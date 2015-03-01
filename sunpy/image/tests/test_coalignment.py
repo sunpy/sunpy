@@ -9,6 +9,7 @@ from astropy import units as u
 from numpy.testing import assert_allclose, assert_array_almost_equal
 from scipy.ndimage.interpolation import shift as sp_shift
 from sunpy import map
+from sunpy.map import GenericMap
 import pytest
 import os
 import sunpy.data.test
@@ -16,7 +17,8 @@ from sunpy.image.coalignment import parabolic_turning_point, \
     repair_image_nonfinite, _default_fmap_function, _lower_clip, _upper_clip, \
     calculate_clipping, get_correlation_shifts, find_best_match_location, \
     match_template_to_layer, clip_edges, \
-    calculate_match_template_shift, mapcube_coalign_by_match_template, apply_shifts
+    calculate_match_template_shift, mapcube_coalign_by_match_template,\
+    apply_shifts
 
 
 @pytest.fixture
@@ -157,7 +159,6 @@ def test_clip_edges():
 def test__default_fmap_function():
     assert(_default_fmap_function([1,2,3]).dtype == np.float64(1).dtype)
 
-"""
 #
 # The following tests test functions that have mapcubes as inputs
 #
@@ -169,23 +170,29 @@ def aia171_test_mc_pixel_displacements():
 
 
 @pytest.fixture
-def aia171_mc_arcsec_displacements():
-    return {'x': np.asarray([0.0, aia171_test_mc_pixel_displacements()[1] * aia171_test_map().scale['x']]) * u.arcsec,
-            'y': np.asarray([0.0, aia171_test_mc_pixel_displacements()[0] * aia171_test_map().scale['y']]) * u.arcsec}
+def aia171_mc_arcsec_displacements(aia171_test_mc_pixel_displacements):
+    return {'x': np.asarray([0.0, aia171_test_mc_pixel_displacements[1] * aia171_test_map().scale['x']]) * u.arcsec,
+            'y': np.asarray([0.0, aia171_test_mc_pixel_displacements[0] * aia171_test_map().scale['y']]) * u.arcsec}
 
 
 @pytest.fixture
-def aia171_test_mc():
+def aia171_test_mc(aia171_test_map, aia171_test_map_layer,
+                   aia171_test_mc_pixel_displacements):
     # Create a map that has been shifted a known amount.
-    d1 = sp_shift(aia171_test_layer(), aia171_test_mc_pixel_displacements())
-    m1 = map.Map((d1, aia171_test_map().meta))
+    d1 = sp_shift(aia171_test_map_layer, aia171_test_mc_pixel_displacements)
+    m1 = map.Map((d1, aia171_test_map.meta))
     # Create the mapcube
-    return map.Map([aia171_test_map(), m1], cube=True)
+    return map.Map([aia171_test_map, m1], cube=True)
 
 
 def test_calculate_match_template_shift(aia171_test_mc,
                                         aia171_mc_arcsec_displacements,
-                                        aia171_test_layer):
+                                        aia171_test_map,
+                                        aia171_test_map_layer,
+                                        aia171_test_map_layer_shape):
+    # Define these local variables to make the code more readable
+    ny = aia171_test_map_layer_shape[0]
+    nx = aia171_test_map_layer_shape[1]
 
     # Test to see if the code can recover the displacements.
     test_displacements = calculate_match_template_shift(aia171_test_mc)
@@ -193,14 +200,14 @@ def test_calculate_match_template_shift(aia171_test_mc,
     assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0 )
 
     # Test setting the template as a ndarray
-    template_ndarray = aia171_test_layer[ny / 4: 3 * ny / 4, nx / 4: 3 * nx / 4]
-    test_displacements = calculate_match_template_shift(aia171_test_mc(), template=template_ndarray)
+    template_ndarray = aia171_test_map_layer[ny / 4: 3 * ny / 4, nx / 4: 3 * nx / 4]
+    test_displacements = calculate_match_template_shift(aia171_test_mc, template=template_ndarray)
     assert_allclose(test_displacements['x'], aia171_mc_arcsec_displacements['x'], rtol=5e-2, atol=0)
     assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0 )
 
     # Test setting the template as GenericMap
     submap = aia171_test_map.submap([nx / 4, 3 * nx / 4], [ny / 4, 3 * ny / 4], units='pixels')
-    test_displacements = calculate_match_template_shift(aia171_test_mc(), template=submap)
+    test_displacements = calculate_match_template_shift(aia171_test_mc, template=submap)
     assert_allclose(test_displacements['x'], aia171_mc_arcsec_displacements['x'], rtol=5e-2, atol=0)
     assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0 )
 
@@ -211,27 +218,30 @@ def test_calculate_match_template_shift(aia171_test_mc,
 
 
 def test_mapcube_coalign_by_match_template(aia171_test_mc,
-                                           ):
+                                           aia171_test_map_layer_shape):
+    # Define these local variables to make the code more readable
+    ny = aia171_test_map_layer_shape[0]
+    nx = aia171_test_map_layer_shape[1]
 
     # Get the test displacements
-    test_displacements = calculate_match_template_shift(aia171_test_mc())
+    test_displacements = calculate_match_template_shift(aia171_test_mc)
 
     # Test passing in displacements
-    test_mc = mapcube_coalign_by_match_template(aia171_test_mc(), shift=test_displacements)
+    test_mc = mapcube_coalign_by_match_template(aia171_test_mc, shift=test_displacements)
 
     # Make sure the output is a mapcube
     assert(isinstance(test_mc, map.MapCube))
 
     # Test returning with no clipping.  Output layers should have the same size
     # as the original input layer.
-    test_mc = mapcube_coalign_by_match_template(aia171_test_mc(), clip=False)
-    assert(test_mc[0].data.shape == aia171_test_layer().shape)
-    assert(test_mc[1].data.shape == aia171_test_layer().shape)
+    test_mc = mapcube_coalign_by_match_template(aia171_test_mc, clip=False)
+    assert(test_mc[0].data.shape == aia171_test_map_layer_shape)
+    assert(test_mc[1].data.shape == aia171_test_map_layer_shape)
 
     # Test the returned mapcube using the default - clipping on.
     # All output layers should have the same size
     # which is smaller than the input by a known amount
-    test_mc = mapcube_coalign_by_match_template(mc)
+    test_mc = mapcube_coalign_by_match_template(aia171_test_mc)
     x_displacement_pixels = test_displacements['x'].to('arcsec').value / test_mc[0].scale['x'] * u.pix
     y_displacement_pixels = test_displacements['y'].to('arcsec').value / test_mc[0].scale['y'] * u.pix
     expected_clipping = calculate_clipping(y_displacement_pixels, x_displacement_pixels)
@@ -276,4 +286,3 @@ def test_apply_shifts(aia171_test_map):
         clipped = calculate_clipping(astropy_displacements["y"], astropy_displacements["x"])
         assert(test_mc[i].data.shape[0] == mc[i].data.shape[0] - np.max(clipped[0].value))
         assert(test_mc[i].data.shape[1] == mc[i].data.shape[1] - np.max(clipped[1].value))
-"""
