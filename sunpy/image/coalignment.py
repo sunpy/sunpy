@@ -28,7 +28,6 @@ from skimage.feature import match_template
 # SunPy imports
 from sunpy.map.mapbase import GenericMap
 import sunpy.map
-from sunpy.util import quantity_input
 
 __author__ = 'J. Ireland'
 
@@ -79,7 +78,7 @@ def calculate_shift(this_layer, template):
 #
 # Remove the edges of a datacube
 #
-@quantity_input(yclips=u.pix, xclips=u.pix)
+@u.quantity_input(yclips=u.pix, xclips=u.pix)
 def clip_edges(data, yclips, xclips):
     """
     Clips off the y and x edges of a 2d array according to a list of pixel
@@ -111,7 +110,7 @@ def clip_edges(data, yclips, xclips):
 # Return the upper and lower clipping values for the y and x directions an
 # input set of pixel shifts y and x
 #
-@quantity_input(y=u.pix, x=u.pix)
+@u.quantity_input(y=u.pix, x=u.pix)
 def calculate_clipping(y, x):
     """
     Return the upper and lower clipping values for the y and x directions.
@@ -345,7 +344,7 @@ def repair_image_nonfinite(image):
     return repaired_image
 
 
-@quantity_input(yshift=u.pix, xshift=u.pix)
+@u.quantity_input(yshift=u.pix, xshift=u.pix)
 def apply_shifts(mc, yshift, xshift, clip=True):
     """
     Apply a set of pixel shifts to a mapcube, and return a new mapcube.

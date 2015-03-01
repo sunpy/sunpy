@@ -170,9 +170,9 @@ def aia171_test_mc_pixel_displacements():
 
 
 @pytest.fixture
-def aia171_mc_arcsec_displacements(aia171_test_mc_pixel_displacements):
-    return {'x': np.asarray([0.0, aia171_test_mc_pixel_displacements[1] * aia171_test_map().scale['x']]) * u.arcsec,
-            'y': np.asarray([0.0, aia171_test_mc_pixel_displacements[0] * aia171_test_map().scale['y']]) * u.arcsec}
+def aia171_mc_arcsec_displacements(aia171_test_mc_pixel_displacements, aia171_test_map):
+    return {'x': np.asarray([0.0, aia171_test_mc_pixel_displacements[1] * aia171_test_map.scale['x']]) * u.arcsec,
+            'y': np.asarray([0.0, aia171_test_mc_pixel_displacements[0] * aia171_test_map.scale['y']]) * u.arcsec}
 
 
 @pytest.fixture
