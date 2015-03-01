@@ -130,6 +130,7 @@ def test_goes_chianti_tem_errors():
     with pytest.raises(ValueError):
         em = goes._goes_get_chianti_em(LONGFLUX, temp_test_toobig)
 
+@pytest.mark.online
 def test_goes_chianti_tem_case1():
     # test case 1: satellite > 7, abundances = coronal
     temp1, em1 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=15,
@@ -138,6 +139,7 @@ def test_goes_chianti_tem_case1():
     assert all(em1 < Quantity([4.79e+48], unit="1/cm**3")) and \
       em1 > Quantity([4.78e+48], unit="1/cm**3")
 
+@pytest.mark.online
 def test_goes_chianti_tem_case2():
     # test case 2: satellite > 7, abundances = photospheric
     temp2, em2 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=15,
@@ -147,6 +149,7 @@ def test_goes_chianti_tem_case2():
     assert all(em2 < Quantity([1.12e+49], unit="1/cm**3")) and \
       all(em2 > Quantity([1.11e+49], unit="1/cm**3"))
 
+@pytest.mark.online
 def test_goes_chianti_tem_case3():
     # test case 3: satellite < 8 and != 6, abundances = coronal
     temp3, em3 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=5,
@@ -157,6 +160,7 @@ def test_goes_chianti_tem_case3():
     assert all(em3 < Quantity([3.85e+48], unit="1/cm**3")) and \
       all(em3 > Quantity([3.84e+48], unit="1/cm**3"))
 
+@pytest.mark.online
 def test_goes_chianti_tem_case4():
     # test case 4: satellite < 8 and != 6, abundances = photospheric
     temp4, em4 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=5,
@@ -167,6 +171,7 @@ def test_goes_chianti_tem_case4():
     assert all(em4 < Quantity(8.81e+48, unit="1/cm**3")) and \
       all(em4 > Quantity(8.80e+48, unit="1/cm**3"))
 
+@pytest.mark.online
 def test_goes_chianti_tem_case5():
     # test case 5: satellite = 6, date < 1983-06-28, abundances = coronal
     temp5, em5 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
@@ -177,6 +182,7 @@ def test_goes_chianti_tem_case5():
     assert all(em5 < Quantity(3.13e+48, unit="1/cm**3")) and \
       all(em5 > Quantity(3.12e+48, unit="1/cm**3"))
 
+@pytest.mark.online
 def test_goes_chianti_tem_case6():
     # test case 6: satellite = 6, date < 1983-06-28, abundances = photospheric
     temp6, em6 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
@@ -187,6 +193,7 @@ def test_goes_chianti_tem_case6():
     assert all(em6 < Quantity(6.74e+48, unit="1/cm**3")) and \
       all(em6 > Quantity(6.73e+48, unit="1/cm**3"))
 
+@pytest.mark.online
 def test_goes_chianti_tem_case7():
     # test case 7: satellite = 6, date > 1983-06-28, abundances = coronal
     temp7, em7 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
@@ -197,6 +204,7 @@ def test_goes_chianti_tem_case7():
     assert all(em7 < Quantity(4.08e+48, unit="1/cm**3")) and \
       all(em7 > Quantity(4.07e+48, unit="1/cm**3"))
 
+@pytest.mark.online
 def test_goes_chianti_tem_case8():
     # test case 8: satellite = 6, date > 1983-06-28, abundances = photospheric
     temp8, em8 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
@@ -207,6 +215,7 @@ def test_goes_chianti_tem_case8():
     assert all(em8 < Quantity(9.39e+48, unit="1/cm**3")) and \
       all(em8 > Quantity(9.38e+48, unit="1/cm**3"))
 
+@pytest.mark.online
 def test_calculate_radiative_loss_rate():
     # Define input variables.
     goeslc_input = lightcurve.GOESLightCurve.create("2014-01-01 00:00:00",
@@ -233,6 +242,7 @@ def test_calculate_radiative_loss_rate():
     goes_test = goes.calculate_radiative_loss_rate(goeslc_no_em)
     assert_frame_equal(goeslc_test.data, goeslc_expected.data)
 
+@pytest.mark.online
 def test_calc_rad_loss_errors():
     # Define input variables
     temp = 11.0 * Quantity(np.ones(6), unit="MK")
@@ -269,6 +279,7 @@ def test_calc_rad_loss_errors():
     with pytest.raises(ValueError):
         rad_loss_test = goes._calc_rad_loss(temp, em, obstime_nonchrono)
 
+@pytest.mark.online
 def test_calc_rad_loss_nokwags():
     # Define input variables
     temp = Quantity([11.0, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
@@ -288,6 +299,7 @@ def test_calc_rad_loss_nokwags():
     assert np.allclose(rad_loss_test["rad_loss_rate"],
                        rad_loss_expected["rad_loss_rate"], rtol=0.01)
 
+@pytest.mark.online
 def test_calc_rad_loss_obstime():
     # Define input variables
     temp = Quantity([11.0, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
