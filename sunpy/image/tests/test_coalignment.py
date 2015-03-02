@@ -250,6 +250,18 @@ def test_mapcube_coalign_by_match_template(aia171_test_mc,
     assert(test_mc[0].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
     assert(test_mc[1].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
 
+    # Test the returned mapcube explicitly using clip=True.
+    # All output layers should have the same size
+    # which is smaller than the input by a known amount
+    test_mc = mapcube_coalign_by_match_template(aia171_test_mc, clip=True)
+    x_displacement_pixels = test_displacements['x'].to('arcsec').value / test_mc[0].scale['x'] * u.pix
+    y_displacement_pixels = test_displacements['y'].to('arcsec').value / test_mc[0].scale['y'] * u.pix
+    expected_clipping = calculate_clipping(y_displacement_pixels, x_displacement_pixels)
+    number_of_pixels_clipped = [np.sum(np.abs(expected_clipping[0])), np.sum(np.abs(expected_clipping[1]))]
+
+    assert(test_mc[0].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
+    assert(test_mc[1].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
+
 
 def test_apply_shifts(aia171_test_map):
     # take two copies of the AIA image and create a test mapcube.
@@ -280,8 +292,17 @@ def test_apply_shifts(aia171_test_map):
     assert(test_mc[1].data.shape == aia171_test_map.data.shape)
 
     # Test returning with clipping.  Output layers should be smaller than the
-    # original layer
+    # original layer by a known amount.
     test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"],  clip=True)
+    for i in range(0, len(test_mc.maps)):
+        clipped = calculate_clipping(astropy_displacements["y"], astropy_displacements["x"])
+        assert(test_mc[i].data.shape[0] == mc[i].data.shape[0] - np.max(clipped[0].value))
+        assert(test_mc[i].data.shape[1] == mc[i].data.shape[1] - np.max(clipped[1].value))
+
+    # Test returning with default clipping.  The default clipping is set to
+    # true, that is the mapcube is clipped.  Output layers should be smaller
+    # than the original layer by a known amount.
+    test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"])
     for i in range(0, len(test_mc.maps)):
         clipped = calculate_clipping(astropy_displacements["y"], astropy_displacements["x"])
         assert(test_mc[i].data.shape[0] == mc[i].data.shape[0] - np.max(clipped[0].value))
