@@ -67,7 +67,7 @@ from sunpy.time import parse_time
 from sunpy import config
 from sunpy import lightcurve
 from sunpy.util.net import check_download_file
-from sunpy.sun import sun
+from sunpy import sun
 
 __all__ = ['get_goes_event_list', 'calculate_temperature_em',
            'calculate_radiative_loss_rate', 'calculate_xray_luminosity']
@@ -1095,7 +1095,9 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
         were taken simultaneously.
 
     date : (optional) datetime object or valid date string.
-        Date at which measurements were taken.
+        Date at which measurements were taken.  This is used to
+        calculate the Sun-Earth distance.
+        Default=None implies mean Sun-Earth distance used.
 
     Returns
     -------
@@ -1211,7 +1213,7 @@ def _calc_xraylum(flux, date=None):
 
     date : (optional) datetime object or valid date string
         Used to calculate a more accurate Sun-Earth distance based on
-        Earth's orbit at that date.  If date is not set, standard value
+        Earth's orbit at that date.  If date is not set, mean value
         for 1AU used.
 
     Returns
@@ -1231,7 +1233,7 @@ def _calc_xraylum(flux, date=None):
     """
     if date is not None:
         date = parse_time(date)
-        xraylum = 4 * np.pi * sun.sunearth_distance(t=date).to("m")**2 * flux
+        xraylum = 4 * np.pi * sun.sun.sunearth_distance(t=date).to("m")**2 * flux
     else:
-        xraylum = 4 * np.pi * sun.sunearth_distance().to("m")**2 * flux
+        xraylum = 4 * np.pi * sun.constants.au.to("m")**2 * flux
     return xraylum
