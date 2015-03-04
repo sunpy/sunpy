@@ -29,7 +29,7 @@ class UnifiedResponse(list):
         self._numfile =0
         for qblock in self:
             self._numfile += len(qblock)
-	
+
     @property
     def file_num(self):
         return self._numfile
