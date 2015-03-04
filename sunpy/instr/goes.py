@@ -1097,7 +1097,7 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
     date : (optional) datetime object or valid date string.
         Date at which measurements were taken.  This is used to
         calculate the Sun-Earth distance.
-        Default=None implies mean Sun-Earth distance used.
+        Default=None implies Sun-Earth distance is set to 1AU.
 
     Returns
     -------
@@ -1213,8 +1213,8 @@ def _calc_xraylum(flux, date=None):
 
     date : (optional) datetime object or valid date string
         Used to calculate a more accurate Sun-Earth distance based on
-        Earth's orbit at that date.  If date is not set, mean value
-        for 1AU used.
+        Earth's orbit at that date.  If date is None, Sun-Earth
+        distance is set to 1AU.
 
     Returns
     -------
