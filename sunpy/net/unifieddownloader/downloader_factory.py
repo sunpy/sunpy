@@ -26,14 +26,13 @@ class UnifiedResponse(list):
             block[0].client = block[1]
             tmplst.append(block[0])
         super(UnifiedResponse, self).__init__(tmplst)
-	self._numfile =0
-	for qblock in self:
-	    self._numfile += len(qblock)
+        self._numfile =0
+        for qblock in self:
+            self._numfile += len(qblock)
 	
     @property
     def file_num(self):
-        
-	return self._numfile
+        return self._numfile
 
     def __str__(self):
 
