@@ -64,7 +64,7 @@ class GOESClient(GenericClient):
         start = timerange.start
         end = timerange.end
         # find out which satellite and datatype to query from the query times
-        sat_num = GOESClient._get_goes_sat_num(start, end)
+        sat_num = GOESClient._get_goes_sat_num(self, start, end)
         base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
 
         if start < parse_time('1999/01/15'):
