@@ -2,17 +2,19 @@
 """Provides programs to process and analyze PROBA2/LYRA data."""
 from __future__ import absolute_import
 
-import datetime
-import urlparse
 import sys
+import datetime
 from collections import OrderedDict
 
+import pandas
 from matplotlib import pyplot as plt
 from astropy.io import fits
-import pandas
 
 from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
+
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['LYRALightCurve']
 
@@ -77,7 +79,7 @@ class LYRALightCurve(LightCurve):
         figure.show()
 
         return figure
-    
+
     @staticmethod
     def _parse_fits(filepath):
         """Loads LYRA data from a FITS file"""
@@ -98,8 +100,17 @@ class LYRALightCurve(LightCurve):
         start = parse_time(start_str)
         #end = datetime.datetime.strptime(end_str, '%Y-%m-%dT%H:%M:%S.%f')
 
-        # First column are times
-        times = [start + datetime.timedelta(0, n) for n in fits_record.field(0)]
+        # First column are times.  For level 2 data, the units are [s].
+        # For level 3 data, the units are [min]
+        if hdulist[1].header['TUNIT1'] == 's':
+            times = [start + datetime.timedelta(seconds=int(n))
+                     for n in fits_record.field(0)]
+        elif hdulist[1].header['TUNIT1'] == 'MIN':
+            times = [start + datetime.timedelta(minutes=int(n))
+                     for n in fits_record.field(0)]
+        else:
+            raise ValueError("Time unit in LYRA fits file not recognised.  "
+                             "Value = {0}".format(hdulist[1].header['TUNIT1']))
 
         # Rest of columns are the data
         table = {}

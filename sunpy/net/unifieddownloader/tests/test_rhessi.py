@@ -1,9 +1,7 @@
-import datetime
 import pytest
 
-import sunpy
 from sunpy.time.timerange import TimeRange
-from sunpy.net.vso.attrs import Time,Instrument,Source 
+from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.unifieddownloader.client import QueryResponse
 import sunpy.net.unifieddownloader.sources.rhessi as rhessi
 
@@ -13,7 +11,7 @@ LCClient = rhessi.RHESSIClient()
 [
 (TimeRange('2012/7/1','2012/7/1'),
 'http://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20120701_050.fits'),
-(TimeRange('2013/6/3','2012/6/4'),
+(TimeRange('2013/6/3','2013/6/4'),
 'http://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20130603_042.fits'),
 (TimeRange('2012/7/1','2012/7/14'),
 'http://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20120701_050.fits')
@@ -40,7 +38,7 @@ def test_query():
     assert len(qr1) == 1
     assert qr1.time_range()[0] == '2011/04/09'
     assert qr1.time_range()[1] == '2011/04/09'
-    
+
 
 @pytest.mark.online
 @pytest.mark.parametrize("time,instrument",

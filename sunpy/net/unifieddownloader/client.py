@@ -13,7 +13,7 @@ from sunpy.net.vso.vso import Results
 from sunpy.net.vso.attrs import Time
 
 class QueryResponseBlock(object):
-    """ 
+    """
     Represents url, source along with other information
     """
     def __init__(self, map_, url):
@@ -21,7 +21,7 @@ class QueryResponseBlock(object):
 	Parameters
 	----------
 	map_ : Dict with relevant information
-	url  : Uniform Resource Locator 
+	url  : Uniform Resource Locator
 	"""
         self.source = map_.get('source', "Data not Available")
         self.provider = map_.get('provider', "Data not Available")
@@ -56,9 +56,9 @@ class QueryResponse(list):
 	Returns the time-span for which records are available
 	"""
         return (datetime.date.strftime(
-                min(qrblock.time.t1 for qrblock in self), '%Y/%m/%d'),
+                min(qrblock.time.start for qrblock in self), '%Y/%m/%d'),
                 datetime.date.strftime(
-                max(qrblock.time.t2 for qrblock in self), '%Y/%m/%d'))
+                max(qrblock.time.end for qrblock in self), '%Y/%m/%d'))
 
     def __str__(self):
         """Presents data within container in a presentable manner"""
@@ -122,7 +122,7 @@ class GenericClient(object):
         Parameters
 	----------
 	qres : QueryResponse object
-        
+
 	Returns
 	-------
 	Results Object
@@ -151,7 +151,7 @@ class GenericClient(object):
     def download_legacy(self, timerange, path=None, callback=None, errback=None):
         """
         Download required data using keyword arguements.
-        
+
 	Parameters
 	----------
 	timerange: Time-range over which to download data.

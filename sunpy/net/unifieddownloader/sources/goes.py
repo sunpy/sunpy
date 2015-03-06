@@ -1,17 +1,16 @@
 #Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-#This module was developed under funding provided by 
+#This module was developed under funding provided by
 #Google Summer of Code 2014
 
 import datetime
 
-import sunpy
-from sunpy.time import parse_time, TimeRange, is_time_in_given_format
+from sunpy.time import parse_time, TimeRange
 from sunpy.net.unifieddownloader.client import GenericClient
 
-__all__ = ['LYRAClient']
+__all__ = ['GOESClient']
 
 class GOESClient(GenericClient):
-    
+
     @classmethod
     def _get_goes_sat_num(self, start, end):
         """Parses the query time to determine which GOES satellite to use."""
@@ -32,10 +31,10 @@ class GOESClient(GenericClient):
 
         sat_list = []
         for sat_num in goes_operational:
-            if ((start > goes_operational[sat_num].start() and
-                 start < goes_operational[sat_num].end()) and
-                (end > goes_operational[sat_num].start() and
-                 end < goes_operational[sat_num].end())):
+            if ((start > goes_operational[sat_num].start and
+                 start < goes_operational[sat_num].end) and
+                (end > goes_operational[sat_num].start and
+                 end < goes_operational[sat_num].end)):
                 # if true then the satellite with sat_num is available
                 sat_list.append(sat_num)
 
@@ -60,10 +59,10 @@ class GOESClient(GenericClient):
         """
         # TimeRange
         if not timerange:
-	    return []
-	 
-	start = timerange.start()
-        end = timerange.end()
+            return []
+
+        start = timerange.start
+        end = timerange.end
         # find out which satellite and datatype to query from the query times
         sat_num = GOESClient._get_goes_sat_num(start, end)
         base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
@@ -76,8 +75,8 @@ class GOESClient(GenericClient):
                 sat_num[0], start.strftime("%Y%m%d"))
         return [url]
 
-    
-    
+
+
     def _makeimap(self):
         '''Helper Function:used to hold information about source. '''
         self.map_['source'] = 'nasa'
