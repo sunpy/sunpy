@@ -7,6 +7,7 @@ from sunpy.net.unifieddownloader.client import GenericClient
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient']
 
+
 class NOAAIndicesClient(GenericClient):
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
@@ -15,7 +16,9 @@ class NOAAIndicesClient(GenericClient):
         return ["ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"]
 
     def _makeimap(self):
-        '''Helper Function:used to hold information about source. '''
+        """
+        Helper Function:used to hold information about source.
+        """
         self.map_['source'] = 'sdic'
         self.map_['instrument'] = 'noaa'
         self.map_['phyobs'] = 'sunspot number'
@@ -24,7 +27,16 @@ class NOAAIndicesClient(GenericClient):
     @classmethod
     def _can_handle_query(cls, *query):
         """
-        Boolean Function:Answers whether client can service the query.
+        Answers whether client can service the query.
+
+        Parameters
+        ----------
+        query : list of query objects
+
+        Returns
+        -------
+        boolean
+            answer as to whether client can service the query
         """
         chkattr = ['Time', 'Instrument']
         chklist = [x.__class__.__name__ in chkattr for x in query]
@@ -43,7 +55,9 @@ class NOAAPredictClient(GenericClient):
         return ["http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"]
 
     def _makeimap(self):
-        '''Helper Function:used to hold information about source. '''
+        """
+        Helper Function:used to hold information about source.
+        """
         self.map_['source'] = 'ises'
         self.map_['instrument'] = 'noaa'
         self.map_['phyobs'] = 'sunspot number'
@@ -52,7 +66,16 @@ class NOAAPredictClient(GenericClient):
     @classmethod
     def _can_handle_query(cls, *query):
         """
-        Boolean Function:Answers whether client can service the query.
+        Answers whether client can service the query.
+
+        Parameters
+        ----------
+        query : list of query objects
+
+        Returns
+        -------
+        boolean
+            answer as to whether client can service the query
         """
         chkattr = ['Time', 'Instrument']
         chklist = [x.__class__.__name__ in chkattr for x in query]

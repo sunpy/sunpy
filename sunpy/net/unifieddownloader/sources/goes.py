@@ -9,6 +9,7 @@ from sunpy.net.unifieddownloader.client import GenericClient
 
 __all__ = ['GOESClient']
 
+
 class GOESClient(GenericClient):
 
     def _get_goes_sat_num(self, start, end):
@@ -76,7 +77,7 @@ class GOESClient(GenericClient):
 
     def _makeimap(self):
         """
-        Helper Function:used to hold information about source.
+        Helper function used to hold information about source.
         """
         self.map_['source'] = 'nasa'
         self.map_['instrument'] = 'goes'
