@@ -285,7 +285,7 @@ class MapFactory(BasicRegistrationFactory):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types idenfitied ({0}).  Specify enough keywords to guarantee unique type identification.".format(n_matches))
+            raise MultipleMatchError("Too many candidate types identified ({0}).  Specify enough keywords to guarantee unique type identification.".format(n_matches))
 
         # Only one is found
         WidgetType = candidate_widget_types[0]
