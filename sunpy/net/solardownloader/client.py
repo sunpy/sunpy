@@ -12,6 +12,8 @@ from sunpy.net.download import Downloader
 from sunpy.net.vso.vso import Results
 from sunpy.net.vso.attrs import Time
 
+__all__ = ['QueryResponse', 'GenericClient']
+
 
 class QueryResponseBlock(object):
     """
