@@ -50,7 +50,8 @@ class GOESClient(GenericClient):
 
         Parameters
         ----------
-        timerange: TimeRange for which data is to be downloaded.
+        timerange: sunpy.time.TimeRange
+            time range for which data is to be downloaded.
         satellite_number : int
             GOES satellite number (default = 15)
         data_type : string
@@ -74,9 +75,7 @@ class GOESClient(GenericClient):
             url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"),
                 sat_num[0], start.strftime("%Y%m%d"))
         return [url]
-
-
-
+    
     def _makeimap(self):
         '''Helper Function:used to hold information about source. '''
         self.map_['source'] = 'nasa'
@@ -86,7 +85,17 @@ class GOESClient(GenericClient):
 
     @classmethod
     def _can_handle_query(cls, *query):
-        """Boolean Function:Answers whether client can service the query.
+        """
+        Answers whether client can service the query.
+
+        Parameters
+        ----------
+        query : list of query objects
+
+        Returns
+        -------
+        boolean
+            answer as to whether client can service the query
         """
         chkattr =  ['Time', 'Instrument']
         chklist =  [x.__class__.__name__ in chkattr for x in query]
