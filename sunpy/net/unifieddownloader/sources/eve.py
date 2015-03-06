@@ -14,7 +14,7 @@ class EVEClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
-        Returns list of URLS corresponding to TimeRange.
+        Returns list of URLS corresponding to value of input timerange.
 
         Parameters
         ----------
@@ -23,7 +23,8 @@ class EVEClient(GenericClient):
 
         Returns
         -------
-        List of urls : list
+        urls : list
+            list of URLs corresponding to the requested time range
         """
         if not timerange:
             return []
@@ -49,9 +50,9 @@ class EVEClient(GenericClient):
         return urlparse.urljoin(base_url, date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt')
 
     def _makeimap(self):
-        '''
+        """
         Helper Function: used to hold information about source.
-        '''
+        """
         self.map_['source'] = 'SDO'
         self.map_['provider'] ='LASP'
         self.map_['instrument'] = 'eve'

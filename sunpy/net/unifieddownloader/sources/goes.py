@@ -75,7 +75,7 @@ class GOESClient(GenericClient):
             url = (base_url + "%s/go%02d%s.fits") % (start.strftime("%Y"),
                 sat_num[0], start.strftime("%Y%m%d"))
         return [url]
-    
+
     def _makeimap(self):
         '''Helper Function:used to hold information about source. '''
         self.map_['source'] = 'nasa'
