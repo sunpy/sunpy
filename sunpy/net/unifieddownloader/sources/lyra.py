@@ -43,7 +43,8 @@ class LYRAClient(GenericClient):
 
         Returns
         -------
-        URL : string
+        string
+            The URL for the corresponding date.
         """
         if not isinstance(date, datetime.date):
             raise ValueError("This method requires a date")
