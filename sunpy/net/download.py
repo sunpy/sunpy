@@ -18,6 +18,7 @@ from collections import defaultdict, deque
 
 import sunpy as spy
 
+
 def default_name(path, sock, url):
     name = sock.headers.get('Content-Disposition', url.rsplit('/', 1)[-1])
     return os.path.join(path, name)

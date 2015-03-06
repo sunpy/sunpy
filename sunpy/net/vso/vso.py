@@ -27,7 +27,6 @@ import astropy
 from astropy.table import Table, Column
 import astropy.units as u
 
-from sunpy import config
 from sunpy.net import download
 from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.util.progressbar import TTYProgressBar as ProgressBar
@@ -74,7 +73,6 @@ class Results(object):
         self.evt = threading.Event()
         self.errors = []
         self.lock = threading.RLock()
-
         self.progress = None
 
     def submit(self, keys, value):
@@ -119,12 +117,13 @@ class Results(object):
             self.total += 1
             return partial(self.submit, keys)
 
-    def wait(self, timeout=100, progress=False):
-        """ Wait for result to be complete and return it. """
+    def wait(self, timeout=100, progress=True):
+        """ Get the result. Blocks until done."""
         # Giving wait a timeout somehow circumvents a CPython bug that the
         # call gets ininterruptible.
         if progress:
             with self.lock:
+
                 self.progress = ProgressBar(self.total, self.total - self.n)
                 self.progress.start()
                 self.progress.draw()
@@ -599,7 +598,7 @@ class VSOClient(object):
                 lambda _: None, 1, lambda mp: self.link(query_response, mp)
             )
         if path is None:
-            path = os.path.join(config.get('downloads','download_dir'),
+            path = os.path.join(config.get('downloads', 'download_dir'),
                                 '{file}')
         fileids = VSOClient.by_fileid(query_response)
         if not fileids:

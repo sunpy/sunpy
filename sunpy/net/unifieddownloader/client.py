@@ -136,7 +136,7 @@ class GenericClient(object):
 
         dobj = Downloader(max_conn=len(urls), max_total=len(urls))
         for aurl, ncall in list(zip(urls, map(lambda x:res.require([x]), urls))):
-            dobj.download(aurl, kwargs.get('Path',None), ncall, kwargs.get('ErrorBack', None))
+            dobj.download(aurl, kwargs.get('Path', None), ncall, kwargs.get('ErrorBack', None))
 
         return res
 
