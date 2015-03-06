@@ -1,6 +1,6 @@
-#Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-#This module was developed under funding provided by
-#Google Summer of Code 2014
+# Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
+# This module was developed under funding provided by
+# Google Summer of Code 2014
 
 from datetime import timedelta
 
@@ -16,6 +16,7 @@ from sunpy.net.vso.attrs import *
 from sunpy.net.unifieddownloader.client import GenericClient
 
 __all__ = ['UnifiedDownloader']
+
 
 class UnifiedResponse(list):
 
@@ -36,21 +37,22 @@ class UnifiedResponse(list):
 
     def __str__(self):
 
-        table =[
-                [
-                     (qrblock.time.t1.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
-                     #vso serviced query will break here, time.t1 --> time.start required
-                     (qrblock.time.t2.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
-                     qrblock.source,
-                     qrblock.instrument,
-                     qrblock.url
-                ]
-                for block in self for i,qrblock in enumerate(block)
-               ]
-        table.insert(0,['----------', '--------', '------', '----------', '---'])
-        table.insert(0,['Start time', 'End time', 'Source', 'Instrument', 'URL'])
+        #vso serviced query will break here, time.start --> time.start required
+        table = [
+            [(qrblock.time.start.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
+             (qrblock.time.end.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
+             qrblock.source,
+             qrblock.instrument,
+             qrblock.url]
+            for block in self for i,qrblock in enumerate(block)
+        ]
+        table.insert(0, ['----------', '--------', '------', '----------', '---'])
+        table.insert(0, ['Start time', 'End time', 'Source', 'Instrument', 'URL'])
 
-        return print_table(table, colsep = '  ', linesep = '\n')
+        return print_table(table, colsep='  ', linesep='\n')
+
+    def __repr__(self):
+        return self.__str__()
 
 class downloadresponse(list):
     """

@@ -13,15 +13,14 @@ class EVEClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """Returns list of URLS corresponding to TimeRange.
+
         Parameters
-	----------
+        ----------
         timerange: TimeRange for which data is to be downloaded.
         Returns
-	-------
-	List of urls
+        -------
+        List of urls
         """
-        if not timerange:
-            return []
         days = timerange.get_dates()
         urls = []
         for day in days:
@@ -30,19 +29,19 @@ class EVEClient(GenericClient):
 
     def _get_url_for_date(self, date, **kwargs):
         """Return URL for corresponding date.
-	Parameters
-	----------
-	date : datetime 
+        Parameters
+        ----------
+        date : datetime
 
         Returns
-	-------
-	string representing URL
+        -------
+        string representing URL
         """
         base_url = 'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
         return urlparse.urljoin(base_url, date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt')
 
     def _makeimap(self):
-        '''Helper Function:used to hold information about source. '''
+        '''Helper Function:used to hold information about source.'''
         self.map_['source'] = 'SDO'
         self.map_['provider'] ='LASP'
         self.map_['instrument'] = 'eve'
