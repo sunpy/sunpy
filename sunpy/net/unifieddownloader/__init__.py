@@ -1,24 +1,23 @@
 """
-This module is broken into two layers.At the bottom layer individual clients
-(LightCurve clients, VSO)operate and download files.
+This module is broken into two layers. At the bottom layer individual clients
+(LightCurve clients, VSO) operate and download files.
 At the top level the Factory instance decides which client/s can best serve
-the query.The factory instance  breaks up query into modular pieces which could be served by 
-clients at lower layer.It then calls an instance of the required client
-to download the data.New individual clients can be registered with factory instance.
+the query. The factory instance breaks up a query into modular pieces which could be served by
+clients at the lower layer.  It then calls an instance of the required client
+to download the data.  New individual clients can be registered with factory instance.
 The clients should have _can_handle_query class method which returns a boolean 
-reprsenting whether the client can handle modularised query.
+representing whether the client can handle modularised query.
 Examples
 --------
 >>> from sunpy.net.unifieddownloader import UnifiedDownloader
 >>> import sunpy.net.vso.attrs as attrs
->>> results = UnifiedDownloader.query(attrs.Time("2012/1/1", "2012/1/2"),
-                               attrs.Instrument('lyra'))
+>>> results = UnifiedDownloader.query(attrs.Time("2012/1/1", "2012/1/2"), attrs.Instrument('lyra'))
 
-query method returns UnifiedResponse object.This is a subclass of List.
+query method returns UnifiedResponse object. This is a subclass of List.
 __str__() method has been overloaded to show all the files downloaded by multiple
-clients.numfile property shows the number of files that need to be downloaded.
+clients. The numfile property shows the number of files that need to be downloaded.
 Each element in the container is a QueryResponse object returned by the underneath 
-client.This QueryResponse object has client member holding an instance of client.
+client. This QueryResponse object has client member holding an instance of client.
     
 >>> print results
 Start time  End time    Source  Instrument  URL                                                                                                         
@@ -33,18 +32,18 @@ Start time  End time    Source  Instrument  URL
 >>> downresp = Downloader.get(results)
 >>> downresp.wait()
      
-get method returns DownloadResponse object.This is list of Results object(same ones as 
-VSO Results object).It has a wait method which returns a list of file paths after
+get method returns DownloadResponse object.This is list of Results object (same ones as
+the VSO Results object). It has a wait method which returns a list of file paths after
 completion of downloading of all files.
      
 Notes
 -----
 
 1)In case multiple clients can serve the query, factory instance delegates the query to one of them.
-Eg. EVE data can be sourced from VSO and EVEClient.Here EVEClient is delegated the duty as it is faster
+Eg. EVE data can be sourced from VSO and EVEClient. Here EVEClient is delegated the duty as it is faster
 at downloading data.
 
-2) In case Time Range being specified, files downloaded might span for complete days.Truncate method 
+2) In case a Time Range is specified, files downloaded might span complete days. A Truncate method
 from LightCurve factory should be used to get specific data.
 """
 from sunpy.net.vso.vso import VSOClient
@@ -69,5 +68,3 @@ UnifiedDownloader.register(VSOClient, VSOClient._can_handle_query)
 UnifiedDownloader.register(NOAAIndicesClient, NOAAIndicesClient._can_handle_query)
 UnifiedDownloader.register(NOAAPredictClient, NOAAPredictClient._can_handle_query)
 UnifiedDownloader.register(RHESSIClient, RHESSIClient._can_handle_query)
-
-
