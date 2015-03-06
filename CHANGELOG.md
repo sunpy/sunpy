@@ -8,6 +8,7 @@ Latest
  * Add STEREO HI Map subclass and color maps.
  * Map.rotate() no longer crops any image data.
  * For accuracy, default Map.rotate() transformation is set to bi-quartic.
+ * `sunpy.image.transform.affine_transform` now casts integer data to float64 and sets NaN values to 0 for all transformations except scikit-image rotation with order <= 3.
  * Refactor the JSOC client so that it follows the .query() .get() interface of VSOClient and UnifedDownloader
  * Remove old style string formatting and other 2.6 compatibility lines.
  * CD matrix now updated, if present, when Map pixel size is changed.
