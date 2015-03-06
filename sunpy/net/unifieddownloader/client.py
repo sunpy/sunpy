@@ -8,9 +8,10 @@ from datetime import timedelta
 from sunpy.time import TimeRange
 from sunpy.util import print_table
 
-from sunpy.net.download  import Downloader
+from sunpy.net.download import Downloader
 from sunpy.net.vso.vso import Results
 from sunpy.net.vso.attrs import Time
+
 
 class QueryResponseBlock(object):
     """
@@ -18,17 +19,18 @@ class QueryResponseBlock(object):
     """
     def __init__(self, map_, url):
         """
-	Parameters
-	----------
-	map_ : Dict with relevant information
-	url  : Uniform Resource Locator
-	"""
+        Parameters
+        ----------
+        map_ : Dict with relevant information
+        url  : Uniform Resource Locator
+        """
         self.source = map_.get('source', "Data not Available")
         self.provider = map_.get('provider', "Data not Available")
         self.phyobs = map_.get('phyobs', "Data not Available")
         self.instrument = map_.get('instrument', "Data not Available")
         self.url = url
-        self.time = TimeRange(map_.get('Time_start'),map_.get('Time_end'))
+        self.time = TimeRange(map_.get('Time_start'), map_.get('Time_end'))
+
 
 def iter_urls(map_, url_list):
     """Helper Function"""
@@ -40,7 +42,6 @@ def iter_urls(map_, url_list):
 class QueryResponse(list):
     """
     Container of QueryResponseBlocks
-
     """
     def __init__(self, lst):
 
@@ -53,8 +54,8 @@ class QueryResponse(list):
 
     def time_range(self):
         """
-	Returns the time-span for which records are available
-	"""
+        Returns the time-span for which records are available
+        """
         return (datetime.date.strftime(
                 min(qrblock.time.start for qrblock in self), '%Y/%m/%d'),
                 datetime.date.strftime(
@@ -110,8 +111,8 @@ class GenericClient(object):
 
     def query(self, *args, **kwargs):
         """
-	Query the web service of the source for urls pertaining to incoming arguements.
-	"""
+        Query the web service of the source for urls pertaining to incoming arguements.
+        """
         GenericClient._makeargs(self, *args, **kwargs)
         urls = self._get_url_for_timerange(self.map_.get('TimeRange'), **kwargs)
         return QueryResponse.create(self.map_, urls)
@@ -120,13 +121,13 @@ class GenericClient(object):
     def get(self, qres, **kwargs):
         """
         Parameters
-	----------
-	qres : QueryResponse object
+        ----------
+        qres : QueryResponse object
 
-	Returns
-	-------
-	Results Object
-	"""
+        Returns
+        -------
+        Results Object
+        """
         urls = []
         for qrblock in qres:
             urls.append(qrblock.url)
@@ -144,27 +145,25 @@ class GenericClient(object):
         paths = []
         for k, v in map_.iteritems():
             paths.append(map_[k]['path'])
-
         return paths
 
 
     def download_legacy(self, timerange, path=None, callback=None, errback=None):
         """
-        Download required data using keyword arguements.
+        Download required data using keyword arguments.
 
-	Parameters
-	----------
-	timerange: Time-range over which to download data.
+        Parameters
+        ----------
+        timerange: Time-range over which to download data.
         path: Defaults to None in which case path used is one defined in sunpyrc file.
         callback: Function to be invoked at completion of download successfully.
         errorback: Function to be called when error is thrown during download.
 
-	Examples
-	--------
-	>>> import sunpy.net.unifieddownloader.sources.eve as eve
-	>>> cl = eve.EVEClient()
-	>>> cl.download_legacy(Time('2012/2/2','2012/2/3'))
-
+        Examples
+        --------
+        >>> import sunpy.net.unifieddownloader.sources.eve as eve
+        >>> cl = eve.EVEClient()
+        >>> cl.download_legacy(Time('2012/2/2','2012/2/3'))
         """
         urls = self._get_url_for_timerange(timerange)
         dobj = Downloader(max_conn=len(urls), max_total=len(urls))
