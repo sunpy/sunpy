@@ -7,12 +7,19 @@ from sunpy.net.unifieddownloader.client import GenericClient
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient']
 
+
 class NOAAIndicesClient(GenericClient):
+
+    @classmethod
+    def _get_default_uri(cls):
+        """Return the url to download indices"""
+        return ["ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"]
+
     def _get_url_for_timerange(cls, timerange, **kwargs):
         """
         Helper function:
         """
-        return ["ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"]
+        return NOAAIndicesClient._get_default_uri()
 
     def _makeimap(self):
         '''Helper Function:used to hold information about source. '''
@@ -36,11 +43,16 @@ class NOAAIndicesClient(GenericClient):
 
 class NOAAPredictClient(GenericClient):
 
+    @classmethod
+    def _get_default_uri(cls):
+        """Return the url to download indices"""
+        return ["http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"]
+
     def _get_url_for_timerange(cls, timerange, **kwargs):
         """
         Helper function:
         """
-        return ["http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"]
+        return NOAAPredictClient._get_default_uri()
 
     def _makeimap(self):
         '''Helper Function:used to hold information about source. '''

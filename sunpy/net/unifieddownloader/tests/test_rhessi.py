@@ -21,11 +21,6 @@ def test_get_url_for_time_range(timerange, url_start):
     assert isinstance(urls, list)
     assert urls[0] == url_start
 
-def test_fail_get_url_for_time_range():
-    urls = LCClient._get_url_for_timerange(None)
-    assert isinstance(urls, list)
-    assert len(urls) == 0
-
 def test_can_handle_query():
     ans1 = rhessi.RHESSIClient._can_handle_query(Time('2012/8/9','2012/8/9'),Instrument('rhessi'))
     assert ans1 == True

@@ -29,9 +29,8 @@ Start time  End time    Source  Instrument  URL
 >>> print len(results)
 1 #Indicating only a single client was used to service the query.
    
->>> downresp = Downloader.get(results)
->>> downresp.wait()
-     
+>>> downresp = UnifiedDownloader.get(results).wait()
+
 get method returns DownloadResponse object.This is list of Results object (same ones as
 the VSO Results object). It has a wait method which returns a list of file paths after
 completion of downloading of all files.
@@ -56,7 +55,7 @@ from sunpy.net.unifieddownloader.sources.goes import GOESClient
 
 from sunpy.net.unifieddownloader.sources.norh import NoRHClient
 from sunpy.net.unifieddownloader.sources.rhessi import RHESSIClient
-from sunpy.net.unifieddownloader.sources.noaa import NOAAIndicesClient,NOAAPredictClient
+from sunpy.net.unifieddownloader.sources.noaa import NOAAIndicesClient, NOAAPredictClient
 
 UnifiedDownloader.register(EVEClient, EVEClient._can_handle_query)
 UnifiedDownloader.register(LYRAClient, LYRAClient._can_handle_query)

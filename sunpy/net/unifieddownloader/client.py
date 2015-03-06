@@ -117,7 +117,6 @@ class GenericClient(object):
         urls = self._get_url_for_timerange(self.map_.get('TimeRange'), **kwargs)
         return QueryResponse.create(self.map_, urls)
 
-
     def get(self, qres, **kwargs):
         """
         Parameters
@@ -146,7 +145,6 @@ class GenericClient(object):
         for k, v in map_.iteritems():
             paths.append(map_[k]['path'])
         return paths
-
 
     def download_legacy(self, timerange, path=None, callback=None, errback=None):
         """

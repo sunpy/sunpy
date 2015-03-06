@@ -75,8 +75,7 @@ class NOAAIndicesLightCurve(LightCurve):
         figure.show()
         return figure
 
-    @classmethod
-    def _get_default_uri(cls):
+    def _get_default_uri(self):
         """Return the url to download indices"""
         return "ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"
 
@@ -152,8 +151,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
         figure.show()
         return figure
 
-    @classmethod
-    def _get_default_uri(cls):
+    def _get_default_uri(self):
         """Return the url to download indices"""
         return "http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"
 

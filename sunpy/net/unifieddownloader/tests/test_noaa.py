@@ -3,23 +3,19 @@ import pytest
 from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.unifieddownloader.client import QueryResponse
-import sunpy.net.unifieddownloader.sources.goes as goes
+import sunpy.net.unifieddownloader.sources.noaa as noaa
 
-LCClient = goes.GOESClient()
-
-'http://umbra.nascom.nasa.gov/goes/fits/1995/go07950603.fits'
-'http://umbra.nascom.nasa.gov/goes/fits/2008/go1020080601.fits'
-
-
+LCClient = noaa.NOAAIndicesClient()
 
 @pytest.mark.parametrize("timerange,url_start,url_end",
 [(TimeRange('1995/06/03', '1995/06/04'),
-'http://umbra.nascom.nasa.gov/goes/fits/1995/go07950603.fits',
-'http://umbra.nascom.nasa.gov/goes/fits/1995/go07950603.fits'),
+'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt',
+'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt'),
 (TimeRange('2008/06/01', '2008/06/02'),
-'http://umbra.nascom.nasa.gov/goes/fits/2008/go1020080601.fits',
-'http://umbra.nascom.nasa.gov/goes/fits/2008/go1020080601.fits')
+'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt',
+'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt')
 ])
+
 def test_get_url_for_time_range(timerange, url_start, url_end):
     urls = LCClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)
@@ -27,15 +23,15 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
     assert urls[-1] == url_end
 
 def test_can_handle_query():
-    ans1 = goes.GOESClient._can_handle_query(Time('2012/8/9', '2012/8/10'), Instrument('goes'))
+    ans1 = noaa.NOAAIndicesClient._can_handle_query(Time('2012/8/9', '2012/8/10'), Instrument('noaa-indices'))
     assert ans1 == True
-    ans2 = goes.GOESClient._can_handle_query(Time('2012/7/7', '2012/7/7'))
+    ans2 = noaa.NOAAIndicesClient._can_handle_query(Time('2012/7/7', '2012/7/7'))
     assert ans2 == False
-    ans3 = goes.GOESClient._can_handle_query(Time('2012/8/9', '2012/8/10'), Instrument('eve'))
+    ans3 = noaa.NOAAIndicesClient._can_handle_query(Time('2012/8/9', '2012/8/10'), Instrument('eve'))
     assert ans3 == False
 
 def test_query():
-    qr1 = LCClient.query(Time('2012/8/9','2012/8/10'), Instrument('goes'))
+    qr1 = LCClient.query(Time('2012/8/9', '2012/8/10'), Instrument('noaa-indices'))
     assert isinstance(qr1,QueryResponse)
     assert len(qr1) == 1
     assert qr1.time_range()[0] == '2012/08/09'
@@ -44,8 +40,8 @@ def test_query():
 
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument",
-[(Time('2012/11/27', '2012/11/27'),Instrument('goes')),
- (Time('2012/10/4', '2012/10/6'),Instrument('goes')),
+[(Time('2012/11/27', '2012/11/27'), Instrument('noaa-indices')),
+ (Time('2012/10/4', '2012/10/6'), Instrument('noaa-indices')),
 ])
 def test_get(time,instrument):
     qr1 = LCClient.query(time,instrument)
