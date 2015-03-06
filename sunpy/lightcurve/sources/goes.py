@@ -71,6 +71,85 @@ class GOESLightCurve(LightCurve):
 
         return figure
 
+    @classmethod
+    def _get_default_uri(cls):
+        """Retrieve latest GOES data if no other data is specified"""
+        today = datetime.datetime.today()
+        days_back = 3
+        time_range = TimeRange(today - datetime.timedelta(days=days_back),
+                               today - datetime.timedelta(days=days_back - 1))
+        return cls._get_url_for_date_range(time_range)
+
+    @classmethod
+    def _get_goes_sat_num(self, start, end):
+        """Parses the query time to determine which GOES satellite to use."""
+
+        goes_operational = {
+        2: TimeRange('1981-01-01', '1983-04-30'),
+        5: TimeRange('1983-05-02', '1984-07-31'),
+        6: TimeRange('1983-06-01', '1994-08-18'),
+        7: TimeRange('1994-01-01', '1996-08-13'),
+        8: TimeRange('1996-03-21', '2003-06-18'),
+        9: TimeRange('1997-01-01', '1998-09-08'),
+        10: TimeRange('1998-07-10', '2009-12-01'),
+        11: TimeRange('2006-06-20', '2008-02-15'),
+        12: TimeRange('2002-12-13', '2007-05-08'),
+        13: TimeRange('2006-08-01', '2006-08-01'),
+        14: TimeRange('2009-12-02', '2010-10-04'),
+        15: TimeRange('2010-09-01', datetime.datetime.utcnow())}
+
+        sat_list = []
+        for sat_num in goes_operational:
+            if ((start > goes_operational[sat_num].start and
+                 start < goes_operational[sat_num].end and
+                (end > goes_operational[sat_num].start and
+                 end < goes_operational[sat_num].end))):
+                # if true then the satellite with sat_num is available
+                sat_list.append(sat_num)
+
+        if not sat_list:
+            # if no satellites were found then raise an exception
+            raise Exception('No operational GOES satellites within time range')
+        else:
+            return sat_list
+
+    @staticmethod
+    def _get_url_for_date_range(*args):
+        """Returns a URL to the GOES data for the specified date.
+
+        Parameters
+        ----------
+        args : TimeRange, datetimes, date strings
+            Date range should be specified using a TimeRange, or start
+            and end dates at datetime instances or date strings.
+        satellite_number : int
+            GOES satellite number (default = 15)
+        data_type : string
+            Data type to return for the particular GOES satellite. Supported
+            types depend on the satellite number specified. (default = xrs_2s)
+        """
+        # TimeRange
+        if len(args) == 1 and isinstance(args[0], TimeRange):
+            start = args[0].start
+            end = args[0].end
+        elif len(args) == 2:
+            start = parse_time(args[0])
+            end = parse_time(args[1])
+        if end < start:
+            raise ValueError('start time > end time')
+
+        # find out which satellite and datatype to query from the query times
+        sat_num = GOESLightCurve._get_goes_sat_num(start, end)
+        base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
+
+        if start < parse_time('1999/01/15'):
+            url = base_url + "{date:%Y}/go{sat:02d}{date:%y%m%d}.fits".format(
+                date=start, sat=sat_num[0])
+        else:
+            url = base_url + "{date:%Y}/go{sat:02d}{date:%Y%m%d}.fits".format(
+                date=start, sat=sat_num[0])
+        return url
+
     @staticmethod
     def _parse_fits(filepath):
         """Parses a GOES FITS file from
