@@ -8,7 +8,7 @@ from sunpy.net.unifieddownloader.client import GenericClient
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient']
 
 class NOAAIndicesClient(GenericClient):
-    def _get_url_for_timerange(cls, timerange, **kwargs):
+    def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Helper function:
         """
@@ -36,7 +36,7 @@ class NOAAIndicesClient(GenericClient):
 
 class NOAAPredictClient(GenericClient):
 
-    def _get_url_for_timerange(cls, timerange, **kwargs):
+    def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Helper function:
         """
