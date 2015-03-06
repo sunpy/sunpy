@@ -173,7 +173,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         return candidate_widget_types
 
     def _get_registered_widget(self, *args, **kwargs):
-        '''Factory helper function'''
+        """Factory helper function"""
         candidate_widget_types = self._check_registered_widgets(*args)
         tmpclient = candidate_widget_types[0]()
         return tmpclient.query(*args), tmpclient
