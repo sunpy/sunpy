@@ -5,6 +5,7 @@ import astropy.units as u
 import sunpy.net.vso.attrs as attrs
 from sunpy.net.unifieddownloader.downloader_factory import UnifiedDownloader
 
+@pytest.mark.online
 @pytest.mark.parametrize("time,instrument,client",
 [
 (attrs.Time('2012/8/8','2012/8/9'),attrs.Instrument('eve'),"VSOClient"),
