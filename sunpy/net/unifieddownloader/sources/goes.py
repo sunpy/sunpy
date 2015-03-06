@@ -11,7 +11,6 @@ __all__ = ['GOESClient']
 
 class GOESClient(GenericClient):
 
-    @classmethod
     def _get_goes_sat_num(self, start, end):
         """Parses the query time to determine which GOES satellite to use."""
 
@@ -43,7 +42,6 @@ class GOESClient(GenericClient):
             raise Exception('No operational GOES satellites within time range')
         else:
             return sat_list
-
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """Returns a URL to the GOES data for the specified date.
@@ -77,7 +75,9 @@ class GOESClient(GenericClient):
         return [url]
 
     def _makeimap(self):
-        '''Helper Function:used to hold information about source. '''
+        """
+        Helper Function:used to hold information about source.
+        """
         self.map_['source'] = 'nasa'
         self.map_['instrument'] = 'goes'
         self.map_['phyobs'] = 'irradiance'
