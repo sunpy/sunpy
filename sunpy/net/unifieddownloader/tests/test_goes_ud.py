@@ -1,7 +1,6 @@
 import datetime
 import pytest
 
-import sunpy
 from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time,Instrument
 from sunpy.net.unifieddownloader.client import QueryResponse
