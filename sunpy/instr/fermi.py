@@ -11,7 +11,7 @@ import datetime
 import os
 import matplotlib.pyplot as plt
 
-from bs4 import BeautifulSoup
+#from bs4 import BeautifulSoup
 import astropy.units as u
 from astropy.utils.compat.odict import OrderedDict
 from astropy.coordinates import Angle, Longitude, Latitude
@@ -68,31 +68,31 @@ def download_weekly_pointing_file(date):
     full_fname_start=fbasename + str(week) + '_' + start_str + '_' + end_str + '_'
     full_fname_extension='.fits'
     #the full filename will be full_fname_start + version number + full_fname_extension,
-    #but version number unknown
-    #multiple versions may exist for each week.
+    #but version number unknown - multiple versions may exist for each week.
 
-    #Parse the base_url page for all file links. Find all matching files for the desired week
-    resp=urllib2.urlopen(base_url)
-    #get the returned html as a string
-    html_string=resp.read().decode('utf-8')
-    #parse the html string using BeautifulSoup 
-    parsed_html = BeautifulSoup(html_string,'html5lib')
-    #find all the links in the html
-    links=parsed_html.body.findAll('a')
+    #search through version numbers starting from most recent (10) until we find a file.
+    #This will find the most up to date file.
+    for v in range(10,-1,-1):
+        rest_of_filename = full_fname_start + '0' + str(v) + full_fname_extension
+        full_fname = base_url + rest_of_filename# full_fname_start + '0' + str(v) + full_fname_extension
+        try:
+            resp = urllib2.urlopen(full_fname)
+            exists = True
+        except:
+            urllib2.HTTPError
+            exists = False
+        #if the file exists then exit and retain this filepath
+        if exists == True:
+            break
 
-    #find all files matching the desired week
-    matching_files = [l.text for l in links if (l.text.startswith(full_fname_start)
-                                                and l.text.endswith(full_fname_extension))]
-    if not matching_files:
+    #if no matches at all were found, then the pointing file doesn't exist
+    if exists == False:
         raise ValueError('No Fermi pointing files found for given date!')
-    #find the file with the highest version number
-    matching_files.sort()
-    #this is the correct pointing file
-    full_fname=matching_files[-1]
-    
+
+   
     #download the file
-    pointing_file_url=urlparse.urljoin(base_url,full_fname)
-    destination=os.path.join(tmp_dir,full_fname)
+    pointing_file_url=full_fname 
+    destination=os.path.join(tmp_dir,rest_of_filename) 
     urllib.urlretrieve(pointing_file_url,destination)
 
     #return the location of the downloaded file
