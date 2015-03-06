@@ -9,16 +9,21 @@ from sunpy.net.unifieddownloader.client import GenericClient
 
 __all__ = ['EVEClient']
 
+
 class EVEClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
-        """Returns list of URLS corresponding to TimeRange.
+        """
+        Returns list of URLS corresponding to TimeRange.
+
         Parameters
-	----------
-        timerange: TimeRange for which data is to be downloaded.
+        ----------
+        timerange: sunpy.time.TimeRange
+            time range for which data is to be downloaded.
+
         Returns
-	-------
-	List of urls
+        -------
+        List of urls : list
         """
         if not timerange:
             return []
@@ -29,20 +34,24 @@ class EVEClient(GenericClient):
         return urls
 
     def _get_url_for_date(self, date, **kwargs):
-        """Return URL for corresponding date.
-	Parameters
-	----------
-	date : datetime 
+        """
+        Return URL for corresponding date.
+
+        Parameters
+        ----------
+        date : Python datetime object
 
         Returns
-	-------
-	string representing URL
+        -------
+        URL : string
         """
         base_url = 'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
         return urlparse.urljoin(base_url, date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt')
 
     def _makeimap(self):
-        '''Helper Function:used to hold information about source. '''
+        '''
+        Helper Function: used to hold information about source.
+        '''
         self.map_['source'] = 'SDO'
         self.map_['provider'] ='LASP'
         self.map_['instrument'] = 'eve'
@@ -50,7 +59,17 @@ class EVEClient(GenericClient):
 
     @classmethod
     def _can_handle_query(cls, *query):
-        """Boolean Function:Answers whether client can service the query.
+        """
+        Answers whether client can service the query.
+
+        Parameters
+        ----------
+        query : list of query objects
+
+        Returns
+        -------
+        boolean
+            answer as to whether client can service the query
         """
         chkattr =  ['Time', 'Instrument','Level']
         chklist =  [x.__class__.__name__ in chkattr for x in query]
