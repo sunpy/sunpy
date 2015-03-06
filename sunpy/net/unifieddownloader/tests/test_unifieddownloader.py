@@ -1,9 +1,8 @@
-import datetime
 import pytest
 
-import sunpy
-from sunpy.time.timerange import TimeRange
-import sunpy.net.vso.attrs as attrs 
+import astropy.units as u
+
+import sunpy.net.vso.attrs as attrs
 from sunpy.net.unifieddownloader.downloader_factory import UnifiedDownloader
 
 @pytest.mark.parametrize("time,instrument,client",
@@ -16,7 +15,7 @@ from sunpy.net.unifieddownloader.downloader_factory import UnifiedDownloader
 (attrs.Time('2012/12/8','2012/12/9'),attrs.Instrument('noaa-predict'),"NOAAPredictClient"),
 ])
 def test_query(time,instrument,client):
-    
+
     unifiedresp = UnifiedDownloader.query(time,instrument)
     for block in unifiedresp:
         assert block.client.__class__.__name__ == client
@@ -28,12 +27,12 @@ def test_query(time,instrument,client):
 #(attrs.Time('2013/1/8','2013/1/9'),attrs.Instrument('eve')),
 (attrs.Time('2011/5/5','2011/5/6'),attrs.Instrument('lyra')),
 (attrs.Time('2012/7/8','2012/7/9'),attrs.Instrument('norh')),
-(attrs.Time('2011/1/22','2011/4/25'),attrs.Instrument('rhessi')),
-(attrs.Time('2012/1/8','2012/3/9'),attrs.Instrument('noaa-indices')),
+(attrs.Time('2012/11/27','2012/11/27'), attrs.Instrument('rhessi')),
+#(attrs.Time('2012/1/8','2012/3/9'),attrs.Instrument('noaa-indices')),
 (attrs.Time('2012/12/8','2012/12/9'),attrs.Instrument('noaa-predict')),
 ])
 def test_get(time,instrument):
-    
+
     unifiedresp = UnifiedDownloader.query(time,instrument)
     res = UnifiedDownloader.get(unifiedresp)
     download_list = res.wait()
@@ -74,9 +73,8 @@ def test_multiple_clients(time, instrument1, instrument2):
 
 @pytest.mark.online
 def test_vso():
-
     unifiedresp = UnifiedDownloader.query(attrs.Time("2013/3/4 01:00:00","2013/3/4 01:10:00"), attrs.Instrument('aia'),
-    attrs.Wave(304,304), attrs.Sample(600))
+    attrs.Wave(304*u.AA,304*u.AA), attrs.Sample(600))
     num_files_to_download = sum([block.num_records() for block in unifiedresp])
     res = UnifiedDownloader.get(unifiedresp)
     files_downloaded = len(res.wait())

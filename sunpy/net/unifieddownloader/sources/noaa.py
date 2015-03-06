@@ -1,5 +1,5 @@
 #Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-#This module was developed under funding provided by 
+#This module was developed under funding provided by
 #Google Summer of Code 2014
 
 
@@ -12,7 +12,7 @@ class NOAAIndicesClient(GenericClient):
         """
         Helper function:
         """
-        return ["http://www.swpc.noaa.gov/ftpdir/weekly/RecentIndices.txt"]
+        return ["ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"]
 
     def _makeimap(self):
         '''Helper Function:used to hold information about source. '''
@@ -40,7 +40,7 @@ class NOAAPredictClient(GenericClient):
         """
         Helper function:
         """
-        return ["http://www.swpc.noaa.gov/ftpdir/weekly/Predict.txt"]
+        return ["http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"]
 
     def _makeimap(self):
         '''Helper Function:used to hold information about source. '''
