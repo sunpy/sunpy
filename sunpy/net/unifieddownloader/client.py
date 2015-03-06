@@ -12,6 +12,7 @@ from sunpy.net.download import Downloader
 from sunpy.net.vso.vso import Results
 from sunpy.net.vso.attrs import Time
 
+
 class QueryResponseBlock(object):
     """
     Represents url, source along with other information
@@ -28,7 +29,8 @@ class QueryResponseBlock(object):
         self.phyobs = map_.get('phyobs', "Data not Available")
         self.instrument = map_.get('instrument', "Data not Available")
         self.url = url
-        self.time = TimeRange(map_.get('Time_start'),map_.get('Time_end'))
+        self.time = TimeRange(map_.get('Time_start'), map_.get('Time_end'))
+
 
 def iter_urls(map_, url_list):
     """Helper Function"""
