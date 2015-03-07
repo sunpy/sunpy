@@ -179,12 +179,98 @@ def sunearth_distance(t='now'):
     return result * u.AU
 
 def apparent_longitude(t='now'):
-    """Returns the apparent longitude of the Sun."""
+    """Returns the apparent longitude of the Sun.
+    This includes the effects of nutation and aberration 
+    to the true ('geometric') longituded of the Sun."""
+    # p. 167
+    #Nutation: Add \sun longitude the nutation in logn \delta\psi (Ch22)
+    # ToDo: find!
+    # aberration: Apply to \sun longitude the correction:
+    # - 20.4898 * u.arcsecs / R
+    # R = Earth's radius vector in AU.
+    # The numerator = constant of aberration (k=20.49552 *u.arcsecs)
+    #                 * a(1-e**2) = eq. 25.10
+    # It varies very slowly
+    # Note, Above: it does not assume perturbations in the orbit (mainly by
+    #       the moon => result's error <= 0.01 arcseconds
+    # --High accuracy--
+    # aberration: 
+    # - 0.005775518 R \delta\lambda (25.11)
+    # Find \delta \lambda of Sun's longitude (arcsecs/day)
+    # R is as before
+    # the numerical const: light-time for unit distance, in days (=8.3 min).
+    # \deltlambda (J2000.0) =
+    # \tau = time in milennia from J2000.0 (Ch 32)
+    # args in sines are in degrees and decimals
+    # most important periodic terms have been retained => err < 0.1 arcsecs
+    #  If this result is used for 25.11 => err < 0.001 arcsecs
+    
     T = julian_centuries(t)
     omega = (259.18 - 1934.142 * T) * u.deg
     true_long = true_longitude(t)        
     result = true_long - (0.00569 - 0.00479 * np.sin(omega)) * u.deg
-    return Longitude(result) 
+    return Longitude(result)
+
+def sun_geocentric_variation_daily_variation(t='now', mean_equinox=False):
+    """
+    Daily variation, in arcseconds, of the geocentric longitude
+    of the Sun in a fixed reference frame.
+    If needed with respect to the mean equinox instead of to a 
+    fixed reference frame, set argument to True.
+    """
+    # tau is measured from J2000.0 (JDE 2451 545.0) in Julian millennia
+    tau = julian_centuries(t)/10.
+
+    #  If \deltaLambda needed with respect to the mean equinox of the
+    # date instead of to a fixed reference frame the constant term
+    # should be replaced: 3548.193 -> 3548.330
+    # p.167
+    if mean_equinox:
+        deltaLambda = 3548.330
+    else:
+        deltaLambda = 3548.193
+
+    # Periodic terms due to Earth's orbit eccentricity
+    earth_pt = np.array([359993.7286, 719987.4571, 1079981.1857])
+    #                due to the action of the Moon
+    moon_pt = np.array([4452671.1152])
+    #                due to Venus
+    venus_pt = np.array([450368.8564, 225184.4282, 315559.5560, 675553.2846])
+    #                due to Jupiter
+    jupit_pt = np.array([329644.6718, 659289.3436, 299295.6151])
+    #                due to Mars
+    mars_pt = np.array([337181.4711])
+    periodic_terms = np.array([ earth_pt[0],  earth_pt[1], moon_pt[0],
+                                venus_pt[0],  jupit_pt[0], jupit_pt[1],
+                                9224659.7915, earth_pt[2], venus_pt[1],
+                                4092677.3866, mars_pt[0],  jupit_pt[2],
+                                venus_pt[2],  venus_pt[3], earth_pt[0],
+                                earth_pt[1],  earth_pt[2], earth_pt[0],
+                                earth_pt[1],  moon_pt[0],  earth_pt[0]])
+    non_periodic_terms = np.array([  87.5287,  85.0561,  27.8502,
+                                     73.1375, 337.2264, 222.5400,
+                                    162.8136,  82.5823, 171.5189,
+                                     30.3214, 119.8105, 247.5418,
+                                    325.1526, 155.1241, 333.4515,
+                                    330.9814, 328.5170, 241.4518,
+                                    205.0482, 297.8610, 154.7066])
+    factor = np.array([ 118.568, 2.476, 1.376,
+                          0.119, 0.114, 0.086,
+                          0.078, 0.054, 0.052,
+                          0.034, 0.033, 0.023,
+                          0.023, 0.021,
+                          7.311, 0.305, 0.010, # * tau
+                          0.309, 0.021, 0.004, # * tau ** 2
+                          0.010])              # * tau ** 3
+    factor[14:17] *= tau
+    factor[17:20] *= tau ** 2
+    factor[-1] *= tau ** 3
+
+    arguments = factor * np.sin(u.deg *
+                                (non_periodic_terms +
+                                 periodic_terms * tau))
+    deltaLambda += arguments.sum()
+    return deltaLambda * u.arcsec 
 
 def true_latitude(t='now'): # pylint: disable=W0613
     '''Returns the true latitude. Never more than 1.2 arcsec from 0,
@@ -218,6 +304,9 @@ def apparent_obliquity_of_ecliptic(t='now'):
 
 def apparent_rightascension(t='now'):
     """Returns the apparent right ascenscion of the Sun."""
+    # P.167: apparent long (\lambda) and lat (\beta) can be transformed
+    # to app_ra and app_dec (13.3) and (13.4) where \eps = true obliquity
+    # affected by nutation in obliquitiy (\delta \eps)
     y = np.cos(apparent_obliquity_of_ecliptic(t)) * np.sin(apparent_longitude(t))
     x = np.cos(apparent_longitude(t))
     app_ra = np.arctan2(y, x)
