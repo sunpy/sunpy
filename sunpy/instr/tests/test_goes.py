@@ -378,10 +378,10 @@ def test_goes_lx_nokwargs():
     shortflux = Quantity([7e-7, 7e-7, 7e-7, 7e-7, 7e-7, 7e-7], unit="W/m**2")
     # Test output when no kwargs are set.
     lx_test = goes._goes_lx(longflux[:2], shortflux[:2])
-    lx_expected = {"longlum": Quantity([1.91013779e+18, 1.91013779e+18],
+    lx_expected = {"longlum": Quantity([1.98649103e+18, 1.98649103e+18],
                                        unit="W"),
-                   "shortlum": Quantity([1.91013779e+17, 1.91013779e+17],
-                                       unit="W")}
+                   "shortlum": Quantity([1.98649103e+17, 1.98649103e+17],
+                                        unit="W")}
     assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
     assert_quantity_allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.1)
     assert_quantity_allclose(lx_test["shortlum"], lx_expected["shortlum"],
@@ -415,16 +415,16 @@ def test_goes_lx_obstime():
     # Test output when obstime and cumulative kwargs are set.
     lx_test = goes._goes_lx(longflux, shortflux, obstime)
     lx_expected = {
-        "longlum": 1.91013779e+18 * Quantity(np.ones(6), unit='W'),
-        "shortlum": 1.91013779e+17 * Quantity(np.ones(6), unit='W'),
-        "longlum_int": Quantity([1.9101360630079373e+19], unit="J"),
-        "shortlum_int": Quantity([1.9101360630079373e+18], unit="J"),
-        "longlum_cumul": Quantity([3.82027213e+18, 7.64054425e+18,
-                                  1.14608164e+19, 1.52810885e+19,
-                                  1.91013606e+19], unit="J"),
-        "shortlum_cumul": Quantity([3.82027213e+17, 7.64054425e+17,
-                                    1.14608164e+18, 1.52810885e+18,
-                                    1.91013606e+18], unit="J")}
+        "longlum": 1.96860565e+18 * Quantity(np.ones(6), unit='W'),
+        "shortlum": 1.96860565e+17 * Quantity(np.ones(6), unit='W'),
+        "longlum_int": Quantity([1.96860565e+19], unit="J"),
+        "shortlum_int": Quantity([1.96860565e+18], unit="J"),
+        "longlum_cumul": Quantity([3.93721131e+18, 7.87442262e+18,
+                                   1.18116339e+19, 1.57488452e+19,
+                                   1.96860565e+19], unit="J"),
+        "shortlum_cumul": Quantity([3.93721131e+17, 7.87442262e+17,
+                                    1.18116339e+18, 1.57488452e+18,
+                                    1.96860565e+18], unit="J")}
     assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
     assert_quantity_allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.1)
     assert_quantity_allclose(lx_test["shortlum"], lx_expected["shortlum"],
