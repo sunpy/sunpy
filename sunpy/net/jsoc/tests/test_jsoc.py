@@ -13,7 +13,7 @@ import pytest
 
 from sunpy.time import parse_time
 from sunpy.net.jsoc import JSOCClient, JSOCResponse
-from sunpy.net.vso.vso import Results
+from sunpy.net.download import Results
 import sunpy.net.jsoc.attrs as attrs
 
 

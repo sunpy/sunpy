@@ -2,9 +2,9 @@ import datetime
 import pytest
 
 from sunpy.time.timerange import TimeRange
-from sunpy.net.vso.attrs import Time, Instrument, Source, Level
-from sunpy.net.unifieddownloader.client import QueryResponse
-import sunpy.net.unifieddownloader.sources.eve as eve
+from sunpy.net.vso.attrs import Time,Instrument,Source,Level
+from sunpy.net.dataretriever.client import QueryResponse
+import sunpy.net.dataretriever.sources.eve as eve
 
 LCClient = eve.EVEClient()
 
@@ -49,7 +49,7 @@ def test_query():
     assert len(qr1) == 2
     assert qr1.time_range()[0] == '2012/08/09'
     assert qr1.time_range()[1] == '2012/08/10'
-    
+
 
 @pytest.mark.online
 @pytest.mark.parametrize("time,instrument",
