@@ -33,13 +33,16 @@ class UnifiedResponse(list):
     def file_num(self):
         return self._numfile
 
+    def __repr__(self):
+        return str(self)
+
     def __str__(self):
 
         table =[
                 [
-                     (qrblock.time.t1.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
+                     (qrblock.time.start.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
                      #vso serviced query will break here, time.t1 --> time.start required
-                     (qrblock.time.t2.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
+                     (qrblock.time.end.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
                      qrblock.source,
                      qrblock.instrument,
                      qrblock.url
@@ -93,7 +96,7 @@ def _create(wlk, query, dobj):
 class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
     def search(self, *query):
-        '''
+        """
         Query for data in form of multiple parameters.
         Examples
         --------
@@ -121,7 +124,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         return UnifiedResponse(qwalker.create(query, self))
 
     def fetch(self, qr, **kwargs):
-        '''
+        """
         Downloads the files pointed at by URLS contained within UnifiedResponse Object.
         Parameters
         ----------
@@ -164,10 +167,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             else:
                 return  [self.default_widget_type]
         elif n_matches > 1:
-            for candidate_client in candidate_widget_types:
-                if issubclass(candidate_client, GenericClient):
-                    return [candidate_client]
-            raise MultipleMatchError("Too many candidates clients can service your query {0}".format(args))
+            candidate_names = [cls.__name__ for cls in candidate_widget_types]
+            raise MultipleMatchError("Too many candidates clients can service your query {0}".format(candidate_names))
 
         return candidate_widget_types
 
