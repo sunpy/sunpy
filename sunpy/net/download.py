@@ -227,7 +227,7 @@ class Results(object):
             self.total += 1
             return partial(self.submit, keys)
 
-    def wait(self, timeout=100, progress=False):
+    def wait(self, timeout=100, progress=True):
         """ Wait for result to be complete and return it. """
         # Giving wait a timeout somehow circumvents a CPython bug that the
         # call gets ininterruptible.
