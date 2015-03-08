@@ -55,8 +55,30 @@ class _Range(object):
         return self.min <= other.min and self.max >= other.max
 
 
-class Wave(Attr, _Range):
-    def __init__(self, wavemin, wavemax):
+class Wavelength(Attr, _Range):
+    def __init__(self, wavemin, wavemax=None):
+        """
+        Specifies the wavelength or spectral energy range of the detector.
+
+        Parameters
+        ----------
+        wavemin : `~astropy.units.Quantity`
+            The lower bounds of the range.
+
+        wavemax : `~astropy.units.Quantity`
+            The upper bound of the range, if not specified it will default to
+            the lower bound.
+
+        Notes
+        -----
+        The VSO understands the 'wavelength' in one of three units, Angstroms,
+        kHz or keV. Therefore any unit which is directly convertable to these
+        units is valid input
+        """
+
+        if not wavemax:
+            wavemax = wavemin
+
         if not all(isinstance(var, u.Quantity) for var in [wavemin, wavemax]):
             raise TypeError("Wave inputs must be astropy Quantities")
 
@@ -64,10 +86,11 @@ class Wave(Attr, _Range):
         # converts to any of these units depending on the spectral inputs
         # Note: the website asks for GHz, however it seems that using GHz produces
         # weird responses on VSO.
-        convert = {'m': u.AA, 'Hz': u.kHz, 'eV': u.keV}
-        for k in convert.keys():
-            if wavemin.decompose().unit == (1 * u.Unit(k)).decompose().unit:
-                unit = convert[k]
+        supported_units = [u.AA, u.kHz, u.keV]
+        for unit in supported_units:
+            if not wavemin.unit.is_equivalent(unit):
+                unit = None
+
         try:
             self.min, self.max = sorted(
                 value.to(unit) for value in [wavemin, wavemax]
@@ -83,11 +106,27 @@ class Wave(Attr, _Range):
 
     def __repr__(self):
 	return "<Wave({0!r}, {1!r}, '{2!s}')>".format(self.min.value,
-                                                self.max.value,
-                                                self.unit)
+                                                   self.max.value,
+                                                   self.unit)
 
+# Alias for backwards compatitibily
+Wave = Wavelength
 
 class Time(Attr, _Range):
+    """
+    Specifies a time range for the search.
+
+    Parameters
+    ----------
+    start : sunpy time or `~sunpy.time.TimeRange`
+        Any time representation that can be parsed by `~sunpy.time.parse_time`.
+
+    end : sunpy time
+        Any time representation that can be parsed by `~sunpy.time.parse_time`.
+        Optional only if start is a `~sunpy.time.TimeRange`.
+
+    """
+
     def __init__(self, start, end=None, near=None):
         if end is None and not isinstance(start, TimeRange):
             raise ValueError("Specify start and end or start has to be a TimeRange")
@@ -165,6 +204,9 @@ class Source(_VSOSimpleAttr):
 
 
 class Instrument(_VSOSimpleAttr):
+    """
+    Specifies the Instrument to search for data for.
+    """
     pass
 
 

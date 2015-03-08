@@ -1,11 +1,10 @@
 #Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-#This Module was developed under funding provided by 
+#This Module was developed under funding provided by
 #Google Summer of Code 2014
 
-import datetime
 import urlparse
 
-from sunpy.net.unifieddownloader.client import GenericClient
+from ..client import GenericClient
 
 __all__ = ['NoRHClient']
 class NoRHClient(GenericClient):
@@ -16,7 +15,7 @@ class NoRHClient(GenericClient):
 
         Parameters
         ----------
-        timerange: sunpy.time.TimeRange
+        timerange: `sunpy.time.TimeRange`
             time range for which data is to be downloaded.
 
         Returns

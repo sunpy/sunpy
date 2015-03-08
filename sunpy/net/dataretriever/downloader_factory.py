@@ -10,10 +10,9 @@ from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 
-from sunpy.net.attr import *
-from sunpy.net.vso.attrs import *
+from sunpy.net import attr
 
-from sunpy.net.unifieddownloader.client import GenericClient
+from .client import GenericClient
 
 __all__ = ['UnifiedDownloader']
 
@@ -74,15 +73,15 @@ class downloadresponse(list):
         return filelist
 
 
-qwalker = AttrWalker()
+qwalker = attr.AttrWalker()
 
-@qwalker.add_creator(AttrAnd)
+@qwalker.add_creator(attr.AttrAnd)
 def _create(wlk, query, dobj):
     qresponseobj, qclient = dobj._get_registered_widget(*query.attrs)
     return [(qresponseobj, qclient)]
 
 
-@qwalker.add_creator(AttrOr)
+@qwalker.add_creator(attr.AttrOr)
 def _create(wlk, query, dobj):
     qblocks = []
     for iattr in query.attrs:
@@ -118,7 +117,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         ie. query is now of form A & B or ((A & B) | (C & D))
         This helps in modularising query into parts and handling each of the parts individually.
         """
-        query = and_(*query)
+        query = attr.and_(*query)
         return UnifiedResponse(qwalker.create(query, self))
 
     def get(self, qr, **kwargs):
@@ -179,4 +178,4 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         return tmpclient.query(*args), tmpclient
 
 
-UnifiedDownloader = UnifiedDownloaderFactory(additional_validation_functions = ['_can_handle_query'])
+Fido = UnifiedDownloaderFactory(additional_validation_functions = ['_can_handle_query'])
