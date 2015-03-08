@@ -166,6 +166,9 @@ class QueryResponse(list):
         return repr(self.build_table())
 
     def _repr_html_(self):
+        return self._build_table()._repr_html_()
+
+    def _repr_html_(self):
         return self.build_table()._repr_html_()
 
 
