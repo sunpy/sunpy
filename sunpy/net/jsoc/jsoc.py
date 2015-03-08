@@ -14,8 +14,7 @@ import astropy.table
 
 from sunpy import config
 from sunpy.time import parse_time, TimeRange
-from sunpy.net.download import Downloader
-from sunpy.net.vso.vso import Results
+from sunpy.net.download import Downloader, Results
 from sunpy.net.attr import and_
 from sunpy.net.jsoc.attrs import walker
 
@@ -197,7 +196,7 @@ class JSOCClient(object):
 
         return return_results
 
-    def request_data(self, jsoc_response, notify='', **kwargs):
+    def request_data(self, jsoc_response, **kwargs):
         """
         Request that JSOC stages the data for download.
 
@@ -205,9 +204,6 @@ class JSOCClient(object):
         ----------
         jsoc_response : JSOCResponse object
             The results of a query
-
-        notify : `str`
-            An email address for the query
 
         Returns
         -------
@@ -221,7 +217,7 @@ class JSOCClient(object):
             raise TypeError("request_data got unexpected keyword arguments {0}".format(kwargs.keys()))
 
         # Do a multi-request for each query block
-        responses = self._multi_request(notify, **jsoc_response.query_args)
+        responses = self._multi_request(**jsoc_response.query_args)
         for i, response in enumerate(responses):
             if response.status_code != 200:
                 warnings.warn(
@@ -473,7 +469,7 @@ class JSOCClient(object):
 
         return dataset
 
-    def _make_query_payload(self, start_time, end_time, series, notify='',
+    def _make_query_payload(self, start_time, end_time, series, notify=None,
                             protocol='FITS', compression='rice', **kwargs):
         """
         Build the POST payload for the query parameters
@@ -489,6 +485,10 @@ class JSOCClient(object):
         dataset = self._make_recordset(start_time, end_time, series, **kwargs)
         kwargs.pop('wavelength', None)
 
+        if not notify:
+            raise ValueError("JSOC queries now require a valid email address "
+                             "before they will be accepted by the server")
+
         # Build full POST payload
         payload = {'ds': dataset,
                    'format': 'json',
@@ -503,7 +503,7 @@ class JSOCClient(object):
         payload.update(kwargs)
         return payload
 
-    def _send_jsoc_request(self, start_time, end_time, series, notify='',
+    def _send_jsoc_request(self, start_time, end_time, series, notify=None,
                            protocol='FITS', compression='rice', **kwargs):
         """
         Request that JSOC stages data for download
@@ -553,7 +553,7 @@ class JSOCClient(object):
         else:
             return astropy.table.Table()
 
-    def _multi_request(self, notify='', **kwargs):
+    def _multi_request(self, **kwargs):
         """
         Make a series of requests to avoid the 100GB limit
         """
@@ -566,7 +566,7 @@ class JSOCClient(object):
         end_time = self._process_time(end_time)
         tr = TimeRange(start_time, end_time)
         returns = []
-        response, json_response = self._send_jsoc_request(start_time, end_time, series, notify=notify, **kwargs)
+        response, json_response = self._send_jsoc_request(start_time, end_time, series, **kwargs)
 
         # We skip these lines because a massive request is not a pratical test.
         if (json_response['status'] == 3 and
@@ -590,8 +590,7 @@ class JSOCClient(object):
     @classmethod
     def _can_handle_query(cls, *query):
         chkattr = ['Series', 'Protocol', 'Notify', 'Compression', 'Wavelength',
-                   'Time', 'Segment', 'Instrument']
+                   'Time', 'Segment']
+
         return all([x.__class__.__name__ in chkattr for x in query])
-
-
 
