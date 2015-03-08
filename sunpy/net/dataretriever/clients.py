@@ -24,3 +24,4 @@ from sunpy.net.jsoc.jsoc import JSOCClient
 from sunpy.net.vso.vso import VSOClient
 
 _Fido.register(VSOClient, VSOClient._can_handle_query)
+_Fido.register(JSOCClient, JSOCClient._can_handle_query)
