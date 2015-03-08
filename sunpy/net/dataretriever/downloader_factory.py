@@ -14,7 +14,7 @@ from sunpy.net import attr
 
 from .client import GenericClient
 
-__all__ = ['UnifiedDownloader']
+__all__ = ['Fido']
 
 class UnifiedResponse(list):
 
@@ -92,15 +92,15 @@ def _create(wlk, query, dobj):
 
 class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
-    def query(self, *query):
-        """
+    def search(self, *query):
+        '''
         Query for data in form of multiple parameters.
         Examples
         --------
         Query for LYRALightCurve data from timerange('2012/3/4','2012/3/6')
-        >>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('lyra'))
-        >>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('norh') | Instrument('rhessi'))
-        >>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'),
+        >>> unifresp = Fido.query(Time('2012/3/4','2012/3/6'),Instrument('lyra'))
+        >>> unifresp = Fido.query(Time('2012/3/4','2012/3/6'),Instrument('norh') | Instrument('rhessi'))
+        >>> unifresp = Fido.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'),
                        Wave(304, 304),Sample(60*10))
 
         Parameters
@@ -120,8 +120,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         query = attr.and_(*query)
         return UnifiedResponse(qwalker.create(query, self))
 
-    def get(self, qr, **kwargs):
-        """
+    def fetch(self, qr, **kwargs):
+        '''
         Downloads the files pointed at by URLS contained within UnifiedResponse Object.
         Parameters
         ----------
@@ -135,8 +135,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         Example
         --------
-        >>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'))
-        >>> downresp = UnifiedDownloader.get(unifresp)
+        >>> unifresp = Fido.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'))
+        >>> downresp = Fido.get(unifresp)
         >>> file_paths = downresp.wait()
         """
         reslist =[]
