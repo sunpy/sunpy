@@ -3,7 +3,6 @@
 #Google Summer of Code 2014
 
 import datetime
-from datetime import timedelta
 
 from sunpy.time import TimeRange
 from sunpy.util import print_table
@@ -68,8 +67,8 @@ class QueryResponse(list):
 
         table = [
                  [
-                  (qrblock.time.t1.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
-                  (qrblock.time.t2.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
+                  (qrblock.time.t1.date() + datetime.timedelta(days=i)).strftime('%Y/%m/%d'),
+                  (qrblock.time.t2.date() + datetime.timedelta(days=i)).strftime('%Y/%m/%d'),
                   qrblock.source,
                   qrblock.instrument,
                   qrblock.url

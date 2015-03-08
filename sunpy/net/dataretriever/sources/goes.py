@@ -5,7 +5,8 @@
 import datetime
 
 from sunpy.time import parse_time, TimeRange
-from sunpy.net.unifieddownloader.client import GenericClient
+
+from ..client import GenericClient
 
 __all__ = ['GOESClient']
 

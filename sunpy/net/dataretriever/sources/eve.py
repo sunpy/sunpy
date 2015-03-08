@@ -1,15 +1,17 @@
 #Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-#This module was developed under funding provided by
+#This module was developed under funding by
 #Google Summer of Code 2014
 
-import datetime
 import urlparse
 
-from sunpy.net.unifieddownloader.client import GenericClient
+from ..client import GenericClient
 
-__all__ = ['LYRAClient']
 
-class LYRAClient(GenericClient):
+__all__ = ['EVEClient']
+
+
+class EVEClient(GenericClient):
+
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns list of URLS corresponding to value of input timerange.
@@ -26,7 +28,6 @@ class LYRAClient(GenericClient):
         """
         if not timerange:
             return []
-
         days = timerange.get_dates()
         urls = []
         for day in days:
@@ -43,24 +44,19 @@ class LYRAClient(GenericClient):
 
         Returns
         -------
-        string
-            The URL for the corresponding date.
+        URL : string
         """
-        if not isinstance(date, datetime.date):
-            raise ValueError("This method requires a date")
-        filename = "lyra_{0:%Y%m%d-}000000_lev{1:d}_std.fits".format(date, kwargs.get('level',2))
-        base_url = "http://proba2.oma.be/lyra/data/bsd/"
-        url_path = urlparse.urljoin(date.strftime('%Y/%m/%d/'), filename)
-        return urlparse.urljoin(base_url, url_path)
+        base_url = 'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
+        return urlparse.urljoin(base_url, date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt')
 
     def _makeimap(self):
         """
-        Helper Function:used to hold information about source.
+        Helper Function: used to hold information about source.
         """
-        self.map_['source'] = 'Proba2'
-        self.map_['instrument'] = 'lyra'
+        self.map_['source'] = 'SDO'
+        self.map_['provider'] ='LASP'
+        self.map_['instrument'] = 'eve'
         self.map_['phyobs'] = 'irradiance'
-        self.map_['provider'] = 'esa'
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -76,9 +72,15 @@ class LYRAClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chkattr =  ['Time', 'Instrument', 'Level']
+        chkattr =  ['Time', 'Instrument','Level']
         chklist =  [x.__class__.__name__ in chkattr for x in query]
+        chk_var = 0
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value == 'lyra':
-                return all(chklist)
+            if x.__class__.__name__ == 'Instrument' and x.value == 'eve':
+                chk_var +=1
+            elif x.__class__.__name__ == 'Level' and x.value == 0:
+                chk_var +=1
+
+        if(chk_var == 2):
+            return all(chklist)
         return False
