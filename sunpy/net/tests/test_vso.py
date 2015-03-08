@@ -151,9 +151,9 @@ def test_wave_toangstrom():
     w = va.Wave(1.506e7 * u.GHz, 1.506e7 * u.GHz)
     assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
 
-    with pytest.raises(ValueError) as excinfo:
+    with pytest.raises(u.UnitsError) as excinfo:
         va.Wave(10 * u.g, 23 * u.g)
-    assert excinfo.value.message == "'g' is not a spectral supported unit"
+    assert excinfo.value.message == 'This unit is not convertable to any of [Unit("Angstrom"), Unit("kHz"), Unit("keV")]'
 
 
 def test_time_xor():

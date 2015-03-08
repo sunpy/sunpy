@@ -88,9 +88,12 @@ class Wavelength(Attr, _Range):
         # weird responses on VSO.
         supported_units = [u.AA, u.kHz, u.keV]
         for unit in supported_units:
-            if not wavemin.unit.is_equivalent(unit):
+            if wavemin.unit.is_equivalent(unit):
+                break
+            else:
                 unit = None
-
+        if unit is None:
+            raise u.UnitsError("This unit is not convertable to any of {}".format(supported_units))
         try:
             self.min, self.max = sorted(
                 value.to(unit) for value in [wavemin, wavemax]

@@ -3,7 +3,7 @@ import pytest
 import astropy.units as u
 
 import sunpy.net.vso.attrs as attrs
-from sunpy.net.unifieddownloader.downloader_factory import UnifiedDownloader
+from sunpy.net.dataretriever.downloader_factory import Fido as UnifiedDownloader
 
 @pytest.mark.online
 @pytest.mark.parametrize("time,instrument,client",
@@ -15,9 +15,9 @@ from sunpy.net.unifieddownloader.downloader_factory import UnifiedDownloader
 (attrs.Time('2012/1/8','2012/3/9'),attrs.Instrument('noaa-indices'),"NOAAIndicesClient"),
 (attrs.Time('2012/12/8','2012/12/9'),attrs.Instrument('noaa-predict'),"NOAAPredictClient"),
 ])
-def test_query(time,instrument,client):
+def test_search(time,instrument,client):
 
-    unifiedresp = UnifiedDownloader.query(time,instrument)
+    unifiedresp = UnifiedDownloader.search(time,instrument)
     for block in unifiedresp:
         assert block.client.__class__.__name__ == client
 
@@ -32,10 +32,10 @@ def test_query(time,instrument,client):
 #(attrs.Time('2012/1/8','2012/3/9'),attrs.Instrument('noaa-indices')),
 (attrs.Time('2012/12/8','2012/12/9'),attrs.Instrument('noaa-predict')),
 ])
-def test_get(time,instrument):
+def test_fetch(time,instrument):
 
-    unifiedresp = UnifiedDownloader.query(time,instrument)
-    res = UnifiedDownloader.get(unifiedresp)
+    unifiedresp = UnifiedDownloader.search(time,instrument)
+    res = UnifiedDownloader.fetch(unifiedresp)
     download_list = res.wait()
     assert len(download_list) == unifiedresp.file_num
 
@@ -50,9 +50,9 @@ def test_get(time,instrument):
 ])
 def test_multiple_time(time1,time2,instrument):
 
-    unifiedresp = UnifiedDownloader.query(time1 | time2, instrument)
+    unifiedresp = UnifiedDownloader.search(time1 | time2, instrument)
     num_files_to_download = unifiedresp.file_num
-    res = UnifiedDownloader.get(unifiedresp)
+    res = UnifiedDownloader.fetch(unifiedresp)
     files_downloaded = len(res.wait())
     assert files_downloaded == num_files_to_download
 
@@ -65,19 +65,19 @@ def test_multiple_time(time1,time2,instrument):
 ])
 def test_multiple_clients(time, instrument1, instrument2):
 
-    unifiedresp = UnifiedDownloader.query(time, instrument1 | instrument2)
+    unifiedresp = UnifiedDownloader.search(time, instrument1 | instrument2)
     num_files_to_download = unifiedresp.file_num
-    res = UnifiedDownloader.get(unifiedresp)
+    res = UnifiedDownloader.fetch(unifiedresp)
     files_downloaded = len(res.wait())
     assert files_downloaded == num_files_to_download
 
 
 @pytest.mark.online
 def test_vso():
-    unifiedresp = UnifiedDownloader.query(attrs.Time("2013/3/4 01:00:00","2013/3/4 01:10:00"), attrs.Instrument('aia'),
+    unifiedresp = UnifiedDownloader.search(attrs.Time("2013/3/4 01:00:00","2013/3/4 01:10:00"), attrs.Instrument('aia'),
     attrs.Wave(304*u.AA,304*u.AA), attrs.Sample(600))
     num_files_to_download = sum([block.num_records() for block in unifiedresp])
-    res = UnifiedDownloader.get(unifiedresp)
+    res = UnifiedDownloader.fetch(unifiedresp)
     files_downloaded = len(res.wait())
     assert files_downloaded == num_files_to_download
 
