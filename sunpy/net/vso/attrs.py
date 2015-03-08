@@ -82,7 +82,7 @@ class Wavelength(Attr, _Range):
         if not all(isinstance(var, u.Quantity) for var in [wavemin, wavemax]):
             raise TypeError("Wave inputs must be astropy Quantities")
 
-        if not all(wavemin.isscalar, wavemax.isscalar):
+        if not all([wavemin.isscalar, wavemax.isscalar]):
             raise ValueError("Both wavemin and wavemax must be scalar values")
 
         # VSO just accept inputs as Angstroms, kHz or keV, the following
@@ -98,9 +98,8 @@ class Wavelength(Attr, _Range):
         if unit is None:
             raise u.UnitsError("This unit is not convertable to any of {}".format(supported_units))
 
-            self.min = wavemin.to(unit)
-            self.max = wavemax.to(unit)
-            self.unit = unit
+        self.min, self.max = sorted([wavemin.to(unit), wavemax.to(unit)])
+        self.unit = unit
 
         Attr.__init__(self)
         _Range.__init__(self, self.min, self.max, self.__class__)
