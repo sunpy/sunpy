@@ -27,7 +27,9 @@ class RHESSIClient(GenericClient):
 
 
     def _makeimap(self):
-        '''Helper Function:used to hold information about source. '''
+        """
+        Helper Function:used to hold information about source.
+        """
         self.map_['source'] = ''
         self.map_['instrument'] = 'rhessi'
         self.map_['phyobs'] = 'irradiance'
@@ -35,7 +37,17 @@ class RHESSIClient(GenericClient):
 
     @classmethod
     def _can_handle_query(cls, *query):
-        """Boolean Function:Answers whether client can service the query.
+        """
+        Answers whether client can service the query.
+
+        Parameters
+        ----------
+        query : list of query objects
+
+        Returns
+        -------
+        boolean
+            answer as to whether client can service the query
         """
         chkattr =  ['Time', 'Instrument']
         chklist =  [x.__class__.__name__ in chkattr for x in query]

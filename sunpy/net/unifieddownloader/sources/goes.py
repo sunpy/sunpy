@@ -9,9 +9,9 @@ from sunpy.net.unifieddownloader.client import GenericClient
 
 __all__ = ['GOESClient']
 
+
 class GOESClient(GenericClient):
 
-    @classmethod
     def _get_goes_sat_num(self, start, end):
         """Parses the query time to determine which GOES satellite to use."""
 
@@ -44,13 +44,13 @@ class GOESClient(GenericClient):
         else:
             return sat_list
 
-
     def _get_url_for_timerange(self, timerange, **kwargs):
         """Returns a URL to the GOES data for the specified date.
 
         Parameters
         ----------
-        timerange: TimeRange for which data is to be downloaded.
+        timerange: sunpy.time.TimeRange
+            time range for which data is to be downloaded.
         satellite_number : int
             GOES satellite number (default = 15)
         data_type : string
@@ -64,7 +64,7 @@ class GOESClient(GenericClient):
         start = timerange.start
         end = timerange.end
         # find out which satellite and datatype to query from the query times
-        sat_num = GOESClient._get_goes_sat_num(start, end)
+        sat_num = GOESClient._get_goes_sat_num(self, start, end)
         base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
 
         if start < parse_time('1999/01/15'):
@@ -75,10 +75,10 @@ class GOESClient(GenericClient):
                 sat_num[0], start.strftime("%Y%m%d"))
         return [url]
 
-
-
     def _makeimap(self):
-        '''Helper Function:used to hold information about source. '''
+        """
+        Helper function used to hold information about source.
+        """
         self.map_['source'] = 'nasa'
         self.map_['instrument'] = 'goes'
         self.map_['phyobs'] = 'irradiance'
@@ -86,7 +86,17 @@ class GOESClient(GenericClient):
 
     @classmethod
     def _can_handle_query(cls, *query):
-        """Boolean Function:Answers whether client can service the query.
+        """
+        Answers whether client can service the query.
+
+        Parameters
+        ----------
+        query : list of query objects
+
+        Returns
+        -------
+        boolean
+            answer as to whether client can service the query
         """
         chkattr =  ['Time', 'Instrument']
         chklist =  [x.__class__.__name__ in chkattr for x in query]
