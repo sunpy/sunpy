@@ -82,6 +82,9 @@ class Wavelength(Attr, _Range):
         if not all(isinstance(var, u.Quantity) for var in [wavemin, wavemax]):
             raise TypeError("Wave inputs must be astropy Quantities")
 
+        if not all(wavemin.isscalar, wavemax.isscalar):
+            raise ValueError("Both wavemin and wavemax must be scalar values")
+
         # VSO just accept inputs as Angstroms, kHz or keV, the following
         # converts to any of these units depending on the spectral inputs
         # Note: the website asks for GHz, however it seems that using GHz produces
@@ -94,13 +97,11 @@ class Wavelength(Attr, _Range):
                 unit = None
         if unit is None:
             raise u.UnitsError("This unit is not convertable to any of {}".format(supported_units))
-        try:
-            self.min, self.max = sorted(
-                value.to(unit) for value in [wavemin, wavemax]
-                )
+
+            self.min = wavemin.to(unit)
+            self.max = wavemax.to(unit)
             self.unit = unit
-        except NameError:
-            raise ValueError("'{0}' is not a spectral supported unit".format(wavemin.unit))
+
         Attr.__init__(self)
         _Range.__init__(self, self.min, self.max, self.__class__)
 
