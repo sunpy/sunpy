@@ -14,7 +14,8 @@ import astropy.table
 
 from sunpy import config
 from sunpy.time import parse_time, TimeRange
-from sunpy.net.download import Downloader, Results
+from sunpy.net.download import Downloader
+from sunpy.net.vso.vso import Results
 from sunpy.net.attr import and_
 from sunpy.net.jsoc.attrs import walker
 
@@ -196,7 +197,7 @@ class JSOCClient(object):
 
         return return_results
 
-    def request_data(self, jsoc_response, **kwargs):
+    def request_data(self, jsoc_response, notify='', **kwargs):
         """
         Request that JSOC stages the data for download.
 
@@ -204,6 +205,9 @@ class JSOCClient(object):
         ----------
         jsoc_response : JSOCResponse object
             The results of a query
+
+        notify : `str`
+            An email address for the query
 
         Returns
         -------
@@ -217,7 +221,7 @@ class JSOCClient(object):
             raise TypeError("request_data got unexpected keyword arguments {0}".format(kwargs.keys()))
 
         # Do a multi-request for each query block
-        responses = self._multi_request(**jsoc_response.query_args)
+        responses = self._multi_request(notify, **jsoc_response.query_args)
         for i, response in enumerate(responses):
             if response.status_code != 200:
                 warnings.warn(
@@ -319,7 +323,7 @@ class JSOCClient(object):
         jsoc_response.requestIDs = requestIDs
         time.sleep(sleep/2.)
 
-        r = Results(lambda x: None)
+        r = Results(lambda x: None, done=lambda maps: [v['path'] for v in maps.values()])
 
         while requestIDs:
             for i, request_id in enumerate(requestIDs):
@@ -388,7 +392,7 @@ class JSOCClient(object):
         # A Results object tracks the number of downloads requested and the
         # number that have been completed.
         if results is None:
-            results = Results(lambda x: None)
+            results = Results(lambda x: None, done=lambda maps: [v['path'] for v in maps.values()])
 
         urls = []
         for request_id in requestIDs:
@@ -399,6 +403,10 @@ class JSOCClient(object):
                     if overwrite or not os.path.isfile(os.path.join(path, ar['filename'])):
                         urls.append(urlparse.urljoin(BASE_DL_URL + u.json()['dir'] +
                                                      '/', ar['filename']))
+                    else:
+                        print("Skipping download of file {} as it has already been downloaded".format(ar['filename']))
+                        # Add the file on disk to the output
+                        results.map_.update({ar['filename']:{'path':os.path.join(path, ar['filename'])}})
                 if progress:
                     print("{0} URLs found for Download. Totalling {1}MB".format(
                                                   len(urls), u.json()['size']))
@@ -545,7 +553,7 @@ class JSOCClient(object):
         else:
             return astropy.table.Table()
 
-    def _multi_request(self, **kwargs):
+    def _multi_request(self, notify='', **kwargs):
         """
         Make a series of requests to avoid the 100GB limit
         """
@@ -558,7 +566,7 @@ class JSOCClient(object):
         end_time = self._process_time(end_time)
         tr = TimeRange(start_time, end_time)
         returns = []
-        response, json_response = self._send_jsoc_request(start_time, end_time, series, **kwargs)
+        response, json_response = self._send_jsoc_request(start_time, end_time, series, notify=notify, **kwargs)
 
         # We skip these lines because a massive request is not a pratical test.
         if (json_response['status'] == 3 and
@@ -578,4 +586,12 @@ class JSOCClient(object):
         u = requests.get(JSOC_EXPORT_URL, params=payload)
 
         return u
+
+    @classmethod
+    def _can_handle_query(cls, *query):
+        chkattr = ['Series', 'Protocol', 'Notify', 'Compression', 'Wavelength',
+                   'Time', 'Segment', 'Instrument']
+        return all([x.__class__.__name__ in chkattr for x in query])
+
+
 
