@@ -3,12 +3,16 @@
 #Google Summer of Code 2014
 
 import datetime
+from collections import OrderedDict
+
+import astropy.table
 
 from sunpy.time import TimeRange
-from sunpy.util import print_table
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
 
-from sunpy.net.download import Downloader, Results
-from sunpy.net.vso.attrs import Time
+from ..download import Downloader, Results
+from ..vso.attrs import Time
 
 __all__ = ['QueryResponse', 'GenericClient']
 
@@ -61,22 +65,27 @@ class QueryResponse(list):
                 datetime.date.strftime(
                 max(qrblock.time.end for qrblock in self), '%Y/%m/%d'))
 
-    def __str__(self):
-        """Presents data within container in a presentable manner"""
+    def __repr__(self):
+        return repr(self._build_table())
 
-        table = [
-                 [
-                  (qrblock.time.t1.date() + datetime.timedelta(days=i)).strftime('%Y/%m/%d'),
-                  (qrblock.time.t2.date() + datetime.timedelta(days=i)).strftime('%Y/%m/%d'),
-                  qrblock.source,
-                  qrblock.instrument,
-                  qrblock.url
-                 ]
-                  for i,qrblock in enumerate(self)
-                ]
-        table.insert(0, ['----------', '--------', '------', '----------', '---'])
-        table.insert(0, ['Start time', 'End time', 'Source', 'Instrument', 'URL'])
-        return print_table(table, colsep='  ', linesep='\n')
+    def __str__(self):
+        return str(self._build_table())
+
+    def _repr_html_(self):
+        return self._build_table()._repr_html_()
+
+    def _build_table(self):
+        columns = OrderedDict((('Start Time', []),
+                               ('End Time', []),
+                               ('Source', []),
+                               ('Instrument', [])))
+        for i,qrblock in enumerate(self):
+            columns['Start Time'].append((qrblock.time.start.date() + datetime.timedelta(days=i)).strftime(TIME_FORMAT))
+            columns['End Time'].append((qrblock.time.end.date() + datetime.timedelta(days=i)).strftime(TIME_FORMAT))
+            columns['Source'].append(qrblock.source)
+            columns['Instrument'].append(qrblock.instrument)
+
+        return astropy.table.Table(columns)
 
 
 class GenericClient(object):

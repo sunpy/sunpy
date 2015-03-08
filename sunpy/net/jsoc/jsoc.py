@@ -41,6 +41,9 @@ class JSOCResponse(object):
     def __repr__(self):
         return repr(self.table)
 
+    def _repr_html_(self):
+        return self.table._repr_html_()
+
     def __len__(self):
         if self.table is None:
             return 0

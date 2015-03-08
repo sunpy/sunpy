@@ -2,16 +2,11 @@
 #This module was developed under funding provided by
 #Google Summer of Code 2014
 
-from datetime import timedelta
-
-from sunpy.util import print_table
-
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 
-from sunpy.net import attr
-
+from .. import attr
 from .client import GenericClient
 
 __all__ = ['Fido']
@@ -33,26 +28,6 @@ class UnifiedResponse(list):
     def file_num(self):
         return self._numfile
 
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-
-        table =[
-                [
-                     (qrblock.time.start.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
-                     #vso serviced query will break here, time.t1 --> time.start required
-                     (qrblock.time.end.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
-                     qrblock.source,
-                     qrblock.instrument,
-                     qrblock.url
-                ]
-                for block in self for i,qrblock in enumerate(block)
-               ]
-        table.insert(0,['----------', '--------', '------', '----------', '---'])
-        table.insert(0,['Start time', 'End time', 'Source', 'Instrument', 'URL'])
-
-        return print_table(table, colsep = '  ', linesep = '\n')
 
 class downloadresponse(list):
     """
@@ -167,6 +142,13 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             else:
                 return  [self.default_widget_type]
         elif n_matches > 1:
+            # This is a hack, VSO services all Instruments.
+            # TODO: VSOClient._can_handle_query should know what values of
+            # Instrument VSO can handle.
+            for candidate_client in candidate_widget_types:
+                if issubclass(candidate_client, GenericClient):
+                    return [candidate_client]
+
             candidate_names = [cls.__name__ for cls in candidate_widget_types]
             raise MultipleMatchError("Too many candidates clients can service your query {0}".format(candidate_names))
 
