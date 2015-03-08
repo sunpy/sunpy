@@ -28,6 +28,12 @@ class UnifiedResponse(list):
     def file_num(self):
         return self._numfile
 
+    def _repr_html_(self):
+        ret = ''
+        for block in self:
+            ret += block._repr_html_()
+
+        return ret
 
 class downloadresponse(list):
     """
