@@ -85,7 +85,7 @@ class GOESLightCurve(LightCurve):
         """Parses the query time to determine which GOES satellite to use."""
 
         goes_operational = {
-        2: TimeRange('1981-01-01', '1983-04-30'),
+        2: TimeRange('1980-01-04', '1983-04-30'),
         5: TimeRange('1983-05-02', '1984-07-31'),
         6: TimeRange('1983-06-01', '1994-08-18'),
         7: TimeRange('1994-01-01', '1996-08-13'),
