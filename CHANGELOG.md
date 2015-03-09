@@ -67,6 +67,7 @@
  * MapCube.plot and MapCube.peek now support a user defined plot_function argument for customising the animation.
  * Added new sample data file, an AIA cutout file.
  * Moved documentation build directory to doc/build
+ * Changed start of GOES 2 operational time range back to 1980-01-04 so data from 1980 can be read into GOESLightCurve object
 
 0.5.0
 -----
