@@ -12,13 +12,17 @@ class NoRHClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
-        Returns list of URLS corresponding to TimeRange.
+        Returns list of URLS corresponding to value of input timerange.
+
         Parameters
-	----------
-        timerange: TimeRange for which data is to be downloaded.
+        ----------
+        timerange: sunpy.time.TimeRange
+            time range for which data is to be downloaded.
+
         Returns
-	-------
-	List of urls
+        -------
+        urls : list
+            list of URLs corresponding to the requested time range
         """
         days = timerange.get_dates()
         urls = []
@@ -27,15 +31,19 @@ class NoRHClient(GenericClient):
         return urls
 
     def _get_url_for_date(self, date, **kwargs):
-        """Return URL for corresponding date.
-	Parameters
-	----------
-	date : datetime 
+        """
+        Return URL for corresponding date.
+
+        Parameters
+        ----------
+        date : Python datetime object
 
         Returns
-	-------
-	string representing URL
+        -------
+        string
+            The URL for the corresponding date.
         """
+
         # Hack to get around Python 2.x not backporting PEP 3102.
         wavelength = kwargs.pop('wavelength', None)
 
@@ -52,7 +60,9 @@ class NoRHClient(GenericClient):
         return final_url
 
     def _makeimap(self):
-        '''Helper Function:used to hold information about source. '''
+        """
+        Helper Function used to hold information about source.
+        """
         self.map_['source'] = 'NAOJ'
         self.map_['provider'] ='NRO'
         self.map_['instrument'] = 'RadioHelioGraph'
@@ -61,7 +71,16 @@ class NoRHClient(GenericClient):
     @classmethod
     def _can_handle_query(cls, *query):
         """
-        Boolean Function:Answers whether client can service the query.
+        Answers whether client can service the query.
+
+        Parameters
+        ----------
+        query : list of query objects
+
+        Returns
+        -------
+        boolean
+            answer as to whether client can service the query
         """
         chkattr =  ['Time', 'Instrument']
         chklist =  [x.__class__.__name__ in chkattr for x in query]

@@ -22,7 +22,9 @@ class NOAAIndicesClient(GenericClient):
         return NOAAIndicesClient._get_default_uri()
 
     def _makeimap(self):
-        '''Helper Function:used to hold information about source. '''
+        """
+        Helper Function:used to hold information about source.
+        """
         self.map_['source'] = 'sdic'
         self.map_['instrument'] = 'noaa'
         self.map_['phyobs'] = 'sunspot number'
@@ -31,7 +33,16 @@ class NOAAIndicesClient(GenericClient):
     @classmethod
     def _can_handle_query(cls, *query):
         """
-        Boolean Function:Answers whether client can service the query.
+        Answers whether client can service the query.
+
+        Parameters
+        ----------
+        query : list of query objects
+
+        Returns
+        -------
+        boolean
+            answer as to whether client can service the query
         """
         chkattr = ['Time', 'Instrument']
         chklist = [x.__class__.__name__ in chkattr for x in query]
@@ -55,7 +66,9 @@ class NOAAPredictClient(GenericClient):
         return NOAAPredictClient._get_default_uri()
 
     def _makeimap(self):
-        '''Helper Function:used to hold information about source. '''
+        """
+        Helper Function:used to hold information about source.
+        """
         self.map_['source'] = 'ises'
         self.map_['instrument'] = 'noaa'
         self.map_['phyobs'] = 'sunspot number'
@@ -64,7 +77,16 @@ class NOAAPredictClient(GenericClient):
     @classmethod
     def _can_handle_query(cls, *query):
         """
-        Boolean Function:Answers whether client can service the query.
+        Answers whether client can service the query.
+
+        Parameters
+        ----------
+        query : list of query objects
+
+        Returns
+        -------
+        boolean
+            answer as to whether client can service the query
         """
         chkattr = ['Time', 'Instrument']
         chklist = [x.__class__.__name__ in chkattr for x in query]

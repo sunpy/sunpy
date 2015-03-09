@@ -96,7 +96,7 @@ def _create(wlk, query, dobj):
 class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
     def query(self, *query):
-        '''
+        """
         Query for data in form of multiple parameters.
         Examples
         --------
@@ -119,12 +119,12 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         and_ tranforms query into disjunctive normal form
         ie. query is now of form A & B or ((A & B) | (C & D))
         This helps in modularising query into parts and handling each of the parts individually.
-        '''
+        """
         query = and_(*query)
         return UnifiedResponse(qwalker.create(query, self))
 
     def get(self, qr, **kwargs):
-        '''
+        """
         Downloads the files pointed at by URLS contained within UnifiedResponse Object.
         Parameters
         ----------
@@ -141,7 +141,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'))
         >>> downresp = UnifiedDownloader.get(unifresp)
         >>> file_paths = downresp.wait()
-        '''
+        """
         reslist =[]
         for block in qr:
             reslist.append(block.client.get(block, **kwargs))
@@ -153,7 +153,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
 
     def _check_registered_widgets(self, *args, **kwargs):
-        '''Factory helper function'''
+        """Factory helper function"""
         candidate_widget_types = list()
         for key in self.registry:
 
@@ -175,7 +175,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         return candidate_widget_types
 
     def _get_registered_widget(self, *args, **kwargs):
-        '''Factory helper function'''
+        """Factory helper function"""
         candidate_widget_types = self._check_registered_widgets(*args)
         tmpclient = candidate_widget_types[0]()
         return tmpclient.query(*args), tmpclient
