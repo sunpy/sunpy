@@ -10,8 +10,8 @@ __all__ = ['NOAAIndicesClient', 'NOAAPredictClient']
 
 class NOAAIndicesClient(GenericClient):
 
-    @classmethod
-    def _get_default_uri(cls):
+    @property
+    def _get_default_uri(self):
         """Return the url to download indices"""
         return ["ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"]
 
