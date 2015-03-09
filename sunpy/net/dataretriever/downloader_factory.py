@@ -104,13 +104,19 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         query = attr.and_(*query)
         return UnifiedResponse(qwalker.create(query, self))
 
-    def fetch(self, qr, **kwargs):
+    def fetch(self, qr, wait=True, progress=True, **kwargs):
         """
         Downloads the files pointed at by URLS contained within UnifiedResponse Object.
         Parameters
         ----------
         qr : UnifiedResponse Object
             Container returned by query method.
+        
+        wait : `bool`
+            fetch will wait until the download is complete before returning.
+        
+        progress : `bool`
+            Show a progress bar while the download is running.
 
         Returns
         -------
@@ -127,7 +133,12 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         for block in qr:
             reslist.append(block.client.get(block, **kwargs))
 
-        return downloadresponse(reslist)
+        results = downloadresponse(reslist)
+        
+        if wait:
+            return results.wait(progress=progress)
+        else:
+            return results
 
     def __call__(self, *args, **kwargs):
         pass
