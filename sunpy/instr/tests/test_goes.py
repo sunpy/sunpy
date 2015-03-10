@@ -6,6 +6,7 @@ import pytest
 
 import numpy as np
 from astropy.units.quantity import Quantity
+from astropy.tests.helper import assert_quantity_allclose
 from pandas.util.testing import assert_frame_equal
 
 from sunpy.time import TimeRange
@@ -130,6 +131,7 @@ def test_goes_chianti_tem_errors():
     with pytest.raises(ValueError):
         em = goes._goes_get_chianti_em(LONGFLUX, temp_test_toobig)
 
+@pytest.mark.online
 def test_goes_chianti_tem_case1():
     # test case 1: satellite > 7, abundances = coronal
     temp1, em1 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=15,
@@ -138,6 +140,7 @@ def test_goes_chianti_tem_case1():
     assert all(em1 < Quantity([4.79e+48], unit="1/cm**3")) and \
       em1 > Quantity([4.78e+48], unit="1/cm**3")
 
+@pytest.mark.online
 def test_goes_chianti_tem_case2():
     # test case 2: satellite > 7, abundances = photospheric
     temp2, em2 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=15,
@@ -147,6 +150,7 @@ def test_goes_chianti_tem_case2():
     assert all(em2 < Quantity([1.12e+49], unit="1/cm**3")) and \
       all(em2 > Quantity([1.11e+49], unit="1/cm**3"))
 
+@pytest.mark.online
 def test_goes_chianti_tem_case3():
     # test case 3: satellite < 8 and != 6, abundances = coronal
     temp3, em3 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=5,
@@ -157,6 +161,7 @@ def test_goes_chianti_tem_case3():
     assert all(em3 < Quantity([3.85e+48], unit="1/cm**3")) and \
       all(em3 > Quantity([3.84e+48], unit="1/cm**3"))
 
+@pytest.mark.online
 def test_goes_chianti_tem_case4():
     # test case 4: satellite < 8 and != 6, abundances = photospheric
     temp4, em4 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=5,
@@ -167,6 +172,7 @@ def test_goes_chianti_tem_case4():
     assert all(em4 < Quantity(8.81e+48, unit="1/cm**3")) and \
       all(em4 > Quantity(8.80e+48, unit="1/cm**3"))
 
+@pytest.mark.online
 def test_goes_chianti_tem_case5():
     # test case 5: satellite = 6, date < 1983-06-28, abundances = coronal
     temp5, em5 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
@@ -177,6 +183,7 @@ def test_goes_chianti_tem_case5():
     assert all(em5 < Quantity(3.13e+48, unit="1/cm**3")) and \
       all(em5 > Quantity(3.12e+48, unit="1/cm**3"))
 
+@pytest.mark.online
 def test_goes_chianti_tem_case6():
     # test case 6: satellite = 6, date < 1983-06-28, abundances = photospheric
     temp6, em6 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
@@ -187,6 +194,7 @@ def test_goes_chianti_tem_case6():
     assert all(em6 < Quantity(6.74e+48, unit="1/cm**3")) and \
       all(em6 > Quantity(6.73e+48, unit="1/cm**3"))
 
+@pytest.mark.online
 def test_goes_chianti_tem_case7():
     # test case 7: satellite = 6, date > 1983-06-28, abundances = coronal
     temp7, em7 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
@@ -197,6 +205,7 @@ def test_goes_chianti_tem_case7():
     assert all(em7 < Quantity(4.08e+48, unit="1/cm**3")) and \
       all(em7 > Quantity(4.07e+48, unit="1/cm**3"))
 
+@pytest.mark.online
 def test_goes_chianti_tem_case8():
     # test case 8: satellite = 6, date > 1983-06-28, abundances = photospheric
     temp8, em8 = goes._goes_chianti_tem(LONGFLUX, SHORTFLUX, satellite=6,
@@ -207,6 +216,7 @@ def test_goes_chianti_tem_case8():
     assert all(em8 < Quantity(9.39e+48, unit="1/cm**3")) and \
       all(em8 > Quantity(9.38e+48, unit="1/cm**3"))
 
+@pytest.mark.online
 def test_calculate_radiative_loss_rate():
     # Define input variables.
     goeslc_input = lightcurve.GOESLightCurve.create("2014-01-01 00:00:00",
@@ -214,7 +224,7 @@ def test_calculate_radiative_loss_rate():
     not_goeslc = []
     goeslc_no_em = goes.calculate_temperature_em(goeslc_input)
     del goeslc_no_em.data["em"]
-    
+
     # Check correct exceptions are raised to incorrect inputs
     with pytest.raises(TypeError):
         goes_test = goes.calculate_radiative_loss_rate(not_goeslc)
@@ -233,6 +243,7 @@ def test_calculate_radiative_loss_rate():
     goes_test = goes.calculate_radiative_loss_rate(goeslc_no_em)
     assert_frame_equal(goeslc_test.data, goeslc_expected.data)
 
+@pytest.mark.online
 def test_calc_rad_loss_errors():
     # Define input variables
     temp = 11.0 * Quantity(np.ones(6), unit="MK")
@@ -269,6 +280,7 @@ def test_calc_rad_loss_errors():
     with pytest.raises(ValueError):
         rad_loss_test = goes._calc_rad_loss(temp, em, obstime_nonchrono)
 
+@pytest.mark.online
 def test_calc_rad_loss_nokwags():
     # Define input variables
     temp = Quantity([11.0, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
@@ -285,9 +297,10 @@ def test_calc_rad_loss_nokwags():
     rad_loss_expected = {"rad_loss_rate":
                          3.01851392e+19 * Quantity(np.ones(2), unit="J/s")}
     assert sorted(rad_loss_test.keys()) == sorted(rad_loss_expected.keys())
-    assert np.allclose(rad_loss_test["rad_loss_rate"],
+    assert_quantity_allclose(rad_loss_test["rad_loss_rate"],
                        rad_loss_expected["rad_loss_rate"], rtol=0.01)
 
+@pytest.mark.online
 def test_calc_rad_loss_obstime():
     # Define input variables
     temp = Quantity([11.0, 11.0, 11.0, 11.0, 11.0, 11.0], unit="MK")
@@ -309,11 +322,11 @@ def test_calc_rad_loss_obstime():
                                     3.01851392e+20], unit="J")
         }
     assert sorted(rad_loss_test.keys()) == sorted(rad_loss_expected.keys())
-    assert np.allclose(rad_loss_test["rad_loss_rate"],
+    assert_quantity_allclose(rad_loss_test["rad_loss_rate"],
                        rad_loss_expected["rad_loss_rate"], rtol=0.0001)
-    assert np.allclose(rad_loss_test["rad_loss_int"],
+    assert_quantity_allclose(rad_loss_test["rad_loss_int"],
                        rad_loss_expected["rad_loss_int"], rtol=0.0001)
-    assert np.allclose(rad_loss_test["rad_loss_cumul"],
+    assert_quantity_allclose(rad_loss_test["rad_loss_cumul"],
                        rad_loss_expected["rad_loss_cumul"], rtol=0.0001)
 
 def test_calculate_xray_luminosity():
@@ -365,14 +378,14 @@ def test_goes_lx_nokwargs():
     shortflux = Quantity([7e-7, 7e-7, 7e-7, 7e-7, 7e-7, 7e-7], unit="W/m**2")
     # Test output when no kwargs are set.
     lx_test = goes._goes_lx(longflux[:2], shortflux[:2])
-    lx_expected = {"longlum": Quantity([1.91013779e+18, 1.91013779e+18],
+    lx_expected = {"longlum": Quantity([1.98649103e+18, 1.98649103e+18],
                                        unit="W"),
-                   "shortlum": Quantity([1.91013779e+17, 1.91013779e+17],
-                                       unit="W")}
+                   "shortlum": Quantity([1.98649103e+17, 1.98649103e+17],
+                                        unit="W")}
     assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
-    assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.01)
-    assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
-                       rtol=0.01)
+    assert_quantity_allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.1)
+    assert_quantity_allclose(lx_test["shortlum"], lx_expected["shortlum"],
+                       rtol=0.1)
 
 def test_goes_lx_date():
     # Define input values of flux and time.
@@ -385,8 +398,8 @@ def test_goes_lx_date():
                    "shortlum": Quantity([1.98649103e+17, 1.98649103e+17],
                                         unit="W")}
     assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
-    assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.001)
-    assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
+    assert_quantity_allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.001)
+    assert_quantity_allclose(lx_test["shortlum"], lx_expected["shortlum"],
                        rtol=0.001)
 
 def test_goes_lx_obstime():
@@ -402,25 +415,25 @@ def test_goes_lx_obstime():
     # Test output when obstime and cumulative kwargs are set.
     lx_test = goes._goes_lx(longflux, shortflux, obstime)
     lx_expected = {
-        "longlum": 1.91013779e+18 * Quantity(np.ones(6), unit='W'),
-        "shortlum": 1.91013779e+17 * Quantity(np.ones(6), unit='W'),
-        "longlum_int": Quantity([1.9101360630079373e+19], unit="J"),
-        "shortlum_int": Quantity([1.9101360630079373e+18], unit="J"),
-        "longlum_cumul": Quantity([3.82027213e+18, 7.64054425e+18,
-                                  1.14608164e+19, 1.52810885e+19,
-                                  1.91013606e+19], unit="J"),
-        "shortlum_cumul": Quantity([3.82027213e+17, 7.64054425e+17,
-                                    1.14608164e+18, 1.52810885e+18,
-                                    1.91013606e+18], unit="J")}
+        "longlum": 1.96860565e+18 * Quantity(np.ones(6), unit='W'),
+        "shortlum": 1.96860565e+17 * Quantity(np.ones(6), unit='W'),
+        "longlum_int": Quantity([1.96860565e+19], unit="J"),
+        "shortlum_int": Quantity([1.96860565e+18], unit="J"),
+        "longlum_cumul": Quantity([3.93721131e+18, 7.87442262e+18,
+                                   1.18116339e+19, 1.57488452e+19,
+                                   1.96860565e+19], unit="J"),
+        "shortlum_cumul": Quantity([3.93721131e+17, 7.87442262e+17,
+                                    1.18116339e+18, 1.57488452e+18,
+                                    1.96860565e+18], unit="J")}
     assert sorted(lx_test.keys()) == sorted(lx_expected.keys())
-    assert np.allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.01)
-    assert np.allclose(lx_test["shortlum"], lx_expected["shortlum"],
-                       rtol=0.01)
-    assert np.allclose(lx_test["longlum_int"], lx_expected["longlum_int"],
-                       rtol=0.01)
-    assert np.allclose(lx_test["shortlum_int"], lx_expected["shortlum_int"],
-                       rtol=0.01)
-    assert np.allclose(lx_test["longlum_cumul"], lx_expected["longlum_cumul"],
-                       rtol=0.01)
-    assert np.allclose(lx_test["shortlum_cumul"],
-                       lx_expected["shortlum_cumul"], rtol=0.01)
+    assert_quantity_allclose(lx_test["longlum"], lx_expected["longlum"], rtol=0.1)
+    assert_quantity_allclose(lx_test["shortlum"], lx_expected["shortlum"],
+                       rtol=0.1)
+    assert_quantity_allclose(lx_test["longlum_int"], lx_expected["longlum_int"],
+                       rtol=0.1)
+    assert_quantity_allclose(lx_test["shortlum_int"], lx_expected["shortlum_int"],
+                       rtol=0.1)
+    assert_quantity_allclose(lx_test["longlum_cumul"], lx_expected["longlum_cumul"],
+                       rtol=0.1)
+    assert_quantity_allclose(lx_test["shortlum_cumul"],
+                       lx_expected["shortlum_cumul"], rtol=0.1)
