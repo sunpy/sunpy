@@ -49,7 +49,7 @@ class EITMap(GenericMap):
         self._name = self.detector + " " + str(self.measurement)
         self._nickname = self.detector
 
-        self.cmap = cm.get_cmap('sohoeit{wl:d}'.format(wl=self.wavelength))
+        self.plot_settings['cmap'] = cm.get_cmap('sohoeit{wl:d}'.format(wl=self.wavelength))
 
     @property
     def rsun_arcseconds(self):
@@ -81,13 +81,7 @@ class EITMap(GenericMap):
         if self.data.dtype == np.float32:
             return None
 
-        mean = self.mean()
-        std = self.std()
-
-        vmin = 1
-        vmax = min(self.max(), mean + 5 * std)
-
-        return colors.LogNorm(vmin, vmax)
+        return colors.Normalize(self.min(), self.max())
 
 class LASCOMap(GenericMap):
     """LASCO Image Map definition"""
@@ -112,7 +106,7 @@ class LASCOMap(GenericMap):
 
         self._name = self.instrument + " " + self.detector + " " + self.measurement
         self._nickname = self.instrument + "-" + self.detector
-        self.cmap = cm.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
+        self.plot_settings['cmap'] = cm.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
 
     @property
     def measurement(self):
@@ -132,7 +126,7 @@ class MDIMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
 
         # Fill in some missing or broken info
-        self.meta['detector'] = "MDI"
+        self.meta['detector'] = self.meta['camera']
         self._fix_dsun()
 
         self._name = self.detector + " " + self.measurement
@@ -167,6 +161,13 @@ class MDIMap(GenericMap):
             self.meta['dsun_obs'] = constants.au
         else:
             self.meta['dsun_obs'] = _dsunAtSoho(self.date, radius)
+
+    def _get_mpl_normalizer(self):
+        """Returns a Normalize object to be used with MDI data"""
+        vmin = np.nanmin(self.data)
+        vmax = np.nanmax(self.data)
+        vmax = np.max(np.abs(np.array([vmin, vmax])))
+        return colors.Normalize(-vmax, vmax)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
