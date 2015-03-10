@@ -67,8 +67,7 @@ from sunpy.time import parse_time
 from sunpy import config
 from sunpy import lightcurve
 from sunpy.util.net import check_download_file
-from sunpy.sun import sun
-from sunpy.util.unit_decorators import quantity_input
+from sunpy import sun
 
 __all__ = ['get_goes_event_list', 'calculate_temperature_em',
            'calculate_radiative_loss_rate', 'calculate_xray_luminosity']
@@ -77,7 +76,7 @@ try:
     # Check required data files are present in user's default download dir
     # Define location where GOES data files are stored.
     # Manually resolve the hostname
-    HOST = socket.gethostbyname_ex('hesperia.gsfc.nasa.gov')[-1][0]
+    HOST = socket.gethostbyname_ex('hesperia.gsfc.nasa.gov')[0]
 except socket.gaierror:
     HOST = ''
 GOES_REMOTE_PATH = "http://{0}/ssw/gen/idl/synoptic/goes/".format(HOST)
@@ -263,7 +262,7 @@ def calculate_temperature_em(goeslc, abundances="coronal",
 
     return lc_new
 
-@quantity_input(longflux=u.W/u.m/u.m, shortflux=u.W/u.m/u.m)
+@u.quantity_input(longflux=u.W/u.m/u.m, shortflux=u.W/u.m/u.m)
 def _goes_chianti_tem(longflux, shortflux, satellite=8,
                       date=datetime.datetime.today(), abundances="coronal",
                       download=False, download_dir=None):
@@ -409,7 +408,7 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
                               download_dir=download_dir)
     return temp, em
 
-@quantity_input(fluxratio=u.dimensionless_unscaled)
+@u.quantity_input(fluxratio=u.dimensionless_unscaled)
 def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
                            download=False, download_dir=None):
     """
@@ -555,7 +554,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
 
     return temp
 
-@quantity_input(longflux=u.W/u.m/u.m, temp=u.MK)
+@u.quantity_input(longflux=u.W/u.m/u.m, temp=u.MK)
 def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
                          download=False, download_dir=None):
     """
@@ -836,7 +835,7 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
 
     return lc_new
 
-@quantity_input(temp=u.MK, em=u.cm**(-3))
+@u.quantity_input(temp=u.MK, em=u.cm**(-3))
 def _calc_rad_loss(temp, em, obstime=None, force_download=False,
                    download_dir=None):
     """
@@ -1096,7 +1095,9 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
         were taken simultaneously.
 
     date : (optional) datetime object or valid date string.
-        Date at which measurements were taken.
+        Date at which measurements were taken.  This is used to
+        calculate the Sun-Earth distance.
+        Default=None implies Sun-Earth distance is set to 1AU.
 
     Returns
     -------
@@ -1194,7 +1195,7 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
 
     return lx_out
 
-@quantity_input(flux=u.W/u.m/u.m)
+@u.quantity_input(flux=u.W/u.m/u.m)
 def _calc_xraylum(flux, date=None):
     """
     Calculates solar luminosity based on observed flux observed at 1AU.
@@ -1212,8 +1213,8 @@ def _calc_xraylum(flux, date=None):
 
     date : (optional) datetime object or valid date string
         Used to calculate a more accurate Sun-Earth distance based on
-        Earth's orbit at that date.  If date is not set, standard value
-        for 1AU used.
+        Earth's orbit at that date.  If date is None, Sun-Earth
+        distance is set to 1AU.
 
     Returns
     -------
@@ -1232,7 +1233,7 @@ def _calc_xraylum(flux, date=None):
     """
     if date is not None:
         date = parse_time(date)
-        xraylum = 4 * np.pi * sun.sunearth_distance(t=date).to("m")**2 * flux
+        xraylum = 4 * np.pi * sun.sun.sunearth_distance(t=date).to("m")**2 * flux
     else:
-        xraylum = 4 * np.pi * sun.sunearth_distance().to("m")**2 * flux
+        xraylum = 4 * np.pi * sun.constants.au.to("m")**2 * flux
     return xraylum
