@@ -6,6 +6,7 @@ Bug Fixes:
  * Updated SWPC/NOAA links due to their new website.
  * Exposed the raw AIA color tables in `sunpy.cm.color_tables`.
  * Fixes `map` compatibility with Astropy 1.0.x.
+ * Corrected GOES satellites' operational time ranges so all data back to 1980 can be read into GOESLightCurve object
 
 0.5.3
 -----
