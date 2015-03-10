@@ -32,7 +32,7 @@ class JSOCResponse(object):
         """
 
         self.table = table
-        self.query_args = None
+        self.query_args = []
         self.requestIDs = None
 
     def __str__(self):
@@ -192,7 +192,7 @@ class JSOCClient(object):
 
             return_results.append(self._lookup_records(iargs))
 
-        return_results.query_args = iargs
+            return_results.query_args.append(iargs)
 
         return return_results
 
@@ -216,22 +216,26 @@ class JSOCClient(object):
         if len(kwargs):
             raise TypeError("request_data got unexpected keyword arguments {0}".format(kwargs.keys()))
 
-        # Do a multi-request for each query block
-        responses = self._multi_request(**jsoc_response.query_args)
-        for i, response in enumerate(responses):
-            if response.status_code != 200:
-                warnings.warn(
-                Warning("Query {0} retuned code {1}".format(i, response.status_code)))
-                responses.pop(i)
-            elif response.json()['status'] != 2:
-                warnings.warn(
-                Warning("Query {0} retuned status {1} with error {2}".format(i,
-                                                     response.json()['status'],
-                                                    response.json()['error'])))
-                responses.pop(i)
 
-        # Extract the IDs from the JSON
-        requestIDs = [response.json()['requestid'] for response in responses]
+        responses = []
+        requestIDs = []
+        for block in jsoc_response.query_args:
+            # Do a multi-request for each query block
+            responses.append(self._multi_request(**block))
+            for i, response in enumerate(responses[-1]):
+                if response.status_code != 200:
+                    warnings.warn(
+                    Warning("Query {0} retuned code {1}".format(i, response.status_code)))
+                    responses[-1].pop(i)
+                elif response.json()['status'] != 2:
+                    warnings.warn(
+                    Warning("Query {0} retuned status {1} with error {2}".format(i,
+                                                         response.json()['status'],
+                                                        response.json()['error'])))
+                    responses[-1].pop(i)
+
+            # Extract the IDs from the JSON
+            requestIDs += [response.json()['requestid'] for response in responses[-1]]
 
         if return_responses:
             return responses

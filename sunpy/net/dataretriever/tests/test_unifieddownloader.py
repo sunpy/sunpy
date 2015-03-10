@@ -35,7 +35,7 @@ def test_search(time,instrument,client):
 def test_fetch(time,instrument):
 
     unifiedresp = UnifiedDownloader.search(time,instrument)
-    res = UnifiedDownloader.fetch(unifiedresp)
+    res = UnifiedDownloader.fetch(unifiedresp, wait=False)
     download_list = res.wait()
     assert len(download_list) == unifiedresp.file_num
 
@@ -52,7 +52,7 @@ def test_multiple_time(time1,time2,instrument):
 
     unifiedresp = UnifiedDownloader.search(time1 | time2, instrument)
     num_files_to_download = unifiedresp.file_num
-    res = UnifiedDownloader.fetch(unifiedresp)
+    res = UnifiedDownloader.fetch(unifiedresp, wait=False)
     files_downloaded = len(res.wait())
     assert files_downloaded == num_files_to_download
 
@@ -67,7 +67,7 @@ def test_multiple_clients(time, instrument1, instrument2):
 
     unifiedresp = UnifiedDownloader.search(time, instrument1 | instrument2)
     num_files_to_download = unifiedresp.file_num
-    res = UnifiedDownloader.fetch(unifiedresp)
+    res = UnifiedDownloader.fetch(unifiedresp, wait=False)
     files_downloaded = len(res.wait())
     assert files_downloaded == num_files_to_download
 
@@ -77,7 +77,7 @@ def test_vso():
     unifiedresp = UnifiedDownloader.search(attrs.Time("2013/3/4 01:00:00","2013/3/4 01:10:00"), attrs.Instrument('aia'),
     attrs.Wave(304*u.AA,304*u.AA), attrs.Sample(600))
     num_files_to_download = sum([block.num_records() for block in unifiedresp])
-    res = UnifiedDownloader.fetch(unifiedresp)
+    res = UnifiedDownloader.fetch(unifiedresp, wait=False)
     files_downloaded = len(res.wait())
     assert files_downloaded == num_files_to_download
 
