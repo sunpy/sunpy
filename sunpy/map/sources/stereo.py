@@ -6,6 +6,7 @@ __email__ = "keith.hughitt@nasa.gov"
 
 from sunpy.map import GenericMap
 from sunpy.cm import cm
+from matplotlib import colors
 
 __all__ = ['EUVIMap', 'CORMap']
 

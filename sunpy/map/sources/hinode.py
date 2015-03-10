@@ -115,7 +115,7 @@ class SOTMap(GenericMap):
         self.plot_settings['cmap'] = cm.get_cmap('hinodesot' + color[self.instrument])
 
     @classmethod
-    def is_datasource_for(cls, header, **kwargs):
+    def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an SOT image"""
 
         return header.get('instrume') in cls.Instruments

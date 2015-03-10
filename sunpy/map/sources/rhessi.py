@@ -46,6 +46,6 @@ class RHESSIMap(GenericMap):
         return self.meta['telescop']
 
     @classmethod
-    def is_datasource_for(cls, header, **kwargs):
+    def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an RHESSI image"""
         return header.get('instrume') == 'RHESSI'

@@ -126,7 +126,7 @@ class MDIMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
 
         # Fill in some missing or broken info
-        self.meta['detector'] = self.meta['camera']
+        self.meta['detector'] = self.meta['INSTRUME']
         self._fix_dsun()
 
         self._name = self.detector + " " + self.measurement

@@ -129,10 +129,9 @@ class GenericMap(NDData):
         # Visualization attributes
         self.plot_settings = {'cmap': cm.gray,
                               'norm': self._get_mpl_normalizer(),
-                              ''
-                              "{name} {date:{tmf}}".format(name=self.name,
-                                                        date=parse_time(self.date),
-                                                        tmf=TIME_FORMAT)
+                              'title': "{name} {date:{tmf}}".format(name=self.name,
+                                                                    date=parse_time(self.date),
+                                                                    tmf=TIME_FORMAT)
                               }
 
         # Validate header

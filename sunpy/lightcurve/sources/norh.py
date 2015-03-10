@@ -38,7 +38,7 @@ class NoRHLightCurve(LightCurve):
     | http://solar.nro.nao.ac.jp/norh/
     """
 
-    def plot(self, title='Nobeyama Radioheliograph', axes=None, **plot_args, plot_type='norh'):
+    def plot(self, title='Nobeyama Radioheliograph', axes=None, plot_type='norh', **plot_args):
         """Plots the NoRH lightcurve"""
 
         if axes is None:
