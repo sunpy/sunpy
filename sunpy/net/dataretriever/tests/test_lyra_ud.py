@@ -2,9 +2,9 @@ import datetime
 import pytest
 
 from sunpy.time.timerange import TimeRange
-from sunpy.net.vso.attrs import Time, Instrument
-from sunpy.net.unifieddownloader.client import QueryResponse
-import sunpy.net.unifieddownloader.sources.lyra as lyra
+from sunpy.net.vso.attrs import Time,Instrument,Source
+from sunpy.net.dataretriever.client import QueryResponse
+import sunpy.net.dataretriever.sources.lyra as lyra
 
 LCClient = lyra.LYRAClient()
 
@@ -50,7 +50,7 @@ def test_query():
     assert len(qr1) == 2
     assert qr1.time_range()[0] == '2012/11/10'
     assert qr1.time_range()[1] == '2012/11/11'
-    
+
 
 @pytest.mark.online
 @pytest.mark.parametrize("time,instrument",

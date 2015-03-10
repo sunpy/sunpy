@@ -4,7 +4,7 @@
 
 from sunpy.instr import rhessi
 
-from sunpy.net.unifieddownloader.client import GenericClient
+from ..client import GenericClient
 
 __all__ = ['RHESSIClient']
 

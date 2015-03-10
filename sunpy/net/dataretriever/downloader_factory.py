@@ -2,20 +2,14 @@
 #This module was developed under funding provided by
 #Google Summer of Code 2014
 
-from datetime import timedelta
-
-from sunpy.util import print_table
-
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 
-from sunpy.net.attr import *
-from sunpy.net.vso.attrs import *
+from .. import attr
+from .client import GenericClient
 
-from sunpy.net.unifieddownloader.client import GenericClient
-
-__all__ = ['UnifiedDownloader']
+__all__ = ['Fido']
 
 class UnifiedResponse(list):
 
@@ -34,23 +28,12 @@ class UnifiedResponse(list):
     def file_num(self):
         return self._numfile
 
-    def __str__(self):
+    def _repr_html_(self):
+        ret = ''
+        for block in self:
+            ret += block._repr_html_()
 
-        table =[
-                [
-                     (qrblock.time.t1.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
-                     #vso serviced query will break here, time.t1 --> time.start required
-                     (qrblock.time.t2.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
-                     qrblock.source,
-                     qrblock.instrument,
-                     qrblock.url
-                ]
-                for block in self for i,qrblock in enumerate(block)
-               ]
-        table.insert(0,['----------', '--------', '------', '----------', '---'])
-        table.insert(0,['Start time', 'End time', 'Source', 'Instrument', 'URL'])
-
-        return print_table(table, colsep = '  ', linesep = '\n')
+        return ret
 
 class downloadresponse(list):
     """
@@ -60,7 +43,7 @@ class downloadresponse(list):
 
         super(downloadresponse, self).__init__(lst)
 
-    def wait(self):
+    def wait(self, progress=True):
         """
         Waits for all files to download completely and then return.
         Returns
@@ -69,20 +52,20 @@ class downloadresponse(list):
         """
         filelist = []
         for resobj in self:
-            filelist.extend(resobj.wait())
+            filelist.extend(resobj.wait(progress=progress))
 
         return filelist
 
 
-qwalker = AttrWalker()
+qwalker = attr.AttrWalker()
 
-@qwalker.add_creator(AttrAnd)
+@qwalker.add_creator(attr.AttrAnd)
 def _create(wlk, query, dobj):
     qresponseobj, qclient = dobj._get_registered_widget(*query.attrs)
     return [(qresponseobj, qclient)]
 
 
-@qwalker.add_creator(AttrOr)
+@qwalker.add_creator(attr.AttrOr)
 def _create(wlk, query, dobj):
     qblocks = []
     for iattr in query.attrs:
@@ -93,15 +76,15 @@ def _create(wlk, query, dobj):
 
 class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
-    def query(self, *query):
+    def search(self, *query):
         """
         Query for data in form of multiple parameters.
         Examples
         --------
         Query for LYRALightCurve data from timerange('2012/3/4','2012/3/6')
-        >>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('lyra'))
-        >>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('norh') | Instrument('rhessi'))
-        >>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'),
+        >>> unifresp = Fido.query(Time('2012/3/4','2012/3/6'),Instrument('lyra'))
+        >>> unifresp = Fido.query(Time('2012/3/4','2012/3/6'),Instrument('norh') | Instrument('rhessi'))
+        >>> unifresp = Fido.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'),
                        Wave(304, 304),Sample(60*10))
 
         Parameters
@@ -118,16 +101,22 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         ie. query is now of form A & B or ((A & B) | (C & D))
         This helps in modularising query into parts and handling each of the parts individually.
         """
-        query = and_(*query)
+        query = attr.and_(*query)
         return UnifiedResponse(qwalker.create(query, self))
 
-    def get(self, qr, **kwargs):
+    def fetch(self, qr, wait=True, progress=True, **kwargs):
         """
         Downloads the files pointed at by URLS contained within UnifiedResponse Object.
         Parameters
         ----------
         qr : UnifiedResponse Object
             Container returned by query method.
+
+        wait : `bool`
+            fetch will wait until the download is complete before returning.
+
+        progress : `bool`
+            Show a progress bar while the download is running.
 
         Returns
         -------
@@ -136,15 +125,20 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         Example
         --------
-        >>> unifresp = UnifiedDownloader.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'))
-        >>> downresp = UnifiedDownloader.get(unifresp)
+        >>> unifresp = Fido.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'))
+        >>> downresp = Fido.get(unifresp)
         >>> file_paths = downresp.wait()
         """
         reslist =[]
         for block in qr:
             reslist.append(block.client.get(block, **kwargs))
 
-        return downloadresponse(reslist)
+        results = downloadresponse(reslist)
+
+        if wait:
+            return results.wait(progress=progress)
+        else:
+            return results
 
     def __call__(self, *args, **kwargs):
         pass
@@ -165,10 +159,15 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             else:
                 return  [self.default_widget_type]
         elif n_matches > 1:
+            # This is a hack, VSO services all Instruments.
+            # TODO: VSOClient._can_handle_query should know what values of
+            # Instrument VSO can handle.
             for candidate_client in candidate_widget_types:
                 if issubclass(candidate_client, GenericClient):
                     return [candidate_client]
-            raise MultipleMatchError("Too many candidates clients can service your query {0}".format(args))
+
+            candidate_names = [cls.__name__ for cls in candidate_widget_types]
+            raise MultipleMatchError("Too many candidates clients can service your query {0}".format(candidate_names))
 
         return candidate_widget_types
 
@@ -179,4 +178,4 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         return tmpclient.query(*args), tmpclient
 
 
-UnifiedDownloader = UnifiedDownloaderFactory(additional_validation_functions = ['_can_handle_query'])
+Fido = UnifiedDownloaderFactory(additional_validation_functions = ['_can_handle_query'])
