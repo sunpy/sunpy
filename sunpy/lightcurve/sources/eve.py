@@ -13,6 +13,9 @@ from os.path import basename
 
 from sunpy.lightcurve import LightCurve
 
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
+
 __all__ = ['EVELightCurve']
 
 class EVELightCurve(LightCurve):
@@ -34,28 +37,54 @@ class EVELightCurve(LightCurve):
     | http://lasp.colorado.edu/home/eve/data/data-access/
     """
 
-    def peek(self, column = None, **kwargs):
-        figure = plt.figure()
-        # Choose title if none was specified
-        if not kwargs.has_key("title") and column is None:
-            if len(self.data.columns) > 1:
-                kwargs['title'] = 'EVE (1 minute data)'
-            else:
-                if self._filename is not None:
-                    base = self._filename.replace('_', ' ')
-                    kwargs['title'] = os.path.splitext(base)[0]
-                else:
-                    kwargs['title'] = 'EVE Averages'
+    def plot(self, axes=None, plot_type='eve 0cs', title = 'SDO/EVE', **plot_args):
+        """Plots EVE light curve is the usual manner"""
+        if axes is None:
+            axes = plt.gca()
 
-        if column is None:
-            self.plot(**kwargs)
-        else:
-            data = self.data[column]
-            if not kwargs.has_key("title"):
-                kwargs['title'] = 'EVE ' + column.replace('_', ' ')
-            data.plot(**kwargs)
-        figure.show()
-        return figure
+        if plot_type == 'goes proxy':
+            self.data['XRS-B proxy'].plot(ax=axes, label='1.0--8.0 $\AA$', color='red', lw=2, **plot_args)
+            self.data['XRS-A proxy'].plot(ax=axes, label='0.5--4.0 $\AA$', color='blue', lw=2, **plot_args)
+            axes.set_yscale("log")
+            axes.set_ylim(1e-9, 1e-2)
+            axes.set_title(title)
+            axes.set_ylabel('Watts m$^{-2}$')
+            #ax2 = axes.twinx()
+            #ax2.set_yscale("log")
+            #ax2.set_ylim(1e-9, 1e-2)
+            #ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
+            #ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
+        if plot_type == 'esp quad':
+            self.data['q0ESP'].plot(ax=axes, label='ESP 0', **plot_args)
+            self.data['q1ESP'].plot(ax=axes, label='ESP 1', **plot_args)
+            self.data['q2ESP'].plot(ax=axes, label='ESP 2', **plot_args)
+            self.data['q3ESP'].plot(ax=axes, label='ESP 3', **plot_args)
+        if plot_type == 'position':
+            self.data['CMLat'].plot(ax=axes, label='Latitude', **plot_args)
+            self.data['CMLon'].plot(ax=axes, label='Longitude', **plot_args)
+        if plot_type == 'sem':
+            self.data['SEM proxy'].plot(ax=axes, label='SEM Proxy', **plot_args)
+        if plot_type == 'esp':
+            self.data['17.1ESP'].plot(ax=axes, label='17.1', **plot_args)
+            self.data['25.7ESP'].plot(ax=axes, label='25.7', **plot_args)
+            self.data['30.4ESP'].plot(ax=axes, label='30.4', **plot_args)
+            self.data['36.6ESP'].plot(ax=axes, label='36.6', **plot_args)
+        if plot_type == 'dark':
+            self.data['darkESP'].plot(ax=axes, label='ESP', **plot_args)
+            self.data['darkMEGS-P'].plot(ax=axes, label='MEGS-P', **plot_args)
+
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
+        axes.set_title(title)
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(True, 'major')
+        axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
+        plt.gcf().autofmt_xdate()
+
+        return axes
+
+    @classmethod
+    def _get_plot_types(cls):
+        return ['goes proxy', 'esp quad', 'position', 'sem', 'esp', 'dark']
 
     @staticmethod
     def _get_default_uri():
