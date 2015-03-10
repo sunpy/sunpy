@@ -19,6 +19,10 @@ class TestGOESLightCurve(object):
     def timerange_b(self):
         return TimeRange('1995/06/03', '1995/06/04')
 
+    @pytest.fixture
+    def timerange_c(self):
+        return TimeRange('1980/01/05', '1980/01/06')
+
     @pytest.mark.online
     def test_goes_range(self, timerange_a):
         """Test creation with two times"""
@@ -78,11 +82,12 @@ class TestGOESLightCurve(object):
         with pytest.raises((Exception)):
             self.compare(lc1, lc2)
 
-    def test_goes_sat_numbers(self, timerange_a, timerange_b):
+    def test_goes_sat_numbers(self, timerange_a, timerange_b, timerange_c):
         """Test the ability to return GOES satellite availability"""
         g = sunpy.lightcurve.GOESLightCurve
         assert g._get_goes_sat_num(timerange_a.start, timerange_a.end) == [10]
         assert g._get_goes_sat_num(timerange_b.start, timerange_b.end) == [7]
+        assert g._get_goes_sat_num(timerange_c.start, timerange_c.end) == [2]
 
     def test_get_url(self, timerange_a, timerange_b):
         """Test the getting of urls"""
