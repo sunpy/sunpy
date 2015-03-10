@@ -127,14 +127,17 @@ class GenericMap(NDData):
         self._nickname = self.detector
 
         # Visualization attributes
-        self.cmap = cm.gray
+        self.plot_settings = {'cmap': cm.gray,
+                              'norm': self._get_mpl_normalizer(),
+                              ''
+                              "{name} {date:{tmf}}".format(name=self.name,
+                                                        date=parse_time(self.date),
+                                                        tmf=TIME_FORMAT)
+                              }
 
         # Validate header
         # TODO: This should be a function of the header, not of the map
         self._validate()
-
-        # Set mpl.colors.Normalize instance for plot scaling
-        self.mpl_color_normalizer = self._get_mpl_normalizer()
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
@@ -214,7 +217,7 @@ Dimension:\t [{xdim:d}, {ydim:d}]
     @property
     def date(self):
         """Image observation time"""
-        return self.meta.get('date-obs', 'now')
+        return parse_time(self.meta.get('date-obs', 'now')).strftime(TIME_FORMAT)
 #    @date.setter
 #    def date(self, new_date):
 #        self.meta['date-obs'] = new_date
@@ -998,7 +1001,7 @@ Dimension:\t [{xdim:d}, {ydim:d}]
         return axes
 
     @toggle_pylab
-    def peek(self, draw_limb=False, draw_grid=False, gamma=None,
+    def peek(self, draw_limb=False, draw_grid=False,
                    colorbar=True, basic_plot=False, **matplot_args):
         """Displays the map in a new figure
 
@@ -1009,8 +1012,6 @@ Dimension:\t [{xdim:d}, {ydim:d}]
         draw_grid : bool or number
             Whether solar meridians and parallels are plotted. If float then sets
             degree difference between parallels and meridians.
-        gamma : float
-            Gamma value to use for the color map
         colorbar : bool
             Whether to display a colorbar next to the plot
         basic_plot : bool
@@ -1029,13 +1030,13 @@ Dimension:\t [{xdim:d}, {ydim:d}]
             axes = plt.Axes(figure, [0., 0., 1., 1.])
             axes.set_axis_off()
             figure.add_axes(axes)
-            matplot_args.update({'annotate':False})
+            matplot_args.update({'annotate': False})
 
         # Normal plot
         else:
             axes = figure.gca()
 
-        im = self.plot(axes=axes,**matplot_args)
+        im = self.plot(axes=axes, **matplot_args)
 
         if colorbar and not basic_plot:
             figure.colorbar(im)
@@ -1053,18 +1054,13 @@ Dimension:\t [{xdim:d}, {ydim:d}]
 
         figure.show()
 
-        return figure
-
     @toggle_pylab
-    def plot(self, gamma=None, annotate=True, axes=None, **imshow_args):
+    def plot(self, annotate=True, axes=None, **imshow_args):
         """ Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
 
         Parameters
         ----------
-        gamma : float
-            Gamma value to use for the color map
-
         annotate : bool
             If true, the data is plotted at it's natural scale; with
             title and axis labels.
@@ -1099,9 +1095,7 @@ Dimension:\t [{xdim:d}, {ydim:d}]
 
         # Normal plot
         if annotate:
-            axes.set_title("{name} {date:{tmf}}".format(name=self.name,
-                                                        date=parse_time(self.date),
-                                                        tmf=TIME_FORMAT))
+            axes.set_title(self.plot_settings.get('title'))
 
             # x-axis label
             if self.coordinate_system['x'] == 'HG':
@@ -1121,16 +1115,12 @@ Dimension:\t [{xdim:d}, {ydim:d}]
         # Determine extent
         extent = self.xrange + self.yrange
 
-        cmap = deepcopy(self.cmap)
-        if gamma is not None:
-            cmap.set_gamma(gamma)
-
         # make imshow kwargs a dict
-        kwargs = {'origin':'lower',
-                  'cmap':cmap,
-                  'norm':self.mpl_color_normalizer,
-                  'extent':extent,
-                  'interpolation':'nearest'}
+        kwargs = {'origin': 'lower',
+                  'cmap': self.plot_settings.get('cmap'),
+                  'norm': self.plot_settings['norm'],
+                  'extent': extent,
+                  'interpolation': 'nearest'}
         kwargs.update(imshow_args)
 
         ret = axes.imshow(self.data, **kwargs)
