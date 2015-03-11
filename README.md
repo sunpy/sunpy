@@ -36,8 +36,9 @@ Here is a quick example of plotting an AIA image:
 
 ```python
 >>> import sunpy.map
+>>> import sunpy.data.sample
 >>> import matplotlib.cm as cm
->>> aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+>>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 >>> aia.peek(cmap=cm.hot)
 ```
 
