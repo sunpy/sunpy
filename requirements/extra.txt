@@ -9,7 +9,7 @@ pytest-cov
 # Optional dependencies for extra functionality
 sqlalchemy
 scikit-image
-# glymur
+glymur
 suds
 beautifulsoup4
 requests
