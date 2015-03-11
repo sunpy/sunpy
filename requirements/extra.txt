@@ -1,0 +1,15 @@
+# Extra dependencies required for development and tests
+
+-r base.txt
+
+# Pytest and the optional pytest coverage plugin for tests
+pytest
+pytest-cov
+
+# Optional dependencies for extra functionality
+sqlalchemy
+scikit-image
+# glymur
+suds
+beautifulsoup4
+requests
