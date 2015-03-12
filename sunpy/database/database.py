@@ -309,7 +309,7 @@ class Database(object):
             client = VSOClient()
 
         paths = client.get(query_result, path).wait(progress=progress)
-        
+
         for (path, block) in zip(paths, query_result):
             qr_entry = tables.DatabaseEntry._from_query_result_block(block)
             
@@ -325,7 +325,7 @@ class Database(object):
                 entry.provider = qr_entry.provider
                 entry.physobs = qr_entry.physobs
                 entry.fileid = qr_entry.fileid
-                entry.observation_time_start =\
+                entry.observation_time_start =  \
                     qr_entry.observation_time_start
                 entry.observation_time_end = qr_entry.observation_time_end
                 entry.instrument = qr_entry.instrument
