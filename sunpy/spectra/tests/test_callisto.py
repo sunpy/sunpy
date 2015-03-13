@@ -11,7 +11,7 @@ from datetime import datetime
 import pytest
 import os
 import numpy as np
-from numpy.testing import assert_array_almost_equal
+from numpy.testing import assert_array_almost_equal, assert_allclose
 import sunpy.data.test
 
 from sunpy.spectra.sources.callisto import (
@@ -125,11 +125,10 @@ def test_create_url_kw():
     ca = CallistoSpectrogram.create(url=URL)
     assert np.array_equal(ca.data, CallistoSpectrogram.read(URL).data)
 
-@pytest.mark.xfail
 def test_create_single_glob(CALLISTO_IMAGE):
     PATTERN = os.path.join( os.path.dirname(CALLISTO_IMAGE), "BIR_*")
     ca = CallistoSpectrogram.create(PATTERN)
-    assert np.array_equal(ca[0].data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
+    assert_allclose(ca[0].data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
 
 
 # seems like this does not work anymore and can't figure out what it is for
@@ -138,14 +137,13 @@ def test_create_single_glob(CALLISTO_IMAGE):
 #    ca = CallistoSpectrogram.create(singlepattern=PATTERN)
 #    assert np.array_equal(ca[0].data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
 
-@pytest.mark.xfail
 def test_create_glob_kw(CALLISTO_IMAGE):
     PATTERN = os.path.join(
         os.path.dirname(CALLISTO_IMAGE),
         "BIR_*"
     )
     ca = CallistoSpectrogram.create(pattern=PATTERN)[0]
-    assert np.array_equal(ca.data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
+    assert_allclose(ca.data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
 
 def test_create_glob():
     PATTERN = os.path.join(
