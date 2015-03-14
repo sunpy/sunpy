@@ -2,8 +2,8 @@ import pytest
 
 from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument
-from sunpy.net.unifieddownloader.client import QueryResponse
-import sunpy.net.unifieddownloader.sources.goes as goes
+from sunpy.net.dataretriever.client import QueryResponse
+import sunpy.net.dataretriever.sources.goes as goes
 
 LCClient = goes.GOESClient()
 

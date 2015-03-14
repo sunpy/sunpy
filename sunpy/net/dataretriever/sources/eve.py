@@ -1,14 +1,16 @@
 #Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-#This Module was developed under funding provided by 
+#This module was developed under funding by
 #Google Summer of Code 2014
 
-import datetime
 import urlparse
 
-from sunpy.net.unifieddownloader.client import GenericClient
+from ..client import GenericClient
 
-__all__ = ['NoRHClient']
-class NoRHClient(GenericClient):
+
+__all__ = ['EVEClient']
+
+
+class EVEClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
@@ -40,33 +42,19 @@ class NoRHClient(GenericClient):
 
         Returns
         -------
-        string
-            The URL for the corresponding date.
+        URL : string
         """
-
-        # Hack to get around Python 2.x not backporting PEP 3102.
-        wavelength = kwargs.pop('wavelength', None)
-
-        #default urllib password anonymous@ is not accepted by the NoRH FTP server.
-        #include an accepted password in base url
-        baseurl = 'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/'
-
-        #date is a datetime.date object
-        if wavelength == '34':
-            final_url = urlparse.urljoin(baseurl, date.strftime('%Y/%m/' + 'tcz' + '%y%m%d'))
-        else:
-            final_url = urlparse.urljoin(baseurl, date.strftime('%Y/%m/' + 'tca' + '%y%m%d'))
-
-        return final_url
+        base_url = 'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
+        return urlparse.urljoin(base_url, date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt')
 
     def _makeimap(self):
         """
-        Helper Function used to hold information about source.
+        Helper Function: used to hold information about source.
         """
-        self.map_['source'] = 'NAOJ'
-        self.map_['provider'] ='NRO'
-        self.map_['instrument'] = 'RadioHelioGraph'
-        self.map_['phyobs'] = ''
+        self.map_['source'] = 'SDO'
+        self.map_['provider'] ='LASP'
+        self.map_['instrument'] = 'eve'
+        self.map_['phyobs'] = 'irradiance'
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -82,9 +70,15 @@ class NoRHClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chkattr =  ['Time', 'Instrument']
+        chkattr =  ['Time', 'Instrument','Level']
         chklist =  [x.__class__.__name__ in chkattr for x in query]
+        chk_var = 0
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value == 'norh':
-                return all(chklist)
+            if x.__class__.__name__ == 'Instrument' and x.value == 'eve':
+                chk_var +=1
+            elif x.__class__.__name__ == 'Level' and x.value == 0:
+                chk_var +=1
+
+        if(chk_var == 2):
+            return all(chklist)
         return False
