@@ -2,19 +2,21 @@
 """SunPy sample data files"""
 from __future__ import absolute_import
 
-from sunpy.util.net import url_exists
 from os import remove
-from astropy.utils.data import download_file
+import os.path
 from zipfile import ZipFile
 from urllib2 import URLError
 from shutil import move
 
-import os.path
+from astropy.utils.data import download_file
+
+from sunpy.util.net import url_exists
+from sunpy import config
 
 __author__ = "Steven Christe"
 __email__ = "steven.christe@nasa.gov"
 
-from sunpy import config
+
 sampledata_dir = config.get("downloads", "sample_dir")
 
 # urls to search for the sample data
