@@ -13,7 +13,7 @@ import pytest
 
 from sunpy.time import parse_time
 from sunpy.net.jsoc import JSOCClient, JSOCResponse
-from sunpy.net.vso.vso import Results
+from sunpy.net.download import Results
 import sunpy.net.jsoc.attrs as attrs
 
 
@@ -38,7 +38,7 @@ def test_payload():
     start = parse_time('2012/1/1T00:00:00')
     end = parse_time('2012/1/1T00:00:45')
 
-    payload = client._make_query_payload(start, end, 'hmi.M_42s')
+    payload = client._make_query_payload(start, end, 'hmi.M_42s', notify='test@sunpy.org')
 
     payload_expected = {
        'ds': '{0}[{1}-{2}]'.format('hmi.M_42s',
@@ -46,7 +46,7 @@ def test_payload():
                                    end.strftime("%Y.%m.%d_%H:%M:%S_TAI")),
        'format': 'json',
        'method': 'url',
-       'notify': '',
+       'notify': 'test@sunpy.org',
        'op': 'exp_request',
        'process': 'n=0|no_op',
        'protocol': 'FITS,compress Rice',
@@ -60,14 +60,14 @@ def test_payload_nocompression():
     start = parse_time('2012/1/1T00:00:00')
     end = parse_time('2012/1/1T00:00:45')
 
-    payload = client._make_query_payload(start, end, 'hmi.M_42s', compression=None)
+    payload = client._make_query_payload(start, end, 'hmi.M_42s', compression=None, notify='@')
 
     payload_expected = {
        'ds':'{0}[{1}-{2}]'.format('hmi.M_42s', start.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                                        end.strftime("%Y.%m.%d_%H:%M:%S_TAI")),
        'format':'json',
        'method':'url',
-       'notify':'',
+       'notify':'@',
        'op':'exp_request',
        'process':'n=0|no_op',
        'protocol':'FITS, **NONE**',
@@ -81,14 +81,14 @@ def test_payload_protocol():
     start = parse_time('2012/1/1T00:00:00')
     end = parse_time('2012/1/1T00:00:45')
 
-    payload = client._make_query_payload(start, end, 'hmi.M_42s', protocol='as-is')
+    payload = client._make_query_payload(start, end, 'hmi.M_42s', protocol='as-is', notify='@')
 
     payload_expected = {
        'ds':'{0}[{1}-{2}]'.format('hmi.M_42s', start.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                                        end.strftime("%Y.%m.%d_%H:%M:%S_TAI")),
        'format':'json',
        'method':'url',
-       'notify':'',
+       'notify':'@',
        'op':'exp_request',
        'process':'n=0|no_op',
        'protocol':'as-is',
@@ -122,7 +122,7 @@ def test_status_request():
 def  test_empty_jsoc_response():
     Jresp = JSOCResponse()
     assert Jresp.table is None
-    assert Jresp.query_args is None
+    assert Jresp.query_args == []
     assert Jresp.requestIDs is None
     assert str(Jresp) == 'None'
     assert repr(Jresp) == 'None'
@@ -139,9 +139,9 @@ def test_query():
 @pytest.mark.online
 def test_post_pass():
     responses = client.query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
-                             attrs.Series('hmi.M_45s'))
+                             attrs.Series('hmi.M_45s'), attrs.Notify('test@sunpy.org'))
     aa = client.request_data(responses, return_resp=True)
-    tmpresp = aa[0].json()
+    tmpresp = aa[0][0].json()
     assert tmpresp['status'] == 2
     assert tmpresp['protocol'] == 'FITS,compress Rice'
     assert tmpresp['method'] == 'url'
@@ -150,25 +150,39 @@ def test_post_pass():
 @pytest.mark.online
 def test_post_wavelength():
     responses = client.query(attrs.Time('2010/07/30T13:30:00','2010/07/30T14:00:00'),attrs.Series('aia.lev1_euv_12s'),
-                             attrs.Wavelength(193*u.AA)|attrs.Wavelength(335*u.AA))
+                             attrs.Wavelength(193*u.AA)|attrs.Wavelength(335*u.AA), attrs.Notify('test@sunpy.org'))
     aa = client.request_data(responses, return_resp=True)
-    tmpresp = aa[0].json()
+    tmpresp = aa[0][0].json()
     assert tmpresp['status'] == 2
     assert tmpresp['protocol'] == 'FITS,compress Rice'
     assert tmpresp['method'] == 'url'
-    assert tmpresp['rcount'] == 302
+    assert tmpresp['rcount'] == 151
+    tmpresp = aa[1][0].json()
+    assert tmpresp['status'] == 2
+    assert tmpresp['protocol'] == 'FITS,compress Rice'
+    assert tmpresp['method'] == 'url'
+    assert tmpresp['rcount'] == 151
+
+@pytest.mark.online
+def test_post_notify_fail():
+    responses = client.query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
+                             attrs.Series('hmi.M_45s'))
+    with pytest.raises(ValueError):
+        client.request_data(responses, return_resp=True)
 
 @pytest.mark.online()
 def test_post_wave_series():
     with pytest.raises(TypeError):
         client.query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
                      attrs.Series('hmi.M_45s')|attrs.Series('aia.lev1_euv_12s'),
-                     attrs.Wavelength(193*u.AA)|attrs.Wavelength(335*u.AA))
+                     attrs.Wavelength(193*u.AA)|attrs.Wavelength(335*u.AA),
+                     attrs.Notify('test@sunpy.org'))
 
 
 @pytest.mark.online
 def test_post_fail(recwarn):
-    res = client.query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'), attrs.Series('none'))
+    res = client.query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'), attrs.Series('none'),
+                     attrs.Notify('test@sunpy.org'))
     client.request_data(res, return_resp=True)
     w = recwarn.pop(Warning)
     assert issubclass(w.category, Warning)
@@ -196,7 +210,7 @@ def test_wait_get():
 @pytest.mark.xfail
 def test_check_request():
     responses = client.query(attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'),
-                             attrs.Series('hmi.M_45s'))
+                             attrs.Series('hmi.M_45s'), attrs.Notify('test@sunpy.org'))
 
     bb = client.request_data(responses)
     aa = client.check_request(bb)
@@ -208,7 +222,7 @@ def test_check_request():
 @pytest.mark.online
 def test_get_request():
     responses = client.query(attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'),
-                             attrs.Series('hmi.M_45s'))
+                             attrs.Series('hmi.M_45s'), attrs.Notify('test@sunpy.org'))
 
     bb = client.request_data(responses)
     aa = client.get_request(bb)

@@ -3,7 +3,7 @@
 #Google Summer of Code 2014
 
 
-from sunpy.net.unifieddownloader.client import GenericClient
+from ..client import GenericClient
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient']
 
