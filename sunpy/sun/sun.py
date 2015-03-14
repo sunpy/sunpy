@@ -102,9 +102,12 @@ def position(t='now'):
     return result
     
 def eccentricity_SunEarth_orbit(t='now'):
-    """Returns the eccentricity of the Sun Earth Orbit."""
+    """Returns the eccentricity of the Sun Earth Orbit.
+    Eq. 25.4
+    """
+    #TODO: Is this low accuracy?
     T = julian_centuries(t)
-    result = 0.016751040 - 0.00004180 * T - 0.0000001260 * T ** 2
+    result = 0.016708634 - 0.000042037 * T - 0.0000001267 * T ** 2
     return result
 
 def mean_ecliptic_longitude(t='now'):
@@ -127,13 +130,12 @@ def mean_anomaly(t='now'):
     """
     T = julian_centuries(t)
     mean_longitude_earth = np.array([100.466457, 36000.7698278, 3.0322e-4,
-                                     2.0e-8]) * u.deg
+                                     +2.0e-8]) * u.deg
     lon_perihelium_earth = np.array([102.937348,     1.7195366, 4.5688e-4,
-                                    -1.8e-8]) * u.deg
+                                     -1.8e-8]) * u.deg
     polinomial_order = np.array([[1, T, T**2, T**3]])
     mean_anomaly = (mean_longitude_earth - lon_perihelium_earth) * polinomial_order
-    result = mean_anomaly.sum()      
-    return Longitude(result)
+    return Longitude(mean_anomaly.sum())
 
 def carrington_rotation_number(t='now'):
     """Return the Carrington Rotation number"""
@@ -144,74 +146,85 @@ def carrington_rotation_number(t='now'):
 def geometric_mean_longitude(t='now'):
     """Returns the geometric mean longitude (in degrees)"""   
     T = julian_centuries(t)
-    result = 279.696680 + 36000.76892 * T + 0.0003025 * T ** 2
-    result = result * u.deg
-    return Longitude(result)
+    #Eq 25.2
+    gm_long = np.array([280.46646, 36000.76983, 0.0003032]) * u.deg
+    gm_long *= T ** np.arange(3)
+    #TODO: High accuracy?
+    return Longitude(gm_long)
   
 def equation_of_center(t='now'):
-    """Returns the Sun's equation of center (in degrees)"""
+    """Returns the Sun's equation of center (in degrees)
+    p.164 """
     T = julian_centuries(t)
     mna = mean_anomaly(t) 
-    result = ((1.9194600 - 0.0047890 * T - 0.0000140 * T ** 2) * np.sin(mna)
-    + (0.0200940 - 0.0001000 * T) *
-    np.sin(2 * mna) + 0.0002930 * np.sin(3 * mna))
+    factors = np.array([1.914602 - 0.004817 * T - 0.0000140 * T ** 2,
+                        0.019993 - 0.000101 * T,
+                        0.000289]) * u.deg
+    result = (factors * np.sin(np.arange(1,4) * mna)).sum()
     result = result * u.deg
+    #TODO: is it highaccuracy?
     return Angle(result)
 
 def true_longitude(t='now'):
     """Returns the Sun's true geometric longitude (in degrees) 
     (Refered to the mean equinox of date.  Question: Should the higher
     accuracy terms from which app_long is derived be added to true_long?)"""
-    result = equation_of_center(t) + geometric_mean_longitude(t)
-    return Longitude(result)
+    #p.164
+    result = geometric_mean_longitude(t) + equation_of_center(t)
+    # Should we use p166 (VSOP87 or FK5)
+    return Longitude(result) #TODO: print gives it in days, minutes, seconds
 
 def true_anomaly(t='now'):
     """Returns the Sun's true anomaly (in degress)."""
-    result = (mean_anomaly(t) + equation_of_center(t)) % (360.0 * u.deg)
-    return result
+    #p.164
+    result = mean_anomaly(t) + equation_of_center(t)
+    return Angle(result)
 
 def sunearth_distance(t='now'):
-    """Returns the Sun Earth distance (AU). There are a set of higher 
-    accuracy terms not included here."""  
+    """Returns the Sun Earth distance (AU).
+    #TODO: There are a set of higher 
+    accuracy terms not included here.
+    Eq 25.5 """  
     ta = true_anomaly(t)
     e = eccentricity_SunEarth_orbit(t)
-    result = 1.00000020 * (1.0 - e ** 2) / (1.0 + e * np.cos(ta))
+    result = 1.000001018 * (1.0 - e ** 2) / (1.0 + e * np.cos(ta))
     return result * u.AU
 
-def apparent_longitude(t='now'):
+def apparent_longitude(t='now', high_precission=False):
     """Returns the apparent longitude of the Sun.
     This includes the effects of nutation and aberration 
     to the true ('geometric') longituded of the Sun."""
     # p. 167
-    #Nutation: Add \sun longitude the nutation in logn \delta\psi (Ch22)
+    # * Nutation: Add \sun longitude the nutation in long \delta\psi (Ch22)
     # ToDo: find!
-    # aberration: Apply to \sun longitude the correction:
+    # * Aberration: Apply to \sun longitude the correction:
     # - 20.4898 * u.arcsecs / R
-    # R = Earth's radius vector in AU.
     # The numerator = constant of aberration (k=20.49552 *u.arcsecs)
     #                 * a(1-e**2) = eq. 25.10
     # It varies very slowly
     # Note, Above: it does not assume perturbations in the orbit (mainly by
     #       the moon => result's error <= 0.01 arcseconds
     # --High accuracy--
-    # aberration: 
+    # * Aberration: 
     # - 0.005775518 R \delta\lambda (25.11)
-    # Find \delta \lambda of Sun's longitude (arcsecs/day)
-    # R is as before
-    # the numerical const: light-time for unit distance, in days (=8.3 min).
-    # \deltlambda (J2000.0) =
-    # \tau = time in milennia from J2000.0 (Ch 32)
-    # args in sines are in degrees and decimals
+    #   the numerical const: light-time for unit distance, in days (=8.3 min).
+    #   \deltlambda (J2000.0) = sun_geocentric_daily_variation
     # most important periodic terms have been retained => err < 0.1 arcsecs
     #  If this result is used for 25.11 => err < 0.001 arcsecs
     
     T = julian_centuries(t)
-    omega = (259.18 - 1934.142 * T) * u.deg
-    true_long = true_longitude(t)        
-    result = true_long - (0.00569 - 0.00479 * np.sin(omega)) * u.deg
+    true_long = true_longitude(t)
+    if high_precission:
+        nutation = 0 #ToDo CH22
+        R = sunearth_distance(t)
+        aberration = -0.005775518 * R * sun_geocentric_daily_variation(t)
+        result = true_long + nutation + aberration
+    else:
+        omega = (259.18 - 1934.142 * T) * u.deg
+        result = true_long - (0.00569 - 0.00479 * np.sin(omega)) * u.deg
     return Longitude(result)
 
-def sun_geocentric_variation_daily_variation(t='now', mean_equinox=False):
+def sun_geocentric_daily_variation(t='now', mean_equinox=False):
     """
     Daily variation, in arcseconds, of the geocentric longitude
     of the Sun in a fixed reference frame.
@@ -266,9 +279,8 @@ def sun_geocentric_variation_daily_variation(t='now', mean_equinox=False):
     factor[17:20] *= tau ** 2
     factor[-1] *= tau ** 3
 
-    arguments = factor * np.sin(u.deg *
-                                (non_periodic_terms +
-                                 periodic_terms * tau))
+    arguments = factor * np.sin((non_periodic_terms + periodic_terms * tau) *
+                                u.deg)
     deltaLambda += arguments.sum()
     return deltaLambda * u.arcsec 
 
