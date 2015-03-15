@@ -325,8 +325,7 @@ class Database(object):
                 entry.provider = qr_entry.provider
                 entry.physobs = qr_entry.physobs
                 entry.fileid = qr_entry.fileid
-                entry.observation_time_start = \
-                qr_entry.observation_time_start
+                entry.observation_time_start = qr_entry.observation_time_start
                 entry.observation_time_end = qr_entry.observation_time_end
                 entry.instrument = qr_entry.instrument
                 entry.size = qr_entry.size
