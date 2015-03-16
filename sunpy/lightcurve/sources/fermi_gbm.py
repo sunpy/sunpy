@@ -78,7 +78,8 @@ class GBMSummaryLightCurve(LightCurve):
 
     @classmethod
     def _get_closest_detector_for_date(cls,date,**kwargs):
-        """This method returns the GBM detector with the smallest mean angle
+        """
+        This method returns the GBM detector with the smallest mean angle
         to the Sun for the given date
         """
         pointing_file = fermi.download_weekly_pointing_file(date)
