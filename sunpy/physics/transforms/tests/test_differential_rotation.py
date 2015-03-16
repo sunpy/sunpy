@@ -11,44 +11,46 @@ from sunpy.tests.helpers import assert_quantity_allclose
 # accuracy, only that they are the values the function was outputting upon
 # implementation.
 
-seconds_per_day = 24 * 60 * 60.0 * u.s
+@pytest.fixture
+def seconds_per_day():
+    return 24 * 60 * 60.0 * u.s
 
-def test_single():
+def test_single(seconds_per_day):
     rot = diff_rot(10 * seconds_per_day, 30 * u.deg)
     assert rot == 136.8216 * u.deg
 
 
-def test_array():
+def test_array(seconds_per_day):
     rot = diff_rot(10 * seconds_per_day, np.linspace(-70, 70, 2) * u.deg)
     assert_quantity_allclose(rot, Longitude(np.array([110.2725,  110.2725]) * u.deg))
 
 
-def test_synodic():
+def test_synodic(seconds_per_day):
     rot = diff_rot(10 * seconds_per_day, 30 * u.deg, rot_type='howard', frame_time='synodic')
     assert rot == 126.9656 * u.deg
 
 
-def test_sidereal():
+def test_sidereal(seconds_per_day):
     rot = diff_rot(10 * seconds_per_day, 30 * u.deg, rot_type='howard', frame_time='sidereal')
     assert rot == 136.8216 * u.deg
 
 
-def test_howard():
+def test_howard(seconds_per_day):
     rot = diff_rot(10 * seconds_per_day, 30 * u.deg, rot_type='howard')
     assert rot == 136.8216 * u.deg
 
 
-def test_allen():
+def test_allen(seconds_per_day):
     rot = diff_rot(10 * seconds_per_day, 30 * u.deg, rot_type='allen')
     assert rot == 136.9 * u.deg
 
 
-def test_snodgrass():
+def test_snodgrass(seconds_per_day):
     rot = diff_rot(10 * seconds_per_day, 30 * u.deg, rot_type='snodgrass')
     assert rot == 135.4232 * u.deg
 
 
-def test_fail():
+def test_fail(seconds_per_day):
     with pytest.raises(ValueError):
         rot = diff_rot(10 * seconds_per_day, 30 * u.deg, rot_type='garbage')
 
