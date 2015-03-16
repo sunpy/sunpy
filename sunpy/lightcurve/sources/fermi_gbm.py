@@ -55,7 +55,9 @@ class GBMSummaryLightCurve(LightCurve):
 
     @classmethod
     def _get_url_for_date(cls,date, **kwargs):
-        """This method retrieves the url for Fermi/GBM data for the given date."""
+        """
+        This method retrieves the url for Fermi/GBM data for the given date.
+        """
         baseurl='http://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
         #date is a datetime object
         if 'detector' in kwargs:
@@ -76,8 +78,9 @@ class GBMSummaryLightCurve(LightCurve):
 
     @classmethod
     def _get_closest_detector_for_date(cls,date,**kwargs):
-        '''This method returns the GBM detector with the smallest mean angle
-        to the Sun for the given date'''
+        """This method returns the GBM detector with the smallest mean angle
+        to the Sun for the given date
+        """
         pointing_file = fermi.download_weekly_pointing_file(date)
         det_angles = fermi.get_detector_sun_angles_for_date(date,pointing_file)
         det_angle_means=[]
@@ -95,7 +98,9 @@ class GBMSummaryLightCurve(LightCurve):
     
     @staticmethod
     def _parse_fits(filepath):
-        """This method parses GBM CSPEC data files to create summary lightcurves."""
+        """
+        This method parses GBM CSPEC data files to create summary lightcurves.
+        """
         hdulist=fits.open(filepath)
         header=OrderedDict(hdulist[0].header)
         #these GBM files have three FITS extensions.
