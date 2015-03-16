@@ -2,13 +2,15 @@
 
 from __future__ import absolute_import
 
-import datetime
+
 import urlparse
+import warnings
+from collections import OrderedDict
+
 import numpy as np
 import matplotlib.pyplot as plt
-from collections import OrderedDict
+import datetime
 import pandas
-import warnings
 
 from sunpy.io.fits import fits
 from sunpy.instr import fermi

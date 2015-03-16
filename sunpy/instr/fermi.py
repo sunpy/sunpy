@@ -1,16 +1,17 @@
 from __future__ import absolute_import
 from __future__ import division
 
-import numpy as np
+
+import os
 import copy
 import urlparse
 import urllib, urllib2
-import tempfile
-import datetime
-import os
-import matplotlib.pyplot as plt
-
 from collections import OrderedDict
+import tempfile
+
+import datetime
+import matplotlib.pyplot as plt
+import numpy as np
 import astropy.units as u
 from astropy.coordinates import Angle, Longitude, Latitude
 
