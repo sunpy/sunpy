@@ -23,10 +23,13 @@ from sunpy.database.commands import EmptyCommandStackError, NoSuchEntryError
 from sunpy.database.caching import LRUCache, LFUCache
 from sunpy.database import attrs
 from sunpy.net import vso, hek
-from sunpy.data.sample import RHESSI_EVENT_LIST
 from sunpy.data.test.waveunit import waveunitdir
 from sunpy.io import fits
 
+import sunpy.data.test
+import os
+testpath = sunpy.data.test.rootdir
+RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
 
 @pytest.fixture
 def database_using_lrucache():
@@ -406,7 +409,8 @@ def test_add_entry_from_hek_qr(database):
     assert len(database) == 0
     database.add_from_hek_query_result(hek_res)
     # The database apparently has 1902 entries now, not 2133
-    assert len(database) == 1902
+    #assert len(database) == 1902
+    assert len(database) == 2133
 
 
 @pytest.mark.online
@@ -481,8 +485,8 @@ def test_add_fom_path_ignore_duplicates(database):
 
 def test_add_from_file(database):
     assert len(database) == 0
-    database.add_from_file(RHESSI_EVENT_LIST)
-    assert len(database) == 11
+    database.add_from_file(RHESSI_IMAGE)
+    assert len(database) == 4
     # make sure that all entries have the same fileid
     fileid = database[0].fileid
     for entry in database:
@@ -490,17 +494,17 @@ def test_add_from_file(database):
 
 
 def test_add_from_file_duplicates(database):
-    database.add_from_file(RHESSI_EVENT_LIST)
+    database.add_from_file(RHESSI_IMAGE)
     with pytest.raises(EntryAlreadyAddedError):
-        database.add_from_file(RHESSI_EVENT_LIST)
+        database.add_from_file(RHESSI_IMAGE)
 
 
 def test_add_from_file_ignore_duplicates(database):
     assert len(database) == 0
-    database.add_from_file(RHESSI_EVENT_LIST)
-    assert len(database) == 11
-    database.add_from_file(RHESSI_EVENT_LIST, True)
-    assert len(database) == 22
+    database.add_from_file(RHESSI_IMAGE)
+    assert len(database) == 4
+    database.add_from_file(RHESSI_IMAGE, True)
+    assert len(database) == 8
 
 
 def test_edit_entry(database):
