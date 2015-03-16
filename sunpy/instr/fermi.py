@@ -3,7 +3,6 @@ from __future__ import division
 
 import numpy as np
 import copy
-import math
 import urlparse
 import urllib, urllib2
 import tempfile
@@ -11,9 +10,8 @@ import datetime
 import os
 import matplotlib.pyplot as plt
 
-#from bs4 import BeautifulSoup
+from collections import OrderedDict
 import astropy.units as u
-from astropy.utils.compat.odict import OrderedDict
 from astropy.coordinates import Angle, Longitude, Latitude
 
 from sunpy.time import parse_time, TimeRange
@@ -350,8 +348,8 @@ def nai_detector_radecs(detectors, scx, scz, time):
         vz_primed = rotate_vector(scz_vector, vy_primed, np.deg2rad(theta))
 
         # now we should be pointing at the new RA/DEC.
-        ra = Longitude(np.degrees(math.atan2(vz_primed[1], vz_primed[0])) * u.deg)
-        dec = Latitude(np.degrees(math.asin(vz_primed[2])) * u.deg)
+        ra = Longitude(np.degrees(np.arctan2(vz_primed[1], vz_primed[0])) * u.deg)
+        dec = Latitude(np.degrees(np.arcsin(vz_primed[2])) * u.deg)
 
         # save the RA/DEC in a dictionary
         detector_radecs[l] = [ra, dec]
