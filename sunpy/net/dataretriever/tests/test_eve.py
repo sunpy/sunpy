@@ -25,15 +25,9 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
-def test_fail_get_url_for_time_range():
-    urls = LCClient._get_url_for_timerange(None)
-    assert isinstance(urls, list)
-    assert len(urls) == 0
-
 def test_get_url_for_date():
     url = LCClient._get_url_for_date(datetime.date(2013,2,13))
     assert url == 'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2013/20130213_EVE_L0CS_DIODES_1m.txt'
-
 
 def test_can_handle_query():
     ans1 = eve.EVEClient._can_handle_query(Time('2012/8/9','2012/8/10'),Instrument('eve'),Level(0))

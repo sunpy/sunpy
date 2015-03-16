@@ -2,7 +2,7 @@ import datetime
 import pytest
 
 from sunpy.time.timerange import TimeRange
-from sunpy.net.vso.attrs import Time,Instrument,Source
+from sunpy.net.vso.attrs import Time, Instrument, Source
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.norh as norh
 
@@ -27,11 +27,6 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
-
-def test_fail_get_url_for_time_range():
-    urls = LCClient._get_url_for_timerange(None)
-    assert isinstance(urls, list)
-    assert len(urls) == 0
 
 def test_get_url_for_date():
     url = LCClient._get_url_for_date(datetime.date(2011,3,14))

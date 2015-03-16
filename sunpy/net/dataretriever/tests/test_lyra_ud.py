@@ -28,24 +28,19 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
-def test_fail_get_url_for_time_range():
-    urls = LCClient._get_url_for_timerange(None)
-    assert isinstance(urls, list)
-    assert len(urls) == 0
-
 def test_get_url_for_date():
-    url = LCClient._get_url_for_date(datetime.date(2013,2,13))
+    url = LCClient._get_url_for_date(datetime.date(2013, 2, 13))
     assert url == 'http://proba2.oma.be/lyra/data/bsd/2013/02/13/lyra_20130213-000000_lev2_std.fits'
 
 def test_can_handle_query():
-    ans1 = lyra.LYRAClient._can_handle_query(Time('2011/8/9','2011/8/10'),Instrument('lyra'))
+    ans1 = lyra.LYRAClient._can_handle_query(Time('2011/8/9', '2011/8/10'), Instrument('lyra'))
     assert ans1 == True
-    ans2 = lyra.LYRAClient._can_handle_query(Time('2013/1/7','2013/1/7'))
+    ans2 = lyra.LYRAClient._can_handle_query(Time('2013/1/7', '2013/1/7'))
     assert ans2 == False
 
 
 def test_query():
-    qr1 = LCClient.query(Time('2012/11/10','2012/11/11'),Instrument('lyra'))
+    qr1 = LCClient.query(Time('2012/11/10', '2012/11/11'), Instrument('lyra'))
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 2
     assert qr1.time_range()[0] == '2012/11/10'
