@@ -30,31 +30,19 @@ To install the Anaconda Python distribution follow the instructions
 `here <http://docs.continuum.io/anaconda/install.html>`_. You will need to 
 select the correct download for your platform and follow the install procedure.
 
-.. note::
-
-    On OS/X you need to install XCode so you can build SunPy's extensions.
-    see :ref:`xcode`
-
-Anaconda comes with it's own package manager (`conda`) for installing 
-packages provided by Continuum Analytics, it is strongly recommended to use the
-conda command for installing and updating packages where possible.
-For packages not availible through `conda` (like SunPy) it is possible to 
-install them from the source distribution using the Python `pip` command.
-
 Installing SunPy on top of Anaconda
 ###################################
 
 To install SunPy launch a system command prompt or the 
 'Anaconda Command Prompt' (under Windows) and follow these steps:
 
-To install SunPy's extra dependancies run::
+To configure conda for sunpy downloads run::
 
-    conda update astropy
-    pip install suds-jurko
+    conda config --add channels sunpy
 
 To install SunPy run::
  
- 	pip install --no-deps sunpy 
+    conda install sunpy
 
 You now have a working SunPy installation. You can check your SunPy install 
 by following the instructions in :ref:`testing-sunpy`. 
@@ -62,8 +50,8 @@ by following the instructions in :ref:`testing-sunpy`.
 .. note::
 
     Currently Glymur / JPEG2000 support is not tested under Anaconda on any 
-    platforms. If you require JPEG2000 support either use a different install 
-    method, or contact the SunPy mailing list.
+    platforms. However, an external installation of openJPEG should work with 
+    the glymur installation in conda. 
 
 Updating SunPy to a New Version
 ###############################
@@ -71,8 +59,7 @@ Updating SunPy to a New Version
 If a new version of SunPy is released you can update to the latest version 
 by running::
 
-    conda update anaconda
-    pip install --upgrade --no-deps sunpy suds-jurko
+    conda update sunpy
 
 
 Advanced SunPy Installation
