@@ -29,33 +29,12 @@ class UnifiedResponse(list):
     def file_num(self):
         return self._numfile
 
-<<<<<<< HEAD:sunpy/net/unifieddownloader/downloader_factory.py
-    def __str__(self):
-
-        #vso serviced query will break here, time.start --> time.start required
-        table = [
-            [(qrblock.time.start.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
-             (qrblock.time.end.date() + timedelta(days=i)).strftime('%Y/%m/%d'),
-             qrblock.source,
-             qrblock.instrument,
-             qrblock.url]
-            for block in self for i,qrblock in enumerate(block)
-        ]
-        table.insert(0, ['----------', '--------', '------', '----------', '---'])
-        table.insert(0, ['Start time', 'End time', 'Source', 'Instrument', 'URL'])
-
-        return print_table(table, colsep='  ', linesep='\n')
-
-    def __repr__(self):
-        return self.__str__()
-=======
     def _repr_html_(self):
         ret = ''
         for block in self:
             ret += block._repr_html_()
 
         return ret
->>>>>>> upstream/unidown:sunpy/net/dataretriever/downloader_factory.py
 
 class downloadresponse(list):
     """
