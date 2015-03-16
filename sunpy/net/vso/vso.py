@@ -27,7 +27,6 @@ import astropy
 from astropy.table import Table, Column
 import astropy.units as u
 
-from sunpy import config
 from sunpy.net import download
 from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.util.net import get_filename, slugify
@@ -515,7 +514,7 @@ class VSOClient(object):
                 lambda _: None, 1, lambda mp: self.link(query_response, mp)
             )
         if path is None:
-            path = os.path.join(config.get('downloads','download_dir'),
+            path = os.path.join(config.get('downloads', 'download_dir'),
                                 '{file}')
         fileids = VSOClient.by_fileid(query_response)
         if not fileids:

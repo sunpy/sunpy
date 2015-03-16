@@ -126,7 +126,6 @@ class GenericClient(object):
         urls = self._get_url_for_timerange(self.map_.get('TimeRange'), **kwargs)
         return QueryResponse.create(self.map_, urls)
 
-
     def get(self, qres, **kwargs):
         """
         Parameters
@@ -145,7 +144,7 @@ class GenericClient(object):
 
         dobj = Downloader(max_conn=len(urls), max_total=len(urls))
         for aurl, ncall in list(zip(urls, map(lambda x:res.require([x]), urls))):
-            dobj.download(aurl, kwargs.get('Path',None), ncall, kwargs.get('ErrorBack', None))
+            dobj.download(aurl, kwargs.get('Path', None), ncall, kwargs.get('ErrorBack', None))
 
         return res
 
@@ -155,7 +154,6 @@ class GenericClient(object):
         for k, v in map_.iteritems():
             paths.append(map_[k]['path'])
         return paths
-
 
     def download_legacy(self, timerange, path=None, callback=None, errback=None):
         """

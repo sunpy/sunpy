@@ -19,6 +19,7 @@ from collections import defaultdict, deque
 import sunpy as spy
 from sunpy.util.progressbar import TTYProgressBar as ProgressBar
 
+
 def default_name(path, sock, url):
     name = sock.headers.get('Content-Disposition', url.rsplit('/', 1)[-1])
     return os.path.join(path, name)
