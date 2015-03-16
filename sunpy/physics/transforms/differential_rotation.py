@@ -7,13 +7,12 @@ from sunpy.time import parse_time, julian_day
 
 from sunpy.wcs import convert_hpc_hg, convert_hg_hpc
 from sunpy.sun import constants, sun
-from sunpy.util import quantity_input
 
 __author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
-__all__ = ['diff_rot', '_sun_pos', '_calc_P_B0_SD', 'rot_hpc']
+__all__ = ['diff_rot', 'rot_hpc']
 
 
-@quantity_input(duration=u.s, latitude=u.degree)
+@u.quantity_input(duration=u.s, latitude=u.degree)
 def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     """
     This function computes the change in longitude over days in degrees.
@@ -89,7 +88,7 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     return np.round(rotation_deg, 4) * u.deg
 
 
-@quantity_input(x=u.arcsec, y=u.arcsec)
+@u.quantity_input(x=u.arcsec, y=u.arcsec)
 def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwargs):
     """Given a location on the Sun referred to using the Helioprojective
     Cartesian co-ordinate system (typically quoted in the units of arcseconds)

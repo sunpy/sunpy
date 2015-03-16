@@ -7,32 +7,19 @@
 import numpy as np
 from astropy import units as u
 from numpy.testing import assert_allclose, assert_array_almost_equal
-<<<<<<< HEAD
-import pytest
-from scipy.ndimage.interpolation import shift
-from sunpy import AIA_171_IMAGE
-=======
+
 from scipy.ndimage.interpolation import shift as sp_shift
->>>>>>> f9a42acff220e59f5e83e03dfb23eb0a0edde8f8
 from sunpy import map
 from sunpy.map import GenericMap
 import pytest
 import os
 import sunpy.data.test
 from sunpy.image.coalignment import parabolic_turning_point, \
-<<<<<<< HEAD
-repair_image_nonfinite, _default_fmap_function, _lower_clip, _upper_clip, \
-calculate_clipping, get_correlation_shifts, find_best_match_location, \
-match_template_to_layer, clip_edges, calculate_shift, \
-mapcube_coalign_by_match_template, apply_shifts
-=======
     repair_image_nonfinite, _default_fmap_function, _lower_clip, _upper_clip, \
     calculate_clipping, get_correlation_shifts, find_best_match_location, \
     match_template_to_layer, clip_edges, \
     calculate_match_template_shift, mapcube_coalign_by_match_template,\
     apply_shifts
->>>>>>> f9a42acff220e59f5e83e03dfb23eb0a0edde8f8
-
 
 @pytest.fixture
 def aia171_test_clipping():
@@ -165,19 +152,8 @@ def test_clip_edges():
     yclip = [4, 0] * u.pix
     xclip = [1, 2] * u.pix
     new_a = clip_edges(a, yclip, xclip)
-<<<<<<< HEAD
-    assert(a.shape[0] - (yclip[0].value + yclip[1].value) == 337)
-    assert(a.shape[1] - (xclip[0].value + xclip[1].value) == 153)
-
-
-def test_calculate_shift():
-    result = calculate_shift(test_layer, test_template)
-    assert_allclose(result[0], 257.0,  rtol=1e-3, atol=0)
-    assert_allclose(result[1], 258.0,  rtol=1e-3, atol=0)
-=======
     assert(a.shape[0] - (yclip[0].value + yclip[1].value) == new_a.shape[0])
     assert(a.shape[1] - (xclip[0].value + xclip[1].value) == new_a.shape[1])
->>>>>>> f9a42acff220e59f5e83e03dfb23eb0a0edde8f8
 
 
 def test__default_fmap_function():
@@ -238,9 +214,6 @@ def test_calculate_match_template_shift(aia171_test_mc,
     # Test setting the template as something other than a ndarray and a
     # GenericMap.  This should throw a ValueError.
     with pytest.raises(ValueError):
-<<<<<<< HEAD
-        test_displacements = mapcube_coalign_by_match_template(mc, template='broken')
-=======
         dummy_return_value = calculate_match_template_shift(aia171_test_mc, template='broken')
 
 
@@ -252,7 +225,6 @@ def test_mapcube_coalign_by_match_template(aia171_test_mc,
 
     # Get the test displacements
     test_displacements = calculate_match_template_shift(aia171_test_mc)
->>>>>>> f9a42acff220e59f5e83e03dfb23eb0a0edde8f8
 
     # Test passing in displacements
     test_mc = mapcube_coalign_by_match_template(aia171_test_mc, shift=test_displacements)
@@ -315,57 +287,17 @@ def test_apply_shifts(aia171_test_map):
 
     # Test returning with no clipping.  Output layers should have the same size
     # as the original input layer.
-<<<<<<< HEAD
-    test_mc = mapcube_coalign_by_match_template(mc, clip=False)
-    assert(test_mc[0].data.shape == testmap.data.shape)
-    assert(test_mc[1].data.shape == testmap.data.shape)
-
-
-def test_apply_shifts():
-    # take two copies of the AIA image and create a test mapcube.
-    mc = map.Map([testmap, testmap], cube=True)
-
-    # Pixel displacements have the y-displacement as the first entry
-    numerical_displacements = {"x": np.asarray([0.0, -2.7]), "y": np.asarray([0.0, -10.4])}
-    astropy_displacements = {"x": numerical_displacements["x"] * u.pix,
-                             "y": numerical_displacements["y"] * u.pix}
-
-    # Test to see if the code can detect the fact that the input shifts are not
-    # astropy quantities
-    with pytest.raises(TypeError):
-        tested = apply_shifts(mc, numerical_displacements["y"], astropy_displacements["x"])
-    with pytest.raises(TypeError):
-        tested = apply_shifts(mc, astropy_displacements["y"], numerical_displacements["x"])
-    with pytest.raises(TypeError):
-        tested = apply_shifts(mc, numerical_displacements["y"], numerical_displacements["x"])
-
-    # Test returning with no extra options - the code returns a mapcube only
-    test_output = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"])
-    assert(isinstance(test_output, map.MapCube))
-
-    # Test returning with no clipping.  Output layers should have the same size
-    # as the original input layer.
-    test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"], clip=False)
-    assert(test_mc[0].data.shape == testmap.data.shape)
-    assert(test_mc[1].data.shape == testmap.data.shape)
-
-    # Test returning with clipping.  Output layers should be smaller than the
-    # original layer
-=======
     test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"], clip=False)
     assert(test_mc[0].data.shape == aia171_test_map.data.shape)
     assert(test_mc[1].data.shape == aia171_test_map.data.shape)
 
     # Test returning with clipping.  Output layers should be smaller than the
     # original layer by a known amount.
->>>>>>> f9a42acff220e59f5e83e03dfb23eb0a0edde8f8
     test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"],  clip=True)
     for i in range(0, len(test_mc.maps)):
         clipped = calculate_clipping(astropy_displacements["y"], astropy_displacements["x"])
         assert(test_mc[i].data.shape[0] == mc[i].data.shape[0] - np.max(clipped[0].value))
         assert(test_mc[i].data.shape[1] == mc[i].data.shape[1] - np.max(clipped[1].value))
-<<<<<<< HEAD
-=======
 
     # Test returning with default clipping.  The default clipping is set to
     # true, that is the mapcube is clipped.  Output layers should be smaller
@@ -375,4 +307,3 @@ def test_apply_shifts():
         clipped = calculate_clipping(astropy_displacements["y"], astropy_displacements["x"])
         assert(test_mc[i].data.shape[0] == mc[i].data.shape[0] - np.max(clipped[0].value))
         assert(test_mc[i].data.shape[1] == mc[i].data.shape[1] - np.max(clipped[1].value))
->>>>>>> f9a42acff220e59f5e83e03dfb23eb0a0edde8f8
