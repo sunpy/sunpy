@@ -40,7 +40,8 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
         The index layer.  Shifts are calculated relative to the time of
         this layer.
     **kwargs
-        Keyword arguments for the solar rotation calculation.
+        These keywords are passed to the function
+        `sunpy.physics.transforms.differential_rotation.rot_hpc`.
 
     Returns
     -------
@@ -100,7 +101,8 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
         affected by edges effects.
 
     **kwargs
-        Keyword arguments for the solar rotation calculation.
+        These keywords are passed to the function
+        `sunpy.physics.transforms.solar_rotation.calculate_solar_rotate_shift`.
 
     Returns
     -------
