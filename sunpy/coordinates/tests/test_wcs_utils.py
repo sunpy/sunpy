@@ -36,3 +36,11 @@ def test_hcc():
     result = solar_wcs_frame_mapping(wcs)
 
     assert result is HelioCentric
+
+def test_none():
+    wcs = WCS(naxis=2)
+    wcs.wcs.ctype = ['wibble', 'wobbl']
+
+    result = solar_wcs_frame_mapping(wcs)
+
+    assert result is None

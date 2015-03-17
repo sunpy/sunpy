@@ -103,6 +103,13 @@ def test_create_3d(args, kwargs):
     assert hpc1.Ty.unit is u.arcsec
     assert hpc1.distance.unit is u.km
 
+def test_cart_init():
+    hpc1 = HelioProjective(CartesianRepresentation(0*u.km, 0*u.km, 1*u.Mm))
+
+    assert isinstance(hpc1, HelioProjective)
+    assert isinstance(hpc1._data, CartesianRepresentation)
+
+
 cylindrical_parameters = [([100*u.km, 25*u.deg, 1*u.Mm], {'representation':'cylindrical'}),
                           ([100*u.km, 25*u.deg, 1*u.Mm], {'dateobs':'2011/01/01T00:00:00',
                                                          'representation':'cylindrical'}),
@@ -266,6 +273,12 @@ def test_create_hgs_3d(frame, args, kwargs):
     assert hgs1.lon.unit is u.deg
     assert hgs1.lat.unit is u.deg
     assert hgs1.rad.unit is u.Mm
+
+def test_cart_init():
+    hpc1 = HelioGraphicStonyhurst(CartesianRepresentation(0*u.km, 0*u.km, 1*u.Mm))
+
+    assert isinstance(hpc1, HelioGraphicStonyhurst)
+    assert isinstance(hpc1._data, CartesianRepresentation)
 
 #==============================================================================
 ### Heliocentric Tests
