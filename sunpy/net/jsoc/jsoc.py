@@ -272,7 +272,7 @@ class JSOCClient(object):
             elif status == 1:
                 print(
 "Request {0} was submitted {1} seconds ago, it is not ready to download.".format(
-                                      u.json()['requestid'], u.json()['wait']))
+                                      u.json()['requestid'], int(u.json()['wait']))*-1)
             else:
                 print("Request returned status: {0} with error: {1}".format(
                                     u.json()['status'], u.json()['error']))
