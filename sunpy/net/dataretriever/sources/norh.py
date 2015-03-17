@@ -23,9 +23,6 @@ class NoRHClient(GenericClient):
         urls : list
             list of URLs corresponding to the requested time range
         """
-        if not timerange:
-            return []
-
         days = timerange.get_dates()
         urls = []
         for day in days:

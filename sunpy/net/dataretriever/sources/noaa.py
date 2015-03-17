@@ -9,11 +9,17 @@ __all__ = ['NOAAIndicesClient', 'NOAAPredictClient']
 
 
 class NOAAIndicesClient(GenericClient):
-    def _get_url_for_timerange(self, timerange, **kwargs):
+
+    @property
+    def _get_default_uri(self):
+        """Return the url to download indices"""
+        return ["ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"]
+
+    def _get_url_for_timerange(cls, timerange, **kwargs):
         """
         Helper function:
         """
-        return ["ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"]
+        return NOAAIndicesClient._get_default_uri()
 
     def _makeimap(self):
         """
@@ -48,11 +54,16 @@ class NOAAIndicesClient(GenericClient):
 
 class NOAAPredictClient(GenericClient):
 
-    def _get_url_for_timerange(self, timerange, **kwargs):
+    @classmethod
+    def _get_default_uri(cls):
+        """Return the url to download indices"""
+        return ["http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"]
+
+    def _get_url_for_timerange(cls, timerange, **kwargs):
         """
         Helper function:
         """
-        return ["http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"]
+        return NOAAPredictClient._get_default_uri()
 
     def _makeimap(self):
         """
