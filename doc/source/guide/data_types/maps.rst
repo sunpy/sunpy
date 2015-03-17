@@ -235,12 +235,23 @@ the coalignment of mapcubes type::
 
 for a full list of options and functionality.
 
-<<<<<<< HEAD
+If you just want to calculate the shifts required to compensate for solar
+rotation relative to the first map in the mapcube without applying them, use::
+
+    from sunpy.image.coalignment import calculate_match_template_shift
+    shifts = calculate_match_template_shift(mc)
+
+This is the function used to calculate the shifts in mapcube coalignment
+function above.  Please consult its docstring to learn more about its features.
+Shifts calculated using calculate_match_template_shift can be passed directly
+to mapcube coalignment function.
+
+
 10. Compensating for solar rotation in Mapcubes
 -----------------------------------------------
 Often a set of solar image data consists of fixing the pointing of a
 field of view for some time and observing.  Features on the Sun will
-rotate according to the Sun's differential rotation.
+rotate according to the Sun's rotation.
 
 A typical data preparation step when dealing with time series of these
 types of images is to shift the images so that features do not appear
@@ -276,16 +287,3 @@ rotation relative to the first map in the mapcube without applying them, use::
 
 Please consult the docstring of the function in order to learn about
 the features of this function.
-=======
-If you just want to calculate the shifts required to compensate for solar
-rotation relative to the first map in the mapcube without applying them, use::
-
-    from sunpy.image.coalignment import calculate_match_template_shift
-    shifts = calculate_match_template_shift(mc)
-
-This is the function used to calculate the shifts in mapcube coalignment
-function above.  Please consult its docstring to learn more about its features.
-Shifts calculated using calculate_match_template_shift can be passed directly
-to mapcube coalignment function.
-
->>>>>>> f9a42acff220e59f5e83e03dfb23eb0a0edde8f8
