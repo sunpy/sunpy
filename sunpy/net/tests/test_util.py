@@ -22,6 +22,3 @@ def test_slugify():
     assert sunpy.util.net.slugify(u"filegreg") == u"filegreg"
     assert sunpy.util.net.slugify(u"f/i*l:e,gr.eg.fits") == u"f_i_l_e_gr_eg.fits"
     assert sunpy.util.net.slugify(u"part1.part2.part3.part4.part5") == u"part1_part2_part3_part4.part5"
-
-
-
