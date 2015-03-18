@@ -33,14 +33,22 @@ def slugify(text, delim=u'_', encoding="ascii"):
 
     period = u'.'
 
-    name, extention = text.rsplit(period, 1)
+    name_and_extension = text.rsplit(period, 1)
+    name = ""
+    extension = ""
+
+    if len(name_and_extension) == 2:
+        name = name_and_extension[0]
+        extension = name_and_extension[1]
+    else:
+        name = name_and_extension[0]
 
     name = unicode(delim).join(ifilter(None, (
         word.encode(encoding, 'ignore')
         for word in _punct_re.split(name.lower())
         )))
 
-    return unicode(period).join([name, extention])
+    return unicode(period).join([name, extension])
 
 
 def get_content_disposition(content_disposition):
