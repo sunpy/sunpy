@@ -30,10 +30,17 @@ _punct_re = re.compile(r'[:\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
 def slugify(text, delim=u'_', encoding="ascii"):
     """ Slugify given unicode text. """
     text = normalize('NFKD', text)
-    return unicode(delim).join(ifilter(None, (
+
+    period = u'.'
+
+    name, extention = text.rsplit(period, 1)
+
+    name = unicode(delim).join(ifilter(None, (
         word.encode(encoding, 'ignore')
-        for word in _punct_re.split(text.lower())
+        for word in _punct_re.split(name.lower())
         )))
+
+    return unicode(period).join([name, extention])
 
 
 def get_content_disposition(content_disposition):
