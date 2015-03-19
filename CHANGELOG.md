@@ -20,6 +20,7 @@ Latest
  * Added a few tests for the sunpy.roi module
  * Refactored mapcube co-alignment functionality.
  * Removed sample data from distribution and added ability to download sample files
+ * Changed default for GOESLightCurve.create() so that it gets the data from the most recent existing GOES fits file.
 
 0.5.0
 -----
