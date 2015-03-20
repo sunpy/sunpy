@@ -188,19 +188,8 @@ def parse_time(time_string, time_format=''):
     else:
         # remove trailing zeros and the final dot to allow any
         # number of zeros. This solves issue #289
-        if '.' in time_string and '+' not in time_string and '-' not in time_string:                   
+        if '.' in time_string:
             time_string = time_string.rstrip("0").rstrip(".")
-
-        if '+' in time_string :
-            time_zone = time_string[time_string.rindex('+'):]
-            time_string_strip = time_string[:time_string.rindex('+')].rstrip("0").rstrip(".")
-            d = parse(time_string_strip + "UTC" + time_zone)
-            return d
-        elif '-' in time_string :
-            time_zone = time_string[time_string.rindex('-'):]
-            time_string_strip = time_string[:time_string.rindex('-')].rstrip("0").rstrip(".")
-            d = parse(time_string_strip + "UTC" + time_zone)
-            return d
         for time_format in TIME_FORMAT_LIST:
             try:
                 try:
