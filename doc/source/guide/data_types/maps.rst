@@ -221,7 +221,7 @@ features in your representative template.
 SunPy provides a function to coalign mapcubes.  The implementation of this
 functionality requires the installation of the scikit-image library, a
 commonly used image processing library.  To coalign a mapcube, simply import
-the function and apply it to yout mapcube::
+the function and apply it to your mapcube::
 
     from sunpy.image.coalignment import mapcube_coalign_by_match_template
     coaligned = mapcube_coalign_by_match_template(mc)
@@ -229,8 +229,20 @@ the function and apply it to yout mapcube::
 This will return a new mapcube, coaligned to a template extracted from the
 center of the first map in the mapcube, with the map dimensions clipped as
 required.  The coalignment algorithm provides many more options for handling
-the coalignment of mapcubes; type::
+the coalignment of mapcubes type::
 
     help(mapcube_coalign_by_match_template)
 
 for a full list of options and functionality.
+
+If you just want to calculate the shifts required to compensate for solar
+rotation relative to the first map in the mapcube without applying them, use::
+
+    from sunpy.image.coalignment import calculate_match_template_shift
+    shifts = calculate_match_template_shift(mc)
+
+This is the function used to calculate the shifts in mapcube coalignment
+function above.  Please consult its docstring to learn more about its features.
+Shifts calculated using calculate_match_template_shift can be passed directly
+to mapcube coalignment function.
+
