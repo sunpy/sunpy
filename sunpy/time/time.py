@@ -195,7 +195,7 @@ def parse_time(time_string, time_format=''):
     else:
         # remove trailing zeros and the final dot to allow any
         # number of zeros. This solves issue #289
-        #The following solves issue #798
+        #Supports time_string with timezone information as '+0000' etc. The following solves issue #798
         if '.' in time_string and '+' not in time_string and '-' not in time_string[9:]:                   
             time_string = time_string.rstrip("0").rstrip(".")
 
