@@ -171,6 +171,11 @@ def parse_time(time_string, time_format=''):
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
 
     """
+    #This supports numpy.datetime64 imput type for time_string
+    if isinstance(time_string,np.datetime64):
+        ts = (time_string - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+        time_string = datetime.utcfromtimestamp(ts)
+    
     if isinstance(time_string, pandas.tslib.Timestamp):
     	return time_string.to_datetime()
     elif isinstance(time_string, datetime) or time_format == 'datetime':
@@ -190,7 +195,8 @@ def parse_time(time_string, time_format=''):
     else:
         # remove trailing zeros and the final dot to allow any
         # number of zeros. This solves issue #289
-        if '.' in time_string and '+' not in time_string and '-' not in time_string:                   
+        #The following solves issue #798
+        if '.' in time_string and '+' not in time_string and '-' not in time_string[9:]:                   
             time_string = time_string.rstrip("0").rstrip(".")
 
         if '+' in time_string :
@@ -198,12 +204,23 @@ def parse_time(time_string, time_format=''):
             time_string_strip = time_string[:time_string.rindex('+')].rstrip("0").rstrip(".")
             d = parse(time_string_strip + time_zone)
             return d.astimezone(timezone('UTC'))
-        elif '-' in time_string :
+        elif '-' in time_string[9:] :
             time_zone = time_string[time_string.rindex('-'):]
             time_string_strip = time_string[:time_string.rindex('-')].rstrip("0").rstrip(".")
             d = parse(time_string_strip + time_zone)
             return d.astimezone(timezone('UTC'))
+            
+#Test Cases Supported by this commit
 
+# '2012-09-09T20:00:00.124000000-0400'
+# '2014-02-07T16:47:51.008288000-0500'
+# '2015-03-18T12:49:22.979471000+0000'
+# '2014-01-01 00:00:00.421999'
+# '2000-01-01 00:00:00.000'
+# '2000-01-01T00:00:00.000'
+# datetime(2000, 1, 2, 12, 0, 0)
+# datetime(2012, 12, 4, 19, 51, 25, 362455)
+# np.datetime64(datetime(2000, 1, 2, 12, 0, 0))
 
         for time_format in TIME_FORMAT_LIST:
             try:
