@@ -20,6 +20,7 @@ Latest
  * Added a few tests for the sunpy.roi module
  * Refactored mapcube co-alignment functionality.
  * Removed sample data from distribution and added ability to download sample files
+ * Require JSOC request data calls have an email address attached.
 
 0.5.0
 -----
