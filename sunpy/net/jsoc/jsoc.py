@@ -317,7 +317,7 @@ class JSOCClient(object):
         jsoc_response.requestIDs = requestIDs
         time.sleep(sleep/2.)
 
-        r = Results(lambda x: None)
+        r = Results(lambda x: None, done=lambda maps: [v['path'] for v in maps.values()])
 
         while requestIDs:
             for i, request_id in enumerate(requestIDs):
@@ -386,7 +386,7 @@ class JSOCClient(object):
         # A Results object tracks the number of downloads requested and the
         # number that have been completed.
         if results is None:
-            results = Results(lambda x: None)
+            results = Results(lambda x: None, done=lambda maps: [v['path'] for v in maps.values()])
 
         urls = []
         for request_id in requestIDs:
@@ -397,6 +397,12 @@ class JSOCClient(object):
                     if overwrite or not os.path.isfile(os.path.join(path, ar['filename'])):
                         urls.append(urlparse.urljoin(BASE_DL_URL + u.json()['dir'] +
                                                      '/', ar['filename']))
+
+                    else:
+                        print("Skipping download of file {} as it has already been downloaded".format(ar['filename']))
+                        # Add the file on disk to the output
+                        results.map_.update({ar['filename']:{'path':os.path.join(path, ar['filename'])}})
+
                 if progress:
                     print("{0} URLs found for Download. Totalling {1}MB".format(
                                                   len(urls), u.json()['size']))
@@ -463,7 +469,7 @@ class JSOCClient(object):
 
         return dataset
 
-    def _make_query_payload(self, start_time, end_time, series, notify='',
+    def _make_query_payload(self, start_time, end_time, series, notify=None,
                             protocol='FITS', compression='rice', **kwargs):
         """
         Build the POST payload for the query parameters
@@ -475,6 +481,10 @@ class JSOCClient(object):
             jprotocol = 'FITS, **NONE**'
         else:
             jprotocol = protocol
+
+        if not notify:
+            raise ValueError("JSOC queries now require a valid email address "
+                             "before they will be accepted by the server")
 
         dataset = self._make_recordset(start_time, end_time, series, **kwargs)
         kwargs.pop('wavelength', None)
@@ -493,7 +503,7 @@ class JSOCClient(object):
         payload.update(kwargs)
         return payload
 
-    def _send_jsoc_request(self, start_time, end_time, series, notify='',
+    def _send_jsoc_request(self, start_time, end_time, series, notify=None,
                            protocol='FITS', compression='rice', **kwargs):
         """
         Request that JSOC stages data for download
