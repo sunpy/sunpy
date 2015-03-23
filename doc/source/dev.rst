@@ -573,7 +573,7 @@ Example (:class:`sunpy.map.Map`) ::
 
     Examples
     --------
-    >>> aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+    >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     >>> aia.T
     Map([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
     [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],

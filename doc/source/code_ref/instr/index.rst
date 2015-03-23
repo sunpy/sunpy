@@ -7,3 +7,4 @@ SunPy instr
     lyra
     rhessi
     goes
+    fermi

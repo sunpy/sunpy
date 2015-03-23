@@ -8,6 +8,21 @@ and trying out some of the examples demonstrated. Once you've completed the
 tutorial check out the rest of the :doc:`User Guide </guide/index>` for a more
 thorough look at the functionality available.
 
+Sample Data
+-----------
+This tour makes use of a number of sample data files which you will need to
+download. To download the sample files simply run the following command::
+
+    import sunpy.data
+    sunpy.data.download_sample_data()
+
+After running this you can then import the sample data files shortcuts which
+are used below (e.g. sunpy.data.sample) by simply importing the module like so::
+
+    import sunpy.data.sample
+    
+If the sample files are not available for some reason that you will get an error
+on import.
 
 Maps
 ----
@@ -24,7 +39,7 @@ a map from one of the supported data products is with the `Map()` class from the
 `Map()` takes either a filename, a list of filenames or a data array and header pair. We can test map with::
 
     import sunpy.map
-    aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+    aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
 This returns a map named `aia` which can be manipulated with standard SunPy map commands.
 For more information about maps checkout the :doc:`map guide <data_types/maps>`.
@@ -61,7 +76,7 @@ Below is the example built into sunpy::
     import sunpy.spectra
 
     from sunpy.spectra.sources.callisto import CallistoSpectrogram
-    image = CallistoSpectrogram.read(sunpy.CALLISTO_IMAGE)
+    image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_IMAGE)
     
     image.peek()        
 
@@ -73,12 +88,12 @@ Plotting
 
 Let's begin by creating a simple plot of an AIA image. To make things easy,
 SunPy includes several example files which are used throughout the docs. These
-files have names like `sunpy.AIA_171_IMAGE` and `sunpy.RHESSI_IMAGE`.
+files have names like `sunpy.data.sample.AIA_171_IMAGE` and `sunpy.data.sample.RHESSI_IMAGE`.
 
 Try typing the below example into your interactive Python shell::
 
     import sunpy.map
-    aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+    aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     aia.peek()
 
 If everything has been configured properly you should see an AIA image with
@@ -98,7 +113,7 @@ SunPy with matplotlib::
     import sunpy.map
     import matplotlib.pyplot as plt
 
-    aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+    aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     
     fig = plt.figure()
     ax = plt.subplot(111)

@@ -5,13 +5,13 @@ from __future__ import absolute_import
 import os
 import numpy
 from datetime import datetime
+from collections import OrderedDict
 
 import matplotlib.pyplot as plt
 from pandas.io.parsers import read_csv
 from os.path import basename
 
 from sunpy.lightcurve import LightCurve
-from sunpy.util.odict import OrderedDict
 
 __all__ = ['EVELightCurve']
 

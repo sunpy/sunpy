@@ -131,7 +131,7 @@ new entry from the given FITS file to the database. Why "at least one" and
 not "exactly one"? The reason is that each database entry does not
 represent one file but one FITS header of a file. That means, if you pass
 a file which has 5 FITS headers in it, 5 entries will be added to the
-database. The file in the following example (``sunpy.AIA_171_IMAGE``) has
+database. The file in the following example (``sunpy.data.sample.AIA_171_IMAGE``) has
 only one FITS header, that is why just one entry is added to the database.
 However, if you are working with Hinode/SOT files you may notice that for
 each file you get two entries, one which refers to the observation and
@@ -172,11 +172,12 @@ the database had been empty, this expression would have raised an
 syntax are introduced.
 
     >>> import sunpy
-    >>> database.add_from_file(sunpy.AIA_171_IMAGE)
+    >>> import sunpy.data.sample
+    >>> database.add_from_file(sunpy.data.sample.AIA_171_IMAGE)
     >>> len(database)
     1
     >>> entry = database[0]
-    >>> entry.path == sunpy.AIA_171_IMAGE
+    >>> entry.path == sunpy.data.sample.AIA_171_IMAGE
     True
     >>> entry.wavemin, entry.wavemax
     (17.1, 17.1)
@@ -236,7 +237,7 @@ Adding all FITS files from a certain directory works by calling the method
 setting the keyword argument `ignore_already_added` to `True`, no
 exception is raised if it is attempted to add an already existing entry
 (In this case, setting this parameter is required because the file
-``sunpy.AIA_171_IMAGE`` was already added which is located in the
+``sunpy.data.sample.AIA_171_IMAGE`` was already added which is located in the
 directory ``sunpy.data.sample.rootdir``).
 
     >>> database.default_waveunit = 'angstrom'
