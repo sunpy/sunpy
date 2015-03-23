@@ -16,8 +16,9 @@ except ImportError:
     HAVE_WCSAXES = False
     warnings.warn("SunPy plotting is improved by installing the WCSAxes module: http://wcsaxes.readthedocs.org/en/latest/index.html")
 
+FORCE_NO_WCSAXES = False
 
-__all__ = ['HAVE_WCSAXES', 'is_wcsaxes']
+__all__ = ['HAVE_WCSAXES', 'is_wcsaxes', 'FORCE_NO_WCSAXES']
 
 def is_wcsaxes(axes):
     """
@@ -34,7 +35,7 @@ def is_wcsaxes(axes):
         Result of the test
     """
 
-    if HAVE_WCSAXES:
+    if HAVE_WCSAXES and not FORCE_NO_WCSAXES:
         return isinstance(axes, wcsaxes.WCSAxes)
     else:
         return False
@@ -51,6 +52,9 @@ def gca_wcs(wcs, fig=None):
     if not len(fig.get_axes()):
         if HAVE_WCSAXES:
             ax = plt.gca(projection=wcs)
+        else:
+            ax = plt.gca()
+            
     else:
         ax = plt.gca()
 
