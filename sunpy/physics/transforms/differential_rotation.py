@@ -385,8 +385,8 @@ def _sun_pos(date):
     elif ra < 0.0:
         ra = ra + 360.0
 
-    dec = np.rad2deg(np.arcsin(np.sin(np.deg2rad(l)) * \
-                                np.sin(np.deg2rad(oblt))))
+    dec = np.rad2deg(np.arcsin(np.sin(np.deg2rad(l)) *
+                               np.sin(np.deg2rad(oblt))))
 
     # convert the internal variables to those listed in the top of the
     # comment section in this code and in the original IDL code.  Quantities
