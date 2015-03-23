@@ -6,10 +6,7 @@
 from __future__ import absolute_import
 
 from abc import ABCMeta, abstractmethod, abstractproperty
-from collections import MutableMapping
-
-from sunpy.util.odict import OrderedDict
-from sunpy.util.counter import Counter
+from collections import MutableMapping, OrderedDict, Counter
 
 __all__ = ['BaseCache', 'LRUCache', 'LFUCache']
 

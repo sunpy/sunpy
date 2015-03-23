@@ -23,12 +23,13 @@ The map object currently supports the following data sources
 ----------------
 SunPy contains a number of example FITS files. 
 To make things easy, SunPy includes several example files which are used throughout the docs. 
-These files have names like `sunpy.AIA_171_IMAGE` and `sunpy.RHESSI_IMAGE`.
+These files have names like `sunpy.data.sample.AIA_171_IMAGE` and `sunpy.data.sample.RHESSI_IMAGE`.
 To create the sample AIA map type the following into your interactive Python shell::
 
     import sunpy
     import sunpy.map
-    my_map = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+    import sunpy.data.sample
+    my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
 The variable my_map is a SunPy Map object. To create a SunPy Map object from a local FITS file try something like the following ::
 
@@ -59,7 +60,8 @@ The format of the header follows the FITS standard.
 A map contains a number of data-associated attributes. To get a quick look at your map simply
 type::
 
-    my_map = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+    import sunpy.data.sample
+    my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     my_map
     
 This will show a representation of the data as well as some of its associated
@@ -133,7 +135,7 @@ is supplied, `Map()` will return a list of maps as the output.  However, if the
 'composite' keyword is set to True, then a `CompositeMap` object is returned.  This is useful if the maps are
 of a different type (e.g. different instruments).  For example, to create a simple composite map::
 
-    my_maps = sunpy.map.Map(sunpy.EIT_195_IMAGE, sunpy.RHESSI_IMAGE, composite=True)
+    my_maps = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE, sunpy.data.sample.RHESSI_IMAGE, composite=True)
 
 A CompositeMap is different from a regular SunPy Map objectand therefore different associated methods.
 To list which maps are part of your composite map use::
@@ -144,7 +146,7 @@ The following code
 adds a new map (which must be instantiated first), sets its transparency to 25%, turns on contours from 50% to 90% for the second map, 
 and then plots the result::
 
-    my_maps.add_map(sunpy.map.Map(sunpy.AIA_171_IMAGE))
+    my_maps.add_map(sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE))
     my_maps.set_alpha(2,0.5)
     my_maps.set_levels(1,[50,60,70,80,90], percent = True)
     my_maps.peek()
@@ -219,7 +221,7 @@ features in your representative template.
 SunPy provides a function to coalign mapcubes.  The implementation of this
 functionality requires the installation of the scikit-image library, a
 commonly used image processing library.  To coalign a mapcube, simply import
-the function and apply it to yout mapcube::
+the function and apply it to your mapcube::
 
     from sunpy.image.coalignment import mapcube_coalign_by_match_template
     coaligned = mapcube_coalign_by_match_template(mc)
@@ -227,8 +229,20 @@ the function and apply it to yout mapcube::
 This will return a new mapcube, coaligned to a template extracted from the
 center of the first map in the mapcube, with the map dimensions clipped as
 required.  The coalignment algorithm provides many more options for handling
-the coalignment of mapcubes; type::
+the coalignment of mapcubes type::
 
     help(mapcube_coalign_by_match_template)
 
 for a full list of options and functionality.
+
+If you just want to calculate the shifts required to compensate for solar
+rotation relative to the first map in the mapcube without applying them, use::
+
+    from sunpy.image.coalignment import calculate_match_template_shift
+    shifts = calculate_match_template_shift(mc)
+
+This is the function used to calculate the shifts in mapcube coalignment
+function above.  Please consult its docstring to learn more about its features.
+Shifts calculated using calculate_match_template_shift can be passed directly
+to mapcube coalignment function.
+
