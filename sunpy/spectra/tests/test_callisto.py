@@ -3,13 +3,13 @@
 
 from __future__ import absolute_import
 
-import os
 import shutil
 from tempfile import mkdtemp
 from datetime import datetime
 
 import pytest
 import os
+import glob
 import numpy as np
 from numpy.testing import assert_array_almost_equal, assert_allclose
 import sunpy.data.test
@@ -18,10 +18,23 @@ from sunpy.spectra.sources.callisto import (
     CallistoSpectrogram, query, download, minimal_pairs
 )
 
+
 @pytest.fixture
 def CALLISTO_IMAGE():
     testpath = sunpy.data.test.rootdir
     return os.path.join(testpath, 'BIR_20110922_050000_01.fit')
+
+
+@pytest.fixture
+def CALLISTO_IMAGE_GLOB_KEY():
+    return 'BIR_*'
+
+
+@pytest.fixture
+def CALLISTO_IMAGE_GLOB_INDEX(CALLISTO_IMAGE, CALLISTO_IMAGE_GLOB_KEY):
+    testpath = sunpy.data.test.rootdir
+    res = glob.glob(os.path.join(testpath, CALLISTO_IMAGE_GLOB_KEY))
+    return res.index(CALLISTO_IMAGE)
 
 
 def test_read(CALLISTO_IMAGE):
@@ -125,10 +138,11 @@ def test_create_url_kw():
     ca = CallistoSpectrogram.create(url=URL)
     assert np.array_equal(ca.data, CallistoSpectrogram.read(URL).data)
 
-def test_create_single_glob(CALLISTO_IMAGE):
-    PATTERN = os.path.join( os.path.dirname(CALLISTO_IMAGE), "BIR_*")
+def test_create_single_glob(CALLISTO_IMAGE, CALLISTO_IMAGE_GLOB_INDEX, CALLISTO_IMAGE_GLOB_KEY):
+    PATTERN = os.path.join(os.path.dirname(CALLISTO_IMAGE), CALLISTO_IMAGE_GLOB_KEY)
     ca = CallistoSpectrogram.create(PATTERN)
-    assert_allclose(ca[0].data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
+    assert_allclose(ca[CALLISTO_IMAGE_GLOB_INDEX].data,
+                    CallistoSpectrogram.read(CALLISTO_IMAGE).data)
 
 
 # seems like this does not work anymore and can't figure out what it is for
@@ -137,18 +151,18 @@ def test_create_single_glob(CALLISTO_IMAGE):
 #    ca = CallistoSpectrogram.create(singlepattern=PATTERN)
 #    assert np.array_equal(ca[0].data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
 
-def test_create_glob_kw(CALLISTO_IMAGE):
+def test_create_glob_kw(CALLISTO_IMAGE, CALLISTO_IMAGE_GLOB_INDEX, CALLISTO_IMAGE_GLOB_KEY):
     PATTERN = os.path.join(
         os.path.dirname(CALLISTO_IMAGE),
-        "BIR_*"
+        CALLISTO_IMAGE_GLOB_KEY
     )
-    ca = CallistoSpectrogram.create(pattern=PATTERN)[0]
+    ca = CallistoSpectrogram.create(pattern=PATTERN)[CALLISTO_IMAGE_GLOB_INDEX]
     assert_allclose(ca.data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
 
-def test_create_glob():
+def test_create_glob(CALLISTO_IMAGE_GLOB_KEY):
     PATTERN = os.path.join(
         os.path.dirname(sunpy.data.test.__file__),
-        "BIR_*"
+        CALLISTO_IMAGE_GLOB_KEY
     )
     ca = CallistoSpectrogram.create(PATTERN)
     assert len(ca) == 2
