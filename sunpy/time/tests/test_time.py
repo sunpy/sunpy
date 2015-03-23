@@ -28,9 +28,6 @@ def test_parse_time_trailing_zeros():
 def test_parse_time_tuple():
     assert parse_time((1966, 2, 3)) == LANDING
 
-def test_parse_time_tuple():
-    assert parse_time((1966, 2, 3)) == LANDING
-
 def test_parse_time_numpy_datetime64():
     assert parse_time(np.datetime64(datetime(2000, 1, 2, 12, 0, 0))) == datetime(2000, 1, 2, 12, 0, 0)
 
