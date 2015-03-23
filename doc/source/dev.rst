@@ -367,7 +367,7 @@ for documenting Python projects. Sphinx works by parsing files written using a
 `reStructuredText <http://docutils.sourceforge.net/rst.html>`_. In addition 
 to parsing static files of reStructuredText, Sphinx can also be told to parse
 code comments. In fact, in addition to what you are reading right now, the
-`Python documenation <http://www.python.org/doc/>`_ was also created using
+`Python documentation <http://www.python.org/doc/>`_ was also created using
 Sphinx.
 
 **Usage**
@@ -420,7 +420,7 @@ for the latest updates on using quantities and units.  The `astropy tutorial on 
 <http://www.astropy.org/astropy-tutorials/Quantities.html>`__ also provides useful examples on their
 capabilities.
 
-Astropy provides the decorator astropy.units.quantity_input that checks the units of the input arguments to a function
+Astropy provides the decorator `~astropy.units.quantity_input` that checks the units of the input arguments to a function
 against the expected units of the argument.  We recommend using this decorator to perform
 function argument unit checks.  The decorator ensures that the units of the input to the function
 are convertible to that specified by the decorator, for example ::
@@ -442,12 +442,13 @@ returns the expected answer but ::
 
 raises an error.
 
-The following is an example of a use-facing function that returns the area of a
+The following is an example of a user-facing function that returns the area of a
 square, in units that are the square of the input length unit::
 
     @u.quantity_input(side_length=u.m)
     def get_area_of_square(side_length):
-        """Compute the area of a square.
+        """
+        Compute the area of a square.
 
         Parameters
         ----------
@@ -467,7 +468,8 @@ quantities can be wrapped by a function that does::
 
     @u.quantity_input(side_length=u.m)
     def some_function(length):
-        """Does something useful.
+        """
+        Does something useful.
 
         Parameters
         ----------
@@ -809,8 +811,8 @@ When to write unit tests
 A rule of thumb for unit testing is to have at least one unit test per public
 function.
 
-Testing Your Code Before Commiting
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Testing Your Code Before Committing
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 When you commit your changes and make a Pull Request to the main SunPy repo on
 GitHub, your code will be tested by Travis CI to make sure that all the tests
 pass and the documentation builds without any warnings. Before you commit your
