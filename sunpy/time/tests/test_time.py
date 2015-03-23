@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 from datetime import datetime
 from datetime import tzinfo
+from datetime import timedelta
 
 from sunpy import time
 from sunpy.time import parse_time
