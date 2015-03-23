@@ -10,6 +10,7 @@ import numpy as np
 
 import pytest
 
+import astropy.wcs
 from astropy.io import fits
 import astropy.units as u
 
@@ -66,6 +67,21 @@ def test_repr_no_obs(generic_map):
 def test_repr_obs(aia171_test_map):
     assert aia171_test_map.__repr__() == 'SunPy AIAMap\n---------\nObservatory:\t SDO\nInstrument:\t AIA_3\nDetector:\t AIA\nMeasurement:\t 171\nObs Date:\t 2011-02-15T00:00:00.34\ndt:\t\t 2.000191\nDimension:\t [128, 128]\n[dx, dy] =\t [19.183648, 19.183648]\n\narray([[-1.25,  0.  ,  1.  , ...,  0.  ,  0.5 , -0.75],\n       [ 0.75, -0.25, -0.5 , ...,  0.25,  0.  , -0.25],\n       [ 0.  ,  0.5 ,  1.75, ...,  0.  ,  0.5 ,  0.  ],\n       ..., \n       [ 1.  ,  0.25, -0.25, ...,  0.  ,  0.  ,  0.  ],\n       [-0.25,  0.  , -0.5 , ...,  0.75, -0.75,  0.  ],\n       [ 0.75,  1.5 , -0.75, ...,  0.  , -0.5 ,  0.5 ]])'
 
+def test_wcs(aia171_test_map):
+    wcs = aia171_test_map.wcs
+    assert isinstance(wcs, astropy.wcs.WCS)
+    
+    assert all(wcs.wcs.crpix == [aia171_test_map.reference_pixel['x'],
+                                 aia171_test_map.reference_pixel['y']])
+    assert all(wcs.wcs.cdelt == [aia171_test_map.scale['x'],
+                                 aia171_test_map.scale['y']])
+    assert all(wcs.wcs.crval == [aia171_test_map.reference_coordinate['x'],
+                                 aia171_test_map.reference_coordinate['y']])
+    assert wcs.wcs.ctype == [aia171_test_map.coordinate_system['x'],
+                             aia171_test_map.coordinate_system['y']]
+    assert all(wcs.wcs.pc == aia171_test_map.rotation_matrix)
+    assert all(wcs.wcs.cunit == [aia171_test_map.units['x'],
+                                 aia171_test_map.units['y']])
 
 def test_dtype(generic_map):
     assert generic_map.dtype == np.float64
