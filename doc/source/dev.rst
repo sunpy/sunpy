@@ -405,13 +405,14 @@ Use of quantities and units
 """""""""""""""""""""""""""
 
 Much code perform calculations using physical quantities.  SunPy uses astropy's
-`quantities and units <http://docs.astropy.org/en/stable/units/index.html>`__ implementation
-to store, express and convert physical quantities. New classes and functions should adhere
-to SunPy's `quantity and unit usage guidelines
-<https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__.  This document sets
-out SunPy's reasons and requirements for the usage of quantities and units.  Briefly,
-SunPy's `policy <https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__ is that *all user-facing
-function/object arguments which accept physical quantities as input **MUST** accept astropy quantities*.
+`quantities and units <http://docs.astropy.org/en/stable/units/index.html>`__
+implementation to store, express and convert physical quantities. New classes
+and functions should adhere to SunPy's `quantity and unit usage guidelines
+<https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__.  This document
+sets out SunPy's reasons and requirements for the usage of quantities and
+units.  Briefly, SunPy's `policy <https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__
+is that *all user-facing function/object arguments which accept physical
+quantities as input **MUST** accept astropy quantities*.
 
 Developers should consult the
 `Astropy Quantities and Units page <http://docs.astropy.org/en/stable/units/index.html>`__
@@ -429,7 +430,8 @@ are convertible to that specified by the decorator, for example ::
     def myfunction(myangle):
         return myangle**2
 
-This function only accepts arguments that are convertible to arcseconds.  Therefore, ::
+This function only accepts arguments that are convertible to arcseconds.
+Therefore, ::
 
     >>> myangle(20 * u.degree)
     <Quantity 400.0 deg2>
@@ -440,8 +442,8 @@ returns the expected answer but ::
 
 raises an error.
 
-The following is an example of a use-facing function that returns the area of a square, in units that are the square
-of the input length unit::
+The following is an example of a use-facing function that returns the area of a
+square, in units that are the square of the input length unit::
 
     @u.quantity_input(side_length=u.m)
     def get_area_of_square(side_length):
@@ -460,8 +462,8 @@ of the input length unit::
 
         return (side_length ** 2)
 
-This more advanced example shows how a private function that does not accept quantities can be wrapped by a function
-that does ::
+This more advanced example shows how a private function that does not accept
+quantities can be wrapped by a function that does::
 
     @u.quantity_input(side_length=u.m)
     def some_function(length):
