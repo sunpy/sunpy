@@ -420,15 +420,13 @@ for the latest updates on using quantities and units.  The `astropy tutorial on 
 capabilities.
 
 
-SunPy provides a useful decorator that checks the units of the input arguments to a function
-against the expected units of the argument (at time of writing, the decorator is a backport
-of functionality present in a future release of astropy).  This decorator should be used to perform
+Astropy provides the decorator astropy.units.quantity_input that checks the units of the input arguments to a function
+against the expected units of the argument.  This decorator should be used to perform
 function argument unit checks.  The decorator ensures that the units of the input to the function
 are convertible to that specified by the decorator, for example ::
 
     import astropy.units as u
-    from sunpy.util.unit_decorators import quantity_input
-    @quantity_input(myangle=u.arcsec)
+    @u.quantity_input(myangle=u.arcsec)
     def myfunction(myangle):
         return myangle**2
 
@@ -446,7 +444,7 @@ raises an error.
 The following is an example of a use-facing function that returns the area of a square, in units that are the square
 of the input length unit::
 
-    @quantity_input(side_length=u.m)
+    @u.quantity_input(side_length=u.m)
     def get_area_of_square(side_length):
         """Compute the area of a square.
 
@@ -466,7 +464,7 @@ of the input length unit::
 This more advanced example shows how a private function that does not accept quantities can be wrapped by a function
 that does ::
 
-    @quantity_input(side_length=u.m)
+    @u.quantity_input(side_length=u.m)
     def some_function(length):
         """Does something useful.
 
