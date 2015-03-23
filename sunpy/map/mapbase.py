@@ -166,18 +166,15 @@ Dimension:\t [{xdim:d}, {ydim:d}]
 
     @property
     def wcs(self):
-        if self._wcs:
-            return self._wcs
-        else:
-            w2 = astropy.wcs.WCS(naxis=2)
-            w2.wcs.crpix = [self.reference_pixel['x'], self.reference_pixel['y']]
-            w2.wcs.cdelt = [self.scale['x'], self.scale['y']]
-            w2.wcs.crval = [self.reference_coordinate['x'], self.reference_coordinate['y']]
-            w2.wcs.ctype = [self.coordinate_system['x'], self.coordinate_system['y']]
-            w2.wcs.pc = self.rotation_matrix
-            w2.wcs.cunit = [self.units['x'], self.units['y']]
+        w2 = astropy.wcs.WCS(naxis=2)
+        w2.wcs.crpix = [self.reference_pixel['x'], self.reference_pixel['y']]
+        w2.wcs.cdelt = [self.scale['x'], self.scale['y']]
+        w2.wcs.crval = [self.reference_coordinate['x'], self.reference_coordinate['y']]
+        w2.wcs.ctype = [self.coordinate_system['x'], self.coordinate_system['y']]
+        w2.wcs.pc = self.rotation_matrix
+        w2.wcs.cunit = [self.units['x'], self.units['y']]
 
-            return w2
+        return w2
 
     #Some numpy extraction
     @property
