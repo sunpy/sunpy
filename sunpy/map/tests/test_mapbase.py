@@ -70,18 +70,18 @@ def test_repr_obs(aia171_test_map):
 def test_wcs(aia171_test_map):
     wcs = aia171_test_map.wcs
     assert isinstance(wcs, astropy.wcs.WCS)
-    
+
     assert all(wcs.wcs.crpix == [aia171_test_map.reference_pixel['x'],
                                  aia171_test_map.reference_pixel['y']])
     assert all(wcs.wcs.cdelt == [aia171_test_map.scale['x'],
                                  aia171_test_map.scale['y']])
     assert all(wcs.wcs.crval == [aia171_test_map.reference_coordinate['x'],
                                  aia171_test_map.reference_coordinate['y']])
-    assert wcs.wcs.ctype == [aia171_test_map.coordinate_system['x'],
-                             aia171_test_map.coordinate_system['y']]
-    assert all(wcs.wcs.pc == aia171_test_map.rotation_matrix)
-    assert all(wcs.wcs.cunit == [aia171_test_map.units['x'],
-                                 aia171_test_map.units['y']])
+    assert set(wcs.wcs.ctype) == set([aia171_test_map.coordinate_system['x'],
+                             aia171_test_map.coordinate_system['y']])
+    np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
+    assert set(wcs.wcs.cunit) == set([u.Unit(a) for a in [aia171_test_map.units['x'],
+                                                          aia171_test_map.units['y']]])
 
 def test_dtype(generic_map):
     assert generic_map.dtype == np.float64
@@ -226,7 +226,7 @@ def test_rotation_matrix_cd_cdelt_square():
 def test_swap_cd():
     amap = sunpy.map.Map(os.path.join(testpath, 'swap_lv1_20140606_000113.fits'))
     np.testing.assert_allclose(amap.rotation_matrix, np.matrix([[1., 0], [0, 1.]]))
-    
+
 
 def test_data_range(generic_map):
     """Make sure xrange and yrange work"""
