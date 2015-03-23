@@ -34,6 +34,7 @@ def test_jsocresponse_single():
     assert all(j1.table == astropy.table.Table(data=[[1,2,3,4]]))
     assert len(j1) == 4
 
+
 def test_payload():
     start = parse_time('2012/1/1T00:00:00')
     end = parse_time('2012/1/1T00:00:45')

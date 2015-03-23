@@ -68,6 +68,10 @@ class JSOCClient(object):
     method, but they can be seperated if you are performing a large or complex
     query.
 
+    .. warning::
+        JSOC now requires you to register your email address before requesting
+        data. See this site: http://jsoc.stanford.edu/ajax/register_email.html
+
     Notes
     -----
     This Client mocks input to this site: http://jsoc.stanford.edu/ajax/exportdata.html
@@ -76,6 +80,7 @@ class JSOCClient(object):
 
     You can build more complex queries by specifiying parameters to POST to JSOC via keyword
     arguments. You can generate these kwargs using the Export Data page at JSOC.
+
 
     Examples
     --------
