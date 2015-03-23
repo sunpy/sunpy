@@ -4,6 +4,9 @@ from datetime import timedelta
 
 import numpy as np
 import pandas
+from pytz import timezone
+from dateutil.parser import parse
+
 
 __all__ = ['find_time', 'extract_time', 'parse_time', 'is_time', 'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format']
 
@@ -188,8 +191,20 @@ def parse_time(time_string, time_format=''):
     else:
         # remove trailing zeros and the final dot to allow any
         # number of zeros. This solves issue #289
-        if '.' in time_string:
+        if '.' in time_string and '+' not in time_string and '-' not in time_string:
             time_string = time_string.rstrip("0").rstrip(".")
+          
+        if '+' in time_string :
+            time_zone = time_string[time_string.rindex('+'):]
+            time_string_strip = time_string[:time_string.rindex('+')].rstrip("0").rstrip(".")
+            d = parse(time_string_strip + time_zone)
+            return d.astimezone(timezone('UTC'))
+        elif '-' in time_string :
+            time_zone = time_string[time_string.rindex('-'):]
+            time_string_strip = time_string[:time_string.rindex('-')].rstrip("0").rstrip(".")
+            d = parse(time_string_strip + time_zone)
+            return d.astimezone(timezone('UTC'))
+            
         for time_format in TIME_FORMAT_LIST:
             try:
                 try:
