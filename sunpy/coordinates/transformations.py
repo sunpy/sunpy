@@ -9,23 +9,26 @@ from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.transformations import FunctionTransform
 
 # SunPy imports
-from sunpy import sun # For Carrington rotation number
+from sunpy import sun
 
 from .representation import SphericalWrap180Representation
-
 from .frames import (HelioGraphicStonyhurst, HelioGraphicCarrington,
                      HelioCentric, HelioProjective)
 
+
 def _carrington_offset(dateobs):
+    """
+    Calculate the HG Longitude offest based on a time
+    """
     if dateobs is None:
         raise ValueError("To perform this transformation the coordinate Frame needs a dateobs Attribute")
-    # This method is to return the Carrington offset.
     return sun.heliographic_solar_center(dateobs)[0]
 
 
-# ------------------ Transformation Framework -------------------------
-# This portion is reserved for the implementation of transformations
-# as defined by Thompson.
+#==============================================================================
+#------------------------- Transformation Framework ---------------------------
+#==============================================================================
+
 
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicStonyhurst, HelioGraphicCarrington)
 def hgs_to_hgc(hgscoord, hgcframe):
@@ -33,11 +36,13 @@ def hgs_to_hgc(hgscoord, hgcframe):
     representation = SphericalWrap180Representation(c_lon, hgscoord.lat, hgscoord.rad)
     return hgcframe.realize_frame(representation)
 
+
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicCarrington, HelioGraphicStonyhurst)
 def hgc_to_hgs(hgccoord, hgsframe):
     s_lon = hgccoord.spherical.lon - _carrington_offset(hgccoord.dateobs).to(u.deg)
     representation = SphericalWrap180Representation(s_lon, hgccoord.lat, hgccoord.rad)
     return hgsframe.realize_frame(representation)
+
 
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioProjective)
 def hcc_to_hpc(helioccoord, heliopframe):
@@ -54,6 +59,7 @@ def hcc_to_hpc(helioccoord, heliopframe):
 
     representation = SphericalWrap180Representation(hpcx, hpcy, distance.to(u.km))
     return heliopframe.realize_frame(representation)
+
 
 @frame_transform_graph.transform(FunctionTransform, HelioProjective, HelioCentric)
 def hpc_to_hcc(heliopcoord, heliocframe):
@@ -72,6 +78,7 @@ def hpc_to_hcc(heliopcoord, heliocframe):
 
     representation = CartesianRepresentation(rx.to(u.km), ry.to(u.km), rz.to(u.km))
     return heliocframe.realize_frame(representation)
+
 
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioGraphicStonyhurst)
 def hcc_to_hgs(helioccoord, heliogframe):
@@ -95,6 +102,7 @@ def hcc_to_hgs(helioccoord, heliogframe):
                                              np.rad2deg(hglt),
                                              hecr.to(u.km))
     return heliogframe.realize_frame(representation)
+
 
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicStonyhurst, HelioCentric)
 def hgs_to_hcc(heliogcoord, heliocframe):
