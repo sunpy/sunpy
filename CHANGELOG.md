@@ -20,6 +20,7 @@ Latest
  * Added a few tests for the sunpy.roi module
  * Refactored mapcube co-alignment functionality.
  * Removed sample data from distribution and added ability to download sample files
+ * Calculation of the solar rotation of a point on the Sun as seen from Earth, and its application to the de-rotation of mapcubes.
 
 0.5.0
 -----
