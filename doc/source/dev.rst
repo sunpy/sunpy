@@ -419,9 +419,8 @@ for the latest updates on using quantities and units.  The `astropy tutorial on 
 <http://www.astropy.org/astropy-tutorials/Quantities.html>`__ also provides useful examples on their
 capabilities.
 
-
 Astropy provides the decorator astropy.units.quantity_input that checks the units of the input arguments to a function
-against the expected units of the argument.  This decorator should be used to perform
+against the expected units of the argument.  We recommend using this decorator to perform
 function argument unit checks.  The decorator ensures that the units of the input to the function
 are convertible to that specified by the decorator, for example ::
 
