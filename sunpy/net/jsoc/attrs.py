@@ -47,7 +47,11 @@ class Notify(_VSOSimpleAttr):
     """
     An email address to get a notification to when JSOC has staged your request
     """
-    pass
+    def __init__(self, value):
+        super(Notify, self).__init__(value)
+        if value.find('@') == -1:
+            raise ValueError("Notify attribute must contain an '@' symbol to be a valid email address")
+        self.value = value
 
 
 class Compression(_VSOSimpleAttr):
