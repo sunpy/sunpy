@@ -38,6 +38,8 @@ __all__ = ['Map', 'MapFactory']
 
 class MapFactory(BasicRegistrationFactory):
     """
+    Map(*args, **kwargs)
+    
     Map factory class.  Used to create a variety of Map objects.  Valid map types
     are specified by registering them with the factory.
 
