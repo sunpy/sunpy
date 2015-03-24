@@ -804,18 +804,19 @@ def test_fetch_separate_filenames():
     if not os.path.isdir(tmp_test_dir):
         os.mkdir(tmp_test_dir)
 
-    path = tmp_test_dir + '{file}.fits'
+    path = tmp_test_dir + '{file}'
 
     db.fetch(*download_query, path=path)
-    
+
     # Test
     assert len(db) == 2
-    
+
     dir_contents = os.listdir(tmp_test_dir)
-    assert dir_contents[-2] == 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1_fits.fits'
-    assert dir_contents[-1] == 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1_fits.fits'
-    assert dir_contents[-1].split('.')[0] != dir_contents[-2].split('.')[1]
-    
+    assert 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits' in dir_contents
+    assert 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits' in dir_contents
+    assert os.path.isfile(os.path.join(tmp_test_dir, 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits'))
+    assert os.path.isfile(os.path.join(tmp_test_dir, 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits'))
+
     # Teardown
     shutil.rmtree(tmp_test_dir)
 
