@@ -412,7 +412,8 @@ and functions should adhere to SunPy's `quantity and unit usage guidelines
 sets out SunPy's reasons and requirements for the usage of quantities and
 units.  Briefly, SunPy's `policy <https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__
 is that *all user-facing function/object arguments which accept physical
-quantities as input **MUST** accept astropy quantities*.
+quantities as input **MUST** accept astropy quantities, and **ONLY** astropy
+quantities*.
 
 Developers should consult the
 `Astropy Quantities and Units page <http://docs.astropy.org/en/stable/units/index.html>`__
