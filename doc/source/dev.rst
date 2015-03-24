@@ -421,10 +421,12 @@ for the latest updates on using quantities and units.  The `astropy tutorial on 
 <http://www.astropy.org/astropy-tutorials/Quantities.html>`__ also provides useful examples on their
 capabilities.
 
-Astropy provides the decorator astropy.units.quantity_input that checks the units of the input arguments to a function
-against the expected units of the argument.  We recommend using this decorator to perform
-function argument unit checks.  The decorator ensures that the units of the input to the function
-are convertible to that specified by the decorator, for example ::
+Astropy provides the decorator `~astropy.units.quantity_input` that
+checks the units of the input arguments to a function against the
+expected units of the argument.  We recommend using this decorator to
+perform function argument unit checks.  The decorator ensures that the
+units of the input to the function are convertible to that specified
+by the decorator, for example ::
 
     import astropy.units as u
     @u.quantity_input(myangle=u.arcsec)
@@ -448,7 +450,8 @@ square, in units that are the square of the input length unit::
 
     @u.quantity_input(side_length=u.m)
     def get_area_of_square(side_length):
-        """Compute the area of a square.
+        """
+        Compute the area of a square.
 
         Parameters
         ----------
@@ -468,7 +471,8 @@ quantities can be wrapped by a function that does::
 
     @u.quantity_input(side_length=u.m)
     def some_function(length):
-        """Does something useful.
+        """
+        Does something useful.
 
         Parameters
         ----------
