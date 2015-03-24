@@ -91,7 +91,7 @@ class JSOCClient(object):
 
     >>> from sunpy.net import jsoc
     >>> client = jsoc.JSOCClient()
-    >>> response = client.query(jsoc.Time('2010-01-01T00:00', '2010-01-01T01:00'),
+    >>> response = client.query(jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...                         jsoc.Series('hmi.m_45s'))
 
     the response object holds the records that your query will return:
@@ -119,11 +119,12 @@ class JSOCClient(object):
     Query the JSOC for some AIA 171 data, and seperate out the staging and the
     download steps:
 
+    >>> import astropy.units as u
     >>> from sunpy.net import jsoc
     >>> client = jsoc.JSOCClient()
     >>> response = client.query(jsoc.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
                                 jsoc.Series('aia.lev1_euv_12s'), jsoc.Segment('image'),
-                                jsoc.Wave(171))
+                                jsoc.Wavelength(171*u.AA))
 
     the response object holds the records that your query will return:
 
