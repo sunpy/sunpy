@@ -401,6 +401,106 @@ using: ::
 
 from inside the ``doc/source`` folder.
 
+Use of quantities and units
+"""""""""""""""""""""""""""
+
+Much code perform calculations using physical quantities.  SunPy uses astropy's
+`quantities and units <http://docs.astropy.org/en/stable/units/index.html>`__
+implementation to store, express and convert physical quantities. New classes
+and functions should adhere to SunPy's `quantity and unit usage guidelines
+<https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__.  This document
+sets out SunPy's reasons and requirements for the usage of quantities and
+units.  Briefly, SunPy's `policy <https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__
+is that *all user-facing function/object arguments which accept physical
+quantities as input **MUST** accept astropy quantities, and **ONLY** astropy
+quantities*.
+
+Developers should consult the
+`Astropy Quantities and Units page <http://docs.astropy.org/en/stable/units/index.html>`__
+for the latest updates on using quantities and units.  The `astropy tutorial on quantities and units
+<http://www.astropy.org/astropy-tutorials/Quantities.html>`__ also provides useful examples on their
+capabilities.
+
+Astropy provides the decorator `~astropy.units.quantity_input` that
+checks the units of the input arguments to a function against the
+expected units of the argument.  We recommend using this decorator to
+perform function argument unit checks.  The decorator ensures that the
+units of the input to the function are convertible to that specified
+by the decorator, for example ::
+
+    import astropy.units as u
+    @u.quantity_input(myangle=u.arcsec)
+    def myfunction(myangle):
+        return myangle**2
+
+This function only accepts arguments that are convertible to arcseconds.
+Therefore, ::
+
+    >>> myangle(20 * u.degree)
+    <Quantity 400.0 deg2>
+
+returns the expected answer but ::
+
+    >>> myangle(20 * u.km)
+
+raises an error.
+
+The following is an example of a use-facing function that returns the area of a
+square, in units that are the square of the input length unit::
+
+    @u.quantity_input(side_length=u.m)
+    def get_area_of_square(side_length):
+        """
+        Compute the area of a square.
+
+        Parameters
+        ----------
+        side_length : `~astropy.units.quantity.Quantity`
+            Side length of the square
+
+        Returns
+        -------
+        area : `~astropy.units.quantity.Quantity`
+            Area of the square.
+        """
+
+        return (side_length ** 2)
+
+This more advanced example shows how a private function that does not accept
+quantities can be wrapped by a function that does::
+
+    @u.quantity_input(side_length=u.m)
+    def some_function(length):
+        """
+        Does something useful.
+
+        Parameters
+        ----------
+        length : `~astropy.units.quantity.Quantity`
+            A length.
+
+        Returns
+        -------
+        length : `~astropy.units.quantity.Quantity`
+            Another length
+        """
+
+        # the following function either
+        # a] does not accept Quantities
+        # b] is slow if using Quantities
+        result = _private_wrapper_function(length.convert('meters').value)
+
+        # now convert back to a quantity
+        result = Quantity(result_meters, units_of_the_private_wrapper_function)
+
+        return result
+
+In this example, the non-user facing function *_private_wrapper_function* requires a numerical input in units of
+meters, and returns a numerical output.  The developer knows that the result of *_private_wrapper_function* is in the
+units *units_of_the_private_wrapper_function*, and sets the result of *some_function* to return the answer in those
+units.
+
+
 Examples
 ^^^^^^^^
 
@@ -669,7 +769,7 @@ the module on the command line, e.g.::
 for the tests for `sunpy.util.xml`.
 
 To run only tests that been marked with a specific pytest mark using the
-deocrator ``@pytest.mark`` (the the section *Writing a unit test*), use the
+decorator ``@pytest.mark`` (the the section *Writing a unit test*), use the
 following command (where ``MARK`` is the name of the mark)::
 
   py.test -k MARK
@@ -725,8 +825,8 @@ everytime you run `git commit` to install it copy the file from
 `sunpy/tools/pre-commit.sh` to `sunpy/.git/hooks/pre-commit`, you should also
 check the script to make sure that it is configured properly for your system.
 
-Continuous Intergration
-^^^^^^^^^^^^^^^^^^^^^^^
+Continuous Integration
+^^^^^^^^^^^^^^^^^^^^^^
 
 SunPy makes use of the `Travis CI service <https://travis-ci.org/sunpy/sunpy>`_.
 This service builds a version of SunPy and runs all the tests. It also integrates 
@@ -734,7 +834,7 @@ with GitHub and will report the test results on any Pull Request when they are
 submitted and when they are updated.
 
 The Travis CI server not only builds SunPy from source, but currently it builds all 
-of SunPy's dependancies from source as well using pip, all of this behaviour is 
+of SunPy's dependencies from source as well using pip, all of this behaviour is
 specified in the .travis.yml file in the root of the SunPy repo.
 
 New Functionality
