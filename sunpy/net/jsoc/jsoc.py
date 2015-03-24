@@ -243,7 +243,7 @@ class JSOCClient(object):
 
     def check_request(self, requestIDs):
         """
-        Check the status of a request and print out a messgae about it
+        Check the status of a request and print out a message about it
 
         Parameters
         ----------
@@ -322,8 +322,6 @@ class JSOCClient(object):
         jsoc_response.requestIDs = requestIDs
         time.sleep(sleep/2.)
 
-        r = Results(lambda x: None, done=lambda maps: [v['path'] for v in maps.values()])
-
         while requestIDs:
             for i, request_id in enumerate(requestIDs):
                 u = self._request_status(request_id)
@@ -334,7 +332,7 @@ class JSOCClient(object):
                 if u.status_code == 200 and u.json()['status'] == '0':
                     rID = requestIDs.pop(i)
                     r = self.get_request(rID, path=path, overwrite=overwrite,
-                                 progress=progress, results=r)
+                                 progress=progress)
 
                 else:
                     time.sleep(sleep)
@@ -391,7 +389,7 @@ class JSOCClient(object):
         # A Results object tracks the number of downloads requested and the
         # number that have been completed.
         if results is None:
-            results = Results(lambda x: None, done=lambda maps: [v['path'] for v in maps.values()])
+            results = Results(lambda _: downloader.stop())
 
         urls = []
         for request_id in requestIDs:
@@ -417,8 +415,9 @@ class JSOCClient(object):
                     self.check_request(request_id)
 
         if urls:
-            for url, rcall in list(zip(urls, list(map(lambda x: results.require([x]), urls)))):
-                downloader.download(url, callback=rcall, path=path)
+            for url in urls:
+                downloader.download(url, callback=results.require([url]),
+                                    errback=lambda x: print(x), path=path)
 
         else:
             #Make Results think it has finished.
