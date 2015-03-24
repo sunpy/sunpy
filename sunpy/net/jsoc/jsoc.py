@@ -68,6 +68,10 @@ class JSOCClient(object):
     method, but they can be seperated if you are performing a large or complex
     query.
 
+    .. warning::
+        JSOC now requires you to register your email address before requesting
+        data. See this site: http://jsoc.stanford.edu/ajax/register_email.html
+
     Notes
     -----
     This Client mocks input to this site: http://jsoc.stanford.edu/ajax/exportdata.html
@@ -76,6 +80,7 @@ class JSOCClient(object):
 
     You can build more complex queries by specifiying parameters to POST to JSOC via keyword
     arguments. You can generate these kwargs using the Export Data page at JSOC.
+
 
     Examples
     --------
@@ -86,7 +91,7 @@ class JSOCClient(object):
 
     >>> from sunpy.net import jsoc
     >>> client = jsoc.JSOCClient()
-    >>> response = client.query(jsoc.Time('2010-01-01T00:00', '2010-01-01T01:00'),
+    >>> response = client.query(jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...                         jsoc.Series('hmi.m_45s'))
 
     the response object holds the records that your query will return:
@@ -114,11 +119,12 @@ class JSOCClient(object):
     Query the JSOC for some AIA 171 data, and seperate out the staging and the
     download steps:
 
+    >>> import astropy.units as u
     >>> from sunpy.net import jsoc
     >>> client = jsoc.JSOCClient()
     >>> response = client.query(jsoc.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
                                 jsoc.Series('aia.lev1_euv_12s'), jsoc.Segment('image'),
-                                jsoc.Wave(171))
+                                jsoc.Wavelength(171*u.AA))
 
     the response object holds the records that your query will return:
 
@@ -238,7 +244,7 @@ class JSOCClient(object):
 
     def check_request(self, requestIDs):
         """
-        Check the status of a request and print out a messgae about it
+        Check the status of a request and print out a message about it
 
         Parameters
         ----------
@@ -317,8 +323,6 @@ class JSOCClient(object):
         jsoc_response.requestIDs = requestIDs
         time.sleep(sleep/2.)
 
-        r = Results(lambda x: None)
-
         while requestIDs:
             for i, request_id in enumerate(requestIDs):
                 u = self._request_status(request_id)
@@ -329,7 +333,7 @@ class JSOCClient(object):
                 if u.status_code == 200 and u.json()['status'] == '0':
                     rID = requestIDs.pop(i)
                     r = self.get_request(rID, path=path, overwrite=overwrite,
-                                 progress=progress, results=r)
+                                 progress=progress)
 
                 else:
                     time.sleep(sleep)
@@ -386,7 +390,7 @@ class JSOCClient(object):
         # A Results object tracks the number of downloads requested and the
         # number that have been completed.
         if results is None:
-            results = Results(lambda x: None)
+            results = Results(lambda _: downloader.stop())
 
         urls = []
         for request_id in requestIDs:
@@ -397,6 +401,12 @@ class JSOCClient(object):
                     if overwrite or not os.path.isfile(os.path.join(path, ar['filename'])):
                         urls.append(urlparse.urljoin(BASE_DL_URL + u.json()['dir'] +
                                                      '/', ar['filename']))
+
+                    else:
+                        print("Skipping download of file {} as it has already been downloaded".format(ar['filename']))
+                        # Add the file on disk to the output
+                        results.map_.update({ar['filename']:{'path':os.path.join(path, ar['filename'])}})
+
                 if progress:
                     print("{0} URLs found for Download. Totalling {1}MB".format(
                                                   len(urls), u.json()['size']))
@@ -406,8 +416,9 @@ class JSOCClient(object):
                     self.check_request(request_id)
 
         if urls:
-            for url, rcall in list(zip(urls, list(map(lambda x: results.require([x]), urls)))):
-                downloader.download(url, callback=rcall, path=path)
+            for url in urls:
+                downloader.download(url, callback=results.require([url]),
+                                    errback=lambda x: print(x), path=path)
 
         else:
             #Make Results think it has finished.
@@ -463,7 +474,7 @@ class JSOCClient(object):
 
         return dataset
 
-    def _make_query_payload(self, start_time, end_time, series, notify='',
+    def _make_query_payload(self, start_time, end_time, series, notify=None,
                             protocol='FITS', compression='rice', **kwargs):
         """
         Build the POST payload for the query parameters
@@ -475,6 +486,10 @@ class JSOCClient(object):
             jprotocol = 'FITS, **NONE**'
         else:
             jprotocol = protocol
+
+        if not notify:
+            raise ValueError("JSOC queries now require a valid email address "
+                             "before they will be accepted by the server")
 
         dataset = self._make_recordset(start_time, end_time, series, **kwargs)
         kwargs.pop('wavelength', None)
@@ -493,7 +508,7 @@ class JSOCClient(object):
         payload.update(kwargs)
         return payload
 
-    def _send_jsoc_request(self, start_time, end_time, series, notify='',
+    def _send_jsoc_request(self, start_time, end_time, series, notify=None,
                            protocol='FITS', compression='rice', **kwargs):
         """
         Request that JSOC stages data for download
