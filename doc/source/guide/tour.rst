@@ -263,8 +263,10 @@ Also, if no unit is specified, an error is thrown ::
 
     TypeError: Argument 'radius' to function has 'circle_area' no 'unit' attribute. You may want to pass in an astropy Quantity instead.
 
-Using units allows the user to be explicit about what the function expects.  Units also make conversions very easy to
-do.  For example, if you want the area of a circle in square feet, but where given measurements in meters, then  ::
+Using units allows the user to be explicit about what the function
+expects.  Units also make conversions very easy to do.  For example,
+if you want the area of a circle in square feet, but were given
+measurements in meters, then ::
 
     >>> circle_area((4 * u.m).to(u.imperial.foot))
     <Quantity 541.0531502245425 ft2>
