@@ -5,6 +5,7 @@ Created on Wed Mar 26 20:17:06 2014
 @author: stuart
 """
 import time
+import tempfile
 import datetime
 import astropy.table
 import astropy.time
@@ -189,34 +190,36 @@ def test_request_status_fail():
 
 
 @pytest.mark.online
-@pytest.mark.xfail
+#@pytest.mark.xfail
 def test_wait_get():
-    responses = client.query(attrs.Time('2012/1/3T00:00:00', '2012/1/3T00:00:45'), attrs.Series( 'hmi.M_45s'))
-    res = client.get(responses)
+    responses = client.query(attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
+                             attrs.Series( 'hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
+    path = tempfile.mkdtemp()
+    res = client.get(responses, path=path)
     assert isinstance(res, Results)
-    assert res.total == 2
+    assert res.total == 1
 
-@pytest.mark.online
-@pytest.mark.xfail
-def test_check_request():
-    responses = client.query(attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'),
-                             attrs.Series('hmi.M_45s'))
-
-    bb = client.request_data(responses)
-    aa = client.check_request(bb)
-    assert aa == [6] or aa == [1] #Incase JSOC is being very efficient
-    time.sleep(5)
-    aa = client.check_request(bb)
-    assert aa == [1]
 
 @pytest.mark.online
 def test_get_request():
-    responses = client.query(attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'),
+    responses = client.query(attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
                              attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
 
     bb = client.request_data(responses)
-    aa = client.get_request(bb)
+    path = tempfile.mkdtemp()
+    aa = client.get_request(bb, path=path)
     assert isinstance(aa, Results)
+
+@pytest.mark.online
+@pytest.mark.xfail
+def test_results_filenames():
+    responses = client.query(attrs.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
+                             attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
+    path = tempfile.mkdtemp()
+    aa = client.get(responses, path=path)
+    assert isinstance(aa, Results)
+    files = aa.wait()
+    assert len(files) == len(responses)
 
 @pytest.mark.online
 def test_invalid_query():
