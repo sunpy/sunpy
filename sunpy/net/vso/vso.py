@@ -600,6 +600,8 @@ class VSOClient(object):
         if path is None:
             path = os.path.join(config.get('downloads','download_dir'),
                                 '{file}')
+        path = os.path.expanduser(path)
+
         fileids = VSOClient.by_fileid(query_response)
         if not fileids:
             res.poke()
