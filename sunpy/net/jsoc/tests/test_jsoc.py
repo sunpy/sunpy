@@ -121,7 +121,8 @@ def test_process_time_astropy_tai():
 @pytest.mark.online
 def test_status_request():
     r = client._request_status('none')
-    assert r.json() == {u'status': 4, u'error': u"Bad RequestID 'none' provided."}
+    assert r.json() == {u'error': u'requestid none is not an acceptable ID for the external export system (acceptable format is JSOC_YYYYMMDD_NNN_X_IN or JSOC_YYYYMMDD_NNN).',
+                         u'status': 4}
 
 def  test_empty_jsoc_response():
     Jresp = JSOCResponse()
@@ -177,16 +178,16 @@ def test_post_fail(recwarn):
     client.request_data(res, return_resp=True)
     w = recwarn.pop(Warning)
     assert issubclass(w.category, Warning)
-    assert "Query 0 retuned status 4 with error Cannot export series 'none' - it does not exist." in str(w.message)
+    assert "Query 0 retuned status 4 with error Series none is not a valid series accessible from hmidb2." in str(w.message)
     assert w.filename
     assert w.lineno
 
 @pytest.mark.online
 def test_request_status_fail():
     resp = client._request_status('none')
-    assert resp.json() == {u'status': 4, u'error': u"Bad RequestID 'none' provided."}
+    assert resp.json() == {u'status': 4, u'error': u"requestid none is not an acceptable ID for the external export system (acceptable format is JSOC_YYYYMMDD_NNN_X_IN or JSOC_YYYYMMDD_NNN)."}
     resp = client._request_status(['none'])
-    assert resp.json() == {u'status': 4, u'error': u"Bad RequestID 'none' provided."}
+    assert resp.json() == {u'status': 4, u'error': u"requestid none is not an acceptable ID for the external export system (acceptable format is JSOC_YYYYMMDD_NNN_X_IN or JSOC_YYYYMMDD_NNN)."}
 
 
 @pytest.mark.online
