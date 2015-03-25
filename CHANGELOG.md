@@ -1,3 +1,9 @@
+0.5.5
+-----
+Bug Fixes:
+
+ * Corrected GOES satellites' operational time ranges so all data back to 1980 can be read into GOESLightCurve object
+
 0.5.4
 -----
 Bug Fixes:
