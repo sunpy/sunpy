@@ -31,6 +31,11 @@ To install the Anaconda Python distribution follow the instructions
 select the correct download for your platform and follow the install procedure.
 
 .. note::
+    If you are using Linux, it is required to have a package such as 
+    ``python-dev`` installed (or similar name, depending on the linux distro)
+    to provide the Python development headers.
+    
+.. note::
 
     On OS/X you need to install XCode so you can build SunPy's extensions.
     see :ref:`xcode`
