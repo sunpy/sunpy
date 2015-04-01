@@ -423,8 +423,8 @@ class JSOCClient(object):
         else:
             #Make Results think it has finished.
             results.require([])
+            results.poke()
 
-        results.poke()
         return results
 
     def _process_time(self, time):
