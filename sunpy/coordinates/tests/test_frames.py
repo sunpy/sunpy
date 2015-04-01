@@ -274,7 +274,7 @@ def test_create_hgs_3d(frame, args, kwargs):
     assert hgs1.lat.unit is u.deg
     assert hgs1.rad.unit is u.Mm
 
-def test_cart_init():
+def test_hgs_cart_init():
     hpc1 = HelioGraphicStonyhurst(CartesianRepresentation(0*u.km, 0*u.km, 1*u.Mm))
 
     assert isinstance(hpc1, HelioGraphicStonyhurst)
