@@ -175,7 +175,7 @@ syntax are introduced.
     >>> import sunpy.data.sample
     >>> database.add_from_file(sunpy.data.sample.AIA_171_IMAGE)
     >>> len(database)
-    1
+    10
     >>> entry = database[0]
     >>> entry.path == sunpy.data.sample.AIA_171_IMAGE
     True
@@ -189,27 +189,7 @@ syntax are introduced.
     170
     >>> for fits_header_entry in entry.fits_header_entries[:10]:
     ...     print '{entry.key}\n\t{entry.value}'.format(entry=fits_header_entry)
-    ... 
-    SIMPLE
-        1
-    BITPIX
-        32
-    NAXIS
-        2
-    NAXIS1
-        1024
-    NAXIS2
-        1024
-    EXTEND
-        1
-    COMMENT
-        FITS (Flexible Image Transport System) format is defined in 'Astronomy  and Astrophysics', volume 376, page 359; bibcode: 2001A&A...376..359H
-    ORIGIN
-        SDO/JSOC-SDP
-    DATE
-        2011-03-19T11:08:25
-    TELESCOP
-        SDO/AIA
+   
     >>> for fits_key_comment in entry.fits_key_comments:
     ...     print '{comment.key}\n\t{comment.value}'.format(comment=fits_key_comment)
     ... 
@@ -243,7 +223,7 @@ directory ``sunpy.data.sample.rootdir``).
     >>> database.default_waveunit = 'angstrom'
     >>> database.add_from_dir(sunpy.data.sample.rootdir, ignore_already_added=True)
     >>> len(database)
-    21
+    10
 
 2.3 Adding entries using the VSO interface
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -267,7 +247,7 @@ sections.
     4
     >>> database.add_from_vso_query_result(qr)
     >>> len(database)
-    25
+    10
 
 2.3.2 Downloading
 ^^^^^^^^^^^^^^^^^
@@ -284,7 +264,7 @@ the `path` attribute of each entry.
     ...     vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
     ...     vso.attrs.Instrument('AIA'))
     >>> len(database)
-    27
+    10
 
 2.3.3 "Clever" Fetching
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -312,7 +292,7 @@ resulting entries to the database. Because the query result translates to
     >>> len(entries)
     2
     >>> len(database)
-    27
+    10
 
     >>> entries = database.fetch(
     ...     vso.attrs.Time('2013-08-05', '2013-08-05 00:00:05'),
@@ -320,7 +300,7 @@ resulting entries to the database. Because the query result translates to
     >>> entries is None
     True
     >>> len(database)
-    29
+    10
 
 2.4 Adding entries manually
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -337,7 +317,7 @@ values as keyword arguments to :class:`tables.DatabaseEntry` as follows:
     >>> entry in database
     True
     >>> len(database)
-    30
+    10
 
 Note that the `in` operator works only as expected after the
 :meth:`Database.commit` method has been called!
@@ -481,10 +461,7 @@ starred:
     ...     ['id', 'observation_time_start', 'observation_time_end', 'instrument', 'wavemin', 'wavemax'])
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
-    23 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        21.1    21.1   
-    25 2011-05-08 00:00:03    2011-05-08 00:00:04  AIA        33.5    33.5   
-    27 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5   
-    29 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5
+    1  2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        17.1    17.1   
 
 So remove the mark from these entries, the method :meth:`Database.unstar`
 works the same way.
@@ -511,12 +488,7 @@ year:
     ...     ['id', 'observation_time_start', 'observation_time_end', 'instrument', 'wavemin', 'wavemax'])
     id observation_time_start     observation_time_end instrument wavemin wavemax
     -- ----------------------     -------------------- ---------- ------- -------
-    1  2011-03-19 10:54:00.340000 N/A                  AIA_3      17.1    17.1   
-    7  2011-03-19 10:54:00.340000 N/A                  AIA_3      17.1    17.1   
-    22 2011-05-08 00:00:00        2011-05-08 00:00:01  AIA        17.1    17.1   
-    23 2011-05-08 00:00:00        2011-05-08 00:00:01  AIA        21.1    21.1   
-    24 2011-05-08 00:00:02        2011-05-08 00:00:03  AIA        9.4     9.4    
-    25 2011-05-08 00:00:03        2011-05-08 00:00:04  AIA        33.5    33.5
+    1  2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        17.1    17.1    N/A  No   
 
 5.3 Changing custom attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

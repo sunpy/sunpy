@@ -57,7 +57,7 @@ response objects, each one of which is a record found by the VSO. You can find h
 records were found by typing
 
     >>> len(qr)
-    122
+    3549
 
 To get a little bit more information about the records found, try
 
