@@ -212,7 +212,6 @@ def test_get_request():
     assert isinstance(aa, Results)
 
 @pytest.mark.online
-@pytest.mark.xfail
 def test_results_filenames():
     responses = client.query(attrs.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
                              attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
