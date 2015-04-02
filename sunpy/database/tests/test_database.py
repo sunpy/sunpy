@@ -7,7 +7,9 @@ from __future__ import absolute_import
 
 import glob
 import ConfigParser
+import os
 import os.path
+import shutil
 import sys
 
 import pytest
@@ -27,7 +29,7 @@ from sunpy.data.test.waveunit import waveunitdir
 from sunpy.io import fits
 
 import sunpy.data.test
-import os
+
 testpath = sunpy.data.test.rootdir
 RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
 
@@ -782,6 +784,41 @@ def test_fetch(database, download_query, tmpdir):
     database.fetch(*download_query, path=str(tmpdir.join('{file}.fits')))
     assert len(database) == 4
     assert database[0].download_time == download_time
+
+
+@pytest.mark.online
+def test_fetch_separate_filenames():
+    # Setup
+    db = Database('sqlite:///')
+
+    download_query = [
+        vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
+        vso.attrs.Instrument('AIA')
+    ]
+
+    tmp_test_dir = os.path.join(
+        sunpy.config.get('downloads', 'download_dir'),
+        'tmp_test_dir/'
+    )
+
+    if not os.path.isdir(tmp_test_dir):
+        os.mkdir(tmp_test_dir)
+
+    path = tmp_test_dir + '{file}'
+
+    db.fetch(*download_query, path=path)
+
+    # Test
+    assert len(db) == 2
+
+    dir_contents = os.listdir(tmp_test_dir)
+    assert 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits' in dir_contents
+    assert 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits' in dir_contents
+    assert os.path.isfile(os.path.join(tmp_test_dir, 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits'))
+    assert os.path.isfile(os.path.join(tmp_test_dir, 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits'))
+
+    # Teardown
+    shutil.rmtree(tmp_test_dir)
 
 
 @pytest.mark.online

@@ -124,7 +124,7 @@ class LYRALightCurve(LightCurve):
         # First column are times.  For level 2 data, the units are [s].
         # For level 3 data, the units are [min]
         if hdulist[1].header['TUNIT1'] == 's':
-            times = [start + datetime.timedelta(seconds=int(n))
+            times = [start + datetime.timedelta(seconds=n)
                      for n in fits_record.field(0)]
         elif hdulist[1].header['TUNIT1'] == 'MIN':
             times = [start + datetime.timedelta(minutes=int(n))
