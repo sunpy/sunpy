@@ -168,11 +168,11 @@ Dimension:\t [{xdim:d}, {ydim:d}]
     def wcs(self):
         w2 = astropy.wcs.WCS(naxis=2)
         w2.wcs.crpix = [self.reference_pixel['x'], self.reference_pixel['y']]
-        w2.wcs.cdelt = [self.scale['x'], self.scale['y']]
-        w2.wcs.crval = [self.reference_coordinate['x'], self.reference_coordinate['y']]
+        w2.wcs.cdelt = u.Quantity([self.scale['x'], self.scale['y']])
+        w2.wcs.crval = u.Quantity([self.reference_coordinate['x'], self.reference_coordinate['y']])
         w2.wcs.ctype = [self.coordinate_system['x'], self.coordinate_system['y']]
         w2.wcs.pc = self.rotation_matrix
-        w2.wcs.cunit = [self.units['x'], self.units['y']]
+        w2.wcs.cunit = self.units['x'], self.units['y']
 
         return w2
 
@@ -360,8 +360,8 @@ Dimension:\t [{xdim:d}, {ydim:d}]
     @property
     def reference_coordinate(self):
         """Reference point WCS axes in data units (crval1/2)"""
-        return {'x': self.meta.get('crval1', 0.),
-                'y': self.meta.get('crval2', 0.),}
+        return {'x': self.meta.get('crval1', 0.) * self.units['x'],
+                'y': self.meta.get('crval2', 0.) * self.units['y'],}
 
     @property
     def reference_pixel(self):
@@ -373,14 +373,14 @@ Dimension:\t [{xdim:d}, {ydim:d}]
     def scale(self):
         """Image scale along the x and y axes in units/pixel (cdelt1/2)"""
         #TODO: Fix this if only CDi_j matrix is provided
-        return {'x': self.meta.get('cdelt1', 1.),
-                'y': self.meta.get('cdelt2', 1.),}
+        return {'x': self.meta.get('cdelt1', 1.) * self.units['x'],
+                'y': self.meta.get('cdelt2', 1.) * self.units['y'],}
 
     @property
     def units(self):
         """Image coordinate units along the x and y axes (cunit1/2)."""
-        return {'x': self.meta.get('cunit1', 'arcsec'),
-                'y': self.meta.get('cunit2', 'arcsec'),}
+        return {'x': u.Unit(self.meta.get('cunit1', 'arcsec')),
+                'y': u.Unit(self.meta.get('cunit2', 'arcsec')),}
 
     @property
     def rotation_matrix(self):
@@ -458,40 +458,74 @@ Dimension:\t [{xdim:d}, {ydim:d}]
 
 # #### Data conversion routines #### #
 
-    def data_to_pixel(self, value, dim):
-        """Convert pixel-center data coordinates to pixel values"""
-        #TODO: This function should be renamed. It is confusing as data
-        # coordinates are in something like arcsec but this function just changes how you
-        # count pixels
-        if dim not in ['x', 'y']:
-            raise ValueError("Invalid dimension. Must be one of 'x' or 'y'.")
+    @u.quantity_input(x=u.deg, y=u.deg)
+    def data_to_pixel(self, x, y, origin=0):
+        """
+        Convert a data (world) coordinate to a pixel coordinate by using
+        `~astropy.wcs.WCS.wcs_world2pix`.
 
-        size = self.shape[dim == 'x']  # 1 if dim == 'x', 0 if dim == 'y'.
+        Parameters
+        ----------
 
-        return (value - self.center[dim]) / self.scale[dim] + ((size - 1) / 2.)
+        x : `~astropy.units.Quantity`
+            Data coordinate of the CTYPE1 axis. (Normally solar-x).
 
-    def pixel_to_data(self, x=None, y=None):
-        """Convert from pixel coordinates to data coordinates (e.g. arcsec)"""
-        width = self.shape[1]
-        height = self.shape[0]
+        y : `~astropy.units.Quantity`
+            Data coordinate of the CTYPE2 axis. (Normally solar-y).
 
-        if (x is not None) & (x > width-1):
-            raise ValueError("X pixel value larger than image width ({width!s}).".format(width=width))
-        if (x is not None) & (y > height-1):
-            raise ValueError("Y pixel value larger than image height ({height!s}).".format(height=height))
-        if (x is not None) & (x < 0):
-            raise ValueError("X pixel value cannot be less than 0.")
-        if (x is not None) & (y < 0):
-            raise ValueError("Y pixel value cannot be less than 0.")
+        origin : int
+            Origin of the top-left corner. i.e. count from 0 or 1.
+            See `~astropy.wcs.WCS.wcs_world2pix` for more information.
 
-        scale = np.array([self.scale['x'], self.scale['y']])
-        crpix = np.array([self.reference_pixel['x'], self.reference_pixel['y']])
-        crval = np.array([self.reference_coordinate['x'], self.reference_coordinate['y']])
-        # FIXME: not used?!
-        coordinate_system = [self.coordinate_system['x'], self.coordinate_system['y']]
-        x,y = wcs.convert_pixel_to_data(self.shape, scale, crpix, crval, x = x, y = y)
+        Returns
+        -------
+
+        x : float
+            Pixel coordinate on the CTYPE1 axis.
+
+        y : float
+            Pixel coordinate on the CTYPE2 axis.
+        """
+        x, y = self.wcs.wcs_world2pix(u.Quantity([x, y])[None, :].to(u.deg).value, origin)[0]
 
         return x, y
+
+    def pixel_to_data(self, x, y, origin=0):
+        """
+        Convert a pixel coordinate to a data (world) coordinate by using
+        `~astropy.wcs.WCS.wcs_pix2world`.
+
+        Parameters
+        ----------
+
+        x : float
+            Pixel coordinate of the CTYPE1 axis. (Normally solar-x).
+
+        y : float
+            Pixel coordinate of the CTYPE2 axis. (Normally solar-y).
+
+        origin : int
+            Origin of the top-left corner. i.e. count from 0 or 1.
+            See `~astropy.wcs.WCS.wcs_pix2world` for more information.
+
+        Returns
+        -------
+
+        x : `~astropy.units.Quantity`
+            Coordinate of the CTYPE1 axis. (Normally solar-x).
+
+        y : `~astropy.units.Quantity`
+            Coordinate of the CTYPE2 axis. (Normally solar-y).
+        """
+
+        x, y = self.wcs.wcs_pix2world(np.array([[x, y]]), origin)[0]
+
+        # WCS always outputs degrees.
+        x *= u.deg
+        y *= u.deg
+
+        return x.to(self.units['x']), y.to(self.units['y'])
+
 
 # #### I/O routines #### #
 
