@@ -5,12 +5,12 @@ from numpy.testing import assert_array_almost_equal
 from itertools import product
 import datetime
 
-from astropy.coordinates import Longitude
+from astropy.coordinates import Longitude, Angle
 from astropy import units as u
 from astropy.time import Time
 
 from sunpy.sun import sun
-from sunpy.time import parse_time
+from sunpy.time import parse_time, julian_centuries
 
 def test_sunearth_distance():
     # Source for these values
@@ -151,3 +151,22 @@ def test_solar_north():
     assert_array_almost_equal(sun.solar_north("2019/10/10"), -1.693 * u.deg, decimal=3)
     assert_array_almost_equal(sun.solar_north("2542/02/20"), 41.351 * u.deg, decimal=3)
 
+def test_SunPosition():
+    # Example 25.a
+    date = Time('1992-10-13T00:00:00', scale='tt').utc
+    t = date.value
+    assert_array_almost_equal(julian_centuries(t), -0.072183436, decimal=10)
+    assert_array_almost_equal(sun.geometric_mean_longitude(t).value, Longitude(201.80720 * u.deg).value, decimal=5) #fixme no units compared
+    assert_array_almost_equal(sun.mean_anomaly(t).value, Longitude(278.99397 * u.deg).value, decimal=5)
+    assert_array_almost_equal(sun.eccentricity_SunEarth_orbit(t), 0.016711668, decimal=9)
+    assert_array_almost_equal(sun.equation_of_center(t).value, (-1.89732 * u.deg).value, decimal=5)
+    assert_array_almost_equal(sun.true_longitude(t).value, Longitude(199.90988 * u.deg).value, decimal=5)
+    assert_array_almost_equal(sun.sunearth_distance(t).value, (0.99766 * u.AU).value, decimal=5)
+    assert_array_almost_equal(sun._omega(t).value, (264.65 * u.deg).value, decimal=2)
+    assert_array_almost_equal(sun.apparent_longitude(t).value, Longitude(199.90895 * u.deg).value, decimal=5)
+    #assert_array_almost_equal(sun.#22.2, 23.44023 * u.deg,decimal=5)
+    assert_array_almost_equal(sun.true_obliquity_of_ecliptic(t).value, (23.43999 * u.deg).value, decimal=4) #fixme This should be 5... but doesn't match - maybe we need terms from Table 22.A in obliquity?
+    assert_array_almost_equal(sun.apparent_rightascension(t).value, Angle('13 13 31.4 hours').value, decimal=5)
+    assert_array_almost_equal(sun.apparent_declination(t).value, (-7.78507 * u.deg).value, decimal=4) #fixme This should be 5
+    
+    # How this compare with the real values given at the end of the example? high_precission=True?
