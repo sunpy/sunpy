@@ -809,7 +809,7 @@ def test_fetch_separate_filenames():
     db.fetch(*download_query, path=path)
 
     # Test
-    assert len(db) == 2
+    assert len(db) == 4
 
     dir_contents = os.listdir(tmp_test_dir)
     assert 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits' in dir_contents
