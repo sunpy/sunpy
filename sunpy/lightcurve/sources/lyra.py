@@ -144,4 +144,6 @@ class LYRALightCurve(LightCurve):
                 table[col.name] = fits_record.field(i + 1)
 
         # Return the header and the data
-        return OrderedDict(hdulist[0].header), pandas.DataFrame(table, index=times)
+        data = pandas.DataFrame(table, index=times)
+        data.sort(inplace=True)
+        return OrderedDict(hdulist[0].header), data
