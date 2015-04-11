@@ -13,6 +13,7 @@ import pytest
 import datetime
 import sunpy
 import sunpy.lightcurve
+from sunpy.time import TimeRange
 from sunpy.data.test import (EVE_AVERAGES_CSV)
 import pandas
 
@@ -38,6 +39,10 @@ def test_input(data, index):
     assert len(lc.data.index) == 24*60
     assert lc.data.index[0] == base
     assert lc.data.index[-1] == base - datetime.timedelta(minutes=24 * 60 - 1)
+
+def test_time_range():
+    time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
+    assert isinstance(time_range, sunpy.time.TimeRange)
 
 
 @pytest.mark.parametrize(("bad_input"), [
