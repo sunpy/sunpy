@@ -1,0 +1,4 @@
+ignore-paths: 
+    - astropy_helpers
+    - ah_bootstrap.py
+    - ez_setup.py

@@ -141,14 +141,3 @@ class Response(dict):
         else:
             return response
 
-
-if __name__ == '__main__':
-    import pprint
-    from sunpy.net.hek import attrs as a
-
-    c = HEKClient()
-    b = c.query(
-        a.Time((2010, 1, 1), (2010, 1, 2)) | a.Time((2010, 1, 3), (2010, 1, 4)),
-        a.AR, a.FL
-    )
-    pprint(b[0].vso_all)

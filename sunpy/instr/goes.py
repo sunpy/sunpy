@@ -542,7 +542,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
     if np.min(fluxratio) < np.min(modelratio) or \
       np.max(fluxratio) > np.max(modelratio):
         raise ValueError(
-            "For GOES {0}, all values in fluxratio input must be within " +
+            "For GOES {0}, all values in fluxratio input must be within "
             "the range {1} - {2}.".format(satellite, np.min(modelratio),
                                           np.max(modelratio)))
 
