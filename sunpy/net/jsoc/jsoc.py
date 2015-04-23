@@ -11,6 +11,7 @@ import numpy as np
 import astropy.units as u
 import astropy.time
 import astropy.table
+from astropy.utils.misc import isiterable
 
 from sunpy import config
 from sunpy.time import parse_time, TimeRange
@@ -218,20 +219,24 @@ class JSOCClient(object):
         # A little (hidden) debug feature
         return_responses = kwargs.pop('return_resp', False)
         if len(kwargs):
-            raise TypeError("request_data got unexpected keyword arguments {0}".format(kwargs.keys()))
+            warn_message = "request_data got unexpected keyword arguments {0}"
+            raise TypeError(warn_message.format(kwargs.keys()))
 
         # Do a multi-request for each query block
         responses = self._multi_request(**jsoc_response.query_args)
         for i, response in enumerate(responses):
             if response.status_code != 200:
+                warn_message = "Query {0} retuned code {1}"
                 warnings.warn(
-                Warning("Query {0} retuned code {1}".format(i, response.status_code)))
+                    Warning(warn_message.format(i, response.status_code)))
                 responses.pop(i)
             elif response.json()['status'] != 2:
-                warnings.warn(
-                Warning("Query {0} retuned status {1} with error {2}".format(i,
-                                                     response.json()['status'],
-                                                    response.json()['error'])))
+                warn_message = "Query {0} retuned status {1} with error {2}"
+                json_response = response.json()
+                json_status = json_response['status']
+                json_error = json_response['error']
+                warnings.warn(Warning(warn_message.format(i, json_status,
+                                                          json_error)))
                 responses.pop(i)
 
         # Extract the IDs from the JSON
@@ -257,7 +262,7 @@ class JSOCClient(object):
             A list of status' that were returned by JSOC
         """
         # Convert IDs to a list if not already
-        if not astropy.utils.misc.isiterable(requestIDs) or isinstance(requestIDs, basestring):
+        if not isiterable(requestIDs) or isinstance(requestIDs, basestring):
             requestIDs = [requestIDs]
 
         allstatus = []
@@ -266,16 +271,19 @@ class JSOCClient(object):
             status = int(u.json()['status'])
 
             if status == 0:  # Data ready to download
-                print(
-"Request {0} was exported at {1} and is ready to download.".format(
-                                   u.json()['requestid'], u.json()['exptime']))
+                print("Request {0} was exported at {1} and is ready to "\
+                      "download.".format(u.json()['requestid'],
+                                           u.json()['exptime']))
             elif status == 1:
-                print(
-"Request {0} was submitted {1} seconds ago, it is not ready to download.".format(
-                                      u.json()['requestid'], u.json()['wait']))
+                print_message = "Request {0} was submitted {1} seconds ago, " \
+                                "it is not ready to download."
+                print(print_message.format(u.json()['requestid'],
+                                           u.json()['wait']))
             else:
-                print("Request returned status: {0} with error: {1}".format(
-                                    u.json()['status'], u.json()['error']))
+                print_message = "Request returned status: {0} with error: {1}"
+                json_status = u.json()['status']
+                json_error = u.json()['error']
+                print(print_message.format(json_status, json_error))
 
             allstatus.append(status)
 
@@ -333,7 +341,7 @@ class JSOCClient(object):
                 if u.status_code == 200 and u.json()['status'] == '0':
                     rID = requestIDs.pop(i)
                     r = self.get_request(rID, path=path, overwrite=overwrite,
-                                 progress=progress)
+                                         progress=progress)
 
                 else:
                     time.sleep(sleep)
@@ -377,11 +385,12 @@ class JSOCClient(object):
         """
 
         # Convert IDs to a list if not already
-        if not astropy.utils.misc.isiterable(requestIDs) or isinstance(requestIDs, basestring):
+
+        if not isiterable(requestIDs) or isinstance(requestIDs, basestring):
             requestIDs = [requestIDs]
 
         if path is None:
-            path = config.get('downloads','download_dir')
+            path = config.get('downloads', 'download_dir')
         path = os.path.expanduser(path)
 
         if downloader is None:
@@ -398,18 +407,21 @@ class JSOCClient(object):
 
             if u.status_code == 200 and u.json()['status'] == '0':
                 for ar in u.json()['data']:
-                    if overwrite or not os.path.isfile(os.path.join(path, ar['filename'])):
-                        urls.append(urlparse.urljoin(BASE_DL_URL + u.json()['dir'] +
-                                                     '/', ar['filename']))
+                    is_file = os.path.isfile(os.path.join(path, ar['filename']))
+                    if overwrite or not is_file:
+                        url_dir = BASE_DL_URL + u.json()['dir'] + '/'
+                        urls.append(urlparse.urljoin(url_dir, ar['filename']))
 
                     else:
-                        print("Skipping download of file {} as it has already been downloaded".format(ar['filename']))
+                        print_message = "Skipping download of file {} as it " \
+                                        "has already been downloaded"
+                        print(print_message.format(ar['filename']))
                         # Add the file on disk to the output
                         results.map_.update({ar['filename']:{'path':os.path.join(path, ar['filename'])}})
 
                 if progress:
-                    print("{0} URLs found for Download. Totalling {1}MB".format(
-                                                  len(urls), u.json()['size']))
+                    print_message = "{0} URLs found for download. Totalling {1}MB"
+                    print(print_message.format(len(urls), u.json()['size']))
 
             else:
                 if progress:
@@ -421,10 +433,10 @@ class JSOCClient(object):
                                     errback=lambda x: print(x), path=path)
 
         else:
-            #Make Results think it has finished.
+            # Make Results think it has finished.
             results.require([])
+            results.poke()
 
-        results.poke()
         return results
 
     def _process_time(self, time):
@@ -444,8 +456,9 @@ class JSOCClient(object):
         # Convert from any input (in UTC) to TAI
         if isinstance(time, basestring):
             time = parse_time(time)
+
         time = astropy.time.Time(time, scale='utc')
-        time = time.tai #change the scale to TAI
+        time = time.tai  # Change the scale to TAI
 
         return time.datetime
 
@@ -523,7 +536,8 @@ class JSOCClient(object):
         r = requests.post(JSOC_EXPORT_URL, data=payload)
 
         if r.status_code != 200:
-            raise Exception("JSOC POST Request returned code {0}".format(r.status_code))
+            exception_message = "JSOC POST Request returned code {0}"
+            raise Exception(exception_message.format(r.status_code))
 
         return r, r.json()
 
@@ -535,7 +549,9 @@ class JSOCClient(object):
                     'WAVEUNIT']
 
         if not all([k in iargs for k in ('start_time', 'end_time', 'series')]):
-            raise ValueError("Both Time and Series must be specified for a JSOC Query")
+            error_message = "Both Time and Series must be specified for a "\
+                            "JSOC Query"
+            raise ValueError(error_message)
 
         postthis = {'ds': self._make_recordset(**iargs),
                     'op': 'rs_list',
@@ -571,13 +587,15 @@ class JSOCClient(object):
         end_time = self._process_time(end_time)
         tr = TimeRange(start_time, end_time)
         returns = []
-        response, json_response = self._send_jsoc_request(start_time, end_time, series, **kwargs)
+        response, json_response = self._send_jsoc_request(start_time, end_time,\
+                                                          series, **kwargs)
 
         # We skip these lines because a massive request is not a pratical test.
+        error_response = 'Request exceeds max byte limit of 100000MB'
         if (json_response['status'] == 3 and
-            json_response['error'] == 'Request exceeds max byte limit of 100000MB'): #pragma: no cover
-            returns.append(self._multi_request(tr.start(), tr.center(), series, **kwargs)[0]) #pragma: no cover
-            returns.append(self._multi_request(tr.center(), tr.end(), series, **kwargs)[0]) #pragma: no cover
+            json_response['error'] == error_response):  # pragma: no cover
+            returns.append(self._multi_request(tr.start(), tr.center(), series, **kwargs)[0])  # pragma: no cover
+            returns.append(self._multi_request(tr.center(), tr.end(), series, **kwargs)[0])  # pragma: no cover
         else:
             returns.append(response)
 

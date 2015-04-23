@@ -4,6 +4,7 @@ Created on Wed Mar 26 20:17:06 2014
 
 @author: stuart
 """
+import os
 import time
 import tempfile
 import datetime
@@ -212,7 +213,6 @@ def test_get_request():
     assert isinstance(aa, Results)
 
 @pytest.mark.online
-@pytest.mark.xfail
 def test_results_filenames():
     responses = client.query(attrs.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
                              attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
@@ -221,6 +221,8 @@ def test_results_filenames():
     assert isinstance(aa, Results)
     files = aa.wait()
     assert len(files) == len(responses)
+    for hmiurl in aa.map_:
+        assert os.path.basename(hmiurl) == os.path.basename(aa.map_[hmiurl]['path'])
 
 @pytest.mark.online
 def test_invalid_query():
