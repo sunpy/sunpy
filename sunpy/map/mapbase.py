@@ -1145,7 +1145,7 @@ Dimension:\t [{xdim:d}, {ydim:d}]
                   'interpolation':'nearest'}
         kwargs.update(imshow_args)
 
-        # Allows users to show masked data using matplotlib
+        # Allows users to show masked data
         if self.mask is None:
             ret = axes.imshow(self.data, **kwargs)
         else:
