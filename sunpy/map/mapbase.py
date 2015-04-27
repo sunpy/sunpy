@@ -281,14 +281,14 @@ Dimension:\t [{xdim:d}, {ydim:d}]
         """Return the X range of the image in arcsec from edge to edge."""
         xmin = self.center['x'] - self.shape[1] / 2. * self.scale['x']
         xmax = self.center['x'] + self.shape[1] / 2. * self.scale['x']
-        return [xmin, xmax]
+        return u.Quantity([xmin, xmax])
 
     @property
     def yrange(self):
         """Return the Y range of the image in arcsec from edge to edge."""
         ymin = self.center['y'] - self.shape[0] / 2. * self.scale['y']
         ymax = self.center['y'] + self.shape[0] / 2. * self.scale['y']
-        return [ymin, ymax]
+        return u.Quantity([ymin, ymax])
 
     @property
     def center(self):
@@ -394,7 +394,7 @@ Dimension:\t [{xdim:d}, {ydim:d}]
             cd = np.matrix([[self.meta['CD1_1'], self.meta['CD1_2']],
                             [self.meta['CD2_1'], self.meta['CD2_2']]])
 
-            cdelt = np.array(self.scale.values())
+            cdelt = u.Quantity(self.scale.values()).value
 
             return cd / cdelt
         else:
@@ -619,7 +619,7 @@ Dimension:\t [{xdim:d}, {ydim:d}]
         return new_map
 
     def rotate(self, angle=None, rmatrix=None, order=4, scale=1.0,
-               rotation_center=(0,0), recenter=False, missing=0.0, use_scipy=False):
+               rotation_center=None, recenter=False, missing=0.0, use_scipy=False):
         """
         Returns a new rotated and rescaled map.  Specify either a rotation
         angle or a rotation matrix, but not both.  If neither an angle or a
@@ -688,6 +688,10 @@ Dimension:\t [{xdim:d}, {ydim:d}]
         # Interpolation parameter sanity
         if order not in range(6):
             raise ValueError("Order must be between 0 and 5")
+        
+        # is None to prevent 0 arrays evaling to False
+        if rotation_center is None:
+            rotation_center = u.Quantity([0*self.units['x'], 0*self.units['y']])
 
         # Copy Map
         new_map = deepcopy(self)
@@ -718,8 +722,7 @@ Dimension:\t [{xdim:d}, {ydim:d}]
         # pixel_center is swapped compared to the x-y convention
         if recenter:
             # Convert the axis of rotation from data coordinates to pixel coordinates
-            x = new_map.data_to_pixel(rotation_center[0], 'x')
-            y = new_map.data_to_pixel(rotation_center[1], 'y')
+            x, y = new_map.data_to_pixel(rotation_center[0], rotation_center[1])
             pixel_center = (y, x)
         else:
             pixel_center = array_center
@@ -739,11 +742,11 @@ Dimension:\t [{xdim:d}, {ydim:d}]
             new_center = rotation_center
         else:
             # Retrieve old coordinates for the center of the array
-            old_center = np.asarray(new_map.pixel_to_data(array_center[1], array_center[0]))
+            old_center = u.Quantity(new_map.pixel_to_data(array_center[1], array_center[0]))
 
             # Calculate new coordinates for the center of the array
             new_center = rotation_center - np.dot(rmatrix, rotation_center - old_center)
-            new_center = np.asarray(new_center)[0]
+            new_center = np.asarray(new_center)
 
         # Define a new reference pixel in the rotated space
         new_map.meta['crval1'] = new_center[0]
@@ -787,14 +790,15 @@ Dimension:\t [{xdim:d}, {ydim:d}]
 
         return new_map
 
+
     def submap(self, range_a, range_b, units="data"):
         """Returns a submap of the map with the specified range
 
         Parameters
         ----------
-        range_a : list
+        range_a : `astropy.units.Quantity`
             The range of the Map to select across either the x axis.
-        range_b : list
+        range_b : `astropy.units.Quantity`
             The range of the Map to select across either the y axis.
         units : {'data' | 'pixels'}, optional
             The units for the supplied ranges.
@@ -831,12 +835,12 @@ Dimension:\t [{xdim:d}, {ydim:d}]
             if range_b[1] is None:
                 range_b[1] = self.yrange[1]
 
-            #x_pixels = [self.data_to_pixel(elem, 'x') for elem in range_a]
-            x_pixels = [np.ceil(self.data_to_pixel(range_a[0], 'x')),
-                        np.floor(self.data_to_pixel(range_a[1], 'x')) + 1]
-            #y_pixels = [self.data_to_pixel(elem, 'y') for elem in range_b]
-            y_pixels = [np.ceil(self.data_to_pixel(range_b[0], 'y')),
-                        np.floor(self.data_to_pixel(range_b[1], 'y')) + 1]
+            x1, y1 = np.ceil(self.data_to_pixel(range_a[0]*u.arcsec, range_b[0]*u.arcsec))
+            x2, y2 = np.floor(self.data_to_pixel(range_a[1]*u.arcsec, range_b[1]*u.arcsec)) + 1
+    
+            x_pixels = [x1, x2]
+            y_pixels = [y1, y2]            
+            
         elif units is "pixels":
             # Check edges
             if range_a[0] is None:
