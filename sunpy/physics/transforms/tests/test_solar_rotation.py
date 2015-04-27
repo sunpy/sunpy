@@ -3,13 +3,18 @@
 # Testing functions for a mapcube solar derotation functionality.
 #
 import os
+from copy import deepcopy
+
+import pytest
 import numpy as np
 from numpy.testing import assert_allclose
+
+import astropy.units as u
+
 import sunpy.data.test
 from sunpy import map
 from sunpy.physics.transforms.solar_rotation import calculate_solar_rotate_shift, mapcube_solar_derotate
-from copy import deepcopy
-import pytest
+
 
 
 @pytest.fixture
@@ -20,7 +25,7 @@ def aia171_test_map():
 
 @pytest.fixture
 def aia171_test_submap(aia171_test_map):
-    return aia171_test_map.submap((0, 400), (0, 500))
+    return aia171_test_map.submap((0, 400)*u.arcsec, (0, 500)*u.arcsec)
 
 
 @pytest.fixture
@@ -74,7 +79,7 @@ def test_mapcube_solar_derotate(aia171_test_mapcube, aia171_test_submap):
     for im, m in enumerate(tmc):
         for s in ['x', 'y']:
             assert_allclose(m.center[s], aia171_test_submap.center[s] -
-                            tshift[s][im].to('arcsec').value, rtol=5e-2, atol=0)
+                            tshift[s][im], rtol=5e-2, atol=0)
 
     # Test that a mapcube is returned on default clipping (clipping is True)
     tmc = mapcube_solar_derotate(aia171_test_mapcube)

@@ -254,7 +254,7 @@ Dimension:\t [{xdim:d}, {ydim:d}]
     @property
     def exposure_time(self):
         """Exposure time of the image in seconds."""
-        return self.meta.get('exptime', 0.0)
+        return self.meta.get('exptime', 0.0) * u.s
 
     @property
     def instrument(self):
@@ -270,7 +270,7 @@ Dimension:\t [{xdim:d}, {ydim:d}]
     def wavelength(self):
         """wavelength of the observation"""
         return self.meta.get('wavelnth', "")
-
+    
     @property
     def observatory(self):
         """Observatory or Telescope name"""
@@ -631,7 +631,7 @@ Dimension:\t [{xdim:d}, {ydim:d}]
 
         Parameters
         ----------
-        angle : float
+        angle : `~astropy.units.Quantity`
             The angle (degrees) to rotate counterclockwise.
         rmatrix : 2x2
             Linear transformation rotation matrix.
@@ -646,7 +646,7 @@ Dimension:\t [{xdim:d}, {ydim:d}]
             Default: 4
         scale : float
             A scale factor for the image, default is no scaling
-        rotation_center : tuple
+        rotation_center : `~astropy.units.Quantity`
             The axis of rotation in data coordinates
             Default: the origin in the data coordinate system
         recenter : bool
@@ -684,6 +684,28 @@ Dimension:\t [{xdim:d}, {ydim:d}]
             raise ValueError("You cannot specify both an angle and a matrix")
         elif angle is None and rmatrix is None:
             rmatrix = self.rotation_matrix
+        
+        # This is out of the quantity_input decorator. To allow the angle=None 
+        # case. See https://github.com/astropy/astropy/issues/3734
+        if angle:
+            try:
+                equivalent = angle.unit.is_equivalent(u.deg)
+
+                if not equivalent:
+                    raise u.UnitsError("Argument '{0}' to function '{1}'"
+                                       " must be in units convertable to"
+                                       " '{2}'.".format('angle', 'rotate',
+                                                      u.deg.to_string()))
+
+            # Either there is no .unit or no .is_equivalent
+            except AttributeError:
+                if hasattr(angle, "unit"):
+                    error_msg = "a 'unit' attribute without an 'is_equivalent' method"
+                else:
+                    error_msg = "no 'unit' attribute"
+                raise TypeError("Argument '{0}' to function '{1}' has {2}. "
+                      "You may want to pass in an astropy Quantity instead."
+                         .format('angle', 'rotate', error_msg))
 
         # Interpolation parameter sanity
         if order not in range(6):
@@ -692,6 +714,17 @@ Dimension:\t [{xdim:d}, {ydim:d}]
         # is None to prevent 0 arrays evaling to False
         if rotation_center is None:
             rotation_center = u.Quantity([0*self.units['x'], 0*self.units['y']])
+        else:
+            if not isinstance(rotation_center, u.Quantity) and not hasattr(rotation_center, "unit"):
+                raise TypeError("Argument rotation_center to function rotate has"
+                                " no unit attribute. You may want to pass in an" 
+                                "astropy Quantity instead." )
+            elif not rotation_center.unit.is_equivalent(self.units['x']):
+                raise u.UnitsError("Argument '{0}' to function '{1}'"
+                                   " must be in units convertable to"
+                                   " '{2}'.".format('rotation_center', 'rotate',
+                                                  self.units['x'].to_string()))
+                
 
         # Copy Map
         new_map = deepcopy(self)
@@ -746,11 +779,11 @@ Dimension:\t [{xdim:d}, {ydim:d}]
 
             # Calculate new coordinates for the center of the array
             new_center = rotation_center - np.dot(rmatrix, rotation_center - old_center)
-            new_center = np.asarray(new_center)
+            new_center = u.Quantity(new_center)
 
         # Define a new reference pixel in the rotated space
-        new_map.meta['crval1'] = new_center[0]
-        new_map.meta['crval2'] = new_center[1]
+        new_map.meta['crval1'] = new_center[0].value
+        new_map.meta['crval2'] = new_center[1].value
         new_map.meta['crpix1'] = array_center[1] + 1 # FITS counts pixels from 1
         new_map.meta['crpix2'] = array_center[0] + 1 # FITS counts pixels from 1
 
@@ -776,8 +809,8 @@ Dimension:\t [{xdim:d}, {ydim:d}]
 
         # Update pixel size if image has been scaled.
         if scale != 1.0:
-            new_map.meta['cdelt1'] = new_map.scale['x'] / scale
-            new_map.meta['cdelt2'] = new_map.scale['y'] / scale
+            new_map.meta['cdelt1'] = (new_map.scale['x'] / scale).value
+            new_map.meta['cdelt2'] = (new_map.scale['y'] / scale).value
 
         # Remove old CROTA kwargs because we have saved a new PCi_j matrix.
         new_map.meta.pop('CROTA1', None)
@@ -791,17 +824,19 @@ Dimension:\t [{xdim:d}, {ydim:d}]
         return new_map
 
 
-    def submap(self, range_a, range_b, units="data"):
-        """Returns a submap of the map with the specified range
+    def submap(self, range_a, range_b):
+        """
+        Returns a submap of the map with the specified range.
+        
 
         Parameters
         ----------
         range_a : `astropy.units.Quantity`
             The range of the Map to select across either the x axis.
+            Can be either in data units (normally arcseconds) or pixel units.
         range_b : `astropy.units.Quantity`
             The range of the Map to select across either the y axis.
-        units : {'data' | 'pixels'}, optional
-            The units for the supplied ranges.
+            Can be either in data units (normally arcseconds) or pixel units.
 
         Returns
         -------
@@ -810,20 +845,39 @@ Dimension:\t [{xdim:d}, {ydim:d}]
 
         Examples
         --------
-        >>> aia.submap([-5,5],[-5,5])
+        >>> aia.submap([-5,5]*u.arcsec, [-5,5]*u.arcsec)
         AIAMap([[ 341.3125,  266.5   ,  329.375 ,  330.5625,  298.875 ],
         [ 347.1875,  273.4375,  247.4375,  303.5   ,  305.3125],
         [ 322.8125,  302.3125,  298.125 ,  299.    ,  261.5   ],
         [ 334.875 ,  289.75  ,  269.25  ,  256.375 ,  242.3125],
         [ 273.125 ,  241.75  ,  248.8125,  263.0625,  249.0625]])
 
-        >>> aia.submap([0,5],[0,5], units='pixels')
+        >>> aia.submap([0,5]*u.pixel, [0,5]*u.pixel)
         AIAMap([[ 0.3125, -0.0625, -0.125 ,  0.    , -0.375 ],
         [ 1.    ,  0.1875, -0.8125,  0.125 ,  0.3125],
         [-1.1875,  0.375 , -0.5   ,  0.25  , -0.4375],
         [-0.6875, -0.3125,  0.8125,  0.0625,  0.1875],
         [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
         """
+        
+        # Do manual Quantity input validation
+        if ((isinstance(range_a, u.Quantity) and isinstance(range_b, u.Quantity)) or
+            (hasattr(range_a, 'unit') and hasattr(range_b, 'unit'))):
+
+            if (range_a.unit.is_equivalent(self.units['x']) and 
+                range_b.unit.is_equivalent(self.units['x'])):
+                units = 'data'
+            elif range_a.unit.is_equivalent(u.pixel) and range_b.unit.is_equivalent(u.pixel):
+                units = 'pixels'
+            else:
+                raise u.UnitsError("range_a and range_b but be"
+                                   "in units convertable to {} or {}".format(self.units['x'],
+                                                                             u.pixel))
+        else:
+            raise TypeError("Arguments range_a and range_b to function submap "
+                            "have an invalid unit attribute "
+                            "You may want to pass in an astropy Quantity instead.")
+
         if units is "data":
             # Check edges (e.g. [:512,..] or [:,...])
             if range_a[0] is None:
@@ -835,8 +889,8 @@ Dimension:\t [{xdim:d}, {ydim:d}]
             if range_b[1] is None:
                 range_b[1] = self.yrange[1]
 
-            x1, y1 = np.ceil(self.data_to_pixel(range_a[0]*u.arcsec, range_b[0]*u.arcsec))
-            x2, y2 = np.floor(self.data_to_pixel(range_a[1]*u.arcsec, range_b[1]*u.arcsec)) + 1
+            x1, y1 = np.ceil(self.data_to_pixel(range_a[0], range_b[0]))
+            x2, y2 = np.floor(self.data_to_pixel(range_a[1], range_b[1])) + 1
     
             x_pixels = [x1, x2]
             y_pixels = [y1, y2]            
@@ -852,8 +906,8 @@ Dimension:\t [{xdim:d}, {ydim:d}]
             if range_b[1] is None:
                 range_b[1] = self.shape[0]
 
-            x_pixels = range_a
-            y_pixels = range_b
+            x_pixels = range_a.value
+            y_pixels = range_b.value
         else:
             raise ValueError(
                 "Invalid unit. Must be one of 'data' or 'pixels'")
@@ -946,7 +1000,8 @@ Dimension:\t [{xdim:d}, {ydim:d}]
 
 # #### Visualization #### #
 
-    def draw_grid(self, axes=None, grid_spacing=15, **kwargs):
+    @u.quantity_input(grid_spacing=u.deg)
+    def draw_grid(self, axes=None, grid_spacing=15*u.deg, **kwargs):
         """Draws a grid over the surface of the Sun
 
         Parameters

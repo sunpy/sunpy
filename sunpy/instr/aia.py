@@ -2,6 +2,8 @@
 """
 Provides processing routines for data captured with the AIA instrument on SDO.
 """
+import astropy.units as u
+
 from sunpy.map.sources.sdo import AIAMap
 
 def aiaprep(aiamap):
@@ -40,13 +42,13 @@ def aiaprep(aiamap):
 
     # Taget scale is 0.6 arcsec/pixel, but this needs to be adjusted if the map
     # has already been rescaled.
-    if round(aiamap.scale['x']/0.6) != 1.0 and aiamap.shape != (4096, 4096):
-        scale = round(aiamap.scale['x']/0.6) * 0.6
+    if (aiamap.scale['x']/0.6).round() != 1.0*u.arcsec and aiamap.shape != (4096, 4096):
+        scale = (aiamap.scale['x']/0.6).round() * 0.6*u.arcsec
     else:
-        scale = 0.6 # pragma: no cover # can't test this because it needs a full res image
+        scale = 0.6*u.arcsec # pragma: no cover # can't test this because it needs a full res image
     scale_factor = aiamap.scale['x'] / scale
 
-    newmap = aiamap.rotate(recenter=True, scale=scale_factor, missing=aiamap.min())
+    newmap = aiamap.rotate(recenter=True, scale=scale_factor.value, missing=aiamap.min())
     newmap.meta['lvl_num'] = 1.5
 
     return newmap

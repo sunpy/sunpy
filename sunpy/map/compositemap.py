@@ -6,6 +6,8 @@ from __future__ import absolute_import
 
 import matplotlib.pyplot as plt
 
+import astropy.units as u
+
 from sunpy.map import GenericMap
 
 from sunpy.util import expand_list
@@ -232,7 +234,8 @@ class CompositeMap(object):
 
         return self._maps[index].draw_limb(axes=axes)
 
-    def draw_grid(self, index=None, axes=None, grid_spacing=20):
+    @u.quantity_input(grid_spacing=u.deg)
+    def draw_grid(self, index=None, axes=None, grid_spacing=20*u.deg):
         """Draws a grid over the surface of the Sun
 
         Parameters
