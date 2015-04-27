@@ -5,10 +5,10 @@ Test Generic Map
 from __future__ import absolute_import
 
 import os
+import pytest
+import datetime
 
 import numpy as np
-
-import pytest
 
 import astropy.wcs
 from astropy.io import fits
@@ -18,6 +18,7 @@ import sunpy
 import sunpy.sun
 import sunpy.map
 import sunpy.data.test
+from sunpy.time import parse_time
 
 testpath = sunpy.data.test.rootdir
 
@@ -65,7 +66,7 @@ def test_repr_no_obs(generic_map):
 
 
 def test_repr_obs(aia171_test_map):
-    assert aia171_test_map.__repr__() == 'SunPy AIAMap\n---------\nObservatory:\t SDO\nInstrument:\t AIA_3\nDetector:\t AIA\nMeasurement:\t 171\nObs Date:\t 2011-02-15T00:00:00.34\ndt:\t\t 2.000191 s\nDimension:\t [128, 128]\n[dx, dy] =\t [19.183648 arcsec, 19.183648 arcsec]\n\narray([[-1.25,  0.  ,  1.  , ...,  0.  ,  0.5 , -0.75],\n       [ 0.75, -0.25, -0.5 , ...,  0.25,  0.  , -0.25],\n       [ 0.  ,  0.5 ,  1.75, ...,  0.  ,  0.5 ,  0.  ],\n       ..., \n       [ 1.  ,  0.25, -0.25, ...,  0.  ,  0.  ,  0.  ],\n       [-0.25,  0.  , -0.5 , ...,  0.75, -0.75,  0.  ],\n       [ 0.75,  1.5 , -0.75, ...,  0.  , -0.5 ,  0.5 ]])'
+    assert aia171_test_map.__repr__() == 'SunPy AIAMap\n---------\nObservatory:\t SDO\nInstrument:\t AIA_3\nDetector:\t AIA\nMeasurement:\t 171\nObs Date:\t 2011-02-15 00:00:00.340000\ndt:\t\t 2.000191 s\nDimension:\t [128, 128]\n[dx, dy] =\t [19.183648 arcsec, 19.183648 arcsec]\n\narray([[-1.25,  0.  ,  1.  , ...,  0.  ,  0.5 , -0.75],\n       [ 0.75, -0.25, -0.5 , ...,  0.25,  0.  , -0.25],\n       [ 0.  ,  0.5 ,  1.75, ...,  0.  ,  0.5 ,  0.  ],\n       ..., \n       [ 1.  ,  0.25, -0.25, ...,  0.  ,  0.  ,  0.  ],\n       [-0.25,  0.  , -0.5 , ...,  0.75, -0.75,  0.  ],\n       [ 0.75,  1.5 , -0.75, ...,  0.  , -0.5 ,  0.5 ]])'
 
 def test_wcs(aia171_test_map):
     wcs = aia171_test_map.wcs
@@ -132,11 +133,11 @@ def test_nickname_set(generic_map):
 
 
 def test_date(generic_map):
-    assert generic_map.date is 'now'
+    assert isinstance(generic_map.date, datetime.datetime)
 
 
 def test_date_aia(aia171_test_map):
-    assert aia171_test_map.date == '2011-02-15T00:00:00.34'
+    assert aia171_test_map.date == parse_time('2011-02-15T00:00:00.34')
 
 
 def test_detector(generic_map):
