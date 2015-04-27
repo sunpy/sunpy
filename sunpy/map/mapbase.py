@@ -168,6 +168,8 @@ Dimension:\t [{xdim:d}, {ydim:d}]
     def wcs(self):
         w2 = astropy.wcs.WCS(naxis=2)
         w2.wcs.crpix = [self.reference_pixel['x'], self.reference_pixel['y']]
+        # Make these a quantity array to prevent the numpy setting element of
+        # array with sequence error.
         w2.wcs.cdelt = u.Quantity([self.scale['x'], self.scale['y']])
         w2.wcs.crval = u.Quantity([self.reference_coordinate['x'], self.reference_coordinate['y']])
         w2.wcs.ctype = [self.coordinate_system['x'], self.coordinate_system['y']]
@@ -226,7 +228,12 @@ Dimension:\t [{xdim:d}, {ydim:d}]
     @property
     def date(self):
         """Image observation time"""
-        return self.meta.get('date-obs', 'now')
+        time = parse_time(self.meta.get('date-obs', 'now'))
+        if time is None:
+            warnings.warn_explicit("Missing metadata for observation time. Using current time.",
+                                       Warning, __file__, inspect.currentframe().f_back.f_lineno)
+        return parse_time(time)
+
 #    @date.setter
 #    def date(self, new_date):
 #        self.meta['date-obs'] = new_date
