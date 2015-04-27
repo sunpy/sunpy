@@ -26,6 +26,9 @@ Latest
  * Fixed the downloading of files with duplicate names in sunpy.database
  * Changed default for GOESLightCurve.create() so that it gets the data from the most recent existing GOES fits file.
  * Map plot functionality now uses the mask property if it is present, allowing the plotting of masked map data
+ * Map Expects Quantities and returns quantities for most parameters.
+ * Map now used Astropy.wcs for world <-> pixel conversions.
+ * map.data_to_pixel now has a similar API to map.pixel_to_data.
 
 0.5.0
 -----
