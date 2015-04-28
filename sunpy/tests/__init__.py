@@ -9,7 +9,7 @@ except ImportError:
 
 
 def main(modulename='', coverage=False, cov_report=False,
-         online=True, offline=True, verbose=False, parallel=0, args=None):
+         online=False, offline=True, verbose=False, parallel=0, args=None):
     """
     Execute the test suite of the sunpy package. The parameters may be
     used to restrict the number of tests that will be executed or to
@@ -31,7 +31,7 @@ def main(modulename='', coverage=False, cov_report=False,
 
     online : bool
         Run the tests that require an internet connection.
-    
+
     offline: bool
         Run the tests that don't require an internet connection.
 
@@ -52,7 +52,7 @@ def main(modulename='', coverage=False, cov_report=False,
         raise ImportError(
             'No module named {0!r} in the sunpy package'.format(modulename))
     assert path is not None
-    
+
     all_args = []
     if coverage:
         print path, modulename
@@ -66,15 +66,15 @@ def main(modulename='', coverage=False, cov_report=False,
     if not offline:
         all_args.append('-k online')
     all_args.append(path)
-    
+
     if args:
         all_args.append(args)
-    
+
     if verbose:
         all_args.append('-v')
-    
+
     if parallel != 0:
-        try:    
+        try:
             import xdist
         except ImportError:
             raise ImportError(

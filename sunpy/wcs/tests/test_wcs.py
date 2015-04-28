@@ -166,3 +166,12 @@ def test_convert_back():
     coord = [34.0, 45.0]
     assert_allclose(wcs.convert_hpc_hg(*wcs.convert_hg_hpc(*coord)),
                     coord, rtol=1e-2, atol=0)
+
+# Ensures that further testing involving wcs uses the "constants" value
+# of the solar radius in meters.  There is a line above that resets the
+# wcs value of the solar radius for the purposes of these tests.  The
+# line below restores the original value.  This ensures that when using
+# Travis testing, all further tests that use wcs also use the correct
+# value of the solar radius.
+wcs.wcs.rsun_meters = sun.constants.radius.si.value
+

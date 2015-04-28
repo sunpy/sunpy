@@ -21,6 +21,10 @@ Latest
  * Added capability for figure-based tests
  * Refactored mapcube co-alignment functionality.
  * Removed sample data from distribution and added ability to download sample files
+ * Require JSOC request data calls have an email address attached.
+ * Calculation of the solar rotation of a point on the Sun as seen from Earth, and its application to the de-rotation of mapcubes.
+ * Downloaded files now keep file extensions rather than replacing all periods with underscores
+ * Fixed the downloading of files with duplicate names in sunpy.database
 
 0.5.0
 -----

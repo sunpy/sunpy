@@ -544,7 +544,8 @@ class VSOClient(object):
             time_near=datetime.utcnow()
         )
 
-    def get(self, query_response, path=None, methods=('URL-FILE',), downloader=None, site=None):
+    def get(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),
+            downloader=None, site=None):
         """
         Download data specified in the query_response.
 
@@ -559,7 +560,12 @@ class VSOClient(object):
             be refered to as file, e.g.
             "{source}/{instrument}/{time.start}/{file}".
         methods : {list of str}
-            Methods acceptable to user.
+            Download methods, defaults to URL-FILE_Rice then URL-FILE.
+            Methods are a concatenation of one PREFIX followed by any number of
+            SUFFIXES i.e. `PREFIX-SUFFIX_SUFFIX2_SUFFIX3`.
+            The full list of `PREFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_PREFIX>`_
+            and `SUFFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_SUFFIX>`_
+            are listed on the VSO site.
         downloader : sunpy.net.downloader.Downloader
             Downloader used to download the data.
         site: str
@@ -600,6 +606,8 @@ class VSOClient(object):
         if path is None:
             path = os.path.join(config.get('downloads','download_dir'),
                                 '{file}')
+        path = os.path.expanduser(path)
+
         fileids = VSOClient.by_fileid(query_response)
         if not fileids:
             res.poke()
