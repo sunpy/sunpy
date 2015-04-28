@@ -203,7 +203,6 @@ class JSOCClient(object):
         for block in walker.create(query):
             iargs = kwargs.copy()
             iargs.update(block)
-
             return_results.append(self._lookup_records(iargs))
 
         return_results.query_args = iargs
@@ -500,6 +499,11 @@ class JSOCClient(object):
                    sample=sample,
                    wavelength=wavelength, segment=segment)
 
+        if kwargs:
+            for key in kwargs.keys():
+                if 'primarykey' in key:
+                    dataset += '[{k}={value}]'.format(k=key.replace('primarykey_',''),value=kwargs[key])
+
         return dataset
 
     def _make_query_payload(self, start_time, end_time, series, notify=None,
@@ -534,8 +538,16 @@ class JSOCClient(object):
                    'requestor': 'none',
                    'filenamefmt': '{0}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format(series)}
 
-        payload.update(kwargs)
+        payload.update(self._clean_primarykey(kwargs))
         return payload
+
+    def _clean_primarykey(self, kwargs):
+        kwarg_copy = kwargs.copy()
+        for key in kwarg_copy.keys():
+            if 'primarykey' in key:
+                keyname = key.replace('primarykey_','')
+                kwarg_copy[keyname] = kwarg_copy.pop(key)
+        return kwarg_copy
 
     def _send_jsoc_request(self, start_time, end_time, series, notify=None,
                            protocol='FITS', compression='rice', **kwargs):
