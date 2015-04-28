@@ -196,9 +196,9 @@ shape.  If this is not true, an error (ValueError) is returned.  If all the
 maps have nx pixels in the x-direction, and ny pixels in the y-direction,
 and there are nt maps in the mapcube, the ndarray array that is
 returned has shape (ny, nx, nt).  The data of the first map in the mapcube 
-appears in the ndarray in position (:, :, 0), the data of second map in
-position (:, :, 1), and so on.  The order of maps in the mapcube is reproduced
-in the returned ndarray.
+appears in the ndarray in position ``[:, :, 0]``, the data of second map in
+position ``[:, :, 1]``, and so on.  The order of maps in the mapcube is
+reproduced in the returned ndarray.
 
 The meta data from each map can be obtained using::
 
@@ -246,3 +246,44 @@ function above.  Please consult its docstring to learn more about its features.
 Shifts calculated using calculate_match_template_shift can be passed directly
 to mapcube coalignment function.
 
+
+10. Compensating for solar rotation in Mapcubes
+-----------------------------------------------
+Often a set of solar image data consists of fixing the pointing of a
+field of view for some time and observing.  Features on the Sun will
+rotate according to the Sun's rotation.
+
+A typical data preparation step when dealing with time series of these
+types of images is to shift the images so that features do not appear
+to move across the field of view.  This requires taking in to account
+the rotation of the Sun.  The Sun rotates differentially, depending on
+latitude, with features at the equator moving faster than features at
+the poles.
+
+SunPy provides a function to shift images in mapcubes following solar
+rotation.  This function shifts an image according to the solar
+differential rotation calculated at the latitude of the center of the
+field of view.  The image is not *differentially* rotated.  This
+function is useful for de-rotating images when the effects of
+differential rotation in the mapcube can be ignored (for example, if
+the spatial extent of the image is small, or when the duration of the
+mapcube is small; deciding on what 'small' means depends on your
+application).
+
+To apply this form of solar derotation to a mapcube, simply import the
+function and apply it to your mapcube::
+
+    from sunpy.physics.transforms.solar_rotation import mapcube_solar_derotate
+    derotated = mapcube_solar_derotate(mc)
+
+Please consult the docstring of the function in order to learn about
+the features of this function.
+
+If you just want to calculate the shifts required to compensate for solar
+rotation relative to the first map in the mapcube without applying them, use::
+
+    from sunpy.physics.transforms.solar_rotation import calculate_solar_rotate_shift
+    shifts = calculate_solar_rotate_shift(mc)
+
+Please consult the docstring of the function in order to learn about
+the features of this function.

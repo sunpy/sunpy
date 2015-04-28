@@ -42,5 +42,5 @@ install:
 build: false
 
 test_script:
-    - "%CMD_IN_ENV% python setup.py test --offline-only"
+    - "%CMD_IN_ENV% python setup.py test"
 

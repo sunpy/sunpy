@@ -20,7 +20,6 @@ from sunpy.image.coalignment import parabolic_turning_point, \
     calculate_match_template_shift, mapcube_coalign_by_match_template,\
     apply_shifts
 
-
 @pytest.fixture
 def aia171_test_clipping():
     return np.asarray([0.2, -0.3, -1.0001])

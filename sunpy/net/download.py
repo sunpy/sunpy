@@ -58,6 +58,7 @@ class Downloader(object):
                         else:
                             fd.write(rec)
         except Exception, e:
+            # TODO: Fix the silent failing
             if errback is not None:
                 with self.mutex:
                     self._close(errback, [e], server)
