@@ -1,8 +1,8 @@
 The SunPy project is happy to announce the release of SunPy 0.6.0.
 This is a major SunPy release with lots of changes that will make SunPy even
 better than it was before.
-This release consists of 1,139 commits from 23 different people and
-8 new contributors!
+This release consists of 1,139 commits from 24 different people and
+9 new contributors!
 
 The major changes in this release are:
 
@@ -48,6 +48,7 @@ The people who have contributed to this release are:
     Simon Liedtke
     Abigail Stevens *
     Ambar Mehrotra *
+    Erik M. Bray *
     Jaylen Wimbish *
     Larry Manley
     Norbert Gyenge
