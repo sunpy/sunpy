@@ -21,7 +21,7 @@ from datetime import datetime
 
 from astropy import units as u
 
-from sunpy.time import _TimeRange
+from sunpy.time import TimeRange as  _TimeRange
 from sunpy.net.attr import (
     Attr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
 )
