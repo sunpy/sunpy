@@ -11,7 +11,7 @@ def test_hpc():
 
     result = solar_wcs_frame_mapping(wcs)
 
-    assert result is HelioProjective
+    assert isinstance(result, HelioProjective)
 
 def test_hgs():
     wcs = WCS(naxis=2)
@@ -19,7 +19,7 @@ def test_hgs():
 
     result = solar_wcs_frame_mapping(wcs)
 
-    assert result is HelioGraphicStonyhurst
+    assert isinstance(result, HelioGraphicStonyhurst)
 
 def test_hgc():
     wcs = WCS(naxis=2)
@@ -27,7 +27,7 @@ def test_hgc():
 
     result = solar_wcs_frame_mapping(wcs)
 
-    assert result is HelioGraphicCarrington
+    assert isinstance(result, HelioGraphicCarrington)
 
 def test_hcc():
     wcs = WCS(naxis=2)
@@ -35,7 +35,7 @@ def test_hcc():
 
     result = solar_wcs_frame_mapping(wcs)
 
-    assert result is HelioCentric
+    assert isinstance(result, HelioCentric)
 
 def test_none():
     wcs = WCS(naxis=2)

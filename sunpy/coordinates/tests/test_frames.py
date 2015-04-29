@@ -36,7 +36,8 @@ two_D_parameters = [([0*u.deg, 0*u.arcsec], None),
                     ([0*u.deg, 0*u.arcsec], {'representation':'unitspherical'}),
                     ([UnitSphericalWrap180Representation(0*u.deg, 0*u.arcsec)], None),
                     ([UnitSphericalRepresentation(0*u.deg, 0*u.arcsec)], None),
-                    ([UnitSphericalWrap180Representation(0*u.deg, 0*u.arcsec)], {'dateobs':'2011/01/01T00:00:00'})
+                    ([UnitSphericalWrap180Representation(0*u.deg, 0*u.arcsec)],
+                      {'dateobs':'2011/01/01T00:00:00'})
                    ]
 """
 These are common 3D params, kwargs are frame specific
@@ -47,7 +48,8 @@ three_D_parameters = [([0*u.deg, 0*u.arcsec, 1*u.Mm], None),
                       ([0*u.deg, 0*u.arcsec, 1*u.Mm], {'representation':'spherical'}),
                       ([SphericalWrap180Representation(0*u.deg, 0*u.arcsec, 1*u.Mm)], None),
                       ([SphericalRepresentation(0*u.deg, 0*u.arcsec, 1*u.Mm)], None),
-                      ([SphericalWrap180Representation(0*u.deg, 0*u.arcsec, 1*u.Mm)], {'dateobs':'2011/01/01T00:00:00'})
+                      ([SphericalWrap180Representation(0*u.deg, 0*u.arcsec, 1*u.Mm)],
+                        {'dateobs':'2011/01/01T00:00:00'})
                      ]
 
 #==============================================================================
