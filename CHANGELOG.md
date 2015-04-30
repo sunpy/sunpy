@@ -51,6 +51,7 @@ Latest
  * Fixed solar_semidiameter_angular_size
  * Improved line quality and performances issues with map.draw_grid()
  * Remove deprecated make_map command.
+ * Changed default for GOESLightCurve.create() so that it gets the data from the most recent existing GOES fits file.
 
 0.4.1
 -----
