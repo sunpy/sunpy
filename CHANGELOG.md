@@ -1,3 +1,8 @@
+latest
+------
+
+ * Changed default for GOESLightCurve.create() so that it gets the data from the most recent existing GOES fits file.
+
 0.5.4
 -----
 Bug Fixes:
