@@ -1145,7 +1145,11 @@ Dimension:\t [{xdim:d}, {ydim:d}]
                   'interpolation':'nearest'}
         kwargs.update(imshow_args)
 
-        ret = axes.imshow(self.data, **kwargs)
+        # Allows users to show masked data
+        if self.mask is None:
+            ret = axes.imshow(self.data, **kwargs)
+        else:
+            ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **kwargs)
 
         #Set current image (makes colorbar work)
         plt.sci(ret)
