@@ -23,7 +23,7 @@ def test_main_stdlib_module():
 def test_main_noargs(monkeypatch):
     monkeypatch.setattr(pytest, 'main', lambda x: x)
     args = sunpy.tests.main()
-    assert args in (['-k-online', 'sunpy'], [root_dir])
+    assert args in (['-k-online', 'sunpy'], ['-k-online', root_dir])
 
 
 def test_main_submodule(monkeypatch):
