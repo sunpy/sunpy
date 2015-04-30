@@ -2,6 +2,8 @@ latest
 ------
 
  * Changed default for GOESLightCurve.create() so that it gets the data from the most recent existing GOES fits file.
+ * Improvements to the Map documentation.
+ * Typo fixes in sunpy.wcs documentation.
 
 0.5.4
 -----
