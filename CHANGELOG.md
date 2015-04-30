@@ -25,6 +25,7 @@ Latest
  * Downloaded files now keep file extensions rather than replacing all periods with underscores
  * Fixed the downloading of files with duplicate names in sunpy.database
  * Changed default for GOESLightCurve.create() so that it gets the data from the most recent existing GOES fits file.
+ * Map plot functionality now uses the mask property if it is present, allowing the plotting of masked map data
 
 0.5.0
 -----
