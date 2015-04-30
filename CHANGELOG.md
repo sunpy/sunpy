@@ -30,6 +30,7 @@ Latest
  * Removed sample data from distribution and added ability to download sample files.
  * Added the calculation of the solar rotation of a point on the Sun as seen from Earth, and its application to the de-rotation of mapcubes.
  * Changed default for GOESLightCurve.create() so that it gets the data from the most recent existing GOES fits file.
+ * Map plot functionality now uses the mask property if it is present, allowing the plotting of masked map data
 
 0.5.0
 -----
