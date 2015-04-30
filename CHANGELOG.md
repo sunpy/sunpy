@@ -24,6 +24,7 @@ Latest
  * Calculation of the solar rotation of a point on the Sun as seen from Earth, and its application to the de-rotation of mapcubes.
  * Downloaded files now keep file extensions rather than replacing all periods with underscores
  * Fixed the downloading of files with duplicate names in sunpy.database
+ * Map plot functionality now uses the mask property if it is present, allowing the plotting of masked map data
 
 0.5.0
 -----
