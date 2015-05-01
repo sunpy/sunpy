@@ -12,6 +12,8 @@ try:
     import skimage.transform
     scikit_image_not_found = False
 except ImportError:  # pragma: no cover
+    warnings.warn("scikit-image could not be imported. Map rotation will use scipy",
+                  ImportWarning)
     scikit_image_not_found = True  # pragma: no cover
 
 __all__ = ['affine_transform']
