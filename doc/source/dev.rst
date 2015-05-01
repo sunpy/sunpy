@@ -130,6 +130,39 @@ Use the `setup.py` script like so: ::
 
  sudo python setup.py develop
 
+If you are interested in having different versions of sunpy in your
+machine and you want to switch from one to another you could use
+virtual enviroments. This is an easy task if you used conda as your
+python package manager.
+
+After a standard conda installation, :ref:`assuming you have also installed
+the latest stable version of sunpy <main-install>`, you then proceed to create a new enviroment
+as::
+
+ conda create -n sunpy-dev python=2.7 sunpy
+
+This will create a new enviroment called `sunpy-dev` with all of the
+dependencies needed by sunpy. We the proceed to change to the new
+enviroment::
+
+ source activate sunpy-dev
+
+Then we need to remove the stable version from this enviroment ::
+
+ conda remove sunpy
+
+to then install the version in your git repository ::
+
+ cd to/sunpy/git/repository
+ python setup.py develop
+
+At this stage you can use the development version in which you are
+working on.
+If you want to go back to the stable installation you can just change
+the enviroment by ::
+
+ source deactivate
+
 **Conclusion**
 
 That's it! You now have your own personal SunPy repo to develop on. You could
