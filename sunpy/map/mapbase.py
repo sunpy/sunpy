@@ -154,13 +154,13 @@ Detector:\t {det}
 Measurement:\t {meas:0.0f}
 Obs Date:\t {date}
 dt:\t\t {dt:f}
-Dimension:\t [{xdim:d}, {ydim:d}]
-[dx, dy] =\t [{dx:f}, {dy:f}]
+Dimension:\t {dim}
+[dx, dy] =\t [{dx}, {dy}]
 
 """.format(dtype=self.__class__.__name__,
            obs=self.observatory, inst=self.instrument, det=self.detector,
            meas=self.measurement, date=self.date, dt=self.exposure_time,
-           xdim=self.data.shape[1], ydim=self.data.shape[0],
+           dim=self.shape,
            dx=self.scale['x'], dy=self.scale['y'])
 + self.data.__repr__())
 
@@ -181,7 +181,7 @@ Dimension:\t [{xdim:d}, {ydim:d}]
     #Some numpy extraction
     @property
     def shape(self):
-        return self.data.shape
+        return u.Quantity(self.data.shape, 'pixel')
 
     @property
     def dtype(self):
@@ -189,7 +189,7 @@ Dimension:\t [{xdim:d}, {ydim:d}]
 
     @property
     def size(self):
-        return self.data.size
+        return u.Quantity(self.data.size, 'pixel')
 
     @property
     def ndim(self):
@@ -256,7 +256,7 @@ Dimension:\t [{xdim:d}, {ydim:d}]
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
             dsun = sun.sunearth_distance(self.date).to(u.m)
 
-        return dsun
+        return u.Quantity(dsun, 'm')
 
     @property
     def exposure_time(self):
@@ -271,12 +271,12 @@ Dimension:\t [{xdim:d}, {ydim:d}]
     @property
     def measurement(self):
         """Measurement name, defaults to the wavelength of image"""
-        return self.meta.get('wavelnth', "")
+        return u.Quantity(self.meta.get('wavelnth', 0), self.meta.get('waveunit', ""))
 
     @property
     def wavelength(self):
         """wavelength of the observation"""
-        return self.meta.get('wavelnth', "")
+        return u.Quantity(self.meta.get('wavelnth', 0), self.meta.get('waveunit', ""))
     
     @property
     def observatory(self):
@@ -306,15 +306,15 @@ Dimension:\t [{xdim:d}, {ydim:d}]
                                     self.reference_coordinate['x']),
                 'y': wcs.get_center(self.shape[0], self.scale['y'],
                                     self.reference_pixel['y'],
-                                    self.reference_coordinate['y']),}
+                                    self.reference_coordinate['y'])}
 
     @property
     def rsun_meters(self):
         """Radius of the sun in meters"""
-        return self.meta.get('rsun_ref', constants.radius)
+        return u.Quantity(self.meta.get('rsun_ref', constants.radius), 'meter')
 
     @property
-    def rsun_arcseconds(self):
+    def rsun_obs(self):
         """Radius of the sun in arcseconds"""
         rsun_arcseconds = self.meta.get('rsun_obs',
                                         self.meta.get('solar_r',
@@ -323,9 +323,9 @@ Dimension:\t [{xdim:d}, {ydim:d}]
         if rsun_arcseconds is None:
             warnings.warn_explicit("Missing metadata for solar radius: assuming photospheric limb as seen from Earth",
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
-            rsun_arcseconds = sun.solar_semidiameter_angular_size(self.date).value
+            rsun_arcseconds = sun.solar_semidiameter_angular_size(self.date).to('arcsec').value
 
-        return rsun_arcseconds
+        return u.Quantity(rsun_arcseconds, 'arcsec')
 
     @property
     def coordinate_system(self):
@@ -343,7 +343,7 @@ Dimension:\t [{xdim:d}, {ydim:d}]
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
             carrington_longitude = (sun.heliographic_solar_center(self.date))[0]
 
-        return carrington_longitude
+        return u.Quantity(carrington_longitude, 'deg')
 
     @property
     def heliographic_latitude(self):
@@ -357,12 +357,12 @@ Dimension:\t [{xdim:d}, {ydim:d}]
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
             heliographic_latitude = (sun.heliographic_solar_center(self.date))[1]
 
-        return heliographic_latitude
+        return u.Quantity(heliographic_latitude, 'deg')
 
     @property
     def heliographic_longitude(self):
         """Heliographic longitude in degrees"""
-        return self.meta.get('hgln_obs', 0.)
+        return u.Quantity(self.meta.get('hgln_obs', 0.), 'deg')
 
     @property
     def reference_coordinate(self):
@@ -373,15 +373,15 @@ Dimension:\t [{xdim:d}, {ydim:d}]
     @property
     def reference_pixel(self):
         """Reference point axes in pixels (crpix1/2)"""
-        return {'x': self.meta.get('crpix1', (self.meta.get('naxis1') + 1) / 2.),
-                'y': self.meta.get('crpix2', (self.meta.get('naxis2') + 1) / 2.),}
+        return {'x': self.meta.get('crpix1', (self.meta.get('naxis1') + 1) / 2.) * u.pixel,
+                'y': self.meta.get('crpix2', (self.meta.get('naxis2') + 1) / 2.) * u.pixel}
 
     @property
     def scale(self):
         """Image scale along the x and y axes in units/pixel (cdelt1/2)"""
         #TODO: Fix this if only CDi_j matrix is provided
-        return {'x': self.meta.get('cdelt1', 1.) * self.units['x'],
-                'y': self.meta.get('cdelt2', 1.) * self.units['y'],}
+        return {'x': self.meta.get('cdelt1', 1.) * self.units['x'] / u.pixel,
+                'y': self.meta.get('cdelt2', 1.) * self.units['y'] / u.pixel}
 
     @property
     def units(self):
@@ -451,6 +451,11 @@ Dimension:\t [{xdim:d}, {ydim:d}]
         if 'bitpix' not in self.meta:
             float_fac = -1 if self.dtype.kind == "f" else 1
             self.meta['bitpix'] = float_fac * 8 * self.dtype.itemsize
+
+    def _get_cmap_name(self):
+        """Build the default color map name."""
+        cmap_string = self.observatory + self.meta['detector'] + str(int(self.wavelength.to('angstrom').value))
+        return cmap_string.lower()
 
     def _validate(self):
         """Validates the meta-information associated with a Map.
