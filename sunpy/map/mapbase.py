@@ -155,7 +155,7 @@ Measurement:\t {meas:0.0f}
 Obs Date:\t {date}
 dt:\t\t {dt:f}
 Dimension:\t {dim}
-[dx, dy] =\t [{dx}, {dy}]
+scale =\t {scale}
 
 """.format(dtype=self.__class__.__name__,
            obs=self.observatory, inst=self.instrument, det=self.detector,
@@ -167,7 +167,7 @@ Dimension:\t {dim}
     @property
     def wcs(self):
         w2 = astropy.wcs.WCS(naxis=2)
-        w2.wcs.crpix = [self.reference_pixel['x'], self.reference_pixel['y']]
+        w2.wcs.crpix = u.Quantity([self.reference_pixel['x'], self.reference_pixel['y']])
         # Make these a quantity array to prevent the numpy setting element of
         # array with sequence error.
         w2.wcs.cdelt = u.Quantity([self.scale['x'], self.scale['y']])
@@ -1152,7 +1152,7 @@ Dimension:\t {dim}
         else:
             axes = figure.gca()
 
-        im = self.plot(axes=axes,**matplot_args)
+        im = self.plot(axes=axes, **matplot_args)
 
         if colorbar and not basic_plot:
             figure.colorbar(im)
@@ -1235,19 +1235,16 @@ Dimension:\t {dim}
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
 
-        # Determine extent
-        extent = self.xrange + self.yrange
-
         cmap = deepcopy(self.cmap)
         if gamma is not None:
             cmap.set_gamma(gamma)
 
         # make imshow kwargs a dict
-        kwargs = {'origin':'lower',
-                  'cmap':cmap,
-                  'norm':self.mpl_color_normalizer,
-                  'extent':extent,
-                  'interpolation':'nearest'}
+        kwargs = {'origin': 'lower',
+                  'cmap': cmap,
+                  'norm': self.mpl_color_normalizer,
+                  'extent': np.append(self.xrange.value, self.yrange.value),
+                  'interpolation': 'nearest'}
         kwargs.update(imshow_args)
 
         # Allows users to show masked data
