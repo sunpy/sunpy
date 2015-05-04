@@ -46,5 +46,5 @@ def test_observatory(createAIAMap):
 
 def test_measurement(createAIAMap):
     """Tests the measurement property of the AIAMap object."""
-    assert createAIAMap.measurement in [171, 193]
+    assert createAIAMap.measurement.value in [171, 193]
     # aiaimg has 171, jp2path has 193.
