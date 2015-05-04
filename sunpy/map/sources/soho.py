@@ -98,6 +98,9 @@ class LASCOMap(GenericMap):
 
         GenericMap.__init__(self, data, header, **kwargs)
 
+        self.meta['CUNIT1'] = self.meta['CUNIT1'].lower()
+        self.meta['CUNIT2'] = self.meta['CUNIT2'].lower()
+
         # Fill in some missing or broken info
         datestr = "{date}T{time}".format(date=self.meta.get('date-obs',
                                                             self.meta.get('date_obs')
