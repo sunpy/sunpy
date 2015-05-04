@@ -61,7 +61,7 @@ class GenericMap(NDData):
     cmap : matplotlib.colors.Colormap
         A color map used for plotting with matplotlib.
     mpl_color_normalizer : matplotlib.colors.Normalize
-        A matplotlib normalizer used to scale the image plot.
+        A matplotlib normalizer used to the image plot.
 
     Examples
     --------
@@ -155,7 +155,7 @@ Measurement:\t {meas:0.0f}
 Obs Date:\t {date}
 dt:\t\t {dt:f}
 Dimension:\t {dim}
-scale =\t {scale}
+scale:\t\t [{dx}, {dy}]
 
 """.format(dtype=self.__class__.__name__,
            obs=self.observatory, inst=self.instrument, det=self.detector,
