@@ -3,7 +3,7 @@ from __future__ import absolute_import
 import numpy as np
 import sunpy.sun as sun
 
-import astropy.units
+import astropy.units as u
 
 rsun_meters = sun.constants.radius.si.value
 
@@ -99,7 +99,7 @@ def get_center(size, scale, reference_pixel, reference_coordinate):
     --------
 
     """
-    return scale * (size - 1) / 2. + reference_coordinate - (reference_pixel - 1) * scale
+    return scale * (size - 1 * u.pix) / 2. + reference_coordinate - (reference_pixel - 1 * u.pix) * scale
 
 def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
     """Calculate the pixel indices for a given data coordinate.
@@ -179,7 +179,7 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
 
     if dsun_meters is None:
         dsun_meters = sun.constants.au.si.value
-    elif isinstance(dsun_meters, astropy.units.Quantity):
+    elif isinstance(dsun_meters, u.Quantity):
         dsun_meters = dsun_meters.si.value
 
     q = dsun_meters * cosy * cosx
@@ -231,7 +231,7 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
 
     if dsun_meters is None:
         dsun_meters = sun.constants.au.si.value
-    elif isinstance(dsun_meters, astropy.units.Quantity):
+    elif isinstance(dsun_meters, u.Quantity):
         dsun_meters = dsun_meters.si.value
 
     zeta = dsun_meters - z
