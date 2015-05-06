@@ -35,6 +35,8 @@ class RHESSIMap(GenericMap):
             self.meta['cunit2'] = 'arcsec'
             self.meta['ctype2'] = 'HPLT-TAN'
 
+        self.plot_settings['cmap'] = cm.get_cmap('rhessi')
+
     @property
     def measurement(self):
         return [self.meta['energy_l'], self.meta['energy_h']]

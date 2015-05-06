@@ -32,7 +32,7 @@ class AIAMap(GenericMap):
         self._nickname = self.detector
         self._name = self.detector + " " + str(self.measurement)
 
-        self.cmap = cm.get_cmap('sdoaia{wl:d}'.format(wl=self.wavelength))
+        self.plot_settings['cmap'] = cm.get_cmap('sdoaia{wl:d}'.format(wl=self.wavelength))
 
     @property
     def observatory(self):
@@ -47,12 +47,23 @@ class AIAMap(GenericMap):
         # byte-scaled images have most likely already been scaled
         if self.data.dtype == np.uint8:
             return None
+        vmin = self.min()
+        vmax = self.max()
 
-        mean = self.mean()
-        std = self.std()
-
-        vmin = max(0, mean - 3 * std)
-        vmax = min(self.max(), mean + 3 * std)
+        if self.wavelength == 304:
+            return colors.PowerNorm(0.35, vmin, vmax)
+        if self.wavelength == 211:
+            return colors.PowerNorm(0.5, vmin, vmax)
+        if self.wavelength == 193:
+            return colors.PowerNorm(0.5, vmin, vmax)
+        if self.wavelength == 171:
+            return colors.PowerNorm(0.5, vmin, vmax)
+        if self.wavelength == 131:
+            return colors.PowerNorm(0.5, 0, vmax)
+        if self.wavelength == 335:
+            return colors.PowerNorm(0.4, 0, vmax)
+        if self.wavelength == 94:
+            return colors.PowerNorm(0.35, 0, vmax)
 
         return colors.Normalize(vmin, vmax)
 

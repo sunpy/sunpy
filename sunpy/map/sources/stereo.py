@@ -6,6 +6,7 @@ __email__ = "keith.hughitt@nasa.gov"
 
 from sunpy.map import GenericMap
 from sunpy.cm import cm
+from matplotlib import colors
 
 __all__ = ['EUVIMap', 'CORMap']
 
@@ -19,7 +20,7 @@ class EUVIMap(GenericMap):
         self._name = self.observatory + " " + self.detector + " " + str(self.measurement)
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
 
-        self.cmap = cm.get_cmap('sohoeit{wl:d}'.format(wl=self.wavelength))
+        self.plot_settings['cmap'] = cm.get_cmap('sohoeit{wl:d}'.format(wl=self.wavelength))
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
@@ -37,6 +38,12 @@ class EUVIMap(GenericMap):
         """
         return self.meta.get('rsun', None)
 
+    def _get_mpl_normalizer(self):
+            """Returns a Normalize object to be used with XRT data"""
+            # byte-scaled images have most likely already been scaled
+
+            return colors.PowerNorm(0.5, self.min(), self.max())
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an EUVI image"""
@@ -52,7 +59,7 @@ class CORMap(GenericMap):
         self._name = self.observatory + " " + self.detector + " " + str(self.measurement)
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
 
-        self.cmap = cm.get_cmap('stereocor{det!s}'.format(det=self.detector[-1]))
+        self.plot_settings['cmap'] = cm.get_cmap('stereocor{det!s}'.format(det=self.detector[-1]))
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
@@ -79,7 +86,7 @@ class HIMap(GenericMap):
         self._name = self.observatory + " " + self.detector + " " + str(self.measurement)
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
 
-        self.cmap = cm.get_cmap('stereohi{det!s}'.format(det=self.detector[-1]))
+        self.plot_settings['cmap'] = cm.get_cmap('stereohi{det!s}'.format(det=self.detector[-1]))
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword

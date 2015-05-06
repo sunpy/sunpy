@@ -77,6 +77,12 @@ class LightCurve(object):
         else:
             self.meta = OrderedDict(meta)
 
+    @property
+    def plot_types(self):
+         """
+         Returns the types of plot available.
+         """
+         return self._get_plot_types()
 
     @property
     def header(self):
@@ -210,14 +216,13 @@ for compatability with map, please use meta instead""", Warning)
 
     def peek(self, **kwargs):
         """Displays the light curve in a new figure"""
-
+        num_plots = len(self._get_plot_types())
         figure = plt.figure()
 
-        self.plot(**kwargs)
-
+        for plot_type, plot_num in zip(self.plot_types, np.arange(0, num_plots)):
+            ax = figure.add_subplot(num_plots, 1, plot_num)
+            self.plot(axes=ax, type=plot_type)
         figure.show()
-
-        return figure
 
     @staticmethod
     def _download(uri, kwargs,

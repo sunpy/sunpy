@@ -37,6 +37,26 @@ class LogicalLightCurve(LightCurve):
     >>> light_curve = lightcurve.LogicalLightCurve.create({"param1": z}, index=dates)
     """
 
+    def plot(self, axes=None, title="Logical", plot_type='logical', **plot_args):
+        """Plots Logical lightcurve"""
+        if axes is None:
+            axes = plt.gca()
+        self.data.plot(ax=axes, **plot_args)
+        plt.fill_between(self.data.index, self.data['param1'], alpha=0.5)
+        axes.set_title(title)
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(True, 'major')
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
+
+        axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
+        plt.gcf().autofmt_xdate()
+
+        return axes
+
+    @classmethod
+    def _get_plot_types(cls):
+        return ['logical']
+
     def complement(self):
         """ Define the complement of the passed lightcurve """
         return LogicalLightCurve.create(np.invert(self.data),
