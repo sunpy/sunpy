@@ -7,5 +7,3 @@ SunPy sun
 
 .. automodapi:: sunpy.sun.models
 
-.. automodapi:: sunpy.sun.position
-

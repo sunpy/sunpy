@@ -26,10 +26,10 @@ class SunPyTest(AstropyTest):
         # plugins to enable
         ('plugins=', 'p',
          'Plugins to enable when running pytest.'),
-        # Run only offline tests?
-        ('offline-only', None,
-         'Only run test that do not require a internet connection.'),
-        # Run only offline tests?
+        # Run online tests?
+        ('online', None,
+         'Also run tests that do require a internet connection.'),
+        # Run only online tests?
         ('online-only', None,
          'Only run test that do require a internet connection.'),
         # Calculate test coverage
@@ -57,8 +57,8 @@ class SunPyTest(AstropyTest):
         self.verbose_results = False
         self.plugins = None
         self.args = None
+        self.online = False
         self.online_only = False
-        self.offline_only = False
         self.coverage = False
         self.cov_report = 'term' if self.coverage else None
         self.docs_path = None
@@ -84,7 +84,7 @@ class SunPyTest(AstropyTest):
         cmd_pre = ''  # Commands to run before the test function
         cmd_post = ''  # Commands to run after the test function
 
-        online = not self.offline_only
+        online = self.online
         offline = not self.online_only
 
         cmd = ('{cmd_pre}{0}; import {1.package_name}, sys; result = ('

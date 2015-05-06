@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 from matplotlib import patches
 from matplotlib import cm
 
+import astropy.wcs
 from .nddata_compat import NDDataCompat as NDData
 
 from sunpy.image.transform import affine_transform
@@ -165,6 +166,17 @@ Dimension:\t [{xdim:d}, {ydim:d}]
            dx=self.scale['x'], dy=self.scale['y'])
 + self.data.__repr__())
 
+    @property
+    def wcs(self):
+        w2 = astropy.wcs.WCS(naxis=2)
+        w2.wcs.crpix = [self.reference_pixel['x'], self.reference_pixel['y']]
+        w2.wcs.cdelt = [self.scale['x'], self.scale['y']]
+        w2.wcs.crval = [self.reference_coordinate['x'], self.reference_coordinate['y']]
+        w2.wcs.ctype = [self.coordinate_system['x'], self.coordinate_system['y']]
+        w2.wcs.pc = self.rotation_matrix
+        w2.wcs.cunit = [self.units['x'], self.units['y']]
+
+        return w2
 
     #Some numpy extraction
     @property
@@ -1122,7 +1134,11 @@ Dimension:\t [{xdim:d}, {ydim:d}]
                   'interpolation': 'nearest'}
         kwargs.update(imshow_args)
 
-        ret = axes.imshow(self.data, **kwargs)
+        # Allows users to show masked data
+        if self.mask is None:
+            ret = axes.imshow(self.data, **kwargs)
+        else:
+            ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **kwargs)
 
         #Set current image (makes colorbar work)
         plt.sci(ret)

@@ -48,7 +48,8 @@ class WaveunitNotFoundError(Exception):
         self.obj = obj
 
     def __str__(self):  # pragma: no cover
-        return 'the wavelength unit cannot be found in {0}'.format(self.obj)
+        return 'the wavelength unit cannot be found in {0}'.format(self.obj) + \
+               ' and default_waveunit not specified when opening the database'
 
 
 class WaveunitNotConvertibleError(Exception):

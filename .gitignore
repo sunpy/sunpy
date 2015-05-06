@@ -25,6 +25,7 @@ docs
 htmlcov
 result.xml
 sunpy/version.py
+sunpy/_compiler.c
 sunpy/cython_version.py
 sunpy/data/sample/*.fits
 sunpy/data/sample/*.csv

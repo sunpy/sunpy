@@ -1,4 +1,4 @@
-# [SunPy](http://sunpy.org) 
+# [SunPy](http://sunpy.org)
 [![Downloads](https://pypip.in/d/sunpy/badge.png)](https://pypi.python.org/pypi/sunpy/) [![Latest Version](https://pypip.in/v/sunpy/badge.png)](https://pypi.python.org/pypi/sunpy/) [![Build Status](https://secure.travis-ci.org/sunpy/sunpy.png)] (http://travis-ci.org/sunpy/sunpy)[![Build status](https://ci.appveyor.com/api/projects/status/xow461iejsjvp9vl?svg=true)](https://ci.appveyor.com/project/sunpy/sunpy)[![Coverage Status](https://coveralls.io/repos/sunpy/sunpy/badge.png?branch=master)](https://coveralls.io/r/sunpy/sunpy?branch=master) [![Code Health](https://landscape.io/github/sunpy/sunpy/master/landscape.png)](https://landscape.io/github/sunpy/sunpy/master)
 
 SunPy is an open-source Python library for solar physics data analysis.
@@ -26,7 +26,7 @@ Next, use git to grab the latest version of SunPy:
 
 Done!
 
-For detailed installation instructions, see the [installation guide](http://sunpy.readthedocs.org/en/latest/guide/installation/index.html) 
+For detailed installation instructions, see the [installation guide](http://sunpy.readthedocs.org/en/latest/guide/installation/index.html)
 in the SunPy docs.
 
 Usage
@@ -36,8 +36,9 @@ Here is a quick example of plotting an AIA image:
 
 ```python
 >>> import sunpy.map
+>>> import sunpy.data.sample
 >>> import matplotlib.cm as cm
->>> aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+>>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 >>> aia.peek(cmap=cm.hot)
 ```
 
@@ -53,12 +54,12 @@ For more information or to ask questions about SunPy, check out:
 Contributing
 ------------
 
-If you would like to get involved, start by joining the 
+If you would like to get involved, start by joining the
 [SunPy mailing list](https://groups.google.com/forum/#!forum/sunpy)
-and check out the [Developer's Guide](http://sunpy.readthedocs.org/en/latest/dev.html) section 
-of the SunPy docs. Stop by our IRC chat room named #sunpy on irc.freenode.net 
-if you have any questions. Help is always welcome so let us know what you like 
-to work on, or check out the [issues page](https://github.com/sunpy/sunpy/issues) 
+and check out the [Developer's Guide](http://sunpy.readthedocs.org/en/latest/dev.html) section
+of the SunPy docs. Stop by our IRC chat room named #sunpy on irc.freenode.net
+if you have any questions. Help is always welcome so let us know what you like
+to work on, or check out the [issues page](https://github.com/sunpy/sunpy/issues)
 for a list of some known outstanding items.
 
 
