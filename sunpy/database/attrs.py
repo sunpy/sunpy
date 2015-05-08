@@ -196,7 +196,7 @@ def _create(wlk, root, session):
             path, inverted = value
             if inverted:
                 query = query.filter(or_(
-                    DatabaseEntry.path != path, DatabaseEntry.path is not None))
+                    DatabaseEntry.path != path, DatabaseEntry.path is None))
             else:
                 query = query.filter(DatabaseEntry.path == path)
         elif typ == 'wave':
