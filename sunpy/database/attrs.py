@@ -195,8 +195,9 @@ def _create(wlk, root, session):
         elif typ == 'path':
             path, inverted = value
             if inverted:
+                # pylint: disable=E711
                 query = query.filter(or_(
-                    DatabaseEntry.path != path, DatabaseEntry.path is None))
+                    DatabaseEntry.path != path, DatabaseEntry.path == None))
             else:
                 query = query.filter(DatabaseEntry.path == path)
         elif typ == 'wave':
