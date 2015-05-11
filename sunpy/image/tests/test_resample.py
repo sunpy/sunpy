@@ -1,5 +1,6 @@
 # Author: Tomas Meszaros <exo@tty.sk>
 
+import astropy.units as u
 from sunpy import map
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 import pytest
@@ -18,17 +19,17 @@ def shape(aia171_test_map):
 
 def resample_meta(dimensions, method, center, minusone):
     map_resampled = aia171_test_map().resample(dimensions)
-    return map_resampled.shape
+    return tuple(map_resampled.shape.value)
 
 def resample_method(method):
-    assert resample_meta((512, 512), method, False, False) == (512, 512)
-    assert resample_meta((2056, 2056), method, False, False) == (2056, 2056)
-    assert resample_meta((512, 512), method, False, True) == (512, 512)
-    assert resample_meta((2056, 2056), method, False, True) == (2056, 2056)
-    assert resample_meta((512, 512), method, True, False) == (512, 512)
-    assert resample_meta((2056, 2056), method, True, False) == (2056, 2056)
-    assert resample_meta((512, 512), method, True, True) == (512, 512)
-    assert resample_meta((2056, 2056), method, True, True) == (2056, 2056)
+    assert resample_meta((512, 512) * u.pix, method, False, False) == (512, 512)
+    assert resample_meta((2056, 2056) * u.pix, method, False, False) == (2056, 2056)
+    assert resample_meta((512, 512) * u.pix, method, False, True) == (512, 512)
+    assert resample_meta((2056, 2056) * u.pix, method, False, True) == (2056, 2056)
+    assert resample_meta((512, 512) * u.pix, method, True, False) == (512, 512)
+    assert resample_meta((2056, 2056) * u.pix, method, True, False) == (2056, 2056)
+    assert resample_meta((512, 512) * u.pix, method, True, True) == (512, 512)
+    assert resample_meta((2056, 2056) * u.pix, method, True, True) == (2056, 2056)
 
 def test_resample_neighbor():
     resample_method('neighbor')
