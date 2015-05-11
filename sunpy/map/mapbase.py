@@ -18,6 +18,7 @@ from matplotlib import cm
 
 import astropy.wcs
 from .nddata_compat import NDDataCompat as NDData
+from astropy.coordinates import Longitude, Latitude
 
 from sunpy.image.transform import affine_transform
 
@@ -508,8 +509,9 @@ scale:\t\t [{dx}, {dy}]
         """
         x, y = self.wcs.wcs_world2pix(u.Quantity([x, y])[None, :].to(u.deg).value, origin)[0]
 
-        return x, y
+        return x * u.pixel, y * u.pixel
 
+    @u.quantity_input(x=u.pixel, y=u.pixel)
     def pixel_to_data(self, x, y, origin=0):
         """
         Convert a pixel coordinate to a data (world) coordinate by using
@@ -537,12 +539,14 @@ scale:\t\t [{dx}, {dy}]
         y : `~astropy.units.Quantity`
             Coordinate of the CTYPE2 axis. (Normally solar-y).
         """
-
-        x, y = self.wcs.wcs_pix2world(np.array([[x, y]]), origin)[0]
+        x, y = self.wcs.wcs_pix2world(u.Quantity([x, y]).reshape((1,2)), origin)[0]
 
         # WCS always outputs degrees.
         x *= u.deg
         y *= u.deg
+
+        x = Longitude(x, wrap_angle=180*u.deg)
+        y = Latitude(y)
 
         return x.to(self.units['x']), y.to(self.units['y'])
 
