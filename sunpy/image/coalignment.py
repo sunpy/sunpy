@@ -431,8 +431,8 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
     """
 
     # Size of the data
-    ny = mc.maps[layer_index].shape[0]
-    nx = mc.maps[layer_index].shape[1]
+    ny = mc.maps[layer_index].data.shape[0]
+    nx = mc.maps[layer_index].data.shape[1]
     nt = len(mc.maps)
 
     # Calculate a template.  If no template is passed then define one
@@ -478,8 +478,8 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
     for i, m in enumerate(mc.maps):
         # Calculate the shifts required in physical units, which are
         # presumed to be arcseconds.
-        xshift_arcseconds[i] = xshift_keep[i].value * m.scale['x']
-        yshift_arcseconds[i] = yshift_keep[i].value * m.scale['y']
+        xshift_arcseconds[i] = xshift_keep[i] * m.scale['x']
+        yshift_arcseconds[i] = yshift_keep[i] * m.scale['y']
 
     return {"x": xshift_arcseconds, "y": yshift_arcseconds}
 
@@ -558,7 +558,7 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
     # Storage for the pixel shifts and the shifts in arcseconds
     xshift_keep = np.zeros(nt) * u.pix
     yshift_keep = np.zeros_like(xshift_keep)
-
+    
     if shift is None:
         shifts = calculate_match_template_shift(mc, template=template,
                                                 layer_index=layer_index,
@@ -571,8 +571,8 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
 
     # Calculate the pixel shifts
     for i, m in enumerate(mc):
-        xshift_keep[i] = (xshift_arcseconds[i] / m.scale['x']) * u.pix
-        yshift_keep[i] = (yshift_arcseconds[i] / m.scale['y']) * u.pix
+        xshift_keep[i] = (xshift_arcseconds[i] / m.scale['x'])
+        yshift_keep[i] = (yshift_arcseconds[i] / m.scale['y'])
 
     # Apply the shifts and return the coaligned mapcube
     return apply_shifts(mc, -yshift_keep, -xshift_keep, clip=clip)

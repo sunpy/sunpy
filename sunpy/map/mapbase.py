@@ -213,6 +213,7 @@ scale:\t\t [{dx}, {dy}]
     def name(self):
         """Human-readable description of map-type"""
         return self._name
+
     @name.setter
     def name(self, n):
         self._name = n
@@ -221,6 +222,7 @@ scale:\t\t [{dx}, {dy}]
     def nickname(self):
         """An abbreviated human-readable description of the map-type; part of the Helioviewer data model"""
         return self._nickname
+
     @nickname.setter
     def nickname(self, n):
         self._nickname = n
@@ -312,6 +314,12 @@ scale:\t\t [{dx}, {dy}]
     def rsun_meters(self):
         """Radius of the sun in meters"""
         return u.Quantity(self.meta.get('rsun_ref', constants.radius), 'meter')
+
+    @property
+    def rsun_arcseconds(self):
+        warnings.warn("rsun_arcseconds is deprecated as of SunPy 0.6. Use rsun_obs instead of rsun_arcseconds",
+                      Warning)
+        return self.rsun_obs()
 
     @property
     def rsun_obs(self):
@@ -433,9 +441,9 @@ scale:\t\t [{dx}, {dy}]
     def _fix_naxis(self):
         # If naxis is not specified, get it from the array shape
         if 'naxis1' not in self.meta:
-            self.meta['naxis1'] = self.shape[1]
+            self.meta['naxis1'] = self.data.shape[1]
         if 'naxis2' not in self.meta:
-            self.meta['naxis2'] = self.shape[0]
+            self.meta['naxis2'] = self.data.shape[0]
         if 'naxis' not in self.meta:
             self.meta['naxis'] = self.ndim
 
@@ -560,6 +568,7 @@ scale:\t\t [{dx}, {dy}]
 
 # #### Image processing routines #### #
 
+    @u.quantity_input(dimensions=u.pixel)
     def resample(self, dimensions, method='linear'):
         """Returns a new Map that has been resampled up or down
 
@@ -571,8 +580,8 @@ scale:\t\t [{dx}, {dy}]
 
         Parameters
         ----------
-        dimensions : tuple
-            Dimensions that new Map should have.
+        dimensions : `~astropy.units.Quantity`
+            Pixel dimensions that new Map should have.
             Note: the first argument corresponds to the 'x' axis and the second
             argument corresponds to the 'y' axis.
         method : {'neighbor' | 'nearest' | 'linear' | 'spline'}
@@ -605,8 +614,8 @@ scale:\t\t [{dx}, {dy}]
 
         # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
         # respectively
-        scale_factor_x = (float(self.shape[1]) / dimensions[0])
-        scale_factor_y = (float(self.shape[0]) / dimensions[1])
+        scale_factor_x = (float(self.data.shape[1]) / dimensions[0].value)
+        scale_factor_y = (float(self.data.shape[0]) / dimensions[1].value)
 
         new_map = deepcopy(self)
         # Update image scale and number of pixels
@@ -620,10 +629,10 @@ scale:\t\t [{dx}, {dy}]
             new_meta['CD2_1'] *= scale_factor_x
             new_meta['CD1_2'] *= scale_factor_y
             new_meta['CD2_2'] *= scale_factor_y
-        new_meta['crpix1'] = (dimensions[0] + 1) / 2.
-        new_meta['crpix2'] = (dimensions[1] + 1) / 2.
-        new_meta['crval1'] = self.center['x']
-        new_meta['crval2'] = self.center['y']
+        new_meta['crpix1'] = (dimensions[0].value + 1) / 2.
+        new_meta['crpix2'] = (dimensions[1].value + 1) / 2.
+        new_meta['crval1'] = self.center['x'].value
+        new_meta['crval2'] = self.center['y'].value
 
         # Create new map instance
         new_map.data = new_data
@@ -748,9 +757,9 @@ scale:\t\t [{dx}, {dy}]
             rmatrix = np.matrix([[c, -s], [s, c]])
 
         # Calculate the shape in pixels to contain all of the image data
-        extent = np.max(np.abs(np.vstack((new_map.shape * rmatrix, new_map.shape * rmatrix.T))), axis=0)
+        extent = np.max(np.abs(np.vstack((new_map.shape.value * rmatrix, new_map.shape.value * rmatrix.T))), axis=0)
         # Calculate the needed padding or unpadding
-        diff = np.asarray(np.ceil((extent - new_map.shape) / 2)).ravel()
+        diff = np.asarray(np.ceil((extent - new_map.shape.value) / 2)).ravel()
         # Pad the image array
         pad_x = np.max((diff[1], 0))
         pad_y = np.max((diff[0], 0))
@@ -872,7 +881,7 @@ scale:\t\t [{dx}, {dy}]
         [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
         """
         
-        # Do manual Quantity input validation
+        # Do manual Quantity input validation to allow for two unit options
         if ((isinstance(range_a, u.Quantity) and isinstance(range_b, u.Quantity)) or
             (hasattr(range_a, 'unit') and hasattr(range_b, 'unit'))):
 
@@ -912,11 +921,11 @@ scale:\t\t [{dx}, {dy}]
             if range_a[0] is None:
                 range_a[0] = 0
             if range_a[1] is None:
-                range_a[1] = self.shape[1]
+                range_a[1] = self.data.shape[1]
             if range_b[0] is None:
                 range_b[0] = 0
             if range_b[1] is None:
-                range_b[1] = self.shape[0]
+                range_b[1] = self.data.shape[0]
 
             x_pixels = range_a.value
             y_pixels = range_b.value
@@ -932,8 +941,8 @@ scale:\t\t [{dx}, {dy}]
 
         # Make a copy of the header with updated centering information
         new_map = deepcopy(self)
-        new_map.meta['crpix1'] = self.reference_pixel['x'] - x_pixels[0]
-        new_map.meta['crpix2'] = self.reference_pixel['y'] - y_pixels[0]
+        new_map.meta['crpix1'] = self.reference_pixel['x'].value - x_pixels[0]
+        new_map.meta['crpix2'] = self.reference_pixel['y'].value - y_pixels[0]
         new_map.meta['naxis1'] = new_data.shape[1]
         new_map.meta['naxis2'] = new_data.shape[0]
 
@@ -941,6 +950,7 @@ scale:\t\t [{dx}, {dy}]
         new_map.data = new_data
         return new_map
 
+    @u.quantity_input(dimensions=u.pixel)
     def superpixel(self, dimensions, method='sum'):
         """Returns a new map consisting of superpixels formed from the
         original data.  Useful for increasing signal to noise ratio in images.
@@ -975,7 +985,7 @@ scale:\t\t [{dx}, {dy}]
 
         # Make a copy of the original data and perform reshaping
         reshaped = reshape_image_to_4d_superpixel(self.data.copy().T,
-                                                  dimensions)
+                                                  dimensions.value)
         if method == 'sum':
             new_data = reshaped.sum(axis=3).sum(axis=1)
         elif method == 'average':
@@ -990,17 +1000,17 @@ scale:\t\t [{dx}, {dy}]
 
         # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
         # respectively
-        new_nx = self.shape[1] / dimensions[0]
-        new_ny = self.shape[0] / dimensions[1]
+        new_nx = (self.shape[1] / dimensions[0]).value
+        new_ny = (self.shape[0] / dimensions[1]).value
 
         # Update metadata
-        new_meta['cdelt1'] = dimensions[0] * self.scale['x']
-        new_meta['cdelt2'] = dimensions[1] * self.scale['y']
+        new_meta['cdelt1'] = (dimensions[0] * self.scale['x']).value
+        new_meta['cdelt2'] = (dimensions[1] * self.scale['y']).value
         if 'CD1_1' in new_meta:
-            new_meta['CD1_1'] *= dimensions[0]
-            new_meta['CD2_1'] *= dimensions[0]
-            new_meta['CD1_2'] *= dimensions[1]
-            new_meta['CD2_2'] *= dimensions[1]
+            new_meta['CD1_1'] *= dimensions[0].value
+            new_meta['CD2_1'] *= dimensions[0].value
+            new_meta['CD1_2'] *= dimensions[1].value
+            new_meta['CD2_2'] *= dimensions[1].value
         new_meta['crpix1'] = (new_nx + 1) / 2.
         new_meta['crpix2'] = (new_ny + 1) / 2.
         new_meta['crval1'] = self.center['x']

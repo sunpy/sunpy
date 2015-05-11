@@ -13,6 +13,7 @@ import numpy as np
 import astropy.wcs
 from astropy.io import fits
 import astropy.units as u
+from astropy.tests.helper import assert_quantity_allclose
 
 import sunpy
 import sunpy.sun
@@ -41,7 +42,8 @@ def generic_map():
               'PC2_1': 1,
               'PC2_2': 0,
               'NAXIS1': 6,
-              'NAXIS2': 6}
+              'NAXIS2': 6,
+              'date-obs': '1970/01/01T00:00:00'}
     return sunpy.map.Map((data, header))
 
 
@@ -66,14 +68,14 @@ def test_repr_no_obs(generic_map):
 
 
 def test_repr_obs(aia171_test_map):
-    assert aia171_test_map.__repr__() == 'SunPy AIAMap\n---------\nObservatory:\t SDO\nInstrument:\t AIA_3\nDetector:\t AIA\nMeasurement:\t 171\nObs Date:\t 2011-02-15 00:00:00.340000\ndt:\t\t 2.000191 s\nDimension:\t [128, 128]\n[dx, dy] =\t [19.183648 arcsec, 19.183648 arcsec]\n\narray([[-1.25,  0.  ,  1.  , ...,  0.  ,  0.5 , -0.75],\n       [ 0.75, -0.25, -0.5 , ...,  0.25,  0.  , -0.25],\n       [ 0.  ,  0.5 ,  1.75, ...,  0.  ,  0.5 ,  0.  ],\n       ..., \n       [ 1.  ,  0.25, -0.25, ...,  0.  ,  0.  ,  0.  ],\n       [-0.25,  0.  , -0.5 , ...,  0.75, -0.75,  0.  ],\n       [ 0.75,  1.5 , -0.75, ...,  0.  , -0.5 ,  0.5 ]])'
+    assert aia171_test_map.__repr__() == 'SunPy AIAMap\n---------\nObservatory:\t SDO\nInstrument:\t AIA_3\nDetector:\t AIA\nMeasurement:\t 171 Angstrom\nObs Date:\t 2011-02-15 00:00:00.340000\ndt:\t\t 2.000191 s\nDimension:\t [ 128.  128.] pix\nscale:\t\t [19.183648 arcsec / pix, 19.183648 arcsec / pix]\n\narray([[-1.25,  0.  ,  1.  , ...,  0.  ,  0.5 , -0.75],\n       [ 0.75, -0.25, -0.5 , ...,  0.25,  0.  , -0.25],\n       [ 0.  ,  0.5 ,  1.75, ...,  0.  ,  0.5 ,  0.  ],\n       ..., \n       [ 1.  ,  0.25, -0.25, ...,  0.  ,  0.  ,  0.  ],\n       [-0.25,  0.  , -0.5 , ...,  0.75, -0.75,  0.  ],\n       [ 0.75,  1.5 , -0.75, ...,  0.  , -0.5 ,  0.5 ]])'
 
 def test_wcs(aia171_test_map):
     wcs = aia171_test_map.wcs
     assert isinstance(wcs, astropy.wcs.WCS)
 
-    assert all(wcs.wcs.crpix == [aia171_test_map.reference_pixel['x'],
-                                 aia171_test_map.reference_pixel['y']])
+    assert all(wcs.wcs.crpix == [aia171_test_map.reference_pixel['x'].value,
+                                 aia171_test_map.reference_pixel['y'].value])
     assert all(wcs.wcs.cdelt == [aia171_test_map.scale['x'].value,
                                  aia171_test_map.scale['y'].value])
     assert all(wcs.wcs.crval == [aia171_test_map.reference_coordinate['x'].value,
@@ -89,7 +91,7 @@ def test_dtype(generic_map):
 
 
 def test_size(generic_map):
-    assert generic_map.size == 36
+    assert generic_map.size == 36 * u.pix
 
 
 def test_min(generic_map):
@@ -98,7 +100,6 @@ def test_min(generic_map):
 
 def test_max(generic_map):
     assert generic_map.max() == 1
-
 
 def test_mean(generic_map):
     assert generic_map.mean() == 1
@@ -113,11 +114,11 @@ def test_std(generic_map):
 # TODO: Test the header keyword extraction
 #==============================================================================
 def test_name(generic_map):
-    assert generic_map.name == ' '
+    assert generic_map.name == ' 0.0'
 
 
 def test_name_set(generic_map):
-    assert generic_map.name == ' '
+    assert generic_map.name == ' 0.0'
     generic_map.name = 'hi'
     assert generic_map.name == 'hi'
 
@@ -152,8 +153,8 @@ def test_rsun_meters(generic_map):
     assert generic_map.rsun_meters == sunpy.sun.constants.radius
 
 
-def test_rsun_arcseconds(generic_map):
-    assert generic_map.rsun_arcseconds == sunpy.sun.solar_semidiameter_angular_size(generic_map.date).value
+def test_rsun_obs(generic_map):
+    assert generic_map.rsun_obs == sunpy.sun.solar_semidiameter_angular_size(generic_map.date)
 
 
 def test_coordinate_system(generic_map):
@@ -246,22 +247,10 @@ def test_data_to_pixel(generic_map):
                                                           generic_map.meta['crval2']*u.arcsec),
                                np.array([generic_map.meta['crpix1'] - 1, generic_map.meta['crpix2'] - 1]))
 
-    # Check conversion of map center
-#    np.testing.assert_allclose(generic_map.data_to_pixel(generic_map.center['x'], generic_map.center['y']),
-#                              ((generic_map.meta['naxis1'] - 1) / 2., (generic_map.meta['naxis2'] - 1) / 2.))
-
-    # Check conversion of map edges
-    # Note: data coords are at pixel centers, so edges are 0.5 pixels wider
-#    assert generic_map.data_to_pixel(generic_map.xrange[0]) == 0. - 0.5
-#    assert generic_map.data_to_pixel(generic_map.yrange[0]) == 0. - 0.5
-#    assert generic_map.data_to_pixel(generic_map.xrange[1]) == (generic_map.meta['naxis1'] - 1) + 0.5
-#    assert generic_map.data_to_pixel(generic_map.yrange[1]) == (generic_map.meta['naxis2'] - 1) + 0.5
-
-
 def test_submap(generic_map):
     """Check data and header information for a submap"""
-    width = generic_map.shape[1]
-    height = generic_map.shape[0]
+    width = generic_map.data.shape[1]
+    height = generic_map.data.shape[0]
 
     # Create a submap of the top-right quadrant of the image
     submap = generic_map.submap([height/2.,height]*u.pix, [width/2.,width]*u.pix)
@@ -273,10 +262,10 @@ def test_submap(generic_map):
     }
 
     # Check to see if submap properties were updated properly
-    assert submap.reference_pixel['x'] == offset['x']
-    assert submap.reference_pixel['y'] == offset['y']
-    assert submap.shape[0] == width / 2.
-    assert submap.shape[1] == height / 2.
+    assert submap.reference_pixel['x'].value == offset['x']
+    assert submap.reference_pixel['y'].value == offset['y']
+    assert submap.data.shape[0] == width / 2.
+    assert submap.data.shape[1] == height / 2.
 
     # Check to see if header was updated
     assert submap.meta['naxis1'] == width / 2.
@@ -287,10 +276,10 @@ def test_submap(generic_map):
                              width/2:width] == submap.data).all()
 
 
-resample_test_data = [('linear', (100, 200)),
-                      ('neighbor', (128, 256)),
-                      ('nearest', (512, 128)),
-                      ('spline', (200, 200))]
+resample_test_data = [('linear', (100, 200)*u.pixel),
+                      ('neighbor', (128, 256)*u.pixel),
+                      ('nearest', (512, 128)*u.pixel),
+                      ('spline', (200, 200)*u.pixel)]
 
 @pytest.mark.parametrize('sample_method, new_dimensions', resample_test_data)
 def test_resample_dimensions(generic_map, sample_method, new_dimensions):
@@ -307,13 +296,13 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
     """
     resampled_map = generic_map.resample(new_dimensions, method=sample_method)
     assert float(resampled_map.meta['cdelt1']) / generic_map.meta['cdelt1'] \
-        == float(generic_map.shape[1]) / resampled_map.shape[1]
+        == float(generic_map.data.shape[1]) / resampled_map.data.shape[1]
     assert float(resampled_map.meta['cdelt2']) / generic_map.meta['cdelt2'] \
-        == float(generic_map.shape[0]) / resampled_map.shape[0]
-    assert resampled_map.meta['crpix1'] == (resampled_map.shape[1] + 1) / 2.
-    assert resampled_map.meta['crpix2'] == (resampled_map.shape[0] + 1) / 2.
-    assert resampled_map.meta['crval1'] == generic_map.center['x']
-    assert resampled_map.meta['crval2'] == generic_map.center['y']
+        == float(generic_map.data.shape[0]) / resampled_map.data.shape[0]
+    assert resampled_map.meta['crpix1'] == (resampled_map.data.shape[1] + 1) / 2.
+    assert resampled_map.meta['crpix2'] == (resampled_map.data.shape[0] + 1) / 2.
+    assert resampled_map.meta['crval1'] == generic_map.center['x'].value
+    assert resampled_map.meta['crval2'] == generic_map.center['y'].value
     for key in generic_map.meta:
         if key not in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2',
                        'crval1', 'crval2'):
@@ -321,23 +310,23 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
 
 
 def test_superpixel(aia171_test_map):
-    dimensions = (2, 2)
+    dimensions = (2, 2)*u.pix
     superpixel_map_sum = aia171_test_map.superpixel(dimensions)
-    assert superpixel_map_sum.shape[0] == aia171_test_map.shape[0]/dimensions[1]
-    assert superpixel_map_sum.shape[1] == aia171_test_map.shape[1]/dimensions[0]
-    assert superpixel_map_sum.data[0][0] == (aia171_test_map.data[0][0] +
-                                             aia171_test_map.data[0][1] +
-                                             aia171_test_map.data[1][0] +
-                                             aia171_test_map.data[1][1])
+    assert_quantity_allclose(superpixel_map_sum.shape[0], aia171_test_map.shape[0]/dimensions[1]*u.pix)
+    assert_quantity_allclose(superpixel_map_sum.shape[1], aia171_test_map.shape[1]/dimensions[0]*u.pix)
+    assert_quantity_allclose(superpixel_map_sum.data[0][0], (aia171_test_map.data[0][0] +
+                                                             aia171_test_map.data[0][1] +
+                                                             aia171_test_map.data[1][0] +
+                                                             aia171_test_map.data[1][1]))
 
-    dimensions = (2, 2)
+    dimensions = (2, 2)*u.pix
     superpixel_map_avg = aia171_test_map.superpixel(dimensions, 'average')
-    assert superpixel_map_avg.shape[0] == aia171_test_map.shape[0]/dimensions[1]
-    assert superpixel_map_avg.shape[1] == aia171_test_map.shape[1]/dimensions[0]
-    assert superpixel_map_avg.data[0][0] == (aia171_test_map.data[0][0] +
-                                             aia171_test_map.data[0][1] +
-                                             aia171_test_map.data[1][0] +
-                                             aia171_test_map.data[1][1])/4.0
+    assert_quantity_allclose(superpixel_map_avg.shape[0], aia171_test_map.shape[0]/dimensions[1]*u.pix)
+    assert_quantity_allclose(superpixel_map_avg.shape[1], aia171_test_map.shape[1]/dimensions[0]*u.pix)
+    assert_quantity_allclose(superpixel_map_avg.data[0][0], (aia171_test_map.data[0][0] +
+                                                             aia171_test_map.data[0][1] +
+                                                             aia171_test_map.data[1][0] +
+                                                             aia171_test_map.data[1][1])/4.0)
 
 
 def calc_new_matrix(angle):
@@ -359,7 +348,7 @@ def test_rotate(aia171_test_map):
     # Rotation of a map by a non-integral multiple of 90 degrees expands the map
     # and assigns the value of 0 to corner pixels. This results in a reduction
     # of the mean for a map of all non-negative values.
-    assert rotated_map_2.shape > rotated_map_1.shape > aia171_test_map.shape
+    assert rotated_map_2.data.shape > rotated_map_1.data.shape > aia171_test_map.data.shape
     np.testing.assert_allclose(rotated_map_1.data[0, 0], 0., atol=1e-7)
     np.testing.assert_allclose(rotated_map_2.data[0, 0], 0., atol=1e-7)
     assert rotated_map_2.mean() < rotated_map_1.mean() < aia171_test_map.mean()
@@ -379,14 +368,14 @@ def test_rotate(aia171_test_map):
     # Rotation of a rectangular map by a large enough angle will change which dimension is larger
     aia171_test_map_crop = aia171_test_map.submap([0, 1000]*u.arcsec, [0, 400]*u.arcsec)
     aia171_test_map_crop_rot = aia171_test_map_crop.rotate(60*u.deg)
-    assert aia171_test_map_crop.shape[0] < aia171_test_map_crop.shape[1]
-    assert aia171_test_map_crop_rot.shape[0] > aia171_test_map_crop_rot.shape[1]
+    assert aia171_test_map_crop.data.shape[0] < aia171_test_map_crop.data.shape[1]
+    assert aia171_test_map_crop_rot.data.shape[0] > aia171_test_map_crop_rot.data.shape[1]
 
     # Same test as above, to test the other direction
     aia171_test_map_crop = aia171_test_map.submap([0, 400]*u.arcsec, [0, 1000]*u.arcsec)
     aia171_test_map_crop_rot = aia171_test_map_crop.rotate(60*u.deg)
-    assert aia171_test_map_crop.shape[0] > aia171_test_map_crop.shape[1]
-    assert aia171_test_map_crop_rot.shape[0] < aia171_test_map_crop_rot.shape[1]
+    assert aia171_test_map_crop.data.shape[0] > aia171_test_map_crop.data.shape[1]
+    assert aia171_test_map_crop_rot.data.shape[0] < aia171_test_map_crop_rot.data.shape[1]
 
 
 def test_rotate_recenter(aia171_test_map):
