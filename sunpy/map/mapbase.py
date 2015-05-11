@@ -283,7 +283,7 @@ scale:\t\t [{dx}, {dy}]
     def wavelength(self):
         """wavelength of the observation"""
         return u.Quantity(self.meta.get('wavelnth', 0), self.meta.get('waveunit', ""))
-    
+
     @property
     def observatory(self):
         """Observatory or Telescope name"""
@@ -614,7 +614,7 @@ scale:\t\t [{dx}, {dy}]
         new_data = new_data.T
 
         scale_factor_x = float(self.dimensions[0] / dimensions[0])
-        scale_factor_y = float(self.dimensions[0] / dimensions[1])
+        scale_factor_y = float(self.dimensions[1] / dimensions[1])
 
         new_map = deepcopy(self)
         # Update image scale and number of pixels
@@ -704,8 +704,8 @@ scale:\t\t [{dx}, {dy}]
             raise ValueError("You cannot specify both an angle and a matrix")
         elif angle is None and rmatrix is None:
             rmatrix = self.rotation_matrix
-        
-        # This is out of the quantity_input decorator. To allow the angle=None 
+
+        # This is out of the quantity_input decorator. To allow the angle=None
         # case. See https://github.com/astropy/astropy/issues/3734
         if angle:
             try:
@@ -730,21 +730,21 @@ scale:\t\t [{dx}, {dy}]
         # Interpolation parameter sanity
         if order not in range(6):
             raise ValueError("Order must be between 0 and 5")
-        
+
         # is None to prevent 0 arrays evaling to False
         if rotation_center is None:
             rotation_center = u.Quantity([0*self.units['x'], 0*self.units['y']])
         else:
             if not isinstance(rotation_center, u.Quantity) and not hasattr(rotation_center, "unit"):
                 raise TypeError("Argument rotation_center to function rotate has"
-                                " no unit attribute. You may want to pass in an" 
-                                "astropy Quantity instead." )
+                                " no unit attribute. You may want to pass in an"
+                                " astropy Quantity instead." )
             elif not rotation_center.unit.is_equivalent(self.units['x']):
                 raise u.UnitsError("Argument '{0}' to function '{1}'"
                                    " must be in units convertable to"
                                    " '{2}'.".format('rotation_center', 'rotate',
                                                   self.units['x'].to_string()))
-                
+
 
         # Copy Map
         new_map = deepcopy(self)
@@ -847,7 +847,7 @@ scale:\t\t [{dx}, {dy}]
     def submap(self, range_a, range_b):
         """
         Returns a submap of the map with the specified range.
-        
+
 
         Parameters
         ----------
@@ -879,12 +879,12 @@ scale:\t\t [{dx}, {dy}]
         [-0.6875, -0.3125,  0.8125,  0.0625,  0.1875],
         [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
         """
-        
+
         # Do manual Quantity input validation to allow for two unit options
         if ((isinstance(range_a, u.Quantity) and isinstance(range_b, u.Quantity)) or
             (hasattr(range_a, 'unit') and hasattr(range_b, 'unit'))):
 
-            if (range_a.unit.is_equivalent(self.units['x']) and 
+            if (range_a.unit.is_equivalent(self.units['x']) and
                 range_b.unit.is_equivalent(self.units['x'])):
                 units = 'data'
             elif range_a.unit.is_equivalent(u.pixel) and range_b.unit.is_equivalent(u.pixel):
@@ -911,10 +911,10 @@ scale:\t\t [{dx}, {dy}]
 
             x1, y1 = np.ceil(u.Quantity(self.data_to_pixel(range_a[0], range_b[0]))).value
             x2, y2 = np.floor(u.Quantity(self.data_to_pixel(range_a[1], range_b[1])) + 1*u.pix).value
-    
+
             x_pixels = [x1, x2]
-            y_pixels = [y1, y2]            
-            
+            y_pixels = [y1, y2]
+
         elif units is "pixels":
             # Check edges
             if range_a[0] is None:
@@ -1109,7 +1109,7 @@ scale:\t\t [{dx}, {dy}]
         if not axes:
             axes = plt.gca()
 
-        c_kw = {'radius':self.rsun_arcseconds,
+        c_kw = {'radius':self.rsun_obs,
                 'fill':False,
                 'color':'white',
                 'zorder':100
