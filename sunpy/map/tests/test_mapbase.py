@@ -243,9 +243,10 @@ def test_data_to_pixel(generic_map):
     """Make sure conversion from data units to pixels is accurate"""
     # Check conversion of reference pixel
     # Note: FITS pixels starts from 1,1
-    np.testing.assert_allclose(generic_map.data_to_pixel(generic_map.meta['crval1']*u.arcsec,
-                                                          generic_map.meta['crval2']*u.arcsec),
-                               np.array([generic_map.meta['crpix1'] - 1, generic_map.meta['crpix2'] - 1]))
+    assert_quantity_allclose(generic_map.data_to_pixel(generic_map.meta['crval1']*u.arcsec,
+                                                       generic_map.meta['crval2']*u.arcsec),
+                             u.Quantity([generic_map.meta['crpix1'] - 1,
+                                         generic_map.meta['crpix2'] - 1], unit=u.pixel))
 
 def test_submap(generic_map):
     """Check data and header information for a submap"""
@@ -285,8 +286,8 @@ resample_test_data = [('linear', (100, 200)*u.pixel),
 def test_resample_dimensions(generic_map, sample_method, new_dimensions):
     """Check that resampled map has expected dimensions."""
     resampled_map = generic_map.resample(new_dimensions, method=sample_method)
-    assert resampled_map.shape[1] == new_dimensions[0]
-    assert resampled_map.shape[0] == new_dimensions[1]
+    assert resampled_map.dimensions[0] == new_dimensions[0]
+    assert resampled_map.dimensions[1] == new_dimensions[1]
 
 
 @pytest.mark.parametrize('sample_method, new_dimensions', resample_test_data)
@@ -312,8 +313,8 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
 def test_superpixel(aia171_test_map):
     dimensions = (2, 2)*u.pix
     superpixel_map_sum = aia171_test_map.superpixel(dimensions)
-    assert_quantity_allclose(superpixel_map_sum.shape[0], aia171_test_map.shape[0]/dimensions[1]*u.pix)
-    assert_quantity_allclose(superpixel_map_sum.shape[1], aia171_test_map.shape[1]/dimensions[0]*u.pix)
+    assert_quantity_allclose(superpixel_map_sum.dimensions[1], aia171_test_map.dimensions[1]/dimensions[1]*u.pix)
+    assert_quantity_allclose(superpixel_map_sum.dimensions[0], aia171_test_map.dimensions[0]/dimensions[0]*u.pix)
     assert_quantity_allclose(superpixel_map_sum.data[0][0], (aia171_test_map.data[0][0] +
                                                              aia171_test_map.data[0][1] +
                                                              aia171_test_map.data[1][0] +
@@ -321,8 +322,8 @@ def test_superpixel(aia171_test_map):
 
     dimensions = (2, 2)*u.pix
     superpixel_map_avg = aia171_test_map.superpixel(dimensions, 'average')
-    assert_quantity_allclose(superpixel_map_avg.shape[0], aia171_test_map.shape[0]/dimensions[1]*u.pix)
-    assert_quantity_allclose(superpixel_map_avg.shape[1], aia171_test_map.shape[1]/dimensions[0]*u.pix)
+    assert_quantity_allclose(superpixel_map_avg.dimensions[1], aia171_test_map.dimensions[1]/dimensions[1]*u.pix)
+    assert_quantity_allclose(superpixel_map_avg.dimensions[0], aia171_test_map.dimensions[0]/dimensions[0]*u.pix)
     assert_quantity_allclose(superpixel_map_avg.data[0][0], (aia171_test_map.data[0][0] +
                                                              aia171_test_map.data[0][1] +
                                                              aia171_test_map.data[1][0] +
@@ -391,7 +392,7 @@ def test_rotate_recenter(aia171_test_map):
 
     # The new desired image center should be in the map center
     new_array_center = (np.array(rotated_map.data.shape)-1)/2.0
-    np.testing.assert_allclose((new_y, new_x), new_array_center)
+    assert_quantity_allclose((new_y, new_x), new_array_center*u.pix)
 
 
 def test_rotate_crota_remove(aia171_test_map):

@@ -15,11 +15,11 @@ def aia171_test_map():
 
 @pytest.fixture
 def shape(aia171_test_map):
-    return np.array(aia171_test_map.shape)
+    return np.array(aia171_test_map.data.shape)
 
 def resample_meta(dimensions, method, center, minusone):
     map_resampled = aia171_test_map().resample(dimensions)
-    return tuple(map_resampled.shape.value)
+    return tuple(map_resampled.data.shape)
 
 def resample_method(method):
     assert resample_meta((512, 512) * u.pix, method, False, False) == (512, 512)
