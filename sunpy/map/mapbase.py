@@ -161,7 +161,7 @@ scale:\t\t [{dx}, {dy}]
 """.format(dtype=self.__class__.__name__,
            obs=self.observatory, inst=self.instrument, det=self.detector,
            meas=self.measurement, date=self.date, dt=self.exposure_time,
-           dim=self.shape,
+           dim=self.dimensions,
            dx=self.scale['x'], dy=self.scale['y'])
 + self.data.__repr__())
 
@@ -181,8 +181,11 @@ scale:\t\t [{dx}, {dy}]
 
     #Some numpy extraction
     @property
-    def shape(self):
-        return u.Quantity(self.data.shape, 'pixel')
+    def dimensions(self):
+        """
+        The dimensions of the array (x axis first, y axis second).
+        """
+        return u.Quantity([self.data.shape[1], self.data.shape[0]], 'pixel')
 
     @property
     def dtype(self):
@@ -289,25 +292,25 @@ scale:\t\t [{dx}, {dy}]
     @property
     def xrange(self):
         """Return the X range of the image in arcsec from edge to edge."""
-        xmin = self.center['x'] - self.shape[1] / 2. * self.scale['x']
-        xmax = self.center['x'] + self.shape[1] / 2. * self.scale['x']
+        xmin = self.center['x'] - self.dimensions[0] / 2. * self.scale['x']
+        xmax = self.center['x'] + self.dimensions[0] / 2. * self.scale['x']
         return u.Quantity([xmin, xmax])
 
     @property
     def yrange(self):
         """Return the Y range of the image in arcsec from edge to edge."""
-        ymin = self.center['y'] - self.shape[0] / 2. * self.scale['y']
-        ymax = self.center['y'] + self.shape[0] / 2. * self.scale['y']
+        ymin = self.center['y'] - self.dimensions[1] / 2. * self.scale['y']
+        ymax = self.center['y'] + self.dimensions[1] / 2. * self.scale['y']
         return u.Quantity([ymin, ymax])
 
     @property
     def center(self):
         """Returns the offset between the center of the Sun and the center of
         the map."""
-        return {'x': wcs.get_center(self.shape[1], self.scale['x'],
+        return {'x': wcs.get_center(self.dimensions[0], self.scale['x'],
                                     self.reference_pixel['x'],
                                     self.reference_coordinate['x']),
-                'y': wcs.get_center(self.shape[0], self.scale['y'],
+                'y': wcs.get_center(self.dimensions[1], self.scale['y'],
                                     self.reference_pixel['y'],
                                     self.reference_coordinate['y'])}
 
@@ -315,12 +318,6 @@ scale:\t\t [{dx}, {dy}]
     def rsun_meters(self):
         """Radius of the sun in meters"""
         return u.Quantity(self.meta.get('rsun_ref', constants.radius), 'meter')
-
-    @property
-    def rsun_arcseconds(self):
-        warnings.warn("rsun_arcseconds is deprecated as of SunPy 0.6. Use rsun_obs instead of rsun_arcseconds",
-                      Warning)
-        return self.rsun_obs()
 
     @property
     def rsun_obs(self):
@@ -616,10 +613,8 @@ scale:\t\t [{dx}, {dy}]
                                     method, center=True)
         new_data = new_data.T
 
-        # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
-        # respectively
-        scale_factor_x = (float(self.data.shape[1]) / dimensions[0].value)
-        scale_factor_y = (float(self.data.shape[0]) / dimensions[1].value)
+        scale_factor_x = float(self.dimensions[0] / dimensions[0])
+        scale_factor_y = float(self.dimensions[0] / dimensions[1])
 
         new_map = deepcopy(self)
         # Update image scale and number of pixels
@@ -761,9 +756,9 @@ scale:\t\t [{dx}, {dy}]
             rmatrix = np.matrix([[c, -s], [s, c]])
 
         # Calculate the shape in pixels to contain all of the image data
-        extent = np.max(np.abs(np.vstack((new_map.shape.value * rmatrix, new_map.shape.value * rmatrix.T))), axis=0)
+        extent = np.max(np.abs(np.vstack((new_map.data.shape * rmatrix, new_map.data.shape * rmatrix.T))), axis=0)
         # Calculate the needed padding or unpadding
-        diff = np.asarray(np.ceil((extent - new_map.shape.value) / 2)).ravel()
+        diff = np.asarray(np.ceil((extent - new_map.data.shape) / 2)).ravel()
         # Pad the image array
         pad_x = np.max((diff[1], 0))
         pad_y = np.max((diff[0], 0))
@@ -781,7 +776,7 @@ scale:\t\t [{dx}, {dy}]
         if recenter:
             # Convert the axis of rotation from data coordinates to pixel coordinates
             x, y = new_map.data_to_pixel(rotation_center[0], rotation_center[1])
-            pixel_center = (y, x)
+            pixel_center = (y.value, x.value)
         else:
             pixel_center = array_center
 
@@ -800,7 +795,7 @@ scale:\t\t [{dx}, {dy}]
             new_center = rotation_center
         else:
             # Retrieve old coordinates for the center of the array
-            old_center = u.Quantity(new_map.pixel_to_data(array_center[1], array_center[0]))
+            old_center = u.Quantity(new_map.pixel_to_data(array_center[1]*u.pix, array_center[0]*u.pix))
 
             # Calculate new coordinates for the center of the array
             new_center = rotation_center - np.dot(rmatrix, rotation_center - old_center)
@@ -914,8 +909,8 @@ scale:\t\t [{dx}, {dy}]
             if range_b[1] is None:
                 range_b[1] = self.yrange[1]
 
-            x1, y1 = np.ceil(self.data_to_pixel(range_a[0], range_b[0]))
-            x2, y2 = np.floor(self.data_to_pixel(range_a[1], range_b[1])) + 1
+            x1, y1 = np.ceil(u.Quantity(self.data_to_pixel(range_a[0], range_b[0]))).value
+            x2, y2 = np.floor(u.Quantity(self.data_to_pixel(range_a[1], range_b[1])) + 1*u.pix).value
     
             x_pixels = [x1, x2]
             y_pixels = [y1, y2]            
@@ -1002,10 +997,8 @@ scale:\t\t [{dx}, {dy}]
         new_map = deepcopy(self)
         new_meta = new_map.meta
 
-        # Note that 'x' and 'y' correspond to 1 and 0 in self.shape,
-        # respectively
-        new_nx = (self.shape[1] / dimensions[0]).value
-        new_ny = (self.shape[0] / dimensions[1]).value
+        new_nx = (self.dimensions[0] / dimensions[0]).value
+        new_ny = (self.dimensions[1] / dimensions[1]).value
 
         # Update metadata
         new_meta['cdelt1'] = (dimensions[0] * self.scale['x']).value
