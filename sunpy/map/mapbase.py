@@ -62,7 +62,7 @@ class GenericMap(NDData):
     cmap : matplotlib.colors.Colormap
         A color map used for plotting with matplotlib.
     mpl_color_normalizer : matplotlib.colors.Normalize
-        A matplotlib normalizer used to the image plot.
+        A matplotlib normalizer used to scale the image plot.
 
     Examples
     --------
@@ -983,15 +983,13 @@ scale:\t\t [{dx}, {dy}]
         #   coordinates in a Map are at pixel centers
 
         # Make a copy of the original data and perform reshaping
-        reshaped = reshape_image_to_4d_superpixel(self.data.copy().T,
-                                                  dimensions.value)
+        reshaped = reshape_image_to_4d_superpixel(self.data.copy(),
+                                                  [dimensions.value[1], dimensions.value[0]])
         if method == 'sum':
             new_data = reshaped.sum(axis=3).sum(axis=1)
         elif method == 'average':
             new_data = ((reshaped.sum(axis=3).sum(axis=1)) /
                     np.float32(dimensions[0] * dimensions[1]))
-        new_data = new_data.T
-
 
         # Update image scale and number of pixels
         new_map = deepcopy(self)
@@ -1010,8 +1008,8 @@ scale:\t\t [{dx}, {dy}]
             new_meta['CD2_2'] *= dimensions[1].value
         new_meta['crpix1'] = (new_nx + 1) / 2.
         new_meta['crpix2'] = (new_ny + 1) / 2.
-        new_meta['crval1'] = self.center['x']
-        new_meta['crval2'] = self.center['y']
+        new_meta['crval1'] = self.center['x'].value
+        new_meta['crval2'] = self.center['y'].value
 
         # Create new map instance
         new_map.data = new_data
