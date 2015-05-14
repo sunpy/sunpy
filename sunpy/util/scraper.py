@@ -65,20 +65,22 @@ class Scraper:
         directories = self.range(starttime, endtime)
         filesurls = []
         for directory in directories:
-            opn = urllib2.urlopen(directory)
             try:
-                soup = BeautifulSoup(opn)
-                for link in soup.find_all("a"):
-                    href = link.get("href")
-                    if href.endswith(self.pattern.split('.')[-1]):
-                        fullpath = directory + href
-                        if self.URL_followsPattern(fullpath):
-                            datehref = self.extractDateURL(fullpath)
-                            if (datehref >= starttime and
-                                datehref <= endtime):
-                                filesurls.append(fullpath)
-            finally:
-                opn.close()
+                opn = urllib2.urlopen(directory)
+                try:
+                    soup = BeautifulSoup(opn)
+                    for link in soup.find_all("a"):
+                        href = link.get("href")
+                        if href.endswith(self.pattern.split('.')[-1]):
+                            fullpath = directory + href
+                            if self.URL_followsPattern(fullpath):
+                                datehref = self.extractDateURL(fullpath)
+                                if (datehref >= starttime and datehref <= endtime):
+                                    filesurls.append(fullpath)
+                finally:
+                    opn.close()
+            except:
+                pass
         return filesurls
 
     def _smallerPattern(self, directoryPattern):
