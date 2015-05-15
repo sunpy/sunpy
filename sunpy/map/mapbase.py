@@ -504,7 +504,7 @@ scale:\t\t [{dx}, {dy}]
         y : float
             Pixel coordinate on the CTYPE2 axis.
         """
-        x, y = self.wcs.wcs_world2pix(u.Quantity([x, y])[None, :].to(u.deg).value, origin)[0]
+        x, y = self.wcs.wcs_world2pix(x.to(u.deg).value, y.to(u.deg).value, origin)
 
         return x * u.pixel, y * u.pixel
 
@@ -536,7 +536,7 @@ scale:\t\t [{dx}, {dy}]
         y : `~astropy.units.Quantity`
             Coordinate of the CTYPE2 axis. (Normally solar-y).
         """
-        x, y = self.wcs.wcs_pix2world(u.Quantity([x, y]).reshape((1,2)), origin)[0]
+        x, y = self.wcs.wcs_pix2world(x, y, origin)
 
         # WCS always outputs degrees.
         x *= u.deg
@@ -932,6 +932,14 @@ scale:\t\t [{dx}, {dy}]
             raise ValueError(
                 "Invalid unit. Must be one of 'data' or 'pixels'")
 
+        x_pixels = np.array(x_pixels)
+        y_pixels = np.array(y_pixels)
+        # Clip pixel values to max of array, prevents negative
+        # indexing
+        x_pixels[np.greater(x_pixels, self.data.shape[1])] = self.data.shape[1]
+
+        y_pixels[np.less(y_pixels, 0)] = 0
+        y_pixels[np.greater(y_pixels, self.data.shape[0])] = self.data.shape[0]
 
         # Get ndarray representation of submap
         xslice = slice(x_pixels[0], x_pixels[1])
@@ -1041,11 +1049,13 @@ scale:\t\t [{dx}, {dy}]
         if not axes:
             axes = plt.gca()
 
-        x, y = self.pixel_to_data()
+        XX, YY = np.meshgrid(np.arange(self.data.shape[0]),
+                             np.arange(self.data.shape[1]))
+        x, y = self.pixel_to_data(XX*u.pix, YY*u.pix)
         dsun = self.dsun
 
-        b0 = self.heliographic_latitude
-        l0 = self.heliographic_longitude
+        b0 = self.heliographic_latitude.to(u.deg).value
+        l0 = self.heliographic_longitude.to(u.deg).value
         units = [self.units['x'], self.units['y']]
 
         #Prep the plot kwargs
@@ -1054,8 +1064,8 @@ scale:\t\t [{dx}, {dy}]
                    'zorder':100}
         plot_kw.update(kwargs)
 
-        hg_longitude_deg = np.linspace(-180, 180, num=361) + self.heliographic_longitude
-        hg_latitude_deg = np.arange(-90, 90, grid_spacing)
+        hg_longitude_deg = np.linspace(-180, 180, num=361) + l0
+        hg_latitude_deg = np.arange(-90, 90, grid_spacing.to(u.deg).value)
 
         # draw the latitude lines
         for lat in hg_latitude_deg:
@@ -1067,7 +1077,7 @@ scale:\t\t [{dx}, {dy}]
             y = y[valid]
             axes.plot(x, y, **plot_kw)
 
-        hg_longitude_deg = np.arange(-180, 180, grid_spacing) + self.heliographic_longitude
+        hg_longitude_deg = np.arange(-180, 180, grid_spacing.to(u.deg).value) + l0
         hg_latitude_deg = np.linspace(-90, 90, num=181)
 
         # draw the longitude lines
@@ -1080,8 +1090,8 @@ scale:\t\t [{dx}, {dy}]
             y = y[valid]
             axes.plot(x, y, **plot_kw)
 
-        axes.set_ylim(self.yrange)
-        axes.set_xlim(self.xrange)
+        axes.set_ylim(self.yrange.value)
+        axes.set_xlim(self.xrange.value)
 
         return axes
 
@@ -1128,7 +1138,7 @@ scale:\t\t [{dx}, {dy}]
         ----------
         draw_limb : bool
             Whether the solar limb should be plotted.
-        draw_grid : bool or number
+         : bool or number
             Whether solar meridians and parallels are plotted. If float then sets
             degree difference between parallels and meridians.
         gamma : float
