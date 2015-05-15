@@ -639,12 +639,15 @@ scale:\t\t [{dx}, {dy}]
         return new_map
 
     def rotate(self, angle=None, rmatrix=None, order=4, scale=1.0,
-               rotation_center=None, recenter=False, missing=0.0, use_scipy=False):
+               recenter=False, missing=0.0, use_scipy=False):
         """
         Returns a new rotated and rescaled map.  Specify either a rotation
         angle or a rotation matrix, but not both.  If neither an angle or a
         rotation matrix are specified, the map will be rotated by the rotation
         angle in the metadata.
+
+        The map will be rotated around the reference coordinate defined in the
+        meta data.
 
         Also updates the rotation_matrix attribute and any appropriate header
         data so that they correctly describe the new map.
@@ -666,9 +669,6 @@ scale:\t\t [{dx}, {dy}]
             Default: 4
         scale : float
             A scale factor for the image, default is no scaling
-        rotation_center : `~astropy.units.Quantity`
-            The axis of rotation in data coordinates
-            Default: the origin in the data coordinate system
         recenter : bool
             If True, position the axis of rotation at the center of the new map
             Default: False
@@ -731,20 +731,10 @@ scale:\t\t [{dx}, {dy}]
         if order not in range(6):
             raise ValueError("Order must be between 0 and 5")
 
-        # is None to prevent 0 arrays evaling to False
-        if rotation_center is None:
-            rotation_center = u.Quantity([0*self.units['x'], 0*self.units['y']])
-        else:
-            if not isinstance(rotation_center, u.Quantity) and not hasattr(rotation_center, "unit"):
-                raise TypeError("Argument rotation_center to function rotate has"
-                                " no unit attribute. You may want to pass in an"
-                                " astropy Quantity instead." )
-            elif not rotation_center.unit.is_equivalent(self.units['x']):
-                raise u.UnitsError("Argument '{0}' to function '{1}'"
-                                   " must be in units convertable to"
-                                   " '{2}'.".format('rotation_center', 'rotate',
-                                                  self.units['x'].to_string()))
-
+        # The FITS-WCS transform is by definition defined around the
+        # reference coordinate in the header.
+        rotation_center = u.Quantity([self.reference_coordinate['x'],
+                                      self.reference_coordinate['y']])
 
         # Copy Map
         new_map = deepcopy(self)
