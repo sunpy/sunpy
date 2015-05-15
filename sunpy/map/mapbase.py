@@ -1211,13 +1211,16 @@ scale:\t\t [{dx}, {dy}]
         aia.draw_limb()
         aia.draw_grid()
         """
-        # Check that the image is properly oriented
-        if not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2))):
-            warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
-                          Warning)
+
         #Get current axes
         if not axes:
-            axes = plt.gca()
+            axes = wcsaxes_compat.gca_wcs(self.wcs)
+
+        # Check that the image is properly oriented
+        if (not wcsaxes_compat.is_wcsaxes(axes) and
+            not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2)))):
+            warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
+                          Warning)
 
         # Normal plot
         if annotate:
@@ -1240,27 +1243,41 @@ scale:\t\t [{dx}, {dy}]
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
 
+
         cmap = deepcopy(self.cmap)
         if gamma is not None:
             cmap.set_gamma(gamma)
 
-        # make imshow kwargs a dict
-        kwargs = {'origin': 'lower',
-                  'cmap': cmap,
-                  'norm': self.mpl_color_normalizer,
-                  'extent': np.append(self.xrange.value, self.yrange.value),
-                  'interpolation': 'nearest'}
+        kwargs = self._mpl_imshow_kwargs(axes, cmap)
         kwargs.update(imshow_args)
 
-        # Allows users to show masked data
-        if self.mask is None:
-            ret = axes.imshow(self.data, **kwargs)
-        else:
-            ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **kwargs)
+        ret = axes.imshow(self.data, **kwargs)
+
+        if wcsaxes_compat.is_wcsaxes(axes):
+            wcsaxes_compat.default_wcs_grid(axes)
 
         #Set current image (makes colorbar work)
         plt.sci(ret)
         return ret
+
+    def _mpl_imshow_kwargs(self, axes, cmap):
+        """
+        Return the keyword arguments for imshow to display this map
+        """
+        if wcsaxes_compat.is_wcsaxes(axes):
+            kwargs = {'cmap':cmap,
+                      'norm':self.mpl_color_normalizer,
+                      'interpolation':'nearest'}
+        else:
+            # make imshow kwargs a dict
+            kwargs = {'origin':'lower',
+                      'cmap':cmap,
+                      'norm':self.mpl_color_normalizer,
+                      'extent':self.xrange + self.yrange,
+                      'interpolation':'nearest'}
+
+        return kwargs
+
 
     def _get_mpl_normalizer(self):
         """
