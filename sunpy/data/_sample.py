@@ -57,8 +57,8 @@ def download_sample_data(progress=True):
     """
     number_of_files_fetched = 0
     print("Downloading sample files to " + sampledata_dir)
-    for base_url in _base_urls:
-        for file_name in _files.itervalues():
+    for file_name in _files.itervalues():
+        for base_url in _base_urls:
             full_file_name = file_name[0] + file_name[1]
             if url_exists(os.path.join(base_url, full_file_name)):
                 f = download_file(os.path.join(base_url, full_file_name))
@@ -74,6 +74,7 @@ def download_sample_data(progress=True):
                     move(f, os.path.join(sampledata_dir, file_name[0]))
                 # increment the number of files obtained to check later
                 number_of_files_fetched += 1
+                break
 
     if number_of_files_fetched < len(_files.keys()):
         raise URLError("Could not download all samples files. Problem with accessing sample data servers.")
