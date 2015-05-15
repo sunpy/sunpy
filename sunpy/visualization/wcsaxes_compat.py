@@ -50,15 +50,23 @@ def gca_wcs(wcs, fig=None):
         fig = plt.gcf()
 
     if not len(fig.get_axes()):
-        if HAVE_WCSAXES:
+        if HAVE_WCSAXES and not FORCE_NO_WCSAXES:
             ax = plt.gca(projection=wcs)
         else:
             ax = plt.gca()
-            
+
     else:
         ax = plt.gca()
 
     return ax
+
+def get_world_transform(axes):
+    if is_wcsaxes(axes):
+        transform = axes.get_transform('world')
+    else:
+        transform = axes.transData
+
+    return transform
 
 def default_wcs_grid(axes):
     """
@@ -76,7 +84,7 @@ def default_wcs_grid(axes):
     x.set_major_formatter('s.s')
     y.set_major_formatter('s.s')
 
-    axes.coords.grid(color='white', alpha=0.4)
+    axes.coords.grid(color='white', alpha=0.6)
 
 def wcsaxes_heliographic_overlay(axes):
     """
