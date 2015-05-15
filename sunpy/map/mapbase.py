@@ -24,7 +24,7 @@ from sunpy.image.transform import affine_transform
 
 import sunpy.io as io
 import sunpy.wcs as wcs
-from sunpy.visualization import toggle_pylab
+from sunpy.visualization import toggle_pylab, wcsaxes_compat
 from sunpy.sun import constants
 from sunpy.sun import sun
 from sunpy.time import parse_time, is_time
@@ -1037,7 +1037,8 @@ scale:\t\t [{dx}, {dy}]
         """
 
         if not axes:
-            axes = plt.gca()
+            axes = wcsaxes_compat.gca_wcs(self.wcs)
+        transform = wcsaxes_compat.get_world_transform(axes)
 
         XX, YY = np.meshgrid(np.arange(self.data.shape[0]),
                              np.arange(self.data.shape[1]))
@@ -1051,7 +1052,8 @@ scale:\t\t [{dx}, {dy}]
         #Prep the plot kwargs
         plot_kw = {'color':'white',
                    'linestyle':'dotted',
-                   'zorder':100}
+                   'zorder':100,
+                   'transform':transform}
         plot_kw.update(kwargs)
 
         hg_longitude_deg = np.linspace(-180, 180, num=361) + l0
@@ -1065,6 +1067,9 @@ scale:\t\t [{dx}, {dy}]
             valid = np.logical_and(np.isfinite(x), np.isfinite(y))
             x = x[valid]
             y = y[valid]
+            if wcsaxes_compat.is_wcsaxes(axes):
+                x = (x*u.arcsec).to(u.deg).value
+                y = (y*u.arcsec).to(u.deg).value
             axes.plot(x, y, **plot_kw)
 
         hg_longitude_deg = np.arange(-180, 180, grid_spacing.to(u.deg).value) + l0
@@ -1078,10 +1083,14 @@ scale:\t\t [{dx}, {dy}]
             valid = np.logical_and(np.isfinite(x), np.isfinite(y))
             x = x[valid]
             y = y[valid]
+            if wcsaxes_compat.is_wcsaxes(axes):
+                x = (x*u.arcsec).to(u.deg).value
+                y = (y*u.arcsec).to(u.deg).value
             axes.plot(x, y, **plot_kw)
 
-        axes.set_ylim(self.yrange.value)
-        axes.set_xlim(self.xrange.value)
+        if not wcsaxes_compat.is_wcsaxes(axes):
+            axes.set_ylim(self.yrange.value)
+            axes.set_xlim(self.xrange.value)
 
         return axes
 
@@ -1105,12 +1114,18 @@ scale:\t\t [{dx}, {dy}]
         """
 
         if not axes:
-            axes = plt.gca()
+            axes = wcsaxes_compat.gca_wcs(self.wcs)
 
-        c_kw = {'radius':self.rsun_obs,
+        transform = wcsaxes_compat.get_world_transform(axes)
+        if wcsaxes_compat.is_wcsaxes(axes):
+            radius = self.rsun_obs.to(u.deg).value
+        else:
+            radius = self.rsun_obs.value
+        c_kw = {'radius':radius,
                 'fill':False,
                 'color':'white',
-                'zorder':100
+                'zorder':100,
+                'transform': transform
                 }
         c_kw.update(kwargs)
 
@@ -1266,6 +1281,7 @@ scale:\t\t [{dx}, {dy}]
         """
         if wcsaxes_compat.is_wcsaxes(axes):
             kwargs = {'cmap':cmap,
+                      'origin': 'lower',
                       'norm':self.mpl_color_normalizer,
                       'interpolation':'nearest'}
         else:
@@ -1273,7 +1289,7 @@ scale:\t\t [{dx}, {dy}]
             kwargs = {'origin':'lower',
                       'cmap':cmap,
                       'norm':self.mpl_color_normalizer,
-                      'extent':self.xrange + self.yrange,
+                      'extent':list(self.xrange.value) + list(self.yrange.value),
                       'interpolation':'nearest'}
 
         return kwargs
