@@ -78,6 +78,9 @@ def default_wcs_grid(axes):
     x = axes.coords[0]
     y = axes.coords[1]
 
+    x.set_ticks(color='white')
+    y.set_ticks(color='white')
+
     x.set_ticks_position('bl')
     y.set_ticks_position('bl')
 

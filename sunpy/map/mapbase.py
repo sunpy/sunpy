@@ -1041,6 +1041,10 @@ scale:\t\t [{dx}, {dy}]
 
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
+
+        # Do not automatically rescale axes when plotting the overlay
+        axes.set_autoscale_on(False)
+
         transform = wcsaxes_compat.get_world_transform(axes)
 
         XX, YY = np.meshgrid(np.arange(self.data.shape[0]),
@@ -1091,10 +1095,8 @@ scale:\t\t [{dx}, {dy}]
                 y = (y*u.arcsec).to(u.deg).value
             axes.plot(x, y, **plot_kw)
 
-        if not wcsaxes_compat.is_wcsaxes(axes):
-            axes.set_ylim(self.yrange.value)
-            axes.set_xlim(self.xrange.value)
-
+        # Turn autoscaling back on.
+        axes.set_autoscale_on(True)
         return axes
 
     def draw_limb(self, axes=None, **kwargs):
@@ -1173,7 +1175,7 @@ scale:\t\t [{dx}, {dy}]
 
         # Normal plot
         else:
-            axes = figure.gca()
+            axes = wcsaxes_compat.gca_wcs(self.wcs)
 
         im = self.plot(axes=axes, **matplot_args)
 
