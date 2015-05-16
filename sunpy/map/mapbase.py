@@ -493,6 +493,8 @@ scale:\t\t [{dx}, {dy}]
 
         origin : int
             Origin of the top-left corner. i.e. count from 0 or 1.
+            Normally, origin should be 0 when passing numpy indicies, or 1 if
+            passing values from FITS header or map attributes.
             See `~astropy.wcs.WCS.wcs_world2pix` for more information.
 
         Returns
@@ -525,6 +527,8 @@ scale:\t\t [{dx}, {dy}]
 
         origin : int
             Origin of the top-left corner. i.e. count from 0 or 1.
+            Normally, origin should be 0 when passing numpy indicies, or 1 if
+            passing values from FITS header or map attributes.
             See `~astropy.wcs.WCS.wcs_pix2world` for more information.
 
         Returns
@@ -746,7 +750,8 @@ scale:\t\t [{dx}, {dy}]
             rmatrix = np.matrix([[c, -s], [s, c]])
 
         # Calculate the shape in pixels to contain all of the image data
-        extent = np.max(np.abs(np.vstack((new_map.data.shape * rmatrix, new_map.data.shape * rmatrix.T))), axis=0)
+        extent = np.max(np.abs(np.vstack((new_map.data.shape * rmatrix,
+                                          new_map.data.shape * rmatrix.T))), axis=0)
         # Calculate the needed padding or unpadding
         diff = np.asarray(np.ceil((extent - new_map.data.shape) / 2)).ravel()
         # Pad the image array
@@ -763,7 +768,7 @@ scale:\t\t [{dx}, {dy}]
 
         if recenter:
             # Convert the axis of rotation from data coordinates to pixel coordinates
-            pixel_center = u.Quantity(new_map.data_to_pixel(*rotation_center)).value
+            pixel_center = u.Quantity(new_map.data_to_pixel(*rotation_center, origin=1)).value
         else:
             pixel_center = array_center
 
@@ -781,10 +786,12 @@ scale:\t\t [{dx}, {dy}]
             new_reference_pixel = array_center
         else:
             # Retrieve old pixel coordinates for the rotation center
-            old_reference_pixel = u.Quantity(new_map.data_to_pixel(*rotation_center)).value
+            old_reference_pixel = u.Quantity(new_map.data_to_pixel(*rotation_center,
+                                                                   origin=1)).value
 
             # Calculate new pixel coordinates for the rotation center
-            new_reference_pixel = array_center + np.dot(rmatrix, old_reference_pixel - pixel_center)
+            new_reference_pixel = array_center + np.dot(rmatrix,
+                                                        old_reference_pixel - pixel_center)
             new_reference_pixel = np.array(new_reference_pixel).ravel()
 
         # Define a new reference pixel in the rotated space
