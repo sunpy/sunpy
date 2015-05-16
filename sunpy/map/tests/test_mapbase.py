@@ -382,17 +382,10 @@ def test_rotate(aia171_test_map):
 def test_rotate_recenter(aia171_test_map):
     array_center = (np.array(aia171_test_map.data.shape)-1)/2.0
 
-    # New image center in data coordinates
-    new_center = u.Quantity((200, 100), unit=u.arcsec)
+    rotated_map = aia171_test_map.rotate(20*u.deg, recenter=True)
 
-    rotated_map = aia171_test_map.rotate(20*u.deg, rotation_center=new_center, recenter=True)
-
-    # Retrieve pixel coordinates for the centers from the new map
-    new_x, new_y = rotated_map.data_to_pixel(new_center[0], new_center[1])
-
-    # The new desired image center should be in the map center
-    new_array_center = (np.array(rotated_map.data.shape)-1)/2.0
-    assert_quantity_allclose((new_y, new_x), new_array_center*u.pix)
+    assert_quantity_allclose((array_center+1)*u.pix, # FITS indexes from 1
+                             u.Quantity(aia171_test_map.reference_pixel.values()))
 
 
 def test_rotate_crota_remove(aia171_test_map):
