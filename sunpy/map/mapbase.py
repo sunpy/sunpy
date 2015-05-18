@@ -33,6 +33,9 @@ from sunpy.image.rescale import resample as sunpy_image_resample
 
 import astropy.units as u
 
+from collections import namedtuple
+Pair = namedtuple('Pair', 'x y')
+
 __all__ = ['GenericMap']
 
 from sunpy import config
@@ -161,21 +164,21 @@ scale:\t\t [{dx}, {dy}]
 """.format(dtype=self.__class__.__name__,
            obs=self.observatory, inst=self.instrument, det=self.detector,
            meas=self.measurement, date=self.date, dt=self.exposure_time,
-           dim=self.dimensions,
-           dx=self.scale['x'], dy=self.scale['y'])
+           dim=u.Quantity(self.dimensions),
+           dx=self.scale.x, dy=self.scale.y)
 + self.data.__repr__())
 
     @property
     def wcs(self):
         w2 = astropy.wcs.WCS(naxis=2)
-        w2.wcs.crpix = u.Quantity([self.reference_pixel['x'], self.reference_pixel['y']])
+        w2.wcs.crpix = u.Quantity(self.reference_pixel)
         # Make these a quantity array to prevent the numpy setting element of
         # array with sequence error.
-        w2.wcs.cdelt = u.Quantity([self.scale['x'], self.scale['y']])
-        w2.wcs.crval = u.Quantity([self.reference_coordinate['x'], self.reference_coordinate['y']])
-        w2.wcs.ctype = [self.coordinate_system['x'], self.coordinate_system['y']]
+        w2.wcs.cdelt = u.Quantity(self.scale)
+        w2.wcs.crval = u.Quantity(self.reference_coordinate)
+        w2.wcs.ctype = self.coordinate_system
         w2.wcs.pc = self.rotation_matrix
-        w2.wcs.cunit = self.units['x'], self.units['y']
+        w2.wcs.cunit = self.units
 
         return w2
 
@@ -185,7 +188,7 @@ scale:\t\t [{dx}, {dy}]
         """
         The dimensions of the array (x axis first, y axis second).
         """
-        return u.Quantity([self.data.shape[1], self.data.shape[0]], 'pixel')
+        return Pair(*u.Quantity(np.flipud(self.data.shape), 'pixel'))
 
     @property
     def dtype(self):
@@ -294,27 +297,27 @@ scale:\t\t [{dx}, {dy}]
     @property
     def xrange(self):
         """Return the X range of the image in arcsec from edge to edge."""
-        xmin = self.center['x'] - self.dimensions[0] / 2. * self.scale['x']
-        xmax = self.center['x'] + self.dimensions[0] / 2. * self.scale['x']
+        xmin = self.center.x - self.dimensions[0] / 2. * self.scale.x
+        xmax = self.center.x + self.dimensions[0] / 2. * self.scale.x
         return u.Quantity([xmin, xmax])
 
     @property
     def yrange(self):
         """Return the Y range of the image in arcsec from edge to edge."""
-        ymin = self.center['y'] - self.dimensions[1] / 2. * self.scale['y']
-        ymax = self.center['y'] + self.dimensions[1] / 2. * self.scale['y']
+        ymin = self.center.y - self.dimensions[1] / 2. * self.scale.y
+        ymax = self.center.y + self.dimensions[1] / 2. * self.scale.y
         return u.Quantity([ymin, ymax])
 
     @property
     def center(self):
         """Returns the offset between the center of the Sun and the center of
         the map."""
-        return {'x': wcs.get_center(self.dimensions[0], self.scale['x'],
-                                    self.reference_pixel['x'],
-                                    self.reference_coordinate['x']),
-                'y': wcs.get_center(self.dimensions[1], self.scale['y'],
-                                    self.reference_pixel['y'],
-                                    self.reference_coordinate['y'])}
+        return Pair(wcs.get_center(self.dimensions[0], self.scale.x,
+                                   self.reference_pixel.x,
+                                   self.reference_coordinate.x),
+                    wcs.get_center(self.dimensions[1], self.scale.y,
+                                   self.reference_pixel.y,
+                                   self.reference_coordinate.y))
 
     @property
     def rsun_meters(self):
@@ -338,8 +341,8 @@ scale:\t\t [{dx}, {dy}]
     @property
     def coordinate_system(self):
         """Coordinate system used for x and y axes (ctype1/2)"""
-        return {'x': self.meta.get('ctype1', 'HPLN-TAN'),
-                'y': self.meta.get('ctype2', 'HPLT-TAN'),}
+        return Pair(self.meta.get('ctype1', 'HPLN-TAN'),
+                    self.meta.get('ctype2', 'HPLT-TAN'))
 
     @property
     def carrington_longitude(self):
@@ -375,27 +378,27 @@ scale:\t\t [{dx}, {dy}]
     @property
     def reference_coordinate(self):
         """Reference point WCS axes in data units (crval1/2)"""
-        return {'x': self.meta.get('crval1', 0.) * self.units['x'],
-                'y': self.meta.get('crval2', 0.) * self.units['y'],}
+        return Pair(self.meta.get('crval1', 0.) * self.units.x,
+                    self.meta.get('crval2', 0.) * self.units.y)
 
     @property
     def reference_pixel(self):
         """Reference point axes in pixels (crpix1/2)"""
-        return {'x': self.meta.get('crpix1', (self.meta.get('naxis1') + 1) / 2.) * u.pixel,
-                'y': self.meta.get('crpix2', (self.meta.get('naxis2') + 1) / 2.) * u.pixel}
+        return Pair(self.meta.get('crpix1', (self.meta.get('naxis1') + 1) / 2.) * u.pixel,
+                    self.meta.get('crpix2', (self.meta.get('naxis2') + 1) / 2.) * u.pixel)
 
     @property
     def scale(self):
         """Image scale along the x and y axes in units/pixel (cdelt1/2)"""
         #TODO: Fix this if only CDi_j matrix is provided
-        return {'x': self.meta.get('cdelt1', 1.) * self.units['x'] / u.pixel,
-                'y': self.meta.get('cdelt2', 1.) * self.units['y'] / u.pixel}
+        return Pair(self.meta.get('cdelt1', 1.) * self.units.x / u.pixel,
+                    self.meta.get('cdelt2', 1.) * self.units.y / u.pixel)
 
     @property
     def units(self):
         """Image coordinate units along the x and y axes (cunit1/2)."""
-        return {'x': u.Unit(self.meta.get('cunit1', 'arcsec')),
-                'y': u.Unit(self.meta.get('cunit2', 'arcsec')),}
+        return Pair(u.Unit(self.meta.get('cunit1', 'arcsec')),
+                    u.Unit(self.meta.get('cunit2', 'arcsec')))
 
     @property
     def rotation_matrix(self):
@@ -409,7 +412,7 @@ scale:\t\t [{dx}, {dy}]
             cd = np.matrix([[self.meta['CD1_1'], self.meta['CD1_2']],
                             [self.meta['CD2_1'], self.meta['CD2_2']]])
 
-            cdelt = u.Quantity(self.scale.values()).value
+            cdelt = u.Quantity(self.scale).value
 
             return cd / cdelt
         else:
@@ -423,7 +426,7 @@ scale:\t\t [{dx}, {dy}]
         This method can be overriden if an instruments header does not use this
         conversion.
         """
-        lam = self.scale['y'] / self.scale['x']
+        lam = self.scale.y / self.scale.x
         p = np.deg2rad(self.meta.get('CROTA2', 0))
 
         return np.matrix([[np.cos(p), -1 * lam * np.sin(p)],
@@ -551,7 +554,7 @@ scale:\t\t [{dx}, {dy}]
         x = Longitude(x, wrap_angle=180*u.deg)
         y = Latitude(y)
 
-        return x.to(self.units['x']), y.to(self.units['y'])
+        return x.to(self.units.x), y.to(self.units.y)
 
 
 # #### I/O routines #### #
@@ -636,8 +639,8 @@ scale:\t\t [{dx}, {dy}]
             new_meta['CD2_2'] *= scale_factor_y
         new_meta['crpix1'] = (dimensions[0].value + 1) / 2.
         new_meta['crpix2'] = (dimensions[1].value + 1) / 2.
-        new_meta['crval1'] = self.center['x'].value
-        new_meta['crval2'] = self.center['y'].value
+        new_meta['crval1'] = self.center.x.value
+        new_meta['crval2'] = self.center.y.value
 
         # Create new map instance
         new_map.data = new_data
@@ -739,8 +742,8 @@ scale:\t\t [{dx}, {dy}]
 
         # The FITS-WCS transform is by definition defined around the
         # reference coordinate in the header.
-        rotation_center = u.Quantity([self.reference_coordinate['x'],
-                                      self.reference_coordinate['y']])
+        rotation_center = u.Quantity([self.reference_coordinate.x,
+                                      self.reference_coordinate.y])
 
         # Copy Map
         new_map = deepcopy(self)
@@ -822,8 +825,8 @@ scale:\t\t [{dx}, {dy}]
 
         # Update pixel size if image has been scaled.
         if scale != 1.0:
-            new_map.meta['cdelt1'] = (new_map.scale['x'] / scale).value
-            new_map.meta['cdelt2'] = (new_map.scale['y'] / scale).value
+            new_map.meta['cdelt1'] = (new_map.scale.x / scale).value
+            new_map.meta['cdelt2'] = (new_map.scale.y / scale).value
 
         # Remove old CROTA kwargs because we have saved a new PCi_j matrix.
         new_map.meta.pop('CROTA1', None)
@@ -877,8 +880,8 @@ scale:\t\t [{dx}, {dy}]
         if ((isinstance(range_a, u.Quantity) and isinstance(range_b, u.Quantity)) or
             (hasattr(range_a, 'unit') and hasattr(range_b, 'unit'))):
 
-            if (range_a.unit.is_equivalent(self.units['x']) and
-                range_b.unit.is_equivalent(self.units['x'])):
+            if (range_a.unit.is_equivalent(self.units.x) and
+                range_b.unit.is_equivalent(self.units.y)):
                 units = 'data'
             elif range_a.unit.is_equivalent(u.pixel) and range_b.unit.is_equivalent(u.pixel):
                 units = 'pixels'
@@ -942,8 +945,8 @@ scale:\t\t [{dx}, {dy}]
 
         # Make a copy of the header with updated centering information
         new_map = deepcopy(self)
-        new_map.meta['crpix1'] = self.reference_pixel['x'].value - x_pixels[0]
-        new_map.meta['crpix2'] = self.reference_pixel['y'].value - y_pixels[0]
+        new_map.meta['crpix1'] = self.reference_pixel.x.value - x_pixels[0]
+        new_map.meta['crpix2'] = self.reference_pixel.y.value - y_pixels[0]
         new_map.meta['naxis1'] = new_data.shape[1]
         new_map.meta['naxis2'] = new_data.shape[0]
 
@@ -1001,8 +1004,8 @@ scale:\t\t [{dx}, {dy}]
         new_ny = (self.dimensions[1] / dimensions[1]).value
 
         # Update metadata
-        new_meta['cdelt1'] = (dimensions[0] * self.scale['x']).value
-        new_meta['cdelt2'] = (dimensions[1] * self.scale['y']).value
+        new_meta['cdelt1'] = (dimensions[0] * self.scale.x).value
+        new_meta['cdelt2'] = (dimensions[1] * self.scale.y).value
         if 'CD1_1' in new_meta:
             new_meta['CD1_1'] *= dimensions[0].value
             new_meta['CD2_1'] *= dimensions[0].value
@@ -1010,8 +1013,8 @@ scale:\t\t [{dx}, {dy}]
             new_meta['CD2_2'] *= dimensions[1].value
         new_meta['crpix1'] = (new_nx + 1) / 2.
         new_meta['crpix2'] = (new_ny + 1) / 2.
-        new_meta['crval1'] = self.center['x'].value
-        new_meta['crval2'] = self.center['y'].value
+        new_meta['crval1'] = self.center.x.value
+        new_meta['crval2'] = self.center.y.value
 
         # Create new map instance
         new_map.data = new_data
@@ -1055,7 +1058,7 @@ scale:\t\t [{dx}, {dy}]
 
         b0 = self.heliographic_latitude.to(u.deg).value
         l0 = self.heliographic_longitude.to(u.deg).value
-        units = [self.units['x'], self.units['y']]
+        units = self.units
 
         #Prep the plot kwargs
         plot_kw = {'color':'white',
@@ -1071,7 +1074,7 @@ scale:\t\t [{dx}, {dy}]
         for lat in hg_latitude_deg:
             x, y = wcs.convert_hg_hpc(hg_longitude_deg, lat * np.ones(361),
                                       b0_deg=b0, l0_deg=l0, dsun_meters=dsun,
-                                      angle_units=units[0], occultation=True)
+                                      angle_units=units.x, occultation=True)
             valid = np.logical_and(np.isfinite(x), np.isfinite(y))
             x = x[valid]
             y = y[valid]
@@ -1252,16 +1255,16 @@ scale:\t\t [{dx}, {dy}]
                                                         tmf=TIME_FORMAT))
 
             # x-axis label
-            if self.coordinate_system['x'] == 'HG':
-                xlabel = 'Longitude [{lon}]'.format(lon=self.units['x'])
+            if self.coordinate_system.x == 'HG':
+                xlabel = 'Longitude [{lon}]'.format(lon=self.units.x)
             else:
-                xlabel = 'X-position [{xpos}]'.format(xpos=self.units['x'])
+                xlabel = 'X-position [{xpos}]'.format(xpos=self.units.x)
 
             # y-axis label
-            if self.coordinate_system['y'] == 'HG':
-                ylabel = 'Latitude [{lat}]'.format(lat=self.units['y'])
+            if self.coordinate_system.y == 'HG':
+                ylabel = 'Latitude [{lat}]'.format(lat=self.units.y)
             else:
-                ylabel = 'Y-position [{ypos}]'.format(ypos=self.units['y'])
+                ylabel = 'Y-position [{ypos}]'.format(ypos=self.units.y)
 
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
