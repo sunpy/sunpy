@@ -8,6 +8,8 @@ import glob
 import numpy as np
 from matplotlib import colors
 
+import astropy.units as u
+
 from sunpy.map.sources.hinode import XRTMap
 from sunpy.map import Map
 import sunpy.data.test
@@ -33,7 +35,7 @@ def test_observatory():
 
 def test_measurement():
     """Tests the measurement property of the XRTMap object."""
-    assert xrt.measurement == ""
+    assert xrt.measurement ==  0 * u.one
 
 def test_normalizer():
     """Tests the creation of the Normalizer object,

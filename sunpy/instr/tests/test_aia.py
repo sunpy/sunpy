@@ -17,8 +17,8 @@ def test_aiaprep():
     # Test that header info for the map has been correctly updated
     # Check all of these for Map attributes and .meta values?
     # Check crpix values
-    assert prep_map.meta['crpix1'] == prep_map.shape[1]/2.0 + 0.5
-    assert prep_map.meta['crpix2'] == prep_map.shape[0]/2.0 + 0.5
+    assert prep_map.meta['crpix1'] == prep_map.data.shape[1]/2.0 + 0.5
+    assert prep_map.meta['crpix2'] == prep_map.data.shape[0]/2.0 + 0.5
     # Check cdelt values
     assert prep_map.meta['cdelt1']/0.6 == int(prep_map.meta['cdelt1']/0.6)
     assert prep_map.meta['cdelt2']/0.6 == int(prep_map.meta['cdelt2']/0.6)
@@ -36,8 +36,8 @@ def test_filesave():
     prep_map.save(afilename, clobber=True)
     load_map = sunpy.map.Map(afilename)
     # Check crpix values
-    assert load_map.meta['crpix1'] == prep_map.shape[1]/2.0 + 0.5
-    assert load_map.meta['crpix2'] == prep_map.shape[0]/2.0 + 0.5
+    assert load_map.meta['crpix1'] == prep_map.data.shape[1]/2.0 + 0.5
+    assert load_map.meta['crpix2'] == prep_map.data.shape[0]/2.0 + 0.5
     # Check cdelt values
     assert load_map.meta['cdelt1']/0.6 == int(load_map.meta['cdelt1']/0.6)
     assert load_map.meta['cdelt2']/0.6 == int(load_map.meta['cdelt2']/0.6)
