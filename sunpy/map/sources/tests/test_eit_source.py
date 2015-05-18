@@ -39,7 +39,7 @@ def test_observatory(createEIT):
 
 def test_measurement(createEIT):
     """Tests the measurement property of the EITMap object."""
-    assert createEIT.measurement in [195, 171]
+    assert createEIT.measurement.value in [195, 171]
 
 def test_normalizer(createEIT):
     """Tests the creation of the Normalizer object,
