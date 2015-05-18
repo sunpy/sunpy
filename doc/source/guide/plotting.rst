@@ -160,7 +160,7 @@ using the `~matplotlib.pyplot.show` command. Here is another example ::
 
     plt.show()
 
-By default `~sunpy.map.Map` uses the `wcsaxes<http://wcsaxes.readthedocs.org/>`_ 
+By default `~sunpy.map.Map` uses the `wcsaxes <http://wcsaxes.readthedocs.org/>`_ 
 package to improve the representation of world coordinates on plots. In the 
 examples above the axes created is a normal matplotlib axes. 
 To create a custom `wcsaxes.WCSAxes` instance do the following ::
