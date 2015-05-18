@@ -881,7 +881,7 @@ scale:\t\t [{dx}, {dy}]
             elif range_a.unit.is_equivalent(u.pixel) and range_b.unit.is_equivalent(u.pixel):
                 units = 'pixels'
             else:
-                raise u.UnitsError("range_a and range_b but be"
+                raise u.UnitsError("range_a and range_b but be "
                                    "in units convertable to {} or {}".format(self.units['x'],
                                                                              u.pixel))
         else:
@@ -927,6 +927,7 @@ scale:\t\t [{dx}, {dy}]
         y_pixels = np.array(y_pixels)
         # Clip pixel values to max of array, prevents negative
         # indexing
+        x_pixels[np.less(x_pixels, 0)] = 0
         x_pixels[np.greater(x_pixels, self.data.shape[1])] = self.data.shape[1]
 
         y_pixels[np.less(y_pixels, 0)] = 0
