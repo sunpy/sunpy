@@ -764,13 +764,17 @@ scale:\t\t [{dx}, {dy}]
         new_map.meta['crpix1'] += pad_x
         new_map.meta['crpix2'] += pad_y
 
-        array_center = (np.flipud(new_map.data.shape)-1)/2.0
+        # All of the following pixel calculations use a pixel origin of 0
 
+        pixel_array_center = (np.flipud(new_map.data.shape) - 1) / 2.0
+
+        # Convert the axis of rotation from data coordinates to pixel coordinates
+        pixel_rotation_center = u.Quantity(new_map.data_to_pixel(*rotation_center,
+                                                                 origin=0)).value
         if recenter:
-            # Convert the axis of rotation from data coordinates to pixel coordinates
-            pixel_center = u.Quantity(new_map.data_to_pixel(*rotation_center, origin=1)).value
+            pixel_center = pixel_rotation_center
         else:
-            pixel_center = array_center
+            pixel_center = pixel_array_center
 
         # Apply the rotation to the image data
         new_map.data = affine_transform(new_map.data.T,
@@ -780,25 +784,19 @@ scale:\t\t [{dx}, {dy}]
                                         recenter=recenter, missing=missing,
                                         use_scipy=use_scipy).T
 
-        # Calculate new reference pixel and coordinate at the center of the
-        # image.
         if recenter:
-            new_reference_pixel = array_center
+            new_reference_pixel = pixel_array_center
         else:
-            # Retrieve old pixel coordinates for the rotation center
-            old_reference_pixel = u.Quantity(new_map.data_to_pixel(*rotation_center,
-                                                                   origin=1)).value
-
             # Calculate new pixel coordinates for the rotation center
-            new_reference_pixel = array_center + np.dot(rmatrix,
-                                                        old_reference_pixel - pixel_center)
+            new_reference_pixel = pixel_center + np.dot(rmatrix,
+                                                        pixel_rotation_center - pixel_center)
             new_reference_pixel = np.array(new_reference_pixel).ravel()
 
-        # Define a new reference pixel in the rotated space
+        # Define the new reference_pixel
         new_map.meta['crval1'] = rotation_center[0].value
         new_map.meta['crval2'] = rotation_center[1].value
-        new_map.meta['crpix1'] = new_reference_pixel[0] + 1 # FITS counts pixels from 1
-        new_map.meta['crpix2'] = new_reference_pixel[1] + 1 # FITS counts pixels from 1
+        new_map.meta['crpix1'] = new_reference_pixel[0] + 1 # FITS pixel origin is 1
+        new_map.meta['crpix2'] = new_reference_pixel[1] + 1 # FITS pixel origin is 1
 
         # Unpad the array if necessary
         unpad_x = -np.min((diff[1], 0))
