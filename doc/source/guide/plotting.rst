@@ -132,13 +132,13 @@ and therefore manipulate the plot as you see fit. Here is an example of this at 
 
     plt.show()
 
-This output of this example is equivalent to one in the previous section. The map.plot()
-command is equivalent to ax.plot(x,y) command which we introduced in section 3. Similar
-to that command it will create a figure for you if you haven't created on yourself. For
+This output of this example is equivalent to one in the previous section. The `sunpy.map.Map.plot`
+command is equivalent to the `~matplotlib.axes.Axes.imshow` command.
+Similar to that command it will create a figure for you if you haven't created on yourself. For
 advanced plotting you'll want to create it yourself. ::
 
     fig = plt.figure()
-    ax = plt.subplot(1,1,1)
+    ax = plt.subplot()
 
     smap.plot()
     plt.colorbar()
@@ -148,11 +148,11 @@ advanced plotting you'll want to create it yourself. ::
 
 The above a plot of line across the map. Using the fig.gca() command to get access to the
 axes object most anything can be done to the plot and the plot can be displayed as usual
-using the show() command. Here is another example ::
+using the `~matplotlib.pyplot.show` command. Here is another example ::
 
     from matplotlib import patches
     fig = plt.figure()
-    ax = plt.subplot(1,1,1)
+    ax = plt.subplot()
 
     smap.plot()
     rect = patches.Rectangle([-350, -650], 500, 500, color = 'white', fill=False)
@@ -160,15 +160,37 @@ using the show() command. Here is another example ::
 
     plt.show()
 
+By default `~sunpy.map.Map` uses the `wcsaxes<http://wcsaxes.readthedocs.org/>`_ 
+package to improve the representation of world coordinates on plots. In the 
+examples above the axes created is a normal matplotlib axes. 
+To create a custom `wcsaxes.WCSAxes` instance do the following ::
+
+    fig = plt.figure()
+    ax = plt.subplot(projection=smap.wcs)
+
+when overplotting data and using wcsaxes you have to use the transform keyword 
+argument, also the native coordinate system of a `~wcsaxes.WCSAxes` is always 
+in degrees ::
+    
+    fig = plt.figure()
+    ax = plt.subplot(projection=smap.wcs)
+
+    smap.plot()
+    ax.plot((100*u.arcsec).to(u.deg), (500*u.arcsec).to(u.deg),
+            transform=ax.get_transform('world'))
+
+
 Finally, here is a more complex example, starting from the beginning::
 
     from matplotlib import patches
+    import astropy.units as u
+
     import sunpy.map
     import matplotlib.pyplot as plt
     import sunpy.data.sample
     
     smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    submap = smap.submap([-100-250, -100+250], [-400-250, -400+250])
+    submap = smap.submap([-100-250, -100+250]*u.arcsec, [-400-250, -400+250]*u.arcsec)
     rect = patches.Rectangle([-100-250, -400-250], 500, 500, color = 'white', fill=False)
 
     fig = plt.figure()
@@ -178,7 +200,7 @@ Finally, here is a more complex example, starting from the beginning::
 
     ax2 = fig.add_subplot(2,1,2)
     submap.plot()
-    submap.draw_grid(grid_spacing=10)
+    submap.draw_grid(grid_spacing=10*u.deg)
     ax2.set_title('submap')
     fig.subplots_adjust(hspace=0.4)
 

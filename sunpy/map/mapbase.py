@@ -254,7 +254,9 @@ scale:\t\t [{dx}, {dy}]
 
     @property
     def dsun(self):
-        """The observer distance from the Sun."""
+        """
+        The observer distance from the Sun.
+        """
         dsun = self.meta.get('dsun_obs', None)
 
         if dsun is None:
@@ -1148,9 +1150,11 @@ scale:\t\t [{dx}, {dy}]
         ----------
         draw_limb : bool
             Whether the solar limb should be plotted.
-         : bool or number
-            Whether solar meridians and parallels are plotted. If float then sets
-            degree difference between parallels and meridians.
+
+        draw_grid : bool or `~astropy.units.Quantity`
+            Whether solar meridians and parallels are plotted.
+            If `~astropy.units.Quantity` then sets degree difference between
+            parallels and meridians.
         gamma : float
             Gamma value to use for the color map
         colorbar : bool
