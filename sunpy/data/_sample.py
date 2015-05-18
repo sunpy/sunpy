@@ -34,7 +34,8 @@ _files = {
     "CALLISTO_IMAGE": ("BIR_20110922_103000_01.fit", ""),
     "RHESSI_EVENT_LIST": ("hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits", ""),
     "SWAP_LEVEL1_IMAGE": ("swap_lv1_20120101_001607.fits", ""),
-    "AIA_193_IMAGE": ("aia.lev1.193A_2013-09-21T16_00_06.84Z.image_lev1.fits", ".zip")
+    "AIA_193_IMAGE": ("aia.lev1.193A_2013-09-21T16_00_06.84Z.image_lev1.fits", ".zip"),
+    "AIA_171_ROLL_IMAGE": ("aiacalibim5.fits.gz", "")
 }
 
 sample_files = {}
