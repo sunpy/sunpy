@@ -240,13 +240,12 @@ def test_data_range(generic_map):
 
 
 def test_data_to_pixel(generic_map):
-    """Make sure conversion from data units to pixels is accurate"""
-    # Check conversion of reference pixel
-    # Note: FITS pixels starts from 1,1
-    assert_quantity_allclose(generic_map.data_to_pixel(generic_map.meta['crval1']*u.arcsec,
-                                                       generic_map.meta['crval2']*u.arcsec),
-                             u.Quantity([generic_map.meta['crpix1'] - 1,
-                                         generic_map.meta['crpix2'] - 1], unit=u.pixel))
+    """Make sure conversion from data units to pixels is internally consistent"""
+    # Note: FITS pixels start from 1,1
+    test_pixel = generic_map.data_to_pixel(*generic_map.reference_coordinate.values(),
+                                           origin=1)
+    assert_quantity_allclose(test_pixel,
+                             generic_map.reference_pixel.values())
 
 def test_submap(generic_map):
     """Check data and header information for a submap"""
@@ -379,13 +378,12 @@ def test_rotate(aia171_test_map):
     assert aia171_test_map_crop_rot.data.shape[0] < aia171_test_map_crop_rot.data.shape[1]
 
 
-def test_rotate_recenter(aia171_test_map):
-    array_center = (np.array(aia171_test_map.data.shape)-1)/2.0
+def test_rotate_recenter(generic_map):
+    rotated_map = generic_map.rotate(20*u.deg, recenter=True)
+    pixel_array_center = (np.flipud(rotated_map.data.shape) - 1) / 2.0
 
-    rotated_map = aia171_test_map.rotate(20*u.deg, recenter=True)
-
-    assert_quantity_allclose((array_center+1)*u.pix, # FITS indexes from 1
-                             u.Quantity(aia171_test_map.reference_pixel.values()))
+    assert_quantity_allclose((pixel_array_center + 1) * u.pix, # FITS indexes from 1
+                             u.Quantity(rotated_map.reference_pixel.values()))
 
 
 def test_rotate_crota_remove(aia171_test_map):
