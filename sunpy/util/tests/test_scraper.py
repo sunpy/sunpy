@@ -3,6 +3,7 @@ import datetime
 import os
 
 import sunpy.data.test
+from sunpy.time import TimeRange
 from sunpy.util.scraper import Scraper
 
 PATTERN_EXAMPLES = [
@@ -34,17 +35,15 @@ class TestScraper:
         s = Scraper('%Y/%m/%d/%Y%m%d_%H.fit.gz')
         directory_list = ['2009/12/30/', '2009/12/31/', '2010/01/01/', 
                           '2010/01/02/', '2010/01/03/']
-        startdate = datetime.datetime(2009,12,30)
-        enddate = datetime.datetime(2010,1,3)
-        assert s.range(startdate, enddate) == directory_list
+        timerange = TimeRange('2009-12-30', '2010-01-03')
+        assert s.range(timerange) == directory_list
         
     def testDirectoryRangeFalse(self):
         s = Scraper('%Y%m%d/%Y%m%d_%H.fit.gz')
         directory_list = ['20091230/', '20091231/', '20100101/', 
                           '20090102/', '20090103/']
-        startdate = datetime.datetime(2009,12,30)
-        enddate = datetime.datetime(2010,1,3)
-        assert s.range(startdate, enddate) != directory_list
+        timerange = TimeRange('2009/12/30', '2010/01/03')
+        assert s.range(timerange) != directory_list
 
     @pytest.mark.parametrize('pattern, mintime', PATTERN_EXAMPLES)
     def test_smallerPattern(self, pattern, mintime):
@@ -52,42 +51,45 @@ class TestScraper:
 
     def testDirectoryRangeHours(self):
         s = Scraper('%Y%m%d_%H/%H%M.csv')
-        startdate = datetime.datetime(2009,12,31,23,40)
-        enddate = datetime.datetime(2010,01,01,01,15)
-        assert len(s.range(startdate, enddate)) == 3 #3 directories (1 per hour)
+        timerange = TimeRange('2009-12-31T23:40:00', '2010-01-01T01:15:00')
+        assert len(s.range(timerange)) == 3 #3 directories (1 per hour)
 
     def testDirectoryRange_single(self):
         s = Scraper('%Y%m%d/%H_%M.csv')
         startdate = datetime.datetime(2010,10,10,5,00)
         enddate = datetime.datetime(2010,10,10,7,00)
-        assert len(s.range(startdate, enddate)) == 1
+        timerange = TimeRange(startdate, enddate)
+        assert len(s.range(timerange)) == 1
         
     def testDirectoryRange_Month(self):
         s = Scraper('%Y%m/%d/%j_%H.txt')
         startdate = datetime.datetime(2008, 2,20,10)
         enddate = datetime.datetime(2008, 3, 2, 5)
-        assert len(s.range(startdate, enddate)) == 12
+        timerange = TimeRange(startdate, enddate)
+        assert len(s.range(timerange)) == 12
         startdate = datetime.datetime(2009, 2,20,10)
         enddate = datetime.datetime(2009, 3, 2, 5)
-        assert len(s.range(startdate, enddate)) == 11
+        timerange = TimeRange(startdate, enddate)
+        assert len(s.range(timerange)) == 11
 
     def testNoDirectory(self):
         s = Scraper('files/%Y%m%d_%H%M.dat')
         startdate = datetime.datetime(2010, 1, 10, 20, 30)
         enddate = datetime.datetime(2010, 1, 20, 20, 30)
-        assert len(s.range(startdate, enddate)) == 1
+        timerange = TimeRange(startdate, enddate)
+        assert len(s.range(timerange)) == 1
 
     def testExtractDates_usingPattern(self):
         s = Scraper('data/%Y/%m/%d/fits/swap/swap_00174_fd_%Y%m%d_%H%M%S.fts.gz')
         testURL = 'data/2014/05/14/fits/swap/swap_00174_fd_20140514_200135.fts.gz'
         timeURL = datetime.datetime(2014, 5, 14, 20, 1, 35)
-        assert s.extractDateURL(testURL) == timeURL
+        assert s._extractDateURL(testURL) == timeURL
 
     def testURL_pattern(self):
         s = Scraper('fd_%Y%m%d_%H%M%S.fts')
-        assert s.URL_followsPattern('fd_20130410_231211.fts') == True
-        assert s.URL_followsPattern('fd_20130410_231211.fts.gz') == False
-        assert s.URL_followsPattern('fd_20130410_ar_231211.fts.gz') == False
+        assert s._URL_followsPattern('fd_20130410_231211.fts')
+        assert not s._URL_followsPattern('fd_20130410_231211.fts.gz')
+        assert not s._URL_followsPattern('fd_20130410_ar_231211.fts.gz')
         
     # def testFilesRange_sameDirectory_local(self):
     #     s = Scraper(os.path.join('file://',sunpy.data.test.rootdir,
@@ -99,14 +101,20 @@ class TestScraper:
     #     enddate = datetime.datetime(2010, 1, 20, 20, 30)
     #     assert len(s.filelist(startdate, enddate)) == 0
 
+    @pytest.mark.online
     def testFilesRange_sameDirectory_remote(self):
-        s = Scraper('http://solarmonitor.org/data/%Y/%m/%d/fits/{instrument}/{instrument}_00174_fd_%Y%m%d_%H%M%S.fts.gz', instrument = 'swap')
+        pattern = ('http://solarmonitor.org/data/%Y/%m/%d/'
+                   'fits/{instrument}/'
+                   '{instrument}_00174_fd_%Y%m%d_%H%M%S.fts.gz')
+        s = Scraper(pattern, instrument = 'swap')
         startdate = datetime.datetime(2014, 5, 14, 0, 0)
         enddate = datetime.datetime(2014, 5, 14, 6, 30)
-        assert len(s.filelist(startdate, enddate)) == 2
+        timerange = TimeRange(startdate, enddate)
+        assert len(s.filelist(timerange)) == 2
         startdate = datetime.datetime(2014, 5, 14, 21, 0)
         enddate = datetime.datetime(2014, 5, 14, 23, 30)
-        assert len(s.filelist(startdate, enddate)) == 0
+        timerange = TimeRange(startdate, enddate)
+        assert len(s.filelist(timerange)) == 0
 
 
     
@@ -117,8 +125,8 @@ class TestScraper:
         #TODO: data gaps
                         
 
-#def main():
-#    pytest.main()
+# def main():
+#     pytest.main()
 
-#if __name__ == '__main__':
-#    main()
+# if __name__ == '__main__':
+#     main()

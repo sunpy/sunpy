@@ -1,9 +1,46 @@
 import datetime
-import urllib2
-from bs4 import BeautifulSoup
 import re
 
+import urllib2
+from bs4 import BeautifulSoup
+
+__all__ = ['Scraper']
+
 class Scraper:
+    """
+    A Scraper to scrap web data archives based on dates.
+
+    Parameters
+    ----------
+    pattern : string
+        A string containing the url with the date encoded as
+        datetime formats, and any other parameter as kwargs
+        as string format.
+
+    Attributes
+    ----------
+    pattern : string
+        A converted string with the kwargs.
+    now : datetime.datetime
+        The pattern with the actual date.
+
+    Examples
+    --------
+    >>> from sunpy.util.scraper import Scraper
+    >>> solmon_pattern = ('http://solarmonitor.org/data/'
+                          '%Y/%m/%d/fits/{instrument}/'
+                          '{instrument}_{wave:05d}_fd_%Y%m%d_%H%M%S.fts.gz')
+    >>> solmon = Scraper(solmon_pattern, instrument = 'swap', wave = 174)
+    >>> print(solmon.pattern)
+    http://solarmonitor.org/data/%Y/%m/%d/fits/swap/swap_00174_fd_%Y%m%d_%H%M%S.fts.gz
+    >>> print(solmon.now)
+    http://solarmonitor.org/data/2012/01/25/fits/swap/swap_00174_fd_20120125_173301.fts.gz
+
+    Notes
+    -----
+    The now attribute does not return an existent file, but just how the
+    pattern looks with the actual time.
+    """
     def __init__(self, pattern, **kwargs):
         self.pattern = pattern.format(**kwargs)
         self.now = datetime.datetime.now().strftime(self.pattern)
@@ -11,25 +48,43 @@ class Scraper:
     def matches(self, filepath, date):
         return date.strftime(self.pattern) == filepath
 
-    def range(self, starttime, endtime):
-        '''
-        Gets the directories for a certain range of time.
-        '''
+    def range(self, timerange):
+        """
+        Gets the directories for a certain range of time
+        (i.e. using `~sunpy.time.TimeRange`).
+
+        Parameters
+        ----------
+
+        timerange : `~sunpy.time.TimeRange`
+            Time interval where to find the directories for a given
+            pattern.
+
+        Returns
+        -------
+
+        directories : list of strings
+            List of all the possible directories valid for the time
+            range given. Notice that these directories may not exist
+            in the archive.
+        """
         #find directory structure - without file names
         directorypattern = self.pattern[:-self.pattern[::-1].find('/')]
         #TODO what if there's not slashes?
-        rangedelta = (endtime - starttime)
+        rangedelta = timerange.dt # TODO check it's a timerange
         timestep = self._smallerPattern(directorypattern)
         if timestep is None:
             return [directorypattern]
         else:
             # Number of elements in the time range (including end)
-            TotalTimeElements = int(round(rangedelta.total_seconds()/timestep.total_seconds())) + 1
-            directories = [(starttime + n * timestep).strftime(directorypattern)
+            n_steps = rangedelta.total_seconds()/timestep.total_seconds()
+            TotalTimeElements = int(round(n_steps)) + 1
+            directories = [(timerange.start + n * timestep).strftime(directorypattern)
                         for n in range(TotalTimeElements)] #todo if date <= endate
             return directories
 
-    def URL_followsPattern(self, url):
+    def _URL_followsPattern(self, url):
+        """Check whether the url provided follows the pattern"""
         time_conversions = {'%Y': '\d{4}', '%y': '\d{2}',
                             '%b': '[A-Z]..', '%B': '\W', '%m': '\d{2}',
                             '%d': '\d{2}', '%j': '\d{3}',
@@ -44,11 +99,14 @@ class Scraper:
             return matches.end() == matches.endpos == len(self.now)
         return False
 
-    def extractDateURL(self, url):
-        pattern_list = self.pattern.replace('.', '/').replace('_', '/').split('/')
-        url_list = url.replace('.', '/').replace('_', '/').split('/')
+    def _extractDateURL(self, url):
+        """Extracts the date from a particular url following the pattern"""
+        url_to_list = lambda txt: re.sub(r'\.|_', '/', txt).split('/')
+        pattern_list = url_to_list(self.pattern)
+        url_list = url_to_list(url)
 
-        time_order = ['%Y', '%y', '%b', '%B', '%m', '%d', '%j', '%H', '%I', '%M', '%S']
+        time_order = ['%Y', '%y', '%b', '%B', '%m', '%d', '%j',
+                      '%H', '%I', '%M', '%S']
         final_date = []
         final_pattern = []
         #Find in directory and filename
@@ -59,10 +117,35 @@ class Scraper:
                 final_pattern.append(pattern_elem)
                 for time_bit in time_formats:
                     time_order.remove(time_bit)
-        return datetime.datetime.strptime(' '.join(final_date), ' '.join(final_pattern))
+        return datetime.datetime.strptime(' '.join(final_date),
+                                          ' '.join(final_pattern))
 
-    def filelist(self, starttime, endtime):
-        directories = self.range(starttime, endtime)
+    def filelist(self, timerange):
+        """
+        Returns the list of existent files in the archive for the
+        given time range.
+
+        Parameters
+        ----------
+
+        timerange : `~sunpy.time.TimeRange`
+            Time interval where to find the directories for a given
+            pattern.
+
+        Returns
+        -------
+
+        filesurls : list of strings
+            List of all the files found between the time range given.
+
+        Examples
+        --------
+        >>> from sunpy.time import TimeRange
+        >>> timerange = TimeRange('2015-01-01','2015-01-01T16:00:00')
+        >>> print(solmon.filelist(timerange))
+        ['http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_025423.fts.gz']
+        """
+        directories = self.range(timerange)
         filesurls = []
         for directory in directories:
             try:
@@ -73,9 +156,10 @@ class Scraper:
                         href = link.get("href")
                         if href.endswith(self.pattern.split('.')[-1]):
                             fullpath = directory + href
-                            if self.URL_followsPattern(fullpath):
-                                datehref = self.extractDateURL(fullpath)
-                                if (datehref >= starttime and datehref <= endtime):
+                            if self._URL_followsPattern(fullpath):
+                                datehref = self._extractDateURL(fullpath)
+                                if (datehref >= timerange.start and
+                                    datehref <= timerange.end):
                                     filesurls.append(fullpath)
                 finally:
                     opn.close()
@@ -84,6 +168,7 @@ class Scraper:
         return filesurls
 
     def _smallerPattern(self, directoryPattern):
+        """Obtain the smaller time step for the given pattern"""
         try: 
             if "%S" in directoryPattern:
                 return datetime.timedelta(seconds=1)
