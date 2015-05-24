@@ -4,15 +4,15 @@ normalization.
 """
 from __future__ import absolute_import
 
-from sunpy.util.odict import OrderedDict
+from collections import OrderedDict
 
 __all__ = ['MapMeta']
 
 class MapMeta(OrderedDict):
     """
     A class to hold meta data associated with a Map derivative.
-    
-    This class handles everything a lower case. This allows case insensitive 
+
+    This class handles everything a lower case. This allows case insensitive
     indexing.
     """
     def __init__(self, adict, *args):
@@ -25,7 +25,7 @@ class MapMeta(OrderedDict):
             tags = dict((k.upper(), v) for k, v in adict.items())
         else:
             raise TypeError("Can not create a MapMeta from this type input")
-            
+
         super(MapMeta, self).__init__(tags, *args)
 
     def __contains__(self, key):
@@ -39,7 +39,7 @@ class MapMeta(OrderedDict):
     def __setitem__(self, key, value):
         """Overide [] indexing"""
         return OrderedDict.__setitem__(self, key.lower(), value)
-        
+
     def get(self, key, default=None):
         """Overide .get() indexing"""
         return OrderedDict.get(self, key.lower(), default)

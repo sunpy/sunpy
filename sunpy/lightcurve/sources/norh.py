@@ -4,17 +4,19 @@ from __future__ import absolute_import
 
 import datetime
 import urlparse
+from collections import OrderedDict
+
 import numpy as np
 import matplotlib.pyplot as plt
 
 from astropy.io import fits
 import pandas
 
-import sunpy
 from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
-from sunpy.util.odict import OrderedDict
 
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['NoRHLightCurve']
 
@@ -25,7 +27,7 @@ class NoRHLightCurve(LightCurve):
     Examples
     --------
     >>> import sunpy
-    
+
     >>> norh = sunpy.lightcurve.NoRHLightCurve.create('~/Data/norh/tca110607')
     >>> norh = sunpy.lightcurve.NoRHLightCurve.create('2011/08/10')
     >>> norh = sunpy.lightcurve.NoRHLightCurve.create('2011/08/10',wavelength='34')
@@ -45,7 +47,7 @@ class NoRHLightCurve(LightCurve):
         axes.set_yscale("log")
         axes.set_ylim(1e-4,1)
         axes.set_title('Nobeyama Radioheliograph')
-        axes.set_xlabel('Start time: ' + self.data.index[0].strftime('%Y-%m-%d %H:%M:%S UT'))
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
         axes.set_ylabel('Correlation')
         axes.legend()
         plt.show()
@@ -59,10 +61,10 @@ class NoRHLightCurve(LightCurve):
         #date is a datetime object
         if 'wavelength' in kwargs:
             if kwargs['wavelength'] == '34':
-                final_url=urlparse.urljoin(baseurl,date.strftime('%Y/%m/' + 'tcz' + '%y%m%d')) 
+                final_url=urlparse.urljoin(baseurl,date.strftime('%Y/%m/tcz%y%m%d'))
         else:
-            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/' + 'tca' + '%y%m%d')) 
-        
+            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/tca%y%m%d'))
+
         return final_url
 
     @staticmethod

@@ -18,21 +18,28 @@ from sunpy.map.mapcube import MapCube
 from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
 
-from sunpy.database.tables import DatabaseEntry
-
 from sunpy.util.net import download_file
 from sunpy.util import expand_list
-from sunpy.util import Deprecated
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.util.datatype_factory_base import ValidationFunctionError
 
+# Make a mock DatabaseEntry class if sqlalchemy is not installed
+
+try:
+    from sunpy.database.tables import DatabaseEntry
+except ImportError:
+    class DatabaseEntry(object):
+        pass
+
 __all__ = ['Map', 'MapFactory']
 
 class MapFactory(BasicRegistrationFactory):
     """
+    Map(*args, **kwargs)
+    
     Map factory class.  Used to create a variety of Map objects.  Valid map types
     are specified by registering them with the factory.
 
@@ -295,18 +302,13 @@ def _is_url(arg):
         return False
     return True
 
-@Deprecated("Please use the new factory sunpy.Map")
-def make_map(*args, **kwargs):
-    __doc__ = MapFactory.__doc__
-    return Map(*args, **kwargs)
-
 class InvalidMapInput(ValueError):
     """Exception to raise when input variable is not a Map instance and does
     not point to a valid Map input file."""
     pass
 
 class InvalidMapType(ValueError):
-    """Exception to raise when an invalid type of map is requested with make_map
+    """Exception to raise when an invalid type of map is requested with Map
     """
     pass
 

@@ -48,13 +48,14 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         imageanimator.BaseFuncAnimator.__init__(self, mapcube.maps, slider_functions,
                                         slider_ranges, **kwargs)
 
-        self._annotate_plot(0)
+        if annotate:
+            self._annotate_plot(0)
 
     def updatefig(self, val, im, slider):
         i = int(val)
         im.set_array(self.data[i].data)
         im.set_cmap(self.mapcube[i].cmap)
-        im.set_mpl_color_normalizer(self.mapcube[i].mpl_color_normalizer)
+        im.set_norm(self.mapcube[i].mpl_color_normalizer)
         # Having this line in means the plot will resize for non-homogenous
         # maps. However it also means that if you zoom in on the plot bad
         # things happen.
@@ -69,19 +70,19 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         This may overwrite some stuff in `GenericMap.plot()`
         """
         # Normal plot
-        self.axes.set_title("%s %s" % (self.data[ind].name, self.data[ind].date))
+        self.axes.set_title("{s.name} {s.date!s}".format(s=self.data[ind]))
 
         # x-axis label
         if self.data[ind].coordinate_system['x'] == 'HG':
-            xlabel = 'Longitude [%s]' % self.data[ind].units['x']
+            xlabel = 'Longitude [{lon}]'.format(lon=self.data[ind].units['x'])
         else:
-            xlabel = 'X-position [%s]' % self.data[ind].units['x']
+            xlabel = 'X-position [{xpos}]'.format(xpos=self.data[ind].units['x'])
 
         # y-axis label
         if self.data[ind].coordinate_system['y'] == 'HG':
-            ylabel = 'Latitude [%s]' % self.data[ind].units['y']
+            ylabel = 'Latitude [{lat}]'.format(lat=self.data[ind].units['y'])
         else:
-            ylabel = 'Y-position [%s]' % self.data[ind].units['y']
+            ylabel = 'Y-position [{ypos}]'.format(ypos=self.data[ind].units['y'])
 
         self.axes.set_xlabel(xlabel)
         self.axes.set_ylabel(ylabel)

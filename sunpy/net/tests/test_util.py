@@ -16,3 +16,9 @@ def test_content_disposition_unicode():
 
 def test_slugify():
     assert sunpy.util.net.slugify(u"äb c", u"b_c")
+    assert sunpy.util.net.slugify(u"file.greg.fits") == u"file_greg.fits"
+    assert sunpy.util.net.slugify(u"file.greg.fits", u"x") == u"filexgreg.fits"
+    assert sunpy.util.net.slugify(u"filegreg.fits") == u"filegreg.fits"
+    assert sunpy.util.net.slugify(u"filegreg") == u"filegreg"
+    assert sunpy.util.net.slugify(u"f/i*l:e,gr.eg.fits") == u"f_i_l_e_gr_eg.fits"
+    assert sunpy.util.net.slugify(u"part1.part2.part3.part4.part5") == u"part1_part2_part3_part4.part5"
