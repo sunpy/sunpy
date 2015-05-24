@@ -7,6 +7,11 @@ Overview
 
 Almost all versions of Linux ship with a recent enough version
 of Python, so it is unlikely that you will need to install Python yourself.
+If you do not have python you can find the source at the 
+`Python official site <https://www.python.org/downloads/source/>`_. 
+Install using `sudo apt-get install python2.7-dev` or a similar command, 
+depending on your linux distro.
+Anything like `python-dev` provides you the required Python development headers.
 
 Ubuntu
 ------

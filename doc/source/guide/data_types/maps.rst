@@ -14,7 +14,7 @@ The map object currently supports the following data sources
 
 - SDO/AIA, SDO/HMI
 - STEREO/EUVI, STEREO/COR
-- Hinode/XRT
+- Hinode/XRT, Hinode/SOT
 - SOHO/EIT, SOHO/LASCO, SOHO/MDI
 - PROBA2/SWAP
 - Yohkoh/SXT
@@ -23,15 +23,17 @@ The map object currently supports the following data sources
 ----------------
 SunPy contains a number of example FITS files. 
 To make things easy, SunPy includes several example files which are used throughout the docs. 
-These files have names like `sunpy.AIA_171_IMAGE` and `sunpy.RHESSI_IMAGE`.
+These files have names like `sunpy.data.sample.AIA_171_IMAGE` and `sunpy.data.sample.RHESSI_IMAGE`.
 To create the sample AIA map type the following into your interactive Python shell::
 
     import sunpy
-    my_map = sunpy.Map(sunpy.AIA_171_IMAGE)
+    import sunpy.map
+    import sunpy.data.sample
+    my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
 The variable my_map is a SunPy Map object. To create a SunPy Map object from a local FITS file try something like the following ::
 
-    my_map = sunpy.Map('/mydirectory/mymap.fits')
+    my_map = sunpy.map.Map('/mydirectory/mymap.fits')
 
 SunPy automatically detects the type of file (e.g. FITS), what instrument it is 
 associated with (e.g. AIA, EIT, LASCO) and will automatically look in the appropriate places for the FITS
@@ -43,13 +45,13 @@ may vary. SunPy can also create maps from the jpg2000 files from
 2. Creating Custom Maps
 -----------------------
 It is also possible to create maps using custom data from a simulation for example. To do this you
-need to provide Map() with both the data array as well as some basic meta information. If no
+need to provide `Map()` with both the data array as well as some basic meta information. If no
 header is given then some default values as assumed. Here is a simple example::
 
     import numpy as np
     data = np.arange(0,100).reshape(10,10)
     header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
-    my_map = sunpy.Map(data, header)
+    my_map = sunpy.map.Map(data, header)
 
 The format of the header follows the FITS standard.
 
@@ -58,7 +60,8 @@ The format of the header follows the FITS standard.
 A map contains a number of data-associated attributes. To get a quick look at your map simply
 type::
 
-    my_map = sunpy.Map(sunpy.AIA_171_IMAGE)
+    import sunpy.data.sample
+    my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     my_map
     
 This will show a representation of the data as well as some of its associated
@@ -121,30 +124,29 @@ quickly view your map on the screen. To create a plot just type::
     
 This will open a matplotlib plot right on your screen.
 In addition, to enable users to modify the plot it is possible to grab the
-matplotlib figure object by using the plot() command instead of the show() 
-command. This makes it possible to use the SunPy plot as the foundation for a 
+matplotlib figure object by using the plot() command.
+This makes it possible to use the SunPy plot as the foundation for a 
 more complicated figure.
 
 6. Overlaying Maps
 ------------------
-The Map() method described above can also handle a list of maps. If a list in inputs
-is supplied, Map() will return a list of maps as the output.  However, if the
-'composite' keyword is set to True, then a CompositeMap object is returned.  This is useful if the maps are
+The `Map()` method described above can also handle a list of maps. If a list in inputs
+is supplied, `Map()` will return a list of maps as the output.  However, if the
+'composite' keyword is set to True, then a `CompositeMap` object is returned.  This is useful if the maps are
 of a different type (e.g. different instruments).  For example, to create a simple composite map::
 
-    my_maps = sunpy.Map(sunpy.EIT_195_IMAGE, sunpy.RHESSI_IMAGE, composite=True)
+    my_maps = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE, sunpy.data.sample.RHESSI_IMAGE, composite=True)
 
 A CompositeMap is different from a regular SunPy Map objectand therefore different associated methods.
 To list which maps are part of your composite map use::
 
     my_maps.list_maps()
 
-Similar to all SunPy data objects, the composite map also has an associated show() method and a 
-number of associated methods to customize your plot. For example, the following code turns 
+The following code  
 adds a new map (which must be instantiated first), sets its transparency to 25%, turns on contours from 50% to 90% for the second map, 
 and then plots the result::
 
-    my_maps.add_map(sunpy.Map(sunpy.AIA_171_IMAGE))
+    my_maps.add_map(sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE))
     my_maps.set_alpha(2,0.5)
     my_maps.set_levels(1,[50,60,70,80,90], percent = True)
     my_maps.peek()
@@ -162,3 +164,126 @@ a list of the methods available for a map type::
     
 and check out the methods section!
 
+8. Mapcubes
+-----------
+A mapcube is an ordered list of maps.  By default, the maps are ordered by
+their observation date, from earlier maps to later maps.  A mapcube can be
+created by supplying multiple existing maps::
+
+    mc = sunpy.map.Map([map1, map2], cube=True)
+
+or by providing a directory full of image files::
+
+    mc = sunpy.map.Map('path/to/my/files/*.fits', cube=True)
+
+The earliest map in the mapcube can be accessed by simply indexing the maps
+list::
+
+    mc.maps[0]
+
+Mapcubes can hold maps that have different shapes.  To test if all the
+maps in a mapcube have the same shape::
+
+    mc.all_maps_same_shape()
+
+It is often useful to return the image data in a mapcube as a single
+three dimensional numpy ndarray::
+
+    mc.as_array()
+
+Note that an array is returned only if all the maps have the same
+shape.  If this is not true, an error (ValueError) is returned.  If all the
+maps have nx pixels in the x-direction, and ny pixels in the y-direction,
+and there are nt maps in the mapcube, the ndarray array that is
+returned has shape (ny, nx, nt).  The data of the first map in the mapcube 
+appears in the ndarray in position ``[:, :, 0]``, the data of second map in
+position ``[:, :, 1]``, and so on.  The order of maps in the mapcube is
+reproduced in the returned ndarray.
+
+The meta data from each map can be obtained using::
+
+    mc.all_meta()
+
+This returns a list of map meta objects that have the same order as
+the maps in the mapcube.
+
+9. Coalignment of Mapcubes
+--------------------------
+A typical data preparation step when dealing with time series of images is to
+coalign images taken at different times so that features in different images
+remain in the same place.  A common approach to this problem is
+to take a representative template that contains the features you are interested
+in, and match that to your images.  The location of the best match tells you
+where the template is in your image.  The images are then shifted to the
+location of the best match.  This aligns your images to the position of the
+features in your representative template.
+
+SunPy provides a function to coalign mapcubes.  The implementation of this
+functionality requires the installation of the scikit-image library, a
+commonly used image processing library.  To coalign a mapcube, simply import
+the function and apply it to your mapcube::
+
+    from sunpy.image.coalignment import mapcube_coalign_by_match_template
+    coaligned = mapcube_coalign_by_match_template(mc)
+
+This will return a new mapcube, coaligned to a template extracted from the
+center of the first map in the mapcube, with the map dimensions clipped as
+required.  The coalignment algorithm provides many more options for handling
+the coalignment of mapcubes type::
+
+    help(mapcube_coalign_by_match_template)
+
+for a full list of options and functionality.
+
+If you just want to calculate the shifts required to compensate for solar
+rotation relative to the first map in the mapcube without applying them, use::
+
+    from sunpy.image.coalignment import calculate_match_template_shift
+    shifts = calculate_match_template_shift(mc)
+
+This is the function used to calculate the shifts in mapcube coalignment
+function above.  Please consult its docstring to learn more about its features.
+Shifts calculated using calculate_match_template_shift can be passed directly
+to mapcube coalignment function.
+
+
+10. Compensating for solar rotation in Mapcubes
+-----------------------------------------------
+Often a set of solar image data consists of fixing the pointing of a
+field of view for some time and observing.  Features on the Sun will
+rotate according to the Sun's rotation.
+
+A typical data preparation step when dealing with time series of these
+types of images is to shift the images so that features do not appear
+to move across the field of view.  This requires taking in to account
+the rotation of the Sun.  The Sun rotates differentially, depending on
+latitude, with features at the equator moving faster than features at
+the poles.
+
+SunPy provides a function to shift images in mapcubes following solar
+rotation.  This function shifts an image according to the solar
+differential rotation calculated at the latitude of the center of the
+field of view.  The image is not *differentially* rotated.  This
+function is useful for de-rotating images when the effects of
+differential rotation in the mapcube can be ignored (for example, if
+the spatial extent of the image is small, or when the duration of the
+mapcube is small; deciding on what 'small' means depends on your
+application).
+
+To apply this form of solar derotation to a mapcube, simply import the
+function and apply it to your mapcube::
+
+    from sunpy.physics.transforms.solar_rotation import mapcube_solar_derotate
+    derotated = mapcube_solar_derotate(mc)
+
+Please consult the docstring of the function in order to learn about
+the features of this function.
+
+If you just want to calculate the shifts required to compensate for solar
+rotation relative to the first map in the mapcube without applying them, use::
+
+    from sunpy.physics.transforms.solar_rotation import calculate_solar_rotate_shift
+    shifts = calculate_solar_rotate_shift(mc)
+
+Please consult the docstring of the function in order to learn about
+the features of this function.

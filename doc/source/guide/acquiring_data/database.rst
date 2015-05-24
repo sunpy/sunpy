@@ -17,13 +17,20 @@ instead of downloading it again from a remote server. The package
 
 1. Connecting and initializing the database
 -------------------------------------------
-To start a new connection to an already existing or to a new database,
-instantiate a new :class:`Database` object. The first parameter of
-``Database`` receives one mandatory argument: A URL which describes how to
-connect to the database. This value is directly passed to
-:func:`sqlalchemy.create_engine`. The supported formal of this URL is
-described by the documentation of :func:`sqlalchemy.create_engine` as
-follows:
+To start a connection to an existing or a new database, instantiate 
+a :class:`Database` object. 
+
+    >>> from sunpy.database import Database
+    >>> database = Database('sqlite:///sunpydata.sqlite')
+
+The database object in our example above connects to a new SQLite database with
+the file name "sunpydata.sqlite" in the current directory.
+    
+The first parameter of ``Database`` receives one mandatory argument: 
+a URL which describes how to connect to the database. This value is 
+directly passed to :func:`sqlalchemy.create_engine`. The supported 
+format of this URL is described by the documentation of 
+:func:`sqlalchemy.create_engine` as follows:
 
     "The string form of the URL is
     ``dialect+driver://user:password@host/dbname[?key=value..]``, where
@@ -31,14 +38,9 @@ follows:
     etc., and driver the name of a DBAPI, such as ``psycopg2``,
     ``pyodbc``, ``cx_oracle``, etc."
 
-The database object in our example connects to a new SQLite database with
-the file name "sunpydata.sqlite" in the current directory. Note that a
-connection is only established when it's really needed, i.e. if some query
-is sent to the database to read from it. Transactions can also be
-committed explicitly using the :meth:`Database.commit` method.
-
-    >>> from sunpy.database import Database
-    >>> database = Database('sqlite:///sunpydata.sqlite')
+Note that a connection is only established when it's really needed, i.e. if some query
+is sent to the database to read from it. Transactions can also be committed explicitly 
+using the :meth:`Database.commit` method.
 
 .. warning::
 
@@ -99,23 +101,27 @@ download_time          The date and time when the files connected to a
 starred                Entries can be starred to mark them. By default,
                        this value is False.
 fits_header_entries    A list of :class:`tables.FitsHeaderEntry` instances.
+fits_key_comments      A list of :class:`tables.FitsKeyComment` instances.
 tags                   A list of :class:`tables.Tag` instances.
 ====================== ===================================================
 
-The ``id`` attribute is automatically set if an entry is added to a
-database. The attributes ``source``, ``provider``, ``physobs``,
-``fileid``, ``observation_time_start``, ``observation_time_end``,
-``instrument``, ``size``, ``wavemin``, and ``wavemax`` are set by methods
-which use the VSO interface. In particular, these are
-:meth:`Database.add_from_vso_query_result`, :meth:`Database.download` and
-possibly :meth:`Database.fetch`. The attributes ``path`` and
-``download_time`` are set by the method :meth:`Database.download` and also
-possibly by :meth:`Database.fetch`. ``starred`` is set or changed via the
-method :meth:`Database.star` or :meth:`unstar`, respectively. Analogously,
-``tags`` is set via the methods :meth:`Database.tag` and
-:meth:`Database.remove_tag`. The attribute ``fits_header_entries`` is set
-by the methods :meth:`Database.download`, :meth:`Database.add_from_dir`,
-and :meth:`Database.add_from_file`.
+* The ``id`` attribute is automatically set if an entry is added to a database. 
+
+* The attributes ``source``, ``provider``, ``physobs``, ``fileid``, 
+  ``observation_time_start``, ``observation_time_end``, ``instrument``,  ``size``, 
+  ``wavemin``, and ``wavemax`` are set by methods which use the VSO interface. In 
+  particular, these are :meth:`Database.add_from_vso_query_result`, 
+  :meth:`Database.download` and   possibly :meth:`Database.fetch`.
+
+* The attributes ``path`` and ``download_time`` are set by the method 
+  :meth:`Database.download` and also possibly by :meth:`Database.fetch`. ``starred`` 
+  is set or changed via the method   :meth:`Database.star` or :meth:`unstar`, 
+  respectively. Analogously, ``tags`` is set via the methods :meth:`Database.tag` 
+  and :meth:`Database.remove_tag`. 
+
+* The attribute ``fits_header_entries`` is set by the methods 
+  :meth:`Database.download`, :meth:`Database.add_from_dir`, and 
+  :meth:`Database.add_from_file`.
 
 2.1 Adding entries from one FITS file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -125,8 +131,15 @@ new entry from the given FITS file to the database. Why "at least one" and
 not "exactly one"? The reason is that each database entry does not
 represent one file but one FITS header of a file. That means, if you pass
 a file which has 5 FITS headers in it, 5 entries will be added to the
-database. The file in the following example (``sunpy.AIA_171_IMAGE``) has
+database. The file in the following example (``sunpy.data.sample.AIA_171_IMAGE``) has
 only one FITS header, that is why just one entry is added to the database.
+However, if you are working with Hinode/SOT files you may notice that for
+each file you get two entries, one which refers to the observation and
+another that contains some (useless - as `discussed 
+<http://listmgr.cv.nrao.edu/pipermail/fitsbits/2007-August/001923.html>`_
+in the `fitsbits mailing list
+<http://listmgr.cv.nrao.edu/mailman/listinfo/fitsbits>`_) 
+telemetry data.
 
 The method saves the value of `path` by either simply passing on the value
 of the received argument (if it was a string) or by reading the value of
@@ -159,11 +172,12 @@ the database had been empty, this expression would have raised an
 syntax are introduced.
 
     >>> import sunpy
-    >>> database.add_from_file(sunpy.AIA_171_IMAGE)
+    >>> import sunpy.data.sample
+    >>> database.add_from_file(sunpy.data.sample.AIA_171_IMAGE)
     >>> len(database)
     1
     >>> entry = database[0]
-    >>> entry.path == sunpy.AIA_171_IMAGE
+    >>> entry.path == sunpy.data.sample.AIA_171_IMAGE
     True
     >>> entry.wavemin, entry.wavemax
     (17.1, 17.1)
@@ -223,7 +237,7 @@ Adding all FITS files from a certain directory works by calling the method
 setting the keyword argument `ignore_already_added` to `True`, no
 exception is raised if it is attempted to add an already existing entry
 (In this case, setting this parameter is required because the file
-``sunpy.AIA_171_IMAGE`` was already added which is located in the
+``sunpy.data.sample.AIA_171_IMAGE`` was already added which is located in the
 directory ``sunpy.data.sample.rootdir``).
 
     >>> database.default_waveunit = 'angstrom'
@@ -403,10 +417,13 @@ entry and returns a list of every 10th entry from there.
 
 4. Removing entries
 -------------------
-Let's imagine we want to only have database entries which have some
-observation time saved. To remove all entries where the value of both
-``observation_time_start`` and ``observation_time_end`` is None, one
-simply iterates over the database and uses the :meth:`Database.remove`
+``database.remove()`` can be used to remove database entries from the SunPy 
+database. It takes a ``tables.DatabaseEntry`` object as argument.
+
+For example, let us imagine we want to only have database entries which have some
+observation time saved. To remove all entries where the value of both 
+``observation_time_start`` and ``observation_time_end`` is None, one can 
+simply iterate over the database and uses the :meth:`Database.remove`
 method to remove those where the just described predicate is true:
 
     >>> for database_entry in database:
@@ -648,13 +665,14 @@ added in section 2.3.2, "Downloading":
     __init__ of the Wave attribute)
 
 When using the :class:`sunpy.net.vso.attrs.Wave` attribute, you have to
-know that the third parameter (unit) is 'angstrom' per default. So if it
-was not passed in the following example, the database would have been
-queried for all entries with a wavelength from 1 nm to 2 nm (10 Ångstrom
-are 1 nm) and therefore, an empty list would have been returned.
-
+specify a unit using ``astropy.units.Quantity``. If not an error is 
+raised. This also implies that there is no default unit that is 
+used by the class. To know how you can specify a detail using astropy
+check `astropy.units <https://astropy.readthedocs.org/en/stable/units/index.html>`_. 
+    
+    >>> from astropy import units as u
     >>> print display_entries(
-    ...     database.query(vso.attrs.Wave(10, 20, 'nm')),
+    ...     database.query(vso.attrs.Wave(10*u.nm, 20*u.nm)),
     ...     ['id', 'observation_time_start', 'observation_time_end', 'instrument', 'wavemin', 'wavemax'])
     id observation_time_start     observation_time_end       instrument wavemin wavemax
     -- ----------------------     --------------------       ---------- ------- -------

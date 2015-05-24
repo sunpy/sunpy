@@ -2,7 +2,8 @@
 ANA File Reader
 
 .. warning::
-    This code currently has an unresolved bug under Windows, it may not work as expected.
+    The reading and writing of ana file is not supported under Windows or Python 3.
+    The C extensions will not be built in either case.
 
 Notes
 -----
@@ -14,7 +15,7 @@ anarw routines.
 Created by Tim van Werkhoven (t.i.m.vanwerkhoven@gmail.com) on 2009-02-11.
 Copyright (c) 2009--2011 Tim van Werkhoven.
 """
- 
+
 from __future__ import absolute_import
 import os
 
@@ -31,23 +32,23 @@ def read(filename, debug=False):
     """
     Loads an ANA file and returns the data and a header in a list of (data,
     header) tuples.
-    
+
     Parameters
     ----------
     filename: string
         Name of file to be read.
     debug: bool, optional
         Prints versbose debug information.
-    
+
     Returns
     -------
     out: list
         A list of (data, header) tuples
-    
+
     Examples
     --------
     >>> data = sunpy.io.ana.read(filename)
-    
+
     """
     if not os.path.isfile(filename):
         raise IOError("File does not exist!")
@@ -70,14 +71,14 @@ def get_header(filename, debug=False):
         Name of file to be read.
     debug: bool, optional
         Prints versbose debug information.
-    
+
     Returns
     -------
     out: list
         A list of FileHeader headers
 
     Examples
-    --------    
+    --------
     >>> header = sunpy.io.ana.get_header(filename)
     """
     if _pyana is None:
@@ -103,14 +104,14 @@ def write(filename, data, comments=False, compress=1, debug=False):
         1 is to compress, 0 is uncompressed
     debug: bool, optional
         Prints versbose debug information.
-    
+
     Returns
     -------
     out: ANA compressed archive
-        A new ANA compressed archive containing the data and header.    
+        A new ANA compressed archive containing the data and header.
 
     Examples
-    --------    
+    --------
     >>> written = sunpy.io.ana.write(filename, data, comments=Falsem, compress=1)
     """
     if _pyana is None:

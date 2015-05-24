@@ -9,8 +9,9 @@ __all__ = ['sdo', 'soho', 'stereo', 'rhessi', 'proba2', 'yohkoh', 'hinode',
 
 from .. map_factory import Map
 
-from hinode import XRTMap
+from hinode import XRTMap, SOTMap
 Map.register(XRTMap, XRTMap.is_datasource_for)
+Map.register(SOTMap, SOTMap.is_datasource_for)
 
 from proba2 import SWAPMap
 Map.register(SWAPMap, SWAPMap.is_datasource_for)
@@ -27,9 +28,10 @@ Map.register(EITMap, EITMap.is_datasource_for)
 Map.register(LASCOMap, LASCOMap.is_datasource_for)
 Map.register(MDIMap, MDIMap.is_datasource_for)
 
-from stereo import EUVIMap, CORMap
+from stereo import EUVIMap, CORMap, HIMap
 Map.register(EUVIMap, EUVIMap.is_datasource_for)
 Map.register(CORMap, CORMap.is_datasource_for)
+Map.register(HIMap, HIMap.is_datasource_for)
 
 from yohkoh import SXTMap
 Map.register(SXTMap, SXTMap.is_datasource_for)

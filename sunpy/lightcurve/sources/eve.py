@@ -4,31 +4,31 @@ from __future__ import absolute_import
 
 import os
 import numpy
-from datetime import datetime  
+from datetime import datetime
+from collections import OrderedDict
 
 import matplotlib.pyplot as plt
 from pandas.io.parsers import read_csv
 from os.path import basename
 
 from sunpy.lightcurve import LightCurve
-from sunpy.util.odict import OrderedDict
 
 __all__ = ['EVELightCurve']
 
 class EVELightCurve(LightCurve):
     """
     SDO EVE LightCurve.
-    
+
     Examples
     --------
     >>> import sunpy
-    
+
     >>> eve = sunpy.lightcurve.EVELightCurve.create()
     >>> eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
     >>> eve = sunpy.lightcurve.EVELightCurve.create(sunpy.data.test.EVE_AVERAGES_CSV)
     >>> eve = sunpy.lightcurve.EVELightCurve.create("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt")
     >>> eve.peek(subplots=True)
-    
+
     References
     ----------
     | http://lasp.colorado.edu/home/eve/data/data-access/
@@ -56,22 +56,22 @@ class EVELightCurve(LightCurve):
             data.plot(**kwargs)
         figure.show()
         return figure
-        
+
     @staticmethod
     def _get_default_uri():
         """Load latest level 0CS if no other data is specified"""
         return "http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt"
-    
+
     @staticmethod
     def _get_url_for_date(date):
         """Returns a URL to the EVE data for the specified date
-        
+
             @NOTE: currently only supports downloading level 0 data
             .TODO: No data available prior to 2010/03/01!
         """
         base_url = 'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
         return base_url + date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt'
-    
+
     @classmethod
     def _parse_csv(cls, filepath):
         """Parses an EVE CSV file"""
@@ -85,51 +85,51 @@ class EVELightCurve(LightCurve):
                 return cls._parse_average_csv(fp)
             elif line1.startswith(";"):
                 return cls._parse_level_0cs(fp)
-    
+
     @staticmethod
     def _parse_average_csv(fp):
         """Parses an EVE Averages file"""
         return "", read_csv(fp, sep=",", index_col=0, parse_dates=True)
-    
+
     @staticmethod
     def _parse_level_0cs(fp):
         """Parses and EVE Level 0CS file"""
-	is_missing_data = False      #boolean to check for missing data
-	missing_data_val = numpy.nan
+        is_missing_data = False      #boolean to check for missing data
+        missing_data_val = numpy.nan
         header = []
         fields = []
         line = fp.readline()
         # Read header at top of file
         while line.startswith(";"):
             header.append(line)
-	    if '; Missing data:' in line :     
-		    is_missing_data = True
-		    missing_data_val = line.split(':')[1].strip()
+            if '; Missing data:' in line :
+                is_missing_data = True
+                missing_data_val = line.split(':')[1].strip()
 
-		   
+
             line = fp.readline()
-	
-	meta = OrderedDict()
-	for hline in header :
-		if hline == '; Format:\n' or hline == '; Column descriptions:\n':
-			continue
-		elif ('Created' in hline) or ('Source' in hline):
-			meta[hline.split(':',1)[0].replace(';',' ').strip()] = hline.split(':',1)[1].strip()
-		elif ':' in hline :
-			meta[hline.split(':')[0].replace(';',' ').strip()] = hline.split(':')[1].strip()
+
+        meta = OrderedDict()
+        for hline in header :
+            if hline == '; Format:\n' or hline == '; Column descriptions:\n':
+                continue
+            elif ('Created' in hline) or ('Source' in hline):
+                meta[hline.split(':',1)[0].replace(';',' ').strip()] = hline.split(':',1)[1].strip()
+            elif ':' in hline :
+                meta[hline.split(':')[0].replace(';',' ').strip()] = hline.split(':')[1].strip()
 
         fieldnames_start = False
         for hline in header:
             if hline.startswith("; Format:"):
                 fieldnames_start = False
             if fieldnames_start:
-                fields.append(hline.split(":")[0].replace(';', ' ').strip())        
+                fields.append(hline.split(":")[0].replace(';', ' ').strip())
             if hline.startswith("; Column descriptions:"):
                 fieldnames_start = True
 
-        # Next line is YYYY DOY MM DD        
+        # Next line is YYYY DOY MM DD
         date_parts = line.split(" ")
-                
+
         year = int(date_parts[0])
         month = int(date_parts[2])
         day = int(date_parts[3])
@@ -137,13 +137,13 @@ class EVELightCurve(LightCurve):
         #line = fp.readline()
         #el = line.split()
         #len
-        
+
         # function to parse date column (HHMM)
         parser = lambda x: datetime(year, month, day, int(x[0:2]), int(x[2:4]))
 
         data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, header = None)
-	if is_missing_data :   #If missing data specified in header
-		data[data == float(missing_data_val)] = numpy.nan
-	
+        if is_missing_data :   #If missing data specified in header
+            data[data == float(missing_data_val)] = numpy.nan
+
         #data.columns = fields
         return meta, data

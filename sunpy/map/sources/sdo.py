@@ -14,30 +14,29 @@ __all__ = ['AIAMap', 'HMIMap']
 
 class AIAMap(GenericMap):
     """AIA Image Map definition
-    
+
     References
     ----------
     For a description of AIA headers
     http://jsoc.stanford.edu/doc/keywords/AIA/AIA02840_A_AIA-SDO_FITS_Keyword_Documents.pdf
     """
-    
+
     def __init__(self, data, header, **kwargs):
-        
+
         GenericMap.__init__(self, data, header, **kwargs)
-        
+
         # Fill in some missing info
         self.meta['detector'] = "AIA"
 #        self.meta['instrme'] = "AIA"
-        
+
         self._nickname = self.detector
         self._name = self.detector + " " + str(self.measurement)
-        
-        self.cmap = cm.get_cmap('sdoaia%d' % self.wavelength)
-    
+        self.cmap = cm.get_cmap(self._get_cmap_name())
+
     @property
     def observatory(self):
         return self.meta['telescop'].split('/')[0]
-        
+
     @property
     def processing_level(self):
         return self.meta['lvl_num']
@@ -50,40 +49,40 @@ class AIAMap(GenericMap):
 
         mean = self.mean()
         std = self.std()
-        
+
         vmin = max(0, mean - 3 * std)
         vmax = min(self.max(), mean + 3 * std)
-        
+
         return colors.Normalize(vmin, vmax)
-    
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an AIA image"""
         return header.get('instrume', '').startswith('AIA')
-        
+
 class HMIMap(GenericMap):
     """HMI Image Map definition"""
-    
+
     def __init__(self, data, header, **kwargs):
-        
+
         GenericMap.__init__(self, data, header, **kwargs)
-        
+
         self.meta['detector'] = "HMI"
 #        self.meta['instrme'] = "HMI"
 #        self.meta['obsrvtry'] = "SDO"
 
         self._name = self.detector + " " + str(self.measurement)
         self._nickname = self.detector
-    
+
     @property
     def measurement(self):
         return self.meta['content'].split(" ")[0].lower()
-    
+
     @property
     def observatory(self):
-        return self.meta['telescop'].split('/')[0]    
+        return self.meta['telescop'].split('/')[0]
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an HMI image"""
-        return header.get('instrume', '').startswith('HMI') 
+        return header.get('instrume', '').startswith('HMI')

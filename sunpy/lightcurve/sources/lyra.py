@@ -4,14 +4,18 @@ from __future__ import absolute_import
 
 import datetime
 import urlparse
+import sys
+from collections import OrderedDict
 
 from matplotlib import pyplot as plt
 from astropy.io import fits
 import pandas
 
-from sunpy.lightcurve import LightCurve 
+from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
-from sunpy.util.odict import OrderedDict
+
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['LYRALightCurve']
 
@@ -22,7 +26,7 @@ class LYRALightCurve(LightCurve):
     Examples
     --------
     >>> import sunpy
-    
+
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create()
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create('~/Data/lyra/lyra_20110810-000000_lev2_std.fits')
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10')
@@ -55,6 +59,7 @@ class LYRALightCurve(LightCurve):
 
         """Shows a plot of all four light curves"""
         figure = plt.figure()
+        plt.subplots_adjust(left=0.17,top=0.94,right=0.94,bottom=0.15)
         axes = plt.gca()
 
         axes = self.data.plot(ax=axes, subplots=True, sharex=True, **kwargs)
@@ -64,11 +69,13 @@ class LYRALightCurve(LightCurve):
             if names < 3:
                 name = lyranames[names][i]
             else:
-                name = lyranames[0][i] + ' (' + lyranames[1][i] + ')'
-            axes[i].set_ylabel("%s (%s)" % (name, "W/m**2"))
+                name = lyranames[0][i] + ' \n (' + lyranames[1][i] + ')'
+            axes[i].set_ylabel( "{name} \n (W/m**2)".format(name=name), fontsize=9.5)
 
-        axes[0].set_title("LYRA ("+ self.data.index[0].strftime('%Y-%m-%d') +")")
+        axes[0].set_title("LYRA ({0:{1}})".format(self.data.index[0],TIME_FORMAT))
         axes[-1].set_xlabel("Time")
+        for axe in axes:
+            axe.locator_params(axis='y',nbins=6)
 
         figure.show()
 
@@ -76,14 +83,14 @@ class LYRALightCurve(LightCurve):
 
 
     @staticmethod
-    def _get_url_for_date(date):
+    def _get_url_for_date(date,**kwargs):
         """Returns a URL to the LYRA data for the specified date
         """
         dt = parse_time(date or datetime.datetime.utcnow())
 
         # Filename
-        filename = "lyra_%s000000_lev%d_%s.fits" % (dt.strftime('%Y%m%d-'),
-                                                    2, 'std')
+        filename = "lyra_{0:%Y%m%d-}000000_lev{1:d}_std.fits".format(
+            dt, kwargs.get('level',2))
         # URL
         base_url = "http://proba2.oma.be/lyra/data/bsd/"
         url_path = urlparse.urljoin(dt.strftime('%Y/%m/%d/'), filename)
@@ -114,16 +121,29 @@ class LYRALightCurve(LightCurve):
         start = parse_time(start_str)
         #end = datetime.datetime.strptime(end_str, '%Y-%m-%dT%H:%M:%S.%f')
 
-        # First column are times
-        times = [start + datetime.timedelta(0, n) for n in fits_record.field(0)]
+        # First column are times.  For level 2 data, the units are [s].
+        # For level 3 data, the units are [min]
+        if hdulist[1].header['TUNIT1'] == 's':
+            times = [start + datetime.timedelta(seconds=n)
+                     for n in fits_record.field(0)]
+        elif hdulist[1].header['TUNIT1'] == 'MIN':
+            times = [start + datetime.timedelta(minutes=int(n))
+                     for n in fits_record.field(0)]
+        else:
+            raise ValueError("Time unit in LYRA fits file not recognised.  "
+                             "Value = {0}".format(hdulist[1].header['TUNIT1']))
 
         # Rest of columns are the data
         table = {}
 
         for i, col in enumerate(fits_record.columns[1:-1]):
-            table[col.name] = fits_record.field(i + 1)
+            #temporary patch for big-endian data bug on pandas 0.13
+            if fits_record.field(i+1).dtype.byteorder == '>' and sys.byteorder =='little':
+                table[col.name] = fits_record.field(i + 1).byteswap().newbyteorder()
+            else:
+                table[col.name] = fits_record.field(i + 1)
 
         # Return the header and the data
-        return OrderedDict(hdulist[0].header), pandas.DataFrame(table, index=times)
-
-
+        data = pandas.DataFrame(table, index=times)
+        data.sort(inplace=True)
+        return OrderedDict(hdulist[0].header), data

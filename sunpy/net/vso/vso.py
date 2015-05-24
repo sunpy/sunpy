@@ -23,6 +23,10 @@ from functools import partial
 from collections import defaultdict
 from suds import client, TypeNotFound
 
+import astropy
+from astropy.table import Table, Column
+import astropy.units as u
+
 from sunpy import config
 from sunpy.net import download
 from sunpy.net.proxyfix import WellBehavedHttpTransport
@@ -31,8 +35,10 @@ from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
-from sunpy.util import print_table, replacement_filename
+from sunpy.util import print_table, replacement_filename, Deprecated
 from sunpy.time import parse_time
+
+TIME_FORMAT = config.get("general", "time_format")
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 DEFAULT_PORT = 'nsoVSOi'
@@ -92,7 +98,7 @@ class Results(object):
         with self.lock:
             self.n -= 1
             if self.progress is not None:
-               self.progress.poke()
+                self.progress.poke()
             if not self.n:
                 if self.done is not None:
                     self.map_ = self.done(self.map_)
@@ -165,10 +171,11 @@ def iter_errors(response):
 
 
 class QueryResponse(list):
-    def __init__(self, lst, queryresult=None):
+    def __init__(self, lst, queryresult=None, table=None):
         super(QueryResponse, self).__init__(lst)
         self.queryresult = queryresult
         self.errors = []
+        self.table = None
 
     def query(self, *query):
         """ Furtherly reduce the query response by matching it against
@@ -203,27 +210,47 @@ class QueryResponse(list):
                   if record.time.end is not None), TIMEFORMAT)
         )
 
+    @Deprecated("Use `print qr` to view the contents of the response")
     def show(self):
         """Print out human-readable summary of records retrieved"""
+        print(str(self))
 
-        table = [
-          [
-            str(datetime.strptime(record.time.start, TIMEFORMAT))
-              if record.time.start is not None else 'N/A',
-            str(datetime.strptime(record.time.end, TIMEFORMAT))
-              if record.time.end is not None else 'N/A',
-            record.source,
-            record.instrument,
-            record.extent.type
-              if record.extent.type is not None else 'N/A'
-          ] for record in self]
-        table.insert(0, ['----------','--------','------','----------','----'])
-        table.insert(0, ['Start time','End time','Source','Instrument','Type'])
+    def build_table(self):
+        keywords = ['Start Time', 'End Time', 'Source', 'Instrument', 'Type']
+        record_items = {}
+        for key in keywords:
+            record_items[key] = []
 
-        print(print_table(table, colsep = '  ', linesep='\n'))
+        def validate_time(time):
+            if record.time.start is not None:
+                return [datetime.strftime(parse_time(time), TIME_FORMAT)]
+            else:
+                return ['N/A']
+
+        for record in self:
+            record_items['Start Time'].append(validate_time(record.time.start))
+            record_items['End Time'].append(validate_time(record.time.end))
+            record_items['Source'].append(str(record.source))
+            record_items['Instrument'].append(str(record.instrument))
+            record_items['Type'].append(str(record.extent.type)
+                                if record.extent.type is not None else ['N/A'])
+
+        return Table(record_items)[keywords]
 
     def add_error(self, exception):
         self.errors.append(exception)
+
+    def __str__(self):
+        """Print out human-readable summary of records retrieved"""
+        return str(self.build_table())
+
+    def __repr__(self):
+        """Print out human-readable summary of records retrieved"""
+        return repr(self.build_table())
+
+    def _repr_html_(self):
+        return self.build_table()._repr_html_()
+
 
 class DownloadFailed(Exception):
     pass
@@ -498,11 +525,11 @@ class VSOClient(object):
                     try:
                         item = item[elem]
                     except KeyError:
-                        raise ValueError("Unexpected argument %s." % key)
+                        raise ValueError("Unexpected argument {key!s}.".format(key=key))
                 if lst not in item:
-                    raise ValueError("Unexpected argument %s." % key)
+                    raise ValueError("Unexpected argument {key!s}.".format(key=key))
                 if item[lst]:
-                    raise ValueError("Got multiple values for %s." % k)
+                    raise ValueError("Got multiple values for {k!s}.".format(k=k))
                 item[lst] = v
         try:
             return QueryResponse.create(self.api.service.Query(queryreq))
@@ -517,7 +544,8 @@ class VSOClient(object):
             time_near=datetime.utcnow()
         )
 
-    def get(self, query_response, path=None, methods=('URL-FILE',), downloader=None, site=None):
+    def get(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),
+            downloader=None, site=None):
         """
         Download data specified in the query_response.
 
@@ -532,7 +560,12 @@ class VSOClient(object):
             be refered to as file, e.g.
             "{source}/{instrument}/{time.start}/{file}".
         methods : {list of str}
-            Methods acceptable to user.
+            Download methods, defaults to URL-FILE_Rice then URL-FILE.
+            Methods are a concatenation of one PREFIX followed by any number of
+            SUFFIXES i.e. `PREFIX-SUFFIX_SUFFIX2_SUFFIX3`.
+            The full list of `PREFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_PREFIX>`_
+            and `SUFFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_SUFFIX>`_
+            are listed on the VSO site.
         downloader : sunpy.net.downloader.Downloader
             Downloader used to download the data.
         site: str
@@ -573,6 +606,8 @@ class VSOClient(object):
         if path is None:
             path = os.path.join(config.get('downloads','download_dir'),
                                 '{file}')
+        path = os.path.expanduser(path)
+
         fileids = VSOClient.by_fileid(query_response)
         if not fileids:
             res.poke()
@@ -761,7 +796,7 @@ class InteractiveVSOClient(VSOClient):
     def multiple_choices(self, choices, response):
         while True:
             for n, elem in enumerate(choices):
-                print "(%d) %s" % (n + 1, elem)
+                print "({num:d}) {choice!s}".format(num=n + 1, choice=elem)
             try:
                 choice = raw_input("Method number: ")
             except KeyboardInterrupt:

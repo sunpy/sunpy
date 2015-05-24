@@ -1,5 +1,5 @@
 """
-LightCurve is a generic LightCurve class from which all other LightCurve classes 
+LightCurve is a generic LightCurve class from which all other LightCurve classes
 inherit from.
 """
 from __future__ import absolute_import
@@ -8,20 +8,20 @@ from __future__ import absolute_import
 __authors__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
-import os
+import os.path
 import shutil
 import urllib2
 import warnings
 from datetime import datetime
+from collections import OrderedDict
 
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas
 
-import sunpy
+from sunpy import config
 from sunpy.time import is_time, TimeRange, parse_time
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
-from sunpy.util.odict import OrderedDict
 
 __all__ = ['LightCurve']
 
@@ -42,7 +42,7 @@ class LightCurve(object):
     meta : string, dict
         The comment string or header associated with the light curve input
     data : pandas.DataFrame
-        An pandas DataFrame prepresenting one or more fields as they vary with 
+        An pandas DataFrame prepresenting one or more fields as they vary with
         respect to time.
 
     Examples
@@ -72,12 +72,12 @@ class LightCurve(object):
 
     def __init__(self, data, meta=None):
         self.data = pandas.DataFrame(data)
-	if meta == '' or meta is None:
-		self.meta = OrderedDict()
-	else:	
-        	self.meta = OrderedDict(meta)
-	
-    
+        if meta == '' or meta is None:
+            self.meta = OrderedDict()
+        else:
+            self.meta = OrderedDict(meta)
+
+
     @property
     def header(self):
         """
@@ -92,6 +92,7 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_time(cls, time, **kwargs):
+        '''Called by Conditional Dispatch object when valid time is passed as input to create method.'''
         date = parse_time(time)
         url = cls._get_url_for_date(date, **kwargs)
         filepath = cls._download(
@@ -101,9 +102,10 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_range(cls, start, end, **kwargs):
-        url = cls._get_url_for_date_range(parse_time(start), parse_time(end))
+        '''Called by Conditional Dispatch object when start and end time are passed as input to create method.'''
+        url = cls._get_url_for_date_range(parse_time(start), parse_time(end), **kwargs)
         filepath = cls._download(
-            url, kwargs, 
+            url, kwargs,
             err = "Unable to download data for specified date range"
         )
         result = cls.from_file(filepath)
@@ -112,36 +114,59 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_timerange(cls, timerange, **kwargs):
-        url = cls._get_url_for_date_range(timerange)
+        '''Called by Conditional Dispatch object when time range is passed as input to create method.'''
+        url = cls._get_url_for_date_range(timerange, **kwargs)
         filepath = cls._download(
             url, kwargs,
             err = "Unable to download data for specified date range"
         )
         result = cls.from_file(filepath)
-        result.data = result.data.truncate(timerange.start(), timerange.end())
+        result.data = result.data.truncate(timerange.start, timerange.end)
         return result
 
     @classmethod
     def from_file(cls, filename):
+        '''Used to return Light Curve object by reading the given filename
+
+        Parameters:
+            filename: Path of the file to be read.
+
+        '''
+
         filename = os.path.expanduser(filename)
         meta, data = cls._parse_filepath(filename)
         if data.empty:
             raise ValueError("No data found!")
-        else:               
+        else:
             return cls(data, meta)
 
     @classmethod
     def from_url(cls, url, **kwargs):
+        '''
+        Downloads a file from the given url, reads and returns a Light Curve object.
+
+        Parameters:
+            url : string
+                Uniform Resource Locator pointing to the file.
+
+            kwargs :Dict
+                Dict object containing other related parameters to assist in download.
+
+        '''
         try:
             filepath = cls._download(url, kwargs)
         except (urllib2.HTTPError, urllib2.URLError, ValueError):
-            err = ("Unable to read location. Did you "
-                   "specify a valid filepath or URL?")
+            err = "Unable to read location {!s}.".format(url)
             raise ValueError(err)
         return cls.from_file(filepath)
 
     @classmethod
     def from_data(cls, data, index=None, meta=None):
+        '''
+        Called by Conditional Dispatch object to create Light Curve object when corresponding data is passed
+        to create method.
+        '''
+
         return cls(
             pandas.DataFrame(data, index=index),
             meta
@@ -153,6 +178,11 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_dataframe(cls, dataframe, meta=None):
+        '''
+        Called by Conditional Dispatch object to create Light Curve object when Pandas DataFrame is passed
+        to create method.
+        '''
+
         return cls(dataframe, meta)
 
     def plot(self, axes=None, **plot_args):
@@ -161,7 +191,7 @@ for compatability with map, please use meta instead""", Warning)
         Parameters
         ----------
         axes: matplotlib.axes object or None
-            If provided the image will be plotted on the given axes. Else the 
+            If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
 
         **plot_args : dict
@@ -190,22 +220,17 @@ for compatability with map, please use meta instead""", Warning)
         return figure
 
     @staticmethod
-    def _download(uri, kwargs, 
-                  err='Unable to download data at specified URL',
-                  filename = None):
+    def _download(uri, kwargs,
+                  err='Unable to download data at specified URL'):
         """Attempts to download data at the specified URI"""
-        
-        #Allow manual override of output filename (used for GOES)
-        if filename is not None:
-            _filename = filename
-        else:            
-            _filename = os.path.basename(uri).split("?")[0]
-        
+
+        _filename = os.path.basename(uri).split("?")[0]
+
         # user specifies a download directory
         if "directory" in kwargs:
             download_dir = os.path.expanduser(kwargs["directory"])
         else:
-            download_dir = sunpy.config.get("downloads", "download_dir")
+            download_dir = config.get("downloads", "download_dir")
 
         # overwrite the existing file if the keyword is present
         if "overwrite" in kwargs:
@@ -216,7 +241,7 @@ for compatability with map, please use meta instead""", Warning)
         # If the file is not already there, download it
         filepath = os.path.join(download_dir, _filename)
 
-        if not(os.path.isfile(filepath)) or (overwrite and 
+        if not(os.path.isfile(filepath)) or (overwrite and
                                              os.path.isfile(filepath)):
             try:
                 response = urllib2.urlopen(uri)
@@ -232,20 +257,20 @@ for compatability with map, please use meta instead""", Warning)
     @classmethod
     def _get_default_uri(cls):
         """Default data to load when none is specified"""
-        msg = "No default action set for %s"
-        raise NotImplementedError(msg % cls.__name__)
+        msg = "No default action set for {}"
+        raise NotImplementedError(msg.format(cls.__name__))
 
     @classmethod
     def _get_url_for_date(cls, date, **kwargs):
         """Returns a URL to the data for the specified date"""
-        msg = "Date-based downloads not supported for for %s"
-        raise NotImplementedError(msg % cls.__name__)
+        msg = "Date-based downloads not supported for for {}"
+        raise NotImplementedError(msg.format(cls.__name__))
 
     @classmethod
     def _get_url_for_date_range(cls, *args, **kwargs):
         """Returns a URL to the data for the specified date range"""
-        msg = "Date-range based downloads not supported for for %s"
-        raise NotImplementedError(msg % cls.__name__)
+        msg = "Date-range based downloads not supported for for {}"
+        raise NotImplementedError(msg.format(cls.__name__))
 
     @staticmethod
     def _parse_csv(filepath):
@@ -261,6 +286,7 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def _parse_filepath(cls, filepath):
+        """Check the file extension to see how to parse the file"""
         filename, extension = os.path.splitext(filepath)
 
         if extension.lower() in (".csv", ".txt"):
@@ -275,8 +301,8 @@ for compatability with map, please use meta instead""", Warning)
         else:
             time_range = TimeRange(a,b)
 
-        truncated = self.data.truncate(time_range.start(), time_range.end())
-        return LightCurve(truncated, self.meta.copy())
+        truncated = self.data.truncate(time_range.start, time_range.end)
+        return self.__class__.create(truncated, self.meta.copy())
 
     def extract(self, a):
         """Extract a set of particular columns from the DataFrame"""

@@ -4,29 +4,33 @@
 __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"
 
+import matplotlib.pyplot as plt
+
 from sunpy.map import GenericMap
+
+import astropy.units as u
 
 __all__ = ['RHESSIMap']
 
 class RHESSIMap(GenericMap):
     """RHESSI Image Map definition
-    
+
     References
     ----------
     For a description of RHESSI image fits headers
     ???
 
-    TODO: Currently (8/29/2011), cannot read fits files containing more than one 
+    TODO: Currently (8/29/2011), cannot read fits files containing more than one
     image (schriste)
     """
-    
+
     def __init__(self, data, header, **kwargs):
-        
+
         GenericMap.__init__(self, data, header, **kwargs)
-        
-        self._name = "RHESSI %d - %d keV" % (self.measurement[0], self.measurement[1])
+
+        self._name = "RHESSI {measure[0]:.0f} - {measure[1]:.0f} keV".format(measure=self.measurement)
         self._nickname = self.detector
-        
+
         # Fix some broken/misapplied keywords
         if self.meta['ctype1'] == 'arcsec':
             self.meta['cunit1'] = 'arcsec'
@@ -34,17 +38,20 @@ class RHESSIMap(GenericMap):
         if self.meta['ctype2'] == 'arcsec':
             self.meta['cunit2'] = 'arcsec'
             self.meta['ctype2'] = 'HPLT-TAN'
-        
+
+        self.meta['waveunit'] = 'keV'
+        self.meta['wavelnth'] = [self.meta['energy_l'], self.meta['energy_h']]
+        self.cmap = plt.get_cmap('jet')
+
     @property
     def measurement(self):
-        return [self.meta['energy_l'], self.meta['energy_h']]
-    
+        return u.Quantity([self.meta['energy_l'], self.meta['energy_h']], self.meta['waveunit'])
+
     @property
     def detector(self):
-        return self.meta['telescop']    
-    
+        return self.meta['telescop']
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an RHESSI image"""
         return header.get('instrume') == 'RHESSI'
-

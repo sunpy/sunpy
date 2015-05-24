@@ -76,7 +76,7 @@ def read(filepath, hdus=None):
         elif isinstance(hdus, collections.Iterable):
             hdulist = [hdulist[i] for i in hdus]
     try:
-        hdulist.verify('silentfix')
+        hdulist.verify('silentfix+warn')
 
         headers = get_header(hdulist)
         pairs = []
@@ -167,14 +167,19 @@ def write(fname, data, header, **kwargs):
 
     for k,v in header.items():
         if isinstance(v, fits.header._HeaderCommentaryCards):
-            if k is 'comments':
-                fits_header.add_comments(str(v))
-            elif k in 'history':
-                fits_header.add_history(str(v))
-            else:
-                fits_header.append(fits.Card(k, str(v)))
+            if k == 'comments':
+                comments = str(v).split('\n')
+                for com in comments:
+                    fits_header.add_comments(com)
+            elif k == 'history':
+                hists = str(v).split('\n')
+                for hist in hists:
+                    fits_header.add_history(hist)
+            elif k != '':
+                fits_header.append(fits.Card(k, str(v).split('\n')))
+
         else:
-            fits_header.append(fits.Card(k,v))
+            fits_header.append(fits.Card(k, v))
 
 
     if isinstance(key_comments, dict):
@@ -263,4 +268,6 @@ def extract_waveunit(header):
             if m is not None:
                 waveunit = m.group(1)
                 break
+    if waveunit == '':
+        return None # To fix problems associated with HMI FITS.
     return waveunit

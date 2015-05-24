@@ -9,13 +9,13 @@ import numpy as np
 
 __all__ = ['to_signed', 'unique', 'print_table',
            'replacement_filename', 'goes_flare_class', 'merge', 'common_base',
-           'minimal_pairs', 'polyfun_at', 
+           'minimal_pairs', 'polyfun_at',
            'expand_list', 'expand_list_generator', 'Deprecated']
 
 def to_signed(dtype):
     """ Return dtype that can hold data of passed dtype but is signed.
     Raise ValueError if no such dtype exists.
-    
+
     Parameters
     ----------
     dtype : np.dtype
@@ -24,7 +24,7 @@ def to_signed(dtype):
     if dtype.kind == "u":
         if dtype.itemsize == 8:
             raise ValueError("Cannot losslessy convert uint64 to int.")
-        dtype = "int%d" % (min(dtype.itemsize * 2 * 8, 64))
+        dtype = "int{0:d}".format(min(dtype.itemsize * 2 * 8, 64))
     return np.dtype(dtype)
 
 def goes_flare_class(gcls):
@@ -81,25 +81,25 @@ def polyfun_at(coeff, p):
 def minimal_pairs(one, other):
     """ Find pairs of values in one and other with minimal distance.
     Assumes one and other are sorted in the same sort sequence.
-    
+
     one, other : sequence
         Sequence of scalars to find pairs from.
     """
     lbestdiff = bestdiff = bestj = besti = None
     for i, freq in enumerate(one):
         lbestj = bestj
-        
+
         bestdiff, bestj = None, None
         for j, o_freq in enumerate(other[lbestj:]):
             j = lbestj + j if lbestj else j
             diff = abs(freq - o_freq)
             if bestj is not None and diff > bestdiff:
                 break
-            
+
             if bestj is None or bestdiff > diff:
                 bestj = j
                 bestdiff = diff
-        
+
         if lbestj is not None and lbestj != bestj:
             yield (besti, lbestj, lbestdiff)
             besti = i
@@ -107,7 +107,7 @@ def minimal_pairs(one, other):
         elif lbestdiff is None or bestdiff < lbestdiff:
             besti = i
             lbestdiff = bestdiff
-    
+
     yield (besti, bestj, lbestdiff)
 
 
@@ -148,7 +148,7 @@ def merge(items, key=(lambda x: x)):
             continue
         else:
             state[item] = (first, key(first))
-    
+
     while state:
         for item, (value, tk) in state.iteritems():
             # Value is biggest.
@@ -183,15 +183,15 @@ def replacement_filename(path):
 # expand list from :http://stackoverflow.com/a/2185971/2486799
 #==============================================================================
 def expand_list(input):
-	return [item for item in expand_list_generator(input)]
+    return [item for item in expand_list_generator(input)]
 
-def expand_list_generator(input):    
+def expand_list_generator(input):
     for item in input:
-       if type(item) in [list, tuple]:
-           for nested_item in expand_list_generator(item):
-               yield nested_item
-       else:
-           yield item
+        if type(item) in [list, tuple]:
+            for nested_item in expand_list_generator(item):
+                yield nested_item
+        else:
+            yield item
 
 #==============================================================================
 # Deprecation decorator: http://code.activestate.com/recipes/391367-deprecated/
@@ -200,7 +200,7 @@ def expand_list_generator(input):
 class Deprecated(object):
     """ Use this decorator to deprecate a function or method, you can pass an
     additional message to the decorator:
-    
+
     @Deprecated("no more")
     """
     def __init__(self, message=""):
@@ -208,12 +208,12 @@ class Deprecated(object):
 
     def __call__(self, func):
         def newFunc(*args, **kwargs):
-            warnings.warn("Call to deprecated function %s. \n %s" %(
+            warnings.warn("Call to deprecated function {0}. \n {1}".format(
                                                                 func.__name__,
                                                                 self.message),
                           category=Warning, stacklevel=2)
             return func(*args, **kwargs)
-        
+
         newFunc.__name__ = func.__name__
         newFunc.__doc__ = func.__doc__
         newFunc.__dict__.update(func.__dict__)

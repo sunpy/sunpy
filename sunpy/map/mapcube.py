@@ -4,6 +4,7 @@ from __future__ import absolute_import
 
 import numpy as np
 import matplotlib.animation
+from sunpy.visualization import wcsaxes_compat
 import matplotlib.pyplot as plt
 
 from sunpy.map import GenericMap
@@ -15,7 +16,7 @@ __all__ = ['MapCube']
 
 class MapCube(object):
     """
-    MapCube(input)
+    MapCube
 
     A series of spatially aligned Maps.
 
@@ -27,8 +28,9 @@ class MapCube(object):
         Method by which the MapCube should be sorted along the z-axis.
     derotate : {None}
         Apply a derotation to the data (Not Implemented)
-    coalign : {None}
-        Apply fine coalignment to the data (Not Implemented)
+
+    To coalign a mapcube so that solar features remain on the same pixels,
+    please see the "Coalignment of mapcubes" note below.
 
     Attributes
     ----------
@@ -37,10 +39,9 @@ class MapCube(object):
 
     Examples
     --------
-    >>> mapcube = sunpy.Map('images/', mapcube=True)
-    >>> mapcube[0].plot()
-    >>> mapcube[3].reference_pixel['x']
-    2050.6599120000001
+    >>> mapcube = sunpy.map.Map('images/*.fits', cube=True)
+
+    Mapcubes can be co-aligned using the routines in sunpy.image.coalignment.
     """
     #pylint: disable=W0613,E1101
     def __init__(self, *args, **kwargs):
@@ -48,7 +49,6 @@ class MapCube(object):
 
         # Hack to get around Python 2.x not backporting PEP 3102.
         sortby = kwargs.pop('sortby', 'date')
-        coalign = kwargs.pop('coalign', False)
         derotate = kwargs.pop('derotate', False)
 
         self.maps = expand_list(args)
@@ -65,51 +65,22 @@ class MapCube(object):
             else:
                 raise ValueError("Only sort by date is supported")
 
-        # Coalignment
-        if coalign:
-            if coalign == 'diff':
-                self.coalign("diff")
-            else:
-                raise ValueError("That coalignment method is not supported")
-
         if derotate:
             self._derotate()
 
     def __getitem__(self, key):
-        """Overiding indexing operation"""
-        return self.maps[key]
+        """Overriding indexing operation.  If the key results in a single map,
+        then a map object is returned.  This allows functions like enumerate to
+        work.  Otherwise, a mapcube is returned."""
 
-    def coalign(self, method="diff"):
-        """ Fine coalign the data"""
-        if method == 'diff':
-            return self._coalign_diff(self)
+        if isinstance(self.maps[key], GenericMap):
+            return self.maps[key]
+        else:
+            return MapCube(self.maps[key])
 
-    # Coalignment methods
-    def _coalign_diff(self):
-        """Difference-based coalignment
-
-        Coaligns data by minimizing the difference between subsequent images
-        before and after shifting the images one to several pixels in each
-        direction.
-
-        pseudo-code:
-
-        for i len(self):
-            min_diff = {'value': (), 'offset': (0, 0)} # () is pos infinity
-
-            # try shifting 1 pixel in each direction
-            for x in (-1, 0, 1):
-                for y in (-1, 0, 1):
-                    # calculate differenand hasattr(self, '_coalign_%s' % coalign):
-            getattr(self, '_coalign_%s' % coalign)()ce for intersecting pixels
-                    # if < min_diff['value'], store new value/offset
-
-            # shift image
-            if min_diff['offset'] != (0, 0):
-                # shift and clip image
-
-        """
-        raise NotImplementedError("Sorry this is not yet supported")
+    def __len__(self):
+        """Return the number of maps in a mapcube."""
+        return len(self.maps)
 
     # Sorting methods
     @classmethod
@@ -175,19 +146,19 @@ class MapCube(object):
 
         # Normal plot
         def annotate_frame(i):
-            axes.set_title("%s %s" % (self[i].name, self[i].date))
+            axes.set_title("{s.name} {s.date!s}".format(s=self[i]))
 
             # x-axis label
             if self[0].coordinate_system['x'] == 'HG':
-                xlabel = 'Longitude [%s]' % self[i].units['x']
+                xlabel = 'Longitude [{lon}'.format(lon=self[i].units['x'])
             else:
-                xlabel = 'X-position [%s]' % self[i].units['x']
+                xlabel = 'X-position [{xpos}]'.format(xpos=self[i].units['x'])
 
             # y-axis label
             if self[0].coordinate_system['y'] == 'HG':
-                ylabel = 'Latitude [%s]' % self[i].units['y']
+                ylabel = 'Latitude [{lat}]'.format(lat=self[i].units['y'])
             else:
-                ylabel = 'Y-position [%s]' % self[i].units['y']
+                ylabel = 'Y-position [{ypos}]'.format(ypos=self[i].units['y'])
 
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
@@ -196,29 +167,29 @@ class MapCube(object):
             self[0].cmap.set_gamma(gamma)
 
         if resample:
-            #This assumes that the maps a homogenous!
+            #This assumes that the maps are homogenous!
             #TODO: Update this!
             resample = np.array(len(self.maps)-1) * np.array(resample)
-            ani_data = [x.resample(resample) for x in self]
+            ani_data = [x.resample(resample) for x in self.maps]
         else:
-            ani_data = self
+            ani_data = self.maps
 
-        im = ani_data[0].plot(**kwargs)
+        im = ani_data[0].plot(axes=axes, **kwargs)
 
         def updatefig(i, im, annotate, ani_data):
 
             im.set_array(ani_data[i].data)
-            im.set_cmap(self[i].cmap)
-            im.set_mpl_color_normalizer(self[i].mpl_color_normalizer)
-            im.set_extent(self.xrange + self.yrange)
+            im.set_cmap(self.maps[i].cmap)
+            im.set_norm(self.maps[i].mpl_color_normalizer)
+            im.set_extent(self.maps[i].xrange + self.maps[i].yrange)
             if annotate:
                 annotate_frame(i)
 
         ani = matplotlib.animation.FuncAnimation(fig, updatefig,
-                                            frames=range(0,len(self.maps)),
-                                            fargs=[im,annotate,ani_data],
-                                            interval=interval,
-                                            blit=False)
+                                                frames=range(0,len(self.maps)),
+                                                fargs=[im,annotate,ani_data],
+                                                interval=interval,
+                                                blit=False)
 
         return ani
 
@@ -281,10 +252,35 @@ class MapCube(object):
             self[0].cmap.set_gamma(gamma)
 
         if resample:
-            #This assumes that the maps a homogenous!
-            #TODO: Update this!
-            resample = np.array(len(self.maps)-1) * np.array(resample)
-            for amap in self.maps:
-                amap.resample(resample)
+            if self.all_maps_same_shape():
+                resample = np.array(len(self.maps) - 1) * np.array(resample)
+                for amap in self.maps:
+                    amap.resample(resample)
+            else:
+                raise ValueError('Maps in mapcube do not all have the same shape.')
 
         return MapCubeAnimator(self, **kwargs)
+
+    def all_maps_same_shape(self):
+        """
+        Tests if all the maps have the same number pixels in the x and y
+        directions.
+        """
+        return np.all([m.data.shape == self.maps[0].data.shape for m in self.maps])
+
+    def as_array(self):
+        """
+        If all the map shapes are the same, their image data is copied
+        into a single single ndarray. The ndarray is ordered as (ny, nx, nt).
+        Otherwise, a ValueError is thrown.
+        """
+        if self.all_maps_same_shape():
+            return np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1).copy(), 1, 2).copy()
+        else:
+            raise ValueError('Not all maps have the same shape.')
+
+    def all_meta(self):
+        """
+        Return all the meta objects as a list.
+        """
+        return [m.meta for m in self.maps]

@@ -15,7 +15,7 @@ __version__ = 'September 22nd, 2013'
 __all__ = ['HECClient']
 
 
-        
+
 
 def suds_unwrapper(wrapped_data):
     """
@@ -275,8 +275,8 @@ class HECClient(object):
         for index, table in enumerate(table_list):
             print ('{number:3d}) {table}'.format(number = index + 1, table = table))
         while True:
-            input = raw_input("\nPlease enter a table number between 1 and %i "
-                              "('e' to exit): " % len(table_list))
+            input = raw_input("\nPlease enter a table number between 1 and {elem:d} "
+                              "('e' to exit): ".format(elem=len(table_list)))
             if input.lower() == "e" or input.lower() == "exit":
                 temp = None
                 break
@@ -288,4 +288,3 @@ class HECClient(object):
             else:
                 print "Choice outside of bounds"
         return temp
-

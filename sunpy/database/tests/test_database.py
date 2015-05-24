@@ -7,7 +7,9 @@ from __future__ import absolute_import
 
 import glob
 import ConfigParser
+import os
 import os.path
+import shutil
 import sys
 
 import pytest
@@ -23,10 +25,13 @@ from sunpy.database.commands import EmptyCommandStackError, NoSuchEntryError
 from sunpy.database.caching import LRUCache, LFUCache
 from sunpy.database import attrs
 from sunpy.net import vso, hek
-from sunpy.data.sample import RHESSI_EVENT_LIST
 from sunpy.data.test.waveunit import waveunitdir
 from sunpy.io import fits
 
+import sunpy.data.test
+
+testpath = sunpy.data.test.rootdir
+RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
 
 @pytest.fixture
 def database_using_lrucache():
@@ -48,6 +53,12 @@ def query_result():
     return vso.VSOClient().query(
         vso.attrs.Time('20130801T200000', '20130801T200030'),
         vso.attrs.Instrument('PLASTIC'))
+
+@pytest.fixture
+def download_qr():
+    return vso.VSOClient().query(
+        vso.attrs.Time('2012-03-29', '2012-03-29'),
+        vso.attrs.Instrument('AIA'))
 
 
 @pytest.fixture
@@ -353,6 +364,8 @@ def test_add_many(database):
     database.add_many((DatabaseEntry() for _ in xrange(5)))
     assert len(database) == 5
     database.undo()
+    with pytest.raises(EmptyCommandStackError):
+        database.undo()
     assert len(database) == 0
     database.redo()
     assert len(database) == 5
@@ -397,7 +410,27 @@ def test_add_entry_from_hek_qr(database):
         hek.attrs.EventType('FL'))
     assert len(database) == 0
     database.add_from_hek_query_result(hek_res)
+    # The database apparently has 1902 entries now, not 2133
+    #assert len(database) == 1902
     assert len(database) == 2133
+
+
+@pytest.mark.online
+def test_download_from_qr(database, download_qr, tmpdir):
+    assert len(database) == 0
+    database.download_from_vso_query_result(
+        download_qr, path=str(tmpdir.join('{file}.fits')))
+    fits_pattern = str(tmpdir.join('*.fits'))
+    num_of_fits_headers = sum(
+        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+    assert len(database) == num_of_fits_headers > 0
+    for entry in database:
+        assert os.path.dirname(entry.path) == str(tmpdir)
+    database.undo()
+    assert len(database) == 0
+    database.redo()
+    assert len(database) == num_of_fits_headers > 0
+
 
 @pytest.mark.online
 def test_add_entry_from_qr(database, query_result):
@@ -454,8 +487,8 @@ def test_add_fom_path_ignore_duplicates(database):
 
 def test_add_from_file(database):
     assert len(database) == 0
-    database.add_from_file(RHESSI_EVENT_LIST)
-    assert len(database) == 11
+    database.add_from_file(RHESSI_IMAGE)
+    assert len(database) == 4
     # make sure that all entries have the same fileid
     fileid = database[0].fileid
     for entry in database:
@@ -463,17 +496,17 @@ def test_add_from_file(database):
 
 
 def test_add_from_file_duplicates(database):
-    database.add_from_file(RHESSI_EVENT_LIST)
+    database.add_from_file(RHESSI_IMAGE)
     with pytest.raises(EntryAlreadyAddedError):
-        database.add_from_file(RHESSI_EVENT_LIST)
+        database.add_from_file(RHESSI_IMAGE)
 
 
 def test_add_from_file_ignore_duplicates(database):
     assert len(database) == 0
-    database.add_from_file(RHESSI_EVENT_LIST)
-    assert len(database) == 11
-    database.add_from_file(RHESSI_EVENT_LIST, True)
-    assert len(database) == 22
+    database.add_from_file(RHESSI_IMAGE)
+    assert len(database) == 4
+    database.add_from_file(RHESSI_IMAGE, True)
+    assert len(database) == 8
 
 
 def test_edit_entry(database):
@@ -483,6 +516,22 @@ def test_edit_entry(database):
     assert entry.id == 1
     database.edit(entry, id=42)
     assert entry.id == 42
+
+
+def test_remove_many_entries(filled_database):
+    bar = Tag('bar')
+    bar.id = 2
+    # required to check if `remove_many` adds any entries to undo-history
+    filled_database.clear_histories()
+    filled_database.remove_many(filled_database[:8])
+    assert len(filled_database) == 2
+    assert list(filled_database) == [
+        DatabaseEntry(id=9),
+        DatabaseEntry(id=10, tags=[bar])]
+    filled_database.undo()
+    assert len(filled_database) == 10
+    with pytest.raises(EmptyCommandStackError):
+        filled_database.undo()
 
 
 def test_remove_existing_entry(database):
@@ -685,9 +734,6 @@ def test_download_empty_query_result(database, empty_query):
 
 
 @pytest.mark.online
-@pytest.mark.skipif(
-        sys.version_info[:2] == (2,6),
-        reason='for some unknown reason, this test fails on Python 2.6')
 def test_download(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
@@ -706,9 +752,6 @@ def test_download(database, download_query, tmpdir):
 
 
 @pytest.mark.online
-@pytest.mark.skipif(
-        sys.version_info[:2] == (2,6),
-        reason='for some unknown reason, this test fails on Python 2.6')
 def test_download_duplicates(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
@@ -732,9 +775,6 @@ def test_fetch_unexpected_kwarg(database):
 
 
 @pytest.mark.online
-@pytest.mark.skipif(
-        sys.version_info[:2] == (2,6),
-        reason='for some unknown reason, this test fails on Python 2.6')
 def test_fetch(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
@@ -747,9 +787,41 @@ def test_fetch(database, download_query, tmpdir):
 
 
 @pytest.mark.online
-@pytest.mark.skipif(
-        sys.version_info[:2] == (2,6),
-        reason='for some unknown reason, this test fails on Python 2.6')
+def test_fetch_separate_filenames():
+    # Setup
+    db = Database('sqlite:///')
+
+    download_query = [
+        vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
+        vso.attrs.Instrument('AIA')
+    ]
+
+    tmp_test_dir = os.path.join(
+        sunpy.config.get('downloads', 'download_dir'),
+        'tmp_test_dir/'
+    )
+
+    if not os.path.isdir(tmp_test_dir):
+        os.mkdir(tmp_test_dir)
+
+    path = tmp_test_dir + '{file}'
+
+    db.fetch(*download_query, path=path)
+
+    # Test
+    assert len(db) == 4
+
+    dir_contents = os.listdir(tmp_test_dir)
+    assert 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits' in dir_contents
+    assert 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits' in dir_contents
+    assert os.path.isfile(os.path.join(tmp_test_dir, 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits'))
+    assert os.path.isfile(os.path.join(tmp_test_dir, 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits'))
+
+    # Teardown
+    shutil.rmtree(tmp_test_dir)
+
+
+@pytest.mark.online
 def test_disable_undo(database, download_query, tmpdir):
     entry = DatabaseEntry()
     with disable_undo(database) as db:
