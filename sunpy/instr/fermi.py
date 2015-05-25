@@ -82,11 +82,11 @@ def download_weekly_pointing_file(date):
             urllib2.HTTPError
             exists = False
         #if the file exists then exit and retain this filepath
-        if exists == True:
+        if exists:
             break
 
     #if no matches at all were found, then the pointing file doesn't exist
-    if exists == False:
+    if not exists:
         raise ValueError('No Fermi pointing files found for given date!')
 
    
