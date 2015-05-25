@@ -54,7 +54,7 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
                                    "when calling resample.")
 
     #@note: will this be okay for integer (e.g. JPEG 2000) data?
-    if not orig.dtype in [np.float64, np.float32]:
+    if orig.dtype not in [np.float64, np.float32]:
         orig = orig.astype(np.float64)
 
     dimensions = np.asarray(dimensions, dtype=np.float64)
