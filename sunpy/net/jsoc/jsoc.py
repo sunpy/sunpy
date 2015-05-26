@@ -11,6 +11,7 @@ import numpy as np
 import astropy.units as u
 import astropy.time
 import astropy.table
+from astropy.utils.misc import isiterable
 
 from sunpy import config
 from sunpy.time import parse_time, TimeRange
@@ -224,24 +225,28 @@ class JSOCClient(object):
             raise TypeError(warn_message.format(kwargs.keys()))
 
         # Do a multi-request for each query block
-        responses = self._multi_request(**jsoc_response.query_args)
-        for i, response in enumerate(responses):
-            if response.status_code != 200:
-                warn_message = "Query {0} retuned code {1}"
-                warnings.warn(
-                    Warning(warn_message.format(i, response.status_code)))
-                responses.pop(i)
-            elif response.json()['status'] != 2:
-                warn_message = "Query {0} retuned status {1} with error {2}"
-                json_response = response.json()
-                json_status = json_response['status']
-                json_error = json_response['error']
-                warnings.warn(Warning(warn_message.format(i, json_status,
-                                                          json_error)))
-                responses.pop(i)
+        responses = []
+        requestIDs = []
+        for block in jsoc_response.query_args:
+            # Do a multi-request for each query block
+            responses.append(self._multi_request(**block))
+            for i, response in enumerate(responses[-1]):
+                if response.status_code != 200:
+                    warn_message = "Query {0} retuned code {1}"
+                    warnings.warn(
+                        Warning(warn_message.format(i, response.status_code)))
+                    responses.pop(i)
+                elif response.json()['status'] != 2:
+                    warn_message = "Query {0} retuned status {1} with error {2}"
+                    json_response = response.json()
+                    json_status = json_response['status']
+                    json_error = json_response['error']
+                    warnings.warn(Warning(warn_message.format(i, json_status,
+                                                            json_error)))
+                    responses[-1].pop(i)
 
-        # Extract the IDs from the JSON
-        requestIDs += [response.json()['requestid'] for response in responses]
+            # Extract the IDs from the JSON
+            requestIDs += [response.json()['requestid'] for response in responses[-1]]
 
         if return_responses:
             return responses
