@@ -4,7 +4,11 @@
 __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"
 
+import matplotlib.pyplot as plt
+
 from sunpy.map import GenericMap
+
+import astropy.units as u
 
 __all__ = ['RHESSIMap']
 
@@ -35,9 +39,13 @@ class RHESSIMap(GenericMap):
             self.meta['cunit2'] = 'arcsec'
             self.meta['ctype2'] = 'HPLT-TAN'
 
+        self.meta['waveunit'] = 'keV'
+        self.meta['wavelnth'] = [self.meta['energy_l'], self.meta['energy_h']]
+        self.cmap = plt.get_cmap('jet')
+
     @property
     def measurement(self):
-        return [self.meta['energy_l'], self.meta['energy_h']]
+        return u.Quantity([self.meta['energy_l'], self.meta['energy_h']], self.meta['waveunit'])
 
     @property
     def detector(self):

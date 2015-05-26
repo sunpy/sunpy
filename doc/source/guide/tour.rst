@@ -157,6 +157,130 @@ available. ::
 These constants are provided as a convenience so that everyone is using the same 
 (accepted values). More will be added over time.
 
+Quantities and Units
+--------------------
+
+Many capabilities in SunPy make use of physical quantities that are specified
+in units. SunPy uses `astropy's units and quantities code <http://docs.astropy.org/en/stable/units/index.html>`__ to
+implement this functionality. For example, the solar radius above is a physical quantity
+that can be expressed in length units.  In the example above ::
+
+    >>> from sunpy.sun import constants as con
+    >>> con.radius
+    <Constant name=u'Solar radius' value=695508000.0 error=26000.0 units='m' reference=u"Allen's Astrophysical Quantities 4th Ed.">
+
+shows the solar radius in units of meters.  It is simple to express the same physical quantity in different units::
+
+    >>> con.radius.to('km')
+    <Quantity 695508.0 km>
+
+To get the numerical value of the solar radius in kilometers - without the unit information - use ::
+
+    >>> con.radius.to('km').value
+    695508.0
+
+Quantities and units are simple and powerful tools for keeping track of the units you're working in, and make it
+easy to convert the same physical quantity into different units.  To learn more about the capabilities of quantities
+and units, please consult `the astropy tutorial <http://www.astropy.org/astropy-tutorials/Quantities.html>`__.
+SunPy's approach to the adoption of quantities and units in the codebase is described
+`here <https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__.
+
+Here's a simple example of the power of units.  Suppose you have the radius of a circle and would like to calculate
+its area.  The following code implements this ::
+
+    >>> import numpy as np
+    >>> import astropy.units as u
+    >>> @u.quantity_input(radius=u.m)
+    >>> def circle_area(radius):
+            return np.pi * radius ** 2
+
+The first line imports numpy, and the second line imports astropy's units module.  The beginning of the third line (the
+"@" symbol) indicates that what follows is a Python decorator.  In this case, the decorator allows us to specify what
+kind of unit the function input variable "radius" in the following function "circle_area" should have.  In this case,
+it is meters.  The decorator checks that the input is convertible to the units specified in the decorator.  Calculating
+the area of a circle with radius 4 meters using the function defined above is simple ::
+
+    >>> circle_area(4 * u.m)
+    <Quantity 50.26548245743669 m2>
+
+The units of the returned area are what we expect, namely the meters squared (m2).  However, we can also use other
+units of measurement; for a circle with radius 4 kilometers ::
+
+    >>> circle_area(4 * u.km)
+    <Quantity 50.26548245743669 km2>
+
+Even although the input value of the radius was not in meters, the function does not crash; this is because the
+input unit is convertible to meters.  This also works across different systems of measurement, for example ::
+
+    >>> circle_area(4 * u.imperial.foot)
+    <Quantity 50.26548245743669 ft2>
+
+However, if the input unit is not convertible to meters, then an error is thrown ::
+
+    >>> circle_area(4 * u.second)
+    ---------------------------------------------------------------------------
+    UnitsError                                Traceback (most recent call last)
+    <ipython-input-15-5d2b19807321> in <module>()
+    ----> 1 circle_area(4 * u.second)
+
+    /Users/ireland/anaconda/lib/python2.7/site-packages/astropy/utils/decorators.py in circle_area(radius)
+        515     def wrapper(func):
+        516         func = make_function_with_signature(func, name=wrapped.__name__,
+    --> 517                                             **_get_function_args(wrapped))
+        518         func = functools.update_wrapper(func, wrapped, assigned=assigned,
+        519                                         updated=updated)
+
+    /Users/ireland/anaconda/lib/python2.7/site-packages/astropy/units/decorators.pyc in wrapper(*func_args, **func_kwargs)
+        112                                              " '{2}'.".format(param.name,
+        113                                                      wrapped_function.__name__,
+    --> 114                                                      target_unit.to_string()))
+        115
+        116                     # Either there is no .unit or no .is_equivalent
+
+    UnitsError: Argument 'radius' to function 'circle_area' must be in units convertable to 'm'.
+
+Also, if no unit is specified, an error is thrown ::
+
+    >>> circle_area(4)
+    ---------------------------------------------------------------------------
+    TypeError                                 Traceback (most recent call last)
+    <ipython-input-17-4c9fa37f7920> in <module>()
+    ----> 1 circle_area(4)
+
+    /Users/ireland/anaconda/lib/python2.7/site-packages/astropy/utils/decorators.py in circle_area(radius)
+        515     def wrapper(func):
+        516         func = make_function_with_signature(func, name=wrapped.__name__,
+    --> 517                                             **_get_function_args(wrapped))
+        518         func = functools.update_wrapper(func, wrapped, assigned=assigned,
+        519                                         updated=updated)
+
+    /Users/ireland/anaconda/lib/python2.7/site-packages/astropy/units/decorators.pyc in wrapper(*func_args, **func_kwargs)
+        122                         raise TypeError("Argument '{0}' to function has '{1}' {2}. "
+        123                               "You may want to pass in an astropy Quantity instead."
+    --> 124                                  .format(param.name, wrapped_function.__name__, error_msg))
+        125
+        126             # Call the original function with any equivalencies in force.
+
+    TypeError: Argument 'radius' to function has 'circle_area' no 'unit' attribute. You may want to pass in an astropy Quantity instead.
+
+Using units allows the user to be explicit about what the function
+expects.  Units also make conversions very easy to do.  For example,
+if you want the area of a circle in square feet, but were given
+measurements in meters, then ::
+
+    >>> circle_area((4 * u.m).to(u.imperial.foot))
+    <Quantity 541.0531502245425 ft2>
+
+or ::
+
+    >>> circle_area(4 * u.m).to(u.imperial.foot ** 2)
+    <Quantity 541.0531502245425 ft2>
+
+Astropy units and quantities are very powerful, and are used throughout SunPy.  To find out more about units and
+quantities, please consult the `the astropy tutorial <http://www.astropy.org/astropy-tutorials/Quantities.html>`__ and
+`documentation <http://docs.astropy.org/en/stable/units/index.html>`__
+
+
 Working with Times
 ------------------
 

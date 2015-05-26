@@ -9,6 +9,7 @@ import itertools
 import operator
 from datetime import datetime
 from contextlib import contextmanager
+import os.path
 
 from sqlalchemy import create_engine, exists
 from sqlalchemy.orm import sessionmaker
@@ -22,6 +23,11 @@ from sunpy.net.hek2vso import H2VClient
 from sunpy.net.attr import and_
 from sunpy.net.vso import VSOClient
 
+__authors__ = ['Simon Liedtke', 'Rajul Srivastava']
+__emails__ = [
+    'liedtke.simon@googlemail.com',
+    'rajul09@gmail.com'
+]
 
 class EntryNotFoundError(Exception):
     """This exception is raised if a database entry cannot be found by its
@@ -301,27 +307,33 @@ class Database(object):
             path=None, progress=False):
         if client is None:
             client = VSOClient()
-        for block in query_result:
-            paths = client.get([block], path).wait(progress=progress)
-            for path in paths:
-                qr_entry = tables.DatabaseEntry._from_query_result_block(block)
-                file_entries = list(
-                    tables.entries_from_file(path, self.default_waveunit))
-                for entry in file_entries:
-                    entry.source = qr_entry.source
-                    entry.provider = qr_entry.provider
-                    entry.physobs = qr_entry.physobs
-                    entry.fileid = qr_entry.fileid
-                    entry.observation_time_start =\
-                        qr_entry.observation_time_start
-                    entry.observation_time_end = qr_entry.observation_time_end
-                    entry.instrument = qr_entry.instrument
-                    entry.size = qr_entry.size
-                    entry.wavemin = qr_entry.wavemin
-                    entry.wavemax = qr_entry.wavemax
-                    entry.path = path
-                    entry.download_time = datetime.utcnow()
-                    yield entry
+
+        paths = client.get(query_result, path).wait(progress=progress)
+
+        for (path, block) in zip(paths, query_result):
+            qr_entry = tables.DatabaseEntry._from_query_result_block(block)
+
+            if os.path.isfile(path):
+                entries = tables.entries_from_file(path, self.default_waveunit)
+            elif os.path.isdir(path):
+                entries = tables.entries_from_dir(path, self.default_waveunit)
+            else:
+                raise ValueError('The path is neither a file nor directory')
+
+            for entry in entries:
+                entry.source = qr_entry.source
+                entry.provider = qr_entry.provider
+                entry.physobs = qr_entry.physobs
+                entry.fileid = qr_entry.fileid
+                entry.observation_time_start = qr_entry.observation_time_start
+                entry.observation_time_end = qr_entry.observation_time_end
+                entry.instrument = qr_entry.instrument
+                entry.size = qr_entry.size
+                entry.wavemin = qr_entry.wavemin
+                entry.wavemax = qr_entry.wavemax
+                entry.path = path
+                entry.download_time = datetime.utcnow()
+                yield entry
 
     def download(self, *query, **kwargs):
         """download(*query, client=sunpy.net.vso.VSOClient(), path=None, progress=False)

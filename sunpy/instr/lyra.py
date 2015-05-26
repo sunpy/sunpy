@@ -224,13 +224,13 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
     if not artifacts:
         raise ValueError("User has supplied no artifacts to remove.")
     if type(artifacts) is str:
-      artifacts = [artifacts]
+        artifacts = [artifacts]
     if not all(isinstance(artifact_type, str) for artifact_type in artifacts):
         raise TypeError("All elements in artifacts must in strings.")
     all_lytaf_event_types = get_lytaf_event_types(lytaf_path=lytaf_path,
                                                   print_event_types=False)
     for artifact in artifacts:
-        if not artifact in all_lytaf_event_types:
+        if artifact not in all_lytaf_event_types:
             print all_lytaf_event_types
             raise ValueError("{0} is not a valid artifact type. See above.".format(artifact))
     # Define outputs
