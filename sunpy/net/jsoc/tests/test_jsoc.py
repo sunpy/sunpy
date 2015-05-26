@@ -234,7 +234,7 @@ def test_results_filenames():
     files = aa.wait()
     assert len(files) == len(responses)
     for hmiurl in aa.map_:
-        assert os.path.basename(hmiurl) == os.path.basename(aa.map_[hmiurl]['path'])
+        assert os.path.isfile(hmiurl)
 
 @pytest.mark.online
 def test_invalid_query():
