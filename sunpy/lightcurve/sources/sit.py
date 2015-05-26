@@ -14,9 +14,9 @@ from sunpy.lightcurve import LightCurve
 from dateutil.relativedelta import relativedelta
 from sunpy.time import parse_time, TimeRange, is_time_in_given_format
 from sunpy.util import net
-# from numpy import nan
-# from numpy import floor
-# from pandas import DataFrame
+import urllib2 
+from shlex import split
+from pandas import DataFrame, concat
 
 
 __all__ = ['SITLightCurve']
@@ -279,43 +279,49 @@ class SITLightCurve(LightCurve):
 
 
 
-
-
-    # @staticmethod
-    # def _parse_fits(filepath):
-    #     """Parses a GOES FITS file from
-    #     http://umbra.nascom.nasa.gov/goes/fits/"""
-    #     fits = pyfits.open(filepath)
-    #     header = fits[0].header
-    #     if len(fits) == 4:
-    #         if is_time_in_given_format(fits[0].header['DATE-OBS'], '%d/%m/%Y'):
-    #             start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%Y')
-    #         elif is_time_in_given_format(fits[0].header['DATE-OBS'], '%d/%m/%y'):
-    #             start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%y')
-    #         else:
-    #             raise ValueError("Date not recognized")
-    #         xrsb = fits[2].data['FLUX'][0][:, 0]
-    #         xrsa = fits[2].data['FLUX'][0][:, 1]
-    #         seconds_from_start = fits[2].data['TIME'][0]
-    #     elif 1 <= len(fits) <= 3:
-    #         start_time = parse_time(header['TIMEZERO'])
-    #         seconds_from_start = fits[0].data[0]
-    #         xrsb = fits[0].data[1]
-    #         xrsa = fits[0].data[2]
-    #     else:
-    #         raise ValueError("Don't know how to parse this file")
-
-    #     times = [start_time + datetime.timedelta(seconds=int(floor(s)),
-    #                                              microseconds=int((s - floor(s)) * 1e6)) for s in seconds_from_start]
-
-    #     # remove bad values as defined in header comments
-    #     xrsb[xrsb == -99999] = nan
-    #     xrsa[xrsa == -99999] = nan
-
-    #     # fix byte ordering
-    #     newxrsa = xrsa.byteswap().newbyteorder()
-    #     newxrsb = xrsb.byteswap().newbyteorder()
-
-    #     data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb}, index=times)
-    #     data.sort(inplace=True)
-    #     return header, data
+    @staticmethod
+    def _parse_txt(filepath):
+        """
+        Parses a STEREO SIT file from
+        http://www.srl.caltech.edu/STEREO/Public/SIT_public.html
+    
+        """
+        data = []
+        data_all = []               
+        header = []
+        
+        for i in filepaths:
+            data_object = urllib2.urlopen(i)
+            data_one = []
+            for line in data_object:
+                data_one = data_one + [line.rstrip()]
+            data_all = data_all + [data_one]
+         
+    
+        header = (data_all[0])[9:25]
+        for key1 in range(17,27):
+            header = header + ["Column "+ str(key1) + ': ' +'4He total counts for same energy ranges as above']
+            
+        
+        for key2 in range(len(data_all)):
+            #data_all : List of lists with each element list containing all the data lines of a file
+            data_all[key2] = (data_all[key2])[27:]
+    
+            for key3 in range(len(data_all[key2])):
+                (data_all[key2])[key3] = split((data_all[key2])[key3])
+    
+                for key4 in range(26):
+                    if key4 in ([1] + range(6,16)):
+                        ((data_all[key2])[key3])[key4] = (float)(((data_all[key2])[key3])[key4])
+                    else:
+                        ((data_all[key2])[key3])[key4] = (int)(((data_all[key2])[key3])[key4])
+    
+                #data_all : List of each file represented as a element containing lists for 
+                #           each line with each line represented as comma separated data values
+    
+    
+            data = data + [DataFrame(data_all[key2], columns = header)]
+                
+        data = concat(data)
+    
+        return header, data
