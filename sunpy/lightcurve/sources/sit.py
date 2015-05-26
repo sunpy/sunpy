@@ -27,12 +27,12 @@ class SITLightCurve(LightCurve):
     SIT LightCurve. Provides SIT data back to 2007-07.
     Most recent data is usually available one or two days late.
 
-    args : type_of_average, instrument_orientation, atomic_specie
+    args : type_of_average, stereo_spacecraft, atomic_specie
 
     POSSIBLE KEYWORD VALUES: (value has to be one of these only for each keyword)
     (Also the values need to be passed in this order only for the positional arguments)
 
-    instrument_orientation : ahead, behind
+    stereo_spacecraft : ahead, behind
     type_of_average        : 1min, 10min, 1hr, 1day
     atomic_specie          : 4He, Fe, H, O
 
@@ -89,7 +89,7 @@ class SITLightCurve(LightCurve):
     @classmethod
     def _get_default_url(cls):
         """
-           Retrieve latest SIT data for 1 minute average of 4He specie from ahead orientation 
+           Retrieve latest SIT data for 1 minute average of 4He specie from ahead spacecraft 
            ( if no other data is specified )
 
         """
@@ -115,8 +115,8 @@ class SITLightCurve(LightCurve):
             Date range should be specified using a TimeRange, or start
             and end dates at datetime instances or date strings.
 
-        instrument_orientation : string
-            SIT instrument orientation (default = "ahead")
+        stereo_spacecraft : string
+            SIT stereo spacecraft (default = "ahead")
         atomic_specie : string 
             atomic specie to consider ( default = "4He")
         type_of_average : string
@@ -127,7 +127,7 @@ class SITLightCurve(LightCurve):
         if len(args) == 4 and isinstance(args[0], TimeRange):
             start = args[0].start
             end = args[0].end
-            instrument_orientation = args[1]
+            stereo_spacecraft = args[1]
             type_of_average = args[2]
             atomic_specie = args[3]
 
@@ -135,7 +135,7 @@ class SITLightCurve(LightCurve):
             #If start and end dates for observation period is given
             start = parse_time(args[0])
             end = parse_time(args[1])
-            instrument_orientation = args[2]
+            stereo_spacecraft = args[2]
             type_of_average = args[3]
             atomic_specie = args[4]
 
@@ -143,18 +143,14 @@ class SITLightCurve(LightCurve):
             raise ValueError('start time > end time')
 
 
-        # find out base url of data to query from the instrument orientation, average type and atomic specie quried for
-        base_url = 'http://www.srl.caltech.edu/STEREO/DATA/SIT/' + instrument_orientation + '/' + type_of_average + '/' 
+        # find out base url of data to query from the stereo spacecraft, average type and atomic specie quried for
+        base_url = 'http://www.srl.caltech.edu/STEREO/DATA/SIT/' + stereo_spacecraft + '/' + type_of_average + '/' 
 
         if type_of_average == '1min' or type_of_average == '10min':
             base_url = base_url + atomic_specie + '/'
         
         #adding the file name to base url
-        if instrument_orientation == "ahead":
-            base_url = base_url + 'SIT_Ahead_' + type_of_average + '_' + atomic_specie + '_'
-        elif instrument_orientation == "behind":
-            base_url = base_url + 'SIT_Behind_' + type_of_average + '_' + atomic_specie + '_'
-
+        base_url = base_url + 'SIT_' + stereo_spacecraft.capitalize() + '_' + type_of_average + '_' + atomic_specie + '_'
 
         #Date Generator to generate dates in between the start and end dates. Inclusive of both end and start dates.         
         def daterange(start_date, end_date, delta = 'day'):
