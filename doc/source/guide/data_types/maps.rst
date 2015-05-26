@@ -133,9 +133,9 @@ more complicated figure.
    If the `wcsaxes <http://wcsaxes.readthedocs.org/en/latest/>`_ package is not 
    installed the `~sunpy.map.GenericMap.plot()` and `~sunpy.map.GenericMap.peek()`
    methods assume that the data is not rotated,
-   i.e. the solar y axis is aligned to the columns of the array. If this condition
+   i.e. the solar y axis is oriented with the columns of the array. If this condition
    is not met, when the map is plotted a warning will be issued. You can create
-   an aliged map by using `~sunpy.map.GenericMap.rotate()` before you plot the Map.
+   an oriented map by using `~sunpy.map.GenericMap.rotate()` before you plot the Map.
 
 6. Overlaying Maps
 ------------------
