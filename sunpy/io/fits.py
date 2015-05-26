@@ -177,8 +177,9 @@ def write(fname, data, header, **kwargs):
                     fits_header.add_history(hist)
             elif k != '':
                 fits_header.append(fits.Card(k, str(v).split('\n')))
+
         else:
-            fits_header.append(fits.Card(k,v))
+            fits_header.append(fits.Card(k, v))
 
 
     if isinstance(key_comments, dict):

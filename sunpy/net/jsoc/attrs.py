@@ -79,13 +79,13 @@ def _apply(wlk, query, imap):
 
 
 @walker.add_applier(_VSOSimpleAttr)
-def _apply(wlk, query, imap):
+def _apply1(wlk, query, imap):
 
     imap[query.__class__.__name__.lower()] = query.value
 
 
 @walker.add_applier(Time)
-def _apply(wlk, query, imap):
+def _apply2(wlk, query, imap):
 
     imap['start_time'] = query.start
     imap['end_time'] = query.end
@@ -99,7 +99,7 @@ def _apply(wlk, query, imap):
 
 
 @walker.add_creator(AttrOr)
-def _create(wlk, query):
+def _create1(wlk, query):
 
     qblocks = []
     for iattr in query.attrs:

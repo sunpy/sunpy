@@ -3,7 +3,7 @@ from __future__ import absolute_import
 import numpy as np
 import sunpy.sun as sun
 
-import astropy.units
+import astropy.units as u
 
 rsun_meters = sun.constants.radius.si.value
 
@@ -99,7 +99,7 @@ def get_center(size, scale, reference_pixel, reference_coordinate):
     --------
 
     """
-    return scale * (size - 1) / 2. + reference_coordinate - (reference_pixel - 1) * scale
+    return scale * (size - 1 * u.pix) / 2. + reference_coordinate - (reference_pixel - 1 * u.pix) * scale
 
 def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
     """Calculate the pixel indices for a given data coordinate.
@@ -169,7 +169,6 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     (28876152.176423457, 23100922.071266972, 694524220.8157959)
 
     """
-
     c = np.array([_convert_angle_units(unit=angle_units),
                   _convert_angle_units(unit=angle_units)])
 
@@ -180,7 +179,7 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
 
     if dsun_meters is None:
         dsun_meters = sun.constants.au.si.value
-    elif isinstance(dsun_meters, astropy.units.Quantity):
+    elif isinstance(dsun_meters, u.Quantity):
         dsun_meters = dsun_meters.si.value
 
     q = dsun_meters * cosy * cosx
@@ -191,6 +190,7 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     rx = distance * cosy * sinx
     ry = distance * siny
     rz = dsun_meters - distance * cosy * cosx
+
 
     if np.all(z == True):
         return rx, ry, rz
@@ -231,7 +231,7 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
 
     if dsun_meters is None:
         dsun_meters = sun.constants.au.si.value
-    elif isinstance(dsun_meters, astropy.units.Quantity):
+    elif isinstance(dsun_meters, u.Quantity):
         dsun_meters = dsun_meters.si.value
 
     zeta = dsun_meters - z
@@ -440,10 +440,9 @@ def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcs
 
     Examples
     --------
-    >>> sunpy.wcs.convert_hg_hpc(382, 748, b0_deg=-7.064078, l0_deg=0.0)
+    >>> sunpy.wcs.convert_hpc_hg(382, 748, b0_deg=-7.064078, l0_deg=0.0)
     (34.504653439914669, 45.443143275518182)
     """
-
     tempx, tempy = convert_hpc_hcc(x, y, dsun_meters=dsun_meters, angle_units=angle_units)
     lon, lat = convert_hcc_hg(tempx, tempy, b0_deg=b0_deg, l0_deg=l0_deg)
     return lon, lat
