@@ -281,47 +281,43 @@ class SITLightCurve(LightCurve):
 
     @staticmethod
     def _parse_txt(filepath):
-        """
-        Parses a STEREO SIT file from
-        http://www.srl.caltech.edu/STEREO/Public/SIT_public.html
+    """
+    Parses a STEREO SIT file from
+    http://www.srl.caltech.edu/STEREO/Public/SIT_public.html
+
+    """
+
+    data = []              
+    header = []
     
-        """
-        data = []
-        data_all = []               
-        header = []
+    data_object = urllib2.urlopen(filepath)
+    for line in data_object:
+        print "==wait=="
+        data = data + [line.rstrip()]
+    
+ 
+
+    header = data[9:25]
+    for key1 in range(17,27):
+        header = header + ["Column "+ str(key1) + ': ' +'4He total counts for same energy ranges as above']
         
-        for i in filepaths:
-            data_object = urllib2.urlopen(i)
-            data_one = []
-            for line in data_object:
-                data_one = data_one + [line.rstrip()]
-            data_all = data_all + [data_one]
-         
     
-        header = (data_all[0])[9:25]
-        for key1 in range(17,27):
-            header = header + ["Column "+ str(key1) + ': ' +'4He total counts for same energy ranges as above']
-            
-        
-        for key2 in range(len(data_all)):
-            #data_all : List of lists with each element list containing all the data lines of a file
-            data_all[key2] = (data_all[key2])[27:]
-    
-            for key3 in range(len(data_all[key2])):
-                (data_all[key2])[key3] = split((data_all[key2])[key3])
-    
-                for key4 in range(26):
-                    if key4 in ([1] + range(6,16)):
-                        ((data_all[key2])[key3])[key4] = (float)(((data_all[key2])[key3])[key4])
-                    else:
-                        ((data_all[key2])[key3])[key4] = (int)(((data_all[key2])[key3])[key4])
-    
-                #data_all : List of each file represented as a element containing lists for 
-                #           each line with each line represented as comma separated data values
-    
-    
-            data = data + [DataFrame(data_all[key2], columns = header)]
-                
-        data = concat(data)
-    
-        return header, data
+
+    #data : List of lists with each element list containing a line of a file
+    data = data[27:]
+
+    for key2 in range(len(data)):
+        data[key2] = split(data[key2])
+        for key3 in range(26):
+            if key3 in ([1] + range(6,16)):
+                (data[key2])[key3] = (float)((data[key2])[key3])
+            else:
+                (data[key2])[key3] = (int)((data[key2])[key3])
+
+        #data : List with each element containing lists for 
+        #       each line with each line represented as comma separated data values
+
+
+    data = DataFrame(data, columns = header)
+
+    return header, data
