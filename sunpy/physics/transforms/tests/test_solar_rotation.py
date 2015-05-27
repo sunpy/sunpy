@@ -77,8 +77,8 @@ def test_mapcube_solar_derotate(aia171_test_mapcube, aia171_test_submap):
     # Test that the returned centers are correctly displaced.
     tshift = calculate_solar_rotate_shift(aia171_test_mapcube)
     for im, m in enumerate(tmc):
-        for s in ['x', 'y']:
-            assert_allclose(m.center[s], aia171_test_submap.center[s] -
+        for i_s, s in enumerate(['x', 'y']):
+            assert_allclose(m.center[i_s], aia171_test_submap.center[i_s] -
                             tshift[s][im], rtol=5e-2, atol=0)
 
     # Test that a mapcube is returned on default clipping (clipping is True)

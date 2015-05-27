@@ -149,16 +149,16 @@ class MapCube(object):
             axes.set_title("{s.name} {s.date!s}".format(s=self[i]))
 
             # x-axis label
-            if self[0].coordinate_system['x'] == 'HG':
-                xlabel = 'Longitude [{lon}'.format(lon=self[i].units['x'])
+            if self[0].coordinate_system.x == 'HG':
+                xlabel = 'Longitude [{lon}'.format(lon=self[i].units.x)
             else:
-                xlabel = 'X-position [{xpos}]'.format(xpos=self[i].units['x'])
+                xlabel = 'X-position [{xpos}]'.format(xpos=self[i].units.x)
 
             # y-axis label
-            if self[0].coordinate_system['y'] == 'HG':
-                ylabel = 'Latitude [{lat}]'.format(lat=self[i].units['y'])
+            if self[0].coordinate_system.y == 'HG':
+                ylabel = 'Latitude [{lat}]'.format(lat=self[i].units.y)
             else:
-                ylabel = 'Y-position [{ypos}]'.format(ypos=self[i].units['y'])
+                ylabel = 'Y-position [{ypos}]'.format(ypos=self[i].units.y)
 
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
