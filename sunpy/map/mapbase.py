@@ -93,6 +93,12 @@ class GenericMap(NDData):
     Notes
     -----
 
+    A number of the properties of this class are returned as two-value named
+    tuples that can either be indexed by position ([0] or [1]) or be accessed by
+    name (.x or .y).  The names "x" and "y" here refer to the first and second
+    axes of the map, and may not necessarily correspond to any similarly named
+    axes in the coordinate system.
+
     This class makes some assumptions about the WCS information contained in
     the meta data. The first and most extensive assumption is that it is
     FITS-like WCS information as defined in the FITS WCS papers.
