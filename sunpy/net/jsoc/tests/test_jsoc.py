@@ -41,12 +41,13 @@ def test_payload():
     start = parse_time('2012/1/1T00:00:00')
     end = parse_time('2012/1/1T00:00:45')
 
-    payload = client._make_query_payload(start, end, 'hmi.M_42s', notify='@')
+    payload = client._make_query_payload(start, end, 'hmi.M_42s', notify='@',period=90)
 
     payload_expected = {
-       'ds': '{0}[{1}-{2}]'.format('hmi.M_42s',
+       'ds': '{0}[{1}-{2}{3}]'.format('hmi.M_42s',
                                    start.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                                   end.strftime("%Y.%m.%d_%H:%M:%S_TAI")),
+                                   end.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                                   '@90s'),
        'format': 'json',
        'method': 'url',
        'notify': '@',

@@ -466,23 +466,31 @@ class JSOCClient(object):
                         segment='', **kwargs):
         # Build the dataset string
         # Extract and format Wavelength
+        
         if wavelength:
             if not series.startswith('aia'):
                 raise TypeError("This series does not support the wavelength attribute.")
             else:
-               if isinstance(wavelength, list):
-                   wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
-                   wavelength = str(wavelength)
-               else:
-                   wavelength = '[{0}]'.format(int(np.ceil(wavelength.to(u.AA).value)))
+                if isinstance(wavelength, list):
+                    wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
+                    wavelength = str(wavelength)
+                else:
+                    wavelength = '[{0}]'.format(int(np.ceil(wavelength.to(u.AA).value)))
 
         # Extract and format segment
         if segment != '':
             segment = '{{{segment}}}'.format(segment=segment)
-
-        dataset = '{series}[{start}-{end}]{wavelength}{segment}'.format(
+        
+        period = ''
+        try :
+            period = '@%ds'%(int(kwargs.pop('period'))) # seconds
+        except KeyError: 
+            pass
+        
+        dataset = '{series}[{start}-{end}{period}]{wavelength}{segment}'.format(
                    series=series, start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                    end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                   period=period,
                    wavelength=wavelength, segment=segment)
 
         return dataset
@@ -506,6 +514,7 @@ class JSOCClient(object):
 
         dataset = self._make_recordset(start_time, end_time, series, **kwargs)
         kwargs.pop('wavelength', None)
+        kwargs.pop('period',None)
 
         # Build full POST payload
         payload = {'ds': dataset,
