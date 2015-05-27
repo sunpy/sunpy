@@ -33,15 +33,26 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
     colorbar: bool
         Plot colorbar
 
+    plot_function: function
+        A function to call when each frame is plotted, the function must have
+        the signature `(fig, axes, map)` where fig and axes are the figure and
+        axes objects of the plot and map is the current frames Map object.
+        Any objects returned from this function will have their `remove()` method
+        called at the start of the next frame to clear them from the plot.
+
     Notes
     -----
     Extra keywords are passed to `mapcube[0].plot()` i.e. the `plot()` routine of
-    the first map in the cube.
+    the maps in the cube.
     """
     def __init__(self, mapcube, annotate=True, **kwargs):
 
         self.mapcube = mapcube
         self.annotate = annotate
+        self.user_plot_function = kwargs.pop('plot_function',
+                                             lambda fig, ax, map: None)
+        # List of object to remove at the start of each plot step
+        self.remove_obj = []
         slider_functions = [self.updatefig]
         slider_ranges = [[0,len(mapcube.maps)]]
 
@@ -52,6 +63,11 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
             self._annotate_plot(0)
 
     def updatefig(self, val, im, slider):
+        # Remove all the objects that need to be removed from the
+        # plot
+        while self.remove_obj:
+            self.remove_obj.pop(0).remove()
+
         i = int(val)
         im.set_array(self.data[i].data)
         im.set_cmap(self.mapcube[i].cmap)
@@ -62,6 +78,8 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         # im.set_extent(self.mapcube[i].xrange + self.mapcube[i].yrange)
         if self.annotate:
             self._annotate_plot(i)
+
+        self.remove_obj += list(self.user_plot_function(self.fig, self.axes, self.mapcube[i]))
 
     def _annotate_plot(self, ind):
         """
@@ -90,4 +108,5 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
     def plot_start_image(self, ax):
         im = self.mapcube[0].plot(annotate=self.annotate, axes=ax,
                                        **self.imshow_kwargs)
+        self.remove_obj += list(self.user_plot_function(self.fig, self.axes, self.mapcube[0]))
         return im
