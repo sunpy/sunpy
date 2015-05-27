@@ -1122,8 +1122,9 @@ scale:\t\t [{dx}, {dy}]
 
             Returns
             -------
-            circ: `matplotlib.patches.Circle`
-                The circle object that has been added to the axes.
+            circ: list
+                A list containing the `matplotlib.patches.Circle` object that
+                has been added to the axes.
 
             Notes
             -----
@@ -1151,7 +1152,7 @@ scale:\t\t [{dx}, {dy}]
         circ = patches.Circle([0, 0], **c_kw)
         axes.add_artist(circ)
 
-        return circ
+        return [circ]
 
     @toggle_pylab
     def peek(self, draw_limb=False, draw_grid=False, gamma=None,
