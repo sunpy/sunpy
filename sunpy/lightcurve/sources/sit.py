@@ -16,7 +16,7 @@ from sunpy.time import parse_time, TimeRange, is_time_in_given_format
 from sunpy.util import net
 import urllib2 
 from shlex import split
-from pandas import DataFrame, concat
+from pandas import DataFrame
 
 
 __all__ = ['SITLightCurve']
