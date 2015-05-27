@@ -32,6 +32,7 @@ Latest
  * map.shape has been replaced with map.dimensions, which is ordered
    x first.
  * map.rsun_arcseconds is now map.rsun_obs as it returns a quantity.
+ * Map properties are now named tuples rather than dictionaries.
 
 0.5.0
 -----

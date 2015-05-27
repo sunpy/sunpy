@@ -29,12 +29,6 @@ def l0():
 # the following known_answers come from equivalent queries to IDL
 # WCS implementation (http://hesperia.gsfc.nasa.gov/ssw/gen/idl/wcs/)
 
-#def test_convert_pixel_to_data():
-#    actual =
-#    reference_pixel = [img.reference_pixel['x'], img.reference_pixel['y']]
-#    reference_coordinate = [img.reference_coordinate['x'], img.reference_coordinate['y']]
-#    scale = [img.scale['x'], img.scale['y']]
-#    actual = wcs.convert_pixel_to_data(scale,img.shape, reference_pixel, reference_coordinate, 0, 0)
 
 def test_convert_angle_units():
     actual = np.array([wcs._convert_angle_units(), wcs._convert_angle_units('arcsec'),
