@@ -14,7 +14,6 @@ from sunpy.lightcurve import LightCurve
 from dateutil.relativedelta import relativedelta
 from sunpy.time import parse_time, TimeRange, is_time_in_given_format
 from sunpy.util import net
-import urllib2 
 from shlex import split
 from pandas import DataFrame
 
@@ -290,9 +289,9 @@ class SITLightCurve(LightCurve):
     data = []              
     header = []
     
-    data_object = urllib2.urlopen(filepath)
+    data_object = open(filepath)
     for line in data_object:
-        print "==wait=="
+        #print "==wait""
         data = data + [line.rstrip()]
     
  
@@ -319,5 +318,12 @@ class SITLightCurve(LightCurve):
 
 
     data = DataFrame(data, columns = header)
+    #print data
 
     return header, data
+    
+    """
+    >>> _parse_txt('SIT_Ahead_10min_4He_2007_01.txt') 
+    #Assuming the file is in same directory
+    
+    """
