@@ -18,7 +18,7 @@ class TimeRange(object):
 
     .. note::
 
-       Regardless of how a TimeRange is constructed it will always provide a 
+       Regardless of how a TimeRange is constructed it will always provide a
        positive time range where the start time is before the end time.
 
     Parameters
@@ -299,6 +299,14 @@ class TimeRange(object):
         # Only a timedelta object is acceptable here
         self._t1 = self._t1 + dt_start
         self._t2 = self._t2 + dt_end
+
+    def get_dates(self):
+        """
+        Return all partial days contained within the timerange
+        """
+        dates = []
+        dates =[ self.start.date() + timedelta(days=i) for i in range(int(self.days.value) + 1) ]
+        return dates
 
     def __contains__(self, time):
         """

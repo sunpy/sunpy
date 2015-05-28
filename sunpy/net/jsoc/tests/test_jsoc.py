@@ -15,7 +15,7 @@ import pytest
 
 from sunpy.time import parse_time
 from sunpy.net.jsoc import JSOCClient, JSOCResponse
-from sunpy.net.vso.vso import Results
+from sunpy.net.download import Results
 import sunpy.net.jsoc.attrs as attrs
 
 
@@ -128,7 +128,7 @@ def test_status_request():
 def  test_empty_jsoc_response():
     Jresp = JSOCResponse()
     assert Jresp.table is None
-    assert Jresp.query_args is None
+    assert Jresp.query_args == []
     assert Jresp.requestIDs is None
     assert str(Jresp) == 'None'
     assert repr(Jresp) == 'None'
@@ -147,7 +147,7 @@ def test_post_pass():
     responses = client.query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
                              attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     aa = client.request_data(responses, return_resp=True)
-    tmpresp = aa[0].json()
+    tmpresp = aa[0][0].json()
     assert tmpresp['status'] == 2
     assert tmpresp['protocol'] == 'FITS,compress Rice'
     assert tmpresp['method'] == 'url'
@@ -158,11 +158,23 @@ def test_post_wavelength():
     responses = client.query(attrs.Time('2010/07/30T13:30:00','2010/07/30T14:00:00'),attrs.Series('aia.lev1_euv_12s'),
                              attrs.Wavelength(193*u.AA)|attrs.Wavelength(335*u.AA), attrs.Notify('jsoc@cadair.com'))
     aa = client.request_data(responses, return_resp=True)
-    tmpresp = aa[0].json()
+    tmpresp = aa[0][0].json()
     assert tmpresp['status'] == 2
     assert tmpresp['protocol'] == 'FITS,compress Rice'
     assert tmpresp['method'] == 'url'
-    assert tmpresp['rcount'] == 302
+    assert tmpresp['rcount'] == 151
+    tmpresp = aa[1][0].json()
+    assert tmpresp['status'] == 2
+    assert tmpresp['protocol'] == 'FITS,compress Rice'
+    assert tmpresp['method'] == 'url'
+    assert tmpresp['rcount'] == 151
+
+@pytest.mark.online
+def test_post_notify_fail():
+    responses = client.query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
+                             attrs.Series('hmi.M_45s'))
+    with pytest.raises(ValueError):
+        client.request_data(responses, return_resp=True)
 
 @pytest.mark.online()
 def test_post_wave_series():
@@ -222,7 +234,7 @@ def test_results_filenames():
     files = aa.wait()
     assert len(files) == len(responses)
     for hmiurl in aa.map_:
-        assert os.path.basename(hmiurl) == os.path.basename(aa.map_[hmiurl]['path'])
+        assert os.path.isfile(hmiurl)
 
 @pytest.mark.online
 def test_invalid_query():

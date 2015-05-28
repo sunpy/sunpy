@@ -15,8 +15,7 @@ from astropy.utils.misc import isiterable
 
 from sunpy import config
 from sunpy.time import parse_time, TimeRange
-from sunpy.net.download import Downloader
-from sunpy.net.vso.vso import Results
+from sunpy.net.download import Downloader, Results
 from sunpy.net.attr import and_
 from sunpy.net.jsoc.attrs import walker
 
@@ -34,7 +33,7 @@ class JSOCResponse(object):
         """
 
         self.table = table
-        self.query_args = None
+        self.query_args = []
         self.requestIDs = None
 
     def __str__(self):
@@ -42,6 +41,9 @@ class JSOCResponse(object):
 
     def __repr__(self):
         return repr(self.table)
+
+    def _repr_html_(self):
+        return self.table._repr_html_()
 
     def __len__(self):
         if self.table is None:
@@ -197,7 +199,7 @@ class JSOCClient(object):
 
             return_results.append(self._lookup_records(iargs))
 
-        return_results.query_args = iargs
+            return_results.query_args.append(iargs)
 
         return return_results
 
@@ -223,24 +225,28 @@ class JSOCClient(object):
             raise TypeError(warn_message.format(kwargs.keys()))
 
         # Do a multi-request for each query block
-        responses = self._multi_request(**jsoc_response.query_args)
-        for i, response in enumerate(responses):
-            if response.status_code != 200:
-                warn_message = "Query {0} retuned code {1}"
-                warnings.warn(
-                    Warning(warn_message.format(i, response.status_code)))
-                responses.pop(i)
-            elif response.json()['status'] != 2:
-                warn_message = "Query {0} retuned status {1} with error {2}"
-                json_response = response.json()
-                json_status = json_response['status']
-                json_error = json_response['error']
-                warnings.warn(Warning(warn_message.format(i, json_status,
-                                                          json_error)))
-                responses.pop(i)
+        responses = []
+        requestIDs = []
+        for block in jsoc_response.query_args:
+            # Do a multi-request for each query block
+            responses.append(self._multi_request(**block))
+            for i, response in enumerate(responses[-1]):
+                if response.status_code != 200:
+                    warn_message = "Query {0} retuned code {1}"
+                    warnings.warn(
+                        Warning(warn_message.format(i, response.status_code)))
+                    responses.pop(i)
+                elif response.json()['status'] != 2:
+                    warn_message = "Query {0} retuned status {1} with error {2}"
+                    json_response = response.json()
+                    json_status = json_response['status']
+                    json_error = json_response['error']
+                    warnings.warn(Warning(warn_message.format(i, json_status,
+                                                            json_error)))
+                    responses[-1].pop(i)
 
-        # Extract the IDs from the JSON
-        requestIDs = [response.json()['requestid'] for response in responses]
+            # Extract the IDs from the JSON
+            requestIDs += [response.json()['requestid'] for response in responses[-1]]
 
         if return_responses:
             return responses
@@ -331,6 +337,8 @@ class JSOCClient(object):
         jsoc_response.requestIDs = requestIDs
         time.sleep(sleep/2.)
 
+        r = Results(lambda x: None, done=lambda maps: [v['path'] for v in maps.values()])
+
         while requestIDs:
             for i, request_id in enumerate(requestIDs):
                 u = self._request_status(request_id)
@@ -341,7 +349,7 @@ class JSOCClient(object):
                 if u.status_code == 200 and u.json()['status'] == '0':
                     rID = requestIDs.pop(i)
                     r = self.get_request(rID, path=path, overwrite=overwrite,
-                                         progress=progress)
+                                 progress=progress, results=r)
 
                 else:
                     time.sleep(sleep)
@@ -399,7 +407,7 @@ class JSOCClient(object):
         # A Results object tracks the number of downloads requested and the
         # number that have been completed.
         if results is None:
-            results = Results(lambda _: downloader.stop())
+            results = Results(lambda x: None, done=lambda maps: [v['path'] for v in maps.values()])
 
         urls = []
         for request_id in requestIDs:
@@ -500,12 +508,12 @@ class JSOCClient(object):
         else:
             jprotocol = protocol
 
+        dataset = self._make_recordset(start_time, end_time, series, **kwargs)
+        kwargs.pop('wavelength', None)
+
         if not notify:
             raise ValueError("JSOC queries now require a valid email address "
                              "before they will be accepted by the server")
-
-        dataset = self._make_recordset(start_time, end_time, series, **kwargs)
-        kwargs.pop('wavelength', None)
 
         # Build full POST payload
         payload = {'ds': dataset,
@@ -549,9 +557,7 @@ class JSOCClient(object):
                     'WAVEUNIT']
 
         if not all([k in iargs for k in ('start_time', 'end_time', 'series')]):
-            error_message = "Both Time and Series must be specified for a "\
-                            "JSOC Query"
-            raise ValueError(error_message)
+            raise ValueError("Both Time and Series must be specified for a JSOC Query")
 
         postthis = {'ds': self._make_recordset(**iargs),
                     'op': 'rs_list',
@@ -609,4 +615,11 @@ class JSOCClient(object):
         u = requests.get(JSOC_EXPORT_URL, params=payload)
 
         return u
+
+    @classmethod
+    def _can_handle_query(cls, *query):
+        chkattr = ['Series', 'Protocol', 'Notify', 'Compression', 'Wavelength',
+                   'Time', 'Segment']
+
+        return all([x.__class__.__name__ in chkattr for x in query])
 
