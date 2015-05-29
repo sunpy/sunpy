@@ -16,7 +16,7 @@ from sunpy.time import parse_time, TimeRange, is_time_in_given_format
 from sunpy.util import net
 from shlex import split
 from astropy.io import ascii
-
+from astropy.table import Table, Column
 
 __all__ = ['SITLightCurve']
 
@@ -264,36 +264,56 @@ class SITLightCurve(LightCurve):
 
     @staticmethod
     def _parse_txt(filepath):
-    """
-    Parses a STEREO SIT file from
-    http://www.srl.caltech.edu/STEREO/Public/SIT_public.html
+        """
+        Parses a STEREO SIT file from
+        http://www.srl.caltech.edu/STEREO/Public/SIT_public.html
+        
+        and returns header and astropy.Table object containing data
     
-    Returns header and data as an astropy Table object
-    """
-    header = []
-    data = ascii.read(filepath, delimiter = "\s", data_start = 27) 
-
-    # To read column names
-    data_all = open(filepath)
-    for i, line in enumerate(data_all):
-        if i > 8 :
-             header = header + [line]
-        if i > 23:
-            break
-    data_all.close()
-
-    #To format column names 
-    for key1 in range(17,27):
-        if key1 <20:
-            header = header + ["Column "+ str(key1) + ': ' +'4He total counts for '+ (header[key1-11])[11:28] +' energy range']  
-        else:
-            header = header + ["Column "+ str(key1) + ': ' +'4He total counts for '+ (header[key1-11])[12:29] +' energy range']  
-
-    #To add the column names in the astropy table object
-    for key2 in range(26):
-        data.rename_column(data.colnames[key2], header[key2])        
-
-    return header, data
+        """
+        header = []
+        data = ascii.read(filepath, delimiter = "\s", data_start = 27) 
+    
+        # To read in column names
+        data_all = open(filepath)
+        for i, line in enumerate(data_all):
+            if i > 13 :
+                 header = header + [line]
+            if i > 23:
+                break
+        data_all.close()
+    
+        for i in range(10):
+            header[i] = "Column " + str(i+2) + header[i][ header[i].index(":") :] 
+    
+        header = ['DateTime'] + header
+    
+        #To format column names 
+        for key1 in range(11,21):
+            if key1 <14:
+                header = header + ["Column "+ str(key1) + ': ' +'4He total counts for '+ (header[key1-10])[11:28] +' energy range']  
+            else:
+                header = header + ["Column "+ str(key1) + ': ' +'4He total counts for '+ (header[key1-10])[12:29] +' energy range']  
+                
+    
+        data_modify = []
+        
+        #Combining Date, Time columns to make a single datetime.datetime value column 
+        for i in range(len(data)): 
+            date = datetime(data['col1'][i], 1, 1) + timedelta(int(data['col2'][i]) - 1)
+            data_modify = data_modify + [datetime(date.year, date.month, date.day, data['col3'][i], data['col4'][i], data['col5'][i])]
+    
+        #Adding one DateTime column and removing 5 columns with separated time info
+        data.add_column(Column(data = data_modify, name='col'),1)
+        data.remove_columns(['col1', 'col2','col3','col4','col5'])
+    
+    
+        #To add the column names in the astropy table object
+        for key2 in range(21):
+            data.rename_column(data.colnames[key2], header[key2])        
+    
+    
+        return header, data
     
     """
     >>> _parse_txt('SIT_Ahead_10min_4He_2007_01.txt') 
