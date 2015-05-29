@@ -312,6 +312,10 @@ class SITLightCurve(LightCurve):
         for key2 in range(21):
             data.rename_column(data.colnames[key2], header[key2])        
     
+        #Converting from astropy.table.Table to pandas.Dataframe
+        # to_pandas() bound method is only available in the latest development build of astropy and 
+        # none of the stable versions include it
+        data = data.to_pandas()
     
         return header, data
     
