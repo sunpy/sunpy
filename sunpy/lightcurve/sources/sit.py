@@ -15,7 +15,7 @@ from dateutil.relativedelta import relativedelta
 from sunpy.time import parse_time, TimeRange, is_time_in_given_format
 from sunpy.util import net
 from shlex import split
-from pandas import DataFrame
+from astropy.io import ascii
 
 
 __all__ = ['SITLightCurve']
@@ -262,41 +262,31 @@ class SITLightCurve(LightCurve):
     """
     Parses a STEREO SIT file from
     http://www.srl.caltech.edu/STEREO/Public/SIT_public.html
+    
+    Returns header and data as an astropy Table object
     """
-
-    data = []              
     header = []
-    
-    data_object = open(filepath)
-    for line in data_object:
-        #print "==wait""
-        data = data + [line.rstrip()]
-    
- 
+    data = ascii.read(filepath, delimiter = "\s", data_start = 27) 
 
-    header = data[9:25]
+    # To read column names
+    data_all = open(filepath)
+    for i, line in enumerate(data_all):
+        if i > 8 :
+             header = header + [line]
+        if i > 23:
+            break
+    data_all.close()
+
+    #To format column names 
     for key1 in range(17,27):
-        header = header + ["Column "+ str(key1) + ': ' +'4He total counts for same energy ranges as above']
-        
-    
+        if key1 <20:
+            header = header + ["Column "+ str(key1) + ': ' +'4He total counts for '+ (header[key1-11])[11:28] +' energy range']  
+        else:
+            header = header + ["Column "+ str(key1) + ': ' +'4He total counts for '+ (header[key1-11])[12:29] +' energy range']  
 
-    #data : List of lists with each element list containing a line of a file
-    data = data[27:]
-
-    for key2 in range(len(data)):
-        data[key2] = split(data[key2])
-        for key3 in range(26):
-            if key3 in ([1] + range(6,16)):
-                (data[key2])[key3] = (float)((data[key2])[key3])
-            else:
-                (data[key2])[key3] = (int)((data[key2])[key3])
-
-        #data : List with each element containing lists for 
-        #       each line with each line represented as comma separated data values
-
-
-    data = DataFrame(data, columns = header)
-    #print data
+    #To add the column names in the astropy table object
+    for key2 in range(26):
+        data.rename_column(data.colnames[key2], header[key2])        
 
     return header, data
     
