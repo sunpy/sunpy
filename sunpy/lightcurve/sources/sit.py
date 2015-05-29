@@ -128,6 +128,11 @@ class SITLightCurve(LightCurve):
             stereo_spacecraft = args[2]
             type_of_average = args[3]
             atomic_specie = args[4]
+            
+        else: 
+            raise ValueError('must recieve 4 or 5 arguments only')
+            # 4 arguments incase of first argument being TimeRange and 5 in case of it being start and end dates
+            # The other three arguments : stereo_spacecraft, type_of_average, atomic_specie remain same for either
 
         if end < start:
             raise ValueError('start time > end time')
