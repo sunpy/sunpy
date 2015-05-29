@@ -310,7 +310,7 @@ class SITLightCurve(LightCurve):
     for key2 in range(26):
         data.rename_column(data.colnames[key2], header[key2])        
 
-    return data
+    return header, data
     
     """
     >>> _parse_txt('SIT_Ahead_10min_4He_2007_01.txt') 
