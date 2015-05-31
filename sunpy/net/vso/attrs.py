@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
+#         Rajul Srivastava <rajul09@gmail.com>
 #
 # This module was developed with funding provided by
 # the ESA Summer of Code (2011).
@@ -17,7 +18,7 @@ Instrument('aia') & Instrument('eit').
 """
 from __future__ import absolute_import
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from astropy import units as u
 
@@ -27,6 +28,11 @@ from sunpy.net.attr import (
 )
 from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time
+
+
+__authors__ = ["Florian Meyer", "Rajul Srivastava"]
+__email__ = ["florian.mayer@bitsrc.org", "rajul09@gmail.com"]
+
 
 __all__ = ['Wave', 'Time', 'Extent', 'Field', 'Provider', 'Source',
            'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',
@@ -112,11 +118,14 @@ class Time(Attr, _Range):
             raise TypeError
         return _Range.__xor__(self, other)
 
-    def pad(self, timedelta):
-        return Time(self.start - timedelta, self.start + timedelta)
+    def pad(self, time_delta):
+        if not isinstance(time_delta, timedelta):
+            raise TypeError("{0!r} must be a {1!r} object".format('timedelta', 'datetime.timedelta'))
+        return Time(self.start - time_delta, self.start + time_delta)
 
     def __repr__(self):
         return '<Time({s.start!r}, {s.end!r}, {s.near!r})>'.format(s=self)
+
 
 class Extent(Attr):
     # pylint: disable=R0913

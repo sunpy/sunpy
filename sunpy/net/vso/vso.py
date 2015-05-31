@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
+#         Rajul Srivastava<rajul09@gmail.com>
 #
 # This module was developed with funding provided by
 # the ESA Summer of Code (2011).
@@ -37,6 +38,11 @@ from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import print_table, replacement_filename, Deprecated
 from sunpy.time import parse_time
+
+
+__authors__ = ["Florian Meyer", "Rajul Srivastava"]
+__email__ = ["florian.mayer@bitsrc.org", "rajul09@gmail.com"]
+
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -87,6 +93,9 @@ class Results(object):
         value : object
             value to save
         """
+        if not isinstance(keys, list):
+            raise TypeError("The argument {0!r} must be of type {1!r}".format('keys', 'list'))
+            
         for key in keys:
             self.map_[key] = value
         self.poke()
@@ -128,8 +137,10 @@ class Results(object):
                 self.progress.start()
                 self.progress.draw()
 
-        while not self.evt.wait(timeout):
-            pass
+        # while not self.evt.wait(timeout):
+        #     pass
+        self.evt.wait(timeout)
+        
         if progress:
             self.progress.finish()
 
