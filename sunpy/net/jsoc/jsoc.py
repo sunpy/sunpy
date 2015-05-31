@@ -290,7 +290,7 @@ class JSOCClient(object):
         return allstatus
 
     def get(self, jsoc_response, path=None, overwrite=False, progress=True,
-            max_conn=5, sleep=10):
+            max_conn=5, downloader=None,sleep=10):
         """
         Make the request for the data in jsoc_response and wait for it to be
         staged and then download the data.
@@ -341,7 +341,7 @@ class JSOCClient(object):
                 if u.status_code == 200 and u.json()['status'] == '0':
                     rID = requestIDs.pop(i)
                     r = self.get_request(rID, path=path, overwrite=overwrite,
-                                         progress=progress)
+                                         progress=progress,downloader=downloader)
 
                 else:
                     time.sleep(sleep)
