@@ -25,6 +25,15 @@ Latest
  * Calculation of the solar rotation of a point on the Sun as seen from Earth, and its application to the de-rotation of mapcubes.
  * Downloaded files now keep file extensions rather than replacing all periods with underscores
  * Fixed the downloading of files with duplicate names in sunpy.database
+ * Changed default for GOESLightCurve.create() so that it gets the data from the most recent existing GOES fits file.
+ * Map plot functionality now uses the mask property if it is present, allowing the plotting of masked map data
+ * Map Expects Quantities and returns quantities for most parameters.
+ * Map now used Astropy.wcs for world <-> pixel conversions.
+ * map.data_to_pixel now has a similar API to map.pixel_to_data.
+ * map.shape has been replaced with map.dimensions, which is ordered
+   x first.
+ * map.rsun_arcseconds is now map.rsun_obs as it returns a quantity.
+ * Map properties are now named tuples rather than dictionaries.
 
 0.5.0
 -----

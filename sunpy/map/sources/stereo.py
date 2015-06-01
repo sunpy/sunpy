@@ -4,6 +4,8 @@
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
+import astropy.units as u
+
 from sunpy.map import GenericMap
 from sunpy.cm import cm
 
@@ -19,7 +21,7 @@ class EUVIMap(GenericMap):
         self._name = self.observatory + " " + self.detector + " " + str(self.measurement)
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
 
-        self.cmap = cm.get_cmap('sohoeit{wl:d}'.format(wl=self.wavelength))
+        self.cmap = cm.get_cmap('sohoeit{wl:d}'.format(wl=int(self.wavelength.value)))
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
