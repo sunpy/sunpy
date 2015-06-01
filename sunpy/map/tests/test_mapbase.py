@@ -371,11 +371,6 @@ def test_rotate(aia171_test_map):
     assert aia171_test_map_crop_rot.data.shape[0] < aia171_test_map_crop_rot.data.shape[1]
 
 
-@figure_test
-def test_rotate_by_20(aia171_test_map):
-    aia171_test_map.rotate(20).plot()
-
-
 def test_rotate_recenter(generic_map):
     rotated_map = generic_map.rotate(20*u.deg, recenter=True)
     pixel_array_center = (np.flipud(rotated_map.data.shape) - 1) / 2.0
@@ -412,3 +407,8 @@ def test_rotate_invalid_order(generic_map):
         generic_map.rotate(order=6)
     with pytest.raises(ValueError):
         generic_map.rotate(order=-1)
+
+
+@figure_test
+def test_plot_aia171(aia171_test_map):
+    aia171_test_map.plot()
