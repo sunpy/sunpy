@@ -6,6 +6,8 @@ This particular test file pertains to SOTMap.
 import os
 import glob
 
+import astropy.units as u
+
 from sunpy.map.sources.hinode import SOTMap
 from sunpy.map import Map
 import sunpy.data.test
@@ -31,7 +33,7 @@ def test_observatory():
 
 def test_measurement():
     """Tests the measurement property of the SOTMap object."""
-    assert sot.measurement == ""
+    assert sot.measurement == 0 * u.one
 
 def test_instruments():
     """Tests the Instruments object of SOTMap."""

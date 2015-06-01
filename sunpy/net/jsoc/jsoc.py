@@ -81,6 +81,10 @@ class JSOCClient(object):
 
     You can build more complex queries by specifiying parameters to POST to JSOC via keyword
     arguments. You can generate these kwargs using the Export Data page at JSOC.
+    
+    JSOC now requires a validated email address, you can pass in your validated email address
+    using the `~sunpy.net.jsoc.attrs.Notify` attribute. You have to register your email address
+    with JSOC http://jsoc.stanford.edu/ajax/register_email.html.
 
 
     Examples
@@ -93,7 +97,7 @@ class JSOCClient(object):
     >>> from sunpy.net import jsoc
     >>> client = jsoc.JSOCClient()
     >>> response = client.query(jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...                         jsoc.Series('hmi.m_45s'))
+    ...                         jsoc.Series('hmi.m_45s'), jsoc.Notify("sunpy@sunpy.org"))
 
     the response object holds the records that your query will return:
 
@@ -125,7 +129,7 @@ class JSOCClient(object):
     >>> client = jsoc.JSOCClient()
     >>> response = client.query(jsoc.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
                                 jsoc.Series('aia.lev1_euv_12s'), jsoc.Segment('image'),
-                                jsoc.Wavelength(171*u.AA))
+                                jsoc.Wavelength(171*u.AA), jsoc.Notify("sunpy@sunpy.org"))
 
     the response object holds the records that your query will return:
 
@@ -290,7 +294,7 @@ class JSOCClient(object):
         return allstatus
 
     def get(self, jsoc_response, path=None, overwrite=False, progress=True,
-            max_conn=5, sleep=10):
+            max_conn=5, downloader=None,sleep=10):
         """
         Make the request for the data in jsoc_response and wait for it to be
         staged and then download the data.
@@ -341,7 +345,7 @@ class JSOCClient(object):
                 if u.status_code == 200 and u.json()['status'] == '0':
                     rID = requestIDs.pop(i)
                     r = self.get_request(rID, path=path, overwrite=overwrite,
-                                         progress=progress)
+                                         progress=progress,downloader=downloader)
 
                 else:
                     time.sleep(sleep)

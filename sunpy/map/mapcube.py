@@ -4,6 +4,7 @@ from __future__ import absolute_import
 
 import numpy as np
 import matplotlib.animation
+from sunpy.visualization import wcsaxes_compat
 import matplotlib.pyplot as plt
 
 from sunpy.map import GenericMap
@@ -15,7 +16,7 @@ __all__ = ['MapCube']
 
 class MapCube(object):
     """
-    MapCube(input)
+    MapCube
 
     A series of spatially aligned Maps.
 
@@ -148,16 +149,16 @@ class MapCube(object):
             axes.set_title("{s.name} {s.date!s}".format(s=self[i]))
 
             # x-axis label
-            if self[0].coordinate_system['x'] == 'HG':
-                xlabel = 'Longitude [{lon}'.format(lon=self[i].units['x'])
+            if self[0].coordinate_system.x == 'HG':
+                xlabel = 'Longitude [{lon}'.format(lon=self[i].units.x)
             else:
-                xlabel = 'X-position [{xpos}]'.format(xpos=self[i].units['x'])
+                xlabel = 'X-position [{xpos}]'.format(xpos=self[i].units.x)
 
             # y-axis label
-            if self[0].coordinate_system['y'] == 'HG':
-                ylabel = 'Latitude [{lat}]'.format(lat=self[i].units['y'])
+            if self[0].coordinate_system.y == 'HG':
+                ylabel = 'Latitude [{lat}]'.format(lat=self[i].units.y)
             else:
-                ylabel = 'Y-position [{ypos}]'.format(ypos=self[i].units['y'])
+                ylabel = 'Y-position [{ypos}]'.format(ypos=self[i].units.y)
 
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
@@ -173,7 +174,7 @@ class MapCube(object):
         else:
             ani_data = self.maps
 
-        im = ani_data[0].plot(**kwargs)
+        im = ani_data[0].plot(axes=axes, **kwargs)
 
         def updatefig(i, im, annotate, ani_data):
 
