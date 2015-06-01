@@ -271,30 +271,19 @@ class SITLightCurve(LightCurve):
         and returns header and astropy.Table object containing data
     
         """
-        header = []
+        header = ['DateTime', 'Column 2: number of minutes summed in rate\n', 'Column 3:  0.113 - 0.160 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n',
+            'Column 4:  0.160 - 0.226 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n', 'Column 5:  0.226 - 0.320 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n',
+            'Column 6:  0.320 - 0.452 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n', 'Column 7:  0.452 - 0.640 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n', 
+            'Column 8:  0.640 - 0.905 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n', 'Column 9:  0.905 - 1.280 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n', 
+            'Column 10:  1.280 - 1.810 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n', 'Column 11:  1.810 - 2.560 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n',
+            'Column 16:  2.560 - 3.620 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n', 'Column 11: 4He total counts for umber of minutes  energy range', 
+            'Column 12: 4He total counts for 0.113 - 0.160 MeV energy range', 'Column 13: 4He total counts for 0.160 - 0.226 MeV energy range', 
+            'Column 14: 4He total counts for .226 - 0.320 MeV/ energy range', 'Column 15: 4He total counts for .320 - 0.452 MeV/ energy range', 
+            'Column 16: 4He total counts for .452 - 0.640 MeV/ energy range', 'Column 17: 4He total counts for .640 - 0.905 MeV/ energy range', 
+            'Column 18: 4He total counts for .905 - 1.280 MeV/ energy range', 'Column 19: 4He total counts for 1.280 - 1.810 MeV energy range', 
+            'Column 20: 4He total counts for 1.810 - 2.560 MeV energy range']
+
         data = ascii.read(filepath, delimiter = "\s", data_start = 27) 
-    
-        # To read in column names
-        data_all = open(filepath)
-        for i, line in enumerate(data_all):
-            if i > 13 :
-                 header = header + [line]
-            if i > 23:
-                break
-        data_all.close()
-    
-        for i in range(10):
-            header[i] = "Column " + str(i+2) + header[i][ header[i].index(":") :] 
-    
-        header = ['DateTime'] + header
-    
-        #To format column names 
-        for key1 in range(11,21):
-            if key1 <14:
-                header = header + ["Column "+ str(key1) + ': ' +'4He total counts for '+ (header[key1-10])[11:28] +' energy range']  
-            else:
-                header = header + ["Column "+ str(key1) + ': ' +'4He total counts for '+ (header[key1-10])[12:29] +' energy range']  
-                
     
         data_modify = []
         
