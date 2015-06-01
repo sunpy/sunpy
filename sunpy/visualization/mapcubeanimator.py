@@ -50,7 +50,7 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         self.mapcube = mapcube
         self.annotate = annotate
         self.user_plot_function = kwargs.pop('plot_function',
-                                             lambda fig, ax, map: None)
+                                             lambda fig, ax, map: [])
         # List of object to remove at the start of each plot step
         self.remove_obj = []
         slider_functions = [self.updatefig]
