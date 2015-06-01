@@ -34,7 +34,7 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         Plot colorbar
 
     plot_function: function
-        A function to call when each frame is plotted, the function must have
+        A function to call when each map is plotted, the function must have
         the signature `(fig, axes, map)` where fig and axes are the figure and
         axes objects of the plot and map is the current frames Map object.
         Any objects returned from this function will have their `remove()` method

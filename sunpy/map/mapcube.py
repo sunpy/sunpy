@@ -221,9 +221,14 @@ class MapCube(object):
         colorbar: bool
             Plot colorbar
 
+        plot_function : function
+            A function to call to overplot extra items on the map plot.
+            For more information see `sunpy.visualization.MapCubeAnimator`.
+
         Returns
         -------
-        Returns a MapCubeAnimator object
+        mapcubeanim : `sunpy.visualization.MapCubeAnimator`
+            A mapcube animator instance.
 
         See Also
         --------
@@ -237,6 +242,15 @@ class MapCube(object):
 
         Plot the map at 1/2 original resolution
 
+        >>> cube = sunpy.Map(files, cube=True)
+        >>> ani = cube.plot(resample=[0.5, 0.5], colorbar=True)
+        >>> plt.show()
+
+        Plot the map with the limb at each time step
+
+        >>> def myplot(fig, ax, map):
+        ...    p = map.draw_limb()
+        ...    return p
         >>> cube = sunpy.Map(files, cube=True)
         >>> ani = cube.plot(resample=[0.5, 0.5], colorbar=True)
         >>> plt.show()
