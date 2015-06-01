@@ -73,16 +73,16 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         self.axes.set_title("{s.name} {s.date!s}".format(s=self.data[ind]))
 
         # x-axis label
-        if self.data[ind].coordinate_system['x'] == 'HG':
-            xlabel = 'Longitude [{lon}]'.format(lon=self.data[ind].units['x'])
+        if self.data[ind].coordinate_system.x == 'HG':
+            xlabel = 'Longitude [{lon}]'.format(lon=self.data[ind].units.x)
         else:
-            xlabel = 'X-position [{xpos}]'.format(xpos=self.data[ind].units['x'])
+            xlabel = 'X-position [{xpos}]'.format(xpos=self.data[ind].units.x)
 
         # y-axis label
-        if self.data[ind].coordinate_system['y'] == 'HG':
-            ylabel = 'Latitude [{lat}]'.format(lat=self.data[ind].units['y'])
+        if self.data[ind].coordinate_system.y == 'HG':
+            ylabel = 'Latitude [{lat}]'.format(lat=self.data[ind].units.y)
         else:
-            ylabel = 'Y-position [{ypos}]'.format(ypos=self.data[ind].units['y'])
+            ylabel = 'Y-position [{ypos}]'.format(ypos=self.data[ind].units.y)
 
         self.axes.set_xlabel(xlabel)
         self.axes.set_ylabel(ylabel)

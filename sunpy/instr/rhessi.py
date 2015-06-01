@@ -361,9 +361,9 @@ def backprojection(calibrated_event_list, pixel_size=(1.,1.) * u.arcsec, image_d
     if not isinstance(pixel_size, u.Quantity):
         raise ValueError("Must be astropy Quantity in arcseconds")
     try:
-       pixel_size = pixel_size.to(u.arcsec)
+        pixel_size = pixel_size.to(u.arcsec)
     except:
-       raise ValueError("'{0}' is not a valid pixel_size unit".format(pixel_size.unit))
+        raise ValueError("'{0}' is not a valid pixel_size unit".format(pixel_size.unit))
     if not (isinstance(image_dim, u.Quantity) and image_dim.unit == 'pix'):
         raise ValueError("Must be astropy Quantity in pixels")
     calibrated_event_list = sunpy.RHESSI_EVENT_LIST
