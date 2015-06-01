@@ -9,14 +9,18 @@ __authors__ = ["Ankit Kumar"]
 __email__ = "ankitkmr.iitk@gmail.com"
 
 from datetime import timedelta,datetime
-from calendar import monthrange
-from sunpy.lightcurve import LightCurve
-from dateutil.relativedelta import relativedelta
-from sunpy.time import parse_time, TimeRange, is_time_in_given_format
-from sunpy.util import net
-from shlex import split
 from astropy.io import ascii
 from astropy.table import Table, Column
+
+from dateutil.relativedelta import relativedelta
+from calendar import monthrange
+from shlex import split
+
+from sunpy.lightcurve import LightCurve
+from sunpy.time import parse_time, TimeRange, is_time_in_given_format
+from sunpy.util import net
+
+
 
 __all__ = ['SITLightCurve']
 
