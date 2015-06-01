@@ -5,6 +5,7 @@ Test mapcube functionality
 from __future__ import absolute_import
 
 import numpy as np
+import astropy.units as u
 import sunpy
 import sunpy.map
 from sunpy.map.header import MapMeta
@@ -24,7 +25,7 @@ def mapcube_different():
     testpath = sunpy.data.test.rootdir
     aia_file = os.path.join(testpath, "aia_171_level1.fits")
     aia_map = sunpy.map.Map(aia_file)
-    return sunpy.map.Map([aia_map, aia_map.superpixel((4, 4))], cube=True)
+    return sunpy.map.Map([aia_map, aia_map.superpixel((4, 4)*u.pix)], cube=True)
 
 
 def test_all_maps_same_shape(mapcube_all_the_same, mapcube_different):
