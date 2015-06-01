@@ -237,13 +237,13 @@ class MapCube(object):
         Examples
         --------
         >>> cube = sunpy.Map(files, cube=True)
-        >>> ani = cube.plot(colorbar=True)
+        >>> ani = cube.peek(colorbar=True)
         >>> plt.show()
 
         Plot the map at 1/2 original resolution
 
         >>> cube = sunpy.Map(files, cube=True)
-        >>> ani = cube.plot(resample=[0.5, 0.5], colorbar=True)
+        >>> ani = cube.peek(resample=[0.5, 0.5], colorbar=True)
         >>> plt.show()
 
         Plot the map with the limb at each time step
@@ -252,13 +252,13 @@ class MapCube(object):
         ...    p = map.draw_limb()
         ...    return p
         >>> cube = sunpy.Map(files, cube=True)
-        >>> ani = cube.plot(plot_function=myplot)
+        >>> ani = cube.peek(plot_function=myplot)
         >>> plt.show()
 
         Decide you want an animation:
 
         >>> cube = sunpy.Map(files, cube=True)
-        >>> ani = cube.plot(resample=[0.5, 0.5], colorbar=True)
+        >>> ani = cube.peek(resample=[0.5, 0.5], colorbar=True)
         >>> mplani = ani.get_animation()
         """
 
