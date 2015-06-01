@@ -479,10 +479,15 @@ class JSOCClient(object):
         # Extract and format segment
         if segment != '':
             segment = '{{{segment}}}'.format(segment=segment)
-
-        dataset = '{series}[{start}-{end}]{wavelength}{segment}'.format(
+        
+        sample = kwargs.get('sample', '')
+        if sample:
+            sample = '@{}s'.format(sample)
+        
+        dataset = '{series}[{start}-{end}{sample}]{wavelength}{segment}'.format(
                    series=series, start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                    end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                   sample=sample,
                    wavelength=wavelength, segment=segment)
 
         return dataset
@@ -506,6 +511,7 @@ class JSOCClient(object):
 
         dataset = self._make_recordset(start_time, end_time, series, **kwargs)
         kwargs.pop('wavelength', None)
+        kwargs.pop('sample',None)
 
         # Build full POST payload
         payload = {'ds': dataset,

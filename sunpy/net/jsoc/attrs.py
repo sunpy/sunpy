@@ -3,17 +3,22 @@ from __future__ import absolute_import
 import astropy.units as u
 
 from sunpy.net.attr import (Attr, AttrWalker, AttrAnd, AttrOr)
-from sunpy.net.vso.attrs import Time, _VSOSimpleAttr
+from sunpy.net.vso.attrs import Time,Sample,_VSOSimpleAttr
 
 __all__ = ['Series', 'Protocol', 'Notify', 'Compression', 'Wavelength', 'Time',
-           'Segment']
+           'Segment','Sample']
 
 
 class Time(Time):
     """
     Time range to download
     """
-
+    
+class Sample(Sample):
+    """
+    Time interval as seconds
+    """
+    pass
 
 class Series(_VSOSimpleAttr):
     """
