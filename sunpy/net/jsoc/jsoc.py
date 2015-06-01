@@ -470,11 +470,11 @@ class JSOCClient(object):
             if not series.startswith('aia'):
                 raise TypeError("This series does not support the wavelength attribute.")
             else:
-               if isinstance(wavelength, list):
-                   wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
-                   wavelength = str(wavelength)
-               else:
-                   wavelength = '[{0}]'.format(int(np.ceil(wavelength.to(u.AA).value)))
+                if isinstance(wavelength, list):
+                    wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
+                    wavelength = str(wavelength)
+                else:
+                    wavelength = '[{0}]'.format(int(np.ceil(wavelength.to(u.AA).value)))
 
         # Extract and format segment
         if segment != '':
@@ -482,7 +482,7 @@ class JSOCClient(object):
         
         sample = kwargs.get('sample', '')
         if sample:
-            sample = '@{}s'.format(sample)
+            sample = '@{}s'.format(sample.to(u.s).value)
         
         dataset = '{series}[{start}-{end}{sample}]{wavelength}{segment}'.format(
                    series=series, start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),

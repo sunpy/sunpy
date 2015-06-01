@@ -13,12 +13,6 @@ class Time(Time):
     """
     Time range to download
     """
-    
-class Sample(Sample):
-    """
-    Time interval as seconds
-    """
-    pass
 
 class Series(_VSOSimpleAttr):
     """
