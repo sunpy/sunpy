@@ -252,7 +252,7 @@ class MapCube(object):
         ...    p = map.draw_limb()
         ...    return p
         >>> cube = sunpy.Map(files, cube=True)
-        >>> ani = cube.plot(resample=[0.5, 0.5], colorbar=True)
+        >>> ani = cube.plot(plot_function=myplot)
         >>> plt.show()
 
         Decide you want an animation:
