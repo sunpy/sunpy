@@ -198,7 +198,7 @@ class Sample(_VSOSimpleAttr):
     """
     @u.quantity_input(value=u.s)
     def __init__(self, value):
-        super(Sample,self).__init__(self,value)
+        super(Sample,self).__init__(value)
 
 
 class Quicklook(_VSOSimpleAttr):
