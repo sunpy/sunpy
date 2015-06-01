@@ -136,8 +136,8 @@ def  test_empty_jsoc_response():
 
 @pytest.mark.online
 def test_query():
-    Jresp = client.query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
-                         attrs.Series('hmi.M_45s'))
+    Jresp = client.query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:01:30'),
+                         attrs.Series('hmi.M_45s'),attrs.Sample(90*u.second))
     assert isinstance(Jresp, JSOCResponse)
     assert len(Jresp) == 2
 

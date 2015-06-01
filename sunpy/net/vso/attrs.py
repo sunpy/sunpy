@@ -193,7 +193,12 @@ class Filter(_VSOSimpleAttr):
 
 
 class Sample(_VSOSimpleAttr):
-    pass
+    """
+    Time interval for data sampling
+    """
+    @u.quantity_input(value=u.s)
+    def __init__(self, value):
+        super(Sample,self).__init__(self,value)
 
 
 class Quicklook(_VSOSimpleAttr):
