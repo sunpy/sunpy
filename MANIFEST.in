@@ -8,6 +8,7 @@ include RELEASE.md
 include CHANGELOG.md
 include licenses/*.rst
 include sunpy/data/sunpyrc
+include sunpy/tests/figure_hashes.json
 include setup.py
 include ah_bootstrap.py
 include ez_setup.py
