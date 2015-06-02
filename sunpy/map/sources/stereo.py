@@ -5,9 +5,11 @@ __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 import astropy.units as u
+import numpy as np
 
 from sunpy.map import GenericMap
 from sunpy.cm import cm
+from matplotlib.colors import PowerNorm
 
 __all__ = ['EUVIMap', 'CORMap']
 
@@ -50,7 +52,7 @@ class EUVIMap(GenericMap):
         if self.dtype == np.uint8:
             return None
 
-        return colors.PowerNorm(0.5, self.min(), self.max())
+        return PowerNorm(0.5, self.min(), self.max())
 
 
 class CORMap(GenericMap):
