@@ -13,8 +13,7 @@ from copy import deepcopy
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import patches
-from matplotlib import cm
+from matplotlib import patches, cm, colors
 
 import astropy.wcs
 from .nddata_compat import NDDataCompat as NDData
@@ -140,6 +139,7 @@ class GenericMap(NDData):
         # Validate header
         # TODO: This should be a function of the header, not of the map
         self._validate()
+        self.mpl_color_normalizer = self._get_mpl_normalizer()
 
         # Visualization attributes
         self.plot_settings = {'cmap': cm.gray,
@@ -1298,10 +1298,9 @@ scale:\t\t [{dx}, {dy}]
                   'interpolation': 'nearest'}
 
         if not wcsaxes_compat.is_wcsaxes(axes):
-            kwargs.udpate({'extent': list(self.xrange.value) + list(self.yrange.value)})
+            kwargs.update({'extent': list(self.xrange.value) + list(self.yrange.value)})
 
         return kwargs
-
 
     def _get_mpl_normalizer(self):
         """
