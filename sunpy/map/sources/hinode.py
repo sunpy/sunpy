@@ -53,14 +53,6 @@ class XRTMap(GenericMap):
 
         self.plot_settings['cmap'] = cm.get_cmap(name='hinodexrt')
 
-    def _get_mpl_normalizer(self):
-        """Returns a Normalize object to be used with XRT data"""
-        # byte-scaled images have most likely already been scaled
-        if self.dtype == np.uint8:
-            return None
-
-        return colors.Normalize(self.min(), self.max())
-
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an XRT image"""
