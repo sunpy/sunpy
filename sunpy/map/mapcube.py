@@ -118,9 +118,9 @@ class MapCube(object):
             Animation interval in ms
 
         plot_function : function
-            A function to be called as each map is plotted. Any varibles
+            A function to be called as each map is plotted. Any variables
             returned from the function will have their ``remove()`` method called
-            at he start of the next frame so that they are removed from the plot.
+            at the start of the next frame so that they are removed from the plot.
 
         Examples
         --------
