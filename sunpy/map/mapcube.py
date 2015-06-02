@@ -92,7 +92,7 @@ class MapCube(object):
         pass
 
     def plot(self, gamma=None, axes=None, resample=None, annotate=True,
-             interval=200, **kwargs):
+             interval=200, plot_function=None, **kwargs):
         """
         A animation plotting routine that animates each element in the
         MapCube
@@ -116,6 +116,11 @@ class MapCube(object):
 
         interval: int
             Animation interval in ms
+
+        plot_function : function
+            A function to be called as each map is plotted. Any varibles
+            returned from the function will have their ``remove()`` method called
+            at he start of the next frame so that they are removed from the plot.
 
         Examples
         --------
@@ -143,6 +148,10 @@ class MapCube(object):
         if not axes:
             axes = plt.gca()
         fig = axes.get_figure()
+
+        if not plot_function:
+            plot_function = lambda fig, ax, smap: []
+        removes = []
 
         # Normal plot
         def annotate_frame(i):
@@ -176,18 +185,20 @@ class MapCube(object):
 
         im = ani_data[0].plot(axes=axes, **kwargs)
 
-        def updatefig(i, im, annotate, ani_data):
-
+        def updatefig(i, im, annotate, ani_data, removes):
+            while removes:
+                removes.pop(0).remove()
             im.set_array(ani_data[i].data)
             im.set_cmap(self.maps[i].cmap)
             im.set_norm(self.maps[i].mpl_color_normalizer)
             im.set_extent(np.concatenate((self.maps[i].xrange.value, self.maps[i].yrange.value)))
             if annotate:
                 annotate_frame(i)
+            removes += list(plot_function(fig, axes, self.maps[i]))
 
         ani = matplotlib.animation.FuncAnimation(fig, updatefig,
                                                 frames=range(0, len(self.maps)),
-                                                fargs=[im, annotate, ani_data],
+                                                fargs=[im, annotate, ani_data, removes],
                                                 interval=interval,
                                                 blit=False)
 
