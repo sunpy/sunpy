@@ -1314,6 +1314,9 @@ scale:\t\t [{dx}, {dy}]
 
         Not yet implemented.
         """
+        if self.dtype == np.uint8:
+            return None
+        
         return colors.Normalize(self.min(), self.max())
 
 
