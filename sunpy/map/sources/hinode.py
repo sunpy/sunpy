@@ -51,7 +51,7 @@ class XRTMap(GenericMap):
         self._name = "{0} {1}-{2}".format(self.detector, fw1, fw2)
         self._nickname = self.detector
 
-        self.cmap = cm.get_cmap(name='hinodexrt')
+        self.plot_settings['cmap'] = cm.get_cmap(name='hinodexrt')
 
     def _get_mpl_normalizer(self):
         """Returns a Normalize object to be used with XRT data"""
@@ -59,14 +59,7 @@ class XRTMap(GenericMap):
         if self.dtype == np.uint8:
             return None
 
-        mean = self.mean()
-        std = self.std()
-
-        vmin = max(0, mean - 3 * std)
-        vmax = min(self.max(), mean + 3 * std)
-
-        return colors.Normalize(vmin, vmax)
-
+        return colors.Normalize(self.min(), self.max())
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -86,7 +79,7 @@ class SOTMap(GenericMap):
     # Add in some information about the the possible instrument, observation type,
     # observable ion and wavelength
 
-    Instruments = ['SOT/WB','SOT/NB','SOT/SP','SOT/CT']
+    Instruments = ['SOT/WB', 'SOT/NB', 'SOT/SP', 'SOT/CT']
 
     Waves = ['6302A', 'BFI no move', 'CN bandhead 3883',
              'Ca II H line', 'G band 4305', 'NFI no move',
@@ -117,7 +110,7 @@ class SOTMap(GenericMap):
                  'SOT/SP': 'intensity', # For the 1st 2 dimmensions
                  }
 
-        self.cmap = cm.get_cmap('hinodesot' + color[self.instrument])
+        self.plot_settings['cmap'] = cm.get_cmap('hinodesot' + color[self.instrument])
 
 
     @classmethod
