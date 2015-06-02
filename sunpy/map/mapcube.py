@@ -167,8 +167,8 @@ class MapCube(object):
             self[0].cmap.set_gamma(gamma)
 
         if resample:
-            #This assumes that the maps are homogenous!
-            #TODO: Update this!
+            # This assumes that the maps are homogeneous!
+            # TODO: Update this!
             resample = np.array(len(self.maps)-1) * np.array(resample)
             ani_data = [x.resample(resample) for x in self.maps]
         else:
@@ -181,13 +181,13 @@ class MapCube(object):
             im.set_array(ani_data[i].data)
             im.set_cmap(self.maps[i].cmap)
             im.set_norm(self.maps[i].mpl_color_normalizer)
-            im.set_extent(self.maps[i].xrange + self.maps[i].yrange)
+            im.set_extent(np.concatenate((self.maps[i].xrange.value, self.maps[i].yrange.value)))
             if annotate:
                 annotate_frame(i)
 
         ani = matplotlib.animation.FuncAnimation(fig, updatefig,
-                                                frames=range(0,len(self.maps)),
-                                                fargs=[im,annotate,ani_data],
+                                                frames=range(0, len(self.maps)),
+                                                fargs=[im, annotate, ani_data],
                                                 interval=interval,
                                                 blit=False)
 
