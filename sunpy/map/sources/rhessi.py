@@ -41,7 +41,7 @@ class RHESSIMap(GenericMap):
 
         self.meta['waveunit'] = 'keV'
         self.meta['wavelnth'] = [self.meta['energy_l'], self.meta['energy_h']]
-        self.cmap = plt.get_cmap('jet')
+        self.plot_settings['cmap'] = cm.get_cmap('rhessi')
 
     @property
     def measurement(self):
