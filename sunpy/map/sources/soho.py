@@ -51,7 +51,7 @@ class EITMap(GenericMap):
         self._name = self.detector + " " + str(self.measurement)
         self._nickname = self.detector
 
-        self.cmap = cm.get_cmap(self._get_cmap_name())
+        self.plot_settings['cmap'] = cm.get_cmap(self._get_cmap_name())
 
     @property
     def rsun_obs(self):
@@ -66,30 +66,6 @@ class EITMap(GenericMap):
         """Determines if header corresponds to an EIT image"""
         return header.get('instrume') == 'EIT'
 
-    def _get_mpl_normalizer(self):
-        """Returns a Normalize object to be used with EIT data"""
-        # byte-scaled images have most likely already been scaled
-        # THIS WARNING IS KNOWN TO APPLY TO 0.3 code only.
-        # NOT TESTED in sunpy 0.4 when the glymur library
-        # is used instead of pyopenjpeg.  It seems that EIT JP2 files read by
-        # pyopenjpeg and openjpeg using the j2k_to_image command, returns
-        # np.float32 arrays.  For comparison, AIA JP2 files read the same way
-        # return np.uint8 arrays.  EIT JP2 files have already been
-        # byte-scaled when they are created by the Helioviewer Project.
-        # SunPy 0.3 and lower code assumes that if datatype of the data array
-        # was np.uint8 then the image was highly likely to be byte-scaled
-        # Since the data datatype was in fact a np.float32, then the byte-scaling
-        # was never picked up.
-        if self.data.dtype == np.float32:
-            return None
-
-        mean = self.mean()
-        std = self.std()
-
-        vmin = 1
-        vmax = min(self.max(), mean + 5 * std)
-
-        return colors.LogNorm(vmin, vmax)
 
 class LASCOMap(GenericMap):
     """LASCO Image Map definition"""
@@ -117,7 +93,7 @@ class LASCOMap(GenericMap):
 
         self._name = self.instrument + " " + self.detector + " " + self.measurement
         self._nickname = self.instrument + "-" + self.detector
-        self.cmap = cm.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
+        self.plot_settings['cmap'] = cm.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
 
     @property
     def measurement(self):
