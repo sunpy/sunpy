@@ -285,7 +285,7 @@ scale:\t\t [{dx}, {dy}]
     @property
     def instrument(self):
         """Instrument name"""
-        return self.meta.get('instrume', "")
+        return self.meta.get('instrume', "").replace("_", " ")
 
     @property
     def measurement(self):
@@ -300,7 +300,7 @@ scale:\t\t [{dx}, {dy}]
     @property
     def observatory(self):
         """Observatory or Telescope name"""
-        return self.meta.get('obsrvtry', self.meta.get('telescop', ""))
+        return self.meta.get('obsrvtry', self.meta.get('telescop', "")).replace("_", " ")
 
     @property
     def xrange(self):
