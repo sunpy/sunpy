@@ -186,8 +186,8 @@ class MapCube(object):
                 annotate_frame(i)
 
         ani = matplotlib.animation.FuncAnimation(fig, updatefig,
-                                                frames=range(0,len(self.maps)),
-                                                fargs=[im,annotate,ani_data],
+                                                frames=range(0, len(self.maps)),
+                                                fargs=[im, annotate, ani_data],
                                                 interval=interval,
                                                 blit=False)
 
