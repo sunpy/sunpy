@@ -137,15 +137,17 @@ class GenericMap(NDData):
         self._name = self.observatory + " " + str(self.measurement)
         self._nickname = self.detector
 
-        # Visualization attributes
-        self.cmap = cm.gray
-
         # Validate header
         # TODO: This should be a function of the header, not of the map
         self._validate()
 
-        # Set mpl.colors.Normalize instance for plot scaling
-        self.mpl_color_normalizer = self._get_mpl_normalizer()
+        # Visualization attributes
+        self.plot_settings = {'cmap': cm.gray,
+                              'norm': self._get_mpl_normalizer(),
+                              'title': "{name} {date:{tmf}}".format(name=self.name,
+                                                                    date=parse_time(self.date),
+                                                                    tmf=TIME_FORMAT)
+                              }
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
@@ -1150,7 +1152,7 @@ scale:\t\t [{dx}, {dy}]
         return axes
 
     @toggle_pylab
-    def peek(self, draw_limb=False, draw_grid=False, gamma=None,
+    def peek(self, draw_limb=False, draw_grid=False,
                    colorbar=True, basic_plot=False, **matplot_args):
         """Displays the map in a new figure
 
@@ -1207,10 +1209,8 @@ scale:\t\t [{dx}, {dy}]
 
         figure.show()
 
-        return figure
-
     @toggle_pylab
-    def plot(self, gamma=None, annotate=True, axes=None, **imshow_args):
+    def plot(self, annotate=True, axes=None, **imshow_args):
         """ Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
 
@@ -1256,9 +1256,7 @@ scale:\t\t [{dx}, {dy}]
 
         # Normal plot
         if annotate:
-            axes.set_title("{name} {date:{tmf}}".format(name=self.name,
-                                                        date=parse_time(self.date),
-                                                        tmf=TIME_FORMAT))
+            axes.set_title(self.plot_settings.get('title'))
 
             # x-axis label
             if self.coordinate_system.x == 'HG':
