@@ -1292,18 +1292,13 @@ scale:\t\t [{dx}, {dy}]
         """
         Return the keyword arguments for imshow to display this map
         """
-        if wcsaxes_compat.is_wcsaxes(axes):
-            kwargs = {'cmap': self.plot_settings['cmap'],
-                      'origin': 'lower',
-                      'norm': self.mpl_color_normalizer,
-                      'interpolation': 'nearest'}
-        else:
-            # make imshow kwargs a dict
-            kwargs = {'origin': 'lower',
-                      'cmap': self.plot_settings['cmap'],
-                      'norm': self.mpl_color_normalizer,
-                      'extent': list(self.xrange.value) + list(self.yrange.value),
-                      'interpolation': 'nearest'}
+        kwargs = {'cmap': cmap,
+                  'origin': 'lower',
+                  'norm': self.mpl_color_normalizer,
+                  'interpolation': 'nearest'}
+
+        if not wcsaxes_compat.is_wcsaxes(axes):
+            kwargs.udpate({'extent': list(self.xrange.value) + list(self.yrange.value)})
 
         return kwargs
 
@@ -1317,7 +1312,7 @@ scale:\t\t [{dx}, {dy}]
         if self.dtype == np.uint8:
             return None
 
-        return colors.Normalize(self.min(), self.max())
+        return colors.Normalize(self.data.min(), self.data.max())
 
 
 class InvalidHeaderInformation(ValueError):
