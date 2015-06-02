@@ -35,8 +35,8 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
 
     plot_function: function
         A function to call when each map is plotted, the function must have
-        the signature `(fig, axes, map)` where fig and axes are the figure and
-        axes objects of the plot and map is the current frames Map object.
+        the signature `(fig, axes, smap)` where fig and axes are the figure and
+        axes objects of the plot and smap is the current frames Map object.
         Any objects returned from this function will have their `remove()` method
         called at the start of the next frame to clear them from the plot.
 
@@ -50,7 +50,7 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         self.mapcube = mapcube
         self.annotate = annotate
         self.user_plot_function = kwargs.pop('plot_function',
-                                             lambda fig, ax, map: [])
+                                             lambda fig, ax, smap: [])
         # List of object to remove at the start of each plot step
         self.remove_obj = []
         slider_functions = [self.updatefig]
