@@ -21,7 +21,7 @@ class EUVIMap(GenericMap):
         self._name = self.observatory + " " + self.detector + " " + str(self.measurement)
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
 
-        self.cmap = cm.get_cmap('sohoeit{wl:d}'.format(wl=int(self.wavelength.value)))
+        self.plot_settings['cmap'] = cm.get_cmap('sohoeit{wl:d}'.format(wl=int(self.wavelength.value)))
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
@@ -44,6 +44,15 @@ class EUVIMap(GenericMap):
         """Determines if header corresponds to an EUVI image"""
         return header.get('detector') == 'EUVI'
 
+    def _get_mpl_normalizer(self):
+        """Returns a Normalize object to be used with XRT data"""
+        # byte-scaled images have most likely already been scaled
+        if self.dtype == np.uint8:
+            return None
+
+        return colors.PowerNorm(0.5, self.min(), self.max())
+
+
 class CORMap(GenericMap):
     """COR Image Map definition"""
 
@@ -54,7 +63,7 @@ class CORMap(GenericMap):
         self._name = self.observatory + " " + self.detector + " " + str(self.measurement)
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
 
-        self.cmap = cm.get_cmap('stereocor{det!s}'.format(det=self.detector[-1]))
+        self.plot_settings['cmap'] = cm.get_cmap('stereocor{det!s}'.format(det=self.detector[-1]))
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
@@ -81,7 +90,7 @@ class HIMap(GenericMap):
         self._name = self.observatory + " " + self.detector + " " + str(self.measurement)
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
 
-        self.cmap = cm.get_cmap('stereohi{det!s}'.format(det=self.detector[-1]))
+        self.plot_settings['cmap'] = cm.get_cmap('stereohi{det!s}'.format(det=self.detector[-1]))
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword

@@ -1316,7 +1316,7 @@ scale:\t\t [{dx}, {dy}]
         """
         if self.dtype == np.uint8:
             return None
-        
+
         return colors.Normalize(self.min(), self.max())
 
 
