@@ -1314,7 +1314,7 @@ scale:\t\t [{dx}, {dy}]
 
         Not yet implemented.
         """
-        return None
+        return colors.Normalize(self.min(), self.max())
 
 
 class InvalidHeaderInformation(ValueError):
