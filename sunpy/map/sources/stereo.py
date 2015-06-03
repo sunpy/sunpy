@@ -48,11 +48,7 @@ class EUVIMap(GenericMap):
 
     def _get_mpl_normalizer(self):
         """Returns a Normalize object to be used with XRT data"""
-        # byte-scaled images have most likely already been scaled
-        if self.dtype == np.uint8:
-            return None
-
-        return PowerNorm(0.5, self.min(), self.max())
+        return PowerNorm(0.25, self.data.min(), self.data.max())
 
 
 class CORMap(GenericMap):
@@ -82,6 +78,10 @@ class CORMap(GenericMap):
         """Determines if header corresponds to an COR image"""
         return header.get('detector', '').startswith('COR')
 
+    def _get_mpl_normalizer(self):
+        """Returns a Normalize object to be used with XRT data"""
+        return PowerNorm(0.25, self.data.min(), self.data.max())
+
 class HIMap(GenericMap):
     """HI Image Map definition"""
 
@@ -108,3 +108,7 @@ class HIMap(GenericMap):
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an COR image"""
         return header.get('detector', '').startswith('HI')
+
+    def _get_mpl_normalizer(self):
+        """Returns a Normalize object to be used with XRT data"""
+        return PowerNorm(0.25, self.data.min(), self.data.max())

@@ -43,12 +43,8 @@ class AIAMap(GenericMap):
 
     def _get_mpl_normalizer(self):
         """Returns a Normalize object to be used with AIA data"""
-        # byte-scaled images have most likely already been scaled
-        if self.data.dtype == np.uint8:
-            return None
-
-        vmin = self.min()
-        vmax = self.max()
+        vmin = self.data.min()
+        vmax = self.data.max()
 
         if self.wavelength.value == 304:
             return colors.PowerNorm(0.35, vmin, vmax)

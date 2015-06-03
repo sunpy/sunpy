@@ -4,9 +4,8 @@
 __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"
 
-import matplotlib.pyplot as plt
-
 from sunpy.map import GenericMap
+from sunpy.cm import cm
 
 import astropy.units as u
 
