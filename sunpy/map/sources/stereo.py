@@ -22,6 +22,7 @@ class EUVIMap(GenericMap):
 
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = cm.get_cmap('sohoeit{wl:d}'.format(wl=int(self.wavelength.value)))
+        self.meta['waveunit'] = 'Angstrom'
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
