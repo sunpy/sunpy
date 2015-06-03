@@ -6,7 +6,7 @@ __email__ = "jack.ireland@nasa.gov"
 
 from sunpy.map import GenericMap
 from sunpy.cm import cm
-import numpy as np
+
 from matplotlib import colors
 
 __all__ = ['TRACEMap']
@@ -46,10 +46,6 @@ above concerning how to read "tri" files in SSWIDL.
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an TRACE image"""
         return header.get('instrume') == 'TRACE'
-
-    @property
-    def measurement(self):
-        return str(self.meta['wave_len'])
 
     def _get_mpl_normalizer(self):
         """Returns a Normalize object to be used with TRACE data"""

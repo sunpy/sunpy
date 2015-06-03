@@ -43,10 +43,6 @@ class RHESSIMap(GenericMap):
         self.plot_settings['cmap'] = cm.get_cmap('rhessi')
 
     @property
-    def measurement(self):
-        return u.Quantity([self.meta['energy_l'], self.meta['energy_h']], self.meta['waveunit'])
-
-    @property
     def detector(self):
         return self.meta['telescop']
 
