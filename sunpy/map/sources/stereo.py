@@ -59,7 +59,8 @@ class CORMap(GenericMap):
 
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = cm.get_cmap('stereocor{det!s}'.format(det=self.detector[-1]))
-
+        self.meta['wavelnth'] = np.nan
+        self.meta['waveunit'] = 'nm'
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
         if ('date_obs' in self.meta) and not('date-obs' in self.meta):
@@ -85,7 +86,8 @@ class HIMap(GenericMap):
     def __init__(self, data, header, **kwargs):
 
         GenericMap.__init__(self, data, header, **kwargs)
-
+        self.meta['wavelnth'] = np.nan
+        self.meta['waveunit'] = 'nm'
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = cm.get_cmap('stereohi{det!s}'.format(det=self.detector[-1]))
 

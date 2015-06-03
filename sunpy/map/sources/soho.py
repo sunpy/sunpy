@@ -88,7 +88,8 @@ class LASCOMap(GenericMap):
         # If non-standard Keyword is present, correct it too, for compatibility.
         if 'date_obs' in self.meta:
             self.meta['date_obs'] = self.meta['date-obs']
-
+        self.meta['wavelnth'] = np.nan
+        self.meta['waveunit'] = 'nm'
         self._nickname = self.instrument + "-" + self.detector
         self.plot_settings['cmap'] = cm.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
 
@@ -112,6 +113,8 @@ class MDIMap(GenericMap):
         # Fill in some missing or broken info
         self.meta['detector'] = "MDI"
         self._fix_dsun()
+        self.meta['wavelnth'] = np.nan
+        self.meta['waveunit'] = 'nm'
         self._nickname = self.detector + " " + self.measurement
 
     @property
