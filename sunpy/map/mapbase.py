@@ -133,7 +133,7 @@ class GenericMap(NDData):
         self._fix_naxis()
 
         # Setup some attributes
-        self._name = self.observatory + " " + str(self.measurement)
+        self._name = self.observatory + " " + self.detector + " " + str(self.measurement)
         self._nickname = self.detector
 
         # Validate header

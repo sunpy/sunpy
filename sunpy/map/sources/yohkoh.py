@@ -28,9 +28,6 @@ class SXTMap(GenericMap):
 
         self.meta['detector'] = "SXT"
         self.meta['telescop'] = "Yohkoh"
-
-        self._name = self.observatory + " " + self.wavelength_string
-
         self.cmap = cm.get_cmap(name='yohkohsxt' + self.wavelength_string[0:2].lower())
 
         # 2012/12/19 - the SXT headers do not have a value of the distance from

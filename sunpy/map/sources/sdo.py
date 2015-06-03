@@ -30,7 +30,6 @@ class AIAMap(GenericMap):
 #        self.meta['instrme'] = "AIA"
 
         self._nickname = self.detector
-        self._name = self.detector + " " + str(self.measurement)
         self.plot_settings['cmap'] = cm.get_cmap(self._get_cmap_name())
 
     @property

@@ -38,11 +38,7 @@ above concerning how to read "tri" files in SSWIDL.
         # already in the header.
         self.meta['detector'] = "TRACE"
         self.meta['obsrvtry'] = "TRACE"
-
-        # Name that will appear at the top of a TRACE image plot
-        self._name = self.detector + " " + self.measurement
         self._nickname = self.detector
-
         # Colour maps
         self.cmap = cm.get_cmap('trace' + self.measurement)
 
