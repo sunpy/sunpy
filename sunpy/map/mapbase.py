@@ -141,9 +141,13 @@ class GenericMap(NDData):
         self._validate()
         self.mpl_color_normalizer = self._get_mpl_normalizer()
 
+        if self.dtype == np.uint8:
+            norm = None
+        else:
+            norm = self._get_mpl_normalizer()
         # Visualization attributes
         self.plot_settings = {'cmap': cm.gray,
-                              'norm': self._get_mpl_normalizer(),
+                              'norm': norm,
                               'title': "{name} {date:{tmf}}".format(name=self.name,
                                                                     date=parse_time(self.date),
                                                                     tmf=TIME_FORMAT)
@@ -1294,7 +1298,7 @@ scale:\t\t [{dx}, {dy}]
         """
         kwargs = {'cmap': cmap,
                   'origin': 'lower',
-                  'norm': self.mpl_color_normalizer,
+                  'norm': self.plot_settings['norm'],
                   'interpolation': 'nearest'}
 
         if not wcsaxes_compat.is_wcsaxes(axes):
@@ -1308,9 +1312,6 @@ scale:\t\t [{dx}, {dy}]
 
         Not yet implemented.
         """
-        if self.dtype == np.uint8:
-            return None
-
         return colors.Normalize(self.data.min(), self.data.max())
 
 
