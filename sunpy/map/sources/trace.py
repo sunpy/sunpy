@@ -57,10 +57,6 @@ above concerning how to read "tri" files in SSWIDL.
 
     def _get_mpl_normalizer(self):
         """Returns a Normalize object to be used with TRACE data"""
-        # byte-scaled images have most likely already been scaled
-        if self.dtype == np.uint8:
-            return None
-
         mean = self.mean()
         std = self.std()
 

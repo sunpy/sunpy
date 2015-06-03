@@ -108,5 +108,4 @@ class SOTMap(GenericMap):
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an SOT image"""
-
         return header.get('instrume') in cls.Instruments
