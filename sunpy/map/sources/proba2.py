@@ -29,8 +29,7 @@ class SWAPMap(GenericMap):
         self.meta['obsrvtry'] = "PROBA2"
 
         self._nickname = self.detector
-
-        self.cmap = cm.get_cmap(name='sdoaia171')
+        self.plot_settings['cmap'] = cm.get_cmap(name='sdoaia171')
 
 
     @classmethod
