@@ -78,7 +78,7 @@ class CORMap(GenericMap):
 
     def _get_mpl_normalizer(self):
         """Returns a Normalize object to be used with XRT data"""
-        return PowerNorm(0.25, self.data.min(), self.data.max())
+        return PowerNorm(0.5, self.data.min(), self.data.max())
 
 class HIMap(GenericMap):
     """HI Image Map definition"""

@@ -58,7 +58,7 @@ class AIAMap(GenericMap):
         if self.wavelength.value == 335:
             return colors.PowerNorm(0.4, 0, vmax)
         if self.wavelength.value == 94:
-            return colors.PowerNorm(0.35, 0, vmax)
+            return colors.PowerNorm(0.45, 0, vmax)
 
         return colors.Normalize(vmin, vmax)
 
