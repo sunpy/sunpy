@@ -1313,7 +1313,7 @@ scale:\t\t {scale}
 
         Not yet implemented.
         """
-        return colors.Normalize(self.data.min(), self.data.max())
+        return colors.Normalize(np.nanmin(self.data), np.nanmax(self.data))
 
 
 class InvalidHeaderInformation(ValueError):
