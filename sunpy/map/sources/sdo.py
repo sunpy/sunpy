@@ -77,7 +77,7 @@ class HMIMap(GenericMap):
         self.meta['detector'] = "HMI"
 #        self.meta['instrme'] = "HMI"
 #        self.meta['obsrvtry'] = "SDO"
-
+        self.meta['waveunit'] = 'Angstrom'
         self._nickname = self.detector
 
     @property
