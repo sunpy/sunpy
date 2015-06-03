@@ -92,8 +92,6 @@ class SOTMap(GenericMap):
 
         self.meta['detector'] = "SOT"
         self.meta['telescop'] = "Hinode"
-
-        self._name = self.observatory + '/' + self.instrument
         self._nickname = self.detector
 
         #TODO (add other options, Now all threated as intensity. This followes Hinode SDC archive)

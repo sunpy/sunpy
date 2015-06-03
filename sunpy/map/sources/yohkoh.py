@@ -58,7 +58,7 @@ class SXTMap(GenericMap):
 
     def _get_mpl_normalizer(self):
         """Returns a Normalize object to be used with SXT data"""
-        return colors.Normalize(self.data.min(), self.data.max())
+        return colors.PowerNorm(0.5, self.data.min(), self.data.max())
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
