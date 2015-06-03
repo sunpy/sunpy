@@ -133,7 +133,6 @@ class GenericMap(NDData):
         self._fix_naxis()
 
         # Setup some attributes
-        self._name = self.observatory + " " + self.detector + " " + str(self.measurement)
         self._nickname = self.detector
 
         # Validate header
@@ -232,11 +231,7 @@ scale:\t\t {scale}
     @property
     def name(self):
         """Human-readable description of map-type"""
-        return self._name
-
-    @name.setter
-    def name(self, n):
-        self._name = n
+        return self.observatory + " " + self.detector + " " + str(self.measurement)
 
     @property
     def nickname(self):
