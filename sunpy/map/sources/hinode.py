@@ -48,7 +48,7 @@ class XRTMap(GenericMap):
 #        self.meta['instrume'] = "XRT"
         self.meta['telescop'] = "Hinode"
 
-        self._name = "{0} {1}-{2}".format(self.detector, fw1, fw2)
+        #self._name = "{0} {1}-{2}".format(self.detector, fw1, fw2)
         self._nickname = self.detector
 
         self.plot_settings['cmap'] = cm.get_cmap(name='hinodexrt')

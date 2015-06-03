@@ -47,8 +47,6 @@ class EITMap(GenericMap):
         self.meta['detector'] = "EIT"
         self.meta['waveunit'] = "Angstrom"
         self._fix_dsun()
-
-        self._name = self.detector + " " + str(self.measurement)
         self._nickname = self.detector
 
         self.plot_settings['cmap'] = cm.get_cmap(self._get_cmap_name())
@@ -91,7 +89,6 @@ class LASCOMap(GenericMap):
         if 'date_obs' in self.meta:
             self.meta['date_obs'] = self.meta['date-obs']
 
-        self._name = self.instrument + " " + self.detector + " " + self.measurement
         self._nickname = self.instrument + "-" + self.detector
         self.plot_settings['cmap'] = cm.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
 
@@ -115,8 +112,6 @@ class MDIMap(GenericMap):
         # Fill in some missing or broken info
         self.meta['detector'] = "MDI"
         self._fix_dsun()
-
-        self._name = self.detector + " " + self.measurement
         self._nickname = self.detector + " " + self.measurement
 
     @property
