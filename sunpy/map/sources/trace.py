@@ -40,7 +40,7 @@ above concerning how to read "tri" files in SSWIDL.
         self.meta['obsrvtry'] = "TRACE"
         self._nickname = self.detector
         # Colour maps
-        self.cmap = cm.get_cmap('trace' + self.measurement)
+        self.plot_settings['cmap'] = cm.get_cmap('trace' + self.measurement)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
