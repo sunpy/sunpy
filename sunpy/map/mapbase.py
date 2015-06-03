@@ -168,16 +168,17 @@ Observatory:\t {obs}
 Instrument:\t {inst}
 Detector:\t {det}
 Measurement:\t {meas:0.0f}
+Wavelength:\t {wave}
 Obs Date:\t {date}
 dt:\t\t {dt:f}
 Dimension:\t {dim}
-scale:\t\t [{dx}, {dy}]
+scale:\t\t {scale}
 
 """.format(dtype=self.__class__.__name__,
            obs=self.observatory, inst=self.instrument, det=self.detector,
-           meas=self.measurement, date=self.date, dt=self.exposure_time,
+           meas=self.measurement, wave=self.wavelength, date=self.date, dt=self.exposure_time,
            dim=u.Quantity(self.dimensions),
-           dx=self.scale.x, dy=self.scale.y)
+           scale=self.scale)
 + self.data.__repr__())
 
     @property
