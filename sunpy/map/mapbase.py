@@ -167,7 +167,7 @@ class GenericMap(NDData):
 Observatory:\t {obs}
 Instrument:\t {inst}
 Detector:\t {det}
-Measurement:\t {meas:0.0f}
+Measurement:\t {meas}
 Wavelength:\t {wave}
 Obs Date:\t {date}
 dt:\t\t {dt:f}
