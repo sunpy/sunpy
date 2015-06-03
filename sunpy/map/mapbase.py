@@ -177,7 +177,7 @@ scale:\t\t {scale}
            obs=self.observatory, inst=self.instrument, det=self.detector,
            meas=self.measurement, wave=self.wavelength, date=self.date, dt=self.exposure_time,
            dim=u.Quantity(self.dimensions),
-           scale=scale=u.Quantity(self.scale)
+           scale=u.Quantity(self.scale)
 + self.data.__repr__())
 
     @property
