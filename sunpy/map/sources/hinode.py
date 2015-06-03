@@ -10,7 +10,6 @@ from matplotlib import colors
 from sunpy.map import GenericMap
 from sunpy.cm import cm
 
-
 __all__ = ['XRTMap', 'SOTMap']
 
 def _lower_list(L):
@@ -47,11 +46,16 @@ class XRTMap(GenericMap):
         self.meta['detector'] = "XRT"
 #        self.meta['instrume'] = "XRT"
         self.meta['telescop'] = "Hinode"
-
-        #self._name = "{0} {1}-{2}".format(self.detector, fw1, fw2)
-        self._nickname = self.detector
-
+        self.meta['wavelnth'] = np.nan
+        self.meta['waveunit'] = 'keV'
+        self._nickname = "{0} {1}-{2}".format(self.detector, fw1, fw2)
         self.plot_settings['cmap'] = cm.get_cmap(name='hinodexrt')
+
+    @property
+    def measurement(self):
+        fw1 = self.meta.get('EC_FW1_').replace("_", " ")
+        fw2 = self.meta.get('EC_FW2_').replace("_", " ")
+        return "{0}-{1}".format(fw1, fw2)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
