@@ -27,7 +27,6 @@ class RHESSIMap(GenericMap):
 
         GenericMap.__init__(self, data, header, **kwargs)
 
-        self._name = "RHESSI {measure[0]:.0f} - {measure[1]:.0f} keV".format(measure=self.measurement)
         self._nickname = self.detector
 
         # Fix some broken/misapplied keywords
@@ -41,6 +40,7 @@ class RHESSIMap(GenericMap):
         self.meta['waveunit'] = 'keV'
         self.meta['wavelnth'] = [self.meta['energy_l'], self.meta['energy_h']]
         self.plot_settings['cmap'] = cm.get_cmap('rhessi')
+        self._name = "RHESSI {measure[0]:.0f} - {measure[1]:.0f}".format(measure=self.measurement)
 
     @property
     def detector(self):
