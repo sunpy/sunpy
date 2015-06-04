@@ -4,14 +4,13 @@
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
-import astropy.units as u
 import numpy as np
 
 from sunpy.map import GenericMap
 from sunpy.cm import cm
 from matplotlib.colors import PowerNorm
 
-__all__ = ['EUVIMap', 'CORMap']
+__all__ = ['EUVIMap', 'CORMap', 'HIMap']
 
 class EUVIMap(GenericMap):
     """STEREO-SECCHI EUVI Image Map
@@ -22,7 +21,7 @@ class EUVIMap(GenericMap):
 
     References
     ----------
-    | `Mission Page <http://stereo.gsfc.nasa.gov>`_
+    | `STEREO Mission Page <http://stereo.gsfc.nasa.gov>`_
     | `STEREO SECCHI <http://secchi.nrl.navy.mil>`_
     | `Instrument Page <http://secchi.lmsal.com/EUVI/>`_
     """
@@ -70,7 +69,7 @@ class CORMap(GenericMap):
 
     References
     ----------
-    | `Mission Page <http://stereo.gsfc.nasa.gov>`_
+    | `STEREO Mission Page <http://stereo.gsfc.nasa.gov>`_
     | `STEREO SECCHI <http://secchi.nrl.navy.mil>`_
     | `COR1 Instrument Page <http://cor1.gsfc.nasa.gov>`_
     | `COR2 Instrument Page <http://secchi.nrl.navy.mil/index.php?p=cor2>`_
@@ -116,9 +115,9 @@ class HIMap(GenericMap):
 
     References
     ----------
-    | `Mission Page <http://stereo.gsfc.nasa.gov>`_
+    | `STEREO Mission Page <http://stereo.gsfc.nasa.gov>`_
     | `STEREO SECCHI <http://secchi.nrl.navy.mil>`_
-    | `Instrument Page <http://www.stereo.rl.ac.uk>`_
+    | `HI Instrument Page <http://www.stereo.rl.ac.uk>`_
     """
     def __init__(self, data, header, **kwargs):
 
