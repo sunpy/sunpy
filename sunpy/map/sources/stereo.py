@@ -58,9 +58,11 @@ class CORMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
 
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
-        self.plot_settings['cmap'] = cm.get_cmap('stereocor{det!s}'.format(det=self.detector[-1]))
         self.meta['wavelnth'] = np.nan
         self.meta['waveunit'] = 'nm'
+        self.plot_settings['cmap'] = cm.get_cmap('stereocor{det!s}'.format(det=self.detector[-1]))
+        self.plot_settings['norm'] = PowerNorm(0.5)
+
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
         if ('date_obs' in self.meta) and not('date-obs' in self.meta):
@@ -76,10 +78,6 @@ class CORMap(GenericMap):
         """Determines if header corresponds to an COR image"""
         return header.get('detector', '').startswith('COR')
 
-    def _get_mpl_normalizer(self):
-        """Returns a Normalize object to be used with XRT data"""
-        return PowerNorm(0.5, self.data.min(), self.data.max())
-
 class HIMap(GenericMap):
     """HI Image Map definition"""
 
@@ -90,6 +88,7 @@ class HIMap(GenericMap):
         self.meta['waveunit'] = 'nm'
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = cm.get_cmap('stereohi{det!s}'.format(det=self.detector[-1]))
+        self.plot_settings['norm'] = PowerNorm(0.25)
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
@@ -105,7 +104,3 @@ class HIMap(GenericMap):
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an COR image"""
         return header.get('detector', '').startswith('HI')
-
-    def _get_mpl_normalizer(self):
-        """Returns a Normalize object to be used with XRT data"""
-        return PowerNorm(0.25, self.data.min(), self.data.max())

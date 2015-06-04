@@ -32,6 +32,12 @@ class AIAMap(GenericMap):
         self._nickname = self.detector
         self.plot_settings['cmap'] = cm.get_cmap(self._get_cmap_name())
 
+        norm = {304: colors.PowerNorm(0.35), 211: colors.PowerNorm(0.5),
+                193: colors.PowerNorm(0.5), 171: colors.PowerNorm(0.5),
+                131: colors.PowerNorm(0.5), 335: colors.PowerNorm(0.4),
+                94: colors.PowerNorm(0.45)}
+        self.plot_settings['norm'] = norm[int(self.wavelength.to('Angstrom').value)]
+
     @property
     def observatory(self):
         return self.meta['telescop'].split('/')[0]
@@ -39,28 +45,6 @@ class AIAMap(GenericMap):
     @property
     def processing_level(self):
         return self.meta['lvl_num']
-
-    def _get_mpl_normalizer(self):
-        """Returns a Normalize object to be used with AIA data"""
-        vmin = self.data.min()
-        vmax = self.data.max()
-
-        if self.wavelength.value == 304:
-            return colors.PowerNorm(0.35, vmin, vmax)
-        if self.wavelength.value == 211:
-            return colors.PowerNorm(0.5, vmin, vmax)
-        if self.wavelength.value == 193:
-            return colors.PowerNorm(0.5, vmin, vmax)
-        if self.wavelength.value == 171:
-            return colors.PowerNorm(0.5, vmin, vmax)
-        if self.wavelength.value == 131:
-            return colors.PowerNorm(0.5, 0, vmax)
-        if self.wavelength.value == 335:
-            return colors.PowerNorm(0.4, 0, vmax)
-        if self.wavelength.value == 94:
-            return colors.PowerNorm(0.45, 0, vmax)
-
-        return colors.Normalize(vmin, vmax)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

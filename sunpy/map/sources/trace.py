@@ -41,18 +41,9 @@ above concerning how to read "tri" files in SSWIDL.
         self._nickname = self.detector
         # Colour maps
         self.plot_settings['cmap'] = cm.get_cmap('trace' + self.measurement)
+        self.plot_settings['norm'] = colors.LogNorm()
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an TRACE image"""
         return header.get('instrume') == 'TRACE'
-
-    def _get_mpl_normalizer(self):
-        """Returns a Normalize object to be used with TRACE data"""
-        mean = self.mean()
-        std = self.std()
-
-        vmin = 1
-        vmax = min(self.max(), mean + 5 * std)
-
-        return colors.LogNorm(vmin, vmax)

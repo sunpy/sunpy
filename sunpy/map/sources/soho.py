@@ -48,8 +48,8 @@ class EITMap(GenericMap):
         self.meta['waveunit'] = "Angstrom"
         self._fix_dsun()
         self._nickname = self.detector
-
         self.plot_settings['cmap'] = cm.get_cmap(self._get_cmap_name())
+        self.plot_settings['norm'] = colors.PowerNorm(0.5)
 
     @property
     def rsun_obs(self):
@@ -92,6 +92,7 @@ class LASCOMap(GenericMap):
         self.meta['waveunit'] = 'nm'
         self._nickname = self.instrument + "-" + self.detector
         self.plot_settings['cmap'] = cm.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
+        self.plot_settings['norm'] = colors.PowerNorm(0.5)
 
     @property
     def measurement(self):
@@ -102,6 +103,7 @@ class LASCOMap(GenericMap):
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an LASCO image"""
         return header.get('instrume') == 'LASCO'
+
 
 class MDIMap(GenericMap):
     """MDI Image Map definition"""
@@ -116,6 +118,12 @@ class MDIMap(GenericMap):
         self.meta['wavelnth'] = np.nan
         self.meta['waveunit'] = 'nm'
         self._nickname = self.detector + " " + self.measurement
+        vmin = np.nanmin(self.data)
+        vmax = np.nanmax(self.data)
+        if abs(vmin) > abs(vmax):
+            self.plot_settings['norm'] = colors.Normalize(-vmin, vmin)
+        else:
+            self.plot_settings['norm'] = colors.Normalize(-vmax, vmax)
 
     @property
     def measurement(self):

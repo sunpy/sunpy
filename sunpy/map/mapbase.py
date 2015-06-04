@@ -138,18 +138,19 @@ class GenericMap(NDData):
         # Validate header
         # TODO: This should be a function of the header, not of the map
         self._validate()
-        self.mpl_color_normalizer = self._get_mpl_normalizer()
 
         if self.dtype == np.uint8:
             norm = None
         else:
-            norm = self._get_mpl_normalizer()
+            norm = colors.Normalize(np.nanmin(self.data), np.nanmax(self.data))
         # Visualization attributes
         self.plot_settings = {'cmap': cm.gray,
                               'norm': norm,
                               'title': "{name} {date:{tmf}}".format(name=self.name,
                                                                     date=parse_time(self.date),
-                                                                    tmf=TIME_FORMAT)
+                                                                    tmf=TIME_FORMAT),
+                              'interpolation': 'nearest',
+                              'origin': 'lower'
                               }
 
     def __getitem__(self, key):
@@ -1210,15 +1211,12 @@ scale:\t\t {scale}
         figure.show()
 
     @toggle_pylab
-    def plot(self, annotate=True, axes=None, **imshow_args):
+    def plot(self, annotate=True, axes=None, **imshow_kwargs):
         """ Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
 
         Parameters
         ----------
-        gamma : float
-            Gamma value to use for the color map
-
         annotate : bool
             If true, the data is plotted at it's natural scale; with
             title and axis labels.
@@ -1227,7 +1225,7 @@ scale:\t\t {scale}
             If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
 
-        **imshow_args : dict
+        **imshow_kwargs  : dict
             Any additional imshow arguments that should be used
             when plotting the image.
 
@@ -1273,13 +1271,12 @@ scale:\t\t {scale}
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
 
+        imshow_args = deepcopy(self.plot_settings)
+        if not wcsaxes_compat.is_wcsaxes(axes):
+            imshow_args.update({'extent': list(self.xrange.value) + list(self.yrange.value)})
+        imshow_args.update(imshow_kwargs)
 
-        cmap = deepcopy(self.plot_settings['cmap'])
-
-        kwargs = self._mpl_imshow_kwargs(axes, cmap)
-        kwargs.update(imshow_args)
-
-        ret = axes.imshow(self.data, **kwargs)
+        ret = axes.imshow(self.data, **imshow_args)
 
         if wcsaxes_compat.is_wcsaxes(axes):
             wcsaxes_compat.default_wcs_grid(axes)
@@ -1287,28 +1284,6 @@ scale:\t\t {scale}
         #Set current image (makes colorbar work)
         plt.sci(ret)
         return ret
-
-    def _mpl_imshow_kwargs(self, axes, cmap):
-        """
-        Return the keyword arguments for imshow to display this map
-        """
-        kwargs = {'cmap': cmap,
-                  'origin': 'lower',
-                  'norm': self.plot_settings['norm'],
-                  'interpolation': 'nearest'}
-
-        if not wcsaxes_compat.is_wcsaxes(axes):
-            kwargs.update({'extent': list(self.xrange.value) + list(self.yrange.value)})
-
-        return kwargs
-
-    def _get_mpl_normalizer(self):
-        """
-        Returns a default mpl.colors.Normalize instance for plot scaling.
-
-        Not yet implemented.
-        """
-        return colors.Normalize(np.nanmin(self.data), np.nanmax(self.data))
 
 
 class InvalidHeaderInformation(ValueError):
