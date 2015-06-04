@@ -3,7 +3,7 @@ Plotting in SunPy
 -----------------
 
 SunPy makes use of `matplotlib <http://matplotlib.org/>`_ for all of its plotting needs
-as such tries to follow the matplotlib plotting philosophy.
+as such it tries to follow the matplotlib plotting philosophy.
 It is therefore useful to go over how matplotlib works as background.
 
 1. Matplotlib Tutorial
@@ -14,10 +14,10 @@ usage documentation <http://matplotlib.org/faq/usage_faq.html>`_.
 Matplotlib provides two main pathways for plotting. One is meant for interactive use
 (e.g. command-line) and the other for non-interactive use (e.g. modules). It is important
 to recognize though that the interactive-use pathway (referred to as pyplot) just
-provides shortcuts doing many of the more advanced non-interactive functions in the
+provides shortcuts for doing many of the more advanced non-interactive functions in the
 background. It is therefore possible to switch between the two as necessary and
-convenient and it is possible to use pyplot in non-interactive way. In this manner pyplot
-is just a shortcut making it quicker to set up plot axes and figures.
+it is possible to use pyplot in a non-interactive way. In this manner pyplot
+is just a shortcut to making it quicker to set up plot axes and figures.
 In order to get access to the full interactive capabilities of pyplot it is
 necessary to turn this feature on. This will be discussed below.
 Pylab is another matplotlib usage scenario but it is essentially just pyplot with the
@@ -34,13 +34,10 @@ Here is an example of pyplot usage ::
     plt.title("A simple Plot")
     plt.show()
 
-The show() command open a plot on the screen and blocks execution (meaning you can't
-do anything with the prompt or your script freezes) until the plot window is closed. For
-reasons that are not very clear, the creators of matplotlib designed the show() command
-so that it would only work once. If you were to call show() on the plt object again
+The show() command opens a plot on the screen and blocks execution until the plot window is closed. For
+The show() command only work once. If you were to call show() on the plt object again
 after the above code is executed nothing happens. Apparently, this confusing behavior
-is something that the matplotlib devs get complaints about often and so this may change
-in the future (or may already have changed depending on your choice of backend).
+is something that the matplotlib devs get complaints about often and so this may change.
 A discussion about this can be found `here
 <http://stackoverflow.com/questions/5524858/matplotlib-show-doesnt-work-twice>`_.
 Don't be confused by another command called draw(). This is only used while in interactive
@@ -79,15 +76,16 @@ and access the figures and axes objects. Here is an example ::
     fig = plt.figure()
     ax = fig.add_subplot(111)
     ax.plot(x, y)
+    ax.set_xlabel('x')
 
     plt.show()
 
 Figure is the top-level container for all plot elements and axes is the top-level container
 for a particular plot. So the above example, creates a figure then creates an axes
-and then uses the pyplot plot() method to populate the plot in ax. You generally don't need
-to mess with the figure object but with this method you now have your hands on the ax
-object so you can do this like change the labels on the x and y axes or add a legend, etc.
-do whatever you want to it. In the previous section, pyplot took care of creating these
+and then uses the pyplot plot() method to populate the plot in ax. With this method you
+now have your hands on the ax
+object so you can do things like change the labels on the x and y axes or add a legend.
+In the previous section, pyplot took care of creating these
 objects for you so you don't have to worry about creating them yourself.
 
 4. SunPy Plotting Standards
@@ -100,7 +98,7 @@ supports both simple and advanced matplotlib usage.
 ---------
 
 For quick and easy access to a plot
-all sunpy base objects (e.g. map, spectra, lightcurve) define their own peek() command.
+all sunpy base objects (e.g. maps, spectra, lightcurves) define their own peek() command.
 For example you can do the following ::
 
     import sunpy.map
@@ -109,7 +107,7 @@ For example you can do the following ::
     smap.peek(draw_limb=True)
 
 This creates a plot window with all axes defined, a plot title, and the image of the map
-data all defined by the contents of the map. As this is command makes use of show(), in non-interactive
+data defined by the contents of the map. As this command makes use of show(), in non-interactive
 mode the plot window blocks and must be closed before doing anything else. This is meant as a
 quick way to visualize the contents of a sunpy object you've created.
 
@@ -120,7 +118,7 @@ For more advanced plotting the base sunpy objects also provide a plot() command.
 command is similar to the pyplot plot() command in that it will create a figure and axes
 object for you if you haven't already. It returns a figure object and does not create a
 plot window. With the figure object in your hands you can reach in and grab the axes
-and therefore manipulate the plot as you see fit. Here is an example of this at work ::
+and therefore manipulate the plot. Here is an example of this at work ::
 
     import sunpy.map
     import sunpy.data.sample
@@ -146,7 +144,7 @@ advanced plotting you'll want to create it yourself. ::
 
     plt.show()
 
-The above a plot of line across the map. Using the fig.gca() command to get access to the
+The above will plot of line across the map. Using the fig.gca() command to get access to the
 axes object most anything can be done to the plot and the plot can be displayed as usual
 using the `~matplotlib.pyplot.show` command. Here is another example ::
 
@@ -171,7 +169,7 @@ To create a custom `wcsaxes.WCSAxes` instance do the following ::
 when overplotting data and using wcsaxes you have to use the transform keyword 
 argument, also the native coordinate system of a `~wcsaxes.WCSAxes` is always 
 in degrees ::
-    
+
     fig = plt.figure()
     ax = plt.subplot(projection=smap.wcs)
 
@@ -180,7 +178,7 @@ in degrees ::
             transform=ax.get_transform('world'))
 
 
-Finally, here is a more complex example, starting from the beginning::
+Finally, here is a more complex example::
 
     from matplotlib import patches
     import astropy.units as u
@@ -210,12 +208,44 @@ The above example creates two side by side plots one with the overall view of th
 with a small area marked with a white box. That smaller view is then shown in the plot
 below it. The spacing between the two plots is controlled by fig.subplots_adjust().
 
-7. Specifying a Colormap
-------------------------
+7. Plotting Keywords
+--------------------
+
+As mentioned before for Map `~matplotlib.pyplot.imshow()` does most of the heavy lifting in the background
+while SunPy makes a number of choices for you so that you don't have. Changing these defaults
+is made possible through some simple interfaces. Firstly you can pass any
+`~matplotlib.pyplot.imshow()` keyword into
+the plot command to override the defaults for that particular plot. The following example
+changes the default AIA color table to use an inverse Grey color table::
+
+    import sunpy.map
+    import sunpy.data.sample
+    import matplotlib.pyplot as plt
+    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+
+    fig = plt.figure()
+    ax = plt.subplot(1,1,1)
+    smap.plot(cmap=plt.Greys_r)
+    plt.show()
+
+If you'd like to make this a permanent change you can access a number of settings under the
+`plot_settings` variable so to permanently change the normalization of the color table to a linear
+one running from 5 to 100 (clipping everything above and below these values)::
+
+    import sunpy.map
+    import sunpy.data.sample
+    import matplotlib.colors as colors
+    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    smap.plot_settings['norm'] = colors.Normalize(5, 1000)
+
+    fig = plt.figure()
+    ax = plt.subplot(1,1,1)
+    smap.plot()
+    plt.show()
 
 There are a number of color maps defined in SunPy which are used for data from
-particular missions (e.g. SDO/AIA).
-A simple example on how to use the color maps provided by SunPy: ::
+particular missions (e.g. SDO/AIA). The Map object chooses the appropriate colormap
+on its own. The following example will show you all of the colormaps available::
 
     import matplotlib.pyplot as plt
     import sunpy.cm
@@ -237,10 +267,10 @@ These can be used with the standard commands to change the colormap::
 
     import sunpy.map
     import sunpy.data.sample
-    from sunpy.cm import cm
+    import matplotlib.pyplot as plt
     smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     
     fig = plt.figure()
     ax = plt.subplot(1,1,1)
-    smap.plot(cmap='sdoaia304')
+    smap.plot(cmap=plt.Greys_r)
     plt.show()
