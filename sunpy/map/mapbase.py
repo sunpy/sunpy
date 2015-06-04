@@ -146,9 +146,6 @@ class GenericMap(NDData):
         # Visualization attributes
         self.plot_settings = {'cmap': cm.gray,
                               'norm': norm,
-                              'title': "{name} {date:{tmf}}".format(name=self.name,
-                                                                    date=parse_time(self.date),
-                                                                    tmf=TIME_FORMAT),
                               'interpolation': 'nearest',
                               'origin': 'lower'
                               }
@@ -1211,7 +1208,7 @@ scale:\t\t {scale}
         figure.show()
 
     @toggle_pylab
-    def plot(self, annotate=True, axes=None, **imshow_kwargs):
+    def plot(self, annotate=True, axes=None, title=True, **imshow_kwargs):
         """ Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
 
@@ -1254,7 +1251,12 @@ scale:\t\t {scale}
 
         # Normal plot
         if annotate:
-            axes.set_title(self.plot_settings.get('title'))
+            if title is True:
+                axes.set_title("{name} {date:{tmf}}".format(name=self.name,
+                                                            date=parse_time(self.date),
+                                                            tmf=TIME_FORMAT))
+            else:
+                axes.set_title(title)
 
             # x-axis label
             if self.coordinate_system.x == 'HG':

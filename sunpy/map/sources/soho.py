@@ -128,7 +128,7 @@ class MDIMap(GenericMap):
     @property
     def measurement(self):
         # TODO: This needs to do more than white-light.  Should give B, pB, etc.
-        return "magnetogram" if self.meta['dpc_obsr'].find('Mag') != -1 else "continuum"
+        return "magnetogram" if self.meta.get('content', " ").find('Mag') != -1 else "continuum"
 
     def _fix_dsun(self):
         """ Solar radius in arc-seconds at 1 au
@@ -158,4 +158,4 @@ class MDIMap(GenericMap):
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an MDI image"""
-        return header.get('instrume') == 'MDI'
+        return header.get('instrume') == 'MDI' or header.get('camera') == 'MDI'
