@@ -58,7 +58,8 @@ def _parse_txt(filepath):
     #Adding Time Column based on type of data
     if type_of_data == '1min':
         header = ['Verse Number', 'DateTime'] + header
-
+        
+        #Converting start datetime separate columns into a single datetime column
         for i in range(len(data)): 
             date = datetime(data['col2'][i], month_dict[ data['col3'][i] ], data['col4'][i], int(("%04d" % (data['col5'][i],))[:2]), int(("%04d" % (data['col5'][i],))[2:]) )
             data_modify = data_modify + [date]
@@ -67,6 +68,7 @@ def _parse_txt(filepath):
     else:
         header = ['Verse Number','TimeRange'] + header
 
+        #Converting start datetime and end datetime separate columns into a single TimeRange column
         for i in range(len(data)): 
             date1 = datetime(data['col2'][i], month_dict[ data['col3'][i] ], data['col4'][i], int(("%04d" % (data['col5'][i],))[:2]), int(("%04d" % (data['col5'][i],))[2:]) )
             date2 = datetime(data['col6'][i], month_dict[ data['col7'][i] ], data['col8'][i], int(("%04d" % (data['col9'][i],))[:2]), int(("%04d" % (data['col9'][i],))[2:]) )
