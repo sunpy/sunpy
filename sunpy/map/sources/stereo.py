@@ -22,6 +22,7 @@ class EUVIMap(GenericMap):
 
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = cm.get_cmap('sohoeit{wl:d}'.format(wl=int(self.wavelength.value)))
+        self.plot_settings['norm'] = PowerNorm(0.25, self.data.min(), self.data.max())
         self.meta['waveunit'] = 'Angstrom'
 
         # Try to identify when the FITS meta data does not have the correct
@@ -44,10 +45,6 @@ class EUVIMap(GenericMap):
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an EUVI image"""
         return header.get('detector') == 'EUVI'
-
-    def _get_mpl_normalizer(self):
-        """Returns a Normalize object to be used with XRT data"""
-        return PowerNorm(0.25, self.data.min(), self.data.max())
 
 
 class CORMap(GenericMap):
@@ -77,6 +74,7 @@ class CORMap(GenericMap):
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an COR image"""
         return header.get('detector', '').startswith('COR')
+
 
 class HIMap(GenericMap):
     """HI Image Map definition"""
