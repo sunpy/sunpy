@@ -29,6 +29,7 @@ class SXTMap(GenericMap):
         self.meta['detector'] = "SXT"
         self.meta['telescop'] = "Yohkoh"
         self.plot_settings['cmap'] = cm.get_cmap(name='yohkohsxt' + self.wavelength_string[0:2].lower())
+        self.plot_settings['norm'] = colors.PowerNorm(0.5, self.data.min(), self.data.max())
 
         # 2012/12/19 - the SXT headers do not have a value of the distance from
         # the spacecraft to the center of the Sun.  The FITS keyword 'DSUN_OBS'
@@ -55,10 +56,6 @@ class SXTMap(GenericMap):
         elif s.lower() ==  'open':
             s = 'white light'
         return s
-
-    def _get_mpl_normalizer(self):
-        """Returns a Normalize object to be used with SXT data"""
-        return colors.PowerNorm(0.5, self.data.min(), self.data.max())
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
