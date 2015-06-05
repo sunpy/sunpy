@@ -6,7 +6,6 @@ __email__ = "keith.hughitt@nasa.gov"
 
 import numpy as np
 from matplotlib import colors
-import astropy.units as u
 
 from sunpy.map import GenericMap
 from sunpy.sun import constants
@@ -37,7 +36,20 @@ def _dsunAtSoho(date, rad_d, rad_1au = None):
 
 
 class EITMap(GenericMap):
-    """EIT Image Map definition"""
+    """SOHO EIT Image Map
+
+    SOHO EIT is an extreme ultraviolet (EUV) imager able to image the solar
+    transition region and inner corona in four selected bandpasses, 171 (Fe IX/X),
+    195 (Fe XII), 284 (Fe XV), and 304 (He II) Angstrom.
+
+    Primary mission operations for SOHO EIT ended at the end of July 2010.
+
+    References
+    ----------
+    | `SOHO Mission Page <http://sohowww.nascom.nasa.gov>`_
+    | `SOHO EIT Instrument Page <http://umbra.nascom.nasa.gov/eit/>`_
+    | `SOHO EIT User Guide <http://umbra.nascom.nasa.gov/eit/eit_guide/>`_
+    """
 
     def __init__(self, data, header, **kwargs):
 
@@ -66,7 +78,22 @@ class EITMap(GenericMap):
 
 
 class LASCOMap(GenericMap):
-    """LASCO Image Map definition"""
+    """SOHO LASCO Image Map
+
+    The Large Angle and Spectrometric COronagraph (LASCO) is a set of three Lyot-type
+    coronagraphs (C1, C2, and C3) that image the solar corona from 1.1 to 32 solar radii.
+
+    The C1 images rom 1.1 to 3 solar radii. The C2 telescope images the corona from 2 to 6 solar radii,
+    overlaping the outer field-of-view of C1 from 2 to 3 solar radii. The C3 telescope extends
+    the field-of-view to 32 solar radii.
+
+    References
+    ----------
+    | `SOHO Mission Page <http://sohowww.nascom.nasa.gov>`_
+    | `SOHO LASCO Instrument Page <http://lasco-www.nrl.navy.mil>`_
+    | `SOHO LASCO Fits Header keywords <http://lasco-www.nrl.navy.mil/index.php?p=content/keywords>`_
+    | `SOHO LASCO User Guide <http://lasco-www.nrl.navy.mil/index.php?p=content/handbook/hndbk>`_
+    """
 
     def __init__(self, data, header, **kwargs):
 
@@ -106,7 +133,27 @@ class LASCOMap(GenericMap):
 
 
 class MDIMap(GenericMap):
-    """MDI Image Map definition"""
+    """SOHO MDI Image Map
+
+    The Michelson Doppler Imager (MDI) is a white light refracting telescope
+    which feeds sunlight through a series of filters onto a CCD camera. Two tunable
+    Michelson interformeters define a 94 mAngstrom bandpass that can be tuned across
+    the Ni 6768 Angstrom solar absorption line.
+
+    MDI measures line-of-sight motion (Dopplergrams), magnetic field (magnetograms),
+    and brightness images of the full solar disk at several resolutions
+    (4 arc-second to very low resolution) and a
+    fixed selected region in higher resolution (1.2 arc-second).
+
+    MDI ceased normal science observations on 12 April 2011.
+
+     References
+    ----------
+    | `SOHO Mission Page <http://sohowww.nascom.nasa.gov>`_
+    | `SOHO MDI Instrument Page <http://soi.stanford.edu>`_
+    | `SOHO MDI Fits Header keywords <http://soi.stanford.edu/sssc/doc/keywords.html>`_
+    | `SOHO MDI Instrument Paper <http://soi.stanford.edu/sssc/doc/SP_paper_1995/MDI_SP_paper_1995.pdf>`_
+    """
 
     def __init__(self, data, header, **kwargs):
 
