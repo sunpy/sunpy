@@ -14,6 +14,9 @@ from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time, TimeRange, is_time_in_given_format
 from sunpy.util import net
 
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
+
 __all__ = ['GOESLightCurve']
 
 
@@ -35,12 +38,15 @@ class GOESLightCurve(LightCurve):
     """
 
     @classmethod
-        def _get_plot_types(cls):
-            return ['goes']
+    def _get_plot_types(cls):
+        return ['goes']
 
-    def plot(self, title="GOES X-ray Flux", axes=None, plot_type='goes', **plot_args):
+    def plot(self, title="GOES X-ray Flux", axes=None, plot_type=None, **plot_args):
         """Plots GOES light curve is the usual manner"""
-                #Get current axes
+
+        if plot_type == None:
+            plot_type = self._get_plot_types()[0]
+
         if axes is None:
             axes = plt.gca()
 

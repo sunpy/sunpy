@@ -83,8 +83,8 @@ class EVELightCurve(LightCurve):
             return axes
 
     @classmethod
-        def _get_plot_types(cls):
-            return ['goes proxy', 'esp quad', 'position', 'sem', 'esp', 'dark']
+    def _get_plot_types(cls):
+        return ['goes proxy', 'esp quad', 'position', 'sem', 'esp', 'dark']
 
     @staticmethod
     def _get_default_uri():

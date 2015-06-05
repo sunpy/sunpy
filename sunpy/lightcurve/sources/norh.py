@@ -38,8 +38,11 @@ class NoRHLightCurve(LightCurve):
     | http://solar.nro.nao.ac.jp/norh/
     """
 
-    def plot(self, title='Nobeyama Radioheliograph', axes=None, plot_type='norh', **plot_args):
+    def plot(self, title='Nobeyama Radioheliograph', axes=None, plot_type=None, **plot_args):
         """Plots the NoRH lightcurve"""
+
+        if plot_type == None:
+            plot_type = self._get_plot_types()[0]
 
         if axes is None:
             axes = plt.gca()
@@ -61,6 +64,7 @@ class NoRHLightCurve(LightCurve):
     @classmethod
     def _get_plot_types(cls):
         return ['norh']
+
     @classmethod
     def _get_url_for_date(cls,date, **kwargs):
         """This method retrieves the url for NoRH correlation data for the given date."""

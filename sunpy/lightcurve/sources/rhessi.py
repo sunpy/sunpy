@@ -11,6 +11,9 @@ from sunpy.lightcurve import LightCurve
 from sunpy.time import TimeRange, parse_time
 from sunpy.instr import rhessi
 
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
+
 __all__ = ['RHESSISummaryLightCurve']
 
 

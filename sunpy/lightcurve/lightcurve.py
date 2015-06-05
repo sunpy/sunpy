@@ -191,7 +191,7 @@ for compatability with map, please use meta instead""", Warning)
 
         return cls(dataframe, meta)
 
-    def plot(self, axes=None, **plot_args):
+    def plot(self, axes=None, plot_type=None, **plot_args):
         """Plot a plot of the light curve
 
         Parameters
@@ -203,7 +203,6 @@ for compatability with map, please use meta instead""", Warning)
         **plot_args : dict
             Any additional plot arguments that should be used
             when plotting the image.
-
         """
 
         #Get current axes
@@ -216,12 +215,11 @@ for compatability with map, please use meta instead""", Warning)
 
     def peek(self, **kwargs):
         """Displays the light curve in a new figure"""
-        num_plots = len(self._get_plot_types())
         figure = plt.figure()
 
-        for plot_type, plot_num in zip(self.plot_types, np.arange(0, num_plots)):
-            ax = figure.add_subplot(num_plots, 1, plot_num)
-            self.plot(axes=ax, type=plot_type)
+        for plot_num, plot_type in enumerate(self.plot_types):
+            ax = figure.add_subplot(len(self.plot_types), 1, plot_num)
+            self.plot(axes=ax, plot_type=plot_type)
         figure.show()
 
     @staticmethod

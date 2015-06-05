@@ -10,6 +10,9 @@ import numpy as np
 
 from sunpy.lightcurve import LightCurve
 
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
+
 __all__ = ['NOAAIndicesLightCurve', 'NOAAPredictIndicesLightCurve']
 
 class NOAAIndicesLightCurve(LightCurve):
