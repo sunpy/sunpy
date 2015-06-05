@@ -10,12 +10,18 @@ from sunpy.cm import cm
 __all__ = ['SWAPMap']
 
 class SWAPMap(GenericMap):
-    """SWAP Image Map definition
+    """PROBA2 SWAP Image Map
+
+    The Sun Watcher using Active Pixel System detector and Image Processing (SWAP)
+    SWAP provides images of the solar corona at about 17.4 nm, a bandpass
+    that corresponds to a temperature of roughly 1 million degrees,
+    with a cadence of 1 image per 1-2 minutes, and field of view (FOV) of 54 arcmin.
+    It is derived from the SOHO EIT telescope concept design.
 
     References
     ----------
-    For a description of SWAP headers
-    http://proba2.oma.be/index.html/swap/swap-analysis-manual/article/data-products?menu=23
+    | `Proba2 SWAP Science Center <http://proba2.sidc.be/about/SWAP/>`
+    | `Fits headers reference <http://proba2.oma.be/index.html/swap/swap-analysis-manual/article/data-products?menu=23>`_
     """
 
     def __init__(self, data, header, **kwargs):
