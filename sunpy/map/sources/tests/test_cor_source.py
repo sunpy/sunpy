@@ -31,4 +31,4 @@ def test_measurement():
 
 def test_observatory():
     """Tests the observatory property of the CORMap object."""
-    assert cor.observatory == "STEREO_A"
+    assert cor.observatory == "STEREO A"
