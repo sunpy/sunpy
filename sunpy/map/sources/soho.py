@@ -133,7 +133,8 @@ class LASCOMap(GenericMap):
 
 
 class MDIMap(GenericMap):
-    """SOHO MDI Image Map
+    """
+    SOHO MDI Image Map
 
     The Michelson Doppler Imager (MDI) is a white light refracting telescope
     which feeds sunlight through a series of filters onto a CCD camera. Two tunable
