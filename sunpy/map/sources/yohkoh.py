@@ -14,12 +14,27 @@ from sunpy.sun import constants
 __all__ = ['SXTMap']
 
 class SXTMap(GenericMap):
-    """SXT Image Map definition
+    """Yohkoh SXT Image Map
+
+    The Yohkoh Soft X-ray Telescope (SXT) the full solar disk
+    (42 x 42 arcminutes)in the 0.25 - 4.0 keV range.
+    It consists of a glancing incidence mirror and a CCD sensor and
+    used thin metallic filters to acquire images in restricted
+    portions of its energy range. SXT could resolve features down to 2.5 arc seconds.
+    Information about the temperature and density of the plasma emitting
+    the observed x-rays was obtained by comparing images acquired with the
+    different filters. Images could be obtained every 2 to 8 seconds.
+    Smaller images with a single filter could be obtained as frequently as
+    once every 0.5 seconds.
+
+    Yohkoh ceased operations on December 14, 2001.
 
     References
     ----------
-    For a description of SXT headers
-    http://proba2.oma.be/index.html/swap/swap-analysis-manual/article/data-products?menu=23
+    | `Yohkoh Mission Page <http://solar.physics.montana.edu/sxt/>`_
+    | `Fits header reference <http://proba2.oma.be/index.html/swap/swap-analysis-manual/article/data-products?menu=23>`_
+    | `Yohkoh Analysis Guide <http://ylstone.physics.montana.edu/ylegacy/yag.html>`_
+
     """
 
     def __init__(self, data, header, **kwargs):
