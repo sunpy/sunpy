@@ -2,8 +2,6 @@ from datetime import timedelta,datetime
 from astropy.io import ascii
 from astropy.table import Table, Column
 
-from sunpy.time import TimeRange
-
 def _parse_txt(filepath):
     """
     Parses a STEREO HET file from
@@ -72,6 +70,9 @@ def _parse_txt(filepath):
         for i in range(len(data)): 
             date1 = datetime(data['col2'][i], month_dict[ data['col3'][i] ], data['col4'][i], int(("%04d" % (data['col5'][i],))[:2]), int(("%04d" % (data['col5'][i],))[2:]) )
             date2 = datetime(data['col6'][i], month_dict[ data['col7'][i] ], data['col8'][i], int(("%04d" % (data['col9'][i],))[:2]), int(("%04d" % (data['col9'][i],))[2:]) )
+            
+            #I don't know why but including it outside interferes with the upper case and results in segmetation fault 11 :/
+            from sunpy.time import TimeRange
             data_modify = data_modify + [TimeRange(date1,date2)]
 
         data.remove_columns(['col2','col3','col4','col5','col6','col7','col8','col9'])
