@@ -48,6 +48,7 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
+
 class GenericMap(NDData):
     """
     A Generic spatially-aware 2D data array
