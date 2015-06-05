@@ -61,10 +61,6 @@ def test_get_item(generic_map):
         generic_map[10,10]
 
 
-def test_repr_no_obs(generic_map):
-    assert generic_map.__repr__() == 'array([[ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.]])'
-
-
 def test_wcs(aia171_test_map):
     wcs = aia171_test_map.wcs
     assert isinstance(wcs, astropy.wcs.WCS)
@@ -108,7 +104,7 @@ def test_std(generic_map):
 # TODO: Test the header keyword extraction
 #==============================================================================
 def test_name(generic_map):
-    assert generic_map.name == 'Far bar 10.0 m'
+    assert generic_map.name == 'Foo bar 10.0 m'
 
 
 def test_nickname(generic_map):

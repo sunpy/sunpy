@@ -18,10 +18,12 @@ path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "HinodeXRT.fits"))
 xrt = Map(fitspath)
 
+
 # XRT Tests
 def test_fitstoXRT():
     """Tests the creation of XRTMap using FITS."""
     assert isinstance(xrt, XRTMap)
+
 
 def test_is_datasource_for():
     """Test the is_datasource_for method of XRTMap.
@@ -29,13 +31,16 @@ def test_is_datasource_for():
     can be a MapMeta object."""
     assert xrt.is_datasource_for(xrt.data, xrt.meta)
 
+
 def test_observatory():
     """Tests the observatory property of the XRTMap object."""
     assert xrt.observatory == "Hinode"
 
+
 def test_measurement():
     """Tests the measurement property of the XRTMap object."""
-    assert xrt.measurement ==   * u.one
+    assert xrt.measurement == xrt.filter_wheel1_measurements[5].replace("_", " ") + '-' + xrt.filter_wheel2_measurements[1].replace("_", " ")
+
 
 def test_wheel_measurements():
     """Tests the filter_wheel_measurements objects present
