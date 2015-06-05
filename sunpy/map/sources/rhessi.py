@@ -12,15 +12,29 @@ import astropy.units as u
 __all__ = ['RHESSIMap']
 
 class RHESSIMap(GenericMap):
-    """RHESSI Image Map definition
+    """RHESSI Image Map
+
+    The RHESSI mission consists of a single spin-stabilized
+    spacecraft in a low-altitude orbit inclined 38 degrees to
+    the Earth's equator. The only instrument on board is an
+    Germaniun imaging spectrometer with the ability to obtain high
+    fidelity solar images in X rays (down to 3 keV) to gamma rays (1 MeV).
+
+    RHESSI provides an angular resolution of 2 arcseconds at
+    X-ray energies below ~40 keV, 7 arcseconds to 400 keV,
+    and 36 arcseconds for gamma-ray lines and continuum above 1 MeV.
+
+    .. warning::
+
+    This software is in beta and cannot read fits files containing more than
+    one image.
 
     References
     ----------
-    For a description of RHESSI image fits headers
-    ???
+    | RHESSI Homepage `<http://hesperia.gsfc.nasa.gov/rhessi3/index.html>`_
 
-    TODO: Currently (8/29/2011), cannot read fits files containing more than one
-    image (schriste)
+
+
     """
 
     def __init__(self, data, header, **kwargs):
@@ -28,7 +42,7 @@ class RHESSIMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
 
         self._nickname = self.detector
-
+        #TODO Currently (8/29/2011), cannot read fits files containing more than one image (schriste)
         # Fix some broken/misapplied keywords
         if self.meta['ctype1'] == 'arcsec':
             self.meta['cunit1'] = 'arcsec'
