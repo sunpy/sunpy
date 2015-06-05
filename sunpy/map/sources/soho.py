@@ -147,7 +147,7 @@ class MDIMap(GenericMap):
 
     MDI ceased normal science observations on 12 April 2011.
 
-     References
+    References
     ----------
     | `SOHO Mission Page <http://sohowww.nascom.nasa.gov>`_
     | `SOHO MDI Instrument Page <http://soi.stanford.edu>`_
