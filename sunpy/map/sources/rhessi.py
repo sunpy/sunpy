@@ -24,14 +24,12 @@ class RHESSIMap(GenericMap):
     X-ray energies below ~40 keV, 7 arcseconds to 400 keV,
     and 36 arcseconds for gamma-ray lines and continuum above 1 MeV.
 
-    .. warning::
-
-    This software is in beta and cannot read fits files containing more than
-    one image.
-
     References
     ----------
     | RHESSI Homepage `<http://hesperia.gsfc.nasa.gov/rhessi3/index.html>`_
+
+    .. warning::
+    This software is in beta and cannot read fits files containing more than one image.
     """
 
     def __init__(self, data, header, **kwargs):

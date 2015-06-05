@@ -27,7 +27,7 @@ class TRACEMap(GenericMap):
     References
     ----------
     | `Mission/Instrument Page <http://trace.lmsal.com>`_
-    | `Fits headers <http://trace.lmsal.com/Project/Instrument/cal/`_
+    | `Fits headers <http://trace.lmsal.com/Project/Instrument/cal/>`_
     | `Analysis Guide <http://trace.lmsal.com/tag/>`
     | `Passband reference <http://trace.lmsal.com/Project/Instrument/inspass.htm>`_
 
