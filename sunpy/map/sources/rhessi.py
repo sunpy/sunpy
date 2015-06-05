@@ -32,9 +32,6 @@ class RHESSIMap(GenericMap):
     References
     ----------
     | RHESSI Homepage `<http://hesperia.gsfc.nasa.gov/rhessi3/index.html>`_
-
-
-
     """
 
     def __init__(self, data, header, **kwargs):
