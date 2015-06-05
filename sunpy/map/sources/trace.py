@@ -12,23 +12,33 @@ from matplotlib import colors
 __all__ = ['TRACEMap']
 
 class TRACEMap(GenericMap):
-    """TRACE Image Map definition
-References
-----------
-For a description of TRACE headers see:
-http://trace.lmsal.com/Project/Instrument/cal/
-For a description of the TRACE mission, TRACE analysis guide (SSWIDL),
-and all things TRACE (images, movies, galleries, science results), please
-see:
-http://trace.lmsal.com/
-Note that this map definition is currently only being tested on JPEG2000
-files. TRACE FITS data is stored in a more complex format. Typically
-TRACE data is stored in hourly "tri" files that store all the data taken
-by TRACE in the hour indicated by the filename. Those files must first be
-understood and parsed to obtain the science data. The ability to do this
-is not yet in SunPy, but is available in SSWIDL. Please refer to the links
-above concerning how to read "tri" files in SSWIDL.
-"""
+    """TRACE Image Map
+
+    The Transition Region and Coronal Explorer was a
+    NASA Small Explorer (SMEX) mission to image the
+    solar corona and transition region at high angular and temporal resolution.
+    TRACE observed the Sun in the following passbands, 5000 A, 1700 A, 1600 A,
+    1550 A (C IV), 1216 A (H1 Lyman-alpha), 173 A (Fe IX), 195 A (Fe XII),
+    and 284 A (Fe XV). TRACE provides solar images with an 8.5 x 8.5 arcminute
+    field of view and 0.5 arcsecond pixels.
+
+    The TRACE mission obtained its last science image on 2010/06/21 23:56 UT.
+
+    References
+    ----------
+    | `Mission/Instrument Page <http://trace.lmsal.com>`_
+    | `Fits headers <http://trace.lmsal.com/Project/Instrument/cal/`_
+    | `Analysis Guide <http://trace.lmsal.com/tag/>`
+    | `Passband reference <http://trace.lmsal.com/Project/Instrument/inspass.htm>`_
+
+    Note that this map definition is currently only being tested on JPEG2000
+    files. TRACE FITS data is stored in a more complex format. Typically
+    TRACE data is stored in hourly "tri" files that store all the data taken
+    by TRACE in the hour indicated by the filename. Those files must first be
+    understood and parsed to obtain the science data. The ability to do this
+    is not yet in SunPy, but is available in SSWIDL. Please refer to the links
+    above concerning how to read "tri" files in SSWIDL.
+    """
 
     def __init__(self, data, header, **kwargs):
 
