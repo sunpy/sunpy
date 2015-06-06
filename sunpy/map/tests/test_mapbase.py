@@ -416,7 +416,7 @@ def test_plot_aia171(aia171_test_map):
 
 @figure_test
 def test_plot_masked_aia171(aia171_test_map):
-    shape = aia171_test_map.shape
+    shape = aia171_test_map.data.shape
     mask = np.zeros_like(aia171_test_map.data, dtype=bool)
     mask[0:shape[0]/2, 0:shape[1]/2] = True
     masked_map = sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
