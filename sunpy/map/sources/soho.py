@@ -42,7 +42,8 @@ class EITMap(GenericMap):
     transition region and inner corona in four selected bandpasses, 171 (Fe IX/X),
     195 (Fe XII), 284 (Fe XV), and 304 (He II) Angstrom.
 
-    Primary mission operations for SOHO EIT ended at the end of July 2010.
+    SOHO was launched on 2 December 2 1995 into a sun-synchronous orbit and
+    primary mission operations for SOHO EIT ended at the end of July 2010.
 
     References
     ----------
@@ -86,6 +87,8 @@ class LASCOMap(GenericMap):
     The C1 images rom 1.1 to 3 solar radii. The C2 telescope images the corona from 2 to 6 solar radii,
     overlaping the outer field-of-view of C1 from 2 to 3 solar radii. The C3 telescope extends
     the field-of-view to 32 solar radii.
+
+    SOHO was launched on 2 December 2 1995 into a sun-synchronous orbit.
 
     References
     ----------
@@ -146,7 +149,8 @@ class MDIMap(GenericMap):
     (4 arc-second to very low resolution) and a
     fixed selected region in higher resolution (1.2 arc-second).
 
-    MDI ceased normal science observations on 12 April 2011.
+    SOHO was launched on 2 December 2 1995 into a sun-synchronous orbit and
+    SOHO MDI ceased normal science observations on 12 April 2011.
 
     References
     ----------
