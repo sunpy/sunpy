@@ -69,11 +69,11 @@ class CORMap(GenericMap):
 
     References
     ----------
-    | `STEREO Mission Page <http://stereo.gsfc.nasa.gov>`_
-    | `STEREO SECCHI <http://secchi.nrl.navy.mil>`_
-    | `COR1 Instrument Page <http://cor1.gsfc.nasa.gov>`_
-    | `COR2 Instrument Page <http://secchi.nrl.navy.mil/index.php?p=cor2>`_
-    | `COR1 User Guide <http://cor1.gsfc.nasa.gov/guide/>`_
+    * `STEREO Mission Page <http://stereo.gsfc.nasa.gov>`_
+    * `STEREO SECCHI <http://secchi.nrl.navy.mil>`_
+    * `COR1 Instrument Page <http://cor1.gsfc.nasa.gov>`_
+    * `COR2 Instrument Page <http://secchi.nrl.navy.mil/index.php?p=cor2>`_
+    * `COR1 User Guide <http://cor1.gsfc.nasa.gov/guide/>`_
     """
 
     def __init__(self, data, header, **kwargs):
@@ -115,9 +115,9 @@ class HIMap(GenericMap):
 
     References
     ----------
-    | `STEREO Mission Page <http://stereo.gsfc.nasa.gov>`_
-    | `STEREO SECCHI <http://secchi.nrl.navy.mil>`_
-    | `HI Instrument Page <http://www.stereo.rl.ac.uk>`_
+    * `STEREO Mission Page <http://stereo.gsfc.nasa.gov>`_
+    * `STEREO SECCHI <http://secchi.nrl.navy.mil>`_
+    * `HI Instrument Page <http://www.stereo.rl.ac.uk>`_
     """
     def __init__(self, data, header, **kwargs):
 

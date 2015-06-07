@@ -27,7 +27,8 @@ class SXTMap(GenericMap):
     Smaller images with a single filter could be obtained as frequently as
     once every 0.5 seconds.
 
-    Yohkoh ceased operations on December 14, 2001.
+    Yohkoh was launched on 30 August 1991 and ceased operations on
+    14 December 2001.
 
     References
     ----------

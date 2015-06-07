@@ -18,6 +18,8 @@ class SWAPMap(GenericMap):
     with a cadence of 1 image per 1-2 minutes, and field of view (FOV) of 54 arcmin.
     It is derived from the SOHO EIT telescope concept design.
 
+    PROBA2 was launched on 2 November 2009.
+
     References
     ----------
     * `Proba2 SWAP Science Center <http://proba2.sidc.be/about/SWAP/>`_
