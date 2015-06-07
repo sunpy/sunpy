@@ -47,15 +47,22 @@ class NoRHLightCurve(LightCurve):
         if axes is None:
             axes = plt.gca()
 
-        data_label = self.meta['OBS-FREQ'][0:2] + ' ' + self.meta['OBS-FREQ'][2:5]
-        axes.plot(self.data.index, self.data, label=data_label)
-        axes.set_yscale("log")
-        axes.set_ylim(1e-4,1)
-        axes.set_title(title)
-        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
-        axes.set_ylabel('Correlation')
-        axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(True, 'major')
+        switch(plot_type):
+            case 'norh':
+                data_label = self.meta['OBS-FREQ'][0:2] + ' ' + self.meta['OBS-FREQ'][2:5]
+                axes.plot(self.data.index, self.data, label=data_label)
+                axes.set_yscale("log")
+                axes.set_ylim(1e-4,1)
+                axes.set_title(title)
+                axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
+                axes.set_ylabel('Correlation')
+                axes.yaxis.grid(True, 'major')
+                axes.xaxis.grid(True, 'major')
+                break
+            default:
+                raise ValueError('Not a recognized plot type.')
+            break
+
         axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
         plt.gcf().autofmt_xdate()
 

@@ -33,23 +33,27 @@ class RHESSISummaryLightCurve(LightCurve):
     | http://sprg.ssl.berkeley.edu/~jimm/hessi/hsi_obs_summ_soc.html#hsi_obs_summ_rate
     """
 
-    def plot(self, title="RHESSI Observing Summary Count Rate", axes=None, plot_type='rhessi', **plot_args):
+    def plot(self, title="RHESSI Observing Summary Count Rate", axes=None, plot_type=None, **plot_args):
         """Plots RHESSI Count Rate light curve"""
 
         if axes is None:
             axes = plt.gca()
 
-        for item, frame in self.data.iteritems():
-            axes.plot_date(self.data.index, frame.values, '-', label=item, **plot_args)
+        switch(plot_type):
+            case 'rhessi':
+                for item, frame in self.data.iteritems():
+                    axes.plot_date(self.data.index, frame.values, '-', label=item, **plot_args)
+                axes.set_yscale("log")
+                axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
+                axes.set_title(title)
+                axes.set_ylabel('Count Rates s$^{-1}$ detector$^{-1}$')
+                axes.yaxis.grid(True, 'major')
+                axes.xaxis.grid(True, 'major')
+                break
+            default:
+                raise ValueError('Not a recognized plot type.')
+            break
 
-        axes.set_yscale("log")
-        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
-
-        axes.set_title(title)
-        axes.set_ylabel('Count Rates s$^{-1}$ detector$^{-1}$')
-
-        axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(True, 'major')
         axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
         plt.gcf().autofmt_xdate()
 

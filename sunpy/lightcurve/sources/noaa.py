@@ -42,34 +42,45 @@ class NOAAIndicesLightCurve(LightCurve):
     | http://www.swpc.noaa.gov/products/solar-cycle-progression
     """
 
-    def plot(self, title='Solar Cycle Progression', plot_type='sunspot SWO', axes=None, **plot_args):
+    @classmethod
+    def plot(self, title='Solar Cycle Progression', plot_type=None, axes=None, **plot_args):
         """Plots GOES light curve is the usual manner"""
 
         if axes is None:
             axes = plt.gca()
 
-        ylabel = ''
-        if plot_type == 'sunspot SWO':
-            axes = self.data['sunspot SWO'].plot()
-            self.data['sunspot SWO smooth'].plot()
-            ylabel = 'Sunspot Number'
-        if plot_type == 'sunspot RI':
-            axes = self.data['sunspot RI'].plot()
-            self.data['sunspot RI smooth'].plot()
-            ylabel = 'Sunspot Number'
-        if plot_type == 'sunspot compare':
-            axes = self.data['sunspot RI'].plot()
-            self.data['sunspot SWO'].plot()
-            ylabel = 'Sunspot Number'
-        if plot_type == 'radio':
-            axes = self.data['radio flux'].plot()
-            self.data['radio flux smooth'].plot()
-            ylabel = 'Radio Flux [sfu]'
-        if plot_type == 'ap index':
-            axes = self.data['geomagnetic ap'].plot()
-            self.data['geomagnetic smooth'].plot()
-            ylabel = 'Geomagnetic AP Index'
+        if plot_type == None:
+            plot_type = self._get_plot_types()[0]
 
+        switch(plot_type):
+            case 'sunspot SWO':
+                axes = self.data['sunspot SWO'].plot()
+                self.data['sunspot SWO smooth'].plot()
+                ylabel = 'Sunspot Number'
+                break
+            case 'sunspot RI':
+                axes = self.data['sunspot RI'].plot()
+                self.data['sunspot RI smooth'].plot()
+                ylabel = 'Sunspot Number'
+                break
+            case 'sunspot compare':
+                axes = self.data['sunspot RI'].plot()
+                self.data['sunspot SWO'].plot()
+                ylabel = 'Sunspot Number'
+                break
+            case 'radio':
+                axes = self.data['radio flux'].plot()
+                self.data['radio flux smooth'].plot()
+                ylabel = 'Radio Flux [sfu]'
+                break
+            case 'ap index'
+                axes = self.data['geomagnetic ap'].plot()
+                self.data['geomagnetic smooth'].plot()
+                ylabel = 'Geomagnetic AP Index'
+                break
+            default:
+                raise ValueError('Not a recognized plot type.')
+            break
         axes.set_ylim(0)
         axes.set_title(title)
         axes.set_ylabel(ylabel)

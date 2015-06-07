@@ -38,23 +38,35 @@ class GBMSummaryLightCurve(LightCurve):
     | http://gammaray.nsstc.nasa.gov/gbm/
     """
 
-    def peek(self, **kwargs):
+    def plot(self, title="RHESSI Observing Summary Count Rate", axes=None, plot_type=None, **plot_args):
         """Plots the GBM lightcurve"""
-        figure=plt.figure()
-        axes = plt.gca()
-        data_lab=self.data.columns.values
+        if axes is None:
+            axes = plt.gca()
 
-        for d in data_lab:
-            axes.plot(self.data.index,self.data[d],label=d)
+        if plot_type == None:
+            plot_type = self._get_plot_types()[0]
 
-        axes.set_yscale("log")
-        axes.set_title('Fermi GBM Summary data ' + self.meta['DETNAM'])
-        axes.set_xlabel('Start time: ' + self.data.index[0].strftime('%Y-%m-%d %H:%M:%S UT'))
-        axes.set_ylabel('Counts/s/keV')
-        axes.legend()
-        figure.autofmt_xdate()
+        switch(plot_type):
+            case 'gbm':
+                data_lab=self.data.columns.values
 
-        plt.show()
+                for d in data_lab:
+                    axes.plot(self.data.index,self.data[d],label=d)
+
+                axes.set_yscale("log")
+                axes.set_title('Fermi GBM Summary data ' + self.meta['DETNAM'])
+                axes.set_xlabel('Start time: ' + self.data.index[0].strftime('%Y-%m-%d %H:%M:%S UT'))
+                axes.set_ylabel('Counts/s/keV')
+                axes.legend()
+            default:
+                raise ValueError('Not a recognized plot type.')
+
+        plt.gcf().autofmt_xdate()
+        return axes
+
+    @classmethod
+    def _get_plot_types(cls):
+        return ['gbm']
 
     @classmethod
     def _get_url_for_date(cls,date, **kwargs):

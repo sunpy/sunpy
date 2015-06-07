@@ -37,50 +37,63 @@ class EVELightCurve(LightCurve):
     | http://lasp.colorado.edu/home/eve/data/data-access/
     """
 
-    def plot(self, axes=None, plot_type='eve 0cs', title = 'SDO/EVE', **plot_args):
-            """Plots EVE light curve is the usual manner"""
-            if axes is None:
-                axes = plt.gca()
+    def plot(self, axes=None, plot_type=None, title='SDO/EVE', **plot_args):
+        """Plots EVE light curve is the usual manner"""
+        if axes is None:
+            axes = plt.gca()
 
-            if plot_type == 'goes proxy':
+        if plot_type == None:
+            plot_type = self._get_plot_types()[0]
+
+        switch(plot_type):
+            case 'goes proxy':
                 self.data['XRS-B proxy'].plot(ax=axes, label='1.0--8.0 $\AA$', color='red', lw=2, **plot_args)
                 self.data['XRS-A proxy'].plot(ax=axes, label='0.5--4.0 $\AA$', color='blue', lw=2, **plot_args)
                 axes.set_yscale("log")
                 axes.set_ylim(1e-9, 1e-2)
                 axes.set_title(title)
                 axes.set_ylabel('Watts m$^{-2}$')
+                break
                 #ax2 = axes.twinx()
                 #ax2.set_yscale("log")
                 #ax2.set_ylim(1e-9, 1e-2)
                 #ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
                 #ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
-            if plot_type == 'esp quad':
+            case 'esp quad':
                 self.data['q0ESP'].plot(ax=axes, label='ESP 0', **plot_args)
                 self.data['q1ESP'].plot(ax=axes, label='ESP 1', **plot_args)
                 self.data['q2ESP'].plot(ax=axes, label='ESP 2', **plot_args)
                 self.data['q3ESP'].plot(ax=axes, label='ESP 3', **plot_args)
-            if plot_type == 'position':
+                break
+            case 'position':
                 self.data['CMLat'].plot(ax=axes, label='Latitude', **plot_args)
                 self.data['CMLon'].plot(ax=axes, label='Longitude', **plot_args)
-            if plot_type == 'sem':
+                break
+            case 'sem':
                 self.data['SEM proxy'].plot(ax=axes, label='SEM Proxy', **plot_args)
-            if plot_type == 'esp':
+                break
+            case 'esp':
                 self.data['17.1ESP'].plot(ax=axes, label='17.1', **plot_args)
                 self.data['25.7ESP'].plot(ax=axes, label='25.7', **plot_args)
                 self.data['30.4ESP'].plot(ax=axes, label='30.4', **plot_args)
                 self.data['36.6ESP'].plot(ax=axes, label='36.6', **plot_args)
-            if plot_type == 'dark':
+                break
+            case 'dark':
                 self.data['darkESP'].plot(ax=axes, label='ESP', **plot_args)
                 self.data['darkMEGS-P'].plot(ax=axes, label='MEGS-P', **plot_args)
+                break
+            default:
+                raise ValueError('Not a recognized plot type.')
+            break
 
-            axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
-            axes.set_title(title)
-            axes.yaxis.grid(True, 'major')
-            axes.xaxis.grid(True, 'major')
-            axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
-            plt.gcf().autofmt_xdate()
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
+        axes.set_title(title)
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(True, 'major')
+        axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
+        plt.gcf().autofmt_xdate()
 
-            return axes
+        return axes
 
     @classmethod
     def _get_plot_types(cls):

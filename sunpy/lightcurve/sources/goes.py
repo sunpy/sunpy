@@ -41,8 +41,9 @@ class GOESLightCurve(LightCurve):
     def _get_plot_types(cls):
         return ['goes']
 
+    @classmethod
     def plot(self, title="GOES X-ray Flux", axes=None, plot_type=None, **plot_args):
-        """Plots GOES light curve is the usual manner"""
+        """Plots GOES light curve."""
 
         if plot_type == None:
             plot_type = self._get_plot_types()[0]
@@ -50,22 +51,27 @@ class GOESLightCurve(LightCurve):
         if axes is None:
             axes = plt.gca()
 
-        axes.plot_date(self.data.index, self.data['xrsa'], '-',
-                     label='0.5--4.0 $\AA$', color='blue', lw=2, **plot_args)
-        axes.plot_date(self.data.index, self.data['xrsb'], '-',
-                     label='1.0--8.0 $\AA$', color='red', lw=2, **plot_args)
+        switch(plot_type):
+            case 'goes':
+                axes.plot_date(self.data.index, self.data['xrsa'], '-',
+                             label='0.5--4.0 $\AA$', color='blue', lw=2, **plot_args)
+                axes.plot_date(self.data.index, self.data['xrsb'], '-',
+                             label='1.0--8.0 $\AA$', color='red', lw=2, **plot_args)
 
-        axes.set_yscale("log")
-        axes.set_ylim(1e-9, 1e-2)
-        axes.set_title(title)
-        axes.set_ylabel('Watts m$^{-2}$')
-        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
+                axes.set_yscale("log")
+                axes.set_ylim(1e-9, 1e-2)
+                axes.set_title(title)
+                axes.set_ylabel('Watts m$^{-2}$')
+                axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
 
-        ax2 = axes.twinx()
-        ax2.set_yscale("log")
-        ax2.set_ylim(1e-9, 1e-2)
-        ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
-        ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
+                ax2 = axes.twinx()
+                ax2.set_yscale("log")
+                ax2.set_ylim(1e-9, 1e-2)
+                ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
+                ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
+                break
+            default:
+                raise ValueError('Not a recognized plot type.')
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
