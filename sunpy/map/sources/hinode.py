@@ -16,17 +16,19 @@ def _lower_list(L):
     return [item.lower() for item in L]
 
 class XRTMap(GenericMap):
-    """XRT Image
+    """Hinode XRT Image
 
     The X-Ray Telescope (XRT) is a high resolution grazing incidence telescope,
     which is a succsessor to Yohkoh. It provides 2-arcsecond resolution images
     of the highest temperature solar coronal material,
     from 1,000,000 to 10,000,000 Kelvin.
 
+    Hinode was launched on 22 September 2006 into a sun-synchronous orbit.
+
     References
     ----------
     * `Hinode Mission Page <http://solarb.msfc.nasa.gov/index.html>`_
-    * `Instrument Page <http://xrt.cfa.harvard.edu>`_
+    * `XRT Instrument Page <http://xrt.cfa.harvard.edu>`_
     * `Fits header reference <http://hinode.nao.ac.jp/sbsc/SB_MW_Key13.pdf>`_
     * `Hinode User Guide <http://hinode.nao.ac.jp/hsc_e/instruction_e.shtml>`_
     * `XRT Analysis Guide <http://xrt.cfa.harvard.edu/science/tutorials.php>`_
@@ -71,13 +73,22 @@ class XRTMap(GenericMap):
         return header.get('instrume') == 'XRT'
 
 class SOTMap(GenericMap):
-    """SOT Image Map definition
+    """Hinode SOT Image Map definition
+
+    The Hinode Solar Optical Telescope (SOT) consists of a 50 cm
+    diffraction-limited Gregorian telescope. It is optimized for
+    accurate measurement of the vector magnetic
+    field in the photosphere and dynamics of both the photosphere and
+    chromosphere associated with the magnetic fields.
+
+    Hinode was launched on 22 September 2006 into a sun-synchronous orbit.
 
     References
     ----------
-    Hinode Solar Optical Telescope
-    Data Analysis Guide:
-    http://hesperia.gsfc.nasa.gov/ssw/hinode/sot/doc/guide/SAGv3.3.pdf
+    * `Hinode Mission Page <http://solarb.msfc.nasa.gov/index.html>`_
+    * `Hinode SOT Instrument Page <http://sot.lmsal.com>`_
+    * `Hinode SOT Instrument Paper <http://arxiv.org/pdf/0711.1715.pdf>`_
+    * `Data Analsis Guide <https://sot.lmsal.com/doc/rep/sot254/fid366/SOT00042_33_SOT_Analysis_Guide_SAG.pdf>`_
     """
     #TODO: get a link for the SOT FITS headers
     # Add in some information about the the possible instrument, observation type,
