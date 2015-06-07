@@ -24,6 +24,8 @@ class RHESSIMap(GenericMap):
     X-ray energies below ~40 keV, 7 arcseconds to 400 keV,
     and 36 arcseconds for gamma-ray lines and continuum above 1 MeV.
 
+    RHESSI was launched on 5 February 2002.
+
     References
     ----------
     * RHESSI Homepage `<http://hesperia.gsfc.nasa.gov/rhessi3/index.html>`_

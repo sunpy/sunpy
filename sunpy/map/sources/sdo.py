@@ -77,9 +77,9 @@ class HMIMap(GenericMap):
 
     References
     ----------
-    | `SDO Mission Page <http://sdo.gsfc.nasa.gov>`_
-    | `Instrument Page <http://hmi.stanford.edu>`_
-    | `Analysis Guide <http://hmi.stanford.edu/doc/magnetic/guide.pdf>`_
+    * `SDO Mission Page <http://sdo.gsfc.nasa.gov>`_
+    * `Instrument Page <http://hmi.stanford.edu>`_
+    * `Analysis Guide <http://hmi.stanford.edu/doc/magnetic/guide.pdf>`_
     """
     def __init__(self, data, header, **kwargs):
 

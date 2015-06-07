@@ -36,8 +36,8 @@ Map.register(HIMap, HIMap.is_datasource_for)
 from yohkoh import SXTMap
 Map.register(SXTMap, SXTMap.is_datasource_for)
 
-from iris import IRISMap
-Map.register(IRISMap, IRISMap.is_datasource_for)
+from iris import SJIMap
+Map.register(SJIMap, SJIMap.is_datasource_for)
 
 from trace import TRACEMap
 Map.register(TRACEMap, TRACEMap.is_datasource_for)

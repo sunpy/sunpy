@@ -21,10 +21,10 @@ class TRACEMap(GenericMap):
     1550 A (C IV), 1216 A (H1 Lyman-alpha), 173 A (Fe IX), 195 A (Fe XII),
     and 284 A (Fe XV). TRACE provides solar images with an 8.5 x 8.5 arcminute
     field of view and 0.5 arcsecond pixels. It was placed in a sun-synchronous
-    orbit, enabling it to make continuous solar observations. 
+    orbit, enabling it to make continuous solar observations.
 
-    The TRACE mission operated was launched on 1998/04/02 and obtained its
-    last science image on 2010/06/21 23:56 UT.
+    The TRACE mission operated was launched on 2 April 1998 and obtained its
+    last science image on 6 June 2010 23:56 UT.
 
     References
     ----------
