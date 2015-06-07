@@ -46,9 +46,9 @@ class EITMap(GenericMap):
 
     References
     ----------
-    | `SOHO Mission Page <http://sohowww.nascom.nasa.gov>`_
-    | `SOHO EIT Instrument Page <http://umbra.nascom.nasa.gov/eit/>`_
-    | `SOHO EIT User Guide <http://umbra.nascom.nasa.gov/eit/eit_guide/>`_
+    * `SOHO Mission Page <http://sohowww.nascom.nasa.gov>`_
+    * `SOHO EIT Instrument Page <http://umbra.nascom.nasa.gov/eit/>`_
+    * `SOHO EIT User Guide <http://umbra.nascom.nasa.gov/eit/eit_guide/>`_
     """
 
     def __init__(self, data, header, **kwargs):

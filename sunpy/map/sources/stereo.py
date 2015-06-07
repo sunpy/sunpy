@@ -21,9 +21,9 @@ class EUVIMap(GenericMap):
 
     References
     ----------
-    | `STEREO Mission Page <http://stereo.gsfc.nasa.gov>`_
-    | `STEREO SECCHI <http://secchi.nrl.navy.mil>`_
-    | `Instrument Page <http://secchi.lmsal.com/EUVI/>`_
+    * `STEREO Mission Page <http://stereo.gsfc.nasa.gov>`_
+    * `STEREO SECCHI <http://secchi.nrl.navy.mil>`_
+    * `Instrument Page <http://secchi.lmsal.com/EUVI/>`_
     """
 
     def __init__(self, data, header, **kwargs):

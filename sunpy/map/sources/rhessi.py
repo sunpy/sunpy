@@ -26,7 +26,7 @@ class RHESSIMap(GenericMap):
 
     References
     ----------
-    | RHESSI Homepage `<http://hesperia.gsfc.nasa.gov/rhessi3/index.html>`_
+    * RHESSI Homepage `<http://hesperia.gsfc.nasa.gov/rhessi3/index.html>`_
 
     .. warning::
     This software is in beta and cannot read fits files containing more than one image.
