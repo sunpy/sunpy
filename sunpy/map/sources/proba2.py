@@ -20,8 +20,8 @@ class SWAPMap(GenericMap):
 
     References
     ----------
-    | `Proba2 SWAP Science Center <http://proba2.sidc.be/about/SWAP/>`
-    | `Fits headers reference <http://proba2.oma.be/index.html/swap/swap-analysis-manual/article/data-products?menu=23>`_
+    * `Proba2 SWAP Science Center <http://proba2.sidc.be/about/SWAP/>`_
+    * `Fits headers reference <http://proba2.oma.be/index.html/swap/swap-analysis-manual/article/data-products?menu=23>`_
     """
 
     def __init__(self, data, header, **kwargs):

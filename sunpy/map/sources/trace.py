@@ -20,16 +20,20 @@ class TRACEMap(GenericMap):
     TRACE observed the Sun in the following passbands, 5000 A, 1700 A, 1600 A,
     1550 A (C IV), 1216 A (H1 Lyman-alpha), 173 A (Fe IX), 195 A (Fe XII),
     and 284 A (Fe XV). TRACE provides solar images with an 8.5 x 8.5 arcminute
-    field of view and 0.5 arcsecond pixels.
+    field of view and 0.5 arcsecond pixels. It was placed in a sun-synchronous
+    orbit, enabling it to make continuous solar observations. 
 
-    The TRACE mission obtained its last science image on 2010/06/21 23:56 UT.
+    The TRACE mission operated was launched on 1998/04/02 and obtained its
+    last science image on 2010/06/21 23:56 UT.
 
     References
     ----------
-    | `Mission/Instrument Page <http://trace.lmsal.com>`_
-    | `Fits headers <http://trace.lmsal.com/Project/Instrument/cal/>`_
-    | `Analysis Guide <http://trace.lmsal.com/tag/>`
-    | `Passband reference <http://trace.lmsal.com/Project/Instrument/inspass.htm>`_
+    * `Mission/Instrument Page <http://trace.lmsal.com>`_
+    * `Fits headers <http://trace.lmsal.com/Project/Instrument/cal/>`_
+    * `Analysis Guide <http://trace.lmsal.com/tag/>`_
+    * `Passband reference <http://trace.lmsal.com/Project/Instrument/inspass.htm>`_
+
+    .. note::
 
     Note that this map definition is currently only being tested on JPEG2000
     files. TRACE FITS data is stored in a more complex format. Typically
