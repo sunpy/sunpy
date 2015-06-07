@@ -123,7 +123,7 @@ and therefore manipulate the plot. Here is an example of this at work ::
     import sunpy.map
     import sunpy.data.sample
     import matplotlib.pyplot as plt
-    
+
     smap = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE)
     smap.plot()
     smap.draw_limb()
@@ -158,16 +158,16 @@ using the `~matplotlib.pyplot.show` command. Here is another example ::
 
     plt.show()
 
-By default `~sunpy.map.Map` uses the `wcsaxes <http://wcsaxes.readthedocs.org/>`_ 
-package to improve the representation of world coordinates on plots. In the 
-examples above the axes created is a normal matplotlib axes. 
+By default `~sunpy.map.Map` uses the `wcsaxes <http://wcsaxes.readthedocs.org/>`_
+package to improve the representation of world coordinates on plots. In the
+examples above the axes created is a normal matplotlib axes.
 To create a custom `wcsaxes.WCSAxes` instance do the following ::
 
     fig = plt.figure()
     ax = plt.subplot(projection=smap.wcs)
 
-when overplotting data and using wcsaxes you have to use the transform keyword 
-argument, also the native coordinate system of a `~wcsaxes.WCSAxes` is always 
+when overplotting data and using wcsaxes you have to use the transform keyword
+argument, also the native coordinate system of a `~wcsaxes.WCSAxes` is always
 in degrees ::
 
     fig = plt.figure()
@@ -177,7 +177,6 @@ in degrees ::
     ax.plot((100*u.arcsec).to(u.deg), (500*u.arcsec).to(u.deg),
             transform=ax.get_transform('world'))
 
-
 Finally, here is a more complex example::
 
     from matplotlib import patches
@@ -186,7 +185,7 @@ Finally, here is a more complex example::
     import sunpy.map
     import matplotlib.pyplot as plt
     import sunpy.data.sample
-    
+
     smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     submap = smap.submap([-100-250, -100+250]*u.arcsec, [-400-250, -400+250]*u.arcsec)
     rect = patches.Rectangle([-100-250, -400-250], 500, 500, color = 'white', fill=False)
@@ -211,8 +210,9 @@ below it. The spacing between the two plots is controlled by fig.subplots_adjust
 7. Plotting Keywords
 --------------------
 
-As mentioned before for Map `~matplotlib.pyplot.imshow()` does most of the heavy lifting in the background
-while SunPy makes a number of choices for you so that you don't have. Changing these defaults
+As mentioned before for Map `~matplotlib.pyplot.imshow()` does most of the heavy
+lifting in the background while SunPy makes a number of choices for you so that
+you don't have to. Changing these defaults
 is made possible through some simple interfaces. Firstly you can pass any
 `~matplotlib.pyplot.imshow()` keyword into
 the plot command to override the defaults for that particular plot. The following example
@@ -229,7 +229,8 @@ changes the default AIA color table to use an inverse Grey color table::
     plt.show()
 
 If you'd like to make this a permanent change you can access a number of settings under the
-`plot_settings` variable so to permanently change the normalization of the color table to a linear
+`plot_settings` property to make your changes for that map instance permanent.
+ In the following example we change the normalization of the color table to a linear
 one running from 5 to 100 (clipping everything above and below these values)::
 
     import sunpy.map
@@ -243,9 +244,13 @@ one running from 5 to 100 (clipping everything above and below these values)::
     smap.plot()
     plt.show()
 
+8. Colormaps
+------------
+
 There are a number of color maps defined in SunPy which are used for data from
 particular missions (e.g. SDO/AIA). The Map object chooses the appropriate colormap
-on its own. The following example will show you all of the colormaps available::
+on its own when you create it. The following example will show you all of the
+colormaps available::
 
     import matplotlib.pyplot as plt
     import sunpy.cm
@@ -263,14 +268,18 @@ on its own. The following example will show you all of the colormaps available::
 
 .. image:: ../images/plotting_ex2.png
 
-These can be used with the standard commands to change the colormap::
+These can be used with the standard commands to change the colormap. So for
+example if you wanted to plot an AIA image but use an EIT colormap, you would
+do so as follows::
 
     import sunpy.map
     import sunpy.data.sample
     import matplotlib.pyplot as plt
+
     smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    
+    cmap = plt.get_cmap('sohoeit171')
+
     fig = plt.figure()
     ax = plt.subplot(1,1,1)
-    smap.plot(cmap=plt.Greys_r)
+    smap.plot(cmap=cmap)
     plt.show()
