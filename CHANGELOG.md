@@ -33,8 +33,10 @@ Latest
    x first.
  * map.rsun_arcseconds is now map.rsun_obs as it returns a quantity.
  * Map properties are now named tuples rather than dictionaries.
- * Improvement for Map plots, standardization and improved color tables, 
-   better access to plot variables through new plot_settings variable
+ * Improvement for Map plots, standardization and improved color tables,
+   better access to plot variables through new plot_settings variable.
+ * Huge improvements in Instrument Map doc strings. Now contain instrument
+   descriptions as well as reference links for more info.
 
 0.5.0
 -----
