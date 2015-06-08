@@ -102,6 +102,9 @@ intersphinx_mapping['astropy'] = ('http://docs.astropy.org/en/stable/', None)
 intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/rel_0_8/', None)
 intersphinx_mapping['pandas'] = ('http://pandas.pydata.org/pandas-docs/stable/', None)
 intersphinx_mapping['skimage'] = ('http://scikit-image.org/docs/stable/', None)
+intersphinx_mapping['numpy'] = ('http://docs.scipy.org/doc/numpy/', None)
+intersphinx_mapping['scipy'] = ('http://docs.scipy.org/doc/scipy/reference/', None)
+intersphinx_mapping['matplotlib'] = ('http://matplotlib.sourceforge.net/', None)
 
 # -- Options for HTML output ---------------------------------------------------
 
