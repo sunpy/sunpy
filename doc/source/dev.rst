@@ -785,6 +785,37 @@ test is skipped, otherwise it is run. Marking tests is pretty
 straightforward in pytest: use the decorator ``@pytest.mark.online`` to
 mark a test function as needing an internet connection.
 
+Writing a unit test for a figure
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can write SunPy unit tests that test the generation of matplotlib figures
+by adding the decorator `sunpy.tests.helpers.figure_test`.
+Here is a simple example: ::
+
+    import matplotlib.pyplot as plt
+    from sunpy.tests.helpers import figure_test
+
+    @figure_test
+    def test_simple_plot():
+        plt.plot([0,1])
+
+The current figure at the end of the unit test, or an explicitly returned
+figure, has its hash compared against an established hash library (more on
+this below).  If the hashes do not match, the figure has changed, and thus
+the test is considered to have failed.
+
+All such tests are automatically marked with the pytest mark
+`pytest.mark.figure`.  See the next section for how to use marks.
+
+You will need to update the library of figure hashes after you create a new
+figure test or after a figure has intentionally changed due to code improvement.
+Once you have confirmed that the only figure-test failures are anticipated ones,
+remove the existing hash library (found at `sunpy/tests/figure_hashes.json`)
+and then run the entire suite of SunPy tests.  Note that all figure tests will
+fail since a new hash library needs to be built.  The test report will tell you
+where the new hash library has been created, which you then copy to
+`sunpy/tests/`.
+
 Running unit tests
 ^^^^^^^^^^^^^^^^^^
 
@@ -802,7 +833,7 @@ the module on the command line, e.g.::
 for the tests for `sunpy.util.xml`.
 
 To run only tests that been marked with a specific pytest mark using the
-decorator ``@pytest.mark`` (the the section *Writing a unit test*), use the
+decorator ``@pytest.mark`` (see the section *Writing a unit test*), use the
 following command (where ``MARK`` is the name of the mark)::
 
   py.test -k MARK
