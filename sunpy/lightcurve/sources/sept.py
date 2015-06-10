@@ -61,7 +61,7 @@ def _parse_txt(filepath):
     #Converting first five columns into a single datetime.datetime column
     for i in range(len(data)): 
         date = datetime(year_col[i], 1, 1) + timedelta(int(day_of_year[i]) - 1)
-        data_modify = data_modify + [datetime(date.year, date.month, date.day, hour_col[i], minutes_col[i], seconds_col[i])]
+        data_modify.append(datetime(date.year, date.month, date.day, hour_col[i], minutes_col[i], seconds_col[i]))
 
     #Removing separate datetime element columns
     data.remove_columns(['col{}'.format(i) for i in range(1,7)])
