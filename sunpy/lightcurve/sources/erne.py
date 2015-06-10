@@ -30,11 +30,17 @@ class ERNELightCurve(LightCurve):
     p is for protons, and
     a is for Helium (alpha particles).
 
+    args:   
+        Timerange or start and end date, 
+        atomic_specie
+    KEYWORD VALUES :-  
+        atomic_specie: 'proton' or 'alpha'
+    
     Examples
     --------
     >>> from sunpy import lightcurve as lc
     >>> from sunpy.time import TimeRange
-    >>> erne = lc.ERNELightCurve.create(TimeRange('2012/06/01', '2012/06/05'))
+    >>> erne = lc.ERNELightCurve.create(TimeRange('2012/06/01', '2012/06/05'),'proton')
     >>> erne.peek()
 
     References
@@ -91,6 +97,7 @@ class ERNELightCurve(LightCurve):
         http://srl.utu.fi/erne_data/carrot/carrota.html
         http://srl.utu.fi/erne_data/carrot/carrotp.html
 
+        and returns header as a list and ERNE data as pandas dataframe
         """
         
         #Reading in Data along with header
