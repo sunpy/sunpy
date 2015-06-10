@@ -16,9 +16,11 @@ def _parse_txt(filepath):
     #Reading in Data along with header
     data = ascii.read(filepath, delimiter = "\s", data_start = 2 ) 
 
+    #header is read along with data i.e the first row in data is the header
     header = data.colnames
-    for i in range(len(header)):
-        header[i] = data[0][header[i]]
+    #So extracting the first row elements and forming header list that contains the energy bins
+    header = [data[0][key] for key in data.colnames]
+    #and now excluding the first line to have only the data in data variable
     data = data[1:]
 
     data_modify = []
@@ -51,13 +53,12 @@ def _parse_txt(filepath):
     data.add_column(Column(data = data_modify, name='col_1'),0)
     
     #To modify header
-    for i in range(len(header[5:])):
-        header[i+5] = 'Intensities [1/(cm^2*sr*s*MeV)] in energy channel ' + header[i+5] +' [MeV] ' 
+    header[5:] = ['Intensities [1/(cm^2*sr*s*MeV)] in energy channel {}  [MeV] '.format(val) for val in header[5:]]
     header = ['TimeRange'] + header[5:]
     
     # To add the column names in the astropy table object
-    for key2 in range(len(data.colnames)):
-        data.rename_column(data.colnames[key2], header[key2])        
+    for elem, head_key in enumerate(header):
+        data.rename_column(data.colnames[elem], head_key)        
 
     # Converting from astropy.table.Table to pandas.Dataframe
     # to_pandas() bound method is only available in the latest development build of astropy and none of the stable versions :/
