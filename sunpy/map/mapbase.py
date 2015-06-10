@@ -13,7 +13,8 @@ from copy import deepcopy
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import patches, cm, colors
+from matplotlib import patches
+from matplotlib import cm
 
 import astropy.wcs
 from .nddata_compat import NDDataCompat as NDData
@@ -1279,7 +1280,10 @@ scale:\t\t {scale}
             imshow_args.update({'extent': list(self.xrange.value) + list(self.yrange.value)})
         imshow_args.update(imshow_kwargs)
 
-        ret = axes.imshow(self.data, **imshow_args)
+        if self.mask is None:
+            ret = axes.imshow(self.data, **kwargs)
+        else:
+            ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **kwargs)
 
         if wcsaxes_compat.is_wcsaxes(axes):
             wcsaxes_compat.default_wcs_grid(axes)
