@@ -52,7 +52,6 @@ def _parse_txt(filepath):
    
 
     data_modify = []
-    month_dict = {'Jan':1,'Feb':2,'Mar':3,'Apr':4,'May':5,'Jun':6,'Jul':7,'Aug':8,'Sep':9,'Oct':10,'Nov':11,'Dec':12}
 
     #Storing data columns in recognizable variables (Common to all types of data)
     start_year_col  = data['col2']
@@ -65,7 +64,7 @@ def _parse_txt(filepath):
         header = ['Verse Number', 'Column 1 : DateTime'] + header 
 
         for i in range(len(data)): 
-            date = datetime(start_year_col[i], month_dict[ start_month_col[i] ], start_date_col[i], int(("%04d" % (start_time_col[i],))[:2]), int(("%04d" % (start_time_col[i],))[2:]) )
+            date = datetime.strptime(str(start_year_col[i])+ '-' +start_month_col[i]+ '-' +"%02d"%start_date_col[i] + '/' + ("%04d"%start_time_col[i])[:2] + ':' + ("%04d"%start_time_col[i])[2:], '%Y-%b-%d/%H:%M' )
             data_modify.append(date)
 
         data.remove_columns(['col{}'.format(i) for i in range(2,6)])
@@ -79,8 +78,8 @@ def _parse_txt(filepath):
         end_time_col    = data['col9']
 
         for i in range(len(data)): 
-            date1 = datetime(start_year_col[i], month_dict[ start_month_col[i] ], start_date_col[i], int(("%04d" % (start_time_col[i],))[:2]), int(("%04d" % (start_time_col[i],))[2:]) )
-            date2 = datetime(end_year_col[i], month_dict[ end_month_col[i] ], end_date_col[i], int(("%04d" % (end_time_col[i],))[:2]), int(("%04d" % (end_time_col[i],))[2:]) )
+            date1 = datetime.strptime(str(start_year_col[i])+ '-' +start_month_col[i]+ '-' +"%02d"%start_date_col[i] + '/' + ("%04d"%start_time_col[i])[:2] + ':' + ("%04d"%start_time_col[i])[2:], '%Y-%b-%d/%H:%M' )
+            date2 = datetime.strptime(str(end_year_col[i])+ '-' +end_month_col[i]+ '-' +"%02d"%end_date_col[i] + '/' + ("%04d"%end_time_col[i])[:2] + ':' + ("%04d"%end_time_col[i])[2:], '%Y-%b-%d/%H:%M' )
             
             #I don't know why but including it outside interferes with the upper case and results in segmetation fault 11 :/
             from sunpy.time import TimeRange
@@ -97,7 +96,7 @@ def _parse_txt(filepath):
     # Converting from astropy.table.Table to pandas.Dataframe
     # to_pandas() bound method is only available in the latest development build and none of the stable
     data = data.to_pandas()
-
+    print data
     return data
 
 """"
