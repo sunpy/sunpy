@@ -15,6 +15,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import patches
 from matplotlib import cm
+from matplotlib import colors
 
 import astropy.wcs
 from .nddata_compat import NDDataCompat as NDData
@@ -58,15 +59,8 @@ class GenericMap(NDData):
     ----------
     data : numpy.ndarray, list
         A 2d list or ndarray containing the map data
-    header : dict
+    meta : dict
         A dictionary of the original image header tags
-
-    Attributes
-    ----------
-    cmap : matplotlib.colors.Colormap
-        A color map used for plotting with matplotlib.
-    mpl_color_normalizer : matplotlib.colors.Normalize
-        A matplotlib normalizer used to scale the image plot.
 
     Examples
     --------
@@ -1281,9 +1275,9 @@ scale:\t\t {scale}
         imshow_args.update(imshow_kwargs)
 
         if self.mask is None:
-            ret = axes.imshow(self.data, **kwargs)
+            ret = axes.imshow(self.data, **imshow_kwargs)
         else:
-            ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **kwargs)
+            ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **imshow_kwargs)
 
         if wcsaxes_compat.is_wcsaxes(axes):
             wcsaxes_compat.default_wcs_grid(axes)
