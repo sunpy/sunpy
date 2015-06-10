@@ -1,4 +1,5 @@
 from datetime import timedelta,datetime
+
 from astropy.io import ascii
 from astropy.table import Table, Column
 
@@ -14,22 +15,39 @@ def _parse_txt(filepath):
     
     #Reading in Data along with header
     data = ascii.read(filepath, delimiter = "\s", data_start = 2 ) 
+
     header = data.colnames
     for i in range(len(header)):
         header[i] = data[0][header[i]]
     data = data[1:]
 
     data_modify = []
+
+    #Storing data columns in recobnizable variables
+    year_col = data['col1']
+    month_col = data['col2']
+    date_col = data['col3']
+    begin_time_col = data['col4']
+    end_time_col = data['col5']
+
     #Converting separate datetime element into a single datetime.datetime column
     for i in range(len(data)):
-        if int(data['col1'][i]) >= 96:
-            year = 1900 + int(data['col1'][i])
+        if int(year_col[i]) >= 96:
+            year = 1900 + int(year_col[i])
         else:
-            year = 2000 + int(data['col1'][i])
-       
-        data_modify = data_modify + [TimeRange(datetime(year,int(data['col2'][i]),int(data['col3'][i]),int(data['col4'][i][:2]),int(data['col4'][i][2:])), datetime(year,int(data['col2'][i]),int(data['col3'][i]),int(data['col5'][i][:2]),int(data['col5'][i][2:])))]
+            year = 2000 + int(year_col[i])
+        
+        #Combining separate datetime elements into single datetime value
+        #start time
+        date1 = datetime(year,int(month_col[i]),int(date_col[i]),int(begin_time_col[i][:2]),int(begin_time_col[i][2:]))
+        #end time
+        date2 = datetime(year,int(month_col[i]),int(date_col[i]),int(end_time_col[i][:2]),int(end_time_col[i][2:]))
+        #Appending the start and end time as sunpy.time TimeRange in a separate list
+        data_modify.append(TimeRange(date1, date2))
     
-    data.remove_columns(['col1','col2','col3','col4','col5'])
+    #Removing the columns with separate date elements like year, day, hour, minute, second
+    data.remove_columns(['col{}'.format(i) for i in range(1,6)])
+    #Adding a single Timerange column to the data
     data.add_column(Column(data = data_modify, name='col_1'),0)
     
     #To modify header
@@ -42,9 +60,9 @@ def _parse_txt(filepath):
         data.rename_column(data.colnames[key2], header[key2])        
 
     # Converting from astropy.table.Table to pandas.Dataframe
-    # to_pandas() bound method is only available in the latest development build and none of the stable
+    # to_pandas() bound method is only available in the latest development build of astropy and none of the stable versions :/
     data = data.to_pandas()
-
+    
     return header, data
 
 """
