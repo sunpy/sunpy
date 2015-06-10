@@ -1,4 +1,5 @@
 from datetime import timedelta,datetime
+
 from astropy.io import ascii
 from astropy.table import Table, Column
 
@@ -50,23 +51,31 @@ def _parse_txt(filepath):
 
     data_modify = []
 
+    #Storing data columns in recognizable variables
+    year_col    = data['col2']
+    day_of_year = data['col3']
+    hour_col    = data['col4']
+    minutes_col = data['col5']
+    seconds_col = data['col6']
+
     #Converting first five columns into a single datetime.datetime column
     for i in range(len(data)): 
-        date = datetime(data['col2'][i], 1, 1) + timedelta(int(data['col3'][i]) - 1)
-        data_modify = data_modify + [datetime(date.year, date.month, date.day, data['col4'][i], data['col5'][i], data['col6'][i])]
+        date = datetime(year_col[i], 1, 1) + timedelta(int(day_of_year[i]) - 1)
+        data_modify = data_modify + [datetime(date.year, date.month, date.day, hour_col[i], minutes_col[i], seconds_col[i])]
 
-    data.remove_columns(['col1','col2','col3','col4','col5','col6'])
-
+    #Removing separate datetime element columns
+    data.remove_columns(['col{}'.format(i) for i in range(1,7)])
+    #Adding the combined datetime column created above in data_modify
     data.add_column(Column(data = data_modify, name='col1'),0)
 
     #To add the column names in the astropy table object
-    for key2 in range(len(data.colnames)):
-        data.rename_column(data.colnames[key2], header[key2])        
+    for elem, head_key in enumerate(header):
+        data.rename_column(data.colnames[elem], head_key)        
 
     # Converting from astropy.table.Table to pandas.Dataframe
     # to_pandas() bound method is only available in the latest development build and none of the stable
     data = data.to_pandas()
-
+    
     return header, data
 
 """
