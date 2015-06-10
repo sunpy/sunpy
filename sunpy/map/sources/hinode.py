@@ -5,12 +5,18 @@ __author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]
 __email__ = "jack.ireland@nasa.gov"
 
 import numpy as np
+import numpy.ma as ma
 from matplotlib import colors
 
 from sunpy.map import GenericMap
 from sunpy.cm import cm
 
 __all__ = ['XRTMap', 'SOTMap']
+
+# the following values comes from xrt_prep.pro
+# search for saturation in
+# http://darts.jaxa.jp/pub/ssw/hinode/xrt/idl/util/xrt_prep.pro
+SATURATION_LIMIT = 2500
 
 def _lower_list(L):
     return [item.lower() for item in L]
@@ -42,6 +48,9 @@ class XRTMap(GenericMap):
     def __init__(self, data, header, **kwargs):
 
         GenericMap.__init__(self, data, header, **kwargs)
+
+        # converting data array to masked array
+        self.data = ma.masked_where(self.data > SATURATION_LIMIT, self.data)
 
         fw1 = header.get('EC_FW1_')
         if fw1.lower() not in _lower_list(self.filter_wheel1_measurements):
