@@ -291,19 +291,26 @@ class SITLightCurve(LightCurve):
     
         data_modify = []
         
+        #Storing data columns in recognizable variables
+        year_col = data['col1']
+        day_of_year_col = data['col2']
+        hour_col = data['col3']
+        minutes_col = data['col4']
+        seconds_col = data['col5']
+        
         #Combining Date, Time columns to make a single datetime.datetime value column 
         for i in range(len(data)): 
-            date = datetime(data['col1'][i], 1, 1) + timedelta(int(data['col2'][i]) - 1)
-            data_modify = data_modify + [datetime(date.year, date.month, date.day, data['col3'][i], data['col4'][i], data['col5'][i])]
+            date = datetime(year_col[i], 1, 1) + timedelta(int(day_of_year_col[i]) - 1)
+            data_modify.append(datetime(date.year, date.month, date.day, hour_col[i], minutes_col[i], seconds_col[i]))
     
         #Adding one DateTime column and removing 5 columns with separated time info
         data.add_column(Column(data = data_modify, name='col'),1)
-        data.remove_columns(['col1', 'col2','col3','col4','col5'])
+        data.remove_columns(['col{}'.format(i) for i in range(1,6)])
     
     
         #To add the column names in the astropy table object
-        for key2 in range(21):
-            data.rename_column(data.colnames[key2], header[key2])        
+        for elem, head_key in enumerate(header):
+            data.rename_column(data.colnames[elem], head_key)        
     
         #Converting from astropy.table.Table to pandas.Dataframe
         # to_pandas() bound method is only available in the latest development build of astropy and 
