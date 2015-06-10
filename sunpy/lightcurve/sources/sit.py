@@ -9,9 +9,9 @@ __authors__ = ["Ankit Kumar"]
 __email__ = "ankitkmr.iitk@gmail.com"
 
 from datetime import timedelta,datetime
+
 from astropy.io import ascii
 from astropy.table import Table, Column
-
 from dateutil.relativedelta import relativedelta
 from calendar import monthrange
 from shlex import split
@@ -20,8 +20,6 @@ from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time, TimeRange, is_time_in_given_format
 from sunpy.util import net
 
-
-
 __all__ = ['SITLightCurve']
 
 
@@ -29,11 +27,11 @@ class SITLightCurve(LightCurve):
     """
     SIT LightCurve. Provides SIT data back to 2007-07.
     Most recent data is usually available one or two days late.
-    args : type_of_average, stereo_spacecraft, atomic_specie
+    args : duration_of_average, stereo_spacecraft, atomic_specie
     POSSIBLE KEYWORD VALUES: (value has to be one of these only for each keyword)
     (Also the values need to be passed in this order only for the positional arguments)
     stereo_spacecraft : ahead, behind
-    type_of_average        : 1min, 10min, 1hr, 1day
+    duration_of_average        : 1min, 10min, 1hr, 1day
     atomic_specie          : 4He, Fe, H, O
     Examples
     --------
@@ -114,7 +112,7 @@ class SITLightCurve(LightCurve):
             SIT stereo spacecraft (default = "ahead")
         atomic_specie : string 
             atomic specie to consider ( default = "4He")
-        type_of_average : string
+        duration_of_average : string
             average type to retrieve (default = "1min")
         """
         # # If time duration given as sunpy.time.TimeRange
@@ -122,7 +120,7 @@ class SITLightCurve(LightCurve):
             start = args[0].start
             end = args[0].end
             stereo_spacecraft = args[1]
-            type_of_average = args[2]
+            duration_of_average = args[2]
             atomic_specie = args[3]
 
         elif len(args) == 5:
@@ -130,26 +128,26 @@ class SITLightCurve(LightCurve):
             start = parse_time(args[0])
             end = parse_time(args[1])
             stereo_spacecraft = args[2]
-            type_of_average = args[3]
+            duration_of_average = args[3]
             atomic_specie = args[4]
             
         else: 
             raise ValueError('must recieve 4 or 5 arguments only')
             # 4 arguments incase of first argument being TimeRange and 5 in case of it being start and end dates
-            # The other three arguments : stereo_spacecraft, type_of_average, atomic_specie remain same for either
+            # The other three arguments : stereo_spacecraft, duration_of_average, atomic_specie remain same for either
 
         if end < start:
             raise ValueError('start time > end time')
 
 
         # find out base url of data to query from the stereo spacecraft, average type and atomic specie quried for
-        base_url = 'http://www.srl.caltech.edu/STEREO/DATA/SIT/' + stereo_spacecraft + '/' + type_of_average + '/' 
+        base_url = 'http://www.srl.caltech.edu/STEREO/DATA/SIT/' + stereo_spacecraft + '/' + duration_of_average + '/' 
 
-        if type_of_average == '1min' or type_of_average == '10min':
+        if duration_of_average == '1min' or duration_of_average == '10min':
             base_url = base_url + atomic_specie + '/'
         
         #adding the file name to base url
-        base_url = base_url + 'SIT_' + stereo_spacecraft.capitalize() + '_' + type_of_average + '_' + atomic_specie + '_'
+        base_url = base_url + 'SIT_' + stereo_spacecraft.capitalize() + '_' + duration_of_average + '_' + atomic_specie + '_'
 
         #Date Generator to generate dates in between the start and end dates. Inclusive of both end and start dates.         
         def daterange(start_date, end_date, delta = 'day'):
@@ -231,11 +229,11 @@ class SITLightCurve(LightCurve):
         url_meta = (start,end)
         
         
-        if type_of_average == '1hr' or type_of_average == '1day': 
+        if duration_of_average == '1hr' or duration_of_average == '1day': 
             for single_date in daterange(start, end, delta = 'year'):  
                 url.append(base_url + "{date:%Y}.txt".format(date=single_date))
 
-        elif type_of_average == '1min':
+        elif duration_of_average == '1min':
             for single_date in daterange(start, end, delta = 'day'):
                 day_of_year = (str)(single_date.timetuple().tm_yday)
                 for i in [0,1,2]:
@@ -244,7 +242,7 @@ class SITLightCurve(LightCurve):
                 url.append(base_url + "{date:%Y}_".format(date = single_date) + day_of_year + ".txt".format(
                     date=single_date))
 
-        elif type_of_average == '10min':
+        elif duration_of_average == '10min':
             for single_date in daterange(start, end, delta = 'month'):
                 url.append(base_url + "{date:%Y}_{date:%m}.txt".format(
                     date=single_date))
