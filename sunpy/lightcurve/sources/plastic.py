@@ -1,8 +1,8 @@
 from datetime import timedelta,datetime
+
 from astropy.io import ascii
 from astropy.table import Table, Column
 
-from sunpy.time import TimeRange
 
 def _parse_txt(filepath):
     """
@@ -15,14 +15,12 @@ def _parse_txt(filepath):
         f.readline()
         header = f.readline().strip('\n').split('\t')
 
-    if header[4] == 'sec':
-        type_of_data = '1min'
-    elif header[4] == 'date and time':
-        type_of_data = '10min'
-    elif header[4] == 'Np [1/cc]':
-        type_of_data = '1hr'
-    else:
-        raise ValueError 
+    types = {'sec':'1min', 'date and time': '10min', 'Np [1/cc]': '1hr'}
+
+    #Determining the type of data
+    type_of_data = types.get(header[4])
+    if type_of_data is None:
+        raise ValueError('{var} is not one of the possibilities in the header it should be one of {poss}'.format(var=header[4], poss= types.keys()))
 
     
     #Reading in Data only, using default i.e. 0 value for data_start keyword since all lines before data are commented
@@ -32,42 +30,48 @@ def _parse_txt(filepath):
     data_modify_other = []
 
     #Converting separate datetime element into a single datetime.datetime column
+    #Adding the combined datetime column and removing the separate datetime elements columns
     if type_of_data == '1min':
+        date_and_time_col = data['col7']
+        millisec_col = data['col6']
+        kev_q_time_col = data['col8']
+
         for i in range(len(data)):
-            data_modify = data_modify + [(datetime.strptime(str(data['col7'][i]) + str(data['col6'][i])[1:], "%Y-%m-%d/%H:%M:%S.%f") )]
-            data_modify_other = data_modify_other + [datetime.strptime(str(data['col8'][i]), "%Y-%m-%d/%H:%M:%S") ]
+            data_modify.append((datetime.strptime(str(date_and_time_col[i]) + str(millisec_col[i])[1:], "%Y-%m-%d/%H:%M:%S.%f") ))
+            data_modify_other.append(datetime.strptime(str(kev_q_time_col[i]), "%Y-%m-%d/%H:%M:%S"))
         
-        data.remove_columns(['col1','col2','col3','col4','col5','col6','col7','col8'])
+        data.remove_columns(['col{}'.format(i) for i in range(1,9)])
         data.add_column(Column(data = data_modify, name='col_1'),0)
         data.add_column(Column(data = data_modify_other, name='col_2'),1)
         header = ['Datetime'] + header[7:]
         
     elif type_of_data == '10min':
-        for i in range(len(data)):
-            data['col5'][i] = datetime.strptime(str(data['col5'][i]), "%Y-%m-%d/%H:%M:%S")
-        
-        data.remove_columns(['col1','col2','col3','col4'])
+        date_and_time_col = data['col5']
+
+        date_and_time_col = [datetime.strptime(str(var), "%Y-%m-%d/%H:%M:%S") for var in date_and_time_col]
+
+        data.remove_columns(['col{}'.format(i) for i in range(1,5)])
         header = ['Datetime'] + header[5:]
 
     elif type_of_data == '1hr':
-        for i in range(len(data)):
-            data['col4'][i] = datetime.strptime(str(data['col4'][i]), "%Y-%m-%d/%H:%M:%S")
-        
-        data.remove_columns(['col1','col2','col3'])
+        date_and_time_col = data['col4']
+
+        date_and_time_col = [datetime.strptime(str(var), "%Y-%m-%d/%H:%M:%S") for var in date_and_time_col]
+
+        data.remove_columns(['col{}'.format(i) for i in range(1,4)])
         header = ['Datetime'] + header[4:]
 
     else:
-        raise ValueError
+        raise ValueError('Unrecognized type of data')
     
     # To add the column names in the astropy table object
-    for key2 in range(len(data.colnames)):
-        data.rename_column(data.colnames[key2], header[key2])        
+    for elem, head_key in enumerate(header):
+        data.rename_column(data.colnames[elem], head_key)         
 
     # Converting from astropy.table.Table to pandas.Dataframe
     # to_pandas() bound method is only available in the latest development build and none of the stable
     data = data.to_pandas()
 
-    print data
     return header, data
 
 """
