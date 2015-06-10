@@ -34,16 +34,12 @@ def _parse_txt(filepath):
 
     #Converting separate datetime element into a single datetime.datetime column
     for i in range(len(data)):
-        if int(year_col[i]) >= 96:
-            year = 1900 + int(year_col[i])
-        else:
-            year = 2000 + int(year_col[i])
         
         #Combining separate datetime elements into single datetime value
         #start time
-        date1 = datetime(year,int(month_col[i]),int(date_col[i]),int(begin_time_col[i][:2]),int(begin_time_col[i][2:]))
+        date1 = datetime.strptime(year_col[i] + '-' + month_col[i] + '-' + date_col[i] + '/' + begin_time_col[i][:2] + ':' +begin_time_col[i][2:],"%y-%m-%d/%H:%M")
         #end time
-        date2 = datetime(year,int(month_col[i]),int(date_col[i]),int(end_time_col[i][:2]),int(end_time_col[i][2:]))
+        date2 = datetime.strptime(year_col[i] + '-' + month_col[i] + '-' + date_col[i] + '/' + end_time_col[i][:2] + ':' + end_time_col[i][2:], "%y-%m-%d/%H:%M")
         #Appending the start and end time as sunpy.time TimeRange in a separate list
         data_modify.append(TimeRange(date1, date2))
     
@@ -65,6 +61,7 @@ def _parse_txt(filepath):
     data = data.to_pandas()
     
     return header, data
+
 
 """
 _parse_txt('cr1907p.txt')
