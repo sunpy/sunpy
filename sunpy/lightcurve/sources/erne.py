@@ -23,7 +23,7 @@ def _parse_txt(filepath):
 
     data_modify = []
 
-    #Storing data columns in recobnizable variables
+    #Storing data columns in recognizable variables
     year_col = data['col1']
     month_col = data['col2']
     date_col = data['col3']
