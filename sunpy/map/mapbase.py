@@ -1283,7 +1283,10 @@ scale:\t\t [{dx}, {dy}]
         kwargs = self._mpl_imshow_kwargs(axes, cmap)
         kwargs.update(imshow_args)
 
-        ret = axes.imshow(self.data, **kwargs)
+        if self.mask is None:
+            ret = axes.imshow(self.data, **kwargs)
+        else:
+            ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **kwargs)
 
         if wcsaxes_compat.is_wcsaxes(axes):
             wcsaxes_compat.default_wcs_grid(axes)
@@ -1297,17 +1300,17 @@ scale:\t\t [{dx}, {dy}]
         Return the keyword arguments for imshow to display this map
         """
         if wcsaxes_compat.is_wcsaxes(axes):
-            kwargs = {'cmap':cmap,
+            kwargs = {'cmap': cmap,
                       'origin': 'lower',
-                      'norm':self.mpl_color_normalizer,
-                      'interpolation':'nearest'}
+                      'norm': self.mpl_color_normalizer,
+                      'interpolation': 'nearest'}
         else:
             # make imshow kwargs a dict
-            kwargs = {'origin':'lower',
-                      'cmap':cmap,
-                      'norm':self.mpl_color_normalizer,
-                      'extent':list(self.xrange.value) + list(self.yrange.value),
-                      'interpolation':'nearest'}
+            kwargs = {'origin': 'lower',
+                      'cmap': cmap,
+                      'norm': self.mpl_color_normalizer,
+                      'extent': list(self.xrange.value) + list(self.yrange.value),
+                      'interpolation': 'nearest'}
 
         return kwargs
 
