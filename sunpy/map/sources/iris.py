@@ -16,10 +16,7 @@ class SJIMap(GenericMap):
     2-second temporal resolution and 1 km/s velocity resolution over a
     field-of- view of up to 175 arcsec by 175 arcsec.  IRIS consists of a 19-cm
     UV telescope that feeds a slit-based dual-bandpass imaging spectrograph.
-    IRIS obtains spectra in passbands from 1332 to 1358, 1389 to 1407 and
-    2783 to 2834 Angstrom including bright spectral lines formed in the
-    chromosphere (Mg ii h 2803  A and Mg ii k 2796  A) and transition
-    region (C ii 1334/1335  A and Si iv 1394/1403  A).
+
     Slit-jaw images in four different passbands (C ii 1330, Si iv 1400,
     Mg ii k 2796 and Mg ii wing 2830  A) can be taken simultaneously with
     spectral rasters that sample regions up to 130 arcsec by 175 arcsec at a
@@ -28,6 +25,10 @@ class SJIMap(GenericMap):
     5000 K and 10 MK.
 
     IRIS was launched into a Sun-synchronous orbit on 27 June 2013.
+
+    warning::
+
+    This object can only handle level 1 SJI files.
 
     References
     ----------
@@ -39,9 +40,14 @@ class SJIMap(GenericMap):
     def __init__(self, data, header, **kwargs):
         GenericMap.__init__(self, data, header, **kwargs)
 
+        self.meta['detector'] = "SJI"
+        self.meta['waveunit'] = "Angstrom"
+        self.meta['wavelnth'] = header['twave1']
+
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an AIA image"""
         tele = header.get('TELESCOP', '').startswith('IRIS')
         obs = header.get('INSTRUME', '').startswith('SJI')
+        level = header.get('lvl_num') ==
         return tele and obs

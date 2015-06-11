@@ -225,7 +225,11 @@ scale:\t\t {scale}
     @property
     def name(self):
         """Human-readable description of map-type"""
-        return self.observatory + " " + self.detector + " " + str(self.measurement)
+        return "{obs} {detector} {measurement} {date:{tmf}}".format(obs=self.observatory,
+                                                                detector=self.detector,
+                                                                measurement=self.measurement,
+                                                                date=parse_time(self.date),
+                                                                tmf=TIME_FORMAT)
 
     @property
     def nickname(self):
@@ -1248,9 +1252,7 @@ scale:\t\t {scale}
         # Normal plot
         if annotate:
             if title is True:
-                axes.set_title("{name} {date:{tmf}}".format(name=self.name,
-                                                            date=parse_time(self.date),
-                                                            tmf=TIME_FORMAT))
+                axes.set_title(self.name)
             else:
                 axes.set_title(title)
 
@@ -1275,9 +1277,9 @@ scale:\t\t {scale}
         imshow_args.update(imshow_kwargs)
 
         if self.mask is None:
-            ret = axes.imshow(self.data, **imshow_kwargs)
+            ret = axes.imshow(self.data, **imshow_args)
         else:
-            ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **imshow_kwargs)
+            ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **imshow_args)
 
         if wcsaxes_compat.is_wcsaxes(axes):
             wcsaxes_compat.default_wcs_grid(axes)
