@@ -147,8 +147,8 @@ class MapCube(object):
 
         Save an animation with the limb at each time step
 
-        >>> def myplot(fig, ax, map):
-        ...    p = map.draw_limb()
+        >>> def myplot(fig, ax, sunpy_map):
+        ...    p = sunpy_map.draw_limb()
         ...    return p
         >>> cube = sunpy.Map(files, cube=True)
         >>> ani = cube.peek(plot_function=myplot)
@@ -269,8 +269,8 @@ class MapCube(object):
 
         Plot the map with the limb at each time step
 
-        >>> def myplot(fig, ax, map):
-        ...    p = map.draw_limb()
+        >>> def myplot(fig, ax, sunpy_map):
+        ...    p = sunpy_map.draw_limb()
         ...    return p
         >>> cube = sunpy.Map(files, cube=True)
         >>> ani = cube.peek(plot_function=myplot)
