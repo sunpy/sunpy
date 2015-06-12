@@ -95,8 +95,17 @@ cmlist = {
           'trace1600': trace1600,
           'trace1700': trace1700,
           'traceWL': traceWL,
-          'hmimag': hmimag
-          }
+          'hmimag': hmimag,
+          'irissji1330': ct.iris_sji_color_table('1330'),
+          'irissji1400': ct.iris_sji_color_table('1400'),
+          'irissji1600': ct.iris_sji_color_table('1600'),
+          'irissji2796': ct.iris_sji_color_table('2796'),
+          'irissji2832': ct.iris_sji_color_table('2832'),
+          'irissji5000': ct.iris_sji_color_table('5000'),
+          'irissjiFUV': ct.iris_sji_color_table('FUV'),
+          'irissjiNUV': ct.iris_sji_color_table('NUV'),
+          'irissjiSJI_NUV': ct.iris_sji_color_table('SJI_NUV')
+}
 
 # Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
 for name, cmap in cmlist.items():
@@ -133,12 +142,13 @@ def get_cmap(name):
         raise ValueError("Colormap {name!s} is not recognized".format(name=name))
 
 
-def show_colormaps():
+def show_colormaps(mission=None):
     """Displays a plot of the custom color maps supported in SunPy.
 
     Parameters
     ----------
-    None : none
+    mission : string
+        Show only the color tables from a mission.
 
     Returns
     -------
@@ -156,7 +166,18 @@ def show_colormaps():
     ----------
 
     """
-    maps = sorted(cmlist)
+
+    if mission:
+        filter = []
+        for k in cmlist.keys():
+            if k.count():
+                filter.append(True)
+            else:
+                filter.append(False)
+        maps = sort(cmlist)
+    else:
+        maps = sorted(cmlist)
+
     nmaps = len(maps) + 1
 
     a = np.linspace(0, 1, 256).reshape(1, -1)  # pylint: disable=E1103
