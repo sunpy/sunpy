@@ -1239,14 +1239,14 @@ scale:\t\t [{dx}, {dy}]
         Examples
         --------
         #Simple Plot with color bar
-        plt.figure()
-        aiamap.plot()
-        plt.colorbar()
+        >>> aiamap.plot()
+        >>> plt.colorbar()
 
         #Add a limb line and grid
-        aia.plot()
-        aia.draw_limb()
-        aia.draw_grid()
+        >>> aia.plot()
+        >>> aia.draw_limb()
+        >>> aia.draw_grid()
+
         """
 
         #Get current axes
