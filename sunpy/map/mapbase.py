@@ -1289,6 +1289,7 @@ scale:\t\t [{dx}, {dy}]
             wcsaxes_compat.default_wcs_grid(axes)
 
         #Set current image (makes colorbar work)
+        plt.sca(axes)
         plt.sci(ret)
         return ret
 
