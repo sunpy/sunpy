@@ -144,6 +144,16 @@ class MapCube(object):
         >>> writer = Writer(fps=10, metadata=dict(artist='SunPy'), bitrate=1800)
 
         >>> ani.save('mapcube_animation.mp4', writer=writer)
+
+        Save an animation with the limb at each time step
+
+        >>> def myplot(fig, ax, map):
+        ...    p = map.draw_limb()
+        ...    return p
+        >>> cube = sunpy.Map(files, cube=True)
+        >>> ani = cube.peek(plot_function=myplot)
+        >>> plt.show()
+
         """
         if not axes:
             axes = plt.gca()
