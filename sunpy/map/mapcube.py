@@ -178,8 +178,8 @@ class MapCube(object):
             im.set_array(ani_data[i].data)
             im.set_cmap(self.maps[i].plot_settings['cmap'])
             im.set_norm(self.maps[i].plot_settings['norm'])
-            im.set_extent([self.maps[i].xrange[0], self.maps[i].xrange[1],
-                           self.maps[i].yrange[0], self.maps[i].yrange[1]])
+            im.set_extent([self.maps[i].xrange[0].value, self.maps[i].xrange[1].value,
+                           self.maps[i].yrange[0].value, self.maps[i].yrange[1].value])
             if annotate:
                 annotate_frame(i)
 
