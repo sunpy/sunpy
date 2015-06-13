@@ -157,9 +157,9 @@ class CompositeMap(object):
     def get_colors(self, index=None):
         """Gets the colors for a map within the compositemap."""
         if index is None:
-            return [_map.cmap for _map in self._maps]
+            return [_map.plot_settings['cmap'] for _map in self._maps]
         else:
-            return self._maps[index].cmap
+            return self._maps[index].plot_settings['cmap']
 
     def get_mpl_color_normalizer(self, index=None):
         """Gets the color normalizer for a map within the
@@ -192,7 +192,7 @@ class CompositeMap(object):
 
     def set_colors(self, index, cm):
         """Sets the color map for a layer in the composite image"""
-        self._maps[index].cmap = cm
+        self._maps[index].plot_settings['cmap'] = cm
 
     def set_alpha(self, index, alpha):
         """Sets the alpha-channel value for a layer in the composite image"""
@@ -268,7 +268,7 @@ class CompositeMap(object):
         ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing)
         return ax
 
-    def plot(self, axes=None, gamma=None, annotate=True, # pylint: disable=W0613
+    def plot(self, axes=None, annotate=True, # pylint: disable=W0613
              title="SunPy Composite Plot", **matplot_args):
         """Plots the composite map object using matplotlib
 
@@ -277,9 +277,6 @@ class CompositeMap(object):
         axes: matplotlib.axes object or None
             If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
-
-        gamma : float
-            Gamma value to use for the color map
 
         annotate : bool
             If true, the data is plotted at it's natural scale; with
@@ -324,9 +321,9 @@ class CompositeMap(object):
             # Parameters for plotting
             params = {
                 "origin": "lower",
-                "extent": m.xrange + m.yrange,
-                "cmap": m.cmap,
-                "norm": m.mpl_color_normalizer,
+                "extent": list(m.xrange.value) + list(m.yrange.value),
+                "cmap": m.plot_settings['cmap'],
+                "norm": m.plot_settings['norm'],
                 "alpha": m.alpha,
                 "zorder": m.zorder,
             }
@@ -350,15 +347,12 @@ class CompositeMap(object):
         plt.sci(ret[0])
         return ret
 
-    def peek(self, gamma=None, colorbar=True, basic_plot=False, draw_limb=True,
+    def peek(self, colorbar=True, basic_plot=False, draw_limb=True,
              draw_grid=False, **matplot_args):
         """Displays the map in a new figure
 
         Parameters
         ----------
-        gamma : float
-            Gamma value to use for the color map
-
         colorbar : bool or int
             Whether to display a colorbar next to the plot.
             If specified as an integer a colorbar is plotted for that index.
@@ -403,8 +397,6 @@ class CompositeMap(object):
             raise TypeError("draw_grid should be bool, int, long or float")
 
         figure.show()
-
-        return figure
 
 
 class OutOfRangeAlphaValue(ValueError):
