@@ -162,7 +162,7 @@ Instrument:\t {inst}
 Detector:\t {det}
 Measurement:\t {meas}
 Wavelength:\t {wave}
-Obs Date:\t {date}
+Obs Date:\t {date:{tmf}}
 dt:\t\t {dt:f}
 Dimension:\t {dim}
 scale:\t\t {scale}
@@ -171,7 +171,8 @@ scale:\t\t {scale}
            obs=self.observatory, inst=self.instrument, det=self.detector,
            meas=self.measurement, wave=self.wavelength, date=self.date, dt=self.exposure_time,
            dim=u.Quantity(self.dimensions),
-           scale=u.Quantity(self.scale))
+           scale=u.Quantity(self.scale),
+           tmf=TIME_FORMAT)
 + self.data.__repr__())
 
     @property
