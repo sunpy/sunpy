@@ -49,5 +49,5 @@ class SJIMap(GenericMap):
         """Determines if header corresponds to an AIA image"""
         tele = header.get('TELESCOP', '').startswith('IRIS')
         obs = header.get('INSTRUME', '').startswith('SJI')
-        level = header.get('lvl_num') ==
+        level = header.get('lvl_num') == 1
         return tele and obs
