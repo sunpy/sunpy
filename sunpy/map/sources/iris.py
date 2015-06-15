@@ -26,9 +26,9 @@ class SJIMap(GenericMap):
 
     IRIS was launched into a Sun-synchronous orbit on 27 June 2013.
 
-    warning::
+    .. warning::
 
-    This object can only handle level 1 SJI files.
+        This object can only handle level 1 SJI files.
 
     References
     ----------
