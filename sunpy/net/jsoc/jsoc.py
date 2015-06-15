@@ -66,7 +66,7 @@ class JSOCClient(object):
     a table of these records is returned. Then you can request these records to
     be staged for download and then you can download them.
     The last two stages of this process are bundled together into the `get()`
-    method, but they can be seperated if you are performing a large or complex
+    method, but they can be separated if you are performing a large or complex
     query.
 
     .. warning::
@@ -77,11 +77,11 @@ class JSOCClient(object):
     -----
     This Client mocks input to this site: http://jsoc.stanford.edu/ajax/exportdata.html
     Therefore that is a good resource if things are mis-behaving.
-    The full list of 'series' is availible through this site: http://jsoc.stanford.edu/
+    The full list of 'series' is available through this site: http://jsoc.stanford.edu/
 
-    You can build more complex queries by specifiying parameters to POST to JSOC via keyword
+    You can build more complex queries by specifying parameters to POST to JSOC via keyword
     arguments. You can generate these kwargs using the Export Data page at JSOC.
-    
+
     JSOC now requires a validated email address, you can pass in your validated email address
     using the `~sunpy.net.jsoc.attrs.Notify` attribute. You have to register your email address
     with JSOC http://jsoc.stanford.edu/ajax/register_email.html.
@@ -121,7 +121,7 @@ class JSOCClient(object):
 
     *Example 2*
 
-    Query the JSOC for some AIA 171 data, and seperate out the staging and the
+    Query the JSOC for some AIA 171 data, and separate out the staging and the
     download steps:
 
     >>> import astropy.units as u
@@ -152,7 +152,7 @@ class JSOCClient(object):
     message and return you the status code, a code of 1 means it is not ready
     to download and a code of 0 means the request is staged and ready. A code
     of 6 means an error, which is commonly that the request has not had time to
-    get into the que.
+    get into the queue.
 
     >>> status = client.check_request(requestIDs)
     Request JSOC_20140724_955 was submitted 10 seconds ago, it is not ready to download.
@@ -235,7 +235,7 @@ class JSOCClient(object):
                     Warning(warn_message.format(i, response.status_code)))
                 responses.pop(i)
             elif response.json()['status'] != 2:
-                warn_message = "Query {0} retuned status {1} with error {2}"
+                warn_message = "Query {0} returned status {1} with error {2}"
                 json_response = response.json()
                 json_status = json_response['status']
                 json_error = json_response['error']
@@ -594,7 +594,7 @@ class JSOCClient(object):
         response, json_response = self._send_jsoc_request(start_time, end_time,\
                                                           series, **kwargs)
 
-        # We skip these lines because a massive request is not a pratical test.
+        # We skip these lines because a massive request is not a practical test.
         error_response = 'Request exceeds max byte limit of 100000MB'
         if (json_response['status'] == 3 and
             json_response['error'] == error_response):  # pragma: no cover

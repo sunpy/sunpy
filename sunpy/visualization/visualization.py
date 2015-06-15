@@ -7,7 +7,7 @@ def toggle_pylab(fn):
         --pylab.
 
         Toggles the value of matplotlib.pyplot.isinteractive() to preserve the
-        users' expections of pylab's behaviour in general. """
+        users' expectations of pylab's behaviour in general. """
 
     if pyplot.isinteractive():
         def fn_itoggle(*args, **kwargs):

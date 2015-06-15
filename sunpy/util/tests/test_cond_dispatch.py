@@ -11,7 +11,7 @@ def pytest_funcarg__oddeven(request):
     f = ConditionalDispatch()
     # Multiply even numbers by two.
     f.add(lambda x: 2 * x, lambda x: x % 2 == 0)
-    # Mulitply odd numbers by three.
+    # Multiply odd numbers by three.
     f.add(lambda x: 3 * x, lambda x: x % 2 == 1)
     return f
 

@@ -120,7 +120,7 @@ class VotableInterceptor(suds.plugin.MessagePlugin):
         self.last_payload = None
 
     def received(self, context):
-        #recieved xml as a string
+        #received xml as a string
         self.last_payload = unicode(suds_unwrapper(context.reply))
         #clean up reply to prevent parsing
         context.reply = ""
