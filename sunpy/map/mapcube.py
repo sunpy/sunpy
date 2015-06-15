@@ -92,7 +92,7 @@ class MapCube(object):
         pass
 
     def plot(self, gamma=None, axes=None, resample=None, annotate=True,
-             interval=200, **kwargs):
+             interval=200, plot_function=None, **kwargs):
         """
         A animation plotting routine that animates each element in the
         MapCube
@@ -117,6 +117,11 @@ class MapCube(object):
         interval: int
             Animation interval in ms
 
+        plot_function : function
+            A function to be called as each map is plotted. Any variables
+            returned from the function will have their ``remove()`` method called
+            at the start of the next frame so that they are removed from the plot.
+
         Examples
         --------
         >>> cube = sunpy.Map(files, cube=True)
@@ -139,10 +144,24 @@ class MapCube(object):
         >>> writer = Writer(fps=10, metadata=dict(artist='SunPy'), bitrate=1800)
 
         >>> ani.save('mapcube_animation.mp4', writer=writer)
+
+        Save an animation with the limb at each time step
+
+        >>> def myplot(fig, ax, sunpy_map):
+        ...    p = sunpy_map.draw_limb()
+        ...    return p
+        >>> cube = sunpy.Map(files, cube=True)
+        >>> ani = cube.peek(plot_function=myplot)
+        >>> plt.show()
+
         """
         if not axes:
             axes = plt.gca()
         fig = axes.get_figure()
+
+        if not plot_function:
+            plot_function = lambda fig, ax, smap: []
+        removes = []
 
         # Normal plot
         def annotate_frame(i):
@@ -167,8 +186,8 @@ class MapCube(object):
             self[0].cmap.set_gamma(gamma)
 
         if resample:
-            #This assumes that the maps are homogenous!
-            #TODO: Update this!
+            # This assumes that the maps are homogeneous!
+            # TODO: Update this!
             resample = np.array(len(self.maps)-1) * np.array(resample)
             ani_data = [x.resample(resample) for x in self.maps]
         else:
@@ -176,18 +195,20 @@ class MapCube(object):
 
         im = ani_data[0].plot(axes=axes, **kwargs)
 
-        def updatefig(i, im, annotate, ani_data):
-
+        def updatefig(i, im, annotate, ani_data, removes):
+            while removes:
+                removes.pop(0).remove()
             im.set_array(ani_data[i].data)
             im.set_cmap(self.maps[i].cmap)
             im.set_norm(self.maps[i].mpl_color_normalizer)
-            im.set_extent(self.maps[i].xrange + self.maps[i].yrange)
+            im.set_extent(np.concatenate((self.maps[i].xrange.value, self.maps[i].yrange.value)))
             if annotate:
                 annotate_frame(i)
+            removes += list(plot_function(fig, axes, self.maps[i]))
 
         ani = matplotlib.animation.FuncAnimation(fig, updatefig,
-                                                frames=range(0,len(self.maps)),
-                                                fargs=[im,annotate,ani_data],
+                                                frames=range(0, len(self.maps)),
+                                                fargs=[im, annotate, ani_data, removes],
                                                 interval=interval,
                                                 blit=False)
 
@@ -221,9 +242,14 @@ class MapCube(object):
         colorbar: bool
             Plot colorbar
 
+        plot_function : function
+            A function to call to overplot extra items on the map plot.
+            For more information see `sunpy.visualization.MapCubeAnimator`.
+
         Returns
         -------
-        Returns a MapCubeAnimator object
+        mapcubeanim : `sunpy.visualization.MapCubeAnimator`
+            A mapcube animator instance.
 
         See Also
         --------
@@ -232,19 +258,28 @@ class MapCube(object):
         Examples
         --------
         >>> cube = sunpy.Map(files, cube=True)
-        >>> ani = cube.plot(colorbar=True)
+        >>> ani = cube.peek(colorbar=True)
         >>> plt.show()
 
         Plot the map at 1/2 original resolution
 
         >>> cube = sunpy.Map(files, cube=True)
-        >>> ani = cube.plot(resample=[0.5, 0.5], colorbar=True)
+        >>> ani = cube.peek(resample=[0.5, 0.5], colorbar=True)
+        >>> plt.show()
+
+        Plot the map with the limb at each time step
+
+        >>> def myplot(fig, ax, sunpy_map):
+        ...    p = sunpy_map.draw_limb()
+        ...    return p
+        >>> cube = sunpy.Map(files, cube=True)
+        >>> ani = cube.peek(plot_function=myplot)
         >>> plt.show()
 
         Decide you want an animation:
 
         >>> cube = sunpy.Map(files, cube=True)
-        >>> ani = cube.plot(resample=[0.5, 0.5], colorbar=True)
+        >>> ani = cube.peek(resample=[0.5, 0.5], colorbar=True)
         >>> mplani = ani.get_animation()
         """
 

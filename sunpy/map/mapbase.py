@@ -1042,7 +1042,8 @@ scale:\t\t [{dx}, {dy}]
 
         Returns
         -------
-        matplotlib.axes object
+        lines: list
+            A list of `matplotlib.lines.Line2D` objects that have been plotted.
 
         Notes
         -----
@@ -1051,6 +1052,8 @@ scale:\t\t [{dx}, {dy}]
 
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
+
+        lines = []
 
         # Do not automatically rescale axes when plotting the overlay
         axes.set_autoscale_on(False)
@@ -1087,7 +1090,7 @@ scale:\t\t [{dx}, {dy}]
             if wcsaxes_compat.is_wcsaxes(axes):
                 x = (x*u.arcsec).to(u.deg).value
                 y = (y*u.arcsec).to(u.deg).value
-            axes.plot(x, y, **plot_kw)
+            lines += axes.plot(x, y, **plot_kw)
 
         hg_longitude_deg = np.arange(-180, 180, grid_spacing.to(u.deg).value) + l0
         hg_latitude_deg = np.linspace(-90, 90, num=181)
@@ -1103,11 +1106,11 @@ scale:\t\t [{dx}, {dy}]
             if wcsaxes_compat.is_wcsaxes(axes):
                 x = (x*u.arcsec).to(u.deg).value
                 y = (y*u.arcsec).to(u.deg).value
-            axes.plot(x, y, **plot_kw)
+            lines += axes.plot(x, y, **plot_kw)
 
         # Turn autoscaling back on.
         axes.set_autoscale_on(True)
-        return axes
+        return lines
 
     def draw_limb(self, axes=None, **kwargs):
         """Draws a circle representing the solar limb
@@ -1119,7 +1122,9 @@ scale:\t\t [{dx}, {dy}]
 
             Returns
             -------
-            matplotlib.axes object
+            circ: list
+                A list containing the `matplotlib.patches.Circle` object that
+                has been added to the axes.
 
             Notes
             -----
@@ -1147,7 +1152,7 @@ scale:\t\t [{dx}, {dy}]
         circ = patches.Circle([0, 0], **c_kw)
         axes.add_artist(circ)
 
-        return axes
+        return [circ]
 
     @toggle_pylab
     def peek(self, draw_limb=False, draw_grid=False, gamma=None,
@@ -1234,14 +1239,14 @@ scale:\t\t [{dx}, {dy}]
         Examples
         --------
         #Simple Plot with color bar
-        plt.figure()
-        aiamap.plot()
-        plt.colorbar()
+        >>> aiamap.plot()
+        >>> plt.colorbar()
 
         #Add a limb line and grid
-        aia.plot()
-        aia.draw_limb()
-        aia.draw_grid()
+        >>> aia.plot()
+        >>> aia.draw_limb()
+        >>> aia.draw_grid()
+
         """
 
         #Get current axes
