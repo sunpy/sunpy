@@ -84,7 +84,7 @@ def _regex_parse_time(inp, format):
 
 
 def find_time(string, format):
-    """ Return iterator of occurences of date formatted with format
+    """ Return iterator of occurrences of date formatted with format
     in string. Currently supported format codes: """
     re_format = format
     for key, value in REGEX.iteritems():

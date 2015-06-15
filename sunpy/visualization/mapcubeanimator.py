@@ -72,7 +72,7 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         im.set_array(self.data[i].data)
         im.set_cmap(self.mapcube[i].cmap)
         im.set_norm(self.mapcube[i].mpl_color_normalizer)
-        # Having this line in means the plot will resize for non-homogenous
+        # Having this line in means the plot will resize for non-homogeneous
         # maps. However it also means that if you zoom in on the plot bad
         # things happen.
         # im.set_extent(self.mapcube[i].xrange + self.mapcube[i].yrange)

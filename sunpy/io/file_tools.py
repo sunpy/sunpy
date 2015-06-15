@@ -35,8 +35,8 @@ class Readers(dict):
     def __getitem__(self, key):
         val = dict.__getitem__(self, key)
         if val is None:
-            raise ReaderError("The Reader sunpy.io.{key!s} is not avalible, ".format(key=key) +
-                              "please check that you have the required dependancies installed.")
+            raise ReaderError("The Reader sunpy.io.{key!s} is not available, ".format(key=key) +
+                              "please check that you have the required dependencies installed.")
         return val
 
 #Map the readers
@@ -123,8 +123,8 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
         Meta data to save with the data
 
     filetype : string
-        {'auto', 'fits', 'jp2'} Filetype to savem if auto fname extension will
-        be detected, else specifiy a supported file extension.
+        {'auto', 'fits', 'jp2'} Filetype to save if auto fname extension will
+        be detected, else specify a supported file extension.
 
     Notes
     -----
@@ -169,7 +169,7 @@ def _detect_filetype(filepath):
     fits_extensions = [".fts", ".fit", ".fits"]
     if (ext1 in gzip_extensions and ext2 in fits_extensions):
         return 'fits'
-    
+
     # Check for "KEY_WORD  =" at beginning of file
     match = re.match(r"[A-Z0-9_]{0,8} *=", first80)
     if match is not None:

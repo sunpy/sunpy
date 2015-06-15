@@ -87,7 +87,7 @@ class LightCurve(object):
             Use .meta instead
         """
         warnings.warn("""lightcurve.header has been renamed to lightcurve.meta
-for compatability with map, please use meta instead""", Warning)
+for compatibility with map, please use meta instead""", Warning)
         return self.meta
 
     @classmethod

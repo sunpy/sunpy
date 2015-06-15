@@ -178,7 +178,7 @@ def test_join():
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
-    # The - 1 is because resampling other procuces an image of size
+    # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     # The - 2 is because there is one second overlap.
     assert z.shape == (200, 3 * 3600 - 2 - 1)
@@ -254,7 +254,7 @@ def test_join_midnight():
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
-    # The - 1 is because resampling other procuces an image of size
+    # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
@@ -282,7 +282,7 @@ def test_join_month():
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
-    # The - 1 is because resampling other procuces an image of size
+    # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
@@ -310,7 +310,7 @@ def test_join_year():
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
-    # The - 1 is because resampling other procuces an image of size
+    # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
@@ -340,7 +340,7 @@ def test_join_over_midnight():
     # FIXME: not used?!
     oz = other.resample_time(0.5)
 
-    # The - 1 is because resampling other procuces an image of size
+    # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
@@ -425,7 +425,7 @@ def test_join_with_gap_fill():
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=2, fill=np.NaN
     )
-    # The - 1 is because resampling other procuces an image of size
+    # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     # The + 2 is because there is one second without data inserted.
     assert z.shape == (200, 3 * 3600 + 2 - 1)
@@ -463,7 +463,7 @@ def test_join_nonlinear():
         [one, other], nonlinear=True, maxgap=2
     )
 
-    # The - 1 is because resampling other procuces an image of size
+    # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
