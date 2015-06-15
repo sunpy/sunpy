@@ -35,13 +35,13 @@ class TRACEMap(GenericMap):
 
     .. note::
 
-    Note that this map definition is currently only being tested on JPEG2000
-    files. TRACE FITS data is stored in a more complex format. Typically
-    TRACE data is stored in hourly "tri" files that store all the data taken
-    by TRACE in the hour indicated by the filename. Those files must first be
-    understood and parsed to obtain the science data. The ability to do this
-    is not yet in SunPy, but is available in SSWIDL. Please refer to the links
-    above concerning how to read "tri" files in SSWIDL.
+        Note that this map definition is currently only being tested on JPEG2000
+        files. TRACE FITS data is stored in a more complex format. Typically
+        TRACE data is stored in hourly "tri" files that store all the data taken
+        by TRACE in the hour indicated by the filename. Those files must first be
+        understood and parsed to obtain the science data. The ability to do this
+        is not yet in SunPy, but is available in SSWIDL. Please refer to the links
+        above concerning how to read "tri" files in SSWIDL.
     """
 
     def __init__(self, data, header, **kwargs):

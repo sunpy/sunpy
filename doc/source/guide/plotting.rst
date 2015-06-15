@@ -230,7 +230,7 @@ changes the default AIA color table to use an inverse Grey color table::
 
 If you'd like to make this a permanent change you can access a number of settings under the
 `plot_settings` property to make your changes for that map instance permanent.
- In the following example we change the normalization of the color table to a linear
+In the following example we change the normalization of the color table to a linear
 one running from 5 to 100 (clipping everything above and below these values)::
 
     import sunpy.map
@@ -243,6 +243,7 @@ one running from 5 to 100 (clipping everything above and below these values)::
     ax = plt.subplot(1,1,1)
     smap.plot()
     plt.show()
+
 
 8. Colormaps
 ------------
