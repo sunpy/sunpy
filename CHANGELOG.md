@@ -33,6 +33,7 @@ Latest
    x first.
  * map.rsun_arcseconds is now map.rsun_obs as it returns a quantity.
  * Map properties are now named tuples rather than dictionaries.
+ * MapCube.plot and MapCube.peek now support a user defined plot_function argument for customising the animation.
 
 0.5.0
 -----
