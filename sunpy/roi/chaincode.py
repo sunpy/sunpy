@@ -1,3 +1,6 @@
+from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
 __authors__ = ["David PS"]
 __email__ = "dps.helio-?-gmail.com"
 
@@ -101,7 +104,7 @@ class Chaincode(np.ndarray):
             IndexMask = 1
             IndexValue = 0
         else:
-            print "Not edges input"
+            print("Not edges input")
             return None
         mask = (self.coordinates[IndexMask, :] >= edge[0]) & \
             (self.coordinates[IndexMask, :] <= edge[1])
