@@ -1,4 +1,6 @@
 """JPEG 2000 File Reader"""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -55,7 +57,7 @@ def get_header(filepath):
     pydict = xml_to_dict(xmlstring)["fits"]
 
     #Fix types
-    for k, v in pydict.items():
+    for k, v in list(pydict.items()):
         if v.isdigit():
             pydict[k] = int(v)
         elif _is_float(v):

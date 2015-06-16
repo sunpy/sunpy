@@ -1,8 +1,11 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import sunpy.io.fits
 from sunpy.io.fits import get_header, extract_waveunit
 
 import sunpy.data.test
 import os
+from six.moves import range
 testpath = sunpy.data.test.rootdir
 
 RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
@@ -25,7 +28,7 @@ def read_hdus_list():
     assert len(pairs) == 2
 
 def read_hdus_gen():
-    pairs = sunpy.io.fits.read(RHESSI_IMAGE, hdus=xrange(0,1))
+    pairs = sunpy.io.fits.read(RHESSI_IMAGE, hdus=range(0,1))
     assert len(pairs) == 2
 
 def test_extract_waveunit_missing_waveunit_key_and_missing_wavelnth_comment():

@@ -30,6 +30,9 @@ References
 | http://stsdas.stsci.edu/download/wikidocs/The_PyFITS_Handbook.pdf
 
 """
+from __future__ import absolute_import
+from __future__ import unicode_literals
+
 import os
 import re
 import itertools
@@ -163,7 +166,7 @@ def write(fname, data, header, **kwargs):
     # Check Header
     key_comments = header.pop('KEYCOMMENTS', False)
 
-    for k,v in header.items():
+    for k,v in list(header.items()):
         if isinstance(v, fits.header._HeaderCommentaryCards):
             if k == 'comments':
                 comments = str(v).split('\n')
@@ -181,7 +184,7 @@ def write(fname, data, header, **kwargs):
 
 
     if isinstance(key_comments, dict):
-        for k,v in key_comments.items():
+        for k,v in list(key_comments.items()):
             fits_header.comments[k] = v
     elif key_comments:
         raise TypeError("KEYCOMMENTS must be a dictionary")
