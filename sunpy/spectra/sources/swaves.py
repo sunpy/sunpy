@@ -2,6 +2,8 @@
 # Author: David Perez-Suarez <dps.helio-?-gmail.com>
 
 from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
 
 import os
 import datetime
@@ -10,6 +12,7 @@ import numpy as np
 
 from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE, get_day
+from six.moves import input
 
 __all__ = ['SWavesSpectrogram']
 
@@ -95,7 +98,7 @@ class SWavesSpectrogram(LinearTimeSpectrogram):
         self.bg = bg
 
 
-SWavesSpectrogram.create.im_func.__doc__ = (
+SWavesSpectrogram.create.__func__.__doc__ = (
     """ Create SWavesSpectrogram from given input dispatching to the
     appropriate from_* function.
 
@@ -107,5 +110,5 @@ Possible signatures:
 if __name__ == "__main__":
     opn = SWavesSpectrogram.read("/home/florian/swaves_average_20120705_a_hfr.dat")
     opn.plot(min_=0, linear=False).show()
-    print "Press return to exit"
-    raw_input()
+    print("Press return to exit")
+    input()

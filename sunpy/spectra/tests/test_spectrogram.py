@@ -2,6 +2,8 @@
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
 from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
 
 from datetime import datetime
 import pytest
@@ -13,6 +15,7 @@ from numpy.testing import assert_array_almost_equal
 from sunpy.spectra.spectrogram import(
     Spectrogram, LinearTimeSpectrogram, _LinearView
 )
+from six.moves import range
 
 
 def is_linear(arr):
@@ -432,7 +435,7 @@ def test_join_with_gap_fill():
 
     assert np.array_equal(z.data[:, :3600], one.data)
 
-    print type(z.data)
+    print(type(z.data))
 
     # Second data to unpack masked array
     assert np.isnan(z.data.data[:, 3600:3602]).all()
@@ -577,7 +580,7 @@ def test_combine_freqs():
 
     # print comb
 
-    for freq in xrange(10):
+    for freq in range(10):
         assert np.array_equal(
             comb[9 - freq, :], stuff[freq % 2][4 - freq // 2, :]
         )

@@ -2,6 +2,8 @@
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
 from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
 
 import datetime
 import urllib2
@@ -23,6 +25,9 @@ from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.util.net import download_file
 
 from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE
+import six
+from six.moves import map
+from six.moves import input
 
 
 __all__ = ['CallistoSpectrogram']
@@ -318,7 +323,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             optional attribute of the resulting objects to sort from, e.g.
             start to sort by starting time.
         """
-        objs = map(cls.read, filenames)
+        objs = list(map(cls.read, filenames))
         if sort_by is not None:
             objs.sort(key=lambda x: getattr(x, sort_by))
         return objs
@@ -346,13 +351,13 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         start = parse_time(start)
         end = parse_time(end)
         urls = query(start, end, [instrument])
-        data = map(cls.from_url, urls)
+        data = list(map(cls.from_url, urls))
         freq_buckets = defaultdict(list)
         for elem in data:
             freq_buckets[tuple(elem.freq_axis)].append(elem)
         try:
             return cls.combine_frequencies(
-                [cls.join_many(elem, **kw) for elem in freq_buckets.itervalues()]
+                [cls.join_many(elem, **kw) for elem in six.itervalues(freq_buckets)]
             )
         except ValueError:
             raise ValueError("No data found.")
@@ -453,7 +458,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         if len(self.instruments) != 1:
             raise ValueError
 
-        instrument = iter(self.instruments).next()
+        instrument = next(iter(self.instruments))
         if minutes > 0:
             data = CallistoSpectrogram.from_range(
                 instrument,
@@ -486,7 +491,7 @@ CallistoSpectrogram._create.add(
     check=False
 )
 
-CallistoSpectrogram.create.im_func.__doc__ = (
+CallistoSpectrogram.create.__func__.__doc__ = (
     """ Create CallistoSpectrogram from given input dispatching to the
     appropriate from_* function.
 
@@ -498,5 +503,5 @@ Possible signatures:
 if __name__ == "__main__":
     opn = CallistoSpectrogram.read("callisto/BIR_20110922_103000_01.fit")
     opn.subtract_bg().clip(0).plot(ratio=2).show()
-    print "Press return to exit"
-    raw_input()
+    print("Press return to exit")
+    input()
