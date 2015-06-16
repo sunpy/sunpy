@@ -37,7 +37,8 @@ class `~sunpy.map.Map`: ::
 
 The result of a call to `~sunpy.map.Map` will be either a `~sunpy.map.mapbase.GenericMap` object,
 or a subclass of `~sunpy.map.mapbase.GenericMap` which either deals with a specific type of data,
-e.g. `~sunpy.map.sources.sdo.AIAMap` or `~sunpy.map.sources.soho.LASCOMap`, or if no
+e.g. `~sunpy.map.sources.sdo.AIAMap` or `~sunpy.map.sources.soho.LASCOMap`
+(see :ref:`map-classes` to see a list of all of them), or if no
 instrument matches, a 2D map `~sunpy.map.mapbase.GenericMap`.
 
 
@@ -58,6 +59,7 @@ attributes and methods that are availible on all Map objects.
 .. autoclass:: sunpy.map.mapbase.GenericMap
    :members:
 
+.. _map-classes:
 
 Map Classes
 -----------
