@@ -3,6 +3,8 @@
 Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 """
 from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
 
 import matplotlib.pyplot as plt
 
@@ -11,6 +13,7 @@ import astropy.units as u
 from sunpy.map import GenericMap
 
 from sunpy.util import expand_list
+from six.moves import range
 
 __all__ = ['CompositeMap']
 
@@ -90,7 +93,7 @@ class CompositeMap(object):
 
         # Default alpha and zorder values
         alphas = [1] * len(self._maps)
-        zorders = range(0, 10 * len(self._maps), 10)
+        zorders = list(range(0, 10 * len(self._maps), 10))
         levels = [False] * len(self._maps)
 
         # Set z-order and alpha values for the map
@@ -132,7 +135,7 @@ class CompositeMap(object):
 
     def list_maps(self):
         """Prints a list of the currently included maps"""
-        print [m.__class__ for m in self._maps]
+        print([m.__class__ for m in self._maps])
 
     def get_map(self, index):
         """ Returns the map with given index """
@@ -397,7 +400,7 @@ class CompositeMap(object):
             if draw_grid:
                 self.draw_grid(axes=axes)
 
-        elif isinstance(draw_grid, (int, long, float)):
+        elif isinstance(draw_grid, (int, int, float)):
             self.draw_grid(axes=axes, grid_spacing=draw_grid)
         else:
             raise TypeError("draw_grid should be bool, int, long or float")

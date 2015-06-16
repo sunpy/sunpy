@@ -3,6 +3,7 @@
 Test mapcube functionality
 """
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import numpy as np
 import astropy.units as u
@@ -12,6 +13,7 @@ from sunpy.map.header import MapMeta
 import pytest
 import os
 import sunpy.data.test
+from six.moves import range
 
 @pytest.fixture
 def mapcube_all_the_same():
