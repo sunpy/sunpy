@@ -25,8 +25,10 @@ Please note that & is evaluated first, so A & B | C is equivalent to
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from sunpy.util.multimethod import MultiMethod
+import six
 
 # XXX: Maybe allow other normal forms.
 
@@ -40,7 +42,7 @@ class Attr(object):
         return AttrAnd([self, other])
 
     def __hash__(self):
-        return hash(frozenset(vars(self).iteritems()))
+        return hash(frozenset(six.iteritems(vars(self))))
 
     def __or__(self, other):
         # Optimization.
@@ -176,7 +178,7 @@ class ValueAttr(Attr):
         return "<ValueAttr({att!r})>".format(att=self.attrs)
 
     def __hash__(self):
-        return hash(frozenset(self.attrs.iteritems()))
+        return hash(frozenset(six.iteritems(self.attrs)))
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):

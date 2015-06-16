@@ -4,6 +4,7 @@
 #pylint: disable=W0613
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import datetime
 import pytest

@@ -7,6 +7,8 @@
 """
 This module was built to test the HEK2VSO class.
 """
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 __author__ = 'Michael Malocha'
 __version__ = 'June 11th, 2013'

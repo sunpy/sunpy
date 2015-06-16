@@ -9,6 +9,7 @@
 """ Facilities to interface with the HEK. """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import json
 
@@ -21,6 +22,8 @@ from sunpy.net.hek import attrs
 from sunpy.net.vso import attrs as v_attrs
 from sunpy.util import unique
 from sunpy.util.xml import xml_to_dict
+import six
+from six.moves import map
 
 __all__ = ['HEKClient']
 
@@ -29,7 +32,7 @@ DEFAULT_URL = 'http://www.lmsal.com/hek/her'
 def _freeze(obj):
     """ Create hashable representation of result dict. """
     if isinstance(obj, dict):
-        return tuple((k, _freeze(v)) for k, v in obj.iteritems())
+        return tuple((k, _freeze(v)) for k, v in six.iteritems(obj))
     if isinstance(obj, list):
         return tuple(_freeze(elem) for elem in obj)
     return obj
@@ -69,7 +72,7 @@ class HEKClient(object):
             results.extend(result['result'])
 
             if not result['overmax']:
-                return map(Response, results)
+                return list(map(Response, results))
             page += 1
 
     def query(self, *query):

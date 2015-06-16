@@ -10,6 +10,7 @@ This module is meant to parse the HELIO registry and return WSDL endpoints to
 facilitate the interfacing between further modules and HELIO.
 """
 from __future__ import absolute_import
+from __future__ import unicode_literals
 from urllib2 import urlopen, URLError
 import xml.etree.ElementTree as EL
 from sunpy.net.helio import registry_links as RL
@@ -64,7 +65,7 @@ def webservice_parser(service='HEC'):
     #Fix for 3.x support
     for interface in root.getiterator('interface'):
         service_type = interface.attrib
-        key = service_type.keys()
+        key = list(service_type.keys())
         if len(key) > 0:
             value = service_type[key[0]]
             if value == 'vr:WebService':
