@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 #pylint: disable=E1103
 import numpy as np
@@ -7,6 +8,7 @@ from numpy.testing import assert_allclose
 import sunpy.wcs as wcs
 import sunpy.sun as sun
 import pytest
+from six.moves import zip
 
 # the following values are taken from the test file 'aia_171_level1.fits'
 
@@ -94,7 +96,7 @@ def test_conv_hg_hcc(b0, l0):
     # If z < 0, using occultation should make the return coordinates nan
     coord2 = [55.0, 56.0]
     known_answer = [[np.nan, 3.1858718e8], [np.nan, 5.9965928e8]]
-    coords = zip(coord, coord2)
+    coords = list(zip(coord, coord2))
     result = wcs.convert_hg_hcc(*coords, b0_deg=b0,
                                 l0_deg=l0, occultation=True)
     assert_allclose(result, known_answer, rtol=1e-2, atol=0)
@@ -110,7 +112,7 @@ def test_conv_hg_hpc(angle_unit, dsun, b0, l0):
     coord = [34.0, 96.0]
     coord2 = [55.0, 56.0]
     known_answer = [[np.nan, 441.65710359], [np.nan, 831.30194808]]
-    coords = zip(coord, coord2)
+    coords = list(zip(coord, coord2))
     result = wcs.convert_hg_hpc(*coords, dsun_meters=dsun,
                 b0_deg=b0, l0_deg=l0,
                 angle_units=angle_unit, occultation=True)
