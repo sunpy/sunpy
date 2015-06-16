@@ -4,8 +4,8 @@ from __future__ import division
 
 import os
 import copy
-import urlparse
-import urllib, urllib2
+import urllib
+import urllib2
 from collections import OrderedDict
 import tempfile
 
@@ -13,7 +13,7 @@ import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 import astropy.units as u
-from astropy.coordinates import Angle, Longitude, Latitude
+from astropy.coordinates import Longitude, Latitude
 
 from sunpy.time import parse_time, TimeRange
 from sunpy import sun
@@ -32,7 +32,7 @@ def download_weekly_pointing_file(date):
     Parameters
     ----------
 
-    date : `datetime.datetime` 
+    date : `datetime.datetime`
         A datetime object or other date format understood by the parse_time function.
     """
 
@@ -42,7 +42,7 @@ def download_weekly_pointing_file(date):
     #use Fermi data server to access weekly LAT pointing file.
     base_url = 'http://fermi.gsfc.nasa.gov/ssc/observations/timeline/ft2/files/'
     fbasename='FERMI_POINTING_FINAL_'
-    
+
     #find out which file to get based on date
     #earliest file in the FERMI server is for mission week 23,
     #beginning 2008 November 6.
@@ -89,10 +89,10 @@ def download_weekly_pointing_file(date):
     if not exists:
         raise ValueError('No Fermi pointing files found for given date!')
 
-   
+
     #download the file
-    pointing_file_url=full_fname 
-    destination=os.path.join(tmp_dir,rest_of_filename) 
+    pointing_file_url=full_fname
+    destination=os.path.join(tmp_dir,rest_of_filename)
     urllib.urlretrieve(pointing_file_url,destination)
 
     #return the location of the downloaded file
@@ -106,13 +106,13 @@ def get_detector_sun_angles_for_time(time, file):
     Parameters
     ----------
 
-    time : `datetime.datetime` 
+    time : `datetime.datetime`
         A datetime object or other time format understood by the parse_time function.
     file : str
         A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the
         download_weekly_pointing_file function).
     """
-    
+
     time = parse_time(time)
     scx, scz, tt = get_scx_scz_at_time(time, file)
     # retrieve the detector angle information in spacecraft coordinates
@@ -141,13 +141,13 @@ def get_detector_sun_angles_for_date(date, file):
     Parameters
     ----------
 
-    date : `datetime.datetime` 
+    date : `datetime.datetime`
         A datetime object or other date format understood by the parse_time function.
     file : str
         A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the
         download_weekly_pointing_file function).
     """
-    
+
     date = parse_time(date)
     tran = TimeRange(date, date + datetime.timedelta(days=1))
     scx, scz, times = get_scx_scz_in_timerange(tran, file)
@@ -180,7 +180,7 @@ def get_detector_sun_angles_for_date(date, file):
             angles[key_list[i]] = [item[key_list[i]]
                                    for item in detector_to_sun_angles]
 
-    return angles  
+    return angles
 
 
 def plot_detector_sun_angles(angles):
@@ -218,13 +218,13 @@ def get_scx_scz_at_time(time, file):
     Parameters
     ----------
 
-    time : `datetime.datetime` 
+    time : `datetime.datetime`
         A datetime object or other time format understood by the parse_time function.
     file : str
         A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the
          download_weekly_pointing_file function).
     """
-    
+
     time = parse_time(time)
     hdulist = fits.open(file)
     timesinutc = []
@@ -236,8 +236,8 @@ def get_scx_scz_at_time(time, file):
                  Latitude(hdulist[1].data['DEC_SCX'][ind]*u.deg))
     scz_radec = (Longitude(hdulist[1].data['RA_SCZ'][ind]*u.deg),
                  Latitude(hdulist[1].data['DEC_SCZ'][ind]*u.deg))
-    
-    
+
+
     return scx_radec, scz_radec, timesinutc[ind]
 
 
@@ -248,13 +248,13 @@ def get_scx_scz_in_timerange(timerange, file):
     Parameters
     ----------
 
-    date : `datetime.datetime` 
+    date : `datetime.datetime`
         A datetime object or other date format understood by the parse_time function.
     file : str
         A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the
         download_weekly_pointing_file function).
     """
-    
+
     hdulist = fits.open(file)
     timesinutc = []
     for tim in hdulist[1].data['START']:
@@ -301,7 +301,7 @@ def nai_detector_angles():
 def nai_detector_radecs(detectors, scx, scz, time):
     """
     calculates the RA/DEC for each NaI detector given spacecraft z and x RA/DEC positions.
-    
+
     NB: This routine is based on code found in GTBURST, originally written by
     Dr Giacamo Vianello for the Fermi Science Tools.
 
@@ -325,11 +325,11 @@ def nai_detector_radecs(detectors, scx, scz, time):
         A dictionary containing the RA/DEC for each Fermi/GBM NaI detector at the given input time.
     """
 
-    scx_vector = (np.array([np.cos(scx[0].to('rad').value)*np.cos(scx[1].to('rad').value), 
+    scx_vector = (np.array([np.cos(scx[0].to('rad').value)*np.cos(scx[1].to('rad').value),
                   np.sin(scx[0].to('rad').value)*np.cos(scx[1].to('rad').value),
                   np.sin(scx[1].to('rad').value)]))
 
-    scz_vector = (np.array([np.cos(scz[0].to('rad').value)*np.cos(scz[1].to('rad').value), 
+    scz_vector = (np.array([np.cos(scz[0].to('rad').value)*np.cos(scz[1].to('rad').value),
                   np.sin(scz[0].to('rad').value)*np.cos(scz[1].to('rad').value),
                   np.sin(scz[1].to('rad').value)]))
 
@@ -371,7 +371,7 @@ def rotate_vector(vector, axis, theta):
 
     rot_matrix = np.array([[a*a+b*b-c*c-d*d, 2*(b*c+a*d),2*(b*d-a*c)],
                  [2*(b*c-a*d), a*a+c*c-b*b-d*d, 2*(c*d+a*b)],
-                 [2*(b*d+a*c), 2*(c*d-a*b), a*a+d*d-b*b-c*c]])      
+                 [2*(b*d+a*c), 2*(c*d-a*b), a*a+d*d-b*b-c*c]])
 
     return np.dot(rot_matrix,vector)
 
@@ -379,7 +379,7 @@ def rotate_vector(vector, axis, theta):
 def get_detector_separation_angles(detector_radecs, sunpos):
     """
     Finds the separation angle between the Sun and each NaI detector,
-    given a dictonary of detector RA/DECs.
+    given a dictionary of detector RA/DECs.
     """
     angles = copy.deepcopy(detector_radecs)
     angles2 = {}
@@ -396,7 +396,7 @@ def separation_angle(radec1, radec2):
     use the law of spherical cosines to calculate the separation angle
     between two RA/DEC positions. radec1 and radec2 are quantities
     """
-    
+
     cosine_of_angle = (( np.cos( ((90*u.deg) - radec1[1].to('degree')).to('rad')) *
                         np.cos( (90*u.deg - radec2[1].to('degree')).to('rad')) )
                         + ( np.sin( ((90*u.deg) - radec1[1].to('degree')).to('rad') ) *
@@ -416,7 +416,7 @@ def met_to_utc(timeinsec):
     # times for GBM are in Mission Elapsed Time (MET).
     #The reference time for this is 2001-Jan-01 00:00.
     met_ref_time = parse_time('2001-01-01 00:00')
-    offset_from_utc = (met_ref_time - parse_time('1979-01-01 00:00')).total_seconds() 
-    time_in_utc=parse_time(timeinsec + offset_from_utc) 
+    offset_from_utc = (met_ref_time - parse_time('1979-01-01 00:00')).total_seconds()
+    time_in_utc=parse_time(timeinsec + offset_from_utc)
 
     return time_in_utc

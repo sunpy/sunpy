@@ -317,7 +317,7 @@ def _(attr, results):
     attrname = attr.__class__.__name__.lower()
     return set(
         item for item in results
-        # Some servers seem to obmit some fields. No way to filter there.
+        # Some servers seem to omit some fields. No way to filter there.
         if not hasattr(item, attrname) or
         getattr(item, attrname).lower() == attr.value.lower()
     )

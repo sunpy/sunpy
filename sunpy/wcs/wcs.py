@@ -274,7 +274,7 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
     -------
     out : ndarray (degrees, meters)
         if radius is false, return the data coordinates (lon, lat).  If
-        radius=True, return the data cordinates (lon, lat, r).  The quantities
+        radius=True, return the data coordinates (lon, lat, r).  The quantities
         (lon, lat) are the heliographic coordinates in degrees.  The quantity
         'r' is the heliographic radius in meters.
 
@@ -450,7 +450,7 @@ def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcs
 def proj_tan(x, y, force=False):
     """Applies the gnomonic (TAN) projection to intermediate relative
     coordinates. This function is not currently implemented!"""
-    # if pixels are within 3 degrees of the Sun then skip the calculatin unless
+    # if pixels are within 3 degrees of the Sun then skip the calculation unless
     # force is True. This applies to all sdo images so this function is just
     # here as a place holder for the future
     # TODO: write proj_tan function

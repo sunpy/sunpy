@@ -3,17 +3,17 @@
 Advanced Installation Instructions
 ----------------------------------
 
-This document provides details on things you need to know to install and 
+This document provides details on things you need to know to install and
 manage your own scientific Python + SunPy installation.
-If you have never installed or used scientific Python we recommend that you 
+If you have never installed or used scientific Python we recommend that you
 follow the :ref:`Anaconda installation instructions <main-install>`.
 
 
 Alternative Scientific Python Installation Instructions
 =======================================================
 
-There are many alternatives to Anaconda as a way of installing a scientific 
-Python environment, there are various other platform specific ways to install 
+There are many alternatives to Anaconda as a way of installing a scientific
+Python environment, there are various other platform specific ways to install
 scientific Python:
 
 .. toctree::
@@ -49,17 +49,17 @@ resource for setting up your environment to build Python packages.
           **Preferences**, then **Downloads**, and then under **Components**,
           click on the Install button to the right of **Command Line Tools**.
           Alternatively, on 10.7 (Lion) or later, you do not need to install
-          XCode, you can download just the command line tools from 
+          XCode, you can download just the command line tools from
           `the Apple developer site <https://developer.apple.com/downloads/index.action>`_
           (requires an Apple developer account).
 
 SunPy's Requirements
 ####################
 
-SunPy consists of many submodules that each have their own requirements. 
-You do not need to fufill all the requirements if you only intend on using 
-parts of SunPy. It is however *strongly* recommended to have all the 
-dependancies installed (with the potential exception of `glymur`).
+SunPy consists of many submodules that each have their own requirements.
+You do not need to fulfil all the requirements if you only intend on using
+parts of SunPy. It is however *strongly* recommended to have all the
+dependencies installed (with the potential exception of `glymur`).
 
 SunPy has the following strict requirements:
 
@@ -76,7 +76,7 @@ However, note that these only need to be installed if those particular features
 are needed. SunPy will import even if these dependencies are not installed.
 
 - `Matplotlib <http://matplotlib.org/>`_ [*Highly Recommended*] 1.3.0 or later:
-  For `~sunpy.lightcurve`, `~sunpy.map`, `~sunpy.spectra`, `~sunpy.instr` 
+  For `~sunpy.lightcurve`, `~sunpy.map`, `~sunpy.spectra`, `~sunpy.instr`
   and `~sunpy.visualization`.
 
 - `pandas <http://pandas.pydata.org/>`_ 0.10 or later: For `~sunpy.lightcurve`.
@@ -91,12 +91,12 @@ are needed. SunPy will import even if these dependencies are not installed.
 
 - `glymur <https://glymur.readthedocs.org/en/latest/>`_ 0.5.9 or later: To enable reading of JPEG2000 files.
   Glymur requires the installation of the `OpenJPEG C library <http://code.google.com/p/openjpeg/downloads/list>`_.
-  
+
 - `pytest <http://pytest.org/latest/>`_: To run our tests.
 
-The packages that will be installed as dependencies by default are the ones 
-required to import the core datatypes `~sunpy.map`, `~sunpy.lightcurve` and 
-`~sunpy.spectra`. These are the strict requirements and the following optional 
+The packages that will be installed as dependencies by default are the ones
+required to import the core datatypes `~sunpy.map`, `~sunpy.lightcurve` and
+`~sunpy.spectra`. These are the strict requirements and the following optional
 packages:
 
 - `matplotlib`
@@ -105,7 +105,7 @@ packages:
 Using `pip`
 ###########
 
-There are multiple options depending on how many optional dependancies you 
+There are multiple options depending on how many optional dependencies you
 want to install:
 
 To install SunPy with `pip` including optional dependencies (recommended), simply run::
@@ -138,7 +138,7 @@ To install SunPy with database dependencies (sqlalchemy)::
     required administrative access to install new packages to your Python
     installation.  In this case you may consider using the ``--user`` option
     to install the package into your home directory.  You can read more about
-    how to do this in the `pip documentation 
+    how to do this in the `pip documentation
     <http://www.pip-installer.org/en/1.2.1/other-tools.html#using-pip-with-the-user-scheme>`_.
 
     Alternatively, if you intend to do development on other software that uses
@@ -159,7 +159,7 @@ correctly is to use the :func:`sunpy.self_test()` function::
     import sunpy
     sunpy.self_test(online=False)
 
-Which will run all the SunPy tests that don't require an active internet 
+Which will run all the SunPy tests that don't require an active internet
 connection (and can therefore be quite slow).
 
 The tests should run and print out any failures, which you can report at
@@ -186,7 +186,7 @@ SunPy using::
     python setup.py install
 
 .. note::
-    This command will need access to system folders append `--user` to install 
+    This command will need access to system folders append `--user` to install
     SunPy into your home directory.
 
 Troubleshooting

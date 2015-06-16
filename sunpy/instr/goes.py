@@ -29,7 +29,7 @@ calculate_temperature_em() and references therein.
 The radiative loss rate of the soft X-ray-emitting plasma across all
 wavelengths can be found with calculate_radiative_loss_rate().  This function
 calls _calc_rad_loss() which, like _goes_get_chianti_temp() and
-_goes_get_chianti_em(), makes use of a look up table calculated by fuctions
+_goes_get_chianti_em(), makes use of a look up table calculated by functions
 in SSW using CHIANTI.  This table relates the temperature and emission
 measure of the emitting solar plasma to the thermal energy radiative over
 all wavelengths.  For more information on how this is done, see
@@ -209,7 +209,7 @@ def calculate_temperature_em(goeslc, abundances="coronal",
 
     Measurements of short channel flux of less than 1e-10 W/m**2 or
     long channel flux less than 3e-8 W/m**2 are not considered good.
-    Ratio values corresponding to suxh fluxes are set to 0.003.
+    Ratio values corresponding to such fluxes are set to 0.003.
 
     References
     ----------
@@ -337,7 +337,7 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
 
     Measurements of short channel flux of less than 1e-10 W/m**2 or
     long channel flux less than 3e-8 W/m**2 are not considered good.
-    Ratio values corresponding to suxh fluxes are set to 0.003.
+    Ratio values corresponding to such fluxes are set to 0.003.
 
     References
     ----------
@@ -619,7 +619,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     These files were calculated using the methods of White et al. (2005)
     who used the CHIANTI atomic physics database and GOES transfer
     functions to model the response of the long channel to the
-    temperture of the emitting plasma for XRSs onboard various GOES
+    temperature of the emitting plasma for XRSs onboard various GOES
     satellites.  The emission measure can then be found by scaling the
     ratio of these two properties.  This method assumes an isothermal
     plasma, the ionisation equilibria of Mazzotta et al. (1998), and
@@ -682,7 +682,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     # Initialize lists to hold model data of temperature - long channel
     # flux relationship read in from csv file.
-    modeltemp = [] # modelled temperature is in log_10 sapce in units of MK
+    modeltemp = [] # modelled temperature is in log_10 space in units of MK
     modelflux = []
     # Determine name of column in csv file containing model ratio values
     # for relevant GOES satellite
@@ -731,7 +731,7 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
     and emission measures are calculated using calculate_temperature_em().
     The unit of the resulting radiative loss rates is W.  Once
     the radiative loss rates have been found, they are returned as part of a
-    new LightCurve object also containing the metdata, GOES fluxes and
+    new LightCurve object also containing the metadata, GOES fluxes and
     corresponding temperatures and emission measures of the input LightCurve
     object.
 
@@ -932,11 +932,11 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
 
     # Initialize lists to hold model data of temperature - rad loss rate
     # relationship read in from csv file
-    modeltemp = [] # modelled temperature is in log_10 sapce in units of MK
+    modeltemp = [] # modelled temperature is in log_10 space in units of MK
     model_loss_rate = []
 
     # Read data from csv file into lists, being sure to skip commented
-    # lines begining with "#"
+    # lines beginning with "#"
     with open(os.path.join(DATA_PATH, FILE_RAD_COR),
               "r") as csvfile:
         startline = csvfile.readlines()[7:]
@@ -960,7 +960,7 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
     rad_loss = rad_loss.to(u.J/u.s)
 
     # If obstime keyword giving measurement times is set, calculate
-    # radiative losses intergrated over time.
+    # radiative losses integrated over time.
     if obstime is not None:
         # First ensure obstime is of same length as temp and em and of
         # correct type.

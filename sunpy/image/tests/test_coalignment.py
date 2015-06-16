@@ -9,7 +9,6 @@ from astropy import units as u
 from numpy.testing import assert_allclose, assert_array_almost_equal
 from scipy.ndimage.interpolation import shift as sp_shift
 from sunpy import map
-from sunpy.map import GenericMap
 import pytest
 import os
 import sunpy.data.test

@@ -83,7 +83,7 @@ Parent._create.add(
 )
 Parent._create.add(
 # pylint: disable=W0108
-# The lambda is necessary because introspection is peformed on the
+# The lambda is necessary because introspection is performed on the
 # argspec of the function.
     run_cls('from_dir'),
     lambda cls, directory: os.path.isdir(os.path.expanduser(directory)),
@@ -99,7 +99,7 @@ Parent._create.add(
 )
 # This case only gets executed under the condition that the previous one wasn't.
 # This is either because more than one file matched, or because the user
-# explicitely used pattern=, in both cases we want a list.
+# explicitly used pattern=, in both cases we want a list.
 Parent._create.add(
     run_cls('from_glob'),
     lambda cls, pattern: '*' in pattern and glob.glob(

@@ -159,7 +159,7 @@ def write(fname, data, header, **kwargs):
     #Copy header so the one in memory is left alone while changing it for write
     header = header.copy()
 
-    #The comments need to be added to the header seperately from the normal
+    #The comments need to be added to the header separately from the normal
     # kwargs. Find and deal with them:
     fits_header = fits.Header()
     # Check Header

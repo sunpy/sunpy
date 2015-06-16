@@ -11,7 +11,6 @@ facilitate the interfacing between further modules and HELIO.
 """
 from __future__ import absolute_import
 from urllib2 import urlopen, URLError
-#import sunpy.util.etree as EL
 import xml.etree.ElementTree as EL
 from sunpy.net.helio import registry_links as RL
 from bs4 import BeautifulSoup
