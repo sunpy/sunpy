@@ -16,7 +16,6 @@ Created by Tim van Werkhoven (t.i.m.vanwerkhoven@gmail.com) on 2009-02-11.
 Copyright (c) 2009--2011 Tim van Werkhoven.
 """
 
-from __future__ import absolute_import
 import os
 
 try:
