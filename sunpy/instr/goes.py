@@ -48,6 +48,7 @@ Dere, K.P., et al. 2009 A&A, 498, 915 DOI: 10.1051/0004-6361/200911712
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 
 import os.path
 import datetime
@@ -379,7 +380,7 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
     # PREPARE DATA
     # GOES 6 long channel flux before 1983-Jun-28 must be corrected by a
     # factor of 4.43/5.32
-    if date < datetime.datetime(1983, 06, 28) and satellite == 6:
+    if date < datetime.datetime(1983, 0o6, 28) and satellite == 6:
         longflux_corrected = longflux*(4.43/5.32)
     else:
         longflux_corrected = longflux

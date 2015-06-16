@@ -1,10 +1,13 @@
 """
 Some very beta tools for IRIS
 """
+from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import sunpy.io
 import sunpy.time
 import sunpy.map
+from six.moves import zip
 
 __all__ = ['SJI_to_cube']
 
@@ -48,7 +51,7 @@ def SJI_to_cube(filename, start=0, stop=None, hdu=0):
     datas = hdus[hdu][0][start:stop]
 
     #Make the cube:
-    iris_cube = sunpy.map.Map(zip(datas,headers),cube=True)
+    iris_cube = sunpy.map.Map(list(zip(datas,headers)),cube=True)
     #Set the date/time
     for i,m in enumerate(iris_cube):
         m.meta['DATE-OBS'] = splits[i].center.isoformat()

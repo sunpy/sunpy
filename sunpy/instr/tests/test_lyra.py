@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 
 import tempfile
 import os.path
@@ -13,6 +14,7 @@ from sunpy.data.test import rootdir
 from sunpy.time import parse_time
 from sunpy import lightcurve
 from sunpy.instr import lyra
+from six.moves import range
 
 # Define location for test LYTAF database files
 TEST_DATA_PATH = rootdir
@@ -72,7 +74,7 @@ def test_split_series_using_lytaf():
                                                    dummy_data, LYTAF_TEST)
     assert type(split_no_lytaf) == list
     assert type(split_no_lytaf[0]) == dict
-    assert split_no_lytaf[0].keys() == ['subtimes', 'subdata']
+    assert list(split_no_lytaf[0].keys()) == ['subtimes', 'subdata']
     assert split_no_lytaf[0]["subtimes"] == dummy_time
     assert split_no_lytaf[0]["subdata"].all() == dummy_data.all()
 
@@ -112,7 +114,7 @@ def test_remove_lytaf_events_from_lightcurve():
                                                 "CHANNEL4": channels[3]})
     # Assert expected result is returned
     pandas.util.testing.assert_frame_equal(lyralc_test.data, dataframe_expected)
-    assert artifact_status_test.keys() == artifact_status_expected.keys()
+    assert list(artifact_status_test.keys()) == list(artifact_status_expected.keys())
     np.testing.assert_array_equal(artifact_status_test["lytaf"],
                                   artifact_status_expected["lytaf"])
     np.testing.assert_array_equal(artifact_status_test["removed"],
@@ -153,7 +155,7 @@ def test_remove_lytaf_events_1():
     assert time_test.all() == time_expected.all()
     assert (channels_test[0]).all() == (channels_expected[0]).all()
     assert (channels_test[1]).all() == (channels_expected[1]).all()
-    assert artifacts_status_test.keys() == artifacts_status_expected.keys()
+    assert list(artifacts_status_test.keys()) == list(artifacts_status_expected.keys())
     np.testing.assert_array_equal(artifacts_status_test["lytaf"],
                                   artifacts_status_expected["lytaf"])
     np.testing.assert_array_equal(artifacts_status_test["removed"],
@@ -173,7 +175,7 @@ def test_remove_lytaf_events_1():
           force_use_local_lytaf=True)
     # Assert test values are same as expected
     assert time_test.all() == time_expected.all()
-    assert artifacts_status_test.keys() == artifacts_status_expected.keys()
+    assert list(artifacts_status_test.keys()) == list(artifacts_status_expected.keys())
     np.testing.assert_array_equal(artifacts_status_test["lytaf"],
                                   artifacts_status_expected["lytaf"])
     np.testing.assert_array_equal(artifacts_status_test["removed"],
@@ -201,7 +203,7 @@ def test_remove_lytaf_events_2():
     assert time_test.all() == time_expected.all()
     assert (channels_test[0]).all() == (channels_expected[0]).all()
     assert (channels_test[1]).all() == (channels_expected[1]).all()
-    assert artifacts_status_test.keys() == artifacts_status_expected.keys()
+    assert list(artifacts_status_test.keys()) == list(artifacts_status_expected.keys())
     np.testing.assert_array_equal(artifacts_status_test["lytaf"],
                                   artifacts_status_expected["lytaf"])
     np.testing.assert_array_equal(artifacts_status_test["removed"],
@@ -287,16 +289,16 @@ def test_get_lytaf_events():
                 datetime.datetime.utcfromtimestamp(1368583080),
                 datetime.datetime.utcfromtimestamp(1371050025),
                 datetime.datetime.utcfromtimestamp(1371167100)]
-    event_type = [u"LAR", u"UV occ.", u"Vis LED on", u"M Flare", u"UV LED on",
-                  u"X Flare", u"Off-limb event", u"Unexplained feature"]
-    event_description = [u"Large Angle Rotation.",
-                         u"Occultation in the UV spectrum.",
-                         u"Visual LED is turned on.",
-                         u"M class solar flare.",
-                         u"UV LED is turned on.",
-                         u"X class solar flare.",
-                         u"Off-limb event in SWAP.",
-                         u"Unexplained feature."]
+    event_type = ["LAR", "UV occ.", "Vis LED on", "M Flare", "UV LED on",
+                  "X Flare", "Off-limb event", "Unexplained feature"]
+    event_description = ["Large Angle Rotation.",
+                         "Occultation in the UV spectrum.",
+                         "Visual LED is turned on.",
+                         "M class solar flare.",
+                         "UV LED is turned on.",
+                         "X class solar flare.",
+                         "Off-limb event in SWAP.",
+                         "Unexplained feature."]
     lytaf_expected = np.empty((8,), dtype=[("insertion_time", object),
                                            ("begin_time", object),
                                            ("reference_time", object),
@@ -326,7 +328,7 @@ def test_get_lytaf_event_types():
 
 def test_lytaf_event2string():
     """Test _lytaf_event2string() associates correct numbers and events."""
-    out_test = lyra._lytaf_event2string(range(12))
+    out_test = lyra._lytaf_event2string(list(range(12)))
     assert out_test == ['LAR', 'N/A', 'UV occult.', 'Vis. occult.', 'Offpoint',
                         'SAA', 'Auroral zone', 'Moon in LYRA', 'Moon in SWAP',
                         'Venus in LYRA', 'Venus in SWAP']
