@@ -1,3 +1,6 @@
+from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
 from functools import partial
 import urllib2
 import os
@@ -53,4 +56,4 @@ def pytest_unconfigure(config):
         with open(hashfile, 'wb') as outfile:
             json.dump(hash.hash_library, outfile, sort_keys=True, indent=4, separators=(',', ': '))
         print("The hash library has expanded and should be copied to sunpy/tests/")
-        print("  " + hashfile)
+        print(("  " + hashfile))
