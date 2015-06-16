@@ -10,7 +10,7 @@ pytest-cov
 sqlalchemy
 scikit-image
 glymur
-suds
+suds-juko
 beautifulsoup4
 requests
 wcsaxes>=0.6
