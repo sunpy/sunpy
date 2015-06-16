@@ -32,7 +32,7 @@ class RHESSIMap(GenericMap):
 
     .. warning::
 
-    This software is in beta and cannot read fits files containing more than one image.
+        This software is in beta and cannot read fits files containing more than one image.
     """
 
     def __init__(self, data, header, **kwargs):
