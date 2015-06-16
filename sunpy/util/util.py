@@ -3,9 +3,12 @@ from __future__ import absolute_import
 import os
 import types
 import warnings
-from itertools import izip, imap, count
+from itertools import count
 
 import numpy as np
+
+from sunpy.extern.six.moves import map as imap
+from sunpy.extern.six.moves import zip as izip
 
 __all__ = ['to_signed', 'unique', 'print_table',
            'replacement_filename', 'goes_flare_class', 'merge', 'common_base',
