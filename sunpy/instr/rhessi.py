@@ -27,7 +27,7 @@ import sunpy.sun.constants
 from sunpy.time import TimeRange, parse_time
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.sun.sun import sunearth_distance
-from six.moves import zip
+from sunpy.extern.six.moves import zip
 
 __all__ = ['get_obssumm_dbase_file', 'parse_obssumm_dbase_file', 'get_obssum_filename', 'get_obssumm_file', 'parse_obssumm_file', 'backprojection']
 

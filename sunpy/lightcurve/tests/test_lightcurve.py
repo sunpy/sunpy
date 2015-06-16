@@ -16,7 +16,7 @@ import sunpy
 import sunpy.lightcurve
 from sunpy.data.test import (EVE_AVERAGES_CSV)
 import pandas
-from six.moves import range
+from sunpy.extern.six.moves import range
 
 # Generate input test data
 base = datetime.datetime.today()

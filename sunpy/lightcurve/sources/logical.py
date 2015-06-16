@@ -10,7 +10,7 @@ import numpy as np
 from sunpy.lightcurve import LightCurve
 from scipy.ndimage import label
 from sunpy.time import TimeRange
-from six.moves import range
+from sunpy.extern.six.moves import range
 
 __all__ = ['LogicalLightCurve']
 

@@ -15,7 +15,7 @@ from numpy.testing import assert_array_almost_equal
 from sunpy.spectra.spectrogram import(
     Spectrogram, LinearTimeSpectrogram, _LinearView
 )
-from six.moves import range
+from sunpy.extern.six.moves import range
 
 
 def is_linear(arr):

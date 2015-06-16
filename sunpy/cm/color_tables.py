@@ -7,8 +7,8 @@ from __future__ import unicode_literals
 
 import numpy as np
 import matplotlib.colors as colors
-from six.moves import range
-from six.moves import zip
+from sunpy.extern.six.moves import range
+from sunpy.extern.six.moves import zip
 
 __all__ = ['aia_color_table', 'lasco_color_table', 'eit_color_table',
            'sxt_color_table', 'xrt_color_table', 'trace_color_table',

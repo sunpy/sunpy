@@ -14,7 +14,7 @@ from astropy.utils.data import download_file
 
 from sunpy.util.net import url_exists
 from sunpy import config
-import six
+from sunpy.extern import six
 
 __author__ = "Steven Christe"
 __email__ = "steven.christe@nasa.gov"

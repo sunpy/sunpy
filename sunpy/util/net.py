@@ -19,7 +19,7 @@ from unicodedata import normalize
 from itertools import ifilter
 
 from sunpy.util import replacement_filename
-import six
+from sunpy.extern import six
 
 __all__ = ['slugify','get_content_disposition', 'get_filename',
            'get_system_filename', 'get_system_filename_slugify',

@@ -4,7 +4,8 @@ from __future__ import print_function
 from __future__ import unicode_literals
 import os
 import tempfile
-import six.moves.configparser
+
+from sunpy.extern import six
 
 import sunpy as spy
 

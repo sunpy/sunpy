@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 from __future__ import unicode_literals
-import six
+from sunpy.extern import six
 
 __authors__ = ["Russell Hewett, Stuart Mumford"]
 __email__ = "stuart@mumford.me.uk"

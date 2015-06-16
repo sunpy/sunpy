@@ -4,7 +4,7 @@ inherit from.
 """
 from __future__ import absolute_import
 from __future__ import unicode_literals
-import six
+from sunpy.extern import six
 
 #pylint: disable=E1101,E1121,W0404,W0612,W0613
 __authors__ = ["Keith Hughitt"]

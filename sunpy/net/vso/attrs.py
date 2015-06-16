@@ -28,7 +28,7 @@ from sunpy.net.attr import (
 )
 from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time
-import six
+from sunpy.extern import six
 
 __all__ = ['Wave', 'Time', 'Extent', 'Field', 'Provider', 'Source',
            'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',

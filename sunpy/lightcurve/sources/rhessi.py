@@ -11,7 +11,7 @@ from pandas import DataFrame
 from sunpy.lightcurve import LightCurve
 from sunpy.time import TimeRange, parse_time
 from sunpy.instr import rhessi
-import six
+from sunpy.extern import six
 
 __all__ = ['RHESSISummaryLightCurve']
 

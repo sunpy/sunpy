@@ -8,7 +8,7 @@ from astropy.units import Unit
 
 from sunpy.time import parse_time
 from sunpy import config
-from six.moves import range
+from sunpy.extern.six.moves import range
 TIME_FORMAT = config.get('general', 'time_format')
 
 __all__ = ['TimeRange']

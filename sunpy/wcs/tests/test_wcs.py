@@ -8,7 +8,7 @@ from numpy.testing import assert_allclose
 import sunpy.wcs as wcs
 import sunpy.sun as sun
 import pytest
-from six.moves import zip
+from sunpy.extern.six.moves import zip
 
 # the following values are taken from the test file 'aia_171_level1.fits'
 

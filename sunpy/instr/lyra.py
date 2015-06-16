@@ -18,7 +18,7 @@ from sunpy.time import parse_time
 from sunpy import config
 from sunpy.util.net import check_download_file
 from sunpy import lightcurve
-from six.moves import range
+from sunpy.extern.six.moves import range
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 LYTAF_PATH = config.get("downloads", "download_dir")

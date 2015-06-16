@@ -15,7 +15,7 @@ import pandas
 from sunpy.io.fits import fits
 from sunpy.instr import fermi
 from sunpy.lightcurve import LightCurve
-from six.moves import range
+from sunpy.extern.six.moves import range
 
 
 __all__ = ['GBMSummaryLightCurve']

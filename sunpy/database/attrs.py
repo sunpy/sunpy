@@ -13,7 +13,7 @@ from sunpy.net.vso import attrs as vso_attrs
 from sunpy.net.attr import AttrWalker, Attr, ValueAttr, AttrAnd, AttrOr
 from sunpy.database.tables import DatabaseEntry, Tag as TableTag,\
     FitsHeaderEntry as TableFitsHeaderEntry
-import six
+from sunpy.extern import six
 
 __all__ = [
     'Starred', 'Tag', 'Path', 'DownloadTime', 'FitsHeaderEntry', 'walker']

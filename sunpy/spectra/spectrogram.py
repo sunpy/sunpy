@@ -32,8 +32,8 @@ from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.util.create import Parent
 from sunpy.spectra.spectrum import Spectrum
 from sunpy.extern.six.moves import zip as izip
-from six.moves import map
-from six.moves import range
+from sunpy.extern.six.moves import map
+from sunpy.extern.six.moves import range
 
 __all__ = ['Spectrogram', 'LinearTimeSpectrogram']
 

@@ -7,7 +7,7 @@ from __future__ import unicode_literals
 import sunpy.io
 import sunpy.time
 import sunpy.map
-from six.moves import zip
+from sunpy.extern.six.moves import zip
 
 __all__ = ['SJI_to_cube']
 

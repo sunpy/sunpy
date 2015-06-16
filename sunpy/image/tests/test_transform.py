@@ -6,8 +6,8 @@ import numpy as np
 from skimage import transform as tf
 import skimage.data as images
 import pytest
-from six.moves import range
-from six.moves import zip
+from sunpy.extern.six.moves import range
+from sunpy.extern.six.moves import zip
 
 # Define test image first so it's accessible to all functions.
 original = images.camera().astype('float')

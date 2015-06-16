@@ -24,7 +24,7 @@ from __future__ import unicode_literals
 from datetime import datetime
 from sunpy.net import attr
 from sunpy.time import parse_time
-import six
+from sunpy.extern import six
 
 class _ParamAttr(attr.Attr):
     """ A _ParamAttr is used to represent equality or inequality checks

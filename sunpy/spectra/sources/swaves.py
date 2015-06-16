@@ -12,7 +12,7 @@ import numpy as np
 
 from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE, get_day
-from six.moves import input
+from sunpy.extern.six.moves import input
 
 __all__ = ['SWavesSpectrogram']
 

@@ -10,7 +10,7 @@ from pandas.io.parsers import read_csv
 import numpy as np
 
 from sunpy.lightcurve import LightCurve
-from six.moves import zip
+from sunpy.extern.six.moves import zip
 
 __all__ = ['NOAAIndicesLightCurve', 'NOAAPredictIndicesLightCurve']
 

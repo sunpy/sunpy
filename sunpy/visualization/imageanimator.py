@@ -10,7 +10,7 @@ import matplotlib.animation as mplanim
 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import mpl_toolkits.axes_grid1.axes_size as Size
-from six.moves import range
+from sunpy.extern.six.moves import range
 
 __all__ = ['BaseFuncAnimator', 'ImageAnimator']
 

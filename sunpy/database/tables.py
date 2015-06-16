@@ -23,7 +23,7 @@ from sunpy.util import print_table
 from sunpy.extern.six.moves import map as imap
 
 from sunpy import config
-import six
+from sunpy.extern import six
 
 
 TIME_FORMAT = config.get("general", "time_format")

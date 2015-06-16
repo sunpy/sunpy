@@ -7,7 +7,7 @@ import datetime
 import pytest
 import sunpy.time
 from astropy.units import Quantity
-from six.moves import zip
+from sunpy.extern.six.moves import zip
 
 tbegin_str = '2012/1/1'
 tfin_str = '2012/1/2'

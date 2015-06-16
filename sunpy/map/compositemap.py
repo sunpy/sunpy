@@ -13,7 +13,7 @@ import astropy.units as u
 from sunpy.map import GenericMap
 
 from sunpy.util import expand_list
-from six.moves import range
+from sunpy.extern.six.moves import range
 
 __all__ = ['CompositeMap']
 

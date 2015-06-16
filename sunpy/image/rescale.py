@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 import numpy as np
 import scipy.interpolate
 import scipy.ndimage
-from six.moves import range
+from sunpy.extern.six.moves import range
 
 __all__ = ['resample', 'reshape_image_to_4d_superpixel']
 

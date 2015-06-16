@@ -20,7 +20,7 @@ from sunpy.net.download import Downloader
 from sunpy.net.vso.vso import Results
 from sunpy.net.attr import and_
 from sunpy.net.jsoc.attrs import walker
-import six
+from sunpy.extern import six
 
 __all__ = ['JSOCClient', 'JSOCResponse']
 

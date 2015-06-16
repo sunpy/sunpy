@@ -13,7 +13,7 @@ from sunpy.map.header import MapMeta
 import pytest
 import os
 import sunpy.data.test
-from six.moves import range
+from sunpy.extern.six.moves import range
 
 @pytest.fixture
 def mapcube_all_the_same():

@@ -8,7 +8,7 @@ from sunpy.time import parse_time
 
 import numpy as np
 import pandas
-from six.moves import range
+from sunpy.extern.six.moves import range
 
 LANDING = datetime(1966, 2, 3)
 

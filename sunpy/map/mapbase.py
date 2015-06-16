@@ -3,7 +3,7 @@ Map is a generic Map class from which all other Map classes inherit from.
 """
 from __future__ import absolute_import
 from __future__ import unicode_literals
-from six.moves import range
+from sunpy.extern.six.moves import range
 
 #pylint: disable=E1101,E1121,W0404,W0613
 __authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe"]

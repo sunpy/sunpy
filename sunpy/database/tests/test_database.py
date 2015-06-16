@@ -7,7 +7,6 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 import glob
-import six.moves.configparser
 import os
 import os.path
 import shutil
@@ -30,7 +29,8 @@ from sunpy.data.test.waveunit import waveunitdir
 from sunpy.io import fits
 
 import sunpy.data.test
-from six.moves import range
+from sunpy.extern import six
+from sunpy.extern.six.moves import range
 
 testpath = sunpy.data.test.rootdir
 RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')

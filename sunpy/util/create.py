@@ -11,8 +11,8 @@ from sunpy import config
 from sunpy.util.net import download_file
 
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
-import six
-from six.moves import map
+from sunpy.extern import six
+from sunpy.extern.six.moves import map
 
 __all__ = ['Parent']
 

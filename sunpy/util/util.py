@@ -10,8 +10,8 @@ import numpy as np
 
 from sunpy.extern.six.moves import map as imap
 from sunpy.extern.six.moves import zip as izip
-import six
-from six.moves import map
+from sunpy.extern import six
+from sunpy.extern.six.moves import map
 
 __all__ = ['to_signed', 'unique', 'print_table',
            'replacement_filename', 'goes_flare_class', 'merge', 'common_base',

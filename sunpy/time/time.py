@@ -6,7 +6,7 @@ from datetime import timedelta
 
 import numpy as np
 import pandas
-import six
+from sunpy.extern import six
 
 __all__ = ['find_time', 'extract_time', 'parse_time', 'is_time', 'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format']
 

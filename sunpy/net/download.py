@@ -18,7 +18,7 @@ from contextlib import closing
 from collections import defaultdict, deque
 
 import sunpy as spy
-import six
+from sunpy.extern import six
 
 def default_name(path, sock, url):
     name = sock.headers.get('Content-Disposition', url.rsplit('/', 1)[-1])

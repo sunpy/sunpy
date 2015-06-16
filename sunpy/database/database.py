@@ -23,8 +23,8 @@ from sunpy.database.attrs import walker
 from sunpy.net.hek2vso import H2VClient
 from sunpy.net.attr import and_
 from sunpy.net.vso import VSOClient
-from six.moves import range
-from six.moves import zip
+from sunpy.extern.six.moves import range
+from sunpy.extern.six.moves import zip
 
 __authors__ = ['Simon Liedtke', 'Rajul Srivastava']
 __emails__ = [

@@ -11,8 +11,8 @@ import os
 
 from sqlalchemy.orm import make_transient
 from sqlalchemy.exc import InvalidRequestError
-import six
-from six.moves import range
+from sunpy.extern import six
+from sunpy.extern.six.moves import range
 
 
 __all__ = [

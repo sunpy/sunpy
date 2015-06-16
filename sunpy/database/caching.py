@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 
 from abc import ABCMeta, abstractmethod, abstractproperty
 from collections import MutableMapping, OrderedDict, Counter
-import six
+from sunpy.extern import six
 
 __all__ = ['BaseCache', 'LRUCache', 'LFUCache']
 

@@ -5,7 +5,7 @@ from sunpy.io.fits import get_header, extract_waveunit
 
 import sunpy.data.test
 import os
-from six.moves import range
+from sunpy.extern.six.moves import range
 testpath = sunpy.data.test.rootdir
 
 RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')

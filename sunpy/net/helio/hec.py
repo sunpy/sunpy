@@ -11,8 +11,8 @@ from suds.client import Client as C
 import suds
 from astropy.io.votable.table import parse_single_table
 import io
-from six.moves import range
-from six.moves import input
+from sunpy.extern.six.moves import range
+from sunpy.extern.six.moves import input
 
 __author__ = 'Michael Malocha'
 __version__ = 'September 22nd, 2013'

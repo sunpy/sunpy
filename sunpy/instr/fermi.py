@@ -19,7 +19,7 @@ from astropy.coordinates import Longitude, Latitude
 from sunpy.time import parse_time, TimeRange
 from sunpy import sun
 from sunpy.io.fits import fits
-from six.moves import range
+from sunpy.extern.six.moves import range
 
 __all__ = ['download_weekly_pointing_file', 'get_detector_sun_angles_for_time',
             'get_detector_sun_angles_for_date','plot_detector_sun_angles',

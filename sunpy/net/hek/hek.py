@@ -22,8 +22,8 @@ from sunpy.net.hek import attrs
 from sunpy.net.vso import attrs as v_attrs
 from sunpy.util import unique
 from sunpy.util.xml import xml_to_dict
-import six
-from six.moves import map
+from sunpy.extern import six
+from sunpy.extern.six.moves import map
 
 __all__ = ['HEKClient']
 

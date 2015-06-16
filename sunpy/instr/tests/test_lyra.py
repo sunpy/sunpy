@@ -14,7 +14,7 @@ from sunpy.data.test import rootdir
 from sunpy.time import parse_time
 from sunpy import lightcurve
 from sunpy.instr import lyra
-from six.moves import range
+from sunpy.extern.six.moves import range
 
 # Define location for test LYTAF database files
 TEST_DATA_PATH = rootdir

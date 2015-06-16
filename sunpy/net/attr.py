@@ -28,7 +28,7 @@ from __future__ import absolute_import
 from __future__ import unicode_literals
 
 from sunpy.util.multimethod import MultiMethod
-import six
+from sunpy.extern import six
 
 # XXX: Maybe allow other normal forms.
 
