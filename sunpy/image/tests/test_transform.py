@@ -1,10 +1,13 @@
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from sunpy.image.transform import affine_transform
 import numpy as np
 from skimage import transform as tf
 import skimage.data as images
 import pytest
+from six.moves import range
+from six.moves import zip
 
 # Define test image first so it's accessible to all functions.
 original = images.camera().astype('float')
@@ -74,9 +77,9 @@ def test_scipy_rotation(angle, k):
     derot = affine_transform(rot, rmatrix=derot_matrix, use_scipy=True)
     assert compare_results(original, derot, allclose=False)
 
-dx_values, dy_values = range(-100, 101, 100)*3, range(-100, 101, 100)*3
+dx_values, dy_values = list(range(-100, 101, 100))*3, list(range(-100, 101, 100))*3
 dy_values.sort()
-@pytest.mark.parametrize("dx, dy", zip(dx_values, dy_values))
+@pytest.mark.parametrize("dx, dy", list(zip(dx_values, dy_values)))
 def test_shift(dx, dy):
     # Rotation center for all translation tests.
     image_center = np.array(original.shape)/2.0 - 0.5

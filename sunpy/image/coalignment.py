@@ -17,6 +17,9 @@ Template matching algorithm:
    Processing and Pattern Recognition Society, Quebec City, Canada, May 15-19,
    1995, p. 120-123 http://www.scribblethink.org/Work/nvisionInterface/vi95_lewis.pdf.
 """
+from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
 
 import numpy as np
 from scipy.ndimage.interpolation import shift
@@ -248,7 +251,7 @@ def get_correlation_shifts(array):
     ny = array.shape[0]
     nx = array.shape[1]
     if nx > 3 or ny > 3:
-        print 'Input array is too big in at least one dimension. Returning Nones'
+        print('Input array is too big in at least one dimension. Returning Nones')
         return None, None
 
     # Find where the maximum of the input array is
