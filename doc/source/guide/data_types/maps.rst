@@ -8,7 +8,7 @@ In this guide, we will cover some of the basic functionality of maps.
 Once you've read through this guide check out
 the :doc:`/code_ref/map` for a more thorough look at SunPy maps.
 There you can see what instruments are currently supported or you can access the
-code reference for each instrument-specific map subclass :doc:`/code_ref/map_instr`.
+code reference for each instrument-specific map subclass.
 
 1. Creating maps
 ----------------

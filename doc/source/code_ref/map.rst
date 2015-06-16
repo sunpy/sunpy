@@ -70,35 +70,24 @@ parameters are met.
     :no-main-docstr:
     :no-heading:
 
-Instrument Map Classes
-----------------------
+.. automodapi:: sunpy.map.sources
 
-The following mission Map classes are available.
-
-* :ref:`hinode_map`
-* :ref:`iris_map`
-* :ref:`proba2_map`
-* :ref:`rhessi_map`
-* :ref:`sdo_map`
-* :ref:`soho_map`
-* :ref:`stereo_map`
-* :ref:`trace_map`
-* :ref:`yohkoh_map`
 
 Writing a new Map Class
 -----------------------
 
 Map classes can be registered with the Map factory, even if the new class is not
 officially part of SunPy.  This is good for prototyping new instruments.  For
-example, to add a Map type for a future instrument, consider the code skeleton ::
+example, to add a Map type for a future instrument, consider this code skeleton:
 
-    import sunpy
+.. code-block:: python
 
-    class FutureMap(sunpy.GenericMap):
+    import sunpy.map
+
+    class FutureMap(sunpy.map.GenericMap):
 
         def __init__(self, data, header, **kwargs):
-
-            GenericMap.__init__(self, data, header, **kwargs)
+            super(self, sunpy.map.GenericMap).__init__(data, header, **kwargs)
 
             # Any Future Instrument specific keyword manipulation
 
@@ -110,7 +99,9 @@ example, to add a Map type for a future instrument, consider the code skeleton :
             return header.get('instrume', '').startswith('FUTURESCOPE')
 
 Then, to be able to instantiate a FutureMap using the Map() factory, one must
-register the FutureMap type with the factory ::
+register the FutureMap type with the factory
+
+.. code-block:: python
 
     sunpy.map.Map.register(FutureMap, FutureMap.is_datasource_for)
 
