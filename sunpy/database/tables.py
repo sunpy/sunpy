@@ -9,7 +9,6 @@ from time import strptime, mktime
 from datetime import datetime
 import fnmatch
 import os
-from itertools import imap
 
 from astropy.units import Unit, nm, equivalencies
 from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean,\
@@ -20,8 +19,11 @@ from sqlalchemy.ext.declarative import declarative_base
 from sunpy.time import parse_time
 from sunpy.io import fits, file_tools as sunpy_filetools
 from sunpy.util import print_table
+from sunpy.extern.six.moves import map as imap
 
 from sunpy import config
+
+
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = [

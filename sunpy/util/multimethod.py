@@ -25,7 +25,8 @@ Multimethod implementation in pure Python.
 from __future__ import absolute_import
 
 from warnings import warn
-from itertools import izip
+
+from sunpy.extern.six.moves import izip as zip
 
 __all__ = ['TypeWarning', 'MultiMethod']
 
