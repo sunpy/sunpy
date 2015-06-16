@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
 # -*- coding: utf-8 -*-
 # Lovingly borrowed from Astropy
 # Licensed under a 3-clause BSD style license - see licences/ASTROPY.rst
