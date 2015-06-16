@@ -30,8 +30,6 @@ References
 | http://stsdas.stsci.edu/download/wikidocs/The_PyFITS_Handbook.pdf
 
 """
-from __future__ import absolute_import
-
 import os
 import re
 import itertools
