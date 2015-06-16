@@ -3,11 +3,16 @@ comments. To generate the documentation you must have Sphinx (as well as
 Numpydoc and astropy-helpers) installed on your computer. Enter
 the doc/source folder and run:
 
-  make html
+  python setup.py build_sphinx -l
 
-This will generate HTML documentation for SunPy. To clean up and delete the
-generated documentation run:
+This will generate fresh HTML documentation for SunPy. Add the -o option to open the 
+docs in your browser after a succesful build
 
-  make clean
+  python setup.py build_sphinx -o
 
-For more information on how to use Sphinx, consult the Sphinx documentation.
+For more options run:
+
+  python setup.py build_sphinx --help
+
+For more information on how to use Sphinx, consult the 
+[Sphinx documentation](http://sphinx-doc.org).
