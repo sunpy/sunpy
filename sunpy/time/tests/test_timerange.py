@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import datetime
 import pytest
 import sunpy.time
 from astropy.units import Quantity
+from six.moves import zip
 
 tbegin_str = '2012/1/1'
 tfin_str = '2012/1/2'
@@ -122,7 +124,7 @@ def test_hours(timerange_a):
 
 def test_next():
     timerange = sunpy.time.TimeRange(tbegin_str, tfin_str)
-    timerange.next()
+    next(timerange)
     assert isinstance(timerange, sunpy.time.TimeRange)
     assert timerange.start == start + delta
     assert timerange.end == end + delta
