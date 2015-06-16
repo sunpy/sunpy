@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """SunPy sample data files"""
 from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
 
 from os import remove
 import os.path
@@ -12,6 +14,7 @@ from astropy.utils.data import download_file
 
 from sunpy.util.net import url_exists
 from sunpy import config
+import six
 
 __author__ = "Steven Christe"
 __email__ = "steven.christe@nasa.gov"
@@ -57,8 +60,8 @@ def download_sample_data(progress=True):
     None
     """
     number_of_files_fetched = 0
-    print("Downloading sample files to " + sampledata_dir)
-    for file_name in _files.itervalues():
+    print(("Downloading sample files to " + sampledata_dir))
+    for file_name in six.itervalues(_files):
         for base_url in _base_urls:
             full_file_name = file_name[0] + file_name[1]
             if url_exists(os.path.join(base_url, full_file_name)):
@@ -66,7 +69,7 @@ def download_sample_data(progress=True):
                 real_name, ext = os.path.splitext(full_file_name)
 
                 if file_name[1] == '.zip':
-                    print("Unpacking: %s" % real_name)
+                    print(("Unpacking: %s" % real_name))
                     with ZipFile(f, 'r') as zip_file:
                         zip_file.extract(real_name, sampledata_dir)
                     remove(f)
@@ -77,5 +80,5 @@ def download_sample_data(progress=True):
                 number_of_files_fetched += 1
                 break
 
-    if number_of_files_fetched < len(_files.keys()):
+    if number_of_files_fetched < len(list(_files.keys())):
         raise URLError("Could not download all samples files. Problem with accessing sample data servers.")
