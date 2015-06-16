@@ -21,6 +21,8 @@ Carrington Rotation Number = 1971.4091        check!
 
 """
 from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
 
 import numpy as np
 
@@ -250,18 +252,18 @@ def heliographic_solar_center(t='now'):
 def print_params(t='now'):
     """Print out a summary of Solar ephemeris"""
     time = parse_time(t)
-    print('Solar Ephemeris for ' + time.ctime())
+    print(('Solar Ephemeris for ' + time.ctime()))
     print('')
-    print('Distance (AU) = ' + str(sunearth_distance(t)))
-    print('Semidiameter (arc sec) = ' + str(solar_semidiameter_angular_size(t)))
-    print('True (long,lat) in degrees = (' + str(true_longitude(t)) + ','
-                                                 + str(true_latitude(t)) + ')')
-    print('Apparent (long, lat) in degrees = (' + str(apparent_longitude(t)) + ','
-                                                 + str(apparent_latitude(t)) + ')')
-    print('True (RA, Dec) = (' + str(true_rightascension(t)) + ','
-          + str(true_declination(t)))
-    print('Apparent (RA, Dec) = (' + str(apparent_rightascension(t)) + ','
-          + str(apparent_declination(t)))
-    print('Heliographic long. and lat of disk center in deg = (' + str(heliographic_solar_center(t)) + ')')
-    print('Position angle of north pole in deg = ' + str(solar_north(t)))
-    print('Carrington Rotation Number = ' + str(carrington_rotation_number(t)))
+    print(('Distance (AU) = ' + str(sunearth_distance(t))))
+    print(('Semidiameter (arc sec) = ' + str(solar_semidiameter_angular_size(t))))
+    print(('True (long,lat) in degrees = (' + str(true_longitude(t)) + ','
+                                                 + str(true_latitude(t)) + ')'))
+    print(('Apparent (long, lat) in degrees = (' + str(apparent_longitude(t)) + ','
+                                                 + str(apparent_latitude(t)) + ')'))
+    print(('True (RA, Dec) = (' + str(true_rightascension(t)) + ','
+          + str(true_declination(t))))
+    print(('Apparent (RA, Dec) = (' + str(apparent_rightascension(t)) + ','
+          + str(apparent_declination(t))))
+    print(('Heliographic long. and lat of disk center in deg = (' + str(heliographic_solar_center(t)) + ')'))
+    print(('Position angle of north pole in deg = ' + str(solar_north(t))))
+    print(('Carrington Rotation Number = ' + str(carrington_rotation_number(t))))

@@ -19,6 +19,7 @@ Object
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import pandas
 from astropy.units import Quantity

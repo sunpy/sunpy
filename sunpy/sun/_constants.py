@@ -9,6 +9,7 @@ everyday use.
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from astropy.constants import Constant
 import astropy.constants as astrocon
