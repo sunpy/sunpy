@@ -14,6 +14,7 @@ from sunpy.util import expand_list
 
 __all__ = ['MapCube']
 
+
 class MapCube(object):
     """
     MapCube
@@ -198,7 +199,7 @@ class MapCube(object):
             im.set_array(ani_data[i].data)
             im.set_cmap(self.maps[i].cmap)
             im.set_norm(self.maps[i].mpl_color_normalizer)
-			im.set_extent(np.concatenate((self.maps[i].xrange.value, self.maps[i].yrange.value)))
+            im.set_extent(np.concatenate((self.maps[i].xrange.value, self.maps[i].yrange.value)))
             if annotate:
                 annotate_frame(i)
             removes += list(plot_function(fig, axes, self.maps[i]))
