@@ -4,6 +4,7 @@
 # the Google Summer of Code (2013).
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import itertools
 import operator
@@ -22,6 +23,8 @@ from sunpy.database.attrs import walker
 from sunpy.net.hek2vso import H2VClient
 from sunpy.net.attr import and_
 from sunpy.net.vso import VSOClient
+from six.moves import range
+from six.moves import zip
 
 __authors__ = ['Simon Liedtke', 'Rajul Srivastava']
 __emails__ = [
@@ -884,7 +887,7 @@ class Database(object):
             start = 0 if key.start is None else key.start
             stop = len(self) if key.stop is None else key.stop
             step = 1 if key.step is None else key.step
-            for i in xrange(start, stop, step):
+            for i in range(start, stop, step):
                 try:
                     entry = self[i]
                 except IndexError:

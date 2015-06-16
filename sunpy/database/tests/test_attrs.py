@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
 # Author: Simon Liedtke <liedtke.simon@googlemail.com>
 #
 # This module was developed with funding provided by
@@ -14,6 +16,7 @@ from sunpy.database.attrs import walker, Starred, Tag, Path, DownloadTime,\
     FitsHeaderEntry
 from sunpy.net.attr import DummyAttr, AttrAnd, AttrOr
 from sunpy.net import vso
+from six.moves import range
 
 
 @pytest.fixture
@@ -24,7 +27,7 @@ def obj():
 @pytest.fixture
 def session():
     database = Database('sqlite:///:memory:')
-    for i in xrange(1, 11):
+    for i in range(1, 11):
         entry = tables.DatabaseEntry()
         database.add(entry)
         # every entry has a fake download time of 2005-06-15 i:00:00
@@ -406,19 +409,19 @@ def test_walker_create_fitsheader_inverted(session):
 def test_walker_create_vso_instrument(vso_session):
     entries = walker.create(vso.attrs.Instrument('RHESSI'), vso_session)
     assert entries == [
-        tables.DatabaseEntry(id=1, source=u'RHESSI', provider=u'LSSP',
-            physobs=u'intensity',
-            fileid=u'/hessidata/2011/09/20/hsi_20110920_010920',
+        tables.DatabaseEntry(id=1, source='RHESSI', provider='LSSP',
+            physobs='intensity',
+            fileid='/hessidata/2011/09/20/hsi_20110920_010920',
             observation_time_start=datetime(2011, 9, 20, 1, 9, 20),
             observation_time_end=datetime(2011, 9, 20, 2, 27, 40),
-            instrument=u'RHESSI', size=-1.0, wavemin=0.4132806430668068,
+            instrument='RHESSI', size=-1.0, wavemin=0.4132806430668068,
             wavemax=7.293187818826002e-05),
-        tables.DatabaseEntry(id=2, source=u'RHESSI', provider=u'LSSP',
-            physobs=u'intensity',
-            fileid=u'/hessidata/2011/09/19/hsi_20110919_233340',
+        tables.DatabaseEntry(id=2, source='RHESSI', provider='LSSP',
+            physobs='intensity',
+            fileid='/hessidata/2011/09/19/hsi_20110919_233340',
             observation_time_start=datetime(2011, 9, 19, 23, 33, 40),
             observation_time_end=datetime(2011, 9, 20, 1, 9, 20),
-            instrument=u'RHESSI', size=-1.0, wavemin=0.4132806430668068,
+            instrument='RHESSI', size=-1.0, wavemin=0.4132806430668068,
             wavemax=7.293187818826002e-05)]
 
 
@@ -437,10 +440,10 @@ def test_walker_create_time(vso_session):
     entries = walker.create(time, vso_session)
     assert len(entries) == 1
     assert entries == [
-        tables.DatabaseEntry(id=2, source=u'RHESSI', provider=u'LSSP',
-            physobs=u'intensity',
-            fileid=u'/hessidata/2011/09/19/hsi_20110919_233340',
+        tables.DatabaseEntry(id=2, source='RHESSI', provider='LSSP',
+            physobs='intensity',
+            fileid='/hessidata/2011/09/19/hsi_20110919_233340',
             observation_time_start=datetime(2011, 9, 19, 23, 33, 40),
             observation_time_end=datetime(2011, 9, 20, 1, 9, 20),
-            instrument=u'RHESSI', size=-1.0, wavemin=0.4132806430668068,
+            instrument='RHESSI', size=-1.0, wavemin=0.4132806430668068,
             wavemax=7.293187818826002e-05)]

@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
 # Author: Simon Liedtke <liedtke.simon@googlemail.com>
 #
 # This module was developed with funding provided by
@@ -171,9 +173,9 @@ def test_entries_from_file():
 def test_entries_from_file_withoutwaveunit():
     # does not raise `WaveunitNotFoundError`, because no wavelength information
     # is present in this file
-    entries_from_file(RHESSI_IMAGE).next()
+    next(entries_from_file(RHESSI_IMAGE))
     with pytest.raises(WaveunitNotFoundError):
-        entries_from_file(EIT_195_IMAGE).next()
+        next(entries_from_file(EIT_195_IMAGE))
 
 
 def test_entries_from_dir():

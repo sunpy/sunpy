@@ -24,6 +24,7 @@ The database package exports the following classes and exceptions:
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from sunpy.database.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\

@@ -4,9 +4,10 @@
 # the Google Summer of Code (2013).
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import glob
-import ConfigParser
+import six.moves.configparser
 import os
 import os.path
 import shutil
@@ -29,6 +30,7 @@ from sunpy.data.test.waveunit import waveunitdir
 from sunpy.io import fits
 
 import sunpy.data.test
+from six.moves import range
 
 testpath = sunpy.data.test.rootdir
 RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
@@ -78,7 +80,7 @@ def download_query():
 @pytest.fixture
 def filled_database():
     database = Database('sqlite:///:memory:')
-    for i in xrange(1, 11):
+    for i in range(1, 11):
         entry = DatabaseEntry()
         database.add(entry)
         # every fourth entry gets the tag 'foo'
@@ -91,7 +93,7 @@ def filled_database():
     return database
 
 def test_config_url(monkeypatch):
-    monkeypatch.setattr("sunpy.config", ConfigParser.SafeConfigParser())
+    monkeypatch.setattr("sunpy.config", six.moves.configparser.SafeConfigParser())
     url = 'sqlite:///'
     sunpy.config.add_section('database')
     sunpy.config.set('database', 'url', url)
@@ -99,8 +101,8 @@ def test_config_url(monkeypatch):
     assert database.url == url
 
 def test_config_url_none(monkeypatch):
-    monkeypatch.setattr("sunpy.config", ConfigParser.SafeConfigParser())
-    with pytest.raises(ConfigParser.NoSectionError):
+    monkeypatch.setattr("sunpy.config", six.moves.configparser.SafeConfigParser())
+    with pytest.raises(six.moves.configparser.NoSectionError):
         Database()
 
 def test_tags_unique(database):
@@ -116,7 +118,7 @@ def test_tags_unique(database):
 def test_setting_cache_size(database_using_lrucache):
     assert database_using_lrucache.cache_maxsize == 3
     assert database_using_lrucache.cache_size == 0
-    for _ in xrange(5):
+    for _ in range(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 3
     assert database_using_lrucache.cache_size == 3
@@ -124,7 +126,7 @@ def test_setting_cache_size(database_using_lrucache):
     database_using_lrucache.set_cache_size(5)
     assert database_using_lrucache.cache_size == 3
     assert database_using_lrucache.cache_maxsize == 5
-    for _ in xrange(5):
+    for _ in range(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 5
     assert database_using_lrucache.cache_size == 5
@@ -134,7 +136,7 @@ def test_setting_cache_size(database_using_lrucache):
 def test_setting_cache_size_shrinking(database_using_lrucache):
     assert database_using_lrucache.cache_maxsize == 3
     assert database_using_lrucache.cache_size == 0
-    for _ in xrange(5):
+    for _ in range(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 3
     assert database_using_lrucache.cache_maxsize == 3
@@ -146,7 +148,7 @@ def test_setting_cache_size_shrinking(database_using_lrucache):
     assert list(database_using_lrucache) == [
         DatabaseEntry(id=4),
         DatabaseEntry(id=5)]
-    for _ in xrange(5):
+    for _ in range(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 2
     assert database_using_lrucache.cache_maxsize == 2
@@ -156,7 +158,7 @@ def test_setting_cache_size_shrinking(database_using_lrucache):
 def test_setting_cache_size_undo(database_using_lrucache):
     assert database_using_lrucache.cache_maxsize == 3
     assert database_using_lrucache.cache_size == 0
-    for _ in xrange(5):
+    for _ in range(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 3
     database_using_lrucache.set_cache_size(1)
@@ -361,7 +363,7 @@ def test_unstar_undo(database):
 
 def test_add_many(database):
     assert len(database) == 0
-    database.add_many((DatabaseEntry() for _ in xrange(5)))
+    database.add_many((DatabaseEntry() for _ in range(5)))
     assert len(database) == 5
     database.undo()
     with pytest.raises(EmptyCommandStackError):
@@ -660,14 +662,14 @@ def test_lru_cache(database_using_lrucache):
     database_using_lrucache.add(entry2)
     database_using_lrucache.add(entry3)
     assert len(database_using_lrucache) == 3
-    assert database_using_lrucache._cache.items() == [
+    assert list(database_using_lrucache._cache.items()) == [
         (1, entry1), (2, entry2), (3, entry3)]
     database_using_lrucache.get_entry_by_id(1)
     database_using_lrucache.get_entry_by_id(3)
     entry4 = DatabaseEntry()
     database_using_lrucache.add(entry4)
     assert len(database_using_lrucache) == 3
-    assert database_using_lrucache._cache.items() == [
+    assert list(database_using_lrucache._cache.items()) == [
         (1, entry1), (3, entry3), (4, entry4)]
 
 
@@ -678,7 +680,7 @@ def test_lfu_cache(database_using_lfucache):
     database_using_lfucache.add(entry2)
     database_using_lfucache.add(entry3)
     assert len(database_using_lfucache) == 3
-    assert database_using_lfucache._cache.items() == [
+    assert list(database_using_lfucache._cache.items()) == [
         (1, entry1), (2, entry2), (3, entry3)]
     # access the entries #1 and #2 to increment their counters
     database_using_lfucache.get_entry_by_id(1)
@@ -686,7 +688,7 @@ def test_lfu_cache(database_using_lfucache):
     entry4 = DatabaseEntry()
     database_using_lfucache.add(entry4)
     assert len(database_using_lfucache) == 3
-    assert database_using_lfucache._cache.items() == [
+    assert list(database_using_lfucache._cache.items()) == [
         (1, entry1), (2, entry2), (4, entry4)]
 
 

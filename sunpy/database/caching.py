@@ -4,14 +4,16 @@
 # the Google Summer of Code (2013).
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from abc import ABCMeta, abstractmethod, abstractproperty
 from collections import MutableMapping, OrderedDict, Counter
+import six
 
 __all__ = ['BaseCache', 'LRUCache', 'LFUCache']
 
 
-class BaseCache(object):
+class BaseCache(six.with_metaclass(ABCMeta, object)):
     """
     BaseCache is a class that saves and operates on an OrderedDict. It has a
     certain capacity, stored in the attribute `maxsize`. Whether this
@@ -21,7 +23,6 @@ class BaseCache(object):
     Call the method `sunpy.database.caching.BaseCache.callback` as soon
     as an item from the cache is removed.
     """
-    __metaclass__ = ABCMeta
 
     def __init__(self, maxsize=float('inf')):
         self.maxsize = maxsize
@@ -91,7 +92,7 @@ class BaseCache(object):
         self._dict.__delitem__(key)
 
     def __contains__(self, key):
-        return key in self._dict.keys()
+        return key in list(self._dict.keys())
 
     def __len__(self):
         return len(self._dict)
@@ -108,23 +109,23 @@ class BaseCache(object):
         return self._dict.clear()
 
     def keys(self):  # pragma: no cover
-        return self._dict.keys()
+        return list(self._dict.keys())
 
     def values(self):  # pragma: no cover
-        return self._dict.values()
+        return list(self._dict.values())
 
     def items(self):  # pragma: no cover
-        return self._dict.items()
+        return list(self._dict.items())
 
     def iterkeys(self):  # pragma: no cover
-        return self._dict.iterkeys()
+        return six.iterkeys(self._dict)
 
     def itervalues(self):  # pragma: no cover
-        for value in self._dict.itervalues():
+        for value in six.itervalues(self._dict):
             yield value
 
     def iteritems(self):  # pragma: no cover
-        for key, value in self._dict.iteritems():
+        for key, value in six.iteritems(self._dict):
             yield key, value
 
     def update(self, *args, **kwds):  # pragma: no cover
@@ -152,13 +153,13 @@ class BaseCache(object):
         return self._dict.__ne__(other)
 
     def viewkeys(self):  # pragma: no cover
-        return self._dict.viewkeys()
+        return six.iterkeys(self._dict)
 
     def viewvalues(self):  # pragma: no cover
-        return self._dict.viewvalues()
+        return six.itervalues(self._dict)
 
     def viewitems(self):  # pragma: no cover
-        return self._dict.viewitems()
+        return six.iteritems(self._dict)
 
     @classmethod
     def fromkeys(cls, iterable, value=None):  # pragma: no cover
@@ -178,7 +179,7 @@ class LRUCache(BaseCache):
         tuple.
 
         """
-        return self.iteritems().next()
+        return six.iteritems(self)
 
     def remove(self):
         """Remove the least recently used item."""
@@ -231,7 +232,7 @@ class LFUCache(BaseCache):
         """
         min_ = float('inf')
         lfu_key = None
-        for k, v in self.usage_counter.iteritems():
+        for k, v in six.iteritems(self.usage_counter):
             if v < min_:
                 min_ = v
                 lfu_key = k
