@@ -72,6 +72,7 @@ TypeError: There are no functions matching your input parameter signature.
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import inspect
 

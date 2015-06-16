@@ -23,10 +23,14 @@ Multimethod implementation in pure Python.
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from warnings import warn
 
 from sunpy.extern.six.moves import izip as zip
+import six
+from six.moves import map
+from six.moves import zip
 
 __all__ = ['TypeWarning', 'MultiMethod']
 
@@ -141,7 +145,7 @@ class MultiMethod(object):
             for x in args
         ]
 
-        for k, elem in kwargs.iteritems():
+        for k, elem in six.iteritems(kwargs):
             if isinstance(elem, super):
                 kwargs[k] = elem.__self__
 
