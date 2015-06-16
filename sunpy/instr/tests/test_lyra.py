@@ -77,7 +77,7 @@ def test_split_series_using_lytaf():
     assert split_no_lytaf[0]["subdata"].all() == dummy_data.all()
 
 def test_remove_lytaf_events_from_lightcurve():
-    """Test if artifacts are correctly removed from a LYRAlightCurve."""
+    """Test if artefacts are correctly removed from a LYRAlightCurve."""
     # Create sample LYRALightCurve
     lyralc = lightcurve.LYRALightCurve.create("2014-01-01")
     lyralc.data = pandas.DataFrame(index=TIME,

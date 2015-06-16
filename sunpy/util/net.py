@@ -140,7 +140,7 @@ def check_download_file(filename, remotepath, download_dir, remotename=None,
         Name of file.
 
     remotepath : string
-        URL of the remote location from which filename can be dowloaded.
+        URL of the remote location from which filename can be downloaded.
 
     download_dir : string
         The files directory.

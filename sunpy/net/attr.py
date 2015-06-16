@@ -244,7 +244,7 @@ class AttrWalker(object):
 
 
 def and_(*args):
-    """ Trick operator precendence.
+    """ Trick operator precedence.
 
     and_(foo < bar, bar < baz)
     """
@@ -254,7 +254,7 @@ def and_(*args):
     return value
 
 def or_(*args):
-    """ Trick operator precendence.
+    """ Trick operator precedence.
 
     or_(foo < bar, bar < baz)
     """
