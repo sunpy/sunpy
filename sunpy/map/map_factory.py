@@ -47,7 +47,9 @@ class MapFactory(BasicRegistrationFactory):
     Examples
     --------
     >>> import sunpy.map
-    >>> mymap = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+    >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
+    >>> import sunpy.data.sample
+    >>> mymap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
     The SunPy Map factory accepts a wide variety of inputs for creating maps
 
