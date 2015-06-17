@@ -27,7 +27,7 @@ class GOESLightCurve(LightCurve):
     >>> from sunpy import lightcurve as lc
     >>> from sunpy.time import TimeRange
     >>> goes = lc.GOESLightCurve.create(TimeRange('2012/06/01', '2012/06/05'))
-    >>> goes.peek()
+    >>> goes.peek()   # doctest: +SKIP
 
     References
     ----------
