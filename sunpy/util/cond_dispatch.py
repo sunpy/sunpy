@@ -8,6 +8,7 @@ user-defined conditions and types.
 
 First, we need to create a new ConditionalDispatch
 
+>>> from sunpy.util.cond_dispatch import ConditionalDispatch
 >>> fun = ConditionalDispatch()
 
 We then can start adding branches, in this case we add a branch for
