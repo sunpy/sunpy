@@ -57,11 +57,16 @@ particular instrument.
 The data attribute stores the time-series measurements as a pandas
 DataFrame object.  For example,
 
-    >>> ly.data
-    >>> <class 'pandas.core.frame.DataFrame'>
-    ... DatetimeIndex: 1723918 entries, 2013-07-21 00:00:00.129000 to 2013-07-22 00:00:00.033000
-    ... Columns: 4 entries, CHANNEL1 to CHANNEL4
-    ... dtypes: float64(4)
+    >>> ly.data.info()
+    <class 'pandas.core.frame.DataFrame'>
+    DatetimeIndex: 1723918 entries, 2013-07-21 00:00:00.129000 to 2013-07-22 00:00:00.033000
+    Data columns (total 4 columns):
+    CHANNEL1    float64
+    CHANNEL2    float64
+    CHANNEL3    float64
+    CHANNEL4    float64
+    dtypes: float64(4)
+    memory usage: 65.8 MB
 
 Pandas has a lot of extremely useful methods for manipulating
 time-series information.  Please consult the `pandas documentation
@@ -76,7 +81,7 @@ The SunPy LightCurve object has its own built-in plot methods so that
 it is easy to quickly view your lightcurve. To create a plot just
 type:
 
-    >>> my_lightcurve.peek()
+    >>> my_lightcurve.peek()   # doctest: +SKIP
 
 This will open a matplotlib plot on your screen.  In addition, to
 enable users to modify the plot, it is possible to grab the matplotlib
