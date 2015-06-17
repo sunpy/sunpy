@@ -194,11 +194,18 @@ class Filter(_VSOSimpleAttr):
 
 class Sample(_VSOSimpleAttr):
     """
-    Time interval for data sampling
+    Time interval for data sampling.
+
+    Parameters
+    ----------
+
+    value : `astropy.units.Quantity`
+        A sampling rate convertable to seconds.
     """
     @u.quantity_input(value=u.s)
     def __init__(self, value):
         super(Sample,self).__init__(value)
+        self.value = value.to(u.s).value
 
 
 class Quicklook(_VSOSimpleAttr):
