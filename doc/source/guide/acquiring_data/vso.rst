@@ -50,8 +50,7 @@ Constructing a Query
 Let's start with a very simple query.  We could ask for all SOHO/EIT
 data between January 1st and 2nd, 2001.
 
-    >>> import astropy.units as u
-    >>> qr = client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'), vso.attrs.Wave(142*u.AA, 123*u.AA))
+    >>> qr = client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'))
 
 The variable ``qr`` is a Python list of
 response objects, each one of which is a record found by the VSO. You can find how many
@@ -110,7 +109,7 @@ So, let's look for the EIT and MDI data on the same day:
 
     >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit') | vso.attrs.Instrument('mdi'))
     >>> len(qr)
-    144
+    3549
     >>> print(qr) # doctest:+SKIP
     ...
 
@@ -127,6 +126,7 @@ Each of the arguments in this query style can be thought of as
 setting conditions that the returned records must satisfy.  You can
 set the wavelength; for example, to return the 171 Angstrom EIT results
 
+    >>> import astropy.units as u
     >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'), vso.attrs.Wave(171*u.AA,171*u.AA) )
     >>> qr.num_records()
     4
