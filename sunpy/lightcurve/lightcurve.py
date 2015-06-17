@@ -60,7 +60,7 @@ class LightCurve(object):
     ...    {"param1": intensity}, index=dates
     ... )
 
-    >>> light_curve.peek()
+    >>> light_curve.peek()   # doctest: +SKIP
 
     References
     ----------
