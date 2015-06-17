@@ -88,6 +88,22 @@ class Wave(Attr, _Range):
 
 
 class Time(Attr, _Range):
+    """
+    Specify the time range of the query.
+
+    Parameters
+    ----------
+
+    start : SunPy Time String or `~sunpy.time.TimeRange`.
+        The start time in a format parseable by `~sunpy.time.parse_time` or
+        a `sunpy.time.TimeRange` object.
+
+    end : SunPy Time String
+        The end time of the range.
+
+    near: SunPy Time String
+
+    """
     def __init__(self, start, end=None, near=None):
         if end is None and not isinstance(start, _TimeRange):
             raise ValueError("Specify start and end or start has to be a TimeRange")
