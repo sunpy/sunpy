@@ -189,46 +189,47 @@ syntax are introduced.
     >>> len(entry.fits_header_entries)
     170
     >>> for fits_header_entry in entry.fits_header_entries[:10]:
-    ...     print '{entry.key}\n\t{entry.value}'.format(entry=fits_header_entry)
+    ...     print '{entry.key}\n\t{entry.value}'.format(entry=fits_header_entry)   # doctest: +NORMALIZE_WHITESPACE
     SIMPLE
-    True
+    	True
     BITPIX
-    32
+    	32
     NAXIS
-    2
+     	2
     NAXIS1
-    1024
+    	1024
     NAXIS2
-    1024
+        1024
     EXTEND
-    True
+    	True
     COMMENT
-    FITS (Flexible Image Transport System) format is defined in 'Astronomy and Astrophysics', volume 376, page 359; bibcode: 2001A&A...376..359H
+    	FITS (Flexible Image Transport System) format is defined in 'Astronomy  and Astrophysics', volume 376, page 359; bibcode: 2001A&A...376..359H
     ORIGIN
-    SDO/JSOC-SDP
+    	SDO/JSOC-SDP
     DATE
-    2011-03-19T11:08:25
+        2011-03-19T11:08:25
     TELESCOP
-    SDO/AIA
+       	SDO/AIA
+
     >>> for fits_key_comment in entry.fits_key_comments:
-    ...     print '{comment.key}\n\t{comment.value}'.format(comment=fits_key_comment)
-    ...
+    ...     print '{comment.key}\n\t{comment.value}'.format(comment=fits_key_comment)   # doctest: +NORMALIZE_WHITESPACE
     NAXIS
-        number of data axes
+            number of data axes
     NAXIS1
-        length of data axis 1
+            length of data axis 1
     DATASUM
-        data unit checksum updated 2011-03-19T11:08:18
+            data unit checksum updated 2011-03-19T11:08:18
     EXTEND
-        FITS dataset may contain extensions
+            FITS dataset may contain extensions
     BITPIX
-        number of bits per data pixel
+            number of bits per data pixel
     SIMPLE
-        file does conform to FITS standard
+            file does conform to FITS standard
     CHECKSUM
-        HDU checksum updated 2011-03-19T11:08:18
+            HDU checksum updated 2011-03-19T11:08:18
     NAXIS2
-        length of data axis 2
+            length of data axis 2
+
 
 2.2 Adding entries from a directory of FITS files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -245,7 +246,7 @@ directory ``sampledata_dir``).
     >>> database.default_waveunit = 'angstrom'
     >>> database.add_from_dir(sampledata_dir, ignore_already_added=True)
     >>> len(database)
-    21
+    24
 
 2.3 Adding entries using the VSO interface
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -269,7 +270,7 @@ sections.
     4
     >>> database.add_from_vso_query_result(qr)
     >>> len(database)
-    25
+    28
 
 2.3.2 Downloading
 ^^^^^^^^^^^^^^^^^
@@ -286,7 +287,7 @@ the `path` attribute of each entry.
     ...     vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
     ...     vso.attrs.Instrument('AIA'))
     >>> len(database)
-    27
+    32
 
 2.3.3 "Clever" Fetching
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -300,11 +301,11 @@ sure whether the required data already exists in the database, use
 As you can see in the following example, the first call of the fetch
 method results in a list of entries. These are the entries which have been
 returned by querying the database. This is the reason why the number of
-saved entries in the database is still 27 even after the fetch method has
+saved entries in the database is still 32 even after the fetch method has
 been called. The second fetch call has not been done already on a download
 call, therefore the given query is used to download new data and add these
 resulting entries to the database. Because the query result translates to
-2 records, 2 new entries are added to the database after the fetch call.
+4 records, 4 new entries are added to the database after the fetch call.
 
     >>> entries = database.fetch(
     ...     vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
@@ -312,9 +313,9 @@ resulting entries to the database. Because the query result translates to
     >>> entries is None
     False
     >>> len(entries)
-    2
+    4
     >>> len(database)
-    27
+    32
 
     >>> entries = database.fetch(
     ...     vso.attrs.Time('2013-08-05', '2013-08-05 00:00:05'),
@@ -322,7 +323,7 @@ resulting entries to the database. Because the query result translates to
     >>> entries is None
     True
     >>> len(database)
-    29
+    36
 
 2.4 Adding entries manually
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -339,14 +340,14 @@ values as keyword arguments to :class:`tables.DatabaseEntry` as follows:
     >>> entry in database
     True
     >>> len(database)
-    30
+    37
 
 Note that the `in` operator works only as expected after the
 :meth:`Database.commit` method has been called!
 
 3. Displaying entries in a table
 --------------------------------
-Meanwhile, 30 entries have been added, all of them saving a lot of data.
+Meanwhile, 37 entries have been added, all of them saving a lot of data.
 How can selected data of each entry be displayed? Fortunately, there is a
 helper function to do this: :func:`tables.display_entries` takes two
 arguments: the first one is an iterator of :class:`tables.DatabaseEntry`
@@ -362,41 +363,48 @@ respective database entry). Note that *N/A* is displayed if the value
 cannot be found or is not set.
 
     >>> from sunpy.database.tables import display_entries
-    >>> print display_entries(
-    ...     database,
-    ...     ['id', 'observation_time_start', 'observation_time_end', 'instrument', 'wavemin', 'wavemax'])
-    id observation_time_start     observation_time_end       instrument wavemin wavemax
-    -- ----------------------     --------------------       ---------- ------- -------
-    1  2011-03-19 10:54:00        N/A                        AIA_3      17.1    17.1
-    2  2010-10-16 19:12:18        2010-10-16 19:12:22        RHESSI     N/A     N/A
-    3  N/A                        N/A                        N/A        N/A     N/A
-    4  N/A                        N/A                        N/A        N/A     N/A
-    5  N/A                        N/A                        N/A        N/A     N/A
-    6  2002-06-25 10:00:10        N/A                        EIT        19.5    19.5
-    7  2011-03-19 10:54:00        N/A                        AIA_3      17.1    17.1
-    8  2011-09-22 00:00:00        2011-09-22 00:00:00        BIR        N/A     N/A
-    9  N/A                        N/A                        N/A        N/A     N/A
-    10 2002-02-20 11:06:00        2002-02-20 11:06:43        RHESSI     N/A     N/A
-    11 N/A                        N/A                        N/A        N/A     N/A
-    12 N/A                        N/A                        N/A        N/A     N/A
-    13 N/A                        N/A                        N/A        N/A     N/A
-    14 N/A                        N/A                        N/A        N/A     N/A
-    15 N/A                        N/A                        N/A        N/A     N/A
-    16 N/A                        N/A                        N/A        N/A     N/A
-    17 N/A                        N/A                        N/A        N/A     N/A
-    18 N/A                        N/A                        N/A        N/A     N/A
-    19 N/A                        N/A                        N/A        N/A     N/A
-    20 N/A                        N/A                        N/A        N/A     N/A
-    21 2012-01-01 00:16:07        N/A                        SWAP       17.4    17.4
-    22 2011-05-08 00:00:00        2011-05-08 00:00:01        AIA        17.1    17.1
-    23 2011-05-08 00:00:00        2011-05-08 00:00:01        AIA        21.1    21.1
-    24 2011-05-08 00:00:02        2011-05-08 00:00:03        AIA        9.4     9.4
-    25 2011-05-08 00:00:03        2011-05-08 00:00:04        AIA        33.5    33.5
-    26 2012-08-05 00:00:01        2012-08-05 00:00:02        AIA        9.4     9.4
-    27 2012-08-05 00:00:02        2012-08-05 00:00:03        AIA        33.5    33.5
-    28 2013-08-05 00:00:01        2013-08-05 00:00:02        AIA        9.4     9.4
-    29 2013-08-05 00:00:02        2013-08-05 00:00:03        AIA        33.5    33.5
-    30 N/A                        N/A                        EIT        25.0    N/A
+    >>> print display_entries(database,
+    ...                       ['id', 'observation_time_start', 'observation_time_end',
+    ...                        'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE
+    id observation_time_start observation_time_end instrument wavemin wavemax
+    -- ---------------------- -------------------- ---------- ------- -------
+    1  2011-03-19 10:54:00    N/A                  AIA_3      17.1    17.1
+    2  N/A                    N/A                  N/A        N/A     N/A
+    3  2013-09-21 16:00:06    N/A                  AIA_2      19.3    19.3
+    4  2011-03-19 10:54:00    N/A                  AIA_3      17.1    17.1
+    5  2014-04-09 06:00:12    N/A                  AIA_3      17.1    17.1
+    6  2011-09-22 00:00:00    2011-09-22 00:00:00  BIR        N/A     N/A
+    7  N/A                    N/A                  N/A        N/A     N/A
+    8  2002-06-25 10:00:10    N/A                  EIT        19.5    19.5
+    9  2002-02-20 11:06:00    2002-02-20 11:06:43  RHESSI     N/A     N/A
+    10 N/A                    N/A                  N/A        N/A     N/A
+    11 N/A                    N/A                  N/A        N/A     N/A
+    12 N/A                    N/A                  N/A        N/A     N/A
+    13 N/A                    N/A                  N/A        N/A     N/A
+    14 N/A                    N/A                  N/A        N/A     N/A
+    15 N/A                    N/A                  N/A        N/A     N/A
+    16 N/A                    N/A                  N/A        N/A     N/A
+    17 N/A                    N/A                  N/A        N/A     N/A
+    18 N/A                    N/A                  N/A        N/A     N/A
+    19 N/A                    N/A                  N/A        N/A     N/A
+    20 2010-10-16 19:12:18    2010-10-16 19:12:22  RHESSI     N/A     N/A
+    21 N/A                    N/A                  N/A        N/A     N/A
+    22 N/A                    N/A                  N/A        N/A     N/A
+    23 N/A                    N/A                  N/A        N/A     N/A
+    24 2012-01-01 00:16:07    N/A                  SWAP       17.4    17.4
+    25 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        17.1    17.1
+    26 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        21.1    21.1
+    27 2011-05-08 00:00:02    2011-05-08 00:00:03  AIA        9.4     9.4
+    28 2011-05-08 00:00:03    2011-05-08 00:00:04  AIA        33.5    33.5
+    29 2012-08-05 00:00:01    2012-08-05 00:00:02  AIA        9.4     9.4
+    30 2012-08-05 00:00:01    2012-08-05 00:00:02  AIA        9.4     9.4
+    31 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5
+    32 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5
+    33 2013-08-05 00:00:01    2013-08-05 00:00:02  AIA        9.4     9.4
+    34 2013-08-05 00:00:01    2013-08-05 00:00:02  AIA        9.4     9.4
+    35 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5
+    36 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5
+    37 N/A                    N/A                  EIT        25.0    N/A
 
 In Section 2.1, "Adding entries from one FITS file", it has already been
 shows that the index operator can be used to access certain single
@@ -408,14 +416,14 @@ all database entries (and is hereby an alias for ``list(database)``),
 oldest one. As you can imagine, ``database[9::10]`` starts with the 10th
 entry and returns a list of every 10th entry from there.
 
-    >>> print display_entries(
-    ...     database[9::10],
-    ...     ['id', 'observation_time_start', 'observation_time_end', 'instrument', 'wavemin', 'wavemax'])
-    id observation_time_start observation_time_end       instrument wavemin wavemax
-    -- ---------------------- --------------------       ---------- ------- -------
-    10 2002-02-20 11:06:00    2002-02-20 11:06:43        RHESSI     N/A     N/A
-    20 N/A                    N/A                        N/A        N/A     N/A
-    30 N/A                    N/A                        EIT        25.0    N/A
+    >>> print display_entries(database[9::10],
+    ...                       ['id', 'observation_time_start', 'observation_time_end',
+    ...                        'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE
+    id observation_time_start observation_time_end instrument wavemin wavemax
+    -- ---------------------- -------------------- ---------- ------- -------
+    10 N/A                    N/A                  N/A        N/A     N/A
+    20 2010-10-16 19:12:18    2010-10-16 19:12:22  RHESSI     N/A     N/A
+    30 2012-08-05 00:00:01    2012-08-05 00:00:02  AIA        9.4     9.4
 
 4. Removing entries
 -------------------
@@ -433,27 +441,33 @@ method to remove those where the just described predicate is true:
     ...         database.remove(database_entry)
     ...
     >>> len(database)
-    15
-    >>> print display_entries(
-    ...     database,
-    ...     ['id', 'observation_time_start', 'observation_time_end', 'instrument', 'wavemin', 'wavemax'])
-    id observation_time_start     observation_time_end       instrument wavemin wavemax
-    -- ----------------------     --------------------       ---------- ------- -------
-    1  2011-03-19 10:54:00        N/A                        AIA_3      17.1    17.1
-    2  2010-10-16 19:12:18        2010-10-16 19:12:22        RHESSI     N/A     N/A
-    6  2002-06-25 10:00:10        N/A                        EIT        19.5    19.5
-    7  2011-03-19 10:54:00        N/A                        AIA_3      17.1    17.1
-    8  2011-09-22 00:00:00        2011-09-22 00:00:00        BIR        N/A     N/A
-    10 2002-02-20 11:06:00        2002-02-20 11:06:43        RHESSI     N/A     N/A
-    21 2012-01-01 00:16:07        N/A                        SWAP       17.4    17.4
-    22 2011-05-08 00:00:00        2011-05-08 00:00:01        AIA        17.1    17.1
-    23 2011-05-08 00:00:00        2011-05-08 00:00:01        AIA        21.1    21.1
-    24 2011-05-08 00:00:02        2011-05-08 00:00:03        AIA        9.4     9.4
-    25 2011-05-08 00:00:03        2011-05-08 00:00:04        AIA        33.5    33.5
-    26 2012-08-05 00:00:01        2012-08-05 00:00:02        AIA        9.4     9.4
-    27 2012-08-05 00:00:02        2012-08-05 00:00:03        AIA        33.5    33.5
-    28 2013-08-05 00:00:01        2013-08-05 00:00:02        AIA        9.4     9.4
-    29 2013-08-05 00:00:02        2013-08-05 00:00:03        AIA        33.5    33.5
+    21
+    >>> print display_entries(database,
+    ...                       ['id', 'observation_time_start', 'observation_time_end',
+    ...                        'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE
+    id observation_time_start observation_time_end instrument wavemin wavemax
+    -- ---------------------- -------------------- ---------- ------- -------
+    1  2011-03-19 10:54:00    N/A                  AIA_3      17.1    17.1
+    3  2013-09-21 16:00:06    N/A                  AIA_2      19.3    19.3
+    4  2011-03-19 10:54:00    N/A                  AIA_3      17.1    17.1
+    5  2014-04-09 06:00:12    N/A                  AIA_3      17.1    17.1
+    6  2011-09-22 00:00:00    2011-09-22 00:00:00  BIR        N/A     N/A
+    8  2002-06-25 10:00:10    N/A                  EIT        19.5    19.5
+    9  2002-02-20 11:06:00    2002-02-20 11:06:43  RHESSI     N/A     N/A
+    20 2010-10-16 19:12:18    2010-10-16 19:12:22  RHESSI     N/A     N/A
+    24 2012-01-01 00:16:07    N/A                  SWAP       17.4    17.4
+    25 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        17.1    17.1
+    26 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        21.1    21.1
+    27 2011-05-08 00:00:02    2011-05-08 00:00:03  AIA        9.4     9.4
+    28 2011-05-08 00:00:03    2011-05-08 00:00:04  AIA        33.5    33.5
+    29 2012-08-05 00:00:01    2012-08-05 00:00:02  AIA        9.4     9.4
+    30 2012-08-05 00:00:01    2012-08-05 00:00:02  AIA        9.4     9.4
+    31 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5
+    32 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5
+    33 2013-08-05 00:00:01    2013-08-05 00:00:02  AIA        9.4     9.4
+    34 2013-08-05 00:00:01    2013-08-05 00:00:02  AIA        9.4     9.4
+    35 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5
+    36 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5
 
 There are more possible ways to remove entries: You can remove every 2nd
 entry by iterating over ``database[::2]`` and then calling passing every
@@ -477,16 +491,19 @@ starred:
     >>> for database_entry in database:
     ...     if database_entry.wavemin > 20:
     ...         database.star(database_entry)
-    ...
     >>> print display_entries(
     ...     filter(lambda entry: entry.starred, database),
-    ...     ['id', 'observation_time_start', 'observation_time_end', 'instrument', 'wavemin', 'wavemax'])
+    ...     ['id', 'observation_time_start', 'observation_time_end',
+    ...      'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
-    23 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        21.1    21.1
-    25 2011-05-08 00:00:03    2011-05-08 00:00:04  AIA        33.5    33.5
-    27 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5
-    29 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5
+    26 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        21.1    21.1
+    28 2011-05-08 00:00:03    2011-05-08 00:00:04  AIA        33.5    33.5
+    31 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5
+    32 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5
+    35 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5
+    36 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5
+
 
 So remove the mark from these entries, the method :meth:`Database.unstar`
 works the same way.
@@ -504,21 +521,22 @@ year:
     >>> for database_entry in database:
     ...     if database_entry.observation_time_start.month in [3,4,5]:
     ...         database.tag(database_entry, 'spring')
-    ...
     >>> database.tags
     [<Tag(name 'spring')>]
     >>> spring = database.tags[0]
     >>> print display_entries(
     ...     filter(lambda entry: spring in entry.tags, database),
-    ...     ['id', 'observation_time_start', 'observation_time_end', 'instrument', 'wavemin', 'wavemax'])
-    id observation_time_start     observation_time_end instrument wavemin wavemax
-    -- ----------------------     -------------------- ---------- ------- -------
-    1  2011-03-19 10:54:00        N/A                  AIA_3      17.1    17.1
-    7  2011-03-19 10:54:00        N/A                  AIA_3      17.1    17.1
-    22 2011-05-08 00:00:00        2011-05-08 00:00:01  AIA        17.1    17.1
-    23 2011-05-08 00:00:00        2011-05-08 00:00:01  AIA        21.1    21.1
-    24 2011-05-08 00:00:02        2011-05-08 00:00:03  AIA        9.4     9.4
-    25 2011-05-08 00:00:03        2011-05-08 00:00:04  AIA        33.5    33.5
+    ...     ['id', 'observation_time_start', 'observation_time_end',
+    ...      'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE
+    id observation_time_start observation_time_end instrument wavemin wavemax
+    -- ---------------------- -------------------- ---------- ------- -------
+    1  2011-03-19 10:54:00    N/A                  AIA_3      17.1    17.1
+    4  2011-03-19 10:54:00    N/A                  AIA_3      17.1    17.1
+    5  2014-04-09 06:00:12    N/A                  AIA_3      17.1    17.1
+    25 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        17.1    17.1
+    26 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        21.1    21.1
+    27 2011-05-08 00:00:02    2011-05-08 00:00:03  AIA        9.4     9.4
+    28 2011-05-08 00:00:03    2011-05-08 00:00:04  AIA        33.5    33.5
 
 5.3 Changing custom attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -535,24 +553,31 @@ arguments which describe which values to change and how.
     ...
     >>> print display_entries(
     ...     database,
-    ...     ['id', 'observation_time_start', 'observation_time_end', 'instrument', 'wavemin', 'wavemax'])
-    id observation_time_start     observation_time_end       instrument wavemin wavemax
-    -- ----------------------     --------------------       ---------- ------- -------
-    1  2011-03-19 10:54:00        2011-03-19 10:54:00        AIA_3      17.1    17.1
-    2  2010-10-16 19:12:18        2010-10-16 19:12:22        RHESSI     N/A     N/A
-    6  2002-06-25 10:00:10        2002-06-25 10:00:10        EIT        19.5    19.5
-    7  2011-03-19 10:54:00        2011-03-19 10:54:00        AIA_3      17.1    17.1
-    8  2011-09-22 00:00:00        2011-09-22 00:00:00        BIR        N/A     N/A
-    10 2002-02-20 11:06:00        2002-02-20 11:06:43        RHESSI     N/A     N/A
-    21 2012-01-01 00:16:07        2012-01-01 00:16:07        SWAP       17.4    17.4
-    22 2011-05-08 00:00:00        2011-05-08 00:00:01        AIA        17.1    17.1
-    23 2011-05-08 00:00:00        2011-05-08 00:00:01        AIA        21.1    21.1
-    24 2011-05-08 00:00:02        2011-05-08 00:00:03        AIA        9.4     9.4
-    25 2011-05-08 00:00:03        2011-05-08 00:00:04        AIA        33.5    33.5
-    26 2012-08-05 00:00:01        2012-08-05 00:00:02        AIA        9.4     9.4
-    27 2012-08-05 00:00:02        2012-08-05 00:00:03        AIA        33.5    33.5
-    28 2013-08-05 00:00:01        2013-08-05 00:00:02        AIA        9.4     9.4
-    29 2013-08-05 00:00:02        2013-08-05 00:00:03        AIA        33.5    33.5
+    ...     ['id', 'observation_time_start', 'observation_time_end',
+    ...      'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE
+    id observation_time_start observation_time_end instrument wavemin wavemax
+    -- ---------------------- -------------------- ---------- ------- -------
+    1  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1
+    3  2013-09-21 16:00:06    2013-09-21 16:00:06  AIA_2      19.3    19.3
+    4  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1
+    5  2014-04-09 06:00:12    2014-04-09 06:00:12  AIA_3      17.1    17.1
+    6  2011-09-22 00:00:00    2011-09-22 00:00:00  BIR        N/A     N/A
+    8  2002-06-25 10:00:10    2002-06-25 10:00:10  EIT        19.5    19.5
+    9  2002-02-20 11:06:00    2002-02-20 11:06:43  RHESSI     N/A     N/A
+    20 2010-10-16 19:12:18    2010-10-16 19:12:22  RHESSI     N/A     N/A
+    24 2012-01-01 00:16:07    2012-01-01 00:16:07  SWAP       17.4    17.4
+    25 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        17.1    17.1
+    26 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        21.1    21.1
+    27 2011-05-08 00:00:02    2011-05-08 00:00:03  AIA        9.4     9.4
+    28 2011-05-08 00:00:03    2011-05-08 00:00:04  AIA        33.5    33.5
+    29 2012-08-05 00:00:01    2012-08-05 00:00:02  AIA        9.4     9.4
+    30 2012-08-05 00:00:01    2012-08-05 00:00:02  AIA        9.4     9.4
+    31 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5
+    32 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5
+    33 2013-08-05 00:00:01    2013-08-05 00:00:02  AIA        9.4     9.4
+    34 2013-08-05 00:00:01    2013-08-05 00:00:02  AIA        9.4     9.4
+    35 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5
+    36 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5
 
 You may ask yourself now "Why can't I simply use
 ``database_entry.observation_time_end = database_entry.observation_time_start``"?
@@ -585,24 +610,32 @@ there are again entries with no end of observation time.
     >>> database.undo(4)  # undo starring entries
     >>> print display_entries(
     ...     database,
-    ...     ['id', 'observation_time_start', 'observation_time_end', 'instrument', 'wavemin', 'wavemax', 'tags', 'starred'])
-    id observation_time_start     observation_time_end       instrument wavemin wavemax tags starred
-    -- ----------------------     --------------------       ---------- ------- ------- ---- -------
-    1  2011-03-19 10:54:00        N/A                        AIA_3      17.1    17.1    N/A  No
-    2  2010-10-16 19:12:18        2010-10-16 19:12:22        RHESSI     N/A     N/A     N/A  No
-    6  2002-06-25 10:00:10        N/A                        EIT        19.5    19.5    N/A  No
-    7  2011-03-19 10:54:00        N/A                        AIA_3      17.1    17.1    N/A  No
-    8  2011-09-22 00:00:00        2011-09-22 00:00:00        BIR        N/A     N/A     N/A  No
-    10 2002-02-20 11:06:00        2002-02-20 11:06:43        RHESSI     N/A     N/A     N/A  No
-    21 2012-01-01 00:16:07        N/A                        SWAP       17.4    17.4    N/A  No
-    22 2011-05-08 00:00:00        2011-05-08 00:00:01        AIA        17.1    17.1    N/A  No
-    23 2011-05-08 00:00:00        2011-05-08 00:00:01        AIA        21.1    21.1    N/A  No
-    24 2011-05-08 00:00:02        2011-05-08 00:00:03        AIA        9.4     9.4     N/A  No
-    25 2011-05-08 00:00:03        2011-05-08 00:00:04        AIA        33.5    33.5    N/A  No
-    26 2012-08-05 00:00:01        2012-08-05 00:00:02        AIA        9.4     9.4     N/A  No
-    27 2012-08-05 00:00:02        2012-08-05 00:00:03        AIA        33.5    33.5    N/A  No
-    28 2013-08-05 00:00:01        2013-08-05 00:00:02        AIA        9.4     9.4     N/A  No
-    29 2013-08-05 00:00:02        2013-08-05 00:00:03        AIA        33.5    33.5    N/A  No
+    ...     ['id', 'observation_time_start', 'observation_time_end',
+    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'])   # doctest: +NORMALIZE_WHITESPACE
+    id observation_time_start observation_time_end instrument wavemin wavemax tags starred
+    -- ---------------------- -------------------- ---------- ------- ------- ---- -------
+    1  2011-03-19 10:54:00    N/A                  AIA_3      17.1    17.1    N/A  No
+    3  2013-09-21 16:00:06    N/A                  AIA_2      19.3    19.3    N/A  No
+    4  2011-03-19 10:54:00    N/A                  AIA_3      17.1    17.1    N/A  No
+    5  2014-04-09 06:00:12    N/A                  AIA_3      17.1    17.1    N/A  No
+    6  2011-09-22 00:00:00    2011-09-22 00:00:00  BIR        N/A     N/A     N/A  No
+    8  2002-06-25 10:00:10    N/A                  EIT        19.5    19.5    N/A  No
+    9  2002-02-20 11:06:00    2002-02-20 11:06:43  RHESSI     N/A     N/A     N/A  No
+    20 2010-10-16 19:12:18    2010-10-16 19:12:22  RHESSI     N/A     N/A     N/A  No
+    24 2012-01-01 00:16:07    N/A                  SWAP       17.4    17.4    N/A  No
+    25 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        17.1    17.1    N/A  No
+    26 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        21.1    21.1    N/A  Yes
+    27 2011-05-08 00:00:02    2011-05-08 00:00:03  AIA        9.4     9.4     N/A  No
+    28 2011-05-08 00:00:03    2011-05-08 00:00:04  AIA        33.5    33.5    N/A  Yes
+    29 2012-08-05 00:00:01    2012-08-05 00:00:02  AIA        9.4     9.4     N/A  No
+    30 2012-08-05 00:00:01    2012-08-05 00:00:02  AIA        9.4     9.4     N/A  No
+    31 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5    N/A  Yes
+    32 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5    N/A  Yes
+    33 2013-08-05 00:00:01    2013-08-05 00:00:02  AIA        9.4     9.4     N/A  No
+    34 2013-08-05 00:00:01    2013-08-05 00:00:02  AIA        9.4     9.4     N/A  No
+    35 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5    N/A  Yes
+    36 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5    N/A  No
+
 
 The redo method reverts the last n operations that have been undone. If
 not that many operations can be redone (i.e. any number greater than 14 in
@@ -614,24 +647,31 @@ stored end of observation time anymore.
     >>> database.redo(14)  # redo all undone operations
     >>> print display_entries(
     ...     database,
-    ...     ['id', 'observation_time_start', 'observation_time_end', 'instrument', 'wavemin', 'wavemax', 'tags', 'starred'])
-    id observation_time_start     observation_time_end       instrument wavemin wavemax tags   starred
-    -- ----------------------     --------------------       ---------- ------- ------- ----   -------
-    1  2011-03-19 10:54:00        2011-03-19 10:54:00        AIA_3      17.1    17.1    spring No
-    2  2010-10-16 19:12:18        2010-10-16 19:12:22        RHESSI     N/A     N/A     N/A    No
-    6  2002-06-25 10:00:10        2002-06-25 10:00:10        EIT        19.5    19.5    N/A    No
-    7  2011-03-19 10:54:00        2011-03-19 10:54:00        AIA_3      17.1    17.1    spring No
-    8  2011-09-22 00:00:00        2011-09-22 00:00:00        BIR        N/A     N/A     N/A    No
-    10 2002-02-20 11:06:00        2002-02-20 11:06:43        RHESSI     N/A     N/A     N/A    No
-    21 2012-01-01 00:16:07        2012-01-01 00:16:07        SWAP       17.4    17.4    N/A    No
-    22 2011-05-08 00:00:00        2011-05-08 00:00:01        AIA        17.1    17.1    spring No
-    23 2011-05-08 00:00:00        2011-05-08 00:00:01        AIA        21.1    21.1    spring Yes
-    24 2011-05-08 00:00:02        2011-05-08 00:00:03        AIA        9.4     9.4     spring No
-    25 2011-05-08 00:00:03        2011-05-08 00:00:04        AIA        33.5    33.5    spring Yes
-    26 2012-08-05 00:00:01        2012-08-05 00:00:02        AIA        9.4     9.4     N/A    No
-    27 2012-08-05 00:00:02        2012-08-05 00:00:03        AIA        33.5    33.5    N/A    Yes
-    28 2013-08-05 00:00:01        2013-08-05 00:00:02        AIA        9.4     9.4     N/A    No
-    29 2013-08-05 00:00:02        2013-08-05 00:00:03        AIA        33.5    33.5    N/A    Yes
+    ...     ['id', 'observation_time_start', 'observation_time_end',
+    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'])   # doctest: +NORMALIZE_WHITESPACE
+    id observation_time_start observation_time_end instrument wavemin wavemax tags   starred
+    -- ---------------------- -------------------- ---------- ------- ------- ----   -------
+    1  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1    spring No
+    3  2013-09-21 16:00:06    2013-09-21 16:00:06  AIA_2      19.3    19.3    N/A    No
+    4  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1    spring No
+    5  2014-04-09 06:00:12    2014-04-09 06:00:12  AIA_3      17.1    17.1    spring No
+    6  2011-09-22 00:00:00    2011-09-22 00:00:00  BIR        N/A     N/A     N/A    No
+    8  2002-06-25 10:00:10    2002-06-25 10:00:10  EIT        19.5    19.5    N/A    No
+    9  2002-02-20 11:06:00    2002-02-20 11:06:43  RHESSI     N/A     N/A     N/A    No
+    20 2010-10-16 19:12:18    2010-10-16 19:12:22  RHESSI     N/A     N/A     N/A    No
+    24 2012-01-01 00:16:07    2012-01-01 00:16:07  SWAP       17.4    17.4    N/A    No
+    25 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        17.1    17.1    spring No
+    26 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        21.1    21.1    spring Yes
+    27 2011-05-08 00:00:02    2011-05-08 00:00:03  AIA        9.4     9.4     spring No
+    28 2011-05-08 00:00:03    2011-05-08 00:00:04  AIA        33.5    33.5    spring Yes
+    29 2012-08-05 00:00:01    2012-08-05 00:00:02  AIA        9.4     9.4     N/A    No
+    30 2012-08-05 00:00:01    2012-08-05 00:00:02  AIA        9.4     9.4     N/A    No
+    31 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5    N/A    Yes
+    32 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5    N/A    Yes
+    33 2013-08-05 00:00:01    2013-08-05 00:00:02  AIA        9.4     9.4     N/A    No
+    34 2013-08-05 00:00:01    2013-08-05 00:00:02  AIA        9.4     9.4     N/A    No
+    35 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5    N/A    Yes
+    36 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5    N/A    Yes
 
 7. Querying the database
 ------------------------
@@ -656,11 +696,14 @@ added in section 2.3.2, "Downloading":
 
     >>> print display_entries(
     ...     database.query(vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'), vso.attrs.Instrument('AIA')),
-    ...     ['id', 'observation_time_start', 'observation_time_end', 'instrument', 'wavemin', 'wavemax'])
+    ...     ['id', 'observation_time_start', 'observation_time_end',
+    ...      'instrument', 'wavemin', 'wavemax'], sort=True)   # doctest: +NORMALIZE_WHITESPACE
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
-    26 2012-08-05 00:00:01    2012-08-05 00:00:02  AIA        9.4     9.4
-    27 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5
+    29 2012-08-05 00:00:01    2012-08-05 00:00:02  AIA        9.4     9.4
+    30 2012-08-05 00:00:01    2012-08-05 00:00:02  AIA        9.4     9.4
+    31 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5
+    32 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5
 
 .. NOTE the following code does not actually work. There seems to be a bug
     in sunpy.util.unit_conversion.to_angstrom (this is called by the
@@ -674,15 +717,18 @@ check `astropy.units <https://astropy.readthedocs.org/en/stable/units/index.html
 
     >>> from astropy import units as u
     >>> print display_entries(
-    ...     database.query(vso.attrs.Wave(10*u.nm, 20*u.nm)),
-    ...     ['id', 'observation_time_start', 'observation_time_end', 'instrument', 'wavemin', 'wavemax'])
-    id observation_time_start     observation_time_end       instrument wavemin wavemax
-    -- ----------------------     --------------------       ---------- ------- -------
-    1  2011-03-19 10:54:00        2011-03-19 10:54:00        AIA_3      17.1    17.1    spring No
-    6  2002-06-25 10:00:10        2002-06-25 10:00:10        EIT        19.5    19.5    N/A    No
-    7  2011-03-19 10:54:00        2011-03-19 10:54:00        AIA_3      17.1    17.1    spring No
-    21 2012-01-01 00:16:07        2012-01-01 00:16:07        SWAP       17.4    17.4    N/A    No
-    22 2011-05-08 00:00:00        2011-05-08 00:00:01        AIA        17.1    17.1    spring No
+    ...     database.query(vso.attrs.Wave(1.0*u.nm, 2.0*u.nm)),
+    ...     ['id', 'observation_time_start', 'observation_time_end',
+    ...      'instrument', 'wavemin', 'wavemax'], sort=True)   # doctest: +NORMALIZE_WHITESPACE
+    id observation_time_start observation_time_end instrument wavemin wavemax
+    -- ---------------------- -------------------- ---------- ------- -------
+    1  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1
+    24 2012-01-01 00:16:07    2012-01-01 00:16:07  SWAP       17.4    17.4
+    25 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        17.1    17.1
+    3  2013-09-21 16:00:06    2013-09-21 16:00:06  AIA_2      19.3    19.3
+    4  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1
+    5  2014-04-09 06:00:12    2014-04-09 06:00:12  AIA_3      17.1    17.1
+    8  2002-06-25 10:00:10    2002-06-25 10:00:10  EIT        19.5    19.5
 
 
 7.2 Database-specific attributes
@@ -705,19 +751,25 @@ The following query searches for all entries that have the tag 'spring' or
 (inclusive or!) are starred and have not the FITS header key 'WAVEUNIT'
 with the value 'Angstrom':
 
->>> print display_entries(
-...     database.query(dbattrs.Tag('spring') | dbattrs.Starred(), ~dbattrs.FitsHeaderEntry('WAVEUNIT', 'Angstrom')),
-...     ['id', 'observation_time_start', 'observation_time_end', 'instrument', 'wavemin', 'wavemax', 'tags', 'starred'])
-id observation_time_start     observation_time_end       instrument wavemin wavemax tags   starred
--- ----------------------     --------------------       ---------- ------- ------- ----   -------
-7  2011-03-19 10:54:00        2011-03-19 10:54:00        AIA_3      17.1    17.1    spring No
-1  2011-03-19 10:54:00        2011-03-19 10:54:00        AIA_3      17.1    17.1    spring No
-22 2011-05-08 00:00:00        2011-05-08 00:00:01        AIA        17.1    17.1    spring No
-23 2011-05-08 00:00:00        2011-05-08 00:00:01        AIA        21.1    21.1    spring Yes
-24 2011-05-08 00:00:02        2011-05-08 00:00:03        AIA        9.4     9.4     spring No
-25 2011-05-08 00:00:03        2011-05-08 00:00:04        AIA        33.5    33.5    spring Yes
-27 2012-08-05 00:00:02        2012-08-05 00:00:03        AIA        33.5    33.5    N/A    Yes
-29 2013-08-05 00:00:02        2013-08-05 00:00:03        AIA        33.5    33.5    N/A    Yes
+    >>> import sunpy.database.attrs as dbattrs
+    >>> print display_entries(
+    ...     database.query(dbattrs.Tag('spring') | dbattrs.Starred(), ~dbattrs.FitsHeaderEntry('WAVEUNIT', 'Angstrom')),
+    ...     ['id', 'observation_time_start', 'observation_time_end',
+    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'], sort=True)   # doctest: +NORMALIZE_WHITESPACE
+    id observation_time_start observation_time_end instrument wavemin wavemax tags   starred
+    -- ---------------------- -------------------- ---------- ------- ------- ----   -------
+    1  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1    spring No
+    25 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        17.1    17.1    spring No
+    26 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        21.1    21.1    spring Yes
+    27 2011-05-08 00:00:02    2011-05-08 00:00:03  AIA        9.4     9.4     spring No
+    28 2011-05-08 00:00:03    2011-05-08 00:00:04  AIA        33.5    33.5    spring Yes
+    31 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5    N/A    Yes
+    32 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5    N/A    Yes
+    35 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5    N/A    Yes
+    36 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5    N/A    Yes
+    4  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1    spring No
+    5  2014-04-09 06:00:12    2014-04-09 06:00:12  AIA_3      17.1    17.1    spring No
+
 
 8. Caching
 ----------
@@ -737,16 +789,17 @@ to 10 and therefore removes the 5 entries that been used least recently.
     >>> database.set_cache_size(10)
     >>> print display_entries(
     ...     database,
-    ...     ['id', 'observation_time_start', 'observation_time_end', 'instrument', 'wavemin', 'wavemax'])
-    id observation_time_start     observation_time_end       instrument wavemin wavemax
-    -- ----------------------     --------------------       ---------- ------- -------
-    1  2011-03-19 10:54:00        2011-03-19 10:54:00        AIA_3      17.1    17.1
-    6  2002-06-25 10:00:10        2002-06-25 10:00:10        EIT        19.5    19.5
-    7  2011-03-19 10:54:00        2011-03-19 10:54:00        AIA_3      17.1    17.1
-    21 2012-01-01 00:16:07        2012-01-01 00:16:07        SWAP       17.4    17.4
-    23 2011-05-08 00:00:00        2011-05-08 00:00:01        AIA        21.1    21.1
-    25 2011-05-08 00:00:03        2011-05-08 00:00:04        AIA        33.5    33.5
-    26 2012-08-05 00:00:01        2012-08-05 00:00:02        AIA        9.4     9.4
-    27 2012-08-05 00:00:02        2012-08-05 00:00:03        AIA        33.5    33.5
-    28 2013-08-05 00:00:01        2013-08-05 00:00:02        AIA        9.4     9.4
-    29 2013-08-05 00:00:02        2013-08-05 00:00:03        AIA        33.5    33.5
+    ...     ['id', 'observation_time_start', 'observation_time_end',
+    ...      'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE
+    id observation_time_start observation_time_end instrument wavemin wavemax
+    -- ---------------------- -------------------- ---------- ------- -------
+    1  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1
+    3  2013-09-21 16:00:06    2013-09-21 16:00:06  AIA_2      19.3    19.3
+    4  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1
+    5  2014-04-09 06:00:12    2014-04-09 06:00:12  AIA_3      17.1    17.1
+    8  2002-06-25 10:00:10    2002-06-25 10:00:10  EIT        19.5    19.5
+    24 2012-01-01 00:16:07    2012-01-01 00:16:07  SWAP       17.4    17.4
+    31 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5
+    32 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5
+    35 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5
+    36 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5
