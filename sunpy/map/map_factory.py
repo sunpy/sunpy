@@ -53,41 +53,41 @@ class MapFactory(BasicRegistrationFactory):
 
     * Preloaded tuples of (data, header) pairs
 
-    >>> mymap = sunpy.map.Map((data, header))
+    >>> mymap = sunpy.map.Map((data, header))   # doctest: +SKIP
 
     headers are some base of `dict` or `collections.OrderedDict`, including `sunpy.io.header.FileHeader` or `sunpy.map.header.MapMeta` classes.
 
     * data, header pairs, not in tuples
 
-    >>> mymap = sunpy.map.Map(data, header)
+    >>> mymap = sunpy.map.Map(data, header)   # doctest: +SKIP
 
     * File names
 
-    >>> mymap = sunpy.map.Map('file1.fits')
+    >>> mymap = sunpy.map.Map('file1.fits')   # doctest: +SKIP
 
     * All fits files in a directory by giving a directory
 
-    >>> mymap = sunpy.map.Map('local_dir/sub_dir')
+    >>> mymap = sunpy.map.Map('local_dir/sub_dir')   # doctest: +SKIP
 
     * Some regex globs
 
-    >>> mymap = sunpy.map.Map('eit_*.fits')
+    >>> mymap = sunpy.map.Map('eit_*.fits')   # doctest: +SKIP
 
     * URLs
 
-    >>> mymap = sunpy.map.Map(url_str)
+    >>> mymap = sunpy.map.Map(url_str)   # doctest: +SKIP
 
     * DatabaseEntry
 
-    >>> mymap = sunpy.map.Map(db_result)
+    >>> mymap = sunpy.map.Map(db_result)   # doctest: +SKIP
 
     * Lists of any of the above
 
-    >>> mymap = sunpy.Map(['file1.fits', 'file2.fits', 'file3.fits', 'directory1/'])
+    >>> mymap = sunpy.map.Map(['file1.fits', 'file2.fits', 'file3.fits', 'directory1/'])   # doctest: +SKIP
 
     * Any mixture of the above not in a list
 
-    >>> mymap = sunpy.Map((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits')
+    >>> mymap = sunpy.map.Map((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits')   # doctest: +SKIP
     """
 
     def _read_file(self, fname, **kwargs):
