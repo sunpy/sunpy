@@ -259,11 +259,12 @@ class DatabaseEntry(Base):
         Examples
         --------
         >>> from sunpy.net import vso
+        >>> from sunpy.database.tables import DatabaseEntry
         >>> client = vso.VSOClient()
         >>> qr = client.query(
         ...     vso.attrs.Time('2001/1/1', '2001/1/2'),
         ...     vso.attrs.Instrument('eit'))
-        >>> entry = DatabaseEntry.from_query_result_block(qr[0])
+        >>> entry = DatabaseEntry._from_query_result_block(qr[0])
         >>> entry.source
         'SOHO'
         >>> entry.provider
@@ -381,7 +382,7 @@ def entries_from_query_result(qr, default_waveunit=None):
     Examples
     --------
     >>> from sunpy.net import vso
-    >>> from sunpy.database import entries_from_query_result
+    >>> from sunpy.database.tables import entries_from_query_result
     >>> client = vso.VSOClient()
     >>> qr = client.query(
     ...     vso.attrs.Time('2001/1/1', '2001/1/2'),
@@ -446,6 +447,10 @@ def entries_from_file(file, default_waveunit=None):
 
     Examples
     --------
+    >>> from sunpy.database.tables import entries_from_file
+    >>> import sunpy.data
+    >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
+    >>> import sunpy.data.sample
     >>> entries = list(entries_from_file(sunpy.data.sample.SWAP_LEVEL1_IMAGE))
     >>> len(entries)
     1
@@ -546,6 +551,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
     --------
     >>> from pprint import pprint
     >>> from sunpy.data.test import rootdir as fitsdir
+    >>> from sunpy.database.tables import entries_from_dir
     >>> entries = list(entries_from_dir(fitsdir))
     >>> len(entries)
     2
