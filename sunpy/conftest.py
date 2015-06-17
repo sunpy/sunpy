@@ -1,13 +1,17 @@
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import unicode_literals
+from __future__ import absolute_import, print_function, unicode_literals
+
 from functools import partial
-import urllib2
+
 import os
 import tempfile
 import json
 
+from six.moves.urllib.request import urlopen
+from six.moves.urllib.error import URLError
+
 import pytest
+
+
 
 # Force MPL to use non-gui backends for testing.
 try:
@@ -26,8 +30,8 @@ GOOGLE_URL = 'http://www.google.com'
 
 def site_reachable(url):
     try:
-        urllib2.urlopen(url, timeout=1)
-    except urllib2.URLError:
+        urlopen(url, timeout=1)
+    except URLError:
         return False
     else:
         return True
