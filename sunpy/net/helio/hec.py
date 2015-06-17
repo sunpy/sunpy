@@ -98,6 +98,7 @@ def votable_handler(xml_table):
 
     Examples
     --------
+    >>> from sunpy.net.helio import hec
     >>> temp = hec.suds_unwrapper(xml_string)
     >>> type(temp)
     unicode
@@ -145,6 +146,7 @@ class HECClient(object):
 
         Examples
         --------
+        >>> from sunpy.net.helio import hec
         >>> hc = hec.HECClient()
         """
         if link is None:
@@ -183,6 +185,7 @@ class HECClient(object):
 
         Examples
         --------
+        >>> from sunpy.net.helio import hec
         >>> hc = hec.HECClient()
         >>> start = '2005/01/03'
         >>> end = '2005/12/03'
@@ -223,6 +226,7 @@ class HECClient(object):
 
         Examples
         --------
+        >>> from sunpy.net.helio import hec
         >>> hc = hec.HECClient()
         >>> print hc.get_table_names()
         [('hi_cme_list',) ('cactus_stereoa_cme',) ('aad_gle',)
@@ -251,6 +255,8 @@ class HECClient(object):
 
         Examples
         --------
+        >>> from sunpy.net.helio import hec
+        >>> hc = hec.HECClient()
         >>> hc.make_table_list()
           1) aad_gle
           2) aastar_list
