@@ -41,6 +41,7 @@ def translate_results_to_query(results):
 
     Examples
     --------
+    >>> from sunpy.net.hek import hek
     >>> h = hek.HEKClient()
     >>> h2v = H2VClient()
     >>> q = h.query(hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))
@@ -80,6 +81,7 @@ def vso_attribute_parse(phrase):
 
     Examples
     --------
+    >>> from sunpy.net.hek import hek
     >>> h = hek.HEKClient()
     >>> h2v = H2VClient()
     >>> q = h.query(hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))
@@ -115,6 +117,7 @@ class H2VClient(object):
 
     Examples
     --------
+    >>> from sunpy.net.hek import hek
     >>> from sunpy.net import hek2vso
     >>> h2v = hek2vso.H2VClient()
     """
