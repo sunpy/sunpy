@@ -63,7 +63,10 @@ class GenericMap(NDData):
     Examples
     --------
     >>> import sunpy.map
-    >>> aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+    >>> import sunpy.data
+    >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
+    >>> import sunpy.data.sample
+    >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     >>> aia.T
     AIAMap([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
     [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
@@ -74,7 +77,7 @@ class GenericMap(NDData):
     [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
     >>> aia.units['x']
     'arcsec'
-    >>> aia.peek()
+    >>> aia.peek()   # doctest: +SKIP
 
     References
     ----------
@@ -866,6 +869,12 @@ scale:\t\t {scale}
 
         Examples
         --------
+        >>> import astropy.units as u
+        >>> import sunpy.map
+        >>> import sunpy.data
+        >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
+        >>> import sunpy.data.sample
+        >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
         >>> aia.submap([-5,5]*u.arcsec, [-5,5]*u.arcsec)
         AIAMap([[ 341.3125,  266.5   ,  329.375 ,  330.5625,  298.875 ],
         [ 347.1875,  273.4375,  247.4375,  303.5   ,  305.3125],
@@ -1239,17 +1248,17 @@ scale:\t\t {scale}
         Examples
         --------
         #Simple Plot with color bar
-        >>> aiamap.plot()
-        >>> plt.colorbar()
+        >>> aiamap.plot()   # doctest: +SKIP
+        >>> plt.colorbar()   # doctest: +SKIP
 
         #Add a limb line and grid
-        >>> aia.plot()
-        >>> aia.draw_limb()
-        >>> aia.draw_grid()
+        >>> aia.plot()   # doctest: +SKIP
+        >>> aia.draw_limb()   # doctest: +SKIP
+        >>> aia.draw_grid()   # doctest: +SKIP
 
         """
 
-        #Get current axes
+        # Get current axes
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
 
