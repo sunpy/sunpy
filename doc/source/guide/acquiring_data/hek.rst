@@ -15,7 +15,7 @@ support from the European Space Agency Summer of Code in Space
 SunPy's HEK module is in sunpy.net.  It can be imported into your
 session as follows:
 
-    >>> from sunpy.net import hek
+    >>> from sunpy.net.hek import hek
     >>> client = hek.HEKClient()
 
 This creates a client that we will use to interact with the HEK.
@@ -162,32 +162,32 @@ Let's look further at the FRM attribute::
     Help on FRM in module sunpy.net.hek.attrs object:
     class FRM(__builtin__.object)
      |  Data descriptors defined here:
-     |  
+     |
      |  __dict__
      |      dictionary for instance variables (if defined)
-     |  
+     |
      |  __weakref__
      |      list of weak references to the object (if defined)
-     |  
+     |
      |  ----------------------------------------------------------------------
      |  Data and other attributes defined here:
-     |  
+     |
      |  Contact = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |  
+     |
      |  HumanFlag = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |  
+     |
      |  Identifier = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |  
+     |
      |  Institute = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |  
+     |
      |  Name = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |  
+     |
      |  ParamSet = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |  
+     |
      |  SpecificID = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |  
+     |
      |  URL = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
-     |  
+     |
      |  VersionNumber = <sunpy.net.hek.attrs._StringParamAttrWrapper object>
 
 Let's say I am only interested in those flares identified by the SSW
@@ -289,7 +289,7 @@ from the `(hek.attrs.FL.PeakFlux > 1000.0)` filter.  Flares that have
 `None` for a peak flux cannot provide this, and so are excluded.  The
 `None` type in this context effectively means "Don't know"; in such
 cases the client returns only those results from the HEK that
-definitely satisfy the criteria passed to it. 
+definitely satisfy the criteria passed to it.
 
 5. Getting data for your event
 ------------------------------
@@ -329,7 +329,7 @@ The full capabilities of the HEK query module can be used in this
 function (see above).
 
 Finally, for greater flexibility, it is possible to pass in a list of
-HEK results and create the corresponding VSO query attributes.  
+HEK results and create the corresponding VSO query attributes.
 
     >>> vso_query = hek2vso.translate_results_to_query(result[10:11])
     >>> vso_query[0]
