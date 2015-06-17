@@ -463,7 +463,7 @@ class Database(object):
         The query in the following example searches for all non-starred entries
         with the tag 'foo' or 'bar' (or both).
 
-        >>> database.query(~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'))
+        >>> database.query(~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'))   # doctest: +SKIP
 
         """
         if not query:
