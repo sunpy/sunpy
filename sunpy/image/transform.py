@@ -3,6 +3,7 @@ Functions for geometrical image transformation and warping.
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import warnings
 

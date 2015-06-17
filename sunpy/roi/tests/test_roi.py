@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from datetime import datetime
 
@@ -16,20 +17,20 @@ def test_roi_empty_instance():
 	
 def test_roi_times_str():
 	region=roi(times='2012-06-20 05:00')
-	expected_time = datetime(2012, 06, 20, 5, 0)
+	expected_time = datetime(2012, 0o6, 20, 5, 0)
 	assert (region.start_time == expected_time)
 	assert (region.end_time == expected_time)
 	
 def test_roi_times_list_one_element():
 	region=roi(times=['2012-06-20 05:00'])
-	expected_time = datetime(2012, 06, 20, 5, 0)
+	expected_time = datetime(2012, 0o6, 20, 5, 0)
 	assert (region.start_time == expected_time)
 	assert (region.end_time == expected_time)
 	
 def test_roi_times_list_two_elements():
 	region=roi(times=['2012-06-20 05:00', '2012-06-20 07:00'])
-	expected_start_time = datetime(2012, 06, 20, 5, 0)
-	expected_end_time = datetime(2012, 06, 20, 7, 0)
+	expected_start_time = datetime(2012, 0o6, 20, 5, 0)
+	expected_end_time = datetime(2012, 0o6, 20, 7, 0)
 	assert (region.start_time == expected_start_time)
 	assert (region.end_time == expected_end_time)
 	

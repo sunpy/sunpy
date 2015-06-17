@@ -7,6 +7,7 @@ Back port of Python 3.3's function signature tools from the inspect module,
 modified to be compatible with Python 2.6, 2.7 and 3.2+.
 """
 from __future__ import absolute_import, division, print_function
+from __future__ import unicode_literals
 import itertools
 import functools
 import re
@@ -60,7 +61,7 @@ def signature(obj):
         if obj.__self__ is None:
             # Unbound method: the first parameter becomes positional-only
             if sig.parameters:
-                first = sig.parameters.values()[0].replace(
+                first = list(sig.parameters.values())[0].replace(
                     kind=_POSITIONAL_ONLY)
                 return sig.replace(
                     parameters=(first,) + tuple(sig.parameters.values())[1:])
@@ -93,7 +94,7 @@ def signature(obj):
     if isinstance(obj, functools.partial):
         sig = signature(obj.func)
 
-        new_params = OrderedDict(sig.parameters.items())
+        new_params = OrderedDict(list(sig.parameters.items()))
 
         partial_args = obj.args or ()
         partial_keywords = obj.keywords or {}
@@ -103,7 +104,7 @@ def signature(obj):
             msg = 'partial object {0!r} has incorrect arguments'.format(obj)
             raise ValueError(msg)
 
-        for arg_name, arg_value in ba.arguments.items():
+        for arg_name, arg_value in list(ba.arguments.items()):
             param = new_params[arg_name]
             if arg_name in partial_keywords:
                 # We set a new default value, because the following code
@@ -130,7 +131,7 @@ def signature(obj):
                             not param._partial_kwarg):
                 new_params.pop(arg_name)
 
-        return sig.replace(parameters=new_params.values())
+        return sig.replace(parameters=list(new_params.values()))
 
     sig = None
     if isinstance(obj, type):
@@ -369,7 +370,7 @@ class BoundArguments(object):
     @property
     def args(self):
         args = []
-        for param_name, param in self._signature.parameters.items():
+        for param_name, param in list(self._signature.parameters.items()):
             if (param.kind in (_VAR_KEYWORD, _KEYWORD_ONLY) or
                                                     param._partial_kwarg):
                 # Keyword arguments mapped by 'functools.partial'
@@ -398,7 +399,7 @@ class BoundArguments(object):
     def kwargs(self):
         kwargs = {}
         kwargs_started = False
-        for param_name, param in self._signature.parameters.items():
+        for param_name, param in list(self._signature.parameters.items()):
             if not kwargs_started:
                 if (param.kind in (_VAR_KEYWORD, _KEYWORD_ONLY) or
                                                 param._partial_kwarg):
@@ -584,7 +585,7 @@ class Signature(object):
         try:
             return types.MappingProxyType(self._parameters)
         except AttributeError:
-            return OrderedDict(self._parameters.items())
+            return OrderedDict(list(self._parameters.items()))
 
     @property
     def return_annotation(self):
@@ -597,7 +598,7 @@ class Signature(object):
         '''
 
         if parameters is _void:
-            parameters = self.parameters.values()
+            parameters = list(self.parameters.values())
 
         if return_annotation is _void:
             return_annotation = self._return_annotation
@@ -647,7 +648,7 @@ class Signature(object):
 
         arguments = OrderedDict()
 
-        parameters = iter(self.parameters.values())
+        parameters = iter(list(self.parameters.values()))
         parameters_ex = ()
         arg_vals = iter(args)
 
@@ -655,7 +656,7 @@ class Signature(object):
             # Support for binding arguments to 'functools.partial' objects.
             # See 'functools.partial' case in 'signature()' implementation
             # for details.
-            for param_name, param in self.parameters.items():
+            for param_name, param in list(self.parameters.items()):
                 if (param._partial_kwarg and param_name not in kwargs):
                     # Simulating 'functools.partial' behavior
                     kwargs[param_name] = param.default

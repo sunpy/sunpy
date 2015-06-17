@@ -1,5 +1,6 @@
 """SunPy test data files"""
 from __future__ import absolute_import
+from __future__ import unicode_literals
 import sunpy
 import os
 

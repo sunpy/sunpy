@@ -1,6 +1,9 @@
 """
 Access the Helio Event Catalogue
 """
+from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
 from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.net.helio import parser
 from sunpy.time import parse_time
@@ -8,6 +11,8 @@ from suds.client import Client as C
 import suds
 from astropy.io.votable.table import parse_single_table
 import io
+from sunpy.extern.six.moves import range
+from sunpy.extern.six.moves import input
 
 __author__ = 'Michael Malocha'
 __version__ = 'September 22nd, 2013'
@@ -121,7 +126,7 @@ class VotableInterceptor(suds.plugin.MessagePlugin):
 
     def received(self, context):
         #received xml as a string
-        self.last_payload = unicode(suds_unwrapper(context.reply))
+        self.last_payload = str(suds_unwrapper(context.reply))
         #clean up reply to prevent parsing
         context.reply = ""
         return context
@@ -273,9 +278,9 @@ class HECClient(object):
                 table_list.append(table)
         table_list.sort()
         for index, table in enumerate(table_list):
-            print ('{number:3d}) {table}'.format(number = index + 1, table = table))
+            print(('{number:3d}) {table}'.format(number = index + 1, table = table)))
         while True:
-            input = raw_input("\nPlease enter a table number between 1 and {elem:d} "
+            input = input("\nPlease enter a table number between 1 and {elem:d} "
                               "('e' to exit): ".format(elem=len(table_list)))
             if input.lower() == "e" or input.lower() == "exit":
                 temp = None
@@ -286,5 +291,5 @@ class HECClient(object):
                 temp = table_list[temp]
                 break
             else:
-                print "Choice outside of bounds"
+                print("Choice outside of bounds")
         return temp

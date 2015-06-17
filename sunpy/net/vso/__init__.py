@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 # for exposure to from sunpy.net.vso import *
 from sunpy.net.vso.vso import VSOClient, InteractiveVSOClient

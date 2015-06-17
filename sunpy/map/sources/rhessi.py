@@ -1,4 +1,6 @@
 """RHESSI Map subclass definitions"""
+from __future__ import absolute_import
+from __future__ import unicode_literals
 #pylint: disable=W0221,W0222,E1121
 
 __author__ = "Steven Christe"

@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
 # -*- coding: utf-8 -*-
 
 import sunpy
@@ -14,7 +16,7 @@ class TestMapMeta(object):
         #get
         assert meta.get('wibble') == meta.get('WIBBLE')
         #has_key
-        assert meta.has_key('wibble') == meta.has_key('WIBBLE')
+        assert ('wibble' in meta) == ('WIBBLE' in meta)
         #Copy
         meta2 = meta.copy()
         assert meta2 == meta

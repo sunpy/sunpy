@@ -72,10 +72,13 @@ TypeError: There are no functions matching your input parameter signature.
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import inspect
 
-from itertools import izip, chain, repeat
+from itertools import chain, repeat
+
+from sunpy.extern.six.moves import zip as izip
 
 __all__ = ['run_cls', 'matches_types', 'arginize', 'correct_argspec',
            'matches_signature', 'ConditionalDispatch', 'fmt_argspec_types']

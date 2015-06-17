@@ -12,6 +12,7 @@ and returns the results from the VSO query to the user.
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import sys
 from astropy import units
@@ -99,7 +100,7 @@ def vso_attribute_parse(phrase):
                  vso.attrs.Instrument(phrase['obs_instrument'])]
         avg_wave_len = phrase['obs_meanwavel'] * units.Unit(phrase['obs_wavelunit'])
         query.append(vso.attrs.Wave(avg_wave_len, avg_wave_len))
-    except KeyError, TypeError:
+    except KeyError as TypeError:
         raise TypeError("'{dtype!s}' is an improper data type".format(dtype=type(phrase)))
     return query
 

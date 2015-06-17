@@ -83,7 +83,7 @@ are needed. SunPy will import even if these dependencies are not installed.
 
 - `sqlalchemy <http://www.sqlalchemy.org>`_: For the `~sunpy.database` package.
 
-- `suds <https://bitbucket.org/jurko/suds>`_: For `~sunpy.net`.
+- `suds-jurko <https://bitbucket.org/jurko/suds>`_: For `~sunpy.net`.
 
 - `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: For `Callisto` Spectrograms and `net.helio`
 

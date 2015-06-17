@@ -2,6 +2,8 @@
 """
 Provides processing routines for data captured with the AIA instrument on SDO.
 """
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import astropy.units as u
 
 from sunpy.map.sources.sdo import AIAMap

@@ -3,6 +3,8 @@ LightCurve is a generic LightCurve class from which all other LightCurve classes
 inherit from.
 """
 from __future__ import absolute_import
+from __future__ import unicode_literals
+from sunpy.extern import six
 
 #pylint: disable=E1101,E1121,W0404,W0612,W0613
 __authors__ = ["Keith Hughitt"]
@@ -335,14 +337,14 @@ LightCurve._cond_dispatch.add(
     lambda cls, time, **kwargs: is_time(time),
     # type is here because the class parameter is a class,
     # i.e. an instance of type (which is the base meta-class).
-    [type, (basestring, datetime, tuple)],
+    [type, (six.string_types, datetime, tuple)],
     False
 )
 
 LightCurve._cond_dispatch.add(
     run_cls("from_range"),
     lambda cls, time1, time2, **kwargs: is_time(time1) and is_time(time2),
-    [type, (basestring, datetime, tuple), (basestring, datetime, tuple)],
+    [type, (six.string_types, datetime, tuple), (six.string_types, datetime, tuple)],
     False
 )
 
@@ -356,14 +358,14 @@ LightCurve._cond_dispatch.add(
 LightCurve._cond_dispatch.add(
     run_cls("from_file"),
     lambda cls, filename: os.path.exists(os.path.expanduser(filename)),
-    [type, basestring],
+    [type, six.string_types],
     False
 )
 
 LightCurve._cond_dispatch.add(
     run_cls("from_url"),
     lambda cls, url, **kwargs: True,
-    [type, basestring],
+    [type, six.string_types],
     False
 )
 

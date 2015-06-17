@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from datetime import datetime
 
@@ -7,6 +8,7 @@ from sunpy.time import parse_time
 
 import numpy as np
 import pandas
+from sunpy.extern.six.moves import range
 
 LANDING = datetime(1966, 2, 3)
 

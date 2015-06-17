@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Provides programs to process and analyze NOAA Solar Cycle data."""
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import datetime
 
@@ -9,6 +10,7 @@ from pandas.io.parsers import read_csv
 import numpy as np
 
 from sunpy.lightcurve import LightCurve
+from sunpy.extern.six.moves import zip
 
 __all__ = ['NOAAIndicesLightCurve', 'NOAAPredictIndicesLightCurve']
 

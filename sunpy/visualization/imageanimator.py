@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
 # -*- coding: utf-8 -*-
 
 import numpy as np
@@ -8,6 +10,7 @@ import matplotlib.animation as mplanim
 
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import mpl_toolkits.axes_grid1.axes_size as Size
+from sunpy.extern.six.moves import range
 
 __all__ = ['BaseFuncAnimator', 'ImageAnimator']
 
@@ -36,7 +39,7 @@ class SliderPB(widgets.Slider):
         self.val = val
         if not self.eventson:
             return
-        for cid, func in self.observers.items():
+        for cid, func in list(self.observers.items()):
             func(val, *self.changed_args[cid])
 
     def on_changed(self, func, *args):
@@ -83,7 +86,7 @@ class ButtonPB(widgets.Button):
             return
         if event.inaxes != self.ax:
             return
-        for cid, func in self.observers.items():
+        for cid, func in list(self.observers.items()):
             func(event, *self.clicked_args[cid])
 
 class BaseFuncAnimator(object):
@@ -226,7 +229,7 @@ class BaseFuncAnimator(object):
 
         im = self.plot_start_image(axes)
 
-        anim_kwargs = {'frames':range(startframe, endframe, stepframe),
+        anim_kwargs = {'frames':list(range(startframe, endframe, stepframe)),
                        'fargs':[im, self.sliders[slider]._slider]}
         anim_kwargs.update(kwargs)
 
@@ -291,12 +294,12 @@ class BaseFuncAnimator(object):
 
     def _highliget_slider(self, ind):
         ax = self.sliders[ind]
-        [a.set_linewidth(2.0) for n,a in ax.spines.items()]
+        [a.set_linewidth(2.0) for n,a in list(ax.spines.items())]
         self.fig.canvas.draw()
 
     def _dehighlight_slider(self, ind):
         ax = self.sliders[ind]
-        [a.set_linewidth(1.0) for n,a in ax.spines.items()]
+        [a.set_linewidth(1.0) for n,a in list(ax.spines.items())]
         self.fig.canvas.draw()
 
 #==============================================================================

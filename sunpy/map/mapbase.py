@@ -2,6 +2,8 @@
 Map is a generic Map class from which all other Map classes inherit from.
 """
 from __future__ import absolute_import
+from __future__ import unicode_literals
+from sunpy.extern.six.moves import range
 
 #pylint: disable=E1101,E1121,W0404,W0613
 __authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe"]
@@ -743,7 +745,7 @@ scale:\t\t [{dx}, {dy}]
                          .format('angle', 'rotate', error_msg))
 
         # Interpolation parameter sanity
-        if order not in range(6):
+        if order not in list(range(6)):
             raise ValueError("Order must be between 0 and 5")
 
         # The FITS-WCS transform is by definition defined around the
@@ -1205,7 +1207,7 @@ scale:\t\t [{dx}, {dy}]
         if isinstance(draw_grid, bool):
             if draw_grid:
                 self.draw_grid(axes=axes)
-        elif isinstance(draw_grid, (int, long, float)):
+        elif isinstance(draw_grid, (int, int, float)):
             self.draw_grid(axes=axes, grid_spacing=draw_grid)
         else:
             raise TypeError("draw_grid should be bool, int, long or float")

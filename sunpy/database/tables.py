@@ -4,12 +4,12 @@
 # the Google Summer of Code (2013).
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from time import strptime, mktime
 from datetime import datetime
 import fnmatch
 import os
-from itertools import imap
 
 from astropy.units import Unit, nm, equivalencies
 from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean,\
@@ -20,8 +20,12 @@ from sqlalchemy.ext.declarative import declarative_base
 from sunpy.time import parse_time
 from sunpy.io import fits, file_tools as sunpy_filetools
 from sunpy.util import print_table
+from sunpy.extern.six.moves import map as imap
 
 from sunpy import config
+from sunpy.extern import six
+
+
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = [
@@ -461,20 +465,20 @@ def entries_from_file(file, default_waveunit=None):
 
     """
     headers = fits.get_header(file)
-    if isinstance(file, (str, unicode)):
+    if isinstance(file, (str, str)):
         filename = file
     else:
         filename = getattr(file, 'name', None)
     for header in headers:
         entry = DatabaseEntry(path=filename)
-        for key, value in header.iteritems():
+        for key, value in six.iteritems(header):
             # Yes, it is possible to have an empty key in a FITS file.
             # Example: sunpy.data.sample.EIT_195_IMAGE
             # Don't ask me why this could be a good idea.
             if key == '':
                 value = str(value)
             elif key == 'KEYCOMMENTS':
-                for k, v in value.iteritems():
+                for k, v in six.iteritems(value):
                     entry.fits_key_comments.append(FitsKeyComment(k, v))
                 continue
             entry.fits_header_entries.append(FitsHeaderEntry(key, value))

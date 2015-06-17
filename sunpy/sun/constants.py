@@ -62,6 +62,8 @@ Websites
 """
 
 from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
 
 from sunpy.sun import _constants as _con # pylint: disable=E0611
 
@@ -203,7 +205,7 @@ def find(sub=None, disp=False):
 
     """
     if sub is None:
-        result = physical_constants.keys()
+        result = list(physical_constants.keys())
     else:
         result = [key for key in physical_constants \
                  if sub.lower() in key.lower()]
@@ -211,7 +213,7 @@ def find(sub=None, disp=False):
     result.sort()
     if disp:
         for key in result:
-            print key
+            print(key)
         return
     else:
         return result
@@ -243,16 +245,16 @@ def print_all(key = None):
     format_string = ('{0:<' + str(column_width[0]) + '}' + '{1:>' +
                     str(column_width[1]) + '}' + '{2:>' + str(column_width[2])
                     + '}' + '{3:>' + str(column_width[3]) + '}')
-    print(format_string.format('Name', 'Value', 'Units', 'Error'))
-    print(('{:-^' + str(table_width) + '}').format(''))
+    print((format_string.format('Name', 'Value', 'Units', 'Error')))
+    print((('{:-^' + str(table_width) + '}').format('')))
 
     if key is None:
         for key in physical_constants:
-            print(format_string.format(key, str(value(key)), unit(key),
-                                       str(uncertainty(key))))
+            print((format_string.format(key, str(value(key)), unit(key),
+                                       str(uncertainty(key)))))
     else:
-        print(format_string.format(key, str(value(key)), unit(key),
-                                   str(uncertainty(key))))
+        print((format_string.format(key, str(value(key)), unit(key),
+                                   str(uncertainty(key)))))
 
 # Spectral class is not included in physical constants since it is not a number
 spectral_classification = 'G2V'

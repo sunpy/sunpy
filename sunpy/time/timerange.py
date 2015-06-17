@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from datetime import timedelta
 from datetime import datetime
@@ -7,6 +8,7 @@ from astropy.units import Unit
 
 from sunpy.time import parse_time
 from sunpy import config
+from sunpy.extern.six.moves import range
 TIME_FORMAT = config.get('general', 'time_format')
 
 __all__ = ['TimeRange']

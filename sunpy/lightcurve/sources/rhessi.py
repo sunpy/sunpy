@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Provides programs to process and analyze RHESSI X-ray data."""
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import datetime
 import matplotlib.dates
@@ -10,6 +11,7 @@ from pandas import DataFrame
 from sunpy.lightcurve import LightCurve
 from sunpy.time import TimeRange, parse_time
 from sunpy.instr import rhessi
+from sunpy.extern import six
 
 __all__ = ['RHESSISummaryLightCurve']
 
@@ -41,7 +43,7 @@ class RHESSISummaryLightCurve(LightCurve):
         lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
                          'navy', 'orange', 'green')
 
-        for item, frame in self.data.iteritems():
+        for item, frame in six.iteritems(self.data):
             axes.plot_date(dates, frame.values, '-', label=item, lw=2)
 
         axes.set_yscale("log")

@@ -1,6 +1,8 @@
 """Provides programs to process and analyse Fermi/GBM lightcurve data."""
 
 from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
 
 
 import urlparse
@@ -13,6 +15,7 @@ import pandas
 from sunpy.io.fits import fits
 from sunpy.instr import fermi
 from sunpy.lightcurve import LightCurve
+from sunpy.extern.six.moves import range
 
 
 __all__ = ['GBMSummaryLightCurve']
@@ -67,9 +70,9 @@ class GBMSummaryLightCurve(LightCurve):
             #if user doesn't specify a detector, find the one pointing closest to the Sun.'
             #OR: maybe user should have to specify detector or fail.
             det = cls._get_closest_detector_for_date(date)
-            print 'No detector specified. Detector with smallest mean angle to Sun is ' + str(det)
-            print 'Using Detector ' + str(det)
-            print 'For Fermi detector pointing information, use tools in sunpy/instr/fermi'
+            print('No detector specified. Detector with smallest mean angle to Sun is ' + str(det))
+            print('Using Detector ' + str(det))
+            print('For Fermi detector pointing information, use tools in sunpy/instr/fermi')
             final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/%d/' + 'current/' +
                                                               'glg_cspec_'+det+'_%y%m%d_v00.pha'))
 
@@ -84,7 +87,7 @@ class GBMSummaryLightCurve(LightCurve):
         pointing_file = fermi.download_weekly_pointing_file(date)
         det_angles = fermi.get_detector_sun_angles_for_date(date,pointing_file)
         det_angle_means=[]
-        for n in det_angles.keys():
+        for n in list(det_angles.keys()):
             if not n == 'time':
                 det_angle_values=[]
                 for angle in det_angles[n]:

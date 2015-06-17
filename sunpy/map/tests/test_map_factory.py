@@ -4,6 +4,8 @@ Created on Fri Jun 21 15:05:09 2013
 
 @author: stuart
 """
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import os
 import glob
 import tempfile

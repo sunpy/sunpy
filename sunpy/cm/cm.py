@@ -2,6 +2,7 @@
 This module provides a set of colormaps specific for solar data.
 """
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -99,7 +100,7 @@ cmlist = {
           }
 
 # Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
-for name, cmap in cmlist.items():
+for name, cmap in list(cmlist.items()):
     cm.register_cmap(name=name, cmap=cmap)
 
 def get_cmap(name):

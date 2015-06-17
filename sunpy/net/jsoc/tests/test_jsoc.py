@@ -4,6 +4,8 @@ Created on Wed Mar 26 20:17:06 2014
 
 @author: stuart
 """
+from __future__ import absolute_import
+from __future__ import unicode_literals
 import os
 import time
 import tempfile
@@ -122,8 +124,8 @@ def test_process_time_astropy_tai():
 @pytest.mark.online
 def test_status_request():
     r = client._request_status('none')
-    assert r.json() == {u'error': u'requestid none is not an acceptable ID for the external export system (acceptable format is JSOC_YYYYMMDD_NNN_X_IN or JSOC_YYYYMMDD_NNN).',
-                         u'status': 4}
+    assert r.json() == {'error': 'requestid none is not an acceptable ID for the external export system (acceptable format is JSOC_YYYYMMDD_NNN_X_IN or JSOC_YYYYMMDD_NNN).',
+                         'status': 4}
 
 def  test_empty_jsoc_response():
     Jresp = JSOCResponse()
@@ -186,9 +188,9 @@ def test_post_fail(recwarn):
 @pytest.mark.online
 def test_request_status_fail():
     resp = client._request_status('none')
-    assert resp.json() == {u'status': 4, u'error': u"requestid none is not an acceptable ID for the external export system (acceptable format is JSOC_YYYYMMDD_NNN_X_IN or JSOC_YYYYMMDD_NNN)."}
+    assert resp.json() == {'status': 4, 'error': "requestid none is not an acceptable ID for the external export system (acceptable format is JSOC_YYYYMMDD_NNN_X_IN or JSOC_YYYYMMDD_NNN)."}
     resp = client._request_status(['none'])
-    assert resp.json() == {u'status': 4, u'error': u"requestid none is not an acceptable ID for the external export system (acceptable format is JSOC_YYYYMMDD_NNN_X_IN or JSOC_YYYYMMDD_NNN)."}
+    assert resp.json() == {'status': 4, 'error': "requestid none is not an acceptable ID for the external export system (acceptable format is JSOC_YYYYMMDD_NNN_X_IN or JSOC_YYYYMMDD_NNN)."}
 
 
 @pytest.mark.online

@@ -2,6 +2,8 @@
 """
 Some Independent plotting tools, mainly animation UI based.
 """
+from __future__ import absolute_import
+from __future__ import unicode_literals
 __author__ = "Stuart Mumford"
 __email__ = "stuartmumford@physics.org"
 __all__ = ['ControlFuncAnimation', 'add_controls']

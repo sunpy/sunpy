@@ -10,6 +10,7 @@ Homepage: http://www.sunpy.org
 Documentation: http://docs.sunpy.org
 """
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 try:
     from .version import version as __version__

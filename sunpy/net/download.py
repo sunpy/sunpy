@@ -6,6 +6,7 @@
 
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import os
 import re
@@ -17,6 +18,7 @@ from contextlib import closing
 from collections import defaultdict, deque
 
 import sunpy as spy
+from sunpy.extern import six
 
 def default_name(path, sock, url):
     name = sock.headers.get('Content-Disposition', url.rsplit('/', 1)[-1])
@@ -57,7 +59,7 @@ class Downloader(object):
                             break
                         else:
                             fd.write(rec)
-        except Exception, e:
+        except Exception as e:
             # TODO: Fix the silent failing
             if errback is not None:
                 with self.mutex:
@@ -134,7 +136,7 @@ class Downloader(object):
 
         if path is None:
             path = partial(default_name, default_dir)
-        elif isinstance(path, basestring):
+        elif isinstance(path, six.string_types):
             path = partial(default_name, path)
 
         # Use default callbacks if none were specified
@@ -159,7 +161,7 @@ class Downloader(object):
         if self.q[server]:
             self._attempt_download(*self.q[server].pop())
         else:
-            for k, v in self.q.iteritems():  # pylint: disable=W0612
+            for k, v in six.iteritems(self.q):  # pylint: disable=W0612
                 while v:
                     if self._attempt_download(*v[0]):
                         v.popleft()

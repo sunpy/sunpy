@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 class BasicRegistrationFactory(object):
     """ Generalized registerable factory type.
 
@@ -134,11 +135,11 @@ class BasicRegistrationFactory(object):
         self.registry.pop(WidgetType)
 
 
-class NoMatchError(StandardError):
+class NoMatchError(Exception):
     """Exception for when no candidate class is found."""
 
 
-class MultipleMatchError(StandardError):
+class MultipleMatchError(Exception):
     """Exception for when too many candidate classes are found."""
 
 

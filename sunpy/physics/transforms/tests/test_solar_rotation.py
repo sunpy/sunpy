@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
 # Author: Jack Ireland
 #
 # Testing functions for a mapcube solar derotation functionality.

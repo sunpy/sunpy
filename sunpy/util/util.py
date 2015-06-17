@@ -1,11 +1,17 @@
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import os
 import types
 import warnings
-from itertools import izip, imap, count
+from itertools import count
 
 import numpy as np
+
+from sunpy.extern.six.moves import map as imap
+from sunpy.extern.six.moves import zip as izip
+from sunpy.extern import six
+from sunpy.extern.six.moves import map
 
 __all__ = ['to_signed', 'unique', 'print_table',
            'replacement_filename', 'goes_flare_class', 'merge', 'common_base',
@@ -38,9 +44,9 @@ def goes_flare_class(gcls):
         else:
             return None
 
-    if isinstance(gcls, types.StringType):
+    if isinstance(gcls, bytes):
         return calc(gcls)
-    if isinstance(gcls, types.ListType):
+    if isinstance(gcls, list):
         return [calc(x) for x in gcls]
 
 
@@ -143,21 +149,21 @@ def merge(items, key=(lambda x: x)):
     state = {}
     for item in map(iter, items):
         try:
-            first = item.next()
+            first = next(item)
         except StopIteration:
             continue
         else:
             state[item] = (first, key(first))
 
     while state:
-        for item, (value, tk) in state.iteritems():
+        for item, (value, tk) in six.iteritems(state):
             # Value is biggest.
             if all(tk >= k for it, (v, k)
-                in state.iteritems() if it is not item):
+                in six.iteritems(state) if it is not item):
                 yield value
                 break
         try:
-            n = item.next()
+            n = next(item)
             state[item] = (n, key(n))
         except StopIteration:
             del state[item]

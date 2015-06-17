@@ -3,12 +3,14 @@
 Useful for keeping track of when an event occurred, usually labeled as
 "True"."""
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import numpy as np
 
 from sunpy.lightcurve import LightCurve
 from scipy.ndimage import label
 from sunpy.time import TimeRange
+from sunpy.extern.six.moves import range
 
 __all__ = ['LogicalLightCurve']
 
@@ -48,7 +50,7 @@ class LogicalLightCurve(LightCurve):
 
         labeling = label(self.data)
         timeranges = []
-        for i in xrange(1, labeling[1]+1):
+        for i in range(1, labeling[1]+1):
             eventindices = (labeling[0] == i).nonzero()
             timeranges.append( TimeRange(self.data.index[ eventindices[0][0] ],
                                          self.data.index[ eventindices[0][-1] ]) )

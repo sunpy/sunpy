@@ -1,3 +1,5 @@
+from __future__ import absolute_import
+from __future__ import unicode_literals
 # Author: David PS <dps.helio -?- gmail.com>
 
 import unittest

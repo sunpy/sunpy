@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function, absolute_import
+from __future__ import unicode_literals
 
 import os
 import time
@@ -19,6 +20,7 @@ from sunpy.net.download import Downloader
 from sunpy.net.vso.vso import Results
 from sunpy.net.attr import and_
 from sunpy.net.jsoc.attrs import walker
+from sunpy.extern import six
 
 __all__ = ['JSOCClient', 'JSOCResponse']
 
@@ -224,7 +226,7 @@ class JSOCClient(object):
         return_responses = kwargs.pop('return_resp', False)
         if len(kwargs):
             warn_message = "request_data got unexpected keyword arguments {0}"
-            raise TypeError(warn_message.format(kwargs.keys()))
+            raise TypeError(warn_message.format(list(kwargs.keys())))
 
         # Do a multi-request for each query block
         responses = self._multi_request(**jsoc_response.query_args)
@@ -266,7 +268,7 @@ class JSOCClient(object):
             A list of status' that were returned by JSOC
         """
         # Convert IDs to a list if not already
-        if not isiterable(requestIDs) or isinstance(requestIDs, basestring):
+        if not isiterable(requestIDs) or isinstance(requestIDs, six.string_types):
             requestIDs = [requestIDs]
 
         allstatus = []
@@ -390,7 +392,7 @@ class JSOCClient(object):
 
         # Convert IDs to a list if not already
 
-        if not isiterable(requestIDs) or isinstance(requestIDs, basestring):
+        if not isiterable(requestIDs) or isinstance(requestIDs, six.string_types):
             requestIDs = [requestIDs]
 
         if path is None:
@@ -458,7 +460,7 @@ class JSOCClient(object):
         datetime, in TAI
         """
         # Convert from any input (in UTC) to TAI
-        if isinstance(time, basestring):
+        if isinstance(time, six.string_types):
             time = parse_time(time)
 
         time = astropy.time.Time(time, scale='utc')

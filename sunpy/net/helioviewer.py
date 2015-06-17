@@ -2,6 +2,7 @@
 This module provides a wrapper around the Helioviewer API.
 """
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 #pylint: disable=E1101,F0401,W0231
 

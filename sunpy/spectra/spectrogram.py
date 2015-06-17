@@ -11,7 +11,6 @@ from __future__ import unicode_literals
 import datetime
 
 from random import randint
-from itertools import izip
 from copy import copy
 from math import floor
 
@@ -32,6 +31,9 @@ from sunpy.util import to_signed, common_base, merge
 from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.util.create import Parent
 from sunpy.spectra.spectrum import Spectrum
+from sunpy.extern.six.moves import zip as izip
+from sunpy.extern.six.moves import map
+from sunpy.extern.six.moves import range
 
 __all__ = ['Spectrogram', 'LinearTimeSpectrogram']
 
@@ -147,7 +149,7 @@ class _LinearView(object):
 
     def make_mask(self, max_dist):
         mask = np.zeros(self.shape, dtype=np.bool)
-        for n, item in enumerate(xrange(len(self))):
+        for n, item in enumerate(range(len(self))):
             freq = self.arr.freq_axis[0] - item * self.delt
             if abs(self.get_freq(item) - freq) > max_dist:
                 mask[n, :] = True
@@ -599,7 +601,7 @@ class Spectrogram(Parent):
         sdevs = np.asarray(np.std(tmp, 0))
 
         # Get indices of values with lowest standard deviation.
-        cand = sorted(xrange(self.shape[1]), key=lambda y: sdevs[y])
+        cand = sorted(range(self.shape[1]), key=lambda y: sdevs[y])
         # Only consider the best 5 %.
         return cand[:max(1, int(amount * len(cand)))]
 
@@ -623,7 +625,7 @@ class Spectrogram(Parent):
             Size of random sample that is considered for calculation of
             the background.
         """
-        cols = [randint(0, self.shape[1] - 1) for _ in xrange(amount)]
+        cols = [randint(0, self.shape[1] - 1) for _ in range(amount)]
 
         # pylint: disable=E1101,E1103
         data = self.data.astype(to_signed(self.dtype))
@@ -636,7 +638,7 @@ class Spectrogram(Parent):
         sdevs = np.asarray(np.std(tmp, 0))
 
         # Get indices of values with lowest standard deviation.
-        cand = sorted(xrange(amount), key=lambda y: sdevs[y])
+        cand = sorted(range(amount), key=lambda y: sdevs[y])
         # Only consider the best 5 %.
         realcand = cand[:max(1, int(0.05 * len(cand)))]
 
@@ -682,7 +684,7 @@ class Spectrogram(Parent):
         return self._with_data(self.data.clip(vmin, vmax, out))
 
     def rescale(self, vmin=0, vmax=1, dtype=np.dtype('float32')):
-        u"""
+        """
         Rescale intensities to [min\_, max\_].
         Note that min\_ ≠ max\_ and spectrogram.min() ≠ spectrogram.max().
 
@@ -811,7 +813,7 @@ class Spectrogram(Parent):
     @staticmethod
     def _mk_format_coord(spec, fmt_coord):
         def format_coord(x, y):
-            shape = map(int, spec.shape)
+            shape = list(map(int, spec.shape))
 
             xint, yint = int(x), int(y)
             if 0 <= xint < shape[1] and 0 <= yint < shape[0]:
@@ -1115,7 +1117,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
         for n, (data, row) in enumerate(merge(
             [
-                [(sp, n) for n in xrange(sp.shape[0])] for sp in specs
+                [(sp, n) for n in range(sp.shape[0])] for sp in specs
             ],
             key=lambda x: x[0].freq_axis[x[1]]
         )):
@@ -1184,7 +1186,7 @@ class LinearTimeSpectrogram(Spectrogram):
                     )
                 start = datetime.datetime(
                     self.start.year, self.start.month, self.start.day,
-                    *map(int, start.split(":"))
+                    *list(map(int, start.split(":")))
                 )
             start = self.time_to_x(start)
         if end is not None:
@@ -1197,7 +1199,7 @@ class LinearTimeSpectrogram(Spectrogram):
                     )
                 end = datetime.datetime(
                     self.start.year, self.start.month, self.start.day,
-                    *map(int, end.split(":"))
+                    *list(map(int, end.split(":")))
                 )
             end = self.time_to_x(end)
         return self[:, start:end]

@@ -19,6 +19,7 @@ from unicodedata import normalize
 from itertools import ifilter
 
 from sunpy.util import replacement_filename
+from sunpy.extern import six
 
 __all__ = ['slugify','get_content_disposition', 'get_filename',
            'get_system_filename', 'get_system_filename_slugify',
@@ -27,23 +28,23 @@ __all__ = ['slugify','get_content_disposition', 'get_filename',
 # Characters not allowed in slugified version.
 _punct_re = re.compile(r'[:\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
 
-def slugify(text, delim=u'_', encoding="ascii"):
+def slugify(text, delim='_', encoding="ascii"):
     """ Slugify given unicode text. """
     text = normalize('NFKD', text)
 
-    period = u'.'
+    period = '.'
 
     name_and_extension = text.rsplit(period, 1)
     name = name_and_extension[0]
 
-    name = unicode(delim).join(ifilter(None, (
+    name = str(delim).join(ifilter(None, (
         word.encode(encoding, 'ignore')
         for word in _punct_re.split(name.lower())
     )))
 
     if len(name_and_extension) == 2:
         extension = name_and_extension[1]
-        return unicode(period).join([name, extension])
+        return str(period).join([name, extension])
     else:
         return name
 
@@ -54,7 +55,7 @@ def get_content_disposition(content_disposition):
     parser = FeedParser()
     parser.feed(b'Content-Disposition: ' + content_disposition)
     name = parser.close().get_filename()
-    if not isinstance(name, unicode):
+    if not isinstance(name, str):
         name = name.decode('latin1', 'ignore')
     return name
 
@@ -76,10 +77,10 @@ def get_filename(sock, url):
     if not name:
         parsed = urlparse.urlparse(url)
         name = parsed.path.rstrip('/').rsplit('/', 1)[-1]
-    return unicode(name)
+    return str(name)
 
 
-def get_system_filename(sock, url, default=u"file"):
+def get_system_filename(sock, url, default="file"):
     """ Get filename from given urllib2.urlopen object and URL.
     First, attempts to extract Content-Disposition, second, extract
     from URL, eventually fall back to default. Returns bytestring
@@ -90,7 +91,7 @@ def get_system_filename(sock, url, default=u"file"):
     return name.encode(sys.getfilesystemencoding(), 'ignore')
 
 
-def get_system_filename_slugify(sock, url, default=u"file"):
+def get_system_filename_slugify(sock, url, default="file"):
     """ Get filename from given urllib2.urlopen object and URL.
     First, attempts to extract Content-Disposition, second, extract
     from URL, eventually fall back to default. Returns bytestring
@@ -99,7 +100,7 @@ def get_system_filename_slugify(sock, url, default=u"file"):
     return slugify(get_system_filename(sock, url, default))
 
 
-def download_file(url, directory, default=u'file', overwrite=False):
+def download_file(url, directory, default='file', overwrite=False):
     """ Download file from url into directory. Try to get filename from
     Content-Disposition header, otherwise get from path of url. Fall
     back to default if both fail. Only overwrite existing files when
@@ -112,7 +113,7 @@ def download_file(url, directory, default=u'file', overwrite=False):
     return path
 
 
-def download_fileobj(opn, directory, url='', default=u"file", overwrite=False):
+def download_fileobj(opn, directory, url='', default="file", overwrite=False):
     """ Download file from url into directory. Try to get filename from
     Content-Disposition header, otherwise get from path of url if given.
     Fall back to default if both fail. Only overwrite existing files when
@@ -168,7 +169,7 @@ def check_download_file(filename, remotepath, download_dir, remotename=None,
     if replace or not os.path.isfile(os.path.join(download_dir, filename)):
         # set local and remote file names be the same unless specified
         # by user.
-        if not isinstance(remotename, basestring):
+        if not isinstance(remotename, six.string_types):
             remotename = filename
 
         download_file(urlparse.urljoin(remotepath, remotename),
@@ -197,9 +198,9 @@ def url_exists(url, timeout=2):
     """
     try:
         urllib2.urlopen(url, timeout=timeout)
-    except urllib2.HTTPError, e:
+    except urllib2.HTTPError as e:
         return False
-    except urllib2.URLError, e:
+    except urllib2.URLError as e:
         return False
     else:
         return True

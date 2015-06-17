@@ -2,6 +2,7 @@
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from sunpy.net import attr
 

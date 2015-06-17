@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Provides programs to process and analyze PROBA2/LYRA data."""
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import datetime
 import urlparse

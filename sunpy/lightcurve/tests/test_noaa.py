@@ -2,6 +2,7 @@
 NOAA LightCurve Tests
 """
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 import pytest
 import sunpy.lightcurve
@@ -43,7 +44,7 @@ class TestNOAAIndicesLightCurve(object):
     def test_header(self):
         """Test presence of GOES satellite number in header"""
         lc1 = sunpy.lightcurve.NOAAIndicesLightCurve.create()
-        assert lc1.header.keys() == ['comments']
+        assert list(lc1.header.keys()) == ['comments']
 
 
 class TestNOAAPredictIndicesLightCurve(object):
@@ -82,4 +83,4 @@ class TestNOAAPredictIndicesLightCurve(object):
     def test_header(self):
         """Test presence of GOES satellite number in header"""
         lc1 = sunpy.lightcurve.NOAAPredictIndicesLightCurve.create()
-        assert lc1.header.keys() == ['comments']
+        assert list(lc1.header.keys()) == ['comments']

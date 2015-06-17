@@ -19,10 +19,12 @@ result in multiple requests to the server which might make them less efficient.
 """
 
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from datetime import datetime
 from sunpy.net import attr
 from sunpy.time import parse_time
+from sunpy.extern import six
 
 class _ParamAttr(attr.Attr):
     """ A _ParamAttr is used to represent equality or inequality checks
@@ -74,7 +76,7 @@ class _ListAttr(attr.Attr):
         return vars(self) == vars(other)
     
     def __hash__(self):
-        return hash(tuple(vars(self).itervalues()))
+        return hash(tuple(six.itervalues(vars(self))))
 
 
 class EventType(attr.Attr):
@@ -109,7 +111,7 @@ class Time(attr.Attr):
         return vars(self) == vars(other)
     
     def __hash__(self):
-        return hash(tuple(vars(self).itervalues()))
+        return hash(tuple(six.itervalues(vars(self))))
     
     @classmethod
     def dt(cls, start, end):
@@ -137,7 +139,7 @@ class SpatialRegion(attr.Attr):
         return vars(self) == vars(other)
     
     def __hash__(self):
-        return hash(tuple(vars(self).itervalues()))
+        return hash(tuple(six.itervalues(vars(self))))
 
 
 class Contains(attr.Attr):
@@ -154,7 +156,7 @@ class Contains(attr.Attr):
         return vars(self) == vars(other)
     
     def __hash__(self):
-        return hash(tuple(vars(self).itervalues()))
+        return hash(tuple(six.itervalues(vars(self))))
 
 
 class _ComparisonParamAttrWrapper(object):

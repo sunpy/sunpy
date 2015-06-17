@@ -8,6 +8,11 @@
 
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import print_function
+from __future__ import unicode_literals
+from sunpy.extern import six
+from sunpy.extern.six.moves import map
+from sunpy.extern.six.moves import input
 
 """
 This module provides a wrapper around the VSO API.
@@ -213,7 +218,7 @@ class QueryResponse(list):
     @Deprecated("Use `print qr` to view the contents of the response")
     def show(self):
         """Print out human-readable summary of records retrieved"""
-        print(str(self))
+        print((str(self)))
 
     def build_table(self):
         keywords = ['Start Time', 'End Time', 'Source', 'Instrument', 'Type']
@@ -291,7 +296,7 @@ class VSOClient(object):
         To assign subattributes, use foo__bar=1 to assign
         ['foo']['bar'] = 1. """
         obj = self.api.factory.create(atype)
-        for k, v in kwargs.iteritems():
+        for k, v in six.iteritems(kwargs):
             split = k.split('__')
             tip = split[-1]
             rest = split[:-1]
@@ -302,7 +307,7 @@ class VSOClient(object):
 
             if isinstance(v, dict):
                 # Do not throw away type information for dicts.
-                for k, v in v.iteritems():
+                for k, v in six.iteritems(v):
                     item[tip][k] = v
             else:
                 item[tip] = v
@@ -376,14 +381,14 @@ class VSOClient(object):
                             )
                             providers[provider].no_of_records_found += 1
                             providers[provider].no_of_records_returned += 1
-        return self.make('QueryResponse', provideritem=providers.values())
+        return self.make('QueryResponse', provideritem=list(providers.values()))
 
     @staticmethod
     def mk_filename(pattern, response, sock, url, overwrite=False):
         name = get_filename(sock, url)
         if not name:
-            if not isinstance(response.fileid, unicode):
-                name = unicode(response.fileid, "ascii", "ignore")
+            if not isinstance(response.fileid, str):
+                name = str(response.fileid, "ascii", "ignore")
             else:
                 name = response.fileid
 
@@ -511,8 +516,8 @@ class VSOClient(object):
             kwargs.update({'time_end': tend})
 
         queryreq = self.api.factory.create('QueryRequest')
-        for key, value in kwargs.iteritems():
-            for k, v in ALIASES.get(key, sdk(key))(value).iteritems():
+        for key, value in six.iteritems(kwargs):
+            for k, v in six.iteritems(ALIASES.get(key, sdk(key))(value)):
                 if k.startswith('time'):
                     v = parse_time(v).strftime(TIMEFORMAT)
                 attr = k.split('_')
@@ -652,7 +657,7 @@ class VSOClient(object):
 
         return self.create_getdatarequest(
             dict((k, [x.fileid for x in v])
-                 for k, v in self.by_provider(response).iteritems()),
+                 for k, v in six.iteritems(self.by_provider(response))),
             methods, info
         )
 
@@ -668,7 +673,7 @@ class VSOClient(object):
             request__info=info,
             request__datacontainer__datarequestitem=[
                 self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
-                for k, v in maps.iteritems()
+                for k, v in six.iteritems(maps)
             ]
         )
 
@@ -701,7 +706,7 @@ class VSOClient(object):
                             dresponse.method.methodtype[0],
                             dataitem.url,
                             dw,
-                            res.require(map(str, dataitem.fileiditem.fileid)),
+                            res.require(list(map(str, dataitem.fileiditem.fileid))),
                             res.add_error,
                             path,
                             qr[dataitem.fileiditem.fileid[0]]
@@ -796,9 +801,9 @@ class InteractiveVSOClient(VSOClient):
     def multiple_choices(self, choices, response):
         while True:
             for n, elem in enumerate(choices):
-                print "({num:d}) {choice!s}".format(num=n + 1, choice=elem)
+                print("({num:d}) {choice!s}".format(num=n + 1, choice=elem))
             try:
-                choice = raw_input("Method number: ")
+                choice = input("Method number: ")
             except KeyboardInterrupt:
                 raise NoData
             if not choice:
@@ -816,7 +821,7 @@ class InteractiveVSOClient(VSOClient):
                     continue
 
     def missing_information(self, info, field):
-        choice = raw_input(field + ': ')
+        choice = input(field + ': ')
         if not choice:
             raise NoData
         return choice

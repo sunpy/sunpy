@@ -1,5 +1,6 @@
 """A Python MapCube Object"""
 from __future__ import absolute_import
+from __future__ import unicode_literals
 #pylint: disable=W0401,W0614,W0201,W0212,W0404
 
 import numpy as np
@@ -10,6 +11,7 @@ from sunpy.map import GenericMap
 
 from sunpy.visualization.mapcubeanimator import MapCubeAnimator
 from sunpy.util import expand_list
+from sunpy.extern.six.moves import range
 
 __all__ = ['MapCube']
 
@@ -207,7 +209,7 @@ class MapCube(object):
             removes += list(plot_function(fig, axes, self.maps[i]))
 
         ani = matplotlib.animation.FuncAnimation(fig, updatefig,
-                                                frames=range(0, len(self.maps)),
+                                                frames=list(range(0, len(self.maps))),
                                                 fargs=[im, annotate, ani_data, removes],
                                                 interval=interval,
                                                 blit=False)

@@ -16,6 +16,7 @@ for a quick example think about how the system should handle
 Instrument('aia') & Instrument('eit').
 """
 from __future__ import absolute_import
+from __future__ import unicode_literals
 
 from datetime import datetime
 
@@ -27,6 +28,7 @@ from sunpy.net.attr import (
 )
 from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time
+from sunpy.extern import six
 
 __all__ = ['Wave', 'Time', 'Extent', 'Field', 'Provider', 'Source',
            'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',
@@ -65,7 +67,7 @@ class Wave(Attr, _Range):
         # Note: the website asks for GHz, however it seems that using GHz produces
         # weird responses on VSO.
         convert = {'m': u.AA, 'Hz': u.kHz, 'eV': u.keV}
-        for k in convert.keys():
+        for k in list(convert.keys()):
             if wavemin.decompose().unit == (1 * u.Unit(k)).decompose().unit:
                 unit = convert[k]
         try:
@@ -225,7 +227,7 @@ def _create(wlk, root, api):
 # pylint: disable=E0102,C0103,W0613
 def _apply(wlk, root, api, queryblock):
     """ Implementation detail. """
-    for k, v in root.attrs.iteritems():
+    for k, v in six.iteritems(root.attrs):
         lst = k[-1]
         rest = k[:-1]
 
@@ -257,7 +259,7 @@ def _create(wlk, root, api):
 # attrs member.
 walker.add_converter(Extent)(
     lambda x: ValueAttr(
-        dict((('extent', k), v) for k, v in vars(x).iteritems())
+        dict((('extent', k), v) for k, v in six.iteritems(vars(x)))
     )
 )
 

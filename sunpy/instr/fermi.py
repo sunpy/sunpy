@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import unicode_literals
 
 
 import os
@@ -18,6 +19,7 @@ from astropy.coordinates import Longitude, Latitude
 from sunpy.time import parse_time, TimeRange
 from sunpy import sun
 from sunpy.io.fits import fits
+from sunpy.extern.six.moves import range
 
 __all__ = ['download_weekly_pointing_file', 'get_detector_sun_angles_for_time',
             'get_detector_sun_angles_for_date','plot_detector_sun_angles',
@@ -197,7 +199,7 @@ def plot_detector_sun_angles(angles):
 
     #make a plot showing the angles vs time
     figure = plt.figure(1)
-    for n in angles.keys():
+    for n in list(angles.keys()):
         if not n == 'time':
             plt.plot(angles['time'],angles[n].value,
                      label = '{lab} ({val})' .format(lab=n,
@@ -335,7 +337,7 @@ def nai_detector_radecs(detectors, scx, scz, time):
 
     # for each detector, do the rotation depending on the detector zenith and azimuth angles
     detector_radecs = copy.deepcopy(detectors)
-    for l, d in detectors.items():
+    for l, d in list(detectors.items()):
         phi = d[0].value
         theta = d[1].value
 
@@ -383,7 +385,7 @@ def get_detector_separation_angles(detector_radecs, sunpos):
     """
     angles = copy.deepcopy(detector_radecs)
     angles2 = {}
-    for l, d in detector_radecs.items():
+    for l, d in list(detector_radecs.items()):
         if not l == 'time':
             angle = separation_angle(d, sunpos)
             angles[l] = angle
