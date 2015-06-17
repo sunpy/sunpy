@@ -542,14 +542,14 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
 
     Examples
     --------
-    >>> import numpy as np
     >>> from sunpy.image.coalignment import mapcube_coalign_by_match_template as mc_coalign
-    >>> coaligned_mc = mc_coalign(mc)
-    >>> coaligned_mc = mc_coalign(mc, layer_index=-1)
-    >>> coaligned_mc = mc_coalign(mc, clip=False)
-    >>> coaligned_mc = mc_coalign(mc, template=sunpy_map)
-    >>> coaligned_mc = mc_coalign(mc, template=two_dimensional_ndarray)
-    >>> coaligned_mc = mc_coalign(mc, func=np.log)
+
+    >>> coaligned_mc = mc_coalign(mc)   # doctest: +SKIP
+    >>> coaligned_mc = mc_coalign(mc, layer_index=-1)   # doctest: +SKIP
+    >>> coaligned_mc = mc_coalign(mc, clip=False)   # doctest: +SKIP
+    >>> coaligned_mc = mc_coalign(mc, template=sunpy_map)   # doctest: +SKIP
+    >>> coaligned_mc = mc_coalign(mc, template=two_dimensional_ndarray)   # doctest: +SKIP
+    >>> coaligned_mc = mc_coalign(mc, func=np.log)   # doctest: +SKIP
     """
 
     # Number of maps
@@ -558,7 +558,7 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
     # Storage for the pixel shifts and the shifts in arcseconds
     xshift_keep = np.zeros(nt) * u.pix
     yshift_keep = np.zeros_like(xshift_keep)
-    
+
     if shift is None:
         shifts = calculate_match_template_shift(mc, template=template,
                                                 layer_index=layer_index,
