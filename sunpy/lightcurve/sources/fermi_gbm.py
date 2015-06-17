@@ -27,7 +27,7 @@ class GBMSummaryLightCurve(LightCurve):
     >>> import sunpy
 
     >>> gbm = sunpy.lightcurve.GBMLightCurve.create('2011-06-07')
-    >>> gbm.peek()
+    >>> gbm.peek()   # doctest: +SKIP
 
     References
     ----------
