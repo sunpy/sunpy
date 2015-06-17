@@ -20,10 +20,14 @@ env:
         - LATEST_NUMPY=1.9.1
         - LATEST_PANDAS=0.15.2
         # Fixed global vars
-        - PYTHON_VERSION=2.7
         - TEST_MODE='offline'
         - NUMPY_VERSION=$LATEST_NUMPY
         - PANDAS_VERSION=$LATEST_PANDAS
+
+    matrix:
+        - PYTHON_VERSION=2.7
+        - PYTHON_VERSION=3.3
+        - PYTHON_VERSION=3.4
 
 matrix:
     include:
