@@ -50,6 +50,7 @@ Constructing a Query
 Let's start with a very simple query.  We could ask for all SOHO/EIT
 data between January 1st and 2nd, 2001.
 
+    >>> import astropy.units as u
     >>> qr = client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'), vso.attrs.Wave(142*u.AA, 123*u.AA))
 
 The variable ``qr`` is a Python list of
