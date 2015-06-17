@@ -102,6 +102,8 @@ class Time(Attr, _Range):
         The end time of the range.
 
     near: SunPy Time String
+    	Return a singular record closest in time to this value as possible, 
+    	inside the start and end window. Note: not all providers support this.
 
     """
     def __init__(self, start, end=None, near=None):
