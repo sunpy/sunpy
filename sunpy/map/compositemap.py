@@ -66,9 +66,9 @@ class CompositeMap(object):
     >>> import sunpy
     >>> sunpy.Map(sunpy.AIA_171_IMAGE, sunpy.RHESSI_IMAGE, composite=True)
     >>> comp_map = sunpy.Map(sunpy.AIA_171_IMAGE, sunpy.EIT_195_IMAGE,
-                             composite=True)
+    ...                      composite=True)
     >>> comp_map.add_map(sunpy.Map(sunpy.RHESSI_IMAGE))
-    >>> comp_map.peek()
+    >>> comp_map.peek()   # doctest: +SKIP
 
     """
     def __init__(self, *args, **kwargs):
