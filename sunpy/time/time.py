@@ -165,6 +165,7 @@ def parse_time(time_string, time_format=''):
 
     Examples
     --------
+    >>> import sunpy.time
     >>> sunpy.time.parse_time('2012/08/01')
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
 
@@ -228,6 +229,7 @@ def is_time(time_string, time_format=''):
 
     Examples
     --------
+    >>> import sunpy.time
     >>> sunpy.time.parse_time('2012/08/01')
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
 
@@ -265,6 +267,7 @@ def day_of_year(time_string):
 
     Examples
     --------
+    >>> import sunpy.time
     >>> sunpy.time.day_of_year('2012/01/01')
     1.00
     >>> sunpy.time.day_of_year('2012/08/01')
