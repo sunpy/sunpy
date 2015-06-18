@@ -16,8 +16,8 @@ SunPy contains a number of example FITS files.
 To make things easy, SunPy includes several example files which are used
 throughout the docs. These files have names like
 `~sunpy.data.sample.AIA_171_IMAGE` and `~sunpy.data.sample.RHESSI_IMAGE`.
-To create the sample `sunpy.map.sources.sdo.AIAMap` type the following into your interactive
-Python shell::
+To create the sample `sunpy.map.sources.sdo.AIAMap` type the following into your
+  interactive Python shell::
 
     import sunpy
     import sunpy.map
@@ -25,11 +25,11 @@ Python shell::
     my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
 The variable my_map is a SunPy Map object. To create a SunPy Map object from a
-local FITS file try something like the following ::
+local FITS file try the following::
 
     my_map = sunpy.map.Map('/mydirectory/mymap.fits')
 
-SunPy automatically detects the type of file (e.g. FITS), what instrument it is
+SunPy should automatically detects the type of file (e.g. FITS), what instrument it is
 associated with (e.g. AIA, EIT, LASCO) and will automatically look in the
 appropriate places for the FITS keywords it needs to interpret the coordinate
 system. If the type of FITS file is not recognized then SunPy will try some
@@ -128,7 +128,7 @@ but accessing the data array directly. For example,
 5. Plotting
 -----------
 As is true of all of the SunPy data objects, the SunPy `~sunpy.map.GenericMap`
-object (and all of its instrument-specific subclasses) has its
+object (and all of its instrument-specific sub-classes) has its
 own built-in plot methods so that it is easy to
 quickly view your map. To create a plot just type::
 
@@ -156,10 +156,10 @@ examples see :ref:`plotting`.
 For Map `~matplotlib.pyplot.imshow()` does most of the heavy
 lifting in the background while SunPy makes a number of choices for you so that
 you don't have to (e.g. colortable, plot title). Changing these defaults
-is made possible through a simple interface. You can pass any
+is made possible through two simple interfaces. You can pass any
 `~matplotlib.pyplot.imshow()` keyword into
-the plot command to override the defaults for that particular plot. The following example
-changes the default AIA color table to use an inverse Grey color table::
+the plot command to override the defaults for that particular plot. The following
+plot changes the default AIA color table to use an inverse Grey color table::
 
 .. plot::
     import sunpy.map
@@ -171,8 +171,9 @@ changes the default AIA color table to use an inverse Grey color table::
     smap.plot(cmap=plt.Greys_r)
     plt.show()
 
-You can view or make changes to the default settings through the `plot_settings` property.
-In the following example we change the title of the plot::
+You can view or make changes to the default settings through the `plot_settings`
+property. In the following example we change the title of the plot by changing the
+`plot_settings` property.::
 
 .. plot::
 
@@ -199,26 +200,28 @@ color using an instance of a subclass of a "~matplotlib.colors.Colormap".
 
 SunPy provides the colormaps for each mission as defined by the mission teams.
 The Map object chooses the appropriate colormap for you when it is created as
-long as it recognizes the instrument. The following example will show you all of the
-colormaps available::
+long as it recognizes the instrument. To see what colormaps are available::
+
+    import sunpy.cm
+    sunpy.cm.cmlist.keys()
+
+The SunPy colormaps are registered with matplotlib so you can grab them like
+you would any other colormap::
+
+    import matplotlib.pyplot as plt
+    import sunpy.cm
+    # You need to import sunpy.cm or sunpy.map for this to work.
+    cmap = plt.get_cmap('sdoaia171')
+
+
+The following plot shows off all of the colormaps.
 
 .. plot::
 
     import matplotlib.pyplot as plt
     import sunpy.cm
 
-    # Access SunPy colormaps through matplotlib
-    # You need to import sunpy.cm or sunpy.map for this to work.
-    cmap = plt.get_cmap('sdoaia171')
-
-    # Get a list of SunPy colormaps
-    sunpy.cm.cmlist.keys()
-
-    # you can also get a visual representation of all of the color tables
     sunpy.cm.show_colormaps()
-
-
-.. image:: ../images/plotting_ex2.png
 
 These can be used with the standard commands to change the colormap. So for
 example if you wanted to plot an AIA image but use an EIT colormap, you would
@@ -415,14 +418,17 @@ different associated methods. To list which maps are part of your composite map 
 
     my_maps.list_maps()
 
-The following code
-adds a new map (which must be instantiated first), sets its transparency to
+The following code adds a new map (which must be instantiated first), sets its transparency to
 25%, turns on contours from 50% to 90% for the second map, and then plots the
-result::
+result.
 
+.. plot::
+
+    import sunpy.map
+    my_maps = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE, sunpy.data.sample.RHESSI_IMAGE, composite=True)
     my_maps.add_map(sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE))
-    my_maps.set_alpha(2,0.5)
-    my_maps.set_levels(1,[50,60,70,80,90], percent = True)
+    my_maps.set_alpha(2, 0.5)
+    my_maps.set_levels(1, [50,60,70,80,90], percent = True)
     my_maps.peek()
 
 This is not a particularly pretty plot but it shows what SunPy can do!

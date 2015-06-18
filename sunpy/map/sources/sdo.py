@@ -5,7 +5,8 @@ __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 import numpy as np
-from matplotlib import colors
+from astropy.visualization.mpl_normalize import ImageNormalize
+from astropy import visualization
 
 from sunpy.map import GenericMap
 from sunpy.cm import cm
@@ -45,11 +46,12 @@ class AIAMap(GenericMap):
         self._nickname = self.detector
         self.plot_settings['cmap'] = cm.get_cmap(self._get_cmap_name())
 
-        norm = {304: colors.PowerNorm(0.35), 211: colors.PowerNorm(0.5),
-                193: colors.PowerNorm(0.5), 171: colors.PowerNorm(0.5),
-                131: colors.PowerNorm(0.5), 335: colors.PowerNorm(0.4),
-                94: colors.PowerNorm(0.45)}
-        self.plot_settings['norm'] = norm[int(self.wavelength.to('Angstrom').value)]
+        #norm = {304: colors.PowerNorm(0.35), 211: colors.PowerNorm(0.5),
+        #        193: colors.PowerNorm(0.5), 171: colors.PowerNorm(0.5),
+        #        131: colors.PowerNorm(0.5), 335: colors.PowerNorm(0.4),
+        #        94: colors.PowerNorm(0.45)}
+        #self.plot_settings['norm'] = norm[int(self.wavelength.to('Angstrom').value)]
+        self.plot_settings['norm'] = ImageNormalize(stretch=visualization.AsinhStretch(0.01))
 
     @property
     def observatory(self):
