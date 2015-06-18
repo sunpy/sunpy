@@ -225,6 +225,7 @@ example if you wanted to plot an AIA image but use an EIT colormap, you would
 do so as follows::
 
 .. plot::
+
     import sunpy.map
     import sunpy.data.sample
     import matplotlib.pyplot as plt
@@ -294,21 +295,19 @@ your images got clipped set the following values::
     cmap.set_over('red', 1.0)
     cmap.set_under('green', 1.0)
 
-This will color the areas above and below in red and green respectively.
+This will color the areas above and below in red and green respectively
+(similar to this `example <http://matplotlib.org/examples/pylab_examples/image_masked.html>`_).
 You can use the following colorbar command to display these choices.
 
     plt.colorbar(extend='both')
 
 Another method to ignore bad data is to use a masked data array. A `~numpy.ma.MaskedArray`
 is a subclass of a numpy array so it has all of the same properties with the
-addition of an associated boolean array which holds the mask. The following examples
-and figure shows both of these methods in action. Let's consider the following
-image.
-
-By inspecting the maximum versus the mean and standard deviation,
-it is clear that there are some overly bright pixels in this Hinode XRT image.
+addition of an associated boolean array which holds the mask. Let's consider the following
+Hinode XRT image. By inspecting the maximum versus the mean and standard deviation,
+it is clear that there are some overly bright pixels.
 This is likely due to cosmic ray hits which is throwing off the default plot making
-it too dark to see the emission from the Sun.
+it too dark to see the solar emission.
 
 .. plot::
 
@@ -328,8 +327,8 @@ it too dark to see the emission from the Sun.
     plt.colorbar()
     plt.show()
 
-Let's address this by clipping the largest values. The following shows the result
-of this operation.
+Let's address this by clipping the largest values (in this case everything above
+3 sigma). The following plot shows the result of this operation.
 
 .. plot::
 
@@ -346,7 +345,7 @@ of this operation.
     plt.show()
 
 This makes it very visible that there are a number of hot
-pixels mostly concentrated in the upper half in this image. Now let's address
+pixels mostly concentrated in the upper half of this image. Now let's address
 this problem with masking instead of clipping.
 
 .. plot::
@@ -369,11 +368,11 @@ this problem with masking instead of clipping.
     smap.plot(norm = norm)
     plt.colorbar()
 
-This plot shows a similar effect
+This plot shows a very similar effect to clipping
 but note that the array properties such as max and min have changed. That's
-because numpy is now ignoring those masked values. Here though we see that we are
-also masking some of the emission from the bright sources. With a masked array
-(compared to clipping) we can go ahead and make more detailed masking operations.
+because numpy is now ignoring those masked values. With a masked array
+(compared to clipping) we can go ahead and make more detailed masking operations
+so that we are not masking the emission from the bright solar sources.
 The next plot
 masks only those bright pixels in the upper area of the plot leaving the bright
 solar sources which are concentrated in the lower part of the plot intact.

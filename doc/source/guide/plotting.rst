@@ -28,6 +28,8 @@ namespace.
 ---------
 Here is an example of pyplot usage ::
 
+.. plot::
+
     import matplotlib.pyplot as plt
 
     plt.plot(range(10), range(10))
@@ -67,6 +69,8 @@ turns off interactivity.
 If you need more fine-grained control over plots the recommended path is to use pyplot
 and access the figures and axes objects. Here is an example ::
 
+.. plot::
+
     import matplotlib.pyplot as plt
     import numpy as np
 
@@ -102,6 +106,8 @@ For quick and easy access to a plot
 all sunpy base objects (e.g. maps, spectra, lightcurves) define their own peek() command.
 For example you can do the following ::
 
+.. plot::
+
     import sunpy.map
     import sunpy.data.sample
     smap = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE)
@@ -121,6 +127,8 @@ object for you if you haven't already. It returns a figure object and does not c
 plot window. With the figure object in your hands you can reach in and grab the axes
 and therefore manipulate the plot. Here is an example of this at work ::
 
+.. plot::
+
     import sunpy.map
     import sunpy.data.sample
     import matplotlib.pyplot as plt
@@ -136,6 +144,8 @@ command is equivalent to the `~matplotlib.axes.Axes.imshow` command.
 Similar to that command it will create a figure for you if you haven't created on yourself. For
 advanced plotting you'll want to create it yourself. ::
 
+.. plot::
+
     fig = plt.figure()
     ax = plt.subplot()
 
@@ -148,6 +158,8 @@ advanced plotting you'll want to create it yourself. ::
 The above will plot of line across the map. Using the fig.gca() command to get access to the
 axes object most anything can be done to the plot and the plot can be displayed as usual
 using the `~matplotlib.pyplot.show` command. Here is another example ::
+
+.. plot::
 
     from matplotlib import patches
     fig = plt.figure()
@@ -179,6 +191,8 @@ in degrees ::
             transform=ax.get_transform('world'))
 
 Finally, here is a more complex example::
+
+.. plot::
 
     from matplotlib import patches
     import astropy.units as u
