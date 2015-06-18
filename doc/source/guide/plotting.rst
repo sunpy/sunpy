@@ -92,7 +92,8 @@ objects for you so you don't have to worry about creating them yourself.
 ---------------------------
 
 To be consistent with matplotlib, SunPy has developed a standard plotting policy which
-supports both simple and advanced matplotlib usage.
+supports both simple and advanced matplotlib usage. The following examples focus
+on the map object but they should be applicable across all of the data objects.
 
 5. peek()
 ---------
@@ -206,81 +207,3 @@ Finally, here is a more complex example::
 The above example creates two side by side plots one with the overall view of the Sun
 with a small area marked with a white box. That smaller view is then shown in the plot
 below it. The spacing between the two plots is controlled by fig.subplots_adjust().
-
-7. Plotting Keywords
---------------------
-
-As mentioned before for Map `~matplotlib.pyplot.imshow()` does most of the heavy
-lifting in the background while SunPy makes a number of choices for you so that
-you don't have to. Changing these defaults
-is made possible through some simple interfaces. Firstly you can pass any
-`~matplotlib.pyplot.imshow()` keyword into
-the plot command to override the defaults for that particular plot. The following example
-changes the default AIA color table to use an inverse Grey color table::
-
-    import sunpy.map
-    import sunpy.data.sample
-    import matplotlib.pyplot as plt
-    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-
-    fig = plt.figure()
-    ax = plt.subplot(1,1,1)
-    smap.plot(cmap=plt.Greys_r)
-    plt.show()
-
-If you'd like to make this a permanent change you can access a number of settings under the
-`plot_settings` property to make your changes for that map instance permanent.
-In the following example we change the normalization of the color table to a linear
-one running from 5 to 100 (clipping everything above and below these values)::
-
-    import sunpy.map
-    import sunpy.data.sample
-    import matplotlib.colors as colors
-    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    smap.plot_settings['norm'] = colors.Normalize(5, 1000)
-
-    fig = plt.figure()
-    ax = plt.subplot(1,1,1)
-    smap.plot()
-    plt.show()
-
-
-8. Colormaps
-------------
-
-There are a number of color maps defined in SunPy which are used for data from
-particular missions (e.g. SDO/AIA). The Map object chooses the appropriate colormap
-on its own when you create it. The following example will show you all of the
-colormaps available::
-
-    import matplotlib.pyplot as plt
-    import sunpy.cm
-
-    # Access SunPy colormaps through matplotlib
-    # You need to import sunpy.cm or sunpy.map for this to work.
-    cmap = plt.get_cmap('sdoaia171')
-
-    # Get a list of SunPy colormaps
-    sunpy.cm.cmlist.keys()
-
-    # you can also get a visual representation of all of the color tables
-    sunpy.cm.show_colormaps()
-
-
-.. image:: ../images/plotting_ex2.png
-
-These can be used with the standard commands to change the colormap. So for
-example if you wanted to plot an AIA image but use an EIT colormap, you would
-do so as follows::
-
-    import sunpy.map
-    import sunpy.data.sample
-    import matplotlib.pyplot as plt
-
-    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    cmap = plt.get_cmap('sohoeit171')
-
-    fig = plt.figure()
-    ax = plt.subplot(1,1,1)
-    smap.plot(cmap=cmap)
-    plt.show()

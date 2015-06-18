@@ -46,7 +46,7 @@ class SJIMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an AIA image"""
+        """Determines if header corresponds to an IRIS SJI image"""
         tele = header.get('TELESCOP', '').startswith('IRIS')
         obs = header.get('INSTRUME', '').startswith('SJI')
         level = header.get('lvl_num') == 1
