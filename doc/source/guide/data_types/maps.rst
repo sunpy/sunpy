@@ -161,6 +161,7 @@ is made possible through a simple interface. You can pass any
 the plot command to override the defaults for that particular plot. The following example
 changes the default AIA color table to use an inverse Grey color table::
 
+.. plot::
     import sunpy.map
     import sunpy.data.sample
     import matplotlib.pyplot as plt
@@ -172,6 +173,8 @@ changes the default AIA color table to use an inverse Grey color table::
 
 You can view or make changes to the default settings through the `plot_settings` property.
 In the following example we change the title of the plot::
+
+.. plot::
 
     import sunpy.map
     import sunpy.data.sample
@@ -199,6 +202,8 @@ The Map object chooses the appropriate colormap for you when it is created as
 long as it recognizes the instrument. The following example will show you all of the
 colormaps available::
 
+.. plot::
+
     import matplotlib.pyplot as plt
     import sunpy.cm
 
@@ -219,6 +224,7 @@ These can be used with the standard commands to change the colormap. So for
 example if you wanted to plot an AIA image but use an EIT colormap, you would
 do so as follows::
 
+.. plot::
     import sunpy.map
     import sunpy.data.sample
     import matplotlib.pyplot as plt
@@ -247,6 +253,9 @@ made available from astropy.  Just like the colormap the default normalization
  plot by passing a keyword argument. The following example shows the difference between
 a linear and logarithmic normalization on an AIA image:
 
+
+.. plot::
+
     import sunpy.map
     import sunpy.data.sample
     import matplotlib.pyplot as plt
@@ -270,17 +279,126 @@ the normalization is different.
 
 8. Masking and Clipping Data
 ----------------------------
-It is often necessary for the purposes of display or otherwise to ignore data
-above or below a particular value. For example large data value could be due to
+It is often necessary for the purposes of display or otherwise to ignore certain
+data in an image. For example large data value could be due to
 cosmic ray hits and should be ignored. The most straightforward way to ignore
-this data in plots without altering the data is to clip it. This can be achieved
+this kind of data in plots without altering the data is to clip it. This can be achieved
 very easily when initializing the normalization variable. For example::
 
-    norm=colors.Normalize(vmin=smap.min(), vmax=smap.mean() + 3 *smap.std())
+    norm = colors.Normalize(vmin=smap.min(), vmax=smap.mean() + 3 *smap.std())
 
-This clip out many of the brightest pixels. If you'd like to see what areas of
-your images got clipped Another more useful method is to
-make use of a masked data array.
+This clips out many of the brightest pixels. If you'd like to see what areas of
+your images got clipped set the following values::
+
+    cmap = cmap.plot_settings['cmap']
+    cmap.set_over('red', 1.0)
+    cmap.set_under('green', 1.0)
+
+This will color the areas above and below in red and green respectively.
+You can use the following colorbar command to display these choices.
+
+    plt.colorbar(extend='both')
+
+Another method to ignore bad data is to use a masked data array. A `~numpy.ma.MaskedArray`
+is a subclass of a numpy array so it has all of the same properties with the
+addition of an associated boolean array which holds the mask. The following examples
+and figure shows both of these methods in action. Let's consider the following
+image.
+
+By inspecting the maximum versus the mean and standard deviation,
+it is clear that there are some overly bright pixels in this Hinode XRT image.
+This is likely due to cosmic ray hits which is throwing off the default plot making
+it too dark to see the emission from the Sun.
+
+.. plot::
+
+    import sunpy.map
+    import matplotlib.pyplot as plt
+    import matplotlib.colors as colors
+    import numpy.ma
+
+    smap = sunpy.map.Map(file)
+    fig = plt.figure()
+    smap.plot()
+    txt = "min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
+                                                                      max=int(smap.max()),
+                                                                      mean=int(smap.mean()),
+                                                                      std=int(smap.std()))
+    plt.text(-600, 1500, txt, color='white')
+    plt.colorbar()
+    plt.show()
+
+Let's address this by clipping the largest values. The following shows the result
+of this operation.
+
+.. plot::
+
+    import sunpy.map
+    import matplotlib.pyplot as plt
+    import matplotlib.colors as colors
+
+    cmap = smap.plot_settings['cmap']
+    cmap.set_over('green', 1.0)
+    cmap.set_under('purple', 1.0)
+    norm = colors.Normalize(vmin=smap.min(), vmax=smap.mean() + 3 *smap.std())
+    smap.plot(norm=norm)
+    plt.colorbar(extend='both')
+    plt.show()
+
+This makes it very visible that there are a number of hot
+pixels mostly concentrated in the upper half in this image. Now let's address
+this problem with masking instead of clipping.
+
+.. plot::
+
+    import sunpy.map
+    import matplotlib.pyplot as plt
+    import matplotlib.colors as colors
+    import numpy.ma
+
+    smap = sunpy.map.Map(file)
+    cmap = smap.plot_settings['cmap']
+    cmap.set_bad('blue', 1.0)
+    smap.data = numpy.ma.masked_greater(smap.data, smap.mean() + 3 *smap.std())
+    txt = "min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
+                                                                      max=int(smap.max()),
+                                                                      mean=int(smap.mean()),
+                                                                      std=int(smap.std()))
+    plt.text(-600, 1500, txt, color='white')
+    norm = colors.Normalize()
+    smap.plot(norm = norm)
+    plt.colorbar()
+
+This plot shows a similar effect
+but note that the array properties such as max and min have changed. That's
+because numpy is now ignoring those masked values. Here though we see that we are
+also masking some of the emission from the bright sources. With a masked array
+(compared to clipping) we can go ahead and make more detailed masking operations.
+The next plot
+masks only those bright pixels in the upper area of the plot leaving the bright
+solar sources which are concentrated in the lower part of the plot intact.
+
+.. plot::
+
+    import sunpy.map
+    import matplotlib.pyplot as plt
+    import matplotlib.colors as colors
+    import numpy.ma
+
+    smap = sunpy.map.Map(file)
+    cmap = smap.plot_settings['cmap']
+    cmap.set_bad('blue', 1.0)
+    smap.data = numpy.ma.masked_greater(smap.data, smap.mean() + 3 *smap.std())
+    smap.data.mask[0:250,:] = False
+    txt = "min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
+                                                                      max=int(smap.max()),
+                                                                      mean=int(smap.mean()),
+                                                                      std=int(smap.std()))
+    plt.text(-600, 1500, txt, color='white')
+    norm = colors.Normalize()
+    smap.plot(norm = norm)
+    plt.colorbar()
+
 
 6. Composite Maps and Overlaying Maps
 -------------------------------------
