@@ -122,8 +122,8 @@ def test_wave_inputQuantity():
     assert excinfo.value.message == wrong_type_mesage
 
 def test_wave_toangstrom():
-    # TODO: this test shoul test that inputs are in any of spectral units
-    # more than just converted to Angstoms.
+    # TODO: this test should test that inputs are in any of spectral units
+    # more than just converted to Angstroms.
     frequency = [(1, 1 * u.Hz),
                  (1e3, 1 * u.kHz),
                  (1e6, 1 * u.MHz),

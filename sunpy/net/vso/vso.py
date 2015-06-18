@@ -121,7 +121,7 @@ class Results(object):
     def wait(self, timeout=100, progress=False):
         """ Wait for result to be complete and return it. """
         # Giving wait a timeout somehow circumvents a CPython bug that the
-        # call gets ininterruptible.
+        # call gets uninterruptible.
         if progress:
             with self.lock:
                 self.progress = ProgressBar(self.total, self.total - self.n)
@@ -557,7 +557,7 @@ class VSOClient(object):
             Specify where the data is to be downloaded. Can refer to arbitrary
             fields of the QueryResponseItem (instrument, source, time, ...) via
             string formatting, moreover the file-name of the file downloaded can
-            be refered to as file, e.g.
+            be referred to as file, e.g.
             "{source}/{instrument}/{time.start}/{file}".
         methods : {list of str}
             Download methods, defaults to URL-FILE_Rice then URL-FILE.

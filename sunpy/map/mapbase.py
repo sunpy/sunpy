@@ -106,7 +106,7 @@ class GenericMap(NDData):
       notation using equations 32 in Thompson (2006).
 
     * If a CDi_j matrix is provided it is assumed that it can be converted to a
-      PCi_j matrix and CDELT keywords as descirbed in Greisen & Calabretta (2002).
+      PCi_j matrix and CDELT keywords as described in Greisen & Calabretta (2002).
 
     * The 'standard' FITS keywords that are used by this class are the PCi_j
       matrix and CDELT, along with the other keywords specified in the WCS papers.
@@ -506,7 +506,7 @@ scale:\t\t {scale}
 
         origin : int
             Origin of the top-left corner. i.e. count from 0 or 1.
-            Normally, origin should be 0 when passing numpy indicies, or 1 if
+            Normally, origin should be 0 when passing numpy indices, or 1 if
             passing values from FITS header or map attributes.
             See `~astropy.wcs.WCS.wcs_world2pix` for more information.
 
@@ -540,7 +540,7 @@ scale:\t\t {scale}
 
         origin : int
             Origin of the top-left corner. i.e. count from 0 or 1.
-            Normally, origin should be 0 when passing numpy indicies, or 1 if
+            Normally, origin should be 0 when passing numpy indices, or 1 if
             passing values from FITS header or map attributes.
             See `~astropy.wcs.WCS.wcs_pix2world` for more information.
 
@@ -757,7 +757,7 @@ scale:\t\t {scale}
         new_map = deepcopy(self)
 
         if angle is not None:
-            # Calulate the parameters for the affine_transform
+            # Calculate the parameters for the affine_transform
             c = np.cos(np.deg2rad(angle))
             s = np.sin(np.deg2rad(angle))
             rmatrix = np.matrix([[c, -s], [s, c]])

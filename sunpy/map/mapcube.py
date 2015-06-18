@@ -4,7 +4,6 @@ from __future__ import absolute_import
 
 import numpy as np
 import matplotlib.animation
-from sunpy.visualization import wcsaxes_compat
 import matplotlib.pyplot as plt
 
 from sunpy.map import GenericMap

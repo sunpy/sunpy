@@ -418,9 +418,9 @@ different associated methods. To list which maps are part of your composite map 
 
     my_maps.list_maps()
 
-The following code adds a new map (which must be instantiated first), sets its transparency to
-25%, turns on contours from 50% to 90% for the second map, and then plots the
-result.
+The following code
+adds a new map (which must be instantiated first), sets its transparency to 25%, turns on contours from 50% to 90% for the second map,
+and then plots the result::
 
 .. plot::
 

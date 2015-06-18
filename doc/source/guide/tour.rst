@@ -2,7 +2,7 @@
 A brief tour of SunPy
 ---------------------
 
-Welcome to the SunPy tutorial! This brief tutorial will walk you through some 
+Welcome to the SunPy tutorial! This brief tutorial will walk you through some
 of the functionality currently offered by SunPy. Start by reading this tutorial
 and trying out some of the examples demonstrated. Once you've completed the
 tutorial check out the rest of the :doc:`User Guide </guide/index>` for a more
@@ -20,19 +20,19 @@ After running this you can then import the sample data files shortcuts which
 are used below (e.g. sunpy.data.sample) by simply importing the module like so::
 
     import sunpy.data.sample
-    
+
 If the sample files are not available for some reason that you will get an error
 on import.
 
 Maps
 ----
-Maps are the primary data type in SunPy they are spatially and / or temporally aware 
-data arrays. There are maps for a 2D image, a time series of 2D images or temporally aligned 2D images. 
-Making a map of your data is the normally the first step in using SunPy to work with your data. 
+Maps are the primary data type in SunPy they are spatially and / or temporally aware
+data arrays. There are maps for a 2D image, a time series of 2D images or temporally aligned 2D images.
+Making a map of your data is the normally the first step in using SunPy to work with your data.
 
 **Creating a Map**
 
-SunPy supports many different data products from various sources 'out of the box' we 
+SunPy supports many different data products from various sources 'out of the box' we
 shall use SDO's AIA instrument as an example in this tutorial. The general way to create
 a map from one of the supported data products is with the `Map()` class from the `map` submodule.
 
@@ -54,8 +54,8 @@ by creating a lightcurve object. Currently lightcurve supports
 - GOES XRS
 - PROBA2/LYRA
 
-A lightcurve consits of two parts; times and measurements taken at those times. The 
-data can either be in your current Python session, alternatively within a local or 
+A lightcurve consists of two parts; times and measurements taken at those times. The
+data can either be in your current Python session, alternatively within a local or
 remote file. Let's create some fake data and pass it into a lightcurve object::
 
     >>> from sunpy.lightcurve import LightCurve
@@ -68,17 +68,17 @@ so a default set of times are generated.
 Spectra
 -------
 
-SunPy has spectral support for instruments which have such a capacity. CALLISTO, 
-an international network of Solar Radio Spectrometers, is a specfic example.
+SunPy has spectral support for instruments which have such a capacity. CALLISTO,
+an international network of Solar Radio Spectrometers, is a specific example.
 Below is the example built into sunpy::
-    
+
     import matplotlib.pyplot as plt
     import sunpy.spectra
 
     from sunpy.spectra.sources.callisto import CallistoSpectrogram
     image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_IMAGE)
-    
-    image.peek()        
+
+    image.peek()
 
 .. image:: ../images/spectra_ex1.png
 
@@ -97,7 +97,7 @@ Try typing the below example into your interactive Python shell::
     aia.peek()
 
 If everything has been configured properly you should see an AIA image with
-a red colormap, a colorbar on the right-hand side and a title and some 
+a red colormap, a colorbar on the right-hand side and a title and some
 labels.
 
 .. image:: ../images/plotting_ex1.png
@@ -114,7 +114,7 @@ SunPy with matplotlib::
     import matplotlib.pyplot as plt
 
     aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    
+
     fig = plt.figure()
     ax = plt.subplot(111)
 
@@ -131,9 +131,9 @@ This should output something like the image below:
 Solar Physical Constants
 ------------------------
 
-SunPy contains a convienient list of solar-related physical constants. Here is 
+SunPy contains a convenient list of solar-related physical constants. Here is
 a short bit of code to get you started: ::
-    
+
     from sunpy.sun import constants as con
 
     # one astronomical unit (the average distance between the Sun and Earth)
@@ -142,19 +142,19 @@ a short bit of code to get you started: ::
     # the solar radius
     print con.radius
 
-Not all constants have a shortcut assigned to them (as above). The rest of the constants 
+Not all constants have a shortcut assigned to them (as above). The rest of the constants
 are stored in a dictionary. The following code grabs the dictionary and gets all of the
 keys.::
 
     solar_constants = con.physical_constants
     solar_constants.keys()
-    
+
 You can also use the following function to print out a table of all of the values
 available. ::
 
     con.print_all()
 
-These constants are provided as a convenience so that everyone is using the same 
+These constants are provided as a convenience so that everyone is using the same
 (accepted values). More will be added over time.
 
 Quantities and Units
@@ -291,14 +291,14 @@ and times. Here is a short example: ::
 
     # parsing a standard time strings
     sunpy.time.parse_time('2004/02/05 12:00')
-    
-    # This returns a datetime object. All SunPy functions which require 
+
+    # This returns a datetime object. All SunPy functions which require
     # time as an input sanitize the input using parse_time.
     sunpy.time.day_of_year('2004-Jul-05 12:00:02')
-    
+
     # the julian day
     sunpy.time.julian_day((2010,4,30))
-    
+
     # TimeRange objects are useful for representing ranges of time
     sunpy.time.time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
     time_range.center()
@@ -326,19 +326,19 @@ The below example demonstrates a simple query for SOHO EIT data using the
 non-interactive version of the main API::
 
     from sunpy.net import vso
-    
+
     # create a new VSOClient instance
     client = vso.VSOClient()
-    
+
     # build our query
     result = client.query(
         vso.attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
         vso.attrs.Instrument('eit')
     )
-    
+
     # print the number of matches
     print("Number of records found: %d " % result.num_records())
-   
+
     # download matches to /download/path
     res = client.get(result, path="/download/path/{file}").wait()
 
@@ -350,10 +350,10 @@ Database Package
 ----------------
 
 The database package offers the possibility to save retrieved data (e.g. via the
-:mod:'sunpy.net.vso' package) onto a local or remote database. The database may be 
-a single file located on a local hard drive (if a SQLite database is used) or a 
+:mod:'sunpy.net.vso' package) onto a local or remote database. The database may be
+a single file located on a local hard drive (if a SQLite database is used) or a
 local or remote database server.
-This makes it possible to fetch required data from the local database instead 
+This makes it possible to fetch required data from the local database instead
 of downloading it again from a remote server.
 
 Querying a database is straightforward, as this example using VSO, shows. The example
@@ -380,9 +380,9 @@ demonstrates the useful feature which prevents storing the same data twice::
     2
 
 
-Explanation: first, entries is None because the query has never been used for querying 
-the database -> query the VSO, add new entries to database, remember query hash. 
-In the second fetch, entries is not None because the query has already been used and 
+Explanation: first, entries is None because the query has never been used for querying
+the database -> query the VSO, add new entries to database, remember query hash.
+In the second fetch, entries is not None because the query has already been used and
 returns a list of database entries.
 
 Querying Helioviewer.org
@@ -393,18 +393,18 @@ including generating a PNG and downloading a `JPEG 2000 <http://wiki.helioviewer
 image and loading it into a SunPy Map.
 
 
-A simple example of a helioviewer quiery is::
+A simple example of a helioviewer query is::
 
     from sunpy.net.helioviewer import HelioviewerClient
-    
+
     hv = HelioviewerClient()
     hv.download_png('2099/01/01', 4.8, "[SDO,AIA,AIA,304,1,100]", x0=0, y0=0, width=512, height=512)
 
-This downloads a PNG image of the latest AIA 304 image available on 
-Helioviewer.org in the `download_png` command 4.8 refers to the image resolution 
-in arcseconds per pixel (larger values mean lower resolution), the "1" and "100" in the 
-layer string refer to the visibility (visible/hidden) and opacity, 
-x0 and y0 are the center points about which to focus and the width and height 
+This downloads a PNG image of the latest AIA 304 image available on
+Helioviewer.org in the `download_png` command 4.8 refers to the image resolution
+in arcseconds per pixel (larger values mean lower resolution), the "1" and "100" in the
+layer string refer to the visibility (visible/hidden) and opacity,
+x0 and y0 are the center points about which to focus and the width and height
 are the pixel values for the image dimensions.
 
 The result is:
