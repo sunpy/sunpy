@@ -430,7 +430,7 @@ The example codes in the Guide section of the docs are configured with the Sphin
 This will test the example code to make sure it runs correctly, it can be executed
 using: ::
 
-  sphinx-build -t doctest -b doctest ./ _build
+  sphinx-build -t doctest -b doctest ./ ../_build
 
 from inside the ``doc/source`` folder.
 
