@@ -479,11 +479,11 @@ class JSOCClient(object):
         # Extract and format segment
         if segment != '':
             segment = '{{{segment}}}'.format(segment=segment)
-        
+
         sample = kwargs.get('sample', '')
         if sample:
-            sample = '@{}s'.format(sample.to(u.s).value)
-        
+            sample = '@{}s'.format(sample)
+
         dataset = '{series}[{start}-{end}{sample}]{wavelength}{segment}'.format(
                    series=series, start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                    end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
