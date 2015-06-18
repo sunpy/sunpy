@@ -25,7 +25,7 @@ created using the Map factory sunpy.map.Map.
 .. Todo:
     1. Map factory and registration
     2. MapBase and Generic Map
-    3. MapMeta and the seperation from the file io
+    3. MapMeta and the separation from the file io
 
 
 Creating Map Objects
@@ -65,7 +65,7 @@ Map Classes
 -----------
 There are a series of base map classes which are specialised for each
 instrument. These subclass GenericMap and then register with
-the Map factory class, which will direct instantiation of an instrument class if the correct
+the Map factory class, which will be direct instantiation of an instrument class if the correct
 parameters are met.
 
 .. automodapi:: sunpy.map
@@ -82,14 +82,13 @@ Map classes can be registered with the Map factory, even if the new class is not
 officially part of SunPy.  This is good for prototyping new instruments.  For
 example, to add a Map type for a future instrument, consider this code skeleton:
 
-.. code-block:: python
+    import sunpy
 
-    import sunpy.map
-
-    class FutureMap(sunpy.map.GenericMap):
+    class FutureMap(sunpy.GenericMap):
 
         def __init__(self, data, header, **kwargs):
-            super(self, sunpy.map.GenericMap).__init__(data, header, **kwargs)
+
+            GenericMap.__init__(self, data, header, **kwargs)
 
             # Any Future Instrument specific keyword manipulation
 

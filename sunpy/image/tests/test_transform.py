@@ -6,7 +6,7 @@ from skimage import transform as tf
 import skimage.data as images
 import pytest
 
-# Define test image first so it's accessable to all functions.
+# Define test image first so it's accessible to all functions.
 original = images.camera().astype('float')
 
 # Tolerance for tests
@@ -28,7 +28,7 @@ def compare_results(expect, result, allclose=True):
     res = result[1:-1, 1:-1]
     t1 = abs(exp.mean() - res.mean()) <= rtol*exp.mean()
 
-    #Don't do the allclose test for scipy as the bicubic algorthm has edge effects
+    #Don't do the allclose test for scipy as the bicubic algorithm has edge effects
     if allclose:
         t2 = np.allclose(exp, res, rtol=rtol)  #TODO: Develop a better way of testing this
     else:

@@ -368,7 +368,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     Returns
     -------
     lytaf : `numpy.recarray`
-        Containsing the various parameters stored in the LYTAF files.
+        Containing the various parameters stored in the LYTAF files.
 
     Notes
     -----

@@ -2,7 +2,7 @@
 Fundamental Solar Physical Constants
 ------------------------------------
 These constants are taken from various sources. The structure of this module is heavily
-based on if not directly copied from the SciPy constants module but contains olar
+based on if not directly copied from the SciPy constants module but contains Solar
 Physical constants.
 
 Object
