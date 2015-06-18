@@ -39,8 +39,8 @@ may vary. SunPy can also create maps from the jpg2000 files from
 
 2. Creating Custom Maps
 -----------------------
-It is also possible to create maps using custom data from a simulation for
-example. To do this you need to provide `~sunpy.map.Map` with both the data array as
+It is also possible to create maps using custom data (e.g. from a simulation).
+To do this you need to provide `~sunpy.map.Map` with both the data array as
 well as some basic meta information. If no header is given then some default
 values as assumed. Here is a simple example::
 
@@ -85,15 +85,16 @@ from the source file.
 
 4. Getting at the data
 ----------------------
-The data in a SunPy Map object is accessible through the `~sunpy.map.GenericMap.data` attribute.
-Currently, the data is implemented as a NumPy `~numpy.ndarray`, so for example, to get
+The data in a SunPy Map object is accessible through the
+`~sunpy.map.GenericMap.data` attribute.  The data is implemented as a
+NumPy `~numpy.ndarray` or `~numpy.ma.MaskedArray`, so for example, to get
 the 0th element in the array ::
 
     my_map.data[0,0]
     my_map.data[0][0]
 
-One important fact to remember which is initially confusing is that the first
-index is for the y direction while the second index is for the x direction!
+One important fact to remember is that the first
+index is for the y direction while the second index is for the x direction.
 For more information about indexing please refer to the
 `Numpy documentation <http://www.scipy.org/Tentative_NumPy_Tutorial#head-864862d3f2bb4c32f04260fac61eb4ef34788c4c>`_.
 Common `~numpy.ndarray` attributes, such as `~numpy.ndarray.shape` and `~numpy.ndarray.dtype`, are accessible through
@@ -102,31 +103,43 @@ the SunPy `~sunpy.map.GenericMap` object ::
     my_map.shape
     my_map.dtype
 
-If you'd like to use the data in a SunPy `~sunpy.map.GenericMap` object elsewhere, you can use ::
+If you'd like to use the data in a SunPy `~sunpy.map.GenericMap` object
+elsewhere, you can use ::
 
     var = my_map.data
     # or
     var = my_map.data.copy()
 
-Basic statistical functions on the data array are also passed through to Map
+Python makes use of pointers so if you want to alter the data and keep the
+original data in the map intact make sure to copy it.
+
+Some basic statistical functions on the data array are also passed through to Map
 objects::
 
     my_map.min()
     my_map.max()
     my_map.mean()
 
-5. Creating a plot of your map
-------------------------------
-The SunPy `~sunpy.map.GenericMap` object has its own built-in plot methods so that it is easy to
-quickly view your map on the screen. To create a plot just type::
+but you can also access all the other `~numpy.ndarray` functions and attributes
+but accessing the data array directly. For example,
+
+    my_map.data.std()
+
+5. Plotting
+-----------
+As is true of all of the SunPy data objects, the SunPy `~sunpy.map.GenericMap`
+object (and all of its instrument-specific subclasses) has its
+own built-in plot methods so that it is easy to
+quickly view your map. To create a plot just type::
 
     my_map.peek()
 
-This will open a matplotlib plot right on your screen.
+This will open a matplotlib plot on your screen.
 In addition, to enable users to modify the plot it is possible to grab the
 matplotlib figure object by using the `~sunpy.map.GenericMap.plot()` command.
 This makes it possible to use the SunPy plot as the foundation for a
-more complicated figure.
+more complicated figure. For a bit more information about this and some
+examples see :ref:`plotting`.
 
 .. note::
 
@@ -137,8 +150,141 @@ more complicated figure.
    is not met, when the map is plotted a warning will be issued. You can create
    an oriented map by using `~sunpy.map.GenericMap.rotate()` before you plot the Map.
 
-6. Overlaying Maps
-------------------
+7. Plotting Keywords
+********************
+
+For Map `~matplotlib.pyplot.imshow()` does most of the heavy
+lifting in the background while SunPy makes a number of choices for you so that
+you don't have to (e.g. colortable, plot title). Changing these defaults
+is made possible through a simple interface. You can pass any
+`~matplotlib.pyplot.imshow()` keyword into
+the plot command to override the defaults for that particular plot. The following example
+changes the default AIA color table to use an inverse Grey color table::
+
+    import sunpy.map
+    import sunpy.data.sample
+    import matplotlib.pyplot as plt
+    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+
+    fig = plt.figure()
+    smap.plot(cmap=plt.Greys_r)
+    plt.show()
+
+You can view or make changes to the default settings through the `plot_settings` property.
+In the following example we change the title of the plot::
+
+    import sunpy.map
+    import sunpy.data.sample
+    import matplotlib.colors as colors
+    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    smap.plot_settings['title'] = "My Second SunPy Plot"
+
+    fig = plt.figure()
+    smap.plot()
+    plt.show()
+
+
+8. Colormaps and Normalization
+******************************
+
+Image data is generally shown in false color in order to better identify it or
+to better visualize structures in the image. Matplotlib handles this colormapping
+process through the "~matplotlib.colors" module. This process involves two steps:
+the data array is first mapped onto the range 0-1 using an instance of
+"~matplotlib.colors.Normalize" or a subclass; then this number is mapped to a
+color using an instance of a subclass of a "~matplotlib.colors.Colormap".
+
+SunPy provides the colormaps for each mission as defined by the mission teams.
+The Map object chooses the appropriate colormap for you when it is created as
+long as it recognizes the instrument. The following example will show you all of the
+colormaps available::
+
+    import matplotlib.pyplot as plt
+    import sunpy.cm
+
+    # Access SunPy colormaps through matplotlib
+    # You need to import sunpy.cm or sunpy.map for this to work.
+    cmap = plt.get_cmap('sdoaia171')
+
+    # Get a list of SunPy colormaps
+    sunpy.cm.cmlist.keys()
+
+    # you can also get a visual representation of all of the color tables
+    sunpy.cm.show_colormaps()
+
+
+.. image:: ../images/plotting_ex2.png
+
+These can be used with the standard commands to change the colormap. So for
+example if you wanted to plot an AIA image but use an EIT colormap, you would
+do so as follows::
+
+    import sunpy.map
+    import sunpy.data.sample
+    import matplotlib.pyplot as plt
+
+    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    cmap = plt.get_cmap('sohoeit171')
+
+    fig = plt.figure()
+    ax = plt.subplot(1,1,1)
+    smap.plot(cmap=cmap)
+    plt.show()
+
+or you can just change the colormap for the map itself as follows::
+
+    cmap.plot_settings['cmap'] = plt.get_cmap('sohoeit171')
+
+The normalization is also set automatically and is chosen so that all the
+data from minimum to maximum is displayed as best as possible for most cases.
+This means that it is never necessary to touch the data such as applying a function
+such sqrt or log to the data to make your plot look good.
+There are many normalizations available from matplotlib such as '~matplotlib.colors.LogNorm', or
+'~matplotlib.colors.PowerNorm'. Other
+`more exotic normalizations <http://physics.mnstate.edu/craig/apy10/visualization/index.html>`_ are also
+made available from astropy.  Just like the colormap the default normalization
+ can be changed through the plot_settings dictionary or directly for the individual
+ plot by passing a keyword argument. The following example shows the difference between
+a linear and logarithmic normalization on an AIA image:
+
+    import sunpy.map
+    import sunpy.data.sample
+    import matplotlib.pyplot as plt
+    import matplotlib.colors as colors
+
+    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+
+    fig = plt.figure()
+    ax1 = fig.add_subplot(2,1,1)
+    smap.plot(norm=colors.Normalize())
+    plt.colorbar()
+    ax2 = fig.add_subplot(2,1,2)
+    smap.plot(norm=colors.LogNorm())
+    fig.subplots_adjust(hspace=0.4)
+    plt.colorbar()
+    plt.show()
+
+Note how the color in the colorbar does not change since these two maps share
+the same colormap while the data values associated with each color do because
+the normalization is different.
+
+8. Masking and Clipping Data
+----------------------------
+It is often necessary for the purposes of display or otherwise to ignore data
+above or below a particular value. For example large data value could be due to
+cosmic ray hits and should be ignored. The most straightforward way to ignore
+this data in plots without altering the data is to clip it. This can be achieved
+very easily when initializing the normalization variable. For example::
+
+    norm=colors.Normalize(vmin=smap.min(), vmax=smap.mean() + 3 *smap.std())
+
+This clip out many of the brightest pixels. If you'd like to see what areas of
+your images got clipped Another more useful method is to
+make use of a masked data array.
+
+6. Composite Maps and Overlaying Maps
+-------------------------------------
+
 The `Map()` method described above can also handle a list of maps. If a list in
 inputs is supplied, `Map()` will return a list of maps as the output.  However,
 if the 'composite' keyword is set to True, then a `~sunpy.map.CompositeMap` object is
@@ -206,7 +352,7 @@ Note that an array is returned only if all the maps have the same
 shape.  If this is not true, an error (ValueError) is returned.  If all the
 maps have nx pixels in the x-direction, and ny pixels in the y-direction,
 and there are n maps in the mapcube, the `~numpy.ndarray` array that is
-returned has shape (ny, nx, nt).  The data of the first map in the `~sunpy.map.MapCube`
+returned has shape (ny, nx, n).  The data of the first map in the `~sunpy.map.MapCube`
 appears in the `~numpy.ndarray` in position ``[:, :, 0]``, the data of second map in
 position ``[:, :, 1]``, and so on.  The order of maps in the `~sunpy.map.MapCube` is
 reproduced in the returned `~numpy.ndarray`.
