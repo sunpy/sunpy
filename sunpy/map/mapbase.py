@@ -15,7 +15,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import patches
 from matplotlib import cm
-from matplotlib import colors
+from astropy.visualization.mpl_normalize import ImageNormalize
+from astropy import visualization
 
 import astropy.wcs
 from .nddata_compat import NDDataCompat as NDData
@@ -138,7 +139,7 @@ class GenericMap(NDData):
         if self.dtype == np.uint8:
             norm = None
         else:
-            norm = colors.Normalize(np.nanmin(self.data), np.nanmax(self.data))
+            norm = ImageNormalize(stretch=visualization.AsinhStretch(0.01))
         # Visualization attributes
         self.plot_settings = {'cmap': cm.gray,
                               'norm': norm,
