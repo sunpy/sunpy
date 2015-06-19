@@ -9,13 +9,12 @@ An region of interest (ROI) is an object that contains some basic information ab
 
 You can create an ROI object with the following: ::
 
-    from sunpy.roi import *
-    result = roi(times=['2011-02-15 04:34:09','2011-02-15 04:48:21'],description='UV occult.',source='LYRA LYTAF')
+    >>> from sunpy.roi import *
+    >>> result = roi(times=['2011-02-15 04:34:09','2011-02-15 04:48:21'],description='UV occult.',source='LYRA LYTAF')
 
 This creates an roi called result for the specific time range. Querying the newly created ROI gives the following: ::
 
-    In [4]: result
-    Out[4]: 
+    >>> result
     SunPy Region-of-interest (ROI) object
     -------------------------------------
     Source: 		LYRA LYTAF

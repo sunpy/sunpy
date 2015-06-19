@@ -13,13 +13,13 @@ Sample Data
 This tour makes use of a number of sample data files which you will need to
 download. To download the sample files simply run the following command::
 
-    import sunpy.data
-    sunpy.data.download_sample_data()
+    >>> import sunpy.data
+    >>> sunpy.data.download_sample_data()
 
 After running this you can then import the sample data files shortcuts which
 are used below (e.g. sunpy.data.sample) by simply importing the module like so::
 
-    import sunpy.data.sample
+    >>> import sunpy.data.sample
 
 If the sample files are not available for some reason that you will get an error
 on import.
@@ -40,7 +40,7 @@ a map from one of the supported data products is with the `Map()` class from the
 
 .. plot::
     :include-source:
-    
+
     import sunpy.data.sample
     import sunpy.map
     aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
@@ -59,7 +59,7 @@ remote file. Let's create some fake data and pass it into a lightcurve object.
 
 .. plot::
     :include-source:
-    
+
     import sunpy.data.sample
     from sunpy.lightcurve import LightCurve
     times = np.arange(1000) * 2.0
@@ -123,25 +123,25 @@ Solar Physical Constants
 SunPy contains a convenient list of solar-related physical constants. Here is
 a short bit of code to get you started: ::
 
-    from sunpy.sun import constants as con
+    >>> from sunpy.sun import constants as con
 
     # one astronomical unit (the average distance between the Sun and Earth)
-    print con.au
+    >>> print con.au
 
     # the solar radius
-    print con.radius
+    >>> print con.radius
 
 Not all constants have a shortcut assigned to them (as above). The rest of the constants
 are stored in a dictionary. The following code grabs the dictionary and gets all of the
 keys.::
 
-    solar_constants = con.physical_constants
-    solar_constants.keys()
+    >>> solar_constants = con.physical_constants
+    >>> solar_constants.keys()
 
 You can also use the following function to print out a table of all of the values
 available. ::
 
-    con.print_all()
+    >>> con.print_all()
 
 These constants are provided as a convenience so that everyone is using the same
 (accepted values). More will be added over time.
@@ -276,21 +276,21 @@ Working with Times
 SunPy also contains a number of convenience functions for working with dates
 and times. Here is a short example: ::
 
-    import sunpy.time
+    >>> import sunpy.time
 
     # parsing a standard time strings
-    sunpy.time.parse_time('2004/02/05 12:00')
+    >>> sunpy.time.parse_time('2004/02/05 12:00')
 
     # This returns a datetime object. All SunPy functions which require
     # time as an input sanitize the input using parse_time.
-    sunpy.time.day_of_year('2004-Jul-05 12:00:02')
+    >>> sunpy.time.day_of_year('2004-Jul-05 12:00:02')
 
     # the julian day
-    sunpy.time.julian_day((2010,4,30))
+    >>> sunpy.time.julian_day((2010,4,30))
 
     # TimeRange objects are useful for representing ranges of time
-    sunpy.time.time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
-    time_range.center()
+    >>> sunpy.time.time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
+    >>> time_range.center()
 
 For more information about working with time in SunPy checkout the :doc:`time guide <time>`.
 
@@ -314,22 +314,22 @@ non-interactive versions available, depending on the type of work you are doing.
 The below example demonstrates a simple query for SOHO EIT data using the
 non-interactive version of the main API::
 
-    from sunpy.net import vso
+    >>> from sunpy.net import vso
 
     # create a new VSOClient instance
-    client = vso.VSOClient()
+    >>> client = vso.VSOClient()
 
     # build our query
-    result = client.query(
-        vso.attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
-        vso.attrs.Instrument('eit')
+    >>> result = client.query(
+    ...     vso.attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
+    ...     vso.attrs.Instrument('eit')
     )
 
     # print the number of matches
-    print("Number of records found: %d " % result.num_records())
+    >>> print("Number of records found: %d " % result.num_records())
 
     # download matches to /download/path
-    res = client.get(result, path="/download/path/{file}").wait()
+    >>> res = client.get(result, path="/download/path/{file}").wait()
 
 Note that specifying a path is optional and if you do not specify one the files
 will simply be downloaded into a temporary directory (e.g. /tmp/xyz).
