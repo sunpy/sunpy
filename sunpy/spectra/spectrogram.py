@@ -689,11 +689,11 @@ class Spectrogram(Parent):
         Parameters
         ----------
         min\_ : float or int
-            New minimum value in the resulting spectogram.
+            New minimum value in the resulting spectrogram.
         max\_ : float or int
-            New maximum value in the resulting spectogram.
+            New maximum value in the resulting spectrogram.
         dtype : np.dtype
-            Data-type of the resulting spectogram.
+            Data-type of the resulting spectrogram.
         """
         if vmax == vmin:
             raise ValueError("Maximum and minimum must be different.")
@@ -713,7 +713,7 @@ class Spectrogram(Parent):
         Parameters
         ----------
         frequency : float or int
-            Unknown frequency for which to lineary interpolate the intensities.
+            Unknown frequency for which to linearly interpolate the intensities.
             freq_axis[0] >= frequency >= self_freq_axis[-1]
         """
         lfreq, lvalue = None, None
@@ -989,7 +989,7 @@ class LinearTimeSpectrogram(Spectrogram):
         arr = mk_arr((data.shape[0], size), dtype_)
         time_axis = np.zeros((size,))
         sx = 0
-        # Amount of pixels left out due to nonlinearity. Needs to be
+        # Amount of pixels left out due to non-linearity. Needs to be
         # considered for correct time axes.
         sd = 0
         for x, elem in izip(xs, specs):
@@ -1168,7 +1168,7 @@ class LinearTimeSpectrogram(Spectrogram):
         ----------
         start : None or datetime or parse_time compatible string or time string
             Start time of the part of the spectrogram that is returned. If the
-            measurement only spans over one day, a colon seperated string
+            measurement only spans over one day, a colon separated string
             representing the time can be passed.
         end : None or datetime or parse_time compatible string or time string
             See start.

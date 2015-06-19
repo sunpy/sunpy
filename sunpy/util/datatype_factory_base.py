@@ -73,7 +73,7 @@ class BasicRegistrationFactory(object):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types idenfitied ({0}).  Specify enough keywords to guarantee unique type identification.".format(n_matches))
+            raise MultipleMatchError("Too many candidate types identified ({0}).  Specify enough keywords to guarantee unique type identification.".format(n_matches))
 
         # Only one is found
         WidgetType = candidate_widget_types[0]
@@ -85,7 +85,7 @@ class BasicRegistrationFactory(object):
 
         If `validation_function` is not specified, tests `WidgetType` for
         existence of any function in in the list `self.validation_functions`,
-        which is a list of strings which must be callable class attribut
+        which is a list of strings which must be callable class attribute
 
         Parameters
         ----------

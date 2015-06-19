@@ -6,7 +6,6 @@
 from __future__ import absolute_import
 
 from abc import ABCMeta, abstractmethod
-import collections
 import os
 
 from sqlalchemy.orm import make_transient
@@ -155,7 +154,7 @@ class RemoveEntry(DatabaseOperation):
         try:
             self.session.delete(self.entry)
         except InvalidRequestError:
-            # self.database_entry cannot be removed becaused it's not stored in
+            # self.database_entry cannot be removed because it's not stored in
             # the database
             raise NoSuchEntryError(self.entry)
 
