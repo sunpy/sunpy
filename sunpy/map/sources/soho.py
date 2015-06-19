@@ -6,7 +6,6 @@ __email__ = "keith.hughitt@nasa.gov"
 
 import numpy as np
 from matplotlib import colors
-import astropy.units as u
 
 from sunpy.map import GenericMap
 from sunpy.sun import constants
@@ -15,7 +14,8 @@ from sunpy.cm import cm
 
 __all__ = ['EITMap', 'LASCOMap', 'MDIMap']
 
-def _dsunAtSoho(date, rad_d, rad_1au = None):
+
+def _dsunAtSoho(date, rad_d, rad_1au=None):
     """Determines the distance to the Sun from SOhO following
     d_{\sun,Object} =
             D_{\sun\earth} \frac{\tan(radius_{1au}[rad])}{\tan(radius_{d}[rad])}

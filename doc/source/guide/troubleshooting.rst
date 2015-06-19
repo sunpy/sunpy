@@ -25,10 +25,10 @@ method
     sunpy/map/map.py:829: Warning: The C extension sunpy.image.Crotate is not installed, falling back to the interpolation='spline' of order=3
       warnings.warn("The C extension sunpy.image.Crotate is not installed, falling back to the interpolation='spline' of order=3" ,Warning)
 
-What happens is, because the C-API extension is not found, the rotate() function 
+What happens is, because the C-API extension is not found, the rotate() function
 defaults to the spline interpolation method of order 3 which is implemented in scipy.
 
-To fix the C-API you should try and reinstall SunPy, if this still fails please 
+To fix the C-API you should try and reinstall SunPy, if this still fails please
 ask the mailing list for assistance.
 
 .. _sunpy-version:
@@ -47,7 +47,7 @@ To find out your sunpy version number, import it and print the
 System Info
 ===========
 
-To quickly collect information on your system, you can use our convienience function
+To quickly collect information on your system, you can use our convenience function
 ``system_info`` which you can run through: ::
 
     import sunpy
@@ -57,16 +57,16 @@ The output should look something like: ::
 
     ==========================================================
      SunPy Installation Information
-    
+
      Sunday, 18. November 2012 11:06PM UT
     ==========================================================
-    
+
     ###########
      General
     ###########
     OS: Mac OS X 10.8.2 (i386)
     Python: 2.7.3 (64bit)
-    
+
     ####################
      Required libraries
     ####################
@@ -76,7 +76,7 @@ The output should look something like: ::
     Matplotlib: 1.2.x
     PyFITS: 3.0.8
     pandas: 0.8.1
-    
+
     #######################
      Recommended libraries
     #######################
@@ -94,7 +94,7 @@ and printing the ``__file__`` attribute::
 
     import sunpy
     sunpy.__file__
- 
+
 .. _locating-matplotlib-config-dir:
 
 :file:`.sunpy` directory location
@@ -161,6 +161,6 @@ If not, please provide the following information in your e-mail to the
     problem.
 
 You will likely get a faster response writing to the mailing list than
-filing a bug in the `bug tracker <http://github.com/sunpy/sunpy/issues>`_.  
-If your problem has been determined to be a bug and can not be quickly solved, the issues 
+filing a bug in the `bug tracker <http://github.com/sunpy/sunpy/issues>`_.
+If your problem has been determined to be a bug and can not be quickly solved, the issues
 may be filed a bug in the tracker so the issue doesn't get lost.

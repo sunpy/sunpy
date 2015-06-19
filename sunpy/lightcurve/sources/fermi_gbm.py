@@ -4,22 +4,19 @@ from __future__ import absolute_import
 
 
 import urlparse
-import warnings
 from collections import OrderedDict
 
 import numpy as np
 import matplotlib.pyplot as plt
-import datetime
 import pandas
 
 from sunpy.io.fits import fits
 from sunpy.instr import fermi
 from sunpy.lightcurve import LightCurve
-from sunpy.time import parse_time
-
 
 
 __all__ = ['GBMSummaryLightCurve']
+
 
 class GBMSummaryLightCurve(LightCurve):
     """
@@ -28,7 +25,7 @@ class GBMSummaryLightCurve(LightCurve):
     Examples
     --------
     >>> import sunpy
-    
+
     >>> gbm = sunpy.lightcurve.GBMLightCurve.create('2011-06-07')
     >>> gbm.peek()
 
@@ -45,14 +42,14 @@ class GBMSummaryLightCurve(LightCurve):
 
         for d in data_lab:
             axes.plot(self.data.index,self.data[d],label=d)
-        
+
         axes.set_yscale("log")
         axes.set_title('Fermi GBM Summary data ' + self.meta['DETNAM'])
         axes.set_xlabel('Start time: ' + self.data.index[0].strftime('%Y-%m-%d %H:%M:%S UT'))
         axes.set_ylabel('Counts/s/keV')
         axes.legend()
         figure.autofmt_xdate()
-       
+
         plt.show()
 
     @classmethod
@@ -72,10 +69,10 @@ class GBMSummaryLightCurve(LightCurve):
             det = cls._get_closest_detector_for_date(date)
             print 'No detector specified. Detector with smallest mean angle to Sun is ' + str(det)
             print 'Using Detector ' + str(det)
-            print 'For Fermi detector pointing information, use tools in sunpy/instr/fermi' 
+            print 'For Fermi detector pointing information, use tools in sunpy/instr/fermi'
             final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/%d/' + 'current/' +
                                                               'glg_cspec_'+det+'_%y%m%d_v00.pha'))
-        
+
         return final_url
 
     @classmethod
@@ -92,13 +89,13 @@ class GBMSummaryLightCurve(LightCurve):
                 det_angle_values=[]
                 for angle in det_angles[n]:
                     det_angle_values.append(angle.value)
-                    
-                det_angle_means.append(np.mean(det_angle_values)) 
-        
+
+                det_angle_means.append(np.mean(det_angle_values))
+
         best_det = 'n' +str(np.argmin(det_angle_means))
         return best_det
-     
-    
+
+
     @staticmethod
     def _parse_fits(filepath):
         """
@@ -136,7 +133,7 @@ def _bin_data_for_summary(energy_bins,count_data):
     indices=[]
     for e in ebands:
         indices.append(np.searchsorted(energy_bins['e_max'],e))
-        
+
     #rebin the 128 energy channels into some summary ranges
     #4-15 keV, 15 - 25 keV, 25-50 keV, 50-100 keV, 100-300 keV, 300-800 keV, 800 - 2000 keV
     #put the data in the units of counts/s/keV
@@ -147,12 +144,12 @@ def _bin_data_for_summary(energy_bins,count_data):
             counts_in_bands.append(np.sum(count_data['counts'][i][indices[j-1]:indices[j]]) /
                                 (count_data['exposure'][i] * (energy_bins['e_max'][indices[j]] -
                                                               energy_bins['e_min'][indices[j-1]])))
-            
+
         summary_counts.append(counts_in_bands)
 
     return summary_counts
 
-   
+
 def _parse_detector(detector):
     oklist=['n0','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11']
     altlist = [str(i) for i in range(12)]

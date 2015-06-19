@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Some Independant plotting tools, mainly animation UI based.
+Some Independent plotting tools, mainly animation UI based.
 """
 __author__ = "Stuart Mumford"
 __email__ = "stuartmumford@physics.org"
@@ -54,7 +54,7 @@ def add_controls(axes=None, slider=False):
     pad = 0.1 # Padding between axes
     pad_size = Size.Fraction(pad, Size.AxesX(axes))
 
-    #Define size of usefult axes cells, 50% each in x 20% for buttons in y.
+    #Define size of useful axes cells, 50% each in x 20% for buttons in y.
     xsize = Size.Fraction((1.-2.*pad)/3., Size.AxesX(axes))
     ysize = Size.Fraction((1.-2.*pad)/15., Size.AxesY(axes))
 
@@ -85,7 +85,7 @@ def add_controls(axes=None, slider=False):
     start = widgets.Button(bax1, "Start")
     stop = widgets.Button(bax2, "Stop")
     step = widgets.Button(bax3, "Step")
-    #Make dummy refernce to prevent garbage collection
+    #Make dummy reference to prevent garbage collection
     bax1._button = start
     bax2._button = stop
     bax3._button = step

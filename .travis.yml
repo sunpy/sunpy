@@ -17,8 +17,8 @@ cache:
 env:
     global:
         # Modify these to represent the newest versions
-        - LATEST_NUMPY=1.9.1
-        - LATEST_PANDAS=0.15.2
+        - LATEST_NUMPY=1.9.2
+        - LATEST_PANDAS=0.16.2
         # Fixed global vars
         - PYTHON_VERSION=2.7
         - TEST_MODE='offline'
@@ -30,7 +30,7 @@ matrix:
          - os: linux
            env: NUMPY_VERSION=1.8.1
          - os: linux
-           env: PANDAS_VERSION=0.14.1
+           env: PANDAS_VERSION=0.15.2
          - os: linux
            env: TEST_MODE='astropy-dev'
          - os: linux
