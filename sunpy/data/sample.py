@@ -11,7 +11,10 @@ _sampledata_dir = _config.get("downloads", "sample_dir")
 for _key in _sample_files:
     if os.path.isfile(os.path.join(_sampledata_dir, _sample_files[_key])):
         setattr(sys.modules[__name__], _key, os.path.join(_sampledata_dir, _sample_files[_key]))
+        print(os.path.join(_sampledata_dir, _sample_files[_key]))
     else:
         raise ImportError("Sample data file(s) missing. Use sunpy.data.download_sample_data() to get them.")
 
-__all__ = _sample_files.keys()
+file_list = _sample_files
+
+__all__ = _sample_files.keys().append(file_list)
