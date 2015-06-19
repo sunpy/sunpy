@@ -21,7 +21,7 @@ If this happens you will encounter the following warning upon using the rotate
 method
 ::
 
-    rot_map = mymap.rotate(10)
+    >>> rot_map = mymap.rotate(10)
     sunpy/map/map.py:829: Warning: The C extension sunpy.image.Crotate is not installed, falling back to the interpolation='spline' of order=3
       warnings.warn("The C extension sunpy.image.Crotate is not installed, falling back to the interpolation='spline' of order=3" ,Warning)
 
@@ -39,8 +39,8 @@ Obtaining sunpy version
 To find out your sunpy version number, import it and print the
 ``__version__`` attribute::
 
-    import sunpy
-    sunpy.__version__
+    >>> import sunpy
+    >>> sunpy.__version__
 
 .. _locating-sunpy-install:
 
@@ -50,8 +50,8 @@ System Info
 To quickly collect information on your system, you can use our convenience function
 ``system_info`` which you can run through: ::
 
-    import sunpy
-    sunpy.util.system_info()
+    >>> import sunpy
+    >>> sunpy.util.system_info()
 
 The output should look something like: ::
 
@@ -92,8 +92,8 @@ This information is especially useful if you are running into a bug and need hel
 You can find what directory sunpy is installed in by importing it
 and printing the ``__file__`` attribute::
 
-    import sunpy
-    sunpy.__file__
+    >>> import sunpy
+    >>> sunpy.__file__
 
 .. _locating-matplotlib-config-dir:
 
@@ -104,8 +104,8 @@ Each user should have a :file:`.sunpy/` directory which should contain a
 :ref:`sunpyrc <customizing-with-sunpyrc-files>` file. To locate your :file:`.sunpy/`
 directory, use :func:`sunpy.print_config`::
 
-    import sunpy as sun
-    sun.print_config()
+    >>> import sunpy as sun
+    >>> sun.print_config()
 
 The output should look something like: ::
 
@@ -143,8 +143,8 @@ If not, please provide the following information in your e-mail to the
 
   * sunpy version::
 
-        import sunpy
-        sunpy.util.system_info()
+        >>> import sunpy
+        >>> sunpy.util.system_info()
 
   * how you obtained sunpy.
 
