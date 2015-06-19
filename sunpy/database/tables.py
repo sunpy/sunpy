@@ -462,7 +462,7 @@ def entries_from_file(file, default_waveunit=None):
     >>> entry.wavemin, entry.wavemax
     (17.400000000000002, 17.400000000000002)
     >>> len(entry.fits_header_entries)
-    112
+    111
 
     """
     headers = fits.get_header(file)
@@ -552,13 +552,13 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
     >>> from pprint import pprint
     >>> from sunpy.data.test import rootdir as fitsdir
     >>> from sunpy.database.tables import entries_from_dir
-    >>> entries = list(entries_from_dir(fitsdir))
+    >>> entries = list(entries_from_dir(fitsdir, default_waveunit='angstrom'))
     >>> len(entries)
-    2
+    38
     >>> # and now search `fitsdir` recursive
-    >>> entries = list(entries_from_dir(fitsdir, True))
+    >>> entries = list(entries_from_dir(fitsdir, True, default_waveunit='angstrom'))
     >>> len(entries)
-    15
+    59
     >>> # print the first 5 items of the FITS header of the first found file
     >>> first_entry, filename = entries[0]
     >>> pprint(first_entry.fits_header_entries[:5])
