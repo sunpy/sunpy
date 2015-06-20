@@ -43,7 +43,7 @@ for key in _files:
     sample_files[key] = os.path.abspath(os.path.join(sampledata_dir, _files[key][0]))
 
 
-def download_sample_data(progress=True):
+def download_sample_data(progress=True, overwrite=True):
     """
     Download the sample data.
 
@@ -51,6 +51,8 @@ def download_sample_data(progress=True):
     ----------
     progress: bool
         Show a progress bar during download
+    overwrite: bool
+        If exist overwrites the downloaded sample data.
 
     Returns
     -------
@@ -59,6 +61,12 @@ def download_sample_data(progress=True):
     number_of_files_fetched = 0
     print("Downloading sample files to " + sampledata_dir)
     for file_name in _files.itervalues():
+        if not overwrite:
+            if os.path.isfile(os.path.join(sampledata_dir,
+                                           file_name[0])):
+                number_of_files_fetched += 1
+                continue
+
         for base_url in _base_urls:
             full_file_name = file_name[0] + file_name[1]
             if url_exists(os.path.join(base_url, full_file_name)):
