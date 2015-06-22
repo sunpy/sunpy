@@ -26,4 +26,4 @@ AIA_193_JP2 = os.path.join(rootdir,
 #
 aia_171_level1 = os.path.join(rootdir, "aia_171_level1.fits")
 
-file_list = glob.glob(sunpy.data.test.rootdir + '/' + '*.[!p]*')
+file_list = glob.glob(os.path.join(rootdi, '*.[!p]*'))
