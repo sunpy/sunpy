@@ -39,7 +39,7 @@ __all__ = ['Map', 'MapFactory']
 class MapFactory(BasicRegistrationFactory):
     """
     Map(*args, **kwargs)
-    
+
     Map factory class.  Used to create a variety of Map objects.  Valid map types
     are specified by registering them with the factory.
 
@@ -201,7 +201,7 @@ class MapFactory(BasicRegistrationFactory):
 
             i += 1
         #TODO:
-        # In the end, if there are aleady maps it should be put in the same
+        # In the end, if there are already maps it should be put in the same
         # order as the input, currently they are not.
         return data_header_pairs, already_maps
 
@@ -260,7 +260,7 @@ class MapFactory(BasicRegistrationFactory):
         if cube:
             return MapCube(new_maps, **kwargs)
 
-        # If the list is meant to be a composite mape, instantiate one
+        # If the list is meant to be a composite map, instantiate one
         if composite:
             return CompositeMap(new_maps, **kwargs)
 
@@ -287,7 +287,7 @@ class MapFactory(BasicRegistrationFactory):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types idenfitied ({0}).  Specify enough keywords to guarantee unique type identification.".format(n_matches))
+            raise MultipleMatchError("Too many candidate types identified ({0}).  Specify enough keywords to guarantee unique type identification.".format(n_matches))
 
         # Only one is found
         WidgetType = candidate_widget_types[0]

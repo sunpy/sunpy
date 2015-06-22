@@ -110,7 +110,7 @@ class GenericMap(NDData):
       notation using equations 32 in Thompson (2006).
 
     * If a CDi_j matrix is provided it is assumed that it can be converted to a
-      PCi_j matrix and CDELT keywords as descirbed in Greisen & Calabretta (2002).
+      PCi_j matrix and CDELT keywords as described in Greisen & Calabretta (2002).
 
     * The 'standard' FITS keywords that are used by this class are the PCi_j
       matrix and CDELT, along with the other keywords specified in the WCS papers.
@@ -504,7 +504,7 @@ scale:\t\t [{dx}, {dy}]
 
         origin : int
             Origin of the top-left corner. i.e. count from 0 or 1.
-            Normally, origin should be 0 when passing numpy indicies, or 1 if
+            Normally, origin should be 0 when passing numpy indices, or 1 if
             passing values from FITS header or map attributes.
             See `~astropy.wcs.WCS.wcs_world2pix` for more information.
 
@@ -538,7 +538,7 @@ scale:\t\t [{dx}, {dy}]
 
         origin : int
             Origin of the top-left corner. i.e. count from 0 or 1.
-            Normally, origin should be 0 when passing numpy indicies, or 1 if
+            Normally, origin should be 0 when passing numpy indices, or 1 if
             passing values from FITS header or map attributes.
             See `~astropy.wcs.WCS.wcs_pix2world` for more information.
 
@@ -755,7 +755,7 @@ scale:\t\t [{dx}, {dy}]
         new_map = deepcopy(self)
 
         if angle is not None:
-            # Calulate the parameters for the affine_transform
+            # Calculate the parameters for the affine_transform
             c = np.cos(np.deg2rad(angle))
             s = np.sin(np.deg2rad(angle))
             rmatrix = np.matrix([[c, -s], [s, c]])
@@ -1042,7 +1042,8 @@ scale:\t\t [{dx}, {dy}]
 
         Returns
         -------
-        matplotlib.axes object
+        lines: list
+            A list of `matplotlib.lines.Line2D` objects that have been plotted.
 
         Notes
         -----
@@ -1051,6 +1052,8 @@ scale:\t\t [{dx}, {dy}]
 
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
+
+        lines = []
 
         # Do not automatically rescale axes when plotting the overlay
         axes.set_autoscale_on(False)
@@ -1087,7 +1090,7 @@ scale:\t\t [{dx}, {dy}]
             if wcsaxes_compat.is_wcsaxes(axes):
                 x = (x*u.arcsec).to(u.deg).value
                 y = (y*u.arcsec).to(u.deg).value
-            axes.plot(x, y, **plot_kw)
+            lines += axes.plot(x, y, **plot_kw)
 
         hg_longitude_deg = np.arange(-180, 180, grid_spacing.to(u.deg).value) + l0
         hg_latitude_deg = np.linspace(-90, 90, num=181)
@@ -1103,11 +1106,11 @@ scale:\t\t [{dx}, {dy}]
             if wcsaxes_compat.is_wcsaxes(axes):
                 x = (x*u.arcsec).to(u.deg).value
                 y = (y*u.arcsec).to(u.deg).value
-            axes.plot(x, y, **plot_kw)
+            lines += axes.plot(x, y, **plot_kw)
 
         # Turn autoscaling back on.
         axes.set_autoscale_on(True)
-        return axes
+        return lines
 
     def draw_limb(self, axes=None, **kwargs):
         """Draws a circle representing the solar limb
@@ -1119,7 +1122,9 @@ scale:\t\t [{dx}, {dy}]
 
             Returns
             -------
-            matplotlib.axes object
+            circ: list
+                A list containing the `matplotlib.patches.Circle` object that
+                has been added to the axes.
 
             Notes
             -----
@@ -1147,7 +1152,7 @@ scale:\t\t [{dx}, {dy}]
         circ = patches.Circle([0, 0], **c_kw)
         axes.add_artist(circ)
 
-        return axes
+        return [circ]
 
     @toggle_pylab
     def peek(self, draw_limb=False, draw_grid=False, gamma=None,
@@ -1234,14 +1239,14 @@ scale:\t\t [{dx}, {dy}]
         Examples
         --------
         #Simple Plot with color bar
-        plt.figure()
-        aiamap.plot()
-        plt.colorbar()
+        >>> aiamap.plot()
+        >>> plt.colorbar()
 
         #Add a limb line and grid
-        aia.plot()
-        aia.draw_limb()
-        aia.draw_grid()
+        >>> aia.plot()
+        >>> aia.draw_limb()
+        >>> aia.draw_grid()
+
         """
 
         #Get current axes
@@ -1283,12 +1288,16 @@ scale:\t\t [{dx}, {dy}]
         kwargs = self._mpl_imshow_kwargs(axes, cmap)
         kwargs.update(imshow_args)
 
-        ret = axes.imshow(self.data, **kwargs)
+        if self.mask is None:
+            ret = axes.imshow(self.data, **kwargs)
+        else:
+            ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **kwargs)
 
         if wcsaxes_compat.is_wcsaxes(axes):
             wcsaxes_compat.default_wcs_grid(axes)
 
         #Set current image (makes colorbar work)
+        plt.sca(axes)
         plt.sci(ret)
         return ret
 
@@ -1297,17 +1306,17 @@ scale:\t\t [{dx}, {dy}]
         Return the keyword arguments for imshow to display this map
         """
         if wcsaxes_compat.is_wcsaxes(axes):
-            kwargs = {'cmap':cmap,
+            kwargs = {'cmap': cmap,
                       'origin': 'lower',
-                      'norm':self.mpl_color_normalizer,
-                      'interpolation':'nearest'}
+                      'norm': self.mpl_color_normalizer,
+                      'interpolation': 'nearest'}
         else:
             # make imshow kwargs a dict
-            kwargs = {'origin':'lower',
-                      'cmap':cmap,
-                      'norm':self.mpl_color_normalizer,
-                      'extent':list(self.xrange.value) + list(self.yrange.value),
-                      'interpolation':'nearest'}
+            kwargs = {'origin': 'lower',
+                      'cmap': cmap,
+                      'norm': self.mpl_color_normalizer,
+                      'extent': list(self.xrange.value) + list(self.yrange.value),
+                      'interpolation': 'nearest'}
 
         return kwargs
 

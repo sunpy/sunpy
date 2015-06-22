@@ -11,7 +11,7 @@ First, we need to create a new ConditionalDispatch
 >>> fun = ConditionalDispatch()
 
 We then can start adding branches, in this case we add a branch for
-even integers, in which case the function applied is a muliplication by
+even integers, in which case the function applied is a multiplication by
 three.
 
 >>> fun.add(lambda x: 3 * x, lambda x: x % 2 == 0, [int])
@@ -47,7 +47,7 @@ that this branch is always executed for floats.
 >>> fun.add(lambda y: 5 * y, None, [float])
 
 Also note that the float branch takes y, while the integer branch takes x.
-Thus, if the user explicitely passes fun(x=1) using a keyword argument, only
+Thus, if the user explicitly passes fun(x=1) using a keyword argument, only
 the integer branch is considered. This can be useful if the user wants
 control over which kind of data they are passing the the function.
 

@@ -16,7 +16,6 @@ Created by Tim van Werkhoven (t.i.m.vanwerkhoven@gmail.com) on 2009-02-11.
 Copyright (c) 2009--2011 Tim van Werkhoven.
 """
 
-from __future__ import absolute_import
 import os
 
 try:
@@ -38,7 +37,7 @@ def read(filename, debug=False):
     filename: string
         Name of file to be read.
     debug: bool, optional
-        Prints versbose debug information.
+        Prints verbose debug information.
 
     Returns
     -------
@@ -70,7 +69,7 @@ def get_header(filename, debug=False):
     filename: string
         Name of file to be read.
     debug: bool, optional
-        Prints versbose debug information.
+        Prints verbose debug information.
 
     Returns
     -------
@@ -103,7 +102,7 @@ def write(filename, data, comments=False, compress=1, debug=False):
         To compress the data or not.
         1 is to compress, 0 is uncompressed
     debug: bool, optional
-        Prints versbose debug information.
+        Prints verbose debug information.
 
     Returns
     -------
@@ -112,7 +111,7 @@ def write(filename, data, comments=False, compress=1, debug=False):
 
     Examples
     --------
-    >>> written = sunpy.io.ana.write(filename, data, comments=Falsem, compress=1)
+    >>> written = sunpy.io.ana.write(filename, data, comments=False, compress=1)
     """
     if _pyana is None:
         raise ImportError("C extension for ANA is missing, please rebuild")# pragma: no cover

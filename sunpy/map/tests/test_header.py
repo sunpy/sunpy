@@ -3,7 +3,7 @@
 import sunpy
 import sunpy.map
 #==============================================================================
-# Test, read, get_header and write through the file independant layer
+# Test, read, get_header and write through the file independent layer
 #==============================================================================
 class TestMapMeta(object):
 
