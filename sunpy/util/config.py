@@ -93,7 +93,7 @@ def _find_config_files():
     config_files.append(os.path.join(module_dir, 'data', 'sunpyrc'))
 
     # if a user configuration file exists, add that to list of files to read
-    # so that any values set there will overide ones specified in the default
+    # so that any values set there will override ones specified in the default
     # config file
     config_path = _get_user_configdir()
 

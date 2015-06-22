@@ -26,7 +26,7 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     rot_type: {'howard' | 'snodgrass' | 'allen'}
         howard: Use values for small magnetic features from Howard et al.
         snodgrass: Use Values from Snodgrass et. al
-        allen: Use values from Allen, Astrophysical Quantities, and simplier equation.
+        allen: Use values from Allen, Astrophysical Quantities, and simpler equation.
     frame_time: {'sidereal' | 'synodic'}
         Choose 'type of day' time reference frame.
 
@@ -169,7 +169,7 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
     longitude, latitude = convert_hpc_hg(x.to(u.arcsec).value,
                                          y.to(u.arcsec).value,
                                          b0_deg=vstart["b0"].to(u.deg).value,
-                                         l0_deg=vstart["l0"].to(u.deg).value, 
+                                         l0_deg=vstart["l0"].to(u.deg).value,
                                          dsun_meters=(constants.au * sun.sunearth_distance(t=dstart)).value,
                                          angle_units='arcsec')
     longitude = Longitude(longitude, u.deg)

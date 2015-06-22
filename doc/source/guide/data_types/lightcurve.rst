@@ -2,16 +2,16 @@
 Lightcurves
 ===========
 
-Time series data are a fundamental part of many data analysis projects as much in 
-heliophysics as other areas. SunPy therefore provides a lightcurve object to deal 
+Time series data are a fundamental part of many data analysis projects as much in
+heliophysics as other areas. SunPy therefore provides a lightcurve object to deal
 with this data type. Thankfully most of the heavy lifting in this area has already been
 done for us. The lightcurve object makes use of the `pandas <http://pandas.pydata.org/>`_
-python module. Pandas is a high-quality and optimized module which is in use in a wide 
-variety of academic and commercial fields, including Finance, Neuroscience, Economics, 
+python module. Pandas is a high-quality and optimized module which is in use in a wide
+variety of academic and commercial fields, including Finance, Neuroscience, Economics,
 Statistics, Advertising, and Web Analytics. The lightcurve object is essentially a wrapper
-around a pandas dataframe object which holds some of the meta-data from the original 
-data source. In this tutorial we provide a quick introduction to 
-the lightcurve object and pandas. We highly recommend any user of the lightcurve object 
+around a pandas dataframe object which holds some of the meta-data from the original
+data source. In this tutorial we provide a quick introduction to
+the lightcurve object and pandas. We highly recommend any user of the lightcurve object
 take a look at the great `pandas documentation <http://pandas.pydata.org/pandas-docs/stable/>`_.
 for more information.
 
@@ -77,7 +77,7 @@ it is easy to quickly view your lightcurve. To create a plot just
 type:
 
     >>> my_lightcurve.peek()
-    
+
 This will open a matplotlib plot on your screen.  In addition, to
 enable users to modify the plot, it is possible to grab the matplotlib
 figure object by using the plot() command instead of the show()
@@ -111,7 +111,7 @@ the 'index' keyword, as is shown below.
 
 This gives the measurements "param1" a set of times, in this case,
 1440 minutes beginning at the current local time.  Under the hood,
-this has created a pandas DataFrame object with a colum name "param1",
+this has created a pandas DataFrame object with a column name "param1",
 with an index of times.
 
 

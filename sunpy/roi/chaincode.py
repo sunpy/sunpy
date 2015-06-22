@@ -9,7 +9,7 @@ class Chaincode(np.ndarray):
     Chaincode(origin, chaincode, xdelta=1, ydelta=1)
 
     A tool to infer some information from chaincodes produced
-    by HELIO Feature Catalogue or Heliphyisics Events Knowledgebase
+    by HELIO Feature Catalogue or Heliophysics Events Knowledgebase
 
     Parameters
     ----------
@@ -77,7 +77,7 @@ class Chaincode(np.ndarray):
 
     def area(self):
         # should we add a mask for possible not flat objects (eg. Sun)?
-        # Check whehter it is a closed object
+        # Check whether it is a closed object
         pass
 
     def length(self):

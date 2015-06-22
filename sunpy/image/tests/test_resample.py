@@ -1,7 +1,6 @@
 # Author: Tomas Meszaros <exo@tty.sk>
 
 import astropy.units as u
-from sunpy import map
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 import pytest
 import os

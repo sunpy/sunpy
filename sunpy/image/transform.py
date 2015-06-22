@@ -64,7 +64,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     geometrical transformation, which by default is :func:`skimage.transform.warp`.
     One can specify using :func:`scipy.ndimage.interpolation.affine_transform` as
     an alternative affine transformation.  The two transformations use different
-    alogrithms and thus do not give identical output.
+    algorithms and thus do not give identical output.
 
     When using for :func:`skimage.transform.warp` with order >= 4 or using
     :func:`scipy.ndimage.interpolation.affine_transform` at all, NaN values will
@@ -78,7 +78,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     use the same algorithm as the IDL rot() function.
     IDL's rot() calls the `POLY_2D <http://www.exelisvis.com/docs/poly_2d.html>`_
     method to calculate the inverse mapping of original to target pixel
-    coordinates. This is a polynominal geometrical transformation.
+    coordinates. This is a polynomial geometrical transformation.
     Then optionally it uses a bicubic convolution interpolation
     algorithm to map the original to target pixel values.
     """

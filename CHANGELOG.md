@@ -18,6 +18,7 @@ Latest
  * `sunpy.cm.get_cmap` no longer defaults to 'sdoaia94'
  * Added database url config setting to be setup by default as a sqlite database in the sunpy working directory
  * Added a few tests for the sunpy.roi module
+ * Added capability for figure-based tests
  * Refactored mapcube co-alignment functionality.
  * Removed sample data from distribution and added ability to download sample files
  * Require JSOC request data calls have an email address attached.
@@ -34,6 +35,7 @@ Latest
  * map.rsun_arcseconds is now map.rsun_obs as it returns a quantity.
  * Map properties are now named tuples rather than dictionaries.
  * net.jsoc can query data series with time sampling by a Sample attribute implemented in vso.
+ * MapCube.plot and MapCube.peek now support a user defined plot_function argument for customising the animation.
 
 0.5.0
 -----
