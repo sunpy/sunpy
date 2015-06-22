@@ -179,7 +179,7 @@ def test_post_fail(recwarn):
     client.request_data(res, return_resp=True)
     w = recwarn.pop(Warning)
     assert issubclass(w.category, Warning)
-    assert "Query 0 retuned status 4 with error Series none is not a valid series accessible from hmidb2." in str(w.message)
+    assert "Query 0 returned status 4 with error Series none is not a valid series accessible from hmidb2." == str(w.message)
     assert w.filename
     assert w.lineno
 
