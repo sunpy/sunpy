@@ -33,6 +33,7 @@ Latest
    x first.
  * map.rsun_arcseconds is now map.rsun_obs as it returns a quantity.
  * Map properties are now named tuples rather than dictionaries.
+ * net.jsoc can query data series with time sampling by a Sample attribute implemented in vso.
 
 0.5.0
 -----
