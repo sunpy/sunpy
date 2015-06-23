@@ -136,8 +136,8 @@ def  test_empty_jsoc_response():
 
 @pytest.mark.online
 def test_query():
-    Jresp = client.query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
-                         attrs.Series('hmi.M_45s'))
+    Jresp = client.query(attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:01:30'),
+                         attrs.Series('hmi.M_45s'),attrs.Sample(90*u.second))
     assert isinstance(Jresp, JSOCResponse)
     assert len(Jresp) == 2
 
@@ -179,7 +179,7 @@ def test_post_fail(recwarn):
     client.request_data(res, return_resp=True)
     w = recwarn.pop(Warning)
     assert issubclass(w.category, Warning)
-    assert "Query 0 retuned status 4 with error Series none is not a valid series accessible from hmidb2." in str(w.message)
+    assert "Query 0 returned status 4 with error Series none is not a valid series accessible from hmidb2." == str(w.message)
     assert w.filename
     assert w.lineno
 
