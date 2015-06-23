@@ -38,6 +38,7 @@ Latest
    better access to plot variables through new plot_settings variable.
  * Huge improvements in Instrument Map doc strings. Now contain instrument
    descriptions as well as reference links for more info.
+ * net.jsoc can query data series with time sampling by a Sample attribute implemented in vso.
  * MapCube.plot and MapCube.peek now support a user defined plot_function argument for customising the animation.
 
 0.5.0
