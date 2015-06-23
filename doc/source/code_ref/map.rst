@@ -33,7 +33,7 @@ Creating Map Objects
 SunPy Map objects are constructed using the special factory
 class `~sunpy.map.Map`: ::
 
->>> x = sunpy.map.Map('file.fits')
+    x = sunpy.map.Map('file.fits')
 
 The result of a call to `~sunpy.map.Map` will be either a `~sunpy.map.mapbase.GenericMap` object,
 or a subclass of `~sunpy.map.mapbase.GenericMap` which either deals with a specific type of data,
@@ -52,9 +52,9 @@ Once a map object has been created using `~sunpy.map.Map` it will be a instance
 or a subclass of the `~sunpy.map.mapbase.GenericMap` class. Irrespective of
 the instrument the map is constructed for, all maps behave the same and are
 interchangeable with one another. It is possible to manipulate the map or access
-meta data about the map from the methods and proprties of the map class.
+meta data about the map from the methods and properties of the map class.
 The following documentation of `~sunpy.map.mapbase.GenericMap` lists the
-attributes and methods that are availible on all Map objects.
+attributes and methods that are available on all Map objects.
 
 .. autoclass:: sunpy.map.mapbase.GenericMap
    :members:
@@ -80,10 +80,9 @@ Writing a new Map Class
 
 Map classes can be registered with the Map factory, even if the new class is not
 officially part of SunPy.  This is good for prototyping new instruments.  For
-example, to add a Map type for a future instrument, consider this code skeleton:
+example, to add a Map type for a future instrument, consider this code skeleton::
 
     import sunpy
-
     class FutureMap(sunpy.GenericMap):
 
         def __init__(self, data, header, **kwargs):
@@ -100,12 +99,10 @@ example, to add a Map type for a future instrument, consider this code skeleton:
             return header.get('instrume', '').startswith('FUTURESCOPE')
 
 Then, to be able to instantiate a FutureMap using the Map() factory, one must
-register the FutureMap type with the factory
-
-.. code-block:: python
+register the FutureMap type with the factory::
 
     sunpy.map.Map.register(FutureMap, FutureMap.is_datasource_for)
 
-If this line is placed correctly, for example in your subpackages __init__.py,
+If this line is placed correctly, for example in your subpackages `__init__.py`,
 it can be guaranteed that the FutureMap is always accessible when your package
 is imported.
