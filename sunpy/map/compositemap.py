@@ -224,11 +224,11 @@ class CompositeMap(object):
         """
         if index is None:
             for i,amap in enumerate(self._maps):
-                if hasattr(amap,'rsun_arcseconds'):
+                if hasattr(amap,'rsun_obs'):
                     index = i
                     break
 
-        index_check = hasattr(self._maps[index],'rsun_arcseconds')
+        index_check = hasattr(self._maps[index],'rsun_obs')
         if not index_check or index is None:
             raise ValueError("Specified index does not have all the required attributes to draw limb.")
 
