@@ -89,6 +89,7 @@ FILE_EM_COR = "goes_chianti_em_cor.csv"
 FILE_EM_PHO = "goes_chianti_em_pho.csv"
 FILE_RAD_COR = "chianti7p1_rad_loss.txt"
 
+
 def get_goes_event_list(timerange, goes_class_filter=None):
     """
     Retrieve list of flares detected by GOES within a given time range.
@@ -142,6 +143,7 @@ def get_goes_event_list(timerange, goes_class_filter=None):
         goes_event_list.append(goes_event)
 
     return goes_event_list
+
 
 def calculate_temperature_em(goeslc, abundances="coronal",
                              download=False, download_dir=None):
@@ -223,7 +225,7 @@ def calculate_temperature_em(goeslc, abundances="coronal",
     >>> from sunpy.instr.goes import calculate_temperature_em
     >>> import sunpy.lightcurve as lc
     >>> time1 = "2014-01-01 00:00:00"
-    >>> time2 = "2014-01-01 00:00:10"
+    >>> time2 = "2014-01-01 00:00:08"
     >>> goeslc = lc.GOESLightCurve.create(time1, time2)
     >>> goeslc.data
                                         xrsa      xrsb
@@ -231,7 +233,6 @@ def calculate_temperature_em(goeslc, abundances="coronal",
     2014-01-01 00:00:02.468999  9.187300e-08  0.000004
     2014-01-01 00:00:04.518999  9.187300e-08  0.000004
     2014-01-01 00:00:06.564999  9.298800e-08  0.000004
-    2014-01-01 00:00:08.615000  9.187300e-08  0.000003
 
     >>> goeslc_new = calculate_temperature_em(goeslc)
     >>> goeslc_new.data
@@ -240,7 +241,6 @@ def calculate_temperature_em(goeslc, abundances="coronal",
     2014-01-01 00:00:02.468999  9.187300e-08  0.000004     6.270239  6.440648e+48
     2014-01-01 00:00:04.518999  9.187300e-08  0.000004     6.273917  6.422208e+48
     2014-01-01 00:00:06.564999  9.298800e-08  0.000004     6.304001  6.350370e+48
-    2014-01-01 00:00:08.615000  9.187300e-08  0.000003     6.277604  6.403795e+48
 
 
     """
@@ -267,6 +267,7 @@ def calculate_temperature_em(goeslc, abundances="coronal",
     lc_new.data["em"] = em.value
 
     return lc_new
+
 
 @u.quantity_input(longflux=u.W/u.m/u.m, shortflux=u.W/u.m/u.m)
 def _goes_chianti_tem(longflux, shortflux, satellite=8,
@@ -355,16 +356,16 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
     Examples
     --------
     >>> from sunpy.instr.goes import _goes_chianti_tem
-    >>> from astropy.units.quantity import Quantity
-    >>> longflux = Quantity([7e-6, 7e-6], unit="MK")
-    >>> shortflux = Quantity([7e-7, 7e-7], unit="cm**(-3)")
+    >>> from astropy.units import Quantity
+    >>> longflux = Quantity([7e-6, 7e-6], unit="W/m/m")
+    >>> shortflux = Quantity([7e-7, 7e-7], unit="W/m/m")
     >>> temp, em = _goes_chianti_tem(longflux, shortflux, satellite=15,
-                                     date='2014-04-16',
-                                     abundances="coronal")
+    ...                              date='2014-04-16',
+    ...                              abundances="coronal")
     >>> temp
-    Quantity< [11.28295376, 11.28295376] MK>
+    <Quantity [ 11.28295376, 11.28295376] MK>
     >>> em
-    Quantity< [  4.78577516e+48,   4.78577516e+48] 1 / cm**3>
+    <Quantity [  4.78577516e+48,  4.78577516e+48] 1 / cm3>
 
     """
     if not download_dir:
@@ -413,6 +414,7 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
                               abundances=abundances, download=download,
                               download_dir=download_dir)
     return temp, em
+
 
 @u.quantity_input(fluxratio=u.dimensionless_unscaled)
 def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
@@ -493,12 +495,13 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
 
     Examples
     --------
+    >>> from astropy.units import Quantity
     >>> from sunpy.instr.goes import _goes_get_chianti_temp
-    >>> fluxratio = np.array([0.1,0.1])
+    >>> fluxratio = Quantity([0.1,0.1])
     >>> temp = _goes_get_chianti_temp(fluxratio, satellite=15,
-                                    abundances="coronal")
+    ...                               abundances="coronal")
     >>> temp
-    array([11.28295376, 11.28295376])
+    <Quantity [ 12.27557778, 12.27557778] MK>
 
     """
     if not download_dir:
@@ -528,7 +531,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
 
     # Initialize lists to hold model data of flux ratio - temperature
     # relationship read in from csv file
-    modeltemp = [] # modelled temperature is in log_10 space in units of MK
+    modeltemp = []  # modelled temperature is in log_10 space in units of MK
     modelratio = []
     # Determine name of column in csv file containing model ratio values
     # for relevant GOES satellite
@@ -559,6 +562,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
     temp = u.Quantity(temp, unit='MK')
 
     return temp
+
 
 @u.quantity_input(longflux=u.W/u.m/u.m, temp=u.MK)
 def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
@@ -646,13 +650,14 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     Examples
     --------
+    >>> import astropy.units as u
     >>> from sunpy.instr.goes import _goes_get_chianti_em
-    >>> longflux = np.array([7e-6,7e-6])
-    >>> temp = np.array([11,11])
+    >>> longflux = u.Quantity([7e-6,7e-6], unit=u.W/u.m/u.m)
+    >>> temp = u.Quantity([11, 11], unit=u.MK)
     >>> em = _goes_get_chianti_em(longflux, temp, satellite=15,
-                                  abundances="coronal")
+    ...                           abundances="coronal")
     >>> em
-    array([  3.45200672e+48,   3.45200672e+48])
+    <Quantity [  3.45200672e+48,  3.45200672e+48] 1 / cm3>
 
     """
     if not download_dir:
@@ -720,6 +725,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     em = u.Quantity(em, unit='cm**(-3)')
 
     return em
+
 
 def calculate_radiative_loss_rate(goeslc, force_download=False,
                                   download_dir=None):
@@ -791,23 +797,31 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
     Examples
     --------
     >>> from sunpy.instr.goes import calculate_radiative_loss_rate
-    >>> from sunpy.lightcurve as lc
+    >>> import sunpy.lightcurve as lc
+    >>> time1 = "2014-01-01 00:00:00"
+    >>> time2 = "2014-01-01 00:00:08"
     >>> goeslc = lc.GOESLightCurve.create(time1, time2)
     >>> goeslc.data
-                               xrsa   xrsb
-    2014-01-01 00:00:00  9.1873e-08  4e-06
-    2014-01-01 00:00:02  9.1873e-08  4e-06
-    2014-01-01 00:00:04  9.1873e-08  4e-06
-    2014-01-01 00:00:06  9.2988e-08  4e-06
-    2014-01-01 00:00:08  9.1873e-08  4e-06
+                                        xrsa      xrsb
+    2014-01-01 00:00:00.421999  9.187300e-08  0.000004
+    2014-01-01 00:00:02.468999  9.187300e-08  0.000004
+    2014-01-01 00:00:04.518999  9.187300e-08  0.000004
+    2014-01-01 00:00:06.564999  9.298800e-08  0.000004
+
     >>> goeslc_new = calculate_radiative_loss_rate(goeslc)
-    >>> goeslc_new.data
-                        xrsa xrsb temperature            em  rad_loss_rate
-    2014-01-01 00:00:00  ...  ...    6.270239  6.440648e+48 5.44914366e+26
-    2014-01-01 00:00:02  ...  ...    6.270239  6.440648e+48 5.44914366e+26
-    2014-01-01 00:00:04  ...  ...    6.273917  6.422207e+48 5.44914366e+26
-    2014-01-01 00:00:06  ...  ...    6.304001  6.350370e+48 5.44914366e+26
-    2014-01-01 00:00:08  ...  ...    6.277604  6.403795e+48 5.44914366e+26
+    >>> goeslc_new.data   # doctest: +NORMALIZE_WHITESPACE
+                                        xrsa      xrsb  temperature            em  \\
+    2014-01-01 00:00:00.421999  9.187300e-08  0.000004     6.270239  6.440648e+48
+    2014-01-01 00:00:02.468999  9.187300e-08  0.000004     6.270239  6.440648e+48
+    2014-01-01 00:00:04.518999  9.187300e-08  0.000004     6.273917  6.422208e+48
+    2014-01-01 00:00:06.564999  9.298800e-08  0.000004     6.304001  6.350370e+48
+    <BLANKLINE>
+                                rad_loss_rate
+    2014-01-01 00:00:00.421999   5.449144e+19
+    2014-01-01 00:00:02.468999   5.449144e+19
+    2014-01-01 00:00:04.518999   5.434659e+19
+    2014-01-01 00:00:06.564999   5.382823e+19
+
 
     """
     if not download_dir:
@@ -922,7 +936,7 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
     >>> em = Quantity([4.0e+48, 4.0e+48], unit="cm**(-3)")
     >>> rad_loss = _calc_rad_loss(temp, em)
     >>> rad_loss["rad_loss_rate"]
-    <Quantity [  3.01851392e+19,   3.01851392e+19] J / s>
+    <Quantity [  3.01851392e+19,  3.01851392e+19] J / s>
     """
     if not download_dir:
         download_dir = DATA_PATH
@@ -1007,6 +1021,7 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
 
     return rad_loss_out
 
+
 def calculate_xray_luminosity(goeslc):
     """
     Calculates GOES solar X-ray luminosity.
@@ -1040,21 +1055,30 @@ def calculate_xray_luminosity(goeslc):
     Examples
     --------
     >>> from sunpy.instr.goes import calculate_xray_luminosity
-    >>> from sunpy.lightcurve as lc
+    >>> import sunpy.lightcurve as lc
+    >>> time1 = "2014-01-01 00:00:00"
+    >>> time2 = "2014-01-01 00:00:08"
     >>> goeslc = lc.GOESLightCurve.create(time1, time2)
     >>> goeslc.data
-                          xrsa   xrsb
-    2014-01-01 00:00:00  7e-07  7e-06
-    2014-01-01 00:00:02  7e-07  7e-06
-    2014-01-01 00:00:04  7e-07  7e-06
-    2014-01-01 00:00:06  7e-07  7e-06
+                                        xrsa      xrsb
+    2014-01-01 00:00:00.421999  9.187300e-08  0.000004
+    2014-01-01 00:00:02.468999  9.187300e-08  0.000004
+    2014-01-01 00:00:04.518999  9.187300e-08  0.000004
+    2014-01-01 00:00:06.564999  9.298800e-08  0.000004
+
     >>> goeslc_new = calculate_xray_luminosity(goeslc)
-    >>> goeslc_new.data
-                          xrsa   xrsb    luminosity_xrsa luminosity_xrsb
-    2014-01-01 00:00:00  7e-07  7e-06     1.96860565e+17  1.96860565e+18
-    2014-01-01 00:00:02  7e-07  7e-06     1.96860565e+17  1.96860565e+18
-    2014-01-01 00:00:04  7e-07  7e-06     1.96860565e+17  1.96860565e+18
-    2014-01-01 00:00:06  7e-07  7e-06     1.96860565e+17  1.96860565e+18
+    >>> goeslc_new.data   # doctest: +NORMALIZE_WHITESPACE
+                                        xrsa      xrsb  luminosity_xrsa \\
+    2014-01-01 00:00:00.421999  9.187300e-08  0.000004     2.498319e+16
+    2014-01-01 00:00:02.468999  9.187300e-08  0.000004     2.498319e+16
+    2014-01-01 00:00:04.518999  9.187300e-08  0.000004     2.498319e+16
+    2014-01-01 00:00:06.564999  9.298800e-08  0.000004     2.528640e+16
+    <BLANKLINE>
+                                luminosity_xrsb
+    2014-01-01 00:00:00.421999     9.543993e+17
+    2014-01-01 00:00:02.468999     9.543993e+17
+    2014-01-01 00:00:04.518999     9.529851e+17
+    2014-01-01 00:00:06.564999     9.529851e+17
 
     """
     # Check that input argument is of correct type
@@ -1073,6 +1097,7 @@ def calculate_xray_luminosity(goeslc):
     lc_new.data["luminosity_xrsb"] = lx_out["longlum"].to("W").value
 
     return lc_new
+
 
 def _goes_lx(longflux, shortflux, obstime=None, date=None):
     """
@@ -1133,22 +1158,22 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
     >>> longflux = Quantity([7e-6,7e-6,7e-6,7e-6,7e-6,7e-6], unit='W/m**2')
     >>> shortflux = Quantity([7e-7,7e-7,7e-7,7e-7,7e-7,7e-7], unit='W/m**2')
     >>> obstime = np.array([datetime(2014,1,1,0,0,0),
-                            datetime(2014,1,1,0,0,2),
-                            datetime(2014,1,1,0,0,4),
-                            datetime(2014,1,1,0,0,6),
-                            datetime(2014,1,1,0,0,8),
-                            datetime(2014,1,1,0,0,10),], dtype=object)
+    ...                     datetime(2014,1,1,0,0,2),
+    ...                     datetime(2014,1,1,0,0,4),
+    ...                     datetime(2014,1,1,0,0,6),
+    ...                     datetime(2014,1,1,0,0,8),
+    ...                     datetime(2014,1,1,0,0,10),], dtype=object)
     >>> lx_out = _goes_lx(longflux, shortflux, obstime)
     >>> lx_out["longlum"]
-    array([  1.96860565e+25,   1.96860565e+25,   1.96860565e+25,
-             1.96860565e+25,   1.96860565e+25,   1.96860565e+25])
+    <Quantity [  1.96860565e+18,  1.96860565e+18,  1.96860565e+18,
+                 1.96860565e+18,  1.96860565e+18,  1.96860565e+18] W>
     >>> lx_out["shortlum"]
-    array([  1.96860565e+24,   1.96860565e+24,   1.96860565e+24,
-             1.96860565e+24,   1.96860565e+24,   1.96860565e+24])
+    <Quantity [  1.96860565e+17,  1.96860565e+17,  1.96860565e+17,
+                 1.96860565e+17,  1.96860565e+17,  1.96860565e+17] W>
     >>> lx_out["longlum_int"]
-    1.96860565412e+26
+    <Quantity 1.968605654118636e+19 s W>
     >>> lx_out["shortlum_int"]
-    1.96860565412e+25
+    <Quantity 1.9686056541186358e+18 s W>
 
     """
     # Calculate X-ray luminosities
@@ -1234,7 +1259,7 @@ def _calc_xraylum(flux, date=None):
     >>> flux = Quantity([7e-6,7e-6], unit="W/m**2")
     >>> xraylum = _calc_xraylum(flux, date="2014-04-21")
     >>> xraylum
-    <Quantity [  1.98649103e+18,   1.98649103e+18] W>
+    <Quantity [  1.98649103e+18,  1.98649103e+18] W>
 
     """
     if date is not None:
