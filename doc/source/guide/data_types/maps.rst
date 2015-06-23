@@ -316,7 +316,7 @@ normalization.
     import sunpy.map
     import matplotlib.pyplot as plt
     import sunpy.data.sample
-    smap = sunpy.map.Map(sunpy.data.sample.AIA_94_CUTOUT')
+    smap = sunpy.map.Map(sunpy.data.sample.AIA_94_CUTOUT)
     txt = "min={min}, max={max}, $\mu$={mean}, $\sigma$={std}".format(min=int(smap.min()),
                                                                       max=int(smap.max()),
                                                                       mean=int(smap.mean()),
@@ -336,7 +336,7 @@ will mean that the bright regions look 'saturated'. This is achieved in the foll
     import matplotlib.pyplot as plt
     import matplotlib.colors as colors
     import sunpy.data.sample
-    smap = sunpy.map.Map(sunpy.data.sample.AIA_94_CUTOUT')
+    smap = sunpy.map.Map(sunpy.data.sample.AIA_94_CUTOUT)
     cmap = smap.plot_settings['cmap']
     cmap.set_over('blue', 1.0)
     cmap.set_under('purple', 1.0)
