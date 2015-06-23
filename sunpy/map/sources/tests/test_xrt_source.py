@@ -39,7 +39,9 @@ def test_observatory():
 
 def test_measurement():
     """Tests the measurement property of the XRTMap object."""
-    assert xrt.measurement == xrt.filter_wheel1_measurements[5].replace("_", " ") + '-' + xrt.filter_wheel2_measurements[1].replace("_", " ")
+    measurement = xrt.filter_wheel1_measurements[5].replace("_", " ")
+    measurement += '-' + xrt.filter_wheel2_measurements[1].replace("_", " ")
+    assert xrt.measurement == measurement
 
 
 def test_wheel_measurements():

@@ -41,16 +41,8 @@ class AIAMap(GenericMap):
 
         # Fill in some missing info
         self.meta['detector'] = "AIA"
-#        self.meta['instrme'] = "AIA"
-
         self._nickname = self.detector
         self.plot_settings['cmap'] = cm.get_cmap(self._get_cmap_name())
-
-        #norm = {304: colors.PowerNorm(0.35), 211: colors.PowerNorm(0.5),
-        #        193: colors.PowerNorm(0.5), 171: colors.PowerNorm(0.5),
-        #        131: colors.PowerNorm(0.5), 335: colors.PowerNorm(0.4),
-        #        94: colors.PowerNorm(0.45)}
-        #self.plot_settings['norm'] = norm[int(self.wavelength.to('Angstrom').value)]
         self.plot_settings['norm'] = ImageNormalize(stretch=visualization.AsinhStretch(0.01))
 
     @property

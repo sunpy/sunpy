@@ -50,7 +50,7 @@ class XRTMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
 
         # converting data array to masked array
-        self.data = ma.masked_where(self.data > SATURATION_LIMIT, self.data)
+        #self.data = ma.masked_where(self.data > SATURATION_LIMIT, self.data)
 
         fw1 = header.get('EC_FW1_')
         if fw1.lower() not in _lower_list(self.filter_wheel1_measurements):
