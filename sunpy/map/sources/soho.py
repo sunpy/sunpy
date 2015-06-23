@@ -6,6 +6,7 @@ __email__ = "keith.hughitt@nasa.gov"
 
 import numpy as np
 from matplotlib import colors
+from astropy.units import Quantity
 
 from sunpy.map import GenericMap
 from sunpy.sun import constants
@@ -67,11 +68,10 @@ class EITMap(GenericMap):
 
     @property
     def rsun_obs(self):
-        return self.meta['solar_r'] * self.meta['cdelt1']
+        return Quantity(self.meta['solar_r'] * self.meta['cdelt1'], 'arcsec')
 
     def _fix_dsun(self):
-        dsun = _dsunAtSoho(self.date, self.rsun_obs)
-        self.meta['dsun_obs'] = dsun
+        self.meta['dsun_obs'] = _dsunAtSoho(self.date, self.rsun_obs)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
