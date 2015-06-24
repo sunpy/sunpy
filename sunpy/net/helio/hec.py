@@ -15,8 +15,6 @@ __version__ = 'September 22nd, 2013'
 __all__ = ['HECClient']
 
 
-
-
 def suds_unwrapper(wrapped_data):
     """
     Removes suds wrapping from returned xml data
@@ -189,18 +187,8 @@ class HECClient(object):
         >>> hc = hec.HECClient()
         >>> start = '2005/01/03'
         >>> end = '2005/12/03'
-        >>> temp = hc.time_query(start, end, max_records=10)
-        >>> print temp.array
-        [ (31463, '2005-01-03T01:37:36', '2005-01-03T01:37:54', '2005-01-03T01:39:00', 717, 982.0, 113.0, 989.0, 84, 22, 9456, 6, 5010320)
-         (31464, '2005-01-03T01:51:36', '2005-01-03T01:59:18', '2005-01-03T02:17:24', 717, 989.0, 117.0, 996.0, 1548, 656, 2286912, 12, 5010301)
-         (31465, '2005-01-03T03:26:28', '2005-01-03T03:42:50', '2005-01-03T03:46:04', 717, 994.0, 117.0, 1001.0, 1176, 38, 157800, 6, 5010332)
-         (31466, '2005-01-03T03:46:04', '2005-01-03T04:07:10', '2005-01-03T04:07:52', 715, -154.0, 124.0, 198.0, 1308, 1328, 2049360, 12, 5010302)
-         (31467, '2005-01-03T05:00:24', '2005-01-03T05:00:30', '2005-01-03T05:19:36', 715, -139.0, 107.0, 176.0, 1152, 224, 894816, 6, 5010313)
-         (31468, '2005-01-03T06:40:48', '2005-01-03T06:42:46', '2005-01-03T06:50:12', 717, 990.0, 105.0, 996.0, 564, 23, 50782, 6, 5010314)
-         (31469, '2005-01-03T08:27:56', '2005-01-03T08:28:26', '2005-01-03T08:29:08', 717, 971.0, 104.0, 977.0, 72, 36, 11197, 6, 5010334)
-         (31470, '2005-01-03T09:31:00', '2005-01-03T09:33:34', '2005-01-03T09:34:52', 717, 960.0, 99.0, 965.0, 232, 108, 56486, 6, 5010322)
-         (31471, '2005-01-03T09:34:52', '2005-01-03T09:59:46', '2005-01-03T10:06:04', 717, 994.0, 108.0, 1000.0, 1872, 40, 55920, 6, 5010336)
-         (31472, '2005-01-03T11:06:48', '2005-01-03T11:07:18', '2005-01-03T11:15:56', 717, 974.0, 116.0, 981.0, 548, 2160, 2240376, 12, 5010304)]
+        >>> temp = hc.time_query(start, end, max_records=10)   # doctest: +SKIP
+
         """
         while table is None:
             table = self.make_table_list()
@@ -228,11 +216,12 @@ class HECClient(object):
         --------
         >>> from sunpy.net.helio import hec
         >>> hc = hec.HECClient()
-        >>> print hc.get_table_names()
-        [('hi_cme_list',) ('cactus_stereoa_cme',) ('aad_gle',)
-            ...
-         ('wind_sw_crossing_time',) ('ulysses_hxr_flare',)
-         ('wind_typeii_soho_cme',)]
+        >>> print hc.get_table_names()   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+        [('timed_see_flare',) ('hi_event',) ('yohkoh_flare_list',)
+         ('wind_mfi_bs_crossing_time',) ('seeds_soho',) ('seeds_stb',)
+         ...
+         ('rhessi_hxr_flare',) ('cactus_soho_flow',) ('cactus_soho_cme',)
+         ('stereob_het_sep',)]
 
         """
         self.hec_client.service.getTableNames()
@@ -257,19 +246,8 @@ class HECClient(object):
         --------
         >>> from sunpy.net.helio import hec
         >>> hc = hec.HECClient()
-        >>> hc.make_table_list()
-          1) aad_gle
-          2) aastar_list
-          3) apstar_list
-          4) bas_magnetic_storms
-          ...
-        108) wind_waves_type_ii_burst
-        109) yohkoh_flare_list
-        110) yohkoh_hxr_flare
-        111) yohkoh_sxt_trace_list
+        >>> hc.make_table_list()   # doctest: +SKIP
 
-        Please enter a table number between 1 and 111 ('e' to exit): 108
-        'wind_waves_type_ii_burst'
         """
         table_list = []
         tables = self.get_table_names()
