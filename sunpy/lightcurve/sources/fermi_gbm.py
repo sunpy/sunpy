@@ -24,9 +24,9 @@ class GBMSummaryLightCurve(LightCurve):
 
     Examples
     --------
-    >>> import sunpy
+    >>> from sunpy.lightcurve import GBMSummaryLightCurve
 
-    >>> gbm = sunpy.lightcurve.GBMLightCurve.create('2011-06-07')
+    >>> gbm = GBMSummaryLightCurve.create('2011-06-07')   # doctest: +SKIP
     >>> gbm.peek()   # doctest: +SKIP
 
     References
