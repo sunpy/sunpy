@@ -41,20 +41,20 @@ def translate_results_to_query(results):
 
     Examples
     --------
-    >>> from sunpy.net.hek import hek
-    >>> h = hek.HEKClient()
+    >>> from sunpy.net.hek import hek, HEKClient
+    >>> from sunpy.net.hek2vso import hek2vso, H2VClient
+    >>> h = HEKClient()
     >>> h2v = H2VClient()
-    >>> q = h.query(hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))
+    >>> q = h.query(hek.attrs.Time('2011/08/09 07:23:56',
+    ...             '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))
     >>> len(q)
     19
 
-    >>> translate_results_to_query(q[0]) # doctest: +ELLIPSIS
-    [[<Time(datetime.datetime(2011, 8, 8, 1, 30, 4), datetime.datetime(2011, 8, 10, 0, 0, 4), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <sunpy.net.vso.attrs.Wave at 0x...>]]
+    >>> hek2vso.translate_results_to_query(q[0])
+    [[<Time(datetime.datetime(2011, 8, 8, 1, 30, 4), datetime.datetime(2011, 8, 10, 0, 0, 4), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(210.99999999999997, 210.99999999999997, 'Angstrom')>]]
 
-    >>> translate_results_to_query(q) # doctest: +ELLIPSIS
-    [[<Time(datetime.datetime(2011, 8, 8, 1, 30, 4), datetime.datetime(2011, 8, 10, 0, 0, 4), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <sunpy.net.vso.attrs.Wave at 0x...>],
-    ...
-    [<Time(datetime.datetime(2011, 8, 9, 8, 1, 21), datetime.datetime(2011, 8, 9, 8, 16, 45), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <sunpy.net.vso.attrs.Wave at 0x...>]]
+    >>> hek2vso.translate_results_to_query(q)   # doctest: +ELLIPSIS
+    [[<Time(datetime.datetime(2011, 8, 8, 1, 30, 4), datetime.datetime(2011, 8, 10, 0, 0, 4), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(210.99999999999997, 210.99999999999997, 'Angstrom')>], ..., [<Time(datetime.datetime(2011, 8, 9, 8, 1, 21), datetime.datetime(2011, 8, 9, 8, 16, 45), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(303.99999999999994, 303.99999999999994, 'Angstrom')>]]
     """
     queries = []
     if type(results) is list:
@@ -81,18 +81,16 @@ def vso_attribute_parse(phrase):
 
     Examples
     --------
-    >>> from sunpy.net.hek import hek
-    >>> h = hek.HEKClient()
+    >>> from sunpy.net.hek import hek, HEKClient
+    >>> from sunpy.net.hek2vso import hek2vso, H2VClient
+    >>> h = HEKClient()
     >>> h2v = H2VClient()
     >>> q = h.query(hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))
     >>> len(q)
     19
 
-    >>> vso_attribute_parse(q[9])
-    [<Time(datetime.datetime(2011, 8, 9, 7, 22, 38), datetime.datetime(2011, 8, 9, 8, 32, 2), None)>,
-    <Source(u'SDO')>,
-    <Instrument(u'AIA')>,
-    <sunpy.net.vso.attrs.Wave at 0x10628f950>]
+    >>> hek2vso.vso_attribute_parse(q[9])
+    [<Time(datetime.datetime(2011, 8, 9, 7, 22, 38), datetime.datetime(2011, 8, 9, 8, 32, 2), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(210.99999999999997, 210.99999999999997, 'Angstrom')>]
     """
     try:
         query = [vso.attrs.Time(phrase['event_starttime'],
