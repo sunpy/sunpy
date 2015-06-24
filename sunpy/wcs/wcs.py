@@ -288,7 +288,7 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
     --------
     >>> import sunpy.wcs
     >>> sunpy.wcs.convert_hcc_hg(230000.0,45000000.0,
-    z=695508000.0 + 8000000.0, radius=True)
+    ...                          z=695508000.0 + 8000000.0, radius=True)
     (0.01873188196651189, 3.6599471896203317, 704945784.41465974)
     """
     if z is None:
@@ -343,7 +343,7 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
     --------
     >>> import sunpy.wcs
     >>> sunpy.wcs.convert_hg_hcc(0.01873188196651189, 3.6599471896203317,
-    r=704945784.41465974, z=True)
+    ...                          r=704945784.41465974, z=True)
     (230000.0, 45000000.0, 703508000.0)
     """
     lon = np.deg2rad(hglon_deg)
