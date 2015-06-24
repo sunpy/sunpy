@@ -23,9 +23,7 @@ from functools import partial
 from collections import defaultdict
 from suds import client, TypeNotFound
 
-import astropy
-from astropy.table import Table, Column
-import astropy.units as u
+from astropy.table import Table
 
 from sunpy import config
 from sunpy.net import download
@@ -35,7 +33,7 @@ from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
-from sunpy.util import print_table, replacement_filename, Deprecated
+from sunpy.util import replacement_filename, Deprecated
 from sunpy.time import parse_time
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -319,10 +317,20 @@ class VSOClient(object):
         Query all data from eit or aia between 2010-01-01T00:00 and
         2010-01-01T01:00.
 
+        >>> from sunpy.net import vso
+        >>> client = vso.VSOClient()
         >>> client.query(
-        ...    vso.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
-        ...    vso.Instrument('eit') | vso.Instrument('aia')
-        ... )
+        ...    vso.attrs.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
+        ...    vso.attrs.Instrument('eit') | vso.attrs.Instrument('aia'))   # doctest: +NORMALIZE_WHITESPACE
+        <Table masked=False length=5>
+           Start Time [1]       End Time [1]     Source  Instrument   Type
+             string152           string152      string32  string24  string64
+        ------------------- ------------------- -------- ---------- --------
+        2010-01-01 00:00:08 2010-01-01 00:00:20     SOHO        EIT FULLDISK
+        2010-01-01 00:12:08 2010-01-01 00:12:20     SOHO        EIT FULLDISK
+        2010-01-01 00:24:10 2010-01-01 00:24:22     SOHO        EIT FULLDISK
+        2010-01-01 00:36:08 2010-01-01 00:36:20     SOHO        EIT FULLDISK
+        2010-01-01 00:48:09 2010-01-01 00:48:21     SOHO        EIT FULLDISK
 
         Returns
         -------
@@ -475,8 +483,10 @@ class VSOClient(object):
         Query all data from eit between 2010-01-01T00:00 and
         2010-01-01T01:00.
 
-        >>> qr = client.query_legacy(
-        ...     datetime(2010, 1, 1), datetime(2010, 1, 1, 1), instrument='eit')
+        >>> from sunpy.net import vso
+        >>> client = vso.VSOClient()
+        >>> qr = client.query_legacy(datetime(2010, 1, 1),
+        ...                          datetime(2010, 1, 1, 1), instrument='eit')
 
         Returns
         -------
