@@ -18,7 +18,6 @@ import numpy as np
 from astropy.io import fits
 from astropy import units as u
 
-import sunpy
 import sunpy.map
 import sunpy.sun.constants
 
@@ -107,8 +106,8 @@ def parse_obssumm_dbase_file(filename):
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> f = rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))
-    >>> rhessi.parse_obssumm_dbase_file(f[0])
+    >>> f = rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
+    >>> rhessi.parse_obssumm_dbase_file(f[0])   # doctest: +SKIP
 
     References
     ----------
@@ -249,8 +248,8 @@ def parse_obssumm_file(filename):
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> f = rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))
-    >>> data = rhessi.parse_obssumm_file(f[0])
+    >>> f = rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
+    >>> data = rhessi.parse_obssumm_file(f[0])   # doctest: +SKIP
 
     """
 
@@ -349,8 +348,6 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
     ----------
     calibrated_event_list : string
         filename of a RHESSI calibrated event list
-    detector : int
-        the detector number
     pixel_size : `~astropy.units.Quantity` instance
         the size of the pixels in arcseconds. Default is (1,1).
     image_dim : `~astropy.units.Quantity` instance
@@ -363,8 +360,11 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
 
     Examples
     --------
+    >>> import sunpy.data
+    >>> import sunpy.data.sample
     >>> import sunpy.instr.rhessi as rhessi
-    >>> map = rhessi.backprojection(sunpy.data.sample.RHESSI_EVENT_LIST)
+    >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
+    >>> map = rhessi.backprojection(sunpy.data.sample.RHESSI_EVENT_LIST)   # doctest: +SKIP
     >>> map.peek()   # doctest: +SKIP
 
     """
@@ -392,7 +392,7 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
 
     image = np.zeros(image_dim.value)
 
-    #find out what detectors were used
+    # find out what detectors were used
     det_index_mask = afits[1].data.field('det_index_mask')[0]
     detector_list = (np.arange(9)+1) * np.array(det_index_mask)
     for detector in detector_list:
