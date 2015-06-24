@@ -167,8 +167,9 @@ def parse_time(time_string, time_format=''):
     --------
     >>> import sunpy.time
     >>> sunpy.time.parse_time('2012/08/01')
+    datetime.datetime(2012, 8, 1, 0, 0)
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
-
+    datetime.datetime(2005, 8, 4, 0, 1, 2)
     """
     if isinstance(time_string, pandas.tslib.Timestamp):
     	return time_string.to_datetime()
@@ -231,7 +232,9 @@ def is_time(time_string, time_format=''):
     --------
     >>> import sunpy.time
     >>> sunpy.time.parse_time('2012/08/01')
+    datetime.datetime(2012, 8, 1, 0, 0)
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
+    datetime.datetime(2005, 8, 4, 0, 1, 2)
 
     .. todo::
 
@@ -269,9 +272,9 @@ def day_of_year(time_string):
     --------
     >>> import sunpy.time
     >>> sunpy.time.day_of_year('2012/01/01')
-    1.00
+    1.0
     >>> sunpy.time.day_of_year('2012/08/01')
-    214.00
+    214.0
     >>> sunpy.time.day_of_year('2005-08-04T00:18:02.000Z')
     216.01252314814815
 
