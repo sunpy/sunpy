@@ -121,12 +121,15 @@ def disable_undo(database):
 
     Examples
     --------
+    >>> from sunpy.database import disable_undo, Database
+    >>> from sunpy.database.tables import DatabaseEntry
+    >>> database = Database('sqlite:///:memory:')
+    >>> entry = DatabaseEntry()
     >>> with disable_undo(database) as db:
     ...     db.add(entry)
-    >>> database.undo()
-    >>> Traceback (most recent call last):
-        ...
-    EmptyCommandStackError
+
+    # This will raise an EmptyCommandStackError
+    >>> database.undo()   # doctest: +SKIP
     """
     database._enable_history = False
     yield database
