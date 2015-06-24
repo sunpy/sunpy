@@ -17,6 +17,7 @@ __all__ = ['CompositeMap']
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
+
 class CompositeMap(object):
     """
     CompositeMap(map1 [,map2,..])
@@ -63,11 +64,14 @@ class CompositeMap(object):
 
     Examples
     --------
-    >>> import sunpy
-    >>> sunpy.Map(sunpy.AIA_171_IMAGE, sunpy.RHESSI_IMAGE, composite=True)
-    >>> comp_map = sunpy.Map(sunpy.AIA_171_IMAGE, sunpy.EIT_195_IMAGE,
-    ...                      composite=True)
-    >>> comp_map.add_map(sunpy.Map(sunpy.RHESSI_IMAGE))
+    >>> import sunpy.map
+    >>> import sunpy.data
+    >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
+    >>> import sunpy.data.sample
+    >>> comp_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE,
+    ...                          sunpy.data.sample.EIT_195_IMAGE,
+    ...                          composite=True)
+    >>> comp_map.add_map(sunpy.map.Map(sunpy.data.sample.RHESSI_IMAGE))
     >>> comp_map.peek()   # doctest: +SKIP
 
     """
