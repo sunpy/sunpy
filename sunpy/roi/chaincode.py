@@ -31,14 +31,15 @@ class Chaincode(np.ndarray):
 
     Examples
     --------
+    >>> from sunpy.roi.chaincode import Chaincode
     >>> cc = Chaincode([-88, 812], "44464655567670006011212222324",
     ...     xdelta=2.629, ydelta=2.629)
 
-    >>> fig = plt.figure()
-    >>> ax = fig.add_subplot(111)
-    >>> x,y = zip(cc.coordinates)
-    >>> ax.plot(x[0], y[0], 'go-')
-    >>> fig.show()
+    >>> fig = plt.figure()   # doctest: +SKIP
+    >>> ax = fig.add_subplot(111)   # doctest: +SKIP
+    >>> x,y = zip(cc.coordinates)   # doctest: +SKIP
+    >>> ax.plot(x[0], y[0], 'go-')   # doctest: +SKIP
+    >>> fig.show()   # doctest: +SKIP
     """
     def __new__(cls, origin, chaincode, **kargs):
         if isinstance(origin, list):
