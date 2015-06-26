@@ -30,8 +30,8 @@ class ERNEClient(GenericClient):
 		Parameters
 		----------
 		timerange: sunpy.time.TimeRange
-		    time range for which data is to be downloaded.
-		    Example value -  TimeRange('1996-02-13','2013-05-15')	
+			time range for which data is to be downloaded.
+			Example value -  TimeRange('1996-02-13','2013-05-15')	
 
 		specie:  string
 			Default value - proton
@@ -40,7 +40,7 @@ class ERNEClient(GenericClient):
 		Returns
 		-------
 		urls : list
-		    list of URLs corresponding to the requested time range
+			list of URLs corresponding to the requested time range
 
 		"""
 
@@ -131,8 +131,8 @@ class ERNEClient(GenericClient):
 		chkattr =  ['Timerange', 'Instrument', 'Specie']
 		chklist =  [x.__class__.__name__ in chkattr for x in query]
 		for x in query:
-		if x.__class__.__name__ == 'Instrument' and x.value == 'soho/erne':
-		    return all(chklist)
+			if x.__class__.__name__ == 'Instrument' and x.value == 'soho/erne':
+				return all(chklist)
 		return False
 		
 	"""

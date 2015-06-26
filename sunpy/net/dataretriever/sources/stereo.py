@@ -30,8 +30,8 @@ class SEPTClient(GenericClient):
 		Parameters
 		----------
 		timerange: sunpy.time.TimeRange
-		    time range for which data is to be downloaded.
-		    Example value -  TimeRange('2007-01-20','2015-01-01')	
+			time range for which data is to be downloaded.
+			Example value -  TimeRange('2007-01-20','2015-01-01')	
 
 		stereo_spacecraft: string	
 			Default value - ahead
@@ -53,7 +53,7 @@ class SEPTClient(GenericClient):
 		Returns
 		-------
 		urls : list
-		    list of URLs corresponding to the requested time range
+			list of URLs corresponding to the requested time range
 
 		"""
 
@@ -111,20 +111,22 @@ class SEPTClient(GenericClient):
 	def _can_handle_query(cls, *query):
 		"""
 		Answers whether client can service the query.
+		
 		Parameters
 		----------
 		query : list of query objects
+		
 		Returns
 		-------
 		boolean
-		    answer as to whether client can service the query
+			answer as to whether client can service the query
 		
 		"""
 		chkattr =  ['Timerange', 'Instrument', 'Spacecraft', 'Average Duration', 'Specie', 'Sensor Pointing']
 		chklist =  [x.__class__.__name__ in chkattr for x in query]
 		for x in query:
-		    if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/sept':
-		        return all(chklist)
+			if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/sept':
+				return all(chklist)
 		return False
 		
 		"""
@@ -138,43 +140,44 @@ class HETClient(GenericClient):
 
 
 	def _get_url_for_timerange(timerange, stereo_spacecraft = 'ahead', duration_of_average = 15*u.min):
-	        """
-	        Returns list of URLS to STEREO HET data files corresponding to value of input timerange.
-	        URL Source : http://www.srl.caltech.edu/STEREO/DATA/HET/
-	
-	        The earliest data available is from Decemeber 2006. It takes a couple of months for latest data to be updated on 
-	        to the site.
-	
-	        Parameters
-	        ----------
-	        timerange: sunpy.time.TimeRange
-	            time range for which data is to be downloaded.
-	            Example value -  TimeRange('2006-12-01','2015-03-01')	
+		"""
+		Returns list of URLS to STEREO HET data files corresponding to value of input timerange.
+		URL Source : http://www.srl.caltech.edu/STEREO/DATA/HET/
+		
+		The earliest data available is from Decemeber 2006. It takes a couple of months for latest data to be updated on 
+		to the site.
+		
+		Parameters
+		----------
+		timerange: sunpy.time.TimeRange
+			time range for which data is to be downloaded.
+			Example value -  TimeRange('2006-12-01','2015-03-01')	
 	        
-	        stereo_spacecraft: string	
-	        	Default value - ahead
-	        	Possible values - ahead, behind    # corresponding to spacecraft location
+		stereo_spacecraft: string	
+			Default value - ahead
+			Possible values - ahead, behind    # corresponding to spacecraft location
+		
+		duration_of_average: astropy units quantity
+			Default value - 15*u.min
+			Possible values - 1*u.min, 15*u.min, 1*u.h, 12*u.h, 1*u.d	
+			#corresponding to duration over which data is averaged
+		
+		Returns
+		-------
+		urls : list
+			list of URLs corresponding to the requested time range
+		"""
 	
-	        duration_of_average: astropy units quantity
-	        	Default value - 15*u.min
-	        	Possible values - 1*u.min, 15*u.min, 1*u.h, 12*u.h, 1*u.d		#corresponding to duration over which data is averaged
-	
-	        Returns
-	        -------
-	        urls : list
-	            list of URLs corresponding to the requested time range
-	        """
-	
-	        base_url = 'http://www.srl.caltech.edu/STEREO/DATA/HET/'
-	
-	        possible_spacecraft = ['ahead', 'behind']
-	        possible_duration   = [1*u.min, 15*u.min, 1*u.h, 12*u.h, 1*u.d]
-	
-	        dict_duration     = { 1*u.min :'1minute', 15*u.min : '15minute', 1*u.h : '1hour' , 12*u.h : '12hour', 1*u.d :'1day'}
-	        dict_time         = {1*u.min:'1m', 1*u.h :'1h', 15*u.min:'15m', 1*u.d :'1d', 12*u.h:'12h'}
-	        dict_spacecraft   = {'Ahead': 'AeH', 'Behind': 'BeH'}
-	
-	        #Parameter Validations
+		base_url = 'http://www.srl.caltech.edu/STEREO/DATA/HET/'
+		
+		possible_spacecraft = ['ahead', 'behind']
+		possible_duration   = [1*u.min, 15*u.min, 1*u.h, 12*u.h, 1*u.d]
+		
+		dict_duration     = { 1*u.min :'1minute', 15*u.min : '15minute', 1*u.h : '1hour' , 12*u.h : '12hour', 1*u.d :'1day'}
+		dict_time         = {1*u.min:'1m', 1*u.h :'1h', 15*u.min:'15m', 1*u.d :'1d', 12*u.h:'12h'}
+		dict_spacecraft   = {'Ahead': 'AeH', 'Behind': 'BeH'}
+		
+		#Parameter Validations
 		if timerange.start < datetime.datetime(2006,12,01):
 			raise ValueError('Earliest date for which HET data is available is 2006-12-01')
 		
@@ -185,16 +188,16 @@ class HETClient(GenericClient):
 			raise ValueError('Possible duration_of_average values as astropy unit quantities: ' + ','.join([str(i) for i in possible_duration]))
 	
 	
-	        stereo_spacecraft = stereo_spacecraft.capitalize()
-	
-	        url_pattern =  base_url + '{stereo_spacecraft}/{duration_of_average}/{dict_spacecraft}%y%b.{dict_time}'
-	
-	        file_scraper = Scraper(url_pattern, stereo_spacecraft = stereo_spacecraft, 
-	        							duration_of_average = dict_duration[duration_of_average],
-	        							dict_spacecraft = dict_spacecraft[stereo_spacecraft], 
-	        							dict_time = dict_time[duration_of_average])
-	
-	        return file_scraper.filelist(timerange)
+		stereo_spacecraft = stereo_spacecraft.capitalize()
+		
+		url_pattern =  base_url + '{stereo_spacecraft}/{duration_of_average}/{dict_spacecraft}%y%b.{dict_time}'
+		
+		file_scraper = Scraper(url_pattern, stereo_spacecraft = stereo_spacecraft, 
+									duration_of_average = dict_duration[duration_of_average],
+									dict_spacecraft = dict_spacecraft[stereo_spacecraft], 
+									dict_time = dict_time[duration_of_average])
+		
+		return file_scraper.filelist(timerange)
 
 	def _makeimap(self):
 		"""
@@ -212,17 +215,18 @@ class HETClient(GenericClient):
 		Parameters
 		----------
 		query : list of query objects
+		
 		Returns
 		-------
 		boolean
-		    answer as to whether client can service the query
+			answer as to whether client can service the query
 		    
 		"""
 		chkattr =  ['Timerange', 'Instrument', 'Spacecraft', 'Average Duration']
 		chklist =  [x.__class__.__name__ in chkattr for x in query]
 		for x in query:
-		    if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/het':
-		        return all(chklist)
+			if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/het':
+				return all(chklist)
 		return False
 
 	"""
@@ -248,8 +252,8 @@ class SITClient(GenericClient):
 		Parameters
 		----------
 		timerange: sunpy.time.TimeRange
-		    time range for which data is to be downloaded.
-		    Example value -  TimeRange('2007-01-01','2015-03-01')	
+			time range for which data is to be downloaded.
+			Example value -  TimeRange('2007-01-01','2015-03-01')	
 
 		stereo_spacecraft: string	
 			Default value - ahead
@@ -266,7 +270,7 @@ class SITClient(GenericClient):
 		Returns
 		-------
 		urls : list
-		    list of URLs corresponding to the requested time range
+			list of URLs corresponding to the requested time range
 
 		"""
 
@@ -333,8 +337,8 @@ class SITClient(GenericClient):
 		chkattr =  ['Timerange', 'Instrument', 'Spacecraft', 'Average Duration', 'Specie' ]
 		chklist =  [x.__class__.__name__ in chkattr for x in query]
 		for x in query:
-		if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/sit':
-		    return all(chklist)
+			if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/sit':
+				return all(chklist)
 		return False
 		
 	"""
@@ -359,8 +363,8 @@ class PLASTICClient(GenericClient):
 		Parameters
 		----------
 		timerange: sunpy.time.TimeRange
-		    time range for which data is to be downloaded.
-		    Example value -  TimeRange('2007-02-14','2014-12-17')	
+			time range for which data is to be downloaded.
+			Example value -  TimeRange('2007-02-14','2014-12-17')	
 
 		stereo_spacecraft: string	
 			Default value - ahead
@@ -375,7 +379,7 @@ class PLASTICClient(GenericClient):
 		Returns
 		-------
 		urls : list
-		    list of URLs corresponding to the requested time range
+			list of URLs corresponding to the requested time range
 
 		"""
 
@@ -421,6 +425,7 @@ class PLASTICClient(GenericClient):
 		Parameters
 		----------
 		query : list of query objects
+		
 		Returns
 		-------
 		boolean
@@ -430,8 +435,8 @@ class PLASTICClient(GenericClient):
 		chkattr =  ['Timerange', 'Instrument', 'Spacecraft', 'Average Duration']
 		chklist =  [x.__class__.__name__ in chkattr for x in query]
 		for x in query:
-		if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/plastic':
-		    return all(chklist)
+			if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/plastic':
+				return all(chklist)
 		return False
 
 	"""
@@ -453,7 +458,7 @@ class MAGClient(GenericClient):
 		Parameters
 		----------
 		timerange: sunpy.time.TimeRange
-		    time range for which data is to be downloaded.
+			time range for which data is to be downloaded.
 
 		stereo_spacecraft: string	
 			Default value - ahead
@@ -462,7 +467,7 @@ class MAGClient(GenericClient):
 		Returns
 		-------
 		urls : list
-		    list of URLs corresponding to the requested time range
+			list of URLs corresponding to the requested time range
 
 		"""
 
@@ -507,8 +512,8 @@ class MAGClient(GenericClient):
 		chkattr =  ['Time', 'Instrument', 'Spacecraft']
 		chklist =  [x.__class__.__name__ in chkattr for x in query]
 		for x in query:
-		if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/mag':
-		    return all(chklist)
+			if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/mag':
+				return all(chklist)
 		return False
 
 	"""
@@ -529,8 +534,8 @@ class LETClient(GenericClient):
 		Parameters
 		----------
 		timerange: sunpy.time.TimeRange
-		    time range for which data is to be downloaded.
-		    Default value -  TimeRange('2007-01-01','2008-06-01')	
+			time range for which data is to be downloaded.
+			Example value -  TimeRange('2007-01-01','2008-06-01')	
 
 		duration_of_average: string
 			Default value - 10*u.min
@@ -559,7 +564,7 @@ class LETClient(GenericClient):
 		Returns
 		-------
 		urls : list
-		    list of URLs corresponding to the requested time range
+			list of URLs corresponding to the requested time range
 
 		"""
 		possible_spacecraft = ['ahead', 'behind']
@@ -660,8 +665,8 @@ class LETClient(GenericClient):
 		chkattr =  ['Timerange', 'Instrument', 'Average Duration', 'Datatype', 'Specie', 'Spacecraft']
 		chklist =  [x.__class__.__name__ in chkattr for x in query]
 		for x in query:
-		if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/let':
-		    return all(chklist)
+			if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/let':
+				return all(chklist)
 		return False
 
 	"""
