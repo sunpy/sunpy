@@ -6,7 +6,6 @@ __email__  = "ankitkmr.iitk@gmail.com"
 #This module was developed under funding provided by
 #Google Summer of Code 2015
 
-
 import urllib2
 import datetime
 
@@ -18,7 +17,6 @@ from sunpy.time import TimeRange
 
 
 __all__ = ['ERNEClient']
-
 
 class ERNEClient(GenericClient):
 
