@@ -107,94 +107,94 @@ class SEPTClient(GenericClient):
 		self.map_['provider']   = 'ieap'
 
 
-    @classmethod
-    def _can_handle_query(cls, *query):
-        """
-        Answers whether client can service the query.
-        Parameters
-        ----------
-        query : list of query objects
-        Returns
-        -------
-        boolean
-            answer as to whether client can service the query
-
-        """
-        chkattr =  ['Timerange', 'Instrument', 'Spacecraft', 'Average Duration', 'Specie', 'Sensor Pointing']
-        chklist =  [x.__class__.__name__ in chkattr for x in query]
-        for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/sept':
-                return all(chklist)
-        return False
-
-	"""
-	print _get_url_for_timerange(TimeRange('2007-02-01','2007-03-01'), stereo_spacecraft = 'behind')
-
-	"""
+	@classmethod
+	def _can_handle_query(cls, *query):
+		"""
+		Answers whether client can service the query.
+		Parameters
+		----------
+		query : list of query objects
+		Returns
+		-------
+		boolean
+		    answer as to whether client can service the query
+		
+		"""
+		chkattr =  ['Timerange', 'Instrument', 'Spacecraft', 'Average Duration', 'Specie', 'Sensor Pointing']
+		chklist =  [x.__class__.__name__ in chkattr for x in query]
+		for x in query:
+		    if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/sept':
+		        return all(chklist)
+		return False
+		
+		"""
+		print _get_url_for_timerange(TimeRange('2007-02-01','2007-03-01'), stereo_spacecraft = 'behind')
+		
+		"""
 
 
 
 class HETClient(GenericClient):
 
 
-    def _get_url_for_timerange(timerange, stereo_spacecraft = 'ahead', duration_of_average = 15*u.min):
-        """
-        Returns list of URLS to STEREO HET data files corresponding to value of input timerange.
-        URL Source : http://www.srl.caltech.edu/STEREO/DATA/HET/
-
-        The earliest data available is from Decemeber 2006. It takes a couple of months for latest data to be updated on 
-        to the site.
-
-        Parameters
-        ----------
-        timerange: sunpy.time.TimeRange
-            time range for which data is to be downloaded.
-            Example value -  TimeRange('2006-12-01','2015-03-01')	
-        
-        stereo_spacecraft: string	
-        	Default value - ahead
-        	Possible values - ahead, behind    # corresponding to spacecraft location
-
-        duration_of_average: astropy units quantity
-        	Default value - 15*u.min
-        	Possible values - 1*u.min, 15*u.min, 1*u.h, 12*u.h, 1*u.d		#corresponding to duration over which data is averaged
-
-        Returns
-        -------
-        urls : list
-            list of URLs corresponding to the requested time range
-        """
-
-        base_url = 'http://www.srl.caltech.edu/STEREO/DATA/HET/'
-
-        possible_spacecraft = ['ahead', 'behind']
-        possible_duration   = [1*u.min, 15*u.min, 1*u.h, 12*u.h, 1*u.d]
-
-        dict_duration     = { 1*u.min :'1minute', 15*u.min : '15minute', 1*u.h : '1hour' , 12*u.h : '12hour', 1*u.d :'1day'}
-        dict_time         = {1*u.min:'1m', 1*u.h :'1h', 15*u.min:'15m', 1*u.d :'1d', 12*u.h:'12h'}
-        dict_spacecraft   = {'Ahead': 'AeH', 'Behind': 'BeH'}
-
-        #Parameter Validations
-	if timerange.start < datetime.datetime(2006,12,01):
-		raise ValueError('Earliest date for which HET data is available is 2006-12-01')
+	def _get_url_for_timerange(timerange, stereo_spacecraft = 'ahead', duration_of_average = 15*u.min):
+	        """
+	        Returns list of URLS to STEREO HET data files corresponding to value of input timerange.
+	        URL Source : http://www.srl.caltech.edu/STEREO/DATA/HET/
 	
-	if stereo_spacecraft not in possible_spacecraft:
-		raise ValueError('Possible stereo_spacecraft values: ' + ','.join(possible_spacecraft))
+	        The earliest data available is from Decemeber 2006. It takes a couple of months for latest data to be updated on 
+	        to the site.
 	
-	if duration_of_average not in possible_duration:
-		raise ValueError('Possible duration_of_average values as astropy unit quantities: ' + ','.join([str(i) for i in possible_duration]))
-
-
-        stereo_spacecraft = stereo_spacecraft.capitalize()
-
-        url_pattern =  base_url + '{stereo_spacecraft}/{duration_of_average}/{dict_spacecraft}%y%b.{dict_time}'
-
-        file_scraper = Scraper(url_pattern, stereo_spacecraft = stereo_spacecraft, 
-        							duration_of_average = dict_duration[duration_of_average],
-        							dict_spacecraft = dict_spacecraft[stereo_spacecraft], 
-        							dict_time = dict_time[duration_of_average])
-
-        return file_scraper.filelist(timerange)
+	        Parameters
+	        ----------
+	        timerange: sunpy.time.TimeRange
+	            time range for which data is to be downloaded.
+	            Example value -  TimeRange('2006-12-01','2015-03-01')	
+	        
+	        stereo_spacecraft: string	
+	        	Default value - ahead
+	        	Possible values - ahead, behind    # corresponding to spacecraft location
+	
+	        duration_of_average: astropy units quantity
+	        	Default value - 15*u.min
+	        	Possible values - 1*u.min, 15*u.min, 1*u.h, 12*u.h, 1*u.d		#corresponding to duration over which data is averaged
+	
+	        Returns
+	        -------
+	        urls : list
+	            list of URLs corresponding to the requested time range
+	        """
+	
+	        base_url = 'http://www.srl.caltech.edu/STEREO/DATA/HET/'
+	
+	        possible_spacecraft = ['ahead', 'behind']
+	        possible_duration   = [1*u.min, 15*u.min, 1*u.h, 12*u.h, 1*u.d]
+	
+	        dict_duration     = { 1*u.min :'1minute', 15*u.min : '15minute', 1*u.h : '1hour' , 12*u.h : '12hour', 1*u.d :'1day'}
+	        dict_time         = {1*u.min:'1m', 1*u.h :'1h', 15*u.min:'15m', 1*u.d :'1d', 12*u.h:'12h'}
+	        dict_spacecraft   = {'Ahead': 'AeH', 'Behind': 'BeH'}
+	
+	        #Parameter Validations
+		if timerange.start < datetime.datetime(2006,12,01):
+			raise ValueError('Earliest date for which HET data is available is 2006-12-01')
+		
+		if stereo_spacecraft not in possible_spacecraft:
+			raise ValueError('Possible stereo_spacecraft values: ' + ','.join(possible_spacecraft))
+		
+		if duration_of_average not in possible_duration:
+			raise ValueError('Possible duration_of_average values as astropy unit quantities: ' + ','.join([str(i) for i in possible_duration]))
+	
+	
+	        stereo_spacecraft = stereo_spacecraft.capitalize()
+	
+	        url_pattern =  base_url + '{stereo_spacecraft}/{duration_of_average}/{dict_spacecraft}%y%b.{dict_time}'
+	
+	        file_scraper = Scraper(url_pattern, stereo_spacecraft = stereo_spacecraft, 
+	        							duration_of_average = dict_duration[duration_of_average],
+	        							dict_spacecraft = dict_spacecraft[stereo_spacecraft], 
+	        							dict_time = dict_time[duration_of_average])
+	
+	        return file_scraper.filelist(timerange)
 
 	def _makeimap(self):
 		"""
@@ -352,7 +352,7 @@ class PLASTICClient(GenericClient):
 							   			duration_of_average = 10*u.min):
 		"""
 		Returns list of URLS to STEREO PLASTIC data files corresponding to value of input timerange.
-		URL Source : http://www2.physik.uni-kiel.de/stereo/data/sept/level2/
+		URL Source : http://stereo-ssc.nascom.nasa.gov/data/ins_data/plastic/level2/Protons/ASCII/
 
 		The earliest data available is from 2007.
 
@@ -517,7 +517,6 @@ class MAGClient(GenericClient):
 	"""
 
 	
-
 class LETClient(GenericClient):
 
 	def _get_url_for_timerange(timerange, duration_of_average, type_of_data , specie, stereo_spacecraft = 'ahead'):
