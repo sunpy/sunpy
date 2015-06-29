@@ -63,6 +63,12 @@ except ImportError:
         if os.path.isdir(a_h_path):
             sys.path.insert(1, a_h_path)
 
+
+# -- Download Sample Data -----------------------------------------------------
+
+import sunpy.data
+sunpy.data.download_sample_data(overwrite=False)
+
 # -- General configuration ----------------------------------------------------
 
 # Load all of the global Astropy configuration
