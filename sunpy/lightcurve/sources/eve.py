@@ -5,13 +5,13 @@ from __future__ import absolute_import
 import os
 import numpy
 from datetime import datetime
+from collections import OrderedDict
 
 import matplotlib.pyplot as plt
 from pandas.io.parsers import read_csv
 from os.path import basename
 
 from sunpy.lightcurve import LightCurve
-from sunpy.util.odict import OrderedDict
 
 __all__ = ['EVELightCurve']
 
@@ -37,7 +37,7 @@ class EVELightCurve(LightCurve):
     def peek(self, column = None, **kwargs):
         figure = plt.figure()
         # Choose title if none was specified
-        if not kwargs.has_key("title") and column is None:
+        if "title" not in kwargs and column is None:
             if len(self.data.columns) > 1:
                 kwargs['title'] = 'EVE (1 minute data)'
             else:
@@ -51,7 +51,7 @@ class EVELightCurve(LightCurve):
             self.plot(**kwargs)
         else:
             data = self.data[column]
-            if not kwargs.has_key("title"):
+            if "title" not in kwargs:
                 kwargs['title'] = 'EVE ' + column.replace('_', ' ')
             data.plot(**kwargs)
         figure.show()

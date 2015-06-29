@@ -18,7 +18,7 @@ class TimeRange(object):
 
     .. note::
 
-       Regardless of how a TimeRange is constructed it will always provide a 
+       Regardless of how a TimeRange is constructed it will always provide a
        positive time range where the start time is before the end time.
 
     Parameters
@@ -249,7 +249,7 @@ class TimeRange(object):
         Returns
         -------
         time ranges : list
-            A list of TimeRange objects, that are window long and seperated by
+            A list of TimeRange objects, that are window long and separated by
             cadence.
 
         Examples

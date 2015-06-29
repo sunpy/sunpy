@@ -1,4 +1,3 @@
-# pylint: disable=E1101
 from __future__ import absolute_import
 
 import numpy as np
@@ -8,7 +7,7 @@ import astropy.wcs as wcs
 from copy import deepcopy
 import re
 
-import astropy.units
+import astropy.units as u
 
 rsun_meters = sun.constants.radius.si.value
 
@@ -118,8 +117,7 @@ def get_center(size, scale, ref_pixel, ref_coordinate):
     --------
 
     """
-    return scale * (size - 1) / 2. + ref_coordinate - (ref_pixel - 1) * scale
-
+    return scale * (size - 1 * u.pix) / 2. + reference_coordinate - (reference_pixel - 1 * u.pix) * scale
 
 def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
     """Calculate the pixel indices for a given data coordinate.
@@ -196,7 +194,6 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     (28876152.176423457, 23100922.071266972, 694524220.8157959)
 
     """
-
     c = np.array([_convert_angle_units(unit=angle_units),
                   _convert_angle_units(unit=angle_units)])
 
@@ -207,7 +204,7 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
 
     if dsun_meters is None:
         dsun_meters = sun.constants.au.si.value
-    elif isinstance(dsun_meters, astropy.units.Quantity):
+    elif isinstance(dsun_meters, u.Quantity):
         dsun_meters = dsun_meters.si.value
 
     q = dsun_meters * cosy * cosx
@@ -219,7 +216,8 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     ry = distance * siny
     rz = dsun_meters - distance * cosy * cosx
 
-    if z:
+
+    if np.all(z == True):
         return rx, ry, rz
     else:
         return rx, ry
@@ -261,7 +259,7 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
 
     if dsun_meters is None:
         dsun_meters = sun.constants.au.si.value
-    elif isinstance(dsun_meters, astropy.units.Quantity):
+    elif isinstance(dsun_meters, u.Quantity):
         dsun_meters = dsun_meters.si.value
 
     zeta = dsun_meters - z
@@ -306,7 +304,7 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
     -------
     out : ndarray (degrees, meters)
         if radius is false, return the data coordinates (lon, lat).  If
-        radius=True, return the data cordinates (lon, lat, r).  The quantities
+        radius=True, return the data coordinates (lon, lat, r).  The quantities
         (lon, lat) are the heliographic coordinates in degrees.  The quantity
         'r' is the heliographic radius in meters.
 
@@ -483,13 +481,11 @@ def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None,
 
     Examples
     --------
-    >>> sunpy.wcs.convert_hg_hpc(382, 748, b0_deg=-7.064078, l0_deg=0.0)
+    >>> sunpy.wcs.convert_hpc_hg(382, 748, b0_deg=-7.064078, l0_deg=0.0)
     (34.504653439914669, 45.443143275518182)
 
     """
-
-    tempx, tempy = convert_hpc_hcc(x, y, dsun_meters=dsun_meters,
-                                   angle_units=angle_units)
+    tempx, tempy = convert_hpc_hcc(x, y, dsun_meters=dsun_meters, angle_units=angle_units)
     lon, lat = convert_hcc_hg(tempx, tempy, b0_deg=b0_deg, l0_deg=l0_deg)
     return lon, lat
 
@@ -497,7 +493,7 @@ def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None,
 def proj_tan(x, y, force=False):
     """Applies the gnomonic (TAN) projection to intermediate relative
     coordinates. This function is not currently implemented!"""
-    # if pixels are within 3 degrees of the Sun then skip the calculatin unless
+    # if pixels are within 3 degrees of the Sun then skip the calculation unless
     # force is True. This applies to all sdo images so this function is just
     # here as a place holder for the future
     # TODO: write proj_tan function

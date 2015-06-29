@@ -6,8 +6,12 @@ recursive-include sunpy *.txt
 include README.md
 include RELEASE.md
 include CHANGELOG.md
-include LICENSE.txt
+include licenses/*.rst
 include sunpy/data/sunpyrc
+include sunpy/tests/figure_hashes.json
 include setup.py
 include ah_bootstrap.py
 include ez_setup.py
+
+recursive-include astropy_helpers *
+exclude astropy_helpers/.*

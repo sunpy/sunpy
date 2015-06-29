@@ -1,70 +1,74 @@
-language: python
+# We use C because conda manages our Python vesion
+# and running on OS/X dosen't work with Python.
+language: c
 
-python:
-  - 2.7
+os:
+    - linux
+    - osx
 
-virtualenv:
-     system_site_packages: false
+# These are currently not used, but we want to cache the packages dir
+# to reduce the number of packages to download.
+cache:
+    directories:
+        $HOME/miniconda/pkgs
+        /Users/travis/miniconda3/pkgs
 
-# Configure the build environment. Global varibles are defined for all
-# configurations. Each configuration in the matrix is run for each python version
-# above.
+# Configure the build environment. Global varibles are defined for all configurations.
 env:
     global:
-        - PIP_WHEEL_COMMAND="--find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade"
-        - SUDS_PKG='suds-jurko'
-        - TEST_MODE='tests'
-    matrix:
-        - NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.14.1
-        - NUMPY_VERSION=1.7.1 PANDAS_VERSION=0.14.1
-        - NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.13.1
+        # Modify these to represent the newest versions
+        - LATEST_NUMPY=1.9.2
+        - LATEST_PANDAS=0.16.2
+        # Fixed global vars
+        - PYTHON_VERSION=2.7
+        - TEST_MODE='offline'
+        - NUMPY_VERSION=$LATEST_NUMPY
+        - PANDAS_VERSION=$LATEST_PANDAS
+
 matrix:
-     include:
-        - python: 2.7
-          env: TEST_MODE='sphinx' NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.14.1
-        - python: 2.7
-          env: TEST_MODE='offline' NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.14.0
+    include:
+         - os: linux
+           env: NUMPY_VERSION=1.8.1
+         - os: linux
+           env: PANDAS_VERSION=0.15.2
+         - os: linux
+           env: TEST_MODE='astropy-dev'
+         - os: linux
+           env: TEST_MODE='sphinx'
+         - os: linux
+           env: TEST_MODE='online'
 
+# If the online build fails, we don't want it to report the whole build broken.
+    allow_failures:
+        - env: TEST_MODE='online'
+
+# Install miniconda
 before_install:
-# Make sure the system is upto date and install scipy requirements
-   - sudo apt-get update -qq
-   - sudo apt-get install -qq libatlas-dev liblapack-dev gfortran
-   - if [[ $TEST_MODE == 'sphinx' ]]; then sudo apt-get install graphviz texlive-latex-extra dvipng; fi
-# Make sure pip is at the latest version (>1.4 for wheels)
-   - pip install pip --upgrade
-# Wheels also need a recent version of setuptools
-   - pip install setuptools>=0.8 --upgrade
-# Install more upto date openjpeg library.
-   - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
-   - sudo tar -xvf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1 -C /
-# Install coveralls
-   - pip install $PIP_WHEEL_COMMAND coveralls pytest-cov pytest-xdist
+    - source continuous-integration/travis/install_$TRAVIS_OS_NAME.sh
 
-# Install all SunPy dependacies using wheels.
 install:
-# Install Numpy first so we force the version we are using
-   - pip install $PIP_WHEEL_COMMAND numpy==$NUMPY_VERSION
-   - pip install $PIP_WHEEL_COMMAND matplotlib
-   - pip install $PIP_WHEEL_COMMAND scipy
-   - pip install $PIP_WHEEL_COMMAND openpyxl==1.8.6 pandas==$PANDAS_VERSION
-   - pip install $PIP_WHEEL_COMMAND astropy>=0.4.0
-   - pip install $PIP_WHEEL_COMMAND $SUDS_PKG beautifulsoup4 requests
-   - pip install $PIP_WHEEL_COMMAND pytest pytest-xdist 
-   - pip install $PIP_WHEEL_COMMAND glymur
-   - pip install $PIP_WHEEL_COMMAND cython
-   - pip install $PIP_WHEEL_COMMAND scikit-image
-   - pip install $PIP_WHEEL_COMMAND sqlalchemy
-# Install sphinx if needed
-   - if [[ $TEST_MODE == 'sphinx' ]]; then pip install $PIP_WHEEL_COMMAND sphinx==1.2.2; fi 
+    # Add a conda env and set up extra binstar channels
+    - conda create --yes -n test python=$PYTHON_VERSION
+    - conda config --add channels sunpy --add channels astropy-ci-extras --add channels https://conda.binstar.org/sunpy/channel/citesting
+    - source activate test
+    # Install default dependancies
+    - conda install --yes pip
+    - conda install -q --yes numpy=$NUMPY_VERSION pandas=$PANDAS_VERSION
+    - conda install -q --yes scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest jinja2 cython
+    - pip install pytest-cov coverage coveralls
+    # Install sunpy conda packages
+    - conda install -q --yes suds-jurko glymur
+    # Install the correct version of astropy
+    - if [[ $TEST_MODE != 'astropy-dev' ]]; then conda install -q --yes astropy>=0.4.0; fi 
+    - if [[ $TEST_MODE == 'astropy-dev' ]]; then pip install git+git://github.com/astropy/astropy.git; fi 
+    # Install sphinx if needed
+    - if [[ $TEST_MODE == 'sphinx' ]]; then conda install -q --yes sphinx==1.2; fi 
 
-# Install SunPy and run tests.
 script:
-   - if [[ $TEST_MODE == 'sphinx' ]]; then python setup.py build_sphinx -w; fi
-   - if [[ $TEST_MODE == 'tests' ]]; then python setup.py test --coverage --cov-report=html --offline-only; fi
-   - if [[ $TEST_MODE == 'online' ]]; then python setup.py test --coverage --cov-report=term-missing --parallel=8; fi
-
-after_success:
-   - if [[ $TEST_MODE == 'online' ]]; then coveralls; fi
+    - if [[ $TEST_MODE == 'sphinx' ]]; then python setup.py build_sphinx -w; fi
+    - if [[ $TEST_MODE == 'offline' || $TEST_MODE == 'astropy-dev' ]]; then python setup.py test; fi
+    - if [[ $TEST_MODE == 'online' ]]; then python setup.py test --online --coverage --cov-report=html; fi
+    - if [[ $TEST_MODE == 'skip' ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
 
 # Notify the IRC channel of build status
 notifications:
@@ -72,6 +76,3 @@ notifications:
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/d1bf84e1bc1293e4dbc5
-    on_success: always  # options: [always|never|change] default: always
-    on_failure: always  # options: [always|never|change] default: always
-    on_start: false     # default: false

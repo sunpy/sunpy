@@ -1,5 +1,0 @@
-beautifulsoup4==4.1.1
-numpy
-scipy
-sqlalchemy
-astropy>=0.4.0

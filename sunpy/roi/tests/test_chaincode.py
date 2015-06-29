@@ -37,7 +37,7 @@ class CCTests(unittest.TestCase):
         self.failUnless(cc.matchany(end, -1))
 
     def testnparray(self):
-        # Let's test that the shape of the array matchs the expected
+        # Let's test that the shape of the array matches the expected
         # To do so we need to use np.array, instead of lists.
         cc = Chaincode([0, 0], "2460")
         shape = (2,5)

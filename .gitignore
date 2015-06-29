@@ -25,10 +25,15 @@ docs
 htmlcov
 result.xml
 sunpy/version.py
+sunpy/_compiler.c
 sunpy/cython_version.py
+sunpy/data/sample/*.fits
+sunpy/data/sample/*.csv
+sunpy/data/sample/*.fit
+
+
 ### https://raw.github.com/github/gitignore/master/Global/OSX.gitignore
 
-.DS_Store
 .AppleDouble
 .LSOverride
 
@@ -63,3 +68,4 @@ $RECYCLE.BIN/
 *.msp
 
 
+*.spyderworkspace

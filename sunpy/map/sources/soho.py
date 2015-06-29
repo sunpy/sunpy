@@ -14,7 +14,8 @@ from sunpy.cm import cm
 
 __all__ = ['EITMap', 'LASCOMap', 'MDIMap']
 
-def _dsunAtSoho(date, rad_d, rad_1au = None):
+
+def _dsunAtSoho(date, rad_d, rad_1au=None):
     """Determines the distance to the Sun from SOhO following
     d_{\sun,Object} =
             D_{\sun\earth} \frac{\tan(radius_{1au}[rad])}{\tan(radius_{d}[rad])}
@@ -44,19 +45,20 @@ class EITMap(GenericMap):
 
         # Fill in some missing info
         self.meta['detector'] = "EIT"
+        self.meta['waveunit'] = "Angstrom"
         self._fix_dsun()
 
         self._name = self.detector + " " + str(self.measurement)
         self._nickname = self.detector
 
-        self.cmap = cm.get_cmap('sohoeit{wl:d}'.format(wl=self.wavelength))
+        self.cmap = cm.get_cmap(self._get_cmap_name())
 
     @property
-    def rsun_arcseconds(self):
+    def rsun_obs(self):
         return self.meta['solar_r'] * self.meta['cdelt1']
 
     def _fix_dsun(self):
-        dsun = _dsunAtSoho(self.date, self.rsun_arcseconds)
+        dsun = _dsunAtSoho(self.date, self.rsun_obs)
         self.meta['dsun_obs'] = dsun
 
     @classmethod
@@ -95,6 +97,9 @@ class LASCOMap(GenericMap):
     def __init__(self, data, header, **kwargs):
 
         GenericMap.__init__(self, data, header, **kwargs)
+
+        self.meta['CUNIT1'] = self.meta['CUNIT1'].lower()
+        self.meta['CUNIT2'] = self.meta['CUNIT2'].lower()
 
         # Fill in some missing or broken info
         datestr = "{date}T{time}".format(date=self.meta.get('date-obs',

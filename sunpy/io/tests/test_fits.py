@@ -1,7 +1,15 @@
 import sunpy.io.fits
 from sunpy.io.fits import get_header, extract_waveunit
-from sunpy.data.sample import RHESSI_IMAGE, EIT_195_IMAGE, AIA_171_IMAGE,\
-    SWAP_LEVEL1_IMAGE
+
+import sunpy.data.test
+import os
+testpath = sunpy.data.test.rootdir
+
+RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
+EIT_195_IMAGE = os.path.join(testpath, 'EIT/efz20040301.000010_s.fits')
+AIA_171_IMAGE = os.path.join(testpath, 'aia_171_level1.fits')
+SWAP_LEVEL1_IMAGE = os.path.join(testpath, 'SWAP/resampled1_swap.fits')
+
 from sunpy.data.test.waveunit import MEDN_IMAGE, MQ_IMAGE, NA_IMAGE, SVSM_IMAGE
 
 def read_hdus():

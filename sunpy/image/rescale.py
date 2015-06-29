@@ -54,7 +54,7 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
                                    "when calling resample.")
 
     #@note: will this be okay for integer (e.g. JPEG 2000) data?
-    if not orig.dtype in [np.float64, np.float32]:
+    if orig.dtype not in [np.float64, np.float32]:
         orig = orig.astype(np.float64)
 
     dimensions = np.asarray(dimensions, dtype=np.float64)
@@ -147,28 +147,43 @@ def _resample_spline(orig, dimensions, offset, m1):
 
     return scipy.ndimage.map_coordinates(orig, newcoords)
 
-def reshape_image_to_4d_superpixel(img,dimensions):
+def reshape_image_to_4d_superpixel(img, dimensions):
     """Re-shape the two dimension input image into a a four dimensional
     array whose 1st and third dimensions express the number of original
     pixels in the x and y directions form one superpixel. The reshaping
-    makes it very easy to perform operations on super-pixels.  Taken from
+    makes it very easy to perform operations on super-pixels.
+
+
+    Parameters
+    ----------
+    img : ndarray
+        A two-dimensional ndarray of the form (y, x)
+
+    dimensions : array-like
+        A two element array-like object containing integers that describe the
+        superpixel summation in the (y, x) directions
+
+    Returns
+    -------
+    A four dimensional ndarray that can be used to easily create
+    two-dimensional arrays of superpixels of the input image
+
+    References
+    ----------
+    Taken from
     http://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html
+
     """
     # check that the dimensions divide into the image size exactly
-    if img.shape[1] % dimensions[0] != 0:
-        print('Sum value in x direction must divide exactly into image'
-              ' x-dimension size.')
-        return None
-    if img.shape[0] % dimensions[1] != 0:
-        print('Sum value in y direction must divide exactly into image'
-              ' x-dimension size.')
-        return None
+
+    if np.all((np.array(img.shape) % np.array(dimensions) != 0)):
+        raise ValueError('New dimensions must divide original image size exactly.')
 
     # Reshape up to a higher dimensional array which is useful for higher
     # level operations
-    return img.reshape(img.shape[1] / dimensions[0],
+    return img.reshape(img.shape[0] / dimensions[0],
                        dimensions[0],
-                       img.shape[0] / dimensions[1],
+                       img.shape[1] / dimensions[1],
                        dimensions[1])
 
 class UnrecognizedInterpolationMethod(ValueError):

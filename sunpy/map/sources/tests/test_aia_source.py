@@ -9,11 +9,11 @@ import pytest
 
 from sunpy.map.sources.sdo import AIAMap
 from sunpy.map import Map
-from sunpy import AIA_171_IMAGE as aiaimg
 import sunpy.data.test
 
 path = sunpy.data.test.rootdir
 jp2path = glob.glob(os.path.join(path, "2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2"))
+aiaimg = glob.glob(os.path.join(path, "aia_171_level1.fits"))
 
 from sunpy.tests.helpers import SKIP_GLYMUR
 
@@ -46,5 +46,5 @@ def test_observatory(createAIAMap):
 
 def test_measurement(createAIAMap):
     """Tests the measurement property of the AIAMap object."""
-    assert createAIAMap.measurement in [171, 193]
+    assert createAIAMap.measurement.value in [171, 193]
     # aiaimg has 171, jp2path has 193.

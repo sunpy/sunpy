@@ -22,7 +22,7 @@ def get_sys_dict():
 
     try:
         from sunpy.version import version as sunpy_version
-        from sunpy.version import git_description as sunpy_git_description
+        from sunpy.version import githash as sunpy_git_description
     except ImportError:
         sunpy_version = 'Missing version.py; re-run setup.py'
         sunpy_git_description = 'N/A'
