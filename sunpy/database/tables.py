@@ -48,7 +48,8 @@ class WaveunitNotFoundError(Exception):
         self.obj = obj
 
     def __str__(self):  # pragma: no cover
-        return 'the wavelength unit cannot be found in {0}'.format(self.obj)
+        return 'the wavelength unit cannot be found in {0}'.format(self.obj) + \
+               ' and default_waveunit not specified when opening the database'
 
 
 class WaveunitNotConvertibleError(Exception):
@@ -578,7 +579,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
             break
 
 
-def display_entries(database_entries, columns):
+def display_entries(database_entries, columns, sort=False):
     """Generate a table to display the database entries.
 
     Parameters
@@ -589,6 +590,9 @@ def display_entries(database_entries, columns):
     columns : iterable of str
         The columns that will be displayed in the resulting table. Possible
         values for the strings are all attributes of :class:`DatabaseEntry`.
+
+    sort : bool (optional)
+        If True, sorts the entries before displaying them.
 
     Returns
     -------
@@ -625,4 +629,6 @@ def display_entries(database_entries, columns):
         data.append(row)
     if not data:
         raise TypeError('given iterable is empty')
+    if sort:
+        data.sort()
     return print_table(header + rulers + data)

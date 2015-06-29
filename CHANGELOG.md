@@ -1,15 +1,41 @@
 Latest
 ------
 
-* Added vso like querying feature to JSOC Client.
+ * Added vso like querying feature to JSOC Client.
  * Update to TimeRange API, removed t1 and t0, start and end are now read-only attributes
  * Added ability to download level3 data for lyra Light Curve along with corresponding tests.
  * Added support for gzipped FITS files.
  * Add STEREO HI Map subclass and color maps.
+ * Map.rotate() no longer crops any image data.
+ * For accuracy, default Map.rotate() transformation is set to bi-quartic.
+ * `sunpy.image.transform.affine_transform` now casts integer data to float64 and sets NaN values to 0 for all transformations except scikit-image rotation with order <= 3.
  * Refactor the JSOC client so that it follows the .query() .get() interface of VSOClient and UnifedDownloader
  * Remove old style string formatting and other 2.6 compatibility lines.
  * CD matrix now updated, if present, when Map pixel size is changed.
  * Removed now-redundant method for rotating IRIS maps since the functionality exists in Map.rotate()
+ * Provide `__str__` and `__repr__` methods on vso `QueryResponse` deprecate `.show()`
+ * SunPy colormaps are now registered with matplotlib on import of `sunpy.cm`
+ * `sunpy.cm.get_cmap` no longer defaults to 'sdoaia94'
+ * Added database url config setting to be setup by default as a sqlite database in the sunpy working directory
+ * Added a few tests for the sunpy.roi module
+ * Added capability for figure-based tests
+ * Refactored mapcube co-alignment functionality.
+ * Removed sample data from distribution and added ability to download sample files
+ * Require JSOC request data calls have an email address attached.
+ * Calculation of the solar rotation of a point on the Sun as seen from Earth, and its application to the de-rotation of mapcubes.
+ * Downloaded files now keep file extensions rather than replacing all periods with underscores
+ * Fixed the downloading of files with duplicate names in sunpy.database
+ * Changed default for GOESLightCurve.create() so that it gets the data from the most recent existing GOES fits file.
+ * Map plot functionality now uses the mask property if it is present, allowing the plotting of masked map data
+ * Map Expects Quantities and returns quantities for most parameters.
+ * Map now used Astropy.wcs for world <-> pixel conversions.
+ * map.data_to_pixel now has a similar API to map.pixel_to_data.
+ * map.shape has been replaced with map.dimensions, which is ordered
+   x first.
+ * map.rsun_arcseconds is now map.rsun_obs as it returns a quantity.
+ * Map properties are now named tuples rather than dictionaries.
+ * net.jsoc can query data series with time sampling by a Sample attribute implemented in vso.
+ * MapCube.plot and MapCube.peek now support a user defined plot_function argument for customising the animation.
 
 0.5.0
 -----

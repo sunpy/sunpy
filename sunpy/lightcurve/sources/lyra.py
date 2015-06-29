@@ -5,6 +5,7 @@ from __future__ import absolute_import
 import datetime
 import urlparse
 import sys
+from collections import OrderedDict
 
 from matplotlib import pyplot as plt
 from astropy.io import fits
@@ -12,7 +13,6 @@ import pandas
 
 from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
-from sunpy.util.odict import OrderedDict
 
 from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")
@@ -124,7 +124,7 @@ class LYRALightCurve(LightCurve):
         # First column are times.  For level 2 data, the units are [s].
         # For level 3 data, the units are [min]
         if hdulist[1].header['TUNIT1'] == 's':
-            times = [start + datetime.timedelta(seconds=int(n))
+            times = [start + datetime.timedelta(seconds=n)
                      for n in fits_record.field(0)]
         elif hdulist[1].header['TUNIT1'] == 'MIN':
             times = [start + datetime.timedelta(minutes=int(n))
@@ -144,4 +144,6 @@ class LYRALightCurve(LightCurve):
                 table[col.name] = fits_record.field(i + 1)
 
         # Return the header and the data
-        return OrderedDict(hdulist[0].header), pandas.DataFrame(table, index=times)
+        data = pandas.DataFrame(table, index=times)
+        data.sort(inplace=True)
+        return OrderedDict(hdulist[0].header), data

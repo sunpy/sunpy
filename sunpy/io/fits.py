@@ -30,8 +30,6 @@ References
 | http://stsdas.stsci.edu/download/wikidocs/The_PyFITS_Handbook.pdf
 
 """
-from __future__ import absolute_import
-
 import os
 import re
 import itertools
@@ -76,7 +74,7 @@ def read(filepath, hdus=None):
         elif isinstance(hdus, collections.Iterable):
             hdulist = [hdulist[i] for i in hdus]
     try:
-        hdulist.verify('fix+warn')
+        hdulist.verify('silentfix+warn')
 
         headers = get_header(hdulist)
         pairs = []
@@ -159,7 +157,7 @@ def write(fname, data, header, **kwargs):
     #Copy header so the one in memory is left alone while changing it for write
     header = header.copy()
 
-    #The comments need to be added to the header seperately from the normal
+    #The comments need to be added to the header separately from the normal
     # kwargs. Find and deal with them:
     fits_header = fits.Header()
     # Check Header
@@ -177,8 +175,9 @@ def write(fname, data, header, **kwargs):
                     fits_header.add_history(hist)
             elif k != '':
                 fits_header.append(fits.Card(k, str(v).split('\n')))
+
         else:
-            fits_header.append(fits.Card(k,v))
+            fits_header.append(fits.Card(k, v))
 
 
     if isinstance(key_comments, dict):

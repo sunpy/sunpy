@@ -25,15 +25,24 @@ def load_config():
     if not config.has_option('general', 'working_dir'):
         config.set('general', 'working_dir', os.path.join(_get_home(), "sunpy"))
 
+    # Specify the database url as a default so that the user's home
+    # directory can be located in an OS-independent manner
+    if not config.has_option('database', 'url'):
+        config.set('database', 'url', "sqlite:///" + os.path.join(_get_home(), "sunpy/sunpydb.sqlite"))
+
     # Use absolute filepaths and adjust OS-dependent paths as needed
     filepaths = [
-        ('downloads', 'download_dir')
+        ('downloads', 'download_dir'),
+        ('downloads', 'sample_dir')
     ]
     _fix_filepaths(config, filepaths)
 
     # check for sunpy working directory and create it if it doesn't exist
     if not os.path.isdir(config.get('downloads', 'download_dir')):
         os.mkdir(config.get('downloads', 'download_dir'))
+
+    if not os.path.isdir(config.get('downloads', 'sample_dir')):
+        os.mkdir(config.get('downloads', 'sample_dir'))
 
     return config
 
@@ -84,7 +93,7 @@ def _find_config_files():
     config_files.append(os.path.join(module_dir, 'data', 'sunpyrc'))
 
     # if a user configuration file exists, add that to list of files to read
-    # so that any values set there will overide ones specified in the default
+    # so that any values set there will override ones specified in the default
     # config file
     config_path = _get_user_configdir()
 

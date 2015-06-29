@@ -88,7 +88,7 @@ class ButtonPB(widgets.Button):
 
 class BaseFuncAnimator(object):
     """
-    Create a matplotlib backend independant data explorer which allows
+    Create a matplotlib backend independent data explorer which allows
     definition of figure update functions for each slider.
 
     The following keyboard shortcuts are defined in the viewer:
@@ -99,8 +99,8 @@ class BaseFuncAnimator(object):
     - 'bottom': change the active slider down one
     - 'p': play/pause active slider
 
-    This viewer can have user defined buttons added by specifing the labels and
-    functions called when those buttons are clicked as keyword argumets.
+    This viewer can have user defined buttons added by specifying the labels and
+    functions called when those buttons are clicked as keyword arguments.
 
     To make this class useful the subclass must implement `_plot_start_image`
     which must define a `self.im` attribute which is an instance of AxesImage
@@ -108,7 +108,7 @@ class BaseFuncAnimator(object):
     Parameters
     ----------
     data: iterable
-        Some arbitary data
+        Some arbitrary data
 
     slider_functions: list
         A list of functions to call when that slider is changed.
@@ -236,10 +236,10 @@ class BaseFuncAnimator(object):
 
     def plot_start_image(self, ax):
         """
-        This method creates the inital image on the mpl axes
+        This method creates the initial image on the mpl axes
 
         .. warning::
-            This method needs to be implemeted in subclasses
+            This method needs to be implemented in subclasses
 
         Parameters
         ----------
@@ -282,7 +282,7 @@ class BaseFuncAnimator(object):
                                self.sliders[self.active_slider]._slider)
 
 #==============================================================================
-#   Active Sider methods
+#   Active Slider methods
 #==============================================================================
     def _set_active_slider(self, ind):
         self._dehighlight_slider(self.active_slider)
@@ -354,7 +354,7 @@ class BaseFuncAnimator(object):
         self.buttons = []
         for i in range(0,self.num_buttons):
             x = i*2
-            #The i+1/10. is a bug that if you make two axes directly ontop of
+            #The i+1/10. is a bug that if you make two axes directly on top of
             #one another then the divider doesn't work.
             self.buttons.append(self.fig.add_axes((0.,0.,0.+i/10.,1.)))
             locator = self.divider.new_locator(nx=x, ny=self.button_ny)
@@ -445,7 +445,7 @@ class BaseFuncAnimator(object):
 
 class ImageAnimator(BaseFuncAnimator):
     """
-    Create a matplotlib backend independant data explorer
+    Create a matplotlib backend independent data explorer
 
     The following keyboard shortcuts are defined in the viewer:
 
@@ -455,8 +455,8 @@ class ImageAnimator(BaseFuncAnimator):
     - 'bottom': change the active slider down one
     - 'p': play/pause active slider
 
-    This viewer can have user defined buttones added by specifing the labels and
-    functions called when those buttons are clicked as keyword argumets.
+    This viewer can have user defined buttons added by specifying the labels and
+    functions called when those buttons are clicked as keyword arguments.
 
     Parameters
     ----------
@@ -470,13 +470,13 @@ class ImageAnimator(BaseFuncAnimator):
         Figure to use
 
     axis_range: list of physical coordinates for array or None
-        If None array indicies will be used for all axes.
+        If None array indices will be used for all axes.
         If a list it should contain one element for each axis of the numpy array.
         For the image axes a [min, max] pair should be specified which will be
         passed to :func:`matplotlib.pyplot.imshow` as extent.
         For the slider axes a [min, max] pair can be specified or an array the
         same length as the axis which will provide all values for that slider.
-        If None is specified for an axis then the array indicies will be used
+        If None is specified for an axis then the array indices will be used
         for that axis.
 
     interval: int
@@ -517,7 +517,7 @@ class ImageAnimator(BaseFuncAnimator):
         ax = self.slider_axes + self.image_axes
         ax.sort()
         if ax != list(range(self.naxis)):
-            raise ValueError("spatial_axes and sider_axes mismatch")
+            raise ValueError("spatial_axes and slider_axes mismatch")
 
         self.axis_range = self._sanitize_axis_range(axis_range, data)
 
@@ -573,12 +573,12 @@ class ImageAnimator(BaseFuncAnimator):
 
         The allowed values of axis range is either None or a list.
         If axis_range is None then all axis are assumed to be not scaled and
-        use array indicies.
+        use array indices.
 
         Where axis_range is a list it must have the same length as the number
         of axis as the array and each element must be one of the following:
 
-                * None: Build a min,max pair or linspace array of array indicies
+                * None: Build a min,max pair or linspace array of array indices
                 * [min, max]: leave for image axes or convert to a array for slider axes (from min to max in axis length steps)
                 * [min, max] pair where min == max: convert to array indies min,max pair or array.
                 * array of axis length, check that it was passed for a slider axes and do nothing if it was, error if it is not.
@@ -587,7 +587,7 @@ class ImageAnimator(BaseFuncAnimator):
         if axis_range is None:
             axis_range = [[0, i] for i in data.shape]
 
-        #need the same numer of axis ranges as axes
+        #need the same number of axis ranges as axes
         if len(axis_range) != data.ndim:
             raise ValueError("axis_range must equal number of axes")
 

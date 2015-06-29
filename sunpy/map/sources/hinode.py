@@ -75,7 +75,7 @@ class XRTMap(GenericMap):
 
 class SOTMap(GenericMap):
     """SOT Image Map definition
-    
+
     References
     ----------
     Hinode Solar Optical Telescope
@@ -107,14 +107,14 @@ class SOTMap(GenericMap):
         self._name = self.observatory + '/' + self.instrument
         self._nickname = self.detector
 
-        #TODO (add other options, Now all threated as intensity. This followes Hinode SDC archive)
+        #TODO (add other options, Now all threated as intensity. This follows Hinode SDC archive)
         # StokesQUV -> grey, Velocity -> EIS, Width -> EIS, Mag Field Azi -> IDL 5 (STD gamma II)
         #'WB' -> red
         #'NB'(0 = red); (>0 = gray), # nb has 1 stokes I, the rest quv
         #'SP' (<=1 = red); (>1 = gray) #sp has 2 stokes I, the rest quv
         color = {'SOT/WB': 'intensity',
-                 'SOT/NB': 'intensity', # For the 1st dimmension
-                 'SOT/SP': 'intensity', # For the 1st 2 dimmensions
+                 'SOT/NB': 'intensity', # For the 1st dimension
+                 'SOT/SP': 'intensity', # For the 1st 2 dimensions
                  }
 
         self.cmap = cm.get_cmap('hinodesot' + color[self.instrument])

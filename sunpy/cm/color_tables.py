@@ -61,6 +61,11 @@ c1 = (np.sqrt(c0) * np.sqrt(255.0)).astype('f')
 c2 = (np.arange(256) ** 2 / 255.0).astype('f')
 c3 = ((c1 + c2 / 2.0) * 255.0 / (c1.max() + c2.max() / 2.0)).astype('f')
 
+aia_wave_dict = {1600: (c3, c3, c2), 1700: (c1, c0, c0), 4500: (c0, c0, b0 / 2.0),
+                 94: (c2, c3, c0), 131: (g0, r0, r0), 171: (r0, c0, b0),
+                 193: (c1, c0, c2), 211: (c1, c0, c3), 304: (r0, g0, b0),
+                 335: (c2, c0, c1)
+                }
 
 def aia_color_table(wavelength):
     '''Returns one of the fundamental color tables for SDO AIA images.
@@ -68,12 +73,7 @@ def aia_color_table(wavelength):
        Karel Schriver (2010/04/12).
     '''
     try:
-        r, g, b = {
-            1600: (c3, c3, c2), 1700: (c1, c0, c0), 4500: (c0, c0, b0 / 2.0),
-            94: (c2, c3, c0), 131: (g0, r0, r0), 171: (r0, c0, b0),
-            193: (c1, c0, c2), 211: (c1, c0, c3), 304: (r0, g0, b0),
-            335: (c2, c0, c1)
-        }[wavelength]
+        r, g, b = aia_wave_dict[wavelength]
     except KeyError:
         raise ValueError(
             "Invalid AIA wavelength. Valid values are "
@@ -209,11 +209,11 @@ eit_dark_green_g = np.concatenate((np.zeros(52).astype('int'),
        245, 247, 248, 249, 249, 250, 252, 253, 255])))
 
 eit_dark_green_b = np.concatenate((np.zeros(197).astype('int'), np.array(
-      [182, 184, 186, 186, 187, 188, 189, 191, 192, 194, 195, 197, 198,
-       198, 199, 200, 202, 204, 205, 206, 208, 209, 210, 211, 211, 213,
-       215, 216, 217, 219, 220, 221, 222, 225, 225, 226, 227, 228, 230,
-       231, 232, 233, 236, 237, 237, 238, 239, 241, 242, 243, 245, 247,
-       248, 249, 249, 250, 252, 253, 255])))
+      [  3,  10,  17,  17,  20,  24,  27,  34,  37,  44,  48,  55,  58,
+        58,  62,  65,  72,  79,  82,  86,  93,  96,  99, 103, 103, 110,
+       117, 120, 124, 130, 134, 137, 141, 151, 151, 155, 158, 161, 168,
+       172, 175, 179, 189, 192, 192, 196, 199, 206, 210, 213, 220, 227,
+       230, 234, 234, 237, 244, 248, 255])))
 
 eit_dark_red_r = np.concatenate((np.zeros(52).astype('int'), np.array(
       [  1,   3,   4,   5,   6,   6,   8,   9,  11,  12,  14,  15,  16,

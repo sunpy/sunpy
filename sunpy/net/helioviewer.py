@@ -37,7 +37,7 @@ class HelioviewerClient(object):
 
         For more information on what types of requests are available and the
         expected usage for the response, consult the Helioviewer
-        API documenation: http://helioviewer.org/api
+        API documentation: http://helioviewer.org/api
 
         Parameters
         ----------
@@ -57,7 +57,7 @@ class HelioviewerClient(object):
         Returns
         -------
         out : dict
-            A dictionary containing metainformation for the closest image matched
+            A dictionary containing meta-information for the closest image matched
 
         Examples
         --------
@@ -121,7 +121,7 @@ class HelioviewerClient(object):
         >>> hv = helioviewer.HelioviewerClient()
         >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', instrument='AIA', detector='AIA', measurement='171')
         >>> aia = sunpy.map.Map(filepath)
-        >>> aia.show()
+        >>> aia.peek()
 
         >>> data_sources = hv.get_data_sources()
         >>> hv.download_jp2('2012/07/03 14:30:00', sourceId=data_sources['SOHO']['LASCO']['C2']['white-light']['sourceId'])
@@ -148,7 +148,7 @@ class HelioviewerClient(object):
         image may be specified using either the top-left and bottom-right
         coordinates in arc-seconds, or a center point in arc-seconds and a
         width and height in pixels. See the Helioviewer.org API Coordinates
-        Appendix for more infomration about working with coordinates in
+        Appendix for more information about working with coordinates in
         Helioviewer.org.
 
         Parameters
@@ -162,7 +162,7 @@ class HelioviewerClient(object):
         layers : string
             Each layer string is comma-separated with these values, e.g.:
             "[sourceId,visible,opacity]" or "[obs,inst,det,meas,visible,opacity]"
-            Mulitple layer string are by commas: "[layer1],[layer2],[layer3]"
+            Multiple layer string are by commas: "[layer1],[layer2],[layer3]"
         directory : string
             (Optional)  Directory to download JPEG 2000 image to.
         x1 : float

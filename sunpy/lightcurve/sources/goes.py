@@ -12,6 +12,7 @@ from pandas import DataFrame
 
 from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time, TimeRange, is_time_in_given_format
+from sunpy.util import net
 
 __all__ = ['GOESLightCurve']
 
@@ -38,7 +39,7 @@ class GOESLightCurve(LightCurve):
         figure = plt.figure()
         axes = plt.gca()
 
-        dates = matplotlib.dates.date2num(self.data.index)
+        dates = matplotlib.dates.date2num(parse_time(self.data.index))
 
         axes.plot_date(dates, self.data['xrsa'], '-',
                      label='0.5--4.0 $\AA$', color='blue', lw=2)
@@ -74,10 +75,13 @@ class GOESLightCurve(LightCurve):
     @classmethod
     def _get_default_uri(cls):
         """Retrieve latest GOES data if no other data is specified"""
-        today = datetime.datetime.today()
-        days_back = 3
-        time_range = TimeRange(today - datetime.timedelta(days=days_back),
-                               today - datetime.timedelta(days=days_back - 1))
+        now = datetime.datetime.utcnow()
+        time_range = TimeRange(datetime.datetime(now.year, now.month, now.day), now)
+        url_does_exist = net.url_exists(cls._get_url_for_date_range(time_range))
+        while not url_does_exist:
+            time_range = TimeRange(time_range.start-datetime.timedelta(days=1),
+                                   time_range.start)
+            url_does_exist = net.url_exists(cls._get_url_for_date_range(time_range))
         return cls._get_url_for_date_range(time_range)
 
     @classmethod
@@ -186,5 +190,5 @@ class GOESLightCurve(LightCurve):
         newxrsb = xrsb.byteswap().newbyteorder()
 
         data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb}, index=times)
-
+        data.sort(inplace=True)
         return header, data

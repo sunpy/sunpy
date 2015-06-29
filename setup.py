@@ -43,7 +43,7 @@ LONG_DESCRIPTION = "SunPy is a Python library for solar physics data analysis."
 builtins._ASTROPY_PACKAGE_NAME_ = PACKAGENAME
 
 # VERSION should be PEP386 compatible (http://www.python.org/dev/peps/pep-0386)
-VERSION = '0.5.dev'
+VERSION = '0.7.dev'
 
 # Indicates if this version is a release version
 RELEASE = 'dev' not in VERSION
@@ -106,7 +106,7 @@ setup(name=PACKAGENAME,
       scripts=scripts,
       setup_requires=['numpy>1.7.1'],
       install_requires=['numpy>1.7.1',
-                        'astropy>=0.4.0',
+                        'astropy>=1.0.0',
                         'scipy',
                         'pandas>=0.12.0',
                         'matplotlib>=1.1'],

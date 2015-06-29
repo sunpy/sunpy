@@ -12,6 +12,7 @@ from astropy import units as u
 from sunpy.time import TimeRange
 from sunpy.net import vso
 from sunpy.net.vso import attrs as va
+from sunpy.net.vso.vso import QueryResponse
 from sunpy.net import attr
 
 def pytest_funcarg__eit(request):
@@ -121,13 +122,13 @@ def test_wave_inputQuantity():
     assert excinfo.value.message == wrong_type_mesage
 
 def test_wave_toangstrom():
-    # TODO: this test shoul test that inputs are in any of spectral units
-    # more than just converted to Angstoms.
+    # TODO: this test should test that inputs are in any of spectral units
+    # more than just converted to Angstroms.
     frequency = [(1, 1 * u.Hz),
                  (1e3, 1 * u.kHz),
                  (1e6, 1 * u.MHz),
                  (1e9, 1 * u.GHz)]
-        
+
     energy = [(1, 1 * u.eV),
               (1e3, 1 * u.keV),
               (1e6, 1 * u.MeV)]
@@ -135,7 +136,7 @@ def test_wave_toangstrom():
     for factor, unit in energy:
         w = va.Wave((62 / factor) * unit, (62 / factor) * unit)
         assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
-    
+
     w = va.Wave(62 * u.eV, 62 * u.eV)
     assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
     w = va.Wave(62e-3 * u.keV, 62e-3 * u.keV)
@@ -144,7 +145,7 @@ def test_wave_toangstrom():
     for factor, unit in frequency:
         w = va.Wave((1.506e16 / factor) * unit, (1.506e16 / factor) * unit)
         assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
-    
+
     w = va.Wave(1.506e16 * u.Hz, 1.506e16 * u.Hz)
     assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
     w = va.Wave(1.506e7 * u.GHz, 1.506e7 * u.GHz)
@@ -175,11 +176,11 @@ def test_time_xor():
 def test_wave_xor():
     one = va.Wave(0 * u.AA, 1000 * u.AA)
     a = one ^ va.Wave(200 * u.AA, 400 * u.AA)
-    
+
     assert a == attr.AttrOr([va.Wave(0 * u.AA, 200 * u.AA), va.Wave(400 * u.AA, 1000 * u.AA)])
-    
+
     a ^= va.Wave(600 * u.AA, 800 * u.AA)
-    
+
     assert a == attr.AttrOr(
         [va.Wave(0 * u.AA, 200 * u.AA), va.Wave(400 * u.AA, 600 * u.AA), va.Wave(800 * u.AA, 1000 * u.AA)])
 
@@ -200,3 +201,11 @@ def test_wave_repr():
     assert repr(wav) == "<Wave(12.0, 16.0, 'Angstrom')>"
     assert repr(moarwav) == "<Wave(12.0, 15.0, 'Angstrom')>"
 
+def test_str():
+    qr = QueryResponse([])
+    assert str(qr) == 'Start Time End Time Source Instrument Type\n---------- -------- ------ ---------- ----'
+
+def test_repr():
+    qr = QueryResponse([])
+    assert repr(qr) in ('<Table masked=False length=0>\nStart Time End Time  Source Instrument   Type \n float64   float64  float64  float64   float64\n---------- -------- ------- ---------- -------', # astropy >1.0
+                        "<Table rows=0 names=('Start Time','End Time','Source','Instrument','Type')>\narray([], \n      dtype=[('Start Time', '<f8'), ('End Time', '<f8'), ('Source', '<f8'), ('Instrument', '<f8'), ('Type', '<f8')])") # astropy 0.4.x
