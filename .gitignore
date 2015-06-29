@@ -28,7 +28,6 @@ sunpy/version.py
 sunpy/cython_version.py
 ### https://raw.github.com/github/gitignore/master/Global/OSX.gitignore
 
-.DS_Store
 .AppleDouble
 .LSOverride
 
@@ -63,3 +62,4 @@ $RECYCLE.BIN/
 *.msp
 
 
+*.spyderworkspace
