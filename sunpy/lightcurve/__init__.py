@@ -18,6 +18,9 @@ from sunpy.lightcurve.sources.logical import *
 from sunpy.lightcurve.sources.norh import *
 from sunpy.lightcurve.sources.rhessi import *
 from sunpy.lightcurve.sources.fermi_gbm import *
+from sunpy.lightcurve.sources.stereo import *
+from sunpy.lightcurve.sources.soho import *
+
 
 #def make_lightcurve(*args, **kwargs):
 #    """Processes one or more inputs and returns a LightCurve instance.
