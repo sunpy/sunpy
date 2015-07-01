@@ -10,6 +10,7 @@ from matplotlib import pyplot as plt
 
 __all__ = ['Spectrum']
 
+
 class Spectrum(np.ndarray):
     """
     Class representing a spectrum.
@@ -20,7 +21,8 @@ class Spectrum(np.ndarray):
         one-dimensional array with the frequency values at every data point
 
     data : np.ndarray
-        one-dimensional array which the intensity at a particular frequency at every data-point.
+        one-dimensional array which the intensity at a particular frequency at
+        every data-point.
     """
     def __new__(cls, data):
         return np.asarray(data).view(cls)
@@ -72,3 +74,27 @@ class Spectrum(np.ndarray):
         self.plot(**matplot_args)
         figure.show()
         return figure
+
+    def shift_axis(self, offset):
+        """
+        Shifts the entire wavelength axis by a given linear offset
+
+        Parameters
+        ----------
+        offset: float
+            The amount to offset by
+        """
+        # TODO: Should this use Quantities?
+        self.map_to_axis(lambda x: x + offset)
+
+    def map_to_axis(self, fun):
+        """
+        Maps a function to the given axis. This can be used for non-linear
+        corrections of the axis.
+
+        Parameters
+        ----------
+        fun: Function from float to float
+            The function to apply to the intensities.
+        """
+        self.freq_axis = map(fun, self.freq_axis)
