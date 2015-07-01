@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
+# pylint: disable=E1101
 
 from __future__ import absolute_import
 
@@ -18,10 +19,10 @@ class Spectrum(np.ndarray):
     freq_axis : np.ndarray
         one-dimensional array with the frequency values at every data point
 
-    data\ : np.ndarray
+    data : np.ndarray
         one-dimensional array which the intensity at a particular frequency at every data-point.
     """
-    def __new__(cls, data, *args, **kwargs):
+    def __new__(cls, data):
         return np.asarray(data).view(cls)
 
     def __init__(self, data, freq_axis):
@@ -39,15 +40,15 @@ class Spectrum(np.ndarray):
             Else the current matplotlib axes will be used.
         """
 
-        #Get current axes
+        # Get current axes
         if not axes:
             axes = plt.gca()
 
         params = {}
         params.update(matplot_args)
 
-        #This is taken from mpl.pyplot.plot() as we are trying to
-        #replicate that functionality
+        # This is taken from mpl.pyplot.plot() as we are trying to
+        # replicate that functionality
 
         # allow callers to override the hold state by passing hold=True|False
         washold = axes.ishold()
@@ -68,9 +69,6 @@ class Spectrum(np.ndarray):
         """
 
         figure = plt.figure()
-
-        lines = self.plot(**matplot_args)
-
+        self.plot(**matplot_args)
         figure.show()
-
         return figure
