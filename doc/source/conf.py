@@ -65,6 +65,13 @@ except ImportError:
 
 # -- General configuration ----------------------------------------------------
 
+
+# -- Read the Docs Setup  -----------------------------------------------------
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+
+if on_rtd:
+    os.environ['SUNPY_CONFIGDIR'] = '/home/docs/checkouts/readthedocs.org/user_builds/sunpy/'
+
 # Load all of the global Astropy configuration
 from astropy_helpers.sphinx.conf import *
 
