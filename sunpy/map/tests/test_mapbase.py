@@ -14,13 +14,14 @@ import astropy.wcs
 from astropy.io import fits
 import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
+import matplotlib.pyplot as plt
 
 import sunpy
 import sunpy.sun
 import sunpy.map
 import sunpy.data.test
 from sunpy.time import parse_time
-from sunpy.tests.helpers import figure_test
+from sunpy.tests.helpers import figure_test, skip_wcsaxes
 
 testpath = sunpy.data.test.rootdir
 
@@ -409,11 +410,19 @@ def test_rotate_invalid_order(generic_map):
         generic_map.rotate(order=-1)
 
 
+@skip_wcsaxes
 @figure_test
 def test_plot_aia171(aia171_test_map):
     aia171_test_map.plot()
 
 
+@figure_test
+def test_plot_aia171_nowcsaxes(aia171_test_map):
+    ax = plt.gca()
+    aia171_test_map.plot(axes=ax)
+
+
+@skip_wcsaxes
 @figure_test
 def test_plot_masked_aia171(aia171_test_map):
     shape = aia171_test_map.data.shape
@@ -421,4 +430,14 @@ def test_plot_masked_aia171(aia171_test_map):
     mask[0:shape[0]/2, 0:shape[1]/2] = True
     masked_map = sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
     masked_map.plot()
+
+
+@figure_test
+def test_plot_masked_aia171_nowcsaxes(aia171_test_map):
+    shape = aia171_test_map.data.shape
+    mask = np.zeros_like(aia171_test_map.data, dtype=bool)
+    mask[0:shape[0]/2, 0:shape[1]/2] = True
+    masked_map = sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
+    ax = plt.gca()
+    masked_map.plot(axes=ax)
 
