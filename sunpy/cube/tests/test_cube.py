@@ -382,4 +382,3 @@ def test_reduce_dim():
     assert cu.reduce_dim(cubem, 0, slices[1]).data.shape == (2, 2, 4)
     assert cu.reduce_dim(cubem, 2, slices[2]).data.shape == (3, 2, 2)
     assert cu.reduce_dim(cube, 2, slices[2]).axes_wcs.wcs.cdelt[1] == 1
-    

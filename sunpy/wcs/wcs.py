@@ -527,9 +527,10 @@ def convert_to_coord(x, y, from_coord, to_coord, b0_deg=0, l0_deg=0,
     return rx, ry
 
 
-class WCS(astropy.wcs.WCS):
+class WCS(wcs.WCS):
 
     def __init__(self, header=None, naxis=None, **kwargs):
+        self.oriented = False
         if WCS._needs_augmenting(header):
             self.was_augmented = True
             header = WCS._augment(header, naxis)
@@ -537,7 +538,7 @@ class WCS(astropy.wcs.WCS):
                 naxis = naxis + 1
         else:
             self.was_augmented = False
-        astropy.wcs.WCS.__init__(self, header=header, naxis=naxis, **kwargs)
+        wcs.WCS.__init__(self, header=header, naxis=naxis, **kwargs)
 
     @classmethod
     def _needs_augmenting(cls, header):

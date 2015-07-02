@@ -31,9 +31,10 @@ from sunpy.wcs import wcs_util as wu
 __all__ = ['Cube']
 
 
-class Cube(astropy.nddata.NDData):
+class Cube(astropy.nddata.NDDataArray):
     """
     Class representing spectral cubes.
+    Extra arguments are passed on to NDDataArray's init.
 
     Attributes
     ----------
@@ -46,20 +47,14 @@ class Cube(astropy.nddata.NDData):
 
     axes_wcs: sunpy.wcs.wcs.WCS object
         The WCS object containing the axes' information
-
-    meta: dict
-        Header containing the wavelength-specific metadata as well as the
-        whole-file metadata
     """
 
-    def __init__(self, data, wcs, meta=None, **kwargs):
+    def __init__(self, data, wcs, **kwargs):
         data, wcs = cu.orient(data, wcs)
-        astropy.nddata.NDData.__init__(self, data=data,
-                                       meta=meta,
-                                       **kwargs)
+        astropy.nddata.NDDataArray.__init__(self, data=data, **kwargs)
         self.axes_wcs = wcs
-        # We don't send this to NDData because it's not
-        # supported as of astropy 0.4. Eventually we will.
+        # We don't send this to NDDataArray because it's not
+        # supported as of astropy 1.0. Eventually we will.
         # Also it's called axes_wcs because wcs belongs to astropy.nddata and
         # that messes up slicing.
 
@@ -430,7 +425,7 @@ class Cube(astropy.nddata.NDData):
         if axis == 2 or axis == 3:
             newwcs = wu.add_celestial_axis(newwcs)
             newwcs.was_augmented = True
-        cube = Cube(newdata, newwcs, self.meta, **kwargs)
+        cube = Cube(newdata, newwcs, meta=self.meta, **kwargs)
         return cube
 
     def time_axis(self):

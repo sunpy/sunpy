@@ -80,6 +80,7 @@ def test_convert_point():
     assert cu.convert_point(24, u.s, wt, 0) == 1
     assert cu.convert_point(-72, u.s, wt, 0) == -3
 
+    assert cu.convert_point(0.2, u.Angstrom, wt, 1) == 1
     assert cu.convert_point(12, None, wt, 0) == 12
     assert cu.convert_point(15.7, None, wm, 3) == 15
     assert cu.convert_point(4, u.pix, wm, 2) == 4

@@ -6,10 +6,10 @@ Utilities used in the sunpy.cube.cube module. Moved here to prevent clutter and
 aid readability.
 """
 
-from copy import deepcopy
 import numpy as np
 from sunpy.wcs import wcs_util
 from astropy import units as u
+import sunpy.cube.cube
 
 
 def orient(array, wcs):
@@ -29,6 +29,9 @@ def orient(array, wcs):
         dimension.
     """
 
+    if wcs.oriented:  # If this wcs has already been oriented.
+        return array, wcs
+
     if array.ndim != 3 and array.ndim != 4:
         raise ValueError("Input array must be 3- or 4-dimensional")
 
@@ -47,6 +50,8 @@ def orient(array, wcs):
 
     wcs_order = np.array(select_order(axtypes))[::-1]
     result_wcs = wcs_util.reindex_wcs(wcs, wcs_order)
+    result_wcs.was_augmented = wcs.was_augmented
+    result_wcs.oriented = True
     return result_array, result_wcs
 
 
@@ -228,9 +233,13 @@ def reduce_dim(cube, axis, keys):
         newwcs.wcs.crpix[waxis] = 0
         newwcs.wcs.crval[waxis] = (cube.axes_wcs.wcs.crval[waxis] +
                                    cube.axes_wcs.wcs.cdelt[waxis] * start)
-    newcube = deepcopy(cube)
-    newcube.data = newdata
-    newcube.axes_wcs = newwcs
+    meta = cube.meta
+    unit = cube.unit
+    uncertainty = cube.uncertainty
+    mask = cube.mask
+
+    newcube = sunpy.cube.Cube(data=newdata, wcs=newwcs, meta=meta, unit=unit,
+                              uncertainty=uncertainty, mask=mask)
     return newcube
 
 
@@ -268,6 +277,7 @@ def getitem_3d(cube, item):
                      not any(isinstance(i, int) for i in item)))
 
     reducedcube = reduce_dim(cube, 0, slice(None, None, None))
+    # We're not actually reducing a cube, just a way of copying the cube.
     if isinstance(item, tuple):
         for i in range(len(item)):
             if isinstance(item[i], slice):
@@ -397,11 +407,11 @@ def convert_point(value, unit, wcs, axis):
     if isinstance(value, u.Quantity):
         value = value.value
         unit = value.unit
-    naxis = wcs.wcs.naxis if not wcs.was_augmented else wcs.wcs.naxis - 1
-    cunit = u.Unit(wcs.wcs.cunit[naxis - 1 - axis])
-    crpix = wcs.wcs.crpix[naxis - 1 - axis]
-    crval = wcs.wcs.crval[naxis - 1 - axis] * cunit
-    cdelt = wcs.wcs.cdelt[naxis - 1 - axis] * cunit
+    ax = -1 - axis if wcs.oriented or not wcs.was_augmented else -2 - axis
+    cunit = u.Unit(wcs.wcs.cunit[ax])
+    crpix = wcs.wcs.crpix[ax]
+    crval = wcs.wcs.crval[ax] * cunit
+    cdelt = wcs.wcs.cdelt[ax] * cunit
 
     point = (value * unit).to(cunit)
     pointdelta = ((point - crval) / cdelt).value
@@ -429,7 +439,7 @@ def _convert_slice(item, wcs, axis):
         The axis the slice corresponds to, in numpy-style ordering (i.e.
         opposite WCS convention)
     """
-    naxis = wcs.wcs.naxis if not wcs.was_augmented else wcs.wcs.naxis - 1
+    ax = -2 - axis if wcs.was_augmented and not wcs.oriented else -1 - axis
     steps = [item.start, item.stop, item.step]
     values = [None, None, None]
     unit = None
@@ -448,8 +458,8 @@ def _convert_slice(item, wcs, axis):
     if values[2] is None:
         delta = None
     else:
-        cunit = u.Unit(wcs.wcs.cunit[naxis - 1 - axis])
-        cdelt = wcs.wcs.cdelt[naxis - 1 - axis] * cunit
+        cunit = u.Unit(wcs.wcs.cunit[ax])
+        cdelt = wcs.wcs.cdelt[ax] * cunit
         delta = int(np.round(((values[2] * unit).to(cunit) / cdelt).value))
 
     if values[0] is None:

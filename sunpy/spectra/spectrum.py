@@ -4,14 +4,14 @@
 
 from __future__ import absolute_import
 
-import numpy as np
+import astropy.nddata
 
 from matplotlib import pyplot as plt
 
 __all__ = ['Spectrum']
 
 
-class Spectrum(np.ndarray):
+class Spectrum(astropy.nddata.NDDataArray):
     """
     Class representing a spectrum.
 
@@ -24,11 +24,11 @@ class Spectrum(np.ndarray):
         one-dimensional array which the intensity at a particular frequency at
         every data-point.
     """
-    def __new__(cls, data):
-        return np.asarray(data).view(cls)
+#    def __new__(cls, data):
+#        return np.asarray(data).view(cls)
 
-    def __init__(self, data, freq_axis):
-        self.data = data
+    def __init__(self, data, freq_axis, **kwargs):
+        astropy.nddata.NDDataArray.__init__(self, data=data, **kwargs)
         self.freq_axis = freq_axis
 
     def plot(self, axes=None, **matplot_args):
@@ -95,6 +95,6 @@ class Spectrum(np.ndarray):
         Parameters
         ----------
         fun: Function from float to float
-            The function to apply to the intensities.
+            The function to apply to the wavelengths.
         """
         self.freq_axis = map(fun, self.freq_axis)
