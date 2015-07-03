@@ -333,8 +333,7 @@ class Cube(astropy.nddata.NDDataArray):
                     sumaxis = 1 if i == 2 else i
                 data = data.sum(axis=sumaxis)
 
-        freq_axis = self.freq_axis()
-        cunit = u.Unit(self.axes_wcs.wcs.cunit[-1 - axis])
+        freq_axis, cunit = self.freq_axis()
         return Spectrum(np.array(data), np.array(freq_axis), cunit)
 
     def slice_to_spectrogram(self, y_coord, x_coord=None, **kwargs):
@@ -365,8 +364,8 @@ class Cube(astropy.nddata.NDDataArray):
             if x_coord is None:
                 raise cu.CubeError(4, 'An x-coordinate is needed for 4D cubes')
             data = self.data[:, :, pixelize(y_coord, 2), pixelize(x_coord, 3)]
-        time_axis = self.time_axis()
-        freq_axis = self.freq_axis()
+        time_axis = self.time_axis()[0]
+        freq_axis = self.freq_axis()[0]
 
         if 'DATE_OBS'in self.meta:
             tformat = '%Y-%m-%dT%H:%M:%S.%f'
@@ -432,7 +431,7 @@ class Cube(astropy.nddata.NDDataArray):
     def time_axis(self):
         """
         Returns a numpy array containing the time values for the cube's time
-        dimension.
+        dimension, as well as the unit used.
         """
         if self.axes_wcs.wcs.ctype[-1] not in ['TIME', 'UTC']:
             raise cu.CubeError(1, 'No time axis present')
@@ -441,12 +440,13 @@ class Cube(astropy.nddata.NDDataArray):
         crval = self.axes_wcs.wcs.crval[-1]
         start = crval - crpix * delta
         stop = start + len(self.data) * delta
-        return np.arange(start, stop, delta)
+        cunit = u.Unit(self.axes_wcs.wcs.cunit[-1])
+        return np.arange(start, stop, delta), cunit
 
     def freq_axis(self):
         """
         Returns a numpy array containing the frequency values for the cube's
-        spectral dimension.
+        spectral dimension, as well as the axis's unit.
         """
         if 'WAVE' not in self.axes_wcs.wcs.ctype:
             raise cu.CubeError(2,
@@ -457,7 +457,8 @@ class Cube(astropy.nddata.NDDataArray):
         crval = self.axes_wcs.wcs.crval[-1 - axis]
         start = crval - crpix * delta
         stop = start + self.data.shape[axis] * delta
-        return np.arange(start, stop, delta)
+        cunit = u.Unit(self.axes_wcs.wcs.cunit[-1 - axis])
+        return np.arange(start, stop, delta), cunit
 
     def _array_is_aligned(self):
         rot_matrix = self.axes_wcs.wcs.pc
