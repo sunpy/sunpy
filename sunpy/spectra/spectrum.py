@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
+# Author: Florian Mayer <florian.mayer@bitsrc.org>,
+#         Mateo Inchaurrandieta <mateo.inchaurrandieta@gmail.com>
 # pylint: disable=E1101
 
 from __future__ import absolute_import
 
 import astropy.nddata
+from astropy.modeling import models, fitting
 
 from matplotlib import pyplot as plt
 
@@ -24,8 +26,6 @@ class Spectrum(astropy.nddata.NDDataArray):
         one-dimensional array which the intensity at a particular frequency at
         every data-point.
     """
-#    def __new__(cls, data):
-#        return np.asarray(data).view(cls)
 
     def __init__(self, data, freq_axis, **kwargs):
         astropy.nddata.NDDataArray.__init__(self, data=data, **kwargs)
@@ -69,7 +69,6 @@ class Spectrum(astropy.nddata.NDDataArray):
         """
         Plot spectrum onto a new figure.
         """
-
         figure = plt.figure()
         self.plot(**matplot_args)
         figure.show()
@@ -98,3 +97,26 @@ class Spectrum(astropy.nddata.NDDataArray):
             The function to apply to the wavelengths.
         """
         self.freq_axis = map(fun, self.freq_axis)
+
+    def gaussian_fit(self, guess, *guesses, **kwargs):
+        """
+        Fits a gaussian distribution to the data, and returns a fit whose
+        parameters - amplitude, mean and standard deviation, among others,
+        can be called.
+        Parameters
+        ----------
+        guess: tuple of three floats
+            The best guess for the first component of the gaussian fit. The
+            syntax is (amp_guess, mean_guess, stddev_guess).
+        *guesses: additional tuples of three ints
+            Additional lines can be fitted by adding more tuples
+        **kwargs: dict
+            Additional keyword arguments are passed on to the fitter
+        """
+        g_init = models.Gaussian1D(amplitude=guess[0], mean=guess[1],
+                                   stddev=guess[2])
+        for (amp, mean, sd) in guesses:
+            g_mod = models.Gaussian1D(amplitude=amp, mean=mean, stddev=sd)
+            g_init = g_init + g_mod
+        fitter = fitting.LevMarLSQFitter()
+        return fitter(g_init, self.freq_axis, self.data, **kwargs)
