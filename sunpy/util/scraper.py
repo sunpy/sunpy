@@ -1,3 +1,4 @@
+import os
 import datetime
 import re
 
@@ -6,7 +7,15 @@ from bs4 import BeautifulSoup
 
 __all__ = ['Scraper']
 
-class Scraper:
+# regular expressions to convert datetime format
+TIME_CONVERSIONS = {'%Y': '\d{4}', '%y': '\d{2}',
+                    '%b': '[A-Z]..', '%B': '\W', '%m': '\d{2}',
+                    '%d': '\d{2}', '%j': '\d{3}',
+                    '%H': '\d{2}', '%I': '\d{2}',
+                    '%M': '\d{2}',
+                    '%S': '\d{2}'}
+
+class Scraper(object):
     """
     A Scraper to scrap web data archives based on dates.
 
@@ -26,6 +35,7 @@ class Scraper:
 
     Examples
     --------
+    >>> # Downloading data from SolarMonitor.org
     >>> from sunpy.util.scraper import Scraper
     >>> solmon_pattern = ('http://solarmonitor.org/data/'
                           '%Y/%m/%d/fits/{instrument}/'
@@ -56,7 +66,7 @@ class Scraper:
         Parameters
         ----------
 
-        timerange : `~sunpy.time.TimeRange`
+        timerange : `~sunpy.time.timerange.TimeRange`
             Time interval where to find the directories for a given
             pattern.
 
@@ -69,9 +79,9 @@ class Scraper:
             in the archive.
         """
         #find directory structure - without file names
-        directorypattern = self.pattern[:-self.pattern[::-1].find('/')]
+        directorypattern = os.path.dirname(self.pattern) + '/'
         #TODO what if there's not slashes?
-        rangedelta = timerange.dt # TODO check it's a timerange
+        rangedelta = timerange.dt
         timestep = self._smallerPattern(directorypattern)
         if timestep is None:
             return [directorypattern]
@@ -85,14 +95,8 @@ class Scraper:
 
     def _URL_followsPattern(self, url):
         """Check whether the url provided follows the pattern"""
-        time_conversions = {'%Y': '\d{4}', '%y': '\d{2}',
-                            '%b': '[A-Z]..', '%B': '\W', '%m': '\d{2}',
-                            '%d': '\d{2}', '%j': '\d{3}',
-                            '%H': '\d{2}', '%I': '\d{2}',
-                            '%M': '\d{2}',
-                            '%S': '\d{2}'}
         pattern = self.pattern
-        for k,v in time_conversions.iteritems():
+        for k,v in TIME_CONVERSIONS.iteritems():
             pattern = pattern.replace(k, v)
         matches = re.match(pattern, url)
         if matches:
@@ -101,6 +105,9 @@ class Scraper:
 
     def _extractDateURL(self, url):
         """Extracts the date from a particular url following the pattern"""
+        # url_to_list substitutes '.' and '_' for '/' to then create
+        # a list of all the blocks in times - assuming they are all
+        # separated with either '.', '_' or '/'
         url_to_list = lambda txt: re.sub(r'\.|_', '/', txt).split('/')
         pattern_list = url_to_list(self.pattern)
         url_list = url_to_list(url)
@@ -109,7 +116,7 @@ class Scraper:
                       '%H', '%I', '%M', '%S']
         final_date = []
         final_pattern = []
-        #Find in directory and filename
+        # Find in directory and filename
         for pattern_elem, url_elem in zip(pattern_list, url_list):
             time_formats = [x for x in time_order if x in pattern_elem]
             if len(time_formats) > 0:
@@ -117,6 +124,26 @@ class Scraper:
                 final_pattern.append(pattern_elem)
                 for time_bit in time_formats:
                     time_order.remove(time_bit)
+        # Find and remove repeated elements eg: %Y in ['%Y', '%Y%m%d']
+        #   Make all as single strings
+        date_together = ''.join(final_date)
+        pattern_together = ''.join(final_pattern)
+        re_together = pattern_together
+        for k, v in TIME_CONVERSIONS.iteritems():
+            re_together = re_together.replace(k, v)
+
+        #   Create new empty lists 
+        final_date = list()
+        final_pattern = list()
+        for p,r in zip(pattern_together.split('%')[1:], re_together.split('\\')[1:]):
+            regexp = '\\{}'.format(r)
+            pattern = '%{}'.format(p)
+            date_part = re.match(regexp, date_together)
+            date_together = date_together[:date_part.start()] + \
+                            date_together[date_part.end():]
+            if pattern not in final_pattern:
+                final_pattern.append('%{}'.format(p))
+                final_date.append(date_part.group())
         return datetime.datetime.strptime(' '.join(final_date),
                                           ' '.join(final_pattern))
 
