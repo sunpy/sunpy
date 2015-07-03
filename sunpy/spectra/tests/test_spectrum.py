@@ -47,4 +47,4 @@ def test_gaussian_fit_2():
     data = g1(axis) + g2(axis) + np.random.normal(0, 0.2, 500)
     spec = s.Spectrum(data, axis, u.Angstrom)
     fit = spec.gaussian_fit((1.45, 5.05, 0.3), (1, 3, 0.1))
-    np.allclose(fit.parameters, [1.5, 5, 1.3, 1, 3, 0.4], 0.05)
+    np.allclose(fit.parameters, [1.5, 5, 1.2, 1.1, 3, 0.1], 0.05)

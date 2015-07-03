@@ -111,7 +111,7 @@ class Spectrum(ndd.NDDataArray):
         newaxis = [tick.value for tick in newqtys]
         self.axis = newaxis
 
-    def gaussian_fit(self, guess, *guesses, **kwargs):
+    def gaussian_fit(self, line_guess, *extra_lines, **kwargs):
         """
         Fits a gaussian distribution to the data, and returns a fit whose
         parameters - amplitude, mean and standard deviation, among others,
@@ -126,9 +126,9 @@ class Spectrum(ndd.NDDataArray):
         **kwargs: dict
             Additional keyword arguments are passed on to the fitter
         """
-        g_init = models.Gaussian1D(amplitude=guess[0], mean=guess[1],
-                                   stddev=guess[2])
-        for (amp, mean, stddev) in guesses:
+        g_init = models.Gaussian1D(amplitude=line_guess[0], mean=line_guess[1],
+                                   stddev=line_guess[2])
+        for (amp, mean, stddev) in extra_lines:
             g_mod = models.Gaussian1D(amplitude=amp, mean=mean, stddev=stddev)
             g_init = g_init + g_mod
         fitter = fitting.LevMarLSQFitter()

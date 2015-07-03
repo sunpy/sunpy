@@ -124,16 +124,19 @@ def test_choose_x_slice():
 
 
 def test_freq_axis():
-    f1 = cube.freq_axis()
-    f2 = cubem.freq_axis()
+    f1, u1 = cube.freq_axis()
+    f2, u2 = cubem.freq_axis()
     # the e-11 are the conversions from angstrom to meters
     assert np.allclose(f1, [0, 2.0e-11, 4.0e-11])
     assert np.allclose(f2, [0, 2.0e-11, 4.0e-11])
+    assert u1 == u.m
+    assert u2 == u.m
 
 
 def test_time_axis():
-    t1 = cube.time_axis()
+    t1, u1 = cube.time_axis()
     assert np.allclose(t1, [0, 0.4])
+    assert u1 == u.min
     with pytest.raises(cu.CubeError):
         cubem.time_axis()
 
