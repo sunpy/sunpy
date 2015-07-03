@@ -5,31 +5,38 @@
 
 from __future__ import absolute_import
 
-import astropy.nddata
+import astropy.nddata as ndd
 from astropy.modeling import models, fitting
+import astropy.units as u
 
 from matplotlib import pyplot as plt
 
 __all__ = ['Spectrum']
 
 
-class Spectrum(astropy.nddata.NDDataArray):
+class Spectrum(ndd.NDDataArray):
     """
     Class representing a spectrum.
 
     Attributes
     ----------
-    freq_axis : np.ndarray
-        one-dimensional array with the frequency values at every data point
+    axis: np.ndarray
+        One-dimensional array with the frequency or wavelength values at every
+        data point.
 
-    data : np.ndarray
+    axis_unit: astropy unit
+        The unit of the spectral axis. This must be in units of frequency or
+        distance.
+
+    data: np.ndarray
         one-dimensional array which the intensity at a particular frequency at
         every data-point.
     """
 
-    def __init__(self, data, freq_axis, **kwargs):
-        astropy.nddata.NDDataArray.__init__(self, data=data, **kwargs)
-        self.freq_axis = freq_axis
+    def __init__(self, data, axis, axis_unit, **kwargs):
+        ndd.NDDataArray.__init__(self, data=data, **kwargs)
+        self.axis = axis
+        self.axis_unit = axis_unit
 
     def plot(self, axes=None, **matplot_args):
         """
@@ -59,7 +66,7 @@ class Spectrum(astropy.nddata.NDDataArray):
         if hold is not None:
             axes.hold(hold)
         try:
-            lines = axes.plot(self.freq_axis, self, **params)
+            lines = axes.plot(self.axis, self, **params)
         finally:
             axes.hold(washold)
 
@@ -80,11 +87,14 @@ class Spectrum(astropy.nddata.NDDataArray):
 
         Parameters
         ----------
-        offset: float
-            The amount to offset by
+        offset: float astropy Quantity
+            The amount to offset by. If no unit is given the current axis unit
+            is used
         """
-        # TODO: Should this use Quantities?
-        self.map_to_axis(lambda x: x + offset)
+        if isinstance(offset, u.Quantity):
+            self.map_to_axis(lambda x: x + offset)
+        else:
+            self.map_to_axis(lambda x: x + (offset * self.axis_unit))
 
     def map_to_axis(self, fun):
         """
@@ -93,10 +103,13 @@ class Spectrum(astropy.nddata.NDDataArray):
 
         Parameters
         ----------
-        fun: Function from float to float
+        fun: Function from Quantity to Quantity
             The function to apply to the wavelengths.
         """
-        self.freq_axis = map(fun, self.freq_axis)
+        qtys = [tick * self.axis_unit for tick in self.axis]
+        newqtys = map(fun, qtys)
+        newaxis = [tick.value for tick in newqtys]
+        self.axis = newaxis
 
     def gaussian_fit(self, guess, *guesses, **kwargs):
         """
@@ -115,8 +128,8 @@ class Spectrum(astropy.nddata.NDDataArray):
         """
         g_init = models.Gaussian1D(amplitude=guess[0], mean=guess[1],
                                    stddev=guess[2])
-        for (amp, mean, sd) in guesses:
-            g_mod = models.Gaussian1D(amplitude=amp, mean=mean, stddev=sd)
+        for (amp, mean, stddev) in guesses:
+            g_mod = models.Gaussian1D(amplitude=amp, mean=mean, stddev=stddev)
             g_init = g_init + g_mod
         fitter = fitting.LevMarLSQFitter()
-        return fitter(g_init, self.freq_axis, self.data, **kwargs)
+        return fitter(g_init, self.axis, self.data, **kwargs)
