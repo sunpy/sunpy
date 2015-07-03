@@ -334,7 +334,8 @@ class Cube(astropy.nddata.NDDataArray):
                 data = data.sum(axis=sumaxis)
 
         freq_axis = self.freq_axis()
-        return Spectrum(np.array(data), np.array(freq_axis))
+        cunit = u.Unit(self.axes_wcs.wcs.cunit[-1 - axis])
+        return Spectrum(np.array(data), np.array(freq_axis), cunit)
 
     def slice_to_spectrogram(self, y_coord, x_coord=None, **kwargs):
         """
