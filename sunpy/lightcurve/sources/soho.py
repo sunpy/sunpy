@@ -55,45 +55,6 @@ class ERNELightCurve(LightCurve):
 
     """
 
-    # def peek(self, title="GOES Xray Flux"):
-    #     """Plots GOES light curve is the usual manner"""
-    #     figure = plt.figure()
-    #     axes = plt.gca()
-
-    #     dates = matplotlib.dates.date2num(parse_time(self.data.index))
-
-    #     axes.plot_date(dates, self.data['xrsa'], '-',
-    #                  label='0.5--4.0 $\AA$', color='blue', lw=2)
-    #     axes.plot_date(dates, self.data['xrsb'], '-',
-    #                  label='1.0--8.0 $\AA$', color='red', lw=2)
-
-    #     axes.set_yscale("log")
-    #     axes.set_ylim(1e-9, 1e-2)
-    #     axes.set_title(title)
-    #     axes.set_ylabel('Watts m$^{-2}$')
-    #     axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
-
-    #     ax2 = axes.twinx()
-    #     ax2.set_yscale("log")
-    #     ax2.set_ylim(1e-9, 1e-2)
-    #     ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
-    #     ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
-
-    #     axes.yaxis.grid(True, 'major')
-    #     axes.xaxis.grid(False, 'major')
-    #     axes.legend()
-
-    #     # @todo: display better tick labels for date range (e.g. 06/01 - 06/05)
-    #     formatter = matplotlib.dates.DateFormatter('%H:%M')
-    #     axes.xaxis.set_major_formatter(formatter)
-
-    #     axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
-    #     figure.autofmt_xdate()
-    #     figure.show()
-
-    #     return figure
-
-
     @staticmethod
     def _parse_txt(filepath):
         """
@@ -124,15 +85,9 @@ class ERNELightCurve(LightCurve):
         end_time_col = data['col5']
 
         #Converting separate datetime element into a single datetime.datetime column
-        for i in range(len(data)):
-            
-            #Combining separate datetime elements into single datetime value
-            #start time
-            date1 = datetime.strptime(year_col[i] + '-' + month_col[i] + '-' + date_col[i] + '/' + begin_time_col[i][:2] + ':' +begin_time_col[i][2:],"%y-%m-%d/%H:%M")
-            #end time
-            date2 = datetime.strptime(year_col[i] + '-' + month_col[i] + '-' + date_col[i] + '/' + end_time_col[i][:2] + ':' + end_time_col[i][2:], "%y-%m-%d/%H:%M")
-            #Appending the start and end time as sunpy.time TimeRange in a separate list
-            data_modify.append(TimeRange(date1, date2))
+        data_modify = [TimeRange('{}-{}-{}T{}:{}:00'.format(y, m, d, bt[:2], bt[2:]), 
+                         '{}-{}-{}T{}:{}:00'.format(y, m, d, et[:2], et[2:])) for y, m, d, bt, et in zip(year, month, day
+                                                                                                         begin_time, end_time)]
         
         #Removing the columns with separate date elements like year, day, hour, minute, second
         data.remove_columns(['col{}'.format(i) for i in range(1,6)])
