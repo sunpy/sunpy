@@ -11,7 +11,7 @@ __email__   = "ankitkmr.iitk@gmail.com"
 # Google Summer of Code 2015
 
 
-from datetime import timedelta,datetime
+from datetime import timedelta,datetime,time
 
 from astropy.io import ascii
 from astropy.table import Table, Column
@@ -85,10 +85,17 @@ class ERNELightCurve(LightCurve):
         end_time_col = data['col5']
 
         #Converting separate datetime element into a single datetime.datetime column
-        data_modify = [TimeRange('{}-{}-{}T{}:{}:00'.format(y, m, d, bt[:2], bt[2:]), 
-                         '{}-{}-{}T{}:{}:00'.format(y, m, d, et[:2], et[2:])) for y, m, d, bt, et in zip(year, month, day
-                                                                                                         begin_time, end_time)]
-        
+        for i in range(len(data)):
+            date = datetime.strptime(year_col[i] + '-' + month_col[i] + '-' + day_col[i],"%y-%m-%d")
+            date1 = datetime.combine(date, time(int(begin_time_col[i][:2])))               #start time
+            
+            if end_time_col[i] == '0000':
+                date = date + timedelta(days = 1)
+
+            date2 = datetime.combine(date, time(int(end_time_col[i][:2])))                 #end time
+            #Appending the start and end time as sunpy.time TimeRange in a separate list
+            data_modify.append(TimeRange(date1, date2))
+            
         #Removing the columns with separate date elements like year, day, hour, minute, second
         data.remove_columns(['col{}'.format(i) for i in range(1,6)])
         #Adding a single Timerange column to the data
