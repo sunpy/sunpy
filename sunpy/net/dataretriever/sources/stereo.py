@@ -128,12 +128,7 @@ class SEPTClient(GenericClient):
 			if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/sept':
 				return all(chklist)
 		return False
-		
-		"""
-		print _get_url_for_timerange(TimeRange('2007-02-01','2007-03-01'), stereo_spacecraft = 'behind')
-		
-		"""
-
+	
 
 
 class HETClient(GenericClient):
@@ -228,14 +223,6 @@ class HETClient(GenericClient):
 			if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/het':
 				return all(chklist)
 		return False
-
-	"""
-	print _get_url_for_timerange(TimeRange('2007-03-01','2007-06-01'))
-	print _get_url_for_timerange(TimeRange('2007-03-01','2007-06-01'), stereo_spacecraft = 'behind' , duration_of_average = 1*u.d)
-	print _get_url_for_timerange(TimeRange('2007-03-01','2007-06-01'), duration_of_average = 12*u.h)
-	
-	"""
-
 
 
 class SITClient(GenericClient):
@@ -340,13 +327,6 @@ class SITClient(GenericClient):
 			if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/sit':
 				return all(chklist)
 		return False
-		
-	"""
-	print _get_url_for_timerange(TimeRange('2007-02-04','2009-03-01')) 
-	print _get_url_for_timerange(TimeRange('2007-02-04','2009-03-01'), stereo_spacecraft = 'behind', atomic_specie ='O', duration_of_average = 1*u.d) 
-	
-	"""
-
 
 
 
@@ -439,12 +419,6 @@ class PLASTICClient(GenericClient):
 				return all(chklist)
 		return False
 
-	"""
-	print _get_url_for_timerange(TimeRange('2008-03-01','2008-06-01'), stereo_spacecraft = 'behind')
-	
-	"""
-
-
 
 class MAGClient(GenericClient):
 
@@ -515,11 +489,6 @@ class MAGClient(GenericClient):
 			if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/mag':
 				return all(chklist)
 		return False
-
-	"""
-	print _get_url_for_timerange(TimeRange('2007-01-01','2009-01-01'), stereo_spacecraft = 'behind')
-	
-	"""
 
 	
 class LETClient(GenericClient):
@@ -669,8 +638,4 @@ class LETClient(GenericClient):
 				return all(chklist)
 		return False
 
-	"""
-	print _get_url_for_timerange(TimeRange('2007-01-01','2008-06-01'), stereo_spacecraft = 'ahead', duration_of_average = 27*u.d, type_of_data = 'summed', specie = 'Al')
-	
-	"""
 
