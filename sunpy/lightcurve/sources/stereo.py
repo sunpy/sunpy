@@ -584,9 +584,6 @@ class HETLightCurve(LightCurve):
             for i in range(len(data)): 
                 date1 = datetime.strptime(str(start_year_col[i])+ '-' +start_month_col[i]+ '-' +"%02d"%start_date_col[i] + '/' + ("%04d"%start_time_col[i])[:2] + ':' + ("%04d"%start_time_col[i])[2:], '%Y-%b-%d/%H:%M' )
                 date2 = datetime.strptime(str(end_year_col[i])+ '-' +end_month_col[i]+ '-' +"%02d"%end_date_col[i] + '/' + ("%04d"%end_time_col[i])[:2] + ':' + ("%04d"%end_time_col[i])[2:], '%Y-%b-%d/%H:%M' )
-                
-                #I don't know why but including it outside interferes with the upper case and results in segmetation fault 11 :/
-                from sunpy.time import TimeRange
                 data_modify.append(TimeRange(date1,date2))
 
             data.remove_columns(['col{}'.format(i) for i in range(2,10)])
