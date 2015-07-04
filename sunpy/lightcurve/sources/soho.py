@@ -115,11 +115,3 @@ class ERNELightCurve(LightCurve):
         
         return header, data
 
-
-    """
-    _parse_txt('cr1907p.txt')
-    _parse_txt('cr1906p.txt') 
-    _parse_txt('cr1906a.txt')
-    _parse_txt('cr1907a.txt')
-
-    """
