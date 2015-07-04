@@ -1,5 +1,6 @@
 """
 SOHO/ERNE LightCurve Tests
+
 """
 from __future__ import absolute_import
 
@@ -18,25 +19,20 @@ test_file_b = 'cr1907a.txt'
 class TestERNELightCurve(object):
 
     @pytest.mark.online
-    def test_input_file(self):
-        """Test creation with a TimeRange"""
-        lc1 = sunpy.lightcurve.ERNELightCurve.create(timerange_a, specie_a)
-        assert isinstance(lc1, sunpy.lightcurve.ERNELightCurve)
-
-    @pytest.mark.online
-    def test_isempty(self):
-        lc = sunpy.lightcurve.ERNELightCurve.create(timerange_a, specie_b)
-        assert lc.data.empty == False
-
-    @pytest.mark.online
     def test_header(self):
-        """Test header parsing from sample file"""
-        info = sunpy.lightcurve.ERNELightCurve._parse_txt('<filepath_to_test_file>')
-        assert info[1] == [ 'TimeRange', 
+        """Test header parsing from file"""
+        lc = sunpy.lightcurve.ERNELightCurve
+        assert lc._parse_txt('<filepath_to_downloaded_file>')[0] == [ 'TimeRange', 
                             'Intensities [1/(cm^2*sr*s*MeV)] in energy channel 1.8-3.3  [MeV] '  , 
                             'Intensities [1/(cm^2*sr*s*MeV)] in energy channel 3.3-6.4  [MeV] '  , 
                             'Intensities [1/(cm^2*sr*s*MeV)] in energy channel 6.4-12.7  [MeV] ' , 
                             'Intensities [1/(cm^2*sr*s*MeV)] in energy channel 13.5-25.8  [MeV]' , 
                             'Intensities [1/(cm^2*sr*s*MeV)] in energy channel 25.8-50.7  [MeV]' ]
+
+    @pytest.mark.online
+    def test_data(self):
+        """Test for non empty data parsing from file"""
+        lc = sunpy.lightcurve.ERNELightCurve
+        assert (lc._parse_txt('<filepath_to_downloaded_file>')[1]).empty == False
 
 
