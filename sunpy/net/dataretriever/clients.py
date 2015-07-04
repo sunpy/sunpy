@@ -27,7 +27,7 @@ _Fido.register(HETClient, HETClient._can_handle_query)
 _Fido.register(LETClient, LETClient._can_handle_query)
 _Fido.register(PLASTICClient, PLASTICClient._can_handle_query)
 _Fido.register(SITClient, SITClient._can_handle_query)
-# _Fido.register(MAGClient, MAGClient._can_handle_query)   **Just noticed I missed making its parse routine **
+# _Fido.register(MAGClient, MAGClient._can_handle_query)   ** CDF data file issue ... mail sent to dev-mailing list **
 
 
 
