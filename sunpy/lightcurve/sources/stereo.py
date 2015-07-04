@@ -66,45 +66,6 @@ class LETLightCurve(LightCurve):
 
     """
 
-	# def peek(self, title="GOES Xray Flux"):
-	#     """Plots GOES light curve is the usual manner"""
-	#     figure = plt.figure()
-	#     axes = plt.gca()
-
-	#     dates = matplotlib.dates.date2num(parse_time(self.data.index))
-
-	#     axes.plot_date(dates, self.data['xrsa'], '-',
-	#                  label='0.5--4.0 $\AA$', color='blue', lw=2)
-	#     axes.plot_date(dates, self.data['xrsb'], '-',
-	#                  label='1.0--8.0 $\AA$', color='red', lw=2)
-
-	#     axes.set_yscale("log")
-	#     axes.set_ylim(1e-9, 1e-2)
-	#     axes.set_title(title)
-	#     axes.set_ylabel('Watts m$^{-2}$')
-	#     axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
-
-	#     ax2 = axes.twinx()
-	#     ax2.set_yscale("log")
-	#     ax2.set_ylim(1e-9, 1e-2)
-	#     ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
-	#     ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
-
-	#     axes.yaxis.grid(True, 'major')
-	#     axes.xaxis.grid(False, 'major')
-	#     axes.legend()
-
-	#     # @todo: display better tick labels for date range (e.g. 06/01 - 06/05)
-	#     formatter = matplotlib.dates.DateFormatter('%H:%M')
-	#     axes.xaxis.set_major_formatter(formatter)
-
-	#     axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
-	#     figure.autofmt_xdate()
-	#     figure.show()
-
-	#     return figure
-
-
     @staticmethod
     def _parse_txt(filepath):
         """
@@ -247,46 +208,7 @@ class SITLightCurve(LightCurve):
 
 	"""
 
-	# def peek(self, title="GOES Xray Flux"):
-	#     """Plots GOES light curve is the usual manner"""
-	#     figure = plt.figure()
-	#     axes = plt.gca()
-
-	#     dates = matplotlib.dates.date2num(parse_time(self.data.index))
-
-	#     axes.plot_date(dates, self.data['xrsa'], '-',
-	#                  label='0.5--4.0 $\AA$', color='blue', lw=2)
-	#     axes.plot_date(dates, self.data['xrsb'], '-',
-	#                  label='1.0--8.0 $\AA$', color='red', lw=2)
-
-	#     axes.set_yscale("log")
-	#     axes.set_ylim(1e-9, 1e-2)
-	#     axes.set_title(title)
-	#     axes.set_ylabel('Watts m$^{-2}$')
-	#     axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
-
-	#     ax2 = axes.twinx()
-	#     ax2.set_yscale("log")
-	#     ax2.set_ylim(1e-9, 1e-2)
-	#     ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
-	#     ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
-
-	#     axes.yaxis.grid(True, 'major')
-	#     axes.xaxis.grid(False, 'major')
-	#     axes.legend()
-
-	#     # @todo: display better tick labels for date range (e.g. 06/01 - 06/05)
-	#     formatter = matplotlib.dates.DateFormatter('%H:%M')
-	#     axes.xaxis.set_major_formatter(formatter)
-
-	#     axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
-	#     figure.autofmt_xdate()
-	#     figure.show()
-
-	#     return figure
-
-
-	@staticmethod
+    @staticmethod
     def _parse_txt(filepath):
         """
         Parses a STEREO SIT file from
@@ -380,45 +302,6 @@ class PLASTICLightCurve(LightCurve):
     | http://stereo-ssc.nascom.nasa.gov/data/ins_data/plastic/level2/Protons/ASCII/
 
     """
-
-    # def peek(self, title="GOES Xray Flux"):
-    #     """Plots GOES light curve is the usual manner"""
-    #     figure = plt.figure()
-    #     axes = plt.gca()
-
-    #     dates = matplotlib.dates.date2num(parse_time(self.data.index))
-
-    #     axes.plot_date(dates, self.data['xrsa'], '-',
-    #                  label='0.5--4.0 $\AA$', color='blue', lw=2)
-    #     axes.plot_date(dates, self.data['xrsb'], '-',
-    #                  label='1.0--8.0 $\AA$', color='red', lw=2)
-
-    #     axes.set_yscale("log")
-    #     axes.set_ylim(1e-9, 1e-2)
-    #     axes.set_title(title)
-    #     axes.set_ylabel('Watts m$^{-2}$')
-    #     axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
-
-    #     ax2 = axes.twinx()
-    #     ax2.set_yscale("log")
-    #     ax2.set_ylim(1e-9, 1e-2)
-    #     ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
-    #     ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
-
-    #     axes.yaxis.grid(True, 'major')
-    #     axes.xaxis.grid(False, 'major')
-    #     axes.legend()
-
-    #     # @todo: display better tick labels for date range (e.g. 06/01 - 06/05)
-    #     formatter = matplotlib.dates.DateFormatter('%H:%M')
-    #     axes.xaxis.set_major_formatter(formatter)
-
-    #     axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
-    #     figure.autofmt_xdate()
-    #     figure.show()
-
-    #     return figure
-
 
     @staticmethod
     def _parse_txt(filepath):
@@ -542,45 +425,6 @@ class SEPTLightCurve(LightCurve):
 
     """
 
-    # def peek(self, title="GOES Xray Flux"):
-    #     """Plots GOES light curve is the usual manner"""
-    #     figure = plt.figure()
-    #     axes = plt.gca()
-
-    #     dates = matplotlib.dates.date2num(parse_time(self.data.index))
-
-    #     axes.plot_date(dates, self.data['xrsa'], '-',
-    #                  label='0.5--4.0 $\AA$', color='blue', lw=2)
-    #     axes.plot_date(dates, self.data['xrsb'], '-',
-    #                  label='1.0--8.0 $\AA$', color='red', lw=2)
-
-    #     axes.set_yscale("log")
-    #     axes.set_ylim(1e-9, 1e-2)
-    #     axes.set_title(title)
-    #     axes.set_ylabel('Watts m$^{-2}$')
-    #     axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
-
-    #     ax2 = axes.twinx()
-    #     ax2.set_yscale("log")
-    #     ax2.set_ylim(1e-9, 1e-2)
-    #     ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
-    #     ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
-
-    #     axes.yaxis.grid(True, 'major')
-    #     axes.xaxis.grid(False, 'major')
-    #     axes.legend()
-
-    #     # @todo: display better tick labels for date range (e.g. 06/01 - 06/05)
-    #     formatter = matplotlib.dates.DateFormatter('%H:%M')
-    #     axes.xaxis.set_major_formatter(formatter)
-
-    #     axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
-    #     figure.autofmt_xdate()
-    #     figure.show()
-
-    #     return figure
-
-
     @staticmethod
     def _parse_txt(filepath):
         """
@@ -693,45 +537,6 @@ class HETLightCurve(LightCurve):
     | http://www.srl.caltech.edu/STEREO/DATA/HET/
 
     """
-
-    # def peek(self, title="GOES Xray Flux"):
-    #     """Plots GOES light curve is the usual manner"""
-    #     figure = plt.figure()
-    #     axes = plt.gca()
-
-    #     dates = matplotlib.dates.date2num(parse_time(self.data.index))
-
-    #     axes.plot_date(dates, self.data['xrsa'], '-',
-    #                  label='0.5--4.0 $\AA$', color='blue', lw=2)
-    #     axes.plot_date(dates, self.data['xrsb'], '-',
-    #                  label='1.0--8.0 $\AA$', color='red', lw=2)
-
-    #     axes.set_yscale("log")
-    #     axes.set_ylim(1e-9, 1e-2)
-    #     axes.set_title(title)
-    #     axes.set_ylabel('Watts m$^{-2}$')
-    #     axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
-
-    #     ax2 = axes.twinx()
-    #     ax2.set_yscale("log")
-    #     ax2.set_ylim(1e-9, 1e-2)
-    #     ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
-    #     ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
-
-    #     axes.yaxis.grid(True, 'major')
-    #     axes.xaxis.grid(False, 'major')
-    #     axes.legend()
-
-    #     # @todo: display better tick labels for date range (e.g. 06/01 - 06/05)
-    #     formatter = matplotlib.dates.DateFormatter('%H:%M')
-    #     axes.xaxis.set_major_formatter(formatter)
-
-    #     axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
-    #     figure.autofmt_xdate()
-    #     figure.show()
-
-    #     return figure
-
 
     @staticmethod
     def _parse_txt(filepath):
