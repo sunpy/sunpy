@@ -33,4 +33,10 @@ class TestERNELightCurve(object):
         lc = sunpy.lightcurve.ERNELightCurve
         assert (lc._parse_txt('<filepath_to_downloaded_file>')[1]).empty == False
 
+    @pytest.mark.online
+    def test_header(self):
+        """Test header parsing from file"""
+        lc = sunpy.lightcurve.ERNELightCurve._parse_txt('<filepath_to_downloaded_file>')
+        assert len(lc[0]) == len(lc[1].columns) #length of header list equals number of columns
+
 
