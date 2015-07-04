@@ -159,17 +159,6 @@ class LETLightCurve(LightCurve):
         
         return header, data
 
-	"""
-
-	_parse_txt('Ar_summed_ahead.txt')
-	_parse_txt('Al_summed_ahead.txt')
-	_parse_txt('CNO_lo_sectored_ahead_2015_1hr_level1_11.txt') 
-	_parse_txt('Fe_sectored_ahead_2015_001_level1_11.txt')
-	_parse_txt('Fe_sectored_ahead_2015_01_10min_level1_11.txt') 
-
-	"""
-
-
 
 class SITLightCurve(LightCurve):
 	"""
@@ -260,12 +249,6 @@ class SITLightCurve(LightCurve):
         data = data.to_pandas()
     
         return header, data
-    
-    """
-    >>> _parse_txt('SIT_Ahead_10min_4He_2007_01.txt') 
-    #Assuming the file is in same directory
-    
-    """
 
 
 class PLASTICLightCurve(LightCurve):
@@ -373,14 +356,6 @@ class PLASTICLightCurve(LightCurve):
         data = data.to_pandas()
 
         return header, data
-
-    """
-    _parse_txt('STA_L2_PLA_1DMax_1hr_20140101_001_V09.txt')
-    _parse_txt('STA_L2_PLA_1DMax_10min_20140101_001_V09.txt') 
-    _parse_txt('STA_L2_PLA_1DMax_1min_20140101_001_V09.txt') 
-
-    """
-
 
 
 class SEPTLightCurve(LightCurve):
@@ -498,12 +473,6 @@ class SEPTLightCurve(LightCurve):
         data = data.to_pandas()
 
         return header, data
-
-    """
-    _parse_txt('sept_ahead_ele_asun_2015_001_1min_l2_v03.dat.txt')
-    _parse_txt('sept_ahead_ele_asun_2015_001_1h_l2_v03.dat.txt') 
-
-    """
 
 
 class HETLightCurve(LightCurve):
@@ -633,10 +602,4 @@ class HETLightCurve(LightCurve):
         data = data.to_pandas()
         
         return data
-
-    """"
-    _parse_txt('AeH07Apr.1m.txt')
-    _parse_txt('AeH06Dec.15m.txt') 
-
-    """
 
