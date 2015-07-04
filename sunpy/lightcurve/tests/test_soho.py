@@ -1,19 +1,17 @@
 """
 SOHO/ERNE LightCurve Tests
-
 """
+
+# This module was developed with funding from 
+# Google Summer of Code 2015
+# author - Ankit Kumar  <ankitkmr.iitk@gmail.com>
+
 from __future__ import absolute_import
 
 import pytest
 
 import sunpy.lightcurve
 from sunpy.time import TimeRange
-
-timerange_a = TimeRange('2008/01/01', '2010/01/01')
-specie_a = 'proton'
-specie_b = 'alpha'
-test_file_a = 'cr1907p.txt'
-test_file_b = 'cr1907a.txt'
 
 
 class TestERNELightCurve(object):
