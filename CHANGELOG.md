@@ -41,6 +41,7 @@ Latest
  * net.jsoc can query data series with time sampling by a Sample attribute implemented in vso.
  * MapCube.plot and MapCube.peek now support a user defined plot_function argument for customising the animation.
  * Added new sample data file, an AIA cutoff file.
+ * Moved documentation build directory to doc/build
 
 0.5.0
 -----

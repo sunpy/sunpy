@@ -29,11 +29,11 @@ install:
     - "conda update --yes conda"
     # Create a conda environment using the astropy bonus packages
     - "conda create -q --yes -n test -c astropy-ci-extras python=%PYTHON_VERSION%"
-    - "conda config --add channels https://conda.binstar.org/sunpy"
+    - "conda config --add channels https://conda.binstar.org/sunpy --add channels astropy"
     - "activate test"
 
     # Install default dependancies
-    - "conda install -q --yes numpy scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy scikit-image pytest"
+    - "conda install -q --yes numpy scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy scikit-image pytest wcsaxes"
 
     # Install sunpy conda packages
     - "conda install -q --yes suds-jurko glymur"
