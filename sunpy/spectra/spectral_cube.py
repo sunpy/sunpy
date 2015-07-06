@@ -16,6 +16,7 @@ __all__ = ['SpectralCube']
 
 
 class SpectralCube():
+    # TODO: implement memoization of gaussians
     def __init__(self, spectra, wcs, meta):
         self.spectra = spectra
         self.wcs = wcs

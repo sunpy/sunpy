@@ -87,7 +87,7 @@ class Spectrum(ndd.NDDataArray):
 
         Parameters
         ----------
-        offset: float astropy Quantity
+        offset: float or astropy Quantity
             The amount to offset by. If no unit is given the current axis unit
             is used
         """

@@ -294,6 +294,7 @@ class Cube(astropy.nddata.NDDataArray):
         For a cube containing a spectral dimension, returns a sunpy spectrum.
         The given coordinates represent which values to take. If they are None,
         then the corresponding axis is summed.
+
         Parameters
         ----------
         fst_coord: int or None
@@ -442,12 +443,12 @@ class Cube(astropy.nddata.NDDataArray):
         axis = 0 if self.axes_wcs.wcs.ctype[-1] == 'WAVE' else 1
         coordaxes = [1, 2] if axis == 0 else [0, 2]  # Non-spectral axes
         newwcs = wu.reindex_wcs(self.axes_wcs, coordaxes)
-        width = self.data.shape[coordaxes[0]]
-        height = self.data.shape[coordaxes[1]]
-        spectra = np.empty((height, width), dtype=Spectrum)
-        for i in range(height):
-            for j in range(width):
-                spectra[i][j] = self.slice_to_spectrum(j, i)
+        time_or_x_size = self.data.shape[coordaxes[0]]
+        y_size = self.data.shape[coordaxes[1]]
+        spectra = np.empty((time_or_x_size, y_size), dtype=Spectrum)
+        for i in range(time_or_x_size):
+            for j in range(y_size):
+                spectra[i][j] = self.slice_to_spectrum(i, j)
         return SpectralCube(spectra, newwcs, self.meta)
 
     def time_axis(self):
