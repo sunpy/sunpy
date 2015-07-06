@@ -25,6 +25,7 @@ from sunpy.visualization.imageanimator import ImageAnimator
 from sunpy.lightcurve import LightCurve
 from sunpy.spectra.spectrum import Spectrum
 from sunpy.spectra.spectrogram import Spectrogram
+from sunpy.spectra.spectral_cube import SpectralCube
 from sunpy.cube import cube_utils as cu
 from sunpy.wcs import wcs_util as wu
 
@@ -427,6 +428,27 @@ class Cube(astropy.nddata.NDDataArray):
             newwcs.was_augmented = True
         cube = Cube(newdata, newwcs, meta=self.meta, **kwargs)
         return cube
+
+    def convert_to_spectral_cube(self):
+        """
+        Converts this cube into a SpectralCube. It will only work if the cube
+        has exactly three dimensions and one of those is a spectral axis.
+        """
+        if self.data.ndim == 4:
+            raise cu.CubeError(4, "Too many dimensions: Can only convert a " +
+                               "3D cube. Slice the cube before converting")
+        if 'WAVE' not in self.axes_wcs.wcs.ctype:
+            raise cu.CubeError(2, 'Spectral axis needed to create a spectrum')
+        axis = 0 if self.axes_wcs.wcs.ctype[-1] == 'WAVE' else 1
+        coordaxes = [1, 2] if axis == 0 else [0, 2]  # Non-spectral axes
+        newwcs = wu.reindex_wcs(self.axes_wcs, coordaxes)
+        width = self.data.shape[coordaxes[0]]
+        height = self.data.shape[coordaxes[1]]
+        spectra = np.empty((height, width), dtype=Spectrum)
+        for i in range(height):
+            for j in range(width):
+                spectra[i][j] = self.slice_to_spectrum(j, i)
+        return SpectralCube(spectra, newwcs, self.meta)
 
     def time_axis(self):
         """

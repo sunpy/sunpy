@@ -12,6 +12,8 @@ import numpy as np
 from sunpy.spectra.spectrum import Spectrum
 from sunpy.map import GenericMap, MapCube
 
+__all__ = ['SpectralCube']
+
 
 class SpectralCube():
     def __init__(self, spectra, wcs, meta):
