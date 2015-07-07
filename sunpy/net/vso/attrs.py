@@ -88,6 +88,24 @@ class Wave(Attr, _Range):
 
 
 class Time(Attr, _Range):
+    """
+    Specify the time range of the query.
+
+    Parameters
+    ----------
+
+    start : SunPy Time String or `~sunpy.time.TimeRange`.
+        The start time in a format parseable by `~sunpy.time.parse_time` or
+        a `sunpy.time.TimeRange` object.
+
+    end : SunPy Time String
+        The end time of the range.
+
+    near: SunPy Time String
+    	Return a singular record closest in time to this value as possible, 
+    	inside the start and end window. Note: not all providers support this.
+
+    """
     def __init__(self, start, end=None, near=None):
         if end is None and not isinstance(start, _TimeRange):
             raise ValueError("Specify start and end or start has to be a TimeRange")
@@ -193,7 +211,19 @@ class Filter(_VSOSimpleAttr):
 
 
 class Sample(_VSOSimpleAttr):
-    pass
+    """
+    Time interval for data sampling.
+
+    Parameters
+    ----------
+
+    value : `astropy.units.Quantity`
+        A sampling rate convertable to seconds.
+    """
+    @u.quantity_input(value=u.s)
+    def __init__(self, value):
+        super(Sample,self).__init__(value)
+        self.value = value.to(u.s).value
 
 
 class Quicklook(_VSOSimpleAttr):
