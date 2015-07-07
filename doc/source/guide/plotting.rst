@@ -28,16 +28,10 @@ namespace.
 
 2. Pyplot
 ---------
-Here is a simple example of pyplot usage::
-
-    import matplotlib.pyplot as plt
-    plt.plot(range(10), range(10))
-    plt.title("A simple Plot")
-    plt.show()
-
-You can see the output of this code below.
+Here is a simple example of pyplot usage.
 
 .. plot::
+    :include-source:
 
     import matplotlib.pyplot as plt
     plt.plot(range(10), range(10))
@@ -78,21 +72,10 @@ turns off interactivity.
 3. Advanced Pyplot
 ------------------
 If you need more fine-grained control over plots the recommended path is to use pyplot
-and access the figures and axes objects. This is shown in the following example::
-
-    import matplotlib.pyplot as plt
-    import numpy as np
-    x = np.arange(0, 10, 0.2)
-    y = np.sin(x)
-    fig = plt.figure()
-    ax = fig.add_subplot(111)
-    ax.plot(x, y)
-    ax.set_xlabel('x')
-    plt.show()
-
-which produces the following plot,
+and access the figures and axes objects. This is shown in the following example.
 
 .. plot::
+    :include-source:
 
     import matplotlib.pyplot as plt
     import numpy as np
@@ -107,7 +90,7 @@ which produces the following plot,
 In matplotlib, `~matplotlib.figure.Figure` is the top-level container for all plot elements and
  `~matplotlib.axes.Axes` is the top-level container for a particular plot. So the above example,
  creates a figure then creates an axes
-and populates the plot in ax. With this method you
+and populates the plot in ``ax``. With this method you
 now have your hands on the `~matplotlib.axes.Axes` object so you can do things
 like change the labels on the x and y axes or add a legend.
 In the previous section, pyplot took care of creating these
@@ -131,13 +114,7 @@ with any matplotlib setup. This is so that it is easy to take a quick look at
 your data. For example you can make the following plot.
 
 .. plot::
-
-    import sunpy.map
-    import sunpy.data.sample
-    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    smap.peek(draw_limb=True)
-
-with this simple code::
+    :include-source:
 
     import sunpy.map
     import sunpy.data.sample
@@ -167,6 +144,7 @@ on the link to see the code.
     smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     smap.plot()
     smap.draw_limb()
+    plt.colorbar()
     plt.show()
 
 For more advanced plotting you'll want to create the `~matplotlib.figure.Figure` object yourself.
@@ -188,7 +166,7 @@ highlight a region of interest, and change the plot title.
     rect = patches.Rectangle([-350, -650], 500, 500, color = 'white', fill=False)
     ax.set_title('My customized plot')
     ax.add_artist(rect)
-
+    plt.colorbar()
     plt.show()
 
 By default :ref:`map` uses the `wcsaxes <http://wcsaxes.readthedocs.org/>`_
