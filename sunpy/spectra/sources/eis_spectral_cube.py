@@ -1,27 +1,53 @@
 # -*- coding: utf-8 -*-
 # Author: Mateo Inchaurrandieta <mateo.inchaurrandieta@gmail.com>
+# pylint: disable=E1101
+"""
+Class for the EIS spectral cube.
+"""
 
 from sunpy.spectra.spectral_cube import SpectralCube
 from sunpy.cube import cube_utils as cu
 from sunpy.util.util import savitzky_golay
 import numpy as np
 
+__all__ = ['EISSpectralCube']
+
 
 class EISSpectralCube(SpectralCube):
-    # TODO: init, docstrings, etc.
-    def orbital_correction(self, line_guess, ymin=None, ymax=None, **kwargs):
-        if not ymin:
-            ymin = 0
+    """
+    An EISSpectralCube is a subclass of SpectralCube with added methods for
+    handling and correcting EIS's characteristics.
+    """
+    # TODO: init, etc.
+
+    def orbital_correction(self, line_guess=None, yrange=None, **kwargs):
+        """
+        Corrects for orbital and slit tilt deviation. Calculates the average
+        over a given y-range which ideally should be over quiet sun. If this is
+        not given, then the whole cube will be used. A line guess may be given,
+        the default is Fe XII. Extra arguments are given to the individual
+        spectra's gaussian fit function.
+
+        Parameters
+        ----------
+        line_guess: tuple of three floats
+            A guess for a strong line present in the data. The temperature
+            drift is independent of wavelength, so this should simply be an
+            easily fitted, strong, clear line present in the data.
+        yrange: tuple of 2 Quantities
+            The y-range to get the average from. This range should avoid active
+            regions that may disrupt the fit. The default is to use the entire
+            cube.
+        """
+        line_guess = (1000, 195.12, 0.1) if not line_guess else line_guess
+        if not yrange:
+            yrange = (0, self.spectra.shape[1])
         else:
-            ymin = cu.convert_point(ymin.value, ymin.unit, self.wcs, 1)
-        if not ymax:
-            ymax = self.spectra.shape[1]
-        else:
-            ymax = cu.convert_point(ymax.value, ymax.unit, self.wcs, 1)
-        if ymin > ymax:
-            temp = ymin
-            ymin = ymax
-            ymax = temp
+            ymin = cu.convert_point(yrange[0].value, yrange[0].unit,
+                                    self.wcs, 1)
+            ymax = cu.convert_point(yrange[1].value, yrange[1].unit,
+                                    self.wcs, 1)
+            yrange = (ymin, ymax)
         # First, get the centers of the line we're correcting for, throughout
         # the whole cube. This is a 2D array.
         centers = self._param_array(1, line_guess, **kwargs)
