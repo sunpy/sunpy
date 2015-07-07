@@ -65,7 +65,7 @@ This will show a representation of the data as well as some of its associated
 attributes. A number of other attributes are also available, for example the
 `~sunpy.map.GenericMap.date`, `~sunpy.map.GenericMap.exposure_time`,
 `~sunpy.map.GenericMap.center`, `~sunpy.map.GenericMap.xrange`,
-`~sunpy.map.GenericMap.yrange` and others::
+`~sunpy.map.GenericMap.yrange` and others (see `~sunpy.map.GenericMap`)::
 
     map_date = my_map.date
     map_exptime = my_map.exposure_time
@@ -101,7 +101,7 @@ For more information about indexing please refer to the
 Common `~numpy.ndarray` attributes, such as `~numpy.ndarray.shape` and `~numpy.ndarray.dtype`, are accessible through
 the SunPy `~sunpy.map.GenericMap` object ::
 
-    my_map.shape
+    my_map.dimensions
     my_map.dtype
 
 If you'd like to use the data in a SunPy `~sunpy.map.GenericMap` object
@@ -137,7 +137,7 @@ To create a plot just type::
 
 This will open a matplotlib plot on your screen.
 In addition, to enable users to modify the plot it is possible to grab the
-matplotlib figure object by using the `~sunpy.map.GenericMap.plot()` command.
+matplotlib axes object by using the `~sunpy.map.GenericMap.plot()` command.
 This makes it possible to use the SunPy plot as the foundation for a
 more complicated figure. For a bit more information about this and some
 examples see :ref:`plotting`.
@@ -174,7 +174,7 @@ plot changes the default AIA color table to use an inverse Grey color table.
     plt.show()
 
 You can view or make changes to the default settings through the `~sunpy.map.GenericMap.plot_settings`
-property. In the following example we change the title of the plot by changing the
+dictionary. In the following example we change the title of the plot by changing the
 `~sunpy.map.GenericMap.plot_settings` property.
 
 .. plot::
@@ -246,7 +246,7 @@ do so as follows.
 
 or you can just change the colormap for the map itself as follows::
 
-    cmap.plot_settings['cmap'] = plt.get_cmap('sohoeit171')
+    smap.plot_settings['cmap'] = plt.get_cmap('sohoeit171')
 
 The normalization is also set automatically and is chosen so that all the
 data from minimum to maximum is displayed as best as possible for most cases.
@@ -254,7 +254,7 @@ This means that it is never necessary to touch the data such as applying a funct
 such sqrt or log to the data to make your plot look good.
 There are many normalizations available from matplotlib such as `~matplotlib.colors.Lognorm`, or
 `~matplotlib.colors.PowerNorm`. Other
-`more exotic normalizations <http://physics.mnstate.edu/craig/apy10/visualization/index.html>`_ are also
+`more exotic normalizations <http://docs.astropy.org/en/stable/visualization/index.html>`_ are also
 made available from astropy.  Just like the colormap the default normalization
 can be changed through the plot_settings dictionary or directly for the individual
 plot by passing a keyword argument. The following example shows the difference between
@@ -351,7 +351,7 @@ displayed.  A `~numpy.ma.MaskedArray`
 is a subclass of a numpy array so it has all of the same properties with the
 addition of an associated boolean array which holds the mask.
 
-
+.. the following is a good example which could be fixed and added later
 .. The following plot achieves the same goal as above but using a mask instead of clipping.
 
 ..    import sunpy.map
