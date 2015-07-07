@@ -1,18 +1,28 @@
 from __future__ import absolute_import
 
+__all__ = ['Series', 'Protocol', 'Notify', 'Compression', 'Wavelength', 'Time',
+           'Segment', 'Sample']
+
 import astropy.units as u
 
-from sunpy.net.attr import (Attr, AttrWalker, AttrAnd, AttrOr)
-from sunpy.net.vso.attrs import Time, _VSOSimpleAttr
+from sunpy.net.attr import Attr, AttrWalker, AttrAnd, AttrOr
+from sunpy.net.vso.attrs import _VSOSimpleAttr
+from sunpy.net.vso.attrs import Time as vTime, Sample as vSample
 
-__all__ = ['Series', 'Protocol', 'Notify', 'Compression', 'Wavelength', 'Time',
-           'Segment']
+###############################################################################
+# This is a horrific hack to make automodapi pick up these as jsoc attrs.
 
 
-class Time(Time):
-    """
-    Time range to download
-    """
+class Time(vTime):
+    __doc__ = vTime.__doc__
+    pass
+
+
+class Sample(vSample):
+    __doc__ = vSample.__doc__
+    pass
+
+###############################################################################
 
 
 class Series(_VSOSimpleAttr):
@@ -49,7 +59,8 @@ class Notify(_VSOSimpleAttr):
     def __init__(self, value):
         super(Notify, self).__init__(value)
         if value.find('@') == -1:
-            raise ValueError("Notify attribute must contain an '@' symbol to be a valid email address")
+            raise ValueError("Notify attribute must contain an '@' symbol "
+                             "to be a valid email address")
         self.value = value
 
 
