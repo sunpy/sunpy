@@ -48,40 +48,40 @@ Lightcurve
 ----------
 
 SunPy handles time series data, fundamental to the study of any real world phenomenon,
-by creating a lightcurve object. Currently lightcurve supports
+by creating a lightcurve object. A lightcurve consists of two parts; times and
+measurements taken at those times. The data can either be in your current Python session, alternatively within a local or
+remote file. Let's create some fake data and pass it into a lightcurve object
+and then plot it.
 
-- SDO/EVE
-- GOES XRS
-- PROBA2/LYRA
+.. plot::
+    :include-source:
 
-A lightcurve consists of two parts; times and measurements taken at those times. The
-data can either be in your current Python session, alternatively within a local or
-remote file. Let's create some fake data and pass it into a lightcurve object::
-
-    >>> from sunpy.lightcurve import LightCurve
-    >>> light_curve = LightCurve.create({"param1": range(24*60)})
+    from sunpy.lightcurve import LightCurve
+    light_curve = LightCurve.create({"param1": range(24*60)})
+    light_curve.peek()
 
 Within LightCurve.create, we have a dictionary that contains a single entry with key
 "param1" containing a list of 1440 entries (0-1439). As there are no times provided,
 so a default set of times are generated.
+
+.. this should be a better example, for example grabbing goes data...
 
 Spectra
 -------
 
 SunPy has spectral support for instruments which have such a capacity. CALLISTO,
 an international network of Solar Radio Spectrometers, is a specific example.
-Below is the example built into sunpy::
+Below is the example built into sunpy.
+
+.. plot::
+    :include-source:
 
     import matplotlib.pyplot as plt
     import sunpy.spectra
-
+    import sunpy.data.sample
     from sunpy.spectra.sources.callisto import CallistoSpectrogram
     image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_IMAGE)
-
     image.peek()
-
-.. image:: ../images/spectra_ex1.png
-
 
 Plotting
 --------
@@ -90,17 +90,15 @@ Let's begin by creating a simple plot of an AIA image. To make things easy,
 SunPy includes several example files which are used throughout the docs. These
 files have names like `sunpy.data.sample.AIA_171_IMAGE` and `sunpy.data.sample.RHESSI_IMAGE`.
 
-Try typing the below example into your interactive Python shell::
+Try typing the below example into your interactive Python shell.
+
+.. plot::
+    :include-source:
 
     import sunpy.map
+    import sunpy.data.sample
     aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     aia.peek()
-
-If everything has been configured properly you should see an AIA image with
-a red colormap, a colorbar on the right-hand side and a title and some
-labels.
-
-.. image:: ../images/plotting_ex1.png
 
 There is lot going on here, but we will walk you through the example. Briefly,
 the first line is just importing SunPy. On the second line we create a
@@ -108,25 +106,21 @@ SunPy Map object which is basically just a spatially-aware image or data array.
 On the last line we then plot the map object, using the built in 'quick plot' function `peek()`.
 
 SunPy uses a matplotlib like interface to it's plotting so more complex plots can be built by combining
-SunPy with matplotlib::
+SunPy with matplotlib.
+
+.. plot::
+    :include-source:
 
     import sunpy.map
     import matplotlib.pyplot as plt
-
+    import sunpy.data.sample
     aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-
     fig = plt.figure()
     ax = plt.subplot(111)
-
     aia.plot()
     plt.colorbar()
     aia.draw_limb()
-
     plt.show()
-
-This should output something like the image below:
-
-.. image:: ../images/plotting_ex3.png
 
 Solar Physical Constants
 ------------------------
@@ -165,18 +159,18 @@ in units. SunPy uses `astropy's units and quantities code <http://docs.astropy.o
 implement this functionality. For example, the solar radius above is a physical quantity
 that can be expressed in length units.  In the example above ::
 
-    >>> from sunpy.sun import constants as con
-    >>> con.radius
+    from sunpy.sun import constants as con
+    con.radius
     <Constant name=u'Solar radius' value=695508000.0 error=26000.0 units='m' reference=u"Allen's Astrophysical Quantities 4th Ed.">
 
 shows the solar radius in units of meters.  It is simple to express the same physical quantity in different units::
 
-    >>> con.radius.to('km')
+    con.radius.to('km')
     <Quantity 695508.0 km>
 
 To get the numerical value of the solar radius in kilometers - without the unit information - use ::
 
-    >>> con.radius.to('km').value
+    con.radius.to('km').value
     695508.0
 
 Quantities and units are simple and powerful tools for keeping track of the units you're working in, and make it
@@ -188,10 +182,10 @@ SunPy's approach to the adoption of quantities and units in the codebase is desc
 Here's a simple example of the power of units.  Suppose you have the radius of a circle and would like to calculate
 its area.  The following code implements this ::
 
-    >>> import numpy as np
-    >>> import astropy.units as u
-    >>> @u.quantity_input(radius=u.m)
-    >>> def circle_area(radius):
+    import numpy as np
+    import astropy.units as u
+    @u.quantity_input(radius=u.m)
+    def circle_area(radius):
             return np.pi * radius ** 2
 
 The first line imports numpy, and the second line imports astropy's units module.  The beginning of the third line (the
@@ -200,24 +194,24 @@ kind of unit the function input variable "radius" in the following function "cir
 it is meters.  The decorator checks that the input is convertible to the units specified in the decorator.  Calculating
 the area of a circle with radius 4 meters using the function defined above is simple ::
 
-    >>> circle_area(4 * u.m)
+    circle_area(4 * u.m)
     <Quantity 50.26548245743669 m2>
 
 The units of the returned area are what we expect, namely the meters squared (m2).  However, we can also use other
 units of measurement; for a circle with radius 4 kilometers ::
 
-    >>> circle_area(4 * u.km)
+    circle_area(4 * u.km)
     <Quantity 50.26548245743669 km2>
 
 Even although the input value of the radius was not in meters, the function does not crash; this is because the
 input unit is convertible to meters.  This also works across different systems of measurement, for example ::
 
-    >>> circle_area(4 * u.imperial.foot)
+    circle_area(4 * u.imperial.foot)
     <Quantity 50.26548245743669 ft2>
 
 However, if the input unit is not convertible to meters, then an error is thrown ::
 
-    >>> circle_area(4 * u.second)
+    circle_area(4 * u.second)
     ---------------------------------------------------------------------------
     UnitsError                                Traceback (most recent call last)
     <ipython-input-15-5d2b19807321> in <module>()
@@ -241,7 +235,7 @@ However, if the input unit is not convertible to meters, then an error is thrown
 
 Also, if no unit is specified, an error is thrown ::
 
-    >>> circle_area(4)
+    circle_area(4)
     ---------------------------------------------------------------------------
     TypeError                                 Traceback (most recent call last)
     <ipython-input-17-4c9fa37f7920> in <module>()
@@ -268,12 +262,12 @@ expects.  Units also make conversions very easy to do.  For example,
 if you want the area of a circle in square feet, but were given
 measurements in meters, then ::
 
-    >>> circle_area((4 * u.m).to(u.imperial.foot))
+    circle_area((4 * u.m).to(u.imperial.foot))
     <Quantity 541.0531502245425 ft2>
 
 or ::
 
-    >>> circle_area(4 * u.m).to(u.imperial.foot ** 2)
+    circle_area(4 * u.m).to(u.imperial.foot ** 2)
     <Quantity 541.0531502245425 ft2>
 
 Astropy units and quantities are very powerful, and are used throughout SunPy.  To find out more about units and
@@ -360,23 +354,23 @@ Querying a database is straightforward, as this example using VSO, shows. The ex
 demonstrates the useful feature which prevents storing the same data twice::
 
 
-    >>> from sunpy.database import Database
-    >>> from sunpy.net.vso.attrs import Time, Instrument
-    >>> db = Database('sqlite:///')
-    >>> entries = db.fetch(
+    from sunpy.database import Database
+    from sunpy.net.vso.attrs import Time, Instrument
+    db = Database('sqlite:///')
+    entries = db.fetch(
     ...     Time('2012-08-05', '2012-08-05 00:00:05'),
     ...     Instrument('AIA'))
-    >>> assert entries is None
-    >>> len(db)
+    assert entries is None
+    len(db)
     2
-    >>> entries = db.fetch(
+    entries = db.fetch(
     ...     Time('2012-08-05', '2012-08-05 00:00:05'),
     ...     Instrument('AIA'))
-    >>> entries is None
+    entries is None
     False
-    >>> len(entries)
+    len(entries)
     2
-    >>> len(db)
+    len(db)
     2
 
 
@@ -393,12 +387,20 @@ including generating a PNG and downloading a `JPEG 2000 <http://wiki.helioviewer
 image and loading it into a SunPy Map.
 
 
-A simple example of a helioviewer query is::
+A simple example of a helioviewer query and a plot of the result follows.
+
+.. plot::
+    :include-source:
 
     from sunpy.net.helioviewer import HelioviewerClient
-
+    import matplotlib.pyplot as plt
+    from matplotlib.image import imread
     hv = HelioviewerClient()
-    hv.download_png('2099/01/01', 4.8, "[SDO,AIA,AIA,304,1,100]", x0=0, y0=0, width=512, height=512)
+    file = hv.download_png('2099/01/01', 4.8, "[SDO,AIA,AIA,304,1,100]", x0=0, y0=0, width=512, height=512)
+    im = imread(file)
+    plt.imshow(im)
+    plt.axis('off')
+    plt.show()
 
 This downloads a PNG image of the latest AIA 304 image available on
 Helioviewer.org in the `download_png` command 4.8 refers to the image resolution
@@ -406,9 +408,5 @@ in arcseconds per pixel (larger values mean lower resolution), the "1" and "100"
 layer string refer to the visibility (visible/hidden) and opacity,
 x0 and y0 are the center points about which to focus and the width and height
 are the pixel values for the image dimensions.
-
-The result is:
-
-.. image:: ../images/helioviewer_download_png_ex1.png
 
 For more information checkout the :doc:`helioviewer guide <acquiring_data/helioviewer>`.
