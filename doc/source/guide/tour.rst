@@ -64,20 +64,14 @@ Spectra
 
 SunPy has spectral support for instruments which have such a capacity. CALLISTO,
 an international network of Solar Radio Spectrometers, is a specific example.
-Below is the example built into sunpy::
-
-    import matplotlib.pyplot as plt
-    import sunpy.spectra
-    from sunpy.spectra.sources.callisto import CallistoSpectrogram
-    image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_IMAGE)
-    image.peek()
-
-which generates the following plot,
+Below is the example built into sunpy.
 
 .. plot::
+    :include-source:
 
     import matplotlib.pyplot as plt
     import sunpy.spectra
+    import sunpy.data.sample
     from sunpy.spectra.sources.callisto import CallistoSpectrogram
     image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_IMAGE)
     image.peek()

@@ -88,9 +88,8 @@ and access the figures and axes objects. This is shown in the following example.
     plt.show()
 
 In matplotlib, `~matplotlib.figure.Figure` is the top-level container for all plot elements and
- `~matplotlib.axes.Axes` is the top-level container for a particular plot. So the above example,
- creates a figure then creates an axes
-and populates the plot in ``ax``. With this method you
+`~matplotlib.axes.Axes` is the top-level container for a particular plot. So the above example,
+creates a figure then creates an axes and populates the plot in ``ax``. With this method you
 now have your hands on the `~matplotlib.axes.Axes` object so you can do things
 like change the labels on the x and y axes or add a legend.
 In the previous section, pyplot took care of creating these
