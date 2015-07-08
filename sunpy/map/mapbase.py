@@ -1254,10 +1254,17 @@ scale:\t\t {scale}
                           Warning)
 
         # Normal plot
+        imshow_args = deepcopy(self.plot_settings)
+        if imshow_args.has_key('title'):
+            plot_settings_title = imshow_args.pop('title')
+        else:
+            plot_settings_title = self.name
+
         if annotate:
             if title is True:
-                axes.set_title(self.name)
-            else:
+                title = plot_settings_title
+
+            if title:
                 axes.set_title(title)
 
             # x-axis label
@@ -1275,7 +1282,7 @@ scale:\t\t {scale}
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
 
-        imshow_args = deepcopy(self.plot_settings)
+
         if not wcsaxes_compat.is_wcsaxes(axes):
             imshow_args.update({'extent': list(self.xrange.value) + list(self.yrange.value)})
         imshow_args.update(imshow_kwargs)

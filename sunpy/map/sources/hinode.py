@@ -16,7 +16,7 @@ __all__ = ['XRTMap', 'SOTMap']
 # the following values comes from xrt_prep.pro
 # search for saturation in
 # http://darts.jaxa.jp/pub/ssw/hinode/xrt/idl/util/xrt_prep.pro
-SATURATION_LIMIT = 2500
+# SATURATION_LIMIT = 2500
 
 def _lower_list(L):
     return [item.lower() for item in L]
