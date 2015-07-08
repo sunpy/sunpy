@@ -63,7 +63,6 @@ except ImportError:
         if os.path.isdir(a_h_path):
             sys.path.insert(1, a_h_path)
 
-
 # -- Read the Docs Setup  -----------------------------------------------------
 
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
@@ -71,6 +70,11 @@ on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 if on_rtd:
     os.environ['SUNPY_CONFIGDIR'] = '/home/docs/checkouts/readthedocs.org/user_builds/sunpy/'
     os.environ['HOME'] = '/home/docs/checkouts/readthedocs.org/user_builds/sunpy/'
+
+# -- Download Sample Data -----------------------------------------------------
+
+import sunpy.data
+sunpy.data.download_sample_data(overwrite=False)
 
 # -- General configuration ----------------------------------------------------
 
