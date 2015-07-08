@@ -41,7 +41,26 @@ class SpectralCube(object):
         self._memo = {}
 
     def _gaussian_fits(self, line_guess, *extra_lines, **kwargs):
-        recalc = kwargs['recalculate'] if 'recalculate' in kwargs else False
+        """
+        Returns an array of fit objects from which parameters can be extracted
+        corresponding to the line guesses provided.
+
+        Parameters
+        ----------
+        line_guess and extra_lines: 3-tuples of floats
+            There must be at least one guess, in the format (intensity,
+            position, stddev). The closer these guesses are to the true values
+            the better the fit will be.
+        recalc=False: boolean
+            If True, the gaussian fits will be recalculated, even if there's an
+            existing fit for the given wavelengths already in the memo. This
+            keyword should be set to True if changing the amplitude or width of
+            the fit.
+        **kwargs: dict
+            Extra keyword arguments are ultimately passed on to the astropy
+            fitter.
+        """
+        recalc = kwargs.get('recalculate', False)
         key = [guess[1] for guess in (line_guess,) + extra_lines]
         if recalc or key not in self._memo:
             gaussian_array = np.empty(self.spectra.shape, dtype=object)

@@ -43,7 +43,6 @@ class EISSpectralCube(SpectralCube):
             cube.
         """
         # TODO: handle multiple exposures in a single window
-        # TODO: clip guess to avoid matching other lines in the window.
         line_guess = (1000, 195.12, 0.1) if not line_guess else line_guess
         if not yrange:
             yrange = (0, self.spectra.shape[1])
@@ -54,7 +53,10 @@ class EISSpectralCube(SpectralCube):
                                     self.wcs, 1)
             yrange = (ymin, ymax)
         # First, get the centers of the line we're correcting for, throughout
-        # the whole cube. This is a 2D array.
+        # the whole cube. This is a 2D array. Force a recalculation and clip
+        # the fitting window as well.
+        x_range = kwargs.get('x_range', (194.9, 195.3))
+        kwargs.update({'recalc': True, 'x_range': x_range})
         centers = self._param_array(1, line_guess, **kwargs)
         # Now get a 1-D array of the average intensities along the y-axis.
         # Ideally the range should be chosen so that this is quiet sun.

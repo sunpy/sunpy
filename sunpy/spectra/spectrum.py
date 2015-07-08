@@ -8,6 +8,7 @@ from __future__ import absolute_import
 import astropy.nddata as ndd
 from astropy.modeling import models, fitting
 import astropy.units as u
+import numpy as np
 
 from matplotlib import pyplot as plt
 
@@ -119,10 +120,10 @@ class Spectrum(ndd.NDDataArray):
 
         Parameters
         ----------
-        guess: tuple of three floats
+        line_guess: tuple of three floats
             The best guess for the first component of the gaussian fit. The
             syntax is (amp_guess, mean_guess, stddev_guess).
-        *guesses: additional tuples of three ints
+        *extra_lines: additional tuples of three ints
             Additional lines can be fitted by adding more tuples
         **kwargs: dict
             Additional keyword arguments are passed on to the fitter
@@ -133,6 +134,17 @@ class Spectrum(ndd.NDDataArray):
             g_mod = models.Gaussian1D(amplitude=amp, mean=mean, stddev=stddev)
             g_init = g_init + g_mod
         fitter = fitting.LevMarLSQFitter()
-        return fitter(g_init, self.axis, self.data, **kwargs)
+        fit_axis = np.empty()
+        fit_data = np.empty()
+        x_range = kwargs.get('x_range')
+        if x_range is not None:
+            arrmin = self.axis.index(x_range[0] / self.axis_unit)
+            arrmax = self.axis.index(x_range[1] / self.axis_unit)
+            fit_axis = self.axis[arrmin:arrmax]
+            fit_data = self.data[arrmin:arrmax]
+        else:
+            fit_axis = self.axis
+            fit_data = self.data
+        return fitter(g_init, fit_axis, fit_data, **kwargs)
 
     # TODO: __getitem__
