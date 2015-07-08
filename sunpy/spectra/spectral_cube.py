@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Author: Mateo Inchaurrandieta <mateo.inchaurrandieta@gmail.com>
+# pylint: disable=E1101
 """
 A spectral cube is, at its most basic, a 2D array of Spectrum objects with an
 associated coordinate system. The name cube is a bit misleading beacuse the
@@ -9,27 +10,33 @@ different wavelength axes.
 
 import gwcs
 import numpy as np
-from sunpy.spectra.spectrum import Spectrum
 from sunpy.map import GenericMap, MapCube
 
 __all__ = ['SpectralCube']
 
 
-class SpectralCube():
-    # TODO: implement memoization of gaussians
+class SpectralCube(object):
     def __init__(self, spectra, wcs, meta):
         self.spectra = spectra
         self.wcs = wcs
         self.meta = meta
+        self.memo = {}
 
     def _gaussian_fits(self, line_guess, *extra_lines, **kwargs):
-        gaussian_array = np.empty(self.spectra.shape, dtype=object)
-        for i in range(self.spectra.shape[0]):
-            for j in range(self.spectra.shape[1]):
-                fit = self.spectra[i, j].gaussian_fit(line_guess, *extra_lines,
-                                                      **kwargs)
-                gaussian_array[i, j] = fit
-        return gaussian_array
+        recalc = kwargs['recalculate'] if 'recalculate' in kwargs else False
+        key = [guess[1] for guess in (line_guess,) + extra_lines]
+        if recalc or key not in self.memo:
+            gaussian_array = np.empty(self.spectra.shape, dtype=object)
+            for i in range(self.spectra.shape[0]):
+                for j in range(self.spectra.shape[1]):
+                    fit = self.spectra[i, j].gaussian_fit(line_guess,
+                                                          *extra_lines,
+                                                          **kwargs)
+                    gaussian_array[i, j] = fit
+            self.memo[key] = gaussian_array
+            return gaussian_array
+        else:
+            return self.memo[key]
 
     def _param_array(self, param, line_guess, *extra_lines, **kwargs):
         depth = 1 + len(extra_lines)
@@ -66,11 +73,13 @@ class SpectralCube():
             fitter.
         """
         param = 0
-        if param.lower()[0] == 'p':
+        if parameter.lower()[0] == 'p':
             param = 1
-        elif param.lower()[0] == 's':
+        elif parameter.lower()[0] == 's':
             param = 2
         val_arr = self._param_array(param, line_guess, *extra_lines, **kwargs)
         maps = [GenericMap(raster, self.meta) for raster in val_arr.T]
         mapcube = MapCube(maps)
         return mapcube
+
+    # TODO: __getitem__

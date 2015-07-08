@@ -116,6 +116,7 @@ class Spectrum(ndd.NDDataArray):
         Fits a gaussian distribution to the data, and returns a fit whose
         parameters - amplitude, mean and standard deviation, among others,
         can be called.
+
         Parameters
         ----------
         guess: tuple of three floats

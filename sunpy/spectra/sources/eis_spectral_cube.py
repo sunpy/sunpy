@@ -18,15 +18,18 @@ class EISSpectralCube(SpectralCube):
     An EISSpectralCube is a subclass of SpectralCube with added methods for
     handling and correcting EIS's characteristics.
     """
-    # TODO: init, etc.
 
     def orbital_correction(self, line_guess=None, yrange=None, **kwargs):
         """
-        Corrects for orbital and slit tilt deviation. Calculates the average
-        over a given y-range which ideally should be over quiet sun. If this is
-        not given, then the whole cube will be used. A line guess may be given,
-        the default is Fe XII. Extra arguments are given to the individual
-        spectra's gaussian fit function.
+        Calculates the corrections for orbital and slit tilt deviation.
+        Calculates the average over a given y-range which ideally should be
+        over quiet sun. If this is not given, then the whole cube will be used.
+        A line guess may be given, the default is Fe XII. Extra arguments are
+        given to the individual spectra's gaussian fit function.
+        After this method is called, the corrections must be applied using the
+        apply_corrections method. This is so that corrections are only
+        calculated once and can be applied to cubes holding different peak
+        wavelengths.
 
         Parameters
         ----------
@@ -39,6 +42,8 @@ class EISSpectralCube(SpectralCube):
             regions that may disrupt the fit. The default is to use the entire
             cube.
         """
+        # TODO: handle multiple exposures in a single window
+        # TODO: clip guess to avoid matching other lines in the window.
         line_guess = (1000, 195.12, 0.1) if not line_guess else line_guess
         if not yrange:
             yrange = (0, self.spectra.shape[1])
@@ -62,7 +67,17 @@ class EISSpectralCube(SpectralCube):
         window_size = int(corrections.shape[0] / 10)
         window_size += 1 if window_size % 2 == 0 else 0
         smooth_averages = savitzky_golay(corrections, window_size, 3)
-        # Apply corrections to the spectra.
-        for arr, corr in zip(self.spectra.T, smooth_averages):
+        return smooth_averages
+
+    def apply_corrections(self, corrections):
+        """
+        Applies the given corrections over the entire array of spectra.
+
+        Parameters
+        ----------
+        corrections: 2D array
+            The offsets to be applied.
+        """
+        for arr, corr in zip(self.spectra.T, corrections):
             for spec in arr:
                 spec.shift_axis(corr)
