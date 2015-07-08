@@ -34,7 +34,7 @@ __all__ = ['Cube']
 
 class Cube(astropy.nddata.NDDataArray):
     """
-    Class representing spectral cubes.
+    Class representing cubes.
     Extra arguments are passed on to NDDataArray's init.
 
     Attributes

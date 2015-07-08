@@ -134,3 +134,5 @@ class Spectrum(ndd.NDDataArray):
             g_init = g_init + g_mod
         fitter = fitting.LevMarLSQFitter()
         return fitter(g_init, self.axis, self.data, **kwargs)
+
+    # TODO: __getitem__
