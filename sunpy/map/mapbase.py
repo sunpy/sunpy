@@ -13,8 +13,7 @@ from copy import deepcopy
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import patches
-from matplotlib import cm
+from matplotlib import patches, cm, colors
 
 import astropy.wcs
 from .nddata_compat import NDDataCompat as NDData
@@ -49,6 +48,7 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
+
 class GenericMap(NDData):
     """
     A Generic spatially-aware 2D data array
@@ -57,15 +57,8 @@ class GenericMap(NDData):
     ----------
     data : numpy.ndarray, list
         A 2d list or ndarray containing the map data
-    header : dict
+    meta : dict
         A dictionary of the original image header tags
-
-    Attributes
-    ----------
-    cmap : matplotlib.colors.Colormap
-        A color map used for plotting with matplotlib.
-    mpl_color_normalizer : matplotlib.colors.Normalize
-        A matplotlib normalizer used to scale the image plot.
 
     Examples
     --------
@@ -134,23 +127,27 @@ class GenericMap(NDData):
         self._fix_naxis()
 
         # Setup some attributes
-        self._name = self.observatory + " " + str(self.measurement)
         self._nickname = self.detector
-
-        # Visualization attributes
-        self.cmap = cm.gray
 
         # Validate header
         # TODO: This should be a function of the header, not of the map
         self._validate()
 
-        # Set mpl.colors.Normalize instance for plot scaling
-        self.mpl_color_normalizer = self._get_mpl_normalizer()
+        if self.dtype == np.uint8:
+            norm = None
+        else:
+            norm = colors.Normalize()
+        # Visualization attributes
+        self.plot_settings = {'cmap': cm.gray,
+                              'norm': norm,
+                              'interpolation': 'nearest',
+                              'origin': 'lower'
+                              }
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
         raise NotImplementedError(
-    "The ability to index Map by physical coordinate is not yet implemented.")
+            "The ability to index Map by physical coordinate is not yet implemented.")
 
     def __repr__(self):
         if not self.observatory:
@@ -161,17 +158,19 @@ class GenericMap(NDData):
 Observatory:\t {obs}
 Instrument:\t {inst}
 Detector:\t {det}
-Measurement:\t {meas:0.0f}
-Obs Date:\t {date}
+Measurement:\t {meas}
+Wavelength:\t {wave}
+Obs Date:\t {date:{tmf}}
 dt:\t\t {dt:f}
 Dimension:\t {dim}
-scale:\t\t [{dx}, {dy}]
+scale:\t\t {scale}
 
 """.format(dtype=self.__class__.__name__,
            obs=self.observatory, inst=self.instrument, det=self.detector,
-           meas=self.measurement, date=self.date, dt=self.exposure_time,
+           meas=self.measurement, wave=self.wavelength, date=self.date, dt=self.exposure_time,
            dim=u.Quantity(self.dimensions),
-           dx=self.scale.x, dy=self.scale.y)
+           scale=u.Quantity(self.scale),
+           tmf=TIME_FORMAT)
 + self.data.__repr__())
 
     @property
@@ -225,11 +224,11 @@ scale:\t\t [{dx}, {dy}]
     @property
     def name(self):
         """Human-readable description of map-type"""
-        return self._name
-
-    @name.setter
-    def name(self, n):
-        self._name = n
+        return "{obs} {detector} {measurement} {date:{tmf}}".format(obs=self.observatory,
+                                                                detector=self.detector,
+                                                                measurement=self.measurement,
+                                                                date=parse_time(self.date),
+                                                                tmf=TIME_FORMAT)
 
     @property
     def nickname(self):
@@ -283,7 +282,7 @@ scale:\t\t [{dx}, {dy}]
     @property
     def instrument(self):
         """Instrument name"""
-        return self.meta.get('instrume', "")
+        return self.meta.get('instrume', "").replace("_", " ")
 
     @property
     def measurement(self):
@@ -298,7 +297,7 @@ scale:\t\t [{dx}, {dy}]
     @property
     def observatory(self):
         """Observatory or Telescope name"""
-        return self.meta.get('obsrvtry', self.meta.get('telescop', ""))
+        return self.meta.get('obsrvtry', self.meta.get('telescop', "")).replace("_", " ")
 
     @property
     def xrange(self):
@@ -934,8 +933,14 @@ scale:\t\t [{dx}, {dy}]
             raise ValueError(
                 "Invalid unit. Must be one of 'data' or 'pixels'")
 
+
+        # Sort the pixel values so we are always slicing in the correct direction
+        x_pixels.sort()
+        y_pixels.sort()
+
         x_pixels = np.array(x_pixels)
         y_pixels = np.array(y_pixels)
+
         # Clip pixel values to max of array, prevents negative
         # indexing
         x_pixels[np.less(x_pixels, 0)] = 0
@@ -984,7 +989,7 @@ scale:\t\t [{dx}, {dy}]
 
         References
         ----------
-        | http://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html
+        | `Summarizing blocks of an array using a moving window <http://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html>`_
         """
 
         # Note: because the underlying ndarray is transposed in sense when
@@ -1155,7 +1160,7 @@ scale:\t\t [{dx}, {dy}]
         return [circ]
 
     @toggle_pylab
-    def peek(self, draw_limb=False, draw_grid=False, gamma=None,
+    def peek(self, draw_limb=False, draw_grid=False,
                    colorbar=True, basic_plot=False, **matplot_args):
         """Displays the map in a new figure
 
@@ -1212,18 +1217,13 @@ scale:\t\t [{dx}, {dy}]
 
         figure.show()
 
-        return figure
-
     @toggle_pylab
-    def plot(self, gamma=None, annotate=True, axes=None, **imshow_args):
+    def plot(self, annotate=True, axes=None, title=True, **imshow_kwargs):
         """ Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
 
         Parameters
         ----------
-        gamma : float
-            Gamma value to use for the color map
-
         annotate : bool
             If true, the data is plotted at it's natural scale; with
             title and axis labels.
@@ -1232,7 +1232,7 @@ scale:\t\t [{dx}, {dy}]
             If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
 
-        **imshow_args : dict
+        **imshow_kwargs  : dict
             Any additional imshow arguments that should be used
             when plotting the image.
 
@@ -1260,10 +1260,18 @@ scale:\t\t [{dx}, {dy}]
                           Warning)
 
         # Normal plot
+        imshow_args = deepcopy(self.plot_settings)
+        if imshow_args.has_key('title'):
+            plot_settings_title = imshow_args.pop('title')
+        else:
+            plot_settings_title = self.name
+
         if annotate:
-            axes.set_title("{name} {date:{tmf}}".format(name=self.name,
-                                                        date=parse_time(self.date),
-                                                        tmf=TIME_FORMAT))
+            if title is True:
+                title = plot_settings_title
+
+            if title:
+                axes.set_title(title)
 
             # x-axis label
             if self.coordinate_system.x == 'HG':
@@ -1281,17 +1289,14 @@ scale:\t\t [{dx}, {dy}]
             axes.set_ylabel(ylabel)
 
 
-        cmap = deepcopy(self.cmap)
-        if gamma is not None:
-            cmap.set_gamma(gamma)
-
-        kwargs = self._mpl_imshow_kwargs(axes, cmap)
-        kwargs.update(imshow_args)
+        if not wcsaxes_compat.is_wcsaxes(axes):
+            imshow_args.update({'extent': list(self.xrange.value) + list(self.yrange.value)})
+        imshow_args.update(imshow_kwargs)
 
         if self.mask is None:
-            ret = axes.imshow(self.data, **kwargs)
+            ret = axes.imshow(self.data, **imshow_args)
         else:
-            ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **kwargs)
+            ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **imshow_args)
 
         if wcsaxes_compat.is_wcsaxes(axes):
             wcsaxes_compat.default_wcs_grid(axes)
@@ -1300,34 +1305,6 @@ scale:\t\t [{dx}, {dy}]
         plt.sca(axes)
         plt.sci(ret)
         return ret
-
-    def _mpl_imshow_kwargs(self, axes, cmap):
-        """
-        Return the keyword arguments for imshow to display this map
-        """
-        if wcsaxes_compat.is_wcsaxes(axes):
-            kwargs = {'cmap': cmap,
-                      'origin': 'lower',
-                      'norm': self.mpl_color_normalizer,
-                      'interpolation': 'nearest'}
-        else:
-            # make imshow kwargs a dict
-            kwargs = {'origin': 'lower',
-                      'cmap': cmap,
-                      'norm': self.mpl_color_normalizer,
-                      'extent': list(self.xrange.value) + list(self.yrange.value),
-                      'interpolation': 'nearest'}
-
-        return kwargs
-
-
-    def _get_mpl_normalizer(self):
-        """
-        Returns a default mpl.colors.Normalize instance for plot scaling.
-
-        Not yet implemented.
-        """
-        return None
 
 
 class InvalidHeaderInformation(ValueError):
