@@ -484,6 +484,9 @@ class Cube(astropy.nddata.NDDataArray):
         return np.arange(start, stop, delta), cunit
 
     def _array_is_aligned(self):
+        """
+        Returns whether the wcs system and the array are well-aligned.
+        """
         rot_matrix = self.axes_wcs.wcs.pc
         return np.allclose(rot_matrix, np.eye(self.axes_wcs.wcs.naxis))
 

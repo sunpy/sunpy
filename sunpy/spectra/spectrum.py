@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>,
 #         Mateo Inchaurrandieta <mateo.inchaurrandieta@gmail.com>
-# pylint: disable=E1101
-
+# pylint: disable=E1101, W0141
+"""
+Module containing the definition of the Spectrum object. Refer to the Spectrum
+documentation for more details.
+"""
 from __future__ import absolute_import
 
 import astropy.nddata as ndd

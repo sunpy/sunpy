@@ -266,12 +266,12 @@ def getitem_3d(cube, item):
                           and axes[-2] == 'WAVE')
                          or (axes[-1] == 'WAVE' and
                              iter_isinstance(item, slice, int, int)))
-    slice_to_spectrogram = (iter_isinstance(item, slice, slice, int)
-                            and axes[-2] == 'WAVE')
+    slice_to_spectrogram = (iter_isinstance(item, slice, slice, int) and
+                            axes[-2] == 'WAVE')
     slice_to_lightcurve = (axes[-2] == 'WAVE' and
-                           (iter_isinstance(item, slice, int, int)
-                            or iter_isinstance(item, slice, int)
-                            or iter_isinstance(item, slice, int, slice)))
+                           (iter_isinstance(item, slice, int, int) or
+                            iter_isinstance(item, slice, int) or
+                            iter_isinstance(item, slice, int, slice)))
     stay_as_cube = (isinstance(item, slice) or
                     (isinstance(item, tuple) and
                      not any(isinstance(i, int) for i in item)))
@@ -407,11 +407,11 @@ def convert_point(value, unit, wcs, axis):
     if isinstance(value, u.Quantity):
         value = value.value
         unit = value.unit
-    ax = -1 - axis if wcs.oriented or not wcs.was_augmented else -2 - axis
-    cunit = u.Unit(wcs.wcs.cunit[ax])
-    crpix = wcs.wcs.crpix[ax]
-    crval = wcs.wcs.crval[ax] * cunit
-    cdelt = wcs.wcs.cdelt[ax] * cunit
+    wcsaxis = -1 - axis if wcs.oriented or not wcs.was_augmented else -2 - axis
+    cunit = u.Unit(wcs.wcs.cunit[wcsaxis])
+    crpix = wcs.wcs.crpix[wcsaxis]
+    crval = wcs.wcs.crval[wcsaxis] * cunit
+    cdelt = wcs.wcs.cdelt[wcsaxis] * cunit
 
     point = (value * unit).to(cunit)
     pointdelta = ((point - crval) / cdelt).value
@@ -439,7 +439,7 @@ def _convert_slice(item, wcs, axis):
         The axis the slice corresponds to, in numpy-style ordering (i.e.
         opposite WCS convention)
     """
-    ax = -2 - axis if wcs.was_augmented and not wcs.oriented else -1 - axis
+    wcs_ax = -2 - axis if wcs.was_augmented and not wcs.oriented else -1 - axis
     steps = [item.start, item.stop, item.step]
     values = [None, None, None]
     unit = None
@@ -458,8 +458,8 @@ def _convert_slice(item, wcs, axis):
     if values[2] is None:
         delta = None
     else:
-        cunit = u.Unit(wcs.wcs.cunit[ax])
-        cdelt = wcs.wcs.cdelt[ax] * cunit
+        cunit = u.Unit(wcs.wcs.cunit[wcs_ax])
+        cdelt = wcs.wcs.cdelt[wcs_ax] * cunit
         delta = int(np.round(((values[2] * unit).to(cunit) / cdelt).value))
 
     if values[0] is None:
