@@ -150,4 +150,8 @@ class Spectrum(ndd.NDDataArray):
             fit_data = self.data
         return fitter(g_init, fit_axis, fit_data, **kwargs)
 
-    # TODO: __getitem__
+    def __getitem__(self, item):
+        # TODO: use quantities here
+        newdata = self.data.__getitem__(item)
+        newaxis = self.axis.__getitem__(item)
+        return Spectrum(newdata, newaxis, self.axis_unit)
