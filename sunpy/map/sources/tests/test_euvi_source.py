@@ -31,4 +31,4 @@ def test_measurement():
 
 def test_observatory():
     """Tests the observatory property of the EUVIMap object."""
-    assert euvi.observatory == "STEREO_A"
+    assert euvi.observatory == "STEREO A"
