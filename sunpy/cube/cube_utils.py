@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Author: Mateo Inchaurrandieta <mateo.inchaurrandieta@gmail.com>
-# pylint: disable=E1101
+# pylint: disable=E1101, C0330
 """
 Utilities used in the sunpy.cube.cube module. Moved here to prevent clutter and
 aid readability.
@@ -77,11 +77,12 @@ def select_order(axtypes):
     return result
 
 
-def iter_isinstance(obj, *types):
+def iter_isinstance(obj, *type_tuples):
     """
-    Given an iterable object and a list of types, classes or tuples of types
-    and classes determine if the given object's items are instances of the
-    given types.
+    Given an iterable object and a list of tuples of types, classes or tuples
+    of types and classes determine if the given object's items are instances of
+    the given types. iter_isinstance(obj, types_1, types_2) is shorthand
+    for iter_isinstance(obj, types_1) or iter_isinstance(obj, types_2).
 
     Parameters
     ----------
@@ -90,9 +91,12 @@ def iter_isinstance(obj, *types):
     *types: any number of types or classes
         The classes to check against
     """
-    if not isinstance(obj, tuple) or len(obj) != len(types):
-        return False
-    return all(isinstance(o, t) for o, t in zip(obj, types))
+    result = False
+    for types in type_tuples:
+        if not isinstance(obj, tuple) or len(obj) != len(types):
+            continue
+        result |= all(isinstance(o, t) for o, t in zip(obj, types))
+    return result
 
 
 def handle_slice_to_spectrum(cube, item):
@@ -110,19 +114,19 @@ def handle_slice_to_spectrum(cube, item):
     if cube.data.ndim == 3:
         if isinstance(item, int):
             spec = cube.slice_to_spectrum(item, None)
-        elif iter_isinstance(item, int, slice, int):
+        elif iter_isinstance(item, (int, slice, int)):
             spec = cube.slice_to_spectrum(item[0], item[2])
-        elif iter_isinstance(item, slice, int, int):
+        elif iter_isinstance(item, (slice, int, int)):
             spec = cube.slice_to_spectrum(item[1], item[2])
         else:
             spec = cube.slice_to_spectrum(item[0], None)
     else:
-        if iter_isinstance(item, int, slice, int, int):
+        if iter_isinstance(item, (int, slice, int, int)):
             spec = cube.slice_to_spectrum(item[0], item[2], item[3])
-        elif (iter_isinstance(item, int, slice, int, slice) or
-              iter_isinstance(item, int, slice, int)):
+        elif iter_isinstance(item, (int, slice, int, slice),
+                                   (int, slice, int)):
             spec = cube.slice_to_spectrum(item[0], item[2], None)
-        elif iter_isinstance(item, int, slice, slice, int):
+        elif iter_isinstance(item, (int, slice, slice, int)):
             spec = cube.slice_to_spectrum(item[0], None, item[3])
     return spec
 
@@ -141,14 +145,14 @@ def handle_slice_to_lightcurve(cube, item):
         The slice to make
     """
     if cube.data.ndim == 3:
-        if iter_isinstance(item, slice, int, int):
+        if iter_isinstance(item, (slice, int, int)):
             lightc = cube.slice_to_lightcurve(item[1], item[2])
         else:
             lightc = cube.slice_to_lightcurve(item[1])
     else:
-        if iter_isinstance(item, slice, int, int, int):
+        if iter_isinstance(item, (slice, int, int, int)):
             lightc = cube.slice_to_lightcurve(item[1], item[2], item[3])
-        elif iter_isinstance(item, slice, int, slice, int):
+        elif iter_isinstance(item, (slice, int, slice, int)):
             lightc = cube.slice_to_lightcurve(item[1], x_coord=item[3])
         else:
             lightc = cube.slice_to_lightcurve(item[1], y_coord=item[2])
@@ -257,21 +261,20 @@ def getitem_3d(cube, item):
     axes = cube.axes_wcs.wcs.ctype
     slice_to_map = (axes[-2] != 'WAVE' and
                     (isinstance(item, int) or
-                     iter_isinstance(item, int, slice) or
-                     iter_isinstance(item, int, slice, slice)))
+                     iter_isinstance(item, (int, slice), (int, slice, slice))))
     slice_to_spectrum = (((isinstance(item, int) or
-                           iter_isinstance(item, int, slice) or
-                           iter_isinstance(item, int, slice, slice) or
-                           iter_isinstance(item, int, slice, int))
+                           iter_isinstance(item, (int, slice),
+                                                 (int, slice, slice),
+                                                 (int, slice, int)))
                           and axes[-2] == 'WAVE')
                          or (axes[-1] == 'WAVE' and
-                             iter_isinstance(item, slice, int, int)))
-    slice_to_spectrogram = (iter_isinstance(item, slice, slice, int) and
+                             iter_isinstance(item, (slice, int, int))))
+    slice_to_spectrogram = (iter_isinstance(item, (slice, slice, int)) and
                             axes[-2] == 'WAVE')
     slice_to_lightcurve = (axes[-2] == 'WAVE' and
-                           (iter_isinstance(item, slice, int, int) or
-                            iter_isinstance(item, slice, int) or
-                            iter_isinstance(item, slice, int, slice)))
+                           (iter_isinstance(item, (slice, int, int),
+                                                  (slice, int),
+                                                  (slice, int, slice))))
     stay_as_cube = (isinstance(item, slice) or
                     (isinstance(item, tuple) and
                      not any(isinstance(i, int) for i in item)))
@@ -309,21 +312,20 @@ def getitem_4d(cube, item):
     item: int, slice object, or tuple of these
         The item to get from the cube
     """
-    slice_to_map = (iter_isinstance(item, int, int) or
-                    iter_isinstance(item, int, int, slice) or
-                    iter_isinstance(item, int, int, slice, slice))
-    slice_to_spectrogram = iter_isinstance(item, slice, slice, int, int)
-    slice_to_spectrum = (iter_isinstance(item, int, slice, int, int) or
-                         iter_isinstance(item, int, slice, int) or
-                         iter_isinstance(item, int, slice, int, slice) or
-                         iter_isinstance(item, int, slice, slice, int))
+    slice_to_map = iter_isinstance(item, (int, int), (int, int, slice),
+                                         (int, int, slice, slice))
+    slice_to_spectrogram = iter_isinstance(item, (slice, slice, int, int))
+    slice_to_spectrum = iter_isinstance(item, (int, slice, int, int),
+                                              (int, slice, int),
+                                              (int, slice, int, slice),
+                                              (int, slice, slice, int))
     slice_to_cube = (isinstance(item, int) or
                      (isinstance(item, tuple) and
                       len([i for i in item if isinstance(i, int)]) == 1))
-    slice_to_lightcurve = (iter_isinstance(item, slice, int, int, int) or
-                           iter_isinstance(item, slice, int, int) or
-                           iter_isinstance(item, slice, int, int, slice) or
-                           iter_isinstance(item, slice, int, slice, int))
+    slice_to_lightcurve = iter_isinstance(item, (slice, int, int, int),
+                                                (slice, int, int),
+                                                (slice, int, int, slice),
+                                                (slice, int, slice, int))
     stay_as_hypercube = (isinstance(item, slice) or
                          (isinstance(item, tuple) and
                           not any(isinstance(i, int) for i in item)))

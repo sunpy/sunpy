@@ -405,13 +405,13 @@ class Cube(astropy.nddata.NDDataArray):
 
         item = [slice(None, None, None) for _ in range(4)]
         if isinstance(chunk, tuple):
-            if cu.iter_isinstance(chunk, u.Quantity, u.Quantity):
+            if cu.iter_isinstance(chunk, (u.Quantity, u.Quantity)):
                 pixel0 = cu.convert_point(chunk[0].value, chunk[0].unit,
                                           self.axes_wcs, axis)
                 pixel1 = cu.convert_point(chunk[1].value, chunk[1].unit,
                                           self.axes_wcs, axis)
                 item[axis] = slice(pixel0, pixel1, None)
-            elif cu.iter_isinstance(chunk, int, int):
+            elif cu.iter_isinstance((chunk, int, int)):
                 item[axis] = slice(chunk[0], chunk[1], None)
             else:
                 raise cu.CubeError(5, "Parameters must be of the same type")
