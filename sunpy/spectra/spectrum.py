@@ -137,12 +137,10 @@ class Spectrum(ndd.NDDataArray):
             g_mod = models.Gaussian1D(amplitude=amp, mean=mean, stddev=stddev)
             g_init = g_init + g_mod
         fitter = fitting.LevMarLSQFitter()
-        fit_axis = np.empty()
-        fit_data = np.empty()
         x_range = kwargs.get('x_range')
         if x_range is not None:
-            arrmin = self.axis.index(x_range[0] / self.axis_unit)
-            arrmax = self.axis.index(x_range[1] / self.axis_unit)
+            arrmin = self._qty_to_pixel(x_range[0])
+            arrmax = self._qty_to_pixel(x_range[1])
             fit_axis = self.axis[arrmin:arrmax]
             fit_data = self.data[arrmin:arrmax]
         else:
@@ -150,8 +148,80 @@ class Spectrum(ndd.NDDataArray):
             fit_data = self.data
         return fitter(g_init, fit_axis, fit_data, **kwargs)
 
+    def _qty_to_pixel(self, quantity):
+        """
+        Converts a quantity into a pixel position on the axis. The closest
+        value will be returned.
+
+        Parameters
+        ----------
+        quantity: astropy.units.Quantity
+            The quantity to convert
+        """
+        value = quantity / self.axis_unit
+        closest_index = (np.abs(self.axis - value)).argmin()
+        return self.axis.index(closest_index)
+
     def __getitem__(self, item):
-        # TODO: use quantities here
-        newdata = self.data.__getitem__(item)
-        newaxis = self.axis.__getitem__(item)
-        return Spectrum(newdata, newaxis, self.axis_unit)
+        if isinstance(item, int):
+            return self.data[item]
+        elif isinstance(item, float):
+            return self.data[self._qty_to_pixel(item * self.axis_unit)]
+        elif isinstance(item, u.Quantity):
+            return self.data[self._qty_to_pixel(item)]
+        elif isinstance(item, slice):
+            intslice = self._intify_slice(item)
+            newdata = self.data.__getitem__(intslice)
+            newaxis = self.axis.__getitem__(intslice)
+            return Spectrum(newdata, newaxis, self.axis_unit)
+        else:
+            raise IndexError("Too many indices for a Spectrum")
+
+    def _intify_slice(self, item):
+        """
+        Converts a slice that includes quantities to one that includes only
+        ints.
+
+        Parameters
+        ----------
+        item: slice
+            The slice object to convert
+        """
+        start = item.start
+        stop = item.stop
+        unit = None
+        if not isinstance(item.step, int):
+            raise IndexError("The step must be an int")
+        if isinstance(start, u.Quantity):
+            unit = start.unit
+            if isinstance(stop, (int, float)):
+                stop *= unit
+
+        elif isinstance(start, float):
+            if isinstance(stop, u.Quantity):
+                unit = stop.unit
+            else:
+                unit = self.axis_unit
+                stop = stop * unit if stop is not None else None
+            start *= unit
+
+        elif isinstance(start, int):
+            if isinstance(stop, u.Quantity):
+                unit = stop.unit
+                start *= unit
+            elif isinstance(stop, float):
+                unit = self.axis_unit
+                start *= unit
+                stop *= unit
+
+        else:
+            if isinstance(stop, u.Quantity):
+                unit = stop.unit
+            elif isinstance(stop, float):
+                unit = self.axis_unit
+                stop *= unit
+
+        if unit is not None:
+            start = self._qty_to_pixel(start)
+            stop = self._qty_to_pixel(stop)
+        return slice(start, stop, item.step)
