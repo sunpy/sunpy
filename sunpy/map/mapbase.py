@@ -70,14 +70,15 @@ class GenericMap(NDData):
     >>> aia   # doctest: +NORMALIZE_WHITESPACE
     SunPy AIAMap
     ---------
-    Observatory: SDO
-    Instrument: AIA_3
-    Detector: AIA
-    Measurement: 171 Angstrom
-    Obs Date: 2011-03-19 10:54:00.340000
-    dt: 1.999601 s
-    Dimension: [ 1024.  1024.] pix
-    scale: [2.4 arcsec / pix, 2.4 arcsec / pix]
+    Observatory:         SDO
+    Instrument:  AIA 3
+    Detector:    AIA
+    Measurement:         171.0 Angstrom
+    Wavelength:  171.0 Angstrom
+    Obs Date:    2011-03-19 10:54:00
+    dt:          1.999601 s
+    Dimension:   [ 1024.  1024.] pix
+    scale:               [ 2.4  2.4] arcsec / pix
     <BLANKLINE>
     array([[ 0.3125, -0.0625, -0.125 , ...,  0.625 , -0.625 ,  0.    ],
            [ 1.    ,  0.1875, -0.8125, ...,  0.625 , -0.625 ,  0.    ],
@@ -86,6 +87,7 @@ class GenericMap(NDData):
            [-0.625 ,  0.0625, -0.3125, ...,  0.125 ,  0.125 ,  0.125 ],
            [ 0.5625,  0.0625,  0.5625, ..., -0.0625, -0.0625,  0.    ],
            [ 0.5   , -0.125 ,  0.4375, ...,  0.6875,  0.6875,  0.6875]])
+
 
     >>> aia.units
     Pair(x=Unit("arcsec"), y=Unit("arcsec"))
@@ -891,13 +893,14 @@ scale:\t\t {scale}
         SunPy AIAMap
         ---------
         Observatory:         SDO
-        Instrument:  AIA_3
+        Instrument:  AIA 3
         Detector:    AIA
-        Measurement:         171 Angstrom
-        Obs Date:    2011-03-19 10:54:00.340000
+        Measurement:         171.0 Angstrom
+        Wavelength:  171.0 Angstrom
+        Obs Date:    2011-03-19 10:54:00
         dt:          1.999601 s
         Dimension:   [ 4.  4.] pix
-        scale:               [2.4 arcsec / pix, 2.4 arcsec / pix]
+        scale:               [ 2.4  2.4] arcsec / pix
         <BLANKLINE>
         array([[ 273.4375,  247.4375,  303.5   ,  305.3125],
                [ 302.3125,  298.125 ,  299.    ,  261.5   ],
@@ -908,13 +911,14 @@ scale:\t\t {scale}
         SunPy AIAMap
         ---------
         Observatory:         SDO
-        Instrument:  AIA_3
+        Instrument:  AIA 3
         Detector:    AIA
-        Measurement:         171 Angstrom
-        Obs Date:    2011-03-19 10:54:00.340000
+        Measurement:         171.0 Angstrom
+        Wavelength:  171.0 Angstrom
+        Obs Date:    2011-03-19 10:54:00
         dt:          1.999601 s
         Dimension:   [ 5.  5.] pix
-        scale:               [2.4 arcsec / pix, 2.4 arcsec / pix]
+        scale:               [ 2.4  2.4] arcsec / pix
         <BLANKLINE>
         array([[ 0.3125, -0.0625, -0.125 ,  0.    , -0.375 ],
                [ 1.    ,  0.1875, -0.8125,  0.125 ,  0.3125],
