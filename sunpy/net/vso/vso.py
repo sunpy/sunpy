@@ -317,6 +317,7 @@ class VSOClient(object):
         Query all data from eit or aia between 2010-01-01T00:00 and
         2010-01-01T01:00.
 
+        >>> from datetime import datetime
         >>> from sunpy.net import vso
         >>> client = vso.VSOClient()
         >>> client.query(
@@ -483,6 +484,7 @@ class VSOClient(object):
         Query all data from eit between 2010-01-01T00:00 and
         2010-01-01T01:00.
 
+        >>> from datetime import datetime
         >>> from sunpy.net import vso
         >>> client = vso.VSOClient()
         >>> qr = client.query_legacy(datetime(2010, 1, 1),
