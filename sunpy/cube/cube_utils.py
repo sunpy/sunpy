@@ -92,8 +92,10 @@ def iter_isinstance(obj, *type_tuples):
         The classes to check against
     """
     result = False
+    if not isinstance(obj, (tuple, list)):
+        return False
     for types in type_tuples:
-        if not isinstance(obj, tuple) or len(obj) != len(types):
+        if len(obj) != len(types):
             continue
         result |= all(isinstance(o, t) for o, t in zip(obj, types))
     return result
@@ -352,7 +354,7 @@ def getitem_4d(cube, item):
     return result
 
 
-def pixelize_slice(item, wcs):
+def pixelize_slice(item, wcs, _source='cube'):
     """
     Given a getitem slice that may or may not contain astropy units and a wcs,
     convert these to pixels. Raises a CubeError if the units don't match.
@@ -363,16 +365,18 @@ def pixelize_slice(item, wcs):
     item: int, astropy.Quantity, slice, or tuple of these
         The slice to convert to pixels.
     wcs: Sunpy.wcs.wcs.WCS
-        The WCS object representing the array/
+        The WCS object representing the array
     """
     if isinstance(item, tuple):
         result = list(range(len(item)))
         for axis in range(len(item)):
             if isinstance(item[axis], slice):
-                result[axis] = _convert_slice(item[axis], wcs, axis)
+                result[axis] = _convert_slice(item[axis], wcs,
+                                              axis, _source=_source)
             elif isinstance(item[axis], u.Quantity):
                 result[axis] = convert_point(item[axis].value,
-                                             item[axis].unit, wcs, axis)
+                                             item[axis].unit, wcs, axis,
+                                             _source=_source)
             else:
                 result[axis] = item[axis]
         result = tuple(result)
@@ -384,7 +388,7 @@ def pixelize_slice(item, wcs):
     return result
 
 
-def convert_point(value, unit, wcs, axis):
+def convert_point(value, unit, wcs, axis, _source='cube'):
     """
     Takes a point on an axis specified by the given wcs and returns the pixel
     coordinate.
@@ -409,7 +413,11 @@ def convert_point(value, unit, wcs, axis):
     if isinstance(value, u.Quantity):
         value = value.value
         unit = value.unit
-    wcsaxis = -1 - axis if wcs.oriented or not wcs.was_augmented else -2 - axis
+    if _source is 'cube':
+        wcsaxis = -1 - axis if wcs.oriented or not wcs.was_augmented \
+                  else -2 - axis
+    else:
+        wcsaxis = 1 - axis
     cunit = u.Unit(wcs.wcs.cunit[wcsaxis])
     crpix = wcs.wcs.crpix[wcsaxis]
     crval = wcs.wcs.crval[wcsaxis] * cunit
@@ -422,7 +430,7 @@ def convert_point(value, unit, wcs, axis):
     return int(np.round(point))
 
 
-def _convert_slice(item, wcs, axis):
+def _convert_slice(item, wcs, axis, _source='cube'):
     """
     Takes in a slice object that may or may not contain units and translates it
     to pixel coordinates along the given wcs and axis. If there are no units,
@@ -441,7 +449,11 @@ def _convert_slice(item, wcs, axis):
         The axis the slice corresponds to, in numpy-style ordering (i.e.
         opposite WCS convention)
     """
-    wcs_ax = -2 - axis if wcs.was_augmented and not wcs.oriented else -1 - axis
+    if _source is 'cube':
+        wcs_ax = -2 - axis if wcs.was_augmented and not wcs.oriented \
+                else -1 - axis
+    else:
+        wcs_ax = 1 - axis
     steps = [item.start, item.stop, item.step]
     values = [None, None, None]
     unit = None
@@ -467,12 +479,12 @@ def _convert_slice(item, wcs, axis):
     if values[0] is None:
         start = None
     else:
-        start = convert_point(values[0], unit, wcs, axis)
+        start = convert_point(values[0], unit, wcs, axis, _source=_source)
 
     if values[1] is None:
         end = None
     else:
-        end = convert_point(values[1], unit, wcs, axis)
+        end = convert_point(values[1], unit, wcs, axis, _source=_source)
 
     return slice(start, end, delta)
 

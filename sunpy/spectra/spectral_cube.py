@@ -11,6 +11,7 @@ different wavelength axes.
 import gwcs
 import numpy as np
 from sunpy.map import GenericMap, MapCube
+from sunpy.cube import cube_utils as cu
 
 __all__ = ['SpectralCube']
 
@@ -20,6 +21,10 @@ class SpectralCube(object):
     Class defining spectral cubes: 2-dimensional arrays of Spectrum objects.
     The individual spectra may have different axis so the shape may not
     necessarily be a perfect cuboid.
+    Slicing works the same as with numpy arrays, with automatic data conversion
+    (so, for example, sc[1, 3] returns a Spectrum object, not a small cube).
+    The first axis is eithertime or x, the second one is y and the last is the
+    spectral dimension.
 
     Attributes
     ----------
@@ -147,4 +152,19 @@ class SpectralCube(object):
         mapcube = MapCube(maps)
         return mapcube
 
-    # TODO: __getitem__
+    def __getitem__(self, item):
+        if item is None or (isinstance(item, tuple) and None in item):
+            raise IndexError("None indices not supported")
+        if isinstance(item, tuple) and len(item) > 2:
+            spectral_slice = item[2]
+        else:
+            spectral_slice = slice(None, None, None)
+        pixels = cu.pixelize_slice(item[:2], self.wcs, _source='other')
+        if cu.iter_isinstance(pixels, (int, int)):
+            return self.spectra[pixels][spectral_slice]
+        else:
+            newspectra = self.spectra[item]
+            for i in newspectra.shape[0]:
+                for j in newspectra.shape[1]:
+                    spec = newspectra[i, j]
+                    newspectra[i, j] = spec[spectral_slice]

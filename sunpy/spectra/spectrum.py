@@ -174,8 +174,10 @@ class Spectrum(ndd.NDDataArray):
             newdata = self.data.__getitem__(intslice)
             newaxis = self.axis.__getitem__(intslice)
             return Spectrum(newdata, newaxis, self.axis_unit)
-        else:
+        elif isinstance(item, tuple):
             raise IndexError("Too many indices for a Spectrum")
+        else:
+            raise IndexError("None indices not supported")
 
     def _intify_slice(self, item):
         """
@@ -196,7 +198,6 @@ class Spectrum(ndd.NDDataArray):
             unit = start.unit
             if isinstance(stop, (int, float)):
                 stop *= unit
-
         elif isinstance(start, float):
             if isinstance(stop, u.Quantity):
                 unit = stop.unit
@@ -204,7 +205,6 @@ class Spectrum(ndd.NDDataArray):
                 unit = self.axis_unit
                 stop = stop * unit if stop is not None else None
             start *= unit
-
         elif isinstance(start, int):
             if isinstance(stop, u.Quantity):
                 unit = stop.unit
@@ -213,14 +213,12 @@ class Spectrum(ndd.NDDataArray):
                 unit = self.axis_unit
                 start *= unit
                 stop *= unit
-
         else:
             if isinstance(stop, u.Quantity):
                 unit = stop.unit
             elif isinstance(stop, float):
                 unit = self.axis_unit
                 stop *= unit
-
         if unit is not None:
             start = self._qty_to_pixel(start)
             stop = self._qty_to_pixel(stop)
