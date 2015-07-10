@@ -262,36 +262,6 @@ class Quicklook(_VSOSimpleAttr):
 class PScale(_VSOSimpleAttr):
     pass
 
-class specie(_VSOSimpleAttr):
-    """
-    Specifies the Specie to search for data for.
-    """
-    pass
-
-class stereo_spacecraft(_VSOSimpleAttr):
-    """
-    Specifies the Spacecraft to search for data for.
-    """
-    pass
-
-class duration_of_average(_VSOSimpleAttr):
-    """
-    Specifies the Average Duration to search for data for.
-    """
-    pass
-
-class sensor_pointing(_VSOSimpleAttr):
-    """
-    Specifies the Sensor Pointing to search for data for.
-    """
-    pass
-
-class type_of_data(_VSOSimpleAttr):
-    """
-    Specifies the Datatype to search for data for.
-    """
-    pass
-
 
 # The walker specifies how the Attr-tree is converted to a query the
 # server can handle.

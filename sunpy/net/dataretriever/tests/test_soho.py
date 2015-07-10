@@ -1,7 +1,7 @@
 import pytest
 
 from sunpy.time.timerange import TimeRange
-from sunpy.net.vso.attrs import Time, Instrument,specie
+from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.soho as soho
 
@@ -24,15 +24,15 @@ def test_get_url_for_time_range(timerange, specie, url_start, url_end):
     assert urls[-1] == url_end
 
 def test_can_handle_query():
-    ans1 = soho.ERNEClient._can_handle_query(Time(TimeRange('1998-03-01','2003-07-02')), Instrument('soho/erne'), specie('alpha'))
+    ans1 = soho.ERNEClient._can_handle_query(Time(TimeRange('1998-03-01','2003-07-02')), Instrument('soho/erne'), specie ='alpha')
     assert ans1 == True
-    ans1 = soho.ERNEClient._can_handle_query(Time(TimeRange('2004-03-01','2005-07-02')), Instrument('soho/erne'), specie('proton'))
+    ans1 = soho.ERNEClient._can_handle_query(Time(TimeRange('2004-03-01','2005-07-02')), Instrument('soho/erne'), specie ='proton')
     assert ans1 == True
     ans3 = soho.ERNEClient._can_handle_query(Time(TimeRange('2012/8/9', '2012/8/10')), Instrument('eve'))
     assert ans3 == False
 
 def test_query():
-    qr1 = LCClient.query(Time(TimeRange('2006/8/9', '2008/8/10')), Instrument('soho/erne'), specie('alpha'))
+    qr1 = LCClient.query(Time(TimeRange('2006/8/9', '2008/8/10')), Instrument('soho/erne'), specie ='alpha')
     assert isinstance(qr1,QueryResponse)
     assert len(qr1) == 1
     assert qr1.time_range()[0] == '2006/08/09'
@@ -41,8 +41,8 @@ def test_query():
 
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument",
-[(Time(TimeRange('1998-03-01','2003-07-02')), Instrument('soho/erne'),specie('alpha')),
- (Time(TimeRange('2004/06/01', '2007/06/02')), Instrument('soho/erne'),specie('proton')),
+[(Time(TimeRange('1998-03-01','2003-07-02')), Instrument('soho/erne'),specie = 'alpha'),
+ (Time(TimeRange('2004/06/01', '2007/06/02')), Instrument('soho/erne'),specie ='proton'),
 ])
 def test_get(time,instrument,specie):
     qr1 = LCClient.query(time,instrument,specie)
