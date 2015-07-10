@@ -116,7 +116,7 @@ class ERNEClient(GenericClient):
 		self.map_['provider']   = 'space research laboratory'
 
 	@classmethod
-	def _can_handle_query(cls, *query):
+	def _can_handle_query(cls, *query, **kwargs):
 		"""
 		Answers whether client can service the query.
 		Parameters
@@ -128,14 +128,9 @@ class ERNEClient(GenericClient):
 		answer as to whether client can service the query
 		
 		"""
-		chkattr =  ['Time', 'Instrument', 'specie']
+		chkattr =  ['Time', 'Instrument']
 		chklist =  [x.__class__.__name__ in chkattr for x in query]
-		instrument_check, specie_check = False, False
 		for x in query:
 			if x.__class__.__name__ == 'Instrument' and x.value == 'soho/erne':
-				instrument_check = True
-			if x.__class__.__name__ == 'Specie' and x.value in ['alpha','proton']:
-				specie_check = True
-			if instrument_check and specie_check:
 				return all(chklist)
 		return False

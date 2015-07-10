@@ -109,7 +109,7 @@ class SEPTClient(GenericClient):
 
 
 	@classmethod
-	def _can_handle_query(cls, *query):
+	def _can_handle_query(cls, *query, **kwargs):
 		"""
 		Answers whether client can service the query.
 		
@@ -123,7 +123,7 @@ class SEPTClient(GenericClient):
 			answer as to whether client can service the query
 		
 		"""
-		chkattr =  ['Time', 'Instrument', 'stereo_spacecraft', 'duration_of_average', 'specie', 'sensor_pointing']
+		chkattr =  ['Time', 'Instrument']
 		chklist =  [x.__class__.__name__ in chkattr for x in query]
 		for x in query:
 			if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/sept':
@@ -206,7 +206,7 @@ class HETClient(GenericClient):
 		self.map_['provider']   = 'solar terrestrial relations observatory '
 
 	@classmethod
-	def _can_handle_query(cls, *query):
+	def _can_handle_query(cls, *query, **kwargs):
 		"""
 		Answers whether client can service the query.
 		Parameters
@@ -219,7 +219,7 @@ class HETClient(GenericClient):
 			answer as to whether client can service the query
 		    
 		"""
-		chkattr =  ['Time', 'Instrument', 'stereo_spacecraft', 'duration_of_average']
+		chkattr =  ['Time', 'Instrument']
 		chklist =  [x.__class__.__name__ in chkattr for x in query]
 		for x in query:
 			if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/het':
@@ -311,7 +311,7 @@ class SITClient(GenericClient):
 		self.map_['provider']   = 'solar terrestrial relations observatory '
 
 	@classmethod
-	def _can_handle_query(cls, *query):
+	def _can_handle_query(cls, *query, **kwargs):
 		"""
 		Answers whether client can service the query.
 		Parameters
@@ -323,7 +323,7 @@ class SITClient(GenericClient):
 		answer as to whether client can service the query
 		
 		"""
-		chkattr =  ['Time', 'Instrument', 'stereo_spacecraft', 'duration_of_average', 'specie' ]
+		chkattr =  ['Time', 'Instrument']
 		chklist =  [x.__class__.__name__ in chkattr for x in query]
 		for x in query:
 			if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/sit':
@@ -401,7 +401,7 @@ class PLASTICClient(GenericClient):
 		self.map_['provider']   = 'stereo science center'
 
 	@classmethod
-	def _can_handle_query(cls, *query):
+	def _can_handle_query(cls, *query, **kwargs):
 		"""
 		Answers whether client can service the query.
 		Parameters
@@ -414,7 +414,7 @@ class PLASTICClient(GenericClient):
 		answer as to whether client can service the query
 		
 		"""
-		chkattr =  ['Time', 'Instrument', 'stereo_spacecraft', 'duration_of_average']
+		chkattr =  ['Time', 'Instrument']
 		chklist =  [x.__class__.__name__ in chkattr for x in query]
 		for x in query:
 			if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/plastic':
@@ -473,7 +473,7 @@ class MAGClient(GenericClient):
 		self.map_['provider']   = 'solar terrestrial relations observatory'
 
 	@classmethod
-	def _can_handle_query(cls, *query):
+	def _can_handle_query(cls, *query, **kwargs):
 		"""
 		Answers whether client can service the query.
 		Parameters
@@ -485,7 +485,7 @@ class MAGClient(GenericClient):
 		answer as to whether client can service the query
 		
 		"""
-		chkattr =  ['Time', 'Instrument', 'stereo_spacecraft']
+		chkattr =  ['Time', 'Instrument']
 		chklist =  [x.__class__.__name__ in chkattr for x in query]
 		for x in query:
 			if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/mag':
@@ -621,7 +621,7 @@ class LETClient(GenericClient):
 		self.map_['provider']   = 'solar terrestrial relations observatory '
 
 	@classmethod
-	def _can_handle_query(cls, *query):
+	def _can_handle_query(cls, *query, **kwargs):
 		"""
 		Answers whether client can service the query.
 		Parameters
@@ -633,7 +633,7 @@ class LETClient(GenericClient):
 		answer as to whether client can service the query
 		
 		"""
-		chkattr =  ['Time', 'Instrument', 'duration_of_average', 'type_of_data', 'specie', 'stereo_spacecraft']
+		chkattr =  ['Time', 'Instrument']
 		chklist =  [x.__class__.__name__ in chkattr for x in query]
 		for x in query:
 			if x.__class__.__name__ == 'Instrument' and x.value == 'stereo/let':

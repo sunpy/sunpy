@@ -1,3 +1,8 @@
+
+# This module was developed with funding from 
+# Google Summer of Code 2015
+# author - Ankit Kumar  <ankitkmr.iitk@gmail.com>
+
 import pytest
 
 from sunpy.time.timerange import TimeRange
@@ -26,8 +31,8 @@ def test_get_url_for_time_range(timerange, specie, url_start, url_end):
 def test_can_handle_query():
     ans1 = soho.ERNEClient._can_handle_query(Time(TimeRange('1998-03-01','2003-07-02')), Instrument('soho/erne'), specie ='alpha')
     assert ans1 == True
-    ans1 = soho.ERNEClient._can_handle_query(Time(TimeRange('2004-03-01','2005-07-02')), Instrument('soho/erne'), specie ='proton')
-    assert ans1 == True
+    ans2 = soho.ERNEClient._can_handle_query(Time(TimeRange('2004-03-01','2005-07-02')), Instrument('soho/erne'), specie ='proton')
+    assert ans2 == True
     ans3 = soho.ERNEClient._can_handle_query(Time(TimeRange('2012/8/9', '2012/8/10')), Instrument('eve'))
     assert ans3 == False
 
