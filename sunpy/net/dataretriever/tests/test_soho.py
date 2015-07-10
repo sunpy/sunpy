@@ -24,11 +24,11 @@ def test_get_url_for_time_range(timerange, specie, url_start, url_end):
     assert urls[-1] == url_end
 
 def test_can_handle_query():
-    ans1 = soho.ERNEClient._can_handle_query(TimeRange('1998-03-01','2003-07-02'), Instrument('soho/erne'), Specie('alpha'))
+    ans1 = soho.ERNEClient._can_handle_query(Time(TimeRange('1998-03-01','2003-07-02')), Instrument('soho/erne'), Specie('alpha'))
     assert ans1 == True
-    ans1 = soho.ERNEClient._can_handle_query(TimeRange('2004-03-01','2005-07-02'), Instrument('soho/erne'), Specie('proton'))
+    ans1 = soho.ERNEClient._can_handle_query(Time(TimeRange('2004-03-01','2005-07-02')), Instrument('soho/erne'), Specie('proton'))
     assert ans1 == True
-    ans3 = soho.ERNEClient._can_handle_query(Time('2012/8/9', '2012/8/10'), Instrument('eve'))
+    ans3 = soho.ERNEClient._can_handle_query(Time(TimeRange('2012/8/9', '2012/8/10')), Instrument('eve'))
     assert ans3 == False
 
 def test_query():
@@ -50,4 +50,4 @@ def test_get(time,instrument):
     download_list = res.wait()
     assert len(download_list) == len(qr1)
 
-    
+

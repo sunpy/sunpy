@@ -262,6 +262,12 @@ class Quicklook(_VSOSimpleAttr):
 class PScale(_VSOSimpleAttr):
     pass
 
+class Specie(_VSOSimpleAttr):
+    """
+    Specifies the Specie to search for data for.
+    """
+    pass
+
 
 # The walker specifies how the Attr-tree is converted to a query the
 # server can handle.
