@@ -20,7 +20,7 @@ __all__ = ['ERNEClient']
 
 class ERNEClient(GenericClient):
 
-	def _get_url_for_timerange(timerange, specie = 'proton'):
+	def _get_url_for_timerange(cls, timerange, specie = 'proton'):
 		"""
 		Returns list of URLS to SOHO ERNE data files corresponding to value of input timerange.
 		URL Source : http://srl.utu.fi/erne_data/
@@ -128,14 +128,14 @@ class ERNEClient(GenericClient):
 		answer as to whether client can service the query
 		
 		"""
-		chkattr =  ['Timerange', 'Instrument', 'Specie']
+		chkattr =  ['Time', 'Instrument', 'specie']
 		chklist =  [x.__class__.__name__ in chkattr for x in query]
+		instrument_check, specie_check = False, False
 		for x in query:
 			if x.__class__.__name__ == 'Instrument' and x.value == 'soho/erne':
+				instrument_check = True
+			if x.__class__.__name__ == 'Specie' and x.value in ['alpha','proton']:
+				specie_check = True
+			if instrument_check and specie_check:
 				return all(chklist)
 		return False
-		
-	"""
-	print _get_url_for_timerange(timerange = TimeRange('1998-03-01','2003-07-02'), specie = 'alpha')
-	
-	"""
