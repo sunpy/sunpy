@@ -98,9 +98,9 @@ class SEPTClient(GenericClient):
 
 
 	def _makeimap(self):
-        """
-        Helper Function:used to hold information about source.
-        """
+		"""
+		Helper Function:used to hold information about source.
+		"""
 		self.map_['source']     = 'university of kiel'
 		self.map_['instrument'] = 'stereo/sept'
 		self.map_['phyobs']     = 'electron intensities'
@@ -197,6 +197,7 @@ class HETClient(GenericClient):
 	def _makeimap(self):
 		"""
 		Helper Function:used to hold information about source.
+		
 		"""
 		self.map_['source']     = 'srl caltech'
 		self.map_['instrument'] = 'stereo/het'

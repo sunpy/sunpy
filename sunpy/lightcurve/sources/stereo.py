@@ -161,41 +161,41 @@ class LETLightCurve(LightCurve):
 
 
 class SITLightCurve(LightCurve):
-	"""
-	SIT LightCurve. Provides SIT data back to 2007-07.
-	Most recent data is usually available one or two days late.
+    """
+    SIT LightCurve. Provides SIT data back to 2007-07.
+    Most recent data is usually available one or two days late.
 
-	Parameters
-	----------
-	    timerange: sunpy.time.TimeRange
-	        time range for which data is to be downloaded.
-	        Example value -  TimeRange('2007-01-01','2015-03-01')   
+    Parameters
+    ----------
+        timerange: sunpy.time.TimeRange
+            time range for which data is to be downloaded.
+            Example value -  TimeRange('2007-01-01','2015-03-01')   
 
-	    stereo_spacecraft: string   
-	        Default value - ahead
-	        Possible values - ahead, behind    # corresponding to spacecraft location
+        stereo_spacecraft: string   
+            Default value - ahead
+            Possible values - ahead, behind    # corresponding to spacecraft location
 
-	    atomic_specie:  string
-	        Default value - 4He
-	        Possible values - 4He, Fe, H, O
+        atomic_specie:  string
+            Default value - 4He
+            Possible values - 4He, Fe, H, O
 
-	    duration_of_average: string
-	    Default value - 15min
-	        Possible values - 1min, 10min, 1hr, 1day        #corresponding to duration over which data is averaged
+        duration_of_average: string
+        Default value - 15min
+            Possible values - 1min, 10min, 1hr, 1day        #corresponding to duration over which data is averaged
 
 
-	Examples
-	--------
-	>>> from sunpy import lightcurve as lc
-	>>> from sunpy.time import TimeRange
-	>>> sit = lc.SITLightCurve.create(TimeRange('2012/06/01', '2012/06/05'), stereo_spacecraft = "ahead",
-										duration_of_average =  "1min", atomic_specie = "4He")
+    Examples
+    --------
+    >>> from sunpy import lightcurve as lc
+    >>> from sunpy.time import TimeRange
+    >>> sit = lc.SITLightCurve.create(TimeRange('2012/06/01', '2012/06/05'), stereo_spacecraft = "ahead",
+    									duration_of_average =  "1min", atomic_specie = "4He")
 
-	References
-	----------
-	| http://www.srl.caltech.edu/STEREO/Public/SIT_public.html
+    References
+    ----------
+    | http://www.srl.caltech.edu/STEREO/Public/SIT_public.html
 
-	"""
+    """
 
     @staticmethod
     def _parse_txt(filepath):

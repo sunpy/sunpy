@@ -83,7 +83,7 @@ class TestSEPTLightCurve(object):
 
     @pytest.mark.online
     def test_data(self):
-        """Test for non empty data parsing from file"""l
+        """Test for non empty data parsing from file"""
         lc = sunpy.lightcurve.SEPTLightCurve
         assert (lc._parse_txt('<filepath_to_downloaded_file>')[1]).empty == False
 
