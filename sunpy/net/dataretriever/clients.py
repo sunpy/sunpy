@@ -9,8 +9,8 @@ from .sources.goes import GOESClient
 from .sources.norh import NoRHClient
 from .sources.rhessi import RHESSIClient
 from .sources.noaa import NOAAIndicesClient, NOAAPredictClient
-from .sources.url_stereo import SEPTClient, HETClient, SITClient, PLASTICClient, MAGClient, LETClient
-from .sources.url_soho import ERNEClient
+from .sources.stereo import SEPTClient, HETClient, SITClient, PLASTICClient, MAGClient, LETClient
+from .sources.soho import ERNEClient
 
 
 
