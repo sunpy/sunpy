@@ -18,4 +18,4 @@ for _key in _sample_files:
 file_dict = _sample_files
 file_list = _sample_files.values()
 
-__all__ = _sample_files.keys().append([file_dict, file_list])
+__all__ = _sample_files.keys() + ['file_dict', 'file_list']
