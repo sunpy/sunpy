@@ -57,7 +57,7 @@ class LETLightCurve(LightCurve):
     >>> from sunpy import lightcurve as lc
     >>> from sunpy.time import TimeRange
     >>> let = lc.LETLightCurve.create(TimeRange('2012/06/01', '2012/06/05'), stereo_spacecraft = 'ahead', duration_of_average = 1*u.h, 
-                                            average_type = 'standard', atomic_specie = 'He')
+                                            average_type = 'standard', specie = 'He')
     >>> let.peek()
 
     References
@@ -175,7 +175,7 @@ class SITLightCurve(LightCurve):
             Default value - ahead
             Possible values - ahead, behind    # corresponding to spacecraft location
 
-        atomic_specie:  string
+        specie:  string
             Default value - 4He
             Possible values - 4He, Fe, H, O
 
@@ -189,7 +189,7 @@ class SITLightCurve(LightCurve):
     >>> from sunpy import lightcurve as lc
     >>> from sunpy.time import TimeRange
     >>> sit = lc.SITLightCurve.create(TimeRange('2012/06/01', '2012/06/05'), stereo_spacecraft = "ahead",
-    									duration_of_average =  "1min", atomic_specie = "4He")
+    									duration_of_average =  "1min", specie = "4He")
 
     References
     ----------

@@ -45,9 +45,9 @@ def test_query():
 
 
 @pytest.mark.online
-@pytest.mark.parametrize("time, instrument",
-[(Time(TimeRange('1998-03-01','2003-07-02')), Instrument('soho/erne'),specie = 'alpha'),
- (Time(TimeRange('2004/06/01', '2007/06/02')), Instrument('soho/erne'),specie ='proton'),
+@pytest.mark.parametrize("time, instrument, specie",
+[(Time(TimeRange('1998-03-01','2003-07-02')), Instrument('soho/erne'),'alpha'),
+ (Time(TimeRange('2004/06/01', '2007/06/02')), Instrument('soho/erne'),'proton'),
 ])
 def test_get(time,instrument,specie):
     qr1 = LCClient.query(time,instrument,specie)
