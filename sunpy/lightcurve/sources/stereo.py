@@ -206,17 +206,28 @@ class SITLightCurve(LightCurve):
         and returns header and astropy.Table object containing data
     
         """
-        header = ['DateTime', 'Column 2: number of minutes summed in rate\n', 'Column 3:  0.113 - 0.160 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n',
-            'Column 4:  0.160 - 0.226 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n', 'Column 5:  0.226 - 0.320 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n',
-            'Column 6:  0.320 - 0.452 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n', 'Column 7:  0.452 - 0.640 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n', 
-            'Column 8:  0.640 - 0.905 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n', 'Column 9:  0.905 - 1.280 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n', 
-            'Column 10:  1.280 - 1.810 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n', 'Column 11:  1.810 - 2.560 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n',
-            'Column 16:  2.560 - 3.620 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))\n', 'Column 11: 4He total counts for umber of minutes  energy range', 
-            'Column 12: 4He total counts for 0.113 - 0.160 MeV energy range', 'Column 13: 4He total counts for 0.160 - 0.226 MeV energy range', 
-            'Column 14: 4He total counts for .226 - 0.320 MeV/ energy range', 'Column 15: 4He total counts for .320 - 0.452 MeV/ energy range', 
-            'Column 16: 4He total counts for .452 - 0.640 MeV/ energy range', 'Column 17: 4He total counts for .640 - 0.905 MeV/ energy range', 
-            'Column 18: 4He total counts for .905 - 1.280 MeV/ energy range', 'Column 19: 4He total counts for 1.280 - 1.810 MeV energy range', 
-            'Column 20: 4He total counts for 1.810 - 2.560 MeV energy range']
+        header = []
+        # To read in column names
+        data_all = open(filepath)
+        for i, line in enumerate(data_all):
+            if i > 13 :
+                 header = header + [line]
+            if line == 'BEGIN DATA\n':
+                break
+        data_all.close()
+
+        specie = header[-2][header[-2].index(':')+3:header[-2].index('t')-1]
+        header = header[:-2]
+
+        for i in range(len(header)):
+            header[i] = header[i][ header[i].index(":") + 2:] 
+
+        header = ['DateTime'] + header
+
+        
+        #To format column names 
+        for i in range(len(header)-2):
+            header = header + [specie + ' total counts for '+ (header[i+2])[1:20] +' energy range']
 
         data = ascii.read(filepath, delimiter = "\s", data_start = 27) 
     
@@ -532,7 +543,7 @@ class HETLightCurve(LightCurve):
                     'Column 6: Electron flux, 2.8-4.0 MeV, particles/(cm2-sr-sec-MeV)',
                     'Column 7: Uncertainty (sigma) for 2.8-4.0 MeV electron flux',
                     'Column 8: Proton flux, 13.6-15.1 MeV, particles/(cm2-sr-sec-MeV)',
-                    'Column 9 Uncertainty (sigma) for 13.6-15.1 MeV proton flux',
+                    'Column 9: Uncertainty (sigma) for 13.6-15.1 MeV proton flux',
                     'Column 10: Proton flux, 14.9-17.1 MeV, particles/(cm2-sr-sec-MeV)',
                     'Column 11: Uncertainty (sigma) for 14.9-17.1 MeV proton flux',
                     'Column 12: Proton flux, 17.0-19.3 MeV, particles/(cm2-sr-sec-MeV)',
