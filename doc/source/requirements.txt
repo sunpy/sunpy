@@ -3,7 +3,7 @@ numpy
 matplotlib>=1.1
 scipy
 glymur>=0.5.9
-suds-jurko
+suds
 pandas>=0.16
 beautifulsoup4
 astropy>=1.1
