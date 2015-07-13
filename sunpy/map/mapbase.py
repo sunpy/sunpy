@@ -16,10 +16,10 @@ import matplotlib.pyplot as plt
 from matplotlib import patches, cm, colors
 
 import astropy.wcs
-from .nddata_compat import NDDataCompat as NDData
 from astropy.coordinates import Longitude, Latitude
 
 from sunpy.image.transform import affine_transform
+from .nddata_compat import NDDataCompat as NDData
 
 import sunpy.io as io
 import sunpy.wcs as wcs
@@ -63,18 +63,35 @@ class GenericMap(NDData):
     Examples
     --------
     >>> import sunpy.map
-    >>> aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
-    >>> aia.T
-    AIAMap([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
-    [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
-    [-0.125 , -0.8125, -0.5   , ..., -0.3125,  0.5625,  0.4375],
-    ...,
-    [ 0.625 ,  0.625 , -0.125 , ...,  0.125 , -0.0625,  0.6875],
-    [-0.625 , -0.625 , -0.625 , ...,  0.125 , -0.0625,  0.6875],
-    [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
-    >>> aia.units['x']
-    'arcsec'
-    >>> aia.peek()
+    >>> import sunpy.data
+    >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
+    >>> import sunpy.data.sample
+    >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    >>> aia   # doctest: +NORMALIZE_WHITESPACE
+    SunPy AIAMap
+    ---------
+    Observatory:         SDO
+    Instrument:  AIA 3
+    Detector:    AIA
+    Measurement:         171.0 Angstrom
+    Wavelength:  171.0 Angstrom
+    Obs Date:    2011-03-19 10:54:00
+    dt:          1.999601 s
+    Dimension:   [ 1024.  1024.] pix
+    scale:               [ 2.4  2.4] arcsec / pix
+    <BLANKLINE>
+    array([[ 0.3125, -0.0625, -0.125 , ...,  0.625 , -0.625 ,  0.    ],
+           [ 1.    ,  0.1875, -0.8125, ...,  0.625 , -0.625 ,  0.    ],
+           [-1.1875,  0.375 , -0.5   , ..., -0.125 , -0.625 , -1.1875],
+           ...,
+           [-0.625 ,  0.0625, -0.3125, ...,  0.125 ,  0.125 ,  0.125 ],
+           [ 0.5625,  0.0625,  0.5625, ..., -0.0625, -0.0625,  0.    ],
+           [ 0.5   , -0.125 ,  0.4375, ...,  0.6875,  0.6875,  0.6875]])
+
+
+    >>> aia.units
+    Pair(x=Unit("arcsec"), y=Unit("arcsec"))
+    >>> aia.peek()   # doctest: +SKIP
 
     References
     ----------
@@ -866,19 +883,49 @@ scale:\t\t {scale}
 
         Examples
         --------
-        >>> aia.submap([-5,5]*u.arcsec, [-5,5]*u.arcsec)
-        AIAMap([[ 341.3125,  266.5   ,  329.375 ,  330.5625,  298.875 ],
-        [ 347.1875,  273.4375,  247.4375,  303.5   ,  305.3125],
-        [ 322.8125,  302.3125,  298.125 ,  299.    ,  261.5   ],
-        [ 334.875 ,  289.75  ,  269.25  ,  256.375 ,  242.3125],
-        [ 273.125 ,  241.75  ,  248.8125,  263.0625,  249.0625]])
+        >>> import astropy.units as u
+        >>> import sunpy.map
+        >>> import sunpy.data
+        >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
+        >>> import sunpy.data.sample
+        >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+        >>> aia.submap([-5,5]*u.arcsec, [-5,5]*u.arcsec)   # doctest: +NORMALIZE_WHITESPACE
+        SunPy AIAMap
+        ---------
+        Observatory:         SDO
+        Instrument:  AIA 3
+        Detector:    AIA
+        Measurement:         171.0 Angstrom
+        Wavelength:  171.0 Angstrom
+        Obs Date:    2011-03-19 10:54:00
+        dt:          1.999601 s
+        Dimension:   [ 4.  4.] pix
+        scale:               [ 2.4  2.4] arcsec / pix
+        <BLANKLINE>
+        array([[ 273.4375,  247.4375,  303.5   ,  305.3125],
+               [ 302.3125,  298.125 ,  299.    ,  261.5   ],
+               [ 289.75  ,  269.25  ,  256.375 ,  242.3125],
+               [ 241.75  ,  248.8125,  263.0625,  249.0625]])
 
-        >>> aia.submap([0,5]*u.pixel, [0,5]*u.pixel)
-        AIAMap([[ 0.3125, -0.0625, -0.125 ,  0.    , -0.375 ],
-        [ 1.    ,  0.1875, -0.8125,  0.125 ,  0.3125],
-        [-1.1875,  0.375 , -0.5   ,  0.25  , -0.4375],
-        [-0.6875, -0.3125,  0.8125,  0.0625,  0.1875],
-        [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
+        >>> aia.submap([0,5]*u.pixel, [0,5]*u.pixel)   # doctest: +NORMALIZE_WHITESPACE
+        SunPy AIAMap
+        ---------
+        Observatory:         SDO
+        Instrument:  AIA 3
+        Detector:    AIA
+        Measurement:         171.0 Angstrom
+        Wavelength:  171.0 Angstrom
+        Obs Date:    2011-03-19 10:54:00
+        dt:          1.999601 s
+        Dimension:   [ 5.  5.] pix
+        scale:               [ 2.4  2.4] arcsec / pix
+        <BLANKLINE>
+        array([[ 0.3125, -0.0625, -0.125 ,  0.    , -0.375 ],
+               [ 1.    ,  0.1875, -0.8125,  0.125 ,  0.3125],
+               [-1.1875,  0.375 , -0.5   ,  0.25  , -0.4375],
+               [-0.6875, -0.3125,  0.8125,  0.0625,  0.1875],
+               [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
+
         """
 
         # Do manual Quantity input validation to allow for two unit options
@@ -1234,17 +1281,17 @@ scale:\t\t {scale}
         Examples
         --------
         #Simple Plot with color bar
-        >>> aiamap.plot()
-        >>> plt.colorbar()
+        >>> aiamap.plot()   # doctest: +SKIP
+        >>> plt.colorbar()   # doctest: +SKIP
 
         #Add a limb line and grid
-        >>> aia.plot()
-        >>> aia.draw_limb()
-        >>> aia.draw_grid()
+        >>> aia.plot()   # doctest: +SKIP
+        >>> aia.draw_limb()   # doctest: +SKIP
+        >>> aia.draw_grid()   # doctest: +SKIP
 
         """
 
-        #Get current axes
+        # Get current axes
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
 

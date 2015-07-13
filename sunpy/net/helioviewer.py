@@ -20,6 +20,7 @@ from sunpy.util.net import download_fileobj
 
 __all__ = ['HelioviewerClient']
 
+
 class HelioviewerClient(object):
     """Helioviewer.org Client"""
     def __init__(self, url="http://helioviewer.org/api/"):
@@ -66,6 +67,7 @@ class HelioviewerClient(object):
         >>> client = HelioviewerClient()
         >>> metadata = client.get_closest_image('2012/01/01', sourceId=11)
         >>> print(metadata['date'])
+        2012-01-01 00:00:07
         """
         params = {
             "action": "getClosestImage",
@@ -119,12 +121,12 @@ class HelioviewerClient(object):
         >>> import sunpy.map
         >>> from sunpy.net import helioviewer
         >>> hv = helioviewer.HelioviewerClient()
-        >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', instrument='AIA', detector='AIA', measurement='171')
-        >>> aia = sunpy.map.Map(filepath)
-        >>> aia.peek()
+        >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', instrument='AIA', detector='AIA', measurement='171')   # doctest: +SKIP
+        >>> aia = sunpy.map.Map(filepath)   # doctest: +SKIP
+        >>> aia.peek()   # doctest: +SKIP
 
         >>> data_sources = hv.get_data_sources()
-        >>> hv.download_jp2('2012/07/03 14:30:00', sourceId=data_sources['SOHO']['LASCO']['C2']['white-light']['sourceId'])
+        >>> hv.download_jp2('2012/07/03 14:30:00', sourceId=data_sources['SOHO']['LASCO']['C2']['white-light']['sourceId'])   # doctest: +SKIP
         """
         params = {
             "action": "getJP2Image",
@@ -198,10 +200,8 @@ class HelioviewerClient(object):
         --------
         >>> from sunpy.net.helioviewer import HelioviewerClient
         >>> hv = HelioviewerClient()
-        >>> hv.download_png('2012/07/16 10:08:00', 2.4, "[SDO,AIA,AIA,171,1,100]", x0=0, y0=0, width=1024, height=1024)
-        '/home/user/sunpy/data/2012_07_16_10_08_00_AIA_171.png
-        >>> hv.download_png('2012/07/16 10:08:00', 4.8, "[SDO,AIA,AIA,171,1,100],[SOHO,LASCO,C2,white-light,1,100]", x1=-2800, x2=2800, y1=-2800, y2=2800, directory='~/Desktop')
-        '/home/user/Desktop/2012_07_16_10_08_00_AIA_171__LASCO_C2.png'
+        >>> hv.download_png('2012/07/16 10:08:00', 2.4, "[SDO,AIA,AIA,171,1,100]", x0=0, y0=0, width=1024, height=1024)   # doctest: +SKIP
+        >>> hv.download_png('2012/07/16 10:08:00', 4.8, "[SDO,AIA,AIA,171,1,100],[SOHO,LASCO,C2,white-light,1,100]", x1=-2800, x2=2800, y1=-2800, y2=2800, directory='~/Desktop')   # doctest: +SKIP
         """
         params = {
             "action": "takeScreenshot",
