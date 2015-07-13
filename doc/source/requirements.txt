@@ -6,7 +6,7 @@ glymur>=0.5.9
 suds
 pandas>=0.16
 beautifulsoup4
-astropy>=1.1
+astropy>=1.0
 pytest
 mock
 sqlalchemy
