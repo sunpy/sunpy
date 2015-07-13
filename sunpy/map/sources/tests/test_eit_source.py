@@ -40,16 +40,3 @@ def test_observatory(createEIT):
 def test_measurement(createEIT):
     """Tests the measurement property of the EITMap object."""
     assert createEIT.measurement.value in [195, 171]
-
-def test_normalizer(createEIT):
-    """Tests the creation of the Normalizer object,
-    as well as its properties."""
-    lognorm = createEIT._get_mpl_normalizer()
-    eit = createEIT
-    if eit.data.dtype == np.float32:
-        assert lognorm is None
-    else:
-        assert isinstance(lognorm, colors.LogNorm)
-        assert lognorm.vmin == 1
-        #assert lognorm.vmax == (min(eit.max(), eit.mean() + 5 * eit.std()))
-        np.testing.assert_allclose(lognorm.vmax, 1234.1161862241358, rtol=1.00001) # Min of 1887.75 and 1234.1161862241358
