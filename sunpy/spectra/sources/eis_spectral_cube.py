@@ -66,7 +66,7 @@ class EISSpectralCube(SpectralCube):
         corrections = line_guess[1] - averages
         # Remove noise by appplying a smoothing filter and getting rid of
         # the less important frequencies.
-        window_size = int(corrections.shape[0] / 10)
+        window_size = int(corrections.shape[0] / 3)
         window_size += 1 if window_size % 2 == 0 else 0
         smooth_averages = savitzky_golay(corrections, window_size, 3)
         return smooth_averages
