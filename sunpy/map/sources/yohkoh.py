@@ -5,7 +5,9 @@ __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
 
 import numpy as np
-from matplotlib import colors
+
+from astropy.visualization import PowerStretch
+from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map import GenericMap
 from sunpy.cm import cm
@@ -44,7 +46,7 @@ class SXTMap(GenericMap):
         self.meta['detector'] = "SXT"
         self.meta['telescop'] = "Yohkoh"
         self.plot_settings['cmap'] = cm.get_cmap(name='yohkohsxt' + self.wavelength_string[0:2].lower())
-        self.plot_settings['norm'] = colors.PowerNorm(0.5, self.data.min(), self.data.max())
+        self.plot_settings['norm'] = ImageNormalize(PowerStretch(0.5))
 
         # 2012/12/19 - the SXT headers do not have a value of the distance from
         # the spacecraft to the center of the Sun.  The FITS keyword 'DSUN_OBS'
