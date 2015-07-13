@@ -6,9 +6,12 @@ __email__ = "keith.hughitt@nasa.gov"
 
 import numpy as np
 
+from astropy.visualization import PowerStretch
+from astropy.visualization.mpl_normalize import ImageNormalize
+
 from sunpy.map import GenericMap
 from sunpy.cm import cm
-from matplotlib.colors import PowerNorm
+
 
 __all__ = ['EUVIMap', 'CORMap', 'HIMap']
 
@@ -32,7 +35,7 @@ class EUVIMap(GenericMap):
 
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = cm.get_cmap('sohoeit{wl:d}'.format(wl=int(self.wavelength.value)))
-        self.plot_settings['norm'] = PowerNorm(0.25, self.data.min(), self.data.max())
+        self.plot_settings['norm'] = ImageNormalize(PowerStretch(0.25))
         self.meta['waveunit'] = 'Angstrom'
 
         # Try to identify when the FITS meta data does not have the correct
@@ -84,7 +87,7 @@ class CORMap(GenericMap):
         self.meta['wavelnth'] = np.nan
         self.meta['waveunit'] = 'nm'
         self.plot_settings['cmap'] = cm.get_cmap('stereocor{det!s}'.format(det=self.detector[-1]))
-        self.plot_settings['norm'] = PowerNorm(0.5)
+        self.plot_settings['norm'] = ImageNormalize(PowerStretch(0.5))
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
@@ -126,7 +129,7 @@ class HIMap(GenericMap):
         self.meta['waveunit'] = 'nm'
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = cm.get_cmap('stereohi{det!s}'.format(det=self.detector[-1]))
-        self.plot_settings['norm'] = PowerNorm(0.25)
+        self.plot_settings['norm'] = ImageNormalize(PowerStretch(0.25))
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
