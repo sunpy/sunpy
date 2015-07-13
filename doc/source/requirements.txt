@@ -1,12 +1,12 @@
-sphinx>=1.2
+sphinx>=1.3
 numpy
 matplotlib>=1.4
 scipy
 glymur>=0.5.9
-suds
-pandas>=0.10
+suds-jurko
+pandas>=0.16
 beautifulsoup4
-astropy>=1.0
+astropy>=1.1
 pytest
 mock
 sqlalchemy
