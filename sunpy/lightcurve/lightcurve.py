@@ -25,6 +25,7 @@ from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 
 __all__ = ['LightCurve']
 
+
 class LightCurve(object):
     """
     LightCurve(filepath)
@@ -60,7 +61,7 @@ class LightCurve(object):
     ...    {"param1": intensity}, index=dates
     ... )
 
-    >>> light_curve.peek()
+    >>> light_curve.peek()   # doctest: +SKIP
 
     References
     ----------
@@ -200,7 +201,7 @@ for compatibility with map, please use meta instead""", Warning)
 
         """
 
-        #Get current axes
+        # Get current axes
         if axes is None:
             axes = plt.gca()
 

@@ -39,7 +39,8 @@ class MapCube(object):
 
     Examples
     --------
-    >>> mapcube = sunpy.map.Map('images/*.fits', cube=True)
+    >>> import sunpy.map
+    >>> mapcube = sunpy.map.Map('images/*.fits', cube=True)   # doctest: +SKIP
 
     Mapcubes can be co-aligned using the routines in sunpy.image.coalignment.
     """
@@ -124,35 +125,39 @@ class MapCube(object):
 
         Examples
         --------
-        >>> cube = sunpy.Map(files, cube=True)
-        >>> ani = cube.plot(colorbar=True)
-        >>> plt.show()
+        >>> import matplotlib.pyplot as plt
+        >>> import matplotlib.animation as animation
+        >>> from sunpy.map import Map
+
+        >>> cube = Map(files, cube=True)   # doctest: +SKIP
+        >>> ani = cube.plot(colorbar=True)   # doctest: +SKIP
+        >>> plt.show()   # doctest: +SKIP
 
         Plot the map at 1/2 original resolution
 
-        >>> cube = sunpy.Map(files, cube=True)
-        >>> ani = cube.plot(resample=[0.5, 0.5], colorbar=True)
-        >>> plt.show()
+        >>> cube = Map(files, cube=True)   # doctest: +SKIP
+        >>> ani = cube.plot(resample=[0.5, 0.5], colorbar=True)   # doctest: +SKIP
+        >>> plt.show()   # doctest: +SKIP
 
         Save an animation of the MapCube
 
-        >>> cube = sunpy.Map(res, cube=True)
+        >>> cube = Map(res, cube=True)   # doctest: +SKIP
 
-        >>> ani = cube.plot(controls=False)
+        >>> ani = cube.plot(controls=False)   # doctest: +SKIP
 
         >>> Writer = animation.writers['ffmpeg']
         >>> writer = Writer(fps=10, metadata=dict(artist='SunPy'), bitrate=1800)
 
-        >>> ani.save('mapcube_animation.mp4', writer=writer)
+        >>> ani.save('mapcube_animation.mp4', writer=writer)   # doctest: +SKIP
 
         Save an animation with the limb at each time step
 
         >>> def myplot(fig, ax, sunpy_map):
         ...    p = sunpy_map.draw_limb()
         ...    return p
-        >>> cube = sunpy.Map(files, cube=True)
-        >>> ani = cube.peek(plot_function=myplot)
-        >>> plt.show()
+        >>> cube = Map(files, cube=True)   # doctest: +SKIP
+        >>> ani = cube.peek(plot_function=myplot)   # doctest: +SKIP
+        >>> plt.show()   # doctest: +SKIP
 
         """
         if not axes:
@@ -251,30 +256,33 @@ class MapCube(object):
 
         Examples
         --------
-        >>> cube = sunpy.Map(files, cube=True)
-        >>> ani = cube.peek(colorbar=True)
-        >>> plt.show()
+        >>> import matplotlib.pyplot as plt
+        >>> from sunpy.map import Map
+
+        >>> cube = Map(files, cube=True)   # doctest: +SKIP
+        >>> ani = cube.peek(colorbar=True)   # doctest: +SKIP
+        >>> plt.show()   # doctest: +SKIP
 
         Plot the map at 1/2 original resolution
 
-        >>> cube = sunpy.Map(files, cube=True)
-        >>> ani = cube.peek(resample=[0.5, 0.5], colorbar=True)
-        >>> plt.show()
+        >>> cube = Map(files, cube=True)   # doctest: +SKIP
+        >>> ani = cube.peek(resample=[0.5, 0.5], colorbar=True)   # doctest: +SKIP
+        >>> plt.show()   # doctest: +SKIP
 
         Plot the map with the limb at each time step
 
         >>> def myplot(fig, ax, sunpy_map):
         ...    p = sunpy_map.draw_limb()
         ...    return p
-        >>> cube = sunpy.Map(files, cube=True)
-        >>> ani = cube.peek(plot_function=myplot)
-        >>> plt.show()
+        >>> cube = Map(files, cube=True)   # doctest: +SKIP
+        >>> ani = cube.peek(plot_function=myplot)   # doctest: +SKIP
+        >>> plt.show()   # doctest: +SKIP
 
         Decide you want an animation:
 
-        >>> cube = sunpy.Map(files, cube=True)
-        >>> ani = cube.peek(resample=[0.5, 0.5], colorbar=True)
-        >>> mplani = ani.get_animation()
+        >>> cube = Map(files, cube=True)   # doctest: +SKIP
+        >>> ani = cube.peek(resample=[0.5, 0.5], colorbar=True)   # doctest: +SKIP
+        >>> mplani = ani.get_animation()   # doctest: +SKIP
         """
 
         if resample:

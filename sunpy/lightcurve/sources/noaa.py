@@ -29,7 +29,7 @@ class NOAAIndicesLightCurve(LightCurve):
     --------
     >>> from sunpy import lightcurve as lc
     >>> noaa = lc.NOAAIndicesLightCurve.create()
-    >>> noaa.peek()
+    >>> noaa.peek()   # doctest: +SKIP
 
     References
     ----------
@@ -121,7 +121,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
     --------
     >>> from sunpy import lightcurve as lc
     >>> noaa = lc.NOAAPredictIndicesLightCurve.create()
-    >>> noaa.peek()
+    >>> noaa.peek()   # doctest: +SKIP
 
     References
     ----------

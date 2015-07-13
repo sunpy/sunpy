@@ -20,12 +20,13 @@ import os
 
 try:
     from sunpy.io import _pyana
-except ImportError: # pragma: no cover
-    _pyana = None # pragma: no cover
+except ImportError:  # pragma: no cover
+    _pyana = None  # pragma: no cover
 
 from sunpy.io.header import FileHeader
 
 __all__ = ['read', 'get_header', 'write']
+
 
 def read(filename, debug=False):
     """
@@ -46,7 +47,7 @@ def read(filename, debug=False):
 
     Examples
     --------
-    >>> data = sunpy.io.ana.read(filename)
+    >>> data = sunpy.io.ana.read(filename)   # doctest: +SKIP
 
     """
     if not os.path.isfile(filename):
@@ -78,7 +79,7 @@ def get_header(filename, debug=False):
 
     Examples
     --------
-    >>> header = sunpy.io.ana.get_header(filename)
+    >>> header = sunpy.io.ana.get_header(filename)   # doctest: +SKIP
     """
     if _pyana is None:
         raise ImportError("C extension for ANA is missing, please rebuild")# pragma: no cover
@@ -111,7 +112,7 @@ def write(filename, data, comments=False, compress=1, debug=False):
 
     Examples
     --------
-    >>> written = sunpy.io.ana.write(filename, data, comments=False, compress=1)
+    >>> written = sunpy.io.ana.write(filename, data, comments=Falsem, compress=1)   # doctest: +SKIP
     """
     if _pyana is None:
         raise ImportError("C extension for ANA is missing, please rebuild")# pragma: no cover

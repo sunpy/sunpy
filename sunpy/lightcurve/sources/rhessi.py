@@ -23,7 +23,7 @@ class RHESSISummaryLightCurve(LightCurve):
     >>> from sunpy import lightcurve as lc
     >>> rhessi = lc.RHESSISummaryLightCurve.create()
     >>> rhessi = lc.RHESSISummaryLightCurve.create('2012/06/01', '2012/06/05')
-    >>> rhessi.peek()
+    >>> rhessi.peek()   # doctest: +SKIP
 
     References
     ----------
