@@ -1,6 +1,6 @@
 sphinx>=1.2
 numpy
-matplotlib>=1.1
+matplotlib>=1.4
 scipy
 glymur>=0.5.9
 suds
