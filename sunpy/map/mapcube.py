@@ -91,7 +91,7 @@ class MapCube(object):
         """Derotates the layers in the MapCube"""
         pass
 
-    def plot(self, gamma=None, axes=None, resample=None, annotate=True,
+    def plot(self, axes=None, resample=None, annotate=True,
              interval=200, plot_function=None, **kwargs):
         """
         A animation plotting routine that animates each element in the
@@ -182,9 +182,6 @@ class MapCube(object):
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
 
-        if gamma is not None:
-            self[0].cmap.set_gamma(gamma)
-
         if resample:
             # This assumes that the maps are homogeneous!
             # TODO: Update this!
@@ -214,16 +211,13 @@ class MapCube(object):
 
         return ani
 
-    def peek(self, gamma=None, resample=None, **kwargs):
+    def peek(self, resample=None, **kwargs):
         """
         A animation plotting routine that animates each element in the
         MapCube
 
         Parameters
         ----------
-        gamma: float
-            Gamma value to use for the color map
-
         fig: mpl.figure
             Figure to use to create the explorer
 
@@ -282,9 +276,6 @@ class MapCube(object):
         >>> ani = cube.peek(resample=[0.5, 0.5], colorbar=True)
         >>> mplani = ani.get_animation()
         """
-
-        if gamma is not None:
-            self[0].cmap.set_gamma(gamma)
 
         if resample:
             if self.all_maps_same_shape():
