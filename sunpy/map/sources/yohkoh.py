@@ -14,12 +14,27 @@ from sunpy.sun import constants
 __all__ = ['SXTMap']
 
 class SXTMap(GenericMap):
-    """SXT Image Map definition
+    """Yohkoh SXT Image Map
+
+    The Yohkoh Soft X-ray Telescope (SXT) the full solar disk
+    (42 x 42 arcminutes)in the 0.25 - 4.0 keV range.
+    It consists of a glancing incidence mirror and a CCD sensor and
+    used thin metallic filters to acquire images in restricted
+    portions of its energy range. SXT could resolve features down to 2.5 arc seconds.
+    Information about the temperature and density of the plasma emitting
+    the observed x-rays was obtained by comparing images acquired with the
+    different filters. Images could be obtained every 2 to 8 seconds.
+    Smaller images with a single filter could be obtained as frequently as
+    once every 0.5 seconds.
+
+    Yohkoh was launched on 30 August 1991 and ceased operations on
+    14 December 2001.
 
     References
     ----------
-    For a description of SXT headers
-    http://proba2.oma.be/index.html/swap/swap-analysis-manual/article/data-products?menu=23
+    * `Yohkoh Mission Page <http://solar.physics.montana.edu/sxt/>`_
+    * `Fits header reference <http://proba2.oma.be/index.html/swap/swap-analysis-manual/article/data-products?menu=23>`_
+    * `Yohkoh Analysis Guide <http://ylstone.physics.montana.edu/ylegacy/yag.html>`_
     """
 
     def __init__(self, data, header, **kwargs):
@@ -28,10 +43,8 @@ class SXTMap(GenericMap):
 
         self.meta['detector'] = "SXT"
         self.meta['telescop'] = "Yohkoh"
-
-        self._name = self.observatory + " " + self.wavelength_string
-
-        self.cmap = cm.get_cmap(name='yohkohsxt' + self.wavelength_string[0:2].lower())
+        self.plot_settings['cmap'] = cm.get_cmap(name='yohkohsxt' + self.wavelength_string[0:2].lower())
+        self.plot_settings['norm'] = colors.PowerNorm(0.5, self.data.min(), self.data.max())
 
         # 2012/12/19 - the SXT headers do not have a value of the distance from
         # the spacecraft to the center of the Sun.  The FITS keyword 'DSUN_OBS'
@@ -58,20 +71,6 @@ class SXTMap(GenericMap):
         elif s.lower() ==  'open':
             s = 'white light'
         return s
-
-    def _get_mpl_normalizer(self):
-        """Returns a Normalize object to be used with SXT data"""
-        # byte-scaled images have most likely already been scaled
-        if self.dtype == np.uint8:
-            return None
-
-        mean = self.mean()
-        std = self.std()
-
-        vmin = max(0, mean - 3 * std)
-        vmax = min(self.max(), mean + 3 * std)
-
-        return colors.Normalize(vmin, vmax)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):

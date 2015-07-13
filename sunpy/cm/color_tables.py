@@ -1128,7 +1128,7 @@ def hmi_mag_color_table():
            import sunpy.map
            import sunpy.cm
            hmi = sunpy.map.Map('fblos.fits')
-           hmi.cmap = sunpy.cm.get_cmap('hmimag')
+           hmi.plot_settings['cmap'] = sunpy.cm.get_cmap('hmimag')
            hmi.peek(vmin=-1500.0, vmax=1500.0)
 
            OR (for a basic plot with pixel values on the axes)
@@ -1146,7 +1146,7 @@ def hmi_mag_color_table():
             import sunpy.cm
             hmi = sunpy.map.Map('hmi.m_45s.2014.05.11_12_00_45_TAI.magnetogram.fits')
             hmir = hmi.rotate()
-            hmir.cmap = sunpy.cm.get_cmap('hmimag')
+            hmir.plot_settings['cmap'] = sunpy.cm.get_cmap('hmimag')
             hmir.peek(vmin=-1500.0, vmax=1500.0)
     '''
     cdict = create_cdict(hmi_mag_r, hmi_mag_g, hmi_mag_b)
