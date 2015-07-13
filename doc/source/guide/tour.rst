@@ -48,17 +48,9 @@ Lightcurve
 ----------
 
 SunPy handles time series data, fundamental to the study of any real world phenomenon,
-by creating a lightcurve object. A lightcurve consists of two parts; times and
-measurements taken at those times. The data can either be in your current Python session, alternatively within a local or
-remote file. Let's create some fake data and pass it into a lightcurve object
-and then plot it.
-
-.. plot::
-    :include-source:
-
-    from sunpy.lightcurve import LightCurve
-    light_curve = LightCurve.create({"param1": range(24*60)})
-    light_curve.peek()
+by creating a lightcurve object. A lightcurve consists of two parts; times and measurements taken at those times. The
+data can either be in your current Python session, alternatively within a local or
+remote file. Let's create some fake data and pass it into a lightcurve object::
 
 Within LightCurve.create, we have a dictionary that contains a single entry with key
 "param1" containing a list of 1440 entries (0-1439). As there are no times provided,
@@ -118,6 +110,8 @@ SunPy with matplotlib.
     fig = plt.figure()
     ax = plt.subplot(111)
     aia.plot()
+    aia.draw_limb()
+    aia.draw_grid()
     plt.colorbar()
     aia.draw_limb()
     plt.show()

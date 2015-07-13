@@ -12,4 +12,4 @@ from . mapcube import MapCube
 from . compositemap import CompositeMap
 
 from sunpy.map.map_factory import Map
-from sunpy.map.sources import *
+from sunpy.map import sources
