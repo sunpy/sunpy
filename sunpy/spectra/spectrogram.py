@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
+# pylint: disable=E1101,E1002,R0902,W0631
 
 """ Classes for spectral analysis. """
 
@@ -20,12 +21,14 @@ from numpy import ma
 
 from scipy import ndimage
 
+import astropy.units as u
+
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 from matplotlib.ticker import FuncFormatter, MaxNLocator, IndexLocator
 from matplotlib.colorbar import Colorbar
 
-#import sunpy
+# import sunpy
 
 from sunpy.time import parse_time, get_day
 from sunpy.util import to_signed, common_base, merge
@@ -49,6 +52,7 @@ REFERENCE = 0
 COPY = 1
 DEEPCOPY = 2
 
+
 def figure(*args, **kwargs):
     """ Create new SpectroFigure, a figure extended with features
     useful for analysis of spectrograms. Compare pyplot.figure. """
@@ -64,6 +68,7 @@ def _min_delt(arr):
     # Multiple values at the same frequency are just thrown away
     # in the process of linearizaion
     return deltas[deltas != 0].min()
+
 
 def _list_formatter(lst, fun=None):
     """ Return function that takes x, pos and returns fun(lst[x]) if
@@ -269,8 +274,6 @@ class Spectrogram(Parent):
         it was constructed using combine_frequencies or join_many.
     """
     # Contrary to what pylint may think, this is not an old-style class.
-    # pylint: disable=E1002,W0142,R0902
-
     # This needs to list all attributes that need to be
     # copied to maintain the object and how to handle them.
     COPY_PROPERTIES = [
@@ -307,12 +310,12 @@ class Spectrogram(Parent):
         params = self._get_params()
 
         soffset = 0 if x_range.start is None else x_range.start
-        eoffset = self.shape[1] if x_range.stop is None else x_range.stop # pylint: disable=E1101
+        eoffset = self.shape[1] if x_range.stop is None else x_range.stop
         eoffset -= 1
 
         # FIXME: `fsoffset` and `feoffset` are not used?!
         fsoffset = 0 if y_range.start is None else y_range.start
-        feoffset = self.shape[0] if y_range.stop is None else y_range.stop # pylint: disable=E1101
+        feoffset = self.shape[0] if y_range.stop is None else y_range.stop
 
         params.update({
             'time_axis': self.time_axis[
@@ -334,7 +337,8 @@ class Spectrogram(Parent):
         return new
 
     def __init__(self, data, time_axis, freq_axis, start, end, t_init=None,
-        t_label="Time", f_label="Frequency", content="", instruments=None):
+                 t_label="Time", f_label="Frequency", content="",
+                 instruments=None):
         # Because of how object creation works, there is no avoiding
         # unused arguments in this case.
         self.data = data
@@ -389,8 +393,8 @@ class Spectrogram(Parent):
         plt.show()
         return ret
 
-    def plot(self, figure=None, overlays=[], colorbar=True, vmin=None, vmax=None,
-             linear=True, showz=True, yres=DEFAULT_YRES,
+    def plot(self, figure=None, overlays=[], colorbar=True, vmin=None,
+             vmax=None, linear=True, showz=True, yres=DEFAULT_YRES,
              max_dist=None, **matplotlib_args):
         """
         Plot spectrogram onto figure.
@@ -491,6 +495,7 @@ class Spectrogram(Parent):
                     dist / data.delt / 10, init
                 )
             )
+
             def freq_fmt(x, pos):
                 # This is necessary because matplotlib somehow tries to get
                 # the mid-point of the row, which we do not need here.
@@ -558,7 +563,8 @@ class Spectrogram(Parent):
         elif isinstance(key[0], slice):
             return Spectrum(
                 self.data[key],
-                self.freq_axis[key[0].start:key[0].stop:key[0].step]
+                self.freq_axis[key[0].start:key[0].stop:key[0].step],
+                u.Hz
             )
 
         return self.data[key]
@@ -586,7 +592,6 @@ class Spectrogram(Parent):
                 right -= 1
 
         return self[left:right + 1, :]
-
 
     def auto_find_background(self, amount=0.05):
         # pylint: disable=E1101,E1103
@@ -699,10 +704,10 @@ class Spectrogram(Parent):
             raise ValueError("Maximum and minimum must be different.")
         if self.data.max() == self.data.min():
             raise ValueError("Spectrogram needs to contain distinct values.")
-        data = self.data.astype(dtype) # pylint: disable=E1101
+        data = self.data.astype(dtype)
         return self._with_data(
-            vmin + (vmax - vmin) * (data - self.data.min()) / # pylint: disable=E1101
-            (self.data.max() - self.data.min()) # pylint: disable=E1101
+            vmin + (vmax - vmin) * (data - self.data.min()) /
+            (self.data.max() - self.data.min())
         )
 
     def interpolate(self, frequency):
@@ -713,7 +718,7 @@ class Spectrogram(Parent):
         Parameters
         ----------
         frequency : float or int
-            Unknown frequency for which to linearly interpolate the intensities.
+            Unknown frequency for which to linearly interpolate the intensity.
             freq_axis[0] >= frequency >= self_freq_axis[-1]
         """
         lfreq, lvalue = None, None
@@ -725,9 +730,9 @@ class Spectrogram(Parent):
             raise ValueError("Frequency not in interpolation range")
         if lfreq is None:
             raise ValueError("Frequency not in interpolation range")
-        diff = frequency - freq # pylint: disable=W0631
+        diff = frequency - freq
         ldiff = lfreq - frequency
-        return (ldiff * value + diff * lvalue) / (diff + ldiff) # pylint: disable=W0631
+        return (ldiff * value + diff * lvalue) / (diff + ldiff)
 
     def linearize_freqs(self, delta_freq=None):
         """ Rebin frequencies so that the frequency axis is linear.
@@ -837,9 +842,9 @@ class LinearTimeSpectrogram(Spectrogram):
         ('t_delt', REFERENCE),
     ]
 
-    def __init__(self, data, time_axis, freq_axis, start, end,
-        t_init=None, t_delt=None, t_label="Time", f_label="Frequency",
-        content="", instruments=None):
+    def __init__(self, data, time_axis, freq_axis, start, end, t_init=None,
+                 t_delt=None, t_label="Time", f_label="Frequency", content="",
+                 instruments=None):
         if t_delt is None:
             t_delt = _min_delt(freq_axis)
 
@@ -892,8 +897,8 @@ class LinearTimeSpectrogram(Spectrogram):
         factor = self.t_delt / float(new_delt)
 
         # The last data-point does not change!
-        new_size = floor((self.shape[1] - 1) * factor + 1) # pylint: disable=E1101
-        data = ndimage.zoom(self.data, (1, new_size / self.shape[1])) # pylint: disable=E1101
+        new_size = floor((self.shape[1] - 1) * factor + 1)
+        data = ndimage.zoom(self.data, (1, new_size / self.shape[1]))
 
         params = self._get_params()
         params.update({
@@ -910,7 +915,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
     @classmethod
     def join_many(cls, specs, mk_arr=None, nonlinear=False,
-        maxgap=0, fill=JOIN_REPEAT):
+                  maxgap=0, fill=JOIN_REPEAT):
         """ Produce new Spectrogram that contains spectrograms
         joined together in time.
 
@@ -1063,7 +1068,7 @@ class LinearTimeSpectrogram(Spectrogram):
         diff = time - self.start
         diff_s = SECONDS_PER_DAY * diff.days + diff.seconds
         result = diff_s // self.t_delt
-        if 0 <= result <= self.shape[1]: # pylint: disable=E1101
+        if 0 <= result <= self.shape[1]:
             return result
         raise ValueError("Out of range.")
 
@@ -1112,7 +1117,6 @@ class LinearTimeSpectrogram(Spectrogram):
 
         freq_axis = np.zeros((fsize,))
 
-
         for n, (data, row) in enumerate(merge(
             [
                 [(sp, n) for n in xrange(sp.shape[0])] for sp in specs
@@ -1122,7 +1126,7 @@ class LinearTimeSpectrogram(Spectrogram):
             new[n, :] = data[row, :]
             freq_axis[n] = data.freq_axis[row]
         params = {
-            'time_axis': one.time_axis, # Should be equal
+            'time_axis': one.time_axis,  # Should be equal
             'freq_axis': freq_axis,
             'start': one.start,
             'end': one.end,
