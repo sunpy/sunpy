@@ -14,13 +14,14 @@ import astropy.wcs
 from astropy.io import fits
 import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
+import matplotlib.pyplot as plt
 
 import sunpy
 import sunpy.sun
 import sunpy.map
 import sunpy.data.test
 from sunpy.time import parse_time
-from sunpy.tests.helpers import figure_test
+from sunpy.tests.helpers import figure_test, skip_wcsaxes
 
 testpath = sunpy.data.test.rootdir
 
@@ -44,14 +45,12 @@ def generic_map():
               'PC2_2': 0,
               'NAXIS1': 6,
               'NAXIS2': 6,
-              'date-obs': '1970/01/01T00:00:00'}
+              'date-obs': '1970/01/01T00:00:00',
+              'obsrvtry': 'Foo',
+              'detector': 'bar',
+              'wavelnth': 10,
+              'waveunit': 'm'}
     return sunpy.map.Map((data, header))
-
-
-#@pytest.fixture
-#def aia171_test_map_large():
-#    return sunpy.map.Map(sunpy.AIA_171_IMAGE)
-
 
 def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same in pyfits and SunPy"""
@@ -63,13 +62,6 @@ def test_get_item(generic_map):
     with pytest.raises(NotImplementedError):
         generic_map[10,10]
 
-
-def test_repr_no_obs(generic_map):
-    assert generic_map.__repr__() == 'array([[ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.]])'
-
-
-def test_repr_obs(aia171_test_map):
-    assert aia171_test_map.__repr__() == 'SunPy AIAMap\n---------\nObservatory:\t SDO\nInstrument:\t AIA_3\nDetector:\t AIA\nMeasurement:\t 171 Angstrom\nObs Date:\t 2011-02-15 00:00:00.340000\ndt:\t\t 2.000191 s\nDimension:\t [ 128.  128.] pix\nscale:\t\t [19.183648 arcsec / pix, 19.183648 arcsec / pix]\n\narray([[-1.25,  0.  ,  1.  , ...,  0.  ,  0.5 , -0.75],\n       [ 0.75, -0.25, -0.5 , ...,  0.25,  0.  , -0.25],\n       [ 0.  ,  0.5 ,  1.75, ...,  0.  ,  0.5 ,  0.  ],\n       ..., \n       [ 1.  ,  0.25, -0.25, ...,  0.  ,  0.  ,  0.  ],\n       [-0.25,  0.  , -0.5 , ...,  0.75, -0.75,  0.  ],\n       [ 0.75,  1.5 , -0.75, ...,  0.  , -0.5 ,  0.5 ]])'
 
 def test_wcs(aia171_test_map):
     wcs = aia171_test_map.wcs
@@ -114,21 +106,15 @@ def test_std(generic_map):
 # TODO: Test the header keyword extraction
 #==============================================================================
 def test_name(generic_map):
-    assert generic_map.name == ' 0.0'
-
-
-def test_name_set(generic_map):
-    assert generic_map.name == ' 0.0'
-    generic_map.name = 'hi'
-    assert generic_map.name == 'hi'
+    assert type(generic_map.name) == type('str')
 
 
 def test_nickname(generic_map):
-    assert generic_map.nickname == ''
+    assert generic_map.nickname == 'bar'
 
 
 def test_nickname_set(generic_map):
-    assert generic_map.nickname == ''
+    assert generic_map.nickname == 'bar'
     generic_map.nickname = 'hi'
     assert generic_map.nickname == 'hi'
 
@@ -142,7 +128,7 @@ def test_date_aia(aia171_test_map):
 
 
 def test_detector(generic_map):
-    assert generic_map.detector == ''
+    assert generic_map.detector == 'bar'
 
 
 def test_dsun(generic_map):
@@ -409,11 +395,19 @@ def test_rotate_invalid_order(generic_map):
         generic_map.rotate(order=-1)
 
 
+@skip_wcsaxes
 @figure_test
 def test_plot_aia171(aia171_test_map):
     aia171_test_map.plot()
 
 
+@figure_test
+def test_plot_aia171_nowcsaxes(aia171_test_map):
+    ax = plt.gca()
+    aia171_test_map.plot(axes=ax)
+
+
+@skip_wcsaxes
 @figure_test
 def test_plot_masked_aia171(aia171_test_map):
     shape = aia171_test_map.data.shape
@@ -421,4 +415,14 @@ def test_plot_masked_aia171(aia171_test_map):
     mask[0:shape[0]/2, 0:shape[1]/2] = True
     masked_map = sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
     masked_map.plot()
+
+
+@figure_test
+def test_plot_masked_aia171_nowcsaxes(aia171_test_map):
+    shape = aia171_test_map.data.shape
+    mask = np.zeros_like(aia171_test_map.data, dtype=bool)
+    mask[0:shape[0]/2, 0:shape[1]/2] = True
+    masked_map = sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
+    ax = plt.gca()
+    masked_map.plot(axes=ax)
 
