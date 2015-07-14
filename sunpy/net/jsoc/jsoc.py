@@ -101,23 +101,27 @@ class JSOCClient(object):
 
     the response object holds the records that your query will return:
 
-    >>> print response
+    >>> print(response)   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
             DATE         TELESCOP  INSTRUME  ... WAVELNTH     WAVEUNIT
     -------------------- -------- ---------- ... -------- ---------------
-    2012-09-05T08:27:19Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-    2012-09-05T08:27:20Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
+    2014-01-05T17:44:53Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
+    2014-01-05T17:46:02Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
+    2014-01-05T17:47:11Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
+    2014-01-05T17:48:18Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
+                     ...      ...        ... ...      ...             ...
+    2014-01-05T17:42:33Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
+    2014-01-05T17:43:41Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
+    2014-01-05T17:44:52Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
+    Length = 81 rows
 
     You can then make the request and download the data:
 
-    >>> res = client.get(response)
-    Request JSOC_20140724_947 was submitted 6 seconds ago, it is not ready to download.
-    Request JSOC_20140724_947 was exported at 2014.07.24_22:08:09_UT and is ready to download.
-    2 URLs found for Download. Totalling 30MB
+    >>> res = client.get(response)   # doctest: +SKIP
 
     This returns a Results instance which can be used to watch the progress
     of the download.
 
-    >>> res.wait(progress=True)
+    >>> res.wait(progress=True)   # doctest: +SKIP
 
     *Example 2*
 
@@ -128,12 +132,12 @@ class JSOCClient(object):
     >>> from sunpy.net import jsoc
     >>> client = jsoc.JSOCClient()
     >>> response = client.query(jsoc.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
-                                jsoc.Series('aia.lev1_euv_12s'), jsoc.Segment('image'),
-                                jsoc.Wavelength(171*u.AA), jsoc.Notify("sunpy@sunpy.org"))
+    ...                         jsoc.Series('aia.lev1_euv_12s'), jsoc.Segment('image'),
+    ...                         jsoc.Wavelength(171*u.AA), jsoc.Notify("sunpy@sunpy.org"))
 
     the response object holds the records that your query will return:
 
-    >>> print response
+    >>> print(response)
             DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH WAVEUNIT
     -------------------- -------- -------- ----------------------- -------- --------
     2014-01-06T15:07:12Z  SDO/AIA    AIA_3 2013-12-31T23:59:36.34Z      171 angstrom
@@ -144,7 +148,6 @@ class JSOCClient(object):
     You can then make the request:
 
     >>> requestIDs = client.request_data(response)
-    [u'JSOC_20140724_952']
 
     This returns a list of all the request identifiers for your query.
 
@@ -155,7 +158,6 @@ class JSOCClient(object):
     get into the queue.
 
     >>> status = client.check_request(requestIDs)
-    Request JSOC_20140724_955 was submitted 10 seconds ago, it is not ready to download.
 
     Once the status code is 0 you can download the data using the `get_request`
     method:
@@ -165,7 +167,7 @@ class JSOCClient(object):
     This returns a Results instance which can be used to watch the progress
     of the download.
 
-    >>> res.wait(progress=True)
+    >>> res.wait(progress=True)   # doctest: +SKIP
     """
 
     def query(self, *query, **kwargs):
@@ -183,9 +185,12 @@ class JSOCClient(object):
         Request all AIA 304 image data between 2010-01-01T00:00 and
         2010-01-01T01:00 in rice compressed form.
 
-        >>> client.query(jsoc.Time('2010-01-01T00:00', '2010-01-01T01:00'),
-        ...              jsoc.Series('aia.lev1_euv_12s'), jsoc.Wavelength(304),
-        ...              jsoc.Compression('rice'), jsoc.Segment('image'))
+        >>> import astropy.units as u
+        >>> from sunpy.net import jsoc
+        >>> client = jsoc.JSOCClient()
+        >>> response = client.query(jsoc.Time('2010-01-01T00:00:00', '2010-01-01T01:00:00'),
+        ...                         jsoc.Series('aia.lev1_euv_12s'), jsoc.Wavelength(304*u.AA),
+        ...                         jsoc.Compression('rice'), jsoc.Segment('image'))
 
         Returns
         -------
@@ -335,6 +340,7 @@ class JSOCClient(object):
         jsoc_response.requestIDs = requestIDs
         time.sleep(sleep/2.)
 
+        r = None   # Needed when all requests ends in the else branch
         while requestIDs:
             for i, request_id in enumerate(requestIDs):
                 u = self._request_status(request_id)

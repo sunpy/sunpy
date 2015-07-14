@@ -20,6 +20,7 @@ from sunpy import lightcurve
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 LYTAF_PATH = config.get("downloads", "download_dir")
 
+
 def remove_lytaf_events_from_lightcurve(lc, artifacts=None,
                                         return_artifacts=False,
                                         lytaf_path=None,
@@ -80,11 +81,13 @@ def remove_lytaf_events_from_lightcurve(lc, artifacts=None,
     Examples
     --------
     Remove LARs (Large Angle Rotations) from LYRALightCurve for 4-Dec-2014:
-        >>> lc = sunpy.lightcurve.LYRALightCurve.create("2014-12-02")
-        >>> lc_nolars = remove_artifacts_from_lyralightcurve(lc, artifacts=["LAR"])
+
+        >>> import sunpy.lightcurve as lc
+        >>> lc = lc.LYRALightCurve.create("2014-12-02")
+        >>> lc_nolars = lc.remove_artifacts_from_lyralightcurve(lc, artifacts=["LAR"])
 
     To also retrieve information on the artifacts during that day:
-        >>> lc_nolars, artifact_status = remove_artifacts_from_lyralightcurve(
+        >>> lc_nolars, artifact_status = lc.remove_artifacts_from_lyralightcurve(
                 lc, artifacts=["LAR"], return_artifacts=True)
 
     """
@@ -334,6 +337,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
         else:
             return clean_time, clean_channels
 
+
 def get_lytaf_events(start_time, end_time, lytaf_path=None,
                      combine_files=("lyra", "manual", "ppt", "science"),
                      csvfile=None, force_use_local_lytaf=False):
@@ -395,6 +399,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     Examples
     --------
     Get all events in the LYTAF files for January 2014
+        >>> from sunpy.instr.lyra import get_lytaf_events
         >>> lytaf = get_lytaf_events('2014-01-01', '2014-02-01')
 
     """

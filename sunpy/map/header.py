@@ -8,6 +8,7 @@ from collections import OrderedDict
 
 __all__ = ['MapMeta']
 
+
 class MapMeta(OrderedDict):
     """
     A class to hold meta data associated with a Map derivative.
