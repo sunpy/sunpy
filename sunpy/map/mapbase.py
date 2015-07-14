@@ -980,9 +980,12 @@ scale:\t\t {scale}
             raise ValueError(
                 "Invalid unit. Must be one of 'data' or 'pixels'")
 
+        x_pixels.sort()
+        y_pixels.sort()
 
         x_pixels = np.array(x_pixels)
         y_pixels = np.array(y_pixels)
+
         # Clip pixel values to max of array, prevents negative
         # indexing
         x_pixels[np.less(x_pixels, 0)] = 0
