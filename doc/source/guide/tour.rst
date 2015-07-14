@@ -82,6 +82,7 @@ Below is the example built into sunpy.
     image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_IMAGE)
     image.peek()
 
+
 Plotting
 --------
 
@@ -96,6 +97,16 @@ Try typing the below example into your interactive Python shell.
 
     import sunpy.map
     import sunpy.data.sample
+    aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    aia.peek()
+
+If everything has been configured properly you should see an AIA image with
+a red colormap, a colorbar on the right-hand side and a title and some
+labels.
+
+.. plot::
+
+    import sunpy.map
     aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     aia.peek()
 
