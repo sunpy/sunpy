@@ -117,8 +117,8 @@ If we want more context, we can also join together different images into
 a large one in time (note that this does more than just concatenating the
 array and the axes -- it also considers possible overlap or gaps).::
 
-    c1 = CallistoSpectrogram.read("BIR_20110922_101500_01.fit")
-    c2 = CallistoSpectrogram.read("BIR_20110922_103000_01.fit")
+    c1 = CallistoSpectrogram.read('BIR_20110922_101500_01.fit')
+    c2 = CallistoSpectrogram.read('BIR_20110922_103000_01.fit')
     d = CallistoSpectrogram.join_many([c1, c2])
 
 We could also get the from_range method to get data between those two points
@@ -129,41 +129,8 @@ frequencies of BIR).
     :include-source:
 
     from sunpy.spectra.sources.callisto import CallistoSpectrogram
-    d = CallistoSpectrogram.from_range("BIR", "2011-09-22T10:15:00", "2011-09-22T10:45:00")
+    d = CallistoSpectrogram.from_range('BIR', '2011-09-22 10:15:00', '2011-09-22 10:45:00')
     d.peek()
-
-The :py:meth:`peek() <sunpy.spectra.spectrogram.Spectrogram.peek>`
-method returns a special kind of figure that offers convenience features
-needed for analyzing spectrograms, a :py:class:`SpectroFigure <sunpy.spectra.spectrogram.SpectroFigure>`.
-By using its :py:meth:`time_freq() <sunpy.spectra.spectrogram.SpectroFigure.time_freq>`,
-we can select points on the figure and frequency-time information of them will
-be returned as a :py:class:`TimeFreq <sunpy.spectra.spectrogram.TimeFreq>`.
-Time is stored as offsets in seconds from TimeFreq.start. Note that if you use
-:py:meth:`plot() <sunpy.spectra.spectrogram.Spectrogram.plot>` instead of
-:py:meth:`plot() <sunpy.spectra.spectrogram.Spectrogram.peek>`, you have to
-create a :py:class:`SpectroFigure <sunpy.spectra.spectrogram.SpectroFigure>`
-by using :py:class:`SpectroFigure <sunpy.spectra.spectrogram.figure>`::
-
-    fig = image.peek()
-    time_freq = fig.time_freq()
-    # Select points.
-    time_freq.time
-    #array([   0.  ,   54.5 ,  104.  ,  163.25])
-    time_freq.freq
-    #array([ 68.76923077,  59.29888786,  48.50092678,  36.46385542])
-
-We can then quickly visualize this using the
-:py:meth:`peek() <sunpy.spectra.spectrogram.TimeFreq.peek>` method::
-
-.. plot::
-    :include-source:
-
-    import sunpy.data.sample
-    from sunpy.spectra.sources.callisto import CallistoSpectrogram
-    image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_IMAGE)
-    fig = image.peek()
-    time_freq = fig.time_freq()
-    time_freq.peek(marker='o', linestyle='--')
 
 .. _e-Callisto: http://www.e-callisto.org/
 .. _Rosse Observatory: http://rosseobservatory.ie/
