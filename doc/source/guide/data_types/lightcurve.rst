@@ -3,8 +3,8 @@ Lightcurves
 ===========
 
 Time series data are a fundamental part of many data analysis projects as much in
-heliophysics as other areas. SunPy therefore provides a lightcurve object to deal
-with this data type. Thankfully most of the heavy lifting in this area has already been
+heliophysics as other areas. SunPy therefore provides a lightcurve object.
+Thankfully most of the heavy lifting in this area has already been
 done for us. The lightcurve object makes use of the `pandas <http://pandas.pydata.org/>`_
 python module. Pandas is a high-quality and optimized module which is in use in a wide
 variety of academic and commercial fields, including Finance, Neuroscience, Economics,
@@ -113,5 +113,3 @@ This gives the measurements "param1" a set of times, in this case,
 1440 minutes beginning at the current local time.  Under the hood,
 this has created a pandas DataFrame object with a column name "param1",
 with an index of times.
-
-
