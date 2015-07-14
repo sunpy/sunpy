@@ -10,14 +10,13 @@ SunPy currently supports reading dynamic spectra from e-Callisto_ instruments.
 The main class that is used for this is
 :py:class:`CallistoSpectrogram <sunpy.spectra.sources.callisto.CallistoSpectrogram>`. SunPy also
 comes with an example image that shows a radio burst observed at `Rosse Observatory`_ (aka. BIR; Birr Castle, Co. Offaly, Ireland) that
-can be found in sunpy.data.sample.CALLISTO_IMAGE. The following example shows
-how to load this data and plot it.
+can be found in sunpy.data.sample.CALLISTO_IMAGE.
 
- .. plot::
+.. plot::
     :include-source:
 
-    from matplotlib import pyplot as plt
-    import sunpy
+    import matplotlib.pyplot as plt
+    import sunpy.spectra
     import sunpy.data.sample
     from sunpy.spectra.sources.callisto import CallistoSpectrogram
     image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_IMAGE)
@@ -30,8 +29,10 @@ to request from the server (negative values mean we want to add data that was
 registered before our existing local data), if none are given it defaults to
 15 minutes (the size of one e-Callisto file).
 
-.. plot::
-   :include-source:
+    more = image.extend()
+    more.peek()
+
+.. image:: ../../images/spectra_ex3-5.png
 
    from matplotlib import pyplot as plt
    import sunpy
@@ -63,16 +64,8 @@ peek in order to avoid negative values.
 If you want to see the background determined by the automatic subtraction,
 you can use the
 :py:meth:`auto_const_bg() <sunpy.spectra.spectrogram.Spectrogram.auto_const_bg>`
-method and visualize the resulting data using :py:func:`pyplot.plot`.
-
-.. plot::
-    :include-source:
-
-    from matplotlib import pyplot as plt
-    import sunpy
-    import sunpy.data.sample
-    from sunpy.spectra.sources.callisto import CallistoSpectrogram
-    image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_IMAGE)
+method and visualize the resulting
+data using :py:func:`pyplot.plot`.::
 
     plt.figure()
     bg = image.auto_const_bg()
