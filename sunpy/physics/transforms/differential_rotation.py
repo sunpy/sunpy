@@ -45,6 +45,9 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     --------
     Default rotation calculation over two days at 30 degrees latitude:
 
+    >>> import numpy as np
+    >>> import astropy.units as u
+    >>> from sunpy.physics.transforms.differential_rotation import diff_rot
     >>> rotation = diff_rot(2 * u.day, 30 * u.deg)
 
     Default rotation over two days for a number of latitudes:
@@ -310,6 +313,7 @@ def _sun_pos(date):
 
     Examples
     --------
+    >>> from sunpy.physics.transforms.differential_rotation import _sun_pos
     >>> sp = _sun_pos('2013-03-27')
     """
     # Fractional Julian day with correct offset
