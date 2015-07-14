@@ -46,7 +46,7 @@ class SXTMap(GenericMap):
         self.meta['detector'] = "SXT"
         self.meta['telescop'] = "Yohkoh"
         self.plot_settings['cmap'] = cm.get_cmap(name='yohkohsxt' + self.wavelength_string[0:2].lower())
-        self.plot_settings['norm'] = ImageNormalize(PowerStretch(0.5))
+        self.plot_settings['norm'] = ImageNormalize(stretch=PowerStretch(0.5))
 
         # 2012/12/19 - the SXT headers do not have a value of the distance from
         # the spacecraft to the center of the Sun.  The FITS keyword 'DSUN_OBS'
