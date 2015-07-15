@@ -10,6 +10,8 @@ __email__ = "ankitkmr.iitk@gmail.com"
 
 
 from datetime import timedelta,datetime
+import matplotlib.dates
+from matplotlib import pyplot as plt
 
 from astropy.io import ascii
 from astropy.table import Table, Column
@@ -197,13 +199,49 @@ class SITLightCurve(LightCurve):
 
     """
 
+    def peek(self, title="SIT elemental Intensities"):
+        """Plots SIT light curve in the usual manner"""
+
+        figure = plt.figure()
+        axes = plt.gca()
+
+        data = self.data.replace(float(0),float('nan'))
+        dates = matplotlib.dates.date2num(data['DateTime'].astype(datetime))
+
+        num_energy_bins = (len(self.header)-2)/2
+        colors = ['Green','Red','Chocolate', 'Blue','SeaGreen','Tomato','SlateBlue','Orange','Purple','Magenta','MediumVioletRed']
+
+        figure.delaxes(ax)
+        axes = figure.add_axes([0.1, 0.15, 0.55, 0.8])
+        
+        for i,line in enumerate(self.header):
+            if i >= 2 and i <= num_energy_bins + 1:
+                axes.plot_date(dates, data[line].ffill(), '-',
+                     label=line[1:20], color=colors[i-2], lw=0.5)
+        
+        axes.set_yscale("log")
+        axes.set_ylim(1e-3, 1e+3)
+        axes.set_title(title + ' : ' + self.header[-1][:self.header[-1].index(' ')])
+        axes.set_ylabel('1/(cm^2 s sr MeV/nuc)')
+        axes.set_xlabel('UTC TimeZone')
+
+
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(False, 'major')
+        axes.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+        figure.autofmt_xdate()
+        plt.show()
+
+        return figure
+
     @staticmethod
     def _parse_txt(filepath):
         """
         Parses a STEREO SIT file from
         http://www.srl.caltech.edu/STEREO/Public/SIT_public.html
         
-        and returns header and astropy.Table object containing data
+        and returns header and Pandas.Dataframe containing data
     
         """
         header = []
@@ -211,8 +249,9 @@ class SITLightCurve(LightCurve):
         data_all = open(filepath)
         for i, line in enumerate(data_all):
             if i > 13 :
-                 header = header + [line]
+                 header.append(line)
             if line == 'BEGIN DATA\n':
+                data_start = i+1
                 break
         data_all.close()
 
@@ -229,7 +268,7 @@ class SITLightCurve(LightCurve):
         for i in range(len(header)-2):
             header = header + [specie + ' total counts for '+ (header[i+2])[1:20] +' energy range']
 
-        data = ascii.read(filepath, delimiter = "\s", data_start = 27) 
+        data = ascii.read(filepath, delimiter = "\s", data_start = data_start) 
     
         data_modify = []
         
@@ -536,34 +575,34 @@ class HETLightCurve(LightCurve):
             type_of_data = 'other'
      
         #Header
-        header = [  'Column 2: Electron flux, 0.7-1.4 MeV, particles/(cm2-sr-sec-MeV)', 
-                    'Column 3: Uncertainty (sigma) for 0.7-1.4 MeV electron flux',
-                    'Column 4: Electron flux, 1.4-2.8 MeV, particles/(cm2-sr-sec-MeV)',
-                    'Column 5: Uncertainty (sigma) for 1.4-2.8 MeV electron flux',
-                    'Column 6: Electron flux, 2.8-4.0 MeV, particles/(cm2-sr-sec-MeV)',
-                    'Column 7: Uncertainty (sigma) for 2.8-4.0 MeV electron flux',
-                    'Column 8: Proton flux, 13.6-15.1 MeV, particles/(cm2-sr-sec-MeV)',
-                    'Column 9: Uncertainty (sigma) for 13.6-15.1 MeV proton flux',
-                    'Column 10: Proton flux, 14.9-17.1 MeV, particles/(cm2-sr-sec-MeV)',
-                    'Column 11: Uncertainty (sigma) for 14.9-17.1 MeV proton flux',
-                    'Column 12: Proton flux, 17.0-19.3 MeV, particles/(cm2-sr-sec-MeV)',
-                    'Column 13: Uncertainty (sigma) for 17.0-19.3 MeV proton flux',
-                    'Column 14: Proton flux, 20.8-23.8 MeV, particles/(cm2-sr-sec-MeV)',
-                    'Column 15: Uncertainty (sigma) for 20.8-23.8 MeV proton flux',
-                    'Column 16: Proton flux, 23.8-26.4 MeV, particles/(cm2-sr-sec-MeV)',
-                    'Column 17: Uncertainty (sigma) for 23.8-26.4 MeV proton flux',
-                    'Column 18: Proton flux, 26.3-29.7 MeV, particles/(cm2-sr-sec-MeV)',
-                    'Column 19: Uncertainty (sigma) for 26.3-29.7 MeV proton flux',
-                    'Column 20: Proton flux, 29.5-33.4 MeV, particles/(cm2-sr-sec-MeV)',
-                    'Column 21: Uncertainty (sigma) for 29.5-33.4 MeV proton flux' ,
-                    'Column 22: Proton flux, 33.4-35.8 MeV, particles/(cm2-sr-sec-MeV)',
-                    'Column 23: Uncertainty (sigma) for 33.4-35.8 MeV proton flux' ,
-                    'Column 24: Proton flux, 35.5-40.5 MeV, particles/(cm2-sr-sec-MeV)',
-                    'Column 25: Uncertainty (sigma) for 35.5-40.5 MeV proton flux' ,
-                    'Column 26: Proton flux, 40.0-60.0 MeV, particles/(cm2-sr-sec-MeV)',
-                    'Column 27: Uncertainty (sigma) for 40.0-60.0 MeV proton flux' ,
-                    'Column 28: Proton flux, 60.0-100.0 MeV, particles/(cm2-sr-sec-MeV)',
-                    'Column 29: Uncertainty (sigma) for 60.0-100.0 MeV proton flux' ]
+        header = [  'Electron flux, 0.7-1.4 MeV, particles/(cm2-sr-sec-MeV)', 
+                    'Uncertainty (sigma) for 0.7-1.4 MeV electron flux',
+                    'Electron flux, 1.4-2.8 MeV, particles/(cm2-sr-sec-MeV)',
+                    'Uncertainty (sigma) for 1.4-2.8 MeV electron flux',
+                    'Electron flux, 2.8-4.0 MeV, particles/(cm2-sr-sec-MeV)',
+                    'Uncertainty (sigma) for 2.8-4.0 MeV electron flux',
+                    'Proton flux, 13.6-15.1 MeV, particles/(cm2-sr-sec-MeV)',
+                    'Uncertainty (sigma) for 13.6-15.1 MeV proton flux',
+                    'Proton flux, 14.9-17.1 MeV, particles/(cm2-sr-sec-MeV)',
+                    'Uncertainty (sigma) for 14.9-17.1 MeV proton flux',
+                    'Proton flux, 17.0-19.3 MeV, particles/(cm2-sr-sec-MeV)',
+                    'Uncertainty (sigma) for 17.0-19.3 MeV proton flux',
+                    'Proton flux, 20.8-23.8 MeV, particles/(cm2-sr-sec-MeV)',
+                    'Uncertainty (sigma) for 20.8-23.8 MeV proton flux',
+                    'Proton flux, 23.8-26.4 MeV, particles/(cm2-sr-sec-MeV)',
+                    'Uncertainty (sigma) for 23.8-26.4 MeV proton flux',
+                    'Proton flux, 26.3-29.7 MeV, particles/(cm2-sr-sec-MeV)',
+                    'Uncertainty (sigma) for 26.3-29.7 MeV proton flux',
+                    'Proton flux, 29.5-33.4 MeV, particles/(cm2-sr-sec-MeV)',
+                    'Uncertainty (sigma) for 29.5-33.4 MeV proton flux' ,
+                    'Proton flux, 33.4-35.8 MeV, particles/(cm2-sr-sec-MeV)',
+                    'Uncertainty (sigma) for 33.4-35.8 MeV proton flux' ,
+                    'Proton flux, 35.5-40.5 MeV, particles/(cm2-sr-sec-MeV)',
+                    'Uncertainty (sigma) for 35.5-40.5 MeV proton flux' ,
+                    'Proton flux, 40.0-60.0 MeV, particles/(cm2-sr-sec-MeV)',
+                    'Uncertainty (sigma) for 40.0-60.0 MeV proton flux' ,
+                    'Proton flux, 60.0-100.0 MeV, particles/(cm2-sr-sec-MeV)',
+                    'Uncertainty (sigma) for 60.0-100.0 MeV proton flux' ]
        
 
         data_modify = []
@@ -576,7 +615,7 @@ class HETLightCurve(LightCurve):
 
         #Adding Time Column based on type of data
         if type_of_data == '1min':
-            header = ['Verse Number', 'Column 1 : DateTime'] + header 
+            header = ['Verse Number', 'DateTime'] + header 
 
             for i in range(len(data)): 
                 date = datetime.strptime(str(start_year_col[i])+ '-' +start_month_col[i]+ '-' +"%02d"%start_date_col[i] + '/' + ("%04d"%start_time_col[i])[:2] + ':' + ("%04d"%start_time_col[i])[2:], '%Y-%b-%d/%H:%M' )
@@ -584,7 +623,7 @@ class HETLightCurve(LightCurve):
 
             data.remove_columns(['col{}'.format(i) for i in range(2,6)])
         else:
-            header = ['Verse Number','Column 1 : TimeRange'] + header
+            header = ['Verse Number','TimeRange'] + header
             
             #Storing data columns in recognizable variables
             end_year_col    = data['col6']
@@ -609,5 +648,5 @@ class HETLightCurve(LightCurve):
         # to_pandas() bound method is only available in the latest development build and none of the stable
         data = data.to_pandas()
         
-        return data
+        return header, data
 
