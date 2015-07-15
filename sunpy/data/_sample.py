@@ -22,7 +22,8 @@ sampledata_dir = config.get("downloads", "sample_dir")
 # urls to search for the sample data
 _base_urls = (
     'http://data.sunpy.org/sample-data/',
-    'http://hesperia.gsfc.nasa.gov/~schriste/sunpy-sample-data/')
+    'http://hesperia.gsfc.nasa.gov/~schriste/sunpy-sample-data/',
+    'https://github.com/ehsteve/sunpy-sample-data/raw/master/')
 
 # keys are file shortcuts
 # values consist of filename as well as optional file extension if files are
