@@ -27,12 +27,12 @@ cut off at the corner of the image, so we use the extend method to request
 more data from the server. It optionally takes the amount of minutes we want
 to request from the server (negative values mean we want to add data that was
 registered before our existing local data), if none are given it defaults to
-15 minutes (the size of one e-Callisto file).
+15 minutes (the size of one e-Callisto file). ::
 
     more = image.extend()
     more.peek()
 
-.. image:: ../../images/spectra_ex3-5.png
+..plot::
 
    from matplotlib import pyplot as plt
    import sunpy
