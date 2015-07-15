@@ -55,6 +55,41 @@ class ERNELightCurve(LightCurve):
 
     """
 
+    def peek(self, title="ERNE Two-hour averaged intensities"):
+        """Plots ERNE light curve in the usual manner"""
+
+        figure = plt.figure()
+        ax = plt.gca()
+
+        data = self.data.replace(float(-1),float('nan'))
+
+        timerange_start = data['TimeRange'].apply(lambda col: col.start)
+        dates = matplotlib.dates.date2num(timerange_start.astype(datetime))
+
+        colors = ['Green','Red','Chocolate', 'Blue','SeaGreen','Tomato',
+                            'SlateBlue','Orange','Purple','Magenta','MediumVioletRed']
+        figure.delaxes(ax)
+        axes = figure.add_axes([0.1, 0.15, 0.55, 0.8])
+
+        for i,line in enumerate(self.header):
+            if i >= 1:
+                axes.plot_date(dates, data[line].ffill(), '-',
+                     label=line[line.index('l')+2:], color=colors[i], lw=1)
+        
+        axes.set_yscale("log")
+        axes.set_title(title)
+        axes.set_ylabel('1/(cm^2*sr*s*MeV) [per nucleon in case of protons]')
+        axes.set_xlabel('UTC TimeZone')
+
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(False, 'major')
+        axes.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+        figure.autofmt_xdate()
+        plt.show()
+
+        return figure
+
     @staticmethod
     def _parse_txt(filepath):
         """
@@ -101,8 +136,8 @@ class ERNELightCurve(LightCurve):
         data.add_column(Column(data = data_modify, name='col_1'),0)
         
         #To modify header
-        header[5:] = ['Intensities [1/(cm^2*sr*s*MeV)] in energy channel {}  [MeV] '.format(val) for val in header[5:]]
-        header = ['TimeRange'] + header[5:]
+        header = ['energy channel {} MeV'.format(val) for val in header[5:]]
+        header = ['TimeRange'] + header
         
         # To add the column names in the astropy table object
         for elem, head_key in enumerate(header):
@@ -111,6 +146,8 @@ class ERNELightCurve(LightCurve):
         # Converting from astropy.table.Table to pandas.Dataframe
         # to_pandas() bound method is only available in the latest development build of astropy and none of the stable versions :/
         data = data.to_pandas()
-        
+        for i,line in enumerate(header[1:]): 
+            data[line] = data[line].apply(lambda col: float(col))
+
         return header, data
 
