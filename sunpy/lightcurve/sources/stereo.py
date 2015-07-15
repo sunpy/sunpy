@@ -213,7 +213,7 @@ class SITLightCurve(LightCurve):
 
         figure.delaxes(ax)
         axes = figure.add_axes([0.1, 0.15, 0.55, 0.8])
-        
+
         for i,line in enumerate(self.header):
             if i >= 2 and i <= num_energy_bins + 1:
                 axes.plot_date(dates, data[line].ffill(), '-',
@@ -556,6 +556,46 @@ class HETLightCurve(LightCurve):
     | http://www.srl.caltech.edu/STEREO/DATA/HET/
 
     """
+
+    def peek(self, title="HET electron/proton Flux"):
+        """Plots HET light curve in the usual manner"""
+
+        figure = plt.figure()
+        ax = plt.gca()
+
+        data = self.data.replace(float(0),float('nan'))
+
+        if self.header[1] == 'DateTime':
+            dates = matplotlib.dates.date2num(data['DateTime'].astype(datetime))
+        else:
+            timerange_start = data['TimeRange'].apply(lambda col: col.start)
+            dates = matplotlib.dates.date2num(timerange_start.astype(datetime))
+
+        colors = ['Green','Red','Chocolate', 'Blue','SeaGreen','Tomato','SlateBlue','Orange',
+                            'Purple','Magenta','MediumVioletRed', 'Teal','Navy','Indigo']
+
+        figure.delaxes(ax)
+        axes = figure.add_axes([0.1, 0.15, 0.55, 0.8])
+
+        for i,line in enumerate(self.header):
+            if i >= 2 and i%2 == 0:
+                axes.plot_date(dates, data[line].ffill(), '-',
+                     label= line[:line.index('n')+2] + line[line.index(',')+2:line.index('V')+1], color=colors[i/2-2], lw=0.5)
+        
+        axes.set_yscale("log")
+        axes.set_title(title)
+        axes.set_ylabel('particles/(cm2-sr-sec-MeV)')
+        axes.set_xlabel('UTC TimeZone')
+
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(False, 'major')
+
+        axes.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+        figure.autofmt_xdate()
+        plt.show()
+
+        return figure
 
     @staticmethod
     def _parse_txt(filepath):
