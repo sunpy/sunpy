@@ -425,7 +425,7 @@ class SEPTLightCurve(LightCurve):
 
         duration_of_average: astropy units quantity
         Default value - 10*u.min
-            Possible values -       
+            Possible values -  1*u.min, 10*u.min, 1*u.h, 1*u.d    
             #corresponding to duration over which data is averaged
 
         specie:  string
