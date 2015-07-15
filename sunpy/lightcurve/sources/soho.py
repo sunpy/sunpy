@@ -69,7 +69,6 @@ class ERNELightCurve(LightCurve):
         data = ascii.read(filepath, delimiter = "\s", data_start = 2 ) 
 
         #header is read along with data i.e the first row in data is the header
-        header = data.colnames
         #So extracting the first row elements and forming header list that contains the energy bins
         header = [data[0][key] for key in data.colnames]
         #and now excluding the first line to have only the data in data variable
@@ -86,7 +85,7 @@ class ERNELightCurve(LightCurve):
 
         #Converting separate datetime element into a single datetime.datetime column
         for i in range(len(data)):
-            date = datetime.strptime(year_col[i] + '-' + month_col[i] + '-' + day_col[i],"%y-%m-%d")
+            date = datetime.strptime(year_col[i] + '-' + month_col[i] + '-' + date_col[i],"%y-%m-%d")
             date1 = datetime.combine(date, time(int(begin_time_col[i][:2])))               #start time
             
             if end_time_col[i] == '0000':
