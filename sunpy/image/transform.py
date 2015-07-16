@@ -18,12 +18,13 @@ except ImportError:  # pragma: no cover
 
 __all__ = ['affine_transform']
 
+
 def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
                      recenter=False, missing=0.0, use_scipy=False):
     """
-    Rotates, shifts and scales an image using :func:`skimage.transform.warp`, or
-    :func:`scipy.ndimage.interpolation.affine_transform` if specified. Falls back to
-    the scipy function if scikit-image can't be imported.
+    Rotates, shifts and scales an image using :func:`skimage.transform.warp`,
+    or :func:`scipy.ndimage.interpolation.affine_transform` if specified. Falls
+    back to the scipy function if scikit-image can't be imported.
 
     Parameters
     ----------
