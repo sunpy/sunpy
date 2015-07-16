@@ -76,6 +76,7 @@ dblarr(3,5)    np.zeros((3,5))
 intarr(3,5)    np.zeros((3,5),dtype=np.int)
 dblarr(3,5)+1  np.ones((3,5))
 intarr(3,5)+9  np.zeros((3,5),dtype=np.int) + 9
+boolarr(10)    np.zeros(10,dtype=bool)
 identity(3)    np.identity(3)
 =============  =========
 
