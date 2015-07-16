@@ -68,8 +68,12 @@ remote file. Let's create some fake data and pass it into a lightcurve object.
     light_curve.peek()
 
 Within LightCurve.create, we have a dictionary that contains a single entry with key
-"param1" containing a list of 1440 entries (0-1439). As there are no times provided,
-so a default set of times are generated.
+"signal" containing a list of 1000 entries (0-999). The accompanying set of times is
+passed in via the index keyword argument. If no times are passed into index, a default
+set of time indices is generated.
+
+The LightCurve object itself is based on a pandas DataFrame. For more information check
+out the `pandas documentation <http://pandas.pydata.org/pandas-docs/stable/>`_
 
 Spectra
 -------
