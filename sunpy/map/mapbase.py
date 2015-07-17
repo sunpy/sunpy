@@ -983,6 +983,10 @@ scale:\t\t {scale}
         x_pixels.sort()
         y_pixels.sort()
 
+        # Sort the pixel values so we are always slicing in the correct direction
+        x_pixels.sort()
+        y_pixels.sort()
+
         x_pixels = np.array(x_pixels)
         y_pixels = np.array(y_pixels)
 
