@@ -119,12 +119,6 @@ If everything has been configured properly you should see an AIA image with
 a red colormap, a colorbar on the right-hand side and a title and some
 labels.
 
-.. plot::
-
-    import sunpy.map
-    aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    aia.peek()
-
 There is lot going on here, but we will walk you through the example. Briefly,
 the first line is just importing SunPy. On the second line we create a
 SunPy Map object which is basically just a spatially-aware image or data array.
@@ -195,9 +189,9 @@ available. ::
     -------------------------------------------------------------------------------------
     solar flux unit                      1e-22      W / (Hz m2)    0
     surface area                     6.087e+18               m2    0
-    average density                     1409.0          kg / m3    0
+    average density                       1409          kg / m3    0
     radius                         695508000.0                m    26000.0
-    surface gravity                      274.0            m / s    0
+    surface gravity                        274            m / s    0
     ellipticity                          5e-05                     0
     visual magnitude                    -26.75                     0
     center density                    162200.0          kg / m3    0
@@ -305,8 +299,8 @@ measurements in meters, then ::
 
 or ::
 
-    >>> circle_area(4 * u.m).to(u.imperial.foot ** 2)   # doctest: +FLOAT_CMP
-    <Quantity 541.0531502245425 ft2>
+    >>> circle_area(4 * u.m).to(u.imperial.foot ** 2)
+    <Quantity 541.0531502245426 ft2>
 
 Astropy units and quantities are very powerful, and are used throughout SunPy.  To find out more about units and
 quantities, please consult the `the astropy tutorial <http://www.astropy.org/astropy-tutorials/Quantities.html>`__ and
@@ -369,11 +363,11 @@ non-interactive version of the main API::
     # build our query
     >>> result = client.query(
     ...     vso.attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
-    ...     vso.attrs.Instrument('eit')
-    )
+    ...     vso.attrs.Instrument('eit'))
 
     # print the number of matches
-    >>> print("Number of records found: %d " % result.num_records())
+    >>> print("Number of records found: %d " % result.num_records())   # doctest: +NORMALIZE_WHITESPACE
+    Number of records found: 4
 
     # download matches to /download/path
     >>> res = client.get(result, path="/download/path/{file}").wait()
@@ -396,24 +390,24 @@ Querying a database is straightforward, as this example using VSO, shows. The ex
 demonstrates the useful feature which prevents storing the same data twice::
 
 
-    from sunpy.database import Database
-    from sunpy.net.vso.attrs import Time, Instrument
-    db = Database('sqlite:///')
-    entries = db.fetch(
+    >>> from sunpy.database import Database
+    >>> from sunpy.net.vso.attrs import Time, Instrument
+    >>> db = Database('sqlite:///')
+    >>> entries = db.fetch(
     ...     Time('2012-08-05', '2012-08-05 00:00:05'),
     ...     Instrument('AIA'))
-    assert entries is None
-    len(db)
-    2
-    entries = db.fetch(
+    >>> assert entries is None
+    >>> len(db)
+    4
+    >>> entries = db.fetch(
     ...     Time('2012-08-05', '2012-08-05 00:00:05'),
     ...     Instrument('AIA'))
-    entries is None
+    >>> entries is None
     False
-    len(entries)
-    2
-    len(db)
-    2
+    >>> len(entries)
+    4
+    >>> len(db)
+    4
 
 
 Explanation: first, entries is None because the query has never been used for querying
