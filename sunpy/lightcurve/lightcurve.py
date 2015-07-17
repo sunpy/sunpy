@@ -116,9 +116,10 @@ for compatibility with map, please use meta instead""", Warning)
     def from_file(cls, filename):
         '''Used to return Light Curve object by reading the given filename
 
-        Parameters:
-            filename: str
-                Path of the file to be read.
+        Parameters
+        ----------
+        filename : str
+            Path of the file to be read.
 
         '''
 
@@ -138,7 +139,7 @@ for compatibility with map, please use meta instead""", Warning)
 
         Parameters
         ----------
-        url: str
+        url : str
             A url given as a string.
         '''
         try:
@@ -156,9 +157,9 @@ for compatibility with map, please use meta instead""", Warning)
 
         Parameters
         ----------
-        data: `~numpy.ndarray`
+        data : `~numpy.ndarray`
             The data array
-        index: datetime.datetime array
+        index : `~datetime.datetime` array
             The time values
         """
 
@@ -182,9 +183,9 @@ for compatibility with map, please use meta instead""", Warning)
 
         Parameters
         ----------
-        dataframe: `~pandas.DataFrame`
+        dataframe : `~pandas.DataFrame`
             The data.
-        meta: str or dict
+        meta : str or dict
             The metadata.
         '''
 
@@ -195,7 +196,7 @@ for compatibility with map, please use meta instead""", Warning)
 
         Parameters
         ----------
-        axes: `~matplotlib.axes` or None
+        axes : `~matplotlib.axes` or None
             If provided the image will be plotted on the given axes. Otherwise the
             current axes will be used.
 
@@ -205,7 +206,7 @@ for compatibility with map, please use meta instead""", Warning)
 
         Returns
         -------
-        axes: `~matplotlib.axes`
+        axes : `~matplotlib.axes`
             The plot axes.
         """
 
@@ -228,7 +229,7 @@ for compatibility with map, please use meta instead""", Warning)
 
         Returns
         -------
-        fig: `~matplotlib.Figure`
+        fig : `~matplotlib.Figure`
             A plot figure.
         """
 
@@ -324,12 +325,12 @@ for compatibility with map, please use meta instead""", Warning)
 
         Parameters
         ----------
-        **a : `sunpy.time.TimeRange`
+        a : `sunpy.time.TimeRange`
             A time range to truncate to.
 
         Returns
         -------
-        newlc: `~sunpy.lightcurve.LightCurve`
+        newlc : `~sunpy.lightcurve.LightCurve`
             A new lightcurve with only the selected times.
         """
         if isinstance(a, TimeRange):
@@ -350,7 +351,7 @@ for compatibility with map, please use meta instead""", Warning)
 
         Returns
         -------
-        newlc: `~sunpy.lightcurve.LightCurve`
+        newlc : `~sunpy.lightcurve.LightCurve`
             A new lightcurve with only the selected column.
         """
         # TODO allow the extract function to pick more than one column
