@@ -16,7 +16,7 @@ from matplotlib import pyplot as plt
 from astropy.io import ascii
 from astropy.table import Table, Column
 
-from sunpy.time import TimeRange
+from sunpy.time import TimeRange, parse_time
 from sunpy.lightcurve import LightCurve
 
 __all__ = ['LETLightCurve', 'SITLightCurve', 'PLASTICLightCurve', 'SEPTLightCurve', 'HETLightCurve']
@@ -100,7 +100,7 @@ class LETLightCurve(LightCurve):
                     continue
                 elif line[:7] == 'Columns':
                     data_start = i + 4
-                    data_points = int(line[20])
+                    data_points = int(line[20:line.index('f')-1])
                 
                     for k in range(data_points):
                         header = header + ['Uncertainty for ' + header[k]]
@@ -334,6 +334,51 @@ class PLASTICLightCurve(LightCurve):
     | http://stereo-ssc.nascom.nasa.gov/data/ins_data/plastic/level2/Protons/ASCII/
 
     """
+
+    def peek(self, title=" PLASTIC Data"):
+        """Plots PLASTIC light curve in the usual manner"""
+
+        figure = plt.figure()
+        
+        data = self.data.replace(-1E+31,float('nan')) #Removing fill value for error situation and not a zero value. 
+        dates = matplotlib.dates.date2num(data['Datetime'].apply(lambda col: parse_time(str(col).replace('/',' '))).astype(datetime))
+        
+        colors = ['Green','Red','Chocolate', 'Blue','SeaGreen','Tomato','SlateBlue','Orange',
+                            'Purple','Magenta','MediumVioletRed', 'Teal','Navy','Indigo']
+
+        ax1 = figure.add_subplot(3,1,1)
+        plt.plot_date(dates, data['Np [1/cc]'].ffill(), '-',label= 'Np [1/cc]' , color='Red', lw=2)
+        ax2 = figure.add_subplot(3,1,2)
+        plt.plot_date(dates, data['Bulk Speed [km/s]'].ffill(), '-',label= 'Bulk Speed [km/s]' , color= 'Blue', lw=2)
+        ax3 = figure.add_subplot(3,1,3)
+        plt.plot_date(dates, data['Tkin [deg K]'].ffill(), '-',label= 'Tkin [deg K]' , color='Teal', lw=2)
+        
+        ax1.set_yscale("log",nonposy = "mask")
+        ax1.set_ylabel('[1/cc]')
+        ax1.legend(loc='upper center', bbox_to_anchor=(0.5, 1.2),
+              ncol=1, fancybox=True, shadow=True)
+        ax1.yaxis.grid(True, 'major')
+        ax1.xaxis.grid(False, 'major')
+
+        ax2.set_yscale("log",nonposy = "mask")
+        ax2.set_ylabel('[km/s]')
+        ax2.legend(loc='upper center', bbox_to_anchor=(0.5, 1.2),
+              ncol=1, fancybox=True, shadow=True)
+        ax2.yaxis.grid(True, 'major')
+        ax2.xaxis.grid(False, 'major')
+
+        ax3.set_yscale("log", nonposy = "mask")
+        ax3.set_ylabel('[deg K]')
+        ax3.legend(loc='upper center', bbox_to_anchor=(0.5, 1.2),
+              ncol=1, fancybox=True, shadow=True)
+        ax3.yaxis.grid(True, 'major')
+        ax3.xaxis.grid(False, 'major')
+        ax3.set_xlabel('UTC TimeZone')
+
+        figure.autofmt_xdate()
+        plt.show()
+
+        return figure
 
     @staticmethod
     def _parse_txt(filepath):
