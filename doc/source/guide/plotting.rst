@@ -50,14 +50,14 @@ This is only used while in interactive mode.
 
 To turn on interactivity for pyplot use the command ::
 
-    >>> plt.ion()
+    >>> plt.ion()   # doctest: +SKIP
 
 In interactive mode, the plot will appear at the first `~matplotlib.pyplot.plot`
 command and most commands will update the plot as you call them. Here is some
 example code::
 
-    >>> plt.plot(range(10), range(10))
-    >>> plt.title("Simple Plot")
+    >>> plt.plot(range(10), range(10))   # doctest: +SKIP
+    >>> plt.title("Simple Plot")   # doctest: +SKIP
 
 In this example, you'll see that the title appears right on the plot when you call it.
 Note that in this case the `~matplotlib.pyplot.show` command is useless as the
@@ -65,7 +65,7 @@ plot shows up right when you create it. Also note that some commands will not
 automatically update the plot and you have to use the `~matplotlib.pyplot.draw`
 command. The following command ::
 
-    >>> plt.ioff()
+    >>> plt.ioff()   # doctest: +SKIP
 
 turns off interactivity.
 
@@ -174,16 +174,16 @@ package to improve the representation of world coordinates. In the
 examples above the axes were normal matplotlib axes.
 To create a custom `wcsaxes.WCSAxes` instance do the following ::
 
-    >>> fig = plt.figure()
-    >>> ax = plt.subplot(projection=smap.wcs)
+    >>> fig = plt.figure()   # doctest: +SKIP
+    >>> ax = plt.subplot(projection=smap.wcs)   # doctest: +SKIP
 
 when overplotting data and using wcsaxes you have to use the transform keyword
 argument, also the native coordinate system of a `~wcsaxes.WCSAxes` is always
 in degrees ::
 
-    >>> smap.plot()
+    >>> smap.plot()   # doctest: +SKIP
     >>> ax.plot((100*u.arcsec).to(u.deg), (500*u.arcsec).to(u.deg),
-                transform=ax.get_transform('world'))
+    ...         transform=ax.get_transform('world'))   # doctest: +SKIP
 
 Finally, here is a more complex example:
 
@@ -192,9 +192,11 @@ Finally, here is a more complex example:
 
     from matplotlib import patches
     import astropy.units as u
+
     import sunpy.map
     import matplotlib.pyplot as plt
     import sunpy.data.sample
+
     smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     submap = smap.submap([-100-250, -100+250]*u.arcsec, [-400-250, -400+250]*u.arcsec)
     rect = patches.Rectangle([-100-250, -400-250], 500, 500, color = 'white', fill=False)
@@ -211,43 +213,3 @@ Finally, here is a more complex example:
     fig.subplots_adjust(hspace=0.4)
 
     plt.show()
-
-The above example creates two side by side plots one with the overall view of the Sun
-with a small area marked with a white box. That smaller view is then shown in the plot
-below it. The spacing between the two plots is controlled by fig.subplots_adjust().
-
-7. Specifying a Colormap
-------------------------
-
-There are a number of color maps defined in SunPy which are used for data from
-particular missions (e.g. SDO/AIA).
-A simple example on how to use the color maps provided by SunPy: ::
-
-    >>> import matplotlib.pyplot as plt
-    >>> import sunpy.cm
-
-    # Access SunPy colormaps through matplotlib
-    # You need to import sunpy.cm or sunpy.map for this to work.
-    >>> cmap = plt.get_cmap('sdoaia171')
-
-    # Get a list of SunPy colormaps
-    >>> sunpy.cm.cmlist.keys()
-
-    # you can also get a visual representation of all of the color tables
-    >>> sunpy.cm.show_colormaps()
-
-
-.. image:: ../images/plotting_ex2.png
-
-These can be used with the standard commands to change the colormap::
-
-    >>> import sunpy.map
-    >>> import sunpy.data.sample
-    >>> from sunpy.cm import cm
-    >>> smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-
-    >>> fig = plt.figure()
-    >>> ax = plt.subplot(1,1,1)
-    >>> smap.plot(cmap='sdoaia304')
-    >>> plt.show()
-
