@@ -31,7 +31,7 @@ class GOESLightCurve(LightCurve):
 
     References
     ----------
-    | http://umbra.nascom.nasa.gov/goes/fits/
+    | `Data Archive <http://umbra.nascom.nasa.gov/goes/fits/>`_
     """
 
     def peek(self, title="GOES Xray Flux"):
