@@ -19,7 +19,7 @@ __all__ = ['GOESLightCurve']
 
 class GOESLightCurve(LightCurve):
     """
-    GOES XRS LightCurve.
+    GOES XRS LightCurve
 
     Each GOES satellite there are two X-ray Sensors (XRS) which provide solar X
     ray fluxes for the wavelength bands of 0.5 to 4 Å (short channel)
