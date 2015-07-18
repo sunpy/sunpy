@@ -28,10 +28,11 @@ class LYRALightCurve(LightCurve):
     solar physics, aeronomy and space weather.
     LYRA is composed of three (redundant) units, each of them constituted of the
     same four channels:
-        * 120-123 nm Lyman-α channel,
-        * 190-222 nm Herzberg continuum channel,
-        * Aluminium filter channel (17-80 nm + a contribution below 5 nm), including He II at 30.4 nm, and
-        * Zirconium filter channel (6-20 nm + a contribution below 2 nm), rejecting He II.
+
+        * 120-123 nm Lyman-alpha channel
+        * 190-222 nm Herzberg continuum channel
+        * Aluminium filter channel (17-80 nm + a contribution below 5 nm), including He II at 30.4 nm
+        * Zirconium filter channel (6-20 nm + a contribution below 2 nm), rejecting He II
 
     LYRA can take data with cadences chosen in the 100Hz to 0.1Hz interval.
 
