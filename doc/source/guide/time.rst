@@ -20,11 +20,12 @@ parsing function which can deal with most every format that a user may encounter
 Here are few examples of formats which `sunpy.time.parse_time()` accepts: ::
 
     >>> from sunpy.time import parse_time
-    >>> parse_time('2007-05-04T21:08:12')
-    >>> parse_time('2007/05/04T21:08:12')
-    >>> parse_time('20070504T210812')
-    >>> parse_time('2007-May-04 21:08:12')
-    >>> parse_time('20070504_210812')
+    >>> parse_time('2007-05-04T21:08:12')   # doctest: +SKIP
+    >>> parse_time('2007/05/04T21:08:12')   # doctest: +SKIP
+    >>> parse_time('20070504T210812')   # doctest: +SKIP
+    >>> parse_time('2007-May-04 21:08:12')   # doctest: +SKIP
+    >>> parse_time('20070504_210812')   # doctest: +SKIP
+    datetime.datetime(2007, 5, 4, 21, 8, 12)
 
 Each of the above returns the same datetime object ``datetime.datetime(2007,
 5, 4, 21, 8, 12)``. One of the most standard time formats used in solar
@@ -62,7 +63,7 @@ time-equivalent `astropy.units.Quantity`
 example: ::
 
     >>> import astropy.units as u
-    >>> time_range = TimeRange('2010/03/04 00:10', 400 * u.sec)
+    >>> time_range = TimeRange('2010/03/04 00:10', 400 * u.second)
 
 or: ::
 
@@ -74,9 +75,13 @@ get the time at the center of your interval or the length of your interval in mi
 or days or seconds: ::
 
     >>> time_range.center
+    datetime.datetime(2010, 3, 4, 0, 13, 20)
     >>> time_range.minutes
+    <Quantity 6.666666666666667 min>
     >>> time_range.days
+    <Quantity 0.004629629629629629 d>
     >>> time_range.seconds
+    <Quantity 400.0 s>
 
 It also makes it easy to create new time ranges. The functions next() and previous()
 do an inplace update to the object by either adding or subtracting the same time interval
@@ -85,6 +90,70 @@ if you needed time ranges that spanned 30 minutes over a period of 4 hours you c
 
     >>> for a in range(8):
     ...     print(time_range.next())
+        Start: 2010-03-04 00:16:40
+        End:   2010-03-04 00:23:20
+        Center:2010-03-04 00:20:00
+        Duration:0.00462962962963 days or
+               0.111111111111 hours or
+               6.66666666667 minutes or
+               400.0 seconds
+    <BLANKLINE>
+        Start: 2010-03-04 00:23:20
+        End:   2010-03-04 00:30:00
+        Center:2010-03-04 00:26:40
+        Duration:0.00462962962963 days or
+               0.111111111111 hours or
+               6.66666666667 minutes or
+               400.0 seconds
+    <BLANKLINE>
+        Start: 2010-03-04 00:30:00
+        End:   2010-03-04 00:36:40
+        Center:2010-03-04 00:33:20
+        Duration:0.00462962962963 days or
+               0.111111111111 hours or
+               6.66666666667 minutes or
+               400.0 seconds
+    <BLANKLINE>
+        Start: 2010-03-04 00:36:40
+        End:   2010-03-04 00:43:20
+        Center:2010-03-04 00:40:00
+        Duration:0.00462962962963 days or
+               0.111111111111 hours or
+               6.66666666667 minutes or
+               400.0 seconds
+    <BLANKLINE>
+        Start: 2010-03-04 00:43:20
+        End:   2010-03-04 00:50:00
+        Center:2010-03-04 00:46:40
+        Duration:0.00462962962963 days or
+               0.111111111111 hours or
+               6.66666666667 minutes or
+               400.0 seconds
+    <BLANKLINE>
+        Start: 2010-03-04 00:50:00
+        End:   2010-03-04 00:56:40
+        Center:2010-03-04 00:53:20
+        Duration:0.00462962962963 days or
+               0.111111111111 hours or
+               6.66666666667 minutes or
+               400.0 seconds
+    <BLANKLINE>
+        Start: 2010-03-04 00:56:40
+        End:   2010-03-04 01:03:20
+        Center:2010-03-04 01:00:00
+        Duration:0.00462962962963 days or
+               0.111111111111 hours or
+               6.66666666667 minutes or
+               400.0 seconds
+    <BLANKLINE>
+        Start: 2010-03-04 01:03:20
+        End:   2010-03-04 01:10:00
+        Center:2010-03-04 01:06:40
+        Duration:0.00462962962963 days or
+               0.111111111111 hours or
+               6.66666666667 minutes or
+               400.0 seconds
+    <BLANKLINE>
 
 A time range can also be easily split into sub-intervals of equal length, for example to
 split a TimeRange object into two new TimeRange objects: ::
