@@ -6,7 +6,10 @@ __email__ = "keith.hughitt@nasa.gov"
 
 import numpy as np
 from matplotlib import colors
+
 from astropy.units import Quantity
+from astropy.visualization import PowerStretch
+from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map import GenericMap
 from sunpy.sun import constants
@@ -64,7 +67,7 @@ class EITMap(GenericMap):
         self._fix_dsun()
         self._nickname = self.detector
         self.plot_settings['cmap'] = cm.get_cmap(self._get_cmap_name())
-        self.plot_settings['norm'] = colors.PowerNorm(0.5)
+        self.plot_settings['norm'] = ImageNormalize(stretch=PowerStretch(0.5))
 
     @property
     def rsun_obs(self):
@@ -123,7 +126,7 @@ class LASCOMap(GenericMap):
         self.meta['waveunit'] = 'nm'
         self._nickname = self.instrument + "-" + self.detector
         self.plot_settings['cmap'] = cm.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
-        self.plot_settings['norm'] = colors.PowerNorm(0.5)
+        self.plot_settings['norm'] = ImageNormalize(stretch=PowerStretch(0.5))
 
     @property
     def measurement(self):
