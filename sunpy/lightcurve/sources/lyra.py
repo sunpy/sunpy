@@ -23,10 +23,23 @@ class LYRALightCurve(LightCurve):
     """
     Proba-2 LYRA LightCurve.
 
+    LYRA (Large Yield RAdiometer) is an ultraviolet irradiance radiometer that
+    observes the Sun in four passbands, chosen for their relevance to
+    solar physics, aeronomy and space weather.
+    LYRA is composed of three (redundant) units, each of them constituted of the
+    same four channels:
+        * 120-123 nm Lyman-α channel,
+        * 190-222 nm Herzberg continuum channel,
+        * Aluminium filter channel (17-80 nm + a contribution below 5 nm), including He II at 30.4 nm, and
+        * Zirconium filter channel (6-20 nm + a contribution below 2 nm), rejecting He II.
+
+    LYRA can take data with cadences chosen in the 100Hz to 0.1Hz interval.
+
+    PROBA2 was launched on 2 November 2009.
+
     Examples
     --------
     >>> import sunpy
-
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create()
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create('~/Data/lyra/lyra_20110810-000000_lev2_std.fits')   # doctest: +SKIP
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10')
@@ -35,13 +48,33 @@ class LYRALightCurve(LightCurve):
 
     References
     ----------
-    | http://proba2.sidc.be/data/LYRA
+    * `Proba2 SWAP Science Center <http://proba2.sidc.be/about/SWAP/>`_
+    * `LYRA Data Homepage <http://proba2.sidc.be/data/LYRA>`_
+    * `LYRA Instrument Homepage <http://proba2.sidc.be/about/LYRA>`_
     """
 
     def peek(self, names=3, **kwargs):
-        """Plots the LYRA data
+        """Plots the LYRA data. An example is shown below.
 
-        See: http://pandas.sourceforge.net/visualization.html
+        .. plot::
+
+            import sunpy
+            lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10')
+            lyra.peek()
+
+        Parameters
+        ----------
+        names : int
+            The number of columns to plot.
+
+        **kwargs : dict
+            Any additional plot arguments that should be used
+            when plotting the image.
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
         """
         lyranames = (('Lyman alpha','Herzberg cont.','Al filter','Zr filter'),
                  ('120-123nm','190-222nm','17-80nm + <5nm','6-20nm + <2nm'))
@@ -56,8 +89,6 @@ class LYRALightCurve(LightCurve):
         #            kwargs['title'] = os.path.splitext(base)[0]
         #        else:
         #            kwargs['title'] = 'LYRA data'
-
-        """Shows a plot of all four light curves"""
         figure = plt.figure()
         plt.subplots_adjust(left=0.17,top=0.94,right=0.94,bottom=0.15)
         axes = plt.gca()
@@ -84,8 +115,7 @@ class LYRALightCurve(LightCurve):
 
     @staticmethod
     def _get_url_for_date(date,**kwargs):
-        """Returns a URL to the LYRA data for the specified date
-        """
+        """Returns a URL to the LYRA data for the specified date"""
         dt = parse_time(date or datetime.datetime.utcnow())
 
         # Filename
@@ -98,12 +128,12 @@ class LYRALightCurve(LightCurve):
 
     @classmethod
     def _get_default_uri(cls):
-        """Look for and download today's LYRA data"""
+        """Returns URL for latest LYRA data"""
         return cls._get_url_for_date(datetime.datetime.utcnow())
 
     @staticmethod
     def _parse_fits(filepath):
-        """Loads LYRA data from a FITS file"""
+        """Parses LYRA data from a FITS file"""
         # Open file with PyFITS
         hdulist = fits.open(filepath)
         fits_record = hdulist[1].data

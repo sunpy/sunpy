@@ -56,7 +56,13 @@ class EVELightCurve(LightCurve):
     """
 
     def peek(self, column = None, **kwargs):
-        """Displays the light curve in a new figure
+        """Plots the light curve in a new figure. An example is shown below.
+
+        .. plot::
+
+            import sunpy
+            eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
+            eve.peek(subplots=True)
 
         Parameters
         ----------
@@ -96,7 +102,7 @@ class EVELightCurve(LightCurve):
 
     @staticmethod
     def _get_default_uri():
-        """Load latest level 0CS if no other data is specified"""
+        """Loads latest level 0CS if no other data is specified"""
         return "http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt"
 
     @staticmethod
