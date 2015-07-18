@@ -33,14 +33,37 @@ class NOAAIndicesLightCurve(LightCurve):
 
     References
     ----------
-    | http://legacy-www.swpc.noaa.gov/Data/index.html#indices
-    | ftp://ftp.swpc.noaa.gov/pub/weekly/README3
-    | ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt
-    | http://www.swpc.noaa.gov/products/solar-cycle-progression
+    * `Solar and Geomagnetic Indices Data Archive <http://legacy-www.swpc.noaa.gov/Data/index.html#indices>`_
+    * `Recent solar indices <ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt>`_
+    * `Indices Descriptions <ftp://ftp.swpc.noaa.gov/pub/weekly/README3>`_
+    * `NOAA plots of Solar Cycle Progression <http://www.swpc.noaa.gov/products/solar-cycle-progression>`_
+    * `NOAA Product List <http://www.swpc.noaa.gov/products-and-data>`_
     """
 
-    def peek(self, axes=None, type='sunspot SWO', **plot_args):
-        """Plots NOAA Indices as a function of time"""
+    def peek(self, type='sunspot SWO', **plot_args):
+        """Plots NOAA Indices as a function of time. An example is shown below.
+
+        .. plot::
+
+            from sunpy import lightcurve as lc
+            noaa = lc.NOAAIndicesLightCurve.create()
+            noaa.peek()
+
+        Parameters
+        ----------
+        type : str
+            The type of plot required.
+
+        **plot_args : dict
+            Any additional plot arguments that should be used
+            when plotting the image.
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
+        """
+
         figure = plt.figure()
         axes = plt.gca()
 
@@ -114,8 +137,10 @@ class NOAAPredictIndicesLightCurve(LightCurve):
 
     The following predicted values are available.
 
-    * The predicted RI sunspot number is the official International Sunspot Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
-    * The predicted radio flux at 10.7 cm is produced by `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
+    * The predicted RI sunspot number is the official International Sunspot
+    Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
+    * The predicted radio flux at 10.7 cm is produced by
+    `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
 
     Examples
     --------
@@ -125,14 +150,33 @@ class NOAAPredictIndicesLightCurve(LightCurve):
 
     References
     ----------
-    | http://legacy-www.swpc.noaa.gov/Data/index.html#indices
-    | http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt
-    | http://www.swpc.noaa.gov/products/solar-cycle-progression
-    | http://www.swpc.noaa.gov/products-and-data
+    * `Solar and Geomagnetic Indices Data Archive <http://legacy-www.swpc.noaa.gov/Data/index.html#indices>`_
+    * `Predicted solar indices <http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt>`_
+    * `NOAA plots of Solar Cycle Progression <http://www.swpc.noaa.gov/products/solar-cycle-progression>`_
+    * `NOAA Product List <http://www.swpc.noaa.gov/products-and-data>`_
     """
 
-    def peek(self, axes=None, **plot_args):
-        """Plots NOAA Indices as a function of time"""
+    def peek(self, **plot_args):
+        """Plots predicted NOAA Indices as a function of time. An example is shown below.
+
+        .. plot::
+
+            from sunpy import lightcurve as lc
+            noaa = lc.NOAAPredictIndicesLightCurve.create()
+            noaa.peek()
+
+        Parameters
+        ----------
+        **plot_args : dict
+            Any additional plot arguments that should be used
+            when plotting the image.
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
+        """
+
         figure = plt.figure()
         axes = plt.gca()
 
