@@ -31,7 +31,7 @@ class RHESSISummaryLightCurve(LightCurve):
     """
 
     def peek(self, title="RHESSI Observing Summary Count Rate", **kwargs):
-        """Plots RHESSI Count Rate light curve"""
+        """Plots RHESSI Count Rate light curve."""
         figure = plt.figure()
         axes = plt.gca()
 

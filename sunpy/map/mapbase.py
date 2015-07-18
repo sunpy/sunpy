@@ -249,7 +249,8 @@ scale:\t\t {scale}
 
     @property
     def nickname(self):
-        """An abbreviated human-readable description of the map-type; part of the Helioviewer data model"""
+        """An abbreviated human-readable description of the map-type; part of
+        the Helioviewer data model"""
         return self._nickname
 
     @nickname.setter

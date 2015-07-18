@@ -35,7 +35,7 @@ class GOESLightCurve(LightCurve):
     """
 
     def peek(self, title="GOES Xray Flux"):
-        """Plots GOES light curve is the usual manner"""
+        """Plots GOES light curve in the usual manner."""
         figure = plt.figure()
         axes = plt.gca()
 
@@ -74,7 +74,7 @@ class GOESLightCurve(LightCurve):
 
     @classmethod
     def _get_default_uri(cls):
-        """Retrieve latest GOES data if no other data is specified"""
+        """Retrieve latest GOES data if no other data is specified."""
         now = datetime.datetime.utcnow()
         time_range = TimeRange(datetime.datetime(now.year, now.month, now.day), now)
         url_does_exist = net.url_exists(cls._get_url_for_date_range(time_range))

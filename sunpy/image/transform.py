@@ -28,7 +28,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
 
     Parameters
     ----------
-    image : ndarray
+    image : `numpy.ndarray`
         2D Image to be rotated.
     rmatrix : 2x2
         Linear transformation rotation matrix.

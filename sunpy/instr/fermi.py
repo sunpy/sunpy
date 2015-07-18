@@ -108,7 +108,7 @@ def get_detector_sun_angles_for_time(time, file):
 
     time : `datetime.datetime`
         A datetime object or other time format understood by the parse_time function.
-    file : str
+    file : `str`
         A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the
         download_weekly_pointing_file function).
     """
@@ -143,7 +143,7 @@ def get_detector_sun_angles_for_date(date, file):
 
     date : `datetime.datetime`
         A datetime object or other date format understood by the parse_time function.
-    file : str
+    file : `str`
         A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the
         download_weekly_pointing_file function).
     """
@@ -190,12 +190,12 @@ def plot_detector_sun_angles(angles):
     Parameters
     ----------
 
-    angles : dict
+    angles : `dict`
         A dictionary containing the Fermi/GBM detector angle information as a function of time.
         Obtained from the get_detector_separation_angles function.
     """
 
-    #make a plot showing the angles vs time
+    # make a plot showing the angles vs time
     figure = plt.figure(1)
     for n in angles.keys():
         if not n == 'time':
@@ -220,7 +220,7 @@ def get_scx_scz_at_time(time, file):
 
     time : `datetime.datetime`
         A datetime object or other time format understood by the parse_time function.
-    file : str
+    file : `str`
         A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the
          download_weekly_pointing_file function).
     """
@@ -237,7 +237,6 @@ def get_scx_scz_at_time(time, file):
     scz_radec = (Longitude(hdulist[1].data['RA_SCZ'][ind]*u.deg),
                  Latitude(hdulist[1].data['DEC_SCZ'][ind]*u.deg))
 
-
     return scx_radec, scz_radec, timesinutc[ind]
 
 
@@ -250,7 +249,7 @@ def get_scx_scz_in_timerange(timerange, file):
 
     date : `datetime.datetime`
         A datetime object or other date format understood by the parse_time function.
-    file : str
+    file : `str`
         A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the
         download_weekly_pointing_file function).
     """
@@ -275,9 +274,10 @@ def get_scx_scz_in_timerange(timerange, file):
 
 def nai_detector_angles():
     """
-    returns the dictionary of Fermi/GBM NAI detector zenith and azimuth angles,
-    in spacecraft coordinates. zenith angle is measured from +z (along the LAT boresight),
-    azimuth is measured from +x. see Meegan et al. (2009) for details and detector angles.
+    Returns the dictionary of Fermi/GBM NAI detector zenith and azimuth angles,
+    in spacecraft coordinates. zenith angle is measured from +z (along the LAT
+    boresight), azimuth is measured from +x. see Meegan et al. (2009) for
+    details and detector angles.
     """
 
     # angles listed as [azimuth, zenith]
@@ -300,7 +300,8 @@ def nai_detector_angles():
 
 def nai_detector_radecs(detectors, scx, scz, time):
     """
-    calculates the RA/DEC for each NaI detector given spacecraft z and x RA/DEC positions.
+    calculates the RA/DEC for each NaI detector given spacecraft z and x RA/DEC
+    positions.
 
     NB: This routine is based on code found in GTBURST, originally written by
     Dr Giacamo Vianello for the Fermi Science Tools.
@@ -308,21 +309,24 @@ def nai_detector_radecs(detectors, scx, scz, time):
     Parameters
     ----------
 
-    detectors : dict
+    detectors : `dict`
         A dictionary containing the Fermi/GBM detector pointing angles relative
         to the spacecraft axes. Obtained from the nai_detector_angles function.
-    scx : array
-        Two-element array containing the RA/DEC information of the Fermi spacecraft X-axis
-    scz : array
-        Two-element array containing the RA/DEC information of the Fermi spacecraft Z-axis
-    time : datetime object
-        The time corresponding to the input scx and scz values, in a format understandable
-        by parse_time.
+    scx : array-like
+        Two-element array containing the RA/DEC information of the Fermi
+        spacecraft X-axis
+    scz : array-like
+        Two-element array containing the RA/DEC information of the Fermi
+        spacecraft Z-axis
+    time : `datetime.datetime`
+        The time corresponding to the input scx and scz values, in a format
+        understandable by parse_time.
 
     Returns
     -------
-    dict
-        A dictionary containing the RA/DEC for each Fermi/GBM NaI detector at the given input time.
+    `dict`
+        A dictionary containing the RA/DEC for each Fermi/GBM NaI detector at
+        the given input time.
     """
 
     scx_vector = (np.array([np.cos(scx[0].to('rad').value)*np.cos(scx[1].to('rad').value),
@@ -360,10 +364,25 @@ def nai_detector_radecs(detectors, scx, scz, time):
 
 
 def rotate_vector(vector, axis, theta):
-    # the Euler-Rodrigues formula for rotating vectors
-    # axis is the vector to rotate around
-    # theta is the angle to rotate
-    # http://en.wikipedia.org/wiki/Euler-Rodrigues_parameters#Rotation_angle_and_rotation_axis
+    """
+    The Euler-Rodrigues formula for rotating vectors.
+
+    Parameters
+    ----------
+    vector : ?
+        ??
+    axis : ?
+        the vector to rotate around
+    theta : ?
+        the angle to rotate
+
+    .. todo::
+        better definition of the input vector, axis, theta
+
+    Reference
+    ---------
+    http://en.wikipedia.org/wiki/Euler-Rodrigues_parameters#Rotation_angle_and_rotation_axis
+    """
 
     axis = axis/np.sqrt(np.dot(axis, axis))
     a = np.cos(theta/2)
@@ -373,7 +392,7 @@ def rotate_vector(vector, axis, theta):
                  [2*(b*c-a*d), a*a+c*c-b*b-d*d, 2*(c*d+a*b)],
                  [2*(b*d+a*c), 2*(c*d-a*b), a*a+d*d-b*b-c*c]])
 
-    return np.dot(rot_matrix,vector)
+    return np.dot(rot_matrix, vector)
 
 
 def get_detector_separation_angles(detector_radecs, sunpos):
@@ -382,7 +401,6 @@ def get_detector_separation_angles(detector_radecs, sunpos):
     given a dictionary of detector RA/DECs.
     """
     angles = copy.deepcopy(detector_radecs)
-    angles2 = {}
     for l, d in detector_radecs.items():
         if not l == 'time':
             angle = separation_angle(d, sunpos)
@@ -393,7 +411,7 @@ def get_detector_separation_angles(detector_radecs, sunpos):
 
 def separation_angle(radec1, radec2):
     """
-    use the law of spherical cosines to calculate the separation angle
+    Use the law of spherical cosines to calculate the separation angle
     between two RA/DEC positions. radec1 and radec2 are quantities
     """
 
@@ -403,8 +421,7 @@ def separation_angle(radec1, radec2):
                         np.sin( ((90*u.deg) - radec2[1].to('degree')).to('rad') ) *
                       np.cos( (radec1[0].to('degree') - radec2[0].to('degree')).to('rad')   ) ) )
 
-
-    angle=(np.arccos(cosine_of_angle)).to('degree')
+    angle = (np.arccos(cosine_of_angle)).to('degree')
 
     return angle
 

@@ -63,11 +63,12 @@ class HMIMap(GenericMap):
 
     HMI consists of a refracting telescope, a polarization selector,
     an image stabilization system, a narrow band tunable filter
-    and two 4096 pixel CCD cameras. It observes the full solar disk in the Fe I absorption
-    line at 6173 Angstrom with a resolution of 1 arc-second.
+    and two 4096 pixel CCD cameras. It observes the full solar disk in the Fe I
+    absorption line at 6173 Angstrom with a resolution of 1 arc-second.
     HMI takes images in a sequence of tuning and polarizations at a 4-second
-    cadence for each camera. One camera is dedicated to a 45 s Doppler and line-of-sight field
-    sequence while the other to a 90 s vector field sequence.
+    cadence for each camera. One camera is dedicated to a 45 s Doppler and
+    line-of-sight field sequence while the other to a 90 s vector field
+    sequence.
 
     References
     ----------
