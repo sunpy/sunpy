@@ -288,7 +288,7 @@ class CompositeMap(object):
 
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
-            when plotting the image.
+            when plotting.
 
         Returns
         -------
@@ -367,7 +367,7 @@ class CompositeMap(object):
 
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
-            when plotting the image.
+            when plotting.
         """
 
         # Create a figure and add title and axes

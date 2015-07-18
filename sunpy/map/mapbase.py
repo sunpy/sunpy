@@ -1231,7 +1231,7 @@ scale:\t\t {scale}
             title, labels, or axes are shown.
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
-            when plotting the image.
+            when plotting.
         """
 
         # Create a figure and add title and axes
@@ -1283,7 +1283,7 @@ scale:\t\t {scale}
 
         **imshow_kwargs  : dict
             Any additional imshow arguments that should be used
-            when plotting the image.
+            when plotting.
 
         Examples
         --------
