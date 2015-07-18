@@ -32,7 +32,7 @@ registered before our existing local data), if none are given it defaults to
     more = image.extend()
     more.peek()
 
-..plot::
+.. plot::
 
    from matplotlib import pyplot as plt
    import sunpy
@@ -116,14 +116,10 @@ array and the axes -- it also considers possible overlap or gaps).::
 
 We could also get the from_range method to get data between those two points
 directly from the archive and joined together (though that will fetch all
-frequencies of BIR).
-
-.. plot::
-    :include-source:
+frequencies of BIR): ::
 
     from sunpy.spectra.sources.callisto import CallistoSpectrogram
     d = CallistoSpectrogram.from_range('BIR', '2011-09-22 10:15:00', '2011-09-22 10:45:00')
-    d.peek()
 
 .. _e-Callisto: http://www.e-callisto.org/
 .. _Rosse Observatory: http://rosseobservatory.ie/

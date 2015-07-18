@@ -12,6 +12,7 @@ from sunpy.lightcurve import LightCurve
 
 __all__ = ['NOAAIndicesLightCurve', 'NOAAPredictIndicesLightCurve']
 
+
 class NOAAIndicesLightCurve(LightCurve):
     """NOAA Solar Cycle monthly indices.
 
@@ -19,10 +20,15 @@ class NOAAIndicesLightCurve(LightCurve):
     Prediction Center (SWPC) publishes the following indices. All of these indices are
     also provided as a 13-month running smoothed value.
 
-    * The SWO sunspot number is issued by the NOAA Space Weather Prediction Center (SWPC)
-    * The RI sunspot number is the official International Sunspot Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
+    * The SWO sunspot number is issued by the NOAA Space Weather
+      Prediction Center (SWPC)
+    * The RI sunspot number is the official International Sunspot Number and is
+      issued by the `Solar Influence Data Analysis Center (SDIC)
+      <http://sidc.oma.be>`_ in Brussels, Belgium.
     * The ratio between the SWO and RI indices.
-    * Radio flux at 10.7 cm is produced by `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
+    * Radio flux at 10.7 cm is produced by
+      `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the
+      units are in sfu.
     * The Ap Geomagnetic Index is produced by the United States Air Force (USAF).
 
     Examples
@@ -138,9 +144,9 @@ class NOAAPredictIndicesLightCurve(LightCurve):
     The following predicted values are available.
 
     * The predicted RI sunspot number is the official International Sunspot
-    Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
+      Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
     * The predicted radio flux at 10.7 cm is produced by
-    `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
+      `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
 
     Examples
     --------
