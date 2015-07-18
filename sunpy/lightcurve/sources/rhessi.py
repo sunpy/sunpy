@@ -76,14 +76,14 @@ class RHESSISummaryLightCurve(LightCurve):
         figure = plt.figure()
         axes = plt.gca()
 
-        dates = matplotlib.dates.date2num(self.data.index)
+        #dates = matplotlib.dates.date2num(self.data.index)
 
         # FIXME: not used?!
         lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
                          'navy', 'orange', 'green')
 
         for item, frame in self.data.iteritems():
-            axes.plot_date(dates, frame.values, '-', label=item, lw=2)
+            axes.plot_date(self.data.index, frame.values, '-', label=item, lw=2)
 
         axes.set_yscale("log")
         axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
