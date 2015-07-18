@@ -20,10 +20,10 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
 
     Parameters
     ----------
-    orig : `numpy.ndarray`
+    orig : `~numpy.ndarray`
         Original inout array.
     dimensions : tuple
-        Dimensions that new `numpy.ndarray` should have.
+        Dimensions that new `~numpy.ndarray` should have.
     method : {'neighbor' | 'nearest' | 'linear' | 'spline'}
         Method to use for resampling interpolation.
             * neighbor - Closest value from original data
@@ -42,8 +42,8 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
 
     Returns
     -------
-    out : `numpy.ndarray`
-        A new `numpy.ndarray` which has been resampled to the desired
+    out : `~numpy.ndarray`
+        A new `~numpy.ndarray` which has been resampled to the desired
         dimensions.
 
     References
@@ -164,7 +164,7 @@ def reshape_image_to_4d_superpixel(img, dimensions):
     Parameters
     ----------
     img : `numpy.ndarray`
-        A two-dimensional `numpy.ndarray` of the form (y, x)
+        A two-dimensional `~numpy.ndarray` of the form (y, x)
 
     dimensions : array-like
         A two element array-like object containing integers that describe the
@@ -172,7 +172,7 @@ def reshape_image_to_4d_superpixel(img, dimensions):
 
     Returns
     -------
-    A four dimensional `numpy.ndarray` that can be used to easily create
+    A four dimensional `~numpy.ndarray` that can be used to easily create
     two-dimensional arrays of superpixels of the input image
 
     References

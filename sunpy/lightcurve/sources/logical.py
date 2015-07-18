@@ -38,7 +38,7 @@ class LogicalLightCurve(LightCurve):
     """
 
     def complement(self):
-        """ Define the complement of the passed lightcurve """
+        """Define the complement of the passed lightcurve."""
         return LogicalLightCurve.create(np.invert(self.data),
                                         header = self.header)
 

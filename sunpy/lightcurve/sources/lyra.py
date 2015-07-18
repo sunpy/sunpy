@@ -39,31 +39,19 @@ class LYRALightCurve(LightCurve):
     """
 
     def peek(self, names=3, **kwargs):
-        """Plots the LYRA data
+        """Plots the LYRA data.
 
         See: http://pandas.sourceforge.net/visualization.html
         """
         lyranames = (('Lyman alpha','Herzberg cont.','Al filter','Zr filter'),
                  ('120-123nm','190-222nm','17-80nm + <5nm','6-20nm + <2nm'))
 
-        # Choose title if none was specified
-        #if not kwargs.has_key("title"):
-        #    if len(self.data.columns) > 1:
-        #        kwargs['title'] = 'LYRA data'
-        #    else:
-        #        if self._filename is not None:
-        #            base = self._filename
-        #            kwargs['title'] = os.path.splitext(base)[0]
-        #        else:
-        #            kwargs['title'] = 'LYRA data'
-
-        """Shows a plot of all four light curves"""
+        # Shows a plot of all four light curves.
         figure = plt.figure()
         plt.subplots_adjust(left=0.17,top=0.94,right=0.94,bottom=0.15)
         axes = plt.gca()
 
         axes = self.data.plot(ax=axes, subplots=True, sharex=True, **kwargs)
-        #plt.legend(loc='best')
 
         for i, name in enumerate(self.data.columns):
             if names < 3:
@@ -80,7 +68,6 @@ class LYRALightCurve(LightCurve):
         figure.show()
 
         return figure
-
 
     @staticmethod
     def _get_url_for_date(date,**kwargs):
@@ -107,7 +94,7 @@ class LYRALightCurve(LightCurve):
         # Open file with PyFITS
         hdulist = fits.open(filepath)
         fits_record = hdulist[1].data
-        #secondary_header = hdulist[1].header
+        # secondary_header = hdulist[1].header
 
         # Start and end dates.  Different LYRA FITS files have
         # different tags for the date obs.
@@ -115,7 +102,7 @@ class LYRALightCurve(LightCurve):
             start_str = hdulist[0].header['date-obs']
         elif 'date_obs' in hdulist[0].header:
             start_str = hdulist[0].header['date_obs']
-        #end_str = hdulist[0].header['date-end']
+        # end_str = hdulist[0].header['date-end']
 
         #start = datetime.datetime.strptime(start_str, '%Y-%m-%dT%H:%M:%S.%f')
         start = parse_time(start_str)

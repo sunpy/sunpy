@@ -15,11 +15,11 @@ __all__ = ['NOAAIndicesLightCurve', 'NOAAPredictIndicesLightCurve']
 class NOAAIndicesLightCurve(LightCurve):
     """NOAA Solar Cycle monthly indices.
 
-    Solar activity is measured by a number of different values. The NOAA Solar Weather
-    Prediction Center (SWPC) publishes the following indices. All of these indices are
-    also provided as a 13-month running smoothed value.
+    Solar activity is measured by a number of different values. The NOAA Solar
+    Weather Prediction Center (SWPC) publishes the following indices. All of
+    these indices are also provided as a 13-month running smoothed value.
 
-    * The SWO sunspot number is issued by the NOAA Space Weather Prediction Center (SWPC)
+    * The SWO sunspot number is issued by the NOAA Space Weather Prediction Center (SWPC).
     * The RI sunspot number is the official International Sunspot Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
     * The ratio between the SWO and RI indices.
     * Radio flux at 10.7 cm is produced by `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
@@ -40,7 +40,7 @@ class NOAAIndicesLightCurve(LightCurve):
     """
 
     def peek(self, axes=None, type='sunspot SWO', **plot_args):
-        """Plots NOAA Indices as a function of time"""
+        """Plots NOAA Indices as a function of time."""
         figure = plt.figure()
         axes = plt.gca()
 
@@ -108,9 +108,9 @@ class NOAAIndicesLightCurve(LightCurve):
 class NOAAPredictIndicesLightCurve(LightCurve):
     """NOAA Solar Cycle Predicted Progression
 
-    The predictions are updated monthly and are produced by ISES. Observed values are
-    initially the preliminary values which are replaced with the final values as they
-    become available.
+    The predictions are updated monthly and are produced by ISES. Observed
+    values are initially the preliminary values which are replaced with the
+    final values as they become available.
 
     The following predicted values are available.
 
@@ -154,7 +154,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
 
     @classmethod
     def _get_default_uri(cls):
-        """Return the url to download indices"""
+        """Return the url to download indices."""
         return "http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"
 
     @staticmethod
