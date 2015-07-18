@@ -154,6 +154,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
     * `Predicted solar indices <http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt>`_
     * `NOAA plots of Solar Cycle Progression <http://www.swpc.noaa.gov/products/solar-cycle-progression>`_
     * `NOAA Product List <http://www.swpc.noaa.gov/products-and-data>`_
+
     """
 
     def peek(self, **plot_args):

@@ -18,9 +18,6 @@ class Spectrum(np.ndarray):
     freq_axis : `~numpy.ndarray`
         one-dimensional array with the frequency values.
 
-    data : `~numpy.ndarray`
-        one-dimensional array which the intensity at each frequency.
-
     Examples
     --------
     >>> from sunpy.spectra.spectrum import Spectrum
@@ -34,7 +31,6 @@ class Spectrum(np.ndarray):
         return np.asarray(data).view(cls)
 
     def __init__(self, data, freq_axis):
-        .. todo:: check that data and freq_axis have same dimensions.
         self.data = data
         self.freq_axis = freq_axis
 

@@ -55,7 +55,7 @@ class GenericMap(NDData):
 
     Parameters
     ----------
-    data : numpy.ndarray, list
+    data : `~numpy.ndarray`, list
         A 2d list or ndarray containing the map data
     meta : dict
         A dictionary of the original image header tags
@@ -279,9 +279,7 @@ scale:\t\t {scale}
 
     @property
     def dsun(self):
-        """
-        The observer distance from the Sun.
-        """
+        """The observer distance from the Sun."""
         dsun = self.meta.get('dsun_obs', None)
 
         if dsun is None:
@@ -318,14 +316,14 @@ scale:\t\t {scale}
 
     @property
     def xrange(self):
-        """Return the X range of the image in arcsec from edge to edge."""
+        """Return the X range of the image from edge to edge."""
         xmin = self.center.x - self.dimensions[0] / 2. * self.scale.x
         xmax = self.center.x + self.dimensions[0] / 2. * self.scale.x
         return u.Quantity([xmin, xmax])
 
     @property
     def yrange(self):
-        """Return the Y range of the image in arcsec from edge to edge."""
+        """Return the Y range of the image from edge to edge."""
         ymin = self.center.y - self.dimensions[1] / 2. * self.scale.y
         ymax = self.center.y + self.dimensions[1] / 2. * self.scale.y
         return u.Quantity([ymin, ymax])
@@ -348,7 +346,7 @@ scale:\t\t {scale}
 
     @property
     def rsun_obs(self):
-        """Radius of the sun in arcseconds"""
+        """Radius of the Sun."""
         rsun_arcseconds = self.meta.get('rsun_obs',
                                         self.meta.get('solar_r',
                                                       self.meta.get('radius', None)))
@@ -380,7 +378,7 @@ scale:\t\t {scale}
 
     @property
     def heliographic_latitude(self):
-        """Heliographic latitude in degrees"""
+        """Heliographic latitude"""
         heliographic_latitude = self.meta.get('hglt_obs',
                                               self.meta.get('crlt_obs',
                                                             self.meta.get('solar_b0', None)))
@@ -394,7 +392,7 @@ scale:\t\t {scale}
 
     @property
     def heliographic_longitude(self):
-        """Heliographic longitude in degrees"""
+        """Heliographic longitude"""
         return u.Quantity(self.meta.get('hgln_obs', 0.), 'deg')
 
     @property
@@ -526,7 +524,6 @@ scale:\t\t {scale}
 
         Returns
         -------
-
         x : float
             Pixel coordinate on the CTYPE1 axis.
 
@@ -589,10 +586,10 @@ scale:\t\t {scale}
 
         Parameters
         ----------
-        filepath : string
+        filepath : str
             Location to save file to.
 
-        filetype : string
+        filetype : str
             'auto' or any supported file extension
         """
         io.write_file(filepath, self.data, self.meta, filetype=filetype,
@@ -625,12 +622,12 @@ scale:\t\t {scale}
 
         Returns
         -------
-        out : Map
+        out : `~sunpy.map.GenericMap` or subclass
             A new Map which has been resampled to the desired dimensions.
 
         References
         ----------
-        | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
+        * `Rebinninb <http://www.scipy.org/Cookbook/Rebinning>`_ (Original source, 2011/11/19)
         """
 
         # Note: because the underlying ndarray is transposed in sense when
@@ -714,7 +711,7 @@ scale:\t\t {scale}
 
         Returns
         -------
-        out : Map
+        out : `~sunpy.map.GenericMap` or subclass
             A new Map instance containing the rotated and rescaled data of the
             original map.
 
@@ -866,7 +863,6 @@ scale:\t\t {scale}
         """
         Returns a submap of the map with the specified range.
 
-
         Parameters
         ----------
         range_a : `astropy.units.Quantity`
@@ -878,7 +874,7 @@ scale:\t\t {scale}
 
         Returns
         -------
-        out : Map
+        out : `~sunpy.map.GenericMap` or subclass
             A new map instance is returned representing to specified sub-region
 
         Examples
@@ -925,7 +921,6 @@ scale:\t\t {scale}
                [-1.1875,  0.375 , -0.5   ,  0.25  , -0.4375],
                [-0.6875, -0.3125,  0.8125,  0.0625,  0.1875],
                [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
-
         """
 
         # Do manual Quantity input validation to allow for two unit options
@@ -1033,7 +1028,7 @@ scale:\t\t {scale}
 
         Returns
         -------
-        out : Map
+        out : `~sunpy.map.GenericMap` or subclass
             A new Map which has superpixels of the required size.
 
         References
@@ -1088,7 +1083,7 @@ scale:\t\t {scale}
 
         Parameters
         ----------
-        axes: matplotlib.axes object or None
+        axes: `~matplotlib.axes` or None
         Axes to plot limb on or None to use current axes.
 
         grid_spacing: float
@@ -1171,7 +1166,7 @@ scale:\t\t {scale}
 
             Parameters
             ----------
-            axes: matplotlib.axes object or None
+            axes: `~matplotlib.axes` or None
                 Axes to plot limb on or None to use current axes.
 
             Returns
@@ -1274,10 +1269,10 @@ scale:\t\t {scale}
         Parameters
         ----------
         annotate : bool
-            If true, the data is plotted at it's natural scale; with
+            If True, the data is plotted at it's natural scale; with
             title and axis labels.
 
-        axes: matplotlib.axes object or None
+        axes: `~matplotlib.axes` or None
             If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
 
