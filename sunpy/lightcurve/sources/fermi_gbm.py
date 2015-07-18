@@ -51,7 +51,7 @@ class GBMSummaryLightCurve(LightCurve):
         ----------
         **kwargs : dict
             Any additional plot arguments that should be used
-            when plotting the image.
+            when plotting.
         """
         figure=plt.figure()
         axes = plt.gca()

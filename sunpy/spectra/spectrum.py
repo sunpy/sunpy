@@ -4,39 +4,58 @@
 from __future__ import absolute_import
 
 import numpy as np
-
 from matplotlib import pyplot as plt
 
 __all__ = ['Spectrum']
 
+
 class Spectrum(np.ndarray):
     """
-    Class representing a spectrum.
+    Class representing a 1 dimensional spectrum.
 
     Attributes
     ----------
-    freq_axis : np.ndarray
-        one-dimensional array with the frequency values at every data point
+    freq_axis : `~numpy.ndarray`
+        one-dimensional array with the frequency values.
 
-    data\ : np.ndarray
-        one-dimensional array which the intensity at a particular frequency at every data-point.
+    data : `~numpy.ndarray`
+        one-dimensional array which the intensity at each frequency.
+
+    Examples
+    --------
+    >>> from sunpy.spectra.spectrum import Spectrum
+    >>> import numpy as np
+    >>> data = np.linspace(1, 100, 100)
+    >>> freq_axis = np.linspace(0, 10, 100)
+    >>> spec = Spectrum(data, freq_axis)
+    >>> spec.peek()
     """
     def __new__(cls, data, *args, **kwargs):
         return np.asarray(data).view(cls)
 
     def __init__(self, data, freq_axis):
+        .. todo:: check that data and freq_axis have same dimensions.
         self.data = data
         self.freq_axis = freq_axis
 
     def plot(self, axes=None, **matplot_args):
         """
-        Plot spectrum onto current axes. Behaves like matplotlib.pylot.plot()
+        Plot spectrum onto current axes.
 
         Parameters
         ----------
-        axes: matplotlib.axes object or None
+        axes : `~matplotlib.axes` or None
             If provided the spectrum will be plotted on the given axes.
             Else the current matplotlib axes will be used.
+
+        **matplot_args : dict
+            Any additional plot arguments that should be used
+            when plotting.
+
+        Returns
+        -------
+        newaxes : `~matplotlib.axes`
+            The plot axes.
         """
 
         #Get current axes
@@ -64,13 +83,29 @@ class Spectrum(np.ndarray):
 
     def peek(self, **matplot_args):
         """
-        Plot spectrum onto a new figure.
+        Plot spectrum onto a new figure. An example is shown below.
+
+        .. plot::
+
+            from sunpy.spectra.spectrum import Spectrum
+            import numpy as np
+            spec = Spectrum(np.linspace(1, 100, 100), np.linspace(0, 10, 100))
+            spec.peek()
+
+        Parameters
+        ----------
+        **matplot_args : dict
+            Any additional plot arguments that should be used
+            when plotting.
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
         """
 
         figure = plt.figure()
-
         lines = self.plot(**matplot_args)
-
         figure.show()
 
         return figure

@@ -71,7 +71,7 @@ class EVELightCurve(LightCurve):
 
         **kwargs : dict
             Any additional plot arguments that should be used
-            when plotting the image.
+            when plotting.
 
         Returns
         -------

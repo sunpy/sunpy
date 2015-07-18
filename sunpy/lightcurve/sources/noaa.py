@@ -56,7 +56,7 @@ class NOAAIndicesLightCurve(LightCurve):
 
         **plot_args : dict
             Any additional plot arguments that should be used
-            when plotting the image.
+            when plotting.
 
         Returns
         -------
@@ -169,7 +169,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
         ----------
         **plot_args : dict
             Any additional plot arguments that should be used
-            when plotting the image.
+            when plotting.
 
         Returns
         -------
