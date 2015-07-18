@@ -252,10 +252,9 @@ The normalization is also set automatically and is chosen so that all the
 data from minimum to maximum is displayed as best as possible for most cases.
 This means that it is never necessary to touch the data such as applying a function
 such sqrt or log to the data to make your plot look good.
-There are many normalizations available from matplotlib such as `~matplotlib.colors.Lognorm`, or
-`~matplotlib.colors.PowerNorm`. Other
+There are many normalizations available from matplotlib such as `~matplotlib.colors.Lognorm`. Other
 `more exotic normalizations <http://docs.astropy.org/en/stable/visualization/index.html>`_ are also
-made available from astropy.  Just like the colormap the default normalization
+made available from Astropy.  Just like the colormap the default normalization
 can be changed through the plot_settings dictionary or directly for the individual
 plot by passing a keyword argument. The following example shows the difference between
 a linear and logarithmic normalization on an AIA image.
