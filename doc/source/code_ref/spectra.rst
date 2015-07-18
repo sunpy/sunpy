@@ -3,5 +3,18 @@ SunPy spectra
 
 .. automodapi:: sunpy.spectra.spectrogram
 
-.. automodapi:: sunpy.spectra.spectrum
+Spectrogram Classes
+-------------------
+There are a series of subclasses which are specialised for each
+instrument.
 
+.. automodapi:: sunpy.spectra
+    :no-main-docstr:
+    :no-heading:
+
+.. automodapi:: sunpy.spectra.sources
+
+Spectrum
+--------
+
+.. automodapi:: sunpy.spectra.spectrum

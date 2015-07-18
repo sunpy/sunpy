@@ -22,7 +22,7 @@ commonly performed operations.
 2D map objects are subclasses of sunpy.map.MapBase and all Map objects are
 created using the Map factory sunpy.map.Map.
 
-.. Todo:
+.. todo :
     1. Map factory and registration
     2. MapBase and Generic Map
     3. MapMeta and the separation from the file io

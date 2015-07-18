@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
-""" Classes for spectral analysis. """
+"""Classes for spectral analysis."""
 
 from __future__ import division
 from __future__ import print_function
@@ -66,7 +66,7 @@ def _min_delt(arr):
     return deltas[deltas != 0].min()
 
 def _list_formatter(lst, fun=None):
-    """Return function that takes x, pos and returns fun(lst[x]) if
+    """Returns a function that takes x, pos and returns fun(lst[x]) if
     fun is not None, else lst[x] or "" if x is out of range. """
     def _fun(x, pos):
         x = int(x)
@@ -81,7 +81,7 @@ def _list_formatter(lst, fun=None):
 
 
 def _union(sets):
-    """Return union of sets. """
+    """Returns a union of sets."""
     union = set()
     for s in sets:
         union |= s
@@ -89,7 +89,7 @@ def _union(sets):
 
 
 class _LinearView(object):
-    """ Helper class for frequency channel linearization.
+    """Helper class for frequency channel linearization.
 
     Attributes
     ----------
@@ -841,7 +841,7 @@ class Spectrogram(Parent):
 
         Parameters
         ----------
-        time : parse_time compatible
+        time : `~sunpy.time.parse_time` compatible str
             Datetime to find the x coordinate for.
         """
         diff = time - self.start
@@ -1103,7 +1103,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
         Parameters
         ----------
-        time : `~sunpy.time.parse_time` compatible
+        time : `~sunpy.time.parse_time` compatible str
             Datetime to find the x coordinate for.
         """
         # This is impossible for frequencies because that mapping
