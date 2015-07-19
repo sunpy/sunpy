@@ -15,6 +15,7 @@ import mpl_toolkits.axes_grid1.axes_size as Size
 class ControlFuncAnimation(animation.FuncAnimation):
     """ This is a slight modification to the animation class to allow pausing
     starting and stopping.
+
     .. todo::
         improve documentation
     """
@@ -59,6 +60,7 @@ def add_controls(axes=None, slider=False):
     -------
     ? : ?
         ?
+
     .. todo::
         improve documentation
     """
