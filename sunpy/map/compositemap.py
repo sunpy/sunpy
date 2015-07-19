@@ -26,7 +26,7 @@ class CompositeMap(object):
 
     Parameters
     ----------
-    args : [sunpy.map | string]
+    args : [`~sunpy.map.Map` | string]
         One or more map of filepaths
 
     Methods
@@ -34,11 +34,11 @@ class CompositeMap(object):
     add_map(map, zorder=None, alpha=1, levels=False)
         Adds a map to the CompositeMap
     remove_map(index)
-        Removes and returns the map with the given index
+        Removes and returns the map with the given index.
     list_maps()
-        Prints a list of the currently included maps
+        Prints a list of the currently included maps.
     get_alpha(index=None)
-        Gets the alpha-channel value for a layer in the composite image
+        Gets the alpha-channel value for a layer in the composite image.
     get_zorder(index=None)
         Gets the layering preference (z-order) for a map within the composite.
     get_colors(index=None)
@@ -46,17 +46,17 @@ class CompositeMap(object):
     get_norm(index=None)
         Gets the normalization for a map within the CompositeMap.
     get_levels(index=None)
-        Gets the list of contour levels for a map within the CompositeMap
+        Gets the list of contour levels for a map within the CompositeMap.
     set_norm(self, index, norm)
-        Sets the norm for a layer in the composite image
+        Sets the norm for a layer in the composite image.
     set_levels(index, levels, percent=False)
-        Sets the contour levels for a layer in the CompositeMap
+        Sets the contour levels for a layer in the CompositeMap.
     set_colors(index=None, cm)
-        Sets the color map for a layer in the CompositeMap
+        Sets the color map for a layer in the CompositeMap.
     set_alpha(index=None, alpha)
-        Sets the alpha-channel value for a layer in the CompositeMap
+        Sets the alpha-channel value for a layer in the CompositeMap.
     set_zorder(index=None, zorder)
-        Set the layering preference (z-order) for a map within the CompositeMap
+        Set the layering preference (z-order) for a map within the CompositeMap.
     plot(figure=None, overlays=None, draw_limb=False, gamma=1.0,
     draw_grid=False, colorbar=True, basic_plot=False,title="SunPy Plot",
     matplot_args)
@@ -81,8 +81,8 @@ class CompositeMap(object):
 
         Parameters
         ----------
-        Maps: SunPy Maps
-            A sequence of maps
+        *args : SunPy Maps
+            A sequence of maps.
         """
 
         self._maps = expand_list(args)
@@ -104,17 +104,17 @@ class CompositeMap(object):
             m.levels = levels[i]
 
     def add_map(self, amap, zorder=None, alpha=1, levels=False):
-        """Adds a map to the CompositeMap
+        """Adds a map to the CompositeMap.
 
         Parameters
         ----------
-        map : sunpy.map
+        map : `~sunpy.map.Map`
             Map instance to be added
-        zorder : int
+        zorder : `int`
             The index to use when determining where the map should lie along
             the z-axis; maps with higher z-orders appear above maps with lower
             z-orders.
-        alpha : float
+        alpha : `float`
             Opacity at which the map should be displayed. An alpha value of 0
             results in a fully transparent image while an alpha value of 1
             results in a fully opaque image. Values between result in semi-
@@ -131,27 +131,74 @@ class CompositeMap(object):
         self._maps.append(amap)
 
     def remove_map(self, index):
-        """Removes and returns the map with the given index"""
+        """Removes and returns the map with the given index.
+
+        Parameters
+        ----------
+        index : `int`
+            The index of the map in the composite map.
+
+        Returns
+        -------
+        `sunpy.map.CompositeMap`
+            A composite map with the map indexed by 'index' removed from the
+            composite map.
+        """
         return self._maps.pop(index)
 
     def list_maps(self):
-        """Prints a list of the currently included maps"""
+        """Prints a list of the currently included maps."""
         print [m.__class__ for m in self._maps]
 
     def get_map(self, index):
-        """ Returns the map with given index """
+        """ Returns the map with given index.
+
+        Parameters
+        ----------
+        index : `int`
+            The index of the map in the composite map.
+
+        Returns
+        -------
+        `sunpy.map.Map`
+            The map in the composite map at index value 'index'.
+        """
         return self._maps[index]
 
     def get_alpha(self, index=None):
-        """Gets the alpha-channel value for a layer in the composite image"""
+        """Gets the alpha-channel value for a layer in the composite image.
+
+        Parameters
+        ----------
+        index : `int`
+            The index of the map in the composite map.
+
+        Returns
+        -------
+        `float`
+            The alpha channel value of the map in the composite map at index
+            value 'index'.
+        """
         if index is None:
             return [_map.alpha for _map in self._maps]
         else:
             return self._maps[index].alpha
 
     def get_zorder(self, index=None):
-        """Gets the layering preference (z-order) for a map within the
+        """Gets the layering order (z-order) for a map within the
         composite.
+
+        Parameters
+        ----------
+        index : {`int` | None}
+            The index of the map in the composite map.
+
+        Returns
+        -------
+        {`float` | `list`}
+            The layering order (z-order) of the map(s) in the composite
+            map.  If None then the layering order of all the maps is returned in
+            a list.
         """
         if index is None:
             return [_map.zorder for _map in self._maps]
@@ -159,7 +206,19 @@ class CompositeMap(object):
             return self._maps[index].zorder
 
     def get_colors(self, index=None):
-        """Gets the colors for a map within the compositemap."""
+        """Gets the colors for a map within the composite map.
+
+        Parameters
+        ----------
+        index : {`int` | None}
+            The index of the map in the composite map.
+
+        Returns
+        -------
+        {`sunpy.cm` | `list`}
+            The colormaps of the map(s) in the composite map.  If None then the
+            colormaps of all the maps are returned in a list.
+        """
         if index is None:
             return [_map.plot_settings['cmap'] for _map in self._maps]
         else:
@@ -168,6 +227,18 @@ class CompositeMap(object):
     def get_mpl_color_normalizer(self, index=None):
         """Gets the color normalizer for a map within the
         composite.
+
+        Parameters
+        ----------
+        index : {`int` | None}
+            The index of the map in the composite map.
+
+        Returns
+        -------
+        {color normalizer | `list`}
+            The color normalizer(s) of the map(s) in the composite map.
+            If None then the color normalizers of all the maps are returned in
+            a list.
         """
         if index is None:
             return [_map.mpl_color_normalizer for _map in self._maps]
@@ -177,6 +248,18 @@ class CompositeMap(object):
     def get_levels(self, index=None):
         """Gets the list of contour levels for a map within the
         composite.
+
+        Parameters
+        ----------
+        index : {`int` | None}
+            The index of the map in the composite map.
+
+        Returns
+        -------
+        `list`
+            A list of the contour levels of map at index 'index' in the
+            composite map.  If index is None, then the contour levels of all
+            the maps are returned as a list of lists.
         """
         if index is None:
             return [_map.levels for _map in self._maps]
@@ -184,47 +267,123 @@ class CompositeMap(object):
             return self._maps[index].levels
 
     def set_mpl_color_normalizer(self, index, norm):
-        """Sets the normalizer for a layer in the composite image."""
+        """Sets the color normalizer for a layer in the composite image.
+
+        Parameters
+        ----------
+        index : `int`
+            The index of the map in the composite map.
+
+        norm : a color normalizer
+            The function used to stretch the color table.
+
+        Returns
+        -------
+        `~sunpy.map.CompositeMap`
+            Sets the color normalizer of the map at index 'index' in the
+            composite map to the value given by 'norm'."""
         self._maps[index].mpl_color_normalizer = norm
 
     def set_levels(self, index, levels, percent=False):
-        """Sets the contour levels for a layer in the composite image"""
+        """
+        Sets the contour levels for a layer in the composite image.
+
+        Parameters
+        ----------
+        index : `int`
+            The index of the map in the composite map.
+
+        levels : array-like
+            The contour levels.
+
+        percent : `bool`
+            If True, the input 'levels' are interpreted as percentages relative
+            to the maximum value of the data in layer 'index' of the composite
+            map.  If False, the contour levels are set directly from 'levels'.
+
+        Returns
+        -------
+        `~sunpy.map.CompositeMap`
+            A composite map with contour levels 'levels' at layer 'index'.
+        """
         if percent is False:
             self._maps[index].levels = levels
         else:
             self._maps[index].levels = [self._maps[index].max()*level/100.0 for level in levels]
 
     def set_colors(self, index, cm):
-        """Sets the color map for a layer in the composite image"""
+        """Sets the color map for a layer in the composite image.
+
+        Parameters
+        ----------
+        index : `int`
+            The index of the map in the composite map.
+
+        cm : a color map
+            The contour levels.
+
+        Returns
+        -------
+        `~sunpy.map.CompositeMap`
+            A composite map with colormap 'cm' at layer 'index'.
+        """
         self._maps[index].plot_settings['cmap'] = cm
 
     def set_alpha(self, index, alpha):
-        """Sets the alpha-channel value for a layer in the composite image"""
+        """Sets the alpha-channel value for a layer in the composite image.
+
+        Parameters
+        ----------
+        index : `int`
+            The index of the map in the composite map.
+
+        alpha : `float`
+            A float in the range 0 to 1.
+
+        Returns
+        -------
+        `~sunpy.map.CompositeMap`
+            A composite map with alpha-channel value 'alpha' at layer 'index'.
+        """
         if 0 <= alpha <= 1:
             self._maps[index].alpha = alpha
         else:
             raise OutOfRangeAlphaValue("Alpha value must be between 0 and 1.")
 
     def set_zorder(self, index, zorder):
-        """Set the layering preference (z-order) for a map within the
+        """Set the layering order (z-order) for a map within the
         composite.
+
+        Parameters
+        ----------
+        index : `int`
+            The index of the map in the composite map.
+
+        zorder : `int`
+            The layer order.
+
+        Returns
+        -------
+        `~sunpy.map.CompositeMap`
+            A composite map with the map at layer 'index' having layering order
+            'zorder'.
         """
         self._maps[index].zorder = zorder
 
     def draw_limb(self, index=None, axes=None):
-        """Draws a circle representing the solar limb
+        """Draws a circle representing the solar limb.
 
-            Parameters
-            ----------
-            index: integer
-                Map index to use to plot limb.
+        Parameters
+        ----------
+        index : `int`
+            Map index to use to plot limb.
 
-            axes: matplotlib.axes object or None
-                Axes to plot limb on or None to use current axes.
+        axes : `matplotlib.axes` object or None
+            Axes to plot limb on or None to use current axes.
 
-            Returns
-            -------
-            matplotlib.axes object
+        Returns
+        -------
+        `matplotlib.axes` object.
         """
         if index is None:
             for i,amap in enumerate(self._maps):
@@ -240,22 +399,22 @@ class CompositeMap(object):
 
     @u.quantity_input(grid_spacing=u.deg)
     def draw_grid(self, index=None, axes=None, grid_spacing=20*u.deg):
-        """Draws a grid over the surface of the Sun
+        """Draws a grid over the surface of the Sun.
 
         Parameters
         ----------
-        index: integer
+        index : `int`
             Index to determine which map to use to draw grid.
 
-        axes: matplotlib.axes object or None
+        axes : `matplotlib.axes` object or None
             Axes to plot limb on or None to use current axes.
 
-        grid_spacing: float
+        grid_spacing : `float`
             Spacing (in degrees) for longitude and latitude grid.
 
         Returns
         -------
-        matplotlib.axes object
+        `matplotlib.axes` object
         """
         needed_attrs = ['rsun_meters', 'dsun', 'heliographic_latitude',
                             'heliographic_longitude']
@@ -278,25 +437,25 @@ class CompositeMap(object):
 
         Parameters
         ----------
-        axes: matplotlib.axes object or None
+        axes : `matplotlib.axes` object or None
             If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
 
-        annotate : bool
+        annotate : `bool`
             If true, the data is plotted at it's natural scale; with
             title and axis labels.
 
-        **matplot_args : dict
+        **matplot_args : `dict`
             Matplotlib Any additional imshow arguments that should be used
             when plotting the image.
 
         Returns
         -------
-        ret : List
+        ret : `list`
             List of axes image or quad contour sets that have been plotted.
         """
 
-        #Get current axes
+        # Get current axes
         if not axes:
             axes = plt.gca()
 
@@ -318,7 +477,7 @@ class CompositeMap(object):
 
             axes.set_title(title)
 
-        #Define a list of plotted objects
+        # Define a list of plotted objects
         ret = []
         # Plot layers of composite map
         for m in self._maps:
@@ -341,27 +500,27 @@ class CompositeMap(object):
                 # Set data with values <= 0 to transparent
                 # contour_data = np.ma.masked_array(m, mask=(m <= 0))
                 ret.append(axes.contour(m.data, m.levels, **params))
-                #Set the label of the first line so a legend can be created
+                # Set the label of the first line so a legend can be created
                 ret[-1].collections[0].set_label(m.name)
 
         # Adjust axes extents to include all data
         axes.axis('image')
 
-        #Set current image (makes colorbar work)
+        # Set current image (makes colorbar work)
         plt.sci(ret[0])
         return ret
 
     def peek(self, colorbar=True, basic_plot=False, draw_limb=True,
              draw_grid=False, **matplot_args):
-        """Displays the map in a new figure
+        """Displays the map in a new figure.
 
         Parameters
         ----------
-        colorbar : bool or int
+        colorbar : `bool` or `int`
             Whether to display a colorbar next to the plot.
             If specified as an integer a colorbar is plotted for that index.
 
-        basic_plot : bool
+        basic_plot : `bool`
             If true, the data is plotted by itself at it's natural scale; no
             title, labels, or axes are shown.
 

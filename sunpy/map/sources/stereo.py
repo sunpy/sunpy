@@ -18,9 +18,10 @@ __all__ = ['EUVIMap', 'CORMap', 'HIMap']
 class EUVIMap(GenericMap):
     """STEREO-SECCHI EUVI Image Map
 
-    EUVI is an extreme ultraviolet (EUV) imager. Part of the STEREO-SECCHI suite it observes
-    the Sun from 1 to 1.7 solar radii. It is capable of observing at 304 (He II),
-    171 (Fe IX), 195 (Fe XII), and 284 (Fe XV) Angstroms.
+    EUVI is an extreme ultraviolet (EUV) imager. Part of the STEREO-SECCHI
+    suite it observes the Sun from 1 to 1.7 solar radii. It is capable of
+    observing at 304 (He II), 171 (Fe IX), 195 (Fe XII), and 284 (Fe XV)
+    Angstroms.
 
     References
     ----------
@@ -96,6 +97,9 @@ class CORMap(GenericMap):
 
     @property
     def measurement(self):
+        """
+        Returns the type of data observed.
+        """
         # TODO: This needs to do more than white-light.  Should give B, pB, etc.
         return "white-light"
 
@@ -114,7 +118,8 @@ class HIMap(GenericMap):
     directed towards the Earth.
 
     The Heliospheric imager consists of two instruments, the HI-1 and HI-2.
-    The HI1 observes from 15-80 solar radii while HI2 observes from 80-215 solar radii.
+    The HI1 observes from 15-80 solar radii while HI2 observes from 80-215
+    solar radii.
 
     References
     ----------
@@ -138,6 +143,9 @@ class HIMap(GenericMap):
 
     @property
     def measurement(self):
+        """
+        Returns the type of data observed.
+        """
         # TODO: This needs to do more than white-light.  Should give B, pB, etc.
         return "white-light"
 
