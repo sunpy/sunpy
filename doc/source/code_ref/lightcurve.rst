@@ -13,7 +13,7 @@ LightCurves can either be creating manually or automatically by downloading
 their own data (the most common case). Too create a custom `~sunpy.lightcurve.LightCurve`
 see the example in the class documentation below. Subclasses of `~sunpy.lightcurve.LightCurve`
 for specific instrument provide their own methods for downloading their data.
-For more information see :ref:`lc_sources`.
+For more information see :ref:`lc-sources`.
 
 .. autoclass:: sunpy.lightcurve.LightCurve
     :members:
