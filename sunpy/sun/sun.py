@@ -60,6 +60,7 @@ __authors__ = ["Steven Christe"]
 __email__ = "steven.d.christe@nasa.gov"
 
 def solar_cycle_number(t='now'):
+    """Return the solar cycle number."""
     time = parse_time(t)
     result = (time.year + 8) % 28 + 1
     return result
@@ -169,19 +170,22 @@ def apparent_longitude(t='now'):
     return Longitude(result)
 
 def true_latitude(t='now'): # pylint: disable=W0613
-    '''Returns the true latitude. Never more than 1.2 arcsec from 0,
-    set to 0 here.'''
+    """Returns the true latitude. Never more than 1.2 arcsec from 0,
+    set to 0 here."""
     return 0.0
 
 def apparent_latitude(t='now'): # pylint: disable=W0613
+    """Returns the true latitude. Set to 0 here."""
     return 0
 
 def true_obliquity_of_ecliptic(t='now'):
+    """Returns the true obliquity of the ecliptic."""
     T = julian_centuries(t)
     result = 23.452294 - 0.0130125 * T - 0.00000164 * T ** 2 + 0.000000503 * T ** 3
     return Angle(result, u.deg)
 
 def true_rightascension(t='now'):
+    """Return the true right ascension."""
     true_long = true_longitude(t)
     ob = true_obliquity_of_ecliptic(t)
     result = np.cos(ob) * np.sin(true_long)
@@ -189,11 +193,13 @@ def true_rightascension(t='now'):
     return Longitude(result)
 
 def true_declination(t='now'):
+    """Return the true declination."""
     result = np.cos(true_longitude(t))
     result = result * u.deg
     return Latitude(result)
 
 def apparent_obliquity_of_ecliptic(t='now'):
+    """Return the apparent obliquity of the ecliptic."""
     omega = apparent_longitude(t)
     result = true_obliquity_of_ecliptic(t) + (0.00256 * np.cos(omega)) * u.deg
     return result

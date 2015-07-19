@@ -15,10 +15,10 @@ class Spectrum(np.ndarray):
 
     Attributes
     ----------
-    freq_axis : np.ndarray
+    freq_axis : `numpy.ndarray`
         one-dimensional array with the frequency values at every data point
 
-    data\ : np.ndarray
+    data : `numpy.ndarray`
         one-dimensional array which the intensity at a particular frequency at every data-point.
     """
     def __new__(cls, data, *args, **kwargs):
@@ -34,20 +34,20 @@ class Spectrum(np.ndarray):
 
         Parameters
         ----------
-        axes: matplotlib.axes object or None
+        axes : `matplotlib.axes` object or None
             If provided the spectrum will be plotted on the given axes.
-            Else the current matplotlib axes will be used.
+            Else the current matplotlib.axes object will be used.
         """
 
-        #Get current axes
+        # Get current axes
         if not axes:
             axes = plt.gca()
 
         params = {}
         params.update(matplot_args)
 
-        #This is taken from mpl.pyplot.plot() as we are trying to
-        #replicate that functionality
+        # This is taken from mpl.pyplot.plot() as we are trying to
+        # replicate that functionality
 
         # allow callers to override the hold state by passing hold=True|False
         washold = axes.ishold()
