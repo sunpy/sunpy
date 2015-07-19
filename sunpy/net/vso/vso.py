@@ -335,7 +335,8 @@ class VSOClient(object):
 
         Returns
         -------
-        out : :py:class:`QueryResult` (enhanced list) of matched items. Return value of same type as the one of :py:meth:`VSOClient.query`.
+        out : :py:class:`QueryResult` (enhanced list) of matched items. Return
+        value of same type as the one of :py:meth:`VSOClient.query`.
         """
         query = and_(*query)
 
@@ -806,6 +807,19 @@ class VSOClient(object):
 class InteractiveVSOClient(VSOClient):
     """ Client for use in the REPL. Prompts user for data if required. """
     def multiple_choices(self, choices, response):
+        """
+        ?
+
+        Parameters
+        ----------
+            choices : ?
+
+            response : ?
+
+        Returns
+        -------
+            ? : ?
+        """
         while True:
             for n, elem in enumerate(choices):
                 print "({num:d}) {choice!s}".format(num=n + 1, choice=elem)
@@ -828,6 +842,19 @@ class InteractiveVSOClient(VSOClient):
                     continue
 
     def missing_information(self, info, field):
+        """
+        ?
+
+        Parameters
+        ----------
+            info : ?
+
+            field : ?
+
+        Returns
+        -------
+            ? : ?
+        """
         choice = raw_input(field + ': ')
         if not choice:
             raise NoData

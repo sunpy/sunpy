@@ -22,16 +22,16 @@ __all__ = ['HAVE_WCSAXES', 'is_wcsaxes', 'FORCE_NO_WCSAXES']
 
 def is_wcsaxes(axes):
     """
-    Test a matplotlib Axes object to see if it is an instance of WCSAxes
+    Test a matplotlib Axes object to see if it is an instance of WCSAxes.
 
     Parameters
     ----------
-    axes : matplotlib Axes Object
+    axes : `matplotlib.axes` Object
         Axes to test
 
     Returns
     -------
-    result : bool
+    result : `bool`
         Result of the test
     """
 
@@ -43,7 +43,22 @@ def is_wcsaxes(axes):
 
 def gca_wcs(wcs, fig=None):
     """
-    Get the current axes, and return a WCSAxes if possible
+    Get the current axes, and return a WCSAxes if possible.
+
+    Parameters
+    ----------
+    wcs : ?
+        ?
+    fig : ?
+        ?
+
+    Returns
+    -------
+    Matplotlib axes object
+        ?
+
+    .. todo::
+        improve documentation
     """
 
     if not fig:
@@ -61,6 +76,22 @@ def gca_wcs(wcs, fig=None):
     return ax
 
 def get_world_transform(axes):
+    """
+    ?
+
+    Parameters
+    ----------
+    axes : ?
+        ?
+
+    Returns
+    -------
+    ? : ?
+        ?
+
+    .. todo::
+        improve documentation
+    """
     if is_wcsaxes(axes):
         transform = axes.get_transform('world')
     else:
@@ -70,7 +101,20 @@ def get_world_transform(axes):
 
 def default_wcs_grid(axes):
     """
-    Apply some default wcsaxes grid formatting
+    Apply some default wcsaxes grid formatting.
+
+    Parameters
+    ----------
+    axes : ?
+        ?
+
+    Returns
+    -------
+    ? : ?
+        ?
+
+    .. todo::
+        improve documentation
     """
     if not isinstance(axes, wcsaxes.WCSAxes):
         raise TypeError("This axes is not a WCSAxes")
@@ -92,6 +136,19 @@ def default_wcs_grid(axes):
 def wcsaxes_heliographic_overlay(axes):
     """
     Draw a heliographic overlay using wcsaxes
+
+    Parameters
+    ----------
+    axes : ?
+        ?
+
+    Returns
+    -------
+    ? : ?
+        ?
+
+    .. todo::
+        improve documentation
     """
     overlay = axes.get_coords_overlay('heliographicstonyhurst')
 

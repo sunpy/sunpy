@@ -25,12 +25,12 @@ def suds_unwrapper(wrapped_data):
 
     Parameters
     ----------
-    wrapped_data: str
+    wrapped_data : `str`
         Contains the wrapped xml results from a WSDL query
 
     Returns
     -------
-    unwrapped: str
+    unwrapped : `str`
         The xml results with the wrapper removed
 
     Examples
@@ -86,12 +86,12 @@ def votable_handler(xml_table):
 
     Parameters
     ----------
-    xml_table: str
+    xml_table : str
         Contains the VOtable style xml data
 
     Returns
     -------
-    votable: astropy.io.votable.tree.Table
+    votable : `astropy.io.votable.tree.Table`
         A properly formatted VOtable object
 
     Examples
@@ -139,7 +139,7 @@ class HECClient(object):
 
         Parameters
         ----------
-        link: str
+        link : str
             Contains URL to valid WSDL endpoint
 
         Examples
@@ -163,13 +163,13 @@ class HECClient(object):
 
         Parameters
         ----------
-        start_time: str
+        start_time : str
             The datetime where the query window opens
 
-        end_time: str
+        end_time : str
             The datetime where the query window closes
 
-        table: str
+        table : str
             The table to query from. If the table is unknown, the user will be
             prompted to pick from a list of tables.
 
@@ -178,7 +178,7 @@ class HECClient(object):
 
         Returns
         -------
-        results: astropy.io.votable.tree.Table
+        results: `astropy.io.votable.tree.Table`
             Table containing the results from the query
 
         Examples
@@ -209,7 +209,7 @@ class HECClient(object):
 
         Returns
         -------
-        tables.array: numpy.ma.core.MaskedArray
+        tables.array: `numpy.ma.core.MaskedArray`
             A VOtable table of available tables names
 
         Examples
@@ -239,7 +239,7 @@ class HECClient(object):
 
         Returns
         -------
-        temp: str
+        temp: `str`
             contains the name of the table that the user picked.
 
         Examples

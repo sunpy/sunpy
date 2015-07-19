@@ -18,22 +18,22 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
 
     Parameters
     ----------
-    mapcube: sunpy.map.MapCube
+    mapcube : `sunpy.map.MapCube`
         A MapCube
 
-    annotate: bool
+    annotate : `bool`
         Annotate the figure with scale and titles
 
-    fig: mpl.figure
+    fig : `matplotlib.figure`
         Figure to use
 
-    interval: int
+    interval : `int`
         Animation interval in ms
 
-    colorbar: bool
+    colorbar : `bool`
         Plot colorbar
 
-    plot_function: function
+    plot_function : function
         A function to call when each map is plotted, the function must have
         the signature `(fig, axes, smap)` where fig and axes are the figure and
         axes objects of the plot and smap is the current frames Map object.
@@ -63,6 +63,22 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
             self._annotate_plot(0)
 
     def updatefig(self, val, im, slider):
+        """
+        ?
+
+        Parameters
+        ----------
+            val : ?
+                ?
+
+            im : ?
+                ?
+
+        Returns
+        -------
+        .. todo::
+            improve documentation
+        """
         # Remove all the objects that need to be removed from the
         # plot
         while self.remove_obj:
