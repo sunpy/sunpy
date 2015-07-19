@@ -1,9 +1,9 @@
 ###############################################################################
 # Install Linux Packages
 ###############################################################################
-sudo apt-get -y update
-sudo apt-get -yqq install libatlas-dev liblapack-dev gfortran
-if [[ $TEST_MODE == 'sphinx' ]]; then sudo apt-get install graphviz texlive-latex-extra dvipng; fi
+
+# Installation of non-Python dependencies that are in the travis approved
+# packages list is now in .travis.yml
 
 # Install more upto date openjpeg library.
 wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
