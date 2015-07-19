@@ -22,7 +22,25 @@ class GBMSummaryLightCurve(LightCurve):
     """
     Fermi/GBM Summary Lightcurve.
 
-    Add description here.
+    The Gamma-ray Burst Monitor (GBM) is an instrument aboard Fermi. It is meant
+    to detect gamma-ray bursts but also detects solar flares. It consists of
+    12 Sodium Iodide (NaI) scintillation detectors and 2 Bismuth Germanate (BGO)
+    scintillation detectors. The NaI detectors cover from a few keV to about 1 MeV
+    and provide burst triggers and locations. The BGO detectors cover the energy range from
+    about 150 keV to about 30 MeV.
+
+    This summary lightcurve makes use of the CSPEC (daily version) data set which
+    consists of the counts accumulated every 4.096 seconds in 128 energy channels
+    for each of the 14 detectors. Note that the data is re-binned from the
+    original 128 into the following 8 pre-determined energy channels.
+
+        * 4-15 keV
+        * 15-25 keV
+        * 25-50 keV
+        * 50-100 keV
+        * 100-300 keV
+        * 300-800 keV
+        * 800-2000 keV
 
     Examples
     --------
@@ -32,6 +50,7 @@ class GBMSummaryLightCurve(LightCurve):
 
     References
     ----------
+    * `Fermi Mission Homepage <http://fermi.gsfc.nasa.gov>`_
     * `Fermi GBM Homepage <http://gammaray.nsstc.nasa.gov/gbm/>`_
     * `Fermi Science Support Center <http://fermi.gsfc.nasa.gov/ssc/>`_
     * `Fermi Data Product <http://fermi.gsfc.nasa.gov/ssc/data/access/>`_
