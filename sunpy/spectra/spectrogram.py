@@ -328,7 +328,7 @@ class Spectrogram(Parent):
         return self.data.dtype
 
     def _get_params(self):
-        """ Implementation detail. """
+        """Implementation detail."""
         return dict(
             (name, getattr(self, name)) for name, _ in self.COPY_PROPERTIES
         )
@@ -614,13 +614,13 @@ class Spectrogram(Parent):
 
     def clip_freq(self, vmin=None, vmax=None):
         """Return a new spectrogram only consisting of frequencies
-        in the interval [min\_, max\_].
+        in the interval [vmin, vmax].
 
         Parameters
         ----------
-        min\_ : float
+        vmin : float
             All frequencies in the result are greater or equal to this.
-        max\_ : float
+        vmax : float
             All frequencies in the result are smaller or equal to this.
         """
         left = 0
@@ -638,6 +638,15 @@ class Spectrogram(Parent):
 
 
     def auto_find_background(self, amount=0.05):
+        """Automatically find the background. This
+        is done by first subtracting the average value in each channel and then
+        finding those times which have the lowest standard deviation.
+
+        Parameters
+        ----------
+        amount : float
+            The percent amount (out of 1) of lowest standard deviation to consider.
+        """
         # pylint: disable=E1101,E1103
         data = self.data.astype(to_signed(self.dtype))
         # Subtract average value from every frequency channel.
@@ -708,7 +717,7 @@ class Spectrogram(Parent):
 
     def clip_values(self, vmin=None, vmax=None, out=None):
         """
-        Clip intensities to be in the interval [min\_, max\_].
+        Clip intensities to be in the interval [vmin, vmax].
 
         Any values greater than the maximum will be assigned the maximum,
         any values lower than the minimum will be assigned the minimum.
@@ -716,9 +725,9 @@ class Spectrogram(Parent):
 
         Parameters
         ----------
-        min\_ : int or float
+        min : int or float
             New minimum value for intensities.
-        max\_ : int or float
+        max : int or float
             New maximum value for intensities
         """
         # pylint: disable=E1101
@@ -732,14 +741,14 @@ class Spectrogram(Parent):
 
     def rescale(self, vmin=0, vmax=1, dtype=np.dtype('float32')):
         u"""
-        Rescale intensities to [min\_, max\_].
-        Note that min\_ ≠ max\_ and spectrogram.min() ≠ spectrogram.max().
+        Rescale intensities to [vmin, vmax].
+        Note that vmin ≠ vmax and spectrogram.min() ≠ spectrogram.max().
 
         Parameters
         ----------
-        min\_ : float or int
+        vmin : float or int
             New minimum value in the resulting spectrogram.
-        max\_ : float or int
+        vmax : float or int
             New maximum value in the resulting spectrogram.
         dtype : `numpy.dtype`
             Data-type of the resulting spectrogram.
@@ -837,12 +846,12 @@ class Spectrogram(Parent):
 
     def time_to_x(self, time):
         """Return x-coordinate in spectrogram that corresponds to the
-        passed datetime value.
+        passed `~datetime.datetime` value.
 
         Parameters
         ----------
         time : `~sunpy.time.parse_time` compatible str
-            Datetime to find the x coordinate for.
+            `~datetime.datetime` to find the x coordinate for.
         """
         diff = time - self.start
         diff_s = SECONDS_PER_DAY * diff.days + diff.seconds
@@ -1104,7 +1113,7 @@ class LinearTimeSpectrogram(Spectrogram):
         Parameters
         ----------
         time : `~sunpy.time.parse_time` compatible str
-            Datetime to find the x coordinate for.
+            `datetime.datetime` to find the x coordinate for.
         """
         # This is impossible for frequencies because that mapping
         # is not injective.
