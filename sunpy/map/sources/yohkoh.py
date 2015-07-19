@@ -22,10 +22,10 @@ class SXTMap(GenericMap):
     (42 x 42 arcminutes)in the 0.25 - 4.0 keV range.
     It consists of a glancing incidence mirror and a CCD sensor and
     used thin metallic filters to acquire images in restricted
-    portions of its energy range. SXT could resolve features down to 2.5 arc seconds.
-    Information about the temperature and density of the plasma emitting
-    the observed x-rays was obtained by comparing images acquired with the
-    different filters. Images could be obtained every 2 to 8 seconds.
+    portions of its energy range. SXT could resolve features down to 2.5
+    arcseconds. Information about the temperature and density of the plasma
+    emitting the observed x-rays was obtained by comparing images acquired with
+    the different filters. Images could be obtained every 2 to 8 seconds.
     Smaller images with a single filter could be obtained as frequently as
     once every 0.5 seconds.
 
@@ -67,10 +67,13 @@ class SXTMap(GenericMap):
 
     @property
     def wavelength_string(self):
+        """
+        Returns the type of data observed.
+        """
         s = self.meta.get('wavelnth', '')
         if s == 'Al.1':
             s = 'Al01'
-        elif s.lower() ==  'open':
+        elif s.lower() == 'open':
             s = 'white light'
         return s
 

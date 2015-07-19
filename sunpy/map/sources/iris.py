@@ -8,7 +8,7 @@ __all__ = ['SJIMap']
 
 class SJIMap(GenericMap):
     """
-    A 2D IRIS Slit Jaw Imager Map
+    A 2D IRIS Slit Jaw Imager Map.
 
     The Interface Region Imaging Spectrograph (IRIS) small explorer spacecraft
     provides simultaneous spectra and images of the photosphere, chromosphere,

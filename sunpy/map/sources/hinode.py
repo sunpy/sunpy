@@ -22,7 +22,7 @@ def _lower_list(L):
     return [item.lower() for item in L]
 
 class XRTMap(GenericMap):
-    """Hinode XRT Image
+    """Hinode XRT map definition.
 
     The X-Ray Telescope (XRT) is a high resolution grazing incidence telescope,
     which is a succsessor to Yohkoh. It provides 2-arcsecond resolution images
@@ -50,7 +50,7 @@ class XRTMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
 
         # converting data array to masked array
-        #self.data = ma.masked_where(self.data > SATURATION_LIMIT, self.data)
+        # self.data = ma.masked_where(self.data > SATURATION_LIMIT, self.data)
 
         fw1 = header.get('EC_FW1_')
         if fw1.lower() not in _lower_list(self.filter_wheel1_measurements):
@@ -82,7 +82,7 @@ class XRTMap(GenericMap):
         return header.get('instrume') == 'XRT'
 
 class SOTMap(GenericMap):
-    """Hinode SOT Image Map definition
+    """Hinode SOT Image Map definition.
 
     The Hinode Solar Optical Telescope (SOT) consists of a 50 cm
     diffraction-limited Gregorian telescope. It is optimized for
@@ -100,8 +100,8 @@ class SOTMap(GenericMap):
     * `Data Analsis Guide <https://sot.lmsal.com/doc/rep/sot254/fid366/SOT00042_33_SOT_Analysis_Guide_SAG.pdf>`_
     """
     #TODO: get a link for the SOT FITS headers
-    # Add in some information about the the possible instrument, observation type,
-    # observable ion and wavelength
+    # Add in some information about the the possible instrument, observation
+    # type, observable ion and wavelength
 
     Instruments = ['SOT/WB', 'SOT/NB', 'SOT/SP', 'SOT/CT']
 
@@ -124,9 +124,9 @@ class SOTMap(GenericMap):
 
         #TODO (add other options, Now all threated as intensity. This follows Hinode SDC archive)
         # StokesQUV -> grey, Velocity -> EIS, Width -> EIS, Mag Field Azi -> IDL 5 (STD gamma II)
-        #'WB' -> red
-        #'NB'(0 = red); (>0 = gray), # nb has 1 stokes I, the rest quv
-        #'SP' (<=1 = red); (>1 = gray) #sp has 2 stokes I, the rest quv
+        # 'WB' -> red
+        # 'NB'(0 = red); (>0 = gray), # nb has 1 stokes I, the rest quv
+        # 'SP' (<=1 = red); (>1 = gray) #sp has 2 stokes I, the rest quv
         color = {'SOT/WB': 'intensity',
                  'SOT/NB': 'intensity', # For the 1st dimension
                  'SOT/SP': 'intensity', # For the 1st 2 dimensions
@@ -136,5 +136,5 @@ class SOTMap(GenericMap):
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an SOT image"""
+        """Determines if header corresponds to an SOT image."""
         return header.get('instrume') in cls.Instruments
