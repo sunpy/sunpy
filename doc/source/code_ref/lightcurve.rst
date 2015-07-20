@@ -15,9 +15,6 @@ see the example in the class documentation below. Subclasses of `~sunpy.lightcur
 for specific instrument provide their own methods for downloading their data.
 For more information see :ref:`lc-sources`.
 
-.. autoclass:: sunpy.lightcurve.LightCurve
-    :members:
-
 .. _lc-sources:
 
 Instrument LightCurve Classes

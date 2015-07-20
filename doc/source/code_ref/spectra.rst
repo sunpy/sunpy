@@ -6,7 +6,7 @@ Overview
 One of core classes in SunPy is a Spectrum and Spectrogram. These representing
 a spectrum as a specific point in time or one as a function of time, respectively.
 Individual instruments are supported through subclasses. To see what instrument
-are supported see :ref:`spectrum-classes` and :ref:`spectragram-classes`.
+are supported see :ref:`spectrum-classes` and :ref:`spectrogram-classes`.
 
 .. warning:: This module is under development! Use at your own risk.
 
