@@ -365,7 +365,7 @@ cannot be found or is not set.
     >>> from sunpy.database.tables import display_entries
     >>> print display_entries(database,
     ...                       ['id', 'observation_time_start', 'observation_time_end',
-    ...                        'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE
+    ...                        'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
     1  2011-03-19 10:54:00    N/A                  AIA_3      17.1    17.1
@@ -419,7 +419,7 @@ entry and returns a list of every 10th entry from there.
 
     >>> print display_entries(database[9::10],
     ...                       ['id', 'observation_time_start', 'observation_time_end',
-    ...                        'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE
+    ...                        'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
     10 N/A                    N/A                  N/A        N/A     N/A
@@ -445,7 +445,7 @@ method to remove those where the just described predicate is true:
     22
     >>> print display_entries(database,
     ...                       ['id', 'observation_time_start', 'observation_time_end',
-    ...                        'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE
+    ...                        'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
     1  2011-03-19 10:54:00    N/A                  AIA_3      17.1    17.1
@@ -496,7 +496,7 @@ starred:
     >>> print display_entries(
     ...     filter(lambda entry: entry.starred, database),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE
+    ...      'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
     27 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        21.1    21.1
@@ -529,7 +529,7 @@ year:
     >>> print display_entries(
     ...     filter(lambda entry: spring in entry.tags, database),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE
+    ...      'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
     1  2011-03-19 10:54:00    N/A                  AIA_3      17.1    17.1
@@ -556,7 +556,7 @@ arguments which describe which values to change and how.
     >>> print display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE
+    ...      'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
     1  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1
@@ -614,7 +614,7 @@ there are again entries with no end of observation time.
     >>> print display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'])   # doctest: +NORMALIZE_WHITESPACE
+    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'])   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax tags starred
     -- ---------------------- -------------------- ---------- ------- ------- ---- -------
     1  2011-03-19 10:54:00    N/A                  AIA_3      17.1    17.1    N/A  No
@@ -652,7 +652,7 @@ stored end of observation time anymore.
     >>> print display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'])   # doctest: +NORMALIZE_WHITESPACE
+    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'])   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax tags   starred
     -- ---------------------- -------------------- ---------- ------- ------- ----   -------
     1  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1    spring No
@@ -702,7 +702,7 @@ added in section 2.3.2, "Downloading":
     >>> print display_entries(
     ...     database.query(vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'), vso.attrs.Instrument('AIA')),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax'], sort=True)   # doctest: +NORMALIZE_WHITESPACE
+    ...      'instrument', 'wavemin', 'wavemax'], sort=True)   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
     30 2012-08-05 00:00:01    2012-08-05 00:00:02  AIA        9.4     9.4
@@ -724,7 +724,7 @@ check `astropy.units <https://astropy.readthedocs.org/en/stable/units/index.html
     >>> print display_entries(
     ...     database.query(vso.attrs.Wave(1.0*u.nm, 2.0*u.nm)),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax'], sort=True)   # doctest: +NORMALIZE_WHITESPACE
+    ...      'instrument', 'wavemin', 'wavemax'], sort=True)   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
     1  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1
@@ -760,7 +760,7 @@ with the value 'Angstrom':
     >>> print display_entries(
     ...     database.query(dbattrs.Tag('spring') | dbattrs.Starred(), ~dbattrs.FitsHeaderEntry('WAVEUNIT', 'Angstrom')),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'], sort=True)   # doctest: +NORMALIZE_WHITESPACE
+    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'], sort=True)   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax tags   starred
     -- ---------------------- -------------------- ---------- ------- ------- ----   -------
     1  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1    spring No
@@ -795,7 +795,7 @@ to 10 and therefore removes the 5 entries that been used least recently.
     >>> print display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE
+    ...      'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
     1  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1
