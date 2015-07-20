@@ -104,7 +104,7 @@ focus on the map object but they should be applicable across all of the data
 objects.
 
 4.1 peek()
----------
+----------
 
 For quick and easy access to a plot
 all SunPy base objects (e.g. maps, spectra, lightcurves) define their own
@@ -125,7 +125,7 @@ the map data defined by the contents of the map. In non-interactive mode the
 plot window blocks the command line terminal and must be closed before doing anything else.
 
 4.2 plot()
----------
+----------
 
 For more advanced plotting the base SunPy objects also provide a `~sunpy.map.mapbase.GenericMap.plot` command.
 This command is similar to the pyplot `~matplotlib.pyplot.plot` command in that
