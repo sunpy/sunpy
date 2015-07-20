@@ -247,8 +247,8 @@ def get_scx_scz_in_timerange(timerange, file):
     Parameters
     ----------
 
-    date : `datetime.datetime`
-        A datetime object or other date format understood by the parse_time function.
+    timerange : `sunpy.time.TimeRange`
+        A SunPy TimeRange object.
     file : `str`
         A filepath to a Fermi/LAT weekly pointing file (e.g. as obtained by the
         download_weekly_pointing_file function).
@@ -313,10 +313,10 @@ def nai_detector_radecs(detectors, scx, scz, time):
         A dictionary containing the Fermi/GBM detector pointing angles relative
         to the spacecraft axes. Obtained from the nai_detector_angles function.
     scx : array-like
-        Two-element array containing the RA/DEC information of the Fermi
+        Two-element tuple containing the RA/DEC information of the Fermi
         spacecraft X-axis
     scz : array-like
-        Two-element array containing the RA/DEC information of the Fermi
+        Two-element tuple containing the RA/DEC information of the Fermi
         spacecraft Z-axis
     time : `datetime.datetime`
         The time corresponding to the input scx and scz values, in a format
@@ -369,15 +369,12 @@ def rotate_vector(vector, axis, theta):
 
     Parameters
     ----------
-    vector : ?
-        ??
-    axis : ?
-        the vector to rotate around
-    theta : ?
-        the angle to rotate
-
-    .. todo::
-        better definition of the input vector, axis, theta
+    vector : `numpy.ndarray`
+          a three-element vector to be rotated
+    axis : `numpy.ndarray`
+          the the-element vector to rotate around
+    theta : `float`
+          the angle (in radians) by which to rotate vector around axis
 
     Reference
     ---------
@@ -399,6 +396,16 @@ def get_detector_separation_angles(detector_radecs, sunpos):
     """
     Finds the separation angle between the Sun and each NaI detector,
     given a dictionary of detector RA/DECs.
+
+    Parameters
+    ----------
+    detector_radecs : 'dict'
+            the RA/DEC for each NaI detector as AstroPy quantities. Obtained from the
+            fermi.nai_detector_radecs function
+    sunpos : 'list'
+            Two-element list containing the RA/DEC of the Sun position as AstroPy Quantities,
+            e.g. [<Longitude 73.94 deg>, <Latitude 22.66 deg>]
+    
     """
     angles = copy.deepcopy(detector_radecs)
     for l, d in detector_radecs.items():
@@ -412,7 +419,17 @@ def get_detector_separation_angles(detector_radecs, sunpos):
 def separation_angle(radec1, radec2):
     """
     Use the law of spherical cosines to calculate the separation angle
-    between two RA/DEC positions. radec1 and radec2 are quantities
+    between two RA/DEC positions.
+
+    Parameters
+    ----------
+    radec1 : `list`
+           A two-element list containing an RA/DEC position as AstroPy Quantities,
+           e.g. [<Longitude 73.94 deg>, <Latitude 22.66 deg>]
+    radec2 : `list`
+           A two-element list containing an RA/DEC position as AstroPy Quantities,
+           e.g. [<Longitude 73.94 deg>, <Latitude 22.66 deg>]
+
     """
 
     cosine_of_angle = (( np.cos( ((90*u.deg) - radec1[1].to('degree')).to('rad')) *
@@ -429,6 +446,12 @@ def separation_angle(radec1, radec2):
 def met_to_utc(timeinsec):
     """
     Converts Fermi Mission Elapsed Time (MET) in seconds to a datetime object.
+
+    Parameters
+    ----------
+    timeinsec : `float`
+          time in seconds since 00:00 UT on 1st January 2001 (the Fermi MET format)
+          
     """
     # times for GBM are in Mission Elapsed Time (MET).
     #The reference time for this is 2001-Jan-01 00:00.
