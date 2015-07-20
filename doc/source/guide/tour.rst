@@ -68,8 +68,12 @@ remote file. Let's create some fake data and pass it into a lightcurve object.
     light_curve.peek()
 
 Within LightCurve.create, we have a dictionary that contains a single entry with key
-``param1`` containing a list of 1440 entries (0-1439). As there are no times provided,
-so a default set of times are generated.
+"signal" containing a list of 1000 entries (0-999). The accompanying set of times is
+passed in via the index keyword argument. If no times are passed into index, a default
+set of time indices is generated.
+
+The LightCurve object itself is based on a pandas DataFrame. For more information check
+out the `pandas documentation <http://pandas.pydata.org/pandas-docs/stable/>`_
 
 .. this should be a better example, for example grabbing goes data...
 
@@ -93,35 +97,6 @@ Below is the example built into sunpy.
 
 Plotting
 --------
-
-Let's begin by creating a simple plot of an AIA image. To make things easy,
-SunPy includes several example files which are used throughout the docs. These
-files have names like `sunpy.data.sample.AIA_171_IMAGE` and `sunpy.data.sample.RHESSI_IMAGE`.
-
-Try typing the below example into your interactive Python shell.
-
-.. plot::
-    :include-source:
-
-    import sunpy.map
-    import sunpy.data.sample
-    aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    aia.peek()
-
-If everything has been configured properly you should see an AIA image with
-a red colormap, a colorbar on the right-hand side and a title and some
-labels.
-
-.. plot::
-
-    import sunpy.map
-    aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    aia.peek()
-
-There is lot going on here, but we will walk you through the example. Briefly,
-the first line is just importing SunPy. On the second line we create a
-SunPy Map object which is basically just a spatially-aware image or data array.
-On the last line we then plot the map object, using the built in 'quick plot' function `peek()`.
 
 SunPy uses a matplotlib like interface to it's plotting so more complex plots can be built by combining
 SunPy with matplotlib.
