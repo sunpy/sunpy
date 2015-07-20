@@ -1,7 +1,12 @@
+# pylint: disable=E1101
 from __future__ import absolute_import
 
 import numpy as np
 import sunpy.sun as sun
+from astropy.wcs import InconsistentAxisTypesError
+import astropy.wcs as wcs
+from copy import deepcopy
+import re
 
 import astropy.units as u
 
@@ -10,11 +15,14 @@ rsun_meters = sun.constants.radius.si.value
 __all__ = ['_convert_angle_units', 'convert_pixel_to_data', 'convert_hpc_hg',
            'convert_data_to_pixel', 'convert_hpc_hcc', 'convert_hcc_hpc',
            'convert_hcc_hg', 'convert_hg_hcc', 'proj_tan',
-           'convert_hg_hpc',  'convert_to_coord',
-           'get_center']
+           'convert_hg_hpc', 'convert_to_coord',
+           'get_center', 'WCS']
+
 
 def _convert_angle_units(unit='arcsec'):
-    """Determine the conversion factor between the data units and radians."""
+    """
+    Determine the conversion factor between the data units and radians.
+    """
     if unit == 'degrees':
         return np.deg2rad(1)
     elif unit == 'arcmin':
@@ -24,25 +32,31 @@ def _convert_angle_units(unit='arcsec'):
     elif unit == 'mas':
         return np.deg2rad(1) / (60 * 60 * 1000.0)
     else:
-        raise ValueError("The units specified are either invalid or is not supported at this time.")
+        raise ValueError("The units specified are either invalid or are not" +
+                         " supported at this time.")
+
 
 def convert_pixel_to_data(size, scale, reference_pixel,
                           reference_coordinate, x=None, y=None):
-    """Calculate the data coordinate for particular pixel indices.
+    """
+    Calculate the data coordinate for particular pixel indices.
 
     Parameters
     ----------
     size : 2d ndarray
         Number of pixels in width and height.
     scale : 2d ndarray
-        The size of a pixel (dx,dy) in data coordinates (equivalent to WCS/CDELT)
+        The size of a pixel (dx,dy) in data coordinates (equivalent to
+        WCS/CDELT)
     reference_pixel : 2d ndarray
-        The reference pixel (x,y) at which the reference coordinate is given (equivalent to WCS/CRPIX)
+        The reference pixel (x,y) at which the reference coordinate is given
+        (equivalent to WCS/CRPIX)
     reference_coordinate : 2d ndarray
-        The data coordinate (x, y) as measured at the reference pixel (equivalent to WCS/CRVAL)
+        The data coordinate (x, y) as measured at the reference pixel
+        (equivalent to WCS/CRVAL)
     x,y : int or ndarray
-        The pixel values at which data coordinates are requested. If none are given,
-        returns coordinates for every pixel.
+        The pixel values at which data coordinates are requested. If none are
+        given, returns coordinates for every pixel.
 
     Returns
     -------
@@ -51,8 +65,8 @@ def convert_pixel_to_data(size, scale, reference_pixel,
 
     Notes
     -----
-    This function assumes a gnomic projection which is correct for a detector at the focus
-    of an optic observing the Sun.
+    This function assumes a gnomic projection which is correct for a detector
+    at the focus of an optic observing the Sun.
 
     Examples
     --------
@@ -76,19 +90,24 @@ def convert_pixel_to_data(size, scale, reference_pixel,
 
     return coordx, coordy
 
-def get_center(size, scale, reference_pixel, reference_coordinate):
-    """Returns the center of the image in data coordinates.
+
+def get_center(size, scale, ref_pixel, ref_coordinate):
+    """
+    Returns the center of the image in data coordinates.
 
     Parameters
     ----------
     size : 2d ndarray
         Number of pixels in width and height.
     scale : 2d ndarray
-        The size of a pixel (dx,dy) in data coordinates (equivalent to WCS/CDELT)
-    reference_pixel : 2d ndarray
-        The reference pixel (x,y) at which the reference coordinate is given (equivalent to WCS/CRPIX)
-    reference_coordinate : 2d ndarray
-        The data coordinate (x, y) as measured at the reference pixel (equivalent to WCS/CRVAL)
+        The size of a pixel (dx,dy) in data coordinates
+        (equivalent to WCS/CDELT)
+    ref_pixel : 2d ndarray
+        The reference pixel (x,y) at which the reference coordinate is given
+        (equivalent to WCS/CRPIX)
+    ref_coordinate : 2d ndarray
+        The data coordinate (x, y) as measured at the reference pixel
+        (equivalent to WCS/CRVAL)
 
     Returns
     -------
@@ -99,7 +118,7 @@ def get_center(size, scale, reference_pixel, reference_coordinate):
     --------
 
     """
-    return scale * (size - 1 * u.pix) / 2. + reference_coordinate - (reference_pixel - 1 * u.pix) * scale
+    return scale * (size - 1 * u.pix) / 2. + ref_coordinate - (ref_pixel - 1 * u.pix) * scale
 
 def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
     """Calculate the pixel indices for a given data coordinate.
@@ -109,11 +128,14 @@ def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
     x, y : float
         Data coordinate in same units as reference coordinate
     scale : 2d ndarray
-        The size of a pixel (dx,dy) in data coordinates (equivalent to WCS/CDELT)
+        The size of a pixel (dx,dy) in data coordinates
+        (equivalent to WCS/CDELT)
     reference_pixel : 2d ndarray
-        The reference pixel (x,y) at which the reference coordinate is given (equivalent to WCS/CRPIX)
+        The reference pixel (x,y) at which the reference coordinate is given
+        (equivalent to WCS/CRPIX)
     reference_coordinate : 2d ndarray
-        The data coordinate (x, y) as measured at the reference pixel (equivalent to WCS/CRVAL)
+        The data coordinate (x, y) as measured at the reference pixel
+        (equivalent to WCS/CRVAL)
 
     Returns
     -------
@@ -138,10 +160,12 @@ def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
 
     return pixelx, pixely
 
+
 def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
-    """Converts from Helioprojective-Cartesian (HPC) coordinates into
-    Heliocentric-Cartesian (HCC) coordinates. Returns all three dimensions, x, y, z in
-    meters.
+    """
+    Converts from Helioprojective-Cartesian (HPC) coordinates into
+    Heliocentric-Cartesian (HCC) coordinates. Returns all three dimensions-
+    x, y, z in meters.
 
     Parameters
     ----------
@@ -150,14 +174,16 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     dsun_meters : float
         Distance from the observer to the Sun in meters. Default is 1 AU.
     angle_units : str
-        Units of the data coordinates (e.g. arcsec, arcmin, degrees). Default is arcsec.
+        Units of the data coordinates (e.g. arcsec, arcmin, degrees).
+        Default is arcsec.
     z : Bool
         If true return the z coordinate as well.
 
     Returns
     -------
     out : ndarray
-        The data coordinates (x,y,z) in heliocentric cartesian coordinates in meters.
+        The data coordinates (x,y,z) in heliocentric cartesian coordinates in
+        meters.
 
     Notes
     -----
@@ -198,6 +224,7 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     else:
         return rx, ry
 
+
 def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
     """Convert Heliocentric-Cartesian (HCC) to angular
     Helioprojective-Cartesian (HPC) coordinates (in degrees).
@@ -209,12 +236,14 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
     dsun_meters : float
         Distance from the observer to the Sun in meters. Default is 1 AU.
     angle_units : str
-        Units of the data coordinates (e.g. arcsec, arcmin, degrees). Default is arcsec.
+        Units of the data coordinates (e.g. arcsec, arcmin, degrees).
+        Default is arcsec.
 
     Returns
     -------
     out : ndarray
-        The  data coordinates (x,y) in helioprojective cartesian coordinates in arcsec.
+        The  data coordinates (x,y) in helioprojective cartesian coordinates in
+        arcsec.
 
     Notes
     -----
@@ -228,7 +257,7 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
 
     """
 
-    # Calculate the z coordinate by assuming that it is on the surface of the Sun
+    # Calculate the z coordinate by assuming it's on the surface of the Sun
     z = np.sqrt(rsun_meters ** 2 - x ** 2 - y ** 2)
 
     if dsun_meters is None:
@@ -250,6 +279,7 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
 
     return hpcx, hpcy
 
+
 def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
     """Convert from Heliocentric-Cartesian (HCC) (given in meters) to
     Stonyhurst Heliographic coordinates (HG) given in degrees, with
@@ -267,7 +297,8 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
         (heliographic latitude of the observer). Usually given as SOLAR_B0,
         HGLT_OBS, or CRLT_OBS. Default is 0.
     l0_deg : float (degrees)
-        Carrington longitude of central meridian as seen from Earth. Default is 0.
+        Carrington longitude of central meridian as seen from Earth.
+        Default is 0.
     radius : Bool
         If true, forces the output to return a triple of (lon, lat, r). If
         false, return (lon, lat) only.
@@ -306,6 +337,7 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
     else:
         return np.rad2deg(hgln), np.rad2deg(hglt)
 
+
 def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
                    z=False, r=rsun_meters):
     """Convert from Stonyhurst Heliographic coordinates (given in degrees) to
@@ -320,7 +352,8 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
         (heliographic latitude of the observer). Usually given as SOLAR_B0,
         HGLT_OBS, or CRLT_OBS. Default is 0.
     l0_deg : float (degrees)
-        Carrington longitude of central meridian as seen from Earth. Default is 0.
+        Carrington longitude of central meridian as seen from Earth.
+        Default is 0.
     occultation : Bool
         If true set all points behind the Sun (e.g. not visible) to Nan.
     z : Bool
@@ -368,13 +401,14 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
         x[zz < 0] = np.nan
         y[zz < 0] = np.nan
 
-    if np.all(z == True):
+    if z:
         return x, y, zz
     else:
         return x, y
 
-def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec',
-                   occultation=False):
+
+def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None,
+                   angle_units='arcsec', occultation=False):
     """Convert from Heliographic coordinates (HG) to Helioprojective-Cartesian
     (HPC).
 
@@ -387,7 +421,8 @@ def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None, a
         (heliographic latitude of the observer). Usually given as SOLAR_B0,
         HGLT_OBS, or CRLT_OBS. Default is 0.
     l0_deg : float (degrees)
-        Carrington longitude of central meridian as seen from Earth. Default is 0.
+        Carrington longitude of central meridian as seen from Earth.
+        Default is 0.
     occultation : Bool
         If true set all points behind the Sun (e.g. not visible) to Nan.
     dsun_meters : float (meters)
@@ -411,12 +446,17 @@ def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None, a
     (380.05656560308898, 743.78281283290016)
     """
 
-    tempx, tempy = convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=b0_deg, l0_deg=l0_deg, occultation=occultation)
-    x, y = convert_hcc_hpc(tempx, tempy, dsun_meters=dsun_meters, angle_units=angle_units)
+    tempx, tempy = convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=b0_deg,
+                                  l0_deg=l0_deg, occultation=occultation)
+    x, y = convert_hcc_hpc(tempx, tempy, dsun_meters=dsun_meters,
+                           angle_units=angle_units)
     return x, y
 
-def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec'):
-    """Convert from Helioprojective-Cartesian (HPC) to Heliographic coordinates
+
+def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None,
+                   angle_units='arcsec'):
+    """
+    Convert from Helioprojective-Cartesian (HPC) to Heliographic coordinates
     (HG) in degrees.
 
     Parameters
@@ -428,7 +468,8 @@ def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcs
         (heliographic latitude of the observer). Usually given as SOLAR_B0,
         HGLT_OBS, or CRLT_OBS. Default is 0.
     l0 : float (degrees)
-        Carrington longitude of central meridian as seen from Earth. Default is 0.
+        Carrington longitude of central meridian as seen from Earth.
+        Default is 0.
     dsun_meters : float (meters)
         Distance between the observer and the Sun.
     angle_units : str
@@ -437,7 +478,8 @@ def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcs
     Returns
     -------
     out : ndarray (degrees)
-        The  data coordinates (hglongitude, hglatitude) in Heliographic coordinates.
+        The  data coordinates (hglongitude, hglatitude) in Heliographic
+        coordinates.
 
     Notes
     -----
@@ -448,10 +490,12 @@ def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcs
     >>> import sunpy.wcs
     >>> sunpy.wcs.convert_hpc_hg(382, 748, b0_deg=-7.064078, l0_deg=0.0)
     (34.504653439914669, 45.443143275518182)
+
     """
     tempx, tempy = convert_hpc_hcc(x, y, dsun_meters=dsun_meters, angle_units=angle_units)
     lon, lat = convert_hcc_hg(tempx, tempy, b0_deg=b0_deg, l0_deg=l0_deg)
     return lon, lat
+
 
 def proj_tan(x, y, force=False):
     """Applies the gnomonic (TAN) projection to intermediate relative
@@ -462,21 +506,70 @@ def proj_tan(x, y, force=False):
     # TODO: write proj_tan function
     return x, y
 
-def convert_to_coord(x, y, from_coord, to_coord, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec'):
+
+def convert_to_coord(x, y, from_coord, to_coord, b0_deg=0, l0_deg=0,
+                     dsun_meters=None, angle_units='arcsec'):
     """Apply a coordinate transform to coordinates. Right now can only do hpc
     to hcc to hg"""
 
     if (from_coord == 'hcc') and (to_coord == 'hg'):
         rx, ry = convert_hcc_hg(x, y, b0_deg=b0_deg, l0_deg=l0_deg)
     elif (from_coord == 'hpc') and (to_coord == 'hg'):
-        rx, ry = convert_hpc_hg(x, y, b0_deg=b0_deg, l0_deg=l0_deg, dsun_meters=dsun_meters, angle_units=angle_units)
+        rx, ry = convert_hpc_hg(x, y, b0_deg=b0_deg, l0_deg=l0_deg,
+                                dsun_meters=dsun_meters,
+                                angle_units=angle_units)
     elif (from_coord == 'hg') and (to_coord == 'hcc'):
         rx, ry = convert_hg_hcc(x, y, b0_deg=b0_deg, l0_deg=l0_deg)
     elif (from_coord == 'hcc') and (to_coord == 'hpc'):
-        rx, ry = convert_hcc_hpc(x, y, dsun_meters=dsun_meters, angle_units=angle_units)
+        rx, ry = convert_hcc_hpc(x, y, dsun_meters=dsun_meters,
+                                 angle_units=angle_units)
     elif (from_coord == 'hg') and (to_coord == 'hpc'):
-        rx, ry = convert_hg_hpc(x, y, b0_deg=b0_deg, l0_deg=l0_deg, dsun_meters=dsun_meters, angle_units=angle_units)
+        rx, ry = convert_hg_hpc(x, y, b0_deg=b0_deg, l0_deg=l0_deg,
+                                dsun_meters=dsun_meters,
+                                angle_units=angle_units)
     elif (from_coord == 'hpc') and (to_coord == 'hcc'):
-        rx, ry = convert_hpc_hcc(x, y, dsun_meters=dsun_meters, angle_units=angle_units)
+        rx, ry = convert_hpc_hcc(x, y, dsun_meters=dsun_meters,
+                                 angle_units=angle_units)
 
     return rx, ry
+
+
+class WCS(wcs.WCS):
+
+    def __init__(self, header=None, naxis=None, **kwargs):
+        self.oriented = False
+        if WCS._needs_augmenting(header):
+            self.was_augmented = True
+            header = WCS._augment(header, naxis)
+            if naxis is not None:
+                naxis = naxis + 1
+        else:
+            self.was_augmented = False
+        wcs.WCS.__init__(self, header=header, naxis=naxis, **kwargs)
+
+    @classmethod
+    def _needs_augmenting(cls, header):
+        try:
+            wcs.WCS(header=header)
+        except InconsistentAxisTypesError as err:
+            if re.search(r'Unmatched celestial axes', err.message):
+                return True
+        return False
+
+    @classmethod
+    def _augment(cls, header, naxis):
+        newheader = deepcopy(header)
+        new_wcs_axes_params = {'CRPIX': 0, 'CDELT': 1, 'CRVAL': 0,
+                               'CNAME': 'redundant axis', 'CTYPE': 'HPLN-TAN',
+                               'CROTA': 0, 'CUNIT': 'deg'}
+        axis = max(newheader.get('NAXIS', 0), naxis) + 1
+        axis = str(axis)
+        for param in new_wcs_axes_params:
+            attr = new_wcs_axes_params[param]
+            newheader[param + axis] = attr
+        try:
+            wcs.WCS(header=newheader).get_axis_types()
+        except InconsistentAxisTypesError as err:
+            projection = re.findall(r'expected [^,]+', err.message)[0][9:]
+            header['CTYPE' + axis] = projection
+        return newheader

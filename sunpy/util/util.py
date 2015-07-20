@@ -9,8 +9,9 @@ import numpy as np
 
 __all__ = ['to_signed', 'unique', 'print_table',
            'replacement_filename', 'goes_flare_class', 'merge', 'common_base',
-           'minimal_pairs', 'polyfun_at',
-           'expand_list', 'expand_list_generator', 'Deprecated']
+           'minimal_pairs', 'polyfun_at', 'expand_list',
+           'expand_list_generator', 'Deprecated', 'savitzky_golay']
+
 
 def to_signed(dtype):
     """ Return dtype that can hold data of passed dtype but is signed.
@@ -27,11 +28,13 @@ def to_signed(dtype):
         dtype = "int{0:d}".format(min(dtype.itemsize * 2 * 8, 64))
     return np.dtype(dtype)
 
+
 def goes_flare_class(gcls):
     """Convert GOES classes into a number to aid size comparison.  Units are
     watts per meter squared."""
     def calc(gcls):
-        powers_of_ten = {'A':1e-08, 'B':1e-07, 'C':1e-06, 'M':1e-05, 'X':1e-04}
+        powers_of_ten = {'A': 1e-08, 'B': 1e-07, 'C': 1e-06,
+                         'M': 1e-05, 'X': 1e-04}
         power = gcls[0].upper()
         if power in powers_of_ten:
             return powers_of_ten[power] * float(gcls[1:])
@@ -57,6 +60,7 @@ def unique(itr, key=None):
             if x not in items:
                 yield elem
                 items.add(x)
+
 
 def print_table(lst, colsep=' ', linesep='\n'):
     width = [max(imap(len, col)) for col in izip(*lst)]
@@ -112,6 +116,8 @@ def minimal_pairs(one, other):
 
 
 DONT = object()
+
+
 def find_next(one, other, pad=DONT):
     """ Given two sorted sequences one and other, for every element
     in one, return the one larger than it but nearest to it in other.
@@ -152,8 +158,8 @@ def merge(items, key=(lambda x: x)):
     while state:
         for item, (value, tk) in state.iteritems():
             # Value is biggest.
-            if all(tk >= k for it, (v, k)
-                in state.iteritems() if it is not item):
+            if (all(tk >= k for it, (v, k)
+               in state.iteritems() if it is not item)):
                 yield value
                 break
         try:
@@ -161,6 +167,7 @@ def merge(items, key=(lambda x: x)):
             state[item] = (n, key(n))
         except StopIteration:
             del state[item]
+
 
 def replacement_filename(path):
     """ Return replacement path for already used path. Enumerates
@@ -179,11 +186,12 @@ def replacement_filename(path):
                 return newpath
 
 
-#==============================================================================
+# =============================================================================
 # expand list from :http://stackoverflow.com/a/2185971/2486799
-#==============================================================================
+# =============================================================================
 def expand_list(input):
     return [item for item in expand_list_generator(input)]
+
 
 def expand_list_generator(input):
     for item in input:
@@ -193,10 +201,11 @@ def expand_list_generator(input):
         else:
             yield item
 
-#==============================================================================
+
+# =============================================================================
 # Deprecation decorator: http://code.activestate.com/recipes/391367-deprecated/
 # and http://www.artima.com/weblogs/viewpost.jsp?thread=240845
-#==============================================================================
+# =============================================================================
 class Deprecated(object):
     """ Use this decorator to deprecate a function or method, you can pass an
     additional message to the decorator:
@@ -218,3 +227,85 @@ class Deprecated(object):
         newFunc.__doc__ = func.__doc__
         newFunc.__dict__.update(func.__dict__)
         return newFunc
+
+
+# =============================================================================
+# Savitzky-Golay Filter for smoothing from:
+# http://wiki.scipy.org/Cookbook/SavitzkyGolay
+# =============================================================================
+def savitzky_golay(y, window_size, order, deriv=0, rate=1):
+    r"""Smooth (and optionally differentiate) data with a Savitzky-Golay filter.
+    The Savitzky-Golay filter removes high frequency noise from data.
+    It has the advantage of preserving the original shape and
+    features of the signal better than other types of filtering
+    approaches, such as moving averages techniques.
+
+    Parameters
+    ----------
+    y : array_like, shape (N,)
+        The values of the time history of the signal.
+    window_size : int
+        The length of the window. Must be an odd integer number.
+    order : int
+        The order of the polynomial used in the filtering.
+        Must be less then `window_size` - 1.
+    deriv: int
+        The order of the derivative to compute.
+        Default of 0 means only smoothing
+    Returns
+    -------
+    ys : ndarray, shape (N)
+        the smoothed signal (or it's n-th derivative).
+    Notes
+    -----
+    The Savitzky-Golay is a type of low-pass filter, particularly
+    suited for smoothing noisy data. The main idea behind this
+    approach is to make for each point a least-square fit with a
+    polynomial of high order over a odd-sized window centered at
+    the point.
+
+    Examples
+    --------
+    >>> t = np.linspace(-4, 4, 500)
+    >>> y = np.exp( -t**2 ) + np.random.normal(0, 0.05, t.shape)
+    >>> ysg = savitzky_golay(y, window_size=31, order=4)
+    >>> import matplotlib.pyplot as plt
+    >>> plt.plot(t, y, label='Noisy signal')
+    >>> plt.plot(t, np.exp(-t**2), 'k', lw=1.5, label='Original signal')
+    >>> plt.plot(t, ysg, 'r', label='Filtered signal')
+    >>> plt.legend()
+    >>> plt.show()
+
+    References
+    ----------
+    .. [1] A. Savitzky, M. J. E. Golay, Smoothing and Differentiation of
+       Data by Simplified Least Squares Procedures. Analytical
+       Chemistry, 1964, 36 (8), pp 1627-1639.
+    .. [2] Numerical Recipes 3rd Edition: The Art of Scientific Computing
+       W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery
+       Cambridge University Press ISBN-13: 9780521880688
+    """
+    import numpy as np
+    from math import factorial
+
+    try:
+        window_size = np.abs(np.int(window_size))
+        order = np.abs(np.int(order))
+    except ValueError:
+        raise ValueError("window_size and order have to be of type int")
+    if window_size % 2 != 1 or window_size < 1:
+        raise TypeError("window_size size must be a positive odd number")
+    if window_size < order + 2:
+        raise TypeError("window_size is too small for the polynomials order")
+    order_range = range(order + 1)
+    half_window = (window_size - 1) // 2
+    # precompute coefficients
+    b = np.mat([[k**i for i in order_range] for k in range(-half_window,
+                                                           half_window+1)])
+    m = np.linalg.pinv(b).A[deriv] * rate**deriv * factorial(deriv)
+    # pad the signal at the extremes with
+    # values taken from the signal itself
+    firstvals = y[0] - np.abs(y[1:half_window+1][::-1] - y[0])
+    lastvals = y[-1] + np.abs(y[-half_window-1:-1][::-1] - y[-1])
+    y = np.concatenate((firstvals, y, lastvals))
+    return np.convolve(m[::-1], y, mode='valid')

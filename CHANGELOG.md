@@ -4,6 +4,8 @@ Latest
  * Added vso like querying feature to JSOC Client.
  * Update to TimeRange API, removed t1 and t0, start and end are now read-only attributes
  * Added ability to download level3 data for lyra Light Curve along with corresponding tests.
+ * Added 3D/4D Cubes module
+ * Added astropy.wcs.WCS subclass that supports unmatched celestial axes
  * Added support for gzipped FITS files.
  * Add STEREO HI Map subclass and color maps.
  * Map.rotate() no longer crops any image data.
