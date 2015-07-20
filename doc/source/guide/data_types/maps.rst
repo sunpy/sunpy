@@ -88,7 +88,7 @@ from the source file.
 ----------------------
 The data in a SunPy Map object is accessible through the
 `~sunpy.map.GenericMap.data` attribute.  The data is implemented as a
-NumPy `~numpy.ndarray` or `~numpy.ma.MaskedArray`, so for example, to get
+NumPy `~numpy.ndarray`, so for example, to get
 the 0th element in the array ::
 
     my_map.data[0,0]

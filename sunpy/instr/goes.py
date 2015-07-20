@@ -96,7 +96,7 @@ def get_goes_event_list(timerange, goes_class_filter=None):
 
     Parameters
     ----------
-    timerange: `sunpy.time.TimeRange`
+    timerange : `sunpy.time.TimeRange`
         The time range to download the event list for.
 
     goes_class_filter: (optional) string
@@ -169,14 +169,14 @@ def calculate_temperature_em(goeslc, abundances="coronal",
         assumed.
         Default='coronal'
 
-    download : (optional) bool
+    download : (optional) `bool`
         If True, the GOES temperature and emission measure data files are
         downloaded.  It is important to do this if a new version of the files
         has been generated due to a new CHIANTI version being released or the
         launch of new GOES satellites since these files were last downloaded.
         Default=False
 
-    download_dir : (optional) string
+    download_dir : (optional) `string`
         The directory to download the GOES temperature and emission measure
         data files to.
         Default=SunPy default download directory
@@ -292,7 +292,7 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
         correct calibration of data.
         Default=8
 
-    date : `datetime.datetime` or str
+    date : `datetime.datetime` or `str`
         Date when observations made.  Important for correctcalibration.
         Default=today
 
@@ -594,19 +594,19 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
         Important for correct calibration of data.
         Default=8
 
-    abundances : (optional) string equalling 'coronal' or 'photospheric'
+    abundances : (optional) {'coronal' | 'photospheric'}
         States whether photospheric or coronal abundances should be
         assumed.
         Default='coronal'
 
-    download : (optional) bool
+    download : (optional) `bool`
         If True, the GOES emission measure data file is downloaded.
         It is important to do this if a new version of the file has been
         generated due to a new CHIANTI version being released or the launch of
         new GOES satellites since these file was last downloaded.
         Default=False
 
-    download_dir : (optional) string
+    download_dir : (optional) `str`
         The directory to download the GOES emission measure data file to.
         Default=SunPy default download directory
 
@@ -756,14 +756,14 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
         temperature and emission measure values, they are calculated from
         the flux values using calculate_temperature_em().
 
-    force_download : (optional) bool
+    force_download : (optional) `bool`
         If True, the GOES radiative loss data file is downloaded even if
         already locally stored. It is important to do this if a new version
         of the file has been generated due to a new CHIANTI version being
         released or the launch of new GOES satellites.
         Default=False
 
-    download_dir : (optional) string
+    download_dir : (optional) `str`
         The directory to download the GOES radiative loss data file to.
         Default=SunPy default download directory
 
@@ -880,7 +880,7 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
         at the same times corresponding to the temperatures in temp.
         Must be same length as temp.  Units=[cm**-3]
 
-    obstime : (optional) array-like of datetime objects
+    obstime : (optional) array-like of `datetime.datetime` objects
         Array of measurement times to which temperature and
         emission measure values correspond.  Must be same length
         as temp and em.  If this keyword is set, the integrated
@@ -1120,24 +1120,24 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
         Array containing the observed GOES/XRS short channel flux.
         Units=[W/m**2]
 
-    obstime : (optional) array-like of datetime objects
+    obstime : (optional) array-like of `datetime.datetime` objects
         Measurement times corresponding to each flux measurement.
         Assumes each pair of 0.5-4 and 1-8 angstrom flux measurements
         were taken simultaneously.
 
-    date : (optional) datetime object or valid date string.
+    date : (optional) `datetime.datetime` object or valid date string.
         Date at which measurements were taken.  This is used to
         calculate the Sun-Earth distance.
         Default=None implies Sun-Earth distance is set to 1AU.
 
     Returns
     -------
-    lx_out : dictionary
+    lx_out : `dict`
         dictionary containing the following fields.
-        longlum : astropy.units.Quantity
+        longlum : `~astropy.units.Quantity`
             Array of luminosity in the 1-8 angstroms range.
 
-        shortlum : astropy.units.Quantity
+        shortlum : `~astropy.units.Quantity`
             Array of luminosity in the 0.5-4 angstroms range.
 
         longlum_int : (only present if obstime kwarg is set)
@@ -1242,14 +1242,14 @@ def _calc_xraylum(flux, date=None):
     flux : `~astropy.units.Quantity`
        Containing the observed solar flux.  Units=[W/m**2]
 
-    date : (optional) datetime object or valid date string
+    date : (optional) `datetime.datetime` object or valid date string
         Used to calculate a more accurate Sun-Earth distance based on
         Earth's orbit at that date.  If date is None, Sun-Earth
         distance is set to 1AU.
 
     Returns
     -------
-    xraylum : numpy array, dtype=float, units=erg/s.
+    xraylum : `~astropy.units.Quantity` array with units=erg/s.
         Array of X-ray luminosity.
 
     Examples

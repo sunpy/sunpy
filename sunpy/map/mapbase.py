@@ -55,7 +55,7 @@ class GenericMap(NDData):
 
     Parameters
     ----------
-    data : numpy.ndarray, list
+    data : `~numpy.ndarray`, list
         A 2d list or ndarray containing the map data
     meta : dict
         A dictionary of the original image header tags
@@ -192,6 +192,9 @@ scale:\t\t {scale}
 
     @property
     def wcs(self):
+        """
+        The `~astropy.wcs.WCS` property of the map.
+        """
         w2 = astropy.wcs.WCS(naxis=2)
         w2.wcs.crpix = u.Quantity(self.reference_pixel)
         # Make these a quantity array to prevent the numpy setting element of
@@ -204,7 +207,7 @@ scale:\t\t {scale}
 
         return w2
 
-    #Some numpy extraction
+    # Some numpy extraction
     @property
     def dimensions(self):
         """
@@ -214,26 +217,47 @@ scale:\t\t {scale}
 
     @property
     def dtype(self):
+        """
+        The `numpy.dtype` of the array of the map.
+        """
         return self.data.dtype
 
     @property
     def size(self):
+        """
+        The number of pixels in the array of the map.
+        """
         return u.Quantity(self.data.size, 'pixel')
 
     @property
     def ndim(self):
+        """
+        The value of `numpy.ndarray.ndim` of the data array of the map.
+        """
         return self.data.ndim
 
     def std(self, *args, **kwargs):
+        """
+        Calculate the standard deviation of the data array.
+        """
         return self.data.std(*args, **kwargs)
 
     def mean(self, *args, **kwargs):
+        """
+        Calculate the mean of the data array.
+        """
         return self.data.mean(*args, **kwargs)
 
     def min(self, *args, **kwargs):
+        """
+        Calculate the minimum value of the data array.
+        """
         return self.data.min(*args, **kwargs)
 
     def max(self, *args, **kwargs):
+        """
+        Calculate the maximum value of the data array.
+        """
         return self.data.max(*args, **kwargs)
 
 # #### Keyword attribute and other attribute definitions #### #
@@ -249,7 +273,8 @@ scale:\t\t {scale}
 
     @property
     def nickname(self):
-        """An abbreviated human-readable description of the map-type; part of the Helioviewer data model"""
+        """An abbreviated human-readable description of the map-type; part of
+        the Helioviewer data model"""
         return self._nickname
 
     @nickname.setter
@@ -279,9 +304,7 @@ scale:\t\t {scale}
 
     @property
     def dsun(self):
-        """
-        The observer distance from the Sun.
-        """
+        """The observer distance from the Sun."""
         dsun = self.meta.get('dsun_obs', None)
 
         if dsun is None:
@@ -318,14 +341,14 @@ scale:\t\t {scale}
 
     @property
     def xrange(self):
-        """Return the X range of the image in arcsec from edge to edge."""
+        """Return the X range of the image from edge to edge."""
         xmin = self.center.x - self.dimensions[0] / 2. * self.scale.x
         xmax = self.center.x + self.dimensions[0] / 2. * self.scale.x
         return u.Quantity([xmin, xmax])
 
     @property
     def yrange(self):
-        """Return the Y range of the image in arcsec from edge to edge."""
+        """Return the Y range of the image from edge to edge."""
         ymin = self.center.y - self.dimensions[1] / 2. * self.scale.y
         ymax = self.center.y + self.dimensions[1] / 2. * self.scale.y
         return u.Quantity([ymin, ymax])
@@ -348,7 +371,7 @@ scale:\t\t {scale}
 
     @property
     def rsun_obs(self):
-        """Radius of the sun in arcseconds"""
+        """Radius of the Sun."""
         rsun_arcseconds = self.meta.get('rsun_obs',
                                         self.meta.get('solar_r',
                                                       self.meta.get('radius', None)))
@@ -380,7 +403,7 @@ scale:\t\t {scale}
 
     @property
     def heliographic_latitude(self):
-        """Heliographic latitude in degrees"""
+        """Heliographic latitude"""
         heliographic_latitude = self.meta.get('hglt_obs',
                                               self.meta.get('crlt_obs',
                                                             self.meta.get('solar_b0', None)))
@@ -394,7 +417,7 @@ scale:\t\t {scale}
 
     @property
     def heliographic_longitude(self):
-        """Heliographic longitude in degrees"""
+        """Heliographic longitude"""
         return u.Quantity(self.meta.get('hgln_obs', 0.), 'deg')
 
     @property
@@ -526,7 +549,6 @@ scale:\t\t {scale}
 
         Returns
         -------
-
         x : float
             Pixel coordinate on the CTYPE1 axis.
 
@@ -589,10 +611,10 @@ scale:\t\t {scale}
 
         Parameters
         ----------
-        filepath : string
+        filepath : str
             Location to save file to.
 
-        filetype : string
+        filetype : str
             'auto' or any supported file extension
         """
         io.write_file(filepath, self.data, self.meta, filetype=filetype,
@@ -625,12 +647,12 @@ scale:\t\t {scale}
 
         Returns
         -------
-        out : Map
+        out : `~sunpy.map.GenericMap` or subclass
             A new Map which has been resampled to the desired dimensions.
 
         References
         ----------
-        | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
+        * `Rebinninb <http://www.scipy.org/Cookbook/Rebinning>`_ (Original source, 2011/11/19)
         """
 
         # Note: because the underlying ndarray is transposed in sense when
@@ -714,7 +736,7 @@ scale:\t\t {scale}
 
         Returns
         -------
-        out : Map
+        out : `~sunpy.map.GenericMap` or subclass
             A new Map instance containing the rotated and rescaled data of the
             original map.
 
@@ -861,11 +883,9 @@ scale:\t\t {scale}
 
         return new_map
 
-
     def submap(self, range_a, range_b):
         """
         Returns a submap of the map with the specified range.
-
 
         Parameters
         ----------
@@ -878,7 +898,7 @@ scale:\t\t {scale}
 
         Returns
         -------
-        out : Map
+        out : `~sunpy.map.GenericMap` or subclass
             A new map instance is returned representing to specified sub-region
 
         Examples
@@ -925,7 +945,6 @@ scale:\t\t {scale}
                [-1.1875,  0.375 , -0.5   ,  0.25  , -0.4375],
                [-0.6875, -0.3125,  0.8125,  0.0625,  0.1875],
                [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
-
         """
 
         # Do manual Quantity input validation to allow for two unit options
@@ -1033,7 +1052,7 @@ scale:\t\t {scale}
 
         Returns
         -------
-        out : Map
+        out : `~sunpy.map.GenericMap` or subclass
             A new Map which has superpixels of the required size.
 
         References
@@ -1088,7 +1107,7 @@ scale:\t\t {scale}
 
         Parameters
         ----------
-        axes: matplotlib.axes object or None
+        axes: `~matplotlib.axes` or None
         Axes to plot limb on or None to use current axes.
 
         grid_spacing: float
@@ -1171,7 +1190,7 @@ scale:\t\t {scale}
 
             Parameters
             ----------
-            axes: matplotlib.axes object or None
+            axes: `~matplotlib.axes` or None
                 Axes to plot limb on or None to use current axes.
 
             Returns
@@ -1231,7 +1250,7 @@ scale:\t\t {scale}
             title, labels, or axes are shown.
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
-            when plotting the image.
+            when plotting.
         """
 
         # Create a figure and add title and axes
@@ -1274,16 +1293,16 @@ scale:\t\t {scale}
         Parameters
         ----------
         annotate : bool
-            If true, the data is plotted at it's natural scale; with
+            If True, the data is plotted at it's natural scale; with
             title and axis labels.
 
-        axes: matplotlib.axes object or None
+        axes: `~matplotlib.axes` or None
             If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
 
         **imshow_kwargs  : dict
             Any additional imshow arguments that should be used
-            when plotting the image.
+            when plotting.
 
         Examples
         --------
@@ -1336,7 +1355,6 @@ scale:\t\t {scale}
 
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
-
 
         if not wcsaxes_compat.is_wcsaxes(axes):
             imshow_args.update({'extent': list(self.xrange.value) + list(self.yrange.value)})
