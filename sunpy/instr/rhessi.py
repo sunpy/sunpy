@@ -50,13 +50,13 @@ def get_obssumm_dbase_file(time_range):
 
     Parameters
     ----------
-    time_range : str, TimeRange
-        A TimeRange or time range compatible string
+    time_range : `str`, `sunpy.time.TimeRange`
+        A `~sunpy.time.TimeRange` or `~sunpy.time.TimeRange` compatible string.
 
     Returns
     -------
-    value : tuple
-        Return a tuple (filename, headers) where filename is the local file
+    value : `tuple`
+        Return a `tuple` (filename, headers) where filename is the local file
         name under which the object can be found, and headers is
         whatever the info() method of the object returned by urlopen.
 
@@ -95,13 +95,13 @@ def parse_obssumm_dbase_file(filename):
 
     Parameters
     ----------
-    filename : str
-        The filename of the obssumm dbase file
+    filename : `str`
+        The filename of the obssumm dbase file.
 
     Returns
     -------
-    out : dict
-        Return a dict containing the parsed data in the dbase file
+    out : `dict`
+        Return a `dict` containing the parsed data in the dbase file.
 
     Examples
     --------
@@ -197,7 +197,7 @@ def get_obssumm_file(time_range):
 
     Parameters
     ----------
-    time_range : str, TimeRange
+    time_range : `str`, `sunpy.time.TimeRange`
         A TimeRange or time range compatible string
 
     Returns
@@ -242,7 +242,7 @@ def parse_obssumm_file(filename):
 
     Returns
     -------
-    out : dict
+    out : `dict`
         Returns a dictionary.
 
     Examples

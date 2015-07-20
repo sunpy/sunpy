@@ -95,7 +95,6 @@ class LYRALightCurve(LightCurve):
         axes = plt.gca()
 
         axes = self.data.plot(ax=axes, subplots=True, sharex=True, **kwargs)
-        #plt.legend(loc='best')
 
         for i, name in enumerate(self.data.columns):
             if names < 3:
@@ -112,7 +111,6 @@ class LYRALightCurve(LightCurve):
         figure.show()
 
         return figure
-
 
     @staticmethod
     def _get_url_for_date(date,**kwargs):
@@ -138,7 +136,7 @@ class LYRALightCurve(LightCurve):
         # Open file with PyFITS
         hdulist = fits.open(filepath)
         fits_record = hdulist[1].data
-        #secondary_header = hdulist[1].header
+        # secondary_header = hdulist[1].header
 
         # Start and end dates.  Different LYRA FITS files have
         # different tags for the date obs.
@@ -146,11 +144,11 @@ class LYRALightCurve(LightCurve):
             start_str = hdulist[0].header['date-obs']
         elif 'date_obs' in hdulist[0].header:
             start_str = hdulist[0].header['date_obs']
-        #end_str = hdulist[0].header['date-end']
+        # end_str = hdulist[0].header['date-end']
 
-        #start = datetime.datetime.strptime(start_str, '%Y-%m-%dT%H:%M:%S.%f')
+        # start = datetime.datetime.strptime(start_str, '%Y-%m-%dT%H:%M:%S.%f')
         start = parse_time(start_str)
-        #end = datetime.datetime.strptime(end_str, '%Y-%m-%dT%H:%M:%S.%f')
+        # end = datetime.datetime.strptime(end_str, '%Y-%m-%dT%H:%M:%S.%f')
 
         # First column are times.  For level 2 data, the units are [s].
         # For level 3 data, the units are [min]
@@ -168,7 +166,7 @@ class LYRALightCurve(LightCurve):
         table = {}
 
         for i, col in enumerate(fits_record.columns[1:-1]):
-            #temporary patch for big-endian data bug on pandas 0.13
+            # temporary patch for big-endian data bug on pandas 0.13
             if fits_record.field(i+1).dtype.byteorder == '>' and sys.byteorder =='little':
                 table[col.name] = fits_record.field(i + 1).byteswap().newbyteorder()
             else:

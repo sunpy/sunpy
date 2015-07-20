@@ -10,7 +10,7 @@ from sunpy.cm import cm
 __all__ = ['SWAPMap']
 
 class SWAPMap(GenericMap):
-    """PROBA2 SWAP Image Map
+    """PROBA2 SWAP Image Map.
 
     The Sun Watcher using Active Pixel System detector and Image Processing (SWAP)
     SWAP provides images of the solar corona at about 17.4 nm, a bandpass
@@ -38,7 +38,6 @@ class SWAPMap(GenericMap):
 
         self._nickname = self.detector
         self.plot_settings['cmap'] = cm.get_cmap(name='sdoaia171')
-
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
