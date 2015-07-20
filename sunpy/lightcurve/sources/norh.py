@@ -22,12 +22,21 @@ __all__ = ['NoRHLightCurve']
 
 class NoRHLightCurve(LightCurve):
     """
-    Nobeyama Radioheliograph LightCurve.
+    Nobeyama Radioheliograph Correlation LightCurve.
+
+    Nobeyama Radioheliograph (NoRH) is a radio telescope dedicated to observing
+    the Sun. It consists of 84 parabolic antennas with 80 cm diameter,
+    sitting on lines of 490 m long in the east/west and of 220 m long in the north/south.
+    It observes the full solar disk at 17 GHz and 34 GHz with a temporal resolution
+    down to 0.1 second resolution (typically 1 s). It is located in Japan at
+    `35.941667, 138.475833 <https://www.google.com/maps/place/Nobeyama+radio+observatory/@35.9410098,138.470243,14z/data=!4m2!3m1!1s0x0:0xe5a3821a5f6a3c4b>`_.
+
+    Its first observation was in April, 1992 and daily 8-hour observations are
+    available starting June, 1992.
 
     Examples
     --------
-    >>> import sunpy
-
+    >>> import sunpy.lightcurve
     >>> norh = sunpy.lightcurve.NoRHLightCurve.create('~/Data/norh/tca110607')   # doctest: +SKIP
     >>> norh = sunpy.lightcurve.NoRHLightCurve.create('2011/08/10')
     >>> norh = sunpy.lightcurve.NoRHLightCurve.create('2011/08/10',wavelength='34')
@@ -35,11 +44,27 @@ class NoRHLightCurve(LightCurve):
 
     References
     ----------
-    | http://solar.nro.nao.ac.jp/norh/
+    * `Nobeyama Radioheliograph Homepage <http://solar.nro.nao.ac.jp/norh/>`_
+    * `Analysis Manual <http://solar.nro.nao.ac.jp/norh/doc/manuale/index.html>`_
+    * `Nobeyama Correlation Plots <http://solar.nro.nao.ac.jp/norh/html/cor_plot/>`_
     """
 
     def peek(self, **kwargs):
-        """Plots the NoRH lightcurve."""
+        """Plots the NoRH lightcurve
+
+        .. plot::
+
+            from sunpy import lightcurve as lc
+            norh = lc.NoRHLightCurve.create('2011/08/10')
+            norh.peek()
+
+        Parameters
+        ----------
+        **kwargs : dict
+            Any additional plot arguments that should be used
+            when plotting.
+        """
+
         plt.figure()
         axes = plt.gca()
         data_lab=self.meta['OBS-FREQ'][0:2] + ' ' + self.meta['OBS-FREQ'][2:5]

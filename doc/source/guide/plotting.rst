@@ -40,7 +40,7 @@ Here is a simple example of pyplot usage.
 
 The `~matplotlib.pyplot.show` command opens a plot on the screen and blocks
 execution until the plot window is closed. The `~matplotlib.pyplot.show`
-command only work once. If you were to call `~matplotlib.pyplot.show` again
+command only works once. If you were to call `~matplotlib.pyplot.show` again
 after the above code is executed nothing happens. This confusing behavior
 is something that the matplotlib devs get complaints about often and so this may change.
 A discussion about this can be found `here
@@ -103,8 +103,8 @@ which supports both simple and advanced matplotlib usage. The following examples
 focus on the map object but they should be applicable across all of the data
 objects.
 
-5. peek()
----------
+4.1 peek()
+----------
 
 For quick and easy access to a plot
 all SunPy base objects (e.g. maps, spectra, lightcurves) define their own
@@ -122,20 +122,20 @@ your data. For example you can make the following plot.
 
 This creates a plot window with all axes defined, a plot title, and the image of
 the map data defined by the contents of the map. In non-interactive mode the
-plot window blocks and must be closed before doing anything else.
+plot window blocks the command line terminal and must be closed before doing anything else.
 
-6. plot()
----------
+4.2 plot()
+----------
 
 For more advanced plotting the base SunPy objects also provide a `~sunpy.map.mapbase.GenericMap.plot` command.
 This command is similar to the pyplot `~matplotlib.pyplot.plot` command in that
 it will create a figure and axes object for you if you haven't already. It
 returns a figure object and does not create a plot window. With the `~matplotlib.figure.Figure` object
 in your hands you can reach in and grab the axes and therefore manipulate the plot.
-Here is a simple example which outputs the same plot as we saw before. Click
-on the link to see the code.
+Here is a simple example which outputs the same plot as we saw before. 
 
 .. plot::
+    :include-source:
 
     import sunpy.map
     import sunpy.data.sample
@@ -151,7 +151,8 @@ The following example plot shows how to add a rectangle to a plot to, for exampl
 highlight a region of interest, and change the plot title.
 
 .. plot::
-
+    :include-source:
+    
     import sunpy.map
     import sunpy.data.sample
     import matplotlib.pyplot as plt
@@ -187,10 +188,10 @@ in degrees ::
     ax.plot((100*u.arcsec).to(u.deg), (500*u.arcsec).to(u.deg),
             transform=ax.get_transform('world'))
 
-Finally, here is a more complex example whose source code is available through
-the link.
+Finally, here is a more complex example:
 
 .. plot::
+    :include-source:
 
     from matplotlib import patches
     import astropy.units as u

@@ -19,10 +19,14 @@ spatially-aware data array, often an image. In order to make it easy to work
 with image data in SunPy, the Map object provides a number of methods for
 commonly performed operations.
 
-2D map objects are subclasses of sunpy.map.MapBase and all Map objects are
-created using the Map factory sunpy.map.Map.
+2D map objects are subclasses of `~sunpy.map.MapBase` and all Map objects are
+created using the Map factory `~sunpy.map.Map`.
 
-.. Todo:
+A number of instrument are supported by subclassing this base object. See
+:ref:`map-sources` to see a list of all of them. More complex subclasses are also
+available. See :ref:`map-classes`.
+
+.. todo :
     1. Map factory and registration
     2. MapBase and Generic Map
     3. MapMeta and the separation from the file io
@@ -72,11 +76,16 @@ parameters are met.
     :no-main-docstr:
     :no-heading:
 
+.. _map-sources:
+
+Instrument Map Classes
+----------------------
+
 .. automodapi:: sunpy.map.sources
 
 
-Writing a new Map Class
------------------------
+Writing a new Insteument Map Class
+----------------------------------
 
 Map classes can be registered with the Map factory, even if the new class is not
 officially part of SunPy.  This is good for prototyping new instruments.  For

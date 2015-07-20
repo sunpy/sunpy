@@ -17,12 +17,29 @@ __all__ = ['EVELightCurve']
 
 class EVELightCurve(LightCurve):
     """
-    SDO EVE LightCurve.
+    SDO EVE LightCurve for level 0CS data.
+
+    The Extreme Ultraviolet Variability Experiment (EVE) is an instrument on board
+    the Solar Dynamics Observatory (SDO). The EVE instrument is designed to
+    measure the solar extreme ultraviolet (EUV) irradiance. The EUV radiation
+    includes the 0.1-105 nm range, which provides the majority of the energy
+    for heating Earth’s thermosphere and creating Earth’s ionosphere (charged plasma).
+
+    EVE includes several irradiance instruments: The Multiple EUV Grating
+    Spectrographs (MEGS)-A is a grazing- incidence spectrograph that measures
+    the solar EUV irradiance in the 5 to 37 nm range with 0.1-nm resolution,
+    and the MEGS-B is a normal-incidence, dual-pass spectrograph that measures
+    the solar EUV irradiance in the 35 to 105 nm range with 0.1-nm resolution.
+
+    Level 0CS data is primarily used for space weather. It is provided near
+    real-time and is crudely calibrated 1-minute averaged broadband irradiances
+    from ESP and MEGS-P broadband.
+
+    Data is available starting on 2010/03/01.
 
     Examples
     --------
     >>> import sunpy
-
     >>> eve = sunpy.lightcurve.EVELightCurve.create()
     >>> eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
     >>> eve = sunpy.lightcurve.EVELightCurve.create(sunpy.data.test.EVE_AVERAGES_CSV)
@@ -31,10 +48,36 @@ class EVELightCurve(LightCurve):
 
     References
     ----------
-    | http://lasp.colorado.edu/home/eve/data/data-access/
+    * `SDO Mission Homepage <http://sdo.gsfc.nasa.gov>`_
+    * `EVE Homepage <http://lasp.colorado.edu/home/eve/>`_
+    * `Level 0CS Definition <http://lasp.colorado.edu/home/eve/data/>`_
+    * `EVE Data Acess <http://lasp.colorado.edu/home/eve/data/data-access/>`_
+    * `Instrument Paper <http://link.springer.com/article/10.1007%2Fs11207-009-9487-6>`_
     """
 
     def peek(self, column=None, **kwargs):
+        """Plots the light curve in a new figure. An example is shown below.
+
+        .. plot::
+
+            import sunpy
+            eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
+            eve.peek(subplots=True)
+
+        Parameters
+        ----------
+        column : str
+            The column to display. If None displays all.
+
+        **kwargs : dict
+            Any additional plot arguments that should be used
+            when plotting.
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
+        """
         figure = plt.figure()
         # Choose title if none was specified
         if "title" not in kwargs and column is None:
@@ -59,7 +102,7 @@ class EVELightCurve(LightCurve):
 
     @staticmethod
     def _get_default_uri():
-        """Load latest level 0CS if no other data is specified."""
+        """Loads latest level 0CS if no other data is specified"""
         return "http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt"
 
     @staticmethod
