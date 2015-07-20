@@ -51,12 +51,12 @@ PARSERS = [
     ("", parse_filename)
 ]
 def query(start, end, instruments=None, url=DEFAULT_URL):
-    """ Get URLs for callisto data from instruments between start and end.
+    """Get URLs for callisto data from instruments between start and end.
 
     Parameters
     ----------
-    start : parse_time compatible
-    end : parse_time compatible
+    start : `~sunpy.time.parse_time` compatible
+    end : `~sunpy.time.parse_time` compatible
     instruments : sequence
         Sequence of instruments whose data is requested.
     url : str
@@ -93,7 +93,7 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
 
 
 def download(urls, directory):
-    """ Download files from urls into directory.
+    """Download files from urls into directory.
 
     Parameters
     ----------
@@ -106,7 +106,7 @@ def download(urls, directory):
 
 
 def _parse_header_time(date, time):
-    """ Return datetime object from date and time fields of header. """
+    """Returns `~datetime.datetime` object from date and time fields of header. """
     if time is not None:
         date = date + 'T' + time
     return parse_time(date)
@@ -115,14 +115,13 @@ def _parse_header_time(date, time):
 class CallistoSpectrogram(LinearTimeSpectrogram):
     """ Classed used for dynamic spectra coming from the Callisto network.
 
-
     Attributes
     ----------
-    header : fits.Header
+    header : `~astropy.io.fits.Header`
         main header of the FITS file
-    axes_header : fits.Header
+    axes_header : `~astropy.io.fits.Header`
         header foe the axes table
-    swapped : boolean
+    swapped : bool
         flag that specifies whether originally in the file the x-axis was
         frequency
     """
@@ -175,7 +174,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         hdulist.writeto(filepath)
 
     def get_header(self):
-        """ Return updated header. """
+        """Returns the updated header."""
         header = self.header.copy()
 
         if self.swapped:
@@ -188,7 +187,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def read(cls, filename, **kwargs):
-        """ Read in FITS file and return a new CallistoSpectrogram.
+        """Reads in FITS file and return a new CallistoSpectrogram.
         Any unknown (i.e. any except filename) keyword arguments get
         passed to fits.open.
 
@@ -287,17 +286,17 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def is_datasource_for(cls, header):
-        """ Check if class supports data from the given FITS file.
+        """Check if class supports data from the given FITS file.
 
         Parameters
         ----------
-        header : fits.Header
+        header : `~astropy.io.fits.Header`
             main header of the FITS file
         """
         return header.get('instrume', '').strip() in cls.INSTRUMENTS
 
     def remove_border(self):
-        """ Remove duplicate entries on the borders. """
+        """Remove duplicate entries on the borders."""
         left = 0
         while self.freq_axis[left] == self.freq_axis[0]:
             left += 1
@@ -308,7 +307,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def read_many(cls, filenames, sort_by=None):
-        """ Return list of CallistoSpectrogram objects read from filenames.
+        """Returns a list of CallistoSpectrogram objects read from filenames.
 
         Parameters
         ----------
@@ -325,16 +324,16 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def from_range(cls, instrument, start, end, **kwargs):
-        """ Automatically download data from instrument between start and
+        """Automatically download data from instrument between start and
         end and join it together.
 
         Parameters
         ----------
         instrument : str
             instrument to retrieve the data from
-        start : parse_time compatible
+        start : `~sunpy.time.parse_time` compatible
             start of the measurement
-        end : parse_time compatible
+        end : `~sunpy.time.parse_time` compatible
             end of the measurement
         """
         kw = {
@@ -365,9 +364,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @staticmethod
     def _to_minimize(a, b):
-        """
-        Function to be minimized for matching to frequency channels.
-        """
+        """Function to be minimized for matching to frequency channels."""
         def _fun(p):
             if p[0] <= 0.2 or abs(p[1]) >= a.max():
                 return float("inf")
@@ -381,7 +378,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
         Parameters
         ----------
-        other : CallistoSpectrogram
+        other : `sunpy.spectra.CallistoSpectrogram`
             Spectrogram to be homogenized with the current one.
         maxdiff : float
             Threshold for which frequencies are considered equal.
@@ -424,7 +421,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
         Parameters
         ----------
-        other : CallistoSpectrogram
+        other : `sunpy.spectra.CallistoSpectrogram`
             Spectrogram to be homogenized with the current one.
         maxdiff : float
             Threshold for which frequencies are considered equal.
@@ -448,7 +445,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         )
 
     def extend(self, minutes=15, **kwargs):
-        """ Request subsequent files from the server. If minutes is negative,
+        """Requests subsequent files from the server. If minutes is negative,
         retrieve preceding files. """
         if len(self.instruments) != 1:
             raise ValueError
@@ -470,12 +467,16 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def from_url(cls, url):
-        """ Return CallistoSpectrogram read from URL.
+        """Returns CallistoSpectrogram read from URL.
 
         Parameters
         ----------
         url : str
             URL to retrieve the data from
+
+        Returns
+        -------
+        newSpectrogram : `sunpy.spectra.CallistoSpectrogram`
         """
         return cls.read(url)
 
@@ -487,7 +488,7 @@ CallistoSpectrogram._create.add(
 )
 
 CallistoSpectrogram.create.im_func.__doc__ = (
-    """ Create CallistoSpectrogram from given input dispatching to the
+    """Create CallistoSpectrogram from given input dispatching to the
     appropriate from_* function.
 
 Possible signatures:

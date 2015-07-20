@@ -32,40 +32,28 @@ class LightCurve(object):
 
     A generic light curve object.
 
-    Parameters
-    ----------
-    args : filepath, url, or start and end dates
-        The input for a LightCurve object should either be a filepath, a URL,
-        or a date range to be queried for the particular instrument.
-
     Attributes
     ----------
-    meta : `str`, `dict`
-        The comment string or header associated with the light curve input
-    data : `pandas.DataFrame`
-        A pandas DataFrame representing one or more fields as they vary with
-        respect to time.
+
+    meta : `str` or `dict`
+        The comment string or header associated with the data.
+    data : `~pandas.DataFrame`
+        An pandas DataFrame prepresenting one or more fields as a function of time.
 
     Examples
     --------
     >>> import sunpy
     >>> import datetime
     >>> import numpy as np
-
     >>> base = datetime.datetime.today()
     >>> dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
-
     >>> intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / 24 * 60))
-
-    >>> light_curve = sunpy.lightcurve.LightCurve.create(
-    ...    {"param1": intensity}, index=dates
-    ... )
-
-    >>> light_curve.peek()   # doctest: +SKIP
+    >>> light_curve = sunpy.lightcurve.LightCurve.create({"param1": intensity}, index=dates)
+    >>> light_curve.peek()
 
     References
     ----------
-    | http://pandas.pydata.org/pandas-docs/dev/dsintro.html
+    * `Pandas Documentation <http://pandas.pydata.org/pandas-docs/dev/dsintro.html>`_
 
     """
     _cond_dispatch = ConditionalDispatch()
@@ -160,16 +148,14 @@ for compatibility with map, please use meta instead""", Warning)
     @classmethod
     def from_url(cls, url, **kwargs):
         """
-        Downloads a file from the given url, reads and returns a Light Curve object.
+        Called by Conditional Dispatch object to create Light Curve object when
+        given a url. Downloads a file from the given url, attemps to read it
+        and returns a Light Curve object.
 
         Parameters
         ----------
-        url : `str`
-            Uniform Resource Locator pointing to the file.
-
-        kwargs : `dict`
-            Dictionary object containing other related parameters to assist in
-            download.
+        url : str
+            A url given as a string.
         """
         try:
             filepath = cls._download(url, kwargs)
@@ -183,6 +169,13 @@ for compatibility with map, please use meta instead""", Warning)
         """
         Called by Conditional Dispatch object to create Light Curve object when
         corresponding data is passed to create method.
+
+        Parameters
+        ----------
+        data : `~numpy.ndarray`
+            The data array
+        index : `~datetime.datetime` array
+            The time values
         """
 
         return cls(
@@ -192,6 +185,9 @@ for compatibility with map, please use meta instead""", Warning)
 
     @classmethod
     def from_yesterday(cls):
+        """
+        Called by Conditional Dispatch object if no input if given
+        """
         return cls.from_url(cls._get_default_uri())
 
     @classmethod
@@ -199,6 +195,13 @@ for compatibility with map, please use meta instead""", Warning)
         """
         Called by Conditional Dispatch object to create Light Curve object when
         Pandas DataFrame is passed to create method.
+
+        Parameters
+        ----------
+        dataframe : `~pandas.DataFrame`
+            The data.
+        meta : `str` or `dict`
+            The metadata.
         """
 
         return cls(dataframe, meta)
@@ -208,14 +211,18 @@ for compatibility with map, please use meta instead""", Warning)
 
         Parameters
         ----------
-        axes: `matplotlib.axes` or None
-            If provided the image will be plotted on the given axes. Else the
-            current matplotlib axes will be used.
+        axes : `~matplotlib.axes.Axes` or None
+            If provided the image will be plotted on the given axes. Otherwise
+            the current axes will be used.
 
         **plot_args : `dict`
             Any additional plot arguments that should be used
-            when plotting the image.
+            when plotting.
 
+        Returns
+        -------
+        axes : `~matplotlib.axes.Axes`
+            The plot axes.
         """
 
         # Get current axes
@@ -227,12 +234,22 @@ for compatibility with map, please use meta instead""", Warning)
         return axes
 
     def peek(self, **kwargs):
-        """Displays the light curve in a new figure."""
+        """Displays the light curve in a new figure.
+
+        Parameters
+        ----------
+        **kwargs : `dict`
+            Any additional plot arguments that should be used
+            when plotting.
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
+        """
 
         figure = plt.figure()
-
         self.plot(**kwargs)
-
         figure.show()
 
         return figure
@@ -240,7 +257,13 @@ for compatibility with map, please use meta instead""", Warning)
     @staticmethod
     def _download(uri, kwargs,
                   err='Unable to download data at specified URL'):
-        """Attempts to download data at the specified URI."""
+        """Attempts to download data at the specified URI.
+
+        Parameters
+        ----------
+        **kwargs : uri
+            A url
+        """
 
         _filename = os.path.basename(uri).split("?")[0]
 
@@ -313,7 +336,18 @@ for compatibility with map, please use meta instead""", Warning)
             return cls._parse_fits(filepath)
 
     def truncate(self, a, b=None):
-        """Returns a truncated version of the timeseries object."""
+        """Returns a truncated version of the timeseries object.
+
+        Parameters
+        ----------
+        a : `sunpy.time.TimeRange`
+            A time range to truncate to.
+
+        Returns
+        -------
+        newlc : `~sunpy.lightcurve.LightCurve`
+            A new lightcurve with only the selected times.
+        """
         if isinstance(a, TimeRange):
             time_range = a
         else:
@@ -322,17 +356,28 @@ for compatibility with map, please use meta instead""", Warning)
         truncated = self.data.truncate(time_range.start, time_range.end)
         return self.__class__.create(truncated, self.meta.copy())
 
-    def extract(self, a):
-        """Extract a set of particular columns from the DataFrame."""
+    def extract(self, column_name):
+        """Returns a new lightcurve with the chosen column.
+
+        Parameters
+        ----------
+        column_name : `str`
+            A valid column name
+
+        Returns
+        -------
+        newlc : `~sunpy.lightcurve.LightCurve`
+            A new lightcurve with only the selected column.
+        """
         # TODO allow the extract function to pick more than one column
         if isinstance(self, pandas.Series):
             return self
         else:
-            return LightCurve(self.data[a], self.meta.copy())
+            return LightCurve(self.data[column_name], self.meta.copy())
 
     def time_range(self):
-        """Returns the start and end times of the LightCurve as a TimeRange
-        object."""
+        """Returns the start and end times of the LightCurve as a `~sunpy.time.TimeRange`
+        object"""
         return TimeRange(self.data.index[0], self.data.index[-1])
 
 # What's happening here is the following: The ConditionalDispatch is just an
