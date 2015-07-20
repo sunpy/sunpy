@@ -19,14 +19,21 @@ parsing function which can deal with most every format that a user may encounter
 `sunpy.time.parse_time()`, this function takes a string as input and returns a datetime object.
 Here are few examples of formats which `sunpy.time.parse_time()` accepts: ::
 
-    from sunpy.time import *
+    from sunpy.time import parse_time
     parse_time('2007-05-04T21:08:12')
+    parse_time('2007-05-04 21:08:12')
     parse_time('2007/05/04T21:08:12')
     parse_time('20070504T210812')
     parse_time('2007-May-04 21:08:12')
     parse_time('20070504_210812')
 
-Each of the above returns the same datetime object. All SunPy functions which require
+Each of the above returns the same datetime object ``datetime.datetime(2007, 5, 4, 21, 8, 12)``. One of the most standard time formats used in solar physics is the number of seconds since 1979 January 01. The parse_time function also accepts this as input, e.g.: ::
+
+    > parse_time(894316092.00000000)
+    datetime.datetime(2007, 5, 4, 21, 8, 12)
+    
+
+All SunPy functions which require
 time as an input sanitize the input using parse_time. You can also pass it a `datetime.datetime`
 object directly and it will simply hand it right back to you. For users of IDL,
 this function is meant to the be the equivalent to SSW's anytim().
@@ -39,6 +46,7 @@ ranges. This occurs very often with plotting or when searching for data. To deal
 time ranges SunPy provides the `sunpy.time.TimeRange` object. A TimeRange object can be created
 very easily by providing it with two time strings, a start time and an end time: ::
 
+    from sunpy.time import TimeRange
     time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
 
 You can also pass the start and end times as a tuple: ::
@@ -75,5 +83,10 @@ if you needed time ranges that spanned 30 minutes over a period of 4 hours you c
 
     for a in range(8):
         print(time_range.next())
+
+A time range can also be easily split into sub-intervals of equal length, for example to
+split a TimeRange object into two new TimeRange objects: ::
+    
+    time_range.split(2)
 
 Check out the code reference for the `sunpy.time.TimeRange` object for more information.
