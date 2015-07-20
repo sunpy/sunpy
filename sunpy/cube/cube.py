@@ -442,7 +442,7 @@ class Cube(astropy.nddata.NDDataArray):
             raise cu.CubeError(2, 'Spectral axis needed to create a spectrum')
         axis = 0 if self.axes_wcs.wcs.ctype[-1] == 'WAVE' else 1
         coordaxes = [1, 2] if axis == 0 else [0, 2]  # Non-spectral axes
-        newwcs = wu.reindex_wcs(self.axes_wcs, coordaxes)
+        newwcs = wu.reindex_wcs(self.axes_wcs, np.array(coordaxes))
         time_or_x_size = self.data.shape[coordaxes[0]]
         y_size = self.data.shape[coordaxes[1]]
         spectra = np.empty((time_or_x_size, y_size), dtype=Spectrum)

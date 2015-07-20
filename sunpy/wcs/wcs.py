@@ -118,7 +118,7 @@ def get_center(size, scale, ref_pixel, ref_coordinate):
     --------
 
     """
-    return scale * (size - 1 * u.pix) / 2. + reference_coordinate - (reference_pixel - 1 * u.pix) * scale
+    return scale * (size - 1 * u.pix) / 2. + ref_coordinate - (ref_pixel - 1 * u.pix) * scale
 
 def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
     """Calculate the pixel indices for a given data coordinate.
