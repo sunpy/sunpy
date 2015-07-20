@@ -16,10 +16,11 @@ class Spectrum(np.ndarray):
     Attributes
     ----------
     freq_axis : `numpy.ndarray`
-        one-dimensional array with the frequency values at every data point
+        One-dimensional array with the frequency values at every data point.
 
-    data : `numpy.ndarray`
-        one-dimensional array which the intensity at a particular frequency at every data-point.
+    data\ : `numpy.ndarray`
+        One-dimensional array which the intensity at a particular frequency at
+        every data-point.
 
     """
     def __new__(cls, data, *args, **kwargs):
@@ -35,9 +36,9 @@ class Spectrum(np.ndarray):
 
         Parameters
         ----------
-        axes : `matplotlib.axes` object or None
+        axes : `matplotlib.axes.Axes` object or None
             If provided the spectrum will be plotted on the given axes.
-            Else the current `matplotlib.axes` object will be used.
+            Else the current `matplotlib.axes.Axes` object will be used.
         """
 
         # Get current axes
