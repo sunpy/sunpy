@@ -68,8 +68,10 @@ remote file. Let's create some fake data and pass it into a lightcurve object.
     light_curve.peek()
 
 Within LightCurve.create, we have a dictionary that contains a single entry with key
-"param1" containing a list of 1440 entries (0-1439). As there are no times provided,
+``param1`` containing a list of 1440 entries (0-1439). As there are no times provided,
 so a default set of times are generated.
+
+.. this should be a better example, for example grabbing goes data...
 
 Spectra
 -------
@@ -96,9 +98,13 @@ Let's begin by creating a simple plot of an AIA image. To make things easy,
 SunPy includes several example files which are used throughout the docs. These
 files have names like `sunpy.data.sample.AIA_171_IMAGE` and `sunpy.data.sample.RHESSI_IMAGE`.
 
-Try typing the below example into your interactive Python shell::
+Try typing the below example into your interactive Python shell.
+
+.. plot::
+    :include-source:
 
     import sunpy.map
+    import sunpy.data.sample
     aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     aia.peek()
 
@@ -118,23 +124,12 @@ SunPy Map object which is basically just a spatially-aware image or data array.
 On the last line we then plot the map object, using the built in 'quick plot' function `peek()`.
 
 SunPy uses a matplotlib like interface to it's plotting so more complex plots can be built by combining
-SunPy with matplotlib::
-
-    import sunpy.map
-    import matplotlib.pyplot as plt
-    aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    fig = plt.figure()
-    ax = plt.subplot(111)
-    aia.plot()
-    aia.draw_limb()
-    aia.draw_grid()
-    plt.colorbar()
-    plt.show()
-
-This should output something like the image below:
+SunPy with matplotlib.
 
 .. plot::
+    :include-source:
 
+    import sunpy.map
     import matplotlib.pyplot as plt
     import sunpy.data.sample
     aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
@@ -144,6 +139,7 @@ This should output something like the image below:
     aia.draw_limb()
     aia.draw_grid()
     plt.colorbar()
+    aia.draw_limb()
     plt.show()
 
 Solar Physical Constants
@@ -411,12 +407,20 @@ including generating a PNG and downloading a `JPEG 2000 <http://wiki.helioviewer
 image and loading it into a SunPy Map.
 
 
-A simple example of a helioviewer query is::
+A simple example of a helioviewer query and a plot of the result follows.
+
+.. plot::
+    :include-source:
 
     from sunpy.net.helioviewer import HelioviewerClient
-
+    import matplotlib.pyplot as plt
+    from matplotlib.image import imread
     hv = HelioviewerClient()
-    hv.download_png('2099/01/01', 4.8, "[SDO,AIA,AIA,304,1,100]", x0=0, y0=0, width=512, height=512)
+    file = hv.download_png('2099/01/01', 4.8, "[SDO,AIA,AIA,304,1,100]", x0=0, y0=0, width=512, height=512)
+    im = imread(file)
+    plt.imshow(im)
+    plt.axis('off')
+    plt.show()
 
 This downloads a PNG image of the latest AIA 304 image available on
 Helioviewer.org in the `download_png` command 4.8 refers to the image resolution
@@ -424,9 +428,5 @@ in arcseconds per pixel (larger values mean lower resolution), the "1" and "100"
 layer string refer to the visibility (visible/hidden) and opacity,
 x0 and y0 are the center points about which to focus and the width and height
 are the pixel values for the image dimensions.
-
-The result is:
-
-.. image:: ../images/helioviewer_download_png_ex1.png
 
 For more information checkout the :doc:`helioviewer guide <acquiring_data/helioviewer>`.
