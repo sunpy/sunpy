@@ -37,65 +37,65 @@ def download_weekly_pointing_file(date):
     """
 
     date = parse_time(date)
-    #use a temp directory to hold the file
-    tmp_dir=tempfile.mkdtemp()
-    #use Fermi data server to access weekly LAT pointing file.
+    # use a temp directory to hold the file
+    tmp_dir = tempfile.mkdtemp()
+    # use Fermi data server to access weekly LAT pointing file.
     base_url = 'http://fermi.gsfc.nasa.gov/ssc/observations/timeline/ft2/files/'
     fbasename='FERMI_POINTING_FINAL_'
 
-    #find out which file to get based on date
-    #earliest file in the FERMI server is for mission week 23,
-    #beginning 2008 November 6.
+    # find out which file to get based on date
+    # earliest file in the FERMI server is for mission week 23,
+    # beginning 2008 November 6.
     weekly_file_start=parse_time('2008-11-06')
     base_week=23
 
-    #find out which mission week corresponds to date
+    # find out which mission week corresponds to date
     time_diff=date-weekly_file_start
     weekdiff = time_diff.days//7
     week = weekdiff + base_week
 
-    #find out the rest of the file name. Need the year and the day-in-year for
-    #start and end of file
+    # find out the rest of the file name. Need the year and the day-in-year for
+    # start and end of file
     start_date = weekly_file_start + datetime.timedelta(weekdiff*7)
-    start_year_str=str(start_date.year) + '-01-01'
+    start_year_str = str(start_date.year) + '-01-01'
     start_str = start_date.strftime('%Y%j')
 
-    #now end string
+    # now end string
     end_date = weekly_file_start + datetime.timedelta((weekdiff+1)*7)
     end_str = end_date.strftime('%Y%j')
 
-    #construct the full url for the weekly pointing file
+    # construct the full url for the weekly pointing file
     full_fname_start=fbasename + str(week) + '_' + start_str + '_' + end_str + '_'
     full_fname_extension='.fits'
-    #the full filename will be full_fname_start + version number + full_fname_extension,
-    #but version number unknown - multiple versions may exist for each week.
+    # the full filename will be full_fname_start + version number + full_fname
+    # extension, but version number unknown - multiple versions may exist for
+    # each week.
 
-    #search through version numbers starting from most recent (10) until we find a file.
-    #This will find the most up to date file.
-    for v in range(10,-1,-1):
+    # search through version numbers starting from most recent (10) until we
+    # find a file. This will find the most up to date file.
+    for v in range(10, -1, -1):
         rest_of_filename = full_fname_start + '0' + str(v) + full_fname_extension
-        full_fname = base_url + rest_of_filename# full_fname_start + '0' + str(v) + full_fname_extension
+        full_fname = base_url + rest_of_filename  # full_fname_start + '0' + str(v) + full_fname_extension
         try:
             resp = urllib2.urlopen(full_fname)
             exists = True
         except:
             urllib2.HTTPError
             exists = False
-        #if the file exists then exit and retain this filepath
+        # if the file exists then exit and retain this filepath
         if exists:
             break
 
-    #if no matches at all were found, then the pointing file doesn't exist
+    # if no matches at all were found, then the pointing file doesn't exist
     if not exists:
         raise ValueError('No Fermi pointing files found for given date!')
 
-
-    #download the file
+    # download the file
     pointing_file_url=full_fname
     destination=os.path.join(tmp_dir,rest_of_filename)
     urllib.urlretrieve(pointing_file_url,destination)
 
-    #return the location of the downloaded file
+    # return the location of the downloaded file
     return destination
 
 
@@ -191,8 +191,9 @@ def plot_detector_sun_angles(angles):
     ----------
 
     angles : `dict`
-        A dictionary containing the Fermi/GBM detector angle information as a function of time.
-        Obtained from the get_detector_separation_angles function.
+        A dictionary containing the Fermi/GBM detector angle information as a
+        function of time. Obtained from the get_detector_separation_angles
+        function.
     """
 
     # make a plot showing the angles vs time
@@ -213,7 +214,8 @@ def plot_detector_sun_angles(angles):
 
 def get_scx_scz_at_time(time, file):
     """
-    read a downloaded FERMI weekly pointing file and extract scx, scz for a single time.
+    Read a downloaded FERMI weekly pointing file and extract scx, scz for a
+    single time.
 
     Parameters
     ----------
@@ -242,7 +244,8 @@ def get_scx_scz_at_time(time, file):
 
 def get_scx_scz_in_timerange(timerange, file):
     """
-    read a downloaded FERMI weekly pointing file and extract scx, scz for a timerange.
+    Read a downloaded FERMI weekly pointing file and extract scx, scz for a
+    timerange.
 
     Parameters
     ----------
@@ -337,7 +340,8 @@ def nai_detector_radecs(detectors, scx, scz, time):
                   np.sin(scz[0].to('rad').value)*np.cos(scz[1].to('rad').value),
                   np.sin(scz[1].to('rad').value)]))
 
-    # for each detector, do the rotation depending on the detector zenith and azimuth angles
+    # For each detector, do the rotation depending on the detector zenith and
+    # azimuth angles.
     detector_radecs = copy.deepcopy(detectors)
     for l, d in detectors.items():
         phi = d[0].value
@@ -399,12 +403,13 @@ def get_detector_separation_angles(detector_radecs, sunpos):
 
     Parameters
     ----------
-    detector_radecs : 'dict'
-            the RA/DEC for each NaI detector as AstroPy quantities. Obtained from the
-            fermi.nai_detector_radecs function
-    sunpos : 'list'
-            Two-element list containing the RA/DEC of the Sun position as AstroPy Quantities,
-            e.g. [<Longitude 73.94 deg>, <Latitude 22.66 deg>]
+    detector_radecs : `dict`
+            the RA/DEC for each NaI detector as AstroPy quantities. Obtained
+            from the fermi.nai_detector_radecs function
+    sunpos : `list`
+            Two-element list containing the RA/DEC of the Sun position as
+            AstroPy Quantities, e.g. [<Longitude 73.94 deg>,
+            <Latitude 22.66 deg>]
     
     """
     angles = copy.deepcopy(detector_radecs)
@@ -450,13 +455,19 @@ def met_to_utc(timeinsec):
     Parameters
     ----------
     timeinsec : `float`
-          time in seconds since 00:00 UT on 1st January 2001 (the Fermi MET format)
-          
+        time in seconds since 00:00 UT on 1st January 2001 (the Fermi MET
+        format)
+
+    Returns
+    -------
+    `datetime.datetime`
+        The input Fermi Mission Elapsed Time converted to a datetime object.
+
     """
-    # times for GBM are in Mission Elapsed Time (MET).
-    #The reference time for this is 2001-Jan-01 00:00.
+    # Times for GBM are in Mission Elapsed Time (MET).
+    # The reference time for this is 2001-Jan-01 00:00.
     met_ref_time = parse_time('2001-01-01 00:00')
     offset_from_utc = (met_ref_time - parse_time('1979-01-01 00:00')).total_seconds()
-    time_in_utc=parse_time(timeinsec + offset_from_utc)
+    time_in_utc = parse_time(timeinsec + offset_from_utc)
 
     return time_in_utc
