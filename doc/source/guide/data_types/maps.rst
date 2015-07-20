@@ -9,7 +9,7 @@ the :doc:`/code_ref/map` for a more thorough look at SunPy maps.
 There you can see what instruments are currently supported or you can access the
 code reference for each instrument-specific map subclass.
 
-1. Creating maps
+Creating maps
 ----------------
 To make things easy, SunPy can download several example files which are used
 throughout the docs. These files have names like
@@ -38,7 +38,7 @@ default FITS keywords and return a `~sunpy.map.GenericMap` but results
 may vary. SunPy can also create maps from the jpg2000 files from
 `helioviewer.org <http://helioviewer.org/>`_.
 
-2. Creating Custom Maps
+Creating Custom Maps
 -----------------------
 It is also possible to create maps using custom data (e.g. from a simulation).
 To do this you need to provide `~sunpy.map.map_factory.MapFactory` with both the data array as
@@ -52,7 +52,7 @@ values as assumed. Here is a simple example::
 
 The keys in the header follows the `FITS standard <http://fits.gsfc.nasa.gov/fits_dictionary.html>`_.
 
-3. Inspecting maps
+Inspecting maps
 ------------------
 A map contains a number of data-associated attributes. To get a quick look at
 your map simply type::
@@ -77,6 +77,9 @@ To get a list of all of the attributes check the documentation by typing::
 
     help(my_map)
 
+From SunPy version 0.6 many attributes return `~astropy.units.quantity.Quantity`
+objects, please refer to the `Astropy documentation <http://astropy.readthedocs.org/en/latest/units/>`_.
+
 The meta data for the map is accessed by ::
 
     header = my_map.meta
@@ -84,7 +87,7 @@ The meta data for the map is accessed by ::
 This references the meta data dictionary with the header information as read
 from the source file.
 
-4. Getting at the data
+Getting at the data
 ----------------------
 The data in a SunPy Map object is accessible through the
 `~sunpy.map.GenericMap.data` attribute.  The data is implemented as a
@@ -98,12 +101,17 @@ One important fact to remember is that the first
 index is for the y direction while the second index is for the x direction.
 For more information about indexing please refer to the
 `Numpy documentation <http://www.scipy.org/Tentative_NumPy_Tutorial#head-864862d3f2bb4c32f04260fac61eb4ef34788c4c>`_.
-Common `~numpy.ndarray` attributes, such as `~numpy.ndarray.shape` and `~numpy.ndarray.dtype`, are accessible through
-the SunPy `~sunpy.map.GenericMap` object ::
 
-    my_map.dimensions
+Data attributes like `~numpy.ndarray.dtype` and
+`~sunpy.map.GenericMap.dimensions` are accessible through
+the SunPyGenericMap object ::
+
     my_map.dtype
+    my_map.dimensions
 
+Here the dimensions attribute is similar to the `~numpy.ndarray.shape`
+attribute, however returning an `~astropy.units.quantity.Quantity`.
+	
 If you'd like to use the data in a SunPy `~sunpy.map.GenericMap` object
 elsewhere, you can use ::
 
@@ -126,7 +134,7 @@ but accessing the data array directly. For example::
 
     my_map.data.std()
 
-5. Plotting
+Plotting
 -----------
 As is true of all of the SunPy data objects, the SunPy `~sunpy.map.GenericMap`
 object (and all of its instrument-specific sub-classes) has its
@@ -151,7 +159,7 @@ examples see :ref:`plotting`.
    is not met, when the map is plotted a warning will be issued. You can create
    an oriented map by using `~sunpy.map.GenericMap.rotate()` before you plot the Map.
 
-7. Plotting Keywords
+Plotting Keywords
 ********************
 
 For Map `~matplotlib.pyplot.imshow` does most of the heavy
@@ -191,7 +199,7 @@ dictionary. In the following example we change the title of the plot by changing
     plt.show()
 
 
-8. Colormaps and Normalization
+Colormaps and Normalization
 ******************************
 
 Image data is generally shown in false color in order to better identify it or
@@ -206,7 +214,7 @@ The Map object chooses the appropriate colormap for you when it is created as
 long as it recognizes the instrument. To see what colormaps are available::
 
     import sunpy.cm
-    sunpy.cm.cmlist.keys()
+    sunpy.cm.cm.cmlist.keys()
 
 The SunPy colormaps are registered with matplotlib so you can grab them like
 you would any other colormap::
@@ -282,7 +290,7 @@ Note how the color in the colorbar does not change since these two maps share
 the same colormap while the data values associated with each color do because
 the normalization is different.
 
-8. Masking and Clipping Data
+Masking and Clipping Data
 ----------------------------
 It is often necessary for the purposes of display or otherwise to ignore certain
 data in an image. For example large data value could be due to
@@ -443,11 +451,11 @@ addition of an associated boolean array which holds the mask.
     plt.colorbar(extend='both')
 
 
-6. Composite Maps and Overlaying Maps
+Composite Maps and Overlaying Maps
 -------------------------------------
 
-The `Map()` method described above can also handle a list of maps. If a list in
-inputs is supplied, `Map()` will return a list of maps as the output.  However,
+The `Map()` method described above can also handle a list of maps. If a series of maps
+are supplied as inputs, `Map()` will return a list of maps as the output.  However,
 if the 'composite' keyword is set to True, then a `~sunpy.map.CompositeMap` object is
 returned.  This is useful if the maps are of a different type (e.g. different
 instruments).  For example, to create a simple composite map::
@@ -477,7 +485,7 @@ and then plots the result.
 
 This is not a particularly pretty plot but it shows what SunPy can do!
 
-7. Working with your map
+Working with your map
 ------------------------
 Part of the philosophy of the map object is to provide most of the basic
 functionality that a scientist would want therefore a map also contains a number
@@ -488,7 +496,7 @@ a list of the methods available for a map type::
 
 and check out the methods section!
 
-8. Mapcubes
+Mapcubes
 -----------
 A `~sunpy.map.MapCube` is an ordered list of maps.  By default, the maps are ordered by
 their observation date, from earlier maps to later maps. A `~sunpy.map.MapCube` can be
@@ -531,7 +539,7 @@ The meta data from each map can be obtained using::
 This returns a list of map meta objects that have the same order as
 the maps in the `~sunpy.map.MapCube`.
 
-9. Coalignment of Mapcubes
+Coalignment of Mapcubes
 --------------------------
 A typical data preparation step when dealing with time series of images is to
 coalign images taken at different times so that features in different images
@@ -572,7 +580,7 @@ Shifts calculated using calculate_match_template_shift can be passed directly
 to the coalignment function.
 
 
-10. Compensating for solar rotation in Mapcubes
+Compensating for solar rotation in Mapcubes
 -----------------------------------------------
 Often a set of solar image data consists of fixing the pointing of a
 field of view for some time and observing.  Features on the Sun will
