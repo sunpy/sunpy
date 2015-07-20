@@ -84,6 +84,11 @@ def default_wcs_grid(axes):
     x.set_ticks_position('bl')
     y.set_ticks_position('bl')
 
+    if x.coord_type != 'longitude':
+        x.set_coord_type('longitude', coord_wrap=180.)
+    if y.coord_type != 'latitude':
+        y.set_coord_type('latitude')
+
     x.set_major_formatter('s.s')
     y.set_major_formatter('s.s')
 
