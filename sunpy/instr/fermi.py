@@ -118,16 +118,17 @@ def get_detector_sun_angles_for_time(time, file):
     # retrieve the detector angle information in spacecraft coordinates
     detectors = nai_detector_angles()
 
-    # get the detector pointings in RA/DEC given the input spacecraft x and z axes
+    # get the detector pointings in RA/DEC given the input spacecraft x and z
+    # axes
     detector_radecs = nai_detector_radecs(detectors, scx, scz, tt)
 
     # this gets the sun position with RA in hours in decimal format (e.g. 4.3).
-    #DEC is already in degrees
+    # DEC is already in degrees
     sunpos_ra_not_in_deg = [sun.sun.apparent_rightascension(time),
                             sun.sun.apparent_declination(time)]
     # now Sun position with RA in degrees
     sun_pos = [sunpos_ra_not_in_deg[0].to('deg'), sunpos_ra_not_in_deg[1]]
-    #sun_pos = [(sunpos_ra_not_in_deg[0] / 24) * 360., sunpos_ra_not_in_deg[1]]
+    # sun_pos = [(sunpos_ra_not_in_deg[0] / 24) * 360., sunpos_ra_not_in_deg[1]]
     # now get the angle between each detector and the Sun
     detector_to_sun_angles = (get_detector_separation_angles(detector_radecs, sun_pos))
 
@@ -156,12 +157,13 @@ def get_detector_sun_angles_for_date(date, file):
     detectors = nai_detector_angles()
 
     detector_to_sun_angles = []
-    # get the detector vs Sun angles for each t and store in a list of dictionaries
+    # get the detector vs Sun angles for each t and store in a list of
+    # dictionaries.
     for i in range(len(scx)):
         detector_radecs = nai_detector_radecs(detectors, scx[i], scz[i], times[i])
 
-        # this gets the sun position with RA in hours in decimal format (e.g. 4.3).
-        #DEC is already in degrees
+        # this gets the sun position with RA in hours in decimal format
+        # (e.g. 4.3). DEC is already in degrees
         sunpos_ra_not_in_deg = [sun.sun.apparent_rightascension(times[i]),
                                 sun.sun.apparent_declination(times[i])]
         # now Sun position with RA in degrees
@@ -169,7 +171,8 @@ def get_detector_sun_angles_for_date(date, file):
         # now get the angle between each detector and the Sun
         detector_to_sun_angles.append(get_detector_separation_angles(detector_radecs, sun_pos))
 
-    # slice the list of dictionaries to get the angles for each detector in a list form
+    # slice the list of dictionaries to get the angles for each detector in a
+    # list form
     angles = OrderedDict()
     key_list = ['n0','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11','time']
     for i in range(13):
