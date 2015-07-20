@@ -192,6 +192,9 @@ scale:\t\t {scale}
 
     @property
     def wcs(self):
+        """
+        The `~astropy.wcs.WCS` property of the map.
+        """
         w2 = astropy.wcs.WCS(naxis=2)
         w2.wcs.crpix = u.Quantity(self.reference_pixel)
         # Make these a quantity array to prevent the numpy setting element of
@@ -204,7 +207,7 @@ scale:\t\t {scale}
 
         return w2
 
-    #Some numpy extraction
+    # Some numpy extraction
     @property
     def dimensions(self):
         """
@@ -214,26 +217,47 @@ scale:\t\t {scale}
 
     @property
     def dtype(self):
+        """
+        The `numpy.dtype` of the array of the map.
+        """
         return self.data.dtype
 
     @property
     def size(self):
+        """
+        The number of pixels in the array of the map.
+        """
         return u.Quantity(self.data.size, 'pixel')
 
     @property
     def ndim(self):
+        """
+        The value of `numpy.ndarray.ndim` of the data array of the map.
+        """
         return self.data.ndim
 
     def std(self, *args, **kwargs):
+        """
+        Calculate the standard deviation of the data array.
+        """
         return self.data.std(*args, **kwargs)
 
     def mean(self, *args, **kwargs):
+        """
+        Calculate the mean of the data array.
+        """
         return self.data.mean(*args, **kwargs)
 
     def min(self, *args, **kwargs):
+        """
+        Calculate the minimum value of the data array.
+        """
         return self.data.min(*args, **kwargs)
 
     def max(self, *args, **kwargs):
+        """
+        Calculate the maximum value of the data array.
+        """
         return self.data.max(*args, **kwargs)
 
 # #### Keyword attribute and other attribute definitions #### #
@@ -249,7 +273,8 @@ scale:\t\t {scale}
 
     @property
     def nickname(self):
-        """An abbreviated human-readable description of the map-type; part of the Helioviewer data model"""
+        """An abbreviated human-readable description of the map-type; part of
+        the Helioviewer data model"""
         return self._nickname
 
     @nickname.setter
@@ -858,7 +883,6 @@ scale:\t\t {scale}
 
         return new_map
 
-
     def submap(self, range_a, range_b):
         """
         Returns a submap of the map with the specified range.
@@ -1331,7 +1355,6 @@ scale:\t\t {scale}
 
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
-
 
         if not wcsaxes_compat.is_wcsaxes(axes):
             imshow_args.update({'extent': list(self.xrange.value) + list(self.yrange.value)})

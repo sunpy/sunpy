@@ -55,7 +55,7 @@ class EVELightCurve(LightCurve):
     * `Instrument Paper <http://link.springer.com/article/10.1007%2Fs11207-009-9487-6>`_
     """
 
-    def peek(self, column = None, **kwargs):
+    def peek(self, column=None, **kwargs):
         """Plots the light curve in a new figure. An example is shown below.
 
         .. plot::
@@ -117,7 +117,7 @@ class EVELightCurve(LightCurve):
 
     @classmethod
     def _parse_csv(cls, filepath):
-        """Parses an EVE CSV file"""
+        """Parses an EVE CSV file."""
         cls._filename = basename(filepath)
         with open(filepath, 'rb') as fp:
             # Determine type of EVE CSV file and parse
@@ -131,12 +131,12 @@ class EVELightCurve(LightCurve):
 
     @staticmethod
     def _parse_average_csv(fp):
-        """Parses an EVE Averages file"""
+        """Parses an EVE Averages file."""
         return "", read_csv(fp, sep=",", index_col=0, parse_dates=True)
 
     @staticmethod
     def _parse_level_0cs(fp):
-        """Parses and EVE Level 0CS file"""
+        """Parses and EVE Level 0CS file."""
         is_missing_data = False      #boolean to check for missing data
         missing_data_val = numpy.nan
         header = []
@@ -148,7 +148,6 @@ class EVELightCurve(LightCurve):
             if '; Missing data:' in line :
                 is_missing_data = True
                 missing_data_val = line.split(':')[1].strip()
-
 
             line = fp.readline()
 
@@ -188,5 +187,5 @@ class EVELightCurve(LightCurve):
         if is_missing_data :   #If missing data specified in header
             data[data == float(missing_data_val)] = numpy.nan
 
-        #data.columns = fields
+        # data.columns = fields
         return meta, data

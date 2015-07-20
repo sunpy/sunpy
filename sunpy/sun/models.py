@@ -11,7 +11,7 @@ Object
 ------
     interior : pandas.DataFrame
         The standard model of the solar interior
-    evolution : pandas.DatFrame
+    evolution : pandas.DataFrame
         The evolution as a function of time of the Sun
 
 .. todo:: Need source for evolution model.

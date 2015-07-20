@@ -8,7 +8,8 @@ from sunpy.map.sources.sdo import AIAMap
 
 def aiaprep(aiamap):
     """
-    Processes a level 1 AIAMap into a level 1.5 AIAMap. Rotates, scales and
+    Processes a level 1 `~sunpy.map.sources.sdo.AIAMap` into a level 1.5
+    `~sunpy.map.sources.sdo.AIAMap`. Rotates, scales and
     translates the image so that solar North is aligned with the y axis, each
     pixel is 0.6 arcsec across, and the center of the sun is at the center of
     the image. The actual transformation is done by Map's
@@ -21,12 +22,12 @@ def aiaprep(aiamap):
 
     Parameters
     ----------
-    aiamap : AIAMap instance
-        A sunpy map from AIA
+    aiamap : `~sunpy.map.sources.sdo.AIAMap` instance
+        A `sunpy.map.Map` from AIA
 
     Returns
     -------
-    newmap : A level 1.5 copy of aiamap
+    newmap : A level 1.5 copy of `~sunpy.map.sources.sdo.AIAMap`
 
     Notes
     -----

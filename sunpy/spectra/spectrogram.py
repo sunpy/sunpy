@@ -540,6 +540,7 @@ class Spectrogram(Parent):
                     dist / data.delt / 10, init
                 )
             )
+
             def freq_fmt(x, pos):
                 # This is necessary because matplotlib somehow tries to get
                 # the mid-point of the row, which we do not need here.
@@ -635,7 +636,6 @@ class Spectrogram(Parent):
                 right -= 1
 
         return self[left:right + 1, :]
-
 
     def auto_find_background(self, amount=0.05):
         """Automatically find the background. This

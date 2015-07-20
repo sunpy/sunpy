@@ -16,9 +16,9 @@ __all__ = ['NOAAIndicesLightCurve', 'NOAAPredictIndicesLightCurve']
 class NOAAIndicesLightCurve(LightCurve):
     """NOAA Solar Cycle monthly indices.
 
-    Solar activity is measured by a number of different values. The NOAA Solar Weather
-    Prediction Center (SWPC) publishes the following indices. All of these indices are
-    also provided as a 13-month running smoothed value.
+    Solar activity is measured by a number of different values. The NOAA Solar
+    Weather Prediction Center (SWPC) publishes the following indices. All of
+    these indices are also provided as a 13-month running smoothed value.
 
     * The SWO sunspot number is issued by the NOAA Space Weather
       Prediction Center (SWPC)
@@ -137,9 +137,9 @@ class NOAAIndicesLightCurve(LightCurve):
 class NOAAPredictIndicesLightCurve(LightCurve):
     """NOAA Solar Cycle Predicted Progression
 
-    The predictions are updated monthly and are produced by ISES. Observed values are
-    initially the preliminary values which are replaced with the final values as they
-    become available.
+    The predictions are updated monthly and are produced by ISES. Observed
+    values are initially the preliminary values which are replaced with the
+    final values as they become available.
 
     The following predicted values are available.
 
@@ -194,7 +194,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
         axes.set_ylim(0)
         axes.set_title('Solar Cycle Sunspot Number Prediction')
         axes.set_ylabel('Sunspot Number')
-        #axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
+        # axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
@@ -205,7 +205,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
 
     @classmethod
     def _get_default_uri(cls):
-        """Return the url to download indices"""
+        """Return the url to download indices."""
         return "http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"
 
     @staticmethod

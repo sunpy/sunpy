@@ -34,7 +34,8 @@ class LightCurve(object):
 
     Attributes
     ----------
-    meta : str or dict
+
+    meta : `str` or `dict`
         The comment string or header associated with the data.
     data : `~pandas.DataFrame`
         An pandas DataFrame prepresenting one or more fields as a function of time.
@@ -65,7 +66,6 @@ class LightCurve(object):
         else:
             self.meta = OrderedDict(meta)
 
-
     @property
     def header(self):
         """
@@ -80,7 +80,10 @@ for compatibility with map, please use meta instead""", Warning)
 
     @classmethod
     def from_time(cls, time, **kwargs):
-        '''Called by Conditional Dispatch object when valid time is passed as input to create method.'''
+        """
+        Called by Conditional Dispatch object when valid time is passed as
+        input to create method.
+        """
         date = parse_time(time)
         url = cls._get_url_for_date(date, **kwargs)
         filepath = cls._download(
@@ -90,11 +93,18 @@ for compatibility with map, please use meta instead""", Warning)
 
     @classmethod
     def from_range(cls, start, end, **kwargs):
-        '''Called by Conditional Dispatch object when start and end time are passed as input to create method.'''
+        """Called by Conditional Dispatch object when start and end time are
+        passed as input to create method.
+
+        :param start:
+        :param end:
+        :param kwargs:
+        :return:
+        """
         url = cls._get_url_for_date_range(parse_time(start), parse_time(end), **kwargs)
         filepath = cls._download(
             url, kwargs,
-            err = "Unable to download data for specified date range"
+            err="Unable to download data for specified date range"
         )
         result = cls.from_file(filepath)
         result.data = result.data.truncate(start,end)
@@ -102,7 +112,10 @@ for compatibility with map, please use meta instead""", Warning)
 
     @classmethod
     def from_timerange(cls, timerange, **kwargs):
-        '''Called by Conditional Dispatch object when time range is passed as input to create method.'''
+        """
+        Called by Conditional Dispatch object when time range is passed as
+        input to create method.
+        """
         url = cls._get_url_for_date_range(timerange, **kwargs)
         filepath = cls._download(
             url, kwargs,
@@ -114,15 +127,17 @@ for compatibility with map, please use meta instead""", Warning)
 
     @classmethod
     def from_file(cls, filename):
-        '''Used to return Light Curve object by reading the given filename
+        """Used to return Light Curve object by reading the given filename.
 
         Parameters
         ----------
-        filename : str
+        filename: `str`
             Path of the file to be read.
 
-        '''
-
+        Returns
+        -------
+        Lightcurve object.
+        """
         filename = os.path.expanduser(filename)
         meta, data = cls._parse_filepath(filename)
         if data.empty:
@@ -132,7 +147,7 @@ for compatibility with map, please use meta instead""", Warning)
 
     @classmethod
     def from_url(cls, url, **kwargs):
-        '''
+        """
         Called by Conditional Dispatch object to create Light Curve object when
         given a url. Downloads a file from the given url, attemps to read it
         and returns a Light Curve object.
@@ -141,7 +156,7 @@ for compatibility with map, please use meta instead""", Warning)
         ----------
         url : str
             A url given as a string.
-        '''
+        """
         try:
             filepath = cls._download(url, kwargs)
         except (urllib2.HTTPError, urllib2.URLError, ValueError):
@@ -177,7 +192,7 @@ for compatibility with map, please use meta instead""", Warning)
 
     @classmethod
     def from_dataframe(cls, dataframe, meta=None):
-        '''
+        """
         Called by Conditional Dispatch object to create Light Curve object when
         Pandas DataFrame is passed to create method.
 
@@ -185,9 +200,9 @@ for compatibility with map, please use meta instead""", Warning)
         ----------
         dataframe : `~pandas.DataFrame`
             The data.
-        meta : str or dict
+        meta : `str` or `dict`
             The metadata.
-        '''
+        """
 
         return cls(dataframe, meta)
 
@@ -196,17 +211,17 @@ for compatibility with map, please use meta instead""", Warning)
 
         Parameters
         ----------
-        axes : `~matplotlib.axes` or None
-            If provided the image will be plotted on the given axes. Otherwise the
-            current axes will be used.
+        axes : `~matplotlib.axes.Axes` or None
+            If provided the image will be plotted on the given axes. Otherwise
+            the current axes will be used.
 
-        **plot_args : dict
+        **plot_args : `dict`
             Any additional plot arguments that should be used
             when plotting.
 
         Returns
         -------
-        axes : `~matplotlib.axes`
+        axes : `~matplotlib.axes.Axes`
             The plot axes.
         """
 
@@ -219,11 +234,11 @@ for compatibility with map, please use meta instead""", Warning)
         return axes
 
     def peek(self, **kwargs):
-        """Displays the light curve in a new figure
+        """Displays the light curve in a new figure.
 
         Parameters
         ----------
-        **kwargs : dict
+        **kwargs : `dict`
             Any additional plot arguments that should be used
             when plotting.
 
@@ -242,7 +257,7 @@ for compatibility with map, please use meta instead""", Warning)
     @staticmethod
     def _download(uri, kwargs,
                   err='Unable to download data at specified URL'):
-        """Attempts to download data at the specified URI
+        """Attempts to download data at the specified URI.
 
         Parameters
         ----------
@@ -282,19 +297,19 @@ for compatibility with map, please use meta instead""", Warning)
 
     @classmethod
     def _get_default_uri(cls):
-        """Default data to load when none is specified"""
+        """Default data to load when none is specified."""
         msg = "No default action set for {}"
         raise NotImplementedError(msg.format(cls.__name__))
 
     @classmethod
     def _get_url_for_date(cls, date, **kwargs):
-        """Returns a URL to the data for the specified date"""
+        """Returns a URL to the data for the specified date."""
         msg = "Date-based downloads not supported for for {}"
         raise NotImplementedError(msg.format(cls.__name__))
 
     @classmethod
     def _get_url_for_date_range(cls, *args, **kwargs):
-        """Returns a URL to the data for the specified date range"""
+        """Returns a URL to the data for the specified date range."""
         msg = "Date-range based downloads not supported for for {}"
         raise NotImplementedError(msg.format(cls.__name__))
 
@@ -312,7 +327,7 @@ for compatibility with map, please use meta instead""", Warning)
 
     @classmethod
     def _parse_filepath(cls, filepath):
-        """Check the file extension to see how to parse the file"""
+        """Check the file extension to see how to parse the file."""
         filename, extension = os.path.splitext(filepath)
 
         if extension.lower() in (".csv", ".txt"):
@@ -321,7 +336,7 @@ for compatibility with map, please use meta instead""", Warning)
             return cls._parse_fits(filepath)
 
     def truncate(self, a, b=None):
-        """Returns a truncated version of the timeseries object
+        """Returns a truncated version of the timeseries object.
 
         Parameters
         ----------
@@ -346,7 +361,7 @@ for compatibility with map, please use meta instead""", Warning)
 
         Parameters
         ----------
-        column_name : str
+        column_name : `str`
             A valid column name
 
         Returns
