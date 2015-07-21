@@ -15,9 +15,9 @@ tar xvzf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1
 MINICONDA_URL="http://repo.continuum.io/miniconda"
 MINICONDA_FILE="Miniconda-3.5.5-Linux-x86_64.sh"
 wget "${MINICONDA_URL}/${MINICONDA_FILE}"
-bash $MINICONDA_FILE -b -f
+bash $MINICONDA_FILE -b
 
-export PATH=/home/travis/miniconda/bin:$PATH
+export PATH=$HOME/miniconda/bin:$PATH
 
 conda update --yes conda
 conda install -q --yes binstar conda-build
