@@ -23,10 +23,10 @@ addons:
 
 # These are currently not used, but we want to cache the packages dir
 # to reduce the number of packages to download.
-cache:
-    directories:
-       - $HOME/miniconda/pkgs
-       - $HOME/miniconda3/pkgs
+# cache:
+#    directories:
+#       - $HOME/miniconda/pkgs
+#       - $HOME/miniconda3/pkgs
 
 # Configure the build environment. Global varibles are defined for all configurations.
 env:
