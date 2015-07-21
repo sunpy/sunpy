@@ -7,7 +7,8 @@
 
 # Install more upto date openjpeg library.
 wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
-tar xvzf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1
+tar xvzf openjpeg-1.5.0-Linux-x86_64.tar.gz
+export PATH=$HOME/openjpeg-1.5.0-Linux-x86_64:$PATH
 
 ###############################################################################
 # Install miniconda
