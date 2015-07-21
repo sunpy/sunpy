@@ -25,8 +25,8 @@ addons:
 # to reduce the number of packages to download.
 cache:
     directories:
-        $HOME/miniconda/pkgs
-        /Users/travis/miniconda3/pkgs
+       - $HOME/miniconda/pkgs
+       - $HOME/miniconda3/pkgs
 
 # Configure the build environment. Global varibles are defined for all configurations.
 env:
