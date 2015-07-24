@@ -35,7 +35,7 @@ a map from one of the supported data products is with the `~sunpy.map.map()` fun
 
 This returns a map named `aia` which can be manipulated with standard SunPy map commands.
 For more information about maps checkout the :doc:`map guide <data_types/maps>`
-and the :doc:`Map API <code_ref/map>`.
+and the :ref:`map`.
 
 Lightcurve
 ----------
@@ -62,7 +62,7 @@ set of time indices is generated.
 
 For more information about lightcurves, check out the
 :doc:`lightcurve guide <data_types/lightcurve>` and the
-and the :doc:`LightCurve API <code_ref/lightcurve>`.
+and the :ref:`lightcurve_code_ref`.
 
 .. this should be a better example, for example grabbing goes data...
 
@@ -83,7 +83,7 @@ an international network of Solar Radio Spectrometers, is a specific example.
     image.peek()
 
 For more information about spectra, check out the :doc:`spectra guide <data_types/spectra>`
-and the :doc:`Spectra API <code_ref/spectra>`.
+and the :ref:`spectra_code_ref`.
 
 Plotting
 --------
@@ -107,7 +107,7 @@ SunPy with matplotlib.
     aia.draw_limb()
     plt.show()
 
-For more information check out :ref:`plotting:`.
+For more information check out :ref:`plotting`.
 
 Solar Physical Constants
 ------------------------
@@ -134,7 +134,7 @@ available. ::
     con.print_all()
 
 These constants are provided as a convenience so that everyone is using the same
-(accepted values). For more information check out :doc:`sun module API <code_ref/sun>`.
+(accepted values). For more information check out :ref:`sun_code_ref`.
 
 Quantities and Units
 --------------------
@@ -362,7 +362,7 @@ demonstrates the useful feature which prevents storing the same data twice::
 Explanation: first, entries is None because the query has never been used for querying
 the database -> query the VSO, add new entries to database, remember query hash.
 In the second fetch, entries is not None because the query has already been used and
-returns a list of database entries. For more information check out the :doc:`Database Guide <guide/database>`.
+returns a list of database entries. For more information check out the :ref:`database_guide`.
 
 Querying Helioviewer.org
 ------------------------
@@ -387,10 +387,5 @@ A simple example of a helioviewer query and a plot of the result follows.
     plt.axis('off')
     plt.show()
 
-This downloads a PNG image of the latest AIA 304 image available on `Helioviewer.org <http://helioviewer.org>`__.  In the
- `~sunpy.net.helioviewer.HelioviewerClient.download_png` command the value, 4.8,
-refers to the image resolution in arcseconds per pixel (larger values mean lower resolution),
-x0 and y0 are the center points about which to focus and the width and height
-are the pixel values for the image dimensions.
-
-For more information checkout the :doc:`helioviewer guide <acquiring_data/helioviewer>`.
+This downloads a PNG image of the latest AIA 304 image available on `Helioviewer.org <http://helioviewer.org>`_.  In the
+ `~sunpy.net.helioviewer.HelioviewerClient.download_png` command the value, 4.8, refers to the image resolution in arcseconds per pixel (larger values mean lower resolution), x0 and y0 are the center points about which to focus and the width and height are the pixel values for the image dimensions. For more information checkout the :doc:`helioviewer guide <acquiring_data/helioviewer>`.
