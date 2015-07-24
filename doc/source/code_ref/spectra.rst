@@ -1,3 +1,5 @@
+.. _spectra_code_ref:
+
 SunPy spectra
 =============
 

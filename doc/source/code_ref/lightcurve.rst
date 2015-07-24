@@ -1,3 +1,5 @@
+.. _lightcurve_code_ref:
+
 SunPy lightcurve
 ================
 
