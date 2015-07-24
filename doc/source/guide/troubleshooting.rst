@@ -104,20 +104,8 @@ Each user should have a :file:`.sunpy/` directory which should contain a
 :ref:`sunpyrc <customizing-with-sunpyrc-files>` file. To locate your :file:`.sunpy/`
 directory, use :func:`sunpy.print_config`::
 
-    import sunpy as sun
-    sun.print_config()
-
-The output should look something like: ::
-
-    FILES USED:
-        sunpy/data/sunpyrc
-
-    CONFIGURATION:
-    [general]
-    working_dir = /Users/schriste/sunpy
-
-    [downloads]
-    download_dir = /Users/schriste/sunpy/data
+    import sunpy
+    sunpy.print_config()
 
 On unix-like systems, this directory is generally located in your
 :envvar:`HOME` directory.  On windows, it is in your documents and
