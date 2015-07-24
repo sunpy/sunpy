@@ -11,7 +11,7 @@ thorough look at the functionality available.
 Sample Data
 -----------
 This tour makes use of a number of sample data files which you will need to
-download. If you are already done so please follow the instruction to :ref:`sample-data`.
+download. If have not already done so please follow the instruction here :ref:`sample-data`.
 
 Maps
 ----
@@ -22,7 +22,7 @@ data arrays. There are maps for a 2D image, a time series of 2D images or tempor
 
 SunPy supports many different data products from various sources 'out of the box'. We
 shall use SDO's AIA instrument as an example in this tutorial. The general way to create
-a map from one of the supported data products is with the `~sunpy.map.map()` function from the `~sunpy.map` submodule.
+a Map from one of the supported data products is with the `~sunpy.map.map()` function from the `~sunpy.map` submodule.
 `~sunpy.map.map()` takes either a filename, a list of filenames or a data array and header. We can test map with:
 
 .. plot::
