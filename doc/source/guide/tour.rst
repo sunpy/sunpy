@@ -2,8 +2,8 @@
 A brief tour of SunPy
 ---------------------
 
-Welcome to the SunPy tutorial! This brief tutorial will walk you through some
-of the functionality currently offered by SunPy. Start by reading this tutorial
+This brief tutorial will walk you through some
+of the functionality offered by SunPy. Start by reading this tutorial
 and trying out some of the examples demonstrated. Once you've completed the
 tutorial check out the rest of the :doc:`User Guide </guide/index>` for a more
 thorough look at the functionality available.
@@ -11,43 +11,31 @@ thorough look at the functionality available.
 Sample Data
 -----------
 This tour makes use of a number of sample data files which you will need to
-download. To download the sample files simply run the following command::
-
-    import sunpy.data
-    sunpy.data.download_sample_data()
-
-After running this you can then import the sample data files shortcuts which
-are used below (e.g. sunpy.data.sample) by simply importing the module like so::
-
-    import sunpy.data.sample
-
-If the sample files are not available for some reason that you will get an error
-on import.
+download. If you are already done so please follow the instruction to :ref:`sample-data`.
 
 Maps
 ----
 Maps are the primary data type in SunPy they are spatially and / or temporally aware
 data arrays. There are maps for a 2D image, a time series of 2D images or temporally aligned 2D images.
-Making a map of your data is the normally the first step in using SunPy to work with your data.
 
 **Creating a Map**
 
-SunPy supports many different data products from various sources 'out of the box' we
+SunPy supports many different data products from various sources 'out of the box'. We
 shall use SDO's AIA instrument as an example in this tutorial. The general way to create
-a map from one of the supported data products is with the `Map()` class from the `map` submodule.
-
-`Map()` takes either a filename, a list of filenames or a data array and header pair. We can test map with:
+a map from one of the supported data products is with the `~sunpy.map.map()` function from the `~sunpy.map` submodule.
+`~sunpy.map.map()` takes either a filename, a list of filenames or a data array and header. We can test map with:
 
 .. plot::
     :include-source:
-    
+
     import sunpy.data.sample
     import sunpy.map
     aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     aia.peek()
 
 This returns a map named `aia` which can be manipulated with standard SunPy map commands.
-For more information about maps checkout the :doc:`map guide <data_types/maps>`.
+For more information about maps checkout the :doc:`map guide <data_types/maps>`
+and the :doc:`Map API <code_ref/map>`.
 
 Lightcurve
 ----------
@@ -59,7 +47,7 @@ remote file. Let's create some fake data and pass it into a lightcurve object.
 
 .. plot::
     :include-source:
-    
+
     import sunpy.data.sample
     from sunpy.lightcurve import LightCurve
     times = np.arange(1000) * 2.0
@@ -72,8 +60,9 @@ Within LightCurve.create, we have a dictionary that contains a single entry with
 passed in via the index keyword argument. If no times are passed into index, a default
 set of time indices is generated.
 
-The LightCurve object itself is based on a pandas DataFrame. For more information check
-out the `pandas documentation <http://pandas.pydata.org/pandas-docs/stable/>`_
+For more information about lightcurves, check out the
+:doc:`lightcurve guide <data_types/lightcurve>` and the
+and the :doc:`LightCurve API <code_ref/lightcurve>`.
 
 .. this should be a better example, for example grabbing goes data...
 
@@ -82,7 +71,6 @@ Spectra
 
 SunPy has spectral support for instruments which have such a capacity. CALLISTO,
 an international network of Solar Radio Spectrometers, is a specific example.
-Below is the example built into sunpy.
 
 .. plot::
     :include-source:
@@ -94,11 +82,13 @@ Below is the example built into sunpy.
     image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_IMAGE)
     image.peek()
 
+For more information about spectra, check out the :doc:`spectra guide <data_types/spectra>`
+and the :doc:`Spectra API <code_ref/spectra>`.
 
 Plotting
 --------
 
-SunPy uses a matplotlib like interface to it's plotting so more complex plots can be built by combining
+SunPy uses a matplotlib-like interface for it's plotting so more complex plots can be built by combining
 SunPy with matplotlib.
 
 .. plot::
@@ -117,6 +107,8 @@ SunPy with matplotlib.
     aia.draw_limb()
     plt.show()
 
+For more information check out :ref:`plotting:`.
+
 Solar Physical Constants
 ------------------------
 
@@ -124,10 +116,8 @@ SunPy contains a convenient list of solar-related physical constants. Here is
 a short bit of code to get you started: ::
 
     from sunpy.sun import constants as con
-
     # one astronomical unit (the average distance between the Sun and Earth)
     print con.au
-
     # the solar radius
     print con.radius
 
@@ -144,13 +134,13 @@ available. ::
     con.print_all()
 
 These constants are provided as a convenience so that everyone is using the same
-(accepted values). More will be added over time.
+(accepted values). For more information check out :doc:`sun module API <code_ref/sun>`.
 
 Quantities and Units
 --------------------
 
 Many capabilities in SunPy make use of physical quantities that are specified
-in units. SunPy uses `astropy's units and quantities code <http://docs.astropy.org/en/stable/units/index.html>`__ to
+with units. SunPy uses `~astropy.units` to
 implement this functionality. For example, the solar radius above is a physical quantity
 that can be expressed in length units.  In the example above ::
 
@@ -304,7 +294,7 @@ There are a couple different ways to query and download data from the VSO using
 SunPy. The method you should use depends first on your preference with respect
 to query style: the main method of querying uses a syntax that is unique to
 SunPy and may require some getting used to, but is extremely flexible and
-powerful. To make it easy for people coming from SSW to get started, a second
+powerful. A second
 "legacy" API also exists which works is very much the same way as VSO_GET in
 IDL.
 
@@ -372,7 +362,7 @@ demonstrates the useful feature which prevents storing the same data twice::
 Explanation: first, entries is None because the query has never been used for querying
 the database -> query the VSO, add new entries to database, remember query hash.
 In the second fetch, entries is not None because the query has already been used and
-returns a list of database entries.
+returns a list of database entries. For more information check out the :doc:`Database Guide <guide/database>`.
 
 Querying Helioviewer.org
 ------------------------
@@ -398,9 +388,9 @@ A simple example of a helioviewer query and a plot of the result follows.
     plt.show()
 
 This downloads a PNG image of the latest AIA 304 image available on
-Helioviewer.org in the `download_png` command 4.8 refers to the image resolution
-in arcseconds per pixel (larger values mean lower resolution), the "1" and "100" in the
-layer string refer to the visibility (visible/hidden) and opacity,
+`Helioviewer.org <http://helioviewer.org>`__.  In the
+ `~sunpy.net.helioviewer.HelioviewerClient.download_png` command the value, 4.8,
+refers to the image resolution in arcseconds per pixel (larger values mean lower resolution),
 x0 and y0 are the center points about which to focus and the width and height
 are the pixel values for the image dimensions.
 
