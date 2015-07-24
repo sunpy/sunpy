@@ -84,7 +84,7 @@ Instrument Map Classes
 .. automodapi:: sunpy.map.sources
 
 
-Writing a new Insteument Map Class
+Writing a new Instrument Map Class
 ----------------------------------
 
 Map classes can be registered with the Map factory, even if the new class is not
