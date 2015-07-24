@@ -387,8 +387,7 @@ A simple example of a helioviewer query and a plot of the result follows.
     plt.axis('off')
     plt.show()
 
-This downloads a PNG image of the latest AIA 304 image available on
-`Helioviewer.org <http://helioviewer.org>`__.  In the
+This downloads a PNG image of the latest AIA 304 image available on `Helioviewer.org <http://helioviewer.org>`__.  In the
  `~sunpy.net.helioviewer.HelioviewerClient.download_png` command the value, 4.8,
 refers to the image resolution in arcseconds per pixel (larger values mean lower resolution),
 x0 and y0 are the center points about which to focus and the width and height
