@@ -6,9 +6,8 @@ Overview
 --------
 
 .. warning::
-    We highly recommend that Mac users install the Anaconda python distribution
-    and not proceed further. Follow the instructions
-    available here :ref:`anaconda_install`.
+    We highly recommend that users use the Anaconda python distribution.
+    Instructions are available here :ref:`anaconda_install`.
 
 Because of the wide variety of methods for setting up a Python environment on
 Mac OS X, users have a number of options with how to install SunPy and its

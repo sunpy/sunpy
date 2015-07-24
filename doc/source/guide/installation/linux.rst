@@ -6,9 +6,8 @@ Overview
 --------
 
 .. warning::
-    We highly recommend that linux users install the Anaconda python distribution
-    and not proceed further. Follow the instructions
-    available here :ref:`anaconda_install`.
+    We highly recommend that users use the Anaconda python distribution.
+    Instructions are available here :ref:`anaconda_install`.
 
 Almost all versions of Linux ship with a recent enough version
 of Python, so it is unlikely that you will need to install Python yourself.
