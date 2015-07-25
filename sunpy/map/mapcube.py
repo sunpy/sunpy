@@ -145,8 +145,8 @@ class MapCube(object):
 
         >>> ani = cube.plot(controls=False)   # doctest: +SKIP
 
-        >>> Writer = animation.writers['ffmpeg']
-        >>> writer = Writer(fps=10, metadata=dict(artist='SunPy'), bitrate=1800)
+        >>> Writer = animation.writers['ffmpeg']   # doctest: +SKIP
+        >>> writer = Writer(fps=10, metadata=dict(artist='SunPy'), bitrate=1800)   # doctest: +SKIP
 
         >>> ani.save('mapcube_animation.mp4', writer=writer)   # doctest: +SKIP
 
