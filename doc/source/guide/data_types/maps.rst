@@ -214,7 +214,7 @@ The Map object chooses the appropriate colormap for you when it is created as
 long as it recognizes the instrument. To see what colormaps are available::
 
     import sunpy.cm
-    sunpy.cm.cm.cmlist.keys()
+    sunpy.cm.cmlist.keys()
 
 The SunPy colormaps are registered with matplotlib so you can grab them like
 you would any other colormap::

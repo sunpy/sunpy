@@ -39,7 +39,7 @@ for sunpy downloads::
 
     conda config --add channels sunpy --add channels astropy
 
-theh install SunPy::
+to install SunPy::
 
     conda install sunpy
 
@@ -55,7 +55,7 @@ by following the instructions in :ref:`testing-sunpy`.
 Updating SunPy to a New Version
 ###############################
 
-When a new version of SunPy is released you can update to the latest version 
+When a new version of SunPy is released you can update to the latest version
 by running::
 
     conda update sunpy
