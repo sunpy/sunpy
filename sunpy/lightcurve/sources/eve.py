@@ -15,13 +15,15 @@ from sunpy.lightcurve import LightCurve
 
 __all__ = ['EVELightCurve']
 
+
 class EVELightCurve(LightCurve):
     """
     SDO EVE LightCurve.
 
     Examples
     --------
-    >>> import sunpy
+    >>> import sunpy.lightcurve
+    >>> import sunpy.data.test
 
     >>> eve = sunpy.lightcurve.EVELightCurve.create()
     >>> eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
@@ -34,7 +36,7 @@ class EVELightCurve(LightCurve):
     | http://lasp.colorado.edu/home/eve/data/data-access/
     """
 
-    def peek(self, column = None, **kwargs):
+    def peek(self, column=None, **kwargs):
         figure = plt.figure()
         # Choose title if none was specified
         if "title" not in kwargs and column is None:
