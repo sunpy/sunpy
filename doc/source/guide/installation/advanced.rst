@@ -156,7 +156,7 @@ correctly is to use the :func:`sunpy.self_test()` function::
     import sunpy
     sunpy.self_test(online=False)
 
-Which will run many of the SunPy tests.
+which will run many of the SunPy tests.
 
 The tests should run and print out any failures, which you can report at
 the `SunPy issue tracker <http://github.com/sunpy/sunpy/issues>`_.
