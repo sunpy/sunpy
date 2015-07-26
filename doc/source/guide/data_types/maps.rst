@@ -198,6 +198,7 @@ plot changes the default AIA color table to use an inverse Grey color table.
 
 .. plot::
     :include-source:
+
     import sunpy.map
     import sunpy.data.sample
     import matplotlib.pyplot as plt
@@ -212,7 +213,8 @@ dictionary. In the following example we change the title of the plot by changing
 `~sunpy.map.GenericMap.plot_settings` property.
 
 .. plot::
-    :include_source:
+    :include-source:
+
     import sunpy.map
     import sunpy.data.sample
     import matplotlib.pyplot as plt
@@ -274,6 +276,7 @@ do so as follows.
 
 .. plot::
     :include-source:
+
     import sunpy.map
     import sunpy.data.sample
     import matplotlib.pyplot as plt
@@ -304,6 +307,7 @@ a linear and logarithmic normalization on an AIA image.
 
 .. plot::
     :include-source:
+
     import sunpy.map
     import sunpy.data.sample
     import matplotlib.pyplot as plt
@@ -375,6 +379,7 @@ will mean that the bright regions look 'saturated'. This is achieved in the foll
 
 .. plot::
     :include-source:
+
     import sunpy.map
     import matplotlib.pyplot as plt
     import matplotlib.colors as colors
@@ -510,6 +515,7 @@ map, and then plots the result.
 
 .. plot::
     :include-source:
+
     import sunpy.data.sample
     import sunpy.map
     import matplotlib.pyplot as plt
