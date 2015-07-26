@@ -10,6 +10,9 @@ wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
 tar xvzf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1
 export PATH=$HOME:$PATH
 
+export LIBRARY_PATH=$(pwd)/lib
+export LD_LIBRARY_PATH=$(pwd)/lib
+
 ###############################################################################
 # Install miniconda
 ###############################################################################
