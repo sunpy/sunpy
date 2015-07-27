@@ -184,15 +184,18 @@ To create a custom `wcsaxes.WCSAxes` instance do the following ::
     >>> fig = plt.figure()   # doctest: +SKIP
     >>> ax = plt.subplot(projection=smap.wcs)   # doctest: +SKIP
 
-when overplotting data and using wcsaxes you have to use the transform keyword
-argument, also the native coordinate system of a `~wcsaxes.WCSAxes` is always
-in degrees ::
+when plotting on a `~wcsaxes.WCSAxes` axes, it will by default plot in pixel 
+coordinates, you can override this behavior and plot in 'world' coordinates
+by getting the transformation from the axes with ``ax.get_transform('world')``.
+Note: World coordinates are always in **degrees** so you will have to convert 
+to degrees.::
 
     >>> smap.plot()   # doctest: +SKIP
     >>> ax.plot((100*u.arcsec).to(u.deg), (500*u.arcsec).to(u.deg),
     ...         transform=ax.get_transform('world'))   # doctest: +SKIP
 
-Finally, here is a more complex example:
+Finally, here is a more complex example using SunPy maps, wcsaxes and Astropy 
+units to plot a AIA image and a zoomed in view of an active region.
 
 .. plot::
     :include-source:
