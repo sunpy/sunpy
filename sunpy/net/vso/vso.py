@@ -855,12 +855,14 @@ class InteractiveVSOClient(VSOClient):
                 not documented yet
             field : not documented yet
                 not documented yet
+
         Returns
         -------
             choice : not documented yet
 
         .. todo::
             improve documentation. what does this function do?
+
         """
         choice = raw_input(field + ': ')
         if not choice:
