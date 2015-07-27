@@ -161,6 +161,7 @@ class MapCube(object):
 
         """
         if not axes:
+            #axes = wcsaxes_helpers.gca_wcs(self.maps[0].wcs)
             axes = plt.gca()
         fig = axes.get_figure()
 
@@ -201,8 +202,8 @@ class MapCube(object):
             while removes:
                 removes.pop(0).remove()
             im.set_array(ani_data[i].data)
-            im.set_cmap(self.maps[i].cmap)
-            im.set_norm(self.maps[i].mpl_color_normalizer)
+            im.set_cmap(self.maps[i].plot_settings['cmap'])
+            im.set_norm(self.maps[i].plot_settings['norm'])
             im.set_extent(np.concatenate((self.maps[i].xrange.value, self.maps[i].yrange.value)))
             if annotate:
                 annotate_frame(i)
