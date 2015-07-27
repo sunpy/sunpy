@@ -4,11 +4,11 @@ from __future__ import absolute_import
 
 import numpy as np
 import matplotlib.animation
-import matplotlib.pyplot as plt
 
 from sunpy.map import GenericMap
 
 from sunpy.visualization.mapcubeanimator import MapCubeAnimator
+from sunpy.visualization import wcsaxes_compat
 from sunpy.util import expand_list
 
 __all__ = ['MapCube']
@@ -161,8 +161,7 @@ class MapCube(object):
 
         """
         if not axes:
-            #axes = wcsaxes_helpers.gca_wcs(self.maps[0].wcs)
-            axes = plt.gca()
+            axes = wcsaxes_compat.gca_wcs(self.maps[0].wcs)
         fig = axes.get_figure()
 
         if not plot_function:
@@ -201,10 +200,20 @@ class MapCube(object):
         def updatefig(i, im, annotate, ani_data, removes):
             while removes:
                 removes.pop(0).remove()
+
+            if wcsaxes_compat.is_wcsaxes(im.axes):
+                im.axes.reset_wcs(self.maps[i].wcs)
+
             im.set_array(ani_data[i].data)
             im.set_cmap(self.maps[i].plot_settings['cmap'])
             im.set_norm(self.maps[i].plot_settings['norm'])
-            im.set_extent(np.concatenate((self.maps[i].xrange.value, self.maps[i].yrange.value)))
+
+            if wcsaxes_compat.is_wcsaxes(axes):
+                wcsaxes_compat.default_wcs_grid(axes)
+            else:
+                im.set_extent(np.concatenate((self.maps[i].xrange.value,
+                                              self.maps[i].yrange.value)))
+
             if annotate:
                 annotate_frame(i)
             removes += list(plot_function(fig, axes, self.maps[i]))
