@@ -50,14 +50,14 @@ This is only used while in interactive mode.
 
 To turn on interactivity for pyplot use the command ::
 
-    plt.ion()
+    >>> plt.ion()   # doctest: +SKIP
 
 In interactive mode, the plot will appear at the first `~matplotlib.pyplot.plot`
 command and most commands will update the plot as you call them. Here is some
 example code::
 
-    plt.plot(range(10), range(10))
-    plt.title("Simple Plot")
+    >>> plt.plot(range(10), range(10))   # doctest: +SKIP
+    >>> plt.title("Simple Plot")   # doctest: +SKIP
 
 In this example, you'll see that the title appears right on the plot when you call it.
 Note that in this case the `~matplotlib.pyplot.show` command is useless as the
@@ -65,7 +65,7 @@ plot shows up right when you create it. Also note that some commands will not
 automatically update the plot and you have to use the `~matplotlib.pyplot.draw`
 command. The following command ::
 
-    plt.ioff()
+    >>> plt.ioff()   # doctest: +SKIP
 
 turns off interactivity.
 
@@ -132,7 +132,7 @@ This command is similar to the pyplot `~matplotlib.pyplot.plot` command in that
 it will create a figure and axes object for you if you haven't already. It
 returns a figure object and does not create a plot window. With the `~matplotlib.figure.Figure` object
 in your hands you can reach in and grab the axes and therefore manipulate the plot.
-Here is a simple example which outputs the same plot as we saw before. 
+Here is a simple example which outputs the same plot as we saw before:
 
 .. plot::
     :include-source:
@@ -152,7 +152,7 @@ highlight a region of interest, and change the plot title.
 
 .. plot::
     :include-source:
-    
+
     import sunpy.map
     import sunpy.data.sample
     import matplotlib.pyplot as plt
@@ -174,19 +174,16 @@ package to improve the representation of world coordinates. In the
 examples above the axes were normal matplotlib axes.
 To create a custom `wcsaxes.WCSAxes` instance do the following ::
 
-    fig = plt.figure()
-    ax = plt.subplot(projection=smap.wcs)
+    >>> fig = plt.figure()   # doctest: +SKIP
+    >>> ax = plt.subplot(projection=smap.wcs)   # doctest: +SKIP
 
 when overplotting data and using wcsaxes you have to use the transform keyword
 argument, also the native coordinate system of a `~wcsaxes.WCSAxes` is always
 in degrees ::
 
-    fig = plt.figure()
-    ax = plt.subplot(projection=smap.wcs)
-
-    smap.plot()
-    ax.plot((100*u.arcsec).to(u.deg), (500*u.arcsec).to(u.deg),
-            transform=ax.get_transform('world'))
+    >>> smap.plot()   # doctest: +SKIP
+    >>> ax.plot((100*u.arcsec).to(u.deg), (500*u.arcsec).to(u.deg),
+    ...         transform=ax.get_transform('world'))   # doctest: +SKIP
 
 Finally, here is a more complex example:
 

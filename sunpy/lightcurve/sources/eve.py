@@ -15,6 +15,7 @@ from sunpy.lightcurve import LightCurve
 
 __all__ = ['EVELightCurve']
 
+
 class EVELightCurve(LightCurve):
     """
     SDO EVE LightCurve for level 0CS data.
@@ -39,7 +40,9 @@ class EVELightCurve(LightCurve):
 
     Examples
     --------
-    >>> import sunpy
+    >>> import sunpy.lightcurve
+    >>> import sunpy.data.test
+
     >>> eve = sunpy.lightcurve.EVELightCurve.create()
     >>> eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
     >>> eve = sunpy.lightcurve.EVELightCurve.create(sunpy.data.test.EVE_AVERAGES_CSV)
