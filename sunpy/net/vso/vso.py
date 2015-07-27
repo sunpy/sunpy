@@ -808,17 +808,21 @@ class InteractiveVSOClient(VSOClient):
     """ Client for use in the REPL. Prompts user for data if required. """
     def multiple_choices(self, choices, response):
         """
-        ?
+        not documented yet
 
         Parameters
         ----------
-            choices : ?
+            choices : not documented yet
 
-            response : ?
+            response : not documented yet
 
         Returns
         -------
-            ? : ?
+            not documented yet
+
+        .. todo::
+            improve documentation. what does this function do?
+
         """
         while True:
             for n, elem in enumerate(choices):
@@ -843,17 +847,20 @@ class InteractiveVSOClient(VSOClient):
 
     def missing_information(self, info, field):
         """
-        ?
+        not documented yet
 
         Parameters
         ----------
-            info : ?
-
-            field : ?
-
+            info : not documented yet
+                not documented yet
+            field : not documented yet
+                not documented yet
         Returns
         -------
-            ? : ?
+            choice : not documented yet
+
+        .. todo::
+            improve documentation. what does this function do?
         """
         choice = raw_input(field + ': ')
         if not choice:
