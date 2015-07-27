@@ -566,12 +566,14 @@ class VSOClient(object):
         ----------
         query_response : sunpy.net.vso.QueryResponse
             QueryResponse containing the items to be downloaded.
+
         path : str
             Specify where the data is to be downloaded. Can refer to arbitrary
             fields of the QueryResponseItem (instrument, source, time, ...) via
             string formatting, moreover the file-name of the file downloaded can
             be referred to as file, e.g.
             "{source}/{instrument}/{time.start}/{file}".
+
         methods : {list of str}
             Download methods, defaults to URL-FILE_Rice then URL-FILE.
             Methods are a concatenation of one PREFIX followed by any number of
@@ -579,9 +581,11 @@ class VSOClient(object):
             The full list of `PREFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_PREFIX>`_
             and `SUFFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_SUFFIX>`_
             are listed on the VSO site.
+
         downloader : sunpy.net.downloader.Downloader
             Downloader used to download the data.
-        site: str
+
+        site : str
             There are a number of caching mirrors for SDO and other
             instruments, some available ones are listed below.
 
@@ -812,13 +816,13 @@ class InteractiveVSOClient(VSOClient):
 
         Parameters
         ----------
+
             choices : not documented yet
 
             response : not documented yet
 
         Returns
         -------
-            not documented yet
 
         .. todo::
             improve documentation. what does this function do?
@@ -851,14 +855,14 @@ class InteractiveVSOClient(VSOClient):
 
         Parameters
         ----------
-            info : not documented yet
+        info : not documented yet
                 not documented yet
-            field : not documented yet
-                not documented yet
+        field : not documented yet
+            not documented yet
 
         Returns
         -------
-            choice : not documented yet
+        choice : not documented yet
 
         .. todo::
             improve documentation. what does this function do?
