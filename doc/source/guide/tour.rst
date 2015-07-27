@@ -88,8 +88,34 @@ and the :ref:`spectra_code_ref`.
 Plotting
 --------
 
-SunPy uses a matplotlib-like interface for it's plotting so more complex plots can be built by combining
-SunPy with matplotlib.
+SunPy uses a matplotlib like interface to it's plotting so more complex
+plots can be built by combining SunPy with matplotlib.
+
+Let's begin by creating a simple plot of an AIA image. To make things easy,
+SunPy includes several example files which are used throughout the docs. These
+files have names like `sunpy.data.sample.AIA_171_IMAGE` and `sunpy.data.sample.RHESSI_IMAGE`.
+
+Try typing the below example into your interactive Python shell.
+
+.. plot::
+    :include-source:
+
+    import sunpy.map
+    import sunpy.data.sample
+    aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    aia.peek()
+
+If everything has been configured properly you should see an AIA image with
+a red colormap, a colorbar on the right-hand side and a title and some
+labels.
+
+There is lot going on here, but we will walk you through the example. Briefly,
+the first line is just importing SunPy. On the second line we create a
+SunPy Map object which is basically just a spatially-aware image or data array.
+On the last line we then plot the map object, using the built in 'quick plot' function `peek()`.
+
+SunPy uses a matplotlib like interface to it's plotting so more complex
+plots can be built by combining SunPy with matplotlib.
 
 .. plot::
     :include-source:
@@ -115,23 +141,72 @@ Solar Physical Constants
 SunPy contains a convenient list of solar-related physical constants. Here is
 a short bit of code to get you started: ::
 
-    from sunpy.sun import constants as con
+    >>> from sunpy.sun import constants as con
+
     # one astronomical unit (the average distance between the Sun and Earth)
-    print con.au
+    >>> print con.au
+      Name   = Astronomical Unit
+      Value  = 1.495978707e+11
+      Error  = 0.0
+      Units  = m
+      Reference = IAU 2012 Resolution B2
+
     # the solar radius
-    print con.radius
+    >>> print con.radius
+      Name   = Solar radius
+      Value  = 695508000.0
+      Error  = 26000.0
+      Units  = m
+      Reference = Allen's Astrophysical Quantities 4th Ed.
 
 Not all constants have a shortcut assigned to them (as above). The rest of the constants
 are stored in a dictionary. The following code grabs the dictionary and gets all of the
 keys.::
 
-    solar_constants = con.physical_constants
-    solar_constants.keys()
+    >>> solar_constants = con.physical_constants
+    >>> solar_constants.keys()   # doctest: +NORMALIZE_WHITESPACE
+    ['solar flux unit', 'surface area', 'average density', 'radius', 'surface
+    gravity', 'ellipticity', 'visual magnitude', 'center density', 'average
+    angular size', 'absolute magnitude', 'sunspot cycle', 'effective
+    temperature', 'aphelion distance', 'mean energy production', 'mass
+    conversion rate', 'average intensity', 'volume', 'metallicity', 'moment of
+    inertia', 'escape velocity', 'perihelion distance', 'GM', 'oblateness',
+    'mean distance', 'age', 'mass', 'luminosity', 'center temperature']
 
 You can also use the following function to print out a table of all of the values
 available. ::
 
-    con.print_all()
+    >>> con.print_all()   # doctest: +NORMALIZE_WHITESPACE
+    Name                                 Value            Units    Error
+    -------------------------------------------------------------------------------------
+    solar flux unit                      1e-22      W / (Hz m2)    0
+    surface area                     6.087e+18               m2    0
+    average density                       1409          kg / m3    0
+    radius                         695508000.0                m    26000.0
+    surface gravity                        274            m / s    0
+    ellipticity                          5e-05                     0
+    visual magnitude                    -26.75                     0
+    center density                    162200.0          kg / m3    0
+    average angular size                959.63           arcsec    0
+    absolute magnitude                    4.83                     0
+    sunspot cycle                         11.4               yr    0
+    effective temperature               5778.0                K    0
+    aphelion distance                1.521e+11                m    0
+    mean energy production           0.0001937           J / kg    0
+    mass conversion rate          4300000000.0           kg / s    0
+    average intensity               20090000.0      W / (m2 sr)    0
+    volume                          1.4122e+27               m3    0
+    metallicity                         0.0122                     0.0
+    moment of inertia                  5.7e+54          kg / m2    0
+    escape velocity                   617700.0            m / s    0
+    perihelion distance              1.471e+11                m    0
+    GM                             132712000.0         km3 / s2    0
+    oblateness                            8.01          marcsec    0.14
+    mean distance              1.495978707e+11                m    0.0
+    age                           4600000000.0               yr    100000000.0
+    mass                            1.9891e+30               kg    5e+25
+    luminosity                       3.846e+26                W    5e+22
+    center temperature              15710000.0                K    0
 
 These constants are provided as a convenience so that everyone is using the same
 (accepted values). For more information check out :ref:`sun_code_ref`.
@@ -167,11 +242,11 @@ SunPy's approach to the adoption of quantities and units in the codebase is desc
 Here's a simple example of the power of units.  Suppose you have the radius of a circle and would like to calculate
 its area.  The following code implements this ::
 
-    import numpy as np
-    import astropy.units as u
-    @u.quantity_input(radius=u.m)
-    def circle_area(radius):
-            return np.pi * radius ** 2
+    >>> import numpy as np
+    >>> import astropy.units as u
+    >>> @u.quantity_input(radius=u.m)
+    ... def circle_area(radius):
+    ...     return np.pi * radius ** 2
 
 The first line imports numpy, and the second line imports astropy's units module.  The beginning of the third line (the
 "@" symbol) indicates that what follows is a Python decorator.  In this case, the decorator allows us to specify what
@@ -196,50 +271,14 @@ input unit is convertible to meters.  This also works across different systems o
 
 However, if the input unit is not convertible to meters, then an error is thrown ::
 
-    circle_area(4 * u.second)
-    ---------------------------------------------------------------------------
-    UnitsError                                Traceback (most recent call last)
-    <ipython-input-15-5d2b19807321> in <module>()
-    ----> 1 circle_area(4 * u.second)
-
-    /Users/ireland/anaconda/lib/python2.7/site-packages/astropy/utils/decorators.py in circle_area(radius)
-        515     def wrapper(func):
-        516         func = make_function_with_signature(func, name=wrapped.__name__,
-    --> 517                                             **_get_function_args(wrapped))
-        518         func = functools.update_wrapper(func, wrapped, assigned=assigned,
-        519                                         updated=updated)
-
-    /Users/ireland/anaconda/lib/python2.7/site-packages/astropy/units/decorators.pyc in wrapper(*func_args, **func_kwargs)
-        112                                              " '{2}'.".format(param.name,
-        113                                                      wrapped_function.__name__,
-    --> 114                                                      target_unit.to_string()))
-        115
-        116                     # Either there is no .unit or no .is_equivalent
-
+    >>> circle_area(4 * u.second)   # doctest: +SKIP
+    ...
     UnitsError: Argument 'radius' to function 'circle_area' must be in units convertable to 'm'.
 
 Also, if no unit is specified, an error is thrown ::
 
-    circle_area(4)
-    ---------------------------------------------------------------------------
-    TypeError                                 Traceback (most recent call last)
-    <ipython-input-17-4c9fa37f7920> in <module>()
-    ----> 1 circle_area(4)
-
-    /Users/ireland/anaconda/lib/python2.7/site-packages/astropy/utils/decorators.py in circle_area(radius)
-        515     def wrapper(func):
-        516         func = make_function_with_signature(func, name=wrapped.__name__,
-    --> 517                                             **_get_function_args(wrapped))
-        518         func = functools.update_wrapper(func, wrapped, assigned=assigned,
-        519                                         updated=updated)
-
-    /Users/ireland/anaconda/lib/python2.7/site-packages/astropy/units/decorators.pyc in wrapper(*func_args, **func_kwargs)
-        122                         raise TypeError("Argument '{0}' to function has '{1}' {2}. "
-        123                               "You may want to pass in an astropy Quantity instead."
-    --> 124                                  .format(param.name, wrapped_function.__name__, error_msg))
-        125
-        126             # Call the original function with any equivalencies in force.
-
+    >>> circle_area(4)   # doctest: +SKIP
+    ...
     TypeError: Argument 'radius' to function has 'circle_area' no 'unit' attribute. You may want to pass in an astropy Quantity instead.
 
 Using units allows the user to be explicit about what the function
@@ -252,8 +291,8 @@ measurements in meters, then ::
 
 or ::
 
-    circle_area(4 * u.m).to(u.imperial.foot ** 2)
-    <Quantity 541.0531502245425 ft2>
+    >>> circle_area(4 * u.m).to(u.imperial.foot ** 2)
+    <Quantity 541.0531502245426 ft2>
 
 Astropy units and quantities are very powerful, and are used throughout SunPy.  To find out more about units and
 quantities, please consult the `the astropy tutorial <http://www.astropy.org/astropy-tutorials/Quantities.html>`__ and
@@ -266,21 +305,25 @@ Working with Times
 SunPy also contains a number of convenience functions for working with dates
 and times. Here is a short example: ::
 
-    import sunpy.time
+    >>> import sunpy.time
 
     # parsing a standard time strings
-    sunpy.time.parse_time('2004/02/05 12:00')
+    >>> sunpy.time.parse_time('2004/02/05 12:00')
+    datetime.datetime(2004, 2, 5, 12, 0)
 
     # This returns a datetime object. All SunPy functions which require
     # time as an input sanitize the input using parse_time.
-    sunpy.time.day_of_year('2004-Jul-05 12:00:02')
+    >>> sunpy.time.day_of_year('2004-Jul-05 12:00:02')
+    187.50002314814816
 
     # the julian day
-    sunpy.time.julian_day((2010,4,30))
+    >>> sunpy.time.julian_day((2010,4,30))
+    2455316.5
 
     # TimeRange objects are useful for representing ranges of time
-    sunpy.time.time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
-    time_range.center()
+    >>> time_range = sunpy.time.TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
+    >>> time_range.center
+    datetime.datetime(2010, 3, 4, 0, 15)
 
 For more information about working with time in SunPy checkout the :doc:`time guide <time>`.
 
@@ -304,22 +347,22 @@ non-interactive versions available, depending on the type of work you are doing.
 The below example demonstrates a simple query for SOHO EIT data using the
 non-interactive version of the main API::
 
-    from sunpy.net import vso
+    >>> from sunpy.net import vso
 
     # create a new VSOClient instance
-    client = vso.VSOClient()
+    >>> client = vso.VSOClient()
 
     # build our query
-    result = client.query(
-        vso.attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
-        vso.attrs.Instrument('eit')
-    )
+    >>> result = client.query(
+    ...     vso.attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
+    ...     vso.attrs.Instrument('eit'))
 
     # print the number of matches
-    print("Number of records found: %d " % result.num_records())
+    >>> print("Number of records found: %d " % result.num_records())   # doctest: +NORMALIZE_WHITESPACE
+    Number of records found: 4
 
     # download matches to /download/path
-    res = client.get(result, path="/download/path/{file}").wait()
+    >>> res = client.get(result, path="/download/path/{file}").wait()
 
 Note that specifying a path is optional and if you do not specify one the files
 will simply be downloaded into a temporary directory (e.g. /tmp/xyz).
@@ -339,24 +382,24 @@ Querying a database is straightforward, as this example using VSO, shows. The ex
 demonstrates the useful feature which prevents storing the same data twice::
 
 
-    from sunpy.database import Database
-    from sunpy.net.vso.attrs import Time, Instrument
-    db = Database('sqlite:///')
-    entries = db.fetch(
+    >>> from sunpy.database import Database
+    >>> from sunpy.net.vso.attrs import Time, Instrument
+    >>> db = Database('sqlite:///')
+    >>> entries = db.fetch(
     ...     Time('2012-08-05', '2012-08-05 00:00:05'),
     ...     Instrument('AIA'))
-    assert entries is None
-    len(db)
-    2
-    entries = db.fetch(
+    >>> assert entries is None
+    >>> len(db)
+    4
+    >>> entries = db.fetch(
     ...     Time('2012-08-05', '2012-08-05 00:00:05'),
     ...     Instrument('AIA'))
-    entries is None
+    >>> entries is None
     False
-    len(entries)
-    2
-    len(db)
-    2
+    >>> len(entries)
+    4
+    >>> len(db)
+    4
 
 
 Explanation: first, entries is None because the query has never been used for querying
