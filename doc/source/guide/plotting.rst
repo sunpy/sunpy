@@ -173,13 +173,13 @@ highlight a region of interest, and change the plot title.
 Plotting Maps with wcsaxes
 --------------------------
 
-By default :ref:`map` uses the `wcsaxes <http://wcsaxes.readthedocs.org/>`_
-package to improve the representation of world coordinates. In the
-examples above the axes were normal matplotlib axes, because they were explictily
-created.
-If wcsaxes is installed, then calling `~sunpy.map.GenericMap.plot` or 
-`~sunpy.map.GenericMap.peek()` will default to using wcsaxes for plotting.
-To create a custom `wcsaxes.WCSAxes` instance do the following ::
+By default :ref:map checks if the `wcsaxes <http://wcsaxes.readthedocs.org/>`_ 
+package has been installed. If it is installed, 
+then `wcsaxes` is used to improve the representation of world coordinates,
+and calling ~sunpy.map.GenericMap.plot or~sunpy.map.GenericMap.peek() will use 
+wcsaxes for plotting. Unless a standard `matplotlib.axes.Axes` object is created.
+
+To explicitly create a `wcsaxes.WCSAxes` instance do the following ::
 
     >>> fig = plt.figure()   # doctest: +SKIP
     >>> ax = plt.subplot(projection=smap.wcs)   # doctest: +SKIP
