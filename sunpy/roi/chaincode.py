@@ -61,31 +61,37 @@ class Chaincode(np.ndarray):
 
     def matchend(self, end):
         """
-        ?
+        not documented yet
 
         Parameters
         ----------
-        end : ?
+        end : not documented yet
 
         Returns
         -------
-        ?
+        not documented yet
+
+        .. todo::
+            improve documentation. what does this function do?
 
         """
         return np.alltrue(np.equal(self.coordinates[:, -1], np.asarray(end)))
 
     def matchany(self, coordinates, index):
         """
-        ?
+        not documented yet
 
         Parameters
         ----------
-        coordinates : ?
-        index : ?
+        coordinates : not documented yet
+        index : not documented yet
 
         Returns
         -------
-        ?
+        not documented yet
+
+        .. todo::
+            improve documentation. what does this function do?
 
         """
         return np.alltrue(np.allclose(self.coordinates[:, index],

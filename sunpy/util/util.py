@@ -64,23 +64,23 @@ def goes_flare_class(gcls):
 
 def unique(itr, key=None):
     """
-    ?
+    not documented yet
 
     Parameters
     ----------
     itr : iterable
         Object to be iterated over
 
-    key :
-        ?
+    key : object
+        not documented yet
 
     Returns
     -------
-    ?
+    not documented yet
 
 
     .. todo::
-        improve documentation.
+        improve documentation. what does this function do?
     """
     items = set()
     if key is None:
@@ -129,14 +129,14 @@ def findpeaks(a):
 
     Parameters
     ----------
-    a : array-like
+    a : `~numpy.ndarray`
+        a one dimensional `~numpy.ndarray` array.
 
     Returns
     -------
-    ?
+    `~numpy.ndarray`
+        indices of all the local maxima
 
-    .. todo::
-        improve documentation. what does this do?
     """
     return np.nonzero((a[1:-1] > a[:-2]) & (a[1:-1] > a[2:]))[0]
 
@@ -147,14 +147,14 @@ def polyfun_at(coeff, p):
 
     Parameters
     ----------
-    coeff : ?
-        ?
-    p : ?
-        ?
+    coeff : not documented yet
+        not documented yet
+    p : not documented yet
+        not documented yet
 
     Returns
     -------
-    ?
+    not documented yet
 
     .. todo::
         improve documentation. what does this do?  Does numpy have this functionality?
