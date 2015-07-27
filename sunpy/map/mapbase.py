@@ -652,7 +652,7 @@ scale:\t\t {scale}
 
         References
         ----------
-        * `Rebinninb <http://www.scipy.org/Cookbook/Rebinning>`_ (Original source, 2011/11/19)
+        * `Rebinning <http://www.scipy.org/Cookbook/Rebinning>`_ (Original source, 2011/11/19)
         """
 
         # Note: because the underlying ndarray is transposed in sense when

@@ -216,7 +216,7 @@ def is_time(time_string, time_format=''):
     time_string : [ int, float, time_string, datetime ]
         Date to parse which can be either time_string, int, datetime object.
     time_format : [ basestring, utime, datetime ]
-    Specifies the format user has provided the time_string in.
+        Specifies the format user has provided the time_string in.
 
     Returns
     -------
