@@ -201,14 +201,12 @@ class MapCube(object):
             while removes:
                 removes.pop(0).remove()
 
-            if wcsaxes_compat.is_wcsaxes(im.axes):
-                im.axes.reset_wcs(self.maps[i].wcs)
-
             im.set_array(ani_data[i].data)
             im.set_cmap(self.maps[i].plot_settings['cmap'])
             im.set_norm(self.maps[i].plot_settings['norm'])
 
             if wcsaxes_compat.is_wcsaxes(axes):
+                im.axes.reset_wcs(self.maps[i].wcs)
                 wcsaxes_compat.default_wcs_grid(axes)
             else:
                 im.set_extent(np.concatenate((self.maps[i].xrange.value,
