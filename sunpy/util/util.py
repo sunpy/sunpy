@@ -9,8 +9,9 @@ import numpy as np
 
 __all__ = ['to_signed', 'unique', 'print_table',
            'replacement_filename', 'goes_flare_class', 'merge', 'common_base',
-           'minimal_pairs', 'polyfun_at',
-           'expand_list', 'expand_list_generator', 'Deprecated']
+           'minimal_pairs', 'polyfun_at', 'expand_list',
+           'expand_list_generator', 'Deprecated']
+
 
 def to_signed(dtype):
     """ Return dtype that can hold data of passed dtype but is signed.
@@ -31,6 +32,7 @@ def to_signed(dtype):
         dtype = "int{0:d}".format(min(dtype.itemsize * 2 * 8, 64))
     return np.dtype(dtype)
 
+
 def goes_flare_class(gcls):
     """Convert GOES classes into a number to aid size comparison.  Units are
     watts per meter squared.
@@ -49,7 +51,8 @@ def goes_flare_class(gcls):
         return astropy quantities.
     """
     def calc(gcls):
-        powers_of_ten = {'A':1e-08, 'B':1e-07, 'C':1e-06, 'M':1e-05, 'X':1e-04}
+        powers_of_ten = {'A': 1e-08, 'B': 1e-07, 'C': 1e-06,
+                         'M': 1e-05, 'X': 1e-04}
         power = gcls[0].upper()
         if power in powers_of_ten:
             return powers_of_ten[power] * float(gcls[1:])
@@ -94,6 +97,7 @@ def unique(itr, key=None):
             if x not in items:
                 yield elem
                 items.add(x)
+
 
 def print_table(lst, colsep=' ', linesep='\n'):
     """
@@ -208,6 +212,8 @@ def minimal_pairs(one, other):
 
 
 DONT = object()
+
+
 def find_next(one, other, pad=DONT):
     """ Given two sorted sequences one and other, for every element
     in one, return the one larger than it but nearest to it in other.
@@ -260,8 +266,8 @@ def merge(items, key=(lambda x: x)):
     while state:
         for item, (value, tk) in state.iteritems():
             # Value is biggest.
-            if all(tk >= k for it, (v, k)
-                in state.iteritems() if it is not item):
+            if (all(tk >= k for it, (v, k)
+               in state.iteritems() if it is not item)):
                 yield value
                 break
         try:
@@ -269,6 +275,7 @@ def merge(items, key=(lambda x: x)):
             state[item] = (n, key(n))
         except StopIteration:
             del state[item]
+
 
 def replacement_filename(path):
     """ Return replacement path for already used path. Enumerates
@@ -315,6 +322,7 @@ def expand_list(input):
     """
     return [item for item in expand_list_generator(input)]
 
+
 def expand_list_generator(input):
     """
     .. todo::
@@ -327,10 +335,11 @@ def expand_list_generator(input):
         else:
             yield item
 
-#==============================================================================
+
+# =============================================================================
 # Deprecation decorator: http://code.activestate.com/recipes/391367-deprecated/
 # and http://www.artima.com/weblogs/viewpost.jsp?thread=240845
-#==============================================================================
+# =============================================================================
 class Deprecated(object):
     """ Use this decorator to deprecate a function or method, you can pass an
     additional message to the decorator:
