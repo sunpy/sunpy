@@ -14,15 +14,16 @@ from sunpy.cm import cm
 __all__ = ['AIAMap', 'HMIMap']
 
 class AIAMap(GenericMap):
-    """AIA Image Map
+    """AIA Image Map.
 
     The Atmospheric Imaging Assembly is a set of four telescopes that employ
     normal-incidence, multi-layer coated optics to provide narrow-band imaging
-    of the Sun. It provides high resolution full-disk images of the corona and transition region
-    up to 0.5 solar radii above the solar limb with 1.5 arcsec angular
-    resolution and 12-second temporal resolution. It observes the Sun in the following seven
-    extreme ultraviolet bandpasses: 94 A (Fe XVIII), 131 A (Fe VIII, XXI), 171 A (Fe IX),
-    193 A (Fe XII, XXIV), 211 A (Fe XIV), 304 A (He II), 335 A (Fe XVI). One telescope observes
+    of the Sun. It provides high resolution full-disk images of the corona and
+    transition region up to 0.5 solar radii above the solar limb with 1.5
+    arcsecond angular resolution and 12-second temporal resolution. It observes
+    the Sun in the following seven extreme ultraviolet bandpasses: 94 A
+    (Fe XVIII), 131 A (Fe VIII, XXI), 171 A (Fe IX), 193 A (Fe XII, XXIV),
+    211 A (Fe XIV), 304 A (He II), 335 A (Fe XVI). One telescope observes
     in the visible 1600 A (C IV) and the nearby continuun (1700 A).
 
     References
@@ -47,10 +48,16 @@ class AIAMap(GenericMap):
 
     @property
     def observatory(self):
+        """
+        Returns the observatory.
+        """
         return self.meta['telescop'].split('/')[0]
 
     @property
     def processing_level(self):
+        """
+        Returns the FITS processing level.
+        """
         return self.meta['lvl_num']
 
     @classmethod
@@ -59,15 +66,16 @@ class AIAMap(GenericMap):
         return header.get('instrume', '').startswith('AIA')
 
 class HMIMap(GenericMap):
-    """HMI Image Map
+    """HMI Image Map.
 
     HMI consists of a refracting telescope, a polarization selector,
     an image stabilization system, a narrow band tunable filter
-    and two 4096 pixel CCD cameras. It observes the full solar disk in the Fe I absorption
-    line at 6173 Angstrom with a resolution of 1 arc-second.
+    and two 4096 pixel CCD cameras. It observes the full solar disk in the Fe I
+    absorption line at 6173 Angstrom with a resolution of 1 arc-second.
     HMI takes images in a sequence of tuning and polarizations at a 4-second
-    cadence for each camera. One camera is dedicated to a 45 s Doppler and line-of-sight field
-    sequence while the other to a 90 s vector field sequence.
+    cadence for each camera. One camera is dedicated to a 45 s Doppler and
+    line-of-sight field sequence while the other to a 90 s vector field
+    sequence.
 
     References
     ----------
@@ -87,10 +95,16 @@ class HMIMap(GenericMap):
 
     @property
     def measurement(self):
+        """
+        Returns the measurement type.
+        """
         return self.meta['content'].split(" ")[0].lower()
 
     @property
     def observatory(self):
+        """
+        Returns the observatory.
+        """
         return self.meta['telescop'].split('/')[0]
 
     @classmethod

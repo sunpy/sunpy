@@ -6,18 +6,22 @@ __email__ = "keith.hughitt@nasa.gov"
 
 import numpy as np
 
+from astropy.visualization import PowerStretch
+from astropy.visualization.mpl_normalize import ImageNormalize
+
 from sunpy.map import GenericMap
 from sunpy.cm import cm
-from matplotlib.colors import PowerNorm
+
 
 __all__ = ['EUVIMap', 'CORMap', 'HIMap']
 
 class EUVIMap(GenericMap):
     """STEREO-SECCHI EUVI Image Map
 
-    EUVI is an extreme ultraviolet (EUV) imager. Part of the STEREO-SECCHI suite it observes
-    the Sun from 1 to 1.7 solar radii. It is capable of observing at 304 (He II),
-    171 (Fe IX), 195 (Fe XII), and 284 (Fe XV) Angstroms.
+    EUVI is an extreme ultraviolet (EUV) imager. Part of the STEREO-SECCHI
+    suite it observes the Sun from 1 to 1.7 solar radii. It is capable of
+    observing at 304 (He II), 171 (Fe IX), 195 (Fe XII), and 284 (Fe XV)
+    Angstroms.
 
     References
     ----------
@@ -32,7 +36,7 @@ class EUVIMap(GenericMap):
 
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = cm.get_cmap('sohoeit{wl:d}'.format(wl=int(self.wavelength.value)))
-        self.plot_settings['norm'] = PowerNorm(0.25, self.data.min(), self.data.max())
+        self.plot_settings['norm'] = ImageNormalize(stretch=PowerStretch(0.25))
         self.meta['waveunit'] = 'Angstrom'
 
         # Try to identify when the FITS meta data does not have the correct
@@ -84,7 +88,7 @@ class CORMap(GenericMap):
         self.meta['wavelnth'] = np.nan
         self.meta['waveunit'] = 'nm'
         self.plot_settings['cmap'] = cm.get_cmap('stereocor{det!s}'.format(det=self.detector[-1]))
-        self.plot_settings['norm'] = PowerNorm(0.5)
+        self.plot_settings['norm'] = ImageNormalize(stretch=PowerStretch(0.5))
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
@@ -93,6 +97,9 @@ class CORMap(GenericMap):
 
     @property
     def measurement(self):
+        """
+        Returns the type of data observed.
+        """
         # TODO: This needs to do more than white-light.  Should give B, pB, etc.
         return "white-light"
 
@@ -111,7 +118,8 @@ class HIMap(GenericMap):
     directed towards the Earth.
 
     The Heliospheric imager consists of two instruments, the HI-1 and HI-2.
-    The HI1 observes from 15-80 solar radii while HI2 observes from 80-215 solar radii.
+    The HI1 observes from 15-80 solar radii while HI2 observes from 80-215
+    solar radii.
 
     References
     ----------
@@ -126,7 +134,7 @@ class HIMap(GenericMap):
         self.meta['waveunit'] = 'nm'
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = cm.get_cmap('stereohi{det!s}'.format(det=self.detector[-1]))
-        self.plot_settings['norm'] = PowerNorm(0.25)
+        self.plot_settings['norm'] = ImageNormalize(stretch=PowerStretch(0.25))
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
@@ -135,6 +143,9 @@ class HIMap(GenericMap):
 
     @property
     def measurement(self):
+        """
+        Returns the type of data observed.
+        """
         # TODO: This needs to do more than white-light.  Should give B, pB, etc.
         return "white-light"
 

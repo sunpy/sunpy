@@ -18,15 +18,12 @@ def read(filepath):
 
     Parameters
     ----------
-    filepath : string
+    filepath : `str`
         The file to be read
-
-    j2k_to_image : string
-        binary to use for reading?
 
     Returns
     -------
-    pairs : list
+    pairs : `list`
         A list of (data, header) tuples
     """
     header = get_header(filepath)
@@ -41,7 +38,7 @@ def get_header(filepath):
 
     Parameters
     ----------
-    filepath : string
+    filepath : `str`
         The file to be read
 
     Returns
@@ -54,7 +51,7 @@ def get_header(filepath):
     xmlstring = ET.tostring(xml_box[0].xml.find('fits'))
     pydict = xml_to_dict(xmlstring)["fits"]
 
-    #Fix types
+    # Fix types
     for k, v in pydict.items():
         if v.isdigit():
             pydict[k] = int(v)

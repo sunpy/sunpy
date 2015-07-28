@@ -40,7 +40,7 @@ Here is a simple example of pyplot usage.
 
 The `~matplotlib.pyplot.show` command opens a plot on the screen and blocks
 execution until the plot window is closed. The `~matplotlib.pyplot.show`
-command only work once. If you were to call `~matplotlib.pyplot.show` again
+command only works once. If you were to call `~matplotlib.pyplot.show` again
 after the above code is executed nothing happens. This confusing behavior
 is something that the matplotlib devs get complaints about often and so this may change.
 A discussion about this can be found `here
@@ -50,14 +50,14 @@ This is only used while in interactive mode.
 
 To turn on interactivity for pyplot use the command ::
 
-    plt.ion()
+    >>> plt.ion()   # doctest: +SKIP
 
 In interactive mode, the plot will appear at the first `~matplotlib.pyplot.plot`
 command and most commands will update the plot as you call them. Here is some
 example code::
 
-    plt.plot(range(10), range(10))
-    plt.title("Simple Plot")
+    >>> plt.plot(range(10), range(10))   # doctest: +SKIP
+    >>> plt.title("Simple Plot")   # doctest: +SKIP
 
 In this example, you'll see that the title appears right on the plot when you call it.
 Note that in this case the `~matplotlib.pyplot.show` command is useless as the
@@ -65,7 +65,7 @@ plot shows up right when you create it. Also note that some commands will not
 automatically update the plot and you have to use the `~matplotlib.pyplot.draw`
 command. The following command ::
 
-    plt.ioff()
+    >>> plt.ioff()   # doctest: +SKIP
 
 turns off interactivity.
 
@@ -103,8 +103,8 @@ which supports both simple and advanced matplotlib usage. The following examples
 focus on the map object but they should be applicable across all of the data
 objects.
 
-5. peek()
----------
+4.1 peek()
+----------
 
 For quick and easy access to a plot
 all SunPy base objects (e.g. maps, spectra, lightcurves) define their own
@@ -122,20 +122,20 @@ your data. For example you can make the following plot.
 
 This creates a plot window with all axes defined, a plot title, and the image of
 the map data defined by the contents of the map. In non-interactive mode the
-plot window blocks and must be closed before doing anything else.
+plot window blocks the command line terminal and must be closed before doing anything else.
 
-6. plot()
----------
+4.2 plot()
+----------
 
 For more advanced plotting the base SunPy objects also provide a `~sunpy.map.mapbase.GenericMap.plot` command.
 This command is similar to the pyplot `~matplotlib.pyplot.plot` command in that
 it will create a figure and axes object for you if you haven't already. It
 returns a figure object and does not create a plot window. With the `~matplotlib.figure.Figure` object
 in your hands you can reach in and grab the axes and therefore manipulate the plot.
-Here is a simple example which outputs the same plot as we saw before. Click
-on the link to see the code.
+Here is a simple example which outputs the same plot as we saw before:
 
 .. plot::
+    :include-source:
 
     import sunpy.map
     import sunpy.data.sample
@@ -151,6 +151,7 @@ The following example plot shows how to add a rectangle to a plot to, for exampl
 highlight a region of interest, and change the plot title.
 
 .. plot::
+    :include-source:
 
     import sunpy.map
     import sunpy.data.sample
@@ -168,50 +169,89 @@ highlight a region of interest, and change the plot title.
     plt.colorbar()
     plt.show()
 
-By default :ref:`map` uses the `wcsaxes <http://wcsaxes.readthedocs.org/>`_
-package to improve the representation of world coordinates. In the
-examples above the axes were normal matplotlib axes.
-To create a custom `wcsaxes.WCSAxes` instance do the following ::
 
-    fig = plt.figure()
-    ax = plt.subplot(projection=smap.wcs)
+Plotting Maps with wcsaxes
+--------------------------
 
-when overplotting data and using wcsaxes you have to use the transform keyword
-argument, also the native coordinate system of a `~wcsaxes.WCSAxes` is always
-in degrees ::
+By default :ref:map checks if the `wcsaxes <http://wcsaxes.readthedocs.org/>`_ 
+package has been installed. If it is installed, 
+then `wcsaxes` is used to improve the representation of world coordinates,
+and calling ~sunpy.map.GenericMap.plot or~sunpy.map.GenericMap.peek() will use 
+wcsaxes for plotting. Unless a standard `matplotlib.axes.Axes` object is created.
 
-    fig = plt.figure()
-    ax = plt.subplot(projection=smap.wcs)
+To explicitly create a `wcsaxes.WCSAxes` instance do the following ::
 
-    smap.plot()
-    ax.plot((100*u.arcsec).to(u.deg), (500*u.arcsec).to(u.deg),
-            transform=ax.get_transform('world'))
+    >>> fig = plt.figure()   # doctest: +SKIP
+    >>> ax = plt.subplot(projection=smap.wcs)   # doctest: +SKIP
 
-Finally, here is a more complex example whose source code is available through
-the link.
+when plotting on a `~wcsaxes.WCSAxes` axes, it will by default plot in pixel 
+coordinates, you can override this behavior and plot in 'world' coordinates
+by getting the transformation from the axes with ``ax.get_transform('world')``.
+Note: World coordinates are always in **degrees** so you will have to convert 
+to degrees.::
+
+    >>> smap.plot()   # doctest: +SKIP
+    >>> ax.plot((100*u.arcsec).to(u.deg), (500*u.arcsec).to(u.deg),
+    ...         transform=ax.get_transform('world'))   # doctest: +SKIP
+
+Finally, here is a more complex example using SunPy maps, wcsaxes and Astropy 
+units to plot a AIA image and a zoomed in view of an active region.
 
 .. plot::
+    :include-source:
 
+    import matplotlib.pyplot as plt
     from matplotlib import patches
     import astropy.units as u
 
     import sunpy.map
-    import matplotlib.pyplot as plt
     import sunpy.data.sample
 
-    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    submap = smap.submap([-100-250, -100+250]*u.arcsec, [-400-250, -400+250]*u.arcsec)
-    rect = patches.Rectangle([-100-250, -400-250], 500, 500, color = 'white', fill=False)
 
-    fig = plt.figure()
-    ax1 = fig.add_subplot(2,1,1)
+    # Define a region of interest
+    l = 250*u.arcsec
+    x0 = -100*u.arcsec
+    y0 = -400*u.arcsec
+
+    # Create a SunPy Map, and a second submap over the region of interest.
+    smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    submap = smap.submap(u.Quantity([x0-l, x0+l]), u.Quantity([y0-l, y0+l]))
+
+
+
+    # Create a new matplotlib figure, larger than default.
+    fig = plt.figure(figsize=(5,12))
+
+    # Add a first Axis, using the WCS from the map.
+    ax1 = fig.add_subplot(2,1,1, projection=smap.wcs)
+
+    # Plot the Map on the axes with default settings.
     smap.plot()
+
+    # Define a region to highlight with a box
+    # We have to convert the region of interest to degress, and then get the raw values.
+    bottom_left = u.Quantity([x0-l, y0-l]).to(u.deg).value
+    l2 = (l*2).to(u.deg).value
+
+    # create the rectangle, we use the world transformation to plot in physical units.
+    rect = patches.Rectangle(bottom_left, l2, l2, color='white', fill=False,
+                             transform=ax1.get_transform('world'))
+                         
+    # Add the rectangle to the plot.
     ax1.add_artist(rect)
 
-    ax2 = fig.add_subplot(2,1,2)
+
+
+    # Create a second axis on the plot.
+    ax2 = fig.add_subplot(2,1,2, projection=submap.wcs)
+
     submap.plot()
+
+    # Add a overlay grid.
     submap.draw_grid(grid_spacing=10*u.deg)
-    ax2.set_title('submap')
-    fig.subplots_adjust(hspace=0.4)
+
+    # Change the title.
+    ax2.set_title('Zoomed View')
+
 
     plt.show()
