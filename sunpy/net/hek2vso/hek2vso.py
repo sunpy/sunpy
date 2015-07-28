@@ -36,7 +36,7 @@ def translate_results_to_query(results):
 
     Parameters
     ----------
-    results : sunpy.net.hek.hek.Response or list of sunpy.net.hek.hek.Response
+    results : `sunpy.net.hek.hek.Response` or list of `sunpy.net.hek.hek.Response`
         The HEK results from a HEK query to be translated.
 
     Examples
@@ -76,7 +76,7 @@ def vso_attribute_parse(phrase):
 
     Parameters
     ----------
-    phrase: dictionary containing a sunpy.net.hek.hek.Response
+    phrase : `dict` containing a `sunpy.net.hek.hek.Response`.
         The single HEK result to be parsed for VSO attribute data.
 
     Examples
@@ -137,9 +137,9 @@ class H2VClient(object):
 
         Parameters
         ----------
-        client_query: list
+        client_query : `list`
             The list containing the HEK style query.
-        limit: int
+        limit : `int`
             An approximate limit to the desired number of VSO results.
 
         Examples
@@ -167,11 +167,11 @@ class H2VClient(object):
 
         Parameters
         ----------
-        hek_results: sunpy.net.hek.hek.Response or list of Responses
+        hek_results : `sunpy.net.hek.hek.Response` or list of such Responses
             The results from a HEK query in the form of a list.
-        limit: int
+        limit : int
             An approximate limit to the desired number of VSO results.
-        progress: Boolean
+        progress : Boolean
             A flag to turn off the progress bar, defaults to "off"
 
         Examples

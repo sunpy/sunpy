@@ -6,7 +6,7 @@ Time in SunPy
 
 Working with times and time ranges is a standard task in solar data analysis as such
 SunPy strives to provide convenient and easy methods to do the simple stuff. Python
-already provides an object for a time or date through the `datetime.datetime`.
+already provides an object for a time or date through `datetime.datetime`.
 SunPy builds upon its functionality.
 
 .. _parse-time:
@@ -37,9 +37,7 @@ function also accepts this as input, e.g.: ::
 
 
 All SunPy functions which require
-time as an input sanitize the input using parse_time. You can also pass it a `datetime.datetime`
-object directly and it will simply hand it right back to you. For users of IDL,
-this function is meant to the be the equivalent to SSW's anytim().
+time as an input sanitize the input using parse_time.
 
 2. Time Ranges
 --------------

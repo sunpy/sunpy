@@ -35,14 +35,14 @@ def read(filename, debug=False):
 
     Parameters
     ----------
-    filename: string
+    filename : `str`
         Name of file to be read.
-    debug: bool, optional
+    debug : `bool` (optional)
         Prints verbose debug information.
 
     Returns
     -------
-    out: list
+    out : `list`
         A list of (data, header) tuples
 
     Examples
@@ -67,15 +67,15 @@ def get_header(filename, debug=False):
 
     Parameters
     ----------
-    filename: string
+    filename : `str`
         Name of file to be read.
-    debug: bool, optional
+    debug : `bool` (optional)
         Prints verbose debug information.
 
     Returns
     -------
-    out: list
-        A list of FileHeader headers
+    out : `list`
+        A list of `~sunpy.io.header.FileHeader` headers.
 
     Examples
     --------
@@ -93,16 +93,16 @@ def write(filename, data, comments=False, compress=1, debug=False):
 
     Parameters
     ----------
-    filename: string
+    filename : `str`
         Name of file to be created.
-    data: numpy array
+    data : `numpy.ndarray`
         Name of data to be stored.
-    comments: FileHeader, optional
+    comments : `~sunpy.io.header.FileHeader`, optional
         The comments to be stored as a header.
-    compress: int, optional
+    compress : `int`, optional
         To compress the data or not.
         1 is to compress, 0 is uncompressed
-    debug: bool, optional
+    debug : `bool`, optional
         Prints verbose debug information.
 
     Returns
