@@ -85,22 +85,19 @@ are needed. SunPy will import even if these dependencies are not installed.
 
 - `suds <https://bitbucket.org/jurko/suds>`_: For `~sunpy.net`.
 
-- `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: For `Callisto` Spectrograms and `net.helio`
+- `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: For `~sunpy.spectra.Callisto` Spectrograms and `~sunpy.net.helio`
 
-- `requests <http://docs.python-requests.org/en/latest/>`_: For the `net.jsoc` submodule.
+- `requests <http://docs.python-requests.org/en/latest/>`_: For the `~sunpy.net.jsoc` submodule.
 
 - `glymur <https://glymur.readthedocs.org/en/latest/>`_ 0.5.9 or later: To enable reading of JPEG2000 files.
   Glymur requires the installation of the `OpenJPEG C library <http://code.google.com/p/openjpeg/downloads/list>`_.
 
-- `pytest <http://pytest.org/latest/>`_: To run our tests.
+- `pytest <http://pytest.org/latest/>`_: To run tests.
 
-The packages that will be installed as dependencies by default are the ones
+The packages that will be installed as dependencies by default and are the ones
 required to import the core datatypes `~sunpy.map`, `~sunpy.lightcurve` and
 `~sunpy.spectra`. These are the strict requirements and the following optional
 packages:
-
-- `matplotlib`
-- `pandas`
 
 Using `pip`
 ###########
@@ -159,8 +156,7 @@ correctly is to use the :func:`sunpy.self_test()` function::
     import sunpy
     sunpy.self_test(online=False)
 
-Which will run all the SunPy tests that don't require an active internet
-connection (and can therefore be quite slow).
+which will run many of the SunPy tests.
 
 The tests should run and print out any failures, which you can report at
 the `SunPy issue tracker <http://github.com/sunpy/sunpy/issues>`_.
@@ -169,7 +165,7 @@ the `SunPy issue tracker <http://github.com/sunpy/sunpy/issues>`_.
 Installing the Development Version of SunPy
 -------------------------------------------
 
-The latest development version of SunPy can be cloned from github
+The latest (bleeding-edge) development version of SunPy can be cloned from github
 using this command::
 
    git clone git://github.com/sunpy/sunpy.git
@@ -193,7 +189,7 @@ Troubleshooting
 ---------------
 
 If you get an error mentioning that you do not have the correct permissions to
-install SunPy into the default ``site-packages`` directory, you can try
+install SunPy into the default ``site-packages`` directory, you should try
 installing with::
 
     pip install sunpy --user
@@ -206,8 +202,8 @@ Building documentation
 .. note::
     Building the documentation is in general not necessary unless you
     are writing new documentation or do not have internet access, because
-    the latest (and archive) versions of SunPy's documentation should
-    be available at `docs.sunpy.org <http://docs.sunpy.org>`_ .
+    the latest (and archive) versions of SunPy's documentation are
+    available at `docs.sunpy.org <http://docs.sunpy.org>`_ .
 
 Building the documentation requires the SunPy source code and some additional
 packages:
@@ -235,7 +231,7 @@ packages:
 There are two ways to build the SunPy documentation. The most straightforward
 way is to execute the command (from the sunpy source directory)::
 
-    python setup.py build_sphinx
+    python setup.py build_sphinx -lo
 
 The documentation will be built in the ``doc/build/html`` directory, and can
 be read by pointing a web browser to ``doc/build/html/index.html``.
@@ -248,10 +244,3 @@ The LaTeX file ``SunPy.tex`` will be created in the ``doc/build/latex``
 directory, and can be compiled using ``pdflatex``.
 
 The above method builds the API documentation from the source code.
-Alternatively, you can do::
-
-    cd doc/source
-    make html
-
-And the documentation will be generated in the same location, but using the
-*installed* version of SunPy.
