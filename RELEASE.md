@@ -1,8 +1,8 @@
 The SunPy project is happy to announce the release of SunPy 0.6.0.
 This is a major SunPy release with lots of changes that will make SunPy even
 better than it was before.
-This release consists of 1,139 commits from 24 different people and
-9 new contributors!
+This release consists of 1,341 commits from 29 different people and
+13 new contributors!
 
 The major changes in this release are:
 
@@ -29,29 +29,35 @@ The major changes in this release are:
 
 The people who have contributed to this release are:
 
+
     Stuart Mumford
     Daniel Ryan
-    Jack Ireland
     Steven Christe
-    Albert Y. Shih
+    Jack Ireland
+    Brigitta Sipocz *
     Asish Panda
     Andrew Inglis
+    Albert Y. Shih
     Rishabh Sharma
     David Perez-Suarez
     Rajul Srivastava
+    Andrew Leonard
     Ruben De Visscher *
     Dumindu Buddhika *
-    Andrew Leonard
     Goran Cetusic *
+    Jongyeob Park *
+    Chloé Guennou *
     Ishtyaq Habib *
     Nabil Freij
     Simon Liedtke
     Abigail Stevens *
+    Alex Hamilton *
     Ambar Mehrotra *
     Erik M. Bray *
     Jaylen Wimbish *
+    Juan Camilo Buitrago-Casas *
     Larry Manley
     Norbert Gyenge
     Rishabh Mishra *
 
-Where a * indicates their first contribution.
+Where an * indicates their first contribution.
