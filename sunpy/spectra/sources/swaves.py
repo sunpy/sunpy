@@ -59,7 +59,7 @@ class SWavesSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def read(cls, filename, **kwargs):
-        """ Read in FITS file and return a new SWavesSpectrogram. """
+        """Read in FITS file and return a new SWavesSpectrogram. """
         data = np.genfromtxt(filename, skip_header=2)
         time_axis = data[:, 0] * 60.
         data = data[:, 1:].transpose()

@@ -10,19 +10,19 @@ The :file:`sunpyrc` file
 =============================
 
 Sunpy uses a :file:`sunpyrc` configuration file to customize certain
-properties. You can control a number of key features of SunPy such as 
+properties. You can control a number of key features of SunPy such as
 where your data will download to. SunPy looks for :file:`sunpyrc` in two
 locations, in the following order:
 
 1. :file:`.sunpy/sunpyrc`, for the user's default customizations.
 2. :file:`{INSTALL}/sunpy/data/sunpyrc`. You can find where SunPy is installed
-   by printing out `sunpy.__file__` after importing SunPy. 
+   by printing out `sunpy.__file__` after importing SunPy.
 
 To display where the currently active :file:`sunpyrc` file was loaded from,
 one can do the following::
 
   >>> import sunpy
-  >>> sunpy.print_config()
+  >>> sunpy.print_config()   # doctest: +SKIP
 
 To maintain your own customizations place a copy of the default sunpyrc file
 into :file:`.sunpy`. Do not edit the default file directly as every

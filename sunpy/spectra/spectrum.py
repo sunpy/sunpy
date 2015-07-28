@@ -12,7 +12,6 @@ import astropy.nddata as ndd
 from astropy.modeling import models, fitting
 import astropy.units as u
 import numpy as np
-
 from matplotlib import pyplot as plt
 
 __all__ = ['Spectrum']
@@ -20,10 +19,11 @@ __all__ = ['Spectrum']
 
 class Spectrum(ndd.NDDataArray):
     """
-    Class representing a spectrum.
+    Class representing a 1 dimensional spectrum.
 
     Attributes
     ----------
+
     axis: np.ndarray
         One-dimensional array with the frequency or wavelength values at every
         data point.
@@ -32,9 +32,19 @@ class Spectrum(ndd.NDDataArray):
         The unit of the spectral axis. This must be in units of frequency or
         distance.
 
-    data: np.ndarray
-        one-dimensional array which the intensity at a particular frequency at
+    data : `numpy.ndarray`
+        One-dimensional array which the intensity at a particular frequency at
         every data-point.
+
+
+    Examples
+    --------
+    >>> from sunpy.spectra.spectrum import Spectrum
+    >>> import numpy as np
+    >>> data = np.linspace(1, 100, 100)
+    >>> freq_axis = np.linspace(0, 10, 100)
+    >>> spec = Spectrum(data, freq_axis)
+    >>> spec.peek()
     """
 
     def __init__(self, data, axis, axis_unit, **kwargs):
@@ -44,13 +54,22 @@ class Spectrum(ndd.NDDataArray):
 
     def plot(self, axes=None, **matplot_args):
         """
-        Plot spectrum onto current axes. Behaves like matplotlib.pylot.plot()
+        Plot spectrum onto current axes.
 
         Parameters
         ----------
-        axes: matplotlib.axes object or None
+        axes : `~matplotlib.axes.Axes` or None
             If provided the spectrum will be plotted on the given axes.
             Else the current matplotlib axes will be used.
+
+        **matplot_args : dict
+            Any additional plot arguments that should be used
+            when plotting.
+
+        Returns
+        -------
+        newaxes : `~matplotlib.axes.Axes`
+            The plot axes.
         """
 
         # Get current axes
@@ -78,7 +97,25 @@ class Spectrum(ndd.NDDataArray):
 
     def peek(self, **matplot_args):
         """
-        Plot spectrum onto a new figure.
+        Plot spectrum onto a new figure. An example is shown below.
+
+        .. plot::
+
+            from sunpy.spectra.spectrum import Spectrum
+            import numpy as np
+            spec = Spectrum(np.linspace(1, 100, 100), np.linspace(0, 10, 100))
+            spec.peek()
+
+        Parameters
+        ----------
+        **matplot_args : dict
+            Any additional plot arguments that should be used
+            when plotting.
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
         """
         figure = plt.figure()
         self.plot(**matplot_args)

@@ -6,7 +6,10 @@ __email__ = "keith.hughitt@nasa.gov"
 
 import numpy as np
 from matplotlib import colors
+
 from astropy.units import Quantity
+from astropy.visualization import PowerStretch
+from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map import GenericMap
 from sunpy.sun import constants
@@ -33,16 +36,16 @@ def _dsunAtSoho(date, rad_d, rad_1au=None):
     if not rad_1au:
         rad_1au = sun.solar_semidiameter_angular_size(date)
     dsun = sun.sunearth_distance(date) * constants.au * (rad_1au / rad_d)
-    #return scalar value not astropy.quantity
+    # return scalar value not astropy.quantity
     return dsun.value
 
 
 class EITMap(GenericMap):
-    """SOHO EIT Image Map
+    """SOHO EIT Image Map.
 
     SOHO EIT is an extreme ultraviolet (EUV) imager able to image the solar
-    transition region and inner corona in four selected bandpasses, 171 (Fe IX/X),
-    195 (Fe XII), 284 (Fe XV), and 304 (He II) Angstrom.
+    transition region and inner corona in four selected bandpasses,
+    171 (Fe IX/X), 195 (Fe XII), 284 (Fe XV), and 304 (He II) Angstrom.
 
     SOHO was launched on 2 December 2 1995 into a sun-synchronous orbit and
     primary mission operations for SOHO EIT ended at the end of July 2010.
@@ -64,10 +67,13 @@ class EITMap(GenericMap):
         self._fix_dsun()
         self._nickname = self.detector
         self.plot_settings['cmap'] = cm.get_cmap(self._get_cmap_name())
-        self.plot_settings['norm'] = colors.PowerNorm(0.5)
+        self.plot_settings['norm'] = ImageNormalize(stretch=PowerStretch(0.5))
 
     @property
     def rsun_obs(self):
+        """
+        Returns the solar radius as measured by EIT in arcseconds.
+        """
         return Quantity(self.meta['solar_r'] * self.meta['cdelt1'], 'arcsec')
 
     def _fix_dsun(self):
@@ -82,12 +88,13 @@ class EITMap(GenericMap):
 class LASCOMap(GenericMap):
     """SOHO LASCO Image Map
 
-    The Large Angle and Spectrometric COronagraph (LASCO) is a set of three Lyot-type
-    coronagraphs (C1, C2, and C3) that image the solar corona from 1.1 to 32 solar radii.
+    The Large Angle and Spectrometric COronagraph (LASCO) is a set of three
+    Lyot-type coronagraphs (C1, C2, and C3) that image the solar corona from
+    1.1 to 32 solar radii.
 
-    The C1 images rom 1.1 to 3 solar radii. The C2 telescope images the corona from 2 to 6 solar radii,
-    overlaping the outer field-of-view of C1 from 2 to 3 solar radii. The C3 telescope extends
-    the field-of-view to 32 solar radii.
+    The C1 images rom 1.1 to 3 solar radii. The C2 telescope images the corona
+    from 2 to 6 solar radii, overlaping the outer field-of-view of C1 from 2 to
+    3 solar radii. The C3 telescope extends the field-of-view to 32 solar radii.
 
     SOHO was launched on 2 December 2 1995 into a sun-synchronous orbit.
 
@@ -123,16 +130,19 @@ class LASCOMap(GenericMap):
         self.meta['waveunit'] = 'nm'
         self._nickname = self.instrument + "-" + self.detector
         self.plot_settings['cmap'] = cm.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
-        self.plot_settings['norm'] = colors.PowerNorm(0.5)
+        self.plot_settings['norm'] = ImageNormalize(stretch=PowerStretch(0.5))
 
     @property
     def measurement(self):
+        """
+        Returns the type of data taken.
+        """
         # TODO: This needs to do more than white-light.  Should give B, pB, etc.
         return "white-light"
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an LASCO image"""
+        """Determines if header corresponds to an LASCO image."""
         return header.get('instrume') == 'LASCO'
 
 
@@ -141,14 +151,14 @@ class MDIMap(GenericMap):
     SOHO MDI Image Map
 
     The Michelson Doppler Imager (MDI) is a white light refracting telescope
-    which feeds sunlight through a series of filters onto a CCD camera. Two tunable
-    Michelson interformeters define a 94 mAngstrom bandpass that can be tuned across
-    the Ni 6768 Angstrom solar absorption line.
+    which feeds sunlight through a series of filters onto a CCD camera. Two
+    tunable Michelson interformeters define a 94 mAngstrom bandpass that can be
+    tuned across the Ni 6768 Angstrom solar absorption line.
 
-    MDI measures line-of-sight motion (Dopplergrams), magnetic field (magnetograms),
-    and brightness images of the full solar disk at several resolutions
-    (4 arc-second to very low resolution) and a
-    fixed selected region in higher resolution (1.2 arc-second).
+    MDI measures line-of-sight motion (Dopplergrams), magnetic field
+    (magnetograms), and brightness images of the full solar disk at several
+    resolutions (4 arc-second to very low resolution) and a fixed selected
+    region in higher resolution (1.2 arc-second).
 
     SOHO was launched on 2 December 2 1995 into a sun-synchronous orbit and
     SOHO MDI ceased normal science observations on 12 April 2011.
@@ -180,7 +190,9 @@ class MDIMap(GenericMap):
 
     @property
     def measurement(self):
-        # TODO: This needs to do more than white-light.  Should give B, pB, etc.
+        """
+        Returns the type of data in the map.
+        """
         return "magnetogram" if self.meta.get('content', " ").find('Mag') != -1 else "continuum"
 
     def _fix_dsun(self):
@@ -203,7 +215,7 @@ class MDIMap(GenericMap):
         self.meta['radius'] = radius
 
         if not radius:
-#            radius = sun.angular_size(self.date)
+            # radius = sun.angular_size(self.date)
             self.meta['dsun_obs'] = constants.au
         else:
             self.meta['dsun_obs'] = _dsunAtSoho(self.date, radius)

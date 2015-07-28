@@ -5,7 +5,9 @@ __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
 
 import numpy as np
-from matplotlib import colors
+
+from astropy.visualization import PowerStretch
+from astropy.visualization.mpl_normalize import ImageNormalize
 
 from sunpy.map import GenericMap
 from sunpy.cm import cm
@@ -20,10 +22,10 @@ class SXTMap(GenericMap):
     (42 x 42 arcminutes)in the 0.25 - 4.0 keV range.
     It consists of a glancing incidence mirror and a CCD sensor and
     used thin metallic filters to acquire images in restricted
-    portions of its energy range. SXT could resolve features down to 2.5 arc seconds.
-    Information about the temperature and density of the plasma emitting
-    the observed x-rays was obtained by comparing images acquired with the
-    different filters. Images could be obtained every 2 to 8 seconds.
+    portions of its energy range. SXT could resolve features down to 2.5
+    arcseconds. Information about the temperature and density of the plasma
+    emitting the observed x-rays was obtained by comparing images acquired with
+    the different filters. Images could be obtained every 2 to 8 seconds.
     Smaller images with a single filter could be obtained as frequently as
     once every 0.5 seconds.
 
@@ -44,7 +46,7 @@ class SXTMap(GenericMap):
         self.meta['detector'] = "SXT"
         self.meta['telescop'] = "Yohkoh"
         self.plot_settings['cmap'] = cm.get_cmap(name='yohkohsxt' + self.wavelength_string[0:2].lower())
-        self.plot_settings['norm'] = colors.PowerNorm(0.5, self.data.min(), self.data.max())
+        self.plot_settings['norm'] = ImageNormalize(stretch=PowerStretch(0.5))
 
         # 2012/12/19 - the SXT headers do not have a value of the distance from
         # the spacecraft to the center of the Sun.  The FITS keyword 'DSUN_OBS'
@@ -65,10 +67,13 @@ class SXTMap(GenericMap):
 
     @property
     def wavelength_string(self):
+        """
+        Returns the type of data observed.
+        """
         s = self.meta.get('wavelnth', '')
         if s == 'Al.1':
             s = 'Al01'
-        elif s.lower() ==  'open':
+        elif s.lower() == 'open':
             s = 'white light'
         return s
 

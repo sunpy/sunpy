@@ -2,7 +2,8 @@
 
 __all__ = ['MapCubeAnimator']
 
-from sunpy.visualization import imageanimator
+from sunpy.visualization import imageanimator, wcsaxes_compat
+from sunpy.visualization.wcsaxes_compat import HAVE_WCSAXES, FORCE_NO_WCSAXES
 
 class MapCubeAnimator(imageanimator.BaseFuncAnimator):
     """
@@ -18,22 +19,22 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
 
     Parameters
     ----------
-    mapcube: sunpy.map.MapCube
+    mapcube : `sunpy.map.MapCube`
         A MapCube
 
-    annotate: bool
+    annotate : `bool`
         Annotate the figure with scale and titles
 
-    fig: mpl.figure
+    fig : `matplotlib.figure`
         Figure to use
 
-    interval: int
+    interval : `int`
         Animation interval in ms
 
-    colorbar: bool
+    colorbar : `bool`
         Plot colorbar
 
-    plot_function: function
+    plot_function : function
         A function to call when each map is plotted, the function must have
         the signature `(fig, axes, smap)` where fig and axes are the figure and
         axes objects of the plot and smap is the current frames Map object.
@@ -63,6 +64,22 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
             self._annotate_plot(0)
 
     def updatefig(self, val, im, slider):
+        """
+        ?
+
+        Parameters
+        ----------
+            val : ?
+                ?
+
+            im : ?
+                ?
+
+        Returns
+        -------
+        .. todo::
+            improve documentation
+        """
         # Remove all the objects that need to be removed from the
         # plot
         while self.remove_obj:
@@ -72,6 +89,10 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         im.set_array(self.data[i].data)
         im.set_cmap(self.mapcube[i].plot_settings['cmap'])
         im.set_norm(self.mapcube[i].plot_settings['norm'])
+        if wcsaxes_compat.is_wcsaxes(im.axes):
+            im.axes.reset_wcs(self.mapcube[i].wcs)
+            wcsaxes_compat.default_wcs_grid(im.axes)
+
         # Having this line in means the plot will resize for non-homogenous
         # maps. However it also means that if you zoom in on the plot bad
         # things happen.
@@ -104,6 +125,15 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
 
         self.axes.set_xlabel(xlabel)
         self.axes.set_ylabel(ylabel)
+
+    def _get_main_axes(self):
+        """
+        Create an axes which is wcsaxes if we have that...
+        """
+        if HAVE_WCSAXES and not FORCE_NO_WCSAXES:
+            return self.fig.add_subplot(111, projection=self.mapcube[0].wcs)
+        else:
+            return self.fig.add_subplot(111)
 
     def plot_start_image(self, ax):
         im = self.mapcube[0].plot(annotate=self.annotate, axes=ax,
