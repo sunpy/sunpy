@@ -335,7 +335,8 @@ class VSOClient(object):
 
         Returns
         -------
-        out : :py:class:`QueryResult` (enhanced list) of matched items. Return value of same type as the one of :py:meth:`VSOClient.query`.
+        out : :py:class:`QueryResult` (enhanced list) of matched items. Return
+        value of same type as the one of :py:meth:`VSOClient.query`.
         """
         query = and_(*query)
 
@@ -565,12 +566,14 @@ class VSOClient(object):
         ----------
         query_response : sunpy.net.vso.QueryResponse
             QueryResponse containing the items to be downloaded.
+
         path : str
             Specify where the data is to be downloaded. Can refer to arbitrary
             fields of the QueryResponseItem (instrument, source, time, ...) via
             string formatting, moreover the file-name of the file downloaded can
             be referred to as file, e.g.
             "{source}/{instrument}/{time.start}/{file}".
+
         methods : {list of str}
             Download methods, defaults to URL-FILE_Rice then URL-FILE.
             Methods are a concatenation of one PREFIX followed by any number of
@@ -578,9 +581,11 @@ class VSOClient(object):
             The full list of `PREFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_PREFIX>`_
             and `SUFFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_SUFFIX>`_
             are listed on the VSO site.
+
         downloader : sunpy.net.downloader.Downloader
             Downloader used to download the data.
-        site: str
+
+        site : str
             There are a number of caching mirrors for SDO and other
             instruments, some available ones are listed below.
 
@@ -806,6 +811,23 @@ class VSOClient(object):
 class InteractiveVSOClient(VSOClient):
     """ Client for use in the REPL. Prompts user for data if required. """
     def multiple_choices(self, choices, response):
+        """
+        not documented yet
+
+        Parameters
+        ----------
+
+            choices : not documented yet
+
+            response : not documented yet
+
+        Returns
+        -------
+
+        .. todo::
+            improve documentation. what does this function do?
+
+        """
         while True:
             for n, elem in enumerate(choices):
                 print "({num:d}) {choice!s}".format(num=n + 1, choice=elem)
@@ -828,6 +850,24 @@ class InteractiveVSOClient(VSOClient):
                     continue
 
     def missing_information(self, info, field):
+        """
+        not documented yet
+
+        Parameters
+        ----------
+        info : not documented yet
+                not documented yet
+        field : not documented yet
+            not documented yet
+
+        Returns
+        -------
+        choice : not documented yet
+
+        .. todo::
+            improve documentation. what does this function do?
+
+        """
         choice = raw_input(field + ': ')
         if not choice:
             raise NoData

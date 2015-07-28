@@ -2,6 +2,8 @@
 Region of Interest
 ==================
 
+.. warning:: This module is under development.
+
 An region of interest (ROI) is an object that contains some basic information about a particular time range in the form of string descriptors. For example, an ROI might denote an interval of troublesome instrument data, such as an encounter with the South Antarctic Anomaly (SAA).
 
 1. Creating an ROI

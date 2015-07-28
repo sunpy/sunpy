@@ -15,6 +15,7 @@ class TTYProgressBar(object):
     SYMBOL = '='
     LEFT_BORDER = '['
     RIGHT_BORDER = ']'
+
     def __init__(self, n, current=0, width=40, output=sys.stdout):
         """
         Parameters

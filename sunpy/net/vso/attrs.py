@@ -62,8 +62,8 @@ class Wave(Attr, _Range):
 
         # VSO just accept inputs as Angstroms, kHz or keV, the following
         # converts to any of these units depending on the spectral inputs
-        # Note: the website asks for GHz, however it seems that using GHz produces
-        # weird responses on VSO.
+        # Note: the website asks for GHz, however it seems that using GHz
+        # produces weird responses on VSO.
         convert = {'m': u.AA, 'Hz': u.kHz, 'eV': u.keV}
         for k in convert.keys():
             if wavemin.decompose().unit == (1 * u.Unit(k)).decompose().unit:
@@ -82,9 +82,9 @@ class Wave(Attr, _Range):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-	return "<Wave({0!r}, {1!r}, '{2!s}')>".format(self.min.value,
-                                                self.max.value,
-                                                self.unit)
+        return "<Wave({0!r}, {1!r}, '{2!s}')>".format(self.min.value,
+                                                      self.max.value,
+                                                      self.unit)
 
 
 class Time(Attr, _Range):
@@ -102,8 +102,8 @@ class Time(Attr, _Range):
         The end time of the range.
 
     near: SunPy Time String
-    	Return a singular record closest in time to this value as possible, 
-    	inside the start and end window. Note: not all providers support this.
+        Return a singular record closest in time to this value as possible,
+        inside the start and end window. Note: not all providers support this.
 
     """
     def __init__(self, start, end=None, near=None):
@@ -218,11 +218,11 @@ class Sample(_VSOSimpleAttr):
     ----------
 
     value : `astropy.units.Quantity`
-        A sampling rate convertable to seconds.
+        A sampling rate convertible to seconds.
     """
     @u.quantity_input(value=u.s)
     def __init__(self, value):
-        super(Sample,self).__init__(value)
+        super(Sample, self).__init__(value)
         self.value = value.to(u.s).value
 
 

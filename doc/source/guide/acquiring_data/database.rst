@@ -1,3 +1,5 @@
+.. _database_guide:
+
 --------------------------
 Using the database package
 --------------------------

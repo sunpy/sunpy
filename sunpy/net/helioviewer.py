@@ -42,7 +42,7 @@ class HelioviewerClient(object):
 
         Parameters
         ----------
-        date : datetime, string
+        date : `datetime.datetime`, `str`
             A string or datetime object for the desired date of the image
         observatory : string
             (Optional) Observatory name
@@ -57,7 +57,7 @@ class HelioviewerClient(object):
 
         Returns
         -------
-        out : dict
+        out : `dict`
             A dictionary containing meta-information for the closest image matched
 
         Examples
@@ -93,7 +93,7 @@ class HelioviewerClient(object):
 
         Parameters
         ----------
-        date : datetime, string
+        date : `datetime.datetime`, string
             A string or datetime object for the desired date of the image
         directory : string
             (Optional) Directory to download JPEG 2000 image to.
@@ -155,7 +155,7 @@ class HelioviewerClient(object):
 
         Parameters
         ----------
-        date : datetime, string
+        date : `datetime.datetime`, string
             A string or datetime object for the desired date of the image
         image_scale : float
             The zoom scale of the image. Default scales that can be used are
@@ -215,7 +215,7 @@ class HelioviewerClient(object):
         return self._get_file(params, directory, overwrite=overwrite)
 
     def is_online(self):
-        """Returns True if Helioviewer is online and available"""
+        """Returns True if Helioviewer is online and available."""
         try:
             self.get_data_sources()
         except urllib2.URLError:
@@ -249,7 +249,7 @@ class HelioviewerClient(object):
 
         Parameters
         ----------
-        params : dict
+        params : `dict`
             Parameters to send
 
         Returns

@@ -19,20 +19,20 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
 
     Parameters
     -----------
-    duration: `~astropy.units.Quantity`
+    duration : `~astropy.units.Quantity`
         Number of seconds to rotate over.
-    latitude: `~astropy.units.Quantity`
+    latitude : `~astropy.units.Quantity`
         heliographic coordinate latitude in Degrees.
-    rot_type: {'howard' | 'snodgrass' | 'allen'}
-        howard: Use values for small magnetic features from Howard et al.
-        snodgrass: Use Values from Snodgrass et. al
-        allen: Use values from Allen, Astrophysical Quantities, and simpler equation.
-    frame_time: {'sidereal' | 'synodic'}
+    rot_type : {'howard' | 'snodgrass' | 'allen'}
+        howard : Use values for small magnetic features from Howard et al.
+        snodgrass : Use Values from Snodgrass et. al
+        allen : Use values from Allen, Astrophysical Quantities, and simpler equation.
+    frame_time : {'sidereal' | 'synodic'}
         Choose 'type of day' time reference frame.
 
     Returns
     -------
-    longitude_delta: `~astropy.units.Quantity`
+    longitude_delta : `~astropy.units.Quantity`
         The change in longitude over days (units=degrees)
 
     Notes
@@ -80,7 +80,7 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     else:
         A, B, C = rot_params[rot_type]
 
-        #This is in micro-radians / sec
+        # This is in micro-radians / sec
         rotation_rate = A + B * sin2l + C * sin4l
         rotation_deg = rotation_rate * 1e-6 * delta_seconds / np.deg2rad(1)
 
@@ -122,7 +122,7 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
         | allen: Use values from Allen, Astrophysical Quantities, and simpler
           equation.
 
-    frame_time: {'sidereal' | 'synodic'}
+    frame_time : {'sidereal' | 'synodic'}
         Choose type of day time reference frame.
 
     Returns
@@ -207,7 +207,7 @@ def _calc_P_B0_SD(date):
 
     Parameters
     -----------
-    date: `sunpy.time.time`
+    date : `sunpy.time.time`
         the time at which to calculate the solar P, B0 angles and the
         semi-diameter.
 

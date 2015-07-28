@@ -30,7 +30,7 @@ BASE_DL_URL = 'http://jsoc.stanford.edu'
 class JSOCResponse(object):
     def __init__(self, table=None):
         """
-        table : astropy.table.Table
+        table : `astropy.table.Table`
         """
 
         self.table = table
@@ -194,7 +194,7 @@ class JSOCClient(object):
 
         Returns
         -------
-        results: JSOCResults object
+        results : JSOCResults object
             A collection of records that the query returns.
         """
 
@@ -262,12 +262,12 @@ class JSOCClient(object):
 
         Parameters
         ----------
-        requestIDs: list or string
+        requestIDs : list or string
             A list of requestIDs to check
 
         Returns
         -------
-        status: list
+        status : list
             A list of status' that were returned by JSOC
         """
         # Convert IDs to a list if not already
@@ -306,31 +306,31 @@ class JSOCClient(object):
 
         Parameters
         ----------
-        jsoc_response: JSOCResponse object
+        jsoc_response : JSOCResponse object
             A response object
 
-        path: string
+        path : string
             Path to save data to, defaults to SunPy download dir
 
-        overwrite: bool
+        overwrite : bool
             Replace files with the same name if True
 
-        progress: bool
+        progress : bool
             Print progress info to terminal
 
-        max_conns: int
+        max_conns : int
             Maximum number of download connections.
 
-        downloader: sunpy.download.Downloder instance
+        downloader: `sunpy.download.Downloader` instance
             A Custom downloader to use
 
-        sleep: int
+        sleep : int
             The number of seconds to wait between calls to JSOC to check the status
             of the request.
 
         Returns
         -------
-        results: a :class:`sunpy.net.vso.Results instance`
+        results : a :class:`sunpy.net.vso.Results` instance
             A Results object
         """
 
@@ -367,22 +367,22 @@ class JSOCClient(object):
 
         Parameters
         ----------
-        requestIDs: list or string
+        requestIDs : list or string
             One or many requestID strings
 
-        path: string
+        path : string
             Path to save data to, defaults to SunPy download dir
 
-        overwrite: bool
+        overwrite : bool
             Replace files with the same name if True
 
-        progress: bool
+        progress : bool
             Print progress info to terminal
 
-        max_conns: int
+        max_conns : int
             Maximum number of download connections.
 
-        downloader: sunpy.download.Downloader instance
+        downloader : `sunpy.download.Downloader` instance
             A Custom downloader to use
 
         results: Results instance
