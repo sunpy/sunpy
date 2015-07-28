@@ -25,7 +25,7 @@ _known_extensions = {
     ('fz', 'f0'): 'ana'
 }
 
-#Define a dict which raises a custom error message if the value is None
+# Define a dict which raises a custom error message if the value is None
 class Readers(dict):
     def __init__(self, *args):
         dict.__init__(self, *args)
@@ -46,20 +46,20 @@ _readers = Readers({
 
 def read_file(filepath, filetype=None, **kwargs):
     """
-    Automatically determine the filetype and read the file
+    Automatically determine the filetype and read the file.
 
     Parameters
     ----------
-    filepath : string
+    filepath : `str`
         The file to be read
 
-    filetype: string
+    filetype : `str`
         Supported reader or extension to manually specify the filetype.
         Supported readers are ('jp2', 'fits', 'ana')
 
     Returns
     -------
-    pairs : list
+    pairs : `list`
         A list of (data, header) tuples.
     """
     if filetype:
@@ -75,24 +75,24 @@ def read_file(filepath, filetype=None, **kwargs):
 
 def read_file_header(filepath, filetype=None, **kwargs):
     """
-    Reads the header from a given file
+    Reads the header from a given file.
 
     This should always return a instance of io.header.FileHeader
 
     Parameters
     ----------
 
-    filepath :  string
+    filepath : `str`
         The file from which the header is to be read.
 
-    filetype: string
+    filetype : `str`
         Supported reader or extension to manually specify the filetype.
         Supported readers are ('jp2', 'fits')
 
     Returns
     -------
 
-    headers : list
+    headers : `list`
         A list of headers
     """
     if filetype:
@@ -111,16 +111,16 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
 
     Parameters
     ----------
-    fname : string
-        Filename of file to save
+    fname : `str`
+        Filename of file to save.
 
-    data : ndarray
-        Data to save to a fits file
+    data : `numpy.ndarray`
+        Data to save to a fits file.
 
-    header : OrderedDict
-        Meta data to save with the data
+    header : `collections.OrderedDict`
+        Meta data to save with the data.
 
-    filetype : string
+    filetype : `str`
         {'auto', 'fits', 'jp2'} Filetype to save if auto fname extension will
         be detected, else specify a supported file extension.
 
@@ -139,21 +139,30 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
             if filetype in extension:
                 return _readers[readername].write(fname, data, header, **kwargs)
 
-    #Nothing has matched, panic
-    raise ValueError("This filetype is not supported" )
+    # Nothing has matched, panic
+    raise ValueError("This filetype is not supported")
 
 def _detect_filetype(filepath):
     """
-    Attempts to determine the type of data contained in a file.
+    Attempts to determine the type of data contained in a file.  This is only
+    used for reading because it opens the file to check the data.
 
-    This is only used for reading because it opens the file to check the data.
+    Parameters
+    ----------
+    filepath : `str`
+        Where the file is.
+
+    Returns
+    -------
+    filetype : `str`
+        The type of file.
     """
 
     # Open file and read in first two lines
     with open(filepath) as fp:
         line1 = fp.readline()
         line2 = fp.readline()
-        #Some FITS files do not have line breaks at the end of header cards.
+        # Some FITS files do not have line breaks at the end of header cards.
         fp.seek(0)
         first80 = fp.read(80)
 

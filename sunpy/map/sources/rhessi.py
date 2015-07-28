@@ -12,7 +12,7 @@ import astropy.units as u
 __all__ = ['RHESSIMap']
 
 class RHESSIMap(GenericMap):
-    """RHESSI Image Map
+    """RHESSI Image Map.
 
     The RHESSI mission consists of a single spin-stabilized
     spacecraft in a low-altitude orbit inclined 38 degrees to
@@ -56,6 +56,9 @@ class RHESSIMap(GenericMap):
 
     @property
     def detector(self):
+        """
+        Returns the name of the detector
+        """
         return self.meta['telescop']
 
     @classmethod

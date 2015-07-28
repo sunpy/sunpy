@@ -24,9 +24,9 @@ class roi(object):
     ----------
     start_time : datetime object containing the start time of the ROI
     end_time : datetime object containing the end time of the ROI
-    description: A string descriptor of the ROI event type
-    (e.g. 'attenuator change', 'LAR', 'SAA', 'flare')
-    source: A string descriptor of the ROI source (e.g. 'LYRA', 'RHESSI')
+    description : A string descriptor of the ROI event type
+        (e.g. 'attenuator change', 'LAR', 'SAA', 'flare')
+    source : A string descriptor of the ROI source (e.g. 'LYRA', 'RHESSI')
 
 
     Methods

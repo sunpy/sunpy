@@ -16,10 +16,10 @@ import matplotlib.pyplot as plt
 from matplotlib import patches, cm, colors
 
 import astropy.wcs
-from .nddata_compat import NDDataCompat as NDData
 from astropy.coordinates import Longitude, Latitude
 
 from sunpy.image.transform import affine_transform
+from .nddata_compat import NDDataCompat as NDData
 
 import sunpy.io as io
 import sunpy.wcs as wcs
@@ -55,7 +55,7 @@ class GenericMap(NDData):
 
     Parameters
     ----------
-    data : numpy.ndarray, list
+    data : `~numpy.ndarray`, list
         A 2d list or ndarray containing the map data
     meta : dict
         A dictionary of the original image header tags
@@ -63,18 +63,35 @@ class GenericMap(NDData):
     Examples
     --------
     >>> import sunpy.map
-    >>> aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
-    >>> aia.T
-    AIAMap([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
-    [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
-    [-0.125 , -0.8125, -0.5   , ..., -0.3125,  0.5625,  0.4375],
-    ...,
-    [ 0.625 ,  0.625 , -0.125 , ...,  0.125 , -0.0625,  0.6875],
-    [-0.625 , -0.625 , -0.625 , ...,  0.125 , -0.0625,  0.6875],
-    [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
-    >>> aia.units['x']
-    'arcsec'
-    >>> aia.peek()
+    >>> import sunpy.data
+    >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
+    >>> import sunpy.data.sample
+    >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    >>> aia   # doctest: +NORMALIZE_WHITESPACE
+    SunPy AIAMap
+    ---------
+    Observatory:         SDO
+    Instrument:  AIA 3
+    Detector:    AIA
+    Measurement:         171.0 Angstrom
+    Wavelength:  171.0 Angstrom
+    Obs Date:    2011-03-19 10:54:00
+    dt:          1.999601 s
+    Dimension:   [ 1024.  1024.] pix
+    scale:               [ 2.4  2.4] arcsec / pix
+    <BLANKLINE>
+    array([[ 0.3125, -0.0625, -0.125 , ...,  0.625 , -0.625 ,  0.    ],
+           [ 1.    ,  0.1875, -0.8125, ...,  0.625 , -0.625 ,  0.    ],
+           [-1.1875,  0.375 , -0.5   , ..., -0.125 , -0.625 , -1.1875],
+           ...,
+           [-0.625 ,  0.0625, -0.3125, ...,  0.125 ,  0.125 ,  0.125 ],
+           [ 0.5625,  0.0625,  0.5625, ..., -0.0625, -0.0625,  0.    ],
+           [ 0.5   , -0.125 ,  0.4375, ...,  0.6875,  0.6875,  0.6875]])
+
+
+    >>> aia.units
+    Pair(x=Unit("arcsec"), y=Unit("arcsec"))
+    >>> aia.peek()   # doctest: +SKIP
 
     References
     ----------
@@ -175,6 +192,9 @@ scale:\t\t {scale}
 
     @property
     def wcs(self):
+        """
+        The `~astropy.wcs.WCS` property of the map.
+        """
         w2 = astropy.wcs.WCS(naxis=2)
         w2.wcs.crpix = u.Quantity(self.reference_pixel)
         # Make these a quantity array to prevent the numpy setting element of
@@ -187,7 +207,7 @@ scale:\t\t {scale}
 
         return w2
 
-    #Some numpy extraction
+    # Some numpy extraction
     @property
     def dimensions(self):
         """
@@ -197,26 +217,47 @@ scale:\t\t {scale}
 
     @property
     def dtype(self):
+        """
+        The `numpy.dtype` of the array of the map.
+        """
         return self.data.dtype
 
     @property
     def size(self):
+        """
+        The number of pixels in the array of the map.
+        """
         return u.Quantity(self.data.size, 'pixel')
 
     @property
     def ndim(self):
+        """
+        The value of `numpy.ndarray.ndim` of the data array of the map.
+        """
         return self.data.ndim
 
     def std(self, *args, **kwargs):
+        """
+        Calculate the standard deviation of the data array.
+        """
         return self.data.std(*args, **kwargs)
 
     def mean(self, *args, **kwargs):
+        """
+        Calculate the mean of the data array.
+        """
         return self.data.mean(*args, **kwargs)
 
     def min(self, *args, **kwargs):
+        """
+        Calculate the minimum value of the data array.
+        """
         return self.data.min(*args, **kwargs)
 
     def max(self, *args, **kwargs):
+        """
+        Calculate the maximum value of the data array.
+        """
         return self.data.max(*args, **kwargs)
 
 # #### Keyword attribute and other attribute definitions #### #
@@ -232,7 +273,8 @@ scale:\t\t {scale}
 
     @property
     def nickname(self):
-        """An abbreviated human-readable description of the map-type; part of the Helioviewer data model"""
+        """An abbreviated human-readable description of the map-type; part of
+        the Helioviewer data model"""
         return self._nickname
 
     @nickname.setter
@@ -262,9 +304,7 @@ scale:\t\t {scale}
 
     @property
     def dsun(self):
-        """
-        The observer distance from the Sun.
-        """
+        """The observer distance from the Sun."""
         dsun = self.meta.get('dsun_obs', None)
 
         if dsun is None:
@@ -301,14 +341,14 @@ scale:\t\t {scale}
 
     @property
     def xrange(self):
-        """Return the X range of the image in arcsec from edge to edge."""
+        """Return the X range of the image from edge to edge."""
         xmin = self.center.x - self.dimensions[0] / 2. * self.scale.x
         xmax = self.center.x + self.dimensions[0] / 2. * self.scale.x
         return u.Quantity([xmin, xmax])
 
     @property
     def yrange(self):
-        """Return the Y range of the image in arcsec from edge to edge."""
+        """Return the Y range of the image from edge to edge."""
         ymin = self.center.y - self.dimensions[1] / 2. * self.scale.y
         ymax = self.center.y + self.dimensions[1] / 2. * self.scale.y
         return u.Quantity([ymin, ymax])
@@ -331,7 +371,7 @@ scale:\t\t {scale}
 
     @property
     def rsun_obs(self):
-        """Radius of the sun in arcseconds"""
+        """Radius of the Sun."""
         rsun_arcseconds = self.meta.get('rsun_obs',
                                         self.meta.get('solar_r',
                                                       self.meta.get('radius', None)))
@@ -363,7 +403,7 @@ scale:\t\t {scale}
 
     @property
     def heliographic_latitude(self):
-        """Heliographic latitude in degrees"""
+        """Heliographic latitude"""
         heliographic_latitude = self.meta.get('hglt_obs',
                                               self.meta.get('crlt_obs',
                                                             self.meta.get('solar_b0', None)))
@@ -377,7 +417,7 @@ scale:\t\t {scale}
 
     @property
     def heliographic_longitude(self):
-        """Heliographic longitude in degrees"""
+        """Heliographic longitude"""
         return u.Quantity(self.meta.get('hgln_obs', 0.), 'deg')
 
     @property
@@ -509,7 +549,6 @@ scale:\t\t {scale}
 
         Returns
         -------
-
         x : float
             Pixel coordinate on the CTYPE1 axis.
 
@@ -572,10 +611,10 @@ scale:\t\t {scale}
 
         Parameters
         ----------
-        filepath : string
+        filepath : str
             Location to save file to.
 
-        filetype : string
+        filetype : str
             'auto' or any supported file extension
         """
         io.write_file(filepath, self.data, self.meta, filetype=filetype,
@@ -608,12 +647,12 @@ scale:\t\t {scale}
 
         Returns
         -------
-        out : Map
+        out : `~sunpy.map.GenericMap` or subclass
             A new Map which has been resampled to the desired dimensions.
 
         References
         ----------
-        | http://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
+        * `Rebinning <http://www.scipy.org/Cookbook/Rebinning>`_ (Original source, 2011/11/19)
         """
 
         # Note: because the underlying ndarray is transposed in sense when
@@ -697,7 +736,7 @@ scale:\t\t {scale}
 
         Returns
         -------
-        out : Map
+        out : `~sunpy.map.GenericMap` or subclass
             A new Map instance containing the rotated and rescaled data of the
             original map.
 
@@ -844,11 +883,9 @@ scale:\t\t {scale}
 
         return new_map
 
-
     def submap(self, range_a, range_b):
         """
         Returns a submap of the map with the specified range.
-
 
         Parameters
         ----------
@@ -861,24 +898,53 @@ scale:\t\t {scale}
 
         Returns
         -------
-        out : Map
+        out : `~sunpy.map.GenericMap` or subclass
             A new map instance is returned representing to specified sub-region
 
         Examples
         --------
-        >>> aia.submap([-5,5]*u.arcsec, [-5,5]*u.arcsec)
-        AIAMap([[ 341.3125,  266.5   ,  329.375 ,  330.5625,  298.875 ],
-        [ 347.1875,  273.4375,  247.4375,  303.5   ,  305.3125],
-        [ 322.8125,  302.3125,  298.125 ,  299.    ,  261.5   ],
-        [ 334.875 ,  289.75  ,  269.25  ,  256.375 ,  242.3125],
-        [ 273.125 ,  241.75  ,  248.8125,  263.0625,  249.0625]])
+        >>> import astropy.units as u
+        >>> import sunpy.map
+        >>> import sunpy.data
+        >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
+        >>> import sunpy.data.sample
+        >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+        >>> aia.submap([-5,5]*u.arcsec, [-5,5]*u.arcsec)   # doctest: +NORMALIZE_WHITESPACE
+        SunPy AIAMap
+        ---------
+        Observatory:         SDO
+        Instrument:  AIA 3
+        Detector:    AIA
+        Measurement:         171.0 Angstrom
+        Wavelength:  171.0 Angstrom
+        Obs Date:    2011-03-19 10:54:00
+        dt:          1.999601 s
+        Dimension:   [ 4.  4.] pix
+        scale:               [ 2.4  2.4] arcsec / pix
+        <BLANKLINE>
+        array([[ 273.4375,  247.4375,  303.5   ,  305.3125],
+               [ 302.3125,  298.125 ,  299.    ,  261.5   ],
+               [ 289.75  ,  269.25  ,  256.375 ,  242.3125],
+               [ 241.75  ,  248.8125,  263.0625,  249.0625]])
 
-        >>> aia.submap([0,5]*u.pixel, [0,5]*u.pixel)
-        AIAMap([[ 0.3125, -0.0625, -0.125 ,  0.    , -0.375 ],
-        [ 1.    ,  0.1875, -0.8125,  0.125 ,  0.3125],
-        [-1.1875,  0.375 , -0.5   ,  0.25  , -0.4375],
-        [-0.6875, -0.3125,  0.8125,  0.0625,  0.1875],
-        [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
+        >>> aia.submap([0,5]*u.pixel, [0,5]*u.pixel)   # doctest: +NORMALIZE_WHITESPACE
+        SunPy AIAMap
+        ---------
+        Observatory:         SDO
+        Instrument:  AIA 3
+        Detector:    AIA
+        Measurement:         171.0 Angstrom
+        Wavelength:  171.0 Angstrom
+        Obs Date:    2011-03-19 10:54:00
+        dt:          1.999601 s
+        Dimension:   [ 5.  5.] pix
+        scale:               [ 2.4  2.4] arcsec / pix
+        <BLANKLINE>
+        array([[ 0.3125, -0.0625, -0.125 ,  0.    , -0.375 ],
+               [ 1.    ,  0.1875, -0.8125,  0.125 ,  0.3125],
+               [-1.1875,  0.375 , -0.5   ,  0.25  , -0.4375],
+               [-0.6875, -0.3125,  0.8125,  0.0625,  0.1875],
+               [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
         """
 
         # Do manual Quantity input validation to allow for two unit options
@@ -933,9 +999,16 @@ scale:\t\t {scale}
             raise ValueError(
                 "Invalid unit. Must be one of 'data' or 'pixels'")
 
+        x_pixels.sort()
+        y_pixels.sort()
+
+        # Sort the pixel values so we are always slicing in the correct direction
+        x_pixels.sort()
+        y_pixels.sort()
 
         x_pixels = np.array(x_pixels)
         y_pixels = np.array(y_pixels)
+
         # Clip pixel values to max of array, prevents negative
         # indexing
         x_pixels[np.less(x_pixels, 0)] = 0
@@ -979,7 +1052,7 @@ scale:\t\t {scale}
 
         Returns
         -------
-        out : Map
+        out : `~sunpy.map.GenericMap` or subclass
             A new Map which has superpixels of the required size.
 
         References
@@ -1034,7 +1107,7 @@ scale:\t\t {scale}
 
         Parameters
         ----------
-        axes: matplotlib.axes object or None
+        axes: `~matplotlib.axes` or None
         Axes to plot limb on or None to use current axes.
 
         grid_spacing: float
@@ -1117,7 +1190,7 @@ scale:\t\t {scale}
 
             Parameters
             ----------
-            axes: matplotlib.axes object or None
+            axes: `~matplotlib.axes` or None
                 Axes to plot limb on or None to use current axes.
 
             Returns
@@ -1177,7 +1250,7 @@ scale:\t\t {scale}
             title, labels, or axes are shown.
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
-            when plotting the image.
+            when plotting.
         """
 
         # Create a figure and add title and axes
@@ -1220,31 +1293,31 @@ scale:\t\t {scale}
         Parameters
         ----------
         annotate : bool
-            If true, the data is plotted at it's natural scale; with
+            If True, the data is plotted at it's natural scale; with
             title and axis labels.
 
-        axes: matplotlib.axes object or None
+        axes: `~matplotlib.axes` or None
             If provided the image will be plotted on the given axes. Else the
             current matplotlib axes will be used.
 
         **imshow_kwargs  : dict
             Any additional imshow arguments that should be used
-            when plotting the image.
+            when plotting.
 
         Examples
         --------
         #Simple Plot with color bar
-        >>> aiamap.plot()
-        >>> plt.colorbar()
+        >>> aiamap.plot()   # doctest: +SKIP
+        >>> plt.colorbar()   # doctest: +SKIP
 
         #Add a limb line and grid
-        >>> aia.plot()
-        >>> aia.draw_limb()
-        >>> aia.draw_grid()
+        >>> aia.plot()   # doctest: +SKIP
+        >>> aia.draw_limb()   # doctest: +SKIP
+        >>> aia.draw_grid()   # doctest: +SKIP
 
         """
 
-        #Get current axes
+        # Get current axes
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
 
@@ -1282,7 +1355,6 @@ scale:\t\t {scale}
 
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
-
 
         if not wcsaxes_compat.is_wcsaxes(axes):
             imshow_args.update({'extent': list(self.xrange.value) + list(self.yrange.value)})
