@@ -47,7 +47,7 @@ values as assumed. Here is a simple example::
 
     >>> import numpy as np
     >>> data = np.arange(0,100).reshape(10,10)
-    >>> header = {'cdelt1': 10, 'cdelt2': 10, 'telescope':'sunpy'}
+    >>> header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
     >>> my_map = sunpy.map.Map(data, header)
 
 The keys in the header follows the `FITS standard <http://fits.gsfc.nasa.gov/fits_dictionary.html>`_.
