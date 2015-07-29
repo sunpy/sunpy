@@ -549,7 +549,6 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
 
     Examples
     --------
-    >>> from pprint import pprint
     >>> from sunpy.data.test import rootdir as fitsdir
     >>> from sunpy.database.tables import entries_from_dir
     >>> entries = list(entries_from_dir(fitsdir, default_waveunit='angstrom'))
@@ -559,14 +558,6 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
     >>> entries = list(entries_from_dir(fitsdir, True, default_waveunit='angstrom'))
     >>> len(entries)
     59
-    >>> # print the first 5 items of the FITS header of the first found file
-    >>> first_entry, filename = entries[0]
-    >>> pprint(first_entry.fits_header_entries[:5])
-    [<FitsHeaderEntry(id None, key 'SIMPLE', value True)>,
-     <FitsHeaderEntry(id None, key 'BITPIX', value -64)>,
-     <FitsHeaderEntry(id None, key 'NAXIS', value 2)>,
-     <FitsHeaderEntry(id None, key 'NAXIS1', value 128)>,
-     <FitsHeaderEntry(id None, key 'NAXIS2', value 128)>]
 
     """
     for dirpath, dirnames, filenames in os.walk(fitsdir):
