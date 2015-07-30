@@ -60,6 +60,7 @@ __authors__ = ["Steven Christe"]
 __email__ = "steven.d.christe@nasa.gov"
 
 def solar_cycle_number(t='now'):
+    """Return the solar cycle number."""
     time = parse_time(t)
     result = (time.year + 8) % 28 + 1
     return result
@@ -82,7 +83,7 @@ def solar_semidiameter_angular_size(t='now'):
     """
     solar_semidiameter_rad = (constants.radius.to(u.AU)) / sunearth_distance(t)
     return Angle(solar_semidiameter_rad.to(u.arcsec, equivalencies = u.dimensionless_angles()))
- 
+
 def position(t='now'):
     """Returns the position of the Sun (right ascension and declination)
     on the celestial sphere using the equatorial coordinate system in arcsec.
@@ -91,7 +92,7 @@ def position(t='now'):
     dec = true_declination(t)
     result = [ra,dec]
     return result
-    
+
 def eccentricity_SunEarth_orbit(t='now'):
     """Returns the eccentricity of the Sun Earth Orbit."""
     T = julian_centuries(t)
@@ -105,10 +106,10 @@ def mean_ecliptic_longitude(t='now'):
     result = result * u.deg
     return Longitude(result)
 
-def longitude_Sun_perigee(t='now'): # pylint: disable=W0613 
+def longitude_Sun_perigee(t='now'): # pylint: disable=W0613
     # T = julian_centuries(t)
     return 1
-    
+
 def mean_anomaly(t='now'):
     """Returns the mean anomaly (the angle through which the Sun has moved
     assuming a circular orbit) as a function of time."""
@@ -124,16 +125,16 @@ def carrington_rotation_number(t='now'):
     return result
 
 def geometric_mean_longitude(t='now'):
-    """Returns the geometric mean longitude (in degrees)"""   
+    """Returns the geometric mean longitude (in degrees)"""
     T = julian_centuries(t)
     result = 279.696680 + 36000.76892 * T + 0.0003025 * T ** 2
     result = result * u.deg
     return Longitude(result)
-  
+
 def equation_of_center(t='now'):
     """Returns the Sun's equation of center (in degrees)"""
     T = julian_centuries(t)
-    mna = mean_anomaly(t) 
+    mna = mean_anomaly(t)
     result = ((1.9194600 - 0.0047890 * T - 0.0000140 * T ** 2) * np.sin(mna)
     + (0.0200940 - 0.0001000 * T) *
     np.sin(2 * mna) + 0.0002930 * np.sin(3 * mna))
@@ -141,20 +142,20 @@ def equation_of_center(t='now'):
     return Angle(result)
 
 def true_longitude(t='now'):
-    """Returns the Sun's true geometric longitude (in degrees) 
-    (Refered to the mean equinox of date.  Question: Should the higher
+    """Returns the Sun's true geometric longitude (in degrees)
+    (Referred to the mean equinox of date.  Question: Should the higher
     accuracy terms from which app_long is derived be added to true_long?)"""
     result = equation_of_center(t) + geometric_mean_longitude(t)
     return Longitude(result)
 
 def true_anomaly(t='now'):
-    """Returns the Sun's true anomaly (in degress)."""
+    """Returns the Sun's true anomaly (in degrees)."""
     result = (mean_anomaly(t) + equation_of_center(t)) % (360.0 * u.deg)
     return result
 
 def sunearth_distance(t='now'):
-    """Returns the Sun Earth distance (AU). There are a set of higher 
-    accuracy terms not included here."""  
+    """Returns the Sun Earth distance (AU). There are a set of higher
+    accuracy terms not included here."""
     ta = true_anomaly(t)
     e = eccentricity_SunEarth_orbit(t)
     result = 1.00000020 * (1.0 - e ** 2) / (1.0 + e * np.cos(ta))
@@ -164,24 +165,27 @@ def apparent_longitude(t='now'):
     """Returns the apparent longitude of the Sun."""
     T = julian_centuries(t)
     omega = (259.18 - 1934.142 * T) * u.deg
-    true_long = true_longitude(t)        
+    true_long = true_longitude(t)
     result = true_long - (0.00569 - 0.00479 * np.sin(omega)) * u.deg
-    return Longitude(result) 
+    return Longitude(result)
 
 def true_latitude(t='now'): # pylint: disable=W0613
-    '''Returns the true latitude. Never more than 1.2 arcsec from 0,
-    set to 0 here.'''
+    """Returns the true latitude. Never more than 1.2 arcsec from 0,
+    set to 0 here."""
     return 0.0
 
 def apparent_latitude(t='now'): # pylint: disable=W0613
+    """Returns the true latitude. Set to 0 here."""
     return 0
 
 def true_obliquity_of_ecliptic(t='now'):
+    """Returns the true obliquity of the ecliptic."""
     T = julian_centuries(t)
     result = 23.452294 - 0.0130125 * T - 0.00000164 * T ** 2 + 0.000000503 * T ** 3
     return Angle(result, u.deg)
 
 def true_rightascension(t='now'):
+    """Return the true right ascension."""
     true_long = true_longitude(t)
     ob = true_obliquity_of_ecliptic(t)
     result = np.cos(ob) * np.sin(true_long)
@@ -189,21 +193,23 @@ def true_rightascension(t='now'):
     return Longitude(result)
 
 def true_declination(t='now'):
+    """Return the true declination."""
     result = np.cos(true_longitude(t))
     result = result * u.deg
     return Latitude(result)
 
 def apparent_obliquity_of_ecliptic(t='now'):
+    """Return the apparent obliquity of the ecliptic."""
     omega = apparent_longitude(t)
     result = true_obliquity_of_ecliptic(t) + (0.00256 * np.cos(omega)) * u.deg
     return result
 
 def apparent_rightascension(t='now'):
-    """Returns the apparent right ascenscion of the Sun."""
+    """Returns the apparent right ascension of the Sun."""
     y = np.cos(apparent_obliquity_of_ecliptic(t)) * np.sin(apparent_longitude(t))
     x = np.cos(apparent_longitude(t))
     app_ra = np.arctan2(y, x)
-    return Longitude(app_ra.to(u.hourangle)) 
+    return Longitude(app_ra.to(u.hourangle))
 
 def apparent_declination(t='now'):
     """Returns the apparent declination of the Sun."""
@@ -217,7 +223,7 @@ def solar_north(t='now'):
     T = julian_centuries(t)
     ob1 = true_obliquity_of_ecliptic(t)
     # in degrees
-    i = 7.25 * u.deg 
+    i = 7.25 * u.deg
     k = (74.3646 + 1.395833 * T) * u.deg
     lamda = true_longitude(t) - (0.00569 * u.deg)
     omega = apparent_longitude(t)

@@ -18,10 +18,12 @@ path = sunpy.data.test.rootdir
 fitspath = glob.glob(os.path.join(path, "HinodeXRT.fits"))
 xrt = Map(fitspath)
 
+
 # XRT Tests
 def test_fitstoXRT():
     """Tests the creation of XRTMap using FITS."""
     assert isinstance(xrt, XRTMap)
+
 
 def test_is_datasource_for():
     """Test the is_datasource_for method of XRTMap.
@@ -29,27 +31,18 @@ def test_is_datasource_for():
     can be a MapMeta object."""
     assert xrt.is_datasource_for(xrt.data, xrt.meta)
 
+
 def test_observatory():
     """Tests the observatory property of the XRTMap object."""
     assert xrt.observatory == "Hinode"
 
+
 def test_measurement():
     """Tests the measurement property of the XRTMap object."""
-    assert xrt.measurement ==  0 * u.one
+    measurement = xrt.filter_wheel1_measurements[5].replace("_", " ")
+    measurement += '-' + xrt.filter_wheel2_measurements[1].replace("_", " ")
+    assert xrt.measurement == measurement
 
-def test_normalizer():
-    """Tests the creation of the Normalizer object,
-    as well as its properties."""
-    norm = xrt._get_mpl_normalizer()
-    if xrt.data.dtype == np.uint8:
-        assert norm is None
-    else:
-        assert isinstance(norm, colors.Normalize)
-        #assert norm.vmin == (max(0, xrt.mean() - 3 * xrt.std()))
-        #assert norm.vmax == (min(xrt.max(), xrt.mean() + 3 * xrt.std()))
-        assert norm.vmin == 0 # Max of 0 and -9.6202650635081
-        np.testing.assert_allclose(norm.vmax, 581.56145769046122, rtol=1.00001)
-        # Min of 4095 and 581.56145769046122
 
 def test_wheel_measurements():
     """Tests the filter_wheel_measurements objects present

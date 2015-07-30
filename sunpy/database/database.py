@@ -29,6 +29,7 @@ __emails__ = [
     'rajul09@gmail.com'
 ]
 
+
 class EntryNotFoundError(Exception):
     """This exception is raised if a database entry cannot be found by its
     unique ID.
@@ -120,12 +121,15 @@ def disable_undo(database):
 
     Examples
     --------
+    >>> from sunpy.database import disable_undo, Database
+    >>> from sunpy.database.tables import DatabaseEntry
+    >>> database = Database('sqlite:///:memory:')
+    >>> entry = DatabaseEntry()
     >>> with disable_undo(database) as db:
     ...     db.add(entry)
-    >>> database.undo()
-    >>> Traceback (most recent call last):
-        ...
-    EmptyCommandStackError
+
+    # This will raise an EmptyCommandStackError
+    >>> database.undo()   # doctest: +SKIP
     """
     database._enable_history = False
     yield database
@@ -180,7 +184,7 @@ class Database(object):
     Methods
     -------
     set_cache_size(cache_size)
-        Set a new value for the maxiumum number of database entries in the
+        Set a new value for the maximum number of database entries in the
         cache. Use the value ``float('inf')`` to disable caching.
     commit()
         Flush pending changes and commit the current transaction.
@@ -260,7 +264,7 @@ class Database(object):
         return self._cache.maxsize
 
     def set_cache_size(self, cache_size):
-        """Set a new value for the maxiumum number of database entries in the
+        """Set a new value for the maximum number of database entries in the
         cache. Use the value ``float('inf')`` to disable caching. If the new
         cache is smaller than the previous one and cannot contain all the
         entries anymore, entries are removed from the cache until the number of
@@ -462,7 +466,7 @@ class Database(object):
         The query in the following example searches for all non-starred entries
         with the tag 'foo' or 'bar' (or both).
 
-        >>> database.query(~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'))
+        >>> database.query(~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'))   # doctest: +SKIP
 
         """
         if not query:
@@ -707,7 +711,7 @@ class Database(object):
             ignore_already_added=False):
         """Search the given directory for FITS files and use their FITS headers
         to add new entries to the database. Note that one entry in the database
-        is assined to a list of FITS headers, so not the number of FITS headers
+        is assigned to a list of FITS headers, so not the number of FITS headers
         but the number of FITS files which have been read determine the number
         of database entries that will be added. FITS files are detected by
         reading the content of each file, the `pattern` argument may be used to
@@ -823,7 +827,7 @@ class Database(object):
             pass
 
     def clear(self):
-        """Remove all entries from the databse. This operation can be undone
+        """Remove all entries from the database. This operation can be undone
         using the :meth:`undo` method.
 
         """

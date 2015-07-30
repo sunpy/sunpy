@@ -84,7 +84,7 @@ def _regex_parse_time(inp, format):
 
 
 def find_time(string, format):
-    """ Return iterator of occurences of date formatted with format
+    """ Return iterator of occurrences of date formatted with format
     in string. Currently supported format codes: """
     re_format = format
     for key, value in REGEX.iteritems():
@@ -165,9 +165,11 @@ def parse_time(time_string, time_format=''):
 
     Examples
     --------
+    >>> import sunpy.time
     >>> sunpy.time.parse_time('2012/08/01')
+    datetime.datetime(2012, 8, 1, 0, 0)
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
-
+    datetime.datetime(2005, 8, 4, 0, 1, 2)
     """
     if isinstance(time_string, pandas.tslib.Timestamp):
     	return time_string.to_datetime()
@@ -214,7 +216,7 @@ def is_time(time_string, time_format=''):
     time_string : [ int, float, time_string, datetime ]
         Date to parse which can be either time_string, int, datetime object.
     time_format : [ basestring, utime, datetime ]
-	Specifies the format user has provided the time_string in.
+        Specifies the format user has provided the time_string in.
 
     Returns
     -------
@@ -228,8 +230,11 @@ def is_time(time_string, time_format=''):
 
     Examples
     --------
+    >>> import sunpy.time
     >>> sunpy.time.parse_time('2012/08/01')
+    datetime.datetime(2012, 8, 1, 0, 0)
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
+    datetime.datetime(2005, 8, 4, 0, 1, 2)
 
     .. todo::
 
@@ -265,10 +270,11 @@ def day_of_year(time_string):
 
     Examples
     --------
+    >>> import sunpy.time
     >>> sunpy.time.day_of_year('2012/01/01')
-    1.00
+    1.0
     >>> sunpy.time.day_of_year('2012/08/01')
-    214.00
+    214.0
     >>> sunpy.time.day_of_year('2005-08-04T00:18:02.000Z')
     216.01252314814815
 

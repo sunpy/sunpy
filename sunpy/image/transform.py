@@ -18,16 +18,17 @@ except ImportError:  # pragma: no cover
 
 __all__ = ['affine_transform']
 
+
 def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
                      recenter=False, missing=0.0, use_scipy=False):
     """
-    Rotates, shifts and scales an image using :func:`skimage.transform.warp`, or
-    :func:`scipy.ndimage.interpolation.affine_transform` if specified. Falls back to
-    the scipy function if scikit-image can't be imported.
+    Rotates, shifts and scales an image using :func:`skimage.transform.warp`,
+    or :func:`scipy.ndimage.interpolation.affine_transform` if specified. Falls
+    back to the scipy function if scikit-image can't be imported.
 
     Parameters
     ----------
-    image : ndarray
+    image : `numpy.ndarray`
         2D Image to be rotated.
     rmatrix : 2x2
         Linear transformation rotation matrix.
@@ -64,7 +65,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     geometrical transformation, which by default is :func:`skimage.transform.warp`.
     One can specify using :func:`scipy.ndimage.interpolation.affine_transform` as
     an alternative affine transformation.  The two transformations use different
-    alogrithms and thus do not give identical output.
+    algorithms and thus do not give identical output.
 
     When using for :func:`skimage.transform.warp` with order >= 4 or using
     :func:`scipy.ndimage.interpolation.affine_transform` at all, NaN values will
@@ -78,7 +79,7 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
     use the same algorithm as the IDL rot() function.
     IDL's rot() calls the `POLY_2D <http://www.exelisvis.com/docs/poly_2d.html>`_
     method to calculate the inverse mapping of original to target pixel
-    coordinates. This is a polynominal geometrical transformation.
+    coordinates. This is a polynomial geometrical transformation.
     Then optionally it uses a bicubic convolution interpolation
     algorithm to map the original to target pixel values.
     """

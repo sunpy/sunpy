@@ -9,7 +9,7 @@ import matplotlib.cm as cm
 
 from sunpy.cm import color_tables as ct
 
-__all__ = ['get_cmap', 'show_colormaps']
+__all__ = ['get_cmap', 'show_colormaps', 'cmlist']
 
 sdoaia94 = ct.aia_color_table(94)
 sdoaia131 = ct.aia_color_table(131)

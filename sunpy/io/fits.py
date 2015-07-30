@@ -30,8 +30,6 @@ References
 | http://stsdas.stsci.edu/download/wikidocs/The_PyFITS_Handbook.pdf
 
 """
-from __future__ import absolute_import
-
 import os
 import re
 import itertools
@@ -52,14 +50,14 @@ def read(filepath, hdus=None):
 
     Parameters
     ----------
-    filepath : string
+    filepath : `str`
         The fits file to be read
-    hdu: int or iterable
+    hdu: `int` or iterable
         The HDU indexes to read from the file
 
     Returns
     -------
-    pairs : list
+    pairs : `list`
         A list of (data, header) tuples
 
     Notes
@@ -95,13 +93,13 @@ def get_header(afile):
 
     Parameters
     ----------
-    afile : string or fits.HDUList
-        The file to be read, or HDUList to process
+    afile : `str` or fits.HDUList
+        The file to be read, or HDUList to process.
 
     Returns
     -------
-    headers : list
-        A list of FileHeader headers
+    headers : `list`
+        A list of FileHeader headers.
     """
     if isinstance(afile,fits.HDUList):
         hdulist = afile
@@ -127,7 +125,7 @@ def get_header(afile):
             header['COMMENT'] = comment
             header['HISTORY'] = history
 
-            #Strip out KEYCOMMENTS to a dict, the hard way
+            # Strip out KEYCOMMENTS to a dict, the hard way
             keydict = {}
             for card in hdu.header.cards:
                 if card.comment != '':
@@ -143,23 +141,24 @@ def get_header(afile):
 
 def write(fname, data, header, **kwargs):
     """
-    Take a data header pair and write a fits file
+    Take a data header pair and write a FITS file.
 
     Parameters
     ----------
-    fname: str
+    fname : `str`
         File name, with extension
 
-    data: ndarray
+    data : `numpy.ndarray`
         n-dimensional data array
 
-    header: dict
+    header : `dict`
         A header dictionary
     """
-    #Copy header so the one in memory is left alone while changing it for write
+    # Copy header so the one in memory is left alone while changing it for
+    # write.
     header = header.copy()
 
-    #The comments need to be added to the header seperately from the normal
+    # The comments need to be added to the header separately from the normal
     # kwargs. Find and deal with them:
     fits_header = fits.Header()
     # Check Header
@@ -180,7 +179,6 @@ def write(fname, data, header, **kwargs):
 
         else:
             fits_header.append(fits.Card(k, v))
-
 
     if isinstance(key_comments, dict):
         for k,v in key_comments.items():
@@ -206,7 +204,7 @@ def extract_waveunit(header):
 
     Returns
     -------
-    waveunit : str
+    waveunit : `str`
         The wavelength unit that could be found or ``None`` otherwise.
 
     Examples
