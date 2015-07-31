@@ -1,6 +1,10 @@
 Latest
 ------
 
+
+0.6.0
+-----
+
  * Enforced the use of Astropy Quantities through out most of SunPy.
  * Dropped Support for Python 2.6.
  * Remove old style string formatting and other 2.6 compatibility lines.
