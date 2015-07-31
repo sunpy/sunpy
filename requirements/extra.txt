@@ -13,3 +13,4 @@ glymur
 suds
 beautifulsoup4
 requests
+wcsaxes>=0.6
