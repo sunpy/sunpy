@@ -230,7 +230,7 @@ class HETClient(GenericClient):
 class SITClient(GenericClient):
 
 	def _get_url_for_timerange(cls,timerange, stereo_spacecraft = 'ahead', 
-							   atomic_specie       = '4He', 
+							   specie       = '4He', 
 							   duration_of_average = 10*u.min):
 		"""
 		Returns list of URLS to STEREO SIT data files corresponding to value of input timerange.
@@ -248,7 +248,7 @@ class SITClient(GenericClient):
 			Default value - ahead
 			Possible values - ahead, behind    # corresponding to spacecraft location
 
-		atomic_specie:  string
+		specie:  string
 			Default value - 4He
 			Possible values - 4He, Fe, H, O
 
@@ -277,8 +277,8 @@ class SITClient(GenericClient):
 		if stereo_spacecraft not in possible_spacecraft:
 			raise ValueError('Possible stereo_spacecraft values: ' + ','.join(possible_spacecraft))
 
-		if atomic_specie not in possible_specie:
-			raise ValueError('Possible atomic_specie values: ' + ','.join(possible_specie))
+		if specie not in possible_specie:
+			raise ValueError('Possible specie values: ' + ','.join(possible_specie))
 
 		if duration_of_average not in possible_duration:
 			raise ValueError('Possible duration_of_average values as astropy unit quantities: ' + ','.join([str(i) for i in possible_duration]))
@@ -288,15 +288,15 @@ class SITClient(GenericClient):
 		base_url = 'http://www.srl.caltech.edu/STEREO/DATA/SIT/{stereo_spacecraft[0]}/{duration_of_average}/'
 
 		if duration_of_average in possible_duration[:2]:
-			url_pattern = base_url + '{atomic_specie}/SIT_{stereo_spacecraft[1]}_{duration_of_average}_{atomic_specie}_%Y_{dict_time}.txt'
+			url_pattern = base_url + '{specie}/SIT_{stereo_spacecraft[1]}_{duration_of_average}_{specie}_%Y_{dict_time}.txt'
 		else: 
 			# duration_of_average in [1*u.h, 1*u.d ]:
-			url_pattern = base_url + 'SIT_{stereo_spacecraft[1]}_{duration_of_average}_{atomic_specie}_%Y.txt'
+			url_pattern = base_url + 'SIT_{stereo_spacecraft[1]}_{duration_of_average}_{specie}_%Y.txt'
 
 
 		file_scraper = Scraper(url_pattern, stereo_spacecraft = [stereo_spacecraft, stereo_spacecraft.capitalize()],
 									duration_of_average      = dict_duration[duration_of_average] , 
-									atomic_specie            = atomic_specie, 
+									specie            = specie, 
 									dict_time                = dict_time[duration_of_average])
 
 		return file_scraper.filelist(timerange)
