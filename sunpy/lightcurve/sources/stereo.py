@@ -68,6 +68,68 @@ class LETLightCurve(LightCurve):
 
     """
 
+    def peek(title="LET electron/proton Flux"):
+        """Plots LET light curve in the usual manner"""
+        figure = plt.figure()
+        ax = plt.gca()
+
+        header, data = _parse_txt('Ar_ahead_2006_318_level1_11.txt')
+        dates = matplotlib.dates.date2num(data['Datetime'].astype(datetime))
+
+        colors = ['Green','Red', 'Blue','SeaGreen','Tomato','SlateBlue','Orange',
+                            'Purple','Magenta','Chocolate','MediumVioletRed', 'Teal','Navy','Indigo']
+
+        figure.delaxes(ax)
+        axes = figure.add_axes([0.1, 0.15, 0.55, 0.8])
+
+        if header[1][:4] == 'Flux':
+            #27 day data
+            num_energy_bins = (len(header)-1)/2
+            for i,line in enumerate(header):
+                if i >= 1 and i < num_energy_bins:
+                    axes.plot_date(dates, data['col' +str(3+i)].ffill(), '-', label= line[9:], color=colors[i], lw=0.5)
+            axes.set_yscale("log",nonposy='mask')
+            
+        elif header[1][:22] == 'Column 6: LET Livetime' and header[2][9] == '-':
+            #Sectored data
+            num_energy_bins = header[2][header[2].index(':')+2:header[2].index('s')-1]
+            data = data.replace(-9999.9,float('nan'))
+            for i in range(int(num_energy_bins)):
+                axes.plot_date(dates, data['col' + str(7+i)].ffill(), '-', label= 'Sector '+str(i), color=colors[i/2-2], lw=2)
+
+        elif header[2][:22] == 'Column 7: LET Livetime':
+            #Non sectored standard data
+            num_energy_bins = len(header) - 4
+            for i in range(num_energy_bins):
+                data = data.replace(-1.000000e+31,float('nan'))
+                # print 'col' + str(8+i), data['col' + str(8+i)]
+                axes.plot_date(dates, data['col' + str(8+i)].ffill(), '-', 
+                        label= header[3+i][header[3+i].index(':')+1:header[3+i].index('/')+2], color=colors[i], lw=2)
+        else:
+            #Non sectored non standard data
+            num_energy_bins = len(header) - 4
+            for i in range(num_energy_bins):
+                data = data.replace(-1.000000e+31,float('nan'))
+                # print 'col' + str(8+i), data['col' + str(8+i)]
+                axes.plot_date(dates, data['col' + str(7+i)].ffill(), '-', 
+                        label= header[2+i][header[2+i].index(':')+1:header[2+i].index('/')+4], color=colors[i], lw=2)
+
+
+        
+        axes.set_title(title)
+        axes.set_ylabel('1/(cm^2 s sr MeV/nuc)')
+        axes.set_xlabel('UTC TimeZone')
+
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(False, 'major')
+
+        axes.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+
+        figure.autofmt_xdate()
+        plt.show()
+
+        return figure
+
     @staticmethod
     def _parse_txt(filepath):
         """
