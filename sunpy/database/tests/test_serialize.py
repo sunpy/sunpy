@@ -8,7 +8,7 @@ from sunpy.database.serialize import QueryEncoder, query_decode
 
 
 def test_vso_wave():
-    attr = vso.attrs.Wave(100 * u.AA, 200 * u.AA)
+    attr = vso.attrs.Wavelength(100 * u.AA, 200 * u.AA)
     expected = '{"Wavelength": [100.0, 200.0, "Angstrom"]}'
     assert json.dumps(attr, cls=QueryEncoder) == expected
 
@@ -96,8 +96,8 @@ def test_attr_and():
 
 
 def test_decode_wave():
-    dump = '{"Wave": [10.0, 20.0, "Angstrom"]}'
-    assert json.loads(dump, object_hook=query_decode) == vso.attrs.Wave(10 * u.AA, 20 * u.AA)
+    dump = '{"Wavelength": [10.0, 20.0, "Angstrom"]}'
+    assert json.loads(dump, object_hook=query_decode) == vso.attrs.Wavelength(10 * u.AA, 20 * u.AA)
 
 
 def test_decode_time():

@@ -28,7 +28,7 @@ from sunpy.net.attr import (
 from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time
 
-__all__ = ['Wave', 'Time', 'Extent', 'Field', 'Provider', 'Source',
+__all__ = ['Wavelength', 'Time', 'Extent', 'Field', 'Provider', 'Source',
            'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',
            'Detector', 'Filter', 'Sample', 'Quicklook', 'PScale']
 
@@ -108,7 +108,7 @@ class Wavelength(Attr, _Range):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return "<Wave({0!r}, {1!r}, '{2!s}')>".format(self.min.value,
+        return "<Wavelength({0!r}, {1!r}, '{2!s}')>".format(self.min.value,
                                                       self.max.value,
                                                       self.unit)
 
@@ -333,7 +333,7 @@ walker.add_converter(_VSOSimpleAttr)(
     lambda x: ValueAttr({(x.__class__.__name__.lower(), ): x.value})
 )
 
-walker.add_converter(Wave)(
+walker.add_converter(Wavelength)(
     lambda x: ValueAttr({
             ('wave', 'wavemin'): x.min.value,
             ('wave', 'wavemax'): x.max.value,
@@ -387,7 +387,7 @@ def _(attr, results):
     return set(results)
 
 
-@filter_results.add_dec(Wave)
+@filter_results.add_dec(Wavelength)
 def _(attr, results):
     return set(
         it for it in results
