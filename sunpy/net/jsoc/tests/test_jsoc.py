@@ -128,7 +128,7 @@ def test_status_request():
 def  test_empty_jsoc_response():
     Jresp = JSOCResponse()
     assert Jresp.table is None
-    assert Jresp.query_args == []
+    assert Jresp.query_args is None
     assert Jresp.requestIDs is None
     assert str(Jresp) == 'None'
     assert repr(Jresp) == 'None'

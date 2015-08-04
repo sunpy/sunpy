@@ -7,7 +7,7 @@ import astropy.units as u
 
 from sunpy.net.attr import Attr, AttrWalker, AttrAnd, AttrOr
 from sunpy.net.vso.attrs import _VSOSimpleAttr
-from sunpy.net.vso.attrs import Time as vTime, Sample as vSample
+from sunpy.net.vso.attrs import Time as vTime, Sample as vSample, Wavelength as vWavelength
 
 ###############################################################################
 # This is a horrific hack to make automodapi pick up these as jsoc attrs.
@@ -20,6 +20,11 @@ class Time(vTime):
 
 class Sample(vSample):
     __doc__ = vSample.__doc__
+    pass
+
+
+class Wavelength(vWavelength):
+    __doc__ = vWavelength.__doc__
     pass
 
 ###############################################################################
@@ -71,27 +76,6 @@ class Compression(_VSOSimpleAttr):
     'rice' or None, download FITS files with RICE compression.
     """
     pass
-
-
-class Wavelength(_VSOSimpleAttr):
-    """
-    Wavelength or list of wavelengths to download. Must be specified in correct
-    units for the series.
-    """
-    def __init__(self, value):
-        if not (isinstance(value, u.Quantity) or isinstance(value, list)):
-            raise TypeError("Wave inputs must be astropy Quantities")
-        Attr.__init__(self)
-
-        self.value = value
-
-    def __or__(self, other):
-        if self == other:
-            return self
-        if isinstance(other, self.__class__):
-            return self.__class__([self.value, other.value])
-        return AttrOr([self, other])
-    __ror__ = __or__
 
 
 walker = AttrWalker()
