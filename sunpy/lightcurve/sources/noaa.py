@@ -46,6 +46,8 @@ class NOAAIndicesLightCurve(LightCurve):
     * `NOAA Product List <http://www.swpc.noaa.gov/products-and-data>`_
     """
 
+    default_url_noaa_indices = "ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"
+    
     def peek(self, type='sunspot SWO', **plot_args):
         """Plots NOAA Indices as a function of time. An example is shown below.
 
@@ -106,12 +108,12 @@ class NOAAIndicesLightCurve(LightCurve):
 
     def _get_default_uri(self):
         """Return the url to download indices"""
-        return "ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"
+        return NOAAIndicesLightCurve.default_url_noaa_indices
 
     @staticmethod
     def _get_url_for_date_range(*args, **kwargs):
         """Returns a URL for the specified date."""
-        return "ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"
+        return NOAAIndicesLightCurve.default_url_noaa_indices
 
     @staticmethod
     def _parse_csv(filepath):
@@ -161,7 +163,8 @@ class NOAAPredictIndicesLightCurve(LightCurve):
     * `NOAA Product List <http://www.swpc.noaa.gov/products-and-data>`_
 
     """
-
+    default_url_noaa_predict_indices = "http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"
+    
     def peek(self, **plot_args):
         """Plots predicted NOAA Indices as a function of time. An example is shown below.
 
@@ -204,12 +207,12 @@ class NOAAPredictIndicesLightCurve(LightCurve):
 
     def _get_default_uri(self):
         """Return the url to download indices"""
-        return "http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"
+        return NOAAPredictIndicesLightCurve.default_url_noaa_predict_indices
 
     @staticmethod
     def _get_url_for_date_range(*args, **kwargs):
         """Returns a URL for the specified date."""
-        return "http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"
+        return NOAAPredictIndicesLightCurve.default_url_noaa_predict_indices
 
     @staticmethod
     def _parse_csv(filepath):
