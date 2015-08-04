@@ -20,6 +20,7 @@ from sunpy.util.net import download_fileobj
 
 __all__ = ['HelioviewerClient']
 
+
 class HelioviewerClient(object):
     """Helioviewer.org Client"""
     def __init__(self, url="http://helioviewer.org/api/"):
@@ -37,11 +38,11 @@ class HelioviewerClient(object):
 
         For more information on what types of requests are available and the
         expected usage for the response, consult the Helioviewer
-        API documenation: http://helioviewer.org/api
+        API documentation: http://helioviewer.org/api
 
         Parameters
         ----------
-        date : datetime, string
+        date : `datetime.datetime`, `str`
             A string or datetime object for the desired date of the image
         observatory : string
             (Optional) Observatory name
@@ -56,8 +57,8 @@ class HelioviewerClient(object):
 
         Returns
         -------
-        out : dict
-            A dictionary containing metainformation for the closest image matched
+        out : `dict`
+            A dictionary containing meta-information for the closest image matched
 
         Examples
         --------
@@ -66,6 +67,7 @@ class HelioviewerClient(object):
         >>> client = HelioviewerClient()
         >>> metadata = client.get_closest_image('2012/01/01', sourceId=11)
         >>> print(metadata['date'])
+        2012-01-01 00:00:07
         """
         params = {
             "action": "getClosestImage",
@@ -91,7 +93,7 @@ class HelioviewerClient(object):
 
         Parameters
         ----------
-        date : datetime, string
+        date : `datetime.datetime`, string
             A string or datetime object for the desired date of the image
         directory : string
             (Optional) Directory to download JPEG 2000 image to.
@@ -119,12 +121,12 @@ class HelioviewerClient(object):
         >>> import sunpy.map
         >>> from sunpy.net import helioviewer
         >>> hv = helioviewer.HelioviewerClient()
-        >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', instrument='AIA', detector='AIA', measurement='171')
-        >>> aia = sunpy.map.Map(filepath)
-        >>> aia.peek()
+        >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', instrument='AIA', detector='AIA', measurement='171')   # doctest: +SKIP
+        >>> aia = sunpy.map.Map(filepath)   # doctest: +SKIP
+        >>> aia.peek()   # doctest: +SKIP
 
         >>> data_sources = hv.get_data_sources()
-        >>> hv.download_jp2('2012/07/03 14:30:00', sourceId=data_sources['SOHO']['LASCO']['C2']['white-light']['sourceId'])
+        >>> hv.download_jp2('2012/07/03 14:30:00', sourceId=data_sources['SOHO']['LASCO']['C2']['white-light']['sourceId'])   # doctest: +SKIP
         """
         params = {
             "action": "getJP2Image",
@@ -148,12 +150,12 @@ class HelioviewerClient(object):
         image may be specified using either the top-left and bottom-right
         coordinates in arc-seconds, or a center point in arc-seconds and a
         width and height in pixels. See the Helioviewer.org API Coordinates
-        Appendix for more infomration about working with coordinates in
+        Appendix for more information about working with coordinates in
         Helioviewer.org.
 
         Parameters
         ----------
-        date : datetime, string
+        date : `datetime.datetime`, string
             A string or datetime object for the desired date of the image
         image_scale : float
             The zoom scale of the image. Default scales that can be used are
@@ -162,7 +164,7 @@ class HelioviewerClient(object):
         layers : string
             Each layer string is comma-separated with these values, e.g.:
             "[sourceId,visible,opacity]" or "[obs,inst,det,meas,visible,opacity]"
-            Mulitple layer string are by commas: "[layer1],[layer2],[layer3]"
+            Multiple layer string are by commas: "[layer1],[layer2],[layer3]"
         directory : string
             (Optional)  Directory to download JPEG 2000 image to.
         x1 : float
@@ -198,10 +200,8 @@ class HelioviewerClient(object):
         --------
         >>> from sunpy.net.helioviewer import HelioviewerClient
         >>> hv = HelioviewerClient()
-        >>> hv.download_png('2012/07/16 10:08:00', 2.4, "[SDO,AIA,AIA,171,1,100]", x0=0, y0=0, width=1024, height=1024)
-        '/home/user/sunpy/data/2012_07_16_10_08_00_AIA_171.png
-        >>> hv.download_png('2012/07/16 10:08:00', 4.8, "[SDO,AIA,AIA,171,1,100],[SOHO,LASCO,C2,white-light,1,100]", x1=-2800, x2=2800, y1=-2800, y2=2800, directory='~/Desktop')
-        '/home/user/Desktop/2012_07_16_10_08_00_AIA_171__LASCO_C2.png'
+        >>> hv.download_png('2012/07/16 10:08:00', 2.4, "[SDO,AIA,AIA,171,1,100]", x0=0, y0=0, width=1024, height=1024)   # doctest: +SKIP
+        >>> hv.download_png('2012/07/16 10:08:00', 4.8, "[SDO,AIA,AIA,171,1,100],[SOHO,LASCO,C2,white-light,1,100]", x1=-2800, x2=2800, y1=-2800, y2=2800, directory='~/Desktop')   # doctest: +SKIP
         """
         params = {
             "action": "takeScreenshot",
@@ -215,7 +215,7 @@ class HelioviewerClient(object):
         return self._get_file(params, directory, overwrite=overwrite)
 
     def is_online(self):
-        """Returns True if Helioviewer is online and available"""
+        """Returns True if Helioviewer is online and available."""
         try:
             self.get_data_sources()
         except urllib2.URLError:
@@ -249,7 +249,7 @@ class HelioviewerClient(object):
 
         Parameters
         ----------
-        params : dict
+        params : `dict`
             Parameters to send
 
         Returns

@@ -8,7 +8,8 @@ from sunpy.map.sources.sdo import AIAMap
 
 def aiaprep(aiamap):
     """
-    Processes a level 1 AIAMap into a level 1.5 AIAMap. Rotates, scales and
+    Processes a level 1 `~sunpy.map.sources.sdo.AIAMap` into a level 1.5
+    `~sunpy.map.sources.sdo.AIAMap`. Rotates, scales and
     translates the image so that solar North is aligned with the y axis, each
     pixel is 0.6 arcsec across, and the center of the sun is at the center of
     the image. The actual transformation is done by Map's
@@ -21,17 +22,17 @@ def aiaprep(aiamap):
 
     Parameters
     ----------
-    aiamap : AIAMap instance
-        A sunpy map from AIA
+    aiamap : `~sunpy.map.sources.sdo.AIAMap` instance
+        A `sunpy.map.Map` from AIA
 
     Returns
     -------
-    newmap : A level 1.5 copy of aiamap
+    newmap : A level 1.5 copy of `~sunpy.map.sources.sdo.AIAMap`
 
     Notes
     -----
     This routine makes use of Map's :meth:`~sunpy.map.mapbase.GenericMap.rotate`
-    method, which modifes the header information to the standard PCi_j WCS
+    method, which modifies the header information to the standard PCi_j WCS
     formalism.
     The FITS header resulting in saving a file after this procedure will
     therefore differ from the original file.
@@ -40,13 +41,13 @@ def aiaprep(aiamap):
     if not isinstance(aiamap, AIAMap):
         raise ValueError("Input must be an AIAMap")
 
-    # Taget scale is 0.6 arcsec/pixel, but this needs to be adjusted if the map
+    # Target scale is 0.6 arcsec/pixel, but this needs to be adjusted if the map
     # has already been rescaled.
-    if (aiamap.scale['x']/0.6).round() != 1.0*u.arcsec and aiamap.data.shape != (4096, 4096):
-        scale = (aiamap.scale['x']/0.6).round() * 0.6*u.arcsec
+    if (aiamap.scale.x/0.6).round() != 1.0*u.arcsec and aiamap.data.shape != (4096, 4096):
+        scale = (aiamap.scale.x/0.6).round() * 0.6*u.arcsec
     else:
         scale = 0.6*u.arcsec # pragma: no cover # can't test this because it needs a full res image
-    scale_factor = aiamap.scale['x'] / scale
+    scale_factor = aiamap.scale.x / scale
 
     newmap = aiamap.rotate(recenter=True, scale=scale_factor.value, missing=aiamap.min())
     newmap.meta['lvl_num'] = 1.5

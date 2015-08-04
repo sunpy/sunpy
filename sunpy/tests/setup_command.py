@@ -5,7 +5,7 @@ Created on Sat Jun  7 19:36:08 2014
 @author: Stuart Mumford
 
 This file is designed to be imported and ran only via setup.py, hence it's
-dependancy on astropy_helpers which will be availible in that context.
+dependency on astropy_helpers which will be available in that context.
 """
 
 from astropy_helpers.test_helpers import AstropyTest

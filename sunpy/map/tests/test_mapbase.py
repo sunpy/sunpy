@@ -14,12 +14,14 @@ import astropy.wcs
 from astropy.io import fits
 import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
+import matplotlib.pyplot as plt
 
 import sunpy
 import sunpy.sun
 import sunpy.map
 import sunpy.data.test
 from sunpy.time import parse_time
+from sunpy.tests.helpers import figure_test, skip_wcsaxes
 
 testpath = sunpy.data.test.rootdir
 
@@ -43,14 +45,12 @@ def generic_map():
               'PC2_2': 0,
               'NAXIS1': 6,
               'NAXIS2': 6,
-              'date-obs': '1970/01/01T00:00:00'}
+              'date-obs': '1970/01/01T00:00:00',
+              'obsrvtry': 'Foo',
+              'detector': 'bar',
+              'wavelnth': 10,
+              'waveunit': 'm'}
     return sunpy.map.Map((data, header))
-
-
-#@pytest.fixture
-#def aia171_test_map_large():
-#    return sunpy.map.Map(sunpy.AIA_171_IMAGE)
-
 
 def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same in pyfits and SunPy"""
@@ -63,28 +63,20 @@ def test_get_item(generic_map):
         generic_map[10,10]
 
 
-def test_repr_no_obs(generic_map):
-    assert generic_map.__repr__() == 'array([[ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.],\n       [ 1.,  1.,  1.,  1.,  1.,  1.]])'
-
-
-def test_repr_obs(aia171_test_map):
-    assert aia171_test_map.__repr__() == 'SunPy AIAMap\n---------\nObservatory:\t SDO\nInstrument:\t AIA_3\nDetector:\t AIA\nMeasurement:\t 171 Angstrom\nObs Date:\t 2011-02-15 00:00:00.340000\ndt:\t\t 2.000191 s\nDimension:\t [ 128.  128.] pix\nscale:\t\t [19.183648 arcsec / pix, 19.183648 arcsec / pix]\n\narray([[-1.25,  0.  ,  1.  , ...,  0.  ,  0.5 , -0.75],\n       [ 0.75, -0.25, -0.5 , ...,  0.25,  0.  , -0.25],\n       [ 0.  ,  0.5 ,  1.75, ...,  0.  ,  0.5 ,  0.  ],\n       ..., \n       [ 1.  ,  0.25, -0.25, ...,  0.  ,  0.  ,  0.  ],\n       [-0.25,  0.  , -0.5 , ...,  0.75, -0.75,  0.  ],\n       [ 0.75,  1.5 , -0.75, ...,  0.  , -0.5 ,  0.5 ]])'
-
 def test_wcs(aia171_test_map):
     wcs = aia171_test_map.wcs
     assert isinstance(wcs, astropy.wcs.WCS)
 
-    assert all(wcs.wcs.crpix == [aia171_test_map.reference_pixel['x'].value,
-                                 aia171_test_map.reference_pixel['y'].value])
-    assert all(wcs.wcs.cdelt == [aia171_test_map.scale['x'].value,
-                                 aia171_test_map.scale['y'].value])
-    assert all(wcs.wcs.crval == [aia171_test_map.reference_coordinate['x'].value,
-                                 aia171_test_map.reference_coordinate['y'].value])
-    assert set(wcs.wcs.ctype) == set([aia171_test_map.coordinate_system['x'],
-                             aia171_test_map.coordinate_system['y']])
+    assert all(wcs.wcs.crpix == [aia171_test_map.reference_pixel.x.value,
+                                 aia171_test_map.reference_pixel.y.value])
+    assert all(wcs.wcs.cdelt == [aia171_test_map.scale.x.value,
+                                 aia171_test_map.scale.y.value])
+    assert all(wcs.wcs.crval == [aia171_test_map.reference_coordinate.x.value,
+                                 aia171_test_map.reference_coordinate.y.value])
+    assert set(wcs.wcs.ctype) == set([aia171_test_map.coordinate_system.x,
+                             aia171_test_map.coordinate_system.y])
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
-    assert set(wcs.wcs.cunit) == set([u.Unit(a) for a in [aia171_test_map.units['x'],
-                                                          aia171_test_map.units['y']]])
+    assert set(wcs.wcs.cunit) == set([u.Unit(a) for a in aia171_test_map.units])
 
 def test_dtype(generic_map):
     assert generic_map.dtype == np.float64
@@ -114,21 +106,15 @@ def test_std(generic_map):
 # TODO: Test the header keyword extraction
 #==============================================================================
 def test_name(generic_map):
-    assert generic_map.name == ' 0.0'
-
-
-def test_name_set(generic_map):
-    assert generic_map.name == ' 0.0'
-    generic_map.name = 'hi'
-    assert generic_map.name == 'hi'
+    assert type(generic_map.name) == type('str')
 
 
 def test_nickname(generic_map):
-    assert generic_map.nickname == ''
+    assert generic_map.nickname == 'bar'
 
 
 def test_nickname_set(generic_map):
-    assert generic_map.nickname == ''
+    assert generic_map.nickname == 'bar'
     generic_map.nickname = 'hi'
     assert generic_map.nickname == 'hi'
 
@@ -142,7 +128,7 @@ def test_date_aia(aia171_test_map):
 
 
 def test_detector(generic_map):
-    assert generic_map.detector == ''
+    assert generic_map.detector == 'bar'
 
 
 def test_dsun(generic_map):
@@ -158,7 +144,7 @@ def test_rsun_obs(generic_map):
 
 
 def test_coordinate_system(generic_map):
-    assert generic_map.coordinate_system == {'x':'HPLN-TAN', 'y': 'HPLT-TAN'}
+    assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
 
 
 def test_carrington_longitude(generic_map):
@@ -174,7 +160,7 @@ def test_heliographic_longitude(generic_map):
 
 
 def test_units(generic_map):
-    generic_map.units == {'x': 'arcsec', 'y': 'arcsec'}
+    generic_map.units == ('arcsec', 'arcsec')
 
 
 #==============================================================================
@@ -200,8 +186,8 @@ def test_rotation_matrix_cd_cdelt():
               'CDELT1': 10,
               'CDELT2': 9,
               'CD1_1': 0,
-              'CD1_2': -10,
-              'CD2_1': 9,
+              'CD1_2': -9,
+              'CD2_1': 10,
               'CD2_2': 0,
               'NAXIS1': 6,
               'NAXIS2': 6}
@@ -235,17 +221,16 @@ def test_data_range(generic_map):
     assert generic_map.xrange[1].value - generic_map.xrange[0].value == generic_map.meta['cdelt1'] * generic_map.meta['naxis1']
     assert generic_map.yrange[1].value - generic_map.yrange[0].value == generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
 
-    assert np.average(generic_map.xrange.value) == generic_map.center['x'].value
-    assert np.average(generic_map.yrange.value) == generic_map.center['y'].value
+    assert np.average(generic_map.xrange.value) == generic_map.center.x.value
+    assert np.average(generic_map.yrange.value) == generic_map.center.y.value
 
 
 def test_data_to_pixel(generic_map):
     """Make sure conversion from data units to pixels is internally consistent"""
     # Note: FITS pixels start from 1,1
-    test_pixel = generic_map.data_to_pixel(*generic_map.reference_coordinate.values(),
-                                           origin=1)
-    assert_quantity_allclose(test_pixel,
-                             generic_map.reference_pixel.values())
+    test_pixel = generic_map.data_to_pixel(*generic_map.reference_coordinate, origin=1)
+    assert_quantity_allclose(test_pixel, generic_map.reference_pixel)
+
 
 def test_submap(generic_map):
     """Check data and header information for a submap"""
@@ -253,19 +238,13 @@ def test_submap(generic_map):
     height = generic_map.data.shape[0]
 
     # Create a submap of the top-right quadrant of the image
-    submap = generic_map.submap([height/2.,height]*u.pix, [width/2.,width]*u.pix)
-
-    # Expected offset for center
-    offset = {
-        "x": generic_map.meta['crpix1'] - width / 2.,
-        "y": generic_map.meta['crpix2'] - height / 2.,
-    }
+    submap = generic_map.submap([width/2.,width]*u.pix, [height/2.,height]*u.pix)
 
     # Check to see if submap properties were updated properly
-    assert submap.reference_pixel['x'].value == offset['x']
-    assert submap.reference_pixel['y'].value == offset['y']
-    assert submap.data.shape[0] == width / 2.
-    assert submap.data.shape[1] == height / 2.
+    assert submap.reference_pixel.x.value == generic_map.meta['crpix1'] - width / 2.
+    assert submap.reference_pixel.y.value == generic_map.meta['crpix2'] - height / 2.
+    assert submap.data.shape[1] == width / 2.
+    assert submap.data.shape[0] == height / 2.
 
     # Check to see if header was updated
     assert submap.meta['naxis1'] == width / 2.
@@ -301,8 +280,8 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
         == float(generic_map.data.shape[0]) / resampled_map.data.shape[0]
     assert resampled_map.meta['crpix1'] == (resampled_map.data.shape[1] + 1) / 2.
     assert resampled_map.meta['crpix2'] == (resampled_map.data.shape[0] + 1) / 2.
-    assert resampled_map.meta['crval1'] == generic_map.center['x'].value
-    assert resampled_map.meta['crval2'] == generic_map.center['y'].value
+    assert resampled_map.meta['crval1'] == generic_map.center.x.value
+    assert resampled_map.meta['crval2'] == generic_map.center.y.value
     for key in generic_map.meta:
         if key not in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2',
                        'crval1', 'crval2'):
@@ -383,7 +362,7 @@ def test_rotate_recenter(generic_map):
     pixel_array_center = (np.flipud(rotated_map.data.shape) - 1) / 2.0
 
     assert_quantity_allclose((pixel_array_center + 1) * u.pix, # FITS indexes from 1
-                             u.Quantity(rotated_map.reference_pixel.values()))
+                             u.Quantity(rotated_map.reference_pixel))
 
 
 def test_rotate_crota_remove(aia171_test_map):
@@ -414,3 +393,36 @@ def test_rotate_invalid_order(generic_map):
         generic_map.rotate(order=6)
     with pytest.raises(ValueError):
         generic_map.rotate(order=-1)
+
+
+@skip_wcsaxes
+@figure_test
+def test_plot_aia171(aia171_test_map):
+    aia171_test_map.plot()
+
+
+@figure_test
+def test_plot_aia171_nowcsaxes(aia171_test_map):
+    ax = plt.gca()
+    aia171_test_map.plot(axes=ax)
+
+
+@skip_wcsaxes
+@figure_test
+def test_plot_masked_aia171(aia171_test_map):
+    shape = aia171_test_map.data.shape
+    mask = np.zeros_like(aia171_test_map.data, dtype=bool)
+    mask[0:shape[0]/2, 0:shape[1]/2] = True
+    masked_map = sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
+    masked_map.plot()
+
+
+@figure_test
+def test_plot_masked_aia171_nowcsaxes(aia171_test_map):
+    shape = aia171_test_map.data.shape
+    mask = np.zeros_like(aia171_test_map.data, dtype=bool)
+    mask[0:shape[0]/2, 0:shape[1]/2] = True
+    masked_map = sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
+    ax = plt.gca()
+    masked_map.plot(axes=ax)
+

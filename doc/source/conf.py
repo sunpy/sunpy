@@ -63,7 +63,21 @@ except ImportError:
         if os.path.isdir(a_h_path):
             sys.path.insert(1, a_h_path)
 
+# -- Read the Docs Setup  -----------------------------------------------------
+
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+
+if on_rtd:
+    os.environ['SUNPY_CONFIGDIR'] = '/home/docs/checkouts/readthedocs.org/user_builds/sunpy/'
+    os.environ['HOME'] = '/home/docs/checkouts/readthedocs.org/user_builds/sunpy/'
+
+# -- Download Sample Data -----------------------------------------------------
+
+import sunpy.data
+sunpy.data.download_sample_data(overwrite=False)
+
 # -- General configuration ----------------------------------------------------
+
 
 # Load all of the global Astropy configuration
 from astropy_helpers.sphinx.conf import *
@@ -97,11 +111,12 @@ version = sunpy.__version__.split('-', 1)[0]
 # The full version, including alpha/beta/rc tags.
 release = sunpy.__version__
 
-intersphinx_mapping.pop('h5py',None)
+intersphinx_mapping.pop('h5py', None)
 intersphinx_mapping['astropy'] = ('http://docs.astropy.org/en/stable/', None)
 intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/rel_0_8/', None)
 intersphinx_mapping['pandas'] = ('http://pandas.pydata.org/pandas-docs/stable/', None)
 intersphinx_mapping['skimage'] = ('http://scikit-image.org/docs/stable/', None)
+intersphinx_mapping['wcsaxes'] = ('http://wcsaxes.readthedocs.org/en/stable/', None)
 
 # -- Options for HTML output ---------------------------------------------------
 

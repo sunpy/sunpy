@@ -5,26 +5,41 @@ __author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]
 __email__ = "jack.ireland@nasa.gov"
 
 import numpy as np
+import numpy.ma as ma
 from matplotlib import colors
 
 from sunpy.map import GenericMap
 from sunpy.cm import cm
 
-
 __all__ = ['XRTMap', 'SOTMap']
+
+# the following values comes from xrt_prep.pro
+# search for saturation in
+# http://darts.jaxa.jp/pub/ssw/hinode/xrt/idl/util/xrt_prep.pro
+# SATURATION_LIMIT = 2500
 
 def _lower_list(L):
     return [item.lower() for item in L]
 
 class XRTMap(GenericMap):
-    """XRT Image Map definition
+    """Hinode XRT map definition.
+
+    The X-Ray Telescope (XRT) is a high resolution grazing incidence telescope,
+    which is a succsessor to Yohkoh. It provides 2-arcsecond resolution images
+    of the highest temperature solar coronal material,
+    from 1,000,000 to 10,000,000 Kelvin.
+
+    Hinode was launched on 22 September 2006 into a sun-synchronous orbit.
 
     References
     ----------
-    For a description of XRT headers
+    * `Hinode Mission Page <http://solarb.msfc.nasa.gov/index.html>`_
+    * `XRT Instrument Page <http://xrt.cfa.harvard.edu>`_
+    * `Fits header reference <http://hinode.nao.ac.jp/sbsc/SB_MW_Key13.pdf>`_
+    * `Hinode User Guide <http://hinode.nao.ac.jp/hsc_e/instruction_e.shtml>`_
+    * `XRT Analysis Guide <http://xrt.cfa.harvard.edu/science/tutorials.php>`_
+    * `Coronal Temperature Diagnostic Capability of the Hinode/X-Ray Telescope Based on Self-Consistent Calibration <http://arxiv.org/pdf/1011.2867.pdf>`_
     """
-    #TODO: get a link for the XRT FITS headers
-    # Add in some information about the the possible filter wheel measurements
     filter_wheel1_measurements = ["Al_med", "Al_poly", "Be_med",
                                   "Be_thin", "C_poly", "Open"]
     filter_wheel2_measurements = ["Open", "Al_mesh", "Al_thick",
@@ -33,6 +48,9 @@ class XRTMap(GenericMap):
     def __init__(self, data, header, **kwargs):
 
         GenericMap.__init__(self, data, header, **kwargs)
+
+        # converting data array to masked array
+        # self.data = ma.masked_where(self.data > SATURATION_LIMIT, self.data)
 
         fw1 = header.get('EC_FW1_')
         if fw1.lower() not in _lower_list(self.filter_wheel1_measurements):
@@ -47,26 +65,16 @@ class XRTMap(GenericMap):
         self.meta['detector'] = "XRT"
 #        self.meta['instrume'] = "XRT"
         self.meta['telescop'] = "Hinode"
+        self.meta['wavelnth'] = np.nan
+        self.meta['waveunit'] = 'keV'
+        self._nickname = "{0} {1}-{2}".format(self.detector, fw1, fw2)
+        self.plot_settings['cmap'] = cm.get_cmap(name='hinodexrt')
 
-        self._name = "{0} {1}-{2}".format(self.detector, fw1, fw2)
-        self._nickname = self.detector
-
-        self.cmap = cm.get_cmap(name='hinodexrt')
-
-    def _get_mpl_normalizer(self):
-        """Returns a Normalize object to be used with XRT data"""
-        # byte-scaled images have most likely already been scaled
-        if self.dtype == np.uint8:
-            return None
-
-        mean = self.mean()
-        std = self.std()
-
-        vmin = max(0, mean - 3 * std)
-        vmax = min(self.max(), mean + 3 * std)
-
-        return colors.Normalize(vmin, vmax)
-
+    @property
+    def measurement(self):
+        fw1 = self.meta.get('EC_FW1_').replace("_", " ")
+        fw2 = self.meta.get('EC_FW2_').replace("_", " ")
+        return "{0}-{1}".format(fw1, fw2)
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -74,19 +82,28 @@ class XRTMap(GenericMap):
         return header.get('instrume') == 'XRT'
 
 class SOTMap(GenericMap):
-    """SOT Image Map definition
-    
+    """Hinode SOT Image Map definition.
+
+    The Hinode Solar Optical Telescope (SOT) consists of a 50 cm
+    diffraction-limited Gregorian telescope. It is optimized for
+    accurate measurement of the vector magnetic
+    field in the photosphere and dynamics of both the photosphere and
+    chromosphere associated with the magnetic fields.
+
+    Hinode was launched on 22 September 2006 into a sun-synchronous orbit.
+
     References
     ----------
-    Hinode Solar Optical Telescope
-    Data Analysis Guide:
-    http://hesperia.gsfc.nasa.gov/ssw/hinode/sot/doc/guide/SAGv3.3.pdf
+    * `Hinode Mission Page <http://solarb.msfc.nasa.gov/index.html>`_
+    * `Hinode SOT Instrument Page <http://sot.lmsal.com>`_
+    * `Hinode SOT Instrument Paper <http://arxiv.org/pdf/0711.1715.pdf>`_
+    * `Data Analsis Guide <https://sot.lmsal.com/doc/rep/sot254/fid366/SOT00042_33_SOT_Analysis_Guide_SAG.pdf>`_
     """
     #TODO: get a link for the SOT FITS headers
-    # Add in some information about the the possible instrument, observation type,
-    # observable ion and wavelength
+    # Add in some information about the the possible instrument, observation
+    # type, observable ion and wavelength
 
-    Instruments = ['SOT/WB','SOT/NB','SOT/SP','SOT/CT']
+    Instruments = ['SOT/WB', 'SOT/NB', 'SOT/SP', 'SOT/CT']
 
     Waves = ['6302A', 'BFI no move', 'CN bandhead 3883',
              'Ca II H line', 'G band 4305', 'NFI no move',
@@ -103,25 +120,21 @@ class SOTMap(GenericMap):
 
         self.meta['detector'] = "SOT"
         self.meta['telescop'] = "Hinode"
-
-        self._name = self.observatory + '/' + self.instrument
         self._nickname = self.detector
 
-        #TODO (add other options, Now all threated as intensity. This followes Hinode SDC archive)
+        #TODO (add other options, Now all threated as intensity. This follows Hinode SDC archive)
         # StokesQUV -> grey, Velocity -> EIS, Width -> EIS, Mag Field Azi -> IDL 5 (STD gamma II)
-        #'WB' -> red
-        #'NB'(0 = red); (>0 = gray), # nb has 1 stokes I, the rest quv
-        #'SP' (<=1 = red); (>1 = gray) #sp has 2 stokes I, the rest quv
+        # 'WB' -> red
+        # 'NB'(0 = red); (>0 = gray), # nb has 1 stokes I, the rest quv
+        # 'SP' (<=1 = red); (>1 = gray) #sp has 2 stokes I, the rest quv
         color = {'SOT/WB': 'intensity',
-                 'SOT/NB': 'intensity', # For the 1st dimmension
-                 'SOT/SP': 'intensity', # For the 1st 2 dimmensions
+                 'SOT/NB': 'intensity', # For the 1st dimension
+                 'SOT/SP': 'intensity', # For the 1st 2 dimensions
                  }
 
-        self.cmap = cm.get_cmap('hinodesot' + color[self.instrument])
-
+        self.plot_settings['cmap'] = cm.get_cmap('hinodesot' + color[self.instrument])
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an SOT image"""
-
+        """Determines if header corresponds to an SOT image."""
         return header.get('instrume') in cls.Instruments

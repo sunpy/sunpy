@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Some Independant plotting tools, mainly animation UI based.
+Some Independent plotting tools, mainly animation UI based.
 """
 __author__ = "Stuart Mumford"
 __email__ = "stuartmumford@physics.org"
@@ -14,7 +14,11 @@ import mpl_toolkits.axes_grid1.axes_size as Size
 
 class ControlFuncAnimation(animation.FuncAnimation):
     """ This is a slight modification to the animation class to allow pausing
-    starting and stopping."""
+    starting and stopping.
+
+    .. todo::
+        improve documentation
+    """
     def __init__(self, fig, func, frames=None, init_func=None, fargs=None,
             save_count=None, auto_start=True, **kwargs):
         self.fig = fig #This should be done.
@@ -42,23 +46,40 @@ class ControlFuncAnimation(animation.FuncAnimation):
 
 def add_controls(axes=None, slider=False):
     """ Adds Start/Stop controls to an axes having been given a animation
-    instance. """
+    instance.
 
-    #If No axes specified use current axes.
+    Parameters
+    ----------
+    axes : matplotlib Axes object
+        Axes object that will get slider controls
+
+    slider : `bool`
+        ?
+
+    Returns
+    -------
+    ? : ?
+        ?
+
+    .. todo::
+        improve documentation
+    """
+
+    # If No axes specified use current axes.
     if not axes:
         axes = plt.gca()
     fig = axes.get_figure()
 
-    #Split up the current axes so there is space for a start and a stop button
+    # Split up the current axes so there is space for a start and a stop button
     divider = make_axes_locatable(axes)
     pad = 0.1 # Padding between axes
     pad_size = Size.Fraction(pad, Size.AxesX(axes))
 
-    #Define size of usefult axes cells, 50% each in x 20% for buttons in y.
+    # Define size of useful axes cells, 50% each in x 20% for buttons in y.
     xsize = Size.Fraction((1.-2.*pad)/3., Size.AxesX(axes))
     ysize = Size.Fraction((1.-2.*pad)/15., Size.AxesY(axes))
 
-    #Set up grid, 3x3 with cells for padding.
+    # Set up grid, 3x3 with cells for padding.
     divider.set_horizontal([xsize, pad_size, xsize, pad_size, xsize])
     if slider:
         divider.set_vertical([ysize, pad_size, ysize, pad_size, Size.AxesY(axes)])
@@ -67,11 +88,11 @@ def add_controls(axes=None, slider=False):
         divider.set_vertical([ysize, pad_size, Size.AxesY(axes)])
         bny = 0
 
-    #Main figure spans all horiz and is in the top (2) in vert.
+    # Main figure spans all horiz and is in the top (2) in vert.
     axes.set_axes_locator(divider.new_locator(0, len(divider.get_vertical())-1,
                                               nx1=-1))
 
-    #Add two axes for buttons and make them 50/50 spilt at the bottom.
+    # Add two axes for buttons and make them 50/50 spilt at the bottom.
     bax1 = fig.add_axes((0.,0.,1.,1.))
     locator = divider.new_locator(nx=0, ny=bny)
     bax1.set_axes_locator(locator)
@@ -85,7 +106,7 @@ def add_controls(axes=None, slider=False):
     start = widgets.Button(bax1, "Start")
     stop = widgets.Button(bax2, "Stop")
     step = widgets.Button(bax3, "Step")
-    #Make dummy refernce to prevent garbage collection
+    # Make dummy reference to prevent garbage collection
     bax1._button = start
     bax2._button = stop
     bax3._button = step

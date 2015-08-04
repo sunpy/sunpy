@@ -90,7 +90,7 @@ class Downloader(object):
         return re.search('(\w+://)?([\w\.]+)', url).group(2)
 
     def _default_callback(self, *args):
-        """Default callback to execute on a successfull download"""
+        """Default callback to execute on a successful download"""
         pass
 
     def _default_error_callback(self, e):

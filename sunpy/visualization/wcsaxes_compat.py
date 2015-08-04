@@ -22,16 +22,16 @@ __all__ = ['HAVE_WCSAXES', 'is_wcsaxes', 'FORCE_NO_WCSAXES']
 
 def is_wcsaxes(axes):
     """
-    Test a matplotlib Axes object to see if it is an instance of WCSAxes
+    Test a matplotlib Axes object to see if it is an instance of WCSAxes.
 
     Parameters
     ----------
-    axes : matplotlib Axes Object
+    axes : `matplotlib.axes` Object
         Axes to test
 
     Returns
     -------
-    result : bool
+    result : `bool`
         Result of the test
     """
 
@@ -43,7 +43,20 @@ def is_wcsaxes(axes):
 
 def gca_wcs(wcs, fig=None):
     """
-    Get the current axes, and return a WCSAxes if possible
+    Get the current axes, and return a WCSAxes if possible.
+
+    Parameters
+    ----------
+    wcs : `astropy.wcs.WCS`
+        A `~astropy.wcs.WCS` object used to create a new axes.
+    fig : `matplotlib.figure.Figure`
+        The figure in which to check for the axes.
+
+    Returns
+    -------
+    ax : `matplotlib.axes.Axes` or `wcsaxes.WCSAxes` object.
+        The current axes, or a new one if created.
+
     """
 
     if not fig:
@@ -61,6 +74,23 @@ def gca_wcs(wcs, fig=None):
     return ax
 
 def get_world_transform(axes):
+    """
+    Get the transformation to world coordinates.
+
+    If the axes is a `wcaxes.WCSAxes` instance this returns the transform to
+    the ``'world'`` coordinates, otherwise it returns the transform to the
+    matplotlib data coordinates, which are assumed to be in world coordinates.
+
+    Parameters
+    ----------
+    axes : `wcsaxes.WCSAxes` or `matplotlib.axes.Axes` obejct.
+        The axes to get the transform from.
+
+    Returns
+    -------
+    transform : `matplotlib.transforms.CompositeGenericTransform`
+        The transformation object.
+    """
     if is_wcsaxes(axes):
         transform = axes.get_transform('world')
     else:
@@ -70,7 +100,12 @@ def get_world_transform(axes):
 
 def default_wcs_grid(axes):
     """
-    Apply some default wcsaxes grid formatting
+    Apply some default wcsaxes grid formatting.
+
+    Parameters
+    ----------
+    axes : `wcsaxes.WCSAxes` object.
+        The `~wcsaxes.WCSAxes` object to draw the world coordinate grid on.
     """
     if not isinstance(axes, wcsaxes.WCSAxes):
         raise TypeError("This axes is not a WCSAxes")
@@ -84,6 +119,11 @@ def default_wcs_grid(axes):
     x.set_ticks_position('bl')
     y.set_ticks_position('bl')
 
+    if x.coord_type != 'longitude':
+        x.set_coord_type('longitude', coord_wrap=180.)
+    if y.coord_type != 'latitude':
+        y.set_coord_type('latitude')
+
     x.set_major_formatter('s.s')
     y.set_major_formatter('s.s')
 
@@ -91,7 +131,23 @@ def default_wcs_grid(axes):
 
 def wcsaxes_heliographic_overlay(axes):
     """
-    Draw a heliographic overlay using wcsaxes
+    Create a heliographic overlay using wcsaxes.
+
+    Also draw a grid and label the top axes.
+
+    Parameters
+    ----------
+    axes : `wcsaxes.WCSAxes` object.
+        The `~wcsaxes.WCSAxes` object to create the HGS overlay on.
+
+    Returns
+    -------
+    overlay : wcsaxes overlay
+        The overlay object.
+
+    .. note::
+        This function requires the WIP sunpy.coordinates module.
+
     """
     overlay = axes.get_coords_overlay('heliographicstonyhurst')
 

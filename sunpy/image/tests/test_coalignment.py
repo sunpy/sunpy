@@ -9,7 +9,6 @@ from astropy import units as u
 from numpy.testing import assert_allclose, assert_array_almost_equal
 from scipy.ndimage.interpolation import shift as sp_shift
 from sunpy import map
-from sunpy.map import GenericMap
 import pytest
 import os
 import sunpy.data.test
@@ -170,8 +169,8 @@ def aia171_test_mc_pixel_displacements():
 
 @pytest.fixture
 def aia171_mc_arcsec_displacements(aia171_test_mc_pixel_displacements, aia171_test_map):
-    return {'x': np.asarray([0.0, aia171_test_mc_pixel_displacements[1] * aia171_test_map.scale['x'].value]) * u.arcsec,
-            'y': np.asarray([0.0, aia171_test_mc_pixel_displacements[0] * aia171_test_map.scale['y'].value]) * u.arcsec}
+    return {'x': np.asarray([0.0, aia171_test_mc_pixel_displacements[1] * aia171_test_map.scale.x.value]) * u.arcsec,
+            'y': np.asarray([0.0, aia171_test_mc_pixel_displacements[0] * aia171_test_map.scale.y.value]) * u.arcsec}
 
 
 @pytest.fixture
@@ -241,8 +240,8 @@ def test_mapcube_coalign_by_match_template(aia171_test_mc,
     # All output layers should have the same size
     # which is smaller than the input by a known amount
     test_mc = mapcube_coalign_by_match_template(aia171_test_mc)
-    x_displacement_pixels = test_displacements['x'] / test_mc[0].scale['x']
-    y_displacement_pixels = test_displacements['y'] / test_mc[0].scale['y']
+    x_displacement_pixels = test_displacements['x'] / test_mc[0].scale.x
+    y_displacement_pixels = test_displacements['y'] / test_mc[0].scale.y
     expected_clipping = calculate_clipping(y_displacement_pixels, x_displacement_pixels)
     number_of_pixels_clipped = [np.sum(np.abs(expected_clipping[0])), np.sum(np.abs(expected_clipping[1]))]
 
@@ -253,8 +252,8 @@ def test_mapcube_coalign_by_match_template(aia171_test_mc,
     # All output layers should have the same size
     # which is smaller than the input by a known amount
     test_mc = mapcube_coalign_by_match_template(aia171_test_mc, clip=True)
-    x_displacement_pixels = test_displacements['x'] / test_mc[0].scale['x']
-    y_displacement_pixels = test_displacements['y'] / test_mc[0].scale['y']
+    x_displacement_pixels = test_displacements['x'] / test_mc[0].scale.x
+    y_displacement_pixels = test_displacements['y'] / test_mc[0].scale.y
     expected_clipping = calculate_clipping(y_displacement_pixels, x_displacement_pixels)
     number_of_pixels_clipped = [np.sum(np.abs(expected_clipping[0])), np.sum(np.abs(expected_clipping[1]))]
 

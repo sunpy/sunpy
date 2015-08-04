@@ -20,6 +20,7 @@ from sunpy import lightcurve
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 LYTAF_PATH = config.get("downloads", "download_dir")
 
+
 def remove_lytaf_events_from_lightcurve(lc, artifacts=None,
                                         return_artifacts=False,
                                         lytaf_path=None,
@@ -38,7 +39,7 @@ def remove_lytaf_events_from_lightcurve(lc, artifacts=None,
         Default=[], i.e. no artifacts will be removed.
 
     return_artifacts : `bool`
-        Set to True to return a numpy recarray containing the start time, end
+        Set to True to return a `numpy.recarray` containing the start time, end
         time and type of all artifacts removed.
         Default=False
 
@@ -80,11 +81,13 @@ def remove_lytaf_events_from_lightcurve(lc, artifacts=None,
     Examples
     --------
     Remove LARs (Large Angle Rotations) from LYRALightCurve for 4-Dec-2014:
-        >>> lc = sunpy.lightcurve.LYRALightCurve.create("2014-12-02")
-        >>> lc_nolars = remove_artifacts_from_lyralightcurve(lc, artifacts=["LAR"])
+
+        >>> import sunpy.lightcurve as lc
+        >>> lc = lc.LYRALightCurve.create("2014-12-02")
+        >>> lc_nolars = lc.remove_artifacts_from_lyralightcurve(lc, artifacts=["LAR"])
 
     To also retrieve information on the artifacts during that day:
-        >>> lc_nolars, artifact_status = remove_artifacts_from_lyralightcurve(
+        >>> lc_nolars, artifact_status = lc.remove_artifacts_from_lyralightcurve(
                 lc, artifacts=["LAR"], return_artifacts=True)
 
     """
@@ -334,6 +337,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
         else:
             return clean_time, clean_channels
 
+
 def get_lytaf_events(start_time, end_time, lytaf_path=None,
                      combine_files=("lyra", "manual", "ppt", "science"),
                      csvfile=None, force_use_local_lytaf=False):
@@ -368,7 +372,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     Returns
     -------
     lytaf : `numpy.recarray`
-        Containsing the various parameters stored in the LYTAF files.
+        Containing the various parameters stored in the LYTAF files.
 
     Notes
     -----
@@ -395,6 +399,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     Examples
     --------
     Get all events in the LYTAF files for January 2014
+        >>> from sunpy.instr.lyra import get_lytaf_events
         >>> lytaf = get_lytaf_events('2014-01-01', '2014-02-01')
 
     """
@@ -592,28 +597,27 @@ def split_series_using_lytaf(timearray, data, lytaf):
     mask = np.ones(n)
     el = len(lytaf)
 
-    #make the input time array a list of datetime objects
+    # make the input time array a list of datetime objects
     datetime_array = []
     for tim in timearray:
         datetime_array.append(parse_time(tim))
 
-
-    #scan through each entry retrieved from the LYTAF database
+    # scan through each entry retrieved from the LYTAF database
     for j in range(0, el):
-        #want to mark all times with events as bad in the mask, i.e. = 0
+        # want to mark all times with events as bad in the mask, i.e. = 0
         start_dt = lytaf['begin_time'][j]
         end_dt = lytaf['end_time'][j]
 
-        #find the start and end indices for each event
+        # find the start and end indices for each event
         start_ind = np.searchsorted(datetime_array, start_dt)
         end_ind = np.searchsorted(datetime_array, end_dt)
 
-        #append the mask to mark event as 'bad'
+        # append the mask to mark event as 'bad'
         mask[start_ind:end_ind] = 0
 
     diffmask = np.diff(mask)
     tmp_discontinuity = np.where(diffmask != 0.)
-    #disc contains the indices of mask where there are discontinuities
+    # disc contains the indices of mask where there are discontinuities
     disc = tmp_discontinuity[0]
 
     if len(disc) == 0:
@@ -621,24 +625,24 @@ def split_series_using_lytaf(timearray, data, lytaf):
           +'Returning original series.'
         return [{'subtimes':datetime_array, 'subdata':data}]
 
-    #-1 in diffmask means went from good data to bad
-    #+1 means went from bad data to good
+    # -1 in diffmask means went from good data to bad
+    # +1 means went from bad data to good
 
-    #want to get the data between a +1 and the next -1
+    # want to get the data between a +1 and the next -1
 
-    #if the first discontinuity is a -1 then the start of the series was good.
+    # if the first discontinuity is a -1 then the start of the series was good.
     if diffmask[disc[0]] == -1.0:
-        #make sure we can always start from disc[0] below
+        # make sure we can always start from disc[0] below
         disc = np.insert(disc, 0, 0)
 
     split_series = []
 
     limit = len(disc)
-    #now extract the good data regions and ignore the bad ones
+    # now extract the good data regions and ignore the bad ones
     for h in range(0, limit, 2):
 
         if h == limit-1:
-            #can't index h+1 here. Go to end of series
+            # can't index h+1 here. Go to end of series
             subtimes = datetime_array[disc[h]:-1]
             subdata = data[disc[h]:-1]
             subseries = {'subtimes':subtimes, 'subdata':subdata}

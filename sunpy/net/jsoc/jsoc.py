@@ -15,7 +15,8 @@ from astropy.utils.misc import isiterable
 
 from sunpy import config
 from sunpy.time import parse_time, TimeRange
-from sunpy.net.download import Downloader, Results
+from sunpy.net.download import Downloader
+from sunpy.net.vso.vso import Results
 from sunpy.net.attr import and_
 from sunpy.net.jsoc.attrs import walker
 
@@ -29,11 +30,11 @@ BASE_DL_URL = 'http://jsoc.stanford.edu'
 class JSOCResponse(object):
     def __init__(self, table=None):
         """
-        table : astropy.table.Table
+        table : `astropy.table.Table`
         """
 
         self.table = table
-        self.query_args = []
+        self.query_args = None
         self.requestIDs = None
 
     def __str__(self):
@@ -41,9 +42,6 @@ class JSOCResponse(object):
 
     def __repr__(self):
         return repr(self.table)
-
-    def _repr_html_(self):
-        return self.table._repr_html_()
 
     def __len__(self):
         if self.table is None:
@@ -68,7 +66,7 @@ class JSOCClient(object):
     a table of these records is returned. Then you can request these records to
     be staged for download and then you can download them.
     The last two stages of this process are bundled together into the `get()`
-    method, but they can be seperated if you are performing a large or complex
+    method, but they can be separated if you are performing a large or complex
     query.
 
     .. warning::
@@ -79,10 +77,14 @@ class JSOCClient(object):
     -----
     This Client mocks input to this site: http://jsoc.stanford.edu/ajax/exportdata.html
     Therefore that is a good resource if things are mis-behaving.
-    The full list of 'series' is availible through this site: http://jsoc.stanford.edu/
+    The full list of 'series' is available through this site: http://jsoc.stanford.edu/
 
-    You can build more complex queries by specifiying parameters to POST to JSOC via keyword
+    You can build more complex queries by specifying parameters to POST to JSOC via keyword
     arguments. You can generate these kwargs using the Export Data page at JSOC.
+
+    JSOC now requires a validated email address, you can pass in your validated email address
+    using the `~sunpy.net.jsoc.attrs.Notify` attribute. You have to register your email address
+    with JSOC http://jsoc.stanford.edu/ajax/register_email.html.
 
 
     Examples
@@ -95,43 +97,47 @@ class JSOCClient(object):
     >>> from sunpy.net import jsoc
     >>> client = jsoc.JSOCClient()
     >>> response = client.query(jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...                         jsoc.Series('hmi.m_45s'))
+    ...                         jsoc.Series('hmi.m_45s'), jsoc.Notify("sunpy@sunpy.org"))
 
     the response object holds the records that your query will return:
 
-    >>> print response
+    >>> print(response)   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
             DATE         TELESCOP  INSTRUME  ... WAVELNTH     WAVEUNIT
     -------------------- -------- ---------- ... -------- ---------------
-    2012-09-05T08:27:19Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-    2012-09-05T08:27:20Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
+    2014-01-05T17:44:53Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
+    2014-01-05T17:46:02Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
+    2014-01-05T17:47:11Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
+    2014-01-05T17:48:18Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
+                     ...      ...        ... ...      ...             ...
+    2014-01-05T17:42:33Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
+    2014-01-05T17:43:41Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
+    2014-01-05T17:44:52Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
+    Length = 81 rows
 
     You can then make the request and download the data:
 
-    >>> res = client.get(response)
-    Request JSOC_20140724_947 was submitted 6 seconds ago, it is not ready to download.
-    Request JSOC_20140724_947 was exported at 2014.07.24_22:08:09_UT and is ready to download.
-    2 URLs found for Download. Totalling 30MB
+    >>> res = client.get(response)   # doctest: +SKIP
 
     This returns a Results instance which can be used to watch the progress
     of the download.
 
-    >>> res.wait(progress=True)
+    >>> res.wait(progress=True)   # doctest: +SKIP
 
     *Example 2*
 
-    Query the JSOC for some AIA 171 data, and seperate out the staging and the
+    Query the JSOC for some AIA 171 data, and separate out the staging and the
     download steps:
 
     >>> import astropy.units as u
     >>> from sunpy.net import jsoc
     >>> client = jsoc.JSOCClient()
     >>> response = client.query(jsoc.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
-                                jsoc.Series('aia.lev1_euv_12s'), jsoc.Segment('image'),
-                                jsoc.Wavelength(171*u.AA))
+    ...                         jsoc.Series('aia.lev1_euv_12s'), jsoc.Segment('image'),
+    ...                         jsoc.Wavelength(171*u.AA), jsoc.Notify("sunpy@sunpy.org"))
 
     the response object holds the records that your query will return:
 
-    >>> print response
+    >>> print(response)
             DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH WAVEUNIT
     -------------------- -------- -------- ----------------------- -------- --------
     2014-01-06T15:07:12Z  SDO/AIA    AIA_3 2013-12-31T23:59:36.34Z      171 angstrom
@@ -150,7 +156,7 @@ class JSOCClient(object):
     message and return you the status code, a code of 1 means it is not ready
     to download and a code of 0 means the request is staged and ready. A code
     of 6 means an error, which is commonly that the request has not had time to
-    get into the que.
+    get into the queue.
 
     >>> status = client.check_request(requestIDs)
     Request JSOC_20140724_955 was submitted 10 seconds ago, it is not ready to download.
@@ -163,7 +169,7 @@ class JSOCClient(object):
     This returns a Results instance which can be used to watch the progress
     of the download.
 
-    >>> res.wait(progress=True)
+    >>> res.wait(progress=True)   # doctest: +SKIP
     """
 
     def query(self, *query, **kwargs):
@@ -181,13 +187,16 @@ class JSOCClient(object):
         Request all AIA 304 image data between 2010-01-01T00:00 and
         2010-01-01T01:00 in rice compressed form.
 
-        >>> client.query(jsoc.Time('2010-01-01T00:00', '2010-01-01T01:00'),
-        ...              jsoc.Series('aia.lev1_euv_12s'), jsoc.Wavelength(304),
-        ...              jsoc.Compression('rice'), jsoc.Segment('image'))
+        >>> import astropy.units as u
+        >>> from sunpy.net import jsoc
+        >>> client = jsoc.JSOCClient()
+        >>> response = client.query(jsoc.Time('2010-01-01T00:00:00', '2010-01-01T01:00:00'),
+        ...                         jsoc.Series('aia.lev1_euv_12s'), jsoc.Wavelength(304*u.AA),
+        ...                         jsoc.Compression('rice'), jsoc.Segment('image'))
 
         Returns
         -------
-        results: JSOCResults object
+        results : JSOCResults object
             A collection of records that the query returns.
         """
 
@@ -199,7 +208,7 @@ class JSOCClient(object):
 
             return_results.append(self._lookup_records(iargs))
 
-            return_results.query_args.append(iargs)
+        return_results.query_args = iargs
 
         return return_results
 
@@ -259,12 +268,12 @@ class JSOCClient(object):
 
         Parameters
         ----------
-        requestIDs: list or string
+        requestIDs : list or string
             A list of requestIDs to check
 
         Returns
         -------
-        status: list
+        status : list
             A list of status' that were returned by JSOC
         """
         # Convert IDs to a list if not already
@@ -296,38 +305,38 @@ class JSOCClient(object):
         return allstatus
 
     def get(self, jsoc_response, path=None, overwrite=False, progress=True,
-            max_conn=5, sleep=10):
+            max_conn=5, downloader=None,sleep=10):
         """
         Make the request for the data in jsoc_response and wait for it to be
         staged and then download the data.
 
         Parameters
         ----------
-        jsoc_response: JSOCResponse object
+        jsoc_response : JSOCResponse object
             A response object
 
-        path: string
+        path : string
             Path to save data to, defaults to SunPy download dir
 
-        overwrite: bool
+        overwrite : bool
             Replace files with the same name if True
 
-        progress: bool
+        progress : bool
             Print progress info to terminal
 
-        max_conns: int
+        max_conns : int
             Maximum number of download connections.
 
-        downloader: sunpy.download.Downloder instance
+        downloader: `sunpy.download.Downloader` instance
             A Custom downloader to use
 
-        sleep: int
+        sleep : int
             The number of seconds to wait between calls to JSOC to check the status
             of the request.
 
         Returns
         -------
-        results: a :class:`sunpy.net.vso.Results instance`
+        results : a :class:`sunpy.net.vso.Results` instance
             A Results object
         """
 
@@ -365,22 +374,22 @@ class JSOCClient(object):
 
         Parameters
         ----------
-        requestIDs: list or string
+        requestIDs : list or string
             One or many requestID strings
 
-        path: string
+        path : string
             Path to save data to, defaults to SunPy download dir
 
-        overwrite: bool
+        overwrite : bool
             Replace files with the same name if True
 
-        progress: bool
+        progress : bool
             Print progress info to terminal
 
-        max_conns: int
+        max_conns : int
             Maximum number of download connections.
 
-        downloader: sunpy.download.Downloader instance
+        downloader : `sunpy.download.Downloader` instance
             A Custom downloader to use
 
         results: Results instance
@@ -407,7 +416,7 @@ class JSOCClient(object):
         # A Results object tracks the number of downloads requested and the
         # number that have been completed.
         if results is None:
-            results = Results(lambda x: None, done=lambda maps: [v['path'] for v in maps.values()])
+            results = Results(lambda _: downloader.stop())
 
         urls = []
         for request_id in requestIDs:
@@ -478,19 +487,24 @@ class JSOCClient(object):
             if not series.startswith('aia'):
                 raise TypeError("This series does not support the wavelength attribute.")
             else:
-               if isinstance(wavelength, list):
-                   wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
-                   wavelength = str(wavelength)
-               else:
-                   wavelength = '[{0}]'.format(int(np.ceil(wavelength.to(u.AA).value)))
+                if isinstance(wavelength, list):
+                    wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
+                    wavelength = str(wavelength)
+                else:
+                    wavelength = '[{0}]'.format(int(np.ceil(wavelength.to(u.AA).value)))
 
         # Extract and format segment
         if segment != '':
             segment = '{{{segment}}}'.format(segment=segment)
 
-        dataset = '{series}[{start}-{end}]{wavelength}{segment}'.format(
+        sample = kwargs.get('sample', '')
+        if sample:
+            sample = '@{}s'.format(sample)
+
+        dataset = '{series}[{start}-{end}{sample}]{wavelength}{segment}'.format(
                    series=series, start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                    end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                   sample=sample,
                    wavelength=wavelength, segment=segment)
 
         return dataset
@@ -508,12 +522,13 @@ class JSOCClient(object):
         else:
             jprotocol = protocol
 
-        dataset = self._make_recordset(start_time, end_time, series, **kwargs)
-        kwargs.pop('wavelength', None)
-
         if not notify:
             raise ValueError("JSOC queries now require a valid email address "
                              "before they will be accepted by the server")
+
+        dataset = self._make_recordset(start_time, end_time, series, **kwargs)
+        kwargs.pop('wavelength', None)
+        kwargs.pop('sample',None)
 
         # Build full POST payload
         payload = {'ds': dataset,
@@ -557,7 +572,9 @@ class JSOCClient(object):
                     'WAVEUNIT']
 
         if not all([k in iargs for k in ('start_time', 'end_time', 'series')]):
-            raise ValueError("Both Time and Series must be specified for a JSOC Query")
+            error_message = "Both Time and Series must be specified for a "\
+                            "JSOC Query"
+            raise ValueError(error_message)
 
         postthis = {'ds': self._make_recordset(**iargs),
                     'op': 'rs_list',
@@ -596,7 +613,7 @@ class JSOCClient(object):
         response, json_response = self._send_jsoc_request(start_time, end_time,\
                                                           series, **kwargs)
 
-        # We skip these lines because a massive request is not a pratical test.
+        # We skip these lines because a massive request is not a practical test.
         error_response = 'Request exceeds max byte limit of 100000MB'
         if (json_response['status'] == 3 and
             json_response['error'] == error_response):  # pragma: no cover
