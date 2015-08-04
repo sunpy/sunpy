@@ -209,7 +209,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
     @staticmethod
     def _get_url_for_date_range(*args, **kwargs):
         """Returns a URL for the specified date."""
-        return http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"
+        return "http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"
 
     @staticmethod
     def _parse_csv(filepath):
