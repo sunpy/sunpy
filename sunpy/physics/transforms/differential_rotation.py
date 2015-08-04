@@ -19,20 +19,20 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
 
     Parameters
     -----------
-    duration: `~astropy.units.Quantity`
+    duration : `~astropy.units.Quantity`
         Number of seconds to rotate over.
-    latitude: `~astropy.units.Quantity`
+    latitude : `~astropy.units.Quantity`
         heliographic coordinate latitude in Degrees.
-    rot_type: {'howard' | 'snodgrass' | 'allen'}
-        howard: Use values for small magnetic features from Howard et al.
-        snodgrass: Use Values from Snodgrass et. al
-        allen: Use values from Allen, Astrophysical Quantities, and simplier equation.
-    frame_time: {'sidereal' | 'synodic'}
+    rot_type : {'howard' | 'snodgrass' | 'allen'}
+        howard : Use values for small magnetic features from Howard et al.
+        snodgrass : Use Values from Snodgrass et. al
+        allen : Use values from Allen, Astrophysical Quantities, and simpler equation.
+    frame_time : {'sidereal' | 'synodic'}
         Choose 'type of day' time reference frame.
 
     Returns
     -------
-    longitude_delta: `~astropy.units.Quantity`
+    longitude_delta : `~astropy.units.Quantity`
         The change in longitude over days (units=degrees)
 
     Notes
@@ -45,6 +45,9 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     --------
     Default rotation calculation over two days at 30 degrees latitude:
 
+    >>> import numpy as np
+    >>> import astropy.units as u
+    >>> from sunpy.physics.transforms.differential_rotation import diff_rot
     >>> rotation = diff_rot(2 * u.day, 30 * u.deg)
 
     Default rotation over two days for a number of latitudes:
@@ -77,7 +80,7 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     else:
         A, B, C = rot_params[rot_type]
 
-        #This is in micro-radians / sec
+        # This is in micro-radians / sec
         rotation_rate = A + B * sin2l + C * sin4l
         rotation_deg = rotation_rate * 1e-6 * delta_seconds / np.deg2rad(1)
 
@@ -119,7 +122,7 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
         | allen: Use values from Allen, Astrophysical Quantities, and simpler
           equation.
 
-    frame_time: {'sidereal' | 'synodic'}
+    frame_time : {'sidereal' | 'synodic'}
         Choose type of day time reference frame.
 
     Returns
@@ -169,7 +172,7 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
     longitude, latitude = convert_hpc_hg(x.to(u.arcsec).value,
                                          y.to(u.arcsec).value,
                                          b0_deg=vstart["b0"].to(u.deg).value,
-                                         l0_deg=vstart["l0"].to(u.deg).value, 
+                                         l0_deg=vstart["l0"].to(u.deg).value,
                                          dsun_meters=(constants.au * sun.sunearth_distance(t=dstart)).value,
                                          angle_units='arcsec')
     longitude = Longitude(longitude, u.deg)
@@ -204,7 +207,7 @@ def _calc_P_B0_SD(date):
 
     Parameters
     -----------
-    date: `sunpy.time.time`
+    date : `sunpy.time.time`
         the time at which to calculate the solar P, B0 angles and the
         semi-diameter.
 
@@ -310,6 +313,7 @@ def _sun_pos(date):
 
     Examples
     --------
+    >>> from sunpy.physics.transforms.differential_rotation import _sun_pos
     >>> sp = _sun_pos('2013-03-27')
     """
     # Fractional Julian day with correct offset

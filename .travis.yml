@@ -6,19 +6,34 @@ os:
     - linux
     - osx
 
+# Setting sudo to false opts in to Travis-CI container-based builds.
+sudo: false
+
+# The apt packages below are needed but can no longer be installed with
+# sudo apt-get.
+addons:
+    apt:
+        packages:
+            - libatlas-dev
+            - liblapack-dev
+            - gfortran
+            - graphviz
+            - texlive-latex-extra
+            - dvipng
+
 # These are currently not used, but we want to cache the packages dir
 # to reduce the number of packages to download.
-cache:
-    directories:
-        $HOME/miniconda/pkgs
-        /Users/travis/miniconda3/pkgs
+# cache:
+#    directories:
+#       - $HOME/miniconda/pkgs
+#       - $HOME/miniconda3/pkgs
 
 # Configure the build environment. Global varibles are defined for all configurations.
 env:
     global:
         # Modify these to represent the newest versions
-        - LATEST_NUMPY=1.9.1
-        - LATEST_PANDAS=0.15.2
+        - LATEST_NUMPY=1.9.2
+        - LATEST_PANDAS=0.16.2
         # Fixed global vars
         - PYTHON_VERSION=2.7
         - TEST_MODE='offline'
@@ -30,17 +45,20 @@ matrix:
          - os: linux
            env: NUMPY_VERSION=1.8.1
          - os: linux
-           env: PANDAS_VERSION=0.14.1
+           env: PANDAS_VERSION=0.15.2
          - os: linux
            env: TEST_MODE='astropy-dev'
          - os: linux
            env: TEST_MODE='sphinx'
          - os: linux
            env: TEST_MODE='online'
+         - os: linux
+           env: TEST_MODE='doctest'
 
 # If the online build fails, we don't want it to report the whole build broken.
     allow_failures:
         - env: TEST_MODE='online'
+        - env: TEST_MODE='doctest'
 
 # Install miniconda
 before_install:
@@ -49,26 +67,27 @@ before_install:
 install:
     # Add a conda env and set up extra binstar channels
     - conda create --yes -n test python=$PYTHON_VERSION
-    - conda config --add channels sunpy --add channels astropy-ci-extras --add channels https://conda.binstar.org/sunpy/channel/citesting
+    - conda config --add channels sunpy --add channels astropy --add channels astropy-ci-extras --add channels https://conda.binstar.org/sunpy/channel/citesting
     - source activate test
     # Install default dependancies
     - conda install --yes pip
     - conda install -q --yes numpy=$NUMPY_VERSION pandas=$PANDAS_VERSION
-    - conda install -q --yes scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest jinja2 cython
+    - conda install -q --yes scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest jinja2 cython wcsaxes
     - pip install pytest-cov coverage coveralls
     # Install sunpy conda packages
     - conda install -q --yes suds-jurko glymur
     # Install the correct version of astropy
-    - if [[ $TEST_MODE != 'astropy-dev' ]]; then conda install -q --yes astropy>=0.4.0; fi 
-    - if [[ $TEST_MODE == 'astropy-dev' ]]; then pip install git+git://github.com/astropy/astropy.git; fi 
+    - if [[ $TEST_MODE != 'astropy-dev' ]]; then conda install -q --yes astropy>=0.4.0; fi
+    - if [[ $TEST_MODE == 'astropy-dev' ]]; then pip install git+git://github.com/astropy/astropy.git; fi
     # Install sphinx if needed
-    - if [[ $TEST_MODE == 'sphinx' ]]; then conda install -q --yes sphinx==1.2; fi 
+    - if [[ $TEST_MODE == 'sphinx' || $TEST_MODE == 'doctest' ]]; then conda install -q --yes sphinx==1.2; fi
 
 script:
     - if [[ $TEST_MODE == 'sphinx' ]]; then python setup.py build_sphinx -w; fi
     - if [[ $TEST_MODE == 'offline' || $TEST_MODE == 'astropy-dev' ]]; then python setup.py test; fi
     - if [[ $TEST_MODE == 'online' ]]; then python setup.py test --online --coverage --cov-report=html; fi
     - if [[ $TEST_MODE == 'skip' ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
+    - if [[ $TEST_MODE == 'doctest' ]]; then python setup.py build_sphinx -w -b doctest; fi
 
 # Notify the IRC channel of build status
 notifications:

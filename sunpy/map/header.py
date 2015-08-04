@@ -8,6 +8,7 @@ from collections import OrderedDict
 
 __all__ = ['MapMeta']
 
+
 class MapMeta(OrderedDict):
     """
     A class to hold meta data associated with a Map derivative.
@@ -18,7 +19,7 @@ class MapMeta(OrderedDict):
     def __init__(self, adict, *args):
         """Creates a new MapHeader instance"""
         # Store all keys as upper-case to allow for case-insensitive indexing
-        #OrderedDict can be instanciated from a list of lists or a tuple of tuples
+        #OrderedDict can be instantiated from a list of lists or a tuple of tuples
         if isinstance(adict, list) or isinstance(adict, tuple):
             tags = dict((k.upper(), v) for k, v in adict)
         elif isinstance(adict, dict):
@@ -29,33 +30,33 @@ class MapMeta(OrderedDict):
         super(MapMeta, self).__init__(tags, *args)
 
     def __contains__(self, key):
-        """Overide __contains__"""
+        """Override __contains__"""
         return OrderedDict.__contains__(self, key.lower())
 
     def __getitem__(self, key):
-        """Overide [] indexing"""
+        """Override [] indexing"""
         return OrderedDict.__getitem__(self, key.lower())
 
     def __setitem__(self, key, value):
-        """Overide [] indexing"""
+        """Override [] indexing"""
         return OrderedDict.__setitem__(self, key.lower(), value)
 
     def get(self, key, default=None):
-        """Overide .get() indexing"""
+        """Override .get() indexing"""
         return OrderedDict.get(self, key.lower(), default)
 
     def has_key(self, key):
-        """Overide .has_key() to perform case-insensitively"""
+        """Override .has_key() to perform case-insensitively"""
         return key.lower() in self
 
     def pop(self, key, default=None):
-        """Overide .pop() to perform case-insensitively"""
+        """Override .pop() to perform case-insensitively"""
         return OrderedDict.pop(self, key.lower(), default)
 
     def update(self, d2):
-        """Overide .update() to perform case-insensitively"""
+        """Override .update() to perform case-insensitively"""
         return OrderedDict.update(self, dict((k.lower(), v) for k, v in d2.items()))
 
     def setdefault(self, key, default=None):
-        """Overide .setdefault() to perform case-insensitively"""
+        """Override .setdefault() to perform case-insensitively"""
         return OrderedDict.setdefault(self, key.lower(), default)

@@ -39,7 +39,7 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
     layer_index : int
         The index layer.  Shifts are calculated relative to the time of
         this layer.
-    **kwargs
+    ``**kwargs``
         These keywords are passed to the function
         `sunpy.physics.transforms.differential_rotation.rot_hpc`.
 
@@ -63,14 +63,14 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
         # Calculate the rotation of the center of the map 'm' at its
         # observation time to the observation time of the reference layer
         # indicated by "layer_index".
-        newx, newy = rot_hpc(m.center['x'],
-                             m.center['y'],
+        newx, newy = rot_hpc(m.center.x,
+                             m.center.y,
                              m.date,
                              mc.maps[layer_index].date, **kwargs)
 
         # Calculate the shift in arcseconds
-        xshift_arcseconds[i] = newx - mc.maps[layer_index].center['x']
-        yshift_arcseconds[i] = newy - mc.maps[layer_index].center['y']
+        xshift_arcseconds[i] = newx - mc.maps[layer_index].center.x
+        yshift_arcseconds[i] = newy - mc.maps[layer_index].center.y
 
     return {"x": xshift_arcseconds, "y": yshift_arcseconds}
 
@@ -100,7 +100,7 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
         If True, then clip off x, y edges in the datacube that are potentially
         affected by edges effects.
 
-    **kwargs
+    ``**kwargs``
         These keywords are passed to the function
         `sunpy.physics.transforms.solar_rotation.calculate_solar_rotate_shift`.
 
@@ -112,6 +112,10 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
     Examples
     --------
     >>> from sunpy.physics.transforms.solar_rotation import mapcube_solar_derotate
+    >>> import sunpy.data.sample
+    >>> map1 = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    >>> map2 = sunpy.map.Map(sunpy.data.sample.EIT_195_IMAGE)
+    >>> mc = sunpy.map.Map([map1, map2], cube=True)
     >>> derotated_mc = mapcube_solar_derotate(mc)
     >>> derotated_mc = mapcube_solar_derotate(mc, layer_index=-1)
     >>> derotated_mc = mapcube_solar_derotate(mc, clip=False)
@@ -136,8 +140,8 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
 
     # Calculate the pixel shifts
     for i, m in enumerate(mc):
-        xshift_keep[i] = xshift_arcseconds[i] / m.scale['x']
-        yshift_keep[i] = yshift_arcseconds[i] / m.scale['y']
+        xshift_keep[i] = xshift_arcseconds[i] / m.scale.x
+        yshift_keep[i] = yshift_arcseconds[i] / m.scale.y
 
     # Apply the pixel shifts and return the mapcube
     return apply_shifts(mc, yshift_keep, xshift_keep , clip=clip)

@@ -17,6 +17,14 @@ else:
     import __builtin__ as builtins
 builtins._ASTROPY_SETUP_ = True
 
+# -- Read the Docs Setup  -----------------------------------------------------
+
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+
+if on_rtd:
+    os.environ['HOME'] = '/home/docs/checkouts/readthedocs.org/user_builds/sunpy/'
+    os.environ['SUNPY_CONFIGDIR'] = '/home/docs/checkouts/readthedocs.org/user_builds/sunpy/'
+
 from astropy_helpers.setup_helpers import (
     register_commands, adjust_compiler, get_debug_option, get_package_info)
 from astropy_helpers.git_helpers import get_git_devstr
@@ -98,7 +106,7 @@ extras_require = {'database': ["sqlalchemy"],
                   'jpeg2000': ["glymur"],
                   'net': ["suds", "beautifulsoup4", "requests"]}
 extras_require['all'] = extras_require['database'] + extras_require['image'] + \
-                        extras_require['net']
+                        extras_require['net'] + ["wcsaxes>=0.6"]
 
 setup(name=PACKAGENAME,
       version=VERSION,

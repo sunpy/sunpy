@@ -1,15 +1,29 @@
 from __future__ import absolute_import
 
-import warnings
+__all__ = ['Series', 'Protocol', 'Notify', 'Compression', 'Wavelength', 'Time',
+           'Segment', 'Sample']
 
 import astropy.units as u
-from astropy.tests.helper import assert_quantity_allclose
 
-from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr
-from sunpy.net.vso.attrs import Time, _VSOSimpleAttr, Wavelength
+from sunpy.net.attr import Attr, AttrWalker, AttrAnd, AttrOr
+from sunpy.net.vso.attrs import _VSOSimpleAttr
+from sunpy.net.vso.attrs import Time as vTime, Sample as vSample
 
-__all__ = ['Series', 'Protocol', 'Notify', 'Compression', 'Wavelength', 'Time',
-           'Segment', 'walker']
+###############################################################################
+# This is a horrific hack to make automodapi pick up these as jsoc attrs.
+
+
+class Time(vTime):
+    __doc__ = vTime.__doc__
+    pass
+
+
+class Sample(vSample):
+    __doc__ = vSample.__doc__
+    pass
+
+###############################################################################
+
 
 class Series(_VSOSimpleAttr):
     """
@@ -44,12 +58,10 @@ class Notify(_VSOSimpleAttr):
     """
     def __init__(self, value):
         super(Notify, self).__init__(value)
-
         if value.find('@') == -1:
-            raise ValueError("Notify attribute must contain an '@' symbol to be a valid email address")
-
+            raise ValueError("Notify attribute must contain an '@' symbol "
+                             "to be a valid email address")
         self.value = value
-    pass
 
 
 class Compression(_VSOSimpleAttr):
@@ -61,9 +73,31 @@ class Compression(_VSOSimpleAttr):
     pass
 
 
+class Wavelength(_VSOSimpleAttr):
+    """
+    Wavelength or list of wavelengths to download. Must be specified in correct
+    units for the series.
+    """
+    def __init__(self, value):
+        if not (isinstance(value, u.Quantity) or isinstance(value, list)):
+            raise TypeError("Wave inputs must be astropy Quantities")
+        Attr.__init__(self)
+
+        self.value = value
+
+    def __or__(self, other):
+        if self == other:
+            return self
+        if isinstance(other, self.__class__):
+            return self.__class__([self.value, other.value])
+        return AttrOr([self, other])
+    __ror__ = __or__
+
+
 walker = AttrWalker()
 
-@walker.add_creator(AttrAnd, _VSOSimpleAttr, Time, Wavelength)
+
+@walker.add_creator(AttrAnd, _VSOSimpleAttr, Time)
 def _create(wlk, query):
 
     map_ = {}
@@ -89,13 +123,6 @@ def _apply2(wlk, query, imap):
 
     imap['start_time'] = query.start
     imap['end_time'] = query.end
-
-@walker.add_applier(Wavelength)
-def _apply(wlk, query, imap):
-    if query.min == query.max:
-        imap['wavelength'] = query.min.to(u.AA, equivalencies=u.spectral())
-    else:
-        raise ValueError('Minimum and Maximum wavelength have to be identical for JSOC queries.')
 
 
 @walker.add_creator(AttrOr)

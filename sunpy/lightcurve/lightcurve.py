@@ -27,46 +27,35 @@ import sunpy.time
 
 __all__ = ['LightCurve']
 
+
 class LightCurve(object):
     """
     LightCurve(filepath)
 
     A generic light curve object.
 
-    Parameters
-    ----------
-    args : filepath, url, or start and end dates
-        The input for a LightCurve object should either be a filepath, a URL,
-        or a date range to be queried for the particular instrument.
-
     Attributes
     ----------
-    meta : string, dict
-        The comment string or header associated with the light curve input
-    data : pandas.DataFrame
-        An pandas DataFrame prepresenting one or more fields as they vary with
-        respect to time.
+
+    meta : `str` or `dict`
+        The comment string or header associated with the data.
+    data : `~pandas.DataFrame`
+        An pandas DataFrame prepresenting one or more fields as a function of time.
 
     Examples
     --------
     >>> import sunpy
     >>> import datetime
     >>> import numpy as np
-
     >>> base = datetime.datetime.today()
     >>> dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
-
     >>> intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / 24 * 60))
-
-    >>> light_curve = sunpy.lightcurve.LightCurve.create(
-    ...    {"param1": intensity}, index=dates
-    ... )
-
+    >>> light_curve = sunpy.lightcurve.LightCurve.create({"param1": intensity}, index=dates)
     >>> light_curve.peek()
 
     References
     ----------
-    | http://pandas.pydata.org/pandas-docs/dev/dsintro.html
+    * `Pandas Documentation <http://pandas.pydata.org/pandas-docs/dev/dsintro.html>`_
 
     """
     _cond_dispatch = ConditionalDispatch()
@@ -79,7 +68,6 @@ class LightCurve(object):
         else:
             self.meta = OrderedDict(meta)
 
-
     @property
     def header(self):
         """
@@ -89,12 +77,15 @@ class LightCurve(object):
             Use .meta instead
         """
         warnings.warn("""lightcurve.header has been renamed to lightcurve.meta
-for compatability with map, please use meta instead""", Warning)
+for compatibility with map, please use meta instead""", Warning)
         return self.meta
 
     @classmethod
     def from_time(cls, time, **kwargs):
-        '''Called by Conditional Dispatch object when valid time is passed as input to create method.'''
+        """
+        Called by Conditional Dispatch object when valid time is passed as
+        input to create method.
+        """
         date = parse_time(time)
         url = cls._get_url_for_date(date, **kwargs)
         filepath = cls._download(
@@ -104,11 +95,18 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_range(cls, start, end, **kwargs):
-        '''Called by Conditional Dispatch object when start and end time are passed as input to create method.'''
+        """Called by Conditional Dispatch object when start and end time are
+        passed as input to create method.
+
+        :param start:
+        :param end:
+        :param kwargs:
+        :return:
+        """
         url = cls._get_url_for_date_range(parse_time(start), parse_time(end), **kwargs)
         filepath = cls._download(
             url, kwargs,
-            err = "Unable to download data for specified date range"
+            err="Unable to download data for specified date range"
         )
         result = cls.from_file(filepath)
         result.data = result.data.truncate(start,end)
@@ -116,7 +114,10 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_timerange(cls, timerange, **kwargs):
-        '''Called by Conditional Dispatch object when time range is passed as input to create method.'''
+        """
+        Called by Conditional Dispatch object when time range is passed as
+        input to create method.
+        """
         url = cls._get_url_for_date_range(timerange, **kwargs)
         filepath = cls._download(
             url, kwargs,
@@ -128,13 +129,17 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_file(cls, filename):
-        '''Used to return Light Curve object by reading the given filename
+        """Used to return Light Curve object by reading the given filename.
 
-        Parameters:
-            filename: Path of the file to be read.
+        Parameters
+        ----------
+        filename: `str`
+            Path of the file to be read.
 
-        '''
-
+        Returns
+        -------
+        Lightcurve object.
+        """
         filename = os.path.expanduser(filename)
         meta, data = cls._parse_filepath(filename)
         if data.empty:
@@ -144,17 +149,16 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_url(cls, url, **kwargs):
-        '''
-        Downloads a file from the given url, reads and returns a Light Curve object.
+        """
+        Called by Conditional Dispatch object to create Light Curve object when
+        given a url. Downloads a file from the given url, attemps to read it
+        and returns a Light Curve object.
 
-        Parameters:
-            url : string
-                Uniform Resource Locator pointing to the file.
-
-            kwargs :Dict
-                Dict object containing other related parameters to assist in download.
-
-        '''
+        Parameters
+        ----------
+        url : str
+            A url given as a string.
+        """
         try:
             filepath = cls._download(url, kwargs)
         except (urllib2.HTTPError, urllib2.URLError, ValueError):
@@ -164,10 +168,17 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_data(cls, data, index=None, meta=None):
-        '''
-        Called by Conditional Dispatch object to create Light Curve object when corresponding data is passed
-        to create method.
-        '''
+        """
+        Called by Conditional Dispatch object to create Light Curve object when
+        corresponding data is passed to create method.
+
+        Parameters
+        ----------
+        data : `~numpy.ndarray`
+            The data array
+        index : `~datetime.datetime` array
+            The time values
+        """
 
         return cls(
             pandas.DataFrame(data, index=index),
@@ -176,14 +187,24 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def from_yesterday(cls):
+        """
+        Called by Conditional Dispatch object if no input if given
+        """
         return cls.from_url(cls._get_default_uri())
 
     @classmethod
     def from_dataframe(cls, dataframe, meta=None):
-        '''
-        Called by Conditional Dispatch object to create Light Curve object when Pandas DataFrame is passed
-        to create method.
-        '''
+        """
+        Called by Conditional Dispatch object to create Light Curve object when
+        Pandas DataFrame is passed to create method.
+
+        Parameters
+        ----------
+        dataframe : `~pandas.DataFrame`
+            The data.
+        meta : `str` or `dict`
+            The metadata.
+        """
 
         return cls(dataframe, meta)
 
@@ -192,17 +213,21 @@ for compatability with map, please use meta instead""", Warning)
 
         Parameters
         ----------
-        axes: matplotlib.axes object or None
-            If provided the image will be plotted on the given axes. Else the
-            current matplotlib axes will be used.
+        axes : `~matplotlib.axes.Axes` or None
+            If provided the image will be plotted on the given axes. Otherwise
+            the current axes will be used.
 
-        **plot_args : dict
+        **plot_args : `dict`
             Any additional plot arguments that should be used
-            when plotting the image.
+            when plotting.
 
+        Returns
+        -------
+        axes : `~matplotlib.axes.Axes`
+            The plot axes.
         """
 
-        #Get current axes
+        # Get current axes
         if axes is None:
             axes = plt.gca()
 
@@ -211,12 +236,22 @@ for compatability with map, please use meta instead""", Warning)
         return axes
 
     def peek(self, **kwargs):
-        """Displays the light curve in a new figure"""
+        """Displays the light curve in a new figure.
+
+        Parameters
+        ----------
+        **kwargs : `dict`
+            Any additional plot arguments that should be used
+            when plotting.
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
+        """
 
         figure = plt.figure()
-
         self.plot(**kwargs)
-
         figure.show()
 
         return figure
@@ -224,7 +259,13 @@ for compatability with map, please use meta instead""", Warning)
     @staticmethod
     def _download(uri, kwargs,
                   err='Unable to download data at specified URL'):
-        """Attempts to download data at the specified URI"""
+        """Attempts to download data at the specified URI.
+
+        Parameters
+        ----------
+        **kwargs : uri
+            A url
+        """
 
         _filename = os.path.basename(uri).split("?")[0]
 
@@ -258,19 +299,19 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def _get_default_uri(cls):
-        """Default data to load when none is specified"""
+        """Default data to load when none is specified."""
         msg = "No default action set for {}"
         raise NotImplementedError(msg.format(cls.__name__))
 
     @classmethod
     def _get_url_for_date(cls, date, **kwargs):
-        """Returns a URL to the data for the specified date"""
+        """Returns a URL to the data for the specified date."""
         msg = "Date-based downloads not supported for for {}"
         raise NotImplementedError(msg.format(cls.__name__))
 
     @classmethod
     def _get_url_for_date_range(cls, *args, **kwargs):
-        """Returns a URL to the data for the specified date range"""
+        """Returns a URL to the data for the specified date range."""
         msg = "Date-range based downloads not supported for for {}"
         raise NotImplementedError(msg.format(cls.__name__))
 
@@ -288,7 +329,7 @@ for compatability with map, please use meta instead""", Warning)
 
     @classmethod
     def _parse_filepath(cls, filepath):
-        """Check the file extension to see how to parse the file"""
+        """Check the file extension to see how to parse the file."""
         filename, extension = os.path.splitext(filepath)
 
         if extension.lower() in (".csv", ".txt"):
@@ -297,7 +338,18 @@ for compatability with map, please use meta instead""", Warning)
             return cls._parse_fits(filepath)
 
     def truncate(self, a, b=None):
-        """Returns a truncated version of the timeseries object"""
+        """Returns a truncated version of the timeseries object.
+
+        Parameters
+        ----------
+        a : `sunpy.time.TimeRange`
+            A time range to truncate to.
+
+        Returns
+        -------
+        newlc : `~sunpy.lightcurve.LightCurve`
+            A new lightcurve with only the selected times.
+        """
         if isinstance(a, TimeRange):
             time_range = a
         else:
@@ -306,16 +358,27 @@ for compatability with map, please use meta instead""", Warning)
         truncated = self.data.truncate(time_range.start, time_range.end)
         return self.__class__.create(truncated, self.meta.copy())
 
-    def extract(self, a):
-        """Extract a set of particular columns from the DataFrame"""
+    def extract(self, column_name):
+        """Returns a new lightcurve with the chosen column.
+
+        Parameters
+        ----------
+        column_name : `str`
+            A valid column name
+
+        Returns
+        -------
+        newlc : `~sunpy.lightcurve.LightCurve`
+            A new lightcurve with only the selected column.
+        """
         # TODO allow the extract function to pick more than one column
         if isinstance(self, pandas.Series):
             return self
         else:
-            return LightCurve(self.data[a], self.meta.copy())
+            return LightCurve(self.data[column_name], self.meta.copy())
 
     def time_range(self):
-        """Returns the start and end times of the LightCurve as a TimeRange
+        """Returns the start and end times of the LightCurve as a `~sunpy.time.TimeRange`
         object"""
         return TimeRange(self.data.index[0], self.data.index[-1])
 

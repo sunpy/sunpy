@@ -1,3 +1,5 @@
+.. _sun_code_ref:
+
 SunPy sun
 =========
 
@@ -6,4 +8,3 @@ SunPy sun
 .. automodapi:: sunpy.sun.constants
 
 .. automodapi:: sunpy.sun.models
-

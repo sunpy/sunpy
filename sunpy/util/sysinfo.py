@@ -14,7 +14,7 @@ def get_sys_dict():
 
     Returns
     -------
-    sys_prop: dict
+    sys_prop : `dict`
         A dictionary containing the programs and versions installed on this
         machine
 
@@ -94,7 +94,7 @@ def get_sys_dict():
 
 def system_info():
     """
-    Takes dictionary from sys_info() and prints the contents in an attractive fashion
+    Takes dictionary from sys_info() and prints the contents in an attractive fashion.
 
     """
     sys_prop = get_sys_dict()
@@ -124,7 +124,6 @@ def system_info():
                                                  platform.version(), sys_prop['Processor']))
     else:
         print("Unknown OS ({0})".format(sys_prop['Processor']))
-
 
     print "\n"
 # required libraries
