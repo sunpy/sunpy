@@ -111,7 +111,7 @@ class NOAAIndicesLightCurve(LightCurve):
     @staticmethod
     def _get_url_for_date_range(*args, **kwargs):
         """Returns a URL for the specified date."""
-        return NOAAIndicesLightCurve._get_default_uri()
+        return "ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"
 
     @staticmethod
     def _parse_csv(filepath):
@@ -209,7 +209,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
     @staticmethod
     def _get_url_for_date_range(*args, **kwargs):
         """Returns a URL for the specified date."""
-        return NOAAPredictIndicesLightCurve._get_default_uri()
+        return http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"
 
     @staticmethod
     def _parse_csv(filepath):
