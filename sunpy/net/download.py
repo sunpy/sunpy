@@ -60,6 +60,7 @@ class Downloader(object):
                         else:
                             fd.write(rec)
         except Exception, e:
+            # TODO: Fix the silent failing
             if errback is not None:
                 with self.mutex:
                     self._close(errback, [e], server)
@@ -89,7 +90,7 @@ class Downloader(object):
         return re.search('(\w+://)?([\w\.]+)', url).group(2)
 
     def _default_callback(self, *args):
-        """Default callback to execute on a successfull download"""
+        """Default callback to execute on a successful download"""
         pass
 
     def _default_error_callback(self, e):

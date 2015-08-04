@@ -44,7 +44,8 @@ a or b     a or b
  IDL       Python  
 =========  ========
 cos(a)     np.cos(a)
-log(a)     np.log(a)
+alog(a)    np.log(a)
+alog10(a)  np.alog(a)
 exp(a)     np.exp(a)
 =========  ========
 
@@ -62,8 +63,8 @@ exp(1)     np.e
 ============  ========
  IDL          Python  
 ============  ========
-indgen(10)+1  np.arange(1,11, dtype=np.float)
-exp(1)        
+indgen(10)    np.arange(0,10)
+findgen(10)   np.arange(0,10,dtype=np.float)
 ============  ========
 
 **Array Creation**
@@ -71,10 +72,11 @@ exp(1)
 =============  =========
  IDL           Python  
 =============  =========
-dblarr(3,5)    np.zeros((3,5),np.float)
-intarr(3,5)    np.zeros((3,5))
+dblarr(3,5)    np.zeros((3,5))
+intarr(3,5)    np.zeros((3,5),dtype=np.int)
 dblarr(3,5)+1  np.ones((3,5))
-intarr(3,5)+9  np.ones((3,5))*9
+intarr(3,5)+9  np.zeros((3,5),dtype=np.int) + 9
+boolarr(10)    np.zeros(10,dtype=bool)
 identity(3)    np.identity(3)
 =============  =========
 

@@ -2,6 +2,7 @@
 from __future__ import absolute_import
 import sunpy
 import os
+import glob
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -24,3 +25,5 @@ AIA_193_JP2 = os.path.join(rootdir,
 # aiaprep() test Map
 #
 aia_171_level1 = os.path.join(rootdir, "aia_171_level1.fits")
+
+file_list = glob.glob(os.path.join(rootdir, '*.[!p]*'))

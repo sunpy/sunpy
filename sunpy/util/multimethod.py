@@ -71,7 +71,7 @@ class MultiMethod(object):
         override : SILENT, WARN or FAIL
             control behaviour when overriding existing definitions.
             If it is set to SILENT, prior definitions are silently
-            overriden, if it is set to WARN a TypeWarning
+            overridden, if it is set to WARN a TypeWarning
             will be issued, and with FAIL a TypeError is raised when
             attempting to override an existing definition.
         """
@@ -111,7 +111,7 @@ class MultiMethod(object):
         # pylint: disable=W0141
         types = tuple(map(type, objs))
 
-        # This code is duplicate for performace reasons.
+        # This code is duplicate for performance reasons.
         cached = self.cache.get(types, None)
         if cached is not None:
             return cached(*args, **kwargs)
@@ -144,7 +144,7 @@ class MultiMethod(object):
             if isinstance(elem, super):
                 kwargs[k] = elem.__self__
 
-        # This code is duplicate for performace reasons.
+        # This code is duplicate for performance reasons.
         cached = self.cache.get(types, None)
         if cached is not None:
             return cached(*nargs, **kwargs)

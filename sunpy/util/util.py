@@ -18,18 +18,36 @@ def to_signed(dtype):
 
     Parameters
     ----------
-    dtype : np.dtype
+    dtype : `numpy.dtype`
         dtype whose values the new dtype needs to be able to represent.
+
+    Returns
+    -------
+    `numpy.dtype`
     """
     if dtype.kind == "u":
         if dtype.itemsize == 8:
-            raise ValueError("Cannot losslessy convert uint64 to int.")
+            raise ValueError("Cannot losslessly convert uint64 to int.")
         dtype = "int{0:d}".format(min(dtype.itemsize * 2 * 8, 64))
     return np.dtype(dtype)
 
 def goes_flare_class(gcls):
     """Convert GOES classes into a number to aid size comparison.  Units are
-    watts per meter squared."""
+    watts per meter squared.
+
+    Parameters
+    ----------
+    gcls : `str`
+        GOES class.
+
+    Returns
+    -------
+    float
+        Flux in implied units of Watts per meter squared.
+
+    .. todo::
+        return astropy quantities.
+    """
     def calc(gcls):
         powers_of_ten = {'A':1e-08, 'B':1e-07, 'C':1e-06, 'M':1e-05, 'X':1e-04}
         power = gcls[0].upper()
@@ -45,6 +63,25 @@ def goes_flare_class(gcls):
 
 
 def unique(itr, key=None):
+    """
+    not documented yet
+
+    Parameters
+    ----------
+    itr : iterable
+        Object to be iterated over
+
+    key : object
+        not documented yet
+
+    Returns
+    -------
+    not documented yet
+
+
+    .. todo::
+        improve documentation. what does this function do?
+    """
     items = set()
     if key is None:
         for elem in itr:
@@ -59,6 +96,26 @@ def unique(itr, key=None):
                 items.add(x)
 
 def print_table(lst, colsep=' ', linesep='\n'):
+    """
+    ?
+
+    Parameters
+    ----------
+    lst : ?
+        ?
+    colsep : ?
+        ?
+    linesep : ?
+        ?
+
+    Returns
+    -------
+    ?
+
+    .. todo::
+        improve documentation.
+
+    """
     width = [max(imap(len, col)) for col in izip(*lst)]
     return linesep.join(
         colsep.join(
@@ -68,13 +125,41 @@ def print_table(lst, colsep=' ', linesep='\n'):
 
 
 def findpeaks(a):
-    """ Find local maxima in 1D. Use findpeaks(-a) for minima. """
+    """Find local maxima in 1D. Use findpeaks(-a) for minima.
+
+    Parameters
+    ----------
+    a : `~numpy.ndarray`
+        a one dimensional `~numpy.ndarray` array.
+
+    Returns
+    -------
+    `~numpy.ndarray`
+        indices of all the local maxima
+
+    """
     return np.nonzero((a[1:-1] > a[:-2]) & (a[1:-1] > a[2:]))[0]
 
 
 def polyfun_at(coeff, p):
     """ Return value of polynomial with coefficients (highest first) at
-    point (can also be an np.ndarray for more than one point) p. """
+    point (can also be an np.ndarray for more than one point) p.
+
+    Parameters
+    ----------
+    coeff : not documented yet
+        not documented yet
+    p : not documented yet
+        not documented yet
+
+    Returns
+    -------
+    not documented yet
+
+    .. todo::
+        improve documentation. what does this do?  Does numpy have this functionality?
+
+    """
     return np.sum(k * p ** n for n, k in enumerate(reversed(coeff)))
 
 
@@ -82,8 +167,19 @@ def minimal_pairs(one, other):
     """ Find pairs of values in one and other with minimal distance.
     Assumes one and other are sorted in the same sort sequence.
 
+    Parameters
+    ----------
     one, other : sequence
         Sequence of scalars to find pairs from.
+
+    Returns
+    -------
+    `tuple`
+         Pairs of values in `one` and `other` with minimal distance
+
+    .. todo::
+        improve documentation. what does this do?
+
     """
     lbestdiff = bestdiff = bestj = besti = None
     for i, freq in enumerate(one):
@@ -116,6 +212,10 @@ def find_next(one, other, pad=DONT):
     """ Given two sorted sequences one and other, for every element
     in one, return the one larger than it but nearest to it in other.
     If no such exists and pad is not DONT, return value of pad as "partner".
+
+    .. todo::
+        improve documentation. what does this do?
+
     """
     n = 0
     for elem1 in one:
@@ -130,7 +230,11 @@ def find_next(one, other, pad=DONT):
 
 
 def common_base(objs):
-    """ Find class that every item of objs is an instance of. """
+    """ Find class that every item of objs is an instance of.
+
+    .. todo::
+        improve documentation. what does this do?
+    """
     for cls in objs[0].__class__.__mro__:
         if all(isinstance(obj, cls) for obj in objs):
             break
@@ -139,7 +243,11 @@ def common_base(objs):
 
 def merge(items, key=(lambda x: x)):
     """ Given sorted lists of iterables, return new iterable that returns
-    elemts of all iterables sorted with respect to key. """
+    elements of all iterables sorted with respect to key.
+
+    .. todo::
+        improve documentation. what does this do?
+"""
     state = {}
     for item in map(iter, items):
         try:
@@ -166,7 +274,11 @@ def replacement_filename(path):
     """ Return replacement path for already used path. Enumerates
     until an unused filename is found. E.g., "/home/florian/foo.fits"
     becomes "/home/florian/foo.0.fits", if that is used
-    "/home/florian/foo.1.fits", etc. """
+    "/home/florian/foo.1.fits", etc.
+
+    .. todo::
+        improve documentation. what does this do?
+    """
     if not os.path.exists(path):
         return path
     else:
@@ -179,13 +291,35 @@ def replacement_filename(path):
                 return newpath
 
 
-#==============================================================================
-# expand list from :http://stackoverflow.com/a/2185971/2486799
-#==============================================================================
 def expand_list(input):
+    """
+    Expand a list of lists.
+
+    Parameters
+    ----------
+    input : `list`
+
+    Returns
+    -------
+    `list`
+        A flat list consisting of the entries of the input.
+
+    References
+    ----------
+    Taken from :http://stackoverflow.com/a/2185971/2486799
+
+
+    .. todo::
+        improve documentation. Can this handle Arbitrarily nested lists?
+
+    """
     return [item for item in expand_list_generator(input)]
 
 def expand_list_generator(input):
+    """
+    .. todo::
+        improve documentation. what does this function do?
+    """
     for item in input:
         if type(item) in [list, tuple]:
             for nested_item in expand_list_generator(item):

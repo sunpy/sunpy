@@ -20,20 +20,34 @@ from itertools import ifilter
 
 from sunpy.util import replacement_filename
 
-__all__ = ['slugify','get_content_disposition', 'get_filename',
+__all__ = ['slugify', 'get_content_disposition', 'get_filename',
            'get_system_filename', 'get_system_filename_slugify',
-           'download_file', 'download_fileobj', 'check_download_file', 'url_exists']
+           'download_file', 'download_fileobj', 'check_download_file',
+           'url_exists']
 
 # Characters not allowed in slugified version.
 _punct_re = re.compile(r'[:\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
 
+
 def slugify(text, delim=u'_', encoding="ascii"):
     """ Slugify given unicode text. """
     text = normalize('NFKD', text)
-    return unicode(delim).join(ifilter(None, (
+
+    period = u'.'
+
+    name_and_extension = text.rsplit(period, 1)
+    name = name_and_extension[0]
+
+    name = unicode(delim).join(ifilter(None, (
         word.encode(encoding, 'ignore')
-        for word in _punct_re.split(text.lower())
-        )))
+        for word in _punct_re.split(name.lower())
+    )))
+
+    if len(name_and_extension) == 2:
+        extension = name_and_extension[1]
+        return unicode(period).join([name, extension])
+    else:
+        return name
 
 
 def get_content_disposition(content_disposition):
@@ -113,6 +127,7 @@ def download_fileobj(opn, directory, url='', default=u"file", overwrite=False):
         shutil.copyfileobj(opn, fd)
     return path
 
+
 def check_download_file(filename, remotepath, download_dir, remotename=None,
                         replace=False):
     """
@@ -128,7 +143,7 @@ def check_download_file(filename, remotepath, download_dir, remotename=None,
         Name of file.
 
     remotepath : string
-        URL of the remote location from which filename can be dowloaded.
+        URL of the remote location from which filename can be downloaded.
 
     download_dir : string
         The files directory.
@@ -143,14 +158,9 @@ def check_download_file(filename, remotepath, download_dir, remotename=None,
 
     Examples
     --------
-    >>> pwd
-    u'Users/user/Desktop/'
-    >>> ls
-    file.py
+    >>> from sunpy.util.net import check_download_file
     >>> remotepath = "http://www.download_repository.com/downloads/"
-    >>> _check_download_file("filename.txt", remotepath)
-    >>> ls
-    file.py    filename.txt
+    >>> check_download_file("filename.txt", remotepath, download_dir='.')   # doctest: +SKIP
     """
     # Check if file already exists locally.  If not, try downloading it.
     if replace or not os.path.isfile(os.path.join(download_dir, filename)):
@@ -161,6 +171,7 @@ def check_download_file(filename, remotepath, download_dir, remotename=None,
 
         download_file(urlparse.urljoin(remotepath, remotename),
                       download_dir, default=filename, overwrite=replace)
+
 
 def url_exists(url, timeout=2):
     """
@@ -177,7 +188,7 @@ def url_exists(url, timeout=2):
 
     Examples
     --------
-    >>> from sunpy.net.helio import parser
+    >>> from sunpy.util.net import url_exists
     >>> url_exists('http://www.google.com')
     True
     >>> url_exists('http://aslkfjasdlfkjwerf.com')
@@ -185,9 +196,9 @@ def url_exists(url, timeout=2):
     """
     try:
         urllib2.urlopen(url, timeout=timeout)
-    except urllib2.HTTPError, e:
+    except urllib2.HTTPError:
         return False
-    except urllib2.URLError, e:
+    except urllib2.URLError:
         return False
     else:
         return True

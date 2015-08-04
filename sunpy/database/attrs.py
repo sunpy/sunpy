@@ -195,6 +195,7 @@ def _create(wlk, root, session):
         elif typ == 'path':
             path, inverted = value
             if inverted:
+                # pylint: disable=E711
                 query = query.filter(or_(
                     DatabaseEntry.path != path, DatabaseEntry.path == None))
             else:
@@ -248,7 +249,7 @@ def _convert(attr):
     return ValueAttr({(attr.__class__.__name__.lower(), ): attr.value})
 
 
-@walker.add_converter(vso_attrs.Wave)
+@walker.add_converter(vso_attrs.Wavelength)
 def _convert(attr):
     return ValueAttr({('wave', ): (attr.min.value, attr.max.value, str(attr.unit))})
 

@@ -16,17 +16,17 @@ Created by Tim van Werkhoven (t.i.m.vanwerkhoven@gmail.com) on 2009-02-11.
 Copyright (c) 2009--2011 Tim van Werkhoven.
 """
 
-from __future__ import absolute_import
 import os
 
 try:
     from sunpy.io import _pyana
-except ImportError: # pragma: no cover
-    _pyana = None # pragma: no cover
+except ImportError:  # pragma: no cover
+    _pyana = None  # pragma: no cover
 
 from sunpy.io.header import FileHeader
 
 __all__ = ['read', 'get_header', 'write']
+
 
 def read(filename, debug=False):
     """
@@ -35,19 +35,19 @@ def read(filename, debug=False):
 
     Parameters
     ----------
-    filename: string
+    filename : `str`
         Name of file to be read.
-    debug: bool, optional
-        Prints versbose debug information.
+    debug : `bool` (optional)
+        Prints verbose debug information.
 
     Returns
     -------
-    out: list
+    out : `list`
         A list of (data, header) tuples
 
     Examples
     --------
-    >>> data = sunpy.io.ana.read(filename)
+    >>> data = sunpy.io.ana.read(filename)   # doctest: +SKIP
 
     """
     if not os.path.isfile(filename):
@@ -67,19 +67,19 @@ def get_header(filename, debug=False):
 
     Parameters
     ----------
-    filename: string
+    filename : `str`
         Name of file to be read.
-    debug: bool, optional
-        Prints versbose debug information.
+    debug : `bool` (optional)
+        Prints verbose debug information.
 
     Returns
     -------
-    out: list
-        A list of FileHeader headers
+    out : `list`
+        A list of `~sunpy.io.header.FileHeader` headers.
 
     Examples
     --------
-    >>> header = sunpy.io.ana.get_header(filename)
+    >>> header = sunpy.io.ana.get_header(filename)   # doctest: +SKIP
     """
     if _pyana is None:
         raise ImportError("C extension for ANA is missing, please rebuild")# pragma: no cover
@@ -93,17 +93,17 @@ def write(filename, data, comments=False, compress=1, debug=False):
 
     Parameters
     ----------
-    filename: string
+    filename : `str`
         Name of file to be created.
-    data: numpy array
+    data : `numpy.ndarray`
         Name of data to be stored.
-    comments: FileHeader, optional
+    comments : `~sunpy.io.header.FileHeader`, optional
         The comments to be stored as a header.
-    compress: int, optional
+    compress : `int`, optional
         To compress the data or not.
         1 is to compress, 0 is uncompressed
-    debug: bool, optional
-        Prints versbose debug information.
+    debug : `bool`, optional
+        Prints verbose debug information.
 
     Returns
     -------
@@ -112,7 +112,7 @@ def write(filename, data, comments=False, compress=1, debug=False):
 
     Examples
     --------
-    >>> written = sunpy.io.ana.write(filename, data, comments=Falsem, compress=1)
+    >>> written = sunpy.io.ana.write(filename, data, comments=Falsem, compress=1)   # doctest: +SKIP
     """
     if _pyana is None:
         raise ImportError("C extension for ANA is missing, please rebuild")# pragma: no cover

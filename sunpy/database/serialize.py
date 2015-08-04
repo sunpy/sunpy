@@ -19,7 +19,7 @@ class QueryEncoder(json.JSONEncoder):
             if isinstance(o, (AttrAnd, AttrOr)):
                 # sort by dictionary keys to be order-invariant
                 values = sorted(o.attrs, key=attrgetter('__class__.__name__'))
-            elif isinstance(o, vso.attrs.Wave):
+            elif isinstance(o, vso.attrs.Wavelength):
                 values = o.min.value, o.max.value, str(o.unit)
             elif isinstance(o, vso.attrs.Time):
                 values = o.start, o.end, o.near
@@ -47,9 +47,9 @@ def query_decode(json_object):
         if key in json_object:
             Attr = getattr(vso.attrs, key)
             return Attr(json_object[key])
-    if 'Wave' in json_object:
-        Attr = getattr(vso.attrs, 'Wave')
-        wavemin, wavemax, unit = json_object['Wave']
+    if 'Wavelength' in json_object:
+        Attr = getattr(vso.attrs, 'Wavelength')
+        wavemin, wavemax, unit = json_object['Wavelength']
         return Attr(wavemin * u.Unit(unit), wavemax * u.Unit(unit))
     if 'Time' in json_object:
         Attr = getattr(vso.attrs, 'Time')

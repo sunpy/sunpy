@@ -22,23 +22,25 @@ import numpy as np
 from scipy.ndimage.interpolation import shift
 from copy import deepcopy
 from astropy import units as u
-
 # Image co-registration by matching templates
 from skimage.feature import match_template
 
 # SunPy imports
 from sunpy.map.mapbase import GenericMap
+import sunpy.map
 
 __author__ = 'J. Ireland'
 
 __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'match_template_to_layer', 'find_best_match_location',
            'get_correlation_shifts', 'parabolic_turning_point',
-           'repair_image_nonfinite', 'mapcube_coalign_by_match_template']
+           'repair_image_nonfinite', 'apply_shifts',
+           'mapcube_coalign_by_match_template']
 
 
 def _default_fmap_function(data):
-    """This function ensures that the data are floats.  It is the default data
+    """
+    This function ensures that the data are floats.  It is the default data
     manipulation function for the coalignment method.
     """
     return np.float64(data)
@@ -50,11 +52,10 @@ def calculate_shift(this_layer, template):
 
     Parameters
     ----------
-    this_layer : ndarray
+    this_layer : `~numpy.ndarray`
         A numpy array of size (ny, nx), where the first two dimensions are
         spatial dimensions.
-
-    template : ndarray
+    template : `~numpy.ndarray`
         A numpy array of size (N, M) where N < ny and M < nx.
 
     Returns
@@ -77,33 +78,29 @@ def calculate_shift(this_layer, template):
 #
 # Remove the edges of a datacube
 #
+@u.quantity_input(yclips=u.pix, xclips=u.pix)
 def clip_edges(data, yclips, xclips):
-    """Clips off the y and x edges of a 2d array according to a list of pixel
+    """
+    Clips off the y and x edges of a 2d array according to a list of pixel
     values.  This function is useful for removing data at the edge of
     2d images that may be affected by shifts from solar de-rotation and
     layer co-registration, leaving an image unaffected by edge effects.
 
     Parameters
     ----------
-    data : ndarray
+    data : `numpy.ndarray`
         A numpy array of shape (ny, nx).
-
-    yclips : `~astropy.units.Quantity` instance
+    yclips : `astropy.units.Quantity`
         The amount to clip in the y-direction of the data.
-
-    xclips : `~astropy.units.Quantity` instance
+    xclips : `astropy.units.Quantity`
         The amount to clip in the x-direction of the data.
 
     Returns
     -------
-    image : ndarray
+    image : `numpy.ndarray`
         A 2d image with edges clipped off according to the positive and
         negative ceiling values in the yclips and xclips arrays.
     """
-    if not (isinstance(yclips and xclips, u.Quantity) and
-    (yclips.unit and xclips.unit == 'pix')):
-        raise ValueError("Must be astropy.units.Quantity with 'pixel' units")
-    # Datacube shape
     ny = data.shape[0]
     nx = data.shape[1]
     return data[yclips[0].value: ny - yclips[1].value, xclips[0].value: nx - xclips[1].value]
@@ -113,20 +110,22 @@ def clip_edges(data, yclips, xclips):
 # Return the upper and lower clipping values for the y and x directions an
 # input set of pixel shifts y and x
 #
+@u.quantity_input(y=u.pix, x=u.pix)
 def calculate_clipping(y, x):
-    """Return the upper and lower clipping values for the y and x directions.
+    """
+    Return the upper and lower clipping values for the y and x directions.
 
     Parameters
     ----------
-    y : `~astropy.units.Quantity` instance
+    y : `astropy.units.Quantity`
         An array of pixel shifts in the y-direction for an image.
-
-    x : `~astropy.units.Quantity` instance
+    x : `astropy.units.Quantity`
         An array of pixel shifts in the x-direction for an image.
 
     Returns
     -------
-    clipping : ([int, int], [int, int]) of type astropy.Quantity
+    clipping : tuple
+        The tuple is of the form ([y0, y1], [x0, x1]).
         The number of (integer) pixels that need to be clipped off at each
         edge in an image. The first element in the tuple is a list that gives
         the number of pixels to clip in the y-direction.  The first element in
@@ -137,13 +136,10 @@ def calculate_clipping(y, x):
         in y.  The clipped image has "clipping[0][1]" rows removed from its
         upper edge when compared to the original image.  The second element in
         the "clipping" tuple applies similarly to the x-direction (image
-        columns).
+        columns).  The parameters y0, y1, x0, x1 have the type
+        `~astropy.units.Quantity`.
     """
-    if not (isinstance(y, u.Quantity) and y.unit == 'pix'):
-        raise ValueError("Must be astropy Quantites with pixel unit")
-    if not (isinstance(x, u.Quantity) and x.unit == 'pix'):
-        raise ValueError("Must be astropy Quantites with pixel unit")
-    return ([_lower_clip(y.value), _upper_clip(y.value)] * u.pix, 
+    return ([_lower_clip(y.value), _upper_clip(y.value)] * u.pix,
             [_lower_clip(x.value), _upper_clip(x.value)] * u.pix)
 
 
@@ -151,7 +147,8 @@ def calculate_clipping(y, x):
 # Helper functions for clipping edges
 #
 def _upper_clip(z):
-    """Find smallest integer bigger than all the positive entries in the input
+    """
+    Find smallest integer bigger than all the positive entries in the input
     array.
     """
     zupper = 0
@@ -162,7 +159,8 @@ def _upper_clip(z):
 
 
 def _lower_clip(z):
-    """Find smallest positive integer bigger than the absolute values of the
+    """
+    Find smallest positive integer bigger than the absolute values of the
     negative entries in the input array.
     """
     zlower = 0
@@ -173,21 +171,21 @@ def _lower_clip(z):
 
 
 def match_template_to_layer(layer, template):
-    """Calculate the correlation array that describes how well the template
+    """
+    Calculate the correlation array that describes how well the template
     matches the layer. All inputs are assumed to be numpy arrays.  This
     function requires the "match_template" function in scikit image.
 
     Parameters
     ----------
-    layer : ndarray
+    layer : `~numpy.ndarray`
         A numpy array of size (ny, nx).
-
-    template : ndarray
+    template : `~numpy.ndarray`
         A numpy array of size (N, M) where N < ny and M < nx.
 
     Returns
     -------
-    correlationarray : ndarray
+    correlationarray : `~numpy.ndarray`
         A correlation array between the layer and the template.
         The values in the array range between 0 and 1.
     """
@@ -195,17 +193,18 @@ def match_template_to_layer(layer, template):
 
 
 def find_best_match_location(corr):
-    """Calculate an estimate of the location of the peak of the correlation
+    """
+    Calculate an estimate of the location of the peak of the correlation
     result in image pixels.
 
     Parameters
     ----------
-    corr : ndarray
+    corr : `~numpy.ndarray`
         A 2-d correlation array.
 
     Returns
     -------
-    shift : `~astropy.units.Quantity` instance
+    shift : `~astropy.units.Quantity`
         The shift amounts (y, x) in image pixels.  Subpixel values are
         possible.
     """
@@ -227,21 +226,22 @@ def find_best_match_location(corr):
 
 
 def get_correlation_shifts(array):
-    """Estimate the location of the maximum of a fit to the input array.  The
+    """
+    Estimate the location of the maximum of a fit to the input array.  The
     estimation in the x and y directions are done separately. The location
     estimates can be used to implement subpixel shifts between two different
     images.
 
     Parameters
     ----------
-    array : ndarray
+    array : `~numpy.ndarray`
         An array with at least one dimension that has three elements.  The
         input array is at most a 3 x 3 array of correlation values calculated
         by matching a template to an image.
 
     Returns
     -------
-    peakloc : `~astropy.units.Quantity` instance
+    peakloc : `~astropy.units.Quantity`
         The (y, x) location of the peak of a parabolic fit, in image pixels.
     """
     # Check input shape
@@ -272,7 +272,8 @@ def get_correlation_shifts(array):
 
 
 def parabolic_turning_point(y):
-    """Find the location of the turning point for a parabola
+    """
+    Find the location of the turning point for a parabola
     y(x) = ax^2 + bx + c, given input values y(-1), y(0), y(1).
     The maximum is located at x0 = -b / 2a .  Assumes
     that the input array represents an equally spaced sampling at the
@@ -280,7 +281,7 @@ def parabolic_turning_point(y):
 
     Parameters
     ----------
-    y : ndarray
+    y : `~numpy.ndarray`
         A one dimensional numpy array of shape 3 with entries that sample the
         parabola at -1, 0, and 1.
 
@@ -295,22 +296,23 @@ def parabolic_turning_point(y):
 
 
 def repair_image_nonfinite(image):
-    """Return a new image in which all the nonfinite entries of the original
+    """
+    Return a new image in which all the nonfinite entries of the original
     image have been replaced by the local mean.
 
     Parameters
     ----------
-    image : ndarray
-        A two-dimensional ndarray.
+    image : `~numpy.ndarray`
+        A two-dimensional `~numpy.ndarray`.
 
     Returns
     -------
-    repaired_image : ndarray
-        A two-dimensional ndarray of the same shape as the input that has all
-        the non-finite entries replaced by a local mean.  The algorithm
-        repairs one non-finite entry at every pass.  At each pass, the next
-        non-finite value is replaced by the mean of its finite valued nearest
-        neighbours.
+    repaired_image : `~numpy.ndarray`
+        A two-dimensional `~numpy.ndarray` of the same shape as the input
+        that has all the non-finite entries replaced by a local mean.  The
+        algorithm repairs one non-finite entry at every pass.  At each pass,
+        the next non-finite value is replaced by the mean of its finite
+        valued nearest neighbours.
     """
     repaired_image = deepcopy(image)
     nx = repaired_image.shape[1]
@@ -342,36 +344,83 @@ def repair_image_nonfinite(image):
     return repaired_image
 
 
-# Coalignment by matching a template
-def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
-                               func=_default_fmap_function, clip=True,
-                               return_displacements_only=False,
-                               apply_displacements=None,
-                               with_displacements=False):
-    """Co-register the layers in a mapcube according to a template taken from
-    that mapcube.  This method REQUIRES that scikit-image be installed.
-    When using this functionality, it is a good idea to check that the
-    shifts that were applied to were reasonable and expected.  One way of
-    checking this is to animate the original mapcube, animate the coaligned
-    mapcube, and compare the differences you see to the calculated shifts.
-
+@u.quantity_input(yshift=u.pix, xshift=u.pix)
+def apply_shifts(mc, yshift, xshift, clip=True):
+    """
+    Apply a set of pixel shifts to a `~sunpy.map.MapCube`, and return a new
+    `~sunpy.map.MapCube`.
 
     Parameters
     ----------
-    mc : sunpy.map.MapCube
-        A mapcube of shape (ny, nx, nt), where nt is the number of layers in
-        the mapcube.
+    mc : `sunpy.map.MapCube`
+        A `~sunpy.map.MapCube` of shape (ny, nx, nt), where nt is the number of
+        layers in the `~sunpy.map.MapCube`.  'ny' is the number of pixels in the
+        y direction, 'nx' is the number of pixels in the 'x' direction.
+    yshift : `~astropy.units.Quantity` instance
+        An array of pixel shifts in the y-direction for an image.
+    xshift : `~astropy.units.Quantity` instance
+        An array of pixel shifts in the x-direction for an image.
+    clip : bool
+        If True, then clip off x, y edges in the datacube that are potentially
+        affected by edges effects.
 
-    template : {None | sunpy.map.Map | ndarray}
-        The template used in the matching.  If an ndarray is passed, the
-        ndarray has to have two dimensions.
+    Returns
+    -------
+    newmapcube : `sunpy.map.MapCube`
+        A `~sunpy.map.MapCube` of the same shape as the input.  All layers in
+        the `~sunpy.map.MapCube` have been shifted according the input shifts.
+    """
 
+    # new mapcube will be constructed from this list
+    newmc_list = []
+
+    # Shift the data and construct the mapcube
+    for i, m in enumerate(mc.maps):
+        shifted_data = shift(m.data, [yshift[i].value, xshift[i].value])
+        # Clip if required
+        if clip:
+            yclips, xclips = calculate_clipping(-yshift, -xshift)
+            shifted_data = clip_edges(shifted_data, yclips, xclips)
+
+        # New header
+        new_meta = deepcopy(m.meta)
+
+        # Adjust the positioning information accordingly.
+        new_meta['crval1'] = new_meta['crval1'] - xshift[i].value * m.scale.x.value
+        new_meta['crval2'] = new_meta['crval2'] - yshift[i].value * m.scale.y.value
+
+        # Append to the list
+        newmc_list.append(sunpy.map.Map(shifted_data, new_meta))
+
+    return sunpy.map.Map(newmc_list, cube=True)
+
+
+def calculate_match_template_shift(mc, template=None, layer_index=0,
+                                   func=_default_fmap_function):
+    """
+    Calculate the arcsecond shifts necessary to co-register the layers in a
+    `~sunpy.map.MapCube` according to a template taken from that
+    `~sunpy.map.MapCube`.  This method REQUIRES that scikit-image be installed.
+    When using this functionality, it is a good idea to check that the shifts
+    that were applied to were reasonable and expected.  One way of checking this
+    is to animate the original `~sunpy.map.MapCube`, animate the coaligned
+    `~sunpy.map.MapCube`, and compare the differences you see to the calculated
+    shifts.
+
+    Parameters
+    ----------
+    mc : `sunpy.map.MapCube`
+        A `~sunpy.map.MapCube` of shape (ny, nx, nt), where nt is the number of
+        layers in the `~sunpy.map.MapCube`.
+    template : {None | `~sunpy.map.Map` | `~numpy.ndarray`}
+        The template used in the matching.  If an `~numpy.ndarray` is passed,
+        the `~numpy.ndarray` has to have two dimensions.
     layer_index : int
-        The template is assumed to refer to the map in the mapcube indexed by
-        the value of "layer_index".  Displacements of all maps in the mapcube
-        are assumed to be relative to this layer.  The displacements of the
-        template relative to this layer are therefore (0, 0).
-
+        The template is assumed to refer to the map in the `~sunpy.map.MapCube`
+        indexed by the value of "layer_index".  Displacements of all maps in the
+        `~sunpy.map.MapCube` are assumed to be relative to this layer.  The
+        displacements of the template relative to this layer are therefore
+        (0, 0).
     func : function
         A function which is applied to the data values before the coalignment
         method is applied.  This can be useful in coalignment, because it is
@@ -382,130 +431,153 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
         func = F(data).  The default function ensures that the data are
         floats.
 
+    """
+
+    # Size of the data
+    ny = mc.maps[layer_index].data.shape[0]
+    nx = mc.maps[layer_index].data.shape[1]
+    nt = len(mc.maps)
+
+    # Calculate a template.  If no template is passed then define one
+    # from the the index layer.
+    if template is None:
+        tplate = mc.maps[layer_index].data[ny / 4: 3 * ny / 4,
+                                           nx / 4: 3 * nx / 4]
+    elif isinstance(template, GenericMap):
+        tplate = template.data
+    elif isinstance(template, np.ndarray):
+        tplate = template
+    else:
+        raise ValueError('Invalid template.')
+
+    # Apply the function to the template
+    tplate = func(tplate)
+
+    # Storage for the pixel shift
+    xshift_keep = np.zeros(nt) * u.pix
+    yshift_keep = np.zeros_like(xshift_keep)
+
+    # Storage for the arcsecond shift
+    xshift_arcseconds = np.zeros(nt) * u.arcsec
+    yshift_arcseconds = np.zeros_like(xshift_arcseconds)
+
+    # Match the template and calculate shifts
+    for i, m in enumerate(mc.maps):
+        # Get the next 2-d data array
+        this_layer = func(m.data)
+
+        # Calculate the y and x shifts in pixels
+        yshift, xshift = calculate_shift(this_layer, tplate)
+
+        # Keep shifts in pixels
+        yshift_keep[i] = yshift
+        xshift_keep[i] = xshift
+
+    # Calculate shifts relative to the template layer
+    yshift_keep = yshift_keep - yshift_keep[layer_index]
+    xshift_keep = xshift_keep - xshift_keep[layer_index]
+
+    for i, m in enumerate(mc.maps):
+        # Calculate the shifts required in physical units, which are
+        # presumed to be arcseconds.
+        xshift_arcseconds[i] = xshift_keep[i] * m.scale.x
+        yshift_arcseconds[i] = yshift_keep[i] * m.scale.y
+
+    return {"x": xshift_arcseconds, "y": yshift_arcseconds}
+
+
+# Coalignment by matching a template
+def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
+                                      func=_default_fmap_function, clip=True,
+                                      shift=None):
+    """
+    Co-register the layers in a `~sunpy.map.MapCube` according to a template
+    taken from that `~sunpy.map.MapCube`.  This method REQUIRES that
+    scikit-image be installed. When using this functionality, it is a good idea
+    to check that the shifts that were applied to were reasonable and expected.
+    One way of checking this is to animate the original `~sunpy.map.MapCube`,
+    animate the coaligned `~sunpy.map.MapCube`, and compare the differences you
+    see to the calculated shifts.
+
+
+    Parameters
+    ----------
+    mc : `sunpy.map.MapCube`
+        A `~sunpy.map.MapCube` of shape (ny, nx, nt), where nt is the number of
+        layers in the `~sunpy.map.MapCube`.
+    template : {None | sunpy.map.Map | `~numpy.ndarray`}
+        The template used in the matching.  If an `~numpy.ndarray` is passed,
+        the `~numpy.ndarray` has to have two dimensions.
+    layer_index : int
+        The template is assumed to refer to the map in the `~sunpy.map.MapCube`
+        indexed by the value of "layer_index".  Displacements of all maps in the
+        `~sunpy.map.MapCube` are assumed to be relative to this layer.  The
+        displacements of the template relative to this layer are therefore
+        (0, 0).
+    func : function
+        A function which is applied to the data values before the coalignment
+        method is applied.  This can be useful in coalignment, because it is
+        sometimes better to co-align on a function of the data rather than the
+        data itself.  The calculated shifts are applied to the original data.
+        Examples of useful functions to consider for EUV images are the
+        logarithm or the square root.  The function is of the form
+        func = F(data).  The default function ensures that the data are
+        floats.
     clip : bool
-        If True, thenclip off x, y edges in the datacube that are potentially
+        If True, then clip off x, y edges in the datacube that are potentially
         affected by edges effects.
-
-    return_displacements_only : bool
-        If True return ONLY the x and y displacements applied to the input
-        data in units of arcseconds.  The return value is a dictionary of the
-        form {"x": xdisplacement, "y": ydisplacement}.
-
-    apply_displacements : {None | dict}
-        If not None, then use the displacements supplied by the user.  Must be
-        in the same format as that returned using the
-        return_displacements_only option.  Can be used when you want to appl
-        the same displacements to multiple mapcubes.
-
-    with_displacements : bool
-        If True, return the x and y displacements applied to the input data in
-        the same format as that returned using the return_displacements_only
-        option, along with the coaligned mapcube.  The format of the return is
-        (mapcube, displacements).
+    shift : dict
+        A dictionary with two keys, 'x' and 'y'.  Key 'x' is an astropy
+        quantities array of corresponding to the amount of shift in the
+        x-direction (in arcseconds, assuming the helio-projective
+        Cartesian co-ordinate system) that is applied to the input
+        `~sunpy.map.MapCube`.  Key 'y' is an `~astropy.units.Quantity` array
+        corresponding to the amount of shift in the y-direction (in arcseconds,
+        assuming the helio-projective Cartesian co-ordinate system) that is
+        applied to the input `~sunpy.map.MapCube`. The number of elements in
+        each array must be the same as the number of maps in the
+        `~sunpy.map.MapCube`.  If a shift is passed in to the function, that
+        shift is applied to the input `~sunpy.map.MapCube` and the template
+        matching algorithm is not used.
 
     Returns
     -------
-    output : {sunpy.map.MapCube | dict | tuple}
-        The results of the mapcube coalignment.  The output depends on the
-        value of the parameters "return_displacements_only" and
-        "with_displacements".
+    output : `sunpy.map.MapCube`
+        A `~sunpy.map.MapCube` that has co-aligned by matching the template.
 
     Examples
     --------
-    >>> import numpy as np
     >>> from sunpy.image.coalignment import mapcube_coalign_by_match_template as mc_coalign
-    >>> coaligned_mc = mc_coalign(mc)
-    >>> coaligned_mc = mc_coalign(mc, layer_index=-1)
-    >>> coaligned_mc = mc_coalign(mc, clip=False)
-    >>> coaligned_mc = mc_coalign(mc, template=sunpy_map)
-    >>> coaligned_mc = mc_coalign(mc, template=two_dimensional_ndarray)
-    >>> coaligned_mc = mc_coalign(mc, func=np.log)
-    >>> displacements = mc_coalign(mc, return_displacements_only=True)
-    >>> coaligned_mc, displacements = mc_coalign(mc, with_displacements=True)
-    >>> coaligned_mc = mc_coalign(mc, apply_displacements=displacements)
+
+    >>> coaligned_mc = mc_coalign(mc)   # doctest: +SKIP
+    >>> coaligned_mc = mc_coalign(mc, layer_index=-1)   # doctest: +SKIP
+    >>> coaligned_mc = mc_coalign(mc, clip=False)   # doctest: +SKIP
+    >>> coaligned_mc = mc_coalign(mc, template=sunpy_map)   # doctest: +SKIP
+    >>> coaligned_mc = mc_coalign(mc, template=two_dimensional_ndarray)   # doctest: +SKIP
+    >>> coaligned_mc = mc_coalign(mc, func=np.log)   # doctest: +SKIP
     """
-    # Size of the data
-    ny = mc.maps[layer_index].shape[0]
-    nx = mc.maps[layer_index].shape[1]
+
+    # Number of maps
     nt = len(mc.maps)
 
     # Storage for the pixel shifts and the shifts in arcseconds
-    xshift_keep = np.zeros((nt))
+    xshift_keep = np.zeros(nt) * u.pix
     yshift_keep = np.zeros_like(xshift_keep)
 
-    # Use the displacements supplied
-    if apply_displacements is not None:
-        xshift_arcseconds = apply_displacements["x"].value
-        yshift_arcseconds = apply_displacements["y"].value
-        for i, m in enumerate(mc.maps):
-            xshift_keep[i] = xshift_arcseconds[i] / m.scale['x']
-            yshift_keep[i] = yshift_arcseconds[i] / m.scale['y']
+    if shift is None:
+        shifts = calculate_match_template_shift(mc, template=template,
+                                                layer_index=layer_index,
+                                                func=func)
+        xshift_arcseconds = shifts['x']
+        yshift_arcseconds = shifts['y']
     else:
-        xshift_arcseconds = np.zeros_like(xshift_keep)
-        yshift_arcseconds = np.zeros_like(xshift_keep)
+        xshift_arcseconds = shift['x']
+        yshift_arcseconds = shift['y']
 
-        # Calculate a template.  If no template is passed then define one
-        # from the the index layer.
-        if template is None:
-            tplate = mc.maps[layer_index].data[ny / 4: 3 * ny / 4,
-                                             nx / 4: 3 * nx / 4]
-        elif isinstance(template, GenericMap):
-            tplate = template.data
-        elif isinstance(template, np.ndarray):
-            tplate = template
-        else:
-            raise ValueError('Invalid template.')
+    # Calculate the pixel shifts
+    for i, m in enumerate(mc):
+        xshift_keep[i] = (xshift_arcseconds[i] / m.scale.x)
+        yshift_keep[i] = (yshift_arcseconds[i] / m.scale.y)
 
-        # Apply the function to the template
-        tplate = func(tplate)
-
-        # Match the template and calculate shifts
-        for i, m in enumerate(mc.maps):
-            # Get the next 2-d data array
-            this_layer = func(m.data)
-
-            # Calculate the y and x shifts in pixels
-            yshift, xshift = calculate_shift(this_layer, tplate)
-
-            # Keep shifts in pixels
-            yshift_keep[i] = yshift.value
-            xshift_keep[i] = xshift.value
-
-        # Calculate shifts relative to the template layer
-        yshift_keep = yshift_keep - yshift_keep[layer_index]
-        xshift_keep = xshift_keep - xshift_keep[layer_index]
-
-        for i, m in enumerate(mc.maps):
-            # Calculate the shifts required in physical units, which are
-            # presumed to be arcseconds.
-            xshift_arcseconds[i] = xshift_keep[i] * m.scale['x']
-            yshift_arcseconds[i] = yshift_keep[i] * m.scale['y']
-
-    # Return only the displacements
-    if return_displacements_only:
-        return {"x": xshift_arcseconds * u.arcsec, "y": yshift_arcseconds * u.arcsec}
-
-    # New mapcube for the new data
-    newmc = deepcopy(mc)
-
-    # Shift the data and construct the mapcube
-    for i, m in enumerate(newmc.maps):
-        shifted_data = shift(m.data, [-yshift_keep[i], -xshift_keep[i]])
-        if clip:
-            yclips, xclips = calculate_clipping(yshift_keep*u.pix, xshift_keep*u.pix)
-            shifted_data = clip_edges(shifted_data, yclips, xclips)
-
-        # Update the mapcube image data
-        newmc.maps[i].data = shifted_data
-
-        # Adjust the positioning information accordingly.
-        newmc.maps[i].meta['crpix1'] = newmc.maps[i].meta['crpix1'] + xshift_arcseconds[i]
-        newmc.maps[i].meta['crpix2'] = newmc.maps[i].meta['crpix2'] + yshift_arcseconds[i]
-
-    # Return the mapcube, or optionally, the mapcube and the displacements
-    # used to create the mapcube.
-    if with_displacements:
-        return newmc, {"x": xshift_arcseconds * u.arcsec, "y": yshift_arcseconds * u.arcsec}
-    else:
-        return newmc
-
+    # Apply the shifts and return the coaligned mapcube
+    return apply_shifts(mc, -yshift_keep, -xshift_keep, clip=clip)

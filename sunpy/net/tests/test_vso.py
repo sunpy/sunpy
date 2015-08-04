@@ -115,15 +115,15 @@ def test_attror_and():
 def test_wave_inputQuantity():
     wrong_type_mesage = "Wave inputs must be astropy Quantities"
     with pytest.raises(TypeError) as excinfo:
-        va.Wave(10, 23)
+        va.Wavelength(10, 23)
     assert excinfo.value.message == wrong_type_mesage
     with pytest.raises(TypeError) as excinfo:
-        va.Wave(10 * u.AA, 23)
+        va.Wavelength(10 * u.AA, 23)
     assert excinfo.value.message == wrong_type_mesage
 
 def test_wave_toangstrom():
-    # TODO: this test shoul test that inputs are in any of spectral units
-    # more than just converted to Angstoms.
+    # TODO: this test should test that inputs are in any of spectral units
+    # more than just converted to Angstroms.
     frequency = [(1, 1 * u.Hz),
                  (1e3, 1 * u.kHz),
                  (1e6, 1 * u.MHz),
@@ -134,25 +134,25 @@ def test_wave_toangstrom():
               (1e6, 1 * u.MeV)]
 
     for factor, unit in energy:
-        w = va.Wave((62 / factor) * unit, (62 / factor) * unit)
+        w = va.Wavelength((62 / factor) * unit, (62 / factor) * unit)
         assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
 
-    w = va.Wave(62 * u.eV, 62 * u.eV)
+    w = va.Wavelength(62 * u.eV, 62 * u.eV)
     assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
-    w = va.Wave(62e-3 * u.keV, 62e-3 * u.keV)
+    w = va.Wavelength(62e-3 * u.keV, 62e-3 * u.keV)
     assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
 
     for factor, unit in frequency:
-        w = va.Wave((1.506e16 / factor) * unit, (1.506e16 / factor) * unit)
+        w = va.Wavelength((1.506e16 / factor) * unit, (1.506e16 / factor) * unit)
         assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
 
-    w = va.Wave(1.506e16 * u.Hz, 1.506e16 * u.Hz)
+    w = va.Wavelength(1.506e16 * u.Hz, 1.506e16 * u.Hz)
     assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
-    w = va.Wave(1.506e7 * u.GHz, 1.506e7 * u.GHz)
+    w = va.Wavelength(1.506e7 * u.GHz, 1.506e7 * u.GHz)
     assert int(w.min.to(u.AA, u.equivalencies.spectral()).value) == 199
 
     with pytest.raises(u.UnitsError) as excinfo:
-        va.Wave(10 * u.g, 23 * u.g)
+        va.Wavelength(10 * u.g, 23 * u.g)
     assert excinfo.value.message == 'This unit is not convertable to any of [Unit("Angstrom"), Unit("kHz"), Unit("keV")]'
 
 
@@ -174,15 +174,15 @@ def test_time_xor():
 
 
 def test_wave_xor():
-    one = va.Wave(0 * u.AA, 1000 * u.AA)
-    a = one ^ va.Wave(200 * u.AA, 400 * u.AA)
+    one = va.Wavelength(0 * u.AA, 1000 * u.AA)
+    a = one ^ va.Wavelength(200 * u.AA, 400 * u.AA)
 
-    assert a == attr.AttrOr([va.Wave(0 * u.AA, 200 * u.AA), va.Wave(400 * u.AA, 1000 * u.AA)])
+    assert a == attr.AttrOr([va.Wavelength(0 * u.AA, 200 * u.AA), va.Wavelength(400 * u.AA, 1000 * u.AA)])
 
-    a ^= va.Wave(600 * u.AA, 800 * u.AA)
+    a ^= va.Wavelength(600 * u.AA, 800 * u.AA)
 
     assert a == attr.AttrOr(
-        [va.Wave(0 * u.AA, 200 * u.AA), va.Wave(400 * u.AA, 600 * u.AA), va.Wave(800 * u.AA, 1000 * u.AA)])
+        [va.Wavelength(0 * u.AA, 200 * u.AA), va.Wavelength(400 * u.AA, 600 * u.AA), va.Wavelength(800 * u.AA, 1000 * u.AA)])
 
 
 def test_err_dummyattr_create():
@@ -196,10 +196,10 @@ def test_err_dummyattr_apply():
 
 def test_wave_repr():
     """Tests the __repr__ method of class vso.attrs.Wave"""
-    wav = vso.attrs.Wave(12 * u.AA, 16 * u.AA)
-    moarwav = vso.attrs.Wave(15 * u.AA, 12 * u.AA)
-    assert repr(wav) == "<Wave(12.0, 16.0, 'Angstrom')>"
-    assert repr(moarwav) == "<Wave(12.0, 15.0, 'Angstrom')>"
+    wav = vso.attrs.Wavelength(12 * u.AA, 16 * u.AA)
+    moarwav = vso.attrs.Wavelength(15 * u.AA, 12 * u.AA)
+    assert repr(wav) == "<Wavelength(12.0, 16.0, 'Angstrom')>"
+    assert repr(moarwav) == "<Wavelength(12.0, 15.0, 'Angstrom')>"
 
 def test_str():
     qr = QueryResponse([])
@@ -207,5 +207,4 @@ def test_str():
 
 def test_repr():
     qr = QueryResponse([])
-    assert repr(qr) in ('<Table masked=False length=0>\nStart Time End Time  Source Instrument   Type \n float64   float64  float64  float64   float64\n---------- -------- ------- ---------- -------', # astropy >1.0
-                        "<Table rows=0 names=('Start Time','End Time','Source','Instrument','Type')>\narray([], \n      dtype=[('Start Time', '<f8'), ('End Time', '<f8'), ('Source', '<f8'), ('Instrument', '<f8'), ('Type', '<f8')])") # astropy 0.4.x
+    assert "Start Time End Time  Source Instrument   Type" in repr(qr)

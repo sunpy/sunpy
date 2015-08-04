@@ -2,7 +2,7 @@
 Fundamental Solar Physical Constants
 ------------------------------------
 These constants are taken from various sources. The structure of this module is heavily
-based on if not directly copied from the SciPy constants module but contains olar
+based on if not directly copied from the SciPy constants module but contains Solar
 Physical constants.
 
 Object
@@ -67,7 +67,8 @@ from sunpy.sun import _constants as _con # pylint: disable=E0611
 
 physical_constants = _con.physical_constants
 
-def constant(key) :
+
+def constant(key):
     """
     The constant in physical_constants index by key
 
@@ -90,11 +91,12 @@ def constant(key) :
     --------
     >>> from sunpy.sun import constants
     >>> constants.constant('mass')
-
+    <Constant name=u'Solar mass' value=1.9891e+30 error=5e+25 units='kg' reference=u"Allen's Astrophysical Quantities 4th Ed.">
     """
     return physical_constants[key]
 
-def value(key) :
+
+def value(key):
     """
     Value in physical_constants indexed by key
 
@@ -117,12 +119,13 @@ def value(key) :
     --------
     >>> from sunpy.sun import constants
     >>> constants.uncertainty('mass')
-        1.9884e30
+    5e+25
 
     """
     return constant(key).value
 
-def unit(key) :
+
+def unit(key):
     """
     Unit in physical_constants indexed by key
 
@@ -145,12 +148,13 @@ def unit(key) :
     --------
     >>> from sunpy.sun import constants
     >>> constants.uncertainty('mass')
-    'kg'
+    5e+25
 
     """
     return constant(key).unit
 
-def uncertainty(key) :
+
+def uncertainty(key):
     """
     Relative uncertainty in physical_constants indexed by key
 
@@ -173,10 +177,11 @@ def uncertainty(key) :
     --------
     >>> from sunpy.sun import constants
     >>> constants.uncertainty('mass')
-
+    5e+25
 
     """
     return constant(key).uncertainty
+
 
 def find(sub=None, disp=False):
     """
@@ -217,7 +222,7 @@ def find(sub=None, disp=False):
         return result
 
 
-def print_all(key = None):
+def print_all(key=None):
     """
     Prints out the complete list of physical_constants to the screen or
     one single value
