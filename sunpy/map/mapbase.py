@@ -591,9 +591,13 @@ scale:\t\t {scale}
         """
         x, y = self.wcs.wcs_pix2world(x, y, origin)
 
-        # WCS always outputs degrees.
-        x *= u.deg
-        y *= u.deg
+        # If the wcs is celestial it is output in degress
+        if self.wcs.is_celestial:
+            x *= u.deg
+            y *= u.deg
+        else:
+            x *= self.units.x
+            y *= self.units.y
 
         x = Longitude(x, wrap_angle=180*u.deg)
         y = Latitude(y)
@@ -996,13 +1000,9 @@ scale:\t\t {scale}
             x_pixels = range_a.value
             y_pixels = range_b.value
         else:
-            raise ValueError(
-                "Invalid unit. Must be one of 'data' or 'pixels'")
+            raise ValueError("Invalid unit. Must be one of 'data' or 'pixels'")
 
-        x_pixels.sort()
-        y_pixels.sort()
-
-        # Sort the pixel values so we are always slicing in the correct direction
+        # Sort the pixel values so we always slicing in the correct direction
         x_pixels.sort()
         y_pixels.sort()
 
