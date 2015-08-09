@@ -1,0 +1,39 @@
+STEREO SIT_Ahead Level 1 4He intensity
+File created: Mon Jul 11 18:36:16 2011 at JHU/APL
+Mass, energy, tof file creation time:  4/18/2011 16:32:16
+Hex table file in use: sit_hex_tables_041811.dat
+Rate boxes file in use: sit_rate_box_ranges_041811_sav.dat
+Efficiency file in use: sit_efficiencies_2011_04_27.dat
+Intensities calculated using pulse-height-analysis data
+Averaging interval: 10 minutes
+Note:  timestamps mark beginning of averaging interval
+Column 1: Years		
+Column 2: Day of year (fractional)	
+Column 3: Hour of day	
+Column 4: Minute of hour
+Column 5: Second of minute
+Column 6: number of minutes summed in rate
+Column 7:  0.113 - 0.160 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))
+Column 8:  0.160 - 0.226 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))
+Column 9:  0.226 - 0.320 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))
+Column 10:  0.320 - 0.452 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))
+Column 11:  0.452 - 0.640 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))
+Column 12:  0.640 - 0.905 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))
+Column 13:  0.905 - 1.280 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))
+Column 14:  1.280 - 1.810 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))
+Column 15:  1.810 - 2.560 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))
+Column 16:  2.560 - 3.620 MeV/n 4He intensity (1/(cm^2 s sr MeV/nuc))
+Columns 17 - 26:  4He total counts for same energy ranges as above
+BEGIN DATA
+2007   1.000521  0  0 45   10   4.1004e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00       3       0       0       0       0       0       0       0       0       0 
+2007   1.007465  0 10 45   10   7.8010e+00   1.6212e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00       6       3       0       0       0       0       0       0       0       0 
+2007   1.014410  0 20 45   10   2.4378e+00   1.0133e+00   9.0643e-01   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00       2       2       3       0       0       0       0       0       0       0 
+2007   1.021354  0 30 45   10   3.8769e+00   5.3713e-01   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   7.8347e-02   0.0000e+00   0.0000e+00   0.0000e+00       3       1       0       0       0       0       1       0       0       0 
+2007   1.028299  0 40 45   10   9.6618e+00   1.7848e+00   0.0000e+00   2.7539e-01   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00       9       4       0       2       0       0       0       0       0       0 
+2007   1.035243  0 50 45   10   0.0000e+00   1.4692e+00   2.9207e-01   1.5113e-01   0.0000e+00   0.0000e+00   7.1434e-02   0.0000e+00   0.0000e+00   0.0000e+00       0       3       1       1       0       0       1       0       0       0 
+2007   1.042188  1  0 45   10   0.0000e+00   5.3055e-01   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00       0       1       0       0       0       0       0       0       0       0 
+2007   1.049132  1 10 45   10   0.0000e+00   3.3057e+00   0.0000e+00   0.0000e+00   1.3793e-01   1.0674e-01   1.6073e-01   0.0000e+00   0.0000e+00   0.0000e+00       0       6       0       0       1       1       2       0       0       0 
+2007   1.056076  1 20 45   10   0.0000e+00   9.1418e-01   0.0000e+00   1.4106e-01   1.1443e-01   0.0000e+00   0.0000e+00   1.2044e-01   0.0000e+00   0.0000e+00       0       2       0       1       1       0       0       2       0       0 
+2007   1.063021  1 30 45   10   2.6090e+00   1.0844e+00   6.4673e-01   3.3465e-01   1.3574e-01   0.0000e+00   0.0000e+00   7.1434e-02   0.0000e+00   0.0000e+00       2       2       2       2       1       0       0       1       0       0 
+2007   1.069965  1 40 45   10   1.1163e+00   4.6396e-01   5.5340e-01   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00       1       1       2       0       0       0       0       0       0       0 
+2007   1.076910  1 50 45   10   1.2568e+00   0.0000e+00   6.2309e-01   0.0000e+00   0.0000e+00   0.0000e+00   1.5239e-01   0.0000e+00   0.0000e+00   0.0000e+00       1       0       2       0       0       0       2       0       0       0 
