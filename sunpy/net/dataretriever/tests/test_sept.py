@@ -46,7 +46,7 @@ def test_query():
     qr1 = LCClient.query(Time(TimeRange('2009/03/01', '2009/03/05')), Instrument('stereo/sept'), specie = 'element', 
                         duration_of_average = 10*u.min, stereo_spacecraft = 'ahead', sensor_pointing = 'asun')
     assert isinstance(qr1,QueryResponse)
-    assert len(qr1) == 1
+    assert len(qr1) == 10
     assert qr1.time_range()[0] == '2009/03/01'
     assert qr1.time_range()[1] == '2009/03/05'
 

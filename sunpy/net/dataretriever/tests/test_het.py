@@ -40,12 +40,12 @@ def test_can_handle_query():
     assert ans3 == False
 
 def test_query():
-    qr1 = LCClient.query(Time(TimeRange('2012/8/9', '2012/8/10')), Instrument('stereo/het'),
+    qr1 = LCClient.query(Time(TimeRange('2012/8/9', '2012/10/11')), Instrument('stereo/het'),
                                          stereo_spacecraft = 'ahead', duration_of_average = 1*u.min)
     assert isinstance(qr1,QueryResponse)
-    assert len(qr1) == 1
+    assert len(qr1) == 2
     assert qr1.time_range()[0] == '2012/08/09'
-    assert qr1.time_range()[1] == '2012/08/10'
+    assert qr1.time_range()[1] == '2012/10/11'
 
 
 @pytest.mark.online
