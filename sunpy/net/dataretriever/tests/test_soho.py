@@ -37,17 +37,17 @@ def test_can_handle_query():
     assert ans3 == False
 
 def test_query():
-    qr1 = LCClient.query(Time(TimeRange('2006/8/9', '2008/8/10')), Instrument('soho/erne'), specie ='alpha')
+    qr1 = LCClient.query(Time(TimeRange('2006/8/9', '2006/8/10')), Instrument('soho/erne'), specie ='alpha')
     assert isinstance(qr1,QueryResponse)
     assert len(qr1) == 1
     assert qr1.time_range()[0] == '2006/08/09'
-    assert qr1.time_range()[1] == '2008/08/10'
+    assert qr1.time_range()[1] == '2006/08/10'
 
 
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument, specie",
-[(Time(TimeRange('1998-03-01','2003-07-02')), Instrument('soho/erne'),'alpha'),
- (Time(TimeRange('2004/06/01', '2007/06/02')), Instrument('soho/erne'),'proton'),
+[(Time(TimeRange('2003-03-01','2003-03-04')), Instrument('soho/erne'),'alpha'),
+ (Time(TimeRange('2004/06/01', '2006/06/02')), Instrument('soho/erne'),'proton'),
 ])
 def test_get(time,instrument,specie):
     qr1 = LCClient.query(time,instrument,specie)

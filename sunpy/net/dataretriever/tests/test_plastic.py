@@ -30,10 +30,10 @@ def test_get_url_for_time_range(timerange, stereo_spacecraft, duration_of_averag
     assert urls[-1] == url_end
 
 def test_can_handle_query():
-    ans1 = stereo.PLASTICClient._can_handle_query(Time(TimeRange('2009-03-01','2009-06-02')), Instrument('stereo/het'), 
+    ans1 = stereo.PLASTICClient._can_handle_query(Time(TimeRange('2009-03-01','2009-06-02')), Instrument('stereo/plastic'), 
                                                                 stereo_spacecraft = 'ahead', duration_of_average = 10*u.min)
     assert ans1 == True
-    ans1 = stereo.PLASTICClient._can_handle_query(Time(TimeRange('2010-03-01','2010-07-02')), Instrument('stereo/het'),  
+    ans1 = stereo.PLASTICClient._can_handle_query(Time(TimeRange('2010-03-01','2010-07-02')), Instrument('stereo/plastic'),  
                                                                 stereo_spacecraft = 'behind', duration_of_average = 1*u.h)
     assert ans1 == True
     ans2 = stereo.PLASTICClient._can_handle_query(Time(TimeRange('2012/7/7', '2012/7/7')))
@@ -44,7 +44,7 @@ def test_can_handle_query():
 def test_query():
     qr1 = LCClient.query(Time('2012/8/9', '2012/8/10'), Instrument('stereo/het'), stereo_spacecraft = 'ahead', duration_of_average = 10*u.min)
     assert isinstance(qr1,QueryResponse)
-    assert len(qr1) == 1
+    assert len(qr1) == 2
     assert qr1.time_range()[0] == '2012/08/09'
     assert qr1.time_range()[1] == '2012/08/10'
 

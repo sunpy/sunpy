@@ -135,7 +135,7 @@ class SEPTClient(GenericClient):
 class HETClient(GenericClient):
 
 
-	def _get_url_for_timerange(cls,timerange, stereo_spacecraft = 'ahead', duration_of_average = 15*u.min):
+	def _get_url_for_timerange(cls, timerange, stereo_spacecraft = 'ahead', duration_of_average = 15*u.min):
 		"""
 		Returns list of URLS to STEREO HET data files corresponding to value of input timerange.
 		URL Source : http://www.srl.caltech.edu/STEREO/DATA/HET/
