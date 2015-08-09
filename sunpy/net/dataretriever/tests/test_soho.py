@@ -46,13 +46,13 @@ def test_query():
 
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument, specie",
-[(Time(TimeRange('2003-03-01','2003-03-04')), Instrument('soho/erne'),'alpha'),
- (Time(TimeRange('2004/06/01', '2006/06/02')), Instrument('soho/erne'),'proton'),
+[(Time(TimeRange('2003-03-01','2003-04-04')), Instrument('soho/erne'),'alpha'),
+ (Time(TimeRange('2004-06-01', '2004-09-04')), Instrument('soho/erne'),'proton'),
 ])
 def test_get(time,instrument,specie):
     qr1 = LCClient.query(time,instrument,specie)
     res = LCClient.get(qr1)
     download_list = res.wait()
-    assert len(download_list) == len(qr1)
+    assert len(download_list) + 1 == len(qr1)
 
 
