@@ -1,0 +1,64 @@
+#STEREO/IMPACT/SEPT Level 2 ASCII electron data for AHEAD spacecraft, sensor pointing: Anti-Sunward
+#File created: Fri Jan 30 23:30:37 2015 UTC
+#Created by: University of Kiel
+#Software version 03:
+# - Differential non-linearity correction: YES
+# - Efficiencies: 0.6220;1.0300;1.0000;1.0000;1.0000;1.0000;1.0000;1.0000;1.0000;1.0000;1.0000;1.0000;1.0000;1.0000;1.0000;
+# - STA sunward-looking electron telescope includes additional correction for low efficiency: YES
+# - Geometric factors (cm^2 sr): 0.089;0.095;0.101;0.101;0.106;0.108;0.113;0.109;0.110;0.114;0.112;0.113;0.095;0.074;0.054;
+# - Energy windows (MeV): 0.0100;0.0100;0.0100;0.0100;0.0200;0.0200;0.0200;0.0200;0.0300;0.0300;0.0300;0.0400;0.0400;0.0400;0.0500;
+#
+#Time resolution:   1.000 hour
+#Time stamps mark center of averaging interval (rounded to the second)
+#Energy bins 02 and 03 should not be used for quantitative studies. 
+#Electron intensities are not corrected for ion contamination 
+#Bad/missing data are filled with -9999.9 (float) or -9999 (integer)
+#Intensities and uncertainties are given in 1/(cm^2 s sr MeV)
+#
+#Column 1 : Julian date (double-precision float). Julian date 0.0 is Jan. 1, 4713 B.C. at 12:00:00
+#Column 2 : Year (integer)
+#Column 3 : Fractional day of year (double-precision float)
+#Column 4 : Hour of day (integer)
+#Column 5 : Minute of hour (integer)
+#Column 6 : Second of minute (integer)
+#Column 7 : Bin 02 (  45.0-  55.0 keV) electron intensity (float)
+#Column 8 : Bin 03 (  55.0-  65.0 keV) electron intensity (float)
+#Column 9 : Bin 04 (  65.0-  75.0 keV) electron intensity (float)
+#Column 10: Bin 05 (  75.0-  85.0 keV) electron intensity (float)
+#Column 11: Bin 06 (  85.0- 105.0 keV) electron intensity (float)
+#Column 12: Bin 07 ( 105.0- 125.0 keV) electron intensity (float)
+#Column 13: Bin 08 ( 125.0- 145.0 keV) electron intensity (float)
+#Column 14: Bin 09 ( 145.0- 165.0 keV) electron intensity (float)
+#Column 15: Bin 10 ( 165.0- 195.0 keV) electron intensity (float)
+#Column 16: Bin 11 ( 195.0- 225.0 keV) electron intensity (float)
+#Column 17: Bin 12 ( 225.0- 255.0 keV) electron intensity (float)
+#Column 18: Bin 13 ( 255.0- 295.0 keV) electron intensity (float)
+#Column 19: Bin 14 ( 295.0- 335.0 keV) electron intensity (float)
+#Column 20: Bin 15 ( 335.0- 375.0 keV) electron intensity (float)
+#Column 21: Bin 16 ( 375.0- 425.0 keV) electron intensity (float)
+#Column 22: Bin 02 Uncertainty (float)
+#Column 23: Bin 03 Uncertainty (float)
+#Column 24: Bin 04 Uncertainty (float)
+#Column 25: Bin 05 Uncertainty (float)
+#Column 26: Bin 06 Uncertainty (float)
+#Column 27: Bin 07 Uncertainty (float)
+#Column 28: Bin 08 Uncertainty (float)
+#Column 29: Bin 09 Uncertainty (float)
+#Column 30: Bin 10 Uncertainty (float)
+#Column 31: Bin 11 Uncertainty (float)
+#Column 32: Bin 12 Uncertainty (float)
+#Column 33: Bin 13 Uncertainty (float)
+#Column 34: Bin 14 Uncertainty (float)
+#Column 35: Bin 15 Uncertainty (float)
+#Column 36: Bin 16 Uncertainty (float)
+#Column 37: Accumulation time in seconds (float) 
+#BEGIN DATA
+2457023.520833 2015   1.020833 00 30 00  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03
+2457023.562500 2015   1.062500 01 30 00  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03
+2457023.604167 2015   1.104167 02 30 00  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03
+2457023.645833 2015   1.145833 03 30 00  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03
+2457023.687500 2015   1.187500 04 30 00  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03
+2457023.729167 2015   1.229167 05 30 00  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03
+2457023.770833 2015   1.270833 06 30 00  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03
+2457023.812500 2015   1.312500 07 30 00  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03
+2457023.854167 2015   1.354167 08 30 00  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03

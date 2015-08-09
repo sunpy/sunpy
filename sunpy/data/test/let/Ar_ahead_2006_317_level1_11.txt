@@ -1,0 +1,30 @@
+STEREO LET LEVEL 1 argon data for ahead spacecraft, for 2006-317
+Verified Data - OK to distribute
+File created: Fri Apr 5 23:11:30 PDT 2013
+Created by: Caltech Space Radiation Lab
+Level 1 software version 11
+Time Resolution: 1 minute (highest LET instrument resolution)
+Note: Timestamps mark beginning of data accumulation interval
+Column 1: Year
+Column 2: Day of year (fractional)
+Column 3: Hour of day
+Column 4: Minute of hour
+Column 5: Second of minute
+Column 6: LET dynamic threshold state (0 - 3)
+Column 7: LET Livetime (seconds)
+Column 8: 3.6 - 4.0 MeV/n argon intensity (1/(cm^2 s sr MeV/nuc))
+Column 9: 4.0 - 4.5 MeV/n argon intensity (1/(cm^2 s sr MeV/nuc))
+Column 10: 4.5 - 5.0 MeV/n argon intensity (1/(cm^2 s sr MeV/nuc))
+Column 11: 5.0 - 6.0 MeV/n argon intensity (1/(cm^2 s sr MeV/nuc))
+Column 12: 6.0 - 8.0 MeV/n argon intensity (1/(cm^2 s sr MeV/nuc))
+Column 13: 8.0 - 10.0 MeV/n argon intensity (1/(cm^2 s sr MeV/nuc))
+Column 14: 10.0 - 12.0 MeV/n argon intensity (1/(cm^2 s sr MeV/nuc))
+Column 15: 12.0 - 15.0 MeV/n argon intensity (1/(cm^2 s sr MeV/nuc))
+Column 16: 15.0 - 21.0 MeV/n argon intensity (1/(cm^2 s sr MeV/nuc))
+Column 17: 21.0 - 27.0 MeV/n argon intensity (1/(cm^2 s sr MeV/nuc))
+Column 18: 27.0 - 33.0 MeV/n argon intensity (1/(cm^2 s sr MeV/nuc))
+Column 19: 33.0 - 40.0 MeV/n argon intensity (1/(cm^2 s sr MeV/nuc))
+Column 20: 40.0 - 52.0 MeV/n argon intensity (1/(cm^2 s sr MeV/nuc))
+Column 21 - 33: 13 argon counts, same energy ranges as above (counts/minute)
+Bad/missing data are filled with -1.0E+31 for floating point, -2147483647 for integers
+BEGIN DATA
