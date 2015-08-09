@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
+# pylint: disable=E1101
 
 from __future__ import absolute_import
 
+import astropy.nddata
 import numpy as np
 from matplotlib import pyplot as plt
 
 __all__ = ['Spectrum']
 
 
-class Spectrum(np.ndarray):
+class Spectrum(astropy.nddata.NDDataArray):
     """
     Class representing a 1 dimensional spectrum.
 
@@ -18,7 +20,7 @@ class Spectrum(np.ndarray):
     freq_axis : `~numpy.ndarray`
         one-dimensional array with the frequency values.
 
-    data\ : `numpy.ndarray`
+
         One-dimensional array which the intensity at a particular frequency at
         every data-point.
 
@@ -32,11 +34,11 @@ class Spectrum(np.ndarray):
     >>> spec = Spectrum(data, freq_axis)
     >>> spec.peek()
     """
-    def __new__(cls, data, *args, **kwargs):
-        return np.asarray(data).view(cls)
+#    def __new__(cls, data):
+#        return np.asarray(data).view(cls)
 
-    def __init__(self, data, freq_axis):
-        self.data = data
+    def __init__(self, data, freq_axis, **kwargs):
+        astropy.nddata.NDDataArray.__init__(self, data=data, **kwargs)
         self.freq_axis = freq_axis
 
     def plot(self, axes=None, **matplot_args):
@@ -108,5 +110,29 @@ class Spectrum(np.ndarray):
         figure = plt.figure()
         lines = self.plot(**matplot_args)
         figure.show()
-
         return figure
+
+    def shift_axis(self, offset):
+        """
+        Shifts the entire wavelength axis by a given linear offset
+
+        Parameters
+        ----------
+        offset: float
+            The amount to offset by
+        """
+        # TODO: Should this use Quantities?
+        self.map_to_axis(lambda x: x + offset)
+
+
+    def map_to_axis(self, fun):
+        """
+        Maps a function to the given axis. This can be used for non-linear
+        corrections of the axis.
+
+        Parameters
+        ----------
+        fun: Function from float to float
+            The function to apply to the wavelengths.
+        """
+        self.freq_axis = map(fun, self.freq_axis)
