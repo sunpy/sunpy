@@ -1002,7 +1002,7 @@ scale:\t\t {scale}
         else:
             raise ValueError("Invalid unit. Must be one of 'data' or 'pixels'")
 
-        # Sort the pixel values so we always slicing in the correct direction
+        # Sort the pixel values so we always slice in the correct direction
         x_pixels.sort()
         y_pixels.sort()
 
