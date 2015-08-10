@@ -124,23 +124,6 @@ def print_table(lst, colsep=' ', linesep='\n'):
     )
 
 
-def findpeaks(a):
-    """Find local maxima in 1D. Use findpeaks(-a) for minima.
-
-    Parameters
-    ----------
-    a : `~numpy.ndarray`
-        a one dimensional `~numpy.ndarray` array.
-
-    Returns
-    -------
-    `~numpy.ndarray`
-        indices of all the local maxima
-
-    """
-    return np.nonzero((a[1:-1] > a[:-2]) & (a[1:-1] > a[2:]))[0]
-
-
 def polyfun_at(coeff, p):
     """ Return value of polynomial with coefficients (highest first) at
     point (can also be an np.ndarray for more than one point) p.
