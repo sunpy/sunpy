@@ -70,6 +70,7 @@ def _to_pandas(self):
             out[name] = out[name].byteswap().newbyteorder()
 
     return DataFrame(out)
+    
 
 class ERNELightCurve(LightCurve):
     """
@@ -81,6 +82,8 @@ class ERNELightCurve(LightCurve):
     p is for protons, and
     a is for Helium (alpha particles).
 
+    Parameters
+    ----------
     args:   
         Timerange or start and end date, 
         atomic_specie
