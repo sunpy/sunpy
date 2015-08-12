@@ -35,7 +35,8 @@ __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'match_template_to_layer', 'find_best_match_location',
            'get_correlation_shifts', 'parabolic_turning_point',
            'repair_image_nonfinite', 'apply_shifts',
-           'mapcube_coalign_by_match_template']
+           'mapcube_coalign_by_match_template',
+           'calculate_match_template_shift']
 
 
 def _default_fmap_function(data):
@@ -372,27 +373,32 @@ def apply_shifts(mc, yshift, xshift, clip=True):
     """
 
     # new mapcube will be constructed from this list
-    newmc_list = []
+    new_mc = []
+
+    # Calculate the clipping
+    if clip:
+        yclips, xclips = calculate_clipping(-yshift, -xshift)
 
     # Shift the data and construct the mapcube
-    for i, m in enumerate(mc.maps):
+    for i, m in enumerate(mc):
         shifted_data = shift(m.data, [yshift[i].value, xshift[i].value])
-        # Clip if required
-        if clip:
-            yclips, xclips = calculate_clipping(-yshift, -xshift)
-            shifted_data = clip_edges(shifted_data, yclips, xclips)
-
-        # New header
         new_meta = deepcopy(m.meta)
+        # Clip if required.  Use the submap function to return the appropriate
+        # portion of the data.
+        if clip:
+            shifted_data = clip_edges(shifted_data, yclips, xclips)
+            new_meta['naxis1'] = shifted_data.shape[1]
+            new_meta['naxis2'] = shifted_data.shape[0]
+            #print i, new_meta['crpix1'], new_meta['crpix2'], xshift[i].value, yshift[i].value, np.mean(m.data)
+            new_meta['crval1'] = new_meta['crval1'] - xshift[i].value * m.scale.x.value
+            new_meta['crval2'] = new_meta['crval2'] - yshift[i].value * m.scale.y.value
 
-        # Adjust the positioning information accordingly.
-        new_meta['crval1'] = new_meta['crval1'] - xshift[i].value * m.scale.x.value
-        new_meta['crval2'] = new_meta['crval2'] - yshift[i].value * m.scale.y.value
+        new_map = sunpy.map.Map(shifted_data, new_meta)
 
         # Append to the list
-        newmc_list.append(sunpy.map.Map(shifted_data, new_meta))
+        new_mc.append(new_map)
 
-    return sunpy.map.Map(newmc_list, cube=True)
+    return sunpy.map.Map(new_mc, cube=True)
 
 
 def calculate_match_template_shift(mc, template=None, layer_index=0,
@@ -580,4 +586,4 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
         yshift_keep[i] = (yshift_arcseconds[i] / m.scale.y)
 
     # Apply the shifts and return the coaligned mapcube
-    return apply_shifts(mc, -yshift_keep, -xshift_keep, clip=clip)
+    return apply_shifts(mc, yshift_keep, xshift_keep, clip=clip)
