@@ -21,29 +21,29 @@ class NOAAIndicesLightCurve(LightCurve):
 	these indices are also provided as a 13-month running smoothed value.
 
 
-    1. The SWO sunspot number is issued by the NOAA Space Weather Prediction Center (SWPC)
-    2. The RI sunspot number is the official International Sunspot Number and is issued by 
-       the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
-    3. The ratio between the SWO and RI indices.
-    4. Radio flux at 10.7 cm is produced by Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html> 
-       and the units are in sfu.
-    5. The Ap Geomagnetic Index is produced by the United States Air Force (USAF).
-    
+	1. The SWO sunspot number is issued by the NOAA Space Weather Prediction Center (SWPC)
+	2. The RI sunspot number is the official International Sunspot Number and is issued by 
+	   the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
+	3. The ratio between the SWO and RI indices.
+	4. Radio flux at 10.7 cm is produced by Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html> 
+	   and the units are in sfu.
+	5. The Ap Geomagnetic Index is produced by the United States Air Force (USAF).
+	
 
 	Examples
 	--------
 	>>> from sunpy import lightcurve as lc
 	>>> noaa = lc.NOAAIndicesLightCurve.create()
-	>>> noaa.peek()   				# doctest: +SKIP
+	>>> noaa.peek()                 # doctest: +SKIP
 
 	References
 	----------
 
-	* Solar and Geomagnetic Indices Data Archive <http://legacy-www.swpc.noaa.gov/Data/index.html#indices>
-	* Recent solar indices <ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt>
-	* Indices Descriptions <ftp://ftp.swpc.noaa.gov/pub/weekly/README3>
-	* NOAA plots of Solar Cycle Progression <http://www.swpc.noaa.gov/products/solar-cycle-progression>
-	* NOAA Product List <http://www.swpc.noaa.gov/products-and-data>
+	1. Solar and Geomagnetic Indices Data Archive <http://legacy-www.swpc.noaa.gov/Data/index.html#indices>
+	2. Recent solar indices <ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt>
+	3. Indices Descriptions <ftp://ftp.swpc.noaa.gov/pub/weekly/README3>
+	4. NOAA plots of Solar Cycle Progression <http://www.swpc.noaa.gov/products/solar-cycle-progression>
+	5. NOAA Product List <http://www.swpc.noaa.gov/products-and-data>
 
 	"""
 
@@ -105,7 +105,9 @@ class NOAAIndicesLightCurve(LightCurve):
 		figure.show()
 		return figure
 
-	def _get_default_uri(self):
+	
+	@classmethod
+	def _get_default_uri():
 		"""Return the url to download indices"""
 		return NOAAIndicesLightCurve.default_url_noaa_indices
 
@@ -202,7 +204,8 @@ class NOAAPredictIndicesLightCurve(LightCurve):
 		figure.show()
 		return figure
 
-	def _get_default_uri(self):
+	@classmethod
+	def _get_default_uri():
 		"""Return the url to download indices"""
 		return NOAAPredictIndicesLightCurve.default_url_noaa_predict_indices
 
