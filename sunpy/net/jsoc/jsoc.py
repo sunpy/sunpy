@@ -15,8 +15,7 @@ from astropy.utils.misc import isiterable
 
 from sunpy import config
 from sunpy.time import parse_time, TimeRange
-from sunpy.net.download import Downloader
-from sunpy.net.vso.vso import Results
+from sunpy.net.download import Downloader, Results
 from sunpy.net.attr import and_
 from sunpy.net.jsoc.attrs import walker
 
@@ -148,6 +147,7 @@ class JSOCClient(object):
     You can then make the request:
 
     >>> requestIDs = client.request_data(response)
+    [u'JSOC_20140724_952']
 
     This returns a list of all the request identifiers for your query.
 
@@ -158,6 +158,7 @@ class JSOCClient(object):
     get into the queue.
 
     >>> status = client.check_request(requestIDs)
+    Request JSOC_20140724_955 was submitted 10 seconds ago, it is not ready to download.
 
     Once the status code is 0 you can download the data using the `get_request`
     method:
@@ -232,24 +233,28 @@ class JSOCClient(object):
             raise TypeError(warn_message.format(kwargs.keys()))
 
         # Do a multi-request for each query block
-        responses = self._multi_request(**jsoc_response.query_args)
-        for i, response in enumerate(responses):
-            if response.status_code != 200:
-                warn_message = "Query {0} retuned code {1}"
-                warnings.warn(
-                    Warning(warn_message.format(i, response.status_code)))
-                responses.pop(i)
-            elif response.json()['status'] != 2:
-                warn_message = "Query {0} returned status {1} with error {2}"
-                json_response = response.json()
-                json_status = json_response['status']
-                json_error = json_response['error']
-                warnings.warn(Warning(warn_message.format(i, json_status,
-                                                          json_error)))
-                responses.pop(i)
+        responses = []
+        requestIDs = []
+        for block in jsoc_response.query_args:
+            # Do a multi-request for each query block
+            responses.append(self._multi_request(**block))
+            for i, response in enumerate(responses[-1]):
+                if response.status_code != 200:
+                    warn_message = "Query {0} retuned code {1}"
+                    warnings.warn(
+                        Warning(warn_message.format(i, response.status_code)))
+                    responses.pop(i)
+                elif response.json()['status'] != 2:
+                    warn_message = "Query {0} retuned status {1} with error {2}"
+                    json_response = response.json()
+                    json_status = json_response['status']
+                    json_error = json_response['error']
+                    warnings.warn(Warning(warn_message.format(i, json_status,
+                                                            json_error)))
+                    responses[-1].pop(i)
 
-        # Extract the IDs from the JSON
-        requestIDs = [response.json()['requestid'] for response in responses]
+            # Extract the IDs from the JSON
+            requestIDs += [response.json()['requestid'] for response in responses[-1]]
 
         if return_responses:
             return responses
@@ -340,7 +345,8 @@ class JSOCClient(object):
         jsoc_response.requestIDs = requestIDs
         time.sleep(sleep/2.)
 
-        r = None   # Needed when all requests ends in the else branch
+        r = Results(lambda x: None, done=lambda maps: [v['path'] for v in maps.values()])
+
         while requestIDs:
             for i, request_id in enumerate(requestIDs):
                 u = self._request_status(request_id)
@@ -351,7 +357,7 @@ class JSOCClient(object):
                 if u.status_code == 200 and u.json()['status'] == '0':
                     rID = requestIDs.pop(i)
                     r = self.get_request(rID, path=path, overwrite=overwrite,
-                                         progress=progress,downloader=downloader)
+                                 progress=progress, results=r)
 
                 else:
                     time.sleep(sleep)
@@ -625,4 +631,11 @@ class JSOCClient(object):
         u = requests.get(JSOC_EXPORT_URL, params=payload)
 
         return u
+
+    @classmethod
+    def _can_handle_query(cls, *query):
+        chkattr = ['Series', 'Protocol', 'Notify', 'Compression', 'Wavelength',
+                   'Time', 'Segment']
+
+        return all([x.__class__.__name__ in chkattr for x in query])
 

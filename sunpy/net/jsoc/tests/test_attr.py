@@ -51,7 +51,7 @@ def test_wavelength_error():
         w1 = attrs.Wavelength(3.24)
     with pytest.raises(TypeError):
         w1 = attrs.Wavelength((3,3))
-        
+
 def test_wave_self():
     w1 = attrs.Wavelength(193*u.AA)
     assert jsoc.jsoc.and_(w1 | w1) is w1
@@ -59,10 +59,9 @@ def test_wave_self():
 def test_duplicate():
     w1 = attrs.Wavelength(193*u.AA)
     w2 = attrs.Wavelength(193*u.AA)
-    assert jsoc.jsoc.and_(w1 | w2).value is w1.value
+    assert jsoc.jsoc.and_(w1 | w2).min is w1.min
 
 def test_random():
     w1 = attrs.Wavelength(193*u.AA)
     w2 = attrs.Series('spam')
     assert jsoc.jsoc.and_(w1 | w2) == AttrOr([w1, w2])
-    
