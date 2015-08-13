@@ -75,11 +75,13 @@ def test_mapcube_solar_derotate(aia171_test_mapcube, aia171_test_submap):
         assert(m.data.shape == aia171_test_submap.data.shape)
 
     # Test that the returned centers are correctly displaced.
+    tmc = mapcube_solar_derotate(aia171_test_mapcube, clip=True)
     tshift = calculate_solar_rotate_shift(aia171_test_mapcube)
+    print tshift
     for im, m in enumerate(tmc):
         for i_s, s in enumerate(['x', 'y']):
-            assert_allclose(m.center[i_s], aia171_test_submap.center[i_s] -
-                            tshift[s][im], rtol=5e-2, atol=0)
+            print im, i_s, s, m.center[i_s], aia171_test_submap.center[i_s], tshift[s][im]
+            #assert_allclose(m.center[i_s], aia171_test_submap.center[i_s] + tshift[s][im], rtol=5e-2, atol=0)
 
     # Test that a mapcube is returned on default clipping (clipping is True)
     tmc = mapcube_solar_derotate(aia171_test_mapcube)
@@ -89,9 +91,4 @@ def test_mapcube_solar_derotate(aia171_test_mapcube, aia171_test_submap):
     clipped_shape = (24, 20)
     for m in tmc:
         assert(m.data.shape == clipped_shape)
-
-
-
-
-
-
+    assert(False)
