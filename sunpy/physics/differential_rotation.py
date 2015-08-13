@@ -1,4 +1,5 @@
 from __future__ import division
+from datetime import timedelta
 
 import numpy as np
 
@@ -142,3 +143,136 @@ def solar_rotate_coordinate(coordinate, new_observer_time, new_observer_location
 
     # Return the rotated coordinates to the input coordinate frame
     return heliographic_rotated.transform_to(coordinate.frame.name)
+
+
+def _to_norm(arr):
+    '''
+    Helpper function to normalise/scale an array.  This is needed for example
+    for scikit-image which uses flotas between 0 and 1
+
+    Parameters
+    ----------
+    arr : `~numpy.ndarray`
+        Array of floats whised to normalise
+
+    Returns
+    -------
+    arr : `~numpy.ndarray`
+        Array with values between 0 (min) and 1 (max)
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from sunpy.physics.transforms.differential_rotation import _to_norm
+    >>> out = _to_norm(np.array([-1, 0, 1]))
+    >>> out
+    array([ 0. ,  0.5,  1. ])
+    '''
+    from skimage.util import img_as_float
+    arr = np.array(arr, dtype='double')
+    arr = img_as_float(arr, force_copy=True)
+    if arr.min() < 0:
+        arr += np.abs(arr.min())
+    arr /= arr.max()
+    return arr
+
+def _un_norm(arr, original):
+    '''
+    Helpper function tu Un-normalises (or re-scale) an array based in
+    the values of the original array.
+
+    Parameters
+    ----------
+    arr : `~numpy.ndarray`
+        Array of floats whised to un-normalise with values in [0,1]
+    original : `~numpy.ndarray`
+        Original array with the min and max values
+
+    Returns
+    -------
+    arr : `~numpy.ndarray`
+        Array with values between `original.min()` and `original.max()`
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from sunpy.physics.transforms.differential_rotation import _un_norm
+    >>> original = np.array([-1, 0, 1])
+    >>> normalised = np.array([0., 0.5, 1.])
+    >>> out = _un_norm(normalised, original)
+    >>> out
+    array([-1.,  0.,  1.])
+    '''
+    level = 0 if original.min() > 0 else np.abs(original.min())
+    arr *= original.max() + level
+    arr -= level
+    return arr
+
+def _warp_sun(xy, smap, timedelta):
+    '''
+    Function that returns a new list of coordinates for each input coord.
+    This is an inverse function needed by the scikit-image `transform.warp`
+    function.
+
+    Parameters
+    ----------
+    xy :
+        Array from `transform.warp`
+    smap : `~sumpy.map`
+        Original map that we want to transform
+    timedelta : `~datetime.timedelta`
+        Desired interval for the differential rotation
+
+    Returns
+    -------
+    xy2 : `~numpy.ndarray`
+        Array with the inverse transformation
+    '''
+    #Calculate the hpc coords
+    x = np.arange(0, smap.dimensions.x.value)
+    y = np.arange(0, smap.dimensions.y.value)
+    xx, yy = np.meshgrid(x, y)
+    hpc_coords = smap.pixel_to_data(xx * u.pix, yy * u.pix)
+
+    #Do the diff rot
+    rotted = rot_hpc(hpc_coords[1], hpc_coords[0], smap.date + timedelta,
+                     smap.date, occultation=True)
+    # `transform.warp` needs the inverse rotation, therefore it's needed
+    # to provide the transform from the desired date to the original date
+
+    #Go back to pixel coords
+    x2,y2 = smap.data_to_pixel(rotted[0], rotted[1])
+
+    #Restack the data to make it correct output form
+    xy2 = np.column_stack([x2.value.flat,y2.value.flat])
+
+    #Remove NaNs
+    mask = np.isnan(xy2)
+    xy2[mask] = 0.0
+
+    return xy2
+
+def difrot_map(smap, timedelta):
+    '''
+    Function to compensate for differential rotation a sunpy map
+
+    Parameters
+    ----------
+    smap : `~sumpy.map`
+        Original map that we want to transform
+    timedelta : `~datetime.timedelta`
+        Desired interval for the differential rotation
+
+    Returns
+    -------
+    rotmap : `~sunpy.map`
+        Array with the inverse transformation
+    '''
+    from skimage import transform
+
+    out = transform.warp(_to_norm(smap.data), inverse_map=_warp_sun,
+                         map_args={'smap':smap, 'timedelta': timedelta })
+    out = _un_norm(out, smap.data)
+    rotmap = sunpy.map.Map((out, smap.meta))
+    rotmap_rotdate = rotmap.date + timedelta # FixMe update the map date (maybe a new keyword in Map?)
+    return rotmap
