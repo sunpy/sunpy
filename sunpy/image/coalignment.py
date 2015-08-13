@@ -371,8 +371,7 @@ def apply_shifts(mc, yshift, xshift, clip=True):
         A `~sunpy.map.MapCube` of the same shape as the input.  All layers in
         the `~sunpy.map.MapCube` have been shifted according the input shifts.
     """
-
-    # new mapcube will be constructed from this list
+    # New mapcube will be constructed from this list
     new_mc = []
 
     # Calculate the clipping
@@ -389,9 +388,8 @@ def apply_shifts(mc, yshift, xshift, clip=True):
             shifted_data = clip_edges(shifted_data, yclips, xclips)
             new_meta['naxis1'] = shifted_data.shape[1]
             new_meta['naxis2'] = shifted_data.shape[0]
-            #print i, new_meta['crpix1'], new_meta['crpix2'], xshift[i].value, yshift[i].value, np.mean(m.data)
-            new_meta['crval1'] = new_meta['crval1'] - xshift[i].value * m.scale.x.value
-            new_meta['crval2'] = new_meta['crval2'] - yshift[i].value * m.scale.y.value
+            new_meta['crpix1'] = m.reference_pixel.x.value + xshift[i].value - xshift[0].value
+            new_meta['crpix2'] = m.reference_pixel.y.value + yshift[i].value - yshift[0].value
 
         new_map = sunpy.map.Map(shifted_data, new_meta)
 
