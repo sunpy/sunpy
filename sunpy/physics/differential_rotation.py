@@ -1,12 +1,14 @@
 from __future__ import division
+from datetime import timedelta
 
 import numpy as np
 from astropy import units as u
 from astropy.coordinates import Longitude, Latitude, Angle
-from sunpy.time import parse_time, julian_day
 
+from sunpy.time import parse_time, julian_day
 from sunpy.wcs import convert_hpc_hg, convert_hg_hpc
 from sunpy.sun import constants, sun
+import sunpy.map
 
 __author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
 __all__ = ['diff_rot', 'rot_hpc']
@@ -164,7 +166,8 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
     dstart = parse_time(tstart)
     dend = parse_time(tend)
     interval = (dend - dstart).total_seconds() * u.s
-
+    print('interval = {}'.format(interval))
+    
     # Get the Sun's position from the vantage point at the start time
     vstart = kwargs.get("vstart", _calc_P_B0_SD(dstart))
     # Compute heliographic co-ordinates - returns (longitude, latitude). Points
@@ -192,7 +195,7 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
                                 b0_deg=vend["b0"].to(u.deg).value,
                                 l0_deg=vend["l0"].to(u.deg).value,
                                 dsun_meters=(constants.au * sun.sunearth_distance(t=dend)).value,
-                                occultation=False)
+                                **kwargs)
     newx = Angle(newx, u.arcsec)
     newy = Angle(newy, u.arcsec)
     return newx.to(u.arcsec), newy.to(u.arcsec)
@@ -400,4 +403,67 @@ def _sun_pos(date):
             "dec": Latitude(dec, u.deg),
             "app_long": Longitude(l, u.deg),
             "obliq": Angle(oblt, u.deg)}
+
+
+def _to_norm(arr):
+    '''
+    Normalises an array. 
+    Needed for example for scikit-image which uses flotas between 0 and 1
+    '''
+    from skimage.util import img_as_float
+    arr = img_as_float(arr, force_copy=True)
+    if arr.min() < 0:
+        arr += np.abs(arr.min())
+    arr /= arr.max()
+    return arr
+
+def _un_norm(arr, ori):
+    '''
+    Un-normalises an array based in the original.
+    '''
+    level = 0 if ori.min() > 0 else np.abs(ori.min())
+    arr *= ori.max() + level
+    arr -= level
+    return arr   
+
+#Define a function that returns a new list of coordinates for each input coord.
+def _warp_sun(xy, smap, timedelta):
+
+    #Calculate the hpc coords
+    x = np.arange(0, smap.dimensions.x.value)
+    y = np.arange(0, smap.dimensions.y.value)
+    xx, yy = np.meshgrid(x, y)
+    hpc_coords = smap.pixel_to_data(xx * u.pix, yy * u.pix)
+    
+    #Do the diff rot
+    print smap.date, smap.date + timedelta
+    rotted = rot_hpc(hpc_coords[1], hpc_coords[0], smap.date,
+                     smap.date - timedelta, occultation=True)
+    # FIXME!! time is being subtracted so the output plot *seems* right
+    # but I don't understand it why ...
+    
+    #Go back to pixel coords
+    x2,y2 = smap.data_to_pixel(rotted[0], rotted[1])
+    
+    #Restack the data to make it correct output form
+    xy2 = np.column_stack([x2.value.flat,y2.value.flat])
+    
+    #Remove NaNs
+    mask = np.isnan(xy2)
+    xy2[mask] = 0.0
+
+    return xy2
+
+def difrot_map(smap, timedelta):
+    '''
+    
+    '''
+    from skimage import transform
+
+    out = transform.warp(_to_norm(smap.data), inverse_map=_warp_sun,
+                         map_args={'smap':smap, 'timedelta': timedelta })
+    out = _un_norm(out, smap.data)
+    rotmap = sunpy.map.Map((out, smap.meta))
+    rotmap_rotdate = rotmap.date + timedelta # FixMe update the map date (maybe a new keyword in Map?)
+    return rotmap
 
