@@ -190,7 +190,7 @@ for compatibility with map, please use meta instead""", Warning)
         """
         Called by Conditional Dispatch object if no input if given
         """
-        return cls.from_url(cls._get_default_uri())
+        return cls.from_url(cls()._get_default_uri())
 
     @classmethod
     def from_dataframe(cls, dataframe, meta=None):
