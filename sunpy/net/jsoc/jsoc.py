@@ -201,13 +201,15 @@ class JSOCClient(object):
 
         return_results = JSOCResponse()
         query = and_(*query)
+        blocks = []
         for block in walker.create(query):
             iargs = kwargs.copy()
             iargs.update(block)
+            blocks.append(iargs)
 
             return_results.append(self._lookup_records(iargs))
 
-        return_results.query_args = iargs
+        return_results.query_args = blocks
 
         return return_results
 
