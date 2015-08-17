@@ -74,14 +74,16 @@ def test_mapcube_solar_derotate(aia171_test_mapcube, aia171_test_submap):
     for m in tmc:
         assert(m.data.shape == aia171_test_submap.data.shape)
 
-    # Test that the returned centers are correctly displaced.
+    # Test that the returned reference pixels are correctly displaced.
     tmc = mapcube_solar_derotate(aia171_test_mapcube, clip=True)
-    tshift = calculate_solar_rotate_shift(aia171_test_mapcube)
-    print tshift
+    tshift = calculate_solar_rotate_shift(aia171_test_mapcube, layer_index=1)
     for im, m in enumerate(tmc):
         for i_s, s in enumerate(['x', 'y']):
-            print im, i_s, s, m.center[i_s], aia171_test_submap.center[i_s], tshift[s][im]
-            #assert_allclose(m.center[i_s], aia171_test_submap.center[i_s] + tshift[s][im], rtol=5e-2, atol=0)
+            assert_allclose(m.reference_pixel[i_s],
+                            aia171_test_submap.reference_pixel[i_s] +
+                            tshift[s][im] / m.scale[i_s] -
+                            tshift[s][0] / m.scale[i_s],
+                            rtol=5e-2, atol=0)
 
     # Test that a mapcube is returned on default clipping (clipping is True)
     tmc = mapcube_solar_derotate(aia171_test_mapcube)
@@ -91,4 +93,3 @@ def test_mapcube_solar_derotate(aia171_test_mapcube, aia171_test_submap):
     clipped_shape = (24, 20)
     for m in tmc:
         assert(m.data.shape == clipped_shape)
-    assert(False)
