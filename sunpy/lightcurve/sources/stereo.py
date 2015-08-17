@@ -78,10 +78,10 @@ def _to_pandas(self):
 class LETLightCurve(LightCurve):
 
 	"""
-	STEREO LET LightCurve. Provides data from as back as 2006.
+	STEREO LET LightCurve. Provides data from as back as 2006. Currently the LightCurve supports only Single File Load !!
 
 	Parameters
-        ----------
+	----------
 	timerange: sunpy.time.TimeRange
 	   time range for which data is to be downloaded.
 	   Default value -  TimeRange('2007-01-01','2008-06-01')   
@@ -110,17 +110,15 @@ class LETLightCurve(LightCurve):
 	   Possible values - ahead, behind    
 	   # corresponding to spacecraft location
 
-    ** Currently the LightCurve supports only Single File Load **
-
 	Examples
 	--------
 	>>> import os
-    >>> import sunpy.data.test
-    >>> filepath = sunpy.data.test.rootdir
-    >>> from sunpy import lightcurve as lc
-    >>> let = lc.LETLightCurve._parse_txt(os.path.join(filepath , 'let/Ar_ahead_2006_318_level1_11.txt'))
-    >>> let = lc.LETLightCurve(let[1],let[0])
-    >>> let.peek()
+	>>> import sunpy.data.test
+	>>> filepath = sunpy.data.test.rootdir
+	>>> from sunpy import lightcurve as lc
+	>>> let = lc.LETLightCurve._parse_txt(os.path.join(filepath , 'let/Ar_ahead_2006_318_level1_11.txt'))
+	>>> let = lc.LETLightCurve(let[1],let[0])
+	>>> let.peek()
 
 	References
 	----------
@@ -288,7 +286,8 @@ class LETLightCurve(LightCurve):
 class SITLightCurve(LightCurve):
 	"""
 	SIT LightCurve. Provides SIT data back to 2007-07.
-	Most recent data is usually available one or two days late.
+	Most recent data is usually available one or two days late. 
+	Currently the LightCurve supports only Single File Load !!
 
 	Parameters
 	----------
@@ -308,17 +307,16 @@ class SITLightCurve(LightCurve):
 	Default value - 15min
 		Possible values - 1min, 10min, 1hr, 1day        #corresponding to duration over which data is averaged
 
-    ** Currently the LightCurve supports only Single File Load **
 
 	Examples
 	--------
 	>>> import os
-    >>> import sunpy.data.test
-    >>> filepath = sunpy.data.test.rootdir
-    >>> from sunpy import lightcurve as lc
-    >>> sit = lc.SITLightCurve._parse_txt(os.path.join(filepath , 'sit/SIT_Ahead_10min_H_2007_01.txt'))
-    >>> sit = lc.SITLightCurve(sit[1],sit[0])
-    >>> sit.peek()
+	>>> import sunpy.data.test
+	>>> filepath = sunpy.data.test.rootdir
+	>>> from sunpy import lightcurve as lc
+	>>> sit = lc.SITLightCurve._parse_txt(os.path.join(filepath , 'sit/SIT_Ahead_10min_H_2007_01.txt'))
+	>>> sit = lc.SITLightCurve(sit[1],sit[0])
+	>>> sit.peek()
 
 
 	References
@@ -433,7 +431,7 @@ class SITLightCurve(LightCurve):
 class PLASTICLightCurve(LightCurve):
 
 	"""
-	STEREO PLASTIC LightCurve. 
+	STEREO PLASTIC LightCurve. Currently the LightCurve supports only Single File Load !!
 
 	Parameters
 	----------
@@ -450,17 +448,15 @@ class PLASTICLightCurve(LightCurve):
 		Possible values - 1*u.min, 10*u.min, 1*u.h      
 		#corresponding to duration over which data is averaged
 
-    ** Currently the LightCurve supports only Single File Load **
-	
 	Examples
 	--------
 	>>> import os
-    >>> import sunpy.data.test
-    >>> filepath = sunpy.data.test.rootdir
-    >>> from sunpy import lightcurve as lc
-    >>> plastic = lc.PLASTICLightCurve._parse_txt(os.path.join(filepath , 'plastic/STA_L2_PLA_1DMax_1min_20140101_001_V09.txt'))
-    >>> plastic = lc.PLASTICLightCurve(plastic[1],plastic[0])
-    >>> plastic.peek()
+	>>> import sunpy.data.test
+	>>> filepath = sunpy.data.test.rootdir
+	>>> from sunpy import lightcurve as lc
+	>>> plastic = lc.PLASTICLightCurve._parse_txt(os.path.join(filepath , 'plastic/STA_L2_PLA_1DMax_1min_20140101_001_V09.txt'))
+	>>> plastic = lc.PLASTICLightCurve(plastic[1],plastic[0])
+	>>> plastic.peek()
 
 	References
 	----------
@@ -590,7 +586,7 @@ class PLASTICLightCurve(LightCurve):
 class SEPTLightCurve(LightCurve):
 	
 	"""
-	STEREO SEPT LightCurve. 
+	STEREO SEPT LightCurve. Currently the LightCurve supports only Single File Load !!
 
 	Parameters
 	----------
@@ -614,17 +610,15 @@ class SEPTLightCurve(LightCurve):
 		Default value - asun
 		Possible values - asun, sun, north, south, omni
 
-    ** Currently the LightCurve supports only Single File Load **
-
 	Examples
 	--------
 	>>> import os
-    >>> import sunpy.data.test
-    >>> filepath = sunpy.data.test.rootdir
-    >>> from sunpy import lightcurve as lc
-    >>> sept = lc.SEPTLightCurve._parse_txt(os.path.join(filepath , 'sept/sept_ahead_ele_asun_2015_001_1min_l2_v03.dat.txt'))
-    >>> sept = lc.SEPTLightCurve(sept[1],sept[0])
-    >>> sept.peek()
+	>>> import sunpy.data.test
+	>>> filepath = sunpy.data.test.rootdir
+	>>> from sunpy import lightcurve as lc
+	>>> sept = lc.SEPTLightCurve._parse_txt(os.path.join(filepath , 'sept/sept_ahead_ele_asun_2015_001_1min_l2_v03.dat.txt'))
+	>>> sept = lc.SEPTLightCurve(sept[1],sept[0])
+	>>> sept.peek()
 
 	References
 	----------
@@ -745,7 +739,7 @@ class SEPTLightCurve(LightCurve):
 
 class HETLightCurve(LightCurve):
 	"""
-	STEREO HET LightCurve. 
+	STEREO HET LightCurve. Currently the LightCurve supports only Single File Load !! 
 
 	Parameters
 	----------
@@ -761,17 +755,15 @@ class HETLightCurve(LightCurve):
 		Default value - 15*u.min
 		Possible values - 1*u.min, 15*u.min, 1*u.h, 12*u.h, 1*u.d       #corresponding to duration over which data is averaged
 
-    ** Currently the LightCurve supports only Single File Load **
-
 	Examples
 	--------
 	>>> import os
-    >>> import sunpy.data.test
-    >>> filepath = sunpy.data.test.rootdir
-    >>> from sunpy import lightcurve as lc
-    >>> het = lc.HETLightCurve._parse_txt(os.path.join(filepath , 'het/AeH06Dec.1m.txt'))
-    >>> het = lc.HETLightCurve(het[1],het[0])
-    >>> het.peek()
+	>>> import sunpy.data.test
+	>>> filepath = sunpy.data.test.rootdir
+	>>> from sunpy import lightcurve as lc
+	>>> het = lc.HETLightCurve._parse_txt(os.path.join(filepath , 'het/AeH06Dec.1m.txt'))
+	>>> het = lc.HETLightCurve(het[1],het[0])
+	>>> het.peek()
 
 	References
 	----------

@@ -86,6 +86,8 @@ class ERNELightCurve(LightCurve):
 	p is for protons, and
 	a is for Helium (alpha particles).
 
+	Currently the LightCurve supports only Single File Load !!
+
 	Parameters
 	----------
 	args:   
@@ -95,11 +97,8 @@ class ERNELightCurve(LightCurve):
 	POSSIBLE KEYWORD VALUES:-  
 		specie: 'proton' or 'alpha'
 
-	** Currently the LightCurve supports only Single File Load **
-	
 	Examples
 	--------
-
 	>>> import os
 	>>> import sunpy.data.test
 	>>> filepath = sunpy.data.test.rootdir
