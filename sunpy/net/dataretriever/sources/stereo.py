@@ -56,6 +56,22 @@ class SEPTClient(GenericClient):
 		urls : list
 			list of URLs corresponding to the requested time range
 
+		Examples
+		--------
+		>>> from sunpy.time.timerange import TimeRange
+		>>> from sunpy.net.vso.attrs import Time, Instrument
+		>>> import sunpy.net.dataretriever.sources.stereo as stereo
+		>>> LCClient = stereo.SEPTClient()
+
+		>>> qr1 = LCClient.query(Time(TimeRange('2008/03/01', '2008/03/05')), Instrument('stereo/sept'), specie = 'element', 
+										duration_of_average = 10*u.min, stereo_spacecraft = 'ahead', sensor_pointing = 'asun')
+		>>> res = LCClient.get(qr1)
+		>>> download_list = res.wait()
+
+		References
+		----------
+		| http://www2.physik.uni-kiel.de/stereo/data/sept/level2/
+
 		"""
 
 		base_url = 'http://www2.physik.uni-kiel.de/stereo/data/sept/level2/'
@@ -162,6 +178,23 @@ class HETClient(GenericClient):
 		-------
 		urls : list
 			list of URLs corresponding to the requested time range
+
+		Examples
+		--------
+		>>> from sunpy.time.timerange import TimeRange
+		>>> from sunpy.net.vso.attrs import Time, Instrument
+		>>> import sunpy.net.dataretriever.sources.stereo as stereo
+		>>> LCClient = stereo.HETClient()
+
+		>>> qr1 = LCClient.query(Time(TimeRange('2012/07/27', '2012/10/27')), Instrument('stereo/het'), stereo_spacecraft ='ahead', 
+									duration_of_average =  1*u.d)
+		>>> res = LCClient.get(qr1)
+		>>> download_list = res.wait()
+
+		References
+		----------
+		| http://www.srl.caltech.edu/STEREO/DATA/HET/
+
 		"""
 	
 		base_url = 'http://www.srl.caltech.edu/STEREO/DATA/HET/'
@@ -260,6 +293,22 @@ class SITClient(GenericClient):
 		-------
 		urls : list
 			list of URLs corresponding to the requested time range
+
+		Examples
+		--------
+		>>> from sunpy.time.timerange import TimeRange
+		>>> from sunpy.net.vso.attrs import Time, Instrument
+		>>> import sunpy.net.dataretriever.sources.stereo as stereo
+		>>> LCClient = stereo.SITClient()
+
+		>>> qr1 = LCClient.query(Time(TimeRange('2008/03/01', '2008/07/02')), Instrument('stereo/sit'), specie = '4He', 
+									stereo_spacecraft = 'ahead', duration_of_average = 10*u.min)
+	    >>> res = LCClient.get(qr1)
+	    >>> download_list = res.wait()
+
+		References
+		----------
+		| http://www.srl.caltech.edu/STEREO/DATA/SIT/
 
 		"""
 
@@ -363,6 +412,22 @@ class PLASTICClient(GenericClient):
 		urls : list
 			list of URLs corresponding to the requested time range
 
+		Examples
+		--------
+		>>> from sunpy.time.timerange import TimeRange
+		>>> from sunpy.net.vso.attrs import Time, Instrument
+		>>> import sunpy.net.dataretriever.sources.stereo as stereo
+		>>> LCClient = stereo.PLASTICClient()
+
+		>>> qr1 = LCClient.query(Time(TimeRange('2012/11/27', '2012/11/27')), Instrument('stereo/plastic'), stereo_spacecraft = 'ahead',
+											duration_of_average = 10*u.min)
+	    >>> res = LCClient.get(qr1)
+	    >>> download_list = res.wait()
+
+		References
+		----------
+		| http://stereo-ssc.nascom.nasa.gov/data/ins_data/plastic/level2/Protons/ASCII/
+
 		"""
 
 		possible_spacecraft = ['ahead', 'behind']
@@ -445,6 +510,14 @@ class MAGClient(GenericClient):
 		urls : list
 			list of URLs corresponding to the requested time range
 
+		Examples
+		--------
+			** Parse for MAG Not Currently Supported : CDF File Issue !! **
+
+		References
+		----------
+		| http://stereo.ssl.berkeley.edu/l2data/
+
 		"""
 
 		possible_spacecraft = ['ahead', 'behind']
@@ -452,7 +525,7 @@ class MAGClient(GenericClient):
 
 		#Parameter Validations
 		if timerange.start < datetime.datetime(2006,01,01):
-			raise ValueError('Earliest date for which PLASTIC data is available is 2006-01-01')
+			raise ValueError('Earliest date for which MAG data is available is 2006-01-01')
 
 		if stereo_spacecraft not in possible_spacecraft:
 			raise ValueError('Possible stereo_spacecraft values: ' + ','.join(possible_spacecraft))
@@ -537,6 +610,22 @@ class LETClient(GenericClient):
 		urls : list
 			list of URLs corresponding to the requested time range
 
+		Examples
+		--------
+		>>> from sunpy.time.timerange import TimeRange
+		>>> from sunpy.net.vso.attrs import Time, Instrument
+		>>> import sunpy.net.dataretriever.sources.stereo as stereo
+		>>> LCClient = stereo.LETClient()
+
+		>>> qr1 = LCClient.query(Time(TimeRange('2012/01/27', '2012/04/27')), Instrument('stereo/let'), specie = 'Al', 
+									duration_of_average = 10*u.min, stereo_spacecraft = 'ahead', type_of_data = 'summed')
+	    >>> res = LCClient.get(qr1)
+	    >>> download_list = res.wait()
+
+		References
+		----------
+		| http://www.srl.caltech.edu/STEREO/DATA/Level1/Public/
+
 		"""
 		possible_spacecraft = ['ahead', 'behind']
 		possible_duration   = [1*u.min, 10*u.min, 1*u.h, 1*u.d, 27*u.d]
@@ -546,7 +635,7 @@ class LETClient(GenericClient):
 
 		#Parameter Validations
 		if timerange.start < datetime.datetime(2006,11,13):
-			raise ValueError('Earliest date for which SEPT data is available is 2006-11-13')
+			raise ValueError('Earliest date for which LET data is available is 2006-11-13')
 
 		if stereo_spacecraft not in possible_spacecraft:
 			raise ValueError('Possible stereo_spacecraft values: ' + ','.join(possible_spacecraft))
