@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""SOHO Dataretriever sources subclass definitions"""
+"""SOHO LightCurve sources subclass definitions"""
 
 from __future__ import absolute_import
 
@@ -16,6 +16,8 @@ from datetime import timedelta,datetime,time
 import pandas as pd
 from pandas import DataFrame
 import numpy as np
+from matplotlib import pyplot as plt
+import matplotlib.dates
 
 from astropy.io import ascii
 from astropy.table import Table, Column
@@ -29,6 +31,8 @@ from sunpy.lightcurve import LightCurve
 
 __all__ = ['ERNELightCurve']
 
+
+#This code for _to_pandas is repeated here and in stereo.py for performance reasons.
 def _to_pandas(self):
     """
     Return a :class:`pandas.DataFrame` instance
@@ -85,24 +89,23 @@ class ERNELightCurve(LightCurve):
     Parameters
     ----------
     args:   
-        Timerange or start and end date, 
-        atomic_specie
+        timerange ( sunpy.time.TimeRange ), 
+        specie ( string )
 
-    KEYWORD VALUES:-  
-        atomic_specie: 'proton' or 'alpha'
+    POSSIBLE KEYWORD VALUES:-  
+        specie: 'proton' or 'alpha'
+
+    ** Currently the LightCurve supports only Single File Load **
     
     Examples
     --------
+    >>> import os
+    >>> import sunpy.data.test
+    >>> filepath = sunpy.data.test.rootdir
     >>> from sunpy import lightcurve as lc
-    >>> from sunpy.time import TimeRange
-    >>> erne = lc.ERNELightCurve.create(TimeRange('2012/06/01', '2012/06/05'),'proton')
+    >>> erne = lc.ERNELightCurve._parse_txt(os.path.join(filepath , 'erne/cr1907a.txt'))
+    >>> erne = lc.ERNELightCurve(erne[1],erne[0])
     >>> erne.peek()
-
-    References
-    ----------
-    They are available at the srl server, and have file names of type
-    | http://srl.utu.fi/erne_data/carrot/1906/cr1906p.txt
-    | http://srl.utu.fi/erne_data/carrot/1906/cr1906a.txt
 
     """
 
@@ -120,7 +123,7 @@ class ERNELightCurve(LightCurve):
         figure.delaxes(ax)
         axes = figure.add_axes([0.1, 0.15, 0.55, 0.8])
 
-        for i,line in enumerate(self.header):
+        for i,line in enumerate(self.header.values()):
             if i >= 1:
                 axes.plot_date(dates, self.data[line].ffill(), '-',
                      label=line[line.index('l')+2:], color=colors[i], lw=1)
@@ -146,7 +149,7 @@ class ERNELightCurve(LightCurve):
         http://srl.utu.fi/erne_data/carrot/carrota.html
         http://srl.utu.fi/erne_data/carrot/carrotp.html
 
-        and returns header as a list and ERNE data as pandas dataframe
+        and returns header as a list and ERNE data as pandas dataframe.
         """
         
         #Reading in Data along with header
@@ -198,5 +201,7 @@ class ERNELightCurve(LightCurve):
         for i,line in enumerate(header[1:]): 
             data[line] = data[line].apply(lambda col: float(col))
 
-        return header, data
+
+        n = len(header)
+        return [OrderedDict(zip(range(n), header)), data]
 

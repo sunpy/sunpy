@@ -42,7 +42,7 @@ def test_can_handle_query():
     assert ans3 == False
 
 def test_query():
-    qr1 = LCClient.query(Time('2012/8/9', '2012/8/10'), Instrument('stereo/het'), stereo_spacecraft = 'ahead', duration_of_average = 10*u.min)
+    qr1 = LCClient.query(Time('2012/8/9', '2012/8/10'), Instrument('stereo/plastic'), stereo_spacecraft = 'ahead', duration_of_average = 10*u.min)
     assert isinstance(qr1,QueryResponse)
     assert len(qr1) == 2
     assert qr1.time_range()[0] == '2012/08/09'
@@ -51,8 +51,8 @@ def test_query():
 
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument, stereo_spacecraft, duration_of_average",
-[(Time(TimeRange('2012/11/27', '2012/11/27')), Instrument('stereo/het'), 'ahead', 10*u.min),
- (Time(TimeRange('2012/10/4', '2012/10/6')), Instrument('stereo/het'),'behind', 1*u.h),
+[(Time(TimeRange('2012/11/27', '2012/11/27')), Instrument('stereo/plastic'), 'ahead', 10*u.min),
+ (Time(TimeRange('2012/10/4', '2012/10/6')), Instrument('stereo/plastic'),'behind', 1*u.h),
 ])
 def test_get(time,instrument, stereo_spacecraft, duration_of_average):
     qr1 = LCClient.query(time,instrument,stereo_spacecraft = stereo_spacecraft, duration_of_average = duration_of_average)

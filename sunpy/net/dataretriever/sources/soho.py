@@ -19,10 +19,10 @@ from sunpy.time import TimeRange
 __all__ = ['ERNEClient']
 
 class ERNEClient(GenericClient):
-
+	
 	def _get_url_for_timerange(cls, timerange, specie = 'proton'):
 		"""
-		Returns list of URLS to SOHO ERNE data files corresponding to value of input timerange.
+		Returns list of URLS to SOHO ERNE data files corresponding to value of input timerange and specie.
 		URL Source : http://srl.utu.fi/erne_data/
 
 		The earliest data available is from 13-Feb-1996.
@@ -41,6 +41,26 @@ class ERNEClient(GenericClient):
 		-------
 		urls : list
 			list of URLs corresponding to the requested time range
+
+		Examples
+		--------
+		>>> from sunpy.time.timerange import TimeRange
+		>>> from sunpy.net.vso.attrs import Time, Instrument
+		>>> import sunpy.net.dataretriever.sources.soho as soho
+		>>> LCClient = soho.ERNEClient()
+
+		>>> qr1 = LCClient.query(Time(TimeRange('2003-03-01','2003-04-04')), Instrument('soho/erne'),specie = 'alpha')
+		>>> res = LCClient.get(qr1)
+		>>> download_list = res.wait()
+
+		References
+		----------
+		They are available at the srl server, 
+		| http://srl.utu.fi/erne_data/
+
+		and have file names of type
+		| http://srl.utu.fi/erne_data/carrot/1906/cr1906p.txt
+		| http://srl.utu.fi/erne_data/carrot/1906/cr1906a.txt
 
 		"""
 

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """STEREO LightCurve sources subclass definitions"""
+
 from __future__ import absolute_import
 
 __authors__ = ["Ankit Kumar"]
@@ -25,8 +26,11 @@ from astropy.table.column import MaskedColumn
 from sunpy.time import TimeRange, parse_time
 from sunpy.lightcurve import LightCurve
 
+
 __all__ = ['LETLightCurve', 'SITLightCurve', 'PLASTICLightCurve', 'SEPTLightCurve', 'HETLightCurve']
 
+
+#This code for _to_pandas is repeated here and in stereo.py for performance reasons.
 def _to_pandas(self):
 	"""
 	Return a :class:`pandas.DataFrame` instance
@@ -69,6 +73,8 @@ def _to_pandas(self):
 
 	return DataFrame(out)
 
+
+
 class LETLightCurve(LightCurve):
 
 	"""
@@ -104,13 +110,17 @@ class LETLightCurve(LightCurve):
 	   Possible values - ahead, behind    
 	   # corresponding to spacecraft location
 
+    ** Currently the LightCurve supports only Single File Load **
+
 	Examples
 	--------
-	>>> from sunpy import lightcurve as lc
-	>>> from sunpy.time import TimeRange
-	>>> let = lc.LETLightCurve.create(TimeRange('2012/06/01', '2012/06/05'), stereo_spacecraft = 'ahead', duration_of_average = 1*u.h, 
-										   average_type = 'standard', specie = 'He')
-	>>> let.peek()
+	>>> import os
+    >>> import sunpy.data.test
+    >>> filepath = sunpy.data.test.rootdir
+    >>> from sunpy import lightcurve as lc
+    >>> let = lc.LETLightCurve._parse_txt(os.path.join(filepath , 'let/Ar_ahead_2006_318_level1_11.txt'))
+    >>> let = lc.LETLightCurve(let[1],let[0])
+    >>> let.peek()
 
 	References
 	----------
@@ -271,7 +281,8 @@ class LETLightCurve(LightCurve):
 		# to_pandas() bound method is only available in the latest development build and none of the stable
 		data = _to_pandas(data)
 		
-		return header, data
+		n = len(header)
+		return [OrderedDict(zip(range(n), header)), data]
 
 
 class SITLightCurve(LightCurve):
@@ -297,13 +308,18 @@ class SITLightCurve(LightCurve):
 	Default value - 15min
 		Possible values - 1min, 10min, 1hr, 1day        #corresponding to duration over which data is averaged
 
+    ** Currently the LightCurve supports only Single File Load **
 
 	Examples
 	--------
-	>>> from sunpy import lightcurve as lc
-	>>> from sunpy.time import TimeRange
-	>>> sit = lc.SITLightCurve.create(TimeRange('2012/06/01', '2012/06/05'), stereo_spacecraft = "ahead",
-										duration_of_average =  "1min", specie = "4He")
+	>>> import os
+    >>> import sunpy.data.test
+    >>> filepath = sunpy.data.test.rootdir
+    >>> from sunpy import lightcurve as lc
+    >>> sit = lc.SITLightCurve._parse_txt(os.path.join(filepath , 'sit/SIT_Ahead_10min_H_2007_01.txt'))
+    >>> sit = lc.SITLightCurve(sit[1],sit[0])
+    >>> sit.peek()
+
 
 	References
 	----------
@@ -319,20 +335,20 @@ class SITLightCurve(LightCurve):
 
 		dates = matplotlib.dates.date2num(self.data['DateTime'].astype(datetime))
 
-		num_energy_bins = (len(self.header)-2)/2
+		num_energy_bins = (len(self.header.values())-2)/2
 		colors = ['Green','Red','Chocolate', 'Blue','SeaGreen','Tomato','SlateBlue','Orange','Purple','Magenta','MediumVioletRed']
 
 		figure.delaxes(ax)
 		axes = figure.add_axes([0.1, 0.15, 0.55, 0.8])
 
-		for i,line in enumerate(self.header):
+		for i,line in enumerate(self.header.values()):
 			if i >= 2 and i <= num_energy_bins + 1:
 				axes.plot_date(dates, self.data[line].ffill(), '-',
 					 label=line[1:20], color=colors[i-2], lw=0.5)
 		
 		axes.set_yscale("log",nonposy='mask')
 		axes.set_ylim(1e-3, 1e+3)
-		axes.set_title(title + ' : ' + self.header[-1][:self.header[-1].index(' ')])
+		axes.set_title(title + ' : ' + self.header.values()[-1][:self.header.values()[-1].index(' ')])
 		axes.set_ylabel('1/(cm^2 s sr MeV/nuc)')
 		axes.set_xlabel('UTC TimeZone')
 
@@ -345,6 +361,7 @@ class SITLightCurve(LightCurve):
 		plt.show()
 
 		return figure
+
 
 	@staticmethod
 	def _parse_txt(filepath):
@@ -409,7 +426,8 @@ class SITLightCurve(LightCurve):
 		# none of the stable versions include it
 		data = _to_pandas(data)
 	
-		return header, data
+		n = len(header)
+		return [OrderedDict(zip(range(n), header)), data]
 
 
 class PLASTICLightCurve(LightCurve):
@@ -431,14 +449,18 @@ class PLASTICLightCurve(LightCurve):
 	duration_of_average: astropy units ( Default value - 10*u.min )
 		Possible values - 1*u.min, 10*u.min, 1*u.h      
 		#corresponding to duration over which data is averaged
+
+    ** Currently the LightCurve supports only Single File Load **
 	
 	Examples
 	--------
-	>>> from sunpy import lightcurve as lc
-	>>> from sunpy.time import TimeRange
-	>>> plastic = lc.PLASTICLightCurve.create(TimeRange('2012/06/01', '2012/06/05'), stereo_spacecraft = 'ahead', 
-												duration_of_average = 10*u.min)
-	>>> plastic.peek()
+	>>> import os
+    >>> import sunpy.data.test
+    >>> filepath = sunpy.data.test.rootdir
+    >>> from sunpy import lightcurve as lc
+    >>> plastic = lc.PLASTICLightCurve._parse_txt(os.path.join(filepath , 'plastic/STA_L2_PLA_1DMax_1min_20140101_001_V09.txt'))
+    >>> plastic = lc.PLASTICLightCurve(plastic[1],plastic[0])
+    >>> plastic.peek()
 
 	References
 	----------
@@ -490,6 +512,7 @@ class PLASTICLightCurve(LightCurve):
 		plt.show()
 
 		return figure
+
 
 	@staticmethod
 	def _parse_txt(filepath):
@@ -560,7 +583,8 @@ class PLASTICLightCurve(LightCurve):
 		# to_pandas() bound method is only available in the latest development build and none of the stable
 		data = _to_pandas(data)
 
-		return header, data
+		n = len(header)
+		return [OrderedDict(zip(range(n), header)), data]
 
 
 class SEPTLightCurve(LightCurve):
@@ -590,13 +614,17 @@ class SEPTLightCurve(LightCurve):
 		Default value - asun
 		Possible values - asun, sun, north, south, omni
 
+    ** Currently the LightCurve supports only Single File Load **
+
 	Examples
 	--------
-	>>> from sunpy import lightcurve as lc
-	>>> from sunpy.time import TimeRange
-	>>> sept = lc.SEPTLightCurve.create(TimeRange('2012/06/01', '2012/06/05'), stereo_spacecraft = 'ahead', 
-									 duration_of_average = 10*u.min, specie = 'element', sensor_pointing = 'asun')
-	>>> sept.peek()
+	>>> import os
+    >>> import sunpy.data.test
+    >>> filepath = sunpy.data.test.rootdir
+    >>> from sunpy import lightcurve as lc
+    >>> sept = lc.SEPTLightCurve._parse_txt(os.path.join(filepath , 'sept/sept_ahead_ele_asun_2015_001_1min_l2_v03.dat.txt'))
+    >>> sept = lc.SEPTLightCurve(sept[1],sept[0])
+    >>> sept.peek()
 
 	References
 	----------
@@ -618,7 +646,7 @@ class SEPTLightCurve(LightCurve):
 		figure.delaxes(ax)
 		axes = figure.add_axes([0.1, 0.15, 0.55, 0.8])
 
-		for i,line in enumerate(self.header):
+		for i,line in enumerate(self.header.values()):
 			if i >= 1 and i <= 15:
 				axes.plot_date(dates, data[line].ffill(), '-',
 					 label= line[line.index('(')+1:line.index('V')+1] , color=colors[i/2-2], lw=0.5)
@@ -637,6 +665,7 @@ class SEPTLightCurve(LightCurve):
 		plt.show()
 
 		return figure
+
 
 	@staticmethod
 	def _parse_txt(filepath):
@@ -710,7 +739,8 @@ class SEPTLightCurve(LightCurve):
 		# to_pandas() bound method is only available in the latest development build and none of the stable
 		data = _to_pandas(data)
 
-		return header, data
+		n = len(header)
+		return [OrderedDict(zip(range(n), header)), data]
 
 
 class HETLightCurve(LightCurve):
@@ -731,13 +761,17 @@ class HETLightCurve(LightCurve):
 		Default value - 15*u.min
 		Possible values - 1*u.min, 15*u.min, 1*u.h, 12*u.h, 1*u.d       #corresponding to duration over which data is averaged
 
+    ** Currently the LightCurve supports only Single File Load **
+
 	Examples
 	--------
-	>>> from sunpy import lightcurve as lc
-	>>> from sunpy.time import TimeRange
-	>>> het = lc.HETLightCurve.create(TimeRange('2012/06/01', '2012/06/05'), stereo_spacecraft = 'ahead', 
-												duration_of_average = 15*u.min)
-	>>> het.peek()
+	>>> import os
+    >>> import sunpy.data.test
+    >>> filepath = sunpy.data.test.rootdir
+    >>> from sunpy import lightcurve as lc
+    >>> het = lc.HETLightCurve._parse_txt(os.path.join(filepath , 'het/AeH06Dec.1m.txt'))
+    >>> het = lc.HETLightCurve(het[1],het[0])
+    >>> het.peek()
 
 	References
 	----------
@@ -751,7 +785,7 @@ class HETLightCurve(LightCurve):
 		figure = plt.figure()
 		ax = plt.gca()
 
-		if self.header[1] == 'DateTime':
+		if self.header.values()[1] == 'DateTime':
 			dates = matplotlib.dates.date2num(self.data['DateTime'].astype(datetime))
 		else:
 			timerange_start = self.data['TimeRange'].apply(lambda col: col.start)
@@ -763,7 +797,7 @@ class HETLightCurve(LightCurve):
 		figure.delaxes(ax)
 		axes = figure.add_axes([0.1, 0.15, 0.55, 0.8])
 
-		for i,line in enumerate(self.header):
+		for i,line in enumerate(self.header.values()):
 			if i >= 2 and i%2 == 0:
 				axes.plot_date(dates, self.data[line].ffill(), '-',
 					 label= line[:line.index('n')+2] + line[line.index(',')+2:line.index('V')+1], color=colors[i/2-2], lw=0.5)
@@ -782,6 +816,7 @@ class HETLightCurve(LightCurve):
 		plt.show()
 
 		return figure
+
 
 	@staticmethod
 	def _parse_txt(filepath):
@@ -874,5 +909,6 @@ class HETLightCurve(LightCurve):
 		# to_pandas() bound method is only available in the latest development build and none of the stable
 		data = _to_pandas(data)
 		
-		return header, data
+		n = len(header)
+		return [OrderedDict(zip(range(n), header)), data]
 
