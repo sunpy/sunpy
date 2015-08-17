@@ -14,25 +14,29 @@ __all__ = ['NOAAIndicesLightCurve', 'NOAAPredictIndicesLightCurve']
 
 
 class NOAAIndicesLightCurve(LightCurve):
-    """NOAA Solar Cycle monthly indices.
+    """
+    NOAA Solar Cycle monthly indices.
     Solar activity is measured by a number of different values. The NOAA Solar
     Weather Prediction Center (SWPC) publishes the following indices. All of
     these indices are also provided as a 13-month running smoothed value.
-    * The SWO sunspot number is issued by the NOAA Space Weather
-      Prediction Center (SWPC)
-    * The RI sunspot number is the official International Sunspot Number and is
-      issued by the `Solar Influence Data Analysis Center (SDIC)
-      <http://sidc.oma.be>`_ in Brussels, Belgium.
-    * The ratio between the SWO and RI indices.
-    * Radio flux at 10.7 cm is produced by
-      `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the
-      units are in sfu.
-    * The Ap Geomagnetic Index is produced by the United States Air Force (USAF).
+
+
+    1. The SWO sunspot number is issued by the NOAA Space Weather Prediction Center (SWPC)
+    2. The RI sunspot number is the official International Sunspot Number and is issued by 
+       the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
+    3. The ratio between the SWO and RI indices.
+    4. Radio flux at 10.7 cm is produced by Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html> 
+       and the units are in sfu.
+    5. The Ap Geomagnetic Index is produced by the United States Air Force (USAF).
+    
+                                          
+
     Examples
     --------
     >>> from sunpy import lightcurve as lc
     >>> noaa = lc.NOAAIndicesLightCurve.create()
     >>> noaa.peek()   # doctest: +SKIP
+
     References
     ----------
     * `Solar and Geomagnetic Indices Data Archive <http://legacy-www.swpc.noaa.gov/Data/index.html#indices>`_
@@ -40,26 +44,31 @@ class NOAAIndicesLightCurve(LightCurve):
     * `Indices Descriptions <ftp://ftp.swpc.noaa.gov/pub/weekly/README3>`_
     * `NOAA plots of Solar Cycle Progression <http://www.swpc.noaa.gov/products/solar-cycle-progression>`_
     * `NOAA Product List <http://www.swpc.noaa.gov/products-and-data>`_
+
+
     """
     default_url_noaa_indices = "ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"
 
     def peek(self, type='sunspot SWO', **plot_args):
         """Plots NOAA Indices as a function of time. An example is shown below.
-        .. plot::
-            from sunpy import lightcurve as lc
-            noaa = lc.NOAAIndicesLightCurve.create()
-            noaa.peek()
+
+        >>> from sunpy import lightcurve as lc
+        >>> noaa = lc.NOAAIndicesLightCurve.create()
+        >>> noaa.peek()
+
         Parameters
         ----------
         type : str
-            The type of plot required.
+        The type of plot required.
+
         **plot_args : dict
-            Any additional plot arguments that should be used
-            when plotting.
+        Any additional plot arguments that should be used when plotting.  
+
         Returns
         -------
-        fig : `~matplotlib.Figure`
-            A plot figure.
+        fig : ~matplotlib.Figure
+        A plot figure.
+
         """
 
         figure = plt.figure()
@@ -127,45 +136,54 @@ class NOAAIndicesLightCurve(LightCurve):
             return {'comments': header}, data
 
 class NOAAPredictIndicesLightCurve(LightCurve):
-    """NOAA Solar Cycle Predicted Progression
+    """
+    NOAA Solar Cycle Predicted Progression
     The predictions are updated monthly and are produced by ISES. Observed
     values are initially the preliminary values which are replaced with the
     final values as they become available.
+
     The following predicted values are available.
     * The predicted RI sunspot number is the official International Sunspot
-      Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
+    Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
     * The predicted radio flux at 10.7 cm is produced by
-      `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
+    `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
+
     Examples
     --------
     >>> from sunpy import lightcurve as lc
     >>> noaa = lc.NOAAPredictIndicesLightCurve.create()
     >>> noaa.peek()   # doctest: +SKIP
+
+
     References
     ----------
     * `Solar and Geomagnetic Indices Data Archive <http://legacy-www.swpc.noaa.gov/Data/index.html#indices>`_
     * `Predicted solar indices <http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt>`_
     * `NOAA plots of Solar Cycle Progression <http://www.swpc.noaa.gov/products/solar-cycle-progression>`_
     * `NOAA Product List <http://www.swpc.noaa.gov/products-and-data>`_
+
     """
 
     default_url_noaa_predict_indices = "http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"
 
     def peek(self, **plot_args):
-        """Plots predicted NOAA Indices as a function of time. An example is shown below.
-        .. plot::
-            from sunpy import lightcurve as lc
-            noaa = lc.NOAAPredictIndicesLightCurve.create()
-            noaa.peek()
+        """
+        Plots predicted NOAA Indices as a function of time. An example is shown below.
+
+        >>> from sunpy import lightcurve as lc
+        >>> noaa = lc.NOAAPredictIndicesLightCurve.create()
+        >>> noaa.peek()
+
         Parameters
         ----------
         **plot_args : dict
-            Any additional plot arguments that should be used
-            when plotting.
+        Any additional plot arguments that should be used when plotting.
+
         Returns
         -------
         fig : `~matplotlib.Figure`
-            A plot figure.
+        A plot figure.
+
         """
 
         figure = plt.figure()
