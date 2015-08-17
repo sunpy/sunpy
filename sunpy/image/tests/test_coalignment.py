@@ -260,6 +260,9 @@ def test_mapcube_coalign_by_match_template(aia171_test_mc,
     assert(test_mc[0].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
     assert(test_mc[1].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
 
+    # Test that the reference pixels of each map in the coaligned mapcube is
+    # correct
+    assert(False)
 
 def test_apply_shifts(aia171_test_map):
     # take two copies of the AIA image and create a test mapcube.

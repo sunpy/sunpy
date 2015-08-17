@@ -584,4 +584,4 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
         yshift_keep[i] = (yshift_arcseconds[i] / m.scale.y)
 
     # Apply the shifts and return the coaligned mapcube
-    return apply_shifts(mc, yshift_keep, xshift_keep, clip=clip)
+    return apply_shifts(mc, -yshift_keep, -xshift_keep, clip=clip)
