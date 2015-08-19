@@ -86,8 +86,8 @@ class TestHETLightCurve(object):
 
 class TestPLASTICLightCurve(object):
 
-    @pytest.mark.parametrize("data_file",[('plastic/STA_L2_PLA_1DMax_10min_20140101_001_V09.txt'), ('plastic/STA_L2_PLA_1DMax_1hr_20140101_001_V09.txt'), 
-                                    ('plastic/STA_L2_PLA_1DMax_1min_20140101_001_V09.txt')])
+    @pytest.mark.parametrize("data_file",[('plastic/STA_L2_PLA_1DMax_10min_20140101_001_V09.txt'), ('plastic/STA_L2_PLA_1DMax_1hr_20141113_317_V09.txt'), 
+                                    ('plastic/STA_L2_PLA_1DMax_1min_20140101_001_V09.txt'),('plastic/STA_L2_PLA_1DMax_1hr_20141016_289_V09.txt')])
     @pytest.mark.online
     def test_header(self, data_file):
         """Test header parsing from file"""
@@ -104,8 +104,8 @@ class TestPLASTICLightCurve(object):
         assert (lc._parse_txt(os.path.join(filepath , data_file))[1]).empty == False
 
 
-    @pytest.mark.parametrize("data_file",[('plastic/STA_L2_PLA_1DMax_10min_20140101_001_V09.txt'), ('plastic/STA_L2_PLA_1DMax_1hr_20140101_001_V09.txt'), 
-                                    ('plastic/STA_L2_PLA_1DMax_1min_20140101_001_V09.txt')])
+    @pytest.mark.parametrize("data_file",[('plastic/STA_L2_PLA_1DMax_10min_20140101_001_V09.txt'), ('plastic/STA_L2_PLA_1DMax_1hr_20141113_317_V09.txt'), 
+                                    ('plastic/STA_L2_PLA_1DMax_1min_20140101_001_V09.txt'),('plastic/STA_L2_PLA_1DMax_1hr_20141016_289_V09.txt')])
     @pytest.mark.online
     def test_header(self, data_file):
         """Test parsed header and data columns list for equal lengths """
