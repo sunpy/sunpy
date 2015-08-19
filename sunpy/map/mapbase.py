@@ -1280,7 +1280,7 @@ scale:\t\t {scale}
         if wcsaxes_compat.is_wcsaxes(axes):
             axes_unit = u.deg
         else:
-            axes_unit = u.arcsec
+            axes_unit = self.units[0]
 
         bottom_left = bottom_left.to(axes_unit).value
         width = width.to(axes_unit).value
