@@ -1031,6 +1031,9 @@ scale:\t\t {scale}
 
         # Create new map instance
         new_map.data = new_data
+        if self.mask is not None:
+            new_map.mask = self.mask[yslice, xslice].copy()
+
         return new_map
 
     @u.quantity_input(dimensions=u.pixel)
