@@ -1240,6 +1240,62 @@ scale:\t\t {scale}
 
         return [circ]
 
+    @u.quantity_input(bottom_left=u.deg, width=u.deg, height=u.deg)
+    def draw_rectangle(self, bottom_left, width, height, axes=None, **kwargs):
+        """
+        Draw a rectangle defined in world coordinates on the plot.
+
+        Parameters
+        ----------
+
+        bottom_left : `astropy.units.Quantity`
+            The bottom left corner of the rectangle.
+
+        width : `astropy.units.Quantity`
+            The width of the rectangle.
+
+        height : `astropy.units.Quantity`
+            The height of the rectangle.
+
+        axes : `matplotlib.axes.Axes`
+            The axes on which to plot the rectangle, defaults to the current axes.
+
+        Returns
+        -------
+
+        rect : `matplotlib.patches.Rectangle`
+            The rectangle obect, after it has been added to ``axes``.
+
+        Notes
+        -----
+
+        Extra keyword arguments to this function are passed through to the
+        `~matplotlib.patches.Rectangle` instance.
+
+        """
+
+        if not axes:
+            axes = plt.gca()
+
+        if wcsaxes_compat.is_wcsaxes(axes):
+            axes_unit = u.deg
+        else:
+            axes_unit = u.arcsec
+
+        bottom_left = bottom_left.to(axes_unit).value
+        width = width.to(axes_unit).value
+        height = height.to(axes_unit).value
+
+        kwergs = {'transform':wcsaxes_compat.get_world_transform(axes),
+                  'color':'white',
+                  'fill':False}
+        kwergs.update(kwargs)
+        rect = plt.Rectangle(bottom_left, width, height, **kwergs)
+
+        axes.add_artist(rect)
+
+        return rect
+
     @toggle_pylab
     def peek(self, draw_limb=False, draw_grid=False,
                    colorbar=True, basic_plot=False, **matplot_args):
