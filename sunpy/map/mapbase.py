@@ -1263,8 +1263,8 @@ scale:\t\t {scale}
         Returns
         -------
 
-        rect : `matplotlib.patches.Rectangle`
-            The rectangle obect, after it has been added to ``axes``.
+        rect : `list`
+            A list containing the `~matplotlib.patches.Rectangle` object, after it has been added to ``axes``.
 
         Notes
         -----
@@ -1294,7 +1294,7 @@ scale:\t\t {scale}
 
         axes.add_artist(rect)
 
-        return rect
+        return [rect]
 
     @toggle_pylab
     def peek(self, draw_limb=False, draw_grid=False,
