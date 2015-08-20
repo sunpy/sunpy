@@ -419,7 +419,7 @@ class PLASTICClient(GenericClient):
 		>>> import sunpy.net.dataretriever.sources.stereo as stereo
 		>>> LCClient = stereo.PLASTICClient()
 
-		>>> qr1 = LCClient.query(Time(TimeRange('2012/11/27', '2012/11/27')), Instrument('stereo/plastic'), stereo_spacecraft = 'ahead',
+		>>> qr1 = LCClient.query(Time(TimeRange('2012/10/27', '2012/11/27')), Instrument('stereo/plastic'), stereo_spacecraft = 'ahead',
 											duration_of_average = 10*u.min)
 	    >>> res = LCClient.get(qr1)
 	    >>> download_list = res.wait()
