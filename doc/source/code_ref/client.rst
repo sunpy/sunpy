@@ -39,5 +39,5 @@ Example Above returns a response object which is further used to download the co
 
 Doing so will download the data files corresponding to input timerange and instrument and Default values for other client specific parameters. The following instrument classes are supported.
 
-.. automodapi:: sunpy.net.dataretriever.client
+.. automodapi:: sunpy.net.dataretriever
 
