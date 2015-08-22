@@ -238,6 +238,9 @@ scale:\t\t {scale}
         w2.wcs.ctype = self.coordinate_system
         w2.wcs.pc = self.rotation_matrix
         w2.wcs.cunit = self.units
+        w2.wcs.dateobs = self.date.isoformat()
+        w2.heliographic_latitude = self.heliographic_latitude
+        w2.heliographic_longitude = self.heliographic_longitude
 
         # Astropy WCS does not understand the SOHO default of "solar-x" and
         # "solar-y" ctypes.  This overrides the default assignment and
