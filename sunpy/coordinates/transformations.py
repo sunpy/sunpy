@@ -16,6 +16,9 @@ from .frames import (HelioGraphicStonyhurst, HelioGraphicCarrington,
                      HelioCentric, HelioProjective)
 
 
+__all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
+           'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc']
+
 def _carrington_offset(dateobs):
     """
     Calculate the HG Longitude offest based on a time
