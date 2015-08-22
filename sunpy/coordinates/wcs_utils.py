@@ -13,7 +13,10 @@ def solar_wcs_frame_mapping(wcs):
 
     xcoord = wcs.wcs.ctype[0][0:4]
     ycoord = wcs.wcs.ctype[1][0:4]
+
     dateobs = wcs.wcs.dateobs if wcs.wcs.dateobs else None
+    hglon = None
+    hglat = None
 
     if hasattr(wcs, 'heliographic_longitude'):
         hglon = wcs.heliographic_longitude
