@@ -1,13 +1,13 @@
 .. _dataretriever_code_ref:
 
-SunPy genericclient
+SunPy GenericClient
 ===================
 
 Overview
 --------
 One of core classes in SunPy is a GenericClient or dataretriver . A number of instruments
 are supported through subclasses of the base `~sunpy.net.dataretriever.GenericClient` class.
-To see :ref:`dataretriever-sources` for a list of all of them.
+See :ref:`dataretriever-sources` for a list of all of them.
 
 Creating a Client and querying for data
 ---------------------------------------
