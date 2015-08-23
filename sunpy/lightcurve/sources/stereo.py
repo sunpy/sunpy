@@ -91,8 +91,7 @@ class LETLightCurve(LightCurve):
         figure = plt.figure()
         ax = plt.gca()
 
-        header, data = _parse_txt('Ar_ahead_2006_318_level1_11.txt')
-        dates = matplotlib.dates.date2num(data['Datetime'].astype(datetime))
+        dates = matplotlib.dates.date2num(self.data['Datetime'].astype(datetime))
 
         colors = ['Green','Red', 'Blue','SeaGreen','Tomato','SlateBlue','Orange',
                             'Purple','Magenta','Chocolate','MediumVioletRed', 'Teal','Navy','Indigo']
@@ -100,35 +99,35 @@ class LETLightCurve(LightCurve):
         figure.delaxes(ax)
         axes = figure.add_axes([0.1, 0.15, 0.55, 0.8])
 
-        if header[1][:4] == 'Flux':
+        if self.header[1][:4] == 'Flux':
             #27 day data
-            num_energy_bins = (len(header)-1)/2
-            for i,line in enumerate(header):
+            num_energy_bins = (len(self.header)-1)/2
+            for i,line in enumerate(self.header):
                 if i >= 1 and i < num_energy_bins:
-                    axes.plot_date(dates, data['col' +str(3+i)].ffill(), '-', label= line[9:], color=colors[i], lw=0.5)
+                    axes.plot_date(dates, self.data['col' +str(3+i)].ffill(), '-', label= line[9:], color=colors[i], lw=0.5)
             axes.set_yscale("log",nonposy='mask')
             
-        elif header[1][:22] == 'Column 6: LET Livetime' and header[2][9] == '-':
+        elif self.header[1][:22] == 'Column 6: LET Livetime' and self.header[2][9] == '-':
             #Sectored data
-            num_energy_bins = header[2][header[2].index(':')+2:header[2].index('s')-1]
-            data = data.replace(-9999.9,float('nan'))
+            num_energy_bins = self.header[2][self.header[2].index(':')+2:self.header[2].index('s')-1]
+            self.data = self.data.replace(-9999.9,float('nan'))
             for i in range(int(num_energy_bins)):
-                axes.plot_date(dates, data['col' + str(7+i)].ffill(), '-', label= 'Sector '+str(i), color=colors[i/2-2], lw=2)
+                axes.plot_date(dates, self.data['col' + str(7+i)].ffill(), '-', label= 'Sector '+str(i), color=colors[i/2-2], lw=2)
 
-        elif header[2][:22] == 'Column 7: LET Livetime':
+        elif self.header[2][:22] == 'Column 7: LET Livetime':
             #Non sectored standard data
-            num_energy_bins = len(header) - 4
+            num_energy_bins = len(self.header) - 4
             for i in range(num_energy_bins):
-                data = data.replace(-1.000000e+31,float('nan'))
-                label = header[3+i][header[3+i].index(':')+1:header[3+i].index('/')+2]
-                axes.plot_date(dates, data['col' + str(8+i)].ffill(), '-', label= label, color=colors[i], lw=2)
+                self.data = self.data.replace(-1.000000e+31,float('nan'))
+                label = self.header[3+i][self.header[3+i].index(':')+1:self.header[3+i].index('/')+2]
+                axes.plot_date(dates, self.data['col' + str(8+i)].ffill(), '-', label= label, color=colors[i], lw=2)
         else:
             #Non sectored non standard data
-            num_energy_bins = len(header) - 4
+            num_energy_bins = len(self.header) - 4
             for i in range(num_energy_bins):
-                data = data.replace(-1.000000e+31,float('nan'))
-                label = header[2+i][header[2+i].index(':')+1:header[2+i].index('/')+4]
-                axes.plot_date(dates, data['col' + str(7+i)].ffill(), '-', label= label, color=colors[i], lw=2)
+                self.data = self.data.replace(-1.000000e+31,float('nan'))
+                label = self.header[2+i][self.header[2+i].index(':')+1:self.header[2+i].index('/')+4]
+                axes.plot_date(dates, self.data['col' + str(7+i)].ffill(), '-', label= label, color=colors[i], lw=2)
 
 
         
@@ -291,7 +290,7 @@ class SITLightCurve(LightCurve):
         """Plots SIT light curve in the usual manner"""
 
         figure = plt.figure()
-        axes = plt.gca()
+        ax = plt.gca()
 
         dates = matplotlib.dates.date2num(self.data['DateTime'].astype(datetime))
 
