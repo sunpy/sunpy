@@ -86,7 +86,7 @@ class LETLightCurve(LightCurve):
 
     """
 
-    def peek(title="LET electron/proton Flux"):
+    def peek(self, title="LET electron/proton Flux"):
         """Plots LET light curve in the usual manner"""
         figure = plt.figure()
         ax = plt.gca()
