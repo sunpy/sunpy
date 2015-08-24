@@ -168,13 +168,7 @@ def show_colormaps(mission=None):
     """
 
     if mission:
-        filter = []
-        for k in cmlist.keys():
-            if k.count():
-                filter.append(True)
-            else:
-                filter.append(False)
-        maps = sort(cmlist)
+        maps =  sorted({k:v for (k,v) in cmlist.iteritems() if k.count(mission)})
     else:
         maps = sorted(cmlist)
 
@@ -192,7 +186,6 @@ def show_colormaps(mission=None):
         pos = list(ax.get_position().bounds)
         fig.text(pos[0] - 0.01, pos[1], name, fontsize=10,
                  horizontalalignment='right')
-
     plt.show()
 
 # def test_equalize(data):
