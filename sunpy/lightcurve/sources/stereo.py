@@ -409,13 +409,13 @@ class PLASTICLightCurve(LightCurve):
     .. plot::
 
     
-import os
-import sunpy.data.test
-filepath = sunpy.data.test.rootdir
-from sunpy import lightcurve as lc
-[header,data] = lc.PLASTICLightCurve._parse_txt(os.path.join(filepath , 'plastic/', 'STA_L2_PLA_1DMax_1min_20140101_001_V09.txt'))
-plastic = lc.PLASTICLightCurve(data,header)
-plastic.peek()
+        import os
+        import sunpy.data.test
+        filepath = sunpy.data.test.rootdir
+        from sunpy import lightcurve as lc
+        [header,data] = lc.PLASTICLightCurve._parse_txt(os.path.join(filepath , 'plastic/', 'STA_L2_PLA_1DMax_1min_20140101_001_V09.txt'))
+        plastic = lc.PLASTICLightCurve(data,header)
+        plastic.peek()
 
     References
     ----------
