@@ -32,9 +32,8 @@ __all__ = ['LETLightCurve', 'SITLightCurve', 'PLASTICLightCurve', 'SEPTLightCurv
 
 
 class LETLightCurve(LightCurve):
-
     """
-    STEREO LET LightCurve. Provides data from as back as 2006. Currently the LightCurve supports only Single File Load !!
+    STEREO LET LightCurve. Provides data from as back as 2006. Currently the LightCurve supports only Single File Load
 
     Parameters
     ----------
@@ -54,7 +53,7 @@ class LETLightCurve(LightCurve):
        else:
        Possible values: sectored, standard, summed
 
-    specie:  string
+    species:  string
        Possible values - depends on other parameters
        if type_of_data = 'Sectored' and duration_of_average in [ 1 * u.min, 10 * u.min, 1 * u.h, 1 * u.d]:
        Possible values: CNO_hi,CNO_lo, Fe_hi, Fe_lo, H_lo, He3_lo, He4_hi, He4_lo, He_lo, NeMgSi_hi, NeMgSi_lo
@@ -76,8 +75,8 @@ class LETLightCurve(LightCurve):
         import sunpy.data.test
         filepath = sunpy.data.test.rootdir
         from sunpy import lightcurve as lc
-        let = lc.LETLightCurve._parse_txt(os.path.join(filepath , 'let/Ar_ahead_2006_318_level1_11.txt'))
-        let = lc.LETLightCurve(let[1],let[0])
+        [header,data] = lc.LETLightCurve._parse_txt(os.path.join(filepath , 'let/', 'Ar_ahead_2006_318_level1_11.txt'))
+        let = lc.LETLightCurve(data,header)
         let.peek()
 
     References
@@ -133,7 +132,7 @@ class LETLightCurve(LightCurve):
         
         axes.set_title(title)
         axes.set_ylabel('1/(cm^2 s sr MeV/nuc)')
-        axes.set_xlabel('UTC TimeZone')
+        axes.set_xlabel('UTC Time')
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(False, 'major')
@@ -211,8 +210,7 @@ class LETLightCurve(LightCurve):
         data_modify = []
         #Converting separate datetime element into a single datetime.datetime column
         if type_of_data == '27day':
-            for i in range(len(data)):
-                data_modify.append(datetime(year_col[i],1,1) + timedelta(days = day_of_year_col[i]) )
+            data_modify = [datetime(year, 1, 1) + timedelta(days=day - 1) for year, day in zip(year_col, day_of_year_col)]
             
             data.remove_columns(['col{}'.format(i) for i in range(1,3)])
             data.add_column(Column(data = data_modify, name='Datetime'),0)
@@ -235,16 +233,15 @@ class LETLightCurve(LightCurve):
         # Converting from astropy.table.Table to pandas.Dataframe
         # to_pandas() bound method is only available in the latest development build and none of the stable
         data = _to_pandas(data)
-        
-        n = len(header)
-        return [OrderedDict(zip(range(n), header)), data]
+
+        return [OrderedDict(enumerate(header))]
 
 
 class SITLightCurve(LightCurve):
     """
     SIT LightCurve. Provides SIT data back to 2007-07.
     Most recent data is usually available one or two days late. 
-    Currently the LightCurve supports only Single File Load !!
+    Currently the LightCurve supports only Single File Load
 
     Parameters
     ----------
@@ -256,7 +253,7 @@ class SITLightCurve(LightCurve):
         Default value - ahead
         Possible values - ahead, behind    # corresponding to spacecraft location
 
-    specie:  string
+    species:  string
         Default value - 4He
         Possible values - 4He, Fe, H, O
 
@@ -275,8 +272,8 @@ class SITLightCurve(LightCurve):
         import sunpy.data.test
         filepath = sunpy.data.test.rootdir
         from sunpy import lightcurve as lc
-        sit = lc.SITLightCurve._parse_txt(os.path.join(filepath , 'sit/SIT_Ahead_10min_H_2007_01.txt'))
-        sit = lc.SITLightCurve(sit[1],sit[0])
+        [header,data] = lc.SITLightCurve._parse_txt(os.path.join(filepath , 'sit/', 'SIT_Ahead_10min_H_2007_01.txt'))
+        sit = lc.SITLightCurve(data,header)
         sit.peek()
 
 
@@ -309,7 +306,7 @@ class SITLightCurve(LightCurve):
         axes.set_ylim(1e-3, 1e+3)
         axes.set_title(title + ' : ' + self.header.values()[-1][:self.header.values()[-1].index(' ')])
         axes.set_ylabel('1/(cm^2 s sr MeV/nuc)')
-        axes.set_xlabel('UTC TimeZone')
+        axes.set_xlabel('UTC Time')
 
 
         axes.yaxis.grid(True, 'major')
@@ -342,18 +339,17 @@ class SITLightCurve(LightCurve):
                 break
         data_all.close()
 
-        specie = header[-2][header[-2].index(':')+3:header[-2].index('t')-1]
+        # To extract the species (4He) from a line like
+        # Columns 17 - 26:  4He total counts for same energy ranges as above
+        specie = header[-2].split(": ")[1].split()[0]
+
         header = header[:-2]
-
-        for i in range(len(header)):
-            header[i] = header[i][ header[i].index(":") + 2:] 
-
+        header = [ h.split(": ")[1] for h in header]
         header = ['DateTime'] + header
 
         
         #To format column names 
-        for i in range(len(header)-2):
-            header = header + [specie + ' total counts for '+ (header[i+2])[1:20] +' energy range']
+        header = header + ['{} total counts for {} energy range'.format(specie, h[1:20]) for h in header[2:]]
 
         data = ascii.read(filepath, delimiter = "\s", data_start = data_start) 
     
@@ -385,14 +381,12 @@ class SITLightCurve(LightCurve):
         # none of the stable versions include it
         data = _to_pandas(data)
     
-        n = len(header)
-        return [OrderedDict(zip(range(n), header)), data]
+        return [OrderedDict(enumerate(header))]
 
 
 class PLASTICLightCurve(LightCurve):
-
     """
-    STEREO PLASTIC LightCurve. Currently the LightCurve supports only Single File Load !!
+    STEREO PLASTIC LightCurve. Currently the LightCurve supports only Single File Load
 
     Parameters
     ----------
@@ -419,8 +413,8 @@ class PLASTICLightCurve(LightCurve):
         import sunpy.data.test
         filepath = sunpy.data.test.rootdir
         from sunpy import lightcurve as lc
-        plastic = lc.PLASTICLightCurve._parse_txt(os.path.join(filepath , 'plastic/STA_L2_PLA_1DMax_1min_20140101_001_V09.txt'))
-        plastic = lc.PLASTICLightCurve(plastic[1],plastic[0])
+        [header,data] = lc.PLASTICLightCurve._parse_txt(os.path.join(filepath , 'plastic/', 'STA_L2_PLA_1DMax_1min_20140101_001_V09.txt'))
+        plastic = lc.PLASTICLightCurve(data,header)
         plastic.peek()
 
     References
@@ -467,7 +461,7 @@ class PLASTICLightCurve(LightCurve):
               ncol=1, fancybox=True, shadow=True)
         ax3.yaxis.grid(True, 'major')
         ax3.xaxis.grid(False, 'major')
-        ax3.set_xlabel('UTC TimeZone')
+        ax3.set_xlabel('UTC Time')
 
         figure.autofmt_xdate()
         plt.show()
@@ -492,7 +486,8 @@ class PLASTICLightCurve(LightCurve):
         #Determining the type of data
         type_of_data = types.get(header[4])
         if type_of_data is None:
-            raise ValueError('{var} is not one of the possibilities in the header it should be one of {poss}'.format(var=header[4], poss= types.keys()))
+            raise ValueError('{var} is not one of the possibilities in the header it \
+                should be one of {poss}'.format(var=header[4], poss= types.keys()))
 
         
         #Reading in Data only, using default i.e. 0 value for data_start keyword since all lines before data are commented
@@ -518,17 +513,13 @@ class PLASTICLightCurve(LightCurve):
             header = ['Datetime'] + header[7:]
             
         elif type_of_data == '10min':
-            date_and_time_col = data['col5']
-
-            date_and_time_col = [datetime.strptime(str(var), "%Y-%m-%d/%H:%M:%S") for var in date_and_time_col]
+            date_and_time_col = [datetime.strptime(str(var), "%Y-%m-%d/%H:%M:%S") for var in data['col5']]
 
             data.remove_columns(['col{}'.format(i) for i in range(1,5)])
             header = ['Datetime'] + header[5:]
 
         elif type_of_data == '1hr':
-            date_and_time_col = data['col4']
-
-            date_and_time_col = [datetime.strptime(str(var), "%Y-%m-%d/%H:%M:%S") for var in date_and_time_col]
+            date_and_time_col = [datetime.strptime(str(var), "%Y-%m-%d/%H:%M:%S") for var in data['col4']]
 
             data.remove_columns(['col{}'.format(i) for i in range(1,4)])
             header = ['Datetime'] + header[4:]
@@ -544,14 +535,12 @@ class PLASTICLightCurve(LightCurve):
         # to_pandas() bound method is only available in the latest development build and none of the stable
         data = _to_pandas(data)
 
-        n = len(header)
-        return [OrderedDict(zip(range(n), header)), data]
+        return [OrderedDict(enumerate(header))]
 
 
 class SEPTLightCurve(LightCurve):
-    
     """
-    STEREO SEPT LightCurve. Currently the LightCurve supports only Single File Load !!
+    STEREO SEPT LightCurve. Currently the LightCurve supports only Single File Load
 
     Parameters
     ----------
@@ -567,7 +556,7 @@ class SEPTLightCurve(LightCurve):
         Possible values -  1 * u.min, 10 * u.min, 1 * u.h, 1 * u.d    
         #corresponding to duration over which data is averaged
 
-    specie: string
+    species: string
         Default value - element
         Possible values - element, ion
 
@@ -585,8 +574,8 @@ class SEPTLightCurve(LightCurve):
         import sunpy.data.test
         filepath = sunpy.data.test.rootdir
         from sunpy import lightcurve as lc
-        sept = lc.SEPTLightCurve._parse_txt(os.path.join(filepath , 'sept/sept_ahead_ele_asun_2015_001_1min_l2_v03.dat.txt'))
-        sept = lc.SEPTLightCurve(sept[1],sept[0])
+        [header,data] = lc.SEPTLightCurve._parse_txt(os.path.join(filepath , 'sept/', 'sept_ahead_ele_asun_2015_001_1min_l2_v03.dat.txt'))
+        sept = lc.SEPTLightCurve(data,header)
         sept.peek()
 
     References
@@ -617,7 +606,7 @@ class SEPTLightCurve(LightCurve):
         axes.set_yscale("log",nonposy='mask')
         axes.set_title(title)
         axes.set_ylabel('1/(cm^2 s sr MeV)')
-        axes.set_xlabel('UTC TimeZone')
+        axes.set_xlabel('UTC Time')
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(False, 'major')
@@ -674,13 +663,12 @@ class SEPTLightCurve(LightCurve):
         # to_pandas() bound method is only available in the latest development build and none of the stable
         data = _to_pandas(data)
 
-        n = len(header)
-        return [OrderedDict(zip(range(n), header)), data]
+        return [OrderedDict(enumerate(header))]
 
 
 class HETLightCurve(LightCurve):
     """
-    STEREO HET LightCurve. Currently the LightCurve supports only Single File Load !! 
+    STEREO HET LightCurve. Currently the LightCurve supports only Single File Load 
 
     Parameters
     ----------
@@ -706,8 +694,8 @@ class HETLightCurve(LightCurve):
         import sunpy.data.test
         filepath = sunpy.data.test.rootdir
         from sunpy import lightcurve as lc
-        het = lc.HETLightCurve._parse_txt(os.path.join(filepath , 'het/AeH06Dec.1m.txt'))
-        het = lc.HETLightCurve(het[1],het[0])
+        [header,data] = lc.HETLightCurve._parse_txt(os.path.join(filepath , 'het/', 'AeH06Dec.1m.txt'))
+        het = lc.HETLightCurve(data,header)
         het.peek()
 
     References
@@ -742,7 +730,7 @@ class HETLightCurve(LightCurve):
         axes.set_yscale("log",nonposy='mask')
         axes.set_title(title)
         axes.set_ylabel('particles/(cm2-sr-sec-MeV)')
-        axes.set_xlabel('UTC TimeZone')
+        axes.set_xlabel('UTC Time')
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(False, 'major')
@@ -845,7 +833,6 @@ class HETLightCurve(LightCurve):
         # Converting from astropy.table.Table to pandas.Dataframe
         # to_pandas() bound method is only available in the latest development build and none of the stable
         data = _to_pandas(data)
-        
-        n = len(header)
-        return [OrderedDict(zip(range(n), header)), data]
+      
+        return [OrderedDict(enumerate(header))]
 

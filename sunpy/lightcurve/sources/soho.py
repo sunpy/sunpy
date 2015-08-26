@@ -62,8 +62,8 @@ class ERNELightCurve(LightCurve):
         import sunpy.data.test
         filepath = sunpy.data.test.rootdir
         from sunpy import lightcurve as lc
-        erne = lc.ERNELightCurve._parse_txt(os.path.join(filepath , 'erne/cr1907a.txt'))
-        erne = lc.ERNELightCurve(erne[1],erne[0])
+        [header,data] = lc.ERNELightCurve._parse_txt(os.path.join(filepath , 'erne/', 'cr1907a.txt'))
+        erne = lc.ERNELightCurve(data,header)
         erne.peek()
 
     """
@@ -90,7 +90,7 @@ class ERNELightCurve(LightCurve):
         axes.set_yscale("log",nonposy='mask')
         axes.set_title(title)
         axes.set_ylabel('1/(cm^2*sr*s*MeV) [per nucleon in case of protons]')
-        axes.set_xlabel('UTC TimeZone')
+        axes.set_xlabel('UTC Time')
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(False, 'major')
@@ -160,7 +160,5 @@ class ERNELightCurve(LightCurve):
         for i,line in enumerate(header[1:]): 
             data[line] = data[line].apply(lambda col: float(col))
 
-
-        n = len(header)
-        return [OrderedDict(zip(range(n), header)), data]
+        return [OrderedDict(enumerate(header))]
 

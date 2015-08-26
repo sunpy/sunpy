@@ -21,7 +21,7 @@ __all__ = ['SEPTClient', 'HETClient', 'SITClient', 'PLASTICClient', 'MAGClient',
 
 class SEPTClient(GenericClient):
     def _get_url_for_timerange(cls,timerange, stereo_spacecraft = 'ahead', duration_of_average = 10 * u.min,
-                               specie = 'element', sensor_pointing = 'asun'):
+                               species = 'element', sensor_pointing = 'asun'):
         """
         Returns list of URLS to STEREO SEPT data files corresponding to value of input timerange.
         URL Source : http://www2.physik.uni-kiel.de/stereo/data/sept/level2/
@@ -43,7 +43,7 @@ class SEPTClient(GenericClient):
             Possible values - 1 * u.min, 10 * u.min, 1 * u.h, 1 * u.d       
             #corresponding to duration over which data is averaged
 
-        specie:  string
+        species:  string
             Default value - element
             Possible values - element, ion
 
@@ -63,7 +63,7 @@ class SEPTClient(GenericClient):
         >>> import sunpy.net.dataretriever.sources.stereo as stereo
         >>> LCClient = stereo.SEPTClient()
 
-        >>> qr1 = LCClient.query(Time(TimeRange('2008/03/01', '2008/03/05')), Instrument('stereo/sept'), specie = 'element', 
+        >>> qr1 = LCClient.query(Time(TimeRange('2008/03/01', '2008/03/05')), Instrument('stereo/sept'), species = 'element', 
                                         duration_of_average = 10 * u.min, stereo_spacecraft = 'ahead', sensor_pointing = 'asun')
         >>> res = LCClient.get(qr1)
         >>> download_list = res.wait()
@@ -77,11 +77,11 @@ class SEPTClient(GenericClient):
         base_url = 'http://www2.physik.uni-kiel.de/stereo/data/sept/level2/'
 
         possible_spacecraft = ['ahead','behind']
-        possible_specie = ['element', 'ion']
+        possible_species = ['element', 'ion']
         possible_duration = [1 * u.min, 10 * u.min, 1 * u.h, 1 * u.d]
         possible_sensor = ['asun', 'sun', 'north','south','omni']
 
-        dict_specie = {'element': 'ele', 'ion':'ion'}
+        dict_species = {'element': 'ele', 'ion':'ion'}
         dict_duration = {1 * u.min: '1min', 10 * u.min:'10min', 1 * u.h: '1h', 1 * u.d: '1d'}   
 
 
@@ -92,8 +92,8 @@ class SEPTClient(GenericClient):
         if stereo_spacecraft not in possible_spacecraft:
             raise ValueError('Possible stereo_spacecraft values: ' + ','.join(possible_spacecraft))
 
-        if specie not in possible_specie:
-            raise ValueError('Possible specie values: ' + ','.join(possible_specie))
+        if species not in possible_species:
+            raise ValueError('Possible species values: ' + ','.join(possible_species))
 
         if duration_of_average not in possible_duration:
             raise ValueError('Possible duration_of_average values as astropy unit quantities: ' + ','.join([str(i) for i in possible_duration]))
@@ -104,12 +104,12 @@ class SEPTClient(GenericClient):
 
 
         base_pattern = base_url + '{stereo_spacecraft}/{duration_of_average}/%Y/'
-        filename_pattern = 'sept_{stereo_spacecraft}_{specie}_{sensor_pointing}_%Y_%j_{duration_of_average}_l2_v03.dat'
+        filename_pattern = 'sept_{stereo_spacecraft}_{species}_{sensor_pointing}_%Y_%j_{duration_of_average}_l2_v03.dat'
 
         url_pattern = base_pattern + filename_pattern
 
         file_scraper = Scraper(url_pattern, stereo_spacecraft = stereo_spacecraft, duration_of_average = dict_duration[duration_of_average] , 
-                                    specie = dict_specie[specie], sensor_pointing = sensor_pointing)
+                                    species = dict_species[species], sensor_pointing = sensor_pointing)
         
         return file_scraper.filelist(timerange)
 
@@ -263,7 +263,7 @@ class HETClient(GenericClient):
 class SITClient(GenericClient):
 
     def _get_url_for_timerange(cls,timerange, stereo_spacecraft = 'ahead', 
-                               specie       = '4He', 
+                               species       = '4He', 
                                duration_of_average = 10 * u.min):
         """
         Returns list of URLS to STEREO SIT data files corresponding to value of input timerange.
@@ -281,7 +281,7 @@ class SITClient(GenericClient):
             Default value - ahead
             Possible values - ahead, behind    # corresponding to spacecraft location
 
-        specie:  string
+        species:  string
             Default value - 4He
             Possible values - 4He, Fe, H, O
 
@@ -301,7 +301,7 @@ class SITClient(GenericClient):
         >>> import sunpy.net.dataretriever.sources.stereo as stereo
         >>> LCClient = stereo.SITClient()
 
-        >>> qr1 = LCClient.query(Time(TimeRange('2008/03/01', '2008/07/02')), Instrument('stereo/sit'), specie = '4He', 
+        >>> qr1 = LCClient.query(Time(TimeRange('2008/03/01', '2008/07/02')), Instrument('stereo/sit'), species = '4He', 
                                     stereo_spacecraft = 'ahead', duration_of_average = 10 * u.min)
         >>> res = LCClient.get(qr1)
         >>> download_list = res.wait()
@@ -314,7 +314,7 @@ class SITClient(GenericClient):
 
         possible_spacecraft = ['ahead', 'behind']
         possible_duration   = [1 * u.min, 10 * u.min, 1 * u.h, 1 * u.d]
-        possible_specie     = ['4He', 'Fe', 'H','O']
+        possible_species     = ['4He', 'Fe', 'H','O']
 
         dict_duration     =   { 1 * u.min :'1min', 10 * u.min : '10min', 1 * u.h : '1hr', 1 * u.d :'1day'}
         dict_time         =   { 1 * u.min :'%j' , 10 * u.min : '%m',1 * u.h : '',1 * u.d : '' }
@@ -326,8 +326,8 @@ class SITClient(GenericClient):
         if stereo_spacecraft not in possible_spacecraft:
             raise ValueError('Possible stereo_spacecraft values: ' + ','.join(possible_spacecraft))
 
-        if specie not in possible_specie:
-            raise ValueError('Possible specie values: ' + ','.join(possible_specie))
+        if species not in possible_species:
+            raise ValueError('Possible species values: ' + ','.join(possible_species))
 
         if duration_of_average not in possible_duration:
             raise ValueError('Possible duration_of_average values as astropy unit quantities: ' + ','.join([str(i) for i in possible_duration]))
@@ -337,15 +337,15 @@ class SITClient(GenericClient):
         base_url = 'http://www.srl.caltech.edu/STEREO/DATA/SIT/{stereo_spacecraft[0]}/{duration_of_average}/'
 
         if duration_of_average in possible_duration[:2]:
-            url_pattern = base_url + '{specie}/SIT_{stereo_spacecraft[1]}_{duration_of_average}_{specie}_%Y_{dict_time}.txt'
+            url_pattern = base_url + '{species}/SIT_{stereo_spacecraft[1]}_{duration_of_average}_{species}_%Y_{dict_time}.txt'
         else: 
             # duration_of_average in [1 * u.h, 1 * u.d ]:
-            url_pattern = base_url + 'SIT_{stereo_spacecraft[1]}_{duration_of_average}_{specie}_%Y.txt'
+            url_pattern = base_url + 'SIT_{stereo_spacecraft[1]}_{duration_of_average}_{species}_%Y.txt'
 
 
         file_scraper = Scraper(url_pattern, stereo_spacecraft = [stereo_spacecraft, stereo_spacecraft.capitalize()],
                                     duration_of_average      = dict_duration[duration_of_average] , 
-                                    specie            = specie, 
+                                    species            = species, 
                                     dict_time                = dict_time[duration_of_average])
 
         return file_scraper.filelist(timerange)
@@ -567,7 +567,7 @@ class MAGClient(GenericClient):
     
 class LETClient(GenericClient):
 
-    def _get_url_for_timerange(cls,timerange, duration_of_average, type_of_data , specie, stereo_spacecraft = 'ahead'):
+    def _get_url_for_timerange(cls,timerange, duration_of_average, type_of_data , species, stereo_spacecraft = 'ahead'):
         """
         Returns list of URLS to STEREO LET data files corresponding to value of input timerange.
         URL Source : http://www.srl.caltech.edu/STEREO/Public/LET_public.html
@@ -592,7 +592,7 @@ class LETClient(GenericClient):
             else:
                 Possible values: sectored, standard, summed
 
-        specie:  string
+        species:  string
             Possible values - depends on other parameters
             if type_of_data = 'Sectored' and duration_of_average in [ 1 * u.min, 10 * u.min, 1 * u.h, 1 * u.d]:
                 Possible values: CNO_hi,CNO_lo, Fe_hi, Fe_lo, H_lo, He3_lo, He4_hi, He4_lo, He_lo, NeMgSi_hi, NeMgSi_lo
@@ -616,7 +616,7 @@ class LETClient(GenericClient):
         >>> import sunpy.net.dataretriever.sources.stereo as stereo
         >>> LCClient = stereo.LETClient()
 
-        >>> qr1 = LCClient.query(Time(TimeRange('2012/01/27', '2012/04/27')), Instrument('stereo/let'), specie = 'Al', 
+        >>> qr1 = LCClient.query(Time(TimeRange('2012/01/27', '2012/04/27')), Instrument('stereo/let'), species = 'Al', 
                                     duration_of_average = 10 * u.min, stereo_spacecraft = 'ahead', type_of_data = 'summed')
         >>> res = LCClient.get(qr1)
         >>> download_list = res.wait()
@@ -661,16 +661,16 @@ class LETClient(GenericClient):
 
         #Specie validation on the basis of type of data and duration of average
         if type_of_data == 'Sectored' and duration_of_average in ['1Minute', '10Minute', 'Hourly', 'Daily']:
-            possible_specie = ['CNO_hi', 'CNO_lo', 'Fe_hi', 'Fe_lo', 'H_lo', 'He3_lo', 'He4_hi', 'He4_lo', 'He_lo', 'NeMgSi_hi', 'NeMgSi_lo']
+            possible_species = ['CNO_hi', 'CNO_lo', 'Fe_hi', 'Fe_lo', 'H_lo', 'He3_lo', 'He4_hi', 'He4_lo', 'He_lo', 'NeMgSi_hi', 'NeMgSi_lo']
         else:
-            possible_specie = ['Al','Ar','C','Ca','Fe', 'H','He', 'He3','He4','Mg','N','Na','Ne','Ni','O','S','Si']
+            possible_species = ['Al','Ar','C','Ca','Fe', 'H','He', 'He3','He4','Mg','N','Na','Ne','Ni','O','S','Si']
 
-        if specie not in possible_specie:
-                raise ValueError('Invalid Specie Selection. Possible values are: ' + ','.join(possible_specie))
+        if species not in possible_species:
+                raise ValueError('Invalid Specie Selection. Possible values are: ' + ','.join(possible_species))
 
 
         if duration_of_average in ['1Minute', '10Minute']:
-            url_base_pattern =  url_base_pattern + '{specie}/'
+            url_base_pattern =  url_base_pattern + '{species}/'
 
 
         duration_replacement = {'1Minute': '', '10Minute':'_10min', 'Hourly':'_1hr', 'Daily':'_1day', '27day':''}
@@ -680,12 +680,12 @@ class LETClient(GenericClient):
 
         #Adding file name to the final directory pattern
         if duration_of_average != '27day':
-            url_pattern =  url_base_pattern + '{specie}{type_replacement}_{stereo_spacecraft}_%Y{date_replacement}{duration_replacement}_level1_11.txt'
+            url_pattern =  url_base_pattern + '{species}{type_replacement}_{stereo_spacecraft}_%Y{date_replacement}{duration_replacement}_level1_11.txt'
 
             file_scraper = Scraper(url_pattern, stereo_spacecraft = stereo_spacecraft, 
                                         duration_of_average = duration_of_average , 
                                         type_of_data = type_of_data, 
-                                        specie = specie, 
+                                        species = species, 
                                         duration_replacement = duration_replacement[duration_of_average],
                                         type_replacement = type_replacement[type_of_data], 
                                         date_replacement = date_replacement[duration_of_average])
@@ -693,8 +693,8 @@ class LETClient(GenericClient):
             return file_scraper.filelist(timerange)
 
         else:
-            url_pattern = (url_base_pattern + '{specie}{type_replacement}_{stereo_spacecraft}.txt').format(stereo_spacecraft = stereo_spacecraft,
-                                                                                    duration_of_average = duration_of_average, specie = specie,
+            url_pattern = (url_base_pattern + '{species}{type_replacement}_{stereo_spacecraft}.txt').format(stereo_spacecraft = stereo_spacecraft,
+                                                                                    duration_of_average = duration_of_average, species = species,
                                                                                     type_replacement = type_replacement[type_of_data])
             return url_pattern
 
