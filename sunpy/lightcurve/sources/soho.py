@@ -160,5 +160,5 @@ class ERNELightCurve(LightCurve):
         for i,line in enumerate(header[1:]): 
             data[line] = data[line].apply(lambda col: float(col))
 
-        return [OrderedDict(enumerate(header))]
+        return OrderedDict(enumerate(header)), data
 
