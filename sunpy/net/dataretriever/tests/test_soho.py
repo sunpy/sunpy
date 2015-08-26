@@ -13,7 +13,7 @@ import sunpy.net.dataretriever.sources.soho as soho
 LCClient = soho.ERNEClient()
 
 
-@pytest.mark.parametrize("timerange,specie,url_start,url_end",
+@pytest.mark.parametrize("timerange,species,url_start,url_end",
 [(TimeRange('1998-03-01','2003-07-02'),'alpha',
 'http://srl.utu.fi/erne_data/carrot/1933/cr1933a.txt',
 'http://srl.utu.fi/erne_data/carrot/2004/cr2004a.txt'),
@@ -22,22 +22,22 @@ LCClient = soho.ERNEClient()
 'http://srl.utu.fi/erne_data/carrot/2057/cr2057p.txt')
 ])
 
-def test_get_url_for_time_range(timerange, specie, url_start, url_end):
-    urls = LCClient._get_url_for_timerange(timerange, specie = specie)
+def test_get_url_for_time_range(timerange, species, url_start, url_end):
+    urls = LCClient._get_url_for_timerange(timerange, species = species)
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
 def test_can_handle_query():
-    ans1 = soho.ERNEClient._can_handle_query(Time(TimeRange('1998-03-01','2003-07-02')), Instrument('soho/erne'), specie ='alpha')
+    ans1 = soho.ERNEClient._can_handle_query(Time(TimeRange('1998-03-01','2003-07-02')), Instrument('soho/erne'), species ='alpha')
     assert ans1 == True
-    ans2 = soho.ERNEClient._can_handle_query(Time(TimeRange('2004-03-01','2005-07-02')), Instrument('soho/erne'), specie ='proton')
+    ans2 = soho.ERNEClient._can_handle_query(Time(TimeRange('2004-03-01','2005-07-02')), Instrument('soho/erne'), species ='proton')
     assert ans2 == True
     ans3 = soho.ERNEClient._can_handle_query(Time(TimeRange('2012/8/9', '2012/8/10')), Instrument('eve'))
     assert ans3 == False
 
 def test_query():
-    qr1 = LCClient.query(Time(TimeRange('2006/8/9', '2006/8/10')), Instrument('soho/erne'), specie ='alpha')
+    qr1 = LCClient.query(Time(TimeRange('2006/8/9', '2006/8/10')), Instrument('soho/erne'), species ='alpha')
     assert isinstance(qr1,QueryResponse)
     assert len(qr1) == 1
     assert qr1.time_range()[0] == '2006/08/09'
@@ -45,12 +45,12 @@ def test_query():
 
 
 @pytest.mark.online
-@pytest.mark.parametrize("time, instrument, specie",
+@pytest.mark.parametrize("time, instrument, species",
 [(Time(TimeRange('2003-03-01','2003-04-04')), Instrument('soho/erne'),'alpha'),
  (Time(TimeRange('2004-06-01', '2004-09-04')), Instrument('soho/erne'),'proton'),
 ])
-def test_get(time,instrument,specie):
-    qr1 = LCClient.query(time,instrument,specie)
+def test_get(time,instrument,species):
+    qr1 = LCClient.query(time,instrument,species)
     res = LCClient.get(qr1)
     download_list = res.wait()
     assert len(download_list) + 1 == len(qr1)

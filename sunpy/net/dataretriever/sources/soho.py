@@ -20,9 +20,9 @@ __all__ = ['ERNEClient']
 
 class ERNEClient(GenericClient):
     
-    def _get_url_for_timerange(cls, timerange, specie = 'proton'):
+    def _get_url_for_timerange(cls, timerange, species = 'proton'):
         """
-        Returns list of URLS to SOHO ERNE data files corresponding to value of input timerange and specie.
+        Returns list of URLS to SOHO ERNE data files corresponding to value of input timerange and species.
         URL Source : http://srl.utu.fi/erne_data/
 
         The earliest data available is from 13-Feb-1996.
@@ -33,7 +33,7 @@ class ERNEClient(GenericClient):
             time range for which data is to be downloaded.
             Example value -  TimeRange('1996-02-13','2013-05-15')   
 
-        specie:  string
+        species:  string
             Default value - proton
             Possible values - proton, alpha
 
@@ -49,7 +49,7 @@ class ERNEClient(GenericClient):
         >>> import sunpy.net.dataretriever.sources.soho as soho
         >>> LCClient = soho.ERNEClient()
 
-        >>> qr1 = LCClient.query(Time(TimeRange('2003-03-01','2003-04-04')), Instrument('soho/erne'),specie = 'alpha')
+        >>> qr1 = LCClient.query(Time(TimeRange('2003-03-01','2003-04-04')), Instrument('soho/erne'),species = 'alpha')
         >>> res = LCClient.get(qr1)
         >>> download_list = res.wait()
 
@@ -64,20 +64,20 @@ class ERNEClient(GenericClient):
 
         """
 
-        possible_specie = ['proton', 'alpha']
+        possible_species = ['proton', 'alpha']
 
         #Parameter Validations
         if timerange.start < datetime.datetime(1996,02,13):
             raise ValueError('Earliest date for which SEPT data is available is 1996-02-13')
 
-        if specie not in possible_specie:
-            raise ValueError('Possible specie values: ' + '.'.join(possible_specie))
+        if species not in possible_species:
+            raise ValueError('Possible species values: ' + '.'.join(possible_species))
 
 
         to_continue = False
         filelists = []
 
-        opn = urllib2.urlopen('http://srl.utu.fi/erne_data/carrot/carrot{specie}.html'.format(specie =specie[0]))
+        opn = urllib2.urlopen('http://srl.utu.fi/erne_data/carrot/carrot{species}.html'.format(species =species[0]))
 
         #Getting the contents of all <tr> tags with "align" attribute having "center" value
         soup = BeautifulSoup(opn)
@@ -109,7 +109,7 @@ class ERNEClient(GenericClient):
             current_rotation_time = TimeRange(rot_start,rot_end)
 
             if (timerange.start in current_rotation_time) and (not to_continue):
-                url = 'http://srl.utu.fi/erne_data/carrot/{carrot}/cr{carrot}{specie[0]}.txt'.format(carrot = carrot, specie = specie[0])
+                url = 'http://srl.utu.fi/erne_data/carrot/{carrot}/cr{carrot}{species[0]}.txt'.format(carrot = carrot, species = species[0])
                 filelists.append(url)
                 if timerange.end in current_rotation_time:
                     break
@@ -117,7 +117,7 @@ class ERNEClient(GenericClient):
                     to_continue = True
 
             if to_continue:
-                url = 'http://srl.utu.fi/erne_data/carrot/{carrot}/cr{carrot}{specie}.txt'.format(carrot = carrot, specie = specie[0])
+                url = 'http://srl.utu.fi/erne_data/carrot/{carrot}/cr{carrot}{species}.txt'.format(carrot = carrot, species = species[0])
                 filelists.append(url)
                 if timerange.end in current_rotation_time:
                     to_continue = False

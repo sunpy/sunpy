@@ -13,7 +13,7 @@ import sunpy.net.dataretriever.sources.stereo as stereo
 
 LCClient = stereo.SITClient()
 
-@pytest.mark.parametrize("timerange, specie, stereo_spacecraft, duration_of_average, url_start,url_end",
+@pytest.mark.parametrize("timerange, species, stereo_spacecraft, duration_of_average, url_start,url_end",
 [(TimeRange('2008-03-01','2008-07-02'),'4He', 'ahead', 10*u.min, 
 'http://www.srl.caltech.edu/STEREO/DATA/SIT/ahead/10min/4He/SIT_Ahead_10min_4He_2008_03.txt',
 'http://www.srl.caltech.edu/STEREO/DATA/SIT/ahead/10min/4He/SIT_Ahead_10min_4He_2008_07.txt'),
@@ -22,18 +22,18 @@ LCClient = stereo.SITClient()
 'http://www.srl.caltech.edu/STEREO/DATA/SIT/behind/1hr/SIT_Behind_1hr_O_2009.txt')
 ])
 
-def test_get_url_for_time_range(timerange, specie, stereo_spacecraft, duration_of_average, url_start, url_end):
-    urls = LCClient._get_url_for_timerange(timerange, specie = specie, stereo_spacecraft = stereo_spacecraft,
+def test_get_url_for_time_range(timerange, species, stereo_spacecraft, duration_of_average, url_start, url_end):
+    urls = LCClient._get_url_for_timerange(timerange, species = species, stereo_spacecraft = stereo_spacecraft,
                                                 duration_of_average = duration_of_average)
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
 def test_can_handle_query():
-    ans1 = stereo.SITClient._can_handle_query(Time(TimeRange('2008-03-01','2008-07-02')), Instrument('stereo/sit'), specie = '4He',
+    ans1 = stereo.SITClient._can_handle_query(Time(TimeRange('2008-03-01','2008-07-02')), Instrument('stereo/sit'), species = '4He',
                                                 stereo_spacecraft = 'ahead', duration_of_average = 10*u.min)
     assert ans1 == True
-    ans1 = stereo.SITClient._can_handle_query(Time(TimeRange('2007-04-01','2009-09-02')), Instrument('stereo/sit'), specie = 'O',
+    ans1 = stereo.SITClient._can_handle_query(Time(TimeRange('2007-04-01','2009-09-02')), Instrument('stereo/sit'), species = 'O',
                                                 stereo_spacecraft = 'behind', duration_of_average = 1*u.h)
     assert ans1 == True
     ans2 = stereo.SITClient._can_handle_query(Time(TimeRange('2012/7/7', '2012/7/7')))
@@ -42,7 +42,7 @@ def test_can_handle_query():
     assert ans3 == False
 
 def test_query():
-    qr1 = LCClient.query(Time(TimeRange('2008/03/01', '2008/04/02')), Instrument('stereo/sit'), specie = '4He',
+    qr1 = LCClient.query(Time(TimeRange('2008/03/01', '2008/04/02')), Instrument('stereo/sit'), species = '4He',
                                                 stereo_spacecraft = 'ahead', duration_of_average = 10*u.min)
     assert isinstance(qr1,QueryResponse)
     assert len(qr1) == 2
@@ -51,12 +51,12 @@ def test_query():
 
 
 @pytest.mark.online
-@pytest.mark.parametrize("time, instrument, specie, stereo_spacecraft, duration_of_average",
+@pytest.mark.parametrize("time, instrument, species, stereo_spacecraft, duration_of_average",
 [(Time(TimeRange('2008/03/01', '2008/07/02')), Instrument('stereo/sit'),'4He', 'ahead', 10*u.min),
  (Time(TimeRange('2007/04/01', '2009/09/02')), Instrument('stereo/sit'), 'O', 'behind', 1*u.h),
 ])
-def test_get(time, instrument, specie, stereo_spacecraft, duration_of_average ):
-    qr1 = LCClient.query(time,instrument,specie = specie, stereo_spacecraft = stereo_spacecraft, duration_of_average = duration_of_average)
+def test_get(time, instrument, species, stereo_spacecraft, duration_of_average ):
+    qr1 = LCClient.query(time,instrument,species = species, stereo_spacecraft = stereo_spacecraft, duration_of_average = duration_of_average)
     res = LCClient.get(qr1)
     download_list = res.wait()
     assert len(download_list) == len(qr1)
