@@ -1,6 +1,8 @@
 Latest
 ------
 
+* Added IRIS SJI color maps.
+* Updated `show_colormaps()` with new string filter to show a subset of color maps.
 
 0.6.0
 -----
