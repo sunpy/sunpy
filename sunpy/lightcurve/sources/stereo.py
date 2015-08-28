@@ -75,7 +75,7 @@ class LETLightCurve(LightCurve):
         import sunpy.data.test
         filepath = sunpy.data.test.rootdir
         from sunpy import lightcurve as lc
-        [header,data] = lc.LETLightCurve._parse_txt(os.path.join(filepath , 'let/', 'Ar_ahead_2006_318_level1_11.txt'))
+        [header,data] = lc.LETLightCurve._parse_txt(os.path.join(filepath , 'let', 'Ar_ahead_2006_318_level1_11.txt'))
         let = lc.LETLightCurve(data,header)
         let.peek()
 
@@ -93,7 +93,7 @@ class LETLightCurve(LightCurve):
         dates = matplotlib.dates.date2num(self.data['Datetime'].astype(datetime))
 
         colors = ['Green','Red', 'Blue','SeaGreen','Tomato','SlateBlue','Orange',
-                            'Purple','Magenta','Chocolate','MediumVioletRed', 'Teal','Navy','Indigo']
+        'Purple','Magenta','Chocolate','MediumVioletRed', 'Teal','Navy','Indigo']
 
         figure.delaxes(ax)
         axes = figure.add_axes([0.1, 0.15, 0.55, 0.8])
@@ -210,7 +210,7 @@ class LETLightCurve(LightCurve):
         data_modify = []
         #Converting separate datetime element into a single datetime.datetime column
         if type_of_data == '27day':
-            data_modify = [datetime(year, 1, 1) + timedelta(days=day - 1) for year, day in zip(year_col, day_of_year_col)]
+            data_modify = [datetime.strptime('{0} {1}'.format(year, day), '%Y %j') for year, day in zip(year_col, day_of_year_col)]
             
             data.remove_columns(['col{}'.format(i) for i in range(1,3)])
             data.add_column(Column(data = data_modify, name='Datetime'),0)
@@ -222,9 +222,9 @@ class LETLightCurve(LightCurve):
             minutes_col = data['col4']
             seconds_col = data['col5']
 
-            for i in range(len(data)):
-                data_modify.append(datetime(year_col[i],1,1,hour_col[i],minutes_col[i],seconds_col[i]) + timedelta(days = int(day_of_year_col[i]-1)))
-
+            data_modify = [datetime.strptime('{0} {1} {2} {3} {4}'.format(year, day, hour, minute, second), '%Y %j %H %M %S') \
+                        for year, day, hour, minute, second in zip(year_col, day_of_year_col, hour_col, minutes_col, seconds_col)]
+            
             header = ['Datetime'] + header[5:]
 
             data.remove_columns(['col{}'.format(i) for i in range(1,6)])
@@ -272,7 +272,7 @@ class SITLightCurve(LightCurve):
         import sunpy.data.test
         filepath = sunpy.data.test.rootdir
         from sunpy import lightcurve as lc
-        [header,data] = lc.SITLightCurve._parse_txt(os.path.join(filepath , 'sit/', 'SIT_Ahead_10min_H_2007_01.txt'))
+        [header,data] = lc.SITLightCurve._parse_txt(os.path.join(filepath , 'sit', 'SIT_Ahead_10min_H_2007_01.txt'))
         sit = lc.SITLightCurve(data,header)
         sit.peek()
 
@@ -363,10 +363,9 @@ class SITLightCurve(LightCurve):
         seconds_col = data['col5']
         
         #Combining Date, Time columns to make a single datetime.datetime value column 
-        for i in range(len(data)): 
-            date = datetime(year_col[i], 1, 1) + timedelta(int(day_of_year_col[i]) - 1)
-            data_modify.append(datetime(date.year, date.month, date.day, hour_col[i], minutes_col[i], seconds_col[i]))
-    
+        data_modify = [datetime.strptime('{0} {1} {2} {3} {4}'.format(year, day, hour, minute, second), '%Y %j %H %M %S') \
+                    for year, day, hour, minute, second in zip(year_col, day_of_year_col, hour_col, minutes_col, seconds_col)]
+
         #Adding one DateTime column and removing 5 columns with separated time info
         data.add_column(Column(data = data_modify, name='col'),1)
         data.remove_columns(['col{}'.format(i) for i in range(1,6)])
@@ -413,7 +412,7 @@ class PLASTICLightCurve(LightCurve):
         import sunpy.data.test
         filepath = sunpy.data.test.rootdir
         from sunpy import lightcurve as lc
-        [header,data] = lc.PLASTICLightCurve._parse_txt(os.path.join(filepath , 'plastic/', 'STA_L2_PLA_1DMax_1min_20140101_001_V09.txt'))
+        [header,data] = lc.PLASTICLightCurve._parse_txt(os.path.join(filepath , 'plastic', 'STA_L2_PLA_1DMax_1min_20140101_001_V09.txt'))
         plastic = lc.PLASTICLightCurve(data,header)
         plastic.peek()
 
@@ -432,7 +431,7 @@ class PLASTICLightCurve(LightCurve):
         dates = matplotlib.dates.date2num(data['Datetime'].apply(lambda col: parse_time(str(col).replace('/',' '))).astype(datetime))
         
         colors = ['Green','Red','Chocolate', 'Blue','SeaGreen','Tomato','SlateBlue','Orange',
-                            'Purple','Magenta','MediumVioletRed', 'Teal','Navy','Indigo']
+        'Purple','Magenta','MediumVioletRed', 'Teal','Navy','Indigo']
 
         ax1 = figure.add_subplot(3,1,1)
         plt.plot_date(dates, data['Np [1/cc]'].ffill(), '-',label= 'Np [1/cc]' , color='Red', lw=2)
@@ -504,8 +503,8 @@ class PLASTICLightCurve(LightCurve):
             kev_q_time_col = data['col8']
 
             for i in range(len(data)):
-                data_modify.append((datetime.strptime(str(date_and_time_col[i]) + str(millisec_col[i])[1:], "%Y-%m-%d/%H:%M:%S.%f") ))
-                data_modify_other.append(datetime.strptime(str(kev_q_time_col[i]), "%Y-%m-%d/%H:%M:%S"))
+                data_modify.append(datetime.strptime(date_and_time_col[i] + str(millisec_col[i])[1:], "%Y-%m-%d/%H:%M:%S.%f"))
+                data_modify_other.append(datetime.strptime(kev_q_time_col[i], "%Y-%m-%d/%H:%M:%S"))
             
             data.remove_columns(['col{}'.format(i) for i in range(1,9)])
             data.add_column(Column(data = data_modify, name='col_1'),0)
@@ -513,13 +512,13 @@ class PLASTICLightCurve(LightCurve):
             header = ['Datetime'] + header[7:]
             
         elif type_of_data == '10min':
-            date_and_time_col = [datetime.strptime(str(var), "%Y-%m-%d/%H:%M:%S") for var in data['col5']]
+            date_and_time_col = [datetime.strptime(var, "%Y-%m-%d/%H:%M:%S") for var in data['col5']]
 
             data.remove_columns(['col{}'.format(i) for i in range(1,5)])
             header = ['Datetime'] + header[5:]
 
         elif type_of_data == '1hr':
-            date_and_time_col = [datetime.strptime(str(var), "%Y-%m-%d/%H:%M:%S") for var in data['col4']]
+            date_and_time_col = [datetime.strptime(var, "%Y-%m-%d/%H:%M:%S") for var in data['col4']]
 
             data.remove_columns(['col{}'.format(i) for i in range(1,4)])
             header = ['Datetime'] + header[4:]
@@ -574,7 +573,7 @@ class SEPTLightCurve(LightCurve):
         import sunpy.data.test
         filepath = sunpy.data.test.rootdir
         from sunpy import lightcurve as lc
-        [header,data] = lc.SEPTLightCurve._parse_txt(os.path.join(filepath , 'sept/', 'sept_ahead_ele_asun_2015_001_1min_l2_v03.dat.txt'))
+        [header,data] = lc.SEPTLightCurve._parse_txt(os.path.join(filepath , 'sept', 'sept_ahead_ele_asun_2015_001_1min_l2_v03.dat.txt'))
         sept = lc.SEPTLightCurve(data,header)
         sept.peek()
 
@@ -593,7 +592,7 @@ class SEPTLightCurve(LightCurve):
         dates = matplotlib.dates.date2num(data['DateTime'].astype(datetime))
         
         colors = ['Green','Red','Chocolate', 'Blue','SeaGreen','Tomato','SlateBlue','Orange',
-                            'Purple','Magenta','MediumVioletRed', 'Teal','Navy','Indigo']
+        'Purple','Magenta','MediumVioletRed', 'Teal','Navy','Indigo']
 
         figure.delaxes(ax)
         axes = figure.add_axes([0.1, 0.15, 0.55, 0.8])
@@ -632,23 +631,23 @@ class SEPTLightCurve(LightCurve):
         #Header
         energy_levels = [45, 55, 65, 75, 85, 105, 125, 145, 165, 195, 225, 255, 295, 335, 375, 425]
         header = ['DateTime'] + \
-               ['Bin {b:02d} ({x:3.1f} - {y:3.1f} keV) electron intensity'.format(b=b, x=x, y=y) for b, x, y in zip(range(2,17), energy_levels[:-1], energy_levels[1:])] + \
-               ['Bin {b:02d} Uncertainty'.format(b=b) for b in range(2,17)]
+        ['Bin {b:02d} ({x:3.1f} - {y:3.1f} keV) electron intensity'.format(b=b, x=x, y=y) for b, x, y in zip(range(2,17), energy_levels[:-1], energy_levels[1:])] + \
+        ['Bin {b:02d} Uncertainty'.format(b=b) for b in range(2,17)]
        
 
         data_modify = []
 
         #Storing data columns in recognizable variables
         year_col    = data['col2']
-        day_of_year = data['col3']
+        day_of_year_col = data['col3']
         hour_col    = data['col4']
         minutes_col = data['col5']
         seconds_col = data['col6']
 
         #Converting first five columns into a single datetime.datetime column
-        for i in range(len(data)): 
-            date = datetime(year_col[i], 1, 1) + timedelta(int(day_of_year[i]) - 1)
-            data_modify.append(datetime(date.year, date.month, date.day, hour_col[i], minutes_col[i], seconds_col[i]))
+        data_modify = [datetime.strptime('{0} {1} {2} {3} {4}'.format(year, day, hour, minute, second), '%Y %j %H %M %S') \
+                    for year, day, hour, minute, second in zip(year_col, day_of_year_col, hour_col, minutes_col, seconds_col)]
+
 
         #Removing separate datetime element columns
         data.remove_columns(['col{}'.format(i) for i in range(1,7)])
@@ -678,11 +677,11 @@ class HETLightCurve(LightCurve):
     
     stereo_spacecraft: string   
         Default value - ahead
-        Possible values - ahead, behind    # corresponding to spacecraft location
+        Possible values - ahead, behind    ( corresponding to spacecraft location )
 
     duration_of_average: astropy units quantity
         Default value - 15 * u.min
-        Possible values - 1 * u.min, 15 * u.min, 1 * u.h, 12 * u.h, 1 * u.d       #corresponding to duration over which data is averaged
+        Possible values - 1 * u.min, 15 * u.min, 1 * u.h, 12 * u.h, 1 * u.d        (corresponding to duration over which data is averaged)
 
     Examples
     --------
@@ -694,7 +693,7 @@ class HETLightCurve(LightCurve):
         import sunpy.data.test
         filepath = sunpy.data.test.rootdir
         from sunpy import lightcurve as lc
-        [header,data] = lc.HETLightCurve._parse_txt(os.path.join(filepath , 'het/', 'AeH06Dec.1m.txt'))
+        [header,data] = lc.HETLightCurve._parse_txt(os.path.join(filepath , 'het', 'AeH06Dec.1m.txt'))
         het = lc.HETLightCurve(data,header)
         het.peek()
 
@@ -717,7 +716,7 @@ class HETLightCurve(LightCurve):
             dates = matplotlib.dates.date2num(timerange_start.astype(datetime))
 
         colors = ['Green','Red','Chocolate', 'Blue','SeaGreen','Tomato','SlateBlue','Orange',
-                            'Purple','Magenta','MediumVioletRed', 'Teal','Navy','Indigo']
+        'Purple','Magenta','MediumVioletRed', 'Teal','Navy','Indigo']
 
         figure.delaxes(ax)
         axes = figure.add_axes([0.1, 0.15, 0.55, 0.8])
@@ -725,7 +724,7 @@ class HETLightCurve(LightCurve):
         for i,line in enumerate(self.header.values()):
             if i >= 2 and i%2 == 0:
                 axes.plot_date(dates, self.data[line].ffill(), '-',
-                     label= line[:line.index('n')+2] + line[line.index(',')+2:line.index('V')+1], color=colors[i/2-2], lw=0.5)
+                label= line[:line.index('n')+2] + line[line.index(',')+2:line.index('V')+1], color=colors[i/2-2], lw=0.5)
         
         axes.set_yscale("log",nonposy='mask')
         axes.set_title(title)

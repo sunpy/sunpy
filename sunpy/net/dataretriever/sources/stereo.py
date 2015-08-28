@@ -344,9 +344,8 @@ class SITClient(GenericClient):
 
 
         file_scraper = Scraper(url_pattern, stereo_spacecraft = [stereo_spacecraft, stereo_spacecraft.capitalize()],
-                                    duration_of_average      = dict_duration[duration_of_average] , 
-                                    species            = species, 
-                                    dict_time                = dict_time[duration_of_average])
+                        duration_of_average = dict_duration[duration_of_average] , 
+                        species = species, dict_time = dict_time[duration_of_average])
 
         return file_scraper.filelist(timerange)
 

@@ -52,22 +52,24 @@ class NOAAIndicesLightCurve(LightCurve):
     def peek(self, type='sunspot SWO', **plot_args):
         """Plots NOAA Indices as a function of time. An example is shown below.
 
-        >>> from sunpy import lightcurve as lc
-        >>> noaa = lc.NOAAIndicesLightCurve.create()
-        >>> noaa.peek()
+        ..plot::
+
+            from sunpy import lightcurve as lc
+            noaa = lc.NOAAIndicesLightCurve.create()
+            noaa.peek()
 
         Parameters
         ----------
         type : str
-        The type of plot required.
+            The type of plot required.
 
         **plot_args : dict
-        Any additional plot arguments that should be used when plotting.  
+            Any additional plot arguments that should be used when plotting.  
 
         Returns
         -------
         fig : ~matplotlib.Figure
-        A plot figure.
+            A plot figure.
 
         """
 
@@ -170,19 +172,21 @@ class NOAAPredictIndicesLightCurve(LightCurve):
         """
         Plots predicted NOAA Indices as a function of time. An example is shown below.
 
-        >>> from sunpy import lightcurve as lc
-        >>> noaa = lc.NOAAPredictIndicesLightCurve.create()
-        >>> noaa.peek()
+        ..plot::
+
+            from sunpy import lightcurve as lc
+            noaa = lc.NOAAPredictIndicesLightCurve.create()
+            noaa.peek()
 
         Parameters
         ----------
         **plot_args : dict
-        Any additional plot arguments that should be used when plotting.
+            Any additional plot arguments that should be used when plotting.
 
         Returns
         -------
         fig : `~matplotlib.Figure`
-        A plot figure.
+            A plot figure.
 
         """
 
