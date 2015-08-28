@@ -222,7 +222,7 @@ class LETLightCurve(LightCurve):
             minutes_col = data['col4']
             seconds_col = data['col5']
 
-            data_modify = [datetime.strptime('{0} {1} {2} {3} {4}'.format(year, day, hour, minute, second), '%Y %j %H %M %S') \
+            data_modify = [datetime.strptime('{0} {1:03d} {2} {3} {4}'.format(year, int(day), hour, minute, second), '%Y %j %H %M %S') \
                         for year, day, hour, minute, second in zip(year_col, day_of_year_col, hour_col, minutes_col, seconds_col)]
             
             header = ['Datetime'] + header[5:]
