@@ -159,6 +159,8 @@ def show_colormaps(filter=None):
     --------
     >>> import sunpy.cm as cm
     >>> cm.show_colormaps()
+    >>> cm.show_colormaps(filter='aia')
+    >>> cm.show_colormaps(filter='171')
 
     References
     ----------
