@@ -210,7 +210,7 @@ class LETLightCurve(LightCurve):
         data_modify = []
         #Converting separate datetime element into a single datetime.datetime column
         if type_of_data == '27day':
-            data_modify = [datetime.strptime('{0} {1}'.format(year, day), '%Y %j') for year, day in zip(year_col, day_of_year_col)]
+            data_modify = [datetime.strptime('{0} {1:03d}'.format(year, int(day)), '%Y %j') for year, day in zip(year_col, day_of_year_col)]
             
             data.remove_columns(['col{}'.format(i) for i in range(1,3)])
             data.add_column(Column(data = data_modify, name='Datetime'),0)
@@ -363,7 +363,7 @@ class SITLightCurve(LightCurve):
         seconds_col = data['col5']
         
         #Combining Date, Time columns to make a single datetime.datetime value column 
-        data_modify = [datetime.strptime('{0} {1} {2} {3} {4}'.format(year, day, hour, minute, second), '%Y %j %H %M %S') \
+        data_modify = [datetime.strptime('{0} {1:03d} {2} {3} {4}'.format(year, int(day), hour, minute, second), '%Y %j %H %M %S') \
                     for year, day, hour, minute, second in zip(year_col, day_of_year_col, hour_col, minutes_col, seconds_col)]
 
         #Adding one DateTime column and removing 5 columns with separated time info
@@ -645,7 +645,7 @@ class SEPTLightCurve(LightCurve):
         seconds_col = data['col6']
 
         #Converting first five columns into a single datetime.datetime column
-        data_modify = [datetime.strptime('{0} {1} {2} {3} {4}'.format(year, day, hour, minute, second), '%Y %j %H %M %S') \
+        data_modify = [datetime.strptime('{0} {1:03d} {2} {3} {4}'.format(year, int(day), hour, minute, second), '%Y %j %H %M %S') \
                     for year, day, hour, minute, second in zip(year_col, day_of_year_col, hour_col, minutes_col, seconds_col)]
 
 

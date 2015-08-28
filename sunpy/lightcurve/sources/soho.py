@@ -136,7 +136,7 @@ class ERNELightCurve(LightCurve):
             end_time = time(int(end_time_col[i][:2]),int(end_time_col[i][2:]))
             date1 = datetime.combine(date, start_time)               #start datetime
             
-            if time(end_time) < time(start_time):
+            if end_time < start_time:
                 date = date + timedelta(days = 1)
 
             date2 = datetime.combine(date, end_time)                 #end datetime
