@@ -50,3 +50,4 @@ def _to_pandas(astropyTable):
 			out[name] = out[name].byteswap().newbyteorder()
 
 	return DataFrame(out)
+

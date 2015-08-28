@@ -62,7 +62,7 @@ class ERNELightCurve(LightCurve):
         import sunpy.data.test
         filepath = sunpy.data.test.rootdir
         from sunpy import lightcurve as lc
-        [header,data] = lc.ERNELightCurve._parse_txt(os.path.join(filepath , 'erne/', 'cr1907a.txt'))
+        [header,data] = lc.ERNELightCurve._parse_txt(os.path.join(filepath , 'erne', 'cr1907a.txt'))
         erne = lc.ERNELightCurve(data,header)
         erne.peek()
 
@@ -78,7 +78,7 @@ class ERNELightCurve(LightCurve):
         dates = matplotlib.dates.date2num(timerange_start.astype(datetime))
 
         colors = ['Green','Red','Chocolate', 'Blue','SeaGreen','Tomato',
-                            'SlateBlue','Orange','Purple','Magenta','MediumVioletRed']
+        'SlateBlue','Orange','Purple','Magenta','MediumVioletRed']
         figure.delaxes(ax)
         axes = figure.add_axes([0.1, 0.15, 0.55, 0.8])
 
@@ -131,13 +131,15 @@ class ERNELightCurve(LightCurve):
 
         #Converting separate datetime element into a single datetime.datetime column
         for i in range(len(data)):
-            date = datetime.strptime(year_col[i] + '-' + month_col[i] + '-' + date_col[i],"%y-%m-%d")
-            date1 = datetime.combine(date, time(int(begin_time_col[i][:2])))               #start time
+            date = datetime.strptime('{}{}{}'.format(year_col[i], month_col[i], date_col[i]),"%y%m%d")
+            start_time = time(int(begin_time_col[i][:2]),int(begin_time_col[i][2:]))
+            end_time = time(int(end_time_col[i][:2]),int(end_time_col[i][2:]))
+            date1 = datetime.combine(date, start_time)               #start datetime
             
-            if end_time_col[i] == '0000':
+            if time(end_time) < time(start_time):
                 date = date + timedelta(days = 1)
 
-            date2 = datetime.combine(date, time(int(end_time_col[i][:2])))                 #end time
+            date2 = datetime.combine(date, end_time)                 #end datetime
             #Appending the start and end time as sunpy.time TimeRange in a separate list
             data_modify.append(TimeRange(date1, date2))
             

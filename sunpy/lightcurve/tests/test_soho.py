@@ -24,7 +24,7 @@ class TestERNELightCurve(object):
     @pytest.mark.online
     def test_header(self, data_file):
         lc = sunpy.lightcurve.ERNELightCurve
-        assert lc._parse_txt(os.path.join(filepath , 'erne/', data_file))[0] == ['TimeRange', 
+        assert lc._parse_txt(os.path.join(filepath , 'erne', data_file))[0] == ['TimeRange', 
                             'energy channel 1.8-3.3 MeV', 
                             'energy channel 3.3-6.4 MeV', 
                             'energy channel 6.4-12.7 MeV', 
@@ -37,14 +37,14 @@ class TestERNELightCurve(object):
     @pytest.mark.online
     def test_data(self, data_file):
         lc = sunpy.lightcurve.ERNELightCurve
-        assert (lc._parse_txt(os.path.join(filepath , 'erne/',data_file))[1]).empty == False
+        assert (lc._parse_txt(os.path.join(filepath , 'erne',data_file))[1]).empty == False
 
 
     #Test parsed header and data columns list for equal lengths
     @pytest.mark.parametrize("data_file",[('cr1907a.txt'),('cr1907p.txt')])
     @pytest.mark.online
     def test_header(self, data_file):
-        lc = sunpy.lightcurve.ERNELightCurve._parse_txt(os.path.join(filepath ,'erne/' ,data_file))
+        lc = sunpy.lightcurve.ERNELightCurve._parse_txt(os.path.join(filepath ,'erne' ,data_file))
         assert len(lc[0]) == len(lc[1].columns) #length of header list equals number of columns
 
 

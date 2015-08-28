@@ -71,7 +71,7 @@ class ERNEClient(GenericClient):
             raise ValueError('Earliest date for which SEPT data is available is 1996-02-13')
 
         if species not in possible_species:
-            raise ValueError('Possible species values: ' + '.'.join(possible_species))
+            raise ValueError('Possible species values: ' + ','.join(possible_species))
 
 
         to_continue = False
