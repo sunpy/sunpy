@@ -142,20 +142,18 @@ def get_cmap(name):
         raise ValueError("Colormap {name!s} is not recognized".format(name=name))
 
 
-def show_colormaps(mission=None):
+def show_colormaps(filter=None):
     """Displays a plot of the custom color maps supported in SunPy.
 
     Parameters
     ----------
-    mission : string
-        Show only the color tables from a mission.
+    filter : str
+        A string to filter the color maps presented (e.g. aia, EIT, 171). Case
+        insensitive.
 
     Returns
     -------
     None : none
-
-    See Also
-    --------
 
     Examples
     --------
@@ -167,8 +165,10 @@ def show_colormaps(mission=None):
 
     """
 
-    if mission:
-        maps =  sorted({k:v for (k,v) in cmlist.iteritems() if k.count(mission)})
+    if filter:
+        maps =  sorted({k:v for (k,v) in cmlist.iteritems() if k.lower().count(filter.lower())})
+        if len(maps) == 0:
+            raise KeyError('No color maps found for key - ' + filter)
     else:
         maps = sorted(cmlist)
 
