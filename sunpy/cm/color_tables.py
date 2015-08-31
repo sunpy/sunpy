@@ -1052,6 +1052,64 @@ def sot_color_table(measurement):
     cdict = create_cdict(r, g, b)
     return colors.LinearSegmentedColormap('mytable', cdict)
 
+def iris_sji_color_table(measurement, aialike=False):
+    """Return the standard color table for IRIS SJI files"""
+    # base vectors for IRIS SJI color tables
+    c0 = np.arange(0, 256)
+    c1 = (np.sqrt(c0) * np.sqrt(255)).astype(np.uint8)
+    c2 = (c0 ** 2 / 255.).astype(np.uint8)
+    c3= ((c1 + c2/2.)*255./(np.max(c1) + np.max(c2)/2.)).astype(np.uint8)
+    c4 = np.zeros(256).astype(np.uint8)
+    c4[50:256] = (1/165. * np.arange(0, 206) ** 2).astype(np.uint8)
+    c5 = ((1 + c1 + c3.astype(np.uint))/2.).astype(np.uint8)
+
+    rr = np.ones(256, dtype=np.uint8) * 255
+    rr[0:176] = np.arange(0, 176) / 175. * 255.
+    gg = np.zeros(256, dtype=np.uint8)
+    gg[100:256] = np.arange(0, 156) / 155. * 255.
+    bb = np.zeros(256, dtype=np.uint8)
+    bb[150:256] = np.arange(0, 106) / 105. * 255.
+    agg = np.zeros(256, dtype=np.uint8)
+    agg[120:256] = np.arange(0, 136) / 135. * 255.
+    abb = np.zeros(256, dtype=np.uint8)
+    abb[190:256] = np.arange(0, 66) / 65. * 255.
+
+    if aialike:
+        color_table = {
+            '1330': (c1, c0, c2),
+            '1400': (rr, agg, abb),
+            '2796': (rr, c0, abb),
+            '2832': (c3, c3, c2),
+        }
+    else:
+        color_table = {
+            '1330': (rr, gg, bb),
+            '1400': (c5, c2, c4),
+            '2796': (c1, c3, c2),
+            '2832': (c0, c0, c2),
+        }
+
+    color_table.update({
+        '1600': (c1, c0, c0),
+        '5000': (c1, c1, c0),
+        'FUV': (rr, gg, bb),
+        'NUV': (c1, c3, c2),
+        'SJI_NUV': (c0, c0, c0)
+    })
+
+    try:
+        r, g, b = color_table[measurement]
+    except KeyError:
+        raise ValueError(
+            "Invalid IRIS SJI waveband.  Valid values are \n" +
+            str(color_table.keys())
+        )
+
+    # Now create the color dictionary in the correct format
+    cdict = create_cdict(r, g, b)
+    # Return the color table
+    return colors.LinearSegmentedColormap('mytable', cdict)
+
 
 hmi_mag_r = np.array(
       [137, 140, 142, 144, 149, 151, 154, 158, 161, 163, 167, 170, 172,
@@ -1283,6 +1341,7 @@ hi2_red = np.array(
         252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252,
         252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252,
         252, 252, 252, 252, 252, 252, 252, 253, 254], dtype=np.uint8)
+
 
 def stereo_hi_color_table(camera):
     if camera == 1:
