@@ -3,6 +3,7 @@ Latest
 
 * Added IRIS SJI color maps.
 * Updated `show_colormaps()` with new string filter to show a subset of color maps.
+* Fixed MapCube animations by working around a bug in Astropy's ImageNormalize
 
 0.6.0
 -----
