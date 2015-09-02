@@ -1,6 +1,7 @@
-Latest
+0.6.1
 ------
 
+* Fixed MapCube animations by working around a bug in Astropy's ImageNormalize
 
 0.6.0
 -----
