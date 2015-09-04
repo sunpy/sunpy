@@ -30,7 +30,10 @@ For the code to be accepted into SunPy it must meet the following criteria:
 
 ## Pull Requests to non-master Branches
 
-From time to time, large feature development work may occur in branches other than master, and all maintained releases currently have a branch i.e. `0.6`. When making a PR to one of these branches, please put the name of the branch in square brackets at the beginning of the PR, i.e. `[0.6] My bug fix`. This makes it easier to filter and review these PRs.
+From time to time, large feature development work may occur in branches other than master, and all 
+maintained releases currently have a branch i.e. `0.6`.
+When making a PR to one of these branches, please put the name of the branch in square brackets at 
+the beginning of the PR, i.e. `[0.6] My bug fix`. This makes it easier to filter and review these PRs.
 
 ## More Information
 
