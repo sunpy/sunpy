@@ -188,6 +188,12 @@ class MDIMap(GenericMap):
         else:
             self.plot_settings['norm'] = colors.Normalize(-vmax, vmax)
 
+        # Astropy WCS has an issue with the MDI default of "solar-x" and
+        # "solar-y" as the ctypes.  This overrides the default assignment and
+        # changes it to a ctype that is understood.
+        self.meta['ctype1'] = 'HPLN-TAN'
+        self.meta['ctype2'] = 'HPLT-TAN'
+
     @property
     def measurement(self):
         """
