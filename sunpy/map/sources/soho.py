@@ -69,6 +69,12 @@ class EITMap(GenericMap):
         self.plot_settings['cmap'] = cm.get_cmap(self._get_cmap_name())
         self.plot_settings['norm'] = ImageNormalize(stretch=PowerStretch(0.5))
 
+        # Astropy WCS has an issue with the MDI default of "solar-x" and
+        # "solar-y" as the ctypes.  This overrides the default assignment and
+        # changes it to a ctype that is understood.
+        self.meta['ctype1'] = 'HPLN-TAN'
+        self.meta['ctype2'] = 'HPLT-TAN'
+
     @property
     def rsun_obs(self):
         """
@@ -131,6 +137,12 @@ class LASCOMap(GenericMap):
         self._nickname = self.instrument + "-" + self.detector
         self.plot_settings['cmap'] = cm.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
         self.plot_settings['norm'] = ImageNormalize(stretch=PowerStretch(0.5))
+
+        # Astropy WCS has an issue with the MDI default of "solar-x" and
+        # "solar-y" as the ctypes.  This overrides the default assignment and
+        # changes it to a ctype that is understood.
+        self.meta['ctype1'] = 'HPLN-TAN'
+        self.meta['ctype2'] = 'HPLT-TAN'
 
     @property
     def measurement(self):
