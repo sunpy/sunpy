@@ -71,7 +71,8 @@ class EITMap(GenericMap):
 
         # Astropy WCS has an issue with the MDI default of "solar-x" and
         # "solar-y" as the ctypes.  This overrides the default assignment and
-        # changes it to a ctype that is understood.
+        # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
+        # 449, 791.
         self.meta['ctype1'] = 'HPLN-TAN'
         self.meta['ctype2'] = 'HPLT-TAN'
 
@@ -140,7 +141,8 @@ class LASCOMap(GenericMap):
 
         # Astropy WCS has an issue with the MDI default of "solar-x" and
         # "solar-y" as the ctypes.  This overrides the default assignment and
-        # changes it to a ctype that is understood.
+        # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
+        # 449, 791.
         self.meta['ctype1'] = 'HPLN-TAN'
         self.meta['ctype2'] = 'HPLT-TAN'
 
@@ -202,7 +204,8 @@ class MDIMap(GenericMap):
 
         # Astropy WCS has an issue with the MDI default of "solar-x" and
         # "solar-y" as the ctypes.  This overrides the default assignment and
-        # changes it to a ctype that is understood.
+        # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
+        # 449, 791.
         self.meta['ctype1'] = 'HPLN-TAN'
         self.meta['ctype2'] = 'HPLT-TAN'
 
