@@ -205,6 +205,16 @@ scale:\t\t {scale}
         w2.wcs.pc = self.rotation_matrix
         w2.wcs.cunit = self.units
 
+        # Astropy WCS does not understand the SOHO default of "solar-x" and
+        # "solar-y" ctypes.  This overrides the default assignment and
+        # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
+        # 449, 791.
+        if w2.wcs.ctype[0] == "solar-x":
+            w2.wcs.ctype[0] = 'HPLN-TAN'
+
+        if w2.wcs.ctype[1] == "solar-y":
+            w2.wcs.ctype[1] = 'HPLT-TAN'
+
         return w2
 
     # Some numpy extraction
