@@ -801,7 +801,7 @@ class HETLightCurve(LightCurve):
 
             for i in range(len(data)): 
                 date = datetime.strptime('{0} {1} {2:02d} {3:04d}'.format(start_year_col[i], start_month_col[i], start_date_col[i], \
-                    start_time_col[i]), '%Y %b %d %H %M')
+                    start_time_col[i]), '%Y %b %d %H%M')
                 data_modify.append(date)
 
             data.remove_columns(['col{}'.format(i) for i in range(2,6)])
@@ -817,9 +817,9 @@ class HETLightCurve(LightCurve):
 
             for i in range(len(data)): 
                 date1 = datetime.strptime('{0} {1} {2:02d} {3:04d}'.format(start_year_col[i], start_month_col[i], start_date_col[i], \
-                    start_time_col[i]), '%Y %b %d %H %M')
+                    start_time_col[i]), '%Y %b %d %H%M')
                 date2 = datetime.strptime('{0} {1} {2:02d} {3:04d}'.format(end_year_col[i], end_month_col[i], end_date_col[i], \
-                    end_time_col[i]), '%Y %b %d %H %M' )
+                    end_time_col[i]), '%Y %b %d %H%M' )
                 data_modify.append(TimeRange(date1,date2))
 
             data.remove_columns(['col{}'.format(i) for i in range(2,10)])
