@@ -109,7 +109,6 @@ class LETLightCurve(LightCurve):
         elif self.header[1][:22] == 'Column 6: LET Livetime' and self.header[2][9] == '-':
             #Sectored data
             num_energy_bins = self.header[2][self.header[2].index(':')+2:self.header[2].index('s')-1]
-            self.data = self.data.replace(-9999.9,float('nan'))
             for i in range(int(num_energy_bins)):
                 axes.plot_date(dates, self.data['col' + str(7+i)].ffill(), '-', label= 'Sector '+str(i), color=colors[i/2-2], lw=2)
 
@@ -117,14 +116,12 @@ class LETLightCurve(LightCurve):
             #Non sectored standard data
             num_energy_bins = len(self.header) - 4
             for i in range(num_energy_bins):
-                self.data = self.data.replace(-1.000000e+31,float('nan'))
                 label = self.header[3+i][self.header[3+i].index(':')+1:self.header[3+i].index('/')+2]
                 axes.plot_date(dates, self.data['col' + str(8+i)].ffill(), '-', label= label, color=colors[i], lw=2)
         else:
             #Non sectored non standard data
             num_energy_bins = len(self.header) - 4
             for i in range(num_energy_bins):
-                self.data = self.data.replace(-1.000000e+31,float('nan'))
                 label = self.header[2+i][self.header[2+i].index(':')+1:self.header[2+i].index('/')+4]
                 axes.plot_date(dates, self.data['col' + str(7+i)].ffill(), '-', label= label, color=colors[i], lw=2)
 
@@ -188,9 +185,7 @@ class LETLightCurve(LightCurve):
             # To figure out and customise header in case of any other type of data since their files are formatted 
             # similarly but different from 27 day type of data
             else:
-                if not data_read['header_line_reached'] and line[:6] != 'Column':
-                    continue
-                elif line[:6] == 'Column':
+                if line[:6] == 'Column':
                     header = header + [line]
                     data_read['header_line_reached'] = True
                     continue
@@ -233,6 +228,7 @@ class LETLightCurve(LightCurve):
         # Converting from astropy.table.Table to pandas.Dataframe
         # to_pandas() bound method is only available in the latest development build and none of the stable
         data = _to_pandas(data)
+        data = data.replace([-1.0e+31, -9999.9],float('nan'))
 
         return OrderedDict(enumerate(header)), data
 
@@ -304,7 +300,7 @@ class SITLightCurve(LightCurve):
         
         axes.set_yscale("log",nonposy='mask')
         axes.set_ylim(1e-3, 1e+3)
-        axes.set_title(title + ' : ' + self.header.values()[-1][:self.header.values()[-1].index(' ')])
+        axes.set_title('{title} : {species}'.format(title = title, species = self.header.values()[-1][:self.header.values()[-1].index(' ')]))
         axes.set_ylabel('1/(cm^2 s sr MeV/nuc)')
         axes.set_xlabel('UTC Time')
 
@@ -533,6 +529,8 @@ class PLASTICLightCurve(LightCurve):
         # Converting from astropy.table.Table to pandas.Dataframe
         # to_pandas() bound method is only available in the latest development build and none of the stable
         data = _to_pandas(data)
+        data = data.replace([-1.0E+31, -9999.9],float('nan'))
+
 
         return OrderedDict(enumerate(header)), data
 
@@ -588,7 +586,6 @@ class SEPTLightCurve(LightCurve):
         figure = plt.figure()
         ax = plt.gca()
 
-        data = self.data.replace(-9.9999E+03,float('nan'))
         dates = matplotlib.dates.date2num(data['DateTime'].astype(datetime))
         
         colors = ['Green','Red','Chocolate', 'Blue','SeaGreen','Tomato','SlateBlue','Orange',
@@ -631,10 +628,10 @@ class SEPTLightCurve(LightCurve):
         #Header
         energy_levels = [45, 55, 65, 75, 85, 105, 125, 145, 165, 195, 225, 255, 295, 335, 375, 425]
         header = ['DateTime'] + \
-        ['Bin {b:02d} ({x:3.1f} - {y:3.1f} keV) electron intensity'.format(b=b, x=x, y=y) for b, x, y in zip(range(2,17), energy_levels[:-1], energy_levels[1:])] + \
-        ['Bin {b:02d} Uncertainty'.format(b=b) for b in range(2,17)]
+        ['Bin {b:02d} ({x:3.1f} - {y:3.1f} keV) electron intensity'.format(b=b, x=x, y=y) for b, x, y in zip(range(2,17), \
+            energy_levels[:-1], energy_levels[1:])] + ['Bin {b:02d} Uncertainty'.format(b=b) for b in range(2,17)]
        
-
+        header.append('Accumulation time in seconds')
         data_modify = []
 
         #Storing data columns in recognizable variables
@@ -661,6 +658,8 @@ class SEPTLightCurve(LightCurve):
         # Converting from astropy.table.Table to pandas.Dataframe
         # to_pandas() bound method is only available in the latest development build and none of the stable
         data = _to_pandas(data)
+        data = data.replace(-9999.9,float('nan'))
+        data = data.replace(-9999,np.ma.masked) 
 
         return OrderedDict(enumerate(header)), data
 
@@ -803,7 +802,8 @@ class HETLightCurve(LightCurve):
             header = ['Verse Number', 'DateTime'] + header 
 
             for i in range(len(data)): 
-                date = datetime.strptime(str(start_year_col[i])+ '-' +start_month_col[i]+ '-' +"%02d"%start_date_col[i] + '/' + ("%04d"%start_time_col[i])[:2] + ':' + ("%04d"%start_time_col[i])[2:], '%Y-%b-%d/%H:%M' )
+                date = datetime.strptime('{}{}{0:02d}{0:04d}:{0:04d}'.format(start_year_col[i], start_month_col[i], start_date_col[i], \
+                    start_time_col[i][:2], start_time_col[i][2:]), '%Y%b%d%H:%M')
                 data_modify.append(date)
 
             data.remove_columns(['col{}'.format(i) for i in range(2,6)])
@@ -817,8 +817,10 @@ class HETLightCurve(LightCurve):
             end_time_col    = data['col9']
 
             for i in range(len(data)): 
-                date1 = datetime.strptime(str(start_year_col[i])+ '-' +start_month_col[i]+ '-' +"%02d"%start_date_col[i] + '/' + ("%04d"%start_time_col[i])[:2] + ':' + ("%04d"%start_time_col[i])[2:], '%Y-%b-%d/%H:%M' )
-                date2 = datetime.strptime(str(end_year_col[i])+ '-' +end_month_col[i]+ '-' +"%02d"%end_date_col[i] + '/' + ("%04d"%end_time_col[i])[:2] + ':' + ("%04d"%end_time_col[i])[2:], '%Y-%b-%d/%H:%M' )
+                date1 = datetime.strptime('{}{}{0:02d}{0:04d}:{0:04d}'.format(start_year_col[i], start_month_col[i], start_date_col[i], \
+                    start_time_col[i][:2], start_time_col[i][2:]), '%Y%b%d%H:%M')
+                date2 = datetime.strptime('{}{}{0:02d}{0:04d}:{0:04d}'.format(end_year_col[i], end_month_col[i], end_date_col[i], \
+                    end_time_col[i][:2], end_time_col[i][2:]), '%Y%b%d%H:%M' )
                 data_modify.append(TimeRange(date1,date2))
 
             data.remove_columns(['col{}'.format(i) for i in range(2,10)])

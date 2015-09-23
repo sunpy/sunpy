@@ -162,5 +162,7 @@ class ERNELightCurve(LightCurve):
         for i,line in enumerate(header[1:]): 
             data[line] = data[line].apply(lambda col: float(col))
 
+        data = data.replace(-1.0e+00,float('nan'))
+
         return OrderedDict(enumerate(header)), data
 
