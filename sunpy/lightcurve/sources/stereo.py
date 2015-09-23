@@ -802,8 +802,8 @@ class HETLightCurve(LightCurve):
             header = ['Verse Number', 'DateTime'] + header 
 
             for i in range(len(data)): 
-                date = datetime.strptime('{}{}{0:02d}{0:04d}:{0:04d}'.format(start_year_col[i], start_month_col[i], start_date_col[i], \
-                    start_time_col[i][:2], start_time_col[i][2:]), '%Y%b%d%H:%M')
+                date = datetime.strptime('{}{}{0:02d}{}:{}'.format(start_year_col[i], start_month_col[i], start_date_col[i], \
+                    ("%04d"%start_time_col[i])[:2], ("%04d"%start_time_col[i])[2:]), '%Y%b%d%H:%M')
                 data_modify.append(date)
 
             data.remove_columns(['col{}'.format(i) for i in range(2,6)])
@@ -816,11 +816,12 @@ class HETLightCurve(LightCurve):
             end_date_col    = data['col8']
             end_time_col    = data['col9']
 
+
             for i in range(len(data)): 
-                date1 = datetime.strptime('{}{}{0:02d}{0:04d}:{0:04d}'.format(start_year_col[i], start_month_col[i], start_date_col[i], \
-                    start_time_col[i][:2], start_time_col[i][2:]), '%Y%b%d%H:%M')
-                date2 = datetime.strptime('{}{}{0:02d}{0:04d}:{0:04d}'.format(end_year_col[i], end_month_col[i], end_date_col[i], \
-                    end_time_col[i][:2], end_time_col[i][2:]), '%Y%b%d%H:%M' )
+                date1 = datetime.strptime('{}{}{0:02d}{}:{}'.format(start_year_col[i], start_month_col[i], start_date_col[i], \
+                    ("%04d"%start_time_col[i])[:2], ("%04d"%start_time_col[i])[2:]), '%Y%b%d%H:%M')
+                date2 = datetime.strptime('{}{}{0:02d}{}:{}'.format(end_year_col[i], end_month_col[i], end_date_col[i], \
+                    ("%04d"%end_time_col[i])[:2], ("%04d"%end_time_col[i])[2:]), '%Y%b%d%H:%M' )
                 data_modify.append(TimeRange(date1,date2))
 
             data.remove_columns(['col{}'.format(i) for i in range(2,10)])
