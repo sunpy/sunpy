@@ -197,6 +197,7 @@ class HETClient(GenericClient):
     
         base_url = 'http://www.srl.caltech.edu/STEREO/DATA/HET/'
         
+        possible_spacecraft = ['ahead', 'behind']
         dict_duration     = { 1 * u.min :'1minute', 15 * u.min : '15minute', 1 * u.h : '1hour' , 12 * u.h : '12hour', 1 * u.d :'1day'}
         dict_time         = {1 * u.min:'1m', 1 * u.h :'1h', 15 * u.min:'15m', 1 * u.d :'1d', 12 * u.h:'12h'}
         dict_spacecraft   = {'Ahead': 'AeH', 'Behind': 'BeH'}
@@ -205,8 +206,8 @@ class HETClient(GenericClient):
         if timerange.start < datetime.datetime(2006,12,01):
             raise ValueError('Earliest date for which HET data is available is 2006-12-01')
         
-        if stereo_spacecraft not in dict_spacecraft:
-            raise ValueError('Possible stereo_spacecraft values: ' + ','.join(dict_spacecraft))
+        if stereo_spacecraft not in possible_spacecraft:
+            raise ValueError('Possible stereo_spacecraft values: ' + ','.join(possible_spacecraft))
         
         if duration_of_average not in dict_duration:
             raise ValueError('Possible duration_of_average values as astropy unit quantities: ' + ','.join([str(i) for i in dict_duration]))
