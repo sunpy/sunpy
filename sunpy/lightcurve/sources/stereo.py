@@ -423,18 +423,17 @@ class PLASTICLightCurve(LightCurve):
 
         figure = plt.figure()
         
-        data = self.data.replace(-1E+31,float('nan')) #Removing fill value for error situation and not a zero value. 
-        dates = matplotlib.dates.date2num(data['Datetime'].apply(lambda col: parse_time(str(col).replace('/',' '))).astype(datetime))
+        dates = matplotlib.dates.date2num(self.data['Datetime'].apply(lambda col: parse_time(str(col).replace('/',' '))).astype(datetime))
         
         colors = ['Green','Red','Chocolate', 'Blue','SeaGreen','Tomato','SlateBlue','Orange',
         'Purple','Magenta','MediumVioletRed', 'Teal','Navy','Indigo']
 
         ax1 = figure.add_subplot(3,1,1)
-        plt.plot_date(dates, data['Np [1/cc]'].ffill(), '-',label= 'Np [1/cc]' , color='Red', lw=2)
+        plt.plot_date(dates, self.data['Np [1/cc]'].ffill(), '-',label= 'Np [1/cc]' , color='Red', lw=2)
         ax2 = figure.add_subplot(3,1,2)
-        plt.plot_date(dates, data['Bulk Speed [km/s]'].ffill(), '-',label= 'Bulk Speed [km/s]' , color= 'Blue', lw=2)
+        plt.plot_date(dates, self.data['Bulk Speed [km/s]'].ffill(), '-',label= 'Bulk Speed [km/s]' , color= 'Blue', lw=2)
         ax3 = figure.add_subplot(3,1,3)
-        plt.plot_date(dates, data['Tkin [deg K]'].ffill(), '-',label= 'Tkin [deg K]' , color='Teal', lw=2)
+        plt.plot_date(dates, self.data['Tkin [deg K]'].ffill(), '-',label= 'Tkin [deg K]' , color='Teal', lw=2)
         
         ax1.set_yscale("log",nonposy = "mask")
         ax1.set_ylabel('[1/cc]')
@@ -586,7 +585,7 @@ class SEPTLightCurve(LightCurve):
         figure = plt.figure()
         ax = plt.gca()
 
-        dates = matplotlib.dates.date2num(data['DateTime'].astype(datetime))
+        dates = matplotlib.dates.date2num(self.data['DateTime'].astype(datetime))
         
         colors = ['Green','Red','Chocolate', 'Blue','SeaGreen','Tomato','SlateBlue','Orange',
         'Purple','Magenta','MediumVioletRed', 'Teal','Navy','Indigo']
@@ -596,7 +595,7 @@ class SEPTLightCurve(LightCurve):
 
         for i,line in enumerate(self.header.values()):
             if i >= 1 and i <= 15:
-                axes.plot_date(dates, data[line].ffill(), '-',
+                axes.plot_date(dates, self.data[line].ffill(), '-',
                      label= line[line.index('(')+1:line.index('V')+1] , color=colors[i/2-2], lw=0.5)
         
         axes.set_yscale("log",nonposy='mask')
@@ -801,8 +800,8 @@ class HETLightCurve(LightCurve):
             header = ['Verse Number', 'DateTime'] + header 
 
             for i in range(len(data)): 
-                date = datetime.strptime('{}{}{0:02d}{}:{}'.format(start_year_col[i], start_month_col[i], start_date_col[i], \
-                    ("%04d"%start_time_col[i])[:2], ("%04d"%start_time_col[i])[2:]), '%Y%b%d%H:%M')
+                date = datetime.strptime('{0} {1} {2:02d} {3:04d}'.format(start_year_col[i], start_month_col[i], start_date_col[i], \
+                    start_time_col[i]), '%Y %b %d %H %M')
                 data_modify.append(date)
 
             data.remove_columns(['col{}'.format(i) for i in range(2,6)])
@@ -817,10 +816,10 @@ class HETLightCurve(LightCurve):
 
 
             for i in range(len(data)): 
-                date1 = datetime.strptime('{}{}{0:02d}{}:{}'.format(start_year_col[i], start_month_col[i], start_date_col[i], \
-                    ("%04d"%start_time_col[i])[:2], ("%04d"%start_time_col[i])[2:]), '%Y%b%d%H:%M')
-                date2 = datetime.strptime('{}{}{0:02d}{}:{}'.format(end_year_col[i], end_month_col[i], end_date_col[i], \
-                    ("%04d"%end_time_col[i])[:2], ("%04d"%end_time_col[i])[2:]), '%Y%b%d%H:%M' )
+                date1 = datetime.strptime('{0} {1} {2:02d} {3:04d}'.format(start_year_col[i], start_month_col[i], start_date_col[i], \
+                    start_time_col[i]), '%Y %b %d %H %M')
+                date2 = datetime.strptime('{0} {1} {2:02d} {3:04d}'.format(end_year_col[i], end_month_col[i], end_date_col[i], \
+                    end_time_col[i]), '%Y %b %d %H %M' )
                 data_modify.append(TimeRange(date1,date2))
 
             data.remove_columns(['col{}'.format(i) for i in range(2,10)])
