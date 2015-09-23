@@ -77,8 +77,6 @@ class SEPTClient(GenericClient):
         base_url = 'http://www2.physik.uni-kiel.de/stereo/data/sept/level2/'
 
         possible_spacecraft = ['ahead','behind']
-        possible_species = ['element', 'ion']
-        possible_duration = [1 * u.min, 10 * u.min, 1 * u.h, 1 * u.d]
         possible_sensor = ['asun', 'sun', 'north','south','omni']
 
         dict_species = {'element': 'ele', 'ion':'ion'}
@@ -92,11 +90,11 @@ class SEPTClient(GenericClient):
         if stereo_spacecraft not in possible_spacecraft:
             raise ValueError('Possible stereo_spacecraft values: ' + ','.join(possible_spacecraft))
 
-        if species not in possible_species:
-            raise ValueError('Possible species values: ' + ','.join(possible_species))
+        if species not in dict_species:
+            raise ValueError('Possible species values: ' + ','.join(dict_species))
 
-        if duration_of_average not in possible_duration:
-            raise ValueError('Possible duration_of_average values as astropy unit quantities: ' + ','.join([str(i) for i in possible_duration]))
+        if duration_of_average not in dict_duration:
+            raise ValueError('Possible duration_of_average values as astropy unit quantities: ' + ','.join([str(i) for i in dict_duration]))
 
         if sensor_pointing not in possible_sensor:
             raise ValueError('Possible sensor_pointing values: ' + ','.join(possible_sensor))
@@ -199,9 +197,6 @@ class HETClient(GenericClient):
     
         base_url = 'http://www.srl.caltech.edu/STEREO/DATA/HET/'
         
-        possible_spacecraft = ['ahead', 'behind']
-        possible_duration   = [1 * u.min, 15 * u.min, 1 * u.h, 12 * u.h, 1 * u.d]
-        
         dict_duration     = { 1 * u.min :'1minute', 15 * u.min : '15minute', 1 * u.h : '1hour' , 12 * u.h : '12hour', 1 * u.d :'1day'}
         dict_time         = {1 * u.min:'1m', 1 * u.h :'1h', 15 * u.min:'15m', 1 * u.d :'1d', 12 * u.h:'12h'}
         dict_spacecraft   = {'Ahead': 'AeH', 'Behind': 'BeH'}
@@ -210,11 +205,11 @@ class HETClient(GenericClient):
         if timerange.start < datetime.datetime(2006,12,01):
             raise ValueError('Earliest date for which HET data is available is 2006-12-01')
         
-        if stereo_spacecraft not in possible_spacecraft:
-            raise ValueError('Possible stereo_spacecraft values: ' + ','.join(possible_spacecraft))
+        if stereo_spacecraft not in dict_spacecraft:
+            raise ValueError('Possible stereo_spacecraft values: ' + ','.join(dict_spacecraft))
         
-        if duration_of_average not in possible_duration:
-            raise ValueError('Possible duration_of_average values as astropy unit quantities: ' + ','.join([str(i) for i in possible_duration]))
+        if duration_of_average not in dict_duration:
+            raise ValueError('Possible duration_of_average values as astropy unit quantities: ' + ','.join([str(i) for i in dict_duration]))
     
     
         stereo_spacecraft = stereo_spacecraft.capitalize()
@@ -428,9 +423,6 @@ class PLASTICClient(GenericClient):
 
         """
 
-        possible_spacecraft = ['ahead', 'behind']
-        possible_duration   = [1 * u.min, 10 * u.min, 1 * u.h ]
-
         dict_spacecraft = { 'ahead': 'A', 'behind': 'B' }
         dict_duration   = { 1 * u.min: '1min', 10 * u.min: '10min', 1 * u.h: '1hr'}
 
@@ -439,11 +431,11 @@ class PLASTICClient(GenericClient):
         if timerange.start < datetime.datetime(2007,02,14):
             raise ValueError('Earliest date for which PLASTIC data is available is 2007-02-14')
 
-        if stereo_spacecraft not in possible_spacecraft:
-            raise ValueError('Possible stereo_spacecraft values: ' + ','.join(possible_spacecraft))
+        if stereo_spacecraft not in dict_spacecraft:
+            raise ValueError('Possible stereo_spacecraft values: ' + ','.join(dict_spacecraft))
 
-        if duration_of_average not in possible_duration:
-            raise ValueError('Possible duration_of_average values as astropy unit quantities: ' + ','.join([str(i) for i in possible_duration]))
+        if duration_of_average not in dict_duration:
+            raise ValueError('Possible duration_of_average values as astropy unit quantities: ' + ','.join([str(i) for i in dict_duration]))
 
         base_url = 'http://stereo-ssc.nascom.nasa.gov/data/ins_data/plastic/level2/Protons/ASCII/'
 
@@ -517,16 +509,14 @@ class MAGClient(GenericClient):
         | http://stereo.ssl.berkeley.edu/l2data/
 
         """
-
-        possible_spacecraft = ['ahead', 'behind']
         dict_spacecraft = {'ahead':'A', 'behind':'B'}
 
         #Parameter Validations
         if timerange.start < datetime.datetime(2006,01,01):
             raise ValueError('Earliest date for which MAG data is available is 2006-01-01')
 
-        if stereo_spacecraft not in possible_spacecraft:
-            raise ValueError('Possible stereo_spacecraft values: ' + ','.join(possible_spacecraft))
+        if stereo_spacecraft not in dict_spacecraft:
+            raise ValueError('Possible stereo_spacecraft values: ' + ','.join(dict_spacecraft))
 
 
         url_pattern = ('http://stereo.ssl.berkeley.edu/l2data/{stereo_spacecraft}/magplasma/ST{dict_spacecraft}_L2_MAGPLASMA_1m_%Y_V01.cdf')
@@ -626,8 +616,6 @@ class LETClient(GenericClient):
 
         """
         possible_spacecraft = ['ahead', 'behind']
-        possible_duration   = [1 * u.min, 10 * u.min, 1 * u.h, 1 * u.d, 27 * u.d]
-
         dict_duration       = { 1 * u.min : '1Minute', 10 * u.min : '10Minute', 1 * u.h: 'Hourly', 1 * u.d: 'Daily', 27 * u.d: '27day'}
 
 
@@ -638,8 +626,8 @@ class LETClient(GenericClient):
         if stereo_spacecraft not in possible_spacecraft:
             raise ValueError('Possible stereo_spacecraft values: ' + ','.join(possible_spacecraft))
 
-        if duration_of_average not in possible_duration:
-            raise ValueError('Possible duration_of_average values: ' + ','.join([str(i) for i in possible_duration]))
+        if duration_of_average not in dict_duration:
+            raise ValueError('Possible duration_of_average values: ' + ','.join([str(i) for i in dict_duration]))
 
 
         url_base_pattern = 'http://www.srl.caltech.edu/STEREO/DATA/Level1/Public/{stereo_spacecraft}/{duration_of_average}/'
