@@ -658,8 +658,7 @@ class SEPTLightCurve(LightCurve):
         # Converting from astropy.table.Table to pandas.Dataframe
         # to_pandas() bound method is only available in the latest development build and none of the stable
         data = _to_pandas(data)
-        data = data.replace(-9999.9,float('nan'))
-        data = data.replace(-9999,np.ma.masked) 
+        data = data.replace(-9999.9,float('nan')) 
 
         return OrderedDict(enumerate(header)), data
 
