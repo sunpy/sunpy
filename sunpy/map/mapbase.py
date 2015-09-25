@@ -376,6 +376,18 @@ scale:\t\t {scale}
                                    self.reference_coordinate.y))
 
     @property
+    def shift(self):
+        """Returns the shift added to the map center"""
+        if self._shift is None:
+            self._shift = Pair(0 * u.arcsec, 0 * u.arcsec)
+        return self._shift
+
+    @shift.setter
+    @u.quantity_input(x=u.deg, y=u.deg)
+    def shift(self, x, y):
+        self._shift = Pair(x, y)
+
+    @property
     def rsun_meters(self):
         """Radius of the sun in meters"""
         return u.Quantity(self.meta.get('rsun_ref', constants.radius), 'meter')
