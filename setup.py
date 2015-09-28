@@ -69,7 +69,7 @@ try:
     cmdclassd['test'] = type('SunPyTest', (SunPyTest,),
                             {'package_name': 'sunpy'})
 except Exception:
-    # Get everything, if it dosen't work, we still want SunPy to install.
+    # Catch everything, if it doesn't work, we still want SunPy to install.
     pass
 
 # Adjust the compiler in case the default on this platform is to use a
