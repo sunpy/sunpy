@@ -150,6 +150,7 @@ class GenericMap(NDData):
         # Validate header
         # TODO: This should be a function of the header, not of the map
         self._validate()
+        self.__shift = Pair(0 * u.arcsec, 0 * u.arcsec)
 
         if self.dtype == np.uint8:
             norm = None
@@ -370,22 +371,20 @@ scale:\t\t {scale}
         the map."""
         return Pair(wcs.get_center(self.dimensions[0], self.scale.x,
                                    self.reference_pixel.x,
-                                   self.reference_coordinate.x),
+                                   self.reference_coordinate.x) + self.__shift.x,
                     wcs.get_center(self.dimensions[1], self.scale.y,
                                    self.reference_pixel.y,
-                                   self.reference_coordinate.y))
+                                   self.reference_coordinate.y) + self.__shift.y)
 
     @property
-    def shift(self):
+    def shiftxy(self):
         """Returns the shift added to the map center"""
-        if self._shift is None:
-            self._shift = Pair(0 * u.arcsec, 0 * u.arcsec)
-        return self._shift
+        return self.__shift
 
-    @shift.setter
     @u.quantity_input(x=u.deg, y=u.deg)
     def shift(self, x, y):
-        self._shift = Pair(x, y)
+        """A shift variable"""
+        self.__shift = Pair(x, y)
 
     @property
     def rsun_meters(self):
