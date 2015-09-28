@@ -22,8 +22,8 @@ builtins._ASTROPY_SETUP_ = True
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
 if on_rtd:
-    os.environ['HOME'] = '/home/docs/checkouts/readthedocs.org/user_builds/sunpy/'
-    os.environ['SUNPY_CONFIGDIR'] = '/home/docs/checkouts/readthedocs.org/user_builds/sunpy/'
+    os.environ['HOME'] = '/home/docs/'
+    os.environ['SUNPY_CONFIGDIR'] = '/home/docs/'
 
 from astropy_helpers.setup_helpers import (
     register_commands, adjust_compiler, get_debug_option, get_package_info)
