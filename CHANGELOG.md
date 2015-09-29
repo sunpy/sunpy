@@ -1,5 +1,8 @@
+0.6.2
+-----
+
 0.6.1
-------
+-----
 
 * Fixed MapCube animations by working around a bug in Astropy's ImageNormalize
 * Small fix to RTD builds for Affiliated packages
