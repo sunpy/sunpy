@@ -29,7 +29,6 @@ from astropy_helpers.setup_helpers import (
     register_commands, adjust_compiler, get_debug_option, get_package_info)
 from astropy_helpers.git_helpers import get_git_devstr
 from astropy_helpers.version_helpers import generate_version_py
-from sunpy.tests.setup_command import SunPyTest
 
 # Get some values from the setup.cfg
 from distutils import config
@@ -64,9 +63,14 @@ if not RELEASE:
 # modify distutils' behavior.
 cmdclassd = register_commands(PACKAGENAME, VERSION, RELEASE)
 
-# Overwrite the Astropy Testing framework
-cmdclassd['test'] = type('SunPyTest', (SunPyTest,),
-                         {'package_name': 'sunpy'})
+try:
+    from sunpy.tests.setup_command import SunPyTest
+    # Overwrite the Astropy Testing framework
+    cmdclassd['test'] = type('SunPyTest', (SunPyTest,),
+                            {'package_name': 'sunpy'})
+except Exception:
+    # Get everything, if it dosen't work, we still want SunPy to install.
+    pass
 
 # Adjust the compiler in case the default on this platform is to use a
 # broken one.
