@@ -2,6 +2,12 @@
 ------
 
 * Fixed MapCube animations by working around a bug in Astropy's ImageNormalize
+* Small fix to RTD builds for Affiliated packages
+* SunPy can now be installed without having to install Astropy first.
+* MapCubes processed with ``coalignment.apply_shifts`` now have correct
+  metadata.
+* Multiple fixes for WCS transformations, especially with solar-x, solar-y
+  CTYPE headers.
 
 0.6.0
 -----
