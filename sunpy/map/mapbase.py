@@ -1319,11 +1319,11 @@ scale:\t\t {scale}
 
         Examples
         --------
-        #Simple Plot with color bar
-        >>> aiamap.plot()   # doctest: +SKIP
+        >>> # Simple Plot with color bar
+        >>> aia.plot()   # doctest: +SKIP
         >>> plt.colorbar()   # doctest: +SKIP
 
-        #Add a limb line and grid
+        >>> # Add a limb line and grid
         >>> aia.plot()   # doctest: +SKIP
         >>> aia.draw_limb()   # doctest: +SKIP
         >>> aia.draw_grid()   # doctest: +SKIP
