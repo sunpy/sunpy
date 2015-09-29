@@ -188,6 +188,7 @@ class MDIMap(GenericMap):
         else:
             self.plot_settings['norm'] = colors.Normalize(-vmax, vmax)
 
+
     @property
     def measurement(self):
         """
