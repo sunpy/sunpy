@@ -193,10 +193,6 @@ class QueryResponse(list):
         # Warn about -1 values?
         return sum(record.size for record in self if record.size > 0)
 
-    def num_records(self):
-        """ Return number of records. """
-        return len(self)
-
     def time_range(self):
         """ Return total time-range all records span across. """
         return (
