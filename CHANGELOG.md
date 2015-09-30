@@ -8,6 +8,7 @@ Latest
 * add a `draw_rectangle` helper to `GenericMap` which can plot rectanges in the
   native coordinate system of the map.
 
+* Added the ability to shift maps to correct for incorrect map location, for example.
 
 0.6.0
 -----
