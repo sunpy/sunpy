@@ -354,6 +354,7 @@ scale:\t\t {scale}
     @property
     def xrange(self):
         """Return the X range of the image from edge to edge."""
+        #TODO: This should be reading from the WCS object
         xmin = self.center.x - self.dimensions[0] / 2. * self.scale.x
         xmax = self.center.x + self.dimensions[0] / 2. * self.scale.x
         return u.Quantity([xmin, xmax])
@@ -361,6 +362,7 @@ scale:\t\t {scale}
     @property
     def yrange(self):
         """Return the Y range of the image from edge to edge."""
+        #TODO: This should be reading from the WCS object
         ymin = self.center.y - self.dimensions[1] / 2. * self.scale.y
         ymax = self.center.y + self.dimensions[1] / 2. * self.scale.y
         return u.Quantity([ymin, ymax])
@@ -371,20 +373,25 @@ scale:\t\t {scale}
         the map."""
         return Pair(wcs.get_center(self.dimensions[0], self.scale.x,
                                    self.reference_pixel.x,
-                                   self.reference_coordinate.x) + self.__shift.x,
+                                   self.reference_coordinate.x),
                     wcs.get_center(self.dimensions[1], self.scale.y,
                                    self.reference_pixel.y,
-                                   self.reference_coordinate.y) + self.__shift.y)
+                                   self.reference_coordinate.y))
 
     @property
-    def shiftxy(self):
-        """Returns the shift added to the map center"""
+    def shift(self):
+        """Returns the shift added to the map center."""
         return self.__shift
 
     @u.quantity_input(x=u.deg, y=u.deg)
-    def shift(self, x, y):
-        """A shift variable"""
+    def set_shift(self, x, y):
+        """Set the amount to shift the map to, for example, correct for a bad
+        map location."""
         self.__shift = Pair(x, y)
+
+    def reset_shift(self):
+        """Reset the shift to (0, 0)"""
+        self.__shift = Pair(0 * u.arcsec, 0 * u.arcsec)
 
     @property
     def rsun_meters(self):
@@ -444,9 +451,10 @@ scale:\t\t {scale}
 
     @property
     def reference_coordinate(self):
-        """Reference point WCS axes in data units (crval1/2)"""
-        return Pair(self.meta.get('crval1', 0.) * self.units.x,
-                    self.meta.get('crval2', 0.) * self.units.y)
+        """Reference point WCS axes in data units (i.e. crval1, crval2). This value
+        includes a shift if one is set."""
+        return Pair(self.meta.get('crval1', 0.) * self.units.x + self.__shift.x,
+                    self.meta.get('crval2', 0.) * self.units.y + self.__shift.y)
 
     @property
     def reference_pixel(self):
