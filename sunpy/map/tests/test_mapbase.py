@@ -39,6 +39,8 @@ def generic_map():
               'CRPIX2': 5,
               'CDELT1': 10,
               'CDELT2': 10,
+              'CUNIT1': 'arcsec',
+              'CUNIT2': 'arcsec',
               'PC1_1': 0,
               'PC1_2': -1,
               'PC2_1': 1,
@@ -71,8 +73,8 @@ def test_wcs(aia171_test_map):
                                  aia171_test_map.reference_pixel.y.value])
     assert all(wcs.wcs.cdelt == [aia171_test_map.scale.x.value,
                                  aia171_test_map.scale.y.value])
-    assert all(wcs.wcs.crval == [aia171_test_map.reference_coordinate.x.value,
-                                 aia171_test_map.reference_coordinate.y.value])
+    assert all(wcs.wcs.crval == [(aia171_test_map.reference_coordinate.x - aia171_test_map.shift.x).value,
+                                 (aia171_test_map.reference_coordinate.y - aia171_test_map.shift.y).value])
     assert set(wcs.wcs.ctype) == set([aia171_test_map.coordinate_system.x,
                              aia171_test_map.coordinate_system.y])
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
@@ -231,6 +233,51 @@ def test_data_to_pixel(generic_map):
     test_pixel = generic_map.data_to_pixel(*generic_map.reference_coordinate, origin=1)
     assert_quantity_allclose(test_pixel, generic_map.reference_pixel)
 
+def test_default_shift():
+    """Test that the default shift is zero"""
+    data = np.ones([6,6], dtype=np.float64)
+    header = {'CRVAL1': 0,
+              'CRVAL2': 0,
+              'CRPIX1': 5,
+              'CRPIX2': 5,
+              'CDELT1': 10,
+              'CDELT2': 9,
+              'CD1_1': 0,
+              'CD1_2': -9,
+              'CD2_1': 10,
+              'CD2_2': 0,
+              'NAXIS1': 6,
+              'NAXIS2': 6}
+    cd_map = sunpy.map.Map((data, header))
+    assert cd_map.shift.x.value == 0
+    assert cd_map.shift.y.value == 0
+
+def test_shift_applied(generic_map):
+    original_reference_coord = (generic_map.reference_coordinate.x, generic_map.reference_coordinate.y)
+    x_shift = 5 * u.arcsec
+    y_shift = 13 * u.arcsec
+    generic_map.set_shift(x_shift, y_shift)
+    assert generic_map.reference_coordinate.x - x_shift == original_reference_coord[0]
+    assert generic_map.reference_coordinate.y - y_shift == original_reference_coord[1]
+
+def test_set_shift(generic_map):
+    """Test that shift can be set properly"""
+    x_shift = 5 * u.arcsec
+    y_shift = 13 * u.arcsec
+    generic_map.set_shift(x_shift, y_shift)
+    resultant_shift = generic_map.shift
+    assert resultant_shift.x == x_shift
+    assert resultant_shift.y == y_shift
+
+def test_reset_shift(generic_map):
+    """Test that resetting the shift zeros it out"""
+    x_shift = 5 * u.arcsec
+    y_shift = 13 * u.arcsec
+    generic_map.set_shift(x_shift, y_shift)
+    generic_map.reset_shift()
+    resultant_shift = generic_map.shift
+    assert resultant_shift.x.value == 0
+    assert resultant_shift.y.value == 0
 
 def test_submap(generic_map):
     """Check data and header information for a submap"""
@@ -425,4 +472,3 @@ def test_plot_masked_aia171_nowcsaxes(aia171_test_map):
     masked_map = sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
     ax = plt.gca()
     masked_map.plot(axes=ax)
-
