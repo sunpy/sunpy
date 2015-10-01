@@ -380,17 +380,44 @@ scale:\t\t {scale}
 
     @property
     def shift(self):
-        """Returns the shift added to the map center."""
+        """The amount to shift the map reference coordinate to, for example,
+        correct for a bad map location. This value be updated by using set_shift().
+        """
         return self.__shift
 
     @u.quantity_input(x=u.deg, y=u.deg)
     def set_shift(self, x, y):
         """Set the amount to shift the map to, for example, correct for a bad
-        map location."""
+        map location.
+
+        Parameters
+        ----------
+
+        x : `~astropy.units.Quantity`
+            The shift to apply to the X coordinate.
+
+        y : `~astropy.units.Quantity`
+            The shift to apply to the Y coordinate
+
+        Returns
+        -------
+        None
+        """
+
         self.__shift = Pair(x, y)
 
     def reset_shift(self):
-        """Reset the shift to (0, 0)"""
+        """Reset the shift applied to the map to (0, 0).
+
+        Parameters
+        ----------
+        None
+
+        Returns
+        -------
+        None
+        """
+
         self.__shift = Pair(0 * u.arcsec, 0 * u.arcsec)
 
     @property
@@ -458,20 +485,20 @@ scale:\t\t {scale}
 
     @property
     def reference_pixel(self):
-        """Reference point axes in pixels (crpix1/2)"""
+        """Reference point axes in pixels (i.e. crpix1, crpix2)"""
         return Pair(self.meta.get('crpix1', (self.meta.get('naxis1') + 1) / 2.) * u.pixel,
                     self.meta.get('crpix2', (self.meta.get('naxis2') + 1) / 2.) * u.pixel)
 
     @property
     def scale(self):
-        """Image scale along the x and y axes in units/pixel (cdelt1/2)"""
+        """Image scale along the x and y axes in units/pixel (i.e. cdelt1, cdelt2)"""
         #TODO: Fix this if only CDi_j matrix is provided
         return Pair(self.meta.get('cdelt1', 1.) * self.units.x / u.pixel,
                     self.meta.get('cdelt2', 1.) * self.units.y / u.pixel)
 
     @property
     def units(self):
-        """Image coordinate units along the x and y axes (cunit1/2)."""
+        """Image coordinate units along the x and y axes (i.e. cunit1, cunit2)."""
         return Pair(u.Unit(self.meta.get('cunit1', 'arcsec')),
                     u.Unit(self.meta.get('cunit2', 'arcsec')))
 
