@@ -150,7 +150,7 @@ class GenericMap(NDData):
         # Validate header
         # TODO: This should be a function of the header, not of the map
         self._validate()
-        self.__shift = Pair(0 * u.arcsec, 0 * u.arcsec)
+        self._shift = Pair(0 * u.arcsec, 0 * u.arcsec)
 
         if self.dtype == np.uint8:
             norm = None
@@ -383,7 +383,7 @@ scale:\t\t {scale}
         """The amount to shift the map reference coordinate to, for example,
         correct for a bad map location. This value be updated by using set_shift().
         """
-        return self.__shift
+        return self._shift
 
     @u.quantity_input(x=u.deg, y=u.deg)
     def set_shift(self, x, y):
@@ -404,7 +404,7 @@ scale:\t\t {scale}
         None
         """
 
-        self.__shift = Pair(x, y)
+        self._shift = Pair(x, y)
 
     def reset_shift(self):
         """Reset the shift applied to the map to (0, 0).
@@ -418,7 +418,7 @@ scale:\t\t {scale}
         None
         """
 
-        self.__shift = Pair(0 * u.arcsec, 0 * u.arcsec)
+        self._shift = Pair(0 * u.arcsec, 0 * u.arcsec)
 
     @property
     def rsun_meters(self):
@@ -480,8 +480,8 @@ scale:\t\t {scale}
     def reference_coordinate(self):
         """Reference point WCS axes in data units (i.e. crval1, crval2). This value
         includes a shift if one is set."""
-        return Pair(self.meta.get('crval1', 0.) * self.units.x + self.__shift.x,
-                    self.meta.get('crval2', 0.) * self.units.y + self.__shift.y)
+        return Pair(self.meta.get('crval1', 0.) * self.units.x + self._shift.x,
+                    self.meta.get('crval2', 0.) * self.units.y + self._shift.y)
 
     @property
     def reference_pixel(self):
