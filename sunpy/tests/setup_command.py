@@ -7,6 +7,7 @@ Created on Sat Jun  7 19:36:08 2014
 This file is designed to be imported and ran only via setup.py, hence it's
 dependency on astropy_helpers which will be available in that context.
 """
+from __future__ import absolute_import
 
 from astropy_helpers.test_helpers import AstropyTest
 from astropy_helpers.compat import _fix_user_options
