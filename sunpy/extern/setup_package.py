@@ -6,7 +6,7 @@ import os
 
 def get_package_data():
     paths = [os.path.join('js', '*.js')]
-    return {'astropy.extern': paths}
+    return {'sunpy.extern': paths}
 
 
 def requires_2to3():

@@ -1,4 +1,4 @@
-# Licensed under a 3-clause BSD style license - see ASTROPY.rst
+# Licensed under a 3-clause BSD style license - see LICENSE.rst
 
 """
 Handle loading six package from system or from the bundled copy
@@ -52,7 +52,7 @@ def _import_six(search_path=_SIX_SEARCH_PATH):
     else:
         raise ImportError(
             "SunPy requires the 'six' module of minimum version {0}; "
-            "normally this is bundled with the astropy package so if you get "
+            "normally this is bundled with the sunpy package so if you get "
             "this warning consult the packager of your SunPy "
             "distribution.".format(_SIX_MIN_VERSION))
 
