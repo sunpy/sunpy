@@ -1,7 +1,9 @@
 from __future__ import absolute_import
 from __future__ import division
+from __future__ import print_function
 
 import sys
+from sunpy.extern.six.moves import range
 
 __all__ = ['TTYProgressBar']
 
@@ -52,7 +54,7 @@ class TTYProgressBar(object):
         Finish the bar, the ProgressBar cannot be used after this
         method was called.
         """
-        print
+        print()
 
     def _draw_one(self):
         """
@@ -66,7 +68,7 @@ class TTYProgressBar(object):
         """
         cur = self.current
         self.current = 0
-        for _ in xrange(cur):
+        for _ in range(cur):
             self.poke()
 
     def poke(self, n=1):
@@ -78,6 +80,6 @@ class TTYProgressBar(object):
             raise ValueError("ProgressBar overflowed.")
 
         diff = int((self.current + n) / self.step) - int(self.current / self.step)
-        for _ in xrange(diff):
+        for _ in range(diff):
             self._draw_one()
         self.current += n

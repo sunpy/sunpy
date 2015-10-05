@@ -27,6 +27,8 @@ from __future__ import absolute_import
 from warnings import warn
 
 from sunpy.extern.six.moves import zip as izip
+from sunpy.extern import six
+from sunpy.extern.six.moves import map
 
 __all__ = ['TypeWarning', 'MultiMethod']
 
@@ -141,7 +143,7 @@ class MultiMethod(object):
             for x in args
         ]
 
-        for k, elem in kwargs.iteritems():
+        for k, elem in six.iteritems(kwargs):
             if isinstance(elem, super):
                 kwargs[k] = elem.__self__
 
