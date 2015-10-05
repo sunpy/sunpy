@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import os.path
 
 testdir = os.path.dirname(os.path.abspath(__file__))
@@ -36,7 +38,7 @@ def main(modulename='', coverage=False, cov_report=False,
         Run the tests that don't require an internet connection.
 
     """
-    print modulename
+    print(modulename)
     if pytest is None:
         raise ImportError("You need to install pytest to run SunPy's tests")
 
@@ -55,7 +57,7 @@ def main(modulename='', coverage=False, cov_report=False,
 
     all_args = []
     if coverage:
-        print path, modulename
+        print(path, modulename)
         modulepath = os.path.abspath(
             os.path.join(path, os.path.join(os.pardir, os.pardir, modulename)))
         all_args.extend(['--cov', modulepath])
