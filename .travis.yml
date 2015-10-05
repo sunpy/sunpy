@@ -40,6 +40,12 @@ env:
         - NUMPY_VERSION=$LATEST_NUMPY
         - PANDAS_VERSION=$LATEST_PANDAS
 
+    matrix:
+        - PYTHON_VERSION=2.7
+#        - PYTHON_VERSION=3.3
+#        - PYTHON_VERSION=3.4
+#        - PYTHON_VERSION=3.5
+
 matrix:
     include:
          - os: linux
