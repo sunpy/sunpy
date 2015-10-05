@@ -19,6 +19,7 @@ from unicodedata import normalize
 from itertools import ifilter
 
 from sunpy.util import replacement_filename
+from sunpy.extern import six
 
 __all__ = ['slugify', 'get_content_disposition', 'get_filename',
            'get_system_filename', 'get_system_filename_slugify',
@@ -38,14 +39,14 @@ def slugify(text, delim=u'_', encoding="ascii"):
     name_and_extension = text.rsplit(period, 1)
     name = name_and_extension[0]
 
-    name = unicode(delim).join(ifilter(None, (
+    name = six.text_type(delim).join(ifilter(None, (
         word.encode(encoding, 'ignore')
         for word in _punct_re.split(name.lower())
     )))
 
     if len(name_and_extension) == 2:
         extension = name_and_extension[1]
-        return unicode(period).join([name, extension])
+        return six.text_type(period).join([name, extension])
     else:
         return name
 
@@ -56,7 +57,7 @@ def get_content_disposition(content_disposition):
     parser = FeedParser()
     parser.feed(b'Content-Disposition: ' + content_disposition)
     name = parser.close().get_filename()
-    if not isinstance(name, unicode):
+    if not isinstance(name, six.text_type):
         name = name.decode('latin1', 'ignore')
     return name
 
@@ -78,7 +79,7 @@ def get_filename(sock, url):
     if not name:
         parsed = urlparse.urlparse(url)
         name = parsed.path.rstrip('/').rsplit('/', 1)[-1]
-    return unicode(name)
+    return six.text_type(name)
 
 
 def get_system_filename(sock, url, default=u"file"):
@@ -166,7 +167,7 @@ def check_download_file(filename, remotepath, download_dir, remotename=None,
     if replace or not os.path.isfile(os.path.join(download_dir, filename)):
         # set local and remote file names be the same unless specified
         # by user.
-        if not isinstance(remotename, basestring):
+        if not isinstance(remotename, six.string_types):
             remotename = filename
 
         download_file(urlparse.urljoin(remotepath, remotename),

@@ -1,9 +1,12 @@
+from __future__ import absolute_import
 import os
 import datetime
 import re
 
 import urllib2
 from bs4 import BeautifulSoup
+import six
+from sunpy.extern.six.moves import range, zip
 
 __all__ = ['Scraper']
 
@@ -96,7 +99,7 @@ class Scraper(object):
     def _URL_followsPattern(self, url):
         """Check whether the url provided follows the pattern"""
         pattern = self.pattern
-        for k,v in TIME_CONVERSIONS.iteritems():
+        for k,v in six.iteritems(TIME_CONVERSIONS):
             pattern = pattern.replace(k, v)
         matches = re.match(pattern, url)
         if matches:
@@ -129,10 +132,10 @@ class Scraper(object):
         date_together = ''.join(final_date)
         pattern_together = ''.join(final_pattern)
         re_together = pattern_together
-        for k, v in TIME_CONVERSIONS.iteritems():
+        for k, v in six.iteritems(TIME_CONVERSIONS):
             re_together = re_together.replace(k, v)
 
-        #   Create new empty lists 
+        #   Create new empty lists
         final_date = list()
         final_pattern = list()
         for p,r in zip(pattern_together.split('%')[1:], re_together.split('\\')[1:]):
@@ -196,7 +199,7 @@ class Scraper(object):
 
     def _smallerPattern(self, directoryPattern):
         """Obtain the smaller time step for the given pattern"""
-        try: 
+        try:
             if "%S" in directoryPattern:
                 return datetime.timedelta(seconds=1)
             elif "%M" in directoryPattern:
