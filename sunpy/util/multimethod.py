@@ -26,7 +26,7 @@ from __future__ import absolute_import
 
 from warnings import warn
 
-from sunpy.extern.six.moves import izip as zip
+from sunpy.extern.six.moves import zip as izip
 
 __all__ = ['TypeWarning', 'MultiMethod']
 
@@ -118,7 +118,7 @@ class MultiMethod(object):
             return cached(*args, **kwargs)
 
         for signature, fun in reversed(self.methods):
-            if all(issubclass(ty, sig) for ty, sig in zip(types, signature)):
+            if all(issubclass(ty, sig) for ty, sig in izip(types, signature)):
                 self.cache[types] = fun
                 return fun(*args, **kwargs)
         raise TypeError('{0!r}'.format(types))
@@ -151,7 +151,7 @@ class MultiMethod(object):
             return cached(*nargs, **kwargs)
 
         for signature, fun in reversed(self.methods):
-            if all(issubclass(ty, sig) for ty, sig in zip(types, signature)):
+            if all(issubclass(ty, sig) for ty, sig in izip(types, signature)):
                 self.cache[types] = fun
                 return fun(*nargs, **kwargs)
         raise TypeError
