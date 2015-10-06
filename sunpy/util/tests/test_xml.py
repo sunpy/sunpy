@@ -1,4 +1,5 @@
-from __future__ import absolute_import
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 from xml.parsers.expat import ExpatError
 from xml.dom.minidom import Document
