@@ -88,7 +88,7 @@ __all__ = ['run_cls', 'matches_types', 'arginize', 'correct_argspec',
 def run_cls(name):
     """ run_cls("foo")(cls, *args, **kwargs) -> cls.foo(*args, **kwargs) """
     fun = lambda cls, *args, **kwargs: getattr(cls, name)(*args, **kwargs)
-    fun.__name__ = name
+    fun.__name__ = str(name)
     fun.run_cls = True
     return fun
 
