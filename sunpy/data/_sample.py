@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 """SunPy sample data files"""
-from __future__ import absolute_import
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
-from os import remove
 import os.path
 from zipfile import ZipFile
-from urllib2 import URLError
 from shutil import move
 
 from astropy.utils.data import download_file
+
+from sunpy.extern import six
+from sunpy.extern.six.moves.urllib.error import URLError
 
 from sunpy.util.net import url_exists
 from sunpy import config
@@ -61,8 +63,8 @@ def download_sample_data(progress=True, overwrite=True):
     None
     """
     number_of_files_fetched = 0
-    print("Downloading sample files to " + sampledata_dir)
-    for file_name in _files.itervalues():
+    print("Downloading sample files to {}".format(sampledata_dir))
+    for file_name in six.itervalues(_files):
         if not overwrite:
             if os.path.isfile(os.path.join(sampledata_dir,
                                            file_name[0])):
@@ -76,10 +78,10 @@ def download_sample_data(progress=True, overwrite=True):
                 real_name, ext = os.path.splitext(full_file_name)
 
                 if file_name[1] == '.zip':
-                    print("Unpacking: %s" % real_name)
+                    print("Unpacking: {}".format(real_name))
                     with ZipFile(f, 'r') as zip_file:
                         zip_file.extract(real_name, sampledata_dir)
-                    remove(f)
+                    os.remove(f)
                 else:
                     # move files to the data directory
                     move(f, os.path.join(sampledata_dir, file_name[0]))
@@ -87,5 +89,5 @@ def download_sample_data(progress=True, overwrite=True):
                 number_of_files_fetched += 1
                 break
 
-    if number_of_files_fetched < len(_files.keys()):
+    if number_of_files_fetched < len(list(_files.keys())):
         raise URLError("Could not download all samples files. Problem with accessing sample data servers.")
