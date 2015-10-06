@@ -1,6 +1,6 @@
 """This module tests the functions implemented in sunpy.util.util."""
-
-from __future__ import absolute_import
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 from sunpy.util import util
 import numpy as np
