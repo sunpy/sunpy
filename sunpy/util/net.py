@@ -8,8 +8,10 @@ import sys
 import shutil
 
 # For Content-Disposition parsing
-import urllib2
-import urlparse
+from sunpy.extern.six.moves.urllib.parse import urlparse, urljoin
+from sunpy.extern.six.moves.urllib.request import urlopen
+from sunpy.extern.six.moves.urllib.error import HTTPError, URLError
+
 from email.parser import FeedParser
 from unicodedata import normalize
 from itertools import ifilter
@@ -73,7 +75,7 @@ def get_filename(sock, url):
             pass
 
     if not name:
-        parsed = urlparse.urlparse(url)
+        parsed = urlparse(url)
         name = parsed.path.rstrip('/').rsplit('/', 1)[-1]
     return six.text_type(name)
 
@@ -103,7 +105,7 @@ def download_file(url, directory, default=u'file', overwrite=False):
     Content-Disposition header, otherwise get from path of url. Fall
     back to default if both fail. Only overwrite existing files when
     overwrite is True. """
-    opn = urllib2.urlopen(url)
+    opn = urlopen(url)
     try:
         path = download_fileobj(opn, directory, url, default, overwrite)
     finally:
@@ -166,7 +168,7 @@ def check_download_file(filename, remotepath, download_dir, remotename=None,
         if not isinstance(remotename, six.string_types):
             remotename = filename
 
-        download_file(urlparse.urljoin(remotepath, remotename),
+        download_file(urljoin(remotepath, remotename),
                       download_dir, default=filename, overwrite=replace)
 
 
@@ -192,10 +194,10 @@ def url_exists(url, timeout=2):
     False
     """
     try:
-        urllib2.urlopen(url, timeout=timeout)
-    except urllib2.HTTPError:
+        urlopen(url, timeout=timeout)
+    except HTTPError:
         return False
-    except urllib2.URLError:
+    except URLError:
         return False
     else:
         return True
