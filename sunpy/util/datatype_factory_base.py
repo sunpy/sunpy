@@ -121,7 +121,7 @@ class BasicRegistrationFactory(object):
                     vfunc = getattr(WidgetType, vfunc_str)
 
                     # check if classmethod: stackoverflow #19227724
-                    _classmethod = vfunc.__self__ is WidgetType
+                    _classmethod = inspect.ismethod(vfunc) and vfunc.__self__ is WidgetType
 
                     if _classmethod:
                         self.registry[WidgetType] = vfunc
