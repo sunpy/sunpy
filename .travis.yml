@@ -60,6 +60,9 @@ matrix:
            env: TEST_MODE='online'
          - os: linux
            env: TEST_MODE='doctest'
+         - os: linux
+           env: PYTHON_VERSION=3.4
+           env: TEST_MODE='python3'
 
 # If the online build fails, we don't want it to report the whole build broken.
     allow_failures:
@@ -94,6 +97,8 @@ script:
     - if [[ $TEST_MODE == 'online' ]]; then python setup.py test --online --coverage --cov-report=html; fi
     - if [[ $TEST_MODE == 'skip' ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
     - if [[ $TEST_MODE == 'doctest' ]]; then python setup.py build_sphinx -w -b doctest; fi
+    - if [[ $TEST_MODE == 'python3' ]]; then continuous-integration/python3.sh; fi
+
 
 # Notify the IRC channel of build status
 notifications:
