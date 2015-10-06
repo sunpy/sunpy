@@ -11,10 +11,10 @@ import shutil
 from sunpy.extern.six.moves.urllib.parse import urlparse, urljoin
 from sunpy.extern.six.moves.urllib.request import urlopen
 from sunpy.extern.six.moves.urllib.error import HTTPError, URLError
+from sunpy.extern.six.moves import filter
 
 from email.parser import FeedParser
 from unicodedata import normalize
-from itertools import ifilter
 
 from sunpy.util import replacement_filename
 from sunpy.extern import six
@@ -37,7 +37,7 @@ def slugify(text, delim=u'_', encoding="ascii"):
     name_and_extension = text.rsplit(period, 1)
     name = name_and_extension[0]
 
-    name = six.text_type(delim).join(ifilter(None, (
+    name = six.text_type(delim).join(filter(None, (
         word.encode(encoding, 'ignore')
         for word in _punct_re.split(name.lower())
     )))
