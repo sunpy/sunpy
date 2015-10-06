@@ -1,4 +1,4 @@
-#!/bin.bash
+#!/bin/bash
 
 # This script runs a passing subset of tests under Python 3.
 
