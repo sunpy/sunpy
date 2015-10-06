@@ -5,7 +5,7 @@ import re
 
 import urllib2
 from bs4 import BeautifulSoup
-import six
+from sunpy.extern import six
 from sunpy.extern.six.moves import range, zip
 
 __all__ = ['Scraper']

@@ -5,8 +5,8 @@ import os
 import tempfile
 import json
 
-from six.moves.urllib.request import urlopen
-from six.moves.urllib.error import URLError
+from sunpy.extern.six.moves.urllib.request import urlopen
+from sunpy.extern.six.moves.urllib.error import URLError
 
 import pytest
 
