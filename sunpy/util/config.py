@@ -1,6 +1,6 @@
 """SunPy configuration file functionality"""
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function
+
 import os
 import tempfile
 from sunpy.extern.six.moves import configparser

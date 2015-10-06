@@ -72,8 +72,7 @@ Traceback (most recent call last):
 TypeError: There are no functions matching your input parameter signature.
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function
 
 import inspect
 

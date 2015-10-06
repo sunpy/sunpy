@@ -1,11 +1,11 @@
 """This module tests the functions implemented in sunpy.util.util."""
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function
 
-from sunpy.util import util
-import numpy as np
 import warnings
 
+import numpy as np
+
+from sunpy.util import util
 def test_to_signed():
     """
     This should return a signed type that can hold uint32.

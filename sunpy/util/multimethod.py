@@ -22,14 +22,12 @@
 Multimethod implementation in pure Python.
 """
 
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+from __future__ import absolute_import, division, print_function
 
 from warnings import warn
 
-from sunpy.extern.six.moves import zip as izip
+from sunpy.extern.six.moves import zip, map
 from sunpy.extern import six
-from sunpy.extern.six.moves import map
 
 __all__ = ['TypeWarning', 'MultiMethod']
 
@@ -82,7 +80,7 @@ class MultiMethod(object):
         overriden = False
         if override:
             for signature, _ in self.methods:
-                if all(issubclass(a, b) for a, b in izip(types, signature)):
+                if all(issubclass(a, b) for a, b in zip(types, signature)):
                     overriden = True
         if overriden and override == FAIL:
             raise TypeError
@@ -121,7 +119,7 @@ class MultiMethod(object):
             return cached(*args, **kwargs)
 
         for signature, fun in reversed(self.methods):
-            if all(issubclass(ty, sig) for ty, sig in izip(types, signature)):
+            if all(issubclass(ty, sig) for ty, sig in zip(types, signature)):
                 self.cache[types] = fun
                 return fun(*args, **kwargs)
         raise TypeError('{0!r}'.format(types))
@@ -154,7 +152,7 @@ class MultiMethod(object):
             return cached(*nargs, **kwargs)
 
         for signature, fun in reversed(self.methods):
-            if all(issubclass(ty, sig) for ty, sig in izip(types, signature)):
+            if all(issubclass(ty, sig) for ty, sig in zip(types, signature)):
                 self.cache[types] = fun
                 return fun(*nargs, **kwargs)
         raise TypeError
