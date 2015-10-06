@@ -78,7 +78,7 @@ import inspect
 
 from itertools import chain, repeat
 
-from sunpy.extern.six.moves import zip as izip
+from sunpy.extern.six.moves import zip
 
 __all__ = ['run_cls', 'matches_types', 'arginize', 'correct_argspec',
            'matches_signature', 'ConditionalDispatch', 'fmt_argspec_types']
@@ -97,7 +97,7 @@ def matches_types(fun, types, args, kwargs):
     in the order they are defined in the function. kwargs are automatically
     converted into that order. """
     return all(
-        isinstance(obj, cls) for obj, cls in izip(
+        isinstance(obj, cls) for obj, cls in zip(
             arginize(fun, args, kwargs), types
         )
     )
@@ -111,7 +111,7 @@ def arginize(fun, a, kw):
         raise ValueError
     names = args[len(a):]
     if defaults:
-        defs = dict(izip(args[-len(defaults):], defaults))
+        defs = dict(zip(args[-len(defaults):], defaults))
     else:
         defs = {}
     return list(a) + [kw.get(name, defs.get(name, None)) for name in names]
@@ -250,7 +250,7 @@ class ConditionalDispatch(object):
             for sig, fun in
             # The 1 prevents the cls from incorrectly being shown in the
             # documentation.
-            izip(self.get_signatures("create", -1), fns)
+            zip(self.get_signatures("create", -1), fns)
         )
 
 
@@ -266,7 +266,12 @@ def fmt_argspec_types(fun, types, start=0):
     defs = chain(repeat(NULL, len(args) - len(defaults)), defaults)
 
     spec = []
-    for key, value, type_ in izip(args, defs, types):
+    for key, value, type_ in zip(args, defs, types):
+        # This is a work around for a bug introduced during Python 3 porting.
+        # for some reason the type was being passed in as a length 1 tuple.
+        # This extracts the type under that condition. SM 6/10/15
+        if isinstance(type_, tuple) and len(type_) == 1:
+            type_ = type_[0]
         if value is NULL:
             spec.append("{0}: {1}".format(key, type_.__name__))
         else:

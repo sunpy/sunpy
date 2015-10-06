@@ -7,10 +7,8 @@ from itertools import count
 
 import numpy as np
 
-from sunpy.extern.six.moves import map as imap
-from sunpy.extern.six.moves import zip as izip
-import six
-from six.moves import map
+from sunpy.extern import six
+from sunpy.extern.six.moves import map, zip
 
 __all__ = ['to_signed', 'unique', 'print_table',
            'replacement_filename', 'goes_flare_class', 'merge', 'common_base',
@@ -121,10 +119,10 @@ def print_table(lst, colsep=' ', linesep='\n'):
         improve documentation.
 
     """
-    width = [max(imap(len, col)) for col in izip(*lst)]
+    width = [max(map(len, col)) for col in zip(*lst)]
     return linesep.join(
         colsep.join(
-            col.ljust(n) for n, col in izip(width, row)
+            col.ljust(n) for n, col in zip(width, row)
         ) for row in lst
     )
 
