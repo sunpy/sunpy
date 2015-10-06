@@ -144,4 +144,4 @@ def system_info():
 
     for sys_info in ['beautifulsoup', 'PyQt', 'SUDS',
                      'Sqlalchemy', 'Requests']:
-        print(('{0}: {1}'.format(sys_info, sys_prop[sys_info])))
+        print('{0}: {1}'.format(sys_info, sys_prop[sys_info]))
