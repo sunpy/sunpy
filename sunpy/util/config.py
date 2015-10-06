@@ -52,13 +52,13 @@ def print_config():
     """Print current configuration options"""
     print("FILES USED:")
     for file_ in _find_config_files():
-        print(("  " + file_))
+        print("  " + file_)
 
     print ("\nCONFIGURATION:")
     for section in sunpy.config.sections():
-        print(("  [{0}]".format(section)))
+        print("  [{0}]".format(section))
         for option in sunpy.config.options(section):
-            print(("  {} = {}".format(option, sunpy.config.get(section, option))))
+            print("  {} = {}".format(option, sunpy.config.get(section, option)))
         print("")
 
 def _is_writable_dir(p):
