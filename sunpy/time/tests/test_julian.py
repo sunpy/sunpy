@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 from datetime import datetime
 
@@ -10,10 +10,10 @@ from sunpy.time import julian
 DATETIME_DATE_1 = datetime(1900, 1, 1, 12, 00, 00)
 STRING_DATE_1 = '1900/1/1 12:00:00'
 
-DATETIME_DATE_2 = datetime(1984, 11, 23, 14, 21, 05)
+DATETIME_DATE_2 = datetime(1984, 11, 23, 14, 21, 5)
 STRING_DATE_2 = '1984/11/23 14:21:05'
 
-DATETIME_DATE_3 = datetime(2174, 2, 11, 05, 02, 00)
+DATETIME_DATE_3 = datetime(2174, 2, 11, 5, 2, 00)
 STRING_DATE_3 = '2174/02/11 05:02:00'
 
 DATETIME_DATE_4 = datetime(814, 1, 28, 23, 59, 59)
