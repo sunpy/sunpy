@@ -2,14 +2,15 @@
 # Lovingly borrowed from Astropy
 # Licensed under a 3-clause BSD style license - see licences/ASTROPY.rst
 
+from __future__ import absolute_import, division, print_function
 import warnings
 
 import pytest
+import numpy as np
+import matplotlib.pyplot as plt
 
 import astropy.units as u
 from astropy.utils.decorators import wraps
-import numpy as np
-import matplotlib.pyplot as plt
 
 from sunpy.tests import hash
 

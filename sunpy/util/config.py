@@ -1,7 +1,9 @@
 """SunPy configuration file functionality"""
+from __future__ import absolute_import, division, print_function
+
 import os
 import tempfile
-import ConfigParser
+from sunpy.extern.six.moves import configparser
 
 import sunpy
 
@@ -12,7 +14,7 @@ def load_config():
     Read the sunpyrc configuration file. If one does not exists in the user's
     home directory then read in the defaults from module
     """
-    config = ConfigParser.SafeConfigParser()
+    config = configparser.SafeConfigParser()
 
     # Get locations of SunPy configuration files to be loaded
     config_files = _find_config_files()
