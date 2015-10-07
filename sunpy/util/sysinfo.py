@@ -112,7 +112,7 @@ def system_info():
     # OS and architecture information
 
     for sys_info in ['Time', 'System', 'Processor', 'Arch', 'SunPy', 'SunPy_git']:
-        print(('{0} : {1}'.format(sys_info, sys_prop[sys_info])))
+        print('{0} : {1}'.format(sys_info, sys_prop[sys_info]))
 
     if sys_prop['System'] == "Linux":
         distro = " ".join(platform.linux_distribution())
@@ -123,7 +123,7 @@ def system_info():
         print("OS: Windows {0} {1} ({2})".format(platform.release(),
                                                  platform.version(), sys_prop['Processor']))
     else:
-        print(("Unknown OS ({0})".format(sys_prop['Processor'])))
+        print("Unknown OS ({0})".format(sys_prop['Processor']))
 
     print("\n")
 # required libraries
@@ -133,7 +133,7 @@ def system_info():
 
     for sys_info in ['Python', 'NumPy', 'SciPy',
               'matplotlib', 'Astropy', 'Pandas']:
-        print(('{0}: {1}'.format(sys_info, sys_prop[sys_info])))
+        print('{0}: {1}'.format(sys_info, sys_prop[sys_info]))
 
     print("\n")
 
