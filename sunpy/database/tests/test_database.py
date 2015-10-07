@@ -410,9 +410,7 @@ def test_add_entry_from_hek_qr(database):
         hek.attrs.EventType('FL'))
     assert len(database) == 0
     database.add_from_hek_query_result(hek_res)
-    # The database apparently has 1902 entries now, not 2133
-    #assert len(database) == 1902
-    assert len(database) == 2133
+    assert len(database) == 1678
 
 
 @pytest.mark.online
@@ -809,7 +807,7 @@ def test_fetch_separate_filenames():
     db.fetch(*download_query, path=path)
 
     # Test
-    assert len(db) == 4
+    assert len(db) == 8
 
     dir_contents = os.listdir(tmp_test_dir)
     assert 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits' in dir_contents
