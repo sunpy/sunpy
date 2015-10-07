@@ -1,13 +1,14 @@
 """
 This module provides a set of colormaps specific for solar data.
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
 from sunpy.cm import color_tables as ct
+from sunpy.extern import six
 
 __all__ = ['get_cmap', 'show_colormaps', 'cmlist']
 
@@ -108,7 +109,7 @@ cmlist = {
 }
 
 # Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
-for name, cmap in cmlist.items():
+for name, cmap in list(cmlist.items()):
     cm.register_cmap(name=name, cmap=cmap)
 
 def get_cmap(name):
@@ -168,7 +169,7 @@ def show_colormaps(filter=None):
     """
 
     if filter:
-        maps =  sorted({k:v for (k,v) in cmlist.iteritems() if k.lower().count(filter.lower())})
+        maps =  sorted({k:v for (k,v) in six.iteritems(cmlist) if k.lower().count(filter.lower())})
         if len(maps) == 0:
             raise KeyError('No color maps found for key - ' + filter)
     else:

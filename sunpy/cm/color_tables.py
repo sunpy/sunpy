@@ -2,10 +2,11 @@
 Nothing here but dictionaries for generating LinearSegmentedColormaps,
 and a dictionary of these dictionaries.
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import numpy as np
 import matplotlib.colors as colors
+from sunpy.extern.six.moves import range, zip
 
 __all__ = ['aia_color_table', 'lasco_color_table', 'eit_color_table',
            'sxt_color_table', 'xrt_color_table', 'trace_color_table',
@@ -17,7 +18,7 @@ def _mkx(i, steps, n):
     """ Generate list according to pattern of g0 and b0. """
     x = []
     for step in steps:
-        x.extend(range(i, step + n, n))
+        x.extend(list(range(i, step + n, n)))
         i = step + (n - 1)
     return x
 
@@ -53,8 +54,8 @@ r0 = np.array(paden(
        226, 227, 228, 230, 231, 233, 234, 236, 237, 239, 240, 241, 243,
        244, 246, 247, 249, 250, 252, 253], 256, 255))
 
-g0 = np.array(padfr(_mkx(1, xrange(17, 256, 17), 2), 256))
-b0 = np.array(padfr(_mkx(3, xrange(51, 256, 51), 4), 256))
+g0 = np.array(padfr(_mkx(1, range(17, 256, 17), 2), 256))
+b0 = np.array(padfr(_mkx(3, range(51, 256, 51), 4), 256))
 
 c0 = np.arange(256, dtype='f')
 c1 = (np.sqrt(c0) * np.sqrt(255.0)).astype('f')
@@ -352,13 +353,13 @@ def lasco_color_table(number):
 # Translated from the JP2Gen IDL SXT code lct_yla_gold.pro.  Might be better
 # to explicitly copy the numbers from the IDL calculation.  This is a little
 # more compact.
-sxt_gold_r = np.concatenate((255.0 * np.array(range(0, 185)) / 185.0,
+sxt_gold_r = np.concatenate((255.0 * np.array(list(range(0, 185))) / 185.0,
                             255 * np.ones(71)))
-sxt_gold_g = 255 * (np.array(range(0, 256)) ** 1.25) / (255.0 ** 1.25)
+sxt_gold_g = 255 * (np.array(list(range(0, 256))) ** 1.25) / (255.0 ** 1.25)
 sxt_gold_b = np.concatenate((np.zeros(185),
-                             255.0 * np.array(range(0, 71)) / 71.0))
+                             255.0 * np.array(list(range(0, 71))) / 71.0))
 
-grayscale = np.array(range(0, 256))
+grayscale = np.array(list(range(0, 256)))
 
 
 def sxt_color_table(sxt_filter):
@@ -1102,7 +1103,7 @@ def iris_sji_color_table(measurement, aialike=False):
     except KeyError:
         raise ValueError(
             "Invalid IRIS SJI waveband.  Valid values are \n" +
-            str(color_table.keys())
+            str(list(color_table.keys()))
         )
 
     # Now create the color dictionary in the correct format
