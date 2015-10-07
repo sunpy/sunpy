@@ -4,10 +4,10 @@ import os
 import datetime
 import re
 
-import urllib2
 from bs4 import BeautifulSoup
 from sunpy.extern import six
 from sunpy.extern.six.moves import range, zip
+from sunpy.extern.six.moves.urllib.request import urlopen
 
 __all__ = ['Scraper']
 
@@ -180,7 +180,7 @@ class Scraper(object):
         filesurls = []
         for directory in directories:
             try:
-                opn = urllib2.urlopen(directory)
+                opn = urlopen(directory)
                 try:
                     soup = BeautifulSoup(opn)
                     for link in soup.find_all("a"):
