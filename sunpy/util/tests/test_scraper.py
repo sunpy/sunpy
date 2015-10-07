@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function
+
 import pytest
 import datetime
 import os
@@ -17,29 +19,29 @@ def testDirectoryDatePattern():
     testpath = '2014/03/05/20140305_013000_59.fit.gz'
     d = datetime.datetime(2014,3,5,1,30)
     assert s.matches(testpath, d)
-        
+
 def testDirectoryDatePatternFalse():
     s = Scraper('%Y/%m/%d/%Y%m%d_%H%M%S_59.fit.gz')
     testpath = '2013/03/05/20140305_013000_59.fit.gz'
     d = datetime.datetime(2014,3,5,1,30)
     assert not s.matches(testpath, d)
-        
+
 def testDirectoryObsPattern():
     s = Scraper('%y%m%d/{observatory}_%Y%m%d.fits', observatory = 'SDO')
     testpath = '140305/SDO_20140305.fits'
     d = datetime.datetime(2014,3,5)
     assert s.matches(testpath, d)
-    
+
 def testDirectoryRange():
     s = Scraper('%Y/%m/%d/%Y%m%d_%H.fit.gz')
-    directory_list = ['2009/12/30/', '2009/12/31/', '2010/01/01/', 
+    directory_list = ['2009/12/30/', '2009/12/31/', '2010/01/01/',
                       '2010/01/02/', '2010/01/03/']
     timerange = TimeRange('2009-12-30', '2010-01-03')
     assert s.range(timerange) == directory_list
-    
+
 def testDirectoryRangeFalse():
     s = Scraper('%Y%m%d/%Y%m%d_%H.fit.gz')
-    directory_list = ['20091230/', '20091231/', '20100101/', 
+    directory_list = ['20091230/', '20091231/', '20100101/',
                       '20090102/', '20090103/']
     timerange = TimeRange('2009/12/30', '2010/01/03')
     assert s.range(timerange) != directory_list
@@ -59,7 +61,7 @@ def testDirectoryRange_single():
     enddate = datetime.datetime(2010,10,10,7,00)
     timerange = TimeRange(startdate, enddate)
     assert len(s.range(timerange)) == 1
-    
+
 def testDirectoryRange_Month():
     s = Scraper('%Y%m/%d/%j_%H.txt')
     startdate = datetime.datetime(2008, 2,20,10)

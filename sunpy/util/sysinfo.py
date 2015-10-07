@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import platform
 import datetime
@@ -125,7 +125,7 @@ def system_info():
     else:
         print("Unknown OS ({0})".format(sys_prop['Processor']))
 
-    print "\n"
+    print("\n")
 # required libraries
     print("###########")
     print(" Required Libraries ")
@@ -135,7 +135,7 @@ def system_info():
               'matplotlib', 'Astropy', 'Pandas']:
         print('{0}: {1}'.format(sys_info, sys_prop[sys_info]))
 
-    print "\n"
+    print("\n")
 
 # recommended
     print("###########")

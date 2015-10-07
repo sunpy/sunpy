@@ -1,12 +1,12 @@
-from __future__ import absolute_import, print_function, unicode_literals
+from __future__ import absolute_import, print_function
 from functools import partial
 
 import os
 import tempfile
 import json
 
-from six.moves.urllib.request import urlopen
-from six.moves.urllib.error import URLError
+from sunpy.extern.six.moves.urllib.request import urlopen
+from sunpy.extern.six.moves.urllib.error import URLError
 
 import pytest
 
