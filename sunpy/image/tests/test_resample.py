@@ -47,5 +47,5 @@ def test_reshape(aia171_test_map, shape):
     imagebytwo = reshape_image_to_4d_superpixel(aia171_test_map.data, (2, 2))
     assert imagebytwo.shape == (shape[0]/2, 2, shape[1]/2, 2)
     with pytest.raises(ValueError) as error_msg:    
-        reshape_image_to_4d_superpixel(aia171_test_map.data, shape/3)
-    assert error_msg == 'New dimensions must divide original image size exactly.'
+        reshape_image_to_4d_superpixel(aia171_test_map.data, (3, 3))
+    assert 'New dimensions must divide original image size exactly.' in str(error_msg.value)
