@@ -183,7 +183,7 @@ def reshape_image_to_4d_superpixel(img, dimensions):
     """
     # check that the dimensions divide into the image size exactly
 
-    if np.all((np.array(img.shape) % np.array(dimensions) != 0)):
+    if np.any(np.array(img.shape) % np.array(dimensions)):
         raise ValueError('New dimensions must divide original image size exactly.')
 
     # Reshape up to a higher dimensional array which is useful for higher
