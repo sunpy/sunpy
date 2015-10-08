@@ -4,6 +4,8 @@ from datetime import timedelta
 
 import numpy as np
 import pandas
+from dateutil.parser import parse
+from pytz import timezone
 
 __all__ = ['find_time', 'extract_time', 'parse_time', 'is_time', 'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format']
 
@@ -171,6 +173,11 @@ def parse_time(time_string, time_format=''):
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
     datetime.datetime(2005, 8, 4, 0, 1, 2)
     """
+    #This supports numpy.datetime64 imput type for time_string
+    if isinstance(time_string,np.datetime64):
+        ts = (time_string - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+        time_string = datetime.utcfromtimestamp(ts)
+    
     if isinstance(time_string, pandas.tslib.Timestamp):
     	return time_string.to_datetime()
     elif isinstance(time_string, datetime) or time_format == 'datetime':
@@ -190,8 +197,14 @@ def parse_time(time_string, time_format=''):
     else:
         # remove trailing zeros and the final dot to allow any
         # number of zeros. This solves issue #289
-        if '.' in time_string:
+        #Supports time_string with timezone information as '+0000' etc. 
+        #The following solves issue #798
+        if '.' in time_string and ( '+' not in time_string or '-' not in time_string[9:]):                   
             time_string = time_string.rstrip("0").rstrip(".")
+
+        if '+' in time_string or '-' in time_string[9:] :
+            return parse(time_string).astimezone(timezone('UTC'))
+     
         for time_format in TIME_FORMAT_LIST:
             try:
                 try:
