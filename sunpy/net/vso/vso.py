@@ -113,10 +113,6 @@ class QueryResponse(list):
         # Warn about -1 values?
         return sum(record.size for record in self if record.size > 0)
 
-    def num_records(self):
-        """ Return number of records. """
-        return len(self)
-
     def time_range(self):
         """ Return total time-range all records span across. """
         return (
@@ -243,15 +239,15 @@ class VSOClient(object):
         >>> client.query(
         ...    vso.attrs.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
         ...    vso.attrs.Instrument('eit') | vso.attrs.Instrument('aia'))   # doctest: +NORMALIZE_WHITESPACE
-        <Table masked=False length=5>
-           Start Time [1]       End Time [1]     Source  Instrument   Type
-             string152           string152      string32  string24  string64
-        ------------------- ------------------- -------- ---------- --------
-        2010-01-01 00:00:08 2010-01-01 00:00:20     SOHO        EIT FULLDISK
-        2010-01-01 00:12:08 2010-01-01 00:12:20     SOHO        EIT FULLDISK
-        2010-01-01 00:24:10 2010-01-01 00:24:22     SOHO        EIT FULLDISK
-        2010-01-01 00:36:08 2010-01-01 00:36:20     SOHO        EIT FULLDISK
-        2010-01-01 00:48:09 2010-01-01 00:48:21     SOHO        EIT FULLDISK
+        <Table length=5>
+           Start Time [1]       End Time [1]    Source Instrument   Type
+               str19               str19         str4     str3      str8
+        ------------------- ------------------- ------ ---------- --------
+        2010-01-01 00:00:08 2010-01-01 00:00:20   SOHO        EIT FULLDISK
+        2010-01-01 00:12:08 2010-01-01 00:12:20   SOHO        EIT FULLDISK
+        2010-01-01 00:24:10 2010-01-01 00:24:22   SOHO        EIT FULLDISK
+        2010-01-01 00:36:08 2010-01-01 00:36:20   SOHO        EIT FULLDISK
+        2010-01-01 00:48:09 2010-01-01 00:48:21   SOHO        EIT FULLDISK
 
         Returns
         -------

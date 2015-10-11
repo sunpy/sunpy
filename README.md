@@ -8,12 +8,12 @@ Installation
 
 To begin, install the following requirements:
 
- * [Python](http://www.python.org) (2.7+)
+ * [Python](http://www.python.org) (2.7)
  * [Astropy](http://astropy.org) (1.0.0)
  * [NumPy](http://numpy.scipy.org/)
  * [SciPy](http://www.scipy.org/)
  * [Matplotlib](http://matplotlib.sourceforge.net/) (1.1+)
- * [Suds](https://fedorahosted.org/suds)
+ * [suds-jurko](https://bitbucket.org/jurko/suds)
  * [pandas](http://pandas.pydata.org/) (0.10.0+)
  * [beautifulsoup4](http://www.crummy.com/software/BeautifulSoup/)
  * [sqlalchemy](http://www.sqlalchemy.org/)
@@ -39,7 +39,7 @@ Here is a quick example of plotting an AIA image:
 >>> import sunpy.data.sample
 >>> import matplotlib.cm as cm
 >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
->>> aia.peek(cmap=cm.hot)
+>>> aia.peek()
 ```
 
 Getting Help

@@ -2,6 +2,8 @@
 
 __all__ = ['MapCubeAnimator']
 
+from copy import deepcopy
+
 from sunpy.visualization import imageanimator, wcsaxes_compat
 from sunpy.visualization.wcsaxes_compat import HAVE_WCSAXES, FORCE_NO_WCSAXES
 
@@ -88,7 +90,12 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         i = int(val)
         im.set_array(self.data[i].data)
         im.set_cmap(self.mapcube[i].plot_settings['cmap'])
-        im.set_norm(self.mapcube[i].plot_settings['norm'])
+
+        norm = deepcopy(self.mapcube[i].plot_settings['norm'])
+        # The following explicit call is for bugged versions of Astropy's ImageNormalize
+        norm.autoscale_None(self.data[i].data)
+        im.set_norm(norm)
+
         if wcsaxes_compat.is_wcsaxes(im.axes):
             im.axes.reset_wcs(self.mapcube[i].wcs)
             wcsaxes_compat.default_wcs_grid(im.axes)

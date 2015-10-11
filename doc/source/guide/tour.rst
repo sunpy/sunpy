@@ -358,7 +358,7 @@ non-interactive version of the main API::
     ...     vso.attrs.Instrument('eit'))
 
     # print the number of matches
-    >>> print("Number of records found: %d " % result.num_records())   # doctest: +NORMALIZE_WHITESPACE
+    >>> print("Number of records found: {}".format(len(result)))   # doctest: +NORMALIZE_WHITESPACE
     Number of records found: 4
 
     # download matches to /download/path

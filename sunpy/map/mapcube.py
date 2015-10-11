@@ -2,6 +2,8 @@
 from __future__ import absolute_import
 #pylint: disable=W0401,W0614,W0201,W0212,W0404
 
+from copy import deepcopy
+
 import numpy as np
 import matplotlib.animation
 
@@ -203,7 +205,11 @@ class MapCube(object):
 
             im.set_array(ani_data[i].data)
             im.set_cmap(self.maps[i].plot_settings['cmap'])
-            im.set_norm(self.maps[i].plot_settings['norm'])
+
+            norm = deepcopy(self.maps[i].plot_settings['norm'])
+            # The following explicit call is for bugged versions of Astropy's ImageNormalize
+            norm.autoscale_None(ani_data[i].data)
+            im.set_norm(norm)
 
             if wcsaxes_compat.is_wcsaxes(axes):
                 im.axes.reset_wcs(self.maps[i].wcs)
