@@ -205,6 +205,16 @@ scale:\t\t {scale}
         w2.wcs.pc = self.rotation_matrix
         w2.wcs.cunit = self.units
 
+        # Astropy WCS does not understand the SOHO default of "solar-x" and
+        # "solar-y" ctypes.  This overrides the default assignment and
+        # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
+        # 449, 791.
+        if w2.wcs.ctype[0].lower() == "solar-x":
+            w2.wcs.ctype[0] = 'HPLN-TAN'
+
+        if w2.wcs.ctype[1].lower() == "solar-y":
+            w2.wcs.ctype[1] = 'HPLT-TAN'
+
         return w2
 
     # Some numpy extraction
@@ -591,9 +601,13 @@ scale:\t\t {scale}
         """
         x, y = self.wcs.wcs_pix2world(x, y, origin)
 
-        # WCS always outputs degrees.
-        x *= u.deg
-        y *= u.deg
+        # If the wcs is celestial it is output in degress
+        if self.wcs.is_celestial:
+            x *= u.deg
+            y *= u.deg
+        else:
+            x *= self.units.x
+            y *= self.units.y
 
         x = Longitude(x, wrap_angle=180*u.deg)
         y = Latitude(y)
@@ -996,13 +1010,9 @@ scale:\t\t {scale}
             x_pixels = range_a.value
             y_pixels = range_b.value
         else:
-            raise ValueError(
-                "Invalid unit. Must be one of 'data' or 'pixels'")
+            raise ValueError("Invalid unit. Must be one of 'data' or 'pixels'")
 
-        x_pixels.sort()
-        y_pixels.sort()
-
-        # Sort the pixel values so we are always slicing in the correct direction
+        # Sort the pixel values so we always slice in the correct direction
         x_pixels.sort()
         y_pixels.sort()
 
@@ -1031,6 +1041,9 @@ scale:\t\t {scale}
 
         # Create new map instance
         new_map.data = new_data
+        if self.mask is not None:
+            new_map.mask = self.mask[yslice, xslice].copy()
+
         return new_map
 
     @u.quantity_input(dimensions=u.pixel)
@@ -1227,6 +1240,62 @@ scale:\t\t {scale}
 
         return [circ]
 
+    @u.quantity_input(bottom_left=u.deg, width=u.deg, height=u.deg)
+    def draw_rectangle(self, bottom_left, width, height, axes=None, **kwargs):
+        """
+        Draw a rectangle defined in world coordinates on the plot.
+
+        Parameters
+        ----------
+
+        bottom_left : `astropy.units.Quantity`
+            The bottom left corner of the rectangle.
+
+        width : `astropy.units.Quantity`
+            The width of the rectangle.
+
+        height : `astropy.units.Quantity`
+            The height of the rectangle.
+
+        axes : `matplotlib.axes.Axes`
+            The axes on which to plot the rectangle, defaults to the current axes.
+
+        Returns
+        -------
+
+        rect : `list`
+            A list containing the `~matplotlib.patches.Rectangle` object, after it has been added to ``axes``.
+
+        Notes
+        -----
+
+        Extra keyword arguments to this function are passed through to the
+        `~matplotlib.patches.Rectangle` instance.
+
+        """
+
+        if not axes:
+            axes = plt.gca()
+
+        if wcsaxes_compat.is_wcsaxes(axes):
+            axes_unit = u.deg
+        else:
+            axes_unit = self.units[0]
+
+        bottom_left = bottom_left.to(axes_unit).value
+        width = width.to(axes_unit).value
+        height = height.to(axes_unit).value
+
+        kwergs = {'transform':wcsaxes_compat.get_world_transform(axes),
+                  'color':'white',
+                  'fill':False}
+        kwergs.update(kwargs)
+        rect = plt.Rectangle(bottom_left, width, height, **kwergs)
+
+        axes.add_artist(rect)
+
+        return [rect]
+
     @toggle_pylab
     def peek(self, draw_limb=False, draw_grid=False,
                    colorbar=True, basic_plot=False, **matplot_args):
@@ -1306,11 +1375,11 @@ scale:\t\t {scale}
 
         Examples
         --------
-        #Simple Plot with color bar
-        >>> aiamap.plot()   # doctest: +SKIP
+        >>> # Simple Plot with color bar
+        >>> aia.plot()   # doctest: +SKIP
         >>> plt.colorbar()   # doctest: +SKIP
 
-        #Add a limb line and grid
+        >>> # Add a limb line and grid
         >>> aia.plot()   # doctest: +SKIP
         >>> aia.draw_limb()   # doctest: +SKIP
         >>> aia.draw_grid()   # doctest: +SKIP

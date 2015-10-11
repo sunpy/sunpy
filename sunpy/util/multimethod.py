@@ -22,10 +22,12 @@
 Multimethod implementation in pure Python.
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 from warnings import warn
-from itertools import izip
+
+from sunpy.extern.six.moves import zip, map
+from sunpy.extern import six
 
 __all__ = ['TypeWarning', 'MultiMethod']
 
@@ -78,7 +80,7 @@ class MultiMethod(object):
         overriden = False
         if override:
             for signature, _ in self.methods:
-                if all(issubclass(a, b) for a, b in izip(types, signature)):
+                if all(issubclass(a, b) for a, b in zip(types, signature)):
                     overriden = True
         if overriden and override == FAIL:
             raise TypeError
@@ -140,7 +142,7 @@ class MultiMethod(object):
             for x in args
         ]
 
-        for k, elem in kwargs.iteritems():
+        for k, elem in six.iteritems(kwargs):
             if isinstance(elem, super):
                 kwargs[k] = elem.__self__
 
