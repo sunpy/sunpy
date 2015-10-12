@@ -160,7 +160,7 @@ def _detect_filetype(filepath):
     """
 
     # Open file and read in first two lines
-    with open(filepath) as fp:
+    with open(filepath, 'rb') as fp:
         line1 = fp.readline()
         line2 = fp.readline()
         # Some FITS files do not have line breaks at the end of header cards.
@@ -190,8 +190,8 @@ def _detect_filetype(filepath):
     # [1] http://www.sno.phy.queensu.ca/~phil/exiftool/
     # [2] http://www.jpeg.org/public/fcd15444-2.pdf
     # [3] ftp://ftp.remotesensing.org/jpeg2000/fcd15444-1.pdf
-    jp2_signatures = ["\x00\x00\x00\x0cjP  \x0d\x0a\x87\x0a",
-                      "\x00\x00\x00\x0cjP\x1a\x1a\x0d\x0a\x87\x0a"]
+    jp2_signatures = [b"\x00\x00\x00\x0cjP  \x0d\x0a\x87\x0a",
+                      b"\x00\x00\x00\x0cjP\x1a\x1a\x0d\x0a\x87\x0a"]
 
     for sig in jp2_signatures:
         if line1 + line2 == sig:
