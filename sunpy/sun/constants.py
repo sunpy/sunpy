@@ -61,7 +61,7 @@ Websites
 
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 from sunpy.sun import _constants as _con # pylint: disable=E0611
 
@@ -208,7 +208,7 @@ def find(sub=None, disp=False):
 
     """
     if sub is None:
-        result = physical_constants.keys()
+        result = list(physical_constants.keys())
     else:
         result = [key for key in physical_constants \
                  if sub.lower() in key.lower()]
@@ -216,7 +216,7 @@ def find(sub=None, disp=False):
     result.sort()
     if disp:
         for key in result:
-            print key
+            print(key)
         return
     else:
         return result

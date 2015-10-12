@@ -20,7 +20,7 @@ Position angle of north pole in deg = 2.0102649
 Carrington Rotation Number = 1971.4091        check!
 
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import numpy as np
 
