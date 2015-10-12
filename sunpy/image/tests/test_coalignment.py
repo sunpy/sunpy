@@ -1,3 +1,4 @@
+from __future__ import absolute_import, division, print_function
 # Author: Jack Ireland, Steven Christe
 #
 # Testing functions for a mapcube coalignment functionality.  This
@@ -18,6 +19,7 @@ from sunpy.image.coalignment import parabolic_turning_point, \
     match_template_to_layer, clip_edges, \
     calculate_match_template_shift, mapcube_coalign_by_match_template,\
     apply_shifts
+from sunpy.extern.six.moves import range
 
 @pytest.fixture
 def aia171_test_clipping():
