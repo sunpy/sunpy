@@ -16,18 +16,21 @@ class MapMeta(OrderedDict):
     This class handles everything a lower case. This allows case insensitive
     indexing.
     """
-    def __init__(self, adict, *args):
+    def __init__(self, *args):
         """Creates a new MapHeader instance"""
         # Store all keys as upper-case to allow for case-insensitive indexing
-        #OrderedDict can be instantiated from a list of lists or a tuple of tuples
-        if isinstance(adict, list) or isinstance(adict, tuple):
-            tags = dict((k.upper(), v) for k, v in adict)
-        elif isinstance(adict, dict):
-            tags = dict((k.upper(), v) for k, v in list(adict.items()))
-        else:
-            raise TypeError("Can not create a MapMeta from this type input")
+        # OrderedDict can be instantiated from a list of lists or a tuple of tuples
+        tags = dict()
+        if args:
+            adict = args[0]
+            if isinstance(adict, list) or isinstance(adict, tuple):
+                tags = dict((k.upper(), v) for k, v in adict)
+            elif isinstance(adict, dict):
+                tags = dict((k.upper(), v) for k, v in list(adict.items()))
+            else:
+                raise TypeError("Can not create a MapMeta from this type input")
 
-        super(MapMeta, self).__init__(tags, *args)
+        super(MapMeta, self).__init__(tags)
 
     def __contains__(self, key):
         """Override __contains__"""
