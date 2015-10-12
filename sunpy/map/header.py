@@ -2,7 +2,7 @@
 MapHeader is a generalized header class that deals with header parsing and
 normalization.
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 from collections import OrderedDict
 
@@ -23,7 +23,7 @@ class MapMeta(OrderedDict):
         if isinstance(adict, list) or isinstance(adict, tuple):
             tags = dict((k.upper(), v) for k, v in adict)
         elif isinstance(adict, dict):
-            tags = dict((k.upper(), v) for k, v in adict.items())
+            tags = dict((k.upper(), v) for k, v in list(adict.items()))
         else:
             raise TypeError("Can not create a MapMeta from this type input")
 
@@ -55,7 +55,7 @@ class MapMeta(OrderedDict):
 
     def update(self, d2):
         """Override .update() to perform case-insensitively"""
-        return OrderedDict.update(self, dict((k.lower(), v) for k, v in d2.items()))
+        return OrderedDict.update(self, dict((k.lower(), v) for k, v in list(d2.items())))
 
     def setdefault(self, key, default=None):
         """Override .setdefault() to perform case-insensitively"""

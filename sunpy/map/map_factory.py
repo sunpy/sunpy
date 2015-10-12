@@ -1,4 +1,5 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
+import six
 
 __authors__ = ["Russell Hewett, Stuart Mumford"]
 __email__ = "stuart@mumford.me.uk"
@@ -161,14 +162,14 @@ class MapFactory(BasicRegistrationFactory):
                 i += 1 # an extra increment to account for the data-header pairing
 
             # File name
-            elif (isinstance(arg,basestring) and
+            elif (isinstance(arg,six.string_types) and
                   os.path.isfile(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
             # Directory
-            elif (isinstance(arg,basestring) and
+            elif (isinstance(arg,six.string_types) and
                   os.path.isdir(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
                 files = [os.path.join(path, elem) for elem in os.listdir(path)]
@@ -176,7 +177,7 @@ class MapFactory(BasicRegistrationFactory):
                     data_header_pairs += self._read_file(afile, **kwargs)
 
             # Glob
-            elif (isinstance(arg,basestring) and '*' in arg):
+            elif (isinstance(arg,six.string_types) and '*' in arg):
                 files = glob.glob( os.path.expanduser(arg) )
                 for afile in files:
                     data_header_pairs += self._read_file(afile, **kwargs)
@@ -186,7 +187,7 @@ class MapFactory(BasicRegistrationFactory):
                 already_maps.append(arg)
 
             # A URL
-            elif (isinstance(arg,basestring) and
+            elif (isinstance(arg,six.string_types) and
                   _is_url(arg)):
                 default_dir = sunpy.config.get("downloads", "download_dir")
                 url = arg
