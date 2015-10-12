@@ -94,8 +94,8 @@ def test_get_correlation_shifts():
     test_array[2, 1] = 0.6
     test_array[1, 2] = 0.2
     y_test, x_test = get_correlation_shifts(test_array)
-    assert_allclose(y_test, 0.214285714286, rtol=1e-2, atol=0)
-    assert_allclose(x_test, 0.0555555555556, rtol=1e-2, atol=0)
+    assert_allclose(y_test.value, 0.214285714286, rtol=1e-2, atol=0)
+    assert_allclose(x_test.value, 0.0555555555556, rtol=1e-2, atol=0)
 
     # Input array is smaller in one direction than the other.
     test_array = np.zeros((2, 2))
@@ -104,8 +104,8 @@ def test_get_correlation_shifts():
     test_array[1, 0] = 0.4
     test_array[1, 1] = 0.3
     y_test, x_test = get_correlation_shifts(test_array)
-    assert_allclose(y_test, 1.0, rtol=1e-2, atol=0)
-    assert_allclose(x_test, 0.0, rtol=1e-2, atol=0)
+    assert_allclose(y_test.value, 1.0, rtol=1e-2, atol=0)
+    assert_allclose(x_test.value, 0.0, rtol=1e-2, atol=0)
 
     # Input array is too big in either direction
     test_array = np.zeros((4, 3))
