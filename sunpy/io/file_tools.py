@@ -1,3 +1,4 @@
+from __future__ import absolute_import, division, print_function
 import re
 import os
 
@@ -65,7 +66,7 @@ def read_file(filepath, filetype=None, **kwargs):
     if filetype:
         return _readers[filetype].read(filepath, **kwargs)
 
-    for extension, readername in _known_extensions.items():
+    for extension, readername in list(_known_extensions.items()):
         if filepath.endswith(extension) or filetype in extension:
             return _readers[readername].read(filepath, **kwargs)
 
@@ -98,7 +99,7 @@ def read_file_header(filepath, filetype=None, **kwargs):
     if filetype:
         return _readers[filetype].get_header(filepath, **kwargs)
 
-    for extension, readername in _known_extensions.items():
+    for extension, readername in list(_known_extensions.items()):
         if filepath.endswith(extension) or filetype in extension:
             return _readers[readername].get_header(filepath, **kwargs)
 
@@ -130,12 +131,12 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
     * This routine currently only supports saving a single HDU.
     """
     if filetype == 'auto':
-        for extension, readername in _known_extensions.items():
+        for extension, readername in list(_known_extensions.items()):
             if fname.endswith(extension):
                 return _readers[readername].write(fname, data, header, **kwargs)
 
     else:
-        for extension, readername in _known_extensions.items():
+        for extension, readername in list(_known_extensions.items()):
             if filetype in extension:
                 return _readers[readername].write(fname, data, header, **kwargs)
 

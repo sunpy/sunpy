@@ -30,6 +30,7 @@ References
 | http://stsdas.stsci.edu/download/wikidocs/The_PyFITS_Handbook.pdf
 
 """
+from __future__ import absolute_import, division, print_function
 import os
 import re
 import itertools
@@ -38,6 +39,7 @@ import collections
 from astropy.io import fits
 
 from sunpy.io.header import FileHeader
+from sunpy.extern.six.moves import zip
 
 __all__ = ['read', 'get_header', 'write', 'extract_waveunit']
 
@@ -78,7 +80,7 @@ def read(filepath, hdus=None):
 
         headers = get_header(hdulist)
         pairs = []
-        for hdu,header in itertools.izip(hdulist, headers):
+        for hdu,header in zip(hdulist, headers):
             pairs.append((hdu.data, header))
     finally:
         hdulist.close()
@@ -164,7 +166,7 @@ def write(fname, data, header, **kwargs):
     # Check Header
     key_comments = header.pop('KEYCOMMENTS', False)
 
-    for k,v in header.items():
+    for k,v in list(header.items()):
         if isinstance(v, fits.header._HeaderCommentaryCards):
             if k == 'comments':
                 comments = str(v).split('\n')
@@ -181,7 +183,7 @@ def write(fname, data, header, **kwargs):
             fits_header.append(fits.Card(k, v))
 
     if isinstance(key_comments, dict):
-        for k,v in key_comments.items():
+        for k,v in list(key_comments.items()):
             fits_header.comments[k] = v
     elif key_comments:
         raise TypeError("KEYCOMMENTS must be a dictionary")
