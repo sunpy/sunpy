@@ -5,7 +5,6 @@ __email__ = "stuart@mumford.me.uk"
 
 import os
 import glob
-import urllib2
 
 import numpy as np
 
@@ -26,6 +25,8 @@ from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.util.datatype_factory_base import ValidationFunctionError
 from sunpy.extern import six
+
+from sunpy.extern.moves.urllib.request import urlopen
 
 # Make a mock DatabaseEntry class if sqlalchemy is not installed
 
@@ -300,7 +301,7 @@ class MapFactory(BasicRegistrationFactory):
 
 def _is_url(arg):
     try:
-        urllib2.urlopen(arg)
+        urlopen(arg)
     except:
         return False
     return True
