@@ -26,7 +26,7 @@ from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.util.datatype_factory_base import ValidationFunctionError
 from sunpy.extern import six
 
-from sunpy.extern.moves.urllib.request import urlopen
+from sunpy.extern.six.moves.urllib.request import urlopen
 
 # Make a mock DatabaseEntry class if sqlalchemy is not installed
 
