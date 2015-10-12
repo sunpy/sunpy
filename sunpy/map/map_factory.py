@@ -1,5 +1,4 @@
 from __future__ import absolute_import, division, print_function
-import six
 
 __authors__ = ["Russell Hewett, Stuart Mumford"]
 __email__ = "stuart@mumford.me.uk"
@@ -26,6 +25,7 @@ from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.util.datatype_factory_base import ValidationFunctionError
+from sunpy.extern import six
 
 # Make a mock DatabaseEntry class if sqlalchemy is not installed
 
