@@ -603,11 +603,11 @@ scale:\t\t {scale}
 
         # If the wcs is celestial it is output in degress
         if self.wcs.is_celestial:
-            x *= u.deg
-            y *= u.deg
+            x = u.Quantity(x, u.deg)
+            y = u.Quantity(y, u.deg)
         else:
-            x *= self.units.x
-            y *= self.units.y
+            x = u.Quantity(x, self.units.x)
+            y = u.Quantity(y, self.units.y)
 
         x = Longitude(x, wrap_angle=180*u.deg)
         y = Latitude(y)
