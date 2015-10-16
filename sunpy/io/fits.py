@@ -183,7 +183,7 @@ def write(fname, data, header, **kwargs):
             fits_header.append(fits.Card(k, v))
 
     if isinstance(key_comments, dict):
-        for k,v in list(key_comments.items()):
+        for k,v in key_comments.items():
             fits_header.comments[k] = v
     elif key_comments:
         raise TypeError("KEYCOMMENTS must be a dictionary")
