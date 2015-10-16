@@ -796,7 +796,7 @@ scale:\t\t {scale}
                          .format('angle', 'rotate', error_msg))
 
         # Interpolation parameter sanity
-        if order not in list(range(6)):
+        if order not in range(6):
             raise ValueError("Order must be between 0 and 5")
 
         # The FITS-WCS transform is by definition defined around the
