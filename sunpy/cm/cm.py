@@ -1,7 +1,7 @@
 """
 This module provides a set of colormaps specific for solar data.
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -112,7 +112,8 @@ for name, cmap in cmlist.items():
     cm.register_cmap(name=name, cmap=cmap)
 
 def get_cmap(name):
-    """Get a colormap.
+    """
+    Get a colormap.
 
     Parameters
     ----------
@@ -168,7 +169,7 @@ def show_colormaps(filter=None):
     """
 
     if filter:
-        maps =  sorted({k:v for (k,v) in cmlist.iteritems() if k.lower().count(filter.lower())})
+        maps =  sorted({k:v for (k,v) in cmlist.items() if k.lower().count(filter.lower())})
         if len(maps) == 0:
             raise KeyError('No color maps found for key - ' + filter)
     else:
