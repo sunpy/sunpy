@@ -53,7 +53,7 @@ def get_header(filepath):
     pydict = xml_to_dict(xmlstring)["fits"]
 
     # Fix types
-    for k, v in list(pydict.items()):
+    for k, v in pydict.items():
         if v.isdigit():
             pydict[k] = int(v)
         elif _is_float(v):
