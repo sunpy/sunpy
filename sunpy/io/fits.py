@@ -166,7 +166,7 @@ def write(fname, data, header, **kwargs):
     # Check Header
     key_comments = header.pop('KEYCOMMENTS', False)
 
-    for k,v in list(header.items()):
+    for k,v in header.items():
         if isinstance(v, fits.header._HeaderCommentaryCards):
             if k == 'comments':
                 comments = str(v).split('\n')
