@@ -26,7 +26,7 @@ class MapMeta(OrderedDict):
             if isinstance(adict, list) or isinstance(adict, tuple):
                 tags = dict((k.upper(), v) for k, v in adict)
             elif isinstance(adict, dict):
-                tags = dict((k.upper(), v) for k, v in list(adict.items()))
+                tags = dict((k.upper(), v) for k, v in adict.items())
             else:
                 raise TypeError("Can not create a MapMeta from this type input")
 
