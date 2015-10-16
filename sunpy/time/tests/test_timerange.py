@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import datetime
+
 import pytest
+import astropy.units as u
+
 import sunpy.time
-from astropy.units import Quantity
+from sunpy.extern.six.moves import zip
 
 tbegin_str = '2012/1/1'
 tfin_str = '2012/1/2'
-dt = Quantity(24 * 60 * 60, 's')
+dt = u.Quantity(24 * 60 * 60, 's')
 
 start = sunpy.time.parse_time(tbegin_str)
 end = sunpy.time.parse_time(tfin_str)
@@ -84,7 +87,7 @@ def test_input_error(timerange_a):
 
 def test_window(timerange_a):
     timerange = sunpy.time.TimeRange(tbegin_str, tfin_str)
-    window = timerange.window(Quantity(12 * 60 * 60, 's'), Quantity(10, 's'))
+    window = timerange.window(u.Quantity(12 * 60 * 60, 's'), u.Quantity(10, 's'))
     expect = [sunpy.time.TimeRange('2012/1/1T00:00:00', '2012/1/1T00:00:10'),
               sunpy.time.TimeRange('2012/1/1T12:00:00', '2012/1/1T12:00:10'),
               sunpy.time.TimeRange('2012/1/2T00:00:00', '2012/1/2T00:00:10')]
@@ -103,7 +106,7 @@ def test_window_timedelta(timerange_a):
     assert all([wi.start == ex.start and wi.end == ex.end for wi, ex in zip(window, expect)])
 
 def test_days(timerange_a):
-    assert timerange_a.days == Quantity(1, 'd')
+    assert timerange_a.days == u.Quantity(1, 'd')
 
 def test_start(timerange_a):
     assert timerange_a.start == start
@@ -115,10 +118,10 @@ def test_seconds(timerange_a):
     assert timerange_a.seconds == dt
 
 def test_minutes(timerange_a):
-    assert timerange_a.minutes == Quantity(24 * 60, 'min')
+    assert timerange_a.minutes == u.Quantity(24 * 60, 'min')
 
 def test_hours(timerange_a):
-    assert timerange_a.hours == Quantity(24, 'hour')
+    assert timerange_a.hours == u.Quantity(24, 'hour')
 
 def test_next():
     timerange = sunpy.time.TimeRange(tbegin_str, tfin_str)
