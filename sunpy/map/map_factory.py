@@ -323,4 +323,4 @@ class NoMapsFound(ValueError):
 
 Map = MapFactory(default_widget_type=GenericMap,
                  additional_validation_functions=['is_datasource_for'])
-Map.registry = GenericMap._registry
+Map.registry = MAP_CLASSES
