@@ -10,4 +10,8 @@ python -c "import sunpy.data.sample"
 
 python setup.py test -P util
 python setup.py test -P time
+python setup.py test -P map
+python setup.py test -P io
+python setup.py test -P image
+python setup.py test -P sun
 
