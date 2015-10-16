@@ -10,7 +10,9 @@ __email__ = "stuart@mumford.me.uk"
 
 import warnings
 import inspect
+from abc import ABCMeta
 from copy import deepcopy
+from collections import OrderedDict
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -31,15 +33,21 @@ from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
 
+from sunpy.extern import six
+
 import astropy.units as u
 
 from collections import namedtuple
 Pair = namedtuple('Pair', 'x y')
 
-__all__ = ['GenericMap']
 
 from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")
+
+MAP_CLASSES = OrderedDict()
+
+__all__ = ['GenericMap']
+
 
 """
 Questions
@@ -50,6 +58,19 @@ or something else?)
 """
 
 
+class GenericMapMeta(ABCMeta):
+
+    _registry = MAP_CLASSES
+
+    def __new__(mcls, name, bases, members):
+        cls = super(GenericMapMeta, mcls).__new__(mcls, name, bases, members)
+        if 'is_datasource_for' in members:
+            mcls._registry[cls] = cls.is_datasource_for
+
+        return cls
+
+
+@six.add_metaclass(GenericMapMeta)
 class GenericMap(NDData):
     """
     A Generic spatially-aware 2D data array
