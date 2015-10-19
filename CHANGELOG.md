@@ -7,6 +7,8 @@ Latest
 * Remove ``vso.QueryResponse.num_records()`` in favour of `len(qr)`
 * add a `draw_rectangle` helper to `GenericMap` which can plot rectanges in the
   native coordinate system of the map.
+* Add automatic registration of ``GenericMap`` subclasses with the factory as
+  long as they define an ``is_datasource_for`` method.
 
 * Added the ability to shift maps to correct for incorrect map location, for example.
 
