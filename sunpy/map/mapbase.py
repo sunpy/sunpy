@@ -44,8 +44,6 @@ Pair = namedtuple('Pair', 'x y')
 from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")
 
-MAP_CLASSES = OrderedDict()
-
 __all__ = ['GenericMap']
 
 
@@ -57,13 +55,26 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
+# GenericMap subclass registry.
+MAP_CLASSES = OrderedDict()
+
 
 class GenericMapMeta(ABCMeta):
+    """
+    Registration metaclass for `~sunpy.map.GenericMap`.
+
+    This class checks for the existance of a method named ``is_datasource_for``
+    when a subclass of `GenericMap` is defined. If it exists it will add that
+    class to the registry.
+    """
 
     _registry = MAP_CLASSES
 
     def __new__(mcls, name, bases, members):
         cls = super(GenericMapMeta, mcls).__new__(mcls, name, bases, members)
+
+        # The registry contains the class as the key and the validation method
+        # as the item.
         if 'is_datasource_for' in members:
             mcls._registry[cls] = cls.is_datasource_for
 
