@@ -29,8 +29,9 @@ class MapMeta(OrderedDict):
                 tags = dict((k.upper(), v) for k, v in adict.items())
             else:
                 raise TypeError("Can not create a MapMeta from this type input")
+            args[0] = tags
 
-        super(MapMeta, self).__init__(tags)
+        super(MapMeta, self).__init__(*args)
 
     def __contains__(self, key):
         """Override __contains__"""
