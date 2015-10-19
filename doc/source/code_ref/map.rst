@@ -95,7 +95,9 @@ Any subclass of `~sunpy.map.GenericMap` which defines a method named
 This makes it straightforward to define your own `~sunpy.map.GenericMap`
 subclass for a new instrument or a custom data source.
 These classes do not have to be part of SunPy for this to work, as
-demonstrated by the following example ::
+demonstrated by the following example.
+
+.. code-block:: python
 
     import sunpy.map
     class FutureMap(sunpy.map.GenericMap):
