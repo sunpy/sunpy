@@ -118,3 +118,16 @@ demonstrated by the following example.
 
 This class will now be available through the ``Map`` factory as long as this
 class has been defined, i.e. imported into the current session.
+
+If you do not want to create a method named ``is_datasource_for`` (or for some
+very very strange reason you are not subclassing from `~sunpy.map.GenericMap`,
+you can manually register your class and matching method using the following
+method
+
+.. code-block:: python
+
+    import sunpy.map
+
+    sunpy.map.Map.register(FutureMap, FutureMap.some_matching_method)
+
+
