@@ -20,11 +20,11 @@ python -c "import sunpy.data" || E=$?||$E
 python -c "import sunpy.data; sunpy.data.download_sample_data()" || E=$?||$E
 python -c "import sunpy.data.sample" || E=$?||$E
 
-python setup.py test -P time || E=$?||$E
-python setup.py test -P map || E=$?||$E
-python setup.py test -P io || E=$?||$E
-python setup.py test -P image || E=$?||$E
-python setup.py test -P sun || E=$?||$E
+py.test sunpy/time || E=$?||$E
+py.test sunpy/map || E=$?||$E
+py.test sunpy/io || E=$?||$E
+py.test sunpy/image || E=$?||$E
+py.test sunpy/sun || E=$?||$E
 
 exit $E
 
