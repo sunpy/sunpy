@@ -1,4 +1,5 @@
 #!/bin/bash
+E=0
 
 # This script runs a passing subset of tests under Python 3.
 
@@ -14,4 +15,16 @@ python setup.py test -P map
 python setup.py test -P io
 python setup.py test -P image
 python setup.py test -P sun
+python setup.py install || E=$?||$E
+python -c "import sunpy.data" || E=$?||$E
+python -c "import sunpy.data; sunpy.data.download_sample_data()" || E=$?||$E
+python -c "import sunpy.data.sample" || E=$?||$E
+
+python setup.py test -P time || E=$?||$E
+python setup.py test -P map || E=$?||$E
+python setup.py test -P io || E=$?||$E
+python setup.py test -P image || E=$?||$E
+python setup.py test -P sun || E=$?||$E
+
+exit $E
 
