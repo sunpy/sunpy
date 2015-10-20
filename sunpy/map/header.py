@@ -22,6 +22,7 @@ class MapMeta(OrderedDict):
         # OrderedDict can be instantiated from a list of lists or a tuple of tuples
         tags = dict()
         if args:
+            args = list(args)
             adict = args[0]
             if isinstance(adict, list) or isinstance(adict, tuple):
                 tags = dict((k.upper(), v) for k, v in adict)
