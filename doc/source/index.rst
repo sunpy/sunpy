@@ -16,5 +16,8 @@ free and open-source solar data analysis environment for Python.
 .. warning::
     Having issues with links on this page? Make sure there is a trailing slash on the URL *e.g.* `http://docs.sunpy.org/en/latest/`
     
---Link to SunPy
--    Want to visit the blog and stay updated with the tutorials? Here is the URL- *e.g.* `http://sunpy.org`
+
+Link to SunPy
+-----------------
+    
+Wish to stay update with the latest releases? Here is the Link *e.g.* `http://sunpy.org`
