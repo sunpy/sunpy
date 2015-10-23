@@ -17,6 +17,8 @@ from sunpy.spectra.spectrogram import(
 from sunpy.spectra.spectrum import Spectrum
 
 def test_spectrum():
+    #The idea is to create two 1-D arrays, data and freq_axis,
+    #Pass them to the Spectrum object and check for equality of dimensions accordingly.
     data = np.linspace(0, 100, 100)
     freq = np.linspace(1, 100, 100)
     spec = Spectrum(data,freq)
