@@ -14,6 +14,14 @@ from sunpy.spectra.spectrogram import(
     Spectrogram, LinearTimeSpectrogram, _LinearView
 )
 
+from sunpy.spectra.spectrum import Spectrum
+
+def test_spectrum():
+    data = np.linspace(0, 100, 100)
+    freq = np.linspace(1, 100, 100)
+    spec = Spectrum(data,freq)
+    if not (np.shape(spec.data) == np.shape(spec.freq_axis)):
+        raise ValueError
 
 def is_linear(arr):
     return np.array_equal(arr, np.linspace(arr[0], arr[-1], len(arr)))
