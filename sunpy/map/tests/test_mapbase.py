@@ -73,8 +73,8 @@ def test_wcs(aia171_test_map):
                                  aia171_test_map.reference_pixel.y.value])
     assert all(wcs.wcs.cdelt == [aia171_test_map.scale.x.value,
                                  aia171_test_map.scale.y.value])
-    assert all(wcs.wcs.crval == [(aia171_test_map.reference_coordinate.x - aia171_test_map.shift.x).value,
-                                 (aia171_test_map.reference_coordinate.y - aia171_test_map.shift.y).value])
+    assert all(wcs.wcs.crval == [aia171_test_map.reference_coordinate.x.value,
+                                 aia171_test_map.reference_coordinate.y.value])
     assert set(wcs.wcs.ctype) == set([aia171_test_map.coordinate_system.x,
                              aia171_test_map.coordinate_system.y])
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
@@ -249,35 +249,42 @@ def test_default_shift():
               'NAXIS1': 6,
               'NAXIS2': 6}
     cd_map = sunpy.map.Map((data, header))
-    assert cd_map.shift.x.value == 0
-    assert cd_map.shift.y.value == 0
+    assert cd_map.shift_amount.x.value == 0
+    assert cd_map.shift_amount.y.value == 0
 
 def test_shift_applied(generic_map):
+    """Test that adding a shift actually updates the reference coordinate"""
     original_reference_coord = (generic_map.reference_coordinate.x, generic_map.reference_coordinate.y)
     x_shift = 5 * u.arcsec
     y_shift = 13 * u.arcsec
-    generic_map.set_shift(x_shift, y_shift)
-    assert generic_map.reference_coordinate.x - x_shift == original_reference_coord[0]
-    assert generic_map.reference_coordinate.y - y_shift == original_reference_coord[1]
+    shifted_map = generic_map.shift(x_shift, y_shift)
+    assert shifted_map.reference_coordinate.x - x_shift == original_reference_coord[0]
+    assert shifted_map.reference_coordinate.y - y_shift == original_reference_coord[1]
+    assert shifted_map.meta.get('crval1') == ((generic_map.meta.get('crval1') * generic_map.units.x + shifted_map.shift_amount.x).to(shifted_map.units.x)).value
+    assert shifted_map.meta.get('crval2') == ((generic_map.meta.get('crval2') * generic_map.units.y + shifted_map.shift_amount.y).to(shifted_map.units.y)).value
 
 def test_set_shift(generic_map):
-    """Test that shift can be set properly"""
+    """Test that previously applied shift is stored in the shift_amount property"""
     x_shift = 5 * u.arcsec
     y_shift = 13 * u.arcsec
-    generic_map.set_shift(x_shift, y_shift)
-    resultant_shift = generic_map.shift
+    shifted_map = generic_map.shift(x_shift, y_shift)
+    resultant_shift = shifted_map.shift_amount
     assert resultant_shift.x == x_shift
     assert resultant_shift.y == y_shift
 
-def test_reset_shift(generic_map):
-    """Test that resetting the shift zeros it out"""
-    x_shift = 5 * u.arcsec
-    y_shift = 13 * u.arcsec
-    generic_map.set_shift(x_shift, y_shift)
-    generic_map.reset_shift()
-    resultant_shift = generic_map.shift
-    assert resultant_shift.x.value == 0
-    assert resultant_shift.y.value == 0
+def test_shift_history(generic_map):
+    """Test the shift_amount is added to a non-zero previous shift"""
+    x_shift1 = 5 * u.arcsec
+    y_shift1 = 13 * u.arcsec
+    shifted_map1 = generic_map.shift(x_shift1, y_shift1)
+
+    x_shift2 = 2 * u.arcsec
+    y_shift2 = 20 * u.arcsec
+    final_shifted_map = shifted_map1.shift(x_shift2, y_shift2)
+
+    resultant_shift = final_shifted_map.shift_amount
+    assert resultant_shift.x == x_shift1 + x_shift2
+    assert resultant_shift.y == y_shift1 + y_shift2
 
 def test_submap(generic_map):
     """Check data and header information for a submap"""
