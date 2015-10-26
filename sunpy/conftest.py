@@ -11,8 +11,6 @@ from sunpy.extern.six.moves.urllib.error import URLError
 import pytest
 
 
-print("in conftest")
-
 # Force MPL to use non-gui backends for testing.
 try:
     import matplotlib
