@@ -378,15 +378,15 @@ scale:\t\t {scale}
                                    self.reference_coordinate.y))
 
     @property
-    def shift_amount(self):
+    def shifted_value(self):
         """The total shift applied to the reference coordinate."""
         return self._shift
 
     @u.quantity_input(x=u.deg, y=u.deg)
     def shift(self, x, y):
         """Returns a map shifted by a specified amount to, for example, correct for a bad
-        map location. These values are applied directly to the reference coordinate (i.e. crval1, crval2).
-        To check how if a shift has been set
+        map location. These values are applied directly to the ~sunpy.map.GenericMap.reference_coordinate.
+        To check how much shift has already been applied see ~sunpy.map.GenericMap.shifted_value
 
         Parameters
         ----------
