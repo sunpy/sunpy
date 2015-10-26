@@ -369,8 +369,7 @@ scale:\t\t {scale}
 
     @property
     def center(self):
-        """Returns the offset between the center of the Sun and the center of
-        the map."""
+        """The offset between the center of the Sun and the center of the map."""
         return Pair(wcs.get_center(self.dimensions[0], self.scale.x,
                                    self.reference_pixel.x,
                                    self.reference_coordinate.x),
@@ -379,16 +378,15 @@ scale:\t\t {scale}
                                    self.reference_coordinate.y))
 
     @property
-    def shift(self):
-        """The amount to shift the map reference coordinate to, for example,
-        correct for a bad map location. This value be updated by using set_shift().
-        """
+    def shift_amount(self):
+        """The total shift applied to the reference coordinate."""
         return self._shift
 
     @u.quantity_input(x=u.deg, y=u.deg)
-    def set_shift(self, x, y):
-        """Set the amount to shift the map to, for example, correct for a bad
-        map location.
+    def shift(self, x, y):
+        """Returns a map shifted by a specified amount to, for example, correct for a bad
+        map location. These values are applied directly to the reference coordinate (i.e. crval1, crval2).
+        To check how if a shift has been set
 
         Parameters
         ----------
@@ -401,24 +399,21 @@ scale:\t\t {scale}
 
         Returns
         -------
-        None
+        out : `~sunpy.map.GenericMap` or subclass
+            A new shifted Map.
         """
+        new_map = deepcopy(self)
+        new_map._shift = Pair(self.shift_amount.x + x, self.shift_amount.y + y)
 
-        self._shift = Pair(x, y)
+        new_meta = self.meta.copy()
 
-    def reset_shift(self):
-        """Reset the shift applied to the map to (0, 0).
+        # Update crvals
+        new_meta['crval1'] = ((self.meta['crval1'] * self.units.x + x).to(self.units.x)).value
+        new_meta['crval2'] = ((self.meta['crval2'] * self.units.x + y).to(self.units.y)).value
 
-        Parameters
-        ----------
-        None
+        new_map.meta = new_meta
 
-        Returns
-        -------
-        None
-        """
-
-        self._shift = Pair(0 * u.arcsec, 0 * u.arcsec)
+        return new_map
 
     @property
     def rsun_meters(self):
@@ -480,8 +475,8 @@ scale:\t\t {scale}
     def reference_coordinate(self):
         """Reference point WCS axes in data units (i.e. crval1, crval2). This value
         includes a shift if one is set."""
-        return Pair(self.meta.get('crval1', 0.) * self.units.x + self._shift.x,
-                    self.meta.get('crval2', 0.) * self.units.y + self._shift.y)
+        return Pair(self.meta.get('crval1', 0.) * self.units.x,
+                    self.meta.get('crval2', 0.) * self.units.y)
 
     @property
     def reference_pixel(self):
