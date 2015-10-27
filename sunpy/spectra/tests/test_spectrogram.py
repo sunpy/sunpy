@@ -17,13 +17,12 @@ from sunpy.spectra.spectrogram import(
 from sunpy.spectra.spectrum import Spectrum
 
 def test_spectrum():
-    #The idea is to create two 1-D arrays, data and freq_axis,
+    #The idea is to create two arrays, data and freq_axis,
     #Pass them to the Spectrum object and check for equality of dimensions accordingly.
-    data = np.linspace(0, 100, 100)
-    freq = np.linspace(1, 100, 100)
+    data = np.random.rand(20, 100)
+    freq = np.random.rand(1, 100)
     spec = Spectrum(data,freq)
-    if not (np.shape(spec.data) == np.shape(spec.freq_axis)):
-        raise ValueError
+    
 
 def is_linear(arr):
     return np.array_equal(arr, np.linspace(arr[0], arr[-1], len(arr)))
