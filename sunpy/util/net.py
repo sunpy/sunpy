@@ -119,7 +119,7 @@ def download_fileobj(opn, directory, url='', default=u"file", overwrite=False):
     Fall back to default if both fail. Only overwrite existing files when
     overwrite is True. """
     filename = get_system_filename(opn, url, default)
-    path = os.path.join(directory, filename)
+    path = os.path.join(directory, filename.decode('utf-8'))
     if not overwrite and os.path.exists(path):
         path = replacement_filename(path)
     with open(path, 'wb') as fd:

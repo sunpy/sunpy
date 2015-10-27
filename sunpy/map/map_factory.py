@@ -1,11 +1,10 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 __authors__ = ["Russell Hewett, Stuart Mumford"]
 __email__ = "stuart@mumford.me.uk"
 
 import os
 import glob
-import urllib2
 
 import numpy as np
 
@@ -25,6 +24,9 @@ from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.util.datatype_factory_base import ValidationFunctionError
+from sunpy.extern import six
+
+from sunpy.extern.six.moves.urllib.request import urlopen
 
 # Make a mock DatabaseEntry class if sqlalchemy is not installed
 
@@ -161,14 +163,14 @@ class MapFactory(BasicRegistrationFactory):
                 i += 1 # an extra increment to account for the data-header pairing
 
             # File name
-            elif (isinstance(arg,basestring) and
+            elif (isinstance(arg,six.string_types) and
                   os.path.isfile(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
             # Directory
-            elif (isinstance(arg,basestring) and
+            elif (isinstance(arg,six.string_types) and
                   os.path.isdir(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
                 files = [os.path.join(path, elem) for elem in os.listdir(path)]
@@ -176,7 +178,7 @@ class MapFactory(BasicRegistrationFactory):
                     data_header_pairs += self._read_file(afile, **kwargs)
 
             # Glob
-            elif (isinstance(arg,basestring) and '*' in arg):
+            elif (isinstance(arg,six.string_types) and '*' in arg):
                 files = glob.glob( os.path.expanduser(arg) )
                 for afile in files:
                     data_header_pairs += self._read_file(afile, **kwargs)
@@ -186,7 +188,7 @@ class MapFactory(BasicRegistrationFactory):
                 already_maps.append(arg)
 
             # A URL
-            elif (isinstance(arg,basestring) and
+            elif (isinstance(arg,six.string_types) and
                   _is_url(arg)):
                 default_dir = sunpy.config.get("downloads", "download_dir")
                 url = arg
@@ -299,7 +301,7 @@ class MapFactory(BasicRegistrationFactory):
 
 def _is_url(arg):
     try:
-        urllib2.urlopen(arg)
+        urlopen(arg)
     except:
         return False
     return True

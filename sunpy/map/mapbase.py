@@ -1,7 +1,8 @@
 """
 Map is a generic Map class from which all other Map classes inherit from.
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
+from sunpy.extern.six.moves import range
 
 #pylint: disable=E1101,E1121,W0404,W0613
 __authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe"]
@@ -1347,7 +1348,7 @@ scale:\t\t {scale}
         if isinstance(draw_grid, bool):
             if draw_grid:
                 self.draw_grid(axes=axes)
-        elif isinstance(draw_grid, (int, long, float)):
+        elif isinstance(draw_grid, six.integer_types + (float,)):
             self.draw_grid(axes=axes, grid_spacing=draw_grid)
         else:
             raise TypeError("draw_grid should be bool, int, long or float")
@@ -1398,7 +1399,7 @@ scale:\t\t {scale}
 
         # Normal plot
         imshow_args = deepcopy(self.plot_settings)
-        if imshow_args.has_key('title'):
+        if 'title' in imshow_args:
             plot_settings_title = imshow_args.pop('title')
         else:
             plot_settings_title = self.name
