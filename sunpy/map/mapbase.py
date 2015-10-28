@@ -404,7 +404,7 @@ scale:\t\t {scale}
             A new shifted Map.
         """
         new_map = deepcopy(self)
-        new_map._shift = Pair(self.shift_amount.x + x, self.shift_amount.y + y)
+        new_map._shift = Pair(self.shifted_value.x + x, self.shifted_value.y + y)
 
         new_meta = self.meta.copy()
 
