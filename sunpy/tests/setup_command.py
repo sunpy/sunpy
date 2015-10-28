@@ -9,6 +9,8 @@ dependency on astropy_helpers which will be available in that context.
 """
 from __future__ import absolute_import, division, print_function
 
+import os
+
 from astropy_helpers.test_helpers import AstropyTest
 from astropy_helpers.compat import _fix_user_options
 
@@ -62,7 +64,7 @@ class SunPyTest(AstropyTest):
         self.online_only = False
         self.coverage = False
         self.cov_report = 'term' if self.coverage else None
-        self.docs_path = None
+        self.docs_path = os.path.abspath('doc')
         self.parallel = 0
 
     def _validate_required_deps(self):

@@ -1,9 +1,10 @@
 """Image resampling methods"""
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import numpy as np
 import scipy.interpolate
 import scipy.ndimage
+from sunpy.extern.six.moves import range
 
 __all__ = ['resample', 'reshape_image_to_4d_superpixel']
 
@@ -99,8 +100,8 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
 
     new_data = mint(dimlist[-1])
 
-    trorder = [orig.ndim - 1] + range(orig.ndim - 1)
-    for i in xrange(orig.ndim - 2, -1, -1):
+    trorder = [orig.ndim - 1] + list(range(orig.ndim - 1))
+    for i in range(orig.ndim - 2, -1, -1):
         new_data = new_data.transpose(trorder)
 
         mint = scipy.interpolate.interp1d(old_coords[i], new_data,
@@ -119,7 +120,7 @@ def _resample_neighbor(orig, dimensions, offset, m1):
 
     dimlist = []
 
-    for i in xrange(orig.ndim):
+    for i in range(orig.ndim):
         base = np.indices(dimensions)[i]
         dimlist.append((orig.shape[i] - m1) / (dimensions[i] - m1) *
                        (base + offset) - offset)
@@ -137,7 +138,7 @@ def _resample_spline(orig, dimensions, offset, m1):
     nslices = [slice(0, j) for j in list(dimensions)]
     newcoords = np.mgrid[nslices]
 
-    newcoords_dims = range(np.rank(newcoords))
+    newcoords_dims = list(range(np.rank(newcoords)))
 
     #make first index last
     newcoords_dims.append(newcoords_dims.pop(0))
