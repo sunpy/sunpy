@@ -249,8 +249,8 @@ def test_default_shift():
               'NAXIS1': 6,
               'NAXIS2': 6}
     cd_map = sunpy.map.Map((data, header))
-    assert cd_map.shift_amount.x.value == 0
-    assert cd_map.shift_amount.y.value == 0
+    assert cd_map.shifted_value.x.value == 0
+    assert cd_map.shifted_value.y.value == 0
 
 def test_shift_applied(generic_map):
     """Test that adding a shift actually updates the reference coordinate"""
@@ -260,20 +260,20 @@ def test_shift_applied(generic_map):
     shifted_map = generic_map.shift(x_shift, y_shift)
     assert shifted_map.reference_coordinate.x - x_shift == original_reference_coord[0]
     assert shifted_map.reference_coordinate.y - y_shift == original_reference_coord[1]
-    assert shifted_map.meta.get('crval1') == ((generic_map.meta.get('crval1') * generic_map.units.x + shifted_map.shift_amount.x).to(shifted_map.units.x)).value
-    assert shifted_map.meta.get('crval2') == ((generic_map.meta.get('crval2') * generic_map.units.y + shifted_map.shift_amount.y).to(shifted_map.units.y)).value
+    assert shifted_map.meta.get('crval1') == ((generic_map.meta.get('crval1') * generic_map.units.x + shifted_map.shifted_value.x).to(shifted_map.units.x)).value
+    assert shifted_map.meta.get('crval2') == ((generic_map.meta.get('crval2') * generic_map.units.y + shifted_map.shifted_value.y).to(shifted_map.units.y)).value
 
 def test_set_shift(generic_map):
-    """Test that previously applied shift is stored in the shift_amount property"""
+    """Test that previously applied shift is stored in the shifted_value property"""
     x_shift = 5 * u.arcsec
     y_shift = 13 * u.arcsec
     shifted_map = generic_map.shift(x_shift, y_shift)
-    resultant_shift = shifted_map.shift_amount
+    resultant_shift = shifted_map.shifted_value
     assert resultant_shift.x == x_shift
     assert resultant_shift.y == y_shift
 
 def test_shift_history(generic_map):
-    """Test the shift_amount is added to a non-zero previous shift"""
+    """Test the shifted_value is added to a non-zero previous shift"""
     x_shift1 = 5 * u.arcsec
     y_shift1 = 13 * u.arcsec
     shifted_map1 = generic_map.shift(x_shift1, y_shift1)
@@ -282,7 +282,7 @@ def test_shift_history(generic_map):
     y_shift2 = 20 * u.arcsec
     final_shifted_map = shifted_map1.shift(x_shift2, y_shift2)
 
-    resultant_shift = final_shifted_map.shift_amount
+    resultant_shift = final_shifted_map.shifted_value
     assert resultant_shift.x == x_shift1 + x_shift2
     assert resultant_shift.y == y_shift1 + y_shift2
 
