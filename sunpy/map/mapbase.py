@@ -1,7 +1,8 @@
 """
 Map is a generic Map class from which all other Map classes inherit from.
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
+from sunpy.extern.six.moves import range
 
 #pylint: disable=E1101,E1121,W0404,W0613
 __authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe"]
@@ -603,11 +604,11 @@ scale:\t\t {scale}
 
         # If the wcs is celestial it is output in degress
         if self.wcs.is_celestial:
-            x *= u.deg
-            y *= u.deg
+            x = u.Quantity(x, u.deg)
+            y = u.Quantity(y, u.deg)
         else:
-            x *= self.units.x
-            y *= self.units.y
+            x = u.Quantity(x, self.units.x)
+            y = u.Quantity(y, self.units.y)
 
         x = Longitude(x, wrap_angle=180*u.deg)
         y = Latitude(y)
@@ -818,8 +819,8 @@ scale:\t\t {scale}
         # Calculate the needed padding or unpadding
         diff = np.asarray(np.ceil((extent - new_map.data.shape) / 2)).ravel()
         # Pad the image array
-        pad_x = np.max((diff[1], 0))
-        pad_y = np.max((diff[0], 0))
+        pad_x = int(np.max((diff[1], 0)))
+        pad_y = int(np.max((diff[0], 0)))
         new_map.data = np.pad(new_map.data,
                               ((pad_y, pad_y), (pad_x, pad_x)),
                               mode='constant',
@@ -1347,7 +1348,7 @@ scale:\t\t {scale}
         if isinstance(draw_grid, bool):
             if draw_grid:
                 self.draw_grid(axes=axes)
-        elif isinstance(draw_grid, (int, long, float)):
+        elif isinstance(draw_grid, six.integer_types + (float,)):
             self.draw_grid(axes=axes, grid_spacing=draw_grid)
         else:
             raise TypeError("draw_grid should be bool, int, long or float")
@@ -1398,7 +1399,7 @@ scale:\t\t {scale}
 
         # Normal plot
         imshow_args = deepcopy(self.plot_settings)
-        if imshow_args.has_key('title'):
+        if 'title' in imshow_args:
             plot_settings_title = imshow_args.pop('title')
         else:
             plot_settings_title = self.name
