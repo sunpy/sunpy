@@ -2,7 +2,7 @@
 """
     Provides programs to process and analyze RHESSI data.
 
-    .. warning:: This module is still in development!
+    .. warning:: This module is in development.
 
 """
 
