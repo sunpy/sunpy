@@ -1,7 +1,7 @@
 """
 This module provides a set of colormaps specific for solar data.
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -9,7 +9,7 @@ import matplotlib.cm as cm
 
 from sunpy.cm import color_tables as ct
 
-__all__ = ['get_cmap', 'show_colormaps']
+__all__ = ['get_cmap', 'show_colormaps', 'cmlist']
 
 sdoaia94 = ct.aia_color_table(94)
 sdoaia131 = ct.aia_color_table(131)
@@ -95,15 +95,25 @@ cmlist = {
           'trace1600': trace1600,
           'trace1700': trace1700,
           'traceWL': traceWL,
-          'hmimag': hmimag
-          }
+          'hmimag': hmimag,
+          'irissji1330': ct.iris_sji_color_table('1330'),
+          'irissji1400': ct.iris_sji_color_table('1400'),
+          'irissji1600': ct.iris_sji_color_table('1600'),
+          'irissji2796': ct.iris_sji_color_table('2796'),
+          'irissji2832': ct.iris_sji_color_table('2832'),
+          'irissji5000': ct.iris_sji_color_table('5000'),
+          'irissjiFUV': ct.iris_sji_color_table('FUV'),
+          'irissjiNUV': ct.iris_sji_color_table('NUV'),
+          'irissjiSJI_NUV': ct.iris_sji_color_table('SJI_NUV')
+}
 
 # Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
 for name, cmap in cmlist.items():
     cm.register_cmap(name=name, cmap=cmap)
 
 def get_cmap(name):
-    """Get a colormap.
+    """
+    Get a colormap.
 
     Parameters
     ----------
@@ -133,30 +143,38 @@ def get_cmap(name):
         raise ValueError("Colormap {name!s} is not recognized".format(name=name))
 
 
-def show_colormaps():
+def show_colormaps(filter=None):
     """Displays a plot of the custom color maps supported in SunPy.
 
     Parameters
     ----------
-    None : none
+    filter : str
+        A string to filter the color maps presented (e.g. aia, EIT, 171). Case
+        insensitive.
 
     Returns
     -------
     None : none
 
-    See Also
-    --------
-
     Examples
     --------
     >>> import sunpy.cm as cm
     >>> cm.show_colormaps()
+    >>> cm.show_colormaps(filter='aia')
+    >>> cm.show_colormaps(filter='171')
 
     References
     ----------
 
     """
-    maps = sorted(cmlist)
+
+    if filter:
+        maps =  sorted({k:v for (k,v) in cmlist.items() if k.lower().count(filter.lower())})
+        if len(maps) == 0:
+            raise KeyError('No color maps found for key - ' + filter)
+    else:
+        maps = sorted(cmlist)
+
     nmaps = len(maps) + 1
 
     a = np.linspace(0, 1, 256).reshape(1, -1)  # pylint: disable=E1103
@@ -171,7 +189,6 @@ def show_colormaps():
         pos = list(ax.get_position().bounds)
         fig.text(pos[0] - 0.01, pos[1], name, fontsize=10,
                  horizontalalignment='right')
-
     plt.show()
 
 # def test_equalize(data):

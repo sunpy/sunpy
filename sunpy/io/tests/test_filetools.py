@@ -17,7 +17,7 @@ EIT_195_IMAGE = os.path.join(testpath, 'EIT/efz20040301.000010_s.fits')
 AIA_171_IMAGE = os.path.join(testpath, 'aia_171_level1.fits')
 
 #==============================================================================
-# Test, read, get_header and write through the file independant layer
+# Test, read, get_header and write through the file independent layer
 #==============================================================================
 class TestFiletools(object):
 

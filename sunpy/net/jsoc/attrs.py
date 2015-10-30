@@ -1,19 +1,28 @@
 from __future__ import absolute_import
 
-import numpy as np
+__all__ = ['Series', 'Protocol', 'Notify', 'Compression', 'Wavelength', 'Time',
+           'Segment', 'Sample']
+
 import astropy.units as u
 
-from sunpy.net.attr import (Attr, AttrWalker, AttrAnd, AttrOr)
-from sunpy.net.vso.attrs import Time, _VSOSimpleAttr
+from sunpy.net.attr import Attr, AttrWalker, AttrAnd, AttrOr
+from sunpy.net.vso.attrs import _VSOSimpleAttr
+from sunpy.net.vso.attrs import Time as vTime, Sample as vSample
 
-__all__ = ['Series', 'Protocol', 'Notify', 'Compression', 'Wavelength', 'Time',
-           'Segment', 'walker']
+###############################################################################
+# This is a horrific hack to make automodapi pick up these as jsoc attrs.
 
 
-class Time(Time):
-    """
-    Time range to download
-    """
+class Time(vTime):
+    __doc__ = vTime.__doc__
+    pass
+
+
+class Sample(vSample):
+    __doc__ = vSample.__doc__
+    pass
+
+###############################################################################
 
 
 class Series(_VSOSimpleAttr):
@@ -47,7 +56,12 @@ class Notify(_VSOSimpleAttr):
     """
     An email address to get a notification to when JSOC has staged your request
     """
-    pass
+    def __init__(self, value):
+        super(Notify, self).__init__(value)
+        if value.find('@') == -1:
+            raise ValueError("Notify attribute must contain an '@' symbol "
+                             "to be a valid email address")
+        self.value = value
 
 
 class Compression(_VSOSimpleAttr):
@@ -99,20 +113,20 @@ def _apply(wlk, query, imap):
 
 
 @walker.add_applier(_VSOSimpleAttr)
-def _apply(wlk, query, imap):
+def _apply1(wlk, query, imap):
 
     imap[query.__class__.__name__.lower()] = query.value
 
 
 @walker.add_applier(Time)
-def _apply(wlk, query, imap):
+def _apply2(wlk, query, imap):
 
     imap['start_time'] = query.start
     imap['end_time'] = query.end
 
 
 @walker.add_creator(AttrOr)
-def _create(wlk, query):
+def _create1(wlk, query):
 
     qblocks = []
     for iattr in query.attrs:

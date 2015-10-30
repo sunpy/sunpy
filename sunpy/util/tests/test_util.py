@@ -1,11 +1,11 @@
 """This module tests the functions implemented in sunpy.util.util."""
+from __future__ import absolute_import, division, print_function
 
-from __future__ import absolute_import
-
-from sunpy.util import util
-import numpy as np
 import warnings
 
+import numpy as np
+
+from sunpy.util import util
 def test_to_signed():
     """
     This should return a signed type that can hold uint32.
@@ -55,14 +55,6 @@ def test_print_table():
                '4|2      |16 \n'
                '3|1.732  |9  ')
     assert util.print_table(lst, colsep='|') == expected
-
-def test_findpeaks():
-    """
-    This should return the indices of the local maxima of numpy array
-    data (relative to index 1).
-    """
-    data = np.array([1.0, 3.5, 3.0, 4.0, -9.0, 0.0, 0.5, 0.3, 9.5])
-    assert np.array_equal(util.findpeaks(data), np.array([0, 2, 5]))
 
 def test_polyfun_at():
     """

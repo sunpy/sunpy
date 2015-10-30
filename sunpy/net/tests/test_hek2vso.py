@@ -60,7 +60,7 @@ def test_vso_attribute_parse():
     hek_query = h.query(hekTime, hekEvent)
     vso_query = hek2vso.vso_attribute_parse(hek_query[0])
 
-    # Cheking Time
+    # Checking Time
     # TODO
 
     # Checking Observatory

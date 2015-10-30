@@ -29,12 +29,6 @@ def l0():
 # the following known_answers come from equivalent queries to IDL
 # WCS implementation (http://hesperia.gsfc.nasa.gov/ssw/gen/idl/wcs/)
 
-#def test_convert_pixel_to_data():
-#    actual =
-#    reference_pixel = [img.reference_pixel['x'], img.reference_pixel['y']]
-#    reference_coordinate = [img.reference_coordinate['x'], img.reference_coordinate['y']]
-#    scale = [img.scale['x'], img.scale['y']]
-#    actual = wcs.convert_pixel_to_data(scale,img.shape, reference_pixel, reference_coordinate, 0, 0)
 
 def test_convert_angle_units():
     actual = np.array([wcs._convert_angle_units(), wcs._convert_angle_units('arcsec'),
@@ -166,3 +160,12 @@ def test_convert_back():
     coord = [34.0, 45.0]
     assert_allclose(wcs.convert_hpc_hg(*wcs.convert_hg_hpc(*coord)),
                     coord, rtol=1e-2, atol=0)
+
+# Ensures that further testing involving wcs uses the "constants" value
+# of the solar radius in meters.  There is a line above that resets the
+# wcs value of the solar radius for the purposes of these tests.  The
+# line below restores the original value.  This ensures that when using
+# Travis testing, all further tests that use wcs also use the correct
+# value of the solar radius.
+wcs.wcs.rsun_meters = sun.constants.radius.si.value
+

@@ -8,10 +8,11 @@ user-defined conditions and types.
 
 First, we need to create a new ConditionalDispatch
 
+>>> from sunpy.util.cond_dispatch import ConditionalDispatch
 >>> fun = ConditionalDispatch()
 
 We then can start adding branches, in this case we add a branch for
-even integers, in which case the function applied is a muliplication by
+even integers, in which case the function applied is a multiplication by
 three.
 
 >>> fun.add(lambda x: 3 * x, lambda x: x % 2 == 0, [int])
@@ -47,7 +48,7 @@ that this branch is always executed for floats.
 >>> fun.add(lambda y: 5 * y, None, [float])
 
 Also note that the float branch takes y, while the integer branch takes x.
-Thus, if the user explicitely passes fun(x=1) using a keyword argument, only
+Thus, if the user explicitly passes fun(x=1) using a keyword argument, only
 the integer branch is considered. This can be useful if the user wants
 control over which kind of data they are passing the the function.
 
@@ -71,11 +72,13 @@ Traceback (most recent call last):
 TypeError: There are no functions matching your input parameter signature.
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import inspect
 
-from itertools import izip, chain, repeat
+from itertools import chain, repeat
+
+from sunpy.extern.six.moves import zip
 
 __all__ = ['run_cls', 'matches_types', 'arginize', 'correct_argspec',
            'matches_signature', 'ConditionalDispatch', 'fmt_argspec_types']
@@ -84,7 +87,7 @@ __all__ = ['run_cls', 'matches_types', 'arginize', 'correct_argspec',
 def run_cls(name):
     """ run_cls("foo")(cls, *args, **kwargs) -> cls.foo(*args, **kwargs) """
     fun = lambda cls, *args, **kwargs: getattr(cls, name)(*args, **kwargs)
-    fun.__name__ = name
+    fun.__name__ = str(name)
     fun.run_cls = True
     return fun
 
@@ -94,7 +97,7 @@ def matches_types(fun, types, args, kwargs):
     in the order they are defined in the function. kwargs are automatically
     converted into that order. """
     return all(
-        isinstance(obj, cls) for obj, cls in izip(
+        isinstance(obj, cls) for obj, cls in zip(
             arginize(fun, args, kwargs), types
         )
     )
@@ -108,7 +111,7 @@ def arginize(fun, a, kw):
         raise ValueError
     names = args[len(a):]
     if defaults:
-        defs = dict(izip(args[-len(defaults):], defaults))
+        defs = dict(zip(args[-len(defaults):], defaults))
     else:
         defs = {}
     return list(a) + [kw.get(name, defs.get(name, None)) for name in names]
@@ -247,7 +250,7 @@ class ConditionalDispatch(object):
             for sig, fun in
             # The 1 prevents the cls from incorrectly being shown in the
             # documentation.
-            izip(self.get_signatures("create", -1), fns)
+            zip(self.get_signatures("create", -1), fns)
         )
 
 
@@ -263,7 +266,12 @@ def fmt_argspec_types(fun, types, start=0):
     defs = chain(repeat(NULL, len(args) - len(defaults)), defaults)
 
     spec = []
-    for key, value, type_ in izip(args, defs, types):
+    for key, value, type_ in zip(args, defs, types):
+        # This is a work around for a bug introduced during Python 3 porting.
+        # for some reason the type was being passed in as a length 1 tuple.
+        # This extracts the type under that condition. SM 6/10/15
+        if isinstance(type_, tuple) and len(type_) == 1:
+            type_ = type_[0]
         if value is NULL:
             spec.append("{0}: {1}".format(key, type_.__name__))
         else:
