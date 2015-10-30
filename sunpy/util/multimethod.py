@@ -22,10 +22,12 @@
 Multimethod implementation in pure Python.
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 from warnings import warn
-from itertools import izip
+
+from sunpy.extern.six.moves import zip, map
+from sunpy.extern import six
 
 __all__ = ['TypeWarning', 'MultiMethod']
 
@@ -71,14 +73,14 @@ class MultiMethod(object):
         override : SILENT, WARN or FAIL
             control behaviour when overriding existing definitions.
             If it is set to SILENT, prior definitions are silently
-            overriden, if it is set to WARN a TypeWarning
+            overridden, if it is set to WARN a TypeWarning
             will be issued, and with FAIL a TypeError is raised when
             attempting to override an existing definition.
         """
         overriden = False
         if override:
             for signature, _ in self.methods:
-                if all(issubclass(a, b) for a, b in izip(types, signature)):
+                if all(issubclass(a, b) for a, b in zip(types, signature)):
                     overriden = True
         if overriden and override == FAIL:
             raise TypeError
@@ -111,7 +113,7 @@ class MultiMethod(object):
         # pylint: disable=W0141
         types = tuple(map(type, objs))
 
-        # This code is duplicate for performace reasons.
+        # This code is duplicate for performance reasons.
         cached = self.cache.get(types, None)
         if cached is not None:
             return cached(*args, **kwargs)
@@ -140,11 +142,11 @@ class MultiMethod(object):
             for x in args
         ]
 
-        for k, elem in kwargs.iteritems():
+        for k, elem in six.iteritems(kwargs):
             if isinstance(elem, super):
                 kwargs[k] = elem.__self__
 
-        # This code is duplicate for performace reasons.
+        # This code is duplicate for performance reasons.
         cached = self.cache.get(types, None)
         if cached is not None:
             return cached(*nargs, **kwargs)

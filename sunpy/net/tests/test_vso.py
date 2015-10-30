@@ -122,8 +122,8 @@ def test_wave_inputQuantity():
     assert excinfo.value.message == wrong_type_mesage
 
 def test_wave_toangstrom():
-    # TODO: this test shoul test that inputs are in any of spectral units
-    # more than just converted to Angstoms.
+    # TODO: this test should test that inputs are in any of spectral units
+    # more than just converted to Angstroms.
     frequency = [(1, 1 * u.Hz),
                  (1e3, 1 * u.kHz),
                  (1e6, 1 * u.MHz),
@@ -207,5 +207,4 @@ def test_str():
 
 def test_repr():
     qr = QueryResponse([])
-    assert repr(qr) in ('<Table masked=False length=0>\nStart Time End Time  Source Instrument   Type \n float64   float64  float64  float64   float64\n---------- -------- ------- ---------- -------', # astropy >1.0
-                        "<Table rows=0 names=('Start Time','End Time','Source','Instrument','Type')>\narray([], \n      dtype=[('Start Time', '<f8'), ('End Time', '<f8'), ('Source', '<f8'), ('Instrument', '<f8'), ('Type', '<f8')])") # astropy 0.4.x
+    assert "Start Time End Time  Source Instrument   Type" in repr(qr)

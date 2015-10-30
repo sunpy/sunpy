@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import platform
 import datetime
@@ -14,7 +14,7 @@ def get_sys_dict():
 
     Returns
     -------
-    sys_prop: dict
+    sys_prop : `dict`
         A dictionary containing the programs and versions installed on this
         machine
 
@@ -22,7 +22,7 @@ def get_sys_dict():
 
     try:
         from sunpy.version import version as sunpy_version
-        from sunpy.version import git_description as sunpy_git_description
+        from sunpy.version import githash as sunpy_git_description
     except ImportError:
         sunpy_version = 'Missing version.py; re-run setup.py'
         sunpy_git_description = 'N/A'
@@ -94,7 +94,7 @@ def get_sys_dict():
 
 def system_info():
     """
-    Takes dictionary from sys_info() and prints the contents in an attractive fashion
+    Takes dictionary from sys_info() and prints the contents in an attractive fashion.
 
     """
     sys_prop = get_sys_dict()
@@ -125,8 +125,7 @@ def system_info():
     else:
         print("Unknown OS ({0})".format(sys_prop['Processor']))
 
-
-    print "\n"
+    print("\n")
 # required libraries
     print("###########")
     print(" Required Libraries ")
@@ -136,7 +135,7 @@ def system_info():
               'matplotlib', 'Astropy', 'Pandas']:
         print('{0}: {1}'.format(sys_info, sys_prop[sys_info]))
 
-    print "\n"
+    print("\n")
 
 # recommended
     print("###########")

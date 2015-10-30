@@ -5,8 +5,11 @@ Created on Sat Jun  7 19:36:08 2014
 @author: Stuart Mumford
 
 This file is designed to be imported and ran only via setup.py, hence it's
-dependancy on astropy_helpers which will be availible in that context.
+dependency on astropy_helpers which will be available in that context.
 """
+from __future__ import absolute_import, division, print_function
+
+import os
 
 from astropy_helpers.test_helpers import AstropyTest
 from astropy_helpers.compat import _fix_user_options
@@ -26,10 +29,10 @@ class SunPyTest(AstropyTest):
         # plugins to enable
         ('plugins=', 'p',
          'Plugins to enable when running pytest.'),
-        # Run only offline tests?
-        ('offline-only', None,
-         'Only run test that do not require a internet connection.'),
-        # Run only offline tests?
+        # Run online tests?
+        ('online', None,
+         'Also run tests that do require a internet connection.'),
+        # Run only online tests?
         ('online-only', None,
          'Only run test that do require a internet connection.'),
         # Calculate test coverage
@@ -57,11 +60,11 @@ class SunPyTest(AstropyTest):
         self.verbose_results = False
         self.plugins = None
         self.args = None
+        self.online = False
         self.online_only = False
-        self.offline_only = False
         self.coverage = False
         self.cov_report = 'term' if self.coverage else None
-        self.docs_path = None
+        self.docs_path = os.path.abspath('doc')
         self.parallel = 0
 
     def _validate_required_deps(self):
@@ -84,7 +87,7 @@ class SunPyTest(AstropyTest):
         cmd_pre = ''  # Commands to run before the test function
         cmd_post = ''  # Commands to run after the test function
 
-        online = not self.offline_only
+        online = self.online
         offline = not self.online_only
 
         cmd = ('{cmd_pre}{0}; import {1.package_name}, sys; result = ('

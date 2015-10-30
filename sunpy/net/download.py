@@ -16,7 +16,7 @@ from functools import partial
 from contextlib import closing
 from collections import defaultdict, deque
 
-import sunpy as spy
+import sunpy
 
 def default_name(path, sock, url):
     name = sock.headers.get('Content-Disposition', url.rsplit('/', 1)[-1])
@@ -58,6 +58,7 @@ class Downloader(object):
                         else:
                             fd.write(rec)
         except Exception, e:
+            # TODO: Fix the silent failing
             if errback is not None:
                 with self.mutex:
                     self._close(errback, [e], server)
@@ -87,7 +88,7 @@ class Downloader(object):
         return re.search('(\w+://)?([\w\.]+)', url).group(2)
 
     def _default_callback(self, *args):
-        """Default callback to execute on a successfull download"""
+        """Default callback to execute on a successful download"""
         pass
 
     def _default_error_callback(self, e):
@@ -129,7 +130,7 @@ class Downloader(object):
         server = self._get_server(url)
 
         # Create function to compute the filepath to download to if not set
-        default_dir = spy.config.get("downloads", "download_dir")
+        default_dir = sunpy.config.get("downloads", "download_dir")
 
         if path is None:
             path = partial(default_name, default_dir)

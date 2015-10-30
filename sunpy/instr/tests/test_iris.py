@@ -14,7 +14,7 @@ def test_SJI_to_cube():
     iris_cube = iris.SJI_to_cube(test_data, start=0, stop=None, hdu=0)
 
     assert isinstance(iris_cube, sunpy.map.MapCube)
-    assert isinstance(iris_cube.maps[0], sunpy.map.sources.IRISMap)
+    assert isinstance(iris_cube.maps[0], sunpy.map.sources.SJIMap)
     assert len(iris_cube.maps) == 2
     assert iris_cube.maps[0].meta['DATE-OBS'] != iris_cube.maps[1].meta['DATE-OBS']
 
@@ -24,7 +24,7 @@ def test_iris_rot():
     irismap = iris_cube.maps[0]
     irismap_rot = irismap.rotate()
 
-    assert isinstance(irismap_rot, sunpy.map.sources.IRISMap)
+    assert isinstance(irismap_rot, sunpy.map.sources.SJIMap)
 
     np.testing.assert_allclose(irismap_rot.meta['pc1_1'], 1)
     np.testing.assert_allclose(irismap_rot.meta['pc1_2'], 0, atol=1e-7)

@@ -55,7 +55,7 @@ class HEKClient(object):
         self.url = url
 
     def _download(self, data):
-        """ Download all data, even if pagiated. """
+        """ Download all data, even if paginated. """
         page = 1
         results = []
 

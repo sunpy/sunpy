@@ -1,12 +1,13 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 from sunpy.image.transform import affine_transform
 import numpy as np
 from skimage import transform as tf
 import skimage.data as images
 import pytest
+from sunpy.extern.six.moves import range, zip
 
-# Define test image first so it's accessable to all functions.
+# Define test image first so it's accessible to all functions.
 original = images.camera().astype('float')
 
 # Tolerance for tests
@@ -28,7 +29,7 @@ def compare_results(expect, result, allclose=True):
     res = result[1:-1, 1:-1]
     t1 = abs(exp.mean() - res.mean()) <= rtol*exp.mean()
 
-    #Don't do the allclose test for scipy as the bicubic algorthm has edge effects
+    #Don't do the allclose test for scipy as the bicubic algorithm has edge effects
     if allclose:
         t2 = np.allclose(exp, res, rtol=rtol)  #TODO: Develop a better way of testing this
     else:
@@ -74,9 +75,9 @@ def test_scipy_rotation(angle, k):
     derot = affine_transform(rot, rmatrix=derot_matrix, use_scipy=True)
     assert compare_results(original, derot, allclose=False)
 
-dx_values, dy_values = range(-100, 101, 100)*3, range(-100, 101, 100)*3
+dx_values, dy_values = list(range(-100, 101, 100))*3, list(range(-100, 101, 100))*3
 dy_values.sort()
-@pytest.mark.parametrize("dx, dy", zip(dx_values, dy_values))
+@pytest.mark.parametrize("dx, dy", list(zip(dx_values, dy_values)))
 def test_shift(dx, dy):
     # Rotation center for all translation tests.
     image_center = np.array(original.shape)/2.0 - 0.5

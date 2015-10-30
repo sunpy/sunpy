@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """SunPy sample data files"""
+from __future__ import absolute_import
 
 import sys
-from _sample import sample_files as _sample_files
+from ._sample import sample_files as _sample_files
 import os.path
 
 from sunpy import config as _config
@@ -14,4 +15,7 @@ for _key in _sample_files:
     else:
         raise ImportError("Sample data file(s) missing. Use sunpy.data.download_sample_data() to get them.")
 
-__all__ = _sample_files.keys()
+file_dict = _sample_files
+file_list = list(_sample_files.values())
+
+__all__ = list(_sample_files.keys()) + ['file_dict', 'file_list']

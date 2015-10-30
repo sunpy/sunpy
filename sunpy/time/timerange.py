@@ -1,12 +1,14 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 from datetime import timedelta
 from datetime import datetime
-from astropy.units import Quantity
-from astropy.units import Unit
+
+import astropy.units as u
 
 from sunpy.time import parse_time
 from sunpy import config
+from sunpy.extern.six.moves import range
+
 TIME_FORMAT = config.get('general', 'time_format')
 
 __all__ = ['TimeRange']
@@ -18,7 +20,7 @@ class TimeRange(object):
 
     .. note::
 
-       Regardless of how a TimeRange is constructed it will always provide a 
+       Regardless of how a TimeRange is constructed it will always provide a
        positive time range where the start time is before the end time.
 
     Parameters
@@ -38,8 +40,8 @@ class TimeRange(object):
     >>> time_range = TimeRange('2010/03/04 00:10', '2010/03/04 00:20')
     >>> time_range = TimeRange(('2010/03/04 00:10', '2010/03/04 00:20'))
     >>> import astropy.units as u
-    >>> time_range = TimeRange('2010/03/04 00:10', 400 * u('s'))
-    >>> time_range = TimeRange('2010/03/04 00:10', 400 * u('day'))
+    >>> time_range = TimeRange('2010/03/04 00:10', 400 * u.s)
+    >>> time_range = TimeRange('2010/03/04 00:10', 400 * u.day)
     """
     def __init__(self, a, b=None):
         """Creates a new TimeRange instance"""
@@ -73,7 +75,7 @@ class TimeRange(object):
                 self._t1 = y
                 self._t2 = x
 
-        if isinstance(y, Quantity):
+        if isinstance(y, u.Quantity):
             y = timedelta(seconds=y.to('s').value)
 
         # Timedelta
@@ -127,7 +129,7 @@ class TimeRange(object):
         -------
         value : `datetime.datetime`
         """
-        return self.start + self.dt / 2
+        return self.start + self.dt // 2
 
     @property
     def hours(self):
@@ -182,7 +184,7 @@ class TimeRange(object):
         -------
         value : `astropy.units.Quantity`
         """
-        result = self.dt.microseconds * Unit('us') + self.dt.seconds * Unit('s') + self.dt.days * Unit('day')
+        result = self.dt.microseconds * u.Unit('us') + self.dt.seconds * u.Unit('s') + self.dt.days * u.Unit('day')
         return result
 
     def __repr__(self):
@@ -228,7 +230,7 @@ class TimeRange(object):
         previous_time = self.start
         next_time = None
         for _ in range(n):
-            next_time = previous_time + self.dt / n
+            next_time = previous_time + self.dt // n
             next_range = TimeRange(previous_time, next_time)
             subsections.append(next_range)
             previous_time = next_time
@@ -249,13 +251,37 @@ class TimeRange(object):
         Returns
         -------
         time ranges : list
-            A list of TimeRange objects, that are window long and seperated by
+            A list of TimeRange objects, that are window long and separated by
             cadence.
 
         Examples
         --------
         >>> import astropy.units as u
-        >>> TimeRange.window(60*60*u('s'), window=12*u('s'))
+        >>> from sunpy.time import TimeRange
+        >>> time_range = TimeRange('2010/03/04 00:10', '2010/03/04 01:20')
+        >>> time_range.window(60*60*u.s, window=12*u.s)   # doctest: +NORMALIZE_WHITESPACE
+        [    Start: 2010-03-04 00:10:00
+            End:   2010-03-04 00:10:12
+            Center:2010-03-04 00:10:06
+            Duration:0.000138888888889 days or
+                   0.00333333333333 hours or
+                   0.2 minutes or
+                   12.0 seconds
+         ,    Start: 2010-03-04 01:10:00
+            End:   2010-03-04 01:10:12
+            Center:2010-03-04 01:10:06
+            Duration:0.000138888888889 days or
+                   0.00333333333333 hours or
+                   0.2 minutes or
+                   12.0 seconds
+         ,    Start: 2010-03-04 02:10:00
+            End:   2010-03-04 02:10:12
+            Center:2010-03-04 02:10:06
+            Duration:0.000138888888889 days or
+                   0.00333333333333 hours or
+                   0.2 minutes or
+                   12.0 seconds
+          ]
         """
         if not isinstance(window, timedelta):
             window = timedelta(seconds=window.to('s').value)
@@ -318,8 +344,14 @@ class TimeRange(object):
 
         Examples
         --------
+        >>> from sunpy.time import TimeRange
+        >>> time1 = '2014/5/5 12:11'
+        >>> time2 = '2012/5/5 12:11'
         >>> time_range = TimeRange('2014/05/04 13:54', '2018/02/03 12:12')
-        >>> time in time_range
+        >>> time1 in time_range
+        True
+        >>> time2 in time_range
+        False
         """
         this_time = parse_time(time)
         return this_time >= self.start and this_time <= self.end

@@ -17,11 +17,18 @@ else:
     import __builtin__ as builtins
 builtins._ASTROPY_SETUP_ = True
 
+# -- Read the Docs Setup  -----------------------------------------------------
+
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+
+if on_rtd:
+    os.environ['HOME'] = '/home/docs/'
+    os.environ['SUNPY_CONFIGDIR'] = '/home/docs/'
+
 from astropy_helpers.setup_helpers import (
     register_commands, adjust_compiler, get_debug_option, get_package_info)
 from astropy_helpers.git_helpers import get_git_devstr
 from astropy_helpers.version_helpers import generate_version_py
-from sunpy.tests.setup_command import SunPyTest
 
 # Get some values from the setup.cfg
 from distutils import config
@@ -43,7 +50,7 @@ LONG_DESCRIPTION = "SunPy is a Python library for solar physics data analysis."
 builtins._ASTROPY_PACKAGE_NAME_ = PACKAGENAME
 
 # VERSION should be PEP386 compatible (http://www.python.org/dev/peps/pep-0386)
-VERSION = '0.6.dev'
+VERSION = '0.7.dev'
 
 # Indicates if this version is a release version
 RELEASE = 'dev' not in VERSION
@@ -56,9 +63,14 @@ if not RELEASE:
 # modify distutils' behavior.
 cmdclassd = register_commands(PACKAGENAME, VERSION, RELEASE)
 
-# Overwrite the Astropy Testing framework
-cmdclassd['test'] = type('SunPyTest', (SunPyTest,),
-                         {'package_name': 'sunpy'})
+try:
+    from sunpy.tests.setup_command import SunPyTest
+    # Overwrite the Astropy Testing framework
+    cmdclassd['test'] = type('SunPyTest', (SunPyTest,),
+                            {'package_name': 'sunpy'})
+except Exception:
+    # Catch everything, if it doesn't work, we still want SunPy to install.
+    pass
 
 # Adjust the compiler in case the default on this platform is to use a
 # broken one.
@@ -98,7 +110,7 @@ extras_require = {'database': ["sqlalchemy"],
                   'jpeg2000': ["glymur"],
                   'net': ["suds", "beautifulsoup4", "requests"]}
 extras_require['all'] = extras_require['database'] + extras_require['image'] + \
-                        extras_require['net']
+                        extras_require['net'] + ["wcsaxes>=0.6"]
 
 setup(name=PACKAGENAME,
       version=VERSION,
