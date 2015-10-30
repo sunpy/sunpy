@@ -86,8 +86,8 @@ class RHESSISummaryLightCurve(LightCurve):
         axes.set_yscale("log")
         axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
 
-        axes.set_title('RHESSI Observing Summary Count Rates, Corrected')
-        axes.set_ylabel('Corrected Count Rates s$^{-1}$ detector$^{-1}$')
+        axes.set_title('RHESSI Observing Summary Count Rates')
+        axes.set_ylabel('Count Rate s$^{-1}$ detector$^{-1}$')
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(False, 'major')
