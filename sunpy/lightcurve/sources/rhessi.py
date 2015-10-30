@@ -25,6 +25,7 @@ class RHESSISummaryLightCurve(LightCurve):
     fidelity solar images in X rays (down to 3 keV) to gamma rays (1 MeV).
 
     RHESSI provides summary lightcurves in the following passbands
+
     * 3 - 6 keV
     * 6 - 12 keV
     * 12 - 25 keV
