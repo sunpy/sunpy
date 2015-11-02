@@ -260,8 +260,12 @@ def test_shift_applied(generic_map):
     shifted_map = generic_map.shift(x_shift, y_shift)
     assert shifted_map.reference_coordinate.x - x_shift == original_reference_coord[0]
     assert shifted_map.reference_coordinate.y - y_shift == original_reference_coord[1]
-    assert shifted_map.meta.get('crval1') == ((generic_map.meta.get('crval1') * generic_map.units.x + shifted_map.shifted_value.x).to(shifted_map.units.x)).value
-    assert shifted_map.meta.get('crval2') == ((generic_map.meta.get('crval2') * generic_map.units.y + shifted_map.shifted_value.y).to(shifted_map.units.y)).value
+    crval1 = ((generic_map.meta.get('crval1') * generic_map.units.x + \
+             shifted_map.shifted_value.x).to(shifted_map.units.x)).value
+    assert shifted_map.meta.get('crval1') == crval1
+    crval2 = ((generic_map.meta.get('crval2') * generic_map.units.y + \
+             shifted_map.shifted_value.y).to(shifted_map.units.y)).value
+    assert shifted_map.meta.get('crval2') == crval2
 
 def test_set_shift(generic_map):
     """Test that previously applied shift is stored in the shifted_value property"""
@@ -278,8 +282,8 @@ def test_shift_history(generic_map):
     y_shift1 = 13 * u.arcsec
     shifted_map1 = generic_map.shift(x_shift1, y_shift1)
 
-    x_shift2 = 2 * u.arcsec
-    y_shift2 = 20 * u.arcsec
+    x_shift2 = -28.5 * u.arcsec
+    y_shift2 = 120 * u.arcsec
     final_shifted_map = shifted_map1.shift(x_shift2, y_shift2)
 
     resultant_shift = final_shifted_map.shifted_value
