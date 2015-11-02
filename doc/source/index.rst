@@ -1,8 +1,10 @@
 SunPy Documentation
 ===================
 
-Welcome to the SunPy documentation. SunPy is a community-developed, 
+Welcome to the SunPy documentation. SunPy is a community-developed,
 free and open-source solar data analysis environment for Python.
+You can find the official SunPy website at
+`sunpy.org <http://hesperia.gsfc.nasa.gov/rhessi3/index.html>`_.
 
 .. toctree::
   :maxdepth: 2
@@ -12,6 +14,3 @@ free and open-source solar data analysis environment for Python.
   dev
   bugs
   ssw
- 
-.. warning::
-    Having issues with links on this page? Make sure there is a trailing slash on the URL *e.g.* `http://docs.sunpy.org/en/latest/`
