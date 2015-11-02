@@ -293,7 +293,7 @@ def uncompress_countrate(compressed_countrate):
     ll = np.arange(0, 16, 1)
     lkup = np.zeros(256, dtype='int')
     sum = 0
-    for i in np.arange(0, 16):
+    for i in range(0, 16):
         lkup[16 * i:16 * (i + 1)] = ll * 2 ** i + sum
         if i < 15:
             sum = lkup[16 * (i + 1) - 1] + 2 ** i
