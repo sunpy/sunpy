@@ -150,6 +150,7 @@ class GenericMap(NDData):
         # Validate header
         # TODO: This should be a function of the header, not of the map
         self._validate()
+        self._shift = Pair(0 * u.arcsec, 0 * u.arcsec)
 
         if self.dtype == np.uint8:
             norm = None
@@ -353,6 +354,7 @@ scale:\t\t {scale}
     @property
     def xrange(self):
         """Return the X range of the image from edge to edge."""
+        #TODO: This should be reading from the WCS object
         xmin = self.center.x - self.dimensions[0] / 2. * self.scale.x
         xmax = self.center.x + self.dimensions[0] / 2. * self.scale.x
         return u.Quantity([xmin, xmax])
@@ -360,20 +362,59 @@ scale:\t\t {scale}
     @property
     def yrange(self):
         """Return the Y range of the image from edge to edge."""
+        #TODO: This should be reading from the WCS object
         ymin = self.center.y - self.dimensions[1] / 2. * self.scale.y
         ymax = self.center.y + self.dimensions[1] / 2. * self.scale.y
         return u.Quantity([ymin, ymax])
 
     @property
     def center(self):
-        """Returns the offset between the center of the Sun and the center of
-        the map."""
+        """The offset between the center of the Sun and the center of the map."""
         return Pair(wcs.get_center(self.dimensions[0], self.scale.x,
                                    self.reference_pixel.x,
                                    self.reference_coordinate.x),
                     wcs.get_center(self.dimensions[1], self.scale.y,
                                    self.reference_pixel.y,
                                    self.reference_coordinate.y))
+
+    @property
+    def shifted_value(self):
+        """The total shift applied to the reference coordinate by past applications of
+        `~sunpy.map.GenericMap.shift`."""
+        return self._shift
+
+    @u.quantity_input(x=u.deg, y=u.deg)
+    def shift(self, x, y):
+        """Returns a map shifted by a specified amount to, for example, correct for a bad
+        map location. These values are applied directly to the `~sunpy.map.GenericMap.reference_coordinate`.
+        To check how much shift has already been applied see `~sunpy.map.GenericMap.shifted_value`
+
+        Parameters
+        ----------
+
+        x : `~astropy.units.Quantity`
+            The shift to apply to the X coordinate.
+
+        y : `~astropy.units.Quantity`
+            The shift to apply to the Y coordinate
+
+        Returns
+        -------
+        out : `~sunpy.map.GenericMap` or subclass
+            A new shifted Map.
+        """
+        new_map = deepcopy(self)
+        new_map._shift = Pair(self.shifted_value.x + x, self.shifted_value.y + y)
+
+        new_meta = self.meta.copy()
+
+        # Update crvals
+        new_meta['crval1'] = ((self.meta['crval1'] * self.units.x + x).to(self.units.x)).value
+        new_meta['crval2'] = ((self.meta['crval2'] * self.units.x + y).to(self.units.y)).value
+
+        new_map.meta = new_meta
+
+        return new_map
 
     @property
     def rsun_meters(self):
@@ -433,26 +474,27 @@ scale:\t\t {scale}
 
     @property
     def reference_coordinate(self):
-        """Reference point WCS axes in data units (crval1/2)"""
+        """Reference point WCS axes in data units (i.e. crval1, crval2). This value
+        includes a shift if one is set."""
         return Pair(self.meta.get('crval1', 0.) * self.units.x,
                     self.meta.get('crval2', 0.) * self.units.y)
 
     @property
     def reference_pixel(self):
-        """Reference point axes in pixels (crpix1/2)"""
+        """Reference point axes in pixels (i.e. crpix1, crpix2)"""
         return Pair(self.meta.get('crpix1', (self.meta.get('naxis1') + 1) / 2.) * u.pixel,
                     self.meta.get('crpix2', (self.meta.get('naxis2') + 1) / 2.) * u.pixel)
 
     @property
     def scale(self):
-        """Image scale along the x and y axes in units/pixel (cdelt1/2)"""
+        """Image scale along the x and y axes in units/pixel (i.e. cdelt1, cdelt2)"""
         #TODO: Fix this if only CDi_j matrix is provided
         return Pair(self.meta.get('cdelt1', 1.) * self.units.x / u.pixel,
                     self.meta.get('cdelt2', 1.) * self.units.y / u.pixel)
 
     @property
     def units(self):
-        """Image coordinate units along the x and y axes (cunit1/2)."""
+        """Image coordinate units along the x and y axes (i.e. cunit1, cunit2)."""
         return Pair(u.Unit(self.meta.get('cunit1', 'arcsec')),
                     u.Unit(self.meta.get('cunit2', 'arcsec')))
 
