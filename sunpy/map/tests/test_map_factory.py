@@ -6,7 +6,6 @@ Created on Fri Jun 21 15:05:09 2013
 """
 import os
 import glob
-import sys
 import tempfile
 
 import numpy as np
@@ -26,6 +25,10 @@ except ImportError:
 filepath = sunpy.data.test.rootdir
 a_list_of_many = glob.glob(os.path.join(filepath, "EIT", "*"))
 a_fname = a_list_of_many[0]
+
+AIA_171_IMAGE = os.path.join(filepath, 'aia_171_level1.fits')
+RHESSI_IMAGE = os.path.join(filepath, 'hsi_image_20101016_191218.fits')
+
 #==============================================================================
 # Map Factory Tests
 #==============================================================================
@@ -37,7 +40,7 @@ class TestMap(object):
 
     def test_composite(self):
         #Test making a CompositeMap
-        comp = sunpy.map.Map(sunpy.AIA_171_IMAGE, sunpy.RHESSI_IMAGE,
+        comp = sunpy.map.Map(AIA_171_IMAGE, RHESSI_IMAGE,
                          composite=True)
         assert isinstance(comp, sunpy.map.CompositeMap)
 
@@ -86,7 +89,7 @@ class TestMap(object):
     @pytest.mark.online
     def test_url_pattern(self):
         # A URL
-        amap = sunpy.map.Map("https://raw.github.com/sunpy/sunpy/master/sunpy/data/sample/AIA20110319_105400_0171.fits")
+        amap = sunpy.map.Map("http://data.sunpy.org/sample-data/AIA20110319_105400_0171.fits")
         assert isinstance(amap, sunpy.map.GenericMap)
 
     def test_save(self):
@@ -102,7 +105,7 @@ class TestMap(object):
 #==============================================================================
     def test_sdo(self):
         #Test an AIAMap
-        aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+        aia = sunpy.map.Map(AIA_171_IMAGE)
         assert isinstance(aia,sunpy.map.sources.AIAMap)
         #Test a HMIMap
 
@@ -130,7 +133,7 @@ class TestMap(object):
 
     def test_rhessi(self):
         #Test RHESSIMap
-        rhessi = sunpy.map.Map(sunpy.RHESSI_IMAGE)
+        rhessi = sunpy.map.Map(RHESSI_IMAGE)
         assert isinstance(rhessi,sunpy.map.sources.RHESSIMap)
 
     def test_sot(self):

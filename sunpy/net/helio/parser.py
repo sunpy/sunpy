@@ -11,7 +11,6 @@ facilitate the interfacing between further modules and HELIO.
 """
 from __future__ import absolute_import
 from urllib2 import urlopen, URLError
-#import sunpy.util.etree as EL
 import xml.etree.ElementTree as EL
 from sunpy.net.helio import registry_links as RL
 from bs4 import BeautifulSoup
@@ -54,7 +53,7 @@ def webservice_parser(service='HEC'):
     'http://festung1.oats.inaf.it:8080/helio-hec/HelioLongQueryService',
     'http://hec.helio-vo.eu/helio_hec/HelioLongQueryService']
     """
-    link = RL.LINK + service.lower()
+    link = RL.LINK + '/' + service.lower()
     xml = link_test(link)
     if xml is None:
         return xml
@@ -182,7 +181,7 @@ def link_test(link):
     None
     """
     try:
-        with closing(urlopen(link)) as fd:
+        with closing(urlopen(link, timeout=LINK_TIMEOUT)) as fd:
             return fd.read()
     except (ValueError, URLError):
         return None

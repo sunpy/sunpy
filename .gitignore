@@ -16,7 +16,7 @@ build
 dist
 sunpy.egg-info
 paver-minilib.zip
-doc/source/_build/*
+doc/build/*
 doc/source/api
 doc/html
 docs
@@ -25,6 +25,13 @@ docs
 htmlcov
 result.xml
 sunpy/version.py
+sunpy/_compiler.c
+sunpy/cython_version.py
+sunpy/data/sample/*.fits
+sunpy/data/sample/*.csv
+sunpy/data/sample/*.fit
+
+
 ### https://raw.github.com/github/gitignore/master/Global/OSX.gitignore
 
 .DS_Store

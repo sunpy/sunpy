@@ -1,0 +1,6 @@
+{
+    "sunpy.map.tests.test_mapbase.test_plot_aia171": "651ea7e735537be5e4c50b1ceb46f4040411e074dd718951bba660f0c735cc30",
+    "sunpy.map.tests.test_mapbase.test_plot_aia171_nowcsaxes": "03845606cc7a61796bc333e8955067d40d40ee642b68ceda80da711aa85e7602",
+    "sunpy.map.tests.test_mapbase.test_plot_masked_aia171": "667cee5dab99cb53ff2ecf98f6eb8aa9addace0504268007696b0a5caf5732e7",
+    "sunpy.map.tests.test_mapbase.test_plot_masked_aia171_nowcsaxes": "53dc4f9160a8862932c9c4dafd8aadb5c193db45886abc1b84c2efc98729e7d8"
+}

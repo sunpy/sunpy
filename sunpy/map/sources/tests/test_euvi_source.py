@@ -6,8 +6,6 @@ This particular test file pertains to EUVIMap.
 import os
 import glob
 
-import pytest
-
 from sunpy.map.sources.stereo import EUVIMap
 from sunpy.map import Map
 import sunpy.data.test
@@ -29,8 +27,8 @@ def test_is_datasource_for():
 
 def test_measurement():
     """Tests the measurement property of the EUVIMap object."""
-    assert euvi.measurement == 171
+    assert euvi.measurement.value == 171
 
 def test_observatory():
     """Tests the observatory property of the EUVIMap object."""
-    assert euvi.observatory == "STEREO_A"
+    assert euvi.observatory == "STEREO A"

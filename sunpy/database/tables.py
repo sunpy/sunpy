@@ -9,7 +9,6 @@ from time import strptime, mktime
 from datetime import datetime
 import fnmatch
 import os
-from itertools import imap
 
 from astropy.units import Unit, nm, equivalencies
 from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean,\
@@ -20,6 +19,12 @@ from sqlalchemy.ext.declarative import declarative_base
 from sunpy.time import parse_time
 from sunpy.io import fits, file_tools as sunpy_filetools
 from sunpy.util import print_table
+from sunpy.extern.six.moves import map as imap
+
+from sunpy import config
+
+
+TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = [
     'WaveunitNotFoundError', 'WaveunitNotConvertibleError', 'JSONDump',
@@ -45,7 +50,8 @@ class WaveunitNotFoundError(Exception):
         self.obj = obj
 
     def __str__(self):  # pragma: no cover
-        return 'the wavelength unit cannot be found in {0}'.format(self.obj)
+        return 'the wavelength unit cannot be found in {0}'.format(self.obj) + \
+               ' and default_waveunit not specified when opening the database'
 
 
 class WaveunitNotConvertibleError(Exception):
@@ -255,11 +261,12 @@ class DatabaseEntry(Base):
         Examples
         --------
         >>> from sunpy.net import vso
+        >>> from sunpy.database.tables import DatabaseEntry
         >>> client = vso.VSOClient()
         >>> qr = client.query(
         ...     vso.attrs.Time('2001/1/1', '2001/1/2'),
         ...     vso.attrs.Instrument('eit'))
-        >>> entry = DatabaseEntry.from_query_result_block(qr[0])
+        >>> entry = DatabaseEntry._from_query_result_block(qr[0])
         >>> entry.source
         'SOHO'
         >>> entry.provider
@@ -377,7 +384,7 @@ def entries_from_query_result(qr, default_waveunit=None):
     Examples
     --------
     >>> from sunpy.net import vso
-    >>> from sunpy.database import entries_from_query_result
+    >>> from sunpy.database.tables import entries_from_query_result
     >>> client = vso.VSOClient()
     >>> qr = client.query(
     ...     vso.attrs.Time('2001/1/1', '2001/1/2'),
@@ -442,6 +449,10 @@ def entries_from_file(file, default_waveunit=None):
 
     Examples
     --------
+    >>> from sunpy.database.tables import entries_from_file
+    >>> import sunpy.data
+    >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
+    >>> import sunpy.data.sample
     >>> entries = list(entries_from_file(sunpy.data.sample.SWAP_LEVEL1_IMAGE))
     >>> len(entries)
     1
@@ -453,7 +464,7 @@ def entries_from_file(file, default_waveunit=None):
     >>> entry.wavemin, entry.wavemax
     (17.400000000000002, 17.400000000000002)
     >>> len(entry.fits_header_entries)
-    112
+    111
 
     """
     headers = fits.get_header(file)
@@ -540,23 +551,15 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
 
     Examples
     --------
-    >>> from pprint import pprint
     >>> from sunpy.data.test import rootdir as fitsdir
-    >>> entries = list(entries_from_dir(fitsdir))
+    >>> from sunpy.database.tables import entries_from_dir
+    >>> entries = list(entries_from_dir(fitsdir, default_waveunit='angstrom'))
     >>> len(entries)
-    2
+    38
     >>> # and now search `fitsdir` recursive
-    >>> entries = list(entries_from_dir(fitsdir, True))
+    >>> entries = list(entries_from_dir(fitsdir, True, default_waveunit='angstrom'))
     >>> len(entries)
-    15
-    >>> # print the first 5 items of the FITS header of the first found file
-    >>> first_entry, filename = entries[0]
-    >>> pprint(first_entry.fits_header_entries[:5])
-    [<FitsHeaderEntry(id None, key 'SIMPLE', value True)>,
-     <FitsHeaderEntry(id None, key 'BITPIX', value -64)>,
-     <FitsHeaderEntry(id None, key 'NAXIS', value 2)>,
-     <FitsHeaderEntry(id None, key 'NAXIS1', value 128)>,
-     <FitsHeaderEntry(id None, key 'NAXIS2', value 128)>]
+    59
 
     """
     for dirpath, dirnames, filenames in os.walk(fitsdir):
@@ -575,7 +578,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
             break
 
 
-def display_entries(database_entries, columns):
+def display_entries(database_entries, columns, sort=False):
     """Generate a table to display the database entries.
 
     Parameters
@@ -586,6 +589,9 @@ def display_entries(database_entries, columns):
     columns : iterable of str
         The columns that will be displayed in the resulting table. Possible
         values for the strings are all attributes of :class:`DatabaseEntry`.
+
+    sort : bool (optional)
+        If True, sorts the entries before displaying them.
 
     Returns
     -------
@@ -613,7 +619,7 @@ def display_entries(database_entries, columns):
                 if time is None:
                     formatted_time = 'N/A'
                 else:
-                    formatted_time = time.strftime('%Y-%m-%d %H:%M:%S')
+                    formatted_time = time.strftime(TIME_FORMAT)
                 row.append(formatted_time)
             else:
                 row.append(str(getattr(entry, col) or 'N/A'))
@@ -622,4 +628,6 @@ def display_entries(database_entries, columns):
         data.append(row)
     if not data:
         raise TypeError('given iterable is empty')
+    if sort:
+        data.sort()
     return print_table(header + rulers + data)

@@ -1,10 +1,8 @@
+from __future__ import absolute_import, division, print_function
+
 import os.path
 
 testdir = os.path.dirname(os.path.abspath(__file__))
-
-INCLUDE_ONLINE = object()
-EXCLUDE_ONLINE = object()
-ONLY_ONLINE = object()
 
 try:
     import pytest
@@ -12,8 +10,8 @@ except ImportError:
     pytest = None
 
 
-def main(modulename='', cover=False, show_uncovered_lines=False,
-         online=INCLUDE_ONLINE):
+def main(modulename='', coverage=False, cov_report=False,
+         online=False, offline=True, verbose=False, parallel=0, args=None):
     """
     Execute the test suite of the sunpy package. The parameters may be
     used to restrict the number of tests that will be executed or to
@@ -26,21 +24,21 @@ def main(modulename='', cover=False, show_uncovered_lines=False,
         The name of the SunPy submodule which will be tested. The default
         is to test the whole sunpy package, i.e. all submodules.
 
-    cover : bool
+    coverage : bool
         Whether to enable or disable code coverage. The default is False.
 
-    show_uncovered_lines : bool
-        Whether to display the line numbers which have not been covered.
-        The default is False.
+    cov_report: string
+        Specify if a coverage report should be generated and which one.
+        Allowed values: 'html' 'xml' 'annotate' 'term-missing'
 
-    online : {INCLUDE_ONLINE, EXCLUDE_ONLINE, ONLY_ONLINE}
-        A constant from sunpy.tests. EXCLUDE_ONLINE will execute only the
-        tests which do not require a working internet connection.
-        ONLY_ONLINE will only run the tests which need a connection to the
-        internet and INCLUDE_ONLINE, the default, does not restrict the
-        number of tests that will be executed in any way.
+    online : bool
+        Run the tests that require an internet connection.
+
+    offline: bool
+        Run the tests that don't require an internet connection.
 
     """
+    print(modulename)
     if pytest is None:
         raise ImportError("You need to install pytest to run SunPy's tests")
 
@@ -56,25 +54,41 @@ def main(modulename='', cover=False, show_uncovered_lines=False,
         raise ImportError(
             'No module named {0!r} in the sunpy package'.format(modulename))
     assert path is not None
-    args = []
-    if cover:
+
+    all_args = []
+    if coverage:
+        print(path, modulename)
         modulepath = os.path.abspath(
             os.path.join(path, os.path.join(os.pardir, os.pardir, modulename)))
-        args.extend(['--cov', modulepath])
-    if show_uncovered_lines:
-        args.extend(['--cov-report', 'term-missing'])
-    if online is EXCLUDE_ONLINE:
-        args.append('-k-online')
-    elif online is ONLY_ONLINE:
-        args.extend(['-k', 'online'])
-    else:
-        if online is not INCLUDE_ONLINE:
-            allowed_values = ', '.join(
-                'sunpy.tests.' + x for x in [
-                    'INCLUDE_ONLINE', 'EXCLUDE_ONLINE', 'ONLY_ONLINE'])
-            errmsg = (
-                '`online` parameter must have one of the following values: '
-                '{0}'.format(allowed_values))
-            raise ValueError(errmsg)
-    args.append(path)
-    return pytest.main(args)
+        all_args.extend(['--cov', modulepath])
+    if cov_report:
+        all_args.extend(['--cov-report', cov_report])
+    if not online:
+        all_args.append('-k-online')
+    if not offline:
+        all_args.append('-k online')
+    all_args.append(path)
+
+    if args:
+        all_args.append(args)
+
+    if verbose:
+        all_args.append('-v')
+
+    if parallel != 0:
+        try:
+            import xdist
+        except ImportError:
+            raise ImportError(
+                'Parallel testing requires the pytest-xdist plugin '
+                'https://pypi.python.org/pypi/pytest-xdist')
+
+        try:
+            parallel = int(parallel)
+        except ValueError:
+            raise ValueError(
+                "parallel must be an int, got {0}".format(parallel))
+
+        all_args.extend(['-n', str(parallel)])
+
+    return pytest.main(all_args)

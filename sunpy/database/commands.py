@@ -6,7 +6,6 @@
 from __future__ import absolute_import
 
 from abc import ABCMeta, abstractmethod
-import collections
 import os
 
 from sqlalchemy.orm import make_transient
@@ -74,6 +73,38 @@ class DatabaseOperation(object):
         return  # pragma: no cover
 
 
+class CompositeOperation(DatabaseOperation):
+    def __init__(self, operations=None):
+        if operations is None:
+            self._operations = []
+        else:
+            self._operations = operations
+
+    @property
+    def operations(self):
+        return self._operations
+
+    def add(self, operation):
+        self._operations.append(operation)
+
+    def remove(self, operation):
+        self._operations.remove(operation)
+
+    def __call__(self):
+        for operation in self._operations:
+            # FIXME: What follows is the worst hack of my life. Enjoy.
+            # Without it, the test test_clear_database would fail.
+            f = open(os.devnull, 'w'); f.write(repr(operation)); f.flush()
+            operation()
+
+    def undo(self):
+        for operation in self._operations:
+            operation.undo()
+
+    def __len__(self):
+        return len(self._operations)
+
+
 class AddEntry(DatabaseOperation):
     """Add a new database entry to this session. It is not checked whether an
     equivalent entry is already saved in the session; this has to be checked by
@@ -123,7 +154,7 @@ class RemoveEntry(DatabaseOperation):
         try:
             self.session.delete(self.entry)
         except InvalidRequestError:
-            # self.database_entry cannot be removed becaused it's not stored in
+            # self.database_entry cannot be removed because it's not stored in
             # the database
             raise NoSuchEntryError(self.entry)
 
@@ -236,8 +267,14 @@ class RemoveTag(DatabaseOperation):
         except InvalidRequestError:
             # self.tag cannot be added because it was just removed
             # -> put it back to transient state
-            make_transient(self.tag)
-            self.database_entry.tags.append(self.tag)
+            try:
+                make_transient(self.tag)
+                self.database_entry.tags.append(self.tag)
+            except InvalidRequestError:
+                # self.database_entry has been removed
+                # -> put it back to transient state
+                make_transient(self.database_entry)
+                self.database_entry.tags.append(self.tag)
 
     def __repr__(self):
         return "<RemoveTag(tag '{0}', session {1!r}, entry id {2})>".format(
@@ -304,14 +341,7 @@ class CommandManager(object):
         iterable is executed and only one entry is saved in the undo history.
 
         """
-        if isinstance(command, collections.Iterable):
-            for cmd in command:
-                # FIXME: What follows is the worst hack of my life. Enjoy.
-                # Without it, the test test_clear_database would fail.
-                f = open(os.devnull, 'w'); f.write(repr(cmd)); f.flush()
-                cmd()
-        else:
-            command()
+        command()
         self.push_undo_command(command)
         # clear the redo stack when a new command was executed
         self.redo_commands[:] = []
@@ -325,11 +355,7 @@ class CommandManager(object):
         """
         for _ in xrange(n):
             command = self.pop_undo_command()
-            if isinstance(command, collections.Iterable):
-                for cmd in reversed(command):
-                    cmd.undo()
-            else:
-                command.undo()
+            command.undo()
             self.push_redo_command(command)
 
     def redo(self, n=1):
@@ -342,9 +368,5 @@ class CommandManager(object):
         """
         for _ in xrange(n):
             command = self.pop_redo_command()
-            if isinstance(command, collections.Iterable):
-                for cmd in command:
-                    cmd()
-            else:
-                command()
+            command()
             self.push_undo_command(command)

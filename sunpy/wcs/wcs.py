@@ -3,7 +3,7 @@ from __future__ import absolute_import
 import numpy as np
 import sunpy.sun as sun
 
-import astropy.units
+import astropy.units as u
 
 rsun_meters = sun.constants.radius.si.value
 
@@ -99,7 +99,7 @@ def get_center(size, scale, reference_pixel, reference_coordinate):
     --------
 
     """
-    return scale * (size - 1) / 2. + reference_coordinate - (reference_pixel - 1) * scale
+    return scale * (size - 1 * u.pix) / 2. + reference_coordinate - (reference_pixel - 1 * u.pix) * scale
 
 def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
     """Calculate the pixel indices for a given data coordinate.
@@ -165,11 +165,11 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
 
     Examples
     --------
+    >>> import sunpy.wcs
     >>> sunpy.wcs.convert_hpc_hcc(40.0, 32.0, z=True)
     (28876152.176423457, 23100922.071266972, 694524220.8157959)
 
     """
-
     c = np.array([_convert_angle_units(unit=angle_units),
                   _convert_angle_units(unit=angle_units)])
 
@@ -180,7 +180,7 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
 
     if dsun_meters is None:
         dsun_meters = sun.constants.au.si.value
-    elif isinstance(dsun_meters, astropy.units.Quantity):
+    elif isinstance(dsun_meters, u.Quantity):
         dsun_meters = dsun_meters.si.value
 
     q = dsun_meters * cosy * cosx
@@ -191,6 +191,7 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     rx = distance * cosy * sinx
     ry = distance * siny
     rz = dsun_meters - distance * cosy * cosx
+
 
     if np.all(z == True):
         return rx, ry, rz
@@ -221,6 +222,7 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
 
     Examples
     --------
+    >>> import sunpy.wcs
     >>> sunpy.wcs.convert_hcc_hpc(28748691, 22998953)
     (39.823439773829705, 31.858751644835717)
 
@@ -231,7 +233,7 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
 
     if dsun_meters is None:
         dsun_meters = sun.constants.au.si.value
-    elif isinstance(dsun_meters, astropy.units.Quantity):
+    elif isinstance(dsun_meters, u.Quantity):
         dsun_meters = dsun_meters.si.value
 
     zeta = dsun_meters - z
@@ -274,7 +276,7 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
     -------
     out : ndarray (degrees, meters)
         if radius is false, return the data coordinates (lon, lat).  If
-        radius=True, return the data cordinates (lon, lat, r).  The quantities
+        radius=True, return the data coordinates (lon, lat, r).  The quantities
         (lon, lat) are the heliographic coordinates in degrees.  The quantity
         'r' is the heliographic radius in meters.
 
@@ -284,8 +286,9 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
 
     Examples
     --------
+    >>> import sunpy.wcs
     >>> sunpy.wcs.convert_hcc_hg(230000.0,45000000.0,
-    z=695508000.0 + 8000000.0, radius=True)
+    ...                          z=695508000.0 + 8000000.0, radius=True)
     (0.01873188196651189, 3.6599471896203317, 704945784.41465974)
     """
     if z is None:
@@ -338,8 +341,9 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
 
     Examples
     --------
+    >>> import sunpy.wcs
     >>> sunpy.wcs.convert_hg_hcc(0.01873188196651189, 3.6599471896203317,
-    r=704945784.41465974, z=True)
+    ...                          r=704945784.41465974, z=True)
     (230000.0, 45000000.0, 703508000.0)
     """
     lon = np.deg2rad(hglon_deg)
@@ -402,6 +406,7 @@ def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None, a
 
     Examples
     --------
+    >>> import sunpy.wcs
     >>> sunpy.wcs.convert_hg_hpc(34.0, 45.0, b0_deg=-7.064078, l0_deg=0.0)
     (380.05656560308898, 743.78281283290016)
     """
@@ -440,10 +445,10 @@ def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcs
 
     Examples
     --------
-    >>> sunpy.wcs.convert_hg_hpc(382, 748, b0_deg=-7.064078, l0_deg=0.0)
+    >>> import sunpy.wcs
+    >>> sunpy.wcs.convert_hpc_hg(382, 748, b0_deg=-7.064078, l0_deg=0.0)
     (34.504653439914669, 45.443143275518182)
     """
-
     tempx, tempy = convert_hpc_hcc(x, y, dsun_meters=dsun_meters, angle_units=angle_units)
     lon, lat = convert_hcc_hg(tempx, tempy, b0_deg=b0_deg, l0_deg=l0_deg)
     return lon, lat
@@ -451,7 +456,7 @@ def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcs
 def proj_tan(x, y, force=False):
     """Applies the gnomonic (TAN) projection to intermediate relative
     coordinates. This function is not currently implemented!"""
-    # if pixels are within 3 degrees of the Sun then skip the calculatin unless
+    # if pixels are within 3 degrees of the Sun then skip the calculation unless
     # force is True. This applies to all sdo images so this function is just
     # here as a place holder for the future
     # TODO: write proj_tan function
