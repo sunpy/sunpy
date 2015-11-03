@@ -69,7 +69,7 @@ from sunpy import lightcurve
 from sunpy.util.net import check_download_file
 from sunpy import sun
 
-GOES_CONVERSION_DICT = {'X': -4, 'M': -5, 'C': -6, 'B': -7, 'A': -8}
+GOES_CONVERSION_DICT = {-4: 'X', -5: 'M', -6: 'C', -7: 'B', -8: 'A'}
 
 __all__ = ['get_goes_event_list', 'calculate_temperature_em',
            'calculate_radiative_loss_rate', 'calculate_xray_luminosity', 'flux_to_flareclass',
