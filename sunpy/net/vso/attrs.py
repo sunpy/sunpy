@@ -21,9 +21,9 @@ from datetime import datetime
 
 from astropy import units as u
 
-from sunpy.time import TimeRange
+from sunpy.time import TimeRange as _TimeRange
 from sunpy.net.attr import (
-    Attr, ValueAttr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
+    Attr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
 )
 from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time
@@ -62,8 +62,8 @@ class Wave(Attr, _Range):
 
         # VSO just accept inputs as Angstroms, kHz or keV, the following
         # converts to any of these units depending on the spectral inputs
-        # Note: the website asks for GHz, however it seems that using GHz produces
-        # weird responses on VSO.
+        # Note: the website asks for GHz, however it seems that using GHz
+        # produces weird responses on VSO.
         convert = {'m': u.AA, 'Hz': u.kHz, 'eV': u.keV}
         for k in convert.keys():
             if wavemin.decompose().unit == (1 * u.Unit(k)).decompose().unit:
@@ -82,18 +82,36 @@ class Wave(Attr, _Range):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-	return '<Wave({0!r}, {1!r}, {2!r})>'.format(self.min.value,
-                                                self.max.value,
-                                                str(self.unit))
+        return "<Wave({0!r}, {1!r}, '{2!s}')>".format(self.min.value,
+                                                      self.max.value,
+                                                      self.unit)
 
 
 class Time(Attr, _Range):
+    """
+    Specify the time range of the query.
+
+    Parameters
+    ----------
+
+    start : SunPy Time String or `~sunpy.time.TimeRange`.
+        The start time in a format parseable by `~sunpy.time.parse_time` or
+        a `sunpy.time.TimeRange` object.
+
+    end : SunPy Time String
+        The end time of the range.
+
+    near: SunPy Time String
+        Return a singular record closest in time to this value as possible,
+        inside the start and end window. Note: not all providers support this.
+
+    """
     def __init__(self, start, end=None, near=None):
-        if end is None and not isinstance(start, TimeRange):
+        if end is None and not isinstance(start, _TimeRange):
             raise ValueError("Specify start and end or start has to be a TimeRange")
-        if isinstance(start, TimeRange):
-            self.start = start.t1
-            self.end = start.t2
+        if isinstance(start, _TimeRange):
+            self.start = start.start
+            self.end = start.end
         else:
             self.start = parse_time(start)
             self.end = parse_time(end)
@@ -116,8 +134,7 @@ class Time(Attr, _Range):
         return Time(self.start - timedelta, self.start + timedelta)
 
     def __repr__(self):
-        return '<Time(%r, %r, %r)>' % (self.start, self.end, self.near)
-
+        return '<Time({s.start!r}, {s.end!r}, {s.near!r})>'.format(s=self)
 
 class Extent(Attr):
     # pylint: disable=R0913
@@ -153,7 +170,8 @@ class _VSOSimpleAttr(Attr):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return "<%s(%r)>" % (self.__class__.__name__, self.value)
+        return "<{cname!s}({val!r})>".format(
+            cname=self.__class__.__name__, val=self.value)
 
 
 class Provider(_VSOSimpleAttr):
@@ -193,7 +211,19 @@ class Filter(_VSOSimpleAttr):
 
 
 class Sample(_VSOSimpleAttr):
-    pass
+    """
+    Time interval for data sampling.
+
+    Parameters
+    ----------
+
+    value : `astropy.units.Quantity`
+        A sampling rate convertible to seconds.
+    """
+    @u.quantity_input(value=u.s)
+    def __init__(self, value):
+        super(Sample, self).__init__(value)
+        self.value = value.to(u.s).value
 
 
 class Quicklook(_VSOSimpleAttr):
@@ -317,7 +347,7 @@ def _(attr, results):
     attrname = attr.__class__.__name__.lower()
     return set(
         item for item in results
-        # Some servers seem to obmit some fields. No way to filter there.
+        # Some servers seem to omit some fields. No way to filter there.
         if not hasattr(item, attrname) or
         getattr(item, attrname).lower() == attr.value.lower()
     )

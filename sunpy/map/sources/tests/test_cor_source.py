@@ -6,8 +6,6 @@ This particular test file pertains to CORMap.
 import os
 import glob
 
-import pytest
-
 from sunpy.map.sources.stereo import CORMap
 from sunpy.map import Map
 import sunpy.data.test
@@ -33,4 +31,4 @@ def test_measurement():
 
 def test_observatory():
     """Tests the observatory property of the CORMap object."""
-    assert cor.observatory == "STEREO_A"
+    assert cor.observatory == "STEREO A"

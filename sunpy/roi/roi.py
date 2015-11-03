@@ -24,9 +24,9 @@ class roi(object):
     ----------
     start_time : datetime object containing the start time of the ROI
     end_time : datetime object containing the end time of the ROI
-    description: A string descriptor of the ROI event type
-    (e.g. 'attenuator change', 'LAR', 'SAA', 'flare')
-    source: A string descriptor of the ROI source (e.g. 'LYRA', 'RHESSI')
+    description : A string descriptor of the ROI event type
+        (e.g. 'attenuator change', 'LAR', 'SAA', 'flare')
+    source : A string descriptor of the ROI source (e.g. 'LYRA', 'RHESSI')
 
 
     Methods
@@ -56,7 +56,6 @@ class roi(object):
             else:
                 self.start_time = None
                 self.end_time = None
-
         elif type(times) == str:
             self.start_time = parse_time(times)
             self.end_time = parse_time(times)

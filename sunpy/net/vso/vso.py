@@ -23,6 +23,8 @@ from functools import partial
 from collections import defaultdict
 from suds import client, TypeNotFound
 
+from astropy.table import Table
+
 from sunpy import config
 from sunpy.net import download
 from sunpy.net.proxyfix import WellBehavedHttpTransport
@@ -31,8 +33,10 @@ from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
-from sunpy.util import print_table, replacement_filename
+from sunpy.util import replacement_filename, Deprecated
 from sunpy.time import parse_time
+
+TIME_FORMAT = config.get("general", "time_format")
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 DEFAULT_PORT = 'nsoVSOi'
@@ -115,7 +119,7 @@ class Results(object):
     def wait(self, timeout=100, progress=False):
         """ Wait for result to be complete and return it. """
         # Giving wait a timeout somehow circumvents a CPython bug that the
-        # call gets ininterruptible.
+        # call gets uninterruptible.
         if progress:
             with self.lock:
                 self.progress = ProgressBar(self.total, self.total - self.n)
@@ -165,10 +169,11 @@ def iter_errors(response):
 
 
 class QueryResponse(list):
-    def __init__(self, lst, queryresult=None):
+    def __init__(self, lst, queryresult=None, table=None):
         super(QueryResponse, self).__init__(lst)
         self.queryresult = queryresult
         self.errors = []
+        self.table = None
 
     def query(self, *query):
         """ Furtherly reduce the query response by matching it against
@@ -188,10 +193,6 @@ class QueryResponse(list):
         # Warn about -1 values?
         return sum(record.size for record in self if record.size > 0)
 
-    def num_records(self):
-        """ Return number of records. """
-        return len(self)
-
     def time_range(self):
         """ Return total time-range all records span across. """
         return (
@@ -203,27 +204,47 @@ class QueryResponse(list):
                   if record.time.end is not None), TIMEFORMAT)
         )
 
+    @Deprecated("Use `print qr` to view the contents of the response")
     def show(self):
         """Print out human-readable summary of records retrieved"""
+        print(str(self))
 
-        table = [
-          [
-            str(datetime.strptime(record.time.start, TIMEFORMAT))
-              if record.time.start is not None else 'N/A',
-            str(datetime.strptime(record.time.end, TIMEFORMAT))
-              if record.time.end is not None else 'N/A',
-            record.source,
-            record.instrument,
-            record.extent.type
-              if record.extent.type is not None else 'N/A'
-          ] for record in self]
-        table.insert(0, ['----------','--------','------','----------','----'])
-        table.insert(0, ['Start time','End time','Source','Instrument','Type'])
+    def build_table(self):
+        keywords = ['Start Time', 'End Time', 'Source', 'Instrument', 'Type']
+        record_items = {}
+        for key in keywords:
+            record_items[key] = []
 
-        print(print_table(table, colsep = '  ', linesep='\n'))
+        def validate_time(time):
+            if record.time.start is not None:
+                return [datetime.strftime(parse_time(time), TIME_FORMAT)]
+            else:
+                return ['N/A']
+
+        for record in self:
+            record_items['Start Time'].append(validate_time(record.time.start))
+            record_items['End Time'].append(validate_time(record.time.end))
+            record_items['Source'].append(str(record.source))
+            record_items['Instrument'].append(str(record.instrument))
+            record_items['Type'].append(str(record.extent.type)
+                                if record.extent.type is not None else ['N/A'])
+
+        return Table(record_items)[keywords]
 
     def add_error(self, exception):
         self.errors.append(exception)
+
+    def __str__(self):
+        """Print out human-readable summary of records retrieved"""
+        return str(self.build_table())
+
+    def __repr__(self):
+        """Print out human-readable summary of records retrieved"""
+        return repr(self.build_table())
+
+    def _repr_html_(self):
+        return self.build_table()._repr_html_()
+
 
 class DownloadFailed(Exception):
     pass
@@ -292,14 +313,26 @@ class VSOClient(object):
         Query all data from eit or aia between 2010-01-01T00:00 and
         2010-01-01T01:00.
 
+        >>> from datetime import datetime
+        >>> from sunpy.net import vso
+        >>> client = vso.VSOClient()
         >>> client.query(
-        ...    vso.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
-        ...    vso.Instrument('eit') | vso.Instrument('aia')
-        ... )
+        ...    vso.attrs.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
+        ...    vso.attrs.Instrument('eit') | vso.attrs.Instrument('aia'))   # doctest: +NORMALIZE_WHITESPACE
+        <Table masked=False length=5>
+           Start Time [1]       End Time [1]     Source  Instrument   Type
+             string152           string152      string32  string24  string64
+        ------------------- ------------------- -------- ---------- --------
+        2010-01-01 00:00:08 2010-01-01 00:00:20     SOHO        EIT FULLDISK
+        2010-01-01 00:12:08 2010-01-01 00:12:20     SOHO        EIT FULLDISK
+        2010-01-01 00:24:10 2010-01-01 00:24:22     SOHO        EIT FULLDISK
+        2010-01-01 00:36:08 2010-01-01 00:36:20     SOHO        EIT FULLDISK
+        2010-01-01 00:48:09 2010-01-01 00:48:21     SOHO        EIT FULLDISK
 
         Returns
         -------
-        out : :py:class:`QueryResult` (enhanced list) of matched items. Return value of same type as the one of :py:meth:`VSOClient.query`.
+        out : :py:class:`QueryResult` (enhanced list) of matched items. Return
+        value of same type as the one of :py:meth:`VSOClient.query`.
         """
         query = and_(*query)
 
@@ -448,8 +481,11 @@ class VSOClient(object):
         Query all data from eit between 2010-01-01T00:00 and
         2010-01-01T01:00.
 
-        >>> qr = client.query_legacy(
-        ...     datetime(2010, 1, 1), datetime(2010, 1, 1, 1), instrument='eit')
+        >>> from datetime import datetime
+        >>> from sunpy.net import vso
+        >>> client = vso.VSOClient()
+        >>> qr = client.query_legacy(datetime(2010, 1, 1),
+        ...                          datetime(2010, 1, 1, 1), instrument='eit')
 
         Returns
         -------
@@ -498,11 +534,11 @@ class VSOClient(object):
                     try:
                         item = item[elem]
                     except KeyError:
-                        raise ValueError("Unexpected argument %s." % key)
+                        raise ValueError("Unexpected argument {key!s}.".format(key=key))
                 if lst not in item:
-                    raise ValueError("Unexpected argument %s." % key)
+                    raise ValueError("Unexpected argument {key!s}.".format(key=key))
                 if item[lst]:
-                    raise ValueError("Got multiple values for %s." % k)
+                    raise ValueError("Got multiple values for {k!s}.".format(k=k))
                 item[lst] = v
         try:
             return QueryResponse.create(self.api.service.Query(queryreq))
@@ -517,7 +553,8 @@ class VSOClient(object):
             time_near=datetime.utcnow()
         )
 
-    def get(self, query_response, path=None, methods=('URL-FILE',), downloader=None, site=None):
+    def get(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),
+            downloader=None, site=None):
         """
         Download data specified in the query_response.
 
@@ -525,17 +562,26 @@ class VSOClient(object):
         ----------
         query_response : sunpy.net.vso.QueryResponse
             QueryResponse containing the items to be downloaded.
+
         path : str
             Specify where the data is to be downloaded. Can refer to arbitrary
             fields of the QueryResponseItem (instrument, source, time, ...) via
             string formatting, moreover the file-name of the file downloaded can
-            be refered to as file, e.g.
+            be referred to as file, e.g.
             "{source}/{instrument}/{time.start}/{file}".
+
         methods : {list of str}
-            Methods acceptable to user.
+            Download methods, defaults to URL-FILE_Rice then URL-FILE.
+            Methods are a concatenation of one PREFIX followed by any number of
+            SUFFIXES i.e. `PREFIX-SUFFIX_SUFFIX2_SUFFIX3`.
+            The full list of `PREFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_PREFIX>`_
+            and `SUFFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_SUFFIX>`_
+            are listed on the VSO site.
+
         downloader : sunpy.net.downloader.Downloader
             Downloader used to download the data.
-        site: str
+
+        site : str
             There are a number of caching mirrors for SDO and other
             instruments, some available ones are listed below.
 
@@ -573,6 +619,8 @@ class VSOClient(object):
         if path is None:
             path = os.path.join(config.get('downloads','download_dir'),
                                 '{file}')
+        path = os.path.expanduser(path)
+
         fileids = VSOClient.by_fileid(query_response)
         if not fileids:
             res.poke()
@@ -759,9 +807,26 @@ class VSOClient(object):
 class InteractiveVSOClient(VSOClient):
     """ Client for use in the REPL. Prompts user for data if required. """
     def multiple_choices(self, choices, response):
+        """
+        not documented yet
+
+        Parameters
+        ----------
+
+            choices : not documented yet
+
+            response : not documented yet
+
+        Returns
+        -------
+
+        .. todo::
+            improve documentation. what does this function do?
+
+        """
         while True:
             for n, elem in enumerate(choices):
-                print "(%d) %s" % (n + 1, elem)
+                print "({num:d}) {choice!s}".format(num=n + 1, choice=elem)
             try:
                 choice = raw_input("Method number: ")
             except KeyboardInterrupt:
@@ -781,6 +846,24 @@ class InteractiveVSOClient(VSOClient):
                     continue
 
     def missing_information(self, info, field):
+        """
+        not documented yet
+
+        Parameters
+        ----------
+        info : not documented yet
+                not documented yet
+        field : not documented yet
+            not documented yet
+
+        Returns
+        -------
+        choice : not documented yet
+
+        .. todo::
+            improve documentation. what does this function do?
+
+        """
         choice = raw_input(field + ': ')
         if not choice:
             raise NoData

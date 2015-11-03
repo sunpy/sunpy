@@ -1,18 +1,23 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 from sunpy.image.transform import affine_transform
 import numpy as np
-import matplotlib.cm as cm
-import matplotlib.pyplot as plt
 from skimage import transform as tf
 import skimage.data as images
 import pytest
+from sunpy.extern.six.moves import range, zip
 
-# Define test image first so it's accessable to all functions.
+# Define test image first so it's accessible to all functions.
 original = images.camera().astype('float')
 
 # Tolerance for tests
 rtol = 1.0e-15
+
+
+@pytest.fixture
+def identity():
+    return np.array([[1, 0], [0, 1]])
+
 
 def compare_results(expect, result, allclose=True):
     """
@@ -24,7 +29,7 @@ def compare_results(expect, result, allclose=True):
     res = result[1:-1, 1:-1]
     t1 = abs(exp.mean() - res.mean()) <= rtol*exp.mean()
 
-    #Don't do the allclose test for scipy as the bicubic algorthm has edge effects
+    #Don't do the allclose test for scipy as the bicubic algorithm has edge effects
     if allclose:
         t2 = np.allclose(exp, res, rtol=rtol)  #TODO: Develop a better way of testing this
     else:
@@ -70,9 +75,9 @@ def test_scipy_rotation(angle, k):
     derot = affine_transform(rot, rmatrix=derot_matrix, use_scipy=True)
     assert compare_results(original, derot, allclose=False)
 
-dx_values, dy_values = range(-100, 101, 100)*3, range(-100, 101, 100)*3
+dx_values, dy_values = list(range(-100, 101, 100))*3, list(range(-100, 101, 100))*3
 dy_values.sort()
-@pytest.mark.parametrize("dx, dy", zip(dx_values, dy_values))
+@pytest.mark.parametrize("dx, dy", list(zip(dx_values, dy_values)))
 def test_shift(dx, dy):
     # Rotation center for all translation tests.
     image_center = np.array(original.shape)/2.0 - 0.5
@@ -181,3 +186,38 @@ def test_all(angle, dx, dy, scale_factor):
     ymin, ymax = max([0, -dy]), min([original.shape[1], original.shape[1]-dy])
     xmin, xmax = max([0, -dx]), min([original.shape[0], original.shape[0]-dx])
     compare_results(original[ymin:ymax, xmin:xmax], inverse[ymin:ymax, xmin:xmax])
+
+
+def test_flat(identity):
+    # Test that a flat array can be rotated using scikit-image
+    in_arr = np.array([[100]])
+    out_arr = affine_transform(in_arr, rmatrix=identity)
+    assert np.allclose(in_arr, out_arr, rtol=rtol)
+
+
+def test_nan_skimage_low(identity):
+    # Test non-replacement of NaN values for scikit-image rotation with order <= 3
+    in_arr = np.array([[np.nan]])
+    out_arr = affine_transform(in_arr, rmatrix=identity, order=3)
+    assert np.all(np.isnan(out_arr))
+
+
+def test_nan_skimage_high(identity):
+    # Test replacement of NaN values for scikit-image rotation with order >=4
+    in_arr = np.array([[np.nan]])
+    out_arr = affine_transform(in_arr, rmatrix=identity, order=4)
+    assert not np.all(np.isnan(out_arr))
+
+
+def test_nan_scipy(identity):
+    # Test replacement of NaN values for scipy rotation
+    in_arr = np.array([[np.nan]])
+    out_arr = affine_transform(in_arr, rmatrix=identity, use_scipy=True)
+    assert not np.all(np.isnan(out_arr))
+
+
+def test_int(identity):
+    # Test casting of integer array to float array
+    in_arr = np.array([[100]], dtype=int)
+    out_arr = affine_transform(in_arr, rmatrix=identity)
+    assert np.issubdtype(out_arr.dtype, np.float)

@@ -26,24 +26,61 @@
 # be accessible, and the documentation will not build correctly.
 
 # -- Mock Modules -------------------------------------------------------------
+# scikit-image will not install on RTD, so if it is no present we
+# use Mock instead so the docs will still build correctly.
 
+import os
 import sys
-from mock import Mock
-mock = Mock()
 
 modules = {}
 
 try:
-    import skimage 
+    import skimage
 except ImportError:
+    from mock import Mock
+    mock = Mock()
     modules.update({'skimage':mock, 'skimage.feature':mock.module})
+
+try:
+    import glymur
+    _, OJP2 = glymur.lib.config.glymur_config()
+except (ImportError, IOError):
+    from mock import Mock
+    mock = Mock()
+    modules.update({'glymur':mock})
 
 sys.modules.update(modules)
 
+# -- Load astropy_helpers -----------------------------------------------------
+
+try:
+    # Has astropy_helpers been installed via pip or similar?
+    import astropy_helpers
+except ImportError:
+    # Building from the doc/source directory?
+    if os.path.basename(os.getcwd()) == 'source':
+        a_h_path = os.path.abspath(os.path.join('..', '..', 'astropy_helpers'))
+        if os.path.isdir(a_h_path):
+            sys.path.insert(1, a_h_path)
+
+# -- Read the Docs Setup  -----------------------------------------------------
+
+on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+
+if on_rtd:
+    os.environ['SUNPY_CONFIGDIR'] = '/home/docs/'
+    os.environ['HOME'] = '/home/docs/'
+
+# -- Download Sample Data -----------------------------------------------------
+
+import sunpy.data
+sunpy.data.download_sample_data(overwrite=False)
+
 # -- General configuration ----------------------------------------------------
 
+
 # Load all of the global Astropy configuration
-from astropy.sphinx.conf import *
+from astropy_helpers.sphinx.conf import *
 
 # If your documentation needs a minimal Sphinx version, state it here.
 needs_sphinx = '1.1'
@@ -74,11 +111,12 @@ version = sunpy.__version__.split('-', 1)[0]
 # The full version, including alpha/beta/rc tags.
 release = sunpy.__version__
 
-intersphinx_mapping.pop('h5py',None)
+intersphinx_mapping.pop('h5py', None)
 intersphinx_mapping['astropy'] = ('http://docs.astropy.org/en/stable/', None)
 intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/rel_0_8/', None)
 intersphinx_mapping['pandas'] = ('http://pandas.pydata.org/pandas-docs/stable/', None)
 intersphinx_mapping['skimage'] = ('http://scikit-image.org/docs/stable/', None)
+intersphinx_mapping['wcsaxes'] = ('http://wcsaxes.readthedocs.org/en/stable/', None)
 
 # -- Options for HTML output ---------------------------------------------------
 
@@ -96,7 +134,13 @@ intersphinx_mapping['skimage'] = ('http://scikit-image.org/docs/stable/', None)
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes. To override the custom theme, set this to the
 # name of a builtin theme or the name of a custom theme in html_theme_path.
-html_theme = 'default'
+
+try:
+    import sphinx_rtd_theme
+    html_theme = 'sphinx_rtd_theme'
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+except ImportError:
+    html_theme = 'default'
 
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
@@ -137,7 +181,7 @@ man_pages = [('index', project.lower(), project + u' Documentation',
 
 ## -- Options for the edit_on_github extension ----------------------------------------
 #
-extensions += ['astropy.sphinx.ext.edit_on_github', 'sphinx.ext.doctest']
+extensions += ['astropy_helpers.sphinx.ext.edit_on_github', 'sphinx.ext.doctest']
 
 ## Don't import the module as "version" or it will override the
 ## "version" configuration parameter

@@ -1,9 +1,13 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 from datetime import datetime
 
 from sunpy import time
 from sunpy.time import parse_time
+
+import numpy as np
+import pandas
+from sunpy.extern.six.moves import range
 
 LANDING = datetime(1966, 2, 3)
 
@@ -26,11 +30,45 @@ def test_parse_time_tuple():
 
 
 def test_parse_time_int():
-    assert parse_time(765548612.0) == datetime(2003, 4, 5, 12, 23, 32)
-    assert parse_time(1009685652.0) == datetime(2010, 12, 30, 4, 14, 12)
+    assert parse_time(765548612.0,'utime') == datetime(2003, 4, 5, 12, 23, 32)
+    assert parse_time(1009685652.0,'utime') == datetime(2010, 12, 30, 4, 14, 12)
+
+def test_parse_time_pandas_timestamp():
+    ts = pandas.Timestamp(LANDING)
+
+    dt = parse_time(ts)
+
+    assert isinstance(dt, datetime)
+    assert dt == LANDING
+
+def test_parse_time_pandas_index():
+    inputs = [datetime(2012, 1, i) for i in range(1,13)]
+    ind = pandas.tseries.index.DatetimeIndex(inputs)
+
+    dts = parse_time(ind)
+
+    assert isinstance(dts, np.ndarray)
+    assert all([isinstance(dt, datetime) for dt in dts])
+    assert list(dts) == inputs
 
 
-def test_parse_time_ISO():
+def test_parse_time_numpy_date():
+    inputs = np.arange('2005-02', '2005-03', dtype='datetime64[D]')
+
+    dts = parse_time(inputs)
+
+    assert isinstance(dts, np.ndarray)
+    assert all([isinstance(dt, datetime) for dt in dts])
+
+def test_parse_time_numpy_datetime():
+    inputs = np.arange('2005-02-01T00', '2005-02-01T10', dtype='datetime64')
+
+    dts = parse_time(inputs)
+
+    assert isinstance(dts, np.ndarray)
+    assert all([isinstance(dt, datetime) for dt in dts])
+
+def test_ISO():
     assert parse_time('1966-02-03') == LANDING
     assert (
         parse_time('1966-02-03T20:17:40') == datetime(1966, 2, 3, 20, 17, 40)
@@ -93,3 +131,4 @@ def test_day_of_year():
     assert time.day_of_year('2012/04/10') == 101
     assert time.day_of_year('2012/01/31') == 31
     assert time.day_of_year('2012/09/30') == 274
+

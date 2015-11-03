@@ -6,7 +6,6 @@
 from __future__ import absolute_import
 
 from sqlalchemy import or_, and_, not_
-from astropy.units import Unit, nm, equivalencies
 
 from sunpy.time import parse_time
 from sunpy.net.vso import attrs as vso_attrs
@@ -196,6 +195,7 @@ def _create(wlk, root, session):
         elif typ == 'path':
             path, inverted = value
             if inverted:
+                # pylint: disable=E711
                 query = query.filter(or_(
                     DatabaseEntry.path != path, DatabaseEntry.path == None))
             else:

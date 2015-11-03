@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
-""" Classes for spectral analysis. """
+"""Classes for spectral analysis."""
 
 from __future__ import division
 from __future__ import print_function
 from __future__ import absolute_import
-from __future__ import unicode_literals
 
 import datetime
 
 from random import randint
-from itertools import izip
 from copy import copy
 from math import floor
 
@@ -32,6 +30,7 @@ from sunpy.util import to_signed, common_base, merge
 from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.util.create import Parent
 from sunpy.spectra.spectrum import Spectrum
+from sunpy.extern.six.moves import zip as izip
 
 __all__ = ['Spectrogram', 'LinearTimeSpectrogram']
 
@@ -50,8 +49,8 @@ COPY = 1
 DEEPCOPY = 2
 
 def figure(*args, **kwargs):
-    """ Create new SpectroFigure, a figure extended with features
-    useful for analysis of spectrograms. Compare pyplot.figure. """
+    """Returns a new SpectroFigure, a figure extended with features
+    useful for analysis of spectrograms. Compare pyplot.figure."""
     kw = {
         'FigureClass': SpectroFigure,
     }
@@ -66,7 +65,7 @@ def _min_delt(arr):
     return deltas[deltas != 0].min()
 
 def _list_formatter(lst, fun=None):
-    """ Return function that takes x, pos and returns fun(lst[x]) if
+    """Returns a function that takes x, pos and returns fun(lst[x]) if
     fun is not None, else lst[x] or "" if x is out of range. """
     def _fun(x, pos):
         x = int(x)
@@ -81,7 +80,7 @@ def _list_formatter(lst, fun=None):
 
 
 def _union(sets):
-    """ Return union of sets. """
+    """Returns a union of sets."""
     union = set()
     for s in sets:
         union |= s
@@ -89,7 +88,7 @@ def _union(sets):
 
 
 class _LinearView(object):
-    """ Helper class for frequency channel linearization.
+    """Helper class for frequency channel linearization.
 
     Attributes
     ----------
@@ -185,15 +184,15 @@ class SpectroFigure(Figure):
 
 
 class TimeFreq(object):
-    """ Class to use for plotting frequency vs time.
+    """Class to use for plotting frequency vs time.
 
     Attributes
     ----------
-    start : datetime
+    start : `datetime.datetime`
         Start time of the plot.
-    time : array
+    time : `~numpy.ndarray`
         Time of the data points as offset from start in seconds.
-    freq : array
+    freq : `~numpy.ndarray`
         Frequency of the data points in MHz.
     """
     def __init__(self, start, time, freq):
@@ -202,6 +201,23 @@ class TimeFreq(object):
         self.freq = freq
 
     def plot(self, time_fmt="%H:%M:%S", **kwargs):
+        """
+        Plot the spectrum.
+
+        Parameters
+        ----------
+        time_fmt : str
+            The time format in a `~datetime.datetime` compatible format
+
+        **kwargs : dict
+            Any additional plot arguments that should be used
+            when plotting.
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
+        """
         figure = plt.gcf()
         axes = figure.add_subplot(111)
         axes.plot(self.time, self.freq, **kwargs)
@@ -229,6 +245,22 @@ class TimeFreq(object):
         return figure
 
     def peek(self, *args, **kwargs):
+        """
+        Plot spectrum onto current axes.
+
+        Parameters
+        ----------
+        *args : dict
+
+        **kwargs : dict
+            Any additional plot arguments that should be used
+            when plotting.
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
+        """
         plt.figure()
         ret = self.plot(*args, **kwargs)
         plt.show()
@@ -237,23 +269,23 @@ class TimeFreq(object):
 
 class Spectrogram(Parent):
     """
-    Base class for spectral analysis in SunPy.
+    Spectrogram Class.
 
     .. warning:: This module is under development! Use at your own risk.
 
     Attributes
     ----------
-    data : np.ndarray
+    data : `~numpy.ndarray`
         two-dimensional array of the image data of the spectrogram.
-    time_axis : np.ndarray
+    time_axis : `~numpy.ndarray`
         one-dimensional array containing the offset from the start
         for each column of data.
-    freq_axis : np.ndarray
+    freq_axis : `~numpy.ndarray`
         one-dimensional array containing information about the
         frequencies each row of the image corresponds to.
-    start : datetime
+    start : `~datetime.datetime`
         starting time of the measurement
-    end : datetime
+    end : `~datetime.datetime`
         end time of the measurement
     t_init : int
         offset from the start of the day the measurement began. If None
@@ -264,7 +296,7 @@ class Spectrogram(Parent):
         label for the frequency axis
     content : str
         header for the image
-    instruments : set of str
+    instruments : str array
         instruments that recorded the data, may be more than one if
         it was constructed using combine_frequencies or join_many.
     """
@@ -295,14 +327,14 @@ class Spectrogram(Parent):
         return self.data.dtype
 
     def _get_params(self):
-        """ Implementation detail. """
+        """Implementation detail."""
         return dict(
             (name, getattr(self, name)) for name, _ in self.COPY_PROPERTIES
         )
 
     def _slice(self, y_range, x_range):
-        """ Return new spectrogram reduced to the values passed
-        as slices. Implementation detail. """
+        """Return new spectrogram reduced to the values passed
+        as slices. Implementation detail."""
         data = self.data[y_range, x_range]
         params = self._get_params()
 
@@ -310,6 +342,7 @@ class Spectrogram(Parent):
         eoffset = self.shape[1] if x_range.stop is None else x_range.stop # pylint: disable=E1101
         eoffset -= 1
 
+        # FIXME: `fsoffset` and `feoffset` are not used?!
         fsoffset = 0 if y_range.start is None else y_range.start
         feoffset = self.shape[0] if y_range.stop is None else y_range.stop # pylint: disable=E1101
 
@@ -359,8 +392,8 @@ class Spectrogram(Parent):
         self.instruments = instruments
 
     def time_formatter(self, x, pos):
-        """ This returns the label for the tick of value x at
-        a specified pos on the time axis. """
+        """This returns the label for the tick of value x at
+        a specified pos on the time axis."""
         # Callback, cannot avoid unused arguments.
         # pylint: disable=W0613
         x = int(x)
@@ -374,15 +407,31 @@ class Spectrogram(Parent):
 
     @staticmethod
     def format_time(time):
-        """ Override to configure default plotting """
+        """Override to configure default plotting."""
         return time.strftime("%H:%M:%S")
 
     @staticmethod
     def format_freq(freq):
-        """ Override to configure default plotting """
-        return "%.1f" % freq
+        """Override to configure default plotting."""
+        return "{freq:0.1f}".format(freq=freq)
 
     def peek(self, *args, **kwargs):
+        """
+        Plot spectrum onto current axes.
+
+        Parameters
+        ----------
+        *args : dict
+
+        **kwargs : dict
+            Any additional plot arguments that should be used
+            when plotting.
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
+        """
         figure()
         ret = self.plot(*args, **kwargs)
         plt.show()
@@ -396,7 +445,7 @@ class Spectrogram(Parent):
 
         Parameters
         ----------
-        figure : matplotlib.figure.Figure
+        figure : `~matplotlib.Figure`
             Figure to plot the spectrogram on. If None, new Figure is created.
         overlays : list
             List of overlays (functions that receive figure and axes and return
@@ -408,7 +457,7 @@ class Spectrogram(Parent):
             Clip intensities lower than vmin before drawing.
         vmax : float
             Clip intensities higher than vmax before drawing.
-        linear :  bool
+        linear : bool
             If set to True, "stretch" image to make frequency axis linear.
         showz : bool
             If set to True, the value of the pixel that is hovered with the
@@ -490,6 +539,7 @@ class Spectrogram(Parent):
                     dist / data.delt / 10, init
                 )
             )
+
             def freq_fmt(x, pos):
                 # This is necessary because matplotlib somehow tries to get
                 # the mid-point of the row, which we do not need here.
@@ -563,14 +613,14 @@ class Spectrogram(Parent):
         return self.data[key]
 
     def clip_freq(self, vmin=None, vmax=None):
-        """ Return a new spectrogram only consisting of frequencies
-        in the interval [min\_, max\_].
+        """Return a new spectrogram only consisting of frequencies
+        in the interval [vmin, vmax].
 
         Parameters
         ----------
-        min\_ : float
+        vmin : float
             All frequencies in the result are greater or equal to this.
-        max\_ : float
+        vmax : float
             All frequencies in the result are smaller or equal to this.
         """
         left = 0
@@ -586,8 +636,16 @@ class Spectrogram(Parent):
 
         return self[left:right + 1, :]
 
-
     def auto_find_background(self, amount=0.05):
+        """Automatically find the background. This
+        is done by first subtracting the average value in each channel and then
+        finding those times which have the lowest standard deviation.
+
+        Parameters
+        ----------
+        amount : float
+            The percent amount (out of 1) of lowest standard deviation to consider.
+        """
         # pylint: disable=E1101,E1103
         data = self.data.astype(to_signed(self.dtype))
         # Subtract average value from every frequency channel.
@@ -603,17 +661,17 @@ class Spectrogram(Parent):
         return cand[:max(1, int(amount * len(cand)))]
 
     def auto_const_bg(self):
-        """ Automatically determine background. """
+        """Automatically determine background."""
         realcand = self.auto_find_background()
         bg = np.average(self.data[:, realcand], 1)
         return bg.reshape(self.shape[0], 1)
 
     def subtract_bg(self):
-        """ Perform constant background subtraction. """
+        """Perform constant background subtraction."""
         return self._with_data(self.data - self.auto_const_bg())
 
     def randomized_auto_const_bg(self, amount):
-        """ Automatically determine background. Only consider a randomly
+        """Automatically determine background. Only consider a randomly
         chosen subset of the image.
 
         Parameters
@@ -645,7 +703,7 @@ class Spectrogram(Parent):
         return bg.reshape(self.shape[0], 1)
 
     def randomized_subtract_bg(self, amount):
-        """ Perform randomized constant background subtraction.
+        """Perform randomized constant background subtraction.
         Does not produce the same result every time it is run.
 
         Parameters
@@ -658,7 +716,7 @@ class Spectrogram(Parent):
 
     def clip_values(self, vmin=None, vmax=None, out=None):
         """
-        Clip intensities to be in the interval [min\_, max\_].
+        Clip intensities to be in the interval [vmin, vmax].
 
         Any values greater than the maximum will be assigned the maximum,
         any values lower than the minimum will be assigned the minimum.
@@ -666,9 +724,9 @@ class Spectrogram(Parent):
 
         Parameters
         ----------
-        min\_ : int or float
+        min : int or float
             New minimum value for intensities.
-        max\_ : int or float
+        max : int or float
             New maximum value for intensities
         """
         # pylint: disable=E1101
@@ -682,17 +740,17 @@ class Spectrogram(Parent):
 
     def rescale(self, vmin=0, vmax=1, dtype=np.dtype('float32')):
         u"""
-        Rescale intensities to [min\_, max\_].
-        Note that min\_ ≠ max\_ and spectrogram.min() ≠ spectrogram.max().
+        Rescale intensities to [vmin, vmax].
+        Note that vmin ≠ vmax and spectrogram.min() ≠ spectrogram.max().
 
         Parameters
         ----------
-        min\_ : float or int
-            New minimum value in the resulting spectogram.
-        max\_ : float or int
-            New maximum value in the resulting spectogram.
-        dtype : np.dtype
-            Data-type of the resulting spectogram.
+        vmin : float or int
+            New minimum value in the resulting spectrogram.
+        vmax : float or int
+            New maximum value in the resulting spectrogram.
+        dtype : `numpy.dtype`
+            Data-type of the resulting spectrogram.
         """
         if vmax == vmin:
             raise ValueError("Maximum and minimum must be different.")
@@ -712,7 +770,7 @@ class Spectrogram(Parent):
         Parameters
         ----------
         frequency : float or int
-            Unknown frequency for which to lineary interpolate the intensities.
+            Unknown frequency for which to linearly interpolate the intensities.
             freq_axis[0] >= frequency >= self_freq_axis[-1]
         """
         lfreq, lvalue = None, None
@@ -729,7 +787,7 @@ class Spectrogram(Parent):
         return (ldiff * value + diff * lvalue) / (diff + ldiff) # pylint: disable=W0631
 
     def linearize_freqs(self, delta_freq=None):
-        """ Rebin frequencies so that the frequency axis is linear.
+        """Rebin frequencies so that the frequency axis is linear.
 
         Parameters
         ----------
@@ -771,7 +829,7 @@ class Spectrogram(Parent):
         return self.__class__(new, **vrs)
 
     def freq_overlap(self, other):
-        """ Get frequency range present in both spectrograms. Returns
+        """Get frequency range present in both spectrograms. Returns
         (min, max) tuple.
 
         Parameters
@@ -786,13 +844,13 @@ class Spectrogram(Parent):
         return lower, upper
 
     def time_to_x(self, time):
-        """ Return x-coordinate in spectrogram that corresponds to the
-        passed datetime value.
+        """Return x-coordinate in spectrogram that corresponds to the
+        passed `~datetime.datetime` value.
 
         Parameters
         ----------
-        time : parse_time compatible
-            Datetime to find the x coordinate for.
+        time : `~sunpy.time.parse_time` compatible str
+            `~datetime.datetime` to find the x coordinate for.
         """
         diff = time - self.start
         diff_s = SECONDS_PER_DAY * diff.days + diff.seconds
@@ -818,15 +876,13 @@ class Spectrogram(Parent):
             else:
                 pixel = ""
 
-            return '%s z=%s' % (
-                fmt_coord(x, y),
-                pixel
-            )
+            return '{0!s} z={1!s}'.format(fmt_coord(x, y), pixel)
+
         return format_coord
 
 
 class LinearTimeSpectrogram(Spectrogram):
-    """ Spectrogram evenly sampled in time.
+    """Spectrogram evenly sampled in time.
 
     Attributes
     ----------
@@ -852,20 +908,20 @@ class LinearTimeSpectrogram(Spectrogram):
 
     @staticmethod
     def make_array(shape, dtype=np.dtype('float32')):
-        """ Function to create an array with shape and dtype.
+        """Function to create an array with shape and dtype.
 
         Parameters
         ----------
         shape : tuple
             shape of the array to create
-        dtype : np.dtype
+        dtype : `numpy.dtype`
             data-type of the array to create
         """
         return np.zeros(shape, dtype=dtype)
 
     @staticmethod
     def memmap(filename):
-        """ Return function that takes shape and dtype and returns a
+        """Return function that takes shape and dtype and returns a
         memory mapped array.
 
         Parameters
@@ -880,7 +936,7 @@ class LinearTimeSpectrogram(Spectrogram):
         )
 
     def resample_time(self, new_delt):
-        """ Rescale image so that the difference in time between pixels is
+        """Rescale image so that the difference in time between pixels is
         new_delt seconds.
 
         Parameters
@@ -912,7 +968,7 @@ class LinearTimeSpectrogram(Spectrogram):
     @classmethod
     def join_many(cls, specs, mk_arr=None, nonlinear=False,
         maxgap=0, fill=JOIN_REPEAT):
-        """ Produce new Spectrogram that contains spectrograms
+        """Produce new Spectrogram that contains spectrograms
         joined together in time.
 
         Parameters
@@ -955,7 +1011,6 @@ class LinearTimeSpectrogram(Spectrogram):
         size = sum(sp.shape[1] for sp in specs)
 
         data = specs[0]
-        init = data.t_init
         start_day = data.start
 
         xs = []
@@ -991,7 +1046,7 @@ class LinearTimeSpectrogram(Spectrogram):
         arr = mk_arr((data.shape[0], size), dtype_)
         time_axis = np.zeros((size,))
         sx = 0
-        # Amount of pixels left out due to nonlinearity. Needs to be
+        # Amount of pixels left out due to non-linearity. Needs to be
         # considered for correct time axes.
         sd = 0
         for x, elem in izip(xs, specs):
@@ -1051,13 +1106,13 @@ class LinearTimeSpectrogram(Spectrogram):
         return common_base(specs)(arr, **params)
 
     def time_to_x(self, time):
-        """ Return x-coordinate in spectrogram that corresponds to the
+        """Return x-coordinate in spectrogram that corresponds to the
         passed datetime value.
 
         Parameters
         ----------
-        time : parse_time compatible
-            Datetime to find the x coordinate for.
+        time : `~sunpy.time.parse_time` compatible str
+            `datetime.datetime` to find the x coordinate for.
         """
         # This is impossible for frequencies because that mapping
         # is not injective.
@@ -1071,7 +1126,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
     @staticmethod
     def intersect_time(specs):
-        """ Return slice of spectrograms that is present in all of the ones
+        """Return slice of spectrograms that is present in all of the ones
         passed.
 
         Parameters
@@ -1092,7 +1147,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
     @classmethod
     def combine_frequencies(cls, specs):
-        """ Return new spectrogram that contains frequencies from all the
+        """Return new spectrogram that contains frequencies from all the
         spectrograms in spec. Only returns time intersection of all of them.
 
         Parameters
@@ -1138,7 +1193,7 @@ class LinearTimeSpectrogram(Spectrogram):
         return common_base(specs)(new, **params)
 
     def check_linearity(self, err=None, err_factor=None):
-        """ Check linearity of time axis. If err is given, tolerate absolute
+        """Check linearity of time axis. If err is given, tolerate absolute
         derivation from average delta up to err. If err_factor is given,
         tolerate up to err_factor * average_delta. If both are given,
         TypeError is raised. Default to err=0.
@@ -1164,15 +1219,15 @@ class LinearTimeSpectrogram(Spectrogram):
         return (abs(deltas - avg) <= err).all()
 
     def in_interval(self, start=None, end=None):
-        """ Return part of spectrogram that lies in [start, end).
+        """Return part of spectrogram that lies in [start, end).
 
         Parameters
         ----------
-        start : None or datetime or parse_time compatible string or time string
+        start : None or `~datetime.datetime` or `~sunpy.time.parse_time` compatible string or time string
             Start time of the part of the spectrogram that is returned. If the
-            measurement only spans over one day, a colon seperated string
+            measurement only spans over one day, a colon separated string
             representing the time can be passed.
-        end : None or datetime or parse_time compatible string or time string
+        end : None or `~datetime.datetime` or `~sunpy.time.parse_time` compatible string or time string
             See start.
         """
         if start is not None:

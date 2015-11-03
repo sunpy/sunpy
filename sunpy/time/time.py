@@ -1,6 +1,11 @@
+from __future__ import absolute_import, division, print_function
 import re
 from datetime import datetime
 from datetime import timedelta
+
+import numpy as np
+import pandas
+from sunpy.extern import six
 
 __all__ = ['find_time', 'extract_time', 'parse_time', 'is_time', 'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format']
 
@@ -40,6 +45,7 @@ TIME_FORMAT_LIST = [
     "%Y%m%d_%H%M%S",           # Example 20070504_210812
     "%Y:%j:%H:%M:%S",          # Example 2012:124:21:08:12
     "%Y:%j:%H:%M:%S.%f",       # Example 2012:124:21:08:12.999999
+    "%Y%m%d%H%M%S",            # Example 20140101000001 (JSOC / VSO)
 ]
 
 
@@ -60,7 +66,7 @@ def _regex_parse_time(inp, format):
     # Parser for finding out the minute value so we can adjust the string
     # from 24:00:00 to 00:00:00 the next day because strptime does not
     # understand the former.
-    for key, value in REGEX.iteritems():
+    for key, value in six.iteritems(REGEX):
         format = format.replace(key, value)
     match = re.match(format, inp)
     if match is None:
@@ -80,10 +86,10 @@ def _regex_parse_time(inp, format):
 
 
 def find_time(string, format):
-    """ Return iterator of occurences of date formatted with format
+    """ Return iterator of occurrences of date formatted with format
     in string. Currently supported format codes: """
     re_format = format
-    for key, value in REGEX.iteritems():
+    for key, value in six.iteritems(REGEX):
         re_format = re_format.replace(key, value)
     matches = re.finditer(re_format, string)
     for match in matches:
@@ -96,12 +102,12 @@ def find_time(string, format):
             yield dt
 
 
-find_time.__doc__ += ', '.join(REGEX.keys())
+find_time.__doc__ += ', '.join(list(REGEX.keys()))
 
 
 def _iter_empty(iter):
     try:
-        iter.next()
+        next(iter)
     except StopIteration:
         return True
     return False
@@ -116,7 +122,7 @@ def extract_time(string):
     for time_format in TIME_FORMAT_LIST:
         found = find_time(string, time_format)
         try:
-            match = found.next()
+            match = next(found)
         except StopIteration:
             continue
         else:
@@ -139,35 +145,48 @@ def extract_time(string):
     return bestmatch
 
 
-def parse_time(time_string):
+def parse_time(time_string, time_format=''):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
+    utime -- Time since epoch 1 Jan 1979
 
     Parameters
     ----------
-    time_string : string
-        Datestring to parse
+    time_string : [ int, float, time_string, datetime ]
+        Date to parse which can be either time_string, int, datetime object.
+    time_format : [ basestring, utime, datetime ]
+        Specifies the format user has provided the time_string in.
 
     Returns
     -------
     out : datetime
         DateTime corresponding to input date string
 
+    Note:
+    If time_string is an instance of float, then it is assumed to be in utime format.
+
     Examples
     --------
+    >>> import sunpy.time
     >>> sunpy.time.parse_time('2012/08/01')
+    datetime.datetime(2012, 8, 1, 0, 0)
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
-
-    .. todo::
-        add ability to parse tai (International Atomic Time seconds since
-        Jan 1, 1958)
+    datetime.datetime(2005, 8, 4, 0, 1, 2)
     """
-    if isinstance(time_string, datetime):
+    if isinstance(time_string, pandas.tslib.Timestamp):
+    	return time_string.to_datetime()
+    elif isinstance(time_string, datetime) or time_format == 'datetime':
         return time_string
     elif isinstance(time_string, tuple):
         return datetime(*time_string)
-    elif isinstance(time_string, int) or isinstance(time_string, float):
+    elif time_format == 'utime' or  isinstance(time_string, (int, float))  :
         return datetime(1979, 1, 1) + timedelta(0, time_string)
+    elif isinstance(time_string, pandas.tseries.index.DatetimeIndex):
+    	return time_string._mpl_repr()
+    elif isinstance(time_string, np.ndarray) and 'datetime64' in str(time_string.dtype):
+        ii = [ss.astype(datetime) for ss in time_string]
+        # Validate (in an agnostic way) that we are getting a datetime rather than a date
+        return np.array([datetime(*(dt.timetuple()[:6])) for dt in ii])
     elif time_string is 'now':
         return datetime.utcnow()
     else:
@@ -187,27 +206,37 @@ def parse_time(time_string):
                 return datetime.strptime(ts, time_format) + time_delta
             except ValueError:
                 pass
-        raise ValueError("%s is not a valid time string!" % time_string)
+        raise ValueError("{tstr!s} is not a valid time string!".format(tstr=time_string))
 
 
-def is_time(time_string):
+def is_time(time_string, time_format=''):
     """
     Returns true if the input is a valid date/time representation
 
     Parameters
     ----------
-    time_string : string
-        Datestring to parse
+    time_string : [ int, float, time_string, datetime ]
+        Date to parse which can be either time_string, int, datetime object.
+    time_format : [ basestring, utime, datetime ]
+        Specifies the format user has provided the time_string in.
 
     Returns
     -------
     out : bool
         True if can be parsed by parse_time
 
+    Notes
+    -----
+        If time_string is an instance of float, then it is assumed to be in
+        unix time format.
+
     Examples
     --------
+    >>> import sunpy.time
     >>> sunpy.time.parse_time('2012/08/01')
+    datetime.datetime(2012, 8, 1, 0, 0)
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
+    datetime.datetime(2005, 8, 4, 0, 1, 2)
 
     .. todo::
 
@@ -221,7 +250,7 @@ def is_time(time_string):
         return True
 
     try:
-        parse_time(time_string)
+        parse_time(time_string,time_format)
     except ValueError:
         return False
     else:
@@ -243,10 +272,11 @@ def day_of_year(time_string):
 
     Examples
     --------
+    >>> import sunpy.time
     >>> sunpy.time.day_of_year('2012/01/01')
-    1.00
+    1.0
     >>> sunpy.time.day_of_year('2012/08/01')
-    214.00
+    214.0
     >>> sunpy.time.day_of_year('2005-08-04T00:18:02.000Z')
     216.01252314814815
 
@@ -256,17 +286,14 @@ def day_of_year(time_string):
     time_diff = time - datetime(time.year, 1, 1, 0, 0, 0)
     return time_diff.days + time_diff.seconds / SECONDS_IN_DAY + 1
 
-
-def break_time(t='now'):
+def break_time(t='now', time_format=''):
     """Given a time returns a string. Useful for naming files."""
-    # TODO: should be able to handle a time range
-    return parse_time(t).strftime("%Y%m%d_%H%M%S")
-
+    #TODO: should be able to handle a time range
+    return parse_time(t, time_format).strftime("%Y%m%d_%H%M%S")
 
 def get_day(dt):
     """ Return datetime for the beginning of the day of given datetime. """
     return datetime(dt.year, dt.month, dt.day)
-
 
 def is_time_in_given_format(time_string, time_format):
     """Tests whether a time string is formatted according to the given time

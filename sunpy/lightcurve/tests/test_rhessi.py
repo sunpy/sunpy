@@ -23,7 +23,7 @@ class TestRHESSISummaryLightCurve(object):
     @pytest.mark.online
     def test_hsi_range(self, timerange_a):
         """Test creation with two times"""
-        lc1 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_a.start(), timerange_a.end())
+        lc1 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_a.start, timerange_a.end)
         assert isinstance(lc1, sunpy.lightcurve.RHESSISummaryLightCurve)
 
     @pytest.mark.online

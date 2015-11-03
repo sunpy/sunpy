@@ -2,10 +2,11 @@
 Nothing here but dictionaries for generating LinearSegmentedColormaps,
 and a dictionary of these dictionaries.
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import numpy as np
 import matplotlib.colors as colors
+from sunpy.extern.six.moves import range, zip
 
 __all__ = ['aia_color_table', 'lasco_color_table', 'eit_color_table',
            'sxt_color_table', 'xrt_color_table', 'trace_color_table',
@@ -53,14 +54,19 @@ r0 = np.array(paden(
        226, 227, 228, 230, 231, 233, 234, 236, 237, 239, 240, 241, 243,
        244, 246, 247, 249, 250, 252, 253], 256, 255))
 
-g0 = np.array(padfr(_mkx(1, xrange(17, 256, 17), 2), 256))
-b0 = np.array(padfr(_mkx(3, xrange(51, 256, 51), 4), 256))
+g0 = np.array(padfr(_mkx(1, range(17, 256, 17), 2), 256))
+b0 = np.array(padfr(_mkx(3, range(51, 256, 51), 4), 256))
 
 c0 = np.arange(256, dtype='f')
 c1 = (np.sqrt(c0) * np.sqrt(255.0)).astype('f')
 c2 = (np.arange(256) ** 2 / 255.0).astype('f')
 c3 = ((c1 + c2 / 2.0) * 255.0 / (c1.max() + c2.max() / 2.0)).astype('f')
 
+aia_wave_dict = {1600: (c3, c3, c2), 1700: (c1, c0, c0), 4500: (c0, c0, b0 / 2.0),
+                 94: (c2, c3, c0), 131: (g0, r0, r0), 171: (r0, c0, b0),
+                 193: (c1, c0, c2), 211: (c1, c0, c3), 304: (r0, g0, b0),
+                 335: (c2, c0, c1)
+                }
 
 def aia_color_table(wavelength):
     '''Returns one of the fundamental color tables for SDO AIA images.
@@ -68,12 +74,7 @@ def aia_color_table(wavelength):
        Karel Schriver (2010/04/12).
     '''
     try:
-        r, g, b = {
-            1600: (c3, c3, c2), 1700: (c1, c0, c0), 4500: (c0, c0, b0 / 2.0),
-            94: (c2, c3, c0), 131: (g0, r0, r0), 171: (r0, c0, b0),
-            193: (c1, c0, c2), 211: (c1, c0, c3), 304: (r0, g0, b0),
-            335: (c2, c0, c1)
-        }[wavelength]
+        r, g, b = aia_wave_dict[wavelength]
     except KeyError:
         raise ValueError(
             "Invalid AIA wavelength. Valid values are "
@@ -209,11 +210,11 @@ eit_dark_green_g = np.concatenate((np.zeros(52).astype('int'),
        245, 247, 248, 249, 249, 250, 252, 253, 255])))
 
 eit_dark_green_b = np.concatenate((np.zeros(197).astype('int'), np.array(
-      [182, 184, 186, 186, 187, 188, 189, 191, 192, 194, 195, 197, 198,
-       198, 199, 200, 202, 204, 205, 206, 208, 209, 210, 211, 211, 213,
-       215, 216, 217, 219, 220, 221, 222, 225, 225, 226, 227, 228, 230,
-       231, 232, 233, 236, 237, 237, 238, 239, 241, 242, 243, 245, 247,
-       248, 249, 249, 250, 252, 253, 255])))
+      [  3,  10,  17,  17,  20,  24,  27,  34,  37,  44,  48,  55,  58,
+        58,  62,  65,  72,  79,  82,  86,  93,  96,  99, 103, 103, 110,
+       117, 120, 124, 130, 134, 137, 141, 151, 151, 155, 158, 161, 168,
+       172, 175, 179, 189, 192, 192, 196, 199, 206, 210, 213, 220, 227,
+       230, 234, 234, 237, 244, 248, 255])))
 
 eit_dark_red_r = np.concatenate((np.zeros(52).astype('int'), np.array(
       [  1,   3,   4,   5,   6,   6,   8,   9,  11,  12,  14,  15,  16,
@@ -352,13 +353,13 @@ def lasco_color_table(number):
 # Translated from the JP2Gen IDL SXT code lct_yla_gold.pro.  Might be better
 # to explicitly copy the numbers from the IDL calculation.  This is a little
 # more compact.
-sxt_gold_r = np.concatenate((255.0 * np.array(range(0, 185)) / 185.0,
-                            255 * np.ones(71)))
-sxt_gold_g = 255 * (np.array(range(0, 256)) ** 1.25) / (255.0 ** 1.25)
+sxt_gold_r = np.concatenate((np.linspace(0, 255, num=185, endpoint=False),
+                             255 * np.ones(71)))
+sxt_gold_g = 255 * (np.arange(256) ** 1.25) / (255.0 ** 1.25)
 sxt_gold_b = np.concatenate((np.zeros(185),
-                             255.0 * np.array(range(0, 71)) / 71.0))
+                             255.0 * np.arange(71) / 71.0))
 
-grayscale = np.array(range(0, 256))
+grayscale = np.arange(256)
 
 
 def sxt_color_table(sxt_filter):
@@ -1052,6 +1053,64 @@ def sot_color_table(measurement):
     cdict = create_cdict(r, g, b)
     return colors.LinearSegmentedColormap('mytable', cdict)
 
+def iris_sji_color_table(measurement, aialike=False):
+    """Return the standard color table for IRIS SJI files"""
+    # base vectors for IRIS SJI color tables
+    c0 = np.arange(0, 256)
+    c1 = (np.sqrt(c0) * np.sqrt(255)).astype(np.uint8)
+    c2 = (c0 ** 2 / 255.).astype(np.uint8)
+    c3= ((c1 + c2/2.)*255./(np.max(c1) + np.max(c2)/2.)).astype(np.uint8)
+    c4 = np.zeros(256).astype(np.uint8)
+    c4[50:256] = (1/165. * np.arange(0, 206) ** 2).astype(np.uint8)
+    c5 = ((1 + c1 + c3.astype(np.uint))/2.).astype(np.uint8)
+
+    rr = np.ones(256, dtype=np.uint8) * 255
+    rr[0:176] = np.arange(0, 176) / 175. * 255.
+    gg = np.zeros(256, dtype=np.uint8)
+    gg[100:256] = np.arange(0, 156) / 155. * 255.
+    bb = np.zeros(256, dtype=np.uint8)
+    bb[150:256] = np.arange(0, 106) / 105. * 255.
+    agg = np.zeros(256, dtype=np.uint8)
+    agg[120:256] = np.arange(0, 136) / 135. * 255.
+    abb = np.zeros(256, dtype=np.uint8)
+    abb[190:256] = np.arange(0, 66) / 65. * 255.
+
+    if aialike:
+        color_table = {
+            '1330': (c1, c0, c2),
+            '1400': (rr, agg, abb),
+            '2796': (rr, c0, abb),
+            '2832': (c3, c3, c2),
+        }
+    else:
+        color_table = {
+            '1330': (rr, gg, bb),
+            '1400': (c5, c2, c4),
+            '2796': (c1, c3, c2),
+            '2832': (c0, c0, c2),
+        }
+
+    color_table.update({
+        '1600': (c1, c0, c0),
+        '5000': (c1, c1, c0),
+        'FUV': (rr, gg, bb),
+        'NUV': (c1, c3, c2),
+        'SJI_NUV': (c0, c0, c0)
+    })
+
+    try:
+        r, g, b = color_table[measurement]
+    except KeyError:
+        raise ValueError(
+            "Invalid IRIS SJI waveband.  Valid values are \n" +
+            str(list(color_table.keys()))
+        )
+
+    # Now create the color dictionary in the correct format
+    cdict = create_cdict(r, g, b)
+    # Return the color table
+    return colors.LinearSegmentedColormap('mytable', cdict)
+
 
 hmi_mag_r = np.array(
       [137, 140, 142, 144, 149, 151, 154, 158, 161, 163, 167, 170, 172,
@@ -1120,37 +1179,186 @@ hmi_mag_b = np.array(
        142, 140, 135, 133, 121, 109,  96,  84,  73])
 
 def hmi_mag_color_table():
-    '''Returns an alternate HMI Magnetogram color table; from Stanford
-       University/JSOC
-       Reference: http://jsoc.stanford.edu/data/hmi/HMI_M.ColorTable.pdf
+    """
+    Returns an alternate HMI Magnetogram color table; from Stanford
+    University/JSOC
 
-      Example usage for NRT data:
-           import sunpy.map
-           import sunpy.cm
-           hmi = sunpy.map.Map('fblos.fits')
-           hmi.cmap = sunpy.cm.get_cmap('hmimag')
-           hmi.peek(vmin=-1500.0, vmax=1500.0)
+    Examples
+    --------
+    >>> # Example usage for NRT data:
+    >>> import sunpy.map
+    >>> import sunpy.cm
+    >>> hmi = sunpy.map.Map('fblos.fits')
+    >>> hmi.plot_settings['cmap'] = sunpy.cm.get_cmap('hmimag')
+    >>> hmi.peek(vmin=-1500.0, vmax=1500.0)
 
-           OR (for a basic plot with pixel values on the axes)
-               import numpy as np
-               import matplotlib.pyplot as plt
-               import sunpy.map
-               import sunpy.cm
-               hmi = sunpy.map.Map('fblos.fits')
-               plt.imshow(np.clip(hmi.data, -1500.0, 1500.0), cmap=sunpy.cm.get_cmap('hmimag'), origin='lower')
-               plt.show()
+    >>> # OR (for a basic plot with pixel values on the axes)
+    >>> import numpy as np
+    >>> import matplotlib.pyplot as plt
+    >>> import sunpy.map
+    >>> import sunpy.cm
+    >>> hmi = sunpy.map.Map('fblos.fits')
+    >>> plt.imshow(np.clip(hmi.data, -1500.0, 1500.0), cmap=sunpy.cm.get_cmap('hmimag'), origin='lower')
+    >>> plt.show()
 
-      Example usage for science (Level 1.0) data:
-            import numpy as np
-            import sunpy.map
-            import sunpy.cm
-            hmi = sunpy.map.Map('hmi.m_45s.2014.05.11_12_00_45_TAI.magnetogram.fits')
-            hmir = hmi.rotate()
-            hmir.cmap = sunpy.cm.get_cmap('hmimag')
-            hmir.peek(vmin=-1500.0, vmax=1500.0)
-    '''
+    >>> # Example usage for science (Level 1.0) data:
+    >>> import numpy as np
+    >>> import sunpy.map
+    >>> import sunpy.cm
+    >>> hmi = sunpy.map.Map('hmi.m_45s.2014.05.11_12_00_45_TAI.magnetogram.fits')
+    >>> hmir = hmi.rotate()
+    >>> hmir.plot_settings['cmap'] = sunpy.cm.get_cmap('hmimag')
+    >>> hmir.peek(vmin=-1500.0, vmax=1500.0)
+
+    References
+    ----------
+    * `Stanford Colortable (pdf) <http://jsoc.stanford.edu/data/hmi/HMI_M.ColorTable.pdf>`_
+    """
     cdict = create_cdict(hmi_mag_r, hmi_mag_g, hmi_mag_b)
     return colors.LinearSegmentedColormap('mytable', cdict)
+
+hi1_blue = np.array(
+       [  0,   1,   2,   4,   5,   6,   8,   9,  10,  12,  13,  14,  16,
+         17,  18,  20,  21,  23,  24,  25,  27,  28,  29,  31,  32,  33,
+         35,  36,  37,  39,  40,  42,  43,  44,  46,  47,  48,  50,  51,
+         52,  54,  55,  56,  58,  59,  61,  62,  63,  65,  66,  67,  69,
+         70,  71,  73,  74,  75,  77,  78,  80,  81,  82,  84,  85,  86,
+         88,  89,  90,  92,  93,  94,  96,  97,  99, 100, 101, 103, 104,
+        105, 107, 108, 109, 111, 112, 113, 115, 116, 118, 119, 120, 122,
+        123, 124, 126, 127, 128, 130, 131, 132, 134, 135, 136, 138, 139,
+        141, 142, 143, 145, 146, 147, 149, 150, 151, 153, 154, 155, 157,
+        158, 160, 161, 162, 164, 165, 166, 168, 169, 170, 172, 173, 174,
+        176, 177, 179, 180, 181, 183, 184, 185, 187, 188, 189, 191, 192,
+        193, 195, 196, 198, 199, 200, 202, 203, 204, 206, 207, 208, 210,
+        211, 212, 214, 215, 217, 218, 219, 221, 222, 223, 225, 226, 227,
+        229, 230, 231, 233, 234, 236, 237, 238, 240, 241, 242, 244, 245,
+        246, 248, 249, 250, 252, 253, 255, 255, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+        255, 255, 255, 255, 255, 255, 255, 255, 255], dtype=np.uint8)
+
+hi1_green = np.array(
+       [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   2,   4,   5,   7,   9,  10,  12,
+         13,  15,  17,  18,  20,  21,  23,  25,  26,  28,  29,  31,  33,
+         34,  36,  37,  39,  41,  42,  44,  45,  47,  49,  50,  52,  53,
+         55,  57,  58,  60,  61,  63,  65,  66,  68,  69,  71,  73,  74,
+         76,  77,  79,  81,  82,  84,  85,  87,  89,  90,  92,  94,  95,
+         97,  98, 100, 102, 103, 105, 106, 108, 110, 111, 113, 114, 116,
+        118, 119, 121, 122, 124, 126, 127, 129, 130, 132, 134, 135, 137,
+        138, 140, 142, 143, 145, 146, 148, 150, 151, 153, 154, 156, 158,
+        159, 161, 162, 164, 166, 167, 169, 170, 172, 174, 175, 177, 179,
+        180, 182, 183, 185, 187, 188, 190, 191, 193, 195, 196, 198, 199,
+        201, 203, 204, 206, 207, 209, 211, 212, 214, 215, 217, 219, 220,
+        222, 223, 225, 227, 228, 230, 231, 233, 235, 236, 238, 239, 241,
+        243, 244, 246, 247, 249, 251, 252, 254, 255], dtype=np.uint8)
+
+hi1_red = np.array(
+       [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   5,   9,
+         13,  17,  21,  25,  29,  33,  37,  41,  45,  49,  53,  57,  61,
+         65,  69,  73,  77,  81,  85,  90,  94,  98, 102, 106, 110, 114,
+        118, 122, 126, 130, 134, 138, 142, 146, 150, 154, 158, 162, 166,
+        170, 175, 179, 183, 187, 191, 195, 199, 203, 207, 211, 215, 219,
+        223, 227, 231, 235, 239, 243, 247, 251, 255], dtype=np.uint8)
+
+hi2_blue = np.array(
+       [  0,   0,   0,   0,   0,   0,   0,   0,   1,   1,   1,   1,   2,
+          2,   2,   2,   2,   2,   2,   2,   3,   3,   3,   3,   4,   4,
+          4,   4,   4,   5,   6,   7,   9,   9,  10,  11,  12,  13,  14,
+         15,  17,  17,  18,  18,  19,  20,  22,  23,  25,  25,  26,  26,
+         27,  28,  29,  30,  32,  32,  33,  33,  34,  35,  36,  37,  39,
+         39,  40,  40,  41,  42,  43,  44,  46,  46,  47,  48,  49,  50,
+         51,  52,  54,  54,  53,  53,  52,  54,  56,  58,  60,  60,  61,
+         62,  63,  64,  65,  66,  68,  69,  70,  71,  73,  74,  75,  76,
+         77,  78,  79,  80,  82,  82,  83,  83,  84,  85,  86,  87,  89,
+         90,  91,  92,  94,  95,  96,  97,  98,  99, 100, 101, 103, 103,
+        104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 115, 116, 117,
+        118, 119, 120, 121, 122, 124, 124, 125, 125, 126, 127, 129, 131,
+        133, 134, 136, 138, 140, 141, 143, 144, 146, 147, 149, 151, 153,
+        154, 156, 157, 159, 160, 161, 162, 164, 165, 166, 167, 169, 170,
+        172, 173, 175, 176, 177, 178, 180, 181, 183, 184, 186, 187, 188,
+        189, 191, 192, 193, 194, 196, 197, 199, 200, 202, 203, 204, 205,
+        207, 208, 209, 210, 212, 213, 214, 215, 217, 218, 219, 220, 221,
+        222, 223, 224, 226, 227, 228, 229, 230, 231, 232, 233, 235, 236,
+        237, 238, 239, 240, 241, 242, 243, 243, 244, 245, 246, 246, 247,
+        248, 249, 249, 250, 251, 252, 252, 253, 254], dtype=np.uint8)
+
+hi2_green = np.array(
+       [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+          1,   2,   3,   4,   4,   4,   4,   4,   4,   4,   4,   4,   4,
+          4,   4,   4,   5,   6,   7,   8,   8,   8,   8,   8,   8,   8,
+          8,   8,   8,   8,   8,   8,   8,   8,   8,   8,   8,   8,   8,
+          8,   8,   8,   8,   8,   9,  10,  11,  12,  12,  12,  12,  12,
+         12,  12,  12,  12,  12,  12,  12,  12,  12,  12,  12,  12,  12,
+         12,  12,  12,  13,  14,  15,  16,  16,  16,  16,  16,  16,  16,
+         16,  16,  16,  16,  16,  16,  16,  16,  16,  16,  17,  18,  19,
+         20,  20,  20,  20,  20,  21,  22,  23,  24,  24,  24,  24,  24,
+         25,  26,  27,  28,  30,  32,  34,  36,  38,  40,  42,  44,  46,
+         48,  50,  52,  54,  56,  58,  60,  61,  62,  63,  64,  66,  68,
+         70,  72,  74,  76,  78,  80,  82,  84,  86,  88,  90,  92,  94,
+         96,  98, 100, 102, 104, 107, 110, 113, 116, 119, 122, 125, 128,
+        131, 134, 137, 140, 143, 146, 149, 152, 155, 158, 161, 164, 167,
+        170, 173, 176, 180, 184, 188, 192, 197, 202, 207, 212, 217, 222,
+        227, 232, 237, 242, 247, 252, 252, 253, 254], dtype=np.uint8)
+
+hi2_red = np.array(
+       [  0,   0,   3,   6,  10,  13,  17,  20,  24,  27,  30,  33,  36,
+         39,  42,  45,  48,  51,  54,  57,  60,  63,  66,  69,  72,  75,
+         78,  81,  84,  85,  86,  87,  88,  90,  92,  94,  96,  97,  98,
+         99, 100, 102, 104, 106, 108, 109, 110, 111, 112, 114, 116, 118,
+        120, 121, 122, 123, 124, 126, 128, 130, 132, 133, 134, 135, 136,
+        138, 140, 142, 144, 145, 146, 147, 148, 150, 152, 154, 156, 157,
+        158, 159, 160, 162, 164, 166, 168, 169, 170, 171, 172, 174, 176,
+        178, 180, 181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191,
+        192, 193, 194, 195, 196, 198, 200, 202, 204, 205, 206, 207, 208,
+        209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 222,
+        224, 226, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238,
+        239, 240, 241, 242, 243, 244, 246, 248, 250, 252, 252, 252, 252,
+        252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252,
+        252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252,
+        252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252,
+        252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252,
+        252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252,
+        252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252,
+        252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252,
+        252, 252, 252, 252, 252, 252, 252, 253, 254], dtype=np.uint8)
+
+
+def stereo_hi_color_table(camera):
+    if camera == 1:
+        cdict = create_cdict(hi1_red, hi1_green, hi1_blue)
+        return colors.LinearSegmentedColormap('HI1', cdict)
+    elif camera == 2:
+        cdict = create_cdict(hi2_red, hi2_green, hi2_blue)
+        return colors.LinearSegmentedColormap('HI2', cdict)
+    else:
+        raise ValueError("Valid HI cameras are 1 and 2")
 
 def create_cdict(r, g, b):
     """ Create the color tuples in the correct format"""

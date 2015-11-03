@@ -9,6 +9,7 @@ import itertools
 import operator
 from datetime import datetime
 from contextlib import contextmanager
+import os.path
 
 from sqlalchemy import create_engine, exists
 from sqlalchemy.orm import sessionmaker
@@ -16,10 +17,17 @@ from sqlalchemy.orm import sessionmaker
 import sunpy
 from sunpy.database import commands, tables, serialize
 from sunpy.database.caching import LRUCache
+from sunpy.database.commands import CompositeOperation
 from sunpy.database.attrs import walker
 from sunpy.net.hek2vso import H2VClient
 from sunpy.net.attr import and_
 from sunpy.net.vso import VSOClient
+
+__authors__ = ['Simon Liedtke', 'Rajul Srivastava']
+__emails__ = [
+    'liedtke.simon@googlemail.com',
+    'rajul09@gmail.com'
+]
 
 
 class EntryNotFoundError(Exception):
@@ -113,12 +121,15 @@ def disable_undo(database):
 
     Examples
     --------
+    >>> from sunpy.database import disable_undo, Database
+    >>> from sunpy.database.tables import DatabaseEntry
+    >>> database = Database('sqlite:///:memory:')
+    >>> entry = DatabaseEntry()
     >>> with disable_undo(database) as db:
     ...     db.add(entry)
-    >>> database.undo()
-    >>> Traceback (most recent call last):
-        ...
-    EmptyCommandStackError
+
+    # This will raise an EmptyCommandStackError
+    >>> database.undo()   # doctest: +SKIP
     """
     database._enable_history = False
     yield database
@@ -173,7 +184,7 @@ class Database(object):
     Methods
     -------
     set_cache_size(cache_size)
-        Set a new value for the maxiumum number of database entries in the
+        Set a new value for the maximum number of database entries in the
         cache. Use the value ``float('inf')`` to disable caching.
     commit()
         Flush pending changes and commit the current transaction.
@@ -253,7 +264,7 @@ class Database(object):
         return self._cache.maxsize
 
     def set_cache_size(self, cache_size):
-        """Set a new value for the maxiumum number of database entries in the
+        """Set a new value for the maximum number of database entries in the
         cache. Use the value ``float('inf')`` to disable caching. If the new
         cache is smaller than the previous one and cannot contain all the
         entries anymore, entries are removed from the cache until the number of
@@ -263,7 +274,7 @@ class Database(object):
         :class:`sunpy.database.caching.LFUCache`).
 
         """
-        cmds = []
+        cmds = CompositeOperation()
         # remove items from the cache if the given argument is lower than the
         # current cache size
         while cache_size < self.cache_size:
@@ -272,7 +283,7 @@ class Database(object):
             entry_id, entry = self._cache.to_be_removed
             cmd = commands.RemoveEntry(self.session, entry)
             if self._enable_history:
-                cmds.append(cmd)
+                cmds.add(cmd)
             else:
                 cmd()
             del self._cache[entry_id]
@@ -300,27 +311,33 @@ class Database(object):
             path=None, progress=False):
         if client is None:
             client = VSOClient()
-        for block in query_result:
-            paths = client.get([block], path).wait(progress=progress)
-            for path in paths:
-                qr_entry = tables.DatabaseEntry._from_query_result_block(block)
-                file_entries = list(
-                    tables.entries_from_file(path, self.default_waveunit))
-                for entry in file_entries:
-                    entry.source = qr_entry.source
-                    entry.provider = qr_entry.provider
-                    entry.physobs = qr_entry.physobs
-                    entry.fileid = qr_entry.fileid
-                    entry.observation_time_start =\
-                        qr_entry.observation_time_start
-                    entry.observation_time_end = qr_entry.observation_time_end
-                    entry.instrument = qr_entry.instrument
-                    entry.size = qr_entry.size
-                    entry.wavemin = qr_entry.wavemin
-                    entry.wavemax = qr_entry.wavemax
-                    entry.path = path
-                    entry.download_time = datetime.utcnow()
-                    yield entry
+
+        paths = client.get(query_result, path).wait(progress=progress)
+
+        for (path, block) in zip(paths, query_result):
+            qr_entry = tables.DatabaseEntry._from_query_result_block(block)
+
+            if os.path.isfile(path):
+                entries = tables.entries_from_file(path, self.default_waveunit)
+            elif os.path.isdir(path):
+                entries = tables.entries_from_dir(path, self.default_waveunit)
+            else:
+                raise ValueError('The path is neither a file nor directory')
+
+            for entry in entries:
+                entry.source = qr_entry.source
+                entry.provider = qr_entry.provider
+                entry.physobs = qr_entry.physobs
+                entry.fileid = qr_entry.fileid
+                entry.observation_time_start = qr_entry.observation_time_start
+                entry.observation_time_end = qr_entry.observation_time_end
+                entry.instrument = qr_entry.instrument
+                entry.size = qr_entry.size
+                entry.wavemin = qr_entry.wavemin
+                entry.wavemax = qr_entry.wavemax
+                entry.path = path
+                entry.download_time = datetime.utcnow()
+                yield entry
 
     def download(self, *query, **kwargs):
         """download(*query, client=sunpy.net.vso.VSOClient(), path=None, progress=False)
@@ -449,7 +466,7 @@ class Database(object):
         The query in the following example searches for all non-starred entries
         with the tag 'foo' or 'bar' (or both).
 
-        >>> database.query(~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'))
+        >>> database.query(~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'))   # doctest: +SKIP
 
         """
         if not query:
@@ -504,7 +521,7 @@ class Database(object):
             raise TypeError('at least one tag must be given')
         # avoid duplicates
         tag_names = set(tags)
-        cmds = []
+        cmds = CompositeOperation()
         for tag_name in tag_names:
             try:
                 tag = self.get_tag(tag_name)
@@ -515,7 +532,7 @@ class Database(object):
                 tag = tables.Tag(tag_name)
             cmd = commands.AddTag(self.session, database_entry, tag)
             if self._enable_history:
-                cmds.append(cmd)
+                cmds.add(cmd)
             else:
                 cmd()
         if cmds:
@@ -533,16 +550,16 @@ class Database(object):
 
         """
         tag = self.get_tag(tag_name)
-        cmds = []
+        cmds = CompositeOperation()
         remove_tag_cmd = commands.RemoveTag(self.session, database_entry, tag)
         remove_tag_cmd()
         if self._enable_history:
-            cmds.append(remove_tag_cmd)
+            cmds.add(remove_tag_cmd)
         if not tag.data:
             remove_entry_cmd = commands.RemoveEntry(self.session, tag)
             remove_entry_cmd()
             if self._enable_history:
-                cmds.append(remove_entry_cmd)
+                cmds.add(remove_entry_cmd)
         if self._enable_history:
             self._command_manager.push_undo_command(cmds)
 
@@ -583,7 +600,7 @@ class Database(object):
             See Database.add
 
         """
-        cmds = []
+        cmds = CompositeOperation()
         for database_entry in database_entries:
             # use list(self) instead of simply self because __contains__ checks
             # for existence in the database and not only all attributes except
@@ -592,7 +609,7 @@ class Database(object):
                 raise EntryAlreadyAddedError(database_entry)
             cmd = commands.AddEntry(self.session, database_entry)
             if self._enable_history:
-                cmds.append(cmd)
+                cmds.add(cmd)
             else:
                 cmd()
             if database_entry.id is None:
@@ -694,7 +711,7 @@ class Database(object):
             ignore_already_added=False):
         """Search the given directory for FITS files and use their FITS headers
         to add new entries to the database. Note that one entry in the database
-        is assined to a list of FITS headers, so not the number of FITS headers
+        is assigned to a list of FITS headers, so not the number of FITS headers
         but the number of FITS files which have been read determine the number
         of database entries that will be added. FITS files are detected by
         reading the content of each file, the `pattern` argument may be used to
@@ -722,7 +739,7 @@ class Database(object):
             See :meth:`sunpy.database.Database.add`.
 
         """
-        cmds = []
+        cmds = CompositeOperation()
         entries = tables.entries_from_dir(
             path, recursive, pattern, self.default_waveunit)
         for database_entry, filepath in entries:
@@ -730,7 +747,7 @@ class Database(object):
                 raise EntryAlreadyAddedError(database_entry)
             cmd = commands.AddEntry(self.session, database_entry)
             if self._enable_history:
-                cmds.append(cmd)
+                cmds.add(cmd)
             else:
                 cmd()
             self._cache.append(database_entry)
@@ -779,11 +796,11 @@ class Database(object):
         database_entries : iterable of sunpy.database.tables.DatabaseEntry
             The database entries that will be removed from the database.
         """
-        cmds = []
+        cmds = CompositeOperation()
         for database_entry in database_entries:
             cmd = commands.RemoveEntry(self.session, database_entry)
             if self._enable_history:
-                cmds.append(cmd)
+                cmds.add(cmd)
             else:
                 cmd()
             try:
@@ -810,14 +827,14 @@ class Database(object):
             pass
 
     def clear(self):
-        """Remove all entries from the databse. This operation can be undone
+        """Remove all entries from the database. This operation can be undone
         using the :meth:`undo` method.
 
         """
-        cmds = []
+        cmds = CompositeOperation()
         for entry in self:
             for tag in entry.tags:
-                cmds.append(commands.RemoveTag(self.session, entry, tag))
+                cmds.add(commands.RemoveTag(self.session, entry, tag))
             # TODO: also remove all FITS header entries and all FITS header
             # comments from each entry before removing the entry itself!
         # remove all entries from all helper tables
@@ -826,15 +843,14 @@ class Database(object):
             tables.FitsKeyComment]
         for table in database_tables:
             for entry in self.session.query(table):
-                cmds.append(commands.RemoveEntry(self.session, entry))
+                cmds.add(commands.RemoveEntry(self.session, entry))
         for entry in self:
-            cmds.append(commands.RemoveEntry(self.session, entry))
+            cmds.add(commands.RemoveEntry(self.session, entry))
             del self._cache[entry.id]
         if self._enable_history:
             self._command_manager.do(cmds)
         else:
-            for cmd in cmds:
-                cmd()
+            cmds()
 
     def clear_histories(self):
         """Clears all entries from the undo and redo history.

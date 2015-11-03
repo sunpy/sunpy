@@ -19,9 +19,6 @@ from sunpy.net import hek
 from sunpy.net import vso
 from sunpy.net import hek2vso
 
-from sunpy.time import parse_time
-
-import numpy as np
 
 startTime = '2011/08/09 07:23:56'
 endTime = '2011/08/09 12:40:29'
@@ -47,7 +44,6 @@ def vso_client():
 def test_translate_results_to_query():
     """Make sure that conversion of HEK results to VSO queries is accurate"""
     h = hek.HEKClient()
-    h2v = hek2vso.H2VClient()
     hek_query = h.query(hekTime, hekEvent)
     vso_query = hek2vso.translate_results_to_query(hek_query)
 
@@ -61,11 +57,10 @@ def test_translate_results_to_query():
 def test_vso_attribute_parse():
     """Make sure that Parsing of VSO attributes from HEK queries is accurate"""
     h = hek.HEKClient()
-    h2v = hek2vso.H2VClient()
     hek_query = h.query(hekTime, hekEvent)
     vso_query = hek2vso.vso_attribute_parse(hek_query[0])
 
-    # Cheking Time
+    # Checking Time
     # TODO
 
     # Checking Observatory
