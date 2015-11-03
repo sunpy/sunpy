@@ -1288,8 +1288,8 @@ def flareclass_to_flux(flareclass):
 
     Raises
     ------
-    ValueError
-        Flux cannot be negative.
+    TypeError
+        Input must be a string.
 
     Examples
     --------
@@ -1302,6 +1302,7 @@ def flareclass_to_flux(flareclass):
     """
     if type(flareclass) != type('str'):
         raise TypeError("Input must be a string")
+    #TODO should probably make sure the string is in the expected format.
 
     flareclass = flareclass.upper()
     #invert the conversion dictionary
