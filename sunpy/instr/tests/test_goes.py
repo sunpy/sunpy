@@ -7,7 +7,9 @@ import pytest
 import numpy as np
 from astropy.units.quantity import Quantity
 from astropy.tests.helper import assert_quantity_allclose
+from numpy.testing import assert_array_equal, assert_almost_equal
 from pandas.util.testing import assert_frame_equal
+import astropy.units as u
 
 from sunpy.time import TimeRange
 from sunpy import lightcurve
@@ -442,26 +444,26 @@ def test_flux_to_classletter():
     """Test converting fluxes into a class letter"""
     fluxes = Quantity(10**(-np.arange(9, 2., -1)), 'W/m**2')
     classesletter = ['A', 'A', 'B', 'C', 'M', 'X', 'X']
-    calculated_classesletter = [flux_to_flareclass(f)[0] for f in fluxes]
-    calculated_classnumber = [float(flux_to_flareclass(f)[1:]) for f in fluxes]
+    calculated_classesletter = [goes.flux_to_flareclass(f)[0] for f in fluxes]
+    calculated_classnumber = [float(goes.flux_to_flareclass(f)[1:]) for f in fluxes]
     assert_array_equal(classesletter, calculated_classesletter)
     assert_array_equal([0.1, 1, 1, 1, 1, 1, 10], calculated_classnumber)
     # now test the Examples
-    assert flux_to_flareclass(1e-08 * u.watt/u.m**2) == 'A1'
-    assert flux_to_flareclass(0.00682 * u.watt/u.m**2) == 'X68.2'
-    assert flux_to_flareclass(7.8e-09 * u.watt/u.m**2) == 'A0.78'
-    assert flux_to_flareclass(0.00024 * u.watt/u.m**2) == 'X2.4'
-    assert flux_to_flareclass(4.7e-06 * u.watt/u.m**2) == 'C4.7'
+    assert goes.flux_to_flareclass(1e-08 * u.watt/u.m**2) == 'A1'
+    assert goes.flux_to_flareclass(0.00682 * u.watt/u.m**2) == 'X68.2'
+    assert goes.flux_to_flareclass(7.8e-09 * u.watt/u.m**2) == 'A0.78'
+    assert goes.flux_to_flareclass(0.00024 * u.watt/u.m**2) == 'X2.4'
+    assert goes.flux_to_flareclass(4.7e-06 * u.watt/u.m**2) == 'C4.7'
 
 def test_class_to_flux():
     classes = ['A3.49', 'A0.23', 'M1', 'X2.3', 'M5.8', 'C2.3', 'B3.45', 'X20']
     results = Quantity([3.49e-8, 2.3e-9, 1e-5, 2.3e-4, 5.8e-5, 2.3e-6, 3.45e-7, 2e-3], 'W/m2')
     for c, r in zip(classes, results):
-        assert_almost_equal(r.value, flareclass_to_flux(c).value)
+        assert_almost_equal(r.value, goes.flareclass_to_flux(c).value)
 
 def test_joint_class_to_flux():
     classes = ['A3.49', 'A0.23', 'M1', 'X2.3', 'M5.8', 'C2.3', 'B3.45', 'X20']
     for c in classes:
-        assert c == flux_to_flareclass(flareclass_to_flux(c))
+        assert c == goes.flux_to_flareclass(goes.flareclass_to_flux(c))
 
 # TODO add a test to check for raising error
