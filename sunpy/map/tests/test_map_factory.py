@@ -124,12 +124,15 @@ class TestMap(object):
         assert isinstance(mdi_m,sunpy.map.sources.MDIMap)
 
     def test_stereo(self):
-        #Test EUVIMap & CORMap
+        #Test EUVIMap & CORMap & HIMap
         euvi = sunpy.map.Map(os.path.join(filepath, "euvi_20090615_000900_n4euA_s.fts"))
         assert isinstance(euvi,sunpy.map.sources.EUVIMap)
 
         cor = sunpy.map.Map(os.path.join(filepath, "cor1_20090615_000500_s4c1A.fts"))
         assert isinstance(cor,sunpy.map.sources.CORMap)
+
+        hi = sunpy.map.Map(os.path.join(filepath,"hi_20110910_114721_s7h2A.fts"))
+        assert isinstance(hi,sunpy.map.sources.HIMap)
 
     def test_rhessi(self):
         #Test RHESSIMap
