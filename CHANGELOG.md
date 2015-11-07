@@ -9,6 +9,7 @@
  * update astropy_helpers
  * Added new sample data
 
+* Bug fix for rhessi summary light curve values.
 
 0.6.1
 -----
