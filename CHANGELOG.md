@@ -9,6 +9,7 @@ Latest
   native coordinate system of the map.
 
 * Added the ability to shift maps to correct for incorrect map location, for example.
+* Bug fix for rhessi summary light curve values.
 
 0.6.0
 -----
