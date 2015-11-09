@@ -602,8 +602,8 @@ scale:\t\t {scale}
         x, y = self.wcs.wcs_pix2world(x, y, origin)
 
         # WCS always outputs degrees.
-        x *= u.deg
-        y *= u.deg
+        x = u.Quantity(x, u.deg)
+        y = u.Quantity(y, u.deg)
 
         x = Longitude(x, wrap_angle=180*u.deg)
         y = Latitude(y)
