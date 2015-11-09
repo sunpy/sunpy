@@ -1090,21 +1090,24 @@ scale:\t\t {scale}
         return new_map
 
     @u.quantity_input(dimensions=u.pixel)
-    def superpixel(self, dimensions, method='sum'):
-        """Returns a new map consisting of superpixels formed from the
-        original data.  Useful for increasing signal to noise ratio in images.
+    def superpixel(self, dimensions, func=np.sum):
+        """Returns a new map consisting of superpixels formed by applying
+        'func' to the original data.
 
         Parameters
         ----------
         dimensions : tuple
             One superpixel in the new map is equal to (dimension[0],
-            dimension[1]) pixels of the original map
+            dimension[1]) pixels of the original map.
             Note: the first argument corresponds to the 'x' axis and the second
             argument corresponds to the 'y' axis.
-        method : {'sum' | 'average'}
-            What each superpixel represents compared to the original data
-                * sum - add up the original data
-                * average - average the sum over the number of original pixels
+        func : function applied to the original data.
+            The function 'func' must take a numpy array as its first argument,
+            and support the axis keyword with the meaning of a numpy axis
+            keyword (see the description of `~numpy.sum` for an example.)
+            The default value of 'func' is `~np.sum`; using this causes
+            superpixel to sum over (dimension[0], dimension[1]) pixels of the
+            original map.
 
         Returns
         -------
@@ -1122,14 +1125,15 @@ scale:\t\t {scale}
         # Note: "center" defaults to True in this function because data
         #   coordinates in a Map are at pixel centers
 
-        # Make a copy of the original data and perform reshaping
-        reshaped = reshape_image_to_4d_superpixel(self.data.copy(),
-                                                  [dimensions.value[1], dimensions.value[0]])
-        if method == 'sum':
-            new_data = reshaped.sum(axis=3).sum(axis=1)
-        elif method == 'average':
-            new_data = ((reshaped.sum(axis=3).sum(axis=1)) /
-                    np.float32(dimensions[0] * dimensions[1]))
+        # Make a copy of the original data, perform reshaping, and apply the
+        # function.
+        if self.mask is not None:
+            reshaped = reshape_image_to_4d_superpixel(np.ma.array(self.data.copy(), mask=self.mask),
+                                                      [dimensions.value[1], dimensions.value[0]])
+        else:
+            reshaped = reshape_image_to_4d_superpixel(self.data.copy(),
+                                                      [dimensions.value[1], dimensions.value[0]])
+        new_array = func(func(reshaped, axis=3), axis=1)
 
         # Update image scale and number of pixels
         new_map = deepcopy(self)
@@ -1152,7 +1156,12 @@ scale:\t\t {scale}
         new_meta['crval2'] = self.center.y.value
 
         # Create new map instance
-        new_map.data = new_data
+        if self.mask is not None:
+            new_map.mask = np.ma.getmask(new_array)
+            new_map.data = np.ma.getdata(new_array)
+        else:
+            new_map.mask = None
+            new_map.data = new_array
         return new_map
 
 # #### Visualization #### #
