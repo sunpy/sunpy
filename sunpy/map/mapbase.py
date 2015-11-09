@@ -1116,7 +1116,8 @@ scale:\t\t {scale}
 
         References
         ----------
-        | `Summarizing blocks of an array using a moving window <http://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html>`_
+        | `Summarizing blocks of an array using a moving window
+        | <http://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html>`_
         """
 
         # Note: because the underlying ndarray is transposed in sense when
@@ -1157,11 +1158,11 @@ scale:\t\t {scale}
 
         # Create new map instance
         if self.mask is not None:
-            new_map.mask = np.ma.getmask(new_array)
             new_map.data = np.ma.getdata(new_array)
+            new_map.mask = np.ma.getmask(new_array)
         else:
-            new_map.mask = None
             new_map.data = new_array
+            new_map.mask = None
         return new_map
 
 # #### Visualization #### #

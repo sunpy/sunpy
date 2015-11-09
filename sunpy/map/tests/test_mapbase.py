@@ -31,6 +31,14 @@ def aia171_test_map():
 
 
 @pytest.fixture
+def aia171_test_map_with_mask(aia171_test_map):
+    shape = aia171_test_map.data.shape
+    mask = np.zeros_like(aia171_test_map.data, dtype=bool)
+    mask[0:shape[0]/2, 0:shape[1]/2] = True
+    return sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
+
+
+@pytest.fixture
 def generic_map():
     data = np.ones([6,6], dtype=np.float64)
     header = {'CRVAL1': 0,
@@ -346,7 +354,7 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
             assert resampled_map.meta[key] == generic_map.meta[key]
 
 
-def test_superpixel(aia171_test_map):
+def test_superpixel(aia171_test_map, aia171_test_map_with_mask):
     dimensions = (2, 2)*u.pix
     superpixel_map_sum = aia171_test_map.superpixel(dimensions)
     assert_quantity_allclose(superpixel_map_sum.dimensions[1], aia171_test_map.dimensions[1]/dimensions[1]*u.pix)
@@ -357,7 +365,7 @@ def test_superpixel(aia171_test_map):
                                                              aia171_test_map.data[1][1]))
 
     dimensions = (2, 2)*u.pix
-    superpixel_map_avg = aia171_test_map.superpixel(dimensions, 'average')
+    superpixel_map_avg = aia171_test_map.superpixel(dimensions, func=np.mean)
     assert_quantity_allclose(superpixel_map_avg.dimensions[1], aia171_test_map.dimensions[1]/dimensions[1]*u.pix)
     assert_quantity_allclose(superpixel_map_avg.dimensions[0], aia171_test_map.dimensions[0]/dimensions[0]*u.pix)
     assert_quantity_allclose(superpixel_map_avg.data[0][0], (aia171_test_map.data[0][0] +
@@ -365,6 +373,13 @@ def test_superpixel(aia171_test_map):
                                                              aia171_test_map.data[1][0] +
                                                              aia171_test_map.data[1][1])/4.0)
 
+    # Test that the mask is respected
+    superpixel_map_sum = aia171_test_map_with_mask.superpixel(dimensions)
+    assert superpixel_map_sum.mask is not None
+    assert_quantity_allclose(superpixel_map_sum.mask.shape[0],
+                             aia171_test_map.dimensions[1]/dimensions[1])
+    assert_quantity_allclose(superpixel_map_sum.mask.shape[1],
+                             aia171_test_map.dimensions[0]/dimensions[0])
 
 def calc_new_matrix(angle):
     c = np.cos(np.deg2rad(angle))
@@ -467,19 +482,11 @@ def test_plot_aia171_nowcsaxes(aia171_test_map):
 
 @skip_wcsaxes
 @figure_test
-def test_plot_masked_aia171(aia171_test_map):
-    shape = aia171_test_map.data.shape
-    mask = np.zeros_like(aia171_test_map.data, dtype=bool)
-    mask[0:shape[0]/2, 0:shape[1]/2] = True
-    masked_map = sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
-    masked_map.plot()
+def test_plot_masked_aia171(aia171_test_map_with_mask):
+    aia171_test_map_with_mask.plot()
 
 
 @figure_test
-def test_plot_masked_aia171_nowcsaxes(aia171_test_map):
-    shape = aia171_test_map.data.shape
-    mask = np.zeros_like(aia171_test_map.data, dtype=bool)
-    mask[0:shape[0]/2, 0:shape[1]/2] = True
-    masked_map = sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
+def test_plot_masked_aia171_nowcsaxes(aia171_test_map_with_mask):
     ax = plt.gca()
-    masked_map.plot(axes=ax)
+    aia171_test_map_with_mask.plot(axes=ax)
