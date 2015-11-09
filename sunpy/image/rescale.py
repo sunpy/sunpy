@@ -191,8 +191,6 @@ def reshape_image_to_4d_superpixel(img, dimensions):
            [2, 0, 4],
            [1, 2, 2]])
 
-
-
     Parameters
     ----------
     img : `numpy.ndarray`
