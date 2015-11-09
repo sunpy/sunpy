@@ -205,6 +205,16 @@ scale:\t\t {scale}
         w2.wcs.pc = self.rotation_matrix
         w2.wcs.cunit = self.units
 
+        # Astropy WCS does not understand the SOHO default of "solar-x" and
+        # "solar-y" ctypes.  This overrides the default assignment and
+        # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
+        # 449, 791.
+        if w2.wcs.ctype[0].lower() == "solar-x":
+            w2.wcs.ctype[0] = 'HPLN-TAN'
+
+        if w2.wcs.ctype[1].lower() == "solar-y":
+            w2.wcs.ctype[1] = 'HPLT-TAN'
+
         return w2
 
     # Some numpy extraction
@@ -592,8 +602,8 @@ scale:\t\t {scale}
         x, y = self.wcs.wcs_pix2world(x, y, origin)
 
         # WCS always outputs degrees.
-        x *= u.deg
-        y *= u.deg
+        x = u.Quantity(x, u.deg)
+        y = u.Quantity(y, u.deg)
 
         x = Longitude(x, wrap_angle=180*u.deg)
         y = Latitude(y)
@@ -1306,11 +1316,11 @@ scale:\t\t {scale}
 
         Examples
         --------
-        #Simple Plot with color bar
-        >>> aiamap.plot()   # doctest: +SKIP
+        >>> # Simple Plot with color bar
+        >>> aia.plot()   # doctest: +SKIP
         >>> plt.colorbar()   # doctest: +SKIP
 
-        #Add a limb line and grid
+        >>> # Add a limb line and grid
         >>> aia.plot()   # doctest: +SKIP
         >>> aia.draw_limb()   # doctest: +SKIP
         >>> aia.draw_grid()   # doctest: +SKIP

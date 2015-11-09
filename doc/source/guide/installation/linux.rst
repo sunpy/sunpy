@@ -24,9 +24,9 @@ can be installed using :command:`apt-get`: ::
 
     sudo apt-get install python-qt4
     sudo apt-get install git-core
-    sudo apt-get python-numpy
-    sudo apt-get python-scipy
-    sudo apt-get python-matplotlib
+    sudo apt-get install python-numpy
+    sudo apt-get install python-scipy
+    sudo apt-get install python-matplotlib
     sudo apt-get update
 
 Now we shall install pip.
