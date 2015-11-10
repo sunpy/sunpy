@@ -1105,7 +1105,7 @@ scale:\t\t {scale}
             The function 'func' must take a numpy array as its first argument,
             and support the axis keyword with the meaning of a numpy axis
             keyword (see the description of `~numpy.sum` for an example.)
-            The default value of 'func' is `~np.sum`; using this causes
+            The default value of 'func' is `~numpy.sum`; using this causes
             superpixel to sum over (dimension[0], dimension[1]) pixels of the
             original map.
 
@@ -1116,8 +1116,7 @@ scale:\t\t {scale}
 
         References
         ----------
-        | `Summarizing blocks of an array using a moving window
-        | <http://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html>`_
+        | `Summarizing blocks of an array using a moving window <http://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html>`_
         """
 
         # Note: because the underlying ndarray is transposed in sense when
