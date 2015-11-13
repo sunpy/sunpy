@@ -264,17 +264,57 @@ def parse_obssumm_file(filename):
               '50 - 100 keV', '100 - 300 keV', '300 - 800 keV', '800 - 7000 keV',
               '7000 - 20000 keV']
 
-    lightcurve_data = np.array(afits[6].data.field('countrate'))
+    # the data stored in the fits file are "compressed" countrates stored as one byte
+    compressed_countrate = np.array(afits[6].data.field('countrate'))
 
-    dim = np.array(lightcurve_data[:,0]).size
+    countrate = uncompress_countrate(compressed_countrate)
+    dim = np.array(countrate[:,0]).size
 
-    time_array = [reference_time_ut + timedelta(0,time_interval_sec*a) for a in np.arange(dim)]
+    time_array = [reference_time_ut + timedelta(0,time_interval_sec * a) for a in np.arange(dim)]
 
     #TODO generate the labels for the dict automatically from labels
-    data = {'time': time_array, 'data': lightcurve_data, 'labels': labels}
+    data = {'time': time_array, 'data': countrate, 'labels': labels}
 
     return header, data
 
+def uncompress_countrate(compressed_countrate):
+    """Convert the compressed count rate inside of observing summary file from
+    a compressed byte to a true count rate
+
+    Parameters
+    ----------
+    compressed_countrate : byte array
+        A compressed count rate returned from an observing summary file.
+
+    References
+    ----------
+    Hsi_obs_summ_decompress.pro `<http://hesperia.gsfc.nasa.gov/ssw/hessi/idl/qlook_archive/hsi_obs_summ_decompress.pro>`_
+    """
+    ll = np.arange(0, 16, 1)
+    lkup = np.zeros(256, dtype='int')
+    sum = 0
+    for i in range(0, 16):
+        lkup[16 * i:16 * (i + 1)] = ll * 2 ** i + sum
+        if i < 15:
+            sum = lkup[16 * (i + 1) - 1] + 2 ** i
+    return lkup[compressed_countrate]
+
+def hsi_linecolors():
+    """Define discrete colors to use for RHESSI plots
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    tuple : matplotliblib color list
+
+    References
+    ----------
+    hsi_linecolors.pro `<http://hesperia.gsfc.nasa.gov/ssw/hessi/idl/gen/hsi_linecolors.pro`_
+    """
+    return ('black', 'magenta', 'lime', 'cyan', 'y', 'red', 'blue', 'orange', 'olive')
 
 def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
                  image_dim=(64, 64)):
@@ -334,7 +374,6 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
     bproj_image = np.inner(probability_of_transmission, count).reshape(image_dim)
 
     return bproj_image
-
 
 def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
                    image_dim=(64, 64) * u.pix):

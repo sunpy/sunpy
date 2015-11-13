@@ -1,5 +1,6 @@
 0.6.2
 -----
+* Bug fix for rhessi summary light curve values.
 
 0.6.1
 -----
