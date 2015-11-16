@@ -1207,11 +1207,11 @@ scale:\t\t {scale}
         l0 = self.heliographic_longitude.to(u.deg).value
         units = self.units
 
-        #Prep the plot kwargs
-        plot_kw = {'color':'white',
-                   'linestyle':'dotted',
-                   'zorder':100,
-                   'transform':transform}
+        # Prep the plot kwargs
+        plot_kw = {'color': 'white',
+                   'linestyle': 'dotted',
+                   'zorder': 100,
+                   'transform': transform}
         plot_kw.update(kwargs)
 
         hg_longitude_deg = np.linspace(-180, 180, num=361) + l0
