@@ -1092,7 +1092,7 @@ scale:\t\t {scale}
     @u.quantity_input(dimensions=u.pixel)
     def superpixel(self, dimensions, func=np.sum):
         """Returns a new map consisting of superpixels formed by applying
-        'func' to the original data.
+        'func' to the original map data.
 
         Parameters
         ----------
