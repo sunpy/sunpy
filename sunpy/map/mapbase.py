@@ -1406,6 +1406,48 @@ scale:\t\t {scale}
 
         return [rect]
 
+    def draw_contours(self, levels=None, percent=True, axes=None, **imshow_args):
+        """
+        Draw contours of the data
+
+        Parameters
+        ----------
+
+        levels : `~numpy.ndarray`, list
+            A list of numbers indicating the level curves to draw;
+            e.g., to draw just the zero contour pass levels=[0]
+
+        percent : bool, default: True
+            The width of the rectangle.
+
+        axes : `matplotlib.axes.Axes`
+            The axes on which to plot the rectangle, defaults to the current axes.
+
+        Returns
+        -------
+
+        cs : `list`
+            The `~matplotlib.QuadContourSet` object, after it has been added to ``axes``.
+
+        Notes
+        -----
+
+        Extra keyword arguments to this function are passed through to the
+        `~matplotlib.pyplot.contour` function.
+
+        """
+        if not axes:
+            axes = plt.gca()
+
+        if levels is not None:
+            if percent:
+                cs = axes.contour(self.data, levels * self.data.max(), **imshow_args)
+            else:
+                cs = axes.contour(self.data, levels, **imshow_args)
+        else:
+            cs = axes.contour(self.data, **imshow_args)
+        return cs
+
     @toggle_pylab
     def peek(self, draw_limb=False, draw_grid=False,
                    colorbar=True, basic_plot=False, **matplot_args):
