@@ -1441,7 +1441,7 @@ scale:\t\t {scale}
 
         if levels is not None:
             if percent:
-                cs = axes.contour(self.data, levels * self.data.max(), **imshow_args)
+                cs = axes.contour(self.data, 0.01 * levels * self.data.max(), **imshow_args)
             else:
                 cs = axes.contour(self.data, levels, **imshow_args)
         else:
