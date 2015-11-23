@@ -1,5 +1,6 @@
 0.6.2
 -----
+ * Changed start of GOES 2 operational time range back to 1980-01-04 so data from 1980 can be read into GOESLightCurve object
 
 0.6.1
 -----
