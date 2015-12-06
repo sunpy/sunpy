@@ -100,7 +100,7 @@ class PrimaryKey(_VSOSimpleAttr):
     """
     def __init__(self, key, value):
         Attr.__init__(self)
-        self.__class__.__name__ += '_{}'.format(key)
+        self.__class__.__name__ = 'PrimaryKey_{}'.format(key)
         self.value = value
 
 
