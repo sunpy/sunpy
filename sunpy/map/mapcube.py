@@ -173,7 +173,7 @@ class MapCube(object):
 
         # Normal plot
         def annotate_frame(i):
-            axes.set_title("{s.name} {s.date!s}".format(s=self[i]))
+            axes.set_title("{s.name}".format(s=self[i]))
 
             # x-axis label
             if self[0].coordinate_system.x == 'HG':
