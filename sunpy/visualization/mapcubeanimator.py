@@ -116,7 +116,7 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         This may overwrite some stuff in `GenericMap.plot()`
         """
         # Normal plot
-        self.axes.set_title("{s.name} {s.date!s}".format(s=self.data[ind]))
+        self.axes.set_title("{s.name}".format(s=self.data[ind]))
 
         # x-axis label
         if self.data[ind].coordinate_system.x == 'HG':
