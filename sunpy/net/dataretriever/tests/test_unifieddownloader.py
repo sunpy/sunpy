@@ -76,7 +76,7 @@ def test_multiple_clients(time, instrument1, instrument2):
 def test_vso():
     unifiedresp = UnifiedDownloader.search(attrs.Time("2013/3/4 01:00:00", "2013/3/4 01:10:00"), attrs.Instrument('aia'),
     attrs.Wavelength(304 * u.AA, 304 * u.AA), attrs.Sample(600*u.s))
-    num_files_to_download = sum([block.num_records() for block in unifiedresp])
+    num_files_to_download = unifiedresp.file_num
     res = UnifiedDownloader.fetch(unifiedresp, wait=False)
     files_downloaded = len(res.wait())
     assert files_downloaded == num_files_to_download
