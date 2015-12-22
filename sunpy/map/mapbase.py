@@ -1121,9 +1121,9 @@ scale:\t\t {scale}
 
         # Note: because the underlying ndarray is transposed in sense when
         #   compared to the Map, the ndarray is transposed, resampled, then
-        #   transposed back
+        #   transposed back.
         # Note: "center" defaults to True in this function because data
-        #   coordinates in a Map are at pixel centers
+        #   coordinates in a Map are at pixel centers.
 
         # Make a copy of the original data, perform reshaping, and apply the
         # function.
