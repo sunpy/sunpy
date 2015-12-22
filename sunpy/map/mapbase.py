@@ -1092,7 +1092,7 @@ scale:\t\t {scale}
     @u.quantity_input(dimensions=u.pixel)
     def superpixel(self, dimensions, func=np.sum):
         """Returns a new map consisting of superpixels formed by applying
-        'func' to the original data.
+        'func' to the original map data.
 
         Parameters
         ----------
@@ -1105,7 +1105,7 @@ scale:\t\t {scale}
             The function 'func' must take a numpy array as its first argument,
             and support the axis keyword with the meaning of a numpy axis
             keyword (see the description of `~numpy.sum` for an example.)
-            The default value of 'func' is `~np.sum`; using this causes
+            The default value of 'func' is `~numpy.sum`; using this causes
             superpixel to sum over (dimension[0], dimension[1]) pixels of the
             original map.
 
@@ -1157,11 +1157,11 @@ scale:\t\t {scale}
 
         # Create new map instance
         if self.mask is not None:
-            new_map.mask = np.ma.getmask(new_array)
             new_map.data = np.ma.getdata(new_array)
+            new_map.mask = np.ma.getmask(new_array)
         else:
-            new_map.mask = None
             new_map.data = new_array
+            new_map.mask = None
         return new_map
 
 # #### Visualization #### #
@@ -1207,11 +1207,11 @@ scale:\t\t {scale}
         l0 = self.heliographic_longitude.to(u.deg).value
         units = self.units
 
-        #Prep the plot kwargs
-        plot_kw = {'color':'white',
-                   'linestyle':'dotted',
-                   'zorder':100,
-                   'transform':transform}
+        # Prep the plot kwargs
+        plot_kw = {'color': 'white',
+                   'linestyle': 'dotted',
+                   'zorder': 100,
+                   'transform': transform}
         plot_kw.update(kwargs)
 
         hg_longitude_deg = np.linspace(-180, 180, num=361) + l0
