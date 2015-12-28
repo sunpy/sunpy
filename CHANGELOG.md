@@ -9,6 +9,7 @@ Latest
   native coordinate system of the map.
 
 * Added the ability to shift maps to correct for incorrect map location, for example.
+* Bug fix for rhessi summary light curve values.
 
 0.6.0
 -----
@@ -42,6 +43,7 @@ Latest
  * Added a few tests for the sunpy.roi module.
  * Refactored mapcube co-alignment functionality.
  * Removed sample data from distribution and added ability to download sample files
+ * Changed start of GOES 2 operational time range back to 1980-01-04 so data from 1980 can be read into GOESLightCurve object
  * Require JSOC request data calls have an email address attached.
  * Calculation of the solar rotation of a point on the Sun as seen from Earth, and its application to the de-rotation of mapcubes.
  * Downloaded files now keep file extensions rather than replacing all periods with underscores
