@@ -15,6 +15,9 @@ from sunpy.util import expand_list
 from sunpy.extern.six.moves import range
 import astropy.units as u
 
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
+
 __all__ = ['MapCubed']
 
 
@@ -74,10 +77,10 @@ class MapCubed(object):
             raise ValueError("All Map data must have the same scale")
 
         self.data = np.zeros((maps[0].data.shape[0], maps[0].data.shape[1], len(maps)), dtype=maps[0].data.dtype)
-        self.meta = []
+        self._meta = []
         for i, m in enumerate(maps):
             self.data[:,:,i] = m.data
-            self.meta.append(m.meta)
+            self._meta.append(m.meta)
 
         self._maps = maps
 
@@ -95,6 +98,30 @@ class MapCubed(object):
         """Return the number of maps in a mapcube."""
         return len(self._maps)
 
+    def __repr__(self):
+        if not self.observatory:
+            return self.data.__repr__()
+        return (
+"""SunPy {dtype!s}
+---------
+Observatory:\t {obs}
+Instrument:\t {inst}
+Detector:\t {det}
+Measurement:\t {meas}
+Wavelength:\t {wave}
+Obs Date:\t {date:{tmf}}
+dt:\t\t {dt:f}
+Dimension:\t {dim}
+scale:\t\t {scale}
+
+""".format(dtype=self.__class__.__name__,
+           obs=self.observatory, inst=self.instrument, det=self.detector,
+           meas=self.measurement, wave=self.wavelength, date=self.date, dt=self.exposure_time,
+           dim=u.Quantity(self.dimensions),
+           scale=u.Quantity(self.scale),
+           tmf=TIME_FORMAT)
++ self.data.__repr__())
+
     # Sorting methods
     @classmethod
     def _sort_by_date(cls):
@@ -103,6 +130,31 @@ class MapCubed(object):
     def _derotate(self):
         """Derotates the layers in the MapCube"""
         pass
+
+    @property
+    def instrument(self):
+        """Instrument name"""
+        return self._maps[0].meta.get('instrume', "").replace("_", " ")
+
+    @property
+    def measurement(self):
+        """Measurement name, defaults to the wavelength of image"""
+        return u.Quantity(self._maps[0].meta.get('wavelnth', 0), self._maps[0].meta.get('waveunit', ""))
+
+    @property
+    def wavelength(self):
+        """wavelength of the observation"""
+        return u.Quantity(self._maps[0].meta.get('wavelnth', 0), self._maps[0].meta.get('waveunit', ""))
+
+    @property
+    def observatory(self):
+        """Observatory or Telescope name"""
+        return self._maps[0].meta.get('obsrvtry', self._maps[0].meta.get('telescop', "")).replace("_", " ")
+
+    @property
+    def detector(self):
+        """Detector name"""
+        return self._maps[0].meta.get('detector', "")
 
     @property
     def dimensions(self):
@@ -136,6 +188,19 @@ class MapCubed(object):
     def units(self):
         """Image coordinate units along the x and y axes (i.e. cunit1, cunit2)."""
         return self._maps[0].units
+
+    @property
+    def exposure_time(self):
+        """Exposure time of the image in seconds."""
+        return self.meta('exptime') * u.s
+
+    def meta(self, key):
+        """The Meta."""
+        result = [meta[key] for meta in self._meta]
+        # check to see if they are all the same if so just return one value
+        if np.all([r == result[0] for r in result]):
+            result = result[0]
+        return result
 
     @property
     def rotation_matrix(self):
@@ -172,25 +237,25 @@ class MapCubed(object):
         """
         Calculate the standard deviation of the data array.
         """
-        return Map((np.std(self.data, axis=2), self.meta[0]))
+        return Map((np.std(self.data, axis=2), self._meta[0]))
 
     def mean(self, *args, **kwargs):
         """
         Calculate the mean of the data array.
         """
-        return Map((np.mean(self.data, axis=2), self.meta[0]))
+        return Map((np.mean(self.data, axis=2), self._meta[0]))
 
     def min(self, *args, **kwargs):
         """
         Calculate the minimum value of the data array.
         """
-        return Map((np.min(self.data, axis=2), self.meta[0]))
+        return Map((np.min(self.data, axis=2), self._meta[0]))
 
     def max(self, *args, **kwargs):
         """
         Calculate the maximum value of the data array.
         """
-        return Map((np.max(self.data, axis=2), self.meta[0]))
+        return Map((np.max(self.data, axis=2), self._meta[0]))
 
     def plot(self, axes=None, resample=None, annotate=True,
              interval=200, plot_function=None, **kwargs):
