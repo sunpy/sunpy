@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.animation
 
 from sunpy.map import GenericMap
+from sunpy.map.map_factory import Map
 from sunpy.visualization.mapcubeanimator import MapCubeAnimator
 from sunpy.visualization import wcsaxes_compat
 from sunpy.util import expand_list
@@ -162,6 +163,30 @@ class MapCubed(object):
         for m in self._maps:
             new_maps.append(m.resample(dimensions, method=method))
         return self.__init__(new_maps)
+
+    def std(self):
+        """
+        Calculate the standard deviation of the data array.
+        """
+        return Map((np.std(self.data, axis=2), self.meta[0]))
+
+    def mean(self, *args, **kwargs):
+        """
+        Calculate the mean of the data array.
+        """
+        return Map((np.mean(self.data, axis=2), self.meta[0]))
+
+    def min(self, *args, **kwargs):
+        """
+        Calculate the minimum value of the data array.
+        """
+        return Map((np.min(self.data, axis=2), self.meta[0]))
+
+    def max(self, *args, **kwargs):
+        """
+        Calculate the maximum value of the data array.
+        """
+        return Map((np.max(self.data, axis=2), self.meta[0]))
 
     def plot(self, axes=None, resample=None, annotate=True,
              interval=200, plot_function=None, **kwargs):
