@@ -8,7 +8,6 @@ import numpy as np
 import matplotlib.animation
 
 from sunpy.map import GenericMap
-
 from sunpy.visualization.mapcubeanimator import MapCubeAnimator
 from sunpy.visualization import wcsaxes_compat
 from sunpy.util import expand_list
@@ -69,6 +68,10 @@ class MapCubed(object):
         if not np.all([m.data.shape == maps[0].data.shape for m in maps]):
             raise ValueError("All Map data must have the same dimensions")
 
+        # test if all maps have the same scale
+        if not np.all([m.scale == maps[0].scale for m in maps]):
+            raise ValueError("All Map data must have the same scale")
+
         self.data = np.zeros((maps[0].data.shape[0], maps[0].data.shape[1], len(maps)), dtype=maps[0].data.dtype)
         self.meta = []
         for i, m in enumerate(maps):
@@ -107,18 +110,58 @@ class MapCubed(object):
         """
         return Pair(*u.Quantity(np.flipud(self.data.shape), 'pixel'))
 
-    def submap(self, range_a, range_b):
-        smap = []
+    @property
+    def dtype(self):
+        """
+        The `numpy.dtype` of the array of the map.
+        """
+        return self.data.dtype
+
+    @property
+    def date(self):
+        """Observation time"""
+        time = []
         for m in self._maps:
-            smap.append(m.submap(range_a, range_b))
-        return self.__init__(smap)
+            time.append(m.date)
+        return time
+
+    @property
+    def scale(self):
+        """Image scale along the x and y axes in units/pixel (i.e. cdelt1, cdelt2)"""
+        #TODO: Fix this if only CDi_j matrix is provided
+        return self._maps[0].scale
+
+    @property
+    def units(self):
+        """Image coordinate units along the x and y axes (i.e. cunit1, cunit2)."""
+        return self._maps[0].units
+
+    @property
+    def rotation_matrix(self):
+        return self._maps[0].rotation_matrix
+
+    def submap(self, range_a, range_b):
+        """
+        """
+        new_maps = []
+        for m in self._maps:
+            new_maps.append(m.submap(range_a, range_b))
+        return self.__init__(new_maps)
 
     @u.quantity_input(dimensions=u.pixel)
     def superpixel(self, dimensions, method='sum'):
-        smap = []
+        new_maps = []
         for m in self._maps:
-            smap.append(m.superpixel(dimensions, method=method))
-        return self.__init__(smap)
+            new_maps.append(m.superpixel(dimensions, method=method))
+        return self.__init__(new_maps)
+
+    @u.quantity_input(dimensions=u.pixel)
+    def resample(self, dimensions, method='linear'):
+        """Returns a new Map that has been resampled up or down"""
+        new_maps = []
+        for m in self._maps:
+            new_maps.append(m.resample(dimensions, method=method))
+        return self.__init__(new_maps)
 
     def plot(self, axes=None, resample=None, annotate=True,
              interval=200, plot_function=None, **kwargs):
