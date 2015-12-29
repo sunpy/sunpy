@@ -13,6 +13,7 @@ from sunpy.visualization.mapcubeanimator import MapCubeAnimator
 from sunpy.visualization import wcsaxes_compat
 from sunpy.util import expand_list
 from sunpy.extern.six.moves import range
+import astropy.units as u
 
 __all__ = ['MapCubed']
 
@@ -55,22 +56,26 @@ class MapCubed(object):
         sortby = kwargs.pop('sortby', 'date')
         derotate = kwargs.pop('derotate', False)
 
-        self.maps = expand_list(args)
+        maps = expand_list(args)
 
-        for m in self.maps:
+        for m in maps:
             if not isinstance(m, GenericMap):
                 raise ValueError(
-                           'CompositeMap expects pre-constructed map objects.')
+                           'MapCubed expects pre-constructed map objects.')
 
-        # Optionally sort data
-        if sortby is not None:
-            if sortby is 'date':
-                self.maps.sort(key=self._sort_by_date())
-            else:
-                raise ValueError("Only sort by date is supported")
+        maps.sort(key=self._sort_by_date())
 
-        if derotate:
-            self._derotate()
+        # test if all maps have the same shape
+        if not np.all([m.data.shape == maps[0].data.shape for m in maps]):
+            raise ValueError("All Map data must have the same dimensions")
+
+        self.data = np.zeros((maps[0].data.shape[0], maps[0].data.shape[1], len(maps)), dtype=maps[0].data.dtype)
+        self.meta = []
+        for i, m in enumerate(maps):
+            self.data[:,:,i] = m.data
+            self.meta.append(m.meta)
+
+        self._maps = maps
 
     def __getitem__(self, key):
         """Overriding indexing operation.  If the key results in a single map,
@@ -94,6 +99,26 @@ class MapCubed(object):
     def _derotate(self):
         """Derotates the layers in the MapCube"""
         pass
+
+    @property
+    def dimensions(self):
+        """
+        The dimensions of the array (x axis first, y axis second).
+        """
+        return Pair(*u.Quantity(np.flipud(self.data.shape), 'pixel'))
+
+    def submap(self, range_a, range_b):
+        smap = []
+        for m in self._maps:
+            smap.append(m.submap(range_a, range_b))
+        return self.__init__(smap)
+
+    @u.quantity_input(dimensions=u.pixel)
+    def superpixel(self, dimensions, method='sum'):
+        smap = []
+        for m in self._maps:
+            smap.append(m.superpixel(dimensions, method=method))
+        return self.__init__(smap)
 
     def plot(self, axes=None, resample=None, annotate=True,
              interval=200, plot_function=None, **kwargs):
