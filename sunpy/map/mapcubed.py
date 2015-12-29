@@ -109,7 +109,7 @@ class MapCubed(object):
         """
         The dimensions of the array (x axis first, y axis second).
         """
-        return self._maps[0]
+        return self._maps[0].dimensions
 
     @property
     def dtype(self):
