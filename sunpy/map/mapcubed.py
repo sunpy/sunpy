@@ -109,7 +109,7 @@ class MapCubed(object):
         """
         The dimensions of the array (x axis first, y axis second).
         """
-        return Pair(*u.Quantity(np.flipud(self.data.shape), 'pixel'))
+        return self._maps[0]
 
     @property
     def dtype(self):
@@ -146,15 +146,19 @@ class MapCubed(object):
         """
         new_maps = []
         for m in self._maps:
-            new_maps.append(m.submap(range_a, range_b))
-        return self.__init__(new_maps)
+            new_map = deepcopy(m)
+            new_maps.append(new_map.submap(range_a, range_b))
+        return MapCubed(new_maps)
 
     @u.quantity_input(dimensions=u.pixel)
     def superpixel(self, dimensions, method='sum'):
+        """
+        """
         new_maps = []
         for m in self._maps:
-            new_maps.append(m.superpixel(dimensions, method=method))
-        return self.__init__(new_maps)
+            new_map = deepcopy(m)
+            new_maps.append(new_map.superpixel(dimensions, method=method))
+        return MapCubed(new_maps)
 
     @u.quantity_input(dimensions=u.pixel)
     def resample(self, dimensions, method='linear'):
