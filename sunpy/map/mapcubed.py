@@ -86,14 +86,14 @@ class MapCubed(object):
         then a map object is returned.  This allows functions like enumerate to
         work.  Otherwise, a mapcube is returned."""
 
-        if isinstance(self.maps[key], GenericMap):
-            return self.maps[key]
+        if isinstance(self._maps[key], GenericMap):
+            return self._maps[key]
         else:
-            return MapCube(self.maps[key])
+            return MapCube(self._maps[key])
 
     def __len__(self):
         """Return the number of maps in a mapcube."""
-        return len(self.maps)
+        return len(self._maps)
 
     # Sorting methods
     @classmethod
@@ -261,7 +261,7 @@ class MapCubed(object):
 
         """
         if not axes:
-            axes = wcsaxes_compat.gca_wcs(self.maps[0].wcs)
+            axes = wcsaxes_compat.gca_wcs(self._maps[0].wcs)
         fig = axes.get_figure()
 
         if not plot_function:
@@ -290,10 +290,10 @@ class MapCubed(object):
         if resample:
             # This assumes that the maps are homogeneous!
             # TODO: Update this!
-            resample = np.array(len(self.maps)-1) * np.array(resample)
-            ani_data = [x.resample(resample) for x in self.maps]
+            resample = np.array(len(self._maps)-1) * np.array(resample)
+            ani_data = [x.resample(resample) for x in self._maps]
         else:
-            ani_data = self.maps
+            ani_data = self._maps
 
         im = ani_data[0].plot(axes=axes, **kwargs)
 
@@ -302,26 +302,26 @@ class MapCubed(object):
                 removes.pop(0).remove()
 
             im.set_array(ani_data[i].data)
-            im.set_cmap(self.maps[i].plot_settings['cmap'])
+            im.set_cmap(self._maps[i].plot_settings['cmap'])
 
-            norm = deepcopy(self.maps[i].plot_settings['norm'])
+            norm = deepcopy(self._maps[i].plot_settings['norm'])
             # The following explicit call is for bugged versions of Astropy's ImageNormalize
             norm.autoscale_None(ani_data[i].data)
             im.set_norm(norm)
 
             if wcsaxes_compat.is_wcsaxes(axes):
-                im.axes.reset_wcs(self.maps[i].wcs)
+                im.axes.reset_wcs(self._maps[i].wcs)
                 wcsaxes_compat.default_wcs_grid(axes)
             else:
-                im.set_extent(np.concatenate((self.maps[i].xrange.value,
-                                              self.maps[i].yrange.value)))
+                im.set_extent(np.concatenate((self._maps[i].xrange.value,
+                                              self._maps[i].yrange.value)))
 
             if annotate:
                 annotate_frame(i)
-            removes += list(plot_function(fig, axes, self.maps[i]))
+            removes += list(plot_function(fig, axes, self._maps[i]))
 
         ani = matplotlib.animation.FuncAnimation(fig, updatefig,
-                                                frames=list(range(0, len(self.maps))),
+                                                frames=list(range(0, len(self._maps))),
                                                 fargs=[im, annotate, ani_data, removes],
                                                 interval=interval,
                                                 blit=False)
@@ -399,8 +399,8 @@ class MapCubed(object):
 
         if resample:
             if self.all_maps_same_shape():
-                resample = np.array(len(self.maps) - 1) * np.array(resample)
-                for amap in self.maps:
+                resample = np.array(len(self._maps) - 1) * np.array(resample)
+                for amap in self._maps:
                     amap.resample(resample)
             else:
                 raise ValueError('Maps in mapcube do not all have the same shape.')
@@ -412,7 +412,7 @@ class MapCubed(object):
         Tests if all the maps have the same number pixels in the x and y
         directions.
         """
-        return np.all([m.data.shape == self.maps[0].data.shape for m in self.maps])
+        return np.all([m.data.shape == self._maps[0].data.shape for m in self._maps])
 
     def as_array(self):
         """
@@ -421,7 +421,7 @@ class MapCubed(object):
         Otherwise, a ValueError is thrown.
         """
         if self.all_maps_same_shape():
-            return np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1).copy(), 1, 2).copy()
+            return np.swapaxes(np.swapaxes(np.asarray([m.data for m in self._maps]), 0, 1).copy(), 1, 2).copy()
         else:
             raise ValueError('Not all maps have the same shape.')
 
@@ -429,4 +429,4 @@ class MapCubed(object):
         """
         Return all the meta objects as a list.
         """
-        return [m.meta for m in self.maps]
+        return [m.meta for m in self._maps]
