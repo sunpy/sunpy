@@ -75,14 +75,11 @@ class MapCubed(object):
         # test if all maps have the same scale
         if not np.all([m.scale == maps[0].scale for m in maps]):
             raise ValueError("All Map data must have the same scale")
-
-        self.data = np.zeros((maps[0].data.shape[0], maps[0].data.shape[1], len(maps)), dtype=maps[0].data.dtype)
+        self._maps = maps
         self._meta = []
         for i, m in enumerate(maps):
-            self.data[:,:,i] = m.data
             self._meta.append(m.meta)
 
-        self._maps = maps
 
     def __getitem__(self, key):
         """Overriding indexing operation.  If the key results in a single map,
@@ -92,7 +89,7 @@ class MapCubed(object):
         if isinstance(self._maps[key], GenericMap):
             return self._maps[key]
         else:
-            return MapCube(self._maps[key])
+            return MapCubed(self._maps[key])
 
     def __len__(self):
         """Return the number of maps in a mapcube."""
@@ -109,18 +106,18 @@ Instrument:\t {inst}
 Detector:\t {det}
 Measurement:\t {meas}
 Wavelength:\t {wave}
-Obs Date:\t {date:{tmf}}
-dt:\t\t {dt:f}
-Dimension:\t {dim}
-scale:\t\t {scale}
-
+Obs. Start:\t {date_start:{tmf}}
+Obs. End:\t {date_end:{tmf}}
+Num. of Frames:\t {frame_num}
+Dimensions:\t {dim}
+Scale:\t\t {scale}
 """.format(dtype=self.__class__.__name__,
            obs=self.observatory, inst=self.instrument, det=self.detector,
-           meas=self.measurement, wave=self.wavelength, date=self.date, dt=self.exposure_time,
+           meas=self.measurement, wave=self.wavelength, date_start=self.date[0],
+           dt=self.exposure_time, date_end=self.date[-1], frame_num=len(self),
            dim=u.Quantity(self.dimensions),
            scale=u.Quantity(self.scale),
-           tmf=TIME_FORMAT)
-+ self.data.__repr__())
+           tmf=TIME_FORMAT) + self.data.__repr__())
 
     # Sorting methods
     @classmethod
@@ -130,6 +127,15 @@ scale:\t\t {scale}
     def _derotate(self):
         """Derotates the layers in the MapCube"""
         pass
+
+    @property
+    def data(self):
+        """The data"""
+        # TODO: this is slow!
+        data = np.zeros((self._maps[0].data.shape[0], self._maps[0].data.shape[1], len(self)), dtype=self._maps[0].data.dtype)
+        for i, m in enumerate(self._maps):
+            data[:,:,i] = m.data
+        return data
 
     @property
     def instrument(self):
@@ -168,7 +174,7 @@ scale:\t\t {scale}
         """
         The `numpy.dtype` of the array of the map.
         """
-        return self.data.dtype
+        return self._maps[0].dtype
 
     @property
     def date(self):
@@ -199,7 +205,7 @@ scale:\t\t {scale}
         result = [meta[key] for meta in self._meta]
         # check to see if they are all the same if so just return one value
         if np.all([r == result[0] for r in result]):
-            result = result[0]
+            result = [result[0]]
         return result
 
     @property
@@ -207,7 +213,7 @@ scale:\t\t {scale}
         return self._maps[0].rotation_matrix
 
     def submap(self, range_a, range_b):
-        """
+        """Returns a submap of the map with the specified range.
         """
         new_maps = []
         for m in self._maps:
@@ -217,7 +223,8 @@ scale:\t\t {scale}
 
     @u.quantity_input(dimensions=u.pixel)
     def superpixel(self, dimensions, method='sum'):
-        """
+        """Returns a new map consisting of superpixels formed from the
+        original data.  Useful for increasing signal to noise ratio in images.
         """
         new_maps = []
         for m in self._maps:
@@ -231,7 +238,7 @@ scale:\t\t {scale}
         new_maps = []
         for m in self._maps:
             new_maps.append(m.resample(dimensions, method=method))
-        return self.__init__(new_maps)
+        return MapCubed(new_maps)
 
     def std(self):
         """
@@ -258,7 +265,7 @@ scale:\t\t {scale}
         return Map((np.max(self.data, axis=2), self._meta[0]))
 
     def plot(self, axes=None, resample=None, annotate=True,
-             interval=200, plot_function=None, **kwargs):
+                 interval=200, plot_function=None, **kwargs):
         """
         A animation plotting routine that animates each element in the
         MapCube
@@ -323,7 +330,6 @@ scale:\t\t {scale}
         >>> cube = Map(files, cube=True)   # doctest: +SKIP
         >>> ani = cube.peek(plot_function=myplot)   # doctest: +SKIP
         >>> plt.show()   # doctest: +SKIP
-
         """
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self._maps[0].wcs)
