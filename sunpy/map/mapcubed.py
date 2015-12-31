@@ -80,7 +80,6 @@ class MapCubed(object):
         for i, m in enumerate(maps):
             self._meta.append(m.meta)
 
-
     def __getitem__(self, key):
         """Overriding indexing operation.  If the key results in a single map,
         then a map object is returned.  This allows functions like enumerate to
@@ -134,7 +133,7 @@ Scale:\t\t {scale}
         # TODO: this is slow!
         data = np.zeros((self._maps[0].data.shape[0], self._maps[0].data.shape[1], len(self)), dtype=self._maps[0].data.dtype)
         for i, m in enumerate(self._maps):
-            data[:,:,i] = m.data
+            data[:, :, i] = m.data
         return data
 
     @property
@@ -240,29 +239,44 @@ Scale:\t\t {scale}
             new_maps.append(m.resample(dimensions, method=method))
         return MapCubed(new_maps)
 
-    def std(self):
+    def apply_function(self, function, *function_args, **function_kwargs):
+        """
+        Apply a function that operates on the full 3-d data in the mapcube and
+        return a single 2-d map based on that function.
+        :param function: funct
+        :param function_args:
+        :param function_kwargs:
+        :return:
+        """
+        if "mapcube_index" in function_kwargs:
+            mapcube_index = function_kwargs.pop("mapcube_index")
+        else:
+            mapcube_index = 0
+        return Map(function(self.data, *function_args, **function_kwargs), self._meta[mapcube_index])
+
+    def std(self, mapcube_index=0):
         """
         Calculate the standard deviation of the data array.
         """
-        return Map((np.std(self.data, axis=2), self._meta[0]))
+        return Map(np.std(self.data), self._meta[mapcube_index])
 
-    def mean(self, *args, **kwargs):
+    def mean(self, mapcube_index=0):
         """
         Calculate the mean of the data array.
         """
-        return Map((np.mean(self.data, axis=2), self._meta[0]))
+        return Map(np.mean(self.data), self._meta[mapcube_index])
 
-    def min(self, *args, **kwargs):
+    def min(self, mapcube_index=0):
         """
         Calculate the minimum value of the data array.
         """
-        return Map((np.min(self.data, axis=2), self._meta[0]))
+        return Map(np.min(self.data), self._meta[mapcube_index])
 
-    def max(self, *args, **kwargs):
+    def max(self, mapcube_index=0):
         """
         Calculate the maximum value of the data array.
         """
-        return Map((np.max(self.data, axis=2), self._meta[0]))
+        return Map(np.max(self.data), self._meta[mapcube_index])
 
     def plot(self, axes=None, resample=None, annotate=True,
                  interval=200, plot_function=None, **kwargs):
