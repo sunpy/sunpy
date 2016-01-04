@@ -75,10 +75,17 @@ class MapCubed(object):
         # test if all maps have the same scale
         if not np.all([m.scale == maps[0].scale for m in maps]):
             raise ValueError("All Map data must have the same scale")
-        self._maps = maps
+
+        self.data = np.zeros((maps[0].data.shape[0], maps[0].data.shape[1], len(maps)), dtype=maps[0].data.dtype)
+        for i, m in enumerate(maps):
+            self.data[:, :, i] = m.data
+
         self._meta = []
         for i, m in enumerate(maps):
             self._meta.append(m.meta)
+
+    def _get_map(self, index):
+        return Map(self.data[:, :, index], meta=self._meta[index])
 
     def __getitem__(self, key):
         """Overriding indexing operation.  If the key results in a single map,
@@ -126,15 +133,6 @@ Scale:\t\t {scale}
     def _derotate(self):
         """Derotates the layers in the MapCube"""
         pass
-
-    @property
-    def data(self):
-        """The data"""
-        # TODO: this is slow!
-        data = np.zeros((self._maps[0].data.shape[0], self._maps[0].data.shape[1], len(self)), dtype=self._maps[0].data.dtype)
-        for i, m in enumerate(self._maps):
-            data[:, :, i] = m.data
-        return data
 
     @property
     def instrument(self):
