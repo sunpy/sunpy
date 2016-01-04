@@ -81,15 +81,15 @@ install:
     # Install default dependancies
     - conda install --yes pip
     - conda install -q --yes numpy=$NUMPY_VERSION pandas=$PANDAS_VERSION
-    - conda install -q --yes scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest jinja2 cython wcsaxes
+    - conda install -q --yes scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest jinja2 cython wcsaxes numpy=$NUMPY_VERSION pandas=$PANDAS_VERSION
     - pip install pytest-cov coverage coveralls
     # Install sunpy conda packages
-    - conda install -q --yes suds-jurko glymur
+    - conda install -q --yes suds-jurko glymur numpy=$NUMPY_VERSION pandas=$PANDAS_VERSION
     # Install the correct version of astropy
-    - if [[ $TEST_MODE != 'astropy-dev' ]]; then conda install -q --yes astropy>=0.4.0; fi
+    - if [[ $TEST_MODE != 'astropy-dev' ]]; then conda install -q --yes astropy>=0.4.0 numpy=$NUMPY_VERSION pandas=$PANDAS_VERSION; fi
     - if [[ $TEST_MODE == 'astropy-dev' ]]; then pip install git+git://github.com/astropy/astropy.git; fi
     # Install sphinx if needed
-    - if [[ $TEST_MODE == 'sphinx' || $TEST_MODE == 'doctest' ]]; then conda install -q --yes sphinx; fi
+    - if [[ $TEST_MODE == 'sphinx' || $TEST_MODE == 'doctest' ]]; then conda install -q --yes sphinx numpy=$NUMPY_VERSION pandas=$PANDAS_VERSION; fi
     - if [[ $TEST_MODE == 'sphinx' || $TEST_MODE == 'doctest' ]]; then python -c "import sunpy.data; sunpy.data.download_sample_data()"; fi
 
 script:
