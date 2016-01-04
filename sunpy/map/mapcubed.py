@@ -56,7 +56,7 @@ class MapCubed(object):
         """Creates a new Map instance"""
 
         # Hack to get around Python 2.x not backporting PEP 3102.
-        sortby = kwargs.pop('sortby', 'date')
+        orderby = kwargs.pop('orderby', 'date')
         derotate = kwargs.pop('derotate', False)
 
         maps = expand_list(args)
@@ -219,6 +219,13 @@ Scale:\t\t {scale}
             new_map = deepcopy(m)
             new_maps.append(new_map.submap(range_a, range_b))
         return MapCubed(new_maps)
+
+    def subcube(self, range_a, range_b, range_c):
+        """
+        Returns a subcube of the input cube with the specified range.
+        """
+
+        return self
 
     @u.quantity_input(dimensions=u.pixel)
     def superpixel(self, dimensions, method='sum'):
@@ -549,7 +556,7 @@ Scale:\t\t {scale}
             new_mc.append(Map(new_data, new_meta))
 
         # Create the new mapcube and return
-        return Map(new_mc, cube=True)
+        return MapCubed(new_mc)
 
     def base_difference(self, base=0, fraction=False):
         """
@@ -596,4 +603,4 @@ Scale:\t\t {scale}
             new_mc.append(Map(new_data, m.meta))
 
         # Create the new mapcube and return
-        return Map(new_mc, cube=True)
+        return MapCubed(new_mc)
