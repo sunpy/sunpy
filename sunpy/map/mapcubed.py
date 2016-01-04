@@ -515,3 +515,85 @@ Scale:\t\t {scale}
         Return all the meta objects as a list.
         """
         return [m.meta for m in self._maps]
+
+    def running_difference(self, offset=1, use_offset_for_meta='mean'):
+        """
+        Calculate the running difference of the mapcube and return a new mapcube
+
+        Parameters
+        ----------
+
+        offset : int
+           Calculate the running difference between map 'i + offset' and image 'i'.
+        use_offset_for_meta : {'ahead', 'behind'}
+           Which meta header to use in layer 'i' in the returned mapcube, either
+           from map 'i + offset' (when set to 'ahead') and image 'i' (when set to
+           'behind').
+
+        Returns
+        -------
+        sunpy.map.MapCube
+           A mapcube containing the running difference of the input mapcube.
+
+        """
+        # Create a list containing the data for the new map object
+        new_mc = []
+        for i in range(0, len(self._maps) - offset):
+            new_data = self._maps[i + offset].data - self._maps[i].data
+            if use_offset_for_meta == 'ahead':
+                new_meta = self._maps[i + offset].meta
+            elif use_offset_for_meta == 'behind':
+                new_meta = self._maps[i].meta
+            else:
+                raise ValueError('The value of the keyword "use_offset_for_meta" has not been recognized.')
+            new_mc.append(Map(new_data, new_meta))
+
+        # Create the new mapcube and return
+        return Map(new_mc, cube=True)
+
+    def base_difference(self, base=0, fraction=False):
+        """
+        Calculate the base difference of a mapcube.
+
+        Parameters
+        ----------
+        base : int, sunpy.map.Map
+           If base is an integer, this is understood as an index to the input
+           mapcube.  Differences are calculated relative to the map at index
+           'base'.  If base is a sunpy map, then differences are calculated
+           relative to that map
+
+        fraction : boolean
+            If False, then absolute changes relative to the base map are
+            returned.  If True, then fractional changes relative to the base map
+            are returned
+
+        Returns
+        -------
+        sunpy.map.MapCube
+           A mapcube containing base difference of the input mapcube.
+
+        """
+
+        if not(isinstance(base, GenericMap)):
+            base_data = self[base].data
+        else:
+            base_data = base.data
+
+        if base_data.shape != self[0].data.shape:
+            raise ValueError('Base map does not have the same shape as the maps in the input mapcube.')
+
+        # Fractional changes or absolute changes
+        if fraction:
+            relative = base_data
+        else:
+            relative = 1.0
+
+        # Create a list containing the data for the new map object
+        new_mc = []
+        for m in self:
+            new_data = (m.data - base_data) / relative
+            new_mc.append(Map(new_data, m.meta))
+
+        # Create the new mapcube and return
+        return Map(new_mc, cube=True)
