@@ -25,7 +25,8 @@ class MapCubed(object):
     """
     MapCube
 
-    A series of spatially aligned Maps of the same size.
+    A series of Maps that have the same shape (number of pixels in each
+    direction) and the same scale in each direction.
 
     Parameters
     ----------
@@ -91,15 +92,15 @@ class MapCubed(object):
         """Overriding indexing operation.  If the key results in a single map,
         then a map object is returned.  This allows functions like enumerate to
         work.  Otherwise, a mapcube is returned."""
-
-        if isinstance(self._maps[key], GenericMap):
-            return self._maps[key]
-        else:
-            return MapCubed(self._maps[key])
+        if isinstance(key, int):
+            return self._get_map(self, key)
+        elif isinstance(key, slice):
+            start, stop, step = key.indices(len(self))
+            return MapCubed([self._get_map(index) for index in range(key.start, key.stop, key.step)])
 
     def __len__(self):
         """Return the number of maps in a mapcube."""
-        return len(self._maps)
+        return self.data.shape[2]
 
     def __repr__(self):
         if not self.observatory:
@@ -195,7 +196,11 @@ Scale:\t\t {scale}
     @property
     def exposure_time(self):
         """Exposure time of the image in seconds."""
-        return self.meta('exptime') * u.s
+        return self._meta[0]['exptime'] * u.s
+
+    @property
+    def rotation_matrix(self):
+        return self._maps[0].rotation_matrix
 
     def meta(self, key):
         """The Meta."""
@@ -205,24 +210,15 @@ Scale:\t\t {scale}
             result = [result[0]]
         return result
 
-    @property
-    def rotation_matrix(self):
-        return self._maps[0].rotation_matrix
-
-    def submap(self, range_a, range_b):
+    def submap(self, range_a, range_b, range_c=None):
         """Returns a submap of the map with the specified range.
         """
         new_maps = []
-        for m in self._maps:
-            new_map = deepcopy(m)
-            new_maps.append(new_map.submap(range_a, range_b))
+        for i in range(0, len(self)):
+            new_maps.append(self._get_map(i).submap(range_a, range_b))
         return MapCubed(new_maps)
 
-    def subcube(self, range_a, range_b, range_c):
-        """
-        Returns a subcube of the input cube with the specified range.
-        """
-
+    def lightcurve(self, location_a, location_b, range_c=None):
         return self
 
     @u.quantity_input(dimensions=u.pixel)
@@ -231,27 +227,29 @@ Scale:\t\t {scale}
         original data.  Useful for increasing signal to noise ratio in images.
         """
         new_maps = []
-        for m in self._maps:
-            new_map = deepcopy(m)
-            new_maps.append(new_map.superpixel(dimensions, method=method))
+        for i in range(0, len(self)):
+            new_maps.append(self._get_map(i).superpixel(dimensions, method=method))
         return MapCubed(new_maps)
 
     @u.quantity_input(dimensions=u.pixel)
     def resample(self, dimensions, method='linear'):
         """Returns a new Map that has been resampled up or down"""
         new_maps = []
-        for m in self._maps:
-            new_maps.append(m.resample(dimensions, method=method))
+        for i in range(0, len(self)):
+            new_maps.append(self._get_map(i).resample(dimensions, method=method))
         return MapCubed(new_maps)
 
     def apply_function(self, function, *function_args, **function_kwargs):
         """
         Apply a function that operates on the full 3-d data in the mapcube and
         return a single 2-d map based on that function.
-        :param function: funct
-        :param function_args:
-        :param function_kwargs:
-        :return:
+        :param function: a function that takes a 3-d numpy array as its first
+        argument.
+        :param function_args: function arguments
+        :param function_kwargs: function keywords
+        :return: `sunpy.map.Map`
+            A map that stores the result of applying the function to the 3-d
+            data of the mapcube.
         """
         if "mapcube_index" in function_kwargs:
             mapcube_index = function_kwargs.pop("mapcube_index")
@@ -263,25 +261,25 @@ Scale:\t\t {scale}
         """
         Calculate the standard deviation of the data array.
         """
-        return Map(np.std(self.data), self._meta[mapcube_index])
+        return Map(np.std(self.data, axis=2), self._meta[mapcube_index])
 
     def mean(self, mapcube_index=0):
         """
         Calculate the mean of the data array.
         """
-        return Map(np.mean(self.data), self._meta[mapcube_index])
+        return Map(np.mean(self.data, axis=2), self._meta[mapcube_index])
 
     def min(self, mapcube_index=0):
         """
         Calculate the minimum value of the data array.
         """
-        return Map(np.min(self.data), self._meta[mapcube_index])
+        return Map(np.min(self.data, axis=2), self._meta[mapcube_index])
 
     def max(self, mapcube_index=0):
         """
         Calculate the maximum value of the data array.
         """
-        return Map(np.max(self.data), self._meta[mapcube_index])
+        return Map(np.max(self.data, axis=2), self._meta[mapcube_index])
 
     def plot(self, axes=None, resample=None, annotate=True,
                  interval=200, plot_function=None, **kwargs):
@@ -497,31 +495,7 @@ Scale:\t\t {scale}
 
         return MapCubeAnimator(self, **kwargs)
 
-    def all_maps_same_shape(self):
-        """
-        Tests if all the maps have the same number pixels in the x and y
-        directions.
-        """
-        return np.all([m.data.shape == self._maps[0].data.shape for m in self._maps])
-
-    def as_array(self):
-        """
-        If all the map shapes are the same, their image data is copied
-        into a single single ndarray. The ndarray is ordered as (ny, nx, nt).
-        Otherwise, a ValueError is thrown.
-        """
-        if self.all_maps_same_shape():
-            return np.swapaxes(np.swapaxes(np.asarray([m.data for m in self._maps]), 0, 1).copy(), 1, 2).copy()
-        else:
-            raise ValueError('Not all maps have the same shape.')
-
-    def all_meta(self):
-        """
-        Return all the meta objects as a list.
-        """
-        return [m.meta for m in self._maps]
-
-    def running_difference(self, offset=1, use_offset_for_meta='mean'):
+    def running_difference(self, offset=1, use_offset_for_meta='ahead'):
         """
         Calculate the running difference of the mapcube and return a new mapcube
 
@@ -541,14 +515,17 @@ Scale:\t\t {scale}
            A mapcube containing the running difference of the input mapcube.
 
         """
+        if offset < 1:
+            raise ValueError('The value of the offset keyword must be greater than or equal to 1.')
+
         # Create a list containing the data for the new map object
         new_mc = []
-        for i in range(0, len(self._maps) - offset):
-            new_data = self._maps[i + offset].data - self._maps[i].data
+        for i in range(0, len(self) - offset):
+            new_data = self.data[:, :, i + offset] - self.data[:, :, i]
             if use_offset_for_meta == 'ahead':
-                new_meta = self._maps[i + offset].meta
+                new_meta = self._meta[i + offset]
             elif use_offset_for_meta == 'behind':
-                new_meta = self._maps[i].meta
+                new_meta = self._meta[i]
             else:
                 raise ValueError('The value of the keyword "use_offset_for_meta" has not been recognized.')
             new_mc.append(Map(new_data, new_meta))
@@ -581,11 +558,11 @@ Scale:\t\t {scale}
         """
 
         if not(isinstance(base, GenericMap)):
-            base_data = self[base].data
+            base_data = self.data[:, :, base]
         else:
             base_data = base.data
 
-        if base_data.shape != self[0].data.shape:
+        if base_data.shape != self.data.shape:
             raise ValueError('Base map does not have the same shape as the maps in the input mapcube.')
 
         # Fractional changes or absolute changes
@@ -596,9 +573,9 @@ Scale:\t\t {scale}
 
         # Create a list containing the data for the new map object
         new_mc = []
-        for m in self:
-            new_data = (m.data - base_data) / relative
-            new_mc.append(Map(new_data, m.meta))
+        for i in range(0, len(self)):
+            new_data = (self.data[:, :, i] - base_data) / relative
+            new_mc.append(Map(new_data, self._meta[i]))
 
         # Create the new mapcube and return
         return MapCubed(new_mc)
