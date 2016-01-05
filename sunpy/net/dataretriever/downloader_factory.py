@@ -80,17 +80,20 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
     def search(self, *query):
         """
         Query for data in form of multiple parameters.
+        
         Examples
         --------
         Query for LYRALightCurve data from timerange('2012/3/4','2012/3/6')
+        
         >>> unifresp = Fido.query(Time('2012/3/4','2012/3/6'),Instrument('lyra'))
+        
         >>> unifresp = Fido.query(Time('2012/3/4','2012/3/6'),Instrument('norh') | Instrument('rhessi'))
-        >>> unifresp = Fido.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'),
-                       Wave(304, 304),Sample(60*10))
+        
+        >>> unifresp = Fido.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'),Wave(304, 304),Sample(60*10))
 
         Parameters
         ----------
-        query: Mutiple parameters,VSO-styled query. Attributes from JSOC, VSO both can be used.
+        query: Mutiple parameters, VSO-styled query. Attributes from JSOC, VSO both can be used.
 
         Returns
         -------
@@ -98,7 +101,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         Notes
         -----
-        and_ tranforms query into disjunctive normal form
+        and tranforms query into disjunctive normal form
         ie. query is now of form A & B or ((A & B) | (C & D))
         This helps in modularising query into parts and handling each of the parts individually.
         """
@@ -107,7 +110,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
     def fetch(self, qr, wait=True, progress=True, **kwargs):
         """
-        Downloads the files pointed at by URLS contained within UnifiedResponse Object.
+        Downloads the files pointed at by URLS contained within UnifiedResponse
+        Object.
+        
         Parameters
         ----------
         qr : UnifiedResponse Object
