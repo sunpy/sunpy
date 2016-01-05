@@ -52,3 +52,4 @@ from .client import QueryResponseBlock,QueryResponse,GenericClient
 from .downloader_factory import downloadresponse,UnifiedDownloaderFactory,Fido
 
 from sunpy.net.dataretriever import sources
+import clients
