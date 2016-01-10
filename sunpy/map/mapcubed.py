@@ -138,47 +138,47 @@ Scale:\t\t {scale}
     @property
     def instrument(self):
         """Instrument name"""
-        return self._maps[0].meta.get('instrume', "").replace("_", " ")
+        return self._meta[0].get('instrume', "").replace("_", " ")
 
     @property
     def measurement(self):
         """Measurement name, defaults to the wavelength of image"""
-        return u.Quantity(self._maps[0].meta.get('wavelnth', 0), self._maps[0].meta.get('waveunit', ""))
+        return u.Quantity(self._meta[0].get('wavelnth', 0), self._meta[0].get('waveunit', ""))
 
     @property
     def wavelength(self):
         """wavelength of the observation"""
-        return u.Quantity(self._maps[0].meta.get('wavelnth', 0), self._maps[0].meta.get('waveunit', ""))
+        return u.Quantity(self._meta[0].get('wavelnth', 0), self._meta[0].get('waveunit', ""))
 
     @property
     def observatory(self):
         """Observatory or Telescope name"""
-        return self._maps[0].meta.get('obsrvtry', self._maps[0].meta.get('telescop', "")).replace("_", " ")
+        return self._meta[0].get('obsrvtry', self._meta[0].get('telescop', "")).replace("_", " ")
 
     @property
     def detector(self):
         """Detector name"""
-        return self._maps[0].meta.get('detector', "")
+        return self._meta[0].get('detector', "")
 
     @property
     def dimensions(self):
         """
         The dimensions of the array (x axis first, y axis second).
         """
-        return self._maps[0].dimensions
+        return self.data.shape[1], self.data.shape[0]
 
     @property
     def dtype(self):
         """
         The `numpy.dtype` of the array of the map.
         """
-        return self._maps[0].dtype
+        return self.data.dtype
 
     @property
     def date(self):
         """Observation time"""
         time = []
-        for m in self._maps:
+        for m in self._meta:
             time.append(m.date)
         return time
 
