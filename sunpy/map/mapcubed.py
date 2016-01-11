@@ -59,6 +59,7 @@ class MapCubed(object):
         # Hack to get around Python 2.x not backporting PEP 3102.
         orderby = kwargs.pop('orderby', 'date')
         derotate = kwargs.pop('derotate', False)
+        self.ref_index = kwargs.pop('reference_index', 0)
 
         maps = expand_list(args)
 
@@ -70,14 +71,14 @@ class MapCubed(object):
         maps.sort(key=self._sort_by_date())
 
         # test if all maps have the same shape
-        if not np.all([m.data.shape == maps[0].data.shape for m in maps]):
+        if not np.all([m.data.shape == maps[self.ref_index].data.shape for m in maps]):
             raise ValueError("All Map data must have the same dimensions")
 
         # test if all maps have the same scale
-        if not np.all([m.scale == maps[0].scale for m in maps]):
+        if not np.all([m.scale == maps[self.ref_index].scale for m in maps]):
             raise ValueError("All Map data must have the same scale")
 
-        self.data = np.zeros((maps[0].data.shape[0], maps[0].data.shape[1], len(maps)), dtype=maps[0].data.dtype)
+        self.data = np.zeros((maps[self.ref_index].data.shape[0], maps[self.ref_index].data.shape[1], len(maps)), dtype=maps[self.ref_index].data.dtype)
         for i, m in enumerate(maps):
             self.data[:, :, i] = m.data
 
@@ -95,7 +96,6 @@ class MapCubed(object):
         if isinstance(key, int):
             return self._get_map(key)
         elif isinstance(key, slice):
-            start, stop, step = key.indices(len(self))
             return MapCubed([Map(self.data[:, :, ii], self._meta[ii]) for ii in xrange(*key.indices(len(self)))])
 
     def __len__(self):
@@ -138,27 +138,27 @@ Scale:\t\t {scale}
     @property
     def instrument(self):
         """Instrument name"""
-        return self._meta[0].get('instrume', "").replace("_", " ")
+        return self._meta[self.ref_index].get('instrume', "").replace("_", " ")
 
     @property
     def measurement(self):
         """Measurement name, defaults to the wavelength of image"""
-        return u.Quantity(self._meta[0].get('wavelnth', 0), self._meta[0].get('waveunit', ""))
+        return u.Quantity(self._meta[self.ref_index].get('wavelnth', 0), self._meta[self.ref_index].get('waveunit', ""))
 
     @property
     def wavelength(self):
         """wavelength of the observation"""
-        return u.Quantity(self._meta[0].get('wavelnth', 0), self._meta[0].get('waveunit', ""))
+        return u.Quantity(self._meta[self.ref_index].get('wavelnth', 0), self._meta[self.ref_index].get('waveunit', ""))
 
     @property
     def observatory(self):
         """Observatory or Telescope name"""
-        return self._meta[0].get('obsrvtry', self._meta[0].get('telescop', "")).replace("_", " ")
+        return self._meta[self.ref_index].get('obsrvtry', self._meta[self.ref_index].get('telescop', "")).replace("_", " ")
 
     @property
     def detector(self):
         """Detector name"""
-        return self._meta[0].get('detector', "")
+        return self._meta[self.ref_index].get('detector', "")
 
     @property
     def dimensions(self):
@@ -189,7 +189,7 @@ Scale:\t\t {scale}
         cdelt2)
         """
         #TODO: Fix this if only CDi_j matrix is provided
-        return self._get_map(0).scale
+        return self._get_map(self.ref_index).scale
 
     @property
     def units(self):
@@ -197,16 +197,16 @@ Scale:\t\t {scale}
         Image coordinate units along the x and y axes (i.e. cunit1,
         cunit2).
         """
-        return self._get_map(0).units
+        return self._get_map(self.ref_index).units
 
     @property
     def exposure_time(self):
         """Exposure time of the image in seconds."""
-        return self._meta[0]['exptime'] * u.s
+        return self._meta[self.ref_index]['exptime'] * u.s
 
     @property
     def rotation_matrix(self):
-        return self._get_map(0).rotation_matrix
+        return self._get_map(self.ref_index).rotation_matrix
 
     def meta(self, key):
         """The Meta."""
@@ -263,29 +263,29 @@ Scale:\t\t {scale}
             mapcube_index = 0
         return Map(function(self.data, *function_args, **function_kwargs), self._meta[mapcube_index])
 
-    def std(self, mapcube_index=0):
+    def std(self):
         """
         Calculate the standard deviation of the data array.
         """
-        return Map(np.std(self.data, axis=2), self._meta[mapcube_index])
+        return Map(np.std(self.data, axis=2), self._meta[self.ref_index])
 
-    def mean(self, mapcube_index=0):
+    def mean(self):
         """
         Calculate the mean of the data array.
         """
-        return Map(np.mean(self.data, axis=2), self._meta[mapcube_index])
+        return Map(np.mean(self.data, axis=2), self._meta[self.ref_index])
 
-    def min(self, mapcube_index=0):
+    def min(self):
         """
         Calculate the minimum value of the data array.
         """
-        return Map(np.min(self.data, axis=2), self._meta[mapcube_index])
+        return Map(np.min(self.data, axis=2), self._meta[self.ref_index])
 
-    def max(self, mapcube_index=0):
+    def max(self):
         """
         Calculate the maximum value of the data array.
         """
-        return Map(np.max(self.data, axis=2), self._meta[mapcube_index])
+        return Map(np.max(self.data, axis=2), self._meta[self.ref_index])
 
     def plot(self, axes=None, resample=None, annotate=True, interval=200,
              plot_function=None, **kwargs):
@@ -355,7 +355,7 @@ Scale:\t\t {scale}
         >>> plt.show()   # doctest: +SKIP
         """
         if not axes:
-            axes = wcsaxes_compat.gca_wcs(self._get_map(0).wcs)
+            axes = wcsaxes_compat.gca_wcs(self._get_map(self.ref_index).wcs)
         fig = axes.get_figure()
 
         if not plot_function:
