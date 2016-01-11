@@ -1101,7 +1101,7 @@ scale:\t\t {scale}
             dimension[1]) pixels of the original map.
             Note: the first argument corresponds to the 'x' axis and the second
             argument corresponds to the 'y' axis.
-        func : function applied to the original data.
+        func : function applied to the original data
             The function 'func' must take a numpy array as its first argument,
             and support the axis keyword with the meaning of a numpy axis
             keyword (see the description of `~numpy.sum` for an example.)
