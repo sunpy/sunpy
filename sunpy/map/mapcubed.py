@@ -86,17 +86,17 @@ class MapCubed(object):
             self._meta.append(m.meta)
 
     def _get_map(self, index):
-        return Map(self.data[:, :, index], meta=self._meta[index])
+        return Map(self.data[:, :, index], self._meta[index])
 
     def __getitem__(self, key):
         """Overriding indexing operation.  If the key results in a single map,
         then a map object is returned.  This allows functions like enumerate to
         work.  Otherwise, a mapcube is returned."""
         if isinstance(key, int):
-            return self._get_map(self, key)
+            return self._get_map(key)
         elif isinstance(key, slice):
             start, stop, step = key.indices(len(self))
-            return MapCubed([self._get_map(index) for index in range(key.start, key.stop, key.step)])
+            return MapCubed([Map(self.data[:, :, ii], self._meta[ii]) for ii in xrange(*key.indices(len(self)))])
 
     def __len__(self):
         """Return the number of maps in a mapcube."""
@@ -184,14 +184,20 @@ Scale:\t\t {scale}
 
     @property
     def scale(self):
-        """Image scale along the x and y axes in units/pixel (i.e. cdelt1, cdelt2)"""
+        """
+        Image scale along the x and y axes in units/pixel (i.e. cdelt1,
+        cdelt2)
+        """
         #TODO: Fix this if only CDi_j matrix is provided
-        return self._maps[0].scale
+        return self._get_map(0).scale
 
     @property
     def units(self):
-        """Image coordinate units along the x and y axes (i.e. cunit1, cunit2)."""
-        return self._maps[0].units
+        """
+        Image coordinate units along the x and y axes (i.e. cunit1,
+        cunit2).
+        """
+        return self._get_map(0).units
 
     @property
     def exposure_time(self):
@@ -200,7 +206,7 @@ Scale:\t\t {scale}
 
     @property
     def rotation_matrix(self):
-        return self._maps[0].rotation_matrix
+        return self._get_map(0).rotation_matrix
 
     def meta(self, key):
         """The Meta."""
@@ -281,8 +287,8 @@ Scale:\t\t {scale}
         """
         return Map(np.max(self.data, axis=2), self._meta[mapcube_index])
 
-    def plot(self, axes=None, resample=None, annotate=True,
-                 interval=200, plot_function=None, **kwargs):
+    def plot(self, axes=None, resample=None, annotate=True, interval=200,
+             plot_function=None, **kwargs):
         """
         A animation plotting routine that animates each element in the
         MapCube
@@ -349,7 +355,7 @@ Scale:\t\t {scale}
         >>> plt.show()   # doctest: +SKIP
         """
         if not axes:
-            axes = wcsaxes_compat.gca_wcs(self._maps[0].wcs)
+            axes = wcsaxes_compat.gca_wcs(self._get_map(0).wcs)
         fig = axes.get_figure()
 
         if not plot_function:
@@ -378,10 +384,10 @@ Scale:\t\t {scale}
         if resample:
             # This assumes that the maps are homogeneous!
             # TODO: Update this!
-            resample = np.array(len(self._maps)-1) * np.array(resample)
-            ani_data = [x.resample(resample) for x in self._maps]
+            resample = np.array(len(self)-1) * np.array(resample)
+            ani_data = [self._get_map(j).resample(resample) for j in range(0, len(self))]
         else:
-            ani_data = self._maps
+            ani_data = [self._get_map(j) for j in range(0, len(self))]
 
         im = ani_data[0].plot(axes=axes, **kwargs)
 
@@ -409,10 +415,10 @@ Scale:\t\t {scale}
             removes += list(plot_function(fig, axes, self._maps[i]))
 
         ani = matplotlib.animation.FuncAnimation(fig, updatefig,
-                                                frames=list(range(0, len(self._maps))),
-                                                fargs=[im, annotate, ani_data, removes],
-                                                interval=interval,
-                                                blit=False)
+                                                 frames=list(range(0, len(self))),
+                                                 fargs=[im, annotate, ani_data, removes],
+                                                 interval=interval,
+                                                 blit=False)
 
         return ani
 
@@ -487,9 +493,9 @@ Scale:\t\t {scale}
 
         if resample:
             if self.all_maps_same_shape():
-                resample = np.array(len(self._maps) - 1) * np.array(resample)
-                for amap in self._maps:
-                    amap.resample(resample)
+                resample = np.array(len(self) - 1) * np.array(resample)
+                for i in range(0, len(self)):
+                    self._get_map(i).resample(resample)
             else:
                 raise ValueError('Maps in mapcube do not all have the same shape.')
 
