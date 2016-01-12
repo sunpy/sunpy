@@ -814,8 +814,8 @@ scale:\t\t {scale}
         # Calculate the needed padding or unpadding
         diff = np.asarray(np.ceil((extent - new_map.data.shape) / 2)).ravel()
         # Pad the image array
-        pad_x = np.max((diff[1], 0))
-        pad_y = np.max((diff[0], 0))
+        pad_x = np.int(np.max((diff[1], 0)))
+        pad_y = np.int(np.max((diff[0], 0)))
         new_map.data = np.pad(new_map.data,
                               ((pad_y, pad_y), (pad_x, pad_x)),
                               mode='constant',
