@@ -302,6 +302,43 @@ the resolution of the conflict with: ::
 
 You can then proceed to push this change up to your branch.
 
+**Backporting contribution**
+
+Sometimes a contribution needs to be backported to the latest stable branch, this
+may be due to a bug being fixed or something similar.
+There are different ways to do so, if the contribution contains just a couple
+of commits, then the easiest is to `cherry-pick` them.
+Assuming you are in the branch of your new feature (eg. `new_feature`), this
+is what you need to do:
+
+First you need to find out which commits you want to copy to the other branch: ::
+
+  git log
+
+Download/update the upstream branches to your local machine: ::
+
+  git fetch upstream
+
+Create a new branch from the version you want to backport, X.y: ::
+
+  git checkout -b new_feature_X.y upstream/X.y
+
+Copy the commits using `cherry-pick`, `xxxxxxxx` (`yyyyyyyy`) refers to the
+oldest (newest) commit you want to backport. `^` at the end of the oldest is
+to include it, otherwise will take the ones after that point: ::
+
+  git cherry-pick xxxxxxxx^..yyyyyyyy
+
+Push that new branch to your repository on github: ::
+
+  git push origin new_feature_X.y
+
+Once done, then you can create a new pull request to the X.y branch.
+Remember to keep the same title that the original but adding [X.y] at the beginning.
+Also add a reference to the original pull request in the comments with
+the appropriate format: `#pr-number`.
+
+
 Coding Standards
 ----------------
 All code that is part of the SunPy project should follow The Style Guide for
