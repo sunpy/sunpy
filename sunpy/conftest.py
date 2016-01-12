@@ -50,6 +50,14 @@ def pytest_runtest_setup(item):
             pytest.skip(msg.format(item.name))
 
 def pytest_unconfigure(config):
+    tempdir = tempfile.mkdtemp(suffix="_figures")
+    for h in hash.file_list:
+        for name, search_h in hash.hash_library.iteritems():
+            if h == search_h:
+                os.rename(hash.file_list[h], os.path.join(tempdir, name + '.png'))
+                #print(os.path.join(os.path.dirname(hash.file_list[h]), name + '.png'))
+    print('All test files for figure hashes can be found in %s' % tempdir)
+
     #Check if additions have been made to the hash library
     if len(hash.hash_library) > hash_library_original_len:
         #Write the new hash library in JSON
