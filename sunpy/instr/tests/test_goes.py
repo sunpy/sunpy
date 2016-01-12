@@ -454,6 +454,8 @@ def test_flux_to_classletter():
     assert goes.flux_to_flareclass(7.8e-09 * u.watt/u.m**2) == 'A0.78'
     assert goes.flux_to_flareclass(0.00024 * u.watt/u.m**2) == 'X2.4'
     assert goes.flux_to_flareclass(4.7e-06 * u.watt/u.m**2) == 'C4.7'
+    assert goes.flux_to_flareclass(6.9e-07 * u.watt/u.m**2) == 'B6.9'
+    assert goes.flux_to_flareclass(2.1e-05 * u.watt/u.m**2) == 'M2.1'
 
 def test_class_to_flux():
     classes = ['A3.49', 'A0.23', 'M1', 'X2.3', 'M5.8', 'C2.3', 'B3.45', 'X20']
