@@ -1090,7 +1090,7 @@ scale:\t\t {scale}
         return new_map
 
     @u.quantity_input(dimensions=u.pixel)
-    def superpixel(self, dimensions, func=np.sum):
+    def superpixel(self, dimensions, offset=(0, 0)*u.pix, func=np.sum):
         """Returns a new map consisting of superpixels formed by applying
         'func' to the original map data.
 
@@ -1101,6 +1101,8 @@ scale:\t\t {scale}
             dimension[1]) pixels of the original map.
             Note: the first argument corresponds to the 'x' axis and the second
             argument corresponds to the 'y' axis.
+        offset : tuple
+            Offset from (0,0) used when calculating the
         func : function applied to the original data
             The function 'func' must take a numpy array as its first argument,
             and support the axis keyword with the meaning of a numpy axis
@@ -1129,10 +1131,12 @@ scale:\t\t {scale}
         # function.
         if self.mask is not None:
             reshaped = reshape_image_to_4d_superpixel(np.ma.array(self.data.copy(), mask=self.mask),
-                                                      [dimensions.value[1], dimensions.value[0]])
+                                                      [dimensions.value[1], dimensions.value[0]],
+                                                      offset)
         else:
             reshaped = reshape_image_to_4d_superpixel(self.data.copy(),
-                                                      [dimensions.value[1], dimensions.value[0]])
+                                                      [dimensions.value[1], dimensions.value[0]],
+                                                      offset)
         new_array = func(func(reshaped, axis=3), axis=1)
 
         # Update image scale and number of pixels
