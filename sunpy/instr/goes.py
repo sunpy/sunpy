@@ -69,7 +69,11 @@ from sunpy import lightcurve
 from sunpy.util.net import check_download_file
 from sunpy import sun
 
-GOES_CONVERSION_DICT = {-4: 'X', -5: 'M', -6: 'C', -7: 'B', -8: 'A'}
+GOES_CONVERSION_DICT = {'X': u.Quantity(1e-4, "W/m^2"),
+                        'M': u.Quantity(1e-5, "W/m^2"),
+                        'C': u.Quantity(1e-6, "W/m^2"),
+                        'B': u.Quantity(1e-7, "W/m^2"),
+                        'A': u.Quantity(1e-8, "W/m^2")}
 
 __all__ = ['get_goes_event_list', 'calculate_temperature_em',
            'calculate_radiative_loss_rate', 'calculate_xray_luminosity', 'flux_to_flareclass',
@@ -1306,12 +1310,8 @@ def flareclass_to_flux(flareclass):
 
     flareclass = flareclass.upper()
     #invert the conversion dictionary
-    conversion_dict = {v: k for k, v in GOES_CONVERSION_DICT.items()}
-
-    str_class = flareclass[0]
-    decade = conversion_dict.get(str_class)
-    flux = float(flareclass[1:]) * 10 ** decade
-    return u.Quantity(flux, "W/m^2")
+    #conversion_dict = {v: k for k, v in GOES_CONVERSION_DICT.items()}
+    return float(flareclass[1:]) * GOES_CONVERSION_DICT[flareclass[0]]
 
 @u.quantity_input(goesflux=u.watt/u.m**2)
 def flux_to_flareclass(goesflux):
@@ -1356,7 +1356,8 @@ def flux_to_flareclass(goesflux):
         raise ValueError("Flux cannot be negative")
 
     decade = np.floor(np.log10(goesflux.to('W/m**2').value))
-    conversion_dict = GOES_CONVERSION_DICT
+    #invert the conversion dictionary
+    conversion_dict = {v: k for k, v in GOES_CONVERSION_DICT.items()}
     if decade < -8:
         str_class = "A"
         decade = -8
@@ -1364,7 +1365,6 @@ def flux_to_flareclass(goesflux):
         str_class = "X"
         decade = -4
     else:
-        str_class = conversion_dict.get(decade)
-
+        str_class = conversion_dict.get(u.Quantity(10 ** decade, "W/m**2" ))
     goes_subclass = 10 ** -decade * goesflux.to('W/m**2').value
-    return "%s%.3g" % (str_class, goes_subclass)
+    return "{0}{1:.3g}".format(str_class, goes_subclass)
