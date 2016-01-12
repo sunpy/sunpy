@@ -329,6 +329,7 @@ def test_calc_rad_loss_obstime():
     assert_quantity_allclose(rad_loss_test["rad_loss_cumul"],
                        rad_loss_expected["rad_loss_cumul"], rtol=0.0001)
 
+@pytest.mark.online
 def test_calculate_xray_luminosity():
     # Check correct exceptions are raised to incorrect inputs
     not_goeslc = []
