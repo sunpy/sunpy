@@ -53,6 +53,8 @@ matrix:
          - os: linux
            env: PANDAS_VERSION=0.15.2
          - os: linux
+           env: TEST_MODE='figure'
+         - os: linux
            env: TEST_MODE='astropy-dev'
          - os: linux
            env: TEST_MODE='sphinx'
@@ -92,10 +94,11 @@ install:
     - if [[ $TEST_MODE == 'sphinx' || $TEST_MODE == 'doctest' ]]; then python -c "import sunpy.data; sunpy.data.download_sample_data()"; fi
 
 script:
-    - if [[ $TEST_MODE == 'sphinx' ]]; then python setup.py build_sphinx -w; fi
     - if [[ $TEST_MODE == 'offline' || $TEST_MODE == 'astropy-dev' ]]; then python setup.py test; fi
+    - if [[ $TEST_MODE == 'figure' ]]; then python setup.py test --figure; fi
+    - if [[ $TEST_MODE == 'sphinx' ]]; then python setup.py build_sphinx -w; fi
     - if [[ $TEST_MODE == 'online' ]]; then python setup.py test --online --coverage --cov-report=html; fi
-    - if [[ $TEST_MODE == 'skip' ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
+    #- if [[ $TEST_MODE == 'skip' ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
     - if [[ $TEST_MODE == 'doctest' ]]; then python setup.py build_sphinx -b doctest; fi
     - if [[ $TEST_MODE == 'python3' ]]; then continuous-integration/python3.sh; fi
 
