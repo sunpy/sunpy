@@ -105,6 +105,7 @@ class SunPyTest(AstropyTest):
                'parallel={1.parallel!r}, '
                'online={online!r}, '
                'offline={offline!r}, '
+               'figure={figure!r}, '
                'coverage={1.coverage!r}, '
                'cov_report={1.cov_report!r})); '
                '{cmd_post}'
