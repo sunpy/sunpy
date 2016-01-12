@@ -34,7 +34,7 @@ class SunPyTest(AstropyTest):
          'Only run test that do require a internet connection.'),
         # Run tests that check figure generation
         ('figure', None,
-         'Run tests that compare figures against stored hashes.')
+         'Run tests that compare figures against stored hashes.'),
         # Calculate test coverage
         ('coverage', 'c',
          'Create a coverage report. Requires the coverage package.'),

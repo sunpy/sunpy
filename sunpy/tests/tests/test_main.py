@@ -68,7 +68,7 @@ def test_main_only_online(monkeypatch):
 
 def test_main_figures(monkeypatch):
     monkeypatch.setattr(pytest, 'main', lambda x: x)
-    args = sunpy.tests.main(figures=True)
+    args = sunpy.tests.main(figure=True)
     assert args in (['-k-online', 'sunpy'],
                     ['-k-online', root_dir])
 
