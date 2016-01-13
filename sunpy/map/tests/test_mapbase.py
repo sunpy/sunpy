@@ -364,7 +364,6 @@ def test_superpixel(aia171_test_map, aia171_test_map_with_mask):
                                                              aia171_test_map.data[1][0] +
                                                              aia171_test_map.data[1][1]))
 
-    dimensions = (2, 2)*u.pix
     superpixel_map_avg = aia171_test_map.superpixel(dimensions, func=np.mean)
     assert_quantity_allclose(superpixel_map_avg.dimensions[1], aia171_test_map.dimensions[1]/dimensions[1]*u.pix)
     assert_quantity_allclose(superpixel_map_avg.dimensions[0], aia171_test_map.dimensions[0]/dimensions[0]*u.pix)
@@ -380,6 +379,17 @@ def test_superpixel(aia171_test_map, aia171_test_map_with_mask):
                              aia171_test_map.dimensions[1]/dimensions[1])
     assert_quantity_allclose(superpixel_map_sum.mask.shape[1],
                              aia171_test_map.dimensions[0]/dimensions[0])
+
+    # Test that the offset is respected
+    superpixel_map_sum = aia171_test_map_with_mask.superpixel(dimensions, offset=(1, 1)*u.pix)
+    assert_quantity_allclose(superpixel_map_sum.dimensions[1], aia171_test_map.dimensions[1]/dimensions[1]*u.pix - 1*u.pix)
+    assert_quantity_allclose(superpixel_map_sum.dimensions[0], aia171_test_map.dimensions[0]/dimensions[0]*u.pix - 1*u.pix)
+
+    dimensions = (7, 9)*u.pix
+    superpixel_map_sum = aia171_test_map_with_mask.superpixel(dimensions, offset=(4, 4)*u.pix)
+    assert_quantity_allclose(superpixel_map_sum.dimensions[0], np.int((aia171_test_map.dimensions[0]/dimensions[0]).value)*u.pix - 1*u.pix)
+    assert_quantity_allclose(superpixel_map_sum.dimensions[1], np.int((aia171_test_map.dimensions[1]/dimensions[1]).value)*u.pix - 1*u.pix)
+
 
 def calc_new_matrix(angle):
     c = np.cos(np.deg2rad(angle))
@@ -490,3 +500,16 @@ def test_plot_masked_aia171(aia171_test_map_with_mask):
 def test_plot_masked_aia171_nowcsaxes(aia171_test_map_with_mask):
     ax = plt.gca()
     aia171_test_map_with_mask.plot(axes=ax)
+
+
+@figure_test
+def test_plot_aia171_superpixel_nowcsaxes(aia171_test_map):
+    ax = plt.gca()
+    aia171_test_map.superpixel((9, 7)*u.pix, offset=(4, 4)*u.pix).plot(axes=ax)
+
+
+
+@figure_test
+def test_plot_masked_aia171_superpixel_nowcsaxes(aia171_test_map_with_mask):
+    ax = plt.gca()
+    aia171_test_map_with_mask.superpixel((9, 7)*u.pix, offset=(4, 4)*u.pix).plot(axes=ax)

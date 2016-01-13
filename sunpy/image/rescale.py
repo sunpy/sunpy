@@ -217,8 +217,8 @@ def reshape_image_to_4d_superpixel(img, dimensions, offset):
 
     """
     # New dimensions of the final image
-    na = np.int((img.shape[0] - offset[0]) / dimensions[0])
-    nb = np.int((img.shape[1] - offset[1]) / dimensions[1])
+    na = int(np.floor((img.shape[0] - offset[0]) / dimensions[0]))
+    nb = int(np.floor((img.shape[1] - offset[1]) / dimensions[1]))
 
     # Reshape up to a higher dimensional array which is useful for higher
     # level operations
