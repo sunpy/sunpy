@@ -1135,7 +1135,7 @@ scale:\t\t {scale}
         if self.mask is not None:
             reshaped = reshape_image_to_4d_superpixel(np.ma.array(self.data.copy(), mask=self.mask),
                                                       [dimensions.value[1], dimensions.value[0]],
-                                                      [offset.value[1]], offset.value[0])
+                                                      [offset.value[1], offset.value[0]])
         else:
             reshaped = reshape_image_to_4d_superpixel(self.data.copy(),
                                                       [dimensions.value[1], dimensions.value[0]],
