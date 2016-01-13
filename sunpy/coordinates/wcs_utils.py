@@ -17,6 +17,7 @@ def solar_wcs_frame_mapping(wcs):
     dateobs = wcs.wcs.dateobs if wcs.wcs.dateobs else None
     hglon = None
     hglat = None
+    dsun = None
 
     if hasattr(wcs, 'heliographic_longitude'):
         hglon = wcs.heliographic_longitude
@@ -24,16 +25,19 @@ def solar_wcs_frame_mapping(wcs):
     if hasattr(wcs, 'heliographic_latitude'):
         hglat = wcs.heliographic_latitude
 
+    if hasattr(wcs, 'dsun'):
+        dsun = wcs.dsun
+
     if xcoord == 'HPLN' and ycoord == 'HPLT':
-        return HelioProjective(dateobs=dateobs, L0=hglon, B0=hglat)
+        return HelioProjective(dateobs=dateobs, L0=hglon, B0=hglat, D0=dsun)
 
     if xcoord == 'HGLN' and ycoord == 'HGLT':
-        return HelioGraphicStonyhurst()
+        return HelioGraphicStonyhurst(dateobs=dateobs)
 
     if xcoord == 'CRLN' and ycoord == 'CRLT':
-        return HelioGraphicCarrington()
+        return HelioGraphicCarrington(dateobs=dateobs)
 
     if xcoord == 'SOLX' and ycoord == 'SOLY':
-        return HelioCentric()
+        return HelioCentric(dateobs=dateobs, L0=hglon, B0=hglat, D0=dsun)
 
 astropy.wcs.utils.WCS_FRAME_MAPPINGS.append([solar_wcs_frame_mapping])

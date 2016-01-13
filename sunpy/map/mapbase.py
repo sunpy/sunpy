@@ -241,6 +241,7 @@ scale:\t\t {scale}
         w2.wcs.dateobs = self.date.isoformat()
         w2.heliographic_latitude = self.heliographic_latitude
         w2.heliographic_longitude = self.heliographic_longitude
+        w2.dsun = self.dsun
 
         # Astropy WCS does not understand the SOHO default of "solar-x" and
         # "solar-y" ctypes.  This overrides the default assignment and
