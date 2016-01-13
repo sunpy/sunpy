@@ -1,6 +1,6 @@
 {
-    "sunpy.map.tests.test_mapbase.test_plot_aia171": "66bfff2e346925891781245006f310c12fa25e5ddadcb5c7889cbb5378185248",
-    "sunpy.map.tests.test_mapbase.test_plot_aia171_nowcsaxes": "9cdf5c679712a292c1cf889f03a1a2e5ec675e226b56069e17eaecbdac89fda5",
-    "sunpy.map.tests.test_mapbase.test_plot_masked_aia171": "e2661efb8ef059bbc5db064361325b241c6dab8c26d2a42a9f9651cdffd49638",
-    "sunpy.map.tests.test_mapbase.test_plot_masked_aia171_nowcsaxes": "0b50bd42e803ab3977cc703aacb53d92ce28ea2ad8ca054a807dce5a80d26e5e"
+    "sunpy.map.tests.test_mapbase.test_plot_aia171": "a317599f56bbabb7ed72d70293237bb857d49071b86d0d361db2da7db4d068e1",
+    "sunpy.map.tests.test_mapbase.test_plot_aia171_nowcsaxes": "886c049b133c344f4b00a33c2968cc4bec2c9539e995db15f51a9da4cc21a57a",
+    "sunpy.map.tests.test_mapbase.test_plot_masked_aia171": "342eb99d3c3f0eaf04f736d2548820d55f0db516d40c7a5ed37244d8a04e7959",
+    "sunpy.map.tests.test_mapbase.test_plot_masked_aia171_nowcsaxes": "f2df8eb49af90f65002d808b7937fd002649f13037f74f80dfc506a38eeccacb"
 }
