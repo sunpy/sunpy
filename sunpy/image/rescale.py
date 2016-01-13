@@ -155,7 +155,7 @@ def _resample_spline(orig, dimensions, offset, m1):
     return scipy.ndimage.map_coordinates(orig, newcoords)
 
 
-def reshape_image_to_4d_superpixel(img, dimensions):
+def reshape_image_to_4d_superpixel(img, dimensions, offset):
     """Re-shape the two dimension input image into a a four dimensional
     array whose first and third dimensions express the number of original
     pixels in the x and y directions that form one superpixel. The reshaping
@@ -216,12 +216,12 @@ def reshape_image_to_4d_superpixel(img, dimensions):
     if np.any(np.array(img.shape) % np.array(dimensions)):
         raise ValueError('New dimensions must divide original image size exactly.')
 
+    na = np.int((img.shape[0] - offset[1].value) / dimensions[0])
+    nb = np.int((img.shape[1] - offset[0].value) / dimensions[1])
+
     # Reshape up to a higher dimensional array which is useful for higher
     # level operations
-    return img.reshape(img.shape[0] / dimensions[0],
-                       dimensions[0],
-                       img.shape[1] / dimensions[1],
-                       dimensions[1])
+    return img[offset[1].value:, offset[0]:].reshape(na, dimensions[0], nb, dimensions[1])
 
 
 class UnrecognizedInterpolationMethod(ValueError):
