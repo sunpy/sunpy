@@ -410,7 +410,7 @@ scale:\t\t {scale}
 
         # Update crvals
         new_meta['crval1'] = ((self.meta['crval1'] * self.units.x + x).to(self.units.x)).value
-        new_meta['crval2'] = ((self.meta['crval2'] * self.units.x + y).to(self.units.y)).value
+        new_meta['crval2'] = ((self.meta['crval2'] * self.units.y + y).to(self.units.y)).value
 
         new_map.meta = new_meta
 
@@ -1089,8 +1089,8 @@ scale:\t\t {scale}
 
         return new_map
 
-    @u.quantity_input(dimensions=u.pixel)
-    def superpixel(self, dimensions, offset=(0, 0)*u.pix, func=np.sum):
+    @u.quantity_input(dimensions=u.pixel, offset=u.pixel)
+    def superpixel(self, dimensions, offset=(0, 0)*u.pixel, func=np.sum):
         """Returns a new map consisting of superpixels formed by applying
         'func' to the original map data.
 
@@ -1127,24 +1127,27 @@ scale:\t\t {scale}
         # Note: "center" defaults to True in this function because data
         #   coordinates in a Map are at pixel centers.
 
+        if (offset.value[0] < 0) or (offset.value[1] < 0):
+            raise ValueError("Offset is strictly non-negative.")
+
         # Make a copy of the original data, perform reshaping, and apply the
         # function.
         if self.mask is not None:
             reshaped = reshape_image_to_4d_superpixel(np.ma.array(self.data.copy(), mask=self.mask),
                                                       [dimensions.value[1], dimensions.value[0]],
-                                                      offset)
+                                                      [offset.value[1]], offset.value[0])
         else:
             reshaped = reshape_image_to_4d_superpixel(self.data.copy(),
                                                       [dimensions.value[1], dimensions.value[0]],
-                                                      offset)
+                                                      [offset.value[1], offset.value[0]])
         new_array = func(func(reshaped, axis=3), axis=1)
 
         # Update image scale and number of pixels
         new_map = deepcopy(self)
         new_meta = new_map.meta
 
-        new_nx = (self.dimensions[0] / dimensions[0]).value
-        new_ny = (self.dimensions[1] / dimensions[1]).value
+        new_nx = new_array.shape[1]
+        new_ny = new_array.shape[0]
 
         # Update metadata
         new_meta['cdelt1'] = (dimensions[0] * self.scale.x).value
@@ -1156,8 +1159,8 @@ scale:\t\t {scale}
             new_meta['CD2_2'] *= dimensions[1].value
         new_meta['crpix1'] = (new_nx + 1) / 2.
         new_meta['crpix2'] = (new_ny + 1) / 2.
-        new_meta['crval1'] = self.center.x.value
-        new_meta['crval2'] = self.center.y.value
+        new_meta['crval1'] = self.center.x.to(self.units.x).value + 0.5*(offset[0]*self.scale.x).to(self.units.x).value
+        new_meta['crval2'] = self.center.y.to(self.units.y).value + 0.5*(offset[1]*self.scale.y).to(self.units.y).value
 
         # Create new map instance
         if self.mask is not None:
