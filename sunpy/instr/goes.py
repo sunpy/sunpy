@@ -386,7 +386,7 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
     # PREPARE DATA
     # GOES 6 long channel flux before 1983-Jun-28 must be corrected by a
     # factor of 4.43/5.32
-    if date < datetime.datetime(1983, 06, 28) and satellite == 6:
+    if date < datetime.datetime(1983, 6, 28) and satellite == 6:
         longflux_corrected = longflux*(4.43/5.32)
     else:
         longflux_corrected = longflux
