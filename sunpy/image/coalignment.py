@@ -347,7 +347,7 @@ def repair_image_nonfinite(image):
 
 
 @u.quantity_input(yshift=u.pix, xshift=u.pix)
-def apply_shifts(mc, yshift, xshift, clip=True):
+def apply_shifts(mc, yshift, xshift, **kwargs):
     """
     Apply a set of pixel shifts to a `~sunpy.map.MapCube`, and return a new
     `~sunpy.map.MapCube`.
@@ -362,9 +362,14 @@ def apply_shifts(mc, yshift, xshift, clip=True):
         An array of pixel shifts in the y-direction for an image.
     xshift : `~astropy.units.Quantity` instance
         An array of pixel shifts in the x-direction for an image.
+
+    Keywords
+    --------
     clip : bool
         If True, then clip off x, y edges in the datacube that are potentially
         affected by edges effects.
+
+    All other keywords are passed to `scipy.ndimage.interpolation.shift`.
 
     Returns
     -------
@@ -376,12 +381,13 @@ def apply_shifts(mc, yshift, xshift, clip=True):
     new_mc = []
 
     # Calculate the clipping
+    clip = kwargs.pop('clip', True)
     if clip:
         yclips, xclips = calculate_clipping(-yshift, -xshift)
 
     # Shift the data and construct the mapcube
     for i, m in enumerate(mc):
-        shifted_data = shift(m.data, [yshift[i].value, xshift[i].value])
+        shifted_data = shift(m.data, [yshift[i].value, xshift[i].value], **kwargs)
         new_meta = deepcopy(m.meta)
         # Clip if required.  Use the submap function to return the appropriate
         # portion of the data.
