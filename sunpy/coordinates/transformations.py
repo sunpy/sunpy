@@ -222,6 +222,26 @@ def hpc_to_hpr(hpcframe, hprframe):
     """
     Transform from the hpcframe to a hprframe
     """
+    # Put it in rads for np
+    lon = np.deg2rad(hpcframe.Tx)
+    lat = np.deg2rad(hpcframe.Ty)
+    # Elongation calc:
+    # Get numerator and denomenator for atan2 calculation
+    top = np.cos(lat)*np.cos(lon)
+    btm = np.sqrt((np.cos(lat)**2)*(np.sin(lon)**2) + (np.sin(lat)**2))
+    el = np.arctan2(top,btm)
+    # Position angle calc:
+    top = np.sin(lat)
+    btm = -np.cos(lat)*np.sin(lon)
+    pa = np.arctan2(top,btm)
+    # Put it back into degs
+    # Take 90 degrees off both and times it by -1, because...
+    pi2 = u.Quantity(np.pi/2,unit=u.rad)
+    el = np.rad2deg(el)
+    pa = np.rad2deg(pa)
+
+    representation = UnitSphericalRepresentation(el, pa)
+    return hprframe.realize_frame(representation)
 
 
 @frame_transform_graph.transform(FunctionTransform,

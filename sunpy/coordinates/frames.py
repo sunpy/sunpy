@@ -391,45 +391,25 @@ class HelioProjectiveRadial(BaseCoordinateFrame):
         The radial distance from the observer to the coordinate point.
     """
 
-    default_representation = SphericalWrap180Representation
+    default_representation = UnitSphericalRepresentation
 
     _frame_specific_representation_info = {
-        'spherical': [RepresentationMapping('lon', 'dec', u.arcsec),
-                      RepresentationMapping('lat', 'psi', u.arcsec),
+        'spherical': [RepresentationMapping('lon', 'dec', u.deg),
+                      RepresentationMapping('lat', 'psi', u.deg),
                       RepresentationMapping('distance', 'distance', u.km)],
 
-        'sphericalwrap180': [RepresentationMapping('lon', 'dec', u.arcsec),
-                             RepresentationMapping('lat', 'psi', u.arcsec),
+        'sphericalwrap180': [RepresentationMapping('lon', 'dec', u.deg),
+                             RepresentationMapping('lat', 'psi', u.deg),
                              RepresentationMapping('distance', 'distance', u.km)],
 
-        'unitspherical': [RepresentationMapping('lon', 'dec', u.arcsec),
-                          RepresentationMapping('lat', 'psi', u.arcsec)],
+        'unitspherical': [RepresentationMapping('lon', 'dec', u.deg),
+                          RepresentationMapping('lat', 'psi', u.deg)],
 
-        'unitsphericalwrap180': [RepresentationMapping('lon', 'dec', u.arcsec),
-                                 RepresentationMapping('lat', 'psi', u.arcsec)],
+        'unitsphericalwrap180': [RepresentationMapping('lon', 'dec', u.deg),
+                                 RepresentationMapping('lat', 'psi', u.deg)]}
 
     D0 = FrameAttribute(default=(1*u.au).to(u.km))
     dateobs = TimeFrameAttributeSunPy()
     L0 = FrameAttribute(default=0*u.deg)
     B0 = FrameAttribute(default=0*u.deg)
-    RSun = FrameAttribute(default=RSUN_METERS.to(u.km))
-
-    def __init__(self, *args, **kwargs):
-        _rep_kwarg = kwargs.get('representation', None)
-
-        BaseCoordinateFrame.__init__(self, *args, **kwargs)
-
-        # If representation was explicitly passed, do not change the rep.
-        if not _rep_kwarg:
-            # The base __init__ will make this a UnitSphericalRepresentation
-            # This makes it Wrap180 instead
-            if isinstance(self._data, UnitSphericalRepresentation):
-                self._data = UnitSphericalWrap180Representation(lat=self._data.lat,
-                                                                lon=self._data.lon)
-                self.representation = UnitSphericalWrap180Representation
-            # Make a Spherical Wrap180 instead
-            elif isinstance(self._data, SphericalRepresentation):
-                self._data = SphericalWrap180Representation(lat=self._data.lat,
-                                                            lon=self._data.lon,
-                                                            distance=self._data.distance)
-                self.representation = SphericalWrap180Representation
+    rsun = FrameAttribute(default=RSUN_METERS.to(u.km))
