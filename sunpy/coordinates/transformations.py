@@ -30,7 +30,7 @@ from astropy.tests.helper import quantity_allclose
 
 from .representation import SphericalWrap180Representation
 from .frames import (HeliographicStonyhurst, HeliographicCarrington,
-                     Heliocentric, Helioprojective)
+                     Heliocentric, Helioprojective, HelioprojectiveRadial)
 
 __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',
@@ -215,6 +215,21 @@ def hgs_to_hcc(heliogcoord, heliocframe):
 
     return heliocframe.realize_frame(representation)
 
+
+@frame_transform_graph.transform(FunctionTransform, Helioprojective,
+                                 HelioprojectiveRadial)
+def hpc_to_hpr(hpcframe, hprframe):
+    """
+    Transform from the hpcframe to a hprframe
+    """
+
+
+@frame_transform_graph.transform(FunctionTransform,
+                                 HelioprojectiveRadial, Helioprojective)
+def hpr_to_hpc(hprframe, hpcframe):
+    """
+    Transform from the hprframe to a hpcframe
+    """
 
 
 @frame_transform_graph.transform(FunctionTransform, Helioprojective,
