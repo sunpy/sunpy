@@ -53,4 +53,7 @@ def solar_wcs_frame_mapping(wcs):
         return Heliocentric(obstime=dateobs, observer=observer)
 
 
+    if xcoord == 'HRLN' and ycoord == 'HRLT':
+        return HelioProjectiveRadial(dateobs=dateobs, L0=hglon, B0=hglat, D0=dsun)
+
 astropy.wcs.utils.WCS_FRAME_MAPPINGS.append([solar_wcs_frame_mapping])
