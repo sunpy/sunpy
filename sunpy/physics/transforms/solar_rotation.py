@@ -101,8 +101,10 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
         affected by edges effects.
 
     ``**kwargs``
-        These keywords are passed to the function
-        `sunpy.physics.transforms.solar_rotation.calculate_solar_rotate_shift`.
+        Additional keywords used to control the solar de-rotation.  The keywords
+        that have function here are those that are used to control the
+        calculation of the solar rotation - see `sunpy.physics.transforms.solar_rotation.rot_hpc`
+        - and those used to control the subsequent image - see `scipy.ndimage.interpolation.shift`.
 
     Returns
     -------
@@ -120,6 +122,8 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
     >>> derotated_mc = mapcube_solar_derotate(mc, layer_index=-1)
     >>> derotated_mc = mapcube_solar_derotate(mc, clip=False)
     """
+    # Split the **kwargs into those used to calculate perform the solar
+    # and those used to perform the image shifting.
 
     # Size of the data
     nt = len(mc.maps)
@@ -141,4 +145,4 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
         yshift_keep[i] = yshift_arcseconds[i] / m.scale.y
 
     # Apply the pixel shifts and return the mapcube
-    return apply_shifts(mc, yshift_keep, xshift_keep, clip=clip)
+    return apply_shifts(mc, yshift_keep, xshift_keep, clip=clip, **kwargs)
