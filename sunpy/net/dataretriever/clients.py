@@ -11,6 +11,7 @@ from .sources.rhessi import RHESSIClient
 from .sources.noaa import NOAAIndicesClient, NOAAPredictClient
 from .sources.stereo import SEPTClient, HETClient, SITClient, PLASTICClient, MAGClient, LETClient
 from .sources.soho import ERNEClient
+from .sources.swap import SWAPClient
 
 
 
@@ -28,7 +29,7 @@ _Fido.register(LETClient, LETClient._can_handle_query)
 _Fido.register(PLASTICClient, PLASTICClient._can_handle_query)
 _Fido.register(SITClient, SITClient._can_handle_query)
 # _Fido.register(MAGClient, MAGClient._can_handle_query)   ** CDF data file issue ... mail sent to dev-mailing list **
-
+_Fido.register(SWAPClient, SWAPClient._can_handle_query)
 
 
 # Import and register other sources
