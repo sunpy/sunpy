@@ -250,6 +250,22 @@ def hpr_to_hpc(hprframe, hpcframe):
     """
     Transform from the hprframe to a hpcframe
     """
+    # Get params in rads
+    el = np.deg2rad(hprframe.psi)
+    pa = np.deg2rad(hprframe.dec)
+    # pi/2 correction
+    el += u.deg*np.pi/2
+    # Longitude conversion
+    top = -np.sin(el)*np.sin(pa)
+    btm = np.cos(el)
+    lon = np.arctan2(top,btm)
+    # Latitude conversion
+    lat = np.arcsin(np.sin(el)*np.cos(pa))
+    # Convert back to degrees.
+    lon = np.rad2deg(lon)
+    lat = np.rad2deg(lat)
+    representation = UnitSphericalWrap180Representation(lon=lon, lat=lat)
+    return hpcframe.realize_frame(representation)
 
 
 @frame_transform_graph.transform(FunctionTransform, Helioprojective,
