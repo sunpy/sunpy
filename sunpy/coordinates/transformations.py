@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+"""
+Coordinate Transformation Functions
+
+This module contains the functions for converting one
+`sunpy.coordinates.frames` object to another.
+"""
+
 # NumPy import
 import numpy as np
 
@@ -7,6 +14,7 @@ from astropy import units as u
 from astropy.coordinates.representation import CartesianRepresentation
 from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.transformations import FunctionTransform
+
 
 # SunPy imports
 from sunpy import sun
@@ -35,6 +43,9 @@ def _carrington_offset(dateobs):
 
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicStonyhurst, HelioGraphicCarrington)
 def hgs_to_hgc(hgscoord, hgcframe):
+    """
+    Transform from Heliographic Stonyhurst to Heliograpic Carrington.
+    """
     c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.dateobs).to(u.deg)
     representation = SphericalWrap180Representation(c_lon, hgscoord.lat, hgscoord.rad)
     return hgcframe.realize_frame(representation)
@@ -42,6 +53,9 @@ def hgs_to_hgc(hgscoord, hgcframe):
 
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicCarrington, HelioGraphicStonyhurst)
 def hgc_to_hgs(hgccoord, hgsframe):
+    """
+    Convert from Heliograpic Carrington to Heliographic Stonyhurst.
+    """
     s_lon = hgccoord.spherical.lon - _carrington_offset(hgccoord.dateobs).to(u.deg)
     representation = SphericalWrap180Representation(s_lon, hgccoord.lat, hgccoord.rad)
     return hgsframe.realize_frame(representation)
@@ -49,6 +63,9 @@ def hgc_to_hgs(hgccoord, hgsframe):
 
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioProjective)
 def hcc_to_hpc(helioccoord, heliopframe):
+    """
+    Convert from Heliocentic Cartesian to Helioprojective Cartesian.
+    """
     x = helioccoord.x.to(u.m)
     y = helioccoord.y.to(u.m)
     z = helioccoord.z.to(u.m)
@@ -66,6 +83,9 @@ def hcc_to_hpc(helioccoord, heliopframe):
 
 @frame_transform_graph.transform(FunctionTransform, HelioProjective, HelioCentric)
 def hpc_to_hcc(heliopcoord, heliocframe):
+    """
+    Convert from Helioprojective Cartesian to Heliocentric Cartesian.
+    """
     heliopcoord = heliopcoord.calculate_distance()
     x = np.deg2rad(heliopcoord.Tx)
     y = np.deg2rad(heliopcoord.Ty)
@@ -85,6 +105,9 @@ def hpc_to_hcc(heliopcoord, heliocframe):
 
 @frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioGraphicStonyhurst)
 def hcc_to_hgs(helioccoord, heliogframe):
+    """
+    Convert from Heliocentric Cartesian to Heliographic Stonyhurst.
+    """
     x = helioccoord.x.to(u.m)
     y = helioccoord.y.to(u.m)
     z = helioccoord.z.to(u.m)
@@ -109,6 +132,9 @@ def hcc_to_hgs(helioccoord, heliogframe):
 
 @frame_transform_graph.transform(FunctionTransform, HelioGraphicStonyhurst, HelioCentric)
 def hgs_to_hcc(heliogcoord, heliocframe):
+    """
+    Convert from Heliographic Stonyhurst to Heliograpic Carrington.
+    """
     hglon = heliogcoord.lon
     hglat = heliogcoord.lat
     r = heliogcoord.rad.to(u.m)
