@@ -5,13 +5,24 @@ from astropy.wcs import WCS
 from ..frames import *
 from ..wcs_utils import solar_wcs_frame_mapping
 
+
+def test_hpr():
+    wcs = WCS(naxis=2)
+    wcs.wcs.ctype = ['HRLN', 'HRLT']
+
+    result = solar_wcs_frame_mapping(wcs)
+
+    assert isinstance(result, HelioprojectiveRadial)
+
+
 def test_hpc():
     wcs = WCS(naxis=2)
     wcs.wcs.ctype = ['HPLN', 'HPLT']
 
     result = solar_wcs_frame_mapping(wcs)
 
-    assert isinstance(result, HelioProjective)
+    assert isinstance(result, Helioprojective)
+
 
 def test_hgs():
     wcs = WCS(naxis=2)
@@ -19,7 +30,8 @@ def test_hgs():
 
     result = solar_wcs_frame_mapping(wcs)
 
-    assert isinstance(result, HelioGraphicStonyhurst)
+    assert isinstance(result, HeliographicStonyhurst)
+
 
 def test_hgc():
     wcs = WCS(naxis=2)
@@ -27,7 +39,8 @@ def test_hgc():
 
     result = solar_wcs_frame_mapping(wcs)
 
-    assert isinstance(result, HelioGraphicCarrington)
+    assert isinstance(result, HeliographicCarrington)
+
 
 def test_hcc():
     wcs = WCS(naxis=2)
@@ -35,11 +48,12 @@ def test_hcc():
 
     result = solar_wcs_frame_mapping(wcs)
 
-    assert isinstance(result, HelioCentric)
+    assert isinstance(result, Heliocentric)
+
 
 def test_none():
     wcs = WCS(naxis=2)
-    wcs.wcs.ctype = ['wibble', 'wobbl']
+    wcs.wcs.ctype = ['spam', 'eggs']
 
     result = solar_wcs_frame_mapping(wcs)
 

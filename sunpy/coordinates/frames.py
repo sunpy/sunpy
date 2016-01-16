@@ -1,7 +1,8 @@
 """
-SunPy's built-in coordinate frames.
-Part of the proposed Coordinates API.
-@author: Pritish C. (VaticanCameos)
+Common solar physics coordinate systems.
+
+This submodule implements various solar physics coordinate frames for use with
+the `astropy.coordinates` module.
 """
 
 # NumPy import
@@ -26,17 +27,18 @@ from .frameattributes import TimeFrameAttributeSunPy
 RSUN_METERS = sun.constants.constant('radius').si.to(u.m)
 DSUN_METERS = sun.constants.constant('mean distance').si.to(u.m)
 
-__all__ = ['HelioGraphicStonyhurst', 'HelioGraphicCarrington',
-           'HelioCentric', 'HelioProjective']
+__all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
+           'Heliocentric', 'Helioprojective']
 
 
-class HelioGraphicStonyhurst(BaseCoordinateFrame):
+class HeliographicStonyhurst(BaseCoordinateFrame):
     """
     A coordinate or frame in the Stonyhurst Heliographic
     system.
-    This system is known to remain fixed with respect to
-    the center of the Earth, and its quantities, the
-    latitude and longitude, are specified in degrees.
+
+    This frame has its origin at the solar centre and the north pole above the
+    solar north pole, and the zero line on longitude pointing towards the
+    Earth.
 
     Parameters
     ----------
@@ -91,8 +93,9 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
     def __init__(self, *args, **kwargs):
         _rep_kwarg = kwargs.get('representation', None)
 
-        super(HelioGraphicStonyhurst, self).__init__(*args, **kwargs)
+        super(HeliographicStonyhurst, self).__init__(*args, **kwargs)
 
+        #### Make 3D if specified as 2D ####
         # If representation was explicitly passed, do not change the rep.
         if not _rep_kwarg:
             # The base __init__ will make this a UnitSphericalRepresentation
@@ -111,7 +114,7 @@ class HelioGraphicStonyhurst(BaseCoordinateFrame):
                 self.representation = SphericalWrap180Representation
 
 
-class HelioGraphicCarrington(HelioGraphicStonyhurst):
+class HeliographicCarrington(HeliographicStonyhurst):
     """
     A coordinate or frame in the Carrington Heliographic
     system.
@@ -165,7 +168,7 @@ class HelioGraphicCarrington(HelioGraphicStonyhurst):
     RSun = FrameAttribute(default=RSUN_METERS.to(u.km))
 
 
-class HelioCentric(BaseCoordinateFrame):
+class Heliocentric(BaseCoordinateFrame):
     """
     A coordinate or frame in the Heliocentric system.
     This frame may either be specified in Cartesian
@@ -217,15 +220,13 @@ class HelioCentric(BaseCoordinateFrame):
     B0 = FrameAttribute(default=0*u.deg)
 
 
-class HelioProjective(BaseCoordinateFrame):
+class Helioprojective(BaseCoordinateFrame):
     """
-    A coordinate or frame in the Helioprojective
-    system.
-    This is the projected equivalent of the Heliocentric
-    coordinate system. As such, the Cartesian representation
-    has degrees for each of the units, and the cylindrical
-    representation has the rho parameter replaced by Trho,
-    or theta_rho.
+    A coordinate or frame in the Helioprojective (Cartesian) system.
+
+    This is a projective coordinate system centered around the observer.
+    It is a full spherical coordinate system with position given as longitude
+    theta_x and latitude theta_y.
 
     Parameters
     ----------
@@ -271,11 +272,8 @@ class HelioProjective(BaseCoordinateFrame):
                           RepresentationMapping('lat', 'Ty', u.arcsec)],
 
         'unitsphericalwrap180': [RepresentationMapping('lon', 'Tx', u.arcsec),
-                                 RepresentationMapping('lat', 'Ty', u.arcsec)],
+                                 RepresentationMapping('lat', 'Ty', u.arcsec)]}
 
-        'cylindrical': [RepresentationMapping('rho', 'rho', u.km),
-                        RepresentationMapping('phi', 'psi', u.arcsec),
-                        RepresentationMapping('z', 'distance', u.km)]}
 
     D0 = FrameAttribute(default=(1*u.au).to(u.km))
     dateobs = TimeFrameAttributeSunPy()
@@ -288,6 +286,7 @@ class HelioProjective(BaseCoordinateFrame):
 
         BaseCoordinateFrame.__init__(self, *args, **kwargs)
 
+        #### Convert from Spherical to SphericalWrap180 ####
         # If representation was explicitly passed, do not change the rep.
         if not _rep_kwarg:
             # The base __init__ will make this a UnitSphericalRepresentation
@@ -303,9 +302,7 @@ class HelioProjective(BaseCoordinateFrame):
                                                             distance=self._data.distance)
                 self.representation = SphericalWrap180Representation
 
-    # Note that Trho = Drho + 90, and Drho is the declination parameter.
-    # According to Thompson, we use Trho internally and Drho as part of
-    # the (Drho, psi) pair when defining a coordinate in this system.
+
     def calculate_distance(self):
         """
         This method calculates the third coordnate of the Helioprojective frame.

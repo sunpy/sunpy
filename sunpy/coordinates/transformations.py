@@ -11,7 +11,7 @@ import numpy as np
 
 # Astropy imports
 from astropy import units as u
-from astropy.coordinates.representation import CartesianRepresentation
+from astropy.coordinates.representation import CartesianRepresentation, UnitSphericalRepresentation
 from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.transformations import FunctionTransform
 
@@ -19,9 +19,9 @@ from astropy.coordinates.transformations import FunctionTransform
 # SunPy imports
 from sunpy import sun
 
-from .representation import SphericalWrap180Representation
-from .frames import (HelioGraphicStonyhurst, HelioGraphicCarrington,
-                     HelioCentric, HelioProjective)
+from .representation import SphericalWrap180Representation, UnitSphericalWrap180Representation
+from .frames import (HeliographicStonyhurst, HeliographicCarrington,
+                     Heliocentric, Helioprojective)
 
 
 __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
@@ -41,7 +41,7 @@ def _carrington_offset(dateobs):
 #==============================================================================
 
 
-@frame_transform_graph.transform(FunctionTransform, HelioGraphicStonyhurst, HelioGraphicCarrington)
+@frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst, HeliographicCarrington)
 def hgs_to_hgc(hgscoord, hgcframe):
     """
     Transform from Heliographic Stonyhurst to Heliograpic Carrington.
@@ -51,7 +51,7 @@ def hgs_to_hgc(hgscoord, hgcframe):
     return hgcframe.realize_frame(representation)
 
 
-@frame_transform_graph.transform(FunctionTransform, HelioGraphicCarrington, HelioGraphicStonyhurst)
+@frame_transform_graph.transform(FunctionTransform, HeliographicCarrington, HeliographicStonyhurst)
 def hgc_to_hgs(hgccoord, hgsframe):
     """
     Convert from Heliograpic Carrington to Heliographic Stonyhurst.
@@ -61,7 +61,7 @@ def hgc_to_hgs(hgccoord, hgsframe):
     return hgsframe.realize_frame(representation)
 
 
-@frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioProjective)
+@frame_transform_graph.transform(FunctionTransform, Heliocentric, Helioprojective)
 def hcc_to_hpc(helioccoord, heliopframe):
     """
     Convert from Heliocentic Cartesian to Helioprojective Cartesian.
@@ -81,7 +81,7 @@ def hcc_to_hpc(helioccoord, heliopframe):
     return heliopframe.realize_frame(representation)
 
 
-@frame_transform_graph.transform(FunctionTransform, HelioProjective, HelioCentric)
+@frame_transform_graph.transform(FunctionTransform, Helioprojective, Heliocentric)
 def hpc_to_hcc(heliopcoord, heliocframe):
     """
     Convert from Helioprojective Cartesian to Heliocentric Cartesian.
@@ -103,7 +103,7 @@ def hpc_to_hcc(heliopcoord, heliocframe):
     return heliocframe.realize_frame(representation)
 
 
-@frame_transform_graph.transform(FunctionTransform, HelioCentric, HelioGraphicStonyhurst)
+@frame_transform_graph.transform(FunctionTransform, Heliocentric, HeliographicStonyhurst)
 def hcc_to_hgs(helioccoord, heliogframe):
     """
     Convert from Heliocentric Cartesian to Heliographic Stonyhurst.
@@ -130,7 +130,7 @@ def hcc_to_hgs(helioccoord, heliogframe):
     return heliogframe.realize_frame(representation)
 
 
-@frame_transform_graph.transform(FunctionTransform, HelioGraphicStonyhurst, HelioCentric)
+@frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst, Heliocentric)
 def hgs_to_hcc(heliogcoord, heliocframe):
     """
     Convert from Heliographic Stonyhurst to Heliograpic Carrington.

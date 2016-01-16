@@ -6,7 +6,7 @@ import pytest
 
 from astropy.time import Time
 
-from ..frames import HelioProjective
+from ..frames import Helioprojective
 from ..frameattributes import TimeFrameAttributeSunPy
 
 @pytest.fixture
@@ -41,7 +41,7 @@ def test_convert(attr, input):
 @pytest.mark.parametrize('input', [Time('2012-01-01 00:00:00'), '2012/01/01T00:00:00',
                                    '20120101000000', '2012/01/01 00:00:00'])
 def test_on_frame(input):
-    hpc1 = HelioProjective(dateobs=input)
+    hpc1 = Helioprojective(dateobs=input)
 
     output = Time('2012-01-01 00:00:00')
 
@@ -51,20 +51,20 @@ def test_on_frame(input):
 def test_non_string():
     output = datetime.datetime.now()
 
-    hpc1 = HelioProjective(dateobs=output)
+    hpc1 = Helioprojective(dateobs=output)
 
     assert isinstance(hpc1.dateobs, Time)
     assert hpc1.dateobs == output
 
 def test_on_frame_error():
     with pytest.raises(ValueError):
-        hpc1 = HelioProjective(dateobs='ajshdasjdhk')
+        hpc1 = Helioprojective(dateobs='ajshdasjdhk')
 
 def test_on_frame_error2():
     with pytest.raises(ValueError):
-        hpc1 = HelioProjective(dateobs=17263871263)
+        hpc1 = Helioprojective(dateobs=17263871263)
 
 def test_array():
     input = Time(['2012-01-01 00:00:00', '2012-01-01 00:00:05'])
     with pytest.raises(ValueError):
-        hpc1 = HelioProjective(dateobs=input)
+        hpc1 = Helioprojective(dateobs=input)

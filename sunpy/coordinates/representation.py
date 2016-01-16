@@ -1,22 +1,26 @@
 """
-SunPy's custom representation classes.
-Part of the proposed Coordinates API.
-@author: Pritish C. (VaticanCameos)
+SunPy specific representations.
+
+This submodule extends `astropy.coordinates.representations` with two Spherical
+representation classes, primarily for use with the Helioprojective coordinate
+system, due to the convention of Longitude going from -180 to 180 degrees.
 """
 
 # Astropy
 from astropy.utils.compat.odict import OrderedDict
 from astropy import units as u
-from astropy.coordinates.representation import SphericalRepresentation, UnitSphericalRepresentation
+from astropy.coordinates.representation import (SphericalRepresentation,
+                                                UnitSphericalRepresentation)
 from astropy.coordinates import Longitude, Latitude
 
-__all__ = ['Longitude180', 'SphericalWrap180Representation']
+__all__ = ['Longitude180', 'SphericalWrap180Representation',
+           'UnitSphericalWrap180Representation']
+
 
 class Longitude180(Longitude):
     """
     Quantity class that represents Longitude.
-    This version of Longitude allows for a negative value.
-    It does so by setting wrap_angle to 180 degrees.
+    It sets the default wrap_angle to 180 degrees.
 
     Parameters
     ----------
@@ -42,9 +46,13 @@ class Longitude180(Longitude):
        has a ``wrap_angle`` attribute already (i.e., is a ``Longitude``),
        in which case it will be taken from there.
     """
-    def __new__(cls, angle, unit=None, wrap_angle=180*u.deg, **kwargs):
-        self = super(Longitude180, cls).__new__(cls, angle, unit=unit,
-                                                wrap_angle=wrap_angle, **kwargs)
+
+    def __new__(cls, angle, unit=None, wrap_angle=180 * u.deg, **kwargs):
+        self = super(Longitude180, cls).__new__(cls,
+                                                angle,
+                                                unit=unit,
+                                                wrap_angle=wrap_angle,
+                                                **kwargs)
         return self
 
 
@@ -72,8 +80,7 @@ class UnitSphericalWrap180Representation(UnitSphericalRepresentation):
         If True, arrays will be copied rather than referenced.
     """
 
-    attr_classes = OrderedDict([('lon', Longitude180),
-                                ('lat', Latitude)])
+    attr_classes = OrderedDict([('lon', Longitude180), ('lat', Latitude)])
     recommended_units = {'lon': u.deg, 'lat': u.deg}
 
 
@@ -101,8 +108,7 @@ class SphericalWrap180Representation(SphericalRepresentation):
         If True, arrays will be copied rather than referenced.
     """
 
-    attr_classes = OrderedDict([('lon', Longitude180),
-                                ('lat', Latitude),
+    attr_classes = OrderedDict([('lon', Longitude180), ('lat', Latitude),
                                 ('distance', u.Quantity)])
     recommended_units = {'lon': u.deg, 'lat': u.deg}
 
