@@ -27,12 +27,24 @@ The easiest interface to the coordinates module is through the `~astropy.coordin
   <SkyCoord (HelioGraphicStonyhurst: dateobs=None, RSun=695508.0 km): (lon, lat, rad) in (deg, deg, km)
       (70.0, -30.0, 695508.0)>
 
+
+SunPy implements supports for the following solar physics coordinate systems:
+
+* Helioprojective (Cartesian) `~sunpy.coordinates.frames.HelioProjective`
+* Helioprojective (Radial) `~sunpy.coordinates.frames.HelioProjectiveRadial`
+* Heliocentric `~sunpy.coordinates.frames.HelioCentric`
+* Heliographic Stonyhurst `~sunpy.coordinates.frames.HelioGraphicStonyhurst`
+* Heliographic Carrington `~sunpy.coordinates.frames.HelioGraphicCarrington`
+
+for a complete description of these frames, see `sunpy.coordinates.frames`.
+
+
 `~astropy.coordinates.SkyCoord` and all other `~astropy.coordinates` objects
 also support array coordinates. These work the same as single-value coordinates,
 but they store multiple coordinates in a single object. When you're going to
-apply the same operation to many different coordinates (say, from a catalog),
-this is a better choice than a list of `~astropy.coordinates.SkyCoord` objects,
-because it will be *much* faster than applying the operation to each
+apply the same operation to many different coordinates, this is a better choice
+than a list of `~astropy.coordinates.SkyCoord` objects, because it will be
+*much* faster than applying the operation to each
 `~astropy.coordinates.SkyCoord` in a for loop.
 ::
 
@@ -120,4 +132,6 @@ Attribution
 
 Some of this documentation was borrowed from Astropy under the terms of the `BSD
 License
-<https://raw.githubusercontent.com/astropy/astropy/master/licenses/LICENSE.rst>`_
+<https://raw.githubusercontent.com/astropy/astropy/master/licenses/LICENSE.rst>`_.
+
+This package was developed by Pritish Chakraborty as part of GSOC 2014.
