@@ -90,9 +90,11 @@ matrix:
 install:
     # install openjpeg
     - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
-    - tar xvzf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1 --show-transformed
-    - export PATH=$HOME:$PATH
+    - tar xvzf openjpeg-1.5.0-Linux-x86_64.tar.gz
+    - export PATH=$HOME/openjpeg-1.5.0-Linux-x86_64/bin:$PATH
+    - export LD_LIBRARY_PATH=$HOME/openjpeg-1.5.0-Linux-x86_64/lib:$LD_LIBRARY_PATH
     - echo $PATH
+    - echo $LD_LIBRARY_PATH
     - echo $CONDA_DEPENDENCIES
     - git clone git://github.com/astropy/ci-helpers.git
     - source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh
