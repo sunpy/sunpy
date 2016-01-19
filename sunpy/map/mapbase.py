@@ -574,8 +574,8 @@ scale:\t\t {scale}
         validation should be handled in the relevant file in the
         sunpy.map.sources package.
 
-        Allows for implicit unit assignment to 'arcsec' by having
-        CUNIT not defined. """
+        Allows for default unit assignment for:
+            CUNIT, WAVEUNIT,  """
 #        if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
 #            raise InvalidHeaderInformation("Invalid value for DSUN")
 
@@ -585,6 +585,8 @@ scale:\t\t {scale}
         if (self.meta.get('cunit2') != None) and (u.Unit(self.meta.get('cunit2'), parse_strict = 'silent').physical_type == 'unknown'):
              raise InvalidHeaderInformation("Unknown value for CUNIT2")
 
+        if (self.meta.get('waveunit') != None) and (u.Unit(self.meta.get('waveunit'), parse_strict = 'silent').physical_type == 'unknown'):
+             raise InvalidHeaderInformation("Unknown value for WAVEUNIT")
         pass
 
 # #### Data conversion routines #### #
@@ -1499,4 +1501,7 @@ scale:\t\t {scale}
 class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
+
+     warnings.warn(ValueError, Warning)
+
     pass

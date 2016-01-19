@@ -1,6 +1,1 @@
-{
-  "sunpy/map/tests/test_mapbase.py::test_plot_aia171": true, 
-  "sunpy/map/tests/test_mapbase.py::test_plot_aia171_nowcsaxes": true, 
-  "sunpy/map/tests/test_mapbase.py::test_plot_masked_aia171": true, 
-  "sunpy/map/tests/test_mapbase.py::test_plot_masked_aia171_nowcsaxes": true
-}
+{}
