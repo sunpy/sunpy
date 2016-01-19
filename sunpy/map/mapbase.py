@@ -1502,6 +1502,5 @@ class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
 
-     warnings.warn(ValueError, Warning)
+    warnings.warn_explicit(ValueError, Warning, __file__, inspect.currentframe().f_back.f_lineno)
 
-    pass
