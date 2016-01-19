@@ -609,14 +609,17 @@ scale:\t\t {scale}
         This method includes very basic validation checks which apply to
         all of the kinds of files that SunPy can read. Datasource-specific
         validation should be handled in the relevant file in the
-        sunpy.map.sources package."""
+        sunpy.map.sources package.
+
+        Allows for implicit unit assignment to 'arcsec' by having
+        CUNIT not defined. """
 #        if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
 #            raise InvalidHeaderInformation("Invalid value for DSUN")
 
-        if u.Unit(self.meta.get('cunit1'), parse_strict = 'silent').physical_type == 'unknown':
+        if (self.meta.get('cunit1') != None) and (u.Unit(self.meta.get('cunit1'), parse_strict = 'silent').physical_type == 'unknown'):
              raise InvalidHeaderInformation("Unknown value for CUNIT1")
 
-        if u.Unit(self.meta.get('cunit2'), parse_strict = 'silent').physical_type == 'unknown':
+        if (self.meta.get('cunit2') != None) and (u.Unit(self.meta.get('cunit2'), parse_strict = 'silent').physical_type == 'unknown'):
              raise InvalidHeaderInformation("Unknown value for CUNIT2")
 
         pass
