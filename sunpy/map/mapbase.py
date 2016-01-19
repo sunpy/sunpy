@@ -575,6 +575,13 @@ scale:\t\t {scale}
         sunpy.map.sources package."""
 #        if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
 #            raise InvalidHeaderInformation("Invalid value for DSUN")
+
+        if u.Unit(self.meta.get('cunit1'), parse_strict = 'silent').physical_type == 'unknown':
+             raise InvalidHeaderInformation("Invalid value for CUNIT1")
+
+        if u.Unit(self.meta.get('cunit2'), parse_strict = 'silent').physical_type == 'unknown':
+             raise InvalidHeaderInformation("Invalid value for CUNIT2")
+
         pass
 
 # #### Data conversion routines #### #
