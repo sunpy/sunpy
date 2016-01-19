@@ -1,25 +1,28 @@
 """A Python MapCube Object"""
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 #pylint: disable=W0401,W0614,W0201,W0212,W0404
 
+from copy import deepcopy
+
 import numpy as np
-import matplotlib.pyplot as plt
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-from copy import copy
+import matplotlib.animation
 
 from sunpy.map import GenericMap
 
-from sunpy.visualization import plotting
+from sunpy.visualization.mapcubeanimator import MapCubeAnimator
+from sunpy.visualization import wcsaxes_compat
 from sunpy.util import expand_list
+from sunpy.extern.six.moves import range
 
 __all__ = ['MapCube']
 
+
 class MapCube(object):
     """
-    MapCube(input)
-    
+    MapCube
+
     A series of spatially aligned Maps.
-    
+
     Parameters
     ----------
     args : {List}
@@ -28,28 +31,33 @@ class MapCube(object):
         Method by which the MapCube should be sorted along the z-axis.
     derotate : {None}
         Apply a derotation to the data (Not Implemented)
-    coalign : {None}
-        Apply fine coalignment to the data (Not Implemented)
- 
+
+    To coalign a mapcube so that solar features remain on the same pixels,
+    please see the "Coalignment of mapcubes" note below.
+
+    Attributes
+    ----------
+    maps : {List}
+        This attribute holds the list of Map instances obtained from parameter args.
+
     Examples
     --------
-    >>> mapcube = sunpy.Map('images/', mapcube=True)
-    >>> mapcube[0].plot()
-    >>> mapcube[3].reference_pixel['x']
-    2050.6599120000001
+    >>> import sunpy.map
+    >>> mapcube = sunpy.map.Map('images/*.fits', cube=True)   # doctest: +SKIP
+
+    Mapcubes can be co-aligned using the routines in sunpy.image.coalignment.
     """
     #pylint: disable=W0613,E1101
     def __init__(self, *args, **kwargs):
         """Creates a new Map instance"""
-        
+
         # Hack to get around Python 2.x not backporting PEP 3102.
         sortby = kwargs.pop('sortby', 'date')
-        coalign = kwargs.pop('coalign', False)
         derotate = kwargs.pop('derotate', False)
-        
-        self._maps = expand_list(args)
-        
-        for m in self._maps:
+
+        self.maps = expand_list(args)
+
+        for m in self.maps:
             if not isinstance(m, GenericMap):
                 raise ValueError(
                            'CompositeMap expects pre-constructed map objects.')
@@ -57,202 +65,271 @@ class MapCube(object):
         # Optionally sort data
         if sortby is not None:
             if sortby is 'date':
-                self._maps.sort(key=self._sort_by_date())
+                self.maps.sort(key=self._sort_by_date())
             else:
                 raise ValueError("Only sort by date is supported")
-        
-        # Coalignment
-        if coalign:
-            if coalign == 'diff':
-                self.coalign("diff")
-            else:
-                raise ValueError("That coalignment method is not supported")
 
         if derotate:
             self._derotate()
 
     def __getitem__(self, key):
-        """Overiding indexing operation"""
-        return self._maps[key]
-    
-    def coalign(self, method="diff"):
-        """ Fine coalign the data"""
-        if method == 'diff':
-            return _coalign_diff(self)
-    
-    # Coalignment methods
-    def _coalign_diff(self):
-        """Difference-based coalignment
-        
-        Coaligns data by minimizing the difference between subsequent images
-        before and after shifting the images one to several pixels in each
-        direction.
-        
-        pseudo-code:
-        
-        for i len(self):
-            min_diff = {'value': (), 'offset': (0, 0)} # () is pos infinity
-            
-            # try shifting 1 pixel in each direction
-            for x in (-1, 0, 1):
-                for y in (-1, 0, 1):
-                    # calculate differenand hasattr(self, '_coalign_%s' % coalign):
-            getattr(self, '_coalign_%s' % coalign)()ce for intersecting pixels
-                    # if < min_diff['value'], store new value/offset
-                    
-            # shift image
-            if min_diff['offset'] != (0, 0):
-                # shift and clip image
+        """Overriding indexing operation.  If the key results in a single map,
+        then a map object is returned.  This allows functions like enumerate to
+        work.  Otherwise, a mapcube is returned."""
 
-        """
-        raise NotImplementedError("Sorry this is not yet supported")
-    
+        if isinstance(self.maps[key], GenericMap):
+            return self.maps[key]
+        else:
+            return MapCube(self.maps[key])
+
+    def __len__(self):
+        """Return the number of maps in a mapcube."""
+        return len(self.maps)
+
     # Sorting methods
     @classmethod
     def _sort_by_date(cls):
         return lambda m: m.date # maps.sort(key=attrgetter('date'))
-    
+
     def _derotate(self):
         """Derotates the layers in the MapCube"""
         pass
-    
-    def plot(self, gamma=None, annotate=True, axes=None, controls=False,
-             interval=200, resample=False, colorbar=False, ani_args={},
-             **imshow_args):
+
+    def plot(self, axes=None, resample=None, annotate=True,
+             interval=200, plot_function=None, **kwargs):
         """
         A animation plotting routine that animates each element in the
         MapCube
-        
+
         Parameters
         ----------
         gamma: float
             Gamma value to use for the color map
-            
-        annotate: bool
-            If true, the data is plotted at it's natural scale; with
-            title and axis labels.
-            
-        axes: matplotlib.axes object or None
-            If provided the image will be plotted on the given axes. Else the 
-            current matplotlib axes will be used.
-        
-        controls: bool
-            Adds play / pause button to the animation
-        
-        interval: int
-            Frame display time in ms.
-        
+
+        axes: mpl axes
+            axes to plot the animation on, if none uses current axes
+
         resample: list or False
             Draws the map at a lower resolution to increase the speed of
-            animation. Specify a list as a fraction i.e. [0.25, 0.25] to 
+            animation. Specify a list as a fraction i.e. [0.25, 0.25] to
             plot at 1/4 resolution.
-        
-        colorbar: bool
-            Draw a colorbar on the plot.
+            [Note: this will only work where the map arrays are the same size]
 
-        ani_args : dict
-            Passed to sunpy.util.plotting.ControlFuncAnimation
+        annotate: bool
+            Annotate the figure with scale and titles
 
-         **imshow_args: dict
-            Any additional imshow arguments that should be used
-            when plotting the image.
-        
+        interval: int
+            Animation interval in ms
+
+        plot_function : function
+            A function to be called as each map is plotted. Any variables
+            returned from the function will have their ``remove()`` method called
+            at the start of the next frame so that they are removed from the plot.
+
         Examples
         --------
-        cube = sunpy.Map(files, cube=True)
-        ani = cube.plot(colorbar=True)        
-        plt.show()
-        
-        #Plot the map at 1/2 original resolution.
-        cube = sunpy.Map(files, cube=True)
-        ani = cube.plot(resample=[0.5, 0.5], colorbar=True)        
-        plt.show()
-        
-        #Save an animation of the MapCube
-        cube = sunpy.Map(res, cube=True)
+        >>> import matplotlib.pyplot as plt
+        >>> import matplotlib.animation as animation
+        >>> from sunpy.map import Map
 
-        ani = cube.plot(controls=False)
+        >>> cube = Map(files, cube=True)   # doctest: +SKIP
+        >>> ani = cube.plot(colorbar=True)   # doctest: +SKIP
+        >>> plt.show()   # doctest: +SKIP
 
-        Writer = animation.writers['ffmpeg']
-        writer = Writer(fps=10, metadata=dict(artist='SunPy'), bitrate=1800)
+        Plot the map at 1/2 original resolution
 
-        ani.save('mapcube_animation.mp4', writer=writer)
+        >>> cube = Map(files, cube=True)   # doctest: +SKIP
+        >>> ani = cube.plot(resample=[0.5, 0.5], colorbar=True)   # doctest: +SKIP
+        >>> plt.show()   # doctest: +SKIP
+
+        Save an animation of the MapCube
+
+        >>> cube = Map(res, cube=True)   # doctest: +SKIP
+
+        >>> ani = cube.plot()   # doctest: +SKIP
+
+        >>> Writer = animation.writers['ffmpeg']   # doctest: +SKIP
+        >>> writer = Writer(fps=10, metadata=dict(artist='SunPy'), bitrate=1800)   # doctest: +SKIP
+
+        >>> ani.save('mapcube_animation.mp4', writer=writer)   # doctest: +SKIP
+
+        Save an animation with the limb at each time step
+
+        >>> def myplot(fig, ax, sunpy_map):
+        ...    p = sunpy_map.draw_limb()
+        ...    return p
+        >>> cube = Map(files, cube=True)   # doctest: +SKIP
+        >>> ani = cube.peek(plot_function=myplot)   # doctest: +SKIP
+        >>> plt.show()   # doctest: +SKIP
+
         """
-        
         if not axes:
-            axes = plt.gca()
+            axes = wcsaxes_compat.gca_wcs(self.maps[0].wcs)
         fig = axes.get_figure()
-        
+
+        if not plot_function:
+            plot_function = lambda fig, ax, smap: []
+        removes = []
+
         # Normal plot
-        if annotate:
-            axes.set_title("%s %s" % (self[0].name, self[0].date))
-            
+        def annotate_frame(i):
+            axes.set_title("{s.name}".format(s=self[i]))
+
             # x-axis label
-            if self[0].coordinate_system['x'] == 'HG':
-                xlabel = 'Longitude [%s]' % self[0].units['x']
+            if self[0].coordinate_system.x == 'HG':
+                xlabel = 'Longitude [{lon}'.format(lon=self[i].units.x)
             else:
-                xlabel = 'X-position [%s]' % self[0].units['x']
+                xlabel = 'X-position [{xpos}]'.format(xpos=self[i].units.x)
 
             # y-axis label
-            if self[0].coordinate_system['y'] == 'HG':
-                ylabel = 'Latitude [%s]' % self[0].units['y']
+            if self[0].coordinate_system.y == 'HG':
+                ylabel = 'Latitude [{lat}]'.format(lat=self[i].units.y)
             else:
-                ylabel = 'Y-position [%s]' % self[0].units['y']
-                
+                ylabel = 'Y-position [{ypos}]'.format(ypos=self[i].units.y)
+
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
 
-        # Determine extent
-        extent = self[0].xrange + self[0].yrange
-        
-        cmap = copy(self[0].cmap)
-        if gamma is not None:
-            cmap.set_gamma(gamma)
-            
-            #make imshow kwargs a dict
-        
-        kwargs = {'origin':'lower',
-                  'cmap':cmap,
-                  'norm':self[0].norm,
-                  'extent':extent,
-                  'interpolation':'nearest'}
-        kwargs.update(imshow_args)
-        
-        im = axes.imshow(self[0].data, **kwargs)
-        
-        #Set current image (makes colorbar work)
-        plt.sci(im)
-        
-        divider = make_axes_locatable(axes)
-        cax = divider.append_axes("right", size="5%", pad=0.2)
-        cbar = plt.colorbar(im,cax)
-        
         if resample:
-            #This assumes that the maps a homogenous!
-            #TODO: Update this!
-            resample = np.array(len(self._maps)-1) * np.array(resample)
-            ani_data = [x.resample(resample) for x in self]
+            # This assumes that the maps are homogeneous!
+            # TODO: Update this!
+            resample = np.array(len(self.maps)-1) * np.array(resample)
+            ani_data = [x.resample(resample) for x in self.maps]
         else:
-            ani_data = self
-            
-        def updatefig(i, *args):
-            im = args[0]
-            im.set_array(args[2][i].data)
-            im.set_cmap(self[i].cmap)
-            im.set_norm(self[i].norm)
-            if args[1]:
-                axes.set_title("%s %s" % (self[i].name, self[i].date))
-        
-        ani = plotting.ControlFuncAnimation(fig, updatefig,
-                                            frames=xrange(0,len(self._maps)),
-                                            fargs=[im,annotate,ani_data],
-                                            interval=interval,
-                                            blit=False)
-        if controls:
-            axes, bax1, bax2, bax3 = plotting.add_controls(axes=axes)
+            ani_data = self.maps
 
-            bax1._button.on_clicked(ani._start)
-            bax2._button.on_clicked(ani._stop)
-            bax3._button.on_clicked(ani._step)
-        
+        im = ani_data[0].plot(axes=axes, **kwargs)
+
+        def updatefig(i, im, annotate, ani_data, removes):
+            while removes:
+                removes.pop(0).remove()
+
+            im.set_array(ani_data[i].data)
+            im.set_cmap(self.maps[i].plot_settings['cmap'])
+
+            norm = deepcopy(self.maps[i].plot_settings['norm'])
+            # The following explicit call is for bugged versions of Astropy's ImageNormalize
+            norm.autoscale_None(ani_data[i].data)
+            im.set_norm(norm)
+
+            if wcsaxes_compat.is_wcsaxes(axes):
+                im.axes.reset_wcs(self.maps[i].wcs)
+                wcsaxes_compat.default_wcs_grid(axes)
+            else:
+                im.set_extent(np.concatenate((self.maps[i].xrange.value,
+                                              self.maps[i].yrange.value)))
+
+            if annotate:
+                annotate_frame(i)
+            removes += list(plot_function(fig, axes, self.maps[i]))
+
+        ani = matplotlib.animation.FuncAnimation(fig, updatefig,
+                                                frames=list(range(0, len(self.maps))),
+                                                fargs=[im, annotate, ani_data, removes],
+                                                interval=interval,
+                                                blit=False)
+
         return ani
+
+    def peek(self, resample=None, **kwargs):
+        """
+        A animation plotting routine that animates each element in the
+        MapCube
+
+        Parameters
+        ----------
+        fig: mpl.figure
+            Figure to use to create the explorer
+
+        resample: list or False
+            Draws the map at a lower resolution to increase the speed of
+            animation. Specify a list as a fraction i.e. [0.25, 0.25] to
+            plot at 1/4 resolution.
+            [Note: this will only work where the map arrays are the same size]
+
+        annotate: bool
+            Annotate the figure with scale and titles
+
+        interval: int
+            Animation interval in ms
+
+        colorbar: bool
+            Plot colorbar
+
+        plot_function : function
+            A function to call to overplot extra items on the map plot.
+            For more information see `sunpy.visualization.MapCubeAnimator`.
+
+        Returns
+        -------
+        mapcubeanim : `sunpy.visualization.MapCubeAnimator`
+            A mapcube animator instance.
+
+        See Also
+        --------
+        sunpy.visualization.mapcubeanimator.MapCubeAnimator
+
+        Examples
+        --------
+        >>> import matplotlib.pyplot as plt
+        >>> from sunpy.map import Map
+
+        >>> cube = Map(files, cube=True)   # doctest: +SKIP
+        >>> ani = cube.peek(colorbar=True)   # doctest: +SKIP
+        >>> plt.show()   # doctest: +SKIP
+
+        Plot the map at 1/2 original resolution
+
+        >>> cube = Map(files, cube=True)   # doctest: +SKIP
+        >>> ani = cube.peek(resample=[0.5, 0.5], colorbar=True)   # doctest: +SKIP
+        >>> plt.show()   # doctest: +SKIP
+
+        Plot the map with the limb at each time step
+
+        >>> def myplot(fig, ax, sunpy_map):
+        ...    p = sunpy_map.draw_limb()
+        ...    return p
+        >>> cube = Map(files, cube=True)   # doctest: +SKIP
+        >>> ani = cube.peek(plot_function=myplot)   # doctest: +SKIP
+        >>> plt.show()   # doctest: +SKIP
+
+        Decide you want an animation:
+
+        >>> cube = Map(files, cube=True)   # doctest: +SKIP
+        >>> ani = cube.peek(resample=[0.5, 0.5], colorbar=True)   # doctest: +SKIP
+        >>> mplani = ani.get_animation()   # doctest: +SKIP
+        """
+
+        if resample:
+            if self.all_maps_same_shape():
+                resample = np.array(len(self.maps) - 1) * np.array(resample)
+                for amap in self.maps:
+                    amap.resample(resample)
+            else:
+                raise ValueError('Maps in mapcube do not all have the same shape.')
+
+        return MapCubeAnimator(self, **kwargs)
+
+    def all_maps_same_shape(self):
+        """
+        Tests if all the maps have the same number pixels in the x and y
+        directions.
+        """
+        return np.all([m.data.shape == self.maps[0].data.shape for m in self.maps])
+
+    def as_array(self):
+        """
+        If all the map shapes are the same, their image data is copied
+        into a single single ndarray. The ndarray is ordered as (ny, nx, nt).
+        Otherwise, a ValueError is thrown.
+        """
+        if self.all_maps_same_shape():
+            return np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1).copy(), 1, 2).copy()
+        else:
+            raise ValueError('Not all maps have the same shape.')
+
+    def all_meta(self):
+        """
+        Return all the meta objects as a list.
+        """
+        return [m.meta for m in self.maps]

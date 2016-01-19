@@ -2,166 +2,73 @@
 Installation
 ============
 
-Below are instructions for installing SunPy and its prerequisites on 
-different platforms.
+SunPy is a Python package for solar physics, it relies on and enables the use
+of the wider ecosystem of scientific Python packages for solar physics.
+Therefore getting a working SunPy installation is more about installing the
+whole scientific Python ecosystem than SunPy itself.
 
-SunPy's Dependancies
---------------------
-SunPy consists of many submodules that each have their own requirements. You do not need 
-to fufill all the requirements if you only intend on using parts of SunPy. It is of course
-reccomended that you install the requirements for all of SunPy.
+If you are new to Python and scientific Python then continue to follow this
+guide to get setup with the whole environment. If you already have a working
+Python / Scientific Python environment then you can skip to the
+:ref:`advanced-install` section.
 
-The Full set of requirements is:
-numpy >= 1.6.0
-scipy >= 0.10.0
-matplotlib >= 1.1
-pandas >= 0.10.0
-astropy >= 0.2.0
-suds
-beautifulsoup4
+.. _main-install:
 
-To import SunPy core (including sun, time, util) you need the following dependacies:
-numpy
-scipy
+Installing Scientific Python and SunPy
+--------------------------------------
 
-Any submodules with extra requirements are listed below:
-instr:
-astropy.io.fits
-matplotlib
+If you do not currently have a working scientific Python distribution this
+guide will set you up with the Anaconda Python distribution. Alternative options
+exist for different operating systems and can be found later in the
+:ref:`advanced-install` section.
 
-io:
-Optionally either of:
-astropy.io.fits
-openjpeg
+Anaconda is a free distribution of Python and a large amount of common
+scientific packages, it is very powerful and easy to use. Installing Anaconda
+provides (almost) all the packages you need to use SunPy.
 
-lightcurve:
-pandas
-astropy.io.fits
-matplotlib
+To install the Anaconda Python distribution follow the instructions
+`here <http://docs.continuum.io/anaconda/install.html>`_. You will need to
+select the correct download for your platform and follow the install procedure.
 
-map:
-astropy.io.fits
-matplotlib
+Installing SunPy on top of Anaconda
+###################################
 
-net:
-suds
-beautifulsoup4
+To install SunPy launch a system command prompt or the
+'Anaconda Command Prompt' (under Windows). First configure conda
+for sunpy downloads::
 
-visualization:
-matplotlib
+    conda config --add channels sunpy --add channels astropy
 
-Installing Scientific Python
-----------------------------
-For instructions on setting up the scientific Python environment which is required by SunPy, 
-choose your OS from the list below. When you are done come back here and follow
-the instructions below to install SunPy and its requirements.
+to install SunPy::
+
+    conda install sunpy
+
+You now have a working SunPy installation. You can check your SunPy install
+by following the instructions in :ref:`testing-sunpy`.
+
+.. note::
+
+    Currently Glymur / JPEG2000 support is not tested under Anaconda on any
+    platforms. However, an external installation of openJPEG should work with
+    the glymur installation in conda.
+
+Updating SunPy to a New Version
+###############################
+
+When a new version of SunPy is released you can update to the latest version
+by running::
+
+    conda update sunpy
+
+
+Advanced SunPy Installation
+---------------------------
+
+If you do not wish to use Anaconda to install Scientific Python or you already
+have a scientific Python installation there are other options for installing
+SunPy.
 
 .. toctree::
-   :maxdepth: 1
-   
-   mac
-   linux
-   win
+  :maxdepth: 2
 
-Anaconda
-^^^^^^^^
-Alternatively, available for all platforms is Anaconda,
-a scientific Python distribution that is available free of charge
-from `https://store.continuum.io/cshop/anaconda/ <https://store.continuum.io/cshop/anaconda/>`_.
-It comes with a complete build environment so you will not need to worry about
-installing a compiler or likewise.
-
-Head to the download page, install it and you are set. It can also be installed
-into your user directory without administrator permissions; be sure to use
-the Anaconda versions of the commands in the following listings if you have
-multiple Python environments installed.
-
-Installing Python Modules
--------------------------
-
-Making sure to have followed one of the guides previously. 
-You will have installed on your system: Python, Numpy, Scipy, Matplotlib, git, pip and Qt.
-There are few more remaining dependencies which must be installed using pip.
-Depending on which system you are using some of these may already be installed but it does not hurt to upgrade: ::
-
- pip install --upgrade distribute
- pip install --upgrade pyfits
- pip install --upgrade suds
- pip install --upgrade pandas
- pip install --upgrade beautifulsoup4
-
-We also recommend you use `ipython <http://ipython.org/>` (a great python enviromnent). 
-This can also be installed using pip: ::
-
- pip install --upgrade ipython
- 
-All done with the SunPy Python prerequisites. You are now ready to install SunPy itself.
-
-Installing SunPy
-----------------
-There are two different versions of SunPy.
-Currently, we recommend that users install the latest stable release.
-However, the bleeding edge version on our GitHub page is quite easy to install and you do get the latest and greatest but it may have bugs.
-Depending on your setup, you may need to preface each of the ``pip ...`` commands with ``sudo pip ...``.
-
-Grabbing the stable SunPy
-^^^^^^^^^^^^^^^^^^^^^^^^^
-It is as simple as this: ::
-
-    pip install sunpy
-
-If you are upgrading the package: ::
-
-    pip install --upgrade sunpy
-
-For those who like to download the source.
-You have a range of download locations.
-
-PyPi: `Download <https://pypi.python.org/packages/source/s/sunpy/sunpy-0.3.1.tar.gz>`_
-
-Github (tar.gz): `Download <https://github.com/sunpy/sunpy/tarball/0.3>`_ 
-
-Github (zip): `Download <https://github.com/sunpy/sunpy/zipball/0.3>`_ 
-
-Then you can use: ::
-
-    pip install ./<path to download>/SunPyDownload.file_extension
-
-In some cases you may need the ``--no-deps`` flag if pip is trying to upgrade dependencies such as SciPy and Matplotlib that are difficult to build from source and the likely errors will abort the upgrade.
-That's it folks!
-
-Grabbing the latest SunPy
-^^^^^^^^^^^^^^^^^^^^^^^^^
-If you do fancy the latest version of SunPy.
-Then you will want to cd into directory you want to have SunPy located and now: ::
-
- git clone git@github.com:sunpy/sunpy.git
-
-or using HTTP: ::
-
- git clone http://github.com/sunpy/sunpy.git
-
-This will download the SunPy repository and create a sunpy folder at the current location.
-With time, updates will happen and you can update your local copy by: ::
-
- git pull upstream master
-
-Finally, to install or upgrade the local version of SunPy you can run: ::
-
- python setup.py install --upgrade
-
-Testing your installation
--------------------------
-
-Now you can test your installation. Open a new Python shell and type these 
-commands: ::
-
->>> import sunpy
->>> sunpy.Map(sunpy.AIA_171_IMAGE).peek()
-
-If all goes well you should see an AIA 171 image on your screen.
-
-Contributing to SunPy
----------------------
-If you are considering contributing to the development of SunPy and please do consider it.
-Please see :ref:`dev-reference-label` as it will explain everything required to start contributing.
+  advanced.rst

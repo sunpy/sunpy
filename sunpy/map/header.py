@@ -2,54 +2,66 @@
 MapHeader is a generalized header class that deals with header parsing and
 normalization.
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
-from sunpy.util.odict import OrderedDict
+from collections import OrderedDict
 
 __all__ = ['MapMeta']
+
 
 class MapMeta(OrderedDict):
     """
     A class to hold meta data associated with a Map derivative.
-    
-    This class handles everything a lower case. This allows case insensitive 
+
+    This class handles everything a lower case. This allows case insensitive
     indexing.
     """
-    def __init__(self, adict):
+    def __init__(self, *args):
         """Creates a new MapHeader instance"""
         # Store all keys as upper-case to allow for case-insensitive indexing
-        tags = dict((k.upper(), v) for k, v in adict.items())
+        # OrderedDict can be instantiated from a list of lists or a tuple of tuples
+        tags = dict()
+        if args:
+            args = list(args)
+            adict = args[0]
+            if isinstance(adict, list) or isinstance(adict, tuple):
+                tags = dict((k.upper(), v) for k, v in adict)
+            elif isinstance(adict, dict):
+                tags = dict((k.upper(), v) for k, v in adict.items())
+            else:
+                raise TypeError("Can not create a MapMeta from this type input")
+            args[0] = tags
 
-        super(MapMeta, self).__init__(tags)
+        super(MapMeta, self).__init__(*args)
 
     def __contains__(self, key):
-        """Overide __contains__"""
+        """Override __contains__"""
         return OrderedDict.__contains__(self, key.lower())
 
     def __getitem__(self, key):
-        """Overide [] indexing"""
+        """Override [] indexing"""
         return OrderedDict.__getitem__(self, key.lower())
 
     def __setitem__(self, key, value):
-        """Overide [] indexing"""
+        """Override [] indexing"""
         return OrderedDict.__setitem__(self, key.lower(), value)
-        
+
     def get(self, key, default=None):
-        """Overide .get() indexing"""
+        """Override .get() indexing"""
         return OrderedDict.get(self, key.lower(), default)
 
     def has_key(self, key):
-        """Overide .has_key() to perform case-insensitively"""
+        """Override .has_key() to perform case-insensitively"""
         return key.lower() in self
 
     def pop(self, key, default=None):
-        """Overide .pop() to perform case-insensitively"""
+        """Override .pop() to perform case-insensitively"""
         return OrderedDict.pop(self, key.lower(), default)
 
     def update(self, d2):
-        """Overide .update() to perform case-insensitively"""
+        """Override .update() to perform case-insensitively"""
         return OrderedDict.update(self, dict((k.lower(), v) for k, v in d2.items()))
 
     def setdefault(self, key, default=None):
-        """Overide .setdefault() to perform case-insensitively"""
+        """Override .setdefault() to perform case-insensitively"""
         return OrderedDict.setdefault(self, key.lower(), default)

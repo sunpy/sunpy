@@ -1,55 +1,111 @@
-language: python
+# We use C because conda manages our Python vesion
+# and running on OS/X dosen't work with Python.
+language: c
 
-python:
-  - 2.6
-  - 2.7
-virtualenv:
-     system_site_packages: false
+os:
+    - linux
+    - osx
 
-# Configure the build environment. Global varibles are defined for all
-# configurations. Each configuration in the matrix is run for each python version
-# above.
+# Setting sudo to false opts in to Travis-CI container-based builds.
+sudo: false
+
+# The apt packages below are needed but can no longer be installed with
+# sudo apt-get.
+addons:
+    apt:
+        packages:
+            - libatlas-dev
+            - liblapack-dev
+            - gfortran
+            - graphviz
+            - texlive-latex-extra
+            - dvipng
+
+# These are currently not used, but we want to cache the packages dir
+# to reduce the number of packages to download.
+# cache:
+#    directories:
+#       - $HOME/miniconda/pkgs
+#       - $HOME/miniconda3/pkgs
+
+# Configure the build environment. Global varibles are defined for all configurations.
 env:
     global:
-        - PIP_WHEEL_COMMAND="--find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade"
-        - MATPLOTLIB_VERSION=1.3.0 SUDS_PKG='suds-jurko==0.4.1.jurko.4'
+        # Modify these to represent the newest versions
+        - LATEST_NUMPY=1.10.2
+        - LATEST_PANDAS=0.17.1
+        - MATPLOTLIB_VERSION=">=1.5.1"
+        # Fixed global vars
+        - PYTHON_VERSION=2.7
+        - TEST_MODE='offline'
+        - NUMPY_VERSION="=$LATEST_NUMPY"
+        - PANDAS_VERSION="=$LATEST_PANDAS"
+
     matrix:
-        - NUMPY_VERSION=1.7.1 PANDAS_VERSION=0.12.0
-        - NUMPY_VERSION=1.6.2 PANDAS_VERSION=0.12.0
-        - NUMPY_VERSION=1.7.1 PANDAS_VERSION=0.11.0
+        - PYTHON_VERSION=2.7
+#        - PYTHON_VERSION=3.3
+#        - PYTHON_VERSION=3.4
+#        - PYTHON_VERSION=3.5
 
+matrix:
+    include:
+         - os: linux
+           env: NUMPY_VERSION="=1.9.3"
+         - os: linux
+           env: PANDAS_VERSION="=0.16.2"
+         - os: linux
+           env: TEST_MODE='figure' MATPLOTLIB_VERSION="=1.5.1"
+         - os: linux
+           env: TEST_MODE='astropy-dev'
+         - os: linux
+           env: TEST_MODE='sphinx'
+         - os: linux
+           env: TEST_MODE='online'
+         - os: linux
+           env: TEST_MODE='doctest'
+         - os: linux
+           env: PYTHON_VERSION=3.4 TEST_MODE='python3'
+
+# If the online build fails, we don't want it to report the whole build broken.
+    allow_failures:
+        - env: TEST_MODE='online'
+        - env: TEST_MODE='doctest'
+
+# Install miniconda
 before_install:
-# Pick the suds version based on the python version
-   - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then SUDS_PKG='suds' ;fi
-# Make sure the system is upto date and install scipy requirements
-   - sudo apt-get update -qq
-   - sudo apt-get install -qq libatlas-dev liblapack-dev gfortran
-# Make sure pip is at the latest version (>1.4 for wheels)
-   - pip install pip --upgrade
-# Wheels also need a recent version of setuptools
-   - pip install setuptools>=0.8 --upgrade
-# Install more upto date openjpeg library.
-   - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
-   - sudo tar -xvf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1 -C /
+    - source continuous-integration/travis/install_$TRAVIS_OS_NAME.sh
 
-# Install all SunPy dependacies using wheels.
 install:
-# Install Numpy first so we force the version we are using
-   - pip install $PIP_WHEEL_COMMAND numpy==$NUMPY_VERSION
-   - pip install $PIP_WHEEL_COMMAND matplotlib==$MATPLOTLIB_VERSION
-   - pip install $PIP_WHEEL_COMMAND scipy
-# Manually install pandas deps due to a pip 1.4 / pytz bug
-   - pip install $PIP_WHEEL_COMMAND pytz==2013b python-dateutil
-   - pip install $PIP_WHEEL_COMMAND pandas==$PANDAS_VERSION
-   - pip install $PIP_WHEEL_COMMAND astropy
-   - pip install $PIP_WHEEL_COMMAND $SUDS_PKG beautifulsoup4
-   - pip install $PIP_WHEEL_COMMAND pytest 
-   - pip install $PIP_WHEEL_COMMAND glymur 
-# Install SunPy and run tests.
+    # Add a conda env and set up extra binstar channels
+    - conda create --yes -n test python=$PYTHON_VERSION
+    - conda config --add channels sunpy --add channels astropy --add channels astropy-ci-extras --add channels https://conda.binstar.org/sunpy/channel/citesting
+    - source activate test
+    # Install default dependencies
+    - conda install --yes pip
+    - conda install -q --yes numpy$NUMPY_VERSION pandas$PANDAS_VERSION scipy matplotlib$MATPLOTLIB_VERSION requests beautiful-soup sqlalchemy scikit-image pytest jinja2 cython wcsaxes
+    - pip install pytest-cov coverage coveralls
+    # Install sunpy conda packages
+    - conda install -q --yes numpy=$NUMPY_VERSION suds-jurko glymur
+    # Install the correct version of astropy
+    - if [[ $TEST_MODE != 'astropy-dev' ]]; then conda install -q --yes astropy>=0.4.0 numpy$NUMPY_VERSION; fi
+    - if [[ $TEST_MODE == 'astropy-dev' ]]; then pip install git+git://github.com/astropy/astropy.git; fi
+    # Install sphinx if needed
+    - if [[ $TEST_MODE == 'sphinx' || $TEST_MODE == 'doctest' ]]; then conda install -q --yes sphinx numpy$NUMPY_VERSION; fi
+    - if [[ $TEST_MODE == 'sphinx' || $TEST_MODE == 'doctest' ]]; then python -c "import sunpy.data; sunpy.data.download_sample_data()"; fi
+
 script:
-  - python setup.py develop
-  - py.test
+    - if [[ $TEST_MODE == 'offline' || $TEST_MODE == 'astropy-dev' ]]; then python setup.py test; fi
+    - if [[ $TEST_MODE == 'figure' ]]; then python setup.py test --figure; fi
+    - if [[ $TEST_MODE == 'sphinx' ]]; then python setup.py build_sphinx -w; fi
+    - if [[ $TEST_MODE == 'online' ]]; then python setup.py test --online --coverage --cov-report=html; fi
+    #- if [[ $TEST_MODE == 'skip' ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
+    - if [[ $TEST_MODE == 'doctest' ]]; then python setup.py build_sphinx -b doctest; fi
+    - if [[ $TEST_MODE == 'python3' ]]; then continuous-integration/python3.sh; fi
+
 
 # Notify the IRC channel of build status
 notifications:
   irc: "chat.freenode.net#SunPy"
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/d1bf84e1bc1293e4dbc5
