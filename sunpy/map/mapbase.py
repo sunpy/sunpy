@@ -149,7 +149,7 @@ class GenericMap(NDData):
 
         # Validate header
         # TODO: This should be a function of the header, not of the map
-        self._validate()
+        self._validate_meta()
         self._shift = Pair(0 * u.arcsec, 0 * u.arcsec)
 
         if self.dtype == np.uint8:
@@ -566,10 +566,10 @@ scale:\t\t {scale}
         cmap_string = self.observatory + self.meta['detector'] + str(int(self.wavelength.to('angstrom').value))
         return cmap_string.lower()
 
-    def _validate(self):
+    def _validate_meta(self):
         """Validates the meta-information associated with a Map.
 
-        This function includes very basic validation checks which apply to
+        This method includes very basic validation checks which apply to
         all of the kinds of files that SunPy can read. Datasource-specific
         validation should be handled in the relevant file in the
         sunpy.map.sources package."""
@@ -577,10 +577,10 @@ scale:\t\t {scale}
 #            raise InvalidHeaderInformation("Invalid value for DSUN")
 
         if u.Unit(self.meta.get('cunit1'), parse_strict = 'silent').physical_type == 'unknown':
-             raise InvalidHeaderInformation("Invalid value for CUNIT1")
+             raise InvalidHeaderInformation("Unknown value for CUNIT1")
 
         if u.Unit(self.meta.get('cunit2'), parse_strict = 'silent').physical_type == 'unknown':
-             raise InvalidHeaderInformation("Invalid value for CUNIT2")
+             raise InvalidHeaderInformation("Unknown value for CUNIT2")
 
         pass
 
