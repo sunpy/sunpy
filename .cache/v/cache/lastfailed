@@ -1,1 +1,3 @@
-{}
+{
+  "sunpy/map/tests/test_mapbase.py": true
+}
