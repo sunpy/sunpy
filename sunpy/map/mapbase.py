@@ -617,12 +617,18 @@ scale:\t\t {scale}
 #            raise InvalidHeaderInformation("Invalid value for DSUN")
 
         if (self.meta.get('cunit1') != None) and (u.Unit(self.meta.get('cunit1'), parse_strict = 'silent').physical_type == 'unknown'):
+             warnings.warn_explicit("Unknown value for CUNIT1",
+                                   Warning, __file__, inspect.currentframe().f_back.f_lineno)
              raise InvalidHeaderInformation("Unknown value for CUNIT1")
 
         if (self.meta.get('cunit2') != None) and (u.Unit(self.meta.get('cunit2'), parse_strict = 'silent').physical_type == 'unknown'):
+             warnings.warn_explicit("Unknown value for CUNIT2",
+                                   Warning, __file__, inspect.currentframe().f_back.f_lineno)
              raise InvalidHeaderInformation("Unknown value for CUNIT2")
 
         if (self.meta.get('waveunit') != None) and (u.Unit(self.meta.get('waveunit'), parse_strict = 'silent').physical_type == 'unknown'):
+             warnings.warn_explicit("Unknown value for WAVEUNIT",
+                                   Warning, __file__, inspect.currentframe().f_back.f_lineno)
              raise InvalidHeaderInformation("Unknown value for WAVEUNIT")
         pass
 
@@ -1555,6 +1561,4 @@ scale:\t\t {scale}
 class InvalidHeaderInformation(ValueError):
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
-
-    warnings.warn_explicit(ValueError, Warning, __file__, inspect.currentframe().f_back.f_lineno)
-
+    pass
