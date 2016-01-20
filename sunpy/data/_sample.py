@@ -39,7 +39,8 @@ _files = {
     "AIA_171_ROLL_IMAGE": ("aiacalibim5.fits.gz", ""),
     "AIA_94_CUTOUT": ("ssw_cutout_20121030_153001_AIA_94_.fts", ""),
     "EVE_LIGHTCURVE": ("20120620_EVE_L0CS_DIODES_1m.txt", ""),
-    "LYRA_LIGHTCURVE": ("lyra_20110810-000000_lev2_std.fits.gz", ""),
+# Uncomment this if it needs to be used. Commented out to save bandwidth.
+#    "LYRA_LIGHTCURVE": ("lyra_20110810-000000_lev2_std.fits.gz", ""),
     "GOES_LIGHTCURVE": ("go1520120601.fits.gz", ""),
     "GBM_LIGHTCURVE": ("glg_cspec_n5_110607_v00.pha", "")
 }
