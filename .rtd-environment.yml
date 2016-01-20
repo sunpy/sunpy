@@ -14,7 +14,6 @@ dependencies:
 - fontconfig=2.11.1=5
 - freetype=2.5.5=0
 - funcsigs=0.4=py27_0
-- glymur=0.8.2=py27_0
 - jbig=2.1=0
 - jpeg=8d=0
 - libgfortran=1.0=0
