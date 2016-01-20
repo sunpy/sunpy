@@ -118,9 +118,8 @@ type:
     :include-source:
 
     from sunpy.lightcurve import GOESLightCurve
-    from sunpy.time import TimeRange
-    tr = TimeRange('2013/07/21', '2013/07/22')
-    goes = GOESLightCurve.create(tr)
+    from sunpy.data.sample import GOES_LIGHTCURVE
+    goes = GOESLightCurve.create(GOES_LIGHTCURVE)
     goes.peek()
 
 This will open a matplotlib plot on your screen. The `~sunpy.lightcurve.LightCurve.peek()`
@@ -138,9 +137,8 @@ which makes use of this methodology.
     :include-source:
 
     from sunpy.lightcurve import GOESLightCurve
-    from sunpy.time import TimeRange
-    tr = TimeRange('2013/07/21', '2013/07/22')
-    goes = GOESLightCurve.create(tr)
+    from sunpy.data.sample import GOES_LIGHTCURVE
+    goes = GOESLightCurve.create(GOES_LIGHTCURVE)
     fig = plt.figure()
     ax = goes.plot()
     ax.set_ylim(1e-10, 25e-8)
