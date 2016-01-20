@@ -41,8 +41,13 @@ _files = {
     "EVE_LIGHTCURVE": ("20120620_EVE_L0CS_DIODES_1m.txt", ""),
 # Uncomment this if it needs to be used. Commented out to save bandwidth.
 #    "LYRA_LIGHTCURVE": ("lyra_20110810-000000_lev2_std.fits.gz", ""),
+    "LYRA_LEVEL3_LIGHTCURVE": ("lyra_20150101-000000_lev3_std.fits.gz", ""),
     "GOES_LIGHTCURVE": ("go1520120601.fits.gz", ""),
-    "GBM_LIGHTCURVE": ("glg_cspec_n5_110607_v00.pha", "")
+    "GBM_LIGHTCURVE": ("glg_cspec_n5_110607_v00.pha", ""),
+    "NOAAINDICES_LIGHTCURVE": ("RecentIndices.txt", ""),
+    "NOAAPREDICT_LIGHTCURVE": ("predicted-sunspot-radio-flux.txt", ""),
+    "RHESSI_LIGHTCURVE": ("hsi_obssumm_20120601_018.fits.gz", ""),
+    "NORH_LIGHTCURVE": ("tca110810", "")
 }
 
 sample_files = {}
