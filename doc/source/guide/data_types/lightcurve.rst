@@ -154,19 +154,19 @@ generated this plot.
 .. plot::
 
     from sunpy.lightcurve import GOESLightCurve
-    from sunpy.time import TimeRange
+    from sunpy.data.sample import GOES_LIGHTCURVE
     import matplotlib.pyplot as plt
     from datetime import datetime
     from astropy.time import Time
 
-    year = 2013
-    month = 9
-    day = 21
+    year = 2012
+    month = 6
+    day = 1
     time_ranges = ((datetime(year,month,day,17,0,0), datetime(year,month,day,18,0,0)),
                    (datetime(year,month,day,19,5,0), datetime(year,month,day,19,50,0)),
                    (datetime(year,month,day,20,20,0), datetime(year,month,day,21,10,0)))
 
-    goes = GOESLightCurve.create(TimeRange("2013-09-21 15:35:00.0", "2013-09-21 22:33:00.0"))
+    goes = GOESLightCurve.create(GOES_LIGHTCURVE)
 
     plt.figure()
     plt.subplot(211)
