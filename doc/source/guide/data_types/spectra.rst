@@ -84,7 +84,7 @@ to the end time of the file.
 .. plot::
     :include-source:
 
-    from matplotlib import pyplot as plt
+    import matplotlib.pyplot as plt
     import sunpy
     import sunpy.data.sample
     from sunpy.spectra.sources.callisto import CallistoSpectrogram
@@ -97,7 +97,7 @@ To get rid of the noise, we could also clip low intensities by setting vmin.
 
 .. plot::
 
-    from matplotlib import pyplot as plt
+    import matplotlib.pyplot as plt
     import sunpy
     import sunpy.data.sample
     from sunpy.spectra.sources.callisto import CallistoSpectrogram
