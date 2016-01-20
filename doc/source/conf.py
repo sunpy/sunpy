@@ -32,20 +32,6 @@
 import os
 import sys
 
-modules = {}
-
-# Read the docs is now using conda, so we could install glymur.
-# However, we currently do no have an OpenJPEG2000 package, so we keep this.
-try:
-    import glymur
-    _, OJP2 = glymur.lib.config.glymur_config()
-except (ImportError, IOError):
-    from mock import Mock
-    mock = Mock()
-    modules.update({'glymur':mock})
-
-sys.modules.update(modules)
-
 # -- Load astropy_helpers -----------------------------------------------------
 
 try:
