@@ -612,13 +612,15 @@ scale:\t\t {scale}
         sunpy.map.sources package.
 
         Allows for default unit assignment for:
-            CUNIT, WAVEUNIT,  """
+            CUNIT1, CUNIT2, WAVEUNIT,  """
 #        if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
 #            raise InvalidHeaderInformation("Invalid value for DSUN")
 
-        for meta_property in ('cunit1', 'cunit2', 'wavelnth'):
+        warnings.simplefilter('always', Warning)
+
+        for meta_property in ('cunit1', 'cunit2', 'waveunit'):
             if (self.meta.get(meta_property) != None) and (u.Unit(self.meta.get(meta_property), parse_strict = 'silent').physical_type == 'unknown'):
-                warnings.warn_explicit("Unknown value for  "+meta_property, Warning, __file__, inspect.currentframe().f_back.f_lineno)
+                warnings.warn("Unknown value for "+meta_property.upper(), Warning)
 
         pass
 
