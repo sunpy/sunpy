@@ -2,6 +2,7 @@ name: sunpy-rtd
 channels:
     - astropy
     - sunpy
+    - jevans
 dependencies:
 - astropy=1.1.1=np110py27_0
 - beautiful-soup=4.3.2=py27_0
@@ -57,3 +58,4 @@ dependencies:
 - wheel=0.26.0=py27_1
 - xz=5.0.5=0
 - zlib=1.2.8=0
+- openjpeg=2.1.0=py27_0
