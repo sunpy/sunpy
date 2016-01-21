@@ -63,6 +63,7 @@ class SunPyTest(AstropyTest):
         self.cov_report = 'term' if self.coverage else None
         self.docs_path = None
         self.parallel = 0
+        self.temp_root = None
 
     def _validate_required_deps(self):
         """
