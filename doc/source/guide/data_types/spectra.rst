@@ -32,16 +32,6 @@ registered before our existing local data), if none are given it defaults to
     more = image.extend()
     more.peek()
 
-.. plot::
-
-   from matplotlib import pyplot as plt
-   import sunpy
-   import sunpy.data.sample
-   from sunpy.spectra.sources.callisto import CallistoSpectrogram
-   image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_IMAGE)
-   more = image.extend()
-   more.peek()
-
 We will, for the purposes of this demonstration, continue working with the
 original image, though.
 
