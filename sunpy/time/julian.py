@@ -10,12 +10,7 @@ def julian_day(t='now'):
     """
     Wrap a UTC -> JD conversion from astropy.
     """
-
-    time = parse_time(t)
-
-    t = Time(time)
-
-    return t.jd
+    return Time(parse_time(t)).jd
 
 # The number of days between Jan 1 1900 and the Julian reference date of
 # 12:00 noon Jan 1, 4713 BC
