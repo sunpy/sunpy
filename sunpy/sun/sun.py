@@ -48,6 +48,7 @@ __all__ = ["print_params"
            ,"equation_of_center"
            ,"geometric_mean_longitude"
            ,"carrington_rotation_number"
+           ,'carrington_rotation_number_of_central_meridian'
            ,"mean_anomaly"
            ,"longitude_Sun_perigee"
            ,"mean_ecliptic_longitude"
@@ -118,11 +119,34 @@ def mean_anomaly(t='now'):
     result = result * u.deg
     return Longitude(result)
 
+
 def carrington_rotation_number(t='now'):
     """Return the Carrington Rotation number"""
     jd = julian_day(t)
     result = (1. / 27.2753) * (jd - 2398167.0) + 1.0
     return result
+
+
+def carrington_rotation_number_of_central_meridian(t='now'):
+    """
+    Return the decimal Carrington Rotation number of the central meridian.
+    Based on the SSWIDL routine
+    https://darts.jaxa.jp/pub/ssw/gen/idl/solar/tim2carr.pro
+    """
+    carr = carrington_rotation_number(t)
+    max_diff = 12.0/360.0
+    int_carr = np.floor(carr)
+    frac_carr = carr - int_carr
+    frac_lon = (360.0 - heliographic_solar_center(t)[0].to('degree').value)/360.0
+    cross_for = (np.abs(frac_carr-frac_lon) > max_diff) and (frac_carr > frac_lon)
+    cross_rev = (np.abs(frac_carr-frac_lon) > max_diff) and (frac_carr < frac_lon)
+    if cross_for:
+        int_carr += 1
+    if cross_rev:
+        int_carr += -1
+    result = int_carr + frac_lon
+    return result
+
 
 def geometric_mean_longitude(t='now'):
     """Returns the geometric mean longitude (in degrees)"""
@@ -239,7 +263,7 @@ def heliographic_solar_center(t='now'):
     jd = julian_day(t)
     T = julian_centuries(t)
     # Heliographic coordinates in degrees
-    theta = ((jd - 2398220)*360/25.38) * u.deg
+    theta = ((jd - 2398220.0)*360.0/25.38) * u.deg
     i = 7.25 * u.deg
     k = (74.3646 + 1.395833 * T) * u.deg
     lamda = true_longitude(t) - 0.00569 * u.deg
