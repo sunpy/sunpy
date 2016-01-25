@@ -146,7 +146,7 @@ class MapCube(object):
 
         >>> cube = Map(res, cube=True)   # doctest: +SKIP
 
-        >>> ani = cube.plot(controls=False)   # doctest: +SKIP
+        >>> ani = cube.plot()   # doctest: +SKIP
 
         >>> Writer = animation.writers['ffmpeg']   # doctest: +SKIP
         >>> writer = Writer(fps=10, metadata=dict(artist='SunPy'), bitrate=1800)   # doctest: +SKIP
@@ -173,7 +173,7 @@ class MapCube(object):
 
         # Normal plot
         def annotate_frame(i):
-            axes.set_title("{s.name} {s.date!s}".format(s=self[i]))
+            axes.set_title("{s.name}".format(s=self[i]))
 
             # x-axis label
             if self[0].coordinate_system.x == 'HG':
