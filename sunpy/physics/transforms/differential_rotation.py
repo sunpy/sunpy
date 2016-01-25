@@ -92,7 +92,7 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
 
 
 @u.quantity_input(x=u.arcsec, y=u.arcsec)
-def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard'):
+def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwargs):
     """Given a location on the Sun referred to using the Helioprojective
     Cartesian co-ordinate system (typically quoted in the units of arcseconds)
     use the solar rotation profile to find that location at some later or
@@ -166,7 +166,7 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard'):
     interval = (dend - dstart).total_seconds() * u.s
 
     # Get the Sun's position from the vantage point at the start time
-    vstart = _calc_P_B0_SD(dstart)
+    vstart = kwargs.get("vstart", _calc_P_B0_SD(dstart))
     # Compute heliographic co-ordinates - returns (longitude, latitude). Points
     # off the limb are returned as nan
     longitude, latitude = convert_hpc_hg(x.to(u.arcsec).value,
@@ -182,7 +182,7 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard'):
                     rot_type=rot_type)
 
     # Convert back to heliocentric cartesian in units of arcseconds
-    vend = _calc_P_B0_SD(dend)
+    vend = kwargs.get("vend", _calc_P_B0_SD(dend))
 
     # It appears that there is a difference in how the SSWIDL function
     # hel2arcmin and the sunpy function below performs this co-ordinate
