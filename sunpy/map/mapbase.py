@@ -10,7 +10,9 @@ __email__ = "stuart@mumford.me.uk"
 
 import warnings
 import inspect
+from abc import ABCMeta
 from copy import deepcopy
+from collections import OrderedDict
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -31,15 +33,19 @@ from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
 
+from sunpy.extern import six
+
 import astropy.units as u
 
 from collections import namedtuple
 Pair = namedtuple('Pair', 'x y')
 
-__all__ = ['GenericMap']
 
 from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")
+
+__all__ = ['GenericMap']
+
 
 """
 Questions
@@ -49,7 +55,33 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
+# GenericMap subclass registry.
+MAP_CLASSES = OrderedDict()
 
+
+class GenericMapMeta(ABCMeta):
+    """
+    Registration metaclass for `~sunpy.map.GenericMap`.
+
+    This class checks for the existance of a method named ``is_datasource_for``
+    when a subclass of `GenericMap` is defined. If it exists it will add that
+    class to the registry.
+    """
+
+    _registry = MAP_CLASSES
+
+    def __new__(mcls, name, bases, members):
+        cls = super(GenericMapMeta, mcls).__new__(mcls, name, bases, members)
+
+        # The registry contains the class as the key and the validation method
+        # as the item.
+        if 'is_datasource_for' in members:
+            mcls._registry[cls] = cls.is_datasource_for
+
+        return cls
+
+
+@six.add_metaclass(GenericMapMeta)
 class GenericMap(NDData):
     """
     A Generic spatially-aware 2D data array
