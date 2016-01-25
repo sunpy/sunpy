@@ -167,6 +167,7 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
 
     # Get the Sun's position from the vantage point at the start time
     vstart = kwargs.get("vstart", _calc_P_B0_SD(dstart))
+
     # Compute heliographic co-ordinates - returns (longitude, latitude). Points
     # off the limb are returned as nan
     longitude, latitude = convert_hpc_hg(x.to(u.arcsec).value,
