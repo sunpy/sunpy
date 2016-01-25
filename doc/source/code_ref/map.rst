@@ -91,10 +91,14 @@ Writing a new Instrument Map Class
 ----------------------------------
 
 Any subclass of `~sunpy.map.GenericMap` which defines a method named
-``is_datasource_for`` will automatically be registered with the ``Map`` factory.
-This makes it straightforward to define your own `~sunpy.map.GenericMap`
-subclass for a new instrument or a custom data source.
-These classes do not have to be part of SunPy for this to work, as
+`~sunpy.map.GenericMap.is_datasource_for` will automatically be registered with
+the ``Map`` factory. The ``is_datasource_for`` method describes the form of the
+data and metadata for which the `~sunpy.map.GenericMap` subclass is valid. For
+example it might check the value of the ``INSTRUMENT`` key in the metadata
+dictionary.
+This makes it straightforward to define your own
+`~sunpy.map.GenericMap` subclass for a new instrument or a custom data source
+like simulated data. These classes only have to be imported for this to work, as
 demonstrated by the following example.
 
 .. code-block:: python
@@ -119,10 +123,8 @@ demonstrated by the following example.
 This class will now be available through the ``Map`` factory as long as this
 class has been defined, i.e. imported into the current session.
 
-If you do not want to create a method named ``is_datasource_for`` (or for some
-very very strange reason you are not subclassing from `~sunpy.map.GenericMap`,
-you can manually register your class and matching method using the following
-method
+If you do not want to create a method named ``is_datasource_for`` you can
+manually register your class and matching method using the following method
 
 .. code-block:: python
 
