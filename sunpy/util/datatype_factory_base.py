@@ -3,7 +3,8 @@ from __future__ import absolute_import, division, print_function
 import inspect
 
 class BasicRegistrationFactory(object):
-    """ Generalized registerable factory type.
+    """
+    Generalized registerable factory type.
 
     Widgets (classes) can be registered with an instance of this class.
     Arguments to the factory's `__call__` method are then passed to a function
