@@ -243,10 +243,10 @@ scale:\t\t {scale}
         # "solar-y" ctypes.  This overrides the default assignment and
         # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
         # 449, 791.
-        if w2.wcs.ctype[0].lower() == "solar-x":
+        if w2.wcs.ctype[0].lower() in ("solar-x", "solar_x"):
             w2.wcs.ctype[0] = 'HPLN-TAN'
 
-        if w2.wcs.ctype[1].lower() == "solar-y":
+        if w2.wcs.ctype[1].lower() in ("solar-y", "solar_y"):
             w2.wcs.ctype[1] = 'HPLT-TAN'
 
         return w2
