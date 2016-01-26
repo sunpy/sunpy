@@ -63,7 +63,8 @@ class GBMSummaryLightCurve(LightCurve):
         .. plot::
 
             from sunpy.lightcurve import GBMSummaryLightCurve
-            gbm = GBMSummaryLightCurve.create('2011-06-07')
+            from sunpy.data.sample import GBM_LIGHTCURVE
+            gbm = GBMSummaryLightCurve.create(GBM_LIGHTCURVE)
             gbm.peek()
 
         Parameters

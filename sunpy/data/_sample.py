@@ -38,7 +38,17 @@ _files = {
     "SWAP_LEVEL1_IMAGE": ("swap_lv1_20120101_001607.fits", ""),
     "AIA_193_IMAGE": ("aia.lev1.193A_2013-09-21T16_00_06.84Z.image_lev1.fits", ".zip"),
     "AIA_171_ROLL_IMAGE": ("aiacalibim5.fits.gz", ""),
-    "AIA_94_CUTOUT": ("ssw_cutout_20121030_153001_AIA_94_.fts", "")
+    "AIA_94_CUTOUT": ("ssw_cutout_20121030_153001_AIA_94_.fts", ""),
+    "EVE_LIGHTCURVE": ("20120620_EVE_L0CS_DIODES_1m.txt", ""),
+# Uncomment this if it needs to be used. Commented out to save bandwidth.
+#    "LYRA_LIGHTCURVE": ("lyra_20110810-000000_lev2_std.fits.gz", ""),
+    "LYRA_LEVEL3_LIGHTCURVE": ("lyra_20150101-000000_lev3_std.fits.gz", ""),
+    "GOES_LIGHTCURVE": ("go1520120601.fits.gz", ""),
+    "GBM_LIGHTCURVE": ("glg_cspec_n5_110607_v00.pha", ""),
+    "NOAAINDICES_LIGHTCURVE": ("RecentIndices.txt", ""),
+    "NOAAPREDICT_LIGHTCURVE": ("predicted-sunspot-radio-flux.txt", ""),
+    "RHESSI_LIGHTCURVE": ("hsi_obssumm_20120601_018.fits.gz", ""),
+    "NORH_LIGHTCURVE": ("tca110810", "")
 }
 
 sample_files = {}
