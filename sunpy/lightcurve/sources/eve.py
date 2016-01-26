@@ -63,8 +63,9 @@ class EVELightCurve(LightCurve):
 
         .. plot::
 
-            import sunpy
-            eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
+            import sunpy.lightcurve
+            from sunpy.data.sample import EVE_LIGHTCURVE
+            eve = sunpy.lightcurve.EVELightCurve.create(EVE_LIGHTCURVE)
             eve.peek(subplots=True)
 
         Parameters
