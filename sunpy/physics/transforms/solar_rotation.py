@@ -39,7 +39,7 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
     layer_index : int
         The index layer.  Shifts are calculated relative to the time of
         this layer.
-    ``**kwargs``
+    **kwargs
         These keywords are passed to the function
         `sunpy.physics.transforms.differential_rotation.rot_hpc`.
 
@@ -132,10 +132,16 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
     xshift_keep = np.zeros((nt)) * u.pix
     yshift_keep = np.zeros_like(xshift_keep)
 
+    # Filter the rotation keywords
+    rot_hpc_kwargs = {'frame_time': kwargs.pop('frame_time', 'synodic'),
+                      'rot_type': kwargs.pop('rot_type', 'howard'),
+                      'vstart': kwargs.pop('vstart', None),
+                      'vend': kwargs.pop('vend', None)}
+
     # If no shifts are passed in, calculate them.  Otherwise,
     # use the shifts passed in.
     if shift is None:
-        shift = calculate_solar_rotate_shift(mc, layer_index=layer_index, **kwargs)
+        shift = calculate_solar_rotate_shift(mc, layer_index=layer_index, **rot_hpc_kwargs)
     xshift_arcseconds = shift['x']
     yshift_arcseconds = shift['y']
 
