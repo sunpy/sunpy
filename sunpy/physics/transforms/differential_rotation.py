@@ -92,7 +92,8 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
 
 
 @u.quantity_input(x=u.arcsec, y=u.arcsec)
-def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwargs):
+def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard',
+            vstart=None, vend=None):
     """Given a location on the Sun referred to using the Helioprojective
     Cartesian co-ordinate system (typically quoted in the units of arcseconds)
     use the solar rotation profile to find that location at some later or
@@ -124,6 +125,16 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
 
     frame_time : {'sidereal' | 'synodic'}
         Choose type of day time reference frame.
+
+    vstart : {dict | None}
+        If None, return the value of `sunpy.physics.transforms.differential_rotation._calc_P_B0_SD`
+        calculated at dstart.  Otherwise, a dictionary containing the same
+        information as the output of `sunpy.physics.transforms.differential_rotation._calc_P_B0_SD`.
+
+    vend : {dict | None}
+        If None, return the value of `sunpy.physics.transforms.differential_rotation._calc_P_B0_SD`
+        calculated at dend.  Otherwise, a dictionary containing the same
+        information as the output of `sunpy.physics.transforms.differential_rotation._calc_P_B0_SD`.
 
     Returns
     -------
@@ -166,7 +177,8 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
     interval = (dend - dstart).total_seconds() * u.s
 
     # Get the Sun's position from the vantage point at the start time
-    vstart = kwargs.get("vstart", _calc_P_B0_SD(dstart))
+    if vstart is None:
+        vstart = _calc_P_B0_SD(dstart)
 
     # Compute heliographic co-ordinates - returns (longitude, latitude). Points
     # off the limb are returned as nan
@@ -183,7 +195,8 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
                     rot_type=rot_type)
 
     # Convert back to heliocentric cartesian in units of arcseconds
-    vend = kwargs.get("vend", _calc_P_B0_SD(dend))
+    if vend is None:
+        vend = _calc_P_B0_SD(dend)
 
     # It appears that there is a difference in how the SSWIDL function
     # hel2arcmin and the sunpy function below performs this co-ordinate
@@ -219,6 +232,7 @@ def _calc_P_B0_SD(date):
     p  -  Solar P (position angle of pole)  (degrees)
     b0 -  latitude of point at disk centre (degrees)
     sd -  semi-diameter of the solar disk in arcminutes
+    l0 -  heliographic longitude.
 
     Notes
     -----
