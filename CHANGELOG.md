@@ -5,11 +5,12 @@ Latest
 * Updated `show_colormaps()` with new string filter to show a subset of color maps.
 * Fixed MapCube animations by working around a bug in Astropy's ImageNormalize
 * Remove ``vso.QueryResponse.num_records()`` in favour of `len(qr)`
-* add a `draw_rectangle` helper to `GenericMap` which can plot rectanges in the
+* Add a `draw_rectangle` helper to `GenericMap` which can plot rectangles in the
   native coordinate system of the map.
-
 * Added the ability to shift maps to correct for incorrect map location, for example.
-* Bug fix for rhessi summary light curve values.
+* Bug fix for RHESSI summary light curve values.
+* Mapcube solar derotation and coalignment now pass keywords to the routine used to
+  shift the images, scipy.ndimage.interpolation.shift.
 
 0.6.0
 -----
