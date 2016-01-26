@@ -50,8 +50,6 @@ env:
 matrix:
     include:
          - os: linux
-           env: NUMPY_VERSION="=1.9.3"
-         - os: linux
            env: PANDAS_VERSION="=0.16.2"
          - os: linux
            env: TEST_MODE='figure' MATPLOTLIB_VERSION="=1.5.1"
