@@ -60,6 +60,11 @@ approach as shown in the following example.::
    >>> plt.axis('off')
    >>> plt.show()
 
+
+.. image:: helioviewer-1.png
+
+
+
 Where 4.8 refers to the image resolution in arcseconds per pixel (larger values
 mean lower resolution), the "1" and "100" in the layer string refer to the
 visibility (visible/hidden) and opacity, x0 and y0 are the center points about
@@ -99,6 +104,8 @@ lower layer.::
    >>> plt.axis('off')
    >>> plt.show()
 
+.. image:: helioviewer-2.png
+
 Next, let's see how we can download a JPEG 2000 image and load it into a SunPy
 Map object.
 
@@ -116,6 +123,9 @@ can specify the values as separate keyword arguments.::
    >>> xrange = Quantity([200, 550], 'arcsec')
    >>> yrange = Quantity([-400, 200], 'arcsec')
    >>> hmi.submap(xrange, yrange).peek()
+
+
+.. image:: helioviewer-3.png
 
 Every JP2 file provided by the Helioviewer Project has been processed to generate an image that
 can be used for browse purposes.  This typically involves following the standard image processing
