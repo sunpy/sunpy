@@ -39,7 +39,7 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
     layer_index : int
         The index layer.  Shifts are calculated relative to the time of
         this layer.
-    **kwargs
+    ``**kwargs``
         These keywords are passed to the function
         `sunpy.physics.transforms.differential_rotation.rot_hpc`.
 
