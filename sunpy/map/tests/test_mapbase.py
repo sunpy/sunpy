@@ -508,7 +508,6 @@ def test_plot_aia171_superpixel_nowcsaxes(aia171_test_map):
     aia171_test_map.superpixel((9, 7)*u.pix, offset=(4, 4)*u.pix).plot(axes=ax)
 
 
-
 @figure_test
 def test_plot_masked_aia171_superpixel_nowcsaxes(aia171_test_map_with_mask):
     ax = plt.gca()
