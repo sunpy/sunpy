@@ -10,6 +10,10 @@ Latest
 
 * Added the ability to shift maps to correct for incorrect map location, for example.
 * Bug fix for rhessi summary light curve values.
+* Map superpixel method now respects masks, accepts numpy functions as an
+  argument, and removes the restriction that the number of original pixels in
+  the x (or y) side of the superpixel exactly divides the number of original
+  pixels in the x (or y) side of the original map data.
 
 0.6.0
 -----
