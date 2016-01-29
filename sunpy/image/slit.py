@@ -16,6 +16,55 @@ files = glob('/storage2/SDO/jet/crop/304*.fits')
 files.sort()
 
 
+def slit(in_files, xy1, xy2):
+    """
+    Returns an array with intensity along the slit on the y axis and time 
+    along x.
+    
+    Parameters    
+    ----------
+    in_files : `sunpy.map.MapCube`
+        A mapcube of the images you want to perform the slit analysis on. 
+        Usually with x and y as space, and z as time.
+    xy1 : List of x and y coordinates in `[x1, y1]`
+        The x and y coordinates of the beginning of the slit. May be either 
+        pixel coordinates or astropy units.
+    xy2 : List of x and y coordinates
+        The x and y coordinates of the end of the slit. May be either 
+        pixel coordinates or astropy units.
+
+        
+    Returns
+    -------
+    out : numpy array
+        A numpy array with intenisty in y and time in x.
+
+    """
+    
+    slits = []
+    slit = get_pixels_on_line(int(xy1[0].value), int(xy1[1].value), 
+                              int(xy2[0].value), int(xy2[1].value))    
+    
+
+
+    for afile in files: 
+        amap = sunpy.map.Map(afile)
+        data = amap.data
+        # get the initial slit pixels
+        s_values = data[slit.T[0], slit.T[1]]
+        # plus one
+        s_p1_values = data[slit.T[0], slit.T[1]]
+        # minus one
+        s_m1_values = data[slit.T[0], slit.T[1]]
+        # wap it all in one list
+        slits.append([s_m1_values, s_values, s_p1_values])   
+    
+    end_array = np.array(slits)
+    mean_array = end_array.mean(axis=1)
+    array_maxes = mean_array.max(axis=0)
+    norm_array = mean_array/array_maxes
+    im_array = np.rot90(norm_array)
+    return(im_array)
 
 def get_pixels_on_line(x1, y1, x2, y2, getvalues=True):
     """Uses Bresenham's line algorithm to enumerate the pixels along
@@ -54,60 +103,4 @@ def get_pixels_on_line(x1, y1, x2, y2, getvalues=True):
 
 
 
-# define the range to preform the slit on in pixels
-amap = sunpy.map.Map(files[100])
-bl = amap.data_to_pixel(908.0*u.arcsec, -245.0*u.arcsec)
-tr = amap.data_to_pixel(934.5*u.arcsec, -235.5*u.arcsec)
-
-x_pixel = range(int(bl[0].value), int(tr[0].value))
-ind_len = len(x_pixel)
-y_pixel = np.linspace(int(bl[1].value), int(tr[1].value), num=ind_len)
-
-inds = np.array([x_pixel,y_pixel])
-
-
-# calculate the intensity along each slit
-# append these to a list
-slits = []
-slit = get_pixels_on_line(int(bl[0].value), int(bl[1].value), int(tr[0].value), int(tr[1].value))
-slit_p1 = slit + [-1,+1]
-slit_m1 = slit + [+1,-1]
-for afile in files: 
-    amap = sunpy.map.Map(afile)
-    data = amap.data
-    # get the initial slit pixels
-    s_values = data[slit.T[0], slit.T[1]]
-    # plus one
-    s_p1_values = data[slit.T[0], slit.T[1]]
-    # minus one
-    s_m1_values = data[slit.T[0], slit.T[1]]
-    # wap it all in one list
-    slits.append([s_m1_values, s_values, s_p1_values])   
-
-end_array = np.array(slits)
-mean_array = end_array.mean(axis=1)
-array_maxes = mean_array.max(axis=0)
-norm_array = mean_array/array_maxes
-im_array = np.rot90(norm_array)
-
-
-
-
-
-the_map = sunpy.map.Map(files[140])
-plt.figure()
-the_map.plot()
-plt.plot(slit[:,0], slit[:,1])
-plt.plot(slit_p1[:,0], slit_p1[:,1])
-plt.plot(slit_m1[:,0], slit_m1[:,1])
-plt.show()
-
-
-
-plt.figure()
-plt.imshow(im_array, origin='lower', cmap='sdoaia304')
-plt.xlabel('Time')
-plt.ylabel('Slit Intensity')
-#plt.savefig('/data/SDO/images/211_slit_2.png')
-plt.show()
 
