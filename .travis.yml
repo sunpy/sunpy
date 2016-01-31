@@ -76,20 +76,25 @@ matrix:
            env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage --cov-report=html'
                 CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov'
          - os: linux
-           env: JOB="Py2Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest' CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 # doctest will fail till new version of astropy-helpers
+           env: JOB="Py2Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
+                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
          - os: linux
-           env: JOB="Py2NumpyPrev" PYTHON_VERSION=2.7 SETUP_CMD='test' NUMPY_VERSION=$PREVIOUS_NUMPY CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+           env: JOB="Py2NumpyPrev" PYTHON_VERSION=2.7 SETUP_CMD='test'
+                NUMPY_VERSION=$PREVIOUS_NUMPY CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
          - os: linux
            env: JOB="Py2Figures" PYTHON_VERSION=2.7 SETUP_CMD='test --figure'
                 CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
                 NUMPY_VERSION=$FIGURES_NUMPY MATPLOTLIB_VERSION=$FIGURES_MPL
          - os: linux
-           env: JOB="Py3" PYTHON_VERSION=3.4 MAIN_CMD='continuous-integration/python3.sh' SETUP_CMD='' CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES
+           env: JOB="Py3" PYTHON_VERSION=3.4 MAIN_CMD='continuous-integration/python3.sh'
+                SETUP_CMD='' CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES
 
     # allow_failures has to repeat the environment from the matrix above to mark it as such
     allow_failures:
-         - env: JOB="Py2Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest' CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 # doctest will fail till new version of astropy-helpers
-         - env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage --cov-report=html' CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov'
+      - env: JOB="Py2Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
+             CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+      - env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage --cov-report=html'
+             CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov'
 
 install:
     # install openjpeg
