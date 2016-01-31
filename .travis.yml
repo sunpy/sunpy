@@ -41,9 +41,9 @@ env:
         - TEST_MODE='offline'
         - NUMPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
-        - CONDA_CHANNELS='astropy astropy-ci-extras sunpy'
+        - CONDA_CHANNELS='astropy astropy-ci-extras sunpy jevans'
         - CONDA_ALL_DEPENDENCIES='Cython jinja2 scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
-        - CONDA_ALL_DEPENDENCIES2="suds-jurko glymur $CONDA_ALL_DEPENDENCIES"
+        - CONDA_ALL_DEPENDENCIES2="suds-jurko glymur openjpeg $CONDA_ALL_DEPENDENCIES"
 
 
 #    matrix:
@@ -57,7 +57,7 @@ matrix:
          # Try MacOS X
          - os: osx
            env: JOB="Py2" PYTHON_VERSION=2.7 SETUP_CMD='test'
-                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+                CONDA_DEPENDENCIES="suds-jurko glymur $CONDA_ALL_DEPENDENCIES" #Without openjpeg
 
          # Try on Linux
          - os: linux
@@ -97,25 +97,20 @@ matrix:
              CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov'
 
 install:
-    # install openjpeg
-    - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
-    - tar xvzf openjpeg-1.5.0-Linux-x86_64.tar.gz
-    - export PATH=`pwd`/openjpeg-1.5.0-Linux-x86_64/bin:$PATH
-    - export LD_LIBRARY_PATH=`pwd`/openjpeg-1.5.0-Linux-x86_64/lib:$LD_LIBRARY_PATH
-    - echo $PATH
-    - echo $LD_LIBRARY_PATH
     - echo $CONDA_DEPENDENCIES
     - git clone git://github.com/astropy/ci-helpers.git
     - source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh
+    - source continuous-integration/travis/openjpeg.sh # so glymur knows where to look
 
     # Download the sample data for the build of the documentation.
     - if [[ $SETUP_CMD == *sphinx* ]]; then python -c "import sunpy.data; sunpy.data.download_sample_data()"; fi
-    - echo $MAIN_CMD $SETUP_CMD
+    - if [[ $SETUP_CMD == *figure* ]]; then wget http://raw.githubusercontent.com/dpshelio/sunpy-figure-tests/np1104/conda_env; conda create --name testFigure --file conda_env ; source activate testFigure; fi
+
 script:
     - $MAIN_CMD $SETUP_CMD
 
     # - if [[ $TEST_MODE == 'skip' ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
-    
+
 
 # Notify the IRC channel of build status
 notifications:
