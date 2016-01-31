@@ -39,7 +39,7 @@ env:
         - NUMPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
         - CONDA_CHANNELS='astropy astropy-ci-extras sunpy'
-        - CONDA_ALL_DEPENDENCIES='Cython jinja2 scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest wcsaxes pyyaml pandas' # pandas last to change version number on env
+        - CONDA_ALL_DEPENDENCIES='Cython jinja2 scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
         - CONDA_ALL_DEPENDENCIES2="suds-jurko glymur $CONDA_ALL_DEPENDENCIES"
 
 
@@ -54,7 +54,7 @@ matrix:
          # Try MacOS X
          - os: osx
            env: PYTHON_VERSION=2.7 SETUP_CMD='test'
-               CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
 
          # Try on Linux
          - os: linux
@@ -62,7 +62,7 @@ matrix:
                 CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
          - os: linux
            env: PYTHON_VERSION=2.7 SETUP_CMD='test'
-                CONDA_DEPENDENCIES="$CONDA_ALL_DEPENDENCIES2=$PREVIOUS_PANDAS" # all in quotes so it may take it
+                PANDAS_VERSION=$PREVIOUS_PANDAS CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
          - os: linux
            env: PYTHON_VERSION=2.7 SETUP_CMD='test'
                 ASTROPY_VERSION='development' CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
@@ -89,7 +89,6 @@ matrix:
 
 install:
     # install openjpeg
-    - echo `pwd`
     - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
     - tar xvzf openjpeg-1.5.0-Linux-x86_64.tar.gz
     - export PATH=`pwd`/openjpeg-1.5.0-Linux-x86_64/bin:$PATH
