@@ -11,9 +11,6 @@ import scipy.ndimage as snd
 import matplotlib.pyplot as plt
 from glob import glob
 
-# import files command
-files = glob('/storage2/SDO/jet/crop/304*.fits')
-files.sort()
 
 
 def slit(in_files, xy1, xy2):
@@ -41,15 +38,34 @@ def slit(in_files, xy1, xy2):
 
     """
     
+    # check the attributes of the coordinates
+    if ((isinstance(xy1[0] and xy1[1], u.Quantity) and isinstance(xy2[0] and xy2[1], u.Quantity)) or
+        (hasattr(xy1[0] and xy1[1], 'unit') and hasattr(xy2[0] and xy2[1], 'unit'))):
+    
+        if (xy1[0].unit.is_equivalent(in_files[0].units.x) and
+            xy1[1].unit.is_equivalent(in_files[0].units.y)):
+            units = 'data'
+        elif xy1[0].unit.is_equivalent(u.pixel) and xy1[1].unit.is_equivalent(u.pixel):
+            units = 'pixels'
+        else:
+            raise u.UnitsError("xy1 and xy2 must be "
+                               "in units convertable to {} or {}".format(in_files[0].units['x'],
+                                                                         u.pixel))
+    else:
+        raise TypeError("Arguments range_a and range_b to function submap "
+                        "have an invalid unit attribute "
+                        "You may want to pass in an astropy Quantity instead.")
+    
+    
+    # call to the get pixel numbers routine
     slits = []
     slit = get_pixels_on_line(int(xy1[0].value), int(xy1[1].value), 
                               int(xy2[0].value), int(xy2[1].value))    
     
 
 
-    for afile in files: 
-        amap = sunpy.map.Map(afile)
-        data = amap.data
+    for d_arr in in_files: 
+        data = in_files[d_arr].data
         # get the initial slit pixels
         s_values = data[slit.T[0], slit.T[1]]
         # plus one
@@ -60,18 +76,16 @@ def slit(in_files, xy1, xy2):
         slits.append([s_m1_values, s_values, s_p1_values])   
     
     end_array = np.array(slits)
-    mean_array = end_array.mean(axis=1)
-    array_maxes = mean_array.max(axis=0)
-    norm_array = mean_array/array_maxes
-    im_array = np.rot90(norm_array)
+    im_array = np.rot90(end_array)
     return(im_array)
 
 def get_pixels_on_line(x1, y1, x2, y2, getvalues=True):
-    """Uses Bresenham's line algorithm to enumerate the pixels along
+    """
+    Uses Bresenham's line algorithm to enumerate the pixels along
     a line.
     (see http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm)
     If `getvalues`==False then it will return tuples of (x, y) coordinates
-    instead of pixel values.
+    instead of pixel values. This was taken from the package Ginga.
     """
     dx = abs(x2 - x1)
     dy = abs(y2 - y1)
