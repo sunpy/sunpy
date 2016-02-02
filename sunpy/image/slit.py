@@ -14,7 +14,7 @@ from glob import glob
 
 
 
-def slit(in_files, x1, y1, x2, y2):
+def slit(mcube_in, x1, y1, x2, y2):
     """
     Returns an array with intensity along the slit on the y axis and time 
     along x.
@@ -43,11 +43,11 @@ def slit(in_files, x1, y1, x2, y2):
     if ((isinstance(x1 and y1, u.Quantity) and isinstance(x2 and y2, u.Quantity)) or
         (hasattr(x1 and y1, 'unit') and hasattr(x2 and y2, 'unit'))):
     
-        if (x1.unit.is_equivalent(in_files[0].units.x) and
-            y1[1].unit.is_equivalent(in_files[0].units.y)):
+        if (x1.unit.is_equivalent(mcube_in[0].units.x) and
+            y1[1].unit.is_equivalent(mcube_in[0].units.y)):
             
             # convert the world to pixel
-            init_map = sunpy.map.Map(in_files[0])
+            init_map = sunpy.map.Map(mcube_in[0])
             c_x1, c_y1 = init_map.data_to_pixel(x1, y1)
             c_x2, c_y2 = init_map.data_to_pixel(x2, y2)            
                         
@@ -56,7 +56,7 @@ def slit(in_files, x1, y1, x2, y2):
         
         else:
             raise u.UnitsError("xy1 and xy2 must be "
-                               "in units convertable to {} or {}".format(in_files[0].units['x'],
+                               "in units convertable to {} or {}".format(mcube_in[0].units['x'],
                                                                          u.pixel))
     else:
         raise TypeError("Arguments range_a and range_b to function submap "
@@ -72,7 +72,7 @@ def slit(in_files, x1, y1, x2, y2):
     
 
 
-    for d_arr in in_files: 
+    for d_arr in mcube_in: 
         data = d_arr.data
         # get the initial slit pixels
         s_values = data[slit.T[0], slit.T[1]]
