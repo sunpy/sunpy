@@ -13,8 +13,8 @@ Latest
 * Map superpixel method now respects maps that have masks.
 * Map superpixel method now accepts numpy functions as an argument, or any user-defined
   function.
-* Map superpixel method no longer has the restriction that the number of original pixels in
-  the x (or y) side of the superpixel exactly divides the number of original
+* Map superpixel method no longer has the restriction that the number of original pixels
+  in the x (or y) side of the superpixel exactly divides the number of original
   pixels in the x (or y) side of the original map data.
 
 0.6.0
