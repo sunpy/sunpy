@@ -4,6 +4,7 @@ import sunpy.cm
 import sunpy.wcs
 
 import numpy as np
+import astropy.wcs
 import astropy.io.fits as fits
 import astropy.units as u
 
@@ -45,6 +46,13 @@ def slit(in_files, xy1, xy2):
         if (xy1[0].unit.is_equivalent(in_files[0].units.x) and
             xy1[1].unit.is_equivalent(in_files[0].units.y)):
             units = 'data'
+            
+            # convert the world to pixel
+            init_map = sunpy.map.Map(in_files[0])
+            x1, y1 = init_map.data_to_pixel(xy1[0], xy1[1])
+            x2, y2 = init_map.data_to_pixel(xy2[0], xy2[1])            
+            
+            
         elif xy1[0].unit.is_equivalent(u.pixel) and xy1[1].unit.is_equivalent(u.pixel):
             units = 'pixels'
         else:
@@ -55,17 +63,18 @@ def slit(in_files, xy1, xy2):
         raise TypeError("Arguments range_a and range_b to function submap "
                         "have an invalid unit attribute "
                         "You may want to pass in an astropy Quantity instead.")
+        
     
     
     # call to the get pixel numbers routine
     slits = []
-    slit = get_pixels_on_line(int(xy1[0].value), int(xy1[1].value), 
-                              int(xy2[0].value), int(xy2[1].value))    
+    slit = get_pixels_on_line(int(x1.value), int(y1.value), 
+                              int(x2.value), int(y2.value))    
     
 
 
     for d_arr in in_files: 
-        data = in_files[d_arr].data
+        data = d_arr.data
         # get the initial slit pixels
         s_values = data[slit.T[0], slit.T[1]]
         # plus one
