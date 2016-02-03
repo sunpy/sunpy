@@ -1,17 +1,8 @@
-import sunpy
 import sunpy.map
-import sunpy.cm
-import sunpy.wcs
 
 import numpy as np
-import astropy.wcs
-import astropy.io.fits as fits
+
 import astropy.units as u
-
-import scipy.ndimage as snd
-import matplotlib.pyplot as plt
-from glob import glob
-
 
 
 def slit(mcube_in, x1, y1, x2, y2):
@@ -21,7 +12,7 @@ def slit(mcube_in, x1, y1, x2, y2):
     
     Parameters    
     ----------
-    in_files : `sunpy.map.MapCube`
+    mcube_in : `sunpy.map.MapCube`
         A mapcube of the images you want to perform the slit analysis on. 
         Usually with x and y as space, and z as time.
     x1, y1 : `astropy.units.Quantity` 
@@ -44,7 +35,7 @@ def slit(mcube_in, x1, y1, x2, y2):
         (hasattr(x1 and y1, 'unit') and hasattr(x2 and y2, 'unit'))):
     
         if (x1.unit.is_equivalent(mcube_in[0].units.x) and
-            y1[1].unit.is_equivalent(mcube_in[0].units.y)):
+            y1.unit.is_equivalent(mcube_in[0].units.y)):
             
             # convert the world to pixel
             init_map = sunpy.map.Map(mcube_in[0])
@@ -52,7 +43,8 @@ def slit(mcube_in, x1, y1, x2, y2):
             c_x2, c_y2 = init_map.data_to_pixel(x2, y2)            
                         
         elif x1.unit.is_equivalent(u.pixel) and y1.unit.is_equivalent(u.pixel):
-            pass
+            c_x1, c_y2 = x1, y1
+            c_x2, c_y2 = x2, y2
         
         else:
             raise u.UnitsError("xy1 and xy2 must be "
@@ -66,11 +58,8 @@ def slit(mcube_in, x1, y1, x2, y2):
     
     
     # call to the get pixel numbers routine
-    slits = []
     slit = get_pixels_on_line(int(c_x1.value), int(c_y1.value), 
                               int(c_x2.value), int(c_y2.value))    
-    
-
 
     for d_arr in mcube_in: 
         data = d_arr.data
@@ -81,7 +70,7 @@ def slit(mcube_in, x1, y1, x2, y2):
         # minus one
         s_m1_values = data[slit.T[0], slit.T[1]]
         # wap it all in one list
-        slits.append([s_m1_values, s_values, s_p1_values])   
+        slits = [s_m1_values, s_values, s_p1_values]
     
     end_array = np.array(slits)
     im_array = np.rot90(end_array)
@@ -124,7 +113,3 @@ def get_pixels_on_line(x1, y1, x2, y2, getvalues=True):
             y += sy
 
     return np.array(res)
-
-
-
-
