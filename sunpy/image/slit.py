@@ -5,7 +5,7 @@ import numpy as np
 import astropy.units as u
 
 
-def slit(mcube_in, x1, y1, x2, y2):
+def slit(mcube_in, range_a, range_b):
     """
     Returns an array with intensity along the slit on the y axis and time 
     along x.
@@ -15,14 +15,13 @@ def slit(mcube_in, x1, y1, x2, y2):
     mcube_in : `sunpy.map.MapCube`
         A mapcube of the images you want to perform the slit analysis on. 
         Usually with x and y as space, and z as time.
-    x1, y1 : `astropy.units.Quantity` 
-        The x and y coordinates of the beginning of the slit. May be either 
-        pixel coordinates or astropy units.
-    x2, y2 : `astropy.units.Quantity`
-        The x and y coordinates of the end of the slit. May be either 
-        pixel coordinates or astropy units.
+    range_a : `astropy.units.Quantity` 
+        A list of two `astropy.unit.Quantity` objects representing x1 and x2, 
+        start and end of slit in x.
+    range_b : `astropy.units.Quantity`
+        A list of two `astropy.unit.Quantity` objects representing x2 and y2, 
+        start and end of slit in y.
 
-        
     Returns
     -------
     out : `numpy.ndarray`
@@ -31,20 +30,20 @@ def slit(mcube_in, x1, y1, x2, y2):
     """
     
     # check the attributes of the coordinates
-    if ((isinstance(x1 and y1, u.Quantity) and isinstance(x2 and y2, u.Quantity)) or
-        (hasattr(x1 and y1, 'unit') and hasattr(x2 and y2, 'unit'))):
+    if ((isinstance(range_a, u.Quantity) and isinstance(range_b, u.Quantity)) or
+        (hasattr(range_a, 'unit') and hasattr(range_b, 'unit'))):
     
-        if (x1.unit.is_equivalent(mcube_in[0].units.x) and
-            y1.unit.is_equivalent(mcube_in[0].units.y)):
+        if (range_a.unit.is_equivalent(mcube_in[0].units.x) and
+            range_b.unit.is_equivalent(mcube_in[0].units.y)):
             
             # convert the world to pixel
             init_map = sunpy.map.Map(mcube_in[0])
-            c_x1, c_y1 = init_map.data_to_pixel(x1, y1)
-            c_x2, c_y2 = init_map.data_to_pixel(x2, y2)            
+            c_x1, c_y1 = init_map.data_to_pixel(range_a[0], range_b[0])
+            c_x2, c_y2 = init_map.data_to_pixel(range_a[1], range_b[1])            
                         
-        elif x1.unit.is_equivalent(u.pixel) and y1.unit.is_equivalent(u.pixel):
-            c_x1, c_y2 = x1, y1
-            c_x2, c_y2 = x2, y2
+        elif range_a.unit.is_equivalent(u.pixel) and range_b.unit.is_equivalent(u.pixel):
+            c_x1, c_y2 = range_a[0], range_b[0]
+            c_x2, c_y2 = range_a[1], range_b[1]
         
         else:
             raise u.UnitsError("xy1 and xy2 must be "
