@@ -13,7 +13,7 @@ import astropy.units as u
 
 import sunpy.data.test
 from sunpy import map
-from sunpy.physics.transforms.solar_rotation import calculate_solar_rotate_shift, mapcube_solar_derotate
+from sunpy.physics.solar_rotation import calculate_solar_rotate_shift, mapcube_solar_derotate
 
 
 
