@@ -30,14 +30,14 @@ def slit(mcube_in, range_a, range_b):
     """
     
     # check the attributes of the coordinates
-    if ((isinstance(range_a, u.Quantity) and isinstance(range_b, u.Quantity)) or
-        (hasattr(range_a, 'unit') and hasattr(range_b, 'unit'))):
+    if ((isinstance(range_a and range_b, u.Quantity) or 
+        (hasattr(range_a and range_b, 'unit')))):
     
         if (range_a.unit.is_equivalent(mcube_in[0].units.x) and
             range_b.unit.is_equivalent(mcube_in[0].units.y)):
             
             # convert the world to pixel
-            init_map = sunpy.map.Map(mcube_in[0])
+            init_map = mcube_in[0]
             c_x1, c_y1 = init_map.data_to_pixel(range_a[0], range_b[0])
             c_x2, c_y2 = init_map.data_to_pixel(range_a[1], range_b[1])            
                         
@@ -77,7 +77,7 @@ def slit(mcube_in, range_a, range_b):
 
 
 
-def get_pixels_on_line(x1, y1, x2, y2, getvalues=True):
+def get_pixels_on_line(x1, y1, x2, y2, getvalues=False):
     """
     Uses Bresenham's line algorithm to enumerate the pixels along
     a line.
