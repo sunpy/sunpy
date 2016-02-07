@@ -54,10 +54,10 @@ env:
 
 matrix:
     include:
-         # Try MacOS X
-         - os: osx
-           env: JOB="Py2" PYTHON_VERSION=2.7 SETUP_CMD='test'
-                CONDA_DEPENDENCIES="suds-jurko glymur $CONDA_ALL_DEPENDENCIES" #Without openjpeg
+         # # Try MacOS X
+         # - os: osx
+         #   env: JOB="Py2" PYTHON_VERSION=2.7 SETUP_CMD='test'
+         #        CONDA_DEPENDENCIES="suds-jurko glymur $CONDA_ALL_DEPENDENCIES" #Without openjpeg
 
          # Try on Linux
          - os: linux
@@ -73,7 +73,7 @@ matrix:
            env: JOB="Py2Sphinx" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -w'
                 CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
          - os: linux
-           env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage --cov-report=html'
+           env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage'
                 CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov'
          - os: linux
            env: JOB="Py2Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
@@ -93,7 +93,7 @@ matrix:
     allow_failures:
       - env: JOB="Py2Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
              CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
-      - env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage --cov-report=html'
+      - env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage'
              CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov'
 
 install:
@@ -109,9 +109,9 @@ install:
 script:
     - $MAIN_CMD $SETUP_CMD
 
-    # - if [[ $TEST_MODE == 'skip' ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
-
-
+after_success:
+    - if [[ $SETUP_CMD == *coverage* ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
+      
 # Notify the IRC channel of build status
 notifications:
   irc: "chat.freenode.net#SunPy"
