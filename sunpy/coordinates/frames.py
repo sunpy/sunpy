@@ -88,7 +88,6 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
         }
 
     dateobs = TimeFrameAttributeSunPy()
-    RSun = FrameAttribute(default=RSUN_METERS.to(u.km))
 
     def __init__(self, *args, **kwargs):
         _rep_kwarg = kwargs.get('representation', None)
@@ -103,7 +102,7 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
             if isinstance(self._data, UnitSphericalRepresentation):
                 self._data = SphericalWrap180Representation(lat=self._data.lat,
                                                             lon=self._data.lon,
-                                                            distance=self.RSun)
+                                                            distance=RSUN_METERS.to(u.km))
                 self.representation = SphericalWrap180Representation
 
             # Make a Spherical Wrap180 instead
@@ -165,7 +164,6 @@ class HeliographicCarrington(HeliographicStonyhurst):
         }
 
     dateobs = TimeFrameAttributeSunPy()
-    RSun = FrameAttribute(default=RSUN_METERS.to(u.km))
 
 
 class Heliocentric(BaseCoordinateFrame):
