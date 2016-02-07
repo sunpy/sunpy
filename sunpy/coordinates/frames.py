@@ -28,7 +28,7 @@ RSUN_METERS = sun.constants.constant('radius').si.to(u.m)
 DSUN_METERS = sun.constants.constant('mean distance').si.to(u.m)
 
 __all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
-           'Heliocentric', 'Helioprojective']
+           'Heliocentric', 'Helioprojective', 'HelioprojectiveRadial']
 
 
 class HeliographicStonyhurst(BaseCoordinateFrame):
@@ -45,14 +45,14 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
     representation: `~astropy.coordinates.BaseRepresentation` or None
         A representation object or None to have no data.
     lon: `Angle` object.
-        The longitude for this object (``lat`` must also be given and ``representation``
-        must be None).
+        The longitude for this object (``lat`` must also be given and
+        ``representation`` must be None).
     lat: `Angle` object.
-        The latitude for this object (``lon`` must also be given and ``representation``
-        must be None).
+        The latitude for this object (``lon`` must also be given and
+        ``representation`` must be None).
     rad: `astropy.units.Quantity` object.
-        This quantity holds the radial distance. If not specified, it is, by default,
-        the solar radius. Optional, must be keyword
+        This quantity holds the radial distance. If not specified, it is, by
+        default, the solar radius. Optional, must be keyword
 
     Examples
     --------
@@ -95,7 +95,7 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
 
         super(HeliographicStonyhurst, self).__init__(*args, **kwargs)
 
-        #### Make 3D if specified as 2D ####
+        # Make 3D if specified as 2D
         # If representation was explicitly passed, do not change the rep.
         if not _rep_kwarg:
             # The base __init__ will make this a UnitSphericalRepresentation
@@ -128,14 +128,14 @@ class HeliographicCarrington(HeliographicStonyhurst):
         A representation object. If specified, other parameters must
         be in keyword form.
     lon: `Angle` object.
-        The longitude for this object (``lat`` must also be given and ``representation``
-        must be None).
+        The longitude for this object (``lat`` must also be given and
+        ``representation`` must be None).
     lat: `Angle` object.
-        The latitude for this object (``lon`` must also be given and ``representation``
-        must be None).
+        The latitude for this object (``lon`` must also be given and
+        ``representation`` must be None).
     rad: `astropy.units.Quantity` object, optional, must be keyword.
-        This quantity holds the radial distance. If not specified, it is, by default,
-        the solar radius. Optional, must be keyword.
+        This quantity holds the radial distance. If not specified, it is, by
+        default, the solar radius. Optional, must be keyword.
 
     Examples
     --------
@@ -274,7 +274,6 @@ class Helioprojective(BaseCoordinateFrame):
         'unitsphericalwrap180': [RepresentationMapping('lon', 'Tx', u.arcsec),
                                  RepresentationMapping('lat', 'Ty', u.arcsec)]}
 
-
     D0 = FrameAttribute(default=(1*u.au).to(u.km))
     dateobs = TimeFrameAttributeSunPy()
     L0 = FrameAttribute(default=0*u.deg)
@@ -286,7 +285,7 @@ class Helioprojective(BaseCoordinateFrame):
 
         BaseCoordinateFrame.__init__(self, *args, **kwargs)
 
-        #### Convert from Spherical to SphericalWrap180 ####
+        # Convert from Spherical to SphericalWrap180
         # If representation was explicitly passed, do not change the rep.
         if not _rep_kwarg:
             # The base __init__ will make this a UnitSphericalRepresentation
@@ -305,17 +304,17 @@ class Helioprojective(BaseCoordinateFrame):
 
     def calculate_distance(self):
         """
-        This method calculates the third coordnate of the Helioprojective frame.
-        It assumes that the coordinate point is on the disk of the Sun at the
-        RSun radius.
+        This method calculates the third coordnate of the Helioprojective
+        frame. It assumes that the coordinate point is on the disk of the Sun
+        at the RSun radius.
 
         If a point in the frame is off limb then NaN will be returned.
 
         Returns
         -------
         new_frame : `~sunpy.coordinates.frames.HelioProjective`
-            A new frame instance with all the attributes of the original but now
-            with a third coordinate.
+            A new frame instance with all the attributes of the original but
+            now with a third coordinate.
         """
         # Skip if we already are 3D
         if isinstance(self._data, SphericalRepresentation):
