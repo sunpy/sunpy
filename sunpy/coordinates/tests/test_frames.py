@@ -246,7 +246,6 @@ def test_create_hgs_2d(frame, args, kwargs):
     # Check the attrs are correct
     assert hgs1.lon == 0 * u.deg
     assert hgs1.lat == 0 * u.deg
-    assert hgs1.rad == hgs1.RSun
 
     # Check the attrs are in the correct default units
     assert hgs1.lon.unit is u.deg
