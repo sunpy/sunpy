@@ -6,15 +6,15 @@ coordinate frames in to the :ref:`Astropy coordinates system <astropy:astropy-co
 
 .. warning::
 
-    This submodule is in beta, the accuracy of the transformations have not 
-    been verified. See `sunpy.wcs` for the previous version of these 
-    transformations.
+   The accuracy of the transformations in this module have not been rigorously
+   verified. They have been compared to `sunpy.wcs` and match to numerical
+   precision. Independent verification will be added at a later date.
 
 
 Getting Started
 ---------------
 
-The easiest interface to the coordinates module is through the `~astropy.coordinates.SkyCoord` module::
+The easiest interface to the coordinates module is through the `~astropy.coordinates.SkyCoord` class::
 
   >>> import astropy.units as u
   >>> from astropy.coordinates import SkyCoord
