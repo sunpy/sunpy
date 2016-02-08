@@ -80,15 +80,15 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
     def search(self, *query):
         """
         Query for data in form of multiple parameters.
-        
+
         Examples
         --------
         Query for LYRALightCurve data from timerange('2012/3/4','2012/3/6')
-        
+
         >>> unifresp = Fido.query(Time('2012/3/4','2012/3/6'),Instrument('lyra'))
-        
+
         >>> unifresp = Fido.query(Time('2012/3/4','2012/3/6'),Instrument('norh') | Instrument('rhessi'))
-        
+
         >>> unifresp = Fido.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'),Wave(304, 304),Sample(60*10))
 
         Parameters
@@ -112,7 +112,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         """
         Downloads the files pointed at by URLS contained within UnifiedResponse
         Object.
-        
+
         Parameters
         ----------
         qr : UnifiedResponse Object
