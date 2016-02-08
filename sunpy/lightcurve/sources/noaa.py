@@ -55,7 +55,8 @@ class NOAAIndicesLightCurve(LightCurve):
         ..plot::
 
             from sunpy import lightcurve as lc
-            noaa = lc.NOAAIndicesLightCurve.create()
+            from sunpy.data.sample import NOAAINDICES_LIGHTCURVE
+            noaa = lc.NOAAIndicesLightCurve.create(NOAAINDICES_LIGHTCURVE)
             noaa.peek()
 
         Parameters
@@ -175,7 +176,8 @@ class NOAAPredictIndicesLightCurve(LightCurve):
         ..plot::
 
             from sunpy import lightcurve as lc
-            noaa = lc.NOAAPredictIndicesLightCurve.create()
+            from sunpy.data.sample import NOAAPREDICT_LIGHTCURVE
+            noaa = lc.NOAAPredictIndicesLightCurve.create(NOAAPREDICT_LIGHTCURVE)
             noaa.peek()
 
         Parameters

@@ -9,7 +9,7 @@ import glob
 import numpy as np
 
 import sunpy
-from sunpy.map import GenericMap
+from sunpy.map.mapbase import GenericMap, MAP_CLASSES
 from sunpy.map.header import MapMeta
 from sunpy.map.compositemap import CompositeMap
 from sunpy.map.mapcube import MapCube
@@ -323,3 +323,4 @@ class NoMapsFound(ValueError):
 
 Map = MapFactory(default_widget_type=GenericMap,
                  additional_validation_functions=['is_datasource_for'])
+Map.registry = MAP_CLASSES
