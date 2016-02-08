@@ -4,6 +4,8 @@
 
 SunPy is an open-source Python library for solar physics data analysis.
 
+[![Research software impact](http://depsy.org/api/package/pypi/sunpy/badge.svg)](http://depsy.org/package/python/sunpy)
+
 Installation
 ------------
 
