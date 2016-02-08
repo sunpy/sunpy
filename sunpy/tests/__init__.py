@@ -1,3 +1,5 @@
+from __future__ import absolute_import, division, print_function
+
 import os.path
 
 testdir = os.path.dirname(os.path.abspath(__file__))
@@ -9,7 +11,8 @@ except ImportError:
 
 
 def main(modulename='', coverage=False, cov_report=False,
-         online=False, offline=True, verbose=False, parallel=0, args=None):
+         online=False, offline=True, figure=False, verbose=False,
+         parallel=0, args=None):
     """
     Execute the test suite of the sunpy package. The parameters may be
     used to restrict the number of tests that will be executed or to
@@ -35,8 +38,11 @@ def main(modulename='', coverage=False, cov_report=False,
     offline: bool
         Run the tests that don't require an internet connection.
 
+    figure: bool
+        Include the figure tests in the test run.
+
     """
-    print modulename
+    print(modulename)
     if pytest is None:
         raise ImportError("You need to install pytest to run SunPy's tests")
 
@@ -55,7 +61,7 @@ def main(modulename='', coverage=False, cov_report=False,
 
     all_args = []
     if coverage:
-        print path, modulename
+        print(path, modulename)
         modulepath = os.path.abspath(
             os.path.join(path, os.path.join(os.pardir, os.pardir, modulename)))
         all_args.extend(['--cov', modulepath])
@@ -65,6 +71,8 @@ def main(modulename='', coverage=False, cov_report=False,
         all_args.append('-k-online')
     if not offline:
         all_args.append('-k online')
+    if not figure:
+        all_args.append('-m not figure')
     all_args.append(path)
 
     if args:

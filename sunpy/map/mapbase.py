@@ -1,7 +1,8 @@
 """
 Map is a generic Map class from which all other Map classes inherit from.
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
+from sunpy.extern.six.moves import range
 
 #pylint: disable=E1101,E1121,W0404,W0613
 __authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe"]
@@ -9,7 +10,9 @@ __email__ = "stuart@mumford.me.uk"
 
 import warnings
 import inspect
+from abc import ABCMeta
 from copy import deepcopy
+from collections import OrderedDict
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -30,15 +33,19 @@ from sunpy.time import parse_time, is_time
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
 
+from sunpy.extern import six
+
 import astropy.units as u
 
 from collections import namedtuple
 Pair = namedtuple('Pair', 'x y')
 
-__all__ = ['GenericMap']
 
 from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")
+
+__all__ = ['GenericMap']
+
 
 """
 Questions
@@ -48,7 +55,33 @@ or something else?)
 * Should 'center' be renamed to 'offset' and crpix1 & 2 be used for 'center'?
 """
 
+# GenericMap subclass registry.
+MAP_CLASSES = OrderedDict()
 
+
+class GenericMapMeta(ABCMeta):
+    """
+    Registration metaclass for `~sunpy.map.GenericMap`.
+
+    This class checks for the existance of a method named ``is_datasource_for``
+    when a subclass of `GenericMap` is defined. If it exists it will add that
+    class to the registry.
+    """
+
+    _registry = MAP_CLASSES
+
+    def __new__(mcls, name, bases, members):
+        cls = super(GenericMapMeta, mcls).__new__(mcls, name, bases, members)
+
+        # The registry contains the class as the key and the validation method
+        # as the item.
+        if 'is_datasource_for' in members:
+            mcls._registry[cls] = cls.is_datasource_for
+
+        return cls
+
+
+@six.add_metaclass(GenericMapMeta)
 class GenericMap(NDData):
     """
     A Generic spatially-aware 2D data array
@@ -149,6 +182,7 @@ class GenericMap(NDData):
         # Validate header
         # TODO: This should be a function of the header, not of the map
         self._validate()
+        self._shift = Pair(0 * u.arcsec, 0 * u.arcsec)
 
         if self.dtype == np.uint8:
             norm = None
@@ -204,6 +238,16 @@ scale:\t\t {scale}
         w2.wcs.ctype = self.coordinate_system
         w2.wcs.pc = self.rotation_matrix
         w2.wcs.cunit = self.units
+
+        # Astropy WCS does not understand the SOHO default of "solar-x" and
+        # "solar-y" ctypes.  This overrides the default assignment and
+        # changes it to a ctype that is understood.  See Thompson, 2006, A.&A.,
+        # 449, 791.
+        if w2.wcs.ctype[0].lower() in ("solar-x", "solar_x"):
+            w2.wcs.ctype[0] = 'HPLN-TAN'
+
+        if w2.wcs.ctype[1].lower() in ("solar-y", "solar_y"):
+            w2.wcs.ctype[1] = 'HPLT-TAN'
 
         return w2
 
@@ -342,6 +386,7 @@ scale:\t\t {scale}
     @property
     def xrange(self):
         """Return the X range of the image from edge to edge."""
+        #TODO: This should be reading from the WCS object
         xmin = self.center.x - self.dimensions[0] / 2. * self.scale.x
         xmax = self.center.x + self.dimensions[0] / 2. * self.scale.x
         return u.Quantity([xmin, xmax])
@@ -349,20 +394,59 @@ scale:\t\t {scale}
     @property
     def yrange(self):
         """Return the Y range of the image from edge to edge."""
+        #TODO: This should be reading from the WCS object
         ymin = self.center.y - self.dimensions[1] / 2. * self.scale.y
         ymax = self.center.y + self.dimensions[1] / 2. * self.scale.y
         return u.Quantity([ymin, ymax])
 
     @property
     def center(self):
-        """Returns the offset between the center of the Sun and the center of
-        the map."""
+        """The offset between the center of the Sun and the center of the map."""
         return Pair(wcs.get_center(self.dimensions[0], self.scale.x,
                                    self.reference_pixel.x,
                                    self.reference_coordinate.x),
                     wcs.get_center(self.dimensions[1], self.scale.y,
                                    self.reference_pixel.y,
                                    self.reference_coordinate.y))
+
+    @property
+    def shifted_value(self):
+        """The total shift applied to the reference coordinate by past applications of
+        `~sunpy.map.GenericMap.shift`."""
+        return self._shift
+
+    @u.quantity_input(x=u.deg, y=u.deg)
+    def shift(self, x, y):
+        """Returns a map shifted by a specified amount to, for example, correct for a bad
+        map location. These values are applied directly to the `~sunpy.map.GenericMap.reference_coordinate`.
+        To check how much shift has already been applied see `~sunpy.map.GenericMap.shifted_value`
+
+        Parameters
+        ----------
+
+        x : `~astropy.units.Quantity`
+            The shift to apply to the X coordinate.
+
+        y : `~astropy.units.Quantity`
+            The shift to apply to the Y coordinate
+
+        Returns
+        -------
+        out : `~sunpy.map.GenericMap` or subclass
+            A new shifted Map.
+        """
+        new_map = deepcopy(self)
+        new_map._shift = Pair(self.shifted_value.x + x, self.shifted_value.y + y)
+
+        new_meta = self.meta.copy()
+
+        # Update crvals
+        new_meta['crval1'] = ((self.meta['crval1'] * self.units.x + x).to(self.units.x)).value
+        new_meta['crval2'] = ((self.meta['crval2'] * self.units.x + y).to(self.units.y)).value
+
+        new_map.meta = new_meta
+
+        return new_map
 
     @property
     def rsun_meters(self):
@@ -422,26 +506,27 @@ scale:\t\t {scale}
 
     @property
     def reference_coordinate(self):
-        """Reference point WCS axes in data units (crval1/2)"""
+        """Reference point WCS axes in data units (i.e. crval1, crval2). This value
+        includes a shift if one is set."""
         return Pair(self.meta.get('crval1', 0.) * self.units.x,
                     self.meta.get('crval2', 0.) * self.units.y)
 
     @property
     def reference_pixel(self):
-        """Reference point axes in pixels (crpix1/2)"""
+        """Reference point axes in pixels (i.e. crpix1, crpix2)"""
         return Pair(self.meta.get('crpix1', (self.meta.get('naxis1') + 1) / 2.) * u.pixel,
                     self.meta.get('crpix2', (self.meta.get('naxis2') + 1) / 2.) * u.pixel)
 
     @property
     def scale(self):
-        """Image scale along the x and y axes in units/pixel (cdelt1/2)"""
+        """Image scale along the x and y axes in units/pixel (i.e. cdelt1, cdelt2)"""
         #TODO: Fix this if only CDi_j matrix is provided
         return Pair(self.meta.get('cdelt1', 1.) * self.units.x / u.pixel,
                     self.meta.get('cdelt2', 1.) * self.units.y / u.pixel)
 
     @property
     def units(self):
-        """Image coordinate units along the x and y axes (cunit1/2)."""
+        """Image coordinate units along the x and y axes (i.e. cunit1, cunit2)."""
         return Pair(u.Unit(self.meta.get('cunit1', 'arcsec')),
                     u.Unit(self.meta.get('cunit2', 'arcsec')))
 
@@ -591,9 +676,13 @@ scale:\t\t {scale}
         """
         x, y = self.wcs.wcs_pix2world(x, y, origin)
 
-        # WCS always outputs degrees.
-        x *= u.deg
-        y *= u.deg
+        # If the wcs is celestial it is output in degress
+        if self.wcs.is_celestial:
+            x = u.Quantity(x, u.deg)
+            y = u.Quantity(y, u.deg)
+        else:
+            x = u.Quantity(x, self.units.x)
+            y = u.Quantity(y, self.units.y)
 
         x = Longitude(x, wrap_angle=180*u.deg)
         y = Latitude(y)
@@ -804,8 +893,8 @@ scale:\t\t {scale}
         # Calculate the needed padding or unpadding
         diff = np.asarray(np.ceil((extent - new_map.data.shape) / 2)).ravel()
         # Pad the image array
-        pad_x = np.max((diff[1], 0))
-        pad_y = np.max((diff[0], 0))
+        pad_x = int(np.max((diff[1], 0)))
+        pad_y = int(np.max((diff[0], 0)))
         new_map.data = np.pad(new_map.data,
                               ((pad_y, pad_y), (pad_x, pad_x)),
                               mode='constant',
@@ -996,13 +1085,9 @@ scale:\t\t {scale}
             x_pixels = range_a.value
             y_pixels = range_b.value
         else:
-            raise ValueError(
-                "Invalid unit. Must be one of 'data' or 'pixels'")
+            raise ValueError("Invalid unit. Must be one of 'data' or 'pixels'")
 
-        x_pixels.sort()
-        y_pixels.sort()
-
-        # Sort the pixel values so we are always slicing in the correct direction
+        # Sort the pixel values so we always slice in the correct direction
         x_pixels.sort()
         y_pixels.sort()
 
@@ -1031,6 +1116,9 @@ scale:\t\t {scale}
 
         # Create new map instance
         new_map.data = new_data
+        if self.mask is not None:
+            new_map.mask = self.mask[yslice, xslice].copy()
+
         return new_map
 
     @u.quantity_input(dimensions=u.pixel)
@@ -1227,6 +1315,62 @@ scale:\t\t {scale}
 
         return [circ]
 
+    @u.quantity_input(bottom_left=u.deg, width=u.deg, height=u.deg)
+    def draw_rectangle(self, bottom_left, width, height, axes=None, **kwargs):
+        """
+        Draw a rectangle defined in world coordinates on the plot.
+
+        Parameters
+        ----------
+
+        bottom_left : `astropy.units.Quantity`
+            The bottom left corner of the rectangle.
+
+        width : `astropy.units.Quantity`
+            The width of the rectangle.
+
+        height : `astropy.units.Quantity`
+            The height of the rectangle.
+
+        axes : `matplotlib.axes.Axes`
+            The axes on which to plot the rectangle, defaults to the current axes.
+
+        Returns
+        -------
+
+        rect : `list`
+            A list containing the `~matplotlib.patches.Rectangle` object, after it has been added to ``axes``.
+
+        Notes
+        -----
+
+        Extra keyword arguments to this function are passed through to the
+        `~matplotlib.patches.Rectangle` instance.
+
+        """
+
+        if not axes:
+            axes = plt.gca()
+
+        if wcsaxes_compat.is_wcsaxes(axes):
+            axes_unit = u.deg
+        else:
+            axes_unit = self.units[0]
+
+        bottom_left = bottom_left.to(axes_unit).value
+        width = width.to(axes_unit).value
+        height = height.to(axes_unit).value
+
+        kwergs = {'transform':wcsaxes_compat.get_world_transform(axes),
+                  'color':'white',
+                  'fill':False}
+        kwergs.update(kwargs)
+        rect = plt.Rectangle(bottom_left, width, height, **kwergs)
+
+        axes.add_artist(rect)
+
+        return [rect]
+
     @toggle_pylab
     def peek(self, draw_limb=False, draw_grid=False,
                    colorbar=True, basic_plot=False, **matplot_args):
@@ -1278,7 +1422,7 @@ scale:\t\t {scale}
         if isinstance(draw_grid, bool):
             if draw_grid:
                 self.draw_grid(axes=axes)
-        elif isinstance(draw_grid, (int, long, float)):
+        elif isinstance(draw_grid, six.integer_types + (float,)):
             self.draw_grid(axes=axes, grid_spacing=draw_grid)
         else:
             raise TypeError("draw_grid should be bool, int, long or float")
@@ -1306,11 +1450,11 @@ scale:\t\t {scale}
 
         Examples
         --------
-        #Simple Plot with color bar
-        >>> aiamap.plot()   # doctest: +SKIP
+        >>> # Simple Plot with color bar
+        >>> aia.plot()   # doctest: +SKIP
         >>> plt.colorbar()   # doctest: +SKIP
 
-        #Add a limb line and grid
+        >>> # Add a limb line and grid
         >>> aia.plot()   # doctest: +SKIP
         >>> aia.draw_limb()   # doctest: +SKIP
         >>> aia.draw_grid()   # doctest: +SKIP
@@ -1329,7 +1473,7 @@ scale:\t\t {scale}
 
         # Normal plot
         imshow_args = deepcopy(self.plot_settings)
-        if imshow_args.has_key('title'):
+        if 'title' in imshow_args:
             plot_settings_title = imshow_args.pop('title')
         else:
             plot_settings_title = self.name

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import pytest
 
@@ -41,7 +41,4 @@ def test_override(recwarn):
 
     mm.add_dec(String, str, override=WARN)(lambda x, y: None)
     w = recwarn.pop(TypeWarning)
-    assert (
-        'Definition (String, str)'
-        ' overrides prior definition (str, str).' in w.message
-    )
+    assert 'Definition (String, str) overrides prior definition (str, str).' in str(w.message)

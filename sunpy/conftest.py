@@ -1,10 +1,15 @@
+from __future__ import absolute_import, print_function
 from functools import partial
-import urllib2
+
 import os
 import tempfile
 import json
 
+from sunpy.extern.six.moves.urllib.request import urlopen
+from sunpy.extern.six.moves.urllib.error import URLError
+
 import pytest
+
 
 # Force MPL to use non-gui backends for testing.
 try:
@@ -23,8 +28,8 @@ GOOGLE_URL = 'http://www.google.com'
 
 def site_reachable(url):
     try:
-        urllib2.urlopen(url, timeout=1)
-    except urllib2.URLError:
+        urlopen(url, timeout=1)
+    except URLError:
         return False
     else:
         return True
@@ -45,6 +50,17 @@ def pytest_runtest_setup(item):
             pytest.skip(msg.format(item.name))
 
 def pytest_unconfigure(config):
+    tempdir = tempfile.mkdtemp(suffix="_figures")
+    # the hash_library is indexed by the name of the test but we want to look
+    # things up with the hash value
+    inv_hash_library = {v: k for k, v in hash.hash_library.items()}
+
+    for h in hash.file_list:
+        test_name = inv_hash_library.get(h, '')
+        if test_name != '':
+            os.rename(hash.file_list[h], os.path.join(tempdir, test_name + '.png'))
+    print('All test files for figure hashes can be found in {0}'.format(tempdir))
+
     #Check if additions have been made to the hash library
     if len(hash.hash_library) > hash_library_original_len:
         #Write the new hash library in JSON

@@ -1,9 +1,14 @@
+# Guide at http://conda.pydata.org/docs/travis.html#the-travis-yml-file
+
 MINICONDA_URL="http://repo.continuum.io/miniconda"
-MINICONDA_FILE="Miniconda3-3.7.3-MacOSX-x86_64.sh"
+MINICONDA_FILE="Miniconda3-latest-MacOSX-x86_64.sh"
 wget "${MINICONDA_URL}/${MINICONDA_FILE}"
-bash $MINICONDA_FILE -b
+bash $MINICONDA_FILE -b -p $HOME/miniconda
 
-export PATH=/Users/travis/miniconda3/bin:$PATH
+export PATH=$HOME/miniconda/bin:$PATH
 
-conda update --yes conda
+hash -r
+conda config --set always_yes yes --set changeps1 no
+conda update -q conda
+conda info -a
 conda install -q --yes binstar conda-build

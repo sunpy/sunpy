@@ -1,9 +1,11 @@
 """SunPy configuration file functionality"""
+from __future__ import absolute_import, division, print_function
+
 import os
 import tempfile
-import ConfigParser
+from sunpy.extern.six.moves import configparser
 
-import sunpy as spy
+import sunpy
 
 __all__ = ['load_config', 'print_config']
 
@@ -12,7 +14,7 @@ def load_config():
     Read the sunpyrc configuration file. If one does not exists in the user's
     home directory then read in the defaults from module
     """
-    config = ConfigParser.SafeConfigParser()
+    config = configparser.SafeConfigParser()
 
     # Get locations of SunPy configuration files to be loaded
     config_files = _find_config_files()
@@ -53,10 +55,10 @@ def print_config():
         print("  " + file_)
 
     print ("\nCONFIGURATION:")
-    for section in spy.config.sections():
+    for section in sunpy.config.sections():
         print("  [{0}]".format(section))
-        for option in spy.config.options(section):
-            print("  {0} = {1}".format(option, spy.config.get(section, option)))
+        for option in sunpy.config.options(section):
+            print("  {} = {}".format(option, sunpy.config.get(section, option)))
         print("")
 
 def _is_writable_dir(p):
@@ -89,7 +91,7 @@ def _find_config_files():
     config_filename = 'sunpyrc'
 
     # find default configuration file
-    module_dir = os.path.dirname(spy.__file__)
+    module_dir = os.path.dirname(sunpy.__file__)
     config_files.append(os.path.join(module_dir, 'data', 'sunpyrc'))
 
     # if a user configuration file exists, add that to list of files to read

@@ -1,19 +1,22 @@
 # [SunPy](http://sunpy.org)
-[![Downloads](https://pypip.in/d/sunpy/badge.png)](https://pypi.python.org/pypi/sunpy/) [![Latest Version](https://pypip.in/v/sunpy/badge.png)](https://pypi.python.org/pypi/sunpy/) [![Build Status](https://secure.travis-ci.org/sunpy/sunpy.png)] (http://travis-ci.org/sunpy/sunpy)[![Build status](https://ci.appveyor.com/api/projects/status/xow461iejsjvp9vl?svg=true)](https://ci.appveyor.com/project/sunpy/sunpy)[![Coverage Status](https://coveralls.io/repos/sunpy/sunpy/badge.png?branch=master)](https://coveralls.io/r/sunpy/sunpy?branch=master) [![Code Health](https://landscape.io/github/sunpy/sunpy/master/landscape.png)](https://landscape.io/github/sunpy/sunpy/master)
+[![Downloads](https://img.shields.io/pypi/dm/sunpy.svg)](https://pypi.python.org/pypi/sunpy/) [![Latest Version](https://img.shields.io/pypi/v/sunpy.svg)](https://pypi.python.org/pypi/sunpy/) [![Build Status](https://secure.travis-ci.org/sunpy/sunpy.svg)] (http://travis-ci.org/sunpy/sunpy)[![Build status](https://ci.appveyor.com/api/projects/status/xow461iejsjvp9vl?svg=true)](https://ci.appveyor.com/project/sunpy/sunpy)[![Coverage Status](https://coveralls.io/repos/sunpy/sunpy/badge.svg?branch=master)](https://coveralls.io/r/sunpy/sunpy?branch=master) [![Code Health](https://landscape.io/github/sunpy/sunpy/master/landscape.svg)](https://landscape.io/github/sunpy/sunpy/master)
+[![Code Issues](https://www.quantifiedcode.com/api/v1/project/9edd3e28230840038713e1c7dc3eb141/badge.svg)](https://www.quantifiedcode.com/app/project/9edd3e28230840038713e1c7dc3eb141)
 
 SunPy is an open-source Python library for solar physics data analysis.
+
+[![Research software impact](http://depsy.org/api/package/pypi/sunpy/badge.svg)](http://depsy.org/package/python/sunpy)
 
 Installation
 ------------
 
 To begin, install the following requirements:
 
- * [Python](http://www.python.org) (2.7+)
+ * [Python](http://www.python.org) (2.7)
  * [Astropy](http://astropy.org) (1.0.0)
  * [NumPy](http://numpy.scipy.org/)
  * [SciPy](http://www.scipy.org/)
  * [Matplotlib](http://matplotlib.sourceforge.net/) (1.1+)
- * [Suds](https://fedorahosted.org/suds)
+ * [suds-jurko](https://bitbucket.org/jurko/suds)
  * [pandas](http://pandas.pydata.org/) (0.10.0+)
  * [beautifulsoup4](http://www.crummy.com/software/BeautifulSoup/)
  * [sqlalchemy](http://www.sqlalchemy.org/)
@@ -39,7 +42,7 @@ Here is a quick example of plotting an AIA image:
 >>> import sunpy.data.sample
 >>> import matplotlib.cm as cm
 >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
->>> aia.peek(cmap=cm.hot)
+>>> aia.peek()
 ```
 
 Getting Help

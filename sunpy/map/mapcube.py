@@ -1,6 +1,8 @@
 """A Python MapCube Object"""
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 #pylint: disable=W0401,W0614,W0201,W0212,W0404
+
+from copy import deepcopy
 
 import numpy as np
 import matplotlib.animation
@@ -10,6 +12,7 @@ from sunpy.map import GenericMap
 from sunpy.visualization.mapcubeanimator import MapCubeAnimator
 from sunpy.visualization import wcsaxes_compat
 from sunpy.util import expand_list
+from sunpy.extern.six.moves import range
 
 __all__ = ['MapCube']
 
@@ -143,7 +146,7 @@ class MapCube(object):
 
         >>> cube = Map(res, cube=True)   # doctest: +SKIP
 
-        >>> ani = cube.plot(controls=False)   # doctest: +SKIP
+        >>> ani = cube.plot()   # doctest: +SKIP
 
         >>> Writer = animation.writers['ffmpeg']   # doctest: +SKIP
         >>> writer = Writer(fps=10, metadata=dict(artist='SunPy'), bitrate=1800)   # doctest: +SKIP
@@ -170,7 +173,7 @@ class MapCube(object):
 
         # Normal plot
         def annotate_frame(i):
-            axes.set_title("{s.name} {s.date!s}".format(s=self[i]))
+            axes.set_title("{s.name}".format(s=self[i]))
 
             # x-axis label
             if self[0].coordinate_system.x == 'HG':
@@ -203,7 +206,11 @@ class MapCube(object):
 
             im.set_array(ani_data[i].data)
             im.set_cmap(self.maps[i].plot_settings['cmap'])
-            im.set_norm(self.maps[i].plot_settings['norm'])
+
+            norm = deepcopy(self.maps[i].plot_settings['norm'])
+            # The following explicit call is for bugged versions of Astropy's ImageNormalize
+            norm.autoscale_None(ani_data[i].data)
+            im.set_norm(norm)
 
             if wcsaxes_compat.is_wcsaxes(axes):
                 im.axes.reset_wcs(self.maps[i].wcs)
@@ -217,7 +224,7 @@ class MapCube(object):
             removes += list(plot_function(fig, axes, self.maps[i]))
 
         ani = matplotlib.animation.FuncAnimation(fig, updatefig,
-                                                frames=range(0, len(self.maps)),
+                                                frames=list(range(0, len(self.maps))),
                                                 fargs=[im, annotate, ani_data, removes],
                                                 interval=interval,
                                                 blit=False)

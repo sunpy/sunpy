@@ -49,7 +49,7 @@ class LightCurve(object):
     >>> dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
     >>> intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / 24 * 60))
     >>> light_curve = sunpy.lightcurve.LightCurve.create({"param1": intensity}, index=dates)
-    >>> light_curve.peek()
+    >>> light_curve.peek()   # doctest: +SKIP
 
     References
     ----------
