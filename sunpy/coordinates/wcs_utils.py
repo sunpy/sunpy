@@ -41,3 +41,11 @@ def solar_wcs_frame_mapping(wcs):
         return Heliocentric(dateobs=dateobs, L0=hglon, B0=hglat, D0=dsun)
 
 astropy.wcs.utils.WCS_FRAME_MAPPINGS.append([solar_wcs_frame_mapping])
+
+# The following is a patch for wcsaxes 0.6 and lower:
+try:
+    import wcsaxes.wcs_utils
+    if hasattr(wcsaxes.wcs_utils, 'WCS_FRAME_MAPPINGS'):
+        wcsaxes.wcs_utils.WCS_FRAME_MAPPINGS.append([solar_wcs_frame_mapping])
+except ImportError:
+    pass
