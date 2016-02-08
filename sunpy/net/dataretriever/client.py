@@ -21,19 +21,19 @@ class QueryResponseBlock(object):
     """
     Represents url, source along with other information
     """
-    def __init__(self, map_, url):
+    def __init__(self, map0, url):
         """
         Parameters
         ----------
-        map_ : Dict with relevant information
+        map0 : Dict with relevant information
         url  : Uniform Resource Locator
         """
-        self.source = map_.get('source', "Data not Available")
-        self.provider = map_.get('provider', "Data not Available")
-        self.phyobs = map_.get('phyobs', "Data not Available")
-        self.instrument = map_.get('instrument', "Data not Available")
+        self.source = map0.get('source', "Data not Available")
+        self.provider = map0.get('provider', "Data not Available")
+        self.phyobs = map0.get('phyobs', "Data not Available")
+        self.instrument = map0.get('instrument', "Data not Available")
         self.url = url
-        self.time = TimeRange(map_.get('Time_start'), map_.get('Time_end'))
+        self.time = TimeRange(map0.get('Time_start'), map0.get('Time_end'))
 
 
 def iter_urls(map_, url_list):
