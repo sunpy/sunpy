@@ -2,10 +2,11 @@
 Nothing here but dictionaries for generating LinearSegmentedColormaps,
 and a dictionary of these dictionaries.
 """
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import numpy as np
 import matplotlib.colors as colors
+from sunpy.extern.six.moves import range, zip
 
 __all__ = ['aia_color_table', 'lasco_color_table', 'eit_color_table',
            'sxt_color_table', 'xrt_color_table', 'trace_color_table',
@@ -53,8 +54,8 @@ r0 = np.array(paden(
        226, 227, 228, 230, 231, 233, 234, 236, 237, 239, 240, 241, 243,
        244, 246, 247, 249, 250, 252, 253], 256, 255))
 
-g0 = np.array(padfr(_mkx(1, xrange(17, 256, 17), 2), 256))
-b0 = np.array(padfr(_mkx(3, xrange(51, 256, 51), 4), 256))
+g0 = np.array(padfr(_mkx(1, range(17, 256, 17), 2), 256))
+b0 = np.array(padfr(_mkx(3, range(51, 256, 51), 4), 256))
 
 c0 = np.arange(256, dtype='f')
 c1 = (np.sqrt(c0) * np.sqrt(255.0)).astype('f')
@@ -352,13 +353,13 @@ def lasco_color_table(number):
 # Translated from the JP2Gen IDL SXT code lct_yla_gold.pro.  Might be better
 # to explicitly copy the numbers from the IDL calculation.  This is a little
 # more compact.
-sxt_gold_r = np.concatenate((255.0 * np.array(range(0, 185)) / 185.0,
-                            255 * np.ones(71)))
-sxt_gold_g = 255 * (np.array(range(0, 256)) ** 1.25) / (255.0 ** 1.25)
+sxt_gold_r = np.concatenate((np.linspace(0, 255, num=185, endpoint=False),
+                             255 * np.ones(71)))
+sxt_gold_g = 255 * (np.arange(256) ** 1.25) / (255.0 ** 1.25)
 sxt_gold_b = np.concatenate((np.zeros(185),
-                             255.0 * np.array(range(0, 71)) / 71.0))
+                             255.0 * np.arange(71) / 71.0))
 
-grayscale = np.array(range(0, 256))
+grayscale = np.arange(256)
 
 
 def sxt_color_table(sxt_filter):
@@ -1052,6 +1053,64 @@ def sot_color_table(measurement):
     cdict = create_cdict(r, g, b)
     return colors.LinearSegmentedColormap('mytable', cdict)
 
+def iris_sji_color_table(measurement, aialike=False):
+    """Return the standard color table for IRIS SJI files"""
+    # base vectors for IRIS SJI color tables
+    c0 = np.arange(0, 256)
+    c1 = (np.sqrt(c0) * np.sqrt(255)).astype(np.uint8)
+    c2 = (c0 ** 2 / 255.).astype(np.uint8)
+    c3= ((c1 + c2/2.)*255./(np.max(c1) + np.max(c2)/2.)).astype(np.uint8)
+    c4 = np.zeros(256).astype(np.uint8)
+    c4[50:256] = (1/165. * np.arange(0, 206) ** 2).astype(np.uint8)
+    c5 = ((1 + c1 + c3.astype(np.uint))/2.).astype(np.uint8)
+
+    rr = np.ones(256, dtype=np.uint8) * 255
+    rr[0:176] = np.arange(0, 176) / 175. * 255.
+    gg = np.zeros(256, dtype=np.uint8)
+    gg[100:256] = np.arange(0, 156) / 155. * 255.
+    bb = np.zeros(256, dtype=np.uint8)
+    bb[150:256] = np.arange(0, 106) / 105. * 255.
+    agg = np.zeros(256, dtype=np.uint8)
+    agg[120:256] = np.arange(0, 136) / 135. * 255.
+    abb = np.zeros(256, dtype=np.uint8)
+    abb[190:256] = np.arange(0, 66) / 65. * 255.
+
+    if aialike:
+        color_table = {
+            '1330': (c1, c0, c2),
+            '1400': (rr, agg, abb),
+            '2796': (rr, c0, abb),
+            '2832': (c3, c3, c2),
+        }
+    else:
+        color_table = {
+            '1330': (rr, gg, bb),
+            '1400': (c5, c2, c4),
+            '2796': (c1, c3, c2),
+            '2832': (c0, c0, c2),
+        }
+
+    color_table.update({
+        '1600': (c1, c0, c0),
+        '5000': (c1, c1, c0),
+        'FUV': (rr, gg, bb),
+        'NUV': (c1, c3, c2),
+        'SJI_NUV': (c0, c0, c0)
+    })
+
+    try:
+        r, g, b = color_table[measurement]
+    except KeyError:
+        raise ValueError(
+            "Invalid IRIS SJI waveband.  Valid values are \n" +
+            str(list(color_table.keys()))
+        )
+
+    # Now create the color dictionary in the correct format
+    cdict = create_cdict(r, g, b)
+    # Return the color table
+    return colors.LinearSegmentedColormap('mytable', cdict)
+
 
 hmi_mag_r = np.array(
       [137, 140, 142, 144, 149, 151, 154, 158, 161, 163, 167, 170, 172,
@@ -1120,35 +1179,41 @@ hmi_mag_b = np.array(
        142, 140, 135, 133, 121, 109,  96,  84,  73])
 
 def hmi_mag_color_table():
-    '''Returns an alternate HMI Magnetogram color table; from Stanford
-       University/JSOC
-       Reference: http://jsoc.stanford.edu/data/hmi/HMI_M.ColorTable.pdf
+    """
+    Returns an alternate HMI Magnetogram color table; from Stanford
+    University/JSOC
 
-      Example usage for NRT data:
-           import sunpy.map
-           import sunpy.cm
-           hmi = sunpy.map.Map('fblos.fits')
-           hmi.plot_settings['cmap'] = sunpy.cm.get_cmap('hmimag')
-           hmi.peek(vmin=-1500.0, vmax=1500.0)
+    Examples
+    --------
+    >>> # Example usage for NRT data:
+    >>> import sunpy.map
+    >>> import sunpy.cm
+    >>> hmi = sunpy.map.Map('fblos.fits')
+    >>> hmi.plot_settings['cmap'] = sunpy.cm.get_cmap('hmimag')
+    >>> hmi.peek(vmin=-1500.0, vmax=1500.0)
 
-           OR (for a basic plot with pixel values on the axes)
-               import numpy as np
-               import matplotlib.pyplot as plt
-               import sunpy.map
-               import sunpy.cm
-               hmi = sunpy.map.Map('fblos.fits')
-               plt.imshow(np.clip(hmi.data, -1500.0, 1500.0), cmap=sunpy.cm.get_cmap('hmimag'), origin='lower')
-               plt.show()
+    >>> # OR (for a basic plot with pixel values on the axes)
+    >>> import numpy as np
+    >>> import matplotlib.pyplot as plt
+    >>> import sunpy.map
+    >>> import sunpy.cm
+    >>> hmi = sunpy.map.Map('fblos.fits')
+    >>> plt.imshow(np.clip(hmi.data, -1500.0, 1500.0), cmap=sunpy.cm.get_cmap('hmimag'), origin='lower')
+    >>> plt.show()
 
-      Example usage for science (Level 1.0) data:
-            import numpy as np
-            import sunpy.map
-            import sunpy.cm
-            hmi = sunpy.map.Map('hmi.m_45s.2014.05.11_12_00_45_TAI.magnetogram.fits')
-            hmir = hmi.rotate()
-            hmir.plot_settings['cmap'] = sunpy.cm.get_cmap('hmimag')
-            hmir.peek(vmin=-1500.0, vmax=1500.0)
-    '''
+    >>> # Example usage for science (Level 1.0) data:
+    >>> import numpy as np
+    >>> import sunpy.map
+    >>> import sunpy.cm
+    >>> hmi = sunpy.map.Map('hmi.m_45s.2014.05.11_12_00_45_TAI.magnetogram.fits')
+    >>> hmir = hmi.rotate()
+    >>> hmir.plot_settings['cmap'] = sunpy.cm.get_cmap('hmimag')
+    >>> hmir.peek(vmin=-1500.0, vmax=1500.0)
+
+    References
+    ----------
+    * `Stanford Colortable (pdf) <http://jsoc.stanford.edu/data/hmi/HMI_M.ColorTable.pdf>`_
+    """
     cdict = create_cdict(hmi_mag_r, hmi_mag_g, hmi_mag_b)
     return colors.LinearSegmentedColormap('mytable', cdict)
 
@@ -1283,6 +1348,7 @@ hi2_red = np.array(
         252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252,
         252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252, 252,
         252, 252, 252, 252, 252, 252, 252, 253, 254], dtype=np.uint8)
+
 
 def stereo_hi_color_table(camera):
     if camera == 1:

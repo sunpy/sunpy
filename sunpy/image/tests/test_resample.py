@@ -1,3 +1,4 @@
+from __future__ import absolute_import, division, print_function
 # Author: Tomas Meszaros <exo@tty.sk>
 
 import astropy.units as u
@@ -43,12 +44,8 @@ def test_resample_spline():
     resample_method('spline')
 
 def test_reshape(aia171_test_map, shape):
-    for factor in np.arange(2, 10):
-        if np.all((shape % factor) == 0):
-            # it is a factor therefore should work
-            reshape_image_to_4d_superpixel(aia171_test_map.data, shape/factor)
-        else:
-            # it is not a factor so function should raise an error
-            with pytest.raises(ValueError):
-                reshape_image_to_4d_superpixel(aia171_test_map.data, shape/factor)
-
+    imagebytwo = reshape_image_to_4d_superpixel(aia171_test_map.data, (2, 2))
+    assert imagebytwo.shape == (shape[0]/2, 2, shape[1]/2, 2)
+    with pytest.raises(ValueError) as error_msg:    
+        reshape_image_to_4d_superpixel(aia171_test_map.data, (3, 3))
+    assert 'New dimensions must divide original image size exactly.' in str(error_msg.value)

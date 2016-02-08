@@ -250,13 +250,13 @@ def test_entries_from_dir():
 def test_entries_from_dir_recursively_true():
     entries = list(
         entries_from_dir(testdir, True, default_waveunit='angstrom'))
-    assert len(entries) == 59
+    assert len(entries) == 60
     # Older val = 31.
 
 def test_entries_from_dir_recursively_false():
     entries = list(
         entries_from_dir(testdir, False, default_waveunit='angstrom'))
-    assert len(entries) == 38
+    assert len(entries) == 39
 
 
 @pytest.mark.online
@@ -284,8 +284,29 @@ def test_entry_from_query_results_with_none_wave(qr_with_none_waves):
 def test_entry_from_query_results_with_none_wave_and_default_unit(
         qr_with_none_waves):
     entries = list(entries_from_query_result(qr_with_none_waves, 'nm'))
-    assert len(entries) == 4
+    assert len(entries) == 7
     assert entries == [
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_blue_intensity_series.tar.gz',
+            observation_time_start=datetime(1996, 4, 11, 0, 0, 0),
+            observation_time_end=datetime(2014, 3, 30, 23, 59, 0),
+            instrument='VIRGO', size=32652.0, wavemin=None,
+            wavemax=None),
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_green_intensity_series.tar.gz',
+            observation_time_start=datetime(1996, 4, 11, 0, 0, 0),
+            observation_time_end=datetime(2014, 3, 30, 23, 59, 0),
+            instrument='VIRGO', size=32652.0, wavemin=None,
+            wavemax=None),
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_red_intensity_series.tar.gz',
+            observation_time_start=datetime(1996, 4, 11, 0, 0, 0),
+            observation_time_end=datetime(2014, 3, 30, 23, 59, 0),
+            instrument='VIRGO', size=32652.0, wavemin=None,
+            wavemax=None),
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
             fileid='/archive/soho/private/data/processed/virgo/level1/1212/HK/121222_1.H01',

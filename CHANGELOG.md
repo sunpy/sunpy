@@ -1,6 +1,20 @@
 Latest
 ------
 
+* Added IRIS SJI color maps.
+* Updated `show_colormaps()` with new string filter to show a subset of color maps.
+* Fixed MapCube animations by working around a bug in Astropy's ImageNormalize
+* Remove ``vso.QueryResponse.num_records()`` in favour of `len(qr)`
+* add a `draw_rectangle` helper to `GenericMap` which can plot rectanges in the
+  native coordinate system of the map.
+* Add automatic registration of ``GenericMap`` subclasses with the factory as
+  long as they define an ``is_datasource_for`` method.
+
+* Added the ability to shift maps to correct for incorrect map location, for example.
+* Added functions flareclass_to_flux and flux_to_flareclass which convert
+  between GOES flux to GOES class numbers (e.g. X12, M3.4).
+* Removed old sunpy.util.goes_flare_class()
+* Bug fix for rhessi summary light curve values.
 
 0.6.0
 -----
@@ -34,6 +48,7 @@ Latest
  * Added a few tests for the sunpy.roi module.
  * Refactored mapcube co-alignment functionality.
  * Removed sample data from distribution and added ability to download sample files
+ * Changed start of GOES 2 operational time range back to 1980-01-04 so data from 1980 can be read into GOESLightCurve object
  * Require JSOC request data calls have an email address attached.
  * Calculation of the solar rotation of a point on the Sun as seen from Earth, and its application to the de-rotation of mapcubes.
  * Downloaded files now keep file extensions rather than replacing all periods with underscores

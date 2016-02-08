@@ -59,8 +59,9 @@ class LYRALightCurve(LightCurve):
 
         .. plot::
 
-            import sunpy
-            lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10')
+            import sunpy.lightcurve
+            from sunpy.data.sample import LYRA_LEVEL3_LIGHTCURVE
+            lyra = sunpy.lightcurve.LYRALightCurve.create(LYRA_LEVEL3_LIGHTCURVE)
             lyra.peek()
 
         Parameters

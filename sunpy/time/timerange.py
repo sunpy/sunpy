@@ -1,12 +1,14 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 from datetime import timedelta
 from datetime import datetime
-from astropy.units import Quantity
-from astropy.units import Unit
+
+import astropy.units as u
 
 from sunpy.time import parse_time
 from sunpy import config
+from sunpy.extern.six.moves import range
+
 TIME_FORMAT = config.get('general', 'time_format')
 
 __all__ = ['TimeRange']
@@ -73,7 +75,7 @@ class TimeRange(object):
                 self._t1 = y
                 self._t2 = x
 
-        if isinstance(y, Quantity):
+        if isinstance(y, u.Quantity):
             y = timedelta(seconds=y.to('s').value)
 
         # Timedelta
@@ -127,7 +129,7 @@ class TimeRange(object):
         -------
         value : `datetime.datetime`
         """
-        return self.start + self.dt / 2
+        return self.start + self.dt // 2
 
     @property
     def hours(self):
@@ -182,7 +184,7 @@ class TimeRange(object):
         -------
         value : `astropy.units.Quantity`
         """
-        result = self.dt.microseconds * Unit('us') + self.dt.seconds * Unit('s') + self.dt.days * Unit('day')
+        result = self.dt.microseconds * u.Unit('us') + self.dt.seconds * u.Unit('s') + self.dt.days * u.Unit('day')
         return result
 
     def __repr__(self):
@@ -228,7 +230,7 @@ class TimeRange(object):
         previous_time = self.start
         next_time = None
         for _ in range(n):
-            next_time = previous_time + self.dt / n
+            next_time = previous_time + self.dt // n
             next_range = TimeRange(previous_time, next_time)
             subsections.append(next_range)
             previous_time = next_time

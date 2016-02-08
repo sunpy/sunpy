@@ -1,3 +1,4 @@
+from __future__ import absolute_import, division, print_function
 # Author: Jack Ireland, Steven Christe
 #
 # Testing functions for a mapcube coalignment functionality.  This
@@ -18,6 +19,7 @@ from sunpy.image.coalignment import parabolic_turning_point, \
     match_template_to_layer, clip_edges, \
     calculate_match_template_shift, mapcube_coalign_by_match_template,\
     apply_shifts
+from sunpy.extern.six.moves import range
 
 @pytest.fixture
 def aia171_test_clipping():
@@ -94,8 +96,8 @@ def test_get_correlation_shifts():
     test_array[2, 1] = 0.6
     test_array[1, 2] = 0.2
     y_test, x_test = get_correlation_shifts(test_array)
-    assert_allclose(y_test, 0.214285714286, rtol=1e-2, atol=0)
-    assert_allclose(x_test, 0.0555555555556, rtol=1e-2, atol=0)
+    assert_allclose(y_test.value, 0.214285714286, rtol=1e-2, atol=0)
+    assert_allclose(x_test.value, 0.0555555555556, rtol=1e-2, atol=0)
 
     # Input array is smaller in one direction than the other.
     test_array = np.zeros((2, 2))
@@ -104,18 +106,18 @@ def test_get_correlation_shifts():
     test_array[1, 0] = 0.4
     test_array[1, 1] = 0.3
     y_test, x_test = get_correlation_shifts(test_array)
-    assert_allclose(y_test, 1.0, rtol=1e-2, atol=0)
-    assert_allclose(x_test, 0.0, rtol=1e-2, atol=0)
+    assert_allclose(y_test.value, 1.0, rtol=1e-2, atol=0)
+    assert_allclose(x_test.value, 0.0, rtol=1e-2, atol=0)
 
     # Input array is too big in either direction
     test_array = np.zeros((4, 3))
     y_test, x_test = get_correlation_shifts(test_array)
-    assert(y_test == None)
-    assert(x_test == None)
+    assert(y_test is None)
+    assert(x_test is None)
     test_array = np.zeros((3, 4))
     y_test, x_test = get_correlation_shifts(test_array)
-    assert(y_test == None)
-    assert(x_test == None)
+    assert(y_test is None)
+    assert(x_test is None)
 
 
 def test_find_best_match_location(aia171_test_map_layer, aia171_test_template,
@@ -201,13 +203,13 @@ def test_calculate_match_template_shift(aia171_test_mc,
     template_ndarray = aia171_test_map_layer[ny / 4: 3 * ny / 4, nx / 4: 3 * nx / 4]
     test_displacements = calculate_match_template_shift(aia171_test_mc, template=template_ndarray)
     assert_allclose(test_displacements['x'], aia171_mc_arcsec_displacements['x'], rtol=5e-2, atol=0)
-    assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0 )
+    assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0)
 
     # Test setting the template as GenericMap
     submap = aia171_test_map.submap([nx / 4, 3 * nx / 4]*u.pix, [ny / 4, 3 * ny / 4]*u.pix)
     test_displacements = calculate_match_template_shift(aia171_test_mc, template=submap)
     assert_allclose(test_displacements['x'], aia171_mc_arcsec_displacements['x'], rtol=5e-2, atol=0)
-    assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0 )
+    assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0)
 
     # Test setting the template as something other than a ndarray and a
     # GenericMap.  This should throw a ValueError.
@@ -221,7 +223,7 @@ def test_mapcube_coalign_by_match_template(aia171_test_mc,
     ny = aia171_test_map_layer_shape[0]
     nx = aia171_test_map_layer_shape[1]
 
-    # Get the test displacements
+    # Get the calculated test displacements
     test_displacements = calculate_match_template_shift(aia171_test_mc)
 
     # Test passing in displacements
@@ -260,6 +262,13 @@ def test_mapcube_coalign_by_match_template(aia171_test_mc,
     assert(test_mc[0].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
     assert(test_mc[1].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
 
+    # Test that the reference pixel of each map in the coaligned mapcube is
+    # correct.
+    for im, m in enumerate(aia171_test_mc):
+        for i_s, s in enumerate(['x', 'y']):
+            assert_allclose(aia171_test_mc[im].reference_pixel[i_s] - test_mc[im].reference_pixel[i_s],
+                            test_displacements[s][im] / m.scale[i_s],
+                            rtol=5e-2, atol=0)
 
 def test_apply_shifts(aia171_test_map):
     # take two copies of the AIA image and create a test mapcube.

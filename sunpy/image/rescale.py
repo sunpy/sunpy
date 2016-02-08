@@ -1,9 +1,10 @@
 """Image resampling methods"""
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import numpy as np
 import scipy.interpolate
 import scipy.ndimage
+from sunpy.extern.six.moves import range
 
 __all__ = ['resample', 'reshape_image_to_4d_superpixel']
 
@@ -99,8 +100,8 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
 
     new_data = mint(dimlist[-1])
 
-    trorder = [orig.ndim - 1] + range(orig.ndim - 1)
-    for i in xrange(orig.ndim - 2, -1, -1):
+    trorder = [orig.ndim - 1] + list(range(orig.ndim - 1))
+    for i in range(orig.ndim - 2, -1, -1):
         new_data = new_data.transpose(trorder)
 
         mint = scipy.interpolate.interp1d(old_coords[i], new_data,
@@ -119,7 +120,7 @@ def _resample_neighbor(orig, dimensions, offset, m1):
 
     dimlist = []
 
-    for i in xrange(orig.ndim):
+    for i in range(orig.ndim):
         base = np.indices(dimensions)[i]
         dimlist.append((orig.shape[i] - m1) / (dimensions[i] - m1) *
                        (base + offset) - offset)
@@ -137,7 +138,7 @@ def _resample_spline(orig, dimensions, offset, m1):
     nslices = [slice(0, j) for j in list(dimensions)]
     newcoords = np.mgrid[nslices]
 
-    newcoords_dims = range(np.rank(newcoords))
+    newcoords_dims = list(range(np.rank(newcoords)))
 
     #make first index last
     newcoords_dims.append(newcoords_dims.pop(0))
@@ -156,9 +157,40 @@ def _resample_spline(orig, dimensions, offset, m1):
 
 def reshape_image_to_4d_superpixel(img, dimensions):
     """Re-shape the two dimension input image into a a four dimensional
-    array whose 1st and third dimensions express the number of original
-    pixels in the x and y directions form one superpixel. The reshaping
+    array whose first and third dimensions express the number of original
+    pixels in the x and y directions that form one superpixel. The reshaping
     makes it very easy to perform operations on superpixels.
+
+    An application of this reshaping is the following.  Let's say you have an
+    array
+
+    x = np.array([[0, 0, 0, 1, 1, 1],
+                  [0, 0, 1, 1, 0, 0],
+                  [1, 1, 0, 0, 1, 1],
+                  [0, 0, 0, 0, 1, 1],
+                  [1, 0, 1, 0, 1, 1],
+                  [0, 0, 1, 0, 0, 0]])
+
+    and you want to sum over 2x2 non-overlapping sub-arrays.  For example, you
+    could have a noisy image and you want to increase the signal-to-noise ratio.
+    Summing over all the non-overlapping 2x2 sub-arrays will create a
+    superpixel array of the original data.  Every pixel in the superpixel array
+    is the sum of the values in a 2x2 sub-array of the original array,
+
+    This summing can be done by reshaping the array
+
+    y = x.reshape(3,2,3,2)
+
+    and then summing over the 1st and third directions
+
+    y2 = y.sum(axis=3).sum(axis=1)
+
+    which gives the expected array.
+
+    array([[0, 3, 2],
+           [2, 0, 4],
+           [1, 2, 2]])
+
 
 
     Parameters
@@ -183,7 +215,7 @@ def reshape_image_to_4d_superpixel(img, dimensions):
     """
     # check that the dimensions divide into the image size exactly
 
-    if np.all((np.array(img.shape) % np.array(dimensions) != 0)):
+    if np.any(np.array(img.shape) % np.array(dimensions)):
         raise ValueError('New dimensions must divide original image size exactly.')
 
     # Reshape up to a higher dimensional array which is useful for higher

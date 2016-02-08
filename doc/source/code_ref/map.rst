@@ -67,10 +67,13 @@ attributes and methods that are available on all Map objects.
 
 Map Classes
 -----------
-There are a series of base map classes which are specialised for each
-instrument. These subclass GenericMap and then register with
-the Map factory class, which will be direct instantiation of an instrument class if the correct
-parameters are met.
+Defined in `sunpy.map.sources` are a set of `~sunpy.map.GenericMap` subclasses
+which convert the specific metadata and other differences in each instruments
+data to the standard `~sunpy.map.GenericMap` interface.
+These 'sources' also define things like the colormap and default
+normalisation for each instrument.
+These subclasses also provide a method, which describes to the ``Map`` factory
+which data and metadata pairs match its instrument.
 
 .. automodapi:: sunpy.map
     :no-main-docstr:
@@ -87,16 +90,25 @@ Instrument Map Classes
 Writing a new Instrument Map Class
 ----------------------------------
 
-Map classes can be registered with the Map factory, even if the new class is not
-officially part of SunPy.  This is good for prototyping new instruments.  For
-example, to add a Map type for a future instrument, consider this code skeleton::
+Any subclass of `~sunpy.map.GenericMap` which defines a method named
+`~sunpy.map.GenericMap.is_datasource_for` will automatically be registered with
+the ``Map`` factory. The ``is_datasource_for`` method describes the form of the
+data and metadata for which the `~sunpy.map.GenericMap` subclass is valid. For
+example it might check the value of the ``INSTRUMENT`` key in the metadata
+dictionary.
+This makes it straightforward to define your own
+`~sunpy.map.GenericMap` subclass for a new instrument or a custom data source
+like simulated data. These classes only have to be imported for this to work, as
+demonstrated by the following example.
 
-    import sunpy
-    class FutureMap(sunpy.GenericMap):
+.. code-block:: python
+
+    import sunpy.map
+    class FutureMap(sunpy.map.GenericMap):
 
         def __init__(self, data, header, **kwargs):
 
-            GenericMap.__init__(self, data, header, **kwargs)
+            super(FutureMap, self).__init__(data, header, **kwargs)
 
             # Any Future Instrument specific keyword manipulation
 
@@ -107,11 +119,17 @@ example, to add a Map type for a future instrument, consider this code skeleton:
             """Determines if header corresponds to an AIA image"""
             return header.get('instrume', '').startswith('FUTURESCOPE')
 
-Then, to be able to instantiate a FutureMap using the Map() factory, one must
-register the FutureMap type with the factory::
 
-    sunpy.map.Map.register(FutureMap, FutureMap.is_datasource_for)
+This class will now be available through the ``Map`` factory as long as this
+class has been defined, i.e. imported into the current session.
 
-If this line is placed correctly, for example in your subpackages `__init__.py`,
-it can be guaranteed that the FutureMap is always accessible when your package
-is imported.
+If you do not want to create a method named ``is_datasource_for`` you can
+manually register your class and matching method using the following method
+
+.. code-block:: python
+
+    import sunpy.map
+
+    sunpy.map.Map.register(FutureMap, FutureMap.some_matching_method)
+
+
