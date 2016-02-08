@@ -391,7 +391,7 @@ class HelioProjectiveRadial(BaseCoordinateFrame):
         The radial distance from the observer to the coordinate point.
     """
 
-    default_representation = UnitSphericalRepresentation
+    default_representation = SphericalRepresentation
 
     _frame_specific_representation_info = {
         'spherical': [RepresentationMapping('lon', 'dec', u.deg),
