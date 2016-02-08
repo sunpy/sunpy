@@ -13,18 +13,39 @@ import pytest
 import os
 import sunpy.data.test
 
+
 @pytest.fixture
-def mapcube_all_the_same():
+def aia_map():
     testpath = sunpy.data.test.rootdir
     aia_file = os.path.join(testpath, "aia_171_level1.fits")
-    aia_map = sunpy.map.Map(aia_file)
+    return sunpy.map.Map(aia_file)
+
+
+@pytest.fixture
+def masked_aia_map(aia_map):
+    aia_map_data = aia_map.data
+    aia_map_mask = np.zeros_like(aia_map_data)
+    return sunpy.map.Map(np.ma.masked_array(aia_map_data, mask=aia_map_mask),
+                         aia_map.meta)
+
+
+@pytest.fixture
+def mapcube_all_the_same(aia_map):
     return sunpy.map.Map([aia_map, aia_map], cube=True)
 
+
+@pytest.fixture
+def mapcube_all_the_same_all_have_masks(masked_aia_map):
+    return sunpy.map.Map([masked_aia_map, masked_aia_map], cube=True)
+
+
+@pytest.fixture
+def mapcube_all_the_same_some_have_masks(aia_map, masked_aia_map):
+    return sunpy.map.Map([aia_map, masked_aia_map, aia_map], cube=True)
+
+
 @pytest.fixture()
-def mapcube_different():
-    testpath = sunpy.data.test.rootdir
-    aia_file = os.path.join(testpath, "aia_171_level1.fits")
-    aia_map = sunpy.map.Map(aia_file)
+def mapcube_different(aia_map):
     return sunpy.map.Map([aia_map, aia_map.superpixel((4, 4)*u.pix)], cube=True)
 
 
@@ -34,7 +55,10 @@ def test_all_maps_same_shape(mapcube_all_the_same, mapcube_different):
     assert not mapcube_different.all_maps_same_shape()
 
 
-def test_as_array(mapcube_all_the_same, mapcube_different):
+def test_as_array(mapcube_all_the_same,
+                  mapcube_different,
+                  mapcube_all_the_same_all_have_masks,
+                  mapcube_all_the_same_some_have_masks):
     """Make sure the data in the mapcube returns correctly, when all the
     maps have the same shape.  When they don't have the same shape, make
     sure an error is raised."""
@@ -49,6 +73,14 @@ def test_as_array(mapcube_all_the_same, mapcube_different):
     # it.
     with pytest.raises(ValueError):
         mapcube_different.as_array()
+
+    # All the maps in the mapcube have masks
+    returned_array = mapcube_all_the_same_all_have_masks.as_array()
+    assert isinstance(returned_array, np.ma.masked_array)
+
+    # Some of the maps in the mapcube have masks
+    returned_array = mapcube_all_the_same_some_have_masks.as_array()
+    assert isinstance(returned_array, np.ma.masked_array)
 
 
 def test_all_meta(mapcube_all_the_same):
