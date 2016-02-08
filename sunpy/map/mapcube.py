@@ -352,10 +352,7 @@ class MapCube(object):
             data = np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1).copy(), 1, 2).copy()
             if self.no_map_has_mask():
                 return data
-            elif self.all_maps_have_mask():
-                return ma.masked_array(data,
-                                       mask=np.swapaxes(np.swapaxes(np.asarray([m.mask for m in self.maps]), 0, 1).copy(), 1, 2).copy())
-            elif self.at_least_one_map_has_mask():
+            elif self.all_maps_have_mask() or self.at_least_one_map_has_mask():
                 mask_cube = np.zeros_like(data, dtype=bool)
                 for im, m in enumerate(self.maps):
                     if m.mask is not None:

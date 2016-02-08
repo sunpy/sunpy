@@ -25,6 +25,7 @@ def aia_map():
 def masked_aia_map(aia_map):
     aia_map_data = aia_map.data
     aia_map_mask = np.zeros_like(aia_map_data)
+    aia_map_mask[0:2, 0:3] = True
     return sunpy.map.Map(np.ma.masked_array(aia_map_data, mask=aia_map_mask),
                          aia_map.meta)
 
@@ -41,7 +42,7 @@ def mapcube_all_the_same_all_have_masks(masked_aia_map):
 
 @pytest.fixture
 def mapcube_all_the_same_some_have_masks(aia_map, masked_aia_map):
-    return sunpy.map.Map([aia_map, masked_aia_map, aia_map], cube=True)
+    return sunpy.map.Map([masked_aia_map, masked_aia_map, aia_map], cube=True)
 
 
 @pytest.fixture()
@@ -53,6 +54,33 @@ def test_all_maps_same_shape(mapcube_all_the_same, mapcube_different):
     """Make sure that Mapcube knows if all the maps have the same shape"""
     assert mapcube_all_the_same.all_maps_same_shape()
     assert not mapcube_different.all_maps_same_shape()
+
+
+def test_all_maps_have_mask(mapcube_all_the_same,
+                            mapcube_all_the_same_all_have_masks,
+                            mapcube_all_the_same_some_have_masks
+                            ):
+    assert not mapcube_all_the_same.all_maps_have_mask()
+    assert mapcube_all_the_same_all_have_masks.all_maps_have_mask()
+    assert not mapcube_all_the_same_some_have_masks.all_maps_have_mask()
+
+
+def test_no_map_has_mask(mapcube_all_the_same,
+                         mapcube_all_the_same_all_have_masks,
+                         mapcube_all_the_same_some_have_masks
+                         ):
+    assert mapcube_all_the_same.no_map_has_mask()
+    assert not mapcube_all_the_same_all_have_masks.no_map_has_mask()
+    assert not mapcube_all_the_same_some_have_masks.no_map_has_mask()
+
+
+def test_at_least_one_map_has_mask(mapcube_all_the_same,
+                                   mapcube_all_the_same_all_have_masks,
+                                   mapcube_all_the_same_some_have_masks
+                                   ):
+    assert not mapcube_all_the_same.at_least_one_map_has_mask()
+    assert mapcube_all_the_same_all_have_masks.at_least_one_map_has_mask()
+    assert mapcube_all_the_same_some_have_masks.at_least_one_map_has_mask()
 
 
 def test_as_array(mapcube_all_the_same,
@@ -69,18 +97,44 @@ def test_as_array(mapcube_all_the_same,
     assert returned_array.shape[0] == 128
     assert returned_array.shape[1] == 128
     assert returned_array.shape[2] == 2
+    assert np.ma.getmask(returned_array) is None
     # Should raise a ValueError if the mapcube has differently shaped maps in
     # it.
     with pytest.raises(ValueError):
         mapcube_different.as_array()
 
-    # All the maps in the mapcube have masks
+    # Test the case when all the maps have masks
     returned_array = mapcube_all_the_same_all_have_masks.as_array()
     assert isinstance(returned_array, np.ma.masked_array)
+    assert returned_array.ndim == 3
+    assert len(returned_array.shape) == 3
+    assert returned_array.shape[0] == 128
+    assert returned_array.shape[1] == 128
+    assert returned_array.shape[2] == 2
 
-    # Some of the maps in the mapcube have masks
+    mask = np.ma.getmask(returned_array.as_array())
+    assert np.ma.getmask(returned_array) is not None
+    assert mask.ndim == 3
+    assert len(mask.shape) == 3
+    assert returned_array.shape[0] == 128
+    assert returned_array.shape[1] == 128
+    assert returned_array.shape[2] == 3
+    assert np.all(mask[0:2, 0:3, 0:2])
+
+    # Test the case when some of the maps have masks
     returned_array = mapcube_all_the_same_some_have_masks.as_array()
     assert isinstance(returned_array, np.ma.masked_array)
+
+
+    mask = np.ma.getmask(mapcube_all_the_same_some_have_masks.as_array())
+    assert mask.ndim == 3
+    assert len(returned_array.shape) == 3
+    assert returned_array.shape[0] == 128
+    assert returned_array.shape[1] == 128
+    assert returned_array.shape[2] == 3
+    assert np.all(mask[0:2, 0:3, 0])
+    assert np.all(mask[0:2, 0:3, 1])
+    assert np.all(np.logical_not(mask[0:2, 0:3, 2]))
 
 
 def test_all_meta(mapcube_all_the_same):
