@@ -324,12 +324,6 @@ class MapCube(object):
         """
         return np.any([m.mask is not None for m in self.maps])
 
-    def no_map_has_mask(self):
-        """
-        Tests if none of the masks have a mask.
-        """
-        return np.all([m.mask is None for m in self.maps])
-
     def as_array(self):
         """
         If all the map shapes are the same, their image data is rendered
@@ -338,20 +332,20 @@ class MapCube(object):
         have masks, then the data is returned as a (ny, nx, nt) masked array
         with all the masks copied from each map.  If only some of the maps
         have masked then the data is returned as a (ny, nx, nt) masked array,
-        with masks copied from maps as appropriately.  Maps that do not have a
+        with masks copied from maps as appropriately; maps that do not have a
         mask are supplied with a mask that is full of False entries.
         If all the map shapes are not the same, a ValueError is thrown.
         """
         if self.all_maps_same_shape():
             data = np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1).copy(), 1, 2).copy()
-            if self.no_map_has_mask():
-                return data
-            elif self.at_least_one_map_has_mask():
+            if self.at_least_one_map_has_mask():
                 mask_cube = np.zeros_like(data, dtype=bool)
                 for im, m in enumerate(self.maps):
                     if m.mask is not None:
                         mask_cube[:, :, im] = m.mask
                 return ma.masked_array(data, mask=mask_cube)
+            else:
+                return data
         else:
             raise ValueError('Not all maps have the same shape.')
 

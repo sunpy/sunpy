@@ -56,15 +56,6 @@ def test_all_maps_same_shape(mapcube_all_the_same, mapcube_different):
     assert not mapcube_different.all_maps_same_shape()
 
 
-def test_no_map_has_mask(mapcube_all_the_same,
-                         mapcube_all_the_same_all_have_masks,
-                         mapcube_all_the_same_some_have_masks
-                         ):
-    assert mapcube_all_the_same.no_map_has_mask()
-    assert not mapcube_all_the_same_all_have_masks.no_map_has_mask()
-    assert not mapcube_all_the_same_some_have_masks.no_map_has_mask()
-
-
 def test_at_least_one_map_has_mask(mapcube_all_the_same,
                                    mapcube_all_the_same_all_have_masks,
                                    mapcube_all_the_same_some_have_masks
