@@ -16,6 +16,9 @@ import sunpy.data.test
 
 @pytest.fixture
 def aia_map():
+    """
+    Load SunPy's test AIA image.
+    """
     testpath = sunpy.data.test.rootdir
     aia_file = os.path.join(testpath, "aia_171_level1.fits")
     return sunpy.map.Map(aia_file)
@@ -23,6 +26,11 @@ def aia_map():
 
 @pytest.fixture
 def masked_aia_map(aia_map):
+    """
+    Put a simple mask in the test AIA image.  A rectangular (not square) block
+    of True values are included to test that operations on the mask respect how
+    the mask is stored.
+    """
     aia_map_data = aia_map.data
     aia_map_mask = np.zeros_like(aia_map_data)
     aia_map_mask[0:2, 0:3] = True
@@ -32,21 +40,28 @@ def masked_aia_map(aia_map):
 
 @pytest.fixture
 def mapcube_all_the_same(aia_map):
+    """ Simple `sunpy.map.mapcube` for testing."""
     return sunpy.map.Map([aia_map, aia_map], cube=True)
 
 
 @pytest.fixture
 def mapcube_all_the_same_all_have_masks(masked_aia_map):
+    """ Simple `sunpy.map.mapcube` for testing, in which all the maps have
+    masks."""
     return sunpy.map.Map([masked_aia_map, masked_aia_map], cube=True)
 
 
 @pytest.fixture
 def mapcube_all_the_same_some_have_masks(aia_map, masked_aia_map):
+    """ Simple `sunpy.map.mapcube` for testing, in which at least some of the
+    maps have masks."""
     return sunpy.map.Map([masked_aia_map, masked_aia_map, aia_map], cube=True)
 
 
 @pytest.fixture()
 def mapcube_different(aia_map):
+    """ Mapcube allows that the size of the image data in each map be
+    different.  This mapcube contains such maps."""
     return sunpy.map.Map([aia_map, aia_map.superpixel((4, 4)*u.pix)], cube=True)
 
 
@@ -60,6 +75,7 @@ def test_at_least_one_map_has_mask(mapcube_all_the_same,
                                    mapcube_all_the_same_all_have_masks,
                                    mapcube_all_the_same_some_have_masks
                                    ):
+    """ Test that we can detect the presence of at least one masked map."""
     assert not mapcube_all_the_same.at_least_one_map_has_mask()
     assert mapcube_all_the_same_all_have_masks.at_least_one_map_has_mask()
     assert mapcube_all_the_same_some_have_masks.at_least_one_map_has_mask()
