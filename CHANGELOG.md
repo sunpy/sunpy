@@ -19,6 +19,7 @@ Latest
   between GOES flux to GOES class numbers (e.g. X12, M3.4).
 * Removed old sunpy.util.goes_flare_class()
 * Bug fix for rhessi summary light curve values.
+* `sunpy.physics.transforms` has been deprecated and the code moved into `sunpy.physics`.
 
 0.6.0
 -----
