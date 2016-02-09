@@ -14,7 +14,10 @@ Latest
 * Added functions flareclass_to_flux and flux_to_flareclass which convert
   between GOES flux to GOES class numbers (e.g. X12, M3.4).
 * Removed old sunpy.util.goes_flare_class()
-* Bug fix for rhessi summary light curve values.
+* Bug fix for RHESSI summary light curve values.
+* The ``MapCube.as_array`` function now returns a masked numpy array if at least
+  one of the input maps in the MapCube has a mask.
+
 
 0.6.0
 -----
