@@ -11,7 +11,7 @@ from sunpy.io.header import FileHeader
 from sunpy.map import GenericMap
 from sunpy.map import Map
 
-from sunpy.tests.helpers import skip_glymur 
+from sunpy.tests.helpers import skip_glymur
 
 @skip_glymur
 def test_read_data():
