@@ -18,6 +18,8 @@ Latest
 * The ``MapCube.as_array`` function now returns a masked numpy array if at least
   one of the input maps in the MapCube has a mask.
 
+* Bug fix for rhessi summary light curve values.
+* `sunpy.physics.transforms` has been deprecated and the code moved into `sunpy.physics`.
 
 0.6.0
 -----
