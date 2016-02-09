@@ -486,6 +486,7 @@ def test_plot_masked_aia171_nowcsaxes(aia171_test_map):
     masked_map.plot(axes=ax)
 
 def test_validate_meta(generic_map):
+    """Check to see if_validate_meta displays an appropriate error"""
     with warnings.catch_warnings(record=True) as w:
         bad_header = {'CRVAL1': 0,
                 'CRVAL2': 0,
