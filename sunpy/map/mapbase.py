@@ -5,7 +5,7 @@ from __future__ import absolute_import, division, print_function
 from sunpy.extern.six.moves import range
 
 #pylint: disable=E1101,E1121,W0404,W0613
-__authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe"]
+__authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe", "Jack Ireland"]
 __email__ = "stuart@mumford.me.uk"
 
 import warnings
@@ -1102,7 +1102,8 @@ scale:\t\t {scale}
             Note: the first argument corresponds to the 'x' axis and the second
             argument corresponds to the 'y' axis.
         offset : tuple
-            Offset from (0,0) used when calculating the
+            Offset from (0,0) in original map pixels used to calculate where
+            the data used to make the resulting superpixel map starts.
         func : function applied to the original data
             The function 'func' must take a numpy array as its first argument,
             and support the axis keyword with the meaning of a numpy axis
