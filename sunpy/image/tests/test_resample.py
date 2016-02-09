@@ -81,6 +81,3 @@ def test_reshape(aia171_test_map, shape):
     im = reshape_image_to_4d_superpixel(aia171_test_map.data, d, o)
     assert im.shape == (_n(shape[0], o[0], d[0]), d[0],
                         _n(shape[1], o[1], d[1]), d[1])
-
-
-
