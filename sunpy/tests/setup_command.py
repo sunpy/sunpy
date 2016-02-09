@@ -92,6 +92,11 @@ class SunPyTest(AstropyTest):
         cmd_pre = ''  # Commands to run before the test function
         cmd_post = ''  # Commands to run after the test function
 
+        if self.coverage:
+            pre, post = self._generate_coverage_commands()
+            cmd_pre += pre
+            cmd_post += post
+
         online = self.online
         offline = not self.online_only
 
