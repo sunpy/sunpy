@@ -56,15 +56,6 @@ def test_all_maps_same_shape(mapcube_all_the_same, mapcube_different):
     assert not mapcube_different.all_maps_same_shape()
 
 
-def test_all_maps_have_mask(mapcube_all_the_same,
-                            mapcube_all_the_same_all_have_masks,
-                            mapcube_all_the_same_some_have_masks
-                            ):
-    assert not mapcube_all_the_same.all_maps_have_mask()
-    assert mapcube_all_the_same_all_have_masks.all_maps_have_mask()
-    assert not mapcube_all_the_same_some_have_masks.all_maps_have_mask()
-
-
 def test_no_map_has_mask(mapcube_all_the_same,
                          mapcube_all_the_same_all_have_masks,
                          mapcube_all_the_same_some_have_masks
@@ -90,6 +81,12 @@ def test_as_array(mapcube_all_the_same,
     """Make sure the data in the mapcube returns correctly, when all the
     maps have the same shape.  When they don't have the same shape, make
     sure an error is raised."""
+    # Should raise a ValueError if the mapcube has differently shaped maps in
+    # it.
+    with pytest.raises(ValueError):
+        mapcube_different.as_array()
+
+    # Test the case when none of the maps have a mask
     returned_array = mapcube_all_the_same.as_array()
     assert isinstance(returned_array, np.ndarray)
     assert returned_array.ndim == 3
@@ -97,41 +94,40 @@ def test_as_array(mapcube_all_the_same,
     assert returned_array.shape[0] == 128
     assert returned_array.shape[1] == 128
     assert returned_array.shape[2] == 2
-    assert np.ma.getmask(returned_array) is None
-    # Should raise a ValueError if the mapcube has differently shaped maps in
-    # it.
-    with pytest.raises(ValueError):
-        mapcube_different.as_array()
+    assert np.ma.getmask(returned_array) is np.ma.nomask
 
     # Test the case when all the maps have masks
     returned_array = mapcube_all_the_same_all_have_masks.as_array()
     assert isinstance(returned_array, np.ma.masked_array)
-    assert returned_array.ndim == 3
-    assert len(returned_array.shape) == 3
-    assert returned_array.shape[0] == 128
-    assert returned_array.shape[1] == 128
-    assert returned_array.shape[2] == 2
-
-    mask = np.ma.getmask(returned_array.as_array())
-    assert np.ma.getmask(returned_array) is not None
+    data = np.ma.getdata(returned_array)
+    assert data.ndim == 3
+    assert len(data.shape) == 3
+    assert data.shape[0] == 128
+    assert data.shape[1] == 128
+    assert data.shape[2] == 2
+    mask = np.ma.getmask(returned_array)
     assert mask.ndim == 3
     assert len(mask.shape) == 3
-    assert returned_array.shape[0] == 128
-    assert returned_array.shape[1] == 128
-    assert returned_array.shape[2] == 3
-    assert np.all(mask[0:2, 0:3, 0:2])
+    assert mask.shape[0] == 128
+    assert mask.shape[1] == 128
+    assert mask.shape[2] == 2
+    assert mask.dtype == bool
 
     # Test the case when some of the maps have masks
     returned_array = mapcube_all_the_same_some_have_masks.as_array()
     assert isinstance(returned_array, np.ma.masked_array)
-
-
+    data = np.ma.getdata(returned_array)
+    assert data.ndim == 3
+    assert len(data.shape) == 3
+    assert data.shape[0] == 128
+    assert data.shape[1] == 128
+    assert data.shape[2] == 3
     mask = np.ma.getmask(mapcube_all_the_same_some_have_masks.as_array())
     assert mask.ndim == 3
-    assert len(returned_array.shape) == 3
-    assert returned_array.shape[0] == 128
-    assert returned_array.shape[1] == 128
-    assert returned_array.shape[2] == 3
+    assert len(mask.shape) == 3
+    assert mask.shape[0] == 128
+    assert mask.shape[1] == 128
+    assert mask.shape[2] == 3
     assert np.all(mask[0:2, 0:3, 0])
     assert np.all(mask[0:2, 0:3, 1])
     assert np.all(np.logical_not(mask[0:2, 0:3, 2]))

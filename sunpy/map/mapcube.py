@@ -318,12 +318,6 @@ class MapCube(object):
         """
         return np.all([m.data.shape == self.maps[0].data.shape for m in self.maps])
 
-    def all_maps_have_mask(self):
-        """
-        Tests if all maps have a mask.
-        """
-        return np.all([m.mask is not None for m in self.maps])
-
     def at_least_one_map_has_mask(self):
         """
         Tests if at least one map has a mask.
@@ -352,7 +346,7 @@ class MapCube(object):
             data = np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1).copy(), 1, 2).copy()
             if self.no_map_has_mask():
                 return data
-            elif self.all_maps_have_mask() or self.at_least_one_map_has_mask():
+            elif self.at_least_one_map_has_mask():
                 mask_cube = np.zeros_like(data, dtype=bool)
                 for im, m in enumerate(self.maps):
                     if m.mask is not None:
