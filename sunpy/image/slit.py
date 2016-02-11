@@ -7,19 +7,19 @@ import astropy.units as u
 
 def slit(mcube_in, range_a, range_b):
     """
-    Returns an array with intensity along the slit on the y axis and time 
+    Returns an array with intensity along the slit on the y axis and time
     along x.
-    
-    Parameters    
+
+    Parameters
     ----------
     mcube_in : `sunpy.map.MapCube`
-        A mapcube of the images you want to perform the slit analysis on. 
+        A mapcube of the images you want to perform the slit analysis on.
         Usually with x and y as space, and z as time.
-    range_a : `astropy.units.Quantity` 
-        A list of two `astropy.unit.Quantity` objects representing x1 and x2, 
+    range_a : `astropy.units.Quantity`
+        A list of two `astropy.unit.Quantity` objects representing x1 and x2,
         start and end of slit in x.
     range_b : `astropy.units.Quantity`
-        A list of two `astropy.unit.Quantity` objects representing x2 and y2, 
+        A list of two `astropy.unit.Quantity` objects representing x2 and y2,
         start and end of slit in y.
 
     Returns
@@ -28,23 +28,23 @@ def slit(mcube_in, range_a, range_b):
         A numpy array with intenisty in y and time in x.
 
     """
-    
+
     # check the attributes of the coordinates
-    if ((isinstance(range_a and range_b, u.Quantity) or 
+    if ((isinstance(range_a and range_b, u.Quantity) or
         (hasattr(range_a and range_b, 'unit')))):
-    
+
         if (range_a.unit.is_equivalent(mcube_in[0].units.x) and
             range_b.unit.is_equivalent(mcube_in[0].units.y)):
-            
+
             # convert the world to pixel
             init_map = mcube_in[0]
             c_x1, c_y1 = init_map.data_to_pixel(range_a[0], range_b[0])
-            c_x2, c_y2 = init_map.data_to_pixel(range_a[1], range_b[1])            
-                        
+            c_x2, c_y2 = init_map.data_to_pixel(range_a[1], range_b[1])
+
         elif range_a.unit.is_equivalent(u.pixel) and range_b.unit.is_equivalent(u.pixel):
             c_x1, c_y2 = range_a[0], range_b[0]
             c_x2, c_y2 = range_a[1], range_b[1]
-        
+
         else:
             raise u.UnitsError("xy1 and xy2 must be "
                                "in units convertable to {} or {}".format(mcube_in[0].units['x'],
@@ -53,24 +53,26 @@ def slit(mcube_in, range_a, range_b):
         raise TypeError("Arguments range_a and range_b to function submap "
                         "have an invalid unit attribute "
                         "You may want to pass in an astropy Quantity instead.")
-        
-    
-    
-    # call to the get pixel numbers routine
-    slit = get_pixels_on_line(int(c_x1.value), int(c_y1.value), 
-                              int(c_x2.value), int(c_y2.value))    
 
-    for d_arr in mcube_in: 
+
+
+    # call to the get pixel numbers routine
+    slit = get_pixels_on_line(int(c_x1.value), int(c_y1.value),
+                              int(c_x2.value), int(c_y2.value))
+    slit_p1 = slit + [-1,+1]
+    slit_m1 = slit + [+1,-1]
+
+    for d_arr in mcube_in:
         data = d_arr.data
         # get the initial slit pixels
         s_values = data[slit.T[0], slit.T[1]]
         # plus one
-        s_p1_values = data[slit.T[0], slit.T[1]]
+        s_p1_values = data[slit_p1.T[0], slit_p1.T[1]]
         # minus one
-        s_m1_values = data[slit.T[0], slit.T[1]]
+        s_m1_values = data[slit_m1.T[0], slit_m1.T[1]]
         # wap it all in one list
         slits = [s_m1_values, s_values, s_p1_values]
-    
+
     end_array = np.array(slits)
     im_array = np.rot90(end_array)
     return(im_array)
