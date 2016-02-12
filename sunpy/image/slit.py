@@ -24,27 +24,29 @@ def slit(mcube_in, range_a, range_b):
 
     Returns
     -------
-    out : `numpy.ndarray`
+    im_array : `numpy.ndarray`
         A numpy array with intenisty in y and time in x.
+    slit : `numpy.ndarray`
+        A numpy array representing the indicies of the central slit.
 
     """
 
     # check the attributes of the coordinates
     if ((isinstance(range_a and range_b, u.Quantity) or
         (hasattr(range_a and range_b, 'unit')))):
-
+        print "first if"
         if (range_a.unit.is_equivalent(mcube_in[0].units.x) and
             range_b.unit.is_equivalent(mcube_in[0].units.y)):
-
+            print "second if"
             # convert the world to pixel
             init_map = mcube_in[0]
             c_x1, c_y1 = init_map.data_to_pixel(range_a[0], range_b[0])
             c_x2, c_y2 = init_map.data_to_pixel(range_a[1], range_b[1])
 
         elif range_a.unit.is_equivalent(u.pixel) and range_b.unit.is_equivalent(u.pixel):
-            c_x1, c_y2 = range_a[0], range_b[0]
+            c_x1, c_y1 = range_a[0], range_b[0]
             c_x2, c_y2 = range_a[1], range_b[1]
-
+            print "thrid if"
         else:
             raise u.UnitsError("xy1 and xy2 must be "
                                "in units convertable to {} or {}".format(mcube_in[0].units['x'],
@@ -59,9 +61,10 @@ def slit(mcube_in, range_a, range_b):
     # call to the get pixel numbers routine
     slit = get_pixels_on_line(int(c_x1.value), int(c_y1.value),
                               int(c_x2.value), int(c_y2.value))
+    # plus one, minus one, to get an average
     slit_p1 = slit + [-1,+1]
     slit_m1 = slit + [+1,-1]
-
+    slit_I = []
     for d_arr in mcube_in:
         data = d_arr.data
         # get the initial slit pixels
@@ -71,21 +74,33 @@ def slit(mcube_in, range_a, range_b):
         # minus one
         s_m1_values = data[slit_m1.T[0], slit_m1.T[1]]
         # wap it all in one list
-        slits = [s_m1_values, s_values, s_p1_values]
+        slit_I.append([s_m1_values, s_values, s_p1_values])
 
-    end_array = np.array(slits)
-    im_array = np.rot90(end_array)
-    return(im_array)
+    end_array = np.array(slit_I)
+    mean_arr = end_array.mean(axis=1)
+    im_array = np.rot90(mean_arr)
+    return([im_array, slit])
 
 
 
 def get_pixels_on_line(x1, y1, x2, y2, getvalues=False):
     """
-    Uses Bresenham's line algorithm to enumerate the pixels along
-    a line.
-    (see http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm)
+    Returns an array of all pixel coordinates which the line defined by `x1, y1` and
+    `x2, y2` crosses. Uses Bresenham's line algorithm to enumerate the pixels along
+    a line. This was adapted from ginga
+
+    Parameters
+    ----------
+    x1, y1, x2, y2 : `<type 'int'>`
+
     If `getvalues`==False then it will return tuples of (x, y) coordinates
-    instead of pixel values. This was taken from the package Ginga.
+    instead of pixel values.
+
+    References
+    ----------
+    | http://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm
+    | https://ginga.readthedocs.org/en/latest/
+
     """
     dx = abs(x2 - x1)
     dy = abs(y2 - y1)
