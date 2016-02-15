@@ -76,6 +76,7 @@ def test_split_series_using_lytaf():
     assert split_no_lytaf[0]["subtimes"] == dummy_time
     assert split_no_lytaf[0]["subdata"].all() == dummy_data.all()
 
+@pytest.mark.online
 def test_remove_lytaf_events_from_lightcurve():
     """Test if artefacts are correctly removed from a LYRAlightCurve."""
     # Create sample LYRALightCurve
