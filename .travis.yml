@@ -85,9 +85,6 @@ matrix:
            env: JOB="Py2Figures" PYTHON_VERSION=2.7 SETUP_CMD='test --figure'
                 CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
                 NUMPY_VERSION=$FIGURES_NUMPY MATPLOTLIB_VERSION=$FIGURES_MPL
-         - os: linux
-           env: JOB="Py3" PYTHON_VERSION=3.4 MAIN_CMD='continuous-integration/python3.sh'
-                SETUP_CMD='' CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES
 
     # allow_failures has to repeat the environment from the matrix above to mark it as such
     allow_failures:
