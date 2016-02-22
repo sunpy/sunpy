@@ -1,5 +1,14 @@
+0.6.3
+------
+
+
 0.6.2
 -----
+ * Changed start of GOES 2 operational time range back to 1980-01-04 so data from 1980 can be read into GOESLightCurve object
+ * Fix bug with numpy 1.10
+ * update astropy_helpers
+ * Added new sample data
+
 
 0.6.1
 -----

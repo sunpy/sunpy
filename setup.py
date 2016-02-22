@@ -26,7 +26,7 @@ if on_rtd:
     os.environ['SUNPY_CONFIGDIR'] = '/home/docs/'
 
 from astropy_helpers.setup_helpers import (
-    register_commands, adjust_compiler, get_debug_option, get_package_info)
+    register_commands, get_debug_option, get_package_info)
 from astropy_helpers.git_helpers import get_git_devstr
 from astropy_helpers.version_helpers import generate_version_py
 
@@ -50,7 +50,7 @@ LONG_DESCRIPTION = "SunPy is a Python library for solar physics data analysis."
 builtins._ASTROPY_PACKAGE_NAME_ = PACKAGENAME
 
 # VERSION should be PEP386 compatible (http://www.python.org/dev/peps/pep-0386)
-VERSION = '0.6.1'
+VERSION = '0.6.2'
 
 # Indicates if this version is a release version
 RELEASE = 'dev' not in VERSION
@@ -68,13 +68,10 @@ try:
     # Overwrite the Astropy Testing framework
     cmdclassd['test'] = type('SunPyTest', (SunPyTest,),
                             {'package_name': 'sunpy'})
+
 except Exception:
     # Get everything, if it dosen't work, we still want SunPy to install.
     pass
-
-# Adjust the compiler in case the default on this platform is to use a
-# broken one.
-adjust_compiler(PACKAGENAME)
 
 # Freeze build information in version.py
 generate_version_py(PACKAGENAME, VERSION, RELEASE,
