@@ -2,9 +2,9 @@
 # and running on OS/X dosen't work with Python.
 language: c
 
-os:
-    - linux
-    - osx
+# os:
+#      - linux
+#     - osx
 
 # Setting sudo to false opts in to Travis-CI container-based builds.
 sudo: false
@@ -32,75 +32,86 @@ addons:
 env:
     global:
         # Modify these to represent the newest versions
-        - LATEST_NUMPY=1.10.2
-        - LATEST_PANDAS=0.17.1
-        - MATPLOTLIB_VERSION=">=1.5.1"
+        - PREVIOUS_PANDAS=0.15.2
+        - PREVIOUS_NUMPY=1.9.3
+        - FIGURES_NUMPY=1.10.0
+        - FIGURES_MPL=1.5.1
         # Fixed global vars
         - PYTHON_VERSION=2.7
         - TEST_MODE='offline'
-        - NUMPY_VERSION="=$LATEST_NUMPY"
-        - PANDAS_VERSION="=$LATEST_PANDAS"
+        - NUMPY_VERSION='stable'
+        - MAIN_CMD='python setup.py'
+        - CONDA_CHANNELS='astropy astropy-ci-extras sunpy jevans'
+        - CONDA_ALL_DEPENDENCIES='Cython jinja2 scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
+        - CONDA_ALL_DEPENDENCIES2="suds-jurko glymur openjpeg $CONDA_ALL_DEPENDENCIES"
 
-    matrix:
-        - PYTHON_VERSION=2.7
+
+#    matrix:
+#        - PYTHON_VERSION=2.7 # egg info
 #        - PYTHON_VERSION=3.3
 #        - PYTHON_VERSION=3.4
 #        - PYTHON_VERSION=3.5
 
 matrix:
     include:
-         - os: linux
-           env: PANDAS_VERSION="=0.16.2"
-         - os: linux
-           env: TEST_MODE='figure' MATPLOTLIB_VERSION="=1.5.1"
-         - os: linux
-           env: TEST_MODE='astropy-dev'
-         - os: linux
-           env: TEST_MODE='sphinx'
-         - os: linux
-           env: TEST_MODE='online'
-         - os: linux
-           env: TEST_MODE='doctest'
-         - os: linux
-           env: PYTHON_VERSION=3.4 TEST_MODE='python3'
+         # # Try MacOS X
+         - os: osx
+           env: JOB="Py2" PYTHON_VERSION=2.7 SETUP_CMD='test'
+                CONDA_DEPENDENCIES="suds-jurko glymur $CONDA_ALL_DEPENDENCIES" #Without openjpeg
 
-# If the online build fails, we don't want it to report the whole build broken.
+         # Try on Linux
+         - os: linux
+           env: JOB="Py2" PYTHON_VERSION=2.7 SETUP_CMD='test'
+                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+         - os: linux
+           env: JOB="Py2PandasPrev" PYTHON_VERSION=2.7 SETUP_CMD='test'
+                PANDAS_VERSION=$PREVIOUS_PANDAS CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+         - os: linux
+           env: JOB="Py2AstropyDev" PYTHON_VERSION=2.7 SETUP_CMD='test'
+                ASTROPY_VERSION='development' CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+         - os: linux
+           env: JOB="Py2Sphinx" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -w'
+                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+         - os: linux
+           env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage'
+                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov'
+         - os: linux
+           env: JOB="Py2Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
+                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+         - os: linux
+           env: JOB="Py2NumpyPrev" PYTHON_VERSION=2.7 SETUP_CMD='test'
+                NUMPY_VERSION=$PREVIOUS_NUMPY CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+         - os: linux
+           env: JOB="Py2Figures" PYTHON_VERSION=2.7 SETUP_CMD='test --figure'
+                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+                NUMPY_VERSION=$FIGURES_NUMPY MATPLOTLIB_VERSION=$FIGURES_MPL
+         - os: linux
+           env: JOB="Py3" PYTHON_VERSION=3.4 MAIN_CMD='continuous-integration/python3.sh'
+                SETUP_CMD='' CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES
+
+    # allow_failures has to repeat the environment from the matrix above to mark it as such
     allow_failures:
-        - env: TEST_MODE='online'
-        - env: TEST_MODE='doctest'
-
-# Install miniconda
-before_install:
-    - source continuous-integration/travis/install_$TRAVIS_OS_NAME.sh
+      - env: JOB="Py2Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
+             CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+      - env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage'
+             CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov'
 
 install:
-    # Add a conda env and set up extra binstar channels
-    - conda create --yes -n test python=$PYTHON_VERSION
-    - conda config --add channels sunpy --add channels astropy --add channels astropy-ci-extras --add channels https://conda.binstar.org/sunpy/channel/citesting
-    - source activate test
-    # Install default dependencies
-    - conda install --yes pip
-    - conda install -q --yes numpy$NUMPY_VERSION pandas$PANDAS_VERSION scipy matplotlib$MATPLOTLIB_VERSION requests beautiful-soup sqlalchemy scikit-image pytest jinja2 cython wcsaxes
-    - pip install pytest-cov coverage coveralls
-    # Install sunpy conda packages
-    - conda install -q --yes numpy=$NUMPY_VERSION suds-jurko glymur
-    # Install the correct version of astropy
-    - if [[ $TEST_MODE != 'astropy-dev' ]]; then conda install -q --yes astropy>=0.4.0 numpy$NUMPY_VERSION; fi
-    - if [[ $TEST_MODE == 'astropy-dev' ]]; then pip install git+git://github.com/astropy/astropy.git; fi
-    # Install sphinx if needed
-    - if [[ $TEST_MODE == 'sphinx' || $TEST_MODE == 'doctest' ]]; then conda install -q --yes sphinx numpy$NUMPY_VERSION; fi
-    - if [[ $TEST_MODE == 'sphinx' || $TEST_MODE == 'doctest' ]]; then python -c "import sunpy.data; sunpy.data.download_sample_data()"; fi
+    - echo $CONDA_DEPENDENCIES
+    - git clone git://github.com/astropy/ci-helpers.git
+    - source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh
+    - source continuous-integration/travis/openjpeg.sh # so glymur knows where to look
+
+    # Download the sample data for the build of the documentation.
+    - if [[ $SETUP_CMD == *sphinx* ]]; then python -c "import sunpy.data; sunpy.data.download_sample_data()"; fi
+    - if [[ $SETUP_CMD == *figure* ]]; then wget http://raw.githubusercontent.com/dpshelio/sunpy-figure-tests/np1104/conda_env; conda create --name testFigure --file conda_env ; source activate testFigure; fi
 
 script:
-    - if [[ $TEST_MODE == 'offline' || $TEST_MODE == 'astropy-dev' ]]; then python setup.py test; fi
-    - if [[ $TEST_MODE == 'figure' ]]; then python setup.py test --figure; fi
-    - if [[ $TEST_MODE == 'sphinx' ]]; then python setup.py build_sphinx -w; fi
-    - if [[ $TEST_MODE == 'online' ]]; then python setup.py test --online --coverage --cov-report=html; fi
-    #- if [[ $TEST_MODE == 'skip' ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
-    - if [[ $TEST_MODE == 'doctest' ]]; then python setup.py build_sphinx -b doctest; fi
-    - if [[ $TEST_MODE == 'python3' ]]; then continuous-integration/python3.sh; fi
+    - $MAIN_CMD $SETUP_CMD
 
-
+# after_success:
+#     - if [[ $SETUP_CMD == *coverage* ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
+      
 # Notify the IRC channel of build status
 notifications:
   irc: "chat.freenode.net#SunPy"
