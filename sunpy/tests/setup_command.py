@@ -8,6 +8,8 @@ This file is designed to be imported and ran only via setup.py, hence it's
 dependency on astropy_helpers which will be available in that context.
 """
 
+import os
+
 from astropy_helpers.test_helpers import AstropyTest
 from astropy_helpers.compat import _fix_user_options
 
@@ -65,7 +67,7 @@ class SunPyTest(AstropyTest):
         self.figure = False
         self.coverage = False
         self.cov_report = 'term' if self.coverage else None
-        self.docs_path = None
+        self.docs_path = os.path.abspath('doc')
         self.parallel = 0
         self.temp_root = None
 
