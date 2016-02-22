@@ -1,16 +1,13 @@
 [run]
-source = {packagename}
+source = sunpy
 omit =
-   {packagename}/_astropy_init*
-   {packagename}/conftest*
-   {packagename}/cython_version*
-   {packagename}/setup_package*
-   {packagename}/*/setup_package*
-   {packagename}/*/*/setup_package*
-   {packagename}/tests/*
-   {packagename}/*/tests/*
-   {packagename}/*/*/tests/*
-   {packagename}/version*
+   sunpy/_astropy_init*
+   sunpy/conftest*
+   sunpy/cython_version*
+   sunpy/*setup*
+   sunpy/*tests/*
+   sunpy/version*
+   sunpy/__init__*
 
 [report]
 exclude_lines =
@@ -29,3 +26,4 @@ exclude_lines =
 
    # Ignore branches that don't pertain to this version of Python
    pragma: py{ignore_python_version}
+   six.PY{ignore_python_version}
