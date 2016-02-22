@@ -51,7 +51,7 @@ dependencies:
 - sip
 - six
 - sqlalchemy
-- sqlit
+- sqlite
 - suds-jurko
 - tk
 - wcsaxes
