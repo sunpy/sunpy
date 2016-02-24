@@ -15,6 +15,7 @@ def slit(mcube_in, range_a, range_b):
     mcube_in : `sunpy.map.MapCube`
         A mapcube of the images you want to perform the slit analysis on.
         Usually with x and y as space, and z as time.
+        Within the mapcube x and y should be uniformly equal
     range_a : `astropy.units.Quantity`
         A list of two `astropy.unit.Quantity` objects representing x1 and x2,
         start and end of slit in x.
@@ -34,10 +35,9 @@ def slit(mcube_in, range_a, range_b):
     # check the attributes of the coordinates
     if ((isinstance(range_a and range_b, u.Quantity) or
         (hasattr(range_a and range_b, 'unit')))):
-        print "first if"
         if (range_a.unit.is_equivalent(mcube_in[0].units.x) and
             range_b.unit.is_equivalent(mcube_in[0].units.y)):
-            print "second if"
+            
             # convert the world to pixel
             init_map = mcube_in[0]
             c_x1, c_y1 = init_map.data_to_pixel(range_a[0], range_b[0])
@@ -46,7 +46,6 @@ def slit(mcube_in, range_a, range_b):
         elif range_a.unit.is_equivalent(u.pixel) and range_b.unit.is_equivalent(u.pixel):
             c_x1, c_y1 = range_a[0], range_b[0]
             c_x2, c_y2 = range_a[1], range_b[1]
-            print "thrid if"
         else:
             raise u.UnitsError("xy1 and xy2 must be "
                                "in units convertable to {} or {}".format(mcube_in[0].units['x'],
@@ -64,7 +63,14 @@ def slit(mcube_in, range_a, range_b):
     # plus one, minus one, to get an average
     slit_p1 = slit + [-1,+1]
     slit_m1 = slit + [+1,-1]
-    slit_I = []
+    
+
+    
+    
+    
+    
+    
+    
     for d_arr in mcube_in:
         data = d_arr.data
         # get the initial slit pixels
@@ -83,7 +89,7 @@ def slit(mcube_in, range_a, range_b):
 
 
 
-def get_pixels_on_line(x1, y1, x2, y2, getvalues=False):
+def get_pixels_on_line(x1, y1, x2, y2:
     """
     Returns an array of all pixel coordinates which the line defined by `x1, y1` and
     `x2, y2` crosses. Uses Bresenham's line algorithm to enumerate the pixels along
