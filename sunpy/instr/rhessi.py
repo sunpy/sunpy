@@ -224,7 +224,6 @@ def get_obssumm_file(time_range):
     # TODO need to check which is the closest servers
     url_root = data_servers[0] + data_location
 
-
     url = url_root + get_obssum_filename(time_range)
 
     print('Downloading file: ' + url)
@@ -266,7 +265,8 @@ def parse_obssumm_file(filename):
               '50 - 100 keV', '100 - 300 keV', '300 - 800 keV', '800 - 7000 keV',
               '7000 - 20000 keV']
 
-    # the data stored in the fits file are "compressed" countrates stored as one byte
+    # The data stored in the FITS file are "compressed" countrates stored as
+    # one byte
     compressed_countrate = np.array(afits[6].data.field('countrate'))
 
     countrate = uncompress_countrate(compressed_countrate)
@@ -318,7 +318,7 @@ def hsi_linecolors():
     ----------
     hsi_linecolors.pro `<http://hesperia.gsfc.nasa.gov/ssw/hessi/idl/gen/hsi_linecolors.pro`_
     """
-    return ('black', 'magenta', 'lime', 'cyan', 'y', 'red', 'blue', 'orange', 'olive')
+    return 'black', 'magenta', 'lime', 'cyan', 'y', 'red', 'blue', 'orange', 'olive'
 
 
 def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
@@ -351,8 +351,8 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
     """
     afits = fits.open(calibrated_event_list)
 
-    #info_parameters = fits[2]
-    #detector_efficiency = info_parameters.data.field('cbe_det_eff$$REL')
+    # info_parameters = fits[2]
+    # detector_efficiency = info_parameters.data.field('cbe_det_eff$$REL')
 
     afits = fits.open(calibrated_event_list)
 
@@ -443,7 +443,7 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
     for detector in detector_list:
         if detector > 0:
             image = image + _backproject(calibrated_event_list, detector=detector, pixel_size=pixel_size.value
-										 , image_dim=image_dim.value)
+                                         , image_dim=image_dim.value)
 
     dict_header = {
         "DATE-OBS": time_range.center().strftime("%Y-%m-%d %H:%M:%S"),
