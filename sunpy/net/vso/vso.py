@@ -724,11 +724,8 @@ class VSOClient(object):
         raise NoData
 
     @classmethod
-    def _can_handle_query(cls,*query):
-        chkattr = ['Wavelength', 'Time', 'Extent', 'Field', 'Provider', 'Source',
-        'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',
-        'Detector', 'Filter', 'Sample', 'Quicklook', 'PScale']
-        return all([x.__class__.__name__ in chkattr for x in query])
+    def _can_handle_query(cls, *query):
+        return all([x.__class__.__name__ in attrs.__all__ for x in query])
 
 
 
