@@ -85,11 +85,11 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         --------
         Query for LYRALightCurve data from timerange('2012/3/4','2012/3/6')
 
-        >>> unifresp = Fido.query(Time('2012/3/4','2012/3/6'),Instrument('lyra'))
+        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/6'),Instrument('lyra'))
 
-        >>> unifresp = Fido.query(Time('2012/3/4','2012/3/6'),Instrument('norh') | Instrument('rhessi'))
+        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/6'),Instrument('norh') | Instrument('rhessi'))
 
-        >>> unifresp = Fido.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'),Wave(304, 304),Sample(60*10))
+        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/6'),Instrument('AIA'),Wave(304, 304),Sample(60*10))
 
         Parameters
         ----------
@@ -131,7 +131,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         Example
         --------
-        >>> unifresp = Fido.query(Time('2012/3/4','2012/3/6'),Instrument('AIA'))
+        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/6'),Instrument('AIA'))
         >>> downresp = Fido.get(unifresp)
         >>> file_paths = downresp.wait()
         """
