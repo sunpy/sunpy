@@ -1,6 +1,6 @@
-#Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-#This module was developed under funding provided by
-#Google Summer of Code 2014
+# Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
+# This module was developed under funding provided by
+# Google Summer of Code 2014
 
 import datetime
 import urlparse
@@ -8,6 +8,7 @@ import urlparse
 from ..client import GenericClient
 
 __all__ = ['LYRAClient']
+
 
 class LYRAClient(GenericClient):
     def _get_url_for_timerange(self, timerange, **kwargs):
