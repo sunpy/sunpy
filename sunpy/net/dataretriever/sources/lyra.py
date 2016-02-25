@@ -1,6 +1,6 @@
-#Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-#This module was developed under funding provided by
-#Google Summer of Code 2014
+# Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
+# This module was developed under funding provided by
+# Google Summer of Code 2014
 
 import datetime
 import urlparse
@@ -8,6 +8,7 @@ import urlparse
 from ..client import GenericClient
 
 __all__ = ['LYRAClient']
+
 
 class LYRAClient(GenericClient):
     def _get_url_for_timerange(self, timerange, **kwargs):
@@ -48,7 +49,6 @@ class LYRAClient(GenericClient):
         filename = "lyra_{0:%Y%m%d-}000000_lev{1:d}_std.fits".format(date, kwargs.get('level',2))
         base_url = "http://proba2.oma.be/lyra/data/bsd/"
         url_path = urlparse.urljoin(date.strftime('%Y/%m/%d/'), filename)
-        print(url_path)
         return urlparse.urljoin(base_url, url_path)
 
     def _makeimap(self):
