@@ -143,7 +143,8 @@ class GenericClient(object):
 
     def _get_url_for_timerange(cls, timerange, **kwargs):
         """
-        Method which generates URL results from a timerange and the `map\_` dictionary.
+        Method which generates URL results from a timerange and the `map\_`
+        dictionary.
 
         Parameters
         ----------
@@ -198,7 +199,7 @@ class GenericClient(object):
 
         Parameters
         ----------
-        qres : QueryResponse object
+        qres : `~sunpy.net.dataretriever.QueryResponse`
             Results to download.
 
         Returns
