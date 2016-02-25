@@ -92,14 +92,12 @@ class EVEClient(GenericClient):
         """
         chk_var = 0
         for x in query:
-            if (x.__class__.__name__ == 'Instrument' and
-                x.value.lower() == 'eve'):
-
+            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'eve':
                 chk_var += 1
 
             elif x.__class__.__name__ == 'Level' and x.value == 0:
                 chk_var += 1
 
-        if(chk_var == 2):
+        if chk_var == 2:
             return True
         return False
