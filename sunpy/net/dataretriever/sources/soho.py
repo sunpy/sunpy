@@ -18,7 +18,7 @@ __all__ = ['ERNEClient']
 
 
 class ERNEClient(GenericClient):
-    def _get_url_for_timerange(cls, timerange, species='proton', **kwargs):
+    def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns list of URLS to SOHO ERNE data files corresponding to value of input timerange and species.
         URL Source : http://srl.utu.fi/erne_data/
@@ -47,7 +47,7 @@ class ERNEClient(GenericClient):
         >>> import sunpy.net.dataretriever.sources.soho as soho
         >>> LCClient = soho.ERNEClient()
 
-        >>> qr1 = LCClient.query(Time(TimeRange('2003-03-01','2003-04-04')), Instrument('soho/erne'),species = 'alpha')
+        >>> qr1 = LCClient.query(Time(TimeRange('2003-03-01','2003-04-04')), Instrument('erne'), Species('alpha'))
         >>> res = LCClient.get(qr1)
         >>> download_list = res.wait()
 
@@ -62,16 +62,16 @@ class ERNEClient(GenericClient):
 
         """
 
-        possible_species = ['proton', 'alpha']
-
         #Parameter Validations
         if timerange.start < datetime.datetime(1996, 02, 13):
             raise ValueError(
                 'Earliest date for which SEPT data is available is 1996-02-13')
 
-        if species not in possible_species:
-            raise ValueError('Possible species values: ' + ','.join(
-                possible_species))
+        if 'species' in kwargs:
+            species = kwargs['species']
+        else:
+             raise ValueError(
+                'No species defined: alpha or protons')
 
         to_continue = False
         filelists = []
@@ -136,10 +136,10 @@ class ERNEClient(GenericClient):
         """
         Helper Function:used to hold information about source.
         """
-        self.map_['source'] = 'university of turku'
-        self.map_['instrument'] = 'soho/erne'
+        self.map_['source'] = 'soho'
+        self.map_['instrument'] = 'erne'
         self.map_['phyobs'] = 'proton and alpha particle intensities'
-        self.map_['provider'] = 'space research laboratory'
+        self.map_['provider'] = 'university of turku'
 
     @classmethod
     def _can_handle_query(cls, *query, **kwargs):
@@ -154,9 +154,16 @@ class ERNEClient(GenericClient):
         answer as to whether client can service the query
 
         """
-        chkattr = ['Time', 'Instrument']
-        chklist = [x.__class__.__name__ in chkattr for x in query]
+        chk_var = 0
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value == 'soho/erne':
-                return all(chklist)
+            if (x.__class__.__name__ == 'Instrument' and
+                x.value.lower() == 'erne'):
+
+                chk_var += 1
+
+            elif x.__class__.__name__ == 'Species' and x.value in ['alpha', 'proton']:
+                chk_var += 1
+
+        if(chk_var == 2):
+            return True
         return False
