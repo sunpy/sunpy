@@ -22,6 +22,7 @@ class QueryResponseBlock(object):
     """
     Represents url, source along with other information
     """
+
     def __init__(self, map0, url):
         """
         Parameters
@@ -48,6 +49,7 @@ class QueryResponse(list):
     """
     Container of QueryResponseBlocks
     """
+
     def __init__(self, lst):
 
         super(QueryResponse, self).__init__(lst)
@@ -62,9 +64,9 @@ class QueryResponse(list):
         Returns the time-span for which records are available
         """
         return (datetime.date.strftime(
-                min(qrblock.time.start for qrblock in self), '%Y/%m/%d'),
+            min(qrblock.time.start for qrblock in self), '%Y/%m/%d'),
                 datetime.date.strftime(
-                max(qrblock.time.end for qrblock in self), '%Y/%m/%d'))
+                    max(qrblock.time.end for qrblock in self), '%Y/%m/%d'))
 
     def __repr__(self):
         return repr(self._build_table())
@@ -76,13 +78,13 @@ class QueryResponse(list):
         return self._build_table()._repr_html_()
 
     def _build_table(self):
-        columns = OrderedDict((('Start Time', []),
-                               ('End Time', []),
-                               ('Source', []),
-                               ('Instrument', [])))
-        for i,qrblock in enumerate(self):
-            columns['Start Time'].append((qrblock.time.start.date() + datetime.timedelta(days=i)).strftime(TIME_FORMAT))
-            columns['End Time'].append((qrblock.time.end.date() + datetime.timedelta(days=i)).strftime(TIME_FORMAT))
+        columns = OrderedDict((('Start Time', []), ('End Time', []), (
+            'Source', []), ('Instrument', [])))
+        for i, qrblock in enumerate(self):
+            columns['Start Time'].append((qrblock.time.start.date(
+            ) + datetime.timedelta(days=i)).strftime(TIME_FORMAT))
+            columns['End Time'].append((qrblock.time.end.date(
+            ) + datetime.timedelta(days=i)).strftime(TIME_FORMAT))
             columns['Source'].append(qrblock.source)
             columns['Instrument'].append(qrblock.instrument)
 
@@ -96,14 +98,37 @@ class GenericClient(object):
     sources, although should in theory be general enough to get data from any
     web service.
 
+    This class has two user facing methods
+    `~sunpy.net.dataretriever.client.GenericClient.query` and
+    `~sunpy.net.dataretriever.client.GenericClient.get` the former generates a
+    set of results for files available through the service the client is
+    querying and the latter downloads that data.
 
+    The `~sunpy.net.dataretriever.client.GenericClient.query` method takes a
+    set of `sunpy.net.attrs` objects and then converts these into a call to
+    `~sunpy.net.dataretriever.client.GenericClient._get_url_for_timerange`. It
+    does this through the `map\_` dictionary which represents the
+    `~sunpy.net.attrs` objects as a dictionary.
     """
 
     def __init__(self):
         self.map_ = {}
 
     def _makeargs(self, *args, **kwargs):
-        '''Map attributes in the query to internal dictionary'''
+        """
+        Construct the `map\_` internal representation of the query.
+
+        This `map\_` dictionary is passed through to the
+        `_get_url_for_timerange` method to get the URL results.
+
+        Parameters
+        ----------
+        \*args: `tuple`
+            The query attributes.
+
+        \*\*kwargs: `dict`
+            None.
+        """
         for elem in args:
             if issubclass(elem.__class__, Time):
                 self.map_['TimeRange'] = TimeRange(elem.start, elem.end)
@@ -116,41 +141,65 @@ class GenericClient(object):
                     self.map_[elem.__class__.__name__.lower()] = None
         self._makeimap()
 
-
     def _get_url_for_timerange(cls, timerange, **kwargs):
-        raise NotImplementedError
+        """
+        Method which generates URL results from a timerange and the `map\_` dictionary.
 
-    def _get_url_for_date(cls, date, **kwargs):
+        Parameters
+        ----------
+        timerange: `sunpy.time.TimeRange`
+             The timerange to extract the URLs for.
+
+        \*\*kwargs: `dict`
+             Any extra keywords to refine the search. Generated from the
+             attributes passed to
+             `~sunpy.net.dataretriever.client.GenericClient.query`.
+        """
         raise NotImplementedError
 
     def _makeimap(self):
         """
         Add client specific information to the _map dict.
+
+        Normally this is extra metadata which is not downloaded, but known
+        a priori.
         """
         raise NotImplementedError
 
     @classmethod
     def _can_handle_query(cls, *query):
+        """
+        Method the
+        `sunpy.net.dataretriever.downloader_factory.UnifiedDownloaderFactory`
+        class uses to dispatch queries to this Client.
+        """
         raise NotImplementedError
 
     def query(self, *args, **kwargs):
         """
-        Query the web service of the source for urls
-        pertaining to incoming arguements.
+        Query this client for a list of results.
+
+        Parameters
+        ----------
+        \*args: `tuple`
+            `sunpy.net.attrs` objects representing the query.
         """
         GenericClient._makeargs(self, *args, **kwargs)
 
         kwergs = copy.copy(self.map_)
         kwergs.update(kwargs)
-        urls = self._get_url_for_timerange(self.map_.get('TimeRange'),
-                                           **kwergs)
+        urls = self._get_url_for_timerange(
+            self.map_.get('TimeRange'), **kwergs)
         return QueryResponse.create(self.map_, urls)
 
     def get(self, qres, **kwargs):
         """
+        Download a set of results.
+
         Parameters
         ----------
         qres : QueryResponse object
+            Results to download.
 
         Returns
         -------
@@ -160,39 +209,19 @@ class GenericClient(object):
         for qrblock in qres:
             urls.append(qrblock.url)
 
-        res = Results(lambda x: None, 0, lambda map_:self.link(map_))
+        res = Results(lambda x: None, 0, lambda map_: self._link(map_))
 
         dobj = Downloader(max_conn=len(urls), max_total=len(urls))
-        for aurl, ncall in list(zip(urls, map(lambda x:res.require([x]), urls))):
-            dobj.download(aurl, kwargs.get('Path', None), ncall, kwargs.get('ErrorBack', None))
+        for aurl, ncall in list(zip(urls, map(lambda x: res.require([x]),
+                                              urls))):
+            dobj.download(aurl, kwargs.get('Path', None), ncall,
+                          kwargs.get('ErrorBack', None))
 
         return res
 
-    def link(self, map_):
+    def _link(self, map_):
         """Helper Function"""
         paths = []
         for k, v in map_.iteritems():
             paths.append(map_[k]['path'])
         return paths
-
-    def download_legacy(self, timerange, path=None, callback=None, errback=None):
-        """
-        Download required data using keyword arguments.
-
-        Parameters
-        ----------
-        timerange: Time-range over which to download data.
-        path: Defaults to None in which case path used is one defined in sunpyrc file.
-        callback: Function to be invoked at completion of download successfully.
-        errorback: Function to be called when error is thrown during download.
-
-        Examples
-        --------
-        >>> import sunpy.net.unifieddownloader.sources.eve as eve
-        >>> cl = eve.EVEClient()
-        >>> cl.download_legacy(Time('2012/2/2','2012/2/3'))
-        """
-        urls = self._get_url_for_timerange(timerange)
-        dobj = Downloader(max_conn=len(urls), max_total=len(urls))
-        for url in urls:
-            dobj.download(url, path, callback, errback)
