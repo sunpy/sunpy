@@ -83,8 +83,8 @@ class QueryResponse(list):
         for i, qrblock in enumerate(self):
             columns['Start Time'].append((qrblock.time.start.date(
             ) + datetime.timedelta(days=i)).strftime(TIME_FORMAT))
-            columns['End Time'].append((qrblock.time.end.date(
-            ) + datetime.timedelta(days=i)).strftime(TIME_FORMAT))
+            columns['End Time'].append((qrblock.time.start.date(
+            ) + datetime.timedelta(days=i+1)).strftime(TIME_FORMAT))
             columns['Source'].append(qrblock.source)
             columns['Instrument'].append(qrblock.instrument)
 
