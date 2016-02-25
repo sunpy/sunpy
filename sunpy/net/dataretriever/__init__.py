@@ -10,9 +10,8 @@ representing whether the client can handle modularised query.
 
 Examples
 --------
->>> from sunpy.net.unifieddownloader import UnifiedDownloader
->>> import sunpy.net.vso.attrs as attrs
->>> results = UnifiedDownloader.query(attrs.Time("2012/1/1", "2012/1/2"), attrs.Instrument('lyra'))
+>>> from sunpy.net import Fido, attrs as a
+>>> results = Fido.query(a.Time("2012/1/1", "2012/1/2"), a.Instrument('lyra'))
 
 query method returns UnifiedResponse object. This is a subclass of List.
 __str__() method has been overloaded to show all the files downloaded by multiple
@@ -30,8 +29,8 @@ Start time  End time    Source  Instrument  URL
 >>> print len(results)
 1 #Indicating only a single client was used to service the query.
 
->>> downresp = Downloader.get(results)
->>> downresp.wait()
+>>> downresp = Fido.get(results)
+>>> files = downresp.wait()
 
 get method returns DownloadResponse object.This is list of Results object (same ones as
 the VSO Results object). It has a wait method which returns a list of file paths after
@@ -48,8 +47,7 @@ at downloading data.
 from LightCurve factory should be used to get specific data.
 """
 
-from .client import QueryResponseBlock,QueryResponse,GenericClient
-from .downloader_factory import downloadresponse,UnifiedDownloaderFactory,Fido
+from .client import QueryResponseBlock, QueryResponse, GenericClient
+from .downloader_factory import downloadresponse, UnifiedDownloaderFactory, Fido
 
-from sunpy.net.dataretriever import sources
-import clients
+from . import clients
