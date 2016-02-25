@@ -9,7 +9,6 @@ __email__ = "ankitkmr.iitk@gmail.com"
 import urllib2
 import datetime
 
-from astropy import units as u
 from bs4 import BeautifulSoup
 from ..client import GenericClient
 

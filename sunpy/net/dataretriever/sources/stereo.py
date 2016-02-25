@@ -12,7 +12,6 @@ from astropy import units as u
 from ..client import GenericClient
 
 from sunpy.util.scraper import Scraper
-from sunpy.time import TimeRange
 
 __all__ = ['SEPTClient', 'HETClient', 'SITClient', 'PLASTICClient',
            'MAGClient', 'LETClient']
