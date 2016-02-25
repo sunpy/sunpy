@@ -8,12 +8,20 @@ from sunpy.util.datatype_factory_base import MultipleMatchError
 
 from sunpy.net.vso import VSOClient
 from .. import attr
-from .client import GenericClient
 
 __all__ = ['Fido']
 
 
 class UnifiedResponse(list):
+    """
+    The object used to store responses from the unified downloader.
+
+    Properties
+    ----------
+    file_num : int
+        The total number of files found as a result of the query.
+
+    """
     def __init__(self, lst):
 
         tmplst = []
@@ -37,20 +45,26 @@ class UnifiedResponse(list):
         return ret
 
 
-class downloadresponse(list):
+class DownloadResponse(list):
     """
-    List of Results object returned by clients servicing the query.
+    Object returned by clients servicing the query.
     """
 
     def __init__(self, lst):
-        super(downloadresponse, self).__init__(lst)
+        super(DownloadResponse, self).__init__(lst)
 
     def wait(self, progress=True):
         """
         Waits for all files to download completely and then return.
+
+        Parameters
+        ----------
+        progress : `bool`
+            if true, display a progress bar.
+
         Returns
         -------
-        list of file paths to which files have been downloaded.
+        List of file paths to which files have been downloaded.
         """
         filelist = []
         for resobj in self:
@@ -86,37 +100,50 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         --------
         Query for LYRALightCurve data for the timerange ('2012/3/4','2012/3/6')
 
-        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/6'),Instrument('lyra'))
+        >>> from sunpy.net.vso.attrs import Time, Instrument
+        >>> unifresp = Fido.search(Time('2012/3/4', '2012/3/6'), Instrument('lyra'))
 
-        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/6'),Instrument('norh') | Instrument('rhessi'))
+        Query for data from Nobeyama Radioheliograph and RHESSI
 
-        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/6'),Instrument('AIA'),Wave(304, 304),Sample(60*10))
+        >>> unifresp = Fido.search(Time('2012/3/4', '2012/3/6'), Instrument('norh') | Instrument('rhessi'))
+
+        Query for 304 Angstrom SDO AIA data with a cadence of 10 minutes
+
+        >>> import astropy.units as u
+        >>> from sunpy.net.vso.attrs import Time, Instrument, Wavelength, Sample
+        >>> unifresp = Fido.search(Time('2012/3/4', '2012/3/6'), Instrument('AIA'), Wavelength(304*u.angstrom, 304*u.angstrom), Sample(10*u.minute))
 
         Parameters
         ----------
-        query: Mutiple parameters, VSO-styled query. Attributes from JSOC, VSO both can be used.
+        query : `sunpy.net.vso.attrs`, `sunpy.net.jsoc.attrs`
+            A query consisting of multiple parameters which define the
+            requested data.  The query is specified using attributes from the
+            VSO and the JSOC.  The query can mix attributes from the VSO and
+            the JSOC.
 
         Returns
         -------
-        UnifiedResponse object: Container of responses returned by clients servicing query.
+        `sunpy.net.dataretriever.downloader_factory.UnifiedResponse` object
+            Container of responses returned by clients servicing query.
 
         Notes
         -----
-        and tranforms query into disjunctive normal form
+        The conjunction 'and' transforms query into disjunctive normal form
         ie. query is now of form A & B or ((A & B) | (C & D))
-        This helps in modularising query into parts and handling each of the parts individually.
+        This helps in modularising query into parts and handling each of the
+        parts individually.
         """
         query = attr.and_(*query)
         return UnifiedResponse(qwalker.create(query, self))
 
     def fetch(self, qr, wait=True, progress=True, **kwargs):
         """
-        Downloads the files pointed at by URLS contained within UnifiedResponse
-        Object.
+        Downloads the files pointed at by URLs contained within UnifiedResponse
+        object.
 
         Parameters
         ----------
-        qr : UnifiedResponse Object
+        qr : `sunpy.net.dataretriever.downloader_factory.UnifiedResponse`
             Container returned by query method.
 
         wait : `bool`
@@ -127,12 +154,12 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         Returns
         -------
-        DownloadResponse Object
-            List of Results object with an additional wait method.
+        `sunpy.net.dataretriever.downloader_factory.DownloadResponse`
 
         Example
         --------
-        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/6'),Instrument('AIA'))
+        >>> from sunpy.net.vso.attrs import Time, Instrument
+        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/6'), Instrument('AIA'))
         >>> downresp = Fido.get(unifresp)
         >>> file_paths = downresp.wait()
         """
@@ -140,7 +167,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         for block in qr:
             reslist.append(block.client.get(block, **kwargs))
 
-        results = downloadresponse(reslist)
+        results = DownloadResponse(reslist)
 
         if wait:
             return results.wait(progress=progress)
@@ -150,7 +177,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
     def __call__(self, *args, **kwargs):
         raise NotImplementedError
 
-    def _check_registered_widgets(self, *args, **kwargs):
+    def _check_registered_widgets(self, *args):
         """Factory helper function"""
         candidate_widget_types = list()
         for key in self.registry:
@@ -181,7 +208,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         return candidate_widget_types
 
-    def _get_registered_widget(self, *args, **kwargs):
+    def _get_registered_widget(self, *args):
         """Factory helper function"""
         candidate_widget_types = self._check_registered_widgets(*args)
         tmpclient = candidate_widget_types[0]()

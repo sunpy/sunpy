@@ -48,6 +48,6 @@ from LightCurve factory should be used to get specific data.
 """
 
 from .client import QueryResponseBlock, QueryResponse, GenericClient
-from .downloader_factory import downloadresponse, UnifiedDownloaderFactory, Fido
+from .downloader_factory import DownloadResponse, UnifiedDownloaderFactory, Fido
 
 from . import clients
