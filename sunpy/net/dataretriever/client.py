@@ -2,6 +2,7 @@
 #This module was developed under funding provided by
 #Google Summer of Code 2014
 
+import copy
 import datetime
 from collections import OrderedDict
 
@@ -89,6 +90,14 @@ class QueryResponse(list):
 
 
 class GenericClient(object):
+    """
+    Base class for simple web clients for the data retriever module. This class
+    is mainly designed for downloading data from FTP and HTTP type data
+    sources, although should in theory be general enough to get data from any
+    web service.
+
+
+    """
 
     def __init__(self):
         self.map_ = {}
@@ -102,9 +111,9 @@ class GenericClient(object):
                 self.map_['Time_end'] = elem.end
             else:
                 try:
-                    self.map_[elem.__class__.__name__] = elem.value
+                    self.map_[elem.__class__.__name__.lower()] = elem.value
                 except Exception:
-                    self.map_[elem.__class__.__name__] = None
+                    self.map_[elem.__class__.__name__.lower()] = None
         self._makeimap()
 
 
@@ -114,16 +123,27 @@ class GenericClient(object):
     def _get_url_for_date(cls, date, **kwargs):
         raise NotImplementedError
 
+    def _makeimap(self):
+        """
+        Add client specific information to the _map dict.
+        """
+        raise NotImplementedError
+
     @classmethod
     def _can_handle_query(cls, *query):
         raise NotImplementedError
 
     def query(self, *args, **kwargs):
         """
-        Query the web service of the source for urls pertaining to incoming arguements.
+        Query the web service of the source for urls
+        pertaining to incoming arguements.
         """
         GenericClient._makeargs(self, *args, **kwargs)
-        urls = self._get_url_for_timerange(self.map_.get('TimeRange'), **kwargs)
+
+        kwergs = copy.copy(self.map_)
+        kwergs.update(kwargs)
+        urls = self._get_url_for_timerange(self.map_.get('TimeRange'),
+                                           **kwergs)
         return QueryResponse.create(self.map_, urls)
 
     def get(self, qres, **kwargs):

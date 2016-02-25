@@ -1,7 +1,7 @@
 """SOHO Dataretriever sources subclass definitions"""
 
 __author__ = "Ankit Kumar"
-__email__  = "ankitkmr.iitk@gmail.com"
+__email__ = "ankitkmr.iitk@gmail.com"
 
 #This module was developed under funding provided by
 #Google Summer of Code 2015
@@ -15,12 +15,11 @@ from ..client import GenericClient
 
 from sunpy.time import TimeRange
 
-
 __all__ = ['ERNEClient']
 
+
 class ERNEClient(GenericClient):
-    
-    def _get_url_for_timerange(cls, timerange, species = 'proton'):
+    def _get_url_for_timerange(cls, timerange, species='proton', **kwargs):
         """
         Returns list of URLS to SOHO ERNE data files corresponding to value of input timerange and species.
         URL Source : http://srl.utu.fi/erne_data/
@@ -31,7 +30,7 @@ class ERNEClient(GenericClient):
         ----------
         timerange: sunpy.time.TimeRange
             time range for which data is to be downloaded.
-            Example value -  TimeRange('1996-02-13','2013-05-15')   
+            Example value -  TimeRange('1996-02-13','2013-05-15')
 
         species:  string
             Default value - proton
@@ -55,7 +54,7 @@ class ERNEClient(GenericClient):
 
         References
         ----------
-        They are available at the srl server, 
+        They are available at the srl server,
         | http://srl.utu.fi/erne_data/
 
         and have file names of type
@@ -67,49 +66,56 @@ class ERNEClient(GenericClient):
         possible_species = ['proton', 'alpha']
 
         #Parameter Validations
-        if timerange.start < datetime.datetime(1996,02,13):
-            raise ValueError('Earliest date for which SEPT data is available is 1996-02-13')
+        if timerange.start < datetime.datetime(1996, 02, 13):
+            raise ValueError(
+                'Earliest date for which SEPT data is available is 1996-02-13')
 
         if species not in possible_species:
-            raise ValueError('Possible species values: ' + ','.join(possible_species))
-
+            raise ValueError('Possible species values: ' + ','.join(
+                possible_species))
 
         to_continue = False
         filelists = []
 
-        opn = urllib2.urlopen('http://srl.utu.fi/erne_data/carrot/carrot{species}.html'.format(species =species[0]))
+        opn = urllib2.urlopen(
+            'http://srl.utu.fi/erne_data/carrot/carrot{species}.html'.format(
+                species=species[0]))
 
         #Getting the contents of all <tr> tags with "align" attribute having "center" value
         soup = BeautifulSoup(opn)
-        results = soup.find_all("tr",{"align":"center"})
+        results = soup.find_all("tr", {"align": "center"})
         results_string = ''
 
         for result in results:
             results_string = results_string + str(result)
 
-        # Reducing the list of contents of <tr> tags to separate elemments carrying start and end date 
+        # Reducing the list of contents of <tr> tags to separate elemments carrying start and end date
         # for a carrington rotation along with the carrington rotation numnber
         results_strings = results_string.split('<tr align="center">')[2:]
-        final_list = [(result[5:9] + ',' + result[19:30] + ',' + result[40:51]) for result in [result[:57] for result in results_strings]]
-
+        final_list = [(result[5:9] + ',' + result[19:30] + ',' + result[40:51])
+                      for result in [result[:57]
+                                     for result in results_strings]]
 
         # Matching start and end dates of argument timerange with start and end dates of carrington rotations given on site
-        # to deduce corresponding carrington numbers covered in the argument TimeRange. deduced carrington number are used 
-        # to form corresponding URL to data file 
+        # to deduce corresponding carrington numbers covered in the argument TimeRange. deduced carrington number are used
+        # to form corresponding URL to data file
         for i in final_list[:-2]:
-            carrot    = i[:4] 
-            rot_start = i[5:16].replace(' ','-')
+            carrot = i[:4]
+            rot_start = i[5:16].replace(' ', '-')
             if rot_start[-2] == '-':
                 rot_start = rot_start[:-2] + '0' + rot_start[-1]
 
-            rot_end   = i[17:].replace(' ','-')
+            rot_end = i[17:].replace(' ', '-')
             if rot_end[-2] == '-':
                 rot_end = rot_end[:-2] + '0' + rot_end[-1]
 
-            current_rotation_time = TimeRange(rot_start,rot_end)
+            current_rotation_time = TimeRange(rot_start, rot_end)
 
-            if (timerange.start in current_rotation_time) and (not to_continue):
-                url = 'http://srl.utu.fi/erne_data/carrot/{carrot}/cr{carrot}{species[0]}.txt'.format(carrot = carrot, species = species[0])
+            if (timerange.start in current_rotation_time) and (
+                    not to_continue):
+                url = 'http://srl.utu.fi/erne_data/carrot/{carrot}/cr{carrot}{species[0]}.txt'.format(
+                    carrot=carrot,
+                    species=species[0])
                 filelists.append(url)
                 if timerange.end in current_rotation_time:
                     break
@@ -117,12 +123,13 @@ class ERNEClient(GenericClient):
                     to_continue = True
 
             if to_continue:
-                url = 'http://srl.utu.fi/erne_data/carrot/{carrot}/cr{carrot}{species}.txt'.format(carrot = carrot, species = species[0])
+                url = 'http://srl.utu.fi/erne_data/carrot/{carrot}/cr{carrot}{species}.txt'.format(
+                    carrot=carrot,
+                    species=species[0])
                 filelists.append(url)
                 if timerange.end in current_rotation_time:
                     to_continue = False
                     break
-
 
         return filelists
 
@@ -130,10 +137,10 @@ class ERNEClient(GenericClient):
         """
         Helper Function:used to hold information about source.
         """
-        self.map_['source']     = 'university of turku'
+        self.map_['source'] = 'university of turku'
         self.map_['instrument'] = 'soho/erne'
-        self.map_['phyobs']     = 'proton and alpha particle intensities'
-        self.map_['provider']   = 'space research laboratory'
+        self.map_['phyobs'] = 'proton and alpha particle intensities'
+        self.map_['provider'] = 'space research laboratory'
 
     @classmethod
     def _can_handle_query(cls, *query, **kwargs):
@@ -146,10 +153,10 @@ class ERNEClient(GenericClient):
         -------
         boolean
         answer as to whether client can service the query
-        
+
         """
-        chkattr =  ['Time', 'Instrument']
-        chklist =  [x.__class__.__name__ in chkattr for x in query]
+        chkattr = ['Time', 'Instrument']
+        chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value == 'soho/erne':
                 return all(chklist)

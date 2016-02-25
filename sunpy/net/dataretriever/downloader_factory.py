@@ -147,7 +147,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             return results
 
     def __call__(self, *args, **kwargs):
-        pass
+        raise NotImplementedError
 
 
     def _check_registered_widgets(self, *args, **kwargs):
@@ -184,4 +184,4 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         return tmpclient.query(*args), tmpclient
 
 
-Fido = UnifiedDownloaderFactory(additional_validation_functions = ['_can_handle_query'])
+Fido = UnifiedDownloaderFactory(additional_validation_functions=['_can_handle_query'])
