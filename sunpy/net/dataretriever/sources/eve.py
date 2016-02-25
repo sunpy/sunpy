@@ -1,6 +1,6 @@
-#Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-#This module was developed under funding by
-#Google Summer of Code 2014
+# Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
+# This module was developed under funding by
+# Google Summer of Code 2014
 
 import urlparse
 
@@ -11,6 +11,25 @@ __all__ = ['EVEClient']
 
 
 class EVEClient(GenericClient):
+    """
+    This EVEClient is for the Level 0C data
+    from http://lasp.colorado.edu/home/eve/data/data-access/.
+
+    To use this client you must request Level 0 data.
+
+    Examples
+    --------
+
+    >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
+                              a.Instrument('EVE'), a.Level(0))
+    >>> results
+    [<Table length=2>
+        Start Time           End Time      Source Instrument
+          str19               str19         str3     str3
+    ------------------- ------------------- ------ ----------
+    2016-01-01 00:00:00 2016-01-02 00:00:00    SDO        eve
+    2016-01-02 00:00:00 2016-01-03 00:00:00    SDO        eve]
+    """
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
@@ -45,14 +64,15 @@ class EVEClient(GenericClient):
         URL : string
         """
         base_url = 'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
-        return urlparse.urljoin(base_url, date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt')
+        return urlparse.urljoin(base_url,
+                                date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt')
 
     def _makeimap(self):
         """
         Helper Function: used to hold information about source.
         """
         self.map_['source'] = 'SDO'
-        self.map_['provider'] ='LASP'
+        self.map_['provider'] = 'LASP'
         self.map_['instrument'] = 'eve'
         self.map_['phyobs'] = 'irradiance'
 
@@ -70,15 +90,16 @@ class EVEClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chkattr =  ['Time', 'Instrument','Level']
-        chklist =  [x.__class__.__name__ in chkattr for x in query]
         chk_var = 0
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value == 'eve':
-                chk_var +=1
+            if (x.__class__.__name__ == 'Instrument' and
+                x.value.lower() == 'eve'):
+
+                chk_var += 1
+
             elif x.__class__.__name__ == 'Level' and x.value == 0:
-                chk_var +=1
+                chk_var += 1
 
         if(chk_var == 2):
-            return all(chklist)
+            return True
         return False
