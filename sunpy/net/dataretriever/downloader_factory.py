@@ -6,6 +6,7 @@ from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 
+from sunpy.net.vso import VSOClient
 from .. import attr
 from .client import GenericClient
 
@@ -161,21 +162,21 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         if n_matches == 0:
             if self.default_widget_type is None:
                 raise NoMatchError(
-                    "Query {0} can not be handled in its current form".format(
-                        args))
+                    "No client understands this query, check your arguments to search.")
             else:
                 return [self.default_widget_type]
-        elif n_matches > 1:
-            # This is a hack, VSO services all Instruments.
-            # TODO: VSOClient._can_handle_query should know what values of
-            # Instrument VSO can handle.
-            for candidate_client in candidate_widget_types:
-                if issubclass(candidate_client, GenericClient):
-                    return [candidate_client]
+        elif n_matches == 2:
+            # If two clients have reported they understand this query, and one
+            # of them is the VSOClient, then we ignore VSOClient.
+            if VSOClient in candidate_widget_types:
+                candidate_widget_types.remove(VSOClient)
 
+        # Finally check that we only have one match.
+        if len(candidate_widget_types) > 1:
             candidate_names = [cls.__name__ for cls in candidate_widget_types]
             raise MultipleMatchError(
-                "Too many candidates clients can service your query {0}".format(
+                "Multiple clients understood this search,"
+                " please provide a more specific query. {}".format(
                     candidate_names))
 
         return candidate_widget_types
