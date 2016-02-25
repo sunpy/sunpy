@@ -26,7 +26,7 @@ class NOAAIndicesClient(GenericClient):
         Helper Function:used to hold information about source.
         """
         self.map_['source'] = 'sdic'
-        self.map_['instrument'] = 'noaa'
+        self.map_['instrument'] = 'noaa-indices'
         self.map_['phyobs'] = 'sunspot number'
         self.map_['provider'] = 'swpc'
 
@@ -70,7 +70,7 @@ class NOAAPredictClient(GenericClient):
         Helper Function:used to hold information about source.
         """
         self.map_['source'] = 'ises'
-        self.map_['instrument'] = 'noaa'
+        self.map_['instrument'] = 'noaa-predict'
         self.map_['phyobs'] = 'sunspot number'
         self.map_['provider'] = 'swpc'
 
