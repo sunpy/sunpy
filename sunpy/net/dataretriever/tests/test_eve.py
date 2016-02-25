@@ -8,6 +8,7 @@ import sunpy.net.dataretriever.sources.eve as eve
 
 LCClient = eve.EVEClient()
 
+@pytest.mark.online
 @pytest.mark.parametrize("timerange,url_start,url_end",
 [(TimeRange('2012/4/21','2012/4/21'),
 'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt',
@@ -25,6 +26,7 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
+@pytest.mark.online
 def test_get_url_for_date():
     url = LCClient._get_url_for_date(datetime.date(2013,2,13))
     assert url == 'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2013/20130213_EVE_L0CS_DIODES_1m.txt'
@@ -37,9 +39,10 @@ def test_can_handle_query():
     ans3 = eve.EVEClient._can_handle_query(Time('2012/8/9','2012/8/10'),Instrument('eve'),Source('sdo'))
     assert ans3 ==False
 
+@pytest.mark.online
 def test_query():
     qr1 = LCClient.query(Time('2012/8/9','2012/8/10'),Instrument('eve'))
-    assert isinstance(qr1,QueryResponse)
+    assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 2
     assert qr1.time_range()[0] == '2012/08/09'
     assert qr1.time_range()[1] == '2012/08/10'
