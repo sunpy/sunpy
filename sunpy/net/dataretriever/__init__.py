@@ -11,7 +11,7 @@ representing whether the client can handle modularised query.
 Examples
 --------
 >>> from sunpy.net import Fido, attrs as a
->>> results = Fido.query(a.Time("2012/1/1", "2012/1/2"), a.Instrument('lyra'))
+>>> results = Fido.search(a.Time("2012/1/1", "2012/1/2"), a.Instrument('lyra'))
 
 query method returns UnifiedResponse object. This is a subclass of List.
 __str__() method has been overloaded to show all the files downloaded by multiple
