@@ -155,8 +155,8 @@ def parse_obssumm_dbase_file(filename):
 def get_obssum_filename(time_range):
     """
     Download the RHESSI observing summary data from one of the RHESSI
-    servers, parses it, and returns the name of the obssumm file relevant for
-    the time range
+    servers, parses it, and returns the name of the obssumm files relevant for
+    the time range.
 
     Parameters
     ----------
@@ -165,13 +165,13 @@ def get_obssum_filename(time_range):
 
     Returns
     -------
-    out : string
-        Returns the filename of the observation summary file
+    out : list
+        Returns the filenames of the observation summary file
 
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> rhessi.get_obssumm_filename(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
+    >>> rhessi.get_obssum_filename(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
 
     .. note::
         This API is currently limited to providing data from whole days only.
@@ -185,9 +185,10 @@ def get_obssum_filename(time_range):
     result = parse_obssumm_dbase_file(f[0])
     _time_range = TimeRange(time_range)
 
-    index_number = _time_range.start.day - 1
+    index_number_start = _time_range.start.day - 1
+    index_number_end = _time_range.end.day - 1
 
-    return data_servers[0] + data_location + result.get('filename')[index_number] + 's'
+    return [data_servers[0] + data_location + filename + 's' for filename in result.get('filename')[index_number_start:index_number_end]]
 
 
 def get_obssumm_file(time_range):
@@ -222,6 +223,7 @@ def get_obssumm_file(time_range):
 
     # TODO need to check which is the closest servers
     url_root = data_servers[0] + data_location
+
 
     url = url_root + get_obssum_filename(time_range)
 
@@ -272,10 +274,11 @@ def parse_obssumm_file(filename):
 
     time_array = [reference_time_ut + timedelta(0,time_interval_sec * a) for a in np.arange(dim)]
 
-    #TODO generate the labels for the dict automatically from labels
+    # TODO generate the labels for the dict automatically from labels
     data = {'time': time_array, 'data': countrate, 'labels': labels}
 
     return header, data
+
 
 def uncompress_countrate(compressed_countrate):
     """Convert the compressed count rate inside of observing summary file from
@@ -299,6 +302,7 @@ def uncompress_countrate(compressed_countrate):
             sum = lkup[16 * (i + 1) - 1] + 2 ** i
     return lkup[compressed_countrate]
 
+
 def hsi_linecolors():
     """Define discrete colors to use for RHESSI plots
 
@@ -315,6 +319,7 @@ def hsi_linecolors():
     hsi_linecolors.pro `<http://hesperia.gsfc.nasa.gov/ssw/hessi/idl/gen/hsi_linecolors.pro`_
     """
     return ('black', 'magenta', 'lime', 'cyan', 'y', 'red', 'blue', 'orange', 'olive')
+
 
 def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
                  image_dim=(64, 64)):
@@ -374,6 +379,7 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
     bproj_image = np.inner(probability_of_transmission, count).reshape(image_dim)
 
     return bproj_image
+
 
 def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
                    image_dim=(64, 64) * u.pix):
