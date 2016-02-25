@@ -240,6 +240,7 @@ class HETClient(GenericClient):
         stereo_spacecraft = stereo_spacecraft.capitalize()
 
         url_pattern = base_url + '{stereo_spacecraft}/{duration_of_average}/{dict_spacecraft}%y%b.{dict_time}'
+        print(url_pattern)
 
         file_scraper = Scraper(
             url_pattern,
@@ -247,8 +248,9 @@ class HETClient(GenericClient):
             duration_of_average=dict_duration[duration_of_average],
             dict_spacecraft=dict_spacecraft[stereo_spacecraft],
             dict_time=dict_time[duration_of_average])
-
-        return file_scraper.filelist(timerange)
+        a = file_scraper.filelist(timerange)
+        print(a)
+        return a
 
     def _makeimap(self):
         """

@@ -15,7 +15,7 @@ API Reference
    io
    lightcurve
    map
-   net
+   net/index
    physics
    roi
    spectra

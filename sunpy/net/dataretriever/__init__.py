@@ -1,4 +1,8 @@
 """
+The primary interface to the `sunpy.net` module is the `~sunpy.net.Fido` class.
+`~sunpy.net.Fido` can make queries to the VSO, JSOC or a collection of other
+HTTP or FTP `~sunpy.net.dataretriever.sources`.
+
 This module is broken into two layers. At the bottom layer individual clients
 (LightCurve clients, VSO) operate and download files.
 At the top level the Factory instance decides which client/s can best serve

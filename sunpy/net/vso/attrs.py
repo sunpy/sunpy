@@ -5,7 +5,6 @@
 # the ESA Summer of Code (2011).
 #
 # pylint: disable=C0103,R0903
-
 """
 Attributes that can be used to construct VSO queries. Attributes are the
 fundamental building blocks of queries that, together with the two
