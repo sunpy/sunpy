@@ -13,7 +13,6 @@ __all__ = ['Fido']
 
 
 class UnifiedResponse(list):
-
     def __init__(self, lst):
 
         tmplst = []
@@ -21,7 +20,7 @@ class UnifiedResponse(list):
             block[0].client = block[1]
             tmplst.append(block[0])
         super(UnifiedResponse, self).__init__(tmplst)
-        self._numfile =0
+        self._numfile = 0
         for qblock in self:
             self._numfile += len(qblock)
 
@@ -36,12 +35,13 @@ class UnifiedResponse(list):
 
         return ret
 
+
 class downloadresponse(list):
     """
     List of Results object returned by clients servicing the query.
     """
-    def __init__(self,lst):
 
+    def __init__(self, lst):
         super(downloadresponse, self).__init__(lst)
 
     def wait(self, progress=True):
@@ -60,6 +60,7 @@ class downloadresponse(list):
 
 qwalker = attr.AttrWalker()
 
+
 @qwalker.add_creator(attr.AttrAnd)
 def _create(wlk, query, dobj):
     qresponseobj, qclient = dobj._get_registered_widget(*query.attrs)
@@ -76,14 +77,13 @@ def _create(wlk, query, dobj):
 
 
 class UnifiedDownloaderFactory(BasicRegistrationFactory):
-
     def search(self, *query):
         """
         Query for data in form of multiple parameters.
 
         Examples
         --------
-        Query for LYRALightCurve data from timerange('2012/3/4','2012/3/6')
+        Query for LYRALightCurve data for the timerange ('2012/3/4','2012/3/6')
 
         >>> unifresp = Fido.search(Time('2012/3/4','2012/3/6'),Instrument('lyra'))
 
@@ -135,7 +135,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> downresp = Fido.get(unifresp)
         >>> file_paths = downresp.wait()
         """
-        reslist =[]
+        reslist = []
         for block in qr:
             reslist.append(block.client.get(block, **kwargs))
 
@@ -149,7 +149,6 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
     def __call__(self, *args, **kwargs):
         raise NotImplementedError
 
-
     def _check_registered_widgets(self, *args, **kwargs):
         """Factory helper function"""
         candidate_widget_types = list()
@@ -161,9 +160,11 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         n_matches = len(candidate_widget_types)
         if n_matches == 0:
             if self.default_widget_type is None:
-                raise NoMatchError("Query {0} can not be handled in its current form".format(args))
+                raise NoMatchError(
+                    "Query {0} can not be handled in its current form".format(
+                        args))
             else:
-                return  [self.default_widget_type]
+                return [self.default_widget_type]
         elif n_matches > 1:
             # This is a hack, VSO services all Instruments.
             # TODO: VSOClient._can_handle_query should know what values of
@@ -173,7 +174,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
                     return [candidate_client]
 
             candidate_names = [cls.__name__ for cls in candidate_widget_types]
-            raise MultipleMatchError("Too many candidates clients can service your query {0}".format(candidate_names))
+            raise MultipleMatchError(
+                "Too many candidates clients can service your query {0}".format(
+                    candidate_names))
 
         return candidate_widget_types
 
@@ -184,4 +187,5 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         return tmpclient.query(*args), tmpclient
 
 
-Fido = UnifiedDownloaderFactory(additional_validation_functions=['_can_handle_query'])
+Fido = UnifiedDownloaderFactory(
+    additional_validation_functions=['_can_handle_query'])
