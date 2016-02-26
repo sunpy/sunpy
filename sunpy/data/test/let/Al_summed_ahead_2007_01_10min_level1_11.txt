@@ -1,0 +1,46 @@
+STEREO LET Level 1 Combined aluminum intensities for ahead spacecraft, for January 2007
+Verified Data - OK to distribute
+File Created: Wed Apr  3 23:53:11 PDT 2013
+Created by: Caltech Space Radiation Lab
+10Min-averaging Software Version: 04
+Level 1 software version: 11
+Time Resolution: 10 Minutes
+Note: Timestamps mark Beginning of averaging interval.
+These data are binned into wider energy ranges than the raw data.
+They should be useful for plotting trends or computing ratios.
+Column 1: Year
+Column 2: Day of year (fractional)
+Column 3: Hour of day
+Column 4: Minute of hour
+Column 5: Second of minute
+Column 6: LET Livetime (seconds)
+Column 7:   6.0 - 10.0 MeV/nuc aluminum intensity (1/(cm^2 s sr MeV/nuc))"
+Column 8:  10.0 - 15.0 MeV/nuc aluminum intensity (1/(cm^2 s sr MeV/nuc))"
+Column 9:  15.0 - 27.0 MeV/nuc aluminum intensity (1/(cm^2 s sr MeV/nuc))"
+Column 10 - 12: 3 aluminum counts, same energy ranges as above (counts/minute)"
+Column 13 - 15: 3 aluminum statistical uncertainties  (1/(cm^2 s sr MeV/nuc))
+Bad/missing data are filled as follows:
+     -9999.9 for floating-point data
+     -9999 for integer data
+10-minute Averages and Uncertainties are calculated as follows:
+     I = Sum(Ii)/M
+     U(I) = sqrt ( Sum( Ii^2/Ni ) ) / M
+     I is the hourly average intensity
+     U(I) is the uncertainty in the calculated average intensity
+     Ii is the intensity for minute i in one of the energy bins
+     Ii^2 = Ii * Ii  (in case the notation is confusing...)
+     Ni is the counts for minute i in one of the energy bins
+     M is the number of good 1-minute records in the averaging interval.
+BEGIN DATA
+2007 001.000000 00 00 00   591.30 -9.9999E+03  0.0000E+00  0.0000E+00   -9999       0       0 -9.9999E+03  0.0000E+00  0.0000E+00
+2007 001.006944 00 10 00   591.29 -9.9999E+03  0.0000E+00  0.0000E+00   -9999       0       0 -9.9999E+03  0.0000E+00  0.0000E+00
+2007 001.013889 00 20 00   591.31 -9.9999E+03  0.0000E+00  0.0000E+00   -9999       0       0 -9.9999E+03  0.0000E+00  0.0000E+00
+2007 001.020833 00 30 00   591.29 -9.9999E+03  0.0000E+00  0.0000E+00   -9999       0       0 -9.9999E+03  0.0000E+00  0.0000E+00
+2007 001.027778 00 40 00   591.30 -9.9999E+03  0.0000E+00  0.0000E+00   -9999       0       0 -9.9999E+03  0.0000E+00  0.0000E+00
+2007 001.034722 00 50 00   591.31 -9.9999E+03  0.0000E+00  0.0000E+00   -9999       0       0 -9.9999E+03  0.0000E+00  0.0000E+00
+2007 001.041667 01 00 00   591.31 -9.9999E+03  0.0000E+00  0.0000E+00   -9999       0       0 -9.9999E+03  0.0000E+00  0.0000E+00
+2007 001.048611 01 10 00   591.31 -9.9999E+03  0.0000E+00  0.0000E+00   -9999       0       0 -9.9999E+03  0.0000E+00  0.0000E+00
+2007 001.055556 01 20 00   591.30 -9.9999E+03  0.0000E+00  0.0000E+00   -9999       0       0 -9.9999E+03  0.0000E+00  0.0000E+00
+2007 001.062500 01 30 00   591.31 -9.9999E+03  0.0000E+00  0.0000E+00   -9999       0       0 -9.9999E+03  0.0000E+00  0.0000E+00
+2007 001.069444 01 40 00   591.32 -9.9999E+03  0.0000E+00  0.0000E+00   -9999       0       0 -9.9999E+03  0.0000E+00  0.0000E+00
+2007 001.076389 01 50 00   591.30 -9.9999E+03  0.0000E+00  0.0000E+00   -9999       0       0 -9.9999E+03  0.0000E+00  0.0000E+00
