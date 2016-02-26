@@ -62,7 +62,6 @@ def slit(mcube_in, range_a, range_b):
     # plus one, minus one, to get an average
     slit_p1 = slit + [-1,+1]
     slit_m1 = slit + [+1,-1]
-    slit_I = []
 
     init_arr = np.zeros([3, len(slit), len(mcube_in)])
 
