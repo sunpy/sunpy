@@ -1,12 +1,13 @@
-#Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-#This module was developed under funding provided by
-#Google Summer of Code 2014
+# Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
+# This module was developed under funding provided by
+# Google Summer of Code 2014
 
 from sunpy.instr import rhessi
 
 from ..client import GenericClient
 
 __all__ = ['RHESSIClient']
+
 
 class RHESSIClient(GenericClient):
 
@@ -19,9 +20,7 @@ class RHESSIClient(GenericClient):
         Date range should be specified using a TimeRange, or start
         and end dates at datetime instances or date strings.
         """
-        url = rhessi.get_obssum_filename(timerange)
-        return [url]
-
+        return rhessi.get_obssum_filename(timerange)
 
     def _makeimap(self):
         """
@@ -46,8 +45,8 @@ class RHESSIClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chkattr =  ['Time', 'Instrument']
-        chklist =  [x.__class__.__name__ in chkattr for x in query]
+        chkattr = ['Time', 'Instrument']
+        chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value == 'rhessi':
                 return all(chklist)
