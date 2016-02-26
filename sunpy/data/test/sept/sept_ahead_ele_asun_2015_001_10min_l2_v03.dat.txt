@@ -1,0 +1,67 @@
+#STEREO/IMPACT/SEPT Level 2 ASCII electron data for AHEAD spacecraft, sensor pointing: Anti-Sunward
+#File created: Fri Jan 30 23:28:54 2015 UTC
+#Created by: University of Kiel
+#Software version 03:
+# - Differential non-linearity correction: YES
+# - Efficiencies: 0.6220;1.0300;1.0000;1.0000;1.0000;1.0000;1.0000;1.0000;1.0000;1.0000;1.0000;1.0000;1.0000;1.0000;1.0000;
+# - STA sunward-looking electron telescope includes additional correction for low efficiency: YES
+# - Geometric factors (cm^2 sr): 0.089;0.095;0.101;0.101;0.106;0.108;0.113;0.109;0.110;0.114;0.112;0.113;0.095;0.074;0.054;
+# - Energy windows (MeV): 0.0100;0.0100;0.0100;0.0100;0.0200;0.0200;0.0200;0.0200;0.0300;0.0300;0.0300;0.0400;0.0400;0.0400;0.0500;
+#
+#Time resolution: 10 minutes
+#Time stamps mark center of averaging interval (rounded to the second)
+#Energy bins 02 and 03 should not be used for quantitative studies. 
+#Electron intensities are not corrected for ion contamination 
+#Bad/missing data are filled with -9999.9 (float) or -9999 (integer)
+#Intensities and uncertainties are given in 1/(cm^2 s sr MeV)
+#
+#Column 1 : Julian date (double-precision float). Julian date 0.0 is Jan. 1, 4713 B.C. at 12:00:00
+#Column 2 : Year (integer)
+#Column 3 : Fractional day of year (double-precision float)
+#Column 4 : Hour of day (integer)
+#Column 5 : Minute of hour (integer)
+#Column 6 : Second of minute (integer)
+#Column 7 : Bin 02 (  45.0-  55.0 keV) electron intensity (float)
+#Column 8 : Bin 03 (  55.0-  65.0 keV) electron intensity (float)
+#Column 9 : Bin 04 (  65.0-  75.0 keV) electron intensity (float)
+#Column 10: Bin 05 (  75.0-  85.0 keV) electron intensity (float)
+#Column 11: Bin 06 (  85.0- 105.0 keV) electron intensity (float)
+#Column 12: Bin 07 ( 105.0- 125.0 keV) electron intensity (float)
+#Column 13: Bin 08 ( 125.0- 145.0 keV) electron intensity (float)
+#Column 14: Bin 09 ( 145.0- 165.0 keV) electron intensity (float)
+#Column 15: Bin 10 ( 165.0- 195.0 keV) electron intensity (float)
+#Column 16: Bin 11 ( 195.0- 225.0 keV) electron intensity (float)
+#Column 17: Bin 12 ( 225.0- 255.0 keV) electron intensity (float)
+#Column 18: Bin 13 ( 255.0- 295.0 keV) electron intensity (float)
+#Column 19: Bin 14 ( 295.0- 335.0 keV) electron intensity (float)
+#Column 20: Bin 15 ( 335.0- 375.0 keV) electron intensity (float)
+#Column 21: Bin 16 ( 375.0- 425.0 keV) electron intensity (float)
+#Column 22: Bin 02 Uncertainty (float)
+#Column 23: Bin 03 Uncertainty (float)
+#Column 24: Bin 04 Uncertainty (float)
+#Column 25: Bin 05 Uncertainty (float)
+#Column 26: Bin 06 Uncertainty (float)
+#Column 27: Bin 07 Uncertainty (float)
+#Column 28: Bin 08 Uncertainty (float)
+#Column 29: Bin 09 Uncertainty (float)
+#Column 30: Bin 10 Uncertainty (float)
+#Column 31: Bin 11 Uncertainty (float)
+#Column 32: Bin 12 Uncertainty (float)
+#Column 33: Bin 13 Uncertainty (float)
+#Column 34: Bin 14 Uncertainty (float)
+#Column 35: Bin 15 Uncertainty (float)
+#Column 36: Bin 16 Uncertainty (float)
+#Column 37: Accumulation time in seconds (float) 
+#BEGIN DATA
+2457023.503472 2015   1.003472 00 05 00  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03
+2457024.142361 2015   1.642361 15 25 00  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03  -9.9999E+03
+2457024.149306 2015   1.649306 15 35 00   3.4259E+03   2.1985E+03   1.5915E+03   1.2746E+03   8.0626E+02   5.2913E+02   3.0710E+02   2.2447E+02   1.4647E+02   9.1075E+01   5.7116E+01   3.4714E+01   2.1646E+01   1.5519E+01   6.3728E+00   1.0191E+02   6.1402E+01   5.1421E+01   4.6018E+01   2.5262E+01   2.0275E+01   1.5100E+01   1.3145E+01   8.6301E+00   6.6848E+00   5.3408E+00   3.5899E+00   3.0917E+00   2.9661E+00   1.9901E+00   5.9594E+02
+2457024.156250 2015   1.656250 15 45 00   3.5145E+03   2.0947E+03   1.4826E+03   1.0838E+03   7.6824E+02   5.3879E+02   3.1005E+02   2.1609E+02   1.5022E+02   9.8049E+01   5.8217E+01   3.1586E+01   2.0147E+01   1.3352E+01   1.1012E+01   1.0321E+02   5.9935E+01   4.9631E+01   4.2434E+01   2.4659E+01   2.0459E+01   1.5173E+01   1.2897E+01   8.7399E+00   6.9360E+00   5.3921E+00   3.4244E+00   2.9828E+00   2.7513E+00   2.6160E+00   5.9594E+02
+2457024.163194 2015   1.663194 15 55 00   3.6973E+03   2.3210E+03   1.5374E+03   1.2137E+03   8.1533E+02   5.3468E+02   3.2182E+02   2.2770E+02   1.5980E+02   8.6469E+01   6.2339E+01   3.4808E+01   1.8715E+01   1.3730E+01   1.1068E+01   1.0586E+02   6.3090E+01   5.0540E+01   4.4906E+01   2.5404E+01   2.0381E+01   1.5458E+01   1.3239E+01   9.0142E+00   6.5135E+00   5.5797E+00   3.5948E+00   2.8748E+00   2.7899E+00   2.6227E+00   5.9594E+02
+2457024.170139 2015   1.670139 16 05 00   3.7567E+03   2.1911E+03   1.5273E+03   1.1975E+03   8.0167E+02   5.3792E+02   2.7926E+02   2.1996E+02   1.6010E+02   9.5815E+01   5.8927E+01   3.2376E+01   2.3106E+01   1.6690E+01   9.5237E+00   1.0671E+02   6.1299E+01   5.0374E+01   4.4604E+01   2.5190E+01   2.0442E+01   1.4400E+01   1.3012E+01   9.0228E+00   6.8565E+00   5.4249E+00   3.4669E+00   3.1943E+00   3.0759E+00   2.4329E+00   5.9594E+02
+2457024.177083 2015   1.677083 16 15 00   3.4536E+03   2.2307E+03   1.5437E+03   1.1538E+03   8.3268E+02   5.2731E+02   3.0131E+02   2.0211E+02   1.4522E+02   8.2208E+01   6.4080E+01   3.1866E+01   2.3486E+01   1.4951E+01   1.4261E+01   1.0785E+02   6.5196E+01   5.3383E+01   4.6152E+01   2.7061E+01   2.1335E+01   1.5766E+01   1.3148E+01   9.0580E+00   6.6946E+00   5.9631E+00   3.6256E+00   3.3946E+00   3.0688E+00   3.1382E+00   5.3634E+02
+2457024.184028 2015   1.684028 16 25 00   3.3674E+03   2.1315E+03   1.5209E+03   1.1580E+03   8.0641E+02   5.0816E+02   3.1899E+02   2.1931E+02   1.4871E+02   8.5215E+01   7.1094E+01   3.2280E+01   2.1363E+01   1.2940E+01   1.1563E+01   1.0103E+02   6.0460E+01   5.0268E+01   4.3862E+01   2.5265E+01   1.9869E+01   1.5390E+01   1.2993E+01   8.6959E+00   6.4661E+00   5.9586E+00   3.4618E+00   3.0714E+00   2.7085E+00   2.6808E+00   5.9594E+02
+2457024.190972 2015   1.690972 16 35 00   3.5863E+03   2.1214E+03   1.5129E+03   1.1764E+03   8.2382E+02   5.3765E+02   2.9754E+02   2.4060E+02   1.4809E+02   9.4074E+01   6.2656E+01   3.4713E+01   2.1617E+01   1.0361E+01   1.1892E+01   1.0426E+02   6.0315E+01   5.0135E+01   4.4210E+01   2.5536E+01   2.0437E+01   1.4863E+01   1.3609E+01   8.6777E+00   6.7939E+00   5.5939E+00   3.5899E+00   3.0897E+00   2.4235E+00   2.7186E+00   5.9594E+02
+2457024.197917 2015   1.697917 16 45 00   3.6751E+03   2.2501E+03   1.4779E+03   1.1398E+03   7.9779E+02   5.6096E+02   3.1357E+02   2.0577E+02   1.5819E+02   8.0609E+01   6.0397E+01   3.1617E+01   2.5095E+01   1.7378E+01   1.0795E+01   1.0555E+02   6.2118E+01   4.9552E+01   4.3517E+01   2.5129E+01   2.0876E+01   1.5259E+01   1.2585E+01   8.9687E+00   6.2890E+00   5.4921E+00   3.4261E+00   3.3289E+00   3.1388E+00   2.5902E+00   5.9594E+02
+2457024.204861 2015   1.704861 16 55 00   3.6827E+03   2.2473E+03   1.5639E+03   1.1900E+03   8.2055E+02   5.4449E+02   3.0457E+02   2.2899E+02   1.5335E+02   8.7098E+01   6.3546E+01   2.8616E+01   2.4841E+01   1.6347E+01   1.2507E+01   1.0566E+02   6.2080E+01   5.0973E+01   4.4464E+01   2.5485E+01   2.0567E+01   1.5038E+01   1.3276E+01   8.8304E+00   6.5372E+00   5.6335E+00   3.2594E+00   3.3120E+00   3.0442E+00   2.7880E+00   5.9594E+02
+2457024.274306 2015   1.774306 18 35 00   3.5614E+03   2.2824E+03   1.5992E+03   1.1987E+03   8.0603E+02   5.5675E+02   3.2060E+02   2.0319E+02   1.3051E+02   8.7520E+01   5.3697E+01   3.0670E+01   2.0506E+01   1.2355E+01   1.4547E+01   1.0390E+02   6.2563E+01   5.1546E+01   4.4626E+01   2.5258E+01   2.0797E+01   1.5429E+01   1.2506E+01   8.1465E+00   6.5530E+00   5.1785E+00   3.3744E+00   3.0091E+00   2.6465E+00   3.0068E+00   5.9594E+02

@@ -1,0 +1,37 @@
+STEREO SIT_Ahead Level 1 Fe intensity
+File created: Mon Aug 11 22:31:01 2014 at JHU/APL
+Mass, energy, tof file creation time:  4/18/2011 16:32:16
+Hex table file in use: sit_hex_tables_041811.dat
+Rate boxes file in use: sit_rate_box_ranges_041811_sav.dat
+Efficiency file in use: sit_efficiencies_2011_04_27.dat
+Intensities calculated using pulse-height-analysis data
+Averaging interval: 10 minutes
+Note:  timestamps mark beginning of averaging interval
+Column 1: Year
+Column 2: Day of year (fractional)
+Column 3: Hour of day
+Column 4: Minute of hour
+Column 5: Second of minute
+Column 6: number of minutes summed in rate
+Column 7:  0.080 - 0.113 MeV/n Fe intensity (1/(cm^2 s sr MeV/nuc))
+Column 8:  0.113 - 0.160 MeV/n Fe intensity (1/(cm^2 s sr MeV/nuc))
+Column 9:  0.160 - 0.226 MeV/n Fe intensity (1/(cm^2 s sr MeV/nuc))
+Column 10:  0.226 - 0.320 MeV/n Fe intensity (1/(cm^2 s sr MeV/nuc))
+Column 11:  0.320 - 0.452 MeV/n Fe intensity (1/(cm^2 s sr MeV/nuc))
+Column 12:  0.452 - 0.640 MeV/n Fe intensity (1/(cm^2 s sr MeV/nuc))
+Column 13:  0.640 - 0.905 MeV/n Fe intensity (1/(cm^2 s sr MeV/nuc))
+Column 14:  0.905 - 1.280 MeV/n Fe intensity (1/(cm^2 s sr MeV/nuc))
+Column 15:  1.280 - 1.810 MeV/n Fe intensity (1/(cm^2 s sr MeV/nuc))
+Column 16:  1.810 - 2.560 MeV/n Fe intensity (1/(cm^2 s sr MeV/nuc))
+Column 17:  2.560 - 3.620 MeV/n Fe intensity (1/(cm^2 s sr MeV/nuc))
+Columns 18 - 28:  Fe total counts for same energy ranges as above
+BEGIN DATA
+2007   1.000521  0  0 45   10   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00       0       0       0       0       0       0       0       0       0       0       0 
+2007   1.007465  0 10 45   10   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00       0       0       0       0       0       0       0       0       0       0       0 
+2007   1.014410  0 20 45   10   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00       0       0       0       0       0       0       0       0       0       0       0 
+2007   1.021354  0 30 45   10   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   1.5330e-02   0.0000e+00   0.0000e+00   0.0000e+00       0       0       0       0       0       0       0       1       0       0       0 
+2007   1.028299  0 40 45   10   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00       0       0       0       0       0       0       0       0       0       0       0 
+2007   1.035243  0 50 45   10   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   1.3414e-02   0.0000e+00   0.0000e+00   0.0000e+00       0       0       0       0       0       0       0       1       0       0       0 
+2007   1.042188  1  0 45   10   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00       0       0       0       0       0       0       0       0       0       0       0 
+2007   1.049132  1 10 45   10   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00       0       0       0       0       0       0       0       0       0       0       0 
+2007   1.056076  1 20 45   10   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00   0.0000e+00       0       0       0       0       0       0       0       0       0       0       0 
