@@ -7,6 +7,8 @@ from .sources.goes import XRSClient
 from .sources.norh import NoRHClient
 from .sources.rhessi import RHESSIClient
 from .sources.noaa import NOAAIndicesClient, NOAAPredictClient, SRSClient
+from .sources.stereo import SEPTClient, HETClient, SITClient, PLASTICClient, MAGClient, LETClient
+from .sources.soho import ERNEClient
 
 # Import and register other sources
 from sunpy.net.jsoc.jsoc import JSOCClient
