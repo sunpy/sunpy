@@ -5,7 +5,7 @@ import astropy.units as u
 import sunpy.net.vso.attrs as attrs
 from sunpy.net.dataretriever.downloader_factory import Fido
 
-
+# Test that the correct client is called.
 @pytest.mark.parametrize("query, client", [
     ((attrs.Time('2012/8/8', '2012/8/9'), attrs.Instrument('eve'),
       attrs.Level(0)), "EVEClient"),
@@ -28,6 +28,7 @@ def test_offline_client(query, client):
         assert block.client.__class__.__name__ == client
 
 
+# Test that the correct client is called (online, so only do one for speed).
 @pytest.mark.online
 @pytest.mark.parametrize("query, client", [
     ((attrs.Time('2012/8/8', '2012/8/9'), attrs.Instrument('eve')),
