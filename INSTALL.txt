@@ -9,4 +9,4 @@ Enter the top-level directory in the extracted files and run:
 
 For detailed installation instructions, see:
 
- https://sunpy.readthedocs.org/en/latest/guide/installation/index.html
+ http://docs.sunpy.org/en/latest/guide/installation/index.html
