@@ -4,6 +4,9 @@ import pytest
 from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time,Instrument
 from sunpy.net.dataretriever.client import QueryResponse
+from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 
 import sunpy.net.dataretriever.sources.swap as swap
 
@@ -14,7 +17,7 @@ LCClient = swap.SWAPClient()
                          [(TimeRange('2015/12/30 00:00:00','2015/12/30 23:59:59'),
                            'http://proba2.oma.be/swap/data/bsd/2015/12/30/swap_lv1_20151230_000044.fits',
                            'http://proba2.oma.be/swap/data/bsd/2015/12/30/swap_lv1_20151230_235935.fits')])
-def test_get_url_for_time_range(timerange,url_start,url_end):
+def test_get_url_for_time_range(timerange, url_start,url_end):
     urls = LCClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)
     assert urls[0] == url_start
@@ -39,9 +42,15 @@ def test_query():
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument",
                          [(Time(TimeRange('2015/12/30 00:00:00','2015/12/30 00:05:00')), Instrument('swap'))])                       
-def test_get(time,instrument):
+def test_get(time, instrument):
     qr1 = LCClient.query(time,instrument)
     res = LCClient.get(qr1)
     download_list = res.wait()
     assert len(download_list) == len(qr1)
 
+@pytest.mark.online
+def test_fido_query():
+    qr = Fido.search(a.Time('2015/12/28 00:00:00', '2015/12/28 00:03:00'), a.Instrument('swap'))
+    assert isinstance(qr, UnifiedResponse)
+    response = Fido.fetch(qr)
+    assert len(response) == qr._numfile
