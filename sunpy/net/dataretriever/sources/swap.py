@@ -36,17 +36,19 @@ class SWAPClient(GenericClient):
 
     Examples
     --------
-    >>> from sunpy.time.timerange import TimeRange
-    >>> from sunpy.net.vso.attrs import Time,Instrument,Source,Level
-    >>> from sunpy.net.dataretriever.client import QueryResponse
-    >>> from sunpy.net.dataretriever.sources import swap
+    >>> from sunpy.net import Fido
+    >>> from sunpy.net import attrs as a
 
-    >>> LCClient = swap.SWAPClient()
-
-    >>> qr = LCClient.query(Time('2015-12-30 00:00:00','2015-12-31 00:05:00'),Instrument('swap'))
-    >>> res = LCClient.get(qr)
-    >>> dl = res.wait()
-    >>> print(len(qr))
+    >>> results = Fido.search(a.Time('2015/12/28 00:00:00', '2015/12/28 00 03:00'), a.Instrument('swap'))
+    >>> print(results)
+    >>> [<Table length=2>
+         Start Time           End Time      Source Instrument
+           str19               str19         str6     str4   
+    ------------------- ------------------- ------ ----------
+    2015-12-28 00:00:00 2015-12-29 00:00:00 Proba2       swap
+    2015-12-29 00:00:00 2015-12-30 00:00:00 Proba2       swap]
+    
+    >>> response = Fido.fetch(results)
     """
     
     def _get_url_for_timerange(self, timerange, **kwargs):
