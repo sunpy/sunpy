@@ -39,7 +39,7 @@ class SWAPClient(GenericClient):
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
 
-    >>> results = Fido.search(a.Time('2015/12/28 00:00:00', '2015/12/28 00 03:00'), a.Instrument('swap'))
+    >>> results = Fido.search(a.Time('2015/12/28 00:00:00', '2015/12/28 00:03:00'), a.Instrument('swap'))
     >>> print(results)
     >>> [<Table length=2>
          Start Time           End Time      Source Instrument
