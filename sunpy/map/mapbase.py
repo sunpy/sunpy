@@ -195,7 +195,7 @@ class GenericMap(NDData):
                               'origin': 'lower'
                               }
 
-    def __getitem__(self, *args,**kwargs):
+    def __getitem__(self, *args):
         """ This should allow indexing by physical coordinate """
         raise NotImplementedError(
             "The ability to index Map by physical coordinate is not yet implemented.")

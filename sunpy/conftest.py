@@ -49,7 +49,7 @@ def pytest_runtest_setup(item):
             msg = 'skipping test {0} (reason: client seems to be offline)'
             pytest.skip(msg.format(item.name))
 
-def pytest_unconfigure(*args, **kwargs):
+def pytest_unconfigure(*args):
     tempdir = tempfile.mkdtemp(suffix="_figures")
     # the hash_library is indexed by the name of the test but we want to look
     # things up with the hash value
