@@ -5,7 +5,7 @@ import numpy as np
 import astropy.units as u
 
 
-def slit(mcube_in, range_a, range_b):
+def slit(mcube_in, range_a, range_b, width):
     """
     Returns an array with intensity along the slit on the y axis and time
     along x.
@@ -22,6 +22,8 @@ def slit(mcube_in, range_a, range_b):
     range_b : `astropy.units.Quantity`
         A list of two `astropy.unit.Quantity` objects representing x2 and y2,
         start and end of slit in y.
+    N_slits : `int`
+        Number of deviations from central slit, e.g. to use 5 slits `N = 2`
 
     Returns
     -------
@@ -63,12 +65,16 @@ def slit(mcube_in, range_a, range_b):
     slit_p1 = slit + [-1,+1]
     slit_m1 = slit + [+1,-1]
 
-    init_arr = np.zeros([3, len(slit), len(mcube_in)])
-
     all_data = mcube_in.as_array()
 
+    # extract the intesities from the data
     del_s_x = np.array([slit_m1.T[0], slit.T[0], slit_p1.T[0]])
     del_s_y = np.array([slit_m1.T[1], slit.T[1], slit_p1.T[1]])
+
+    # extract the intensities from the data using function
+    slit_count(slit, -1, +1, 2)
+
+
 
     im_arr = all_data[del_s_x, del_s_y]
     out_arr = im_arr.mean(axis=0)
@@ -76,11 +82,42 @@ def slit(mcube_in, range_a, range_b):
 
 
 
-
-
-
 # TODO build a function to give any number of iterations from the central slit
-#def slit_count(shift_x, shift_y):
+def slit_count(init_slit, shift_x, shift_y, N):
+    """
+    Returns a list of lists associated with increments away from the inital
+    slit. It transorms the slit array
+
+    Parameters
+    ----------
+    slit : `numpy.ndarray`
+        Inital array of slit values
+    shift_x : `int`
+        Possible values, `-1`, `0`, `+1`
+    shift_y : `int`
+        Possible values, `-1`, `0`, `+1`
+    N : `int`
+        Number of slits away from central slit.
+
+    Returns
+    -------
+    ind_array : `numpy.ndarray`
+        List of indicies representing the indicies of the interated slits
+    """
+
+    init_ind_p = [shift_x, shift_y]
+    init_ind_m = init_ind_p * (-1)
+    out_arr = np.zeros(2*N + 1, len(init_slit))
+
+    slits_inds_p = []
+    slits_inds_m = []
+    for i in range(1, N + 1):
+        slits_inds_p.append(i * init_ind_p)
+        slits_inds_m.append(i * init_ind_m)
+
+
+    out_arr = ([init_slit, slits_inds_m[:], slits_inds_p[:]])
+    return out_arr
 
 
 
