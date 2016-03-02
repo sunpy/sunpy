@@ -75,6 +75,10 @@ def slit(mcube_in, range_a, range_b):
     return out_arr, slit
 
 
+
+
+
+
 # TODO build a function to give any number of iterations from the central slit
 #def slit_count(shift_x, shift_y):
 
