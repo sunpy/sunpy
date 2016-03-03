@@ -5,7 +5,7 @@ import numpy as np
 import astropy.units as u
 
 
-def slit(mcube_in, range_a, range_b, width):
+def slit(mcube_in, range_a, range_b, shift_x, shift_y, N_slits=1):
     """
     Returns an array with intensity along the slit on the y axis and time
     along x.
@@ -22,8 +22,17 @@ def slit(mcube_in, range_a, range_b, width):
     range_b : `astropy.units.Quantity`
         A list of two `astropy.unit.Quantity` objects representing x2 and y2,
         start and end of slit in y.
+    shift_x : `int`
+        Possible values, `-1`, `0`, `+1`
+        The displacement from the origin on the slit in x. These extra slits
+        calcuate a mean along each row to make the positioning of the original
+        slit less sensetive. Both `x` and `y` cannot be `0`
+    shift_y : `int`
+        Possible values, `-1`, `0`, `+1`
+        The displacement from the origin in `y`.
     N_slits : `int`
-        Number of deviations from central slit, e.g. to use 5 slits `N = 2`
+        Number of deviations from central slit, e.g. to use 5 slits `N = 2`.
+        Default = 1
 
     Returns
     -------
@@ -72,17 +81,16 @@ def slit(mcube_in, range_a, range_b, width):
     del_s_y = np.array([slit_m1.T[1], slit.T[1], slit_p1.T[1]])
 
     # extract the intensities from the data using function
-    slit_count(slit, -1, +1, 2)
+    intensity_inds = slit_count(slit, shift_y, shift_x, N_slits)
 
-
+    del_s_x = np.array([intensity_inds[:,:,0]])
+    del_s_y = np.array([intensity_inds[:,:,1]])
 
     im_arr = all_data[del_s_x, del_s_y]
-    out_arr = im_arr.mean(axis=0)
-    return out_arr, slit
+    im_out = im_arr.mean(axis=1)
+    return im_out, slit
 
 
-
-# TODO build a function to give any number of iterations from the central slit
 def slit_count(init_slit, shift_x, shift_y, N):
     """
     Returns a list of lists associated with increments away from the inital
@@ -102,26 +110,21 @@ def slit_count(init_slit, shift_x, shift_y, N):
     Returns
     -------
     ind_array : `numpy.ndarray`
-        List of indicies representing the indicies of the interated slits
+        Array of indicies representing the indicies of the interated slits
     """
 
-    init_ind_p = [shift_x, shift_y]
-    init_ind_m = init_ind_p * (-1)
-    out_arr = np.zeros(2*N + 1, len(init_slit))
+    shift_ind = np.array([shift_y, shift_x])
+    shift_inds = [np.array([0, 0])]
+    for i in range(1, N+1):
+        shift_inds.append(shift_ind*i)
+        shift_inds.append(shift_ind*(-i))
 
-    slits_inds_p = []
-    slits_inds_m = []
-    for i in range(1, N + 1):
-        slits_inds_p.append(i * init_ind_p)
-        slits_inds_m.append(i * init_ind_m)
+    list_slits = []
+    for i in range(len(shift_inds)):
+        slit_int = init_slit + shift_inds[i]
+        list_slits.append(slit_int)
 
-
-    out_arr = ([init_slit, slits_inds_m[:], slits_inds_p[:]])
-    return out_arr
-
-
-
-
+    return np.array(list_slits)
 
 
 def get_pixels_on_line(x1, y1, x2, y2):
