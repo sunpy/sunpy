@@ -4,6 +4,9 @@ from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.goes as goes
+from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 
 LCClient = goes.GOESClient()
 
@@ -52,8 +55,14 @@ def test_get(time, instrument):
 
 @pytest.mark.online
 def test_new_logic():
-    qr = LCClient.query(Time('2012/10/4','2012/10/6'),Instrument('goes'))
+    qr = LCClient.query(Time('2012/10/4','2012/10/6'), Instrument('goes'))
     res = LCClient.get(qr)
     download_list = res.wait()
     assert len(download_list) == len(qr)
 
+@pytest.mark.online
+def test_fido_query():
+    qr = Fido.search(a.Time('2012/10/4','2012/10/6'), Instrument('goes'))
+    assert isinstance(qr, UnifiedResponse)
+    response = Fido.fetch(qr)
+    assert len(response) == qr._numfile
