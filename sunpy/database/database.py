@@ -12,7 +12,7 @@ from contextlib import contextmanager
 import os.path
 
 from sqlalchemy import create_engine, exists
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 import sunpy
 from sunpy.database import commands, tables, serialize
@@ -234,7 +234,7 @@ class Database(object):
             url = sunpy.config.get('database', 'url')
         self._engine = create_engine(url)
         self._session_cls = sessionmaker(bind=self._engine)
-        self.session = self._session_cls()
+        self.session = scoped_session(self._session_cls)
         self._command_manager = commands.CommandManager()
         self.default_waveunit = default_waveunit
         self._enable_history = True
