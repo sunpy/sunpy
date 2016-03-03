@@ -112,6 +112,25 @@ class TagAlreadyAssignedError(Exception):
         errmsg = 'the database entry {0!r} has already assigned the tag {1!r}'
         return errmsg.format(self.database_entry, self.tag_name)
 
+def split_database(source_database, destination_database, query_string):
+    """Queries the source database with the query string, and moves the
+    matched entries to the destination database. When this function is
+    called, the undo feature is disabled for both databases.
+    """
+    with disable_undo(source_database):
+        with disable_undo(destination_database):
+            filtered_entries = source_database.query(query_string)
+            filtered_entries_2 = source_database.query(query_string)
+            print "Add successfull !"
+            #print filtered_entries
+            source_database.commit()
+            for temp in filtered_entries:
+                source_database.remove(temp)
+            #source_database.remove_many(filtered_entries)
+            source_database.commit()
+            destination_database.add_many(filtered_entries_2)
+            destination_database.commit()
+    return source_database, destination_database
 
 @contextmanager
 def disable_undo(database):
