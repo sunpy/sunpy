@@ -5,7 +5,7 @@ import numpy as np
 import astropy.units as u
 
 
-def slit(mcube_in, range_a, range_b, shift_x, shift_y, N_slits=1):
+def slit(mcube_in, range_a, range_b, N_slits=0, shift_x=+1, shift_y=-1,):
     """
     Returns an array with intensity along the slit on the y axis and time
     along x.
@@ -26,13 +26,13 @@ def slit(mcube_in, range_a, range_b, shift_x, shift_y, N_slits=1):
         Possible values, `-1`, `0`, `+1`
         The displacement from the origin on the slit in x. These extra slits
         calcuate a mean along each row to make the positioning of the original
-        slit less sensetive. Both `x` and `y` cannot be `0`
+        slit less sensetive. Both `x` and `y` cannot be `0`. Default = `+1`
     shift_y : `int`
         Possible values, `-1`, `0`, `+1`
-        The displacement from the origin in `y`.
+        The displacement from the origin in `y`. Default = `-1`
     N_slits : `int`
         Number of deviations from central slit, e.g. to use 5 slits `N = 2`.
-        Default = 1
+        Default = 0
 
     Returns
     -------
@@ -65,6 +65,9 @@ def slit(mcube_in, range_a, range_b, shift_x, shift_y, N_slits=1):
                         "have an invalid unit attribute "
                         "You may want to pass in an astropy Quantity instead.")
 
+    if (shift_x and shift_y) == 0:
+        raise ValueError("`shift_x` and `shift_y` are both equal to zero, therefore"
+                         " not shift is possible")
 
 
     # call to the get pixel numbers routine
