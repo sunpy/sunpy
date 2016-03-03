@@ -70,15 +70,8 @@ def slit(mcube_in, range_a, range_b, shift_x, shift_y, N_slits=1):
     # call to the get pixel numbers routine
     slit = get_pixels_on_line(int(c_x1.value), int(c_y1.value),
                               int(c_x2.value), int(c_y2.value))
-    # plus one, minus one, to get an average
-    slit_p1 = slit + [-1,+1]
-    slit_m1 = slit + [+1,-1]
 
     all_data = mcube_in.as_array()
-
-    # extract the intesities from the data
-    del_s_x = np.array([slit_m1.T[0], slit.T[0], slit_p1.T[0]])
-    del_s_y = np.array([slit_m1.T[1], slit.T[1], slit_p1.T[1]])
 
     # extract the intensities from the data using function
     intensity_inds = slit_count(slit, shift_y, shift_x, N_slits)
