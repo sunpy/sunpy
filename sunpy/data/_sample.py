@@ -98,8 +98,9 @@ def download_sample_data(progress=True, overwrite=True):
                 # increment the number of files obtained to check later
                     number_of_files_fetched += 1
                     break
-                except socket.timeout as e:
-                    print(e)
+                except Exception,e:
+                    warnings.warn("Download failed with error {}. \n Retrying with different mirror.".format(e))
+                    continue
 
     if number_of_files_fetched < len(list(_files.keys())):
         raise URLError("Could not download all samples files. Problem with accessing sample data servers.")
