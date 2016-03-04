@@ -97,7 +97,7 @@ def download_sample_data(progress=True, overwrite=True, timeout=None):
                 else:
                     # move files to the data directory
                     move(f, os.path.join(sampledata_dir, file_name[0]))
-                # increment the number of files obtained to check later
+            # increment the number of files obtained to check later
                 number_of_files_fetched += 1
                 break
 
