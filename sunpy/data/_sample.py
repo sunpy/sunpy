@@ -3,7 +3,6 @@
 from __future__ import absolute_import, division, print_function
 
 import os.path
-import sys
 from zipfile import ZipFile
 from shutil import move
 
@@ -99,8 +98,7 @@ def download_sample_data(progress=True, overwrite=True):
                 # increment the number of files obtained to check later
                     number_of_files_fetched += 1
                     break
-                except:
-                    e=sys.exc_info()
+                except socket.timeout as e:
                     print(e)
 
     if number_of_files_fetched < len(list(_files.keys())):
