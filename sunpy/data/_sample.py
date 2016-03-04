@@ -85,22 +85,23 @@ def download_sample_data(progress=True, overwrite=True):
             if url_exists(os.path.join(base_url, full_file_name)):
                 try:
                     f = download_file(os.path.join(base_url, full_file_name))
-                    real_name, ext = os.path.splitext(full_file_name)
-
-                    if file_name[1] == '.zip':
-                        print("Unpacking: {}".format(real_name))
-                        with ZipFile(f, 'r') as zip_file:
-                           zip_file.extract(real_name, sampledata_dir)
-                        os.remove(f)
-                    else:
-                        # move files to the data directory
-                        move(f, os.path.join(sampledata_dir, file_name[0]))
-                # increment the number of files obtained to check later
-                    number_of_files_fetched += 1
-                    break
-                except Exception,e:
+                except Exception as e:
                     warnings.warn("Download failed with error {}. \n Retrying with different mirror.".format(e))
                     continue
+                real_name, ext = os.path.splitext(full_file_name)
+
+                if file_name[1] == '.zip':
+                    print("Unpacking: {}".format(real_name))
+                    with ZipFile(f, 'r') as zip_file:
+                       zip_file.extract(real_name, sampledata_dir)
+                    os.remove(f)
+                else:
+                    # move files to the data directory
+                    move(f, os.path.join(sampledata_dir, file_name[0]))
+            # increment the number of files obtained to check later
+                number_of_files_fetched += 1
+                break
+                
 
     if number_of_files_fetched < len(list(_files.keys())):
         raise URLError("Could not download all samples files. Problem with accessing sample data servers.")
