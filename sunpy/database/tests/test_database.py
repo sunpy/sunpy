@@ -18,7 +18,7 @@ import sqlalchemy
 import sunpy
 from sunpy.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
-    EntryNotFoundError, TagAlreadyAssignedError, disable_undo
+    EntryNotFoundError, TagAlreadyAssignedError, disable_undo, split_database
 from sunpy.database.tables import DatabaseEntry, Tag, FitsHeaderEntry,\
     FitsKeyComment, JSONDump
 from sunpy.database.commands import EmptyCommandStackError, NoSuchEntryError
@@ -840,3 +840,44 @@ def test_disable_undo(database, download_query, tmpdir):
         db.clear()
     with pytest.raises(EmptyCommandStackError):
         database.undo()
+
+
+def test_split_function(filled_database, database):
+    i=1
+    for entry in filled_database:
+        # every fourth entry gets the instrument 'EIA'
+        if i % 4 == 0:
+            filled_database.edit(entry, instrument='EIA')
+            filled_database.remove_tag(entry, 'foo')
+        # every fifth entry gets the instrument 'AIA_3'
+        elif i % 5 == 0:
+            filled_database.edit(entry, instrument='AIA_3')
+            filled_database.remove_tag(entry, 'bar')
+        #every other entry gets instrument 'RHESSI'
+        else:
+            filled_database.edit(entry, instrument='RHESSI')
+        #all  entries have provider 'xyz'
+        filled_database.edit(entry, provider='xyz')
+        i=i+1
+    filled_database.commit()
+
+    #Send all entries with instrument='EIA' to destination_database
+    filled_database, database = split_database(filled_database, database, vso.attrs.Instrument('EIA'))
+
+    observed_source_entries = filled_database.query(vso.attrs.Provider('xyz'), sortby='id')
+    observed_destination_entries = database.query(vso.attrs.Provider('xyz'))
+
+    assert observed_source_entries == [
+            DatabaseEntry(id=1,instrument='RHESSI', provider='xyz'),
+            DatabaseEntry(id=2,instrument='RHESSI', provider='xyz'),
+            DatabaseEntry(id=3,instrument='RHESSI', provider='xyz'),
+            DatabaseEntry(id=5,instrument='AIA_3', provider='xyz'),
+            DatabaseEntry(id=6,instrument='RHESSI', provider='xyz'),
+            DatabaseEntry(id=7,instrument='RHESSI', provider='xyz'),
+            DatabaseEntry(id=9,instrument='RHESSI', provider='xyz'),
+            DatabaseEntry(id=10,instrument='AIA_3', provider='xyz'),
+    ]
+    assert observed_destination_entries == [
+            DatabaseEntry(id=4,instrument='EIA', provider='xyz'),
+            DatabaseEntry(id=8,instrument='EIA', provider='xyz'),
+    ]
