@@ -841,6 +841,7 @@ def test_disable_undo(database, download_query, tmpdir):
     with pytest.raises(EmptyCommandStackError):
         database.undo()
 
+
 def test_split_function(filled_database, database):
     i=1
     for entry in filled_database:

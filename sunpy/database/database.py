@@ -112,6 +112,7 @@ class TagAlreadyAssignedError(Exception):
         errmsg = 'the database entry {0!r} has already assigned the tag {1!r}'
         return errmsg.format(self.database_entry, self.tag_name)
 
+
 def split_database(source_database, destination_database, *query_string):
     """
     Queries the source database with the query string, and moves the
@@ -144,6 +145,7 @@ def split_database(source_database, destination_database, *query_string):
             destination_database.commit()
 
     return source_database, destination_database
+
 
 @contextmanager
 def disable_undo(database):
