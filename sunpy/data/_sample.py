@@ -101,7 +101,7 @@ def download_sample_data(progress=True, overwrite=True):
                     break
                 except:
                     e=sys.exc_info()
-                    print e
+                    print(e)
 
     if number_of_files_fetched < len(list(_files.keys())):
         raise URLError("Could not download all samples files. Problem with accessing sample data servers.")
