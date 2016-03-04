@@ -55,6 +55,8 @@ class CompositeMap(object):
         Sets the contour levels for a layer in the CompositeMap.
     set_colors(index=None, cm)
         Sets the color map for a layer in the CompositeMap.
+    set_minmax_alpha(self, index, vmin, vmax)
+        Sets the threshold onn the alpha-channel value for a layer in the CompositeMap.
     set_alpha(index=None, alpha)
         Sets the alpha-channel value for a layer in the CompositeMap.
     set_zorder(index=None, zorder)
@@ -298,7 +300,34 @@ class CompositeMap(object):
             A composite map with colormap 'cm' at layer 'index'.
         """
         self._maps[index].plot_settings['cmap'] = cm
+    def set_minmax_alpha(self, index, vmin, vmax):
+        """
+        Sets the alpha-channel threshold value for a layer in the composite image.
 
+        Parameters
+        ----------
+        index : `int`
+            The index of the map in the composite map.
+
+        vmin :  `float`
+            Minimum contour threshold level.
+
+        vmax :  `float`
+            Maximum contour threshold level.
+
+        Returns
+        -------
+        `~sunpy.map.CompositeMap`
+            A composite map with threshold alpha-channel value set at layer 'index'.
+        """
+        if 0 <= vmin <= 1 and 0 <= vmax <= 1 and vmin < vmax:
+            if self._maps[index].alpha > vmax:
+                self._maps[index].alpha = vmax
+            if self._maps[index].alpha < vmin:
+                self._maps[index].alpha = vmin
+        else:
+            raise OutOfRangeAlphaValue("vmax and vmin value must be between 0 and 1 and should be vmin<vmax.")
+    
     def set_alpha(self, index, alpha):
         """Sets the alpha-channel value for a layer in the composite image.
 
