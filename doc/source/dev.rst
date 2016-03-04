@@ -142,7 +142,7 @@ as::
  conda create -n sunpy-dev python=2.7 sunpy
 
 This will create a new environment called `sunpy-dev` with all of the
-dependencies needed by sunpy. We then proceed to change to the new
+dependencies needed by sunpy. We the proceed to change to the new
 environment::
 
  source activate sunpy-dev
