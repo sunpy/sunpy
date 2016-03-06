@@ -842,29 +842,35 @@ def test_disable_undo(database, download_query, tmpdir):
         database.undo()
 
 
-def test_split_function(filled_database, database):
-    i=1
-    for entry in filled_database:
+@pytest.fixture
+def split_function_database():
+    """
+    Generates a custom database to test the split_database function
+    """
+    database = Database('sqlite:///:memory:')
+    for i in xrange(1, 11):
+        entry = DatabaseEntry()
+        database.add(entry)
         # every fourth entry gets the instrument 'EIA'
         if i % 4 == 0:
-            filled_database.edit(entry, instrument='EIA')
-            filled_database.remove_tag(entry, 'foo')
+            database.edit(entry, instrument='EIA')
         # every fifth entry gets the instrument 'AIA_3'
         elif i % 5 == 0:
-            filled_database.edit(entry, instrument='AIA_3')
-            filled_database.remove_tag(entry, 'bar')
-        #every other entry gets instrument 'RHESSI'
+            database.edit(entry, instrument='AIA_3')
+        # every other entry gets instrument 'RHESSI'
         else:
-            filled_database.edit(entry, instrument='RHESSI')
-        #all  entries have provider 'xyz'
-        filled_database.edit(entry, provider='xyz')
-        i=i+1
-    filled_database.commit()
+            database.edit(entry, instrument='RHESSI')
+        # all  entries have provider 'xyz'
+        database.edit(entry, provider='xyz')
+    database.commit()
+    return database
 
+
+def test_split_database(split_function_database, database):
     #Send all entries with instrument='EIA' to destination_database
-    filled_database, database = split_database(filled_database, database, vso.attrs.Instrument('EIA'))
+    split_function_database, database = split_database(split_function_database, database, vso.attrs.Instrument('EIA'))
 
-    observed_source_entries = filled_database.query(vso.attrs.Provider('xyz'), sortby='id')
+    observed_source_entries = split_function_database.query(vso.attrs.Provider('xyz'), sortby='id')
     observed_destination_entries = database.query(vso.attrs.Provider('xyz'))
 
     assert observed_source_entries == [
