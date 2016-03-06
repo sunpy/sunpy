@@ -121,15 +121,26 @@ def split_database(source_database, destination_database, *query_string):
 
     Parameters
     ----------
-    source_database : Database object of the database on which query is to be made
-    destination_database : Database object of the database to which the matched entries
-                            will be appended
-    query_string : Can consist of multiple arguments. All of them will be ANDed together
-                    to form the final query.
-
+    source_database : sunpy.database.database.Database
+        A SunPy database object. This is the database on which the queries
+        will be made.
+    destination_database : sunpy.database.database.Database
+        A SunPy database object. This is the database to which the matched
+        entries will be moved.
+    query_string : list
+        A variable number of attributes that are chained together via the
+        boolean AND operator. The | operator may be used between attributes
+        to express the boolean OR operator.
+    
     Example
     -------
-    split_database(database1, database2, vso.attrs.Instrument('RHESSI'), vso.attrs.Time('2002-02-20 11:04:00', '2002-02-20 12:06:00'))
+    The function call in the following example moves those entries from
+    database1 to database2 which have Instrument = 'RHESSI' and
+    observation time falls in the range given by vso.attrs.Time.
+
+    >>> from sunpy.net import vso
+    >>> split_database(database1, database2, vso.attrs.Instrument('RHESSI'), vso.attrs.Time('2002-02-20 11:04:00', '2002-02-20 12:06:00'))
+
     """
 
     query_string = and_(*query_string)
