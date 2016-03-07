@@ -238,7 +238,9 @@ class Database(object):
         self._session_cls = sessionmaker(bind=self._engine)
         self.session = self._session_cls()
         self._command_manager = commands.CommandManager()
-        if default_waveunit is not None:
+        if default_waveunit is None:
+            self.default_waveunit = None
+        elif default_waveunit is not None:
             try:
                 self.default_waveunit = units.Unit(default_waveunit)
             except ValueError:
