@@ -14,6 +14,8 @@ import os.path
 from sqlalchemy import create_engine, exists
 from sqlalchemy.orm import sessionmaker
 
+from astropy import units
+
 import sunpy
 from sunpy.database import commands, tables, serialize
 from sunpy.database.caching import LRUCache
@@ -236,7 +238,11 @@ class Database(object):
         self._session_cls = sessionmaker(bind=self._engine)
         self.session = self._session_cls()
         self._command_manager = commands.CommandManager()
-        self.default_waveunit = default_waveunit
+        if default_waveunit is not None:
+            try:
+                self.default_waveunit = units.Unit(default_waveunit)
+            except ValueError:
+                raise WaveunitNotConvertibleError(default_waveunit)
         self._enable_history = True
 
         class Cache(CacheClass):
