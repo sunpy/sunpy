@@ -5,10 +5,11 @@ from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time,Instrument,Source,Level
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.eve as eve
-
+from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 LCClient = eve.EVEClient()
 
-@pytest.mark.online
 @pytest.mark.parametrize("timerange,url_start,url_end",
 [(TimeRange('2012/4/21','2012/4/21'),
 'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt',
@@ -58,4 +59,16 @@ def test_get(time,instrument):
     res = LCClient.get(qr1)
     download_list = res.wait()
     assert len(download_list) == len(qr1)
+
+@pytest.mark.online
+@pytest.mark.parametrize("time, instrument",
+                         [(a.Time('2012/10/4','2012/10/6'), a.Instrument('eve')),
+                          (a.Time('2013/10/5', '2013/10/7'), a.Instrument('eve'))])
+def test_fido(time, instrument):
+    qr = Fido.search(time, instrument)
+    assert isinstance(qr, UnifiedResponse)
+    response = Fido.fetch(qr)
+    assert len(response) == qr._numfile
+                          
+                        
 
