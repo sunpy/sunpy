@@ -240,7 +240,7 @@ class Database(object):
         self._command_manager = commands.CommandManager()
         if default_waveunit is None:
             self.default_waveunit = None
-        elif default_waveunit is not None:
+        else:
             try:
                 self.default_waveunit = units.Unit(default_waveunit)
             except ValueError:
