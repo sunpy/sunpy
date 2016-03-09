@@ -4,6 +4,7 @@ Common solar physics coordinate systems.
 This submodule implements various solar physics coordinate frames for use with
 the `astropy.coordinates` module.
 """
+from __future__ import absolute_import, division
 
 # NumPy import
 import numpy as np
@@ -19,7 +20,7 @@ from astropy.coordinates import FrameAttribute
 
 # SunPy imports
 from sunpy import sun  # For Carrington rotation number
-from representation import (SphericalWrap180Representation,
+from .representation import (SphericalWrap180Representation,
                             UnitSphericalWrap180Representation)
 
 from .frameattributes import TimeFrameAttributeSunPy
@@ -42,7 +43,7 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
 
     Parameters
     ----------
-    representation: `~astropy.coordinates.BaseRepresentation` or None
+    representation: `~astropy.coordinates.BaseRepresentation` or `None`
         A representation object or None to have no data.
     lon: `Angle` object.
         The longitude for this object (``lat`` must also be given and
@@ -52,7 +53,7 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
         ``representation`` must be None).
     radius: `astropy.units.Quantity` object.
         This quantity holds the radial distance. If not specified, it is, by
-        default, the solar radius. Optional, must be keyword
+        default, the radius of the photosphere. Optional.
 
     Examples
     --------

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-
+from __future__ import absolute_import, division
 import datetime
 
 from astropy.time import Time
 from astropy.coordinates.baseframe import TimeFrameAttribute
 
+from sunpy.extern import six
 from sunpy.time import parse_time
 
 __all__ = ['TimeFrameAttributeSunPy']
@@ -21,7 +22,7 @@ class TimeFrameAttributeSunPy(TimeFrameAttribute):
         Default value for the attribute if not provided
     secondary_attribute : str
         Name of a secondary instance attribute which supplies the value
-        if ``default is None`` and no value was supplied during initialization.
+        if ``default`` is ``None`` and no value was supplied during initialization.
 
     Returns
     -------
@@ -59,7 +60,7 @@ class TimeFrameAttributeSunPy(TimeFrameAttribute):
             out = value
             converted = False
 
-        elif isinstance(value, basestring):
+        elif isinstance(value, six.stringtypes):
             try:
                 out = Time(parse_time(value))
             except Exception as err:
