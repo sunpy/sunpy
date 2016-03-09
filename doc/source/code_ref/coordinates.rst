@@ -2,7 +2,7 @@ SunPy coordinates
 =================
 
 The SunPy coordinates submodule is an implementation of the common solar physics
-coordinate frames in to the :ref:`Astropy coordinates system <astropy:astropy-coordinates>`.
+coordinate frames using the :ref:`Astropy coordinates framework <astropy:astropy-coordinates>`.
 
 .. warning::
 
@@ -28,7 +28,7 @@ The easiest interface to the coordinates module is through the `~astropy.coordin
       (70.0, -30.0, 695508.0)>
 
 
-SunPy implements supports for the following solar physics coordinate systems:
+SunPy implements support for the following solar physics coordinate systems:
 
 * Helioprojective (Cartesian) `~sunpy.coordinates.frames.HelioProjective`
 * Helioprojective (Radial) `~sunpy.coordinates.frames.HelioProjectiveRadial`
@@ -36,7 +36,8 @@ SunPy implements supports for the following solar physics coordinate systems:
 * Heliographic Stonyhurst `~sunpy.coordinates.frames.HelioGraphicStonyhurst`
 * Heliographic Carrington `~sunpy.coordinates.frames.HelioGraphicCarrington`
 
-for a complete description of these frames, see `sunpy.coordinates.frames`.
+for a complete description of these frames, see `sunpy.coordinates.frames`, for
+a more detailed description of the frames see [(Thompson 2006)](http://dx.doi.org/10.1051/0004-6361:20054262).
 
 
 `~astropy.coordinates.SkyCoord` and all other `~astropy.coordinates` objects
@@ -45,7 +46,7 @@ but they store multiple coordinates in a single object. When you're going to
 apply the same operation to many different coordinates, this is a better choice
 than a list of `~astropy.coordinates.SkyCoord` objects, because it will be
 *much* faster than applying the operation to each
-`~astropy.coordinates.SkyCoord` in a for loop.
+`~astropy.coordinates.SkyCoord` in a ``for`` loop.
 ::
 
    >>> c = SkyCoord([-500, 400]*u.arcsec, [100, 200]*u.arcsec, frame='helioprojective')
@@ -61,10 +62,13 @@ Accessing Coordinates
 ^^^^^^^^^^^^^^^^^^^^^
 
 Individual coordinates can be accessed via attributes on the SkyCoord object,
-the names of the components of the coordinates for each frame differ. For a full
+but the names of the components of the coordinates for each frame differ. For a full
 description of all the properties of the frames see `sunpy.coordinates.frames`.
 
-``HelioProjective``::
+``HelioProjective``
+###################
+
+For the helioprojective frame the coordinates are access as ``Tx`` and ``Ty`` representing theta x and y. These are the same coordinates that are often referred to as 'solar-x' and 'solar-y'.
 
   >>> c = SkyCoord(-500*u.arcsec, 100*u.arcsec, frame='helioprojective')
   >>> c.Tx
@@ -72,7 +76,10 @@ description of all the properties of the frames see `sunpy.coordinates.frames`.
   >>> c.Ty
   <Latitude 100.0 arcsec>
 
-``Heliocentric``::
+``Heliocentric``
+################
+
+Heliocentric normally a Cartesian frame so the coordinates are accessed as ``x,y,z``:
 
   >>> c = SkyCoord(-72241.0*u.km, 361206.1*u.km, 589951.4*u.km, frame='heliocentric')
   >>> c.x
@@ -82,14 +89,15 @@ description of all the properties of the frames see `sunpy.coordinates.frames`.
   >>> c.z
   <Quantity 589951.4 km>
 
-``HeliographicStonyhurst``::
+``HeliographicStonyhurst``
+##########################
 
    >>> c = SkyCoord(70*u.deg, -30*u.deg, frame='heliographicstonyhurst')
    >>> c.lat
    <Latitude -30.0 deg>
    >>> c.lon
    <Longitude180 70.0 deg>
-   >>> c.rad
+   >>> c.radius
    <Distance 695508.0 km>
 
 
