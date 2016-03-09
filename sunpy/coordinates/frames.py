@@ -50,7 +50,7 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
     lat: `Angle` object.
         The latitude for this object (``lon`` must also be given and
         ``representation`` must be None).
-    rad: `astropy.units.Quantity` object.
+    radius: `astropy.units.Quantity` object.
         This quantity holds the radial distance. If not specified, it is, by
         default, the solar radius. Optional, must be keyword
 
@@ -72,7 +72,7 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
     Notes
     -----
     This frame will always be converted a 3D frame where the radius defaults to
-    RSun.
+    rsun.
     """
 
     default_representation = SphericalWrap180Representation
@@ -80,11 +80,11 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
     _frame_specific_representation_info = {
        'spherical': [RepresentationMapping('lon', 'lon', 'recommended'),
                      RepresentationMapping('lat', 'lat', 'recommended'),
-                     RepresentationMapping('distance', 'rad', 'recommended')],
+                     RepresentationMapping('distance', 'radius', 'recommended')],
 
        'sphericalwrap180': [RepresentationMapping('lon', 'lon', 'recommended'),
                             RepresentationMapping('lat', 'lat', 'recommended'),
-                            RepresentationMapping('distance', 'rad', 'recommended')]
+                            RepresentationMapping('distance', 'radius', 'recommended')]
         }
 
     dateobs = TimeFrameAttributeSunPy()
@@ -132,7 +132,7 @@ class HeliographicCarrington(HeliographicStonyhurst):
     lat: `Angle` object.
         The latitude for this object (``lon`` must also be given and
         ``representation`` must be None).
-    rad: `astropy.units.Quantity` object, optional, must be keyword.
+    radius: `astropy.units.Quantity` object, optional, must be keyword.
         This quantity holds the radial distance. If not specified, it is, by
         default, the solar radius. Optional, must be keyword.
 
@@ -156,11 +156,11 @@ class HeliographicCarrington(HeliographicStonyhurst):
     _frame_specific_representation_info = {
         'spherical': [RepresentationMapping('lon', 'lon', 'recommended'),
                       RepresentationMapping('lat', 'lat', 'recommended'),
-                      RepresentationMapping('distance', 'rad', 'recommended')],
+                      RepresentationMapping('distance', 'radius', 'recommended')],
 
         'sphericalwrap180': [RepresentationMapping('lon', 'lon', 'recommended'),
                              RepresentationMapping('lat', 'lat', 'recommended'),
-                             RepresentationMapping('distance', 'rad', 'recommended')]
+                             RepresentationMapping('distance', 'radius', 'recommended')]
         }
 
     dateobs = TimeFrameAttributeSunPy()
@@ -276,7 +276,7 @@ class Helioprojective(BaseCoordinateFrame):
     dateobs = TimeFrameAttributeSunPy()
     L0 = FrameAttribute(default=0*u.deg)
     B0 = FrameAttribute(default=0*u.deg)
-    RSun = FrameAttribute(default=RSUN_METERS.to(u.km))
+    rsun = FrameAttribute(default=RSUN_METERS.to(u.km))
 
     def __init__(self, *args, **kwargs):
         _rep_kwarg = kwargs.get('representation', None)
@@ -304,7 +304,7 @@ class Helioprojective(BaseCoordinateFrame):
         """
         This method calculates the third coordnate of the Helioprojective
         frame. It assumes that the coordinate point is on the disk of the Sun
-        at the RSun radius.
+        at the rsun radius.
 
         If a point in the frame is off limb then NaN will be returned.
 
@@ -321,9 +321,54 @@ class Helioprojective(BaseCoordinateFrame):
         rep = self.represent_as(UnitSphericalWrap180Representation)
         lat, lon = rep.lat, rep.lon
         alpha = np.arccos(np.cos(lat) * np.cos(lon)).to(lat.unit)
-        c = self.D0**2 - self.RSun**2
+        c = self.D0**2 - self.rsun**2
         b = -2 * self.D0.to(u.m) * np.cos(alpha)
         d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2
         return self.realize_frame(SphericalWrap180Representation(lon=lon,
                                                                  lat=lat,
                                                                  distance=d))
+
+
+class HelioprojectiveRadial(BaseCoordinateFrame):
+    """
+    The Helioprojective-Radial frame is a spherical coordinate system projected
+    on to the the celestial sphere.
+
+    The center of the solar disk is defined to be at the south pole of the
+    sphere and by definition has the impact parameter angle as 0 at this pole.
+
+    Parameters
+    ----------
+    representation: `~astropy.coordinates.BaseRepresentation` or None.
+        A representation object. If specified, other parameters must
+        be in keyword form.
+    dec: `Angle` object.
+        Declination Parameter.
+    psi: `Angle` object.
+        Latitude coordinate.
+    distance: Z-axis coordinate.
+        The radial distance from the observer to the coordinate point.
+    """
+
+    default_representation = SphericalRepresentation
+
+    _frame_specific_representation_info = {
+        'spherical': [RepresentationMapping('lon', 'dec', u.deg),
+                      RepresentationMapping('lat', 'psi', u.deg),
+                      RepresentationMapping('distance', 'distance', u.km)],
+
+        'sphericalwrap180': [RepresentationMapping('lon', 'dec', u.deg),
+                             RepresentationMapping('lat', 'psi', u.deg),
+                             RepresentationMapping('distance', 'distance', u.km)],
+
+        'unitspherical': [RepresentationMapping('lon', 'dec', u.deg),
+                          RepresentationMapping('lat', 'psi', u.deg)],
+
+        'unitsphericalwrap180': [RepresentationMapping('lon', 'dec', u.deg),
+                                 RepresentationMapping('lat', 'psi', u.deg)]}
+
+    D0 = FrameAttribute(default=(1*u.au).to(u.km))
+    dateobs = TimeFrameAttributeSunPy()
+    L0 = FrameAttribute(default=0*u.deg)
+    B0 = FrameAttribute(default=0*u.deg)
+    rsun = FrameAttribute(default=RSUN_METERS.to(u.km))
