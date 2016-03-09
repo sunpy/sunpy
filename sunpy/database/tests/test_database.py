@@ -851,7 +851,7 @@ def default_waveunit_database():
     return unit_database, str_database
 
 
-def test_default_waveunit():
-    unit_database, str_database = default_waveunit_database()
+def test_default_waveunit(default_waveunit_database):
+    unit_database, str_database = default_waveunit_database
     assert isinstance(unit_database.default_waveunit, units.UnitBase)
     assert isinstance(str_database.default_waveunit, units.UnitBase)
