@@ -5,6 +5,7 @@ Coordinate Transformation Functions
 This module contains the functions for converting one
 `sunpy.coordinates.frames` object to another.
 """
+from __future__ import absolute_import, division
 
 # NumPy import
 import numpy as np

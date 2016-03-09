@@ -51,10 +51,10 @@ than a list of `~astropy.coordinates.SkyCoord` objects, because it will be
 
    >>> c = SkyCoord([-500, 400]*u.arcsec, [100, 200]*u.arcsec, frame='helioprojective')
    >>> c
-   <SkyCoord (HelioProjective: D0=149597870.7 km, dateobs=None, L0=0.0 deg, B0=0.0 deg, RSun=695508.0 km): (Tx, Ty) in arcsec
+   <SkyCoord (HelioProjective: D0=149597870.7 km, dateobs=None, L0=0.0 deg, B0=0.0 deg, rsun=695508.0 km): (Tx, Ty) in arcsec
        [(-500.0, 100.0), (400.0, 200.0)]>
    >>> c[0]
-   <SkyCoord (HelioProjective: D0=149597870.7 km, dateobs=None, L0=0.0 deg, B0=0.0 deg, RSun=695508.0 km): (Tx, Ty) in arcsec
+   <SkyCoord (HelioProjective: D0=149597870.7 km, dateobs=None, L0=0.0 deg, B0=0.0 deg, rsun=695508.0 km): (Tx, Ty) in arcsec
        (-500.0, 100.0)>
 
 
@@ -89,8 +89,10 @@ Heliocentric normally a Cartesian frame so the coordinates are accessed as ``x,y
   >>> c.z
   <Quantity 589951.4 km>
 
-``HeliographicStonyhurst``
-##########################
+``HeliographicStonyhurst`` and ``HeliographicCarrington``
+#########################################################
+
+Both the heliographic frames use latitude, longitude and radius so are accessed as follows:
 
    >>> c = SkyCoord(70*u.deg, -30*u.deg, frame='heliographicstonyhurst')
    >>> c.lat
@@ -107,10 +109,12 @@ Design of the Coordinates Module
 This module works by defining a collection of ``Frames``
 (`sunpy.coordinates.frames`), which exists on a transformation graph, where the
 transformations between the coordinate frames are then defined and registered
-with the transformation graph (`sunpy.coordinates.transformations`).
+with the transformation graph (`sunpy.coordinates.transformations`). Currently,
+the SunPy frames are not transformable to the frames in Astropy, as their is no
+transformation defined between the two sets of frames.
 
 Positions within these ``Frames`` are stored as a ``Representation`` of a
-coordinate, a representation is a description of a point in a Cartesian,
+coordinate, a representation being a description of a point in a Cartesian,
 spherical or cylindrical system (`sunpy.coordinates.representation`). A frame
 that contains a representation of one or many points is said to have been
 'realized'.
@@ -139,12 +143,12 @@ frame using `SkyCoord` it will remember the attributes previously provided, and
 repopulate the final frame with them. If you were to do transformations using
 the Frames alone this would not happen.
 
-The most important implication for this in `sunpy.coordinates` is the ``RSun``
+The most important implication for this in `sunpy.coordinates` is the ``rsun``
 parameter in the projective frames. If you create a projective frame with a
-``RSun`` attribute, if you convert back to a projective frame it will be set
+``rsun`` attribute, if you convert back to a projective frame it will be set
 correctly. It should also be noted that, if you create a Heliographic frame and
-then transform to a projective frame with an ``RSun`` attribute, it will not
-match the ``rad`` coordinate in the Heliographic frame. This is because you may
+then transform to a projective frame with an ``rsun`` attribute, it will not
+match the ``radius`` coordinate in the Heliographic frame. This is because you may
 mean to be describing a point above the defined 'surface' of the Sun.
 
 
@@ -174,7 +178,7 @@ If you want to obtain a un-realized coordinate frame corresponding to a
   >>> amap = sunpy.map.Map(AIA_171_IMAGE)
 
   >>> wcs_to_celestial_frame(amap.wcs)
-  <Helioprojective Frame (D0=1.48940609627e+11 m, dateobs=2011-03-1910:54:00.340000, L0=0.0 deg, B0=-7.064078 deg, RSun=695508.0 km)>
+  <Helioprojective Frame (D0=1.48940609627e+11 m, dateobs=2011-03-1910:54:00.340000, L0=0.0 deg, B0=-7.064078 deg, rsun=695508.0 km)>
 
 
 
@@ -197,8 +201,8 @@ sunpy.coordinates Package
 Attribution
 -----------
 
-Some of this documentation was borrowed from Astropy under the terms of the `BSD
+Some of this documentation was adapted from Astropy under the terms of the `BSD
 License
 <https://raw.githubusercontent.com/astropy/astropy/master/licenses/LICENSE.rst>`_.
 
-This package was developed by Pritish Chakraborty as part of GSOC 2014.
+This package was developed by Pritish Chakraborty as part of GSOC 2014 and Stuart Mumford.
