@@ -73,7 +73,7 @@ def test_hgs_hcc(lon, lat):
     hcc = hgs.transform_to(Heliocentric)
 
     x, y, z = wcs.convert_hg_hcc(lon.value, lat.value,
-                                 r=hgs.rad.to(u.m).value,
+                                 r=hgs.radius.to(u.m).value,
                                  z=True)
 
     assert_quantity_allclose(x*u.m, hcc.x)

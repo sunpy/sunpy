@@ -250,7 +250,7 @@ def test_create_hgs_2d(frame, args, kwargs):
     # Check the attrs are in the correct default units
     assert hgs1.lon.unit is u.deg
     assert hgs1.lat.unit is u.deg
-    assert hgs1.rad.unit is u.km
+    assert hgs1.radius.unit is u.km
 
 
 @pytest.mark.parametrize('frame',
@@ -284,8 +284,8 @@ def test_create_hgs_force_2d(frame, args, kwargs):
     "args, kwargs",
     three_D_parameters + [(None, {'lat': 0 * u.deg,
                                   'lon': 0 * u.arcsec,
-                                  'rad': 1 * u.Mm}),
-                          ([0 * u.deg, 0 * u.arcsec], {'rad': 1 * u.Mm})])
+                                  'radius': 1 * u.Mm}),
+                          ([0 * u.deg, 0 * u.arcsec], {'radius': 1 * u.Mm})])
 def test_create_hgs_3d(frame, args, kwargs):
     hgs1 = init_frame(frame, args, kwargs)
 
@@ -302,12 +302,12 @@ def test_create_hgs_3d(frame, args, kwargs):
     # Check the attrs are correct
     assert hgs1.lon == 0 * u.deg
     assert hgs1.lat == 0 * u.deg
-    assert hgs1.rad == 1 * u.Mm
+    assert hgs1.radius == 1 * u.Mm
 
     # Check the attrs are in the correct default units
     assert hgs1.lon.unit is u.deg
     assert hgs1.lat.unit is u.deg
-    assert hgs1.rad.unit is u.Mm
+    assert hgs1.radius.unit is u.Mm
 
 
 def test_hgs_cart_init():

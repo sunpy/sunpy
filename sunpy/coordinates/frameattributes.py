@@ -60,7 +60,7 @@ class TimeFrameAttributeSunPy(TimeFrameAttribute):
             out = value
             converted = False
 
-        elif isinstance(value, six.stringtypes):
+        elif isinstance(value, six.string_types):
             try:
                 out = Time(parse_time(value))
             except Exception as err:
