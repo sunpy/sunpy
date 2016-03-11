@@ -51,7 +51,7 @@ def hgs_to_hgc(hgscoord, hgcframe):
     c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.dateobs).to(
         u.deg)
     representation = SphericalWrap180Representation(c_lon, hgscoord.lat,
-                                                    hgscoord.rad)
+                                                    hgscoord.radius)
     return hgcframe.realize_frame(representation)
 
 
@@ -64,7 +64,7 @@ def hgc_to_hgs(hgccoord, hgsframe):
     s_lon = hgccoord.spherical.lon - _carrington_offset(hgccoord.dateobs).to(
         u.deg)
     representation = SphericalWrap180Representation(s_lon, hgccoord.lat,
-                                                    hgccoord.rad)
+                                                    hgccoord.radius)
     return hgsframe.realize_frame(representation)
 
 
@@ -150,7 +150,7 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     """
     hglon = heliogcoord.lon
     hglat = heliogcoord.lat
-    r = heliogcoord.rad.to(u.m)
+    r = heliogcoord.radius.to(u.m)
 
     l0b0_pair = [heliocframe.L0, heliocframe.B0]
 
