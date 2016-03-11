@@ -80,3 +80,4 @@ class TimeFrameAttributeSunPy(TimeFrameAttribute):
                              .format(self.name, value))
 
         return out, converted
+

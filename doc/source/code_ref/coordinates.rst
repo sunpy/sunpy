@@ -157,8 +157,8 @@ Coordinates and WCS
 
 The `sunpy.coordinates` package provides a mapping between FITS-WCS CTYPE
 convention and the coordinate frames as defined in `sunpy.coordinates`. This is
-provided in the `sunpy.coordinates.wcs_utils` module and adds the mappings to
-the `astropy.wcs.utils.WCS_FRAME_MAPPINGS` list. This list is used by packages
+used via the `astropy.wcs.utils.wcs_to_celestial_frame` function, with which the
+SunPy frames are registered upon being imported. This list is used by packages
 such as ``wcsaxes`` to convert from `astropy.wcs.WCS` objects to coordinate
 frames.
 
