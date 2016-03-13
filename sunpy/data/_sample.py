@@ -65,10 +65,10 @@ _files = {
     "NORH_LIGHTCURVE": ("tca110810", "")
 }
 
-#print ("",disk_usage('/').free)
+
 free_required=145227776
 if disk_usage('/').free > free_required :
-#	print ("hello")
+
 	sample_files = {}
 	for key in _files:
     		sample_files[key] = os.path.abspath(os.path.join(sampledata_dir, _files[key][0]))
