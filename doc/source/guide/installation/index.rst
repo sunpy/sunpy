@@ -28,7 +28,7 @@ provides (almost) all the packages you need to use SunPy.
 
 **Python 2.7 is currently used for Sunpy Development**.Versions of Python 3 have
 not been tried and tested properly so it's recommended to install Python 2.7
-To download Python 2.7 follow this link 'https://www.python.org/download/releases/2.7/' 
+To download Python 2.7 follow this link '[[https://www.python.org/download/releases/2.7/]]' 
 
 To install the Anaconda Python distribution follow the instructions
 `here <http://docs.continuum.io/anaconda/install.html>`_. You will need to
