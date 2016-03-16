@@ -506,12 +506,12 @@ by the decorator, for example ::
 This function only accepts arguments that are convertible to arcseconds.
 Therefore, ::
 
-    >>> myangle(20 * u.degree)
+    >>> myfunction(20 * u.degree)
     <Quantity 400.0 deg2>
 
 returns the expected answer but ::
 
-    >>> myangle(20 * u.km)
+    >>> myfunction(20 * u.km)
 
 raises an error.
 
