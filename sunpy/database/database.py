@@ -156,16 +156,16 @@ class Database(object):
         The default value is :class:`sunpy.database.caching.LRUCache`.
     cache_size : int
         The maximum number of database entries, default is no limit.
-    default_waveunit : str or astropy.units.Unit, optional
+    default_waveunit : `str` or `~astropy.units.Unit`, optional
         The wavelength unit that will be used if an entry is added to the
         database but its wavelength unit cannot be found (either in the file or
         the VSO query result block, depending on the way the entry was added).
-        If an astropy.units.Unit is passed, it is assigned to default_waveunit.
-        If a str is passed, it will be converted to astropy.units.Unit through
-        the units.Unit() initializer, and then assigned to default_waveunit.
-        If an invalid string is passed, WaveunitNotConvertibleError is raised.
-        If `None` (the default), attempting to add an entry without knowing the
-        wavelength unit results in a
+        If an `~astropy.units.Unit` is passed, it is assigned to ``default_waveunit``.
+        If a `str` is passed, it will be converted to `~astropy.units.Unit` through
+        the `astropy.units.Unit()` initializer, and then assigned to default_waveunit.
+        If an invalid string is passed, `~sunpy.database.WaveunitNotConvertibleError`
+        is raised. If `None` (the default), attempting to add an entry without knowing
+        the wavelength unit results in a
         :exc:`sunpy.database.WaveunitNotFoundError`.
     """
     """
