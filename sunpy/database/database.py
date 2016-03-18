@@ -117,30 +117,36 @@ def split_database(source_database, destination_database, *query_string):
     """
     Queries the source database with the query string, and moves the
     matched entries to the destination database. When this function is
-    called, the undo feature is disabled for both databases.
+    called, the `~sunpy.database.Database.undo` feature is disabled for both databases.
 
     Parameters
     ----------
-    source_database : sunpy.database.database.Database
-        A SunPy database object. This is the database on which the queries
+    source_database : `~sunpy.database.database.Database`
+        A SunPy `~Database` object. This is the database on which the queries
         will be made.
-    destination_database : sunpy.database.database.Database
-        A SunPy database object. This is the database to which the matched
+    destination_database : `~sunpy.database.database.Database`
+        A SunPy `~Database` object. This is the database to which the matched
         entries will be moved.
-    query_string : list
+    query_string : `list`
         A variable number of attributes that are chained together via the
         boolean AND operator. The | operator may be used between attributes
         to express the boolean OR operator.
     
-    Example
-    -------
+    Examples
+    --------
     The function call in the following example moves those entries from
-    database1 to database2 which have Instrument = 'RHESSI' and
-    observation time falls in the range given by vso.attrs.Time.
+    database1 to database2 which have `~sunpy.net.vso.attrs.Instrument` = 'AIA' or
+    'ERNE'.
 
+    >>> from sunpy.database import Database, split_database
+    >>> from sunpy.database.tables import display_entries
     >>> from sunpy.net import vso
-    >>> split_database(database1, database2, vso.attrs.Instrument('RHESSI'), vso.attrs.Time('2002-02-20 11:04:00', '2002-02-20 12:06:00'))
-
+    >>> database1 = Database('sqlite:///:memory:')
+    >>> database2 = Database('sqlite:///:memory:')
+    >>> client = vso.VSOClient()
+    >>> qr = client.query(vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'))
+    >>> database1.add_from_vso_query_result(qr)
+    >>> database1, database2 = split_database(database1, database2, vso.attrs.Instrument('AIA') | vso.attrs.Instrument('ERNE'))
     """
 
     query_string = and_(*query_string)
