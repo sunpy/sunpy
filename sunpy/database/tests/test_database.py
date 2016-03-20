@@ -15,6 +15,8 @@ import sys
 import pytest
 import sqlalchemy
 
+from astropy import units
+
 import sunpy
 from sunpy.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
@@ -840,3 +842,16 @@ def test_disable_undo(database, download_query, tmpdir):
         db.clear()
     with pytest.raises(EmptyCommandStackError):
         database.undo()
+
+
+@pytest.fixture
+def default_waveunit_database():
+    unit_database = Database('sqlite:///:memory:', default_waveunit = units.meter)
+    str_database = Database('sqlite:///:memory:', default_waveunit = "m")
+    return unit_database, str_database
+
+
+def test_default_waveunit(default_waveunit_database):
+    unit_database, str_database = default_waveunit_database
+    assert isinstance(unit_database.default_waveunit, units.UnitBase)
+    assert isinstance(str_database.default_waveunit, units.UnitBase)
