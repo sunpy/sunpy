@@ -89,7 +89,7 @@ def slit(mcube_in, range_a, range_b):
 
 
 
-def get_pixels_on_line(x1, y1, x2, y2:
+def get_pixels_on_line(x1, y1, x2, y2):
     """
     Returns an array of all pixel coordinates which the line defined by `x1, y1` and
     `x2, y2` crosses. Uses Bresenham's line algorithm to enumerate the pixels along
