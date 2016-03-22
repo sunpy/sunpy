@@ -18,7 +18,7 @@ class Spectrum(np.ndarray):
     freq_axis : `~numpy.ndarray`
         one-dimensional array with the frequency values.
 
-    data\ : `numpy.ndarray`
+    data : `numpy.ndarray`
         One-dimensional array which the intensity at a particular frequency at
         every data-point.
 
@@ -36,7 +36,6 @@ class Spectrum(np.ndarray):
         return np.asarray(data).view(cls)
 
     def __init__(self, data, freq_axis):
-        self.data = data
         self.freq_axis = freq_axis
 
     def plot(self, axes=None, **matplot_args):
