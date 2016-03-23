@@ -116,10 +116,10 @@ def test_wave_inputQuantity():
     wrong_type_mesage = "Wave inputs must be astropy Quantities"
     with pytest.raises(TypeError) as excinfo:
         va.Wave(10, 23)
-    assert excinfo.value.message == wrong_type_mesage
+        assert excinfo.value.message == wrong_type_mesage
     with pytest.raises(TypeError) as excinfo:
         va.Wave(10 * u.AA, 23)
-    assert excinfo.value.message == wrong_type_mesage
+        assert excinfo.value.message == wrong_type_mesage
 
 def test_wave_toangstrom():
     # TODO: this test should test that inputs are in any of spectral units
@@ -153,7 +153,7 @@ def test_wave_toangstrom():
 
     with pytest.raises(ValueError) as excinfo:
         va.Wave(10 * u.g, 23 * u.g)
-    assert excinfo.value.message == "'g' is not a spectral supported unit"
+        assert excinfo.value.message == "'g' is not a spectral supported unit"
 
 
 def test_time_xor():

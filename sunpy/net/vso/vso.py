@@ -6,8 +6,7 @@
 #
 #pylint: disable=W0401,C0103,R0904,W0141
 
-from __future__ import absolute_import
-from __future__ import division
+from __future__ import absolute_import, division, print_function
 
 """
 This module provides a wrapper around the VSO API.
@@ -35,6 +34,7 @@ from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import replacement_filename, Deprecated
 from sunpy.time import parse_time
+from sunpy.extern.six import iteritems
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -285,7 +285,7 @@ class VSOClient(object):
         To assign subattributes, use foo__bar=1 to assign
         ['foo']['bar'] = 1. """
         obj = self.api.factory.create(atype)
-        for k, v in kwargs.iteritems():
+        for k, v in iteritems(kwargs):
             split = k.split('__')
             tip = split[-1]
             rest = split[:-1]
@@ -296,7 +296,7 @@ class VSOClient(object):
 
             if isinstance(v, dict):
                 # Do not throw away type information for dicts.
-                for k, v in v.iteritems():
+                for k, v in iteritems(v):
                     item[tip][k] = v
             else:
                 item[tip] = v
@@ -520,8 +520,8 @@ class VSOClient(object):
             kwargs.update({'time_end': tend})
 
         queryreq = self.api.factory.create('QueryRequest')
-        for key, value in kwargs.iteritems():
-            for k, v in ALIASES.get(key, sdk(key))(value).iteritems():
+        for key, value in iteritems(kwargs):
+            for k, v in iteritems(ALIASES.get(key, sdk(key))(value)):
                 if k.startswith('time'):
                     v = parse_time(v).strftime(TIMEFORMAT)
                 attr = k.split('_')
@@ -665,7 +665,7 @@ class VSOClient(object):
 
         return self.create_getdatarequest(
             dict((k, [x.fileid for x in v])
-                 for k, v in self.by_provider(response).iteritems()),
+                 for k, v in iteritems(self.by_provider(response))),
             methods, info
         )
 
@@ -681,7 +681,7 @@ class VSOClient(object):
             request__info=info,
             request__datacontainer__datarequestitem=[
                 self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
-                for k, v in maps.iteritems()
+                for k, v in iteritems(maps)
             ]
         )
 
@@ -826,7 +826,7 @@ class InteractiveVSOClient(VSOClient):
         """
         while True:
             for n, elem in enumerate(choices):
-                print "({num:d}) {choice!s}".format(num=n + 1, choice=elem)
+                print("({num:d}) {choice!s}".format(num=n + 1, choice=elem))
             try:
                 choice = raw_input("Method number: ")
             except KeyboardInterrupt:
