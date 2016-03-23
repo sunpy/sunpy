@@ -15,6 +15,7 @@ py.test sunpy/image || E=$?||$E
 py.test sunpy/sun || E=$?||$E
 py.test sunpy/util || E=$?||$E
 py.test sunpy/spectra || E=$?||$E
+py.test sunpy/net || E=$?||$E
 
 exit $E
 
