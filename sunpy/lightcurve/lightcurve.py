@@ -394,6 +394,10 @@ for compatibility with map, please use meta instead""", Warning)
         newlc : `~sunpy.lightcurve.LightCurve`
             A new lightcurve.
         """
+        if isinstance(otherlightcurve, self.__class__):
+            pass
+        else:
+            raise TypeError("Lightcurve classes must match.")
 
         # TODO need to concatenate the two meta objects. Currently only keeps first.
         meta = self.meta.copy()
