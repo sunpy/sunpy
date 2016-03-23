@@ -12,7 +12,7 @@ from contextlib import contextmanager
 import os.path
 
 from sqlalchemy import create_engine, exists
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 from astropy import units
 
@@ -113,6 +113,57 @@ class TagAlreadyAssignedError(Exception):
     def __str__(self):  # pragma: no cover
         errmsg = 'the database entry {0!r} has already assigned the tag {1!r}'
         return errmsg.format(self.database_entry, self.tag_name)
+
+
+def split_database(source_database, destination_database, *query_string):
+    """
+    Queries the source database with the query string, and moves the
+    matched entries to the destination database. When this function is
+    called, the `~sunpy.database.Database.undo` feature is disabled for both databases.
+
+    Parameters
+    ----------
+    source_database : `~sunpy.database.database.Database`
+        A SunPy `~Database` object. This is the database on which the queries
+        will be made.
+    destination_database : `~sunpy.database.database.Database`
+        A SunPy `~Database` object. This is the database to which the matched
+        entries will be moved.
+    query_string : `list`
+        A variable number of attributes that are chained together via the
+        boolean AND operator. The | operator may be used between attributes
+        to express the boolean OR operator.
+    
+    Examples
+    --------
+    The function call in the following example moves those entries from
+    database1 to database2 which have `~sunpy.net.vso.attrs.Instrument` = 'AIA' or
+    'ERNE'.
+
+    >>> from sunpy.database import Database, split_database
+    >>> from sunpy.database.tables import display_entries
+    >>> from sunpy.net import vso
+    >>> database1 = Database('sqlite:///:memory:')
+    >>> database2 = Database('sqlite:///:memory:')
+    >>> client = vso.VSOClient()
+    >>> qr = client.query(vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'))
+    >>> database1.add_from_vso_query_result(qr)
+    >>> database1, database2 = split_database(database1, database2, vso.attrs.Instrument('AIA') | vso.attrs.Instrument('ERNE'))
+    """
+
+    query_string = and_(*query_string)
+    filtered_entries = source_database.query(query_string)
+    with disable_undo(source_database):
+        with disable_undo(destination_database):
+            source_database.remove_many(filtered_entries)
+            source_database.commit()
+            source_database.session.commit()
+            source_database.session.close()
+
+            destination_database.add_many(filtered_entries)
+            destination_database.commit()
+
+    return source_database, destination_database
 
 
 @contextmanager
@@ -240,7 +291,7 @@ class Database(object):
             url = sunpy.config.get('database', 'url')
         self._engine = create_engine(url)
         self._session_cls = sessionmaker(bind=self._engine)
-        self.session = self._session_cls()
+        self.session = scoped_session(self._session_cls)
         self._command_manager = commands.CommandManager()
         self.default_waveunit = default_waveunit
         if self.default_waveunit is not None:
