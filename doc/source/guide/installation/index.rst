@@ -20,7 +20,9 @@ Installing Scientific Python and SunPy
 If you do not currently have a working scientific Python distribution this
 guide will set you up with the Anaconda Python distribution. Alternative options
 exist for different operating systems and can be found later in the
-:ref:`advanced-install` section.
+:ref:`advanced-install` section.Sunpy currently supports Python 2.7 and the 
+documentation is designed for the same.We would be releasing Python 3.x support
+for Anaconda soon. 
 
 Anaconda is a free distribution of Python and a large amount of common
 scientific packages, it is very powerful and easy to use. Installing Anaconda
