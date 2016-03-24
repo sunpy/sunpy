@@ -405,7 +405,7 @@ for compatibility with map, please use meta instead""", Warning)
         data['index'] = data.index
         data = data.drop_duplicates(subset='index')
         data.set_index = data['index']
-        data.drop('index', axis=1)
+        data.drop('index', axis=1, inplace=True)
         return self.__class__.create(data, meta)
 
 
