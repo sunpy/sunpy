@@ -42,8 +42,8 @@ env:
         - NUMPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
         - CONDA_CHANNELS='astropy astropy-ci-extras sunpy jevans https://conda.anaconda.org/sunpy/label/citesting'
-        - CONDA_ALL_DEPENDENCIES='Cython jinja2 scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
-        - CONDA_ALL_DEPENDENCIES2="suds-jurko glymur openjpeg $CONDA_ALL_DEPENDENCIES"
+        - CONDA_ALL_DEPENDENCIES='suds-jurko Cython jinja2 scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
+        - CONDA_ALL_DEPENDENCIES2="glymur openjpeg $CONDA_ALL_DEPENDENCIES"
 
 
 #    matrix:
@@ -57,7 +57,7 @@ matrix:
          # # Try MacOS X
          - os: osx
            env: JOB="Py2" PYTHON_VERSION=2.7 SETUP_CMD='test'
-                CONDA_DEPENDENCIES="suds-jurko glymur $CONDA_ALL_DEPENDENCIES" #Without openjpeg
+                CONDA_DEPENDENCIES="glymur $CONDA_ALL_DEPENDENCIES" #Without openjpeg
 
          # Try on Linux
          - os: linux
@@ -111,7 +111,7 @@ script:
 
 # after_success:
 #     - if [[ $SETUP_CMD == *coverage* ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
-      
+
 # Notify the IRC channel of build status
 notifications:
   irc: "chat.freenode.net#SunPy"
