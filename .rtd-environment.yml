@@ -1,4 +1,8 @@
 name: sunpy-rtd
+channels:
+    - astropy
+    - sunpy
+    - jevans
 dependencies:
 - astropy
 - beautiful-soup
