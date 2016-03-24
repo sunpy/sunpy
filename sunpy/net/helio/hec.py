@@ -1,7 +1,7 @@
 """
 Access the Helio Event Catalogue
 """
-from __future__ import print_function
+from __future__ import print_function, absolute_import
 from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.net.helio import parser
 from sunpy.time import parse_time
