@@ -72,7 +72,7 @@ matrix:
                 ASTROPY_VERSION='development' CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
          - os: linux
            env: JOB="Py2Sphinx" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -w'
-                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES PIP_DEPENDENCIES='sphinx-gallery'
          - os: linux
            env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage'
                 CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov suds-jurko'
