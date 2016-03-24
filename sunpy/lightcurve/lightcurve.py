@@ -382,7 +382,8 @@ for compatibility with map, please use meta instead""", Warning)
 
     def concatenate(self, otherlightcurve):
         """Concatenate another light curve. This function will check and remove
-        any duplicate times.
+        any duplicate times. It will keep the column values from the original
+        lightcurve to which the new lightcurve is being added.
 
         Parameters
         ----------
@@ -403,7 +404,8 @@ for compatibility with map, please use meta instead""", Warning)
         data = self.data.copy().append(otherlightcurve.data)
 
         data['index'] = data.index
-        data = data.drop_duplicates(subset='index')
+        # added keep keyword to be explicit about which value is kept
+        data = data.drop_duplicates(subset='index', keep='first')
         data.set_index = data['index']
         data.drop('index', axis=1, inplace=True)
         return self.__class__.create(data, meta)
