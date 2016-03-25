@@ -1,6 +1,3 @@
-0.6.4
------
-
 0.6.3
 ------
 * Change setup.py extras to install suds-jurko not suds.
