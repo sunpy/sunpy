@@ -63,6 +63,7 @@ class LightCurve(object):
         self.data = pandas.DataFrame(data)
         if meta == '' or meta is None:
             self.meta = OrderedDict()
+            self.meta.update({'name':None})
         else:
             self.meta = OrderedDict(meta)
 
