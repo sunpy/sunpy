@@ -398,8 +398,9 @@ for compatibility with map, please use meta instead""", Warning)
         if not isinstance(otherlightcurve, self.__class__):
             raise TypeError("Lightcurve classes must match.")
 
-        # TODO need to concatenate the two meta objects. Currently only keeps first.
-        meta = self.meta.copy()
+        meta = OrderedDict()
+        meta.update({str(self.data.index[0]):self.meta.copy()})
+        meta.update({str(otherlightcurve.data.index[0]):otherlightcurve.meta.copy()})
 
         data = self.data.copy().append(otherlightcurve.data)
 
