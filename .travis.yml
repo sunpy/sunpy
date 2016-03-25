@@ -41,7 +41,7 @@ env:
         - TEST_MODE='offline'
         - NUMPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
-        - CONDA_CHANNELS='astropy astropy-ci-extras sunpy jevans'
+        - CONDA_CHANNELS='astropy astropy-ci-extras sunpy jevans https://conda.anaconda.org/sunpy/label/citesting'
         - CONDA_ALL_DEPENDENCIES='Cython jinja2 scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
         - CONDA_ALL_DEPENDENCIES2="suds-jurko glymur openjpeg $CONDA_ALL_DEPENDENCIES"
 
