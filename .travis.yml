@@ -42,8 +42,9 @@ env:
         - NUMPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
         - CONDA_CHANNELS='astropy astropy-ci-extras sunpy jevans https://conda.anaconda.org/sunpy/label/citesting openastronomy'
-        - CONDA_ALL_DEPENDENCIES='suds-jurko Cython jinja2 scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
-        - CONDA_ALL_DEPENDENCIES2='glymur openjpeg suds-jurko Cython jinja2 scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
+        - CONDA_ALL_DEPENDENCIES='Cython jinja2 scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
+        - CONDA_ALL_DEPENDENCIES2='glymur openjpeg Cython jinja2 scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
+        - PIP_DEPENDENCIES='suds-jurko'
 
 
 #    matrix:
