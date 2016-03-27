@@ -20,6 +20,7 @@ from sunpy.time import parse_time
 from sunpy.io import fits, file_tools as sunpy_filetools
 from sunpy.util import print_table
 from sunpy.extern.six.moves import map as imap
+from sunpy.extern import six
 
 from sunpy import config
 
@@ -468,7 +469,7 @@ def entries_from_file(file, default_waveunit=None):
 
     """
     headers = fits.get_header(file)
-    if isinstance(file, (str, unicode)):
+    if isinstance(file, (str, six.text_type)):
         filename = file
     else:
         filename = getattr(file, 'name', None)
