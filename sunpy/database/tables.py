@@ -475,14 +475,14 @@ def entries_from_file(file, default_waveunit=None):
         filename = getattr(file, 'name', None)
     for header in headers:
         entry = DatabaseEntry(path=filename)
-        for key, value in header.iteritems():
+        for key, value in six.iteritems(header):
             # Yes, it is possible to have an empty key in a FITS file.
             # Example: sunpy.data.sample.EIT_195_IMAGE
             # Don't ask me why this could be a good idea.
             if key == '':
                 value = str(value)
             elif key == 'KEYCOMMENTS':
-                for k, v in value.iteritems():
+                for k, v in six.iteritems(value):
                     entry.fits_key_comments.append(FitsKeyComment(k, v))
                 continue
             entry.fits_header_entries.append(FitsHeaderEntry(key, value))
