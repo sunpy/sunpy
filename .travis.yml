@@ -89,6 +89,10 @@ matrix:
          - os: linux
            env: JOB="Py3" PYTHON_VERSION=3.4 MAIN_CMD='continuous-integration/python3.sh'
                 SETUP_CMD='' CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES DEBUG=True
+         - os: linux
+           env: JOB="Py3.4" PYTHON_VERSION=3.4 SETUP_CMD='test'
+         - os: linux
+           env: JOB="Py3.5" PYTHON_VERSION=3.5 SETUP_CMD='test'
 
     # allow_failures has to repeat the environment from the matrix above to mark it as such
     allow_failures:
@@ -96,6 +100,9 @@ matrix:
              CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
       - env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage'
              CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov'
+      - env: JOB="Py3.4" PYTHON_VERSION=3.4 SETUP_CMD='test'
+      - env: JOB="Py3.5" PYTHON_VERSION=3.5 SETUP_CMD='test'
+
 
 install:
     - echo $CONDA_DEPENDENCIES
