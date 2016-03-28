@@ -9,14 +9,13 @@ __author__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
-import urllib
-import urllib2
-
 import json
-
+import codecs
 import sunpy
 from sunpy.time import parse_time
 from sunpy.util.net import download_fileobj
+
+from sunpy.extern.six.moves import urllib
 
 __all__ = ['HelioviewerClient']
 
@@ -218,15 +217,16 @@ class HelioviewerClient(object):
         """Returns True if Helioviewer is online and available."""
         try:
             self.get_data_sources()
-        except urllib2.URLError:
+        except urllib.error.URLError:
             return False
 
         return True
 
     def _get_json(self, params):
         """Returns a JSON result as a string"""
-        response = self._request(params).read()
-        return json.loads(response)
+        reader = codecs.getreader("utf-8")
+        response = self._request(params)
+        return json.load(reader(response))
 
     def _get_file(self, params, directory=None, overwrite=False):
         """Downloads a file and return the filepath to that file"""
@@ -256,7 +256,8 @@ class HelioviewerClient(object):
         -------
         out : result of request
         """
-        response = urllib2.urlopen(self._api, urllib.urlencode(params))
+        response = urllib.request.urlopen(
+            self._api, urllib.parse.urlencode(params).encode('utf-8'))
 
         return response
 
