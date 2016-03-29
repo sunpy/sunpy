@@ -101,7 +101,7 @@ matrix:
       - env: JOB="Py2Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
              CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
       - env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage'
-             CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov'
+             CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov suds-jurko'
       - env: JOB="Py3.4" PYTHON_VERSION=3.4 SETUP_CMD='test' ASTROPY_VERSION='stable'
              CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES DEBUG=True
       - env: JOB="Py3.5" PYTHON_VERSION=3.5 SETUP_CMD='test' ASTROPY_VERSION='stable'
