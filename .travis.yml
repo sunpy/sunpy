@@ -75,7 +75,7 @@ matrix:
                 CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
          - os: linux
            env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage'
-                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov'
+                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov suds-jurko'
          - os: linux
            env: JOB="Py2Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
                 CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
