@@ -8,6 +8,8 @@ from __future__ import absolute_import
 from abc import ABCMeta, abstractmethod, abstractproperty
 from collections import MutableMapping, OrderedDict, Counter
 
+from sunpy.extern import six
+
 __all__ = ['BaseCache', 'LRUCache', 'LFUCache']
 
 
@@ -124,7 +126,7 @@ class BaseCache(object):
             yield value
 
     def iteritems(self):  # pragma: no cover
-        for key, value in self._dict.iteritems():
+        for key, value in six.iteritems(self._dict):
             yield key, value
 
     def update(self, *args, **kwds):  # pragma: no cover
@@ -231,7 +233,7 @@ class LFUCache(BaseCache):
         """
         min_ = float('inf')
         lfu_key = None
-        for k, v in self.usage_counter.iteritems():
+        for k, v in six.iteritems(self.usage_counter):
             if v < min_:
                 min_ = v
                 lfu_key = k

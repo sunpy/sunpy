@@ -15,10 +15,12 @@ import sys
 import pytest
 import sqlalchemy
 
+from astropy import units
+
 import sunpy
 from sunpy.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
-    EntryNotFoundError, TagAlreadyAssignedError, disable_undo
+    EntryNotFoundError, TagAlreadyAssignedError, disable_undo, split_database
 from sunpy.database.tables import DatabaseEntry, Tag, FitsHeaderEntry,\
     FitsKeyComment, JSONDump
 from sunpy.database.commands import EmptyCommandStackError, NoSuchEntryError
@@ -840,3 +842,63 @@ def test_disable_undo(database, download_query, tmpdir):
         db.clear()
     with pytest.raises(EmptyCommandStackError):
         database.undo()
+
+
+@pytest.fixture
+def default_waveunit_database():
+    unit_database = Database('sqlite:///:memory:', default_waveunit = units.meter)
+    str_database = Database('sqlite:///:memory:', default_waveunit = "m")
+    return unit_database, str_database
+
+
+def test_default_waveunit(default_waveunit_database):
+    unit_database, str_database = default_waveunit_database
+    assert isinstance(unit_database.default_waveunit, units.UnitBase)
+    assert isinstance(str_database.default_waveunit, units.UnitBase)
+
+
+@pytest.fixture
+def split_function_database():
+    """
+    Generates a custom database to test the split_database function
+    """
+    database = Database('sqlite:///:memory:')
+    for i in xrange(1, 11):
+        entry = DatabaseEntry()
+        database.add(entry)
+        # every fourth entry gets the instrument 'EIA'
+        if i % 4 == 0:
+            database.edit(entry, instrument='EIA')
+        # every fifth entry gets the instrument 'AIA_3'
+        elif i % 5 == 0:
+            database.edit(entry, instrument='AIA_3')
+        # every other entry gets instrument 'RHESSI'
+        else:
+            database.edit(entry, instrument='RHESSI')
+        # all  entries have provider 'xyz'
+        database.edit(entry, provider='xyz')
+    database.commit()
+    return database
+
+
+def test_split_database(split_function_database, database):
+    #Send all entries with instrument='EIA' to destination_database
+    split_function_database, database = split_database(split_function_database, database, vso.attrs.Instrument('EIA'))
+
+    observed_source_entries = split_function_database.query(vso.attrs.Provider('xyz'), sortby='id')
+    observed_destination_entries = database.query(vso.attrs.Provider('xyz'))
+
+    assert observed_source_entries == [
+            DatabaseEntry(id=1,instrument='RHESSI', provider='xyz'),
+            DatabaseEntry(id=2,instrument='RHESSI', provider='xyz'),
+            DatabaseEntry(id=3,instrument='RHESSI', provider='xyz'),
+            DatabaseEntry(id=5,instrument='AIA_3', provider='xyz'),
+            DatabaseEntry(id=6,instrument='RHESSI', provider='xyz'),
+            DatabaseEntry(id=7,instrument='RHESSI', provider='xyz'),
+            DatabaseEntry(id=9,instrument='RHESSI', provider='xyz'),
+            DatabaseEntry(id=10,instrument='AIA_3', provider='xyz'),
+    ]
+    assert observed_destination_entries == [
+            DatabaseEntry(id=4,instrument='EIA', provider='xyz'),
+            DatabaseEntry(id=8,instrument='EIA', provider='xyz'),
+    ]

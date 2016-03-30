@@ -41,9 +41,10 @@ env:
         - TEST_MODE='offline'
         - NUMPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
-        - CONDA_CHANNELS='astropy astropy-ci-extras sunpy jevans'
-        - CONDA_ALL_DEPENDENCIES='Cython jinja2 scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
-        - CONDA_ALL_DEPENDENCIES2="suds-jurko glymur openjpeg $CONDA_ALL_DEPENDENCIES"
+        - CONDA_CHANNELS='astropy astropy-ci-extras sunpy jevans https://conda.anaconda.org/sunpy/label/citesting openastronomy'
+        - CONDA_ALL_DEPENDENCIES='glymur Cython jinja2 scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
+        - CONDA_ALL_DEPENDENCIES2='glymur openjpeg Cython jinja2 scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
+        - PIP_DEPENDENCIES='suds-jurko'
 
 
 #    matrix:
@@ -57,7 +58,7 @@ matrix:
          # # Try MacOS X
          - os: osx
            env: JOB="Py2" PYTHON_VERSION=2.7 SETUP_CMD='test'
-                CONDA_DEPENDENCIES="suds-jurko glymur $CONDA_ALL_DEPENDENCIES" #Without openjpeg
+                CONDA_DEPENDENCIES="$CONDA_ALL_DEPENDENCIES" #Without openjpeg
 
          # Try on Linux
          - os: linux
@@ -74,7 +75,7 @@ matrix:
                 CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
          - os: linux
            env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage'
-                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov'
+                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov suds-jurko'
          - os: linux
            env: JOB="Py2Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
                 CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
@@ -87,14 +88,24 @@ matrix:
                 NUMPY_VERSION=$FIGURES_NUMPY MATPLOTLIB_VERSION=$FIGURES_MPL
          - os: linux
            env: JOB="Py3" PYTHON_VERSION=3.4 MAIN_CMD='continuous-integration/python3.sh'
-                SETUP_CMD='' CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES
+                SETUP_CMD='' CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES DEBUG=True
+         - os: linux
+           env: JOB="Py3.4" PYTHON_VERSION=3.4 SETUP_CMD='test' ASTROPY_VERSION='stable'
+                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES DEBUG=True
+         - os: linux
+           env: JOB="Py3.5" PYTHON_VERSION=3.5 SETUP_CMD='test' ASTROPY_VERSION='stable'
+                DEBUG=True CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES
 
     # allow_failures has to repeat the environment from the matrix above to mark it as such
     allow_failures:
       - env: JOB="Py2Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
              CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
       - env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage'
-             CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov'
+             CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov suds-jurko'
+      - env: JOB="Py3.4" PYTHON_VERSION=3.4 SETUP_CMD='test' ASTROPY_VERSION='stable'
+             CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES DEBUG=True
+      - env: JOB="Py3.5" PYTHON_VERSION=3.5 SETUP_CMD='test' ASTROPY_VERSION='stable'
+             DEBUG=True CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES
 
 install:
     - echo $CONDA_DEPENDENCIES
@@ -111,7 +122,7 @@ script:
 
 # after_success:
 #     - if [[ $SETUP_CMD == *coverage* ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
-      
+
 # Notify the IRC channel of build status
 notifications:
   irc: "chat.freenode.net#SunPy"

@@ -1,6 +1,6 @@
 """Provides programs to process and analyse Fermi/GBM lightcurve data."""
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 
 import urlparse
@@ -99,19 +99,22 @@ class GBMSummaryLightCurve(LightCurve):
             final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/%d/' + 'current/' +
                                                               'glg_cspec_'+det+'_%y%m%d_v00.pha'))
         else:
-            #if user doesn't specify a detector, find the one pointing closest to the Sun.'
-            #OR: maybe user should have to specify detector or fail.
+            # if user doesn't specify a detector, find the one pointing closest to the Sun.'
+            # OR: maybe user should have to specify detector or fail.
             det = cls._get_closest_detector_for_date(date)
-            print 'No detector specified. Detector with smallest mean angle to Sun is ' + str(det)
-            print 'Using Detector ' + str(det)
-            print 'For Fermi detector pointing information, use tools in sunpy/instr/fermi'
-            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/%d/' + 'current/' +
-                                                              'glg_cspec_'+det+'_%y%m%d_v00.pha'))
+            print('No detector specified. Detector with smallest mean angle '
+                  'to Sun is ' + str(det))
+            print('Using Detector ' + str(det))
+            print('For Fermi detector pointing information, use tools in '
+                  'sunpy/instr/fermi')
+            final_url = urlparse.urljoin(
+                baseurl, date.strftime('%Y/%m/%d/' + 'current/' +
+                                       'glg_cspec_' + det + '_%y%m%d_v00.pha'))
 
         return final_url
 
     @classmethod
-    def _get_closest_detector_for_date(cls,date,**kwargs):
+    def _get_closest_detector_for_date(cls, date, **kwargs):
         """Returns the GBM detector with the smallest mean angle to the Sun
         for the given date"""
         pointing_file = fermi.download_weekly_pointing_file(date)
