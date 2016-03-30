@@ -24,6 +24,7 @@ from sunpy.database.attrs import walker
 from sunpy.net.hek2vso import H2VClient
 from sunpy.net.attr import and_
 from sunpy.net.vso import VSOClient
+from sunpy.extern.six.moves import xrange as range
 
 __authors__ = ['Simon Liedtke', 'Rajul Srivastava']
 __emails__ = [
@@ -133,7 +134,7 @@ def split_database(source_database, destination_database, *query_string):
         A variable number of attributes that are chained together via the
         boolean AND operator. The | operator may be used between attributes
         to express the boolean OR operator.
-    
+
     Examples
     --------
     The function call in the following example moves those entries from
@@ -949,7 +950,7 @@ class Database(object):
             start = 0 if key.start is None else key.start
             stop = len(self) if key.stop is None else key.stop
             step = 1 if key.step is None else key.step
-            for i in xrange(start, stop, step):
+            for i in range(start, stop, step):
                 try:
                     entry = self[i]
                 except IndexError:

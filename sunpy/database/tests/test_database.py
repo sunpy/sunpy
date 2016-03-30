@@ -6,11 +6,9 @@
 from __future__ import absolute_import
 
 import glob
-import ConfigParser
 import os
 import os.path
 import shutil
-import sys
 
 import pytest
 import sqlalchemy
@@ -29,11 +27,14 @@ from sunpy.database import attrs
 from sunpy.net import vso, hek
 from sunpy.data.test.waveunit import waveunitdir
 from sunpy.io import fits
+from sunpy.extern.six.moves import xrange as range
+from sunpy.extern.six.moves import configparser
 
 import sunpy.data.test
 
 testpath = sunpy.data.test.rootdir
 RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
+
 
 @pytest.fixture
 def database_using_lrucache():
@@ -55,6 +56,7 @@ def query_result():
     return vso.VSOClient().query(
         vso.attrs.Time('20130801T200000', '20130801T200030'),
         vso.attrs.Instrument('PLASTIC'))
+
 
 @pytest.fixture
 def download_qr():
@@ -80,7 +82,7 @@ def download_query():
 @pytest.fixture
 def filled_database():
     database = Database('sqlite:///:memory:')
-    for i in xrange(1, 11):
+    for i in range(1, 11):
         entry = DatabaseEntry()
         database.add(entry)
         # every fourth entry gets the tag 'foo'
@@ -92,18 +94,21 @@ def filled_database():
     database.commit()
     return database
 
+
 def test_config_url(monkeypatch):
-    monkeypatch.setattr("sunpy.config", ConfigParser.SafeConfigParser())
+    monkeypatch.setattr("sunpy.config", configparser.SafeConfigParser())
     url = 'sqlite:///'
     sunpy.config.add_section('database')
     sunpy.config.set('database', 'url', url)
     database = Database()
     assert database.url == url
 
+
 def test_config_url_none(monkeypatch):
-    monkeypatch.setattr("sunpy.config", ConfigParser.SafeConfigParser())
-    with pytest.raises(ConfigParser.NoSectionError):
+    monkeypatch.setattr("sunpy.config", configparser.SafeConfigParser())
+    with pytest.raises(configparser.NoSectionError):
         Database()
+
 
 def test_tags_unique(database):
     entry = DatabaseEntry()
@@ -118,7 +123,7 @@ def test_tags_unique(database):
 def test_setting_cache_size(database_using_lrucache):
     assert database_using_lrucache.cache_maxsize == 3
     assert database_using_lrucache.cache_size == 0
-    for _ in xrange(5):
+    for _ in range(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 3
     assert database_using_lrucache.cache_size == 3
@@ -126,7 +131,7 @@ def test_setting_cache_size(database_using_lrucache):
     database_using_lrucache.set_cache_size(5)
     assert database_using_lrucache.cache_size == 3
     assert database_using_lrucache.cache_maxsize == 5
-    for _ in xrange(5):
+    for _ in range(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 5
     assert database_using_lrucache.cache_size == 5
@@ -136,7 +141,7 @@ def test_setting_cache_size(database_using_lrucache):
 def test_setting_cache_size_shrinking(database_using_lrucache):
     assert database_using_lrucache.cache_maxsize == 3
     assert database_using_lrucache.cache_size == 0
-    for _ in xrange(5):
+    for _ in range(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 3
     assert database_using_lrucache.cache_maxsize == 3
@@ -148,7 +153,7 @@ def test_setting_cache_size_shrinking(database_using_lrucache):
     assert list(database_using_lrucache) == [
         DatabaseEntry(id=4),
         DatabaseEntry(id=5)]
-    for _ in xrange(5):
+    for _ in range(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 2
     assert database_using_lrucache.cache_maxsize == 2
@@ -158,7 +163,7 @@ def test_setting_cache_size_shrinking(database_using_lrucache):
 def test_setting_cache_size_undo(database_using_lrucache):
     assert database_using_lrucache.cache_maxsize == 3
     assert database_using_lrucache.cache_size == 0
-    for _ in xrange(5):
+    for _ in range(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 3
     database_using_lrucache.set_cache_size(1)
@@ -363,7 +368,7 @@ def test_unstar_undo(database):
 
 def test_add_many(database):
     assert len(database) == 0
-    database.add_many((DatabaseEntry() for _ in xrange(5)))
+    database.add_many((DatabaseEntry() for _ in range(5)))
     assert len(database) == 5
     database.undo()
     with pytest.raises(EmptyCommandStackError):
@@ -863,7 +868,7 @@ def split_function_database():
     Generates a custom database to test the split_database function
     """
     database = Database('sqlite:///:memory:')
-    for i in xrange(1, 11):
+    for i in range(1, 11):
         entry = DatabaseEntry()
         database.add(entry)
         # every fourth entry gets the instrument 'EIA'
@@ -889,16 +894,16 @@ def test_split_database(split_function_database, database):
     observed_destination_entries = database.query(vso.attrs.Provider('xyz'))
 
     assert observed_source_entries == [
-            DatabaseEntry(id=1,instrument='RHESSI', provider='xyz'),
-            DatabaseEntry(id=2,instrument='RHESSI', provider='xyz'),
-            DatabaseEntry(id=3,instrument='RHESSI', provider='xyz'),
-            DatabaseEntry(id=5,instrument='AIA_3', provider='xyz'),
-            DatabaseEntry(id=6,instrument='RHESSI', provider='xyz'),
-            DatabaseEntry(id=7,instrument='RHESSI', provider='xyz'),
-            DatabaseEntry(id=9,instrument='RHESSI', provider='xyz'),
-            DatabaseEntry(id=10,instrument='AIA_3', provider='xyz'),
+        DatabaseEntry(id=1, instrument='RHESSI', provider='xyz'),
+        DatabaseEntry(id=2, instrument='RHESSI', provider='xyz'),
+        DatabaseEntry(id=3, instrument='RHESSI', provider='xyz'),
+        DatabaseEntry(id=5, instrument='AIA_3', provider='xyz'),
+        DatabaseEntry(id=6, instrument='RHESSI', provider='xyz'),
+        DatabaseEntry(id=7, instrument='RHESSI', provider='xyz'),
+        DatabaseEntry(id=9, instrument='RHESSI', provider='xyz'),
+        DatabaseEntry(id=10, instrument='AIA_3', provider='xyz'),
     ]
     assert observed_destination_entries == [
-            DatabaseEntry(id=4,instrument='EIA', provider='xyz'),
-            DatabaseEntry(id=8,instrument='EIA', provider='xyz'),
+        DatabaseEntry(id=4, instrument='EIA', provider='xyz'),
+        DatabaseEntry(id=8, instrument='EIA', provider='xyz'),
     ]
