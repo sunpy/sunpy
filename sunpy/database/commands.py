@@ -13,6 +13,8 @@ from sqlalchemy.exc import InvalidRequestError
 
 from sunpy.extern import six
 
+from sunpy.extern.six.moves import xrange as range
+
 __all__ = [
     'EmptyCommandStackError', 'NoSuchEntryError', 'NonRemovableTagError',
     'DatabaseOperation', 'AddEntry', 'RemoveEntry', 'EditEntry',
@@ -354,7 +356,7 @@ class CommandManager(object):
         :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
 
         """
-        for _ in xrange(n):
+        for _ in range(n):
             command = self.pop_undo_command()
             command.undo()
             self.push_redo_command(command)
@@ -367,7 +369,7 @@ class CommandManager(object):
         :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
 
         """
-        for _ in xrange(n):
+        for _ in range(n):
             command = self.pop_redo_command()
             command()
             self.push_undo_command(command)
