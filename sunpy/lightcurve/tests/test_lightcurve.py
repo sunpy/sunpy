@@ -63,11 +63,10 @@ def test_concatenate_with_overlap(overlap_factor):
     assert len(concat_lc.data) == (len(lc1.data) + len(lc2.data) - overlap_factor)
     # check that the times are correct
     assert np.all(concat_lc.data.index[0:len(dates)] == lc1.data.index)
+    # check that the original data is still there
     assert np.all(concat_lc.data.index[-len(lc2.data)+overlap_factor:] == lc2.data.index[overlap_factor:])
+    # check that the new data is there
     assert np.all(concat_lc.data[-len(lc2.data)+overlap_factor:] == lc2.data[overlap_factor:])
-    # check that the data are correct
-    #assert np.all(concat_lc.data[dates[0]:dates[-1]] == lc1.data)
-    #assert np.all(concat_lc.data[shifted_dates[0]:shifted_dates[-1]] == lc2.data)
 
 
 def test_concatenate_meta():
