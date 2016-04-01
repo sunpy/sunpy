@@ -7,6 +7,7 @@ from __future__ import absolute_import
 import os
 import pytest
 import datetime
+import warnings
 
 import numpy as np
 
@@ -483,3 +484,29 @@ def test_plot_masked_aia171_nowcsaxes(aia171_test_map):
     masked_map = sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
     ax = plt.gca()
     masked_map.plot(axes=ax)
+
+def test_validate_meta(generic_map):
+    """Check to see if_validate_meta displays an appropriate error"""
+    with warnings.catch_warnings(record=True) as w:
+        bad_header = {'CRVAL1': 0,
+                'CRVAL2': 0,
+                'CRPIX1': 5,
+                'CRPIX2': 5,
+                'CDELT1': 10,
+                'CDELT2': 10,
+                'CUNIT1': 'ARCSEC',
+                'CUNIT2': 'ARCSEC',
+                'PC1_1': 0,
+                'PC1_2': -1,
+                'PC2_1': 1,
+                'PC2_2': 0,
+                'NAXIS1': 6,
+                'NAXIS2': 6,
+                'date-obs': '1970/01/01T00:00:00',
+                'obsrvtry': 'Foo',
+                'detector': 'bar',
+                'wavelnth': 10,
+                'waveunit': 'ANGSTROM'}
+        bad_map=sunpy.map.Map((generic_map.data, bad_header))
+        for count, meta_property in enumerate(('cunit1', 'cunit2', 'waveunit')):
+            assert meta_property.upper() in str(w[count].message)

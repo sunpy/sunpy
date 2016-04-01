@@ -181,7 +181,7 @@ class GenericMap(NDData):
 
         # Validate header
         # TODO: This should be a function of the header, not of the map
-        self._validate()
+        self._validate_meta()
         self._shift = Pair(0 * u.arcsec, 0 * u.arcsec)
 
         if self.dtype == np.uint8:
@@ -598,15 +598,25 @@ scale:\t\t {scale}
         cmap_string = self.observatory + self.meta['detector'] + str(int(self.wavelength.to('angstrom').value))
         return cmap_string.lower()
 
-    def _validate(self):
+    def _validate_meta(self):
         """Validates the meta-information associated with a Map.
 
-        This function includes very basic validation checks which apply to
+        This method includes very basic validation checks which apply to
         all of the kinds of files that SunPy can read. Datasource-specific
         validation should be handled in the relevant file in the
-        sunpy.map.sources package."""
+        sunpy.map.sources package.
+
+        Allows for default unit assignment for:
+            CUNIT1, CUNIT2, WAVEUNIT,  """
 #        if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
 #            raise InvalidHeaderInformation("Invalid value for DSUN")
+
+        warnings.simplefilter('always', Warning)
+
+        for meta_property in ('cunit1', 'cunit2', 'waveunit'):
+            if (self.meta.get(meta_property)) and (u.Unit(self.meta.get(meta_property), parse_strict = 'silent').physical_type == 'unknown'):
+                warnings.warn("Unknown value for "+meta_property.upper(), Warning)
+
         pass
 
 # #### Data conversion routines #### #
