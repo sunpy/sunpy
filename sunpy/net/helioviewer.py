@@ -24,15 +24,16 @@ class HelioviewerClient(object):
     """Helioviewer.org Client"""
     def __init__(self, url="http://legacy.helioviewer.org/api/"):
         """
-        :param url: location of the Helioviewer API.  The default location
-        points to version 1 of the API.  Version 1 of the Helioviewer API is
-        currently planned to be supported until the end of April 2017.
+        url : location of the Helioviewer API.  The default location points to
+            version 1 of the API.  Version 1 of the Helioviewer API is
+            currently planned to be supported until the end of April 2017.
         """
         self._api = url
 
     def get_data_sources(self, **kwargs):
-        """Returns a structured list of datasources available at
-        Helioviewer.org"""
+        """
+        Returns a structured list of datasources available at helioviewer.org.
+        """
         params = {"action": "getDataSources"}
         params.update(kwargs)
 
