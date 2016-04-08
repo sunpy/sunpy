@@ -43,8 +43,8 @@ class HelioviewerClient(object):
         """Finds the closest image available for the specified source and date.
 
         For more information on what types of requests are available and the
-        expected usage for the response, consult the Helioviewer
-        API documentation: http://helioviewer.org/api
+        expected usage for the response, consult the Helioviewer API
+        documentation: http://legacy.helioviewer.org/api/docs/v1/ .
 
         Parameters
         ----------
