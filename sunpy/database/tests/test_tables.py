@@ -158,9 +158,9 @@ def test_entries_from_file():
         FitsHeaderEntry('COMMENT', ''),
         FitsHeaderEntry('HISTORY', '')]
     assert entry.fits_header_entries == expected_fits_header_entries
-    assert entry.fits_key_comments == [
+    assert entry.fits_key_comments.sort() == [
         FitsKeyComment('SIMPLE', 'Written by IDL:  Mon Aug 12 08:48:08 2013'),
-        FitsKeyComment('BITPIX', 'Integer*2 (short integer)')]
+        FitsKeyComment('BITPIX', 'Integer*2 (short integer)')].sort()
     assert entry.instrument == 'Spectroheliograph'
     assert entry.observation_time_start == datetime(2013, 8, 12, 8, 42, 53)
     assert entry.observation_time_end == datetime(2013, 8, 12, 8, 42, 53)
@@ -229,7 +229,7 @@ def test_entries_from_dir():
         FitsHeaderEntry('SOLAR_R', 64.0),
         FitsHeaderEntry('COMMENT', ''),
         FitsHeaderEntry('HISTORY', '')]
-    assert entry.fits_key_comments == [
+    assert entry.fits_key_comments.sort() == [
         FitsKeyComment('WAVEUNIT', 'in meters'),
         FitsKeyComment('NAXIS2', 'number of rows'),
         FitsKeyComment('CDELT2', 'pixel scale y, in solar radius/pixel'),
@@ -245,7 +245,7 @@ def test_entries_from_dir():
         FitsKeyComment('BITPIX', 'IEEE 32-bit floating point values'),
         FitsKeyComment('DATE', 'Date of file creation'),
         FitsKeyComment('FREQUNIT', 'in MHz'),
-        FitsKeyComment('EXPTIME', 'in seconds')]
+        FitsKeyComment('EXPTIME', 'in seconds')].sort()
 
 
 def test_entries_from_dir_recursively_true():

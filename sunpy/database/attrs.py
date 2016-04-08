@@ -54,6 +54,9 @@ class _BooleanAttr(object):
     def __eq__(self, other):
         return isinstance(other, self.make) and self.value == other.value
 
+    def __hash__(self):
+        return super(_BooleanAttr, self).__hash__()
+
     def collides(self, other):  # pragma: no cover
         return False
 
