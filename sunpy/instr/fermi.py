@@ -4,8 +4,6 @@ from __future__ import division
 
 import os
 import copy
-import urllib
-import urllib2
 from collections import OrderedDict
 import tempfile
 
@@ -18,16 +16,18 @@ from astropy.coordinates import Longitude, Latitude
 from sunpy.time import parse_time, TimeRange
 from sunpy import sun
 from sunpy.io.fits import fits
+from sunpy.extern.six.moves import urllib
 
 __all__ = ['download_weekly_pointing_file', 'get_detector_sun_angles_for_time',
-            'get_detector_sun_angles_for_date','plot_detector_sun_angles',
-             'met_to_utc']
+           'get_detector_sun_angles_for_date', 'plot_detector_sun_angles',
+           'met_to_utc']
+
 
 def download_weekly_pointing_file(date):
     """
-    Downloads the FERMI/LAT weekly pointing file corresponding to the specified date.
-    This file contains 1 minute cadence data on the spacecraft pointing, useful for
-    calculating detector angles.
+    Downloads the FERMI/LAT weekly pointing file corresponding to the
+    specified date.  This file contains 1 minute cadence data on the
+    spacecraft pointing, useful for calculating detector angles.
 
     Parameters
     ----------
@@ -74,13 +74,14 @@ def download_weekly_pointing_file(date):
     # search through version numbers starting from most recent (10) until we
     # find a file. This will find the most up to date file.
     for v in range(10, -1, -1):
-        rest_of_filename = full_fname_start + '0' + str(v) + full_fname_extension
-        full_fname = base_url + rest_of_filename  # full_fname_start + '0' + str(v) + full_fname_extension
+        # full_fname_start + '0' + str(v) + full_fname_extension
+        rest_of_filename = (full_fname_start + '0' + str(v) +
+                            full_fname_extension)
+        full_fname = base_url + rest_of_filename
         try:
-            resp = urllib2.urlopen(full_fname)
+            urllib.request.urlopen(full_fname)
             exists = True
-        except:
-            urllib2.HTTPError
+        except urllib.error.HTTPError:
             exists = False
         # if the file exists then exit and retain this filepath
         if exists:
@@ -91,9 +92,9 @@ def download_weekly_pointing_file(date):
         raise ValueError('No Fermi pointing files found for given date!')
 
     # download the file
-    pointing_file_url=full_fname
-    destination=os.path.join(tmp_dir,rest_of_filename)
-    urllib.urlretrieve(pointing_file_url,destination)
+    pointing_file_url = full_fname
+    destination = os.path.join(tmp_dir, rest_of_filename)
+    urllib.request.urlretrieve(pointing_file_url, destination)
 
     # return the location of the downloaded file
     return destination
@@ -413,7 +414,7 @@ def get_detector_separation_angles(detector_radecs, sunpos):
             Two-element list containing the RA/DEC of the Sun position as
             AstroPy Quantities, e.g. [<Longitude 73.94 deg>,
             <Latitude 22.66 deg>]
-    
+
     """
     angles = copy.deepcopy(detector_radecs)
     for l, d in detector_radecs.items():

@@ -5,7 +5,6 @@ import datetime
 from warnings import warn
 import copy
 import csv
-import urllib
 import sqlite3
 
 import numpy as np
@@ -16,6 +15,8 @@ from sunpy.time import parse_time
 from sunpy import config
 from sunpy.util.net import check_download_file
 from sunpy import lightcurve
+
+from sunpy.extern.six.moves import urllib
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 LYTAF_PATH = config.get("downloads", "download_dir")
@@ -571,7 +572,7 @@ def download_lytaf_database(lytaf_dir=''):
     """download latest Proba2 pointing database from Proba2 Science Center"""
     url = 'http://proba2.oma.be/lyra/data/lytaf/annotation_ppt.db'
     destination = os.path.join(lytaf_dir, 'annotation_ppt.db')
-    urllib.urlretrieve(url, destination)
+    urllib.request.urlretrieve(url, destination)
 
     return
 
