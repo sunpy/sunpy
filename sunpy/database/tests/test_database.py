@@ -665,14 +665,14 @@ def test_lru_cache(database_using_lrucache):
     database_using_lrucache.add(entry2)
     database_using_lrucache.add(entry3)
     assert len(database_using_lrucache) == 3
-    assert database_using_lrucache._cache.items() == [
+    assert list(database_using_lrucache._cache.items()) == [
         (1, entry1), (2, entry2), (3, entry3)]
     database_using_lrucache.get_entry_by_id(1)
     database_using_lrucache.get_entry_by_id(3)
     entry4 = DatabaseEntry()
     database_using_lrucache.add(entry4)
     assert len(database_using_lrucache) == 3
-    assert database_using_lrucache._cache.items() == [
+    assert list(database_using_lrucache._cache.items()) == [
         (1, entry1), (3, entry3), (4, entry4)]
 
 
@@ -683,7 +683,7 @@ def test_lfu_cache(database_using_lfucache):
     database_using_lfucache.add(entry2)
     database_using_lfucache.add(entry3)
     assert len(database_using_lfucache) == 3
-    assert database_using_lfucache._cache.items() == [
+    assert list(database_using_lfucache._cache.items()) == [
         (1, entry1), (2, entry2), (3, entry3)]
     # access the entries #1 and #2 to increment their counters
     database_using_lfucache.get_entry_by_id(1)
@@ -691,7 +691,7 @@ def test_lfu_cache(database_using_lfucache):
     entry4 = DatabaseEntry()
     database_using_lfucache.add(entry4)
     assert len(database_using_lfucache) == 3
-    assert database_using_lfucache._cache.items() == [
+    assert list(database_using_lfucache._cache.items()) == [
         (1, entry1), (2, entry2), (4, entry4)]
 
 
@@ -887,10 +887,12 @@ def split_function_database():
 
 
 def test_split_database(split_function_database, database):
-    #Send all entries with instrument='EIA' to destination_database
-    split_function_database, database = split_database(split_function_database, database, vso.attrs.Instrument('EIA'))
+    # Send all entries with instrument='EIA' to destination_database
+    split_function_database, database = split_database(
+        split_function_database, database, vso.attrs.Instrument('EIA'))
 
-    observed_source_entries = split_function_database.query(vso.attrs.Provider('xyz'), sortby='id')
+    observed_source_entries = split_function_database.query(
+        vso.attrs.Provider('xyz'), sortby='id')
     observed_destination_entries = database.query(vso.attrs.Provider('xyz'))
 
     assert observed_source_entries == [

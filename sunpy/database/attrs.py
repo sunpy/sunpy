@@ -43,7 +43,10 @@ class _BooleanAttr(object):
         attr.value = self.value or other.value
         return attr
 
-    def __nonzero__(self):
+    def __nonzero__(self):  # py 2.x
+        return self.value
+
+    def __bool__(self):  # py 3.x
         return self.value
 
     def __invert__(self):

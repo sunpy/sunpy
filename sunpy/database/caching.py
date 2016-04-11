@@ -180,7 +180,7 @@ class LRUCache(BaseCache):
         tuple.
 
         """
-        return self.iteritems().next()
+        return six.next(self.iteritems())
 
     def remove(self):
         """Remove the least recently used item."""
