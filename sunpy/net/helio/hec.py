@@ -1,6 +1,7 @@
 """
 Access the Helio Event Catalogue
 """
+from __future__ import print_function, absolute_import
 from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.net.helio import parser
 from sunpy.time import parse_time
@@ -42,7 +43,7 @@ def suds_unwrapper(wrapped_data):
     >>> client = Client(hec.parser.wsdl_retriever(), plugins=[self.votable_interceptor], transport=WellBehavedHttpTransport())
     >>> client.service.getTableNames()
     >>> temp = client.last_received().str()
-    >>> print temp
+    >>> print(temp)
     <?xml version="1.0" encoding="UTF-8"?>
     <S:Envelope ..... >
        <S:Body>
@@ -56,7 +57,7 @@ def suds_unwrapper(wrapped_data):
        </S:Body>
     </S:Envelope>
     >>> temp = hec.suds_unwrapper(temp)
-    >>> print temp
+    >>> print(temp)
     <?xml version="1.0" encoding="UTF-8"?>
     <VOTABLE xmlns="http://www.ivoa.net/xml/VOTable/v1.1" version="1.1">
         <RESOURCE>
@@ -216,7 +217,7 @@ class HECClient(object):
         --------
         >>> from sunpy.net.helio import hec
         >>> hc = hec.HECClient()
-        >>> print hc.get_table_names()   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+        >>> print(hc.get_table_names())   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
         [('timed_see_flare',) ('hi_event',) ('yohkoh_flare_list',)
          ('wind_mfi_bs_crossing_time',) ('seeds_soho',) ('seeds_stb',)
          ...
@@ -257,7 +258,7 @@ class HECClient(object):
                 table_list.append(table)
         table_list.sort()
         for index, table in enumerate(table_list):
-            print ('{number:3d}) {table}'.format(number = index + 1, table = table))
+            print(('{number:3d}) {table}'.format(number = index + 1, table = table)))
         while True:
             input = raw_input("\nPlease enter a table number between 1 and {elem:d} "
                               "('e' to exit): ".format(elem=len(table_list)))
@@ -270,5 +271,5 @@ class HECClient(object):
                 temp = table_list[temp]
                 break
             else:
-                print "Choice outside of bounds"
+                print("Choice outside of bounds")
         return temp
