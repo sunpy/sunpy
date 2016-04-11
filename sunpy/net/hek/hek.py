@@ -11,25 +11,27 @@
 from __future__ import absolute_import
 
 import json
+import codecs
 
 from itertools import chain
-from urllib2 import urlopen
-from urllib import urlencode
 from datetime import datetime
 from sunpy.net import attr
 from sunpy.net.hek import attrs
 from sunpy.net.vso import attrs as v_attrs
 from sunpy.util import unique
 from sunpy.util.xml import xml_to_dict
+from sunpy.extern.six import iteritems
+from sunpy.extern.six.moves import urllib
 
 __all__ = ['HEKClient']
 
 DEFAULT_URL = 'http://www.lmsal.com/hek/her'
 
+
 def _freeze(obj):
     """ Create hashable representation of result dict. """
     if isinstance(obj, dict):
-        return tuple((k, _freeze(v)) for k, v in obj.iteritems())
+        return tuple((k, _freeze(v)) for k, v in iteritems(obj))
     if isinstance(obj, list):
         return tuple(_freeze(elem) for elem in obj)
     return obj
@@ -58,18 +60,20 @@ class HEKClient(object):
         """ Download all data, even if paginated. """
         page = 1
         results = []
+        reader = codecs.getreader("utf-8")
 
         while True:
             data['page'] = page
-            fd = urlopen(self.url, urlencode(data))
+            fd = urllib.request.urlopen(
+                self.url, urllib.parse.urlencode(data).encode('utf-8'))
             try:
-                result = json.load(fd)
+                result = json.load(reader(fd))
             finally:
                 fd.close()
             results.extend(result['result'])
 
             if not result['overmax']:
-                return map(Response, results)
+                return list(map(Response, results))
             page += 1
 
     def query(self, *query):
@@ -130,10 +134,10 @@ class Response(dict):
             "cosec": 1,
             "ivorn": self['kb_archivid']
         }
-        url = base_url + urlencode(params)
+        url = base_url + urllib.parse.urlencode(params)
 
         # Query and read response
-        response = urlopen(url).read()
+        response = urllib.request.urlopen(url).read()
 
         # Return a string or dict
         if as_dict:

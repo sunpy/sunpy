@@ -23,14 +23,13 @@ from matplotlib.figure import Figure
 from matplotlib.ticker import FuncFormatter, MaxNLocator, IndexLocator
 from matplotlib.colorbar import Colorbar
 
-#import sunpy
-
 from sunpy.time import parse_time, get_day
 from sunpy.util import to_signed, common_base, merge
 from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.util.create import Parent
 from sunpy.spectra.spectrum import Spectrum
 from sunpy.extern.six.moves import zip as izip
+from sunpy.extern.six.moves import xrange as range
 
 __all__ = ['Spectrogram', 'LinearTimeSpectrogram']
 
@@ -48,6 +47,7 @@ REFERENCE = 0
 COPY = 1
 DEEPCOPY = 2
 
+
 def figure(*args, **kwargs):
     """Returns a new SpectroFigure, a figure extended with features
     useful for analysis of spectrograms. Compare pyplot.figure."""
@@ -63,6 +63,7 @@ def _min_delt(arr):
     # Multiple values at the same frequency are just thrown away
     # in the process of linearizaion
     return deltas[deltas != 0].min()
+
 
 def _list_formatter(lst, fun=None):
     """Returns a function that takes x, pos and returns fun(lst[x]) if
@@ -119,7 +120,8 @@ class _LinearView(object):
         self.shape = (len(self), arr.data.shape[1])
 
     def __len__(self):
-        return 1 + (self.arr.freq_axis[0] - self.arr.freq_axis[-1]) / self.delt
+        return int(1 + (self.arr.freq_axis[0] - self.arr.freq_axis[-1]) /
+                   self.delt)
 
     def _find(self, arr, item):
         if item < 0:
@@ -146,7 +148,7 @@ class _LinearView(object):
 
     def make_mask(self, max_dist):
         mask = np.zeros(self.shape, dtype=np.bool)
-        for n, item in enumerate(xrange(len(self))):
+        for n, item in enumerate(range(len(self))):
             freq = self.arr.freq_axis[0] - item * self.delt
             if abs(self.get_freq(item) - freq) > max_dist:
                 mask[n, :] = True
@@ -222,6 +224,7 @@ class TimeFreq(object):
         axes = figure.add_subplot(111)
         axes.plot(self.time, self.freq, **kwargs)
         xa = axes.get_xaxis()
+        # FIXME: ``ya`` is not used?
         ya = axes.get_yaxis()
         xa.set_major_formatter(
             FuncFormatter(
@@ -339,12 +342,12 @@ class Spectrogram(Parent):
         params = self._get_params()
 
         soffset = 0 if x_range.start is None else x_range.start
-        eoffset = self.shape[1] if x_range.stop is None else x_range.stop # pylint: disable=E1101
+        eoffset = self.shape[1] if x_range.stop is None else x_range.stop  # pylint: disable=E1101
         eoffset -= 1
 
         # FIXME: `fsoffset` and `feoffset` are not used?!
         fsoffset = 0 if y_range.start is None else y_range.start
-        feoffset = self.shape[0] if y_range.stop is None else y_range.stop # pylint: disable=E1101
+        feoffset = self.shape[0] if y_range.stop is None else y_range.stop  # pylint: disable=E1101
 
         params.update({
             'time_axis': self.time_axis[
@@ -366,7 +369,8 @@ class Spectrogram(Parent):
         return new
 
     def __init__(self, data, time_axis, freq_axis, start, end, t_init=None,
-        t_label="Time", f_label="Frequency", content="", instruments=None):
+                 t_label="Time", f_label="Frequency", content="",
+                 instruments=None):
         # Because of how object creation works, there is no avoiding
         # unused arguments in this case.
         self.data = data
@@ -437,8 +441,8 @@ class Spectrogram(Parent):
         plt.show()
         return ret
 
-    def plot(self, figure=None, overlays=[], colorbar=True, vmin=None, vmax=None,
-             linear=True, showz=True, yres=DEFAULT_YRES,
+    def plot(self, figure=None, overlays=[], colorbar=True, vmin=None,
+             vmax=None, linear=True, showz=True, yres=DEFAULT_YRES,
              max_dist=None, **matplotlib_args):
         """
         Plot spectrogram onto figure.
@@ -644,7 +648,8 @@ class Spectrogram(Parent):
         Parameters
         ----------
         amount : float
-            The percent amount (out of 1) of lowest standard deviation to consider.
+            The percent amount (out of 1) of lowest standard deviation to
+            consider.
         """
         # pylint: disable=E1101,E1103
         data = self.data.astype(to_signed(self.dtype))
@@ -656,7 +661,7 @@ class Spectrogram(Parent):
         sdevs = np.asarray(np.std(tmp, 0))
 
         # Get indices of values with lowest standard deviation.
-        cand = sorted(xrange(self.shape[1]), key=lambda y: sdevs[y])
+        cand = sorted(range(self.shape[1]), key=lambda y: sdevs[y])
         # Only consider the best 5 %.
         return cand[:max(1, int(amount * len(cand)))]
 
@@ -680,7 +685,7 @@ class Spectrogram(Parent):
             Size of random sample that is considered for calculation of
             the background.
         """
-        cols = [randint(0, self.shape[1] - 1) for _ in xrange(amount)]
+        cols = [randint(0, self.shape[1] - 1) for _ in range(amount)]
 
         # pylint: disable=E1101,E1103
         data = self.data.astype(to_signed(self.dtype))
@@ -693,7 +698,7 @@ class Spectrogram(Parent):
         sdevs = np.asarray(np.std(tmp, 0))
 
         # Get indices of values with lowest standard deviation.
-        cand = sorted(xrange(amount), key=lambda y: sdevs[y])
+        cand = sorted(range(amount), key=lambda y: sdevs[y])
         # Only consider the best 5 %.
         realcand = cand[:max(1, int(0.05 * len(cand)))]
 
@@ -1169,17 +1174,16 @@ class LinearTimeSpectrogram(Spectrogram):
 
         freq_axis = np.zeros((fsize,))
 
-
         for n, (data, row) in enumerate(merge(
             [
-                [(sp, n) for n in xrange(sp.shape[0])] for sp in specs
+                [(sp, n) for n in range(sp.shape[0])] for sp in specs
             ],
             key=lambda x: x[0].freq_axis[x[1]]
         )):
             new[n, :] = data[row, :]
             freq_axis[n] = data.freq_axis[row]
         params = {
-            'time_axis': one.time_axis, # Should be equal
+            'time_axis': one.time_axis,  # Should be equal
             'freq_axis': freq_axis,
             'start': one.start,
             'end': one.end,

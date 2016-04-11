@@ -1,4 +1,4 @@
-from __future__ import absolute_import, division
+from __future__ import absolute_import, division, print_function
 
 import os.path
 import datetime
@@ -234,7 +234,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
                                                   print_event_types=False)
     for artifact in artifacts:
         if artifact not in all_lytaf_event_types:
-            print all_lytaf_event_types
+            print(all_lytaf_event_types)
             raise ValueError("{0} is not a valid artifact type. See above.".format(artifact))
     # Define outputs
     clean_time = np.array([parse_time(t) for t in time])
@@ -543,7 +543,7 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
     all_event_types = []
     # For each database file extract the event types and print them.
     if print_event_types:
-        print "\nLYTAF Event Types\n-----------------\n"
+        print("\nLYTAF Event Types\n-----------------\n")
     for suffix in suffixes:
         dbname = "annotation_{0}.db".format(suffix)
         # Check database file exists, else download it.
@@ -556,14 +556,16 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
         event_types = cursor.fetchall()
         all_event_types.append(event_types)
         if print_event_types:
-            print "----------------\n{0} database\n----------------".format(suffix)
+            print("----------------\n{0} database\n----------------"
+                  .format(suffix))
             for event_type in event_types:
-                print str(event_type[0])
-            print " "
+                print(str(event_type[0]))
+            print(" ")
     # Unpack event types in all_event_types into single list
     all_event_types = [event_type[0] for event_types in all_event_types
                        for event_type in event_types]
     return all_event_types
+
 
 def download_lytaf_database(lytaf_dir=''):
     """download latest Proba2 pointing database from Proba2 Science Center"""
@@ -572,6 +574,7 @@ def download_lytaf_database(lytaf_dir=''):
     urllib.urlretrieve(url, destination)
 
     return
+
 
 def split_series_using_lytaf(timearray, data, lytaf):
     """
@@ -621,9 +624,9 @@ def split_series_using_lytaf(timearray, data, lytaf):
     disc = tmp_discontinuity[0]
 
     if len(disc) == 0:
-        print 'No events found within time series interval. '\
-          +'Returning original series.'
-        return [{'subtimes':datetime_array, 'subdata':data}]
+        print('No events found within time series interval. '
+              'Returning original series.')
+        return [{'subtimes': datetime_array, 'subdata': data}]
 
     # -1 in diffmask means went from good data to bad
     # +1 means went from bad data to good
