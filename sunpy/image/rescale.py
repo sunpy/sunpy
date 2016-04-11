@@ -155,7 +155,7 @@ def _resample_spline(orig, dimensions, offset, m1):
     return scipy.ndimage.map_coordinates(orig, newcoords)
 
 
-def reshape_image_to_4d_superpixel(img, dimensions):
+def reshape_image_to_4d_superpixel(img, dimensions, offset):
     """Re-shape the two dimension input image into a a four dimensional
     array whose first and third dimensions express the number of original
     pixels in the x and y directions that form one superpixel. The reshaping
@@ -191,21 +191,24 @@ def reshape_image_to_4d_superpixel(img, dimensions):
            [2, 0, 4],
            [1, 2, 2]])
 
-
-
     Parameters
     ----------
     img : `numpy.ndarray`
-        A two-dimensional `~numpy.ndarray` of the form (y, x)
+        A two-dimensional `~numpy.ndarray` of the form (y, x).
 
     dimensions : array-like
         A two element array-like object containing integers that describe the
-        superpixel summation in the (y, x) directions
+        superpixel summation in the (y, x) directions.
+
+    offset : array-like
+        A two element array-like object containing integers that describe
+        where in the input image the array reshaping begins in the (y, x)
+        directions.
 
     Returns
     -------
     A four dimensional `~numpy.ndarray` that can be used to easily create
-    two-dimensional arrays of superpixels of the input image
+    two-dimensional arrays of superpixels of the input image.
 
     References
     ----------
@@ -213,17 +216,14 @@ def reshape_image_to_4d_superpixel(img, dimensions):
     http://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html
 
     """
-    # check that the dimensions divide into the image size exactly
-
-    if np.any(np.array(img.shape) % np.array(dimensions)):
-        raise ValueError('New dimensions must divide original image size exactly.')
+    # New dimensions of the final image
+    na = int(np.floor((img.shape[0] - offset[0]) / dimensions[0]))
+    nb = int(np.floor((img.shape[1] - offset[1]) / dimensions[1]))
 
     # Reshape up to a higher dimensional array which is useful for higher
     # level operations
-    return img.reshape(img.shape[0] / dimensions[0],
-                       dimensions[0],
-                       img.shape[1] / dimensions[1],
-                       dimensions[1])
+    return (img[offset[0]:offset[0] + na*dimensions[0],
+                offset[1]:offset[1] + nb*dimensions[1]]).reshape(na, dimensions[0], nb, dimensions[1])
 
 
 class UnrecognizedInterpolationMethod(ValueError):
