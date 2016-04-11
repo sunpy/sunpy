@@ -13,12 +13,9 @@ Latest
   shift the images, scipy.ndimage.interpolation.shift.
 * Add automatic registration of ``GenericMap`` subclasses with the factory as
   long as they define an ``is_datasource_for`` method.
-
-* Added the ability to shift maps to correct for incorrect map location, for example.
 * Added functions flareclass_to_flux and flux_to_flareclass which convert
   between GOES flux to GOES class numbers (e.g. X12, M3.4).
 * Removed old sunpy.util.goes_flare_class()
-* Bug fix for rhessi summary light curve values.
 * Map superpixel method now respects maps that have masks.
 * Map superpixel method now accepts numpy functions as an argument, or any user-defined
   function.
