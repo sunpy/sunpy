@@ -19,8 +19,6 @@ Latest
 * Bug fix for RHESSI summary light curve values.
 * The ``MapCube.as_array`` function now returns a masked numpy array if at least
   one of the input maps in the MapCube has a mask.
-
-* Bug fix for rhessi summary light curve values.
 * Map superpixel method now respects maps that have masks.
 * Map superpixel method now accepts numpy functions as an argument, or any user-defined
   function.
