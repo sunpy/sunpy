@@ -27,7 +27,7 @@ from sunpy.database import attrs
 from sunpy.net import vso, hek
 from sunpy.data.test.waveunit import waveunitdir
 from sunpy.io import fits
-from sunpy.extern.six.moves import xrange as range
+from sunpy.extern.six.moves import range
 from sunpy.extern.six.moves import configparser
 
 import sunpy.data.test
