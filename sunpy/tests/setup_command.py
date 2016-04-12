@@ -11,7 +11,7 @@ from __future__ import absolute_import, division, print_function
 
 import os
 
-from astropy_helpers.test_helpers import AstropyTest
+from astropy_helpers.commands.test import AstropyTest
 from astropy_helpers.compat import _fix_user_options
 
 
@@ -30,7 +30,7 @@ class SunPyTest(AstropyTest):
         ('plugins=', 'p',
          'Plugins to enable when running pytest.'),
         # Run online tests?
-        ('online', None,
+        ('online', 'R',
          'Also run tests that do require a internet connection.'),
         # Run only online tests?
         ('online-only', None,
