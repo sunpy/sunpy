@@ -8,7 +8,6 @@
 
 from __future__ import absolute_import
 
-import urllib
 import csv
 from datetime import datetime
 from datetime import timedelta
@@ -24,6 +23,8 @@ import sunpy.sun.constants
 from sunpy.time import TimeRange, parse_time
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.sun.sun import sunearth_distance
+
+from sunpy.extern.six.moves import urllib
 
 __all__ = ['get_obssumm_dbase_file', 'parse_obssumm_dbase_file',
            'get_obssum_filename', 'get_obssumm_file', 'parse_obssumm_file',
@@ -82,7 +83,7 @@ def get_obssumm_dbase_file(time_range):
     url_root = data_servers[0] + data_location
     url = url_root + _time_range.start.strftime("hsi_obssumm_filedb_%Y%m.txt")
 
-    f = urllib.urlretrieve(url)
+    f = urllib.request.urlretrieve(url)
 
     return f
 
@@ -226,7 +227,7 @@ def get_obssumm_file(time_range):
     url = url_root + get_obssum_filename(time_range)
 
     print('Downloading file: ' + url)
-    f = urllib.urlretrieve(url)
+    f = urllib.request.urlretrieve(url)
 
     return f
 
