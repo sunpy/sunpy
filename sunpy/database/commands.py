@@ -13,7 +13,7 @@ from sqlalchemy.exc import InvalidRequestError
 
 from sunpy.extern import six
 
-from sunpy.extern.six.moves import xrange as range
+from sunpy.extern.six.moves import range
 
 __all__ = [
     'EmptyCommandStackError', 'NoSuchEntryError', 'NonRemovableTagError',

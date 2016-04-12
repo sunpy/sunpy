@@ -3,9 +3,7 @@
 
 """Classes for spectral analysis."""
 
-from __future__ import division
-from __future__ import print_function
-from __future__ import absolute_import
+from __future__ import division, print_function, absolute_import
 
 import datetime
 
@@ -28,8 +26,7 @@ from sunpy.util import to_signed, common_base, merge
 from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.util.create import Parent
 from sunpy.spectra.spectrum import Spectrum
-from sunpy.extern.six.moves import zip as izip
-from sunpy.extern.six.moves import xrange as range
+from sunpy.extern.six.moves import zip, range
 
 __all__ = ['Spectrogram', 'LinearTimeSpectrogram']
 
@@ -779,7 +776,7 @@ class Spectrogram(Parent):
             freq_axis[0] >= frequency >= self_freq_axis[-1]
         """
         lfreq, lvalue = None, None
-        for freq, value in izip(self.freq_axis, self.data[:, :]):
+        for freq, value in zip(self.freq_axis, self.data[:, :]):
             if freq < frequency:
                 break
             lfreq, lvalue = freq, value
@@ -821,7 +818,7 @@ class Spectrogram(Parent):
         fillto = np.abs(fillto)
         fillfrom = np.abs(fillfrom)
 
-        for row, from_, to_ in izip(self, fillfrom, fillto):
+        for row, from_, to_ in zip(self, fillfrom, fillto):
             new[from_: to_] = row
 
         vrs = self._get_params()
@@ -1054,7 +1051,7 @@ class LinearTimeSpectrogram(Spectrogram):
         # Amount of pixels left out due to non-linearity. Needs to be
         # considered for correct time axes.
         sd = 0
-        for x, elem in izip(xs, specs):
+        for x, elem in zip(xs, specs):
             diff = x - elem.shape[1]
             e_time_axis = elem.time_axis
 

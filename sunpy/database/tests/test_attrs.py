@@ -14,7 +14,7 @@ from sunpy.database.attrs import walker, Starred, Tag, Path, DownloadTime,\
     FitsHeaderEntry
 from sunpy.net.attr import DummyAttr, AttrAnd, AttrOr
 from sunpy.net import vso
-from sunpy.extern.six.moves import xrange as range
+from sunpy.extern.six.moves import range
 
 
 @pytest.fixture
