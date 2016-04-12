@@ -113,6 +113,9 @@ class FitsHeaderEntry(Base):
             self.key == other.key and
             self.value == other.value)
 
+    def __hash__(self):
+        return super(FitsHeaderEntry, self).__hash__()
+
     def __ne__(self, other):
         return not (self == other)
 
@@ -139,6 +142,13 @@ class FitsKeyComment(Base):
             self.key == other.key and
             self.value == other.value)
 
+    def __lt__(self, other):
+        return ('{0}, {1}'.format(self.key, self.value) <
+                '{0}, {1}'.format(other.key, other.value))
+
+    def __hash__(self):
+        return super(FitsKeyComment, self).__hash__()
+
     def __ne__(self, other):
         return not (self == other)
 
@@ -157,6 +167,9 @@ class Tag(Base):
 
     def __eq__(self, other):
         return self.name == other.name
+
+    def __hash__(self):
+        return super(Tag, self).__hash__()
 
     def __ne__(self, other):
         return not (self == other)
@@ -349,6 +362,9 @@ class DatabaseEntry(Base):
             bool(self.starred) == bool(other.starred) and
             self.fits_header_entries == other.fits_header_entries and
             self.tags == other.tags)
+
+    def __hash__(self):
+        return super(DatabaseEntry, self).__hash__()
 
     def __ne__(self, other):  # pragma: no cover
         return not (self == other)

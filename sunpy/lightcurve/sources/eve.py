@@ -128,9 +128,9 @@ class EVELightCurve(LightCurve):
             line1 = fp.readline()
             fp.seek(0)
 
-            if line1.startswith("Date"):
+            if line1.startswith("Date".encode('ascii')):
                 return cls._parse_average_csv(fp)
-            elif line1.startswith(";"):
+            elif line1.startswith(";".encode('ascii')):
                 return cls._parse_level_0cs(fp)
 
     @staticmethod
