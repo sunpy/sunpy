@@ -56,6 +56,7 @@ class NonRemovableTagError(Exception):
         return errmsg.format(self.database_entry, self.tag)
 
 
+@six.add_metaclass(ABCMeta)
 class DatabaseOperation(object):
     """This is the abstract main class for all database operations. To
     implement a new operation, inherit from this class and override the methods
@@ -65,7 +66,6 @@ class DatabaseOperation(object):
     row must not have any side-effects. This is not checked in any way, though.
 
     """
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def __call__(self):
