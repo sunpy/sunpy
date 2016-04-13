@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # Author: David Perez-Suarez <dps.helio-?-gmail.com>
-
 from __future__ import absolute_import, print_function
 
 import os
@@ -12,34 +11,6 @@ from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE, get_day
 
 __all__ = ['SWavesSpectrogram']
-
-#def query(start, end, spacecraft=None, band=None):
-#    start = datetime.datetime(start.year, start.month, start.day)
-#    end = datetime.datetime(end.year, end.month, end.day)
-#    if spacecraft is None:
-#        spacecraft = ['STEREO_A','STEREO_B']
-#    elif spacecraft.upper() != 'STEREO_B':
-#        spacecraft = ['STEREO_A']
-#    else:
-#        spacecraft = ['STEREO_B']
-#    if band is None:
-#        band = 'All'
-#        min_wave = 0.00001
-#        max_wave = 0.016
-#    elif band.lower() != 'low':
-#        band = 'high' # range 0.125 - 16 MHz
-#        min_wave = 0.00017
-#        max_wave = 0.016
-#    elif band.lower() == 'low': # range 10 - 160 KHz
-#        min_wave = 0.00001
-#        max_wave = 0.00012
-#    print "Getting data from %s satellite, band %s" % (spacecraft,band)
-#    client = vso.InteractiveVSOClient()
-#    result = client.query_legacy(tstart=start,\
-#                                     tend=end,instrument='SWAVES',source=spacecraft.upper(),\
-#                                     min_wave=min_wave,max_wave=max_wave,unit_wave='GHz')
-#    if len(result) > 0:
-#        listfiles = client.get(result).wait()
 
 
 class SWavesSpectrogram(LinearTimeSpectrogram):
