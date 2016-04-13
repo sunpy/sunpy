@@ -2,7 +2,6 @@
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
 """Classes for spectral analysis."""
-
 from __future__ import division, print_function, absolute_import
 
 import datetime
@@ -741,7 +740,7 @@ class Spectrogram(Parent):
         return self._with_data(self.data.clip(vmin, vmax, out))
 
     def rescale(self, vmin=0, vmax=1, dtype=np.dtype('float32')):
-        u"""
+        """
         Rescale intensities to [vmin, vmax].
         Note that vmin ≠ vmax and spectrogram.min() ≠ spectrogram.max().
 
@@ -870,7 +869,7 @@ class Spectrogram(Parent):
     @staticmethod
     def _mk_format_coord(spec, fmt_coord):
         def format_coord(x, y):
-            shape = map(int, spec.shape)
+            shape = list(map(int, spec.shape))
 
             xint, yint = int(x), int(y)
             if 0 <= xint < shape[1] and 0 <= yint < shape[0]:
@@ -1242,7 +1241,7 @@ class LinearTimeSpectrogram(Spectrogram):
                     )
                 start = datetime.datetime(
                     self.start.year, self.start.month, self.start.day,
-                    *map(int, start.split(":"))
+                    *list(map(int, start.split(":")))
                 )
             start = self.time_to_x(start)
         if end is not None:
@@ -1255,7 +1254,7 @@ class LinearTimeSpectrogram(Spectrogram):
                     )
                 end = datetime.datetime(
                     self.start.year, self.start.month, self.start.day,
-                    *map(int, end.split(":"))
+                    *list(map(int, end.split(":")))
                 )
             end = self.time_to_x(end)
         return self[:, start:end]

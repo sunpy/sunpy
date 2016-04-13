@@ -2,7 +2,6 @@
 #
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
-
 from __future__ import absolute_import
 
 from time import strptime, mktime
@@ -19,7 +18,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sunpy.time import parse_time
 from sunpy.io import fits, file_tools as sunpy_filetools
 from sunpy.util import print_table
-from sunpy.extern.six.moves import map as imap
+from sunpy.extern.six.moves import map
 from sunpy.extern import six
 
 from sunpy import config
@@ -626,7 +625,7 @@ def display_entries(database_entries, columns, sort=False):
             if col == 'starred':
                 row.append('Yes' if entry.starred else 'No')
             elif col == 'tags':
-                row.append(', '.join(imap(str, entry.tags)) or 'N/A')
+                row.append(', '.join(map(str, entry.tags)) or 'N/A')
             # do not display microseconds in datetime columns
             elif col in (
                     'observation_time_start',
