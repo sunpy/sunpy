@@ -13,6 +13,7 @@ from sunpy.extern import six
 __all__ = ['BaseCache', 'LRUCache', 'LFUCache']
 
 
+@six.add_metaclass(ABCMeta)
 class BaseCache(object):
     """
     BaseCache is a class that saves and operates on an OrderedDict. It has a
@@ -23,7 +24,6 @@ class BaseCache(object):
     Call the method `sunpy.database.caching.BaseCache.callback` as soon
     as an item from the cache is removed.
     """
-    __metaclass__ = ABCMeta
 
     def __init__(self, maxsize=float('inf')):
         self.maxsize = maxsize
