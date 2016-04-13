@@ -2,6 +2,7 @@
 Access the Helio Event Catalogue
 """
 from __future__ import print_function, absolute_import
+
 from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.net.helio import parser
 from sunpy.time import parse_time
@@ -9,6 +10,9 @@ from suds.client import Client as C
 import suds
 from astropy.io.votable.table import parse_single_table
 import io
+
+from sunpy.extern import six
+from sunpy.extern.six.moves import range, input
 
 __author__ = 'Michael Malocha'
 __version__ = 'September 22nd, 2013'
@@ -20,9 +24,10 @@ def suds_unwrapper(wrapped_data):
     """
     Removes suds wrapping from returned xml data
 
-    When grabbing data via votable_interceptor.last_payload from the suds.client.Client
-    module, it returns the xml data in an un-helpful "<s:Envelope>" that needs
-    to be removed. This function politely cleans it up.
+    When grabbing data via votable_interceptor.last_payload from the
+    suds.client.Client module, it returns the xml data in an un-helpful
+    "<s:Envelope>" that needs to be removed. This function politely cleans
+    it up.
 
     Parameters
     ----------
@@ -120,9 +125,9 @@ class VotableInterceptor(suds.plugin.MessagePlugin):
         self.last_payload = None
 
     def received(self, context):
-        #received xml as a string
-        self.last_payload = unicode(suds_unwrapper(context.reply))
-        #clean up reply to prevent parsing
+        # received xml as a string
+        self.last_payload = six.u(suds_unwrapper(context.reply))
+        # clean up reply to prevent parsing
         context.reply = ""
         return context
 
@@ -204,9 +209,10 @@ class HECClient(object):
 
     def get_table_names(self):
         """
-        Returns a list of the available tables to query
+        Returns a list of the available tables to query.
 
-        Returns the names of all the tables that can be queried via the webservice
+        Returns the names of all the tables that can be queried via the
+        webservice.
 
         Returns
         -------
@@ -258,14 +264,17 @@ class HECClient(object):
                 table_list.append(table)
         table_list.sort()
         for index, table in enumerate(table_list):
-            print(('{number:3d}) {table}'.format(number = index + 1, table = table)))
+            print(('{number:3d}) {table}'.format(number=index + 1,
+                                                 table=table)))
+
         while True:
-            input = raw_input("\nPlease enter a table number between 1 and {elem:d} "
-                              "('e' to exit): ".format(elem=len(table_list)))
-            if input.lower() == "e" or input.lower() == "exit":
+            stdinput = input("\nPlease enter a table number between 1 and "
+                             "{elem:d} "
+                             "('e' to exit): ".format(elem=len(table_list)))
+            if stdinput.lower() == "e" or stdinput.lower() == "exit":
                 temp = None
                 break
-            temp = [int(s) for s in input.split() if s.isdigit()]
+            temp = [int(s) for s in stdinput.split() if s.isdigit()]
             temp = temp[0] - 1
             if temp in range(0, len(table_list)):
                 temp = table_list[temp]
