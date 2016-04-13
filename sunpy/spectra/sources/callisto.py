@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
-
 from __future__ import absolute_import, print_function
 
 import datetime
@@ -346,7 +345,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         start = parse_time(start)
         end = parse_time(end)
         urls = query(start, end, [instrument])
-        data = map(cls.from_url, urls)
+        data = list(map(cls.from_url, urls))
         freq_buckets = defaultdict(list)
         for elem in data:
             freq_buckets[tuple(elem.freq_axis)].append(elem)

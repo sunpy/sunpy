@@ -2,10 +2,7 @@
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
 """Classes for spectral analysis."""
-
-from __future__ import division
-from __future__ import print_function
-from __future__ import absolute_import
+from __future__ import division, print_function, absolute_import
 
 import datetime
 
@@ -28,8 +25,7 @@ from sunpy.util import to_signed, common_base, merge
 from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.util.create import Parent
 from sunpy.spectra.spectrum import Spectrum
-from sunpy.extern.six.moves import zip as izip
-from sunpy.extern.six.moves import xrange as range
+from sunpy.extern.six.moves import zip, range
 
 __all__ = ['Spectrogram', 'LinearTimeSpectrogram']
 
@@ -744,7 +740,7 @@ class Spectrogram(Parent):
         return self._with_data(self.data.clip(vmin, vmax, out))
 
     def rescale(self, vmin=0, vmax=1, dtype=np.dtype('float32')):
-        u"""
+        """
         Rescale intensities to [vmin, vmax].
         Note that vmin ≠ vmax and spectrogram.min() ≠ spectrogram.max().
 
@@ -779,7 +775,7 @@ class Spectrogram(Parent):
             freq_axis[0] >= frequency >= self_freq_axis[-1]
         """
         lfreq, lvalue = None, None
-        for freq, value in izip(self.freq_axis, self.data[:, :]):
+        for freq, value in zip(self.freq_axis, self.data[:, :]):
             if freq < frequency:
                 break
             lfreq, lvalue = freq, value
@@ -821,7 +817,7 @@ class Spectrogram(Parent):
         fillto = np.abs(fillto)
         fillfrom = np.abs(fillfrom)
 
-        for row, from_, to_ in izip(self, fillfrom, fillto):
+        for row, from_, to_ in zip(self, fillfrom, fillto):
             new[from_: to_] = row
 
         vrs = self._get_params()
@@ -873,7 +869,7 @@ class Spectrogram(Parent):
     @staticmethod
     def _mk_format_coord(spec, fmt_coord):
         def format_coord(x, y):
-            shape = map(int, spec.shape)
+            shape = list(map(int, spec.shape))
 
             xint, yint = int(x), int(y)
             if 0 <= xint < shape[1] and 0 <= yint < shape[0]:
@@ -1054,7 +1050,7 @@ class LinearTimeSpectrogram(Spectrogram):
         # Amount of pixels left out due to non-linearity. Needs to be
         # considered for correct time axes.
         sd = 0
-        for x, elem in izip(xs, specs):
+        for x, elem in zip(xs, specs):
             diff = x - elem.shape[1]
             e_time_axis = elem.time_axis
 
@@ -1245,7 +1241,7 @@ class LinearTimeSpectrogram(Spectrogram):
                     )
                 start = datetime.datetime(
                     self.start.year, self.start.month, self.start.day,
-                    *map(int, start.split(":"))
+                    *list(map(int, start.split(":")))
                 )
             start = self.time_to_x(start)
         if end is not None:
@@ -1258,7 +1254,7 @@ class LinearTimeSpectrogram(Spectrogram):
                     )
                 end = datetime.datetime(
                     self.start.year, self.start.month, self.start.day,
-                    *map(int, end.split(":"))
+                    *list(map(int, end.split(":")))
                 )
             end = self.time_to_x(end)
         return self[:, start:end]
