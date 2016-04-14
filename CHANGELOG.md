@@ -1,6 +1,8 @@
 0.6.4
 -----
- * Bug fix for rhessi summary light curve values.
+ * Bug fix for rhessi summary lightcurve values.
+ * Fix docstring for pixel_to_data and data_to_pixel
+ * Fix the URL for the Helioviewer API. (This fixes Helioviewer.)
 
 0.6.3
 ------
