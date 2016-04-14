@@ -1,6 +1,10 @@
+0.6.4
+-----
+ * Bug fix for rhessi summary light curve values.
+
 0.6.3
 ------
-* Change setup.py extras to install suds-jurko not suds.
+ * Change setup.py extras to install suds-jurko not suds.
 
 0.6.2
 -----
@@ -9,18 +13,16 @@
  * update astropy_helpers
  * Added new sample data
 
-* Bug fix for rhessi summary light curve values.
-
 0.6.1
 -----
 
-* Fixed MapCube animations by working around a bug in Astropy's ImageNormalize
-* Small fix to RTD builds for Affiliated packages
-* SunPy can now be installed without having to install Astropy first.
-* MapCubes processed with ``coalignment.apply_shifts`` now have correct
-  metadata.
-* Multiple fixes for WCS transformations, especially with solar-x, solar-y
-  CTYPE headers.
+ * Fixed MapCube animations by working around a bug in Astropy's ImageNormalize
+ * Small fix to RTD builds for Affiliated packages
+ * SunPy can now be installed without having to install Astropy first.
+ * MapCubes processed with ``coalignment.apply_shifts`` now have correct
+   metadata.
+ * Multiple fixes for WCS transformations, especially with solar-x, solar-y
+   CTYPE headers.
 
 0.6.0
 -----
