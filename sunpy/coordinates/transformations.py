@@ -7,24 +7,20 @@ This module contains the functions for converting one
 """
 from __future__ import absolute_import, division
 
-# NumPy import
 import numpy as np
 
-# Astropy imports
 from astropy import units as u
 from astropy.coordinates.representation import (CartesianRepresentation,
                                                 UnitSphericalRepresentation)
 from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.transformations import FunctionTransform
 
-
-# SunPy imports
 from sunpy import sun
 
-from .representation import SphericalWrap180Representation, UnitSphericalWrap180Representation
+from .representation import (SphericalWrap180Representation,
+                             UnitSphericalWrap180Representation)
 from .frames import (HeliographicStonyhurst, HeliographicCarrington,
-                     Heliocentric, Helioprojective)
-
+                     Heliocentric, Helioprojective, HelioprojectiveRadial)
 
 __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc']
@@ -34,7 +30,8 @@ def _carrington_offset(dateobs):
     Calculate the HG Longitude offest based on a time
     """
     if dateobs is None:
-        raise ValueError("To perform this transformation the coordinate Frame needs a dateobs Attribute")
+        raise ValueError("To perform this transformation the coordinate"
+                         " Frame needs a dateobs Attribute")
     return sun.heliographic_solar_center(dateobs)[0]
 
 # =============================================================================

@@ -6,10 +6,8 @@ the `astropy.coordinates` module.
 """
 from __future__ import absolute_import, division
 
-# NumPy import
 import numpy as np
 
-# Astropy imports
 from astropy import units as u
 from astropy.coordinates.representation import (CartesianRepresentation,
                                                 UnitSphericalRepresentation,
@@ -18,7 +16,6 @@ from astropy.coordinates.baseframe import (BaseCoordinateFrame,
                                            RepresentationMapping)
 from astropy.coordinates import FrameAttribute
 
-# SunPy imports
 from sunpy import sun  # For Carrington rotation number
 from .representation import (SphericalWrap180Representation,
                             UnitSphericalWrap180Representation)

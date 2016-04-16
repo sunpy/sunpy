@@ -36,7 +36,7 @@ SunPy implements support for the following solar physics coordinate systems:
 * Heliographic Stonyhurst `~sunpy.coordinates.frames.HelioGraphicStonyhurst`
 * Heliographic Carrington `~sunpy.coordinates.frames.HelioGraphicCarrington`
 
-for a complete description of these frames, see `sunpy.coordinates.frames`, for
+for a complete description of these frames see `sunpy.coordinates.frames`, for
 a more detailed description of the frames see [(Thompson 2006)](http://dx.doi.org/10.1051/0004-6361:20054262).
 
 
@@ -92,7 +92,7 @@ Heliocentric normally a Cartesian frame so the coordinates are accessed as ``x,y
 ``HeliographicStonyhurst`` and ``HeliographicCarrington``
 #########################################################
 
-Both the heliographic frames use latitude, longitude and radius so are accessed as follows:
+Both the heliographic frames use latitude, longitude and radius which are accessed as follows:
 
    >>> c = SkyCoord(70*u.deg, -30*u.deg, frame='heliographicstonyhurst')
    >>> c.lat
@@ -110,7 +110,7 @@ This module works by defining a collection of ``Frames``
 (`sunpy.coordinates.frames`), which exists on a transformation graph, where the
 transformations between the coordinate frames are then defined and registered
 with the transformation graph (`sunpy.coordinates.transformations`). Currently,
-the SunPy frames are not transformable to the frames in Astropy, as their is no
+the SunPy frames are not transformable to the frames in Astropy, as there is no
 transformation defined between the two sets of frames.
 
 Positions within these ``Frames`` are stored as a ``Representation`` of a

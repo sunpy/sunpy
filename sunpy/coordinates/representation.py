@@ -7,7 +7,7 @@ system, due to the convention of Longitude going from -180 to 180 degrees.
 """
 
 from __future__ import absolute_import, division
-# Astropy
+
 from astropy.utils.compat.odict import OrderedDict
 from astropy import units as u
 from astropy.coordinates.representation import (SphericalRepresentation,
