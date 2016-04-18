@@ -9,15 +9,6 @@ from ..frames import *
 from ..wcs_utils import solar_wcs_frame_mapping
 
 
-def test_hpr():
-    wcs = WCS(naxis=2)
-    wcs.wcs.ctype = ['HRLN', 'HRLT']
-
-    result = solar_wcs_frame_mapping(wcs)
-
-    assert isinstance(result, HelioprojectiveRadial)
-
-
 def test_hpc():
     wcs = WCS(naxis=2)
     wcs.wcs.ctype = ['HPLN', 'HPLT']
@@ -25,15 +16,6 @@ def test_hpc():
     result = solar_wcs_frame_mapping(wcs)
 
     assert isinstance(result, Helioprojective)
-
-
-def test_hpr():
-    wcs = WCS(naxis=2)
-    wcs.wcs.ctype = ['HRLN', 'HRLT']
-
-    result = solar_wcs_frame_mapping(wcs)
-
-    assert isinstance(result, HelioprojectiveRadial)
 
 
 def test_hgs():

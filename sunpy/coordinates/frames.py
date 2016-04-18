@@ -26,7 +26,7 @@ RSUN_METERS = sun.constants.constant('radius').si.to(u.m)
 DSUN_METERS = sun.constants.constant('mean distance').si.to(u.m)
 
 __all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
-           'Heliocentric', 'Helioprojective', 'HelioprojectiveRadial']
+           'Heliocentric', 'Helioprojective']
 
 
 class HeliographicStonyhurst(BaseCoordinateFrame):
@@ -325,48 +325,3 @@ class Helioprojective(BaseCoordinateFrame):
         return self.realize_frame(SphericalWrap180Representation(lon=lon,
                                                                  lat=lat,
                                                                  distance=d))
-
-
-class HelioprojectiveRadial(BaseCoordinateFrame):
-    """
-    The Helioprojective-Radial frame is a spherical coordinate system projected
-    on to the the celestial sphere.
-
-    The center of the solar disk is defined to be at the south pole of the
-    sphere and by definition has the impact parameter angle as 0 at this pole.
-
-    Parameters
-    ----------
-    representation: `~astropy.coordinates.BaseRepresentation` or None.
-        A representation object. If specified, other parameters must
-        be in keyword form.
-    dec: `Angle` object.
-        Declination Parameter.
-    psi: `Angle` object.
-        Latitude coordinate.
-    distance: Z-axis coordinate.
-        The radial distance from the observer to the coordinate point.
-    """
-
-    default_representation = SphericalRepresentation
-
-    _frame_specific_representation_info = {
-        'spherical': [RepresentationMapping('lon', 'dec', u.deg),
-                      RepresentationMapping('lat', 'psi', u.deg),
-                      RepresentationMapping('distance', 'distance', u.km)],
-
-        'sphericalwrap180': [RepresentationMapping('lon', 'dec', u.deg),
-                             RepresentationMapping('lat', 'psi', u.deg),
-                             RepresentationMapping('distance', 'distance', u.km)],
-
-        'unitspherical': [RepresentationMapping('lon', 'dec', u.deg),
-                          RepresentationMapping('lat', 'psi', u.deg)],
-
-        'unitsphericalwrap180': [RepresentationMapping('lon', 'dec', u.deg),
-                                 RepresentationMapping('lat', 'psi', u.deg)]}
-
-    D0 = FrameAttribute(default=(1*u.au).to(u.km))
-    dateobs = TimeFrameAttributeSunPy()
-    L0 = FrameAttribute(default=0*u.deg)
-    B0 = FrameAttribute(default=0*u.deg)
-    rsun = FrameAttribute(default=RSUN_METERS.to(u.km))

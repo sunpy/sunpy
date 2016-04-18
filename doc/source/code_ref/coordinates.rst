@@ -20,7 +20,6 @@ The easiest interface to the coordinates module is through the `~astropy.coordin
   >>> from astropy.coordinates import SkyCoord
   >>> import sunpy.coordinates
   >>> c = SkyCoord(-100*u.arcsec, 500*u.arcsec, frame='helioprojective')
-  >>> c = SkyCoord(90*u.deg, -76*u.deg, frame='helioprojectiveradial')
   >>> c = SkyCoord(x=-72241.0*u.km, y=361206.1*u.km, z=589951.4*u.km, frame='heliocentric')
   >>> c = SkyCoord(70*u.deg, -30*u.deg, frame='heliographicstonyhurst')
   >>> c
@@ -31,7 +30,6 @@ The easiest interface to the coordinates module is through the `~astropy.coordin
 SunPy implements support for the following solar physics coordinate systems:
 
 * Helioprojective (Cartesian) `~sunpy.coordinates.frames.HelioProjective`
-* Helioprojective (Radial) `~sunpy.coordinates.frames.HelioProjectiveRadial`
 * Heliocentric `~sunpy.coordinates.frames.HelioCentric`
 * Heliographic Stonyhurst `~sunpy.coordinates.frames.HelioGraphicStonyhurst`
 * Heliographic Carrington `~sunpy.coordinates.frames.HelioGraphicCarrington`
