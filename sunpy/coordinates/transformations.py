@@ -20,7 +20,7 @@ from sunpy import sun
 from .representation import (SphericalWrap180Representation,
                              UnitSphericalWrap180Representation)
 from .frames import (HeliographicStonyhurst, HeliographicCarrington,
-                     Heliocentric, Helioprojective, HelioprojectiveRadial)
+                     Heliocentric, Helioprojective)
 
 __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc']
