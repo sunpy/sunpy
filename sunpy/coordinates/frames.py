@@ -72,7 +72,7 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
     This frame will always be converted a 3D frame where the radius defaults to
     rsun.
     """
-
+    name = "heliographic_stonyhurst"
     default_representation = SphericalWrap180Representation
 
     _frame_specific_representation_info = {
@@ -149,6 +149,7 @@ class HeliographicCarrington(HeliographicStonyhurst):
         [(1.0, 4.0, 5.0), (2.0, 5.0, 6.0), (3.0, 6.0, 7.0)]>
     """
 
+    name = "heliographic_carrington"
     default_representation = SphericalWrap180Representation
 
     _frame_specific_representation_info = {

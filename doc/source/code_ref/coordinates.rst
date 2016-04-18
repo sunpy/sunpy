@@ -21,7 +21,7 @@ The easiest interface to the coordinates module is through the `~astropy.coordin
   >>> import sunpy.coordinates
   >>> c = SkyCoord(-100*u.arcsec, 500*u.arcsec, frame='helioprojective')
   >>> c = SkyCoord(x=-72241.0*u.km, y=361206.1*u.km, z=589951.4*u.km, frame='heliocentric')
-  >>> c = SkyCoord(70*u.deg, -30*u.deg, frame='heliographicstonyhurst')
+  >>> c = SkyCoord(70*u.deg, -30*u.deg, frame='heliographic_stonyhurst')
   >>> c
   <SkyCoord (HelioGraphicStonyhurst: dateobs=None): (lon, lat, rad) in (deg, deg, km)
       (70.0, -30.0, 695508.0)>
@@ -92,7 +92,7 @@ Heliocentric normally a Cartesian frame so the coordinates are accessed as ``x,y
 
 Both the heliographic frames use latitude, longitude and radius which are accessed as follows:
 
-   >>> c = SkyCoord(70*u.deg, -30*u.deg, frame='heliographicstonyhurst')
+   >>> c = SkyCoord(70*u.deg, -30*u.deg, frame='heliographic_stonyhurst')
    >>> c.lat
    <Latitude -30.0 deg>
    >>> c.lon
