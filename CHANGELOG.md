@@ -27,6 +27,7 @@ Latest
   in the x (or y) side of the superpixel exactly divides the number of original
   pixels in the x (or y) side of the original map data.
 * `sunpy.physics.transforms` has been deprecated and the code moved into `sunpy.physics`.
+* Add the `sunpy.coordinates` module, this adds the core physical solar coordinates frame within the astropy coordinates framework.
 
 0.6.0
 -----
