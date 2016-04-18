@@ -54,7 +54,7 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
 
     Examples
     --------
-    >>> sc = SkyCoord(1*u.deg, 1*u.deg, 2*u.km, frame="heliographicstonyhurst",
+    >>> sc = SkyCoord(1*u.deg, 1*u.deg, 2*u.km, frame="heliographic_stonyhurst",
     dateobs="2010/01/01T00:00:45")
     >>> sc
     <SkyCoord (HelioGraphicStonyhurst): dateobs=2010-01-01 00:00:45,
@@ -136,13 +136,13 @@ class HeliographicCarrington(HeliographicStonyhurst):
 
     Examples
     --------
-    >>> sc = SkyCoord(1*u.deg, 2*u.deg, 3*u.km, frame="heliographiccarrington",
+    >>> sc = SkyCoord(1*u.deg, 2*u.deg, 3*u.km, frame="heliographic_carrington",
     dateobs="2010/01/01T00:00:30")
     >>> sc
     <SkyCoord (HelioGraphicCarrington): dateobs=2010-01-01 00:00:30,
     lon=1.0 deg, lat=2.0 deg, rad=3.0 km>
     >>> sc = SkyCoord([1,2,3]*u.deg, [4,5,6]*u.deg, [5,6,7]*u.km,
-    dateobs="2010/01/01T00:00:45", frame="heliographiccarrington")
+    dateobs="2010/01/01T00:00:45", frame="heliographic_carrington")
     >>> sc
     <SkyCoord (HelioGraphicCarrington): dateobs=2010-01-01 00:00:45,
     (lon, lat, rad) in (deg, deg, km)
