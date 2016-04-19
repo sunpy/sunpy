@@ -26,6 +26,7 @@ from .nddata_compat import NDDataCompat as NDData
 
 import sunpy.io as io
 import sunpy.wcs as wcs
+import sunpy.coordinates
 from sunpy.visualization import toggle_pylab, wcsaxes_compat
 from sunpy.sun import constants
 from sunpy.sun import sun
