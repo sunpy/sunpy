@@ -25,10 +25,10 @@ class TimeRange(object):
     ----------
     a : str, number, `datetime.datetime`
         A time (usually the start time) specified as a parse_time-compatible
-        time string or number, or a datetime object.
-    b : str, `datetime.timedelta`, `astropy.units.Quantity` (time)
+        time string, number, or a datetime object.
+    b : str, number, `datetime.datetime`, `datetime.timedelta`, `astropy.units.Quantity` (time)
         Another time (usually the end time) specified as a
-        parse_time-compatible time string, or a datetime object.
+        parse_time-compatible time string, number, or a datetime object.
         May also be the size of the time range specified as a timedelta object,
         or a `astropy.units.Quantity`.
 
@@ -62,17 +62,6 @@ class TimeRange(object):
             x = parse_time(a)
             y = b
 
-        if isinstance(y, str):
-            y = parse_time(y)
-
-        if isinstance(y, datetime):
-            if x < y:
-                self._t1 = x
-                self._t2 = y
-            else:
-                self._t1 = y
-                self._t2 = x
-
         if isinstance(y, Quantity):
             y = timedelta(seconds=y.to('s').value)
 
@@ -83,6 +72,18 @@ class TimeRange(object):
                 self._t2 = x + y
             else:
                 self._t1 = x + y
+                self._t2 = x
+            return
+
+        # Otherwise, assume that the second argument is parse_time-compatible
+        y = parse_time(y)
+
+        if isinstance(y, datetime):
+            if x < y:
+                self._t1 = x
+                self._t2 = y
+            else:
+                self._t1 = y
                 self._t2 = x
 
     @property
