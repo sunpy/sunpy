@@ -358,13 +358,13 @@ def apply_shifts(mc, yshift, xshift, clip=True, **kwargs):
         A `~sunpy.map.MapCube` of shape (ny, nx, nt), where nt is the number of
         layers in the `~sunpy.map.MapCube`.  'ny' is the number of pixels in the
         y direction, 'nx' is the number of pixels in the 'x' direction.
+
     yshift : `~astropy.units.Quantity` instance
         An array of pixel shifts in the y-direction for an image.
+
     xshift : `~astropy.units.Quantity` instance
         An array of pixel shifts in the x-direction for an image.
 
-    Keywords
-    --------
     clip : bool
         If True, then clip off x, y edges in the datacube that are potentially
         affected by edges effects.
@@ -422,15 +422,18 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
     mc : `sunpy.map.MapCube`
         A `~sunpy.map.MapCube` of shape (ny, nx, nt), where nt is the number of
         layers in the `~sunpy.map.MapCube`.
+
     template : {None | `~sunpy.map.Map` | `~numpy.ndarray`}
         The template used in the matching.  If an `~numpy.ndarray` is passed,
         the `~numpy.ndarray` has to have two dimensions.
+
     layer_index : int
         The template is assumed to refer to the map in the `~sunpy.map.MapCube`
         indexed by the value of "layer_index".  Displacements of all maps in the
         `~sunpy.map.MapCube` are assumed to be relative to this layer.  The
         displacements of the template relative to this layer are therefore
         (0, 0).
+
     func : function
         A function which is applied to the data values before the coalignment
         method is applied.  This can be useful in coalignment, because it is
