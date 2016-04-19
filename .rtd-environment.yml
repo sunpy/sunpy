@@ -15,7 +15,6 @@ dependencies:
 - fontconfig
 - freetype
 - funcsigs
-- glymur
 - jbig
 - jpeg
 - libgfortran
@@ -25,12 +24,10 @@ dependencies:
 - libxslt
 - lxml
 - matplotlib
-- mkl
 - mock
 - networkx
 - numpy
 - openblas
-- openjpeg
 - openssl
 - pandas
 - pbr
@@ -61,5 +58,7 @@ dependencies:
 - wheel
 - xz
 - zlib
-- pip:
-  - sphinx-gallery>=0.1.2
+- glymur
+- openjpeg
+pip:
+ - sphinx-gallery>=0.1.2
