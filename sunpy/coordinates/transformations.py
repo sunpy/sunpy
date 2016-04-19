@@ -191,13 +191,22 @@ def _make_transform_graph_docs():
     from astropy.coordinates.baseframe import (BaseCoordinateFrame,
                                                frame_transform_graph)
 
+    import copy
+    f = copy.deepcopy(frame_transform_graph)
+    for f1 in frame_transform_graph._graph.keys():
+        if 'sunpy' not in str(f1):
+            del f._graph[f1]
+        else:
+            for f2 in frame_transform_graph._graph[f1].keys():
+                if 'sunpy' not in str(f2):
+                    del f._graph[f1][f2]
+
     # TODO: Make this just show the SunPy Frames
     isclass = inspect.isclass
     coosys = [item
               for item in list(six.itervalues(globals()))
               if isclass(item) and issubclass(item, BaseCoordinateFrame)]
-    graphstr = frame_transform_graph.to_dot_graph(addnodes=coosys,
-                                                  priorities=False)
+    graphstr = f.to_dot_graph(addnodes=coosys, priorities=False)
 
     docstr = """
     The diagram below shows all of the coordinate systems built into the
