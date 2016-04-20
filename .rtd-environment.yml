@@ -1,8 +1,6 @@
 name: sunpy-rtd
 channels:
-    - astropy
-    - sunpy
-    - jevans
+    - openastronomy
 dependencies:
 - astropy
 - beautiful-soup
@@ -60,5 +58,5 @@ dependencies:
 - zlib
 - glymur
 - openjpeg
-pip:
- - sphinx-gallery>=0.1.2
+- pip:
+    - sphinx-gallery
