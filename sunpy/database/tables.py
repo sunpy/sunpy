@@ -2,7 +2,6 @@
 #
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
-
 from __future__ import absolute_import
 
 from time import strptime, mktime
@@ -19,7 +18,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sunpy.time import parse_time
 from sunpy.io import fits, file_tools as sunpy_filetools
 from sunpy.util import print_table
-from sunpy.extern.six.moves import map as imap
+from sunpy.extern.six.moves import map
 from sunpy.extern import six
 
 from sunpy import config
@@ -113,6 +112,9 @@ class FitsHeaderEntry(Base):
             self.key == other.key and
             self.value == other.value)
 
+    def __hash__(self):
+        return super(FitsHeaderEntry, self).__hash__()
+
     def __ne__(self, other):
         return not (self == other)
 
@@ -139,6 +141,13 @@ class FitsKeyComment(Base):
             self.key == other.key and
             self.value == other.value)
 
+    def __lt__(self, other):
+        return ('{0}, {1}'.format(self.key, self.value) <
+                '{0}, {1}'.format(other.key, other.value))
+
+    def __hash__(self):
+        return super(FitsKeyComment, self).__hash__()
+
     def __ne__(self, other):
         return not (self == other)
 
@@ -157,6 +166,9 @@ class Tag(Base):
 
     def __eq__(self, other):
         return self.name == other.name
+
+    def __hash__(self):
+        return super(Tag, self).__hash__()
 
     def __ne__(self, other):
         return not (self == other)
@@ -349,6 +361,9 @@ class DatabaseEntry(Base):
             bool(self.starred) == bool(other.starred) and
             self.fits_header_entries == other.fits_header_entries and
             self.tags == other.tags)
+
+    def __hash__(self):
+        return super(DatabaseEntry, self).__hash__()
 
     def __ne__(self, other):  # pragma: no cover
         return not (self == other)
@@ -610,7 +625,7 @@ def display_entries(database_entries, columns, sort=False):
             if col == 'starred':
                 row.append('Yes' if entry.starred else 'No')
             elif col == 'tags':
-                row.append(', '.join(imap(str, entry.tags)) or 'N/A')
+                row.append(', '.join(map(str, entry.tags)) or 'N/A')
             # do not display microseconds in datetime columns
             elif col in (
                     'observation_time_start',

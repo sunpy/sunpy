@@ -46,8 +46,7 @@ Dere, K.P., et al. 2009 A&A, 498, 915 DOI: 10.1051/0004-6361/200911712
 
 """
 
-from __future__ import absolute_import
-from __future__ import division
+from __future__ import absolute_import, division
 
 import os.path
 import datetime

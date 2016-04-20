@@ -42,8 +42,8 @@ env:
         - NUMPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
         - CONDA_CHANNELS='astropy astropy-ci-extras sunpy jevans https://conda.anaconda.org/sunpy/label/citesting openastronomy'
-        - CONDA_ALL_DEPENDENCIES='glymur Cython jinja2 scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
-        - CONDA_ALL_DEPENDENCIES2='glymur openjpeg Cython jinja2 scipy matplotlib requests beautiful-soup sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
+        - CONDA_ALL_DEPENDENCIES='glymur Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
+        - CONDA_ALL_DEPENDENCIES2='glymur openjpeg Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
         - PIP_DEPENDENCIES='suds-jurko'
 
 
@@ -87,9 +87,6 @@ matrix:
                 CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
                 NUMPY_VERSION=$FIGURES_NUMPY MATPLOTLIB_VERSION=$FIGURES_MPL
          - os: linux
-           env: JOB="Py3" PYTHON_VERSION=3.4 MAIN_CMD='continuous-integration/python3.sh'
-                SETUP_CMD='' CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES DEBUG=True
-         - os: linux
            env: JOB="Py3.4" PYTHON_VERSION=3.4 SETUP_CMD='test' ASTROPY_VERSION='stable'
                 CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES DEBUG=True
          - os: linux
@@ -102,17 +99,13 @@ matrix:
              CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
       - env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage'
              CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov suds-jurko'
-      - env: JOB="Py3.4" PYTHON_VERSION=3.4 SETUP_CMD='test' ASTROPY_VERSION='stable'
-             CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES DEBUG=True
-      - env: JOB="Py3.5" PYTHON_VERSION=3.5 SETUP_CMD='test' ASTROPY_VERSION='stable'
-             DEBUG=True CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES
 
 install:
-    - echo $CONDA_DEPENDENCIES
     - git clone git://github.com/astropy/ci-helpers.git
     - source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh
-    - source continuous-integration/travis/openjpeg.sh # so glymur knows where to look
+    - source continuous-integration/travis/openjpeg.sh  # so glymur knows where to look
 
+before_script:
     # Download the sample data for the build of the documentation.
     - if [[ $SETUP_CMD == *sphinx* ]]; then python -c "import sunpy.data; sunpy.data.download_sample_data()"; fi
     - if [[ $SETUP_CMD == *figure* ]]; then wget http://raw.githubusercontent.com/dpshelio/sunpy-figure-tests/np1104/conda_env; conda create --name testFigure --file conda_env ; source activate testFigure; fi

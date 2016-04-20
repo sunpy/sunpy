@@ -13,6 +13,8 @@ from sqlalchemy.exc import InvalidRequestError
 
 from sunpy.extern import six
 
+from sunpy.extern.six.moves import range
+
 __all__ = [
     'EmptyCommandStackError', 'NoSuchEntryError', 'NonRemovableTagError',
     'DatabaseOperation', 'AddEntry', 'RemoveEntry', 'EditEntry',
@@ -54,6 +56,7 @@ class NonRemovableTagError(Exception):
         return errmsg.format(self.database_entry, self.tag)
 
 
+@six.add_metaclass(ABCMeta)
 class DatabaseOperation(object):
     """This is the abstract main class for all database operations. To
     implement a new operation, inherit from this class and override the methods
@@ -63,7 +66,6 @@ class DatabaseOperation(object):
     row must not have any side-effects. This is not checked in any way, though.
 
     """
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def __call__(self):
@@ -354,7 +356,7 @@ class CommandManager(object):
         :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
 
         """
-        for _ in xrange(n):
+        for _ in range(n):
             command = self.pop_undo_command()
             command.undo()
             self.push_redo_command(command)
@@ -367,7 +369,7 @@ class CommandManager(object):
         :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
 
         """
-        for _ in xrange(n):
+        for _ in range(n):
             command = self.pop_redo_command()
             command()
             self.push_undo_command(command)
