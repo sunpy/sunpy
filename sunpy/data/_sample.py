@@ -83,7 +83,11 @@ def download_sample_data(progress=True, overwrite=True):
         for base_url in _base_urls:
             full_file_name = file_name[0] + file_name[1]
             if url_exists(os.path.join(base_url, full_file_name)):
-                f = download_file(os.path.join(base_url, full_file_name))
+                try:
+                    f = download_file(os.path.join(base_url, full_file_name))
+                except Exception as e:
+                    warnings.warn("Download failed with error {}. \n Retrying with different mirror.".format(e))
+                    continue
                 real_name, ext = os.path.splitext(full_file_name)
 
                 if file_name[1] == '.zip':
@@ -94,7 +98,7 @@ def download_sample_data(progress=True, overwrite=True):
                 else:
                     # move files to the data directory
                     move(f, os.path.join(sampledata_dir, file_name[0]))
-                # increment the number of files obtained to check later
+            # increment the number of files obtained to check later
                 number_of_files_fetched += 1
                 break
 
