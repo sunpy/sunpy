@@ -17,11 +17,12 @@ Install using `sudo apt-get install python2.7-dev` or a similar command,
 depending on your linux distro.
 Anything like `python-dev` provides you the required Python development headers.
 
-Ubuntu
-------
+Debian based (eg. Ubuntu)
+-------------------------
 On Ubuntu, most of the pre-reqs are available in the Ubuntu software repos and
 can be installed using :command:`apt-get`: ::
 
+    sudo apt-get install python-dev
     sudo apt-get install python-qt4
     sudo apt-get install git-core
     sudo apt-get install python-numpy

@@ -27,11 +27,11 @@ from __future__ import absolute_import
 
 from sunpy.database.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
-    EntryNotFoundError, TagAlreadyAssignedError, disable_undo
+    EntryNotFoundError, TagAlreadyAssignedError, disable_undo, split_database
 from sunpy.database.commands import NoSuchEntryError, NonRemovableTagError
 
 __all__ = [
     'Database', 'EntryAlreadyAddedError', 'NoSuchEntryError', 'NoSuchTagError',
     'NonRemovableTagError', 'EntryAlreadyStarredError',
     'EntryAlreadyUnstarredError', 'EntryNotFoundError',
-    'TagAlreadyAssignedError', 'disable_undo']
+    'TagAlreadyAssignedError', 'disable_undo', 'split_database']
