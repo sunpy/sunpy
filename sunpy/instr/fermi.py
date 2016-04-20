@@ -4,6 +4,8 @@ from __future__ import division
 
 import os
 import copy
+import urllib
+import urllib2
 from collections import OrderedDict
 import tempfile
 
@@ -16,18 +18,16 @@ from astropy.coordinates import Longitude, Latitude
 from sunpy.time import parse_time, TimeRange
 from sunpy import sun
 from sunpy.io.fits import fits
-from sunpy.extern.six.moves import urllib
 
 __all__ = ['download_weekly_pointing_file', 'get_detector_sun_angles_for_time',
-           'get_detector_sun_angles_for_date', 'plot_detector_sun_angles',
-           'met_to_utc']
-
+            'get_detector_sun_angles_for_date','plot_detector_sun_angles',
+             'met_to_utc']
 
 def download_weekly_pointing_file(date):
     """
-    Downloads the FERMI/LAT weekly pointing file corresponding to the
-    specified date.  This file contains 1 minute cadence data on the
-    spacecraft pointing, useful for calculating detector angles.
+    Downloads the FERMI/LAT weekly pointing file corresponding to the specified date.
+    This file contains 1 minute cadence data on the spacecraft pointing, useful for
+    calculating detector angles.
 
     Parameters
     ----------
@@ -40,61 +40,41 @@ def download_weekly_pointing_file(date):
     # use a temp directory to hold the file
     tmp_dir = tempfile.mkdtemp()
     # use Fermi data server to access weekly LAT pointing file.
-    base_url = 'http://fermi.gsfc.nasa.gov/ssc/observations/timeline/ft2/files/'
-    fbasename='FERMI_POINTING_FINAL_'
-
+    base_url = 'ftp://legacy.gsfc.nasa.gov/FTP/glast/data/lat/weekly/spacecraft/'
+    fbasename = 'lat_spacecraft_weekly_w'
+    
     # find out which file to get based on date
-    # earliest file in the FERMI server is for mission week 23,
-    # beginning 2008 November 6.
-    weekly_file_start=parse_time('2008-11-06')
-    base_week=23
+    # earliest full file in the FERMI server is for mission week 10,
+    # beginning 2008 August 7.
+    weekly_file_start = parse_time('2008-08-07')
+    base_week = 10
 
     # find out which mission week corresponds to date
-    time_diff=date-weekly_file_start
+    time_diff = date-weekly_file_start
     weekdiff = time_diff.days//7
     week = weekdiff + base_week
-
-    # find out the rest of the file name. Need the year and the day-in-year for
-    # start and end of file
-    start_date = weekly_file_start + datetime.timedelta(weekdiff*7)
-    start_year_str = str(start_date.year) + '-01-01'
-    start_str = start_date.strftime('%Y%j')
-
-    # now end string
-    end_date = weekly_file_start + datetime.timedelta((weekdiff+1)*7)
-    end_str = end_date.strftime('%Y%j')
+   # weekstr = ('%03.0f' % week)
+    weekstr = '{:03.0f}'.format(week)
 
     # construct the full url for the weekly pointing file
-    full_fname_start=fbasename + str(week) + '_' + start_str + '_' + end_str + '_'
-    full_fname_extension='.fits'
-    # the full filename will be full_fname_start + version number + full_fname
-    # extension, but version number unknown - multiple versions may exist for
-    # each week.
+    full_fname = fbasename + weekstr + '_p202_v001.fits'
+    pointing_file_url = base_url + full_fname
 
-    # search through version numbers starting from most recent (10) until we
-    # find a file. This will find the most up to date file.
-    for v in range(10, -1, -1):
-        # full_fname_start + '0' + str(v) + full_fname_extension
-        rest_of_filename = (full_fname_start + '0' + str(v) +
-                            full_fname_extension)
-        full_fname = base_url + rest_of_filename
-        try:
-            urllib.request.urlopen(full_fname)
-            exists = True
-        except urllib.error.HTTPError:
-            exists = False
-        # if the file exists then exit and retain this filepath
-        if exists:
-            break
+    #try to download the file from the FTP site
+    try:
+        resp = urllib2.urlopen(pointing_file_url)
+        exists = True
+    except:
+        urllib2.HTTPError
+        exists = False
 
     # if no matches at all were found, then the pointing file doesn't exist
     if not exists:
         raise ValueError('No Fermi pointing files found for given date!')
 
     # download the file
-    pointing_file_url = full_fname
-    destination = os.path.join(tmp_dir, rest_of_filename)
-    urllib.request.urlretrieve(pointing_file_url, destination)
+    destination=os.path.join(tmp_dir,full_fname)
+    urllib.urlretrieve(pointing_file_url,destination)
 
     # return the location of the downloaded file
     return destination
@@ -414,7 +394,7 @@ def get_detector_separation_angles(detector_radecs, sunpos):
             Two-element list containing the RA/DEC of the Sun position as
             AstroPy Quantities, e.g. [<Longitude 73.94 deg>,
             <Latitude 22.66 deg>]
-
+    
     """
     angles = copy.deepcopy(detector_radecs)
     for l, d in detector_radecs.items():
@@ -475,3 +455,25 @@ def met_to_utc(timeinsec):
     time_in_utc = parse_time(timeinsec + offset_from_utc)
 
     return time_in_utc
+
+def utc_to_met(time_ut):
+    """
+    Converts a UT (in datetime format) to a Fermi Mission Elapsed Time (MET) float.
+
+    Parameters
+    ----------
+    time_ut : 'datetime.datetime'
+        A datetime object in UT
+
+    Returns
+    -------
+    'float'
+        The Fermi Mission Elapsed Time corresponding to the input UT
+
+    """
+    met_ref_time = parse_time('2001-01-01 00:00')
+    ut_seconds = (time_ut - parse_time('1979-01-01')).total_seconds()
+    offset_from_utc = (met_ref_time - parse_time('1979-01-01 00:00')).total_seconds()
+    fermi_met = ut_seconds - offset_from_utc
+
+    return fermi_met
