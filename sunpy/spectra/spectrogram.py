@@ -130,7 +130,7 @@ class _LinearView(object):
         # The idea is that when we take the biggest delta in the mid points,
         # we do not have to search anything that is between the beginning and
         # the first item that can possibly be that frequency.
-        min_mid = max(0, (freq - self.midpoints[0]) // self.max_mp_delt)
+        min_mid = int(max(0, (freq - self.midpoints[0]) // self.max_mp_delt))
         for n, mid in enumerate(self.midpoints[min_mid:]):
             if mid <= freq:
                 return arr[min_mid + n]
@@ -338,12 +338,15 @@ class Spectrogram(Parent):
         params = self._get_params()
 
         soffset = 0 if x_range.start is None else x_range.start
+        soffset = int(soffset)
         eoffset = self.shape[1] if x_range.stop is None else x_range.stop  # pylint: disable=E1101
         eoffset -= 1
+        eoffset = int(eoffset)
 
         # FIXME: `fsoffset` and `feoffset` are not used?!
         fsoffset = 0 if y_range.start is None else y_range.start
         feoffset = self.shape[0] if y_range.stop is None else y_range.stop  # pylint: disable=E1101
+        feoffset = int(feoffset)
 
         params.update({
             'time_axis': self.time_axis[
@@ -595,7 +598,7 @@ class Spectrogram(Parent):
         only_y = not isinstance(key, tuple)
 
         if only_y:
-            return self.data[key]
+            return self.data[int(key)]
         elif isinstance(key[0], slice) and isinstance(key[1], slice):
             return self._slice(key[0], key[1])
         elif isinstance(key[1], slice):
@@ -603,14 +606,14 @@ class Spectrogram(Parent):
             #     super(Spectrogram, self).__getitem__(key),
             #     self.time_axis[key[1].start:key[1].stop:key[1].step]
             # )
-            return np.array(self.data[key])
+            return np.array(self.data[int(key)])
         elif isinstance(key[0], slice):
             return Spectrum(
-                self.data[key],
+                self.data[int(key)],
                 self.freq_axis[key[0].start:key[0].stop:key[0].step]
             )
 
-        return self.data[key]
+        return self.data[int(key)]
 
     def clip_freq(self, vmin=None, vmax=None):
         """Return a new spectrogram only consisting of frequencies
