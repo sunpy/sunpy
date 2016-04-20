@@ -604,7 +604,8 @@ scale:\t\t {scale}
         return cmap_string.lower()
 
     def _validate_meta(self):
-        """Validates the meta-information associated with a Map.
+        """
+        Validates the meta-information associated with a Map.
 
         This method includes very basic validation checks which apply to
         all of the kinds of files that SunPy can read. Datasource-specific
@@ -612,17 +613,19 @@ scale:\t\t {scale}
         sunpy.map.sources package.
 
         Allows for default unit assignment for:
-            CUNIT1, CUNIT2, WAVEUNIT,  """
-#        if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
-#            raise InvalidHeaderInformation("Invalid value for DSUN")
+            CUNIT1, CUNIT2, WAVEUNIT
+
+        """
 
         warnings.simplefilter('always', Warning)
 
         for meta_property in ('cunit1', 'cunit2', 'waveunit'):
-            if (self.meta.get(meta_property)) and (u.Unit(self.meta.get(meta_property), parse_strict = 'silent').physical_type == 'unknown'):
+            if (self.meta.get(meta_property) and
+                u.Unit(self.meta.get(meta_property),
+                       parse_strict='silent').physical_type == 'unknown'):
+
                 warnings.warn("Unknown value for "+meta_property.upper(), Warning)
 
-        pass
 
 # #### Data conversion routines #### #
 
