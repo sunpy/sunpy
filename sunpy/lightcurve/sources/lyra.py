@@ -177,5 +177,5 @@ class LYRALightCurve(LightCurve):
 
         # Return the header and the data
         data = pandas.DataFrame(table, index=times)
-        data.sort(inplace=True)
+        data.sort_index(inplace=True)
         return OrderedDict(hdulist[0].header), data
