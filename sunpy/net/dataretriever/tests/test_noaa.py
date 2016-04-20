@@ -4,7 +4,9 @@ from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.noaa as noaa
-
+from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 LCClient = noaa.NOAAIndicesClient()
 
 @pytest.mark.parametrize("timerange,url_start,url_end",
@@ -15,7 +17,6 @@ LCClient = noaa.NOAAIndicesClient()
 'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt',
 'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt')
 ])
-
 def test_get_url_for_time_range(timerange, url_start, url_end):
     urls = LCClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)
@@ -30,6 +31,7 @@ def test_can_handle_query():
     ans3 = noaa.NOAAIndicesClient._can_handle_query(Time('2012/8/9', '2012/8/10'), Instrument('eve'))
     assert ans3 == False
 
+@pytest.mark.online
 def test_query():
     qr1 = LCClient.query(Time('2012/8/9', '2012/8/10'), Instrument('noaa-indices'))
     assert isinstance(qr1,QueryResponse)
@@ -48,4 +50,15 @@ def test_get(time,instrument):
     res = LCClient.get(qr1)
     download_list = res.wait()
     assert len(download_list) == len(qr1)
+    
+@pytest.mark.online
+@pytest.mark.parametrize("time, instrument",
+                         [(a.Time("2012/10/4","2012/10/6"), a.Instrument('noaa-indices')),
+                          (a.Time('2013/10/5', '2013/10/7'), a.Instrument('noaa-indices'))])
+def test_fido(time, instrument):
+    qr = Fido.search(time, instrument)
+    assert isinstance(qr, UnifiedResponse)
+    response = Fido.fetch(qr)
+    assert len(response) == qr._numfile
+
 
