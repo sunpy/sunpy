@@ -1,20 +1,34 @@
 Latest
 ------
 
+* Sunpy is now Python 3.x compatible (3.4 and 3.5).
+* Added a unit check and warnings for map metadata.
 * Added IRIS SJI color maps.
 * Updated `show_colormaps()` with new string filter to show a subset of color maps.
 * Fixed MapCube animations by working around a bug in Astropy's ImageNormalize
 * Remove ``vso.QueryResponse.num_records()`` in favour of `len(qr)`
-* add a `draw_rectangle` helper to `GenericMap` which can plot rectanges in the
+* Add a `draw_rectangle` helper to `GenericMap` which can plot rectangles in the
   native coordinate system of the map.
+* Added the ability to shift maps to correct for incorrect map location, for example.
+* Bug fix for RHESSI summary light curve values.
+* Mapcube solar derotation and coalignment now pass keywords to the routine used to
+  shift the images, scipy.ndimage.interpolation.shift.
 * Add automatic registration of ``GenericMap`` subclasses with the factory as
   long as they define an ``is_datasource_for`` method.
-
-* Added the ability to shift maps to correct for incorrect map location, for example.
 * Added functions flareclass_to_flux and flux_to_flareclass which convert
   between GOES flux to GOES class numbers (e.g. X12, M3.4).
 * Removed old sunpy.util.goes_flare_class()
-* Bug fix for rhessi summary light curve values.
+* Bug fix for RHESSI summary light curve values.
+* The ``MapCube.as_array`` function now returns a masked numpy array if at least
+  one of the input maps in the MapCube has a mask.
+* Map superpixel method now respects maps that have masks.
+* Map superpixel method now accepts numpy functions as an argument, or any user-defined
+  function.
+* Map superpixel method no longer has the restriction that the number of original pixels
+  in the x (or y) side of the superpixel exactly divides the number of original
+  pixels in the x (or y) side of the original map data.
+* `sunpy.physics.transforms` has been deprecated and the code moved into `sunpy.physics`.
+* Add the `sunpy.coordinates` module, this adds the core physical solar coordinates frame within the astropy coordinates framework.
 
 0.6.0
 -----

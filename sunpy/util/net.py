@@ -37,10 +37,8 @@ def slugify(text, delim=u'_', encoding="ascii"):
     name_and_extension = text.rsplit(period, 1)
     name = name_and_extension[0]
 
-    name = six.text_type(delim).join(filter(None, (
-        word.encode(encoding, 'ignore')
-        for word in _punct_re.split(name.lower())
-    )))
+    name = six.text_type(delim).join(
+        filter(None, (word for word in _punct_re.split(name.lower()))))
 
     if len(name_and_extension) == 2:
         extension = name_and_extension[1]
@@ -53,7 +51,7 @@ def get_content_disposition(content_disposition):
     """ Get content disposition filename from given header. Do not include
     "Content-Disposition:". Returns a unicode string! """
     parser = FeedParser()
-    parser.feed(b'Content-Disposition: ' + content_disposition)
+    parser.feed('Content-Disposition: ' + content_disposition)
     name = parser.close().get_filename()
     if not isinstance(name, six.text_type):
         name = name.decode('latin1', 'ignore')
