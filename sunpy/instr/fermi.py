@@ -46,21 +46,23 @@ def download_weekly_pointing_file(date):
     # find out which file to get based on date
     # earliest full file in the FERMI server is for mission week 10,
     # beginning 2008 August 7.
-    weekly_file_start=parse_time('2008-08-07')
-    base_week=10
+    weekly_file_start = parse_time('2008-08-07')
+    base_week = 10
 
     # find out which mission week corresponds to date
-    time_diff=date-weekly_file_start
+    time_diff = date-weekly_file_start
     weekdiff = time_diff.days//7
     week = weekdiff + base_week
-    weekstr = ('%03.0f' % week)
+   # weekstr = ('%03.0f' % week)
+    weekstr = '{:03.0f}'.format(week)
 
     # construct the full url for the weekly pointing file
     full_fname = fbasename + weekstr + '_p202_v001.fits'
+    pointing_file_url = base_url + full_fname
 
     #try to download the file from the FTP site
     try:
-        resp = urllib2.urlopen(base_url + full_fname)
+        resp = urllib2.urlopen(pointing_file_url)
         exists = True
     except:
         urllib2.HTTPError
@@ -71,7 +73,6 @@ def download_weekly_pointing_file(date):
         raise ValueError('No Fermi pointing files found for given date!')
 
     # download the file
-    pointing_file_url=base_url + full_fname
     destination=os.path.join(tmp_dir,full_fname)
     urllib.urlretrieve(pointing_file_url,destination)
 
@@ -454,3 +455,25 @@ def met_to_utc(timeinsec):
     time_in_utc = parse_time(timeinsec + offset_from_utc)
 
     return time_in_utc
+
+def utc_to_met(time_ut):
+    """
+    Converts a UT (in datetime format) to a Fermi Mission Elapsed Time (MET) float.
+
+    Parameters
+    ----------
+    time_ut : 'datetime.datetime'
+        A datetime object in UT
+
+    Returns
+    -------
+    'float'
+        The Fermi Mission Elapsed Time corresponding to the input UT
+
+    """
+    met_ref_time = parse_time('2001-01-01 00:00')
+    ut_seconds = (time_ut - parse_time('1979-01-01')).total_seconds()
+    offset_from_utc = (met_ref_time - parse_time('1979-01-01 00:00')).total_seconds()
+    fermi_met = ut_seconds - offset_from_utc
+
+    return fermi_met
