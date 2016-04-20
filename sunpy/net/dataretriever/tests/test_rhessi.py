@@ -4,7 +4,9 @@ from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.rhessi as rhessi
-
+from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
+from sunpy.net import Fido
+from sunpy.net import attrs as a
 LCClient = rhessi.RHESSIClient()
 
 
@@ -29,7 +31,7 @@ def test_can_handle_query():
     ans2 = rhessi.RHESSIClient._can_handle_query(Time('2013/2/7', '2013/2/7'))
     assert ans2 is False
 
-
+@pytest.mark.online
 def test_query():
     qr1 = LCClient.query(Time('2011/4/9', '2011/4/10'), Instrument('rhessi'))
     assert isinstance(qr1, QueryResponse)
@@ -48,4 +50,14 @@ def test_get(time, instrument):
     res = LCClient.get(qr1)
     download_list = res.wait()
     assert len(download_list) == len(qr1)
+
+@pytest.mark.online
+@pytest.mark.parametrize("time, instrument",
+                         [(a.Time('2012/10/4','2012/10/6'), a.Instrument('rhessi')),
+                          (a.Time('2013/10/5', '2013/10/7'), a.Instrument('rhessi'))])
+def test_fido(time, instrument):
+    qr = Fido.search(time, instrument)
+    assert isinstance(qr, UnifiedResponse)
+    response = Fido.fetch(qr)
+    assert len(response) == qr._numfile
 
