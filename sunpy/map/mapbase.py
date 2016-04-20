@@ -1121,8 +1121,8 @@ scale:\t\t {scale}
         y_pixels[np.greater(y_pixels, self.data.shape[0])] = self.data.shape[0]
 
         # Get ndarray representation of submap
-        xslice = slice(x_pixels[0], x_pixels[1])
-        yslice = slice(y_pixels[0], y_pixels[1])
+        xslice = slice(int(x_pixels[0]), int(x_pixels[1]))
+        yslice = slice(int(y_pixels[0]), int(y_pixels[1]))
         new_data = self.data[yslice, xslice].copy()
 
         # Make a copy of the header with updated centering information
