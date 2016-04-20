@@ -3,6 +3,10 @@ from sunpy.io.fits import get_header, extract_waveunit
 
 import sunpy.data.test
 import os
+
+from sunpy.data.test.waveunit import MEDN_IMAGE, MQ_IMAGE, NA_IMAGE, SVSM_IMAGE
+from sunpy.extern.six.moves import range
+
 testpath = sunpy.data.test.rootdir
 
 RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
@@ -10,23 +14,26 @@ EIT_195_IMAGE = os.path.join(testpath, 'EIT/efz20040301.000010_s.fits')
 AIA_171_IMAGE = os.path.join(testpath, 'aia_171_level1.fits')
 SWAP_LEVEL1_IMAGE = os.path.join(testpath, 'SWAP/resampled1_swap.fits')
 
-from sunpy.data.test.waveunit import MEDN_IMAGE, MQ_IMAGE, NA_IMAGE, SVSM_IMAGE
 
 def read_hdus():
     pairs = sunpy.io.fits.read(RHESSI_IMAGE)
     assert len(pairs) == 4
 
+
 def read_hdu_int():
     pairs = sunpy.io.fits.read(RHESSI_IMAGE, hdus=1)
     assert len(pairs) == 1
 
+
 def read_hdus_list():
-    pairs = sunpy.io.fits.read(RHESSI_IMAGE, hdus=[1,2])
+    pairs = sunpy.io.fits.read(RHESSI_IMAGE, hdus=[1, 2])
     assert len(pairs) == 2
 
+
 def read_hdus_gen():
-    pairs = sunpy.io.fits.read(RHESSI_IMAGE, hdus=xrange(0,1))
+    pairs = sunpy.io.fits.read(RHESSI_IMAGE, hdus=range(0, 1))
     assert len(pairs) == 2
+
 
 def test_extract_waveunit_missing_waveunit_key_and_missing_wavelnth_comment():
     waveunit = extract_waveunit(get_header(RHESSI_IMAGE)[0])

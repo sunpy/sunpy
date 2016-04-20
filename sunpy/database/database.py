@@ -24,6 +24,7 @@ from sunpy.database.attrs import walker
 from sunpy.net.hek2vso import H2VClient
 from sunpy.net.attr import and_
 from sunpy.net.vso import VSOClient
+from sunpy.extern.six.moves import range
 
 __authors__ = ['Simon Liedtke', 'Rajul Srivastava']
 __emails__ = [
@@ -133,7 +134,7 @@ def split_database(source_database, destination_database, *query_string):
         A variable number of attributes that are chained together via the
         boolean AND operator. The | operator may be used between attributes
         to express the boolean OR operator.
-    
+
     Examples
     --------
     The function call in the following example moves those entries from
@@ -298,7 +299,7 @@ class Database(object):
             try:
                 self.default_waveunit = units.Unit(default_waveunit)
             except ValueError:
-                raise WaveunitNotConvertibleError(default_waveunit)
+                raise tables.WaveunitNotConvertibleError(default_waveunit)
         self._enable_history = True
 
         class Cache(CacheClass):
@@ -306,7 +307,10 @@ class Database(object):
                 self.remove(database_entry)
 
             def append(this, value):
-                this[max(this or [0]) + 1] = value
+                try:
+                    this[max(this or [0]) + 1] = value
+                except TypeError:
+                    this[1] = value
         self._create_tables()
         self._cache = Cache(cache_size)
         for entry in self:
@@ -537,9 +541,16 @@ class Database(object):
         if kwargs:
             k, v = kwargs.popitem()
             raise TypeError('unexpected keyword argument {0!r}'.format(k))
-        return sorted(
-            walker.create(and_(*query), self.session),
-            key=operator.attrgetter(sortby))
+
+        db_entries = walker.create(and_(*query), self.session)
+
+        # If any of the DatabaseEntry-s lack the sorting attribute, the
+        # sorting key should fall back to 'id', orherwise it fails with
+        # TypeError on py3
+        if any([getattr(entry, sortby) is None for entry in db_entries]):
+            sortby = 'id'
+
+        return sorted(db_entries, key=operator.attrgetter(sortby))
 
     def get_entry_by_id(self, entry_id):
         """Get a database entry by its unique ID number. If an entry with the
@@ -949,7 +960,7 @@ class Database(object):
             start = 0 if key.start is None else key.start
             stop = len(self) if key.stop is None else key.stop
             step = 1 if key.step is None else key.step
-            for i in xrange(start, stop, step):
+            for i in range(start, stop, step):
                 try:
                     entry = self[i]
                 except IndexError:
