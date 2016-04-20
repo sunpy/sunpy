@@ -606,10 +606,10 @@ class Spectrogram(Parent):
             #     super(Spectrogram, self).__getitem__(key),
             #     self.time_axis[key[1].start:key[1].stop:key[1].step]
             # )
-            return np.array(self.data[int(key)])
+            return np.array(self.data[key])
         elif isinstance(key[0], slice):
             return Spectrum(
-                self.data[int(key)],
+                self.data[key],
                 self.freq_axis[key[0].start:key[0].stop:key[0].step]
             )
 
