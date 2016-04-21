@@ -4,8 +4,7 @@ from __future__ import division
 
 import os
 import copy
-import urllib
-import urllib2
+from sunpy.extern.six.moves import urllib, urllib2
 from collections import OrderedDict
 import tempfile
 
