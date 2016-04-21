@@ -1406,19 +1406,16 @@ scale:\t\t {scale}
 
         return [rect]
 
-    def draw_contours(self, levels=None, percent=True, axes=None, **imshow_args):
+    @u.quantity_input(levels=u.percent)
+    def draw_contours(self, levels, axes=None, **imshow_args):
         """
         Draw contours of the data
 
         Parameters
         ----------
 
-        levels : `~numpy.ndarray`, list
-            A list of numbers indicating the level curves to draw;
-            e.g., to draw just the zero contour pass levels=[0]
-
-        percent : bool, default: True
-            The width of the rectangle.
+        levels : `~astropy.units.Quantity`, list, optional
+            A list of numbers indicating the level curves to draw given in percent.
 
         axes : `matplotlib.axes.Axes`
             The axes on which to plot the rectangle, defaults to the current axes.
@@ -1439,13 +1436,9 @@ scale:\t\t {scale}
         if not axes:
             axes = plt.gca()
 
-        if levels is not None:
-            if percent:
-                cs = axes.contour(self.data, 0.01 * levels * self.data.max(), **imshow_args)
-            else:
-                cs = axes.contour(self.data, levels, **imshow_args)
-        else:
-            cs = axes.contour(self.data, **imshow_args)
+        #TODO: allow for use of direct input of contours but requires units of map flux which is not yet implemented
+
+        cs = axes.contour(self.data, 0.01 * levels.to('percent').value * self.data.max(), **imshow_args)
         return cs
 
     @toggle_pylab
