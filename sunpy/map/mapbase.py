@@ -1434,7 +1434,7 @@ scale:\t\t {scale}
 
         """
         if not axes:
-            axes = plt.gca()
+            axes = wcsaxes_compat.gca_wcs(self.wcs)
 
         #TODO: allow for use of direct input of contours but requires units of map flux which is not yet implemented
 
