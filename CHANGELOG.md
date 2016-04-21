@@ -5,6 +5,7 @@
  * Fix the URL for the Helioviewer API. (This fixes Helioviewer.)
  * Fix the way `reshape_image_to_4d_superpixel` checks the dimension of the new image.
  * Fix Map to allow astropy.io.fits Header objects as valid input for meta arguments.
+ * Prevent helioviewer tests from checking access to API when running tests in offline mode. 
 
 0.6.3
 ------
