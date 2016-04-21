@@ -409,7 +409,7 @@ for compatibility with map, please use meta instead""", Warning)
         data = self.data.copy().append(otherlightcurve.data)
 
         data['index'] = data.index
-        # default behavior of drop_duplicates is keep the first row.
+        # default behavior of drop_duplicates is keep the first column.
         data = data.drop_duplicates(subset='index')
         data.set_index = data['index']
         data.drop('index', axis=1, inplace=True)
