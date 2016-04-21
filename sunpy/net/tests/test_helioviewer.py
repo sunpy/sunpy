@@ -11,34 +11,35 @@ from sunpy.net.helioviewer import HelioviewerClient
 
 from sunpy.tests.helpers import skip_glymur
 
-# If server is not accessible, skip Helioviewer tests
-client = HelioviewerClient()
-if not client.is_online():
-    __SKIP_TESTS__ = True
-    print("Skipping Helioviewer.org tests (server inaccessible)")
-else:
-    __SKIP_TESTS__ = False
 
+@pytest.mark.online
 class TestHelioviewerClient:
     """Tests the Helioviewer.org API Client class"""
+
     def setup_class(self):
-        self.client = client
+        self.client = HelioviewerClient()
+        if not self.client.is_online():
+            self.__SKIP_TESTS__ = True
+            print("Skipping Helioviewer.org tests (server inaccessible)")
+        else:
+            self.__SKIP_TESTS__ = False
+
         self.sources = self.client.get_data_sources()
 
     def teardown_class(self):
         self.client = None
 
-    @pytest.mark.online
-    @pytest.mark.skipif("__SKIP_TESTS__ is True")
     def test_get_datasources(self):
         """Makes sure datasource query returns a valid result and source id
         is casted to an integer"""
+        if self.__SKIP_TESTS__:
+            return
         assert type(self.sources['SDO']['AIA']['AIA']['171']['sourceId']) is int
 
-    @pytest.mark.online
-    @pytest.mark.skipif("__SKIP_TESTS__ is True")
     def test_get_closest_image(self):
         """Tests getClosestImage API method"""
+        if self.__SKIP_TESTS__:
+            return
         # check basic query
         im1 = self.client.get_closest_image('1994/01/01',
                                               observatory='SOHO',
@@ -55,10 +56,10 @@ class TestHelioviewerClient:
         assert im1 == im2
 
     @skip_glymur
-    @pytest.mark.online
-    @pytest.mark.skipif("__SKIP_TESTS__ is True")
     def test_download_jp2(self):
         """Tests getJP2Image API method"""
+        if self.__SKIP_TESTS__:
+            return
         filepath = self.client.download_jp2('2020/01/01', observatory='SOHO',
                                             instrument='MDI', detector='MDI',
                                             measurement='continuum')
