@@ -4,7 +4,7 @@ from __future__ import division
 
 import os
 import copy
-from sunpy.extern.six.moves import urllib, urllib2
+from sunpy.extern.six.moves import urllib
 from collections import OrderedDict
 import tempfile
 
@@ -61,10 +61,10 @@ def download_weekly_pointing_file(date):
 
     #try to download the file from the FTP site
     try:
-        resp = urllib2.urlopen(pointing_file_url)
+        resp = urllib.request.urlopen(pointing_file_url)
         exists = True
     except:
-        urllib2.HTTPError
+        urllib.error.HTTPError
         exists = False
 
     # if no matches at all were found, then the pointing file doesn't exist
@@ -73,7 +73,7 @@ def download_weekly_pointing_file(date):
 
     # download the file
     destination=os.path.join(tmp_dir,full_fname)
-    urllib.urlretrieve(pointing_file_url,destination)
+    urllib.request.urlretrieve(pointing_file_url,destination)
 
     # return the location of the downloaded file
     return destination
