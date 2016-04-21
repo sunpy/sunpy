@@ -551,3 +551,15 @@ def test_validate_meta(generic_map):
         bad_map=sunpy.map.Map((generic_map.data, bad_header))
         for count, meta_property in enumerate(('cunit1', 'cunit2', 'waveunit')):
             assert meta_property.upper() in str(w[count].message)
+
+
+def test_draw_contours_noerror(aia171_test_map):
+    """Check if it runs with no errors"""
+    aia171_test_map.plot()
+    aia171_test_map.draw_contours(u.Quantity(np.arange(1, 100, 10), 'percent'))
+
+
+@figure_test
+def test_draw_contours_aia(aia171_test_map):
+    aia171_test_map.plot()
+    aia171_test_map.draw_contours(u.Quantity(np.arange(1, 100, 10), 'percent'))
