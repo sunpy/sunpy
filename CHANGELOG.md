@@ -2,6 +2,7 @@ Latest
 ------
 
 * Sunpy is now Python 3.x compatible (3.4 and 3.5).
+* Added a unit check and warnings for map metadata.
 * Added IRIS SJI color maps.
 * Updated `show_colormaps()` with new string filter to show a subset of color maps.
 * Fixed MapCube animations by working around a bug in Astropy's ImageNormalize
@@ -28,6 +29,7 @@ Latest
   pixels in the x (or y) side of the original map data.
 * `sunpy.physics.transforms` has been deprecated and the code moved into `sunpy.physics`.
 * Add the `sunpy.coordinates` module, this adds the core physical solar coordinates frame within the astropy coordinates framework.
+* Added concatenate functionality to lightcurve base class.
 
 0.6.0
 -----

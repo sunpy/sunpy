@@ -25,9 +25,10 @@ shall use SDO's AIA instrument as an example in this tutorial. The general way t
 a Map from one of the supported data products is with the `~sunpy.map.map()` function from the `~sunpy.map` submodule.
 `~sunpy.map.map()` takes either a filename, a list of filenames or a data array and header. We can test map with:
 
+
 .. plot::
     :include-source:
-
+ 
     import sunpy.data.sample
     import sunpy.map
     aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
