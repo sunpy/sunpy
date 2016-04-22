@@ -182,7 +182,7 @@ class GenericMap(NDData):
 
         # Validate header
         # TODO: This should be a function of the header, not of the map
-        self._validate()
+        self._validate_meta()
         self._shift = Pair(0 * u.arcsec, 0 * u.arcsec)
 
         if self.dtype == np.uint8:
@@ -603,16 +603,29 @@ scale:\t\t {scale}
         cmap_string = self.observatory + self.meta['detector'] + str(int(self.wavelength.to('angstrom').value))
         return cmap_string.lower()
 
-    def _validate(self):
-        """Validates the meta-information associated with a Map.
+    def _validate_meta(self):
+        """
+        Validates the meta-information associated with a Map.
 
-        This function includes very basic validation checks which apply to
+        This method includes very basic validation checks which apply to
         all of the kinds of files that SunPy can read. Datasource-specific
         validation should be handled in the relevant file in the
-        sunpy.map.sources package."""
-#        if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
-#            raise InvalidHeaderInformation("Invalid value for DSUN")
-        pass
+        sunpy.map.sources package.
+
+        Allows for default unit assignment for:
+            CUNIT1, CUNIT2, WAVEUNIT
+
+        """
+
+        warnings.simplefilter('always', Warning)
+
+        for meta_property in ('cunit1', 'cunit2', 'waveunit'):
+            if (self.meta.get(meta_property) and
+                u.Unit(self.meta.get(meta_property),
+                       parse_strict='silent').physical_type == 'unknown'):
+
+                warnings.warn("Unknown value for "+meta_property.upper(), Warning)
+
 
 # #### Data conversion routines #### #
 
@@ -1108,8 +1121,8 @@ scale:\t\t {scale}
         y_pixels[np.greater(y_pixels, self.data.shape[0])] = self.data.shape[0]
 
         # Get ndarray representation of submap
-        xslice = slice(x_pixels[0], x_pixels[1])
-        yslice = slice(y_pixels[0], y_pixels[1])
+        xslice = slice(int(x_pixels[0]), int(x_pixels[1]))
+        yslice = slice(int(y_pixels[0]), int(y_pixels[1]))
         new_data = self.data[yslice, xslice].copy()
 
         # Make a copy of the header with updated centering information
