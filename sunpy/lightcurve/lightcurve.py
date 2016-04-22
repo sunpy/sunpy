@@ -65,6 +65,7 @@ class LightCurve(object):
         self.data = pandas.DataFrame(data)
         if meta == '' or meta is None:
             self.meta = OrderedDict()
+            self.meta.update({'name':None})
         else:
             self.meta = OrderedDict(meta)
 
@@ -339,7 +340,7 @@ for compatibility with map, please use meta instead""", Warning)
             return cls._parse_fits(filepath)
 
     def truncate(self, a, b=None):
-        """Returns a truncated version of the timeseries object.
+        """Returns a truncated version of the lightcurve object.
 
         Parameters
         ----------
@@ -382,6 +383,38 @@ for compatibility with map, please use meta instead""", Warning)
         """Returns the start and end times of the LightCurve as a `~sunpy.time.TimeRange`
         object"""
         return TimeRange(self.data.index[0], self.data.index[-1])
+
+    def concatenate(self, otherlightcurve):
+        """Concatenate another light curve. This function will check and remove
+        any duplicate times. It will keep the column values from the original
+        lightcurve to which the new lightcurve is being added.
+
+        Parameters
+        ----------
+        otherlightcurve : `~sunpy.lightcurve.LightCurve`
+            Another lightcurve of the same type.
+
+        Returns
+        -------
+        newlc : `~sunpy.lightcurve.LightCurve`
+            A new lightcurve.
+        """
+        if not isinstance(otherlightcurve, self.__class__):
+            raise TypeError("Lightcurve classes must match.")
+
+        meta = OrderedDict()
+        meta.update({str(self.data.index[0]):self.meta.copy()})
+        meta.update({str(otherlightcurve.data.index[0]):otherlightcurve.meta.copy()})
+
+        data = self.data.copy().append(otherlightcurve.data)
+
+        data['index'] = data.index
+        # default behavior of drop_duplicates is keep the first column.
+        data = data.drop_duplicates(subset='index')
+        data.set_index = data['index']
+        data.drop('index', axis=1, inplace=True)
+        return self.__class__.create(data, meta)
+
 
 # What's happening here is the following: The ConditionalDispatch is just an
 # unbound callable object, that is, it does not know which class it is attached

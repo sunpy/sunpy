@@ -30,6 +30,7 @@ Latest
 * `sunpy.physics.transforms` has been deprecated and the code moved into `sunpy.physics`.
 * Add the `sunpy.coordinates` module, this adds the core physical solar coordinates frame within the astropy coordinates framework.
 * Added ability of maps to draw contours on top of themselves (draw_contours)
+* Added concatenate functionality to lightcurve base class.
 
 0.6.0
 -----
