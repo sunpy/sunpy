@@ -1407,7 +1407,7 @@ scale:\t\t {scale}
         return [rect]
 
     @u.quantity_input(levels=u.percent)
-    def draw_contours(self, levels, axes=None, **imshow_args):
+    def draw_contours(self, levels, axes=None, **contour_args):
         """
         Draw contours of the data
 
@@ -1438,7 +1438,7 @@ scale:\t\t {scale}
 
         #TODO: allow for use of direct input of contours but requires units of map flux which is not yet implemented
 
-        cs = axes.contour(self.data, 0.01 * levels.to('percent').value * self.data.max(), **imshow_args)
+        cs = axes.contour(self.data, 0.01 * levels.to('percent').value * self.data.max(), **contour_args)
         return cs
 
     @toggle_pylab
