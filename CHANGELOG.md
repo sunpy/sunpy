@@ -3,6 +3,7 @@
  * Bug fix for rhessi summary lightcurve values.
  * Fix docstring for pixel_to_data and data_to_pixel
  * Fix the URL for the Helioviewer API. (This fixes Helioviewer.)
+ * Fix the way `reshape_image_to_4d_superpixel` checks the dimension of the new image.
 
 0.6.3
 ------
