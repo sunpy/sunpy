@@ -118,8 +118,8 @@ def value(key):
     Examples
     --------
     >>> from sunpy.sun import constants
-    >>> constants.uncertainty('mass')
-    5e+25
+    >>> constants.value('mass')
+    1.9891e+30
 
     """
     return constant(key).value
@@ -147,8 +147,8 @@ def unit(key):
     Examples
     --------
     >>> from sunpy.sun import constants
-    >>> constants.uncertainty('mass')
-    5e+25
+    >>> constants.unit('mass')
+    Unit("kg")
 
     """
     return constant(key).unit
