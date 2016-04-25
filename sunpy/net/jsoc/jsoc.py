@@ -3,7 +3,6 @@ from __future__ import print_function, absolute_import
 
 import os
 import time
-import urlparse
 import warnings
 
 import requests
@@ -18,6 +17,8 @@ from sunpy.time import parse_time, TimeRange
 from sunpy.net.download import Downloader, Results
 from sunpy.net.attr import and_
 from sunpy.net.jsoc.attrs import walker
+from sunpy.extern.six.moves import urllib
+from sunpy.extern import six
 
 __all__ = ['JSOCClient', 'JSOCResponse']
 
@@ -232,7 +233,7 @@ class JSOCClient(object):
         return_responses = kwargs.pop('return_resp', False)
         if len(kwargs):
             warn_message = "request_data got unexpected keyword arguments {0}"
-            raise TypeError(warn_message.format(kwargs.keys()))
+            raise TypeError(warn_message.format(list(kwargs.keys())))
 
         # Do a multi-request for each query block
         responses = []
@@ -278,7 +279,7 @@ class JSOCClient(object):
             A list of status' that were returned by JSOC
         """
         # Convert IDs to a list if not already
-        if not isiterable(requestIDs) or isinstance(requestIDs, basestring):
+        if not isiterable(requestIDs) or isinstance(requestIDs, six.string_types):
             requestIDs = [requestIDs]
 
         allstatus = []
@@ -404,7 +405,7 @@ class JSOCClient(object):
 
         # Convert IDs to a list if not already
 
-        if not isiterable(requestIDs) or isinstance(requestIDs, basestring):
+        if not isiterable(requestIDs) or isinstance(requestIDs, six.string_types):
             requestIDs = [requestIDs]
 
         if path is None:
@@ -428,7 +429,7 @@ class JSOCClient(object):
                     is_file = os.path.isfile(os.path.join(path, ar['filename']))
                     if overwrite or not is_file:
                         url_dir = BASE_DL_URL + u.json()['dir'] + '/'
-                        urls.append(urlparse.urljoin(url_dir, ar['filename']))
+                        urls.append(urllib.parse.urljoin(url_dir, ar['filename']))
 
                     else:
                         print_message = "Skipping download of file {} as it " \
@@ -464,7 +465,7 @@ class JSOCClient(object):
 
         Parameters
         ----------
-        time: basestring or datetime or astropy.time
+        time: six.string_types or datetime or astropy.time
             Input time
 
         Returns
@@ -472,7 +473,7 @@ class JSOCClient(object):
         datetime, in TAI
         """
         # Convert from any input (in UTC) to TAI
-        if isinstance(time, basestring):
+        if isinstance(time, six.string_types):
             time = parse_time(time)
 
         time = astropy.time.Time(time, scale='utc')

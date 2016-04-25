@@ -14,6 +14,7 @@ from sunpy.database.attrs import walker, Starred, Tag, Path, DownloadTime,\
     FitsHeaderEntry
 from sunpy.net.attr import DummyAttr, AttrAnd, AttrOr
 from sunpy.net import vso
+from sunpy.extern.six.moves import range
 
 
 @pytest.fixture
@@ -24,7 +25,7 @@ def obj():
 @pytest.fixture
 def session():
     database = Database('sqlite:///:memory:')
-    for i in xrange(1, 11):
+    for i in range(1, 11):
         entry = tables.DatabaseEntry()
         database.add(entry)
         # every entry has a fake download time of 2005-06-15 i:00:00
