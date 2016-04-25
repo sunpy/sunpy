@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 __authors__ = ["Russell Hewett, Stuart Mumford"]
 __email__ = "stuart@mumford.me.uk"
@@ -6,8 +6,10 @@ __email__ = "stuart@mumford.me.uk"
 import os
 import glob
 import urllib2
+from collections import OrderedDict
 
 import numpy as np
+import astropy.io.fits
 
 import sunpy
 from sunpy.map import GenericMap
@@ -111,10 +113,21 @@ class MapFactory(BasicRegistrationFactory):
                 new_pairs.append((data, meta))
         return new_pairs
 
+    def _validate_meta(self, meta):
+        """
+        Validate a meta argument.
+        """
+        if isinstance(meta, astropy.io.fits.header.Header):
+            return True
+        elif isinstance(meta, dict):
+            return True
+        else:
+            return False
+
     def _parse_args(self, *args, **kwargs):
         """
-        Parses an args list for data-header pairs.  args can contain any mixture
-        of the following entries:
+        Parses an args list for data-header pairs.  args can contain any
+        mixture of the following entries:
         * tuples of data,header
         * data, header not in a tuple
         * filename, which will be read
@@ -148,15 +161,18 @@ class MapFactory(BasicRegistrationFactory):
 
             # Data-header pair in a tuple
             if ((type(arg) in [tuple, list]) and
-                 len(arg) == 2 and
-                 isinstance(arg[0],np.ndarray) and
-                 isinstance(arg[1],dict)):
+                len(arg) == 2 and
+                isinstance(arg[0], np.ndarray) and
+                self._validate_meta(arg[1])):
+
+                arg[1] = OrderedDict(arg[1])
                 data_header_pairs.append(arg)
 
             # Data-header pair not in a tuple
             elif (isinstance(arg, np.ndarray) and
-                  isinstance(args[i+1],dict)):
-                pair = (args[i], args[i+1])
+                  self._validate_meta(args[i+1])):
+
+                pair = (args[i], OrderedDict(args[i+1]))
                 data_header_pairs.append(pair)
                 i += 1 # an extra increment to account for the data-header pairing
 
