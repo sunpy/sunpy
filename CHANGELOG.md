@@ -29,6 +29,7 @@ Latest
   pixels in the x (or y) side of the original map data.
 * `sunpy.physics.transforms` has been deprecated and the code moved into `sunpy.physics`.
 * Add the `sunpy.coordinates` module, this adds the core physical solar coordinates frame within the astropy coordinates framework.
+* Added ability of maps to draw contours on top of themselves (draw_contours)
 * Added concatenate functionality to lightcurve base class.
 * Fix Map to allow astropy.io.fits Header objects as valid input for meta arguments.
 
