@@ -79,13 +79,6 @@ class GOESClient(GenericClient):
                 url = base_url + "{date:%Y}/go{sat:02d}{date:%Y%m%d}.fits".format(
                     date=cur_date, sat=self._get_goes_sat_num(cur_date,cur_date)[0])
                 result.append(url)
-            
-##        if timerange.start < parse_time('1999/01/15'):
-##            url = base_url + "{date:%Y}/go{sat:02d}{date:%y%m%d}.fits".format(
-##                date=timerange.start, sat=sat_num[0])
-##        else:
-##            url = base_url + "{date:%Y}/go{sat:02d}{date:%Y%m%d}.fits".format(
-##                date=timerange.start, sat=sat_num[0])
         return result
 
     def _makeimap(self):
