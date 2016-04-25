@@ -1406,6 +1406,41 @@ scale:\t\t {scale}
 
         return [rect]
 
+    @u.quantity_input(levels=u.percent)
+    def draw_contours(self, levels, axes=None, **contour_args):
+        """
+        Draw contours of the data
+
+        Parameters
+        ----------
+
+        levels : `~astropy.units.Quantity`
+            A list of numbers indicating the level curves to draw given in percent.
+
+        axes : `matplotlib.axes.Axes`
+            The axes on which to plot the rectangle, defaults to the current axes.
+
+        Returns
+        -------
+
+        cs : `list`
+            The `~matplotlib.QuadContourSet` object, after it has been added to ``axes``.
+
+        Notes
+        -----
+
+        Extra keyword arguments to this function are passed through to the
+        `~matplotlib.pyplot.contour` function.
+
+        """
+        if not axes:
+            axes = wcsaxes_compat.gca_wcs(self.wcs)
+
+        #TODO: allow for use of direct input of contours but requires units of map flux which is not yet implemented
+
+        cs = axes.contour(self.data, 0.01 * levels.to('percent').value * self.data.max(), **contour_args)
+        return cs
+
     @toggle_pylab
     def peek(self, draw_limb=False, draw_grid=False,
                    colorbar=True, basic_plot=False, **matplot_args):
