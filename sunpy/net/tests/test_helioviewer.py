@@ -32,6 +32,8 @@ class TestHelioviewerClient:
     def test_get_datasources(self):
         """Makes sure datasource query returns a valid result and source id
         is casted to an integer"""
+        #  we skip these tests like this if the HV api is offline because
+        # we can not define __SKIP_TESTS__ in a scope that pytest.mark.skipif will find.
         if self.__SKIP_TESTS__:
             return
         assert type(self.sources['SDO']['AIA']['AIA']['171']['sourceId']) is int
