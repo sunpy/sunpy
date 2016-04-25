@@ -12,7 +12,9 @@ from contextlib import contextmanager
 import os.path
 
 from sqlalchemy import create_engine, exists
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
+
+from astropy import units
 
 import sunpy
 from sunpy.database import commands, tables, serialize
@@ -22,6 +24,7 @@ from sunpy.database.attrs import walker
 from sunpy.net.hek2vso import H2VClient
 from sunpy.net.attr import and_
 from sunpy.net.vso import VSOClient
+from sunpy.extern.six.moves import range
 
 __authors__ = ['Simon Liedtke', 'Rajul Srivastava']
 __emails__ = [
@@ -113,6 +116,57 @@ class TagAlreadyAssignedError(Exception):
         return errmsg.format(self.database_entry, self.tag_name)
 
 
+def split_database(source_database, destination_database, *query_string):
+    """
+    Queries the source database with the query string, and moves the
+    matched entries to the destination database. When this function is
+    called, the `~sunpy.database.Database.undo` feature is disabled for both databases.
+
+    Parameters
+    ----------
+    source_database : `~sunpy.database.database.Database`
+        A SunPy `~Database` object. This is the database on which the queries
+        will be made.
+    destination_database : `~sunpy.database.database.Database`
+        A SunPy `~Database` object. This is the database to which the matched
+        entries will be moved.
+    query_string : `list`
+        A variable number of attributes that are chained together via the
+        boolean AND operator. The | operator may be used between attributes
+        to express the boolean OR operator.
+
+    Examples
+    --------
+    The function call in the following example moves those entries from
+    database1 to database2 which have `~sunpy.net.vso.attrs.Instrument` = 'AIA' or
+    'ERNE'.
+
+    >>> from sunpy.database import Database, split_database
+    >>> from sunpy.database.tables import display_entries
+    >>> from sunpy.net import vso
+    >>> database1 = Database('sqlite:///:memory:')
+    >>> database2 = Database('sqlite:///:memory:')
+    >>> client = vso.VSOClient()
+    >>> qr = client.query(vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'))
+    >>> database1.add_from_vso_query_result(qr)
+    >>> database1, database2 = split_database(database1, database2, vso.attrs.Instrument('AIA') | vso.attrs.Instrument('ERNE'))
+    """
+
+    query_string = and_(*query_string)
+    filtered_entries = source_database.query(query_string)
+    with disable_undo(source_database):
+        with disable_undo(destination_database):
+            source_database.remove_many(filtered_entries)
+            source_database.commit()
+            source_database.session.commit()
+            source_database.session.close()
+
+            destination_database.add_many(filtered_entries)
+            destination_database.commit()
+
+    return source_database, destination_database
+
+
 @contextmanager
 def disable_undo(database):
     """A context manager to disable saving the used commands in the undo
@@ -154,12 +208,16 @@ class Database(object):
         The default value is :class:`sunpy.database.caching.LRUCache`.
     cache_size : int
         The maximum number of database entries, default is no limit.
-    default_waveunit : str, optional
+    default_waveunit : `str` or `~astropy.units.Unit`, optional
         The wavelength unit that will be used if an entry is added to the
         database but its wavelength unit cannot be found (either in the file or
         the VSO query result block, depending on the way the entry was added).
-        If `None` (the default), attempting to add an entry without knowing the
-        wavelength unit results in a
+        If an `~astropy.units.Unit` is passed, it is assigned to ``default_waveunit``.
+        If a `str` is passed, it will be converted to `~astropy.units.Unit` through
+        the `astropy.units.Unit()` initializer, and then assigned to default_waveunit.
+        If an invalid string is passed, `~sunpy.database.WaveunitNotConvertibleError`
+        is raised. If `None` (the default), attempting to add an entry without knowing
+        the wavelength unit results in a
         :exc:`sunpy.database.WaveunitNotFoundError`.
     """
     """
@@ -234,9 +292,14 @@ class Database(object):
             url = sunpy.config.get('database', 'url')
         self._engine = create_engine(url)
         self._session_cls = sessionmaker(bind=self._engine)
-        self.session = self._session_cls()
+        self.session = scoped_session(self._session_cls)
         self._command_manager = commands.CommandManager()
         self.default_waveunit = default_waveunit
+        if self.default_waveunit is not None:
+            try:
+                self.default_waveunit = units.Unit(default_waveunit)
+            except ValueError:
+                raise tables.WaveunitNotConvertibleError(default_waveunit)
         self._enable_history = True
 
         class Cache(CacheClass):
@@ -244,7 +307,10 @@ class Database(object):
                 self.remove(database_entry)
 
             def append(this, value):
-                this[max(this or [0]) + 1] = value
+                try:
+                    this[max(this or [0]) + 1] = value
+                except TypeError:
+                    this[1] = value
         self._create_tables()
         self._cache = Cache(cache_size)
         for entry in self:
@@ -475,9 +541,16 @@ class Database(object):
         if kwargs:
             k, v = kwargs.popitem()
             raise TypeError('unexpected keyword argument {0!r}'.format(k))
-        return sorted(
-            walker.create(and_(*query), self.session),
-            key=operator.attrgetter(sortby))
+
+        db_entries = walker.create(and_(*query), self.session)
+
+        # If any of the DatabaseEntry-s lack the sorting attribute, the
+        # sorting key should fall back to 'id', orherwise it fails with
+        # TypeError on py3
+        if any([getattr(entry, sortby) is None for entry in db_entries]):
+            sortby = 'id'
+
+        return sorted(db_entries, key=operator.attrgetter(sortby))
 
     def get_entry_by_id(self, entry_id):
         """Get a database entry by its unique ID number. If an entry with the
@@ -887,7 +960,7 @@ class Database(object):
             start = 0 if key.start is None else key.start
             stop = len(self) if key.stop is None else key.stop
             step = 1 if key.step is None else key.step
-            for i in xrange(start, stop, step):
+            for i in range(start, stop, step):
                 try:
                     entry = self[i]
                 except IndexError:

@@ -27,6 +27,7 @@ from sunpy.net.attr import (
 )
 from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time
+from sunpy.extern.six import iteritems
 
 __all__ = ['Wavelength', 'Time', 'Extent', 'Field', 'Provider', 'Source',
            'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',
@@ -284,7 +285,7 @@ def _create(wlk, root, api):
 # pylint: disable=E0102,C0103,W0613
 def _apply(wlk, root, api, queryblock):
     """ Implementation detail. """
-    for k, v in root.attrs.iteritems():
+    for k, v in iteritems(root.attrs):
         lst = k[-1]
         rest = k[:-1]
 
@@ -316,7 +317,7 @@ def _create(wlk, root, api):
 # attrs member.
 walker.add_converter(Extent)(
     lambda x: ValueAttr(
-        dict((('extent', k), v) for k, v in vars(x).iteritems())
+        dict((('extent', k), v) for k, v in iteritems(vars(x)))
     )
 )
 
