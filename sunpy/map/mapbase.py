@@ -1414,7 +1414,7 @@ scale:\t\t {scale}
         Parameters
         ----------
 
-        levels : `~astropy.units.Quantity`, list, optional
+        levels : `~astropy.units.Quantity`
             A list of numbers indicating the level curves to draw given in percent.
 
         axes : `matplotlib.axes.Axes`
