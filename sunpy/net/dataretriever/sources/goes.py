@@ -58,18 +58,35 @@ class GOESClient(GenericClient):
             Data type to return for the particular GOES satellite. Supported
             types depend on the satellite number specified. (default = xrs_2s)
         """
-
+        start_date = parse_time(timerange.start)
+        end_date = parse_time(timerange.end)
+        
         # find out which satellite and datatype to query from the query times
         sat_num = self._get_goes_sat_num(timerange.start, timerange.end)
         base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
 
-        if timerange.start < parse_time('1999/01/15'):
-            url = base_url + "{date:%Y}/go{sat:02d}{date:%y%m%d}.fits".format(
-                date=timerange.start, sat=sat_num[0])
-        else:
-            url = base_url + "{date:%Y}/go{sat:02d}{date:%Y%m%d}.fits".format(
-                date=timerange.start, sat=sat_num[0])
-        return [url]
+        total_days = (end_date - start_date).days + 1
+
+        result = []
+        for day_number in range(total_days):
+            current_date = (start_date + datetime.timedelta(days=day_number)).date()
+            cur_date = datetime.datetime.combine(current_date, datetime.time())
+            if (cur_date < parse_time('1999/01/15')):
+                url = base_url + "{date:%Y}/go{sat:02d}{date:%y%m%d}.fits".format(
+                    date=cur_date, sat=self._get_goes_sat_num(cur_date,cur_date)[0])
+                result.append(url)
+            else:
+                url = base_url + "{date:%Y}/go{sat:02d}{date:%Y%m%d}.fits".format(
+                    date=cur_date, sat=self._get_goes_sat_num(cur_date,cur_date)[0])
+                result.append(url)
+            
+##        if timerange.start < parse_time('1999/01/15'):
+##            url = base_url + "{date:%Y}/go{sat:02d}{date:%y%m%d}.fits".format(
+##                date=timerange.start, sat=sat_num[0])
+##        else:
+##            url = base_url + "{date:%Y}/go{sat:02d}{date:%Y%m%d}.fits".format(
+##                date=timerange.start, sat=sat_num[0])
+        return result
 
     def _makeimap(self):
         """
