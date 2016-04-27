@@ -122,4 +122,5 @@ class NoRHLightCurve(LightCurve):
         for s in sec_array:
             norh_time.append(obs_start_time + datetime.timedelta(0,s))
 
+        header.update({'UNIT': [None] * len(data.columns)})
         return header, pandas.DataFrame(data, index=norh_time)

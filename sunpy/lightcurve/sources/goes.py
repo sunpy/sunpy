@@ -67,9 +67,6 @@ class GOESLightCurve(LightCurve):
 
             axes.set_yscale("log")
             axes.set_ylim(1e-9, 1e-2)
-            axes.set_title(title)
-            axes.set_ylabel('Watts m$^{-2}$')
-            axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
 
             ax2 = axes.twinx()
             ax2.set_yscale("log")
@@ -79,7 +76,9 @@ class GOESLightCurve(LightCurve):
         else:
             raise ValueError('Not a recognized plot type.')
 
-        axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
+        axes.set_ylabel(self.meta.get('UNIT'))
+        axes.set_title(title)
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
         plt.gcf().autofmt_xdate()
 
         return axes
@@ -203,4 +202,5 @@ class GOESLightCurve(LightCurve):
 
         data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb}, index=times)
         data.sort_index(inplace=True)
+        header.update({"UNIT": ["Watts m^-2"] * len(data.columns)})
         return header, data

@@ -59,7 +59,7 @@ class GBMSummaryLightCurve(LightCurve):
     * `GBM Instrument Papers <http://gammaray.msfc.nasa.gov/gbm/publications/>`_
     """
 
-    def plot(self, plot_type=None, **kwargs):
+    def plot(self, plot_type=None, title='Fermi GBM Summary data', **kwargs):
         """Plots the GBM lightcurve. An example can be seen below.
 
         .. plot::
@@ -75,9 +75,8 @@ class GBMSummaryLightCurve(LightCurve):
             Any additional plot arguments that should be used
             when plotting.
         """
-        figure=plt.figure()
-        axes = plt.gca()
-        data_lab = self.data.columns.values
+        if axes is None:
+            axes = plt.gca()
 
         if plot_type is None:
             plot_type = self._get_plot_types()[0]
@@ -87,14 +86,12 @@ class GBMSummaryLightCurve(LightCurve):
 
             for d in data_lab:
                 axes.plot(self.data.index,self.data[d],label=d)
-
             axes.set_yscale("log")
-            axes.set_title('Fermi GBM Summary data ' + self.meta['DETNAM'])
-            axes.set_ylabel('Counts/s/keV')
-            axes.legend()
         else:
             raise ValueError('Not a recognized plot type.')
 
+        axes.set_title(title)
+        axes.set_ylabel(self.meta['DETNAM'] + ' ' + self.meta.get('UNIT'))
         axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
 
         plt.gcf().autofmt_xdate()
@@ -174,6 +171,7 @@ class GBMSummaryLightCurve(LightCurve):
             gbm_times.append(fermi.met_to_utc(t))
         column_labels=['4-15 keV','15-25 keV','25-50 keV','50-100 keV','100-300 keV',
                        '300-800 keV','800-2000 keV']
+        header.update({'UNIT': 'Counts s^-1 keV^-1'})
         return header, pandas.DataFrame(summary_counts, columns=column_labels, index=gbm_times)
 
 

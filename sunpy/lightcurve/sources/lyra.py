@@ -89,18 +89,16 @@ class LYRALightCurve(LightCurve):
 
         if plot_type == 'channel 1':
             axes = self.data['CHANNEL1'].plot(ax=axes, **plot_args)
-            ylabel = lyranames[0][0] + ' \n (' + lyranames[1][0] + ')'
+            ylabel = lyranames[0][0] + ' \n (' + lyranames[1][0] + ")\n" + self.meta.get('UNIT')[0]
         if plot_type == 'channel 2':
             axes = self.data['CHANNEL2'].plot(ax=axes, **plot_args)
-            ylabel = lyranames[0][1] + ' \n (' + lyranames[1][1] + ')'
+            ylabel = lyranames[0][1] + ' \n (' + lyranames[1][1] + ")\n" + self.meta.get('UNIT')[1]
         if plot_type == 'channel 3':
             axes = self.data['CHANNEL3'].plot(ax=axes, **plot_args)
-            ylabel = lyranames[0][2] + ' \n (' + lyranames[1][2] + ')'
+            ylabel = lyranames[0][2] + ' \n (' + lyranames[1][2] + ")\n" + self.meta.get('UNIT')[2]
         if plot_type == 'channel 4':
             axes = self.data['CHANNEL4'].plot(ax=axes, **plot_args)
-            ylabel = lyranames[0][3] + ' \n (' + lyranames[1][3] + ')'
-
-        ylabel += "\n (W/m**2)"
+            ylabel = lyranames[0][3] + ' \n (' + lyranames[1][3] + ")\n" + self.meta.get('UNIT')[3]
 
         axes.set_xlabel('Start time: ' + self.data['CHANNEL1'].index[0].strftime(TIME_FORMAT))
         axes.set_ylabel(ylabel)
@@ -177,4 +175,6 @@ class LYRALightCurve(LightCurve):
         # Return the header and the data
         data = pandas.DataFrame(table, index=times)
         data.sort_index(inplace=True)
-        return OrderedDict(hdulist[0].header), data
+        header = OrderedDict(hdulist[0].header)
+        header.update({'UNIT': ["W m^-2"] * len(data.columns)})
+        return header, data

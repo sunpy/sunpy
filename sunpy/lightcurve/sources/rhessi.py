@@ -60,21 +60,21 @@ class RHESSISummaryLightCurve(LightCurve):
         if axes is None:
             axes = plt.gca()
 
+        if plot_type == None:
+            plot_type = self._get_plot_types()[0]
+
         if plot_type == 'rhessi':
             for item, frame in self.data.iteritems():
                 axes.plot_date(self.data.index, frame.values, '-', label=item, **plot_args)
             axes.set_yscale("log")
-            axes.set_title(title)
-            axes.set_ylabel('Count Rates s$^{-1}$ detector$^{-1}$')
             axes.yaxis.grid(True, 'major')
             axes.xaxis.grid(True, 'major')
         else:
             raise ValueError('Not a recognized plot type.')
 
+        axes.set_title(title)
+        axes.set_ylabel(self.meta.get('UNIT'))
         axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
-
-        for item, frame in self.data.iteritems():
-            axes.plot_date(self.data.index, frame.values, '-', label=item, lw=2)
 
         return axes
 
@@ -113,5 +113,5 @@ class RHESSISummaryLightCurve(LightCurve):
         """Parses a RHESSI FITS file"""
         header, d = rhessi.parse_obssumm_file(filepath)
         data = DataFrame(d['data'], columns=d['labels'], index=d['time'])
-
+        header.update({'UNIT': ['counts s^-1 detector^-1'] * len(data.columns)})
         return header, data

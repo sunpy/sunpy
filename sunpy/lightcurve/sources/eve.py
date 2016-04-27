@@ -74,7 +74,13 @@ class EVELightCurve(LightCurve):
             self.data['XRS-A proxy'].plot(ax=axes, label='0.5--4.0 $\AA$', color='blue', lw=2, **plot_args)
             axes.set_yscale("log")
             axes.set_ylim(1e-9, 1e-2)
-            axes.set_ylabel('Watts m$^{-2}$')
+            axes.set_ylabel(self.meta.get('UNIT')[0])
+            ax2 = axes.twinx()
+            ax2.set_yscale("log")
+            ax2.set_ylim(1e-9, 1e-2)
+            ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
+            ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
+
         elif plot_type == self._get_plot_types()[1]:  # esp quad
             self.data['q0ESP'].plot(ax=axes, label='ESP 0', **plot_args)
             self.data['q1ESP'].plot(ax=axes, label='ESP 1', **plot_args)
@@ -100,9 +106,7 @@ class EVELightCurve(LightCurve):
         axes.set_title(title)
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
-        #axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
         plt.gcf().autofmt_xdate()
-
         return axes
 
     @classmethod
@@ -199,4 +203,7 @@ class EVELightCurve(LightCurve):
             data[data == float(missing_data_val)] = numpy.nan
 
         # data.columns = fields
+        units = [None] * len(data.columns)
+        units[0] = 'Watts m^-2'
+        meta.update({'UNIT': units})
         return meta, data
