@@ -58,14 +58,10 @@ class GOESClient(GenericClient):
             Data type to return for the particular GOES satellite. Supported
             types depend on the satellite number specified. (default = xrs_2s)
         """
-        start_date = timerange.start
-        end_date = timerange.end
-        
         # find out which satellite and datatype to query from the query times
         sat_num = self._get_goes_sat_num(timerange.start, timerange.end)
         base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
-
-        total_days = (end_date - start_date).days + 1 
+        total_days = (timerange.end - timerange.start).days + 1 
         all_dates = timerange.split(total_days)
         result = list()
         for day in all_dates:
