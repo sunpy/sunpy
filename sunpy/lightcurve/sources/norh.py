@@ -51,7 +51,7 @@ class NoRHLightCurve(LightCurve):
     * `Nobeyama Correlation Plots <http://solar.nro.nao.ac.jp/norh/html/cor_plot/>`_
     """
 
-    def plot(self, title='Nobeyama Radioheliograph', axes=None, plot_type=None, **plot_args):
+    def plot(self, title=True, axes=None, plot_type=None, **plot_args):
         """Plots the NoRH lightcurve"""
 
         if plot_type == None:
@@ -60,18 +60,24 @@ class NoRHLightCurve(LightCurve):
         if axes is None:
             axes = plt.gca()
 
+        if title is True:
+            title = self.name
+
         if plot_type == 'norh':
             data_label = self.meta['OBS-FREQ'][0:2] + ' ' + self.meta['OBS-FREQ'][2:5]
             axes.plot(self.data.index, self.data, label=data_label)
             axes.set_yscale("log")
-            axes.set_ylim(1e-4,1)
-            axes.set_title(title)
+            axes.set_ylim(1e-4, 1)
             axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
             axes.set_ylabel('Correlation')
             axes.yaxis.grid(True, 'major')
             axes.xaxis.grid(True, 'major')
         else:
             raise ValueError('Not a recognized plot type.')
+
+        axes.set_ylabel(self.meta.get('UNIT'))
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
+        axes.set_title(title)
 
         #axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
         plt.gcf().autofmt_xdate()

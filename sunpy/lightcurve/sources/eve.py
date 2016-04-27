@@ -61,7 +61,7 @@ class EVELightCurve(LightCurve):
     * `Instrument Paper <http://link.springer.com/article/10.1007%2Fs11207-009-9487-6>`_
     """
 
-    def plot(self, axes=None, plot_type=None, title='SDO/EVE', **plot_args):
+    def plot(self, title=True, axes=None, plot_type=None, **plot_args):
         """Plots EVE light curve is the usual manner"""
         if axes is None:
             axes = plt.gca()
@@ -80,7 +80,6 @@ class EVELightCurve(LightCurve):
             ax2.set_ylim(1e-9, 1e-2)
             ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
             ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
-
         elif plot_type == self._get_plot_types()[1]:  # esp quad
             self.data['q0ESP'].plot(ax=axes, label='ESP 0', **plot_args)
             self.data['q1ESP'].plot(ax=axes, label='ESP 1', **plot_args)
@@ -204,6 +203,11 @@ class EVELightCurve(LightCurve):
 
         # data.columns = fields
         units = [None] * len(data.columns)
-        units[0] = 'Watts m^-2'
-        meta.update({'UNIT': units})
+        units[0] = units[1] = 'Watts m^-2'
+        meta.update({'unit': units})
+        meta.update({'instrume': 'SDO/EVE'})
+        meta.update({'obsrvtry': 'SDO'})
+        meta.update({'telescope': 'EVE'})
+        meta.update({'wavelnth': ''})
+        meta.update({'waveunit': ''})
         return meta, data

@@ -59,7 +59,7 @@ class GBMSummaryLightCurve(LightCurve):
     * `GBM Instrument Papers <http://gammaray.msfc.nasa.gov/gbm/publications/>`_
     """
 
-    def plot(self, plot_type=None, title='Fermi GBM Summary data', **kwargs):
+    def plot(self, title=True, axes=None, plot_type=None, **plot_args):
         """Plots the GBM lightcurve. An example can be seen below.
 
         .. plot::
@@ -80,6 +80,9 @@ class GBMSummaryLightCurve(LightCurve):
 
         if plot_type is None:
             plot_type = self._get_plot_types()[0]
+
+        if title is True:
+            title = self.name
 
         if plot_type == 'gbm':
             data_lab=self.data.columns.values

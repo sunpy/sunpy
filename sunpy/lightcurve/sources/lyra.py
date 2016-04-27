@@ -56,7 +56,7 @@ class LYRALightCurve(LightCurve):
     * `LYRA Instrument Homepage <http://proba2.sidc.be/about/LYRA>`_
     """
 
-    def plot(self, title="LYRA", axes=None, plot_type='channel 1', **plot_args):
+    def plot(self, title=True, axes=None, plot_type=None, **plot_args):
         """Plots the LYRA data. Available plot types are
 
         .. plot::
@@ -83,9 +83,16 @@ class LYRALightCurve(LightCurve):
         lyranames = (('Lyman alpha', 'Herzberg cont.', 'Al filter', 'Zr filter'),
                  ('120-123nm', '190-222nm', '17-80nm + <5nm', '6-20nm + <2nm'))
 
-        """Shows a plot of all four light curves"""
         if axes is None:
             axes = plt.gca()
+
+        if plot_type == None:
+            plot_type = self._get_plot_types()[0]
+
+        if title is True:
+            title = self.name
+
+        ylabel = ''
 
         if plot_type == 'channel 1':
             axes = self.data['CHANNEL1'].plot(ax=axes, **plot_args)
@@ -177,4 +184,9 @@ class LYRALightCurve(LightCurve):
         data.sort_index(inplace=True)
         header = OrderedDict(hdulist[0].header)
         header.update({'UNIT': ["W m^-2"] * len(data.columns)})
+        header.update({'instrume': 'LYRA'})
+        header.update({'obsrvtry': 'PROBA2'})
+        header.update({'telescope': ['Lyman alpha', 'Herzberg cont.', 'Al filter', 'Zr filter']})
+        header.update({'wavelnth': [[120, 123], [190, 222], [17, 80], [6, 20]]})
+        header.update({'waveunit': 'nm'})
         return header, data

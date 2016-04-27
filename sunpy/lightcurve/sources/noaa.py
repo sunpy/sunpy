@@ -49,7 +49,7 @@ class NOAAIndicesLightCurve(LightCurve):
     * `NOAA Product List <http://www.swpc.noaa.gov/products-and-data>`_
     """
 
-    def plot(self, plot_type=None, axes=None, title='Solar Cycle Progression', **plot_args):
+    def plot(self, title=True, axes=None, plot_type=None, **plot_args):
         """Plots NOAA Indices as a function of time. An example is shown below.
 
         .. plot::
@@ -137,7 +137,7 @@ class NOAAIndicesLightCurve(LightCurve):
     @staticmethod
     def _parse_csv(filepath):
         """Parses an NOAA indices csv"""
-        header = []
+        comments = []
         with open(filepath, 'r') as fp:
             line = fp.readline()
             # Read header at top of file
@@ -152,7 +152,17 @@ class NOAAIndicesLightCurve(LightCurve):
             data = data.set_index('time')
             data = data.drop('mm',1)
             data = data.drop('yyyy',1)
-            return {'comments': header}, data
+
+            meta = {'comments': comments}
+            units = [''] * len(data.columns)
+            meta.update({'unit': units})
+            meta.update({'instrume': 'NOAA'})
+            meta.update({'obsrvtry': 'NOAA'})
+            meta.update({'telescope': None})
+            meta.update({'wavelnth': ''})
+            meta.update({'waveunit': ''})
+
+            return meta, data
 
 
 class NOAAPredictIndicesLightCurve(LightCurve):
@@ -184,31 +194,28 @@ class NOAAPredictIndicesLightCurve(LightCurve):
 
     """
 
-    def plot(self, axes=None, title='Solar Cycle Prediction', type='sunspot', **plot_args):
+    def plot(self, title=True, axes=None, plot_type=None, **plot_args):
         """Plots NOAA Indices as a function of time"""
         if axes is None:
             axes = plt.gca()
 
-        if type == 'sunspot':
+        if plot_type == None:
+            plot_type = self._get_plot_types()[0]
+
+        if plot_type == 'sunspot':
             ylabel = 'Sunspot Number'
             axes = self.data['sunspot'].plot(**plot_args)
             plt.fill_between(self.data.index, self.data['sunspot high'],
                          y2=self.data['sunspot low'], interpolate=True,
                          alpha=0.5)
-        if type == 'radio':
+        elif plot_type == 'radio':
             ylabel = 'Radio flux'
             axes = self.data['radio flux'].plot(**plot_args)
             plt.fill_between(self.data.index, self.data['radio flux high'],
-                         y2=self.data['radio flux low'], interpolate=True,
-                         alpha=0.5)
-
-            from sunpy import lightcurve as lc
-            from sunpy.data.sample import NOAAPREDICT_LIGHTCURVE
-            noaa = lc.NOAAPredictIndicesLightCurve.create(NOAAPREDICT_LIGHTCURVE)
-            noaa.peek()
-
-        figure = plt.figure()
-        axes = plt.gca()
+                             y2=self.data['radio flux low'], interpolate=True,
+                             alpha=0.5)
+        else:
+            raise ValueError('Not a recognized plot type.')
 
         axes = self.data['sunspot'].plot(color='b')
         self.data['sunspot low'].plot(linestyle='--', color='b')
@@ -217,14 +224,12 @@ class NOAAPredictIndicesLightCurve(LightCurve):
         axes.set_ylim(0)
         axes.set_title(title)
         axes.set_ylabel(ylabel)
-        #axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
+        axes.set_xlabel('Start time: ' + self.data['sunspot SWO'].index[0].strftime(TIME_FORMAT))
 
-        axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
         plt.gcf().autofmt_xdate()
-
         return axes
 
     @classmethod
@@ -244,12 +249,12 @@ class NOAAPredictIndicesLightCurve(LightCurve):
     @staticmethod
     def _parse_csv(filepath):
         """Parses an NOAA indices csv"""
-        header = ''
+        comments = ''
         with open(filepath, 'r') as fp:
             line = fp.readline()
             # Read header at top of file
             while line.startswith((":", "#")):
-                header += line
+                comments += line
                 line = fp.readline()
             fields = ('yyyy', 'mm', 'sunspot', 'sunspot low', 'sunspot high', 'radio flux', 'radio flux low', 'radio flux high')
             data = read_csv(filepath, delim_whitespace=True, names = fields, comment='#', skiprows=2, dtype={'yyyy':np.str, 'mm':np.str})
@@ -259,4 +264,14 @@ class NOAAPredictIndicesLightCurve(LightCurve):
             data = data.set_index('time')
             data = data.drop('mm',1)
             data = data.drop('yyyy',1)
-            return {'comments': header}, data
+
+            meta = {'comments': comments}
+            units = [''] * len(data.columns)
+            meta.update({'UNIT': units})
+            meta.update({'INSTRUME': 'NOAA Prediction'})
+            meta.update({'obsrvtry': 'NOAA'})
+            meta.update({'telescope': None})
+            meta.update({'wavelnth': ''})
+            meta.update({'waveunit': ''})
+
+            return meta, data

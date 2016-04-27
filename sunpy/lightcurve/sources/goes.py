@@ -50,7 +50,7 @@ class GOESLightCurve(LightCurve):
         return ['goes']
 
     @classmethod
-    def plot(self, title="GOES X-ray Flux", axes=None, plot_type=None, **plot_args):
+    def plot(self, title=None, axes=None, plot_type=None, **plot_args):
         """Plots GOES light curve."""
 
         if plot_type == None:
@@ -58,6 +58,9 @@ class GOESLightCurve(LightCurve):
 
         if axes is None:
             axes = plt.gca()
+
+        if title is True:
+            title = self.name
 
         if plot_type == self._get_plot_types()[0]:      # goes
             axes.plot_date(self.data.index, self.data['xrsa'], '-',
@@ -202,5 +205,8 @@ class GOESLightCurve(LightCurve):
 
         data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb}, index=times)
         data.sort_index(inplace=True)
-        header.update({"UNIT": ["Watts m^-2"] * len(data.columns)})
+        header.update({"unit": ["Watts m^-2"] * len(data.columns)})
+        header.update({'obsrvtry': header.get('telescop')})
+        header.update({'wavelnth': [[0.5, 4], [1.0, 8]]})
+        header.update({'waveunit': 'angstrom'})
         return header, data

@@ -54,7 +54,7 @@ class RHESSISummaryLightCurve(LightCurve):
     * Mission Paper `<http://link.springer.com/article/10.1023%2FA%3A1022428818870>`_
     """
 
-    def plot(self, title="RHESSI Observing Summary Count Rate", axes=None, plot_type=None, **plot_args):
+    def plot(self, title=True, axes=None, plot_type=None, **plot_args):
         """Plots RHESSI Count Rate light curve"""
 
         if axes is None:
@@ -62,6 +62,9 @@ class RHESSISummaryLightCurve(LightCurve):
 
         if plot_type == None:
             plot_type = self._get_plot_types()[0]
+
+        if title is True:
+            title = self.name
 
         if plot_type == 'rhessi':
             for item, frame in self.data.iteritems():
@@ -117,6 +120,7 @@ class RHESSISummaryLightCurve(LightCurve):
         header.update({'instrume': 'RHESSI'})
         header.update({'obsrvtry': 'RHESSI'})
         header.update({'telescope': 'RHESSI'})
-        header.update({'wavelnth': ['3', '6', '12', '25', '50', '100', '300', '800', '7000']})
+        header.update({'wavelnth': [[3, 6], [6, 12], [12, 25], [25, 50], [50, 100], [100, 300],
+                                    [300, 800], [800, 7000], [7000, 20000]]})
         header.update({'waveunit': 'keV'})
         return header, data
