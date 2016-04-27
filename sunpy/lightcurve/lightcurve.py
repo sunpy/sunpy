@@ -76,8 +76,6 @@ class LightCurve(object):
             self.meta.update({'name':None})
         else:
             self.meta = OrderedDict(meta)
-        self.unit = None
-        self.uncertainty = None
 
     @property
     def plot_types(self):
@@ -263,7 +261,7 @@ for compatibility with map, please use meta instead""", Warning)
 
         return cls(dataframe, meta)
 
-    def plot(self, axes=None, plot_type=None, **plot_args):
+    def plot(self, title=True, axes=None, plot_type=None, **plot_args):
         """Plot a plot of the light curve
 
         Parameters
