@@ -40,8 +40,15 @@ class LightCurve(object):
 
     meta : `str` or `dict`
         The comment string or header associated with the data.
+
     data : `~pandas.DataFrame`
-        An pandas DataFrame prepresenting one or more fields as a function of time.
+        An pandas DataFrame representing one or more fields as a function of time.
+
+    unit : `astropy.units.UnitBase` instance or str, optional
+        The units of the data.
+
+    uncertainty : `np.ndarray`, optional
+        Uncertainties on the data.
 
     Examples
     --------
@@ -69,6 +76,8 @@ class LightCurve(object):
             self.meta.update({'name':None})
         else:
             self.meta = OrderedDict(meta)
+        self.unit = None
+        self.uncertainty = None
 
     @property
     def plot_types(self):
@@ -99,6 +108,17 @@ for compatibility with map, please use meta instead""", Warning)
             self._unit = None
         else:
             self._unit = Unit(value)
+
+    @property
+    def uncertainty(self):
+        return self._uncertainty
+
+    @uncertainty.setter
+    def uncertainty(self, value):
+        if value is not None:
+            self._uncertainty = value
+        else:
+            self._uncertainty = value
 
     @classmethod
     def from_time(cls, time, **kwargs):
