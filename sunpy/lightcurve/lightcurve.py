@@ -19,7 +19,7 @@ from sunpy.time import is_time, TimeRange, parse_time
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.extern.six.moves import urllib
 from sunpy.extern import six
-from astropy.units import Unit
+import astropy.units as u
 
 # pylint: disable=E1101,E1121,W0404,W0612,W0613
 __authors__ = ["Keith Hughitt"]
@@ -119,26 +119,21 @@ for compatibility with map, please use meta instead""", Warning)
         return self.meta.get('obsrvtry', self.meta.get('telescop', "")).replace("_", " ")
 
     @property
-    def unit(self):
-        return self._unit
-
-    @unit.setter
-    def unit(self, value):
-        if value is None:
-            self._unit = None
-        else:
-            self._unit = Unit(value)
+    def detector(self):
+        """Detector name"""
+        return self.meta.get('detector', "")
 
     @property
-    def uncertainty(self):
-        return self._uncertainty
+    def name(self):
+        """Human-readable description of map-type"""
+        return "{obs} {detector} {measurement} {timerange:{tmf}}".format(obs=self.observatory,
+                                                                detector=self.detector,
+                                                                measurement=self.measurement,
+                                                                timerange=self.time_range)
 
-    @uncertainty.setter
-    def uncertainty(self, value):
-        if value is not None:
-            self._uncertainty = value
-        else:
-            self._uncertainty = value
+    @property
+    def unit(self):
+        return u.Unit(self.meta.get('unit'))
 
     @classmethod
     def from_time(cls, time, **kwargs):
