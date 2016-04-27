@@ -19,6 +19,7 @@ from sunpy.time import is_time, TimeRange, parse_time
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.extern.six.moves import urllib
 from sunpy.extern import six
+from astropy.units import Unit
 
 # pylint: disable=E1101,E1121,W0404,W0612,W0613
 __authors__ = ["Keith Hughitt"]
@@ -87,6 +88,17 @@ class LightCurve(object):
         warnings.warn("""lightcurve.header has been renamed to lightcurve.meta
 for compatibility with map, please use meta instead""", Warning)
         return self.meta
+
+    @property
+    def unit(self):
+        return self._unit
+
+    @unit.setter
+    def unit(self, value):
+        if value is None:
+            self._unit = None
+        else:
+            self._unit = Unit(value)
 
     @classmethod
     def from_time(cls, time, **kwargs):
