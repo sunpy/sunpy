@@ -211,7 +211,7 @@ class TimeRange(object):
         Parameters
         ----------
         n : int
-            The number of times to split the time range (must > 1)
+            The number of times to split the time range (must >= 1)
 
         Returns
         -------
