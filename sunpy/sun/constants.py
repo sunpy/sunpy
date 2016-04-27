@@ -61,7 +61,7 @@ Websites
 
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 from sunpy.sun import _constants as _con # pylint: disable=E0611
 
@@ -91,7 +91,7 @@ def constant(key):
     --------
     >>> from sunpy.sun import constants
     >>> constants.constant('mass')
-    <Constant name=u'Solar mass' value=1.9891e+30 error=5e+25 units='kg' reference=u"Allen's Astrophysical Quantities 4th Ed.">
+    <Constant name=u'Solar mass' value=1.9891e+30 uncertainty=5e+25 unit='kg' reference=u"Allen's Astrophysical Quantities 4th Ed.">
     """
     return physical_constants[key]
 
@@ -118,8 +118,8 @@ def value(key):
     Examples
     --------
     >>> from sunpy.sun import constants
-    >>> constants.uncertainty('mass')
-    5e+25
+    >>> constants.value('mass')
+    1.9891e+30
 
     """
     return constant(key).value
@@ -147,8 +147,8 @@ def unit(key):
     Examples
     --------
     >>> from sunpy.sun import constants
-    >>> constants.uncertainty('mass')
-    5e+25
+    >>> constants.unit('mass')
+    Unit("kg")
 
     """
     return constant(key).unit
@@ -208,7 +208,7 @@ def find(sub=None, disp=False):
 
     """
     if sub is None:
-        result = physical_constants.keys()
+        result = list(physical_constants.keys())
     else:
         result = [key for key in physical_constants \
                  if sub.lower() in key.lower()]
@@ -216,7 +216,7 @@ def find(sub=None, disp=False):
     result.sort()
     if disp:
         for key in result:
-            print key
+            print(key)
         return
     else:
         return result

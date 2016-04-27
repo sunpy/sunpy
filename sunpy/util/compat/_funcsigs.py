@@ -7,6 +7,7 @@ Back port of Python 3.3's function signature tools from the inspect module,
 modified to be compatible with Python 2.6, 2.7 and 3.2+.
 """
 from __future__ import absolute_import, division, print_function
+
 import itertools
 import functools
 import re
@@ -60,7 +61,7 @@ def signature(obj):
         if obj.__self__ is None:
             # Unbound method: the first parameter becomes positional-only
             if sig.parameters:
-                first = sig.parameters.values()[0].replace(
+                first = list(sig.parameters.values())[0].replace(
                     kind=_POSITIONAL_ONLY)
                 return sig.replace(
                     parameters=(first,) + tuple(sig.parameters.values())[1:])
@@ -99,7 +100,7 @@ def signature(obj):
         partial_keywords = obj.keywords or {}
         try:
             ba = sig.bind_partial(*partial_args, **partial_keywords)
-        except TypeError as ex:
+        except TypeError:
             msg = 'partial object {0!r} has incorrect arguments'.format(obj)
             raise ValueError(msg)
 
@@ -127,10 +128,10 @@ def signature(obj):
                                                      _partial_kwarg=True)
 
             elif (param.kind not in (_VAR_KEYWORD, _VAR_POSITIONAL) and
-                            not param._partial_kwarg):
+                  not param._partial_kwarg):
                 new_params.pop(arg_name)
 
-        return sig.replace(parameters=new_params.values())
+        return sig.replace(parameters=list(new_params.values()))
 
     sig = None
     if isinstance(obj, type):
@@ -371,7 +372,7 @@ class BoundArguments(object):
         args = []
         for param_name, param in self._signature.parameters.items():
             if (param.kind in (_VAR_KEYWORD, _KEYWORD_ONLY) or
-                                                    param._partial_kwarg):
+                    param._partial_kwarg):
                 # Keyword arguments mapped by 'functools.partial'
                 # (Parameter._partial_kwarg is True) are mapped
                 # in 'BoundArguments.kwargs', along with VAR_KEYWORD &
@@ -401,7 +402,7 @@ class BoundArguments(object):
         for param_name, param in self._signature.parameters.items():
             if not kwargs_started:
                 if (param.kind in (_VAR_KEYWORD, _KEYWORD_ONLY) or
-                                                param._partial_kwarg):
+                        param._partial_kwarg):
                     kwargs_started = True
                 else:
                     if param_name not in self.arguments:
@@ -597,7 +598,7 @@ class Signature(object):
         '''
 
         if parameters is _void:
-            parameters = self.parameters.values()
+            parameters = list(self.parameters.values())
 
         if return_annotation is _void:
             return_annotation = self._return_annotation

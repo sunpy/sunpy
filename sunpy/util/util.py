@@ -1,14 +1,17 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import os
 import types
 import warnings
-from itertools import izip, imap, count
+from itertools import count
 
 import numpy as np
 
+from sunpy.extern import six
+from sunpy.extern.six.moves import map, zip
+
 __all__ = ['to_signed', 'unique', 'print_table',
-           'replacement_filename', 'goes_flare_class', 'merge', 'common_base',
+           'replacement_filename', 'merge', 'common_base',
            'minimal_pairs', 'polyfun_at',
            'expand_list', 'expand_list_generator', 'Deprecated']
 
@@ -30,37 +33,6 @@ def to_signed(dtype):
             raise ValueError("Cannot losslessly convert uint64 to int.")
         dtype = "int{0:d}".format(min(dtype.itemsize * 2 * 8, 64))
     return np.dtype(dtype)
-
-def goes_flare_class(gcls):
-    """Convert GOES classes into a number to aid size comparison.  Units are
-    watts per meter squared.
-
-    Parameters
-    ----------
-    gcls : `str`
-        GOES class.
-
-    Returns
-    -------
-    float
-        Flux in implied units of Watts per meter squared.
-
-    .. todo::
-        return astropy quantities.
-    """
-    def calc(gcls):
-        powers_of_ten = {'A':1e-08, 'B':1e-07, 'C':1e-06, 'M':1e-05, 'X':1e-04}
-        power = gcls[0].upper()
-        if power in powers_of_ten:
-            return powers_of_ten[power] * float(gcls[1:])
-        else:
-            return None
-
-    if isinstance(gcls, types.StringType):
-        return calc(gcls)
-    if isinstance(gcls, types.ListType):
-        return [calc(x) for x in gcls]
-
 
 def unique(itr, key=None):
     """
@@ -116,29 +88,12 @@ def print_table(lst, colsep=' ', linesep='\n'):
         improve documentation.
 
     """
-    width = [max(imap(len, col)) for col in izip(*lst)]
+    width = [max(map(len, col)) for col in zip(*lst)]
     return linesep.join(
         colsep.join(
-            col.ljust(n) for n, col in izip(width, row)
+            col.ljust(n) for n, col in zip(width, row)
         ) for row in lst
     )
-
-
-def findpeaks(a):
-    """Find local maxima in 1D. Use findpeaks(-a) for minima.
-
-    Parameters
-    ----------
-    a : `~numpy.ndarray`
-        a one dimensional `~numpy.ndarray` array.
-
-    Returns
-    -------
-    `~numpy.ndarray`
-        indices of all the local maxima
-
-    """
-    return np.nonzero((a[1:-1] > a[:-2]) & (a[1:-1] > a[2:]))[0]
 
 
 def polyfun_at(coeff, p):
@@ -251,21 +206,21 @@ def merge(items, key=(lambda x: x)):
     state = {}
     for item in map(iter, items):
         try:
-            first = item.next()
+            first = next(item)
         except StopIteration:
             continue
         else:
             state[item] = (first, key(first))
 
     while state:
-        for item, (value, tk) in state.iteritems():
+        for item, (value, tk) in six.iteritems(state):
             # Value is biggest.
             if all(tk >= k for it, (v, k)
-                in state.iteritems() if it is not item):
+                in six.iteritems(state) if it is not item):
                 yield value
                 break
         try:
-            n = item.next()
+            n = next(item)
             state[item] = (n, key(n))
         except StopIteration:
             del state[item]

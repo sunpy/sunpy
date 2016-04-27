@@ -1,15 +1,19 @@
 """A Python MapCube Object"""
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 #pylint: disable=W0401,W0614,W0201,W0212,W0404
+
+from copy import deepcopy
 
 import numpy as np
 import matplotlib.animation
+import numpy.ma as ma
 
 from sunpy.map import GenericMap
 
 from sunpy.visualization.mapcubeanimator import MapCubeAnimator
 from sunpy.visualization import wcsaxes_compat
 from sunpy.util import expand_list
+from sunpy.extern.six.moves import range
 
 __all__ = ['MapCube']
 
@@ -143,7 +147,7 @@ class MapCube(object):
 
         >>> cube = Map(res, cube=True)   # doctest: +SKIP
 
-        >>> ani = cube.plot(controls=False)   # doctest: +SKIP
+        >>> ani = cube.plot()   # doctest: +SKIP
 
         >>> Writer = animation.writers['ffmpeg']   # doctest: +SKIP
         >>> writer = Writer(fps=10, metadata=dict(artist='SunPy'), bitrate=1800)   # doctest: +SKIP
@@ -170,7 +174,7 @@ class MapCube(object):
 
         # Normal plot
         def annotate_frame(i):
-            axes.set_title("{s.name} {s.date!s}".format(s=self[i]))
+            axes.set_title("{s.name}".format(s=self[i]))
 
             # x-axis label
             if self[0].coordinate_system.x == 'HG':
@@ -203,7 +207,11 @@ class MapCube(object):
 
             im.set_array(ani_data[i].data)
             im.set_cmap(self.maps[i].plot_settings['cmap'])
-            im.set_norm(self.maps[i].plot_settings['norm'])
+
+            norm = deepcopy(self.maps[i].plot_settings['norm'])
+            # The following explicit call is for bugged versions of Astropy's ImageNormalize
+            norm.autoscale_None(ani_data[i].data)
+            im.set_norm(norm)
 
             if wcsaxes_compat.is_wcsaxes(axes):
                 im.axes.reset_wcs(self.maps[i].wcs)
@@ -217,7 +225,7 @@ class MapCube(object):
             removes += list(plot_function(fig, axes, self.maps[i]))
 
         ani = matplotlib.animation.FuncAnimation(fig, updatefig,
-                                                frames=range(0, len(self.maps)),
+                                                frames=list(range(0, len(self.maps))),
                                                 fargs=[im, annotate, ani_data, removes],
                                                 interval=interval,
                                                 blit=False)
@@ -310,14 +318,34 @@ class MapCube(object):
         """
         return np.all([m.data.shape == self.maps[0].data.shape for m in self.maps])
 
+    def at_least_one_map_has_mask(self):
+        """
+        Tests if at least one map has a mask.
+        """
+        return np.any([m.mask is not None for m in self.maps])
+
     def as_array(self):
         """
-        If all the map shapes are the same, their image data is copied
-        into a single single ndarray. The ndarray is ordered as (ny, nx, nt).
-        Otherwise, a ValueError is thrown.
+        If all the map shapes are the same, their image data is rendered
+        into the appropriate numpy object.  If none of the maps have masks,
+        then the data is returned as a (ny, nx, nt) ndarray.  If all the maps
+        have masks, then the data is returned as a (ny, nx, nt) masked array
+        with all the masks copied from each map.  If only some of the maps
+        have masked then the data is returned as a (ny, nx, nt) masked array,
+        with masks copied from maps as appropriately; maps that do not have a
+        mask are supplied with a mask that is full of False entries.
+        If all the map shapes are not the same, a ValueError is thrown.
         """
         if self.all_maps_same_shape():
-            return np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1).copy(), 1, 2).copy()
+            data = np.swapaxes(np.swapaxes(np.asarray([m.data for m in self.maps]), 0, 1).copy(), 1, 2).copy()
+            if self.at_least_one_map_has_mask():
+                mask_cube = np.zeros_like(data, dtype=bool)
+                for im, m in enumerate(self.maps):
+                    if m.mask is not None:
+                        mask_cube[:, :, im] = m.mask
+                return ma.masked_array(data, mask=mask_cube)
+            else:
+                return data
         else:
             raise ValueError('Not all maps have the same shape.')
 

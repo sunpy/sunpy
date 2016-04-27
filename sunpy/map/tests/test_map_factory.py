@@ -8,8 +8,9 @@ import os
 import glob
 import tempfile
 
-import numpy as np
 import pytest
+import numpy as np
+from astropy.io import fits
 
 import sunpy
 import sunpy.map
@@ -70,6 +71,14 @@ class TestMap(object):
         # Data-header pair not in a tuple
         pair_map = sunpy.map.Map(amap.data, amap.meta)
         assert isinstance(pair_map, sunpy.map.GenericMap)
+        # Data-header from FITS
+        with fits.open(a_fname) as hdul:
+            data = hdul[0].data
+            header = hdul[0].header
+        pair_map = sunpy.map.Map((data, header))
+        assert isinstance(pair_map, sunpy.map.GenericMap)
+        pair_map = sunpy.map.Map(data, header)
+        assert isinstance(pair_map, sunpy.map.GenericMap)
         #Custom Map
         data = np.arange(0,100).reshape(10,10)
         header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
@@ -124,12 +133,15 @@ class TestMap(object):
         assert isinstance(mdi_m,sunpy.map.sources.MDIMap)
 
     def test_stereo(self):
-        #Test EUVIMap & CORMap
+        #Test EUVIMap & CORMap & HIMap
         euvi = sunpy.map.Map(os.path.join(filepath, "euvi_20090615_000900_n4euA_s.fts"))
         assert isinstance(euvi,sunpy.map.sources.EUVIMap)
 
         cor = sunpy.map.Map(os.path.join(filepath, "cor1_20090615_000500_s4c1A.fts"))
         assert isinstance(cor,sunpy.map.sources.CORMap)
+
+        hi = sunpy.map.Map(os.path.join(filepath,"hi_20110910_114721_s7h2A.fts"))
+        assert isinstance(hi,sunpy.map.sources.HIMap)
 
     def test_rhessi(self):
         #Test RHESSIMap

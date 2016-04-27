@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
-
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import datetime
-import urllib2
 
 import numpy as np
 
@@ -23,7 +21,8 @@ from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.util.net import download_file
 
 from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE
-
+from sunpy.extern.six.moves import urllib
+from sunpy.extern.six import next, itervalues
 
 __all__ = ['CallistoSpectrogram']
 
@@ -31,7 +30,8 @@ TIME_STR = "%Y%m%d%H%M%S"
 DEFAULT_URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/'
 _DAY = datetime.timedelta(days=1)
 
-DATA_SIZE = datetime.timedelta(seconds=15*60)
+DATA_SIZE = datetime.timedelta(seconds=15 * 60)
+
 
 def parse_filename(href):
     name = href.split('.')[0]
@@ -65,7 +65,7 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
     day = datetime.datetime(start.year, start.month, start.day)
     while day <= end:
         directory = url + day.strftime('%Y/%m/%d/')
-        opn = urllib2.urlopen(directory)
+        opn = urllib.request.urlopen(directory)
         try:
             soup = BeautifulSoup(opn)
             for link in soup.find_all("a"):
@@ -317,7 +317,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             optional attribute of the resulting objects to sort from, e.g.
             start to sort by starting time.
         """
-        objs = map(cls.read, filenames)
+        objs = list(map(cls.read, filenames))
         if sort_by is not None:
             objs.sort(key=lambda x: getattr(x, sort_by))
         return objs
@@ -345,13 +345,13 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         start = parse_time(start)
         end = parse_time(end)
         urls = query(start, end, [instrument])
-        data = map(cls.from_url, urls)
+        data = list(map(cls.from_url, urls))
         freq_buckets = defaultdict(list)
         for elem in data:
             freq_buckets[tuple(elem.freq_axis)].append(elem)
         try:
             return cls.combine_frequencies(
-                [cls.join_many(elem, **kw) for elem in freq_buckets.itervalues()]
+                [cls.join_many(elem, **kw) for elem in itervalues(freq_buckets)]
             )
         except ValueError:
             raise ValueError("No data found.")
@@ -450,7 +450,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         if len(self.instruments) != 1:
             raise ValueError
 
-        instrument = iter(self.instruments).next()
+        instrument = next(iter(self.instruments))
         if minutes > 0:
             data = CallistoSpectrogram.from_range(
                 instrument,
@@ -487,17 +487,25 @@ CallistoSpectrogram._create.add(
     check=False
 )
 
-CallistoSpectrogram.create.im_func.__doc__ = (
-    """Create CallistoSpectrogram from given input dispatching to the
-    appropriate from_* function.
+try:
+    CallistoSpectrogram.create.im_func.__doc__ = (
+        """Create CallistoSpectrogram from given input dispatching to the
+        appropriate from_* function.
 
-Possible signatures:
+    Possible signatures:
 
-""" + CallistoSpectrogram._create.generate_docs()
-)
+    """ + CallistoSpectrogram._create.generate_docs())
+except AttributeError:
+    CallistoSpectrogram.create.__func__.__doc__ = (
+        """Create CallistoSpectrogram from given input dispatching to the
+        appropriate from_* function.
+
+    Possible signatures:
+
+    """ + CallistoSpectrogram._create.generate_docs())
+
 
 if __name__ == "__main__":
     opn = CallistoSpectrogram.read("callisto/BIR_20110922_103000_01.fit")
     opn.subtract_bg().clip(0).plot(ratio=2).show()
-    print "Press return to exit"
-    raw_input()
+    print("Press return to exit")

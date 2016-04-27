@@ -7,6 +7,7 @@ from __future__ import absolute_import
 import os
 import pytest
 import datetime
+import warnings
 
 import numpy as np
 
@@ -31,6 +32,14 @@ def aia171_test_map():
 
 
 @pytest.fixture
+def aia171_test_map_with_mask(aia171_test_map):
+    shape = aia171_test_map.data.shape
+    mask = np.zeros_like(aia171_test_map.data, dtype=bool)
+    mask[0:shape[0]/2, 0:shape[1]/2] = True
+    return sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
+
+
+@pytest.fixture
 def generic_map():
     data = np.ones([6,6], dtype=np.float64)
     header = {'CRVAL1': 0,
@@ -39,6 +48,8 @@ def generic_map():
               'CRPIX2': 5,
               'CDELT1': 10,
               'CDELT2': 10,
+              'CUNIT1': 'arcsec',
+              'CUNIT2': 'arcsec',
               'PC1_1': 0,
               'PC1_2': -1,
               'PC2_1': 1,
@@ -231,6 +242,62 @@ def test_data_to_pixel(generic_map):
     test_pixel = generic_map.data_to_pixel(*generic_map.reference_coordinate, origin=1)
     assert_quantity_allclose(test_pixel, generic_map.reference_pixel)
 
+def test_default_shift():
+    """Test that the default shift is zero"""
+    data = np.ones([6,6], dtype=np.float64)
+    header = {'CRVAL1': 0,
+              'CRVAL2': 0,
+              'CRPIX1': 5,
+              'CRPIX2': 5,
+              'CDELT1': 10,
+              'CDELT2': 9,
+              'CD1_1': 0,
+              'CD1_2': -9,
+              'CD2_1': 10,
+              'CD2_2': 0,
+              'NAXIS1': 6,
+              'NAXIS2': 6}
+    cd_map = sunpy.map.Map((data, header))
+    assert cd_map.shifted_value.x.value == 0
+    assert cd_map.shifted_value.y.value == 0
+
+def test_shift_applied(generic_map):
+    """Test that adding a shift actually updates the reference coordinate"""
+    original_reference_coord = (generic_map.reference_coordinate.x, generic_map.reference_coordinate.y)
+    x_shift = 5 * u.arcsec
+    y_shift = 13 * u.arcsec
+    shifted_map = generic_map.shift(x_shift, y_shift)
+    assert shifted_map.reference_coordinate.x - x_shift == original_reference_coord[0]
+    assert shifted_map.reference_coordinate.y - y_shift == original_reference_coord[1]
+    crval1 = ((generic_map.meta.get('crval1') * generic_map.units.x + \
+             shifted_map.shifted_value.x).to(shifted_map.units.x)).value
+    assert shifted_map.meta.get('crval1') == crval1
+    crval2 = ((generic_map.meta.get('crval2') * generic_map.units.y + \
+             shifted_map.shifted_value.y).to(shifted_map.units.y)).value
+    assert shifted_map.meta.get('crval2') == crval2
+
+def test_set_shift(generic_map):
+    """Test that previously applied shift is stored in the shifted_value property"""
+    x_shift = 5 * u.arcsec
+    y_shift = 13 * u.arcsec
+    shifted_map = generic_map.shift(x_shift, y_shift)
+    resultant_shift = shifted_map.shifted_value
+    assert resultant_shift.x == x_shift
+    assert resultant_shift.y == y_shift
+
+def test_shift_history(generic_map):
+    """Test the shifted_value is added to a non-zero previous shift"""
+    x_shift1 = 5 * u.arcsec
+    y_shift1 = 13 * u.arcsec
+    shifted_map1 = generic_map.shift(x_shift1, y_shift1)
+
+    x_shift2 = -28.5 * u.arcsec
+    y_shift2 = 120 * u.arcsec
+    final_shifted_map = shifted_map1.shift(x_shift2, y_shift2)
+
+    resultant_shift = final_shifted_map.shifted_value
+    assert resultant_shift.x == x_shift1 + x_shift2
+    assert resultant_shift.y == y_shift1 + y_shift2
 
 def test_submap(generic_map):
     """Check data and header information for a submap"""
@@ -288,7 +355,7 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
             assert resampled_map.meta[key] == generic_map.meta[key]
 
 
-def test_superpixel(aia171_test_map):
+def test_superpixel(aia171_test_map, aia171_test_map_with_mask):
     dimensions = (2, 2)*u.pix
     superpixel_map_sum = aia171_test_map.superpixel(dimensions)
     assert_quantity_allclose(superpixel_map_sum.dimensions[1], aia171_test_map.dimensions[1]/dimensions[1]*u.pix)
@@ -298,14 +365,31 @@ def test_superpixel(aia171_test_map):
                                                              aia171_test_map.data[1][0] +
                                                              aia171_test_map.data[1][1]))
 
-    dimensions = (2, 2)*u.pix
-    superpixel_map_avg = aia171_test_map.superpixel(dimensions, 'average')
+    superpixel_map_avg = aia171_test_map.superpixel(dimensions, func=np.mean)
     assert_quantity_allclose(superpixel_map_avg.dimensions[1], aia171_test_map.dimensions[1]/dimensions[1]*u.pix)
     assert_quantity_allclose(superpixel_map_avg.dimensions[0], aia171_test_map.dimensions[0]/dimensions[0]*u.pix)
     assert_quantity_allclose(superpixel_map_avg.data[0][0], (aia171_test_map.data[0][0] +
                                                              aia171_test_map.data[0][1] +
                                                              aia171_test_map.data[1][0] +
                                                              aia171_test_map.data[1][1])/4.0)
+
+    # Test that the mask is respected
+    superpixel_map_sum = aia171_test_map_with_mask.superpixel(dimensions)
+    assert superpixel_map_sum.mask is not None
+    assert_quantity_allclose(superpixel_map_sum.mask.shape[0],
+                             aia171_test_map.dimensions[1]/dimensions[1])
+    assert_quantity_allclose(superpixel_map_sum.mask.shape[1],
+                             aia171_test_map.dimensions[0]/dimensions[0])
+
+    # Test that the offset is respected
+    superpixel_map_sum = aia171_test_map_with_mask.superpixel(dimensions, offset=(1, 1)*u.pix)
+    assert_quantity_allclose(superpixel_map_sum.dimensions[1], aia171_test_map.dimensions[1]/dimensions[1]*u.pix - 1*u.pix)
+    assert_quantity_allclose(superpixel_map_sum.dimensions[0], aia171_test_map.dimensions[0]/dimensions[0]*u.pix - 1*u.pix)
+
+    dimensions = (7, 9)*u.pix
+    superpixel_map_sum = aia171_test_map_with_mask.superpixel(dimensions, offset=(4, 4)*u.pix)
+    assert_quantity_allclose(superpixel_map_sum.dimensions[0], np.int((aia171_test_map.dimensions[0]/dimensions[0]).value)*u.pix - 1*u.pix)
+    assert_quantity_allclose(superpixel_map_sum.dimensions[1], np.int((aia171_test_map.dimensions[1]/dimensions[1]).value)*u.pix - 1*u.pix)
 
 
 def calc_new_matrix(angle):
@@ -409,20 +493,73 @@ def test_plot_aia171_nowcsaxes(aia171_test_map):
 
 @skip_wcsaxes
 @figure_test
-def test_plot_masked_aia171(aia171_test_map):
-    shape = aia171_test_map.data.shape
-    mask = np.zeros_like(aia171_test_map.data, dtype=bool)
-    mask[0:shape[0]/2, 0:shape[1]/2] = True
-    masked_map = sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
-    masked_map.plot()
+def test_plot_masked_aia171(aia171_test_map_with_mask):
+    aia171_test_map_with_mask.plot()
 
 
 @figure_test
-def test_plot_masked_aia171_nowcsaxes(aia171_test_map):
-    shape = aia171_test_map.data.shape
-    mask = np.zeros_like(aia171_test_map.data, dtype=bool)
-    mask[0:shape[0]/2, 0:shape[1]/2] = True
-    masked_map = sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
+def test_plot_masked_aia171_nowcsaxes(aia171_test_map_with_mask):
     ax = plt.gca()
-    masked_map.plot(axes=ax)
+    aia171_test_map_with_mask.plot(axes=ax)
 
+
+@skip_wcsaxes
+@figure_test
+def test_plot_aia171_superpixel(aia171_test_map):
+    aia171_test_map.superpixel((9, 7)*u.pix, offset=(4, 4)*u.pix).plot()
+
+
+@figure_test
+def test_plot_aia171_superpixel_nowcsaxes(aia171_test_map):
+    ax = plt.gca()
+    aia171_test_map.superpixel((9, 7)*u.pix, offset=(4, 4)*u.pix).plot(axes=ax)
+
+
+@skip_wcsaxes
+@figure_test
+def test_plot_masked_aia171_superpixel(aia171_test_map_with_mask):
+    aia171_test_map_with_mask.superpixel((9, 7)*u.pix, offset=(4, 4)*u.pix).plot()
+
+
+@figure_test
+def test_plot_masked_aia171_superpixel_nowcsaxes(aia171_test_map_with_mask):
+    ax = plt.gca()
+    aia171_test_map_with_mask.superpixel((9, 7)*u.pix, offset=(4, 4)*u.pix).plot(axes=ax)
+
+def test_validate_meta(generic_map):
+    """Check to see if_validate_meta displays an appropriate error"""
+    with warnings.catch_warnings(record=True) as w:
+        bad_header = {'CRVAL1': 0,
+                'CRVAL2': 0,
+                'CRPIX1': 5,
+                'CRPIX2': 5,
+                'CDELT1': 10,
+                'CDELT2': 10,
+                'CUNIT1': 'ARCSEC',
+                'CUNIT2': 'ARCSEC',
+                'PC1_1': 0,
+                'PC1_2': -1,
+                'PC2_1': 1,
+                'PC2_2': 0,
+                'NAXIS1': 6,
+                'NAXIS2': 6,
+                'date-obs': '1970/01/01T00:00:00',
+                'obsrvtry': 'Foo',
+                'detector': 'bar',
+                'wavelnth': 10,
+                'waveunit': 'ANGSTROM'}
+        bad_map=sunpy.map.Map((generic_map.data, bad_header))
+        for count, meta_property in enumerate(('cunit1', 'cunit2', 'waveunit')):
+            assert meta_property.upper() in str(w[count].message)
+
+
+def test_draw_contours_noerror(aia171_test_map):
+    """Check if it runs with no errors"""
+    aia171_test_map.plot()
+    aia171_test_map.draw_contours(u.Quantity(np.arange(1, 100, 10), 'percent'))
+
+
+@figure_test
+def test_draw_contours_aia(aia171_test_map):
+    aia171_test_map.plot()
+    aia171_test_map.draw_contours(u.Quantity(np.arange(1, 100, 10), 'percent'))

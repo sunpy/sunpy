@@ -7,6 +7,7 @@ from collections import Hashable
 from datetime import datetime
 
 import pytest
+import os
 
 from astropy import units as u
 
@@ -17,12 +18,12 @@ from sunpy.database.tables import FitsHeaderEntry, FitsKeyComment, Tag,\
 from sunpy.net import vso
 from sunpy.data.test import rootdir as testdir
 from sunpy.data.test.waveunit import waveunitdir, MQ_IMAGE
-from sunpy.tests.helpers import skip_windows
-import pytest
-import os
+from sunpy.extern.six import next
+
 
 RHESSI_IMAGE = os.path.join(testdir, 'hsi_image_20101016_191218.fits')
 EIT_195_IMAGE = os.path.join(testdir, 'EIT/efz20040301.000010_s.fits')
+
 
 @pytest.fixture
 def query_result():
@@ -157,9 +158,9 @@ def test_entries_from_file():
         FitsHeaderEntry('COMMENT', ''),
         FitsHeaderEntry('HISTORY', '')]
     assert entry.fits_header_entries == expected_fits_header_entries
-    assert entry.fits_key_comments == [
+    assert entry.fits_key_comments.sort() == [
         FitsKeyComment('SIMPLE', 'Written by IDL:  Mon Aug 12 08:48:08 2013'),
-        FitsKeyComment('BITPIX', 'Integer*2 (short integer)')]
+        FitsKeyComment('BITPIX', 'Integer*2 (short integer)')].sort()
     assert entry.instrument == 'Spectroheliograph'
     assert entry.observation_time_start == datetime(2013, 8, 12, 8, 42, 53)
     assert entry.observation_time_end == datetime(2013, 8, 12, 8, 42, 53)
@@ -171,9 +172,9 @@ def test_entries_from_file():
 def test_entries_from_file_withoutwaveunit():
     # does not raise `WaveunitNotFoundError`, because no wavelength information
     # is present in this file
-    entries_from_file(RHESSI_IMAGE).next()
+    next(entries_from_file(RHESSI_IMAGE))
     with pytest.raises(WaveunitNotFoundError):
-        entries_from_file(EIT_195_IMAGE).next()
+        next(entries_from_file(EIT_195_IMAGE))
 
 
 def test_entries_from_dir():
@@ -228,7 +229,7 @@ def test_entries_from_dir():
         FitsHeaderEntry('SOLAR_R', 64.0),
         FitsHeaderEntry('COMMENT', ''),
         FitsHeaderEntry('HISTORY', '')]
-    assert entry.fits_key_comments == [
+    assert entry.fits_key_comments.sort() == [
         FitsKeyComment('WAVEUNIT', 'in meters'),
         FitsKeyComment('NAXIS2', 'number of rows'),
         FitsKeyComment('CDELT2', 'pixel scale y, in solar radius/pixel'),
@@ -244,19 +245,20 @@ def test_entries_from_dir():
         FitsKeyComment('BITPIX', 'IEEE 32-bit floating point values'),
         FitsKeyComment('DATE', 'Date of file creation'),
         FitsKeyComment('FREQUNIT', 'in MHz'),
-        FitsKeyComment('EXPTIME', 'in seconds')]
+        FitsKeyComment('EXPTIME', 'in seconds')].sort()
 
 
 def test_entries_from_dir_recursively_true():
     entries = list(
         entries_from_dir(testdir, True, default_waveunit='angstrom'))
-    assert len(entries) == 59
+    assert len(entries) == 60
     # Older val = 31.
+
 
 def test_entries_from_dir_recursively_false():
     entries = list(
         entries_from_dir(testdir, False, default_waveunit='angstrom'))
-    assert len(entries) == 38
+    assert len(entries) == 39
 
 
 @pytest.mark.online
@@ -284,8 +286,29 @@ def test_entry_from_query_results_with_none_wave(qr_with_none_waves):
 def test_entry_from_query_results_with_none_wave_and_default_unit(
         qr_with_none_waves):
     entries = list(entries_from_query_result(qr_with_none_waves, 'nm'))
-    assert len(entries) == 4
+    assert len(entries) == 7
     assert entries == [
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_blue_intensity_series.tar.gz',
+            observation_time_start=datetime(1996, 4, 11, 0, 0, 0),
+            observation_time_end=datetime(2014, 3, 30, 23, 59, 0),
+            instrument='VIRGO', size=32652.0, wavemin=None,
+            wavemax=None),
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_green_intensity_series.tar.gz',
+            observation_time_start=datetime(1996, 4, 11, 0, 0, 0),
+            observation_time_end=datetime(2014, 3, 30, 23, 59, 0),
+            instrument='VIRGO', size=32652.0, wavemin=None,
+            wavemax=None),
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_red_intensity_series.tar.gz',
+            observation_time_start=datetime(1996, 4, 11, 0, 0, 0),
+            observation_time_end=datetime(2014, 3, 30, 23, 59, 0),
+            instrument='VIRGO', size=32652.0, wavemin=None,
+            wavemax=None),
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
             fileid='/archive/soho/private/data/processed/virgo/level1/1212/HK/121222_1.H01',

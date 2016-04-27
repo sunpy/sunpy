@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 from datetime import datetime
 
@@ -7,6 +7,7 @@ from sunpy.time import parse_time
 
 import numpy as np
 import pandas
+from sunpy.extern.six.moves import range
 
 LANDING = datetime(1966, 2, 3)
 
@@ -34,9 +35,9 @@ def test_parse_time_int():
 
 def test_parse_time_pandas_timestamp():
     ts = pandas.Timestamp(LANDING)
-    
+
     dt = parse_time(ts)
-    
+
     assert isinstance(dt, datetime)
     assert dt == LANDING
 
@@ -45,7 +46,7 @@ def test_parse_time_pandas_index():
     ind = pandas.tseries.index.DatetimeIndex(inputs)
 
     dts = parse_time(ind)
-    
+
     assert isinstance(dts, np.ndarray)
     assert all([isinstance(dt, datetime) for dt in dts])
     assert list(dts) == inputs
@@ -53,19 +54,19 @@ def test_parse_time_pandas_index():
 
 def test_parse_time_numpy_date():
     inputs = np.arange('2005-02', '2005-03', dtype='datetime64[D]')
-    
+
     dts = parse_time(inputs)
-    
+
     assert isinstance(dts, np.ndarray)
     assert all([isinstance(dt, datetime) for dt in dts])
-  
+
 def test_parse_time_numpy_datetime():
     inputs = np.arange('2005-02-01T00', '2005-02-01T10', dtype='datetime64')
-    
+
     dts = parse_time(inputs)
-    
+
     assert isinstance(dts, np.ndarray)
-    assert all([isinstance(dt, datetime) for dt in dts])  
+    assert all([isinstance(dt, datetime) for dt in dts])
 
 def test_ISO():
     assert parse_time('1966-02-03') == LANDING

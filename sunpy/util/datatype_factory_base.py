@@ -1,5 +1,10 @@
+from __future__ import absolute_import, division, print_function
+
+import inspect
+
 class BasicRegistrationFactory(object):
-    """ Generalized registerable factory type.
+    """
+    Generalized registerable factory type.
 
     Widgets (classes) can be registered with an instance of this class.
     Arguments to the factory's `__call__` method are then passed to a function
@@ -117,7 +122,7 @@ class BasicRegistrationFactory(object):
                     vfunc = getattr(WidgetType, vfunc_str)
 
                     # check if classmethod: stackoverflow #19227724
-                    _classmethod = vfunc.__self__ is WidgetType
+                    _classmethod = inspect.ismethod(vfunc) and vfunc.__self__ is WidgetType
 
                     if _classmethod:
                         self.registry[WidgetType] = vfunc
@@ -134,11 +139,11 @@ class BasicRegistrationFactory(object):
         self.registry.pop(WidgetType)
 
 
-class NoMatchError(StandardError):
+class NoMatchError(Exception):
     """Exception for when no candidate class is found."""
 
 
-class MultipleMatchError(StandardError):
+class MultipleMatchError(Exception):
     """Exception for when too many candidate classes are found."""
 
 

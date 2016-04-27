@@ -30,13 +30,12 @@ class Spectrum(np.ndarray):
     >>> data = np.linspace(1, 100, 100)
     >>> freq_axis = np.linspace(0, 10, 100)
     >>> spec = Spectrum(data, freq_axis)
-    >>> spec.peek()
+    >>> spec.peek()   # doctest: +SKIP
     """
     def __new__(cls, data, *args, **kwargs):
         return np.asarray(data).view(cls)
 
     def __init__(self, data, freq_axis):
-        self.data = data
         self.freq_axis = freq_axis
 
     def plot(self, axes=None, **matplot_args):

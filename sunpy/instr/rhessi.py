@@ -2,13 +2,11 @@
 """
     Provides programs to process and analyze RHESSI data.
 
-    .. warning:: This module is still in development!
+    .. warning:: This module is in development.
 
 """
+from __future__ import absolute_import, print_function
 
-from __future__ import absolute_import
-
-import urllib
 import csv
 from datetime import datetime
 from datetime import timedelta
@@ -24,6 +22,8 @@ import sunpy.sun.constants
 from sunpy.time import TimeRange, parse_time
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.sun.sun import sunearth_distance
+
+from sunpy.extern.six.moves import urllib
 
 __all__ = ['get_obssumm_dbase_file', 'parse_obssumm_dbase_file',
            'get_obssum_filename', 'get_obssumm_file', 'parse_obssumm_file',
@@ -82,7 +82,7 @@ def get_obssumm_dbase_file(time_range):
     url_root = data_servers[0] + data_location
     url = url_root + _time_range.start.strftime("hsi_obssumm_filedb_%Y%m.txt")
 
-    f = urllib.urlretrieve(url)
+    f = urllib.request.urlretrieve(url)
 
     return f
 
@@ -117,12 +117,12 @@ def parse_obssumm_dbase_file(filename):
         This API is currently limited to providing data from whole days only.
 
     """
-    with open(filename, "rb") as fd:
+    with open(filename, "rt") as fd:
         reader = csv.reader(fd, delimiter=' ', skipinitialspace=True)
-        headerline = reader.next()
-        headerline = reader.next()
-        headerline = reader.next()
-        headerline = reader.next()
+        headerline = next(reader)
+        headerline = next(reader)
+        headerline = next(reader)
+        headerline = next(reader)
 
         obssumm_filename = []
         orbit_start = []
@@ -226,7 +226,7 @@ def get_obssumm_file(time_range):
     url = url_root + get_obssum_filename(time_range)
 
     print('Downloading file: ' + url)
-    f = urllib.urlretrieve(url)
+    f = urllib.request.urlretrieve(url)
 
     return f
 
@@ -264,17 +264,57 @@ def parse_obssumm_file(filename):
               '50 - 100 keV', '100 - 300 keV', '300 - 800 keV', '800 - 7000 keV',
               '7000 - 20000 keV']
 
-    lightcurve_data = np.array(afits[6].data.field('countrate'))
+    # the data stored in the fits file are "compressed" countrates stored as one byte
+    compressed_countrate = np.array(afits[6].data.field('countrate'))
 
-    dim = np.array(lightcurve_data[:,0]).size
+    countrate = uncompress_countrate(compressed_countrate)
+    dim = np.array(countrate[:,0]).size
 
-    time_array = [reference_time_ut + timedelta(0,time_interval_sec*a) for a in np.arange(dim)]
+    time_array = [reference_time_ut + timedelta(0,time_interval_sec * a) for a in np.arange(dim)]
 
     #TODO generate the labels for the dict automatically from labels
-    data = {'time': time_array, 'data': lightcurve_data, 'labels': labels}
+    data = {'time': time_array, 'data': countrate, 'labels': labels}
 
     return header, data
 
+def uncompress_countrate(compressed_countrate):
+    """Convert the compressed count rate inside of observing summary file from
+    a compressed byte to a true count rate
+
+    Parameters
+    ----------
+    compressed_countrate : byte array
+        A compressed count rate returned from an observing summary file.
+
+    References
+    ----------
+    Hsi_obs_summ_decompress.pro `<http://hesperia.gsfc.nasa.gov/ssw/hessi/idl/qlook_archive/hsi_obs_summ_decompress.pro>`_
+    """
+    ll = np.arange(0, 16, 1)
+    lkup = np.zeros(256, dtype='int')
+    sum = 0
+    for i in range(0, 16):
+        lkup[16 * i:16 * (i + 1)] = ll * 2 ** i + sum
+        if i < 15:
+            sum = lkup[16 * (i + 1) - 1] + 2 ** i
+    return lkup[compressed_countrate]
+
+def hsi_linecolors():
+    """Define discrete colors to use for RHESSI plots
+
+    Parameters
+    ----------
+    None
+
+    Returns
+    -------
+    tuple : matplotliblib color list
+
+    References
+    ----------
+    hsi_linecolors.pro `<http://hesperia.gsfc.nasa.gov/ssw/hessi/idl/gen/hsi_linecolors.pro`_
+    """
+    return ('black', 'magenta', 'lime', 'cyan', 'y', 'red', 'blue', 'orange', 'olive')
 
 def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
                  image_dim=(64, 64)):
@@ -325,7 +365,7 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
     tempa = (np.arange(image_dim[0]*image_dim[1]) %  image_dim[0]) - (image_dim[0]-1)/2.
     tempb = tempa.reshape(image_dim[0],image_dim[1]).transpose().reshape(image_dim[0]*image_dim[1])
 
-    pixel = np.array(zip(tempa,tempb))*pixel_size[0]
+    pixel = np.array(list(zip(tempa,tempb)))*pixel_size[0]
     phase_pixel = (2*np.pi/harm_ang_pitch)* ( np.outer(pixel[:,0], np.cos(this_roll_angle - grid_angle)) -
                                               np.outer(pixel[:,1], np.sin(this_roll_angle - grid_angle))) + phase_map_center
     phase_modulation = np.cos(phase_pixel)
@@ -334,7 +374,6 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
     bproj_image = np.inner(probability_of_transmission, count).reshape(image_dim)
 
     return bproj_image
-
 
 def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
                    image_dim=(64, 64) * u.pix):

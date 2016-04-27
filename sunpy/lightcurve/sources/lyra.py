@@ -3,7 +3,6 @@
 from __future__ import absolute_import
 
 import datetime
-import urlparse
 import sys
 from collections import OrderedDict
 
@@ -15,6 +14,9 @@ from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
 
 from sunpy import config
+
+from sunpy.extern.six.moves import urllib
+
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['LYRALightCurve']
@@ -59,8 +61,9 @@ class LYRALightCurve(LightCurve):
 
         .. plot::
 
-            import sunpy
-            lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10')
+            import sunpy.lightcurve
+            from sunpy.data.sample import LYRA_LEVEL3_LIGHTCURVE
+            lyra = sunpy.lightcurve.LYRALightCurve.create(LYRA_LEVEL3_LIGHTCURVE)
             lyra.peek()
 
         Parameters
@@ -103,7 +106,6 @@ class LYRALightCurve(LightCurve):
         axes.set_ylabel(ylabel)
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
-        axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
         plt.gcf().autofmt_xdate()
 
         return axes
@@ -113,17 +115,17 @@ class LYRALightCurve(LightCurve):
         return ['channel 1', 'channel 2', 'channel 3', 'channel 4']
 
     @staticmethod
-    def _get_url_for_date(date,**kwargs):
+    def _get_url_for_date(date, **kwargs):
         """Returns a URL to the LYRA data for the specified date"""
         dt = parse_time(date or datetime.datetime.utcnow())
 
         # Filename
         filename = "lyra_{0:%Y%m%d-}000000_lev{1:d}_std.fits".format(
-            dt, kwargs.get('level',2))
+            dt, kwargs.get('level', 2))
         # URL
         base_url = "http://proba2.oma.be/lyra/data/bsd/"
-        url_path = urlparse.urljoin(dt.strftime('%Y/%m/%d/'), filename)
-        return urlparse.urljoin(base_url, url_path)
+        url_path = urllib.parse.urljoin(dt.strftime('%Y/%m/%d/'), filename)
+        return urllib.parse.urljoin(base_url, url_path)
 
     @classmethod
     def _get_default_uri(cls):
@@ -174,5 +176,5 @@ class LYRALightCurve(LightCurve):
 
         # Return the header and the data
         data = pandas.DataFrame(table, index=times)
-        data.sort(inplace=True)
+        data.sort_index(inplace=True)
         return OrderedDict(hdulist[0].header), data

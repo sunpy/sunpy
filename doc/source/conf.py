@@ -32,25 +32,6 @@
 import os
 import sys
 
-modules = {}
-
-try:
-    import skimage
-except ImportError:
-    from mock import Mock
-    mock = Mock()
-    modules.update({'skimage':mock, 'skimage.feature':mock.module})
-
-try:
-    import glymur
-    _, OJP2 = glymur.lib.config.glymur_config()
-except (ImportError, IOError):
-    from mock import Mock
-    mock = Mock()
-    modules.update({'glymur':mock})
-
-sys.modules.update(modules)
-
 # -- Load astropy_helpers -----------------------------------------------------
 
 try:
@@ -68,8 +49,8 @@ except ImportError:
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
 
 if on_rtd:
-    os.environ['SUNPY_CONFIGDIR'] = '/home/docs/checkouts/readthedocs.org/user_builds/sunpy/'
-    os.environ['HOME'] = '/home/docs/checkouts/readthedocs.org/user_builds/sunpy/'
+    os.environ['SUNPY_CONFIGDIR'] = '/home/docs/'
+    os.environ['HOME'] = '/home/docs/'
 
 # -- Download Sample Data -----------------------------------------------------
 
@@ -183,6 +164,7 @@ man_pages = [('index', project.lower(), project + u' Documentation',
 #
 extensions += ['astropy_helpers.sphinx.ext.edit_on_github', 'sphinx.ext.doctest']
 
+
 ## Don't import the module as "version" or it will override the
 ## "version" configuration parameter
 # TODO: make this smart like astropy
@@ -191,3 +173,13 @@ edit_on_github_branch = "master"
 
 edit_on_github_source_root = ""
 edit_on_github_doc_root = "docs"
+
+
+## -- Sphinx Gallery ---------------------------------------------------------- 
+extensions += ['sphinx_gallery.gen_gallery']
+
+sphinx_gallery_conf = {
+    # path to your examples scripts
+    'examples_dirs' : '../../examples',
+    # path where to save gallery generated examples
+    'gallery_dirs'  : 'auto_examples'}

@@ -1,18 +1,21 @@
 """SunPy configuration file functionality"""
+from __future__ import absolute_import, division, print_function
+
 import os
 import tempfile
-import ConfigParser
+from sunpy.extern.six.moves import configparser
 
-import sunpy as spy
+import sunpy
 
 __all__ = ['load_config', 'print_config']
+
 
 def load_config():
     """
     Read the sunpyrc configuration file. If one does not exists in the user's
     home directory then read in the defaults from module
     """
-    config = ConfigParser.SafeConfigParser()
+    config = configparser.SafeConfigParser()
 
     # Get locations of SunPy configuration files to be loaded
     config_files = _find_config_files()
@@ -28,7 +31,8 @@ def load_config():
     # Specify the database url as a default so that the user's home
     # directory can be located in an OS-independent manner
     if not config.has_option('database', 'url'):
-        config.set('database', 'url', "sqlite:///" + os.path.join(_get_home(), "sunpy/sunpydb.sqlite"))
+        config.set('database', 'url', "sqlite:///" + os.path.join(
+            _get_home(), "sunpy/sunpydb.sqlite"))
 
     # Use absolute filepaths and adjust OS-dependent paths as needed
     filepaths = [
@@ -46,29 +50,32 @@ def load_config():
 
     return config
 
+
 def print_config():
     """Print current configuration options"""
     print("FILES USED:")
     for file_ in _find_config_files():
         print("  " + file_)
 
-    print ("\nCONFIGURATION:")
-    for section in spy.config.sections():
+    print("\nCONFIGURATION:")
+    for section in sunpy.config.sections():
         print("  [{0}]".format(section))
-        for option in spy.config.options(section):
-            print("  {0} = {1}".format(option, spy.config.get(section, option)))
+        for option in sunpy.config.options(section):
+            print("  {} = {}".format(option, sunpy.config.get(section, option)))
         print("")
+
 
 def _is_writable_dir(p):
     """Checks to see if a directory is writable"""
     return os.path.isdir(p) and os.access(p, os.W_OK)
+
 
 def _get_home():
     """Find user's home directory if possible.
     Otherwise raise error.
 
     """
-    path = path=os.path.expanduser("~")
+    path = os.path.expanduser("~")
 
     if not os.path.isdir(path):
         for evar in ('HOME', 'USERPROFILE', 'TMP'):
@@ -83,13 +90,14 @@ def _get_home():
     else:
         raise RuntimeError('please define environment variable $HOME')
 
+
 def _find_config_files():
     """Finds locations of SunPy configuration files"""
     config_files = []
     config_filename = 'sunpyrc'
 
     # find default configuration file
-    module_dir = os.path.dirname(spy.__file__)
+    module_dir = os.path.dirname(sunpy.__file__)
     config_files.append(os.path.join(module_dir, 'data', 'sunpyrc'))
 
     # if a user configuration file exists, add that to list of files to read
@@ -102,6 +110,7 @@ def _find_config_files():
 
     return config_files
 
+
 def _get_user_configdir():
     """
     Return the string representing the configuration dir.
@@ -112,8 +121,9 @@ def _get_user_configdir():
 
     if configdir is not None:
         if not _is_writable_dir(configdir):
-            raise RuntimeError('Could not write to SUNPY_CONFIGDIR="{0}"'.format(
-                               configdir))
+            raise RuntimeError('Could not write to SUNPY_CONFIGDIR="{0}"'
+                               .format(configdir))
+
         return configdir
 
     h = _get_home()
@@ -136,6 +146,7 @@ def _get_user_configdir():
 
     return p
 
+
 def _fix_filepaths(config, filepaths):
     """Converts relative filepaths to absolute filepaths"""
     # Parse working_dir
@@ -154,6 +165,7 @@ def _fix_filepaths(config, filepaths):
         # Replace config value with full filepath
         params = f + (filepath,)
         config.set(*params)
+
 
 def _expand_filepath(filepath, working_dir=""):
     """Checks a filepath and expands it if necessary"""

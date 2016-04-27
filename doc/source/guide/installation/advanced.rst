@@ -83,11 +83,13 @@ are needed. SunPy will import even if these dependencies are not installed.
 
 - `sqlalchemy <http://www.sqlalchemy.org>`_: For the `~sunpy.database` package.
 
-- `suds <https://bitbucket.org/jurko/suds>`_: For `~sunpy.net`.
+- `suds-jurko <https://bitbucket.org/jurko/suds>`_: For `~sunpy.net`.
 
 - `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: For `~sunpy.spectra.Callisto` Spectrograms and `~sunpy.net.helio`
 
 - `requests <http://docs.python-requests.org/en/latest/>`_: For the `~sunpy.net.jsoc` submodule.
+
+- `wcsaxes <http://wcsaxes.readthedocs.org/en/latest/>`_: For `sunpy.map` plotting improvements.
 
 - `glymur <https://glymur.readthedocs.org/en/latest/>`_ 0.5.9 or later: To enable reading of JPEG2000 files.
   Glymur requires the installation of the `OpenJPEG C library <http://code.google.com/p/openjpeg/downloads/list>`_.

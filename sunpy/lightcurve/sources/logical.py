@@ -9,14 +9,15 @@ import numpy as np
 from sunpy.lightcurve import LightCurve
 from scipy.ndimage import label
 from sunpy.time import TimeRange
+import matplotlib.pyplot as plt
+from sunpy.extern.six.moves import range
 
 from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['LogicalLightCurve']
 
-#
-#
+
 # Logical Lightcurve
 # TODO
 # Change the init to accept a list of TimeRange objects.  Durations between the
@@ -47,17 +48,15 @@ class LogicalLightCurve(LightCurve):
         if plot_type == None:
             plot_type = self._get_plot_types()[0]
 
-        switch(plot_type):
-            case 'logical':
-                self.data.plot(ax=axes, **plot_args)
-                plt.fill_between(self.data.index, self.data['param1'], alpha=0.5)
-                axes.set_title(title)
-                axes.yaxis.grid(True, 'major')
-                axes.xaxis.grid(True, 'major')
-                axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
-                break
-            default:
-                raise ValueError('Not a recognized plot type.')
+        if plot_type == self._get_plot_types()[0]:      # logical
+            self.data.plot(ax=axes, **plot_args)
+            plt.fill_between(self.data.index, self.data['param1'], alpha=0.5)
+            axes.set_title(title)
+            axes.yaxis.grid(True, 'major')
+            axes.xaxis.grid(True, 'major')
+            axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
+        else:
+            raise ValueError('Not a recognized plot type.')
 
         axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
         plt.gcf().autofmt_xdate()
@@ -67,7 +66,7 @@ class LogicalLightCurve(LightCurve):
     def complement(self):
         """Return the logical complement of the original lightcurve."""
         return LogicalLightCurve.create(np.invert(self.data),
-                                        header = self.header)
+                                        header=self.header)
 
     def times(self):
         """Returns a list of time ranges where values are True.
@@ -80,8 +79,8 @@ class LogicalLightCurve(LightCurve):
 
         labeling = label(self.data)
         timeranges = []
-        for i in xrange(1, labeling[1]+1):
+        for i in range(1, labeling[1] + 1):
             eventindices = (labeling[0] == i).nonzero()
-            timeranges.append( TimeRange(self.data.index[ eventindices[0][0] ],
-                                         self.data.index[ eventindices[0][-1] ]) )
+            timeranges.append(TimeRange(self.data.index[eventindices[0][0]],
+                                        self.data.index[eventindices[0][-1]]))
         return timeranges

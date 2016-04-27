@@ -69,52 +69,38 @@ class EVELightCurve(LightCurve):
         if plot_type == None:
             plot_type = self._get_plot_types()[0]
 
-        switch(plot_type):
-            case 'goes proxy':
-                self.data['XRS-B proxy'].plot(ax=axes, label='1.0--8.0 $\AA$', color='red', lw=2, **plot_args)
-                self.data['XRS-A proxy'].plot(ax=axes, label='0.5--4.0 $\AA$', color='blue', lw=2, **plot_args)
-                axes.set_yscale("log")
-                axes.set_ylim(1e-9, 1e-2)
-                axes.set_title(title)
-                axes.set_ylabel('Watts m$^{-2}$')
-                break
-                #ax2 = axes.twinx()
-                #ax2.set_yscale("log")
-                #ax2.set_ylim(1e-9, 1e-2)
-                #ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
-                #ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
-            case 'esp quad':
-                self.data['q0ESP'].plot(ax=axes, label='ESP 0', **plot_args)
-                self.data['q1ESP'].plot(ax=axes, label='ESP 1', **plot_args)
-                self.data['q2ESP'].plot(ax=axes, label='ESP 2', **plot_args)
-                self.data['q3ESP'].plot(ax=axes, label='ESP 3', **plot_args)
-                break
-            case 'position':
-                self.data['CMLat'].plot(ax=axes, label='Latitude', **plot_args)
-                self.data['CMLon'].plot(ax=axes, label='Longitude', **plot_args)
-                break
-            case 'sem':
-                self.data['SEM proxy'].plot(ax=axes, label='SEM Proxy', **plot_args)
-                break
-            case 'esp':
-                self.data['17.1ESP'].plot(ax=axes, label='17.1', **plot_args)
-                self.data['25.7ESP'].plot(ax=axes, label='25.7', **plot_args)
-                self.data['30.4ESP'].plot(ax=axes, label='30.4', **plot_args)
-                self.data['36.6ESP'].plot(ax=axes, label='36.6', **plot_args)
-                break
-            case 'dark':
-                self.data['darkESP'].plot(ax=axes, label='ESP', **plot_args)
-                self.data['darkMEGS-P'].plot(ax=axes, label='MEGS-P', **plot_args)
-                break
-            default:
-                raise ValueError('Not a recognized plot type.')
-            break
+        if plot_type == self._get_plot_types()[0]:      # goes proxy
+            self.data['XRS-B proxy'].plot(ax=axes, label='1.0--8.0 $\AA$', color='red', lw=2, **plot_args)
+            self.data['XRS-A proxy'].plot(ax=axes, label='0.5--4.0 $\AA$', color='blue', lw=2, **plot_args)
+            axes.set_yscale("log")
+            axes.set_ylim(1e-9, 1e-2)
+            axes.set_ylabel('Watts m$^{-2}$')
+        elif plot_type == self._get_plot_types()[1]:  # esp quad
+            self.data['q0ESP'].plot(ax=axes, label='ESP 0', **plot_args)
+            self.data['q1ESP'].plot(ax=axes, label='ESP 1', **plot_args)
+            self.data['q2ESP'].plot(ax=axes, label='ESP 2', **plot_args)
+            self.data['q3ESP'].plot(ax=axes, label='ESP 3', **plot_args)
+        elif plot_type == self._get_plot_types()[2]:  # position
+            self.data['CMLat'].plot(ax=axes, label='Latitude', **plot_args)
+            self.data['CMLon'].plot(ax=axes, label='Longitude', **plot_args)
+        elif plot_type == self._get_plot_types()[3]:  # sem
+            self.data['SEM proxy'].plot(ax=axes, label='SEM Proxy', **plot_args)
+        elif plot_type == self._get_plot_types()[4]:  # esp
+            self.data['17.1ESP'].plot(ax=axes, label='17.1', **plot_args)
+            self.data['25.7ESP'].plot(ax=axes, label='25.7', **plot_args)
+            self.data['30.4ESP'].plot(ax=axes, label='30.4', **plot_args)
+            self.data['36.6ESP'].plot(ax=axes, label='36.6', **plot_args)
+        elif plot_type == self._get_plot_types()[5]:  # dark
+            self.data['darkESP'].plot(ax=axes, label='ESP', **plot_args)
+            self.data['darkMEGS-P'].plot(ax=axes, label='MEGS-P', **plot_args)
+        else:
+            raise ValueError('Not a recognized plot type.')
 
         axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
         axes.set_title(title)
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
-        axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
+        #axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
         plt.gcf().autofmt_xdate()
 
         return axes
@@ -122,52 +108,6 @@ class EVELightCurve(LightCurve):
     @classmethod
     def _get_plot_types(cls):
         return ['goes proxy', 'esp quad', 'position', 'sem', 'esp', 'dark']
-=======
-    def peek(self, column=None, **kwargs):
-        """Plots the light curve in a new figure. An example is shown below.
-
-        .. plot::
-
-            import sunpy
-            eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
-            eve.peek(subplots=True)
-
-        Parameters
-        ----------
-        column : str
-            The column to display. If None displays all.
-
-        **kwargs : dict
-            Any additional plot arguments that should be used
-            when plotting.
-
-        Returns
-        -------
-        fig : `~matplotlib.Figure`
-            A plot figure.
-        """
-        figure = plt.figure()
-        # Choose title if none was specified
-        if "title" not in kwargs and column is None:
-            if len(self.data.columns) > 1:
-                kwargs['title'] = 'EVE (1 minute data)'
-            else:
-                if self._filename is not None:
-                    base = self._filename.replace('_', ' ')
-                    kwargs['title'] = os.path.splitext(base)[0]
-                else:
-                    kwargs['title'] = 'EVE Averages'
-
-        if column is None:
-            self.plot(**kwargs)
-        else:
-            data = self.data[column]
-            if "title" not in kwargs:
-                kwargs['title'] = 'EVE ' + column.replace('_', ' ')
-            data.plot(**kwargs)
-        figure.show()
-        return figure
->>>>>>> upstream/master
 
     @staticmethod
     def _get_default_uri():
@@ -193,9 +133,9 @@ class EVELightCurve(LightCurve):
             line1 = fp.readline()
             fp.seek(0)
 
-            if line1.startswith("Date"):
+            if line1.startswith("Date".encode('ascii')):
                 return cls._parse_average_csv(fp)
-            elif line1.startswith(";"):
+            elif line1.startswith(";".encode('ascii')):
                 return cls._parse_level_0cs(fp)
 
     @staticmethod
@@ -212,34 +152,36 @@ class EVELightCurve(LightCurve):
         fields = []
         line = fp.readline()
         # Read header at top of file
-        while line.startswith(";"):
+        while line.startswith(";".encode('ascii')):
             header.append(line)
-            if '; Missing data:' in line :
+            if '; Missing data:'.encode('ascii') in line :
                 is_missing_data = True
-                missing_data_val = line.split(':')[1].strip()
+                missing_data_val = line.split(':'.encode('ascii'))[1].strip()
 
             line = fp.readline()
 
         meta = OrderedDict()
         for hline in header :
-            if hline == '; Format:\n' or hline == '; Column descriptions:\n':
+            if hline == '; Format:\n'.encode('ascii') or hline == '; Column descriptions:\n'.encode('ascii'):
                 continue
-            elif ('Created' in hline) or ('Source' in hline):
-                meta[hline.split(':',1)[0].replace(';',' ').strip()] = hline.split(':',1)[1].strip()
-            elif ':' in hline :
-                meta[hline.split(':')[0].replace(';',' ').strip()] = hline.split(':')[1].strip()
+            elif ('Created'.encode('ascii') in hline) or ('Source'.encode('ascii') in hline):
+                meta[hline.split(':'.encode('ascii'),
+                                 1)[0].replace(';'.encode('ascii'),
+                                               ' '.encode('ascii')).strip()] = hline.split(':'.encode('ascii'), 1)[1].strip()
+            elif ':'.encode('ascii') in hline :
+                meta[hline.split(':'.encode('ascii'))[0].replace(';'.encode('ascii'), ' '.encode('ascii')).strip()] = hline.split(':'.encode('ascii'))[1].strip()
 
         fieldnames_start = False
         for hline in header:
-            if hline.startswith("; Format:"):
+            if hline.startswith("; Format:".encode('ascii')):
                 fieldnames_start = False
             if fieldnames_start:
-                fields.append(hline.split(":")[0].replace(';', ' ').strip())
-            if hline.startswith("; Column descriptions:"):
+                fields.append(hline.split(":".encode('ascii'))[0].replace(';'.encode('ascii'), ' '.encode('ascii')).strip())
+            if hline.startswith("; Column descriptions:".encode('ascii')):
                 fieldnames_start = True
 
         # Next line is YYYY DOY MM DD
-        date_parts = line.split(" ")
+        date_parts = line.split(" ".encode('ascii'))
 
         year = int(date_parts[0])
         month = int(date_parts[2])
@@ -252,7 +194,7 @@ class EVELightCurve(LightCurve):
         # function to parse date column (HHMM)
         parser = lambda x: datetime(year, month, day, int(x[0:2]), int(x[2:4]))
 
-        data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, header = None)
+        data = read_csv(fp, sep="\s*".encode('ascii'), names=fields, index_col=0, date_parser=parser, header=None, engine='python')
         if is_missing_data :   #If missing data specified in header
             data[data == float(missing_data_val)] = numpy.nan
 

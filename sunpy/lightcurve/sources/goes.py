@@ -34,7 +34,7 @@ class GOESLightCurve(LightCurve):
     --------
     >>> from sunpy import lightcurve as lc
     >>> from sunpy.time import TimeRange
-    >>> goes = lc.GOESLightCurve.create(TimeRange('2012/06/01', '2012/06/05'))
+    >>> goes = lc.GOESLightCurve.create(TimeRange('2012/06/01', '2012/06/02'))
     >>> goes.peek()   # doctest: +SKIP
 
     References
@@ -59,30 +59,26 @@ class GOESLightCurve(LightCurve):
         if axes is None:
             axes = plt.gca()
 
-        switch(plot_type):
-            case 'goes':
-                axes.plot_date(self.data.index, self.data['xrsa'], '-',
-                             label='0.5--4.0 $\AA$', color='blue', lw=2, **plot_args)
-                axes.plot_date(self.data.index, self.data['xrsb'], '-',
-                             label='1.0--8.0 $\AA$', color='red', lw=2, **plot_args)
+        if plot_type == self._get_plot_types()[0]:      # goes
+            axes.plot_date(self.data.index, self.data['xrsa'], '-',
+                         label='0.5--4.0 $\AA$', color='blue', lw=2, **plot_args)
+            axes.plot_date(self.data.index, self.data['xrsb'], '-',
+                         label='1.0--8.0 $\AA$', color='red', lw=2, **plot_args)
 
-                axes.set_yscale("log")
-                axes.set_ylim(1e-9, 1e-2)
-                axes.set_title(title)
-                axes.set_ylabel('Watts m$^{-2}$')
-                axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
+            axes.set_yscale("log")
+            axes.set_ylim(1e-9, 1e-2)
+            axes.set_title(title)
+            axes.set_ylabel('Watts m$^{-2}$')
+            axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
 
-                ax2 = axes.twinx()
-                ax2.set_yscale("log")
-                ax2.set_ylim(1e-9, 1e-2)
-                ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
-                ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
-                break
-            default:
-                raise ValueError('Not a recognized plot type.')
+            ax2 = axes.twinx()
+            ax2.set_yscale("log")
+            ax2.set_ylim(1e-9, 1e-2)
+            ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
+            ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
+        else:
+            raise ValueError('Not a recognized plot type.')
 
-        axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(True, 'major')
         axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
         plt.gcf().autofmt_xdate()
 
@@ -105,25 +101,25 @@ class GOESLightCurve(LightCurve):
         """Parses the query time to determine which GOES satellite to use."""
 
         goes_operational = {
-        2: TimeRange('1981-01-01', '1983-04-30'),
-        5: TimeRange('1983-05-02', '1984-07-31'),
-        6: TimeRange('1983-06-01', '1994-08-18'),
-        7: TimeRange('1994-01-01', '1996-08-13'),
-        8: TimeRange('1996-03-21', '2003-06-18'),
-        9: TimeRange('1997-01-01', '1998-09-08'),
-        10: TimeRange('1998-07-10', '2009-12-01'),
-        11: TimeRange('2006-06-20', '2008-02-15'),
-        12: TimeRange('2002-12-13', '2007-05-08'),
+        2: TimeRange('1980-01-04', '1983-05-01'),
+        5: TimeRange('1983-05-02', '1984-08-01'),
+        6: TimeRange('1983-06-01', '1994-08-19'),
+        7: TimeRange('1994-01-01', '1996-08-14'),
+        8: TimeRange('1996-03-21', '2003-06-19'),
+        9: TimeRange('1997-01-01', '1998-09-09'),
+        10: TimeRange('1998-07-10', '2009-12-02'),
+        11: TimeRange('2006-06-20', '2008-02-16'),
+        12: TimeRange('2002-12-13', '2007-05-09'),
         13: TimeRange('2006-08-01', '2006-08-01'),
-        14: TimeRange('2009-12-02', '2010-10-04'),
+        14: TimeRange('2009-12-02', '2010-11-05'),
         15: TimeRange('2010-09-01', datetime.datetime.utcnow())}
 
         sat_list = []
         for sat_num in goes_operational:
-            if ((start > goes_operational[sat_num].start and
-                 start < goes_operational[sat_num].end and
-                (end > goes_operational[sat_num].start and
-                 end < goes_operational[sat_num].end))):
+            if ((start >= goes_operational[sat_num].start and
+                 start <= goes_operational[sat_num].end and
+                (end >= goes_operational[sat_num].start and
+                 end <= goes_operational[sat_num].end))):
                 # if true then the satellite with sat_num is available
                 sat_list.append(sat_num)
 
@@ -206,5 +202,5 @@ class GOESLightCurve(LightCurve):
         newxrsb = xrsb.byteswap().newbyteorder()
 
         data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb}, index=times)
-        data.sort(inplace=True)
+        data.sort_index(inplace=True)
         return header, data

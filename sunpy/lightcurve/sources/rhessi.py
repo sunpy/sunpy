@@ -28,6 +28,7 @@ class RHESSISummaryLightCurve(LightCurve):
     fidelity solar images in X rays (down to 3 keV) to gamma rays (1 MeV).
 
     RHESSI provides summary lightcurves in the following passbands
+
     * 3 - 6 keV
     * 6 - 12 keV
     * 12 - 25 keV
@@ -59,20 +60,18 @@ class RHESSISummaryLightCurve(LightCurve):
         if axes is None:
             axes = plt.gca()
 
-        switch(plot_type):
-            case 'rhessi':
-                for item, frame in self.data.iteritems():
-                    axes.plot_date(self.data.index, frame.values, '-', label=item, **plot_args)
-                axes.set_yscale("log")
-                axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
-                axes.set_title(title)
-                axes.set_ylabel('Count Rates s$^{-1}$ detector$^{-1}$')
-                axes.yaxis.grid(True, 'major')
-                axes.xaxis.grid(True, 'major')
-                break
-            default:
-                raise ValueError('Not a recognized plot type.')
-            break
+        if plot_type == 'rhessi':
+            for item, frame in self.data.iteritems():
+                axes.plot_date(self.data.index, frame.values, '-', label=item, **plot_args)
+            axes.set_yscale("log")
+            axes.set_title(title)
+            axes.set_ylabel('Count Rates s$^{-1}$ detector$^{-1}$')
+            axes.yaxis.grid(True, 'major')
+            axes.xaxis.grid(True, 'major')
+        else:
+            raise ValueError('Not a recognized plot type.')
+
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
 
         for item, frame in self.data.iteritems():
             axes.plot_date(self.data.index, frame.values, '-', label=item, lw=2)

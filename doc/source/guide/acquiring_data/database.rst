@@ -257,7 +257,7 @@ directory ``sampledata_dir``).
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 A VSO query result can be used to add new entries to the database. The
 number of database entries that will be added is equal to the value of
-``qr.num_records()`` in the following code snippet. Note that the method
+``len(qr)`` in the following code snippet. Note that the method
 :meth:`Database.add_from_vso_query_result` does not download any files,
 though. If you want to add new entries using the VSO and also want to
 download files at the same time, take a look at the following two
@@ -268,7 +268,7 @@ sections.
     >>> qr = client.query(
     ...     vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'),
     ...     vso.attrs.Instrument('AIA'))
-    >>> qr.num_records()
+    >>> len(qr)
     4
     >>> database.add_from_vso_query_result(qr)
     >>> len(database)
@@ -544,7 +544,7 @@ year:
 
 5.3 Changing custom attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-What sill annoys me a bit is that there are entries in the database where
+What still annoys me a bit is that there are entries in the database where
 the end of the observation time is `None`. Let us change them to the same
 value to the start of the observation time (because we can and because it
 looks prettier, not because it is accurate). The :meth:`Database.edit`

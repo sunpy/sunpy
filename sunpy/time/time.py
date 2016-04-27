@@ -1,9 +1,13 @@
+from __future__ import absolute_import, division, print_function
 import re
 from datetime import datetime
 from datetime import timedelta
 
 import numpy as np
 import pandas
+from sunpy.extern import six
+
+import astropy.time
 
 __all__ = ['find_time', 'extract_time', 'parse_time', 'is_time', 'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format']
 
@@ -64,7 +68,7 @@ def _regex_parse_time(inp, format):
     # Parser for finding out the minute value so we can adjust the string
     # from 24:00:00 to 00:00:00 the next day because strptime does not
     # understand the former.
-    for key, value in REGEX.iteritems():
+    for key, value in six.iteritems(REGEX):
         format = format.replace(key, value)
     match = re.match(format, inp)
     if match is None:
@@ -87,7 +91,7 @@ def find_time(string, format):
     """ Return iterator of occurrences of date formatted with format
     in string. Currently supported format codes: """
     re_format = format
-    for key, value in REGEX.iteritems():
+    for key, value in six.iteritems(REGEX):
         re_format = re_format.replace(key, value)
     matches = re.finditer(re_format, string)
     for match in matches:
@@ -100,12 +104,12 @@ def find_time(string, format):
             yield dt
 
 
-find_time.__doc__ += ', '.join(REGEX.keys())
+find_time.__doc__ += ', '.join(list(REGEX.keys()))
 
 
 def _iter_empty(iter):
     try:
-        iter.next()
+        next(iter)
     except StopIteration:
         return True
     return False
@@ -120,7 +124,7 @@ def extract_time(string):
     for time_format in TIME_FORMAT_LIST:
         found = find_time(string, time_format)
         try:
-            match = found.next()
+            match = next(found)
         except StopIteration:
             continue
         else:
@@ -187,6 +191,8 @@ def parse_time(time_string, time_format=''):
         return np.array([datetime(*(dt.timetuple()[:6])) for dt in ii])
     elif time_string is 'now':
         return datetime.utcnow()
+    elif isinstance(time_string, astropy.time.Time):
+        return time_string.datetime
     else:
         # remove trailing zeros and the final dot to allow any
         # number of zeros. This solves issue #289

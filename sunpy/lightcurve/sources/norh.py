@@ -3,7 +3,6 @@
 from __future__ import absolute_import
 
 import datetime
-import urlparse
 from collections import OrderedDict
 
 import numpy as np
@@ -16,6 +15,9 @@ from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
 
 from sunpy import config
+
+from sunpy.extern.six.moves import urllib
+
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['NoRHLightCurve']
@@ -58,26 +60,27 @@ class NoRHLightCurve(LightCurve):
         if axes is None:
             axes = plt.gca()
 
-        switch(plot_type):
-            case 'norh':
-                data_label = self.meta['OBS-FREQ'][0:2] + ' ' + self.meta['OBS-FREQ'][2:5]
-                axes.plot(self.data.index, self.data, label=data_label)
-                axes.set_yscale("log")
-                axes.set_ylim(1e-4,1)
-                axes.set_title(title)
-                axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
-                axes.set_ylabel('Correlation')
-                axes.yaxis.grid(True, 'major')
-                axes.xaxis.grid(True, 'major')
-                break
-            default:
-                raise ValueError('Not a recognized plot type.')
-            break
+        if plot_type == 'norh':
+            data_label = self.meta['OBS-FREQ'][0:2] + ' ' + self.meta['OBS-FREQ'][2:5]
+            axes.plot(self.data.index, self.data, label=data_label)
+            axes.set_yscale("log")
+            axes.set_ylim(1e-4,1)
+            axes.set_title(title)
+            axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
+            axes.set_ylabel('Correlation')
+            axes.yaxis.grid(True, 'major')
+            axes.xaxis.grid(True, 'major')
+        else:
+            raise ValueError('Not a recognized plot type.')
 
-        axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
+        #axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
         plt.gcf().autofmt_xdate()
 
         return axes
+
+    @classmethod
+    def _get_plot_types(cls):
+        return ['norh']
 
     @classmethod
     def _get_url_for_date(cls, date, **kwargs):
@@ -87,13 +90,15 @@ class NoRHLightCurve(LightCurve):
         """
         # default urllib password anonymous@ is not accepted by the NoRH FTP
         # server. include an accepted password in base url
-        baseurl='ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/'
+        baseurl = 'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/'
         # date is a datetime object
         if 'wavelength' in kwargs:
             if kwargs['wavelength'] == '34':
-                final_url=urlparse.urljoin(baseurl,date.strftime('%Y/%m/tcz%y%m%d'))
+                final_url = urllib.parse.urljoin(
+                    baseurl, date.strftime('%Y/%m/tcz%y%m%d'))
         else:
-            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/tca%y%m%d'))
+            final_url = urllib.parse.urljoin(
+                baseurl, date.strftime('%Y/%m/tca%y%m%d'))
 
         return final_url
 

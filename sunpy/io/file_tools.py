@@ -1,3 +1,4 @@
+from __future__ import absolute_import, division, print_function
 import re
 import os
 
@@ -24,6 +25,7 @@ _known_extensions = {
     ('jp2', 'j2k', 'jpc', 'jpt'): 'jp2',
     ('fz', 'f0'): 'ana'
 }
+
 
 # Define a dict which raises a custom error message if the value is None
 class Readers(dict):
@@ -142,6 +144,7 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
     # Nothing has matched, panic
     raise ValueError("This filetype is not supported")
 
+
 def _detect_filetype(filepath):
     """
     Attempts to determine the type of data contained in a file.  This is only
@@ -159,7 +162,7 @@ def _detect_filetype(filepath):
     """
 
     # Open file and read in first two lines
-    with open(filepath) as fp:
+    with open(filepath, 'rb') as fp:
         line1 = fp.readline()
         line2 = fp.readline()
         # Some FITS files do not have line breaks at the end of header cards.
@@ -178,7 +181,7 @@ def _detect_filetype(filepath):
         return 'fits'
 
     # Check for "KEY_WORD  =" at beginning of file
-    match = re.match(r"[A-Z0-9_]{0,8} *=", first80)
+    match = re.match(r"[A-Z0-9_]{0,8} *=".encode('ascii'), first80)
     if match is not None:
         return 'fits'
 
@@ -189,8 +192,8 @@ def _detect_filetype(filepath):
     # [1] http://www.sno.phy.queensu.ca/~phil/exiftool/
     # [2] http://www.jpeg.org/public/fcd15444-2.pdf
     # [3] ftp://ftp.remotesensing.org/jpeg2000/fcd15444-1.pdf
-    jp2_signatures = ["\x00\x00\x00\x0cjP  \x0d\x0a\x87\x0a",
-                      "\x00\x00\x00\x0cjP\x1a\x1a\x0d\x0a\x87\x0a"]
+    jp2_signatures = [b"\x00\x00\x00\x0cjP  \x0d\x0a\x87\x0a",
+                      b"\x00\x00\x00\x0cjP\x1a\x1a\x0d\x0a\x87\x0a"]
 
     for sig in jp2_signatures:
         if line1 + line2 == sig:

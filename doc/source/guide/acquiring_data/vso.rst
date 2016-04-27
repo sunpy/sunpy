@@ -119,7 +119,7 @@ of conditions which get passed to the VSO.  Let's say you want all the
 EIT data from two separate days:
 
     >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2') | vso.attrs.Time('2007/8/9', '2007/8/10'), vso.attrs.Instrument('eit') )
-    >>> qr.num_records()
+    >>> len(qr)
     227
 
 Each of the arguments in this query style can be thought of as
@@ -128,7 +128,7 @@ set the wavelength; for example, to return the 171 Angstrom EIT results
 
     >>> import astropy.units as u
     >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'), vso.attrs.Wave(171*u.AA,171*u.AA) )
-    >>> qr.num_records()
+    >>> len(qr)
     4
 
 Using the Legacy Query Style
@@ -155,7 +155,7 @@ both gives the same result. The variable ``qr`` is a Python list of
 response objects, each one of which is a record found by the VSO. How
 many records have been found?  You can find that out be typing
 
-    >>> qr.num_records()
+    >>> len(qr)
     122
 
 To get a little bit more information, try

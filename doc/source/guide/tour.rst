@@ -25,9 +25,10 @@ shall use SDO's AIA instrument as an example in this tutorial. The general way t
 a Map from one of the supported data products is with the `~sunpy.map.map()` function from the `~sunpy.map` submodule.
 `~sunpy.map.map()` takes either a filename, a list of filenames or a data array and header. We can test map with:
 
+
 .. plot::
     :include-source:
-
+ 
     import sunpy.data.sample
     import sunpy.map
     aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
@@ -358,7 +359,7 @@ non-interactive version of the main API::
     ...     vso.attrs.Instrument('eit'))
 
     # print the number of matches
-    >>> print("Number of records found: %d " % result.num_records())   # doctest: +NORMALIZE_WHITESPACE
+    >>> print("Number of records found: {}".format(len(result)))   # doctest: +NORMALIZE_WHITESPACE
     Number of records found: 4
 
     # download matches to /download/path
@@ -415,20 +416,18 @@ including generating a PNG and downloading a `JPEG 2000 <http://wiki.helioviewer
 image and loading it into a SunPy Map.
 
 
-A simple example of a helioviewer query and a plot of the result follows.
+A simple example of a helioviewer query and generating a plot of the result follows::
 
-.. plot::
-    :include-source:
 
-    from sunpy.net.helioviewer import HelioviewerClient
-    import matplotlib.pyplot as plt
-    from matplotlib.image import imread
-    hv = HelioviewerClient()
-    file = hv.download_png('2099/01/01', 4.8, "[SDO,AIA,AIA,304,1,100]", x0=0, y0=0, width=512, height=512)
-    im = imread(file)
-    plt.imshow(im)
-    plt.axis('off')
-    plt.show()
+   >>> from sunpy.net.helioviewer import HelioviewerClient
+   >>> import matplotlib.pyplot as plt
+   >>> from matplotlib.image import imread
+   >>> hv = HelioviewerClient()
+   >>> file = hv.download_png('2099/01/01', 4.8, "[SDO,AIA,AIA,304,1,100]", x0=0, y0=0, width=512, height=512)
+   >>> im = imread(file)
+   >>> plt.imshow(im)
+   >>> plt.axis('off')
+   >>> plt.show()
 
 This downloads a PNG image of the latest AIA 304 image available on `Helioviewer.org <http://helioviewer.org>`_.  In the
  `~sunpy.net.helioviewer.HelioviewerClient.download_png` command the value, 4.8, refers to the image resolution in arcseconds per pixel (larger values mean lower resolution), x0 and y0 are the center points about which to focus and the width and height are the pixel values for the image dimensions. For more information checkout the :doc:`helioviewer guide <acquiring_data/helioviewer>`.

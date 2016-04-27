@@ -17,6 +17,7 @@ Template matching algorithm:
    Processing and Pattern Recognition Society, Quebec City, Canada, May 15-19,
    1995, p. 120-123 http://www.scribblethink.org/Work/nvisionInterface/vi95_lewis.pdf.
 """
+from __future__ import absolute_import, division, print_function
 
 import numpy as np
 from scipy.ndimage.interpolation import shift
@@ -35,7 +36,8 @@ __all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
            'match_template_to_layer', 'find_best_match_location',
            'get_correlation_shifts', 'parabolic_turning_point',
            'repair_image_nonfinite', 'apply_shifts',
-           'mapcube_coalign_by_match_template']
+           'mapcube_coalign_by_match_template',
+           'calculate_match_template_shift']
 
 
 def _default_fmap_function(data):
@@ -248,7 +250,7 @@ def get_correlation_shifts(array):
     ny = array.shape[0]
     nx = array.shape[1]
     if nx > 3 or ny > 3:
-        print 'Input array is too big in at least one dimension. Returning Nones'
+        print('Input array is too big in at least one dimension. Returning Nones')
         return None, None
 
     # Find where the maximum of the input array is
@@ -345,7 +347,7 @@ def repair_image_nonfinite(image):
 
 
 @u.quantity_input(yshift=u.pix, xshift=u.pix)
-def apply_shifts(mc, yshift, xshift, clip=True):
+def apply_shifts(mc, yshift, xshift, clip=True, **kwargs):
     """
     Apply a set of pixel shifts to a `~sunpy.map.MapCube`, and return a new
     `~sunpy.map.MapCube`.
@@ -356,13 +358,18 @@ def apply_shifts(mc, yshift, xshift, clip=True):
         A `~sunpy.map.MapCube` of shape (ny, nx, nt), where nt is the number of
         layers in the `~sunpy.map.MapCube`.  'ny' is the number of pixels in the
         y direction, 'nx' is the number of pixels in the 'x' direction.
+
     yshift : `~astropy.units.Quantity` instance
         An array of pixel shifts in the y-direction for an image.
+
     xshift : `~astropy.units.Quantity` instance
         An array of pixel shifts in the x-direction for an image.
+
     clip : bool
         If True, then clip off x, y edges in the datacube that are potentially
         affected by edges effects.
+
+    All other keywords are passed to `scipy.ndimage.interpolation.shift`.
 
     Returns
     -------
@@ -370,29 +377,32 @@ def apply_shifts(mc, yshift, xshift, clip=True):
         A `~sunpy.map.MapCube` of the same shape as the input.  All layers in
         the `~sunpy.map.MapCube` have been shifted according the input shifts.
     """
+    # New mapcube will be constructed from this list
+    new_mc = []
 
-    # new mapcube will be constructed from this list
-    newmc_list = []
+    # Calculate the clipping
+    if clip:
+        yclips, xclips = calculate_clipping(-yshift, -xshift)
 
     # Shift the data and construct the mapcube
-    for i, m in enumerate(mc.maps):
-        shifted_data = shift(m.data, [yshift[i].value, xshift[i].value])
-        # Clip if required
-        if clip:
-            yclips, xclips = calculate_clipping(-yshift, -xshift)
-            shifted_data = clip_edges(shifted_data, yclips, xclips)
-
-        # New header
+    for i, m in enumerate(mc):
+        shifted_data = shift(deepcopy(m.data), [yshift[i].value, xshift[i].value], **kwargs)
         new_meta = deepcopy(m.meta)
+        # Clip if required.  Use the submap function to return the appropriate
+        # portion of the data.
+        if clip:
+            shifted_data = clip_edges(shifted_data, yclips, xclips)
+            new_meta['naxis1'] = shifted_data.shape[1]
+            new_meta['naxis2'] = shifted_data.shape[0]
+            new_meta['crpix1'] = m.reference_pixel.x.value + xshift[i].value - xshift[0].value
+            new_meta['crpix2'] = m.reference_pixel.y.value + yshift[i].value - yshift[0].value
 
-        # Adjust the positioning information accordingly.
-        new_meta['crval1'] = new_meta['crval1'] - xshift[i].value * m.scale.x.value
-        new_meta['crval2'] = new_meta['crval2'] - yshift[i].value * m.scale.y.value
+        new_map = sunpy.map.Map(shifted_data, new_meta)
 
         # Append to the list
-        newmc_list.append(sunpy.map.Map(shifted_data, new_meta))
+        new_mc.append(new_map)
 
-    return sunpy.map.Map(newmc_list, cube=True)
+    return sunpy.map.Map(new_mc, cube=True)
 
 
 def calculate_match_template_shift(mc, template=None, layer_index=0,
@@ -412,15 +422,18 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
     mc : `sunpy.map.MapCube`
         A `~sunpy.map.MapCube` of shape (ny, nx, nt), where nt is the number of
         layers in the `~sunpy.map.MapCube`.
+
     template : {None | `~sunpy.map.Map` | `~numpy.ndarray`}
         The template used in the matching.  If an `~numpy.ndarray` is passed,
         the `~numpy.ndarray` has to have two dimensions.
+
     layer_index : int
         The template is assumed to refer to the map in the `~sunpy.map.MapCube`
         indexed by the value of "layer_index".  Displacements of all maps in the
         `~sunpy.map.MapCube` are assumed to be relative to this layer.  The
         displacements of the template relative to this layer are therefore
         (0, 0).
+
     func : function
         A function which is applied to the data values before the coalignment
         method is applied.  This can be useful in coalignment, because it is
@@ -489,7 +502,7 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
 # Coalignment by matching a template
 def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
                                       func=_default_fmap_function, clip=True,
-                                      shift=None):
+                                      shift=None, **kwargs):
     """
     Co-register the layers in a `~sunpy.map.MapCube` according to a template
     taken from that `~sunpy.map.MapCube`.  This method REQUIRES that
@@ -540,6 +553,8 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
         shift is applied to the input `~sunpy.map.MapCube` and the template
         matching algorithm is not used.
 
+    The remaining keyword arguments are sent to `sunpy.image.coalignment.apply_shifts`.
+
     Returns
     -------
     output : `sunpy.map.MapCube`
@@ -580,4 +595,4 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
         yshift_keep[i] = (yshift_arcseconds[i] / m.scale.y)
 
     # Apply the shifts and return the coaligned mapcube
-    return apply_shifts(mc, -yshift_keep, -xshift_keep, clip=clip)
+    return apply_shifts(mc, -yshift_keep, -xshift_keep, clip=clip, **kwargs)
