@@ -69,14 +69,13 @@ class GOESClient(GenericClient):
         all_dates = timerange.split(total_days)
         result = list()
         for day in all_dates:
-            cur_date = day.end
             regex = "{date:%Y}/go{sat:02d}"
-            if (cur_date < parse_time('1999/01/15')):
+            if (day.end < parse_time('1999/01/15')):
                 regex += "{date:%y%m%d}.fits"
             else:
                 regex += "{date:%Y%m%d}.fits"
             url = base_url + regex.format(
-                    date=cur_date, sat=self._get_goes_sat_num(cur_date,cur_date)[0])
+                    date=day.end, sat=self._get_goes_sat_num(day.end, day.end)[0])
             result.append(url)
         return result
 
