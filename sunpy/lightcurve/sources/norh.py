@@ -123,4 +123,8 @@ class NoRHLightCurve(LightCurve):
             norh_time.append(obs_start_time + datetime.timedelta(0,s))
 
         header.update({'UNIT': [None] * len(data.columns)})
+        header.update({'instrume': header.get('telescope')})
+        header.update({'obsrvtry': header.get('origin')})
+        header.update({'wavelnth': '17'})
+        header.update({'waveunit': 'GHz'})
         return header, pandas.DataFrame(data, index=norh_time)
