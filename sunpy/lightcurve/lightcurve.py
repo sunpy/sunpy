@@ -99,6 +99,26 @@ for compatibility with map, please use meta instead""", Warning)
         return self.meta
 
     @property
+    def instrument(self):
+        """Instrument name"""
+        return self.meta.get('instrume', "").replace("_", " ")
+
+    @property
+    def measurement(self):
+        """Measurement name, defaults to the wavelength of image"""
+        return u.Quantity(self.meta.get('wavelnth', 0), self.meta.get('waveunit', ""))
+
+    @property
+    def wavelength(self):
+        """wavelength of the observation"""
+        return u.Quantity(self.meta.get('wavelnth', 0), self.meta.get('waveunit', ""))
+
+    @property
+    def observatory(self):
+        """Observatory or Telescope name"""
+        return self.meta.get('obsrvtry', self.meta.get('telescop', "")).replace("_", " ")
+
+    @property
     def unit(self):
         return self._unit
 
