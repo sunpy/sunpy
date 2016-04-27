@@ -58,27 +58,26 @@ class GOESClient(GenericClient):
             Data type to return for the particular GOES satellite. Supported
             types depend on the satellite number specified. (default = xrs_2s)
         """
-        start_date = parse_time(timerange.start)
-        end_date = parse_time(timerange.end)
+        start_date = timerange.start
+        end_date = timerange.end
         
         # find out which satellite and datatype to query from the query times
         sat_num = self._get_goes_sat_num(timerange.start, timerange.end)
         base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
 
-        total_days = (end_date - start_date).days + 1
-
-        result = []
-        for day_number in range(total_days):
-            current_date = (start_date + datetime.timedelta(days=day_number)).date()
-            cur_date = datetime.datetime.combine(current_date, datetime.time())
+        total_days = (end_date - start_date).days + 1 
+        all_dates = timerange.split(total_days)
+        result = list()
+        for day in all_dates:
+            cur_date = day.end
+            regex = "{date:%Y}/go{sat:02d}"
             if (cur_date < parse_time('1999/01/15')):
-                url = base_url + "{date:%Y}/go{sat:02d}{date:%y%m%d}.fits".format(
-                    date=cur_date, sat=self._get_goes_sat_num(cur_date,cur_date)[0])
-                result.append(url)
+                regex += "{date:%y%m%d}.fits"
             else:
-                url = base_url + "{date:%Y}/go{sat:02d}{date:%Y%m%d}.fits".format(
+                regex += "{date:%Y%m%d}.fits"
+            url = base_url + regex.format(
                     date=cur_date, sat=self._get_goes_sat_num(cur_date,cur_date)[0])
-                result.append(url)
+            result.append(url)
         return result
 
     def _makeimap(self):
