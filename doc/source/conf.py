@@ -97,7 +97,7 @@ intersphinx_mapping['astropy'] = ('http://docs.astropy.org/en/stable/', None)
 intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/rel_0_8/', None)
 intersphinx_mapping['pandas'] = ('http://pandas.pydata.org/pandas-docs/stable/', None)
 intersphinx_mapping['skimage'] = ('http://scikit-image.org/docs/stable/', None)
-intersphinx_mapping['wcsaxes'] = ('http://wcsaxes.readthedocs.org/en/stable/', None)
+intersphinx_mapping['wcsaxes'] = ('http://wcsaxes.readthedocs.io/en/stable/', None)
 
 # -- Options for HTML output ---------------------------------------------------
 
