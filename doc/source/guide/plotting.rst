@@ -132,7 +132,7 @@ This command is similar to the pyplot `~matplotlib.pyplot.plot` command in that
 it will create a figure and axes object for you if you haven't already. It
 returns a figure object and does not create a plot window. With the `~matplotlib.figure.Figure` object
 in your hands you can reach in and grab the axes and therefore manipulate the plot.
-Here is a simple example which outputs the same plot as we saw before:
+Here is a simple example which outputs the same plot as we saw before but with contours added:
 
 .. plot::
     :include-source:
@@ -140,9 +140,12 @@ Here is a simple example which outputs the same plot as we saw before:
     import sunpy.map
     import sunpy.data.sample
     import matplotlib.pyplot as plt
+    from astropy.units import Quantity
     smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     smap.plot()
     smap.draw_limb()
+    # let's add contours as well
+    smap.draw_contours(Quantity([10,20,30,40,50,60,70,80,90], 'percent'))
     plt.colorbar()
     plt.show()
 
@@ -173,10 +176,10 @@ highlight a region of interest, and change the plot title.
 Plotting Maps with wcsaxes
 --------------------------
 
-By default :ref:map checks if the `wcsaxes <http://wcsaxes.readthedocs.io/>`_ 
-package has been installed. If it is installed, 
+By default :ref:map checks if the `wcsaxes <http://wcsaxes.readthedocs.org/>`_
+package has been installed. If it is installed,
 then `wcsaxes` is used to improve the representation of world coordinates,
-and calling ~sunpy.map.GenericMap.plot or~sunpy.map.GenericMap.peek() will use 
+and calling ~sunpy.map.GenericMap.plot or~sunpy.map.GenericMap.peek() will use
 wcsaxes for plotting. Unless a standard `matplotlib.axes.Axes` object is created.
 
 To explicitly create a `wcsaxes.WCSAxes` instance do the following ::
@@ -184,17 +187,17 @@ To explicitly create a `wcsaxes.WCSAxes` instance do the following ::
     >>> fig = plt.figure()   # doctest: +SKIP
     >>> ax = plt.subplot(projection=smap.wcs)   # doctest: +SKIP
 
-when plotting on a `~wcsaxes.WCSAxes` axes, it will by default plot in pixel 
+when plotting on a `~wcsaxes.WCSAxes` axes, it will by default plot in pixel
 coordinates, you can override this behavior and plot in 'world' coordinates
 by getting the transformation from the axes with ``ax.get_transform('world')``.
-Note: World coordinates are always in **degrees** so you will have to convert 
+Note: World coordinates are always in **degrees** so you will have to convert
 to degrees.::
 
     >>> smap.plot()   # doctest: +SKIP
     >>> ax.plot((100*u.arcsec).to(u.deg), (500*u.arcsec).to(u.deg),
     ...         transform=ax.get_transform('world'))   # doctest: +SKIP
 
-Finally, here is a more complex example using SunPy maps, wcsaxes and Astropy 
+Finally, here is a more complex example using SunPy maps, wcsaxes and Astropy
 units to plot a AIA image and a zoomed in view of an active region.
 
 .. plot::
@@ -236,7 +239,7 @@ units to plot a AIA image and a zoomed in view of an active region.
     # create the rectangle, we use the world transformation to plot in physical units.
     rect = patches.Rectangle(bottom_left, l2, l2, color='white', fill=False,
                              transform=ax1.get_transform('world'))
-                         
+
     # Add the rectangle to the plot.
     ax1.add_artist(rect)
 

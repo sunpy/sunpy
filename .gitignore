@@ -18,7 +18,9 @@ sunpy.egg-info
 paver-minilib.zip
 doc/build/*
 doc/source/api
+doc/source/modules
 doc/html
+doc/source/auto_examples
 docs
 .tox/
 .coverage
@@ -30,7 +32,7 @@ sunpy/cython_version.py
 sunpy/data/sample/*.fits
 sunpy/data/sample/*.csv
 sunpy/data/sample/*.fit
-
+.cache
 
 ### https://raw.github.com/github/gitignore/master/Global/OSX.gitignore
 

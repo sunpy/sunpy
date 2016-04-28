@@ -3,7 +3,6 @@
 from __future__ import absolute_import
 
 import datetime
-import urlparse
 from collections import OrderedDict
 
 import numpy as np
@@ -16,6 +15,9 @@ from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time
 
 from sunpy import config
+
+from sunpy.extern.six.moves import urllib
+
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['NoRHLightCurve']
@@ -86,13 +88,15 @@ class NoRHLightCurve(LightCurve):
         """
         # default urllib password anonymous@ is not accepted by the NoRH FTP
         # server. include an accepted password in base url
-        baseurl='ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/'
+        baseurl = 'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/'
         # date is a datetime object
         if 'wavelength' in kwargs:
             if kwargs['wavelength'] == '34':
-                final_url=urlparse.urljoin(baseurl,date.strftime('%Y/%m/tcz%y%m%d'))
+                final_url = urllib.parse.urljoin(
+                    baseurl, date.strftime('%Y/%m/tcz%y%m%d'))
         else:
-            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/tca%y%m%d'))
+            final_url = urllib.parse.urljoin(
+                baseurl, date.strftime('%Y/%m/tca%y%m%d'))
 
         return final_url
 

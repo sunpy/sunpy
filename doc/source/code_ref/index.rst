@@ -9,6 +9,7 @@ API Reference
 
    sunpy
    cm
+   coordinates
    database
    image
    instr/index

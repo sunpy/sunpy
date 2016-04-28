@@ -164,6 +164,7 @@ man_pages = [('index', project.lower(), project + u' Documentation',
 #
 extensions += ['astropy_helpers.sphinx.ext.edit_on_github', 'sphinx.ext.doctest']
 
+
 ## Don't import the module as "version" or it will override the
 ## "version" configuration parameter
 # TODO: make this smart like astropy
@@ -172,3 +173,13 @@ edit_on_github_branch = "master"
 
 edit_on_github_source_root = ""
 edit_on_github_doc_root = "docs"
+
+
+## -- Sphinx Gallery ---------------------------------------------------------- 
+extensions += ['sphinx_gallery.gen_gallery']
+
+sphinx_gallery_conf = {
+    # path to your examples scripts
+    'examples_dirs' : '../../examples',
+    # path where to save gallery generated examples
+    'gallery_dirs'  : 'auto_examples'}

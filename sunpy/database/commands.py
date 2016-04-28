@@ -11,6 +11,9 @@ import os
 from sqlalchemy.orm import make_transient
 from sqlalchemy.exc import InvalidRequestError
 
+from sunpy.extern import six
+
+from sunpy.extern.six.moves import range
 
 __all__ = [
     'EmptyCommandStackError', 'NoSuchEntryError', 'NonRemovableTagError',
@@ -53,6 +56,7 @@ class NonRemovableTagError(Exception):
         return errmsg.format(self.database_entry, self.tag)
 
 
+@six.add_metaclass(ABCMeta)
 class DatabaseOperation(object):
     """This is the abstract main class for all database operations. To
     implement a new operation, inherit from this class and override the methods
@@ -62,7 +66,6 @@ class DatabaseOperation(object):
     row must not have any side-effects. This is not checked in any way, though.
 
     """
-    __metaclass__ = ABCMeta
 
     @abstractmethod
     def __call__(self):
@@ -183,14 +186,14 @@ class EditEntry(DatabaseOperation):
         self.prev_values = {}
 
     def __call__(self):
-        for k, v in self.kwargs.iteritems():
+        for k, v in six.iteritems(self.kwargs):
             # save those values in the dict prev_values that will be changed
             # so that they can be recovered
             self.prev_values[k] = getattr(self.database_entry, k)
             setattr(self.database_entry, k, v)
 
     def undo(self):
-        for k, v in self.prev_values.iteritems():
+        for k, v in six.iteritems(self.prev_values):
             setattr(self.database_entry, k, v)
 
     def __repr__(self):
@@ -353,7 +356,7 @@ class CommandManager(object):
         :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
 
         """
-        for _ in xrange(n):
+        for _ in range(n):
             command = self.pop_undo_command()
             command.undo()
             self.push_redo_command(command)
@@ -366,7 +369,7 @@ class CommandManager(object):
         :exc:`sunpy.database.commands.EmptyCommandStackError` is raised.
 
         """
-        for _ in xrange(n):
+        for _ in range(n):
             command = self.pop_redo_command()
             command()
             self.push_undo_command(command)
