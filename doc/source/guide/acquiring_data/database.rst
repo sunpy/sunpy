@@ -720,7 +720,7 @@ When using the :class:`sunpy.net.vso.attrs.Wave` attribute, you have to
 specify a unit using ``astropy.units.Quantity``. If not an error is
 raised. This also implies that there is no default unit that is
 used by the class. To know how you can specify a detail using astropy
-check `astropy.units <https://astropy.readthedocs.org/en/stable/units/index.html>`_.
+check `astropy.units`.
 
     >>> from astropy import units as u
     >>> print display_entries(
