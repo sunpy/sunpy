@@ -173,7 +173,7 @@ highlight a region of interest, and change the plot title.
 Plotting Maps with wcsaxes
 --------------------------
 
-By default :ref:map checks if the `wcsaxes <http://wcsaxes.readthedocs.org/>`_ 
+By default :ref:map checks if the `wcsaxes <http://wcsaxes.readthedocs.io/>`_ 
 package has been installed. If it is installed, 
 then `wcsaxes` is used to improve the representation of world coordinates,
 and calling ~sunpy.map.GenericMap.plot or~sunpy.map.GenericMap.peek() will use 
