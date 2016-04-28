@@ -9,20 +9,23 @@ import matplotlib.animation as mplanim
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import mpl_toolkits.axes_grid1.axes_size as Size
 
+from sunpy.extern.six.moves import range
+
 __all__ = ['BaseFuncAnimator', 'ImageAnimator']
 
+
 class SliderPB(widgets.Slider):
-    __doc__= widgets.Slider.__doc__
+    __doc__ = widgets.Slider.__doc__
 
     def __init__(self, ax, label, valmin, valmax, valinit=0.5, valfmt='%1.2f',
                  closedmin=True, closedmax=True, slidermin=None,
                  slidermax=None, dragging=True, **kwargs):
 
-        widgets.Slider.__init__(self, ax, label, valmin, valmax, valinit=valinit,
-                                valfmt=valfmt, closedmin=closedmin,
-                                closedmax=closedmax, slidermin=slidermin,
-                                slidermax=slidermax, dragging=dragging, **kwargs)
-
+        widgets.Slider.__init__(self, ax, label, valmin, valmax,
+                                valinit=valinit, valfmt=valfmt,
+                                closedmin=closedmin, closedmax=closedmax,
+                                slidermin=slidermin, slidermax=slidermax,
+                                dragging=dragging, **kwargs)
         self.changed_args = {}
 
     def set_val(self, val):
@@ -52,12 +55,13 @@ class SliderPB(widgets.Slider):
         self.cnt += 1
         return cid
 
+
 class ButtonPB(widgets.Button):
     def __init__(self, ax, label, image=None,
                  color='0.85', hovercolor='0.95'):
 
         widgets.Button.__init__(self, ax, label, image=image,
-                 color=color, hovercolor=hovercolor)
+                                color=color, hovercolor=hovercolor)
 
         self.clicked_args = {}
 
@@ -86,6 +90,7 @@ class ButtonPB(widgets.Button):
         for cid, func in self.observers.items():
             func(event, *self.clicked_args[cid])
 
+
 class BaseFuncAnimator(object):
     """
     Create a matplotlib backend independent data explorer which allows
@@ -99,8 +104,8 @@ class BaseFuncAnimator(object):
     - 'bottom': change the active slider down one
     - 'p': play/pause active slider
 
-    This viewer can have user defined buttons added by specifying the labels and
-    functions called when those buttons are clicked as keyword arguments.
+    This viewer can have user defined buttons added by specifying the labels
+    and functions called when those buttons are clicked as keyword arguments.
 
     To make this class useful the subclass must implement `_plot_start_image`
     which must define a `self.im` attribute which is an instance of AxesImage
@@ -141,7 +146,7 @@ class BaseFuncAnimator(object):
     def __init__(self, data, slider_functions, slider_ranges, fig=None,
                  interval=200, colorbar=False, **kwargs):
 
-        #Allow the user to specify the button func:
+        # Allow the user to specify the button func:
         self.button_func = kwargs.pop('button_func', [])
         self.button_labels = kwargs.pop('button_labels', [])
         self.num_buttons = len(self.button_labels)
@@ -156,29 +161,31 @@ class BaseFuncAnimator(object):
         self.imshow_kwargs = kwargs
 
         if len(slider_functions) != len(slider_ranges):
-            raise ValueError("You must specify the same number of functions as extents")
+            raise ValueError("You must specify the same number of functions "
+                             "as extents")
         self.num_sliders = len(slider_functions)
         self.slider_functions = slider_functions
         self.slider_ranges = slider_ranges
 
-        #Set active slider
+        # Set active slider
         self.active_slider = 0
 
-        #Set a blank timer
+        # Set a blank timer
         self.timer = None
 
-        #Set up axes
+        # Set up axes
         self._make_axes_grid()
         self._add_widgets()
         self._set_active_slider(0)
 
-        #Set the current axes to the main axes so commands like plt.ylabel() work.
+        # Set the current axes to the main axes so commands like
+        # plt.ylabel() work.
         plt.sca(self.axes)
 
-        #Do Plot
+        # Do Plot
         self.im = self.plot_start_image(self.axes)
 
-        #Connect fig events
+        # Connect fig events
         self._connect_fig_events()
 
     def label_slider(self, i, label):
@@ -222,15 +229,16 @@ class BaseFuncAnimator(object):
         anim_fig = axes.get_figure()
 
         if endframe is None:
-            endframe=self.slider_ranges[slider][1]
+            endframe = self.slider_ranges[slider][1]
 
         im = self.plot_start_image(axes)
 
-        anim_kwargs = {'frames':range(startframe, endframe, stepframe),
-                       'fargs':[im, self.sliders[slider]._slider]}
+        anim_kwargs = {'frames': list(range(startframe, endframe, stepframe)),
+                       'fargs': [im, self.sliders[slider]._slider]}
         anim_kwargs.update(kwargs)
 
-        ani = mplanim.FuncAnimation(anim_fig, self.slider_functions[slider], **anim_kwargs)
+        ani = mplanim.FuncAnimation(anim_fig, self.slider_functions[slider],
+                                    **anim_kwargs)
 
         return ani
 
@@ -249,7 +257,8 @@ class BaseFuncAnimator(object):
         Returns
         -------
         AxesImage:
-            A AxesImage object, the instance returned from a plt.imshow() command.
+            An AxesImage object, the instance returned from a plt.imshow()
+            command.
         """
         raise NotImplementedError("Please define your setup function")
 
@@ -260,9 +269,9 @@ class BaseFuncAnimator(object):
     def _add_colorbar(self, im):
         self.colorbar = plt.colorbar(im, self.cax)
 
-#==============================================================================
+# =============================================================================
 #   Figure event callback functions
-#==============================================================================
+# =============================================================================
     def _mouse_click(self, event):
         if event.inaxes in self.sliders:
             slider = self.sliders.index(event.inaxes)
@@ -281,9 +290,9 @@ class BaseFuncAnimator(object):
             self._click_slider_button(event, self.slider_buttons[self.active_slider]._button,
                                self.sliders[self.active_slider]._slider)
 
-#==============================================================================
+# =============================================================================
 #   Active Slider methods
-#==============================================================================
+# =============================================================================
     def _set_active_slider(self, ind):
         self._dehighlight_slider(self.active_slider)
         self._highliget_slider(ind)
@@ -291,17 +300,17 @@ class BaseFuncAnimator(object):
 
     def _highliget_slider(self, ind):
         ax = self.sliders[ind]
-        [a.set_linewidth(2.0) for n,a in ax.spines.items()]
+        [a.set_linewidth(2.0) for n, a in ax.spines.items()]
         self.fig.canvas.draw()
 
     def _dehighlight_slider(self, ind):
         ax = self.sliders[ind]
-        [a.set_linewidth(1.0) for n,a in ax.spines.items()]
+        [a.set_linewidth(1.0) for n, a in ax.spines.items()]
         self.fig.canvas.draw()
 
-#==============================================================================
+# =============================================================================
 #   Build the figure and place the widgets
-#==============================================================================
+# =============================================================================
     def _get_main_axes(self):
         """ Allow replacement of main axes by subclassing """
         return self.fig.add_subplot(111)
@@ -309,17 +318,17 @@ class BaseFuncAnimator(object):
     def _make_axes_grid(self):
         self.axes = self._get_main_axes()
 
-        #Split up the current axes so there is space for a start and a stop button
+        # Split up the current axes so there is space for start & stop buttons
         self.divider = make_axes_locatable(self.axes)
-        pad = 0.01 # Padding between axes
+        pad = 0.01  # Padding between axes
         pad_size = Size.Fraction(pad, Size.AxesX(self.axes))
         large_pad_size = Size.Fraction(0.1, Size.AxesY(self.axes))
 
-        #Define size of useful axes cells, 50% each in x 20% for buttons in y.
+        # Define size of useful axes cells, 50% each in x 20% for buttons in y.
         small_x = Size.Fraction((1.-2.*pad)/10, Size.AxesX(self.axes))
         ysize = Size.Fraction((1.-2.*pad)/15., Size.AxesY(self.axes))
 
-        #Set up grid, 3x3 with cells for padding.
+        # Set up grid, 3x3 with cells for padding.
         if self.num_buttons > 0:
             xsize = Size.Fraction((1.-2.*pad)/self.num_buttons, Size.AxesX(self.axes))
             horiz = [xsize] + [pad_size, xsize]*(self.num_buttons-1) + \
@@ -336,38 +345,37 @@ class BaseFuncAnimator(object):
         self.divider.set_vertical(vert)
         self.button_ny = len(vert) - 3
 
-
-        #If we are going to add a colorbar it will need an axis next to the plot
+        # If we are going to add a colorbar it'll need an axis next to the plot
         if self.if_colorbar:
             nx1 = -3
-            self.cax = self.fig.add_axes((0.,0.,0.141,1.))
+            self.cax = self.fig.add_axes((0., 0., 0.141, 1.))
             locator = self.divider.new_locator(nx=-2, ny=len(vert)-1, nx1=-1)
             self.cax.set_axes_locator(locator)
         else:
-            #Main figure spans all horiz and is in the top (2) in vert.
+            # Main figure spans all horiz and is in the top (2) in vert.
             nx1 = -1
 
-        self.axes.set_axes_locator(self.divider.new_locator(nx=0, ny=len(vert)-1,
-                                                  nx1=nx1))
+        self.axes.set_axes_locator(
+            self.divider.new_locator(nx=0, ny=len(vert)-1, nx1=nx1))
 
     def _add_widgets(self):
         self.buttons = []
-        for i in range(0,self.num_buttons):
+        for i in range(0, self.num_buttons):
             x = i*2
-            #The i+1/10. is a bug that if you make two axes directly on top of
-            #one another then the divider doesn't work.
-            self.buttons.append(self.fig.add_axes((0.,0.,0.+i/10.,1.)))
+            # The i+1/10. is a bug that if you make two axes directly on top of
+            # one another then the divider doesn't work.
+            self.buttons.append(self.fig.add_axes((0., 0., 0.+i/10., 1.)))
             locator = self.divider.new_locator(nx=x, ny=self.button_ny)
             self.buttons[-1].set_axes_locator(locator)
             self.buttons[-1]._button = widgets.Button(self.buttons[-1],
-                                                         self.button_labels[i])
+                                                      self.button_labels[i])
             self.buttons[-1]._button.on_clicked(self.button_func[i])
 
         self.sliders = []
         self.slider_buttons = []
         for i in range(self.num_sliders):
             x = i * 2
-            self.sliders.append(self.fig.add_axes((0.,0.,0.01+i/10.,1.)))
+            self.sliders.append(self.fig.add_axes((0., 0., 0.01+i/10., 1.)))
             if self.num_buttons == 0:
                 nx1 = 1
             else:
@@ -375,16 +383,17 @@ class BaseFuncAnimator(object):
             locator = self.divider.new_locator(nx=0, ny=x, nx1=nx1)
             self.sliders[-1].set_axes_locator(locator)
             sframe = SliderPB(self.sliders[-1], "{slide:d}".format(slide=i),
-                                    self.slider_ranges[i][0],
-                                    self.slider_ranges[i][-1]-1,
-                                    valinit=self.slider_ranges[i][0],
-                                    valfmt = '%4.1f')
+                              self.slider_ranges[i][0],
+                              self.slider_ranges[i][-1]-1,
+                              valinit=self.slider_ranges[i][0],
+                              valfmt = '%4.1f')
             sframe.on_changed(self._slider_changed, sframe)
             sframe.slider_ind = i
             sframe.cval = sframe.val
             self.sliders[-1]._slider = sframe
 
-            self.slider_buttons.append(self.fig.add_axes((0., 0., 0.05+x/10., 1.)))
+            self.slider_buttons.append(
+                self.fig.add_axes((0., 0., 0.05+x/10., 1.)))
             if self.num_buttons == 0:
                 nx = 2
             else:
@@ -392,14 +401,14 @@ class BaseFuncAnimator(object):
             locator = self.divider.new_locator(nx=nx, ny=x)
 
             self.slider_buttons[-1].set_axes_locator(locator)
-            butt = ButtonPB(self.slider_buttons[-1],">")
+            butt = ButtonPB(self.slider_buttons[-1], ">")
             butt.on_clicked(self._click_slider_button, butt, sframe)
             butt.clicked = False
             self.slider_buttons[-1]._button = butt
 
-#==============================================================================
+# =============================================================================
 #   Widget callbacks
-#==============================================================================
+# =============================================================================
     def _click_slider_button(self, event, button, slider):
         self._set_active_slider(slider.slider_ind)
         if button.clicked:
@@ -443,6 +452,7 @@ class BaseFuncAnimator(object):
     def _slider_changed(self, val, slider):
         self.slider_functions[slider.slider_ind](val, self.im, slider)
 
+
 class ImageAnimator(BaseFuncAnimator):
     """
     Create a matplotlib backend independent data explorer
@@ -455,8 +465,8 @@ class ImageAnimator(BaseFuncAnimator):
     - 'bottom': change the active slider down one
     - 'p': play/pause active slider
 
-    This viewer can have user defined buttons added by specifying the labels and
-    functions called when those buttons are clicked as keyword arguments.
+    This viewer can have user defined buttons added by specifying the labels
+    and functions called when those buttons are clicked as keyword arguments.
 
     Parameters
     ----------
@@ -494,7 +504,7 @@ class ImageAnimator(BaseFuncAnimator):
     Extra keywords are passed to imshow.
     """
 
-    def __init__(self, data, image_axes=[-2,-1], axis_range=None, **kwargs):
+    def __init__(self, data, image_axes=[-2, -1], axis_range=None, **kwargs):
 
         self.naxis = data.ndim
         self.num_sliders = self.naxis - 2
@@ -502,7 +512,7 @@ class ImageAnimator(BaseFuncAnimator):
             raise ValueError("There can only be two spatial axes")
 
         all_axes = list(range(self.naxis))
-        #Handle negative indexes
+        # Handle negative indexes
         self.image_axes = [all_axes[i] for i in image_axes]
 
         slider_axes = list(range(self.naxis))
@@ -513,7 +523,7 @@ class ImageAnimator(BaseFuncAnimator):
             raise ValueError("Specific the same number of axes as sliders!")
         self.slider_axes = slider_axes
 
-        #Verify that combined slider_axes and image_axes make all axes
+        # Verify that combined slider_axes and image_axes make all axes
         ax = self.slider_axes + self.image_axes
         ax.sort()
         if ax != list(range(self.naxis)):
@@ -521,12 +531,12 @@ class ImageAnimator(BaseFuncAnimator):
 
         self.axis_range = self._sanitize_axis_range(axis_range, data)
 
-        #create data slice
-        self.frame_slice = [slice(None)]*self.naxis
+        # create data slice
+        self.frame_slice = [slice(None)] * self.naxis
         for i in self.slider_axes:
             self.frame_slice[i] = 0
 
-        base_kwargs = {'slider_functions':[self._updateimage]*self.num_sliders,
+        base_kwargs = {'slider_functions': [self._updateimage]*self.num_sliders,
                        'slider_ranges': [self.axis_range[i] for i in self.slider_axes]}
         base_kwargs.update(kwargs)
         BaseFuncAnimator.__init__(self, data, **base_kwargs)
@@ -545,15 +555,15 @@ class ImageAnimator(BaseFuncAnimator):
         self.sliders[i]._slider.label.set_text(label)
 
     def plot_start_image(self, ax):
-        #Create extent arg
+        # Create extent arg
         extent = []
-        #reverse because numpy is in y-x and extent is x-y
+        # reverse because numpy is in y-x and extent is x-y
         for i in self.image_axes[::-1]:
             extent += self.axis_range[i]
 
-        imshow_args = {'interpolation':'nearest',
-                       'origin':'lower',
-                       'extent':extent,
+        imshow_args = {'interpolation': 'nearest',
+                       'origin': 'lower',
+                       'extent': extent,
                        }
 
         imshow_args.update(self.imshow_kwargs)
@@ -583,25 +593,26 @@ class ImageAnimator(BaseFuncAnimator):
                 * [min, max] pair where min == max: convert to array indies min,max pair or array.
                 * array of axis length, check that it was passed for a slider axes and do nothing if it was, error if it is not.
         """
-        #If no axis range at all make it all [min,max] pairs
+        # If no axis range at all make it all [min,max] pairs
         if axis_range is None:
             axis_range = [[0, i] for i in data.shape]
 
-        #need the same number of axis ranges as axes
+        # need the same number of axis ranges as axes
         if len(axis_range) != data.ndim:
             raise ValueError("axis_range must equal number of axes")
 
-        #For each axis validate and translate the axis_range
-        for i,d in enumerate(data.shape):
-            #If [min,max] pair or None
+        # For each axis validate and translate the axis_range
+        for i, d in enumerate(data.shape):
+            # If [min,max] pair or None
             if axis_range[i] is None or len(axis_range[i]) == 2:
-                #If min==max or None
+                # If min==max or None
                 if axis_range[i] is None or axis_range[i][0] == axis_range[i][1]:
                     if i in self.slider_axes:
                         axis_range[i] = np.linspace(0,d,d)
                     else:
                         axis_range[i] = [0, d]
-                        # min max pair for slider axes should be converted to an array
+                        # min max pair for slider axes should be converted
+                        # to an array
                 elif i in self.slider_axes:
                     axis_range[i] = np.linspace(axis_range[i][0], axis_range[i][1], d)
 

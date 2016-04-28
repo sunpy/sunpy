@@ -544,7 +544,7 @@ year:
 
 5.3 Changing custom attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-What sill annoys me a bit is that there are entries in the database where
+What still annoys me a bit is that there are entries in the database where
 the end of the observation time is `None`. Let us change them to the same
 value to the start of the observation time (because we can and because it
 looks prettier, not because it is accurate). The :meth:`Database.edit`

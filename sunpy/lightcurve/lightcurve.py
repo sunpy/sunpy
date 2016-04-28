@@ -1,16 +1,11 @@
 """
-LightCurve is a generic LightCurve class from which all other LightCurve classes
-inherit from.
+LightCurve is a generic LightCurve class from which all other LightCurve
+classes inherit from.
 """
 from __future__ import absolute_import
 
-#pylint: disable=E1101,E1121,W0404,W0612,W0613
-__authors__ = ["Keith Hughitt"]
-__email__ = "keith.hughitt@nasa.gov"
-
 import os.path
 import shutil
-import urllib2
 import warnings
 from datetime import datetime
 from collections import OrderedDict
@@ -22,6 +17,13 @@ import pandas
 from sunpy import config
 from sunpy.time import is_time, TimeRange, parse_time
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
+from sunpy.extern.six.moves import urllib
+from sunpy.extern import six
+
+# pylint: disable=E1101,E1121,W0404,W0612,W0613
+__authors__ = ["Keith Hughitt"]
+__email__ = "keith.hughitt@nasa.gov"
+
 
 __all__ = ['LightCurve']
 
@@ -42,13 +44,13 @@ class LightCurve(object):
 
     Examples
     --------
-    >>> import sunpy
+    >>> from sunpy.lightcurve import LightCurve
     >>> import datetime
     >>> import numpy as np
     >>> base = datetime.datetime.today()
     >>> dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
     >>> intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / 24 * 60))
-    >>> light_curve = sunpy.lightcurve.LightCurve.create({"param1": intensity}, index=dates)
+    >>> light_curve = LightCurve.create({"param1": intensity}, index=dates)
     >>> light_curve.peek()   # doctest: +SKIP
 
     References
@@ -63,6 +65,7 @@ class LightCurve(object):
         self.data = pandas.DataFrame(data)
         if meta == '' or meta is None:
             self.meta = OrderedDict()
+            self.meta.update({'name':None})
         else:
             self.meta = OrderedDict(meta)
 
@@ -159,7 +162,7 @@ for compatibility with map, please use meta instead""", Warning)
         """
         try:
             filepath = cls._download(url, kwargs)
-        except (urllib2.HTTPError, urllib2.URLError, ValueError):
+        except (urllib.error.HTTPError, urllib.error.URLError, ValueError):
             err = "Unable to read location {!s}.".format(url)
             raise ValueError(err)
         return cls.from_file(filepath)
@@ -285,13 +288,14 @@ for compatibility with map, please use meta instead""", Warning)
         if not(os.path.isfile(filepath)) or (overwrite and
                                              os.path.isfile(filepath)):
             try:
-                response = urllib2.urlopen(uri)
-            except (urllib2.HTTPError, urllib2.URLError):
-                raise urllib2.URLError(err)
+                response = urllib.request.urlopen(uri)
+            except (urllib.error.HTTPError, urllib.error.URLError):
+                raise urllib.error.URLError(err)
             with open(filepath, 'wb') as fp:
                 shutil.copyfileobj(response, fp)
         else:
-            warnings.warn("Using existing file rather than downloading, use overwrite=True to override.", RuntimeWarning)
+            warnings.warn("Using existing file rather than downloading, use "
+                          "overwrite=True to override.", RuntimeWarning)
 
         return filepath
 
@@ -336,7 +340,7 @@ for compatibility with map, please use meta instead""", Warning)
             return cls._parse_fits(filepath)
 
     def truncate(self, a, b=None):
-        """Returns a truncated version of the timeseries object.
+        """Returns a truncated version of the lightcurve object.
 
         Parameters
         ----------
@@ -380,6 +384,38 @@ for compatibility with map, please use meta instead""", Warning)
         object"""
         return TimeRange(self.data.index[0], self.data.index[-1])
 
+    def concatenate(self, otherlightcurve):
+        """Concatenate another light curve. This function will check and remove
+        any duplicate times. It will keep the column values from the original
+        lightcurve to which the new lightcurve is being added.
+
+        Parameters
+        ----------
+        otherlightcurve : `~sunpy.lightcurve.LightCurve`
+            Another lightcurve of the same type.
+
+        Returns
+        -------
+        newlc : `~sunpy.lightcurve.LightCurve`
+            A new lightcurve.
+        """
+        if not isinstance(otherlightcurve, self.__class__):
+            raise TypeError("Lightcurve classes must match.")
+
+        meta = OrderedDict()
+        meta.update({str(self.data.index[0]):self.meta.copy()})
+        meta.update({str(otherlightcurve.data.index[0]):otherlightcurve.meta.copy()})
+
+        data = self.data.copy().append(otherlightcurve.data)
+
+        data['index'] = data.index
+        # default behavior of drop_duplicates is keep the first column.
+        data = data.drop_duplicates(subset='index')
+        data.set_index = data['index']
+        data.drop('index', axis=1, inplace=True)
+        return self.__class__.create(data, meta)
+
+
 # What's happening here is the following: The ConditionalDispatch is just an
 # unbound callable object, that is, it does not know which class it is attached
 # to. What we do against that is return a wrapper and make that a classmethod -
@@ -398,14 +434,15 @@ LightCurve._cond_dispatch.add(
     lambda cls, time, **kwargs: is_time(time),
     # type is here because the class parameter is a class,
     # i.e. an instance of type (which is the base meta-class).
-    [type, (basestring, datetime, tuple)],
+    [type, (six.string_types, datetime, tuple)],
     False
 )
 
 LightCurve._cond_dispatch.add(
     run_cls("from_range"),
     lambda cls, time1, time2, **kwargs: is_time(time1) and is_time(time2),
-    [type, (basestring, datetime, tuple), (basestring, datetime, tuple)],
+    [type, (six.string_types, datetime, tuple),
+     (six.string_types, datetime, tuple)],
     False
 )
 
@@ -419,14 +456,14 @@ LightCurve._cond_dispatch.add(
 LightCurve._cond_dispatch.add(
     run_cls("from_file"),
     lambda cls, filename: os.path.exists(os.path.expanduser(filename)),
-    [type, basestring],
+    [type, six.string_types],
     False
 )
 
 LightCurve._cond_dispatch.add(
     run_cls("from_url"),
     lambda cls, url, **kwargs: True,
-    [type, basestring],
+    [type, six.string_types],
     False
 )
 

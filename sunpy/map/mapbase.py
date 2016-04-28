@@ -5,7 +5,7 @@ from __future__ import absolute_import, division, print_function
 from sunpy.extern.six.moves import range
 
 #pylint: disable=E1101,E1121,W0404,W0613
-__authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe"]
+__authors__ = ["Russell Hewett, Stuart Mumford, Keith Hughitt, Steven Christe", "Jack Ireland"]
 __email__ = "stuart@mumford.me.uk"
 
 import warnings
@@ -26,6 +26,7 @@ from .nddata_compat import NDDataCompat as NDData
 
 import sunpy.io as io
 import sunpy.wcs as wcs
+import sunpy.coordinates
 from sunpy.visualization import toggle_pylab, wcsaxes_compat
 from sunpy.sun import constants
 from sunpy.sun import sun
@@ -181,7 +182,7 @@ class GenericMap(NDData):
 
         # Validate header
         # TODO: This should be a function of the header, not of the map
-        self._validate()
+        self._validate_meta()
         self._shift = Pair(0 * u.arcsec, 0 * u.arcsec)
 
         if self.dtype == np.uint8:
@@ -238,6 +239,10 @@ scale:\t\t {scale}
         w2.wcs.ctype = self.coordinate_system
         w2.wcs.pc = self.rotation_matrix
         w2.wcs.cunit = self.units
+        w2.wcs.dateobs = self.date.isoformat()
+        w2.heliographic_latitude = self.heliographic_latitude
+        w2.heliographic_longitude = self.heliographic_longitude
+        w2.dsun = self.dsun
 
         # Astropy WCS does not understand the SOHO default of "solar-x" and
         # "solar-y" ctypes.  This overrides the default assignment and
@@ -442,7 +447,7 @@ scale:\t\t {scale}
 
         # Update crvals
         new_meta['crval1'] = ((self.meta['crval1'] * self.units.x + x).to(self.units.x)).value
-        new_meta['crval2'] = ((self.meta['crval2'] * self.units.x + y).to(self.units.y)).value
+        new_meta['crval2'] = ((self.meta['crval2'] * self.units.y + y).to(self.units.y)).value
 
         new_map.meta = new_meta
 
@@ -598,16 +603,29 @@ scale:\t\t {scale}
         cmap_string = self.observatory + self.meta['detector'] + str(int(self.wavelength.to('angstrom').value))
         return cmap_string.lower()
 
-    def _validate(self):
-        """Validates the meta-information associated with a Map.
+    def _validate_meta(self):
+        """
+        Validates the meta-information associated with a Map.
 
-        This function includes very basic validation checks which apply to
+        This method includes very basic validation checks which apply to
         all of the kinds of files that SunPy can read. Datasource-specific
         validation should be handled in the relevant file in the
-        sunpy.map.sources package."""
-#        if (self.dsun <= 0 or self.dsun >= 40 * constants.au):
-#            raise InvalidHeaderInformation("Invalid value for DSUN")
-        pass
+        sunpy.map.sources package.
+
+        Allows for default unit assignment for:
+            CUNIT1, CUNIT2, WAVEUNIT
+
+        """
+
+        warnings.simplefilter('always', Warning)
+
+        for meta_property in ('cunit1', 'cunit2', 'waveunit'):
+            if (self.meta.get(meta_property) and
+                u.Unit(self.meta.get(meta_property),
+                       parse_strict='silent').physical_type == 'unknown'):
+
+                warnings.warn("Unknown value for "+meta_property.upper(), Warning)
+
 
 # #### Data conversion routines #### #
 
@@ -634,10 +652,10 @@ scale:\t\t {scale}
 
         Returns
         -------
-        x : float
+        x : `~astropy.units.Quantity`
             Pixel coordinate on the CTYPE1 axis.
 
-        y : float
+        y : `~astropy.units.Quantity`
             Pixel coordinate on the CTYPE2 axis.
         """
         x, y = self.wcs.wcs_world2pix(x.to(u.deg).value, y.to(u.deg).value, origin)
@@ -653,10 +671,10 @@ scale:\t\t {scale}
         Parameters
         ----------
 
-        x : float
+        x : `~astropy.units.Quantity`
             Pixel coordinate of the CTYPE1 axis. (Normally solar-x).
 
-        y : float
+        y : `~astropy.units.Quantity`
             Pixel coordinate of the CTYPE2 axis. (Normally solar-y).
 
         origin : int
@@ -1103,8 +1121,8 @@ scale:\t\t {scale}
         y_pixels[np.greater(y_pixels, self.data.shape[0])] = self.data.shape[0]
 
         # Get ndarray representation of submap
-        xslice = slice(x_pixels[0], x_pixels[1])
-        yslice = slice(y_pixels[0], y_pixels[1])
+        xslice = slice(int(x_pixels[0]), int(x_pixels[1]))
+        yslice = slice(int(y_pixels[0]), int(y_pixels[1]))
         new_data = self.data[yslice, xslice].copy()
 
         # Make a copy of the header with updated centering information
@@ -1121,22 +1139,28 @@ scale:\t\t {scale}
 
         return new_map
 
-    @u.quantity_input(dimensions=u.pixel)
-    def superpixel(self, dimensions, method='sum'):
-        """Returns a new map consisting of superpixels formed from the
-        original data.  Useful for increasing signal to noise ratio in images.
+    @u.quantity_input(dimensions=u.pixel, offset=u.pixel)
+    def superpixel(self, dimensions, offset=(0, 0)*u.pixel, func=np.sum):
+        """Returns a new map consisting of superpixels formed by applying
+        'func' to the original map data.
 
         Parameters
         ----------
         dimensions : tuple
             One superpixel in the new map is equal to (dimension[0],
-            dimension[1]) pixels of the original map
+            dimension[1]) pixels of the original map.
             Note: the first argument corresponds to the 'x' axis and the second
             argument corresponds to the 'y' axis.
-        method : {'sum' | 'average'}
-            What each superpixel represents compared to the original data
-                * sum - add up the original data
-                * average - average the sum over the number of original pixels
+        offset : tuple
+            Offset from (0,0) in original map pixels used to calculate where
+            the data used to make the resulting superpixel map starts.
+        func : function applied to the original data
+            The function 'func' must take a numpy array as its first argument,
+            and support the axis keyword with the meaning of a numpy axis
+            keyword (see the description of `~numpy.sum` for an example.)
+            The default value of 'func' is `~numpy.sum`; using this causes
+            superpixel to sum over (dimension[0], dimension[1]) pixels of the
+            original map.
 
         Returns
         -------
@@ -1150,25 +1174,31 @@ scale:\t\t {scale}
 
         # Note: because the underlying ndarray is transposed in sense when
         #   compared to the Map, the ndarray is transposed, resampled, then
-        #   transposed back
+        #   transposed back.
         # Note: "center" defaults to True in this function because data
-        #   coordinates in a Map are at pixel centers
+        #   coordinates in a Map are at pixel centers.
 
-        # Make a copy of the original data and perform reshaping
-        reshaped = reshape_image_to_4d_superpixel(self.data.copy(),
-                                                  [dimensions.value[1], dimensions.value[0]])
-        if method == 'sum':
-            new_data = reshaped.sum(axis=3).sum(axis=1)
-        elif method == 'average':
-            new_data = ((reshaped.sum(axis=3).sum(axis=1)) /
-                    np.float32(dimensions[0] * dimensions[1]))
+        if (offset.value[0] < 0) or (offset.value[1] < 0):
+            raise ValueError("Offset is strictly non-negative.")
+
+        # Make a copy of the original data, perform reshaping, and apply the
+        # function.
+        if self.mask is not None:
+            reshaped = reshape_image_to_4d_superpixel(np.ma.array(self.data.copy(), mask=self.mask),
+                                                      [dimensions.value[1], dimensions.value[0]],
+                                                      [offset.value[1], offset.value[0]])
+        else:
+            reshaped = reshape_image_to_4d_superpixel(self.data.copy(),
+                                                      [dimensions.value[1], dimensions.value[0]],
+                                                      [offset.value[1], offset.value[0]])
+        new_array = func(func(reshaped, axis=3), axis=1)
 
         # Update image scale and number of pixels
         new_map = deepcopy(self)
         new_meta = new_map.meta
 
-        new_nx = (self.dimensions[0] / dimensions[0]).value
-        new_ny = (self.dimensions[1] / dimensions[1]).value
+        new_nx = new_array.shape[1]
+        new_ny = new_array.shape[0]
 
         # Update metadata
         new_meta['cdelt1'] = (dimensions[0] * self.scale.x).value
@@ -1180,11 +1210,16 @@ scale:\t\t {scale}
             new_meta['CD2_2'] *= dimensions[1].value
         new_meta['crpix1'] = (new_nx + 1) / 2.
         new_meta['crpix2'] = (new_ny + 1) / 2.
-        new_meta['crval1'] = self.center.x.value
-        new_meta['crval2'] = self.center.y.value
+        new_meta['crval1'] = self.center.x.to(self.units.x).value + 0.5*(offset[0]*self.scale.x).to(self.units.x).value
+        new_meta['crval2'] = self.center.y.to(self.units.y).value + 0.5*(offset[1]*self.scale.y).to(self.units.y).value
 
         # Create new map instance
-        new_map.data = new_data
+        if self.mask is not None:
+            new_map.data = np.ma.getdata(new_array)
+            new_map.mask = np.ma.getmask(new_array)
+        else:
+            new_map.data = new_array
+            new_map.mask = None
         return new_map
 
 # #### Visualization #### #
@@ -1230,11 +1265,11 @@ scale:\t\t {scale}
         l0 = self.heliographic_longitude.to(u.deg).value
         units = self.units
 
-        #Prep the plot kwargs
-        plot_kw = {'color':'white',
-                   'linestyle':'dotted',
-                   'zorder':100,
-                   'transform':transform}
+        # Prep the plot kwargs
+        plot_kw = {'color': 'white',
+                   'linestyle': 'dotted',
+                   'zorder': 100,
+                   'transform': transform}
         plot_kw.update(kwargs)
 
         hg_longitude_deg = np.linspace(-180, 180, num=361) + l0
@@ -1370,6 +1405,41 @@ scale:\t\t {scale}
         axes.add_artist(rect)
 
         return [rect]
+
+    @u.quantity_input(levels=u.percent)
+    def draw_contours(self, levels, axes=None, **contour_args):
+        """
+        Draw contours of the data
+
+        Parameters
+        ----------
+
+        levels : `~astropy.units.Quantity`
+            A list of numbers indicating the level curves to draw given in percent.
+
+        axes : `matplotlib.axes.Axes`
+            The axes on which to plot the rectangle, defaults to the current axes.
+
+        Returns
+        -------
+
+        cs : `list`
+            The `~matplotlib.QuadContourSet` object, after it has been added to ``axes``.
+
+        Notes
+        -----
+
+        Extra keyword arguments to this function are passed through to the
+        `~matplotlib.pyplot.contour` function.
+
+        """
+        if not axes:
+            axes = wcsaxes_compat.gca_wcs(self.wcs)
+
+        #TODO: allow for use of direct input of contours but requires units of map flux which is not yet implemented
+
+        cs = axes.contour(self.data, 0.01 * levels.to('percent').value * self.data.max(), **contour_args)
+        return cs
 
     @toggle_pylab
     def peek(self, draw_limb=False, draw_grid=False,
