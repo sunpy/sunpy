@@ -97,7 +97,7 @@ To get a list of all of the attributes check the documentation by typing::
     >>> help(my_map)   # doctest: +SKIP
 
 From SunPy version 0.6 many attributes return `~astropy.units.quantity.Quantity`
-objects, please refer to the `Astropy documentation <http://astropy.readthedocs.io/en/latest/units/>`_.
+objects, please refer to the `astropy.units`.
 
 The meta data for the map is accessed by ::
 
