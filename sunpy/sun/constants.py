@@ -7,7 +7,7 @@ Physical constants.
 
 Object
 ------
-    physical_constants : dict
+    constants : dict
         A dictionary containing physical constants. Keys are the names
         of physical constants, values are tuples (value, units, uncertainty). The dictionary
         contains the following solar physical constants:
@@ -52,7 +52,7 @@ Object
 
 Attributes
 ----------
-A number of variables from physical_constants are made available for convenience as
+A number of variables from constants are made available for convenience as
 attributes.
 
 Websites
@@ -65,127 +65,39 @@ from __future__ import absolute_import, division, print_function
 
 from sunpy.sun import _constants as _con # pylint: disable=E0611
 
-physical_constants = _con.physical_constants
+constants = _con.physical_constants
 
 
-def constant(key):
+def get(key):
     """
-    The constant in physical_constants index by key
+    Retrieve a constant by key. This is just a short cut into a dictionary.
 
     Parameters
     ----------
     key : Python string or unicode
-        Key in dictionary in `physical_constants`
+        Key in dictionary in `constants`
 
     Returns
     -------
-    constant : constant
-        constant in `physical_constants` corresponding to `key`
+    constant :  `~astropy.units.Constant`
 
     See Also
     --------
-    _constants : Contains the description of `physical_constants`, which, as a
+    _constants : Contains the description of `constants`, which, as a
         dictionary literal object, does not itself possess a docstring.
 
     Examples
     --------
     >>> from sunpy.sun import constants
-    >>> constants.constant('mass')
+    >>> constants.get('mass')
     <Constant name=u'Solar mass' value=1.9891e+30 uncertainty=5e+25 unit='kg' reference=u"Allen's Astrophysical Quantities 4th Ed.">
     """
-    return physical_constants[key]
-
-
-def value(key):
-    """
-    Value in physical_constants indexed by key
-
-    Parameters
-    ----------
-    key : Python string or unicode
-        Key in dictionary `physical_constants`
-
-    Returns
-    -------
-    value : float
-        Value in `physical_constants` corresponding to `key`
-
-    See Also
-    --------
-    _constants : Contains the description of `physical_constants`, which, as a
-        dictionary literal object, does not itself possess a docstring.
-
-    Examples
-    --------
-    >>> from sunpy.sun import constants
-    >>> constants.uncertainty('mass')
-    5e+25
-
-    """
-    return constant(key).value
-
-
-def unit(key):
-    """
-    Unit in physical_constants indexed by key
-
-    Parameters
-    ----------
-    key : Python string or unicode
-        Key in dictionary `physical_constants`
-
-    Returns
-    -------
-    unit : Python string
-        Unit in `physical_constants` corresponding to `key`
-
-    See Also
-    --------
-    _constants : Contains the description of `physical_constants`, which, as a
-        dictionary literal object, does not itself possess a docstring.
-
-    Examples
-    --------
-    >>> from sunpy.sun import constants
-    >>> constants.uncertainty('mass')
-    5e+25
-
-    """
-    return constant(key).unit
-
-
-def uncertainty(key):
-    """
-    Relative uncertainty in physical_constants indexed by key
-
-    Parameters
-    ----------
-    key : Python string or unicode
-        Key in dictionary `physical_constants`
-
-    Returns
-    -------
-    prec : float
-        Relative uncertainty in `physical_constants` corresponding to `key`
-
-    See Also
-    --------
-    _constants : Contains the description of `physical_constants`, which, as a
-        dictionary literal object, does not itself possess a docstring.
-
-    Examples
-    --------
-    >>> from sunpy.sun import constants
-    >>> constants.uncertainty('mass')
-    5e+25
-
-    """
-    return constant(key).uncertainty
+    return constants[key]
 
 
 def find(sub=None, disp=False):
     """
-    Return list of physical_constants keys containing a given string
+    Return list of constants keys containing a given string
 
     Parameters
     ----------
@@ -203,14 +115,14 @@ def find(sub=None, disp=False):
 
     See Also
     --------
-    _constants : Contains the description of `physical_constants`, which, as a
+    _constants : Contains the description of `constants`, which, as a
         dictionary literal object, does not itself possess a docstring.
 
     """
     if sub is None:
-        result = list(physical_constants.keys())
+        result = list(constants.keys())
     else:
-        result = [key for key in physical_constants \
+        result = [key for key in constants \
                  if sub.lower() in key.lower()]
 
     result.sort()
@@ -224,13 +136,13 @@ def find(sub=None, disp=False):
 
 def print_all(key=None):
     """
-    Prints out the complete list of physical_constants to the screen or
+    Prints out the complete list of constants to the screen or
     one single value
 
     Parameters
     ----------
     key : Python string or unicode
-        Key in dictionary `physical_constants`
+        Key in dictionary `constants`
 
     Returns
     -------
@@ -238,7 +150,7 @@ def print_all(key=None):
 
     See Also
     --------
-    _constants : Contains the description of `physical_constants`, which, as a
+    _constants : Contains the description of `constants`, which, as a
         dictionary literal object, does not itself possess a docstring.
 
     """
@@ -252,7 +164,7 @@ def print_all(key=None):
     print(('{:-^' + str(table_width) + '}').format(''))
 
     if key is None:
-        for key in physical_constants:
+        for key in constants:
             print(format_string.format(key, str(value(key)), unit(key),
                                        str(uncertainty(key))))
     else:
@@ -262,22 +174,22 @@ def print_all(key=None):
 # Spectral class is not included in physical constants since it is not a number
 spectral_classification = 'G2V'
 
-au = astronomical_unit = constant('mean distance')
+au = astronomical_unit = quantity('mean distance')
 
-# The following variables from _constants are brought out by making them
+# The following variables from _quantitys are brought out by making them
 # accessible through a call such as sun.volume
-mass = constant('mass')
-equatorial_radius = radius = constant('radius')
-volume = constant('volume')
-surface_area = constant('surface area')
-average_density = density = constant('average density')
-equatorial_surface_gravity = surface_gravity = constant('surface gravity')
-effective_temperature = constant('effective temperature')
-luminosity = constant('luminosity')
-mass_conversion_rate = constant('mass conversion rate')
-escape_velocity = constant('escape velocity')
+mass = quantity('mass')
+equatorial_radius = radius = quantity('radius')
+volume = quantity('volume')
+surface_area = quantity('surface area')
+average_density = density = quantity('average density')
+equatorial_surface_gravity = surface_gravity = quantity('surface gravity')
+effective_temperature = quantity('effective temperature')
+luminosity = quantity('luminosity')
+mass_conversion_rate = quantity('mass conversion rate')
+escape_velocity = quantity('escape velocity')
 
-sfu = constant('solar flux unit')
+sfu = quantity('solar flux unit')
 
 # Observable parameters
-average_angular_size = constant('average angular size')
+average_angular_size = quantity('average angular size')
