@@ -85,7 +85,7 @@ similarly wavemin(for minimum value) for the query. Also the ``u.AA``
 part comes from ``astropy.units.Quantity`` where `AA` is Angstrom. It
 should be noted that specifying spectral units in arguments is
 necessary or an error will be raised. To know more check
-`astropy.units <https://astropy.readthedocs.org/en/stable/units/index.html>`_.
+`astropy.units`.
 
 So what is going on here?
 The notion is that a VSO query has a set of attribute objects -

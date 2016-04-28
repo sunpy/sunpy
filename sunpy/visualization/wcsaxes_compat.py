@@ -14,7 +14,7 @@ try:
 
 except ImportError:
     HAVE_WCSAXES = False
-    warnings.warn("SunPy plotting is improved by installing the WCSAxes module: http://wcsaxes.readthedocs.org/en/latest/index.html")
+    warnings.warn("SunPy plotting is improved by installing the WCSAxes module: http://wcsaxes.readthedocs.io/en/latest/index.html")
 
 FORCE_NO_WCSAXES = False
 
