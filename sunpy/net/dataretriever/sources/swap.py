@@ -55,22 +55,18 @@ class SWAPClient(GenericClient):
     """
     
     def _get_url_for_timerange(self, timerange, **kwargs):
-        """ returns list of urls corresponding
-        to given TimeRange. """
-        Level = kwargs['level']
+        """
+        returns list of urls corresponding to given TimeRange.
+        """
+        level = kwargs.get('level', 1)
         SWAP_STARTDATE = datetime.datetime(2009, 11, 24)
         if timerange.start < SWAP_STARTDATE:
-            raise ValueError('Earliest date for which SWAP data is available is 2009-11-24')
-        prefix = ""
-        suffix = ""
-        if (Level == 1):
-            prefix = 'http://proba2.oma.be/swap/data/bsd/'
-            suffix = '%Y/%m/%d/{instrument}_lv1_%Y%m%d_%H%M%S.fits'
-        else:
-            prefix = 'http://proba2.oma.be/swap/data/eng/'
-            suffix = '%Y/%m/%d/{instrument}_lv0_%Y%m%d_%H%M%S.fits'
+            raise ValueError('Earliest date for which SWAP data is available is '+ str(SWAP_STARTDATE))
+        datatype = {0: 'eng', 1:'bsd'}
+        prefix = 'http://proba2.oma.be/swap/data/{datatype}/'
+        suffix = '%Y/%m/%d/{instrument}_lv{level}_%Y%m%d_%H%M%S.fits'
         url_pattern = prefix + suffix
-        crawler = Scraper(url_pattern, instrument= 'swap')
+        crawler = Scraper(url_pattern, instrument= 'swap', level = level, datatype = datatype[level])
         if not timerange:
             return []
         result = crawler.filelist(timerange)
@@ -84,6 +80,7 @@ class SWAPClient(GenericClient):
         self.map_['instrument'] = 'swap'
         self.map_['phyobs'] = 'irradiance'
         self.map_['provider'] = 'esa'
+        self.map_['wavelength'] = '174 AA'
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -105,7 +102,7 @@ class SWAPClient(GenericClient):
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'swap':
                 chk_var += 1
-            if x.__class__.__name__ == 'Level' and 0<=x.value<=1:
+            if x.__class__.__name__ == 'Level' and x.value in (0,1):
                 chk_var += 1
         if (chk_var == 2):
             return True
