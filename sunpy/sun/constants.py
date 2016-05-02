@@ -173,22 +173,22 @@ def print_all(key=None):
 # Spectral class is not included in physical constants since it is not a number
 spectral_classification = 'G2V'
 
-au = astronomical_unit = quantity('mean distance')
+au = astronomical_unit = get('mean distance')
 
-# The following variables from _quantitys are brought out by making them
+# The following variables from _gets are brought out by making them
 # accessible through a call such as sun.volume
-mass = quantity('mass')
-equatorial_radius = radius = quantity('radius')
-volume = quantity('volume')
-surface_area = quantity('surface area')
-average_density = density = quantity('average density')
-equatorial_surface_gravity = surface_gravity = quantity('surface gravity')
-effective_temperature = quantity('effective temperature')
-luminosity = quantity('luminosity')
-mass_conversion_rate = quantity('mass conversion rate')
-escape_velocity = quantity('escape velocity')
+mass = get('mass')
+equatorial_radius = radius = get('radius')
+volume = get('volume')
+surface_area = get('surface area')
+average_density = density = get('average density')
+equatorial_surface_gravity = surface_gravity = get('surface gravity')
+effective_temperature = get('effective temperature')
+luminosity = get('luminosity')
+mass_conversion_rate = get('mass conversion rate')
+escape_velocity = get('escape velocity')
 
-sfu = quantity('solar flux unit')
+sfu = get('solar flux unit')
 
 # Observable parameters
-average_angular_size = quantity('average angular size')
+average_angular_size = get('average angular size')
