@@ -122,12 +122,7 @@ def find(sub=None):
                  if sub.lower() in key.lower()]
 
     result.sort()
-    if disp:
-        for key in result:
-            print(key)
-        return
-    else:
-        return result
+    return result
 
 
 def print_all(key=None):
