@@ -199,6 +199,9 @@ class NOAAPredictIndicesLightCurve(LightCurve):
         if axes is None:
             axes = plt.gca()
 
+        if title is True:
+            title = self.name
+
         if plot_type == None:
             plot_type = self._get_plot_types()[0]
 
@@ -269,9 +272,9 @@ class NOAAPredictIndicesLightCurve(LightCurve):
             units = [''] * len(data.columns)
             meta.update({'UNIT': units})
             meta.update({'INSTRUME': 'NOAA Prediction'})
-            meta.update({'obsrvtry': 'NOAA'})
-            meta.update({'telescope': None})
-            meta.update({'wavelnth': ''})
-            meta.update({'waveunit': ''})
+            meta.update({'OBSRVTRY': 'NOAA'})
+            meta.update({'TELESCOP': None})
+            meta.update({'WAVELNTH': ''})
+            meta.update({'WAVEUNIT': ''})
 
             return meta, data

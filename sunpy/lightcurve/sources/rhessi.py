@@ -6,6 +6,7 @@ import datetime
 import matplotlib.dates
 import matplotlib.pyplot as plt
 from pandas import DataFrame
+from collections import OrderedDict
 
 from sunpy.lightcurve import LightCurve
 from sunpy.time import TimeRange, parse_time
@@ -115,12 +116,13 @@ class RHESSISummaryLightCurve(LightCurve):
     def _parse_fits(filepath):
         """Parses a RHESSI FITS file"""
         header, d = rhessi.parse_obssumm_file(filepath)
+        header = OrderedDict(header)
         data = DataFrame(d['data'], columns=d['labels'], index=d['time'])
         header.update({'UNIT': ['counts s^-1 detector^-1'] * len(data.columns)})
-        header.update({'instrume': 'RHESSI'})
-        header.update({'obsrvtry': 'RHESSI'})
-        header.update({'telescope': 'RHESSI'})
-        header.update({'wavelnth': [[3, 6], [6, 12], [12, 25], [25, 50], [50, 100], [100, 300],
+        header.update({'INSTRUME': 'RHESSI'})
+        header.update({'OBSRVTRY': 'RHESSI'})
+        header.update({'TELESCOP': 'RHESSI'})
+        header.update({'WAVELNTH': [[3, 6], [6, 12], [12, 25], [25, 50], [50, 100], [100, 300],
                                     [300, 800], [800, 7000], [7000, 20000]]})
-        header.update({'waveunit': 'keV'})
+        header.update({'WAVEUNIT': 'keV'})
         return header, data

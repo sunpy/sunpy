@@ -123,14 +123,14 @@ class NoRHLightCurve(LightCurve):
         length = len(data)
         cadence = np.float(header['CDELT1'])
         sec_array = np.linspace(0, length-1, (length/cadence))
+        norh_time = [obs_start_time + datetime.timedelta(0, s) for s in sec_array]
 
-        norh_time = []
-        for s in sec_array:
-            norh_time.append(obs_start_time + datetime.timedelta(0,s))
+        data = pandas.DataFrame(data, index=norh_time)
 
         header.update({'UNIT': [None] * len(data.columns)})
-        header.update({'instrume': header.get('telescope')})
-        header.update({'obsrvtry': header.get('origin')})
-        header.update({'wavelnth': '17'})
-        header.update({'waveunit': 'GHz'})
-        return header, pandas.DataFrame(data, index=norh_time)
+        header.update({'INSTRUME': 'Nobeyama Radio Heliograph'})
+        header.update({'TELESCOP': 'Nobeyama Radio Heliograph'})
+        header.update({'OBSRVTRY': header.get('ORIGIN')})
+        header.update({'WAVELNTH': 17})
+        header.update({'WAVEUNIT': 'GHz'})
+        return header, data
