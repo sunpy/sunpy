@@ -142,7 +142,7 @@ class NOAAIndicesLightCurve(LightCurve):
             line = fp.readline()
             # Read header at top of file
             while line.startswith((":", "#")):
-                header += line
+                comments += line
                 line = fp.readline()
             fields = ('yyyy', 'mm', 'sunspot SWO', 'sunspot RI', 'sunspot ratio', 'sunspot SWO smooth', 'sunspot RI smooth', 'radio flux', 'radio flux smooth', 'geomagnetic ap', 'geomagnetic smooth')
             data = read_csv(fp, delim_whitespace=True, names = fields, comment='#', dtype={'yyyy':np.str, 'mm':np.str})
@@ -227,7 +227,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
-        axes.set_xlabel('Start time: ' + self.data['sunspot SWO'].index[0].strftime(TIME_FORMAT))
+        axes.set_xlabel('Start time: ' + self.data['sunspot'].index[0].strftime(TIME_FORMAT))
 
         plt.gcf().autofmt_xdate()
         return axes
