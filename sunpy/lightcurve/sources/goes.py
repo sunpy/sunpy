@@ -9,6 +9,7 @@ from astropy.io import fits as pyfits
 from numpy import nan
 from numpy import floor
 from pandas import DataFrame
+from collections import OrderedDict
 
 from sunpy.lightcurve import LightCurve
 from sunpy.time import parse_time, TimeRange, is_time_in_given_format
@@ -53,7 +54,7 @@ class GOESLightCurve(LightCurve):
     def plot(self, title=None, axes=None, plot_type=None, **plot_args):
         """Plots GOES light curve."""
 
-        if plot_type == None:
+        if plot_type is None:
             plot_type = self._get_plot_types()[0]
 
         if axes is None:
@@ -173,7 +174,7 @@ class GOESLightCurve(LightCurve):
         """Parses a GOES FITS file from
         http://umbra.nascom.nasa.gov/goes/fits/"""
         fits = pyfits.open(filepath)
-        header = fits[0].header
+        header = OrderedDict(fits[0].header)
         if len(fits) == 4:
             if is_time_in_given_format(fits[0].header['DATE-OBS'], '%d/%m/%Y'):
                 start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%Y')
@@ -205,8 +206,8 @@ class GOESLightCurve(LightCurve):
 
         data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb}, index=times)
         data.sort_index(inplace=True)
-        header.update({"unit": ["Watts m^-2"] * len(data.columns)})
-        header.update({'obsrvtry': header.get('telescop')})
-        header.update({'wavelnth': [[0.5, 4], [1.0, 8]]})
-        header.update({'waveunit': 'angstrom'})
+        header.update({"UNIT": ["Watts m^-2"] * len(data.columns)})
+        header.update({'OBSRVTRY': header.get('TELESCOP')})
+        header.update({'WAVELNTH': [[0.5, 4], [1.0, 8]]})
+        header.update({'WAVEUNIT': 'angstrom'})
         return header, data
