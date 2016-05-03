@@ -57,8 +57,6 @@ class LogicalLightCurve(LightCurve):
             axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
         else:
             raise ValueError('Not a recognized plot type.')
-
-        axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
         plt.gcf().autofmt_xdate()
 
         return axes
