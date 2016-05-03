@@ -96,7 +96,7 @@ def get(key):
     return constants[key]
 
 
-def find(sub=None, disp=False):
+def find(sub=None):
     """
     Return list of constants keys containing a given string
 
@@ -104,15 +104,10 @@ def find(sub=None, disp=False):
     ----------
     sub : str, unicode
         Sub-string to search keys for.  By default, return all keys.
-    disp : bool
-        If True, print the keys that are found, and return None.
-        Otherwise, return the list of keys without printing anything.
 
     Returns
     -------
     keys : None or list
-        If `disp` is False, the list of keys is returned. Otherwise, None
-        is returned.
 
     See Also
     --------
