@@ -127,11 +127,18 @@ for compatibility with map, please use meta instead""", Warning)
         return "{obs} {detector} {measurement} {timerange}".format(obs=self.observatory,
                                                                 detector=self.detector,
                                                                 measurement=self.measurement,
-                                                                timerange=str(self.time_range))
+                                                                timerange=str(self.time_range.start) + '-' +
+                                                                   str(self.time_range.end))
 
     @property
     def unit(self):
         return u.Unit(self.meta.get('unit'))
+
+    @property
+    def time_range(self):
+        """Returns the start and end times of the LightCurve as a `~sunpy.time.TimeRange`
+        object"""
+        return TimeRange(self.data.index[0], self.data.index[-1])
 
     @classmethod
     def from_time(cls, time, **kwargs):
@@ -432,11 +439,6 @@ for compatibility with map, please use meta instead""", Warning)
             return self
         else:
             return LightCurve(self.data[column_name], self.meta.copy())
-
-    def time_range(self):
-        """Returns the start and end times of the LightCurve as a `~sunpy.time.TimeRange`
-        object"""
-        return TimeRange(self.data.index[0], self.data.index[-1])
 
     def concatenate(self, otherlightcurve):
         """Concatenate another light curve. This function will check and remove
