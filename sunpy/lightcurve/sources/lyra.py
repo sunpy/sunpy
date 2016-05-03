@@ -109,6 +109,7 @@ class LYRALightCurve(LightCurve):
 
         axes.set_xlabel('Start time: ' + self.data['CHANNEL1'].index[0].strftime(TIME_FORMAT))
         axes.set_ylabel(ylabel)
+        axes.set_title(title)
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(True, 'major')
         plt.gcf().autofmt_xdate()
