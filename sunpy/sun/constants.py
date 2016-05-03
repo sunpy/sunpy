@@ -62,6 +62,7 @@ Websites
 """
 
 from __future__ import absolute_import, division, print_function
+from astropy.table import Table
 
 from sunpy.sun import _constants as _con # pylint: disable=E0611
 
@@ -93,6 +94,7 @@ def get(key):
     <Constant name=u'Solar mass' value=1.9891e+30 uncertainty=5e+25 unit='kg' reference=u"Allen's Astrophysical Quantities 4th Ed.">
     """
     return constants[key]
+
 
 def find(sub=None, disp=False):
     """
@@ -135,8 +137,7 @@ def find(sub=None, disp=False):
 
 def print_all(key=None):
     """
-    Prints out the complete list of constants to the screen or
-    one single value
+    Provides a table of the complete list of constants.
 
     Parameters
     ----------
@@ -145,30 +146,16 @@ def print_all(key=None):
 
     Returns
     -------
-    None
-
-    See Also
-    --------
-    _constants : Contains the description of `constants`, which, as a
-        dictionary literal object, does not itself possess a docstring.
-
+    table : `astropy.table.Table`
     """
-    column_width = [25, 20, 20, 20]
-    table_width = (column_width[0] + column_width[1] + column_width[2]
-                   + column_width[3])
-    format_string = ('{0:<' + str(column_width[0]) + '}' + '{1:>' +
-                    str(column_width[1]) + '}' + '{2:>' + str(column_width[2])
-                    + '}' + '{3:>' + str(column_width[3]) + '}')
-    print(format_string.format('Name', 'Value', 'Units', 'Error'))
-    print(('{:-^' + str(table_width) + '}').format(''))
+    data_rows = []
+    for key, this_constant in constants.iteritems():
+        data_rows.append([key, this_constant.name, this_constant.value, this_constant.uncertainty,
+                          str(this_constant.unit), this_constant.reference])
 
-    if key is None:
-        for key in constants:
-            print(format_string.format(key, str(value(key)), unit(key),
-                                       str(uncertainty(key))))
-    else:
-        print(format_string.format(key, str(value(key)), unit(key),
-                                   str(uncertainty(key))))
+    t = Table(rows=data_rows, names=('key', 'name', 'value', 'uncertainty', 'unit', 'Reference'))
+    return t
+
 
 # Spectral class is not included in physical constants since it is not a number
 spectral_classification = 'G2V'
