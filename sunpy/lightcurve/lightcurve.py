@@ -73,7 +73,7 @@ class LightCurve(object):
         self.data = pandas.DataFrame(data)
         if meta == '' or meta is None:
             self.meta = OrderedDict()
-            self.meta.update({'name':None})
+            self.meta.update({'name': None})
         else:
             self.meta = OrderedDict(meta)
 
@@ -99,35 +99,35 @@ for compatibility with map, please use meta instead""", Warning)
     @property
     def instrument(self):
         """Instrument name"""
-        return self.meta.get('instrume', "").replace("_", " ")
+        return self.meta.get('INSTRUME', "").replace("_", " ")
 
     @property
     def measurement(self):
         """Measurement name, defaults to the wavelength of image"""
-        return u.Quantity(self.meta.get('wavelnth', 0), self.meta.get('waveunit', ""))
+        return u.Quantity(self.meta.get('WAVELNTH', 0), self.meta.get('WAVEUNIT', ""))
 
     @property
     def wavelength(self):
         """wavelength of the observation"""
-        return u.Quantity(self.meta.get('wavelnth', 0), self.meta.get('waveunit', ""))
+        return u.Quantity(self.meta.get('WAVELNTH', 0), self.meta.get('WAVEUNIT', ""))
 
     @property
     def observatory(self):
         """Observatory or Telescope name"""
-        return self.meta.get('obsrvtry', self.meta.get('telescop', "")).replace("_", " ")
+        return self.meta.get('OBSRVTRY', self.meta.get('TELESCOP', "")).replace("_", " ")
 
     @property
     def detector(self):
         """Detector name"""
-        return self.meta.get('detector', "")
+        return self.meta.get('DETECTOR', "")
 
     @property
     def name(self):
         """Human-readable description of map-type"""
-        return "{obs} {detector} {measurement} {timerange:{tmf}}".format(obs=self.observatory,
+        return "{obs} {detector} {measurement} {timerange}".format(obs=self.observatory,
                                                                 detector=self.detector,
                                                                 measurement=self.measurement,
-                                                                timerange=self.time_range)
+                                                                timerange=str(self.time_range))
 
     @property
     def unit(self):
@@ -198,7 +198,7 @@ for compatibility with map, please use meta instead""", Warning)
         if data.empty:
             raise ValueError("No data found!")
         else:
-            return cls(data, meta)
+            return cls(data, OrderedDict(meta))
 
     @classmethod
     def from_url(cls, url, **kwargs):
