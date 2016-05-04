@@ -127,7 +127,7 @@ class NoRHLightCurve(LightCurve):
 
         data = pandas.DataFrame(data, index=norh_time)
 
-        header.update({'UNIT': [None] * len(data.columns)})
+        header.update({'UNIT': [''] * len(data.columns)})
         header.update({'INSTRUME': 'Nobeyama Radio Heliograph'})
         header.update({'TELESCOP': 'Nobeyama Radio Heliograph'})
         header.update({'OBSRVTRY': header.get('ORIGIN')})

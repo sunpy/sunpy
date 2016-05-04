@@ -73,7 +73,7 @@ class LightCurve(object):
         self.data = pandas.DataFrame(data)
         if meta == '' or meta is None:
             self.meta = OrderedDict()
-            self.meta.update({'name': None})
+            self.meta.update({'NAME': None})
         else:
             self.meta = OrderedDict(meta)
 
@@ -123,16 +123,14 @@ for compatibility with map, please use meta instead""", Warning)
 
     @property
     def name(self):
-        """Human-readable description of map-type"""
-        return "{obs} {detector} {measurement} {timerange}".format(obs=self.observatory,
+        """Human-readable description of lightcurve"""
+        return "{obs} {detector} {measurement}".format(obs=self.observatory,
                                                                 detector=self.detector,
-                                                                measurement=self.measurement,
-                                                                timerange=str(self.time_range.start) + '-' +
-                                                                   str(self.time_range.end))
+                                                                measurement=self.measurement)
 
     @property
     def unit(self):
-        return u.Unit(self.meta.get('unit'))
+        return [u.Unit(this_unit) for this_unit in self.meta.get('UNIT')]
 
     @property
     def time_range(self):
