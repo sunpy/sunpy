@@ -19,21 +19,17 @@ LCClient = swap.SWAPClient()
                          [(TimeRange('2015/12/30 00:00:00','2015/12/30 23:59:59'),
                            'http://proba2.oma.be/swap/data/bsd/2015/12/30/swap_lv1_20151230_000044.fits',
                            'http://proba2.oma.be/swap/data/bsd/2015/12/30/swap_lv1_20151230_235935.fits', 1)])
-def test_get_url_for_time_range(timerange, url_start,url_end, level):
+def test_get_url_for_time_range(timerange, url_start, url_end, level):
     urls = LCClient._get_url_for_timerange(timerange, level = 1)
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
 def test_can_handle_query():
-    ans0 = swap.SWAPClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'),Instrument('swap'), a.Level(1))
-    assert ans0 == True
-    ans1 = swap.SWAPClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'),Instrument('swap'))
-    assert ans1 == False
-    ans2 = swap.SWAPClient._can_handle_query(Time('2015/12/30','2015/12/31'))
-    assert ans2 == False
-    ans3 = swap.SWAPClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'),Instrument('eve'))
-    assert ans3 == False
+    assert swap.SWAPClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'), Instrument('swap'), a.Level(1)) == True 
+    assert swap.SWAPClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'), Instrument('swap')) == False
+    assert swap.SWAPClient._can_handle_query(Time('2015/12/30','2015/12/31')) == False
+    assert swap.SWAPClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'), Instrument('eve')) == False
 
 @pytest.mark.online
 def test_query():

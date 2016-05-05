@@ -61,12 +61,12 @@ class SWAPClient(GenericClient):
         level = kwargs.get('level', 1)
         SWAP_STARTDATE = datetime.datetime(2009, 11, 24)
         if timerange.start < SWAP_STARTDATE:
-            raise ValueError('Earliest date for which SWAP data is available is '+ str(SWAP_STARTDATE))
+            raise ValueError('Earliest date for which SWAP data is available is {:%Y-%m-%d}'.format(SWAP_STARTDATE))
         datatype = {0: 'eng', 1:'bsd'}
         prefix = 'http://proba2.oma.be/swap/data/{datatype}/'
         suffix = '%Y/%m/%d/{instrument}_lv{level}_%Y%m%d_%H%M%S.fits'
         url_pattern = prefix + suffix
-        crawler = Scraper(url_pattern, instrument= 'swap', level = level, datatype = datatype[level])
+        crawler = Scraper(url_pattern, instrument='swap', level=level, datatype=datatype[level])
         if not timerange:
             return []
         result = crawler.filelist(timerange)
