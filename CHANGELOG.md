@@ -1,6 +1,6 @@
 Latest
 ------
-
+* Fixed `aiaprep` to return properly sized map.
 * Sunpy is now Python 3.x compatible (3.4 and 3.5).
 * Added a unit check and warnings for map metadata.
 * Added IRIS SJI color maps.
