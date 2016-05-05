@@ -54,9 +54,8 @@ def aiaprep(aiamap):
 
     # extract center from padded aiamap.rotate output
     center = np.floor(tempmap.meta['crpix1'])
-    leftx = center - aiamap.data.shape[0] / 2
-    rightx = center + aiamap.data.shape[0] / 2
-    newmap = tempmap.submap([leftx, rightx]*u.pix, [leftx, rightx]*u.pix)
+    range_side = (center + np.array([-1, 1]) * aiamap.data.shape[0] / 2) * u.pix
+    newmap = tempmap.submap(range_side, range_side)
 
     newmap.meta['r_sun'] = newmap.meta['rsun_obs'] / newmap.meta['cdelt1']
     newmap.meta['lvl_num'] = 1.5
