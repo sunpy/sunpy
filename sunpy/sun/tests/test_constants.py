@@ -4,6 +4,7 @@ from astropy.constants import Constant
 import pytest
 from six import iteritems
 
+
 @pytest.mark.parametrize('this_constant', [value for key, value in iteritems(con.constants)])
 def test_all_constants_are_constants(this_constant):
     """Test that each member of the constants dict is an astropy Constant"""

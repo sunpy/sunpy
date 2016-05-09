@@ -67,6 +67,8 @@ from six import iteritems
 
 from sunpy.sun import _constants as _con # pylint: disable=E0611
 
+__all__ = ['get', 'find', 'print_all']
+
 constants = _con.physical_constants
 
 
