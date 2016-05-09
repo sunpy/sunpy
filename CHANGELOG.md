@@ -1,3 +1,7 @@
+0.6.5
+-----
+
+
 0.6.4
 -----
  * Bug fix for rhessi summary lightcurve values.
