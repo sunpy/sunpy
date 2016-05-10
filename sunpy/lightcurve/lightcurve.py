@@ -21,6 +21,10 @@ from sunpy.extern.six.moves import urllib
 from sunpy.extern import six
 import astropy.units as u
 
+# define and register a new unit, needed for RHESSI
+det = u.def_unit('detector')
+u.add_enabled_units([det])
+
 # pylint: disable=E1101,E1121,W0404,W0612,W0613
 __authors__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
@@ -124,13 +128,14 @@ for compatibility with map, please use meta instead""", Warning)
     @property
     def name(self):
         """Human-readable description of lightcurve"""
-        return "{obs} {detector} {measurement}".format(obs=self.observatory,
-                                                                detector=self.detector,
-                                                                measurement=self.measurement)
+        return "{obs} {detector}".format(obs=self.observatory, detector=self.detector)
 
     @property
     def unit(self):
-        return [u.Unit(this_unit) for this_unit in self.meta.get('UNIT')]
+        if type(self.meta.get('UNIT', [' '])) is type(list):
+            return [u.Unit(this_unit) for this_unit in self.meta.get('UNIT', u.dimensionless_unscaled)]
+        else:
+            return u.Unit(self.meta.get('UNIT', u.dimensionless_unscaled))
 
     @property
     def time_range(self):
