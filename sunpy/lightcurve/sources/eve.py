@@ -74,7 +74,7 @@ class EVELightCurve(LightCurve):
             self.data['XRS-A proxy'].plot(ax=axes, label='0.5--4.0 $\AA$', color='blue', lw=2, **plot_args)
             axes.set_yscale("log")
             axes.set_ylim(1e-9, 1e-2)
-            axes.set_ylabel(self.meta.get('UNIT')[0])
+            axes.set_ylabel(self.unit)
             ax2 = axes.twinx()
             ax2.set_yscale("log")
             ax2.set_ylim(1e-9, 1e-2)
@@ -202,12 +202,10 @@ class EVELightCurve(LightCurve):
             data[data == float(missing_data_val)] = numpy.nan
 
         # data.columns = fields
-        units = [None] * len(data.columns)
-        units[0] = units[1] = 'Watts m^-2'
-        meta.update({'unit': units})
-        meta.update({'instrume': 'SDO/EVE'})
-        meta.update({'obsrvtry': 'SDO'})
-        meta.update({'telescope': 'EVE'})
-        meta.update({'wavelnth': ''})
-        meta.update({'waveunit': ''})
+        meta.update({'UNIT': 'Watt m^-2'})
+        meta.update({'INSTRUME': 'SDO/EVE'})
+        meta.update({'OBSRVTRY': 'SDO'})
+        meta.update({'TELESCOP': 'EVE'})
+        meta.update({'WAVELNTH': ''})
+        meta.update({'WAVEUNIT': ''})
         return meta, data
