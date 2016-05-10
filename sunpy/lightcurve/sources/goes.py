@@ -206,7 +206,7 @@ class GOESLightCurve(LightCurve):
 
         data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb}, index=times)
         data.sort_index(inplace=True)
-        header.update({"UNIT": ["Watts m^-2"] * len(data.columns)})
+        header.update({"UNIT": "Watt m^-2"})
         header.update({'OBSRVTRY': header.get('TELESCOP')})
         header.update({'WAVELNTH': [[0.5, 4], [1.0, 8]]})
         header.update({'WAVEUNIT': 'angstrom'})

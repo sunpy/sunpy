@@ -45,6 +45,9 @@ class LogicalLightCurve(LightCurve):
         if axes is None:
             axes = plt.gca()
 
+        if title is True:
+            title = self.name
+
         if plot_type == None:
             plot_type = self._get_plot_types()[0]
 

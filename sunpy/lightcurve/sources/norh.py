@@ -75,7 +75,7 @@ class NoRHLightCurve(LightCurve):
         else:
             raise ValueError('Not a recognized plot type.')
 
-        axes.set_ylabel(self.meta.get('UNIT'))
+        axes.set_ylabel(self.unit)
         axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
         axes.set_title(title)
 
@@ -127,7 +127,6 @@ class NoRHLightCurve(LightCurve):
 
         data = pandas.DataFrame(data, index=norh_time)
 
-        header.update({'UNIT': [''] * len(data.columns)})
         header.update({'INSTRUME': 'Nobeyama Radio Heliograph'})
         header.update({'TELESCOP': 'Nobeyama Radio Heliograph'})
         header.update({'OBSRVTRY': header.get('ORIGIN')})

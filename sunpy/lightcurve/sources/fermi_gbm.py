@@ -94,7 +94,7 @@ class GBMSummaryLightCurve(LightCurve):
             raise ValueError('Not a recognized plot type.')
 
         axes.set_title(title)
-        axes.set_ylabel(self.meta['DETNAM'] + ' ' + self.meta.get('UNIT'))
+        axes.set_ylabel(self.meta['DETNAM'] + ' ' + self.unit)
         axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
 
         plt.gcf().autofmt_xdate()

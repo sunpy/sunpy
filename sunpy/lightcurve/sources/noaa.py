@@ -79,6 +79,9 @@ class NOAAIndicesLightCurve(LightCurve):
         if axes is None:
             axes = plt.gca()
 
+        if title is True:
+            title = self.name
+
         if plot_type == None:
             plot_type = self._get_plot_types()[0]
         ylabel = ''
@@ -154,8 +157,6 @@ class NOAAIndicesLightCurve(LightCurve):
             data = data.drop('yyyy',1)
 
             meta = {'comments': comments}
-            units = [''] * len(data.columns)
-            meta.update({'unit': units})
             meta.update({'instrume': 'NOAA'})
             meta.update({'obsrvtry': 'NOAA'})
             meta.update({'telescope': None})
@@ -269,8 +270,6 @@ class NOAAPredictIndicesLightCurve(LightCurve):
             data = data.drop('yyyy',1)
 
             meta = {'comments': comments}
-            units = [''] * len(data.columns)
-            meta.update({'UNIT': units})
             meta.update({'INSTRUME': 'NOAA Prediction'})
             meta.update({'OBSRVTRY': 'NOAA'})
             meta.update({'TELESCOP': None})

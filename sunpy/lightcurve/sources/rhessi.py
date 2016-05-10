@@ -3,7 +3,6 @@
 from __future__ import absolute_import
 
 import datetime
-import matplotlib.dates
 import matplotlib.pyplot as plt
 from pandas import DataFrame
 from collections import OrderedDict
@@ -77,8 +76,9 @@ class RHESSISummaryLightCurve(LightCurve):
             raise ValueError('Not a recognized plot type.')
 
         axes.set_title(title)
-        axes.set_ylabel(self.meta.get('UNIT'))
+        axes.set_ylabel(self.unit)
         axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
+        plt.gcf().autofmt_xdate()
 
         return axes
 
@@ -118,7 +118,7 @@ class RHESSISummaryLightCurve(LightCurve):
         header, d = rhessi.parse_obssumm_file(filepath)
         header = OrderedDict(header)
         data = DataFrame(d['data'], columns=d['labels'], index=d['time'])
-        header.update({'UNIT': ['counts s^-1 detector^-1'] * len(data.columns)})
+        header.update({'UNIT': 'count s^-1 detector^-1'})
         header.update({'INSTRUME': 'RHESSI'})
         header.update({'OBSRVTRY': 'RHESSI'})
         header.update({'TELESCOP': 'RHESSI'})
