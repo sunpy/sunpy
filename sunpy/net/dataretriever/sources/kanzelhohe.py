@@ -56,7 +56,7 @@ class KanzelhoheClient(GenericClient):
         """
         START_DATE = datetime.datetime(2000, 7, 20, 7, 45, 46)
         if timerange.start < START_DATE:
-            raise ValueError('Earliest date for which SWAP data is available is '+ str(START_DATE))
+            raise ValueError('Earliest date for which SWAP data is available is {:%Y-%m-%d}'.format(START_DATE))
         prefix = "http://cesar.kso.ac.at/halpha2k/recent/"
         suffix = "%Y/kanz_halph_fr_%Y%m%d_%H%M%S.fts.gz"
         url_pattern = prefix + suffix
