@@ -667,20 +667,6 @@ class Database(object):
             H2VClient().translate_and_query(query_result))
         self.add_from_vso_query_result(vso_qr, ignore_already_added)
 
-
-    def download_from_hek_query_result(self, query_result,
-        path=None, progress=False, ignore_already_added=False):
-        #vso_qr = itertools.chain.from_iterable(
-        #   H2VClient().translate_and_query(query_result))
-        #self.download_from_vso_query_result(query_result = vso_qr,
-        #    path = path, progress = progress)
-
-        vso_qr = H2VClient().translate_and_query(query_result)
-        for qr in vso_qr:
-            self.download_from_vso_query_result(query_result = qr, path = path,
-                progress = progress, ignore_already_added = ignore_already_added)
-
-
     def download_from_vso_query_result(self, query_result, client=None,
             path=None, progress=False, ignore_already_added=False):
         """download(query_result, client=sunpy.net.vso.VSOClient(),
