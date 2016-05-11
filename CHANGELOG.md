@@ -1,6 +1,19 @@
+0.6.5
+-----
+
+
+0.6.4
+-----
+ * Bug fix for rhessi summary lightcurve values.
+ * Fix docstring for `pixel_to_data` and `data_to_pixel`.
+ * Fix the URL for the Helioviewer API. (This fixes Helioviewer.)
+ * Fix the way `reshape_image_to_4d_superpixel` checks the dimension of the new image.
+ * Fix Map to allow astropy.io.fits Header objects as valid input for meta arguments.
+ * Prevent helioviewer tests from checking access to API when running tests in offline mode. 
+
 0.6.3
 ------
-* Change setup.py extras to install suds-jurko not suds.
+ * Change setup.py extras to install suds-jurko not suds.
 
 0.6.2
 -----
@@ -9,17 +22,16 @@
  * update astropy_helpers
  * Added new sample data
 
-
 0.6.1
 -----
 
-* Fixed MapCube animations by working around a bug in Astropy's ImageNormalize
-* Small fix to RTD builds for Affiliated packages
-* SunPy can now be installed without having to install Astropy first.
-* MapCubes processed with ``coalignment.apply_shifts`` now have correct
-  metadata.
-* Multiple fixes for WCS transformations, especially with solar-x, solar-y
-  CTYPE headers.
+ * Fixed MapCube animations by working around a bug in Astropy's ImageNormalize
+ * Small fix to RTD builds for Affiliated packages
+ * SunPy can now be installed without having to install Astropy first.
+ * MapCubes processed with ``coalignment.apply_shifts`` now have correct
+   metadata.
+ * Multiple fixes for WCS transformations, especially with solar-x, solar-y
+   CTYPE headers.
 
 0.6.0
 -----

@@ -23,11 +23,18 @@ __all__ = ['HelioviewerClient']
 
 class HelioviewerClient(object):
     """Helioviewer.org Client"""
-    def __init__(self, url="http://helioviewer.org/api/"):
+    def __init__(self, url="http://legacy.helioviewer.org/api/"):
+        """
+        url : location of the Helioviewer API.  The default location points to
+            version 1 of the API.  Version 1 of the Helioviewer API is
+            currently planned to be supported until the end of April 2017.
+        """
         self._api = url
 
     def get_data_sources(self, **kwargs):
-        """Returns a structured list of datasources available at Helioviewer.org"""
+        """
+        Returns a structured list of datasources available at Helioviewer.org.
+        """
         params = {"action": "getDataSources"}
         params.update(kwargs)
 
@@ -37,8 +44,9 @@ class HelioviewerClient(object):
         """Finds the closest image available for the specified source and date.
 
         For more information on what types of requests are available and the
-        expected usage for the response, consult the Helioviewer
-        API documentation: http://helioviewer.org/api
+        expected usage for the response, consult the Helioviewer API
+        documentation: http://legacy.helioviewer.org/api/docs/v1/ .
+
 
         Parameters
         ----------

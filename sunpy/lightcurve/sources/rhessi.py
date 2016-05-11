@@ -79,18 +79,16 @@ class RHESSISummaryLightCurve(LightCurve):
 
         #dates = matplotlib.dates.date2num(self.data.index)
 
-        # FIXME: not used?!
-        lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
-                         'navy', 'orange', 'green')
+        lc_linecolors = rhessi.hsi_linecolors()
 
-        for item, frame in self.data.iteritems():
-            axes.plot_date(self.data.index, frame.values, '-', label=item, lw=2)
+        for lc_color, (item, frame) in zip(lc_linecolors, self.data.iteritems()):
+            axes.plot_date(self.data.index, frame.values, '-', label=item, lw=2, color=lc_color)
 
         axes.set_yscale("log")
         axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
 
-        axes.set_title('RHESSI Observing Summary Count Rates, Corrected')
-        axes.set_ylabel('Corrected Count Rates s$^{-1}$ detector$^{-1}$')
+        axes.set_title('RHESSI Observing Summary Count Rates')
+        axes.set_ylabel('Count Rate s$^{-1}$ detector$^{-1}$')
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(False, 'major')
