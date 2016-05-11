@@ -1,6 +1,6 @@
 0.6.5
 -----
-
+ * The draw_grid keyword of the peek method of Map now accepts booleans or astropy quantities.
 
 0.6.4
 -----
