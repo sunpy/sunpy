@@ -718,11 +718,6 @@ def test_download_missing_arg(database):
         database.download()
 
 
-def test_download_unexpected_kwarg(database):
-    with pytest.raises(TypeError):
-        database.download(vso.attrs.Source('SOHO'), foo=42)
-
-
 @pytest.mark.online
 def test_download_empty_query_result(database, empty_query):
     database.download(*empty_query)
@@ -765,11 +760,6 @@ def test_download_duplicates(database, download_query, tmpdir):
 def test_fetch_missing_arg(database):
     with pytest.raises(TypeError):
         database.fetch()
-
-
-def test_fetch_unexpected_kwarg(database):
-    with pytest.raises(TypeError):
-        database.fetch(vso.attrs.Source('SOHO'), foo=42)
 
 
 @pytest.mark.online
