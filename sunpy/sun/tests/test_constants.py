@@ -2,7 +2,7 @@ from __future__ import absolute_import
 from sunpy.sun import constants as con
 from astropy.constants import Constant
 import pytest
-from six import iteritems
+from sunpy.extern.six import iteritems
 
 
 @pytest.mark.parametrize('this_constant', [value for key, value in iteritems(con.constants)])

@@ -63,7 +63,7 @@ Websites
 
 from __future__ import absolute_import, division, print_function
 from astropy.table import Table
-from six import iteritems
+from sunpy.extern.six import  iteritems
 
 from sunpy.sun import _constants as _con # pylint: disable=E0611
 
