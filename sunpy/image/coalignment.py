@@ -106,7 +106,7 @@ def clip_edges(data, yclips, xclips):
     ny = data.shape[0]
     nx = data.shape[1]
     return data[int(yclips[0].value): ny - int(yclips[1].value),
-                int(xclips[0].value): nx - int(xclips[1]).value]
+                int(xclips[0].value): nx - int(xclips[1].value)]
 
 
 #
