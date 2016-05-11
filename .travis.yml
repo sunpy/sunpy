@@ -1,12 +1,7 @@
-# We use C because conda manages our Python vesion
+# We use C because conda manages our Python version
 # and running on OS/X dosen't work with Python.
 language: c
 
-# os:
-#      - linux
-#     - osx
-
-# Setting sudo to false opts in to Travis-CI container-based builds.
 sudo: false
 
 # The apt packages below are needed but can no longer be installed with
@@ -21,13 +16,6 @@ addons:
             - texlive-latex-extra
             - dvipng
 
-# These are currently not used, but we want to cache the packages dir
-# to reduce the number of packages to download.
-# cache:
-#    directories:
-#       - $HOME/miniconda/pkgs
-#       - $HOME/miniconda3/pkgs
-
 # Configure the build environment. Global varibles are defined for all configurations.
 env:
     global:
@@ -36,8 +24,6 @@ env:
         - PREVIOUS_NUMPY=1.9.3
         - FIGURES_NUMPY=1.10.0
         - FIGURES_MPL=1.5.1
-        # Fixed global vars
-        - PYTHON_VERSION=2.7
         - TEST_MODE='offline'
         - NUMPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
@@ -45,22 +31,19 @@ env:
         - CONDA_ALL_DEPENDENCIES='glymur Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
         - CONDA_ALL_DEPENDENCIES2='glymur openjpeg Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
         - PIP_DEPENDENCIES='suds-jurko sphinx-gallery pytest-cov'
+        - SETUP_CMD='egg_info'
 
 
-#    matrix:
-#        - PYTHON_VERSION=2.7 # egg info
-#        - PYTHON_VERSION=3.3
-#        - PYTHON_VERSION=3.4
-#        - PYTHON_VERSION=3.5
+matrix:
+    - PYTHON_VERSION=2.7
+    - PYTHON_VERSION=3.4
+    - PYTHON_VERSION=3.5
 
 matrix:
     include:
-         # # Try MacOS X
          - os: osx
            env: JOB="Py2" PYTHON_VERSION=2.7 SETUP_CMD='test'
                 CONDA_DEPENDENCIES="$CONDA_ALL_DEPENDENCIES" #Without openjpeg
-
-         # Try on Linux
          - os: linux
            env: JOB="Py2" PYTHON_VERSION=2.7 SETUP_CMD='test'
                 CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
