@@ -156,7 +156,7 @@ def _upper_clip(z):
     zupper = 0
     zcond = z >= 0
     if np.any(zcond):
-        zupper = np.max(np.ceil(z[zcond]))
+        zupper = int(np.max(np.ceil(z[zcond])))
     return zupper
 
 
@@ -168,7 +168,7 @@ def _lower_clip(z):
     zlower = 0
     zcond = z <= 0
     if np.any(zcond):
-        zlower = np.max(np.ceil(-z[zcond]))
+        zlower = int(np.max(np.ceil(-z[zcond])))
     return zlower
 
 
