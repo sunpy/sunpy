@@ -364,15 +364,7 @@ class Database(object):
         if not query:
             raise TypeError('at least one attribute required')
         
-        kwargs_copy = kwargs.copy()
-        client = kwargs_copy.pop('client', None)
-        path = kwargs_copy.pop('path', None)
-        progress = kwargs_copy.pop('progress', False)
-        methods = kwargs_copy.pop('methods', ('URL-FILE_Rice', 'URL-FILE'))
-        
-        if kwargs_copy:
-            k, v = kwargs_copy.popitem()
-            raise TypeError('unexpected keyword argument {0!r}'.format(k))
+        client = kwargs.get('client', None)
         if client is None:
             client = VSOClient()
         qr = client.query(*query)
@@ -425,11 +417,7 @@ class Database(object):
         """
         if not query:
             raise TypeError('at least one attribute required')
-        kwargs_copy = kwargs.copy()
-        path = kwargs_copy.pop('path', None)
-        if kwargs_copy:
-            k, v = kwargs_copy.popitem()
-            raise TypeError('unexpected keyword argument {0!r}'.format(k))
+        
         dump = serialize.dump_query(and_(*query))
         (dump_exists,), = self.session.query(
             exists().where(tables.JSONDump.dump == tables.JSONDump(dump).dump))
@@ -678,6 +666,20 @@ class Database(object):
         vso_qr = itertools.chain.from_iterable(
             H2VClient().translate_and_query(query_result))
         self.add_from_vso_query_result(vso_qr, ignore_already_added)
+
+
+    def download_from_hek_query_result(self, query_result,
+        path=None, progress=False, ignore_already_added=False):
+        #vso_qr = itertools.chain.from_iterable(
+        #   H2VClient().translate_and_query(query_result))
+        #self.download_from_vso_query_result(query_result = vso_qr,
+        #    path = path, progress = progress)
+
+        vso_qr = H2VClient().translate_and_query(query_result)
+        for qr in vso_qr:
+            self.download_from_vso_query_result(query_result = qr, path = path,
+                progress = progress, ignore_already_added = ignore_already_added)
+
 
     def download_from_vso_query_result(self, query_result, client=None,
             path=None, progress=False, ignore_already_added=False):
