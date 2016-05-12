@@ -18,8 +18,7 @@ __all__ = ['physical_constants']
 physical_constants = {}
 
 # references
-gsfc_fact = ("Sun Fact Sheet - David R. Williams - "
-             "http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html")
+gsfc_fact = "http://nssdc.gsfc.nasa.gov/planetary/factsheet/sunfact.html"
 allen = "Allen's Astrophysical Quantities 4th Ed."
 asplund = "Asplund et al. 2006"
 fivian = "Fivian et al. 2008"
@@ -111,7 +110,7 @@ physical_constants['average intensity'] = Constant('I', "Mean Intensity",
                                                    0,
                                                    "", system='si')
 
-effect_temp_exp = "The effective black-body temperature of the Sun in Kelvin."
+effect_temp_exp = "Effective black-body temperature"
 physical_constants['effective temperature'] = Constant('T', effect_temp_exp,
                                                        5778.0, 'K', 0,
                                                        "", system='si')

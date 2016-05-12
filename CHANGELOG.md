@@ -33,6 +33,7 @@ Latest
 * Added concatenate functionality to lightcurve base class.
 * Fix Map to allow astropy.io.fits Header objects as valid input for meta arguments.
 * Added an examples gallery using `sphinx-gallery`.
+* API clean up to constants. Removed constant() function which is now replaced by get().
 
 0.6.0
 -----
