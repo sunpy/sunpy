@@ -22,8 +22,8 @@ from .representation import (SphericalWrap180Representation,
 
 from .frameattributes import TimeFrameAttributeSunPy
 
-RSUN_METERS = sun.constants.constant('radius').si.to(u.m)
-DSUN_METERS = sun.constants.constant('mean distance').si.to(u.m)
+RSUN_METERS = sun.constants.get('radius').si.to(u.m)
+DSUN_METERS = sun.constants.get('mean distance').si.to(u.m)
 
 __all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
            'Heliocentric', 'Helioprojective']
