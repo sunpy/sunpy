@@ -53,6 +53,7 @@ def aiaprep(aiamap):
     tempmap = aiamap.rotate(recenter=True, scale=scale_factor.value, missing=aiamap.min())
 
     # extract center from padded aiamap.rotate output
+    # crpix1 and crpix2 will be equal (recenter=True), as aiaprep does not work with submaps
     center = np.floor(tempmap.meta['crpix1'])
     range_side = (center + np.array([-1, 1]) * aiamap.data.shape[0] / 2) * u.pix
     newmap = tempmap.submap(range_side, range_side)
