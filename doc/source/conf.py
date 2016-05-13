@@ -80,7 +80,7 @@ rst_epilog += """
 # This does not *have* to match the package name, but typically does
 project = u'SunPy'
 author = u'The SunPy Community'
-copyright = u'2013, ' + author
+copyright = u'2016, ' + author
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -179,7 +179,15 @@ edit_on_github_doc_root = "docs"
 extensions += ['sphinx_gallery.gen_gallery']
 
 sphinx_gallery_conf = {
-    # path to your examples scripts
-    'examples_dirs' : '../../examples',
-    # path where to save gallery generated examples
-    'gallery_dirs'  : 'auto_examples'}
+    # execute all examples except those that start with "skip_"
+    'filename_pattern': '^((?!skip_).)*$',
+    # path to the examples scripts
+    'examples_dirs': '..{}..{}examples'.format(os.sep, os.sep),
+    'gallery_dirs': 'gallery',
+    'reference_url': {
+        'sunpy': None,
+        'astropy': 'http://docs.astropy.org/en/latest/',
+        'matplotlib': 'http://matplotlib.org/',
+        'numpy': 'http://docs.scipy.org/doc/numpy/',
+    }
+}
