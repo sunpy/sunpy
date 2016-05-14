@@ -46,7 +46,7 @@ __all__ = ['read', 'get_header', 'write', 'extract_waveunit']
 __author__ = "Keith Hughitt, Stuart Mumford, Simon Liedtke"
 __email__ = "keith.hughitt@nasa.gov"
 
-def read(filepath, hdus=None):
+def read(filepath, hdus=None, memmap=None, **kwargs):
     """
     Read a fits file
 
@@ -69,7 +69,7 @@ def read(filepath, hdus=None):
     Also all comments in the original file are concatenated into a single
     'comment' key in the returned FileHeader.
     """
-    hdulist = fits.open(filepath)
+    hdulist = fits.open(filepath, memmap=memmap)
     if hdus is not None:
         if isinstance(hdus, int):
             hdulist = hdulist[hdus]
