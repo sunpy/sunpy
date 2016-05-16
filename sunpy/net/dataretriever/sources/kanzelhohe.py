@@ -71,9 +71,9 @@ class KanzelhoheClient(GenericClient):
         Helper Function:used to hold information about source.
         """
         self.map_['source'] = 'Global Halpha Network'
-        self.map_['instrument'] = 'Kanzelhohe'
-##        self.map_['phyobs'] = 'irradiance'
-##        self.map_['provider'] = 'esa'
+        self.map_['instrument'] = 'Kanzelhohe HA2'
+        self.map_['phyobs'] = 'irradiance'
+        self.map_['provider'] = 'Kanzelhohe'
         self.map_['wavelength'] = '6563 AA'
 
     @classmethod
