@@ -28,7 +28,7 @@ a Map from one of the supported data products is with the `~sunpy.map.map()` fun
 
 .. plot::
     :include-source:
- 
+
     import sunpy.data.sample
     import sunpy.map
     aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
@@ -164,7 +164,7 @@ Not all constants have a shortcut assigned to them (as above). The rest of the c
 are stored in a dictionary. The following code grabs the dictionary and gets all of the
 keys.::
 
-    >>> solar_constants = con.physical_constants
+    >>> solar_constants = con.constants
     >>> solar_constants.keys()   # doctest: +NORMALIZE_WHITESPACE
     ['solar flux unit', 'surface area', 'average density', 'radius', 'surface
     gravity', 'ellipticity', 'visual magnitude', 'center density', 'average
@@ -174,43 +174,9 @@ keys.::
     inertia', 'escape velocity', 'perihelion distance', 'GM', 'oblateness',
     'mean distance', 'age', 'mass', 'luminosity', 'center temperature']
 
-You can also use the following function to print out a table of all of the values
-available. ::
-
-    >>> con.print_all()   # doctest: +NORMALIZE_WHITESPACE
-    Name                                 Value            Units    Error
-    -------------------------------------------------------------------------------------
-    solar flux unit                      1e-22      W / (Hz m2)    0
-    surface area                     6.087e+18               m2    0
-    average density                       1409          kg / m3    0
-    radius                         695508000.0                m    26000.0
-    surface gravity                        274            m / s    0
-    ellipticity                          5e-05                     0
-    visual magnitude                    -26.75                     0
-    center density                    162200.0          kg / m3    0
-    average angular size                959.63           arcsec    0
-    absolute magnitude                    4.83                     0
-    sunspot cycle                         11.4               yr    0
-    effective temperature               5778.0                K    0
-    aphelion distance                1.521e+11                m    0
-    mean energy production           0.0001937           J / kg    0
-    mass conversion rate          4300000000.0           kg / s    0
-    average intensity               20090000.0      W / (m2 sr)    0
-    volume                          1.4122e+27               m3    0
-    metallicity                         0.0122                     0.0
-    moment of inertia                  5.7e+54          kg / m2    0
-    escape velocity                   617700.0            m / s    0
-    perihelion distance              1.471e+11                m    0
-    GM                             132712000.0         km3 / s2    0
-    oblateness                            8.01          marcsec    0.14
-    mean distance              1.495978707e+11                m    0.0
-    age                           4600000000.0               yr    100000000.0
-    mass                            1.9891e+30               kg    5e+25
-    luminosity                       3.846e+26                W    5e+22
-    center temperature              15710000.0                K    0
-
-These constants are provided as a convenience so that everyone is using the same
-(accepted values). For more information check out :ref:`sun_code_ref`.
+You can also use the function `sunpy.constants.print_all()` to print out a table of all of the values
+available. These constants are provided as a convenience so that everyone is using the same
+(accepted) values. For more information check out :ref:`sun_code_ref`.
 
 Quantities and Units
 --------------------

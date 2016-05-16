@@ -21,7 +21,7 @@ doc/build/*
 doc/source/api
 doc/source/modules
 doc/html
-doc/source/auto_examples
+doc/source/gallery
 docs
 .tox/
 .coverage

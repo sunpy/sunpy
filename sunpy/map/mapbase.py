@@ -1492,10 +1492,10 @@ scale:\t\t {scale}
         if isinstance(draw_grid, bool):
             if draw_grid:
                 self.draw_grid(axes=axes)
-        elif isinstance(draw_grid, six.integer_types + (float,)):
+        elif isinstance(draw_grid, u.Quantity):
             self.draw_grid(axes=axes, grid_spacing=draw_grid)
         else:
-            raise TypeError("draw_grid should be bool, int, long or float")
+            raise TypeError("draw_grid should be a bool or an astropy Quantity.")
 
         figure.show()
 

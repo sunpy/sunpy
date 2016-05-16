@@ -247,6 +247,10 @@ class MapFactory(BasicRegistrationFactory):
         silence_errors : boolean, optional
             If set, ignore data-header pairs which cause an exception.
 
+        Notes
+        -----
+        Extra keyword arguments are passed through to `sunpy.io.read_file` such
+        as `memmap` for FITS files.
         """
 
         # Hack to get around Python 2.x not backporting PEP 3102.
