@@ -1,17 +1,18 @@
 """
-==============================
-Editing Map Colormaps and Norm
-==============================
+=======================================
+Editing Map Colormaps and Normalization
+=======================================
 
 A simple example to show how to edit the
 display of a map
 """
 
-from sunpy.data.sample import AIA_171_IMAGE
-import sunpy.map
 import matplotlib.cm as cm
 import matplotlib.colors as colors
 import matplotlib.pyplot as plt
+import sunpy.map
+from sunpy.data.sample import AIA_171_IMAGE
+
 
 ###############################################################################
 # We now create the Map using the sample data.
