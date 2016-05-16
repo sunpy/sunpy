@@ -5,8 +5,8 @@ Currently this module provides image coalignment by template matching.
 Which is partially inspired by the SSWIDL routine
 `tr_get_disp.pro <http://hesperia.gsfc.nasa.gov/ssw/trace/idl/util/routines/tr_get_disp.pro>`_.
 
-In this implementation, the template matching is handled via
-the scikit-image routine :func:`skimage.feature.match_template`.
+In this implementation, the template matching is handled via the scikit-image
+routine :func:`skimage.feature.match_template`.
 
 References
 ----------
@@ -93,19 +93,24 @@ def clip_edges(data, yclips, xclips):
     data : `numpy.ndarray`
         A numpy array of shape (ny, nx).
     yclips : `astropy.units.Quantity`
-        The amount to clip in the y-direction of the data.
+        The amount to clip in the y-direction of the data.  Has units of
+        pixels, and values should be whole non-negative numbers.
     xclips : `astropy.units.Quantity`
-        The amount to clip in the x-direction of the data.
+        The amount to clip in the x-direction of the data.  Has units of
+        pixels, and values should be whole non-negative numbers.
 
     Returns
     -------
     image : `numpy.ndarray`
-        A 2d image with edges clipped off according to the positive and
-        negative ceiling values in the yclips and xclips arrays.
+        A 2d image with edges clipped off according to yclips and xclips
+        arrays.
     """
     ny = data.shape[0]
     nx = data.shape[1]
-    return data[yclips[0].value: ny - yclips[1].value, xclips[0].value: nx - xclips[1].value]
+    # The purpose of the int below is to ensure integer type since by default
+    # astropy quantities are converted to floats.
+    return data[int(yclips[0].value): ny - int(yclips[1].value),
+                int(xclips[0].value): nx - int(xclips[1].value)]
 
 
 #
@@ -156,7 +161,7 @@ def _upper_clip(z):
     zupper = 0
     zcond = z >= 0
     if np.any(zcond):
-        zupper = np.max(np.ceil(z[zcond]))
+        zupper = int(np.max(np.ceil(z[zcond])))
     return zupper
 
 
@@ -168,7 +173,7 @@ def _lower_clip(z):
     zlower = 0
     zcond = z <= 0
     if np.any(zcond):
-        zlower = np.max(np.ceil(-z[zcond]))
+        zlower = int(np.max(np.ceil(-z[zcond])))
     return zlower
 
 
@@ -452,10 +457,10 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
     nt = len(mc.maps)
 
     # Calculate a template.  If no template is passed then define one
-    # from the the index layer.
+    # from the index layer.
     if template is None:
-        tplate = mc.maps[layer_index].data[ny / 4: 3 * ny / 4,
-                                           nx / 4: 3 * nx / 4]
+        tplate = mc.maps[layer_index].data[int(ny/4): int(3*ny/4),
+                                           int(nx/4): int(3*nx/4)]
     elif isinstance(template, GenericMap):
         tplate = template.data
     elif isinstance(template, np.ndarray):
