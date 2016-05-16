@@ -11,7 +11,7 @@ You can find the official SunPy website at
 
   guide/index.rst
   code_ref/index.rst
-  auto_examples/index
+  gallery/index
   dev
   bugs
   ssw
