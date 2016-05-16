@@ -3,7 +3,6 @@ Helioviewer Client tests
 """
 from __future__ import absolute_import
 
-#pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
 import sunpy
 import sunpy.map
 import pytest
@@ -22,9 +21,10 @@ def client():
         client = HelioviewerClient()
         client.sources = client.get_data_sources()
         return client
-    except (urllib.error.HTTPError), e:
+    except urllib.error.HTTPError as e:
         print("There's a HTTP problem {} {}".format(e.code, e.args))
         pytest.skip("HTTP error {}".format(e.code))
+
 
 @pytest.mark.online
 class TestHelioviewerClient:
