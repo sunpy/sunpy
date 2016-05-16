@@ -31,6 +31,7 @@
 
 import os
 import sys
+import datetime
 
 # -- Load astropy_helpers -----------------------------------------------------
 
@@ -80,7 +81,7 @@ rst_epilog += """
 # This does not *have* to match the package name, but typically does
 project = u'SunPy'
 author = u'The SunPy Community'
-copyright = u'2016, ' + author
+copyright = u'{}, {}'.format(datetime.datetime.now().year, author)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -186,7 +187,7 @@ sphinx_gallery_conf = {
     'gallery_dirs': 'gallery',
     'reference_url': {
         'sunpy': None,
-        'astropy': 'http://docs.astropy.org/en/latest/',
+        'astropy': 'http://docs.astropy.org/en/stable/',
         'matplotlib': 'http://matplotlib.org/',
         'numpy': 'http://docs.scipy.org/doc/numpy/',
     }
