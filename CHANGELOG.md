@@ -1,6 +1,8 @@
 Latest
 ------
 * Fixed `aiaprep` to return properly sized map.
+
+* Deprecation warnings fixed when using image coalignment.
 * Sunpy is now Python 3.x compatible (3.4 and 3.5).
 * Added a unit check and warnings for map metadata.
 * Added IRIS SJI color maps.
@@ -33,6 +35,9 @@ Latest
 * Added concatenate functionality to lightcurve base class.
 * Fix Map to allow astropy.io.fits Header objects as valid input for meta arguments.
 * Added an examples gallery using `sphinx-gallery`.
+* API clean up to constants. Removed constant() function which is now replaced by get().
+* Prevent helioviewer tests from checking access to the API endpoint when running tests offline.
+
 
 0.6.0
 -----
