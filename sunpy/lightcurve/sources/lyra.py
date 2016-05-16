@@ -41,9 +41,9 @@ class LYRALightCurve(LightCurve):
     PROBA2 was launched on 2 November 2009.
 
     This class can download and hold either Level 2 data (the default) which
-    has sub-second resolution or Level 3 data which is derived from Level 2
-    data and has one minute resolution. The level can be specified with the
-    ``level`` keyword argument to `~sunpy.lightcurve.LyraLightCurve.create`.
+    has sub-second resolution or Level 3 which is the Level 2 data averaged to
+    one minute cadence. The level can be specified with the ``level`` keyword
+    argument to `~sunpy.lightcurve.LyraLightCurve.create`.
 
     Examples
     --------
