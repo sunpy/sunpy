@@ -38,6 +38,7 @@ Latest
 * Prevent helioviewer tests from checking access to the API endpoint when running tests offline.
 
 
+* `GenericMap.units` is renamed to `GenericMap.spatial_units` to avoid confusion with `NDData.unit`.
 0.6.0
 -----
 
