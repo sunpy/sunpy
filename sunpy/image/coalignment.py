@@ -93,18 +93,22 @@ def clip_edges(data, yclips, xclips):
     data : `numpy.ndarray`
         A numpy array of shape (ny, nx).
     yclips : `astropy.units.Quantity`
-        The amount to clip in the y-direction of the data.
+        The amount to clip in the y-direction of the data.  Has units of
+        pixels, and values should be whole non-negative numbers.
     xclips : `astropy.units.Quantity`
-        The amount to clip in the x-direction of the data.
+        The amount to clip in the x-direction of the data.  Has units of
+        pixels, and values should be whole non-negative numbers.
 
     Returns
     -------
     image : `numpy.ndarray`
-        A 2d image with edges clipped off according to the positive and
-        negative ceiling values in the yclips and xclips arrays.
+        A 2d image with edges clipped off according to yclips and xclips
+        arrays.
     """
     ny = data.shape[0]
     nx = data.shape[1]
+    # The purpose of the int below is to ensure integer type since by default
+    # astropy quantities are converted to floats.
     return data[int(yclips[0].value): ny - int(yclips[1].value),
                 int(xclips[0].value): nx - int(xclips[1].value)]
 
