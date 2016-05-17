@@ -20,7 +20,7 @@ from sunpy.util import replacement_filename
 from sunpy import config
 
 from ..download import Downloader, Results
-from ..vso.attrs import Time, _Range
+from ..vso.attrs import Time, _Range, Wavelength
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -171,6 +171,10 @@ class GenericClient(object):
         \*\*kwargs: `dict`
             None.
         """
+#       Currently Fido doesn't support Parsing Wavelength support.
+#       i.e. If you pass Wavelength object it will ot recognize it.
+#       To do recognize it, we store a key called wavelength and make it
+#       hold a .vso.attrs.Wavelength object.
         for elem in args:
             if isinstance(elem, Time):
                 self.map_['TimeRange'] = TimeRange(elem.start, elem.end)
@@ -183,6 +187,8 @@ class GenericClient(object):
                     self.map_[elem.__class__.__name__.lower()] = a_min
                 else:
                     self.map_[elem.__class__.__name__.lower()] = (a_min, a_max)
+            elif issubclass(elem.__class__, Wavelength):
+                self.map_['Wavelength'] = elem
             else:
                 if hasattr(elem, 'value'):
                     self.map_[elem.__class__.__name__.lower()] = elem.value
@@ -242,9 +248,9 @@ class GenericClient(object):
             `sunpy.net.attrs` objects representing the query.
         """
         GenericClient._makeargs(self, *args, **kwargs)
-
         kwergs = copy.copy(self.map_)
         kwergs.update(kwargs)
+        print(kwergs)
         urls = self._get_url_for_timerange(
             self.map_.get('TimeRange'), **kwergs)
         return QueryResponse.create(self.map_, urls)
