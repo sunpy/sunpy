@@ -46,6 +46,7 @@ def slit(mcube_in, range_a, range_b, N_slits=0, shift_x=+1, shift_y=-1,):
         (hasattr(range_a and range_b, 'unit')))):
         if (range_a.unit.is_equivalent(mcube_in[0].units.x) and
             range_b.unit.is_equivalent(mcube_in[0].units.y)):
+            print "second if"
             # convert the world to pixel
             init_map = mcube_in[0]
             c_x1, c_y1 = init_map.data_to_pixel(range_a[0], range_b[0])
@@ -68,32 +69,29 @@ def slit(mcube_in, range_a, range_b, N_slits=0, shift_x=+1, shift_y=-1,):
                          " not shift is possible")
 
 
-    # call to the get pixel numbers routine
-    slit = get_pixels_on_line(int(c_x1.value), int(c_y1.value),
-                              int(c_x2.value), int(c_y2.value))
-
-    all_data = mcube_in.as_array()
-
     # extract the intensities from the data using function
-    intensity_inds = slit_count(slit, shift_y, shift_x, N_slits)
+    intensity_inds = slit_count(c_x1, c_y1, c_x2, c_y2, shift_y, shift_x, N_slits)
+
+    # create an array of the data to index with the resualts of the slit file
+    all_data = mcube_in.as_array()
 
     del_s_x = np.array([intensity_inds[:,:,0]])
     del_s_y = np.array([intensity_inds[:,:,1]])
 
     im_arr = all_data[del_s_x, del_s_y]
     im_out = im_arr.mean(axis=1)
-    return im_out, slit
+    return im_out, intensity_inds[0]
 
 
-def slit_count(init_slit, shift_x, shift_y, N):
+def slit_count(bx, by, tx, ty, shift_x, shift_y, N):
     """
     Returns a list of lists associated with increments away from the inital
     slit. It transorms the slit array
 
     Parameters
     ----------
-    slit : `numpy.ndarray`
-        Inital array of slit values
+    bx, by, tx, ty : `astropy.unit.pixel`
+        X and Y coordinates of the base and tip of the slit.
     shift_x : `int`
         Possible values, `-1`, `0`, `+1`
     shift_y : `int`
@@ -106,6 +104,10 @@ def slit_count(init_slit, shift_x, shift_y, N):
     ind_array : `numpy.ndarray`
         Array of indicies representing the indicies of the interated slits
     """
+
+    # call to the get pixel numbers routine
+    init_slit = get_pixels_on_line(int(bx.value), int(by.value),
+                              int(tx.value), int(ty.value))
 
     shift_ind = np.array([shift_y, shift_x])
     shift_inds = [np.array([0, 0])]
