@@ -238,7 +238,7 @@ scale:\t\t {scale}
         w2.wcs.crval = u.Quantity(self.reference_coordinate)
         w2.wcs.ctype = self.coordinate_system
         w2.wcs.pc = self.rotation_matrix
-        w2.wcs.cunit = self.units
+        w2.wcs.cunit = self.spatial_units
         w2.wcs.dateobs = self.date.isoformat()
         w2.heliographic_latitude = self.heliographic_latitude
         w2.heliographic_longitude = self.heliographic_longitude
@@ -446,8 +446,8 @@ scale:\t\t {scale}
         new_meta = self.meta.copy()
 
         # Update crvals
-        new_meta['crval1'] = ((self.meta['crval1'] * self.units.x + x).to(self.units.x)).value
-        new_meta['crval2'] = ((self.meta['crval2'] * self.units.y + y).to(self.units.y)).value
+        new_meta['crval1'] = ((self.meta['crval1'] * self.spatial_units.x + x).to(self.spatial_units.x)).value
+        new_meta['crval2'] = ((self.meta['crval2'] * self.spatial_units.y + y).to(self.spatial_units.y)).value
 
         new_map.meta = new_meta
 
@@ -513,8 +513,8 @@ scale:\t\t {scale}
     def reference_coordinate(self):
         """Reference point WCS axes in data units (i.e. crval1, crval2). This value
         includes a shift if one is set."""
-        return Pair(self.meta.get('crval1', 0.) * self.units.x,
-                    self.meta.get('crval2', 0.) * self.units.y)
+        return Pair(self.meta.get('crval1', 0.) * self.spatial_units.x,
+                    self.meta.get('crval2', 0.) * self.spatial_units.y)
 
     @property
     def reference_pixel(self):
@@ -526,11 +526,11 @@ scale:\t\t {scale}
     def scale(self):
         """Image scale along the x and y axes in units/pixel (i.e. cdelt1, cdelt2)"""
         #TODO: Fix this if only CDi_j matrix is provided
-        return Pair(self.meta.get('cdelt1', 1.) * self.units.x / u.pixel,
-                    self.meta.get('cdelt2', 1.) * self.units.y / u.pixel)
+        return Pair(self.meta.get('cdelt1', 1.) * self.spatial_units.x / u.pixel,
+                    self.meta.get('cdelt2', 1.) * self.spatial_units.y / u.pixel)
 
     @property
-    def units(self):
+    def spatial_units(self):
         """Image coordinate units along the x and y axes (i.e. cunit1, cunit2)."""
         return Pair(u.Unit(self.meta.get('cunit1', 'arcsec')),
                     u.Unit(self.meta.get('cunit2', 'arcsec')))
@@ -699,13 +699,13 @@ scale:\t\t {scale}
             x = u.Quantity(x, u.deg)
             y = u.Quantity(y, u.deg)
         else:
-            x = u.Quantity(x, self.units.x)
-            y = u.Quantity(y, self.units.y)
+            x = u.Quantity(x, self.spatial_units.x)
+            y = u.Quantity(y, self.spatial_units.y)
 
         x = Longitude(x, wrap_angle=180*u.deg)
         y = Latitude(y)
 
-        return x.to(self.units.x), y.to(self.units.y)
+        return x.to(self.spatial_units.x), y.to(self.spatial_units.y)
 
 
 # #### I/O routines #### #
@@ -1058,14 +1058,14 @@ scale:\t\t {scale}
         if ((isinstance(range_a, u.Quantity) and isinstance(range_b, u.Quantity)) or
             (hasattr(range_a, 'unit') and hasattr(range_b, 'unit'))):
 
-            if (range_a.unit.is_equivalent(self.units.x) and
-                range_b.unit.is_equivalent(self.units.y)):
+            if (range_a.unit.is_equivalent(self.spatial_units.x) and
+                range_b.unit.is_equivalent(self.spatial_units.y)):
                 units = 'data'
             elif range_a.unit.is_equivalent(u.pixel) and range_b.unit.is_equivalent(u.pixel):
                 units = 'pixels'
             else:
                 raise u.UnitsError("range_a and range_b but be "
-                                   "in units convertable to {} or {}".format(self.units['x'],
+                                   "in units convertable to {} or {}".format(self.spatial_units['x'],
                                                                              u.pixel))
         else:
             raise TypeError("Arguments range_a and range_b to function submap "
@@ -1210,8 +1210,8 @@ scale:\t\t {scale}
             new_meta['CD2_2'] *= dimensions[1].value
         new_meta['crpix1'] = (new_nx + 1) / 2.
         new_meta['crpix2'] = (new_ny + 1) / 2.
-        new_meta['crval1'] = self.center.x.to(self.units.x).value + 0.5*(offset[0]*self.scale.x).to(self.units.x).value
-        new_meta['crval2'] = self.center.y.to(self.units.y).value + 0.5*(offset[1]*self.scale.y).to(self.units.y).value
+        new_meta['crval1'] = self.center.x.to(self.spatial_units.x).value + 0.5*(offset[0]*self.scale.x).to(self.spatial_units.x).value
+        new_meta['crval2'] = self.center.y.to(self.spatial_units.y).value + 0.5*(offset[1]*self.scale.y).to(self.spatial_units.y).value
 
         # Create new map instance
         if self.mask is not None:
@@ -1263,7 +1263,7 @@ scale:\t\t {scale}
 
         b0 = self.heliographic_latitude.to(u.deg).value
         l0 = self.heliographic_longitude.to(u.deg).value
-        units = self.units
+        units = self.spatial_units
 
         # Prep the plot kwargs
         plot_kw = {'color': 'white',
@@ -1390,7 +1390,7 @@ scale:\t\t {scale}
         if wcsaxes_compat.is_wcsaxes(axes):
             axes_unit = u.deg
         else:
-            axes_unit = self.units[0]
+            axes_unit = self.spatial_units[0]
 
         bottom_left = bottom_left.to(axes_unit).value
         width = width.to(axes_unit).value
@@ -1557,15 +1557,15 @@ scale:\t\t {scale}
 
             # x-axis label
             if self.coordinate_system.x == 'HG':
-                xlabel = 'Longitude [{lon}]'.format(lon=self.units.x)
+                xlabel = 'Longitude [{lon}]'.format(lon=self.spatial_units.x)
             else:
-                xlabel = 'X-position [{xpos}]'.format(xpos=self.units.x)
+                xlabel = 'X-position [{xpos}]'.format(xpos=self.spatial_units.x)
 
             # y-axis label
             if self.coordinate_system.y == 'HG':
-                ylabel = 'Latitude [{lat}]'.format(lat=self.units.y)
+                ylabel = 'Latitude [{lat}]'.format(lat=self.spatial_units.y)
             else:
-                ylabel = 'Y-position [{ypos}]'.format(ypos=self.units.y)
+                ylabel = 'Y-position [{ypos}]'.format(ypos=self.spatial_units.y)
 
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
