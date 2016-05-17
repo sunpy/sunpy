@@ -1,5 +1,3 @@
-import sunpy.map
-
 import numpy as np
 
 import astropy.units as u
