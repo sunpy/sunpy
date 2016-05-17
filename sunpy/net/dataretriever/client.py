@@ -146,6 +146,10 @@ class GenericClient(BaseClient):
             The query attributes.
 
         """
+#       Currently Fido doesn't support Parsing Wavelength support.
+#       i.e. If you pass Wavelength object it will ot recognize it.
+#       To do recognize it, we store a key called wavelength and make it
+#       hold a .vso.attrs.Wavelength object.
         for elem in args:
             if isinstance(elem, Time):
                 self.map_['TimeRange'] = TimeRange(elem.start, elem.end)
@@ -163,6 +167,8 @@ class GenericClient(BaseClient):
                         prefix = ''
                     minmax = namedtuple("minmax", "{0}min {0}max".format(prefix))
                     self.map_[elem.__class__.__name__.lower()] = minmax(a_min, a_max)
+            elif issubclass(elem.__class__, Wavelength): #FIXME Is this still needed?
+                self.map_['Wavelength'] = elem
             else:
                 if hasattr(elem, 'value'):
                     self.map_[elem.__class__.__name__.lower()] = elem.value
@@ -271,9 +277,9 @@ class GenericClient(BaseClient):
             `sunpy.net.attrs` objects representing the query.
         """
         GenericClient._makeargs(self, *args, **kwargs)
-
         kwergs = copy.copy(self.map_)
         kwergs.update(kwargs)
+        print(kwergs)
         urls = self._get_url_for_timerange(
             self.map_.get('TimeRange'), **kwergs)
         if urls:
