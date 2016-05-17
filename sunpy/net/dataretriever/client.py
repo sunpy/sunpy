@@ -250,7 +250,6 @@ class GenericClient(object):
         GenericClient._makeargs(self, *args, **kwargs)
         kwergs = copy.copy(self.map_)
         kwergs.update(kwargs)
-        print(kwergs)
         urls = self._get_url_for_timerange(
             self.map_.get('TimeRange'), **kwergs)
         return QueryResponse.create(self.map_, urls)
