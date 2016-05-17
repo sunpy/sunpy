@@ -54,13 +54,21 @@ class KanzelhoheClient(GenericClient):
         """
         returns list of urls corresponding to given TimeRange.
         """
-        START_DATE = datetime.datetime(2000, 7, 20, 7, 45, 46)
-        if timerange.start < START_DATE:
-            raise ValueError('Earliest date for which SWAP data is available is {:%Y-%m-%d}'.format(START_DATE))
-        prefix = "http://cesar.kso.ac.at/halpha2k/recent/"
-        suffix = "%Y/kanz_halph_fr_%Y%m%d_%H%M%S.fts.gz"
+        wave = int(kwargs['Wavelength'].min.value)
+        table = {6563:'halpha2k/recent', 32768:'caiia', 5460:'phokada'}
+        table1 = {6563:'halph_fr', 32768:'caiik_fi', 5460:'bband_fi'}
+        datatype = table[wave]
+        datatype1 = table1[wave]
+##        START_DATE = datetime.datetime(2000, 7, 20, 7, 45, 46)
+##        if timerange.start < START_DATE:
+##            raise ValueError('Earliest date for which SWAP data is available is {:%Y-%m-%d}'.format(START_DATE))
+        prefix = "http://cesar.kso.ac.at/{datatype}/"
+        if (wave==6563):
+            suffix = "%Y/kanz_{datatype1}_%Y%m%d_%H%M%S.fts.gz"
+        else:
+            suffix = "%Y/%Y%m%d/processed/kanz_{datatype1}_%Y%m%d_%H%M%S.fts.gz"
         url_pattern = prefix + suffix
-        crawler = Scraper(url_pattern)
+        crawler = Scraper(url_pattern, datatype = datatype, datatype1 = datatype1)
         if not timerange:
             return []
         result = crawler.filelist(timerange)
@@ -74,7 +82,6 @@ class KanzelhoheClient(GenericClient):
         self.map_['instrument'] = 'Kanzelhohe HA2'
         self.map_['phyobs'] = 'irradiance'
         self.map_['provider'] = 'Kanzelhohe'
-        self.map_['wavelength'] = '6563 AA'
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -90,11 +97,16 @@ class KanzelhoheClient(GenericClient):
         boolean: answer as to whether client can service the query
         
         """
-        chkattr = ['Time', 'Instrument']
+        chkattr = ['Time', 'Instrument', 'Wavelength']
         chklist = [x.__class__.__name__ in chkattr for x in query]
+        chk_var = 0
         for x in query:
             if (x.__class__.__name__ == 'Instrument' and x.value.lower() == 'kanzelhohe'):
-                return all(chklist)
+                chk_var += 1
+            if (x.__class__.__name__ == 'Wavelength' and int(x.min.value) in (6563, 5460, 32768) and (x.unit.name).lower()=='angstrom'):
+                chk_var += 1
+        if (chk_var==2):
+            return True
         return False
             
         
