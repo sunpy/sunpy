@@ -59,9 +59,14 @@ class KanzelhoheClient(GenericClient):
         table1 = {6563:'halph_fr', 32768:'caiik_fi', 5460:'bband_fi'}
         datatype = table[wave]
         datatype1 = table1[wave]
-##        START_DATE = datetime.datetime(2000, 7, 20, 7, 45, 46)
-##        if timerange.start < START_DATE:
-##            raise ValueError('Earliest date for which SWAP data is available is {:%Y-%m-%d}'.format(START_DATE))
+        if (wave==6563):
+            START_DATE = datetime.datetime(2000, 7, 20, 7, 45, 46)
+        elif (wave==5460):
+            START_DATE = datetime.datetime(2011, 1, 7, 10, 7, 33)
+        elif (wave==32768):
+            START_DATE = datetime.datetime(2010, 7, 31, 8, 10, 59)
+        if timerange.start < START_DATE:
+            raise ValueError('Earliest date for which SWAP data is available is {:%Y-%m-%d}'.format(START_DATE))
         prefix = "http://cesar.kso.ac.at/{datatype}/"
         if (wave==6563):
             suffix = "%Y/kanz_{datatype1}_%Y%m%d_%H%M%S.fts.gz"
@@ -100,10 +105,11 @@ class KanzelhoheClient(GenericClient):
         chkattr = ['Time', 'Instrument', 'Wavelength']
         chklist = [x.__class__.__name__ in chkattr for x in query]
         chk_var = 0
+        values = [6563, 5460, 32768]
         for x in query:
             if (x.__class__.__name__ == 'Instrument' and x.value.lower() == 'kanzelhohe'):
                 chk_var += 1
-            if (x.__class__.__name__ == 'Wavelength' and int(x.min.value) in (6563, 5460, 32768) and (x.unit.name).lower()=='angstrom'):
+            if (x.__class__.__name__ == 'Wavelength' and int(x.min.value) in values and (x.unit.name).lower()=='angstrom') and int(x.max.value) in values:
                 chk_var += 1
         if (chk_var==2):
             return True
