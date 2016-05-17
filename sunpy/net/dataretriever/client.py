@@ -279,7 +279,6 @@ class GenericClient(BaseClient):
         GenericClient._makeargs(self, *args, **kwargs)
         kwergs = copy.copy(self.map_)
         kwergs.update(kwargs)
-        print(kwergs)
         urls = self._get_url_for_timerange(
             self.map_.get('TimeRange'), **kwergs)
         if urls:
