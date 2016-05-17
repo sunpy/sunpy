@@ -18,9 +18,11 @@ __all__ = ['KanzelhoheClient']
 class KanzelhoheClient(GenericClient):
     """
     Returns a list of URLS to Kanzelhohe H-alpha files corresponding to value of input timerange.
-    URL source: `http://cesar.kso.ac.at/halpha2k/recent/`.
+    URL source: `http://cesar.kso.ac.at/`.
 
-    The earliest date available is from 20-July-2000
+    The earliest data for H-alpha 2k - 20-Jul-2000
+                          Ca-II k - 31-Jul-2010
+                          Continuum - 7-Jan-2011
 
     Parameters
     ----------
@@ -29,6 +31,10 @@ class KanzelhoheClient(GenericClient):
         Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
     
     Instrument: Fixed argument = 'kanzelhohe'
+
+    Wavelength: Fixed argument = astropy.units.quantity.Quantity
+                The physical value of wavelength will belong to any of [5460, 6563, 32768]
+                and units will be Angstroms.
 
     Returns
     -------
@@ -40,7 +46,7 @@ class KanzelhoheClient(GenericClient):
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
 
-    >>> results = Fido.search(a.Time('2015/12/28 00:00:00', '2015/12/28 00:03:00'), a.Instrument('kanzelhohe'))
+    >>> results = Fido.search(a.Time('2015/12/28 00:00:00', '2015/12/28 00:03:00'), a.Instrument('kanzelhohe'), a.Wavelength(6563*u.AA))
     >>> print(results)
     >>> [<Table length=1>
         Start Time           End Time              Source        Instrument
