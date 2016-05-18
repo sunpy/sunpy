@@ -389,7 +389,18 @@ class Database(object):
         if client is None:
             client = VSOClient()
 
-        paths = client.get(query_result, path, methods).wait(progress=progress)
+        remove_list = []
+        for qr in query_result:
+            temp =  tables.DatabaseEntry._from_query_result_block(qr)
+            for database_entry in self.__iter__():
+                if database_entry.path is not None and temp.__compare_attributes__(database_entry, ["source", "provider", "physobs", "fileid", "observation_time_start", "observation_time_end", "instrument", "size", "wavemin", "wavemax"]):
+                    remove_list.append(qr)
+                    break
+
+        for temp in remove_list:
+            query_result.remove(temp)
+
+        paths = client.get(query_result, path).wait(progress=progress)
 
         for (path, block) in zip(paths, query_result):
             qr_entry = tables.DatabaseEntry._from_query_result_block(block)
