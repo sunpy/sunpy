@@ -370,7 +370,7 @@ class DatabaseEntry(Base):
             self.fits_header_entries == other.fits_header_entries and
             self.tags == other.tags)
 
-    def __compare_attributes__(self, other, attribute_list):
+    def _compare_attributes(self, other, attribute_list):
         """Compare a given list of attributes of two :class:`DatabaseEntry` 
         instances and return True if all of them match.
 
