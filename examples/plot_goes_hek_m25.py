@@ -28,5 +28,6 @@ flares_hek = client.query(hek.attrs.Time(tr.start,tr.end), hek.attrs.FL, hek.att
 
 goes.peek()
 plt.axvline(parse_time(flares_hek[0].get('event_peaktime')))
-plt.axvspan(parse_time(flares_hek[0].get('event_starttime')), parse_time(flares_hek[0].get('event_endtime')), alpha=0.2, label=result[0].get('fl_goescls'))
+plt.axvspan(parse_time(flares_hek[0].get('event_starttime')), parse_time(flares_hek[0].get('event_endtime')),
+            alpha=0.2, label=flares_hek[0].get('fl_goescls'))
 plt.legend(loc=2)
