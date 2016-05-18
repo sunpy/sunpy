@@ -431,6 +431,40 @@ def test_add_entry_from_hek_qr(database):
 
 
 @pytest.mark.online
+def test_vso_query_block_caching(database, download_qr, tmpdir):
+    assert len(database) == 0
+
+    database.download_from_vso_query_result(
+        download_qr, path=str(tmpdir.join('{file}.fits')))
+    fits_pattern = str(tmpdir.join('*.fits'))
+    num_of_fits_headers = sum(
+        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+
+    assert len(database) == num_of_fits_headers > 0
+
+    database.clear()
+    database.commit()
+
+    database.download_from_vso_query_result(
+        download_qr[:1], path=str(tmpdir.join('{file}.type1')))
+    fits_pattern = str(tmpdir.join('*.type1'))
+    num_of_fits_headers_1 = sum(
+        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+
+    assert len(database) == num_of_fits_headers_1 > 0
+
+    database.download_from_vso_query_result(
+        download_qr, path=str(tmpdir.join('{file}.type2')))
+    fits_pattern = str(tmpdir.join('*.type2'))
+    num_of_fits_headers_2 = sum(
+        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+
+    assert len(database) == num_of_fits_headers_1 + num_of_fits_headers_2 > 0
+
+    assert num_of_fits_headers_1+num_of_fits_headers_2 == num_of_fits_headers
+
+
+@pytest.mark.online
 def test_download_from_qr(database, download_qr, tmpdir):
     assert len(database) == 0
     database.download_from_vso_query_result(
