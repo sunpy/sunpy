@@ -58,7 +58,7 @@ class SWAPClient(GenericClient):
         returns list of urls corresponding to given TimeRange.
         """
         level = kwargs.get('level', 1)
-        if (level==1 or level==0):
+        if (level == 1 or level == 0):
             SWAP_STARTDATE = datetime.datetime(2009, 11, 24)
         else:
             SWAP_STARTDATE = datetime.datetime(2010, 1, 4)
@@ -66,7 +66,7 @@ class SWAPClient(GenericClient):
             raise ValueError('Earliest date for which SWAP data is available is {:%Y-%m-%d}'.format(SWAP_STARTDATE))
         datatype = {0: 'eng', 1:'bsd', 'q':'qlk', 'Q':'qlk'}
         prefix = 'http://proba2.oma.be/swap/data/{datatype}/%Y/%m/%d/'
-        if (level==0 or level==1):
+        if (level == 0 or level == 1):
             suffix = '{instrument}_lv{level}_%Y%m%d_%H%M%S.fits'
         else:
             suffix = '%Y_%m_%d__%H_%M_%S__PROBA2_SWAP_SWAP_174.jp2'
@@ -107,7 +107,7 @@ class SWAPClient(GenericClient):
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'swap':
                 chk_var += 1
-            if x.__class__.__name__ == 'Level' and x.value in (0,1,'q','Q'):
+            if x.__class__.__name__ == 'Level' and x.value in (0, 1, 'q', 'Q'):
                 chk_var += 1
         if (chk_var == 2):
             return True
