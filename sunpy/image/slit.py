@@ -46,7 +46,6 @@ def slit(mcube_in, range_a, range_b, N_slits=0, shift_x=+1, shift_y=-1,):
         (hasattr(range_a and range_b, 'unit')))):
         if (range_a.unit.is_equivalent(mcube_in[0].units.x) and
             range_b.unit.is_equivalent(mcube_in[0].units.y)):
-            print "second if"
             # convert the world to pixel
             init_map = mcube_in[0]
             c_x1, c_y1 = init_map.data_to_pixel(range_a[0], range_b[0])
