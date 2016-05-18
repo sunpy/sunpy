@@ -64,6 +64,12 @@ class GOESClient(GenericClient):
         total_days = (timerange.end - timerange.start).days + 1 
         all_dates = timerange.split(total_days)
         result = list()
+#       Earlier we assumed that an entire range (consequently all dates within the range) were assigned the
+#       same GOES sat number, which meant we supplied timerange.start and timerange.end to
+#       _get_goes_sat_num. But now, we iterate over all the dates individually and hence
+#       _get_goes_sat_num gets each single date as an argument (the timerange.start and timerange.end
+#       for a single day is the day itself (trivial) ). That is why the same date. Its iterating over all the dates
+#       indivually.
         for day in all_dates:
             regex = "{date:%Y}/go{sat:02d}"
             if (day.end < parse_time('1999/01/15')):
