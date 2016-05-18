@@ -256,6 +256,14 @@ scale:\t\t {scale}
 
         return w2
 
+    @property
+    def coordinate_frame(self):
+        """
+        An `astropy.coordinates.BaseFrame` instance created from the coordinate
+        information for this Map.
+        """
+        return astropy.wcs.utils.wcs_to_celestial_frame(self.wcs)
+
     # Some numpy extraction
     @property
     def dimensions(self):
