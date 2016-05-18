@@ -1,5 +1,6 @@
 Latest
 ------
+* Fixed `aiaprep` to return properly sized map.
 
 * Deprecation warnings fixed when using image coalignment.
 * Sunpy is now Python 3.x compatible (3.4 and 3.5).
