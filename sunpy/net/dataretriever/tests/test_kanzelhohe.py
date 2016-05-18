@@ -28,19 +28,19 @@ def test_get_url_for_timerange(timerange, wavelength, url_start, url_end):
 
 def test_can_handle_query():
     ans1 = kanzelhohe.KanzelhoheClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'), Instrument('kanzelhohe'), Wavelength(6563*u.AA))
-    assert ans1 == True
+    assert ans1 is True
     ans2 = kanzelhohe.KanzelhoheClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'), Instrument('swap'))
-    assert ans2 == False
+    assert ans2 is False
     ans3 = kanzelhohe.KanzelhoheClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'))
-    assert ans3 == False
+    assert ans3 is False
     ans4 = kanzelhohe.KanzelhoheClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'), Instrument('kanzelhohe'), Wavelength(32768*u.AA))
-    assert ans4 == True
+    assert ans4 is True
 
 @pytest.mark.online
 def test_query():
     qr = KClient.query(Time('2015/01/10 00:00:00', '2015/01/10 12:00:00'), Wavelength(6563*u.AA))
     assert isinstance(qr, QueryResponse)
-    assert len(qr) == 2
+    assert len(qr) is 2
     assert qr.time_range()[0] == '2015/01/10'
     assert qr.time_range()[1] == '2015/01/10'
 
