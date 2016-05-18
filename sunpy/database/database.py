@@ -393,7 +393,10 @@ class Database(object):
         for qr in query_result:
             temp =  tables.DatabaseEntry._from_query_result_block(qr)
             for database_entry in self.__iter__():
-                if database_entry.path is not None and temp._compare_attributes(database_entry, ["source", "provider", "physobs", "fileid", "observation_time_start", "observation_time_end", "instrument", "size", "wavemin", "wavemax"]):
+                if database_entry.path is not None and temp._compare_attributes(
+                    database_entry, ["source", "provider", "physobs", "fileid", 
+                    "observation_time_start", "observation_time_end", 
+                    "instrument", "size", "wavemin", "wavemax"]):
                     remove_list.append(qr)
                     break
 
