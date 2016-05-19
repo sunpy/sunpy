@@ -25,7 +25,7 @@ from sunpy.physics.solar_rotation import rot_hpc
 
 ##############################################################################
 # Load in an AIA map
-aia_map = sunpy.map.Map(sunpy.data.sample.AIA171IMAGE)
+aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
 ##############################################################################
 # Let's look for sunspots in the HEK close to the time of the AIA map. First
