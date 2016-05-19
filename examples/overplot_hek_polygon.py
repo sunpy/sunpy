@@ -49,11 +49,12 @@ for i, response in enumerate(responses):
 
 ##############################################################################
 # Now let's get the boundary of the coronal hole
-p1 = responses[response_index]["hpc_boundcc"][9: -2]
+ch = responses[response_index]
+p1 = ch["hpc_boundcc"][9: -2]
 p2 = p1.split(',')
 p3 = [v.split(" ") for v in p2]
 ch_boundary = np.asarray([(eval(v[0]), eval(v[1])) for v in p3])
-ch_date = parse_time(responses[response_index]['event_starttime'])
+ch_date = parse_time(ch['event_starttime'])
 
 ##############################################################################
 # The coronal hole was detected at a certain time.  To plot it on a map, we
@@ -75,7 +76,8 @@ fig = plt.figure()
 ax = plt.subplot()
 aia_map.plot()
 coronal_hole = patches.Polygon(rotated_boundary, color='white', fill=False, hatch='*')
-ax.set_title('SPoCA coronal hole polygon overplotted')
+ax.set_title('{:s} {:s} \n {:s} \n {:s}'.format(aia_map.nickname, str(aia_map.wavelength), str(aia_map.date), ch['frm_specificid']))
 ax.add_artist(coronal_hole)
 plt.colorbar()
+plt.tight_layout()
 plt.show()
