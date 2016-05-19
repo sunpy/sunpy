@@ -3,15 +3,19 @@
 AIA to STEREO Coordinate Conversion
 ===================================
 
-In this example I am going to demonstrate how you can identify a feature on
-the surface of the Sun in an AIA image and then convert that point to a point
-in a STEREO image.
+In this example we demonstrate how you can identify a point or region on the
+surface of the Sun in an AIA image and then convert that point to a point in a
+STEREO image.
+
+.. note::
+    This example requires `WCSAxes` which is an optional SunPy dependency.
 """
 
 import matplotlib.pyplot as plt
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
+import wcsaxes
 
 import sunpy.map
 import sunpy.coordinates
@@ -21,7 +25,7 @@ from sunpy.net import vso
 
 ###############################################################################
 # The first step is to download some data, we are going to get an image from
-# early 2010 when the STEREO spacecraft were roughly 90 deg seperated from the
+# early 2011 when the STEREO spacecraft were roughly 90 deg seperated from the
 # Earth.
 
 stereo = (vso.attrs.Source('STEREO_B') &
@@ -39,33 +43,32 @@ vc = vso.VSOClient()
 res = vc.query(wave, aia | stereo)
 
 ###############################################################################
-# The results from VSO query
+# The results from VSO query:
 print(res)
 
 
 ###############################################################################
-# Download the files
+# Download the files:
 files = vc.get(res).wait()
 
 
 ###############################################################################
 # Create a dictionary with the two maps, cropped down to full disk.
-maps = {m.detector:m.submap((-1100, 1100)*u.arcsec,
-                            (-1100, 1100)*u.arcsec) for m in sunpy.map.Map(files)}
-
+maps = {m.detector: m.submap((-1100, 1100)*u.arcsec,
+                             (-1100, 1100)*u.arcsec) for m in sunpy.map.Map(files)}
 
 ###############################################################################
 # Plot both maps
-fig = plt.figure(figsize=(15,5))
+fig = plt.figure(figsize=(15, 5))
 for i, m in enumerate(maps.values()):
-    ax = fig.add_subplot(1,2,i+1, projection=m.wcs)
+    ax = fig.add_subplot(1, 2, i+1, projection=m.wcs)
     m.plot(axes=ax)
 
 ###############################################################################
 # We are now going to pick out a region around the south west corner:
 
-aia_w = 200*u.arcsec
-aia_h = 250*u.arcsec
+aia_width = 200*u.arcsec
+aia_height = 250*u.arcsec
 aia_bottom_left = (-800, -300)*u.arcsec
 
 
@@ -75,15 +78,15 @@ m = maps['AIA']
 fig = plt.figure()
 ax = fig.add_subplot(111, projection=m.wcs)
 m.plot(axes=ax)
-m.draw_rectangle(aia_bottom_left, aia_w, aia_h)
+m.draw_rectangle(aia_bottom_left, aia_width, aia_height)
 
 
 ###############################################################################
 # Create a submap of this area
 subaia = maps['AIA'].submap(u.Quantity((aia_bottom_left[0],
-                                        aia_bottom_left[0] + aia_w)),
+                                        aia_bottom_left[0] + aia_width)),
                             u.Quantity((aia_bottom_left[1],
-                                        aia_bottom_left[1] + aia_h)))
+                                        aia_bottom_left[1] + aia_height)))
 subaia.peek()
 
 ###############################################################################
@@ -92,16 +95,16 @@ subaia.peek()
 # this object, we use `Map.coordinate_frame` so that the location parameters of
 # SDO are correctly set.
 hpc_aia = SkyCoord((aia_bottom_left,
-                    aia_bottom_left + u.Quantity((aia_w, 0*u.arcsec)),
-                    aia_bottom_left + u.Quantity((0*u.arcsec, aia_h)),
-                    aia_bottom_left + u.Quantity((aia_w, aia_h))),
+                    aia_bottom_left + u.Quantity((aia_width, 0*u.arcsec)),
+                    aia_bottom_left + u.Quantity((0*u.arcsec, aia_height)),
+                    aia_bottom_left + u.Quantity((aia_width, aia_height))),
                    frame=maps['AIA'].coordinate_frame)
 
 print(hpc_aia)
 
 ###############################################################################
 # Now we convert these coordinates into Heliographic Stonyhurst coordinates,
-# which are on the Sun, with the zero meridian aligned with the Earth.
+# which are on the Sun, with the zero meridian facing the Earth.
 hgs = hpc_aia.transform_to('heliographic_stonyhurst')
 print(hgs)
 
@@ -115,7 +118,7 @@ hgs.B0 = maps['EUVI'].heliographic_latitude
 # We do this on the Heliographic frame because when in a Heliographic frame
 # these parameters have no effect on the frame, but they are used when the
 # frame is converted back to Helioprojective. And now we can convert back to
-# Helioprojective, but this time from the view point of STEREO B:
+# Helioprojective, but this time from the view-point of STEREO B:
 hpc_B = hgs.transform_to('helioprojective')
 print(hpc_B)
 
@@ -144,4 +147,3 @@ fig = plt.figure(figsize=(15, 5))
 for i, m in enumerate((subeuvi, subaia)):
     ax = fig.add_subplot(1, 2, i+1, projection=m.wcs)
     m.plot(axes=ax)
-
