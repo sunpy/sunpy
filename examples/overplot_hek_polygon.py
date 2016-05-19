@@ -80,4 +80,3 @@ ax.set_title('{:s} {:s} \n {:s} \n {:s}'.format(aia_map.nickname, str(aia_map.wa
 ax.add_artist(coronal_hole)
 plt.colorbar()
 plt.tight_layout()
-plt.show()
