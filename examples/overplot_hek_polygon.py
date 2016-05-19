@@ -45,15 +45,15 @@ area = 0.0
 for i, response in enumerate(responses):
     if response['area_atdiskcenter'] > area and np.abs(response['hgc_y']) < 60.0:
         area = response['area_atdiskcenter']
-        coronal_hole = i
+        response_index = i
 
 ##############################################################################
 # Now let's get the boundary of the coronal hole
-p1 = responses[coronal_hole]["hpc_boundcc"][9: -2]
+p1 = responses[response_index]["hpc_boundcc"][9: -2]
 p2 = p1.split(',')
 p3 = [v.split(" ") for v in p2]
 ch_boundary = np.asarray([(eval(v[0]), eval(v[1])) for v in p3])
-ch_date = parse_time(responses[coronal_hole]['event_starttime'])
+ch_date = parse_time(responses[response_index]['event_starttime'])
 
 ##############################################################################
 # The coronal hole was detected at a certain time.  To plot it on a map, we
@@ -74,8 +74,8 @@ for i in range(0, n):
 fig = plt.figure()
 ax = plt.subplot()
 aia_map.plot()
-rect = patches.Polygon(rotated_boundary, color='white', fill=False, hatch='*')
+coronal_hole = patches.Polygon(rotated_boundary, color='white', fill=False, hatch='*')
 ax.set_title('SPoCA coronal hole polygon overplotted')
-ax.add_artist(rect)
+ax.add_artist(coronal_hole)
 plt.colorbar()
 plt.show()
