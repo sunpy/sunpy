@@ -75,7 +75,7 @@ for i in range(0, n):
 fig = plt.figure()
 ax = plt.subplot()
 aia_map.plot()
-coronal_hole = patches.Polygon(rotated_boundary, color='white', fill=False, hatch='*')
+coronal_hole = patches.Polygon(rotated_boundary, color='white', fill=False)
 ax.set_title('{:s}\n{:s}'.format(aia_map.name, ch['frm_specificid']))
 ax.add_artist(coronal_hole)
 plt.colorbar()
