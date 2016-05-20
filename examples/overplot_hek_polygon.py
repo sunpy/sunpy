@@ -1,8 +1,8 @@
-# -*- coding: utf-8 -*-
 """
-===========================================
-Overplotting HEK information on SunPy maps
-===========================================
+=====================================================
+Overplotting HEK feature/event polygons on SunPy maps
+=====================================================
+
 This example shows how to overplot HEK outlines on SunPy maps.
 """
 
@@ -24,7 +24,7 @@ from sunpy.time import parse_time
 from sunpy.physics.solar_rotation import rot_hpc
 
 ##############################################################################
-# Load in an AIA map
+# Load in an AIA map:
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
 ##############################################################################
@@ -40,7 +40,7 @@ responses = hek_client.query(hek.attrs.Time(start_time, end_time), hek.attrs.CH,
 
 ##############################################################################
 # Let's find the biggest coronal hole within 60 degrees north/south of the
-# equator
+# equator:
 area = 0.0
 for i, response in enumerate(responses):
     if response['area_atdiskcenter'] > area and np.abs(response['hgc_y']) < 60.0:
@@ -76,7 +76,7 @@ fig = plt.figure()
 ax = plt.subplot()
 aia_map.plot()
 coronal_hole = patches.Polygon(rotated_boundary, color='white', fill=False, hatch='*')
-ax.set_title('{:s} {:s} \n {:s} \n {:s}'.format(aia_map.nickname, str(aia_map.wavelength), str(aia_map.date), ch['frm_specificid']))
+ax.set_title('{:s}\n{:s}'.format(aia_map.name, ch['frm_specificid']))
 ax.add_artist(coronal_hole)
 plt.colorbar()
 plt.tight_layout()
