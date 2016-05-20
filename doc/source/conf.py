@@ -25,10 +25,6 @@
 # Thus, any C-extensions that are needed to build the documentation will *not*
 # be accessible, and the documentation will not build correctly.
 
-# -- Mock Modules -------------------------------------------------------------
-# scikit-image will not install on RTD, so if it is no present we
-# use Mock instead so the docs will still build correctly.
-
 import os
 import sys
 import datetime
@@ -75,6 +71,9 @@ exclude_patterns.append('_templates')
 # be used globally.
 rst_epilog += """
 """
+
+# put auto generated api docs in the generated folder.
+automodapi_toctreedirnm = 'generated/api'
 
 # -- Project information ------------------------------------------------------
 
@@ -180,11 +179,12 @@ edit_on_github_doc_root = "docs"
 extensions += ['sphinx_gallery.gen_gallery']
 
 sphinx_gallery_conf = {
+    'mod_example_dir': 'generated/modules', # path to store the module using example template
     # execute all examples except those that start with "skip_"
     'filename_pattern': '^((?!skip_).)*$',
     # path to the examples scripts
     'examples_dirs': '..{}..{}examples'.format(os.sep, os.sep),
-    'gallery_dirs': 'gallery',
+    'gallery_dirs': 'generated/gallery',
     'reference_url': {
         'sunpy': None,
         'astropy': 'http://docs.astropy.org/en/stable/',
