@@ -264,6 +264,35 @@ scale:\t\t {scale}
         """
         return astropy.wcs.utils.wcs_to_celestial_frame(self.wcs)
 
+    def _as_mpl_axes(self):
+        """
+        Compatibility hook for Matplotlib and WCSAxes.
+        This functionality requires the WCSAxes package to work. The reason
+        we include this here is that it allows users to use WCSAxes without
+        having to explicitly import WCSAxes
+        With this method, one can do::
+
+            import matplotlib.pyplot as plt
+            import sunpy.map
+            amap = sunpy.map.Map('filename.fits')
+            fig = plt.figure()
+            ax = plt.subplot(projection=wcs)
+            ...
+
+        and this will generate a plot with the correct WCS coordinates on the
+        axes. See http://wcsaxes.readthedocs.io for more information.
+        """
+
+        try:
+            from wcsaxes import WCSAxes
+        except ImportError:
+            raise ImportError("Using WCS instances as Matplotlib projections "
+                              "requires the WCSAxes package to be installed. "
+                              "See http://wcsaxes.readthedocs.io for more "
+                              "details.")
+        else:
+            return WCSAxes, {'wcs': self.wcs}
+
     # Some numpy extraction
     @property
     def dimensions(self):
@@ -1423,16 +1452,19 @@ scale:\t\t {scale}
         ----------
 
         levels : `~astropy.units.Quantity`
-            A list of numbers indicating the level curves to draw given in percent.
+            A list of numbers indicating the level curves to draw given in
+            percent.
 
         axes : `matplotlib.axes.Axes`
-            The axes on which to plot the rectangle, defaults to the current axes.
+            The axes on which to plot the rectangle, defaults to the current
+            axes.
 
         Returns
         -------
 
         cs : `list`
-            The `~matplotlib.QuadContourSet` object, after it has been added to ``axes``.
+            The `~matplotlib.QuadContourSet` object, after it has been added to
+            ``axes``.
 
         Notes
         -----
@@ -1444,9 +1476,13 @@ scale:\t\t {scale}
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
 
-        #TODO: allow for use of direct input of contours but requires units of map flux which is not yet implemented
+        contour_kwargs = {'cmap': 'viridis'}
+        contour_kwargs.update(contour_args)
+        # TODO: allow for use of direct input of contours but requires units of
+        # map flux which is not yet implemented
 
-        cs = axes.contour(self.data, 0.01 * levels.to('percent').value * self.data.max(), **contour_args)
+        cs = axes.contour(self.data, 0.01 * levels.to('percent').value * self.data.max(),
+                          **contour_kwargs)
         return cs
 
     @toggle_pylab
