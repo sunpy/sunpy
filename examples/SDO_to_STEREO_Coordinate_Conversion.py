@@ -30,13 +30,13 @@ from sunpy.net import vso
 
 stereo = (vso.attrs.Source('STEREO_B') &
           vso.attrs.Instrument('EUVI') &
-          vso.attrs.Time('2011/1/1', '2011/1/1T00:10:00'))
+          vso.attrs.Time('2011-01-01', '2011-01-01T00:10:00'))
 
 aia = (vso.attrs.Instrument('AIA') &
-       vso.attrs.Sample(24*u.hour) &
-       vso.attrs.Time('2011/1/1', '2011/1/2'))
+       vso.attrs.Sample(24 * u.hour) &
+       vso.attrs.Time('2011-01-01', '2011-01-02'))
 
-wave = vso.attrs.Wave(30*u.nm, 31*u.nm)
+wave = vso.attrs.Wave(30 * u.nm, 31 * u.nm)
 
 
 vc = vso.VSOClient()
@@ -54,8 +54,8 @@ files = vc.get(res).wait()
 
 ###############################################################################
 # Create a dictionary with the two maps, cropped down to full disk.
-maps = {m.detector: m.submap((-1100, 1100)*u.arcsec,
-                             (-1100, 1100)*u.arcsec) for m in sunpy.map.Map(files)}
+maps = {m.detector: m.submap((-1100, 1100) * u.arcsec,
+                             (-1100, 1100) * u.arcsec) for m in sunpy.map.Map(files)}
 
 ###############################################################################
 # Plot both maps
@@ -95,8 +95,8 @@ subaia.peek()
 # this object, we use `Map.coordinate_frame` so that the location parameters of
 # SDO are correctly set.
 hpc_aia = SkyCoord((aia_bottom_left,
-                    aia_bottom_left + u.Quantity((aia_width, 0*u.arcsec)),
-                    aia_bottom_left + u.Quantity((0*u.arcsec, aia_height)),
+                    aia_bottom_left + u.Quantity((aia_width, 0 * u.arcsec)),
+                    aia_bottom_left + u.Quantity((0 * u.arcsec, aia_height)),
                     aia_bottom_left + u.Quantity((aia_width, aia_height))),
                    frame=maps['AIA'].coordinate_frame)
 
@@ -130,6 +130,7 @@ for i, (m, coord) in enumerate(zip([maps['EUVI'], maps['AIA']],
     ax = fig.add_subplot(1, 2, i+1, projection=m.wcs)
     m.plot(axes=ax)
 
+    # coord[3] is the top-right corner coord[0] is the bottom-left corner.
     w = (coord[3].Tx - coord[0].Tx)
     h = (coord[3].Ty - coord[0].Ty)
     m.draw_rectangle(u.Quantity((coord[0].Tx, coord[0].Ty)), w, h,
