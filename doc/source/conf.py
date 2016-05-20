@@ -153,19 +153,20 @@ try:
     import sphinx_gallery
     extensions += ['sphinx_gallery.gen_gallery']
 
-	sphinx_gallery_conf = {
-	    'mod_example_dir': 'generated/modules', # path to store the module using example template
-	    # execute all examples except those that start with "skip_"
-	    'filename_pattern': '^((?!skip_).)*$',
-	    # path to the examples scripts
-	    'examples_dirs': '..{}..{}examples'.format(os.sep, os.sep),
-	    'gallery_dirs': 'generated/gallery',
-	    'reference_url': {
-		'sunpy': None,
-		'astropy': 'http://docs.astropy.org/en/stable/',
-		'matplotlib': 'http://matplotlib.org/',
-		'numpy': 'http://docs.scipy.org/doc/numpy/'}
-	    }
+    sphinx_gallery_conf = {
+        # path to store the module using example template
+        'mod_example_dir': 'generated/modules',
+        # execute all examples except those that start with "skip_"
+        'filename_pattern': '^((?!skip_).)*$',
+        # path to the examples scripts
+        'examples_dirs': '..{}..{}examples'.format(os.sep, os.sep),
+        'gallery_dirs': 'generated/gallery',
+        'reference_url': {
+            'sunpy': None,
+            'astropy': 'http://docs.astropy.org/en/stable/',
+            'matplotlib': 'http://matplotlib.org/',
+            'numpy': 'http://docs.scipy.org/doc/numpy/'}
+        }
 except ImportError:
     def setup(app):
         app.warn('The sphinx_gallery extension is not installed, so the '
