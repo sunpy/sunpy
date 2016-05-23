@@ -62,13 +62,13 @@ def download_sample_data(progress=True, overwrite=True, timeout=None):
 
     Parameters
     ----------
-    progress: bool
+    progress: `bool`
         Show a progress bar during download
-    overwrite: bool
+    overwrite: `bool`
         If exist overwrites the downloaded sample data.
-    timeout: float
-        The timeout in seconds.
-        Default timeout is `astropy.utils.data.Conf.remote_timeout`.
+    timeout: `float`
+        The timeout in seconds. If `None` the default timeout is used from
+        `astropy.utils.data.Conf.remote_timeout`.
 
     Returns
     -------
