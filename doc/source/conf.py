@@ -161,6 +161,7 @@ try:
         # path to the examples scripts
         'examples_dirs': '..{}..{}examples'.format(os.sep, os.sep),
         'gallery_dirs': 'generated/gallery',
+        'default_thumb_file': '../logo/sunpy_icon_128x128.png',
         'reference_url': {
             'sunpy': None,
             'astropy': 'http://docs.astropy.org/en/stable/',
