@@ -67,9 +67,9 @@ for i, m in enumerate(maps.values()):
 ###############################################################################
 # We are now going to pick out a region around the south west corner:
 
-aia_width = 200*u.arcsec
-aia_height = 250*u.arcsec
-aia_bottom_left = (-800, -300)*u.arcsec
+aia_width = 200 * u.arcsec
+aia_height = 250 * u.arcsec
+aia_bottom_left = (-800, -300) * u.arcsec
 
 
 ###############################################################################
