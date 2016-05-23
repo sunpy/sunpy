@@ -76,8 +76,8 @@ print(aia_map.coordinate_system)
 print(aia_map.measurement)
 
 ##############################################################################
-# If you wish to see only a part of the image then you can create a submap with
-# given range AstroPy Quantities:
+# To see only a part of the image you create a submap, specifying ranges in
+# AstroPy Quantities:
 rangex = u.Quantity([aia_map.xrange[0], 0 * u.arcsec])
 rangey = u.Quantity([aia_map.yrange[0], 0 * u.arcsec])
 aia_submap = aia_map.submap(rangex, rangey)
