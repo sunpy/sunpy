@@ -96,7 +96,7 @@ aia_resampled_map.peek(draw_limb=True, draw_grid=True)
 # dimensions argument into one single pixel.
 # This can be used to increase the signal to noise ratio.
 # For this the new dimensions must divide original image size exactly.
-dimensions = dimensions = u.Quantity(aia_map.dimensions) / 16
+dimensions = u.Quantity(aia_map.dimensions) / 16
 aia_superpixel_map = aia_map.superpixel(dimensions)
 aia_superpixel_map.peek(draw_limb=True)
 
