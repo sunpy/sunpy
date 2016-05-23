@@ -1584,6 +1584,11 @@ scale:\t\t {scale}
             warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
                           Warning)
 
+        if not wcsaxes_compat.is_wcsaxes(axes) and wcsaxes_compat.HAVE_WCSAXES:
+            warnings.warn("WCSAxes is installed but not being used."
+                          " Plots may not have the expected behaviour.",
+                          Warning)
+
         # Normal plot
         imshow_args = deepcopy(self.plot_settings)
         if 'title' in imshow_args:
