@@ -276,12 +276,13 @@ scale:\t\t {scale}
             import sunpy.map
             amap = sunpy.map.Map('filename.fits')
             fig = plt.figure()
-            ax = plt.subplot(projection=wcs)
+            ax = plt.subplot(projection=amap)
             ...
 
         and this will generate a plot with the correct WCS coordinates on the
         axes. See http://wcsaxes.readthedocs.io for more information.
         """
+        # This code is reused from Astropy
 
         try:
             from wcsaxes import WCSAxes
