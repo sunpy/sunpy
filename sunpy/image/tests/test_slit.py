@@ -20,20 +20,18 @@ def numbered_array():
     test_numb = np.linspace(1,10,10)*np.ones((10,10))
     return test_numb
 
-def test_slit_count():
-    
-
-
+@pytest.fixture
+def e_list():
+    alist=[]
+    for i in range(1,11):
+        alist.append([i,i])
+    return alist
 
 def test_slit_count():
     assert slit_count(0, 0, 928, 0, 0, 1, 1 ) isinstance numpy.ndarray
-  
-    
+    assert slit_count(0, 0, 9, 9, 0, 0, 0) == e_list()
 
 def test_get_pixels_on_line():
     assert get_pixels_on_line(0, 928, 0, 0) isinstance numpy.ndarray
     assert get_pixels_on_line(0, 0, 10, 10) == np.linspace(1,10,10)
-
-
-
 
