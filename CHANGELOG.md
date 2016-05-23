@@ -1,5 +1,6 @@
 Latest
 ------
+* Added `timeout` parameter in `sunpy.data.download_sample_data()`
 * Fixed `aiaprep` to return properly sized map.
 * Deprecation warnings fixed when using image coalignment.
 * Sunpy is now Python 3.x compatible (3.4 and 3.5).
