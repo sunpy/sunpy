@@ -1476,18 +1476,16 @@ scale:\t\t {scale}
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
 
-        contour_kwargs = {'cmap': 'viridis'}
-        contour_kwargs.update(contour_args)
         # TODO: allow for use of direct input of contours but requires units of
         # map flux which is not yet implemented
 
         cs = axes.contour(self.data, 0.01 * levels.to('percent').value * self.data.max(),
-                          **contour_kwargs)
+                          **contour_args)
         return cs
 
     @toggle_pylab
     def peek(self, draw_limb=False, draw_grid=False,
-                   colorbar=True, basic_plot=False, **matplot_args):
+             colorbar=True, basic_plot=False, **matplot_args):
         """Displays the map in a new figure
 
         Parameters
