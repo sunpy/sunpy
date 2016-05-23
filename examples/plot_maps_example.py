@@ -11,15 +11,17 @@ In this example you will be learning how to create and modify SunPy Map objects.
 # Start by importing the necessary modules.
 
 from __future__ import print_function, division
+
+import numpy as np
+import astropy.units as u
+
 import sunpy.map
 import sunpy.data.sample
-import numpy as np
-from astropy import units as u
 
 ##############################################################################
 # SunPy Maps store 2D data in a numpy array and additional data in a metadata
 # dictionary giving information relating to the data and instrument.
-# You can create a Map in a number of ways, including loading a fits file or URL:
+# You can create a Map in a number of ways, including loading a FITS file or URL:
 # ``mymap = sunpy.map.Map('file1.fits')``
 # ``mymap = sunpy.map.Map(url_str)``
 # Or using creating manually by using tuple with the data/header within:
@@ -47,10 +49,12 @@ print(manual_map.yrange)
 # In general the attributes are populated using details in the metadata and in
 # this case there is no centre pixel or pixel size information given so SunPy
 # is defaulting to assuming each pixel is 1 arcsec.
+# This is in Helioprojective tangent projection in both longitude and latitude:
+print(manual_map.coordinate_system)
 
 ##############################################################################
 # A real map example is given in the sample data, where the sunpy.data.sample.NAME
-# returns the location of the given fits file.
+# returns the location of the given FITS file.
 aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 aia_map.peek(draw_limb=True)
 
@@ -82,25 +86,23 @@ aia_submap.peek(draw_limb=True)
 ##############################################################################
 # Similarly, if you want to reduce the angular resolution of the map you can use
 # the resample method, specifying the dimensions as an Astropy Quantity in pixels:
-dimensions = u.Quantity([50, 50] * u.pixel)
+dimensions = u.Quantity([50, 50], u.pixel)
 aia_resampled_map = aia_map.resample(dimensions)
-aia_resampled_map.peek(draw_limb=True)
+aia_resampled_map.peek(draw_limb=True, draw_grid=True)
 
 ##############################################################################
 # Similar to resampling you can use superpixels, this will reduce the resolution
 # of the image by combining the number of pixels (in each dimension) in the
 # dimensions argument into one single pixel.
-# This can be used to increase the signal to noise ratio:
+# This can be used to increase the signal to noise ratio.
 # For this the new dimensions must divide original image size exactly.
-dimensions = u.Quantity(np.array(aia_map.data.shape) / 16 * u.pixel)
+dimensions = dimensions = u.Quantity(aia_map.dimensions) / 16
 aia_superpixel_map = aia_map.superpixel(dimensions)
 aia_superpixel_map.peek(draw_limb=True)
 
 ##############################################################################
 # Maps can also be rotated:
 aia_rotated_submap = aia_submap.rotate(angle = 10 * u.deg)
-aia_rotated_submap.peek()
+aia_rotated_submap.peek(draw_limb=True, draw_grid=True)
 # Note: the data array is expanded so that none of the original data is lost
 # through clipping.
-
-
