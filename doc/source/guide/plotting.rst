@@ -193,13 +193,13 @@ instances are created explicitly, and then used to modify the plot:
                  transform=ax.get_transform('world'))
 
     # Set title.
-    ax.set_title('My customized plot')
+    ax.set_title('Custom plot with WCSAxes')
     
     plt.colorbar()
     plt.show()
 
-It is possible to create the same plot, explicitly not using `wcsaxes`, however
-this example will not have the features of `wcsaxes` which include correct
+It is possible to create the same plot, explicitly not using `wcsaxes`, however,
+this will not have the features of `wcsaxes` which include correct
 representation of rotation and plotting in different coordinate systems.
 
 .. plot::
@@ -226,7 +226,7 @@ representation of rotation and plotting in different coordinate systems.
     p = plt.plot(xc, yc, 'o')
 
     # Set title.
-    ax.set_title('My customized plot')
+    ax.set_title('Custom plot without WCSAxes')
     
     plt.colorbar()
     plt.show()
