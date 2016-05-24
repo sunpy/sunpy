@@ -47,12 +47,18 @@ def test_query():
 @pytest.mark.online
 @pytest.mark.parametrize("time, wavelength",
 [(Time('2015/01/02 07:30:00', '2015/01/02 07:38:00'), Wavelength(32768*u.AA))])
+#This test downloads 3 files
+#Each file is 4.5MB, total size
+#is 13.4MB
 def test_get(time, wavelength):
     qr = KClient.query(time, wavelength)
     res = KClient.get(qr)
     download_list = res.wait()
     assert len(download_list) == len(qr)
 
+#This test downloads 3 files
+#Each file is 4.5MB, total size
+#is 13.4MB
 @pytest.mark.online
 def test_fido_query():
     qr = Fido.search(a.Time('2016/01/05 07:30:00', '2016/01/05 07:38:00'), a.Instrument('kanzelhohe'), a.Wavelength(5460*u.AA))
