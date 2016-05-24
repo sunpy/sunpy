@@ -107,7 +107,7 @@ extras_require = {'database': ["sqlalchemy"],
                   'jpeg2000': ["glymur"],
                   'net': ["suds-jurko", "beautifulsoup4", "requests"]}
 extras_require['all'] = extras_require['database'] + extras_require['image'] + \
-                        extras_require['net'] + ["wcsaxes>=0.6"]
+                        extras_require['net'] + ["wcsaxes>=0.8"]
 
 setup(name=PACKAGENAME,
       version=VERSION,
