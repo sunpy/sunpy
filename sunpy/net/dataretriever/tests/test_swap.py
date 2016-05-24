@@ -26,12 +26,12 @@ def test_get_url_for_time_range(timerange, url_start, url_end, level):
     assert urls[-1] == url_end
 
 def test_can_handle_query():
-    assert swap.SWAPClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'), Instrument('swap'), a.Level(1)) == True
-    assert swap.SWAPClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'), Instrument('swap'), a.Level('q')) == True
-    assert swap.SWAPClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'), Instrument('swap'), a.Level('s')) == False
-    assert swap.SWAPClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'), Instrument('swap')) == False
-    assert swap.SWAPClient._can_handle_query(Time('2015/12/30','2015/12/31')) == False
-    assert swap.SWAPClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'), Instrument('eve')) == False
+    assert swap.SWAPClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'), Instrument('swap'), a.Level(1)) is True
+    assert swap.SWAPClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'), Instrument('swap'), a.Level('q')) is True
+    assert swap.SWAPClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'), Instrument('swap'), a.Level('s')) is False
+    assert swap.SWAPClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'), Instrument('swap')) is False
+    assert swap.SWAPClient._can_handle_query(Time('2015/12/30','2015/12/31')) is False
+    assert swap.SWAPClient._can_handle_query(Time('2015/12/30 00:00:00','2015/12/31 00:05:00'), Instrument('eve')) is False
 
 @pytest.mark.online
 def test_query():
@@ -44,12 +44,16 @@ def test_query():
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument, level",
 [(Time('2015/12/30 00:00:00','2015/12/30 00:05:00'), Instrument('swap'), Level('q'))])
+#This test will download 4 JP2 files
+#each of size 170KB.
 def test_get(time, instrument, level):
     qr1 = LCClient.query(time,instrument,level)
     res = LCClient.get(qr1)
     download_list = res.wait()
     assert len(download_list) == len(qr1)
 
+#This test will download 2 fits files
+#each of size 2MB
 @pytest.mark.online
 def test_fido_query():
     qr = Fido.search(a.Time('2015/12/28 00:00:00', '2015/12/28 00:03:00'), a.Instrument('swap'), a.Level(1))
