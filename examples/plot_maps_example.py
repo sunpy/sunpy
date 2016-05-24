@@ -85,15 +85,15 @@ aia_submap.peek(draw_limb=True)
 
 ##############################################################################
 # Similarly, if you want to reduce the angular resolution of the map you can use
-# the resample method, specifying the dimensions as an Astropy Quantity in pixels:
+# the `~sunpy.map.GenericMap.resample` method, specifying the dimensions as an Astropy Quantity in pixels:
 dimensions = u.Quantity([50, 50], u.pixel)
 aia_resampled_map = aia_map.resample(dimensions)
 aia_resampled_map.peek(draw_limb=True, draw_grid=True)
 
 ##############################################################################
-# Similar to resampling you can use superpixels, this will reduce the resolution
-# of the image by combining the number of pixels (in each dimension) in the
-# dimensions argument into one single pixel.
+# Similar to resampling you can use the `~sunpy.map.GenericMap.superpixel` method, this will reduce the
+# resolution of the image by combining the number of pixels (in each dimension)
+# in the dimensions argument into one single pixel.
 # This can be used to increase the signal to noise ratio.
 # For this the new dimensions must divide original image size exactly.
 dimensions = u.Quantity(aia_map.dimensions) / 16
@@ -101,7 +101,7 @@ aia_superpixel_map = aia_map.superpixel(dimensions)
 aia_superpixel_map.peek(draw_limb=True)
 
 ##############################################################################
-# Maps can also be rotated:
+# Maps can also be rotated using the `~sunpy.map.GenericMap.rotate` method:
 aia_rotated_submap = aia_submap.rotate(angle = 10 * u.deg)
 aia_rotated_submap.peek(draw_limb=True, draw_grid=True)
 # Note: the data array is expanded so that none of the original data is lost
