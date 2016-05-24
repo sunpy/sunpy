@@ -37,7 +37,7 @@ To install SunPy launch a system command prompt or the
 'Anaconda Command Prompt' (under Windows). First configure conda
 for sunpy downloads::
 
-    conda config --add channels sunpy --add channels astropy
+    conda config --add channels conda-forge
 
 to install SunPy::
 
