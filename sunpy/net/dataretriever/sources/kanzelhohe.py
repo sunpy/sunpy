@@ -10,7 +10,6 @@ import urllib2
 
 from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
-
 from sunpy.time import TimeRange
 
 __all__ = ['KanzelhoheClient']
@@ -45,10 +44,10 @@ class KanzelhoheClient(GenericClient):
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
-
-    >>> results = Fido.search(a.Time('2015/12/28 00:00:00', '2015/12/28 00:03:00'), a.Instrument('kanzelhohe'), a.Wavelength(6563*u.AA))
+    >>> timerange = a.Time('2015/12/28 00:00:00','2015/12/28 00:03:00')
+    >>> results = Fido.search(timerange, a.Instrument('kanzelhohe'), a.Wavelength(6563*u.AA))
     >>> print(results)
-    >>> [<Table length=1>
+    [<Table length=1>
         Start Time           End Time              Source        Instrument
         str19               str19                str21           str10   
     ------------------- ------------------- --------------------- ----------
@@ -61,10 +60,7 @@ class KanzelhoheClient(GenericClient):
         returns list of urls corresponding to given TimeRange.
         """
         wave = int(kwargs['Wavelength'].min.value)
-        table = {6563:'halpha2k/recent', 32768:'caiia', 5460:'phokada'}
-        table1 = {6563:'halph_fr', 32768:'caiik_fi', 5460:'bband_fi'}
-        datatype = table[wave]
-        datatype1 = table1[wave]
+        table = {6563:['halpha2k/recent', 'halph_fr'], 32768:['caiia', 'caiik_fi'], 5460:['phokada', 'bband_fi']}
         if (wave == 6563):
             START_DATE = datetime.datetime(2000, 7, 20, 7, 45, 46)
         elif (wave == 5460):
@@ -79,7 +75,7 @@ class KanzelhoheClient(GenericClient):
         else:
             suffix = "%Y/%Y%m%d/processed/kanz_{datatype1}_%Y%m%d_%H%M%S.fts.gz"
         url_pattern = prefix + suffix
-        crawler = Scraper(url_pattern, datatype = datatype, datatype1 = datatype1)
+        crawler = Scraper(url_pattern, datatype = table[wave][0], datatype1 = table[wave][1])
         if not timerange:
             return []
         result = crawler.filelist(timerange)
@@ -89,7 +85,7 @@ class KanzelhoheClient(GenericClient):
         """
         Helper Function:used to hold information about source.
         """
-        self.map_['source'] = 'Global Halpha Network'
+        self.map_['source'] = 'Global Halpha Network' #TODO: check with kanzelhohe
         self.map_['instrument'] = 'Kanzelhohe HA2'
         self.map_['phyobs'] = 'irradiance'
         self.map_['provider'] = 'Kanzelhohe'
