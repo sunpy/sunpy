@@ -30,6 +30,7 @@ The people who have contributed to this release are:
     Andrew Inglis
     Daniel Ryan
     Sally Dacie *
+    Sanskar Modi *
     Albert Y. Shih
     Erik M. Bray
     Larry Manley
@@ -38,7 +39,6 @@ The people who have contributed to this release are:
     Ankit *
     Igor Babuschkin *
     Ole Streicher *
-    Sanskar Modi *
     Simon Liedtke
     Sudarshan Konge *
     Tessa D. Wilkinson *
