@@ -49,6 +49,7 @@ remote file. Let's create some fake data and pass it into a lightcurve object.
 .. plot::
     :include-source:
 
+    import numpy as np
     import sunpy.data.sample
     from sunpy.lightcurve import LightCurve
     times = np.arange(1000) * 2.0

@@ -216,6 +216,9 @@ def reshape_image_to_4d_superpixel(img, dimensions, offset):
     http://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html
 
     """
+    # make sure the input dimensions are integers
+    dimensions = [int(dim) for dim in dimensions]
+
     # New dimensions of the final image
     na = int(np.floor((img.shape[0] - offset[0]) / dimensions[0]))
     nb = int(np.floor((img.shape[1] - offset[1]) / dimensions[1]))
