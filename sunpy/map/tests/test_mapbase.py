@@ -526,6 +526,7 @@ def test_plot_masked_aia171_superpixel_nowcsaxes(aia171_test_map_with_mask):
     ax = plt.gca()
     aia171_test_map_with_mask.superpixel((9, 7)*u.pix, offset=(4, 4)*u.pix).plot(axes=ax)
 
+
 def test_validate_meta(generic_map):
     """Check to see if_validate_meta displays an appropriate error"""
     with warnings.catch_warnings(record=True) as w:
