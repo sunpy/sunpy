@@ -28,13 +28,14 @@ def test_get_url_for_timerange(timerange, url_start, url_end):
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
+trange = Time('2015/12/30', '2015/12/31')
 def test_can_handle_query():
-    assert ace.SWEPAMClient._can_handle_query(Time('2015/12/30', '2015/12/31'), Instrument('swepam')) is True
-    assert ace.EPAMClient._can_handle_query(Time('2015/12/30', '2015/12/31'), Instrument('epam')) is True
-    assert ace.MAGClient._can_handle_query(Time('2015/12/30', '2015/12/31'), Instrument('mag')) is True
-    assert ace.SISClient._can_handle_query(Time('2015/12/30', '2015/12/31'), Instrument('sis')) is True
-    assert ace.SWEPAMClient._can_handle_query(Time('2015/12/30', '2015/12/31'), Instrument('swap')) is False
-    assert ace.EPAMClient._can_handle_query(Time('2015/12/30', '2015/12/31')) is False
+    assert SWEPAMClient._can_handle_query(trange, Instrument('swepam')) is True
+    assert EPAMClient._can_handle_query(trange, Instrument('epam')) is True
+    assert MAGClient._can_handle_query(trange, Instrument('mag')) is True
+    assert SClient._can_handle_query(trange, Instrument('sis')) is True
+    assert SWEPAMClient._can_handle_query(trange, Instrument('swap')) is False
+    assert EPAMClient._can_handle_query(trange) is False
 
 @pytest.mark.online
 def test_query():
