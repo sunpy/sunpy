@@ -334,8 +334,6 @@ class Spectrogram(Parent):
     def _slice(self, y_range, x_range):
         """Return new spectrogram reduced to the values passed
         as slices. Implementation detail."""
-        y_range = int(y_range)
-        x_range = int(x_range)
         data = self.data[y_range, x_range]
         params = self._get_params()
 
@@ -806,7 +804,7 @@ class Spectrogram(Parent):
             # Nyquist–Shannon sampling theorem
             delta_freq = _min_delt(self.freq_axis) / 2.
         nsize = (self.freq_axis.max() - self.freq_axis.min()) / delta_freq + 1
-        new = np.zeros((nsize, self.shape[1]), dtype=self.data.dtype)
+        new = np.zeros((int(nsize), self.shape[1]), dtype=self.data.dtype)
 
         freqs = self.freq_axis - self.freq_axis.max()
         freqs = freqs / delta_freq
@@ -823,7 +821,7 @@ class Spectrogram(Parent):
         fillfrom = np.abs(fillfrom)
 
         for row, from_, to_ in zip(self, fillfrom, fillto):
-            new[from_: to_] = row
+            new[int(from_): int(to_)] = row
 
         vrs = self._get_params()
         vrs.update({
