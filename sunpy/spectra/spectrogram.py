@@ -962,7 +962,7 @@ class LinearTimeSpectrogram(Spectrogram):
         params.update({
             'time_axis': np.linspace(
                 self.time_axis[0],
-                self.time_axis[(new_size - 1) * new_delt / self.t_delt],
+                self.time_axis[int((new_size - 1) * new_delt / self.t_delt)],
                 new_size
             ),
             't_delt': new_delt,
