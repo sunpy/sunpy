@@ -7,7 +7,6 @@ __email__ = "sudk1896@gmail.com"
 import datetime
 import urllib2
 
-
 from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
 from sunpy.time import TimeRange
@@ -35,9 +34,9 @@ class SWEPAMClient(GenericClient):
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
-    >>> results = Fido.search(a.Time('2015/12/28 00:00:00', '2015/12/28 00:03:00'), a.Instrument('swepam'))
+    >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'), a.Instrument('swepam'))
     >>> print(results)
-    >>> [<Table length=3>
+    [<Table length=3>
          Start Time           End Time      Source Instrument
             str19               str19         str3     str6   
     ------------------- ------------------- ------ ----------
@@ -57,10 +56,7 @@ class SWEPAMClient(GenericClient):
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
         total_days = (timerange.end - timerange.start).days + 1
         all_days = timerange.split(total_days)
-        result = list()
-        for day in all_days:
-            url = base_url + '{date:%Y%m%d}_ace_swepam_1m.txt'.format(date = day.end)
-            result.append(url)
+        result = [base_url + '{date:%Y%m%d}_ace_swepam_1m.txt'.format(date = day.end) for day in all_days]
         if ((datetime.datetime.now() - timerange.end).days == 0):
             url = base_url + 'ace_swepam_1m.txt'
             result.append(url)
@@ -72,8 +68,10 @@ class SWEPAMClient(GenericClient):
         """
         self.map_['source'] = 'ACE'
         self.map_['instrument'] = 'swepam'
+        self.map_['phyobs'] = 'particle-flux'
 
     @classmethod
+    
     def _can_handle_query(cls, *query):
         """
         Answers whether client can service the query.
@@ -96,7 +94,7 @@ class SWEPAMClient(GenericClient):
 
 
 class EPAMClient(GenericClient):
-     """
+    """
     Returns a list of URLS to ACE SWEPAM files corresponding to value of input timerange.
     URL source: `ftp://ftp.swpc.noaa.gov/pub/lists/ace/`.
     The earliest date available is from 29-Jul-2015
@@ -116,35 +114,30 @@ class EPAMClient(GenericClient):
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
-    >>> results = Fido.search(a.Time('2015/12/28 00:00:00', '2015/12/28 00:03:00'), a.Instrument('epam'))
+    >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'), a.Instrument('epam'))
     >>> print(results)
-    >>> [<Table length=3>
+    [<Table length=3>
          Start Time           End Time      Source Instrument
-            str19               str19         str3     str6   
+           str19               str19         str3     str4   
     ------------------- ------------------- ------ ----------
-    2016-05-18 00:00:00 2016-05-19 00:00:00    ACE     epam
-    2016-05-19 00:00:00 2016-05-20 00:00:00    ACE     epam
-    2016-05-20 00:00:00 2016-05-21 00:00:00    ACE     epam]
+    2016-05-18 00:00:00 2016-05-19 00:00:00    ACE       epam
+    2016-05-19 00:00:00 2016-05-20 00:00:00    ACE       epam
+    2016-05-20 00:00:00 2016-05-21 00:00:00    ACE       epam]
     
     >>> response = Fido.fetch(results)
     """
     def _get_url_for_timerange(self, timerange, **kwargs):
-
         START_DATE = datetime.datetime(2015, 7, 29)
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
         if timerange.start < START_DATE:
             raise ValueError("The earliest date for which EPAM data is available is {:%Y-%m-%d}".format(START_DATE))
         total_days = (timerange.end - timerange.start).days + 1
         all_days = timerange.split(total_days)
-        result = list()
-        for day in all_days:
-            url = base_url + "{date:%Y%m%d}_ace_epam_5m.txt".format(date = day.end)
-            result.append(url)
-
+        result = [base_url + '{date:%Y%m%d}_ace_epam_5m.txt'.format(date = day.end) for day in all_days]
         if ((datetime.datetime.now() - timerange.end).days == 0):
             url = base_url + 'ace_epam_5m.txt'
             result.append(url)
-        return result
+        return result 
 
     def _makeimap(self):
         """
@@ -152,6 +145,7 @@ class EPAMClient(GenericClient):
         """
         self.map_['source'] = 'ACE'
         self.map_['instrument'] = 'epam'
+        self.map_['phyobs'] = 'particle-flux'
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -176,7 +170,7 @@ class EPAMClient(GenericClient):
 
 
 class MAGClient(GenericClient):
-     """
+    """
     Returns a list of URLS to ACE SWEPAM files corresponding to value of input timerange.
     URL source: `ftp://ftp.swpc.noaa.gov/pub/lists/ace/`.
     The earliest date available is from 29-Jul-2015
@@ -196,9 +190,9 @@ class MAGClient(GenericClient):
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
-    >>> results = Fido.search(a.Time('2015/12/28 00:00:00', '2015/12/28 00:03:00'), a.Instrument('mag'))
+    >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'), a.Instrument('mag'))
     >>> print(results)
-    >>> [<Table length=3>
+    [<Table length=3>
          Start Time           End Time      Source Instrument
             str19               str19         str3     str6   
     ------------------- ------------------- ------ ----------
@@ -218,10 +212,7 @@ class MAGClient(GenericClient):
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
         total_days = (timerange.end - timerange.start).days + 1
         all_days = timerange.split(total_days)
-        result = list()
-        for day in all_days:
-            url = base_url + '{date:%Y%m%d}_ace_mag_1m.txt'.format(date = day.end)
-            result.append(url)
+        result = [base_url +  '{date:%Y%m%d}_ace_mag_1m.txt'.format(date = day.end) for day in all_days]
         if ((datetime.datetime.now() - timerange.end).days == 0):
             url = base_url + 'ace_mag_1m.txt'
             result.append(url)
@@ -233,6 +224,7 @@ class MAGClient(GenericClient):
         """
         self.map_['source'] = 'ACE'
         self.map_['instrument'] = 'mag'
+        self.map_['phyobs'] = 'magnetic-field'
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -256,7 +248,7 @@ class MAGClient(GenericClient):
         return False
 
 class SISClient(GenericClient):
-     """
+    """
     Returns a list of URLS to ACE SWEPAM files corresponding to value of input timerange.
     URL source: `ftp://ftp.swpc.noaa.gov/pub/lists/ace/`.
     The earliest date available is from 29-Jul-2015
@@ -276,9 +268,9 @@ class SISClient(GenericClient):
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a
-    >>> results = Fido.search(a.Time('2015/12/28 00:00:00', '2015/12/28 00:03:00'), a.Instrument('sis'))
+    >>> results = Fido.search(a.Time('2016/5/18 00:00:00', '2016/5/20 00:03:00'), a.Instrument('sis'))
     >>> print(results)
-    >>> [<Table length=3>
+    [<Table length=3>
          Start Time           End Time      Source Instrument
             str19               str19         str3     str6   
     ------------------- ------------------- ------ ----------
@@ -298,7 +290,7 @@ class SISClient(GenericClient):
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
         total_days = (timerange.end - timerange.start).days + 1
         all_days = timerange.split(total_days)
-        result = list()
+        result = [base_url +  '{date:%Y%m%d}_ace_sis_5m.txt'.format(date = day.end) for day in all_days]
         for day in all_days:
             url = base_url + '{date:%Y%m%d}_ace_sis_5m.txt'.format(date = day.end)
             result.append(url)
@@ -313,6 +305,7 @@ class SISClient(GenericClient):
         """
         self.map_['source'] = 'ACE'
         self.map_['instrument'] = 'sis'
+        self.map_['phyobs'] = 'particle-flux'
 
     @classmethod
     def _can_handle_query(cls, *query):
