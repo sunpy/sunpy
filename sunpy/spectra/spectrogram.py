@@ -334,6 +334,8 @@ class Spectrogram(Parent):
     def _slice(self, y_range, x_range):
         """Return new spectrogram reduced to the values passed
         as slices. Implementation detail."""
+        y_range = int(y_range)
+        x_range = int(x_range)
         data = self.data[y_range, x_range]
         params = self._get_params()
 
