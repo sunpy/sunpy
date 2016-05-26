@@ -114,12 +114,12 @@ def test_scale(scale_factor):
     w = original.shape[0]/2.0 - 0.5
     new_c = (newim.shape[0]/2.0) - 0.5
     expected = np.zeros(original.shape)
-    upper = w+new_c+1
+    upper = int(w+new_c+1)
     if scale_factor > 1:
-        lower = new_c-w
+        lower = int(new_c-w)
         expected = newim[lower:upper, lower:upper]
     else:
-        lower = w-new_c
+        lower = int(w-new_c)
         expected[lower:upper, lower:upper] = newim
     scale = affine_transform(original, rmatrix=rmatrix, scale=scale_factor)
     compare_results(expected, scale)
@@ -147,12 +147,12 @@ def test_all(angle, dx, dy, scale_factor):
     # Old width and new center of image
     w = np.array(original.shape[0])/2.0 - 0.5
     new_c = (np.array(scale.shape[0])/2.0 - 0.5)
-    upper = w+new_c+1
+    upper = int(w+new_c+1)
     if scale_factor > 1:
-        lower = new_c-w
+        lower = int(new_c-w)
         new = scale[lower:upper, lower:upper]
     else:
-        lower = w-new_c
+        lower = int(w-new_c)
         new[lower:upper, lower:upper] = scale
     disp = np.array([dx, dy])
     rcen = image_center + disp
@@ -163,12 +163,12 @@ def test_all(angle, dx, dy, scale_factor):
                         recenter=True, image_center=rcen)
     w = np.array(expected.shape[0])/2.0 - 0.5
     new_c = (np.array(rotscaleshift.shape[0])/2.0 - 0.5)
-    upper = w+new_c+1
+    upper = int(w+new_c+1)
     if scale_factor > 1:
-        lower = new_c-w
+        lower = int(new_c-w)
         expected = rotscaleshift[lower:upper, lower:upper]
     else:
-        lower = w-new_c
+        lower = int(w-new_c)
         expected[lower:upper, lower:upper] = rotscaleshift
     compare_results(expected, rotscaleshift)
 
@@ -183,8 +183,8 @@ def test_all(angle, dx, dy, scale_factor):
 
     # Need to ignore the portion of the image cut off by the first shift
     # (which isn't the portion you'd expect, because of the rotation)
-    ymin, ymax = max([0, -dy]), min([original.shape[1], original.shape[1]-dy])
-    xmin, xmax = max([0, -dx]), min([original.shape[0], original.shape[0]-dx])
+    ymin, ymax = int(max([0, -dy])), int(min([original.shape[1], original.shape[1]-dy]))
+    xmin, xmax = int(max([0, -dx])), int(min([original.shape[0], original.shape[0]-dx]))
     compare_results(original[ymin:ymax, xmin:xmax], inverse[ymin:ymax, xmin:xmax])
 
 
