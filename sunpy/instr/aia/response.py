@@ -28,7 +28,8 @@ from scipy.integrate import trapz, cumtrapz
 import astropy.units as u
 import pandas as pd
 
-import chiantipy as ch
+import chiantipy as chpy
+import chianti.core as ch
 
 from sunpy.net import hek
 from sunpy.time import parse_time
@@ -38,7 +39,7 @@ from sunpy.util.net import check_download_file
 from sunpy import sun
 
 # general format
-def get_function(variable1, optional = None):
+def get_function(ion, emissivity, temperature, density, optional = None):
     """
     Statement of usefulness of function.
     Parameters
@@ -49,3 +50,57 @@ def get_function(variable1, optional = None):
         A string specifying optional vairable
         e.g. strings
     """
+    pass
+
+
+
+def area():
+    """
+    finds the area of the instrument
+
+    input: string, file (or path to file?) with instrument information
+
+        input: a data file giving the area of the instrument
+
+    :return: dictionary or array
+    """
+    pass
+
+
+
+def temperature_response():
+    """
+    calculates temperature for various features
+
+    input: string, data file
+
+    channel: string, indicates channels used
+
+    :return:
+    """
+
+
+
+def emissivity():
+    """
+
+    :return:
+    """
+
+
+
+def wavelength_response():
+    """
+    input: string, data file with wavelengths
+
+    :return:
+    """
+
+
+
+
+
+
+
+
+
