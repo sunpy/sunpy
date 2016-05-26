@@ -992,11 +992,11 @@ scale:\t\t {scale}
         new_map.meta['crpix2'] = new_reference_pixel[1] + 1 # FITS pixel origin is 1
 
         # Unpad the array if necessary
-        unpad_x = -np.min((diff[1], 0))
+        unpad_x = -int(np.min((diff[1], 0)))
         if unpad_x > 0:
             new_map.data = new_map.data[:, unpad_x:-unpad_x]
             new_map.meta['crpix1'] -= unpad_x
-        unpad_y = -np.min((diff[0], 0))
+        unpad_y = -int(np.min((diff[0], 0)))
         if unpad_y > 0:
             new_map.data = new_map.data[unpad_y:-unpad_y, :]
             new_map.meta['crpix2'] -= unpad_y
