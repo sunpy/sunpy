@@ -46,7 +46,7 @@ def test_query():
 #each of size 8.4MB, total size 16.8MB
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument, level",
-[(Time('2016/5/18 15:28:00','2016/5/18 16:30:00'), Instrument('swepam'), Level('fr'))])
+[(Time('2016/5/18 15:28:00','2016/5/18 16:30:00'), Instrument('bbso'), Level('fr'))])
 def test_get(time, instrument, level):
     qr = BClient.query(time, instrument, level)
     res = BClient.get(qr)
@@ -61,6 +61,3 @@ def test_fido_query():
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
-
-
-

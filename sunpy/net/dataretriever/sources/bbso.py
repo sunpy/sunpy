@@ -6,8 +6,7 @@ __email__ = "sudk1896@gmail.com"
 
 import datetime
 import urllib2
-from BeautifulSoup import BeautifulSoup
-
+from bs4 import BeautifulSoup
 from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
 from sunpy.time import TimeRange
