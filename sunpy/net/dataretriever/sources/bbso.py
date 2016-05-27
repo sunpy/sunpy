@@ -89,7 +89,7 @@ class BBSOClient(GenericClient):
         """
         self.map_['source'] = 'Global Halpha Network'
         self.map_['instrument'] = 'bbso'
-##        self.map_['phyobs'] = 'irradiance'
+        self.map_['phyobs'] = 'irradiance'
 ##        self.map_['provider'] = 'esa'
         self.map_['wavelength'] = '174 AA'
 
@@ -113,7 +113,7 @@ class BBSOClient(GenericClient):
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'bbso':
                 chk_var += 1
-            if x.__class__.__name__ == 'Level' and x.value.lower() in ('fl', 'fr'):
+            if x.__class__.__name__ == 'Level' and type(x.value) is str and x.value.lower() in ('fl', 'fr'):
                 chk_var += 1
         if (chk_var == 2):
             return True
