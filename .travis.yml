@@ -91,6 +91,10 @@ matrix:
          - os: linux
            env: JOB="Py3.5" PYTHON_VERSION=3.5 SETUP_CMD='test' ASTROPY_VERSION='stable'
                 DEBUG=True CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES
+         - os: linux
+           env: JOB="Py3NumpyDev" PYTHON_VERSION=3.5 SETUP_CMD='test'
+                ASTROPY_VERSION='stable' NUMPY_VERSION='dev' DEBUG=True
+                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES
 
     # allow_failures has to repeat the environment from the matrix above to mark it as such
     allow_failures:
