@@ -41,6 +41,15 @@ def test_query():
     assert qr.time_range()[0] == '2016/05/18'
     assert qr.time_range()[1] == '2016/05/19'
 
+@pytest.mark.online
+@pytest.mark.parametrize("time, instrument, filter_",
+[(Time('2016/5/18','2016/5/19'), Instrument('xrt'), Filter('al_mesh'))])
+def test_get(time, instrument, filter_):
+    qr = XClient.query(time, instrument, filter_)
+    res = XClient.get(qr)
+    download_list = res.wait()
+    assert len(download_list) == len(qr)
+
 
 
 
