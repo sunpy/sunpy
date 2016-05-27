@@ -33,5 +33,15 @@ def test_can_handle_query():
     assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('thin_be')) is True
     assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('mag')) is not True
 
+@pytest.mark.online
+def test_query():
+    qr = XClient.query(Time('2016/5/18','2016/5/19'), Instrument = 'xrt', filter = 'al_mesh')
+    assert isinstance(qr, QueryResponse)
+    assert len(qr) == 2
+    assert qr.time_range()[0] == '2016/05/18'
+    assert qr.time_range()[1] == '2016/05/19'
+
+
+
 
     
