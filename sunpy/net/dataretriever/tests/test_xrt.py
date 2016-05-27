@@ -14,7 +14,6 @@ import sunpy.net.dataretriever.sources.xrt as xrt
 XClient = xrt.XRTClient()
 
 @pytest.mark.online
-
 @pytest.mark.parametrize("timerange,url_start,url_end, filter_",
 [(TimeRange('2016/5/18','2016/5/19'),
 'http://solar.physics.montana.edu/HINODE/XRT/QL/syn_comp_fits/XRT_Al_mesh_20160518_180137.1.fits',
@@ -24,3 +23,15 @@ def test_get_url_for_timerange(timerange, url_start, url_end, filter_):
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
+
+trange = Time('2015/12/30', '2015/12/31')
+def test_can_handle_query():
+    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('almesh')) is True
+    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('alpoly')) is True
+    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('cpoly')) is True
+    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('tipoly')) is True
+    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('thin_be')) is True
+    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('mag')) is not True
+
+
+    
