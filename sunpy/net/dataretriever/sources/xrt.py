@@ -66,6 +66,11 @@ class XRTClient(GenericClient):
                        format(filter = filter_dict[filter_type], s=i) for i in range (0, 10)]
         arr = [Scraper(pattern, filter = filter_dict[filter_type]).filelist(timerange) for pattern in url_pattern]
         [result.extend(url) for url in arr if len(url)>0]
+        #Integrate nascom.nasa.gov XRT data as well.
+        url_pattern = ['http://sohowww.nascom.nasa.gov/sdb/hinode/xrt/l1q_synop/XRT_{filter}_%Y%m%d_%H%M%S.{s}.fits'.
+                       format(filter = filter_dict[filter_type], s=i) for i in range (0, 10)]
+        arr = [Scraper(pattern, filter = filter_dict[filter_type]).filelist(timerange) for pattern in url_pattern]
+        [result.extend(url) for url in arr if len(url)>0]
         if not timerange:
             return []
         return result
