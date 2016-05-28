@@ -16,9 +16,44 @@ from sunpy.time import TimeRange
 __all__ = ['XRTClient']
 
 class XRTClient(GenericClient):
-
+    """
+    Returns a list of URLS to XRT files corresponding to value of input timerange.
+    URL source: `http://solar.physics.montana.edu/HINODE/XRT/QL/syn_comp_fits/`.
+    Parameters
+    ----------
+    timerange: sunpy.time.TimeRange
+        time range for which data is to be downloaded.
+        Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
+    
+    Instrument: Fixed argument = 'xrt'
+    Filter: Filter can take only 'almesh', 'alpoly', 'cpoly', 'tipoly', 'thinbe' as arguments.
+            Arguments are case-insensitive and can include non alphabetic characters as well.
+            Arguments like 'Al-mesh' or 'Al_mesh' or 'Al/mesh' would also work fine.
+            
+    Returns
+    -------
+    urls: list
+    list of urls corresponding to requested time range.
+    
+    Examples
+    --------
+    >>> from sunpy.net import Fido
+    >>> from sunpy.net import attrs as a
+    >>> results = Fido.search(Time('2016/5/18','2016/5/19'), a.Instrument('xrt'), a.Filter('al_mesh'))
+    >>> print(results)
+        [<Table length=2>
+         Start Time           End Time      Source Instrument
+           str19               str19         str6     str3   
+    ------------------- ------------------- ------ ----------
+    2016-05-18 00:00:00 2016-05-19 00:00:00 Hinode        XRT
+    2016-05-19 00:00:00 2016-05-20 00:00:00 Hinode        XRT]
+    
+    >>> response = Fido.fetch(results)
+    """
     def _get_url_for_timerange(self, timerange, **kwargs):
-
+        """
+        returns list of urls corresponding to given TimeRange.
+        """
         START_DATE = datetime.datetime(2014, 1, 10, 18, 14, 42)
         filter_type = kwargs['filter']
         regex = re.compile('[^a-zA-Z]')
@@ -36,6 +71,9 @@ class XRTClient(GenericClient):
         return result
 
     def _makeimap(self):
+        """
+        Helper Function:used to hold information about source.
+        """
         self.map_['source'] = 'Hinode'
         self.map_['instrument'] = 'XRT'
 
