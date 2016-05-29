@@ -11,7 +11,12 @@ Temperature response functions: calculate the sensitivity of light from the plas
 
 other important variables:
 area
-emissivity
+ion emissivity
+
+electron density
+temperature array
+
+# utilize sunpy/instr/tests/test_aia.py
 """
 
 # tools to import listed here as reference (clean out ones not used at end):
@@ -31,7 +36,9 @@ import pandas as pd
 import chiantipy as chpy
 import chianti.core as ch
 
-from sunpy.instr import aia
+import sunpy
+import sunpy.data.test as test
+from sunpy.instr.aia import aiaprep
 from sunpy.net import hek
 from sunpy.time import parse_time
 from sunpy import config
@@ -61,6 +68,7 @@ def area():
     finds the area of the instrument
     needs to work with channels
     AIA instrument response / effective area
+
 
     input: string, file (or path to file?) with instrument information
 
