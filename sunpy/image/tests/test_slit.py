@@ -27,6 +27,12 @@ def e_list():
         alist.append([i,i])
     return alist
 
+
+def test_slit():
+    a_cube = eit_test_cube():
+    test = slit.slit(a_cube, [0, 0]*u.arcsec, [0, 50]*u.arcsec, 0,0,0)
+    assert test == a_cube[:, 0, 0:50]
+
 def test_slit_count():
     test_obj = slit.slit_count(0, 0, 928, 0, 0, 1, 1 ) 
     assert isinstance(test_obj, np.ndarray)
