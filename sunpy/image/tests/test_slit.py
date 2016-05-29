@@ -15,7 +15,7 @@ def eit_test_cube():
     eit_dir = os.path.join(testpath, 'EIT')
     return sunpy.map.Map(eit_dir, cube=True)
 
-@pytest.fixtre
+@pytest.fixture
 def numbered_array():
     test_numb = np.linspace(1,10,10)*np.ones((10,10))
     return test_numb
@@ -28,10 +28,12 @@ def e_list():
     return alist
 
 def test_slit_count():
-    assert slit_count(0, 0, 928, 0, 0, 1, 1 ) isinstance numpy.ndarray
-    assert slit_count(0, 0, 9, 9, 0, 0, 0) == e_list()
+    test_obj = slit.slit_count(0, 0, 928, 0, 0, 1, 1 ) 
+    assert isinstance(test_obj, np.ndarray)
+    assert slit.slit_count(0, 0, 9, 9, 0, 0, 0) == e_list() 
 
 def test_get_pixels_on_line():
-    assert get_pixels_on_line(0, 928, 0, 0) isinstance numpy.ndarray
-    assert get_pixels_on_line(0, 0, 10, 10) == np.linspace(1,10,10)
+    test_obj = slit.get_pixels_on_line(0, 928, 0, 0) 
+    assert isinstance(test_obj, np.ndarray)
+    assert slit.get_pixels_on_line(0, 0, 10, 10) == np.linspace(1,10,10)
 

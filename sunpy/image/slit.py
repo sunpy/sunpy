@@ -105,8 +105,11 @@ def slit_count(bx, by, tx, ty, shift_x, shift_y, N):
     """
 
     # call to the get pixel numbers routine
-    init_slit = get_pixels_on_line(int(bx.value), int(by.value),
-                              int(tx.value), int(ty.value))
+    if isinstance([bx, by, tx, ty], u.Unit) == True:
+        init_slit = get_pixels_on_line(int(bx.value), int(by.value),
+                                       int(tx.value), int(ty.value))
+    else:
+        init_slit = get_pixels_on_line(bx, by, tx, ty)
 
     shift_ind = np.array([shift_y, shift_x])
     shift_inds = [np.array([0, 0])]
