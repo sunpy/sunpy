@@ -109,9 +109,9 @@ class KanzelhoheClient(GenericClient):
         chk_var = 0
         values = [6563, 5460, 32768]
         for x in query:
-            if (x.__class__.__name__ == 'Instrument' and x.value.lower() == 'kanzelhohe'):
+            if (x.__class__.__name__ == 'Instrument' and type(x.value) is str and x.value.lower() == 'kanzelhohe'):
                 chk_var += 1
-            if (x.__class__.__name__ == 'Wavelength' and int(x.min.value) in values and (x.unit.name).lower()=='angstrom') and int(x.max.value) in values:
+            if (x.__class__.__name__ == 'Wavelength' and int(x.min.value) in values and int(x.max.value) in values and (x.unit.name).lower()=='angstrom'):
                 chk_var += 1
         if (chk_var==2):
             return True
