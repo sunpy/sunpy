@@ -73,6 +73,7 @@ def effective_area():
     AIA instrument response / effective area
         A_{eff}=A_{geo}R_p(\lambda)R_S(\lambda)T_E(\lambda)T_F(\lambda)D(\lambda,t)Q(\lambda)
 
+
     input: string, file (or path to file?) with instrument information
 
     input: a data file giving the area of the instrument
