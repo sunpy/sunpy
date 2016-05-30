@@ -10,7 +10,7 @@ from .sources.noaa import NOAAIndicesClient, NOAAPredictClient, SRSClient
 from .sources.kanzelhohe import KanzelhoheClient
 from .sources.bbso import BBSOClient
 from .sources.gong import GONGClient, FARSIDEClient
-
+from .sources.vsm import VSMClient
 # Import and register other sources
 from sunpy.net.jsoc.jsoc import JSOCClient
 from sunpy.net.vso.vso import VSOClient
