@@ -3,14 +3,14 @@ __author__ = 'TDWilkinson'
 """
 AIA response functions by integrating ChiantiPy
 
-    - analyze AIA instrument response then output a wavelength response
-    - use spectral model (synthetic spectra)
-    - obtain temperature response based on chianti spectral contribution functions
-
+    - analyze AIA instrument response that tells efficiency of channel using instrument properties
+    - then output a wavelength response
+    - use spectral model (synthetic spectra) - to get ion emissivities as a function of temp/density
+    - obtain temperature response based on chianti spectral contribution functions (emissivity)
 
 
 other important variables:
-area
+effective area
 ion emissivity
 
 electron density
@@ -89,6 +89,18 @@ def instrument_response():
         Describes the instrument (AIA) response per wavelength by calculating effective area vs wavelength of the strongest emission lines present in the solar feature
         R(\lambda)=A_{eff}(\lambda,t)G(\lambda)
 
+    For a given position in the image plane \mathbf{x} and wavelength channel i , the pixel values can be expressed as,
+
+    p_i(\mathbf{x})=\int_0^{\infty}\mathrm{d}\lambda\,\eta_i(\lambda)\int_{pixel\,\mathbf{x}}\mathrm{d}\theta\,I(\lambda,\theta)
+
+    Here, \eta_i(\lambda,t,\mathbf{x}) is the efficiency function of the i^{th} channel
+
+
+    effective area A_{eff}=A_{geo}R_p(\lambda)R_S(\lambda)T_E(\lambda)T_F(\lambda)D(\lambda,t)Q(\lambda)
+    gain of the CCD-camera system, G(\lambda)=(12398/\lambda/3.65)g
+    flat field function F(\mathbf{x})
+
+
     :keyword
     input: string, data file with wavelengths
 
@@ -101,6 +113,7 @@ def instrument_response():
 def wavelength_response():
     """
     Wavelength response functions: calculate the amount of flux per wavelength
+     R_i(\lambda) which is equivalent to \eta_i as expressed above.
 
     :return:
     """
@@ -112,6 +125,7 @@ def emissivity():
     """
 
     - Use  chianti.core.mspectrum.intensityratio to get spectral line intensities and show relative emissivity per line.
+    - create a line list  to show line intensities
 
     input:
 
@@ -126,7 +140,7 @@ def spectrum():
     """
     generate a spectral model for various solar features to be used in modules
 
-    - develop an emissivity spectral structure based on plasma  properties
+    - develop an emissivity (chianti) spectral structure based on plasma  properties (line intensities?/ emissivity?)
     - want to read values of physical parameters to determine feature
     - elemental abundances:  chianti.core.Spectrum.chianti.data.Abundance
         chianti.core.continuum has places to access freebound and freefree emissions
