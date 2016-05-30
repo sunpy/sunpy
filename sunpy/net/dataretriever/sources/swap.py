@@ -105,7 +105,7 @@ class SWAPClient(GenericClient):
         chklist = [x.__class__.__name__ in chkattr for x in query]
         chk_var = 0
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'swap':
+            if x.__class__.__name__ == 'Instrument' and type(x.value) is str and x.value.lower() == 'swap':
                 chk_var += 1
             if x.__class__.__name__ == 'Level' and x.value in (0, 1, 'q', 'Q'):
                 chk_var += 1
