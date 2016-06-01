@@ -119,6 +119,7 @@ def _resample_neighbor(orig, dimensions, offset, m1):
     """Resample Map using closest-value interpolation."""
 
     dimlist = []
+    dimensions = np.asarray(dimensions, dtype=int)
 
     for i in range(orig.ndim):
         base = np.indices(dimensions)[i]
