@@ -1144,7 +1144,7 @@ class LinearTimeSpectrogram(Spectrogram):
         # XXX: Could do without resampling by using
         # sp.t_init below, not sure if good idea.
         specs = [sp.resample_time(delt) for sp in specs]
-        cut = [sp[:, (start - sp.t_init) / delt:] for sp in specs]
+        cut = [sp[:, int((start - sp.t_init) / delt):] for sp in specs]
 
         length = min(sp.shape[1] for sp in cut)
         return [sp[:, :length] for sp in cut]
