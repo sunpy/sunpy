@@ -26,3 +26,12 @@ def test_get_url_for_timerange(timerange, source, detector, url_start, url_end):
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
+
+trange = Time('2008/3/2 17:45:00', '2008/3/2 18:00:00')
+def test_can_handle_query():
+    assert SECCHIClient._can_handle_query(trange, Instrument('secchi'), Source('ahead'), Detector('euvi')) is True
+    assert SECCHIClient._can_handle_query(trange, Instrument('secchi'), Source('behind'), Detector('hi_1')) is True
+    assert PClient._can_handle_query(trange, Instrument('plastic'), Source('ahead')) is True
+    assert IClient._can_handle_query(trange, Instrument('impact'), Source('Behind')) is True
+    assert SWClient._can_handle_query(trange, Instrument('swaves')) is not True
+    assert SECCHIClient._can_handle_query(trange, Instrument('secchi'), Source('Ahead'), Detector('xyz')) is not True
