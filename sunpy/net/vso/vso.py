@@ -217,6 +217,9 @@ class QueryResponse(list):
             record_items[key] = []
 
         def validate_time(time):
+            # Handle if the time is None when coming back from VSO
+            if time is None:
+                return ['None']
             if record.time.start is not None:
                 return [datetime.strftime(parse_time(time), TIME_FORMAT)]
             else:
