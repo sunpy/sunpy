@@ -15,7 +15,7 @@ __all__ = ['SECCHIClient', 'PLASTICClient', 'IMPACTClient', 'SWAVESClient']
 
 class SECCHIClient(GenericClient):
     """
-    Returns a list of URLS to XRT files corresponding to value of input timerange.
+    Returns a list of URLS to SECCHI files corresponding to value of input timerange.
     URL source: `http://stereo-ssc.nascom.nasa.gov/data/beacon/`.
     Parameters
     ----------
@@ -101,7 +101,7 @@ class SECCHIClient(GenericClient):
 
 class PLASTICClient(GenericClient):
     """
-    Returns a list of URLS to XRT files corresponding to value of input timerange.
+    Returns a list of URLS to PLASTIC files corresponding to value of input timerange.
     URL source: `http://stereo-ssc.nascom.nasa.gov/data/beacon/`.
     Parameters
     ----------
@@ -183,7 +183,34 @@ class PLASTICClient(GenericClient):
         return False
 
 class IMPACTClient(GenericClient):
-
+    """
+    Returns a list of URLS to IMPACT files corresponding to value of input timerange.
+    URL source: `http://stereo-ssc.nascom.nasa.gov/data/beacon/`.
+    Parameters
+    ----------
+    timerange: sunpy.time.TimeRange
+        time range for which data is to be downloaded.
+        Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
+    
+    Instrument: Fixed argument, case-insensitive = 'impact'
+    
+    Source: Two arguments, case-insensitive - 'ahead' or 'behind'
+    
+    Examples
+    --------
+    >>> from sunpy.net import Fido
+    >>> from sunpy.net import attrs as a    
+    >>> results = Fido.search(a.Time('2007/3/20 17:00:00', '2007/3/25 17:15:00'), a.Instrument('impact'), a.Source('ahead'))
+    [<Table length=5>
+        Start Time           End Time      Source Instrument
+           str19               str19         str5     str6   
+    ------------------- ------------------- ------ ----------
+    2007-03-20 00:00:00 2007-03-21 00:00:00  ahead     impact
+    2007-03-21 00:00:00 2007-03-22 00:00:00  ahead     impact
+    2007-03-22 00:00:00 2007-03-23 00:00:00  ahead     impact
+    2007-03-23 00:00:00 2007-03-24 00:00:00  ahead     impact
+    2007-03-24 00:00:00 2007-03-25 00:00:00  ahead     impact]
+    """
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         returns list of urls corresponding to given TimeRange.
@@ -193,7 +220,7 @@ class IMPACTClient(GenericClient):
         if (timerange.start < START_DATE):
             raise ValueError('Earliest date for which IMPACT data is available is {:%Y-%m-%d}'.format(START_DATE))
         prefix = 'http://stereo-ssc.nascom.nasa.gov/data/beacon/{source}/'
-        suffix = 'impact/%Y/%m/ST{char}_LB_IMPACT_%Y%m%d_V02.cdf'
+        suffix = 'impact/%Y/%m/ST{char}_LB_IMPACT_%Y%m%d_V01.cdf'
         url_pattern = prefix + suffix
         crawler = Scraper(url_pattern, source = source, char = source[0].upper())
         if not timerange:
