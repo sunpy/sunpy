@@ -262,7 +262,35 @@ class IMPACTClient(GenericClient):
 
 
 class SWAVESClient(GenericClient):
-
+    """
+    Returns a list of URLS to SWAVES files corresponding to value of input timerange.
+    URL source: `http://stereo-ssc.nascom.nasa.gov/data/beacon/`.
+    Parameters
+    ----------
+    timerange: sunpy.time.TimeRange
+        time range for which data is to be downloaded.
+        Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
+    
+    Instrument: Fixed argument, case-insensitive = 'swaves'
+    
+    Source: Two arguments, case-insensitive - 'ahead' or 'behind'
+    
+    Examples
+    --------
+    >>> from sunpy.net import Fido
+    >>> from sunpy.net import attrs as a    
+    >>> results = Fido.search(a.Time('2008/3/20 17:00:00', '2008/3/25 17:15:00'), a.Instrument('swaves'), a.Source('ahead'))
+    >>> print(results)
+    [<Table length=5>
+     Start Time           End Time      Source Instrument
+       str19               str19         str5     str6   
+    ------------------- ------------------- ------ ----------
+    2008-03-20 00:00:00 2008-03-21 00:00:00  ahead     swaves
+    2008-03-21 00:00:00 2008-03-22 00:00:00  ahead     swaves
+    2008-03-22 00:00:00 2008-03-23 00:00:00  ahead     swaves
+    2008-03-23 00:00:00 2008-03-24 00:00:00  ahead     swaves
+    2008-03-24 00:00:00 2008-03-25 00:00:00  ahead     swaves]
+    """
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         returns list of urls corresponding to given TimeRange.
