@@ -32,7 +32,7 @@ class SECCHIClient(GenericClient):
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a    
-    >>> results = Fido.search(a.Time('2007/3/2', '2007/3/3'), a.Instrument('secchi'), a.Source('ahead'), a.Detector('euvi'))
+    >>> results = Fido.search(a.Time('2007/3/2 17:00:00', '2007/3/3 17:15:00'), a.Instrument('secchi'), a.Source('ahead'), a.Detector('euvi'))
     >>> print(results)
         [<Table length=4>
         Start Time           End Time      Source Instrument
@@ -45,7 +45,9 @@ class SECCHIClient(GenericClient):
     >>> response = Fido.fetch(results)
     """
     def _get_url_for_timerange(self, timerange, **kwargs):
-
+        """
+        returns list of urls corresponding to given TimeRange.
+        """
         regex = re.compile('[^a-zA-Z0-9]')
         source = kwargs.get('source', 'ahead').lower() 
         detector = regex.sub('', kwargs.get('detector')).lower() #default to euvi ?
@@ -60,6 +62,9 @@ class SECCHIClient(GenericClient):
         return result
 
     def _makeimap(self):
+        """
+        Helper Function: used to hold information about source.
+        """       
         self.map_['instrument'] = 'secchi'
 
     @classmethod
@@ -95,9 +100,36 @@ class SECCHIClient(GenericClient):
                 
 
 class PLASTICClient(GenericClient):
-
+    """
+    Returns a list of URLS to XRT files corresponding to value of input timerange.
+    URL source: `http://stereo-ssc.nascom.nasa.gov/data/beacon/`.
+    Parameters
+    ----------
+    timerange: sunpy.time.TimeRange
+        time range for which data is to be downloaded.
+        Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
+    
+    Instrument: Fixed argument, case-insensitive = 'plastic'
+    
+    Source: Two arguments, case-insensitive - 'ahead' or 'behind'
+    
+    Examples
+    --------
+    >>> from sunpy.net import Fido
+    >>> from sunpy.net import attrs as a    
+    >>> results = Fido.search(a.Time('2007/3/2 17:00:00', '2007/3/4 17:15:00'), a.Instrument('plastic'), a.Source('ahead'))
+    >>> print(results)
+       [<Table length=2>
+         Start Time           End Time      Source Instrument
+           str19               str19         str5     str7   
+        ------------------- ------------------- ------ ----------
+        2007-03-02 00:00:00 2007-03-03 00:00:00  ahead    plastic
+        2007-03-03 00:00:00 2007-03-04 00:00:00  ahead    plastic]
+    """
     def _get_url_for_timerange(self, timerange, **kwargs):
-
+        """
+        returns list of urls corresponding to given TimeRange.
+        """
         source = kwargs.get('source').lower()
         if (source == 'ahead'):
             START_DATE = datetime.datetime(2006, 10, 1)
@@ -107,9 +139,9 @@ class PLASTICClient(GenericClient):
             raise ValueError('Earliest date for which PLASTIC data is available is {:%Y-%m-%d}'.format(START_DATE))
         prefix = 'http://stereo-ssc.nascom.nasa.gov/data/beacon/{source}/plastic/'
         if (source == 'ahead'):
-            suffix = '%Y/%m/ST{char}_LB_PLASTIC_%Y%m%d_V08.cdf'
+            suffix = '%Y/%m/ST{char}_LB_PLASTIC_%Y%m%d_V06.cdf'
         else:
-            suffix = '%y/%m/ST{char}_LB_PLASTIC_%Y%m%d_V08.cdf'
+            suffix = '%y/%m/ST{char}_LB_PLASTIC_%Y%m%d_V06.cdf'
         url_pattern = prefix + suffix
         crawler = Scraper(url_pattern, source = source, char = source[0].upper())
         if not timerange:
@@ -118,6 +150,9 @@ class PLASTICClient(GenericClient):
         return result
 
     def _makeimap(self):
+        """
+        Helper Function: used to hold information about source.
+        """       
         self.map_['instrument'] = 'plastic'
 
     @classmethod
@@ -150,7 +185,9 @@ class PLASTICClient(GenericClient):
 class IMPACTClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
-
+        """
+        returns list of urls corresponding to given TimeRange.
+        """
         source = kwargs.get('source').lower()
         START_DATE = datetime.datetime(2006, 10, 1)
         if (timerange.start < START_DATE):
@@ -164,6 +201,9 @@ class IMPACTClient(GenericClient):
         result = crawler.filelist(timerange)
         return result
     def _makeimap(self):
+        """
+        Helper Function: used to hold information about source.
+        """      
         self.map_['instrument'] = 'impact'
 
     @classmethod
@@ -197,7 +237,9 @@ class IMPACTClient(GenericClient):
 class SWAVESClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
-
+        """
+        returns list of urls corresponding to given TimeRange.
+        """
         source = kwargs.get('source')
         START_DATE = datetime.datetime(2006, 10, 27)
         if (timerange.start < START_DATE):
@@ -212,6 +254,9 @@ class SWAVESClient(GenericClient):
         return result
 
     def _makeimap(self):
+        """
+        Helper Function: used to hold information about source.
+        """
         self.map_['instrument'] = 'swaves'
 
     @classmethod
