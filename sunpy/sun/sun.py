@@ -150,8 +150,8 @@ def true_longitude(t='now'):
 
 def true_anomaly(t='now'):
     """Returns the Sun's true anomaly (in degrees)."""
-    result = (mean_anomaly(t) + equation_of_center(t)) % (360.0 * u.deg)
-    return result
+    result = mean_anomaly(t) + equation_of_center(t)
+    return Longitude(result)
 
 def sunearth_distance(t='now'):
     """Returns the Sun Earth distance (AU). There are a set of higher
@@ -186,17 +186,15 @@ def true_obliquity_of_ecliptic(t='now'):
 
 def true_rightascension(t='now'):
     """Return the true right ascension."""
-    true_long = true_longitude(t)
-    ob = true_obliquity_of_ecliptic(t)
-    result = np.cos(ob) * np.sin(true_long)
-    result = result * u.deg
-    return Longitude(result)
+    y = np.cos(true_obliquity_of_ecliptic(t)) * np.sin(true_longitude(t))
+    x = np.cos(true_longitude(t))
+    true_ra = np.arctan2(y, x)
+    return Longitude(true_ra.to(u.hourangle))
 
 def true_declination(t='now'):
     """Return the true declination."""
-    result = np.cos(true_longitude(t))
-    result = result * u.deg
-    return Latitude(result)
+    result = np.arcsin(np.sin(true_obliquity_of_ecliptic(t))) * np.sin(apparent_longitude(t))
+    return Latitude(result.to(u.deg))
 
 def apparent_obliquity_of_ecliptic(t='now'):
     """Return the apparent obliquity of the ecliptic."""
@@ -215,8 +213,8 @@ def apparent_declination(t='now'):
     """Returns the apparent declination of the Sun."""
     ob = apparent_obliquity_of_ecliptic(t)
     app_long = apparent_longitude(t)
-    result = np.degrees(np.arcsin(np.sin(ob)) * np.sin(app_long))
-    return Latitude(result)
+    result = np.arcsin(np.sin(ob)) * np.sin(app_long)
+    return Latitude(result.to(u.deg))
 
 def solar_north(t='now'):
     """Returns the position of the Solar north pole in degrees."""
@@ -226,10 +224,10 @@ def solar_north(t='now'):
     i = 7.25 * u.deg
     k = (74.3646 + 1.395833 * T) * u.deg
     lamda = true_longitude(t) - (0.00569 * u.deg)
-    omega = apparent_longitude(t)
+    omega = (259.18 - 1934.142 * T) * u.deg
     lamda2 = lamda - (0.00479 * np.sin(omega)) * u.deg
     diff = lamda - k
-    x = np.arctan(-np.cos((lamda2) * np.tan(ob1)))
+    x = np.arctan(-np.cos(lamda2) * np.tan(ob1))
     y = np.arctan(-np.cos(diff) * np.tan(i))
     result = x + y
     return Angle(result.to(u.deg))
@@ -245,13 +243,13 @@ def heliographic_solar_center(t='now'):
     lamda = true_longitude(t) - 0.00569 * u.deg
     diff = lamda - k
     # Latitude at center of disk (deg):
-    he_lat = np.degrees(np.arcsin(np.sin(diff)*np.sin(i)))
+    he_lat = np.arcsin(np.sin(diff)*np.sin(i))
     # Longitude at center of disk (deg):
     y = -np.sin(diff)*np.cos(i)
     x = -np.cos(diff)
     rpol = (np.arctan2(y, x))
     he_lon = rpol - theta
-    return [Longitude(he_lon), Latitude(he_lat)]
+    return [Longitude(he_lon.to(u.deg)), Latitude(he_lat.to(u.deg))]
 
 def print_params(t='now'):
     """Print out a summary of Solar ephemeris"""

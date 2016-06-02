@@ -36,6 +36,6 @@ def julian_day(t='now'):
 
 def julian_centuries(t='now'):
     """Returns the number of Julian centuries since 1900 January 0.5."""
-    DAYS_IN_YEAR = 36525.0
+    DAYS_IN_JULIAN_CENTURY = 36525.0
 
-    return (julian_day(t) - JULIAN_DAY_ON_NOON01JAN1900) / DAYS_IN_YEAR
+    return (julian_day(t) - JULIAN_DAY_ON_NOON01JAN1900 + 1) / DAYS_IN_JULIAN_CENTURY
