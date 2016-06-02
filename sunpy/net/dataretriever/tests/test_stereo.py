@@ -35,3 +35,13 @@ def test_can_handle_query():
     assert IClient._can_handle_query(trange, Instrument('impact'), Source('Behind')) is True
     assert SWClient._can_handle_query(trange, Instrument('swaves')) is not True
     assert SECCHIClient._can_handle_query(trange, Instrument('secchi'), Source('Ahead'), Detector('xyz')) is not True
+
+trange = Time('2007/6/13 04:00:00', '2007/6/13 05:00:00')
+@pytest.mark.online
+def test_query():
+    qr = SECCHIClient.query(trange, Instrument = 'secchi', source = Source('behind'), detector = Detector('euvi'))
+    assert isinstance(qr, QueryResponse)
+    assert len(qr) == 5
+    assert qr.time_range()[0] == '2007/06/13'
+    assert qr.time_range()[1] == '2007/06/13'
+              
