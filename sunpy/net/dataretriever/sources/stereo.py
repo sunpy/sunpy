@@ -131,6 +131,7 @@ class PLASTICClient(GenericClient):
         returns list of urls corresponding to given TimeRange.
         """
         source = kwargs.get('source').lower()
+        result = list()
         if (source == 'ahead'):
             START_DATE = datetime.datetime(2006, 10, 1)
         else:
@@ -138,15 +139,25 @@ class PLASTICClient(GenericClient):
         if (timerange.start < START_DATE):
             raise ValueError('Earliest date for which PLASTIC data is available is {:%Y-%m-%d}'.format(START_DATE))
         prefix = 'http://stereo-ssc.nascom.nasa.gov/data/beacon/{source}/plastic/'
+        prefix_copy = prefix
         if (source == 'ahead'):
-            suffix = '%Y/%m/ST{char}_LB_PLASTIC_%Y%m%d_V06.cdf'
+            prefix += '%Y/%m/ST{char}_LB_PLASTIC_%Y%m%d_'
+            prefix_copy += '%Y/%m/ST{char}_LB_PLA_BROWSE_%Y%m%d_'
         else:
-            suffix = '%y/%m/ST{char}_LB_PLASTIC_%Y%m%d_V06.cdf'
-        url_pattern = prefix + suffix
-        crawler = Scraper(url_pattern, source = source, char = source[0].upper())
+            prefix += '%y/%m/ST{char}_LB_PLASTIC_%Y%m%d_'
+            prefix_copy +='%y/%m/ST{char}_LB_PLA_BROWSE_%Y%m%d_'
+        suffix = 'V{0:02d}.cdf'
+        suffix_copy = suffix
+        pattern = prefix.format(source = source, char = source[0].upper()) + suffix
+        pattern_copy = prefix_copy.format(source = source, char = source[0].upper()) + suffix
+        patterns = list()
+        patterns.append(pattern), patterns.append(pattern_copy)
+        for pattern_ in patterns:
+            url_pattern = [pattern_.format(i) for i in range(6, 12)]
+            arr = [Scraper(pattern__).filelist(timerange) for pattern__ in url_pattern]
+            [result.extend(url) for url in arr if len(url)>0]
         if not timerange:
             return []
-        result = crawler.filelist(timerange)
         return result
 
     def _makeimap(self):

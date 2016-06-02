@@ -44,4 +44,15 @@ def test_query():
     assert len(qr) == 5
     assert qr.time_range()[0] == '2007/06/13'
     assert qr.time_range()[1] == '2007/06/13'
+
+@pytest.mark.online
+@pytest.mark.parametrize("time, instrument, source",
+[(Time('2013/4/1', '2013/4/3'), Instrument("plastic"), Source("ahead"))])
+def test_get(time, instrument, source):
+    qr = PClient.query(time, instrument, source)
+    res = PClient.get(qr)
+    download_list = res.wait()
+    assert len(download_list) == len(qr)
+
+
               
