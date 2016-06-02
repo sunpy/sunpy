@@ -26,12 +26,6 @@ def test__all__():
 
     assert julian.__all__ == ["julian_day", "julian_centuries"]
 
-def test_constant():
-    """should return JULIAN_DAY_ON_NOON01JAN1900"""
-
-    assert julian.JULIAN_DAY_ON_NOON01JAN1900 == 2415021.0
-
-
 def test_julian_day():
     assert julian.julian_day('1900-01-01 12:00') == 2415021.0
     assert julian.julian_day(LANDING) == 2439159.5
@@ -40,7 +34,7 @@ def test_julian_day():
 
 def test_julian_day1():
     """should return julian day for date 1"""
-    expected_day = julian.JULIAN_DAY_ON_NOON01JAN1900
+    expected_day = 2415021.0
     assert julian.julian_day(DATETIME_DATE_1) == expected_day
     assert julian.julian_day(STRING_DATE_1) == expected_day
 
