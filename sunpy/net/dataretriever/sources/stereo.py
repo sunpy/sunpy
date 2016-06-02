@@ -49,8 +49,8 @@ class SECCHIClient(GenericClient):
         returns list of urls corresponding to given TimeRange.
         """
         regex = re.compile('[^a-zA-Z0-9]')
-        source = kwargs.get('source').value.lower() 
-        detector = regex.sub('', kwargs.get('detector').value).lower() #default to euvi ?
+        source = kwargs.get('source').lower() 
+        detector = regex.sub('', kwargs.get('detector')).lower() #default to euvi ?
         table = { 'euvi':'euvi', 'hi1' : 'hi_1', 'hi2': 'hi_2', 'cor2':'cor2'}
         prefix = 'http://stereo-ssc.nascom.nasa.gov/data/beacon/{source}/secchi/img/{det}/%Y%m%d/%Y%m%d_%H%M%S_'
         suffix_table = { 'euvi':'n7eu{char}.fts', 'cor2': 'd7c2{char}.fts', 'hi1':'s7h1{char}.fts', 'hi2':'s7h2{char}.fts'}
@@ -130,7 +130,7 @@ class PLASTICClient(GenericClient):
         """
         returns list of urls corresponding to given TimeRange.
         """
-        source = kwargs.get('source').value.lower()
+        source = kwargs.get('source').lower()
         if (source == 'ahead'):
             START_DATE = datetime.datetime(2006, 10, 1)
         else:
@@ -215,7 +215,7 @@ class IMPACTClient(GenericClient):
         """
         returns list of urls corresponding to given TimeRange.
         """
-        source = kwargs.get('source').value.lower()
+        source = kwargs.get('source').lower()
         START_DATE = datetime.datetime(2006, 10, 1)
         if (timerange.start < START_DATE):
             raise ValueError('Earliest date for which IMPACT data is available is {:%Y-%m-%d}'.format(START_DATE))
@@ -295,7 +295,7 @@ class SWAVESClient(GenericClient):
         """
         returns list of urls corresponding to given TimeRange.
         """
-        source = kwargs.get('source').value.lower()
+        source = kwargs.get('source').lower()
         START_DATE = datetime.datetime(2006, 10, 27)
         if (timerange.start < START_DATE):
             raise ValueError('Earliest date for which SWAVES data is available is {:%Y-%m-%d}'.format(START_DATE))        

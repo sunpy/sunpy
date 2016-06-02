@@ -18,7 +18,7 @@ SWClient = stereo.SWAVESClient()
 
 @pytest.mark.online
 @pytest.mark.parametrize("timerange, source, detector, url_start, url_end",
-                         [(TimeRange('2008/3/2 17:45:00', '2008/3/2 18:00:00'), Source('ahead'), Detector('euvi'),
+                         [(TimeRange('2008/3/2 17:45:00', '2008/3/2 18:00:00'), 'ahead', 'euvi',
                           'http://stereo-ssc.nascom.nasa.gov/data/beacon/ahead/secchi/img/euvi/20080302/20080302_174530_n7euA.fts',
                          'http://stereo-ssc.nascom.nasa.gov/data/beacon/ahead/secchi/img/euvi/20080302/20080302_175530_n7euA.fts')])
 def test_get_url_for_timerange(timerange, source, detector, url_start, url_end):
@@ -39,7 +39,7 @@ def test_can_handle_query():
 trange = Time('2007/6/13 04:00:00', '2007/6/13 05:00:00')
 @pytest.mark.online
 def test_query():
-    qr = SECCHIClient.query(trange, Instrument = 'secchi', source = Source('behind'), detector = Detector('euvi'))
+    qr = SECCHIClient.query(trange, Instrument = 'secchi', source = 'behind', detector = 'euvi')
     assert isinstance(qr, QueryResponse)
     assert len(qr) == 5
     assert qr.time_range()[0] == '2007/06/13'
