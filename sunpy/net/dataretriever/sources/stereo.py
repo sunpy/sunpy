@@ -55,7 +55,7 @@ class SECCHIClient(GenericClient):
         prefix = 'http://stereo-ssc.nascom.nasa.gov/data/beacon/{source}/secchi/img/{det}/%Y%m%d/%Y%m%d_%H%M%S_'
         suffix_table = { 'euvi':'n7eu{char}.fts', 'cor2': 'd7c2{char}.fts', 'hi1':'s7h1{char}.fts', 'hi2':'s7h2{char}.fts'}
         url_pattern = prefix + suffix_table[detector]
-        crawler = Scraper(url_pattern, source = source, det = detector, char = source[0].upper())
+        crawler = Scraper(url_pattern, source =source, det = table[detector], char = source[0].upper())
         if not timerange:
             return []
         result = crawler.filelist(timerange)

@@ -54,5 +54,10 @@ def test_get(time, instrument, source):
     download_list = res.wait()
     assert len(download_list) == len(qr)
 
-
-              
+@pytest.mark.online
+def test_fido_query():
+    qr = Fido.search(a.Time('2013/4/5 01:00:00', '2013/4/5 06:00:00'), a.Instrument('secchi'), a.Source('behind'), a.Detector('hi_2'))
+    assert isinstance(qr, UnifiedResponse)
+    response = Fido.fetch(qr)
+    assert len(response) == qr._numfile
+    
