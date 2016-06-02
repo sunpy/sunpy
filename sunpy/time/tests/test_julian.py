@@ -78,28 +78,28 @@ def test_julian_day6():
 def test_julian_centuries1():
     """should return julian century for date 1"""
 
-    expected_century = 0.0
+    expected_century = 2.7378507871321012e-05
     assert julian.julian_centuries(DATETIME_DATE_1) == expected_century
     assert julian.julian_centuries(STRING_DATE_1) == expected_century
 
 def test_julian_centuries2():
     """should return julian century for date 2"""
 
-    expected_century = 0.8489280759626815
+    expected_century = 0.8489554544705528
     assert julian.julian_centuries(DATETIME_DATE_2) == expected_century
     assert julian.julian_centuries(STRING_DATE_2) == expected_century
 
 def test_julian_centuries3():
     """should return julian century for date 3"""
 
-    expected_century = 2.7410735036884954
+    expected_century = 2.741100882196367
     assert julian.julian_centuries(DATETIME_DATE_3) == expected_century
     assert julian.julian_centuries(STRING_DATE_3) == expected_century
 
 def test_julian_centuries4():
     """should return julian century for date 4"""
 
-    expected_century = -10.859014374033512
+    expected_century = -10.85898699552564
     assert julian.julian_centuries(DATETIME_DATE_4) == expected_century
     assert julian.julian_centuries(STRING_DATE_4) == expected_century
 
