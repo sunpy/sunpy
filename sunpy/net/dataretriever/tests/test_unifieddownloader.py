@@ -3,7 +3,7 @@ import pytest
 import astropy.units as u
 
 import sunpy.net.vso.attrs as attrs
-from sunpy.net.dataretriever.downloader_factory import Fido
+from sunpy.net.dataretriever.downloader_factory import Fido, UnifiedResponse
 
 # Test that the correct client is called.
 @pytest.mark.parametrize("query, client", [
@@ -105,3 +105,10 @@ def test_vso():
     res = Fido.fetch(unifiedresp, wait=False)
     files_downloaded = len(res.wait())
     assert files_downloaded == num_files_to_download
+
+
+def test_unifiedresponse_slicing():
+    results = Fido.search(attrs.Time("2012/1/1", "2012/1/5"),
+                          attrs.Instrument("lyra"))
+    assert isinstance(results[0:2], UnifiedResponse)
+    assert isinstance(results[0], UnifiedResponse)
