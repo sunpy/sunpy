@@ -10,6 +10,7 @@ from sunpy.net import attrs as a
 
 LCClient = goes.GOESClient()
 
+@pytest.mark.xfail
 @pytest.mark.parametrize("timerange,url_start,url_end",
 [(TimeRange('1995/06/03', '1995/06/04'),
 'http://umbra.nascom.nasa.gov/goes/fits/1995/go07950603.fits',

@@ -15,8 +15,6 @@ from sunpy.net.dataretriever.downloader_factory import Fido
      "LYRAClient"),
     ((attrs.Time('2012/1/8', '2012/1/9'), attrs.Instrument('norh')),
      "NoRHClient"),
-    ((attrs.Time('2012/4/22', '2012/4/25'), attrs.Instrument('rhessi')),
-     "RHESSIClient"),
     ((attrs.Time('2012/1/8', '2012/3/9'), attrs.Instrument('noaa-indices')),
      "NOAAIndicesClient"),
     ((attrs.Time('2012/12/8', '2012/12/9'), attrs.Instrument('noaa-predict')),

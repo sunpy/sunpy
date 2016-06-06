@@ -10,6 +10,7 @@ from sunpy.net import attrs as a
 LCClient = rhessi.RHESSIClient()
 
 
+@pytest.mark.online
 @pytest.mark.parametrize("timerange,url_start",
 [
 (TimeRange('2012/7/1', '2012/7/2'),
