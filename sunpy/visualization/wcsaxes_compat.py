@@ -14,11 +14,12 @@ try:
 
 except ImportError:
     HAVE_WCSAXES = False
-    warnings.warn("SunPy plotting is improved by installing the WCSAxes module: http://wcsaxes.readthedocs.org/en/latest/index.html")
+    warnings.warn("SunPy plotting is improved by installing the WCSAxes module: http://wcsaxes.readthedocs.io/")
 
 FORCE_NO_WCSAXES = False
 
 __all__ = ['HAVE_WCSAXES', 'is_wcsaxes', 'FORCE_NO_WCSAXES']
+
 
 def is_wcsaxes(axes):
     """
@@ -73,6 +74,7 @@ def gca_wcs(wcs, fig=None):
 
     return ax
 
+
 def get_world_transform(axes):
     """
     Get the transformation to world coordinates.
@@ -97,6 +99,7 @@ def get_world_transform(axes):
         transform = axes.transData
 
     return transform
+
 
 def default_wcs_grid(axes):
     """
@@ -129,6 +132,7 @@ def default_wcs_grid(axes):
 
     axes.coords.grid(color='white', alpha=0.6)
 
+
 def wcsaxes_heliographic_overlay(axes):
     """
     Create a heliographic overlay using wcsaxes.
@@ -144,12 +148,8 @@ def wcsaxes_heliographic_overlay(axes):
     -------
     overlay : wcsaxes overlay
         The overlay object.
-
-    .. note::
-        This function requires the WIP sunpy.coordinates module.
-
     """
-    overlay = axes.get_coords_overlay('heliographicstonyhurst')
+    overlay = axes.get_coords_overlay('heliographic_stonyhurst')
 
     lon = overlay[0]
     lat = overlay[1]

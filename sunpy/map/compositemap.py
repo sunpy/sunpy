@@ -433,15 +433,15 @@ class CompositeMap(object):
         if annotate:
             # x-axis label
             if self._maps[0].coordinate_system.x == 'HG':
-                xlabel = 'Longitude [{lon}]'.format(lon=self._maps[0].units.x)
+                xlabel = 'Longitude [{lon}]'.format(lon=self._maps[0].spatial_units.x)
             else:
-                xlabel = 'X-position [{solx}]'.format(solx=self._maps[0].units.x)
+                xlabel = 'X-position [{solx}]'.format(solx=self._maps[0].spatial_units.x)
 
             # y-axis label
             if self._maps[0].coordinate_system.y == 'HG':
-                ylabel = 'Latitude [{lat}]'.format(lat=self._maps[0].units.y)
+                ylabel = 'Latitude [{lat}]'.format(lat=self._maps[0].spatial_units.y)
             else:
-                ylabel = 'Y-position [{soly}]'.format(soly=self._maps[0].units.y)
+                ylabel = 'Y-position [{soly}]'.format(soly=self._maps[0].spatial_units.y)
 
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)

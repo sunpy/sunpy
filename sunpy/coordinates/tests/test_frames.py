@@ -16,8 +16,8 @@ from ... import sun
 from ..frames import Helioprojective, HeliographicStonyhurst, Heliocentric, HeliographicCarrington
 from ..representation import UnitSphericalWrap180Representation, SphericalWrap180Representation
 
-RSUN_METERS = sun.constants.constant('radius').si.to(u.m)
-DSUN_METERS = sun.constants.constant('mean distance').si.to(u.m)
+RSUN_METERS = sun.constants.get('radius').si.to(u.m)
+DSUN_METERS = sun.constants.get('mean distance').si.to(u.m)
 
 
 def init_frame(frame, args, kwargs):
