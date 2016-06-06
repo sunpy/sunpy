@@ -58,18 +58,28 @@ class GOESClient(GenericClient):
             Data type to return for the particular GOES satellite. Supported
             types depend on the satellite number specified. (default = xrs_2s)
         """
-
         # find out which satellite and datatype to query from the query times
         sat_num = self._get_goes_sat_num(timerange.start, timerange.end)
         base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
-
-        if timerange.start < parse_time('1999/01/15'):
-            url = base_url + "{date:%Y}/go{sat:02d}{date:%y%m%d}.fits".format(
-                date=timerange.start, sat=sat_num[0])
-        else:
-            url = base_url + "{date:%Y}/go{sat:02d}{date:%Y%m%d}.fits".format(
-                date=timerange.start, sat=sat_num[0])
-        return [url]
+        total_days = (timerange.end - timerange.start).days + 1 
+        all_dates = timerange.split(total_days)
+        result = list()
+#       Earlier we assumed that an entire range (consequently all dates within the range) were assigned the
+#       same GOES sat number, which meant we supplied timerange.start and timerange.end to
+#       _get_goes_sat_num. But now, we iterate over all the dates individually and hence
+#       _get_goes_sat_num gets each single date as an argument (the timerange.start and timerange.end
+#       for a single day is the day itself (trivial) ). That is why the same date. Its iterating over all the dates
+#       indivually.
+        for day in all_dates:
+            regex = "{date:%Y}/go{sat:02d}"
+            if (day.end < parse_time('1999/01/15')):
+                regex += "{date:%y%m%d}.fits"
+            else:
+                regex += "{date:%Y%m%d}.fits"
+            url = base_url + regex.format(
+                    date=day.end, sat=self._get_goes_sat_num(day.end, day.end)[0])
+            result.append(url)
+        return result
 
     def _makeimap(self):
         """
