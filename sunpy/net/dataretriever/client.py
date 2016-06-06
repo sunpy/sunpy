@@ -210,7 +210,7 @@ class GenericClient(object):
                     minmax = namedtuple("minmax", "{0}min {0}max".format(prefix))
                     self.map_[elem.__class__.__name__.lower()] = minmax(a_min, a_max)
             elif issubclass(elem.__class__, Wavelength): #FIXME Is this still needed?
-                self.map_['Wavelength'] = elem
+                self.map_[elem.__class__.__name__.lower()] = elem
             else:
                 if hasattr(elem, 'value'):
                     self.map_[elem.__class__.__name__.lower()] = elem.value
