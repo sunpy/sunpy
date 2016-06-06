@@ -59,7 +59,7 @@ class KanzelhoheClient(GenericClient):
         """
         returns list of urls corresponding to given TimeRange.
         """
-        wave = int(kwargs['Wavelength'].min.value)
+        wave = int(kwargs['wavelength'].min.value)
         table = {6563:['halpha2k/recent', 'halph_fr'], 32768:['caiia', 'caiik_fi'], 5460:['phokada', 'bband_fi']}
         if (wave == 6563):
             START_DATE = datetime.datetime(2000, 7, 20, 7, 45, 46)
