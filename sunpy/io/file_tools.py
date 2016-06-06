@@ -59,10 +59,18 @@ def read_file(filepath, filetype=None, **kwargs):
         Supported reader or extension to manually specify the filetype.
         Supported readers are ('jp2', 'fits', 'ana')
 
+    memmap : bool
+        Should memory mapping be used, i.e. keep data on disk rather than in RAM.
+        This is currently only supported by the FITS reader.
+
     Returns
     -------
     pairs : `list`
         A list of (data, header) tuples.
+
+    Notes
+    -----
+    Other keyword arguments are passed to the reader used.
     """
     if filetype:
         return _readers[filetype].read(filepath, **kwargs)

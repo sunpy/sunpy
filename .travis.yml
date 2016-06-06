@@ -44,14 +44,13 @@ env:
         - CONDA_CHANNELS='astropy astropy-ci-extras sunpy jevans https://conda.anaconda.org/sunpy/label/citesting openastronomy'
         - CONDA_ALL_DEPENDENCIES='glymur Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
         - CONDA_ALL_DEPENDENCIES2='glymur openjpeg Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
-        - PIP_DEPENDENCIES='suds-jurko'
+        - PIP_DEPENDENCIES='suds-jurko sphinx-gallery pytest-cov'
 
 
-#    matrix:
-#        - PYTHON_VERSION=2.7 # egg info
-#        - PYTHON_VERSION=3.3
-#        - PYTHON_VERSION=3.4
-#        - PYTHON_VERSION=3.5
+    matrix:
+        - PYTHON_VERSION=2.7 SETUP_CMD='egg_info'
+        - PYTHON_VERSION=3.4 SETUP_CMD='egg_info'
+        - PYTHON_VERSION=3.5 SETUP_CMD='egg_info'
 
 matrix:
     include:
@@ -72,10 +71,10 @@ matrix:
                 ASTROPY_VERSION='development' CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
          - os: linux
            env: JOB="Py2Sphinx" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -w'
-                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES
          - os: linux
            env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage'
-                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov suds-jurko'
+                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
          - os: linux
            env: JOB="Py2Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
                 CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
@@ -98,7 +97,7 @@ matrix:
       - env: JOB="Py2Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
              CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
       - env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage'
-             CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2 PIP_DEPENDENCIES='pytest-cov suds-jurko'
+             CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
 
 install:
     - git clone git://github.com/astropy/ci-helpers.git
