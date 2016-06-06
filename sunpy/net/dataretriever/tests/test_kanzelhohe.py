@@ -20,7 +20,7 @@ KClient = kanzelhohe.KanzelhoheClient()
                            'http://cesar.kso.ac.at/halpha2k/recent/2015/kanz_halph_fr_20150110_102629.fts.gz',
                            'http://cesar.kso.ac.at/halpha2k/recent/2015/kanz_halph_fr_20150110_113524.fts.gz')])
 def test_get_url_for_timerange(timerange, wavelength, url_start, url_end):
-    urls = KClient._get_url_for_timerange(timerange, Wavelength = wavelength )
+    urls = KClient._get_url_for_timerange(timerange, wavelength = wavelength )
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[1] == url_end
