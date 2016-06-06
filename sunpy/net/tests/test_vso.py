@@ -118,7 +118,7 @@ def test_wave_inputQuantity():
         va.Wavelength(10, 23)
         assert excinfo.value.message == wrong_type_mesage
     with pytest.raises(TypeError) as excinfo:
-        va.Wave(10 * u.AA, 23)
+        va.Wavelength(10 * u.AA, 23)
         assert excinfo.value.message == wrong_type_mesage
 
 def test_wave_toangstrom():
