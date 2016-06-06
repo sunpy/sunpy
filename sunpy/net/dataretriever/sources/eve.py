@@ -2,7 +2,9 @@
 # This module was developed under funding by
 # Google Summer of Code 2014
 
-import urlparse
+from __future__ import absolute_import, division, print_function
+
+from sunpy.extern.six.moves.urllib.parse import urljoin
 
 from ..client import GenericClient
 
@@ -64,7 +66,7 @@ class EVEClient(GenericClient):
         URL : string
         """
         base_url = 'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
-        return urlparse.urljoin(base_url,
+        return urljoin(base_url,
                                 date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt')
 
     def _makeimap(self):

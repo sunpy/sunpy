@@ -3,7 +3,7 @@
 # Google Summer of Code 2014
 
 import datetime
-import urlparse
+from sunpy.extern.six.moves.urllib.parse import urljoin
 
 from ..client import GenericClient
 
@@ -48,8 +48,8 @@ class LYRAClient(GenericClient):
             raise ValueError("This method requires a date")
         filename = "lyra_{0:%Y%m%d-}000000_lev{1:d}_std.fits".format(date, kwargs.get('level',2))
         base_url = "http://proba2.oma.be/lyra/data/bsd/"
-        url_path = urlparse.urljoin(date.strftime('%Y/%m/%d/'), filename)
-        return urlparse.urljoin(base_url, url_path)
+        url_path = urljoin(date.strftime('%Y/%m/%d/'), filename)
+        return urljoin(base_url, url_path)
 
     def _makeimap(self):
         """
