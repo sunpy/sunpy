@@ -5,7 +5,7 @@ import pytest
 
 from astropy import units as u
 from sunpy.time.timerange import TimeRange
-from sunpy.net.vso.attrs import Time,Instrument,Physobs, Wavelength
+from sunpy.net.vso.attrs import Time,Instrument
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
 from sunpy.net import Fido
@@ -40,3 +40,20 @@ def test_query():
     assert len(qr) == 8
     assert qr.time_range()[0] == '2016/01/01'
     assert qr.time_range()[1] == '2016/01/05'
+
+@pytest.mark.online
+@pytest.mark.parametrize("time, instrument",
+                         [(Time('2016/1/1 00:00:00', '2016/1/4 10:00:00'),
+                           Instrument('farside'))])
+def test_get(time, instrument):
+    qr = FClient.query(time, instrument)
+    res = FClient.get(qr)
+    download_list = res.wait()
+    assert len(download_list) == len(qr)
+
+@pytest.mark.online
+def test_fido_query():
+    qr = Fido.search(a.Time('2016/5/18', '2016/5/20'), a.Instrument('farside'))
+    assert isinstance(qr, UnifiedResponse)
+    response = Fido.fetch(qr)
+    assert len(response) == qr._numfile
