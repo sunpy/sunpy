@@ -22,8 +22,9 @@ class GONGClient(GenericClient):
         table_instruments = ['bb', 'ct', 'le', 'ml', 'td', 'ud', 'z'] #all possible instruments
         
         physobs_in = True if ('physobs' in kwargs.keys() and kwargs['physobs'] in table_physobs) else False #Is PhysObs entered
-        instrument_in = True if 'instrument' in kwargs.keys() else False #Is instrument entered.
-        
+        instrument_in = True if 'instrument' in kwargs.keys() else False
+        #Is instrument entered.
+        #The or is for checking for H-alpha instruments. The observatories are single letter 
         url_pattern_1 =  'ftp://gong2.nso.edu/QR/{id}qa/%Y%m/{ObsID}bqa%y%m%d/{ObsID}bqa%y%m%dt%H%M.fits.gz'
         url_pattern_2 = 'http://gong2.nso.edu/HA/{id}haf/%Y%m/%Y%m%d/%Y%m%d%H%M%S{ObsID}h.fits.fz' #'id' here is a dummy argument
                                                                                                     #put id = '', an empty string
@@ -57,21 +58,17 @@ class GONGClient(GenericClient):
         else:
             instruments_to.append(kwargs['instrument'])
 
-        
         for pattern_ in patterns:
             urls = list()
             if (pattern_ == url_pattern_1):
-                print url_pattern_1
                 urls =  [generate(url_pattern_1, id, id[0].upper()) for id in instruments_to]
             elif (pattern_ == url_pattern_2):
-                print url_pattern_2
                 urls = [generate(url_pattern_2, '', id[0].upper()) for id in instruments_to]
             arr = [Scraper(pattern__).filelist(timerange) for pattern__ in urls]
             [result.extend(url) for url in arr if len(url)>0]
         
         if not timerange:
             return []
-        print result
         return result
 
     def _makeimap(self):
@@ -109,6 +106,7 @@ class GONGClient(GenericClient):
                 chk_wavelength += 1
         if chk_instr == 1 or chk_physobs == 1:
             return True
+        return False
 
 
 class FARSIDEClient(GenericClient):
@@ -118,13 +116,20 @@ class FARSIDEClient(GenericClient):
         returns list of urls corresponding to given TimeRange.
         """
         START_DATE = datetime.datetime(2006, 5, 13, 12, 0, 0)
-        if timerange.start < START:
-            raise ValueError('Earliest date for which XRT data is available is {:%Y-%m-%d}'.format(START_DATE))
-        url_pattern = 'http://farside.nso.edu/oQR/fqo/%Y%m/mrfqo%y%m%dt%H%M.fits'
-        crawler = Scraper(url_pattern)
+        if timerange.start < START_DATE:
+            raise ValueError('Earliest date for which FARSIDE data is available is {:%Y-%m-%d}'.format(START_DATE))
+        url_pattern = 'http://farside.nso.edu/oQR/fqo/{:%Y%m}/mrfqo{:%y%m%d}/mrfqo{:%y%m%d}t{:%H%M}.fits'
+        tot_days = (timerange.end - timerange.start).days
+        all_days = timerange.split(tot_days)
+        #TODO: Figure out all cases where Scraper in sunpy.util would
+        # and wouldn't work. Doesn't work for this website.
+        result = list()
+        for dt in all_days:
+            times = [datetime.datetime(dt.start.year, dt.start.month, dt.start.day, 0, 0),
+                     datetime.datetime(dt.start.year, dt.start.month, dt.start.day, 12, 0)]
+            [result.append(url_pattern.format(dt_, dt_, dt_, dt_)) for dt_ in times]
         if not timerange:
             return []
-        result = Scraper.filelist(timerange)
         return result
 
     def _makeimap(self):
