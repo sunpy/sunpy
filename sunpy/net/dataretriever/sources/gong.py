@@ -26,8 +26,10 @@ class GONGClient(GenericClient):
         
         url_pattern_1 =  'ftp://gong2.nso.edu/QR/{id}qa/%Y%m/{ObsID}bqa%y%m%d/{ObsID}bqa%y%m%dt%H%M.fits.gz'
         url_pattern_2 = 'http://gong2.nso.edu/HA/{id}haf/%Y%m/%Y%m%d/%Y%m%d%H%M%S{ObsID}h.fits.fz' #'id' here is a dummy argument
+                                                                                                    #put id = '', an empty string
 
         generate = lambda url, id_, obs: url.format(id = id_, ObsID = obs) #Function generates urls based on instrument
+        #Better than writing two regexes for each url_pattern 1 and 2.
         
         result = list() #final list of urls
         patterns = list()
@@ -39,13 +41,38 @@ class GONGClient(GenericClient):
             else:
                 #Differentiate on basis of wavelength
                 wavelength_in = True if 'wavelength' in kwargs.keys() else False
-                
-                
-                
-        # Create a lambda for generating urls for 1. and for 2.
+                if not wavelength_in:
+                    patterns.append(url_pattern_1), patterns.append(url_pattern_2)
+                else:
+                    wave = int(kwargs['wavelength'].min.value)
+                    if (6562 <= wave <= 6563):
+                        patterns.append(url_pattern_2)
+                    elif wave == 6768:
+                        patterns.append(url_pattern_1)
         
-        #table = {'bb':'B', 'ct':'ct', 'le', 'ml', 'td', 'ud', 'z'} #for H-alpha
+        #All valid patterns to be downloaded are in the patterns list.
+        instruments_to = list() #The instruments from which user wants to download
+        if not instrument_in:
+            instruments_to.extend(table_instruments)
+        else:
+            instruments_to.append(kwargs['instrument'])
 
+        
+        for pattern_ in patterns:
+            urls = list()
+            if (pattern_ == url_pattern_1):
+                print url_pattern_1
+                urls =  [generate(url_pattern_1, id, id[0].upper()) for id in instruments_to]
+            elif (pattern_ == url_pattern_2):
+                print url_pattern_2
+                urls = [generate(url_pattern_2, '', id[0].upper()) for id in instruments_to]
+            arr = [Scraper(pattern__).filelist(timerange) for pattern__ in urls]
+            [result.extend(url) for url in arr if len(url)>0]
+        
+        if not timerange:
+            return []
+        print result
+        return result
 
     def _makeimap(self):
         self.map_['source'] = 'GONG'
@@ -66,26 +93,22 @@ class GONGClient(GenericClient):
         boolean: answer as to whether client can service the query
         
         """
-        chkattr = ['Time', 'Instrument', 'Physobs']
+        chkattr = ['Time', 'Instrument', 'Physobs', 'Wavelength']
         chklist = [x.__class__.__name__ in chkattr for x in query]
         physobs = ['intensity', 'los_magnetic_field'] #from VSO
         instruments = ['bb', 'ct', 'le', 'ml', 'td', 'ud', 'z'] #for Magnetogram and intensity
         chk_instr, chk_physobs = 0, 0
-        chk_source, chk_wavelength = 0, 0
+        chk_wavelength = 0
         values = [6562, 6563, 6768]
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value.lower() in instruments:
                 chk_instr += 1
             if x.__class__.__name__ == 'Physobs' and x.value.lower() in physobs:
                 chk_physobs += 1
-            if x.__class__.__name__ == 'Source' and x.value.lower() == 'gong':
-                chk_source += 1
             if (x.__class__.__name__ == 'Wavelength' and int(x.min.value) in values and int(x.max.value) in values and (x.unit.name).lower()=='angstrom'):
                 chk_wavelength += 1
         if chk_instr == 1 or chk_physobs == 1:
             return True
-        else:
-            return chk_source == 1
 
 
 class FARSIDEClient(GenericClient):
