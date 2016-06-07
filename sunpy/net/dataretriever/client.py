@@ -183,6 +183,8 @@ class GenericClient(object):
                     self.map_[elem.__class__.__name__.lower()] = a_min
                 else:
                     self.map_[elem.__class__.__name__.lower()] = (a_min, a_max)
+            elif issubclass(elem.__class__, Wavelength):
+                self.map_[elem.__class__.__name__.lower()] = elem
             else:
                 if hasattr(elem, 'value'):
                     self.map_[elem.__class__.__name__.lower()] = elem.value
