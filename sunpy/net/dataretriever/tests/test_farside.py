@@ -32,3 +32,11 @@ def test_can_handle_query():
     assert FClient._can_handle_query(trange, Instrument('Farside')) is True
     assert FClient._can_handle_query(trange) is not True
     assert FClient._can_handle_query(trange, Instrument('bbso')) is not True
+
+@pytest.mark.online
+def test_query():
+    qr = FClient.query(Time('2016/1/1', '2016/1/5'), instrument = 'farside')
+    assert isinstance(qr, QueryResponse)
+    assert len(qr) == 8
+    assert qr.time_range()[0] == '2016/01/01'
+    assert qr.time_range()[1] == '2016/01/05'
