@@ -19,6 +19,11 @@ from sunpy.time import is_time, TimeRange, parse_time
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.extern.six.moves import urllib
 from sunpy.extern import six
+import astropy.units as u
+
+# define and register a new unit, needed for RHESSI
+det = u.def_unit('detector')
+u.add_enabled_units([det])
 
 # pylint: disable=E1101,E1121,W0404,W0612,W0613
 __authors__ = ["Keith Hughitt"]
@@ -39,8 +44,15 @@ class LightCurve(object):
 
     meta : `str` or `dict`
         The comment string or header associated with the data.
+
     data : `~pandas.DataFrame`
-        An pandas DataFrame prepresenting one or more fields as a function of time.
+        An pandas DataFrame representing one or more fields as a function of time.
+
+    unit : `astropy.units.UnitBase` instance or str, optional
+        The units of the data.
+
+    uncertainty : `np.ndarray`, optional
+        Uncertainties on the data.
 
     Examples
     --------
@@ -65,9 +77,16 @@ class LightCurve(object):
         self.data = pandas.DataFrame(data)
         if meta == '' or meta is None:
             self.meta = OrderedDict()
-            self.meta.update({'name':None})
+            self.meta.update({'NAME': None})
         else:
             self.meta = OrderedDict(meta)
+
+    @property
+    def plot_types(self):
+         """
+         Returns the types of plot available.
+         """
+         return self._get_plot_types()
 
     @property
     def header(self):
@@ -80,6 +99,49 @@ class LightCurve(object):
         warnings.warn("""lightcurve.header has been renamed to lightcurve.meta
 for compatibility with map, please use meta instead""", Warning)
         return self.meta
+
+    @property
+    def instrument(self):
+        """Instrument name"""
+        return self.meta.get('INSTRUME', "").replace("_", " ")
+
+    @property
+    def measurement(self):
+        """Measurement name, defaults to the wavelength of image"""
+        return u.Quantity(self.meta.get('WAVELNTH', 0), self.meta.get('WAVEUNIT', ""))
+
+    @property
+    def wavelength(self):
+        """wavelength of the observation"""
+        return u.Quantity(self.meta.get('WAVELNTH', 0), self.meta.get('WAVEUNIT', ""))
+
+    @property
+    def observatory(self):
+        """Observatory or Telescope name"""
+        return self.meta.get('OBSRVTRY', self.meta.get('TELESCOP', "")).replace("_", " ")
+
+    @property
+    def detector(self):
+        """Detector name"""
+        return self.meta.get('DETECTOR', "")
+
+    @property
+    def name(self):
+        """Human-readable description of lightcurve"""
+        return "{obs} {detector}".format(obs=self.observatory, detector=self.detector)
+
+    @property
+    def unit(self):
+        if type(self.meta.get('UNIT', [' '])) is type(list):
+            return [u.Unit(this_unit) for this_unit in self.meta.get('UNIT', u.dimensionless_unscaled)]
+        else:
+            return u.Unit(self.meta.get('UNIT', u.dimensionless_unscaled))
+
+    @property
+    def time_range(self):
+        """Returns the start and end times of the LightCurve as a `~sunpy.time.TimeRange`
+        object"""
+        return TimeRange(self.data.index[0], self.data.index[-1])
 
     @classmethod
     def from_time(cls, time, **kwargs):
@@ -146,7 +208,7 @@ for compatibility with map, please use meta instead""", Warning)
         if data.empty:
             raise ValueError("No data found!")
         else:
-            return cls(data, meta)
+            return cls(data, OrderedDict(meta))
 
     @classmethod
     def from_url(cls, url, **kwargs):
@@ -209,7 +271,7 @@ for compatibility with map, please use meta instead""", Warning)
 
         return cls(dataframe, meta)
 
-    def plot(self, axes=None, **plot_args):
+    def plot(self, title=True, axes=None, plot_type=None, **plot_args):
         """Plot a plot of the light curve
 
         Parameters
@@ -252,10 +314,12 @@ for compatibility with map, please use meta instead""", Warning)
         """
 
         figure = plt.figure()
-        self.plot(**kwargs)
-        figure.show()
 
-        return figure
+        for plot_num, plot_type in enumerate(self.plot_types):
+            ax = figure.add_subplot(len(self.plot_types), 1, plot_num+1)
+            self.plot(axes=ax, plot_type=plot_type)
+
+        figure.show()
 
     @staticmethod
     def _download(uri, kwargs,
@@ -378,11 +442,6 @@ for compatibility with map, please use meta instead""", Warning)
             return self
         else:
             return LightCurve(self.data[column_name], self.meta.copy())
-
-    def time_range(self):
-        """Returns the start and end times of the LightCurve as a `~sunpy.time.TimeRange`
-        object"""
-        return TimeRange(self.data.index[0], self.data.index[-1])
 
     def concatenate(self, otherlightcurve):
         """Concatenate another light curve. This function will check and remove

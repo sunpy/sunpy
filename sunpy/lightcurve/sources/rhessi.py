@@ -3,13 +3,16 @@
 from __future__ import absolute_import
 
 import datetime
-import matplotlib.dates
 import matplotlib.pyplot as plt
 from pandas import DataFrame
+from collections import OrderedDict
 
 from sunpy.lightcurve import LightCurve
 from sunpy.time import TimeRange, parse_time
 from sunpy.instr import rhessi
+
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['RHESSISummaryLightCurve']
 
@@ -51,57 +54,37 @@ class RHESSISummaryLightCurve(LightCurve):
     * Mission Paper `<http://link.springer.com/article/10.1023%2FA%3A1022428818870>`_
     """
 
-    def peek(self, title="RHESSI Observing Summary Count Rate", **kwargs):
-        """Plots RHESSI Count Rate light curve. An example is shown below.
+    def plot(self, title=True, axes=None, plot_type=None, **plot_args):
+        """Plots RHESSI Count Rate light curve"""
 
-        .. plot::
+        if axes is None:
+            axes = plt.gca()
 
-            from sunpy import lightcurve as lc
-            from sunpy.data.sample import RHESSI_LIGHTCURVE
-            rhessi = lc.RHESSISummaryLightCurve.create(RHESSI_LIGHTCURVE)
-            rhessi.peek()
+        if plot_type == None:
+            plot_type = self._get_plot_types()[0]
 
-        Parameters
-        ----------
-        title : str
-            The title of the plot.
+        if title is True:
+            title = self.name
 
-        **kwargs : dict
-            Any additional plot arguments that should be used
-            when plotting.
+        if plot_type == 'rhessi':
+            for item, frame in self.data.iteritems():
+                axes.plot_date(self.data.index, frame.values, '-', label=item, **plot_args)
+            axes.set_yscale("log")
+            axes.yaxis.grid(True, 'major')
+            axes.xaxis.grid(True, 'major')
+        else:
+            raise ValueError('Not a recognized plot type.')
 
-        Returns
-        -------
-        fig : `~matplotlib.Figure`
-            A plot figure.
-        """
-        figure = plt.figure()
-        axes = plt.gca()
+        axes.set_title(title)
+        axes.set_ylabel(self.unit)
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
+        plt.gcf().autofmt_xdate()
 
-        #dates = matplotlib.dates.date2num(self.data.index)
+        return axes
 
-        lc_linecolors = rhessi.hsi_linecolors()
-
-        for lc_color, (item, frame) in zip(lc_linecolors, self.data.iteritems()):
-            axes.plot_date(self.data.index, frame.values, '-', label=item, lw=2, color=lc_color)
-
-        axes.set_yscale("log")
-        axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
-
-        axes.set_title('RHESSI Observing Summary Count Rates')
-        axes.set_ylabel('Count Rate s$^{-1}$ detector$^{-1}$')
-
-        axes.yaxis.grid(True, 'major')
-        axes.xaxis.grid(False, 'major')
-        axes.legend()
-
-        # @todo: display better tick labels for date range (e.g. 06/01 - 06/05)
-        formatter = matplotlib.dates.DateFormatter('%H:%M')
-        axes.xaxis.set_major_formatter(formatter)
-
-        axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
-        figure.autofmt_xdate()
-        figure.show()
+    @classmethod
+    def _get_plot_types(cls):
+        return ['rhessi']
 
     @classmethod
     def _get_default_uri(cls):
@@ -133,6 +116,13 @@ class RHESSISummaryLightCurve(LightCurve):
     def _parse_fits(filepath):
         """Parses a RHESSI FITS file"""
         header, d = rhessi.parse_obssumm_file(filepath)
+        header = OrderedDict(header)
         data = DataFrame(d['data'], columns=d['labels'], index=d['time'])
-
+        header.update({'UNIT': 'count s^-1 detector^-1'})
+        header.update({'INSTRUME': 'RHESSI'})
+        header.update({'OBSRVTRY': 'RHESSI'})
+        header.update({'TELESCOP': 'RHESSI'})
+        header.update({'WAVELNTH': [[3, 6], [6, 12], [12, 25], [25, 50], [50, 100], [100, 300],
+                                    [300, 800], [800, 7000], [7000, 20000]]})
+        header.update({'WAVEUNIT': 'keV'})
         return header, data

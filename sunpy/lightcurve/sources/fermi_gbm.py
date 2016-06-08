@@ -14,6 +14,8 @@ from sunpy.instr import fermi
 from sunpy.lightcurve import LightCurve
 
 from sunpy.extern.six.moves import urllib
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['GBMSummaryLightCurve']
 
@@ -57,7 +59,7 @@ class GBMSummaryLightCurve(LightCurve):
     * `GBM Instrument Papers <http://gammaray.msfc.nasa.gov/gbm/publications/>`_
     """
 
-    def peek(self, **kwargs):
+    def plot(self, title=True, axes=None, plot_type=None, **plot_args):
         """Plots the GBM lightcurve. An example can be seen below.
 
         .. plot::
@@ -73,25 +75,37 @@ class GBMSummaryLightCurve(LightCurve):
             Any additional plot arguments that should be used
             when plotting.
         """
-        figure=plt.figure()
-        axes = plt.gca()
-        data_lab = self.data.columns.values
+        if axes is None:
+            axes = plt.gca()
 
-        for d in data_lab:
-            axes.plot(self.data.index, self.data[d], label=d)
+        if plot_type is None:
+            plot_type = self._get_plot_types()[0]
 
-        axes.set_yscale("log")
-        axes.set_title('Fermi GBM Summary data ' + self.meta['DETNAM'])
-        axes.set_xlabel('Start time: ' +
-                        self.data.index[0].strftime('%Y-%m-%d %H:%M:%S UT'))
-        axes.set_ylabel('Counts/s/keV')
-        axes.legend()
-        figure.autofmt_xdate()
+        if title is True:
+            title = self.name
 
-        plt.show()
+        if plot_type == 'gbm':
+            data_lab=self.data.columns.values
+
+            for d in data_lab:
+                axes.plot(self.data.index,self.data[d],label=d)
+            axes.set_yscale("log")
+        else:
+            raise ValueError('Not a recognized plot type.')
+
+        axes.set_title(title)
+        axes.set_ylabel(self.meta['DETNAM'] + ' ' + self.unit)
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
+
+        plt.gcf().autofmt_xdate()
+        return axes
 
     @classmethod
-    def _get_url_for_date(cls, date, **kwargs):
+    def _get_plot_types(cls):
+        return ['gbm']
+
+    @classmethod
+    def _get_url_for_date(cls,date, **kwargs):
         """Returns the url for Fermi/GBM data for the given date."""
         baseurl = 'http://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
         # date is a datetime object
@@ -160,6 +174,7 @@ class GBMSummaryLightCurve(LightCurve):
             gbm_times.append(fermi.met_to_utc(t))
         column_labels=['4-15 keV','15-25 keV','25-50 keV','50-100 keV','100-300 keV',
                        '300-800 keV','800-2000 keV']
+        header.update({'UNIT': 'Counts s^-1 keV^-1'})
         return header, pandas.DataFrame(summary_counts, columns=column_labels, index=gbm_times)
 
 

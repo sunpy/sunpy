@@ -51,34 +51,42 @@ class NoRHLightCurve(LightCurve):
     * `Nobeyama Correlation Plots <http://solar.nro.nao.ac.jp/norh/html/cor_plot/>`_
     """
 
-    def peek(self, **kwargs):
-        """Plots the NoRH lightcurve
+    def plot(self, title=True, axes=None, plot_type=None, **plot_args):
+        """Plots the NoRH lightcurve"""
 
-        .. plot::
+        if plot_type == None:
+            plot_type = self._get_plot_types()[0]
 
-            from sunpy import lightcurve as lc
-            from sunpy.data.sample import NORH_LIGHTCURVE
-            norh = lc.NoRHLightCurve.create(NORH_LIGHTCURVE)
-            norh.peek()
+        if axes is None:
+            axes = plt.gca()
 
-        Parameters
-        ----------
-        **kwargs : dict
-            Any additional plot arguments that should be used
-            when plotting.
-        """
+        if title is True:
+            title = self.name
 
-        plt.figure()
-        axes = plt.gca()
-        data_lab=self.meta['OBS-FREQ'][0:2] + ' ' + self.meta['OBS-FREQ'][2:5]
-        axes.plot(self.data.index,self.data,label=data_lab)
-        axes.set_yscale("log")
-        axes.set_ylim(1e-4,1)
-        axes.set_title('Nobeyama Radioheliograph')
+        if plot_type == 'norh':
+            data_label = self.meta['OBS-FREQ'][0:2] + ' ' + self.meta['OBS-FREQ'][2:5]
+            axes.plot(self.data.index, self.data, label=data_label)
+            axes.set_yscale("log")
+            axes.set_ylim(1e-4, 1)
+            axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
+            axes.set_ylabel('Correlation')
+            axes.yaxis.grid(True, 'major')
+            axes.xaxis.grid(True, 'major')
+        else:
+            raise ValueError('Not a recognized plot type.')
+
+        axes.set_ylabel(self.unit)
         axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
-        axes.set_ylabel('Correlation')
-        axes.legend()
-        plt.show()
+        axes.set_title(title)
+
+        #axes.legend(bbox_to_anchor=(1.02, 1), loc=2, borderaxespad=0.)
+        plt.gcf().autofmt_xdate()
+
+        return axes
+
+    @classmethod
+    def _get_plot_types(cls):
+        return ['norh']
 
     @classmethod
     def _get_url_for_date(cls, date, **kwargs):
@@ -115,9 +123,13 @@ class NoRHLightCurve(LightCurve):
         length = len(data)
         cadence = np.float(header['CDELT1'])
         sec_array = np.linspace(0, length-1, (length/cadence))
+        norh_time = [obs_start_time + datetime.timedelta(0, s) for s in sec_array]
 
-        norh_time = []
-        for s in sec_array:
-            norh_time.append(obs_start_time + datetime.timedelta(0,s))
+        data = pandas.DataFrame(data, index=norh_time)
 
-        return header, pandas.DataFrame(data, index=norh_time)
+        header.update({'INSTRUME': 'Nobeyama Radio Heliograph'})
+        header.update({'TELESCOP': 'Nobeyama Radio Heliograph'})
+        header.update({'OBSRVTRY': header.get('ORIGIN')})
+        header.update({'WAVELNTH': 17})
+        header.update({'WAVEUNIT': 'GHz'})
+        return header, data

@@ -13,6 +13,9 @@ from os.path import basename
 
 from sunpy.lightcurve import LightCurve
 
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
+
 __all__ = ['EVELightCurve']
 
 
@@ -58,51 +61,56 @@ class EVELightCurve(LightCurve):
     * `Instrument Paper <http://link.springer.com/article/10.1007%2Fs11207-009-9487-6>`_
     """
 
-    def peek(self, column=None, **kwargs):
-        """Plots the light curve in a new figure. An example is shown below.
+    def plot(self, title=True, axes=None, plot_type=None, **plot_args):
+        """Plots EVE light curve is the usual manner"""
+        if axes is None:
+            axes = plt.gca()
 
-        .. plot::
+        if plot_type == None:
+            plot_type = self._get_plot_types()[0]
 
-            import sunpy.lightcurve
-            from sunpy.data.sample import EVE_LIGHTCURVE
-            eve = sunpy.lightcurve.EVELightCurve.create(EVE_LIGHTCURVE)
-            eve.peek(subplots=True)
-
-        Parameters
-        ----------
-        column : str
-            The column to display. If None displays all.
-
-        **kwargs : dict
-            Any additional plot arguments that should be used
-            when plotting.
-
-        Returns
-        -------
-        fig : `~matplotlib.Figure`
-            A plot figure.
-        """
-        figure = plt.figure()
-        # Choose title if none was specified
-        if "title" not in kwargs and column is None:
-            if len(self.data.columns) > 1:
-                kwargs['title'] = 'EVE (1 minute data)'
-            else:
-                if self._filename is not None:
-                    base = self._filename.replace('_', ' ')
-                    kwargs['title'] = os.path.splitext(base)[0]
-                else:
-                    kwargs['title'] = 'EVE Averages'
-
-        if column is None:
-            self.plot(**kwargs)
+        if plot_type == self._get_plot_types()[0]:      # goes proxy
+            self.data['XRS-B proxy'].plot(ax=axes, label='1.0--8.0 $\AA$', color='red', lw=2, **plot_args)
+            self.data['XRS-A proxy'].plot(ax=axes, label='0.5--4.0 $\AA$', color='blue', lw=2, **plot_args)
+            axes.set_yscale("log")
+            axes.set_ylim(1e-9, 1e-2)
+            axes.set_ylabel(self.unit)
+            ax2 = axes.twinx()
+            ax2.set_yscale("log")
+            ax2.set_ylim(1e-9, 1e-2)
+            ax2.set_yticks((1e-9, 1e-8, 1e-7, 1e-6, 1e-5, 1e-4, 1e-3, 1e-2))
+            ax2.set_yticklabels((' ', 'A', 'B', 'C', 'M', 'X', ' '))
+        elif plot_type == self._get_plot_types()[1]:  # esp quad
+            self.data['q0ESP'].plot(ax=axes, label='ESP 0', **plot_args)
+            self.data['q1ESP'].plot(ax=axes, label='ESP 1', **plot_args)
+            self.data['q2ESP'].plot(ax=axes, label='ESP 2', **plot_args)
+            self.data['q3ESP'].plot(ax=axes, label='ESP 3', **plot_args)
+        elif plot_type == self._get_plot_types()[2]:  # position
+            self.data['CMLat'].plot(ax=axes, label='Latitude', **plot_args)
+            self.data['CMLon'].plot(ax=axes, label='Longitude', **plot_args)
+        elif plot_type == self._get_plot_types()[3]:  # sem
+            self.data['SEM proxy'].plot(ax=axes, label='SEM Proxy', **plot_args)
+        elif plot_type == self._get_plot_types()[4]:  # esp
+            self.data['17.1ESP'].plot(ax=axes, label='17.1', **plot_args)
+            self.data['25.7ESP'].plot(ax=axes, label='25.7', **plot_args)
+            self.data['30.4ESP'].plot(ax=axes, label='30.4', **plot_args)
+            self.data['36.6ESP'].plot(ax=axes, label='36.6', **plot_args)
+        elif plot_type == self._get_plot_types()[5]:  # dark
+            self.data['darkESP'].plot(ax=axes, label='ESP', **plot_args)
+            self.data['darkMEGS-P'].plot(ax=axes, label='MEGS-P', **plot_args)
         else:
-            data = self.data[column]
-            if "title" not in kwargs:
-                kwargs['title'] = 'EVE ' + column.replace('_', ' ')
-            data.plot(**kwargs)
-        figure.show()
-        return figure
+            raise ValueError('Not a recognized plot type.')
+
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
+        axes.set_title(title)
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(True, 'major')
+        plt.gcf().autofmt_xdate()
+        return axes
+
+    @classmethod
+    def _get_plot_types(cls):
+        return ['goes proxy', 'esp quad', 'position', 'sem', 'esp', 'dark']
 
     @staticmethod
     def _get_default_uri():
@@ -194,4 +202,10 @@ class EVELightCurve(LightCurve):
             data[data == float(missing_data_val)] = numpy.nan
 
         # data.columns = fields
+        meta.update({'UNIT': 'Watt m^-2'})
+        meta.update({'INSTRUME': 'SDO/EVE'})
+        meta.update({'OBSRVTRY': 'SDO'})
+        meta.update({'TELESCOP': 'EVE'})
+        meta.update({'WAVELNTH': ''})
+        meta.update({'WAVEUNIT': ''})
         return meta, data

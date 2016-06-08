@@ -62,8 +62,8 @@ class LYRALightCurve(LightCurve):
     * `LYRA Instrument Homepage <http://proba2.sidc.be/about/LYRA>`_
     """
 
-    def peek(self, names=3, **kwargs):
-        """Plots the LYRA data. An example is shown below.
+    def plot(self, title=True, axes=None, plot_type=None, **plot_args):
+        """Plots the LYRA data. Available plot types are
 
         .. plot::
 
@@ -86,40 +86,45 @@ class LYRALightCurve(LightCurve):
         fig : `~matplotlib.Figure`
             A plot figure.
         """
-        lyranames = (('Lyman alpha','Herzberg cont.','Al filter','Zr filter'),
-                 ('120-123nm','190-222nm','17-80nm + <5nm','6-20nm + <2nm'))
+        lyranames = (('Lyman alpha', 'Herzberg cont.', 'Al filter', 'Zr filter'),
+                 ('120-123nm', '190-222nm', '17-80nm + <5nm', '6-20nm + <2nm'))
 
-        # Choose title if none was specified
-        #if not kwargs.has_key("title"):
-        #    if len(self.data.columns) > 1:
-        #        kwargs['title'] = 'LYRA data'
-        #    else:
-        #        if self._filename is not None:
-        #            base = self._filename
-        #            kwargs['title'] = os.path.splitext(base)[0]
-        #        else:
-        #            kwargs['title'] = 'LYRA data'
-        figure = plt.figure()
-        plt.subplots_adjust(left=0.17,top=0.94,right=0.94,bottom=0.15)
-        axes = plt.gca()
+        if axes is None:
+            axes = plt.gca()
 
-        axes = self.data.plot(ax=axes, subplots=True, sharex=True, **kwargs)
+        if plot_type == None:
+            plot_type = self._get_plot_types()[0]
 
-        for i, name in enumerate(self.data.columns):
-            if names < 3:
-                name = lyranames[names][i]
-            else:
-                name = lyranames[0][i] + ' \n (' + lyranames[1][i] + ')'
-            axes[i].set_ylabel( "{name} \n (W/m**2)".format(name=name), fontsize=9.5)
+        if title is True:
+            title = self.name
 
-        axes[0].set_title("LYRA ({0:{1}})".format(self.data.index[0],TIME_FORMAT))
-        axes[-1].set_xlabel("Time")
-        for axe in axes:
-            axe.locator_params(axis='y',nbins=6)
+        ylabel = ''
 
-        figure.show()
+        if plot_type == 'channel 1':
+            axes = self.data['CHANNEL1'].plot(ax=axes, **plot_args)
+            ylabel = lyranames[0][0] + ' \n (' + lyranames[1][0] + ") [" + str(self.unit) + "]"
+        if plot_type == 'channel 2':
+            axes = self.data['CHANNEL2'].plot(ax=axes, **plot_args)
+            ylabel = lyranames[0][1] + ' \n (' + lyranames[1][1] + ") [" + str(self.unit) + "]"
+        if plot_type == 'channel 3':
+            axes = self.data['CHANNEL3'].plot(ax=axes, **plot_args)
+            ylabel = lyranames[0][2] + ' \n (' + lyranames[1][2] + ") [" + str(self.unit) + "]"
+        if plot_type == 'channel 4':
+            axes = self.data['CHANNEL4'].plot(ax=axes, **plot_args)
+            ylabel = lyranames[0][3] + ' \n (' + lyranames[1][3] + ") [" + str(self.unit) + "]"
 
-        return figure
+        axes.set_xlabel('Start time: ' + self.data['CHANNEL1'].index[0].strftime(TIME_FORMAT))
+        axes.set_ylabel(ylabel)
+        axes.set_title(title)
+        axes.yaxis.grid(True, 'major')
+        axes.xaxis.grid(True, 'major')
+        plt.gcf().autofmt_xdate()
+
+        return axes
+
+    @classmethod
+    def _get_plot_types(cls):
+        return ['channel 1', 'channel 2', 'channel 3', 'channel 4']
 
     @staticmethod
     def _get_url_for_date(date, **kwargs):
@@ -184,4 +189,12 @@ class LYRALightCurve(LightCurve):
         # Return the header and the data
         data = pandas.DataFrame(table, index=times)
         data.sort_index(inplace=True)
-        return OrderedDict(hdulist[0].header), data
+        header = OrderedDict(hdulist[0].header)
+        header.update({'UNIT': "W m^-2"})
+        header.update({'INSTRUME': 'LYRA'})
+        header.update({'OBSRVTRY': 'PROBA2'})
+        header.update({'TELESCOP': ['Lyman alpha', 'Herzberg cont.', 'Al filter', 'Zr filter']})
+        header.update({'DETECTOR': header.get('TELESCOP')})
+        header.update({'WAVELNTH': [[120, 123], [190, 222], [17, 80], [6, 20]]})
+        header.update({'WAVEUNIT': 'nm'})
+        return header, data

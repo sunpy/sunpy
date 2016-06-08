@@ -9,7 +9,11 @@ import numpy as np
 from sunpy.lightcurve import LightCurve
 from scipy.ndimage import label
 from sunpy.time import TimeRange
+import matplotlib.pyplot as plt
 from sunpy.extern.six.moves import range
+
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['LogicalLightCurve']
 
@@ -31,6 +35,34 @@ class LogicalLightCurve(LightCurve):
     >>> z = [True for x in range(0, 24 * 60)]
     >>> light_curve = lightcurve.LogicalLightCurve.create({"param1": z}, index=dates)
     """
+
+    @classmethod
+    def _get_plot_types(cls):
+        return ['logical']
+
+    def plot(self, axes=None, title="Logical", plot_type=None, **plot_args):
+        """Plots Logical lightcurve"""
+        if axes is None:
+            axes = plt.gca()
+
+        if title is True:
+            title = self.name
+
+        if plot_type == None:
+            plot_type = self._get_plot_types()[0]
+
+        if plot_type == self._get_plot_types()[0]:      # logical
+            self.data.plot(ax=axes, **plot_args)
+            plt.fill_between(self.data.index, self.data['param1'], alpha=0.5)
+            axes.set_title(title)
+            axes.yaxis.grid(True, 'major')
+            axes.xaxis.grid(True, 'major')
+            axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
+        else:
+            raise ValueError('Not a recognized plot type.')
+        plt.gcf().autofmt_xdate()
+
+        return axes
 
     def complement(self):
         """Return the logical complement of the original lightcurve."""
