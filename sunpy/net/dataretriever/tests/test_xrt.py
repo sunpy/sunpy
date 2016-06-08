@@ -26,12 +26,12 @@ def test_get_url_for_timerange(timerange, url_start, url_end, filter_):
 
 trange = Time('2015/12/30', '2015/12/31')
 def test_can_handle_query():
-    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('almesh')) is True
-    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('alpoly')) is True
-    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('cpoly')) is True
-    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('tipoly')) is True
-    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('thin_be')) is True
-    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('mag')) is not True
+    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('almesh'))
+    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('alpoly'))
+    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('cpoly'))
+    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('tipoly'))
+    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('thin_be'))
+    assert not XClient._can_handle_query(trange, Instrument('xrt'), Filter('mag'))
 
 @pytest.mark.online
 def test_query():
@@ -50,6 +50,8 @@ def test_get(time, instrument, filter_):
     download_list = res.wait()
     assert len(download_list) == len(qr)
 
+#Downloads two fits files each of size 4MB
+#Total size = 8MB
 @pytest.mark.online
 def test_fido_query():
     qr = Fido.search(a.Time('2016/5/18','2016/5/19'), a.Instrument('xrt'), a.Filter('al_mesh'))
