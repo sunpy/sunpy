@@ -25,14 +25,15 @@ class SECCHIClient(GenericClient):
     
     Instrument: Fixed argument = 'secchi'
     
-    Source: Two arguments, case-insensitive - 'ahead' or 'behind'
+    Source: Two arguments, case-insensitive - 'STEREO_A' or 'STEREO_B', case-sensitive.
 
     Detector: Can take any four arguments, case-insensitive - 'euvi', 'cor2', 'hi_1', 'hi_2'
     Examples
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a    
-    >>> results = Fido.search(a.Time('2007/3/2 17:00:00', '2007/3/3 17:15:00'), a.Instrument('secchi'), a.Source('ahead'), a.Detector('euvi'))
+    >>> results = Fido.search(a.Time('2007/3/2 17:00:00', '2007/3/3 17:15:00'), a.Instrument('secchi'),
+    a.Source('STEREO_A'), a.Detector('euvi'))
     >>> print(results)
         [<Table length=4>
         Start Time           End Time      Source Instrument
@@ -48,16 +49,17 @@ class SECCHIClient(GenericClient):
         """
         returns list of urls corresponding to given TimeRange.
         """
+        if not timerange:
+            return []
         regex = re.compile('[^a-zA-Z0-9]')
-        source = kwargs.get('source').lower() 
+        source = kwargs.get('source')
+        table_ = {'STEREO_A':'ahead', 'STEREO_B':'behind'} 
         detector = regex.sub('', kwargs.get('detector')).lower() #default to euvi ?
         table = { 'euvi':'euvi', 'hi1' : 'hi_1', 'hi2': 'hi_2', 'cor2':'cor2'}
         prefix = 'http://stereo-ssc.nascom.nasa.gov/data/beacon/{source}/secchi/img/{det}/%Y%m%d/%Y%m%d_%H%M%S_'
         suffix_table = { 'euvi':'n7eu{char}.fts', 'cor2': 'd7c2{char}.fts', 'hi1':'s7h1{char}.fts', 'hi2':'s7h2{char}.fts'}
         url_pattern = prefix + suffix_table[detector]
-        crawler = Scraper(url_pattern, source =source, det = table[detector], char = source[0].upper())
-        if not timerange:
-            return []
+        crawler = Scraper(url_pattern, source = table_[source], det = table[detector], char = table_[source][0].upper())
         result = crawler.filelist(timerange)
         return result
 
@@ -85,12 +87,12 @@ class SECCHIClient(GenericClient):
         chkattr = ['Time', 'Instrument', 'Source', 'Detector']
         chklist = [x.__class__.__name__ in chkattr for x in query]
         chk_var = 0
-        sources = ['ahead', 'behind']
+        sources = ['STEREO_A', 'STEREO_B']
         detectors = ['euvi', 'cor2', 'hi1', 'hi2']
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'secchi':
                 chk_var += 1
-            if x.__class__.__name__ == 'Source' and x.value.lower() in sources:
+            if x.__class__.__name__ == 'Source' and x.value in sources:
                 chk_var += 1
             if x.__class__.__name__ == 'Detector' and regex.sub('',x.value).lower() in detectors:
                 chk_var += 1
@@ -111,13 +113,14 @@ class PLASTICClient(GenericClient):
     
     Instrument: Fixed argument, case-insensitive = 'plastic'
     
-    Source: Two arguments, case-insensitive - 'ahead' or 'behind'
+    Source: Two arguments, case-insensitive - 'STEREO_A' or 'STEREO_B', case-sensitive.
     
     Examples
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a    
-    >>> results = Fido.search(a.Time('2007/3/2 17:00:00', '2007/3/4 17:15:00'), a.Instrument('plastic'), a.Source('ahead'))
+    >>> results = Fido.search(a.Time('2007/3/2 17:00:00', '2007/3/4 17:15:00'),
+    a.Instrument('plastic'), a.Source('STEREO_A'))
     >>> print(results)
        [<Table length=2>
          Start Time           End Time      Source Instrument
@@ -130,7 +133,10 @@ class PLASTICClient(GenericClient):
         """
         returns list of urls corresponding to given TimeRange.
         """
-        source = kwargs.get('source').lower()
+        if not timerange:
+            return []
+        source = kwargs.get('source')
+        table_ = {'STEREO_A':'ahead', 'STEREO_B':'behind'}
         result = list()
         if (source == 'ahead'):
             START_DATE = datetime.datetime(2006, 10, 1)
@@ -140,24 +146,23 @@ class PLASTICClient(GenericClient):
             raise ValueError('Earliest date for which PLASTIC data is available is {:%Y-%m-%d}'.format(START_DATE))
         prefix = 'http://stereo-ssc.nascom.nasa.gov/data/beacon/{source}/plastic/'
         prefix_copy = prefix
-        if (source == 'ahead'):
+        if (source == 'STEREO_A'):
             prefix += '%Y/%m/ST{char}_LB_PLASTIC_%Y%m%d_'
             prefix_copy += '%Y/%m/ST{char}_LB_PLA_BROWSE_%Y%m%d_'
-        else:
+        elif (source == 'STEREO_B'):
             prefix += '%y/%m/ST{char}_LB_PLASTIC_%Y%m%d_'
             prefix_copy +='%y/%m/ST{char}_LB_PLA_BROWSE_%Y%m%d_'
         suffix = 'V{0:02d}.cdf'
         suffix_copy = suffix
-        pattern = prefix.format(source = source, char = source[0].upper()) + suffix
-        pattern_copy = prefix_copy.format(source = source, char = source[0].upper()) + suffix
+        pattern = prefix.format(source = table_[source], char = table_[source][0].upper()) + suffix
+        pattern_copy = prefix_copy.format(source = table_[source], char = table_[source][0].upper()) + suffix
         patterns = list()
         patterns.append(pattern), patterns.append(pattern_copy)
         for pattern_ in patterns:
             url_pattern = [pattern_.format(i) for i in range(6, 12)]
             arr = [Scraper(pattern__).filelist(timerange) for pattern__ in url_pattern]
             [result.extend(url) for url in arr if len(url)>0]
-        if not timerange:
-            return []
+
         return result
 
     def _makeimap(self):
@@ -183,11 +188,11 @@ class PLASTICClient(GenericClient):
         chkattr = ['Time', 'Instrument', 'Source']
         chklist = [x.__class__.__name__ in chkattr for x in query]
         chk_var = 0
-        sources = ['ahead', 'behind']
+        sources = ['STEREO_A', 'STEREO_B']
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'plastic':
                 chk_var += 1
-            if x.__class__.__name__ == 'Source' and x.value.lower() in sources:
+            if x.__class__.__name__ == 'Source' and x.value in sources:
                 chk_var += 1
         if (chk_var == 2):
             return True
@@ -205,13 +210,14 @@ class IMPACTClient(GenericClient):
     
     Instrument: Fixed argument, case-insensitive = 'impact'
     
-    Source: Two arguments, case-insensitive - 'ahead' or 'behind'
+    Source: Two arguments, case-insensitive - 'STEREO_A' or 'STEREO_B', case-sensitive.
     
     Examples
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a    
-    >>> results = Fido.search(a.Time('2007/3/20 17:00:00', '2007/3/25 17:15:00'), a.Instrument('impact'), a.Source('ahead'))
+    >>> results = Fido.search(a.Time('2007/3/20 17:00:00', '2007/3/25 17:15:00'),
+    a.Instrument('impact'), a.Source('STEREO_A'))
     [<Table length=5>
         Start Time           End Time      Source Instrument
            str19               str19         str5     str6   
@@ -226,16 +232,17 @@ class IMPACTClient(GenericClient):
         """
         returns list of urls corresponding to given TimeRange.
         """
-        source = kwargs.get('source').lower()
+        if not timerange:
+            return []
+        source = kwargs.get('source')
+        table_ = {'STEREO_A':'ahead', 'STEREO_B':'behind'}
         START_DATE = datetime.datetime(2006, 10, 1)
         if (timerange.start < START_DATE):
             raise ValueError('Earliest date for which IMPACT data is available is {:%Y-%m-%d}'.format(START_DATE))
         prefix = 'http://stereo-ssc.nascom.nasa.gov/data/beacon/{source}/'
         suffix = 'impact/%Y/%m/ST{char}_LB_IMPACT_%Y%m%d_V01.cdf'
         url_pattern = prefix + suffix
-        crawler = Scraper(url_pattern, source = source, char = source[0].upper())
-        if not timerange:
-            return []
+        crawler = Scraper(url_pattern, source = table_[source], char = table_[source][0].upper())
         result = crawler.filelist(timerange)
         return result
     def _makeimap(self):
@@ -261,11 +268,11 @@ class IMPACTClient(GenericClient):
         chkattr = ['Time', 'Instrument', 'Source']
         chklist = [x.__class__.__name__ in chkattr for x in query]
         chk_var = 0
-        sources = ['ahead', 'behind']
+        sources = ['STEREO_A', 'STEREO_B']
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'impact':
                 chk_var += 1
-            if x.__class__.__name__ == 'Source' and x.value.lower() in sources:
+            if x.__class__.__name__ == 'Source' and x.value in sources:
                 chk_var += 1
         if (chk_var == 2):
             return True
@@ -284,13 +291,14 @@ class SWAVESClient(GenericClient):
     
     Instrument: Fixed argument, case-insensitive = 'swaves'
     
-    Source: Two arguments, case-insensitive - 'ahead' or 'behind'
+    Source: Two arguments, case-insensitive - 'STEREO_A' or 'STEREO_B', case-sensitive.
     
     Examples
     --------
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a    
-    >>> results = Fido.search(a.Time('2008/3/20 17:00:00', '2008/3/25 17:15:00'), a.Instrument('swaves'), a.Source('ahead'))
+    >>> results = Fido.search(a.Time('2008/3/20 17:00:00', '2008/3/25 17:15:00'),
+    a.Instrument('swaves'), a.Source('STEREO_A'))
     >>> print(results)
     [<Table length=5>
      Start Time           End Time      Source Instrument
@@ -306,16 +314,17 @@ class SWAVESClient(GenericClient):
         """
         returns list of urls corresponding to given TimeRange.
         """
-        source = kwargs.get('source').lower()
+        if not timerange:
+            return []
+        source = kwargs.get('source')
         START_DATE = datetime.datetime(2006, 10, 27)
+        table_ = {'STEREO_A':'ahead', 'STEREO_B':'behind'}
         if (timerange.start < START_DATE):
             raise ValueError('Earliest date for which SWAVES data is available is {:%Y-%m-%d}'.format(START_DATE))        
         prefix = 'http://stereo-ssc.nascom.nasa.gov/data/beacon/{source}/'
         suffix = 'swaves/%Y/%m/ST{char}_LB_SWAVES_%Y%m%d.idlsave'
         url_pattern = prefix + suffix
-        crawler = Scraper(url_pattern, source = source, char = source[0].upper())
-        if not timerange:
-            return []
+        crawler = Scraper(url_pattern, source = table_[source], char = table_[source][0].upper())
         result = crawler.filelist(timerange)
         return result
 
@@ -342,11 +351,11 @@ class SWAVESClient(GenericClient):
         chkattr = ['Time', 'Instrument', 'Source']
         chklist = [x.__class__.__name__ in chkattr for x in query]
         chk_var = 0
-        sources = ['ahead', 'behind']
+        sources = ['STEREO_A', 'STEREO_B']
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'swaves':
                 chk_var += 1
-            if x.__class__.__name__ == 'Source' and x.value.lower() in sources:
+            if x.__class__.__name__ == 'Source' and x.value in sources:
                 chk_var += 1
         if (chk_var == 2):
             return True
