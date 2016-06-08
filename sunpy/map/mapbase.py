@@ -123,7 +123,7 @@ class GenericMap(NDData):
            [ 0.5   , -0.125 ,  0.4375, ...,  0.6875,  0.6875,  0.6875]])
 
 
-    >>> aia.units
+    >>> aia.spatial_units
     Pair(x=Unit("arcsec"), y=Unit("arcsec"))
     >>> aia.peek()   # doctest: +SKIP
 
