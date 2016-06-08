@@ -110,7 +110,39 @@ class GONGClient(GenericClient):
 
 
 class FARSIDEClient(GenericClient):
-
+    """
+    Returns a list of URLS to XRT files corresponding to value of input timerange.
+    URL source: `http://solar.physics.montana.edu/HINODE/XRT/QL/syn_comp_fits/`.
+    Parameters
+    ----------
+    timerange: sunpy.time.TimeRange
+        time range for which data is to be downloaded.
+        Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
+    
+    Instrument: Fixed argument = 'farside'
+            
+    Returns
+    -------
+    urls: list
+    list of urls corresponding to requested time range.
+    
+    Examples
+    --------
+    >>> from sunpy.net import Fido
+    >>> from sunpy.net import attrs as a
+    >>> results = Fido.search(Time('2015/4/2','2015/4/4'), a.Instrument('farside'))
+    >>> print(results)
+    [<Table length=4>
+         Start Time           End Time      Source Instrument
+           str19               str19         str4     str7   
+    ------------------- ------------------- ------ ----------
+    2015-04-02 00:00:00 2015-04-03 00:00:00   GONG    farside
+    2015-04-03 00:00:00 2015-04-04 00:00:00   GONG    farside
+    2015-04-04 00:00:00 2015-04-05 00:00:00   GONG    farside
+    2015-04-05 00:00:00 2015-04-06 00:00:00   GONG    farside]
+    
+    >>> response = Fido.fetch(results)
+    """
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         returns list of urls corresponding to given TimeRange.
