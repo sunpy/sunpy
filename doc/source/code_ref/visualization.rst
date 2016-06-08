@@ -13,3 +13,6 @@ SunPy visualization
 .. automodapi:: sunpy.visualization.imageanimator
     :headings: ^#
 
+.. automodapi:: sunpy.visualization.wcsaxes_compat
+    :headings: ^#
+
