@@ -187,7 +187,7 @@ def hpc_to_hpc(heliopcoord, heliopframe):
         heliopcoord.L0 == heliopframe.L0 and
         heliopcoord.D0 == heliopframe.D0):
 
-        return heliopcoord
+        return heliopframe.realize_frame(heliopcoord._data)
 
     hgs = heliopcoord.transform_to(HeliographicStonyhurst)
     hgs.B0 = heliopframe.B0
