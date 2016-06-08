@@ -54,6 +54,8 @@ class XRTClient(GenericClient):
         """
         returns list of urls corresponding to given TimeRange.
         """
+        if not timerange:
+            return []      
         START_DATE = datetime.datetime(2014, 1, 10, 18, 14, 42)
         filter_type = kwargs['filter']
         regex = re.compile('[^a-zA-Z]')
@@ -71,8 +73,7 @@ class XRTClient(GenericClient):
                        format(filter = filter_dict[filter_type], s=i) for i in range (0, 10)]
         arr = [Scraper(pattern, filter = filter_dict[filter_type]).filelist(timerange) for pattern in url_pattern]
         [result.extend(url) for url in arr if len(url)>0]
-        if not timerange:
-            return []
+
         return result
 
     def _makeimap(self):
