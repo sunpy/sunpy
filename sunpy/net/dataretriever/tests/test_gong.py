@@ -32,7 +32,10 @@ def test_can_handle_query():
     assert GONGClient._can_handle_query(trange, Instrument('bb'), Physobs('intensity')) is True
     assert GONGClient._can_handle_query(trange, Physobs('los_magnetic_field')) is True
     assert GONGClient._can_handle_query(trange, Instrument('z')) is True
-    assert GONGClient._can_handle_query(trange, Instrument('ct'), Physobs('intensity'), Wavelength(6563*u.AA))
+    assert GONGClient._can_handle_query(trange, Instrument('ct'), Physobs('intensity'), Wavelength(6563*u.AA)) is True
+    assert GONGClient._can_handle_query(trange) is not True
+
+
 
 
                            
