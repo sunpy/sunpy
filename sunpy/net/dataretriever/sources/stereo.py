@@ -25,7 +25,7 @@ class SECCHIClient(GenericClient):
     
     Instrument: Fixed argument = 'secchi'
     
-    Source: Two arguments, case-insensitive - 'STEREO_A' or 'STEREO_B', case-sensitive.
+    Source: Two arguments, case-sensitive - 'STEREO_A' or 'STEREO_B'.
 
     Detector: Can take any four arguments, case-insensitive - 'euvi', 'cor2', 'hi_1', 'hi_2'
     Examples
@@ -113,7 +113,7 @@ class PLASTICClient(GenericClient):
     
     Instrument: Fixed argument, case-insensitive = 'plastic'
     
-    Source: Two arguments, case-insensitive - 'STEREO_A' or 'STEREO_B', case-sensitive.
+    Source: Two arguments, case-sensitive - 'STEREO_A' or 'STEREO_B'.
     
     Examples
     --------
@@ -210,7 +210,7 @@ class IMPACTClient(GenericClient):
     
     Instrument: Fixed argument, case-insensitive = 'impact'
     
-    Source: Two arguments, case-insensitive - 'STEREO_A' or 'STEREO_B', case-sensitive.
+    Source: Two arguments, case-sensitive - 'STEREO_A' or 'STEREO_B'.
     
     Examples
     --------
@@ -291,7 +291,7 @@ class SWAVESClient(GenericClient):
     
     Instrument: Fixed argument, case-insensitive = 'swaves'
     
-    Source: Two arguments, case-insensitive - 'STEREO_A' or 'STEREO_B', case-sensitive.
+    Source: Two arguments, case-sensitive - 'STEREO_A' or 'STEREO_B'.
     
     Examples
     --------
