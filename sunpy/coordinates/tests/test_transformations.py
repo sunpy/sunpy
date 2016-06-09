@@ -28,3 +28,18 @@ def test_hpc_hpc():
     theta = np.arctan(dd / D0)
 
     assert quantity_allclose(theta, hpc_new.Tx, rtol=1e-3)
+
+
+def test_hpc_hpc_null():
+
+    hpc_in = Helioprojective(0*u.arcsec, 0*u.arcsec)
+    hpc_out = Helioprojective()
+
+    hpc_new = hpc_in.transform_to(hpc_out)
+
+    assert not hpc_new is hpc_in
+    assert quantity_allclose(hpc_new.Tx, hpc_in.Tx)
+    assert quantity_allclose(hpc_new.Ty, hpc_in.Ty)
+    assert quantity_allclose(hpc_new.D0, hpc_in.D0)
+    assert quantity_allclose(hpc_new.B0, hpc_in.B0)
+    assert quantity_allclose(hpc_new.L0, hpc_in.L0)
