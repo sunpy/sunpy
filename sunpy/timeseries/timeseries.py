@@ -150,9 +150,9 @@ class GenericTimeSeries:
     @property
     def date(self):
         """Image observation time"""
-        time = parse_time(self.meta.get('date-obs', 'now'))
+        time = parse_time(self.meta.get('date-obs', self.data.index.min()))
         if time is None:
-            warnings.warn_explicit("Missing metadata for observation time. Using current time.",
+            warnings.warn_explicit("Missing metadata for observation time. Using first measurement index.",
                                        Warning, __file__, inspect.currentframe().f_back.f_lineno)
         return parse_time(time)
 
@@ -398,6 +398,46 @@ class GenericTimeSeries:
         return GenericTimeSeries(self.data.sort_index(**kwargs), self.meta.copy(), self.units)
 
 # #### From Generic Spec #### #
+    def resample(self, rule, method='sum', **kwargs):
+        """Returns a resampled version of the timeseries object.
+
+        Parameters
+        ----------
+        rule : string
+            The offset string or object representing target conversion
+
+        method : string
+            The mothod used to combine values.
+            Defines the function called in Pandas.
+            downsampling: 'sum', 'mean', 'std'
+            upsampling: 'pad', 'bfill', 'ffill'
+
+        Returns
+        -------
+        newts :
+            A new time series with the data resampled.
+        """
+        # create the resample using the given rule.
+        if method.lower()=='sum':
+            resampled_data = self.data.resample(rule).sum()
+        elif method.lower()=='mean':
+            resampled_data = self.data.resample(rule).mean()
+        elif method.lower()=='std':
+            resampled_data = self.data.resample(rule).std()
+        elif method.lower()=='pad':
+            resampled_data = self.data.resample(rule).pad()
+        elif method.lower()=='bfill':
+            resampled_data = self.data.resample(rule).bfill()
+        elif method.lower()=='ffill':
+            resampled_data = self.data.resample(rule).ffill()
+        else:
+            resampled_data = self.data
+            warnings.warn("Unknown resample rule \""+method+"\"", Warning)
+
+        # ToDo: consider re-evaluating the metadata.
+
+        # Return the resampled
+        return GenericTimeSeries(resampled_data, self.meta.copy(), self.units)
 
 
 # #### From OLD LightCurve #### #
@@ -428,6 +468,9 @@ class GenericTimeSeries:
         newlc : `~sunpy.lightcurve.LightCurve`
             A new lightcurve with only the selected times.
         """
+        # ToDo: consider adding slice notation instead of calling this function.
+
+        # Evaluate inputs
         if isinstance(a, TimeRange):
             # If we have a TimeRange, extract the values
             start = a.start
@@ -438,10 +481,8 @@ class GenericTimeSeries:
             end   = b
 
         # If an interval integer was given then use in truncation.
-        if int:
-            truncated = self.data.sort_index()[start:end:int]
-        else:
-            truncated = self.data.sort_index()[start:end]
+        truncated = self.data.sort_index()[start:end:int]
+
         ####return self.__class__.create(truncated, self.meta.copy())
         return GenericTimeSeries(truncated, self.meta.copy(), self.units)
 
@@ -557,23 +598,24 @@ class GenericTimeSeries:
         # For all columns not present in the units dictionary.
         for column in set(self.data.columns.tolist()) - set(self.units.keys()):
             self.units[column] = u.Quantity(1.0)
-            warnings.warn("Unknown units for "+column, Warning)
+            warnings.warn("Unknown units for \""+column+"\"", Warning)
 
 if __name__ == "__main__":
     # Build a traditional lightcurve
     intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
     import sunpy
     import datetime
+    from sunpy import lightcurve
     #from sunpy import lightcurve
     dates = [datetime.datetime(2016, 6, 7, 12, 0) - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
-    light_curve = sunpy.lightcurve.LightCurve.create({"param1": intensity}, index=dates)
+    light_curve = lightcurve.LightCurve.create({"param1": intensity}, index=dates)
 
     # Use this to
     units_list = { "param1": u.Quantity(1 * u.meter) }
     gts = GenericTimeSeries(light_curve.data, light_curve.meta, units_list)
 
     ###########################################################################
-    # The basic functions necessary for the API
+    # The basic functions necessary for the API - Operating on the Pandas
     ###########################################################################
     # Sorting: sort the data so time is monotonically increasing
     gts.data = gts.data.sort_index()
@@ -655,20 +697,26 @@ if __name__ == "__main__":
 
     # Resampling: taking an existing lightcurve and resample it at different times to get a new lightcurve
     # summing every 'n' elements of the original time-series
-    resampled = gts.data.resample('3T').sum() # '3T = 3 mins'
-    resampled = gts.data.resample('60S').mean() # '60S = 60 seconds'
-    resampled = gts.data.resample('H').std() # 'H = one hour'
-    resampled = gts.data.resample('D').sum() # 'D = one day'
+    resampled = gts.resample('3T')         # '3T = 3 mins'
+    resampled = gts.resample('60S', 'sum') # '60S = 60 seconds'
+    resampled = gts.resample('H', 'std')   # 'H = one hour'
+    resampled = gts.resample('D', 'mean')  # 'D = one day'
+    resampled = gts.resample('D', 'other')  # should show a warning
     # Note: use of the methods: .sum(), .mean(), .std()
     # Note: not sure how to do every nth element.
 
     # Upsampling: increasing the cadence with interpolation.
     ###################upsampled = gts.data[0:5].resample('30S').asfreq() #select first 5 rows
-    upsampled = gts.data[0:10].resample('30S').pad()
-    upsampled = gts.data[0:10].resample('30S').bfill()
-    upsampled = gts.data[0:10].resample('30S').ffill()
+    upsampled = gts.resample('30S', 'pad')
+    upsampled = gts.resample('30S', 'bfill')
+    upsampled = gts.resample('30S', 'ffill')
 
     # Unit aware: Being able to assign a physical unit to a column of the LightCurve data
     # Note: only a bolt on ATM, use a self.units ordered dictionary to store quantity related to each column.
     column = 'param1'
     quantity = u.Quantity(gts.data['param1'].values * gts.units[column])
+
+
+    ###########################################################################
+    # Additional functionality
+    ###########################################################################
