@@ -417,22 +417,30 @@ class GenericTimeSeries:
         newts :
             A new time series with the data resampled.
         """
+        # how parameter indicates using multiple methods to Pandas
+        how = kwargs.get('how', None)
+
         # create the resample using the given rule.
-        if method.lower()=='sum':
-            resampled_data = self.data.resample(rule).sum()
-        elif method.lower()=='mean':
-            resampled_data = self.data.resample(rule).mean()
-        elif method.lower()=='std':
-            resampled_data = self.data.resample(rule).std()
-        elif method.lower()=='pad':
-            resampled_data = self.data.resample(rule).pad()
-        elif method.lower()=='bfill':
-            resampled_data = self.data.resample(rule).bfill()
-        elif method.lower()=='ffill':
-            resampled_data = self.data.resample(rule).ffill()
+        if not how:
+            if method.lower()=='sum':
+                print("self.data.resample(" + str(rule) + ", " + str(kwargs) + ").sum()")
+                resampled_data = self.data.resample(rule, **kwargs).sum()
+            elif method.lower()=='mean':
+                resampled_data = self.data.resample(rule, **kwargs).mean()
+            elif method.lower()=='std':
+                resampled_data = self.data.resample(rule, **kwargs).std()
+            elif method.lower()=='pad':
+                resampled_data = self.data.resample(rule, **kwargs).pad()
+            elif method.lower()=='bfill':
+                resampled_data = self.data.resample(rule, **kwargs).bfill()
+            elif method.lower()=='ffill':
+                resampled_data = self.data.resample(rule, **kwargs).ffill()
+            else:
+                resampled_data = self.data
+                warnings.warn("Unknown resample rule \""+str(method)+"\"", Warning)
         else:
-            resampled_data = self.data
-            warnings.warn("Unknown resample rule \""+method+"\"", Warning)
+            # If the how kwarg was given then we simply pass it to the resample function.
+            resampled_data = self.data.resample(rule, **kwargs)
 
         # ToDo: consider re-evaluating the metadata.
 
@@ -445,7 +453,8 @@ class GenericTimeSeries:
     def time_range(self):
         """Returns the start and end times of the LightCurve as a `~sunpy.time.TimeRange`
         object"""
-        return TimeRange(self.data.index[0], self.data.index[-1])
+        #return TimeRange(self.data.index[0], self.data.index[-1])
+        return TimeRange(self.data.index.min(), self.data.index.max())
 
     def truncate(self, a, b=None, int=None):
         """Returns a truncated version of the lightcurve object.
@@ -598,7 +607,7 @@ class GenericTimeSeries:
         # For all columns not present in the units dictionary.
         for column in set(self.data.columns.tolist()) - set(self.units.keys()):
             self.units[column] = u.Quantity(1.0)
-            warnings.warn("Unknown units for \""+column+"\"", Warning)
+            warnings.warn("Unknown units for \""+str(column)+"\"", Warning)
 
 if __name__ == "__main__":
     # Build a traditional lightcurve
