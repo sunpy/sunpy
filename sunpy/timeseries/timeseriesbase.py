@@ -647,15 +647,34 @@ class GenericTimeSeries:
 
         Parameters
         ----------
-        otherts : `~pandas.core.frame.DataFrame`
-            Another time series of the same type.
+        columns: list, optional, default:None
+            If None, return all columns minus the index, otherwise, returns
+            specified columns.
 
         Returns
         -------
-        newts : `~pandas.core.frame.DataFrame`
+        newts : `~numpy.ndarray`
             A new time series.
         """
         return self.data
+
+    def to_array(self, **kwargs):
+        """
+        Return a numpy array of the give TimeSeries object.
+
+        Parameters
+        ----------
+        columns: list, optional, default:None
+            If None, return all columns minus the index, otherwise, returns
+            specified columns.
+
+        Returns
+        -------
+        values : `~numpy.ndarray`
+            If the caller is heterogeneous and contains booleans or objects,
+            the result will be of dtype=object. See Notes.
+        """
+        return self.data.as_matrix(**kwargs)
 
 if __name__ == "__main__":
     # Build a traditional lightcurve
@@ -779,3 +798,4 @@ if __name__ == "__main__":
     ###########################################################################
     merged_table = merged.to_table()
     merged_dataframe = merged.to_dataframe()
+    merged_array = merged.to_array()
