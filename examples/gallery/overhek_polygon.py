@@ -70,8 +70,7 @@ for i in range(0, n):
     rotated_boundary[i, 1] = new_coords[1].value
 
 ##############################################################################
-# Now let's plot the rotated coronal hole boundary on the AIA map, and fill
-# it with some matplotlib hatching.
+# Now let's plot the rotated coronal hole boundary on the AIA map.
 fig = plt.figure()
 ax = plt.subplot()
 aia_map.plot()
