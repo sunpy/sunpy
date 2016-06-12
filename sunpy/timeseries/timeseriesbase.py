@@ -24,6 +24,8 @@ from sunpy.extern import six
 from sunpy.sun import sun
 
 import astropy.units as u
+from astropy.table import Table
+from astropy.table import Column
 
 from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")
@@ -609,6 +611,52 @@ class GenericTimeSeries:
             self.units[column] = u.Quantity(1.0)
             warnings.warn("Unknown units for \""+str(column)+"\"", Warning)
 
+# #### New Methods #### #
+    def to_table(self, **kwargs):
+        """
+        Return an Astropy Table of the give TimeSeries object.
+
+        Parameters
+        ----------
+        otherts : `~sunpy.lightcurve.LightCurve`
+            Another time series of the same type.
+
+        Returns
+        -------
+        newts : `~astrpy.table`
+            A new time series.
+        """
+        # ToDo: Table.from_pandas(df) doesn't include the index column. Add request?
+        #return Table.from_pandas(self.data)
+        # Get data columns
+        table = Table.from_pandas(self.data)
+
+        # Get index column and add to table
+        index_col = Column(self.data.index.values, name='date')
+        table.add_column(index_col, index=0)
+
+        # ToDo: add in the units support.
+
+        # Output the table
+        return table
+
+
+    def to_dataframe(self, **kwargs):
+        """
+        Return a Pandas DataFrame of the give TimeSeries object.
+
+        Parameters
+        ----------
+        otherts : `~pandas.core.frame.DataFrame`
+            Another time series of the same type.
+
+        Returns
+        -------
+        newts : `~pandas.core.frame.DataFrame`
+            A new time series.
+        """
+        return self.data
+
 if __name__ == "__main__":
     # Build a traditional lightcurve
     intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
@@ -729,3 +777,5 @@ if __name__ == "__main__":
     ###########################################################################
     # Additional functionality
     ###########################################################################
+    merged_table = merged.to_table()
+    merged_dataframe = merged.to_dataframe()
