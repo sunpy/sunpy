@@ -1,6 +1,8 @@
 Latest
 ------
 
+* Fix bug in `wcs.convert_data_to_pixel` where crpix[1] was used for both axes.
+* Fix some leftover instances of `GenericMap.units`
 
 0.7.0
 -----
