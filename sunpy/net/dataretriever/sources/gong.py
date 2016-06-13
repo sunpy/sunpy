@@ -6,6 +6,7 @@ __email__ = "sudk1896@gmail.com"
 
 import datetime
 import re
+import urllib2
 
 from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
@@ -17,20 +18,16 @@ class GONGClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         
-        
+        #TO-DO: Figure out where scraper would and wouldn't work
         table_physobs = {'intensity' : 'i', 'los_magnetic_field': 'b'} #legitimate physical observations.
-        table_instruments = ['bb', 'ct', 'le', 'ml', 'td', 'ud', 'z'] #all possible instruments
+        table_instruments = ['bb', 'ct', 'le', 'ml', 'td', 'ud','z'] #For magnetogram and intensity
         
-        physobs_in = True if ('physobs' in kwargs.keys() and kwargs['physobs'] in table_physobs) else False #Is PhysObs entered
-        instrument_in = True if 'instrument' in kwargs.keys() else False
+        physobs_in = True if ('physobs' in kwargs.keys() and kwargs['physobs'] in table_physobs.keys()) else False #Is PhysObs entered
+        instrument_in = True if ('instrument' in kwargs.keys() and kwargs['instrument'] in table_instruments) else False
+        wavelength_in = True if 'wavelength' in kwargs.keys() else False
         #Is instrument entered.
-        #The or is for checking for H-alpha instruments. The observatories are single letter 
         url_pattern_1 =  'ftp://gong2.nso.edu/QR/{id}qa/%Y%m/{ObsID}bqa%y%m%d/{ObsID}bqa%y%m%dt%H%M.fits.gz'
-        url_pattern_2 = 'http://gong2.nso.edu/HA/{id}haf/%Y%m/%Y%m%d/%Y%m%d%H%M%S{ObsID}h.fits.fz' #'id' here is a dummy argument
-                                                                                                    #put id = '', an empty string
-
-        generate = lambda url, id_, obs: url.format(id = id_, ObsID = obs) #Function generates urls based on instrument
-        #Better than writing two regexes for each url_pattern 1 and 2.
+        url_pattern_2 = 'http://gong2.nso.edu/HA/haf/%Y%m/%Y%m%d/%Y%m%d%H%M%S{ObsID}h.fits.fz'
         
         result = list() #final list of urls
         patterns = list()
@@ -41,7 +38,6 @@ class GONGClient(GenericClient):
                 patterns.append(url_pattern_1)
             else:
                 #Differentiate on basis of wavelength
-                wavelength_in = True if 'wavelength' in kwargs.keys() else False
                 if not wavelength_in:
                     patterns.append(url_pattern_1), patterns.append(url_pattern_2)
                 else:
@@ -50,7 +46,9 @@ class GONGClient(GenericClient):
                         patterns.append(url_pattern_2)
                     elif wave == 6768:
                         patterns.append(url_pattern_1)
-        
+
+
+
         #All valid patterns to be downloaded are in the patterns list.
         instruments_to = list() #The instruments from which user wants to download
         if not instrument_in:
@@ -58,18 +56,60 @@ class GONGClient(GenericClient):
         else:
             instruments_to.append(kwargs['instrument'])
 
+        
+        def download_from_nso(id, ObsID, time_range):
+            #Cannot scrape urls from NSO. The logic for downloading is
+            #dependent on NSO's policy of uploading data. Every day staring from 00:04
+            #fits files are uploaded regularly at an interval of 10 minutes.
+            result = list()
+            base_url = 'ftp://gong2.nso.edu/QR/{id}qa/{date:%Y%m}/{ObsID}{id}qa{date:%y%m%d}/{ObsID}{id}qa{date:%y%m%d}t{date:%H%M}.fits.gz'
+            total_days = (time_range.end - time_range.start).days + 1
+            all_dates = time_range.split(total_days)
+            for day in all_dates:
+                today = datetime.datetime(day.end.year, day.end.month, day.end.day,
+                                          0, 4, 0)
+                tomorrow = today
+                tomorrow += datetime.timedelta(days=1)
+                while (today < tomorrow):
+                    if (time_range.start <= today <= time_range.end):
+                        result.append(base_url.format(id=id, ObsID=ObsID, date=today))
+                    today += datetime.timedelta(seconds = 600)#10 minutes, 600 seconds.
+            result = list(set(result)) #Remove duplicates, for safety.
+            return result
+                
+            
+        
         for pattern_ in patterns:
             urls = list()
             if (pattern_ == url_pattern_1):
-                urls =  [generate(url_pattern_1, id, id[0].upper()) for id in instruments_to]
+                if not physobs_in:
+                    for instr in instruments_to:
+                        arr = download_from_nso('i',instr,timerange)
+                        urls.extend(arr)
+                        arr = download_from_nso('b',instr,timerange)
+                        urls.extend(arr)
+                else:
+                    for instr in instruments_to:
+                        urls.extend(download_from_nso(table_physobs[kwargs['physobs']],instr,timerange))
+                result.extend(urls)
             elif (pattern_ == url_pattern_2):
-                urls = [generate(url_pattern_2, '', id[0].upper()) for id in instruments_to]
-            arr = [Scraper(pattern__).filelist(timerange) for pattern__ in urls]
-            [result.extend(url) for url in arr if len(url)>0]
+                urls = [url_pattern_2.format(ObsID=id[0].upper()) for id in instruments_to]
+                arr = [Scraper(pattern__).filelist(timerange) for pattern__ in urls]
+                [result.extend(url) for url in arr if len(url)>0]
         
         if not timerange:
             return []
-        return result
+        final_result = list()
+        #Check for illegitimate urls.
+        for urls in result:
+            try:
+                check = urllib2.urlopen(urls)
+                final_result.append(urls)
+            except urllib2.HTTPError,e:
+                pass
+            except urllib2.URLError,e:
+                pass
+        return final_result
 
     def _makeimap(self):
         self.map_['source'] = 'GONG'
@@ -153,8 +193,6 @@ class FARSIDEClient(GenericClient):
         url_pattern = 'http://farside.nso.edu/oQR/fqo/{:%Y%m}/mrfqo{:%y%m%d}/mrfqo{:%y%m%d}t{:%H%M}.fits'
         tot_days = (timerange.end - timerange.start).days
         all_days = timerange.split(tot_days)
-        #TODO: Figure out all cases where Scraper in sunpy.util would
-        # and wouldn't work. Doesn't work for this website.
         result = list()
         for dt in all_days:
             times = [datetime.datetime(dt.start.year, dt.start.month, dt.start.day, 0, 0),
