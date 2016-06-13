@@ -9,6 +9,7 @@ import os.path
 import shutil
 import warnings
 import inspect
+from abc import ABCMeta
 from datetime import datetime
 from collections import OrderedDict
 
@@ -36,7 +37,32 @@ __authors__ = ["Alex Hamilton"]
 __email__ = "####"
 
 
-#def GenericTimeSeries(*args, source=None, concatenate=True, **kwargs):
+# GenericMap subclass registry.
+TIMESERIES_CLASSES = OrderedDict()
+
+
+class GenericTimeSeriesMeta(ABCMeta):
+    """
+    Registration metaclass for `~sunpy.map.GenericMap`.
+    This class checks for the existance of a method named ``is_datasource_for``
+    when a subclass of `GenericMap` is defined. If it exists it will add that
+    class to the registry.
+    """
+
+    _registry = TIMESERIES_CLASSES
+
+    def __new__(mcls, name, bases, members):
+        cls = super(GenericTimeSeriesMeta, mcls).__new__(mcls, name, bases, members)
+
+        # The registry contains the class as the key and the validation method
+        # as the item.
+        if 'is_datasource_for' in members:
+            mcls._registry[cls] = cls.is_datasource_for
+
+        return cls
+
+
+@six.add_metaclass(GenericTimeSeriesMeta)
 class GenericTimeSeries:
     """
     A generic time series object.
@@ -675,6 +701,11 @@ class GenericTimeSeries:
             the result will be of dtype=object. See Notes.
         """
         return self.data.as_matrix(**kwargs)
+
+    @classmethod
+    def _parse_file(cls, filepath):
+        """Parses a file - to be implmented in any subclass that may use files"""
+        return NotImplemented
 
 if __name__ == "__main__":
     # Build a traditional lightcurve

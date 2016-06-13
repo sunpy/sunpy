@@ -139,8 +139,8 @@ class LYRALightCurve(GenericTimeSeries):
         """Returns URL for latest LYRA data"""
         return cls._get_url_for_date(datetime.datetime.utcnow())
 
-    @staticmethod
-    def _parse_file(filepath):
+    @classmethod
+    def _parse_file(cls, filepath):
         """Parses LYRA data from a FITS file"""
         # Open file with PyFITS
         hdulist = fits.open(filepath)

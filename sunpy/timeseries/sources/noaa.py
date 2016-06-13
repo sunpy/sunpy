@@ -115,8 +115,8 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         """Returns a URL for the specified date."""
         return NOAAIndicesTimeSeries._get_default_uri()
 
-    @staticmethod
-    def _parse_file(filepath):
+    @classmethod
+    def _parse_file(cls, filepath):
         """Parses an NOAA indices csv file"""
         header = []
         with open(filepath, 'r') as fp:

@@ -198,6 +198,7 @@ class EVELightCurve(GenericTimeSeries):
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
+        print(kwargs)
         #"""Determines if header corresponds to an HMI image"""
         #return header.get('instrume', '').startswith('HMI')
         return kwargs.get('source', '').startswith('EVE')
