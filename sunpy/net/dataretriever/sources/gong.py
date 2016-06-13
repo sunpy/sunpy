@@ -15,11 +15,59 @@ from sunpy.time import TimeRange
 __all__ = ['GONGClient', 'FARSIDEClient']
 
 class GONGClient(GenericClient):
+    """
+    Returns a list of URLS to GONG files corresponding to value of input timerange.
+    URL source: `ftp://gong2.nso.edu/QR/` and `http://gong2.nso.edu/HA/haf/`.
+    Parameters
+    ----------
+    timerange: sunpy.time.TimeRange
+        time range for which data is to be downloaded.
+        Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
+    
+    Instrument: Arguments are any one from ['bb', 'ct', 'le', 'ml', 'td', 'ud','z']
 
+    Physobs: Two arguments or none 'intensity' and 'los_magnetic_field'
+
+    GONGClient expects at least one argument from Physobs or Instrument
+
+    Examples
+    --------
+    >>> from sunpy.net import Fido
+    >>> from sunpy.net import attrs as a
+    >>> res = Fido.search(a.Time('2016/6/4', '2016/6/4 00:10:00'), a.Physobs('intensity'))
+    >>> print (res)
+    [<Table length=32>
+     Start Time           End Time      Source     Instrument    
+       str19               str19         str4        str18       
+    ------------------- ------------------- ------ ------------------
+    2016-06-04 00:00:00 2016-06-05 00:00:00   GONG Data not Available
+    2016-06-05 00:00:00 2016-06-06 00:00:00   GONG Data not Available
+    2016-06-06 00:00:00 2016-06-07 00:00:00   GONG Data not Available
+    2016-06-07 00:00:00 2016-06-08 00:00:00   GONG Data not Available
+    2016-06-08 00:00:00 2016-06-09 00:00:00   GONG Data not Available
+    2016-06-09 00:00:00 2016-06-10 00:00:00   GONG Data not Available
+    2016-06-10 00:00:00 2016-06-11 00:00:00   GONG Data not Available
+    2016-06-11 00:00:00 2016-06-12 00:00:00   GONG Data not Available
+    2016-06-12 00:00:00 2016-06-13 00:00:00   GONG Data not Available
+    2016-06-13 00:00:00 2016-06-14 00:00:00   GONG Data not Available
+                    ...                 ...    ...                ...
+    2016-06-26 00:00:00 2016-06-27 00:00:00   GONG Data not Available
+    2016-06-27 00:00:00 2016-06-28 00:00:00   GONG Data not Available
+    2016-06-28 00:00:00 2016-06-29 00:00:00   GONG Data not Available
+    2016-06-29 00:00:00 2016-06-30 00:00:00   GONG Data not Available
+    2016-06-30 00:00:00 2016-07-01 00:00:00   GONG Data not Available
+    2016-07-01 00:00:00 2016-07-02 00:00:00   GONG Data not Available
+    2016-07-02 00:00:00 2016-07-03 00:00:00   GONG Data not Available
+    2016-07-03 00:00:00 2016-07-04 00:00:00   GONG Data not Available
+    2016-07-04 00:00:00 2016-07-05 00:00:00   GONG Data not Available
+    2016-07-05 00:00:00 2016-07-06 00:00:00   GONG Data not Available]
+    """
     def _get_url_for_timerange(self, timerange, **kwargs):
-        
+        """
+        returns list of urls corresponding to given TimeRange.
+        """
         #TO-DO: Figure out where scraper would and wouldn't work
-        table_physobs = {'intensity' : 'i', 'los_magnetic_field': 'b'} #legitimate physical observations.
+        table_physobs = {'INTENSITY' : 'i', 'LOS_MAGNETIC_FIELD': 'b'} #legitimate physical observations.
         table_instruments = ['bb', 'ct', 'le', 'ml', 'td', 'ud','z'] #For magnetogram and intensity
         
         physobs_in = True if ('physobs' in kwargs.keys() and kwargs['physobs'] in table_physobs.keys()) else False #Is PhysObs entered
@@ -34,7 +82,7 @@ class GONGClient(GenericClient):
         if not physobs_in:
             patterns.append(url_pattern_1), patterns.append(url_pattern_2)
         else:
-            if kwargs['physobs'] == 'los_magnetic_field':
+            if kwargs['physobs'] == 'LOS_MAGNETIC_FIELD':
                 patterns.append(url_pattern_1)
             else:
                 #Differentiate on basis of wavelength
@@ -46,7 +94,6 @@ class GONGClient(GenericClient):
                         patterns.append(url_pattern_2)
                     elif wave == 6768:
                         patterns.append(url_pattern_1)
-
 
 
         #All valid patterns to be downloaded are in the patterns list.
@@ -112,6 +159,9 @@ class GONGClient(GenericClient):
         return final_result
 
     def _makeimap(self):
+        """
+        Helper Function: used to hold information about source.
+        """   
         self.map_['source'] = 'GONG'
         
         
@@ -132,7 +182,7 @@ class GONGClient(GenericClient):
         """
         chkattr = ['Time', 'Instrument', 'Physobs', 'Wavelength']
         chklist = [x.__class__.__name__ in chkattr for x in query]
-        physobs = ['intensity', 'los_magnetic_field'] #from VSO
+        physobs = ['INTENSITY', 'LOS_MAGNETIC_FIELD'] #from VSO
         instruments = ['bb', 'ct', 'le', 'ml', 'td', 'ud', 'z'] #for Magnetogram and intensity
         chk_instr, chk_physobs = 0, 0
         chk_wavelength = 0
@@ -140,7 +190,7 @@ class GONGClient(GenericClient):
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value.lower() in instruments:
                 chk_instr += 1
-            if x.__class__.__name__ == 'Physobs' and x.value.lower() in physobs:
+            if x.__class__.__name__ == 'Physobs' and x.value in physobs:
                 chk_physobs += 1
             if (x.__class__.__name__ == 'Wavelength' and int(x.min.value) in values and int(x.max.value) in values and (x.unit.name).lower()=='angstrom'):
                 chk_wavelength += 1
@@ -230,4 +280,3 @@ class FARSIDEClient(GenericClient):
                 return all(chklist)
         return False
         
-    
