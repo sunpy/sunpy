@@ -197,8 +197,8 @@ class GOESLightCurve(GenericTimeSeries):
                 date=start, sat=sat_num[0])
         return url
 
-    @staticmethod
-    def _parse_file(filepath):
+    @classmethod
+    def _parse_file(cls, filepath):
         """Parses a GOES FITS file from
         http://umbra.nascom.nasa.gov/goes/fits/"""
         fits = pyfits.open(filepath)

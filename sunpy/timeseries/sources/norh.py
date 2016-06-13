@@ -109,8 +109,8 @@ class NoRHLightCurve(GenericTimeSeries):
 
         return final_url
 
-    @staticmethod
-    def _parse_file(filepath):
+    @classmethod
+    def _parse_file(cls, filepath):
         """This method parses NoRH tca and tcz correlation FITS files."""
         hdulist = fits.open(filepath)
         header = OrderedDict(hdulist[0].header)

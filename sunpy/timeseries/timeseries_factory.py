@@ -17,7 +17,7 @@ from sunpy.map.header import MapMeta
 #from sunpy.map.compositemap import CompositeMap
 #from sunpy.map.mapcube import MapCube
 
-from sunpy.io.file_tools import read_file
+from sunpy.io.file_tools import read_file, UnrecognizedFileTypeError
 from sunpy.io.header import FileHeader
 
 from sunpy.util.net import download_file
@@ -108,18 +108,23 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         # File gets read here.  This needs to be generic enough to seamlessly
         #call a fits file or a jpeg2k file, etc
-        pairs = read_file(fname, **kwargs)
+        try:
+            pairs = read_file(fname, **kwargs)
 
-        new_pairs = []
-        for pair in pairs:
-            filedata, filemeta = pair
-            assert isinstance(filemeta, FileHeader)
-            #This tests that the data is more than 1D
-            if len(np.shape(filedata)) > 1:
-                data = filedata
-                meta = MapMeta(filemeta)
-                new_pairs.append((data, meta))
-        return new_pairs
+            new_pairs = []
+            for pair in pairs:
+                filedata, filemeta = pair
+                assert isinstance(filemeta, FileHeader)
+                #This tests that the data is more than 1D
+                if len(np.shape(filedata)) > 1:
+                    data = filedata
+                    meta = MapMeta(filemeta)
+                    new_pairs.append((data, meta))
+            return True, new_pairs
+        except UnrecognizedFileTypeError:
+            return False, fname
+
+
 
 
     def _validate_meta(self, meta):
@@ -158,6 +163,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         data_header_pairs = list()
         already_maps = list()
+        filepaths = list()
 
         # Account for nested lists of items
         args = expand_list(args)
@@ -189,8 +195,16 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             elif (isinstance(arg,six.string_types) and
                   os.path.isfile(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
-                pairs = self._read_file(path, **kwargs)
-                data_header_pairs += pairs
+
+                temp = self._read_file(path, **kwargs)
+                # If the file was sucessfully read in:
+                if temp[0]:
+                    pairs = temp[1]
+                    data_header_pairs += pairs
+                else:
+                    # Unsucessfully read files are listed to be read by the
+                    # source instrument specific file_paser().
+                    filepaths.append(temp[1])
 
             # Directory
             elif (isinstance(arg,six.string_types) and
@@ -232,7 +246,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         #TODO:
         # In the end, if there are already maps it should be put in the same
         # order as the input, currently they are not.
-        return data_header_pairs, already_maps
+        return data_header_pairs, already_maps, filepaths
 
 
     def __call__(self, *args, **kwargs):
@@ -267,9 +281,21 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         cube = kwargs.pop('cube', False)
         silence_errors = kwargs.pop('silence_errors', False)
 
-        data_header_pairs, already_maps = self._parse_args(*args, **kwargs)
+        data_header_pairs, already_maps, filepaths = self._parse_args(*args, **kwargs)
 
         new_timeseries = list()
+
+        # The filepaths for unreadable files
+        for filepath in filepaths:
+            try:
+                new_ts = self._check_registered_widgets(filepath=filepath, **kwargs)
+            except (NoMatchError, MultipleMatchError, ValidationFunctionError):
+                if not silence_errors:
+                    raise
+            except:
+                raise
+
+            new_timeseries.append(new_ts)
 
         # Loop over each registered type and check to see if WidgetType
         # matches the arguments.  If it does, use that type.
@@ -278,7 +304,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             meta = MapMeta(header)
 
             try:
-                new_ts = self._check_registered_widgets(data, meta, **kwargs)
+                new_ts = self._check_registered_widgets(data=data, meta=meta, **kwargs)
             except (NoMatchError, MultipleMatchError, ValidationFunctionError):
                 if not silence_errors:
                     raise
@@ -288,10 +314,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             new_timeseries.append(new_ts)
 
         new_timeseries += already_maps
-
-        # If the list is meant to be a cube, instantiate a map cube
-        if cube:
-            return MapCube(new_timeseries, **kwargs)
 
         """#### Removed as we don't have/need a composite TimeSeries
         # If the list is meant to be a composite map, instantiate one
@@ -303,7 +325,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         return new_timeseries
 
-    def _check_registered_widgets(self, data, meta, **kwargs):
+    def _check_registered_widgets(self, **kwargs):
 
         candidate_widget_types = list()
 
@@ -330,7 +352,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # Dealing with the fact that timeseries filetypes are less consistent
         # (then maps), we use a _parse_file() method embedded into each
         # instrument subclass.
-        data, meta = WidgetType._parse_file(filepath)
+        filepath = kwargs.pop('filepath', None)
+        data = kwargs.pop('data', None)
+        meta = kwargs.pop('meta', None)
+        if filepath:
+            data, meta = WidgetType._parse_file(filepath)
 
         # Now return a TimeSeries from the given file.
         return WidgetType(data, meta, **kwargs)

@@ -135,8 +135,8 @@ class GBMSummaryLightCurve(GenericTimeSeries):
         return best_det
 
 
-    @staticmethod
-    def _parse_file(filepath):
+    @classmethod
+    def _parse_file(cls, filepath):
         """Parses GBM CSPEC FITS data files to create summary lightcurves."""
         hdulist=fits.open(filepath)
         header=OrderedDict(hdulist[0].header)

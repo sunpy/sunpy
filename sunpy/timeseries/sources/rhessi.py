@@ -129,8 +129,8 @@ class RHESSISummaryLightCurve(GenericTimeSeries):
         url = rhessi.get_obssum_filename(time_range)
         return url
 
-    @staticmethod
-    def _parse_file(filepath):
+    @classmethod
+    def _parse_file(cls, filepath):
         """Parses a RHESSI FITS file"""
         header, d = rhessi.parse_obssumm_file(filepath)
         data = DataFrame(d['data'], columns=d['labels'], index=d['time'])
