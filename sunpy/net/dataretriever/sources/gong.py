@@ -201,8 +201,8 @@ class GONGClient(GenericClient):
 
 class FARSIDEClient(GenericClient):
     """
-    Returns a list of URLS to XRT files corresponding to value of input timerange.
-    URL source: `http://solar.physics.montana.edu/HINODE/XRT/QL/syn_comp_fits/`.
+    Returns a list of URLS to FARSIDE files corresponding to value of input timerange.
+    URL source: `http://farside.nso.edu/oQR/fqo/`.
     Parameters
     ----------
     timerange: sunpy.time.TimeRange
