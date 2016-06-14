@@ -49,7 +49,7 @@ def main(modulename='', coverage=False, cov_report=False,
     if not modulename:
         module = __import__('sunpy')
     else:
-        module = __import__('sunpy.{0}.tests'.format(modulename), fromlist=[modulename])
+        module = __import__('sunpy.{0}'.format(modulename), fromlist=[modulename.split('.')[0]])
     path = None
     for path in module.__path__:
         if os.path.exists(path):
