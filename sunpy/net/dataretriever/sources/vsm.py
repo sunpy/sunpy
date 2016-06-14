@@ -17,13 +17,77 @@ from sunpy.time import TimeRange
 _all__ = ['VSMClient']
 
 class VSMClient(GenericClient):
+    """
+    Returns a list of URLS to SOLIS VSM files corresponding to value of input timerange.
+    URL source: `http://gong2.nso.edu/pubkeep/`.
+    Parameters
+    ----------
+    timerange: sunpy.time.TimeRange
+        time range for which data is to be downloaded.
+        Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
+    
+    Instrument: Fixed argument - 'vsm' ,case insensitive.
 
+    Wavelength: Any of 6302, 8542 or 10830 Angstrom units. Expects a
+                Wavelength object in Angstrom units.
+                e.g. 6302*u.AA etc.
+                
+    Physobs: Optional, includes 'LOS_MAGNETIC_FIELD', "VECTOR_MAGNETIC_FIELD'
+             'EQUIVALENT_WIDTH'.
+
+    Examples
+    --------
+    >>> from sunpy.net import Fido
+    >>> from sunpy.net import attrs as a
+    >>> res = Fido.search(a.Time('2016/6/4', '2016/6/4 00:10:00'), a.Instrument('vsm'),
+                          a.Wavelength(6302*u.AA), a.Physobs('VECTOR_MAGNETIC_FIELD'))
+    >>> print (res)
+    [<Table length=6>
+         Start Time           End Time      Source Instrument
+           str19               str19         str5     str3   
+    ------------------- ------------------- ------ ----------
+    2015-01-03 00:00:00 2015-01-04 00:00:00  SOLIS        vsm
+    2015-01-04 00:00:00 2015-01-05 00:00:00  SOLIS        vsm
+    2015-01-05 00:00:00 2015-01-06 00:00:00  SOLIS        vsm
+    2015-01-06 00:00:00 2015-01-07 00:00:00  SOLIS        vsm
+    2015-01-07 00:00:00 2015-01-08 00:00:00  SOLIS        vsm
+    2015-01-08 00:00:00 2015-01-09 00:00:00  SOLIS        vsm]
+    """
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         returns list of urls corresponding to given TimeRange.
         """
-        wave = int(kwargs['Wavelength'].min.value)
-        table = {6302:'v72', 8542:'v82', 10830: 'v22'}
+        table_physobs = ['EQUIVALENT_WIDTH', 'LOS_MAGNETIC_FIELD', 'VECTOR_MAGNETIC_FIELD']
+        table_wave = { 6302:'v72', 8542: 'v82', 10830: 'v22'}
+
+        physobs_in = True if ('physobs' in kwargs.keys() and kwargs['physobs'] in table_physobs) else False
+        url_pattern = 'http://gong2.nso.edu/pubkeep/{dtype}/%Y%m/k4{dtype}%y%m%d/k4{dtype}%y%m%dt%H%M%S{suffix}'
+
+        wave = int(kwargs['wavelength'].min.value)
+        def download_from_nso(dtype, suffix, timerange):
+            tmp_pattern = 'k4{dtype}%y%m%dt%H%M%S{suffix}'
+            result = list()
+            base_url = 'http://gong2.nso.edu/pubkeep/{dtype}/{date:%Y%m}/k4{dtype}{date:%y%m%d}/'
+            total_days = (timerange.end - timerange.start).days + 1
+            all_dates = timerange.split(total_days)
+            for day in all_dates:
+                try:
+                    html = urllib2.urlopen(base_url.format(dtype=dtype, date=day.end))
+                    soup = BeautifulSoup(html)
+                    for link in soup.findAll("a"):
+                        crawler = Scraper(tmp_pattern, dtype = dtype, suffix = suffix)
+                        simple_pattern = '%y%m%d_%H%M%S'
+                        url = str(link.get('href'))
+                        if (crawler._URL_followsPattern(url)):
+                            tmp = re.sub('k4'+dtype,'',url)
+                            tmp = re.sub('[a-zA-Z]', '', tmp)
+                            crawler_ = Scraper(simple_pattern)
+                            if (timerange.start <= crawler_._extractDateURL(tmp) <= timerange.end):
+                                result.append(base_url.format(dtype=dtype, date=day.end)+url)
+                except:
+                    pass
+            return result
+        
         if (wave == 6302):
             START_DATE = datetime.datetime(2003, 8, 21)
         elif (wave == 8542):
@@ -34,10 +98,19 @@ class VSMClient(GenericClient):
         if timerange.start < START_DATE:
             raise ValueError('Earliest date for which Kanzelhohe data is available is {:%Y-%m-%d}'.format(START_DATE))
 
-        prefix = 'http://gong2.nso.edu/pubkeep/{wave_type}/%Y%m'
-        suffix = 'k4{wave_type}%y%m%dt%H%M%S.fts.gz'
-        total_days = (timerange.end - timerange.start).days + 1
-        all_days = timerange.split(total_days)
+        result = list()
+        if (wave == 6302):
+            if not physobs_in:
+                result.extend(download_from_nso('v72','.fts.gz',timerange))
+                result.extend(download_from_nso('v93','_FDISK.fts.gz', timerange))
+            else:
+                if kwargs['physobs'] == 'VECTOR_MAGNETIC_FIELD':
+                    result.extend(download_from_nso('v93','_FDISK.fts.gz', timerange))
+                else:
+                    result.extend(download_from_nso('v72','.fts.gz',timerange))
+        else:
+            result.extend(download_from_nso(table_wave[wave]), '.fts.gz', timerange)
+        return result
 
     def _makeimap(self):
         """
@@ -70,7 +143,7 @@ class VSMClient(GenericClient):
                 chk_var += 1
             if (x.__class__.__name__ == 'Wavelength' and int(x.min.value) in values and int(x.max.value) in values and (x.unit.name).lower()=='angstrom'):
                 chk_var += 1
-        if (chk_var==2):
+        if (chk_var == 2):
             return True
         return False
         
