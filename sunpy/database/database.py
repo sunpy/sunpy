@@ -857,6 +857,14 @@ class Database(object):
                 query_result, self.default_waveunit),
             ignore_already_added)
 
+    def add_from_fido_search_result(self, search_result,
+            ignore_already_added=False):
+        self.add_many(
+            tables.entries_from_fido_search_result(
+                search_result, self.default_waveunit),
+            ignore_already_added)
+
+
     def add_from_dir(self, path, recursive=False, pattern='*',
                      ignore_already_added=False, time_string_parse_format=None):
         """Search the given directory for FITS files and use their FITS headers
