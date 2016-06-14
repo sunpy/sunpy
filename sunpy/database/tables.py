@@ -435,6 +435,30 @@ class DatabaseEntry(Base):
             instrument=instrument, size=size,
             wavemin=wavemin, wavemax=wavemax)
 
+    @classmethod
+    def _from_fido_search_result_block(cls, sr_block, default_waveunit=None):
+        # All attributes of DatabaseEntry that are not in QueryResponseBlock
+        # are set as None for now.
+        source = str(sr_block.source) if sr_block.source is not None else None
+        provider = str(sr_block.provider) if sr_block.provider is not None else None
+        #physobs is written as phyobs in QueryResponseBlock
+        physobs = getattr(sr_block, 'phyobs', None)
+        if physobs is not None:
+            physobs = str(physobs)
+        instrument = str(sr_block.instrument) if sr_block.instrument is not None else None
+        time_start = sr_block.time.start
+        time_end = sr_block.time.end
+        wavemin = None
+        wavemax = None
+        #sr_block.url of a QueryResponseBlock attribute is stored in fileid
+        fileid = str(sr_block.url) if sr_block.url is not None else None
+        size = None
+        return cls(
+            source=source, provider=provider, physobs=physobs, fileid=fileid,
+            observation_time_start=time_start, observation_time_end=time_end,
+            instrument=instrument, size=size,
+            wavemin=wavemin, wavemax=wavemax)
+
     def __eq__(self, other):
 
         if self.wavemin is None and other.wavemin is None:
@@ -616,8 +640,7 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
                 yield DatabaseEntry._from_fido_search_result_block(block, default_waveunit)
 
 
-def entries_from_file(file, default_waveunit=None,
-                      time_string_parse_format=None):
+def entries_from_file(file, default_waveunit=None, time_string_parse_format=None):
     """Use the headers of a FITS file to generate an iterator of
     :class:`sunpy.database.tables.DatabaseEntry` instances. Gathered
     information will be saved in the attribute `fits_header_entries`. If the
