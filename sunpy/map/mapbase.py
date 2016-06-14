@@ -946,7 +946,7 @@ scale:\t\t {scale}
         extent = np.max(np.abs(np.vstack((new_map.data.shape * rmatrix,
                                           new_map.data.shape * rmatrix.T))), axis=0)
         # Calculate the needed padding or unpadding
-        diff = np.asarray(np.ceil((extent - new_map.data.shape) / 2)).ravel()
+        diff = np.asarray(np.ceil((extent - new_map.data.shape) / 2), dtype=int).ravel()
         # Pad the image array
         pad_x = int(np.max((diff[1], 0)))
         pad_y = int(np.max((diff[0], 0)))
@@ -992,11 +992,11 @@ scale:\t\t {scale}
         new_map.meta['crpix2'] = new_reference_pixel[1] + 1 # FITS pixel origin is 1
 
         # Unpad the array if necessary
-        unpad_x = -int(np.min((diff[1], 0)))
+        unpad_x = -np.min((diff[1], 0))
         if unpad_x > 0:
             new_map.data = new_map.data[:, unpad_x:-unpad_x]
             new_map.meta['crpix1'] -= unpad_x
-        unpad_y = -int(np.min((diff[0], 0)))
+        unpad_y = -np.min((diff[0], 0))
         if unpad_y > 0:
             new_map.data = new_map.data[unpad_y:-unpad_y, :]
             new_map.meta['crpix2'] -= unpad_y

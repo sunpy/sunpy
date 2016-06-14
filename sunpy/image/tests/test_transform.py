@@ -176,15 +176,15 @@ def test_all(angle, dx, dy, scale_factor):
     transformed = affine_transform(original, rmatrix=rmatrix, scale=1.0, recenter=True,
                       image_center=rcen)
     rcen = image_center - np.dot(rmatrix, np.array([dx, dy]))
-    dx, dy = np.dot(rmatrix, disp)
+    dx, dy = np.asarray(np.dot(rmatrix, disp), dtype=int)
     rmatrix = np.array([[c, s], [-s, c]])
     inverse = affine_transform(transformed, rmatrix=rmatrix, scale=1.0, recenter=True,
                   image_center=rcen)
 
     # Need to ignore the portion of the image cut off by the first shift
     # (which isn't the portion you'd expect, because of the rotation)
-    ymin, ymax = int(max([0, -dy])), int(min([original.shape[1], original.shape[1]-dy]))
-    xmin, xmax = int(max([0, -dx])), int(min([original.shape[0], original.shape[0]-dx]))
+    ymin, ymax = max([0, -dy]), min([original.shape[1], original.shape[1]-dy])
+    xmin, xmax = max([0, -dx]), min([original.shape[0], original.shape[0]-dx])
     compare_results(original[ymin:ymax, xmin:xmax], inverse[ymin:ymax, xmin:xmax])
 
 

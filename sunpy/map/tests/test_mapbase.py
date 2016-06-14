@@ -36,7 +36,7 @@ def aia171_test_map():
 def aia171_test_map_with_mask(aia171_test_map):
     shape = aia171_test_map.data.shape
     mask = np.zeros_like(aia171_test_map.data, dtype=bool)
-    mask[0:int(shape[0]/2), 0:int(shape[1]/2)] = True
+    mask[0:shape[0]//2, 0:shape[1]//2] = True
     return sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
 
 
@@ -328,8 +328,8 @@ def test_submap(generic_map):
     assert submap.meta['naxis2'] == height / 2.
 
     # Check data
-    assert (generic_map.data[int(height/2):int(height),
-                             int(width/2):int(width)] == submap.data).all()
+    assert (generic_map.data[height//2:height,
+                             width//2:width] == submap.data).all()
 
 
 resample_test_data = [('linear', (100, 200)*u.pixel),
