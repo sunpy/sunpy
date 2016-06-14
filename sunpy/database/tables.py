@@ -16,11 +16,12 @@ from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean,\
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
-from sunpy.time import parse_time
+from sunpy.time import parse_time, TimeRange
 from sunpy.io import fits, file_tools as sunpy_filetools
 from sunpy.util import print_table
 from sunpy.extern.six.moves import map
 from sunpy.extern import six
+import sunpy.net
 
 from sunpy import config
 
@@ -349,6 +350,31 @@ class DatabaseEntry(Base):
             instrument=instrument, size=size,
             wavemin=wavemin, wavemax=wavemax)
 
+    @classmethod
+    def _from_fido_search_result_block(cls, sr_block, default_waveunit=None):
+        # All attributes of DatabaseEntry that are not in QueryResponseBlock
+        # are set as None for now.
+        source = str(sr_block.source) if sr_block.source is not None else None
+        provider = str(sr_block.provider) if sr_block.provider is not None else None
+
+        # physobs is written as phyobs in QueryResponseBlock
+        physobs = getattr(sr_block, 'phyobs', None)
+        if physobs is not None:
+            physobs = str(physobs)
+        instrument = str(sr_block.instrument) if sr_block.instrument is not None else None
+        time_start = sr_block.time.start
+        time_end = sr_block.time.end
+        wavemin = None
+        wavemax = None
+        # sr_block.url of a QueryResponseBlock attribute is stored in fileid
+        fileid = str(sr_block.url) if sr_block.url is not None else None
+        size = None
+        return cls(
+            source=source, provider=provider, physobs=physobs, fileid=fileid,
+            observation_time_start=time_start, observation_time_end=time_end,
+            instrument=instrument, size=size,
+            wavemin=wavemin, wavemax=wavemax)
+
     def __eq__(self, other):
         wavemins_equal = self.wavemin is None and other.wavemin is None or\
             self.wavemin is not None and other.wavemin is not None and\
@@ -459,6 +485,23 @@ def entries_from_query_result(qr, default_waveunit=None):
     """
     for block in qr:
         yield DatabaseEntry._from_query_result_block(block, default_waveunit)
+
+
+def entries_from_fido_search_result(sr, default_waveunit=None):
+    for entry in sr:
+        if isinstance(entry, sunpy.net.vso.vso.QueryResponse):
+            #This is because EVE doesn't return a Fido QueryResponse. It
+            #returns a VSO QueryResponse.
+            for block in entry:
+                yield DatabaseEntry._from_query_result_block(block,
+                            default_waveunit)
+        elif isinstance(entry, sunpy.net.jsoc.jsoc.JSOCResponse):
+            #Adding JSOC results to the DB not supported for now
+            raise ValueError("Cannot add JSOC results to database")
+        else:
+            for block in entry:
+                yield DatabaseEntry._from_fido_search_result_block(block,
+                            default_waveunit)
 
 
 def entries_from_file(file, default_waveunit=None,
