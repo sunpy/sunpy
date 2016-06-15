@@ -488,6 +488,54 @@ def entries_from_query_result(qr, default_waveunit=None):
 
 
 def entries_from_fido_search_result(sr, default_waveunit=None):
+    """Use a `sunpy.net.dataretriever.downloader_factory.UnifiedResponse`
+    object returned from
+    :meth:`sunpy.net.dataretriever.downloader_factory.UnifiedDownloaderFactory.search`
+    to generate instances of :class:`DatabaseEntry`. Return an iterator
+    over those instances.
+
+    Parameters
+    ----------
+    search_result : sunpy.net.dataretriever.downloader_factory.UnifiedResponse
+            A UnifiedResponse object that is used to store responses from the
+            unified downloader. This is returned by the ``search`` method of a
+            :class:`sunpy.net.dataretriever.downloader_factory.UnifiedDownloaderFactory`
+            object.
+
+    default_waveunit : str, optional
+        The wavelength unit that is used if it cannot be found in the Query
+        Response block.
+
+    Examples
+    --------
+    >>> from sunpy.net import Fido, attrs
+    >>> from sunpy.database.tables import entries_from_fido_search_result
+    >>> sr = Fido.search(attrs.Time("2012/1/1", "2012/1/2"),
+    ...     attrs.Instrument('lyra'))
+    >>> entries = entries_from_fido_search_result(sr)
+
+    >>> from sunpy.net import vso
+    >>> from sunpy.database.tables import entries_from_query_result
+    >>> client = vso.VSOClient()
+    >>> qr = client.query(
+    ...     vso.attrs.Time('2001/1/1', '2001/1/2'),
+    ...     vso.attrs.Instrument('eit'))
+    >>> entries = entries_from_query_result(qr)
+    >>> entry = entries.next()
+    >>> entry.source
+    'Proba2'
+    >>> entry.provider
+    'esa'
+    >>> entry.physobs
+    'irradiance'
+    >>> entry.fileid
+    'http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits'
+    >>> entry.observation_time_start, entry.observation_time_end
+    (datetime.datetime(2012, 1, 1, 0, 0), datetime.datetime(2012, 1, 2, 0, 0))
+    >>> entry.instrument
+    'lyra'
+
+    """
     for entry in sr:
         if isinstance(entry, sunpy.net.vso.vso.QueryResponse):
             #This is because EVE doesn't return a Fido QueryResponse. It
