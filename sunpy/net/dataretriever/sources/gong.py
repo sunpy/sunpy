@@ -67,12 +67,13 @@ class GONGClient(GenericClient):
         returns list of urls corresponding to given TimeRange.
         """
         #TO-DO: Figure out where scraper would and wouldn't work
-        table_physobs = {'INTENSITY' : 'i', 'LOS_MAGNETIC_FIELD': 'b'} #legitimate physical observations.
-        table_instruments = ['bb', 'ct', 'le', 'ml', 'td', 'ud','z'] #For magnetogram and intensity
+        table_physobs = {'INTENSITY' : 'i', 'LOS_MAGNETIC_FIELD': 'b'} #Supported physical observations.
+        table_instruments = {'bigbear':'bb', 'cerrotololo':'ct', 'learmonth':'le', 'maunaloa':'ml',
+                             'teide':'td', 'udaipur':'ud','tucson':'z'} #For magnetogram and intensity
         
-        physobs_in = True if ('physobs' in kwargs.keys() and kwargs['physobs'] in table_physobs.keys()) else False #Is PhysObs entered
-        instrument_in = True if ('instrument' in kwargs.keys() and kwargs['instrument'] in table_instruments) else False
-        wavelength_in = True if 'wavelength' in kwargs.keys() else False
+        physobs_in = ('physobs' in kwargs.keys() and kwargs['physobs'] in table_physobs.keys())#Is PhysObs entered
+        instrument_in = ('instrument' in kwargs.keys() and kwargs['instrument'] in table_instruments.keys())
+        wavelength_in = ('wavelength' in kwargs.keys())
         #Is instrument entered.
         url_pattern_1 =  'ftp://gong2.nso.edu/QR/{id}qa/%Y%m/{ObsID}bqa%y%m%d/{ObsID}bqa%y%m%dt%H%M.fits.gz'
         url_pattern_2 = 'http://gong2.nso.edu/HA/haf/%Y%m/%Y%m%d/%Y%m%d%H%M%S{ObsID}h.fits.fz'
@@ -99,9 +100,9 @@ class GONGClient(GenericClient):
         #All valid patterns to be downloaded are in the patterns list.
         instruments_to = list() #The instruments from which user wants to download
         if not instrument_in:
-            instruments_to.extend(table_instruments)
+            instruments_to.extend(table_instruments.values())
         else:
-            instruments_to.append(kwargs['instrument'])
+            instruments_to.append(table_instruments[kwargs['instrument']])
 
         
         def download_from_nso(id, ObsID, time_range):
@@ -110,17 +111,14 @@ class GONGClient(GenericClient):
             #fits files are uploaded regularly at an interval of 10 minutes.
             result = list()
             base_url = 'ftp://gong2.nso.edu/QR/{id}qa/{date:%Y%m}/{ObsID}{id}qa{date:%y%m%d}/{ObsID}{id}qa{date:%y%m%d}t{date:%H%M}.fits.gz'
-            total_days = (time_range.end - time_range.start).days + 1
-            all_dates = time_range.split(total_days)
-            for day in all_dates:
-                today = datetime.datetime(day.end.year, day.end.month, day.end.day,
-                                          0, 4, 0)
-                tomorrow = today
-                tomorrow += datetime.timedelta(days=1)
-                while (today < tomorrow):
-                    if (time_range.start <= today <= time_range.end):
-                        result.append(base_url.format(id=id, ObsID=ObsID, date=today))
-                    today += datetime.timedelta(seconds = 600)#10 minutes, 600 seconds.
+            start = time_range.start
+            today = datetime.datetime(start.year, start.month, start.day,
+                                      0, 4, 0)
+            while(today <= time_range.end):
+                if (time_range.start <= today <= time_range.end):
+                    result.append(base_url.format(id=id, ObsID=ObsID, date=today))
+                today = today + datetime.timedelta(seconds = 600)
+            
             result = list(set(result)) #Remove duplicates, for safety.
             return result
                 
@@ -142,7 +140,7 @@ class GONGClient(GenericClient):
             elif (pattern_ == url_pattern_2):
                 urls = [url_pattern_2.format(ObsID=id[0].upper()) for id in instruments_to]
                 arr = [Scraper(pattern__).filelist(timerange) for pattern__ in urls]
-                [result.extend(url) for url in arr if len(url)>0]
+                result.extend([url for url in arr if len(url)>0])
         
         if not timerange:
             return []
@@ -183,7 +181,7 @@ class GONGClient(GenericClient):
         chkattr = ['Time', 'Instrument', 'Physobs', 'Wavelength']
         chklist = [x.__class__.__name__ in chkattr for x in query]
         physobs = ['INTENSITY', 'LOS_MAGNETIC_FIELD'] #from VSO
-        instruments = ['bb', 'ct', 'le', 'ml', 'td', 'ud', 'z'] #for Magnetogram and intensity
+        instruments = ['bigbear', 'cerrotololo', 'learmonth', 'maunaloa', 'teide', 'udaipur', 'tucson'] #for Magnetogram and intensity
         chk_instr, chk_physobs = 0, 0
         chk_wavelength = 0
         values = [6562, 6563, 6768]
@@ -240,14 +238,14 @@ class FARSIDEClient(GenericClient):
         START_DATE = datetime.datetime(2006, 5, 13, 12, 0, 0)
         if timerange.start < START_DATE:
             raise ValueError('Earliest date for which FARSIDE data is available is {:%Y-%m-%d}'.format(START_DATE))
-        url_pattern = 'http://farside.nso.edu/oQR/fqo/{:%Y%m}/mrfqo{:%y%m%d}/mrfqo{:%y%m%d}t{:%H%M}.fits'
+        url_pattern = 'http://farside.nso.edu/oQR/fqo/{date:%Y%m}/mrfqo{date:%y%m%d}/mrfqo{date:%y%m%d}t{date:%H%M}.fits'
         tot_days = (timerange.end - timerange.start).days
         all_days = timerange.split(tot_days)
         result = list()
         for dt in all_days:
             times = [datetime.datetime(dt.start.year, dt.start.month, dt.start.day, 0, 0),
                      datetime.datetime(dt.start.year, dt.start.month, dt.start.day, 12, 0)]
-            [result.append(url_pattern.format(dt_, dt_, dt_, dt_)) for dt_ in times]
+            [result.append(url_pattern.format(date = dt_)) for dt_ in times]
         if not timerange:
             return []
         return result
