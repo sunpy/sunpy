@@ -26,12 +26,11 @@ def test_get_url_for_timerange(timerange, url_start, url_end):
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
-trange = Time('2015/12/28', '2015/12/30')
 def test_can_handle_query():
-    assert FClient._can_handle_query(trange, Instrument('farside')) is True
-    assert FClient._can_handle_query(trange, Instrument('Farside')) is True
-    assert FClient._can_handle_query(trange) is not True
-    assert FClient._can_handle_query(trange, Instrument('bbso')) is not True
+    assert FClient._can_handle_query(Time('2015/12/28', '2015/12/30'), Instrument('farside'))
+    assert FClient._can_handle_query(Time('2015/12/28', '2015/12/30'), Instrument('Farside'))
+    assert not FClient._can_handle_query(Time('2015/12/28', '2015/12/30'))
+    assert not FClient._can_handle_query(Time('2015/12/28', '2015/12/30'), Instrument('bbso'))
 
 @pytest.mark.online
 def test_query():
@@ -41,6 +40,8 @@ def test_query():
     assert qr.time_range()[0] == '2016/01/01'
     assert qr.time_range()[1] == '2016/01/05'
 
+#Downloads 7 fits files each of size
+#160KB. Total size ~ 1.2MB
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument",
                          [(Time('2016/1/1 00:00:00', '2016/1/4 10:00:00'),
@@ -51,6 +52,8 @@ def test_get(time, instrument):
     download_list = res.wait()
     assert len(download_list) == len(qr)
 
+#Downloads 5 fits files each of size 160KB.
+#Total size ~ 800KB.
 @pytest.mark.online
 def test_fido_query():
     qr = Fido.search(a.Time('2016/5/18', '2016/5/20'), a.Instrument('farside'))

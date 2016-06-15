@@ -17,11 +17,11 @@ GONGClient = gong.GONGClient()
 
 ##downloads 4 fits files each of size 3MB.
 ##Total size = 12MB.
-trange = Time('2014/6/4 00:00:00', '2014/6/4 00:07:00')
+TRANGE = Time('2014/6/4 00:00:00', '2014/6/4 00:07:00')
 @pytest.mark.online
 @pytest.mark.parametrize("time, physobs, instrument, wavelength",
-                         [(trange, Physobs('INTENSITY'), Instrument('M'), Wavelength(6563*u.AA)),
-                          (trange, Physobs('INTENSITY'), Instrument(''), Wavelength(6563*u.AA))])
+                         [(TRANGE, Physobs('INTENSITY'), Instrument('maunaloa'), Wavelength(6563*u.AA)),
+                          (TRANGE, Physobs('INTENSITY'), Instrument(''), Wavelength(6563*u.AA))])
 def test_query(time, physobs, instrument, wavelength):
     qr = GONGClient.query(time, physobs, instrument, wavelength)
     res = GONGClient.get(qr)
@@ -29,16 +29,15 @@ def test_query(time, physobs, instrument, wavelength):
     assert len(download_list) == len(qr)
 
 def test_can_handle_query():
-    assert GONGClient._can_handle_query(trange, Instrument('bb'), Physobs('INTENSITY'))
-    assert GONGClient._can_handle_query(trange, Physobs('LOS_MAGNETIC_FIELD'))
-    assert GONGClient._can_handle_query(trange, Instrument('z'))
-    assert GONGClient._can_handle_query(trange, Instrument('ct'), Physobs('INTENSITY'), Wavelength(6563*u.AA))
-    assert not GONGClient._can_handle_query(trange)
-    
-trange = Time('2016/6/4 00:00:00', '2016/6/4 00:30:00')
+    assert GONGClient._can_handle_query(TRANGE, Instrument('bigbear'), Physobs('INTENSITY'))
+    assert GONGClient._can_handle_query(TRANGE, Physobs('LOS_MAGNETIC_FIELD'))
+    assert GONGClient._can_handle_query(TRANGE, Instrument('tucson'))
+    assert GONGClient._can_handle_query(TRANGE, Instrument('cerrotololo'), Physobs('INTENSITY'), Wavelength(6563*u.AA))
+    assert not GONGClient._can_handle_query(TRANGE)
+
 @pytest.mark.online
 def test_query():
-    qr = GONGClient.query(trange, physobs = 'LOS_MAGNETIC_FIELD', instrument='bb')
+    qr = GONGClient.query(Time('2016/6/4 00:00:00', '2016/6/4 00:30:00'), physobs = 'LOS_MAGNETIC_FIELD', instrument='bigbear')
     assert len(qr) == 3
     assert qr.time_range()[0] == '2016/06/04'
     assert qr.time_range()[1] == '2016/06/04'
@@ -48,7 +47,7 @@ def test_query():
 @pytest.mark.online
 @pytest.mark.parametrize("time, physobs, instrument, wavelength",
                          [(Time('2016/6/13 03:00', '2016/6/13 04:00'), Physobs('INTENSITY'),
-                           Instrument('ud'), Wavelength(6768*u.AA))])
+                           Instrument('udaipur'), Wavelength(6768*u.AA))])
 def test_get(time, physobs, instrument, wavelength):
     qr = GONGClient.query(time, physobs, instrument, wavelength)
     res = GONGClient.get(qr)
