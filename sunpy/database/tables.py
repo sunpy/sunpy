@@ -547,14 +547,6 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
     >>> sr = Fido.search(attrs.Time("2012/1/1", "2012/1/2"),
     ...     attrs.Instrument('lyra'))
     >>> entries = entries_from_fido_search_result(sr)
-
-    >>> from sunpy.net import vso
-    >>> from sunpy.database.tables import entries_from_query_result
-    >>> client = vso.VSOClient()
-    >>> qr = client.query(
-    ...     vso.attrs.Time('2001/1/1', '2001/1/2'),
-    ...     vso.attrs.Instrument('eit'))
-    >>> entries = entries_from_query_result(qr)
     >>> entry = entries.next()
     >>> entry.source
     'Proba2'
