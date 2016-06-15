@@ -19,8 +19,8 @@ trange = Time('2014/6/1', '2014/6/4')
 #they are very huge ranging from 75MB-100MB
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument, wavelength, physobs",
-                         [(trange, Instrument('vsm'), Wavelength(6302*u.AA),
-                           Physobs("LOS_MAGNETIC_FIELD"))])
+[(trange, Instrument('vsm'), Wavelength(6302*u.AA),
+Physobs("LOS_MAGNETIC_FIELD"))])
 def test_query(time, instrument, physobs, wavelength):
     qr = VClient.query(time, instrument, physobs, wavelength)
     assert len(qr) == 3
@@ -30,7 +30,7 @@ def test_can_handle_query():
     assert not VClient._can_handle_query(trange, Instrument('vsm'))
     assert VClient._can_handle_query(trange, Instrument('vsm'), Wavelength(8542*u.AA))
     assert VClient._can_handle_query(trange, Instrument('vsm'), Wavelength(10830*u.AA),
-                                         Physobs('EQUIVALENT_WIDTH'))
+                                     Physobs('EQUIVALENT_WIDTH'))
 
 @pytest.mark.online
 def test_query():
