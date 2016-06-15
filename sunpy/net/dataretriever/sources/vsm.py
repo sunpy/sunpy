@@ -60,7 +60,7 @@ class VSMClient(GenericClient):
         table_physobs = ['EQUIVALENT_WIDTH', 'LOS_MAGNETIC_FIELD', 'VECTOR_MAGNETIC_FIELD']
         table_wave = { 6302:'v72', 8542: 'v82', 10830: 'v22'}
 
-        physobs_in = True if ('physobs' in kwargs.keys() and kwargs['physobs'] in table_physobs) else False
+        physobs_in = ('physobs' in kwargs.keys() and kwargs['physobs'] in table_physobs)
         url_pattern = 'http://gong2.nso.edu/pubkeep/{dtype}/%Y%m/k4{dtype}%y%m%d/k4{dtype}%y%m%dt%H%M%S{suffix}'
 
         wave = int(kwargs['wavelength'].min.value)
@@ -87,14 +87,10 @@ class VSMClient(GenericClient):
                 except:
                     pass
             return result
-        
-        if (wave == 6302):
-            START_DATE = datetime.datetime(2003, 8, 21)
-        elif (wave == 8542):
-            START_DATE = datetime.datetime(2003, 8, 26)
-        elif (wave == 10830):
-            START_DATE = datetime.datetime(2004, 11, 4)
 
+        start_date = {6302: datetime.datetime(2003, 8, 21), 8542: datetime.datetime(2003, 8, 26),
+                      10830: datetime.datetime(2004, 11, 4)}
+        START_DATE = start_date[wave]
         if timerange.start < START_DATE:
             raise ValueError('Earliest date for which Kanzelhohe data is available is {:%Y-%m-%d}'.format(START_DATE))
 
