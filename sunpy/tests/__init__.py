@@ -63,7 +63,7 @@ def main(modulename='', coverage=False, cov_report=False,
     if coverage:
         print(path, modulename)
         modulepath = os.path.abspath(
-            os.path.join(path, os.path.join(os.pardir, os.pardir, modulename)))
+            os.path.join(path, os.path.join(os.pardir, modulename)))
         all_args.extend(['--cov', modulepath])
     if cov_report:
         all_args.extend(['--cov-report', cov_report])
