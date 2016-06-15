@@ -437,11 +437,47 @@ class DatabaseEntry(Base):
 
     @classmethod
     def _from_fido_search_result_block(cls, sr_block, default_waveunit=None):
+        """Make a new :class:`DatabaseEntry` instance from a Fido search
+        result block.
+
+        Parameters
+        ----------
+        sr_block : sunpy.net.dataretriever.client.QueryResponseBlock
+            A query result block is usually not created directly; instead,
+            one gets instances of
+            ``sunpy.net.dataretriever.client.QueryResponseBlock`` by iterating
+            over each element of a Fido search result.
+        default_waveunit : str, optional
+            The wavelength unit that is used if it cannot be found in the
+            `sr_block`.
+
+        Examples
+        --------
+        >>> from sunpy.net import Fido, attrs
+        >>> from sunpy.database.tables import DatabaseEntry
+        >>> sr = Fido.search(attrs.Time("2012/1/1", "2012/1/2"),
+        ...    attrs.Instrument('lyra'))
+        >>> entry = DatabaseEntry._from_fido_search_result_block(sr[0][0])
+        >>> entry.source
+        'Proba2'
+        >>> entry.provider
+        'esa'
+        >>> entry.physobs
+        'irradiance'
+        >>> entry.fileid
+        'http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits'
+        >>> entry.observation_time_start, entry.observation_time_end
+        (datetime.datetime(2012, 1, 1, 0, 0), datetime.datetime(2012, 1, 2, 0, 0))
+        >>> entry.instrument
+        'lyra'
+
+        """
         # All attributes of DatabaseEntry that are not in QueryResponseBlock
         # are set as None for now.
         source = str(sr_block.source) if sr_block.source is not None else None
         provider = str(sr_block.provider) if sr_block.provider is not None else None
-        #physobs is written as phyobs in QueryResponseBlock
+        # physobs is written as phyobs in
+        # sunpy.net.dataretriever.client.QueryResponseBlock
         physobs = getattr(sr_block, 'phyobs', None)
         if physobs is not None:
             physobs = str(physobs)
