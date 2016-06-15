@@ -859,6 +859,21 @@ class Database(object):
 
     def add_from_fido_search_result(self, search_result,
             ignore_already_added=False):
+        """Generate database entries from a Fido search result and add all the
+        generated entries to this database.
+
+        Parameters
+        ----------
+        search_result : sunpy.net.dataretriever.downloader_factory.UnifiedResponse
+            A UnifiedResponse object that is used to store responses from the
+            unified downloader. This is returned by the ``search`` method of a
+            :class:`sunpy.net.dataretriever.downloader_factory.UnifiedDownloaderFactory`
+            object.
+
+        ignore_already_added : bool
+            See :meth:`sunpy.database.Database.add`.
+
+        """
         self.add_many(
             tables.entries_from_fido_search_result(
                 search_result, self.default_waveunit),
