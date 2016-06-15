@@ -34,13 +34,14 @@ def test_main_submodule(monkeypatch):
                     ['-k-online', '-m not figure'] + [os.path.join(root_dir, 'map')])
 
 
+@pytest.mark.xfail
 def test_main_with_cover(monkeypatch):
     monkeypatch.setattr(pytest, 'main', lambda x: x)
     args = sunpy.tests.main('map', coverage=True)
     covpath = os.path.abspath(
         os.path.join(sunpy.tests.testdir, os.path.join(os.pardir, 'map')))
-    assert args in (['--cov', covpath, '-k-online', '-m not figure', os.path.join('sunpy', 'map')],
-                    ['--cov', covpath, '-k-online', '-m not figure', os.path.join(root_dir, 'map')])
+    assert args in (['--cov', covpath, '--cov-config', os.path.join(os.path.join('sunpy', 'tests'), 'coveragerc'), '-k-online', '-m not figure', os.path.join('sunpy', 'map')],
+                    ['--cov', covpath, '--cov-config', os.path.join(os.path.join(root_dir, 'tests'), 'coveragerc'), '-k-online', '-m not figure', os.path.join(root_dir, 'map')])
 
 
 def test_main_with_show_uncovered_lines(monkeypatch):

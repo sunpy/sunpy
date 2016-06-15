@@ -12,6 +12,7 @@ include sunpy/tests/figure_hashes.json
 include setup.py
 include ah_bootstrap.py
 include ez_setup.py
+include .coveragerc
 
 recursive-include astropy_helpers *
 exclude astropy_helpers/.*
