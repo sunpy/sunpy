@@ -90,8 +90,7 @@ def position(t='now'):
     """
     ra = true_rightascension(t)
     dec = true_declination(t)
-    result = [ra,dec]
-    return result
+    return (ra, dec)
 
 def eccentricity_SunEarth_orbit(t='now'):
     """Returns the eccentricity of the Sun Earth Orbit."""
@@ -249,23 +248,23 @@ def heliographic_solar_center(t='now'):
     x = -np.cos(diff)
     rpol = (np.arctan2(y, x))
     he_lon = rpol - theta
-    return [Longitude(he_lon.to(u.deg)), Latitude(he_lat.to(u.deg))]
+    return (Longitude(he_lon.to(u.deg)), Latitude(he_lat.to(u.deg)))
 
 def print_params(t='now'):
     """Print out a summary of Solar ephemeris"""
     time = parse_time(t)
     print('Solar Ephemeris for ' + time.ctime())
     print('')
-    print('Distance (AU) = ' + str(sunearth_distance(t)))
-    print('Semidiameter (arc sec) = ' + str(solar_semidiameter_angular_size(t)))
-    print('True (long,lat) in degrees = (' + str(true_longitude(t)) + ','
+    print('Distance = ' + str(sunearth_distance(t)))
+    print('Semidiameter = ' + str(solar_semidiameter_angular_size(t)))
+    print('True (long, lat) = (' + str(true_longitude(t)) + ', '
                                                  + str(true_latitude(t)) + ')')
-    print('Apparent (long, lat) in degrees = (' + str(apparent_longitude(t)) + ','
+    print('Apparent (long, lat) = (' + str(apparent_longitude(t)) + ', '
                                                  + str(apparent_latitude(t)) + ')')
-    print('True (RA, Dec) = (' + str(true_rightascension(t)) + ','
-          + str(true_declination(t)))
-    print('Apparent (RA, Dec) = (' + str(apparent_rightascension(t)) + ','
-          + str(apparent_declination(t)))
-    print('Heliographic long. and lat of disk center in deg = (' + str(heliographic_solar_center(t)) + ')')
-    print('Position angle of north pole in deg = ' + str(solar_north(t)))
+    print('True (RA, Dec) = (' + str(true_rightascension(t)) + ', '
+          + str(true_declination(t)) + ')')
+    print('Apparent (RA, Dec) = (' + str(apparent_rightascension(t)) + ', '
+          + str(apparent_declination(t)) + ')')
+    print('Heliographic long. and lat of disk center = ' + str(heliographic_solar_center(t)))
+    print('Position angle of north pole in = ' + str(solar_north(t)))
     print('Carrington Rotation Number = ' + str(carrington_rotation_number(t)))
