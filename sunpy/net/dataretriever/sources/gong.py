@@ -7,6 +7,7 @@ __email__ = "sudk1896@gmail.com"
 import datetime
 import re
 import urllib2
+import numpy as np
 
 from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
@@ -77,6 +78,8 @@ class GONGClient(GenericClient):
         #Is instrument entered.
         url_pattern_1 =  'ftp://gong2.nso.edu/QR/{id}qa/%Y%m/{ObsID}bqa%y%m%d/{ObsID}bqa%y%m%dt%H%M.fits.gz'
         url_pattern_2 = 'http://gong2.nso.edu/HA/haf/%Y%m/%Y%m%d/%Y%m%d%H%M%S{ObsID}h.fits.fz'
+
+        pattern_table = { 6562: url_pattern_1, 6563: url_pattern_1, 6768: url_pattern_2}
         
         result = list() #final list of urls
         patterns = list()
@@ -90,13 +93,19 @@ class GONGClient(GenericClient):
                 if not wavelength_in:
                     patterns.append(url_pattern_1), patterns.append(url_pattern_2)
                 else:
-                    wave = int(kwargs['wavelength'].min.value)
-                    if (6562 <= wave <= 6563):
-                        patterns.append(url_pattern_2)
-                    elif wave == 6768:
-                        patterns.append(url_pattern_1)
-
-
+                    try:
+                        wave_float = kwargs['wavelength'].min.value
+                        da = []
+                        da.append(wave_float)
+                        for wave_nums in pattern_table.keys():
+                            db = []
+                            db.append(wave_nums)
+                            if np.isclose(da, db, 1e-10, 1e-10):
+                                wave = wave_nums
+                                break
+                        patterns.append(pattern_table[wave])
+                    except NameError:
+                        print ("Enter correct wavelength range and units")
         #All valid patterns to be downloaded are in the patterns list.
         instruments_to = list() #The instruments from which user wants to download
         if not instrument_in:
@@ -140,7 +149,7 @@ class GONGClient(GenericClient):
             elif (pattern_ == url_pattern_2):
                 urls = [url_pattern_2.format(ObsID=id[0].upper()) for id in instruments_to]
                 arr = [Scraper(pattern__).filelist(timerange) for pattern__ in urls]
-                result.extend([url for url in arr if len(url)>0])
+                [result.extend(url) for url in arr if len(url)>0]
         
         if not timerange:
             return []
@@ -150,9 +159,7 @@ class GONGClient(GenericClient):
             try:
                 check = urllib2.urlopen(urls)
                 final_result.append(urls)
-            except urllib2.HTTPError,e:
-                pass
-            except urllib2.URLError,e:
+            except:
                 pass
         return final_result
 
@@ -183,15 +190,11 @@ class GONGClient(GenericClient):
         physobs = ['INTENSITY', 'LOS_MAGNETIC_FIELD'] #from VSO
         instruments = ['bigbear', 'cerrotololo', 'learmonth', 'maunaloa', 'teide', 'udaipur', 'tucson'] #for Magnetogram and intensity
         chk_instr, chk_physobs = 0, 0
-        chk_wavelength = 0
-        values = [6562, 6563, 6768]
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value.lower() in instruments:
                 chk_instr += 1
             if x.__class__.__name__ == 'Physobs' and x.value in physobs:
                 chk_physobs += 1
-            if (x.__class__.__name__ == 'Wavelength' and int(x.min.value) in values and int(x.max.value) in values and (x.unit.name).lower()=='angstrom'):
-                chk_wavelength += 1
         if chk_instr == 1 or chk_physobs == 1:
             return True
         return False

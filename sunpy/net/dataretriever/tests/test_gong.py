@@ -15,12 +15,12 @@ import sunpy.net.dataretriever.sources.gong as gong
 
 GONGClient = gong.GONGClient()
 
-##downloads 4 fits files each of size 3MB.
-##Total size = 12MB.
+downloads 4 fits files each of size 3MB.
+Total size = 12MB.
 TRANGE = Time('2014/6/4 00:00:00', '2014/6/4 00:07:00')
 @pytest.mark.online
 @pytest.mark.parametrize("time, physobs, instrument, wavelength",
-                         [(TRANGE, Physobs('INTENSITY'), Instrument('maunaloa'), Wavelength(6563*u.AA)),
+                         [(TRANGE, Physobs('INTENSITY'), Instrument('maunaloa'), Wavelength(656.3*u.nm)),
                           (TRANGE, Physobs('INTENSITY'), Instrument(''), Wavelength(6563*u.AA))])
 def test_query(time, physobs, instrument, wavelength):
     qr = GONGClient.query(time, physobs, instrument, wavelength)
@@ -47,7 +47,7 @@ def test_query():
 @pytest.mark.online
 @pytest.mark.parametrize("time, physobs, instrument, wavelength",
                          [(Time('2016/6/13 03:00', '2016/6/13 04:00'), Physobs('INTENSITY'),
-                           Instrument('udaipur'), Wavelength(6768*u.AA))])
+                           Instrument('udaipur'), Wavelength(676.8*u.nm))])
 def test_get(time, physobs, instrument, wavelength):
     qr = GONGClient.query(time, physobs, instrument, wavelength)
     res = GONGClient.get(qr)
