@@ -8,6 +8,7 @@ import datetime
 import urllib2
 import re
 from bs4 import BeautifulSoup
+import numpy as np
 
 from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
@@ -63,7 +64,20 @@ class VSMClient(GenericClient):
         physobs_in = ('physobs' in kwargs.keys() and kwargs['physobs'] in table_physobs)
         url_pattern = 'http://gong2.nso.edu/pubkeep/{dtype}/%Y%m/k4{dtype}%y%m%d/k4{dtype}%y%m%dt%H%M%S{suffix}'
 
-        wave = int(kwargs['wavelength'].min.value)
+        wave_float = kwargs['wavelength'].min.value
+        
+        da = []
+        da.append(wave_float)
+        for wave_nums in table_wave.keys():
+            db = []
+            db.append(wave_nums)
+            if np.isclose(da, db, 1e-10, 1e-10):
+                wave = wave_nums
+                break
+            
+        if wave is None:
+            print ("Enter correct wavelength values and units")
+        
         def download_from_nso(dtype, suffix, timerange):
             tmp_pattern = 'k4{dtype}%y%m%dt%H%M%S{suffix}'
             result = list()
@@ -91,9 +105,10 @@ class VSMClient(GenericClient):
         start_date = {6302: datetime.datetime(2003, 8, 21), 8542: datetime.datetime(2003, 8, 26),
                       10830: datetime.datetime(2004, 11, 4)}
         START_DATE = start_date[wave]
+        
         if timerange.start < START_DATE:
             raise ValueError('Earliest date for which SOLIS VSM data is available is {:%Y-%m-%d}'.format(START_DATE))
-
+        
         result = list()
         if (wave == 6302):
             if not physobs_in:
@@ -137,7 +152,7 @@ class VSMClient(GenericClient):
         for x in query:
             if (x.__class__.__name__ == 'Instrument' and type(x.value) is str and x.value.lower() == 'vsm'):
                 chk_var += 1
-            if (x.__class__.__name__ == 'Wavelength' and int(x.min.value) in values and int(x.max.value) in values and (x.unit.name).lower()=='angstrom'):
+            if (x.__class__.__name__ == 'Wavelength'):
                 chk_var += 1
         if (chk_var == 2):
             return True

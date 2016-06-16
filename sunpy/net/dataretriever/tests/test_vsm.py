@@ -29,7 +29,7 @@ def test_can_handle_query():
     assert VClient._can_handle_query(trange, Instrument('vsm'), Wavelength(6302*u.AA))
     assert not VClient._can_handle_query(trange, Instrument('vsm'))
     assert VClient._can_handle_query(trange, Instrument('vsm'), Wavelength(8542*u.AA))
-    assert VClient._can_handle_query(trange, Instrument('vsm'), Wavelength(10830*u.AA),
+    assert VClient._can_handle_query(trange, Instrument('vsm'), Wavelength(1083.0*u.nm),
                                      Physobs('EQUIVALENT_WIDTH'))
 
 @pytest.mark.online
@@ -43,7 +43,7 @@ def test_query():
 #For wavelength 6302 Angstroms.
 @pytest.mark.online
 def test_fido_query():
-    qr = Fido.search(a.Time('2015/1/3', '2015/1/6'), a.Instrument('vsm'), a.Wavelength(6302*u.AA),
+    qr = Fido.search(a.Time('2015/1/3', '2015/1/6'), a.Instrument('vsm'), a.Wavelength(630.2*u.nm),
                      a.Physobs('VECTOR_MAGNETIC_FIELD'))
     assert isinstance(qr, UnifiedResponse)
     assert qr._numfile == 6
