@@ -6,6 +6,7 @@ __email__ = "sudk1896@gmail.com"
 
 import datetime
 import urllib2
+import numpy as np
 
 
 from sunpy.net.dataretriever.client import GenericClient
@@ -59,14 +60,24 @@ class KanzelhoheClient(GenericClient):
         """
         returns list of urls corresponding to given TimeRange.
         """
-        wave = int(kwargs['wavelength'].min.value)
+        wave_float = kwargs['wavelength'].min.value
         table = {6563:['halpha2k/recent', 'halph_fr'], 32768:['caiia', 'caiik_fi'], 5460:['phokada', 'bband_fi']}
-        if (wave == 6563):
-            START_DATE = datetime.datetime(2000, 7, 20, 7, 45, 46)
-        elif (wave == 5460):
-            START_DATE = datetime.datetime(2011, 1, 7, 10, 7, 33)
-        elif (wave == 32768):
-            START_DATE = datetime.datetime(2010, 7, 31, 8, 10, 59)
+        #Checking if value is close enough to a wavelength value.
+        #Converting from one unit to other introduces precision errors.
+        try:
+            da = []
+            da.append(wave_float)
+            for wave_nums in table.keys():
+                db = []
+                db.append(wave_nums)
+                if np.isclose(da, db, 1e-10, 1e-10):
+                    wave = wave_nums
+        except NameError:
+            print ("Enter valid wavelength range with proper units")
+
+        date_table = {6563: datetime.datetime(2000, 7, 20, 7, 45, 46), 5460: datetime.datetime(2011, 1, 7, 10, 7, 33),
+                      32768: datetime.datetime(2010, 7, 31, 8, 10, 59)}
+        START_DATE = date_table[wave]
         if timerange.start < START_DATE:
             raise ValueError('Earliest date for which Kanzelhohe data is available is {:%Y-%m-%d}'.format(START_DATE))
         prefix = "http://cesar.kso.ac.at/{datatype}/"
@@ -111,7 +122,7 @@ class KanzelhoheClient(GenericClient):
         for x in query:
             if (x.__class__.__name__ == 'Instrument' and type(x.value) is str and x.value.lower() == 'kanzelhohe'):
                 chk_var += 1
-            if (x.__class__.__name__ == 'Wavelength' and int(x.min.value) in values and int(x.max.value) in values and (x.unit.name).lower()=='angstrom'):
+            if (x.__class__.__name__ == 'Wavelength'):
                 chk_var += 1
         if (chk_var==2):
             return True

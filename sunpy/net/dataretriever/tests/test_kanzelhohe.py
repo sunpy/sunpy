@@ -46,7 +46,7 @@ def test_query():
 
 @pytest.mark.online
 @pytest.mark.parametrize("time, wavelength",
-[(Time('2015/01/02 07:30:00', '2015/01/02 07:38:00'), Wavelength(32768*u.AA))])
+[(Time('2015/01/02 07:30:00', '2015/01/02 07:38:00'), Wavelength(3276.8*u.nm))])
 #This test downloads 3 files
 #Each file is 4.5MB, total size
 #is 13.4MB
@@ -61,7 +61,7 @@ def test_get(time, wavelength):
 #is 13.4MB
 @pytest.mark.online
 def test_fido_query():
-    qr = Fido.search(a.Time('2016/01/05 07:30:00', '2016/01/05 07:38:00'), a.Instrument('kanzelhohe'), a.Wavelength(5460*u.AA))
+    qr = Fido.search(a.Time('2016/01/05 07:30:00', '2016/01/05 07:38:00'), a.Instrument('kanzelhohe'), a.Wavelength(546.0*u.nm))
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
