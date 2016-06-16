@@ -92,7 +92,7 @@ class VSMClient(GenericClient):
                       10830: datetime.datetime(2004, 11, 4)}
         START_DATE = start_date[wave]
         if timerange.start < START_DATE:
-            raise ValueError('Earliest date for which Kanzelhohe data is available is {:%Y-%m-%d}'.format(START_DATE))
+            raise ValueError('Earliest date for which SOLIS VSM data is available is {:%Y-%m-%d}'.format(START_DATE))
 
         result = list()
         if (wave == 6302):
