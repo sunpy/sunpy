@@ -193,7 +193,7 @@ def true_rightascension(t='now'):
 
 def true_declination(t='now'):
     """Return the true declination."""
-    result = np.arcsin(np.sin(true_obliquity_of_ecliptic(t))) * np.sin(apparent_longitude(t))
+    result = np.arcsin(np.sin(true_obliquity_of_ecliptic(t)) * np.sin(apparent_longitude(t)))
     return Latitude(result.to(u.deg))
 
 def apparent_obliquity_of_ecliptic(t='now'):
