@@ -352,11 +352,10 @@ scale:\t\t {scale}
     @property
     def name(self):
         """Human-readable description of map-type"""
-        return "{obs} {detector} {measurement} {date:{tmf}}".format(obs=self.observatory,
-                                                                detector=self.detector,
-                                                                measurement=self.measurement,
-                                                                date=parse_time(self.date),
-                                                                tmf=TIME_FORMAT)
+        return "{nickname} {measurement} {date:{tmf}}".format(nickname=self.nickname,
+                                                              measurement=self.measurement,
+                                                              date=parse_time(self.date),
+                                                              tmf=TIME_FORMAT)
 
     @property
     def nickname(self):
