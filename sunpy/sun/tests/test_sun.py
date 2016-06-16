@@ -101,9 +101,9 @@ def test_true_rightasenscion():
 
 
 def test_true_declination():
-    assert_quantity_allclose(sun.true_declination("2012/11/11"), -17.687 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.true_declination("2245/12/01"), -21.802 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.true_declination("2014/05/27"), 21.352 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.true_declination("2012/11/11"), -17.467 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.true_declination("2245/12/01"), -21.717 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.true_declination("2014/05/27"), 21.245 * u.deg, atol=1e-3 * u.deg)
 
 
 def test_apparent_obliquity_of_ecliptic():
