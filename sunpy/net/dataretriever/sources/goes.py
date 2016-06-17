@@ -1,10 +1,12 @@
-#Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-#This module was developed under funding provided by
-#Google Summer of Code 2014
+#This module was developed with funding provided by
+#the Google Summer of Code 2016.
+
+__author__ = "Sudarshan Konge"
+__email__ = "sudk1896@gmail.com"
 
 import datetime
-import urllib2
 from bs4 import BeautifulSoup
+from six.moves.urllib.request import urlopen
 
 from sunpy.time import parse_time, TimeRange
 from sunpy.util.scraper import Scraper
@@ -66,9 +68,9 @@ class GOESClient(GenericClient):
         timerange: sunpy.time.TimeRange
             time range for which data is to be downloaded.
         Physobs : string
-            'INTENSITY', 'PARTICLE_FLUX' and 'IRRADIANCE'
+            'INTENSITY', 'PARTICLE_FLUX' and 'IRRADIANCE', Case sensitive
         Instrument: string
-            Fixed argument, 'goes'
+            Fixed argument, 'goes' Case insensitive.
         """
         def download_particle_flux(time_range):
             """
@@ -95,7 +97,7 @@ class GOESClient(GenericClient):
             in such case the data will be obtained from NOAA.
             """
             now = datetime.datetime.utcnow()
-            real_time = ((now - time_range.end).total_seconds <= 3600 * 24)
+            real_time = ((now - time_range.end).total_seconds() <= 3600 * 24)
 
             total_days = (time_range.end - time_range.start).days + 1
             all_dates = time_range.split(total_days)
@@ -134,29 +136,34 @@ class GOESClient(GenericClient):
             """
 
             # TODO: update to new Scraper version #1862
-            prefix = 'http://satdat.ngdc.noaa.gov/sxi/archive/fits/{sat}/{date:%Y/%m/%d/}'
-            suffix = ['SXI_%Y%m%d_%H%M%S%j_{level}_{sat}.FTS'.format(pat=pat) for level in ('AB', 'BA')]
+            prefix = 'http://satdat.ngdc.noaa.gov/sxi/archive/fits/goes{sat}/{date:%Y/%m/%d/}'
+            suffix = 'SXI_%Y%m%d_%H%M%S%j_{level}_{sat}.FTS'
             result = list()
             total_days = (time_range.end - time_range.start).days + 1
             all_dates = time_range.split(total_days)
             for day in all_dates:
-                html = urllib2.urlopen(prefix.format(date=day.end, sat=self._get_goes_sat_num(day)))
-                soup = BeautifulSoup(html)
+                print(prefix.format(date=day.end, sat=self._get_goes_sat_num(day.end)))
+                html = urlopen(prefix.format(date=day.end, sat=self._get_goes_sat_num(day.end)))
+                soup = BeautifulSoup(html, 'lxml')
                 for link in soup.findAll("a"):
                     url = str(link.get('href'))
                     for suf in suffix:
-                        crawler = Scraper(suf.format(sat=self_get_goes_sat_num(day)))
-                        if crawler._URL_followsPattern(url):
-                            extract = crawler._extractDateURL(url)
-                            valid = datetime.datetime(day.end.year, day.end.month, day.end.day,
-                                                      extract.hour, extract.minute, extract.second)
-                            if time_range.start <= valid <= time_range.end:
-                                result.append(url)
+                        sat=self._get_goes_sat_num(day.start)
+                        suf_ = [suf.format(level=level, sat=sat) for level in ('AB', 'BA')]
+                        for sufi in suf_:
+                            print(sufi)
+                            crawler = Scraper(sufi)
+                            if crawler._URL_followsPattern(url):
+                                extract = crawler._extractDateURL(url)
+                                valid = datetime.datetime(day.end.year, day.end.month, day.end.day,
+                                                          extract.hour, extract.minute, extract.second)
+                                if time_range.start <= valid <= time_range.end:
+                                    result.append(prefix.format(date= day.end) + url)
             return result
 
 
         physobs = kwargs['physobs']
-        start_dates = {'INTENSITY': datetime.datetime(2010, 6, 4), 'IRRADIANCE':datetime.datetime(2012, 9, 6),
+        start_dates = {'INTENSITY': datetime.datetime(2010, 6, 4), 'IRRADIANCE':datetime.datetime(1980, 1, 4),
                        'PARTICLE_FLUX': datetime.datetime(2015, 5, 30)}
         START_DATE = start_dates[physobs]
         if timerange.end < START_DATE:
