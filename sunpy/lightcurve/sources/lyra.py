@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Provides programs to process and analyze PROBA2/LYRA data."""
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import datetime
 import sys
@@ -40,12 +40,18 @@ class LYRALightCurve(LightCurve):
 
     PROBA2 was launched on 2 November 2009.
 
+    This class can download and hold either Level 2 data (the default) which
+    has sub-second resolution or Level 3 which is the Level 2 data averaged to
+    one minute cadence. The level can be specified with the ``level`` keyword
+    argument to `~sunpy.lightcurve.LyraLightCurve.create`.
+
     Examples
     --------
     >>> import sunpy
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create()
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create('~/Data/lyra/lyra_20110810-000000_lev2_std.fits')   # doctest: +SKIP
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10')
+    >>> lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10', level=3)
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create("http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
     >>> lyra.peek()   # doctest: +SKIP
 

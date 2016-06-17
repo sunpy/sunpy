@@ -13,7 +13,7 @@ homepage <http://www.openjpeg.org>`_.
 The other package you will need is `Glymur
 <https://pypi.python.org/pypi/Glymur/>`_.  Glymur is an interface
 between Python and the OpenJPEG libraries.  Please follow the
-instructions `here <https://glymur.readthedocs.org/en/latest/>`_ to
+instructions `here <https://glymur.readthedocs.io/en/latest/>`_ to
 install Glymur on your system.
 
 To interact with the Helioviewer API, users first create a "HelioviewerClient"

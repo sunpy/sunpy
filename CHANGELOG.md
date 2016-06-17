@@ -1,6 +1,14 @@
 Latest
 ------
 
+* Fix bug in `wcs.convert_data_to_pixel` where crpix[1] was used for both axes.
+* Fix some leftover instances of `GenericMap.units`
+
+0.7.0
+-----
+* Added `timeout` parameter in `sunpy.data.download_sample_data()`
+* Fixed `aiaprep` to return properly sized map.
+* Deprecation warnings fixed when using image coalignment.
 * Sunpy is now Python 3.x compatible (3.4 and 3.5).
 * Added a unit check and warnings for map metadata.
 * Added IRIS SJI color maps.
@@ -33,6 +41,11 @@ Latest
 * Added concatenate functionality to lightcurve base class.
 * Fix Map to allow astropy.io.fits Header objects as valid input for meta arguments.
 * Added an examples gallery using `sphinx-gallery`.
+* API clean up to constants. Removed constant() function which is now replaced by get().
+* Prevent helioviewer tests from checking access to the API endpoint when running tests offline.
+* `GenericMap.units` is renamed to `GenericMap.spatial_units` to avoid confusion with `NDData.unit`.
+* `GenericMap` now has a `coordinate_frame` property which returns an `astropy.coordinates` frame with all the meta data from the map populated.
+* `GenericMap` now has a `_mpl_axes` method which allows it to be specified as a projection to `matplotlib` methods and will return a `WCSAxes` object with `WCS` projection.
 
 0.6.0
 -----
