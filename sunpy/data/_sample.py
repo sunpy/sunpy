@@ -56,16 +56,19 @@ for key in _files:
     sample_files[key] = os.path.abspath(os.path.join(sampledata_dir, _files[key][0]))
 
 
-def download_sample_data(progress=True, overwrite=True):
+def download_sample_data(progress=True, overwrite=True, timeout=None):
     """
     Download the sample data.
 
     Parameters
     ----------
-    progress: bool
+    progress: `bool`
         Show a progress bar during download
-    overwrite: bool
+    overwrite: `bool`
         If exist overwrites the downloaded sample data.
+    timeout: `float`
+        The timeout in seconds. If `None` the default timeout is used from
+        `astropy.utils.data.Conf.remote_timeout`.
 
     Returns
     -------
@@ -83,7 +86,7 @@ def download_sample_data(progress=True, overwrite=True):
         for base_url in _base_urls:
             full_file_name = file_name[0] + file_name[1]
             if url_exists(os.path.join(base_url, full_file_name)):
-                f = download_file(os.path.join(base_url, full_file_name))
+                f = download_file(os.path.join(base_url, full_file_name), timeout=timeout)
                 real_name, ext = os.path.splitext(full_file_name)
 
                 if file_name[1] == '.zip':
