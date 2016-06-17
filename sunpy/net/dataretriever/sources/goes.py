@@ -20,6 +20,40 @@ __all__ = ['GOESClient']
 
 
 class GOESClient(GenericClient):
+    """
+    Returns a list of URLS to SOLIS VSM files corresponding to value of input timerange.
+    URL source: `http://gong2.nso.edu/pubkeep/`.
+    Parameters
+    ----------
+    timerange: sunpy.time.TimeRange
+        time range for which data is to be downloaded.
+        Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
+
+    Instrument: Fixed argument - 'goes' ,case insensitive.
+
+    Physobs: Optional, includes 'INTENSITY', "IRRADIANCE'
+             'PARTICLE_FLUX'.
+
+    Examples
+    --------
+    >>> from sunpy.net import Fido
+    >>> from sunpy.net import attrs as a
+    >>> res = Fido.search(a.Time('2016/6/4 00:00:00','2016/6/4 00:03:00'),
+                Instrument('goes'), a.Physobs('INTENSITY'))
+    >>> print (res)
+    [<Table length=7>
+         Start Time           End Time      Source Instrument
+           str19               str19         str4     str4
+    ------------------- ------------------- ------ ----------
+    2016-06-04 00:00:00 2016-06-05 00:00:00   nasa       goes
+    2016-06-05 00:00:00 2016-06-06 00:00:00   nasa       goes
+    2016-06-06 00:00:00 2016-06-07 00:00:00   nasa       goes
+    2016-06-07 00:00:00 2016-06-08 00:00:00   nasa       goes
+    2016-06-08 00:00:00 2016-06-09 00:00:00   nasa       goes
+    2016-06-09 00:00:00 2016-06-10 00:00:00   nasa       goes
+    2016-06-10 00:00:00 2016-06-11 00:00:00   nasa       goes]
+    """
+
     def _get_goes_sat_num(self, date):
         """
         Determines the satellite number for a given date.
