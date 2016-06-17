@@ -109,6 +109,4 @@ class SWAPClient(GenericClient):
                 chk_var += 1
             if x.__class__.__name__ == 'Level' and x.value in (0, 1, 'q', 'Q'):
                 chk_var += 1
-        if (chk_var == 2):
-            return True
-        return False
+        return chk_var == 2
