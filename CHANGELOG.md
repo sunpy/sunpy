@@ -2,6 +2,7 @@
 -----
 * The draw_grid keyword of the peek method of Map now accepts booleans or astropy quantities.
 * Fix bug in `wcs.convert_data_to_pixel` where crpix[1] was used for both axes.
+* Fixed bugs in `sun` equations
 
 0.6.4
 -----
