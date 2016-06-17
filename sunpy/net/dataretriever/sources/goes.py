@@ -3,8 +3,11 @@
 #Google Summer of Code 2014
 
 import datetime
+import urllib2
+from bs4 import BeautifulSoup
 
 from sunpy.time import parse_time, TimeRange
+from sunpy.util.scraper import Scraper
 
 from ..client import GenericClient
 
@@ -62,31 +65,106 @@ class GOESClient(GenericClient):
         ----------
         timerange: sunpy.time.TimeRange
             time range for which data is to be downloaded.
-        satellite_number : int
-            GOES satellite number (default = 15)
-        data_type : string
-            Data type to return for the particular GOES satellite. Supported
-            types depend on the satellite number specified. (default = xrs_2s)
+        Physobs : string
+            'INTENSITY', 'PARTICLE_FLUX' and 'IRRADIANCE'
+        Instrument: string
+            Fixed argument, 'goes'
         """
-        # find out which satellite and datatype to query from the query times
-        base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
-        start_time = datetime.datetime.combine(timerange.start.date(),
-                                               datetime.datetime.min.time())
-        total_days = int(timerange.days.value) + 1
-        result = list()
+        def download_particle_flux(time_range):
+            """
+            Generate URLs for electron and particle fluxes measured by GOES
+            for dates not older than May 30, 2015.
+            URLs with `p` or `s` in their filenames stand for primary and
+            secondary satellite respectively.
+            """
+            oldest_date = datetime.datetime(2015, 5, 30)
+            total_days = (time_range.end - time_range.start).days + 1
+            all_dates = time_range.split(total_days)
 
-        # Iterate over each day in the input timerange and generate a URL for
-        # it.
-        for day in range(total_days):
-            date = start_time + datetime.timedelta(days=day)
-            regex = "{date:%Y}/go{sat:02d}"
-            if (date < parse_time('1999/01/15')):
-                regex += "{date:%y%m%d}.fits"
-            else:
-                regex += "{date:%Y%m%d}.fits"
-            url = base_url + regex.format(
-                date=date, sat=self._get_goes_sat_num(date))
-            result.append(url)
+            url_pattern = 'ftp://ftp.swpc.noaa.gov/pub/lists/particle/{date:%Y%m%d}_G{char}_part_5m.txt'
+
+            result = [url_pattern.format(date=day.start, char=ch)
+                      for day in all_dates
+                      for ch in ('p', 's') if day.start >= oldest_date]
+            return result
+
+        def download_irradiance(time_range):
+            """
+            Generate URLs for GOES soft x-rays flux. The result URLs will point
+            to the FITS files from NASA unless required data from the last day,
+            in such case the data will be obtained from NOAA.
+            """
+            now = datetime.datetime.utcnow()
+            real_time = ((now - time_range.end).total_seconds <= 3600 * 24)
+
+            total_days = (time_range.end - time_range.start).days + 1
+            all_dates = time_range.split(total_days)
+
+            result = list()
+            # Obtain fits files within the time range
+            # find out which satellite and datatype to query from the query times
+            base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
+            start_time = datetime.datetime.combine(timerange.start.date(),
+                                                   datetime.datetime.min.time())
+            total_days = int(timerange.days.value) + 1
+
+            result = list()
+            # Iterate over each day in the input timerange and generate a URL for
+            # it.
+            for day in range(total_days):
+                date = start_time + datetime.timedelta(days=day)
+                regex = "{date:%Y}/go{sat:02d}"
+                if (date < parse_time('1999/01/15')):
+                    regex += "{date:%y%m%d}.fits"
+                else:
+                    regex += "{date:%Y%m%d}.fits"
+                url = base_url + regex.format(
+                    date=date, sat=self._get_goes_sat_num(date))
+                result.append(url)
+
+            if real_time:  # TODO: is the above archive providing data till yesterday, or have delay?
+                url_pattern = 'ftp://ftp.swpc.noaa.gov/pub/lists/xray/{date:%Y%m%d}_G{satord}_xr_{cad}m.txt'
+                g = lambda url, satord, date, cad: url.format(satord=satord, date=date, cad=cad)
+                result.extend([g(url_pattern, satord, now, cad) for cad in (1, 5) for satord in ('s', 'p')])
+            return result
+
+        def download_intensity(time_range):
+            """
+            Generate URLs for GOES SXI imager.
+            """
+
+            # TODO: update to new Scraper version #1862
+            prefix = 'http://satdat.ngdc.noaa.gov/sxi/archive/fits/{sat}/{date:%Y/%m/%d/}'
+            suffix = ['SXI_%Y%m%d_%H%M%S%j_{level}_{sat}.FTS'.format(pat=pat) for level in ('AB', 'BA')]
+            result = list()
+            total_days = (time_range.end - time_range.start).days + 1
+            all_dates = time_range.split(total_days)
+            for day in all_dates:
+                html = urllib2.urlopen(prefix.format(date=day.end, sat=self._get_goes_sat_num(day)))
+                soup = BeautifulSoup(html)
+                for link in soup.findAll("a"):
+                    url = str(link.get('href'))
+                    for suf in suffix:
+                        crawler = Scraper(suf.format(sat=self_get_goes_sat_num(day)))
+                        if crawler._URL_followsPattern(url):
+                            extract = crawler._extractDateURL(url)
+                            valid = datetime.datetime(day.end.year, day.end.month, day.end.day,
+                                                      extract.hour, extract.minute, extract.second)
+                            if time_range.start <= valid <= time_range.end:
+                                result.append(url)
+            return result
+
+
+        physobs = kwargs['physobs']
+        start_dates = {'INTENSITY': datetime.datetime(2010, 6, 4), 'IRRADIANCE':datetime.datetime(2012, 9, 6),
+                       'PARTICLE_FLUX': datetime.datetime(2015, 5, 30)}
+        START_DATE = start_dates[physobs]
+        if timerange.end < START_DATE:
+            raise ValueError('Earliest date for which data is available is {:%Y-%m-%d}'.format(START_DATE))
+
+        download_functions = {'INTENSITY': download_intensity, 'IRRADIANCE': download_irradiance,
+                              'PARTICLE_FLUX': download_particle_flux}
+        result = download_functions[physobs](timerange) # TODO: how to get more than one?
         return result
 
     def _makeimap(self):
@@ -112,9 +190,14 @@ class GOESClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chkattr = ['Time', 'Instrument']
-        chklist = [x.__class__.__name__ in chkattr for x in query]
+        chkattr =  ['Time', 'Instrument', 'Physobs']
+        physobs = ['PARTICLE_FLUX', 'IRRADIANCE', 'INTENSITY']
+        chklist =  [x.__class__.__name__ in chkattr for x in query]
+        chk_var = 0
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'goes':
-                return all(chklist)
-        return False
+            if x.__class__.__name__ == 'Instrument' and x.value == 'goes':
+                chk_var += 1
+            if x.__class__.__name__ == 'Physobs' and x.value in physobs:
+                chk_var += 1
+
+        return chk_var == 2
