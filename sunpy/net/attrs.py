@@ -29,12 +29,14 @@ from .jsoc import attrs as jsoc
 from .dataretriever.attrs import goes
 
 from ._attrs import Time, Instrument, Wavelength, Level, Sample, Detector, Resolution
+from .vso.attrs import Source, Physobs, Filter
 from .base_client import BaseClient
 
 # Trick the docs into thinking these attrs are defined in here.
-for _a in (Time, Instrument, Wavelength, Level, Sample, Detector, Resolution):
+for _a in (Time, Instrument, Wavelength, Level, Sample, Detector, Resolution,
+           Source, Physobs, Filter):
     _a.__module__ = __name__
 
 
 __all__ = ['Time', 'Instrument', 'Wavelength', 'Level', 'Sample', 'Detector', 'Resolution',
-           'vso', 'jsoc', 'goes']
+           'vso', 'jsoc', 'goes', 'Source', 'Physobs', 'Filter']
