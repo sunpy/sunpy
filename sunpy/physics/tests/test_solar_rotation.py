@@ -90,6 +90,6 @@ def test_mapcube_solar_derotate(aia171_test_mapcube, aia171_test_submap):
     assert(isinstance(tmc, map.MapCube))
 
     # Test that the shape of data is correct when clipped
-    clipped_shape = (25, 19)
+    clipped_shape = (24, 20)
     for m in tmc:
         assert(m.data.shape == clipped_shape)
