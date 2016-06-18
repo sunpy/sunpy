@@ -15,8 +15,8 @@ import sunpy.net.dataretriever.sources.gong as gong
 
 GONGClient = gong.GONGClient()
 
-downloads 4 fits files each of size 3MB.
-Total size = 12MB.
+##downloads 4 fits files each of size 3MB.
+##Total size = 12MB.
 TRANGE = Time('2014/6/4 00:00:00', '2014/6/4 00:07:00')
 @pytest.mark.online
 @pytest.mark.parametrize("time, physobs, instrument, wavelength",
