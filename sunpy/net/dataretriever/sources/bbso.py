@@ -89,7 +89,7 @@ class BBSOClient(GenericClient):
         """
         self.map_['source'] = 'Global Halpha Network'
         self.map_['instrument'] = 'bbso'
-        self.map_['phyobs'] = 'irradiance'
+        self.map_['phyobs'] = 'IRRADIANCE'
 ##        self.map_['provider'] = 'esa'
         self.map_['wavelength'] = '174 AA'
 
