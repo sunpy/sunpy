@@ -68,7 +68,7 @@ class SWEPAMClient(GenericClient):
         """
         self.map_['source'] = 'ACE'
         self.map_['instrument'] = 'swepam'
-        self.map_['phyobs'] = 'particle-flux'
+        self.map_['phyobs'] = 'PARTICLE_FLUX'
 
     @classmethod
     
@@ -145,7 +145,7 @@ class EPAMClient(GenericClient):
         """
         self.map_['source'] = 'ACE'
         self.map_['instrument'] = 'epam'
-        self.map_['phyobs'] = 'particle-flux'
+        self.map_['phyobs'] = 'PARTICLE_FLUX'
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -224,7 +224,7 @@ class MAGClient(GenericClient):
         """
         self.map_['source'] = 'ACE'
         self.map_['instrument'] = 'mag'
-        self.map_['phyobs'] = 'magnetic-field'
+        self.map_['phyobs'] = 'MAGNETIC_FIELD'
 
     @classmethod
     def _can_handle_query(cls, *query):
@@ -305,7 +305,7 @@ class SISClient(GenericClient):
         """
         self.map_['source'] = 'ACE'
         self.map_['instrument'] = 'sis'
-        self.map_['phyobs'] = 'particle-flux'
+        self.map_['phyobs'] = 'PARTICLE_FLUX'
 
     @classmethod
     def _can_handle_query(cls, *query):
