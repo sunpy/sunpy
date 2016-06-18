@@ -72,25 +72,25 @@ class KanzelhoheClient(GenericClient):
                 db.append(wave_nums)
                 if np.isclose(da, db, 1e-10, 1e-10):
                     wave = wave_nums
-        except NameError:
-            print ("Enter valid wavelength range with proper units")
 
-        date_table = {6563: datetime.datetime(2000, 7, 20, 7, 45, 46), 5460: datetime.datetime(2011, 1, 7, 10, 7, 33),
-                      32768: datetime.datetime(2010, 7, 31, 8, 10, 59)}
-        START_DATE = date_table[wave]
-        if timerange.start < START_DATE:
-            raise ValueError('Earliest date for which Kanzelhohe data is available is {:%Y-%m-%d}'.format(START_DATE))
-        prefix = "http://cesar.kso.ac.at/{datatype}/"
-        if (wave == 6563):
-            suffix = "%Y/kanz_{datatype1}_%Y%m%d_%H%M%S.fts.gz"
-        else:
-            suffix = "%Y/%Y%m%d/processed/kanz_{datatype1}_%Y%m%d_%H%M%S.fts.gz"
-        url_pattern = prefix + suffix
-        crawler = Scraper(url_pattern, datatype = table[wave][0], datatype1 = table[wave][1])
-        if not timerange:
-            return []
-        result = crawler.filelist(timerange)
-        return result
+            date_table = {6563: datetime.datetime(2000, 7, 20, 7, 45, 46), 5460: datetime.datetime(2011, 1, 7, 10, 7, 33),
+                          32768: datetime.datetime(2010, 7, 31, 8, 10, 59)}
+            START_DATE = date_table[wave]
+            if timerange.start < START_DATE:
+                raise ValueError('Earliest date for which Kanzelhohe data is available is {:%Y-%m-%d}'.format(START_DATE))
+            prefix = "http://cesar.kso.ac.at/{datatype}/"
+            if (wave == 6563):
+                suffix = "%Y/kanz_{datatype1}_%Y%m%d_%H%M%S.fts.gz"
+            else:
+                suffix = "%Y/%Y%m%d/processed/kanz_{datatype1}_%Y%m%d_%H%M%S.fts.gz"
+            url_pattern = prefix + suffix
+            crawler = Scraper(url_pattern, datatype = table[wave][0], datatype1 = table[wave][1])
+            if not timerange:
+                return []
+            result = crawler.filelist(timerange)
+            return result
+        except:
+            print "Enter wavelength with proper values and units"
 
     def _makeimap(self):
         """
