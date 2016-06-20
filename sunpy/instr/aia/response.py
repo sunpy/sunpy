@@ -46,20 +46,19 @@ def get_function(ion, emissivity, temperature, density, optional = None):
     pass
 # think: how to test
 
-def read_genx(path_to_file):
+def get_data_from_aia_inst_file(path_to_file):
     """
-    This definition reads the .genx output file from SolarSoft Ware (SSW). It will extract the instrument data and save them to an data file to be used for this program.
+    This definition reads the instrument file aia_V6_all_fullinst file which was obtained from ssw_aia_response_data inside
+    ssw_aia_response_genx.tar.gz (an output file of SolarSoft Ware (SSW)). It will extract the instrument data and save
+    it a dataframe file for easier access.
 
      Parameters
     ----------
-    :param path_to_file: string, the path location that leads to ssw_aia_response_genx file documents. The output file
-                    used for obtaining all of the information is:   aia_V6_all_fullinst
-    :param outfile_name: string, the name of the outfile that will store the dataframe
-                                    - could make this a dictioary called self.instr_properties in class format
+    :param path_to_file: string, the path location that leads to ssw_aia_response_data/aia_V6_all_fullinst.
 
     Returns
     -------
-    output: a comma separated dataframe file with arrays for each property per channel
+    output: channel_properties.csv, a comma separated dataframe file with arrays for each property per channel
 
     """
 
@@ -93,7 +92,7 @@ def read_genx(path_to_file):
 
 
 
-def load_channel_as_dict(channel = 'all'):
+def load_channel_as_dict(channel = ""):
     """
     This definition reads the .csv output file from the read_genx function. It will return a dictionary for each channel
 
