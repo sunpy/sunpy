@@ -1,5 +1,11 @@
-Latest
-------
+0.7.1
+-----
+
+* Fix bug in `wcs.convert_data_to_pixel` where crpix[1] was used for both axes.
+* Fix some leftover instances of `GenericMap.units`
+
+0.7.0
+-----
 * Added `timeout` parameter in `sunpy.data.download_sample_data()`
 * Fixed `aiaprep` to return properly sized map.
 * Deprecation warnings fixed when using image coalignment.
