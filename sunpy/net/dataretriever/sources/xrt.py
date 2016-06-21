@@ -8,7 +8,6 @@ import datetime
 import urllib2
 import re
 
-
 from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
 from sunpy.time import TimeRange
