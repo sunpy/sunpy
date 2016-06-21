@@ -65,10 +65,15 @@ class KanzelhoheClient(GenericClient):
         #Checking if value is close enough to a wavelength value.
         #Converting from one unit to other introduces precision errors.
         try:
-            da = []
+            #The isclose function in numpy can only check two arrays if they
+            #are close to each other within some precision. Standalone values such
+            #as int, doubles etc can't be checked that way. In order to do that, we put the
+            #two indiviual values in two seperate arrays da and db and then apply
+            #isclose on both those arrays.
+            da = list()
             da.append(wave_float)
             for wave_nums in table.keys():
-                db = []
+                db = list()
                 db.append(wave_nums)
                 if np.isclose(da, db, 1e-10, 1e-10):
                     wave = wave_nums
@@ -84,13 +89,13 @@ class KanzelhoheClient(GenericClient):
             else:
                 suffix = "%Y/%Y%m%d/processed/kanz_{datatype1}_%Y%m%d_%H%M%S.fts.gz"
             url_pattern = prefix + suffix
-            crawler = Scraper(url_pattern, datatype = table[wave][0], datatype1 = table[wave][1])
+            crawler = Scraper(url_pattern, datatype=table[wave][0], datatype1=table[wave][1])
             if not timerange:
                 return []
             result = crawler.filelist(timerange)
             return result
         except:
-            print "Enter wavelength with proper values and units"
+            raise ValueError("Enter wavelength with proper values and units")
 
     def _makeimap(self):
         """
