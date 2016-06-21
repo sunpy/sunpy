@@ -31,11 +31,7 @@ env:
 
     matrix:
         - PYTHON_VERSION=2.7 SETUP_CMD='egg_info' 
-        - PYTHON_VERSION=3.4 SETUP_CMD='egg_info'
-        - PYTHON_VERSION=3.5 SETUP_CMD='egg_info'
         - PYTHON_VERSION=2.7 SETUP_CMD='test'
-        - PYTHON_VERSION=3.4 SETUP_CMD='test'
-        - PYTHON_VERSION=3.5 SETUP_CMD='test'
 
 matrix:
     include:
@@ -43,7 +39,7 @@ matrix:
            env: PYTHON_VERSION=2.7 SETUP_CMD='test'
 
          - os: linux
-           env: JOB="Astropy Dev" PYTHON_VERSION=3.5 SETUP_CMD='test' ASTROPY_VERSION='development'
+           env: JOB="Astropy Dev" PYTHON_VERSION=2.7 SETUP_CMD='test' ASTROPY_VERSION='development'
 
          - os: linux
            env: JOB="Numpy Prev" PYTHON_VERSION=2.7 SETUP_CMD='test' NUMPY_VERSION=$PREVIOUS_NUMPY
