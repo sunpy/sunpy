@@ -95,17 +95,17 @@ class GONGClient(GenericClient):
                 else:
                     try:
                         wave_float = kwargs['wavelength'].min.value
-                        da = []
+                        da = list()
                         da.append(wave_float)
                         for wave_nums in pattern_table.keys():
-                            db = []
+                            db = list()
                             db.append(wave_nums)
                             if np.isclose(da, db, 1e-10, 1e-10):
                                 wave = wave_nums
                                 break
                         patterns.append(pattern_table[wave])
-                    except NameError:
-                        print ("Enter correct wavelength range and units")
+                    except:
+                        raise NameError("Enter correct wavelength range and units")
         #All valid patterns to be downloaded are in the patterns list.
         instruments_to = list() #The instruments from which user wants to download
         if not instrument_in:
@@ -159,7 +159,7 @@ class GONGClient(GenericClient):
             try:
                 check = urllib2.urlopen(urls)
                 final_result.append(urls)
-            except:
+            except (urllib2.HTTPError, urllib2.URLError) as e:
                 pass
         return final_result
 
@@ -169,8 +169,6 @@ class GONGClient(GenericClient):
         """   
         self.map_['source'] = 'GONG'
         
-        
-    
     @classmethod
     def _can_handle_query(cls, *query):
         """
