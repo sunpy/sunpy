@@ -7,6 +7,7 @@ __email__ = "sudk1896@gmail.com"
 import datetime
 import urllib2
 from bs4 import BeautifulSoup
+
 from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
 from sunpy.time import TimeRange
@@ -61,14 +62,14 @@ class BBSOClient(GenericClient):
             raise ValueError('Earliest date for which BBSO data is available is {:%Y-%m-%d}'.format(START_DATE))
         prefix = 'http://www.bbso.njit.edu'
         suffix = '/pub/archive/%Y/%m/%d/bbso_halph_{level}_%Y%m%d_%H%M%S.fts'
-        suffix_gz = suffix + '.gz' #Downlaod compressed files as well, if available.
+        suffix_gz = suffix + '.gz' #Download compressed files as well, if available.
         total_days = (timerange.end - timerange.start).days + 1
         all_dates = timerange.split(total_days)
-        crawler = Scraper(suffix, level = level)
+        crawler = Scraper(suffix, level=level)
         crawler_gz = Scraper(suffix_gz, level = level) 
         result = list()
         for day in all_dates:
-            url_to_open = 'http://www.bbso.njit.edu/pub/archive/{date:%Y/%m/%d/}'.format(date = day.end)
+            url_to_open = 'http://www.bbso.njit.edu/pub/archive/{date:%Y/%m/%d/}'.format(date=day.end)
             html_page = urllib2.urlopen(url_to_open)
             soup = BeautifulSoup(html_page)
             for link in soup.findAll('a'):
