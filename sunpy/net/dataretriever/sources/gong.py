@@ -25,7 +25,8 @@ class GONGClient(GenericClient):
         time range for which data is to be downloaded.
         Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
     
-    Instrument: Arguments are any one from ['bb', 'ct', 'le', 'ml', 'td', 'ud','z']
+    Instrument: Arguments are any one from ['bigbear', 'cerrotelolo',
+                'learmonth', 'maunaloa', 'teide', 'udaipur','tucson']
 
     Physobs: Two arguments or none 'intensity' and 'los_magnetic_field'
 
