@@ -29,9 +29,9 @@ class VSMClient(GenericClient):
     
     Instrument: Fixed argument - 'vsm' ,case insensitive.
 
-    Wavelength: Any of 6302, 8542 or 10830 Angstrom units. Expects a
-                Wavelength object in Angstrom units.
-                e.g. 6302*u.AA etc.
+    Wavelength: Any of 6302, 8542 or 10830 Angstrom units or equivalent values in different units.
+                Expects a Wavelength object.
+                e.g. 6302*u.AA, 630.2*u.nm etc.
                 
     Physobs: Optional, includes 'LOS_MAGNETIC_FIELD', "VECTOR_MAGNETIC_FIELD'
              'EQUIVALENT_WIDTH'.
@@ -65,18 +65,23 @@ class VSMClient(GenericClient):
         url_pattern = 'http://gong2.nso.edu/pubkeep/{dtype}/%Y%m/k4{dtype}%y%m%d/k4{dtype}%y%m%dt%H%M%S{suffix}'
 
         wave_float = kwargs['wavelength'].min.value
-        
-        da = []
+
+        #The isclose function in numpy can only check two arrays if they
+        #are close to each other within some precision. Standalone values such
+        #as int, doubles etc can't be checked that way. In order to do that, we put the
+        #two indiviual values in two seperate arrays da and db and then apply
+        #isclose on both those arrays.
+        da = list()
         da.append(wave_float)
         for wave_nums in table_wave.keys():
-            db = []
+            db = list()
             db.append(wave_nums)
             if np.isclose(da, db, 1e-10, 1e-10):
                 wave = wave_nums
                 break
             
         if wave is None:
-            print ("Enter correct wavelength values and units")
+            raise ValueError("Enter correct wavelength values and units")
         
         def download_from_nso(dtype, suffix, timerange):
             tmp_pattern = 'k4{dtype}%y%m%dt%H%M%S{suffix}'
@@ -89,7 +94,7 @@ class VSMClient(GenericClient):
                     html = urllib2.urlopen(base_url.format(dtype=dtype, date=day.end))
                     soup = BeautifulSoup(html)
                     for link in soup.findAll("a"):
-                        crawler = Scraper(tmp_pattern, dtype = dtype, suffix = suffix)
+                        crawler = Scraper(tmp_pattern, dtype=dtype, suffix=suffix)
                         simple_pattern = '%y%m%d_%H%M%S'
                         url = str(link.get('href'))
                         if (crawler._URL_followsPattern(url)):
@@ -157,4 +162,3 @@ class VSMClient(GenericClient):
         if (chk_var == 2):
             return True
         return False
-        
