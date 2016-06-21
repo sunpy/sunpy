@@ -90,6 +90,12 @@ class GONGClient(GenericClient):
                 patterns.append(url_pattern_1)
             else:
                 #Differentiate on basis of wavelength
+                
+                #The isclose function in numpy can only check two arrays if they
+                #are close to each other within some precision. Standalone values such
+                #as int, doubles etc can't be checked that way. In order to do that, we put the
+                #two indiviual values in two seperate arrays da and db and then apply
+                #isclose on both those arrays.
                 if not wavelength_in:
                     patterns.append(url_pattern_1), patterns.append(url_pattern_2)
                 else:
