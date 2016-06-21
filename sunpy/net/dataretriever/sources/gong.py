@@ -252,7 +252,7 @@ class FARSIDEClient(GenericClient):
         for dt in all_days:
             times = [datetime.datetime(dt.start.year, dt.start.month, dt.start.day, 0, 0),
                      datetime.datetime(dt.start.year, dt.start.month, dt.start.day, 12, 0)]
-            [result.append(url_pattern.format(date = dt_)) for dt_ in times]
+            [result.append(url_pattern.format(date=dt_)) for dt_ in times]
         if not timerange:
             return []
         return result
