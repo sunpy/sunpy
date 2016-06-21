@@ -1,18 +1,19 @@
-from sunpy.coordinates import Helioprojective
+import numpy as np
 
 import astropy.units as u
 from astropy.tests.helper import quantity_allclose
 
-import numpy as np
+from sunpy.coordinates import Helioprojective
 
 
 def test_hpc_hpc():
+    # Use some unphysical values for solar parameters for testing
     rsun = 1*u.m
     D0 = 1*u.km
     L0 = 1*u.deg
 
     hpc_in = Helioprojective(0*u.arcsec, 0*u.arcsec, rsun=rsun, D0=D0)
-    hpc_out = Helioprojective(L0=1*u.deg, D0=D0, rsun=rsun)
+    hpc_out = Helioprojective(L0=L0, D0=D0, rsun=rsun)
 
     hpc_new = hpc_in.transform_to(hpc_out)
 
