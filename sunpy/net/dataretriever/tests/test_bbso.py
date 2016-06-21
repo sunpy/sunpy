@@ -27,10 +27,10 @@ def test_get_url_for_time_range(timerange, url_start, url_end, level):
 
 trange = Time('2015/12/30', '2015/12/31')
 def test_can_handle_query():
-    assert BClient._can_handle_query(trange, Instrument('bbso'), Level('fl')) is True
-    assert BClient._can_handle_query(trange, Instrument('bbso'), Level('fr')) is True
-    assert BClient._can_handle_query(trange, Instrument('bbso'), Level('mag')) is False
-    assert BClient._can_handle_query(trange, Level('mag')) is False
+    assert BClient._can_handle_query(trange, Instrument('bbso'), Level('fl'))
+    assert BClient._can_handle_query(trange, Instrument('bbso'), Level('fr'))
+    assert not BClient._can_handle_query(trange, Instrument('bbso'), Level('mag'))
+    assert not BClient._can_handle_query(trange, Level('mag'))
 
 @pytest.mark.online
 #This test downloads 2 fits files
