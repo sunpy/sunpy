@@ -45,8 +45,8 @@ def test_query():
     assert qr.time_range()[0] == '2007/06/13'
     assert qr.time_range()[1] == '2007/06/13'
 
-Downloads 2 cf files each of size 1.4MB
-Total size = 2.8MB
+##Downloads 2 files each of size 1.4MB
+##Total size = 2.8MB
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument, source",
 [(Time('2013/4/1', '2013/4/3'), Instrument("plastic"), Source("STEREO_A"))])

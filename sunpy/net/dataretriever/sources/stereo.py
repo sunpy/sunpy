@@ -33,7 +33,7 @@ class SECCHIClient(GenericClient):
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a    
     >>> results = Fido.search(a.Time('2007/3/2 17:00:00', '2007/3/3 17:15:00'), a.Instrument('secchi'),
-    a.Source('STEREO_A'), a.Detector('euvi'))
+        a.Source('STEREO_A'), a.Detector('euvi'))
     >>> print(results)
         [<Table length=4>
         Start Time           End Time      Source Instrument
@@ -55,11 +55,13 @@ class SECCHIClient(GenericClient):
         source = kwargs.get('source')
         table_ = {'STEREO_A':'ahead', 'STEREO_B':'behind'} 
         detector = regex.sub('', kwargs.get('detector')).lower() #default to euvi ?
-        table = { 'euvi':'euvi', 'hi1' : 'hi_1', 'hi2': 'hi_2', 'cor2':'cor2'}
+        table = { 'euvi':'euvi', 'hi1' : 'hi_1', 'hi2': 'hi_2', 'cor2':'cor2'} #table here just simplifies life.
+        #Would have to include 2 or 3 if statements to handle hi1, hi2 and the other two.
+        #Instead I just use a dictionary.
         prefix = 'http://stereo-ssc.nascom.nasa.gov/data/beacon/{source}/secchi/img/{det}/%Y%m%d/%Y%m%d_%H%M%S_'
         suffix_table = { 'euvi':'n7eu{char}.fts', 'cor2': 'd7c2{char}.fts', 'hi1':'s7h1{char}.fts', 'hi2':'s7h2{char}.fts'}
         url_pattern = prefix + suffix_table[detector]
-        crawler = Scraper(url_pattern, source = table_[source], det = table[detector], char = table_[source][0].upper())
+        crawler = Scraper(url_pattern, source=table_[source], det=table[detector], char=table_[source][0].upper())
         result = crawler.filelist(timerange)
         return result
 
@@ -120,7 +122,7 @@ class PLASTICClient(GenericClient):
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a    
     >>> results = Fido.search(a.Time('2007/3/2 17:00:00', '2007/3/4 17:15:00'),
-    a.Instrument('plastic'), a.Source('STEREO_A'))
+        a.Instrument('plastic'), a.Source('STEREO_A'))
     >>> print(results)
        [<Table length=2>
          Start Time           End Time      Source Instrument
@@ -146,16 +148,16 @@ class PLASTICClient(GenericClient):
             raise ValueError('Earliest date for which PLASTIC data is available is {:%Y-%m-%d}'.format(START_DATE))
         prefix = 'http://stereo-ssc.nascom.nasa.gov/data/beacon/{source}/plastic/'
         prefix_copy = prefix
-        if (source == 'STEREO_A'):
-            prefix += '%Y/%m/ST{char}_LB_PLASTIC_%Y%m%d_'
-            prefix_copy += '%Y/%m/ST{char}_LB_PLA_BROWSE_%Y%m%d_'
-        elif (source == 'STEREO_B'):
-            prefix += '%y/%m/ST{char}_LB_PLASTIC_%Y%m%d_'
-            prefix_copy +='%y/%m/ST{char}_LB_PLA_BROWSE_%Y%m%d_'
+        source_dict = {'STEREO_A':'%Y', 'STEREO_B':'%y'}
+        prefix += source_dict[source]
+        prefix_copy += source_dict[source]
+        prefix += '/%m/ST{char}_LB_PLASTIC_%Y%m%d_'
+        prefix_copy += '/%m/ST{char}_LB_PLA_BROWSE_%Y%m%d_'
+        
         suffix = 'V{0:02d}.cdf'
         suffix_copy = suffix
-        pattern = prefix.format(source = table_[source], char = table_[source][0].upper()) + suffix
-        pattern_copy = prefix_copy.format(source = table_[source], char = table_[source][0].upper()) + suffix
+        pattern = prefix.format(source=table_[source], char=table_[source][0].upper()) + suffix
+        pattern_copy = prefix_copy.format(source=table_[source], char=table_[source][0].upper()) + suffix
         patterns = list()
         patterns.append(pattern), patterns.append(pattern_copy)
         for pattern_ in patterns:
@@ -217,7 +219,7 @@ class IMPACTClient(GenericClient):
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a    
     >>> results = Fido.search(a.Time('2007/3/20 17:00:00', '2007/3/25 17:15:00'),
-    a.Instrument('impact'), a.Source('STEREO_A'))
+        a.Instrument('impact'), a.Source('STEREO_A'))
     [<Table length=5>
         Start Time           End Time      Source Instrument
            str19               str19         str5     str6   
@@ -242,7 +244,7 @@ class IMPACTClient(GenericClient):
         prefix = 'http://stereo-ssc.nascom.nasa.gov/data/beacon/{source}/'
         suffix = 'impact/%Y/%m/ST{char}_LB_IMPACT_%Y%m%d_V01.cdf'
         url_pattern = prefix + suffix
-        crawler = Scraper(url_pattern, source = table_[source], char = table_[source][0].upper())
+        crawler = Scraper(url_pattern, source=table_[source], char=table_[source][0].upper())
         result = crawler.filelist(timerange)
         return result
     def _makeimap(self):
@@ -298,7 +300,7 @@ class SWAVESClient(GenericClient):
     >>> from sunpy.net import Fido
     >>> from sunpy.net import attrs as a    
     >>> results = Fido.search(a.Time('2008/3/20 17:00:00', '2008/3/25 17:15:00'),
-    a.Instrument('swaves'), a.Source('STEREO_A'))
+        a.Instrument('swaves'), a.Source('STEREO_A'))
     >>> print(results)
     [<Table length=5>
      Start Time           End Time      Source Instrument
@@ -324,7 +326,7 @@ class SWAVESClient(GenericClient):
         prefix = 'http://stereo-ssc.nascom.nasa.gov/data/beacon/{source}/'
         suffix = 'swaves/%Y/%m/ST{char}_LB_SWAVES_%Y%m%d.idlsave'
         url_pattern = prefix + suffix
-        crawler = Scraper(url_pattern, source = table_[source], char = table_[source][0].upper())
+        crawler = Scraper(url_pattern, source=table_[source], char=table_[source][0].upper())
         result = crawler.filelist(timerange)
         return result
 
