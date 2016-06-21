@@ -56,7 +56,7 @@ class SWEPAMClient(GenericClient):
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
         total_days = (timerange.end - timerange.start).days + 1
         all_days = timerange.split(total_days)
-        result = [base_url + '{date:%Y%m%d}_ace_swepam_1m.txt'.format(date = day.end) for day in all_days]
+        result = [base_url + '{date:%Y%m%d}_ace_swepam_1m.txt'.format(date=day.end) for day in all_days]
         if ((datetime.datetime.now() - timerange.end).days == 0):
             url = base_url + 'ace_swepam_1m.txt'
             result.append(url)
@@ -95,7 +95,7 @@ class SWEPAMClient(GenericClient):
 
 class EPAMClient(GenericClient):
     """
-    Returns a list of URLS to ACE SWEPAM files corresponding to value of input timerange.
+    Returns a list of URLS to ACE EPAM files corresponding to value of input timerange.
     URL source: `ftp://ftp.swpc.noaa.gov/pub/lists/ace/`.
     The earliest date available is from 29-Jul-2015
     Parameters
@@ -133,7 +133,7 @@ class EPAMClient(GenericClient):
             raise ValueError("The earliest date for which EPAM data is available is {:%Y-%m-%d}".format(START_DATE))
         total_days = (timerange.end - timerange.start).days + 1
         all_days = timerange.split(total_days)
-        result = [base_url + '{date:%Y%m%d}_ace_epam_5m.txt'.format(date = day.end) for day in all_days]
+        result = [base_url + '{date:%Y%m%d}_ace_epam_5m.txt'.format(date=day.end) for day in all_days]
         if ((datetime.datetime.now() - timerange.end).days == 0):
             url = base_url + 'ace_epam_5m.txt'
             result.append(url)
@@ -171,7 +171,7 @@ class EPAMClient(GenericClient):
 
 class MAGClient(GenericClient):
     """
-    Returns a list of URLS to ACE SWEPAM files corresponding to value of input timerange.
+    Returns a list of URLS to ACE MAG files corresponding to value of input timerange.
     URL source: `ftp://ftp.swpc.noaa.gov/pub/lists/ace/`.
     The earliest date available is from 29-Jul-2015
     Parameters
@@ -212,7 +212,7 @@ class MAGClient(GenericClient):
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
         total_days = (timerange.end - timerange.start).days + 1
         all_days = timerange.split(total_days)
-        result = [base_url +  '{date:%Y%m%d}_ace_mag_1m.txt'.format(date = day.end) for day in all_days]
+        result = [base_url +  '{date:%Y%m%d}_ace_mag_1m.txt'.format(date=day.end) for day in all_days]
         if ((datetime.datetime.now() - timerange.end).days == 0):
             url = base_url + 'ace_mag_1m.txt'
             result.append(url)
@@ -249,7 +249,7 @@ class MAGClient(GenericClient):
 
 class SISClient(GenericClient):
     """
-    Returns a list of URLS to ACE SWEPAM files corresponding to value of input timerange.
+    Returns a list of URLS to ACE SIS files corresponding to value of input timerange.
     URL source: `ftp://ftp.swpc.noaa.gov/pub/lists/ace/`.
     The earliest date available is from 29-Jul-2015
     Parameters
@@ -290,9 +290,9 @@ class SISClient(GenericClient):
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/lists/ace/'
         total_days = (timerange.end - timerange.start).days + 1
         all_days = timerange.split(total_days)
-        result = [base_url +  '{date:%Y%m%d}_ace_sis_5m.txt'.format(date = day.end) for day in all_days]
+        result = [base_url +  '{date:%Y%m%d}_ace_sis_5m.txt'.format(date=day.end) for day in all_days]
         for day in all_days:
-            url = base_url + '{date:%Y%m%d}_ace_sis_5m.txt'.format(date = day.end)
+            url = base_url + '{date:%Y%m%d}_ace_sis_5m.txt'.format(date=day.end)
             result.append(url)
         if ((datetime.datetime.now() - timerange.end).days == 0):
             url = base_url + 'ace_sis_5m.txt'
