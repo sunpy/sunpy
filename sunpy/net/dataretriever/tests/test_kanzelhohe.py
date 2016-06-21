@@ -27,14 +27,10 @@ def test_get_url_for_timerange(timerange, wavelength, url_start, url_end):
 
 def test_can_handle_query():
     time = Time('2015/12/30 00:00:00','2015/12/31 00:05:00')
-    ans1 = kanzelhohe.KanzelhoheClient._can_handle_query(time, Instrument('kanzelhohe'), Wavelength(6563*u.AA))
-    assert ans1 is True
-    ans2 = kanzelhohe.KanzelhoheClient._can_handle_query(time, Instrument('swap'))
-    assert ans2 is False
-    ans3 = kanzelhohe.KanzelhoheClient._can_handle_query(time)
-    assert ans3 is False
-    ans4 = kanzelhohe.KanzelhoheClient._can_handle_query(time, Instrument('kanzelhohe'), Wavelength(32768*u.AA))
-    assert ans4 is True
+    assert kanzelhohe.KanzelhoheClient._can_handle_query(time, Instrument('kanzelhohe'), Wavelength(6563*u.AA))
+    assert not kanzelhohe.KanzelhoheClient._can_handle_query(time, Instrument('swap'))
+    assert not kanzelhohe.KanzelhoheClient._can_handle_query(time)
+    assert kanzelhohe.KanzelhoheClient._can_handle_query(time, Instrument('kanzelhohe'), Wavelength(32768*u.AA))
 
 @pytest.mark.online
 def test_query():
