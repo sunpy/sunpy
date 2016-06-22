@@ -184,10 +184,12 @@ class LYRALightCurve(GenericTimeSeries):
         # Return the header and the data
         data = pandas.DataFrame(table, index=times)
         data.sort_index(inplace=True)
-        return OrderedDict(hdulist[0].header), data
+        return data, OrderedDict(hdulist[0].header)
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to a LYRA LightCurve timeseries"""
+        print('in is_datasource_for Lyra lightcurve')
+        print(kwargs)
         #return header.get('instrume', '').startswith('HMI')
         return kwargs.get('source', '').startswith('LYRA')

@@ -175,8 +175,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         """
 
         data_header_pairs = list()
-        already_maps = list()
+        already_timeseries = list()
         filepaths = list()
+        
+        # Take source kwarg if defined
+        source = kwargs.get('source', None)
 
         # Account for nested lists of items
         args = expand_list(args)
@@ -214,8 +217,13 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 print('in file path check, looking for:')
                 print(path)
                 print('\n')
-
-                temp = self._read_file(path, **kwargs)
+                
+                # Only read using generic _read_file() if no source defined.
+                if not source:
+                    temp = self._read_file(path, **kwargs)
+                else:
+                    temp = ( False, path )
+                
                 print('created temp file:')
                 print(temp)
                 print(type(temp))
@@ -250,9 +258,9 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     data_header_pairs += self._read_file(afile, **kwargs)
 
             #### Potentially unecessary, as there won't be a time series cube.
-            # Already a Map
-            ####elif isinstance(arg, GenericMap):
-            ####    already_maps.append(arg)
+            # Already a TimeSeries
+            elif isinstance(arg, GenericTimeSeries):
+                already_timeseries.append(arg)
 
             # A URL
             elif (isinstance(arg,six.string_types) and
@@ -277,12 +285,12 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # order as the input, currently they are not.
         print('\ndata_header_pairs:')
         print(data_header_pairs)
-        print('\nalready_maps:')
-        print(already_maps)
+        print('\nalready_timeseries:')
+        print(already_timeseries)
         print('\nfilepaths:')
         print(filepaths)
         print('\n')
-        return data_header_pairs, already_maps, filepaths
+        return data_header_pairs, already_timeseries, filepaths
 
 
     def __call__(self, *args, **kwargs):
@@ -317,14 +325,17 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         cube = kwargs.pop('cube', False)
         silence_errors = kwargs.pop('silence_errors', False)
 
-        data_header_pairs, already_maps, filepaths = self._parse_args(*args, **kwargs)
+        data_header_pairs, already_timeseries, filepaths = self._parse_args(*args, **kwargs)
 
         new_timeseries = list()
-
+        
+        print('Now to run though the list of filepaths:')
         # The filepaths for unreadable files
         for filepath in filepaths:
+            print('filepath:' + filepath)
             try:
                 new_ts = self._check_registered_widgets(filepath=filepath, **kwargs)
+                print('file added.')
             except (NoMatchError, MultipleMatchError, ValidationFunctionError):
                 if not silence_errors:
                     raise
@@ -333,9 +344,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
             new_timeseries.append(new_ts)
 
+        print('Now to run though the list of data header pairs:')        
         # Loop over each registered type and check to see if WidgetType
         # matches the arguments.  If it does, use that type.
         for pair in data_header_pairs:
+            print('pair: ' + str(pair))
             data, header = pair
             meta = MapMeta(header)
 
@@ -349,7 +362,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
             new_timeseries.append(new_ts)
 
-        new_timeseries += already_maps
+        new_timeseries += already_timeseries
 
         """#### Removed as we don't have/need a composite TimeSeries
         # If the list is meant to be a composite map, instantiate one
@@ -362,18 +375,20 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         return new_timeseries
 
     def _check_registered_widgets(self, **kwargs):
-
+        print('\nin _check_registered_widgets()\n')
         candidate_widget_types = list()
-
+        
+        print('For the keys in the registry:')
         for key in self.registry:
-
+            print('key: ' + str(key))
             # Call the registered validation function for each registered class
             #if self.registry[key](data, meta, **kwargs):
             if self.registry[key](**kwargs):
                 candidate_widget_types.append(key)
 
         n_matches = len(candidate_widget_types)
-
+        print('\nn_matches: ' + str(n_matches))
+        
         if n_matches == 0:
             if self.default_widget_type is None:
                 raise NoMatchError("No types match specified arguments and no default is set.")
@@ -384,6 +399,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         # Only one is found
         WidgetType = candidate_widget_types[0]
+        print('\nWidgetType: ' + str(WidgetType)) 
 
         # Dealing with the fact that timeseries filetypes are less consistent
         # (then maps), we use a _parse_file() method embedded into each

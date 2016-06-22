@@ -129,10 +129,12 @@ class NoRHLightCurve(GenericTimeSeries):
         for s in sec_array:
             norh_time.append(obs_start_time + datetime.timedelta(0,s))
 
-        return header, pandas.DataFrame(data, index=norh_time)
+        return pandas.DataFrame(data, index=norh_time), header
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
+        print('in is_datasource_for NoRH')
+        print(kwargs)
         #"""Determines if header corresponds to an HMI image"""
         #return header.get('instrume', '').startswith('HMI')
         return kwargs.get('source', '').startswith('NoRH')

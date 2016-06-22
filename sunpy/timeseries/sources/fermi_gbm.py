@@ -160,11 +160,13 @@ class GBMSummaryLightCurve(GenericTimeSeries):
             gbm_times.append(fermi.met_to_utc(t))
         column_labels=['4-15 keV','15-25 keV','25-50 keV','50-100 keV','100-300 keV',
                        '300-800 keV','800-2000 keV']
-        return header, pandas.DataFrame(summary_counts, columns=column_labels, index=gbm_times)
+        return pandas.DataFrame(summary_counts, columns=column_labels, index=gbm_times), header
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to a GBM summary lightcurve timeseries"""
+        print('in is_datasource_for GBMSummary')
+        print(kwargs)
         #return header.get('instrume', '').startswith('HMI')
         return kwargs.get('source', '').startswith('GBMSummary')
 
