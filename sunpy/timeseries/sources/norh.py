@@ -90,26 +90,6 @@ class NoRHLightCurve(GenericTimeSeries):
         plt.show()
 
     @classmethod
-    def _get_url_for_date(cls, date, **kwargs):
-        """
-        This method retrieves the url for NoRH correlation data for the given
-        date.
-        """
-        # default urllib password anonymous@ is not accepted by the NoRH FTP
-        # server. include an accepted password in base url
-        baseurl = 'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/'
-        # date is a datetime object
-        if 'wavelength' in kwargs:
-            if kwargs['wavelength'] == '34':
-                final_url = urllib.parse.urljoin(
-                    baseurl, date.strftime('%Y/%m/tcz%y%m%d'))
-        else:
-            final_url = urllib.parse.urljoin(
-                baseurl, date.strftime('%Y/%m/tca%y%m%d'))
-
-        return final_url
-
-    @classmethod
     def _parse_file(cls, filepath):
         """This method parses NoRH tca and tcz correlation FITS files."""
         hdulist = fits.open(filepath)

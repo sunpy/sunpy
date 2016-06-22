@@ -106,16 +106,6 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         return figure
 
     @classmethod
-    def _get_default_uri(cls):
-        """Return the url to download indices"""
-        return "ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt"
-
-    @staticmethod
-    def _get_url_for_date_range(*args, **kwargs):
-        """Returns a URL for the specified date."""
-        return NOAAIndicesTimeSeries._get_default_uri()
-
-    @classmethod
     def _parse_file(cls, filepath):
         """Parses an NOAA indices csv file"""
         header = []
@@ -213,16 +203,6 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
 
         figure.show()
         return figure
-
-    @classmethod
-    def _get_default_uri(cls):
-        """Return the url to download indices."""
-        return "http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt"
-
-    @staticmethod
-    def _get_url_for_date_range(*args, **kwargs):
-        """Returns a URL for the specified date."""
-        return NOAAPredictIndicesTimeSeries._get_default_uri()
 
     @staticmethod
     def _parse_file(filepath):

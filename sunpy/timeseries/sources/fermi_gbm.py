@@ -90,50 +90,6 @@ class GBMSummaryLightCurve(GenericTimeSeries):
 
         plt.show()
 
-    @classmethod
-    def _get_url_for_date(cls, date, **kwargs):
-        """Returns the url for Fermi/GBM data for the given date."""
-        baseurl = 'http://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
-        # date is a datetime object
-        if 'detector' in kwargs:
-            det = _parse_detector(kwargs['detector'])
-            final_url = urllib.parse.urljoin(
-                baseurl, date.strftime('%Y/%m/%d/' + 'current/' +
-                                       'glg_cspec_' + det + '_%y%m%d_v00.pha'))
-        else:
-            # if user doesn't specify a detector, find the one pointing
-            # closest to the Sun.'
-            # OR: maybe user should have to specify detector or fail.
-            det = cls._get_closest_detector_for_date(date)
-            print('No detector specified. Detector with smallest mean angle '
-                  'to Sun is ' + str(det))
-            print('Using Detector ' + str(det))
-            print('For Fermi detector pointing information, use tools in '
-                  'sunpy/instr/fermi')
-            final_url = urllib.parse.urljoin(
-                baseurl, date.strftime('%Y/%m/%d/' + 'current/' +
-                                       'glg_cspec_' + det + '_%y%m%d_v00.pha'))
-
-        return final_url
-
-    @classmethod
-    def _get_closest_detector_for_date(cls, date, **kwargs):
-        """Returns the GBM detector with the smallest mean angle to the Sun
-        for the given date"""
-        pointing_file = fermi.download_weekly_pointing_file(date)
-        det_angles = fermi.get_detector_sun_angles_for_date(date, pointing_file)
-        det_angle_means = []
-        for n in det_angles.keys():
-            if not n == 'time':
-                det_angle_values = []
-                for angle in det_angles[n]:
-                    det_angle_values.append(angle.value)
-
-                det_angle_means.append(np.mean(det_angle_values))
-
-        best_det = 'n' +str(np.argmin(det_angle_means))
-        return best_det
-
 
     @classmethod
     def _parse_file(cls, filepath):

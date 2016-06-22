@@ -104,32 +104,6 @@ class RHESSISummaryLightCurve(GenericTimeSeries):
         figure.show()
 
     @classmethod
-    def _get_default_uri(cls):
-        """Retrieves the latest RHESSI data."""
-        today = datetime.datetime.today()
-        days_back = 3
-        time_range = TimeRange(today - datetime.timedelta(days=days_back),
-                               today - datetime.timedelta(days=days_back - 1))
-        return cls._get_url_for_date_range(time_range)
-
-    @staticmethod
-    def _get_url_for_date_range(*args, **kwargs):
-        """Returns a URL to the RHESSI data for the specified date range.
-
-        Parameters
-        ----------
-        args : `~sunpy.time.TimeRange`, `datetime.datetime, str
-            Date range should be specified using a TimeRange, or start
-            and end dates at datetime instances or date strings.
-        """
-        if len(args) == 1 and isinstance(args[0], TimeRange):
-            time_range = args[0]
-        elif len(args) == 2:
-            time_range = TimeRange(parse_time(args[0]), parse_time(args[1]))
-        url = rhessi.get_obssum_filename(time_range)
-        return url
-
-    @classmethod
     def _parse_file(cls, filepath):
         """Parses a RHESSI FITS file"""
         header, d = rhessi.parse_obssumm_file(filepath)
