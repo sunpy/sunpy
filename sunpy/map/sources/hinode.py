@@ -68,7 +68,6 @@ class XRTMap(GenericMap):
         self.meta['telescop'] = "Hinode"
         self.meta['wavelnth'] = np.nan
         self.meta['waveunit'] = 'keV'
-        self._nickname = "XRT"
         self.plot_settings['cmap'] = cm.get_cmap(name='hinodexrt')
 
     @property
