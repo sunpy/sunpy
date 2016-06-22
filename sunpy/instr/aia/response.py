@@ -64,40 +64,41 @@ class Response():
 
 
     example:
-    from sunpy.instr.aia import aia                          #Q) redundant!?
-    effarea = aia.response.aia_inst_genx_to_dict(path_to_file)
+    from sunpy.instr.aia import Response
+    Response.aia_inst_genx_to_dataframe(path_to_file)
 
     Notes:
-    Currently the instr directory contains the file response.py (previously aiaprep.py - I think?)
+    Currently the instr directory contains the file aia.py (previously aiaprep.py - I think?)
     This branch creates instr/aia directory and will have both this program response.py and aiaprep.py
 
     Feedback/ Thoughts are always welcome! -Thanks!
     """
 
-    def __init__(self, elecperev=0.0, wave=np.array, elecperdn=np.array, geoarea=0.0, ent_filter=np.array,
+    def __init__(self,  elecperev=0.0, wave=np.array, elecperdn=np.array, geoarea=0.0, ent_filter=np.array,
                  fp_filter=np.array, primary=np.array, secondary=np.array, ccd=np.array, contam=np.array,
                  cross_area=np.array, *args, **kwargs):
         # no keywords for now. emissivity, temperature, density possible later
 
-        # parameter lists
+        # parameter list
         self.properties = ['wave', 'effarea', 'units', 'geoarea', 'scale', 'platescale',
                            'numfilters', 'wavemin', 'wavestep', 'wavenumsteps', 'wavelog',
                            'filtersincludemesh', 'meshtrans', 'usecontam', 'contamthick',
                            'usephottoelec', 'elecperev', 'usephottodn', 'elecperdn', 'useerror',
                            'fp_filter', 'ent_filter', 'primary', 'secondary', 'ccd', 'contam',
                            'cross_area']
+
+        # wavelength center list
         # TODO: want 6 EUV channels and 2 UV channels --- needs updated
-        self.wavelength_centers = ['94', '131', '171', '193', '211', '304', '335']
+        self.wavelength_centers = [94, 131, 171, 193, 211, 304, 335]
 
-        self.dataframe = pd.DataFrame()
-
+        self.dataframe = pd.DataFrame(index = self.properties)
 
 
         # Notes: I'm trying to define these as self.properties  as something so I can define them in the definition that reads the .genx file
         #          I saw that def __repr__(self): can be used to define self.things --- need to ask about the best way to do this
         # TODO: research *args **kwargs
 
-        # parameters to be defined from instrument file
+        # parameters to be defined from self.dataframe..  implement in get_properties function
         # self.elecperev = 0.0
         # self.wave = np.array
         # self.elecperdn = 0.0
@@ -120,55 +121,73 @@ class Response():
         ----------
         path_to_file : string, the path location that leads to ssw_aia_response_data/aia_V6_all_fullinst.
 
+        :param save: bool, if True, will save a dataframe containing all of the extracted instrument data to
+
         Returns
         -------
-        self.data_dictionary: dictionary, the keys are the wavelength centers for each channel and the values are dictionaries containing
-        key/value pairs of the properties and values from the aia_inst_genx_.
+        :returns self.dataframe: dataframe, stores the dictionary for easy access. Each column lists the channel information and each row is a different peroperty from aia_inst_genx.
 
-        self.dataframe: dataframe, stores the dictionary for easy access. Each column lists the channel information and each row is a different peroperty from aia_inst_genx.
-
-        output file: 'channel_properties.csv: dataframe with wavelength centers for each channel is a column and listed in the column are the properties from the is returned where it has keys of the properties of the channel
+        :returns 'channel_properties.csv', dataframe with wavelength centers for each channel is a column and listed in the column are the properties from the is returned where it has keys of the properties of the channel
 
         Notes:
-        Np.recarray store information with shape(1,0) and are quite nested.
+        np.recarray store information with shape(1,0) and are quite nested.
 
         """
-
-        data_dictionary = {}
 
         # access np.recarray from .genx file
         ssw_array = readsav(path_to_file)
         data = ssw_array['data']
 
-        # obtain instrument information for each channel region
-        for wavelength in self.wavelength_centers:
-            wave_dictionary = {}
-            # pick out instrument files to look into
-            for name in data.dtype.names:
-                # selects instrument files inside np.recarray, eg.(A94_THICK_FULL or A94_FULL or A94_THICk_FILE)
-                if name.startswith('A') and name.endswith('THICK_FULL') and wavelength in name:
-                    key = wavelength
+        # store in dataframe
+        df = self.dataframe
 
-                    # store information from those files in dataframe
-                    # TODO: refactor to get rid of so many four loops
-                    for value in data[name]:
-                        for prop in self.properties:
-                            wave_dictionary[prop] = [value[prop][0]]
-            # store in dictionary
-            data_dictionary[wavelength] = wave_dictionary
+        # pick out instrument files inside np.recarray
+        for name in data.dtype.names:
 
-        # store in dataframe,     options!
-        df = pd.DataFrame.from_dict(self.data_dictionary)
+            # eg.(A94_THICK_FULL or A94_FULL or A94_THICK_FILE)
+            # TODO: Fix to read in more than just this file to get all desired channels
+            if name.startswith('A') and name.endswith('THICK_FULL'):
+
+                # target number in filename that matches wavelength_center
+                start = name.find('A')
+                end = name.find('_T')
+                wavelength = name[start+1:end]
+
+                # match the properties in the rec.array to desired properties
+                variables = set(data[name][0].dtype.fields.keys()) & set(self.properties)
+
+                # then iterate through the properties to fill a dataframe with rec.array information
+                for property in variables:
+                    try:
+                        df.loc[property,wavelength] = data[name][0][property][0]
+
+                    # contam and crossarea are sequences so these don't have to be unpacked as much
+                    except ValueError:
+                        df.loc[property,wavelength] = data[name][0][property]
+
+        assert len(df) != 0
         self.dataframe = df
+
         if save:
             #  save to .csv outfile
             df.to_csv('channel_properties.csv')
             print('saved to channel_properties.csv')
 
-        return self.dataframe
 
 
 
+    def get_properties_per_channel(self, wavelength_center = 94):
+        """
+
+        :param wavelength_center:
+        :return:
+        """
+        assert wavelength_center in self.wavelength_centers
+
+        print('start')
+        # print(self.dataframe[wavelength_center])
+        # for property, values in self.dataframe[wavelength_center].iteritems():
+        #     print(property, values)
 
     def effective_area(self):
         """
@@ -190,6 +209,7 @@ class Response():
         effective_area: dictionary or array
 
         """
+        # TODO: implement effective area function
 
         if type(channel) == type:
             channel = 'A' + str(channel)
@@ -251,6 +271,7 @@ class Response():
         :return: float, array describing the response per wavelength of effective area (wavelength response)
 
         """
+        # TODO: implement response function and plot!
         pass
 
 
