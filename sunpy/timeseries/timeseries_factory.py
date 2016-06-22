@@ -261,7 +261,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             # Already a TimeSeries
             elif isinstance(arg, GenericTimeSeries):
                 already_timeseries.append(arg)
-
+            
             # A URL
             elif (isinstance(arg,six.string_types) and
                   _is_url(arg)):

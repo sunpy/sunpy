@@ -127,6 +127,7 @@ class GOESLightCurve(GenericTimeSeries):
             url_does_exist = net.url_exists(cls._get_url_for_date_range(time_range))
         return cls._get_url_for_date_range(time_range)
 
+    # ToDo: is this part of the DL pipeline? If so delete.
     @classmethod
     def _get_goes_sat_num(self, start, end):
         """Parses the query time to determine which GOES satellite to use."""
@@ -159,43 +160,6 @@ class GOESLightCurve(GenericTimeSeries):
             raise Exception('No operational GOES satellites within time range')
         else:
             return sat_list
-
-    @staticmethod
-    def _get_url_for_date_range(*args):
-        """Returns a URL to the GOES data for the specified date.
-
-        Parameters
-        ----------
-        args : `~sunpy.time.TimeRange`, `datetime.datetime`, str
-            Date range should be specified using a TimeRange, or start
-            and end dates at datetime instances or date strings.
-        satellite_number : int
-            GOES satellite number (default = 15)
-        data_type : str
-            Data type to return for the particular GOES satellite. Supported
-            types depend on the satellite number specified. (default = xrs_2s)
-        """
-        # TimeRange
-        if len(args) == 1 and isinstance(args[0], TimeRange):
-            start = args[0].start
-            end = args[0].end
-        elif len(args) == 2:
-            start = parse_time(args[0])
-            end = parse_time(args[1])
-        if end < start:
-            raise ValueError('start time > end time')
-
-        # find out which satellite and datatype to query from the query times
-        sat_num = GOESLightCurve._get_goes_sat_num(start, end)
-        base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
-
-        if start < parse_time('1999/01/15'):
-            url = base_url + "{date:%Y}/go{sat:02d}{date:%y%m%d}.fits".format(
-                date=start, sat=sat_num[0])
-        else:
-            url = base_url + "{date:%Y}/go{sat:02d}{date:%Y%m%d}.fits".format(
-                date=start, sat=sat_num[0])
-        return url
 
     @classmethod
     def _parse_file(cls, filepath):
