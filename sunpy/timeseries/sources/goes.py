@@ -239,5 +239,7 @@ class GOESLightCurve(GenericTimeSeries):
     @classmethod
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to a GOES lightcurve timeseries"""
+        print('Goes source:\n')
+        print(kwargs)
         #return header.get('instrume', '').startswith('HMI')
         return kwargs.get('source', '').startswith('GOES')

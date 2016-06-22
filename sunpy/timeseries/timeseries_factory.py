@@ -109,14 +109,27 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # File gets read here.  This needs to be generic enough to seamlessly
         #call a fits file or a jpeg2k file, etc
         try:
+            print('About to attempt to read in the a file generically.')
             pairs = read_file(fname, **kwargs)
+            print('Returned pairs:')
+            print('len(pairs): ' + str(len(pairs)))
+            print('len(pairs[0]): ' + str(len(pairs[0])))
+            print('\n')
 
             new_pairs = []
+            print('Going into loop for each pair:')
             for pair in pairs:
+                print('This is a pair in the loop.')
+                print('len(pair): ' + str(len(pair)))
                 filedata, filemeta = pair
+                #print('len(filedata): ' + str(len(filedata)))
+                #print('np.shape(filedata): ' + str(np.shape(filedata)))
+                #print('len(np.shape(filedata): ' + str(len(np.shape(filedata))))
                 assert isinstance(filemeta, FileHeader)
-                #This tests that the data is more than 1D
-                if len(np.shape(filedata)) > 1:
+                # ToDo Validate data before adding it.
+                #if len(np.shape(filedata)) > 1:
+                if True:
+                    print('The if conditional')
                     data = filedata
                     meta = MapMeta(filemeta)
                     new_pairs.append((data, meta))
@@ -167,6 +180,9 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         # Account for nested lists of items
         args = expand_list(args)
+        print('args:')
+        print(args)
+        print('\n')
 
         # For each of the arguments, handle each of the cases
         i = 0
@@ -191,17 +207,30 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 data_header_pairs.append(pair)
                 i += 1 # an extra increment to account for the data-header pairing
 
-            # File name
+            # Filepath
             elif (isinstance(arg,six.string_types) and
                   os.path.isfile(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
+                print('in file path check, looking for:')
+                print(path)
+                print('\n')
 
                 temp = self._read_file(path, **kwargs)
+                print('created temp file:')
+                print(temp)
+                print(type(temp))
+                print('\n')
                 # If the file was sucessfully read in:
                 if temp[0]:
+                    print('File sucessfully read in, it should be returned as pairs:')
                     pairs = temp[1]
+                    print(pairs)
+                    print('\n')
                     data_header_pairs += pairs
                 else:
+                    print('File unsucessfully read in, it should be returned as a filepath.')
+                    print('Filepath should be: ' + temp[1])
+                    print('\n')
                     # Unsucessfully read files are listed to be read by the
                     # source instrument specific file_paser().
                     filepaths.append(temp[1])
@@ -246,6 +275,13 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         #TODO:
         # In the end, if there are already maps it should be put in the same
         # order as the input, currently they are not.
+        print('\ndata_header_pairs:')
+        print(data_header_pairs)
+        print('\nalready_maps:')
+        print(already_maps)
+        print('\nfilepaths:')
+        print(filepaths)
+        print('\n')
         return data_header_pairs, already_maps, filepaths
 
 
