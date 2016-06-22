@@ -60,6 +60,10 @@ matrix:
          - os: linux
            env: JOB="Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
 
+         - os: linux
+           env: JOB="Numpy Dev" PYTHON_VERSION=3.5 SETUP_CMD='test'
+                ASTROPY_VERSION='stable' NUMPY_VERSION='dev'
+
     # allow_failures has to repeat the environment from the matrix above to mark it as such
     allow_failures:
       - env: JOB="Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
