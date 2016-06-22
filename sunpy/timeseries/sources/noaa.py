@@ -133,11 +133,13 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
             data = data.set_index('time')
             data = data.drop('mm',1)
             data = data.drop('yyyy',1)
-            return {'comments': header}, data
+            return data, {'comments': header}
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to an NOAA indices timeseries"""
+        print('in is_datasource_for NOAAIndices')
+        print(kwargs)
         #return header.get('instrume', '').startswith('HMI')
         return kwargs.get('source', '').startswith('NOAAIndices')
 
@@ -240,10 +242,12 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
             data = data.set_index('time')
             data = data.drop('mm',1)
             data = data.drop('yyyy',1)
-            return {'comments': header}, data
+            return data, {'comments': header}
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to an NOAA predict indices timeseries"""
+        print('in is_datasource_for NOAAPredictIndices')
+        print(kwargs)
         #return header.get('instrume', '').startswith('HMI')
         return kwargs.get('source', '').startswith('NOAAPredictIndices')

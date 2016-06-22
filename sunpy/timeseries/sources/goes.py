@@ -234,12 +234,12 @@ class GOESLightCurve(GenericTimeSeries):
 
         data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb}, index=times)
         data.sort_index(inplace=True)
-        return header, data
+        return data, header
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to a GOES lightcurve timeseries"""
-        print('Goes source:\n')
+        print('in is_datasource_for GOES')
         print(kwargs)
         #return header.get('instrume', '').startswith('HMI')
         return kwargs.get('source', '').startswith('GOES')

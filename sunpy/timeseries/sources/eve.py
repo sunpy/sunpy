@@ -122,6 +122,7 @@ class EVELightCurve(GenericTimeSeries):
     @classmethod
     def _parse_file(cls, filepath):
         """Parses an EVE CSV file."""
+        print('\nin _parse_file()')
         cls._filename = basename(filepath)
         with open(filepath, 'rb') as fp:
             # Determine type of EVE CSV file and parse
@@ -130,17 +131,21 @@ class EVELightCurve(GenericTimeSeries):
 
             if line1.startswith("Date".encode('ascii')):
                 return cls._parse_average_csv(fp)
+                print('Out of _parse_average_csv()\n')
             elif line1.startswith(";".encode('ascii')):
                 return cls._parse_level_0cs(fp)
+                print('Out of _parse_level_0cs()\n')
 
     @staticmethod
     def _parse_average_csv(fp):
         """Parses an EVE Averages file."""
+        print('\nin _parse_average_csv()')
         return "", read_csv(fp, sep=",", index_col=0, parse_dates=True)
 
     @staticmethod
     def _parse_level_0cs(fp):
         """Parses and EVE Level 0CS file."""
+        print('\nstart _parse_level_0cs()')
         is_missing_data = False      #boolean to check for missing data
         missing_data_val = numpy.nan
         header = []
@@ -190,14 +195,21 @@ class EVELightCurve(GenericTimeSeries):
         parser = lambda x: datetime(year, month, day, int(x[0:2]), int(x[2:4]))
 
         data = read_csv(fp, sep="\s*".encode('ascii'), names=fields, index_col=0, date_parser=parser, header=None, engine='python')
+        print('type(data): ' + str(type(data)))
+        #print('data: ' + str(data))
         if is_missing_data :   #If missing data specified in header
             data[data == float(missing_data_val)] = numpy.nan
+            
+        print('type(data): ' + str(type(data)))
+        #print('data: ' + str(data))
 
         # data.columns = fields
-        return meta, data
+        print('finish _parse_level_0cs()')
+        return data, meta
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
+        print('in is_datasource_for EVE lightcurve')
         print(kwargs)
         #"""Determines if header corresponds to an HMI image"""
         #return header.get('instrume', '').startswith('HMI')

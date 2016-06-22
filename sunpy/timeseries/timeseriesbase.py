@@ -105,14 +105,14 @@ class GenericTimeSeries:
     """
 
     def __init__(self, data, meta=None, units=None, **kwargs):
-        self.data = pandas.DataFrame(data)
-        if meta == '' or meta is None:
+        self.data = data#pandas.DataFrame(data)
+        if meta is None:
             self.meta = OrderedDict()
             self.meta.update({'name':None})
         else:
             self.meta = OrderedDict(meta)
 
-        if units == '' or units is None:
+        if units is None:
             self.units = {}
         else:
             self.units = units
@@ -633,6 +633,9 @@ class GenericTimeSeries:
         warnings.simplefilter('always', Warning)
 
         # For all columns not present in the units dictionary.
+        print('type(self.data): ' + str(type(self.data)))
+        print('self.data.columns.tolist(): ' + str(self.data.columns.tolist()))
+        print('set(self.units.keys()): ' + str(set(self.units.keys())))
         for column in set(self.data.columns.tolist()) - set(self.units.keys()):
             self.units[column] = u.Quantity(1.0)
             warnings.warn("Unknown units for \""+str(column)+"\"", Warning)
@@ -834,14 +837,16 @@ if __name__ == "__main__":
     """Code for testing
     import sunpy.data.sample
     import sunpy.timeseries
-    ts_eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_LIGHTCURVE, source='EVE')
-    ts_gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_LIGHTCURVE, source='GBMSummary')
-    ts_goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='GOES')
-    ts_lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_LIGHTCURVE, source='LYRA')
+    
+    
     ts_noaa_ind = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_LIGHTCURVE, source='NOAAPredictIndices')
     ts_noaa_pre = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_LIGHTCURVE, source='NOAAIndices')
-    ts_rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_LIGHTCURVE, source='RHESSI')
     
     # Working:
-    ts_norrh = sunpy.timeseries.TimeSeries(sunpy.data.sample.NORH_LIGHTCURVE, source='NoRH')    
+    ts_eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_LIGHTCURVE, source='EVE')
+    ts_gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_LIGHTCURVE, source='GBMSummary')
+    ts_norrh = sunpy.timeseries.TimeSeries(sunpy.data.sample.NORH_LIGHTCURVE, source='NoRH') # ToDo: add column heading.
+    ts_goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='GOES')
+    ts_lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_LIGHTCURVE, source='LYRA')
+    ts_rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_LIGHTCURVE, source='RHESSI')
     """

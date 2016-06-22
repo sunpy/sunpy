@@ -135,10 +135,12 @@ class RHESSISummaryLightCurve(GenericTimeSeries):
         header, d = rhessi.parse_obssumm_file(filepath)
         data = DataFrame(d['data'], columns=d['labels'], index=d['time'])
 
-        return header, data
+        return data, header
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
+        print('in is_datasource_for RHESSI')
+        print(kwargs)
         #"""Determines if header corresponds to an HMI image"""
         #return header.get('instrume', '').startswith('HMI')
         return kwargs.get('source', '').startswith('RHESSI')
