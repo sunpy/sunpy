@@ -64,7 +64,7 @@ class response():
 
 
     example:
-    from sunpy.instr.aia import aia                     #Q) redundant?
+    from sunpy.instr.aia import aia                          #Q) redundant!?
     effarea = aia.response.aia_inst_genx_to_dict(path_to_file)
 
     Notes:
@@ -90,6 +90,7 @@ class response():
         self.wavelength_centers = ['94', '131', '171', '193', '211', '304', '335']
 
         self.data_dictionary = {}
+        self.dataframe = pd.DataFrame()
 
 
 
@@ -110,7 +111,7 @@ class response():
         # self.contam = np.array
         # self.cross_area = np.array
 
-    def aia_inst_genx_to_dict(self, path_to_file):
+    def aia_inst_genx_to_dataframe(self, path_to_file):
         """
         This definition reads the instrument file aia_V6_all_fullinst, which was obtained from ssw_aia_response_data inside
         ssw_aia_response_genx.tar.gz (an output file saved from SolarSoft Ware (SSW)). It will extract the instrument data and save
@@ -122,8 +123,12 @@ class response():
 
         Returns
         -------
-        output: dictionary, the keys are the wavelength centers for each channel and the values are dictionaries containing
+        self.data_dictionary: dictionary, the keys are the wavelength centers for each channel and the values are dictionaries containing
         key/value pairs of the properties and values from the aia_inst_genx_.
+
+        self.dataframe: dataframe, stores the dictionary for easy access. Each column lists the channel information and each row is a different peroperty from aia_inst_genx.
+
+        output file: 'channel_properties.csv: dataframe with wavelength centers for each channel is a column and listed in the column are the properties from the is returned where it has keys of the properties of the channel
 
         Notes:
         Np.recarray store information with shape(1,0) and are quite nested.
@@ -146,30 +151,27 @@ class response():
                     key = wavelength
 
                     # store information from those files in dataframe
-                    # TODO: try to refactor this to get rid of this many four loops
+                    # TODO: refactor to get rid of so many four loops
                     for value in data[name]:
                         for prop in self.properties:
                             wave_dictionary[prop] = [value[prop][0]]
+            # store in dictionary
             self.data_dictionary[wavelength] = wave_dictionary
 
-        return self.data_dictionary
-
-    def aia_inst_genx_to_csv(self):
-        """
-        This definition writes a.csv output file showing the dictionary values from ssw_genx function. The wavelength centers are the keys.
-        Returns
-        -------
-        output: 'channel_properties.csv: dataframe with wavelength centers for each channel is a column and listed in the column are the properties from the is returned where it has keys of the properties of the channel
-        """
-
-        # write into dataframe for each channel from inner dictionaries
+        # store in dataframe,     options!
         df = pd.DataFrame.from_dict(self.data_dictionary)
-        # save to dataframe outfile
-        df.to_csv('channel_properties.csv')
-        print('saved to channel_properties.csv')
+        self.dataframe = df
+        if save:
+            #  save to .csv outfile
+            df.to_csv('channel_properties.csv')
+            print('saved to channel_properties.csv')
+
+        return self.dataframe
 
 
-    def effective_area(self, channel='A131'):
+
+
+    def effective_area(self):
         """
         Finds the area of the instrument
         needs to work with channels
@@ -189,6 +191,7 @@ class response():
         effective_area: dictionary or array
 
         """
+
         if type(channel) == type:
             channel = 'A' + str(channel)
 
