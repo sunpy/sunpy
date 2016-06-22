@@ -35,7 +35,7 @@ import sunpy
 import sunpy.data.test as test
 
 
-class response():
+class Response():
     """
     class description here!
 
@@ -68,8 +68,8 @@ class response():
     effarea = aia.response.aia_inst_genx_to_dict(path_to_file)
 
     Notes:
-    Currently the instr directory contains the file aia.py (previously aiaprep.py - I think?)
-    This branch creates instr/aia directory and will have both this program aia.py and aiaprep.py
+    Currently the instr directory contains the file response.py (previously aiaprep.py - I think?)
+    This branch creates instr/aia directory and will have both this program response.py and aiaprep.py
 
     Feedback/ Thoughts are always welcome! -Thanks!
     """
@@ -89,7 +89,6 @@ class response():
         # TODO: want 6 EUV channels and 2 UV channels --- needs updated
         self.wavelength_centers = ['94', '131', '171', '193', '211', '304', '335']
 
-        self.data_dictionary = {}
         self.dataframe = pd.DataFrame()
 
 
@@ -111,7 +110,7 @@ class response():
         # self.contam = np.array
         # self.cross_area = np.array
 
-    def aia_inst_genx_to_dataframe(self, path_to_file):
+    def aia_inst_genx_to_dataframe(self, path_to_file, save=True):
         """
         This definition reads the instrument file aia_V6_all_fullinst, which was obtained from ssw_aia_response_data inside
         ssw_aia_response_genx.tar.gz (an output file saved from SolarSoft Ware (SSW)). It will extract the instrument data and save
@@ -135,7 +134,7 @@ class response():
 
         """
 
-        self.data_dictionary = {}
+        data_dictionary = {}
 
         # access np.recarray from .genx file
         ssw_array = readsav(path_to_file)
@@ -156,7 +155,7 @@ class response():
                         for prop in self.properties:
                             wave_dictionary[prop] = [value[prop][0]]
             # store in dictionary
-            self.data_dictionary[wavelength] = wave_dictionary
+            data_dictionary[wavelength] = wave_dictionary
 
         # store in dataframe,     options!
         df = pd.DataFrame.from_dict(self.data_dictionary)
