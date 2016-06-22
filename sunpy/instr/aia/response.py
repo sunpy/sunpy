@@ -28,7 +28,7 @@ utilize sunpy/instr/tests/test_aia.py
 
 import numpy as np
 import pandas as pd
-import astropy.units as u
+from astropy import units as u
 from scipy.io import readsav
 
 import sunpy
@@ -41,6 +41,12 @@ class Response():
 
     Parameters
     ----------
+    path_to_genx_file: string
+        give a path to a instrument file from .genx output to initialize a dataframe for the class
+    save_to_outfile: bool
+        loads channel properties into a dataframe and saves to a .csv file
+    csv: string
+        alternately, give a path to the csv file to read in data information where the keys are channel wavelength centers and the values are properties
     wave: array
         wavelengths imaged by the instrument and centered around the channel wavelength
     geoarea: float
@@ -63,9 +69,15 @@ class Response():
         size of the ccd
 
 
-    example:
-    from sunpy.instr.aia import Response
-    Response.aia_inst_genx_to_dataframe(path_to_file)
+    # Example:
+    # >>> from sunpy.instr.aia import Response
+    #
+    # # load in dataframe to be used
+    # >>> r = Response(path_to_genx_file='/media/gsoc/ssw_aia_response_data/aia_V6_all_fullinst', save_outfile=True)
+    #
+    # # call functions
+    # >>> r.get_properties_per_channel(94)
+
 
     Notes:
     Currently the instr directory contains the file aia.py (previously aiaprep.py - I think?)
@@ -74,9 +86,7 @@ class Response():
     Feedback/ Thoughts are always welcome! -Thanks!
     """
 
-    def __init__(self,  elecperev=0.0, wave=np.array, elecperdn=np.array, geoarea=0.0, ent_filter=np.array,
-                 fp_filter=np.array, primary=np.array, secondary=np.array, ccd=np.array, contam=np.array,
-                 cross_area=np.array, *args, **kwargs):
+    def __init__(self, **kwargs):
         # no keywords for now. emissivity, temperature, density possible later
 
         # parameter list
@@ -91,27 +101,31 @@ class Response():
         # TODO: want 6 EUV channels and 2 UV channels --- needs updated
         self.wavelength_centers = [94, 131, 171, 193, 211, 304, 335]
 
-        self.dataframe = pd.DataFrame(index = self.properties)
+        # Load in the filename with the call of the function to intialize channel properties
+        #    Notes: I needed a way to define self.dataframe locally inside the aia_inst_genx_to_dataframe
+        #           and afterwards use it globally. This is what i have found, but am open to other suggestions.
+
+        #   # I can also implement a recursive search of the genx directory if wanted. Then: path_to_genx_dir
+        path_to_genx_file = kwargs.get('path_to_genx_file', '')
+        save_outfile = kwargs.get('save_outfile', True)
+        csv = kwargs.get('csv', '')
+
+        if path_to_genx_file and save_outfile:
+            self.aia_inst_genx_to_dataframe(path_to_genx_file, save_outfile)
+        elif path_to_genx_file:
+            self.aia_inst_genx_to_dataframe(path_to_genx_file)
+            print('yeah')
+        elif csv:
+            self.dataframe = pd.DataFrame.from_csv(csv)
+        else:
+            print('Implement keyword path_to_genx_file or csv to load properties.')
 
 
-        # Notes: I'm trying to define these as self.properties  as something so I can define them in the definition that reads the .genx file
-        #          I saw that def __repr__(self): can be used to define self.things --- need to ask about the best way to do this
-        # TODO: research *args **kwargs
+            # Notes: I'm trying to define self.stuffs as cleanly as possible - Any input appreciated
+            #          I saw that def __repr__(self): can be used to define self.things maybe?
+            # TODO: research *args **kwargs... more
 
-        # parameters to be defined from self.dataframe..  implement in get_properties function
-        # self.elecperev = 0.0
-        # self.wave = np.array
-        # self.elecperdn = 0.0
-        # self.geoarea = 0.0
-        # self.ent_filter = np.array
-        # self.fp_filter = np.array
-        # self.primary = np.array
-        # self.secondary = np.array
-        # self.ccd = np.array
-        # self.contam = np.array
-        # self.cross_area = np.array
-
-    def aia_inst_genx_to_dataframe(self, path_to_file, save=True):
+    def aia_inst_genx_to_dataframe(self, path_to_file, save=False):
         """
         This definition reads the instrument file aia_V6_all_fullinst, which was obtained from ssw_aia_response_data inside
         ssw_aia_response_genx.tar.gz (an output file saved from SolarSoft Ware (SSW)). It will extract the instrument data and save
@@ -139,7 +153,7 @@ class Response():
         data = ssw_array['data']
 
         # store in dataframe
-        df = self.dataframe
+        df = pd.DataFrame()
 
         # pick out instrument files inside np.recarray
         for name in data.dtype.names:
@@ -151,21 +165,22 @@ class Response():
                 # target number in filename that matches wavelength_center
                 start = name.find('A')
                 end = name.find('_T')
-                wavelength = name[start+1:end]
+                wavelength = name[start + 1:end]
 
                 # match the properties in the rec.array to desired properties
                 variables = set(data[name][0].dtype.fields.keys()) & set(self.properties)
+                assert len(variables) == len(self.properties)
 
                 # then iterate through the properties to fill a dataframe with rec.array information
                 for property in variables:
                     try:
-                        df.loc[property,wavelength] = data[name][0][property][0]
+                        df.loc[property, wavelength] = data[name][0][property][0]
 
                     # contam and crossarea are sequences so these don't have to be unpacked as much
                     except ValueError:
-                        df.loc[property,wavelength] = data[name][0][property]
+                        df.loc[property, wavelength] = data[name][0][property]
 
-        assert len(df) != 0
+        assert len(df) != 0, 'Data Frame is not loading from file.'
         self.dataframe = df
 
         if save:
@@ -173,23 +188,51 @@ class Response():
             df.to_csv('channel_properties.csv')
             print('saved to channel_properties.csv')
 
-
-
-
-    def get_properties_per_channel(self, wavelength_center = 94):
+    def properties_per_channel_dictionary(self, wavelength_center=94):
         """
 
         :param wavelength_center:
         :return:
         """
-        assert wavelength_center in self.wavelength_centers
+        assert wavelength_center in self.wavelength_centers, 'Choose one integer value from wavelength centers: ' + str(
+            self.wavelength_centers)
 
-        print('start')
-        # print(self.dataframe[wavelength_center])
-        # for property, values in self.dataframe[wavelength_center].iteritems():
-        #     print(property, values)
+        dict = {}
 
-    def effective_area(self):
+        # target wavelength specifid and pull out respective properties in dataframe
+        for wavelength, values in self.dataframe.iteritems():
+            if int(wavelength) == int(wavelength_center):
+                dict['wave'] = values['wave'] * u.angstrom
+                dict['effarea'] = values['effarea'] * u.meter
+                dict['units'] = values['units']
+                dict['geoarea'] = values['geoarea'] * u.meter
+                dict['scale'] = values['scale'] * u.meter
+                dict['platescale'] = values['platescale'] * u.meter
+                dict['numfilters'] = values['numfilters']
+                dict['wavemin'] = values['wavemin'] * u.angstrom
+                dict['wavestep'] = values['wavestep'] * u.angstrom
+                dict['wavenumsteps'] = values['wavenumsteps'] * u.angstrom
+                dict['wavelog'] = values['wavelog'] * u.angstrom
+                dict['filtersincludemesh'] = values['filtersincludemesh']
+                dict['meshtrans'] = values['meshtrans']
+                dict['usecontam'] = values['usecontam']
+                dict['contamthick'] = values['contamthick']
+                dict['usephottoelec'] = values['usephottoelec'] * u.meter
+                dict['elecperev'] = values['elecperev'] * u.meter
+                dict['usephottodn'] = values['usephottodn'] * u.meter
+                dict['elecperdn'] = values['elecperdn'] * u.meter
+                dict['useerror'] = values['useerror']
+                dict['fp_filter'] = values['fp_filter'] * u.meter
+                dict['ent_filter'] = values['ent_filter'] * u.meter
+                dict['primary'] = values['primary'] * u.meter
+                dict['secondary'] = values['secondary'] * u.meter
+                dict['ccd'] = values['ccd'] * u.meter
+                dict['contam'] = values['contam']
+                dict['cross_area'] = values['cross_area']
+
+                return dict
+
+    def effective_area(self, wavelength_center):
         """
         Finds the area of the instrument
         needs to work with channels
@@ -209,28 +252,23 @@ class Response():
         effective_area: dictionary or array
 
         """
-        # TODO: implement effective area function
 
-        if type(channel) == type:
-            channel = 'A' + str(channel)
-
-        if channel == 'all':
-            pass
-            # TODO: implement for all channels at once
+        if wavelength_center == 'all':
+            pass   # run through all
         else:
-            # load in channel properties
+            assert wavelength_center in self.wavelength_centers, "Choose one integer value from wavelength centers: ' + str(self.wavelength_centers) or 'all'"
 
-
-            # replicating the IDL version for now.     idl: if statment usephottoelec and usephottodn-- not sure why?!
-
-            ones = np.ones(len(wave))
-            print
-            type(wave), type(elecperdn), type(elecperev)
-            units = 12398. / wave * elecperev / elecperdn
-
-            eff_area = ((geoarea * ent_filter * fp_filter * primary * secondary * ccd * contam) + cross_area) * units
-
-            return eff_area
+            #
+            # # replicating the IDL version for now.     idl: if statment usephottoelec and usephottodn-- not sure why?!
+            #
+            # ones = np.ones(len(wave))
+            # print
+            # type(wave), type(elecperdn), type(elecperev)
+            # units = 12398. / wave * elecperev / elecperdn
+            #
+            # eff_area = ((geoarea * ent_filter * fp_filter * primary * secondary * ccd * contam) + cross_area) * units
+            #
+            # return eff_area
 
     def instrument_response(self, eff_area, gain, flat_field):
         """
