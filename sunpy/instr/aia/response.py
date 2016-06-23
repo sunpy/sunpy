@@ -11,6 +11,7 @@ AIA response functions by integrating ChiantiPy
     - use spectral model (synthetic spectra) - to get ion emissivities as a function of temp/density
     - obtain temperature response based on chianti spectral contribution functions (emissivity)
 
+AIA ccd's do not provide spectroscopic information, so there is no way to directly apply a wavlength-dependent calibration to the data.
 
 other important variables:
 effective area
@@ -47,26 +48,17 @@ class Response():
         loads channel properties into a dataframe and saves to a .csv file
     csv: string
         alternately, give a path to the csv file to read in data information where the keys are channel wavelength centers and the values are properties
-    wave: array
-        wavelengths imaged by the instrument and centered around the channel wavelength
-    geoarea: float
-        the geometric area of the each channel: EUV = 83.0 cm**2, UV = 30.8 cm**2
-    elecperev: float
-        a conversion factor for electrons per electronic volts
-    ent_filter: array
-        size of the entire filter on the instrument
-    fp_filter: array of floats
-        size of fp filter <<<<
-    contam: array of floats
-        maps the fluctuation of the instrument
-    cross_area: array of flats
-        cross area of the instrument
-    secondary: array of floats
-        size of secondary mirror
-    primary: array
-        size of the primary mirror
-    ccd: array, floats
-        size of the ccd
+
+    Attributes
+    ----------
+    properties: array of strings
+        The names of properties that are imported from SSW
+    wavelength_centers: array of integers
+        The center wavelength of each wavelength range or channel imaged with AIA
+    dataframe: pandas dataframe
+        The property information stored after being imported from SSW
+    wavelength_range: array
+        the range of wavelengths imaged per channel with AIA
 
 
     # Example:
@@ -101,29 +93,52 @@ class Response():
         # TODO: want 6 EUV channels and 2 UV channels --- needs updated
         self.wavelength_centers = [94, 131, 171, 193, 211, 304, 335]
 
-        # Load in the filename with the call of the function to intialize channel properties
-        #    Notes: I needed a way to define self.dataframe locally inside the aia_inst_genx_to_dataframe
+        #           Notes: I needed a way to define self.dataframe locally inside the aia_inst_genx_to_dataframe
         #           and afterwards use it globally. This is what i have found, but am open to other suggestions.
 
-        #   # I can also implement a recursive search of the genx directory if wanted. Then: path_to_genx_dir
+        #           I could import os and recursivly search the .genx directory for the files needed rather than the user defining one file. Then, the variable would change to path_to_genx_dir
+
+
+        # keyword arguements
         path_to_genx_file = kwargs.get('path_to_genx_file', '')
-        save_outfile = kwargs.get('save_outfile', True)
+        save_outfile = kwargs.get('save_outfile', False)
         csv = kwargs.get('csv', '')
 
+
+        # Load in the filename with the call of the function to initialize channel properties
         if path_to_genx_file and save_outfile:
             self.aia_inst_genx_to_dataframe(path_to_genx_file, save_outfile)
         elif path_to_genx_file:
             self.aia_inst_genx_to_dataframe(path_to_genx_file)
-            print('yeah')
         elif csv:
             self.dataframe = pd.DataFrame.from_csv(csv)
         else:
             print('Implement keyword path_to_genx_file or csv to load properties.')
 
+        wavelength = kwargs.get('wavelength', '')
 
-            # Notes: I'm trying to define self.stuffs as cleanly as possible - Any input appreciated
-            #          I saw that def __repr__(self): can be used to define self.things maybe?
-            # TODO: research *args **kwargs... more
+        # assert type(wavelength) == str
+        # wavelength range is the same for all channels, but can be loaded per channel, reflectance is only defined if wavelength is defined for quick plotting
+        if wavelength:
+            if wavelength == 'all':
+                wrange = []
+                reflect = []
+                for i in self.wavelength_centers:
+                    wrange.append(self.dataframe[str(i)]['wave'])
+                    reflect.append(self.dataframe[str(i)]['primary'] * self.dataframe[str(i)]['secondary'])
+                self.wavelength_range = wrange
+                self.reflectance = reflect
+            else:
+                # add units
+                self.wavelength_range = self.dataframe[wavelength]['wave']
+                self.reflectance = (self.dataframe[wavelength]['primary']) * (
+                    self.dataframe[str(wavelength)]['secondary'])
+        else:
+            self.wavelength_range = self.dataframe['94']['wave']
+
+
+            # Notes: I'm trying to define self.stuffs as cleanly as possible - Any input appreciated as this is still new to me
+            #          I saw that def __repr__(self): can be used to define self.things but I'm not sure on how..?
 
     def aia_inst_genx_to_dataframe(self, path_to_file, save=False):
         """
@@ -188,26 +203,55 @@ class Response():
             df.to_csv('channel_properties.csv')
             print('saved to channel_properties.csv')
 
-    def properties_per_channel_dictionary(self, wavelength_center=94):
+    def property_per_channel_dict(self, wavelength_center=94):
         """
+        Returns a dictionary for the channel whose wavelength center is inputed.
 
-        :param wavelength_center:
-        :return:
+        Parameters
+        ----------
+        wavelength_center: int
+            has to be one of the wavelengths in self.wavelength_centers
+
+
+        Returns
+        -------
+        :returns A dictionary with the following keys and values:
+
+        wave: array
+            wavelengths imaged by the instrument and centered around the channel wavelength
+        geoarea: float
+            the geometric area of the each channel: EUV = 83.0 cm**2, UV = 30.8 cm**2
+        elecperev: float
+            a conversion factor for electrons per electronic volts
+        ent_filter: array
+            transmission efficiency of the entrance filter
+        fp_filter: array of floats
+            transmission efficiency of the focal plane filter
+        contam: array of floats
+            the quantum efficiency of the ccd
+        cross_area: array of flats
+            cross area of the instrument
+        secondary: array of floats
+            reflectance of secondary mirror
+        primary: array
+            reflectance of the primary mirror
+        ccd: array, floats
+            the quantum efficiency of the ccd
         """
         assert wavelength_center in self.wavelength_centers, 'Choose one integer value from wavelength centers: ' + str(
             self.wavelength_centers)
 
         dict = {}
 
-        # target wavelength specifid and pull out respective properties in dataframe
+        # target wavelength specifid and pull out respective properties in dataframe and apply units
         for wavelength, values in self.dataframe.iteritems():
             if int(wavelength) == int(wavelength_center):
                 dict['wave'] = values['wave'] * u.angstrom
-                dict['effarea'] = values['effarea'] * u.meter
+                dict['effarea'] = values['effarea'] * u.cm ** 2
                 dict['units'] = values['units']
-                dict['geoarea'] = values['geoarea'] * u.meter
-                dict['scale'] = values['scale'] * u.meter
-                dict['platescale'] = values['platescale'] * u.meter
+                dict['geoarea'] = values['geoarea'] * u.cm ** 2
+                dict['scale'] = values['scale']
+                dict['platescale'] = values['platescale'] * u.cm ** 2
                 dict['numfilters'] = values['numfilters']
                 dict['wavemin'] = values['wavemin'] * u.angstrom
                 dict['wavestep'] = values['wavestep'] * u.angstrom
@@ -217,64 +261,88 @@ class Response():
                 dict['meshtrans'] = values['meshtrans']
                 dict['usecontam'] = values['usecontam']
                 dict['contamthick'] = values['contamthick']
-                dict['usephottoelec'] = values['usephottoelec'] * u.meter
-                dict['elecperev'] = values['elecperev'] * u.meter
-                dict['usephottodn'] = values['usephottodn'] * u.meter
-                dict['elecperdn'] = values['elecperdn'] * u.meter
+                dict['usephottoelec'] = values['usephottoelec'] * u.photon/u.electron
+                dict['elecperev'] = values['elecperev'] * (u.electron /u.ct) # u.eV?
+                dict['usephottodn'] = values['usephottodn'] * u.photon / u.ct
+                dict['elecperdn'] = values['elecperdn'] * (u.electron/u.ct)  # the ccd gain!!
                 dict['useerror'] = values['useerror']
-                dict['fp_filter'] = values['fp_filter'] * u.meter
-                dict['ent_filter'] = values['ent_filter'] * u.meter
-                dict['primary'] = values['primary'] * u.meter
-                dict['secondary'] = values['secondary'] * u.meter
-                dict['ccd'] = values['ccd'] * u.meter
-                dict['contam'] = values['contam']
-                dict['cross_area'] = values['cross_area']
+                dict['fp_filter'] = values['fp_filter'] * u.cm ** 2
+                dict['ent_filter'] = values['ent_filter'] * u.cm ** 2
+                dict['primary'] = values['primary'] * u.cm ** 2
+                dict['secondary'] = values['secondary'] * u.cm ** 2
+                dict['ccd'] = values['ccd'] * u.cm**2
 
+                # indexing the next two series did not return expected results because not all have len 6
+                index = self.wavelength_centers.index(int(wavelength))
+                dict['contam'] = values['contam'][0] * u.cm**2
+                dict['cross_area'] = values['cross_area'][index]
+
+
+                assert len(dict) != 0
                 return dict
 
-    def effective_area(self, wavelength_center):
+    def effective_area(self, wavelength,  compare=False):
         """
-        Finds the area of the instrument
-        needs to work with channels
         AIA instrument response / effective area
-            A_{eff}=A_{geo}R_p(\lambda)R_S(\lambda)T_E(\lambda)T_F(\lambda)D(\lambda,t)Q(\lambda)
+        - contains information about the efficiency of the telescope optics.
+        - trying to reformat effective area structure, convert to DN units
+
+        Effective Area = Geo_Area * Reflectance of Primary and Secondary Mirrors * Transmission Efficiency of filters * Quantum Efficiency of CCD * Correction for time-varying contamination
+
+        A_{eff}=A_{geo}R_p(\lambda)R_S(\lambda)T_E(\lambda)T_F(\lambda)D(\lambda,t)Q(\lambda)
+        site github ^^^     @
 
         Parameters
         ----------
-        filename: string, file (or path to file?) with instrument information
+        wavelength: int
+            the wavelength center of the channel of interest
 
-        input: a data file giving the area of the instrument
-
-        channel: tell which channel to find the area for, otherwise will just find all channels.
+        Variables:
+        ----------
+        Reflectance = The combined reflectance of the primary and secondary mirrors
+        Transmission_efficiency = for the focal plane and entrence filters
 
         Returns
         -------
-        effective_area: dictionary or array
+        effective_area: np.array
+            if compare is True: returns the effective area loaded in from the ssw genx file.
+            if compare is False: returns the calculations here from Boerner
+
 
         """
 
-        if wavelength_center == 'all':
-            pass   # run through all
+        assert wavelength in self.wavelength_centers, "Choose one integer value from wavelength centers: ' + str(self.wavelength_centers) or 'all'"
+
+        # define variables to call from channel dictionary
+        var = self.property_per_channel_dict(wavelength)
+        Reflectance = var['primary'] * var['secondary']
+        Transmission_efficiency = var['fp_filter'] * var['ent_filter']
+
+
+        eff_area = var['geoarea'] * var['ccd'] * var['contam'] * Transmission_efficiency  * Reflectance
+
+        if compare:
+            self.eff_area = var['effarea']
+
         else:
-            assert wavelength_center in self.wavelength_centers, "Choose one integer value from wavelength centers: ' + str(self.wavelength_centers) or 'all'"
+            self.eff_area = eff_area
+        return self.eff_area
 
-            #
-            # # replicating the IDL version for now.     idl: if statment usephottoelec and usephottodn-- not sure why?!
-            #
-            # ones = np.ones(len(wave))
-            # print
-            # type(wave), type(elecperdn), type(elecperev)
-            # units = 12398. / wave * elecperev / elecperdn
-            #
-            # eff_area = ((geoarea * ent_filter * fp_filter * primary * secondary * ccd * contam) + cross_area) * units
-            #
-            # return eff_area
+        # TODO: Work on units!! not right as of yet - cm**14?!
+        # REFERENCE IDL CODE:
+        # if usephottoelec and usephottodn:-- not sure why?! - conversions?
+        #       units = 12398. / wave * elecperev / elecperdn
+        # else:
+        #       units = 1
+        # eff_area = ((geoarea * ent_filter * fp_filter * primary * secondary * ccd * contam) + cross_area) * units
 
-    def instrument_response(self, eff_area, gain, flat_field):
+
+    def instrument_response(self, wavelength = 94, ssw_gain=False, compare = False):
         """
-        Describes the instrument (AIA) response per wavelength by calculating effective area vs wavelength of the strongest emission lines present in the solar feature
-            R(\lambda)=A_{eff}(\lambda,t)G(\lambda)
 
+        Describes the instrument (AIA) response per wavelength by calculating effective area vs wavelength of the strongest emission lines present in the solar feature
+        \
+            R(\lambda)=A_{eff}(\lambda,t)G(\lambda)
 
         notes:
         For a given position in the image plane \mathbf{x} and wavelength channel i , the pixel values can be expressed as,
@@ -307,11 +375,43 @@ class Response():
         Returns
         -------
         :return: float, array describing the response per wavelength of effective area (wavelength response)
-
+                want units cm^2 DN phot^-1
         """
-        # TODO: implement response function and plot!
-        pass
 
+        # TODO: fix doc string here! ^^^
+        var = self.property_per_channel_dict(wavelength)
+        instr_response = []
+
+        # Calculations of G from Boerner formulas * work in progress*
+        if ssw_gain:
+            for key, gain in ccd_gain.iteritems():
+                if str(key) == str(wavelength):
+                    eff_area = self.effective_area(key)
+                    Gain = 12398.0 / (var['wave'] * var['elecperev']) / var['elecperdn'] # < gain
+                    instr_response = (eff_area+ var['cross_area']) * Gain ** (u.electron / u.ct)
+                    # want: dn/photon
+
+
+        # calculations of G from Boerner Table 12
+        else:
+            Gain_dict = {94: 2.128, 131: 1.523, 171: 1.168, 195: 1.024, 211: 0.946, 304: 0.658, 335: 0.596}
+            for key, gain in Gain_dict.iteritems():
+                if str(key) == str(wavelength):
+                    eff_area = self.effective_area(key)
+                    print(eff_area)
+                    instr_response = (eff_area  * gain * ((u.electron/u.ct)/var['usephottodn']) * (u.electron / u.ct))# eff_area + var['cross_area'])
+                    print(np.mean(instr_response))
+
+        # if compare:
+        #     self.inst_response = [0.664, 1.785, 3.365, 1.217, 1.14, 0.041, 0.027]
+        #     print(self.inst_response - instr_response)
+        # else:
+        #     self.instr_response = instr_response
+
+        print(type(instr_response))
+
+        # TODO: get this array to be as expected  , want units: cm**2 DN /phot
+        return instr_response
 
 def emissivity():
     """
