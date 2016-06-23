@@ -178,7 +178,7 @@ class GenericMap(NDData):
         self._fix_naxis()
 
         # Setup some attributes
-        self._nickname = self.detector
+        self._nickname = None
 
         # Validate header
         # TODO: This should be a function of the header, not of the map
@@ -349,19 +349,27 @@ scale:\t\t {scale}
 
 # #### Keyword attribute and other attribute definitions #### #
 
+    def _base_name(self):
+        """Abstract the shared bit between name and latex_name"""
+        return "{nickname} {{measurement}} {date:{tmf}}".format(nickname=self.nickname,
+                                                                date=parse_time(self.date),
+                                                                tmf=TIME_FORMAT)
+
     @property
     def name(self):
-        """Human-readable description of map-type"""
-        return "{nickname} {measurement} {date:{tmf}}".format(nickname=self.nickname,
-                                                              measurement=self.measurement,
-                                                              date=parse_time(self.date),
-                                                              tmf=TIME_FORMAT)
+        """Human-readable description of the Map"""
+        return self._base_name().format(measurement=self.measurement)
+
+    @property
+    def latex_name(self):
+        """LaTeX formatted description of the Map."""
+        return self._base_name().format(measurement=self.measurement._repr_latex_())
 
     @property
     def nickname(self):
         """An abbreviated human-readable description of the map-type; part of
         the Helioviewer data model"""
-        return self._nickname
+        return self._nickname if self._nickname else self.detector
 
     @nickname.setter
     def nickname(self, n):
@@ -1593,7 +1601,7 @@ scale:\t\t {scale}
         if 'title' in imshow_args:
             plot_settings_title = imshow_args.pop('title')
         else:
-            plot_settings_title = self.name
+            plot_settings_title = self.latex_name
 
         if annotate:
             if title is True:
