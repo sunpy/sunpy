@@ -1,3 +1,8 @@
+0.7.2
+-----
+
+* Fixed bugs in `sun` equations
+
 0.7.1
 -----
 
