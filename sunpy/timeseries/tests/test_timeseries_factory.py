@@ -52,9 +52,6 @@ class TestTimeSeries(object):
         ts_rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_LIGHTCURVE, source='RHESSI')
         assert isinstance(ts_rhessi,sunpy.timeseries.sources.rhessi.RHESSISummaryLightCurve)
 
-    
-    
-
     def test_noaa_ind(self):
         #Test a NOAAPredictIndices TimeSeries
         ts_noaa_ind = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_LIGHTCURVE, source='NOAAPredictIndices')
@@ -64,11 +61,6 @@ class TestTimeSeries(object):
         #Test a NOAAIndices TimeSeries
         ts_noaa_pre = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_LIGHTCURVE, source='NOAAIndices')
         assert isinstance(ts_noaa_pre,)
-
-    def test_logical(self):
-        #Test a logical TimeSeries
-        ts_logical = 'test'
-        assert isinstance(ts_logical,)
     
     
     

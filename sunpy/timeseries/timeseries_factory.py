@@ -43,20 +43,20 @@ __all__ = ['TimeSeries', 'TimeSeriesFactory']
 
 class TimeSeriesFactory(BasicRegistrationFactory):
     """
-    Map(*args, **kwargs)
+    TimeSeries(*args, **kwargs)
 
-    Map factory class.  Used to create a variety of Map objects.  Valid map types
+    TimeSeries factory class.  Used to create a variety of Map objects.  Valid map types
     are specified by registering them with the factory.
 
 
     Examples
     --------
-    >>> import sunpy.map
+    >>> import sunpy.timeseries
     >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
     >>> import sunpy.data.sample
-    >>> mymap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    >>> mytimeseries = sunpy.map.Map(sunpy.data.sample.GOES_LIGHTCURVE)
 
-    The SunPy Map factory accepts a wide variety of inputs for creating maps
+    The SunPy TimeSeries factory accepts a wide variety of inputs for creating maps
 
     * Preloaded tuples of (data, header) pairs
 
@@ -194,6 +194,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             arg = args[i]
 
             # Data-header pair in a tuple
+            # ToDo: this needs to accept a 3-tuple if units are given.
             if ((type(arg) in [tuple, list]) and
                 len(arg) == 2 and
                 isinstance(arg[0], np.ndarray) and
@@ -205,11 +206,24 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             # Data-header pair not in a tuple
             elif (isinstance(arg, np.ndarray) and
                   self._validate_meta(args[i+1])):
-
+                # Make the 
                 pair = (args[i], OrderedDict(args[i+1]))
+                
+                # Check if units are give:
+                if(self._validate_units(args[i+2])):
+                    # If we have been given units
+                    pair = (args[i], OrderedDict(args[i+1]), args[i+2])
+                    i += 1 # an extra increment to account for the units
+
+                
                 data_header_pairs.append(pair)
                 i += 1 # an extra increment to account for the data-header pairing
-
+            
+            # Astropy Table
+            #elif (isinstance(arg, astropy.table.table.Table):
+            #    df = t.to_pandas()
+                
+            
             # Filepath
             elif (isinstance(arg,six.string_types) and
                   os.path.isfile(os.path.expanduser(arg))):
@@ -356,9 +370,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         new_timeseries += already_timeseries
 
-        if len(new_timeseries) == 1:
-            return new_timeseries[0]
-
         # Concatenate the timeseries into one if specified.
         concatenate = kwargs.get('concatenate', False)
         if concatenate:
@@ -367,7 +378,17 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             full_timeseries = new_timeseries.pop(0)
             for timeseries in new_timeseries:
                 full_timeseries = full_timeseries.concatenate(timeseries)
+            
+            new_timeseries = full_timeseries
 
+        # Sanitize any units OrderedDict details
+        for timeseries in new_timeseries:
+            timeseries._sanitize_units()
+        
+        # Only return single time series, not in a list if we only have one.
+        if len(new_timeseries) == 1:
+            return new_timeseries[0]
+        
         return new_timeseries
 
     def _check_registered_widgets(self, **kwargs):
