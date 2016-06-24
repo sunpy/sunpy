@@ -29,7 +29,7 @@ utilize sunpy/instr/tests/test_aia.py
 
 import numpy as np
 import pandas as pd
-from astropy import units as u
+import astropy.units as u
 from scipy.io import readsav
 
 import sunpy
@@ -111,23 +111,32 @@ class Response():
         elif path_to_genx_file:
             self.aia_inst_genx_to_dataframe(path_to_genx_file)
         elif csv:
-            self.dataframe = pd.DataFrame.from_csv(csv)
+            self.dataframe = np.array(pd.DataFrame.from_csv(csv))
         else:
             print('Implement keyword path_to_genx_file or csv to load properties.')
 
         wavelength = kwargs.get('wavelength', '')
 
+
+
+        #  These are just for quick plotting for now...
         # assert type(wavelength) == str
-        # wavelength range is the same for all channels, but can be loaded per channel, reflectance is only defined if wavelength is defined for quick plotting
+        # wavelength range is the same for all channels, but can be loaded per channel, reflectance is only defined if wavelength is defined
         if wavelength:
             if wavelength == 'all':
                 wrange = []
                 reflect = []
+                transm = []
+                fp = []     # want to iterate over all properties
                 for i in self.wavelength_centers:
+                    fp.append(self.dataframe[str(i)]['fp_filter'])
                     wrange.append(self.dataframe[str(i)]['wave'])
                     reflect.append(self.dataframe[str(i)]['primary'] * self.dataframe[str(i)]['secondary'])
+                    transm.append(self.dataframe[str(i)]['fp_filter'] * np.array(self.dataframe[str(i)]['ent_filter'])) # * or +?
                 self.wavelength_range = wrange
                 self.reflectance = reflect
+                self.transmittance = transm
+
             else:
                 # add units
                 self.wavelength_range = self.dataframe[wavelength]['wave']
@@ -228,7 +237,7 @@ class Response():
         fp_filter: array of floats
             transmission efficiency of the focal plane filter
         contam: array of floats
-            the quantum efficiency of the ccd
+            correction to adjust for the time varying contamination of the components
         cross_area: array of flats
             cross area of the instrument
         secondary: array of floats
@@ -266,11 +275,11 @@ class Response():
                 dict['usephottodn'] = values['usephottodn'] * u.photon / u.ct
                 dict['elecperdn'] = values['elecperdn'] * (u.electron/u.ct)  # the ccd gain!!
                 dict['useerror'] = values['useerror']
-                dict['fp_filter'] = values['fp_filter'] * u.cm ** 2
-                dict['ent_filter'] = values['ent_filter'] * u.cm ** 2
-                dict['primary'] = values['primary'] * u.cm ** 2
-                dict['secondary'] = values['secondary'] * u.cm ** 2
-                dict['ccd'] = values['ccd'] * u.cm**2
+                dict['fp_filter'] = values['fp_filter']
+                dict['ent_filter'] = values['ent_filter']
+                dict['primary'] = values['primary']
+                dict['secondary'] = values['secondary']
+                dict['ccd'] = values['ccd']
 
                 # indexing the next two series did not return expected results because not all have len 6
                 index = self.wavelength_centers.index(int(wavelength))
@@ -319,22 +328,25 @@ class Response():
         Transmission_efficiency = var['fp_filter'] * var['ent_filter']
 
 
-        eff_area = var['geoarea'] * var['ccd'] * var['contam'] * Transmission_efficiency  * Reflectance
+        eff_area = var['geoarea'] * Reflectance * Transmission_efficiency * var['contam'] * var['ccd']
 
         if compare:
             self.eff_area = var['effarea']
 
         else:
-            self.eff_area = eff_area
+            self.eff_area = eff_area            # print('calc:',wavelength, np.mean(eff_area))
         return self.eff_area
 
-        # TODO: Work on units!! not right as of yet - cm**14?!
+        # TODO: Work on units!! not right as of yet ?!
         # REFERENCE IDL CODE:
         # if usephottoelec and usephottodn:-- not sure why?! - conversions?
         #       units = 12398. / wave * elecperev / elecperdn
         # else:
         #       units = 1
         # eff_area = ((geoarea * ent_filter * fp_filter * primary * secondary * ccd * contam) + cross_area) * units
+
+
+        #    paper: 0.312 1.172 2.881 1.188 1.206 0.063 0.045
 
 
     def instrument_response(self, wavelength = 94, ssw_gain=False, compare = False):
@@ -379,39 +391,39 @@ class Response():
         """
 
         # TODO: fix doc string here! ^^^
+
+
         var = self.property_per_channel_dict(wavelength)
-        instr_response = []
 
-        # Calculations of G from Boerner formulas * work in progress*
-        if ssw_gain:
-            for key, gain in ccd_gain.iteritems():
-                if str(key) == str(wavelength):
-                    eff_area = self.effective_area(key)
-                    Gain = 12398.0 / (var['wave'] * var['elecperev']) / var['elecperdn'] # < gain
-                    instr_response = (eff_area+ var['cross_area']) * Gain ** (u.electron / u.ct)
-                    # want: dn/photon
-
-
-        # calculations of G from Boerner Table 12
+        if compare:
+            self.inst_response = [0.664, 1.785, 3.365, 1.217, 1.14, 0.041, 0.027]
         else:
-            Gain_dict = {94: 2.128, 131: 1.523, 171: 1.168, 195: 1.024, 211: 0.946, 304: 0.658, 335: 0.596}
-            for key, gain in Gain_dict.iteritems():
-                if str(key) == str(wavelength):
-                    eff_area = self.effective_area(key)
-                    print(eff_area)
-                    instr_response = (eff_area  * gain * ((u.electron/u.ct)/var['usephottodn']) * (u.electron / u.ct))# eff_area + var['cross_area'])
-                    print(np.mean(instr_response))
+            # Calculations of G from Boerner formulas * work in progress*
+            if ssw_gain:
+                for key, gain in ccd_gain.iteritems():
+                    if str(key) == str(wavelength):
+                        eff_area = self.effective_area(key)
+                        Gain = 12398.0 / (var['wave'] * var['elecperev']) / var['elecperdn'] # < gain
+                        inst_response = (eff_area+ var['cross_area']) * Gain ** (u.electron / u.ct)
+                        # want: dn/photon  -- gain should be elec/dn??
+                        self.inst_response = instr_response
 
-        # if compare:
-        #     self.inst_response = [0.664, 1.785, 3.365, 1.217, 1.14, 0.041, 0.027]
-        #     print(self.inst_response - instr_response)
-        # else:
-        #     self.instr_response = instr_response
+            # calculations of G from Boerner Table 12
+            else:
+                Gain_dict = {94: 2.128, 131: 1.523, 171: 1.168, 195: 1.024, 211: 0.946, 304: 0.658, 335: 0.596}
+                for key, gain in Gain_dict.iteritems():
+                    if str(key) == str(wavelength):
+                        eff_area = self.effective_area(key)
+                        print('eff_area:',eff_area)
+                        inst_response = (eff_area  * gain * ((u.electron/u.ct)/var['usephottodn']) * (u.electron / u.ct))# eff_area + var['cross_area'])
+                        # print(np.mean(instr_response))
+                        self.inst_response = inst_response
 
-        print(type(instr_response))
+
+
 
         # TODO: get this array to be as expected  , want units: cm**2 DN /phot
-        return instr_response
+        return self.inst_response
 
 def emissivity():
     """
