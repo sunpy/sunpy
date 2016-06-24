@@ -305,12 +305,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         Parameters
         ----------
 
-        composite : boolean, optional
-            Indicates if collection of maps should be returned as a CompositeMap
-
-        cube : boolean, optional
-            Indicates if collection of maps should be returned as a MapCube
-
         silence_errors : boolean, optional
             If set, ignore data-header pairs which cause an exception.
 
@@ -321,8 +315,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         """
 
         # Hack to get around Python 2.x not backporting PEP 3102.
-        composite = kwargs.pop('composite', False)
-        cube = kwargs.pop('cube', False)
         silence_errors = kwargs.pop('silence_errors', False)
 
         data_header_pairs, already_timeseries, filepaths = self._parse_args(*args, **kwargs)
@@ -364,17 +356,23 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         new_timeseries += already_timeseries
 
-        """#### Removed as we don't have/need a composite TimeSeries
-        # If the list is meant to be a composite map, instantiate one
-        if composite:
-            return CompositeMap(new_timeseries, **kwargs)
-        """
         if len(new_timeseries) == 1:
             return new_timeseries[0]
+
+        # Concatenate the timeseries into one if specified.
+        concatenate = kwargs.get('concatenate', False)
+        if concatenate:
+            # Merge all these timeseries into one.
+            # ToDo: consider metadata output carfully.
+            full_timeseries = new_timeseries.pop(0)
+            for timeseries in new_timeseries:
+                full_timeseries = full_timeseries.concatenate(timeseries)
 
         return new_timeseries
 
     def _check_registered_widgets(self, **kwargs):
+        """Checks the (instrument) source/s that are compatible with this given file/data.
+        Only if exactly one source is compatible will a TimeSeries be returned."""
         print('\nin _check_registered_widgets()\n')
         candidate_widget_types = list()
         
