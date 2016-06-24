@@ -51,11 +51,6 @@ def rhessi_test_ts():
     #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='RHESSI')
     return sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_LIGHTCURVE, source='RHESSI')
 
-
-
-
-
-
 @pytest.fixture
 def noaa_ind_test_ts():
     #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAPredictIndices')
@@ -65,11 +60,7 @@ def noaa_ind_test_ts():
 def noaa_pre_test_ts():
     #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAIndices')
     return sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_LIGHTCURVE, source='NOAAIndices')
-    
-@pytest.fixture
-def logical_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source=logical)
-    return sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_LIGHTCURVE, source='EVE')
+
     
 
 
@@ -112,7 +103,7 @@ def truncation_slice_test_ts_2(eve_test_ts):
 # Test Concatenation Operations
 #==============================================================================
 
-def concatenation_slice_test_ts(eve_test_ts, truncation_slice_test_ts_1, truncation_slice_test_ts_2):
+def test_concatenation_slice_ts(eve_test_ts, truncation_slice_test_ts_1, truncation_slice_test_ts_2):
     # Try to recreate the original TimeSeries, using the two sliced variants.
     concatenated_ts = truncation_slice_test_ts_1.concatenate(truncation_slice_test_ts_2)
     

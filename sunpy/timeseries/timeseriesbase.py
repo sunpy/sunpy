@@ -76,12 +76,12 @@ class GenericTimeSeries:
 
     Parameters
     ----------------
-    filename: string or File
+    filename: `str` or File
         A file to read.
-    source: string
+    source: `str`
         A string identifier for a registered subclass, matched by that
          subclasses `_is_source_for` method.
-    concatenate :  boolean
+    concatenate :  `bool`
         Concatenate all files into one TimeSeries object if True, or return
         one TimeSeries for each file if False.
 
@@ -95,7 +95,9 @@ class GenericTimeSeries:
     >>> base = datetime.datetime.today()
     >>> dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
     >>> intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / (24 * 60)))
-    >>> ts = LightCurve.create({"param1": intensity}, index=dates)
+    >>> ts = Timeseries({"param1": intensity}, index=dates)
+    >>> df = 
+    >>> ts = Timeseries({"param1": intensity}, index=dates)
     >>> ts.peek()   # doctest: +SKIP
 
     References
@@ -154,13 +156,6 @@ class GenericTimeSeries:
                                        Warning, __file__, inspect.currentframe().f_back.f_lineno)
         return parse_time(time)
 
-#    @date.setter
-#    def date(self, new_date):
-#        self.meta['date-obs'] = new_date
-#        #propagate change to malformed FITS keywords
-#        if is_time(self.meta.get('date_obs', None)):
-#            self.meta['date_obs'] = new_date
-
     @property
     def detector(self):
         """Detector name"""
@@ -206,7 +201,7 @@ class GenericTimeSeries:
 
 # #### From Pandas #### #
     def sort_index(self, **kwargs):
-        """Returns a truncated version of the lightcurve object.
+        """Returns a truncated version of the TimeSeries object.
 
         Parameters
         ----------
@@ -215,8 +210,8 @@ class GenericTimeSeries:
 
         Returns
         -------
-        newlc : `~sunpy.lightcurve.LightCurve`
-            A new lightcurve with only the selected times.
+        newts : `~sunpy.timeseries.TimeSeries`
+            A new time series with only the selected times.
         """
         return GenericTimeSeries(self.data.sort_index(**kwargs), self.meta.copy(), self.units)
 
@@ -257,8 +252,8 @@ class GenericTimeSeries:
         
         # ToDo: consider re-evaluating the metadata.
 
-        # Return the resampled
-        return GenericTimeSeries(resampled_data.sort_index(), self.meta.copy(), self.units)
+        # Return the same type of timeseries object.
+        return self.__class__(resampled_data.sort_index(), self.meta.copy(), self.units)
 
 
 # #### From OLD LightCurve #### #
@@ -340,6 +335,10 @@ class GenericTimeSeries:
         # ToDo: consider adding slice notation instead of calling this function.
 
         # Evaluate inputs
+        # If given strings, then use to create a sunpy.time.timerange.TimeRange
+        # for the SunPy text date parser.
+        if isinstance(a, str) and isinstance(b, str):
+            a = TimeRange(a, b)
         if isinstance(a, TimeRange):
             # If we have a TimeRange, extract the values
             start = a.start
@@ -352,9 +351,8 @@ class GenericTimeSeries:
         # If an interval integer was given then use in truncation.
         truncated = self.data.sort_index()[start:end:int]
 
-        # ToDo: implement more like LightCurve???:
-        #return self.__class__.create(truncated, self.meta.copy())
-        return GenericTimeSeries(truncated.sort_index(), self.meta.copy(), self.units)
+        # Return the same type of timeseries object.
+        return self.__class__(truncated.sort_index(), self.meta.copy(), self.units)
 
     def extract(self, column_name):
         """Returns a new time series with the chosen column.
@@ -378,9 +376,9 @@ class GenericTimeSeries:
         """
         # Extract column and remove empty rows
         data = self.data[column_name].dropna()
-
-        # Return a new GenericTimeSeries
-        return GenericTimeSeries(data.sort_index(), self.meta.copy(), { column_name:self.units[column_name] })
+        
+        # Return the same type of timeseries object.
+        return self.__class__(data.sort_index(), self.meta.copy(), self.units.copy())
 
     def concatenate(self, otherts):
         """Concatenate with another time series. This function will check and
@@ -416,7 +414,8 @@ class GenericTimeSeries:
         units.update(self.units)
         units.update(otherts.units)
         
-        return GenericTimeSeries(data.sort_index(), meta, units)
+        # Return the same type of timeseries object.
+        return self.__class__(data.sort_index(), meta, units)
 
 # #### Miscellaneous #### #
     def _validate_meta(self):
@@ -444,7 +443,7 @@ class GenericTimeSeries:
 
     def _validate_units(self, **kwargs):
         """
-        Validates the meta-information associated with a TimeSeries.
+        Validates the astropy unit-information associated with a TimeSeries.
 
         This method includes very basic validation checks which apply to
         all of the kinds of files that SunPy can read. Datasource-specific
@@ -459,19 +458,48 @@ class GenericTimeSeries:
         warnings.simplefilter('always', Warning)
 
         # For all columns not present in the units dictionary.
+        #for column in set(self.data.columns.tolist()) - set(self.units.keys()):
+        #    self.units[column] = u.Quantity(1.0)
+        #    warnings.warn("Unknown units for \""+str(column)+"\"", Warning)
+
+        # Check that all elements in the dictionary are of type units.
+        # ToDo: figure out how to do the above.
+        return True
+
+    def _sanitize_units(self, **kwargs):
+        """
+        Sanitises the collections.OrderedDict used to store the units.
+        Primarily this method will:
+        
+        Remove entries that don't match up to a column,
+        Add unitless entries for columns with no units defined.        
+        Re-arrange the order of the dictionary to match the columns.
+        """
+        print('in the sanitize function')
+        print(self.units)
+        warnings.simplefilter('always', Warning)
+
+        # Populate unspecified units:
         for column in set(self.data.columns.tolist()) - set(self.units.keys()):
-            self.units[column] = u.Quantity(1.0)
+            # For all columns not present in the units dictionary.
+            self.units[column] = u.dimensionless_unscaled
             warnings.warn("Unknown units for \""+str(column)+"\"", Warning)
+            
+        # Re-arrange so it's in the same order as the columns and removed unused.
+        units = OrderedDict()
+        for column in self.data.columns.tolist():
+            units.update({column:self.units[column]})
+            
+        # Now use the amended units Ordered Dictionary
+        self.units = units
+        print('now:')
+        print(self.units)
+            
 
 # #### New Methods #### #
     def to_table(self, **kwargs):
         """
         Return an Astropy Table of the give TimeSeries object.
-
-        Parameters
-        ----------
-        otherts : `~sunpy.timeseries.TimeSeries`
-            Another time series of the same type.
 
         Returns
         -------
