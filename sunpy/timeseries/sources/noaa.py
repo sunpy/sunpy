@@ -108,6 +108,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     @classmethod
     def _parse_file(cls, filepath):
         """Parses an NOAA indices csv file"""
+        """
         header = []
         with open(filepath, 'r') as fp:
             line = fp.readline()
@@ -124,6 +125,25 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
             data = data.drop('mm',1)
             data = data.drop('yyyy',1)
             return data, {'comments': header}
+        """
+        header = []
+        with open(filepath, 'r') as fp:
+            line = fp.readline()
+            # Read header at top of file
+            while line.startswith((":", "#")):
+                header += line
+                line = fp.readline()
+            fields = ('yyyy', 'mm', 'sunspot SWO', 'sunspot RI', 'sunspot ratio', 'sunspot SWO smooth', 'sunspot RI smooth', 'radio flux', 'radio flux smooth', 'geomagnetic ap', 'geomagnetic smooth')
+            data = read_csv(fp, delim_whitespace=True, names = fields, comment='#', dtype={'yyyy':np.str, 'mm':np.str})
+            data = data.dropna(how='any')
+            timeindex = [datetime.datetime.strptime(x + y, '%Y%m') for x,y in zip(data['yyyy'], data['mm'])]
+            data['time']=timeindex
+            data = data.set_index('time')
+            data = data.drop('mm',1)
+            data = data.drop('yyyy',1)
+            return data, {'comments': header}
+
+
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
