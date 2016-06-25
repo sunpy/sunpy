@@ -2,6 +2,7 @@
 """Provides programs to process and analyze NOAA Solar Cycle data."""
 from __future__ import absolute_import
 
+from collections import OrderedDict
 import datetime
 
 from matplotlib import pyplot as plt
