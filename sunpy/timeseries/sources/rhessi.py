@@ -2,6 +2,7 @@
 """Provides programs to process and analyze RHESSI X-ray data."""
 from __future__ import absolute_import
 
+from collections import OrderedDict
 import datetime
 import matplotlib.dates
 import matplotlib.pyplot as plt
