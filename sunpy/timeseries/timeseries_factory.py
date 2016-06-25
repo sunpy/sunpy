@@ -228,18 +228,27 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 if isinstance(data, Table):
                     # We have an AstroPy Table:
                     data = arg[0].to_pandas()
+                    
+                    # Extract Units from table:
+                    units = OrderedDict({})
+                    for colname in arg[0].colnames:
+                        # Only add the unit if specified.
+                        if arg[0][colname].unit:
+                            units.update({colname:arg[0][colname].unit})
+                    
                 elif isinstance(data, np.ndarray):
                     # We have a numpy ndarray:
                     data = pd.DataFrame(data=arg[0])
                     # ToDo: should this include an index? Maybe use the first column?
+                    units = OrderedDict({})
                 
                 # The second argument will be the metadata/header.
                 meta = OrderedDict(arg[1])
                 
                 # Check if we're given a third units
-                units = OrderedDict({})
                 if (len(arg) == 3) and self._validate_meta(arg[2]):
-                    units = OrderedDict(arg[2])
+                    # Tis combines with values gathered from an input Table.
+                    units = units.update(arg[2])
                 
                 # Add a 3-tuple for this TimeSeries.
                 data_header_unit_tuples.append((data, meta, units))
@@ -253,18 +262,25 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 if isinstance(data, Table):
                     # We have an AstroPy Table:
                     data = arg.to_pandas()
+                    
+                    # Extract Units from table:
+                    units = OrderedDict({})
+                    for colname in arg.colnames:
+                        # Only add the unit if specified.
+                        if arg[colname].unit:
+                            units.update({colname:arg[colname].unit})
                 elif isinstance(data, np.ndarray):
                     # We have a numpy ndarray:
                     data = pd.DataFrame(data=arg)
                     # ToDo: should this include an index? Maybe use the first column?
+                    units = OrderedDict({})
                     
                 # The second argument will be the metadata/header.
                 meta = OrderedDict(args[i+1])
                 
                 # Check if we're given a third units
-                units = OrderedDict({})
                 if (len(args) > i+2) and self._validate_meta(args[i+2]):
-                    units = OrderedDict(args[i+2])
+                    units = units.update(args[i+2])
                     i += 1 # an extra increment to account for the units
                 
                 # Add a 3-tuple for this TimeSeries.
