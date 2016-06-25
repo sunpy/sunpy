@@ -120,6 +120,7 @@ a = [1, 4, 5]
 b = [2.0, 5.0, 8.2]
 c = ['x', 'y', 'z']
 t = Table([a, b, c], names=('a', 'b', 'c'), meta={'name': 'first table'})
+t['b'].unit = 's' # Adding units
 df = t.to_pandas()
 ts_from_arr = sunpy.timeseries.TimeSeries(arr,{})
 ts_from_table = sunpy.timeseries.TimeSeries(t,{})
