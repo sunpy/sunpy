@@ -12,6 +12,7 @@ import pandas
 
 from sunpy.timeseries import GenericTimeSeries
 from sunpy.time import parse_time
+from astropy import units as u
 
 from sunpy import config
 
@@ -166,6 +167,13 @@ class LYRALightCurve(GenericTimeSeries):
         # Return the header and the data
         data = pandas.DataFrame(table, index=times)
         data.sort_index(inplace=True)
+        
+        # Add the units data
+        units = OrderedDict([('CHANNEL1', u.W/u.m**2),
+                             ('CHANNEL2', u.W/u.m**2),
+                             ('CHANNEL3', u.W/u.m**2),
+                             ('CHANNEL4', u.W/u.m**2)])
+        # ToDo: check: http://www.wmo-sat.info/oscar/instruments/view/733
         return data, OrderedDict(hdulist[0].header)
 
     @classmethod

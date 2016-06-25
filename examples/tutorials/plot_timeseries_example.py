@@ -65,7 +65,7 @@ combined_goes_ts.peek()
 # data (pandas.DataFrame): stores the data.
 # meta (OrderedDict): stores the metadata (like the Map)
 # units (OrderedDict): stores the units for each column, with keys that match
-#                      the name of each column.
+# the name of each column.
 # These can be accessed like on the map:
 ts_lyra.data
 ts_lyra.meta

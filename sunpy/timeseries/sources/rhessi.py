@@ -10,6 +10,7 @@ from pandas import DataFrame
 from sunpy.timeseries import GenericTimeSeries
 from sunpy.time import TimeRange, parse_time
 from sunpy.instr import rhessi
+from astropy import units as u
 
 __all__ = ['RHESSISummaryLightCurve']
 
@@ -109,6 +110,17 @@ class RHESSISummaryLightCurve(GenericTimeSeries):
         header, d = rhessi.parse_obssumm_file(filepath)
         data = DataFrame(d['data'], columns=d['labels'], index=d['time'])
 
+        # Add the units data
+        units = OrderedDict([('3 - 6 keV', u.dimensionless_unscaled),
+                             ('6 - 12 keV', u.dimensionless_unscaled),
+                             ('12 - 25 keV', u.dimensionless_unscaled),
+                             ('25 - 50 keV', u.dimensionless_unscaled),
+                             ('50 - 100 keV', u.dimensionless_unscaled),
+                             ('100 - 300 keV', u.dimensionless_unscaled),
+                             ('300 - 800 keV', u.dimensionless_unscaled),
+                             ('800 - 7000 keV', u.dimensionless_unscaled),
+                             ('7000 - 20000 keV', u.dimensionless_unscaled)])
+        # Todo: check units used. http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm
         return data, header
 
     @classmethod

@@ -9,6 +9,7 @@ from pandas.io.parsers import read_csv
 import numpy as np
 
 from sunpy.timeseries import GenericTimeSeries
+from astropy import units as u
 
 __all__ = ['NOAAIndicesTimeSeries', 'NOAAPredictIndicesTimeSeries']
 
@@ -141,6 +142,19 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
             data = data.set_index('time')
             data = data.drop('mm',1)
             data = data.drop('yyyy',1)
+            
+            # Add the units data
+            units = OrderedDict([('sunspot SWO', u.dimensionless_unscaled),
+                                 ('sunspot RI', u.dimensionless_unscaled),
+                                 ('sunspot ratio', u.dimensionless_unscaled),
+                                 ('sunspot SWO smooth', u.dimensionless_unscaled),
+                                 ('sunspot RI smooth', u.dimensionless_unscaled),
+                                 ('radio flux', u.W/u.m**2),
+                                 ('radio flux smooth', u.W/u.m**2),
+                                 ('geomagnetic ap', u.dimensionless_unscaled),
+                                 ('geomagnetic smooth', u.dimensionless_unscaled)])
+            # Todo: check uni
+            # Todo: fix header/meta, it's returning rubbish.
             return data, {'comments': header}
 
 
@@ -242,6 +256,15 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
             data = data.set_index('time')
             data = data.drop('mm',1)
             data = data.drop('yyyy',1)
+            
+            # Add the units data
+            units = OrderedDict([('sunspot', u.dimensionless_unscaled),
+                                 ('sunspot low', u.dimensionless_unscaled),
+                                 ('sunspot high', u.dimensionless_unscaled),
+                                 ('radio flux', u.W/u.m**2),
+                                 ('radio flux low', u.W/u.m**2),
+                                 ('radio flux high', u.W/u.m**2)])
+            # Todo: check units used.
             return data, {'comments': header}
 
     @classmethod

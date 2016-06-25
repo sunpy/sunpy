@@ -12,6 +12,7 @@ from pandas.io.parsers import read_csv
 from os.path import basename
 
 from sunpy.timeseries import GenericTimeSeries
+from astropy import units as u
 
 __all__ = ['EVELightCurve']
 
@@ -195,6 +196,26 @@ class EVELightCurve(GenericTimeSeries):
 
         # data.columns = fields
         print('finish _parse_level_0cs()')
+        
+        # Add the units data
+        units = OrderedDict([(b'XRS-B proxy', u.dimensionless_unscaled),
+                             (b'XRS-A proxy', u.dimensionless_unscaled),
+                             (b'SEM proxy', u.dimensionless_unscaled),
+                             (b'0.1-7ESPquad', u.W/u.m**2),
+                             (b'17.1ESP', u.W/u.m**2),
+                             (b'25.7ESP', u.W/u.m**2),
+                             (b'30.4ESP', u.W/u.m**2),
+                             (b'36.6ESP', u.W/u.m**2),
+                             (b'darkESP', u.ct),
+                             (b'121.6MEGS-P', u.W/u.m**2),
+                             (b'darkMEGS-P', u.ct),
+                             (b'q0ESP', u.dimensionless_unscaled),
+                             (b'q1ESP', u.dimensionless_unscaled),
+                             (b'q2ESP', u.dimensionless_unscaled),
+                             (b'q3ESP', u.dimensionless_unscaled),
+                             (b'CMLat', u.W/u.m**2),
+                             (b'CMLon', u.W/u.m**2)])
+        # Todo: check units used.
         return data, meta
 
     @classmethod

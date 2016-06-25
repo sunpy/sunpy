@@ -12,6 +12,7 @@ import pandas
 from sunpy.io.fits import fits
 from sunpy.instr import fermi
 from sunpy.timeseries import GenericTimeSeries
+from astropy import units as u
 
 from sunpy.extern.six.moves import urllib
 
@@ -116,6 +117,16 @@ class GBMSummaryLightCurve(GenericTimeSeries):
             gbm_times.append(fermi.met_to_utc(t))
         column_labels=['4-15 keV','15-25 keV','25-50 keV','50-100 keV','100-300 keV',
                        '300-800 keV','800-2000 keV']
+                       
+        # Add the units data
+        units = OrderedDict([('4-15 keV', u.ct),
+                             ('15-25 keV', u.ct),
+                             ('25-50 keV', u.ct),
+                             ('50-100 keV', u.ct),
+                             ('100-300 keV', u.ct),
+                             ('300-800 keV', u.ct),
+                             ('800-2000 keV', u.ct)])
+        # Todo: check units used.
         return pandas.DataFrame(summary_counts, columns=column_labels, index=gbm_times), header
 
     @classmethod
