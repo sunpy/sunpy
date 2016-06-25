@@ -127,7 +127,7 @@ class GBMSummaryLightCurve(GenericTimeSeries):
                              ('300-800 keV', u.ct),
                              ('800-2000 keV', u.ct)])
         # Todo: check units used.
-        return pandas.DataFrame(summary_counts, columns=column_labels, index=gbm_times), header
+        return pandas.DataFrame(summary_counts, columns=column_labels, index=gbm_times), header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):

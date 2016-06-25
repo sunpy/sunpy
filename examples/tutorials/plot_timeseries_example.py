@@ -18,8 +18,10 @@ import sunpy.timeseries
 from sunpy.time import TimeRange
 
 from sunpy import lightcurve as lc
-
-
+import astropy.units as u
+from collections import OrderedDict
+from astropy.table import Table
+import numpy as np
 
 ##############################################################################
 # Creating a TimeSeries from a file can be done using the factory.
@@ -41,8 +43,8 @@ ts_rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_LIGHTCURVE, sou
 # class to download files that arnt in the sample data.
 goes_lc_1 = lc.GOESLightCurve.create(TimeRange('2012/06/01', '2012/06/02'))
 goes_lc_2 = lc.GOESLightCurve.create(TimeRange('2012/06/02', '2012/06/03'))
-filepath_1 = 'C:\\Users\\alex_\\sunpy\\data\\go1520120601.fits' # ToDo: get this path from the LC DL.
-filepath_2 = 'C:\\Users\\alex_\\sunpy\\data\\go1520120602.fits'
+filepath_1 = sunpy.config.get('downloads', 'download_dir') + '\\go1520120601.fits'
+filepath_2 = sunpy.config.get('downloads', 'download_dir') + '\\go1520120602.fits'
 # Using these new files you get a list:
 lis_goes_ts = sunpy.timeseries.TimeSeries(filepath_1, filepath_2, source='GOES')
 # Using concatenate=True kwarg you can merge the files into one TimeSeries:
@@ -108,3 +110,31 @@ ts_goes.to_dataframe()
 ts_goes.to_table()
 ts_goes.to_array()
 # Note: the array doesn't include the datetime index column.
+
+##############################################################################
+# Creating a TimeSeries from scratch can be done in a lot of ways, much like a
+# Map. Input data can be in the form of a Pandas DataFrame (prefered), an astropy
+# Table or a Numpy Array.
+arr = np.array([[1,2],[3,4]])
+a = [1, 4, 5]
+b = [2.0, 5.0, 8.2]
+c = ['x', 'y', 'z']
+t = Table([a, b, c], names=('a', 'b', 'c'), meta={'name': 'first table'})
+df = t.to_pandas()
+ts_from_arr = sunpy.timeseries.TimeSeries(arr,{})
+ts_from_table = sunpy.timeseries.TimeSeries(t,{})
+ts_from_df = sunpy.timeseries.TimeSeries(df,{})
+
+##############################################################################
+# You can optionally add units data, a dictionary matching column heading keys
+# to an astropy unit.
+units = OrderedDict([('a', u.Unit("ct")),
+             ('b', u.Unit("ct")),
+             ('c', u.Unit("ct"))])
+ts_from_table = sunpy.timeseries.TimeSeries(t,{}, units)
+ts_from_df = sunpy.timeseries.TimeSeries(df,{}, units)
+
+##############################################################################
+# Quantities can be extracted from a column using the quantity(col_name) method:
+qua = ts_eve.quantity(b'17.1ESP')
+print(qua)

@@ -113,7 +113,7 @@ class NoRHLightCurve(GenericTimeSeries):
         # Add the units data
         units = OrderedDict([('Correlation Coefficient', u.dimensionless_unscaled)])
         # Todo: check units used.
-        return pandas.DataFrame(data, index=norh_time, columns=('Correlation Coefficient')), header
+        return pandas.DataFrame(data, index=norh_time, columns=('Correlation Coefficient')), header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):

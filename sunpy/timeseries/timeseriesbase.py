@@ -24,6 +24,7 @@ from sunpy.extern.six.moves import urllib
 from sunpy.extern import six
 from sunpy.sun import sun
 
+import astropy
 import astropy.units as u
 from astropy.table import Table
 from astropy.table import Column
@@ -121,7 +122,7 @@ class GenericTimeSeries:
 
         # Validate input data
         #self._validate_meta()
-        self._validate_units()
+        #self._validate_units()
 
         # Setup some attributes
         self._nickname = self.detector
@@ -441,7 +442,7 @@ class GenericTimeSeries:
 
                 warnings.warn("Unknown value for "+meta_property.upper(), Warning)
 
-    def _validate_units(self, **kwargs):
+    def _validate_units(self, units, **kwargs):
         """
         Validates the astropy unit-information associated with a TimeSeries.
 
@@ -457,14 +458,14 @@ class GenericTimeSeries:
 
         warnings.simplefilter('always', Warning)
 
-        # For all columns not present in the units dictionary.
-        #for column in set(self.data.columns.tolist()) - set(self.units.keys()):
-        #    self.units[column] = u.Quantity(1.0)
-        #    warnings.warn("Unknown units for \""+str(column)+"\"", Warning)
-
-        # Check that all elements in the dictionary are of type units.
-        # ToDo: figure out how to do the above.
-        return True
+        result = True
+        for key in units:
+            if not isinstance(units[key], astropy.units.UnitBase):
+                # If this is not a unit then this can't be a valid units dict.
+                result = False
+                warnings.warn("Invalid unit given for \""+str(key)+"\"", Warning)
+        
+        return result
 
     def _sanitize_units(self, **kwargs):
         """
@@ -554,6 +555,23 @@ class GenericTimeSeries:
             the result will be of dtype=object. See Notes.
         """
         return self.data.as_matrix(**kwargs)
+
+    def quantity(self, column, **kwargs):
+        """
+        Return a `~astropy.units.quantity.Quantity` for the given column.
+
+        Parameters
+        ----------
+        column: `str`
+            The heading of the column you want output.
+
+        Returns
+        -------
+        quantity : `~astropy.units.quantity.Quantity`
+        """
+        values = self.data[column].values
+        unit   = self.units[column]
+        return u.Quantity(values, unit)
 
     @classmethod
     def _parse_file(cls, filepath):

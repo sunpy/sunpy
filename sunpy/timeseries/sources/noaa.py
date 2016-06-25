@@ -155,7 +155,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
                                  ('geomagnetic smooth', u.dimensionless_unscaled)])
             # Todo: check uni
             # Todo: fix header/meta, it's returning rubbish.
-            return data, {'comments': header}
+            return data, {'comments': header}, units
 
 
 
@@ -265,7 +265,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
                                  ('radio flux low', u.W/u.m**2),
                                  ('radio flux high', u.W/u.m**2)])
             # Todo: check units used.
-            return data, {'comments': header}
+            return data, {'comments': header}, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):

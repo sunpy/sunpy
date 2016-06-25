@@ -204,7 +204,7 @@ class GOESLightCurve(GenericTimeSeries):
         units = OrderedDict([('xrsa', u.ct),
                              ('xrsb', u.ct)])
         # ToDo: check: http://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf
-        return data, header
+        return data, header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
