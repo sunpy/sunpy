@@ -216,7 +216,7 @@ class EVELightCurve(GenericTimeSeries):
                              (b'CMLat', u.W/u.m**2),
                              (b'CMLon', u.W/u.m**2)])
         # Todo: check units used.
-        return data, meta
+        return data, meta, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):

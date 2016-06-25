@@ -121,7 +121,7 @@ class RHESSISummaryLightCurve(GenericTimeSeries):
                              ('800 - 7000 keV', u.dimensionless_unscaled),
                              ('7000 - 20000 keV', u.dimensionless_unscaled)])
         # Todo: check units used. http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm
-        return data, header
+        return data, header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):

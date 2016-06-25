@@ -174,7 +174,7 @@ class LYRALightCurve(GenericTimeSeries):
                              ('CHANNEL3', u.W/u.m**2),
                              ('CHANNEL4', u.W/u.m**2)])
         # ToDo: check: http://www.wmo-sat.info/oscar/instruments/view/733
-        return data, OrderedDict(hdulist[0].header)
+        return data, OrderedDict(hdulist[0].header), units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):

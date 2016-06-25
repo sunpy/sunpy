@@ -3,12 +3,15 @@ from __future__ import absolute_import, division, print_function
 __authors__ = ["Alex Hamilton, Russell Hewett, Stuart Mumford"]
 __email__ = "#########stuart@mumford.me.uk"
 
+import warnings
 import os
 import glob
 from collections import OrderedDict
 
 import numpy as np
+import pandas as pd
 import astropy.io.fits
+from astropy.table import Table
 
 import sunpy
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries, TIMESERIES_CLASSES
@@ -56,15 +59,15 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     >>> import sunpy.data.sample
     >>> mytimeseries = sunpy.map.Map(sunpy.data.sample.GOES_LIGHTCURVE)
 
-    The SunPy TimeSeries factory accepts a wide variety of inputs for creating maps
+    The SunPy TimeSeries factory accepts a wide variety of inputs for creating time series
 
-    * Preloaded tuples of (data, header) pairs
+    * Preloaded tuples of (data, header) pairs or (data, header, units)
 
     >>> my_timeseries = sunpy.timeseries.TimeSeries((data, header))   # doctest: +SKIP
 
     headers are some base of `dict` or `collections.OrderedDict`, including `sunpy.io.header.FileHeader` or `sunpy.map.header.MapMeta` classes.
 
-    * data, header pairs, not in tuples
+    * data, header pairs, or data, header units triples, not in tuples
 
     >>> my_timeseries = sunpy.timeseries.TimeSeries(data, header)
 
@@ -138,8 +141,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             return False, fname
 
 
-
-
     def _validate_meta(self, meta):
         """
         Validate a meta argument.
@@ -150,6 +151,28 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             return True
         else:
             return False
+
+    def _validate_units(self, units, **kwargs):
+        """
+        Validates the astropy unit-information associated with a TimeSeries.
+        """
+    
+        warnings.simplefilter('always', Warning)
+        
+        result = True
+        
+        # It must be a dictionary
+        if not isinstance(units, dict):
+            return False
+        
+        for key in units:
+            if not isinstance(units[key], astropy.units.UnitBase):
+                # If this is not a unit then this can't be a valid units dict.
+                warnings.warn("Invalid unit given for \""+str(key)+"\"", Warning)
+                return False
+        
+        # Passed all the tests
+        return result
 
     def _parse_args(self, *args, **kwargs):
         """
@@ -174,7 +197,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         """
 
-        data_header_pairs = list()
+        data_header_unit_tuples = list()
         already_timeseries = list()
         filepaths = list()
         
@@ -196,32 +219,57 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             # Data-header pair in a tuple
             # ToDo: this needs to accept a 3-tuple if units are given.
             if ((type(arg) in [tuple, list]) and
-                len(arg) == 2 and
-                isinstance(arg[0], np.ndarray) and
+                (len(arg) == 2 or len(arg) == 3) and
+                isinstance(arg[0], (np.ndarray, Table, pd.DataFrame)) and
                 self._validate_meta(arg[1])):
-
-                arg[1] = OrderedDict(arg[1])
-                data_header_pairs.append(arg)
+                # Assume a Pandas Dataframe is given.
+                data = arg[0]
+                # Convert the data argument into a Pandas DataFrame if needed.
+                if isinstance(data, Table):
+                    # We have an AstroPy Table:
+                    data = arg[0].to_pandas()
+                elif isinstance(data, np.ndarray):
+                    # We have a numpy ndarray:
+                    data = pd.DataFrame(data=arg[0])
+                    # ToDo: should this include an index? Maybe use the first column?
+                
+                # The second argument will be the metadata/header.
+                meta = OrderedDict(arg[1])
+                
+                # Check if we're given a third units
+                units = OrderedDict({})
+                if (len(arg) == 3) and self._validate_meta(arg[2]):
+                    units = OrderedDict(arg[2])
+                
+                # Add a 3-tuple for this TimeSeries.
+                data_header_unit_tuples.append((data, meta, units))
 
             # Data-header pair not in a tuple
-            elif (isinstance(arg, np.ndarray) and
+            elif (isinstance(arg, (np.ndarray, Table, pd.DataFrame)) and
                   self._validate_meta(args[i+1])):
-                # Make the 
-                pair = (args[i], OrderedDict(args[i+1]))
+                # Assume a Pandas Dataframe is given.
+                data = arg
+                # Convert the data argument into a Pandas DataFrame if needed.
+                if isinstance(data, Table):
+                    # We have an AstroPy Table:
+                    data = arg.to_pandas()
+                elif isinstance(data, np.ndarray):
+                    # We have a numpy ndarray:
+                    data = pd.DataFrame(data=arg)
+                    # ToDo: should this include an index? Maybe use the first column?
+                    
+                # The second argument will be the metadata/header.
+                meta = OrderedDict(args[i+1])
                 
-                # Check if units are give:
-                if(self._validate_units(args[i+2])):
-                    # If we have been given units
-                    pair = (args[i], OrderedDict(args[i+1]), args[i+2])
+                # Check if we're given a third units
+                units = OrderedDict({})
+                if (len(args) > i+2) and self._validate_meta(args[i+2]):
+                    units = OrderedDict(args[i+2])
                     i += 1 # an extra increment to account for the units
-
                 
-                data_header_pairs.append(pair)
-                i += 1 # an extra increment to account for the data-header pairing
-            
-            # Astropy Table
-            #elif (isinstance(arg, astropy.table.table.Table):
-            #    df = t.to_pandas()
+                # Add a 3-tuple for this TimeSeries.
+                data_header_unit_tuples.append((data, meta, units))
+                i += 1 # an extra increment to account for the header
                 
             
             # Filepath
@@ -248,7 +296,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     pairs = temp[1]
                     print(pairs)
                     print('\n')
-                    data_header_pairs += pairs
+                    data_header_unit_tuples += pairs
                 else:
                     print('File unsucessfully read in, it should be returned as a filepath.')
                     print('Filepath should be: ' + temp[1])
@@ -263,13 +311,13 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 path = os.path.expanduser(arg)
                 files = [os.path.join(path, elem) for elem in os.listdir(path)]
                 for afile in files:
-                    data_header_pairs += self._read_file(afile, **kwargs)
+                    data_header_unit_tuples += self._read_file(afile, **kwargs)
 
             # Glob
             elif (isinstance(arg,six.string_types) and '*' in arg):
                 files = glob.glob( os.path.expanduser(arg) )
                 for afile in files:
-                    data_header_pairs += self._read_file(afile, **kwargs)
+                    data_header_unit_tuples += self._read_file(afile, **kwargs)
 
             #### Potentially unecessary, as there won't be a time series cube.
             # Already a TimeSeries
@@ -283,12 +331,12 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 url = arg
                 path = download_file(url, default_dir)
                 pairs = self._read_file(path, **kwargs)
-                data_header_pairs += pairs
+                data_header_unit_tuples += pairs
 
             #### Potentially unecessary
             # A database Entry
             ####elif isinstance(arg, DatabaseEntry):
-            ####    data_header_pairs += self._read_file(arg.path, **kwargs)
+            ####    data_header_unit_tuples += self._read_file(arg.path, **kwargs)
 
             else:
                 raise ValueError("File not found or invalid input")
@@ -297,14 +345,14 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         #TODO:
         # In the end, if there are already maps it should be put in the same
         # order as the input, currently they are not.
-        print('\ndata_header_pairs:')
-        print(data_header_pairs)
+        print('\ndata_header_unit_tuples:')
+        print(data_header_unit_tuples)
         print('\nalready_timeseries:')
         print(already_timeseries)
         print('\nfilepaths:')
         print(filepaths)
         print('\n')
-        return data_header_pairs, already_timeseries, filepaths
+        return data_header_unit_tuples, already_timeseries, filepaths
 
 
     def __call__(self, *args, **kwargs):
@@ -331,7 +379,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # Hack to get around Python 2.x not backporting PEP 3102.
         silence_errors = kwargs.pop('silence_errors', False)
 
-        data_header_pairs, already_timeseries, filepaths = self._parse_args(*args, **kwargs)
+        data_header_unit_tuples, already_timeseries, filepaths = self._parse_args(*args, **kwargs)
 
         new_timeseries = list()
         
@@ -353,13 +401,13 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         print('Now to run though the list of data header pairs:')        
         # Loop over each registered type and check to see if WidgetType
         # matches the arguments.  If it does, use that type.
-        for pair in data_header_pairs:
+        for pair in data_header_unit_tuples:
             print('pair: ' + str(pair))
-            data, header = pair
+            data, header, units = pair
             meta = MapMeta(header)
 
             try:
-                new_ts = self._check_registered_widgets(data=data, meta=meta, **kwargs)
+                new_ts = self._check_registered_widgets(data=data, meta=meta, units=units, **kwargs)
             except (NoMatchError, MultipleMatchError, ValidationFunctionError):
                 if not silence_errors:
                     raise
@@ -426,12 +474,12 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         filepath = kwargs.pop('filepath', None)
         data = kwargs.pop('data', None)
         meta = kwargs.pop('meta', None)
+        units = kwargs.pop('units', None)
         if filepath:
-            data, meta = WidgetType._parse_file(filepath)
+            data, meta, units = WidgetType._parse_file(filepath)
 
         # Now return a TimeSeries from the given file.
-        return WidgetType(data, meta, **kwargs)
-
+        return WidgetType(data, meta, units, **kwargs)
 
 def _is_url(arg):
     try:
