@@ -13,6 +13,7 @@ import pandas
 
 from sunpy.timeseries import GenericTimeSeries
 from sunpy.time import parse_time
+from astropy import units as u
 
 from sunpy import config
 
@@ -109,7 +110,10 @@ class NoRHLightCurve(GenericTimeSeries):
         for s in sec_array:
             norh_time.append(obs_start_time + datetime.timedelta(0,s))
 
-        return pandas.DataFrame(data, index=norh_time), header
+        # Add the units data
+        units = OrderedDict([('Correlation Coefficient', u.dimensionless_unscaled)])
+        # Todo: check units used.
+        return pandas.DataFrame(data, index=norh_time, columns=('Correlation Coefficient')), header
 
     @classmethod
     def is_datasource_for(cls, **kwargs):

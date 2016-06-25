@@ -16,6 +16,7 @@ from pandas import DataFrame
 from sunpy.timeseries import GenericTimeSeries
 from sunpy.time import parse_time, TimeRange, is_time_in_given_format
 from sunpy.util import net
+from astropy import units as u
 
 import numpy as np
 import numpy.ma as ma
@@ -198,6 +199,11 @@ class GOESLightCurve(GenericTimeSeries):
 
         data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb}, index=times)
         data.sort_index(inplace=True)
+
+        # Add the units data
+        units = OrderedDict([('xrsa', u.ct),
+                             ('xrsb', u.ct)])
+        # ToDo: check: http://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf
         return data, header
 
     @classmethod
