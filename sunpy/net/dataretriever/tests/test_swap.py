@@ -25,13 +25,13 @@ def test_get_url_for_time_range(timerange, url_start, url_end, level):
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
-trange = Time('2015/12/30 00:00:00','2015/12/31 00:05:00')
 def test_can_handle_query():
+    trange = Time('2015/12/30 00:00:00','2015/12/31 00:05:00')
     assert swap.SWAPClient._can_handle_query(trange, Instrument('swap'), a.Level(1))
     assert swap.SWAPClient._can_handle_query(trange, Instrument('swap'), a.Level('q'))
-    assert swap.SWAPClient._can_handle_query(trange, Instrument('swap'), a.Level('s'))
+    assert not swap.SWAPClient._can_handle_query(trange, Instrument('swap'), a.Level('s'))
     assert not swap.SWAPClient._can_handle_query(trange, Instrument('swap'))
-    assert not swap.SWAPClient._can_handle_query(trange) is False
+    assert not swap.SWAPClient._can_handle_query(trange)
     assert not swap.SWAPClient._can_handle_query(trange, Instrument('eve'))
 
 @pytest.mark.online
