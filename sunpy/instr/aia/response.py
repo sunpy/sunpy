@@ -102,24 +102,24 @@ class Response():
         # keyword arguements
         path_to_genx_dir = kwargs.get('path_to_genx_dir', '')
         # save_outfile = kwargs.get('save_outfile', False)
-        overwrite = kwargs.get('overwrite', True)
+        overwrite = kwargs.get('overwrite', False)
         version = kwargs.get('version', 6)
-        csv = kwargs.get('csv', 'channel_properties.csv')
+
+        csv = kwargs.get('csv', 'channel_properties_' + str(version) + '.csv')
 
         # Load in the filename with the call of the function to initialize channel properties, define self.dataframe
         if os.path.exists(csv):
-            # print('using already made csv')
-            self.dataframe = pd.DataFrame.from_csv('channel_properties.csv')
             if overwrite:
                 os.remove(csv)
+                print('overwriting: ' + 'channel_properties_' + str(version) + '.csv')
                 self.aia_inst_genx_to_dataframe(path_to_genx_dir, version=version)
+            else:
+                print('using: ' + 'channel_properties_' + str(version) + '.csv')
+                self.dataframe = pd.DataFrame.from_csv('channel_properties_' + str(version) + '.csv', header = 0,  index_col = 0, sep = ',')
+
         else:
-            # print('making csv')
+            print('making: ', 'channel_properties_' + str(version) + '.csv')
             self.aia_inst_genx_to_dataframe(path_to_genx_dir, version=version)
-
-
-
-
 
         # defines properties for one channel if given a wavelength keyword: #TODO: how to output 'all'?
         # def __call__(self, **kwargs): # possible way to implement wavelength after initial^^^
@@ -149,23 +149,20 @@ class Response():
             self.primary = kwargs.get('primary', var['primary'])
             self.secondary = kwargs.get('secondary', var['secondary'])
             self.ccd = kwargs.get('ccd', var['ccd'])
-            self.contam = kwargs.get('contam', var['contam'])
-
+            self.contam = kwargs.get('contam', var['contam']) # nan in 1600 and 1700
+            self.cross_area = kwargs.get('cross_area', var['cross_area'][0])
 
             # 1600, 1700 channels have arrays for some attributes #TODO: figure out why/ which is best
             if type(self.primary[0]) == np.ndarray:
                 self.primary = self.primary[0]
                 self.secondary = self.secondary[0]
-                #self.contam = self.contam[0]  # nan in 1600 and 1700
 
             # eff_area is not in all channels
             try:
                 self.eff_area = kwargs.get('eff_area', var['effarea'])
-            except KeyError:            #     pass
+            except KeyError:
                 print(wavelength, 'has no eff_area keyword.')
                 pass
-
-
 
     def aia_inst_genx_to_dataframe(self, input_directory, version):
         """
@@ -180,25 +177,22 @@ class Response():
         :param save: bool, if True, will save a dataframe containing all of the extracted instrument data to
 
         """
-        check = []
+        check = []  # make sure not duplicated
         file_paths = []
 
         for root, dirs, files in os.walk(input_directory, topdown=False):
+
             for name in files:
-                if (os.path.join(root, name)) not in check and name.startswith(
-                        'aia_V' + str(version)) and name.endswith('_fullinst'):
+                if (os.path.join(root, name)) not in check and name.endswith('_fullinst') and str(version) in str(name):
                     check.append(os.path.join(root, name))
                     file_paths.append(os.path.join(root, name))
 
-        assert len(file_paths) != 0, 'Did not find aia_V' + str(version) + '_fullinst files in directory.'
+        assert len(file_paths) != 0, 'Did not find aia_' + str(version) + '_fullinst files in directory.'
 
         # fill dataframe with desired properties and save csv file
-        self.dataframe = self.save_properties_to_dataframe(file_paths)
+        self.dataframe = self.save_properties_to_dataframe(file_paths, version)
 
-
-
-
-    def save_properties_to_dataframe(self, files):
+    def save_properties_to_dataframe(self, files, version):
         """
         This definition reads the instrument file aia_V6_all_fullinst, which was obtained from ssw_aia_response_data inside
         ssw_aia_response_genx.tar.gz (an output file saved from SolarSoft Ware (SSW)). It will extract the instrument data and save
@@ -254,7 +248,7 @@ class Response():
         assert len(df) != 0, 'Data Frame is not loading from file.'
 
         #  save to .csv outfile
-        df.to_csv('channel_properties.csv')
+        df.to_csv('channel_properties_' + str(version) + '.csv')
 
         return df
 
@@ -294,18 +288,18 @@ class Response():
 
         dict = {}
 
-        # target wavelength specifid and pull out respective properties in dataframe and apply units
+        # at target wavelength - pull out respective properties in dataframe and apply units
         for wavelength, values in self.dataframe.iteritems():
             if int(wavelength) == int(wavelength_center):
-                dict['wave'] = values['wave'] * u.angstrom
+                print(values['wave'] * u.angstrom)
+                dict['wavemin'] = values['wavemin'] * u.angstrom
                 dict['effarea'] = values['effarea'] * u.cm ** 2
                 dict['geoarea'] = values['geoarea'] * u.cm ** 2
                 dict['platescale'] = values['platescale']
                 dict['numfilters'] = values['numfilters']
-                dict['wavemin'] = values['wavemin'] * u.angstrom
-                dict['wavestep'] = values['wavestep'] * u.angstrom
-                dict['wavenumsteps'] = values['wavenumsteps'] * u.angstrom
-                dict['wavelog'] = values['wavelog'] * u.angstrom
+                dict['wavestep'] = values['wavestep'] * u.angstom
+                dict['wavenumsteps'] = values['wavenumsteps'] * u.angstom
+                dict['wavelog'] = values['wavelog'] * u.AA
                 dict['usecontam'] = values['usecontam']
                 dict['contamthick'] = values['contamthick']
                 dict['fp_filter'] = values['fp_filter']
@@ -314,20 +308,22 @@ class Response():
                 dict['secondary'] = values['secondary']
                 dict['ccd'] = values['ccd']
                 dict['contam'] = values['contam']
+                dict['cross_area'] = values['cross_area']
+                dict['wave'] = values['wave'] * u.angstrom
+
 
                 # not in 1600 and 1700 channels
                 try:
-                    dict['elecperdn'] = values['elecperdn'] # loaded for now for comparison
-                    dict['elecperev'] = values['elecperev'] # loaded for now for comparison
+                    dict['elecperdn'] = values['elecperdn']  # loaded for now for comparison
+                    dict['elecperev'] = values['elecperev']  # loaded for now for comparison
                 except KeyError:
                     pass
 
-
-
                 assert len(dict) != 0
+
                 return dict
 
-    def effective_area(self, compare_genx=False, compare_table = False):
+    def effective_area(self, compare_genx=False, compare_table=False):
         """
         AIA instrument response / effective area
         - contains information about the efficiency of the telescope optics.
@@ -359,30 +355,20 @@ class Response():
         if compare_genx:
             self.eff_area = self.eff_area
         elif compare_table:
-            self.eff_area =  [0.312, 1.172, 2.881, 1.188, 1.206, 0.063, 0.045, 0.0192, 0.0389][self.wavelength_centers.index(self.wavelength)]
+            self.eff_area = [0.312, 1.172, 2.881, 1.188, 1.206, 0.063, 0.045, 0.0192, 0.0389][
+                self.wavelength_centers.index(self.wavelength)]
         else:
             # variables:
             wavelength = self.wavelength
             reflectance = self.primary * self.secondary
-            transmission_efficiency = self.fp_filter * self.ent_filter   # these appear to be the same... not sure
+            transmission_efficiency = self.fp_filter * self.ent_filter  # these appear to be the same... not sure
 
             # equation:
-            eff_area = self.geoarea * reflectance * transmission_efficiency * self.contam * self.ccd
+            eff_area = self.geoarea * reflectance * transmission_efficiency * wavelength * self.contam * self.ccd
 
             self.eff_area = eff_area
 
         return self.eff_area
-
-
-        # REFERENCE IDL CODE:
-        # if usephottoelec and usephottodn:-- not sure why?! - conversions?
-        #       units = 12398. / wave * elecperev / elecperdn
-        # else:
-        #       units = 1
-        # eff_area = ((geoarea * ent_filter * fp_filter * primary * secondary * ccd * contam) + cross_area) * units
-
-
-
 
     def instrument_response(self, compare=False):
         """
@@ -409,7 +395,7 @@ class Response():
 
             # ccd == quantum efficience ==q
             # calulate gain across wavelength centers - included in master gain of aia image metadata load gain
-            # contam = fluctions of the instruement
+            # contam = fluctuations of the instrument
         Parameters
         ----------
         :keyword
@@ -428,7 +414,8 @@ class Response():
         # TODO: fix doc string here! ^^^
         # TODO: WIP!!   work with values / conversions to get the right number out from this function
         gu = u.count / u.photon
-        gain_table = {94: 2.128* gu, 131: 1.523*gu, 171: 1.168*gu, 195: 1.024*gu, 211: 0.946*gu, 304: 0.658*gu, 335: 0.596*gu, 1600:0.125*gu, 1700:0.118*gu}
+        gain_table = {94: 2.128 * gu, 131: 1.523 * gu, 171: 1.168 * gu, 195: 1.024 * gu, 211: 0.946 * gu,
+                      304: 0.658 * gu, 335: 0.596 * gu, 1600: 0.125 * gu, 1700: 0.118 * gu}
 
         if compare:
             # gives Table 2 values for instruement response
@@ -445,7 +432,7 @@ class Response():
         return self.inst_response
 
         # NOTES:      ^^^ get the same values as the table when using all table values: self.effective_area(compare_table=True)
-        #                 get one of the same values (171) when calculating it with center wavelength
+        #                 get one of the same values (171) when calculating it with center wavelength - fix
 
 
 def emissivity():
