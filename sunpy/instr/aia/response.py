@@ -85,9 +85,9 @@ class Response():
         # parameter list
         self.properties = ['wave', 'effarea', 'geoarea', 'platescale',
                            'numfilters', 'wavemin', 'wavestep', 'wavenumsteps', 'wavelog',
-                           'usecontam', 'contamthick',
+                           'usecontam', 'contamthick', 'elecperdn',
                            'useerror', 'fp_filter', 'ent_filter', 'primary', 'secondary', 'ccd', 'contam',
-                           'cross_area']  # 'usephottoelec', 'usephottodn',  'elecperdn','elecperev', no longer, not in 1600, 1700
+                           'cross_area']  # 'usephottoelec', 'usephottodn',  'elecperdn','elecperev', not in 1600, 1700
 
         # wavelength center list
         # TODO: want 6 EUV channels and 2 UV channels --- needs updated
@@ -130,15 +130,18 @@ class Response():
             assert wavelength in self.wavelength_centers, "Choose one integer value from wavelength centers: ' + str(self.wavelength_centers) or 'all'"
             self.wavelength = wavelength
 
-            for prop in self.properties:
-                var = self.property_per_channel_dict(wavelength)
+            var = self.property_per_channel_dict(wavelength)
+
+            self.platescale = kwargs.get('platescale', var['platescale'])
+            self.elecperdn = kwargs.get('elecperdn', var['elecperdn'])
+            # self.elecperev = kwargs.get('elecperev', var['elecperev'])
 
             self.wavelength_range = kwargs.get('wave', var['wave'])
-            self.geoarea = kwargs.get('geoarea', var['geoarea'])
-            self.platescale = kwargs.get('platescale', var['platescale'])
             self.wavemin = kwargs.get('wavemin', var['wavemin'])
             self.wavenumsteps = kwargs.get('wavenumsteps', var['wavenumsteps'])
             self.wavestep = kwargs.get('wavestep', var['wavestep'])
+
+            self.geoarea = kwargs.get('geoarea', var['geoarea'])
 
             self.fp_filter = kwargs.get('fp_filter', var['fp_filter'])
             self.ent_filter = kwargs.get('ent_filter', var['ent_filter'])
@@ -153,14 +156,14 @@ class Response():
             if type(self.primary[0]) == np.ndarray:
                 self.primary = self.primary[0]
                 self.secondary = self.secondary[0]
-                #self.contam = self.contam[0]  # not sure if this is needed
+                #self.contam = self.contam[0]  # nan in 1600 and 1700
 
             # eff_area is not in all channels
             try:
                 self.eff_area = kwargs.get('eff_area', var['effarea'])
             except KeyError:            #     pass
                 print(wavelength, 'has no eff_area keyword.')
-                self.eff_area = kwargs.get('eff_area', np.array(np.zeros(shape = len(self.wavelength_range))))
+                pass
 
 
 
@@ -237,13 +240,11 @@ class Response():
 
                         # match the properties in the rec.array to desired properties
                         variables = set(data[name][0].dtype.fields.keys()) & set(self.properties)
-                        # assert len(variables) == len(self.properties)
 
                         # then iterate through the properties to fill a dataframe with rec.array information
                         for property in variables:
                             try:
                                 df.loc[property, wavelength] = data[name][0][property][0]
-
                             # contam and crossarea are sequences -- # TODO: work on this try statement
                             except ValueError:
                                 df.loc[property, wavelength] = data[name][0][property]
@@ -275,16 +276,12 @@ class Response():
             wavelengths imaged by the instrument and centered around the channel wavelength
         geoarea: float
             the geometric area of the each channel: EUV = 83.0 cm**2, UV = 30.8 cm**2
-        elecperev: float
-            a conversion factor for electrons per electronic volts
         ent_filter: array
             transmission efficiency of the entrance filter
         fp_filter: array of floats
             transmission efficiency of the focal plane filter
         contam: array of floats
             correction to adjust for the time varying contamination of the components
-        cross_area: array of flats
-            cross area of the instrument
         secondary: array of floats
             reflectance of secondary mirror
         primary: array
@@ -302,24 +299,15 @@ class Response():
             if int(wavelength) == int(wavelength_center):
                 dict['wave'] = values['wave'] * u.angstrom
                 dict['effarea'] = values['effarea'] * u.cm ** 2
-                # dict['units'] = values['units']
                 dict['geoarea'] = values['geoarea'] * u.cm ** 2
-                # dict['scale'] = values['scale']
                 dict['platescale'] = values['platescale']
                 dict['numfilters'] = values['numfilters']
                 dict['wavemin'] = values['wavemin'] * u.angstrom
                 dict['wavestep'] = values['wavestep'] * u.angstrom
                 dict['wavenumsteps'] = values['wavenumsteps'] * u.angstrom
                 dict['wavelog'] = values['wavelog'] * u.angstrom
-                # dict['filtersincludemesh'] = values['filtersincludemesh']
-                # dict['meshtrans'] = values['meshtrans']
                 dict['usecontam'] = values['usecontam']
                 dict['contamthick'] = values['contamthick']
-                # dict['usephottoelec'] = values['usephottoelec'] * u.photon / u.electron
-                # dict['elecperev'] = values['elecperev'] * (u.electron / u.ct)  # u.eV?
-                # dict['usephottodn'] = values['usephottodn'] * u.photon / u.ct
-                # dict['elecperdn'] = values['elecperdn'] * (u.electron / u.ct)  # the ccd gain!!
-                dict['useerror'] = values['useerror']
                 dict['fp_filter'] = values['fp_filter']
                 dict['ent_filter'] = values['ent_filter']
                 dict['primary'] = values['primary']
@@ -327,11 +315,19 @@ class Response():
                 dict['ccd'] = values['ccd']
                 dict['contam'] = values['contam']
 
+                # not in 1600 and 1700 channels
+                try:
+                    dict['elecperdn'] = values['elecperdn'] # loaded for now for comparison
+                    dict['elecperev'] = values['elecperev'] # loaded for now for comparison
+                except KeyError:
+                    pass
+
+
 
                 assert len(dict) != 0
                 return dict
 
-    def effective_area(self, compare=False):
+    def effective_area(self, compare_genx=False, compare_table = False):
         """
         AIA instrument response / effective area
         - contains information about the efficiency of the telescope optics.
@@ -360,20 +356,20 @@ class Response():
 
 
         """
-
-        wavelength = self.wavelength
-
-        # define variables to call from channel dictionary
-        reflectance = self.primary * self.secondary
-        transmission_efficiency = self.fp_filter * self.ent_filter   # these appear to be the same... not sure
-
-        eff_area = self.geoarea * reflectance * transmission_efficiency * self.contam * self.ccd
-
-        if compare:
+        if compare_genx:
             self.eff_area = self.eff_area
-
+        elif compare_table:
+            self.eff_area =  [0.312, 1.172, 2.881, 1.188, 1.206, 0.063, 0.045, 0.0192, 0.0389][self.wavelength_centers.index(self.wavelength)]
         else:
-            self.eff_area = eff_area  # print('calc:',wavelength, np.mean(eff_area))
+            # variables:
+            wavelength = self.wavelength
+            reflectance = self.primary * self.secondary
+            transmission_efficiency = self.fp_filter * self.ent_filter   # these appear to be the same... not sure
+
+            # equation:
+            eff_area = self.geoarea * reflectance * transmission_efficiency * self.contam * self.ccd
+
+            self.eff_area = eff_area
 
         return self.eff_area
 
@@ -386,9 +382,9 @@ class Response():
         # eff_area = ((geoarea * ent_filter * fp_filter * primary * secondary * ccd * contam) + cross_area) * units
 
 
-        #    paper: 0.312 1.172 2.881 1.188 1.206 0.063 0.045
 
-    def instrument_response(self, wavelength=94, ssw_gain=False, compare=False):
+
+    def instrument_response(self, compare=False):
         """
 
         Describes the instrument (AIA) response per wavelength by calculating effective area vs wavelength of the strongest emission lines present in the solar feature
@@ -430,37 +426,26 @@ class Response():
         """
 
         # TODO: fix doc string here! ^^^
-
-
-        var = self.property_per_channel_dict(wavelength)
+        # TODO: WIP!!   work with values / conversions to get the right number out from this function
+        gu = u.count / u.photon
+        gain_table = {94: 2.128* gu, 131: 1.523*gu, 171: 1.168*gu, 195: 1.024*gu, 211: 0.946*gu, 304: 0.658*gu, 335: 0.596*gu, 1600:0.125*gu, 1700:0.118*gu}
 
         if compare:
-            self.inst_response = [0.664, 1.785, 3.365, 1.217, 1.14, 0.041, 0.027]
+            # gives Table 2 values for instruement response
+            index = self.wavelength_centers.index(self.wavelength)
+            self.inst_response = [0.664, 1.785, 3.365, 1.217, 1.14, 0.041, 0.027, 0.0024, 0.0046][index]
         else:
-            # Calculations of G from Boerner formulas * work in progress*
-            if ssw_gain:
-                for key, gain in ccd_gain.iteritems():
-                    if str(key) == str(wavelength):
-                        eff_area = self.effective_area(key)
-                        Gain = 12398.0 / (var['wave'] * var['elecperev']) / var['elecperdn']  # < gain
-                        inst_response = (eff_area + var['cross_area']) * Gain ** (u.electron / u.ct)
-                        # want: dn/photon  -- gain should be elec/dn??
-                        self.inst_response = instr_response
-
             # calculations of G from Boerner Table 12
-            else:
-                Gain_dict = {94: 2.128, 131: 1.523, 171: 1.168, 195: 1.024, 211: 0.946, 304: 0.658, 335: 0.596}
-                for key, gain in Gain_dict.iteritems():
-                    if str(key) == str(wavelength):
-                        eff_area = self.effective_area(key)
-                        print('eff_area:', eff_area)
-                        inst_response = (eff_area * gain * ((u.electron / u.ct) / var['usephottodn']) * (
-                        u.electron / u.ct))  # eff_area + var['cross_area'])
-                        # print(np.mean(instr_response))
-                        self.inst_response = inst_response
+            for key, gain in gain_table.iteritems():
+                if str(key) == str(self.wavelength):
+                    eff_area = self.effective_area()
+                    inst_response = eff_area * gain
+                    self.inst_response = inst_response[self.wavelength]
 
-        # TODO: get this array to be as expected  , want units: cm**2 DN /phot
         return self.inst_response
+
+        # NOTES:      ^^^ get the same values as the table when using all table values: self.effective_area(compare_table=True)
+        #                 get one of the same values (171) when calculating it with center wavelength
 
 
 def emissivity():
