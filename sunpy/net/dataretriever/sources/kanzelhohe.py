@@ -83,12 +83,11 @@ class KanzelhoheClient(GenericClient):
             START_DATE = date_table[wave]
             if timerange.start < START_DATE:
                 raise ValueError('Earliest date for which Kanzelhohe data is available is {:%Y-%m-%d}'.format(START_DATE))
-            prefix = "http://cesar.kso.ac.at/{datatype}/"
-            if (wave == 6563):
-                suffix = "%Y/kanz_{datatype1}_%Y%m%d_%H%M%S.fts.gz"
-            else:
-                suffix = "%Y/%Y%m%d/processed/kanz_{datatype1}_%Y%m%d_%H%M%S.fts.gz"
-            url_pattern = prefix + suffix
+            prefix = "http://cesar.kso.ac.at/{datatype}/%Y/"
+            suffix = ""
+            if (wave != 6563):
+                suffix = "%Y%m%d/processed/"
+            url_pattern = prefix + suffix + "kanz_{datatype1}_%Y%m%d_%H%M%S.fts.gz"
             crawler = Scraper(url_pattern, datatype=table[wave][0], datatype1=table[wave][1])
             if not timerange:
                 return []
