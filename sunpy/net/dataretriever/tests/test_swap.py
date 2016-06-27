@@ -1,10 +1,12 @@
+"""
+This module tests SWAPClient
+"""
 #This module was developed with funding provided by
 #the Google Summer of Code 2016.
-import datetime
 import pytest
 
 from sunpy.time.timerange import TimeRange
-from sunpy.net.vso.attrs import Time,Instrument,Level
+from sunpy.net.vso.attrs import Time, Instrument, Level
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
 from sunpy.net import Fido
@@ -26,7 +28,7 @@ def test_get_url_for_time_range(timerange, url_start, url_end, level):
     assert urls[-1] == url_end
 
 def test_can_handle_query():
-    trange = Time('2015/12/30 00:00:00','2015/12/31 00:05:00')
+    trange = Time('2015/12/30 00:00:00', '2015/12/31 00:05:00')
     assert swap.SWAPClient._can_handle_query(trange, Instrument('swap'), a.Level(1))
     assert swap.SWAPClient._can_handle_query(trange, Instrument('swap'), a.Level('q'))
     assert not swap.SWAPClient._can_handle_query(trange, Instrument('swap'), a.Level('s'))
@@ -36,7 +38,7 @@ def test_can_handle_query():
 
 @pytest.mark.online
 def test_query():
-    qr1 = LCClient.query(Time('2015-12-30 00:00:00','2015-12-30 00:05:00'), Level = 1)
+    qr1 = LCClient.query(Time('2015-12-30 00:00:00', '2015-12-30 00:05:00'), Level = 1)
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 4
     assert qr1.time_range()[0] == '2015/12/30'
@@ -44,11 +46,11 @@ def test_query():
 
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument, level",
-[(Time('2015/12/30 00:00:00','2015/12/30 00:05:00'), Instrument('swap'), Level('q'))])
+[(Time('2015/12/30 00:00:00', '2015/12/30 00:05:00'), Instrument('swap'), Level('q'))])
 #This test will download 4 JP2 files
 #each of size 170KB.
 def test_get(time, instrument, level):
-    qr1 = LCClient.query(time,instrument,level)
+    qr1 = LCClient.query(time, instrument, level)
     res = LCClient.get(qr1)
     download_list = res.wait()
     assert len(download_list) == len(qr1)
