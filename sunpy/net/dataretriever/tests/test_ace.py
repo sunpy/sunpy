@@ -1,10 +1,12 @@
+"""
+This module tests ACE Client.
+"""
 #This module was developed with funding provided by
 #the Google Summer of Code 2016.
-import datetime
 import pytest
 
 from sunpy.time.timerange import TimeRange
-from sunpy.net.vso.attrs import Time,Instrument,Level
+from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
 from sunpy.net import Fido
@@ -39,7 +41,7 @@ def test_can_handle_query():
 
 @pytest.mark.online
 def test_query():
-    qr = SWEPAMClient.query(Time('2015/12/27', '2015/12/30'), Instrument = 'swepam')
+    qr = SWEPAMClient.query(Time('2015/12/27', '2015/12/30'), Instrument='swepam')
     assert isinstance(qr, QueryResponse)
     assert len(qr) == 4
     assert qr.time_range()[0] == '2015/12/27'
