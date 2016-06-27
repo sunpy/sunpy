@@ -1,17 +1,16 @@
 #This module was developed with funding provided by
 #the Google Summer of Code 2016.
-
+"""
+This module implements Kanzelhohe Client.
+"""
 __author__ = "Sudarshan Konge"
 __email__ = "sudk1896@gmail.com"
 
 import datetime
-import urllib2
 import numpy as np
-
 
 from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
-from sunpy.time import TimeRange
 
 __all__ = ['KanzelhoheClient']
 
@@ -29,7 +28,7 @@ class KanzelhoheClient(GenericClient):
     timerange: sunpy.time.TimeRange
         time range for which data is to be downloaded.
         Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
-    
+
     Instrument: Fixed argument = 'kanzelhohe'
 
     Wavelength: Fixed argument = astropy.units.quantity.Quantity
@@ -50,10 +49,10 @@ class KanzelhoheClient(GenericClient):
     >>> print(results)
     [<Table length=1>
         Start Time           End Time              Source        Instrument
-        str19               str19                str21           str10   
+        str19               str19                str21           str10
     ------------------- ------------------- --------------------- ----------
     2015-12-28 00:00:00 2015-12-29 00:00:00 Global Halpha Network Kanzelhohe]
-    
+
     >>> response = Fido.fetch(results)
     """
     def _get_url_for_timerange(self, timerange, **kwargs):
@@ -85,7 +84,7 @@ class KanzelhoheClient(GenericClient):
                 raise ValueError('Earliest date for which Kanzelhohe data is available is {:%Y-%m-%d}'.format(START_DATE))
             prefix = "http://cesar.kso.ac.at/{datatype}/%Y/"
             suffix = ""
-            if (wave != 6563):
+            if wave != 6563:
                 suffix = "%Y%m%d/processed/"
             url_pattern = prefix + suffix + "kanz_{datatype1}_%Y%m%d_%H%M%S.fts.gz"
             crawler = Scraper(url_pattern, datatype=table[wave][0], datatype1=table[wave][1])
@@ -109,28 +108,24 @@ class KanzelhoheClient(GenericClient):
     def _can_handle_query(cls, *query):
         """
         Answers whether client can service the query.
-        
+
         Parameters
         ----------
         query : list of query objects
-        
+
         Returns
         -------
         boolean: answer as to whether client can service the query
-        
+
         """
         chkattr = ['Time', 'Instrument', 'Wavelength']
         chklist = [x.__class__.__name__ in chkattr for x in query]
         chk_var = 0
         values = [6563, 5460, 32768]
         for x in query:
-            if (x.__class__.__name__ == 'Instrument' and type(x.value) is str and x.value.lower() == 'kanzelhohe'):
+            if x.__class__.__name__ == 'Instrument' and type(x.value) is str and x.value.lower() == 'kanzelhohe':
                 chk_var += 1
-            if (x.__class__.__name__ == 'Wavelength'):
+            if x.__class__.__name__ == 'Wavelength':
                 chk_var += 1
-        if (chk_var==2):
-            return True
-        return False
-            
-        
-    
+        return chk_var == 2
+
