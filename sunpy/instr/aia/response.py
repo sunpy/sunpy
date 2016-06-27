@@ -79,35 +79,23 @@ class Response():
     Feedback/ Thoughts are always welcome! -Thanks!
     """
 
-    def __init__(self, **kwargs):
-        # no keywords for now. emissivity, temperature, density possible later
+    def __init__(self, path_to_genx_dir, wavelength, **kwargs):
 
-        # parameter list
+        # wavelength center list and parameter list are used when defining dataframe
+        self.wavelength_centers = [94, 131, 171, 193, 211, 304, 335, 1600, 1700]
+
         self.properties = ['wave', 'effarea', 'geoarea', 'platescale',
                            'numfilters', 'wavemin', 'wavestep', 'wavenumsteps', 'wavelog',
                            'usecontam', 'contamthick', 'elecperdn',
                            'useerror', 'fp_filter', 'ent_filter', 'primary', 'secondary', 'ccd', 'contam',
                            'cross_area']  # 'usephottoelec', 'usephottodn',  'elecperdn','elecperev', not in 1600, 1700
 
-        # wavelength center list
-        # TODO: want 6 EUV channels and 2 UV channels --- needs updated
-        self.wavelength_centers = [94, 131, 171, 193, 211, 304, 335, 1600, 1700]
-
-        #           Notes: I needed a way to define self.dataframe locally inside the aia_inst_genx_to_dataframe
-        #           and afterwards use it globally. This is what i have found, but am open to other suggestions.
-
-        #           I could import os and recursivly search the .genx directory for the files needed rather than the user defining one file. Then, the variable would change to path_to_genx_dir
-
-
         # keyword arguements
-        path_to_genx_dir = kwargs.get('path_to_genx_dir', '')
-        # save_outfile = kwargs.get('save_outfile', False)
         overwrite = kwargs.get('overwrite', False)
         version = kwargs.get('version', 6)
-
         csv = kwargs.get('csv', 'channel_properties_' + str(version) + '.csv')
 
-        # Load in the filename with the call of the function to initialize channel properties, define self.dataframe
+        # Load in the filename and define dataframe
         if os.path.exists(csv):
             if overwrite:
                 os.remove(csv)
@@ -115,54 +103,50 @@ class Response():
                 self.aia_inst_genx_to_dataframe(path_to_genx_dir, version=version)
             else:
                 print('using: ' + 'channel_properties_' + str(version) + '.csv')
-                self.dataframe = pd.DataFrame.from_csv('channel_properties_' + str(version) + '.csv', header = 0,  index_col = 0, sep = ',')
+                self.dataframe = pd.DataFrame.from_csv('channel_properties_' + str(version) + '.csv', header=0,
+                                                       index_col=0, sep=',')
 
         else:
             print('making: ', 'channel_properties_' + str(version) + '.csv')
             self.aia_inst_genx_to_dataframe(path_to_genx_dir, version=version)
 
-        # defines properties for one channel if given a wavelength keyword: #TODO: how to output 'all'?
+        # defines properties for one channel with wavelength keyword. implement all wavelengths at once?
         # def __call__(self, **kwargs): # possible way to implement wavelength after initial^^^
         # currently to plot, have to loop through array of wavelengths
 
-        wavelength = kwargs.get('wavelength', 94)
-        if wavelength:
-            assert wavelength in self.wavelength_centers, "Choose one integer value from wavelength centers: ' + str(self.wavelength_centers) or 'all'"
-            self.wavelength = wavelength
+        assert wavelength in self.wavelength_centers, "Choose one integer value from wavelength centers: ' + str(self.wavelength_centers) or 'all'"
+        self.wavelength = wavelength
 
-            var = self.property_per_channel_dict(wavelength)
+        print(self.dataframe[str(wavelength)]['ccd']) # could replace property_per_channel_dict with this implemented here
+        var = self.property_per_channel_dict(wavelength)
 
-            self.platescale = kwargs.get('platescale', var['platescale'])
-            self.elecperdn = kwargs.get('elecperdn', var['elecperdn'])
-            # self.elecperev = kwargs.get('elecperev', var['elecperev'])
 
-            self.wavelength_range = kwargs.get('wave', var['wave'])
-            self.wavemin = kwargs.get('wavemin', var['wavemin'])
-            self.wavenumsteps = kwargs.get('wavenumsteps', var['wavenumsteps'])
-            self.wavestep = kwargs.get('wavestep', var['wavestep'])
+        self.platescale = kwargs.get('platescale', var['platescale'])
+        self.elecperdn = kwargs.get('elecperdn', var['elecperdn'])
+        self.wavelength_range = kwargs.get('wave', var['wave'])
+        self.wavemin = kwargs.get('wavemin', var['wavemin'])
+        self.wavenumsteps = kwargs.get('wavenumsteps', var['wavenumsteps'])
+        self.wavestep = kwargs.get('wavestep', var['wavestep'])
+        # test: wavelength_range == wavemin+wavestep * wavenumsteps
+        self.geometric_area = kwargs.get('geoarea', var['geoarea'])
+        self.focal_plane_filter = kwargs.get('fp_filter', var['fp_filter'])
+        self.entire_filter = kwargs.get('ent_filter', var['ent_filter'])
+        self.primary = kwargs.get('primary', var['primary'])
+        self.secondary = kwargs.get('secondary', var['secondary'])
+        self.ccd = kwargs.get('ccd', var['ccd'])
+        self.instrument_contamination = kwargs.get('contam', var['contam'])  # nan in 1600 and 1700
+        # self.cross_area = kwargs.get('cross_area', var['cross_area'][0])
+        # 1600, 1700 channels have arrays for some attributes #TODO: figure out why/ which is best
+        if type(self.primary) == np.ndarray: # previously self.primary[0]
+            self.primary = self.primary[0]
+            self.secondary = self.secondary[0]
 
-            self.geoarea = kwargs.get('geoarea', var['geoarea'])
-
-            self.fp_filter = kwargs.get('fp_filter', var['fp_filter'])
-            self.ent_filter = kwargs.get('ent_filter', var['ent_filter'])
-
-            self.primary = kwargs.get('primary', var['primary'])
-            self.secondary = kwargs.get('secondary', var['secondary'])
-            self.ccd = kwargs.get('ccd', var['ccd'])
-            self.contam = kwargs.get('contam', var['contam']) # nan in 1600 and 1700
-            self.cross_area = kwargs.get('cross_area', var['cross_area'][0])
-
-            # 1600, 1700 channels have arrays for some attributes #TODO: figure out why/ which is best
-            if type(self.primary[0]) == np.ndarray:
-                self.primary = self.primary[0]
-                self.secondary = self.secondary[0]
-
-            # eff_area is not in all channels
-            try:
-                self.eff_area = kwargs.get('eff_area', var['effarea'])
-            except KeyError:
-                print(wavelength, 'has no eff_area keyword.')
-                pass
+        # eff_area is not in all channels
+        try:
+            self.eff_area = kwargs.get('eff_area', var['effarea'])
+        except KeyError:
+            print(wavelength, 'has no eff_area keyword.')
+            pass
 
     def aia_inst_genx_to_dataframe(self, input_directory, version):
         """
@@ -291,15 +275,14 @@ class Response():
         # at target wavelength - pull out respective properties in dataframe and apply units
         for wavelength, values in self.dataframe.iteritems():
             if int(wavelength) == int(wavelength_center):
-                print(values['wave'] * u.angstrom)
                 dict['wavemin'] = values['wavemin'] * u.angstrom
                 dict['effarea'] = values['effarea'] * u.cm ** 2
                 dict['geoarea'] = values['geoarea'] * u.cm ** 2
                 dict['platescale'] = values['platescale']
                 dict['numfilters'] = values['numfilters']
-                dict['wavestep'] = values['wavestep'] * u.angstom
-                dict['wavenumsteps'] = values['wavenumsteps'] * u.angstom
-                dict['wavelog'] = values['wavelog'] * u.AA
+                dict['wavestep'] = values['wavestep']
+                dict['wavenumsteps'] = values['wavenumsteps']
+                dict['wavelog'] = values['wavelog']
                 dict['usecontam'] = values['usecontam']
                 dict['contamthick'] = values['contamthick']
                 dict['fp_filter'] = values['fp_filter']
@@ -310,7 +293,6 @@ class Response():
                 dict['contam'] = values['contam']
                 dict['cross_area'] = values['cross_area']
                 dict['wave'] = values['wave'] * u.angstrom
-
 
                 # not in 1600 and 1700 channels
                 try:
@@ -361,10 +343,10 @@ class Response():
             # variables:
             wavelength = self.wavelength
             reflectance = self.primary * self.secondary
-            transmission_efficiency = self.fp_filter * self.ent_filter  # these appear to be the same... not sure
+            transmission_efficiency = self.focal_plane_filter * self.entire_filter  # these appear to be the same... not sure
 
             # equation:
-            eff_area = self.geoarea * reflectance * transmission_efficiency * wavelength * self.contam * self.ccd
+            eff_area = self.geometric_area * reflectance * transmission_efficiency * wavelength * self.instrument_contamination * self.ccd
 
             self.eff_area = eff_area
 
@@ -373,17 +355,8 @@ class Response():
     def instrument_response(self, compare=False):
         """
 
-        Describes the instrument (AIA) response per wavelength by calculating effective area vs wavelength of the strongest emission lines present in the solar feature
-        \
+        Describes the instrument (AIA) response per wavelength by calculating effective area vs wavelength of the strongest emission lines present in the solar feature.
             R(\lambda)=A_{eff}(\lambda,t)G(\lambda)
-
-        notes:
-        For a given position in the image plane \mathbf{x} and wavelength channel i , the pixel values can be expressed as,
-
-        p_i(\mathbf{x})=\int_0^{\infty}\mathrm{d}\lambda\,\eta_i(\lambda)\int_{pixel\,\mathbf{x}}\mathrm{d}\theta\,I(\lambda,\theta)
-
-        Here, \eta_i(\lambda,t,\mathbf{x}) is the efficiency function of the i^{th} channel
-
 
         effective area A_{eff}=A_{geo}R_p(\lambda)R_S(\lambda)T_E(\lambda)T_F(\lambda)D(\lambda,t)Q(\lambda)
         gain of the CCD-camera system, G(\lambda)=(12398/\lambda/3.65)g
@@ -393,17 +366,15 @@ class Response():
          R_i(\lambda) which is equivalent to \eta_i as expressed above.
 
 
-            # ccd == quantum efficience ==q
-            # calulate gain across wavelength centers - included in master gain of aia image metadata load gain
-            # contam = fluctuations of the instrument
         Parameters
         ----------
         :keyword
-        input: string, area from effective area calculation
 
-        input: may need a photon-to-DN unit conversion   # digital number = counts on detectore
+        photon_to_dn?
+            may need a photon-to-DN unit conversion   # digital number = counts on detector
 
-        output: outfile of instrument response per channel
+        output: float
+            outfile of instrument response per channel
 
         Returns
         -------
