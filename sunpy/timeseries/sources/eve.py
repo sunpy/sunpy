@@ -106,7 +106,6 @@ class EVELightCurve(GenericTimeSeries):
     @classmethod
     def _parse_file(cls, filepath):
         """Parses an EVE CSV file."""
-        print('\nin _parse_file()')
         cls._filename = basename(filepath)
         with open(filepath, 'rb') as fp:
             # Determine type of EVE CSV file and parse
@@ -115,10 +114,8 @@ class EVELightCurve(GenericTimeSeries):
 
             if line1.startswith("Date".encode('ascii')):
                 return cls._parse_average_csv(fp)
-                print('Out of _parse_average_csv()\n')
             elif line1.startswith(";".encode('ascii')):
                 return cls._parse_level_0cs(fp)
-                print('Out of _parse_level_0cs()\n')
 
     @staticmethod
     def _parse_average_csv(fp):
@@ -129,7 +126,6 @@ class EVELightCurve(GenericTimeSeries):
     @staticmethod
     def _parse_level_0cs(fp):
         """Parses and EVE Level 0CS file."""
-        print('\nstart _parse_level_0cs()')
         is_missing_data = False      #boolean to check for missing data
         missing_data_val = numpy.nan
         header = []

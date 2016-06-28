@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Provides programs to process and analyse Fermi/GBM lightcurve data."""
 
 from __future__ import absolute_import, print_function

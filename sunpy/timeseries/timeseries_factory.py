@@ -124,7 +124,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 # ToDo Validate data before adding it.
                 #if len(np.shape(filedata)) > 1:
                 if True:
-                    print('The if conditional')
                     data = filedata
                     meta = MapMeta(filemeta)
                     new_pairs.append((data, meta))
