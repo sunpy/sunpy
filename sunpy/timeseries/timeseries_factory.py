@@ -93,10 +93,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
     >>> my_timeseries = sunpy.timeseries.TimeSeries(url)   # doctest: +SKIP
 
-    * DatabaseEntry
-#
-#    >>> my_timeseries = sunpy.timeseries.TimeSeries(db_result)   # doctest: +SKIP
-#
     * Lists of any of the above
 
     >>> my_timeseries = sunpy.timeseries.TimeSeries(['file1.fits', 'file2.fits', 'file3.fits', 'directory1/'])   # doctest: +SKIP
@@ -323,11 +319,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 path = download_file(url, default_dir)
                 pairs = self._read_file(path, **kwargs)
                 data_header_unit_tuples += pairs
-
-            #### Potentially unnecessary
-            # A database Entry
-            ####elif isinstance(arg, DatabaseEntry):
-            ####    data_header_unit_tuples += self._read_file(arg.path, **kwargs)
 
             else:
                 raise ValueError("File not found or invalid input")
