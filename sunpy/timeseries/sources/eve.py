@@ -3,6 +3,8 @@
 from __future__ import absolute_import
 
 import os
+import codecs
+
 import numpy
 from datetime import datetime
 from collections import OrderedDict
@@ -107,9 +109,9 @@ class EVELightCurve(GenericTimeSeries):
     def _parse_file(cls, filepath):
         """Parses an EVE CSV file."""
         cls._filename = basename(filepath)
-        with open(filepath, 'rb') as fp:
+        with codecs.open(filepath, mode='rb', encoding='ascii') as fp:
             # Determine type of EVE CSV file and parse
-            line1 = fp.readline().decode('ascii')
+            line1 = fp.readline()
             fp.seek(0)
 
             if line1.startswith("Date"):
@@ -130,7 +132,7 @@ class EVELightCurve(GenericTimeSeries):
         missing_data_val = numpy.nan
         header = []
         fields = []
-        line = fp.readline().decode('ascii')
+        line = fp.readline()
         # Read header at top of file
         while line.startswith(";"):
             header.append(line)
@@ -138,7 +140,7 @@ class EVELightCurve(GenericTimeSeries):
                 is_missing_data = True
                 missing_data_val = line.split(':')[1].strip()
 
-            line = fp.readline().decode('ascii')
+            line = fp.readline()
 
         meta = OrderedDict()
         for hline in header :
@@ -149,7 +151,7 @@ class EVELightCurve(GenericTimeSeries):
                                  1)[0].replace(';',
                                                ' ').strip()] = hline.split(':', 1)[1].strip()
             elif ':' in hline :
-                meta[hline.split(':')[0].replace(';', ' ').strip()] = hline.split(':'.encode('ascii'))[1].strip()
+                meta[hline.split(':')[0].replace(';', ' ').strip()] = hline.split(':')[1].strip()
 
         fieldnames_start = False
         for hline in header:
