@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Provides programs to process and analyse NoRH lightcurve data."""
 
 from __future__ import absolute_import
