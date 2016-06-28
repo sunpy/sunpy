@@ -14,14 +14,12 @@ from sunpy.instr import fermi
 from sunpy.timeseries import GenericTimeSeries
 from astropy import units as u
 
-from sunpy.extern.six.moves import urllib
-
 __all__ = ['GBMSummaryLightCurve']
 
 
 class GBMSummaryLightCurve(GenericTimeSeries):
     """
-    Fermi/GBM Summary Lightcurve.
+    Fermi/GBM Summary Lightcurve TimeSeries.
 
     The Gamma-ray Burst Monitor (GBM) is an instrument aboard Fermi. It is meant
     to detect gamma-ray bursts but also detects solar flares. It consists of
@@ -45,8 +43,9 @@ class GBMSummaryLightCurve(GenericTimeSeries):
 
     Examples
     --------
-    >>> from sunpy.lightcurve import GBMSummaryLightCurve
-    >>> gbm = GBMSummaryLightCurve.create('2011-06-07')   # doctest: +SKIP
+    >>> import sunpy.timeseries
+    >>> import sunpy.data.sample
+    >>> gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_LIGHTCURVE, source='GBMSummary')   # doctest: +SKIP
     >>> gbm.peek()   # doctest: +SKIP
 
     References
@@ -59,20 +58,19 @@ class GBMSummaryLightCurve(GenericTimeSeries):
     """
 
     def peek(self, **kwargs):
-        """Plots the GBM lightcurve. An example can be seen below.
+        """Plots the GBM lightcurve TimeSeries. An example can be seen below.
 
         .. plot::
 
-            from sunpy.lightcurve import GBMSummaryLightCurve
-            from sunpy.data.sample import GBM_LIGHTCURVE
-            gbm = GBMSummaryLightCurve.create(GBM_LIGHTCURVE)
+            import sunpy.timeseries
+            import sunpy.data.sample
+            gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_LIGHTCURVE, source='GBMSummary')
             gbm.peek()
 
         Parameters
         ----------
-        **kwargs : dict
-            Any additional plot arguments that should be used
-            when plotting.
+        **kwargs : `dict`
+            Any additional plot arguments that should be used when plotting.
         """
         figure=plt.figure()
         axes = plt.gca()
@@ -94,7 +92,7 @@ class GBMSummaryLightCurve(GenericTimeSeries):
 
     @classmethod
     def _parse_file(cls, filepath):
-        """Parses GBM CSPEC FITS data files to create summary lightcurves."""
+        """Parses GBM CSPEC FITS data files to create TimeSeries."""
         hdulist=fits.open(filepath)
         header=OrderedDict(hdulist[0].header)
         #these GBM files have three FITS extensions.
@@ -132,9 +130,7 @@ class GBMSummaryLightCurve(GenericTimeSeries):
     @classmethod
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to a GBM summary lightcurve timeseries"""
-        print('in is_datasource_for GBMSummary')
-        print(kwargs)
-        #return header.get('instrume', '').startswith('HMI')
+        #return header.get('instrume', '').startswith('')
         return kwargs.get('source', '').startswith('GBMSummary')
 
 def _bin_data_for_summary(energy_bins,count_data):

@@ -5,22 +5,16 @@ classes inherit from.
 
 from __future__ import absolute_import, division, print_function
 
-import os.path
-import shutil
 import warnings
 import inspect
 from abc import ABCMeta
-from datetime import datetime
 from collections import OrderedDict
 
-import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 
 from sunpy import config
-from sunpy.time import is_time, TimeRange, parse_time
-from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
-from sunpy.extern.six.moves import urllib
+from sunpy.time import TimeRange, parse_time
 from sunpy.extern import six
 from sunpy.sun import sun
 
@@ -29,7 +23,6 @@ import astropy.units as u
 from astropy.table import Table
 from astropy.table import Column
 
-from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")
 
 
@@ -38,13 +31,13 @@ __authors__ = ["Alex Hamilton"]
 __email__ = "####"
 
 
-# GenericMap subclass registry.
+# GenericTimeSeries subclass registry.
 TIMESERIES_CLASSES = OrderedDict()
 
 
 class GenericTimeSeriesMeta(ABCMeta):
     """
-    Registration metaclass for `~sunpy.map.GenericTimeSeries`.
+    Registration metaclass for `~sunpy.timeseries.GenericTimeSeries`.
     This class checks for the existance of a method named ``is_datasource_for``
     when a subclass of `GenericTimeSeries` is defined. If it exists it will add
     that class to the registry.
@@ -188,12 +181,7 @@ class GenericTimeSeries:
     def measurement(self):
         """Measurement name, defaults to the wavelength of image"""
         #return u.Quantity(self.meta.get('wavelnth', 0), self.meta.get('waveunit', ""))
-        return 'measurment'
-
-#    @property
-#    def wavelength(self):
-#        """wavelength of the observation"""
-#        return u.Quantity(self.meta.get('wavelnth', 0), self.meta.get('waveunit', ""))
+        return 'measurement'
 
     @property
     def observatory(self):
@@ -202,19 +190,16 @@ class GenericTimeSeries:
 
 # #### From Pandas #### #
     def sort_index(self, **kwargs):
-        """Returns a truncated version of the TimeSeries object.
-
-        Parameters
-        ----------
-        a : `sunpy.time.TimeRange`
-            A time range to truncate to.
+        """Returns a sorted version of the TimeSeries object.
+        Generally this shouldn't be necessary as most TimeSeries operations sort
+        the data anyway to ensure consistent behaviour when truncating.
 
         Returns
         -------
         newts : `~sunpy.timeseries.TimeSeries`
-            A new time series with only the selected times.
+            A new time series in ascending chronological order.
         """
-        return GenericTimeSeries(self.data.sort_index(**kwargs), self.meta.copy(), self.units)
+        return GenericTimeSeries(self.data.sort_index(**kwargs), self.meta.copy(), self.units.copy())
 
 # #### From Generic Spec #### #
     def resample(self, rule, method='sum', **kwargs):
@@ -222,10 +207,10 @@ class GenericTimeSeries:
 
         Parameters
         ----------
-        rule : string
+        rule : `str`
             The offset string or object representing target conversion
 
-        method : string
+        method : `str`
             The mothod used to combine values.
             Defines the function called in Pandas.
             downsampling: 'sum', 'mean', 'std'
@@ -297,8 +282,7 @@ class GenericTimeSeries:
         Parameters
         ----------
         **kwargs : `dict`
-            Any additional plot arguments that should be used
-            when plotting.
+            Any additional plot arguments that should be used when plotting.
 
         Returns
         -------
@@ -333,7 +317,7 @@ class GenericTimeSeries:
         newts : `~sunpy.timeseries.TimeSeries`
             A new time series with only the selected times.
         """
-        # ToDo: consider adding slice notation instead of calling this function.
+        # Debate: consider adding slice notation instead of calling this function.
 
         # Evaluate inputs
         # If given strings, then use to create a sunpy.time.timerange.TimeRange
@@ -361,7 +345,7 @@ class GenericTimeSeries:
         Parameters
         ----------
         column_name : `str`
-            A valid column name
+            A valid column name.
 
         Returns
         -------
@@ -376,12 +360,13 @@ class GenericTimeSeries:
             return GenericTimeSeries(self.data[column_name], self.meta.copy())
         """
         # Extract column and remove empty rows
-        data = self.data[column_name].dropna()
+        data = self.data[[column_name]].dropna()
         
         # Return the same type of timeseries object.
         return self.__class__(data.sort_index(), self.meta.copy(), self.units.copy())
+        # Debate: should this return the same TimeSeries type as the original?
 
-    def concatenate(self, otherts):
+    def concatenate(self, otherts, **kwargs):
         """Concatenate with another time series. This function will check and
         remove any duplicate times. It will keep the column values from the
         original time series to which the new time series is being added.
@@ -391,22 +376,29 @@ class GenericTimeSeries:
         otherts : `~sunpy.timeseries.TimeSeries`
             Another time series.
 
+        same_source : `bool` Optional
+            Set to true to check if the sources of the time series match.
+
         Returns
         -------
         newts : `~sunpy.timeseries.TimeSeries`
             A new time series.
+        
+        Debate: decide if we want to be able to concatenate multiple time series
+        at once.
         """
         
-        # ToDo: Potentually delete, this stops you being able to merge TimeSeries
-        # from different sources.
-        #if not isinstance(otherts, self.__class__):
-        #    raise TypeError("TimeSeries classes must match.")
+        # Check the sources match if specified.
+        same_source = kwargs.get('same_source', False)
+        if same_source and not isinstance(otherts, self.__class__):
+            raise TypeError("TimeSeries classes must match.")
 
-        # ToDo: Consider metadata merging implmentation.
-        # ATM Metadata will be the original time series metadata but with an
-        # additional entry containing all of the additional time series.
-        meta = self.meta.copy()
-        meta['2nd_ts_meta'] = otherts.meta.copy()
+
+        # Metadata is implemented as with the legacy LightCurve class.
+        # ToDo: Debate: we want to consider how to do this in future.
+        meta = OrderedDict()
+        meta.update({str(self.data.index[0]):self.meta.copy()})
+        meta.update({str(otherts.data.index[0]):otherts.meta.copy()})
 
         data = pd.concat([self.data.copy(), otherts.data])
         
@@ -435,6 +427,7 @@ class GenericTimeSeries:
 
         warnings.simplefilter('always', Warning)
 
+        #
         for meta_property in ('cunit1', 'cunit2', 'waveunit'):
             if (self.meta.get(meta_property) and
                 u.Unit(self.meta.get(meta_property),
@@ -520,16 +513,9 @@ class GenericTimeSeries:
         # Output the table
         return table
 
-
     def to_dataframe(self, **kwargs):
         """
         Return a Pandas DataFrame of the give TimeSeries object.
-
-        Parameters
-        ----------
-        columns: list, optional, default:None
-            If None, return all columns minus the index, otherwise, returns
-            specified columns.
 
         Returns
         -------
@@ -544,7 +530,7 @@ class GenericTimeSeries:
 
         Parameters
         ----------
-        columns: list, optional, default:None
+        columns: `list`, optional, default:None
             If None, return all columns minus the index, otherwise, returns
             specified columns.
 

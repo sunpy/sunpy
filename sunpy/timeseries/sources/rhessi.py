@@ -18,7 +18,7 @@ __all__ = ['RHESSISummaryLightCurve']
 
 class RHESSISummaryLightCurve(GenericTimeSeries):
     """
-    RHESSI X-ray Summary LightCurve.
+    RHESSI X-ray Summary Lightcurve TimeSeries.
 
     The RHESSI mission consists of a single spin-stabilized
     spacecraft in a low-altitude orbit inclined 38 degrees to
@@ -42,9 +42,9 @@ class RHESSISummaryLightCurve(GenericTimeSeries):
 
     Examples
     --------
-    >>> from sunpy import lightcurve as lc
-    >>> rhessi = lc.RHESSISummaryLightCurve.create()
-    >>> rhessi = lc.RHESSISummaryLightCurve.create('2012/06/01', '2012/06/05')
+    >>> import sunpy.data.sample
+    >>> import sunpy.timeseries
+    >>> rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_LIGHTCURVE, source='RHESSI')
     >>> rhessi.peek()   # doctest: +SKIP
 
     References
@@ -58,17 +58,17 @@ class RHESSISummaryLightCurve(GenericTimeSeries):
 
         .. plot::
 
-            from sunpy import lightcurve as lc
-            from sunpy.data.sample import RHESSI_LIGHTCURVE
-            rhessi = lc.RHESSISummaryLightCurve.create(RHESSI_LIGHTCURVE)
+            import sunpy.data.sample
+            import sunpy.timeseries
+            rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_LIGHTCURVE, source='RHESSI')
             rhessi.peek()
 
         Parameters
         ----------
-        title : str
+        title : `str`
             The title of the plot.
 
-        **kwargs : dict
+        **kwargs : `dict`
             Any additional plot arguments that should be used
             when plotting.
 
@@ -126,8 +126,6 @@ class RHESSISummaryLightCurve(GenericTimeSeries):
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
-        print('in is_datasource_for RHESSI')
-        print(kwargs)
-        #"""Determines if header corresponds to an HMI image"""
-        #return header.get('instrume', '').startswith('HMI')
+        """Determines if header corresponds to a RHESSI X-ray Summary lightcurve"""
+        #return header.get('instrume', '').startswith('')
         return kwargs.get('source', '').startswith('RHESSI')

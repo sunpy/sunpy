@@ -15,10 +15,7 @@ from astropy.table import Table
 
 import sunpy
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries, TIMESERIES_CLASSES
-#from sunpy.map.mapbase import GenericMap, MAP_CLASSES
 from sunpy.map.header import MapMeta
-#from sunpy.map.compositemap import CompositeMap
-#from sunpy.map.mapcube import MapCube
 
 from sunpy.io.file_tools import read_file, UnrecognizedFileTypeError
 from sunpy.io.header import FileHeader
@@ -34,30 +31,32 @@ from sunpy.extern import six
 
 from sunpy.extern.six.moves.urllib.request import urlopen
 
-"""
-# Make a mock DatabaseEntry class if sqlalchemy is not installed
-try:
-    from sunpy.database.tables import DatabaseEntry
-except ImportError:
-    class DatabaseEntry(object):
-        pass
-"""
 __all__ = ['TimeSeries', 'TimeSeriesFactory']
 
 class TimeSeriesFactory(BasicRegistrationFactory):
     """
     TimeSeries(*args, **kwargs)
 
-    TimeSeries factory class.  Used to create a variety of Map objects.  Valid map types
-    are specified by registering them with the factory.
+    TimeSeries factory class.  Used to create a variety of TimeSeries objects.
+    Valid time series types are specified by registering them with the factory.
 
+    Parameters
+    ----------
+
+    source : `str`, optional
+        A string to select the observational source of the data, currently
+        necessary to define how files should be read for all instruments.
+
+    concatenate : `bool`, optional, default:False
+        If set, combine any resulting list of TimeSeries objects into a single
+        TimeSeries, using successive concatenate methods.
 
     Examples
     --------
     >>> import sunpy.timeseries
     >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
     >>> import sunpy.data.sample
-    >>> mytimeseries = sunpy.map.Map(sunpy.data.sample.GOES_LIGHTCURVE)
+    >>> my_timeseries = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE)
 
     The SunPy TimeSeries factory accepts a wide variety of inputs for creating time series
 
@@ -65,18 +64,20 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
     >>> my_timeseries = sunpy.timeseries.TimeSeries((data, header))   # doctest: +SKIP
 
-    headers are some base of `dict` or `collections.OrderedDict`, including `sunpy.io.header.FileHeader` or `sunpy.map.header.MapMeta` classes.
+    headers and units are some base of `dict` or `~collections.OrderedDict`.
 
     * data, header pairs, or data, header units triples, not in tuples
 
     >>> my_timeseries = sunpy.timeseries.TimeSeries(data, header)
+    >>> my_timeseries = sunpy.timeseries.TimeSeries(data, header, units)
 
     * File names for files understood by sunpy.io and those not
 
     >>> my_timeseries = sunpy.timeseries.TimeSeries('filename.fits')   # doctest: +SKIP
     >>> my_timeseries = sunpy.timeseries.TimeSeries('filename.fits', source='lyra')
 
-    * Multiple files can be combined into one LightCurve, as long as they are the same source   # doctest: +SKIP
+    * Multiple files can be combined into one TimeSeries, as long as they are
+    the same source   # doctest: +SKIP
 
     >>> my_timeseries = sunpy.timeseries.TimeSeries(['goesfile1.fits', 'goesfile2.fits'], concatenate=True)
 
@@ -94,7 +95,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
     * DatabaseEntry
 #
-#    >>> mymap = sunpy.map.Map(db_result)   # doctest: +SKIP
+#    >>> my_timeseries = sunpy.timeseries.TimeSeries(db_result)   # doctest: +SKIP
 #
     * Lists of any of the above
 
@@ -106,28 +107,19 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     """
 
     def _read_file(self, fname, **kwargs):
-        """ Read in a file name and return the list of (data, meta) pairs in
+        """ Read in a file name and return the list of (data, meta, unit) tuples in
             that file. """
-
+        
+        # ToDo: implement this for the TimeSeries using either Pandas or AstroPy parser.
+        
         # File gets read here.  This needs to be generic enough to seamlessly
         #call a fits file or a jpeg2k file, etc
         try:
-            print('About to attempt to read in the a file generically.')
             pairs = read_file(fname, **kwargs)
-            print('Returned pairs:')
-            print('len(pairs): ' + str(len(pairs)))
-            print('len(pairs[0]): ' + str(len(pairs[0])))
-            print('\n')
 
             new_pairs = []
-            print('Going into loop for each pair:')
             for pair in pairs:
-                print('This is a pair in the loop.')
-                print('len(pair): ' + str(len(pair)))
                 filedata, filemeta = pair
-                #print('len(filedata): ' + str(len(filedata)))
-                #print('np.shape(filedata): ' + str(np.shape(filedata)))
-                #print('len(np.shape(filedata): ' + str(len(np.shape(filedata))))
                 assert isinstance(filemeta, FileHeader)
                 # ToDo Validate data before adding it.
                 #if len(np.shape(filedata)) > 1:
@@ -206,9 +198,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         # Account for nested lists of items
         args = expand_list(args)
-        print('args:')
-        print(args)
-        print('\n')
 
         # For each of the arguments, handle each of the cases
         i = 0
@@ -245,9 +234,9 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 # The second argument will be the metadata/header.
                 meta = OrderedDict(arg[1])
                 
-                # Check if we're given a third units
+                # Check if we're given a third argument for units
                 if (len(arg) == 3) and self._validate_meta(arg[2]):
-                    # Tis combines with values gathered from an input Table.
+                    # This combines with values gathered from an input Table.
                     units = units.update(arg[2])
                 
                 # Add a 3-tuple for this TimeSeries.
@@ -292,9 +281,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             elif (isinstance(arg,six.string_types) and
                   os.path.isfile(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
-                print('in file path check, looking for:')
-                print(path)
-                print('\n')
                 
                 # Only read using generic _read_file() if no source defined.
                 if not source:
@@ -302,22 +288,12 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 else:
                     temp = ( False, path )
                 
-                print('created temp file:')
-                print(temp)
-                print(type(temp))
-                print('\n')
-                # If the file was sucessfully read in:
+                # If the file was successfully read in:
                 if temp[0]:
-                    print('File sucessfully read in, it should be returned as pairs:')
                     pairs = temp[1]
-                    print(pairs)
-                    print('\n')
                     data_header_unit_tuples += pairs
                 else:
-                    print('File unsucessfully read in, it should be returned as a filepath.')
-                    print('Filepath should be: ' + temp[1])
-                    print('\n')
-                    # Unsucessfully read files are listed to be read by the
+                    # Unsuccessfully read files are listed to be read by the
                     # source instrument specific file_paser().
                     filepaths.append(temp[1])
 
@@ -335,7 +311,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 for afile in files:
                     data_header_unit_tuples += self._read_file(afile, **kwargs)
 
-            #### Potentially unecessary, as there won't be a time series cube.
+            #### Potentially unnecessary, as there won't be a time series cube.
             # Already a TimeSeries
             elif isinstance(arg, GenericTimeSeries):
                 already_timeseries.append(arg)
@@ -349,7 +325,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 pairs = self._read_file(path, **kwargs)
                 data_header_unit_tuples += pairs
 
-            #### Potentially unecessary
+            #### Potentially unnecessary
             # A database Entry
             ####elif isinstance(arg, DatabaseEntry):
             ####    data_header_unit_tuples += self._read_file(arg.path, **kwargs)
@@ -359,31 +335,24 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
             i += 1
         #TODO:
-        # In the end, if there are already maps it should be put in the same
-        # order as the input, currently they are not.
-        print('\ndata_header_unit_tuples:')
-        print(data_header_unit_tuples)
-        print('\nalready_timeseries:')
-        print(already_timeseries)
-        print('\nfilepaths:')
-        print(filepaths)
-        print('\n')
+        # In the end, if there are already TimeSeries it should be put in the
+        # same order as the input, currently they are not.
         return data_header_unit_tuples, already_timeseries, filepaths
 
 
     def __call__(self, *args, **kwargs):
         """ Method for running the factory. Takes arbitrary arguments and
         keyword arguments and passes them to a sequence of pre-registered types
-        to determine which is the correct Map-type to build.
+        to determine which is the correct TimeSeries source type to build.
 
         Arguments args and kwargs are passed through to the validation
-        function and to the constructor for the final type.  For Map types,
-        validation function must take a data-header pair as an argument.
+        function and to the constructor for the final type.  For TimeSeries
+        types, validation function must take a data-header pair as an argument.
 
         Parameters
         ----------
 
-        silence_errors : boolean, optional
+        silence_errors : `bool`, optional
             If set, ignore data-header pairs which cause an exception.
 
         Notes
@@ -399,13 +368,10 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         new_timeseries = list()
         
-        print('Now to run though the list of filepaths:')
         # The filepaths for unreadable files
         for filepath in filepaths:
-            print('filepath:' + filepath)
             try:
                 new_ts = self._check_registered_widgets(filepath=filepath, **kwargs)
-                print('file added.')
             except (NoMatchError, MultipleMatchError, ValidationFunctionError):
                 if not silence_errors:
                     raise
@@ -414,7 +380,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
             new_timeseries.append(new_ts)
 
-        print('Now to run though the list of data header pairs:')        
         # Loop over each registered type and check to see if WidgetType
         # matches the arguments.  If it does, use that type.
         for pair in data_header_unit_tuples:
@@ -443,7 +408,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             for timeseries in new_timeseries:
                 full_timeseries = full_timeseries.concatenate(timeseries)
             
-            new_timeseries = full_timeseries
+            new_timeseries = [ full_timeseries ]
 
         # Sanitize any units OrderedDict details
         for timeseries in new_timeseries:
@@ -458,19 +423,14 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     def _check_registered_widgets(self, **kwargs):
         """Checks the (instrument) source/s that are compatible with this given file/data.
         Only if exactly one source is compatible will a TimeSeries be returned."""
-        print('\nin _check_registered_widgets()\n')
         candidate_widget_types = list()
         
-        print('For the keys in the registry:')
         for key in self.registry:
-            print('key: ' + str(key))
             # Call the registered validation function for each registered class
-            #if self.registry[key](data, meta, **kwargs):
             if self.registry[key](**kwargs):
                 candidate_widget_types.append(key)
 
         n_matches = len(candidate_widget_types)
-        print('\nn_matches: ' + str(n_matches))
         
         if n_matches == 0:
             if self.default_widget_type is None:
@@ -480,9 +440,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         elif n_matches > 1:
             raise MultipleMatchError("Too many candidate types identified ({0}).  Specify enough keywords to guarantee unique type identification.".format(n_matches))
 
-        # Only one is found
+        # Only one suitable source class is found
         WidgetType = candidate_widget_types[0]
-        print('\nWidgetType: ' + str(WidgetType)) 
 
         # Dealing with the fact that timeseries filetypes are less consistent
         # (then maps), we use a _parse_file() method embedded into each
@@ -504,19 +463,19 @@ def _is_url(arg):
         return False
     return True
 
-class InvalidMapInput(ValueError):
-    """Exception to raise when input variable is not a Map instance and does
-    not point to a valid Map input file."""
+class InvalidTimeSeriesInput(ValueError):
+    """Exception to raise when input variable is not a TimeSeries instance and
+    does not point to a valid TimeSeries input file."""
     pass
 
-class InvalidMapType(ValueError):
-    """Exception to raise when an invalid type of map is requested with Map
-    """
+class InvalidTimeSeriesType(ValueError):
+    """Exception to raise when an invalid type of time series is requested with
+    TimeSeries."""
     pass
 
-class NoMapsFound(ValueError):
-    """Exception to raise when input does not point to any valid maps or files
-    """
+class NoTimeSeriesFound(ValueError):
+    """Exception to raise when input does not point to any valid time series or
+    files."""
     pass
 
 TimeSeries = TimeSeriesFactory(default_widget_type=GenericTimeSeries,
