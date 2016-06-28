@@ -4,7 +4,7 @@
 Interacting with Data Using SunPy TimeSeries
 =========================================
 
-This is an early runthrough of the basic functionality of the SunPy TimeSeries
+This is an early run-through of the basic functionality of the SunPy TimeSeries
 class.
 This is intended primarily to demonstrate the current interface for discussion
 of the final implementation. Much of the code will be changes as the class is
@@ -31,10 +31,10 @@ ts_goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source=
 ts_lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_LIGHTCURVE, source='LYRA')
 ts_noaa_ind = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_LIGHTCURVE, source='NOAAIndices')
 ts_noaa_pre = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_LIGHTCURVE, source='NOAAPredictIndices')
-ts_norrh = sunpy.timeseries.TimeSeries(sunpy.data.sample.NORH_LIGHTCURVE, source='NoRH')
+ts_norh = sunpy.timeseries.TimeSeries(sunpy.data.sample.NORH_LIGHTCURVE, source='NoRH')
 ts_rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_LIGHTCURVE, source='RHESSI')
-# Note: currently you need to define a source, in future this may become implicit for some sources, dependning on if the file contains such data.
-# Debate: would it be better for consistancy to simply always demand the source?
+# Note: currently you need to define a source, in future this may become implicit for some sources, depending on if the file contains such data.
+# Debate: would it be better for consistency to simply always demand the source?
 
 ##############################################################################
 # You can create a list of TimeSeries objects by using multiple files.
@@ -43,15 +43,19 @@ ts_rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_LIGHTCURVE, sou
 # class to download files that arnt in the sample data.
 goes_lc_1 = lc.GOESLightCurve.create(TimeRange('2012/06/01', '2012/06/02'))
 goes_lc_2 = lc.GOESLightCurve.create(TimeRange('2012/06/02', '2012/06/03'))
+goes_lc_3 = lc.GOESLightCurve.create(TimeRange('2012/06/03', '2012/06/04'))
 filepath_1 = sunpy.config.get('downloads', 'download_dir') + '\\go1520120601.fits'
 filepath_2 = sunpy.config.get('downloads', 'download_dir') + '\\go1520120602.fits'
+filepath_3 = sunpy.config.get('downloads', 'download_dir') + '\\go1520120603.fits'
 # Using these new files you get a list:
 lis_goes_ts = sunpy.timeseries.TimeSeries(filepath_1, filepath_2, source='GOES')
+lis_goes_ts = sunpy.timeseries.TimeSeries(filepath_1, filepath_2, filepath_3, source='GOES')
 # Using concatenate=True kwarg you can merge the files into one TimeSeries:
 combined_goes_ts = sunpy.timeseries.TimeSeries(filepath_1, filepath_2, source='GOES', concatenate=True)
+combined_goes_ts = sunpy.timeseries.TimeSeries(filepath_1, filepath_2, filepath_3, source='GOES', concatenate=True)
 combined_goes_ts.peek()
 # Note: ATM we only accept TimeSeries of a single class being created together
-# with the factory. The issue is that several source filetimes don't contain
+# with the factory. The issue is that several source filetypes don't contain
 # metadata that enables us to reliably implicitly gather the source and ATM the
 # source is given as a single keyword argument for simplicity. But you can merge
 # different Timeseries classes using concatenate.
@@ -61,9 +65,10 @@ combined_goes_ts.peek()
 # You can concatenate manually:
 combined_goes_ts = lis_goes_ts[0].concatenate(lis_goes_ts[1])
 combined_goes_ts.peek()
+# Debate: how should we deal with metadata when concatenating.
 
 ##############################################################################
-# The TimeSeries object has 3 primary storage sections:
+# The TimeSeries object has 3 primary data storage components:
 # data (pandas.DataFrame): stores the data.
 # meta (OrderedDict): stores the metadata (like the Map)
 # units (OrderedDict): stores the units for each column, with keys that match
@@ -72,10 +77,27 @@ combined_goes_ts.peek()
 ts_lyra.data
 ts_lyra.meta
 ts_lyra.units
+# Further data is avalible:
+ts_lyra.time_range # Retunrs a SunPy TimeRange object.
+ts_lyra.name
+ts_lyra.nickname
+ts_lyra.date
+ts_lyra.detector
+ts_lyra.dsun
+ts_lyra.exposure_time
+ts_lyra.instrument
+ts_lyra.measurement
+ts_lyra.observatory
+# Note: much of the behaviour of these is yet to be sorted for specific instruments.
 
 ##############################################################################
 # The TimeSeries objects can be visualised using peek():
 ts_goes.peek()
+
+##############################################################################
+# An individual column can be extracted from a TimeSeries:
+series_eve_extract = ts_eve.extract(b'CMLon')
+# Note: this returns a Pandas Series 
 
 ##############################################################################
 # You can truncate a TimeSeries using the truncate() method.
@@ -90,6 +112,7 @@ ts_goes_trunc = ts_goes.truncate(tr)
 ts_goes_trunc = ts_goes.truncate('2012-06-01 05:00','2012-06-01 06:30')
 ts_goes_trunc.peek()
 # Note: the strings are parsed using SunPy's string parser.
+# Debate: how should we deal with metadata when truncating.
 
 ##############################################################################
 # You can call Pandas resample method, for example to downsample:
@@ -136,6 +159,13 @@ ts_from_table = sunpy.timeseries.TimeSeries(t,{}, units)
 ts_from_df = sunpy.timeseries.TimeSeries(df,{}, units)
 
 ##############################################################################
+# Changing the units for a column simply requires changing the value:
+ts_from_table.units['a'] = u.m
+
+##############################################################################
 # Quantities can be extracted from a column using the quantity(col_name) method:
 qua = ts_eve.quantity(b'17.1ESP')
 print(qua)
+
+
+

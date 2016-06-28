@@ -16,15 +16,13 @@ from astropy import units as u
 
 from sunpy import config
 
-from sunpy.extern.six.moves import urllib
-
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['LYRALightCurve']
 
 class LYRALightCurve(GenericTimeSeries):
     """
-    Proba-2 LYRA LightCurve.
+    Proba-2 LYRA Lightcurve TimeSeries.
 
     LYRA (Large Yield RAdiometer) is an ultraviolet irradiance radiometer that
     observes the Sun in four passbands, chosen for their relevance to
@@ -48,12 +46,9 @@ class LYRALightCurve(GenericTimeSeries):
 
     Examples
     --------
-    >>> import sunpy
-    >>> lyra = sunpy.lightcurve.LYRALightCurve.create()
-    >>> lyra = sunpy.lightcurve.LYRALightCurve.create('~/Data/lyra/lyra_20110810-000000_lev2_std.fits')   # doctest: +SKIP
-    >>> lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10')
-    >>> lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10', level=3)
-    >>> lyra = sunpy.lightcurve.LYRALightCurve.create("http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
+    >>> import sunpy.timeseries
+    >>> import sunpy.data.sample
+    >>> lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_LIGHTCURVE, source='LYRA')
     >>> lyra.peek()   # doctest: +SKIP
 
     References
@@ -68,19 +63,18 @@ class LYRALightCurve(GenericTimeSeries):
 
         .. plot::
 
-            import sunpy.lightcurve
-            from sunpy.data.sample import LYRA_LEVEL3_LIGHTCURVE
-            lyra = sunpy.lightcurve.LYRALightCurve.create(LYRA_LEVEL3_LIGHTCURVE)
+            import sunpy.timeseries
+            import sunpy.data.sample
+            lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_LIGHTCURVE, source='LYRA')
             lyra.peek()
 
         Parameters
         ----------
-        names : int
+        names : `int`
             The number of columns to plot.
 
-        **kwargs : dict
-            Any additional plot arguments that should be used
-            when plotting.
+        **kwargs : `dict`
+            Any additional plot arguments that should be used when plotting.
 
         Returns
         -------
@@ -179,7 +173,5 @@ class LYRALightCurve(GenericTimeSeries):
     @classmethod
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to a LYRA LightCurve timeseries"""
-        print('in is_datasource_for Lyra lightcurve')
-        print(kwargs)
-        #return header.get('instrume', '').startswith('HMI')
+        #return header.get('instrume', '').startswith('')
         return kwargs.get('source', '').startswith('LYRA')

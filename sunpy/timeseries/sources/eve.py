@@ -41,13 +41,11 @@ class EVELightCurve(GenericTimeSeries):
 
     Examples
     --------
-    >>> import sunpy.lightcurve
-    >>> import sunpy.data.test
+    >>> import sunpy.timeseries
+    >>> import sunpy.data.sample
 
-    >>> eve = sunpy.lightcurve.EVELightCurve.create()
-    >>> eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
-    >>> eve = sunpy.lightcurve.EVELightCurve.create(sunpy.data.test.EVE_AVERAGES_CSV)
-    >>> eve = sunpy.lightcurve.EVELightCurve.create("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt")
+    >>> eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_LIGHTCURVE, source='EVE')
+    >>> eve = sunpy.timeseries.TimeSeries("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt", source='EVE')
     >>> eve.peek(subplots=True)    # doctest: +SKIP
 
     References
@@ -60,21 +58,21 @@ class EVELightCurve(GenericTimeSeries):
     """
 
     def peek(self, column=None, **kwargs):
-        """Plots the light curve in a new figure. An example is shown below.
+        """Plots the time series in a new figure. An example is shown below.
 
         .. plot::
 
-            import sunpy.lightcurve
+           import sunpy.timeseries
             from sunpy.data.sample import EVE_LIGHTCURVE
-            eve = sunpy.lightcurve.EVELightCurve.create(EVE_LIGHTCURVE)
+            eve = sunpy.timeseries.TimeSeries(EVE_LIGHTCURVE)
             eve.peek(subplots=True)
 
         Parameters
         ----------
-        column : str
+        column : `str`
             The column to display. If None displays all.
 
-        **kwargs : dict
+        **kwargs : `dict`
             Any additional plot arguments that should be used
             when plotting.
 
@@ -104,11 +102,6 @@ class EVELightCurve(GenericTimeSeries):
             data.plot(**kwargs)
         figure.show()
         return figure
-
-    @staticmethod
-    def _get_default_uri():
-        """Loads latest level 0CS if no other data is specified"""
-        return "http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt"
 
     @classmethod
     def _parse_file(cls, filepath):
@@ -186,17 +179,9 @@ class EVELightCurve(GenericTimeSeries):
         parser = lambda x: datetime(year, month, day, int(x[0:2]), int(x[2:4]))
 
         data = read_csv(fp, sep="\s*".encode('ascii'), names=fields, index_col=0, date_parser=parser, header=None, engine='python')
-        print('type(data): ' + str(type(data)))
-        #print('data: ' + str(data))
         if is_missing_data :   #If missing data specified in header
             data[data == float(missing_data_val)] = numpy.nan
             
-        print('type(data): ' + str(type(data)))
-        #print('data: ' + str(data))
-
-        # data.columns = fields
-        print('finish _parse_level_0cs()')
-        
         # Add the units data
         units = OrderedDict([(b'XRS-B proxy', u.dimensionless_unscaled),
                              (b'XRS-A proxy', u.dimensionless_unscaled),
@@ -220,8 +205,6 @@ class EVELightCurve(GenericTimeSeries):
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
-        print('in is_datasource_for EVE lightcurve')
-        print(kwargs)
-        #"""Determines if header corresponds to an HMI image"""
-        #return header.get('instrume', '').startswith('HMI')
+        """Determines if header corresponds to an EVE image"""
+        #return header.get('instrume', '').startswith('')
         return kwargs.get('source', '').startswith('EVE')

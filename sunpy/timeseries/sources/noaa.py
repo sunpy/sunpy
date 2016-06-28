@@ -35,8 +35,9 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
 
     Examples
     --------
-    >>> from sunpy import lightcurve as lc
-    >>> noaa = lc.NOAAIndicesTimeSeries.create()
+    >>> import sunpy.timeseries
+    >>> import sunpy.data.sample
+    >>> noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_LIGHTCURVE, source='NOAAIndices')
     >>> noaa.peek()   # doctest: +SKIP
 
     References
@@ -53,19 +54,18 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
 
         .. plot::
 
-            from sunpy import lightcurve as lc
-            from sunpy.data.sample import NOAAINDICES_LIGHTCURVE
-            noaa = lc.NOAAIndicesTimeSeries.create(NOAAINDICES_LIGHTCURVE)
+            import sunpy.timeseries
+            import sunpy.data.sample
+            noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_LIGHTCURVE, source='NOAAIndices')
             noaa.peek()
 
         Parameters
         ----------
-        type : str
+        type : `str`
             The type of plot required.
 
-        **plot_args : dict
-            Any additional plot arguments that should be used
-            when plotting.
+        **plot_args : `dict`
+            Any additional plot arguments that should be used when plotting.
 
         Returns
         -------
@@ -163,9 +163,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     @classmethod
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to an NOAA indices timeseries"""
-        print('in is_datasource_for NOAAIndices')
-        print(kwargs)
-        #return header.get('instrume', '').startswith('HMI')
+        #return header.get('instrume', '').startswith('')
         return kwargs.get('source', '').startswith('NOAAIndices')
 
 
@@ -185,8 +183,9 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
 
     Examples
     --------
-    >>> from sunpy import lightcurve as lc
-    >>> noaa = lc.NOAAPredictIndicesTimeSeries.create()
+    >>> import sunpy.timeseries
+    >>> import sunpy.data.sample
+    >>> noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_LIGHTCURVE, source='NOAAPredictIndices')
     >>> noaa.peek()   # doctest: +SKIP
 
     References
@@ -203,16 +202,15 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
 
         .. plot::
 
-            from sunpy import lightcurve as lc
-            from sunpy.data.sample import NOAAPREDICT_LIGHTCURVE
-            noaa = lc.NOAAPredictIndicesTimeSeries.create(NOAAPREDICT_LIGHTCURVE)
+            import sunpy.timeseries
+            import sunpy.data.sample
+            noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_LIGHTCURVE, source='NOAAPredictIndices')
             noaa.peek()
 
         Parameters
         ----------
-        **plot_args : dict
-            Any additional plot arguments that should be used
-            when plotting.
+        **plot_args : `dict`
+            Any additional plot arguments that should be used when plotting.
 
         Returns
         -------
@@ -271,7 +269,5 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     @classmethod
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to an NOAA predict indices timeseries"""
-        print('in is_datasource_for NOAAPredictIndices')
-        print(kwargs)
-        #return header.get('instrume', '').startswith('HMI')
+        #return header.get('instrume', '').startswith('')
         return kwargs.get('source', '').startswith('NOAAPredictIndices')

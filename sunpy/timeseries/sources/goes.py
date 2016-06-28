@@ -16,20 +16,13 @@ from pandas import DataFrame
 
 from sunpy.timeseries import GenericTimeSeries
 from sunpy.time import parse_time, TimeRange, is_time_in_given_format
-from sunpy.util import net
 from astropy import units as u
-
-import numpy as np
-import numpy.ma as ma
-from matplotlib import colors
-
-from sunpy.cm import cm
 
 Y__all__ = ['XRTMap', 'SOTMap']
 
 class GOESLightCurve(GenericTimeSeries):
     """
-    GOES XRS LightCurve
+    GOES XRS Lightcurve Time Series
 
     Each GOES satellite there are two X-ray Sensors (XRS) which provide solar X
     ray fluxes for the wavelength bands of 0.5 to 4 Å (short channel)
@@ -39,9 +32,9 @@ class GOESLightCurve(GenericTimeSeries):
 
     Examples
     --------
-    >>> from sunpy import lightcurve as lc
-    >>> from sunpy.time import TimeRange
-    >>> goes = lc.GOESLightCurve.create(TimeRange('2012/06/01', '2012/06/05'))
+    >>> import sunpy.timeseries
+    >>> import sunpy.data.sample
+    >>> goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='GOES')
     >>> goes.peek()   # doctest: +SKIP
 
     References
@@ -62,19 +55,18 @@ class GOESLightCurve(GenericTimeSeries):
 
         .. plot::
 
-            from sunpy import lightcurve as lc
-            from sunpy.data.sample import GOES_LIGHTCURVE
-            goes = lc.GOESLightCurve.create(GOES_LIGHTCURVE)
+            import sunpy.timeseries
+            import sunpy.data.sample
+            ts_goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='GOES')
             goes.peek()
 
         Parameters
         ----------
-        title : str
+        title : `str`
             The title of the plot.
 
-        **kwargs : dict
-            Any additional plot arguments that should be used
-            when plotting.
+        **kwargs : `dict`
+            Any additional plot arguments that should be used when plotting.
 
         Returns
         -------
@@ -116,18 +108,6 @@ class GOESLightCurve(GenericTimeSeries):
         figure.show()
 
         return figure
-
-    @classmethod
-    def _get_default_uri(cls):
-        """Returns the URL for the latest GOES data."""
-        now = datetime.datetime.utcnow()
-        time_range = TimeRange(datetime.datetime(now.year, now.month, now.day), now)
-        url_does_exist = net.url_exists(cls._get_url_for_date_range(time_range))
-        while not url_does_exist:
-            time_range = TimeRange(time_range.start-datetime.timedelta(days=1),
-                                   time_range.start)
-            url_does_exist = net.url_exists(cls._get_url_for_date_range(time_range))
-        return cls._get_url_for_date_range(time_range)
 
     # ToDo: is this part of the DL pipeline? If so delete.
     @classmethod
@@ -209,8 +189,6 @@ class GOESLightCurve(GenericTimeSeries):
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
-        """Determines if header corresponds to a GOES lightcurve timeseries"""
-        print('in is_datasource_for GOES')
-        print(kwargs)
-        #return header.get('instrume', '').startswith('HMI')
+        """Determines if header corresponds to a GOES lightcurve TimeSeries"""
+        #return header.get('instrume', '').startswith('')
         return kwargs.get('source', '').startswith('GOES')

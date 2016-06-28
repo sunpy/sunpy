@@ -17,15 +17,13 @@ from astropy import units as u
 
 from sunpy import config
 
-from sunpy.extern.six.moves import urllib
-
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['NoRHLightCurve']
 
 class NoRHLightCurve(GenericTimeSeries):
     """
-    Nobeyama Radioheliograph Correlation LightCurve.
+    Nobeyama Radioheliograph Correlation Lightcurve TimeSeries.
 
     Nobeyama Radioheliograph (NoRH) is a radio telescope dedicated to observing
     the Sun. It consists of 84 parabolic antennas with 80 cm diameter,
@@ -39,10 +37,9 @@ class NoRHLightCurve(GenericTimeSeries):
 
     Examples
     --------
-    >>> import sunpy.lightcurve
-    >>> norh = sunpy.lightcurve.NoRHLightCurve.create('~/Data/norh/tca110607')   # doctest: +SKIP
-    >>> norh = sunpy.lightcurve.NoRHLightCurve.create('2011/08/10')
-    >>> norh = sunpy.lightcurve.NoRHLightCurve.create('2011/08/10',wavelength='34')
+    >>> import sunpy.data.sample
+    >>> import sunpy.timeseries
+    >>> norh = sunpy.timeseries.TimeSeries(sunpy.data.sample.NORH_LIGHTCURVE, source='NoRH')
     >>> norh.peek()   # doctest: +SKIP
 
     References
@@ -62,20 +59,19 @@ class NoRHLightCurve(GenericTimeSeries):
         #self.plot_settings['norm'] = ImageNormalize(stretch=visualization.AsinhStretch(0.01))
 
     def peek(self, **kwargs):
-        """Plots the NoRH lightcurve
+        """Plots the NoRH lightcurve TimeSeries
 
         .. plot::
 
-            from sunpy import lightcurve as lc
-            from sunpy.data.sample import NORH_LIGHTCURVE
-            norh = lc.NoRHLightCurve.create(NORH_LIGHTCURVE)
+            import sunpy.data.sample
+            import sunpy.timeseries
+            norh = sunpy.timeseries.TimeSeries(sunpy.data.sample.NORH_LIGHTCURVE, source='NoRH')
             norh.peek()
 
         Parameters
         ----------
-        **kwargs : dict
-            Any additional plot arguments that should be used
-            when plotting.
+        **kwargs : `dict`
+            Any additional plot arguments that should be used when plotting.
         """
 
         plt.figure()
@@ -117,8 +113,6 @@ class NoRHLightCurve(GenericTimeSeries):
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
-        print('in is_datasource_for NoRH')
-        print(kwargs)
-        #"""Determines if header corresponds to an HMI image"""
-        #return header.get('instrume', '').startswith('HMI')
+        """Determines if header corresponds to a Nobeyama Radioheliograph Correlation lightcurve"""
+        #return header.get('instrume', '').startswith('')
         return kwargs.get('source', '').startswith('NoRH')
