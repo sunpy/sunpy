@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
 """Hinode XRT and SOT Map subclass definitions"""
 from __future__ import absolute_import, print_function, division
-#pylint: disable=W0221,W0222,E1101,E1121
+# pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = ["Alex Hamilton"]
 __email__ = "####"
