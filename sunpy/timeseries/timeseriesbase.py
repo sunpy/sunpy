@@ -469,8 +469,6 @@ class GenericTimeSeries:
         Add unitless entries for columns with no units defined.        
         Re-arrange the order of the dictionary to match the columns.
         """
-        print('in the sanitize function')
-        print(self.units)
         warnings.simplefilter('always', Warning)
 
         # Populate unspecified units:
@@ -486,8 +484,6 @@ class GenericTimeSeries:
             
         # Now use the amended units Ordered Dictionary
         self.units = units
-        print('now:')
-        print(self.units)
             
 
 # #### New Methods #### #
