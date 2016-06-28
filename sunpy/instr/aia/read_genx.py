@@ -18,7 +18,7 @@ from astropy.table import Table, Column
 
 
 
-def aia_inst_to_table(input_directory, channel_list, properties, version, save = True):
+def aia_inst_to_table(input_directory, channel_list, properties, version, save = False):
     """
 
     Given  a .genx directory, this function searches for aia instrument files and saves the properties to a table.
@@ -66,6 +66,10 @@ def aia_inst_to_table(input_directory, channel_list, properties, version, save =
     # # store in table
     table = Table()
 
+    indices = Column(name='properties', data=properties)
+    table.add_column(indices)
+    table.add_index('properties')
+
     # search through each instrument file for channels
     for instr_file in file_paths:
         # access np.recarray from .genx file
@@ -74,10 +78,10 @@ def aia_inst_to_table(input_directory, channel_list, properties, version, save =
         # pick out instrument files inside np.recarray
         for name in data.dtype.names:
             array = []
+            dtype = []
 
             # target number in filename that matches channels
             if name.startswith('A') and name.endswith('_FULL') and name.find('THICK') < 0:
-                print(name)
                 start = name.find('A')
                 end = name.find('_F')
                 channel = name[start + 1:end]
@@ -93,23 +97,21 @@ def aia_inst_to_table(input_directory, channel_list, properties, version, save =
                         else:
                             array.append(str(data[name][0][inst_property][0]))
 
-                    # print(dtype)
+
                     # create column of property information per channel
-                    # TODO: implement dtype, unit, and index name
-                    channel_information = Column(name = int(channel), data=array )
+                    # TODO: implement dtype, unit
+                    channel_information = Column(name = int(channel), data=array)
 
                     if int(channel) == 1600 or int(channel) == 1700:
                         pass # TODO: Fix ValueError: Inconsistent data column lengths: set([17,19])
-                     #         because these are shorter so won't work with this size table
-                     #    table.add_column(channel_information)
+                    #         because these are shorter so won't work with this size table
+                    #    table.add_column(channel_information)
                     else:
                         table.add_column(channel_information)
 
-    # print('output:', table)
     assert len(table) != 0, 'Data Frame is not loading from file.'
 
     if save: # TODO: fix TypeError: unhashable type: 'list'
-        #to outfile
         table.write('channel_properties_' + str(version) + '.csv', format ='csv')
 
     return table
