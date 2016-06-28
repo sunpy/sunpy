@@ -495,16 +495,19 @@ class GenericTimeSeries:
         -------
         newtable : `~astrpy.table`
             A new astropy table containing the data from the time series.
+            The table will include units where relevant.
         """
         # ToDo: Table.from_pandas(df) doesn't include the index column. Add request?
         # Get data columns
         table = Table.from_pandas(self.data)
 
-        # Get index column and add to table
+        # Get index column and add to table.
         index_col = Column(self.data.index.values, name='date')
         table.add_column(index_col, index=0)
 
-        # ToDo: add in the units support.
+        # Add in units.
+        for key in self.units:
+            table[key].unit = self.units[key]
 
         # Output the table
         return table
@@ -538,22 +541,68 @@ class GenericTimeSeries:
         """
         return self.data.as_matrix(**kwargs)
 
-    def quantity(self, column, **kwargs):
+    def quantity(self, colname, **kwargs):
         """
         Return a `~astropy.units.quantity.Quantity` for the given column.
 
         Parameters
         ----------
-        column: `str`
+        colname: `str`
             The heading of the column you want output.
 
         Returns
         -------
         quantity : `~astropy.units.quantity.Quantity`
         """
-        values = self.data[column].values
-        unit   = self.units[column]
+        values = self.data[colname].values
+        unit   = self.units[colname]
         return u.Quantity(values, unit)
+
+    def add_column(self, colname, quantity, **kwargs):
+        """
+        Return a `~astropy.units.quantity.Quantity` for the given column.
+
+        Parameters
+        ----------
+        colname: `str`
+            The heading of the column you want output.
+
+        quantity : `~astropy.units.quantity.Quantity` or `~numpy.ndarray`
+            The values to be placed within the column.
+            If updating values only then a numpy array is permitted.
+            
+        overwrite : `bool`, optional, default:True
+            Set to true to allow the method to overwrite a column already present
+            in the TimeSeries.
+            
+        Returns
+        -------
+        quantity : `~astropy.units.quantity.Quantity`        
+        
+        """
+        unit      = kwargs.get('unit', None)
+        overwrite = kwargs.get('overwrite', True)
+        values    = quantity
+
+        data  = self.data.copy()
+        meta  = self.meta.copy()
+        units = self.units.copy()
+        
+        # Check if we are updating a current column or adding a new one. If
+        # updating then change the unit if appicable.
+        if (colname in self.data.columns) and unit and overwrite:
+            units[colname] = unit
+        
+        # Convert the given values into the column units.
+        if isinstance(values, astropy.units.quantity.Quantity) and overwrite:
+            values = values.to(units[colname]).value
+        
+        # Update or add the data.
+        if not (colname in self.data.columns) or overwrite:
+            data[colname] = values
+            
+        # Return a new TimeSeries with the given updated/added column.
+        return self.__class__(data, meta, units)
 
     @classmethod
     def _parse_file(cls, filepath):

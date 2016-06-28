@@ -50,8 +50,8 @@ class NoRHLightCurve(GenericTimeSeries):
     * `Nobeyama Correlation Plots <http://solar.nro.nao.ac.jp/norh/html/cor_plot/>`_
     """
 
-    def __init__(self, data, header, **kwargs):
-        GenericTimeSeries.__init__(self, data, header, **kwargs)
+    def __init__(self, data, header, units, **kwargs):
+        super(NoRHLightCurve,self).__init__(data, header, units, **kwargs)
 
         # Fill in some missing info
         self.meta['detector'] = ""
@@ -110,7 +110,7 @@ class NoRHLightCurve(GenericTimeSeries):
         # Add the units data
         units = OrderedDict([('Correlation Coefficient', u.dimensionless_unscaled)])
         # Todo: check units used.
-        return pandas.DataFrame(data, index=norh_time, columns=('Correlation Coefficient')), header, units
+        return pandas.DataFrame(data, index=norh_time, columns=('Correlation Coefficient',)), header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):

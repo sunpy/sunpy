@@ -13,6 +13,8 @@ developed.
 
 from __future__ import print_function, division
 
+import os
+
 import sunpy.data.sample
 import sunpy.timeseries
 from sunpy.time import TimeRange
@@ -44,9 +46,9 @@ ts_rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_LIGHTCURVE, sou
 goes_lc_1 = lc.GOESLightCurve.create(TimeRange('2012/06/01', '2012/06/02'))
 goes_lc_2 = lc.GOESLightCurve.create(TimeRange('2012/06/02', '2012/06/03'))
 goes_lc_3 = lc.GOESLightCurve.create(TimeRange('2012/06/03', '2012/06/04'))
-filepath_1 = sunpy.config.get('downloads', 'download_dir') + '\\go1520120601.fits'
-filepath_2 = sunpy.config.get('downloads', 'download_dir') + '\\go1520120602.fits'
-filepath_3 = sunpy.config.get('downloads', 'download_dir') + '\\go1520120603.fits'
+filepath_1 = os.path.join(sunpy.config.get('downloads', 'download_dir'), 'go1520120601.fits')
+filepath_2 = os.path.join(sunpy.config.get('downloads', 'download_dir'), 'go1520120602.fits')
+filepath_3 = os.path.join(sunpy.config.get('downloads', 'download_dir'), 'go1520120603.fits')
 # Using these new files you get a list:
 lis_goes_ts = sunpy.timeseries.TimeSeries(filepath_1, filepath_2, source='GOES')
 lis_goes_ts = sunpy.timeseries.TimeSeries(filepath_1, filepath_2, filepath_3, source='GOES')
@@ -96,7 +98,7 @@ ts_goes.peek()
 
 ##############################################################################
 # An individual column can be extracted from a TimeSeries:
-series_eve_extract = ts_eve.extract(b'CMLon')
+series_eve_extract = ts_eve.extract('CMLon')
 # Note: this returns a Pandas Series 
 
 ##############################################################################
@@ -164,8 +166,22 @@ ts_from_table.units['a'] = u.m
 
 ##############################################################################
 # Quantities can be extracted from a column using the quantity(col_name) method:
-qua = ts_eve.quantity(b'17.1ESP')
+colname = 'CMLat'
+qua = ts_eve.quantity(colname)
 print(qua)
 
-
-
+##############################################################################
+# You can add or overwrite a column using the add_column method.
+# This method ascepts an astropy quantity and will convert to the intended units
+# if necessary.
+qua_new = u.Quantity(qua.value * 0.01, ts_eve.units[colname])
+print(qua_new)
+ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
+# Otherwise you can also use a numpy array and it assume you're using the original
+# units:
+arr_new = u.Quantity(qua.value * 0.1, ts_eve.units[colname]).value
+ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
+# Finally, if you want to change the units used, you can specify a new unit for the column using the unit keyword:
+qua_new = u.Quantity(qua.value * 0.00001, ts_eve.units[colname])
+unit = u.W/(u.km**2)
+ts_eve = ts_eve.add_column(colname, qua_new, unit=unit, overwrite=True)
