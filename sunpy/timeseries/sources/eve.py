@@ -3,6 +3,8 @@
 from __future__ import absolute_import
 
 import os
+import codecs
+
 import numpy
 from datetime import datetime
 from collections import OrderedDict
@@ -107,14 +109,14 @@ class EVELightCurve(GenericTimeSeries):
     def _parse_file(cls, filepath):
         """Parses an EVE CSV file."""
         cls._filename = basename(filepath)
-        with open(filepath, 'rb') as fp:
+        with codecs.open(filepath, mode='rb', encoding='ascii') as fp:
             # Determine type of EVE CSV file and parse
             line1 = fp.readline()
             fp.seek(0)
 
-            if line1.startswith("Date".encode('ascii')):
+            if line1.startswith("Date"):
                 return cls._parse_average_csv(fp)
-            elif line1.startswith(";".encode('ascii')):
+            elif line1.startswith(";"):
                 return cls._parse_level_0cs(fp)
 
     @staticmethod
@@ -132,70 +134,66 @@ class EVELightCurve(GenericTimeSeries):
         fields = []
         line = fp.readline()
         # Read header at top of file
-        while line.startswith(";".encode('ascii')):
+        while line.startswith(";"):
             header.append(line)
-            if '; Missing data:'.encode('ascii') in line :
+            if '; Missing data:' in line :
                 is_missing_data = True
-                missing_data_val = line.split(':'.encode('ascii'))[1].strip()
+                missing_data_val = line.split(':')[1].strip()
 
             line = fp.readline()
 
         meta = OrderedDict()
         for hline in header :
-            if hline == '; Format:\n'.encode('ascii') or hline == '; Column descriptions:\n'.encode('ascii'):
+            if hline == '; Format:\n' or hline == '; Column descriptions:\n':
                 continue
-            elif ('Created'.encode('ascii') in hline) or ('Source'.encode('ascii') in hline):
-                meta[hline.split(':'.encode('ascii'),
-                                 1)[0].replace(';'.encode('ascii'),
-                                               ' '.encode('ascii')).strip()] = hline.split(':'.encode('ascii'), 1)[1].strip()
-            elif ':'.encode('ascii') in hline :
-                meta[hline.split(':'.encode('ascii'))[0].replace(';'.encode('ascii'), ' '.encode('ascii')).strip()] = hline.split(':'.encode('ascii'))[1].strip()
+            elif ('Created' in hline) or ('Source' in hline):
+                meta[hline.split(':',
+                                 1)[0].replace(';',
+                                               ' ').strip()] = hline.split(':', 1)[1].strip()
+            elif ':' in hline :
+                meta[hline.split(':')[0].replace(';', ' ').strip()] = hline.split(':')[1].strip()
 
         fieldnames_start = False
         for hline in header:
-            if hline.startswith("; Format:".encode('ascii')):
+            if hline.startswith("; Format:"):
                 fieldnames_start = False
             if fieldnames_start:
-                fields.append(hline.split(":".encode('ascii'))[0].replace(';'.encode('ascii'), ' '.encode('ascii')).strip())
-            if hline.startswith("; Column descriptions:".encode('ascii')):
+                fields.append(hline.split(":")[0].replace(';', ' ').strip())
+            if hline.startswith("; Column descriptions:"):
                 fieldnames_start = True
 
         # Next line is YYYY DOY MM DD
-        date_parts = line.split(" ".encode('ascii'))
+        date_parts = line.split(" ")
 
         year = int(date_parts[0])
         month = int(date_parts[2])
         day = int(date_parts[3])
-        #last_pos = fp.tell()
-        #line = fp.readline()
-        #el = line.split()
-        #len
 
         # function to parse date column (HHMM)
         parser = lambda x: datetime(year, month, day, int(x[0:2]), int(x[2:4]))
 
-        data = read_csv(fp, sep="\s*".encode('ascii'), names=fields, index_col=0, date_parser=parser, header=None, engine='python')
+        data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, header=None, engine='python')
         if is_missing_data :   #If missing data specified in header
             data[data == float(missing_data_val)] = numpy.nan
-            
+
         # Add the units data
-        units = OrderedDict([(b'XRS-B proxy', u.dimensionless_unscaled),
-                             (b'XRS-A proxy', u.dimensionless_unscaled),
-                             (b'SEM proxy', u.dimensionless_unscaled),
-                             (b'0.1-7ESPquad', u.W/u.m**2),
-                             (b'17.1ESP', u.W/u.m**2),
-                             (b'25.7ESP', u.W/u.m**2),
-                             (b'30.4ESP', u.W/u.m**2),
-                             (b'36.6ESP', u.W/u.m**2),
-                             (b'darkESP', u.ct),
-                             (b'121.6MEGS-P', u.W/u.m**2),
-                             (b'darkMEGS-P', u.ct),
-                             (b'q0ESP', u.dimensionless_unscaled),
-                             (b'q1ESP', u.dimensionless_unscaled),
-                             (b'q2ESP', u.dimensionless_unscaled),
-                             (b'q3ESP', u.dimensionless_unscaled),
-                             (b'CMLat', u.W/u.m**2),
-                             (b'CMLon', u.W/u.m**2)])
+        units = OrderedDict([('XRS-B proxy', u.dimensionless_unscaled),
+                             ('XRS-A proxy', u.dimensionless_unscaled),
+                             ('SEM proxy', u.dimensionless_unscaled),
+                             ('0.1-7ESPquad', u.W/u.m**2),
+                             ('17.1ESP', u.W/u.m**2),
+                             ('25.7ESP', u.W/u.m**2),
+                             ('30.4ESP', u.W/u.m**2),
+                             ('36.6ESP', u.W/u.m**2),
+                             ('darkESP', u.ct),
+                             ('121.6MEGS-P', u.W/u.m**2),
+                             ('darkMEGS-P', u.ct),
+                             ('q0ESP', u.dimensionless_unscaled),
+                             ('q1ESP', u.dimensionless_unscaled),
+                             ('q2ESP', u.dimensionless_unscaled),
+                             ('q3ESP', u.dimensionless_unscaled),
+                             ('CMLat', u.W/u.m**2),
+                             ('CMLon', u.W/u.m**2)])
         # Todo: check units used.
         return data, meta, units
 
