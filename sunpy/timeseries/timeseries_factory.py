@@ -1,7 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
 __authors__ = ["Alex Hamilton, Russell Hewett, Stuart Mumford"]
-__email__ = "#########stuart@mumford.me.uk"
+__email__ = "stuart@mumford.me.uk"
 
 import warnings
 import os
@@ -201,20 +201,19 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             arg = args[i]
 
             # Data-header pair in a tuple
-            # ToDo: this needs to accept a 3-tuple if units are given.
             if ((type(arg) in [tuple, list]) and
                 (len(arg) == 2 or len(arg) == 3) and
                 isinstance(arg[0], (np.ndarray, Table, pd.DataFrame)) and
                 self._validate_meta(arg[1])):
                 # Assume a Pandas Dataframe is given.
                 data = arg[0]
+                units = OrderedDict({})
                 # Convert the data argument into a Pandas DataFrame if needed.
                 if isinstance(data, Table):
                     # We have an AstroPy Table:
                     data = arg[0].to_pandas()
                     
                     # Extract Units from table:
-                    units = OrderedDict({})
                     for colname in arg[0].colnames:
                         # Only add the unit if specified.
                         if arg[0][colname].unit:
@@ -224,7 +223,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     # We have a numpy ndarray:
                     data = pd.DataFrame(data=arg[0])
                     # ToDo: should this include an index? Maybe use the first column?
-                    units = OrderedDict({})
                 
                 # The second argument will be the metadata/header.
                 meta = OrderedDict(arg[1])
@@ -232,7 +230,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 # Check if we're given a third argument for units
                 if (len(arg) == 3) and self._validate_meta(arg[2]):
                     # This combines with values gathered from an input Table.
-                    units = units.update(arg[2])
+                    units.update(arg[2])
                 
                 # Add a 3-tuple for this TimeSeries.
                 data_header_unit_tuples.append((data, meta, units))
@@ -242,13 +240,12 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                   self._validate_meta(args[i+1])):
                 # Assume a Pandas Dataframe is given.
                 data = arg
+                units = OrderedDict()
                 # Convert the data argument into a Pandas DataFrame if needed.
                 if isinstance(data, Table):
                     # We have an AstroPy Table:
                     data = arg.to_pandas()
-                    
                     # Extract Units from table:
-                    units = OrderedDict({})
                     for colname in arg.colnames:
                         # Only add the unit if specified.
                         if arg[colname].unit:
@@ -257,14 +254,13 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     # We have a numpy ndarray:
                     data = pd.DataFrame(data=arg)
                     # ToDo: should this include an index? Maybe use the first column?
-                    units = OrderedDict({})
                     
                 # The second argument will be the metadata/header.
                 meta = OrderedDict(args[i+1])
                 
-                # Check if we're given a third units
-                if (len(args) > i+2) and self._validate_meta(args[i+2]):
-                    units = units.update(args[i+2])
+                # Check if we're given a third argument for units
+                if (len(args) > i+2) and self._validate_units(args[i+2]):
+                    units.update(args[i+2])
                     i += 1 # an extra increment to account for the units
                 
                 # Add a 3-tuple for this TimeSeries.
@@ -373,7 +369,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # Loop over each registered type and check to see if WidgetType
         # matches the arguments.  If it does, use that type.
         for pair in data_header_unit_tuples:
-            print('pair: ' + str(pair))
             data, header, units = pair
             meta = MapMeta(header)
 
