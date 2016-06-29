@@ -120,7 +120,7 @@ class Response():
         var = self.channel_data
 
         if compare_genx:
-            self.eff_area = var['eff_area']
+            self.eff_area = var['effarea']
         elif compare_table:
             self.eff_area = [0.312, 1.172, 2.881, 1.188, 1.206, 0.063, 0.045, 0.0192, 0.0389][
                 self.channel_list.index(self.channel)]
@@ -137,7 +137,7 @@ class Response():
 
         return self.eff_area
 
-    def wavelength_response(self, compare=False):
+    def wavelength_response(self, compare_genx=False, compare_table = False):
         """
 
         Describes the instrument (AIA) response per wavelength by calculating effective area vs wavelength of the strongest emission lines present in the solar feature.
@@ -173,17 +173,27 @@ class Response():
         gain_table = {94: 2.128 * gu, 131: 1.523 * gu, 171: 1.168 * gu, 195: 1.024 * gu, 211: 0.946 * gu,
                       304: 0.658 * gu, 335: 0.596 * gu, 1600: 0.125 * gu, 1700: 0.118 * gu}
 
-        if compare:
+        var = self.channel_data
+
+        if compare_genx:
             # gives Table 2 values for instruement response
             index = self.channel_list.index(self.channel)
             self.inst_response = [0.664, 1.785, 3.365, 1.217, 1.14, 0.041, 0.027, 0.0024, 0.0046][index]
-        else:
+        elif compare_table:
             # calculations of G from Boerner Table 12
             for key, gain in gain_table.iteritems():
                 if str(key) == str(self.channel):
                     eff_area = self.effective_area()
                     inst_response = eff_area * gain # / wavelength
                     self.inst_response = inst_response[self.channel]
+        else:
+            # Calculations of G from Boerner formulas * work in progress*
+            for key, gain in ccd_gain.iteritems():
+                if str(key) == str(wavelength):
+                    eff_area = self.effective_area(key)
+                    Gain = 12398.0 / (var['wave'] * var['elecperev']) / var['elecperdn']  # < gain
+                    instr_response = (eff_area ) * Gain ** (u.electron / u.ct)
+                    # want: dn/photon
 
         return self.inst_response
 
