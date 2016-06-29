@@ -80,7 +80,7 @@ ts_lyra.data
 ts_lyra.meta
 ts_lyra.units
 # Further data is avalible:
-ts_lyra.time_range # Retunrs a SunPy TimeRange object.
+ts_lyra.time_range # Returns a SunPy TimeRange object.
 ts_lyra.name
 ts_lyra.nickname
 ts_lyra.date
@@ -95,11 +95,12 @@ ts_lyra.observatory
 ##############################################################################
 # The TimeSeries objects can be visualised using peek():
 ts_goes.peek()
+# And you can use subplots:
+ts_eve.peek(subplots=True)
 
 ##############################################################################
 # An individual column can be extracted from a TimeSeries:
-series_eve_extract = ts_eve.extract('CMLon')
-# Note: this returns a Pandas Series 
+ts_eve_extract = ts_eve.extract('CMLon')
 
 ##############################################################################
 # You can truncate a TimeSeries using the truncate() method.
@@ -181,7 +182,8 @@ ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
 # units:
 arr_new = u.Quantity(qua.value * 0.1, ts_eve.units[colname]).value
 ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
-# Finally, if you want to change the units used, you can specify a new unit for the column using the unit keyword:
+# Finally, if you want to change the units used, you can specify a new unit for
+# the column using the unit keyword:
 qua_new = u.Quantity(qua.value * 0.00001, ts_eve.units[colname])
 unit = u.W/(u.km**2)
 ts_eve = ts_eve.add_column(colname, qua_new, unit=unit, overwrite=True)

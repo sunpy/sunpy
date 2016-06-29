@@ -4,6 +4,8 @@ classes inherit from.
 """
 
 from __future__ import absolute_import, division, print_function
+__authors__ = ["Alex Hamilton, Stuart Mumford"]
+__email__ = "stuart@mumford.me.uk"
 
 import warnings
 import inspect
@@ -560,7 +562,7 @@ class GenericTimeSeries:
 
     def add_column(self, colname, quantity, **kwargs):
         """
-        Return a `~astropy.units.quantity.Quantity` for the given column.
+        Return an new TimeSeries with the given column added or updated.
 
         Parameters
         ----------
@@ -577,20 +579,21 @@ class GenericTimeSeries:
             
         Returns
         -------
-        quantity : `~astropy.units.quantity.Quantity`        
+        newts : TimeSeries
         
         """
         unit      = kwargs.get('unit', None)
         overwrite = kwargs.get('overwrite', True)
         values    = quantity
 
+        # Make a copy of all the TimeSeries components.
         data  = self.data.copy()
         meta  = self.meta.copy()
         units = self.units.copy()
         
-        # Check if we are updating a current column or adding a new one. If
-        # updating then change the unit if appicable.
+        # Check if we are updating a current column or adding a new one.
         if (colname in self.data.columns) and unit and overwrite:
+            # Updating, so change the unit if appicable.
             units[colname] = unit
         
         # Convert the given values into the column units.
