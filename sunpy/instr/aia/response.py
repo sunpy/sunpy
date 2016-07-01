@@ -36,6 +36,7 @@ import os
 
 import sunpy
 import sunpy.data.test as test
+import aia_read_genx
 
 
 class Response():
@@ -56,35 +57,63 @@ class Response():
     Feedback/ Thoughts are always welcome! -Thanks!
     """
 
-    def __init__(self, dataframe, channel = 'all', **kwargs): #data_table,
+    def __init__(self, channel_list, properties, **kwargs):  # data_table,
 
-        # #data_table = kwargs.get('data_table', '')
-        #
-        # if channel == 'all':
-        #     self.data_dictionary = data_table.columns
+        path_to_genx_dir = kwargs.get('path_to_genx_dir', '')
+        version = kwargs.get('version', 6)
+
+        # check if datafile is made
+        if not os.path.exists('channel_properties_' + str(version) + '.csv'):
+            # load in pandas dataframe ( doesn't hold units/ dtype)
+            # aia_read_genx.aia_instr_properties_to_dataframe(path_to_genx_dir, channel_list, properties, version, save=True)
+            # or load in astropy table
+            aia_read_genx.aia_instr_properties_to_table(path_to_genx_dir, channel_list, properties, version, save=True)
+
+        # load in data
+        dataframe = pd.DataFrame.from_csv('channel_properties_' + str(version) + '.csv', sep=',')
+        data_table = Table.read('channel_properties_' + str(version) + '.csv')
+
+        # The is for using dataframe until I finish testing the Table structure.
+        # self.dataframe = dataframe
+
+        # This code is for testing the table structure.
+        #######################################################
+
+        self.data_dictionary = data_table.columns
+
+        self.properties = data_table['properties']
+        self.wavelength_range = kwargs.get('wavelength_range', np.array(data_table['94'][8]))
+        #######################################################
+
+
+
+    def channel_data(self, channel):
+
+        # working with dataframe
+        # if type(channel) == int:
+        #     channel_data = self.dataframe[str(channel)]
         # else:
-        #     self.channel_data = data_table[str(channel)]
-        #
-        # self.properties = data_table['properties']
-        # self.wavelength_range = kwargs.get('wavelength_range', np.array(data_table['94'][8]))
+        #     channel_data = self.dataframe[channel]
+
+        # working with table
+        if type(channel) == int:
+            channel_data = self.data_dictionary[str(channel)]
+        else:
+            channel_data = self.data_dictionary[channel]
+
+        return channel_data
 
 
-        #The code above is for testing the table structure. The code below is for using dataframe to carry on until I finish testing the Table structure.
-
-
-        self.channel = channel
+    def wavelength_range(self, channel):
+        # wavelength range is calculated here for plotting becomes more general after calling a specific channel
 
         if channel == 'all':
-            self.dataframe = dataframe
+            wavelength_range = np.arange(0, float(self.dataframe[0]['wavenumsteps'])) * float((self.dataframe[0]['wavestep'])) + float(self.dataframe[0]['wavemin'])
+
         else:
-            self.channel_data = dataframe[str(channel)]
+            wavelength_range = np.arange(0, float(self.dataframe[str(channel)]['wavenumsteps'])) * float((self.dataframe[str(channel)]['wavestep'])) + float(self.dataframe[str(channel)]['wavemin'])
 
-        # wavelength range is calculated here: (for plotting)
-        self.wavelength_range = np.arange(0, float(self.channel_data['wavenumsteps']))*float((self.channel_data['wavestep']))+ float(self.channel_data['wavemin'])
-
-        # only for comparing to paper - inside functions
-        self.channel_list = kwargs.get('channel_list', [])
-
+        return wavelength_range
 
 
     def effective_area(self, compare_genx=False, compare_table=False):
@@ -131,13 +160,13 @@ class Response():
             transmission_efficiency = var['fp_filter'] * var['ent_filter']  # these appear to be the same... not sure
 
             # equation:
-            eff_area = var['geoarea'] * reflectance * transmission_efficiency * wavelength * var['contam']* var['ccd']
+            eff_area = var['geoarea']* u.cm**2 * reflectance * transmission_efficiency * wavelength * var['contam'] * var['ccd']
 
-            self.eff_area = eff_area[self.channel]
+            self.eff_area = eff_area
 
         return self.eff_area
 
-    def wavelength_response(self, compare_genx=False, compare_table = False):
+    def wavelength_response(self, compare_genx=False, compare_table=False):
         """
 
         Describes the instrument (AIA) response per wavelength by calculating effective area vs wavelength of the strongest emission lines present in the solar feature.
@@ -184,16 +213,20 @@ class Response():
             for key, gain in gain_table.iteritems():
                 if str(key) == str(self.channel):
                     eff_area = self.effective_area()
-                    inst_response = eff_area * gain # / wavelength
+                    inst_response = eff_area/var['wave'] / gain
                     self.inst_response = inst_response[self.channel]
         else:
             # Calculations of G from Boerner formulas * work in progress*
+            eu = u.electron / u.count
+            ccd_gain = {94:18.3*eu, 131: 17.6*eu, 171: 17.7*eu, 193: 18.3*eu, 211: 18.3*eu, 304: 18.3*eu, 335: 17.6*eu, 1600:0.125*eu, 1700:0.118*eu}
             for key, gain in ccd_gain.iteritems():
-                if str(key) == str(wavelength):
-                    eff_area = self.effective_area(key)
-                    Gain = 12398.0 / (var['wave'] * var['elecperev']) / var['elecperdn']  # < gain
-                    instr_response = (eff_area ) * Gain ** (u.electron / u.ct)
-                    # want: dn/photon
+                if str(key) == str(self.channel):
+                    eff_area = self.effective_area()
+                    # g = (12398.0 / var['wave'])  / var['elecperdn'] * gain* var['elecperev']
+                    # g = (12398.0*u.eV*u.angstrom / var['wave']*u.angstrom) / 3.65 /  gain
+                    g = (12398.0*u.eV*u.angstrom / var['wave']*u.angstrom) * (u.electron / u.eV)    * gain
+                    instr_response = (eff_area) * g
+                    self.inst_response = instr_response[self.channel]
 
         return self.inst_response
 
