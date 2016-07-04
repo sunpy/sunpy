@@ -26,6 +26,23 @@ class TimeSeriesMetaData:
     def append(self, timerange, columns, metadata, **kwargs):
         """
         Add the given metadata into the metadata table.
+        
+        Parameters
+        ----------
+        timerange : `~sunpy.time.TimeRange`
+            The string (parsed using the `~sunpy.time.parse_time`) or datetime
+            that you need metadata for.
+        
+        columns : `str`
+            A string that can be used to narrow results to specific columns.
+
+        metadata : `OrderedDict`
+            A string that can be used to narrow results to specific columns.
+    
+        Returns
+        -------
+        list : `list`
+            A list of OrderedDict objects that contain all matching metadata.
         """
         # Check the types are correct.
         pos = len(self.metadata)
@@ -54,6 +71,20 @@ class TimeSeriesMetaData:
     def find(self, datetime, colname=None):
         """
         Find all metadata matching the given date/time and optional column name.
+        
+        Parameters
+        ----------
+        datetime : `str` or `~datetime.datetime`
+            The string (parsed using the `~sunpy.time.parse_time`) or datetime
+            that you need metadata for.
+        
+        colname : `str` optional
+            A string that can be used to narrow results to specific columns.
+    
+        Returns
+        -------
+        list : `list`
+            A list of OrderedDict objects that contain all matching metadata.
         """
         # Extract the datetime object.
         dt = datetime
