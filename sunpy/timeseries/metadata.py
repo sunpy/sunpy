@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Jun 30 18:10:26 2016
-
-@author: alex_
-"""
+from __future__ import absolute_import, division, print_function
+__authors__ = ["Alex Hamilton, Stuart Mumford"]
+__email__ = "stuart@mumford.me.uk"
 
 from collections import OrderedDict
 
@@ -12,12 +10,27 @@ from sunpy.time import TimeRange, parse_time
 import warnings
 import inspect
 
-
-
-
 class TimeSeriesMetaData:
     """
-    A metadata object for use with the TimeSeries object.
+    An object used to store metadata for TimeSeries objects that enables multiple
+    TimeSeries metadata to be concatenated in an organised fashion.
+
+    Attributes
+    ----------
+    metadata : `list` of `tuple`
+        The list of 3-tuples which each represent a source files metadata.
+        The tuples consist of: ( TimeRange, [ colnames ], OrderedDict(metadata) )
+
+    Examples
+    --------
+    >>> from sunpy.timeseries import TimeSeriesMetaData
+    >>> from sunpy.time import TimeRange, parse_time
+    >>> from collections import OrderedDict
+    >>> tr = TimeRange('2012-06-01 00:00','2012-06-02 00:00')
+    >>> md = TimeSeriesMetaData()
+    >>> md.append(tr, ['GOES'], OrderedDict([('tr','tr')]))
+    >>> md.find(parse_time('2012-06-01T21:08:12'))
+    >>> md.find(parse_time('2012-06-01T21:08:12'), 'GOES')   # doctest: +SKIP
     """
 
     def __init__(self, **kwargs):
@@ -25,7 +38,9 @@ class TimeSeriesMetaData:
 
     def append(self, timerange, columns, metadata, **kwargs):
         """
-        Add the given metadata into the metadata table.
+        Add the given metadata OrderedDict into the metadata list as a tuple.
+        Will add the new entry so the list is in chronological order for the
+        TimeRange.start datetime values.
         
         Parameters
         ----------
@@ -38,11 +53,6 @@ class TimeSeriesMetaData:
 
         metadata : `OrderedDict`
             A string that can be used to narrow results to specific columns.
-    
-        Returns
-        -------
-        list : `list`
-            A list of OrderedDict objects that contain all matching metadata.
         """
         # Check the types are correct.
         pos = len(self.metadata)
@@ -51,7 +61,7 @@ class TimeSeriesMetaData:
                 if timerange.start < self.metadata[i][0].start:
                     pos = i - 1
         else:
-            warnings.warn_explicit("Incorrect datatime or data for append to MetaData.",
+            warnings.warn_explicit("Incorrect datatime or data for append to TimeSeriesMetaData.",
                                    Warning, __file__, inspect.currentframe().f_back.f_lineno)
         
         # Prepare tuple to append.
@@ -68,55 +78,105 @@ class TimeSeriesMetaData:
         if not duplicate:
             self.metadata.insert(pos, new_metadata)
             
-    def find(self, datetime, colname=None):
+    def find(self, datetime=None, colname=None, **kwargs):
         """
-        Find all metadata matching the given date/time and optional column name.
+        Find all metadata matching the given datetime and optionally column name.
         
         Parameters
         ----------
-        datetime : `str` or `~datetime.datetime`
+        datetime : `str` or `~datetime.datetime` optional
             The string (parsed using the `~sunpy.time.parse_time`) or datetime
             that you need metadata for.
         
         colname : `str` optional
             A string that can be used to narrow results to specific columns.
+
+        indexes : `bool` optional
+            If True then return a list of indexes, not of OrderedDict items.
     
         Returns
         -------
         list : `list`
             A list of OrderedDict objects that contain all matching metadata.
         """
-        # Extract the datetime object.
+        # Parameters
+        indexes = kwargs.get('indexes', False)
         dt = datetime
-        if isinstance(dt, str):
+        if not dt:
+            dt = False
+        elif isinstance(dt, str):
             dt = parse_time(dt)
             
         # Find all results with suitable timerange.
         results_indexes = []
         for i in range(0, len(self.metadata)):
-            if dt in self.metadata[i][0]:
+            if dt in self.metadata[i][0] or not(dt):
                 results_indexes.append(i)
         
         # Filter out only those with the correct column.
         results = []
         for i in results_indexes:
-            #print('\n\nself.metadata[i][1]: ' + str(self.metadata[i][1]) + '\n\n')
             if (colname in self.metadata[i][1]) or (not colname):
-                results.append(self.metadata[i][2])
+                if indexes:
+                    results.append(i)
+                else:
+                    results.append(self.metadata[i][2])
         
         return results
     
     def get(self, index):
-        # Return the dictionary entry at the given index.
+        """
+        Return the dictionary entry at the given index.
+        
+        Parameters
+        ----------
+        index : `int`
+            The integer index of the metadata entry in the list.
+    
+        Returns
+        -------
+        metadata : `OrderedDict`
+            An ordered Dictionary containing the metadata at the given index.
+        """
         return self.metadata[index][1]
         
     def concatenate(self, tsmetadata2, **kwargs):
         """
         Combine the metadata from a TimeSeriesMetaData object with the current
-        metadata.
+        TimeSeriesMetaData.
+
+        Parameters
+        ----------
+        tsmetadata2 : `~sunpy.timeseries.TimeSeriesMetaData`
+            The second TimeSeriesMetaData object.
         """
+        # Append each metadata entry from the second TimeSeriesMetaData object
+        # to the original TimeSeriesMetaData object.
         for tuple in tsmetadata2.metadata:
             self.append(tuple[0], tuple[1], tuple[2])
+
+    def update(self, dictionary, datetime=None, colname=None, **kwargs):
+        """
+        Make updates to the OrderedDict metadata for all matching metadata entries.
+
+        Parameters
+        ----------
+        dictionary : `dict` or `OrderedDict`
+            The second TimeSeriesMetaData object.
+            
+        datetime : `str` or `~datetime.datetime` optional
+            The string (parsed using the `~sunpy.time.parse_time`) or datetime
+            to filter the metadata entries updated.
+            
+        colname : `str` optional
+            A string that can be used to narrow results to specific columns.
+        """
+        # Find all matching metadata entries
+        indexes = self.find(datetime, colname, indexes=True)
+        
+        # Now update each matching entry
+        for i in indexes:
+            self.metadata[i][2].update(dictionary)
         
     def _validate_meta(self, meta):
         """
@@ -132,16 +192,13 @@ if __name__ == "__main__":
     tr_4 = TimeRange('2012-06-04 00:00','2012-06-05 00:00')
     tr_5 = TimeRange('2012-06-02 00:00','2012-06-06 00:00')
     
-    # Build a MetaData object
+    # Build a TimeSeriesMetaData object
     md = TimeSeriesMetaData()
     md.append(tr_1, ['GOES'], OrderedDict([('tr_1','tr_1')]))
     md.append(tr_2, ['GOES'], OrderedDict([('tr_2','tr_2')]))
     md.append(tr_3, ['GOES'], OrderedDict([('tr_3','tr_3')]))
     md.append(tr_4, ['GOES'], OrderedDict([('tr_4','tr_4')]))
     md.append(tr_5, ['Other'], OrderedDict([('tr_5','tr_5')]))
-    
-    #metadict = OrderedDict([(tr_1, 'tr_1'), (tr_2, 'tr_2'), (tr_3, 'tr_3'), (tr_4, 'tr_4'), (tr_5, 'tr_5')])
-    #md = MetaData(metadict)
     
     # Check it
     time_1 = parse_time('2012-06-01T21:08:12')
