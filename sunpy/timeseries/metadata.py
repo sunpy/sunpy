@@ -177,7 +177,27 @@ class TimeSeriesMetaData:
         # Now update each matching entry
         for i in indexes:
             self.metadata[i][2].update(dictionary)
+
+    def rename_column(self, old, new):
+        """
+        Change the name of a column in all the metadata entries.
         
+        Parameters
+        ----------
+        old : `str`
+            The original column name to be changed.
+
+        new : `str`
+            The new column name.
+        """
+        for i in range(0, len(self.metadata)):
+            # Update the colnames
+            colnames = self.metadata[i][1]
+            colnames = [w.replace(old, new) for w in colnames]
+            
+            # Replace values
+            self.metadata[i] = ( self.metadata[i][0], colnames, self.metadata[i][2] )
+
     def _validate_meta(self, meta):
         """
         Validate a meta argument.
@@ -231,3 +251,7 @@ if __name__ == "__main__":
     md.find(time_5, 'GOES')
     md.find(time_6, 'GOES') # No results (too early)
     md.find(time_7, 'GOES') # No results (too late)
+    
+    # renaming columns
+    md.rename_column('Other', 'changed')
+    md.rename_column('GOES', 'goes')
