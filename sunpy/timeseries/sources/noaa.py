@@ -154,7 +154,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
                                  ('radio flux smooth', u.W/u.m**2),
                                  ('geomagnetic ap', u.dimensionless_unscaled),
                                  ('geomagnetic smooth', u.dimensionless_unscaled)])
-            # Todo: check uni
+            # Todo: check units
             # Todo: fix header/meta, it's returning rubbish.
             return data, {'comments': header}, units
 
