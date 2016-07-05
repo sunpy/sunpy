@@ -33,8 +33,20 @@ class TimeSeriesMetaData:
     >>> md.find(parse_time('2012-06-01T21:08:12'), 'GOES')   # doctest: +SKIP
     """
 
-    def __init__(self, **kwargs):
+    def __init__(self, metadata=None, timerange=None, colnames=None, **kwargs):
         self.metadata = []
+        if metadata:
+            if isinstance(metadata, (dict, OrderedDict)) and isinstance(timerange, TimeRange) and isinstance(colnames, list):
+                # Given a single metadata entry as a dictionary with additional timerange and colnames.
+                self.metadata.append(( timerange, colnames, metadata))
+            elif isinstance(metadata, tuple):
+                # Given a single metadata entry as a tuple.
+                self.metadata.append(metadata)
+            elif isinstance(metadata, tuple):
+                # Given a complex metadata list (of tuples)
+                self.meta = metadata
+            
+        
 
     def append(self, timerange, columns, metadata, **kwargs):
         """
@@ -182,17 +194,21 @@ class TimeSeriesMetaData:
     def concatenate(self, tsmetadata2, **kwargs):
         """
         Combine the metadata from a TimeSeriesMetaData object with the current
-        TimeSeriesMetaData.
+        TimeSeriesMetaData and return as a new TimeSeriesMetaData object.
 
         Parameters
         ----------
         tsmetadata2 : `~sunpy.timeseries.TimeSeriesMetaData`
             The second TimeSeriesMetaData object.
         """
+        # Create a copy of the metadata
+        meta = self.copy()
         # Append each metadata entry from the second TimeSeriesMetaData object
         # to the original TimeSeriesMetaData object.
         for tuple in tsmetadata2.metadata:
-            self.append(tuple[0], tuple[1], tuple[2])
+            meta.append(tuple[0], tuple[1], tuple[2])
+            
+        return meta
 
     def update(self, dictionary, datetime=None, colname=None, **kwargs):
         """
