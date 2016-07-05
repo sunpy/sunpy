@@ -79,15 +79,14 @@ class Response():
         # This code is for testing the table structure.
         #######################################################
 
-        self.data_dictionary = data_table.columns
+        self.data_dictionary = data_table#.columns
 
-        self.properties = data_table['properties']
+        # self.properties = data_table['properties']
+        self.properties = properties
         self.wavelength_range = kwargs.get('wavelength_range', np.array(data_table['94'][8]))
         #######################################################
 
-
-
-    def channel_data(self, channel):
+    def channel_data(self, channel, **kwargs):
 
         # working with dataframe
         # if type(channel) == int:
@@ -101,70 +100,100 @@ class Response():
         else:
             channel_data = self.data_dictionary[channel]
 
-        return channel_data
-
+        value = kwargs.get('value', '')
+        if len(value) > 0:
+            if value in self.data_dictionary['properties']:
+                # print('value in dictionary', self.data_dictionary.loc['properties'][value])
+                value_index = self.properties.index(value)
+                return channel_data[value_index]
+        else:
+            return channel_data
 
     def wavelength_range(self, channel):
         # wavelength range is calculated here for plotting becomes more general after calling a specific channel
 
+        # # working with dataframe
+        # if channel == 'all':
+        #     wavelength_range = np.arange(0, float(self.dataframe[0]['wavenumsteps'])) * float((self.dataframe[0]['wavestep'])) + float(self.dataframe[0]['wavemin'])
+        # else:
+        #     wavelength_range = np.arange(0, float(self.dataframe[str(channel)]['wavenumsteps'])) * float((self.dataframe[str(channel)]['wavestep'])) + float(self.dataframe[str(channel)]['wavemin'])
+
+        # working with table
+        print('in wavelength_range')
+        numwavesteps = self.properties.index('wavenumsteps')
+        wave_intervals = self.properties.index('wavestep')
+        min_wavelength = self.properties.index('minwave')
+
+        wave = self.data_dictionary[str(channel)][self.properties.index('wave')]
+
+        print(wave)
         if channel == 'all':
-            wavelength_range = np.arange(0, float(self.dataframe[0]['wavenumsteps'])) * float((self.dataframe[0]['wavestep'])) + float(self.dataframe[0]['wavemin'])
-
+            wavelength_range = np.arange(0, float(self.data_dictionary[0][numwavesteps])) * float(
+                (self.data_dictionary[0][wave_intervals])) + float(self.data_dictionary[0][min_wavelength])
         else:
-            wavelength_range = np.arange(0, float(self.dataframe[str(channel)]['wavenumsteps'])) * float((self.dataframe[str(channel)]['wavestep'])) + float(self.dataframe[str(channel)]['wavemin'])
+            wavelength_range = np.arange(0, float(self.data_dictionary[str(channel)][numwavesteps])) * float(
+                (self.data_dictionary[str(channel)][wave_intervals])) + float(
+                self.data_dictionary[str(channel)][min_wavelength])
 
-        return wavelength_range
+        # wavelength_range = [1,2,3,4,5]
+        # print(wavelength_range[0])
+        return wave
+
 
 
     def effective_area(self, compare_genx=False, compare_table=False):
-        """
-        AIA instrument response / effective area
-        - contains information about the efficiency of the telescope optics.
-        - trying to reformat effective area structure, convert to DN units
+            """
+            AIA instrument response / effective area
+            - contains information about the efficiency of the telescope optics.
+            - trying to reformat effective area structure, convert to DN units
 
-        Effective Area = Geo_Area * Reflectance of Primary and Secondary Mirrors * Transmission Efficiency of filters * Quantum Efficiency of CCD * Correction for time-varying contamination
+            Effective Area = Geo_Area * Reflectance of Primary and Secondary Mirrors * Transmission Efficiency of filters * Quantum Efficiency of CCD * Correction for time-varying contamination
 
-        A_{eff}=A_{geo}R_p(\lambda)R_S(\lambda)T_E(\lambda)T_F(\lambda)D(\lambda,t)Q(\lambda)
-        site github ^^^     @
+            A_{eff}=A_{geo}R_p(\lambda)R_S(\lambda)T_E(\lambda)T_F(\lambda)D(\lambda,t)Q(\lambda)
+            site github ^^^     @
 
-        Parameters
-        ----------
-        wavelength: int
-            the wavelength center of the channel of interest
+            Parameters
+            ----------
+            wavelength: int
+                the wavelength center of the channel of interest
 
-        Variables:
-        ----------
-        Reflectance = The combined reflectance of the primary and secondary mirrors
-        Transmission_efficiency = for the focal plane and entrence filters
+            Variables:
+            ----------
+            Reflectance = The combined reflectance of the primary and secondary mirrors
+            Transmission_efficiency = for the focal plane and entrence filters
 
-        Returns
-        -------
-        effective_area: np.array
-            if compare is True: returns the effective area loaded in from the ssw genx file.
-            if compare is False: returns the calculations here from Boerner
+            Returns
+            -------
+            effective_area: np.array
+                if compare is True: returns the effective area loaded in from the ssw genx file.
+                if compare is False: returns the calculations here from Boerner
 
 
-        """
+            """
 
-        var = self.channel_data
+            var = self.channel_data
 
-        if compare_genx:
-            self.eff_area = var['effarea']
-        elif compare_table:
-            self.eff_area = [0.312, 1.172, 2.881, 1.188, 1.206, 0.063, 0.045, 0.0192, 0.0389][
-                self.channel_list.index(self.channel)]
-        else:
-            # variables:
-            wavelength = self.wavelength_range
-            reflectance = var['primary'] * var['secondary']
-            transmission_efficiency = var['fp_filter'] * var['ent_filter']  # these appear to be the same... not sure
+            if compare_genx:
+                self.eff_area = var['effarea']
+            elif compare_table:
+                self.eff_area = [0.312, 1.172, 2.881, 1.188, 1.206, 0.063, 0.045, 0.0192, 0.0389][
+                    self.channel_list.index(self.channel)]
+            else:
+                # variables:
+                wavelength = self.wavelength_range
+                reflectance = var['primary'] * var['secondary']
+                transmission_efficiency = var['fp_filter'] * var[
+                    'ent_filter']  # these appear to be the same... not sure
 
-            # equation:
-            eff_area = var['geoarea']* u.cm**2 * reflectance * transmission_efficiency * wavelength * var['contam'] * var['ccd']
+                # equation:
+                eff_area = var['geoarea'] * u.cm ** 2 * reflectance * transmission_efficiency * wavelength * var[
+                    'contam'] * var['ccd']
 
-            self.eff_area = eff_area
+                self.eff_area = eff_area
 
-        return self.eff_area
+            return self.eff_area
+
+
 
     def wavelength_response(self, compare_genx=False, compare_table=False):
         """
@@ -213,18 +242,19 @@ class Response():
             for key, gain in gain_table.iteritems():
                 if str(key) == str(self.channel):
                     eff_area = self.effective_area()
-                    inst_response = eff_area/var['wave'] / gain
+                    inst_response = eff_area / var['wave'] / gain
                     self.inst_response = inst_response[self.channel]
         else:
             # Calculations of G from Boerner formulas * work in progress*
             eu = u.electron / u.count
-            ccd_gain = {94:18.3*eu, 131: 17.6*eu, 171: 17.7*eu, 193: 18.3*eu, 211: 18.3*eu, 304: 18.3*eu, 335: 17.6*eu, 1600:0.125*eu, 1700:0.118*eu}
+            ccd_gain = {94: 18.3 * eu, 131: 17.6 * eu, 171: 17.7 * eu, 193: 18.3 * eu, 211: 18.3 * eu,
+                        304: 18.3 * eu, 335: 17.6 * eu, 1600: 0.125 * eu, 1700: 0.118 * eu}
             for key, gain in ccd_gain.iteritems():
                 if str(key) == str(self.channel):
                     eff_area = self.effective_area()
                     # g = (12398.0 / var['wave'])  / var['elecperdn'] * gain* var['elecperev']
                     # g = (12398.0*u.eV*u.angstrom / var['wave']*u.angstrom) / 3.65 /  gain
-                    g = (12398.0*u.eV*u.angstrom / var['wave']*u.angstrom) * (u.electron / u.eV)    * gain
+                    g = (12398.0 * u.eV * u.angstrom / var['wave'] * u.angstrom) * (u.electron / u.eV) * gain
                     instr_response = (eff_area) * g
                     self.inst_response = instr_response[self.channel]
 
@@ -233,51 +263,48 @@ class Response():
         # NOTES:      ^^^ get the same values as the table when using all table values: self.effective_area(compare_table=True)
         #                 get one of the same values (171) when calculating it with center wavelength - fix
 
+    def emissivity():
+        """
 
-def emissivity():
-    """
+        - Use  chianti.core.mspectrum.intensityratio to get spectral line intensities and show relative emissivity per line.
+            chianti.core.continuum has places to access freebound and freefree emissions
+        - create a line list  to show line intensities
 
-    - Use  chianti.core.mspectrum.intensityratio to get spectral line intensities and show relative emissivity per line.
-        chianti.core.continuum has places to access freebound and freefree emissions
-    - create a line list  to show line intensities
-
-    input:
-
-
-    :return: generates chianti object - continuum - chianti model with line list
-    """
-    pass
+        input:
 
 
-def spectrum():
-    """
-    generate a spectral model for various solar features to be used in modules
+        :return: generates chianti object - continuum - chianti model with line list
+        """
+        pass
 
-    - develop an emissivity (chianti) spectral structure based on plasma  properties (line intensities?/ emissivity?)
-    - want to read values of physical parameters to determine feature
-    - elemental abundances:  chianti.core.Spectrum.chianti.data.Abundance
-        chianti.core.continuum has places to access freebound and freefree emissions
+    def spectrum():
+        """
+        generate a spectral model for various solar features to be used in modules
 
-    input:
+        - develop an emissivity (chianti) spectral structure based on plasma  properties (line intensities?/ emissivity?)
+        - want to read values of physical parameters to determine feature
+        - elemental abundances:  chianti.core.Spectrum.chianti.data.Abundance
+            chianti.core.continuum has places to access freebound and freefree emissions
 
-    :return:
-    """
-    pass
+        input:
+
+        :return:
+        """
+        pass
+
+    def temperature_response():
+        """
+        calculates temperature for various features using ChiantiPy
+         - Will need to use the spectral contribution function in Chiantipy
+                G(\lambda,T)
+        input: string, data file
+
+        channel: string, indicates channels used
 
 
-def temperature_response():
-    """
-    calculates temperature for various features using ChiantiPy
-     - Will need to use the spectral contribution function in Chiantipy
-            G(\lambda,T)
-    input: string, data file
+        :return:
 
-    channel: string, indicates channels used
+        outfile: giving temperature response per channel
 
-
-    :return:
-
-    outfile: giving temperature response per channel
-
-    """
-    pass
+        """
+        pass
