@@ -124,7 +124,7 @@ class TimeSeriesMetaData:
         
         return results
     
-    def get(self, index):
+    def get_index(self, index):
         """
         Return the dictionary entry at the given index.
         
@@ -139,6 +139,45 @@ class TimeSeriesMetaData:
             An ordered Dictionary containing the metadata at the given index.
         """
         return self.metadata[index][1]
+
+    def get(self, key, default=None, datetime=None, colname=None, **kwargs):
+        """
+        Return a list of all the matching entries in the metadata.
+        
+        Parameters
+        ----------
+        key : `str`
+            The Key to be searched in the dictionary.
+
+        default : 
+            The Value to be returned in case key does not exist.
+
+        datetime : `str` or `~datetime.datetime` optional
+            The string (parsed using the `~sunpy.time.parse_time`) or datetime
+            that you need metadata for.
+        
+        colname : `str` optional
+            A string that can be used to narrow results to specific columns.
+            
+        Returns
+        -------
+        list : `list`
+            Returns a list of the matching entries or the default value.
+        """
+        # Find all matching metadata entries
+        indexes = self.find(datetime, colname, indexes=True)
+        
+        # Now find each matching entry
+        results = []
+        for i in indexes:
+            # Get the value for the entry in this metadata entry
+            value = self.metadata[i][2].get(key)
+            # Add to the list if a result was returned
+            if value != None:
+                results.append(value)
+        
+        # Return all the results
+        return results
         
     def concatenate(self, tsmetadata2, **kwargs):
         """
@@ -214,11 +253,12 @@ if __name__ == "__main__":
     
     # Build a TimeSeriesMetaData object
     md = TimeSeriesMetaData()
-    md.append(tr_1, ['GOES'], OrderedDict([('tr_1','tr_1')]))
-    md.append(tr_2, ['GOES'], OrderedDict([('tr_2','tr_2')]))
-    md.append(tr_3, ['GOES'], OrderedDict([('tr_3','tr_3')]))
-    md.append(tr_4, ['GOES'], OrderedDict([('tr_4','tr_4')]))
-    md.append(tr_5, ['Other'], OrderedDict([('tr_5','tr_5')]))
+    md.append(tr_1, ['GOES'], OrderedDict([('tr_1','tr_1'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
+    md.append(tr_2, ['GOES'], OrderedDict([('tr_2','tr_2'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
+    md.append(tr_3, ['GOES'], OrderedDict([('tr_3','tr_3'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
+    md.append(tr_4, ['GOES'], OrderedDict([('tr_4','tr_4'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
+    md.append(tr_5, ['Other'], OrderedDict([('tr_5','tr_5'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
+
     
     # Check it
     time_1 = parse_time('2012-06-01T21:08:12')
@@ -255,3 +295,8 @@ if __name__ == "__main__":
     # renaming columns
     md.rename_column('Other', 'changed')
     md.rename_column('GOES', 'goes')
+    
+    # Get from the metadata
+    date_obs = md.get('date-obs', [ ])
+    date_obs = md.get('date-obs', [ ], time_2)
+    date_obs = md.get('date-obs', [ ], time_2, 'goes')
