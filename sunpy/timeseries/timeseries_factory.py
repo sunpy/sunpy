@@ -438,6 +438,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         if filepath:
             data, meta, units = WidgetType._parse_file(filepath)
 
+        print('\n\n\nmeta: ' + str(type(meta)) + '\n\n\n')
         # Now return a TimeSeries from the given file.
         return WidgetType(data, meta, units, **kwargs)
 

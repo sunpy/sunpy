@@ -19,6 +19,7 @@ from sunpy import config
 from sunpy.time import TimeRange, parse_time
 from sunpy.extern import six
 from sunpy.sun import sun
+from sunpy.timeseries import TimeSeriesMetaData
 
 import astropy
 import astropy.units as u
@@ -65,8 +66,8 @@ class GenericTimeSeries:
 
     Attributes
     ----------
-    meta : `str` or `dict`
-        The comment string or header associated with the data.
+    meta : `~sunpy.timeseries.metadata.TimeSeriesMetaData`
+        The metadata giving details about the time series data/instrument.
     data : `~pandas.DataFrame`
         An pandas DataFrame prepresenting one or more fields as a function of time.
 
@@ -104,12 +105,21 @@ class GenericTimeSeries:
 
     def __init__(self, data, meta=None, units=None, **kwargs):
         self.data = data
+        # Check metadata input
         if meta is None:
-            self.meta = OrderedDict()
+            # No meta given, so default
+            self.meta = TimeSeriesMetaData()
             self.meta.update({'name':None})
+        elif isinstance(meta, (dict, OrderedDict)):
+            # Given the values for metadata (dict) and infer timerange and colnames from the data
+            self.meta = TimeSeriesMetaData(meta, self.time_range, list(self.data.columns.values))
+        elif isinstance(meta, tuple):
+            # Given the values all in a tuple
+            self.meta = TimeSeriesMetaData(meta, self.time_range, list(self.data.columns.values))
         else:
-            self.meta = OrderedDict(meta)
-
+            # Should have a list of 3-tuples giving a complex metadata list.
+            self.meta = meta
+        
         if units is None:
             self.units = {}
         else:
@@ -144,18 +154,27 @@ class GenericTimeSeries:
         self._nickname = n
 
     @property
-    def date(self):
-        """Image observation time"""
-        time = parse_time(self.meta.get('date-obs', self.data.index.min()))
-        if time is None:
-            warnings.warn_explicit("Missing metadata for observation time. Using first measurement index.",
-                                       Warning, __file__, inspect.currentframe().f_back.f_lineno)
-        return parse_time(time)
+    def date(self, datetime=None, colname=None, **kwargs):
+        """Observation time/s"""
+        # Get all matching values
+        strings = self.meta.get('date-obs', [ self.data.index.min() ], datetime, colname)
+        
+        # Parse to datetime objects
+        datetimes = []
+        for string in strings:
+            datetimes.append(parse_time(string))
+        
+        # Return the list
+        return datetimes
 
     @property
-    def detector(self):
-        """Detector name"""
-        return self.meta.get('detector', "")
+    def detector(self, datetime=None, colname=None, **kwargs):
+        """Detector name/s"""
+        # Get all matching values
+        strings = self.meta.get('detector', [], datetime, colname)
+        
+        # Return the list
+        return strings
 
     @property
     def dsun(self):
@@ -175,18 +194,27 @@ class GenericTimeSeries:
         return self.meta.get('exptime', 0.0) * u.s
 
     @property
-    def instrument(self):
-        """Instrument name"""
-        return self.meta.get('instrume', "").replace("_", " ")
+    def instrument(self, datetime=None, colname=None, **kwargs):
+        """Instrument name/s"""
+        # Get all matching values
+        strings = self.meta.get('instrume', [], datetime, colname)
+        
+        # Sanitized the strings
+        sanitized_strings = []
+        for string in strings:
+            sanitized_strings.append(string.replace("_", " "))
+        
+        # Return the list
+        return sanitized_strings
 
     @property
-    def measurement(self):
+    def measurement(self, datetime=None, colname=None, **kwargs):
         """Measurement name, defaults to the wavelength of image"""
         #return u.Quantity(self.meta.get('wavelnth', 0), self.meta.get('waveunit', ""))
         return 'measurement'
 
     @property
-    def observatory(self):
+    def observatory(self, datetime=None, colname=None, **kwargs):
         """Observatory or Telescope name"""
         return self.meta.get('obsrvtry', self.meta.get('telescop', "")).replace("_", " ")
 
@@ -395,13 +423,15 @@ class GenericTimeSeries:
         if same_source and not isinstance(otherts, self.__class__):
             raise TypeError("TimeSeries classes must match.")
 
-
+        """
         # Metadata is implemented as with the legacy LightCurve class.
         # ToDo: Debate: we want to consider how to do this in future.
         meta = OrderedDict()
         meta.update({str(self.data.index[0]):self.meta.copy()})
         meta.update({str(otherts.data.index[0]):otherts.meta.copy()})
-
+        """
+        # Concatenate the metadata and data
+        meta = self.meta.concatenate(otherts.meta)
         data = pd.concat([self.data.copy(), otherts.data])
         
         # Add all the new units to the dictionary.
