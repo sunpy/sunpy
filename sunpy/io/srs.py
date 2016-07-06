@@ -47,6 +47,15 @@ def read(filepath):
 
     #"table" now has three different tables i.e.
     #I, IA and II.
+    #Make the table columns unit-aware. First convert string to
+    #floats, ones which can be converted that is.
+    for item in table:
+        for cols in item.columns.values():
+            try:
+                column = item[cols.name].astype(float)
+                item.replace_column(cols.name, column)
+            except ValueError:
+                pass
         
         
     
