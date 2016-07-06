@@ -4,9 +4,9 @@
 
 
 from ..client import GenericClient
+import datetime
 
-__all__ = ['NOAAIndicesClient', 'NOAAPredictClient']
-
+__all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
 
 class NOAAIndicesClient(GenericClient):
 
@@ -94,3 +94,51 @@ class NOAAPredictClient(GenericClient):
             if x.__class__.__name__ == 'Instrument' and x.value == 'noaa-predict':
                 return all(chklist)
         return False
+
+class SRSClient(GenericClient):
+
+    @staticmethod
+    def _get_default_uri():
+        today = datetime.datetime.utcnow()
+        return ['ftp://ftp.swpc.noaa.gov/pub/warehouse/%Y/SRS/%Y%m%dSRS.txt']
+
+    def _get_url_for_timerange(self, timerange, **kwargs):
+
+        if not timerange:
+            return SRSClient._get_default_uri()
+        result = list()
+        base_url = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
+        total_days = (timerange.end - timerange.start).days + 1
+        all_dates = timerange.split(total_days)
+        for day in all_dates:
+            url = base_url + '%Y/SRS/%Y%m%dSRS.txt'.format(day)
+            result.append(url)
+        return url
+
+    def _makeimap(self):
+        self.map_['source'] = 'swpc'
+        self.map_['instrument'] = 'SOON'
+        self.map_['physobs'] = 'SRS'
+        self.map_['source'] = 'NOAA/USAF'
+
+    @classmethod
+    def _can_handle_query(cls, *query):
+        """
+        Answers whether client can service the query.
+
+        Parameters
+        ----------
+        query : list of query objects
+
+        Returns
+        -------
+        boolean
+            answer as to whether client can service the query
+        """
+        chkattr = ["Time", "Instrument"]
+        chklist = [x.__class__.__name__ in chkattr for x in query]
+        for x in query:
+            if x.__class__.__name__ == "Instrument" and x.value == "SOON":
+                return all(chklist)
+        return False
+        
