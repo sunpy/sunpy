@@ -17,7 +17,7 @@ import os
 
 import sunpy.data.sample
 import sunpy.timeseries
-from sunpy.time import TimeRange
+from sunpy.time import TimeRange, parse_time
 
 from sunpy import lightcurve as lc
 import astropy.units as u
@@ -131,6 +131,8 @@ downsampled.peek()
 upsampled = downsampled.resample('1T', 'ffill')
 upsampled.peek()
 # Note: 'ffill', 'bfill' and 'pad' methods work, and as before others should also.
+# You can also resample using astropy quantities:
+upsampled = downsampled.resample(u.Quantity(1,u.min), 'ffill')
 
 ##############################################################################
 # The data from the TimeSeries can be retrieved in a number of formats:
@@ -150,9 +152,9 @@ c = ['x', 'y', 'z']
 t = Table([a, b, c], names=('a', 'b', 'c'), meta={'name': 'first table'})
 t['b'].unit = 's' # Adding units
 df = t.to_pandas()
-ts_from_arr = sunpy.timeseries.TimeSeries(arr,{})
+ts_from_arr   = sunpy.timeseries.TimeSeries(arr,{})
 ts_from_table = sunpy.timeseries.TimeSeries(t,{})
-ts_from_df = sunpy.timeseries.TimeSeries(df,{})
+ts_from_df    = sunpy.timeseries.TimeSeries(df,{})
 
 ##############################################################################
 # You can optionally add units data, a dictionary matching column heading keys
@@ -188,4 +190,18 @@ ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
 # the column using the unit keyword:
 qua_new = u.Quantity(qua.value * 0.00001, ts_eve.units[colname])
 unit = u.W/(u.km**2)
-ts_eve = ts_eve.add_column(colname, qua_new, unit=unit, overwrite=True)
+ts_eve = ts_eve.add_column(colname, qua_new, unit=unit, overwrite=True)#
+
+##############################################################################
+# MetaData
+# Get
+date_obs = combined_goes_ts.meta.get('date-obs', [ ])
+date_obs = combined_goes_ts.meta.get('date-obs', [ ], datetime=parse_time('2012-06-02T21:08:12'))
+date_obs = combined_goes_ts.meta.get('date-obs', [ ], datetime=parse_time('2012-06-02T21:08:12'), colname='GOES')
+date_obs = combined_goes_ts.meta.get('date-obs', itemised=True)
+# Overwrite
+combined_goes_ts.meta.metadata
+combined_goes_ts.meta.update({'object':'changed'})
+combined_goes_ts.meta.update({'object':'changed'}, overwrite=True)
+# Note: last one re-arranges order. Is this desired?
+

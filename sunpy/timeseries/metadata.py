@@ -3,13 +3,9 @@ from __future__ import absolute_import, division, print_function
 __authors__ = ["Alex Hamilton, Stuart Mumford"]
 __email__ = "stuart@mumford.me.uk"
 
-from collections import OrderedDict
 from sunpy.util.metadata import MetaDict
 
 from sunpy.time import TimeRange, parse_time
-
-import warnings
-import inspect
 
 class TimeSeriesMetaData:
     """
@@ -74,8 +70,8 @@ class TimeSeriesMetaData:
                 if timerange.start < self.metadata[i][0].start:
                     pos = i - 1
         else:
-            warnings.warn_explicit("Incorrect datatime or data for append to TimeSeriesMetaData.",
-                                   Warning, __file__, inspect.currentframe().f_back.f_lineno)
+            raise ValueError(
+                'Incorrect datatime or data for append to TimeSeriesMetaData.')
         
         # Prepare tuple to append.
         new_metadata = (timerange, columns, metadata)
@@ -173,6 +169,9 @@ class TimeSeriesMetaData:
         
         colname : `str` optional
             A string that can be used to narrow results to specific columns.
+
+        itemised : `bool` optional
+            Option to allow the return of the time ranges and column names (as list) that match each geven value.
             
         Returns
         -------
@@ -180,6 +179,7 @@ class TimeSeriesMetaData:
             Returns a list of the matching entries or the default value.
         """
         # Parameters
+        itemised = kwargs.get('itemised', False)
         datetime = kwargs.get('datetime', None)
         colname = kwargs.get('colname', None)
         
@@ -190,13 +190,23 @@ class TimeSeriesMetaData:
         results = []
         for i in indexes:
             # Get the value for the entry in this metadata entry
-            value = self.metadata[i][2].get(key)
-            # Add to the list if a result was returned
-            if value != None:
-                results.append(value)
+            value = self.metadata[i][2].get(key)            
+            
+            # Need more details if itemised.
+            if itemised:
+                tr       = self.metadata[i][0]
+                colnames = self.metadata[i][1]
+                
+                # Append a tuple of these values
+                results.append(( tr, colnames, value ))
+            else:
+                # Add to the list if a result was returned
+                if value != None:
+                    results.append(value)
         
         # Remove duplicates.
-        results = list(set(results))
+        if not itemised:
+            results = list(set(results))
         
         # Return all the results
         return results
@@ -236,8 +246,14 @@ class TimeSeriesMetaData:
             
         colname : `str` optional
             A string that can be used to narrow results to specific columns.
+            
+        overwrite : `bool` optional
+            Option to define if the user is able to overwrite already present keys.
+            Defaults to False, designed to stop users from being able to
+            corrupt/damage the metadict values so easily.
         """
         # Parameters
+        overwrite = kwargs.get('overwrite', False)
         datetime = kwargs.get('datetime', None)
         colname = kwargs.get('colname', None)
         
@@ -246,7 +262,16 @@ class TimeSeriesMetaData:
         
         # Now update each matching entries
         for i in indexes:
-            self.metadata[i][2].update(dictionary)
+            # Should we allow the user to overwrite values?
+            if overwrite:
+                self.metadata[i][2].update(dictionary)
+            else:
+                # Overwrite the original dict over the new to keeps old values.
+                old_meta = self.metadata[i][2].copy()
+                new_meta = MetaDict(dictionary).copy()
+                new_meta.update(old_meta)
+                # Now recreate the tuple
+                self.metadata[i] = ( self.metadata[i][0], self.metadata[i][1], new_meta )
 
     def rename_column(self, old, new):
         """
@@ -326,11 +351,13 @@ if __name__ == "__main__":
     date_obs = md.get('date-obs', [ ])
     date_obs = md.get('date-obs', [ ], datetime=time_2)
     date_obs = md.get('date-obs', [ ], datetime=time_2, colname='GOES')
+    date_obs = md.get('date-obs', itemised=True)
     
     # Update
     md.update({'new_key_1':'added to all.'})
     md.update({'new_key_2':'added to all at time_3.'}, datetime=time_3)
     md.update({'new_key_3':'added only to time_4'}, datetime=time_4, colname=None)
+    md.update({'comment':'short'}, overwrite=True)
 
     # renaming columns
     md.rename_column('Other', 'changed')
