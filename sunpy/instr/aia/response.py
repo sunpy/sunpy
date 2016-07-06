@@ -36,7 +36,8 @@ import os
 
 import sunpy
 import sunpy.data.test as test
-import aia_read_genx
+import aia_read_genx2table
+import aia_read_genx_test
 
 
 class Response():
@@ -67,10 +68,10 @@ class Response():
             # load in pandas dataframe ( doesn't hold units/ dtype)
             # aia_read_genx.aia_instr_properties_to_dataframe(path_to_genx_dir, channel_list, properties, version, save=True)
             # or load in astropy table
-            aia_read_genx.aia_instr_properties_to_table(path_to_genx_dir, channel_list, properties, version, save=True)
+            # aia_read_genx2table.aia_instr_properties_to_table(path_to_genx_dir, channel_list, properties, version, save=True)
+            aia_read_genx_test.aia_instr_properties_to_table_by_row(path_to_genx_dir, channel_list, properties, version, save = True)
 
-        # load in data
-        dataframe = pd.DataFrame.from_csv('channel_properties_' + str(version) + '.csv', sep=',')
+        # dataframe = pd.DataFrame.from_csv('channel_properties_' + str(version) + '.csv', sep=',')
         data_table = Table.read('channel_properties_' + str(version) + '.csv')
 
         # The is for using dataframe until I finish testing the Table structure.
@@ -79,64 +80,58 @@ class Response():
         # This code is for testing the table structure.
         #######################################################
 
-        self.data_dictionary = data_table#.columns
+        self.data_dictionary = data_table
 
         # self.properties = data_table['properties']
         self.properties = properties
-        self.wavelength_range = kwargs.get('wavelength_range', np.array(data_table['94'][8]))
+        self.channel_list = channel_list
+        # self.wavelength_range = kwargs.get('wavelength_range', np.array(data_table['94'][8]))
         #######################################################
 
-    def channel_data(self, channel, **kwargs):
+    def get_channel_data(self, channel):
+        # possible rename to dictionary_per_channel
 
-        # working with dataframe
-        # if type(channel) == int:
-        #     channel_data = self.dataframe[str(channel)]
-        # else:
-        #     channel_data = self.dataframe[channel]
 
-        # working with table
-        if type(channel) == int:
-            channel_data = self.data_dictionary[str(channel)]
-        else:
-            channel_data = self.data_dictionary[channel]
+        if channel in self.data_dictionary['key']:
+            index = self.channel_list.index(channel)
+            print(index)
+            channel_data = self.data_dictionary[index]
 
-        value = kwargs.get('value', '')
-        if len(value) > 0:
-            if value in self.data_dictionary['properties']:
-                # print('value in dictionary', self.data_dictionary.loc['properties'][value])
-                value_index = self.properties.index(value)
-                return channel_data[value_index]
-        else:
             return channel_data
 
-    def wavelength_range(self, channel):
-        # wavelength range is calculated here for plotting becomes more general after calling a specific channel
 
-        # # working with dataframe
-        # if channel == 'all':
-        #     wavelength_range = np.arange(0, float(self.dataframe[0]['wavenumsteps'])) * float((self.dataframe[0]['wavestep'])) + float(self.dataframe[0]['wavemin'])
-        # else:
-        #     wavelength_range = np.arange(0, float(self.dataframe[str(channel)]['wavenumsteps'])) * float((self.dataframe[str(channel)]['wavestep'])) + float(self.dataframe[str(channel)]['wavemin'])
+
+
+    def wavelength_range(self, channel):
+        """
+        wavelength range is calculated here for plotting becomes more general after calling a specific channel
+
+        :param channel:
+        :return:
+        """
 
         # working with table
-        print('in wavelength_range')
+        print('INSIDE............................... wavelength_range')
+
         numwavesteps = self.properties.index('wavenumsteps')
         wave_intervals = self.properties.index('wavestep')
-        min_wavelength = self.properties.index('minwave')
+        min_wavelength = self.properties.index('wavemin')
+        num = self.get_channel_data(channel)[numwavesteps]
+        intervals = self.get_channel_data(channel)[wave_intervals]
+        min_wave = self.get_channel_data(channel)[min_wavelength]
 
-        wave = self.data_dictionary[str(channel)][self.properties.index('wave')]
+        wave = self.get_channel_data(channel)[self.properties.index('wave')]
 
-        print(wave)
+        print(intervals, type(intervals))
+
         if channel == 'all':
-            wavelength_range = np.arange(0, float(self.data_dictionary[0][numwavesteps])) * float(
-                (self.data_dictionary[0][wave_intervals])) + float(self.data_dictionary[0][min_wavelength])
+            # wavelength_range = np.arange(0, float(self.data_dictionary[0][numwavesteps])) * float(
+            #     (self.data_dictionary[0][wave_intervals])) + float(self.data_dictionary[0][min_wavelength])
+            pass
         else:
-            wavelength_range = np.arange(0, float(self.data_dictionary[str(channel)][numwavesteps])) * float(
-                (self.data_dictionary[str(channel)][wave_intervals])) + float(
-                self.data_dictionary[str(channel)][min_wavelength])
+            wavelength_range = np.arange(0, float(num)) * float(intervals) + float(min_wave)
+            print('wavelength range', wavelength_range)
 
-        # wavelength_range = [1,2,3,4,5]
-        # print(wavelength_range[0])
         return wave
 
 
@@ -233,6 +228,7 @@ class Response():
 
         var = self.channel_data
 
+        #TODO: TRY  gain = elecperphot / elecperdn
         if compare_genx:
             # gives Table 2 values for instruement response
             index = self.channel_list.index(self.channel)
@@ -262,6 +258,22 @@ class Response():
 
         # NOTES:      ^^^ get the same values as the table when using all table values: self.effective_area(compare_table=True)
         #                 get one of the same values (171) when calculating it with center wavelength - fix
+        #
+        #     This is the
+        #     closest
+        #     thing in aia_bp_parse_effarea.pro - returns wavelength response
+        #     effarea = thisfullstr.effarea
+        #
+        #
+        # if KEYWORD_SET(dn) then begin
+        # evperphot = 12398. / wave
+        # elecperphot = (evperphot * thisfullstr.elecperev) > 1
+        # elecperdn = thisfullstr.elecperdn
+        # effarea = effarea * elecperphot / elecperdn
+        # units = 'cm^2 DN phot^-1'
+        # thisfullstr.usephottoelec = 1
+        # thisfullstr.usephottodn = 1
+        # endif
 
     def emissivity():
         """

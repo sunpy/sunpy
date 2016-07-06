@@ -96,18 +96,15 @@ def aia_instr_properties_to_table(input_directory, channel_list, properties, ver
 
                     # iterate through the properties and append to array
                     for inst_property in variables:
-                        # NOTE: ValueError: setting an array element with a sequence solved by making each element in array a string but I loose type information...
+                        # TODO: fix ValueError: setting an array element with a sequence solved by making each element in array a string but I loose type information...
                         if inst_property == 'contam':
                             array.append(str(data[name][0][inst_property][0][0]))
                         else:
                             array.append(str(data[name][0][inst_property][0]))
 
-                    # dtype = []
-                    # for i in array:
-                    #     print(i, type(i))
-                    #     dtype.append(type(i))
+
                     # create column of property information per channel
-                    # TODO: implement dtype, unit
+                    # TODO: implement dtype, unit!
                     channel_information = Column(name=int(channel), data=array)
 
                     if int(channel) == 1600 or int(channel) == 1700:
@@ -119,7 +116,8 @@ def aia_instr_properties_to_table(input_directory, channel_list, properties, ver
     # Last column gives indices and name of rows
     indices = Column(name='properties', data=properties)
     table.add_column(indices)
-    # not sure if this works   vvv
+
+    # not sure if this works
     table.add_index('properties')
     # print(table)
     assert len(table) != 0, 'Data Frame is not loading from file.'
