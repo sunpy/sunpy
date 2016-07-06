@@ -14,6 +14,7 @@ import pandas
 
 from sunpy.timeseries import GenericTimeSeries
 from sunpy.time import parse_time
+from sunpy.util.metadata import MetaDict
 from astropy import units as u
 
 from sunpy import config
@@ -91,7 +92,7 @@ class NoRHLightCurve(GenericTimeSeries):
     def _parse_file(cls, filepath):
         """This method parses NoRH tca and tcz correlation FITS files."""
         hdulist = fits.open(filepath)
-        header = OrderedDict(hdulist[0].header)
+        header = MetaDict(OrderedDict(hdulist[0].header))
         # For these NoRH files, the time series data is recorded in the primary
         # HDU
         data = hdulist[0].data

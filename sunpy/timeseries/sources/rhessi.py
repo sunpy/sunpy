@@ -10,6 +10,7 @@ from pandas import DataFrame
 
 from sunpy.timeseries import GenericTimeSeries
 from sunpy.time import TimeRange, parse_time
+from sunpy.util.metadata import MetaDict
 from sunpy.instr import rhessi
 from astropy import units as u
 
@@ -109,6 +110,7 @@ class RHESSISummaryLightCurve(GenericTimeSeries):
     def _parse_file(cls, filepath):
         """Parses a RHESSI FITS file"""
         header, d = rhessi.parse_obssumm_file(filepath)
+        header = MetaDict(OrderedDict(header))
         data = DataFrame(d['data'], columns=d['labels'], index=d['time'])
 
         # Add the units data

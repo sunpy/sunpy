@@ -20,6 +20,7 @@ from sunpy.time import TimeRange, parse_time
 from sunpy.extern import six
 from sunpy.sun import sun
 from sunpy.timeseries import TimeSeriesMetaData
+from sunpy.util.metadata import MetaDict
 
 import astropy
 import astropy.units as u
@@ -110,7 +111,7 @@ class GenericTimeSeries:
             # No meta given, so default
             self.meta = TimeSeriesMetaData()
             self.meta.update({'name':None})
-        elif isinstance(meta, (dict, OrderedDict)):
+        elif isinstance(meta, (dict, OrderedDict, MetaDict)):
             # Given the values for metadata (dict) and infer timerange and colnames from the data
             self.meta = TimeSeriesMetaData(meta, self.time_range, list(self.data.columns.values))
         elif isinstance(meta, tuple):
@@ -157,7 +158,7 @@ class GenericTimeSeries:
     def date(self, datetime=None, colname=None, **kwargs):
         """Observation time/s"""
         # Get all matching values
-        strings = self.meta.get('date-obs', [ self.data.index.min() ], datetime, colname)
+        strings = self.meta.get('date-obs', [ self.data.index.min() ], datetime=datetime, colname=colname)
         
         # Parse to datetime objects
         datetimes = []
@@ -171,7 +172,7 @@ class GenericTimeSeries:
     def detector(self, datetime=None, colname=None, **kwargs):
         """Detector name/s"""
         # Get all matching values
-        strings = self.meta.get('detector', [], datetime, colname)
+        strings = self.meta.get('detector', [], datetime=datetime, colname=colname)
         
         # Return the list
         return strings
@@ -197,7 +198,7 @@ class GenericTimeSeries:
     def instrument(self, datetime=None, colname=None, **kwargs):
         """Instrument name/s"""
         # Get all matching values
-        strings = self.meta.get('instrume', [], datetime, colname)
+        strings = self.meta.get('instrume', [], datetime=datetime, colname=colname)
         
         # Sanitized the strings
         sanitized_strings = []
@@ -229,7 +230,7 @@ class GenericTimeSeries:
         newts : `~sunpy.timeseries.TimeSeries`
             A new time series in ascending chronological order.
         """
-        return GenericTimeSeries(self.data.sort_index(**kwargs), self.meta.copy(), self.units.copy())
+        return GenericTimeSeries(self.data.sort_index(**kwargs), TimeSeriesMetaData(self.meta.metadata.copy()), self.units.copy())
 
 # #### From Generic Spec #### #
     def resample(self, rule, method='sum', **kwargs):
@@ -269,7 +270,7 @@ class GenericTimeSeries:
         # ToDo: consider re-evaluating the metadata.
 
         # Return the same type of timeseries object.
-        return self.__class__(resampled_data.sort_index(), self.meta.copy(), self.units)
+        return self.__class__(resampled_data.sort_index(), TimeSeriesMetaData(self.meta.metadata.copy()), self.units)
 
 
 # #### From OLD LightCurve #### #
@@ -367,7 +368,7 @@ class GenericTimeSeries:
         truncated = self.data.sort_index()[start:end:int]
 
         # Return the same type of timeseries object.
-        return self.__class__(truncated.sort_index(), self.meta.copy(), self.units)
+        return self.__class__(truncated.sort_index(), TimeSeriesMetaData(self.meta.metadata.copy()), self.units)
 
     def extract(self, column_name):
         """Returns a new time series with the chosen column.
@@ -387,13 +388,13 @@ class GenericTimeSeries:
         if isinstance(self, pandas.Series):
             return self
         else:
-            return GenericTimeSeries(self.data[column_name], self.meta.copy())
+            return GenericTimeSeries(self.data[column_name], TimeSeriesMetaData(self.meta.metadata.copy()))
         """
         # Extract column and remove empty rows
         data = self.data[[column_name]].dropna()
         
         # Return the same type of timeseries object.
-        return self.__class__(data.sort_index(), self.meta.copy(), self.units.copy())
+        return self.__class__(data.sort_index(), TimeSeriesMetaData(self.meta.metadata.copy()), self.units.copy())
         # Debate: should this return the same TimeSeries type as the original?
 
     def concatenate(self, otherts, **kwargs):
@@ -427,7 +428,7 @@ class GenericTimeSeries:
         # Metadata is implemented as with the legacy LightCurve class.
         # ToDo: Debate: we want to consider how to do this in future.
         meta = OrderedDict()
-        meta.update({str(self.data.index[0]):self.meta.copy()})
+        meta.update({str(self.data.index[0]):TimeSeriesMetaData(self.meta.metadata.copy())})
         meta.update({str(otherts.data.index[0]):otherts.meta.copy()})
         """
         # Concatenate the metadata and data
@@ -618,7 +619,7 @@ class GenericTimeSeries:
 
         # Make a copy of all the TimeSeries components.
         data  = self.data.copy()
-        meta  = self.meta.copy()
+        meta  = TimeSeriesMetaData(self.meta.metadata.copy())
         units = self.units.copy()
         
         # Check if we are updating a current column or adding a new one.

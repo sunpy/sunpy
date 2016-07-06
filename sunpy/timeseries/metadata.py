@@ -34,18 +34,18 @@ class TimeSeriesMetaData:
     >>> md.find(parse_time('2012-06-01T21:08:12'), 'GOES')   # doctest: +SKIP
     """
 
-    def __init__(self, metadata=None, timerange=None, colnames=None, **kwargs):
+    def __init__(self, meta=None, timerange=None, colnames=None, **kwargs):
         self.metadata = []
-        if metadata:
-            if isinstance(metadata, (dict, MetaDict)) and isinstance(timerange, TimeRange) and isinstance(colnames, list):
+        if meta:
+            if isinstance(meta, (dict, MetaDict)) and isinstance(timerange, TimeRange) and isinstance(colnames, list):
                 # Given a single metadata entry as a dictionary with additional timerange and colnames.
-                self.metadata.append(( timerange, colnames, metadata))
-            elif isinstance(metadata, tuple):
+                self.metadata.append(( timerange, colnames, meta))
+            elif isinstance(meta, tuple):
                 # Given a single metadata entry as a tuple.
-                self.metadata.append(metadata)
-            elif isinstance(metadata, tuple):
+                self.metadata.append(meta)
+            elif isinstance(meta, list):
                 # Given a complex metadata list (of tuples)
-                self.meta = metadata
+                self.metadata = meta.copy()
             
         
 
@@ -91,7 +91,7 @@ class TimeSeriesMetaData:
         if not duplicate:
             self.metadata.insert(pos, new_metadata)
             
-    def find(self, datetime=None, colname=None, **kwargs):
+    def find(self, **kwargs):
         """
         Find all metadata matching the given datetime and optionally column name.
         
@@ -113,6 +113,8 @@ class TimeSeriesMetaData:
             A list of MetaDict objects that contain all matching metadata.
         """
         # Parameters
+        datetime = kwargs.get('datetime', None)
+        colname = kwargs.get('colname', None)        
         indexes = kwargs.get('indexes', False)
         dt = datetime
         if not dt:
@@ -153,7 +155,7 @@ class TimeSeriesMetaData:
         """
         return self.metadata[index][1]
 
-    def get(self, key, default=None, datetime=None, colname=None, **kwargs):
+    def get(self, key, default=None, **kwargs):
         """
         Return a list of all the matching entries in the metadata.
         
@@ -162,7 +164,7 @@ class TimeSeriesMetaData:
         key : `str`
             The Key to be searched in the dictionary.
 
-        default : 
+        default : optional
             The Value to be returned in case key does not exist.
 
         datetime : `str` or `~datetime.datetime` optional
@@ -177,8 +179,12 @@ class TimeSeriesMetaData:
         list : `list`
             Returns a list of the matching entries or the default value.
         """
+        # Parameters
+        datetime = kwargs.get('datetime', None)
+        colname = kwargs.get('colname', None)
+        
         # Find all matching metadata entries
-        indexes = self.find(datetime, colname, indexes=True)
+        indexes = self.find(datetime=datetime, colname=colname, indexes=True)
         
         # Now find each matching entry
         results = []
@@ -188,6 +194,9 @@ class TimeSeriesMetaData:
             # Add to the list if a result was returned
             if value != None:
                 results.append(value)
+        
+        # Remove duplicates.
+        results = list(set(results))
         
         # Return all the results
         return results
@@ -203,7 +212,8 @@ class TimeSeriesMetaData:
             The second TimeSeriesMetaData object.
         """
         # Create a copy of the metadata
-        meta = self.copy()
+        meta = TimeSeriesMetaData(self.metadata.copy())
+        
         # Append each metadata entry from the second TimeSeriesMetaData object
         # to the original TimeSeriesMetaData object.
         for tuple in tsmetadata2.metadata:
@@ -211,7 +221,7 @@ class TimeSeriesMetaData:
             
         return meta
 
-    def update(self, dictionary, datetime=None, colname=None, **kwargs):
+    def update(self, dictionary, **kwargs):
         """
         Make updates to the MetaDict metadata for all matching metadata entries.
 
@@ -227,10 +237,14 @@ class TimeSeriesMetaData:
         colname : `str` optional
             A string that can be used to narrow results to specific columns.
         """
-        # Find all matching metadata entries
-        indexes = self.find(datetime, colname, indexes=True)
+        # Parameters
+        datetime = kwargs.get('datetime', None)
+        colname = kwargs.get('colname', None)
         
-        # Now update each matching entry
+        # Find all matching metadata entries
+        indexes = self.find(datetime=datetime, colname=colname, indexes=True)
+        
+        # Now update each matching entries
         for i in indexes:
             self.metadata[i][2].update(dictionary)
 
@@ -275,7 +289,6 @@ if __name__ == "__main__":
     md.append(tr_3, ['GOES'], MetaDict([('tr_3','tr_3'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
     md.append(tr_4, ['GOES'], MetaDict([('tr_4','tr_4'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
     md.append(tr_5, ['Other'], MetaDict([('tr_5','tr_5'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
-
     
     # Check it
     time_1 = parse_time('2012-06-01T21:08:12')
@@ -286,33 +299,33 @@ if __name__ == "__main__":
     time_6 = parse_time('2012-05-05T21:08:12') # Too early
     time_7 = parse_time('2012-06-08T21:08:12') # Too late
     # Without columns
-    md.find(time_1) # One result (tr_1)
-    md.find(time_2) # Two results (tr_2 and tr_5)
-    md.find(time_3) # Two results (tr_5 and tr_3)
-    md.find(time_4) # Two results (tr_5 and tr_4)
-    md.find(time_5) # One result (tr_5)
-    md.find(time_6) # No results (too early)
-    md.find(time_7) # No results (too late)
+    md.find(datetime=time_1) # One result (tr_1)
+    md.find(datetime=time_2) # Two results (tr_2 and tr_5)
+    md.find(datetime=time_3) # Two results (tr_5 and tr_3)
+    md.find(datetime=time_4) # Two results (tr_5 and tr_4)
+    md.find(datetime=time_5) # One result (tr_5)
+    md.find(datetime=time_6) # No results (too early)
+    md.find(datetime=time_7) # No results (too late)
     # With columns
-    md.find(time_1, 'Other') # No results (wrong column)
-    md.find(time_2, 'Other') # One result (tr_5)
-    md.find(time_3, 'Other') # One result (tr_5)
-    md.find(time_4, 'Other') # One result (tr_5)
-    md.find(time_5, 'Other') # One result (tr_5)
-    md.find(time_6, 'Other') # No results (too early)
-    md.find(time_7, 'Other')
-    md.find(time_1, 'GOES')
-    md.find(time_2, 'GOES')
-    md.find(time_3, 'GOES')
-    md.find(time_4, 'GOES')
-    md.find(time_5, 'GOES')
-    md.find(time_6, 'GOES') # No results (too early)
-    md.find(time_7, 'GOES') # No results (too late)
+    md.find(datetime=time_1, colname='Other') # No results (wrong column)
+    md.find(datetime=time_2, colname='Other') # One result (tr_5)
+    md.find(datetime=time_3, colname='Other') # One result (tr_5)
+    md.find(datetime=time_4, colname='Other') # One result (tr_5)
+    md.find(datetime=time_5, colname='Other') # One result (tr_5)
+    md.find(datetime=time_6, colname='Other') # No results (too early)
+    md.find(datetime=time_7, colname='Other')
+    md.find(datetime=time_1, colname='GOES')
+    md.find(datetime=time_2, colname='GOES')
+    md.find(datetime=time_3, colname='GOES')
+    md.find(datetime=time_4, colname='GOES')
+    md.find(datetime=time_5, colname='GOES')
+    md.find(datetime=time_6, colname='GOES') # No results (too early)
+    md.find(datetime=time_7, colname='GOES') # No results (too late)
     
     # Get from the metadata
     date_obs = md.get('date-obs', [ ])
-    date_obs = md.get('date-obs', [ ], time_2)
-    date_obs = md.get('date-obs', [ ], time_2, 'GOES')
+    date_obs = md.get('date-obs', [ ], datetime=time_2)
+    date_obs = md.get('date-obs', [ ], datetime=time_2, colname='GOES')
     
     # Update
     md.update({'new_key_1':'added to all.'})

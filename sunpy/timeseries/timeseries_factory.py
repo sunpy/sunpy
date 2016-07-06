@@ -64,7 +64,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
     >>> my_timeseries = sunpy.timeseries.TimeSeries((data, header))   # doctest: +SKIP
 
-    headers and units are some base of `dict` or `~collections.OrderedDict`.
+    headers and units are some base of `dict` or `~collections.OrderedDict` or `~sunpy.util.metadata.MetaDict`.
 
     * data, header pairs, or data, header units triples, not in tuples
 
@@ -121,7 +121,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 #if len(np.shape(filedata)) > 1:
                 if True:
                     data = filedata
-                    meta = MapMeta(filemeta)
+                    meta = MetaDict(filemeta)
                     new_pairs.append((data, meta))
             return True, new_pairs
         except UnrecognizedFileTypeError:
@@ -225,7 +225,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     # ToDo: should this include an index? Maybe use the first column?
                 
                 # The second argument will be the metadata/header.
-                meta = OrderedDict(arg[1])
+                meta = MetaDict(arg[1])
                 
                 # Check if we're given a third argument for units
                 if (len(arg) == 3) and self._validate_meta(arg[2]):
@@ -256,7 +256,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     # ToDo: should this include an index? Maybe use the first column?
                     
                 # The second argument will be the metadata/header.
-                meta = OrderedDict(args[i+1])
+                meta = MetaDict(args[i+1])
                 
                 # Check if we're given a third argument for units
                 if (len(args) > i+2) and self._validate_units(args[i+2]):
@@ -370,7 +370,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # matches the arguments.  If it does, use that type.
         for pair in data_header_unit_tuples:
             data, header, units = pair
-            meta = MapMeta(header)
+            meta = MetaDict(header)
 
             try:
                 new_ts = self._check_registered_widgets(data=data, meta=meta, units=units, **kwargs)
@@ -438,7 +438,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         if filepath:
             data, meta, units = WidgetType._parse_file(filepath)
 
-        print('\n\n\nmeta: ' + str(type(meta)) + '\n\n\n')
         # Now return a TimeSeries from the given file.
         return WidgetType(data, meta, units, **kwargs)
 

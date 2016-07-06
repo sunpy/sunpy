@@ -13,6 +13,7 @@ import pandas
 from sunpy.io.fits import fits
 from sunpy.instr import fermi
 from sunpy.timeseries import GenericTimeSeries
+from sunpy.util.metadata import MetaDict
 from astropy import units as u
 
 __all__ = ['GBMSummaryLightCurve']
@@ -95,7 +96,7 @@ class GBMSummaryLightCurve(GenericTimeSeries):
     def _parse_file(cls, filepath):
         """Parses GBM CSPEC FITS data files to create TimeSeries."""
         hdulist=fits.open(filepath)
-        header=OrderedDict(hdulist[0].header)
+        header=MetaDict(OrderedDict(hdulist[0].header))
         #these GBM files have three FITS extensions.
         #extn1 - this gives the energy range for each of the 128 energy bins
         #extn2 - this contains the data, e.g. counts, exposure time, time of observation
