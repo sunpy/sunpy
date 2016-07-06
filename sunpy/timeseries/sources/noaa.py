@@ -10,6 +10,7 @@ from pandas.io.parsers import read_csv
 import numpy as np
 
 from sunpy.timeseries import GenericTimeSeries
+from sunpy.util.metadata import MetaDict
 from astropy import units as u
 
 __all__ = ['NOAAIndicesTimeSeries', 'NOAAPredictIndicesTimeSeries']
@@ -156,7 +157,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
                                  ('geomagnetic smooth', u.dimensionless_unscaled)])
             # Todo: check units
             # Todo: fix header/meta, it's returning rubbish.
-            return data, {'comments': header}, units
+            return data, MetaDict({'comments': header}), units
 
 
 
@@ -264,7 +265,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
                                  ('radio flux low', u.W/u.m**2),
                                  ('radio flux high', u.W/u.m**2)])
             # Todo: check units used.
-            return data, {'comments': header}, units
+            return data, MetaDict({'comments': header}), units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):

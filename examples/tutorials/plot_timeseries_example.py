@@ -91,6 +91,8 @@ ts_lyra.instrument
 ts_lyra.measurement
 ts_lyra.observatory
 # Note: much of the behaviour of these is yet to be sorted for specific instruments.
+combined_goes_ts.meta.get('telescop')
+# Note: this returns a list, not a single entry as with the Map.
 
 ##############################################################################
 # The TimeSeries objects can be visualised using peek():

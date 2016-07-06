@@ -14,6 +14,7 @@ from pandas.io.parsers import read_csv
 from os.path import basename
 
 from sunpy.timeseries import GenericTimeSeries
+from sunpy.util.metadata import MetaDict
 from astropy import units as u
 
 __all__ = ['EVELightCurve']
@@ -142,7 +143,7 @@ class EVELightCurve(GenericTimeSeries):
 
             line = fp.readline()
 
-        meta = OrderedDict()
+        meta = MetaDict()
         for hline in header :
             if hline == '; Format:\n' or hline == '; Column descriptions:\n':
                 continue

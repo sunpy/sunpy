@@ -17,6 +17,7 @@ from pandas import DataFrame
 
 from sunpy.timeseries import GenericTimeSeries
 from sunpy.time import parse_time, TimeRange, is_time_in_given_format
+from sunpy.util.metadata import MetaDict
 from astropy import units as u
 
 Y__all__ = ['XRTMap', 'SOTMap']
@@ -149,7 +150,7 @@ class GOESLightCurve(GenericTimeSeries):
         """Parses a GOES FITS file from
         http://umbra.nascom.nasa.gov/goes/fits/"""
         fits = pyfits.open(filepath)
-        header = fits[0].header
+        header = MetaDict(OrderedDict(fits[0].header))
         if len(fits) == 4:
             if is_time_in_given_format(fits[0].header['DATE-OBS'], '%d/%m/%Y'):
                 start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%Y')
@@ -186,7 +187,6 @@ class GOESLightCurve(GenericTimeSeries):
         units = OrderedDict([('xrsa', u.ct),
                              ('xrsb', u.ct)])
         # ToDo: check: http://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf
-        print('\n\n\nheader:\n' + str(type(header)) + '\n\n\n')
         return data, header, units
 
     @classmethod
