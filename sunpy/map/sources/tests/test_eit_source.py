@@ -30,7 +30,7 @@ def test_fitstoEIT(createEIT):
 def test_is_datasource_for(createEIT):
     """Test the is_datasource_for method of EITMap.
     Note that header data to be provided as an argument
-    can be a MapMeta object."""
+    can be a MetaDict object."""
     assert createEIT.is_datasource_for(createEIT.data, createEIT.meta)
 
 def test_observatory(createEIT):

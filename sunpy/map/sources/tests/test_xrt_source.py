@@ -28,7 +28,7 @@ def test_fitstoXRT():
 def test_is_datasource_for():
     """Test the is_datasource_for method of XRTMap.
     Note that header data to be provided as an argument
-    can be a MapMeta object."""
+    can be a MetaDict object."""
     assert xrt.is_datasource_for(xrt.data, xrt.meta)
 
 

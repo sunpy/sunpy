@@ -4,6 +4,7 @@ __authors__ = ["Alex Hamilton, Stuart Mumford"]
 __email__ = "stuart@mumford.me.uk"
 
 from collections import OrderedDict
+from sunpy.util.metadata import MetaDict
 
 from sunpy.time import TimeRange, parse_time
 
@@ -19,16 +20,16 @@ class TimeSeriesMetaData:
     ----------
     metadata : `list` of `tuple`
         The list of 3-tuples which each represent a source files metadata.
-        The tuples consist of: ( TimeRange, [ colnames ], OrderedDict(metadata) )
+        The tuples consist of: ( TimeRange, [ colnames ], MetaDict(metadata) )
 
     Examples
     --------
     >>> from sunpy.timeseries import TimeSeriesMetaData
     >>> from sunpy.time import TimeRange, parse_time
-    >>> from collections import OrderedDict
+    >>> from collections import MetaDict
     >>> tr = TimeRange('2012-06-01 00:00','2012-06-02 00:00')
     >>> md = TimeSeriesMetaData()
-    >>> md.append(tr, ['GOES'], OrderedDict([('tr','tr')]))
+    >>> md.append(tr, ['GOES'], MetaDict([('tr','tr')]))
     >>> md.find(parse_time('2012-06-01T21:08:12'))
     >>> md.find(parse_time('2012-06-01T21:08:12'), 'GOES')   # doctest: +SKIP
     """
@@ -36,7 +37,7 @@ class TimeSeriesMetaData:
     def __init__(self, metadata=None, timerange=None, colnames=None, **kwargs):
         self.metadata = []
         if metadata:
-            if isinstance(metadata, (dict, OrderedDict)) and isinstance(timerange, TimeRange) and isinstance(colnames, list):
+            if isinstance(metadata, (dict, MetaDict)) and isinstance(timerange, TimeRange) and isinstance(colnames, list):
                 # Given a single metadata entry as a dictionary with additional timerange and colnames.
                 self.metadata.append(( timerange, colnames, metadata))
             elif isinstance(metadata, tuple):
@@ -50,7 +51,7 @@ class TimeSeriesMetaData:
 
     def append(self, timerange, columns, metadata, **kwargs):
         """
-        Add the given metadata OrderedDict into the metadata list as a tuple.
+        Add the given metadata MetaDict into the metadata list as a tuple.
         Will add the new entry so the list is in chronological order for the
         TimeRange.start datetime values.
         
@@ -63,12 +64,12 @@ class TimeSeriesMetaData:
         columns : `str`
             A string that can be used to narrow results to specific columns.
 
-        metadata : `OrderedDict`
+        metadata : `~sunpy.util.metadata.MetaDict`
             A string that can be used to narrow results to specific columns.
         """
         # Check the types are correct.
         pos = len(self.metadata)
-        if isinstance(timerange, TimeRange) and isinstance(metadata, OrderedDict):
+        if isinstance(timerange, TimeRange) and isinstance(metadata, MetaDict):
             for i in range(0, len(self.metadata)):
                 if timerange.start < self.metadata[i][0].start:
                     pos = i - 1
@@ -104,12 +105,12 @@ class TimeSeriesMetaData:
             A string that can be used to narrow results to specific columns.
 
         indexes : `bool` optional
-            If True then return a list of indexes, not of OrderedDict items.
+            If True then return a list of indexes, not of MetaDict items.
     
         Returns
         -------
         list : `list`
-            A list of OrderedDict objects that contain all matching metadata.
+            A list of MetaDict objects that contain all matching metadata.
         """
         # Parameters
         indexes = kwargs.get('indexes', False)
@@ -147,7 +148,7 @@ class TimeSeriesMetaData:
     
         Returns
         -------
-        metadata : `OrderedDict`
+        metadata : `~sunpy.util.metadata.MetaDict`
             An ordered Dictionary containing the metadata at the given index.
         """
         return self.metadata[index][1]
@@ -212,11 +213,11 @@ class TimeSeriesMetaData:
 
     def update(self, dictionary, datetime=None, colname=None, **kwargs):
         """
-        Make updates to the OrderedDict metadata for all matching metadata entries.
+        Make updates to the MetaDict metadata for all matching metadata entries.
 
         Parameters
         ----------
-        dictionary : `dict` or `OrderedDict`
+        dictionary : `dict` or `~sunpy.util.metadata.MetaDict`
             The second TimeSeriesMetaData object.
             
         datetime : `str` or `~datetime.datetime` optional
@@ -269,11 +270,11 @@ if __name__ == "__main__":
     
     # Build a TimeSeriesMetaData object
     md = TimeSeriesMetaData()
-    md.append(tr_1, ['GOES'], OrderedDict([('tr_1','tr_1'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
-    md.append(tr_2, ['GOES'], OrderedDict([('tr_2','tr_2'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
-    md.append(tr_3, ['GOES'], OrderedDict([('tr_3','tr_3'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
-    md.append(tr_4, ['GOES'], OrderedDict([('tr_4','tr_4'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
-    md.append(tr_5, ['Other'], OrderedDict([('tr_5','tr_5'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
+    md.append(tr_1, ['GOES'], MetaDict([('tr_1','tr_1'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
+    md.append(tr_2, ['GOES'], MetaDict([('tr_2','tr_2'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
+    md.append(tr_3, ['GOES'], MetaDict([('tr_3','tr_3'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
+    md.append(tr_4, ['GOES'], MetaDict([('tr_4','tr_4'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
+    md.append(tr_5, ['Other'], MetaDict([('tr_5','tr_5'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
 
     
     # Check it
@@ -308,11 +309,18 @@ if __name__ == "__main__":
     md.find(time_6, 'GOES') # No results (too early)
     md.find(time_7, 'GOES') # No results (too late)
     
-    # renaming columns
-    md.rename_column('Other', 'changed')
-    md.rename_column('GOES', 'goes')
-    
     # Get from the metadata
     date_obs = md.get('date-obs', [ ])
     date_obs = md.get('date-obs', [ ], time_2)
-    date_obs = md.get('date-obs', [ ], time_2, 'goes')
+    date_obs = md.get('date-obs', [ ], time_2, 'GOES')
+    
+    # Update
+    md.update({'new_key_1':'added to all.'})
+    md.update({'new_key_2':'added to all at time_3.'}, datetime=time_3)
+    md.update({'new_key_3':'added only to time_4'}, datetime=time_4, colname=None)
+
+    # renaming columns
+    md.rename_column('Other', 'changed')
+    md.rename_column('changed', 'Other')
+    md.rename_column('GOES', 'goes')
+    md.rename_column('goes', 'GOES')
