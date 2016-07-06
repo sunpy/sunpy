@@ -52,6 +52,7 @@ def read(filepath):
     for item in table:
         for cols in item.columns.values():
             try:
+                #Replace column of strings with column of floats.
                 column = item[cols.name].astype(float)
                 item.replace_column(cols.name, column)
             except ValueError:
