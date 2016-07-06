@@ -16,26 +16,37 @@ def read(filepath):
     lines = list()
     for line in File:
         arr = line.split()
-        string = ""
+        store = list()
         for i in range(0, min(len(arr), 8)):
-            string += (arr[i] + ' ')
-        lines.append(string)
+            store.append(arr[i])
+        lines.append(store)
 
     #Problem: An array of strings. We need to extract
     #three tables from these I, IA and II.
 
     table = list()
     indices = list()
-    n = len(lines)
-    for i in range(0, n):
-        if (lines[i][0] == 'I'):
+    
+    for i in range(0, len(lines)):
+        if (lines[i][0][0] == 'I'):
             indices.append(i)
     indices.append(len(lines))
     indices.sort()
 
     for i in range(0, len(indices) - 1):
-        string = lines[indices[i]+1]
-        columns = string.split()
+        columns = lines[indices[i]+1]
+        temp_table = Table(names = cols, dtype=['object_']*len(cols))
+        for j in range(indices[i]+2, indices[i+1]):
+            temp_string = lines[j]
+            temp_array = temp_string.split()
+            if (len(temp_array) == len(cols)):
+                temp.add_row(temp_array)
+            else:
+                temp.add_row(['None']*len(cols))
+        table.append(temp_table)
+
+    #"table" now has three different tables i.e.
+    #I, IA and II.
         
         
     
