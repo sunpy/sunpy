@@ -15,7 +15,7 @@ from astropy.table import Table
 
 import sunpy
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries, TIMESERIES_CLASSES
-from sunpy.map.header import MapMeta
+from sunpy.util.metadata import MetaDict
 
 from sunpy.io.file_tools import read_file, UnrecognizedFileTypeError
 from sunpy.io.header import FileHeader

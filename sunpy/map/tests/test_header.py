@@ -5,10 +5,10 @@ import sunpy.map
 #==============================================================================
 # Test, read, get_header and write through the file independent layer
 #==============================================================================
-class TestMapMeta(object):
+class TestMetaDict(object):
 
     def test_upcasing(self):
-        meta = sunpy.map.MapMeta({'wibble':1, 'WOBBLE':2})
+        meta = sunpy.map.MetaDict({'wibble':1, 'WOBBLE':2})
         #__getitem__
         assert meta['wibble'] == meta['WIBBLE']
         #get

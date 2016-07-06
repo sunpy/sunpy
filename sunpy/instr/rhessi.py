@@ -460,7 +460,7 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
         "DSUN_OBS": sunearth_distance(time_range.center()) * sunpy.sun.constants.au.value
     }
 
-    header = sunpy.map.MapMeta(dict_header)
+    header = sunpy.map.MetaDict(dict_header)
     result_map = sunpy.map.Map(image, header)
 
     return result_map

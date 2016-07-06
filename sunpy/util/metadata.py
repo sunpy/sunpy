@@ -6,10 +6,10 @@ from __future__ import absolute_import, division, print_function
 
 from collections import OrderedDict
 
-__all__ = ['MapMeta']
+__all__ = ['MetaDict']
 
 
-class MapMeta(OrderedDict):
+class MetaDict(OrderedDict):
     """
     A class to hold meta data associated with a Map derivative.
 
@@ -29,10 +29,10 @@ class MapMeta(OrderedDict):
             elif isinstance(adict, dict):
                 tags = dict((k.upper(), v) for k, v in adict.items())
             else:
-                raise TypeError("Can not create a MapMeta from this type input")
+                raise TypeError("Can not create a MetaDict from this type input")
             args[0] = tags
 
-        super(MapMeta, self).__init__(*args)
+        super(MetaDict, self).__init__(*args)
 
     def __contains__(self, key):
         """Override __contains__"""

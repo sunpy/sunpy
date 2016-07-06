@@ -28,7 +28,7 @@ def test_fitstoSWAP(createSWAP):
 def test_is_datasource_for(createSWAP):
     """Test the is_datasource_for method of SWAPMap.
     Note that header data to be provided as an argument
-    can be a MapMeta object."""
+    can be a MetaDict object."""
     assert createSWAP.is_datasource_for(createSWAP.data, createSWAP.meta)
 
 def test_observatory(createSWAP):

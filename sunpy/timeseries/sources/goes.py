@@ -186,6 +186,7 @@ class GOESLightCurve(GenericTimeSeries):
         units = OrderedDict([('xrsa', u.ct),
                              ('xrsb', u.ct)])
         # ToDo: check: http://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf
+        print('\n\n\nheader:\n' + str(type(header)) + '\n\n\n')
         return data, header, units
 
     @classmethod

@@ -23,7 +23,7 @@ def test_fitstoHMI():
 def test_is_datasource_for():
     """Test the is_datasource_for method of HMIMap.
     Note that header data to be provided as an argument
-    can be a MapMeta object, which in this case is
+    can be a MetaDict object, which in this case is
     hmi.meta."""
     assert hmi.is_datasource_for(hmi.data, hmi.meta)
 

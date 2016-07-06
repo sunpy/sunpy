@@ -12,7 +12,6 @@ import astropy.io.fits
 
 import sunpy
 from sunpy.map.mapbase import GenericMap, MAP_CLASSES
-from sunpy.map.header import MapMeta
 from sunpy.map.compositemap import CompositeMap
 from sunpy.map.mapcube import MapCube
 
@@ -21,6 +20,7 @@ from sunpy.io.header import FileHeader
 
 from sunpy.util.net import download_file
 from sunpy.util import expand_list
+from sunpy.util.metadata import MetaDict
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
@@ -61,7 +61,7 @@ class MapFactory(BasicRegistrationFactory):
 
     >>> mymap = sunpy.map.Map((data, header))   # doctest: +SKIP
 
-    headers are some base of `dict` or `collections.OrderedDict`, including `sunpy.io.header.FileHeader` or `sunpy.map.header.MapMeta` classes.
+    headers are some base of `dict` or `collections.OrderedDict`, including `sunpy.io.header.FileHeader` or `sunpy.util.metadata.MetaDict` classes.
 
     * data, header pairs, not in tuples
 
@@ -111,7 +111,7 @@ class MapFactory(BasicRegistrationFactory):
             #This tests that the data is more than 1D
             if len(np.shape(filedata)) > 1:
                 data = filedata
-                meta = MapMeta(filemeta)
+                meta = MetaDict(filemeta)
                 new_pairs.append((data, meta))
         return new_pairs
 
@@ -266,7 +266,7 @@ class MapFactory(BasicRegistrationFactory):
         # matches the arguments.  If it does, use that type.
         for pair in data_header_pairs:
             data, header = pair
-            meta = MapMeta(header)
+            meta = MetaDict(header)
 
             try:
                 new_map = self._check_registered_widgets(data, meta, **kwargs)

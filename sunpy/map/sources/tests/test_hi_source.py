@@ -20,7 +20,7 @@ def test_fitstoHI():
 def test_is_datasource_for():
     """Test the is_data_source_for method of HIMap.
     Note that header data to be provided as an argument
-    can be a MapMeta object."""
+    can be a MetaDict object."""
     assert hi.is_datasource_for(hi.data, hi.meta)
 
 def test_measurement():
