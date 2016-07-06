@@ -238,8 +238,9 @@ class GenericTimeSeries:
 
         Parameters
         ----------
-        rule : `str`
-            The offset string or object representing target conversion
+        rule : `str` or `~astropy.units.quantity.Quantity`
+            The offset string or object representing target conversion.
+            nS for n seconds, nT for n minutes, nH for n hours, nD for n Days.
 
         method : `str`
             The mothod used to combine values.
@@ -254,18 +255,23 @@ class GenericTimeSeries:
         """
         # how parameter indicates using multiple methods to Pandas
         how = kwargs.get('how', None)
+        rule_str = rule
+        if isinstance(rule_str, astropy.units.quantity.Quantity):
+            seconds = rule_str.to(u.s)
+            rule_str = str(seconds.value) + 'S'
+            rule_str = rule_str.replace('.0', '')
 
         # Create the resample using the given rule.
         if not how:
             method = method.lower()
-            resampled_data = self.data.resample(rule, **kwargs)
+            resampled_data = self.data.resample(rule_str, **kwargs)
             if hasattr(resampled_data, method):
                 resampled_data = getattr(resampled_data, method)()
             else:
                 raise ValueError("Resample method not found")
         else:
             # If the how kwarg was given then we simply pass it to the resample function.
-            resampled_data = self.data.resample(rule, **kwargs)
+            resampled_data = self.data.resample(rule_str, **kwargs)
         
         # ToDo: consider re-evaluating the metadata.
 
