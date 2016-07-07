@@ -62,6 +62,9 @@ def read(filepath):
     attributes = list(set(attributes))
     #"attributes" is for the master table.
 
+    #We are adding those columns in the tables
+    #that the tables don't have and initializing
+    #them with 'None'.
     for item in table:
         for attrs in attributes:
             item_attr = [cols.name for cols in item.columns.values()]
