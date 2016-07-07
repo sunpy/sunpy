@@ -197,7 +197,8 @@ ts_eve = ts_eve.add_column(colname, qua_new, unit=unit, overwrite=True)#
 # Get
 date_obs = combined_goes_ts.meta.get('date-obs', [ ])
 date_obs = combined_goes_ts.meta.get('date-obs', [ ], datetime=parse_time('2012-06-02T21:08:12'))
-date_obs = combined_goes_ts.meta.get('date-obs', [ ], datetime=parse_time('2012-06-02T21:08:12'), colname='GOES')
+date_obs = combined_goes_ts.meta.get('date-obs', [ ], datetime=parse_time('2012-06-02T21:08:12'), colname='xrsa')
+date_obs = combined_goes_ts.meta.get('date-obs', [ ], datetime='2012-06-02T21:08:12', colname='xrsa')
 date_obs = combined_goes_ts.meta.get('date-obs', itemised=True)
 # Overwrite
 combined_goes_ts.meta.metadata
