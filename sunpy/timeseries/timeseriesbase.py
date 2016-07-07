@@ -219,6 +219,11 @@ class GenericTimeSeries:
         """Observatory or Telescope name"""
         return self.meta.get('obsrvtry', self.meta.get('telescop', "")).replace("_", " ")
 
+    @property
+    def columns(self):
+        """Returns a list of all the names of the columns in the data."""
+        return list(self.data.columns.values)
+        
 # #### From Pandas #### #
     def sort_index(self, **kwargs):
         """Returns a sorted version of the TimeSeries object.
@@ -372,9 +377,14 @@ class GenericTimeSeries:
 
         # If an interval integer was given then use in truncation.
         truncated = self.data.sort_index()[start:end:int]
+        
+        # Build similar TimeSeries object and sanatise metadata and units.
+        object = self.__class__(truncated.sort_index(), TimeSeriesMetaData(self.meta.metadata.copy()), self.units.copy())
+        object._sanitize_metadata()
+        object._sanitize_units()
+        return object
 
-        # Return the same type of timeseries object.
-        return self.__class__(truncated.sort_index(), TimeSeriesMetaData(self.meta.metadata.copy()), self.units)
+
 
     def extract(self, column_name):
         """Returns a new time series with the chosen column.
@@ -399,8 +409,11 @@ class GenericTimeSeries:
         # Extract column and remove empty rows
         data = self.data[[column_name]].dropna()
         
-        # Return the same type of timeseries object.
-        return self.__class__(data.sort_index(), TimeSeriesMetaData(self.meta.metadata.copy()), self.units.copy())
+        # Build similar TimeSeries object and sanatise metadata and units.
+        object = self.__class__(data.sort_index(), TimeSeriesMetaData(self.meta.metadata.copy()), self.units.copy())
+        object._sanitize_metadata()
+        object._sanitize_units()
+        return object
         # Debate: should this return the same TimeSeries type as the original?
 
     def concatenate(self, otherts, **kwargs):
@@ -446,8 +459,11 @@ class GenericTimeSeries:
         units.update(self.units)
         units.update(otherts.units)
         
-        # Return the same type of timeseries object.
-        return self.__class__(data.sort_index(), meta, units)
+        # Build similar TimeSeries object and sanatise metadata and units.
+        object = self.__class__(data.sort_index(), meta, units)
+        object._sanitize_metadata()
+        object._sanitize_units()
+        return object
 
 # #### Miscellaneous #### #
     def _validate_meta(self):
@@ -523,7 +539,27 @@ class GenericTimeSeries:
             
         # Now use the amended units Ordered Dictionary
         self.units = units
-            
+
+    def _sanitize_metadata(self, **kwargs):
+        """
+        Sanitises the TimeSeriesMetaData object used to store the metadata.
+        Primarily this method will:
+        
+        Remove entries outside of the datas TimeRange or truncate TimeRanges
+        if the metadata overflows past the data,
+        Remove column references in the metadata that don't match to a column
+        in the data.
+        Remove metadata entries that have no columns matching the data.        
+        """
+        warnings.simplefilter('always', Warning)
+        
+        # Truncate the metadata
+        self.meta.truncate(self.time_range)
+        
+        # Remove non-existant columns
+        redundant_cols = list(set(self.meta.columns) - set(self.columns))
+        self.meta.remove_columns(redundant_cols)
+              
 
 # #### New Methods #### #
     def to_table(self, **kwargs):
