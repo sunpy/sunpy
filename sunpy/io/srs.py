@@ -24,7 +24,7 @@ def read(filepath):
     #Problem: An array of strings. We need to extract
     #three tables from these I, IA and II.
 
-    table = list()
+    table = list() #This table holds the three tables which we would later merge.
     indices = list()
     
     for i in range(0, len(lines)):
@@ -49,14 +49,26 @@ def read(filepath):
     #I, IA and II.
     #Make the table columns unit-aware. First convert string to
     #floats, ones which can be converted that is.
+    attributes = list()
     for item in table:
         for cols in item.columns.values():
             try:
                 #Replace column of strings with column of floats.
+                attributes.append(cols.name)
                 column = item[cols.name].astype(float)
                 item.replace_column(cols.name, column)
             except ValueError:
                 pass
+    attributes = list(set(attributes))
+    #"attributes" is for the master table.
+
+    for item in table:
+        for attrs in attributes:
+            item_attr = [cols.name for cols in item.columns.values()]
+            if attrs not in item_attr:
+                new_column = Column(data=['None']*len(item), name=attrs, dtype='object_')
+                item.add_column(new_column)
+        
         
         
     
