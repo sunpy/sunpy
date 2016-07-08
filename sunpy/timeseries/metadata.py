@@ -83,7 +83,7 @@ class TimeSeriesMetaData:
         duplicate = False
         if pos < len(self.metadata):
             old_metadata = self.metadata[pos]
-            if (new_metadata[0].start == old_metadata[0].start) and (new_metadata[0].end == old_metadata[0].end) and (new_metadata[1] == old_metadata[1]):
+            if (new_metadata[0] == old_metadata[0]) and (new_metadata[1] == old_metadata[1]):
                 duplicate = True
                 
         # Insert into the given position
@@ -365,7 +365,89 @@ class TimeSeriesMetaData:
         Validate a meta argument.
         """
         return True
+
+    def _to_string(self, depth=10, width=99):
+        """
+        Print a table-like representation of the TimeSeriesMetaData object.
         
+        Parameters
+        ----------
+        depth : `int`
+            The maximum number of lines to show for each entry. Metadata
+            dictionaries and column lists will be truncated if this is small.
+
+        width : `int`
+            The number of characters wide to make the entire table.
+        """
+        # Parameters
+        colspace = ' | '
+        liswidths = (26, 15, width-2-2*len(colspace) - 26 - 15)
+        colheadings = '|' + 'TimeRange'.ljust(100)[:liswidths[0]] + colspace + 'Columns'.ljust(100)[:liswidths[1]] + colspace + 'Meta'.ljust(100)[:liswidths[2]]  + '|'
+        rowspace = "-" * (liswidths[0] + len(colspace) + liswidths[1] + len(colspace) + liswidths[2])
+        rowspace = '|' + rowspace + '|'
+        
+        # Headings
+        full = rowspace + '\n' + colheadings + '\n' + rowspace + '\n'
+        
+        # Add metadata entries
+        for entry in self.metadata:
+            # Make lists for each of the columns for each metadata entry
+            # Padded to the widths given in liswidths
+            listr = [ str(entry[0].start), '            to            ', str(entry[0].end) ]
+            liscols = []
+            for col in self.metadata[0][1]:
+                liscols.append(col.ljust(100)[:liswidths[1]])
+            lismeta = []
+            for key in list(self.metadata[0][2].keys()):
+                string = str(key) + ': ' + str(self.metadata[0][2][key])
+                lismeta.append(string.ljust(100)[:liswidths[2]])
+            
+            # Add lines of the entry upto the given depth
+            for i in range(0, depth):
+                if len(listr) > i or len(entry[1]) > i or len(lismeta) > i :
+                    line = '|'
+                    if len(listr) > i:
+                        line += listr[i].ljust(100)[:liswidths[0]]
+                    else:
+                        line += ''.ljust(100)[:liswidths[0]]
+                    line += colspace
+                    if len(entry[1]) > i:
+                        line += entry[1][i].ljust(100)[:liswidths[1]]
+                    else:
+                        line += ''.ljust(100)[:liswidths[1]]
+                    line += colspace
+                    if len(lismeta) > i:
+                        line += lismeta[i].ljust(100)[:liswidths[2]]
+                    else:
+                        line += ''.ljust(100)[:liswidths[2]]
+                    full += line + '|\n'
+            # Add a line to show if the columns are truncated.
+            if len(listr) >= depth or len(entry[1]) >= depth or len(lismeta) >= depth:
+                line = '|'
+                if len(listr) >= depth:
+                    line += '...'.ljust(100)[:liswidths[0]]
+                else:
+                    line += ''.ljust(100)[:liswidths[0]]
+                line += colspace
+                if len(entry[1]) >= depth:
+                    line += '...'.ljust(100)[:liswidths[1]]
+                else:
+                    line += ''.ljust(100)[:liswidths[1]]
+                line += colspace
+                if len(lismeta) >= depth:
+                    line += '...'.ljust(100)[:liswidths[2]]
+                else:
+                    line += ''.ljust(100)[:liswidths[2]]
+                full += line + '|\n'
+            # Add a line to close the table
+            full += rowspace + '\n'
+        return full
+
+    def __repr__(self):
+        return self._to_string()
+    def __str__(self):
+        return self._to_string()
+       
 if __name__ == "__main__":
     tr_1 = TimeRange('2012-06-01 00:00','2012-06-02 00:00')
     tr_1a = TimeRange('2012-06-01 00:00','2012-06-02 00:00')

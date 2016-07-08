@@ -94,6 +94,13 @@ ts_lyra.observatory
 combined_goes_ts.meta.get('telescop')
 # Note: this returns a list, not a single entry as with the Map.
 
+
+##############################################################################
+# The TimeSeriesMetaData can be sumerised:
+combined_goes_ts.meta
+print(combined_goes_ts.meta)
+print(combined_goes_ts.meta._to_string(2))
+
 ##############################################################################
 # The TimeSeries objects can be visualised using peek():
 ts_goes.peek()
