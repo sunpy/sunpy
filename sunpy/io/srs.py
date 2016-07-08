@@ -43,10 +43,10 @@ def read(filepath):
             temp_array = temp_string
             if (len(temp_array) == len(cols)):
                 temp_table.add_row(temp_array)
-##            else:
-##                temp_table.add_row(['None']*len(cols))
-        #Make the table data type aware while
+        #Make the table, data-type aware while
         #you're building it.
+        #If it is empty, don't do anything
+        #Just add the empty table as it is.
         if len(temp_table)>0:
             for cols in temp_table.columns.values():
                 try:
@@ -97,10 +97,12 @@ def read(filepath):
     #do that all that remains is to add all the rows to 'master'
     for items in table:
         #Take care of order of columns.
+        #OrderedDict because we care about order
+        #of columns.
         dict_of_columns = collections.OrderedDict()
         for columns in items.columns.values():
             dict_of_columns[columns.name] = items[columns.name]
-        new_table = Table()
+        new_table = Table() #The re-ordered table. Ordered according to 'master'
         for cols in attributes:
             new_table.add_column(dict_of_columns[cols])
         for rows in new_table:
