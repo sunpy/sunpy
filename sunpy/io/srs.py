@@ -107,5 +107,7 @@ def read(filepath):
             new_table.add_column(dict_of_columns[cols])
         for rows in new_table:
             master.add_row(rows)
-               
+
+    master['Area'].unit = 'u.m**2'
+    master['Lat'].unit = 'u.deg'
     return master
