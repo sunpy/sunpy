@@ -5,7 +5,7 @@ __author__ = "Sudarshan Konge"
 __email__ = "sudk1896@gmail.com"
 
 from astropy.table import Table, Column, vstack
-import collections
+import collections, calendar, re
 
 __all__ = ['read']
 
@@ -21,6 +21,16 @@ def read(filepath):
         for i in range(0, min(len(arr), 8)):
             store.append(arr[i])
         lines.append(store)
+
+    #Store table meta-data. Only first two lines
+    #of SRS text file store the meta-data.
+    meta_data = collections.OrderedDict()
+    regex = re.compile('[^a-zA-Z]')
+    try:
+        meta_data[regex.sub('', lines[0][0])] = lines[0][1]
+        meta_data[regex.sub('', lines[1][0])] = ' '.join(lines[1][1:])
+    except IndexError:
+        print ("SRS meta-data is not available.")
 
     #Problem: An array of strings. We need to extract
     #three tables from these I, IA and II.
@@ -85,7 +95,7 @@ def read(filepath):
         table[i].add_column(Column(data=[Map[i]]*len(table[i]), name='ID', dtype='object_'))
     
     attributes.insert(0, 'ID')
-    master = Table(names=attributes, dtype=['object_']*len(attributes))
+    master = Table(names=attributes, dtype=['object_']*len(attributes), meta=meta_data)
     #We will store all the three tables as a single table, basically
     #store all rows of all the three (or less) tables in 'master'
 
