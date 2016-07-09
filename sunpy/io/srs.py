@@ -120,4 +120,5 @@ def read(filepath):
 
     master['Area'].unit = 'u.m**2'
     master['Lat'].unit = 'u.deg'
+    master['Lo'].unit = 'u.deg'
     return master
