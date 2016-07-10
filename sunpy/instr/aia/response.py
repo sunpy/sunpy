@@ -207,7 +207,8 @@ class Response():
 
         return self.eff_area
 
-    def wavelength_response(self, channel, compare_genx=False, compare_table=False, use_eff_area=False):
+    def get_wavelength_response(self, channel, use_response_table2=False, use_calc_effarea_table2_gain=False,
+                            use_genx_values=False):
         """
 
         Describes the instrument (AIA) response per wavelength by calculating effective area vs wavelength of the strongest emission lines present in the solar feature.
@@ -235,79 +236,79 @@ class Response():
         var = self.get_channel_data(channel)
 
         # units
-        angstrom = u.angstrom
-        # angstrom = 10**(-8) * u.cm
         dn_per_photon = u.count / u.photon
 
-
-
         # gain values from Boerner paper
-        gain_table = {94: 2.128 * dn_per_photon, 131: 1.523 * dn_per_photon, 171: 1.168 * dn_per_photon,
-                      195: 1.024 * dn_per_photon, 211: 0.946 * dn_per_photon,
-                      304: 0.658 * dn_per_photon, 335: 0.596 * dn_per_photon, 1600: 0.125 * dn_per_photon,
-                      1700: 0.118 * dn_per_photon}
+        gain_table2 = {94: 2.128, 131: 1.523, 171: 1.168, 193: 1.024, 211: 0.946, 304: 0.658, 335: 0.596, 1600: 0.125,
+                      1700: 0.118}
         ccd_gain = {94: 18.3, 131: 17.6, 171: 17.7, 193: 18.3, 211: 18.3, 304: 18.3, 335: 17.6, 1600: 0.125,
                     1700: 0.118}
-        read_noise_table = {94: 1.14, 131: 1.18,  171: 1.15, 193: 1.20, 211: 1.20, 304: 1.14, 335: 1.18, 1600: 1.15,
-                    1700: 1.15}
 
-
-        # gives instrument response values listed in Table 2
-        if compare_genx:
+        # returns the instrument response values listed in Table 2
+        if use_response_table2:
             index = self.channel_list.index(channel)
-            self.inst_response = [0.664, 1.785, 3.365, 1.217, 1.14, 0.041, 0.027, 0.0024, 0.0046][index]
-
+            response = [0.664, 1.785, 3.365, 1.217, 1.14, 0.041, 0.027, 0.0024, 0.0046][index]
+            self.wavelength_response = response
         # Uses Gain from table Table 12 to calculate instrument response
-        elif compare_table:
-            for key, gain in gain_table.iteritems():
-                if str(key) == str(channel):
-                    inst_response = self.effective_area(key) * gain
+        elif use_calc_effarea_table2_gain:
+            gain = gain_table2[channel]
+            # for key, gain in gain_table2.iteritems():
+            #     if str(key) == str(channel):
                     # print(key, gain) # ~ 2.1
-                    self.inst_response = inst_response
+            self.wavelength_response = self.effective_area(channel) * gain * dn_per_photon
 
-        elif use_eff_area:
-            # TODO: TRY  gain = elecperphot / elecperdn --- no elecperphot in genx
-            gain = var['elecperdn']# 18.3 for all channels from .genx file
-            # print(gain)# ~ 18.3
-            inst_response = self.effective_area(channel) * (gain  * (u.count / u.photon) )
-            self.inst_response = inst_response
+        elif use_genx_values:
+            # no elecperphot in genx - have to make it with imported properties
 
-
-        # calculate the values
-        else:
+            # calculate the index of values to use from wavelength range
             for n, value in enumerate(self.get_wavelength_range(channel)):
                 if channel < value < channel + 1:
                     # print('        ', n,  value)
                     index = n
                     break
-                    # G(wavelength) = (12398 / wavelength / 3.65)g
 
             # the photon energy in eV
             ev = (12398.4953 * u.eV * u.angstrom * u.nm)
-            wavelength =  (var['wave'][index] * u.nm )
+            wavelength = (var['wave'][index] * u.nm)
             ev_per_wavelength = ev / wavelength
-            print('elecperphot: ', ev_per_wavelength)
-            #^^^ assert for wavelength 94, expect about 131.89 nm
+
+            electron_per_ev = var['elecperev'] * (u.electron / u.eV)
+
+            # converts energy of wavelength from eV to electrons
+            electron_per_wavelength = (ev_per_wavelength * electron_per_ev)
+
+            # TRY  gain = elecperphot / elecperdn
+            gain = electron_per_wavelength / var['elecperdn']
+            # print(gain)# 18.3 for all channels from .genx file
+
+            self.wavelength_response = var['effarea'][index] * (gain * dn_per_photon)
+
+
+        else:
+            # calculate entire response using calculated eff_area and ccd gain from table12
+
+            # the photon energy in eV
+            ev = (12398.4953 * u.eV * u.angstrom)
+            wavelength = (float(channel) * u.angstrom)
+            ev_per_wavelength = ev / wavelength
+            # print('elecperphot: ', ev_per_wavelength)
+            # ^^^ assert for wavelength 94, expect about 131.89 nm
             # these two should NOT be the same,
             # print('wave', var['wave'][index] , var['wave'][channel])
 
+            calc_electron_per_ev = (1 * u.electron) / (3.98 * u.eV)
+            # print('e', electron_per_ev, calc_electron_per_ev)            # these are approximately the same
 
-            # these are approximately the same
-            calc_electron_per_ev =  (1* u.electron ) / (3.98 *  u.eV)
-            electron_per_ev = var['elecperev'] * (u.electron / u.eV)
-            print('e', electron_per_ev, calc_electron_per_ev)
+            # converts energy of wavelength from eV to electrons
+            electron_per_wavelength = (ev_per_wavelength * calc_electron_per_ev)
+            # print('epl', electron_per_wavelength)
 
-            # rename this, more like electron per wavelength
-            electron_to_photon = (ev_per_wavelength *  electron_per_ev)
-            print('etp', electron_to_photon)
-
-            electron_per_dn = var['elecperdn'] * (u.electron / u.count)
-            platescale = var['platescale'] # very small...  10**(-11)
+            # gain of ccd from genx file:
+            ccdgain = ccd_gain[channel] * (u.electron / u.count)
+            # print(ccdgain)
 
             # Gain(wavelength)  calulation
-            calculated_gain = electron_to_photon  * (18.3 * (u.electron / u.count) * dn_per_photon)
-            #  calculated_gain =  ( (12398.4953 / (float(channel) / 0.1)) * (1 /  3.98 ) )* (18.3) # channel* value *(10**(-5))
-
+            calculated_gain = electron_per_wavelength * dn_per_photon
 
             # print('channel:', channel )
             # print('index:', index )
@@ -316,12 +317,11 @@ class Response():
             # print('gain: ', [0.664, 1.785, 3.365, 1.217, 1.14, 0.041, 0.027, 0.0024, 0.0046][
             #     self.channel_list.index(channel)], calculated_gain * electron_per_dn)  # ~ 17 or 18.3 dn/phot
 
-            eff_area = self.effective_area(channel, total_range=False, print_comparison_ratio=False)
+            calc_eff_area = self.effective_area(channel, total_range=False, print_comparison_ratio=False)
 
-            instr_response = eff_area * (calculated_gain / electron_per_dn)
-            self.inst_response = instr_response
+            self.wavelength_response = calc_eff_area * (calculated_gain / ccdgain)
 
-        return self.inst_response  # want units of cm**2 * count / photon
+        return self.wavelength_response  # want units of cm**2 * count / photon
 
         # NOTES:      ^^^ get the same values as the table when using all table values: self.effective_area(compare_table=True)
         #                 get one of the same values (171) when calculating it with center wavelength - fix
