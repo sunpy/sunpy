@@ -18,7 +18,7 @@ import astropy.units as u
 import pandas as pd
 
 
-def aia_instr_properties_to_table(input_directory, channel_list, properties, version, save=True):
+def aia_instr_properties_to_table(input_directory, channel_list, version, save=True):
     """
 
     Given  a .genx directory, this function searches for aia instrument files and saves the properties to a table.
@@ -50,33 +50,41 @@ def aia_instr_properties_to_table(input_directory, channel_list, properties, ver
 
     """
 
-    assert type(channel_list) == list
-    assert type(properties) == list
-
     check = []
     file_paths = []
 
-    # table = Table(names = properties)
-    # table = Table(names=properties, dtype = ('int32', 'float32', 'int16', 'float32', '>f4', 'int16', '>f4', 'float32', '>f4', '>f4', 'float32', 'int16', '>f4', 'int16', '>f4' ,'int16' ,'float32', 'float32', '>f4', '>f4'))
+    datatypes = [('wave', 'object'), ('effarea', 'object'),
+                 ('geoarea', 'float32'), ('platescale', 'float32'),
+                 ('wavemin', 'float32'), ('wavestep', 'float32'), ('wavenumsteps', '>i4'),
+                 ('elecperdn', 'object'), ('elecperev', 'float32'),
+                 ('fp_filter', 'object'), ('ent_filter', 'object'),
+                 ('primary', 'object'), ('secondary', 'object'),
+                 ('ccd', 'object'), ('contam', 'object')
+                 ]
 
-    # used this one!
-    #datatypes = [('wavenumsteps','>i4'), ('geoarea','float32'),('usecontam', 'int16'),('elecperdn',  '>f4'), ('contam','>f4'), ('numfilters','int16'), ('primary', '>f4'), ('wavemin', 'float32'), ('wave','>f4'), ('ent_filter', '>f4'), ('wavestep', 'float32'), ('useerror','int16'), ('effarea', '>f4'),('wavelog', 'int16'),('ccd', '>f4') ,('contamthick', 'int16') ,('platescale', 'float32'), ('elecperev','float32'),('fp_filter', '>f4')]  #, ('secondary','>f4'), ('elecperphot', 'float32')
-    datatypes = [('wavenumsteps','>i4'), ('geoarea','float32'),('usecontam', 'int16'),('elecperdn',  'object'), ('contam','object'), ('numfilters','int16'), ('primary', 'object'), ('wavemin', 'float32'), ('wave','object'), ('ent_filter', 'object'), ('wavestep', 'float32'), ('useerror','int16'), ('effarea', 'object'),('wavelog', 'int16'),('ccd', 'object') ,('contamthick', 'int16') ,('platescale', 'float32'), ('elecperev','float32'),('fp_filter', 'object'), ('secondary','object')]#, ('elecperphot', 'float32')]
+    properties = ['wave', 'effarea',
+                  'geoarea', 'platescale',
+                  'wavemin', 'wavestep', 'wavenumsteps',
+                  'elecperdn', 'elecperev',
+                  'fp_filter', 'ent_filter',
+                  'primary', 'secondary',
+                  'ccd', 'contam']
 
-    # datatypes = ('int32', 'float32', 'int16', 'float32', '>f4', 'int16', '>f4', 'float32', '>f4', '>f4', 'float32', 'int16', '>f4', 'int16', '>f4' ,'int16' ,'float32', 'float32',  '>f4', '>f4')
+    # less ambiguous naming and manually sorted to match sorted(properties) order
+    new_prop = ['quantum_efficiency_ccd', 'ccd_contamination', 'effective_area', 'electron_per_dn',
+                'electron_per_ev', 'entire_filter_efficiency', 'focal_plane_filter_efficiency', 'geometric_area_ccd',
+                'plate_scale', 'primary_mirror_reflectance', 'secondary_mirror_reflectance',
+                'wavelength_range', 'minimum_wavelength', 'number_wavelength_intervals', 'wavelength_interval'
+                ]
 
-    # print(len(properties))
-    # print(len(datatypes))
-
+    # make sure data types and properties are sorted in the same order
     dt = []
     for i in sorted(properties):
         for j in datatypes:
             if j[0] == i:
-                # print(i,j)
                 dt.append(j[1])
 
-    table = QTable(names = sorted(properties), dtype = dt)
-
+    table = QTable(names=new_prop, dtype=dt)
 
     # search through directory for instrument files for each version
     for root, dirs, files in os.walk(input_directory, topdown=False):
@@ -85,9 +93,6 @@ def aia_instr_properties_to_table(input_directory, channel_list, properties, ver
                 version) in str(channel_file):
                 check.append(os.path.join(root, channel_file))
                 file_paths.append(os.path.join(root, channel_file))
-
-    assert len(file_paths) != 0, 'Did not find aia_' + str(version) + '_fullinst files in directory.'
-
 
     # search through each instrument file for channels
     for instr_file in file_paths:
@@ -107,33 +112,30 @@ def aia_instr_properties_to_table(input_directory, channel_list, properties, ver
 
                     # save all properties for a channel into an array
                     for n, inst_property in enumerate(sorted(variables)):
-
                         value = data[channel_file][0][inst_property][0]
-                        dtype = value.dtype
-                        if str(dtype) == '>f4':
-                            row.append(value)
-                            # print(n, inst_property, dtype)
-                        else:
-                            row.append(value)
-                            # print(n, inst_property, dtype)
+
+                        row.append(value)
 
                     # put channel array into the table
                     table.add_row(row)
 
-
     # Make the first table column listing the channels
     C = Table.Column(data=channel_list, name='channel', dtype=int)
-    table.add_column(C, index = 0)
+    table.add_column(C, index=0)
     table.add_index(['channel'])
 
-    # print('OUT- TABLE------------------', table)
+    # units
+    # table['geoarea'] = table['geoarea']* u.cm**2
+    # table['wave'] = table['wave'] * u.AA
+    # table['wavemin'] = table['wavemin'] *u.angstrom
 
-    assert len(table) != 0, 'Empty Dataframe: Data Frame is not loading from file.'
     # if save:
     #     table.write('channel_properties_' + str(version) + '.csv')
     # return ('channel_properties_' + str(version) + '.csv')
 
-    #^^^^^^^^^Returned TypeError: unhashable type: 'numpy.ndarray'
-    # so maybe it is better to read in each time
+    # ^^^^^^^^^Returned TypeError: unhashable type: 'numpy.ndarray'
+    # get around bug by reading in each time.....
+
+    assert len(table) != 0, 'Empty Table: Data is not loading from file.'
 
     return table
