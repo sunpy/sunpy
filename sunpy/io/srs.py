@@ -59,6 +59,8 @@ def read(filepath):
         #Just add the empty table as it is.
         if len(temp_table)>0:
             for cols in temp_table.columns.values():
+                #Make the table columns unit-aware. First convert string to
+                #floats, ones which can be converted that is.
                 try:
                     column = temp_table[cols.name].astype(float)
                     temp_table.replace_column(cols.name, column)
@@ -68,8 +70,6 @@ def read(filepath):
 
     #"table" now has three different tables i.e.
     #I, IA and II.
-    #Make the table columns unit-aware. First convert string to
-    #floats, ones which can be converted that is.
     attributes = list() 
     
     for item in table:
