@@ -55,7 +55,7 @@ class Response():
     Feedback/ Thoughts are always welcome! -Thanks!
     """
 
-    def __init__(self, channel_list, properties, **kwargs):  # data_table,
+    def __init__(self, channel_list, **kwargs):  # data_table,
 
         path_to_genx_dir = kwargs.get('path_to_genx_dir', '')
         version = kwargs.get('version', 6)
@@ -67,9 +67,10 @@ class Response():
         # load in astropy table  ( quicker than reading genx files each time)
         # self.data_table = Table.read('channel_properties_' + str(version) + '.csv')
 
-        self.data_table = aia_read_genx2table.aia_instr_properties_to_table(path_to_genx_dir, channel_list, properties,
+        self.data_table = aia_read_genx2table.aia_instr_properties_to_table(path_to_genx_dir, channel_list,
                                                                             version, save=True)
-        self.properties = properties
+
+
         self.channel_list = channel_list
 
     def get_channel_data(self, channel):
@@ -104,11 +105,9 @@ class Response():
         :return:
         """
 
-        num = self.get_channel_data(channel)['wavenumsteps']
-        intervals = self.get_channel_data(channel)['wavestep']
-        min_wave = self.get_channel_data(channel)['wavemin']
-
-        wave = self.get_channel_data(channel)[self.properties.index('wave')]
+        num = self.get_channel_data(channel)['number_wavelength_intervals']
+        intervals = self.get_channel_data(channel)['wavelength_interval']
+        min_wave = self.get_channel_data(channel)['minimum_wavelength']
 
         if channel == 'all':
             # wavelength_range = np.arange(0, float(self.data_dictionary[0][numwavesteps])) * float(
@@ -116,6 +115,7 @@ class Response():
             pass
         else:
             wavelength_range = np.arange(0, float(num)) * float(intervals) + float(min_wave)
+            # assert should match var['wavelength_range']
 
             return wavelength_range
 
@@ -154,18 +154,18 @@ class Response():
         var = self.get_channel_data(channel)
 
         if compare_genx:
-            self.eff_area = var['effarea'] * u.cm ** 2
+            self.eff_area = var['effective_area'] * u.cm ** 2
 
         elif total_range:
             # Returns the entire channel wavelength ranges effective area
 
             # iterate through lists for multiplication (otherwise type error occurs)
-            reflectance = [i * j for i, j in zip(var['primary'], var['secondary'])]
-            transmission_efficiency = [i * j for i, j in zip(var['fp_filter'], var['ent_filter'])]
+            reflectance = [i * j for i, j in zip(var['primary_mirror_reflectance'], var['secondary_mirror_reflectance'])]
+            transmission_efficiency = [i * j for i, j in zip(var['focal_plane_filter_efficiency'], var['entire_filter_efficiency'])]
 
             # equation:
-            eff_area = (var['geoarea'] * u.cm ** 2) * reflectance * transmission_efficiency * var[
-                'contam'] * var['ccd']
+            eff_area = (var['geometric_area_ccd'] * u.cm ** 2) * reflectance * transmission_efficiency * var[
+                'ccd_contamination'] * var['quantum_efficiency_ccd']
 
             self.eff_area = eff_area
         else:
@@ -184,8 +184,8 @@ class Response():
                     index = n
                     break
 
-            reflectance = var['primary'][index] * var['secondary'][index]
-            transmission_efficiency = var['fp_filter'][index] * var['ent_filter'][index]
+            reflectance = var['primary_mirror_reflectance'][index] * var['secondary_mirror_reflectance'][index]
+            transmission_efficiency = var['focal_plane_filter_efficiency'][index] * var['entire_filter_efficiency'][index]
 
             # assert statement, these two should be the same
             # print(len(var['fp_filter']))
@@ -196,8 +196,8 @@ class Response():
             # print(reflectance, transmission_efficiency)
 
             # equation:
-            eff_area = (var['geoarea'] * u.cm ** 2) * reflectance * transmission_efficiency * var[
-                'contam'][index] * var['ccd'][index]
+            eff_area = (var['geometric_area_ccd'] * u.cm ** 2) * reflectance * transmission_efficiency * var[
+                'ccd_contamination'][index] * var['quantum_efficiency_ccd'][index]
             self.eff_area = eff_area
 
             if print_comparison_ratio:
@@ -208,7 +208,7 @@ class Response():
         return self.eff_area
 
     def get_wavelength_response(self, channel, use_response_table2=False, use_calc_effarea_table2_gain=False,
-                            use_genx_values=False):
+                                use_genx_values=False):
         """
 
         Describes the instrument (AIA) response per wavelength by calculating effective area vs wavelength of the strongest emission lines present in the solar feature.
@@ -240,7 +240,7 @@ class Response():
 
         # gain values from Boerner paper
         gain_table2 = {94: 2.128, 131: 1.523, 171: 1.168, 193: 1.024, 211: 0.946, 304: 0.658, 335: 0.596, 1600: 0.125,
-                      1700: 0.118}
+                       1700: 0.118}
         ccd_gain = {94: 18.3, 131: 17.6, 171: 17.7, 193: 18.3, 211: 18.3, 304: 18.3, 335: 17.6, 1600: 0.125,
                     1700: 0.118}
 
@@ -254,7 +254,7 @@ class Response():
             gain = gain_table2[channel]
             # for key, gain in gain_table2.iteritems():
             #     if str(key) == str(channel):
-                    # print(key, gain) # ~ 2.1
+            # print(key, gain) # ~ 2.1
             self.wavelength_response = self.effective_area(channel) * gain * dn_per_photon
 
         elif use_genx_values:
@@ -268,20 +268,20 @@ class Response():
                     break
 
             # the photon energy in eV
-            ev = (12398.4953 * u.eV * u.angstrom * u.nm)
-            wavelength = (var['wave'][index] * u.nm)
+            ev = (12398.4953 * u.eV * u.angstrom)
+            wavelength = (var['wavelength_range'][index] * u.angstrom)
             ev_per_wavelength = ev / wavelength
 
-            electron_per_ev = var['elecperev'] * (u.electron / u.eV)
+            electron_per_ev = var['electron_per_ev'] * (u.count / u.eV)
 
             # converts energy of wavelength from eV to electrons
             electron_per_wavelength = (ev_per_wavelength * electron_per_ev)
 
-            # TRY  gain = elecperphot / elecperdn
-            gain = electron_per_wavelength / var['elecperdn']
+            # gain = elecperphot / elecperdn
+            gain = electron_per_wavelength / var['electron_per_dn']
             # print(gain)# 18.3 for all channels from .genx file
 
-            self.wavelength_response = var['effarea'][index] * (gain * dn_per_photon)
+            self.wavelength_response = var['effective_area'][index] * (gain * dn_per_photon)
 
 
         else:
@@ -323,25 +323,6 @@ class Response():
 
         return self.wavelength_response  # want units of cm**2 * count / photon
 
-        # NOTES:      ^^^ get the same values as the table when using all table values: self.effective_area(compare_table=True)
-        #                 get one of the same values (171) when calculating it with center wavelength - fix
-        #
-        #     This is the
-        #     closest
-        #     thing in aia_bp_parse_effarea.pro - returns wavelength response
-        #     effarea = thisfullstr.effarea
-        #
-        #
-        # if KEYWORD_SET(dn) then begin
-        # evperphot = 12398. / wave
-        # elecperphot = (evperphot * thisfullstr.elecperev) > 1
-        # elecperdn = thisfullstr.elecperdn
-        # effarea = effarea * elecperphot / elecperdn
-        # units = 'cm^2 DN phot^-1'
-        # thisfullstr.usephottoelec = 1
-        # thisfullstr.usephottodn = 1
-        # endif
-
     def emissivity():
         """
 
@@ -354,7 +335,6 @@ class Response():
 
         :return: generates chianti object - continuum - chianti model with line list
         """
-        pass
 
     def spectrum():
         """
