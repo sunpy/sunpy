@@ -119,7 +119,7 @@ class Response():
 
             return wavelength_range
 
-    def effective_area(self, channel, total_range=False, compare_genx=False, print_comparison_ratio=False):
+    def effective_area(self, channel, total_range=False, use_genx_effarea=False, print_comparison_ratio=False):
         """
         AIA instrument response / effective area
         - contains information about the efficiency of the telescope optics.
@@ -153,7 +153,7 @@ class Response():
 
         var = self.get_channel_data(channel)
 
-        if compare_genx:
+        if use_genx_effarea:
             self.eff_area = var['effective_area'] * u.cm ** 2
 
         elif total_range:
@@ -218,14 +218,16 @@ class Response():
 
         NOTE:
 
-        The energy of a photon E = hf = hc / lambda . Expressing hc in units of eV/angstrom = 12398.4953
+        The energy of a photon E = hf = hc / lambda . Expressing hc in units of eV = 12398.4953
 
         """
 
         var = self.get_channel_data(channel)
 
-        # units
+        # conversions
         dn_per_photon = u.count / u.photon
+        ev_per_angstrom = (12398.4953 * u.eV * u.angstrom)
+        electron_per_ev = (1 * u.electron) / (3.98 * u.eV)
 
         # gain values from Boerner paper
         gain_table2 = {94: 2.128, 131: 1.523, 171: 1.168, 193: 1.024, 211: 0.946, 304: 0.658, 335: 0.596, 1600: 0.125,
@@ -256,13 +258,12 @@ class Response():
                     break
 
             # elecperphot in genx starting with the photon energy in eV
-            ev = (12398.4953 * u.eV * u.angstrom)
             wavelength = (var['wavelength_range'][index] * u.angstrom)
-            ev_per_wavelength = ev / wavelength
+            ev_per_wavelength = ev_per_angstrom / wavelength
 
             # converts energy of wavelength from eV to electrons
-            electron_per_ev = var['electron_per_ev'] * (u.count / u.eV)
-            electron_per_wavelength = (ev_per_wavelength * electron_per_ev)
+            genx_electron_per_ev = var['electron_per_ev'] * (u.count / u.eV)
+            electron_per_wavelength = (ev_per_wavelength * genx_electron_per_ev)
 
             # gain = elecperphot / elecperdn
             gain = electron_per_wavelength / var['electron_per_dn']
@@ -274,18 +275,16 @@ class Response():
             # calculate entire response using calculated eff_area and ccd gain from table12
 
             # the photon energy in eV
-            ev = (12398.4953 * u.eV * u.angstrom)
             wavelength = (float(channel) * u.angstrom)
-            ev_per_wavelength = ev / wavelength
+            ev_per_wavelength = ev_per_angstrom / wavelength
 
             # converts energy of wavelength from eV to electrons
-            calc_electron_per_ev = (1 * u.electron) / (3.98 * u.eV)
-            electron_per_wavelength = (ev_per_wavelength * calc_electron_per_ev)
+            electron_per_wavelength = (ev_per_wavelength * electron_per_ev)
 
             # gain of ccd from genx file:
             ccdgain = ccd_gain[channel] * (u.electron / u.count)
 
-            # Gain(wavelength)  calulation
+            # Gain(wavelength)  calculation
             calculated_gain = electron_per_wavelength * dn_per_photon
 
             calc_eff_area = self.effective_area(channel)
