@@ -110,12 +110,12 @@ class Response():
         min_wave = self.get_channel_data(channel)['minimum_wavelength']
 
         if channel == 'all':
+            # TODO:  return an array / ndarray of wavelength data
             # wavelength_range = np.arange(0, float(self.data_dictionary[0][numwavesteps])) * float(
             #     (self.data_dictionary[0][wave_intervals])) + float(self.data_dictionary[0][min_wavelength])
             pass
         else:
             wavelength_range = np.arange(0, float(num)) * float(intervals) + float(min_wave)
-            # assert should match var['wavelength_range']
 
             return wavelength_range
 
@@ -171,36 +171,24 @@ class Response():
         else:
             # Returns effective area at the position of the center wavelength for the channel specified
 
-            # # This test confirms that I need to index the values differently than just the index of the channel
-            # for value in var['fp_filter']:
-            #     if 0.348 < values < 0.349: # trying to replicate table data
-            #         index = var['fp_filter'].index(value) # 684   != 94
-            #         print(index, value)
-            #         print(self.get_wavelength_range(channel)[index]) # 93.9 !!
-
+            # find the index in arrays from ssw for desired wavelength
             for n, value in enumerate(self.get_wavelength_range(channel)):
                 if channel < value < channel + 1:
                     # print(n,  value)
                     index = n
                     break
 
+            # import instrument properties
             reflectance = var['primary_mirror_reflectance'][index] * var['secondary_mirror_reflectance'][index]
             transmission_efficiency = var['focal_plane_filter_efficiency'][index] * var['entire_filter_efficiency'][index]
 
-            # assert statement, these two should be the same
-            # print(len(var['fp_filter']))
-            # print(var['wavenumsteps'])
-
-            # print what's being called, perform test if not close to what's expected
-            # print(var['primary'][index], var['secondary'][index], var['fp_filter'][index], var['ent_filter'][index])
-            # print(reflectance, transmission_efficiency)
-
-            # equation:
+            # equation calculation :
             eff_area = (var['geometric_area_ccd'] * u.cm ** 2) * reflectance * transmission_efficiency * var[
                 'ccd_contamination'][index] * var['quantum_efficiency_ccd'][index]
             self.eff_area = eff_area
 
             if print_comparison_ratio:
+                # used for testing - move to test_aia?
                 compare_eff_area = [0.312, 1.172, 2.881, 1.188, 1.206, 0.063, 0.045, 0.0192, 0.0389][
                     self.channel_list.index(channel)]
                 print('eff_area: ', compare_eff_area, eff_area, 'ratio of comparison: ', eff_area / compare_eff_area)
@@ -244,42 +232,39 @@ class Response():
         ccd_gain = {94: 18.3, 131: 17.6, 171: 17.7, 193: 18.3, 211: 18.3, 304: 18.3, 335: 17.6, 1600: 0.125,
                     1700: 0.118}
 
-        # returns the instrument response values listed in Table 2
         if use_response_table2:
+            # returns the instrument response values listed in Table 2
+
             index = self.channel_list.index(channel)
             response = [0.664, 1.785, 3.365, 1.217, 1.14, 0.041, 0.027, 0.0024, 0.0046][index]
             self.wavelength_response = response
-        # Uses Gain from table Table 12 to calculate instrument response
+
         elif use_calc_effarea_table2_gain:
+            # Uses Gain from table Table 12 to calculate instrument response
             gain = gain_table2[channel]
-            # for key, gain in gain_table2.iteritems():
-            #     if str(key) == str(channel):
-            # print(key, gain) # ~ 2.1
             self.wavelength_response = self.effective_area(channel) * gain * dn_per_photon
 
         elif use_genx_values:
-            # no elecperphot in genx - have to make it with imported properties
-
             # calculate the index of values to use from wavelength range
+
+            # obtain index for values as specific wavelength
             for n, value in enumerate(self.get_wavelength_range(channel)):
                 if channel < value < channel + 1:
                     # print('        ', n,  value)
                     index = n
                     break
 
-            # the photon energy in eV
+            # elecperphot in genx starting with the photon energy in eV
             ev = (12398.4953 * u.eV * u.angstrom)
             wavelength = (var['wavelength_range'][index] * u.angstrom)
             ev_per_wavelength = ev / wavelength
 
-            electron_per_ev = var['electron_per_ev'] * (u.count / u.eV)
-
             # converts energy of wavelength from eV to electrons
+            electron_per_ev = var['electron_per_ev'] * (u.count / u.eV)
             electron_per_wavelength = (ev_per_wavelength * electron_per_ev)
 
             # gain = elecperphot / elecperdn
             gain = electron_per_wavelength / var['electron_per_dn']
-            # print(gain)# 18.3 for all channels from .genx file
 
             self.wavelength_response = var['effective_area'][index] * (gain * dn_per_photon)
 
@@ -291,34 +276,20 @@ class Response():
             ev = (12398.4953 * u.eV * u.angstrom)
             wavelength = (float(channel) * u.angstrom)
             ev_per_wavelength = ev / wavelength
-            # print('elecperphot: ', ev_per_wavelength)
-            # ^^^ assert for wavelength 94, expect about 131.89 nm
-            # these two should NOT be the same,
-            # print('wave', var['wave'][index] , var['wave'][channel])
-
-            calc_electron_per_ev = (1 * u.electron) / (3.98 * u.eV)
-            # print('e', electron_per_ev, calc_electron_per_ev)            # these are approximately the same
 
             # converts energy of wavelength from eV to electrons
+            calc_electron_per_ev = (1 * u.electron) / (3.98 * u.eV)
             electron_per_wavelength = (ev_per_wavelength * calc_electron_per_ev)
-            # print('epl', electron_per_wavelength)
 
             # gain of ccd from genx file:
             ccdgain = ccd_gain[channel] * (u.electron / u.count)
-            # print(ccdgain)
 
             # Gain(wavelength)  calulation
             calculated_gain = electron_per_wavelength * dn_per_photon
 
-            # print('channel:', channel )
-            # print('index:', index )
-            # print('value:', value )
-            # print('platescale: ', var['platescale'])
-            # print('gain: ', [0.664, 1.785, 3.365, 1.217, 1.14, 0.041, 0.027, 0.0024, 0.0046][
-            #     self.channel_list.index(channel)], calculated_gain * electron_per_dn)  # ~ 17 or 18.3 dn/phot
+            calc_eff_area = self.effective_area(channel)
 
-            calc_eff_area = self.effective_area(channel, total_range=False, print_comparison_ratio=False)
-
+            # TODO: fix error in units count**2?!
             self.wavelength_response = calc_eff_area * (calculated_gain / ccdgain)
 
         return self.wavelength_response  # want units of cm**2 * count / photon
