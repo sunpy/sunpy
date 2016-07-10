@@ -209,16 +209,17 @@ class Response():
         ----------
         :keyword
 
-        photon_to_dn?
-            may need a photon-to-DN unit conversion   # digital number = counts on detector
-
-        output: float
-            outfile of instrument response per channel
 
         Returns
         -------
         :return: float, array describing the response per wavelength of effective area (wavelength response)
                  count rate for spectrum?  : units cm^2 DN phot^-1
+
+
+        NOTE:
+
+        The energy of a photon E = hf = hc / lambda . Expressing hc in units of eV/angstrom = 12398.4953
+
         """
 
         var = self.get_channel_data(channel)
@@ -306,6 +307,11 @@ class Response():
 
         :return: generates chianti object - continuum - chianti model with line list
         """
+
+
+
+
+        pass
 
     def spectrum():
         """
