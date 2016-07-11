@@ -461,14 +461,15 @@ class Database(object):
         for (path, sr_entry) in zip(paths, entries_list):
             
             # Caching Begins
-            # exists=False
-            # for existing_entry in self:
-            #     print existing_entry.path
-            #     if existing_entry.path is not None and sr_entry._compare_attributes(existing_entry, ["source", "provider", "physobs", "fileid", "observation_time_start", "observation_time_end", "instrument", "size", "wavemin", "wavemax"]):
-            #         exists=True
-            #         break
-            # if exists:
-            #     continue
+            exists=False
+            for existing_entry in self:
+                if existing_entry.path is not None and sr_entry._compare_attributes(existing_entry,
+                    ["source", "provider", "physobs", "fileid", "observation_time_start",
+                    "observation_time_end", "instrument", "size", "wavemin", "wavemax"]):
+                    exists=True
+                    break
+            if exists:
+                continue
             # Caching Ends
 
             try:
