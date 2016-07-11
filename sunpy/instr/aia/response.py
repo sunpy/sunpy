@@ -31,13 +31,16 @@ import numpy as np
 import pandas as pd
 from astropy.table import Table
 import astropy.units as u
-import astropy.constants as constant
-
+import astropy.constants as constants
 import os
 
 import sunpy
 import sunpy.data.test as test
-import aia_read_genx2table
+from .aia_read_genx2table import aia_instr_properties_to_table
+
+# currently anaconda version
+# TODO: change this to github chiantipy
+# import chianti.core as ch
 
 
 class Response():
@@ -67,7 +70,7 @@ class Response():
         # load in astropy table  ( quicker than reading genx files each time)
         # self.data_table = Table.read('channel_properties_' + str(version) + '.csv')
 
-        self.data_table = aia_read_genx2table.aia_instr_properties_to_table(path_to_genx_dir, channel_list,
+        self.data_table = aia_instr_properties_to_table(path_to_genx_dir, channel_list,
                                                                             version, save=True)
 
 
@@ -225,8 +228,9 @@ class Response():
         var = self.get_channel_data(channel)
 
         # conversions
+        # TODO: implement astropy.constants here!
         dn_per_photon = u.count / u.photon
-        ev_per_angstrom = (12398.4953 * u.eV * u.angstrom)
+        hc = (constants.h * constants.c).to(u.eV * u.angstrom)
         electron_per_ev = (1 * u.electron) / (3.98 * u.eV)
 
 
@@ -260,7 +264,7 @@ class Response():
 
             # elecperphot in genx starting with the photon energy in eV
             wavelength = (var['wavelength_range'][index] * u.angstrom)
-            ev_per_wavelength = ev_per_angstrom / wavelength
+            ev_per_wavelength = hc / wavelength
 
             # converts energy of wavelength from eV to electrons
             genx_electron_per_ev = var['electron_per_ev'] * (u.count / u.eV)
@@ -277,7 +281,8 @@ class Response():
 
             # the photon energy in eV
             wavelength = (float(channel) * u.angstrom)
-            ev_per_wavelength = ev_per_angstrom / wavelength
+            ev_per_wavelength = hc / wavelength
+
 
             # converts energy of wavelength from eV to electrons
             electron_per_wavelength = (ev_per_wavelength * electron_per_ev)
@@ -298,19 +303,34 @@ class Response():
     def emissivity():
         """
 
-        - Use  chianti.core.mspectrum.intensityratio to get spectral line intensities and show relative emissivity per line.
-            chianti.core.continuum has places to access freebound and freefree emissions
-        - create a line list  to show line intensities
-
         input:
 
-
         :return: generates chianti object - continuum - chianti model with line list
+
+        Notes:
+
+        - Use (isothermal?) chianti.core.mspectrum.intensityratio to get spectral line intensities and show relative emissivity per line.
+            chianti.core.continuum has places to access freebound and freefree emissions
+        - create a line list  to show line intensities
+        - # array - chianti ionization equilibrium - ion.eq ?
+
+        Chianti contribution function tells how much a transition contributes to the emissivity at a given temperature
+                                         or line intensity per unit emission measurement
+
         """
 
+        # Make array of chianti line lists with contribution function for all lines in solar spectrum
 
+        #  - make a synthetic spectrum with goft ? example stuff to remember
 
-
+        # chianti.ioneq # definately from here!
+        t = 10. ** (5.8 + 0.05 * np.arange(21.))
+        fe14 = ch.ion('fe_14', temperature=t, eDensity=1.e+9, em=1.e+27)
+        fe14.populate() # creates fe14.Population containing the level population information
+        fe14.emiss() # create fe14.Emiss containting the line emissivity information
+        fe14.intensity() # created fe14.Intensity contain the line intensities information
+        fe14.spectrum() # creates fe14.Spectrum contain the line and continuum spectrum information
+        fe14.gofnt(wvlRange=[210., 220.], top=3)
         pass
 
     def spectrum():
@@ -321,7 +341,7 @@ class Response():
         - want to read values of physical parameters to determine feature
         - elemental abundances:  chianti.core.Spectrum.chianti.data.Abundance
             chianti.core.continuum has places to access freebound and freefree emissions
-
+            chianti.core.ioneq = ionization equilibrium for ions a function of temp
         input:
 
         :return:
