@@ -31,13 +31,13 @@ import numpy as np
 import pandas as pd
 from astropy.table import Table
 import astropy.units as u
+import astropy.constants as constant
 
 import os
 
 import sunpy
 import sunpy.data.test as test
 import aia_read_genx2table
-import aia_read_genx_test
 
 
 class Response():
@@ -228,6 +228,7 @@ class Response():
         dn_per_photon = u.count / u.photon
         ev_per_angstrom = (12398.4953 * u.eV * u.angstrom)
         electron_per_ev = (1 * u.electron) / (3.98 * u.eV)
+
 
         # gain values from Boerner paper
         gain_table2 = {94: 2.128, 131: 1.523, 171: 1.168, 193: 1.024, 211: 0.946, 304: 0.658, 335: 0.596, 1600: 0.125,
