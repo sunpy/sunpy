@@ -761,6 +761,7 @@ def entries_from_file(file, default_waveunit=None, time_string_parse_format=None
                 unit = Unit(waveunit)
             except ValueError:
                 raise WaveunitNotConvertibleError(waveunit)
+        instrument_name = next(x for x in entry.fits_header_entries if x.key == 'TELESCOP').value
         for header_entry in entry.fits_header_entries:
             key, value = header_entry.key, header_entry.value
             if key == 'INSTRUME':
@@ -774,15 +775,23 @@ def entries_from_file(file, default_waveunit=None, time_string_parse_format=None
             # NOTE: the key DATE-END or DATE_END is not part of the official
             # FITS standard, but many FITS files use it in their header
             elif key in ('DATE-END', 'DATE_END'):
-                entry.observation_time_end = parse_time(
-                    value,
-                    _time_string_parse_format=time_string_parse_format
-                )
+                try:
+                    entry.observation_time_end = parse_time(value, _time_string_parse_format=time_string_parse_format)
+                except ValueError:
+                    if 'goes' in instrument_name.lower():
+                        entry.observation_time_end = datetime.strptime(value,
+                            '%d/%m/%Y')
+                    else:
+                        raise
             elif key in ('DATE-OBS', 'DATE_OBS'):
-                entry.observation_time_start = parse_time(
-                    value,
-                    _time_string_parse_format=time_string_parse_format
-                )
+                try:
+                    entry.observation_time_start = parse_time(value, _time_string_parse_format=time_string_parse_format)
+                except ValueError:
+                        if 'goes' in instrument_name.lower():
+                            entry.observation_time_start = datetime.strptime(value,
+                                '%d/%m/%Y')
+                        else:
+                            raise
         yield entry
 
 
