@@ -1,10 +1,12 @@
+"""
+This module tests XRT Client.
+"""
 #This module was developed with funding provided by
 #the Google Summer of Code 2016.
-import datetime
 import pytest
 
 from sunpy.time.timerange import TimeRange
-from sunpy.net.vso.attrs import Time,Instrument,Filter
+from sunpy.net.vso.attrs import Time, Instrument, Filter
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
 from sunpy.net import Fido
@@ -15,11 +17,11 @@ XClient = xrt.XRTClient()
 
 @pytest.mark.online
 @pytest.mark.parametrize("timerange,url_start,url_end, filter_",
-[(TimeRange('2016/5/18','2016/5/19'),
+[(TimeRange('2016/5/18', '2016/5/19'),
 'http://solar.physics.montana.edu/HINODE/XRT/QL/syn_comp_fits/XRT_Al_mesh_20160518_180137.1.fits',
-'http://solar.physics.montana.edu/HINODE/XRT/QL/syn_comp_fits/XRT_Al_mesh_20160518_062007.7.fits' ,'al_mesh')])
+'http://solar.physics.montana.edu/HINODE/XRT/QL/syn_comp_fits/XRT_Al_mesh_20160518_062007.7.fits', 'al_mesh')])
 def test_get_url_for_timerange(timerange, url_start, url_end, filter_):
-    urls = XClient._get_url_for_timerange(timerange, filter = filter_)
+    urls = XClient._get_url_for_timerange(timerange, filter=filter_)
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
@@ -35,7 +37,7 @@ def test_can_handle_query():
 
 @pytest.mark.online
 def test_query():
-    qr = XClient.query(Time('2016/5/18','2016/5/19'), Instrument = 'xrt', filter = 'al_mesh')
+    qr = XClient.query(Time('2016/5/18', '2016/5/19'), Instrument='xrt', filter='al_mesh')
     assert isinstance(qr, QueryResponse)
     assert len(qr) == 2
     assert qr.time_range()[0] == '2016/05/18'
@@ -43,7 +45,7 @@ def test_query():
 
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument, filter_",
-[(Time('2016/5/18','2016/5/19'), Instrument('xrt'), Filter('al_mesh'))])
+[(Time('2016/5/18', '2016/5/19'), Instrument('xrt'), Filter('al_mesh'))])
 def test_get(time, instrument, filter_):
     qr = XClient.query(time, instrument, filter_)
     res = XClient.get(qr)
@@ -54,7 +56,7 @@ def test_get(time, instrument, filter_):
 #Total size = 8MB
 @pytest.mark.online
 def test_fido_query():
-    qr = Fido.search(a.Time('2016/5/18','2016/5/19'), a.Instrument('xrt'), a.Filter('al_mesh'))
+    qr = Fido.search(a.Time('2016/5/18', '2016/5/19'), a.Instrument('xrt'), a.Filter('al_mesh'))
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
