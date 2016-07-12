@@ -1,3 +1,6 @@
+"""
+This module implements GONG Client.
+"""
 #This module was developed with funding provided by
 #the Google Summer of Code 2016.
 
@@ -5,13 +8,11 @@ __author__ = "Sudarshan Konge"
 __email__ = "sudk1896@gmail.com"
 
 import datetime
-import re
 import urllib2
 import numpy as np
 
 from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
-from sunpy.time import TimeRange
 
 __all__ = ['GONGClient', 'FARSIDEClient']
 
@@ -24,7 +25,7 @@ class GONGClient(GenericClient):
     timerange: sunpy.time.TimeRange
         time range for which data is to be downloaded.
         Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
-    
+
     Instrument: Arguments are any one from ['bigbear', 'cerrotelolo',
                 'learmonth', 'maunaloa', 'teide', 'udaipur','tucson']
 
@@ -39,8 +40,8 @@ class GONGClient(GenericClient):
     >>> res = Fido.search(a.Time('2016/6/4', '2016/6/4 00:10:00'), a.Physobs('intensity'))
     >>> print (res)
     [<Table length=32>
-     Start Time           End Time      Source     Instrument    
-       str19               str19         str4        str18       
+     Start Time           End Time      Source     Instrument
+       str19               str19         str4        str18
     ------------------- ------------------- ------ ------------------
     2016-06-04 00:00:00 2016-06-05 00:00:00   GONG Data not Available
     2016-06-05 00:00:00 2016-06-06 00:00:00   GONG Data not Available
@@ -71,17 +72,17 @@ class GONGClient(GenericClient):
         #TO-DO: Figure out where scraper would and wouldn't work
         table_physobs = {'INTENSITY' : 'i', 'LOS_MAGNETIC_FIELD': 'b'} #Supported physical observations.
         table_instruments = {'bigbear':'bb', 'cerrotololo':'ct', 'learmonth':'le', 'maunaloa':'ml',
-                             'teide':'td', 'udaipur':'ud','tucson':'z'} #For magnetogram and intensity
-        
+                             'teide':'td', 'udaipur':'ud', 'tucson':'z'} #For magnetogram and intensity
+
         physobs_in = ('physobs' in kwargs.keys() and kwargs['physobs'] in table_physobs.keys())#Is PhysObs entered
         instrument_in = ('instrument' in kwargs.keys() and kwargs['instrument'] in table_instruments.keys())
         wavelength_in = ('wavelength' in kwargs.keys())
         #Is instrument entered.
-        url_pattern_1 =  'ftp://gong2.nso.edu/QR/{id}qa/%Y%m/{ObsID}bqa%y%m%d/{ObsID}bqa%y%m%dt%H%M.fits.gz'
+        url_pattern_1 = 'ftp://gong2.nso.edu/QR/{id}qa/%Y%m/{ObsID}bqa%y%m%d/{ObsID}bqa%y%m%dt%H%M.fits.gz'
         url_pattern_2 = 'http://gong2.nso.edu/HA/haf/%Y%m/%Y%m%d/%Y%m%d%H%M%S{ObsID}h.fits.fz'
 
-        pattern_table = { 6562: url_pattern_1, 6563: url_pattern_1, 6768: url_pattern_2}
-        
+        pattern_table = {6562:url_pattern_1, 6563:url_pattern_1, 6768:url_pattern_2}
+
         result = list() #final list of urls
         patterns = list()
         if not physobs_in:
@@ -91,7 +92,7 @@ class GONGClient(GenericClient):
                 patterns.append(url_pattern_1)
             else:
                 #Differentiate on basis of wavelength
-                
+
                 #The isclose function in numpy can only check two arrays if they
                 #are close to each other within some precision. Standalone values such
                 #as int, doubles etc can't be checked that way. In order to do that, we put the
@@ -120,7 +121,7 @@ class GONGClient(GenericClient):
         else:
             instruments_to.append(table_instruments[kwargs['instrument']])
 
-        
+
         def download_from_nso(id, ObsID, time_range):
             #Cannot scrape urls from NSO. The logic for downloading is
             #dependent on NSO's policy of uploading data. Every day staring from 00:04
@@ -130,34 +131,34 @@ class GONGClient(GenericClient):
             start = time_range.start
             today = datetime.datetime(start.year, start.month, start.day,
                                       0, 4, 0)
-            while(today <= time_range.end):
+            while today <= time_range.end:
                 if (time_range.start <= today <= time_range.end):
                     result.append(base_url.format(id=id, ObsID=ObsID, date=today))
-                today = today + datetime.timedelta(seconds = 600)
-            
+                today = today + datetime.timedelta(seconds=600)
+
             result = list(set(result)) #Remove duplicates, for safety.
             return result
-                
-            
-        
+
+
+
         for pattern_ in patterns:
             urls = list()
             if (pattern_ == url_pattern_1):
                 if not physobs_in:
                     for instr in instruments_to:
-                        arr = download_from_nso('i',instr,timerange)
+                        arr = download_from_nso('i', instr, timerange)
                         urls.extend(arr)
-                        arr = download_from_nso('b',instr,timerange)
+                        arr = download_from_nso('b', instr, timerange)
                         urls.extend(arr)
                 else:
                     for instr in instruments_to:
-                        urls.extend(download_from_nso(table_physobs[kwargs['physobs']],instr,timerange))
+                        urls.extend(download_from_nso(table_physobs[kwargs['physobs']], instr, timerange))
                 result.extend(urls)
-            elif (pattern_ == url_pattern_2):
+            elif pattern_ == url_pattern_2:
                 urls = [url_pattern_2.format(ObsID=id[0].upper()) for id in instruments_to]
                 arr = [Scraper(pattern__).filelist(timerange) for pattern__ in urls]
-                [result.extend(url) for url in arr if len(url)>0]
-        
+                [result.extend(url) for url in arr if len(url) > 0]
+
         if not timerange:
             return []
         final_result = list()
@@ -173,22 +174,22 @@ class GONGClient(GenericClient):
     def _makeimap(self):
         """
         Helper Function: used to hold information about source.
-        """   
+        """
         self.map_['source'] = 'GONG'
-        
+
     @classmethod
     def _can_handle_query(cls, *query):
         """
         Answers whether client can service the query.
-        
+
         Parameters
         ----------
         query : list of query objects
-        
+
         Returns
         -------
         boolean: answer as to whether client can service the query
-        
+
         """
         chkattr = ['Time', 'Instrument', 'Physobs', 'Wavelength']
         chklist = [x.__class__.__name__ in chkattr for x in query]
@@ -214,14 +215,14 @@ class FARSIDEClient(GenericClient):
     timerange: sunpy.time.TimeRange
         time range for which data is to be downloaded.
         Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
-    
+
     Instrument: Fixed argument = 'farside'
-            
+
     Returns
     -------
     urls: list
     list of urls corresponding to requested time range.
-    
+
     Examples
     --------
     >>> from sunpy.net import Fido
@@ -230,13 +231,13 @@ class FARSIDEClient(GenericClient):
     >>> print(results)
     [<Table length=4>
          Start Time           End Time      Source Instrument
-           str19               str19         str4     str7   
+           str19               str19         str4     str7
     ------------------- ------------------- ------ ----------
     2015-04-02 00:00:00 2015-04-03 00:00:00   GONG    farside
     2015-04-03 00:00:00 2015-04-04 00:00:00   GONG    farside
     2015-04-04 00:00:00 2015-04-05 00:00:00   GONG    farside
     2015-04-05 00:00:00 2015-04-06 00:00:00   GONG    farside]
-    
+
     >>> response = Fido.fetch(results)
     """
     def _get_url_for_timerange(self, timerange, **kwargs):
@@ -269,15 +270,15 @@ class FARSIDEClient(GenericClient):
     def _can_handle_query(cls, *query):
         """
         Answers whether client can service the query.
-        
+
         Parameters
         ----------
         query : list of query objects
-        
+
         Returns
         -------
         boolean: answer as to whether client can service the query
-        
+
         """
         chkattr = ['Time', 'Instrument']
         chklist = [x.__class__.__name__ in chkattr for x in query]
@@ -285,4 +286,4 @@ class FARSIDEClient(GenericClient):
             if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'farside':
                 return all(chklist)
         return False
-        
+
