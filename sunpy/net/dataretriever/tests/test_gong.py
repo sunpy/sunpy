@@ -1,12 +1,12 @@
+"""
+This module tests GONG Client
+"""
 #This module was developed with funding provided by
 #the Google Summer of Code 2016.
-import datetime
 import pytest
 
 from astropy import units as u
-from sunpy.time.timerange import TimeRange
-from sunpy.net.vso.attrs import Time,Instrument,Physobs, Wavelength
-from sunpy.net.dataretriever.client import QueryResponse
+from sunpy.net.vso.attrs import Time, Instrument, Physobs, Wavelength
 from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
@@ -37,7 +37,7 @@ def test_can_handle_query():
 
 @pytest.mark.online
 def test_query():
-    qr = GONGClient.query(Time('2016/6/4 00:00:00', '2016/6/4 00:30:00'), physobs = 'LOS_MAGNETIC_FIELD', instrument='bigbear')
+    qr = GONGClient.query(Time('2016/6/4 00:00:00', '2016/6/4 00:30:00'), physobs='LOS_MAGNETIC_FIELD', instrument='bigbear')
     assert len(qr) == 3
     assert qr.time_range()[0] == '2016/06/04'
     assert qr.time_range()[1] == '2016/06/04'
