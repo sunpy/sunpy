@@ -12,8 +12,6 @@ import numpy as np
 
 from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
-from sunpy.time import TimeRange
-
 
 _all__ = ['VSMClient']
 
@@ -59,7 +57,7 @@ class VSMClient(GenericClient):
         returns list of urls corresponding to given TimeRange.
         """
         table_physobs = ['EQUIVALENT_WIDTH', 'LOS_MAGNETIC_FIELD', 'VECTOR_MAGNETIC_FIELD']
-        table_wave = { 6302:'v72', 8542: 'v82', 10830: 'v22'}
+        table_wave = {6302:'v72', 8542: 'v82', 10830: 'v22'}
 
         physobs_in = ('physobs' in kwargs.keys() and kwargs['physobs'] in table_physobs)
         url_pattern = 'http://gong2.nso.edu/pubkeep/{dtype}/%Y%m/k4{dtype}%y%m%d/k4{dtype}%y%m%dt%H%M%S{suffix}'
@@ -98,7 +96,7 @@ class VSMClient(GenericClient):
                         simple_pattern = '%y%m%d_%H%M%S'
                         url = str(link.get('href'))
                         if (crawler._URL_followsPattern(url)):
-                            tmp = re.sub('k4'+dtype,'',url)
+                            tmp = re.sub('k4'+dtype, '', url)
                             tmp = re.sub('[a-zA-Z]', '', tmp)
                             crawler_ = Scraper(simple_pattern)
                             if (timerange.start <= crawler_._extractDateURL(tmp) <= timerange.end):
@@ -115,7 +113,7 @@ class VSMClient(GenericClient):
             raise ValueError('Earliest date for which SOLIS VSM data is available is {:%Y-%m-%d}'.format(START_DATE))
         
         result = list()
-        if (wave == 6302):
+        if wave == 6302:
             if not physobs_in:
                 result.extend(download_from_nso('v72','.fts.gz',timerange))
                 result.extend(download_from_nso('v93','_FDISK.fts.gz', timerange))
@@ -123,7 +121,7 @@ class VSMClient(GenericClient):
                 if kwargs['physobs'] == 'VECTOR_MAGNETIC_FIELD':
                     result.extend(download_from_nso('v93','_FDISK.fts.gz', timerange))
                 else:
-                    result.extend(download_from_nso('v72','.fts.gz',timerange))
+                    result.extend(download_from_nso('v72', '.fts.gz', timerange))
         else:
             result.extend(download_from_nso(table_wave[wave]), '.fts.gz', timerange)
         return result
@@ -150,15 +148,10 @@ class VSMClient(GenericClient):
         boolean: answer as to whether client can service the query
         
         """
-        chkattr = ['Time', 'Instrument', 'Wavelength']
-        chklist = [x.__class__.__name__ in chkattr for x in query]
         chk_var = 0
-        values = [6302, 8542, 10830]
         for x in query:
-            if (x.__class__.__name__ == 'Instrument' and type(x.value) is str and x.value.lower() == 'vsm'):
+            if x.__class__.__name__ == 'Instrument' and type(x.value) is str and x.value.lower() == 'vsm':
                 chk_var += 1
-            if (x.__class__.__name__ == 'Wavelength'):
+            if x.__class__.__name__ == 'Wavelength':
                 chk_var += 1
-        if (chk_var == 2):
-            return True
-        return False
+        return chk_var == 2
