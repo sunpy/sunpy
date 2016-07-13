@@ -27,13 +27,15 @@ def test_get_url_for_timerange(timerange, url_start, url_end, filter_):
     assert urls[-1] == url_end
 
 trange = Time('2015/12/30', '2015/12/31')
-def test_can_handle_query():
-    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('almesh'))
-    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('alpoly'))
-    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('cpoly'))
-    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('tipoly'))
-    assert XClient._can_handle_query(trange, Instrument('xrt'), Filter('thin_be'))
-    assert not XClient._can_handle_query(trange, Instrument('xrt'), Filter('mag'))
+@pytest.mark.parametrize("timerange, instrument, filter_, expected",
+                         [(trange, Instrument('xrt'), Filter('almesh'), True),
+                          (trange, Instrument('xrt'), Filter('alpoly'), True),
+                          (trange, Instrument('xrt'), Filter('cpoly'), True),
+                          (trange, Instrument('xrt'), Filter('tipoly'), True),
+                          (trange, Instrument('xrt'), Filter('thin_be'), True),
+                          (trange, Instrument('xrt'), Filter('mag'), False)])
+def test_can_handle_query(timerange, instrument, filter_, expected):
+    assert XClient._can_handle_query(timerange, instrument, filter_) is expected  
 
 @pytest.mark.online
 def test_query():
@@ -56,7 +58,7 @@ def test_get(time, instrument, filter_):
 #Total size = 8MB
 @pytest.mark.online
 def test_fido_query():
-    qr = Fido.search(a.Time('2016/5/18', '2016/5/19'), a.Instrument('xrt'), a.Filter('al_mesh'))
+    qr = Fido.search(a.Time('2016/5/18', '2016/5/19'), a.Instrument('xrt'), Filter('al_mesh'))
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile

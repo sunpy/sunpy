@@ -97,8 +97,6 @@ class XRTClient(GenericClient):
         boolean: answer as to whether client can service the query
 
         """
-        chkattr = ['Time', 'Instrument', 'Filter']
-        chklist = [x.__class__.__name__ in chkattr for x in query]
         chk_var = 0
         types = ['almesh', 'alpoly', 'cpoly', 'tipoly', 'thinbe']
         regex = re.compile('[^a-zA-Z]')
