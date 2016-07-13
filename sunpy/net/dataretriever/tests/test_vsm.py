@@ -1,12 +1,9 @@
 #This module was developed with funding provided by
 #the Google Summer of Code 2016.
-import datetime
 import pytest
 
 from astropy import units as u
-from sunpy.time.timerange import TimeRange
-from sunpy.net.vso.attrs import Time,Instrument,Physobs, Wavelength
-from sunpy.net.dataretriever.client import QueryResponse
+from sunpy.net.vso.attrs import Time, Instrument, Physobs, Wavelength
 from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
@@ -25,12 +22,14 @@ def test_query(time, instrument, physobs, wavelength):
     qr = VClient.query(time, instrument, physobs, wavelength)
     assert len(qr) == 3
 
-def test_can_handle_query():
-    assert VClient._can_handle_query(trange, Instrument('vsm'), Wavelength(6302*u.AA))
-    assert not VClient._can_handle_query(trange, Instrument('vsm'))
-    assert VClient._can_handle_query(trange, Instrument('vsm'), Wavelength(8542*u.AA))
-    assert VClient._can_handle_query(trange, Instrument('vsm'), Wavelength(1083.0*u.nm),
-                                     Physobs('EQUIVALENT_WIDTH'))
+@pytest.mark.parametrize("timerange, instrument, wavelength, physobs, expected",
+                         [(trange, Instrument('vsm'), Wavelength(6302*u.AA), None, True),
+                          (trange, Instrument('vsm'), None, None, False),
+                          (trange, Instrument('vsm'), Wavelength(8542*u.AA), None, True),
+                          (trange, Instrument('vsm'), Wavelength(1083.0*u.nm), Physobs('EQUIVALENT_WIDTH'),
+                           True)])
+def test_can_handle_query(timerange, instrument, wavelength, physobs, expected):
+    assert VClient._can_handle_query(timerange, instrument, wavelength, physobs) is expected
 
 @pytest.mark.online
 def test_query():
