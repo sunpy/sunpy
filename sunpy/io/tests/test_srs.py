@@ -1,7 +1,7 @@
 """
 This module implements tests for SRS Reader.
 """
-import sunpy.io.srs
+import sunpy.io.srs, pytest
 from sunpy.io.srs import read
 
 import sunpy.data.test
@@ -13,16 +13,11 @@ testpath = sunpy.data.test.rootdir
 srs_20150906 = os.path.join(testpath, '20150906SRS.txt')
 srs_20150306 = os.path.join(testpath, '20150306SRS.txt')
 srs_20150101 = os.path.join(testpath, '20150101SRS.txt')
-
-def test_20150906():
-    table = sunpy.io.srs.read(srs_20150906)
-    assert len(table) == 5
-
-def test_20150306():
-    table = sunpy.io.srs.read(srs_20150306)
-    assert len(table) == 4
-
-def test_20150101():
-    table = sunpy.io.srs.read(srs_20150101)
-    assert len(table) == 9
+@pytest.mark.paramterize("path_, number_of_rows",
+                    [(srs_20150906, 5),
+                     (srs_20150306, 4),
+                     (srs_20150101, 9)])
+def test_number_of_rows(path_, number_of_rows):
+    table = sunpy.io.srs.read(path_)
+    assert len(table) == number_of_rows
     
