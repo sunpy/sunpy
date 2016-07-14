@@ -4,7 +4,7 @@ This module implements SRS File Reader.
 __author__ = "Sudarshan Konge"
 __email__ = "sudk1896@gmail.com"
 
-from astropy.table import Table, Column, vstack
+from astropy.table import Table, Column, vstack, MaskedColumn
 import collections, calendar, re
 
 __all__ = ['read']
@@ -85,7 +85,7 @@ def read(filepath):
         for attrs in attributes:
             item_attr = [cols.name for cols in item.columns.values()]
             if attrs not in item_attr:
-                new_column = Column(['-']*len(item), name=attrs, dtype='object_')
+                new_column = MaskedColumn(['-']*len(item), name=attrs, dtype='object_', mask=[True]*len(item))
                 item.add_column(new_column)
 
     #Just add a column for ID
@@ -118,7 +118,26 @@ def read(filepath):
         for rows in new_table:
             master.add_row(rows)
 
+    #Pre-process 'Location' variable.
+    latsign = {'N':1, 'S':-1}
+    lonsign = {'W':1, 'E':-1}
+    latitude, longitude = list(), list()
+    mask_arr = list()
+    for value in master['Location']:
+        #If value is NULL, just mask it.
+        if value.__class__.__name__ == 'MaskedConstant':
+            latitude.append('-'), longitude.append('-')
+            mask_arr.append(True)
+        else:
+            lati = latsign[value[0]]*float(value[1:3])
+            longi = lonsign[value[3]]*float(value[4:])
+            latitude.append(lati), longitude.append(longi)
+            mask_arr.append(False)
+    master.rename_column('Lo', 'Carrington Longitude')
+    master.add_column(MaskedColumn(data=latitude, name='Latitude', mask=mask_arr, unit='u.deg'))
+    master.add_column(MaskedColumn(data=longitude, name='Longitude', mask=mask_arr, unit='u.deg'))
+    master.remove_column('Location')
     master['Area'].unit = 'u.m**2'
     master['Lat'].unit = 'u.deg'
-    master['Lo'].unit = 'u.deg'
+    master['Carrington Longitude'].unit = 'u.deg'
     return master
