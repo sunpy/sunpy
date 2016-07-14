@@ -371,3 +371,5 @@ class TimeRange(object):
         """
         this_time = parse_time(time)
         return this_time >= self.start and this_time <= self.end
+    
+  

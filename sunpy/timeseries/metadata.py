@@ -4,6 +4,10 @@ __authors__ = ["Alex Hamilton, Stuart Mumford"]
 __email__ = "stuart@mumford.me.uk"
 
 from sunpy.util.metadata import MetaDict
+import itertools
+
+import warnings
+import inspect
 
 from sunpy.time import TimeRange, parse_time
 
@@ -90,22 +94,26 @@ class TimeSeriesMetaData:
         if not duplicate:
             self.metadata.insert(pos, new_metadata)
             
-    def find(self, datetime=None, colname=None, indexes=False, **kwargs):
+    def find(self, time=None, colname=None, row=None, indices=False, **kwargs):
         """
         Find all metadata matching the given filters for datetime and column name.
         Will return all metadata entries if no filters are given.
         
         Parameters
         ----------
-        datetime : `str` or `~datetime.datetime` optional
+        time : `str` or `~datetime.datetime` optional
             The string (parsed using the `~sunpy.time.parse_time`) or datetime
             that you need metadata for.
+        
+        row : `int` optional
+            Integer index of the row within the data (dataframe) to get the
+            datetime index from.
         
         colname : `str` optional
             A string that can be used to narrow results to specific columns.
 
-        indexes : `bool` optional
-            If True then return a list of indexes, not of MetaDict items.
+        indices : `bool` optional
+            If True then return a list of indices, not of MetaDict items.
             Used when other methods use the filters for selecting metadata entries.
     
         Returns
@@ -114,23 +122,26 @@ class TimeSeriesMetaData:
             A list of MetaDict objects that contain all matching metadata.
         """
         # Parameters
-        dt = datetime
+        dt = time
+        if row:
+            # Given a row index, get the relevant dt.
+            dt = self.data.index[row]
         if not dt:
             dt = False
         elif isinstance(dt, str):
             dt = parse_time(dt)
             
         # Find all results with suitable timerange.
-        results_indexes = []
+        results_indices = []
         for i, meta in enumerate(self.metadata):
             if dt in meta[0] or not(dt):
-                results_indexes.append(i)
+                results_indices.append(i)
         
         # Filter out only those with the correct column.
         results = []
-        for i in results_indexes:
+        for i in results_indices:
             if (colname in self.metadata[i][1]) or (not colname):
-                if indexes:
+                if indices:
                     results.append(i)
                 else:
                     results.append(self.metadata[i][2])
@@ -153,7 +164,7 @@ class TimeSeriesMetaData:
         """
         return self.metadata[index][1]
 
-    def get(self, key, default=None, datetime=None, colname=None, itemised=False, **kwargs):
+    def get(self, key, default=None, time=None, colname=None, row=None, itemised=False, **kwargs):
         """
         Return a list of all the matching entries in the metadata.
         
@@ -165,15 +176,20 @@ class TimeSeriesMetaData:
         default : optional
             The Value to be returned in case key does not exist.
 
-        datetime : `str` or `~datetime.datetime` optional
+        time : `str` or `~datetime.datetime` optional
             The string (parsed using the `~sunpy.time.parse_time`) or datetime
             that you need metadata for.
-        
+
+        row : `int` optional
+            Integer index of the row within the data (dataframe) to get the
+            datetime index from.
+            
         colname : `str` optional
             A string that can be used to narrow results to specific columns.
 
         itemised : `bool` optional
-            Option to allow the return of the time ranges and column names (as list) that match each given value.
+            Option to allow the return of the time ranges and column names
+            (as list) that match each given value.
             
         Returns
         -------
@@ -181,11 +197,11 @@ class TimeSeriesMetaData:
             Returns a list of the matching entries or the default value.
         """        
         # Find all matching metadata entries
-        indexes = self.find(datetime=datetime, colname=colname, indexes=True)
+        indices = self.find(time=time, colname=colname, row=row, indices=True)
         
         # Now find each matching entry
         results = []
-        for i in indexes:
+        for i in indices:
             # Get the value for the entry in this metadata entry
             value = self.metadata[i][2].get(key)            
             
@@ -228,7 +244,7 @@ class TimeSeriesMetaData:
             
         return meta
 
-    def update(self, dictionary, datetime=None, colname=None, overwrite=False, **kwargs):
+    def update(self, dictionary, time=None, colname=None, row=None, overwrite=False, **kwargs):
         """
         Make updates to the MetaDict metadata for all matching metadata entries.
 
@@ -237,7 +253,7 @@ class TimeSeriesMetaData:
         dictionary : `dict` or `OrderedDict` or `~sunpy.util.metadata.MetaDict`
             The second TimeSeriesMetaData object.
             
-        datetime : `str` or `~datetime.datetime` optional
+        time : `str` or `~datetime.datetime` optional
             The string (parsed using the `~sunpy.time.parse_time`) or datetime
             to filter the metadata entries updated.
             
@@ -250,14 +266,15 @@ class TimeSeriesMetaData:
             corrupt/damage the metadict values so easily.
         """
         # Find all matching metadata entries
-        indexes = self.find(datetime=datetime, colname=colname, indexes=True)
+        indices = self.find(time=time, colname=colname, row=row, indices=True)
         
         # Now update each matching entries
-        for i in indexes:
+        for i in indices:
             # Should we allow the user to overwrite values?
             if overwrite:
                 self.metadata[i][2].update(dictionary)
             else:
+                #ToDo: if any new.keys in... iterate through keys, if key is false throw an error otherwise update.
                 # Overwrite the original dict over the new to keeps old values.
                 old_meta = self.metadata[i][2].copy()
                 new_meta = MetaDict(dictionary).copy()
@@ -364,9 +381,24 @@ class TimeSeriesMetaData:
         """
         Validate a meta argument.
         """
+        # Checking for metadata that may overlap.
+        #for x, y in itertools.combinations(self.metadata, 2):
+        indices = range(0, len(self.metadata))
+        for i, j in itertools.combinations(indices, 2):
+            # Check if the TimeRanges overlap
+            if not ((self.metadata[i][0].end <= self.metadata[j][0].start) or (self.metadata[i][0].start >= self.metadata[j][0].end)):
+                # Check column headings overlap
+                col_overlap = list(set(self.metadata[i][1]) & set(self.metadata[j][1]))
+                # If we have an overlap then show a warning
+                if col_overlap:
+                    warnings.warn_explicit('Metadata entries ' + str(i) + ' and ' + str(j) + ' contain interleaved data.',
+                                           Warning, __file__, inspect.currentframe().f_back.f_lineno)
+            
+            
+        
         return True
 
-    def _to_string(self, depth=10, width=99):
+    def to_string(self, depth=10, width=99):
         """
         Print a table-like representation of the TimeSeriesMetaData object.
         
@@ -395,11 +427,11 @@ class TimeSeriesMetaData:
             # Padded to the widths given in liswidths
             listr = [ str(entry[0].start), '            to            ', str(entry[0].end) ]
             liscols = []
-            for col in self.metadata[0][1]:
+            for col in entry[1]:
                 liscols.append(col.ljust(100)[:liswidths[1]])
             lismeta = []
-            for key in list(self.metadata[0][2].keys()):
-                string = str(key) + ': ' + str(self.metadata[0][2][key])
+            for key in list(entry[2].keys()):
+                string = str(key) + ': ' + str(entry[2][key])
                 lismeta.append(string.ljust(100)[:liswidths[2]])
             
             # Add lines of the entry upto the given depth
@@ -444,72 +476,6 @@ class TimeSeriesMetaData:
         return full
 
     def __repr__(self):
-        return self._to_string()
+        return self.to_string()
     def __str__(self):
-        return self._to_string()
-       
-if __name__ == "__main__":
-    tr_1 = TimeRange('2012-06-01 00:00','2012-06-02 00:00')
-    tr_1a = TimeRange('2012-06-01 00:00','2012-06-02 00:00')
-    tr_2 = TimeRange('2012-06-02 00:00','2012-06-03 00:00')
-    tr_3 = TimeRange('2012-06-03 00:00','2012-06-04 00:00')
-    tr_4 = TimeRange('2012-06-04 00:00','2012-06-05 00:00')
-    tr_5 = TimeRange('2012-06-02 00:00','2012-06-06 00:00')
-    
-    # Build a TimeSeriesMetaData object
-    md = TimeSeriesMetaData()
-    md.append(tr_1, ['GOES'], MetaDict([('tr_1','tr_1'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
-    md.append(tr_2, ['GOES'], MetaDict([('tr_2','tr_2'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
-    md.append(tr_3, ['GOES'], MetaDict([('tr_3','tr_3'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
-    md.append(tr_4, ['GOES'], MetaDict([('tr_4','tr_4'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
-    md.append(tr_5, ['Other'], MetaDict([('tr_5','tr_5'), ('date-obs', 'yyyy-mm-dd hh-mm')]))
-    
-    # Check it
-    time_1 = parse_time('2012-06-01T21:08:12')
-    time_2 = parse_time('2012-06-02T21:08:12')
-    time_3 = parse_time('2012-06-03T21:08:12')
-    time_4 = parse_time('2012-06-04T21:08:12')
-    time_5 = parse_time('2012-06-05T21:08:12')
-    time_6 = parse_time('2012-05-05T21:08:12') # Too early
-    time_7 = parse_time('2012-06-08T21:08:12') # Too late
-    # Without columns
-    md.find(datetime=time_1) # One result (tr_1)
-    md.find(datetime=time_2) # Two results (tr_2 and tr_5)
-    md.find(datetime=time_3) # Two results (tr_5 and tr_3)
-    md.find(datetime=time_4) # Two results (tr_5 and tr_4)
-    md.find(datetime=time_5) # One result (tr_5)
-    md.find(datetime=time_6) # No results (too early)
-    md.find(datetime=time_7) # No results (too late)
-    # With columns
-    md.find(datetime=time_1, colname='Other') # No results (wrong column)
-    md.find(datetime=time_2, colname='Other') # One result (tr_5)
-    md.find(datetime=time_3, colname='Other') # One result (tr_5)
-    md.find(datetime=time_4, colname='Other') # One result (tr_5)
-    md.find(datetime=time_5, colname='Other') # One result (tr_5)
-    md.find(datetime=time_6, colname='Other') # No results (too early)
-    md.find(datetime=time_7, colname='Other')
-    md.find(datetime=time_1, colname='GOES')
-    md.find(datetime=time_2, colname='GOES')
-    md.find(datetime=time_3, colname='GOES')
-    md.find(datetime=time_4, colname='GOES')
-    md.find(datetime=time_5, colname='GOES')
-    md.find(datetime=time_6, colname='GOES') # No results (too early)
-    md.find(datetime=time_7, colname='GOES') # No results (too late)
-    
-    # Get from the metadata
-    date_obs = md.get('date-obs', [ ])
-    date_obs = md.get('date-obs', [ ], datetime=time_2)
-    date_obs = md.get('date-obs', [ ], datetime=time_2, colname='GOES')
-    date_obs = md.get('date-obs', itemised=True)
-    
-    # Update
-    md.update({'new_key_1':'added to all.'})
-    md.update({'new_key_2':'added to all at time_3.'}, datetime=time_3)
-    md.update({'new_key_3':'added only to time_4'}, datetime=time_4, colname=None)
-    md.update({'comment':'short'}, overwrite=True)
-
-    # renaming columns
-    md.rename_column('Other', 'changed')
-    md.rename_column('changed', 'Other')
-    md.rename_column('GOES', 'goes')
-    md.rename_column('goes', 'GOES')
+        return self.to_string()
