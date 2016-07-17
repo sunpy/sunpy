@@ -196,9 +196,9 @@ class TimeSeriesMetaData:
         """
         return self.metadata[index][2]
 
-    def get(self, key, default=None, time=None, colname=None, row=None, **kwargs):
+    def get(self, key, time=None, colname=None, row=None, **kwargs):
         """
-        Return a TimeSeriesMetaData object of all entries matcing the time and
+        Return a TimeSeriesMetaData object of all entries matching the time and
         colname filters with the dictionaries containing only the key value pairs
         with the key matching the given input key.
 
@@ -206,9 +206,6 @@ class TimeSeriesMetaData:
         ----------
         key : `str`
             The Key to be searched in the dictionary.
-
-        default : optional
-            The Value to be returned in case key does not exist.
 
         time : `str` or `~datetime.datetime` optional
             The string (parsed using the `~sunpy.time.parse_time`) or datetime
