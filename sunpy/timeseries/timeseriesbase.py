@@ -415,7 +415,7 @@ class GenericTimeSeries:
         data = self.data[[column_name]].dropna()
 
         # Build generic TimeSeries object and sanatise metadata and units.
-        object = GenericTimeSeriesMeta(data.sort_index(), TimeSeriesMetaData(self.meta.metadata.copy()), self.units.copy())
+        object = GenericTimeSeries(data.sort_index(), TimeSeriesMetaData(self.meta.metadata.copy()), self.units.copy())
         object._sanitize_metadata()
         object._sanitize_units()
         return object

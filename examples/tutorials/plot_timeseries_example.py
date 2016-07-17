@@ -92,14 +92,15 @@ ts_lyra.measurement
 ts_lyra.observatory
 # Note: much of the behaviour of these is yet to be sorted for specific instruments.
 combined_goes_ts.meta.get('telescop')
-# Note: this returns a list, not a single entry as with the Map.
-
+# Note: this returns a TimeSeriesMetaData object, to get a list use the values method:
+combined_goes_ts.meta.get('telescop').values()
+# Note: this returns a list because there may be one or more results.
 
 ##############################################################################
 # The TimeSeriesMetaData can be sumerised:
 combined_goes_ts.meta
 print(combined_goes_ts.meta)
-print(combined_goes_ts.meta._to_string(2))
+print(combined_goes_ts.meta.to_string(2))
 
 ##############################################################################
 # The TimeSeries objects can be visualised using peek():
@@ -139,7 +140,8 @@ upsampled = downsampled.resample('1T', 'ffill')
 upsampled.peek()
 # Note: 'ffill', 'bfill' and 'pad' methods work, and as before others should also.
 # You can also resample using astropy quantities:
-upsampled = downsampled.resample(u.Quantity(1,u.min), 'ffill')
+upsampled = downsampled.resample(u.Quantity(0.5,u.min), 'ffill')
+upsampled.peek()
 
 ##############################################################################
 # The data from the TimeSeries can be retrieved in a number of formats:
@@ -202,13 +204,12 @@ ts_eve = ts_eve.add_column(colname, qua_new, unit=unit, overwrite=True)#
 ##############################################################################
 # MetaData
 # Get
-date_obs = combined_goes_ts.meta.get('date-obs', [ ])
-date_obs = combined_goes_ts.meta.get('date-obs', [ ], datetime=parse_time('2012-06-02T21:08:12'))
-date_obs = combined_goes_ts.meta.get('date-obs', [ ], datetime=parse_time('2012-06-02T21:08:12'), colname='xrsa')
-date_obs = combined_goes_ts.meta.get('date-obs', [ ], datetime='2012-06-02T21:08:12', colname='xrsa')
-date_obs = combined_goes_ts.meta.get('date-obs', itemised=True)
+date_obs = combined_goes_ts.meta.get('date-obs').values()
+date_obs = combined_goes_ts.meta.get('date-obs', time=parse_time('2012-06-02T21:08:12')).values()
+date_obs = combined_goes_ts.meta.get('date-obs', time=parse_time('2012-06-02T21:08:12'), colname='xrsa').values()
+date_obs = combined_goes_ts.meta.get('date-obs', time='2012-06-02T21:08:12', colname='xrsa')
+date_obs = combined_goes_ts.meta.get('date-obs')
 # Overwrite
-combined_goes_ts.meta.metadata
 combined_goes_ts.meta.update({'object':'changed'})
 combined_goes_ts.meta.update({'object':'changed'}, overwrite=True)
 # Note: last one re-arranges order. Is this desired?
