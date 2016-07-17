@@ -1,3 +1,6 @@
+"""
+This module implements STEREO Client.
+"""
 #This module was developed with funding provided by
 #the Google Summer of Code 2016.
 
@@ -9,7 +12,6 @@ import re
 
 from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
-from sunpy.time import TimeRange
 
 __all__ = ['SECCHIClient', 'PLASTICClient', 'IMPACTClient', 'SWAVESClient']
 
@@ -22,22 +24,22 @@ class SECCHIClient(GenericClient):
     timerange: sunpy.time.TimeRange
         time range for which data is to be downloaded.
         Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
-    
+
     Instrument: Fixed argument = 'secchi'
-    
+
     Source: Two arguments, case-sensitive - 'STEREO_A' or 'STEREO_B'.
 
     Detector: Can take any four arguments, case-insensitive - 'euvi', 'cor2', 'hi_1', 'hi_2'
     Examples
     --------
     >>> from sunpy.net import Fido
-    >>> from sunpy.net import attrs as a    
+    >>> from sunpy.net import attrs as a
     >>> results = Fido.search(a.Time('2007/3/2 17:00:00', '2007/3/3 17:15:00'), a.Instrument('secchi'),
         a.Source('STEREO_A'), a.Detector('euvi'))
     >>> print(results)
         [<Table length=4>
         Start Time           End Time      Source Instrument
-           str19               str19         str5     str6   
+           str19               str19         str5     str6
     ------------------- ------------------- ------ ----------
     2007-03-02 00:00:00 2007-03-03 00:00:00  ahead     secchi
     2007-03-03 00:00:00 2007-03-04 00:00:00  ahead     secchi
@@ -53,13 +55,15 @@ class SECCHIClient(GenericClient):
             return []
         regex = re.compile('[^a-zA-Z0-9]')
         source = kwargs.get('source')
-        table_ = {'STEREO_A':'ahead', 'STEREO_B':'behind'} 
+        table_ = {'STEREO_A':'ahead', 'STEREO_B':'behind'}
         detector = regex.sub('', kwargs.get('detector')).lower() #default to euvi ?
-        table = { 'euvi':'euvi', 'hi1' : 'hi_1', 'hi2': 'hi_2', 'cor2':'cor2'} #table here just simplifies life.
+        table = {'euvi':'euvi', 'hi1':'hi_1', 'hi2':'hi_2', 'cor2':'cor2'}
+        #table here just simplifies life.
         #Would have to include 2 or 3 if statements to handle hi1, hi2 and the other two.
         #Instead I just use a dictionary.
         prefix = 'http://stereo-ssc.nascom.nasa.gov/data/beacon/{source}/secchi/img/{det}/%Y%m%d/%Y%m%d_%H%M%S_'
-        suffix_table = { 'euvi':'n7eu{char}.fts', 'cor2': 'd7c2{char}.fts', 'hi1':'s7h1{char}.fts', 'hi2':'s7h2{char}.fts'}
+        suffix_table = { 'euvi':'n7eu{char}.fts', 'cor2': 'd7c2{char}.fts',
+                         'hi1':'s7h1{char}.fts', 'hi2':'s7h2{char}.fts'}
         url_pattern = prefix + suffix_table[detector]
         crawler = Scraper(url_pattern, source=table_[source], det=table[detector], char=table_[source][0].upper())
         result = crawler.filelist(timerange)
@@ -68,22 +72,22 @@ class SECCHIClient(GenericClient):
     def _makeimap(self):
         """
         Helper Function: used to hold information about source.
-        """       
+        """
         self.map_['instrument'] = 'secchi'
 
     @classmethod
     def _can_handle_query(cls, *query):
         """
         Answers whether client can service the query.
-        
+
         Parameters
         ----------
         query : list of query objects
-        
+
         Returns
         -------
         boolean: answer as to whether client can service the query
-        
+
         """
         regex = re.compile('[^a-zA-Z0-9]')
         chkattr = ['Time', 'Instrument', 'Source', 'Detector']
@@ -96,12 +100,10 @@ class SECCHIClient(GenericClient):
                 chk_var += 1
             if x.__class__.__name__ == 'Source' and x.value in sources:
                 chk_var += 1
-            if x.__class__.__name__ == 'Detector' and regex.sub('',x.value).lower() in detectors:
+            if x.__class__.__name__ == 'Detector' and regex.sub('', x.value).lower() in detectors:
                 chk_var += 1
-        if (chk_var == 3):
-            return True
-        return False
-                
+        return chk_var == 3
+
 
 class PLASTICClient(GenericClient):
     """
@@ -112,21 +114,21 @@ class PLASTICClient(GenericClient):
     timerange: sunpy.time.TimeRange
         time range for which data is to be downloaded.
         Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
-    
+
     Instrument: Fixed argument, case-insensitive = 'plastic'
-    
+
     Source: Two arguments, case-sensitive - 'STEREO_A' or 'STEREO_B'.
-    
+
     Examples
     --------
     >>> from sunpy.net import Fido
-    >>> from sunpy.net import attrs as a    
+    >>> from sunpy.net import attrs as a
     >>> results = Fido.search(a.Time('2007/3/2 17:00:00', '2007/3/4 17:15:00'),
         a.Instrument('plastic'), a.Source('STEREO_A'))
     >>> print(results)
        [<Table length=2>
          Start Time           End Time      Source Instrument
-           str19               str19         str5     str7   
+           str19               str19         str5     str7
         ------------------- ------------------- ------ ----------
         2007-03-02 00:00:00 2007-03-03 00:00:00  ahead    plastic
         2007-03-03 00:00:00 2007-03-04 00:00:00  ahead    plastic]
@@ -140,11 +142,11 @@ class PLASTICClient(GenericClient):
         source = kwargs.get('source')
         table_ = {'STEREO_A':'ahead', 'STEREO_B':'behind'}
         result = list()
-        if (source == 'ahead'):
+        if source == 'ahead':
             START_DATE = datetime.datetime(2006, 10, 1)
         else:
             START_DATE = datetime.datetime(2006, 10, 12)
-        if (timerange.start < START_DATE):
+        if timerange.start < START_DATE:
             raise ValueError('Earliest date for which PLASTIC data is available is {:%Y-%m-%d}'.format(START_DATE))
         prefix = 'http://stereo-ssc.nascom.nasa.gov/data/beacon/{source}/plastic/'
         prefix_copy = prefix
@@ -153,39 +155,45 @@ class PLASTICClient(GenericClient):
         prefix_copy += source_dict[source]
         prefix += '/%m/ST{char}_LB_PLASTIC_%Y%m%d_'
         prefix_copy += '/%m/ST{char}_LB_PLA_BROWSE_%Y%m%d_'
-        
+
         suffix = 'V{0:02d}.cdf'
         suffix_copy = suffix
         pattern = prefix.format(source=table_[source], char=table_[source][0].upper()) + suffix
         pattern_copy = prefix_copy.format(source=table_[source], char=table_[source][0].upper()) + suffix
         patterns = list()
         patterns.append(pattern), patterns.append(pattern_copy)
+        # There are two patterns prefix and prefix_copy.
+        # There are different sub-patterns within this (url_pattern = ....)
+        # We generate a scraper for each such sub-pattern, that scraper
+        # generates different urls, each scraper generates an array of urls,
+        # the last statement, the list comprehension, just adds an array
+        # to result if that array is non-empty.
         for pattern_ in patterns:
             url_pattern = [pattern_.format(i) for i in range(6, 12)]
             arr = [Scraper(pattern__).filelist(timerange) for pattern__ in url_pattern]
-            [result.extend(url) for url in arr if len(url)>0]
+            result += [url for sublist in arr for url in sublist if len(url) > 0]
 
         return result
 
     def _makeimap(self):
         """
         Helper Function: used to hold information about source.
-        """       
+        """
         self.map_['instrument'] = 'plastic'
 
     @classmethod
     def _can_handle_query(cls, *query):
         """
         Answers whether client can service the query.
-        
+
         Parameters
         ----------
         query : list of query objects
-        
+
         Returns
         -------
         boolean: answer as to whether client can service the query
-        
+
         """
         chkattr = ['Time', 'Instrument', 'Source']
         chklist = [x.__class__.__name__ in chkattr for x in query]
@@ -196,9 +204,7 @@ class PLASTICClient(GenericClient):
                 chk_var += 1
             if x.__class__.__name__ == 'Source' and x.value in sources:
                 chk_var += 1
-        if (chk_var == 2):
-            return True
-        return False
+        return chk_var == 2
 
 class IMPACTClient(GenericClient):
     """
@@ -209,20 +215,20 @@ class IMPACTClient(GenericClient):
     timerange: sunpy.time.TimeRange
         time range for which data is to be downloaded.
         Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
-    
+
     Instrument: Fixed argument, case-insensitive = 'impact'
-    
+
     Source: Two arguments, case-sensitive - 'STEREO_A' or 'STEREO_B'.
-    
+
     Examples
     --------
     >>> from sunpy.net import Fido
-    >>> from sunpy.net import attrs as a    
+    >>> from sunpy.net import attrs as a
     >>> results = Fido.search(a.Time('2007/3/20 17:00:00', '2007/3/25 17:15:00'),
         a.Instrument('impact'), a.Source('STEREO_A'))
     [<Table length=5>
         Start Time           End Time      Source Instrument
-           str19               str19         str5     str6   
+           str19               str19         str5     str6
     ------------------- ------------------- ------ ----------
     2007-03-20 00:00:00 2007-03-21 00:00:00  ahead     impact
     2007-03-21 00:00:00 2007-03-22 00:00:00  ahead     impact
@@ -239,7 +245,7 @@ class IMPACTClient(GenericClient):
         source = kwargs.get('source')
         table_ = {'STEREO_A':'ahead', 'STEREO_B':'behind'}
         START_DATE = datetime.datetime(2006, 10, 1)
-        if (timerange.start < START_DATE):
+        if timerange.start < START_DATE:
             raise ValueError('Earliest date for which IMPACT data is available is {:%Y-%m-%d}'.format(START_DATE))
         prefix = 'http://stereo-ssc.nascom.nasa.gov/data/beacon/{source}/'
         suffix = 'impact/%Y/%m/ST{char}_LB_IMPACT_%Y%m%d_V01.cdf'
@@ -250,22 +256,22 @@ class IMPACTClient(GenericClient):
     def _makeimap(self):
         """
         Helper Function: used to hold information about source.
-        """      
+        """
         self.map_['instrument'] = 'impact'
 
     @classmethod
     def _can_handle_query(cls, *query):
         """
         Answers whether client can service the query.
-        
+
         Parameters
         ----------
         query : list of query objects
-        
+
         Returns
         -------
         boolean: answer as to whether client can service the query
-        
+
         """
         chkattr = ['Time', 'Instrument', 'Source']
         chklist = [x.__class__.__name__ in chkattr for x in query]
@@ -276,9 +282,7 @@ class IMPACTClient(GenericClient):
                 chk_var += 1
             if x.__class__.__name__ == 'Source' and x.value in sources:
                 chk_var += 1
-        if (chk_var == 2):
-            return True
-        return False
+        return chk_var == 2
 
 
 class SWAVESClient(GenericClient):
@@ -290,21 +294,21 @@ class SWAVESClient(GenericClient):
     timerange: sunpy.time.TimeRange
         time range for which data is to be downloaded.
         Example value - TimeRange('2015-12-30 00:00:00','2015-12-31 00:01:00')
-    
+
     Instrument: Fixed argument, case-insensitive = 'swaves'
-    
+
     Source: Two arguments, case-sensitive - 'STEREO_A' or 'STEREO_B'.
-    
+
     Examples
     --------
     >>> from sunpy.net import Fido
-    >>> from sunpy.net import attrs as a    
+    >>> from sunpy.net import attrs as a
     >>> results = Fido.search(a.Time('2008/3/20 17:00:00', '2008/3/25 17:15:00'),
         a.Instrument('swaves'), a.Source('STEREO_A'))
     >>> print(results)
     [<Table length=5>
      Start Time           End Time      Source Instrument
-       str19               str19         str5     str6   
+       str19               str19         str5     str6
     ------------------- ------------------- ------ ----------
     2008-03-20 00:00:00 2008-03-21 00:00:00  ahead     swaves
     2008-03-21 00:00:00 2008-03-22 00:00:00  ahead     swaves
@@ -321,8 +325,8 @@ class SWAVESClient(GenericClient):
         source = kwargs.get('source')
         START_DATE = datetime.datetime(2006, 10, 27)
         table_ = {'STEREO_A':'ahead', 'STEREO_B':'behind'}
-        if (timerange.start < START_DATE):
-            raise ValueError('Earliest date for which SWAVES data is available is {:%Y-%m-%d}'.format(START_DATE))        
+        if timerange.start < START_DATE:
+            raise ValueError('Earliest date for which SWAVES data is available is {:%Y-%m-%d}'.format(START_DATE))
         prefix = 'http://stereo-ssc.nascom.nasa.gov/data/beacon/{source}/'
         suffix = 'swaves/%Y/%m/ST{char}_LB_SWAVES_%Y%m%d.idlsave'
         url_pattern = prefix + suffix
@@ -340,15 +344,15 @@ class SWAVESClient(GenericClient):
     def _can_handle_query(cls, *query):
         """
         Answers whether client can service the query.
-        
+
         Parameters
         ----------
         query : list of query objects
-        
+
         Returns
         -------
         boolean: answer as to whether client can service the query
-        
+
         """
         chkattr = ['Time', 'Instrument', 'Source']
         chklist = [x.__class__.__name__ in chkattr for x in query]
@@ -359,6 +363,4 @@ class SWAVESClient(GenericClient):
                 chk_var += 1
             if x.__class__.__name__ == 'Source' and x.value in sources:
                 chk_var += 1
-        if (chk_var == 2):
-            return True
-        return False
+        return chk_var == 2

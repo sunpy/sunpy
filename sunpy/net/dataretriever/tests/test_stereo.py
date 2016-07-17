@@ -28,13 +28,15 @@ def test_get_url_for_timerange(timerange, source, detector, url_start, url_end):
     assert urls[-1] == url_end
 
 trange = Time('2008/3/2 17:45:00', '2008/3/2 18:00:00')
-def test_can_handle_query():
-    assert SECCHIClient._can_handle_query(trange, Instrument('secchi'), Source('STEREO_A'), Detector('euvi'))
-    assert SECCHIClient._can_handle_query(trange, Instrument('secchi'), Source('STEREO_B'), Detector('hi_1'))
-    assert PClient._can_handle_query(trange, Instrument('plastic'), Source('STEREO_A'))
-    assert IClient._can_handle_query(trange, Instrument('impact'), Source('STEREO_B'))
-    assert not SWClient._can_handle_query(trange, Instrument('swaves'))
-    assert not SECCHIClient._can_handle_query(trange, Instrument('secchi'), Source('STEREO_A'), Detector('xyz'))
+@pytest.mark.parametrize("client, timerange, instrument, source, detector, expected",
+                         [(SECCHIClient, trange, Instrument('secchi'), Source('STEREO_A'), Detector('euvi'), True),
+                          (SECCHIClient, trange, Instrument('secchi'), Source('STEREO_B'), Detector('hi_1'), True),
+                          (PClient, trange, Instrument('plastic'), Source('STEREO_A'), None, True),
+                          (IClient, trange, Instrument('impact'), Source('STEREO_B'), None, True),
+                          (SWClient, trange, Instrument('swaves'), None, None, False),
+                          (SECCHIClient, trange, Instrument('secchi'), Source("STEREO_A"), Detector('xyz'), False)])
+def test_can_handle_query(client, timerange, instrument, source, detector, expected):
+    assert client._can_handle_query(timerange, instrument, source, detector) is expected
 
 trange = Time('2007/6/13 04:00:00', '2007/6/13 05:00:00')
 @pytest.mark.online
