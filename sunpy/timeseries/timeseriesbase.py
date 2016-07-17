@@ -94,7 +94,7 @@ class GenericTimeSeries:
     >>> dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
     >>> intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / (24 * 60)))
     >>> ts = Timeseries({"param1": intensity}, index=dates)
-    >>> df = 
+    >>> df =
     >>> ts = Timeseries({"param1": intensity}, index=dates)
     >>> ts.peek()   # doctest: +SKIP
 
@@ -120,7 +120,7 @@ class GenericTimeSeries:
         else:
             # Should have a list of 3-tuples giving a complex metadata list.
             self.meta = meta
-        
+
         if units is None:
             self.units = {}
         else:
@@ -159,12 +159,12 @@ class GenericTimeSeries:
         """Observation time/s"""
         # Get all matching values
         strings = self.meta.get('date-obs', [ self.data.index.min() ], datetime=datetime, colname=colname)
-        
+
         # Parse to datetime objects
         datetimes = []
         for string in strings:
             datetimes.append(parse_time(string))
-        
+
         # Return the list
         return datetimes
 
@@ -173,7 +173,7 @@ class GenericTimeSeries:
         """Detector name/s"""
         # Get all matching values
         strings = self.meta.get('detector', [], datetime=datetime, colname=colname)
-        
+
         # Return the list
         return strings
 
@@ -199,12 +199,12 @@ class GenericTimeSeries:
         """Instrument name/s"""
         # Get all matching values
         strings = self.meta.get('instrume', [], datetime=datetime, colname=colname)
-        
+
         # Sanitized the strings
         sanitized_strings = []
         for string in strings:
             sanitized_strings.append(string.replace("_", " "))
-        
+
         # Return the list
         return sanitized_strings
 
@@ -223,7 +223,7 @@ class GenericTimeSeries:
     def columns(self):
         """Returns a list of all the names of the columns in the data."""
         return list(self.data.columns.values)
-        
+
 # #### From Pandas #### #
     def sort_index(self, **kwargs):
         """Returns a sorted version of the TimeSeries object.
@@ -277,7 +277,7 @@ class GenericTimeSeries:
         else:
             # If the how kwarg was given then we simply pass it to the resample function.
             resampled_data = self.data.resample(rule_str, **kwargs)
-        
+
         # ToDo: consider re-evaluating the metadata.
 
         # Return the same type of timeseries object.
@@ -285,6 +285,11 @@ class GenericTimeSeries:
 
 
 # #### From OLD LightCurve #### #
+    @property
+    def index(self):
+        """Return the time index of the data."""
+        return self.data.index
+
     @property
     def time_range(self):
         """Returns the start and end times of the TimeSeries as a `~sunpy.time.TimeRange`
@@ -377,7 +382,7 @@ class GenericTimeSeries:
 
         # If an interval integer was given then use in truncation.
         truncated = self.data.sort_index()[start:end:int]
-        
+
         # Build similar TimeSeries object and sanatise metadata and units.
         object = self.__class__(truncated.sort_index(), TimeSeriesMetaData(self.meta.metadata.copy()), self.units.copy())
         object._sanitize_metadata()
@@ -408,9 +413,9 @@ class GenericTimeSeries:
         """
         # Extract column and remove empty rows
         data = self.data[[column_name]].dropna()
-        
-        # Build similar TimeSeries object and sanatise metadata and units.
-        object = self.__class__(data.sort_index(), TimeSeriesMetaData(self.meta.metadata.copy()), self.units.copy())
+
+        # Build generic TimeSeries object and sanatise metadata and units.
+        object = GenericTimeSeriesMeta(data.sort_index(), TimeSeriesMetaData(self.meta.metadata.copy()), self.units.copy())
         object._sanitize_metadata()
         object._sanitize_units()
         return object
@@ -433,14 +438,14 @@ class GenericTimeSeries:
         -------
         newts : `~sunpy.timeseries.TimeSeries`
             A new time series.
-        
+
         Debate: decide if we want to be able to concatenate multiple time series
         at once.
         """
-        
+
         # Check the sources match if specified.
         same_source = kwargs.get('same_source', False)
-        if same_source and not isinstance(otherts, self.__class__):
+        if same_source and not (isinstance(otherts, self.__class__)):
             raise TypeError("TimeSeries classes must match.")
 
         """
@@ -453,14 +458,20 @@ class GenericTimeSeries:
         # Concatenate the metadata and data
         meta = self.meta.concatenate(otherts.meta)
         data = pd.concat([self.data.copy(), otherts.data])
-        
+
         # Add all the new units to the dictionary.
         units = OrderedDict()
         units.update(self.units)
         units.update(otherts.units)
-        
-        # Build similar TimeSeries object and sanatise metadata and units.
-        object = self.__class__(data.sort_index(), meta, units)
+
+        # If sources match then build similar TimeSeries.
+        if self.__class__ == otherts.__class__:
+            object = self.__class__(data.sort_index(), meta, units)
+        else:
+            # Build generic time series if the sources don't match.
+            object = GenericTimeSeries(data.sort_index(), meta, units)
+
+        # Sanatise metadata and units
         object._sanitize_metadata()
         object._sanitize_units()
         return object
@@ -512,16 +523,16 @@ class GenericTimeSeries:
                 # If this is not a unit then this can't be a valid units dict.
                 result = False
                 warnings.warn("Invalid unit given for \""+str(key)+"\"", Warning)
-        
+
         return result
 
     def _sanitize_units(self, **kwargs):
         """
         Sanitises the collections.OrderedDict used to store the units.
         Primarily this method will:
-        
+
         Remove entries that don't match up to a column,
-        Add unitless entries for columns with no units defined.        
+        Add unitless entries for columns with no units defined.
         Re-arrange the order of the dictionary to match the columns.
         """
         warnings.simplefilter('always', Warning)
@@ -531,12 +542,12 @@ class GenericTimeSeries:
             # For all columns not present in the units dictionary.
             self.units[column] = u.dimensionless_unscaled
             warnings.warn("Unknown units for \""+str(column)+"\"", Warning)
-            
+
         # Re-arrange so it's in the same order as the columns and removed unused.
         units = OrderedDict()
         for column in self.data.columns.tolist():
             units.update({column:self.units[column]})
-            
+
         # Now use the amended units Ordered Dictionary
         self.units = units
 
@@ -544,22 +555,22 @@ class GenericTimeSeries:
         """
         Sanitises the TimeSeriesMetaData object used to store the metadata.
         Primarily this method will:
-        
+
         Remove entries outside of the datas TimeRange or truncate TimeRanges
         if the metadata overflows past the data,
         Remove column references in the metadata that don't match to a column
         in the data.
-        Remove metadata entries that have no columns matching the data.        
+        Remove metadata entries that have no columns matching the data.
         """
         warnings.simplefilter('always', Warning)
-        
+
         # Truncate the metadata
-        self.meta.truncate(self.time_range)
-        
+        self.meta._truncate(self.time_range)
+
         # Remove non-existant columns
         redundant_cols = list(set(self.meta.columns) - set(self.columns))
-        self.meta.remove_columns(redundant_cols)
-              
+        self.meta._remove_columns(redundant_cols)
+
 
 # #### New Methods #### #
     def to_table(self, **kwargs):
@@ -633,7 +644,7 @@ class GenericTimeSeries:
         unit   = self.units[colname]
         return u.Quantity(values, unit)
 
-    def add_column(self, colname, quantity, **kwargs):
+    def add_column(self, colname, quantity, unit=False, overwrite=True, **kwargs):
         """
         Return an new TimeSeries with the given column added or updated.
 
@@ -645,38 +656,41 @@ class GenericTimeSeries:
         quantity : `~astropy.units.quantity.Quantity` or `~numpy.ndarray`
             The values to be placed within the column.
             If updating values only then a numpy array is permitted.
-            
+
         overwrite : `bool`, optional, default:True
             Set to true to allow the method to overwrite a column already present
             in the TimeSeries.
-            
+
         Returns
         -------
         newts : TimeSeries
-        
+
         """
-        unit      = kwargs.get('unit', None)
-        overwrite = kwargs.get('overwrite', True)
-        values    = quantity
+        # Get the expected units from the quantity if required
+        if not unit and isinstance(quantity, astropy.units.quantity.Quantity):
+            unit = quantity.unit
+        elif not unit:
+            unit = u.dimensionless_unscaled
+
 
         # Make a copy of all the TimeSeries components.
         data  = self.data.copy()
         meta  = TimeSeriesMetaData(self.meta.metadata.copy())
         units = self.units.copy()
-        
-        # Check if we are updating a current column or adding a new one.
-        if (colname in self.data.columns) and unit and overwrite:
-            # Updating, so change the unit if appicable.
+
+        # Add the unit to the units dictionary if already there.
+        if not (colname in self.data.columns):
             units[colname] = unit
-        
-        # Convert the given values into the column units.
+
+        # Convert the given quantity into values for given units if necessary.
+        values = quantity
         if isinstance(values, astropy.units.quantity.Quantity) and overwrite:
             values = values.to(units[colname]).value
-        
+
         # Update or add the data.
         if not (colname in self.data.columns) or overwrite:
             data[colname] = values
-            
+
         # Return a new TimeSeries with the given updated/added column.
         return self.__class__(data, meta, units)
 
