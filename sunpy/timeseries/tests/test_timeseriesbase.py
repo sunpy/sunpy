@@ -70,6 +70,14 @@ def generic_test_ts():
     #########
     return sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_LIGHTCURVE, source='NOAAIndices')
 
+#==============================================================================
+# Test Creating TimeSeries From Various Dataformats
+#==============================================================================
+
+# ToDo:
+###ts_goes.to_dataframe()
+###ts_goes.to_table()
+###ts_goes.to_array()
 
 #==============================================================================
 # Test TimeSeries Parameters
@@ -86,14 +94,22 @@ def test_units():
     assert isinstance(noaa_pre_test_ts.units, OrderedDict)
     assert isinstance(generic_test_ts.units, OrderedDict)
 
-
-
-
-
-
-
     # ToDo: check length? (should match the number of columns)
-    # ToDo: is this a good way of going?
+# ToDo: is this a good way of going?
+# ToDo: test for all:
+###ts_lyra.data
+###ts_lyra.meta
+###ts_lyra.time_range # Returns a SunPy TimeRange object.
+###ts_lyra.name
+###ts_lyra.nickname
+###ts_lyra.date
+###ts_lyra.detector
+###ts_lyra.dsun
+###ts_lyra.exposure_time
+###ts_lyra.instrument
+###ts_lyra.measurement
+###ts_lyra.observatory
+
 
 #==============================================================================
 # Test Truncation Operations
@@ -141,6 +157,11 @@ def test_truncation_dates(truncation_dates_test_ts):
     # Check the resulting timerange in both TS and TSMD
     assert truncation_dates_test_ts.time_range.hours == truncation_dates_test_ts.meta.timerange.hours == u.Quantity(2, u.h)
 
+#==============================================================================
+# Test Extraction Operations
+#==============================================================================
+
+# ToDo: ts_eve_extract = ts_eve.extract('CMLon')
 
 #==============================================================================
 # Test Concatenation Operations
@@ -219,11 +240,11 @@ def test_concatenation_of_different_data(eve_test_ts, fermi_gbm_test_ts, concate
 
 
 
-
-
-
-
-
 #==============================================================================
-# Test Rotation WCS conversion
+# Test Data Manipulation
 #==============================================================================
+
+# ToDo:
+###Extracting column as quantity or array#ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
+###Updating a column using quantity or array#ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
+###Updating the units# ts_eve = ts_eve.add_column(colname, qua_new, unit=unit, overwrite=True)
