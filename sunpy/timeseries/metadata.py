@@ -449,7 +449,7 @@ class TimeSeriesMetaData:
                     warnings.warn_explicit('Metadata entries ' + str(i) + ' and ' + str(j) + ' contain interleaved data.',
                                            Warning, __file__, inspect.currentframe().f_back.f_lineno)
 
-
+        # ToDo: Check all entries are in tr.start time order.
 
         return True
 
