@@ -515,7 +515,10 @@ class Response():
 
             # gofnt function per line
             self.contribution_function = abundance * g_ioneq * emissivity[top_line_index]
-            print('gofnt: ', self.contribution_function)
+            # print('gofnt: ', self.contribution_function)
+
+
+
 
     def calculate_temperature_response(self, channel):
         """
@@ -566,7 +569,7 @@ class Response():
         self.calculate_contribution_function(channel, wavelength_range, fe14)
 
         temp_response = self.contribution_function * self.wavelength_response
-        print('temp response: ', temp_response)
+        # print('temp response: ', temp_response)
 
         # TODO: loop through array of ions (from chianti elements), Too many, need to choose some. But still Testing:
         # gofnt_array = []
