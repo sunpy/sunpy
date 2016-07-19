@@ -120,7 +120,7 @@ class Response():
 
             return wavelength_range
 
-    def effective_area(self, channel, total_range=False, use_genx_effarea=False, print_comparison_ratio=False):
+    def calculate_effective_area(self, channel, total_range=False, use_genx_effarea=False, print_comparison_ratio=False):
         """
         AIA instrument response / effective area
         - contains information about the efficiency of the telescope optics.
@@ -155,7 +155,7 @@ class Response():
         var = self.get_channel_data(channel)
 
         if use_genx_effarea:
-            self.eff_area = var['effective_area'] * u.cm ** 2
+            self.effective_area = var['effective_area'] * u.cm ** 2
 
         elif total_range:
             # Returns the entire channel wavelength ranges effective area
@@ -170,7 +170,8 @@ class Response():
             eff_area = (var['geometric_area_ccd'] * u.cm ** 2) * reflectance * transmission_efficiency * var[
                 'ccd_contamination'] * var['quantum_efficiency_ccd']
 
-            self.eff_area = eff_area
+            self.effective_area = eff_area
+
         else:
             # Returns effective area at the position of the center wavelength for the channel specified
 
@@ -189,7 +190,7 @@ class Response():
             # equation calculation :
             eff_area = (var['geometric_area_ccd'] * u.cm ** 2) * reflectance * transmission_efficiency * var[
                 'ccd_contamination'][index] * var['quantum_efficiency_ccd'][index]
-            self.eff_area = eff_area
+            self.effective_area = eff_area
 
             if print_comparison_ratio:
                 # used for testing - move to test_aia?
@@ -197,10 +198,76 @@ class Response():
                     self.channel_list.index(channel)]
                 print('eff_area: ', compare_eff_area, eff_area, 'ratio of comparison: ', eff_area / compare_eff_area)
 
-        return self.eff_area
 
-    def get_wavelength_response(self, channel, use_response_table2=False, use_calc_effarea_table2_gain=False,
-                                use_genx_values=False):
+
+
+    def calculate_system_gain(self, use_table2_gain=False, use_genx_values=False):
+        """
+
+        :return:
+        """
+
+        var = self.get_channel_data(channel)
+
+        # conversions
+        hc = (constants.h * constants.c).to(u.eV * u.angstrom)
+        electron_per_ev = (1 * u.electron) / (3.98 * u.eV)
+
+        if use_table2_gain:
+            # Uses Gain from table Table 12 to calculate instrument response
+
+            # gain values from Boerner paper
+            gain_table2 = {94: 2.128, 131: 1.523, 171: 1.168, 193: 1.024, 211: 0.946, 304: 0.658, 335: 0.596,
+                           1600: 0.125, 1700: 0.118}
+
+
+            self.system_gain = gain_table2[channel]
+
+
+        elif use_genx_values:
+            # calculate the index of values to use from wavelength range
+
+            # obtain index for values as specific wavelength
+            for n, value in enumerate(self.get_wavelength_range(channel)):
+                if channel < value < channel + 1:
+                    index = n
+                    break
+
+            # elecperphot in genx starting with the photon energy in eV
+            wavelength = (var['wavelength_range'][index] * u.angstrom)
+            ev_per_wavelength = hc / wavelength
+
+            # converts energy of wavelength from eV to electrons
+            genx_electron_per_ev = var['electron_per_ev'] * (u.count / u.eV)
+            electron_per_wavelength = (ev_per_wavelength * genx_electron_per_ev)
+
+            # gain = elecperphot / elecperdn
+            self.system_gain = electron_per_wavelength / var['electron_per_dn']
+
+
+        else:
+            # calculate entire response using calculated eff_area and ccd gain from table12
+            ccd_gain = {94: 18.3, 131: 17.6, 171: 17.7, 193: 18.3, 211: 18.3, 304: 18.3, 335: 17.6, 1600: 0.125,
+                        1700: 0.118}
+
+            # the photon energy in eV
+            wavelength = (float(channel) * u.angstrom)
+            ev_per_wavelength = hc / wavelength
+
+            # converts energy of wavelength from eV to electrons
+            electron_per_wavelength = (ev_per_wavelength * electron_per_ev)
+
+            # gain of ccd from genx file:
+            ccdgain = ccd_gain[channel] * (u.electron / u.count)
+
+            # Gain(wavelength)  calculation
+            calculated_gain = electron_per_wavelength * dn_per_photon
+
+            self.system_gain = calculated_gain / ccdgain
+
+
+    def calculate_wavelength_response(self, channel, use_response_table2=False, use_table2_gain=False,
+                                      use_genx_values=False):
         """
 
         Describes the instrument (AIA) response per wavelength by calculating effective area vs wavelength of the strongest emission lines present in the solar feature.
@@ -226,81 +293,44 @@ class Response():
 
         """
 
-        var = self.get_channel_data(channel)
-
         # conversions
         dn_per_photon = u.count / u.photon
-        hc = (constants.h * constants.c).to(u.eV * u.angstrom)
-        electron_per_ev = (1 * u.electron) / (3.98 * u.eV)
 
-        # gain values from Boerner paper
-        gain_table2 = {94: 2.128, 131: 1.523, 171: 1.168, 193: 1.024, 211: 0.946, 304: 0.658, 335: 0.596, 1600: 0.125,
-                       1700: 0.118}
-        ccd_gain = {94: 18.3, 131: 17.6, 171: 17.7, 193: 18.3, 211: 18.3, 304: 18.3, 335: 17.6, 1600: 0.125,
-                    1700: 0.118}
+        var = self.get_channel_data(channel)
 
-        if use_response_table2:
+        if use_table2_gain:
+            self.calculate_effective_area(channel)
+            self.calculate_system_gain(use_table2_gain=True)
+            self.wavelength_response = self.effective_area * self.system_gain * dn_per_photon
+
+
+        elif use_response_table2:
             # returns the instrument response values listed in Table 2
-
             index = self.channel_list.index(channel)
             response = [0.664, 1.785, 3.365, 1.217, 1.14, 0.041, 0.027, 0.0024, 0.0046][index]
             self.wavelength_response = response
 
-        elif use_calc_effarea_table2_gain:
-            # Uses Gain from table Table 12 to calculate instrument response
-            gain = gain_table2[channel]
-            self.wavelength_response = self.effective_area(channel) * gain * dn_per_photon
-
         elif use_genx_values:
-            # calculate the index of values to use from wavelength range
-
-            # obtain index for values as specific wavelength
+            # obtain index for values as specific wavelength in wavelength range
             for n, value in enumerate(self.get_wavelength_range(channel)):
                 if channel < value < channel + 1:
                     index = n
                     break
 
-            # elecperphot in genx starting with the photon energy in eV
-            wavelength = (var['wavelength_range'][index] * u.angstrom)
-            ev_per_wavelength = hc / wavelength
-
-            # converts energy of wavelength from eV to electrons
-            genx_electron_per_ev = var['electron_per_ev'] * (u.count / u.eV)
-            electron_per_wavelength = (ev_per_wavelength * genx_electron_per_ev)
-
-            # gain = elecperphot / elecperdn
-            gain = electron_per_wavelength / var['electron_per_dn']
-
-            self.wavelength_response = var['effective_area'][index] * (gain * dn_per_photon)
-
+            self.calculate_system_gain(use_genx_values = True)
+            self.wavelength_response = var['effective_area'][index] * (self.system_gain * dn_per_photon)
 
         else:
-            # calculate entire response using calculated eff_area and ccd gain from table12
+            self.calculate_system_gain()
+            self.calculate_effective_area(channel)
 
-            # the photon energy in eV
-            wavelength = (float(channel) * u.angstrom)
-            ev_per_wavelength = hc / wavelength
-
-            # converts energy of wavelength from eV to electrons
-            electron_per_wavelength = (ev_per_wavelength * electron_per_ev)
-
-            # gain of ccd from genx file:
-            ccdgain = ccd_gain[channel] * (u.electron / u.count)
-
-            # Gain(wavelength)  calculation
-            calculated_gain = electron_per_wavelength * dn_per_photon
-
-            calc_eff_area = self.effective_area(channel)
-
-            # TODO: fix error in units count**2?!
-            self.wavelength_response = calc_eff_area * (calculated_gain / ccdgain)
-
-        return self.wavelength_response  # want units of cm**2 * count / photon
+            # TODO: fix error in units count**2?!   # want units of cm**2 * count / photon
+            self.wavelength_response = self.effective_area * self.system_gain
 
 
 
 
-    def emissivity(self, channel, wavelength_range, specific_ion):
+    def get_emissivity(self, channel, wavelength_range, specific_ion):
         """
         Find the emissivity for each line
          - develop an emissivity (chianti) spectral structure based on plasma  properties (line intensities?/ emissivity?)
@@ -394,7 +424,7 @@ class Response():
         :return:
         """
         temperatures = specific_ion.Temperature
-        emissivity, emissivity_wavelength_array = self.emissivity(channel, wavelength_range, specific_ion)
+        emissivity, emissivity_wavelength_array = self.get_emissivity(channel, wavelength_range, specific_ion)
 
         # TODO: want to use ionWeb.gofntSelectLines to get self.toplines and self.wvlchoices
         # couldn't figure out how to access it...
@@ -431,7 +461,7 @@ class Response():
 
 
 
-    def get_contribution_function(self, channel, wavelength_range, specific_ion, chianti_Gofnt=False, intensity=False):
+    def calculate_contribution_function(self, channel, wavelength_range, specific_ion, chianti_Gofnt=False, intensity=False):
         """
         information on plasma and atomic physics governing how matter emits at a given temperature
 
@@ -451,7 +481,7 @@ class Response():
             # Chianti Contribution Function  ## PROMPTS AND PLOT ###
             specific_ion.gofnt(wvlRange=wavelength_range, top=1, verbose=0)
             gofnt = specific_ion.Gofnt['gofnt']
-            contribution_function = gofnt
+            self.contribution_function = gofnt
 
             # self.Gofnt = {'temperature': outTemperature, 'eDensity': outDensity, 'gofnt': gofnt, 'index': g_line,
             #               'wvl': wvl[g_line]}
@@ -474,7 +504,7 @@ class Response():
             # intensity array or line intensity?
             contribution_function = intensity_array / emissivity_array
 
-            return contribution_function
+            self.contribution_function
 
         else:
 
@@ -482,8 +512,8 @@ class Response():
             # spec = self.spectrum(temperature=t, wavelength_range=wavelength_range, specific_ion=specific_ion, channel=channel)
 
             # emissivity defined separate from Contribution Function (Gofnt)
-            emissivity, em_wavelength_array = self.emissivity(channel=channel, wavelength_range=wavelength_range,
-                                                              specific_ion=specific_ion)
+            emissivity, em_wavelength_array = self.get_emissivity(channel=channel, wavelength_range=wavelength_range,
+                                                                  specific_ion=specific_ion)
 
             # ssw multiplies by platescale
             platescale = self.get_channel_data(channel)['platescale']
@@ -503,7 +533,7 @@ class Response():
             contribution_function = abundance * g_ioneq * emissivity[top_line_index]
             print('gofnt: ', contribution_function)
 
-        return contribution_function
+            self.contribution_function
 
 
 
@@ -526,7 +556,7 @@ class Response():
 
 
         # load in wavelength response
-        wavelength_response = self.get_wavelength_response(channel, use_genx_values=True)
+        wavelength_response = self.calculate_wavelength_response(channel, use_genx_values=True)
 
 
         # all elements we can check... need all of them?
@@ -556,9 +586,9 @@ class Response():
         temperatures = fe14.Temperature  # same as fe14.Population['temperature']  # length 21
 
         # pulled this to separate function until debugged. remerge as needed.
-        contribution_function = self.get_contribution_function(channel, wavelength_range, fe14)
+        self.calculate_contribution_function(channel, wavelength_range, fe14)
 
-        temp_response = contribution_function * wavelength_response
+        temp_response = self.contribution_function * wavelength_response
         print('temp response: ', temp_response)
 
         # TODO: loop through array of ions (from chianti elements)
