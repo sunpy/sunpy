@@ -31,7 +31,6 @@ import numpy as np
 import astropy.units as u
 import astropy.constants as constants
 
-
 import sunpy
 import sunpy.data.test as test
 from .aia_read_genx2table import aia_instr_properties_to_table
@@ -120,7 +119,8 @@ class Response():
 
             return wavelength_range
 
-    def calculate_effective_area(self, channel, total_range=False, use_genx_effarea=False, print_comparison_ratio=False):
+    def calculate_effective_area(self, channel, total_range=False, use_genx_effarea=False,
+                                 print_comparison_ratio=False):
         """
         AIA instrument response / effective area
         - contains information about the efficiency of the telescope optics.
@@ -198,10 +198,7 @@ class Response():
                     self.channel_list.index(channel)]
                 print('eff_area: ', compare_eff_area, eff_area, 'ratio of comparison: ', eff_area / compare_eff_area)
 
-
-
-
-    def calculate_system_gain(self, use_table2_gain=False, use_genx_values=False):
+    def calculate_system_gain(self, channel, use_table2_gain=False, use_genx_values=False):
         """
 
         :return:
@@ -219,7 +216,6 @@ class Response():
             # gain values from Boerner paper
             gain_table2 = {94: 2.128, 131: 1.523, 171: 1.168, 193: 1.024, 211: 0.946, 304: 0.658, 335: 0.596,
                            1600: 0.125, 1700: 0.118}
-
 
             self.system_gain = gain_table2[channel]
 
@@ -265,7 +261,6 @@ class Response():
 
             self.system_gain = calculated_gain / ccdgain
 
-
     def calculate_wavelength_response(self, channel, use_response_table2=False, use_table2_gain=False,
                                       use_genx_values=False):
         """
@@ -300,7 +295,7 @@ class Response():
 
         if use_table2_gain:
             self.calculate_effective_area(channel)
-            self.calculate_system_gain(use_table2_gain=True)
+            self.calculate_system_gain(channel, use_table2_gain=True)
             self.wavelength_response = self.effective_area * self.system_gain * dn_per_photon
 
 
@@ -317,18 +312,15 @@ class Response():
                     index = n
                     break
 
-            self.calculate_system_gain(use_genx_values = True)
+            self.calculate_system_gain(channel, use_genx_values=True)
             self.wavelength_response = var['effective_area'][index] * (self.system_gain * dn_per_photon)
 
         else:
-            self.calculate_system_gain()
+            self.calculate_system_gain(channel)
             self.calculate_effective_area(channel)
 
             # TODO: fix error in units count**2?!   # want units of cm**2 * count / photon
             self.wavelength_response = self.effective_area * self.system_gain
-
-
-
 
     def get_emissivity(self, channel, wavelength_range, specific_ion):
         """
@@ -377,9 +369,6 @@ class Response():
 
         return emissivity, emissivity_wavelength_array
 
-
-
-
     def spectrum(self, temperature, wavelength_range, fe_14, channel):
         """
         generate a spectral model for various solar features to be used in modules
@@ -414,9 +403,6 @@ class Response():
         # fe14.spectrum(wvl=wavelength_range, em=emissivity_array, eDensity=fe14.Population['eDensity'])
         #
         # return spectrum
-
-
-
 
     def get_most_intense_line(self, channel, wavelength_range, specific_ion):
         """
@@ -458,10 +444,8 @@ class Response():
 
         return topline_index, nlines
 
-
-
-
-    def calculate_contribution_function(self, channel, wavelength_range, specific_ion, chianti_Gofnt=False, intensity=False):
+    def calculate_contribution_function(self, channel, wavelength_range, specific_ion, chianti_Gofnt=False,
+                                        intensity=False):
         """
         information on plasma and atomic physics governing how matter emits at a given temperature
 
@@ -476,7 +460,8 @@ class Response():
 
         if chianti_Gofnt:
             #   refactor chianti gofnt? time?
-            print('ERROR: chianti.core.ion.gofnt does not return self.Gofnt until after prompts and plots for each ion.')
+            print(
+                'ERROR: chianti.core.ion.gofnt does not return self.Gofnt until after prompts and plots for each ion.')
 
             # Chianti Contribution Function  ## PROMPTS AND PLOT ###
             specific_ion.gofnt(wvlRange=wavelength_range, top=1, verbose=0)
@@ -502,9 +487,8 @@ class Response():
             print('ratio:', intensity_array / emissivity_array)
 
             # intensity array or line intensity?
-            contribution_function = intensity_array / emissivity_array
+            self.contribution_function = intensity_array / emissivity_array
 
-            self.contribution_function
 
         else:
 
@@ -516,7 +500,7 @@ class Response():
                                                                   specific_ion=specific_ion)
 
             # ssw multiplies by platescale
-            platescale = self.get_channel_data(channel)['platescale']
+            platescale = self.get_channel_data(channel)['plate_scale']
 
             # top intensity lines in range defined separate from contribution function
             top_line_index, nlines = self.get_most_intense_line(channel=channel, wavelength_range=wavelength_range,
@@ -530,15 +514,10 @@ class Response():
             abundance = specific_ion.Abundance
 
             # gofnt function per line
-            contribution_function = abundance * g_ioneq * emissivity[top_line_index]
-            print('gofnt: ', contribution_function)
+            self.contribution_function = abundance * g_ioneq * emissivity[top_line_index]
+            print('gofnt: ', self.contribution_function)
 
-            self.contribution_function
-
-
-
-
-    def temperature_response(self, channel):
+    def calculate_temperature_response(self, channel):
         """
         calculates temperature for various features using ChiantiPy
 
@@ -554,10 +533,8 @@ class Response():
 
         """
 
-
         # load in wavelength response
-        wavelength_response = self.calculate_wavelength_response(channel, use_genx_values=True)
-
+        self.calculate_wavelength_response(channel, use_genx_values=True)
 
         # all elements we can check... need all of them?
         ion_array = []
@@ -575,7 +552,7 @@ class Response():
         # print('wavelength range: ', wavelength_range)
 
         # isobaric model pressure is 10^15
-        pressure = 10 ** 15 * (u.Kelvin / u.cm**3)
+        pressure = 10 ** 15 * (u.Kelvin / u.cm ** 3)
 
         # default temperature
         t = 10. ** (5.5 + 0.05 * np.arange(21.))
@@ -588,10 +565,10 @@ class Response():
         # pulled this to separate function until debugged. remerge as needed.
         self.calculate_contribution_function(channel, wavelength_range, fe14)
 
-        temp_response = self.contribution_function * wavelength_response
+        temp_response = self.contribution_function * self.wavelength_response
         print('temp response: ', temp_response)
 
-        # TODO: loop through array of ions (from chianti elements)
+        # TODO: loop through array of ions (from chianti elements), Too many, need to choose some. But still Testing:
         # gofnt_array = []
         # for i in ion_array:
         #     print(i)   # breaks on h_2 .. :( 'ion' has no attribute 'Nlvls' for h_2
@@ -600,7 +577,6 @@ class Response():
         #     contribution_function = self.get_contribution_function(channel, wavelength_range, specific_ion)
         #     gofnt_array.append(contribution_function)
         # temp_response = gofnt_array * wavelength_response
-        print('temp response: ', temp_response)
+        # print('temp response: ', self.temperature_response)
 
-        return {'temperature': temperatures, 'temperature response': temp_response}
-
+        self.temperature_response =  {'temperature': temperatures, 'temperature response': temp_response}
