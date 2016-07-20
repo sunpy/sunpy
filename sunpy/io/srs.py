@@ -133,6 +133,27 @@ def read(filepath):
             longi = lonsign[value[3]]*float(value[4:])
             latitude.append(lati), longitude.append(longi)
             mask_arr.append(False)
+
+    #All columns in master are of type object_,
+    #Convert them to the requisite types. The rows
+    #or the column data is of the correct data type, courtesy
+    #previous pre-processing, now make the column data type aware in
+    #Master.
+    for cols in master.columns.values():
+        flag = False
+        #Check if column has a floating point number.
+        #Ignore masked values.
+        for vals in master[cols.name]:
+            if vals.__class__.__name__ != 'MaskedConstant':
+                try:
+                    float(vals)
+                    flag = True
+                except ValueError:
+                    pass
+        if flag:
+            column = master[cols.name].astype(float)
+            master.replace_column(cols.name, column)
+    
     master.rename_column('Lo', 'CarringtonLong')
     master.add_column(MaskedColumn(data=latitude, name='Latitude', mask=mask_arr, unit='u.deg'))
     master.add_column(MaskedColumn(data=longitude, name='Longitude', mask=mask_arr, unit='u.deg'))
