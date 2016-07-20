@@ -111,9 +111,9 @@ class SRSClient(GenericClient):
         total_days = (timerange.end - timerange.start).days + 1
         all_dates = timerange.split(total_days)
         for day in all_dates:
-            url = base_url + '{date:%Y}/SRS/{date:%Y%m%d}SRS.txt'.format(date=day)
+            url = base_url + '%Y/SRS/%Y%m%dSRS.txt'.format(day)
             result.append(url)
-        return url
+        return result
 
     def _makeimap(self):
         self.map_['source'] = 'swpc'
@@ -139,6 +139,6 @@ class SRSClient(GenericClient):
         chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
             if x.__class__.__name__ == "Instrument" and x.value == "SOON":
-                return all(chklist)
+                return True
         return False
         
