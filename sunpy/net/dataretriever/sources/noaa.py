@@ -111,7 +111,8 @@ class SRSClient(GenericClient):
         total_days = (timerange.end - timerange.start).days + 1
         all_dates = timerange.split(total_days)
         for day in all_dates:
-            url = base_url + '%Y/SRS/%Y%m%dSRS.txt'.format(day)
+            suffix = '{date:%Y}/SRS/{date:%Y%m%d}SRS.txt'
+            url = base_url + suffix.format(date=day)
             result.append(url)
         return result
 
