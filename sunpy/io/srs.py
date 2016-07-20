@@ -133,11 +133,11 @@ def read(filepath):
             longi = lonsign[value[3]]*float(value[4:])
             latitude.append(lati), longitude.append(longi)
             mask_arr.append(False)
-    master.rename_column('Lo', 'Carrington Longitude')
+    master.rename_column('Lo', 'CarringtonLong')
     master.add_column(MaskedColumn(data=latitude, name='Latitude', mask=mask_arr, unit='u.deg'))
     master.add_column(MaskedColumn(data=longitude, name='Longitude', mask=mask_arr, unit='u.deg'))
     master.remove_column('Location')
     master['Area'].unit = 'u.m**2'
     master['Lat'].unit = 'u.deg'
-    master['Carrington Longitude'].unit = 'u.deg'
+    master['CarringtonLong'].unit = 'u.deg'
     return master
