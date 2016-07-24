@@ -28,12 +28,19 @@ def test_query(time, physobs, instrument, wavelength):
     download_list = res.wait()
     assert len(download_list) == len(qr)
 
-def test_can_handle_query():
-    assert GONGClient._can_handle_query(TRANGE, Instrument('bigbear'), Physobs('INTENSITY'))
-    assert GONGClient._can_handle_query(TRANGE, Physobs('LOS_MAGNETIC_FIELD'))
-    assert GONGClient._can_handle_query(TRANGE, Instrument('tucson'))
-    assert GONGClient._can_handle_query(TRANGE, Instrument('cerrotololo'), Physobs('INTENSITY'), Wavelength(6563*u.AA))
-    assert not GONGClient._can_handle_query(TRANGE)
+@pytest.mark.parametrize("time, instrument, physobs, wavelength, expected",
+                         [(TRANGE, Instrument('bigbear'), Physobs('INTENSITY'), None, True),
+                          (TRANGE, None, Physobs('LOS_MAGNETIC_FIELD'), None, True),
+                          (TRANGE, Instrument('tucson'), None, None, True),
+                          (TRANGE, Instrument('cerrotololo'), Physobs('INTENSITY'), Wavelength(6563*u.AA), True),
+                          (TRANGE, None, None, None, False)])
+def test_can_handle_query(time, instrument, physobs, wavelength, expected):
+    assert GONGClient._can_handle_query(time, instrument, physobs, wavelength) is expected
+##    assert GONGClient._can_handle_query(TRANGE, Instrument('bigbear'), Physobs('INTENSITY'))
+##    assert GONGClient._can_handle_query(TRANGE, Physobs('LOS_MAGNETIC_FIELD'))
+##    assert GONGClient._can_handle_query(TRANGE, Instrument('tucson'))
+##    assert GONGClient._can_handle_query(TRANGE, Instrument('cerrotololo'), Physobs('INTENSITY'), Wavelength(6563*u.AA))
+##    assert not GONGClient._can_handle_query(TRANGE)
 
 @pytest.mark.online
 def test_query():
