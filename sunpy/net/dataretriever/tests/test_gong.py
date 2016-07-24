@@ -36,11 +36,6 @@ def test_query(time, physobs, instrument, wavelength):
                           (TRANGE, None, None, None, False)])
 def test_can_handle_query(time, instrument, physobs, wavelength, expected):
     assert GONGClient._can_handle_query(time, instrument, physobs, wavelength) is expected
-##    assert GONGClient._can_handle_query(TRANGE, Instrument('bigbear'), Physobs('INTENSITY'))
-##    assert GONGClient._can_handle_query(TRANGE, Physobs('LOS_MAGNETIC_FIELD'))
-##    assert GONGClient._can_handle_query(TRANGE, Instrument('tucson'))
-##    assert GONGClient._can_handle_query(TRANGE, Instrument('cerrotololo'), Physobs('INTENSITY'), Wavelength(6563*u.AA))
-##    assert not GONGClient._can_handle_query(TRANGE)
 
 @pytest.mark.online
 def test_query():
