@@ -27,14 +27,23 @@ def test_get_url_for_time_range(timerange, url_start, url_end, level):
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
-def test_can_handle_query():
-    trange = Time('2015/12/30 00:00:00', '2015/12/31 00:05:00')
-    assert swap.SWAPClient._can_handle_query(trange, Instrument('swap'), a.Level(1))
-    assert swap.SWAPClient._can_handle_query(trange, Instrument('swap'), a.Level('q'))
-    assert not swap.SWAPClient._can_handle_query(trange, Instrument('swap'), a.Level('s'))
-    assert not swap.SWAPClient._can_handle_query(trange, Instrument('swap'))
-    assert not swap.SWAPClient._can_handle_query(trange)
-    assert not swap.SWAPClient._can_handle_query(trange, Instrument('eve'))
+TRANGE = Time('2015/12/30 00:00:00', '2015/12/31 00:05:00')
+@pytest.mark.parametrize("time, instrument, level, expected",
+                         [(TRANGE, Instrument('swap'), Level(1), True),
+                          (TRANGE, Instrument('swap'), Level('q'), True),
+                          (TRANGE, Instrument('swap'), Level('s'), False),
+                          (TRANGE, Instrument('swap'), None, False),
+                          (TRANGE, None, None, False),
+                          (TRANGE, Instrument('eve'), None, False)])
+def test_can_handle_query(time, instrument, level, expected):
+    assert LCClient._can_handle_query(time, instrument, level) is expected
+##    trange = Time('2015/12/30 00:00:00', '2015/12/31 00:05:00')
+##    assert swap.SWAPClient._can_handle_query(trange, Instrument('swap'), a.Level(1))
+##    assert swap.SWAPClient._can_handle_query(trange, Instrument('swap'), a.Level('q'))
+##    assert not swap.SWAPClient._can_handle_query(trange, Instrument('swap'), a.Level('s'))
+##    assert not swap.SWAPClient._can_handle_query(trange, Instrument('swap'))
+##    assert not swap.SWAPClient._can_handle_query(trange)
+##    assert not swap.SWAPClient._can_handle_query(trange, Instrument('eve'))
 
 @pytest.mark.online
 def test_query():
