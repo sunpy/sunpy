@@ -30,14 +30,16 @@ def test_get_url_for_timerange(timerange, url_start, url_end):
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
-trange = Time('2015/12/30', '2015/12/31')
-def test_can_handle_query():
-    assert SWEPAMClient._can_handle_query(trange, Instrument('swepam'))
-    assert EPAMClient._can_handle_query(trange, Instrument('epam'))
-    assert MAGClient._can_handle_query(trange, Instrument('mag'))
-    assert SClient._can_handle_query(trange, Instrument('sis'))
-    assert not SWEPAMClient._can_handle_query(trange, Instrument('swap'))
-    assert not EPAMClient._can_handle_query(trange)
+TRANGE = Time('2015/12/30', '2015/12/31')
+@pytest.mark.parametrize("client, time, instrument, expected",
+                         [(SWEPAMClient, TRANGE, Instrument('swepam'), True),
+                          (EPAMClient, TRANGE, Instrument('epam'), True),
+                          (MAGClient, TRANGE, Instrument('mag'), True),
+                          (SClient, TRANGE, Instrument('sis'), True),
+                          (SWEPAMClient, TRANGE, Instrument('swap'), False),
+                          (EPAMClient, TRANGE, None, False)])
+def test_can_handle_query(client, time, instrument, expected):
+    assert client._can_handle_query(time, instrument) is expected
 
 @pytest.mark.online
 def test_query():
