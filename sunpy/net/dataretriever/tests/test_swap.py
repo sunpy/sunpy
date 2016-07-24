@@ -37,13 +37,6 @@ TRANGE = Time('2015/12/30 00:00:00', '2015/12/31 00:05:00')
                           (TRANGE, Instrument('eve'), None, False)])
 def test_can_handle_query(time, instrument, level, expected):
     assert LCClient._can_handle_query(time, instrument, level) is expected
-##    trange = Time('2015/12/30 00:00:00', '2015/12/31 00:05:00')
-##    assert swap.SWAPClient._can_handle_query(trange, Instrument('swap'), a.Level(1))
-##    assert swap.SWAPClient._can_handle_query(trange, Instrument('swap'), a.Level('q'))
-##    assert not swap.SWAPClient._can_handle_query(trange, Instrument('swap'), a.Level('s'))
-##    assert not swap.SWAPClient._can_handle_query(trange, Instrument('swap'))
-##    assert not swap.SWAPClient._can_handle_query(trange)
-##    assert not swap.SWAPClient._can_handle_query(trange, Instrument('eve'))
 
 @pytest.mark.online
 def test_query():
