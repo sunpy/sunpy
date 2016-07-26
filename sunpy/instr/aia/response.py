@@ -257,11 +257,12 @@ class Response():
             ccdgain = ccd_gain[channel] * (u.electron / u.count)
 
             # Gain(wavelength)  calculation
-            calculated_gain = electron_per_wavelength * dn_per_photon
+            calculated_gain = electron_per_wavelength * (u.count / u.photon)
 
             self.system_gain = calculated_gain / ccdgain
 
-    def calculate_wavelength_response(self, channel, use_response_table2=False, use_table2_gain=False,
+    def calculate_wavelength_response(self, channel, total_range=False, use_response_table2=False,
+                                      use_table2_gain=False,
                                       use_genx_values=False):
         """
 
@@ -313,13 +314,15 @@ class Response():
                     break
 
             self.calculate_system_gain(channel, use_genx_values=True)
-            self.wavelength_response = var['effective_area'][index] * (self.system_gain * dn_per_photon)
+            if total_range:
+                self.wavelength_response = var['effective_area'] * (self.system_gain * dn_per_photon)
+            else:
+                self.wavelength_response = var['effective_area'][index] * (self.system_gain * dn_per_photon)
 
         else:
             self.calculate_system_gain(channel)
-            self.calculate_effective_area(channel)
+            self.calculate_effective_area(channel, total_range=True)
 
-            # TODO: fix error in units count**2?!   # want units of cm**2 * count / photon
             self.wavelength_response = self.effective_area * self.system_gain
 
     def get_emissivity(self, channel, wavelength_range, specific_ion):
@@ -364,10 +367,8 @@ class Response():
         # create fe14.Emiss containing the line emissivity information
         fe14.emiss(wvlRange=wavelength_range)
 
-        emissivity_wavelength_array = fe14.Emiss['wvl']  # 41745 length
-        emissivity = fe14.Emiss['emiss']  # 21 values of 41745 length
-
-        return emissivity, emissivity_wavelength_array
+        self.emissivity_wavelength_array = fe14.Emiss['wvl']  # 41745 length
+        self.emissivity = fe14.Emiss['emiss']  # 21 values of 41745 length
 
     def spectrum(self, temperature, wavelength_range, fe_14, channel):
         """
@@ -404,47 +405,73 @@ class Response():
         #
         # return spectrum
 
-    def get_most_intense_line(self, channel, wavelength_range, specific_ion):
+    def get_most_intense_line(self, channel, wavelength_range, ion_object):
         """
 
         :return:
         """
-        temperatures = specific_ion.Temperature
-        emissivity, emissivity_wavelength_array = self.get_emissivity(channel, wavelength_range, specific_ion)
+        temperatures = ion_object.Temperature
+        emissivity, emissivity_wavelength_array = self.get_emissivity(channel, wavelength_range, ion_object)
 
         # TODO: want to use ionWeb.gofntSelectLines to get self.toplines and self.wvlchoices
         # couldn't figure out how to access it...
 
-        # most intense lines  direct from chianti GOFNT
-        igvl = range(len(emissivity_wavelength_array))
-        nlines = len(emissivity_wavelength_array)
-        maxEmiss = np.zeros(nlines, 'Float64')
-        for iline in range(nlines):
-            maxEmiss[iline] = emissivity[igvl[iline]].max()
-        for iline in range(nlines):
-            if maxEmiss[iline] >= maxEmiss.max():
-                maxAll = emissivity[igvl[iline]]  # used in defining output
-        igvlsort = np.take(igvl, np.argsort(maxEmiss))
-        topLines = igvlsort[-nlines:]
-
-        # print(topLines)
-        top_lines = topLines[emissivity_wavelength_array[topLines].argsort()]  # better way to do this?
-
-        # should plot just like GOFNT, test:
-        # out = []
-        # for iline in range(top):
-        #     tline = topLines[iline]
-        #     out.append(emissivity[tline]/maxAll)
+        # # most intense lines  direct from chianti GOFNT
+        # igvl = range(len(emissivity_wavelength_array))
+        # nlines = len(emissivity_wavelength_array)
+        # maxEmiss = np.zeros(nlines, 'Float64')
+        # for iline in range(nlines):
+        #     maxEmiss[iline] = emissivity[igvl[iline]].max()
+        # for iline in range(nlines):
+        #     if maxEmiss[iline] >= maxEmiss.max():
+        #         maxAll = emissivity[igvl[iline]]  # used in defining output
+        # igvlsort = np.take(igvl, np.argsort(maxEmiss))
+        # topLines = igvlsort[-nlines:]
         #
-        #     plt.loglog(temperatures, emissivity[tline]/maxAll)
-        # plt.show()
+        # print('t', topLines)
+        # top_lines = topLines[emissivity_wavelength_array[topLines].argsort()]  # better way to do this?
+        # print('tl', top_lines)
+        #
+        # # # should plot just like GOFNT, test:
+        # # out = []
+        # # for iline in range(nlines):
+        # #     tline = topLines[iline]
+        # #     out.append(emissivity[tline]/maxAll)
+        # #
+        # #     plt.loglog(temperatures, emissivity[tline]/maxAll)
+        # # plt.show()
+        #
+        # # index position of highest intensity line
+        # topline_index = emissivity_wavelength_array[top_lines[0]]
+        #
+        # return topline_index, top_lines
+        wvl = ion_object.Intensity["wvl"]
+        igvl = range(len(wvl))
+        nlines = len(igvl)
+        igvl = np.take(igvl, wvl[igvl].argsort())
+        # find the top most intense lines
+        # if top > nlines: # default 10
+        #     top = nlines
+        #
+        intensity = ion_object.Intensity['intensity']
+        maxIntens = np.zeros(nlines, 'Float64')
+        for iline in range(nlines):
+            maxIntens[iline] = intensity[:, igvl[iline]].max()
+        for iline in range(nlines):
+            if maxIntens[iline] == maxIntens.max():
+                maxAll = intensity[:, igvl[iline]]
+        igvlsort = np.take(igvl, np.argsort(maxIntens))
+        # print('igvlsort = ', igvlsort)
+        topLines = igvlsort[-1:]  # previously top, default 10 in code
+        # print(' topLines = ', topLines)
+        maxWvl = '%5.3f' % wvl[topLines[-1]]
+        #        maxline=topLines[-1]
+        #
+        topLines = topLines[wvl[topLines].argsort()]
 
-        # index position of highest intensity line
-        topline_index = emissivity_wavelength_array[top_lines[0]]
+        return topLines, maxWvl
 
-        return topline_index, nlines
-
-    def calculate_contribution_function(self, channel, wavelength_range, specific_ion, chianti_Gofnt=False,
+    def calculate_contribution_function(self, channel, wavelength_range, ion_object, chianti_Gofnt=False,
                                         intensity=False):
         """
         information on plasma and atomic physics governing how matter emits at a given temperature
@@ -457,15 +484,18 @@ class Response():
         """
         # default temperature - make this global?
         t = 10. ** (5.5 + 0.05 * np.arange(21.))
+        var = self.get_channel_data(channel)
 
         if chianti_Gofnt:
-            #   refactor chianti gofnt? time?
-            print(
-                'ERROR: chianti.core.ion.gofnt does not return self.Gofnt until after prompts and plots for each ion.')
+            #   refactored chianti gofnt
+            # print(
+            #     'ERROR: chianti.core.ion.gofnt does not return self.Gofnt until after prompts and plots for each ion.')
 
-            # Chianti Contribution Function  ## PROMPTS AND PLOT ###
-            specific_ion.gofnt(wvlRange=wavelength_range, top=1, verbose=0)
-            gofnt = specific_ion.Gofnt['gofnt']
+            # Chianti Contribution Function
+            ion_object.gofnt(wvlRange=wavelength_range, top=1, verbose=0, plot=False)
+            gofnt = ion_object.Gofnt['gofnt']
+
+            self.temperatures = ion_object.Gofnt['temperature']
             self.contribution_function = gofnt
 
             # self.Gofnt = {'temperature': outTemperature, 'eDensity': outDensity, 'gofnt': gofnt, 'index': g_line,
@@ -473,21 +503,36 @@ class Response():
 
         elif intensity:
 
-            # --- [WIP] --- if possible/worth it?
-            # intensity may be used for plotting one line (alt. to gofnt)
-            # AND it INCLUDES elemental abundance and ionization fraction.
-            # can it be used to calculate these values instead of using gofnt?
+            # intensity INCLUDES elemental abundance and ionization fraction
+            #           can it be used to calculate gofnt without plotting
+            #           as recommended by kdere of chiantipy
+            #           fe14.Intensity.keys() = ['em', 'intensity', 'wvl', 'lvl2', 'lvl1',
+            #                        'pretty2', 'ionS', 'avalue', 'pretty1', 'integrated', 'obs']
 
-            specific_ion.intensity(wvlRange=wavelength_range)
+            ion_object.intensity(wvlRange=wavelength_range)
 
-            # fe14.Intensity contain the line intensities information
-            # size 21 from len temperatures - each array then is len 41745 - same as gofnt output
-            intensity_array = specific_ion.Intensity['intensity']  # array of [[values]]!
-            emissivity_array = specific_ion.Intensity['em']  # array of one value em=1.e+27 given in def of ion
-            print('ratio:', intensity_array / emissivity_array)
+            emissivity_array = ion_object.Intensity['em']  # array of one value em=1.e+27 given in def of ion
+            # ^^^^ EMISSIVITY IS USED IN SSW ^^^^
 
-            # intensity array or line intensity?
-            self.contribution_function = intensity_array / emissivity_array
+            # # Attempt to get top line
+            # peak_line, maxwvl = self.get_most_intense_line(channel, wavelength_range, ion_object)
+            # print('top line: ', peak_line, maxwvl)
+
+
+
+            # find index in wavelength range for the line at peak value
+            # index = np.argmin(np.abs(ion_object.Intensity['wvl'] - float(maxwvl)))
+            # print('iw:', intensity_wavelengths[index], index)
+            # print(intensity_array[:,index])
+            index = ion_object.Intensity['intensity'].index(ion_object.Intensity['intensityTop'])
+            print('index: ', index)
+
+            # Intensity['intensity'] is double nested
+            gofnt = ion_object.Intensity['intensity'][:, index] / ion_object.EDensity
+            print('gofnt: ', gofnt)
+
+            self.temperatures = ion_object.Temperature
+            self.contribution_function = gofnt
 
 
         else:
@@ -496,29 +541,27 @@ class Response():
             # spec = self.spectrum(temperature=t, wavelength_range=wavelength_range, specific_ion=specific_ion, channel=channel)
 
             # emissivity defined separate from Contribution Function (Gofnt)
-            emissivity, em_wavelength_array = self.get_emissivity(channel=channel, wavelength_range=wavelength_range,
-                                                                  specific_ion=specific_ion)
+            self.get_emissivity(channel=channel, wavelength_range=wavelength_range, specific_ion=ion_object)
 
             # ssw multiplies by platescale
             platescale = self.get_channel_data(channel)['plate_scale']
+            print('platescale', platescale)  # check that out...
 
             # top intensity lines in range defined separate from contribution function
+            ion_object.intensity(wvlRange=wavelength_range)
             top_line_index, nlines = self.get_most_intense_line(channel=channel, wavelength_range=wavelength_range,
-                                                                specific_ion=specific_ion)
+                                                                ion_object=ion_object)
 
             # Contribution function variables defined alternately
-            specific_ion.populate(temperature=t)  # creates fe14.Population containing the level population information
-            edensity = specific_ion.Population['eDensity']
-            ion_eq = specific_ion.IoneqOne  # the ionization equilibrium for the selected ion as a function of temperature.
+            ion_object.populate(temperature=t)  # creates fe14.Population containing the level population information
+            edensity = ion_object.Population['eDensity']
+            ion_eq = ion_object.IoneqOne  # the ionization equilibrium for the selected ion as a function of temperature.
             g_ioneq = ion_eq / edensity  # divided by the electron density
-            abundance = specific_ion.Abundance
+            abundance = ion_object.Abundance
 
             # gofnt function per line
-            self.contribution_function = abundance * g_ioneq * emissivity[top_line_index]
+            self.contribution_function = abundance * g_ioneq * self.emissivity[top_line_index]
             # print('gofnt: ', self.contribution_function)
-
-
-
 
     def calculate_temperature_response(self, channel):
         """
@@ -535,51 +578,93 @@ class Response():
             dictionary with temperatures and temperature response as items
 
         """
+        var = self.get_channel_data(channel)
 
-        # load in wavelength response
-        self.calculate_wavelength_response(channel, use_genx_values=True)
-
-        # all elements we can check... need all of them?
-        ion_array = []
-        for element in c.El:
-            for level in range(1, 38, 1):
-                ion_array.append(element + '_' + str(level))
-
-        # temperature response variables:
-
-        # wavelengthrange needs to be given as [start, stop] -    probably a better way to et this...
-        wrange = self.get_wavelength_range(channel)
-        start_wvl = self.get_channel_data(channel)['minimum_wavelength']
-        end_wvl = wrange[-1]
+        # temperature response variables: wavelengthrange needs to be given as [start, stop]
+        # wrange = self.get_wavelength_range(channel)
+        # start_wvl = self.get_channel_data(channel)['minimum_wavelength']
+        # end_wvl = wrange[-1]
+        start_wvl = channel - 20
+        end_wvl = channel + 20
         wavelength_range = [start_wvl, end_wvl]
-        # print('wavelength range: ', wavelength_range)
+        print('wavelength range: ', wavelength_range)
 
-        # isobaric model pressure is 10^15
+        # isobaric model pressure is 10^15 - needed?
         pressure = 10 ** 15 * (u.Kelvin / u.cm ** 3)
 
         # default temperature
         t = 10. ** (5.5 + 0.05 * np.arange(21.))
 
-        # define ion
-        fe14 = ch.ion('fe_14', temperature=t, eDensity=1.e+9, em=1.e+27)
-        # define ion temperatures
-        temperatures = fe14.Temperature  # same as fe14.Population['temperature']  # length 21
+        # # test with wavelength response as full array?
+        # self.calculate_wavelength_response(channel, total_range=True, use_genx_values=True)
 
-        # pulled this to separate function until debugged. remerge as needed.
-        self.calculate_contribution_function(channel, wavelength_range, fe14)
+        # test with wavelength response as float value for channel? -
+        self.calculate_wavelength_response(channel,  use_genx_values=True)
 
-        temp_response = self.contribution_function * self.wavelength_response
-        # print('temp response: ', temp_response)
+        # # test case: one ion object - fe14
+        # fe14 = ch.ion('fe_14', temperature=t, eDensity=1.e+9, em=1.e+27)
 
-        # TODO: loop through array of ions (from chianti elements), Too many, need to choose some. But still Testing:
-        # gofnt_array = []
-        # for i in ion_array:
-        #     print(i)   # breaks on h_2 .. :( 'ion' has no attribute 'Nlvls' for h_2
-        #     specific_ion = ch.ion( i , temperature=t, eDensity=1.e+9, em=1.e+27)
-        #     temperatures = specific_ion.Temperature  # same as fe14.Population['temperature']  # length 21
-        #     contribution_function = self.get_contribution_function(channel, wavelength_range, specific_ion)
-        #     gofnt_array.append(contribution_function)
-        # temp_response = gofnt_array * wavelength_response
-        # print('temp response: ', self.temperature_response)
+        # looping through elements and ions:
+        ion_array = []
 
-        self.temperature_response =  {'temperature': temperatures, 'temperature response': temp_response}
+        # test case: store iron ion names
+        # for level in range(1, 15, 1):
+        #     ion_array.append('fe' + '_' + str(level))
+
+        # # test case: store ion names of elements with high solar abundance - basically same result as running all ions
+        # # (based on logarithmic abundance chart, higher than ~ 7 dex)
+        # solar_elements = ['h', 'he', 'c', 'n', 'o', 'ne', 'si', 's', 'ar', 'ca', 'ni', 'fe']
+        # for element in solar_elements:
+        #     for level in range(1, 18, 1): # max 38
+        #         ion_array.append(element + '_' + str(level))
+
+        # # test case: store every element in chianti ion names - takes a REALLY long time...
+        # for element in c.El:
+        #     for level in range(1, 38, 1):
+        #         ion_array.append(element + '_' + str(level))
+
+        # store every ion from Felding and Widing (1993) abundances: bibcode 1995ApJ...443..416L
+        ion_array = ['o_5', 'o_6', 'ne_8', 'mg_7', 'mg_10', 'si_6', 'si_7', 'si_8', 'si_9', 'si_10', 's_8', 's_9',
+                     's_10', 's_11', 's_12', 's_13', 'fe_8', 'fe_9', 'fe_10', 'fe_11', 'fe_12', 'fe_13', 'fe_14',
+                     'fe_15', 'ni_11', 'ni_12', 'ni_13', 'ni_17', 'ni_18']
+
+        # find contribution function for all ions
+        gofnt_array = []
+        for i in ion_array:
+            try:
+                ion_object = ch.ion(i, temperature=t, eDensity=1.e+9, em=1.e+27)
+                self.calculate_contribution_function(channel, wavelength_range, ion_object, chianti_Gofnt=True)
+                gofnt_array.append(self.contribution_function)
+                print(i)
+            except (AttributeError, KeyError, UnboundLocalError, IndexError):
+                # doesn't save ions if no lines found in selected interval
+                #                      missing information (Elvlc file missing)
+                #                      cause errors in ChiantyPy (Zion2Filename, self.Ip)
+                # print(i, ' contribution not calculated')
+                pass
+
+        platescale = var['plate_scale']  # * (1 / u.second)
+        print(platescale)
+
+        # attempt: add contributions together
+        # temp_response = sum(gofnt_array) * self.wavelength_response * (1 / pressure) * (1 / platescale)
+
+        # attempt: max contributions - more defined
+        stack = np.dstack((gofnt_array))
+        temp_response = stack.max(2) * self.wavelength_response * (1 / pressure) * (1 / platescale)
+        ## will need to change output temp_response to temp_response[0]
+
+        # attempt: emissivity times wavelength response (Figure 11)
+        # self.get_emissivity(channel, wavelength_range, ion_object)
+        # temp_response = self.emissivity  * self.wavelength_response * 1/pressure # add pressure???
+
+        # testing wavelength_response as array:  # not working  as of yet ValueError: shapes (8751,) and (21,)
+        # temp_response = []
+        # stack = np.dstack((gofnt_array))
+        # for value in stack.max(2):
+        #     temp_response.append(value * self.wavelength_response * (1 / pressure) * (1 / platescale))
+
+        # print('output tr:', temp_response, temp_response.shape)
+
+        # define temperature response dictionary
+        self.temperature_response = {'temperature': self.temperatures, 'temperature response': temp_response[0]}
