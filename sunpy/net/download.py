@@ -53,6 +53,9 @@ class Downloader(object):
 
             with closing(urllib.request.urlopen(url)) as sock:
                 fullname = path(sock, url)
+                dir_ = os.path.abspath(os.path.dirname(fullname))
+                if not os.path.exists(dir_):
+                    os.makedirs(dir_)
 
                 with open(fullname, 'wb') as fd:
                     while True:
@@ -137,6 +140,9 @@ class Downloader(object):
 
         # Create function to compute the filepath to download to if not set
         default_dir = sunpy.config.get("downloads", "download_dir")
+
+        if path is not None:
+            path = os.path.expanduser(path)
 
         if path is None:
             path = partial(default_name, default_dir)
