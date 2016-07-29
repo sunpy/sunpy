@@ -140,6 +140,9 @@ class Downloader(object):
 
         # Create function to compute the filepath to download to if not set
 
+        if path is not None:
+            path = os.path.expanduser(path)
+
         if path is None:
             path = partial(default_name, get_and_create_download_dir())
         elif isinstance(path, six.string_types):
