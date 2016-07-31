@@ -13,7 +13,7 @@ __all__ = ['Scraper']
 
 # regular expressions to convert datetime format
 TIME_CONVERSIONS = {'%Y': '\d{4}', '%y': '\d{2}',
-                    '%b': '[A-Z]..', '%B': '\W', '%m': '\d{2}',
+                    '%b': '[A-Z][a-z]{2}', '%B': '\W', '%m': '\d{2}',
                     '%d': '\d{2}', '%j': '\d{3}',
                     '%H': '\d{2}', '%I': '\d{2}',
                     '%M': '\d{2}',
@@ -139,10 +139,11 @@ class Scraper(object):
         #   Create new empty lists
         final_date = list()
         final_pattern = list()
+        re_together = re_together.replace('[A-Z]', '\\[A-Z]')
         for p,r in zip(pattern_together.split('%')[1:], re_together.split('\\')[1:]):
-            regexp = '\\{}'.format(r)
+            regexp = '\\{}'.format(r) if not r.startswith('[') else r
             pattern = '%{}'.format(p)
-            date_part = re.match(regexp, date_together)
+            date_part = re.search(regexp, date_together)
             date_together = date_together[:date_part.start()] + \
                             date_together[date_part.end():]
             if pattern not in final_pattern:
@@ -182,7 +183,7 @@ class Scraper(object):
             try:
                 opn = urlopen(directory)
                 try:
-                    soup = BeautifulSoup(opn)
+                    soup = BeautifulSoup(opn, "lxml")
                     for link in soup.find_all("a"):
                         href = link.get("href")
                         if href.endswith(self.pattern.split('.')[-1]):
