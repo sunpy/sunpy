@@ -105,6 +105,12 @@ def testURL_pattern():
     assert not s._URL_followsPattern('fd_20130410_231211.fts.gz')
     assert not s._URL_followsPattern('fd_20130410_ar_231211.fts.gz')
 
+def testURL_patternMilliseconds():
+    s = Scraper('fd_%Y%m%d_%H%M%S_%e.fts')
+    assert s._URL_followsPattern('fd_20130410_231211_119.fts')
+    assert not s._URL_followsPattern('fd_20130410_231211.fts.gz')
+    assert not s._URL_followsPattern('fd_20130410_ar_231211.fts.gz')
+
 # Local files don't work
 # def testFilesRange_sameDirectory_local():
 #     s = Scraper('/'.join(['file:/',sunpy.data.test.rootdir,
