@@ -137,6 +137,16 @@ class Downloader(object):
 
         server = self._get_server(url)
 
+        # Create function to compute the filepath to download to if not set
+        default_dir = sunpy.config.get("downloads", "download_dir")
+
+        if path is None:
+            path = partial(default_name, default_dir)
+        elif isinstance(path, six.string_types):
+            path = partial(default_name, path)
+        elif not callable(path):
+            raise ValueError("path must be: None, string or callable")
+
         # Use default callbacks if none were specified
         if callback is None:
             callback = self._default_callback
