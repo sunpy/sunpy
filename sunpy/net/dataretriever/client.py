@@ -205,17 +205,26 @@ class GenericClient(object):
         -------
         Results Object
         """
+        details = (qres.__dict__['client']).map_
+
         urls = []
         for qrblock in qres:
             urls.append(qrblock.url)
 
+        filenames = []
+        for url in urls:
+            filenames.append(url.split('/')[-1])
+
         res = Results(lambda x: None, 0, lambda map_: self._link(map_))
 
         dobj = Downloader(max_conn=len(urls), max_total=len(urls))
-        for aurl, ncall in list(zip(urls, map(lambda x: res.require([x]),
-                                              urls))):
+
+        for aurl, ncall, filename in list(zip(urls, map(lambda x: res.require([x]),
+                                              urls), filenames)):
+            temp_dict = details.copy()
+            temp_dict['file'] = filename
             dobj.download(aurl, kwargs.get('path', None), ncall,
-                            kwargs.get('ErrorBack', None))
+                            kwargs.get('ErrorBack', None), **temp_dict)
 
         return res
 
