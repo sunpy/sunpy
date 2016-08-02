@@ -215,7 +215,7 @@ class GenericClient(object):
         -------
         Results Object
         """
-        details = (qres.__dict__['client']).map_
+        details = qres.client.map_
 
         urls = []
         for qrblock in qres:
@@ -232,7 +232,7 @@ class GenericClient(object):
         for filename in filenames:
             if path is None:
                 path = os.path.join(default_dir, '{file}')
-            elif isinstance(path, six.string_types):
+            elif isinstance(path, six.string_types) and '{file}' not in path:
                 path = os.path.join(path, '{file}')
 
             temp_dict = details.copy()
