@@ -26,7 +26,7 @@ class RHESSIClient(GenericClient):
         """
         Helper Function:used to hold information about source.
         """
-        self.map_['source'] = ''
+        self.map_['source'] = 'rhessi'
         self.map_['instrument'] = 'rhessi'
         self.map_['phyobs'] = 'irradiance'
         self.map_['provider'] = 'nasa'
