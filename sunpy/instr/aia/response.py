@@ -28,19 +28,15 @@ utilize sunpy/instr/tests/test_aia.py
 """
 
 import numpy as np
+
 import astropy.units as u
 import astropy.constants as constants
-
-import sunpy
-import sunpy.data.test as test
-from .aia_read_genx2table import aia_instr_properties_to_table
-
-# running github ChiantiPy!
 import chianti.core as ch
+import chianti.constants as c
 from scipy import integrate
 
-import chianti.constants as c
-import matplotlib.pyplot as plt
+from .aia_read_genx2table import aia_instr_properties_to_table
+import sunpy.data.test as test
 
 
 class Response():
@@ -310,7 +306,7 @@ class Response():
                 self.wavelength_response = var['effective_area'] * (self.system_gain * dn_per_photon)
             else:
                 self.wavelength_response = var['effective_area'][channel_index] * (
-                self.system_gain * dn_per_photon)
+                    self.system_gain * dn_per_photon)
 
         else:
             self.calculate_system_gain(channel)
@@ -450,7 +446,8 @@ class Response():
         :return:
         """
         # default temperature - make this global?
-        t = 10. ** (5.5 + 0.05 * np.arange(21.))
+        # t = 10. ** (5.5 + 0.05 * np.arange(21.))
+        # print('t: ', t)
         var = self.get_channel_data(channel)
 
         if chianti_Gofnt:
@@ -530,8 +527,8 @@ class Response():
             self.contribution_function = abundance * g_ioneq * self.emissivity[top_line_index]
             # print('gofnt: ', self.contribution_function)
 
-    def make_ion_contribution_array(self, channel, temperature, wavelength_range, test=False, all_chianti_ions=False,
-                                    solar_chromosphere_ions=False):
+    def get_ion_contribution_array(self, channel, temperature, wavelength_range, test=False, all_chianti_ions=False,
+                                   solar_chromosphere_ions=False, **kwargs):
         """
 
         :return:
@@ -567,29 +564,38 @@ class Response():
                     ion_array.append(element + '_' + str(level))
                     # # TODO: create data structure with contribution structure of all elements for easy access
 
-        # find contribution function for all ions
-        ion_contributions = []
-        for i in ion_array:
-            try:
-                ion_object = ch.ion(i, temperature=temperature, eDensity=1.e+9, em=1.e+27)
-                self.calculate_contribution_function(channel, wavelength_range, ion_object, chianti_Gofnt=True)
-                ion_contributions.append(self.contribution_function)
-                print(i)
-            except (AttributeError, KeyError, UnboundLocalError, IndexError):
-                # doesn't save ions if no lines found in selected interval
-                #                      missing information (Elvlc file missing)
-                #                      cause errors in ChiantyPy (Zion2Filename, self.Ip)
-                # print(i, ' contribution not calculated')
-                pass
+        ion_contribution_dataframe = kwargs.get('ion_contribution_dataframe', 'contributions.csv')
+        if ion_contribution_dataframe:
+            # read contributions from dataframe
+            # move to another definition?
+            # df = pd.dataframe()
+            #ion_contributions = array
+            pass
+        else:
+
+            # find contribution function for all ions
+            ion_contributions = []
+            for i in ion_array:
+                try:
+                    ion_object = ch.ion(i, temperature=temperature, eDensity=1.e+9, em=1.e+27)
+                    self.calculate_contribution_function(channel, wavelength_range, ion_object, chianti_Gofnt=True)
+                    ion_contributions.append(self.contribution_function)
+                    print(i)
+                except (AttributeError, KeyError, UnboundLocalError, IndexError):
+                    # doesn't save ions if no lines found in selected interval
+                    #                      missing information (Elvlc file missing)
+                    #                      cause errors in ChiantyPy (Zion2Filename, self.Ip)
+                    # print(i, ' contribution not calculated')
+                    pass
 
         # sum all contributions for all ions
         self.contributions_array = sum(ion_contributions)
 
-        # check: confirms sum did the job!
+        # move to test: check: confirms sum did the job!
         # print('ca: ', contributions_array)
         # print('ic: ', ion_contributions, len(ion_contributions))
 
-    def calculate_temperature_response(self, channel, simp=False, trapz1=False, trapz2=False, **kwargs):
+    def calculate_temperature_response(self, channel, trapz1=False, trapz2=False, **kwargs):
         """
         calculates temperature for various features using ChiantiPy
 
@@ -610,25 +616,28 @@ class Response():
         wrange = var['wavelength_range']
         # print('wave', wrange)
 
-        start_wvl = self.get_channel_data(channel)['minimum_wavelength']
-        end_wvl = wrange[-1]
-        wavelength_range = [start_wvl, end_wvl]
-        print('wavelength range1: ', wavelength_range, 'largest total range - same for all channels')
-
-        start_wvl = channel - 30
-        end_wvl = channel + 30
-        wavelength_range = [start_wvl, end_wvl]
-        print('wavelength range2: ', wavelength_range, 'mid range centered around channel')
+        # start_wvl = self.get_channel_data(channel)['minimum_wavelength']
+        # end_wvl = wrange[-1]
+        # wavelength_range = [start_wvl, end_wvl]
+        # print('wavelength range1: ', wavelength_range, 'largest total range - same for all channels')
+        #
+        # start_wvl = channel - 30
+        # end_wvl = channel + 30
+        # wavelength_range = [start_wvl, end_wvl]
+        # print('wavelength range2: ', wavelength_range, 'mid range centered around channel')
 
         # obtain index for values as specific wavelength in wavelength range
         # wavesteps make actual range 10x smaller if indexing
+        #TODO: input range keyword to choose how much of a wavelength range to probe
         channel_index = self.wavelength_range_index(channel)
-        start_wvl = wrange[channel_index - 100]
-        end_wvl = wrange[channel_index + 25]
+        start_wvl = wrange[channel_index - 10]
+        end_wvl = wrange[channel_index + 10]
         wavelength_range = [start_wvl, end_wvl]
-        print('wavelength range3: ', wavelength_range, 'smallest range ( + 100 in index = + 10 wavelengths in array)')
+        print('wavelength range3: ', wavelength_range)
+        # + 100 in index = + 10 wavelengths in array
+        # + 10 in index = + 1 wavelength in array
 
-        # Question How close to the central channel do we want to look at the temperature response?
+        # Question: How close to the central channel do we want to look at the temperature response?
 
 
 
@@ -639,17 +648,18 @@ class Response():
         # isobaric model pressure is 10^15 - needed?
         pressure = 10 ** 15 * (u.Kelvin / u.cm ** 3)
 
-        # default temprature
-        t = kwargs.get('temperature', 10. ** (5.5 + 0.05 * np.arange(21.)))
+        # default temperature
+        t = kwargs.get('temperature', 10. ** (5.0 + 0.05 * np.arange(61.)))
+        print('t: ', np.log(t))
         # print('t',t)
 
         # calculate wavelength response
         self.calculate_wavelength_response(channel, use_total_range=True, use_genx_values=True)
 
         # get ion contributions
-        # # TODO: save this once run once and then load from it
-        # if no csv or table file:
-        self.make_ion_contribution_array(channel, temperature=t, wavelength_range=wavelength_range, test = True)
+        # # TODO: save this in dataframe after one run and then load from it
+        self.get_ion_contribution_array(channel, temperature=t, wavelength_range=wavelength_range,
+                                        all_chianti_ions=True)
         #     save to a file
         # else:
         #     look in file
@@ -660,9 +670,10 @@ class Response():
         # multiply ion contributions array by wave-length response array
         response = []
         for ion_contribution_per_temp in self.contributions_array:
-            response.append(ion_contribution_per_temp * self.wavelength_response[channel_index - 100:channel_index + 100 ] )#index effective area the same as contributions are indexed
+            response.append(ion_contribution_per_temp * self.wavelength_response[
+                                                        channel_index - 10:channel_index + 10])  # index effective area the same as contributions are indexed
 
-        # # check: these are the same length because wavelength range in defining response functions
+        # move to test: check: these are the same length because wavelength range in defining response functions
         # print('save', response, len(response), len(response[0]))
         # print(len(wrange))
 
