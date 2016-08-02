@@ -20,16 +20,12 @@ from sunpy.extern.six.moves import urllib
 from sunpy.extern.six import iteritems
 
 import sunpy
-from sunpy.util import replacement_filename
 from sunpy.util.progressbar import TTYProgressBar as ProgressBar
 
 
 def default_name(path, sock, url):
     name = sock.headers.get('Content-Disposition', url.rsplit('/', 1)[-1])
     return os.path.join(path, name)
-
-def simple_path(path, sock, url):
-    return path
 
 
 class Downloader(object):
@@ -116,7 +112,7 @@ class Downloader(object):
     def init(self):
         pass
 
-    def download(self, url, path=None, callback=None, errback=None, **kwargs):
+    def download(self, url, path=None, callback=None, errback=None):
         """Downloads a file at a specified URL.
 
         Parameters
@@ -141,22 +137,6 @@ class Downloader(object):
 
         server = self._get_server(url)
 
-        # Create function to compute the filepath to download to if not set
-        default_dir = sunpy.config.get("downloads", "download_dir")
-
-        if path is None:
-            fname = os.path.join(default_dir, '{file}')
-        elif isinstance(path, six.string_types):
-            fname = os.path.join(path, '{file}')
-
-        fname = fname.format(**kwargs)
-        fname = os.path.expanduser(fname)
-
-        if os.path.exists(fname):
-            fname = replacement_filename(fname)
-
-        fname = partial(simple_path, fname)
-
         # Use default callbacks if none were specified
         if callback is None:
             callback = self._default_callback
@@ -164,9 +144,9 @@ class Downloader(object):
             errback = self._default_error_callback
 
         # Attempt to download file from URL
-        if not self._attempt_download(url, fname, callback, errback):
+        if not self._attempt_download(url, path, callback, errback):
             # If there are too many concurrent downloads, queue for later
-            self.q[server].append((url, fname, callback, errback))
+            self.q[server].append((url, path, callback, errback))
 
     def _close(self, callback, args, server):
         """ Called after download is done. Activated queued downloads, call callback.
