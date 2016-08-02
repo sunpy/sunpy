@@ -75,7 +75,7 @@ def test_response():
     # Test for response function
 
     # Check initial properties are loaded in as arrays
-    # assert type(self.channel_list) == array
+    assert type(self.channel_list) == array
 
     # test get wavelength range
     # if no channel specified, wavelength range should match var['wavelength_range']
@@ -100,7 +100,7 @@ def test_response():
     # print(reflectance, transmission_efficiency)
 
 
-# test get_wavelength_response
+    # test get_wavelength_response
     # use genx files
         # print(gain)# 18.3 for all channels from .genx file
     # after else

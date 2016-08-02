@@ -314,125 +314,8 @@ class Response():
 
             self.wavelength_response = self.effective_area * self.system_gain
 
-    def get_emissivity(self, channel, wavelength_range, specific_ion):
-        """
-        Find the emissivity for each line
-         - develop an emissivity (chianti) spectral structure based on plasma  properties (line intensities?/ emissivity?)
-
-        :return: generates chianti object - continuum - chianti model with line list
-
-        Notes:
 
 
-        - create a line list  to show line intensities
-
-
-        # solar abundances in chianti!
-        chianti abundfile  default = sun_photospheric_1998_grevesse which includes the abundances of
-                                    Grevesse and Sauval, 1998, Space Science Reviews, 85, 161.
-                                    Boerner paper uses: Feldman and Widing (1993) ?
-
-
-        # ionization equilibrium in chianti!
-        chianti ioneqfile = The default value is chianti which includes the ionization equilibrium calculations
-                            of Dere, et al., 2009, Astronomy and Astrophysics, 498, 915 and are considered to be based
-                            on the best ionization and recombination rates currently available.
-        """
-
-        t = 10. ** (5.5 + 0.05 * np.arange(21.))
-        fe14 = ch.ion('fe_14', temperature=t, eDensity=1.e+9, em=1.e+27)
-
-        var = self.get_channel_data(channel)
-        # ion needs form [start, stop] -- what's the best method for choosing the wavelength range?
-        wrange = var['wavelength_range']
-        start_wvl = var['minimum_wavelength']
-        end_wvl = wrange[-1]  # index?
-        wavelength_range = [start_wvl, end_wvl]
-
-        # # define for emissitivity function attributes - not required ?
-        # fe14.populate(temperature=t)  # creates fe14.Population containing the level population information
-        # fe14.Population['population'] # level populations for specific ion
-        # fe14.IoneqOne # the ionization equilibrium for the selected ion as a function of temperature.
-
-        # create fe14.Emiss containing the line emissivity information
-        fe14.emiss(wvlRange=wavelength_range)
-
-        self.emissivity_wavelength_array = fe14.Emiss['wvl']  # 41745 length
-        self.emissivity = fe14.Emiss['emiss']  # 21 values of 41745 length
-
-    def spectrum(self, temperature, wavelength_range, fe_14, channel):
-        """
-        generate a spectral model for various solar features to be used in modules
-                 idl uses this to make a 'structure' object...
-                 maybe I can use it to make a line list?
-
-        - want to read values of physical parameters to determine feature
-            chianti.core.continuum has places to access freebound and freefree emissions
-
-        input:
-
-        :return:
-        """
-
-        # # continuum to get freebound and freefree emissions
-        # # want:  ioneq and abundance to default values
-        # fe14_cont = ch.continuum('fe_14', temperature=temperature)
-        # fe14_cont.freeFreeEmiss(wvl=wavelength_range)
-        # fe14_cont.freeBoundEmiss(wvl=channel)
-        #
-        # fe14_cont.freeFree(wvl=channel)
-        # fe14_cont.freeBound(wvl=channel)
-        # # fe14_cont.IoneqName  = chianti ?
-        #
-        #
-        # # use spectrum to get synthetic spectrum with minwl, maxwl, pressure, goft, ioneqfile  of ions?
-        # # ie) ch.spectrum(temperature, eDensity, wavelength, filter, label, elementList, ionList, minAbund, doContinuum, em, )
-        # # ie ) ch.spectrum(temperature=t, eDensity=fe14.Population['eDensity'], wavelength=channel )
-        #
-        # # test:  attribute error: continuum instance has no attribute 'FreeFree' in ch.spectrum()
-        # # fe14.spectrum() # creates fe14.Spectrum contain the line and continuum spectrum information
-        # fe14.spectrum(wvl=wavelength_range, em=emissivity_array, eDensity=fe14.Population['eDensity'])
-        #
-        # return spectrum
-
-    def get_most_intense_line(self, channel, wavelength_range, ion_object):
-        """
-
-        :return:
-        """
-        temperatures = ion_object.Temperature
-        emissivity, emissivity_wavelength_array = self.get_emissivity(channel, wavelength_range, ion_object)
-
-        # TODO: want to use ionWeb.gofntSelectLines to get self.toplines and self.wvlchoices
-        # couldn't figure out how to access it...
-
-        # # most intense lines  direct from chianti GOFNT
-        # return topline_index, top_lines
-        wvl = ion_object.Intensity["wvl"]
-        igvl = range(len(wvl))
-        nlines = len(igvl)
-        igvl = np.take(igvl, wvl[igvl].argsort())
-        # find the top most intense lines
-        # if top > nlines: # default 10
-        #     top = nlines
-        #
-        intensity = ion_object.Intensity['intensity']
-        maxIntens = np.zeros(nlines, 'Float64')
-        for iline in range(nlines):
-            maxIntens[iline] = intensity[:, igvl[iline]].max()
-        for iline in range(nlines):
-            if maxIntens[iline] == maxIntens.max():
-                maxAll = intensity[:, igvl[iline]]
-        igvlsort = np.take(igvl, np.argsort(maxIntens))
-        # print('igvlsort = ', igvlsort)
-        topLines = igvlsort[-1:]  # previously top, default 10 in code
-        # print(' topLines = ', topLines)
-        maxWvl = '%5.3f' % wvl[topLines[-1]]
-        #        maxline=topLines[-1]
-        #
-        topLines = topLines[wvl[topLines].argsort()]
-
-        return topLines, maxWvl
 
     def calculate_contribution_function(self, channel, wavelength_range, ion_object, chianti_Gofnt=False,
                                         intensity=False):
@@ -465,67 +348,7 @@ class Response():
             # self.Gofnt = {'temperature': outTemperature, 'eDensity': outDensity, 'gofnt': gofnt, 'index': g_line,
             #               'wvl': wvl[g_line]}
 
-        elif intensity:
 
-            # intensity INCLUDES elemental abundance and ionization fraction
-            #           can it be used to calculate gofnt without plotting
-            #           as recommended by kdere of chiantipy
-            #           fe14.Intensity.keys() = ['em', 'intensity', 'wvl', 'lvl2', 'lvl1',
-            #                        'pretty2', 'ionS', 'avalue', 'pretty1', 'integrated', 'obs']
-
-            ion_object.intensity(wvlRange=wavelength_range)
-
-            emissivity_array = ion_object.Intensity['em']  # array of one value em=1.e+27 given in def of ion
-            # ^^^^ EMISSIVITY IS USED IN SSW ^^^^
-
-            # # Attempt to get top line
-            # peak_line, maxwvl = self.get_most_intense_line(channel, wavelength_range, ion_object)
-            # print('top line: ', peak_line, maxwvl)
-
-
-
-            # find index in wavelength range for the line at peak value
-            # index = np.argmin(np.abs(ion_object.Intensity['wvl'] - float(maxwvl)))
-            # print('iw:', intensity_wavelengths[index], index)
-            # print(intensity_array[:,index])
-            index = ion_object.Intensity['intensity'].index(ion_object.Intensity['intensityTop'])
-            print('index: ', index)
-
-            # Intensity['intensity'] is double nested
-            gofnt = ion_object.Intensity['intensity'][:, index] / ion_object.EDensity
-            print('gofnt: ', gofnt)
-
-            self.temperatures = ion_object.Temperature
-            self.contribution_function = gofnt
-
-
-        else:
-
-            # not sure we need a model spectrum? just in case...
-            # spec = self.spectrum(temperature=t, wavelength_range=wavelength_range, specific_ion=specific_ion, channel=channel)
-
-            # emissivity defined separate from Contribution Function (Gofnt)
-            self.get_emissivity(channel=channel, wavelength_range=wavelength_range, specific_ion=ion_object)
-
-            # ssw multiplies by platescale
-            platescale = self.get_channel_data(channel)['plate_scale']
-            print('platescale', platescale)  # check that out...
-
-            # top intensity lines in range defined separate from contribution function
-            ion_object.intensity(wvlRange=wavelength_range)
-            top_line_index, nlines = self.get_most_intense_line(channel=channel, wavelength_range=wavelength_range,
-                                                                ion_object=ion_object)
-
-            # Contribution function variables defined alternately
-            ion_object.populate(temperature=t)  # creates fe14.Population containing the level population information
-            edensity = ion_object.Population['eDensity']
-            ion_eq = ion_object.IoneqOne  # the ionization equilibrium for the selected ion as a function of temperature.
-            g_ioneq = ion_eq / edensity  # divided by the electron density
-            abundance = ion_object.Abundance
-
-            # gofnt function per line
-            self.contribution_function = abundance * g_ioneq * self.emissivity[top_line_index]
-            # print('gofnt: ', self.contribution_function)
 
     def get_ion_contribution_array(self, channel, temperature, wavelength_range, test=False, all_chianti_ions=False,
                                    solar_chromosphere_ions=False, **kwargs):
@@ -565,28 +388,28 @@ class Response():
                     # # TODO: create data structure with contribution structure of all elements for easy access
 
         ion_contribution_dataframe = kwargs.get('ion_contribution_dataframe', 'contributions.csv')
-        if ion_contribution_dataframe:
-            # read contributions from dataframe
-            # move to another definition?
-            # df = pd.dataframe()
-            #ion_contributions = array
-            pass
-        else:
+        # if ion_contribution_dataframe:
+        #     # read contributions from dataframe
+        #     # move to another definition?
+        #     # df = pd.dataframe()
+        #     #ion_contributions = array
+        #     pass
+        # else:
 
-            # find contribution function for all ions
-            ion_contributions = []
-            for i in ion_array:
-                try:
-                    ion_object = ch.ion(i, temperature=temperature, eDensity=1.e+9, em=1.e+27)
-                    self.calculate_contribution_function(channel, wavelength_range, ion_object, chianti_Gofnt=True)
-                    ion_contributions.append(self.contribution_function)
-                    print(i)
-                except (AttributeError, KeyError, UnboundLocalError, IndexError):
-                    # doesn't save ions if no lines found in selected interval
-                    #                      missing information (Elvlc file missing)
-                    #                      cause errors in ChiantyPy (Zion2Filename, self.Ip)
-                    # print(i, ' contribution not calculated')
-                    pass
+        # find contribution function for all ions
+        ion_contributions = []
+        for i in ion_array:
+            try:
+                ion_object = ch.ion(i, temperature=temperature, eDensity=1.e+9, em=1.e+27)
+                self.calculate_contribution_function(channel, wavelength_range, ion_object, chianti_Gofnt=True)
+                ion_contributions.append(self.contribution_function)
+                print(i)
+            except (AttributeError, KeyError, UnboundLocalError, IndexError):
+                # doesn't save ions if no lines found in selected interval
+                #                      missing information (Elvlc file missing)
+                #                      cause errors in ChiantyPy (Zion2Filename, self.Ip)
+                # print(i, ' contribution not calculated')
+                pass
 
         # sum all contributions for all ions
         self.contributions_array = sum(ion_contributions)
@@ -616,9 +439,9 @@ class Response():
         wrange = var['wavelength_range']
         # print('wave', wrange)
 
-        # start_wvl = self.get_channel_data(channel)['minimum_wavelength']
-        # end_wvl = wrange[-1]
-        # wavelength_range = [start_wvl, end_wvl]
+        start_wvl = self.get_channel_data(channel)['minimum_wavelength']
+        end_wvl = wrange[-1]
+        wavelength_range = [start_wvl, end_wvl]
         # print('wavelength range1: ', wavelength_range, 'largest total range - same for all channels')
         #
         # start_wvl = channel - 30
@@ -628,14 +451,14 @@ class Response():
 
         # obtain index for values as specific wavelength in wavelength range
         # wavesteps make actual range 10x smaller if indexing
-        #TODO: input range keyword to choose how much of a wavelength range to probe
-        channel_index = self.wavelength_range_index(channel)
-        start_wvl = wrange[channel_index - 10]
-        end_wvl = wrange[channel_index + 10]
-        wavelength_range = [start_wvl, end_wvl]
-        print('wavelength range3: ', wavelength_range)
-        # + 100 in index = + 10 wavelengths in array
-        # + 10 in index = + 1 wavelength in array
+        # #TODO: input range keyword to choose how much of a wavelength range to probe
+        # channel_index = self.wavelength_range_index(channel)
+        # start_wvl = wrange[channel_index - 10]
+        # end_wvl = wrange[channel_index + 10]
+        # wavelength_range = [start_wvl, end_wvl]
+        # print('wavelength range3: ', wavelength_range)
+        # # + 100 in index = + 10 wavelengths in array
+        # # + 10 in index = + 1 wavelength in array
 
         # Question: How close to the central channel do we want to look at the temperature response?
 
@@ -670,8 +493,7 @@ class Response():
         # multiply ion contributions array by wave-length response array
         response = []
         for ion_contribution_per_temp in self.contributions_array:
-            response.append(ion_contribution_per_temp * self.wavelength_response[
-                                                        channel_index - 10:channel_index + 10])  # index effective area the same as contributions are indexed
+            response.append(ion_contribution_per_temp * self.wavelength_response[channel_index - 10:channel_index + 10])  # index effective area the same as contributions are indexed
 
         # move to test: check: these are the same length because wavelength range in defining response functions
         # print('save', response, len(response), len(response[0]))
