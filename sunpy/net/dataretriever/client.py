@@ -3,12 +3,17 @@
 # Google Summer of Code 2014
 
 import copy
+import os
 import datetime
 from collections import OrderedDict
+from functools import partial
 
 import astropy.table
 
+import sunpy
+from sunpy.extern import six
 from sunpy.time import TimeRange
+from sunpy.util import replacement_filename
 from sunpy import config
 
 from ..download import Downloader, Results
@@ -18,6 +23,10 @@ TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['QueryResponse', 'GenericClient']
 
+
+
+def simple_path(path, sock, url):
+    return path
 
 class QueryResponseBlock(object):
     """
@@ -215,17 +224,37 @@ class GenericClient(object):
         for url in urls:
             filenames.append(url.split('/')[-1])
 
+        # Create function to compute the filepath to download to if not set
+        default_dir = sunpy.config.get("downloads", "download_dir")
+
+        paths = []
+        for filename in filenames:
+            if path is None:
+                path = os.path.join(default_dir, '{file}')
+            elif isinstance(path, six.string_types):
+                path = os.path.join(path, '{file}')
+
+            temp_dict = details.copy()
+            temp_dict['file'] = filename
+            path  = path.format(**temp_dict)
+            path = os.path.expanduser(path)
+
+            if os.path.exists(path):
+                path = replacement_filename(path)
+
+            path = partial(simple_path, path)
+
+            paths.append(path)
+
         res = Results(lambda x: None, 0, lambda map_: self._link(map_))
 
         dobj = Downloader(max_conn=len(urls), max_total=len(urls))
 
         # We cast to list here in list(zip... to force execution of 
         # res.require([x]) at the start of the loop.
-        for aurl, ncall, filename in list(zip(urls, map(lambda x: res.require([x]),
-                                              urls), filenames)):
-            temp_dict = details.copy()
-            temp_dict['file'] = filename
-            dobj.download(aurl, path, ncall, error_callback, **temp_dict)
+        for aurl, ncall, path in list(zip(urls, map(lambda x: res.require([x]),
+                                              urls), paths)):
+            dobj.download(aurl, path, ncall, error_callback)
 
         return res
 
