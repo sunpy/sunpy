@@ -20,9 +20,13 @@ from sunpy.extern.six.moves import urllib
 from sunpy.extern.six import iteritems
 
 import sunpy
+from sunpy.util import replacement_filename
 from sunpy.util.progressbar import TTYProgressBar as ProgressBar
 
 
+def default_name(path, sock, url):
+    name = sock.headers.get('Content-Disposition', url.rsplit('/', 1)[-1])
+    return os.path.join(path, name)
 
 def simple_path(path, sock, url):
     return path

@@ -221,6 +221,8 @@ class GenericClient(object):
 
         for aurl, ncall, filename in list(zip(urls, map(lambda x: res.require([x]),
                                               urls), filenames)):
+            # We cast to list here in list(zip... to force execution of 
+            # res.require([x]) at the start of the loop.
             temp_dict = details.copy()
             temp_dict['file'] = filename
             dobj.download(aurl, kwargs.get('path', None), ncall,
