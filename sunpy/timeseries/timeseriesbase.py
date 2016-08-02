@@ -11,6 +11,7 @@ import warnings
 import inspect
 from abc import ABCMeta
 from collections import OrderedDict
+import copy
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -134,14 +135,14 @@ class GenericTimeSeries:
         self._nickname = self.detector
 
 
-# #### Keyword attribute and other attribute definitions #### #
+# #### Attribute definitions #### #
+
     @property
     def name(self):
         """Human-readable description of time-series-type"""
         return "{obs} {detector} {instrument} {measurement} {date:{tmf}}".format(obs=self.observatory,
                                                                 detector=self.detector,
                                                                 instrument=self.instrument,
-                                                                measurement=self.measurement,
                                                                 date=parse_time(self.date),
                                                                 tmf=TIME_FORMAT)
 
@@ -154,137 +155,48 @@ class GenericTimeSeries:
     def nickname(self, n):
         self._nickname = n
 
-    @property
-    def date(self, datetime=None, colname=None, **kwargs):
-        """Observation time/s"""
-        # Get all matching values
-        strings = self.meta.get('date-obs', [ self.data.index.min() ], datetime=datetime, colname=colname)
-
-        # Parse to datetime objects
-        datetimes = []
-        for string in strings:
-            datetimes.append(parse_time(string))
-
-        # Return the list
-        return datetimes
-
-    @property
     def detector(self, datetime=None, colname=None, **kwargs):
         """Detector name/s"""
         # Get all matching values
-        strings = self.meta.get('detector', [], datetime=datetime, colname=colname)
+        strings = self.meta.get('detector', datetime=datetime, colname=colname).values()
+        strings.sort()
 
         # Return the list
         return strings
 
-    @property
-    def dsun(self):
-        """The observer distance from the Sun."""
-        dsun = self.meta.get('dsun_obs', None)
-
-        if dsun is None:
-            warnings.warn_explicit("Missing metadata for Sun-spacecraft separation: assuming Sun-Earth distance",
-                                   Warning, __file__, inspect.currentframe().f_back.f_lineno)
-            dsun = sun.sunearth_distance(self.date).to(u.m)
-
-        return u.Quantity(dsun, 'm')
-
-    @property
-    def exposure_time(self):
-        """Exposure time of the image in seconds."""
-        return self.meta.get('exptime', 0.0) * u.s
-
-    @property
     def instrument(self, datetime=None, colname=None, **kwargs):
         """Instrument name/s"""
         # Get all matching values
-        strings = self.meta.get('instrume', [], datetime=datetime, colname=colname)
+        strings = self.meta.get('instrume', datetime=datetime, colname=colname).values()
 
-        # Sanitized the strings
-        sanitized_strings = []
+        # Clean the strings
+        clean_strings = []
         for string in strings:
-            sanitized_strings.append(string.replace("_", " "))
+            clean_strings.append(string.replace("_", " "))
+        clean_strings.sort()
 
         # Return the list
-        return sanitized_strings
+        return clean_strings
 
-    @property
-    def measurement(self, datetime=None, colname=None, **kwargs):
-        """Measurement name, defaults to the wavelength of image"""
-        #return u.Quantity(self.meta.get('wavelnth', 0), self.meta.get('waveunit', ""))
-        return 'measurement'
-
-    @property
     def observatory(self, datetime=None, colname=None, **kwargs):
         """Observatory or Telescope name"""
-        return self.meta.get('obsrvtry', self.meta.get('telescop', "")).replace("_", " ")
+        # Get all matching values
+        strings = self.meta.get(['obsrvtry', 'telescop'], datetime=datetime, colname=colname).values()
+
+        # Clean the strings
+        clean_strings = []
+        for string in strings:
+            clean_strings.append(string.replace("_", " "))
+        clean_strings.sort()
+
+        # Return the list
+        return clean_strings
 
     @property
     def columns(self):
         """Returns a list of all the names of the columns in the data."""
         return list(self.data.columns.values)
 
-# #### From Pandas #### #
-    def sort_index(self, **kwargs):
-        """Returns a sorted version of the TimeSeries object.
-        Generally this shouldn't be necessary as most TimeSeries operations sort
-        the data anyway to ensure consistent behaviour when truncating.
-
-        Returns
-        -------
-        newts : `~sunpy.timeseries.TimeSeries`
-            A new time series in ascending chronological order.
-        """
-        return GenericTimeSeries(self.data.sort_index(**kwargs), TimeSeriesMetaData(self.meta.metadata.copy()), self.units.copy())
-
-# #### From Generic Spec #### #
-    def resample(self, rule, method='sum', **kwargs):
-        """Returns a resampled version of the TimeSeries object.
-
-        Parameters
-        ----------
-        rule : `str` or `~astropy.units.quantity.Quantity`
-            The offset string or object representing target conversion.
-            nS for n seconds, nT for n minutes, nH for n hours, nD for n Days.
-
-        method : `str`
-            The mothod used to combine values.
-            Defines the function called in Pandas.
-            downsampling: 'sum', 'mean', 'std'
-            upsampling: 'pad', 'bfill', 'ffill'
-
-        Returns
-        -------
-        newts :
-            A new time series with the data resampled.
-        """
-        # how parameter indicates using multiple methods to Pandas
-        how = kwargs.get('how', None)
-        rule_str = rule
-        if isinstance(rule_str, astropy.units.quantity.Quantity):
-            seconds = rule_str.to(u.s)
-            rule_str = str(seconds.value) + 'S'
-            rule_str = rule_str.replace('.0', '')
-
-        # Create the resample using the given rule.
-        if not how:
-            method = method.lower()
-            resampled_data = self.data.resample(rule_str, **kwargs)
-            if hasattr(resampled_data, method):
-                resampled_data = getattr(resampled_data, method)()
-            else:
-                raise ValueError("Resample method not found")
-        else:
-            # If the how kwarg was given then we simply pass it to the resample function.
-            resampled_data = self.data.resample(rule_str, **kwargs)
-
-        # ToDo: consider re-evaluating the metadata.
-
-        # Return the same type of timeseries object.
-        return self.__class__(resampled_data.sort_index(), TimeSeriesMetaData(self.meta.metadata.copy()), self.units)
-
-
-# #### From OLD LightCurve #### #
     @property
     def index(self):
         """Return the time index of the data."""
@@ -295,6 +207,220 @@ class GenericTimeSeries:
         """Returns the start and end times of the TimeSeries as a `~sunpy.time.TimeRange`
         object"""
         return TimeRange(self.data.index.min(), self.data.index.max())
+
+# #### Data Access, Selection and Organisation Methods #### #
+
+    def quantity(self, colname, **kwargs):
+        """
+        Return a `~astropy.units.quantity.Quantity` for the given column.
+
+        Parameters
+        ----------
+        colname: `str`
+            The heading of the column you want output.
+
+        Returns
+        -------
+        quantity : `~astropy.units.quantity.Quantity`
+        """
+        values = self.data[colname].values
+        unit   = self.units[colname]
+        return u.Quantity(values, unit)
+
+    def add_column(self, colname, quantity, unit=False, overwrite=True, **kwargs):
+        """
+        Return an new TimeSeries with the given column added or updated.
+
+        Parameters
+        ----------
+        colname: `str`
+            The heading of the column you want output.
+
+        quantity : `~astropy.units.quantity.Quantity` or `~numpy.ndarray`
+            The values to be placed within the column.
+            If updating values only then a numpy array is permitted.
+
+        overwrite : `bool`, optional, default:True
+            Set to true to allow the method to overwrite a column already present
+            in the TimeSeries.
+
+        Returns
+        -------
+        newts : TimeSeries
+
+        """
+        # Get the expected units from the quantity if required
+        if not unit and isinstance(quantity, astropy.units.quantity.Quantity):
+            unit = quantity.unit
+        elif not unit:
+            unit = u.dimensionless_unscaled
+
+
+        # Make a copy of all the TimeSeries components.
+        data  = copy.copy(self.data)
+        meta  = TimeSeriesMetaData(copy.copy(self.meta.metadata))
+        units = copy.copy(self.units)
+
+        # Add the unit to the units dictionary if already there.
+        if not (colname in self.data.columns):
+            units[colname] = unit
+
+        # Convert the given quantity into values for given units if necessary.
+        values = quantity
+        if isinstance(values, astropy.units.quantity.Quantity) and overwrite:
+            values = values.to(units[colname]).value
+
+        # Update or add the data.
+        if not (colname in self.data.columns) or overwrite:
+            data[colname] = values
+
+        # Return a new TimeSeries with the given updated/added column.
+        return self.__class__(data, meta, units)
+
+    def sort_index(self, **kwargs):
+        """Returns a sorted version of the TimeSeries object.
+        Generally this shouldn't be necessary as most TimeSeries operations sort
+        the data anyway to ensure consistent behaviour when truncating.
+
+        Returns
+        -------
+        newts : `~sunpy.timeseries.TimeSeries`
+            A new time series in ascending chronological order.
+        """
+        return GenericTimeSeries(self.data.sort_index(**kwargs), TimeSeriesMetaData(copy.copy(self.meta.metadata)), copy.copy(self.units))
+
+    def truncate(self, a, b=None, int=None):
+        """Returns a truncated version of the TimeSeries object.
+
+        Parameters
+        ----------
+        a : `sunpy.time.TimeRange`, `str` or `int`
+            Either a time range to truncate to, or a start time in some format
+            recognised by pandas, or a index integer.
+
+        b : `str` or `int`
+            If specified, the end time of the time range in some format
+            recognised by pandas, or a index integer.
+
+        int : `int`
+            If specified, the interger indicating the slicing intervals.
+
+        Returns
+        -------
+        newts : `~sunpy.timeseries.TimeSeries`
+            A new time series with only the selected times.
+        """
+        # Evaluate inputs
+        # If given strings, then use to create a sunpy.time.timerange.TimeRange
+        # for the SunPy text date parser.
+        if isinstance(a, str) and isinstance(b, str):
+            a = TimeRange(a, b)
+        if isinstance(a, TimeRange):
+            # If we have a TimeRange, extract the values
+            start = a.start
+            end   = a.end
+        else:
+            # Otherwise we already have the values
+            start = a
+            end   = b
+
+        # If an interval integer was given then use in truncation.
+        truncated = self.data.sort_index()[start:end:int]
+
+        # Build similar TimeSeries object and sanatise metadata and units.
+        object = self.__class__(truncated.sort_index(), TimeSeriesMetaData(copy.copy(self.meta.metadata)), copy.copy(self.units))
+        object._sanitize_metadata()
+        object._sanitize_units()
+        return object
+
+
+
+    def extract(self, column_name):
+        """Returns a new time series with the chosen column.
+
+        Parameters
+        ----------
+        column_name : `str`
+            A valid column name.
+
+        Returns
+        -------
+        newts : `~sunpy.timeseries.TimeSeries`
+            A new time series with only the selected column.
+        """
+        """
+        # TODO allow the extract function to pick more than one column
+        if isinstance(self, pandas.Series):
+            return self
+        else:
+            return GenericTimeSeries(self.data[column_name], TimeSeriesMetaData(self.meta.metadata.copy()))
+        """
+        # Extract column and remove empty rows
+        data = self.data[[column_name]].dropna()
+
+        # Build generic TimeSeries object and sanatise metadata and units.
+        object = GenericTimeSeries(data.sort_index(), TimeSeriesMetaData(copy.copy(self.meta.metadata)), copy.copy(self.units))
+        object._sanitize_metadata()
+        object._sanitize_units()
+        return object
+        # Debate: should this return the same TimeSeries type as the original?
+
+    def concatenate(self, otherts, **kwargs):
+        """Concatenate with another time series. This function will check and
+        remove any duplicate times. It will keep the column values from the
+        original time series to which the new time series is being added.
+
+        Parameters
+        ----------
+        otherts : `~sunpy.timeseries.TimeSeries`
+            Another time series.
+
+        same_source : `bool` Optional
+            Set to true to check if the sources of the time series match.
+
+        Returns
+        -------
+        newts : `~sunpy.timeseries.TimeSeries`
+            A new time series.
+
+        Debate: decide if we want to be able to concatenate multiple time series
+        at once.
+        """
+
+        # Check the sources match if specified.
+        same_source = kwargs.get('same_source', False)
+        if same_source and not (isinstance(otherts, self.__class__)):
+            raise TypeError("TimeSeries classes must match.")
+
+        """
+        # Metadata is implemented as with the legacy LightCurve class.
+        # ToDo: Debate: we want to consider how to do this in future.
+        meta = OrderedDict()
+        meta.update({str(self.data.index[0]):TimeSeriesMetaData(self.meta.metadata.copy())})
+        meta.update({str(otherts.data.index[0]):otherts.meta.copy()})
+        """
+        # Concatenate the metadata and data
+        meta = self.meta.concatenate(otherts.meta)
+        data = pd.concat([copy.copy(self.data), otherts.data])
+
+        # Add all the new units to the dictionary.
+        units = OrderedDict()
+        units.update(self.units)
+        units.update(otherts.units)
+
+        # If sources match then build similar TimeSeries.
+        if self.__class__ == otherts.__class__:
+            object = self.__class__(data.sort_index(), meta, units)
+        else:
+            # Build generic time series if the sources don't match.
+            object = GenericTimeSeries(data.sort_index(), meta, units)
+
+        # Sanatise metadata and units
+        object._sanitize_metadata()
+        object._sanitize_units()
+        return object
+
+# #### Plotting Methods #### #
 
     def plot(self, axes=None, **plot_args):
         """Plot a plot of the time series
@@ -343,140 +469,8 @@ class GenericTimeSeries:
 
         return figure
 
-    def truncate(self, a, b=None, int=None):
-        """Returns a truncated version of the TimeSeries object.
-
-        Parameters
-        ----------
-        a : `sunpy.time.TimeRange`, `str` or `int`
-            Either a time range to truncate to, or a start time in some format
-            recognised by pandas, or a index integer.
-
-        b : `str` or `int`
-            If specified, the end time of the time range in some format
-            recognised by pandas, or a index integer.
-
-        int : `int`
-            If specified, the interger indicating the slicing intervals.
-
-        Returns
-        -------
-        newts : `~sunpy.timeseries.TimeSeries`
-            A new time series with only the selected times.
-        """
-        # Debate: consider adding slice notation instead of calling this function.
-
-        # Evaluate inputs
-        # If given strings, then use to create a sunpy.time.timerange.TimeRange
-        # for the SunPy text date parser.
-        if isinstance(a, str) and isinstance(b, str):
-            a = TimeRange(a, b)
-        if isinstance(a, TimeRange):
-            # If we have a TimeRange, extract the values
-            start = a.start
-            end   = a.end
-        else:
-            # Otherwise we already have the values
-            start = a
-            end   = b
-
-        # If an interval integer was given then use in truncation.
-        truncated = self.data.sort_index()[start:end:int]
-
-        # Build similar TimeSeries object and sanatise metadata and units.
-        object = self.__class__(truncated.sort_index(), TimeSeriesMetaData(self.meta.metadata.copy()), self.units.copy())
-        object._sanitize_metadata()
-        object._sanitize_units()
-        return object
-
-
-
-    def extract(self, column_name):
-        """Returns a new time series with the chosen column.
-
-        Parameters
-        ----------
-        column_name : `str`
-            A valid column name.
-
-        Returns
-        -------
-        newts : `~sunpy.timeseries.TimeSeries`
-            A new time series with only the selected column.
-        """
-        """
-        # TODO allow the extract function to pick more than one column
-        if isinstance(self, pandas.Series):
-            return self
-        else:
-            return GenericTimeSeries(self.data[column_name], TimeSeriesMetaData(self.meta.metadata.copy()))
-        """
-        # Extract column and remove empty rows
-        data = self.data[[column_name]].dropna()
-
-        # Build generic TimeSeries object and sanatise metadata and units.
-        object = GenericTimeSeries(data.sort_index(), TimeSeriesMetaData(self.meta.metadata.copy()), self.units.copy())
-        object._sanitize_metadata()
-        object._sanitize_units()
-        return object
-        # Debate: should this return the same TimeSeries type as the original?
-
-    def concatenate(self, otherts, **kwargs):
-        """Concatenate with another time series. This function will check and
-        remove any duplicate times. It will keep the column values from the
-        original time series to which the new time series is being added.
-
-        Parameters
-        ----------
-        otherts : `~sunpy.timeseries.TimeSeries`
-            Another time series.
-
-        same_source : `bool` Optional
-            Set to true to check if the sources of the time series match.
-
-        Returns
-        -------
-        newts : `~sunpy.timeseries.TimeSeries`
-            A new time series.
-
-        Debate: decide if we want to be able to concatenate multiple time series
-        at once.
-        """
-
-        # Check the sources match if specified.
-        same_source = kwargs.get('same_source', False)
-        if same_source and not (isinstance(otherts, self.__class__)):
-            raise TypeError("TimeSeries classes must match.")
-
-        """
-        # Metadata is implemented as with the legacy LightCurve class.
-        # ToDo: Debate: we want to consider how to do this in future.
-        meta = OrderedDict()
-        meta.update({str(self.data.index[0]):TimeSeriesMetaData(self.meta.metadata.copy())})
-        meta.update({str(otherts.data.index[0]):otherts.meta.copy()})
-        """
-        # Concatenate the metadata and data
-        meta = self.meta.concatenate(otherts.meta)
-        data = pd.concat([self.data.copy(), otherts.data])
-
-        # Add all the new units to the dictionary.
-        units = OrderedDict()
-        units.update(self.units)
-        units.update(otherts.units)
-
-        # If sources match then build similar TimeSeries.
-        if self.__class__ == otherts.__class__:
-            object = self.__class__(data.sort_index(), meta, units)
-        else:
-            # Build generic time series if the sources don't match.
-            object = GenericTimeSeries(data.sort_index(), meta, units)
-
-        # Sanatise metadata and units
-        object._sanitize_metadata()
-        object._sanitize_units()
-        return object
-
 # #### Miscellaneous #### #
+
     def _validate_meta(self):
         """
         Validates the meta-information associated with a TimeSeries.
@@ -572,7 +566,7 @@ class GenericTimeSeries:
         self.meta._remove_columns(redundant_cols)
 
 
-# #### New Methods #### #
+# #### Export/Output Methods #### #
     def to_table(self, **kwargs):
         """
         Return an Astropy Table of the give TimeSeries object.
@@ -626,73 +620,6 @@ class GenericTimeSeries:
             the result will be of dtype=object. See Notes.
         """
         return self.data.as_matrix(**kwargs)
-
-    def quantity(self, colname, **kwargs):
-        """
-        Return a `~astropy.units.quantity.Quantity` for the given column.
-
-        Parameters
-        ----------
-        colname: `str`
-            The heading of the column you want output.
-
-        Returns
-        -------
-        quantity : `~astropy.units.quantity.Quantity`
-        """
-        values = self.data[colname].values
-        unit   = self.units[colname]
-        return u.Quantity(values, unit)
-
-    def add_column(self, colname, quantity, unit=False, overwrite=True, **kwargs):
-        """
-        Return an new TimeSeries with the given column added or updated.
-
-        Parameters
-        ----------
-        colname: `str`
-            The heading of the column you want output.
-
-        quantity : `~astropy.units.quantity.Quantity` or `~numpy.ndarray`
-            The values to be placed within the column.
-            If updating values only then a numpy array is permitted.
-
-        overwrite : `bool`, optional, default:True
-            Set to true to allow the method to overwrite a column already present
-            in the TimeSeries.
-
-        Returns
-        -------
-        newts : TimeSeries
-
-        """
-        # Get the expected units from the quantity if required
-        if not unit and isinstance(quantity, astropy.units.quantity.Quantity):
-            unit = quantity.unit
-        elif not unit:
-            unit = u.dimensionless_unscaled
-
-
-        # Make a copy of all the TimeSeries components.
-        data  = self.data.copy()
-        meta  = TimeSeriesMetaData(self.meta.metadata.copy())
-        units = self.units.copy()
-
-        # Add the unit to the units dictionary if already there.
-        if not (colname in self.data.columns):
-            units[colname] = unit
-
-        # Convert the given quantity into values for given units if necessary.
-        values = quantity
-        if isinstance(values, astropy.units.quantity.Quantity) and overwrite:
-            values = values.to(units[colname]).value
-
-        # Update or add the data.
-        if not (colname in self.data.columns) or overwrite:
-            data[colname] = values
-
-        # Return a new TimeSeries with the given updated/added column.
-        return self.__class__(data, meta, units)
 
     @classmethod
     def _parse_file(cls, filepath):

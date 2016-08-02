@@ -28,13 +28,13 @@ import numpy as np
 ##############################################################################
 # Creating a TimeSeries from a file can be done using the factory.
 ts_eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_LIGHTCURVE, source='EVE')
-ts_gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_LIGHTCURVE, source='GBMSummary')
 ts_goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='GOES')
 ts_lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_LIGHTCURVE, source='LYRA')
 ts_noaa_ind = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_LIGHTCURVE, source='NOAAIndices')
 ts_noaa_pre = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_LIGHTCURVE, source='NOAAPredictIndices')
 ts_norh = sunpy.timeseries.TimeSeries(sunpy.data.sample.NORH_LIGHTCURVE, source='NoRH')
 ts_rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_LIGHTCURVE, source='RHESSI')
+ts_gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_LIGHTCURVE, source='GBMSummary')
 # Note: currently you need to define a source, in future this may become implicit for some sources, depending on if the file contains such data.
 # Debate: would it be better for consistency to simply always demand the source?
 
@@ -83,12 +83,8 @@ ts_lyra.units
 ts_lyra.time_range # Returns a SunPy TimeRange object.
 ts_lyra.name
 ts_lyra.nickname
-ts_lyra.date
 ts_lyra.detector
-ts_lyra.dsun
-ts_lyra.exposure_time
 ts_lyra.instrument
-ts_lyra.measurement
 ts_lyra.observatory
 # Note: much of the behaviour of these is yet to be sorted for specific instruments.
 combined_goes_ts.meta.get('telescop')
@@ -155,6 +151,8 @@ ts_goes.to_array()
 # Map. Input data can be in the form of a Pandas DataFrame (prefered), an astropy
 # Table or a Numpy Array.
 arr = np.array([[1,2],[3,4]])
+from astropy.time import Time
+tm = Time(['2000:002', '2001:345', '2002:345'])
 a = [1, 4, 5]
 b = [2.0, 5.0, 8.2]
 c = ['x', 'y', 'z']
