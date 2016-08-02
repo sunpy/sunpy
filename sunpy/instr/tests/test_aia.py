@@ -51,31 +51,31 @@ def test_filesave():
 
 
 
-def test_aia_read_genx2table():
-    # Check that keywords are lists
-    assert type(channel_list) == list
-    #assert type(properties) == list   # no longer keyword - but should it be?
-    assert len(properties) == len(datatypes) == len(new_prop) # - needed?
-    #
-    # should match length
-    # print(len(datatypes))
-    # print(len(properties))
-    # print(len(new_prop))
-
-    # check that it finds files to look in the genx directory
-    assert len(file_paths) != 0, 'Did not find aia_' + str(version) + '_fullinst files in directory.'
-
-    # Check that the table is filled
-    assert len(table) != 0, 'Empty Table: Data is not loading from file.'
-
-
+# def test_aia_read_genx2table():
+#     # Check that keywords are lists
+#     assert type(channel_list) == list
+#     #assert type(properties) == list   # no longer keyword - but should it be?
+#     assert len(properties) == len(datatypes) == len(new_prop) # - needed?
+#     #
+#     # should match length
+#     # print(len(datatypes))
+#     # print(len(properties))
+#     # print(len(new_prop))
+#
+#     # check that it finds files to look in the genx directory
+#     assert len(file_paths) != 0, 'Did not find aia_' + str(version) + '_fullinst files in directory.'
+#
+#     # Check that the table is filled
+#     assert len(table) != 0, 'Empty Table: Data is not loading from file.'
 
 
-def test_response():
+
+
+# def test_response():
     # Test for response function
 
     # Check initial properties are loaded in as arrays
-    assert type(self.channel_list) == array
+    # assert type(self.channel_list) == array
 
     # test get wavelength range
     # if no channel specified, wavelength range should match var['wavelength_range']
