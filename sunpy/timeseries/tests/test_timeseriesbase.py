@@ -7,6 +7,8 @@ Created on Thu Jun 23 12:29:55 2016
 @author: alex_
 """
 
+
+
 import os
 import pytest
 import datetime
@@ -15,14 +17,18 @@ import warnings
 import numpy as np
 import astropy.units as u
 from pandas.util.testing import assert_frame_equal
+from pandas import DataFrame
 from collections import OrderedDict
 
 import sunpy
 import sunpy.timeseries
 from sunpy.time import TimeRange
+from sunpy.util.metadata import MetaDict
+from sunpy.timeseries import TimeSeriesMetaData
 
+import sunpy.data.sample
+import sunpy.data.test
 testpath = sunpy.data.test.rootdir
-
 
 @pytest.fixture
 def eve_test_ts():
@@ -56,19 +62,28 @@ def rhessi_test_ts():
 
 @pytest.fixture
 def noaa_ind_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAPredictIndices')
-    return sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_LIGHTCURVE, source='NOAAPredictIndices')
+    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAIndices')
+    return sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_LIGHTCURVE, source='NOAAIndices')
 
 @pytest.fixture
 def noaa_pre_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAIndices')
-    return sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_LIGHTCURVE, source='NOAAIndices')
+    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAPredictIndices')
+    return sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_LIGHTCURVE, source='NOAAPredictIndices')
 
 @pytest.fixture
 def generic_test_ts():
-    #ToDo: generate a generic TS!
-    #########
-    return sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_LIGHTCURVE, source='NOAAIndices')
+    # Generate the data and the corrisponding dates
+    base = datetime.datetime.today()
+    dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+    intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
+
+    # Create the data DataFrame, header MetaDict and units OrderedDict
+    data = DataFrame(intensity, index=dates, columns=['intensity'])
+    units = OrderedDict([('intensity', u.W/u.m**2)])
+    meta = MetaDict({'key':'value'})
+
+    # Create the time series
+    return sunpy.timeseries.TimeSeries(data, meta, units)
 
 #==============================================================================
 # Test Creating TimeSeries From Various Dataformats
@@ -83,7 +98,7 @@ def generic_test_ts():
 # Test TimeSeries Parameters
 #==============================================================================
 
-def test_units():
+def test_units_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts, lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts, noaa_pre_test_ts, generic_test_ts):
     assert isinstance(eve_test_ts.units, OrderedDict)
     assert isinstance(fermi_gbm_test_ts.units, OrderedDict)
     assert isinstance(norrh_test_ts.units, OrderedDict)
@@ -94,6 +109,28 @@ def test_units():
     assert isinstance(noaa_pre_test_ts.units, OrderedDict)
     assert isinstance(generic_test_ts.units, OrderedDict)
 
+def test_meta_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts, lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts, noaa_pre_test_ts, generic_test_ts):
+    assert isinstance(eve_test_ts.meta, TimeSeriesMetaData)
+    assert isinstance(fermi_gbm_test_ts.meta, TimeSeriesMetaData)
+    assert isinstance(norrh_test_ts.meta, TimeSeriesMetaData)
+    assert isinstance(goes_test_ts.meta, TimeSeriesMetaData)
+    assert isinstance(lyra_test_ts.meta, TimeSeriesMetaData)
+    assert isinstance(rhessi_test_ts.meta, TimeSeriesMetaData)
+    assert isinstance(noaa_ind_test_ts.meta, TimeSeriesMetaData)
+    assert isinstance(noaa_pre_test_ts.meta, TimeSeriesMetaData)
+    assert isinstance(generic_test_ts.meta, TimeSeriesMetaData)
+
+def test_data_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts, lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts, noaa_pre_test_ts, generic_test_ts):
+    assert isinstance(eve_test_ts.data, DataFrame)
+    assert isinstance(fermi_gbm_test_ts.data, DataFrame)
+    assert isinstance(norrh_test_ts.data, DataFrame)
+    assert isinstance(goes_test_ts.data, DataFrame)
+    assert isinstance(lyra_test_ts.data, DataFrame)
+    assert isinstance(rhessi_test_ts.data, DataFrame)
+    assert isinstance(noaa_ind_test_ts.data, DataFrame)
+    assert isinstance(noaa_pre_test_ts.data, DataFrame)
+    assert isinstance(generic_test_ts.data, DataFrame)
+
     # ToDo: check length? (should match the number of columns)
 # ToDo: is this a good way of going?
 # ToDo: test for all:
@@ -102,15 +139,11 @@ def test_units():
 ###ts_lyra.time_range # Returns a SunPy TimeRange object.
 ###ts_lyra.name
 ###ts_lyra.nickname
-###ts_lyra.date
 ###ts_lyra.detector
-###ts_lyra.dsun
-###ts_lyra.exposure_time
 ###ts_lyra.instrument
-###ts_lyra.measurement
 ###ts_lyra.observatory
 
-
+"""
 #==============================================================================
 # Test Truncation Operations
 #==============================================================================
@@ -161,7 +194,22 @@ def test_truncation_dates(truncation_dates_test_ts):
 # Test Extraction Operations
 #==============================================================================
 
-# ToDo: ts_eve_extract = ts_eve.extract('CMLon')
+@pytest.fixture
+def extraction_test_ts(eve_test_ts):
+    # Extract the CMLon column
+    return eve_test_ts.extract('CMLon')
+
+def test_extraction(eve_test_ts, extraction_test_ts):
+    # Test there's only one column in the data, metadata and units
+    assert len(eve_test_ts.data.columns) == 1
+    assert len(eve_test_ts.meta.columns) == 1
+    assert len(eve_test_ts.units) == 1
+
+    # Test this column name matches
+    assert eve_test_ts.data.columns[0] == eve_test_ts.data.columns[0] == list(eve_test_ts.units.keys())[0]
+
+    # Test the data matches
+    assert_frame_equal(eve_test_ts.data, DataFrame(eve_test_ts.data['CMLon']))
 
 #==============================================================================
 # Test Concatenation Operations
@@ -202,41 +250,8 @@ def test_concatenation_of_different_data(eve_test_ts, fermi_gbm_test_ts, concate
     assert concatenation_different_data_test_ts.meta[1] == fermi_gbm_test_ts.meta[0]
     # Test unit concatenation
     # ToDo: check the resulting units is the union of the originals.
-
-
-
-
     # ToDo: check units dict is the concatenation of both.
 
-
-#==============================================================================
-# Test Resample Operations
-#==============================================================================
-
-
-    # Subsampling: every n'th element
-    ts_eve_subsam = ts_eve.truncate(0,50000,10)
-    ts_gbm_subsam = ts_gbm.truncate(0,50000,10)
-    ts_norrh_subsam = ts_norrh.truncate(0,50000,10)
-    ts_goes_subsam = ts_goes.truncate(0,50000,10)
-    ts_lyra_subsam = ts_lyra.truncate(0,50000,10)
-    ts_rhessi_subsam = ts_rhessi.truncate(0,50000,10)
-
-    # Resampling: taking an existing lightcurve and resample it at different times to get a new lightcurve
-    # summing every 'n' elements of the original time-series
-    resampled = ts_eve.resample('3T')         # '3T = 3 mins'
-    resampled = ts_eve.resample('H', 'sum') # '60S = 60 seconds'
-    resampled = ts_eve.resample('H', 'std')   # 'H = one hour'
-    resampled = ts_eve.resample('D', 'mean')  # 'D = one day'
-    resampled = ts_eve.resample('D', 'other')  # should show a warning
-    # Note: use of the methods: .sum(), .mean(), .std()
-    # Note: not sure how to do every nth element.
-    #
-
-    # Upsampling: increasing the cadence with interpolation.
-    upsampled = ts_eve_subsam.resample('30S', 'pad')
-    upsampled = ts_eve_subsam.resample('30S', 'bfill')
-    upsampled = ts_eve_subsam.resample('30S', 'ffill')
 
 
 
@@ -244,7 +259,42 @@ def test_concatenation_of_different_data(eve_test_ts, fermi_gbm_test_ts, concate
 # Test Data Manipulation
 #==============================================================================
 
+@pytest.fixture
+def column_quantity(eve_test_ts):
+    # Get the astropy Quantity of values from a column
+    return eve_test_ts.quantity('CMLon')
+
+def test_column_quantity(eve_test_ts, column_quantity):
+    # Test the units and values match
+    assert eve_test_ts.units['CMLon'] == column_quantity.unit
+    assert eve_test_ts.data['CMLon'].values == column_quantity.value
+
+@pytest.fixture
+def add_column_from_quantity_ts(eve_test_ts, column_quantity):
+    # Add a column to a TS using an astropy quantity
+    return eve_test_ts.quantity('quantity_added', column_quantity)
+
+def test_add_column_from_quantity(eve_test_ts, add_column_from_quantity_ts, column_quantity):
+    # Test the column similar to the original quantity?
+    assert add_column_from_quantity_ts.quantity('quantity_added') == column_quantity
+    # Test the full list of columns are pressent
+    assert set(add_column_from_quantity_ts.data.columns) == set(eve_test_ts.data.columns) | set('quantity_added')
+
+@pytest.fixture
+def add_column_from_array(eve_test_ts, column_quantity):
+    # Add a column to a TS using a numpy array
+    return eve_test_ts.quantity('array_added', column_quantity.value, unit=column_quantity.unit)
+
+def test_add_column_from_array(eve_test_ts, add_column_from_array_ts, column_quantity):
+    # Test the column similar to the original quantity?
+    assert add_column_from_array_ts.quantity('array_added') == column_quantity
+    # Test the full list of columns are pressent
+    assert set(add_column_from_array_ts.data.columns) == set(eve_test_ts.data.columns) | set('array_added')
+
+
+
 # ToDo:
 ###Extracting column as quantity or array#ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
 ###Updating a column using quantity or array#ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
 ###Updating the units# ts_eve = ts_eve.add_column(colname, qua_new, unit=unit, overwrite=True)
+"""

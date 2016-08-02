@@ -4,24 +4,33 @@ Created on Thu Jun 23 12:08:21 2016
 
 @author: alex_
 """
-
+"""
 import sunpy.data.sample
 import sunpy.timeseries
-    
+
 #==============================================================================
 # Map Factory Tests
 #==============================================================================
+
+a_list_of_many_goes = ['C:\\Users\\alex_\\sunpy\\data\\go1420101102.fits',
+ 'C:\\Users\\alex_\\sunpy\\data\\go1420101103.fits',
+ 'C:\\Users\\alex_\\sunpy\\data\\go1420101104.fits',
+ 'C:\\Users\\alex_\\sunpy\\data\\go1520101105.fits',
+ 'C:\\Users\\alex_\\sunpy\\data\\go1520101106.fits',
+ 'C:\\Users\\alex_\\sunpy\\data\\go1520101107.fits']
+
 class TestTimeSeries(object):
     def test_concatenate(self):
         #Test making a TimeSeries that is the concatenation of multiple files.
-        ts = sunpy.timeseries.TimeSeries(a_list_of_many, concatenate=True)
-        assert isinstance(ts, sunpy)
+        ts = sunpy.timeseries.TimeSeries(a_list_of_many_goes, source='GOES', concatenate=True)
+        assert isinstance(ts, sunpy.timeseries.sources.goes.GOESLightCurve)
 
 
 
 #==============================================================================
 # Sources Tests
 #==============================================================================
+
     def test_eve(self):
         #Test an EVE TimeSeries
         ts_eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_LIGHTCURVE, source='EVE')
@@ -54,13 +63,27 @@ class TestTimeSeries(object):
 
     def test_noaa_ind(self):
         #Test a NOAAPredictIndices TimeSeries
-        ts_noaa_ind = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_LIGHTCURVE, source='NOAAPredictIndices')
+        ts_noaa_ind = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_LIGHTCURVE, source='NOAAIndices')
         assert isinstance(ts_noaa_ind, sunpy.timeseries.sources.noaa.NOAAIndicesTimeSeries)
-            
+
     def test_noaa_pre(self):
         #Test a NOAAIndices TimeSeries
-        ts_noaa_pre = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_LIGHTCURVE, source='NOAAIndices')
+        ts_noaa_pre = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_LIGHTCURVE, source='NOAAPredictIndices')
         assert isinstance(ts_noaa_pre, sunpy.timeseries.sources.noaa.NOAAPredictIndicesTimeSeries)
-    
-    
-    
+
+    def test_generic_test_ts(self):
+        # Generate the data and the corrisponding dates
+        base = datetime.datetime.today()
+        dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+        intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
+
+        # Create the data DataFrame, header MetaDict and units OrderedDict
+        data = DataFrame(intensity, index=dates, columns=['intensity'])
+        units = OrderedDict([('intensity', u.W/u.m**2)])
+        meta = MetaDict({'key':'value'})
+
+        # Create TS and check
+        ts_generic = sunpy.timeseries.TimeSeries(data, meta, units)
+        assert isinstance(ts_generic, sunpy.timeseries.timeseriesbase.GenericTimeSeries)
+
+"""

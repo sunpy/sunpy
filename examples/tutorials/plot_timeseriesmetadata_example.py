@@ -74,7 +74,7 @@ large_ts.meta.metadata
 ##############################################################################
 # The TimeSeriesMetaData class has a number of other properties, including the
 # timerange property that returns a TimeRange for the entire metadata:
-large_ts.meta.timerange
+large_ts.meta.time_range
 # Further properties can be used to get lists of details, such as:
 # lists of the values:
 large_ts.meta.timeranges # List of the time ranges

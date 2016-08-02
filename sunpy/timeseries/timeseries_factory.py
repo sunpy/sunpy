@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import astropy.io.fits
 from astropy.table import Table
+import astropy
 
 import sunpy
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries, TIMESERIES_CLASSES
@@ -105,9 +106,9 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     def _read_file(self, fname, **kwargs):
         """ Read in a file name and return the list of (data, meta, unit) tuples in
             that file. """
-        
+
         # ToDo: implement this for the TimeSeries using either Pandas or AstroPy parser.
-        
+
         # File gets read here.  This needs to be generic enough to seamlessly
         #call a fits file or a jpeg2k file, etc
         try:
@@ -143,22 +144,35 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         """
         Validates the astropy unit-information associated with a TimeSeries.
         """
-    
+
         warnings.simplefilter('always', Warning)
-        
+
         result = True
-        
+
         # It must be a dictionary
         if not isinstance(units, dict):
             return False
-        
+
         for key in units:
             if not isinstance(units[key], astropy.units.UnitBase):
                 # If this is not a unit then this can't be a valid units dict.
                 warnings.warn("Invalid unit given for \""+str(key)+"\"", Warning)
                 return False
-        
+
         # Passed all the tests
+        return result
+
+    def _from_table(self, table, **kwargs):
+        """
+
+        """
+        index_col = -1
+        for i, colname in enumerate(table.colnames):
+            if isinstance(table[colname], astropy.time.core.Time):
+                index_col = i
+                break
+
+
         return result
 
     def _parse_args(self, *args, **kwargs):
@@ -187,7 +201,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         data_header_unit_tuples = list()
         already_timeseries = list()
         filepaths = list()
-        
+
         # Take source kwarg if defined
         source = kwargs.get('source', None)
 
@@ -212,26 +226,26 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 if isinstance(data, Table):
                     # We have an AstroPy Table:
                     data = arg[0].to_pandas()
-                    
+
                     # Extract Units from table:
                     for colname in arg[0].colnames:
                         # Only add the unit if specified.
                         if arg[0][colname].unit:
                             units.update({colname:arg[0][colname].unit})
-                    
+
                 elif isinstance(data, np.ndarray):
                     # We have a numpy ndarray:
                     data = pd.DataFrame(data=arg[0])
                     # ToDo: should this include an index? Maybe use the first column?
-                
+
                 # The second argument will be the metadata/header.
                 meta = MetaDict(arg[1])
-                
+
                 # Check if we're given a third argument for units
                 if (len(arg) == 3) and self._validate_meta(arg[2]):
                     # This combines with values gathered from an input Table.
                     units.update(arg[2])
-                
+
                 # Add a 3-tuple for this TimeSeries.
                 data_header_unit_tuples.append((data, meta, units))
 
@@ -254,31 +268,31 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     # We have a numpy ndarray:
                     data = pd.DataFrame(data=arg)
                     # ToDo: should this include an index? Maybe use the first column?
-                    
+
                 # The second argument will be the metadata/header.
                 meta = MetaDict(args[i+1])
-                
+
                 # Check if we're given a third argument for units
                 if (len(args) > i+2) and self._validate_units(args[i+2]):
                     units.update(args[i+2])
                     i += 1 # an extra increment to account for the units
-                
+
                 # Add a 3-tuple for this TimeSeries.
                 data_header_unit_tuples.append((data, meta, units))
                 i += 1 # an extra increment to account for the header
-                
-            
+
+
             # Filepath
             elif (isinstance(arg,six.string_types) and
                   os.path.isfile(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
-                
+
                 # Only read using generic _read_file() if no source defined.
                 if not source:
                     temp = self._read_file(path, **kwargs)
                 else:
                     temp = ( False, path )
-                
+
                 # If the file was successfully read in:
                 if temp[0]:
                     pairs = temp[1]
@@ -306,7 +320,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             # Already a TimeSeries
             elif isinstance(arg, GenericTimeSeries):
                 already_timeseries.append(arg)
-            
+
             # A URL
             elif (isinstance(arg,six.string_types) and
                   _is_url(arg)):
@@ -353,7 +367,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         data_header_unit_tuples, already_timeseries, filepaths = self._parse_args(*args, **kwargs)
 
         new_timeseries = list()
-        
+
         # The filepaths for unreadable files
         for filepath in filepaths:
             try:
@@ -392,31 +406,31 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             full_timeseries = new_timeseries.pop(0)
             for timeseries in new_timeseries:
                 full_timeseries = full_timeseries.concatenate(timeseries)
-            
+
             new_timeseries = [ full_timeseries ]
 
         # Sanitize any units OrderedDict details
         for timeseries in new_timeseries:
             timeseries._sanitize_units()
-        
+
         # Only return single time series, not in a list if we only have one.
         if len(new_timeseries) == 1:
             return new_timeseries[0]
-        
+
         return new_timeseries
 
     def _check_registered_widgets(self, **kwargs):
         """Checks the (instrument) source/s that are compatible with this given file/data.
         Only if exactly one source is compatible will a TimeSeries be returned."""
         candidate_widget_types = list()
-        
+
         for key in self.registry:
             # Call the registered validation function for each registered class
             if self.registry[key](**kwargs):
                 candidate_widget_types.append(key)
 
         n_matches = len(candidate_widget_types)
-        
+
         if n_matches == 0:
             if self.default_widget_type is None:
                 raise NoMatchError("No types match specified arguments and no default is set.")

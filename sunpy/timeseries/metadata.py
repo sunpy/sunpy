@@ -46,7 +46,31 @@ class TimeSeriesMetaData:
                 self.metadata.append(meta)
             elif isinstance(meta, list):
                 # Given a complex metadata list (of tuples)
-                self.metadata = meta.copy()
+                self.metadata = copy.copy(meta)
+
+    def __eq__(self, other):
+        """
+        Check two TimeSeriesMetaData objects are the same, they have the same
+        entries in the same order.
+
+        Parameters
+        ----------
+        other : `~sunpy.timeseries.metadata.TimeSeriesMetaData`
+            The second TimeSeriesMetaData object to compare with.
+
+        Returns
+        -------
+        result : `bool`
+        """
+        match = True
+        if len(self.metadata) == len(other.metadata):
+            for i in range(0,len(self.metadata)):
+                #
+                if self.metadata[i] != other.metadata[i]:
+                    match = False
+        else:
+            match = False
+        return match
 
     def append(self, timerange, columns, metadata, **kwargs):
         """
@@ -145,7 +169,7 @@ class TimeSeriesMetaData:
 
         return results
 
-    def find(self, time=None, colname=None, row=None, **kwargs):
+    def find(self, time=None, colname=None, **kwargs):
         """
         Find all metadata matching the given filters for datetime and/or column name.
         Will return all metadata entries if no filters are given.
@@ -155,11 +179,6 @@ class TimeSeriesMetaData:
         time : `str` or `~datetime.datetime` optional
             The string (parsed using the `~sunpy.time.parse_time`) or datetime
             that you need metadata for.
-
-        ####ToDo: implmentation decision.
-        row : `int` optional
-            Integer index of the row within the data (dataframe) to get the
-            datetime index from.
 
         colname : `str` optional
             A string that can be used to narrow results to specific columns.
@@ -196,7 +215,7 @@ class TimeSeriesMetaData:
         """
         return self.metadata[index][2]
 
-    def get(self, key, time=None, colname=None, row=None, **kwargs):
+    def get(self, keys, time=None, colname=None, **kwargs):
         """
         Return a TimeSeriesMetaData object of all entries matching the time and
         colname filters with the dictionaries containing only the key value pairs
@@ -204,17 +223,12 @@ class TimeSeriesMetaData:
 
         Parameters
         ----------
-        key : `str`
-            The Key to be searched in the dictionary.
+        keys : `str`
+            The Key/s to be searched in the dictionary.
 
         time : `str` or `~datetime.datetime` optional
             The string (parsed using the `~sunpy.time.parse_time`) or datetime
             that you need metadata for.
-
-        ####ToDo: implmentation decision.
-        row : `int` optional
-            Integer index of the row within the data (dataframe) to get the
-            datetime index from.
 
         colname : `str` optional
             A string that can be used to narrow results to specific columns.
@@ -228,15 +242,21 @@ class TimeSeriesMetaData:
         list : `list`
             Returns a list of the matching entries or the default value.
         """
-        # Find all matching metadata entries
+        # Make a list of keys if only one is given
+        if isinstance(keys, str):
+            keys = [ keys ]
+
+        # Find all metadata entries for the given time/colname filters
         full_metadata = self.find(time=time, colname=colname)
         metadata = []
 
+        # Append to metadata only key:value pairs with requested keys
         for i, entry in enumerate(full_metadata.metadata):
             metadict = MetaDict()
             for curkey, value in entry[2].items():
-                if curkey == key:
-                    metadict.update({key:value})
+                for key in keys:
+                    if curkey == key:
+                        metadict.update({key:value})
             metadata.append((entry[0], entry[1], metadict))
 
         # Return a TimeSeriesMetaData object
@@ -253,7 +273,7 @@ class TimeSeriesMetaData:
             The second TimeSeriesMetaData object.
         """
         # Create a copy of the metadata
-        meta = TimeSeriesMetaData(self.metadata.copy())
+        meta = TimeSeriesMetaData(copy.copy(self.metadata))
 
         # Append each metadata entry from the second TimeSeriesMetaData object
         # to the original TimeSeriesMetaData object.
@@ -294,8 +314,8 @@ class TimeSeriesMetaData:
             else:
                 #ToDo: if any new.keys in... iterate through keys, if key is false throw an error otherwise update.
                 # Overwrite the original dict over the new to keeps old values.
-                old_meta = self.metadata[i][2].copy()
-                new_meta = MetaDict(dictionary).copy()
+                old_meta = copy.copy(self.metadata[i][2])
+                new_meta = copy.copy(MetaDict(dictionary))
                 new_meta.update(old_meta)
                 # Now recreate the tuple
                 self.metadata[i] = ( self.metadata[i][0], self.metadata[i][1], new_meta )
@@ -374,7 +394,7 @@ class TimeSeriesMetaData:
         return all_vals
 
     @property
-    def timerange(self):
+    def time_range(self):
         """Returns the TimeRange of the entire time series meta data."""
         start = self.metadata[0][0].start
         end = self.metadata[0][0].end
