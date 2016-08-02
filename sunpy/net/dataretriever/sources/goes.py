@@ -1,3 +1,6 @@
+"""
+This module implements GOES Client.
+"""
 #This module was developed with funding provided by
 #the Google Summer of Code 2016.
 
@@ -8,7 +11,7 @@ import datetime
 from bs4 import BeautifulSoup
 from six.moves.urllib.request import urlopen
 
-from sunpy.time import parse_time, TimeRange
+from sunpy.time import TimeRange
 from sunpy.util.scraper import Scraper
 
 from ..client import GenericClient
@@ -21,7 +24,8 @@ __all__ = ['GOESClient']
 
 class GOESClient(GenericClient):
     """
-    Returns a list of URLS to SOLIS VSM files corresponding to value of input timerange.
+    Returns a list of URLS to GOES files corresponding to value of input timerange
+    and Physical Observation value.
     URL source: `http://gong2.nso.edu/pubkeep/`.
     Parameters
     ----------
@@ -162,6 +166,7 @@ class GOESClient(GenericClient):
                 url_pattern = 'ftp://ftp.swpc.noaa.gov/pub/lists/xray/{date:%Y%m%d}_G{satord}_xr_{cad}m.txt'
                 g = lambda url, satord, date, cad: url.format(satord=satord, date=date, cad=cad)
                 result.extend([g(url_pattern, satord, now, cad) for cad in (1, 5) for satord in ('s', 'p')])
+
             return result
 
         def download_intensity(time_range):
@@ -176,7 +181,6 @@ class GOESClient(GenericClient):
             total_days = (time_range.end - time_range.start).days + 1
             all_dates = time_range.split(total_days)
             for day in all_dates:
-                print(prefix.format(date=day.end, sat=self._get_goes_sat_num(day.end)))
                 html = urlopen(prefix.format(date=day.end, sat=self._get_goes_sat_num(day.end)))
                 soup = BeautifulSoup(html, 'lxml')
                 for link in soup.findAll("a"):
@@ -231,9 +235,9 @@ class GOESClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chkattr =  ['Time', 'Instrument', 'Physobs']
+        chkattr = ['Time', 'Instrument', 'Physobs']
         physobs = ['PARTICLE_FLUX', 'IRRADIANCE', 'INTENSITY']
-        chklist =  [x.__class__.__name__ in chkattr for x in query]
+        chklist = [x.__class__.__name__ in chkattr for x in query]
         chk_var = 0
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value == 'goes':

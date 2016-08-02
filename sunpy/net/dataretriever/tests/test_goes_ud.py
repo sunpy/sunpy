@@ -1,14 +1,18 @@
+
+"""
+This module tests GOES Client.
+"""
+#This module was developed by funding
+#provided by Google Summer of Code 2016.
 import pytest
 import datetime
 from itertools import product
 
 from sunpy.time.timerange import TimeRange, parse_time
 from sunpy.net.vso.attrs import Time, Instrument, Physobs
-from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.goes as goes
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
-from sunpy.net import attrs as a
 
 from hypothesis import given, example
 from sunpy.net.tests.strategies import goes_time
@@ -81,6 +85,7 @@ def test_get(time, instrument, physobs):
 
 
 @pytest.mark.online
+
 def test_new_logic():
     qr = LCClient.search(Time('2012/10/4', '2012/10/6'), Instrument('goes'), Physobs('IRRADIANCE'))
     res = LCClient.fetch(qr)
@@ -115,6 +120,17 @@ def test_query_2(time, instrument, physobs):
     res = LCClient.get(qr)
     d_list = res.wait()
     assert len(qr) == len(d_list)
+
+@pytest.mark.parametrize("time, instrument, physobs, number_of_files",
+[(Time(datetime.datetime.now() - datetime.timedelta(days=2), datetime.datetime.now()), Instrument('goes'),
+  Physobs('PARTICLE_FLUX'), 8),
+ (Time(datetime.datetime.now() - datetime.timedelta(days=2), datetime.datetime.now()), Instrument('goes'),
+  Physobs('IRRADIANCE'), 16),
+ (Time('2016/7/1', '2016/7/3'), Instrument('goes'), Physobs('IRRADIANCE'), 10)])
+def test_query_c(time, instrument, physobs, number_of_files):
+    qr = GClient.query(time, instrument, physobs)
+    assert len(qr) == number_of_files
+
 
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument, physobs",
