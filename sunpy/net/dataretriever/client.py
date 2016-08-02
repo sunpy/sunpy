@@ -192,7 +192,7 @@ class GenericClient(object):
             self.map_.get('TimeRange'), **kwergs)
         return QueryResponse.create(self.map_, urls)
 
-    def get(self, qres, **kwargs):
+    def get(self, qres, path=None, error_callback=None, **kwargs):
         """
         Download a set of results.
 
@@ -225,8 +225,7 @@ class GenericClient(object):
                                               urls), filenames)):
             temp_dict = details.copy()
             temp_dict['file'] = filename
-            dobj.download(aurl, kwargs.get('path', None), ncall,
-                            kwargs.get('ErrorBack', None), **temp_dict)
+            dobj.download(aurl, path, ncall, error_callback, **temp_dict)
 
         return res
 
