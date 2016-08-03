@@ -443,7 +443,7 @@ def test_vso_query_block_caching(database, download_qr, tmpdir):
     num_of_fits_headers = sum(
         len(fits.get_header(file)) for file in glob.glob(fits_pattern))
 
-    assert len(database) == num_of_fits_headers > 0
+    assert len(database) == num_of_fits_headers and len(database) > 0
 
     """Emptying the database"""
     database.clear()
@@ -456,7 +456,7 @@ def test_vso_query_block_caching(database, download_qr, tmpdir):
     num_of_fits_headers_1 = sum(
         len(fits.get_header(file)) for file in glob.glob(fits_pattern))
 
-    assert len(database) == num_of_fits_headers_1 > 0
+    assert len(database) == num_of_fits_headers_1 and len(database) > 0
 
     """Downloading for all query response blocks"""
     database.download_from_vso_query_result(
@@ -471,7 +471,8 @@ def test_vso_query_block_caching(database, download_qr, tmpdir):
     num_of_fits_headers as new entries are added to the database in case of a
     download."""
 
-    assert len(database) == num_of_fits_headers_1 + num_of_fits_headers_2 > 0
+    assert len(database) == num_of_fits_headers_1 + num_of_fits_headers_2
+    assert len(database) > 0
 
     assert num_of_fits_headers_1+num_of_fits_headers_2 == num_of_fits_headers
 
