@@ -4,14 +4,20 @@ Created on Thu Jun 23 12:08:21 2016
 
 @author: alex_
 """
-"""
+
 import sunpy.data.sample
 import sunpy.timeseries
+import datetime
+import numpy as np
+from pandas import DataFrame
+from collections import OrderedDict
+from sunpy.util.metadata import MetaDict
+import astropy.units as u
 
 #==============================================================================
 # Map Factory Tests
 #==============================================================================
-
+"""
 a_list_of_many_goes = ['C:\\Users\\alex_\\sunpy\\data\\go1420101102.fits',
  'C:\\Users\\alex_\\sunpy\\data\\go1420101103.fits',
  'C:\\Users\\alex_\\sunpy\\data\\go1420101104.fits',
@@ -85,5 +91,6 @@ class TestTimeSeries(object):
         # Create TS and check
         ts_generic = sunpy.timeseries.TimeSeries(data, meta, units)
         assert isinstance(ts_generic, sunpy.timeseries.timeseriesbase.GenericTimeSeries)
+
 
 """
