@@ -223,6 +223,6 @@ class GenericClient(object):
     def _link(self, map_):
         """Helper Function"""
         paths = []
-        for k, v in map_.iteritems():
+        for k, v in map_.items():
             paths.append(map_[k]['path'])
         return paths
