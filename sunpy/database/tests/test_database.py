@@ -435,8 +435,8 @@ def test_vso_query_block_caching(database, download_qr, tmpdir):
 
     assert len(database) == 0
 
-    """Download for all query response blocks and save the length
-     of database in num_of_fits_headers"""
+    # Download for all query response blocks and save the length
+    # of database in num_of_fits_headers
     database.download_from_vso_query_result(
         download_qr, path=str(tmpdir.join('{file}.fits')))
     fits_pattern = str(tmpdir.join('*.fits'))
@@ -445,11 +445,11 @@ def test_vso_query_block_caching(database, download_qr, tmpdir):
 
     assert len(database) == num_of_fits_headers and len(database) > 0
 
-    """Emptying the database"""
+    # Emptying the database
     database.clear()
     database.commit()
 
-    """Only downloading for the first query response block"""
+    # Only downloading for the first query response block
     database.download_from_vso_query_result(
         download_qr[:1], path=str(tmpdir.join('{file}.type1')))
     fits_pattern = str(tmpdir.join('*.type1'))
@@ -458,18 +458,18 @@ def test_vso_query_block_caching(database, download_qr, tmpdir):
 
     assert len(database) == num_of_fits_headers_1 and len(database) > 0
 
-    """Downloading for all query response blocks"""
+    # Downloading for all query response blocks
     database.download_from_vso_query_result(
         download_qr, path=str(tmpdir.join('{file}.type2')))
     fits_pattern = str(tmpdir.join('*.type2'))
     num_of_fits_headers_2 = sum(
         len(fits.get_header(file)) for file in glob.glob(fits_pattern))
 
-    """Final length of the database should be the same as num_of_fits_headers.
-    This is done to ensure that the first query response block's files weren't
-    redownloaded. If they were redownloaded then length will be greater than
-    num_of_fits_headers as new entries are added to the database in case of a
-    download."""
+    # Final length of the database should be the same as num_of_fits_headers.
+    # This is done to ensure that the first query response block's files weren't
+    # redownloaded. If they were redownloaded then length will be greater than
+    # num_of_fits_headers as new entries are added to the database in case of a
+    # download.
 
     assert len(database) == num_of_fits_headers_1 + num_of_fits_headers_2
     assert len(database) > 0
