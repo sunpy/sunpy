@@ -401,7 +401,7 @@ class GenericTimeSeries:
         """
         # Concatenate the metadata and data
         meta = self.meta.concatenate(otherts.meta)
-        data = pd.concat([copy.copy(self.data), otherts.data])
+        data = pd.concat([self.data.copy(), otherts.data])
 
         # Add all the new units to the dictionary.
         units = OrderedDict()

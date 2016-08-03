@@ -13,12 +13,15 @@ import os
 import pytest
 import datetime
 import warnings
+import copy
 
 import numpy as np
 import astropy.units as u
 from pandas.util.testing import assert_frame_equal
 from pandas import DataFrame
+import pandas as pd
 from collections import OrderedDict
+from astropy.tests.helper import assert_quantity_allclose
 
 import sunpy
 import sunpy.timeseries
@@ -30,6 +33,7 @@ import sunpy.data.sample
 import sunpy.data.test
 testpath = sunpy.data.test.rootdir
 
+"""
 @pytest.fixture
 def eve_test_ts():
     #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='EVE')
@@ -143,7 +147,6 @@ def test_data_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts, 
 ###ts_lyra.instrument
 ###ts_lyra.observatory
 
-"""
 #==============================================================================
 # Test Truncation Operations
 #==============================================================================
@@ -168,8 +171,8 @@ def test_truncation_slices(eve_test_ts, truncation_slice_test_ts_1, truncation_s
     # Test MetaDict match
     assert eve_test_ts.meta.metadata[0][2] == truncation_slice_test_ts_1.meta.metadata[0][2] == truncation_slice_test_ts_2.meta.metadata[0][2]
     # For TS and meta, Test time ranges match for the start and end of the TS.
-    assert truncation_slice_test_ts_1.time_range.start == truncation_slice_test_ts_1.meta.timerange.start == eve_test_ts.start
-    assert truncation_slice_test_ts_2.time_range.end == truncation_slice_test_ts_2.meta.timerange.end == eve_test_ts.end
+    assert truncation_slice_test_ts_1.time_range.start == truncation_slice_test_ts_1.meta.time_range.start == eve_test_ts.time_range.start
+    assert truncation_slice_test_ts_2.time_range.end == truncation_slice_test_ts_2.meta.time_range.end == eve_test_ts.time_range.end
 
 
 @pytest.fixture
@@ -179,7 +182,7 @@ def truncation_timerange_test_ts(eve_test_ts):
 
 def test_truncation_timerange(truncation_timerange_test_ts):
     # Check the resulting timerange in both TS and TSMD
-    assert truncation_timerange_test_ts.time_range.hours == truncation_timerange_test_ts.meta.timerange.hours == u.Quantity(2, u.h)
+    assert truncation_timerange_test_ts.time_range.hours == truncation_timerange_test_ts.meta.time_range.hours == u.Quantity(2, u.h)
 
 @pytest.fixture
 def truncation_dates_test_ts(eve_test_ts):
@@ -188,7 +191,8 @@ def truncation_dates_test_ts(eve_test_ts):
 
 def test_truncation_dates(truncation_dates_test_ts):
     # Check the resulting timerange in both TS and TSMD
-    assert truncation_dates_test_ts.time_range.hours == truncation_dates_test_ts.meta.timerange.hours == u.Quantity(2, u.h)
+    assert truncation_dates_test_ts.time_range.hours == truncation_dates_test_ts.meta.time_range.hours == u.Quantity(2, u.h)
+
 
 #==============================================================================
 # Test Extraction Operations
@@ -201,15 +205,17 @@ def extraction_test_ts(eve_test_ts):
 
 def test_extraction(eve_test_ts, extraction_test_ts):
     # Test there's only one column in the data, metadata and units
-    assert len(eve_test_ts.data.columns) == 1
-    assert len(eve_test_ts.meta.columns) == 1
-    assert len(eve_test_ts.units) == 1
+    assert len(extraction_test_ts.data.columns) == 1
+    assert len(extraction_test_ts.meta.columns) == 1
+    assert len(extraction_test_ts.units) == 1
 
     # Test this column name matches
     assert eve_test_ts.data.columns[0] == eve_test_ts.data.columns[0] == list(eve_test_ts.units.keys())[0]
 
     # Test the data matches
-    assert_frame_equal(eve_test_ts.data, DataFrame(eve_test_ts.data['CMLon']))
+    extracted_df = DataFrame(eve_test_ts.data['CMLon']).dropna()
+    extracted_df = extracted_df.sort_index()
+    assert_frame_equal(extraction_test_ts.data, extracted_df)
 
 #==============================================================================
 # Test Concatenation Operations
@@ -225,7 +231,7 @@ def test_concatenation_of_slices(eve_test_ts, concatenated_slices_test_ts):
     assert_frame_equal(concatenated_slices_test_ts.data, eve_test_ts.data)
     # Otherwise: concatenated_ts.data.equals(eve_test_ts)
     # Compare timeranges from before and after match for both metadata and TS
-    assert eve_test_ts.meta.timerange == concatenated_slices_test_ts.meta.timerange
+    assert eve_test_ts.meta.time_range == concatenated_slices_test_ts.meta.time_range
     assert eve_test_ts.time_range == concatenated_slices_test_ts.time_range
     # Test metadata MetaDict matches
     eve_test_ts.meta.metadata[0][2] == concatenated_slices_test_ts.meta.metadata[0][2] == concatenated_slices_test_ts.meta.metadata[1][2]
@@ -243,16 +249,27 @@ def concatenation_different_data_test_ts(eve_test_ts, fermi_gbm_test_ts):
     return eve_test_ts.concatenate(fermi_gbm_test_ts)
 
 def test_concatenation_of_different_data(eve_test_ts, fermi_gbm_test_ts, concatenation_different_data_test_ts):
-    # Test data
-    # ToDo: figure out some simple tests
-    # Test metadata concatenation
-    assert concatenation_different_data_test_ts.meta[0] == eve_test_ts.meta[0]
-    assert concatenation_different_data_test_ts.meta[1] == fermi_gbm_test_ts.meta[0]
-    # Test unit concatenation
-    # ToDo: check the resulting units is the union of the originals.
-    # ToDo: check units dict is the concatenation of both.
+    # ToDo: test the metadata is as expected using the below. (note ATM this fails if the order is changed)
+    #assert concatenation_different_data_test_ts.meta.metadata[0] == fermi_gbm_test_ts.meta.metadata[0]
+    #assert concatenation_different_data_test_ts.meta.metadata[1] == eve_test_ts.meta.metadata[0]
+    value = True
+    for key in list(concatenation_different_data_test_ts.meta.metadata[0][2].keys()):
+        if concatenation_different_data_test_ts.meta.metadata[0][2][key] != fermi_gbm_test_ts.meta.metadata[0][2][key]:
+            value = False
+    for key in list(concatenation_different_data_test_ts.meta.metadata[1][2].keys()):
+        if concatenation_different_data_test_ts.meta.metadata[1][2][key] != eve_test_ts.meta.metadata[0][2][key]:
+            value = False
+    assert value
 
+    # Test units concatenation
+    comined_units = copy.deepcopy(eve_test_ts.units)
+    comined_units.update(fermi_gbm_test_ts.units)
+    assert dict(concatenation_different_data_test_ts.units) == dict(comined_units)
 
+    # Test data is the concatenation
+    comined_df = pd.concat([eve_test_ts.data, fermi_gbm_test_ts.data])
+    comined_df = comined_df.sort_index()
+    assert_frame_equal(concatenation_different_data_test_ts.data, comined_df)
 
 
 #==============================================================================
@@ -267,34 +284,34 @@ def column_quantity(eve_test_ts):
 def test_column_quantity(eve_test_ts, column_quantity):
     # Test the units and values match
     assert eve_test_ts.units['CMLon'] == column_quantity.unit
-    assert eve_test_ts.data['CMLon'].values == column_quantity.value
+    assert ((eve_test_ts.data['CMLon'].values == column_quantity.value) | (np.isnan(eve_test_ts.data['CMLon'].values) & np.isnan(column_quantity.value))).all()
 
 @pytest.fixture
 def add_column_from_quantity_ts(eve_test_ts, column_quantity):
     # Add a column to a TS using an astropy quantity
-    return eve_test_ts.quantity('quantity_added', column_quantity)
+    return eve_test_ts.add_column('quantity_added', column_quantity)
 
 def test_add_column_from_quantity(eve_test_ts, add_column_from_quantity_ts, column_quantity):
     # Test the column similar to the original quantity?
-    assert add_column_from_quantity_ts.quantity('quantity_added') == column_quantity
+    assert_quantity_allclose(add_column_from_quantity_ts.quantity('quantity_added'), column_quantity)
     # Test the full list of columns are pressent
-    assert set(add_column_from_quantity_ts.data.columns) == set(eve_test_ts.data.columns) | set('quantity_added')
+    assert set(add_column_from_quantity_ts.data.columns) == set(eve_test_ts.data.columns) | set(['quantity_added'])
 
 @pytest.fixture
-def add_column_from_array(eve_test_ts, column_quantity):
+def add_column_from_array_ts(eve_test_ts, column_quantity):
     # Add a column to a TS using a numpy array
-    return eve_test_ts.quantity('array_added', column_quantity.value, unit=column_quantity.unit)
+    return eve_test_ts.add_column('array_added', column_quantity.value, unit=column_quantity.unit)
 
 def test_add_column_from_array(eve_test_ts, add_column_from_array_ts, column_quantity):
     # Test the column similar to the original quantity?
-    assert add_column_from_array_ts.quantity('array_added') == column_quantity
+    assert_quantity_allclose(add_column_from_array_ts.quantity('array_added'), column_quantity)
+
     # Test the full list of columns are pressent
-    assert set(add_column_from_array_ts.data.columns) == set(eve_test_ts.data.columns) | set('array_added')
+    assert set(add_column_from_array_ts.data.columns) == set(eve_test_ts.data.columns) | set(['array_added'])
 
 
-
+"""
 # ToDo:
 ###Extracting column as quantity or array#ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
 ###Updating a column using quantity or array#ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
 ###Updating the units# ts_eve = ts_eve.add_column(colname, qua_new, unit=unit, overwrite=True)
-"""

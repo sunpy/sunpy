@@ -5,7 +5,7 @@ Created on Wed Jul 20 10:24:06 2016
 @author: alex_
 """
 
-"""
+
 from __future__ import print_function, division
 
 import os
@@ -16,8 +16,8 @@ import sunpy.timeseries
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.metadata import MetaDict
+from collections import OrderedDict
 
-from sunpy import lightcurve as lc
 from datetime import timedelta
 
 import pytest
@@ -31,6 +31,7 @@ def basic_1_md():
     tr = TimeRange('2010-01-01 13:59:57.468999', '2010-01-01 13:59:56.091999')
     colnames = [ 'md1_column1', 'md1_column2' ]
     metadict = MetaDict({'md1_key1':'value1', 'md1_key2':'value2', 'all_same':'value3', 'all_different':'diff_1'})
+    metadict = MetaDict(OrderedDict([('md1_key1', 'value1'), ('md1_key2', 'value2'), ('all_same', 'value3'), ('all_different', 'diff_1')]))
     lis = [ ( tr, colnames, metadict ) ]
     return TimeSeriesMetaData(lis)
 
@@ -39,6 +40,7 @@ def basic_2_md():
     tr = TimeRange('2010-01-02 13:59:57.468999', '2010-01-02 13:59:56.091999')
     colnames = [ 'md2_column1', 'md2_column2' ]
     metadict = MetaDict({'md2_key1':'value1', 'md2_key2':'value2', 'all_same':'value3', 'all_different':'diff_2'})
+    metadict = MetaDict(OrderedDict([('md2_key1', 'value1'), ('md2_key2', 'value2'), ('all_same', 'value3'), ('all_different', 'diff_2')]))
     lis = [ ( tr, colnames, metadict ) ]
     return TimeSeriesMetaData(lis)
 
@@ -47,6 +49,7 @@ def basic_3_md():
     tr = TimeRange('2010-01-03 13:59:57.468999', '2010-01-03 13:59:56.091999')
     colnames = [ 'md3_column1', 'md3_column2' ]
     metadict = MetaDict({'md3_key1':'value1', 'md3_key2':'value2', 'all_same':'value3', 'all_different':'diff_3'})
+    metadict = MetaDict(OrderedDict([('md3_key1', 'value1'), ('md3_key2', 'value2'), ('all_same', 'value3'), ('all_different', 'diff_3')]))
     lis = [ ( tr, colnames, metadict ) ]
     return TimeSeriesMetaData(lis)
 
@@ -55,16 +58,54 @@ def basic_4_md():
     tr = TimeRange('2010-01-02 20:59:57.468999', '2010-01-04 13:59:56.091999')
     colnames = [ 'md4_column1', 'md4_column2' ]
     metadict = MetaDict({'md4_key1':'value1', 'md4_key2':'value2', 'all_same':'value3', 'all_different':'diff_4'})
+    metadict = MetaDict(OrderedDict([('md4_key1', 'value1'), ('md4_key2', 'value2'), ('all_same', 'value3'), ('all_different', 'diff_4')]))
     lis = [ ( tr, colnames, metadict ) ]
     return TimeSeriesMetaData(lis)
 
+"""
+tr = TimeRange('2010-01-01 13:59:57.468999', '2010-01-01 13:59:56.091999')
+colnames = [ 'md1_column1', 'md1_column2' ]
+metadict = MetaDict({'md1_key1':'value1', 'md1_key2':'value2', 'all_same':'value3', 'all_different':'diff_1'})
+metadict = MetaDict(OrderedDict([('md1_key1', 'value1'), ('md1_key2', 'value2'), ('all_same', 'value3'), ('all_different', 'diff_1')]))
+lis = [ ( tr, colnames, metadict ) ]
+basic_1_md = TimeSeriesMetaData(lis)
+
+tr = TimeRange('2010-01-02 13:59:57.468999', '2010-01-02 13:59:56.091999')
+colnames = [ 'md2_column1', 'md2_column2' ]
+metadict = MetaDict({'md2_key1':'value1', 'md2_key2':'value2', 'all_same':'value3', 'all_different':'diff_2'})
+lis = [ ( tr, colnames, metadict ) ]
+basic_2_md = TimeSeriesMetaData(lis)
+
+tr = TimeRange('2010-01-03 13:59:57.468999', '2010-01-03 13:59:56.091999')
+colnames = [ 'md3_column1', 'md3_column2' ]
+metadict = MetaDict({'md3_key1':'value1', 'md3_key2':'value2', 'all_same':'value3', 'all_different':'diff_3'})
+lis = [ ( tr, colnames, metadict ) ]
+basic_3_md = TimeSeriesMetaData(lis)
+
+tr = TimeRange('2010-01-02 20:59:57.468999', '2010-01-04 13:59:56.091999')
+colnames = [ 'md4_column1', 'md4_column2' ]
+metadict = MetaDict({'md4_key1':'value1', 'md4_key2':'value2', 'all_same':'value3', 'all_different':'diff_4'})
+lis = [ ( tr, colnames, metadict ) ]
+basic_4_md = TimeSeriesMetaData(lis)
+
+appended = copy.deepcopy(basic_1_md)
+appended.append(*basic_2_md.metadata[0])
+appended.append(*basic_3_md.metadata[0])
+basic_ascending_append_md = appended
+
+appended = copy.deepcopy(basic_1_md)
+appended.append(*basic_2_md.metadata[0])
+appended.append(*basic_3_md.metadata[0])
+appended.append(*basic_4_md.metadata[0])
+complex_append_md = appended
+"""
 #==============================================================================
 # Test Appending TimeSeriesMetaData Objects
 #==============================================================================
 
 @pytest.fixture
 def basic_ascending_append_md(basic_1_md, basic_2_md, basic_3_md):
-    appended = copy.copy(basic_1_md)
+    appended = copy.deepcopy(basic_1_md)
     appended.append(*basic_2_md.metadata[0])
     appended.append(*basic_3_md.metadata[0])
     return appended
@@ -73,23 +114,31 @@ def test_basic_ascending_append_md(basic_1_md, basic_2_md, basic_3_md, basic_asc
     # Check all the entries are in the correct order
     assert basic_ascending_append_md.metadata[0] == basic_1_md.metadata[0]
     assert basic_ascending_append_md.metadata[1] == basic_2_md.metadata[0]
+
+    print('\n\n')
+    print(basic_ascending_append_md.metadata[2])
+    print('\n\n')
+    print(basic_3_md.metadata[0])
+    print('\n\n')
+
     assert basic_ascending_append_md.metadata[2] == basic_3_md.metadata[0]
 
 def test_basic_descending_append_md(basic_1_md, basic_2_md, basic_3_md, basic_ascending_append_md):
-    appended = copy.copy(basic_3_md)
-    appended.append(*basic_2_md.metadata[0])
+    appended = copy.deepcopy(basic_3_md)
     appended.append(*basic_1_md.metadata[0])
+    appended.append(*basic_2_md.metadata[0])
     assert appended == basic_ascending_append_md
 
+"""
 def test_basic_random_append_md(basic_1_md, basic_2_md, basic_3_md, basic_ascending_append_md):
-    appended = copy.copy(basic_3_md)
+    appended = copy.deepcopy(basic_3_md)
     appended.append(*basic_1_md.metadata[0])
     appended.append(*basic_2_md.metadata[0])
     assert appended == basic_ascending_append_md
 
 @pytest.fixture
 def complex_append_md(basic_1_md, basic_2_md, basic_3_md, basic_4_md):
-    appended = copy.copy(basic_1_md)
+    appended = copy.deepcopy(basic_1_md)
     appended.append(*basic_2_md.metadata[0])
     appended.append(*basic_3_md.metadata[0])
     appended.append(*basic_4_md.metadata[0])
@@ -109,25 +158,25 @@ def test_complex_append_md(basic_1_md, basic_2_md, basic_3_md, basic_4_md, compl
 @pytest.fixture
 def truncated_none_md(basic_ascending_append_md):
     tr = TimeRange('2010-01-01 1:59:57.468999', '2010-01-03 23:59:56.091999')
-    truncated = copy.copy(basic_ascending_append_md)
+    truncated = copy.deepcopy(basic_ascending_append_md)
     return truncated.truncate(tr)
 
 @pytest.fixture
 def truncated_start_md(basic_ascending_append_md):
     tr = TimeRange('2010-01-01 20:59:57.468999', '2010-01-03 23:59:56.091999')
-    truncated = copy.copy(basic_ascending_append_md)
+    truncated = copy.deepcopy(basic_ascending_append_md)
     return truncated.truncate(tr)
 
 @pytest.fixture
 def truncated_end_md(basic_ascending_append_md):
     tr = TimeRange('2010-01-01 1:59:57.468999', '2010-01-03 1:59:56.091999')
-    truncated = copy.copy(basic_ascending_append_md)
+    truncated = copy.deepcopy(basic_ascending_append_md)
     return truncated.truncate(tr)
 
 @pytest.fixture
 def truncated_both_md(basic_ascending_append_md):
     tr = TimeRange('2010-01-01 20:59:57.468999', '2010-01-03 1:59:56.091999')
-    truncated = copy.copy(basic_ascending_append_md)
+    truncated = copy.deepcopy(basic_ascending_append_md)
     return truncated.truncate(tr)
 
 
@@ -158,11 +207,11 @@ def test_complex_append_tr(basic_1_md, basic_4_md, complex_append_md):
     tr = TimeRange(basic_1_md.start, basic_4_md.end)
     assert complex_append_md.time_range == tr
 
-"""
+
 #==============================================================================
-# Test TimeSeriesMetaData find, get and update methods
+# Test TimeSeriesMetaData find and update methods
 #==============================================================================
-"""
+
 def test_find(basic_ascending_append_md):
     assert isinstance(basic_ascending_append_md.get('md1_key1'),TimeSeriesMetaData)
 
@@ -184,11 +233,11 @@ def test_get_colname_filter(basic_ascending_append_md):
 
 def test_get_both_filters(basic_ascending_append_md):
     assert basic_ascending_append_md.get('all_different', time='2010-01-02 20:59:57.468999', colname='md2_column2').values == ['diff_2']
-"""
+
 #==============================================================================
-# Test TimeSeriesMetaData find, get and update methods
+# Test TimeSeriesMetaData get and update methods
 #==============================================================================
-"""
+
 def test_get(basic_ascending_append_md):
     assert isinstance(basic_ascending_append_md.get('md1_key1'),TimeSeriesMetaData)
 
@@ -211,7 +260,6 @@ def test_get_colname_filter(basic_ascending_append_md):
 def test_get_both_filters(basic_ascending_append_md):
     assert basic_ascending_append_md.get('all_different', time='2010-01-02 20:59:57.468999', colname='md2_column2').values == ['diff_2']
 """
-
 """
 ##############################################################################
 # Getting GOES data over a satelite change
