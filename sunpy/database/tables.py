@@ -386,7 +386,7 @@ class DatabaseEntry(Base):
         if len(attribute_list) == 0 :
             raise TypeError('At least one attribute required')
         for attribute in attribute_list:
-            if self.__dict__[attribute] != other.__dict__[attribute]:
+            if getattr(self, attribute) != getattr(other, attribute):
                 return False
         return True
 
