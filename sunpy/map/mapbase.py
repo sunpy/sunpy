@@ -148,8 +148,8 @@ class GenericMap(NDData):
       notation using equations 32 in Thompson (2006).
 
     * If a CDi_j matrix is provided it is assumed that it can be converted to a
-      PCi_j matrix and CDELT keywords as described in Greisen & Calabretta
-      (2002).
+      PCi_j matrix and CDELT keywords as described in
+      `Greisen & Calabretta (2002) <http://dx.doi.org/10.1051/0004-6361:20021327>`_
 
     * The 'standard' FITS keywords that are used by this class are the PCi_j
       matrix and CDELT, along with the other keywords specified in the WCS
