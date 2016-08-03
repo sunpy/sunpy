@@ -174,7 +174,8 @@ class Response():
             self.effective_area = eff_area
 
         else:
-            # Returns effective area at the position of the center wavelength for the channel specified
+            # Returns effective area float value at the position of the center wavelength for the channel specified
+            # want to move away from this and just return an array with zeros everywhere but where the channel is specified
             channel_index = self.wavelength_range_index(channel)
 
             # import instrument properties
@@ -209,11 +210,9 @@ class Response():
 
         if use_table2_gain:
             # Uses Gain from table Table 12 to calculate instrument response
-
             # gain values from Boerner paper
             gain_table2 = {94: 2.128, 131: 1.523, 171: 1.168, 193: 1.024, 211: 0.946, 304: 0.658, 335: 0.596,
                            1600: 0.125, 1700: 0.118}
-
             self.system_gain = gain_table2[channel]
 
 
@@ -253,8 +252,11 @@ class Response():
 
             self.system_gain = calculated_gain / ccdgain
 
-    def calculate_wavelength_response(self, channel, use_total_range=False, use_response_table2=False,
-                                      use_table2_gain=False, use_genx_values=False, **kwargs):
+
+
+
+    def calculate_wavelength_response(self, channel, band_width = 2.5,
+                                      use_response_table2=False, use_table2_gain=False, use_genx_values=True, **kwargs):
         """
 
         Describes the instrument (AIA) response per wavelength by calculating effective area vs wavelength of the strongest emission lines present in the solar feature.
@@ -267,12 +269,11 @@ class Response():
         ----------
         :keyword
 
-
+        band_width in angstroms - range around channel wavelength that is probed, all other values return as zeros in wavelength response array
         Returns
         -------
         :return: float, array describing the response per wavelength of effective area (wavelength response)
                  count rate for spectrum?  : units cm^2 DN phot^-1
-
 
         NOTE:
 
@@ -285,36 +286,54 @@ class Response():
 
         var = self.get_channel_data(channel)
 
-        if use_table2_gain:
-            self.calculate_effective_area(channel)
-            self.calculate_system_gain(channel, use_table2_gain=True)
-            self.wavelength_response = self.effective_area * self.system_gain * dn_per_photon
+        # # move to test
+        # if use_table2_gain:
+        #     self.calculate_effective_area(channel)
+        #     self.calculate_system_gain(channel, use_table2_gain=True)
+        #     self.wavelength_response = self.effective_area * self.system_gain * dn_per_photon
 
+        # # move to test
+        # elif use_response_table2:
+        #     # returns the instrument response values listed in Table 2
+        #     i = self.channel_list.index(channel)
+        #     response = [0.664, 1.785, 3.365, 1.217, 1.14, 0.041, 0.027, 0.0024, 0.0046][i]
+        #     self.wavelength_response = response
 
-        elif use_response_table2:
-            # returns the instrument response values listed in Table 2
-            i = self.channel_list.index(channel)
-            response = [0.664, 1.785, 3.365, 1.217, 1.14, 0.041, 0.027, 0.0024, 0.0046][i]
-            self.wavelength_response = response
+        # default is to use these values
+        if use_genx_values:
 
-        elif use_genx_values:
-
-            channel_index = self.wavelength_range_index(channel)
 
             self.calculate_system_gain(channel, use_genx_values=True)
-            if use_total_range:
-                self.wavelength_response = var['effective_area'] * (self.system_gain * dn_per_photon)
-            else:
-                self.wavelength_response = var['effective_area'][channel_index] * (
-                    self.system_gain * dn_per_photon)
+            wavelength_response = var['effective_area'] * (self.system_gain * dn_per_photon)
+
+
+            # if total range removed. float value returned, moving away from this!
+            # else:
+            #     self.wavelength_response = var['effective_area'][channel_index] * (
+            #         self.system_gain * dn_per_photon)
 
         else:
             self.calculate_system_gain(channel)
             self.calculate_effective_area(channel, total_range=True)
+            wavelength_response = self.effective_area * self.system_gain
 
-            self.wavelength_response = self.effective_area * self.system_gain
 
 
+        # wavelength range selected, conversion to index by multiplying by ten.
+        # This is because the wavelength array is of dispersed wavelengths.
+            # # + 100 in index = + 10 wavelengths in array
+            # # + 10 in index = + 1 wavelength in array
+        range = band_width * 10
+        channel_index = self.wavelength_range_index(channel)
+
+        # make the wavelength array zeros except in a small wavelength range near channel
+        for index, value in enumerate(wavelength_response):
+            if index - range < channel_index < index + range:
+                continue
+            else:
+                wavelength_response[index] = 0.0
+
+        self.wavelength_response = wavelength_response
 
 
     def calculate_contribution_function(self, channel, wavelength_range, ion_object, chianti_Gofnt=False,
@@ -361,9 +380,9 @@ class Response():
 
         # test case: store iron ion names
         if test:
-            # ion_array =  [ 'fe_14', 'fe_15']
-            for level in range(5, 16, 5):
-                ion_array.append('fe' + '_' + str(level))
+            ion_array =  ['co_23', 'ni_20', 'ni_21', 'fe_18', 'fe_20']
+            # for level in range(5, 16, 5):
+            #     ion_array.append('fe' + '_' + str(level))
 
         # # test case: store ion names of elements with high solar abundance - basically same result as running all ions
         # # (based on logarithmic abundance chart, higher than ~ 7 dex)
@@ -376,8 +395,7 @@ class Response():
             #
             # store every ion from Felding and Widing (1993) abundances: bibcode 1995ApJ...443..416L
             ion_array = ['o_5', 'o_6', 'ne_8', 'mg_7', 'mg_10', 'si_6', 'si_7', 'si_8', 'si_9', 'si_10', 's_8', 's_9',
-                         'fe_14',
-                         'fe_15', 's_10', 's_11', 's_12', 's_13', 'fe_8', 'fe_9', 'fe_10', 'fe_11', 'fe_12', 'fe_13',
+                         'fe_14', 'fe_15', 's_10', 's_11', 's_12', 's_13', 'fe_8', 'fe_9', 'fe_10', 'fe_11', 'fe_12', 'fe_13',
                          'ni_11', 'ni_12', 'ni_13', 'ni_17', 'ni_18']
 
         # # test case: store every element in chianti ion names - takes ~ 10 mins per channel, ~ 80 mins for all channels
@@ -385,8 +403,8 @@ class Response():
             for element in c.El:
                 for level in range(1, 38, 1):
                     ion_array.append(element + '_' + str(level))
-                    # # TODO: create data structure with contribution structure of all elements for easy access
 
+        # TODO: set up dataframe
         ion_contribution_dataframe = kwargs.get('ion_contribution_dataframe', 'contributions.csv')
         # if ion_contribution_dataframe:
         #     # read contributions from dataframe
@@ -434,58 +452,29 @@ class Response():
 
         """
 
-        # # wavelength range for chianti ion object needs to be given in form [start, stop]
+        # wavelength range for chianti ion object needs to be given in form [start, stop]
         var = self.get_channel_data(channel)
-        wrange = var['wavelength_range']
-        # print('wave', wrange)
-
-        start_wvl = self.get_channel_data(channel)['minimum_wavelength']
-        end_wvl = wrange[-1]
+        start_wvl = var['wavelength_range'][0]
+        end_wvl = var['wavelength_range'][-1]
         wavelength_range = [start_wvl, end_wvl]
         # print('wavelength range1: ', wavelength_range, 'largest total range - same for all channels')
-        #
-        # start_wvl = channel - 30
-        # end_wvl = channel + 30
-        # wavelength_range = [start_wvl, end_wvl]
-        # print('wavelength range2: ', wavelength_range, 'mid range centered around channel')
 
-        # obtain index for values as specific wavelength in wavelength range
-        # wavesteps make actual range 10x smaller if indexing
-        # #TODO: input range keyword to choose how much of a wavelength range to probe
-        # channel_index = self.wavelength_range_index(channel)
-        # start_wvl = wrange[channel_index - 10]
-        # end_wvl = wrange[channel_index + 10]
-        # wavelength_range = [start_wvl, end_wvl]
-        # print('wavelength range3: ', wavelength_range)
-        # # + 100 in index = + 10 wavelengths in array
-        # # + 10 in index = + 1 wavelength in array
-
-        # Question: How close to the central channel do we want to look at the temperature response?
-
-
-
-
-
-        platescale = var['plate_scale']  # * (1 / u.second)
 
         # isobaric model pressure is 10^15 - needed?
         pressure = 10 ** 15 * (u.Kelvin / u.cm ** 3)
 
         # default temperature
         t = kwargs.get('temperature', 10. ** (5.0 + 0.05 * np.arange(61.)))
-        print('t: ', np.log(t))
+        # print('t: ', np.log(t))
         # print('t',t)
 
-        # calculate wavelength response
-        self.calculate_wavelength_response(channel, use_total_range=True, use_genx_values=True)
+        # calculate wavelength response # expect this to be run first
+        self.calculate_wavelength_response(channel)
 
         # get ion contributions
-        # # TODO: save this in dataframe after one run and then load from it
         self.get_ion_contribution_array(channel, temperature=t, wavelength_range=wavelength_range,
-                                        all_chianti_ions=True)
-        #     save to a file
-        # else:
-        #     look in file
+                                        test=True)
+
         # print('test: ', self.wavelength_response)
         # print('test: ', self.wavelength_response[start_wvl : end_wvl])
         # print('test: ', self.wavelength_response[channel_index - 50: channel_index + 50])
@@ -493,10 +482,10 @@ class Response():
         # multiply ion contributions array by wave-length response array
         response = []
         for ion_contribution_per_temp in self.contributions_array:
-            response.append(ion_contribution_per_temp * self.wavelength_response[channel_index - 10:channel_index + 10])  # index effective area the same as contributions are indexed
+            response.append(ion_contribution_per_temp * self.wavelength_response)
 
         # move to test: check: these are the same length because wavelength range in defining response functions
-        # print('save', response, len(response), len(response[0]))
+        print('save', response, len(response), len(response[0]))
         # print(len(wrange))
 
         # integrate through wavelength range, default = simpsons
@@ -506,9 +495,6 @@ class Response():
 
         # method 2:
         elif trapz2:
-            # transverse = response.transpose()
-            # resp = np.vstack((response))
-            # print('r', resp, len(resp), len(resp[0]) #  2D 21 (,8761
             temp_response = integrate.trapz(response, axis=1)
         else:
             # method 3: simpson integration
@@ -520,3 +506,6 @@ class Response():
 
         # define temperature response dictionary
         self.temperature_response = {'temperature': self.temperatures, 'temperature response': temp_response}
+
+
+
