@@ -8,8 +8,9 @@ import numpy as np
 import matplotlib.animation
 import numpy.ma as ma
 
-from sunpy.map import GenericMap
+import astropy.units as u
 
+from sunpy.map import GenericMap
 from sunpy.visualization.mapcubeanimator import MapCubeAnimator
 from sunpy.visualization import wcsaxes_compat
 from sunpy.util import expand_list
@@ -192,10 +193,12 @@ class MapCube(object):
             axes.set_ylabel(ylabel)
 
         if resample:
-            # This assumes that the maps are homogeneous!
-            # TODO: Update this!
-            resample = np.array(len(self.maps)-1) * np.array(resample)
-            ani_data = [x.resample(resample) for x in self.maps]
+            if self.all_maps_same_shape():
+                resample = u.Quantity(self.maps[0].dimensions) * np.array(resample)
+                for amap in self.maps:
+                    amap.resample(resample)
+            else:
+                raise ValueError('Maps in mapcube do not all have the same shape.')
         else:
             ani_data = self.maps
 
@@ -303,7 +306,7 @@ class MapCube(object):
 
         if resample:
             if self.all_maps_same_shape():
-                resample = np.array(len(self.maps) - 1) * np.array(resample)
+                resample = u.Quantity(self.maps[0].dimensions) * np.array(resample)
                 for amap in self.maps:
                     amap.resample(resample)
             else:
