@@ -84,7 +84,7 @@ basic_3_md = TimeSeriesMetaData(lis)
 
 tr = TimeRange('2010-01-02 20:59:57.468999', '2010-01-04 13:59:56.091999')
 colnames = [ 'md4_column1', 'md4_column2' ]
-metadict = MetaDict({'md4_key1':'value1', 'md4_key2':'value2', 'all_same':'value3', 'all_different':'diff_4'})
+metadict = MetaDict({'md4_key1':'value1', 'md4_key2':'value2', 'all_same':'value3', 'all_different':'diff_4'})#
 lis = [ ( tr, colnames, metadict ) ]
 basic_4_md = TimeSeriesMetaData(lis)
 
