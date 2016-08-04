@@ -327,6 +327,19 @@ resulting entries to the database. Because the query result translates to
     >>> len(database)
     37
 
+There is another level of caching which ensures a previously downloaded file
+corresponding to a database entry is not downloaded again. This ensures that
+in case of queries which have some results in common, files for the common
+results will not be downloaded again. In the following example, you can see
+that even if the query is a new one, it will have all files in common with the
+previous query. Therefore, no new files are downloaded.
+
+    >>> entries = database1.fetch(
+        vso.attrs.Time('2012-08-05 00:00:00', '2012-08-05 00:00:01'),
+        vso.attrs.Instrument('AIA'))
+    >>> len(database)
+    37
+
 2.4 Adding entries manually
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Although usually not required, it is also possible to add database entries
