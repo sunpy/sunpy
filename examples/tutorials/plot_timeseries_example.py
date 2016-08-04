@@ -24,6 +24,9 @@ import astropy.units as u
 from collections import OrderedDict
 from astropy.table import Table
 import numpy as np
+import datetime
+from pandas import DataFrame
+from sunpy.util.metadata import MetaDict
 
 ##############################################################################
 # Creating a TimeSeries from a file can be done using the factory.
@@ -148,8 +151,21 @@ ts_goes.to_array()
 
 ##############################################################################
 # Creating a TimeSeries from scratch can be done in a lot of ways, much like a
-# Map. Input data can be in the form of a Pandas DataFrame (prefered), an astropy
+# Map.
+# Input data can be in the form of a Pandas DataFrame (prefered), an astropy
 # Table or a Numpy Array.
+# To generate some data and the corrisponding dates
+base = datetime.datetime.today()
+dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
+# Create the data DataFrame, header MetaDict and units OrderedDict
+data = DataFrame(intensity, index=dates, columns=['intensity'])
+units = OrderedDict([('intensity', u.W/u.m**2)])
+meta = MetaDict({'key':'value'})
+# Create the time series
+ts_custom = sunpy.timeseries.TimeSeries(data, meta, units)
+
+
 arr = np.array([[1,2],[3,4]])
 from astropy.time import Time
 tm = Time(['2000:002', '2001:345', '2002:345'])
