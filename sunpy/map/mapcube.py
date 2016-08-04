@@ -62,7 +62,7 @@ class MapCube(object):
         for m in self.maps:
             if not isinstance(m, GenericMap):
                 raise ValueError(
-                           'CompositeMap expects pre-constructed map objects.')
+                           'MapCube expects pre-constructed map objects.')
 
         # Optionally sort data
         if sortby is not None:
@@ -195,8 +195,9 @@ class MapCube(object):
         if resample:
             if self.all_maps_same_shape():
                 resample = u.Quantity(self.maps[0].dimensions) * np.array(resample)
+                ani_data = []
                 for amap in self.maps:
-                    amap.resample(resample)
+                    ani_data.append(amap.resample(resample))
             else:
                 raise ValueError('Maps in mapcube do not all have the same shape.')
         else:
@@ -209,29 +210,30 @@ class MapCube(object):
                 removes.pop(0).remove()
 
             im.set_array(ani_data[i].data)
-            im.set_cmap(self.maps[i].plot_settings['cmap'])
+            im.set_cmap(ani_data[i].plot_settings['cmap'])
 
-            norm = deepcopy(self.maps[i].plot_settings['norm'])
-            # The following explicit call is for bugged versions of Astropy's ImageNormalize
+            norm = deepcopy(ani_data[i].plot_settings['norm'])
+            # The following explicit call is for bugged versions of Astropy's
+            # ImageNormalize
             norm.autoscale_None(ani_data[i].data)
             im.set_norm(norm)
 
             if wcsaxes_compat.is_wcsaxes(axes):
-                im.axes.reset_wcs(self.maps[i].wcs)
+                im.axes.reset_wcs(ani_data[i].wcs)
                 wcsaxes_compat.default_wcs_grid(axes)
             else:
-                im.set_extent(np.concatenate((self.maps[i].xrange.value,
-                                              self.maps[i].yrange.value)))
+                im.set_extent(np.concatenate((ani_data[i].xrange.value,
+                                              ani_data[i].yrange.value)))
 
             if annotate:
                 annotate_frame(i)
-            removes += list(plot_function(fig, axes, self.maps[i]))
+            removes += list(plot_function(fig, axes, ani_data[i]))
 
         ani = matplotlib.animation.FuncAnimation(fig, updatefig,
-                                                frames=list(range(0, len(self.maps))),
-                                                fargs=[im, annotate, ani_data, removes],
-                                                interval=interval,
-                                                blit=False)
+                                                 frames=list(range(0, len(ani_data))),
+                                                 fargs=[im, annotate, ani_data, removes],
+                                                 interval=interval,
+                                                 blit=False)
 
         return ani
 
@@ -306,13 +308,16 @@ class MapCube(object):
 
         if resample:
             if self.all_maps_same_shape():
+                plot_cube = MapCube()
                 resample = u.Quantity(self.maps[0].dimensions) * np.array(resample)
-                for amap in self.maps:
-                    amap.resample(resample)
+                for i, amap in enumerate(self.maps):
+                    plot_cube.maps.append(amap.resample(resample))
             else:
                 raise ValueError('Maps in mapcube do not all have the same shape.')
+        else:
+            plot_cube = self
 
-        return MapCubeAnimator(self, **kwargs)
+        return MapCubeAnimator(plot_cube, **kwargs)
 
     def all_maps_same_shape(self):
         """
