@@ -252,10 +252,7 @@ class Response():
 
             self.system_gain = calculated_gain / ccdgain
 
-
-
-
-    def calculate_wavelength_response(self, channel, band_width = 2.5,
+    def calculate_wavelength_response(self, channel, band_width=2.5,
                                       use_response_table2=False, use_table2_gain=False, use_genx_values=True, **kwargs):
         """
 
@@ -270,6 +267,8 @@ class Response():
         :keyword
 
         band_width in angstroms - range around channel wavelength that is probed, all other values return as zeros in wavelength response array
+
+        cropped = test case of returning a cropped array
         Returns
         -------
         :return: float, array describing the response per wavelength of effective area (wavelength response)
@@ -302,7 +301,6 @@ class Response():
         # default is to use these values
         if use_genx_values:
 
-
             self.calculate_system_gain(channel, use_genx_values=True)
             wavelength_response = var['effective_area'] * (self.system_gain * dn_per_photon)
 
@@ -319,24 +317,23 @@ class Response():
 
 
 
-        # wavelength range selected, conversion to index by multiplying by ten.
-        # This is because the wavelength array is of dispersed wavelengths.
+            # wavelength range selected, conversion to index by multiplying by ten.
+            # This is because the wavelength array is of dispersed wavelengths.
             # # + 100 in index = + 10 wavelengths in array
             # # + 10 in index = + 1 wavelength in array
-        range = band_width * 10
+        self.range = int(band_width * 10)
         channel_index = self.wavelength_range_index(channel)
 
-        # make the wavelength array zeros except in a small wavelength range near channel
+        # mask the wavelength array with zeros except in a small wavelength range near channel
         for index, value in enumerate(wavelength_response):
-            if index - range < channel_index < index + range:
+            if index - self.range < channel_index < index + self.range:
                 continue
             else:
                 wavelength_response[index] = 0.0
 
         self.wavelength_response = wavelength_response
 
-
-    def calculate_contribution_function(self, channel, wavelength_range, ion_object, chianti_Gofnt=False,
+    def calculate_contribution_function(self, channel, ion_object, chianti_Gofnt=False,
                                         intensity=False):
         """
         information on plasma and atomic physics governing how matter emits at a given temperature
@@ -352,6 +349,20 @@ class Response():
         # print('t: ', t)
         var = self.get_channel_data(channel)
 
+        # wavelength range for chianti ion object needs to be given in form [start, stop]
+
+        # method 1: using the whole wavelength range given from SSW
+        # start_wvl = var['wavelength_range'][0]
+        # end_wvl = var['wavelength_range'][-1]
+
+        # method 2: using only a wavelength band around the channel ie. channel 94, using 92.5-95.5
+
+        wrange = var['wavelength_range']
+        channel_index = self.wavelength_range_index(channel)
+        start_wvl = wrange[channel_index - self.range]  # default set in wavelength range to 2.5 angstroms
+        end_wvl = wrange[channel_index + self.range]
+        wavelength_range = [start_wvl, end_wvl]
+
         if chianti_Gofnt:
             #   refactored chianti gofnt
             # print(
@@ -359,18 +370,20 @@ class Response():
 
             # Chianti Contribution Function
             ion_object.gofnt(wvlRange=wavelength_range, top=1, verbose=0, plot=False)
-            gofnt = ion_object.Gofnt['gofnt']
 
             self.temperatures = ion_object.Gofnt['temperature']
-            self.contribution_function = gofnt
+            self.contribution_function = ion_object.Gofnt['gofnt']
+
+            # print('len gofnt', len(ion_object.Gofnt['gofnt']))
+            # print('eDensity', ion_object.Gofnt['eDensity'])
+            # print('index', ion_object.Gofnt['index'])
+            # print('wvl', ion_object.Gofnt['wvl'])
 
             # self.Gofnt = {'temperature': outTemperature, 'eDensity': outDensity, 'gofnt': gofnt, 'index': g_line,
             #               'wvl': wvl[g_line]}
 
-
-
-    def get_ion_contribution_array(self, channel, temperature, wavelength_range, test=False, all_chianti_ions=False,
-                                   solar_chromosphere_ions=False, **kwargs):
+    def get_ion_contribution_array(self, channel, temperature, top_ions=True, all_chianti_ions=False,
+                                   solar_chromosphere_ions=False, test=False, **kwargs):
         """
 
         :return:
@@ -380,9 +393,16 @@ class Response():
 
         # test case: store iron ion names
         if test:
-            ion_array =  ['co_23', 'ni_20', 'ni_21', 'fe_18', 'fe_20']
-            # for level in range(5, 16, 5):
+            # for level in range(5, 28, 1):
             #     ion_array.append('fe' + '_' + str(level))
+
+            # just iron in 94 give a pretty good result for channel 94 only
+            ion_array = ['fe_10', 'fe_18', 'fe_20']
+
+        if top_ions:
+            # default: top ions selected from chianti linelist that have high intensities in near each channel wavelength
+            ion_array = ['al_10', 'ca_14', 'ca_15', 'ca_17', 'fe_3', 'fe_7', 'fe_9', 'fe_11', 'fe_12', 'fe_14', 'fe_16',
+                         'fe_18', 'fe_19', 'fe_20', 'fe_21', 'fe_23', 'ni_14', 'ni_20', ]
 
         # # test case: store ion names of elements with high solar abundance - basically same result as running all ions
         # # (based on logarithmic abundance chart, higher than ~ 7 dex)
@@ -395,8 +415,8 @@ class Response():
             #
             # store every ion from Felding and Widing (1993) abundances: bibcode 1995ApJ...443..416L
             ion_array = ['o_5', 'o_6', 'ne_8', 'mg_7', 'mg_10', 'si_6', 'si_7', 'si_8', 'si_9', 'si_10', 's_8', 's_9',
-                         'fe_14', 'fe_15', 's_10', 's_11', 's_12', 's_13', 'fe_8', 'fe_9', 'fe_10', 'fe_11', 'fe_12', 'fe_13',
-                         'ni_11', 'ni_12', 'ni_13', 'ni_17', 'ni_18']
+                         'fe_14', 'fe_15', 's_10', 's_11', 's_12', 's_13', 'fe_8', 'fe_9', 'fe_10', 'fe_11', 'fe_12',
+                         'fe_13', 'ni_11', 'ni_12', 'ni_13', 'ni_17', 'ni_18']
 
         # # test case: store every element in chianti ion names - takes ~ 10 mins per channel, ~ 80 mins for all channels
         if all_chianti_ions:
@@ -404,7 +424,6 @@ class Response():
                 for level in range(1, 38, 1):
                     ion_array.append(element + '_' + str(level))
 
-        # TODO: set up dataframe
         ion_contribution_dataframe = kwargs.get('ion_contribution_dataframe', 'contributions.csv')
         # if ion_contribution_dataframe:
         #     # read contributions from dataframe
@@ -419,7 +438,7 @@ class Response():
         for i in ion_array:
             try:
                 ion_object = ch.ion(i, temperature=temperature, eDensity=1.e+9, em=1.e+27)
-                self.calculate_contribution_function(channel, wavelength_range, ion_object, chianti_Gofnt=True)
+                self.calculate_contribution_function(channel, ion_object, chianti_Gofnt=True)
                 ion_contributions.append(self.contribution_function)
                 print(i)
             except (AttributeError, KeyError, UnboundLocalError, IndexError):
@@ -452,14 +471,6 @@ class Response():
 
         """
 
-        # wavelength range for chianti ion object needs to be given in form [start, stop]
-        var = self.get_channel_data(channel)
-        start_wvl = var['wavelength_range'][0]
-        end_wvl = var['wavelength_range'][-1]
-        wavelength_range = [start_wvl, end_wvl]
-        # print('wavelength range1: ', wavelength_range, 'largest total range - same for all channels')
-
-
         # isobaric model pressure is 10^15 - needed?
         pressure = 10 ** 15 * (u.Kelvin / u.cm ** 3)
 
@@ -469,15 +480,10 @@ class Response():
         # print('t',t)
 
         # calculate wavelength response # expect this to be run first
-        self.calculate_wavelength_response(channel)
+        self.calculate_wavelength_response(channel, cropped=False)
 
         # get ion contributions
-        self.get_ion_contribution_array(channel, temperature=t, wavelength_range=wavelength_range,
-                                        test=True)
-
-        # print('test: ', self.wavelength_response)
-        # print('test: ', self.wavelength_response[start_wvl : end_wvl])
-        # print('test: ', self.wavelength_response[channel_index - 50: channel_index + 50])
+        self.get_ion_contribution_array(channel, temperature=t)
 
         # multiply ion contributions array by wave-length response array
         response = []
@@ -485,7 +491,7 @@ class Response():
             response.append(ion_contribution_per_temp * self.wavelength_response)
 
         # move to test: check: these are the same length because wavelength range in defining response functions
-        print('save', response, len(response), len(response[0]))
+        # print('save', response, len(response), len(response[0]))
         # print(len(wrange))
 
         # integrate through wavelength range, default = simpsons
@@ -506,6 +512,3 @@ class Response():
 
         # define temperature response dictionary
         self.temperature_response = {'temperature': self.temperatures, 'temperature response': temp_response}
-
-
-
