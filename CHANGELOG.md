@@ -9,6 +9,9 @@ Latest
 * Now the `sunpy.database.tables.display_entries()` prints an astropy table.
 * Additional methods added inside the `sunpy.database` class to make it easier
   to display the database contents.
+* Added VSO query result block level caching in the database module. This
+  prevents redownloading of files which have already been downloaded.
+  Especially helpful in case of overlapping queries.
 
 0.7.0
 -----
