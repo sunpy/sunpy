@@ -13,6 +13,9 @@ Latest
 * `sunpy.io.fits.read` will now return any parse-able HDUs even if some raise an error.
 * `VSOClient` no longer prints a lot of XML junk if the query fails.
 * Remove unused `sunpy.visualization.plotting` module
+* Added VSO query result block level caching in the database module. This
+  prevents redownloading of files which have already been downloaded.
+  Especially helpful in case of overlapping queries.
 
 0.7.0
 -----
