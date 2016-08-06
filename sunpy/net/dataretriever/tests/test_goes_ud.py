@@ -44,13 +44,6 @@ def test_can_handle_query(time):
     ans3 = goes.GOESClient._can_handle_query(time, Instrument('eve'))
     assert ans3 is False
 
-def test_can_handle_query_b():
-    assert LCClient._can_handle_query(Time('2016/06/15', '2016/06/17'), Instrument('goes'), Physobs('PARTICLE_FLUX'))
-    assert LCClient._can_handle_query(Time('2016/06/15', '2016/06/17'), Instrument('goes'), Physobs('INTENSITY'))
-    assert LCClient._can_handle_query(Time('2016/06/15', '2016/06/17'), Instrument('goes'), Physobs('IRRADIANCE'))
-    assert not LCClient._can_handle_query(Time('2016/06/15', '2016/06/17'), Instrument('goes'))
-
-
 def test_no_satellite():
     with pytest.raises(ValueError):
         LCClient.search(Time("1950/01/01", "1950/02/02"), Instrument('goes'), Physobs('IRRADIANCE'))
@@ -131,6 +124,14 @@ def test_query_c(time, instrument, physobs, number_of_files):
     qr = GClient.query(time, instrument, physobs)
     assert len(qr) == number_of_files
 
+TRANGE = Time('2016/6/15', '2016/6/17')
+@pytest.mark.parametrize("time, instrument, physobs, expected",
+                         [(TRANGE, Instrument('goes'), Physobs('PARTICLE_FLUX'), True),
+                          (TRANGE, Instrument('goes'), Physobs('INTENSITY'), True),
+                          (TRANGE, Instrument('goes'), Physobs('IRRADIANCE'), True),
+                          (TRANGE, Instrument('goes'), None, False)])
+def test_can_handle_query_b(time, instrument, physobs, expected):
+    assert GClient._can_handle_query(time, instrument, physobs) is expected
 
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument, physobs",
