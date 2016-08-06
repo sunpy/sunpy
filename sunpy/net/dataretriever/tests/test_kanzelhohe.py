@@ -26,13 +26,14 @@ def test_get_url_for_timerange(timerange, wavelength, url_start, url_end):
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[1] == url_end
-
-def test_can_handle_query():
-    time = Time('2015/12/30 00:00:00', '2015/12/31 00:05:00')
-    assert kanzelhohe.KanzelhoheClient._can_handle_query(time, Instrument('kanzelhohe'), Wavelength(6563*u.AA))
-    assert not kanzelhohe.KanzelhoheClient._can_handle_query(time, Instrument('swap'))
-    assert not kanzelhohe.KanzelhoheClient._can_handle_query(time)
-    assert kanzelhohe.KanzelhoheClient._can_handle_query(time, Instrument('kanzelhohe'), Wavelength(32768*u.AA))
+TRANGE = Time('2015/12/30 00:00:00', '2015/12/31 00:05:00')
+@pytest.mark.parametrize("time, instrument, wavelength, expected",
+                         [(TRANGE, Instrument('kanzelhohe'), Wavelength(6563*u.AA), True),
+                          (TRANGE, Instrument('swap'), None, False),
+                          (TRANGE, None, None, False),
+                          (TRANGE, Instrument('kanzelhohe'), Wavelength(32768*u.AA), True)])
+def test_can_handle_query(time, instrument, wavelength, expected):
+    assert KClient._can_handle_query(time, instrument, wavelength) is expected
 
 @pytest.mark.online
 def test_query():
@@ -54,9 +55,9 @@ def test_get(time, wavelength):
     download_list = res.wait()
     assert len(download_list) == len(qr)
 
-#This test downloads 3 files
-#Each file is 4.5MB, total size
-#is 13.4MB
+This test downloads 3 files
+Each file is 4.5MB, total size
+is 13.4MB
 @pytest.mark.online
 def test_fido_query():
     qr = Fido.search(a.Time('2016/01/05 07:30:00', '2016/01/05 07:38:00'), a.Instrument('kanzelhohe'), a.Wavelength(546.0*u.nm))
