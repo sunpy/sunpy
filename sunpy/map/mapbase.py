@@ -363,10 +363,7 @@ scale:\t\t {scale}
     @property
     def latex_name(self):
         """LaTeX formatted description of the Map."""
-        if isinstance(self.measurement, u.Quantity):
-            return self._base_name().format(measurement=self.measurement._repr_latex_())
-        else:
-            return self._base_name().format(measurement=self.measurement)
+        return self.name
 
     @property
     def nickname(self):
