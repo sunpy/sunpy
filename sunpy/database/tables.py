@@ -10,6 +10,7 @@ import fnmatch
 import os
 
 from astropy.units import Unit, nm, equivalencies
+import astropy
 from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean,\
     Table, ForeignKey
 from sqlalchemy.orm import relationship
@@ -594,7 +595,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
             break
 
 
-def display_entries(database_entries, columns, sort=False):
+def display_entries(database_entries, columns=None, sort=False):
     """Generate a table to display the database entries.
 
     Parameters
@@ -612,12 +613,15 @@ def display_entries(database_entries, columns, sort=False):
     Returns
     -------
     str
-        A formatted table that can be printed on the console or written to a
+        An astropy table that can be printed on the console or written to a
         file.
 
     """
-    header = [columns]
-    rulers = [['-' * len(col) for col in columns]]
+    if columns is None:
+        columns = ['id', 'observation_time_start', 'observation_time_end',
+                    'instrument', 'source', 'provider', 'physobs', 'wavemin',
+                    'wavemax', 'path', 'fileid', 'tags', 'starred',
+                    'download_time', 'size']
     data = []
     for entry in database_entries:
         row = []
@@ -646,4 +650,4 @@ def display_entries(database_entries, columns, sort=False):
         raise TypeError('given iterable is empty')
     if sort:
         data.sort()
-    return print_table(header + rulers + data)
+    return astropy.table.Table(rows=data, names=columns)
