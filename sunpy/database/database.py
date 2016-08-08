@@ -956,7 +956,7 @@ class Database(object):
         self._command_manager.redo(n)  # pragma: no cover
 
     def display_entries(self, columns=None, sort=False):
-        print display_entries(self, columns, sort)
+        print (display_entries(self, columns, sort))
 
     def show_in_browser(self, columns=None, sort=False):
         display_entries(self, columns, sort).show_in_browser(jsviewer=True)
