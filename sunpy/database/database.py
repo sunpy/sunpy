@@ -958,8 +958,9 @@ class Database(object):
     def display_entries(self, columns=None, sort=False):
         print (display_entries(self, columns, sort))
 
-    def show_in_browser(self, columns=None, sort=False):
-        display_entries(self, columns, sort).show_in_browser(jsviewer=True)
+    def show_in_browser(self, columns=None, sort=False, **kwargs):
+        jsviewer = kwargs.get('jsviewer', True)
+        display_entries(self, columns, sort).show_in_browser(jsviewer)
 
     def __getitem__(self, key):
         if isinstance(key, slice):
