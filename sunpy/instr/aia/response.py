@@ -29,12 +29,14 @@ utilize sunpy/instr/tests/test_aia.py
 
 import numpy as np
 import pandas as pd
+import os
 
 import astropy.units as u
 import astropy.constants as constants
 import chianti.core as ch
 import chianti.constants as c
 from scipy import integrate
+from scipy.interpolate import interp1d
 
 from .aia_read_genx2table import aia_instr_properties_to_table
 import sunpy.data.test as test
@@ -308,7 +310,12 @@ class Response():
             self.calculate_effective_area(channel, total_range=True)
             wavelength_response = self.effective_area * self.system_gain
 
-        self.wavelength_response = wavelength_response
+        wavelengths = np.arange(0, var['number_wavelength_intervals'])*var['wavelength_interval']+var['minimum_wavelength']
+
+        out_response = {}
+        out_response[channel] = {'response': wavelength_response, 'wavelength': wavelengths}
+
+        self.wavelength_response = out_response
 
 
 
@@ -331,7 +338,7 @@ class Response():
 
 
 
-    def get_contribution_function(self, channel, ion_object):
+    def get_contribution_function(self, channel, ion_object, wavelength_range):
         """
         information on plasma and atomic physics governing how matter emits at a given temperature
 
@@ -351,11 +358,15 @@ class Response():
         # end_wvl = var['wavelength_range'][-1]
 
         # method 2: using only a wavelength band around the channel ie. channel 94, using 92.5-95.5
-        wrange = var['wavelength_range']
-        channel_index = self.wavelength_range_index(channel)
-        start_wvl = wrange[channel_index - 25]  # default set in wavelength range to 2.5 angstroms
-        end_wvl = wrange[channel_index + 25]
-        wavelength_range = [start_wvl, end_wvl]
+        # wrange = var['wavelength_range']
+        # channel_index = self.wavelength_range_index(channel)
+        # start_wvl = wrange[channel_index - 25]  # default set in wavelength range to 2.5 angstroms
+        # end_wvl = wrange[channel_index + 25]
+        # wavelength_range = [start_wvl, end_wvl]
+        # print(wavelength_range)
+
+        # method 3:
+        # use wavelength range as defined in make_ion_table
 
         #   refactored chianti gofnt
         # print(
@@ -366,7 +377,8 @@ class Response():
 
         self.temperatures = ion_object.Gofnt['temperature']
         self.contribution_function = ion_object.Gofnt['gofnt']
-        #
+        self.wvl = ion_object.Gofnt['wvl'] # TODO: rename this <- 'wvl' chiantipy output name
+
         # print('len gofnt', len(ion_object.Gofnt['gofnt']))
         # print('eDensity', ion_object.Gofnt['eDensity'])
         # print('index', ion_object.Gofnt['index'])
@@ -378,11 +390,7 @@ class Response():
 
 
 
-
-
-
-    def get_ion_contribution_array(self, channel, temperature, density , top_ions=False, all_chianti_ions=False,
-                                   solar_chromosphere_ions=False, test=False, **kwargs):
+    def get_ion_name_array(self, top_ions=False, all_chianti_ions=False, solar_chromosphere_ions=False, test=False, **kwargs):
         """
 
         :return:
@@ -425,35 +433,61 @@ class Response():
                     ion_array.append(element + '_' + str(level))
 
 
-        # find contribution function for all ions
-        ion_contributions_array = []
-        for i in ion_array:
+        return ion_array
+
+
+    def make_ion_datatable(self,channel, temperature, density):
+        """
+
+
+
+        :return:
+        """
+
+        ion_array = self.get_ion_name_array(test = True)
+
+        # search_interval
+        ion_wvl_range = []
+        for i in [-2.5, 2.5]:
+            ion_wvl_range.append(i + channel)
+        # print(ion_wvl_range)
+
+        # define empty dataframe to fill
+        data = pd.DataFrame() # columns = ion_array, index = ion_wvl_range ,works but doesn't load != match self.wvl
+
+        # iterate through each column filling in the values for the contribution array with index = wavelength
+        for ion in ion_array:
             try:
-                ion_object = ch.ion(i, temperature=temperature, eDensity=1.e+9, em=1.e+27)
+                ion_object = ch.ion(ion, temperature=temperature, eDensity=1.e+9, em=1.e+27)
                 # print('ion object', ion_object)
 
-                self.get_contribution_function(channel, ion_object)
+                self.get_contribution_function(channel, ion_object, wavelength_range = ion_wvl_range)
+                # print('calculated contr. function: ', self.contributions_function)
 
-                # print('calc', self.contributions_function)
-                ion_contributions_array.append(self.contribution_function)
-                print(i)
+                # round the output of contribution function to match interval wavelength range on ions
+                wavelength = round(self.wvl, 3)
+                # print(wavelength, ion)
+                # print(len(self.contribution_function))
+
+                for temp, ion_contribution in zip(temperature, self.contribution_function):
+                    # data[wavelength] = self.contribution_function
+                    data.loc[temp, wavelength] = ion_contribution
+
+                print(ion)
             except (AttributeError, KeyError, UnboundLocalError, IndexError):
                 # doesn't save ions if no lines found in selected interval
                 #                      missing information (Elvlc file missing)
                 #                      cause errors in ChiantyPy (Zion2Filename, self.Ip)
-                print('passing ', i, ' due to error in ChiantiPy')
-
-        print('ion', len(ion_contributions_array))
-
-
+                # print('passing ', i, ) #' due to error in ChiantiPy')
+                pass
+            # print('ion', len(ion_contributions_array))
 
 
+        # print('data:',data)
 
-        # self.contribution_array = sum(ion_contributions)
+        # data in the shape G[[Temperature,wavelength of ion contribution]]
+        data.to_csv('ion_contribution.csv')
 
-        # move to test: check: confirms sum did the job!
-        # print('ca: ', contributions_array)
-        # print('ic: ', ion_contributions, len(ion_contributions))
 
 
 
@@ -478,7 +512,7 @@ class Response():
         pressure = 10 ** 15 * (u.Kelvin / u.cm ** 3)
 
         # default temperature
-        t = kwargs.get('temperature', 10. ** (5.0 + 0.05 * np.arange(61.)))
+        temperature_array = kwargs.get('temperature', 10. ** (5.0 + 0.05 * np.arange(61.)))
 
         # TODO: try density = t * pressure to get array
         density = 1.e+9
@@ -488,40 +522,65 @@ class Response():
         # calculate wavelength response # expect this to be run first
         self.calculate_wavelength_response(channel)
 
-        # get ion contributions
-        self.get_ion_contribution_array(channel, temperature=t, density = density, test = True)
+
+        # save ion contribution into a dataframe for faster computation
+        ion_contribution_dataframe = kwargs.get('ion_contribution_dataframe', 'ion_contribution.csv')
+
+        # check for path. does this work with defining your own ion data frame ^^ ?
+        if not os.path.exists(ion_contribution_dataframe):
+            print('WARNING: Making an Ion datatable will take a while!')
+            self.make_ion_datatable(channel, temperature_array, density = density)
+
+        data = pd.read_csv('ion_contribution.csv', delimiter = ',', header = 0, index_col = 0)
+
+        # from saved dataframe, put values near channel into 2D array
+        array = []
+        discrete_wavelengths = []
+
+        for number in np.arange(channel - 2.5, channel + 2.5, .001): # auto-sort?
+            if str(number) in data.keys():
+                store_per_wavelength = []
+                discrete_wavelengths.append(number)
+                for ion_contribution_per_temp in data[str(number)]:
+                    store_per_wavelength.append(ion_contribution_per_temp)
+                array.append(store_per_wavelength)
+        # print('array', array, len(array))
+        matrix = np.vstack((array)).T
+
+        # print('matrix:' , len(matrix)) # 61
+        # print(discrete_wavelengths) # returns array   (1,3) for channel 94, only three ions probed - check
+
+        # check that these are the same length -- good! 8751 == 8751
+        # print( len(self.wavelength_response[channel]['wavelength']), len(self.wavelength_response[channel]['response']))
+
+
+        # response_interpolated =  interp1d(discrete_wavelengths, self.wavelength_response, axis = 1)
+        response_interpolated = np.interp(discrete_wavelengths,  self.wavelength_response[channel]['wavelength'], self.wavelength_response[channel]['response'])[0]
 
         # multiply ion contributions array by wave-length response array
+        response = matrix * response_interpolated
 
-
-
-        response = []
-        # print('r', self.contributions_array)
-        for ion_contribution_per_temp in self.contribution_array:
-            response.append(ion_contribution_per_temp * self.wavelength_response)
 
         # move to test: check: these are the same length because wavelength range in defining response functions
-        # print('save', response, len(response), len(response[0]))
+        # print('response', response, len(response), len(response[0]))
         # print(len(wrange))
 
         # integrate through wavelength range, default = simpsons
         # method 1: composite trapezoidal integration
         if trapz1:
-            temp_response = integrate.cumtrapz(response, axis=1)
+            temp_response = integrate.cumtrapz(response, discrete_wavelengths)
 
         # method 2:
         elif trapz2:
-            temp_response = integrate.trapz(response, axis=1)
+            temp_response = integrate.trapz(response, discrete_wavelengths)
         else:
             # method 3: simpson integration
-            temp_response = integrate.simps(response, axis=1)
+            temp_response = integrate.simps(response, discrete_wavelengths)
 
-        # test if multiplying by pressure and/or plate scale give better accuracy
-        # temp_response = tr #* ( 1 / pressure) * (1 / platescale)
-        # print(temp_response, len(temp_response))
 
         # define temperature response dictionary
-        self.temperature_response = {'temperature': self.temperatures, 'temperature response': temp_response}
+        # print(len(temperature_array), len(temp_response), print(temp_response))
+        self.temperature_response = {'temperature': temperature_array, 'temperature response': temp_response}
 
 
 
