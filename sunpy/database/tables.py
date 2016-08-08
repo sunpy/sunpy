@@ -10,7 +10,7 @@ import fnmatch
 import os
 
 from astropy.units import Unit, nm, equivalencies
-import astropy
+import astropy.table
 from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean,\
     Table, ForeignKey
 from sqlalchemy.orm import relationship
