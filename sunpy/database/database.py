@@ -18,6 +18,7 @@ from astropy import units
 
 import sunpy
 from sunpy.database import commands, tables, serialize
+from sunpy.database.tables import display_entries
 from sunpy.database.caching import LRUCache
 from sunpy.database.commands import CompositeOperation
 from sunpy.database.attrs import walker
@@ -954,6 +955,14 @@ class Database(object):
         """
         self._command_manager.redo(n)  # pragma: no cover
 
+    def display_entries(self, columns=None, sort=False):
+        print display_entries(self, columns, sort)
+        return
+
+    def show_in_browser(self, columns=None, sort=False):
+        display_entries(self, columns, sort).show_in_browser(jsviewer=True)
+        return
+
     def __getitem__(self, key):
         if isinstance(key, slice):
             entries = []
@@ -996,3 +1005,12 @@ class Database(object):
     def __len__(self):
         """Get the number of rows in the table."""
         return self.session.query(tables.DatabaseEntry).count()
+
+    def __repr__(self):
+        return display_entries(self).__repr__()
+
+    def __str__(self):
+        return display_entries(self).__str__()
+
+    def _repr_html_(self):
+        return display_entries(self)._repr_html_()
