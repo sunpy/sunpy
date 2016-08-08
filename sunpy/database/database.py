@@ -957,11 +957,9 @@ class Database(object):
 
     def display_entries(self, columns=None, sort=False):
         print display_entries(self, columns, sort)
-        return
 
     def show_in_browser(self, columns=None, sort=False):
         display_entries(self, columns, sort).show_in_browser(jsviewer=True)
-        return
 
     def __getitem__(self, key):
         if isinstance(key, slice):
