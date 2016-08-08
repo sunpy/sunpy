@@ -89,12 +89,16 @@ class CompositeMap(object):
         alphas = [1] * len(self._maps)
         zorders = list(range(0, 10 * len(self._maps), 10))
         levels = [False] * len(self._maps)
-
+        Vmin = [0]*len(self._maps) #Don't know what the default for v_min and v_max is.
+        Vmax = [0]*len(self._maps)
+        
         # Set z-order and alpha values for the map
         for i, m in enumerate(self._maps):
             m.zorder = zorders[i]
             m.alpha = alphas[i]
             m.levels = levels[i]
+            m.Vmin = Vmin[i]
+            m.Vmax = Vmax[i]
 
     def add_map(self, amap, zorder=None, alpha=1, levels=False):
         """Adds a map to the CompositeMap.
@@ -339,6 +343,22 @@ class CompositeMap(object):
             'zorder'.
         """
         self._maps[index].zorder = zorder
+    #Possible solution for #1697
+    def set_vals(self, layer, vmin, vmax):
+        """Set the vmin and vmax value for
+            each layer of a composite map.
+
+            Parameters
+            ----------
+            layer: `int`
+                    the index of the map in composite map.
+            vmin: `int`
+                    Value of vmin
+            vmax: `int`
+                    Value of vmax
+        """
+        self._maps[layer].Vmin = vmin
+        self._maps[layer].Vmax = vmax    
 
     def draw_limb(self, index=None, axes=None):
         """Draws a circle representing the solar limb.
@@ -460,6 +480,8 @@ class CompositeMap(object):
                 "norm": m.plot_settings['norm'],
                 "alpha": m.alpha,
                 "zorder": m.zorder,
+                "vmin":m.Vmin,
+                "vmax":m.Vmax
             }
             params.update(matplot_args)
 
