@@ -669,4 +669,4 @@ def display_entries(database_entries, columns=None, sort=False):
         If True, sorts the entries before displaying them.
 
     """
-    print (create_display_table(database_entries, columns, sort))
+    print(create_display_table(database_entries, columns, sort))
