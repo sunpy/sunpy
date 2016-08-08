@@ -956,10 +956,9 @@ class Database(object):
         self._command_manager.redo(n)  # pragma: no cover
 
     def display_entries(self, columns=None, sort=False):
-        print (create_display_table(self, columns, sort))
+        print(create_display_table(self, columns, sort))
 
-    def show_in_browser(self, columns=None, sort=False, **kwargs):
-        jsviewer = kwargs.get('jsviewer', True)
+    def show_in_browser(self, columns=None, sort=False, jsviewer=True):
         create_display_table(self, columns, sort).show_in_browser(jsviewer)
 
     def __getitem__(self, key):
