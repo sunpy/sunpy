@@ -595,7 +595,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
             break
 
 
-def display_entries(database_entries, columns=None, sort=False):
+def create_display_table(database_entries, columns=None, sort=False):
     """Generate a table to display the database entries.
 
     Parameters
@@ -651,3 +651,22 @@ def display_entries(database_entries, columns=None, sort=False):
     if sort:
         data.sort()
     return astropy.table.Table(rows=data, names=columns)
+
+
+def display_entries(database_entries, columns=None, sort=False):
+    """Print a table to display the database entries.
+
+    Parameters
+    ----------
+    database_entries : iterable of :class:`DatabaseEntry` instances
+        The database entries will be the rows in the resulting table.
+
+    columns : iterable of str
+        The columns that will be displayed in the resulting table. Possible
+        values for the strings are all attributes of :class:`DatabaseEntry`.
+
+    sort : bool (optional)
+        If True, sorts the entries before displaying them.
+
+    """
+    print (create_display_table(database_entries, columns, sort))
