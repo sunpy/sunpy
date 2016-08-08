@@ -379,4 +379,4 @@ def test_display_entries():
     filedir = os.path.dirname(os.path.realpath(__file__))
     with open(os.path.join(filedir,'test_table.txt'), 'r') as f:
         stored_table = f.read()
-    assert table.strip() == stored_table.strip()
+    assert table.__str__().strip() == stored_table.strip()
