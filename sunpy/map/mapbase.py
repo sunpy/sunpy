@@ -357,7 +357,7 @@ scale:\t\t {scale}
 
     @property
     def name(self):
-        """Human-readable description of the Map"""
+        """Human-readable description of the Map."""
         return self._base_name().format(measurement=self.measurement)
 
     @property
