@@ -10,6 +10,7 @@ import pytest
 import os
 
 from astropy import units as u
+from astropy import conf
 
 from sunpy.database import Database
 from sunpy.database.tables import FitsHeaderEntry, FitsKeyComment, Tag,\
@@ -356,6 +357,7 @@ def test_create_display_table_missing_columns():
 
 
 def test_create_display_table():
+    conf.max_width = 500
     entries = [
         DatabaseEntry(
             id=1, source='SOHO', provider='SDAC', physobs='intensity',
@@ -381,3 +383,4 @@ def test_create_display_table():
     with open(os.path.join(filedir,'test_table.txt'), 'r') as f:
         stored_table = f.read()
     assert table.__str__().strip() == stored_table.strip()
+    conf.reset('max_width')
