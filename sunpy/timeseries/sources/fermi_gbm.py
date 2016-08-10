@@ -82,7 +82,7 @@ class GBMSummaryLightCurve(GenericTimeSeries):
             axes.plot(self.data.index, self.data[d], label=d)
 
         axes.set_yscale("log")
-        axes.set_title('Fermi GBM Summary data ' + self.meta['DETNAM'])
+        axes.set_title('Fermi GBM Summary data ' + str(self.meta.get('DETNAM').values()))
         axes.set_xlabel('Start time: ' +
                         self.data.index[0].strftime('%Y-%m-%d %H:%M:%S UT'))
         axes.set_ylabel('Counts/s/keV')

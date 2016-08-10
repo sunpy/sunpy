@@ -255,7 +255,7 @@ class TimeSeriesMetaData:
             metadict = MetaDict()
             for curkey, value in entry[2].items():
                 for key in keys:
-                    if curkey == key:
+                    if curkey.lower() == key.lower():
                         metadict.update({key:value})
             metadata.append((entry[0], entry[1], metadict))
 
@@ -308,9 +308,20 @@ class TimeSeriesMetaData:
 
         # Now update each matching entries
         for i in indices:
-            # Should we allow the user to overwrite values?
-            if overwrite:
-                self.metadata[i][2].update(dictionary)
+            # Seperate keys for new and current pairs
+            old_keys = set(dictionary.keys())
+            old_keys.intersection_update(set(self.metadata[i][2].keys()))
+            new_keys = set(dictionary.keys())
+            new_keys.difference_update(old_keys)
+
+            # Old keys only overwritten if allowed
+            for key in (self.metadata[i][2].keys()):
+                if key in old_keys and overwrite:
+                    self.metadata[i][2][key] = dictionary[key]
+            for key in dictionary:
+                if key in new_keys:
+                    self.metadata[i][2][key] = dictionary[key]
+            """
             else:
                 #ToDo: if any new.keys in... iterate through keys, if key is false throw an error otherwise update.
                 # Overwrite the original dict over the new to keeps old values.
@@ -319,6 +330,7 @@ class TimeSeriesMetaData:
                 new_meta.update(old_meta)
                 # Now recreate the tuple
                 self.metadata[i] = ( self.metadata[i][0], self.metadata[i][1], new_meta )
+            """
 
     def _truncate(self, timerange):
         """Removes metadata entries outside of the new (truncated) TimeRange.
@@ -364,7 +376,9 @@ class TimeSeriesMetaData:
         all_cols = set()
         for metatuple in self.metadata:
             all_cols.update(metatuple[1])
-        return list(all_cols)
+        all_cols = list(all_cols)
+        all_cols.sort()
+        return all_cols
 
     @property
     def metas(self):
