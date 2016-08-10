@@ -195,9 +195,7 @@ class MapCube(object):
         if resample:
             if self.all_maps_same_shape():
                 resample = u.Quantity(self.maps[0].dimensions) * np.array(resample)
-                ani_data = []
-                for amap in self.maps:
-                    ani_data.append(amap.resample(resample))
+                ani_data = [amap.resample(resample) for amap in self.maps]
             else:
                 raise ValueError('Maps in mapcube do not all have the same shape.')
         else:
@@ -310,7 +308,7 @@ class MapCube(object):
             if self.all_maps_same_shape():
                 plot_cube = MapCube()
                 resample = u.Quantity(self.maps[0].dimensions) * np.array(resample)
-                for i, amap in enumerate(self.maps):
+                for amap in self.maps:
                     plot_cube.maps.append(amap.resample(resample))
             else:
                 raise ValueError('Maps in mapcube do not all have the same shape.')
