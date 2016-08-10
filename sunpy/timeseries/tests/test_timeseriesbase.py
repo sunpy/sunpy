@@ -33,46 +33,70 @@ import sunpy.data.sample
 import sunpy.data.test
 testpath = sunpy.data.test.rootdir
 
-"""
+
+#==============================================================================
+# TimeSeries Tests
+#==============================================================================
+
+filepath = sunpy.data.test.rootdir
+
+eve_filepath = os.path.join(filepath, '')
+fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
+norrh_filepath = os.path.join(filepath, '')
+goes_filepath = os.path.join(filepath, 'goes.fits')
+lyra_filepath = os.path.join(filepath, '')
+rhessi_filepath = os.path.join(filepath, '')
+noaa_ind_filepath = os.path.join(filepath, '')
+noaa_pre_filepath = os.path.join(filepath, '')
+
+goes_filepath = sunpy.data.sample.GOES_LIGHTCURVE
+eve_filepath = sunpy.data.sample.EVE_LIGHTCURVE
+norrh_filepath = sunpy.data.sample.NORH_LIGHTCURVE
+lyra_filepath = sunpy.data.sample.LYRA_LEVEL3_LIGHTCURVE
+rhessi_filepath = sunpy.data.sample.RHESSI_LIGHTCURVE
+noaa_ind_filepath = sunpy.data.sample.NOAAINDICES_LIGHTCURVE
+noaa_pre_filepath = sunpy.data.sample.NOAAPREDICT_LIGHTCURVE
+
+
 @pytest.fixture
 def eve_test_ts():
     #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='EVE')
-    return sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_LIGHTCURVE, source='EVE')
+    return sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
 
 @pytest.fixture
 def fermi_gbm_test_ts():
     #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='GBMSummary')
-    return sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_LIGHTCURVE, source='GBMSummary')
+    return sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
 
 @pytest.fixture
 def norrh_test_ts():
     #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NoRH')
-    return sunpy.timeseries.TimeSeries(sunpy.data.sample.NORH_LIGHTCURVE, source='NoRH')
+    return sunpy.timeseries.TimeSeries(norrh_filepath, source='NoRH')
 
 @pytest.fixture
 def goes_test_ts():
     #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='GOES')
-    return sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='GOES')
+    return sunpy.timeseries.TimeSeries(goes_filepath, source='GOES')
 
 @pytest.fixture
 def lyra_test_ts():
     #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='LYRA')
-    return sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_LIGHTCURVE, source='LYRA')
+    return sunpy.timeseries.TimeSeries(lyra_filepath, source='LYRA')
 
 @pytest.fixture
 def rhessi_test_ts():
     #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='RHESSI')
-    return sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_LIGHTCURVE, source='RHESSI')
+    return sunpy.timeseries.TimeSeries(rhessi_filepath, source='RHESSI')
 
 @pytest.fixture
 def noaa_ind_test_ts():
     #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAIndices')
-    return sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_LIGHTCURVE, source='NOAAIndices')
+    return sunpy.timeseries.TimeSeries(noaa_ind_filepath, source='NOAAIndices')
 
 @pytest.fixture
 def noaa_pre_test_ts():
     #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAPredictIndices')
-    return sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_LIGHTCURVE, source='NOAAPredictIndices')
+    return sunpy.timeseries.TimeSeries(noaa_pre_filepath, source='NOAAPredictIndices')
 
 @pytest.fixture
 def generic_test_ts():
@@ -310,7 +334,7 @@ def test_add_column_from_array(eve_test_ts, add_column_from_array_ts, column_qua
     assert set(add_column_from_array_ts.data.columns) == set(eve_test_ts.data.columns) | set(['array_added'])
 
 
-"""
+
 # ToDo:
 ###Extracting column as quantity or array#ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
 ###Updating a column using quantity or array#ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
