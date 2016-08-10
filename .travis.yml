@@ -1,10 +1,5 @@
-# We use C because conda manages our Python vesion
-# and running on OS/X dosen't work with Python.
+# We use C because conda manages our Python version
 language: c
-
-# os:
-#      - linux
-#     - osx
 
 # Setting sudo to false opts in to Travis-CI container-based builds.
 sudo: false
@@ -21,83 +16,58 @@ addons:
             - texlive-latex-extra
             - dvipng
 
-# These are currently not used, but we want to cache the packages dir
-# to reduce the number of packages to download.
-# cache:
-#    directories:
-#       - $HOME/miniconda/pkgs
-#       - $HOME/miniconda3/pkgs
-
 # Configure the build environment. Global varibles are defined for all configurations.
 env:
     global:
-        # Modify these to represent the newest versions
-        - PREVIOUS_PANDAS=0.15.2
-        - PREVIOUS_NUMPY=1.9.3
-        - FIGURES_NUMPY=1.10.0
-        - FIGURES_MPL=1.5.1
-        # Fixed global vars
+        - PREVIOUS_NUMPY=1.10.4
         - PYTHON_VERSION=2.7
         - TEST_MODE='offline'
         - NUMPY_VERSION='stable'
+        - ASTROPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
-        - CONDA_CHANNELS='astropy astropy-ci-extras sunpy jevans https://conda.anaconda.org/sunpy/label/citesting openastronomy'
-        - CONDA_ALL_DEPENDENCIES='glymur Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
-        - CONDA_ALL_DEPENDENCIES2='glymur openjpeg Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest wcsaxes pyyaml pandas'
-        - PIP_DEPENDENCIES='suds-jurko sphinx-gallery pytest-cov'
-
+        - CONDA_CHANNELS='astropy astropy-ci-extras conda-forge'
+        - CONDA_DEPENDENCIES='glymur openjpeg Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest wcsaxes pyyaml pandas nomkl pytest-cov coverage'
+        - PIP_DEPENDENCIES='suds-jurko sphinx-gallery'
 
     matrix:
-        - PYTHON_VERSION=2.7 SETUP_CMD='egg_info'
+        - PYTHON_VERSION=2.7 SETUP_CMD='egg_info' 
         - PYTHON_VERSION=3.4 SETUP_CMD='egg_info'
         - PYTHON_VERSION=3.5 SETUP_CMD='egg_info'
+        - PYTHON_VERSION=2.7 SETUP_CMD='test'
+        - PYTHON_VERSION=3.4 SETUP_CMD='test'
+        - PYTHON_VERSION=3.5 SETUP_CMD='test'
 
 matrix:
     include:
-         # # Try MacOS X
          - os: osx
-           env: JOB="Py2" PYTHON_VERSION=2.7 SETUP_CMD='test'
-                CONDA_DEPENDENCIES="$CONDA_ALL_DEPENDENCIES" #Without openjpeg
+           env: PYTHON_VERSION=2.7 SETUP_CMD='test'
 
-         # Try on Linux
          - os: linux
-           env: JOB="Py2" PYTHON_VERSION=2.7 SETUP_CMD='test'
-                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+           env: JOB="Astropy Dev" PYTHON_VERSION=3.5 SETUP_CMD='test' ASTROPY_VERSION='development'
+
          - os: linux
-           env: JOB="Py2PandasPrev" PYTHON_VERSION=2.7 SETUP_CMD='test'
-                PANDAS_VERSION=$PREVIOUS_PANDAS CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+           env: JOB="Numpy Prev" PYTHON_VERSION=2.7 SETUP_CMD='test' NUMPY_VERSION=$PREVIOUS_NUMPY
+
          - os: linux
-           env: JOB="Py2AstropyDev" PYTHON_VERSION=2.7 SETUP_CMD='test'
-                ASTROPY_VERSION='development' CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+           env: JOB="Documentation" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -w'
+
          - os: linux
-           env: JOB="Py2Sphinx" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -w'
-                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES
+           env: JOB="Figures" PYTHON_VERSION=2.7 SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
+
          - os: linux
-           env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage'
-                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+           env: JOB="Online" PYTHON_VERSION=3.5 SETUP_CMD='test --online --coverage'
+
          - os: linux
-           env: JOB="Py2Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
-                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+           env: JOB="Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
+
          - os: linux
-           env: JOB="Py2NumpyPrev" PYTHON_VERSION=2.7 SETUP_CMD='test'
-                NUMPY_VERSION=$PREVIOUS_NUMPY CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
-         - os: linux
-           env: JOB="Py2Figures" PYTHON_VERSION=2.7 SETUP_CMD='test --figure'
-                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
-                NUMPY_VERSION=$FIGURES_NUMPY MATPLOTLIB_VERSION=$FIGURES_MPL
-         - os: linux
-           env: JOB="Py3.4" PYTHON_VERSION=3.4 SETUP_CMD='test' ASTROPY_VERSION='stable'
-                CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES DEBUG=True
-         - os: linux
-           env: JOB="Py3.5" PYTHON_VERSION=3.5 SETUP_CMD='test' ASTROPY_VERSION='stable'
-                DEBUG=True CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES
+           env: JOB="Numpy Dev" PYTHON_VERSION=3.5 SETUP_CMD='test'
+                ASTROPY_VERSION='stable' NUMPY_VERSION='dev'
 
     # allow_failures has to repeat the environment from the matrix above to mark it as such
     allow_failures:
-      - env: JOB="Py2Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
-             CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
-      - env: JOB="Py2Coverage" PYTHON_VERSION=2.7 SETUP_CMD='test --online --coverage'
-             CONDA_DEPENDENCIES=$CONDA_ALL_DEPENDENCIES2
+      - env: JOB="Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
+      - env: JOB="Online" PYTHON_VERSION=3.5 SETUP_CMD='test --online --coverage'
 
 install:
     - git clone git://github.com/astropy/ci-helpers.git
@@ -107,7 +77,7 @@ install:
 before_script:
     # Download the sample data for the build of the documentation.
     - if [[ $SETUP_CMD == *sphinx* ]]; then python -c "import sunpy.data; sunpy.data.download_sample_data()"; fi
-    - if [[ $SETUP_CMD == *figure* ]]; then wget http://raw.githubusercontent.com/dpshelio/sunpy-figure-tests/np1104/conda_env; conda create --name testFigure --file conda_env ; source activate testFigure; fi
+    - if [[ $SETUP_CMD == *figure* ]]; then wget https://raw.githubusercontent.com/sunpy/sunpy-figure-tests/master/conda_env.yml; conda env create --file conda_env.yml; source activate sunpy-figure-tests; fi
 
 script:
     - $MAIN_CMD $SETUP_CMD
