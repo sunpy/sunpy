@@ -59,6 +59,8 @@ class CompositeMap(object):
         Sets the alpha-channel value for a layer in the CompositeMap.
     set_zorder(index=None, zorder)
         Set the layering preference (z-order) for a map within the CompositeMap.
+    set_vals(layers, vmin, vmax)
+        Set the vmin and vmax value of each Suny map in the CompositeMap.
     plot(figure=None, overlays=None, draw_limb=False, gamma=1.0,
     draw_grid=False, colorbar=True, basic_plot=False,title="SunPy Plot",
     matplot_args)
@@ -89,16 +91,16 @@ class CompositeMap(object):
         alphas = [1] * len(self._maps)
         zorders = list(range(0, 10 * len(self._maps), 10))
         levels = [False] * len(self._maps)
-        Vmin = [0]*len(self._maps) #Don't know what the default for v_min and v_max is.
-        Vmax = [0]*len(self._maps)
+        vmin = [m.data.min() for m in self._maps]
+        vmax = [m.data.max() for m in self._maps]
         
         # Set z-order and alpha values for the map
         for i, m in enumerate(self._maps):
             m.zorder = zorders[i]
             m.alpha = alphas[i]
             m.levels = levels[i]
-            m.Vmin = Vmin[i]
-            m.Vmax = Vmax[i]
+            m.vmin = vmin[i]
+            m.vmax = vmax[i]
 
     def add_map(self, amap, zorder=None, alpha=1, levels=False):
         """Adds a map to the CompositeMap.
@@ -344,21 +346,21 @@ class CompositeMap(object):
         """
         self._maps[index].zorder = zorder
     #Possible solution for #1697
-    def set_vals(self, layer, vmin, vmax):
+    def set_vals(self, index, vmin, vmax):
         """Set the vmin and vmax value for
-            each layer of a composite map.
+        each layer of a composite map.
 
-            Parameters
-            ----------
-            layer: `int`
-                    the index of the map in composite map.
-            vmin: `int`
-                    Value of vmin
-            vmax: `int`
-                    Value of vmax
+        Parameters
+        ----------
+        layer: `int`
+                the index of the map in composite map.
+        vmin: `int`
+                Value of vmin
+        vmax: `int`
+                Value of vmax
         """
-        self._maps[layer].Vmin = vmin
-        self._maps[layer].Vmax = vmax    
+        self._maps[index].vmin = vmin
+        self._maps[index].vmax = vmax    
 
     def draw_limb(self, index=None, axes=None):
         """Draws a circle representing the solar limb.
@@ -480,8 +482,8 @@ class CompositeMap(object):
                 "norm": m.plot_settings['norm'],
                 "alpha": m.alpha,
                 "zorder": m.zorder,
-                "vmin":m.Vmin,
-                "vmax":m.Vmax
+                "vmin":m.vmin,
+                "vmax":m.vmax,
             }
             params.update(matplot_args)
 
