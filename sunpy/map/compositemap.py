@@ -59,6 +59,8 @@ class CompositeMap(object):
         Sets the alpha-channel value for a layer in the CompositeMap.
     set_zorder(index=None, zorder)
         Set the layering preference (z-order) for a map within the CompositeMap.
+    get_vals(index)
+        Get the vmin and vmax values for a layer in a CompositeMap
     set_vals(layers, vmin, vmax)
         Set the vmin and vmax value of each Suny map in the CompositeMap.
     plot(figure=None, overlays=None, draw_limb=False, gamma=1.0,
@@ -345,6 +347,21 @@ class CompositeMap(object):
             'zorder'.
         """
         self._maps[index].zorder = zorder
+    def get_vals(self, index):
+        """Get the vmin and vmax values for
+        a layer in a CompositeMap
+
+        Parameters
+        ----------
+        index: `int`
+            The index of the map in the CompositeMap.
+
+        Returns
+        -------
+        `list`
+        A list with the values vmin and vmax respectively.
+        """
+        return [self._maps[index].vmin, self._maps[index].vmax]
     #Possible solution for #1697
     def set_vals(self, index, vmin, vmax):
         """Set the vmin and vmax value for
