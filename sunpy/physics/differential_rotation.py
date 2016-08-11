@@ -26,7 +26,7 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     rot_type : {'howard' | 'snodgrass' | 'allen'}
         howard : Use values for small magnetic features from Howard et al.
         snodgrass : Use Values from Snodgrass et. al
-        allen : Use values from Allen, Astrophysical Quantities, and simpler equation.
+        allen : Use values from Allen's Astrophysical Quantities, and simpler equation.
     frame_time : {'sidereal' | 'synodic'}
         Choose 'type of day' time reference frame.
     Returns
@@ -147,13 +147,13 @@ def solar_rotate_coordinate(coordinate, new_observer_time, new_observer_location
 
 def _to_norm(arr):
     '''
-    Helpper function to normalise/scale an array.  This is needed for example
-    for scikit-image which uses flotas between 0 and 1
+    Helper function to normalise/scale an array.  This is needed for example
+    for scikit-image which uses floats between 0 and 1
 
     Parameters
     ----------
     arr : `~numpy.ndarray`
-        Array of floats whised to normalise
+        Array of floats to normalise
 
     Returns
     -------
@@ -178,13 +178,13 @@ def _to_norm(arr):
 
 def _un_norm(arr, original):
     '''
-    Helpper function tu Un-normalises (or re-scale) an array based in
+    Helper function to un-normalise (or re-scale) an array based in
     the values of the original array.
 
     Parameters
     ----------
     arr : `~numpy.ndarray`
-        Array of floats whised to un-normalise with values in [0,1]
+        Array of floats to un-normalise with values in [0,1]
     original : `~numpy.ndarray`
         Original array with the min and max values
 
@@ -218,7 +218,7 @@ def _warp_sun(xy, smap, timedelta):
     ----------
     xy :
         Array from `transform.warp`
-    smap : `~sumpy.map`
+    smap : `~sunpy.map`
         Original map that we want to transform
     timedelta : `~datetime.timedelta`
         Desired interval for the differential rotation
@@ -234,9 +234,12 @@ def _warp_sun(xy, smap, timedelta):
     xx, yy = np.meshgrid(x, y)
     hpc_coords = smap.pixel_to_data(xx * u.pix, yy * u.pix)
 
+    vstart = {"b0": smap.heliographic_latitude, "l0": smap.heliographic_longitude}
+    vend = vstart
+
     #Do the diff rot
     rotted = rot_hpc(hpc_coords[1], hpc_coords[0], smap.date + timedelta,
-                     smap.date, occultation=True)
+                     smap.date, occultation=True, vstart=vstart, vend=vend)
     # `transform.warp` needs the inverse rotation, therefore it's needed
     # to provide the transform from the desired date to the original date
 
@@ -254,11 +257,11 @@ def _warp_sun(xy, smap, timedelta):
 
 def difrot_map(smap, timedelta):
     '''
-    Function to compensate for differential rotation a sunpy map
+    Function to compensate for differential rotation in a sunpy map
 
     Parameters
     ----------
-    smap : `~sumpy.map`
+    smap : `~sunpy.map`
         Original map that we want to transform
     timedelta : `~datetime.timedelta`
         Desired interval for the differential rotation
