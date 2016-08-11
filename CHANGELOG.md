@@ -1,3 +1,10 @@
+0.7.3
+------
+
+* Fix ConfigParser for Python 3.5.2 - This allows SunPy to run under Python 3.5.2
+* Fix incorrect ordering of keys in `MapMeta`
+* Add `sunpy.util.scraper` to the API documentation.
+
 0.7.2
 -----
 
