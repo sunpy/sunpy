@@ -473,7 +473,7 @@ class Database(object):
             # Caching Ends
 
             try:
-                read_file_header(path)          
+                read_file_header(path)
                 if os.path.isfile(path):
                     entries = tables.entries_from_file(path, self.default_waveunit)
                 elif os.path.isdir(path):
@@ -904,9 +904,10 @@ class Database(object):
         if not search_result:
             return
         self.add_many(
-            self._download_and_collect_fido_entries(search_result, path,
-                wait, progress),
-            ignore_already_added)
+            self._download_and_collect_fido_entries(
+                search_result=search_result, path=path, wait=wait,
+                progress=progress),
+            ignore_already_added=ignore_already_added)
 
     def add_from_vso_query_result(self, query_result,
                                   ignore_already_added=False):
