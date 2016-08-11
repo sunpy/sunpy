@@ -493,8 +493,8 @@ def _warp_sun(xy, smap, timedelta):
     xx, yy = np.meshgrid(x, y)
     hpc_coords = smap.pixel_to_data(xx * u.pix, yy * u.pix)
 
-	vstart = {"b0": smap.heliographic_latitude, "l0": smap.heliographic_longitude}
-	vend = vstart
+    vstart = {"b0": smap.heliographic_latitude, "l0": smap.heliographic_longitude}
+    vend = vstart
 
     #Do the diff rot
     rotted = rot_hpc(hpc_coords[1], hpc_coords[0], smap.date + timedelta,
