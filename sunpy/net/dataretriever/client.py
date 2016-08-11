@@ -346,24 +346,7 @@ class GenericClient(object):
         # Create function to compute the filepath to download to if not set
         default_dir = sunpy.config.get("downloads", "download_dir")
 
-        paths = []
-        for filename in filenames:
-            if path is None:
-                path = os.path.join(default_dir, '{file}')
-            elif isinstance(path, six.string_types):
-                path = os.path.join(path, '{file}')
-
-            temp_dict = details.copy()
-            temp_dict['file'] = filename
-            path  = path.format(**temp_dict)
-            path = os.path.expanduser(path)
-
-            if os.path.exists(path):
-                path = replacement_filename(path)
-
-            path = partial(simple_path, path)
-
-            paths.append(path)
+        paths = self._get_full_filenames(qres, filenames, path)
 
         res = Results(lambda x: None, 0, lambda map_: self._link(map_))
 
