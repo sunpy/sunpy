@@ -12,7 +12,7 @@ from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy.coordinates import frames
 from sunpy.coordinates.ephemeris import get_earth
-from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinate
+from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinate, _un_norm, _to_norm
 from sunpy.time import parse_time
 
 #pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
@@ -102,6 +102,19 @@ def test_solar_rotate_coordinate():
     np.testing.assert_almost_equal(d.Tx.to(u.arcsec).value, -562.3768, decimal=1)
     np.testing.assert_almost_equal(d.Ty.to(u.arcsec).value, 119.2684, decimal=1)
     np.testing.assert_almost_equal(d.distance.to(u.km).value, 150083151.97246578, decimal=1)
+
+
+def test_to_norm():
+    array_simple = np.array([10., 20., 30., 100.])
+    assert_allclose(_to_norm(array_simple), np.array([0.1, 0.2, 0.3, 1.]))    
+    array_simple_neg = np.array([-10., 0., 10., 90.])
+    assert_allclose(_to_norm(array_simple_neg), np.array([0, 0.1, 0.2, 1.]))
+
+def test_un_norm():
+    array_simple = np.array([10, 20, 30, 100.])
+    assert_allclose(_un_norm(np.array([0.1, 0.2, 0.3, 1.]), array_simple), array_simple)
+    array_simple_neg = np.array([-10, 0, 10, 90])
+    assert_allclose(_un_norm(np.array([0, 0.1, 0.2, 1.]), array_simple_neg), array_simple_neg)
 
     # Test that the SkyCoordinate is Helioprojective
     assert isinstance(d.frame, frames.Helioprojective)
