@@ -101,6 +101,26 @@ Both the heliographic frames use latitude, longitude and radius which are access
    <Distance 695508.0 km>
 
 
+Observer Location Information
+-----------------------------
+
+Both ``Helioprojective`` and ``Heliocentric`` frames are defined by the location of the observer. For example in ``Helioprojective`` the observer is at the origin of the coordinate system. This information is encoded in the ``Helioprojecitve`` and ``Heliocentric`` frames as the attributes `L0`, `B0` and `D0` which are heliographic longitude, latitude and distance from the center of the Sun. These attributes are automatically populated from meta data when coordinate frames are created using map.
+
+It is possible to convert from a ``Helioprojective`` frame with one observer location to another ``Helioprojecitve`` frame with a different observer location, by converting through ``Heliographic``, this does involve making an assumption of the radius of the Sun to calculate the position on the solar sphere. The conversion can be performed as follows::
+
+  # Input coordinate
+  >>> hpc1 = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective')
+  # Define the location of the new observer as a Helioprojective frame
+  >>> hpc_out = sunpy.coordinates.Helioprojective(L0=10*u.deg)
+  # Perform the conversion
+  >>> hpc2 = hpc1.transform_to(hpc_out)
+
+An example with two maps, i.e. ``aia`` and ``stereo``::
+
+  >>> hpc1 = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=aia.coordinate_frame)
+  >>> hpc2 = hpc1.transform_to(stereo.coordinate_frame)
+
+
 Design of the Coordinates Module
 --------------------------------
 

@@ -1,9 +1,14 @@
 Latest
 ------
 
+* Add time format used by some SDO HMI FITS keywords
+* Fix bug in `wcs.convert_data_to_pixel` where crpix[1] was used for both axes.
+* Fix some leftover instances of `GenericMap.units`
+* Fixed bugs in `sun` equations
 
 0.7.0
 -----
+* Fixed test failures with numpy developer version.[#1808]
 * Added `timeout` parameter in `sunpy.data.download_sample_data()`
 * Fixed `aiaprep` to return properly sized map.
 * Deprecation warnings fixed when using image coalignment.
