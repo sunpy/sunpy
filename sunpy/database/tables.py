@@ -717,6 +717,7 @@ def entries_from_file(file, default_waveunit=None, time_string_parse_format=None
         filename = file
     else:
         filename = getattr(file, 'name', None)
+
     for header in headers:
         entry = DatabaseEntry(path=filename)
         for key, value in six.iteritems(header):
@@ -740,8 +741,13 @@ def entries_from_file(file, default_waveunit=None, time_string_parse_format=None
                 unit = Unit(waveunit)
             except ValueError:
                 raise WaveunitNotConvertibleError(waveunit)
-        instrument_name = next(x for x in entry.fits_header_entries if x.key == 'TELESCOP').value
+        try:
+            instrument_name = next(x for x in entry.fits_header_entries if x.key == 'TELESCOP').value
+        except:
+            pass
+
         for header_entry in entry.fits_header_entries:
+
             key, value = header_entry.key, header_entry.value
             if key == 'INSTRUME':
                 entry.instrument = value
@@ -760,8 +766,8 @@ def entries_from_file(file, default_waveunit=None, time_string_parse_format=None
                     if 'goes' in instrument_name.lower():
                         entry.observation_time_end = datetime.strptime(value,
                             '%d/%m/%Y')
-                    else:
-                        raise
+             #       else:
+             #          raise
             elif key in ('DATE-OBS', 'DATE_OBS'):
                 try:
                     entry.observation_time_start = parse_time(value, _time_string_parse_format=time_string_parse_format)
@@ -769,8 +775,8 @@ def entries_from_file(file, default_waveunit=None, time_string_parse_format=None
                         if 'goes' in instrument_name.lower():
                             entry.observation_time_start = datetime.strptime(value,
                                 '%d/%m/%Y')
-                        else:
-                            raise
+            #            else:
+            #                raise
         yield entry
 
 
