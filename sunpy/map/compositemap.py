@@ -347,6 +347,7 @@ class CompositeMap(object):
             'zorder'.
         """
         self._maps[index].zorder = zorder
+    
     def get_vals(self, index):
         """Get the vmin and vmax values for
         a layer in a CompositeMap
@@ -362,7 +363,7 @@ class CompositeMap(object):
         A list with the values vmin and vmax respectively.
         """
         return [self._maps[index].vmin, self._maps[index].vmax]
-    #Possible solution for #1697
+    
     def set_vals(self, index, vmin, vmax):
         """Set the vmin and vmax value for
         each layer of a composite map.
