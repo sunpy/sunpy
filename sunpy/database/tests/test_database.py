@@ -27,6 +27,7 @@ from sunpy.database import attrs
 from sunpy.net import vso, hek
 from sunpy.data.test.waveunit import waveunitdir
 from sunpy.io import fits
+from sunpy.io.file_tools import UnrecognizedFileTypeError
 from sunpy.extern.six.moves import range
 from sunpy.extern.six.moves import configparser
 from sunpy.net import Fido, attrs as net_attrs
@@ -73,6 +74,38 @@ def fido_search_result():
         net_attrs.Instrument('rhessi') |
         (net_attrs.Instrument('EVE') & net_attrs.Level(0))
         )
+
+
+@pytest.fixture
+def fido_search_result_list():
+    #Contains a list of search results from different clients
+    fido_sr = []
+
+    fido_sr.append(Fido.search(net_attrs.Time("2012/1/1", "2012/1/2"),
+        net_attrs.Instrument('lyra')))
+
+    fido_sr.append(Fido.search(net_attrs.Time("2012/1/1", "2012/1/2"),
+        net_attrs.Instrument('goes')))
+
+    fido_sr.append(Fido.search(net_attrs.Time("2012/1/1", "2012/1/2"),
+        net_attrs.Instrument('rhessi')))
+
+    fido_sr.append(Fido.search(net_attrs.Time("2012/2/1T00:00:00", "2012/2/1T01:00:00"),
+        net_attrs.Instrument('eve')))
+
+    fido_sr.append(Fido.search(net_attrs.Time("2012/1/1", "2012/1/2"),
+        net_attrs.Instrument('noaa-indices')))
+
+    fido_sr.append(Fido.search(net_attrs.Time("2012/1/1", "2012/1/2"),
+        net_attrs.Instrument('noaa-predict')))
+
+    fido_sr.append(Fido.search(net_attrs.Time("2012/1/1", "2012/1/2"),
+        net_attrs.Instrument('norh')))
+
+    fido_sr.append(Fido.search(net_attrs.Time("2012/1/1", "2012/1/2"),
+        net_attrs.Instrument('EVE'), net_attrs.Level(0)))
+
+    return fido_sr
 
 
 @pytest.fixture
@@ -540,6 +573,48 @@ def test_download_from_qr(database, download_qr, tmpdir):
     assert len(database) == 0
     database.redo()
     assert len(database) == num_of_fits_headers > 0
+
+
+@pytest.mark.online
+def test_download_from_fido_search_result(database,
+    fido_search_result_list, tmpdir):
+
+    file_list = glob.glob(str(tmpdir.join("*")))
+
+    for file in file_list:
+        os.remove(file)
+
+    for sr in fido_search_result_list:
+        assert len(database) == 0
+
+        database.download_from_fido_search_result(
+            sr, path=str(tmpdir.join('{file}')))
+        file_list = glob.glob(str(tmpdir.join("*")))
+        num_headers = 0
+
+        for file in file_list:
+            try:
+                num_headers += len(fits.get_header(file))
+            except IOError or UnrecognizedFileTypeError:
+                # All files downloaded won't be FITS files.
+                # IOError will happen while trying to read non-FITS noaa-indices files.
+                num_headers += 1
+
+        assert len(database) == num_headers and num_headers > 0
+
+        for entry in database:
+            assert os.path.dirname(entry.path) == str(tmpdir)
+        database.undo()
+        assert len(database) == 0
+        database.redo()
+        assert len(database) == num_headers and num_headers > 0
+
+        for file in file_list:
+            os.remove(file)
+
+        database.clear()
+
+    assert len(database) == 0
 
 
 @pytest.mark.online
