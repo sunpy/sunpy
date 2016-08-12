@@ -31,8 +31,11 @@ from astropy_helpers.git_helpers import get_git_devstr
 from astropy_helpers.version_helpers import generate_version_py
 
 # Get some values from the setup.cfg
-from distutils import config
-conf = config.ConfigParser()
+try:
+    from ConfigParser import ConfigParser
+except ImportError:
+    from configparser import ConfigParser
+conf = ConfigParser()
 conf.read(['setup.cfg'])
 metadata = dict(conf.items('metadata'))
 
@@ -50,7 +53,7 @@ LONG_DESCRIPTION = "SunPy is a Python library for solar physics data analysis."
 builtins._ASTROPY_PACKAGE_NAME_ = PACKAGENAME
 
 # VERSION should be PEP386 compatible (http://www.python.org/dev/peps/pep-0386)
-VERSION = '0.7.2'
+VERSION = '0.7.3'
 
 # Indicates if this version is a release version
 RELEASE = 'dev' not in VERSION
