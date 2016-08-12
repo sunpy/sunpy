@@ -27,7 +27,8 @@ database = Database('sqlite:///sunpydata.sqlite')
 ##############################################################################
 # Adding Entries from a VSO query
 
-vso_query_result = vso.VSOClient().query(
+client = vso.VSOClient()
+vso_query_result = client.query(
 	vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'),
 	vso.attrs.Instrument('AIA'))
 database.add_from_vso_query_result(vso_query_result)
