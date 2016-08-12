@@ -25,7 +25,8 @@ from sunpy.net import vso
 database = Database('sqlite:///sunpydata.sqlite')
 
 ##############################################################################
-# Adding Entries from a VSO query
+# Adding Entries from a VSO query. This will just add the query response data
+# obtained and not download any files.
 
 client = vso.VSOClient()
 vso_query_result = client.query(
