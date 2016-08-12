@@ -168,7 +168,7 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
     interval = (dend - dstart).total_seconds() * u.s
 
     # Get the Sun's position from the vantage point at the start time
-    vstart = kwargs.get("vstart", _calc_P_B0_SD(dstart))
+    vstart = kwargs.pop("vstart", _calc_P_B0_SD(dstart))
     # Compute heliographic co-ordinates - returns (longitude, latitude). Points
     # off the limb are returned as nan
     longitude, latitude = convert_hpc_hg(x.to(u.arcsec).value,
@@ -184,7 +184,7 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
                     rot_type=rot_type)
 
     # Convert back to heliocentric cartesian in units of arcseconds
-    vend = kwargs.get("vend", _calc_P_B0_SD(dend))
+    vend = kwargs.pop("vend", _calc_P_B0_SD(dend))
 
     # It appears that there is a difference in how the SSWIDL function
     # hel2arcmin and the sunpy function below performs this co-ordinate
