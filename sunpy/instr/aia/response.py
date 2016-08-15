@@ -4,26 +4,20 @@ from __future__ import (absolute_import, division, print_function,
 __author__ = "Tessa D. Wilkinson"
 
 """
-AIA response functions by integrating ChiantiPy
+The Atmospheric Imaging Assembly (AIA) instrument used on the Solar Dynamics Observatory satellite do not provide spectroscopic information, so there is no way to directly apply a wavelength-dependent calibration to the data.
+These AIA response functions were calculated using AIA instruement information obtained using Solar Soft Ware .genx files, and also integrating ChiantiPy ion temperature and density information.
 
-    - analyze AIA instrument response that tells efficiency of channel using instrument properties
-    - then output a wavelength response
-    - use spectral model (synthetic spectra) - to get ion emissivities as a function of temp/density
-    - obtain temperature response based on chianti spectral contribution functions (emissivity)
-
-AIA ccd's do not provide spectroscopic information, so there is no way to directly apply a wavelength-dependent calibration to the data.
-
-other important variables:
-effective area
-ion emissivity
-electron density
-temperature array
-
-utilize sunpy/instr/tests/test_aia.py
+Utilizing this code one can:
+    - Analyze AIA instrument response that tells efficiency of each channel using instrument properties.
+    - Plot effective area vs wavelengths to see where on the instrument the response is peaked in wavelength.
+    - Obtain temperature response based on chianti spectral contribution functions as a function of temperature/density.
 
 
-    for units use:
-    @u.quantity_input(wave=u.m)
+- Test with sunpy/instr/tests/test_aia.py
+
+An example of how to run this code:
+
+"insert example text here!"
 
 """
 
@@ -33,12 +27,12 @@ import os
 
 import astropy.units as u
 import astropy.constants as constants
-import chianti.core as ch
-import chianti.constants as c
+
 from scipy import integrate
 from scipy.interpolate import interp1d
 
 from .aia_read_genx2table import aia_instr_properties_to_table
+from .make_ion_contribution_table import save_contribution_csv
 import sunpy.data.test as test
 
 
@@ -338,158 +332,6 @@ class Response():
 
 
 
-    def get_contribution_function(self, channel, ion_object, wavelength_range):
-        """
-        information on plasma and atomic physics governing how matter emits at a given temperature
-
-            - Chianti contribution function tells how much a transition contributes to the emissivity at a given
-                temperature or line intensity per unit emission measurement
-        input:
-
-        :return:
-        """
-
-        var = self.get_channel_data(channel)
-
-        # wavelength range for chianti ion object needs to be given in form [start, stop]
-
-        # method 1: using the whole wavelength range given from SSW
-        # start_wvl = var['wavelength_range'][0]
-        # end_wvl = var['wavelength_range'][-1]
-
-        # method 2: using only a wavelength band around the channel ie. channel 94, using 92.5-95.5
-        # wrange = var['wavelength_range']
-        # channel_index = self.wavelength_range_index(channel)
-        # start_wvl = wrange[channel_index - 25]  # default set in wavelength range to 2.5 angstroms
-        # end_wvl = wrange[channel_index + 25]
-        # wavelength_range = [start_wvl, end_wvl]
-        # print(wavelength_range)
-
-        # method 3:
-        # use wavelength range as defined in make_ion_table
-
-        #   refactored chianti gofnt
-        # print(
-        #     'ERROR: chianti.core.ion.gofnt does not return self.Gofnt until after prompts and plots for each ion.')
-
-        # Chianti Contribution Function
-        ion_object.gofnt(wvlRange=wavelength_range, top=1, verbose=0, plot=False)
-
-        self.temperatures = ion_object.Gofnt['temperature']
-        self.contribution_function = ion_object.Gofnt['gofnt']
-        self.wvl = ion_object.Gofnt['wvl'] # TODO: rename this <- 'wvl' chiantipy output name
-
-        # print('len gofnt', len(ion_object.Gofnt['gofnt']))
-        # print('eDensity', ion_object.Gofnt['eDensity'])
-        # print('index', ion_object.Gofnt['index'])
-        # print('wvl', ion_object.Gofnt['wvl'])
-
-        # self.Gofnt = {'temperature': outTemperature, 'eDensity': outDensity, 'gofnt': gofnt, 'index': g_line,
-        #               'wvl': wvl[g_line]}
-
-
-
-
-    def get_ion_name_array(self, top_ions=False, all_chianti_ions=False, solar_chromosphere_ions=False, test=False, **kwargs):
-        """
-
-        :return:
-        """
-        # looping through elements and ions:
-        ion_array = []
-
-        # test case: store iron ion names
-        if test:
-            # for level in range(5, 28, 1):
-            #     ion_array.append('fe' + '_' + str(level))
-
-            # just iron in 94 give a pretty good result for channel 94 only
-            ion_array = ['fe_10', 'fe_18', 'fe_20']
-
-        if top_ions:
-            # default: top ions selected from chianti linelist that have high intensities in near each channel wavelength
-            ion_array = ['al_10', 'ca_14', 'ca_15', 'ca_17', 'fe_3', 'fe_7', 'fe_9', 'fe_11', 'fe_12', 'fe_14', 'fe_16',
-                         'fe_18', 'fe_19', 'fe_20', 'fe_21', 'fe_23', 'ni_14', 'ni_20', 'ni_21' ]
-
-
-        if solar_chromosphere_ions:
-            # # test case: store ion names of elements with high solar abundance - basically same result as running all ions
-            # # (based on logarithmic abundance chart, higher than ~ 7 dex)
-            # solar_elements = ['h', 'he', 'c', 'n', 'o', 'ne', 'si', 's', 'ar', 'ca', 'ni', 'fe']
-            # for element in solar_elements:
-            #     for level in range(1, 18, 1): # max 38
-            #         ion_array.append(element + '_' + str(level))
-            # or
-            #
-            # store every ion from Felding and Widing (1993) abundances: bibcode 1995ApJ...443..416L
-            ion_array = ['o_5', 'o_6', 'ne_8', 'mg_7', 'mg_10', 'si_6', 'si_7', 'si_8', 'si_9', 'si_10', 's_8', 's_9',
-                         'fe_14', 'fe_15', 's_10', 's_11', 's_12', 's_13', 'fe_8', 'fe_9', 'fe_10', 'fe_11', 'fe_12',
-                         'fe_13', 'ni_11', 'ni_12', 'ni_13', 'ni_17', 'ni_18']
-
-        # # test case: store every element in chianti ion names - takes ~ 10 mins per channel, ~ 80 mins for all channels
-        if all_chianti_ions:
-            for element in c.El:
-                for level in range(1, 38, 1):
-                    ion_array.append(element + '_' + str(level))
-
-
-        return ion_array
-
-
-    def make_ion_datatable(self,channel, temperature, density):
-        """
-
-
-
-        :return:
-        """
-
-        ion_array = self.get_ion_name_array(test = True)
-
-        # search_interval
-        ion_wvl_range = []
-        for i in [-2.5, 2.5]:
-            ion_wvl_range.append(i + channel)
-        # print(ion_wvl_range)
-
-        # define empty dataframe to fill
-        data = pd.DataFrame() # columns = ion_array, index = ion_wvl_range ,works but doesn't load != match self.wvl
-
-        # iterate through each column filling in the values for the contribution array with index = wavelength
-        for ion in ion_array:
-            try:
-                ion_object = ch.ion(ion, temperature=temperature, eDensity=1.e+9, em=1.e+27)
-                # print('ion object', ion_object)
-
-                self.get_contribution_function(channel, ion_object, wavelength_range = ion_wvl_range)
-                # print('calculated contr. function: ', self.contributions_function)
-
-                # round the output of contribution function to match interval wavelength range on ions
-                wavelength = round(self.wvl, 3)
-                # print(wavelength, ion)
-                # print(len(self.contribution_function))
-
-                for temp, ion_contribution in zip(temperature, self.contribution_function):
-                    # data[wavelength] = self.contribution_function
-                    data.loc[temp, wavelength] = ion_contribution
-
-                print(ion)
-            except (AttributeError, KeyError, UnboundLocalError, IndexError):
-                # doesn't save ions if no lines found in selected interval
-                #                      missing information (Elvlc file missing)
-                #                      cause errors in ChiantyPy (Zion2Filename, self.Ip)
-                # print('passing ', i, ) #' due to error in ChiantiPy')
-                pass
-            # print('ion', len(ion_contributions_array))
-
-
-        # print('data:',data)
-
-        # data in the shape G[[Temperature,wavelength of ion contribution]]
-        data.to_csv('ion_contribution.csv')
-
-
-
 
 
     def calculate_temperature_response(self, channel, trapz1=False, trapz2=False, **kwargs):
@@ -514,7 +356,7 @@ class Response():
         # default temperature
         temperature_array = kwargs.get('temperature', 10. ** (5.0 + 0.05 * np.arange(61.)))
 
-        # TODO: try density = t * pressure to get array
+        # TODO: try density = t * pressure to get array ( / temperature * kb)
         density = 1.e+9
         # print('t: ', np.log(t))
         # print('t',t)
@@ -524,20 +366,25 @@ class Response():
 
 
         # save ion contribution into a dataframe for faster computation
-        ion_contribution_dataframe = kwargs.get('ion_contribution_dataframe', 'ion_contribution.csv')
+        ion_contribution_dataframe = kwargs.get('ion_contribution_dataframe', 'test_ion_contributions.csv')
 
         # check for path. does this work with defining your own ion data frame ^^ ?
         if not os.path.exists(ion_contribution_dataframe):
             print('WARNING: Making an Ion datatable will take a while!')
-            self.make_ion_datatable(channel, temperature_array, density = density)
+            save_contribution_csv(self.channel_list, temperature_array, density = density)
 
-        data = pd.read_csv('ion_contribution.csv', delimiter = ',', header = 0, index_col = 0)
+        data = pd.read_csv('test_ion_contributions.csv', delimiter = ',', header = 0, index_col = 0)
+        # data = pd.read_csv('top_ions_contributions.csv', delimiter = ',', header = 0, index_col = 0)
+        # data = pd.read_csv('all_ions_contributions.csv', delimiter = ',', header = 0, index_col = 0)
 
-        # from saved dataframe, put values near channel into 2D array
+
+
+
+        # from saved dataframe, put values near channel into 2D matrix
         array = []
         discrete_wavelengths = []
 
-        for number in np.arange(channel - 2.5, channel + 2.5, .001): # auto-sort?
+        for number in np.arange(channel - 3, channel + 3, .001): # auto-sort?
             if str(number) in data.keys():
                 store_per_wavelength = []
                 discrete_wavelengths.append(number)
@@ -554,10 +401,17 @@ class Response():
         # print( len(self.wavelength_response[channel]['wavelength']), len(self.wavelength_response[channel]['response']))
 
 
-        # response_interpolated =  interp1d(discrete_wavelengths, self.wavelength_response, axis = 1)
-        response_interpolated = np.interp(discrete_wavelengths,  self.wavelength_response[channel]['wavelength'], self.wavelength_response[channel]['response'])[0]
+        # Wavelength Response Interpolation
+        # here more ions is good
+        # response_interpolated =  interp1d(discrete_wavelengths,  self.wavelength_response[channel]['wavelength'], self.wavelength_response[channel]['response'])[0]
+        # response_interpolated = np.interp(discrete_wavelengths,  self.wavelength_response[channel]['wavelength'], self.wavelength_response[channel]['response'])[0]
 
-        # multiply ion contributions array by wave-length response array
+        # evaluate wavelength response function at specific wavelengths, DOES affect magnitude: (-10**2 from above interpolation)
+        response_interpolated = []
+        for wavelength in discrete_wavelengths:
+            response_interpolated.append(self.wavelength_response[channel]['wavelength'][wavelength])
+
+        # # multiply ion contributions array by wave-length response array
         response = matrix * response_interpolated
 
 
@@ -565,7 +419,7 @@ class Response():
         # print('response', response, len(response), len(response[0]))
         # print(len(wrange))
 
-        # integrate through wavelength range, default = simpsons
+        # integrate through wavelength range, default = simpsons, sample specifically near discrete_wavelength values
         # method 1: composite trapezoidal integration
         if trapz1:
             temp_response = integrate.cumtrapz(response, discrete_wavelengths)
