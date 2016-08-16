@@ -55,10 +55,10 @@ def test_get(time, wavelength):
     download_list = res.wait()
     assert len(download_list) == len(qr)
 
-This test downloads 3 files
-Each file is 4.5MB, total size
-is 13.4MB
-@pytest.mark.online
+##This test downloads 3 files
+##Each file is 4.5MB, total size
+##is 13.4MB
+##@pytest.mark.online
 def test_fido_query():
     qr = Fido.search(a.Time('2016/01/05 07:30:00', '2016/01/05 07:38:00'), a.Instrument('kanzelhohe'), a.Wavelength(546.0*u.nm))
     assert isinstance(qr, UnifiedResponse)
