@@ -655,8 +655,6 @@ scale:\t\t {scale}
 
         """
 
-        warnings.simplefilter('always', Warning)
-
         for meta_property in ('cunit1', 'cunit2', 'waveunit'):
             if (self.meta.get(meta_property) and
                 u.Unit(self.meta.get(meta_property),
