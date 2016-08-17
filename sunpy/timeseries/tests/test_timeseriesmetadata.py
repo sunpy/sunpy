@@ -51,13 +51,19 @@ def basic_4_md():
     tr = TimeRange('2010-01-01 20:59:57.468999', '2010-01-03 20:59:56.091999')
     colnames = [ 'md4_column1', 'md4_column2' ]
     metadict = MetaDict(OrderedDict([('md4_key1', 'value1'), ('md4_key2', 'value2'), ('all_same', 'value3'), ('all_different', 'diff_4')]))
-    lis = [ ( tr, colnames, metadict ) ]
-    return TimeSeriesMetaData(lis)
+    tup = ( tr, colnames, metadict )
+    return TimeSeriesMetaData(tup)
 
 
 #==============================================================================
 # Test Appending TimeSeriesMetaData Objects
 #==============================================================================
+
+def test_append_similar(basic_1_md):
+    appended = copy.deepcopy(basic_1_md)
+    appended.append(*basic_1_md.metadata[0])
+    # The duplicate should not have been added
+    assert appended == basic_1_md
 
 @pytest.fixture
 def basic_ascending_append_md(basic_1_md, basic_2_md, basic_3_md):
@@ -99,6 +105,11 @@ def test_complex_append_md(basic_1_md, basic_2_md, basic_3_md, basic_4_md, compl
     assert complex_append_md.metadata[1] == basic_4_md.metadata[0]
     assert complex_append_md.metadata[2] == basic_2_md.metadata[0]
     assert complex_append_md.metadata[3] == basic_3_md.metadata[0]
+
+def test_append_not_timerange(basic_1_md):
+    appended = copy.deepcopy(basic_1_md)
+    with pytest.raises(ValueError):
+        appended.append('nottimerange', basic_1_md.metadata[0][1], basic_1_md.metadata[0][2])
 
 
 #==============================================================================
@@ -272,6 +283,15 @@ def test_update_both_filters(complex_append_md):
 # Test Misc Methods
 #==============================================================================
 
+def test_get_index(basic_1_md, basic_ascending_append_md):
+    assert basic_ascending_append_md.get_index(0) == basic_1_md.get_index(0)
+
+def test_equality(basic_1_md, basic_2_md, basic_ascending_append_md):
+    basic_1_copy_md = copy.deepcopy(basic_1_md)
+    assert basic_1_md == basic_1_copy_md
+    assert basic_1_md != basic_2_md
+    assert basic_1_md != basic_ascending_append_md
+    
 def test_to_string(basic_1_md):
     assert isinstance(basic_1_md.to_string(), str)
 
@@ -301,6 +321,13 @@ def test_rename_column(complex_append_md):
     new = 'renamed'
     col_renamed_md._rename_column(old, new)
     assert col_renamed_md.metadata[0][1][0] == col_renamed_md.metadata[2][1][0] == col_renamed_md.metadata[3][1][0] == new
+
+def test_remove_column(complex_append_md):
+    col_removed_md = copy.deepcopy(complex_append_md)
+    col = complex_append_md.metadata[0][1][0]
+    col_removed_md._remove_columns(col)
+    assert col_removed_md.metadata[0][1] == col_removed_md.metadata[2][1] == col_removed_md.metadata[3][1] == [complex_append_md.metadata[0][1][1]]
+    assert col_removed_md.metadata[1][1] == [complex_append_md.metadata[1][1][0], complex_append_md.metadata[1][1][1]]
 
 def test_remove_columns(complex_append_md):
     cols_removed_md = copy.deepcopy(complex_append_md)
