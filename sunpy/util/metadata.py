@@ -60,7 +60,7 @@ class MetaDict(OrderedDict):
 
     def update(self, d2):
         """Override .update() to perform case-insensitively"""
-        return OrderedDict.update(self, dict((k.lower(), v) for k, v in d2.items()))
+        return OrderedDict.update(self, OrderedDict((k.lower(), v) for k, v in d2.items()))
 
     def setdefault(self, key, default=None):
         """Override .setdefault() to perform case-insensitively"""

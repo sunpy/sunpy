@@ -22,6 +22,8 @@ from pandas import DataFrame
 import pandas as pd
 from collections import OrderedDict
 from astropy.tests.helper import assert_quantity_allclose
+from astropy.table import Table
+from astropy.time import Time
 
 import sunpy
 import sunpy.timeseries
@@ -99,7 +101,7 @@ def noaa_pre_test_ts():
     return sunpy.timeseries.TimeSeries(noaa_pre_filepath, source='NOAAPredictIndices')
 
 @pytest.fixture
-def generic_test_ts():
+def generic_ts():
     # Generate the data and the corrisponding dates
     base = datetime.datetime.today()
     dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
@@ -113,9 +115,30 @@ def generic_test_ts():
     # Create the time series
     return sunpy.timeseries.TimeSeries(data, meta, units)
 
+
+@pytest.fixture
+def table_ts():
+    # Generate the data and the corresponding dates
+    base = datetime.datetime.today()
+    times = Time([base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)])
+    intensity = u.Quantity(np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60)))), u.W/u.m**2)
+
+    # Create the units and meta objects
+    units = OrderedDict([('intensity', u.W/u.m**2)])
+    meta = MetaDict({'key':'value'})
+    tbl_meta = MetaDict({'t_key':'t_value'})
+
+    # Create a suitable mixin qtable
+    table = Table([times, intensity], names=['time', 'intensity'], meta=tbl_meta)
+    table.add_index('time')
+
+    # Create TS from dataframe and check
+    return sunpy.timeseries.TimeSeries(table, meta, units)
+
 #==============================================================================
 # Test Creating TimeSeries From Various Dataformats
 #==============================================================================
+
 
 # ToDo:
 ###ts_goes.to_dataframe()
@@ -123,10 +146,10 @@ def generic_test_ts():
 ###ts_goes.to_array()
 
 #==============================================================================
-# Test TimeSeries Parameters
+# Test Resulting TimeSeries Parameters
 #==============================================================================
 
-def test_units_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts, lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts, noaa_pre_test_ts, generic_test_ts):
+def test_units_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts, lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts, noaa_pre_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.units, OrderedDict)
     assert isinstance(fermi_gbm_test_ts.units, OrderedDict)
     assert isinstance(norrh_test_ts.units, OrderedDict)
@@ -135,9 +158,10 @@ def test_units_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts,
     assert isinstance(rhessi_test_ts.units, OrderedDict)
     assert isinstance(noaa_ind_test_ts.units, OrderedDict)
     assert isinstance(noaa_pre_test_ts.units, OrderedDict)
-    assert isinstance(generic_test_ts.units, OrderedDict)
+    assert isinstance(generic_ts.units, OrderedDict)
+    assert isinstance(table_ts.units, OrderedDict)
 
-def test_meta_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts, lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts, noaa_pre_test_ts, generic_test_ts):
+def test_meta_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts, lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts, noaa_pre_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(fermi_gbm_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(norrh_test_ts.meta, TimeSeriesMetaData)
@@ -146,9 +170,10 @@ def test_meta_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts, 
     assert isinstance(rhessi_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(noaa_ind_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(noaa_pre_test_ts.meta, TimeSeriesMetaData)
-    assert isinstance(generic_test_ts.meta, TimeSeriesMetaData)
+    assert isinstance(generic_ts.meta, TimeSeriesMetaData)
+    assert isinstance(table_ts.meta, TimeSeriesMetaData)
 
-def test_data_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts, lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts, noaa_pre_test_ts, generic_test_ts):
+def test_data_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts, lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts, noaa_pre_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.data, DataFrame)
     assert isinstance(fermi_gbm_test_ts.data, DataFrame)
     assert isinstance(norrh_test_ts.data, DataFrame)
@@ -157,7 +182,8 @@ def test_data_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts, 
     assert isinstance(rhessi_test_ts.data, DataFrame)
     assert isinstance(noaa_ind_test_ts.data, DataFrame)
     assert isinstance(noaa_pre_test_ts.data, DataFrame)
-    assert isinstance(generic_test_ts.data, DataFrame)
+    assert isinstance(generic_ts.data, DataFrame)
+    assert isinstance(table_ts.data, DataFrame)
 
     # ToDo: check length? (should match the number of columns)
 # ToDo: is this a good way of going?
@@ -269,7 +295,7 @@ def test_concatenation_of_slices(eve_test_ts, concatenated_slices_test_ts):
 
 @pytest.fixture
 def concatenation_different_data_test_ts(eve_test_ts, fermi_gbm_test_ts):
-    # Tate two different data sources and concatenate
+    # Take two different data sources and concatenate
     return eve_test_ts.concatenate(fermi_gbm_test_ts)
 
 def test_concatenation_of_different_data(eve_test_ts, fermi_gbm_test_ts, concatenation_different_data_test_ts):
@@ -295,6 +321,10 @@ def test_concatenation_of_different_data(eve_test_ts, fermi_gbm_test_ts, concate
     comined_df = comined_df.sort_index()
     assert_frame_equal(concatenation_different_data_test_ts.data, comined_df)
 
+def test_concatenation_different_data_error(eve_test_ts, fermi_gbm_test_ts):
+    # Take two different data sources and concatenate
+    with pytest.raises(TypeError):
+        eve_test_ts.concatenate(fermi_gbm_test_ts, same_source=True)
 
 #==============================================================================
 # Test Data Manipulation
@@ -333,6 +363,22 @@ def test_add_column_from_array(eve_test_ts, add_column_from_array_ts, column_qua
     # Test the full list of columns are pressent
     assert set(add_column_from_array_ts.data.columns) == set(eve_test_ts.data.columns) | set(['array_added'])
 
+#==============================================================================
+# Test Other Functions
+#==============================================================================
+
+def test_equality(generic_ts, table_ts):
+    generic_copy_ts = copy.deepcopy(generic_ts)
+    assert generic_ts == generic_copy_ts
+    generic_copy_ts.meta.metadata[0][2]['key'] = 1
+    assert generic_ts != generic_copy_ts
+    assert generic_ts != table_ts
+
+def test_ts_index(generic_ts):
+    assert (generic_ts.index == generic_ts.data.index).all()
+
+def test_ts_sort_index(generic_ts):
+    assert generic_ts.sort_index().data.equals(generic_ts.data.sort_index())
 
 
 # ToDo:

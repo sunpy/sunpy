@@ -37,7 +37,7 @@ class TimeSeriesMetaData:
 
     def __init__(self, meta=None, timerange=None, colnames=None, **kwargs):
         self.metadata = []
-        if meta:
+        if not isinstance(meta, type(None)):
             if isinstance(meta, (dict, MetaDict)) and isinstance(timerange, TimeRange) and isinstance(colnames, list):
                 # Given a single metadata entry as a dictionary with additional timerange and colnames.
                 self.metadata.append((timerange, colnames, meta))
@@ -47,6 +47,15 @@ class TimeSeriesMetaData:
             elif isinstance(meta, list):
                 # Given a complex metadata list (of tuples)
                 self.metadata = copy.copy(meta)
+        else:
+            # In the event no metadata dictionary is sent we default to something usable
+            if isinstance(timerange, TimeRange) and isinstance(colnames, list):
+                self.metadata.append((timerange, colnames, MetaDict()))
+            if isinstance(timerange, TimeRange):
+                self.metadata.append((timerange, [], MetaDict()))
+                warnings.warn("No time range given for metadata. This will mean the metadata can't be linked to columns in data.", Warning)
+            if isinstance(colnames, list):
+                raise ValueError("You cannot create a TimeSeriesMetaData object without specifying a TimeRange")
 
     def __eq__(self, other):
         """

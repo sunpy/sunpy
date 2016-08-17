@@ -107,17 +107,17 @@ class GenericTimeSeries:
 
     def __init__(self, data, meta=None, units=None, **kwargs):
         self.data = data
+        tr = TimeRange(self.data.index.min(), self.data.index.max())
         # Check metadata input
         if meta is None:
             # No meta given, so default
-            self.meta = TimeSeriesMetaData()
-            self.meta.update({'name':None})
+            self.meta = TimeSeriesMetaData(MetaDict(), tr, list(self.data.columns.values))
         elif isinstance(meta, (dict, OrderedDict, MetaDict)):
             # Given the values for metadata (dict) and infer timerange and colnames from the data
-            self.meta = TimeSeriesMetaData(meta, self.time_range, list(self.data.columns.values))
+            self.meta = TimeSeriesMetaData(meta, tr, list(self.data.columns.values))
         elif isinstance(meta, tuple):
             # Given the values all in a tuple
-            self.meta = TimeSeriesMetaData(meta, self.time_range, list(self.data.columns.values))
+            self.meta = TimeSeriesMetaData(meta, tr, list(self.data.columns.values))
         else:
             # Should have a list of 3-tuples giving a complex metadata list.
             self.meta = meta
@@ -620,6 +620,28 @@ class GenericTimeSeries:
             the result will be of dtype=object. See Notes.
         """
         return self.data.as_matrix(**kwargs)
+
+    def __eq__(self, other):
+        """
+        Check two TimeSeries objects are the same, they have matching type, data,
+        metadata and units entries.
+
+        Parameters
+        ----------
+        other : `~sunpy.timeseries.GenericTimeSeries`
+            The second TimeSeries object to compare with.
+
+        Returns
+        -------
+        result : `bool`
+        """
+        match = True
+        if isinstance(other, type(self)):
+            if (not self.data.equals(other.data)) or (self.meta != other.meta) or (self.units != other.units):
+                match = False
+        else:
+            match = False
+        return match
 
     @classmethod
     def _parse_file(cls, filepath):

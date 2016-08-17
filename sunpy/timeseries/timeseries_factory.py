@@ -7,16 +7,19 @@ import warnings
 import os
 import glob
 from collections import OrderedDict
+import copy
 
 import numpy as np
 import pandas as pd
 import astropy.io.fits
 from astropy.table import Table
 import astropy
+from astropy.time import Time
 
 import sunpy
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries, TIMESERIES_CLASSES
 from sunpy.util.metadata import MetaDict
+from sunpy.time import parse_time
 
 from sunpy.io.file_tools import read_file, UnrecognizedFileTypeError
 from sunpy.io.header import FileHeader
@@ -131,7 +134,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
     def _validate_meta(self, meta):
         """
-        Validate a meta argument.
+        Validate a meta argument for use as metadata.
         """
         if isinstance(meta, astropy.io.fits.header.Header):
             return True
@@ -150,7 +153,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         result = True
 
         # It must be a dictionary
-        if not isinstance(units, dict):
+        if not isinstance(units, dict) or isinstance(units, MetaDict):
             return False
 
         for key in units:
@@ -162,18 +165,32 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # Passed all the tests
         return result
 
-    def _from_table(self, table, **kwargs):
+    def _from_table(self, t, **kwargs):
         """
 
         """
-        index_col = -1
-        for i, colname in enumerate(table.colnames):
-            if isinstance(table[colname], astropy.time.core.Time):
-                index_col = i
-                break
+        table = copy.deepcopy(t)
+        # Default the time index to the first column
+        index_name = table.colnames[0]
+        if table.primary_key and len(table.primary_key) == 1:
+            table.primary_key[0]
+        elif table.primary_key:
+                warnings.warn("Invalid input Table, TimeSeries doesn't support conversion of tables with more then one index column.", Warning)
 
+        # Extract and remove the input table
+        index = Time(table[index_name])
+        table.remove_column(index_name)
 
-        return result
+        # Extract the column values from the table
+        data = {}
+        units = {}
+        for colname in table.colnames:
+            data[colname] = table[colname]
+            units[colname] = table[colname].unit
+
+        # Create a dataframe with this and return
+        df = pd.DataFrame(data=data, index=index)
+        return df, table.meta, units
 
     def _parse_args(self, *args, **kwargs):
         """
@@ -221,24 +238,46 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 self._validate_meta(arg[1])):
                 # Assume a Pandas Dataframe is given.
                 data = arg[0]
-                units = OrderedDict({})
+                units = OrderedDict()
+                meta = MetaDict()
                 # Convert the data argument into a Pandas DataFrame if needed.
-                if isinstance(data, Table):
-                    # We have an AstroPy Table:
-                    data = arg[0].to_pandas()
-
-                    # Extract Units from table:
-                    for colname in arg[0].colnames:
-                        # Only add the unit if specified.
-                        if arg[0][colname].unit:
-                            units.update({colname:arg[0][colname].unit})
-
-                elif isinstance(data, np.ndarray):
+                if isinstance(data, np.ndarray):
                     # We have a numpy ndarray:
                     data = pd.DataFrame(data=arg[0])
                     # ToDo: should this include an index? Maybe use the first column?
+                    """
+                    # Evaluate the next argument/s to see if it's metadata or units
+                    if (len(arg) == 2) and self._validate_meta(arg[1]):
+                        units = arg[1]
+                    elif (len(arg) == 2) and self._validate_units(arg[1]):
+                        meta = arg[1]
+                    if (len(arg) == 3) and self._validate_meta(arg[2]):
+                        units = arg[2]
+                    elif (len(arg) == 3) and self._validate_units(arg[2]):
+                        meta = arg[2]
+                    """
+                    # ToDo: this and the similar code below may be able to be consolidated.
 
+                elif isinstance(data, Table):
+                    # We have an AstroPy Table:
+                    data, meta, units = self._from_table(data)
+
+                # Evaluate the next argument/s to see if metadata or units supplied
+                if (len(arg) == 2) and self._validate_units(arg[1]):
+                    units.update(arg[1])
+                elif (len(arg) == 2) and self._validate_meta(arg[1]):
+                    meta.update(arg[1])
+                if (len(arg) == 3) and self._validate_units(arg[2]):
+                    units.update(arg[2])
+                elif (len(arg) == 3) and self._validate_meta(arg[2]):
+                    meta.update(arg[2])
+
+                # Add a 3-tuple for this TimeSeries.
+                data_header_unit_tuples.append((data, meta, units))
+
+                """
                 # The second argument will be the metadata/header.
+
                 meta = MetaDict(arg[1])
 
                 # Check if we're given a third argument for units
@@ -248,34 +287,34 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
                 # Add a 3-tuple for this TimeSeries.
                 data_header_unit_tuples.append((data, meta, units))
-
-            # Data-header pair not in a tuple
-            elif (isinstance(arg, (np.ndarray, Table, pd.DataFrame)) and
-                  self._validate_meta(args[i+1])):
-                # Assume a Pandas Dataframe is given.
+                """
+            # Data/header/units triple (or just data) not in a tuple
+            elif (isinstance(arg, (np.ndarray, Table, pd.DataFrame))):# and self._validate_meta(args[i+1])):
+                # Assume a Pandas Dataframe is given
                 data = arg
                 units = OrderedDict()
+                meta = MetaDict()
+
                 # Convert the data argument into a Pandas DataFrame if needed.
                 if isinstance(data, Table):
                     # We have an AstroPy Table:
-                    data = arg.to_pandas()
-                    # Extract Units from table:
-                    for colname in arg.colnames:
-                        # Only add the unit if specified.
-                        if arg[colname].unit:
-                            units.update({colname:arg[colname].unit})
+                    data, meta, units = self._from_table(data)
                 elif isinstance(data, np.ndarray):
                     # We have a numpy ndarray:
                     data = pd.DataFrame(data=arg)
-                    # ToDo: should this include an index? Maybe use the first column?
+                    # ToDo: should this include an index? Maybe default is first column?
 
-                # The second argument will be the metadata/header.
-                meta = MetaDict(args[i+1])
-
-                # Check if we're given a third argument for units
-                if (len(args) > i+2) and self._validate_units(args[i+2]):
-                    units.update(args[i+2])
-                    i += 1 # an extra increment to account for the units
+                # If there are 1 or 2 more arguments:
+                for j in range(0,2):
+                  if (len(args) > i+1):
+                      # If that next argument isn't data but is metaddata or units:
+                      if not isinstance(args[i+1], (np.ndarray, Table, pd.DataFrame)):
+                          if self._validate_units(args[i+1]):
+                              units.update(args[i+1])
+                              i += 1 # an extra increment to account for the units
+                          elif self._validate_meta(args[i+1]):
+                              meta.update(args[i+1])
+                              i += 1 # an extra increment to account for the units
 
                 # Add a 3-tuple for this TimeSeries.
                 data_header_unit_tuples.append((data, meta, units))
@@ -308,13 +347,26 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 path = os.path.expanduser(arg)
                 files = [os.path.join(path, elem) for elem in os.listdir(path)]
                 for afile in files:
-                    data_header_unit_tuples += self._read_file(afile, **kwargs)
+                    # returns a boolean telling us if it were read and either a
+                    # tuple or the original filepath for reading by a source
+                    read, result = self._read_file(afile, **kwargs)
+                    if read:
+                        data_header_unit_tuples.append(result)
+                    else:
+                        filepaths.append(result)
 
             # Glob
             elif (isinstance(arg,six.string_types) and '*' in arg):
                 files = glob.glob( os.path.expanduser(arg) )
                 for afile in files:
-                    data_header_unit_tuples += self._read_file(afile, **kwargs)
+                    #data_header_unit_tuples += self._read_file(afile, **kwargs)
+                    # returns a boolean telling us if it were read and either a
+                    # tuple or the original filepath for reading by a source
+                    read, result = self._read_file(afile, **kwargs)
+                    if read:
+                        data_header_unit_tuples.append(result)
+                    else:
+                        filepaths.append(result)
 
             #### Potentially unnecessary, as there won't be a time series cube.
             # Already a TimeSeries
@@ -382,8 +434,10 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         # Loop over each registered type and check to see if WidgetType
         # matches the arguments.  If it does, use that type.
-        for pair in data_header_unit_tuples:
-            data, header, units = pair
+        #print('data_header_unit_tuples[0]:\n' + str(data_header_unit_tuples[0]) + '\n')
+        print('data_header_unit_tuples:\n' + str(data_header_unit_tuples))
+        for triple in data_header_unit_tuples:
+            data, header, units = triple
             meta = MetaDict(header)
 
             try:
