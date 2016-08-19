@@ -42,7 +42,7 @@ testpath = sunpy.data.test.rootdir
 
 filepath = sunpy.data.test.rootdir
 
-eve_filepath = os.path.join(filepath, '')
+eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
 fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
 norrh_filepath = os.path.join(filepath, '')
 goes_filepath = os.path.join(filepath, 'goes.fits')
@@ -52,7 +52,6 @@ noaa_ind_filepath = os.path.join(filepath, '')
 noaa_pre_filepath = os.path.join(filepath, '')
 
 goes_filepath = sunpy.data.sample.GOES_LIGHTCURVE
-eve_filepath = sunpy.data.sample.EVE_LIGHTCURVE
 norrh_filepath = sunpy.data.sample.NORH_LIGHTCURVE
 lyra_filepath = sunpy.data.sample.LYRA_LEVEL3_LIGHTCURVE
 rhessi_filepath = sunpy.data.sample.RHESSI_LIGHTCURVE
@@ -204,12 +203,12 @@ def test_data_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts, 
 @pytest.fixture
 def truncation_slice_test_ts_1(eve_test_ts):
     # Truncate by slicing the second half off.
-    return eve_test_ts.truncate(0, 720, None)
+    return eve_test_ts.truncate(0, int(len(eve_test_ts.data)/2), None)
 
 @pytest.fixture
 def truncation_slice_test_ts_2(eve_test_ts):
     # Truncate by slicing the first half off.
-    return eve_test_ts.truncate(720, None, None)
+    return eve_test_ts.truncate(int(len(eve_test_ts.data)/2), None, None)
 
 def test_truncation_slices(eve_test_ts, truncation_slice_test_ts_1, truncation_slice_test_ts_2):
     # Test resulting DataFrame are similar
@@ -228,20 +227,22 @@ def test_truncation_slices(eve_test_ts, truncation_slice_test_ts_1, truncation_s
 @pytest.fixture
 def truncation_timerange_test_ts(eve_test_ts):
     # Truncate using a TimeRange object.
-    return eve_test_ts.truncate(TimeRange('2012-06-20 02:00:00','2012-06-20 4:00:00'))
+    return eve_test_ts.truncate(eve_test_ts.time_range.split(3)[1])
 
-def test_truncation_timerange(truncation_timerange_test_ts):
+def test_truncation_timerange(eve_test_ts, truncation_timerange_test_ts):
     # Check the resulting timerange in both TS and TSMD
-    assert truncation_timerange_test_ts.time_range.hours == truncation_timerange_test_ts.meta.time_range.hours == u.Quantity(2, u.h)
+    assert truncation_timerange_test_ts.time_range == truncation_timerange_test_ts.meta.time_range == eve_test_ts.time_range.split(3)[1]
 
 @pytest.fixture
 def truncation_dates_test_ts(eve_test_ts):
     # Truncate using strings for start and end datetime.
-    return eve_test_ts.truncate('2012-06-20 02:00:00','2012-06-20 4:00:00')
+    start_str = str(eve_test_ts.time_range.split(3)[1].start)
+    end_str = str(eve_test_ts.time_range.split(3)[1].end)
+    return eve_test_ts.truncate(start_str, end_str)
 
-def test_truncation_dates(truncation_dates_test_ts):
+def test_truncation_dates(eve_test_ts, truncation_dates_test_ts):
     # Check the resulting timerange in both TS and TSMD
-    assert truncation_dates_test_ts.time_range.hours == truncation_dates_test_ts.meta.time_range.hours == u.Quantity(2, u.h)
+    assert truncation_dates_test_ts.time_range == truncation_dates_test_ts.meta.time_range == eve_test_ts.time_range.split(3)[1]
 
 
 #==============================================================================

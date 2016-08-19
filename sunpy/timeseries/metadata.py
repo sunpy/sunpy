@@ -248,8 +248,9 @@ class TimeSeriesMetaData:
 
         Returns
         -------
-        list : `list`
-            Returns a list of the matching entries or the default value.
+        metadata : `~sunpy.timeseries.metadata.TimeSeriesMetaData`
+            A TimeSeriesMetaData that contain all matching metadata entries but
+            with only the requested key/value pairs in the MetaDict objects.
         """
         # Make a list of keys if only one is given
         if isinstance(keys, str):

@@ -54,12 +54,6 @@ class NoRHLightCurve(GenericTimeSeries):
     def __init__(self, data, header, units, **kwargs):
         super(NoRHLightCurve,self).__init__(data, header, units, **kwargs)
 
-        # Fill in some missing info
-        self.meta.update({'detector':""})
-        self._nickname = self.detector
-        #self.plot_settings['cmap'] = cm.get_cmap(self._get_cmap_name())
-        #self.plot_settings['norm'] = ImageNormalize(stretch=visualization.AsinhStretch(0.01))
-
     def peek(self, **kwargs):
         """Plots the NoRH lightcurve TimeSeries
 

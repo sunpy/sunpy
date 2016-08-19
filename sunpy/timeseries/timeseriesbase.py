@@ -91,11 +91,12 @@ class GenericTimeSeries:
     >>> from sunpy.timeseries import TimeSeries
     >>> import datetime
     >>> import numpy as np
+    >>> import pandas as pd
     >>> base = datetime.datetime.today()
     >>> dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
     >>> intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / (24 * 60)))
     >>> ts = Timeseries({"param1": intensity}, index=dates)
-    >>> df =
+    >>> df = DataFrame(intensity, index=times, columns=['intensity'])
     >>> ts = Timeseries({"param1": intensity}, index=dates)
     >>> ts.peek()   # doctest: +SKIP
 
@@ -131,66 +132,8 @@ class GenericTimeSeries:
         #self._validate_meta()
         #self._validate_units()
 
-        # Setup some attributes
-        self._nickname = self.detector
-
 
 # #### Attribute definitions #### #
-
-    @property
-    def name(self):
-        """Human-readable description of time-series-type"""
-        return "{obs} {detector} {instrument} {measurement} {date:{tmf}}".format(obs=self.observatory,
-                                                                detector=self.detector,
-                                                                instrument=self.instrument,
-                                                                date=parse_time(self.date),
-                                                                tmf=TIME_FORMAT)
-
-    @property
-    def nickname(self):
-        """An abbreviated human-readable description of the time-series-type"""
-        return self._nickname
-
-    @nickname.setter
-    def nickname(self, n):
-        self._nickname = n
-
-    def detector(self, datetime=None, colname=None, **kwargs):
-        """Detector name/s"""
-        # Get all matching values
-        strings = self.meta.get('detector', datetime=datetime, colname=colname).values()
-        strings.sort()
-
-        # Return the list
-        return strings
-
-    def instrument(self, datetime=None, colname=None, **kwargs):
-        """Instrument name/s"""
-        # Get all matching values
-        strings = self.meta.get('instrume', datetime=datetime, colname=colname).values()
-
-        # Clean the strings
-        clean_strings = []
-        for string in strings:
-            clean_strings.append(string.replace("_", " "))
-        clean_strings.sort()
-
-        # Return the list
-        return clean_strings
-
-    def observatory(self, datetime=None, colname=None, **kwargs):
-        """Observatory or Telescope name"""
-        # Get all matching values
-        strings = self.meta.get(['obsrvtry', 'telescop'], datetime=datetime, colname=colname).values()
-
-        # Clean the strings
-        clean_strings = []
-        for string in strings:
-            clean_strings.append(string.replace("_", " "))
-        clean_strings.sort()
-
-        # Return the list
-        return clean_strings
 
     @property
     def columns(self):
@@ -216,7 +159,7 @@ class GenericTimeSeries:
 
         Parameters
         ----------
-        colname: `str`
+        colname : `str`
             The heading of the column you want output.
 
         Returns
@@ -233,7 +176,7 @@ class GenericTimeSeries:
 
         Parameters
         ----------
-        colname: `str`
+        colname : `str`
             The heading of the column you want output.
 
         quantity : `~astropy.units.quantity.Quantity` or `~numpy.ndarray`

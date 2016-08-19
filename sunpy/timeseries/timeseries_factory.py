@@ -146,10 +146,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     def _validate_units(self, units, **kwargs):
         """
         Validates the astropy unit-information associated with a TimeSeries.
+        Should be a dictionary of some form (but not MetaDict) with only astropy
+        units for values.
         """
 
         warnings.simplefilter('always', Warning)
-
         result = True
 
         # It must be a dictionary
@@ -159,7 +160,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         for key in units:
             if not isinstance(units[key], astropy.units.UnitBase):
                 # If this is not a unit then this can't be a valid units dict.
-                warnings.warn("Invalid unit given for \""+str(key)+"\"", Warning)
+                warnings.warn('Invalid unit given for "'+str(key)+'"', Warning)
                 return False
 
         # Passed all the tests
@@ -167,7 +168,21 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
     def _from_table(self, t, **kwargs):
         """
+        Extract the data, metadata and units from an astropy table for use in
+        constructing a TimeSeries.
 
+        Parameters
+        ----------
+        t: `~astropy.table.table.Table`
+            The input table. The datetime column ust be the first column or the
+            (single) primary key index.
+
+
+        Returns
+        -------
+        data : `~pandas.core.frame.DataFrame`
+        meta : `~sunpy.util.metadata.MetaDict`
+        units : `dict`
         """
         table = copy.deepcopy(t)
         # Default the time index to the first column
@@ -175,7 +190,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         if table.primary_key and len(table.primary_key) == 1:
             table.primary_key[0]
         elif table.primary_key:
-                warnings.warn("Invalid input Table, TimeSeries doesn't support conversion of tables with more then one index column.", Warning)
+            raise ValueError("Invalid input Table, TimeSeries doesn't support conversion of tables with more then one index column.")
 
         # Extract and remove the input table
         index = Time(table[index_name])
@@ -190,7 +205,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         # Create a dataframe with this and return
         df = pd.DataFrame(data=data, index=index)
-        return df, table.meta, units
+        return df, MetaDict(table.meta), units
 
     def _parse_args(self, *args, **kwargs):
         """
@@ -245,18 +260,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     # We have a numpy ndarray:
                     data = pd.DataFrame(data=arg[0])
                     # ToDo: should this include an index? Maybe use the first column?
-                    """
-                    # Evaluate the next argument/s to see if it's metadata or units
-                    if (len(arg) == 2) and self._validate_meta(arg[1]):
-                        units = arg[1]
-                    elif (len(arg) == 2) and self._validate_units(arg[1]):
-                        meta = arg[1]
-                    if (len(arg) == 3) and self._validate_meta(arg[2]):
-                        units = arg[2]
-                    elif (len(arg) == 3) and self._validate_units(arg[2]):
-                        meta = arg[2]
-                    """
-                    # ToDo: this and the similar code below may be able to be consolidated.
 
                 elif isinstance(data, Table):
                     # We have an AstroPy Table:
@@ -275,19 +278,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 # Add a 3-tuple for this TimeSeries.
                 data_header_unit_tuples.append((data, meta, units))
 
-                """
-                # The second argument will be the metadata/header.
-
-                meta = MetaDict(arg[1])
-
-                # Check if we're given a third argument for units
-                if (len(arg) == 3) and self._validate_meta(arg[2]):
-                    # This combines with values gathered from an input Table.
-                    units.update(arg[2])
-
-                # Add a 3-tuple for this TimeSeries.
-                data_header_unit_tuples.append((data, meta, units))
-                """
             # Data/header/units triple (or just data) not in a tuple
             elif (isinstance(arg, (np.ndarray, Table, pd.DataFrame))):# and self._validate_meta(args[i+1])):
                 # Assume a Pandas Dataframe is given
@@ -433,9 +423,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             new_timeseries.append(new_ts)
 
         # Loop over each registered type and check to see if WidgetType
-        # matches the arguments.  If it does, use that type.
-        #print('data_header_unit_tuples[0]:\n' + str(data_header_unit_tuples[0]) + '\n')
-        print('data_header_unit_tuples:\n' + str(data_header_unit_tuples))
+        # matches the arguments.  If it does, use that type
         for triple in data_header_unit_tuples:
             data, header, units = triple
             meta = MetaDict(header)
@@ -456,7 +444,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         concatenate = kwargs.get('concatenate', False)
         if concatenate:
             # Merge all these timeseries into one.
-            # ToDo: consider metadata output carfully.
             full_timeseries = new_timeseries.pop(0)
             for timeseries in new_timeseries:
                 full_timeseries = full_timeseries.concatenate(timeseries)
@@ -470,7 +457,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # Only return single time series, not in a list if we only have one.
         if len(new_timeseries) == 1:
             return new_timeseries[0]
-
         return new_timeseries
 
     def _check_registered_widgets(self, **kwargs):
