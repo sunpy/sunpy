@@ -15,7 +15,7 @@ from astropy import conf
 from sunpy.database import Database
 from sunpy.database.tables import FitsHeaderEntry, FitsKeyComment, Tag,\
     DatabaseEntry, entries_from_query_result, entries_from_dir,\
-    entries_from_file, create_display_table, display_entries,\
+    entries_from_file, _create_display_table, display_entries,\
     WaveunitNotFoundError
 from sunpy.net import vso
 from sunpy.data.test import rootdir as testdir
@@ -343,17 +343,17 @@ def test_entry_from_query_results_with_none_wave_and_default_unit(
 
 def test_create_display_table_missing_entries():
     with pytest.raises(TypeError):
-        create_display_table([], ['some', 'columns'])
+        _create_display_table([], ['some', 'columns'])
 
 
 def test_create_display_table_empty_db():
     with pytest.raises(TypeError):
-        create_display_table(Database('sqlite:///'), ['id'])
+        _create_display_table(Database('sqlite:///'), ['id'])
 
 
 def test_create_display_table_missing_columns():
     with pytest.raises(TypeError):
-        create_display_table([DatabaseEntry()], [])
+        _create_display_table([DatabaseEntry()], [])
 
 
 def test_create_display_table():
@@ -378,7 +378,7 @@ def test_create_display_table():
         'id', 'source', 'provider', 'physobs', 'fileid', 'download_time',
         'observation_time_start', 'instrument', 'size',
         'wavemin', 'path', 'starred', 'tags']
-    table = create_display_table(entries, columns)
+    table = _create_display_table(entries, columns)
     filedir = os.path.dirname(os.path.realpath(__file__))
     with open(os.path.join(filedir,'test_table.txt'), 'r') as f:
         stored_table = f.read()
