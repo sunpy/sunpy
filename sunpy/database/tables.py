@@ -595,7 +595,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
             break
 
 
-def create_display_table(database_entries, columns=None, sort=False):
+def _create_display_table(database_entries, columns=None, sort=False):
     """Generate a table to display the database entries.
 
     Parameters
@@ -669,4 +669,4 @@ def display_entries(database_entries, columns=None, sort=False):
         If True, sorts the entries before displaying them.
 
     """
-    return create_display_table(database_entries, columns, sort).__str__()
+    return _create_display_table(database_entries, columns, sort).__str__()
