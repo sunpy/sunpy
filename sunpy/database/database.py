@@ -18,7 +18,7 @@ from astropy import units
 
 import sunpy
 from sunpy.database import commands, tables, serialize
-from sunpy.database.tables import create_display_table
+from sunpy.database.tables import _create_display_table
 from sunpy.database.caching import LRUCache
 from sunpy.database.commands import CompositeOperation
 from sunpy.database.attrs import walker
