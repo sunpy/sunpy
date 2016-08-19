@@ -956,10 +956,10 @@ class Database(object):
         self._command_manager.redo(n)  # pragma: no cover
 
     def display_entries(self, columns=None, sort=False):
-        print(create_display_table(self, columns, sort))
+        print(_create_display_table(self, columns, sort))
 
     def show_in_browser(self, columns=None, sort=False, jsviewer=True):
-        create_display_table(self, columns, sort).show_in_browser(jsviewer)
+        _create_display_table(self, columns, sort).show_in_browser(jsviewer)
 
     def __getitem__(self, key):
         if isinstance(key, slice):
@@ -1005,10 +1005,10 @@ class Database(object):
         return self.session.query(tables.DatabaseEntry).count()
 
     def __repr__(self):
-        return create_display_table(self).__repr__()
+        return _create_display_table(self).__repr__()
 
     def __str__(self):
-        return create_display_table(self).__str__()
+        return _create_display_table(self).__str__()
 
     def _repr_html_(self):
-        return create_display_table(self)._repr_html_()
+        return _create_display_table(self)._repr_html_()
