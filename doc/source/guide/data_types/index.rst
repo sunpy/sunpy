@@ -6,6 +6,6 @@ Data Types in SunPy
     :maxdepth: 2
 
     maps
-	timeseries
+    timeseries
     lightcurve
     spectra

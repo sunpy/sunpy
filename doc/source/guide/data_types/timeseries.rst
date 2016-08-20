@@ -43,7 +43,7 @@ The factory has the ability to make a list of TimeSeries objects using a list of
     >>> my_ts_list = sunpy.timeseries.TimeSeries('/goesdirectory/', source='GOES')   # doctest: +SKIP
     >>> my_ts_list = sunpy.timeseries.TimeSeries(glob, source='GOES')   # doctest: +SKIP
 
-Note that the factory will only work with files from a single source, generating a source specific child of the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries` class such as the `~sunpy.timeseries.sources.goes.GOESLightCurve` above. Fir this reason all the files should be from that same source for the factory to work correctly.
+Note that the factory will only work with files from a single source, generating a source specific child of the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries` class such as the `~sunpy.timeseries.sources.goes.GOESLightCurve` above. For this reason all the files should be from that same source for the factory to work correctly.
 
 1.1 Creating a Single TimeSeries from Multiple Files
 ----------------------------------------------------
@@ -298,7 +298,7 @@ Note that the more complex `~sunpy.timeseries.metadata.TimeSeriesMetaData` objec
 
 The metadata object is described in more detail in the next section.
 
-5.4 Creating an AstroPy Table from a TimeSeries
+5.5 Creating an AstroPy Table from a TimeSeries
 -----------------------------------------------
 
 If you want to take the data from your TimeSeries and use it as a `~astropy.table.table.Table` this can be done using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.to_table` method.
@@ -311,7 +311,7 @@ One of the most useful reasons for doing this is that AstroPy `~sunpy.timeseries
 
     >>> table
 
-And the more sofisticated browser view using the `~astropy.table.table.Table.show_in_browser` method: ::
+And the more sophisticated browser view using the `~astropy.table.table.Table.show_in_browser` method: ::
 
     >>> table.show_in_browser(jsviewer=True)
 
@@ -343,7 +343,7 @@ For example: ::
 
 Similar to the TimeSeries, the metadata has some properties for convenient access to the global metadata details, including `~sunpy.timeseries.metadata.TimeSeriesMetaData.columns` as a list of strings, `~sunpy.timeseries.metadata.TimeSeriesMetaData.index` values and `~sunpy.timeseries.metadata.TimeSeriesMetaData.time_range` of the data.
 Beyond this, there are properties to get lists of details for all the entries in the `~sunpy.timeseries.metadata.TimeSeriesMetaData` object, including `~sunpy.timeseries.metadata.TimeSeriesMetaData.timeranges`, `~sunpy.timeseries.metadata.TimeSeriesMetaData.columns` (as a list of string column names) and `~sunpy.timeseries.metadata.TimeSeriesMetaData.metas`.
-Similar to TimeSeries objects you can `~sunpy.timeseries.metadata.TimeSeriesMetaData.truncate` and `~sunpy.timeseries.metadata.TimeSeriesMetaData.concatenate` `~sunpy.timeseries.metadata.TimeSeriesMetaData` objects, but generally you won't need to do this as it's done automatically when actioned on the TmeSeries.
+Similar to TimeSeries objects you can `~sunpy.timeseries.metadata.TimeSeriesMetaData.truncate` and `~sunpy.timeseries.metadata.TimeSeriesMetaData.concatenate` `~sunpy.timeseries.metadata.TimeSeriesMetaData` objects, but generally you won't need to do this as it's done automatically when actioned on the TimeSeries.
 Note that when truncating a `~sunpy.timeseries.metadata.TimeSeriesMetaData` object you will remove any entries outside of the given `~sunpy.time.TimeRange`.
 You can also `~sunpy.timeseries.metadata.TimeSeriesMetaData.append` a new entry (as a tuple or list), which will add the entry in the correct chronological position.
 It is frequently necessary to locate the metadata for a given column, row or cell which can be uniquely identified by both, to do this you can use the `~sunpy.timeseries.metadata.TimeSeriesMetaData.find` method, by adding colname and/or time/row keyword arguments you get a `~sunpy.timeseries.metadata.TimeSeriesMetaData` object returned which contains only the relevant entries. You can then use the `~sunpy.timeseries.metadata.TimeSeriesMetaData.metas` property to get a list of just the relevant `~sunpy.util.metadata.MetaDict` objects.
@@ -358,7 +358,7 @@ A common usage case for the metadata is to find out the instrument/s that gather
     >>> tsmd_return = my_timeseries.meta.get('telescop', colname='xrsa')
     >>> tsmd_return.values()
 
-Not values removes duplicate strings and sorts the returned list.
+Note, `~sunpy.timeseries.metadata.TimeSeriesMetaData.values` removes duplicate strings and sorts the returned list.
 You can update the values for these entries efficiently using the `~sunpy.timeseries.metadata.TimeSeriesMetaData.update` method which takes a dictionary argument and updates the values to each of the dictionaries that match the given colname and time filters, for example: ::
 
     >>> my_timeseries.meta.get({'telescop': 'G15'}, colname='xrsa', overwrite=True)
