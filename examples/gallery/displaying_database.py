@@ -44,7 +44,7 @@ print(display_entries(database,
 # database object. Note that the resultant table may be truncated according to
 # the terminal size.
 
-print (database)
+print(database)
 
 ##############################################################################
 # We can also display the database entries in a nicely formatted HTML page.
