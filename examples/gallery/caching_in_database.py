@@ -19,14 +19,13 @@ from sunpy.net import vso
 ##############################################################################
 # Instantiate the VSO and database clients
 
-client = vso.VSOClient()
 database = Database('sqlite:///sunpydata.sqlite')
 
 
 ##############################################################################
 # Download data for a VSO query
 
-database.download(vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'),
+database.fetch(vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'),
 	vso.attrs.Instrument('AIA'))
 
 ##############################################################################
