@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-=========================================
+====================================================
 Download and store files in the database (using VSO)
-=========================================
+====================================================
 
 A simple demonstration of downloading and storing VSO data using the database
 module.
