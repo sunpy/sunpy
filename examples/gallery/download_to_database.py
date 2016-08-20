@@ -25,10 +25,10 @@ database = Database('sqlite:///sunpydata.sqlite')
 ##############################################################################
 # Downloading data. We can download the required files and store them so
 # that they can be easily accessed for future use. Put the VSO query for which
-# you want to download files as the arguments to the download function. An
+# you want to download files as the arguments to the fetch function. An
 # optional argument path can be passed to specify the download location.
 
-database.download(vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'),
+database.fetch(vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'),
 	vso.attrs.Instrument('AIA'))
 
 ##############################################################################
