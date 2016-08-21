@@ -310,7 +310,7 @@ downloaded. This means no new files are downloaded.
     >>> len(database)  # doctest: +REMOTE_DATA
     70
 
-2.4 Adding entries manually
+2.5 Adding entries manually
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Although usually not required, it is also possible to add database entries
 by specifying the parameters manually. To do so pass the
@@ -758,16 +758,55 @@ to 10 and therefore removes the 5 entries that been used least recently.
     >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
-     id observation_time_start ...      wavemin            wavemax
-     --- ---------------------- ... ------------------ ------------------
-      8    2011-06-07 06:33:07 ...               19.3               19.3
-      9    2011-06-07 06:33:07 ...               19.3               19.3
-     10    2011-06-07 06:39:31 ...               19.3               19.3
-     11    2011-06-07 06:45:55 ...               19.3               19.3
-     12    2011-06-07 06:52:19 ...               19.3               19.3
-     13    2011-06-07 06:58:43 ...               19.3               19.3
-     14    2011-06-07 20:37:52 ...               19.5               19.5
-     21    2011-06-07 06:33:29 ... 17.400000000000002 17.400000000000002
-     22    2014-04-09 06:00:12 ...               17.1               17.1
-     58    2011-06-06 00:00:00 ...                N/A                N/A
+    ...      'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +SKIP
+    id observation_time_start observation_time_end instrument wavemin wavemax
+    -- ---------------------- -------------------- ---------- ------- -------
+    1  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1
+    3  2013-09-21 16:00:06    2013-09-21 16:00:06  AIA_2      19.3    19.3
+    4  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1
+    5  2014-04-09 06:00:12    2014-04-09 06:00:12  AIA_3      17.1    17.1
+    8  2002-06-25 10:00:10    2002-06-25 10:00:10  EIT        19.5    19.5
+    24 2012-10-30 15:30:01    2012-10-30 15:30:01  AIA_4      9.4     9.4
+    25 2012-01-01 00:16:07    2012-01-01 00:16:07  SWAP       17.4    17.4
+    33 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5
+    36 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5
+    37 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5
+
+
+9. Adding entries using the Fido interface
+------------------------------------------
+
+9.1 Adding entries from a Fido search result
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A Fido search result can also be used to add new entries to the database. 
+This is similar to adding entries from VSO query result as shown previously. 
+The method :meth:`Database.add_from_fido_search_result()` does not download 
+any files.
+
+Let's clear the database first.
+
+    >>> database.clear()
+
+Now get the Fido search result and pass it into the 
+:meth:`Database.add_from_fido_search_result()` method.
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> search_result = Fido.search(a.Time("2012/1/1", "2012/1/2"),
+    ...                              a.Instrument('lyra'))
+    >>> database.add_from_fido_search_result(search_result)
+    >>> len(database)
+    2
+
+9.2 Downloading
+~~~~~~~~~~~~~~~
+The method :meth:`Database.download_from_fido_search_result()` downloads the files from a Fido search result and adds the corresponding entries to the database. Again, similar to VSO downloading, not the number of records of the resulting search result determines the number of entries that will be added to the database! The number of entries that will be added depends on the total number of FITS headers. The :meth:`Database.download_from_fido_search_result()` method also accepts an optional keyword argument path which determines the value of the download path of each file.
+
+    >>> database.download_from_fido_search_result(search_result)
+    >>> display_entries(database, ['id', 'observation_time_start', 'observation_time_end', 'instrument', 
+    ...                             'source'])
+    id observation_time_start observation_time_end instrument source
+    -- ---------------------- -------------------- ---------- ------
+    1  2012-01-01 00:00:00    2012-01-02 00:00:00  lyra       Proba2
+    2  2012-01-01 00:00:00    2012-01-02 00:00:00  lyra       Proba2
+    3  2012-01-01 00:00:00    2012-01-02 00:00:00  lyra       Proba2
+    4  2012-01-01 00:00:00    2012-01-02 00:00:00  lyra       Proba2
