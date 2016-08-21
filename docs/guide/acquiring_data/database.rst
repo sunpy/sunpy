@@ -326,7 +326,7 @@ files are downloaded.
     >>> len(database)
     37
 
-2.4 Adding entries manually
+2.5 Adding entries manually
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Although usually not required, it is also possible to add database entries
 by specifying the parameters manually. To do so, you simply pass the
@@ -809,3 +809,42 @@ to 10 and therefore removes the 5 entries that been used least recently.
     33 2012-08-05 00:00:02    2012-08-05 00:00:03  AIA        33.5    33.5
     36 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5
     37 2013-08-05 00:00:02    2013-08-05 00:00:03  AIA        33.5    33.5
+
+
+9. Adding entries using the Fido interface
+------------------------------------------
+
+9.1 Adding entries from a Fido search result
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A Fido search result can also be used to add new entries to the database. 
+This is similar to adding entries from VSO query result as shown previously. 
+The method :meth:`Database.add_from_fido_search_result()` does not download 
+any files.
+
+Let's clear the database first.
+
+    >>> database.clear()
+
+Now get the Fido search result and pass it into the 
+:meth:`Database.add_from_fido_search_result()` method.
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> search_result = Fido.search(a.Time("2012/1/1", "2012/1/2"),
+    ...                              a.Instrument('lyra'))
+    >>> database.add_from_fido_search_result(search_result)
+    >>> len(database)
+    2
+
+9.2 Downloading
+~~~~~~~~~~~~~~~
+The method :meth:`Database.download_from_fido_search_result()` downloads the files from a Fido search result and adds the corresponding entries to the database. Again, similar to VSO downloading, not the number of records of the resulting search result determines the number of entries that will be added to the database! The number of entries that will be added depends on the total number of FITS headers. The :meth:`Database.download_from_fido_search_result()` method also accepts an optional keyword argument path which determines the value of the download path of each file.
+
+    >>> database.download_from_fido_search_result(search_result)
+    >>> display_entries(database, ['id', 'observation_time_start', 'observation_time_end', 'instrument', 
+    ...                             'source'])
+    id observation_time_start observation_time_end instrument source
+    -- ---------------------- -------------------- ---------- ------
+    1  2012-01-01 00:00:00    2012-01-02 00:00:00  lyra       Proba2
+    2  2012-01-01 00:00:00    2012-01-02 00:00:00  lyra       Proba2
+    3  2012-01-01 00:00:00    2012-01-02 00:00:00  lyra       Proba2
+    4  2012-01-01 00:00:00    2012-01-02 00:00:00  lyra       Proba2
