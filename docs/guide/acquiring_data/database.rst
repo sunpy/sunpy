@@ -310,7 +310,7 @@ downloaded. This means no new files are downloaded.
     >>> len(database)  # doctest: +REMOTE_DATA
     70
 
-2.5 Adding entries manually
+2.4 Adding entries manually
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Although usually not required, it is also possible to add database entries
 by specifying the parameters manually. To do so pass the
