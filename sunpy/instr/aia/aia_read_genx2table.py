@@ -10,12 +10,11 @@ It specifically searches for instrument files and gathers information to be stor
 
 """
 
-import numpy as np
+ np
 import os
 from scipy.io import readsav
 from astropy.table import Table, Column, QTable
-import astropy.units as u
-import pandas as pd
+
 
 
 def aia_instr_properties_to_table(input_directory, channel_list, version, save=True):
@@ -45,8 +44,6 @@ def aia_instr_properties_to_table(input_directory, channel_list, version, save=T
 
     outfile: channel_properties_[version number] .csv
 
-    Notes;
-
 
     """
 
@@ -75,7 +72,7 @@ def aia_instr_properties_to_table(input_directory, channel_list, version, save=T
                 'electron_per_ev', 'entire_filter_efficiency', 'focal_plane_filter_efficiency', 'geometric_area_ccd',
                 'plate_scale', 'primary_mirror_reflectance', 'secondary_mirror_reflectance',
                 'wavelength_range', 'minimum_wavelength', 'number_wavelength_intervals', 'wavelength_interval'
-                ]
+                ]  # efficiency or transmittance?
 
     # make sure data types and properties are sorted in the same order
     dt = []
@@ -124,18 +121,9 @@ def aia_instr_properties_to_table(input_directory, channel_list, version, save=T
     table.add_column(C, index=0)
     table.add_index(['channel'])
 
-    # units
-    # table['geoarea'] = table['geoarea']* u.cm**2
-    # table['wave'] = table['wave'] * u.AA
-    # table['wavemin'] = table['wavemin'] *u.angstrom
-
+    # could add save option!
     # if save:
     #     table.write('channel_properties_' + str(version) + '.csv')
     # return ('channel_properties_' + str(version) + '.csv')
-
-    # ^^^^^^^^^Returned TypeError: unhashable type: 'numpy.ndarray'
-    # get around bug by reading in each time.....
-
-    assert len(table) != 0, 'Empty Table: Data is not loading from file.'
 
     return table
