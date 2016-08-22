@@ -837,11 +837,18 @@ Now get the Fido search result and pass it into the
 
 9.2 Downloading
 ~~~~~~~~~~~~~~~
-The method :meth:`Database.download_from_fido_search_result()` downloads the files from a Fido search result and adds the corresponding entries to the database. Again, similar to VSO downloading, not the number of records of the resulting search result determines the number of entries that will be added to the database! The number of entries that will be added depends on the total number of FITS headers. The :meth:`Database.download_from_fido_search_result()` method also accepts an optional keyword argument path which determines the value of the download path of each file.
+The method :meth:`Database.download_from_fido_search_result()` downloads the 
+files from a Fido search result and adds the corresponding entries to the 
+database. Again, similar to VSO downloading, not the number of records of the 
+resulting search result determines the number of entries that will be added 
+to the database. The number of entries that will be added depends on the total 
+number of FITS headers. The :meth:`Database.download_from_fido_search_result()` 
+method also accepts an optional keyword argument `path` which determines the 
+download path of each file.
 
     >>> database.download_from_fido_search_result(search_result)
-    >>> display_entries(database, ['id', 'observation_time_start', 'observation_time_end', 'instrument', 
-    ...                             'source'])
+    >>> display_entries(database, ['id', 'observation_time_start', 
+    ...                     'observation_time_end', 'instrument', 'source'])
     id observation_time_start observation_time_end instrument source
     -- ---------------------- -------------------- ---------- ------
     1  2012-01-01 00:00:00    2012-01-02 00:00:00  lyra       Proba2
