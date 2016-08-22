@@ -277,7 +277,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         instrument='RadioHelioGraph')
     # 1 entry from rhessi
     assert entries[62] == DatabaseEntry(
-        source="", provider= 'nasa', physobs= 'irradiance',
+        source="rhessi", provider= 'nasa', physobs= 'irradiance',
         fileid= 'http://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20120101_016.fits',
         observation_time_start = datetime(2012, 1, 1, 0, 0),
         observation_time_end = datetime(2012, 1, 2, 0, 0),
