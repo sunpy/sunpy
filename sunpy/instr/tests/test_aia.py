@@ -122,4 +122,44 @@ def test_filesave():
         #     self.channel_list.index(channel)], calculated_gain * electron_per_dn)  # ~ 17 or 18.3 dn/phot
 
 
+        # test gain:
+        # # move to aia_test.pu as a reference
+        # if use_table2_gain:
+        #     # Uses Gain from table Table 12 to calculate instrument response
+        #     # gain values from Boerner paper
+        #     gain_table2 = {94: 2.128, 131: 1.523, 171: 1.168, 193: 1.024, 211: 0.946, 304: 0.658, 335: 0.596,
+        #                    1600: 0.125, 1700: 0.118}
+        #     self.system_gain = gain_table2[channel]
 
+
+        # test calculate wavelength response:
+        # if use_table2_gain:
+        #     self.calculate_effective_area(channel)
+        #     self.calculate_system_gain(channel, use_table2_gain=True)
+        #     self.wavelength_response = self.effective_area * self.system_gain * dn_per_photon
+
+        # test calculate wavelength response
+        # elif use_response_table2:
+        #     # returns the instrument response values listed in Table 2
+        #     i = self.channel_list.index(channel)
+        #     response = [0.664, 1.785, 3.365, 1.217, 1.14, 0.041, 0.027, 0.0024, 0.0046][i]
+        #     self.wavelength_response = response
+
+        # temperature response:
+
+        # print('matrix:' , len(matrix)) # 61
+        # print(discrete_wavelengths) # returns array   (1,3) for channel 94, only three ions probed - check
+
+        # check that these are the same length -- good! 8751 == 8751
+        # print( len(self.wavelength_response[channel]['wavelength']), len(self.wavelength_response[channel]['response']))
+
+        # Wavelength Response Interpolation could be done in this way
+        # here more ions is good
+        # response_interpolated =  interp1d(discrete_wavelengths,  self.wavelength_response[channel]['wavelength'], self.wavelength_response[channel]['response'])[0]
+        # response_interpolated = np.interp(discrete_wavelengths,  self.wavelength_response[channel]['wavelength'], self.wavelength_response[channel]['response'])[0]
+
+        # move to test: check: these are the same length because wavelength range in defining response functions
+        # print('response', response, len(response), len(response[0]))
+        # print(len(wrange))
+
+        # print(len(temperature_array), len(temp_response), print(temp_response))
