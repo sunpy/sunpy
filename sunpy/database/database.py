@@ -689,7 +689,7 @@ class Database(object):
         if not query_result:
             return
         self.add_many(self._download_and_collect_entries(
-            query_result, client = client, path = path, progress = progress))
+            query_result, client=client, path=path, progress=progress))
 
     def add_from_vso_query_result(self, query_result,
             ignore_already_added=False):
