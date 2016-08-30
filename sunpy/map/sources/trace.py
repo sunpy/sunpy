@@ -55,7 +55,7 @@ class TRACEMap(GenericMap):
         self.meta['obsrvtry'] = "TRACE"
         self._nickname = self.detector
         # Colour maps
-        self.plot_settings['cmap'] = cm.get_cmap('trace' + str(self.measurement))
+        self.plot_settings['cmap'] = cm.get_cmap('trace' + str(self.meta['WAVE_LEN']))
         self.plot_settings['norm'] = colors.LogNorm()
 
     @classmethod
