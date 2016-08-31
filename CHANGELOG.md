@@ -1,6 +1,7 @@
 0.7.4
 ------
 
+* Remove Map always forcing warnings on.
 
 
 0.7.3
