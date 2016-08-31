@@ -373,12 +373,21 @@ class Database(object):
         """
         self.session.commit()
 
-    def _download_and_collect_entries(self, query_result, client=None,
-            path=None, progress=False):
+    def _download_and_collect_entries(self, query_result, **kwargs):
+
+        client = kwargs.pop('client', None)
+        path = kwargs.pop('path', None)
+        progress = kwargs.pop('progress', False)
+        methods = kwargs.pop('methods', ('URL-FILE_Rice', 'URL-FILE'))
+
+        if kwargs:
+            k, v = kwargs.popitem()
+            raise TypeError('unexpected keyword argument {0!r}'.format(k))
+
         if client is None:
             client = VSOClient()
 
-        paths = client.get(query_result, path).wait(progress=progress)
+        paths = client.get(query_result, path, methods).wait(progress=progress)
 
         for (path, block) in zip(paths, query_result):
             qr_entry = tables.DatabaseEntry._from_query_result_block(block)
@@ -420,20 +429,18 @@ class Database(object):
         """
         if not query:
             raise TypeError('at least one attribute required')
-        client = kwargs.pop('client', None)
-        path = kwargs.pop('path', None)
-        progress = kwargs.pop('progress', False)
-        if kwargs:
-            k, v = kwargs.popitem()
-            raise TypeError('unexpected keyword argument {0!r}'.format(k))
+        
+        client = kwargs.get('client', None)
         if client is None:
             client = VSOClient()
         qr = client.query(*query)
+
         # don't do anything if querying the VSO results in no data
         if not qr:
             return
+
         entries = list(self._download_and_collect_entries(
-            qr, client, path, progress))
+            qr, **kwargs))
         dump = serialize.dump_query(and_(*query))
         (dump_exists,), = self.session.query(
             exists().where(tables.JSONDump.dump == tables.JSONDump(dump).dump))
@@ -476,16 +483,13 @@ class Database(object):
         """
         if not query:
             raise TypeError('at least one attribute required')
-        path = kwargs.pop('path', None)
-        if kwargs:
-            k, v = kwargs.popitem()
-            raise TypeError('unexpected keyword argument {0!r}'.format(k))
+        
         dump = serialize.dump_query(and_(*query))
         (dump_exists,), = self.session.query(
             exists().where(tables.JSONDump.dump == tables.JSONDump(dump).dump))
         if dump_exists:
             return self.query(*query)
-        return self.download(*query, path=path)
+        return self.download(*query, **kwargs)
 
     def query(self, *query, **kwargs):
         """
@@ -758,7 +762,7 @@ class Database(object):
         if not query_result:
             return
         self.add_many(self._download_and_collect_entries(
-            query_result, client, path, progress))
+            query_result, client=client, path=path, progress=progress))
 
     def add_from_vso_query_result(self, query_result,
             ignore_already_added=False):
