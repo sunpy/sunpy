@@ -16,8 +16,7 @@ from matplotlib import patches, cm, colors
 
 import astropy.wcs
 import astropy.units as u
-from astropy.visualization.wcsaxes import WCSAxes
-from astropy.coordinates import Longitude, Latitude
+from astropy.coordinates import SkyCoord
 
 import sunpy.io as io
 import sunpy.wcs as wcs
@@ -196,7 +195,7 @@ class GenericMap(NDData):
         if not self.observatory:
             return self.data.__repr__()
         return (
-"""SunPy Map
+"""SunPy {dtype!s}
 ---------
 Observatory:\t {obs}
 Instrument:\t {inst}
@@ -208,7 +207,8 @@ dt:\t\t {dt:f}
 Dimension:\t {dim}
 scale:\t\t {scale}
 
-""".format(obs=self.observatory, inst=self.instrument, det=self.detector,
+""".format(dtype=self.__class__.__name__,
+           obs=self.observatory, inst=self.instrument, det=self.detector,
            meas=self.measurement, wave=self.wavelength, date=self.date,
            dt=self.exposure_time,
            dim=u.Quantity(self.dimensions),
@@ -769,10 +769,7 @@ scale:\t\t {scale}
             x = u.Quantity(x, self.spatial_units.x)
             y = u.Quantity(y, self.spatial_units.y)
 
-        x = Longitude(x, wrap_angle=180*u.deg)
-        y = Latitude(y)
-
-        return x.to(self.spatial_units.x), y.to(self.spatial_units.y)
+        return SkyCoord(x, y, frame=self.coordinate_frame)
 
 
 # #### I/O routines #### #
@@ -1629,9 +1626,7 @@ scale:\t\t {scale}
             # Check that the image is properly oriented
             if (not wcsaxes_compat.is_wcsaxes(axes) and
                 not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2)))):
-                warnings.warn("WCSAxes is not being used as the axes for this plot and the"
-                              " coordinate system is not aligned to the pixel axes."
-                              " Plot axes may be incorrect",
+                warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
                               Warning)
 
             elif not wcsaxes_compat.is_wcsaxes(axes):
