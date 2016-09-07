@@ -586,6 +586,23 @@ class GenericTimeSeries:
             match = False
         return match
 
+
+    def __ne__(self, other):
+        """
+        Check two TimeSeries objects are not the same, they don't have matching
+        type, data, metadata and/or units entries.
+
+        Parameters
+        ----------
+        other : `~sunpy.timeseries.GenericTimeSeries`
+            The second TimeSeries object to compare with.
+
+        Returns
+        -------
+        result : `bool`
+        """
+        return not self == other
+
     @classmethod
     def _parse_file(cls, filepath):
         """Parses a file - to be implemented in any subclass that may use files"""

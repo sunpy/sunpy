@@ -80,6 +80,22 @@ class TimeSeriesMetaData:
         else:
             match = False
         return match
+        
+    def __ne__(self, other):
+        """
+        Check two TimeSeriesMetaData objects are not the same, they don't have
+        same entries in the same order.
+
+        Parameters
+        ----------
+        other : `~sunpy.timeseries.GenericTimeSeries`
+            The second TimeSeries object to compare with.
+
+        Returns
+        -------
+        result : `bool`
+        """
+        return not self == other
 
     def append(self, timerange, columns, metadata, **kwargs):
         """
