@@ -187,10 +187,15 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         table = copy.deepcopy(t)
         # Default the time index to the first column
         index_name = table.colnames[0]
-        if table.primary_key and len(table.primary_key) == 1:
-            table.primary_key[0]
-        elif table.primary_key:
-            raise ValueError("Invalid input Table, TimeSeries doesn't support conversion of tables with more then one index column.")
+        print('table.primary_key: ' + str(table.primary_key))
+        if table.primary_key:
+            print('if table.primary_key: True')
+            if len(table.primary_key) == 1:
+                print('if len(table.primary_key) == 1: True')
+                table.primary_key[0]
+            else:
+                print('if len(table.primary_key) == 1: False')
+                raise ValueError("Invalid input Table, TimeSeries doesn't support conversion of tables with more then one index column.")
 
         # Extract and remove the input table
         index = Time(table[index_name])

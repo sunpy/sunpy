@@ -176,8 +176,6 @@ class TestTimeSeries(object):
             sunpy.timeseries.TimeSeries((dual_index_table, meta, units))
 
 
-
-
 #==============================================================================
 # Test some Errors
 #==============================================================================
