@@ -5,9 +5,14 @@ omit =
    sunpy/conftest*
    sunpy/cython_version*
    sunpy/*setup*
-   sunpy/*tests/*
    sunpy/version*
    sunpy/__init__*
+   sunpy/*/tests/*
+   sunpy/extern/*
+   */setup_package.py
+include =
+   *
+   sunpy/tests/*
 
 [report]
 exclude_lines =
