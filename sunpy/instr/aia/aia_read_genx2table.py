@@ -1,20 +1,15 @@
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+"""
+Reads files in a .genx data directory.
+"""
+from __future__ import (absolute_import, division, print_function,unicode_literals)
+import os
+
+import numpy as np
+from scipy.io import readsav
+from astropy.table import QTable
+import astropy.units as u
 
 __author__ = "Tessa D. Wilkinson"
-
-"""
-
-This function reads files in a .genx data directory.
-It specifically searches for instrument files and gathers information to be stored in an astropy table or dataframe.
-
-"""
-
- np
-import os
-from scipy.io import readsav
-from astropy.table import Table, Column, QTable
-
 
 
 def aia_instr_properties_to_table(input_directory, channel_list, version, save=True):
@@ -26,104 +21,61 @@ def aia_instr_properties_to_table(input_directory, channel_list, version, save=T
     ----------
     input_directory : string,
         the path location that leads to ssw_aia_response_data/ (output of .genx.tar file)
-
     channel_list : list
         a list of channel wavelengths to search for
-
-    properties: list
-        a list of properties to search for
-
     version: int
         the version of aia instrument files to grab
 
-    save : bool
-        if True, will save a table containing all of the extracted instrument data to 'channel_properties (version #) .csv'
-
     Returns:
     --------
-
     outfile: channel_properties_[version number] .csv
-
-
     """
 
-    check = []
-    file_paths = []
+    #correspondence between property names
+    properties = [('wave','wavelength'),('wavemin','minimum_wavelength'),('wavestep','wavelength_interval'),
+                  ('wavenumsteps','number_wavelength_intervals'),('effarea','effective_area'),
+                  ('geoarea','geometric_area_ccd'),('platescale','plate_scale'),('elecperdn','electron_per_dn'),
+                  ('elecperev','electron_per_ev'),('fp_filter','focal_plane_filter_efficiency'),
+                  ('ent_filter','entire_filter_efficiency'),('primary','primary_mirror_reflectance'),
+                  ('secondary','secondary_mirror_reflectance'),('ccd','quantum_efficiency_ccd'),
+                  ('contam','ccd_contamination')]
+    #corresponding units for each field
+    unitless = u.m/u.m
+    units = [u.angstrom,u.angstrom,u.angstrom,unitless,u.cm**2,u.cm**2,1/u.cm,u.electron/u.count,u.electron/u.eV,
+             unitless,unitless,unitless,unitless,unitless,unitless]
+    units = {p[1] : u for p,u in zip(properties,units)}
+    units['channel'] = u.angstrom
+    #set instrument files; these are the names used by SSW, should be static
+    instrument_files = [os.path.join(input_directory,'aia_V{0}_all_fullinst'.format(version)),
+                        os.path.join(input_directory,'aia_V{0}_fuv_fullinst'.format(version))]
+    field_name = 'A{0}_FULL'
 
-    datatypes = [('wave', 'object'), ('effarea', 'object'),
-                 ('geoarea', 'float32'), ('platescale', 'float32'),
-                 ('wavemin', 'float32'), ('wavestep', 'float32'), ('wavenumsteps', '>i4'),
-                 ('elecperdn', 'object'), ('elecperev', 'float32'),
-                 ('fp_filter', 'object'), ('ent_filter', 'object'),
-                 ('primary', 'object'), ('secondary', 'object'),
-                 ('ccd', 'object'), ('contam', 'object')
-                 ]
+    #read in values
+    rows = []
+    for instr_file in instrument_files:
+        instrument_data = readsav(instr_file)['data']
+        for channel in channel_list:
+            if field_name.format(channel).upper() not in instrument_data.dtype.names:
+                continue
+            row = {'channel':channel}
+            channel_data = instrument_data[field_name.format(channel)][0]
+            for prop in properties:
+                if prop[0].upper() not in channel_data.dtype.names:
+                    print('Cannot find {0} for channel {1} in file {2}'.format(prop[0],channel,instr_file))
+                    print('Setting {} to 1'.format(prop[1]))
+                    row[prop[1]] = 1
+                else:
+                    row[prop[1]] = channel_data[prop[0]][0]
+            rows.append(row)
 
-    properties = ['wave', 'effarea',
-                  'geoarea', 'platescale',
-                  'wavemin', 'wavestep', 'wavenumsteps',
-                  'elecperdn', 'elecperev',
-                  'fp_filter', 'ent_filter',
-                  'primary', 'secondary',
-                  'ccd', 'contam']
-
-    # less ambiguous naming and manually sorted to match sorted(properties) order
-    new_prop = ['quantum_efficiency_ccd', 'ccd_contamination', 'effective_area', 'electron_per_dn',
-                'electron_per_ev', 'entire_filter_efficiency', 'focal_plane_filter_efficiency', 'geometric_area_ccd',
-                'plate_scale', 'primary_mirror_reflectance', 'secondary_mirror_reflectance',
-                'wavelength_range', 'minimum_wavelength', 'number_wavelength_intervals', 'wavelength_interval'
-                ]  # efficiency or transmittance?
-
-    # make sure data types and properties are sorted in the same order
-    dt = []
-    for i in sorted(properties):
-        for j in datatypes:
-            if j[0] == i:
-                dt.append(j[1])
-
-    table = QTable(names=new_prop, dtype=dt)
-
-    # search through directory for instrument files for each version
-    for root, dirs, files in os.walk(input_directory, topdown=False):
-        for channel_file in files:
-            if (os.path.join(root, channel_file)) not in check and channel_file.endswith('_fullinst') and str(
-                version) in str(channel_file):
-                check.append(os.path.join(root, channel_file))
-                file_paths.append(os.path.join(root, channel_file))
-
-    # search through each instrument file for channels
-    for instr_file in file_paths:
-        data = readsav(instr_file)['data']
-        for channel_file in data.dtype.names:
-            row = []
-
-            # target number in filename that matches channels
-            if channel_file.startswith('A') and channel_file.endswith('_FULL') and channel_file.find('THICK') < 0:
-                start = channel_file.find('A')
-                end = channel_file.find('_F')
-                channel = channel_file[start + 1:end]
-
-                if int(channel) in channel_list:
-                    # match files to listed properties
-                    variables = set(data[channel_file][0].dtype.fields.keys()) & set(sorted(properties))
-
-                    # save all properties for a channel into an array
-                    for n, inst_property in enumerate(sorted(variables)):
-                        value = data[channel_file][0][inst_property][0]
-
-                        row.append(value)
-
-                    # put channel array into the table
-                    table.add_row(row)
-
-    # Make the first table column listing the channels
-    C = Table.Column(data=channel_list, name='channel', dtype=int)
-    table.add_column(C, index=0)
-    table.add_index(['channel'])
-
-    # could add save option!
-    # if save:
-    #     table.write('channel_properties_' + str(version) + '.csv')
-    # return ('channel_properties_' + str(version) + '.csv')
+    #assign units
+    table = QTable(rows=rows,names=tuple(['channel']+[p[1] for p in properties]))
+    for name in table.colnames:
+        try:
+            table[name].unit = units[name]
+        except TypeError:
+            #weird astropy table exception, units still set in all cases
+            #exception seems to be only thrown when reading in the UV channels
+            pass
 
     return table
