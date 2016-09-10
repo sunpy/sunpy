@@ -1,5 +1,5 @@
-import ChiantiPy.core as ch
-import ChiantiPy.tools.constants as c
+#import ChiantiPy.core as ch
+#import ChiantiPy.tools.constants as c
 import pandas as pd
 import time
 import numpy as np
