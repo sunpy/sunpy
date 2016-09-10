@@ -1,82 +1,58 @@
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
+"""Provides functions for calculating wavelength and temperature response of SDO/AIA"""
 
-__author__ = "Tessa D. Wilkinson"  # github: tdwilkinson
-
-"""
-This program performs characterization of the Atmospheric Imaging Assembly (AIA) instrument used on the Solar Dynamics
-Observatory satellite. The wavelength and temperature response allow for photometric calibration using instrument
-parameters. The instrument does not provide spectroscopic information, so there is no way to directly apply a
-wavelength-dependent calibration to the data. These AIA response functions were calculated using AIA instrument
-information obtained using Solar Soft Ware .genx files, and also integrating ChiantiPy ion temperature and density
-information.
-
-Utilizing this code one can:
-    - Analyze AIA instrument response that tells efficiency of each channel using instrument properties.
-    - Plot effective area vs wavelengths to see where on the instrument the response is peaked in wavelength.
-    - Obtain temperature response based on chianti spectral contribution functions as a function of temperature.
-
-
-"""
-
-import numpy as np
-import pandas as pd
+from __future__ import (absolute_import, division, print_function, unicode_literals)
 import os
 
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
 import astropy.units as u
 import astropy.constants as constants
-
 from scipy import integrate
 
 from .aia_read_genx2table import aia_instr_properties_to_table
 from .make_ion_contribution_table import save_contribution_csv
 
+__author__ = ["Tessa D. Wilkinson","Will Barnes"] # github: tdwilkinson
+
 
 class Response():
+    """
+    This class calculates the wavelength and temperature response functions for the 7 EUV channels of the Atmospheric Imaging Assembly (AIA) instrument onboard the Solar Dynamics Observatory spacecraft. These AIA response functions were calculated using AIA instrument information obtained from  Solar Software (SSW) .genx files. Temperature response functions are calculated using spectroscopic information from the CHIANTI atomic database and the ChiantiPy package.
+
+    Parameters
+    ----------
+
+    Examples
+    --------
+
+    Notes
+    -----
+
+    References
+    ----------
+    """
+
+    channel_colors = {94:'#ff3a3a',131:'#6060ff',171:'#f1de1f',193:'#4cec4c',211:'#ed64c6',335:'#45deed',304:'k'}
+
+    def __init__(self, channel_list=[94,131,171,193,335,211,304], path_to_genx_dir='', version=6):  # data_table,
+        self._get_channel_info(channel_list,path_to_genx_dir,version)
 
 
-    def __init__(self, channel_list, **kwargs):  # data_table,
-
-        path_to_genx_dir = kwargs.get('path_to_genx_dir', '')
-        version = kwargs.get('version', 6)
-
-        self.data_table = aia_instr_properties_to_table(path_to_genx_dir, channel_list,
-                                                        version, save=True)
-
-        self.channel_list = channel_list
-
-    def get_channel_data(self, channel):
+    def _get_channel_info(self,channel_list, path_to_genx_dir,version):
         """
-        This definition returns a specific row in self.data_table containing all of the channel data.
-        Individual properties of the channel can be obtained by indexing the property.
-        ie:  min_wavelength = get_channel_data(94)['wavemin']
+        Get instrument info for channels in channel list. Creates self._channel_info
 
-        Parameters
-        ---------
-        :param channel: int
-            specify which channel of which to obtain data
-
-
-        Returns
-        ------
-        :return: Table row that acts like dictionary
+        Notes
+        -----
+        This will probably change once instrument data is acquired through other means.
         """
+        data_table = aia_instr_properties_to_table(path_to_genx_dir,channel_list,version,save=True)
+        self._channel_info = {}
+        for c in channel_list:
+            index = channel_list.index(c)
+            self._channel_info[c] = {property : data_table[property][index] for property in data_table.columns.keys()}
 
-        # define the location of the channel data to return
-        if channel in self.data_table['channel']:
-            index = self.channel_list.index(channel)
-            channel_data = self.data_table[index]
-
-            # Return np.array not np.ndarray
-            for n, data in enumerate(channel_data):
-                if type(data) == np.ndarray:
-                    array = []
-                    for i in data:
-                        array.append(i)
-                    channel_data[n] = array
-
-            # returns  the table row that is a dictionary
-            return channel_data
 
     def wavelength_range_index(self, channel):
         """
@@ -93,13 +69,12 @@ class Response():
         :return: the index value
         """
 
-        var = self.get_channel_data(channel)
-        num = var['number_wavelength_intervals']
-        intervals = var['wavelength_interval']
-        min_wave = var['minimum_wavelength']
+        num = self._channel_info[channel]['number_wavelength_intervals']
+        intervals = self._channel_info[channel]['wavelength_interval']
+        min_wave = self._channel_info[channel]['minimum_wavelength']
         wave_range = np.arange(0, float(num)) * float(intervals) + float(min_wave)
 
-        wavelength_range = var['wavelength_range']
+        wavelength_range = self._channel_info[channel]['wavelength_range']
 
         # assert wavelength_range.all() == wave_range.all() # check these are the same
 
@@ -111,7 +86,7 @@ class Response():
 
         return index
 
-    def calculate_effective_area(self, channel,  use_genx_effarea=True):
+    def _calculate_effective_area(self, channel):
         """
         AIA photometric calibration was obtained by making component-level measurements of all the optical elements in
         the AIA telescopes (mirrors, filters, and CCD), and combining those measurements analytically to produce a model
@@ -146,32 +121,17 @@ class Response():
             returns the effective area of the instrument over the entire wavelength range
 
         """
+        # Returns the entire channel wavelengths  effective area as calculated with .genx values
+        reflectance = self._channel_info[channel]['primary_mirror_reflectance']*self._channel_info[channel]['secondary_mirror_reflectance']
+        transmission_efficiency = self._channel_info[channel]['focal_plane_filter_efficiency']*self._channel_info[channel]['entire_filter_efficiency']
 
-        var = self.get_channel_data(channel)
+        # effective area equation:
+        eff_area = self._channel_info[channel]['geometric_area_ccd']*reflectance*transmission_efficiency*self._channel_info[channel]['ccd_contamination']*self._channel_info[channel]['quantum_efficiency_ccd']
 
-        if use_genx_effarea:
-            # returns the channel wavelength effective area strait from the .genx files
-            self.effective_area = var['effective_area'] * u.cm ** 2
-
-        else:
-            # Returns the entire channel wavelengths  effective area as calculated with .genx values
-
-            # iterate through lists for multiplication (otherwise type error occurs)
-            reflectance = [i * j for i, j in
-                           zip(var['primary_mirror_reflectance'], var['secondary_mirror_reflectance'])]
-            transmission_efficiency = [i * j for i, j in
-                                       zip(var['focal_plane_filter_efficiency'], var['entire_filter_efficiency'])]
-
-            # effective area equation:
-            eff_area = (var['geometric_area_ccd'] * u.cm ** 2) * reflectance * transmission_efficiency * var[
-                'ccd_contamination'] * var['quantum_efficiency_ccd']
-
-            self.effective_area = eff_area
+        return eff_area
 
 
-
-
-    def calculate_system_gain(self, channel, use_genx_values= True):
+    def _calculate_system_gain(self, channel):
         """
         The CCD camera system gain is calculated using  a standard conversion of photons to detected electrons with the
         camera gain.
@@ -186,53 +146,17 @@ class Response():
             equation from Boerner et al 2012.
 
         """
-
-        var = self.get_channel_data(channel)
-
-        # conversions
+        # convert hc to convenient units
         hc = (constants.h * constants.c).to(u.eV * u.angstrom)
-        electron_per_ev = (1 * u.electron) / (3.98 * u.eV)
-
-        if use_genx_values:
-            # calculate the index of values to use from wavelength range
-            channel_index = self.wavelength_range_index(channel)
-
-            # elecperphot in genx starting with the photon energy in eV
-            wavelength = (var['wavelength_range'][channel_index] * u.angstrom)
-            ev_per_wavelength = hc / wavelength
-
-            # converts energy of wavelength from eV to electrons
-            genx_electron_per_ev = var['electron_per_ev'] * (u.count / u.eV)
-            electron_per_wavelength = (ev_per_wavelength * genx_electron_per_ev)
-
-            # gain = elecperphot / elecperdn
-            self.system_gain = electron_per_wavelength / var['electron_per_dn']
+        #energy per photon in units of eV
+        ev_per_photon = hc/(self._channel_info[channel]['wavelength'])/u.photon
+        electron_per_ev = self._channel_info[channel]['electron_per_ev']
+        electron_per_photon = ev_per_photon*electron_per_ev
+        # gain = elecperphot / elecperdn
+        return electron_per_photon/self._channel_info[channel]['electron_per_dn']
 
 
-        else:
-            # calculate entire response using calculated eff_area and ccd gain from table12
-            ccd_gain = {94: 18.3, 131: 17.6, 171: 17.7, 193: 18.3, 211: 18.3, 304: 18.3, 335: 17.6, 1600: 0.125,
-                        1700: 0.118}
-
-            # the photon energy in eV
-            wavelength = (float(channel) * u.angstrom)
-            ev_per_wavelength = hc / wavelength
-
-            # converts energy of wavelength from eV to electrons
-            electron_per_wavelength = (ev_per_wavelength * electron_per_ev)
-
-            # gain of ccd from genx file:
-            ccdgain = ccd_gain[channel] * (u.electron / u.count)
-
-            # Gain(wavelength)  calculation
-            calculated_gain = electron_per_wavelength * (u.count / u.photon)
-
-            self.system_gain = calculated_gain / ccdgain
-
-
-
-
-    def calculate_wavelength_response(self, channel, use_genx_values=True):
+    def calculate_wavelength_response(self,use_genx_value=True):
         """
         Describes the (AIA) instrument wavelength response by calculating effective area as a function of wavelength for
          the strongest emission lines present in the solar feature. This should display a peaked value around the
@@ -264,51 +188,30 @@ class Response():
 
         """
 
-        # conversions
-        dn_per_photon = u.count / u.photon
-
-        var = self.get_channel_data(channel)
-
-        # default is to use use effective area generated with a genx file
-        if use_genx_values:
-
-            self.calculate_system_gain(channel, use_genx_values=True)
-            wavelength_response = var['effective_area'] * (self.system_gain * dn_per_photon)
-
-        # otherwise an effective area calculation is completed using instrument properties from the genx file.
-        else:
-            self.calculate_system_gain(channel)
-            self.calculate_effective_area(channel)
-            wavelength_response = self.effective_area * self.system_gain
-
-        wavelengths = np.arange(0, var['number_wavelength_intervals']) * var['wavelength_interval'] + var[
-            'minimum_wavelength']
-
-        out_response = {}
-        out_response[channel] = {'response': wavelength_response, 'wavelength': wavelengths}
-
-        self.wavelength_response = out_response
+        self.wavelength_response = {}
+        for channel in self._channel_info:
+            system_gain = self._calculate_system_gain(channel, use_genx_value=True)
+            effective_area = self._calculate_effective_area(channel, use_genx_value=use_genx_value)
+            self.wavelength_response[channel] = {'wavelength':self._channel_info[channel]['wavelength'], 'response':system_gain*effective_area}
 
 
-
-
-    def get_wavelength_response_functions(self):
+    def peek_wavelength_response(self):
         """
-        Calc wavelength response functions for each channel in self.channel_list
-
-        :return: dictionary
-            each key is the channel and the value is the wavelength response array
+        Quick plot of wavelength response functions versus wavelength
         """
+        if not hasattr(self,'wavelength_response'):
+            self.calculate_wavelength_response()
 
-        out_dictionary = {}
+        fig = plt.figure(figsize=(8,8))
+        ax = fig.gca()
+        for key in self.wavelength_response:
+            ax.plot(self.wavelength_response[key]['wavelength'], self.wavelength_response[key]['response']/np.max(self.wavelength_response[key]['response']), label='{0} {1:latex}'.format(key,u.angstrom), color=self.channel_colors[key])
 
-        for channel_wavelength in self.channel_list:
-            self.calculate_wavelength_response(channel_wavelength, use_genx_values=True)
-            out_dictionary[channel_wavelength] = self.wavelength_response[channel_wavelength]
-
-        self.wavelength_response_functions = out_dictionary
-
-
+        ax.set_xlabel(r'Wavelength ({0:latex})'.format(self.wavelength_response[key]['wavelength'].unit))
+        ax.set_ylabel(r'$R_i(\lambda)/R_{{i,max}}(\lambda)$ ({0:latex})'.format(self.wavelength_response[key]['response'].unit))
+        ax.set_xlim([np.min(self.wavelength_response.keys())-50,np.max(self.wavelength_response.keys())+50])
+        ax.legend(loc='best')
+        plt.show()
 
 
     def calculate_temperature_response(self, channel, trapz1=False, trapz2=False, **kwargs):
