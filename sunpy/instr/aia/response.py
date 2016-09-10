@@ -33,7 +33,7 @@ class Response():
     ----------
     """
 
-    channel_colors = {94:'#ff3a3a',131:'#6060ff',171:'#f1de1f',193:'#4cec4c',211:'#ed64c6',335:'#45deed',304:'k'}
+    channel_colors = {94:'#ff3a3a',131:'#6060ff',171:'#f1de1f',193:'#4cec4c',211:'#ed64c6',335:'#45deed',304:'k',1600:'b',1700:'g',4500:'r'}
 
     def __init__(self, channel_list=[94,131,171,193,335,211,304], path_to_genx_dir='', version=6):  # data_table,
         self._get_channel_info(channel_list,path_to_genx_dir,version)
@@ -54,38 +54,6 @@ class Response():
             self._channel_info[c] = {property : data_table[property][index] for property in data_table.columns.keys()}
 
 
-    def wavelength_range_index(self, channel):
-        """
-        Often times in ChiantiPy, the index of the wavelength is more useful than the the wavelength itself.
-        This function returns the index of a channels center wavelength from the wavelength array.
-
-        Parameter
-        ---------
-        :param channel: int
-            specify which channel of which to obtain data
-
-        Returns
-        -------
-        :return: the index value
-        """
-
-        num = self._channel_info[channel]['number_wavelength_intervals']
-        intervals = self._channel_info[channel]['wavelength_interval']
-        min_wave = self._channel_info[channel]['minimum_wavelength']
-        wave_range = np.arange(0, float(num)) * float(intervals) + float(min_wave)
-
-        wavelength_range = self._channel_info[channel]['wavelength_range']
-
-        # assert wavelength_range.all() == wave_range.all() # check these are the same
-
-        # obtain index for values as specific wavelength in wavelength range
-        for n, value in enumerate(wavelength_range):
-            if channel < value < channel + 1:
-                index = n
-                break
-
-        return index
-
     def _calculate_effective_area(self, channel):
         """
         AIA photometric calibration was obtained by making component-level measurements of all the optical elements in
@@ -100,10 +68,6 @@ class Response():
         ----------
         :param channel, int
             the wavelength center of the channel to probe
-
-        :param use_genx_effarea, book
-            Default is to use the imported genx effective area, otherwise, the effective area will be caluculated using
-            imported variables.
 
         Variables:
         ----------
@@ -141,10 +105,6 @@ class Response():
         :param: channel, int
             the wavelength center of the channel to probe
 
-        :param: use_genx_values, bool
-            Default is to use the values imported by genx files. Otherwise, the ccd system gain is calculated with the
-            equation from Boerner et al 2012.
-
         """
         # convert hc to convenient units
         hc = (constants.h * constants.c).to(u.eV * u.angstrom)
@@ -156,7 +116,7 @@ class Response():
         return electron_per_photon/self._channel_info[channel]['electron_per_dn']
 
 
-    def calculate_wavelength_response(self,use_genx_value=True):
+    def calculate_wavelength_response(self):
         """
         Describes the (AIA) instrument wavelength response by calculating effective area as a function of wavelength for
          the strongest emission lines present in the solar feature. This should display a peaked value around the
@@ -190,8 +150,8 @@ class Response():
 
         self.wavelength_response = {}
         for channel in self._channel_info:
-            system_gain = self._calculate_system_gain(channel, use_genx_value=True)
-            effective_area = self._calculate_effective_area(channel, use_genx_value=use_genx_value)
+            system_gain = self._calculate_system_gain(channel)
+            effective_area = self._calculate_effective_area(channel)
             self.wavelength_response[channel] = {'wavelength':self._channel_info[channel]['wavelength'], 'response':system_gain*effective_area}
 
 
@@ -207,11 +167,47 @@ class Response():
         for key in self.wavelength_response:
             ax.plot(self.wavelength_response[key]['wavelength'], self.wavelength_response[key]['response']/np.max(self.wavelength_response[key]['response']), label='{0} {1:latex}'.format(key,u.angstrom), color=self.channel_colors[key])
 
-        ax.set_xlabel(r'Wavelength ({0:latex})'.format(self.wavelength_response[key]['wavelength'].unit))
-        ax.set_ylabel(r'$R_i(\lambda)/R_{{i,max}}(\lambda)$ ({0:latex})'.format(self.wavelength_response[key]['response'].unit))
-        ax.set_xlim([np.min(self.wavelength_response.keys())-50,np.max(self.wavelength_response.keys())+50])
+        ax.set_xlabel(r'$\lambda$ ({0:latex})'.format(self.wavelength_response[key]['wavelength'].unit))
+        ax.set_ylabel(r'$R_i(\lambda)$ (norm.) ({0:latex})'.format(self.wavelength_response[key]['response'].unit))
+        lambda_min = np.min(self.wavelength_response.keys())
+        lambda_max = np.max(self.wavelength_response.keys())
+        lambda_diff= np.fabs(lambda_max-lambda_min)*0.25
+        ax.set_xlim([lambda_min-lambda_diff,lambda_max+lambda_diff])
         ax.legend(loc='best')
         plt.show()
+
+
+    def wavelength_range_index(self, channel):
+        """
+        Often times in ChiantiPy, the index of the wavelength is more useful than the the wavelength itself.
+        This function returns the index of a channels center wavelength from the wavelength array.
+
+        Parameter
+        ---------
+        :param channel: int
+            specify which channel of which to obtain data
+
+        Returns
+        -------
+        :return: the index value
+        """
+
+        num = self._channel_info[channel]['number_wavelength_intervals']
+        intervals = self._channel_info[channel]['wavelength_interval']
+        min_wave = self._channel_info[channel]['minimum_wavelength']
+        wave_range = np.arange(0, float(num)) * float(intervals) + float(min_wave)
+
+        wavelength_range = self._channel_info[channel]['wavelength_range']
+
+        # assert wavelength_range.all() == wave_range.all() # check these are the same
+
+        # obtain index for values as specific wavelength in wavelength range
+        for n, value in enumerate(wavelength_range):
+            if channel < value < channel + 1:
+                index = n
+                break
+
+        return index
 
 
     def calculate_temperature_response(self, channel, trapz1=False, trapz2=False, **kwargs):
