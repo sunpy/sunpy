@@ -6,6 +6,7 @@ import numpy as np
 
 import sunpy
 import sunpy.data.test as test
+from sunpy.instr.aia import aiaprep
 
 
 # Define the original and prepped images first so they're available to all functions
