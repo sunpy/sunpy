@@ -109,32 +109,41 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
     def _read_file(self, fname, **kwargs):
         """
-        Read in a file name and return the list of (data, meta, unit) tuples in
-        that file.
+        Test reading a file with sunpy.io for automatic source detection.
+
+        Parameters
+        ----------
+
+        fname : filename
+
+        kwargs
+
+        Returns
+        -------
+
+        parsed :  bool
+            True if file has been reading
+
+        pairs : list or string
+            List of (data, header) pairs if ``parsed`` is ``True`` or ``fname``
+            if ``False``
         """
+        if 'source' not in kwargs.keys() or not kwargs['source']:
+            try:
+                pairs = read_file(fname, **kwargs)
 
-        # ToDo: implement this for the TimeSeries using either Pandas or
-        # AstroPy parser.
-
-        # File gets read here.  This needs to be generic enough to seamlessly
-        # call a fits file or a jpeg2k file, etc
-        try:
-            pairs = read_file(fname, **kwargs)
-
-            new_pairs = []
-            for pair in pairs:
-                filedata, filemeta = pair
-                assert isinstance(filemeta, FileHeader)
-                # ToDo Validate data before adding it.
-                #if len(np.shape(filedata)) > 1:
-                if True:
-                    data = filedata
-                    meta = MetaDict(filemeta)
-                    new_pairs.append((data, meta))
-            return True, new_pairs
-        except UnrecognizedFileTypeError:
+                new_pairs = []
+                for pair in pairs:
+                    filedata, filemeta = pair
+                    if isinstance(filemeta, FileHeader):
+                        data = filedata
+                        meta = MetaDict(filemeta)
+                        new_pairs.append((data, meta))
+                return True, new_pairs
+            except UnrecognizedFileTypeError:
+                return False, fname
+        else:
             return False, fname
-
 
     def _validate_meta(self, meta):
         """
@@ -150,8 +159,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     def _validate_units(self, units, **kwargs):
         """
         Validates the astropy unit-information associated with a TimeSeries.
-        Should be a dictionary of some form (but not MetaDict) with only astropy
-        units for values.
+        Should be a dictionary of some form (but not MetaDict) with only
+        astropy units for values.
         """
 
         warnings.simplefilter('always', Warning)
@@ -319,30 +328,23 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 data_header_unit_tuples.append((data, meta, units))
                 i += 1  # an extra increment to account for the data
 
-
             # Filepath
-            elif (isinstance(arg,six.string_types) and
+            elif (isinstance(arg, six.string_types) and
                   os.path.isfile(os.path.expanduser(arg))):
+
                 path = os.path.expanduser(arg)
 
-                # Only read using generic _read_file() if no source defined.
-                if not source:
-                    temp = self._read_file(path, **kwargs)
-                else:
-                    temp = ( False, path )
+                read, result = self._read_file(path, **kwargs)
 
-                # If the file was successfully read in:
-                if temp[0]:
-                    pairs = temp[1]
-                    data_header_unit_tuples += pairs
+                if read:
+                    data_header_unit_tuples.append(result)
                 else:
-                    # Unsuccessfully read files are listed to be read by the
-                    # source instrument specific file_paser().
-                    filepaths.append(temp[1])
+                    filepaths.append(result)
 
             # Directory
-            elif (isinstance(arg,six.string_types) and
+            elif (isinstance(arg, six.string_types) and
                   os.path.isdir(os.path.expanduser(arg))):
+
                 path = os.path.expanduser(arg)
                 files = [os.path.join(path, elem) for elem in os.listdir(path)]
                 for afile in files:
@@ -355,10 +357,12 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                         filepaths.append(result)
 
             # Glob
-            elif (isinstance(arg,six.string_types) and '*' in arg):
-                files = glob.glob( os.path.expanduser(arg) )
+            elif (isinstance(arg, six.string_types) and '*' in arg):
+
+                files = glob.glob( os.path.expanduser(arg))
+
                 for afile in files:
-                    #data_header_unit_tuples += self._read_file(afile, **kwargs)
+                    # data_header_unit_tuples += self._read_file(afile, **kwargs)
                     # returns a boolean telling us if it were read and either a
                     # tuple or the original filepath for reading by a source
                     read, result = self._read_file(afile, **kwargs)
@@ -388,7 +392,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # In the end, if there are already TimeSeries it should be put in the
         # same order as the input, currently they are not.
         return data_header_unit_tuples, already_timeseries, filepaths
-
 
     def __call__(self, *args, **kwargs):
         """ Method for running the factory. Takes arbitrary arguments and
@@ -437,7 +440,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             meta = MetaDict(header)
 
             try:
-                new_ts = self._check_registered_widgets(data=data, meta=meta, units=units, **kwargs)
+                new_ts = self._check_registered_widgets(data=data, meta=meta,
+                                                        units=units, **kwargs)
             except (NoMatchError, MultipleMatchError, ValidationFunctionError):
                 if not silence_errors:
                     raise
@@ -456,7 +460,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             for timeseries in new_timeseries:
                 full_timeseries = full_timeseries.concatenate(timeseries)
 
-            new_timeseries = [ full_timeseries ]
+            new_timeseries = [full_timeseries]
 
         # Sanitize any units OrderedDict details
         for timeseries in new_timeseries:
@@ -468,8 +472,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         return new_timeseries
 
     def _check_registered_widgets(self, **kwargs):
-        """Checks the (instrument) source/s that are compatible with this given file/data.
-        Only if exactly one source is compatible will a TimeSeries be returned."""
+        """
+        Checks the (instrument) source/s that are compatible with this given
+        file/data. Only if exactly one source is compatible will a TimeSeries
+        be returned.
+        """
         candidate_widget_types = list()
 
         for key in self.registry:
