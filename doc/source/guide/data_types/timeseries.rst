@@ -110,7 +110,8 @@ A Pandas `~pandas.core.frame.DataFrame` is the underlying object used to store t
 An advantage of this method is it allows you to include metadata and AstroPy `~astropy.units.quantity.Quantity` values, which are both supported in tables, without additional arguments.
 For example: ::
 
-    >>> import datetime
+    >>> import numpy as np
+	>>> import datetime
     >>> from astropy.time import Time
     >>> import astropy.units as u
     >>> from astropy.table import Table
@@ -278,7 +279,7 @@ It's common to want to combine a number of TimeSeries together into a single Tim
 In the simplest scenario this is to combine data from a single source over several time ranges, for example if you wanted to combine the daily GOES data to get a week or more of constant data in one TimeSeries.
 This can be performed using the TimeSeries factory with the concatenate=True keyword argument: ::
 
-    >>> concatenated_timeseries = sunpy.timeseries.TimeSeries(filepath1, filepath2, source=GOES, concatenate=True)
+    >>> concatenated_timeseries = sunpy.timeseries.TimeSeries(filepath1, filepath2, source='GOES', concatenate=True)
 
 Note, you can list any number of files, or a folder or use a glob to select the input files to be concatenated.
 It's possible to concatenate two TimeSeries after creating them with the factory using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.concatenate` method.
