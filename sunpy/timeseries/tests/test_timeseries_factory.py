@@ -86,7 +86,7 @@ class TestTimeSeries(object):
 
     def test_fermi_gbm(self):
         #Test a GBMSummary TimeSeries
-        ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
+        ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath)
         assert isinstance(ts_gbm, sunpy.timeseries.sources.fermi_gbm.GBMSummaryLightCurve)
 
     def test_norrh(self):
