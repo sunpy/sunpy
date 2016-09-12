@@ -10,7 +10,7 @@ from collections import OrderedDict
 import datetime
 import matplotlib.dates
 from matplotlib import pyplot as plt
-from astropy.io import fits as pyfits
+from astropy.io import fits
 from numpy import nan
 from numpy import floor
 from pandas import DataFrame
@@ -149,45 +149,45 @@ class GOESLightCurve(GenericTimeSeries):
     def _parse_file(cls, filepath):
         """Parses a GOES FITS file from
         http://umbra.nascom.nasa.gov/goes/fits/"""
-        fits = pyfits.open(filepath)
-        header = MetaDict(OrderedDict(fits[0].header))
-        if len(fits) == 4:
-            if is_time_in_given_format(fits[0].header['DATE-OBS'], '%d/%m/%Y'):
-                start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%Y')
-            elif is_time_in_given_format(fits[0].header['DATE-OBS'], '%d/%m/%y'):
-                start_time = datetime.datetime.strptime(fits[0].header['DATE-OBS'], '%d/%m/%y')
+        with fits.open(filepath) as hdulist:
+            header = MetaDict(OrderedDict(hdulist[0].header))
+            if len(hdulist) == 4:
+                if is_time_in_given_format(hdulist[0].header['DATE-OBS'], '%d/%m/%Y'):
+                    start_time = datetime.datetime.strptime(hdulist[0].header['DATE-OBS'], '%d/%m/%Y')
+                elif is_time_in_given_format(hdulist[0].header['DATE-OBS'], '%d/%m/%y'):
+                    start_time = datetime.datetime.strptime(hdulist[0].header['DATE-OBS'], '%d/%m/%y')
+                else:
+                    raise ValueError("Date not recognized")
+                xrsb = hdulist[2].data['FLUX'][0][:, 0]
+                xrsa = hdulist[2].data['FLUX'][0][:, 1]
+                seconds_from_start = hdulist[2].data['TIME'][0]
+            elif 1 <= len(hdulist) <= 3:
+                start_time = parse_time(header['TIMEZERO'])
+                seconds_from_start = hdulist[0].data[0]
+                xrsb = hdulist[0].data[1]
+                xrsa = hdulist[0].data[2]
             else:
-                raise ValueError("Date not recognized")
-            xrsb = fits[2].data['FLUX'][0][:, 0]
-            xrsa = fits[2].data['FLUX'][0][:, 1]
-            seconds_from_start = fits[2].data['TIME'][0]
-        elif 1 <= len(fits) <= 3:
-            start_time = parse_time(header['TIMEZERO'])
-            seconds_from_start = fits[0].data[0]
-            xrsb = fits[0].data[1]
-            xrsa = fits[0].data[2]
-        else:
-            raise ValueError("Don't know how to parse this file")
+                raise ValueError("Don't know how to parse this file")
 
-        times = [start_time + datetime.timedelta(seconds=int(floor(s)),
-                                                 microseconds=int((s - floor(s)) * 1e6)) for s in seconds_from_start]
+            times = [start_time + datetime.timedelta(seconds=int(floor(s)),
+                                                     microseconds=int((s - floor(s)) * 1e6)) for s in seconds_from_start]
 
-        # remove bad values as defined in header comments
-        xrsb[xrsb == -99999] = nan
-        xrsa[xrsa == -99999] = nan
+            # remove bad values as defined in header comments
+            xrsb[xrsb == -99999] = nan
+            xrsa[xrsa == -99999] = nan
 
-        # fix byte ordering
-        newxrsa = xrsa.byteswap().newbyteorder()
-        newxrsb = xrsb.byteswap().newbyteorder()
+            # fix byte ordering
+            newxrsa = xrsa.byteswap().newbyteorder()
+            newxrsb = xrsb.byteswap().newbyteorder()
 
-        data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb}, index=times)
-        data.sort_index(inplace=True)
+            data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb}, index=times)
+            data.sort_index(inplace=True)
 
-        # Add the units data
-        units = OrderedDict([('xrsa', u.ct),
-                             ('xrsb', u.ct)])
-        # ToDo: check: http://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf
-        return data, header, units
+            # Add the units data
+            units = OrderedDict([('xrsa', u.ct),
+                                 ('xrsb', u.ct)])
+            # ToDo: check: http://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf
+            return data, header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):

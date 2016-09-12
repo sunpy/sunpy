@@ -95,39 +95,38 @@ class GBMSummaryLightCurve(GenericTimeSeries):
     @classmethod
     def _parse_file(cls, filepath):
         """Parses GBM CSPEC FITS data files to create TimeSeries."""
-        hdulist=fits.open(filepath)
-        header=MetaDict(OrderedDict(hdulist[0].header))
-        #these GBM files have three FITS extensions.
-        #extn1 - this gives the energy range for each of the 128 energy bins
-        #extn2 - this contains the data, e.g. counts, exposure time, time of observation
-        #extn3 - eclipse times?
-        energy_bins=hdulist[1].data
-        count_data=hdulist[2].data
-        misc=hdulist[3].data
+        with fits.open(filepath) as hdulist:
+            header=MetaDict(OrderedDict(hdulist[0].header))
+            #these GBM files have three FITS extensions.
+            #extn1 - this gives the energy range for each of the 128 energy bins
+            #extn2 - this contains the data, e.g. counts, exposure time, time of observation
+            #extn3 - eclipse times?
+            energy_bins=hdulist[1].data
+            count_data=hdulist[2].data
+            misc=hdulist[3].data
 
+            #rebin the 128 energy channels into some summary ranges
+            #4-15 keV, 15 - 25 keV, 25-50 keV, 50-100 keV, 100-300 keV, 300-800 keV, 800 - 2000 keV
+            #put the data in the units of counts/s/keV
+            summary_counts=_bin_data_for_summary(energy_bins,count_data)
 
-        #rebin the 128 energy channels into some summary ranges
-        #4-15 keV, 15 - 25 keV, 25-50 keV, 50-100 keV, 100-300 keV, 300-800 keV, 800 - 2000 keV
-        #put the data in the units of counts/s/keV
-        summary_counts=_bin_data_for_summary(energy_bins,count_data)
+            gbm_times=[]
+            #get the time information in datetime format with the correct MET adjustment
+            for t in count_data['time']:
+                gbm_times.append(fermi.met_to_utc(t))
+            column_labels=['4-15 keV','15-25 keV','25-50 keV','50-100 keV','100-300 keV',
+                           '300-800 keV','800-2000 keV']
 
-        gbm_times=[]
-        #get the time information in datetime format with the correct MET adjustment
-        for t in count_data['time']:
-            gbm_times.append(fermi.met_to_utc(t))
-        column_labels=['4-15 keV','15-25 keV','25-50 keV','50-100 keV','100-300 keV',
-                       '300-800 keV','800-2000 keV']
-                       
-        # Add the units data
-        units = OrderedDict([('4-15 keV', u.ct),
-                             ('15-25 keV', u.ct),
-                             ('25-50 keV', u.ct),
-                             ('50-100 keV', u.ct),
-                             ('100-300 keV', u.ct),
-                             ('300-800 keV', u.ct),
-                             ('800-2000 keV', u.ct)])
-        # Todo: check units used.
-        return pandas.DataFrame(summary_counts, columns=column_labels, index=gbm_times), header, units
+            # Add the units data
+            units = OrderedDict([('4-15 keV', u.ct),
+                                 ('15-25 keV', u.ct),
+                                 ('25-50 keV', u.ct),
+                                 ('50-100 keV', u.ct),
+                                 ('100-300 keV', u.ct),
+                                 ('300-800 keV', u.ct),
+                                 ('800-2000 keV', u.ct)])
+            # Todo: check units used.
+            return pandas.DataFrame(summary_counts, columns=column_labels, index=gbm_times), header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
