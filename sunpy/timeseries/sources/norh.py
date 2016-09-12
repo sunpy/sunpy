@@ -85,27 +85,27 @@ class NoRHLightCurve(GenericTimeSeries):
     @classmethod
     def _parse_file(cls, filepath):
         """This method parses NoRH tca and tcz correlation FITS files."""
-        hdulist = fits.open(filepath)
-        header = MetaDict(OrderedDict(hdulist[0].header))
-        # For these NoRH files, the time series data is recorded in the primary
-        # HDU
-        data = hdulist[0].data
+        with fits.open(filepath) as hdulist:
+            header = MetaDict(OrderedDict(hdulist[0].header))
+            # For these NoRH files, the time series data is recorded in the primary
+            # HDU
+            data = hdulist[0].data
 
-        # No explicit time array in FITS file, so construct the time array from
-        # the FITS header
-        obs_start_time=parse_time(header['DATE-OBS'] + 'T' + header['CRVAL1'])
-        length = len(data)
-        cadence = np.float(header['CDELT1'])
-        sec_array = np.linspace(0, length-1, (length/cadence))
+            # No explicit time array in FITS file, so construct the time array from
+            # the FITS header
+            obs_start_time=parse_time(header['DATE-OBS'] + 'T' + header['CRVAL1'])
+            length = len(data)
+            cadence = np.float(header['CDELT1'])
+            sec_array = np.linspace(0, length-1, (length/cadence))
 
-        norh_time = []
-        for s in sec_array:
-            norh_time.append(obs_start_time + datetime.timedelta(0,s))
+            norh_time = []
+            for s in sec_array:
+                norh_time.append(obs_start_time + datetime.timedelta(0,s))
 
-        # Add the units data
-        units = OrderedDict([('Correlation Coefficient', u.dimensionless_unscaled)])
-        # Todo: check units used.
-        return pandas.DataFrame(data, index=norh_time, columns=('Correlation Coefficient',)), header, units
+            # Add the units data
+            units = OrderedDict([('Correlation Coefficient', u.dimensionless_unscaled)])
+            # Todo: check units used.
+            return pandas.DataFrame(data, index=norh_time, columns=('Correlation Coefficient',)), header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
