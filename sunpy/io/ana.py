@@ -18,6 +18,7 @@ Copyright (c) 2009--2011 Tim van Werkhoven.
 from __future__ import absolute_import, division, print_function
 
 import os
+import collections
 
 try:
     from sunpy.io import _pyana
@@ -27,6 +28,8 @@ except ImportError:  # pragma: no cover
 from sunpy.io.header import FileHeader
 
 __all__ = ['read', 'get_header', 'write']
+
+HDPair = collections.namedtuple('HDPair', ['data', 'header'])
 
 
 def read(filename, debug=False, **kwargs):
@@ -58,7 +61,8 @@ def read(filename, debug=False, **kwargs):
         raise ImportError("C extension for ANA is missing, please rebuild") # pragma: no cover
 
     data = _pyana.fzread(filename, debug)
-    return [(data['data'],FileHeader(data['header']))]
+    return [HDPair(data['data'], FileHeader(data['header']))]
+
 
 def get_header(filename, debug=False):
     """

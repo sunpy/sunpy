@@ -1,8 +1,7 @@
 """JPEG 2000 File Reader"""
 from __future__ import absolute_import, division, print_function
 
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
+import collections
 
 from xml.etree import cElementTree as ET
 
@@ -12,6 +11,12 @@ from sunpy.util.xml import xml_to_dict
 from sunpy.io.header import FileHeader
 
 __all__ = ['read', 'get_header', 'write']
+
+__author__ = "Keith Hughitt"
+__email__ = "keith.hughitt@nasa.gov"
+
+HDPair = collections.namedtuple('HDPair', ['data', 'header'])
+
 
 def read(filepath, **kwargs):
     """
@@ -31,7 +36,8 @@ def read(filepath, **kwargs):
 
     data = Jp2k(filepath).read()[::-1]
 
-    return [(data, header[0])]
+    return [HDPair(data, header[0])]
+
 
 def get_header(filepath):
     """
@@ -65,11 +71,13 @@ def get_header(filepath):
 
     return [FileHeader(pydict)]
 
+
 def write(fname, data, header):
     """
     Place holder for required file writer
     """
     raise NotImplementedError("No jp2 writer is implemented")
+
 
 def _is_float(s):
     """Check to see if a string value is a valid float"""
