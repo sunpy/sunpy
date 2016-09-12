@@ -1,8 +1,5 @@
 from __future__ import absolute_import, division, print_function
 
-__authors__ = ["Alex Hamilton, Russell Hewett, Stuart Mumford"]
-__email__ = "stuart@mumford.me.uk"
-
 import warnings
 import os
 import glob
@@ -35,7 +32,11 @@ from sunpy.extern import six
 
 from sunpy.extern.six.moves.urllib.request import urlopen
 
+__authors__ = ["Alex Hamilton, Russell Hewett, Stuart Mumford"]
+__email__ = "stuart@mumford.me.uk"
+
 __all__ = ['TimeSeries', 'TimeSeriesFactory']
+
 
 class TimeSeriesFactory(BasicRegistrationFactory):
     """
@@ -107,13 +108,16 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     """
 
     def _read_file(self, fname, **kwargs):
-        """ Read in a file name and return the list of (data, meta, unit) tuples in
-            that file. """
+        """
+        Read in a file name and return the list of (data, meta, unit) tuples in
+        that file.
+        """
 
-        # ToDo: implement this for the TimeSeries using either Pandas or AstroPy parser.
+        # ToDo: implement this for the TimeSeries using either Pandas or
+        # AstroPy parser.
 
         # File gets read here.  This needs to be generic enough to seamlessly
-        #call a fits file or a jpeg2k file, etc
+        # call a fits file or a jpeg2k file, etc
         try:
             pairs = read_file(fname, **kwargs)
 
@@ -252,7 +256,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             arg = args[i]
 
             # Data-header pair in a tuple
-            if ((type(arg) in [tuple, list]) and
+            if (isinstance(arg, [tuple, list]) and
                 (len(arg) == 2 or len(arg) == 3) and
                 isinstance(arg[0], (np.ndarray, Table, pd.DataFrame)) and
                 self._validate_meta(arg[1])):
@@ -297,23 +301,23 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 elif isinstance(data, np.ndarray):
                     # We have a numpy ndarray:
                     data = pd.DataFrame(data=arg)
-                    # ToDo: should this include an index? Maybe default is first column?
+                    # TODO: should this include an index? Maybe default is first column?
 
                 # If there are 1 or 2 more arguments:
-                for j in range(0,2):
-                  if (len(args) > i+1):
-                      # If that next argument isn't data but is metaddata or units:
-                      if not isinstance(args[i+1], (np.ndarray, Table, pd.DataFrame)):
-                          if self._validate_units(args[i+1]):
-                              units.update(args[i+1])
-                              i += 1 # an extra increment to account for the units
-                          elif self._validate_meta(args[i+1]):
-                              meta.update(args[i+1])
-                              i += 1 # an extra increment to account for the units
+                for _ in range(2):
+                    if (len(args) > i+1):
+                        # If that next argument isn't data but is metaddata or units:
+                        if not isinstance(args[i+1], (np.ndarray, Table, pd.DataFrame)):
+                            if self._validate_units(args[i+1]):
+                                units.update(args[i+1])
+                                i += 1  # an extra increment to account for the units
+                            elif self._validate_meta(args[i+1]):
+                                meta.update(args[i+1])
+                                i += 1  # an extra increment to account for the meta
 
                 # Add a 3-tuple for this TimeSeries.
                 data_header_unit_tuples.append((data, meta, units))
-                i += 1 # an extra increment to account for the header
+                i += 1  # an extra increment to account for the data
 
 
             # Filepath
@@ -363,7 +367,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     else:
                         filepaths.append(result)
 
-            #### Potentially unnecessary, as there won't be a time series cube.
             # Already a TimeSeries
             elif isinstance(arg, GenericTimeSeries):
                 already_timeseries.append(arg)
@@ -381,7 +384,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 raise ValueError("File not found or invalid input")
 
             i += 1
-        #TODO:
+        # TODO:
         # In the end, if there are already TimeSeries it should be put in the
         # same order as the input, currently they are not.
         return data_header_unit_tuples, already_timeseries, filepaths
