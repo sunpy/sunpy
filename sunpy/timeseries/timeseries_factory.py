@@ -19,6 +19,7 @@ from sunpy.util.metadata import MetaDict
 from sunpy.time import parse_time
 
 from sunpy.io.file_tools import read_file, UnrecognizedFileTypeError
+from sunpy.io.fits import HDPair
 from sunpy.io.header import FileHeader
 
 from sunpy.util.net import download_file
@@ -138,7 +139,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     if isinstance(filemeta, FileHeader):
                         data = filedata
                         meta = MetaDict(filemeta)
-                        new_pairs.append((data, meta))
+                        new_pairs.append(HDPair(data, meta))
                 return True, new_pairs
             except UnrecognizedFileTypeError:
                 return False, fname
@@ -437,17 +438,20 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
         for pairs in data_header_pairs:
             # Pairs may be x long where x is the number of HDUs in the file.
-            headers = [pair[1] for pair in pairs]
+            headers = [pair.header for pair in pairs]
 
             types = []
             for header in headers:
                 try:
-                    types.append(self._get_matching_widget(**kwargs))
+                    match = self._get_matching_widget(meta=header, **kwargs)
+                    if not match == GenericTimeSeries:
+                        types.append(match)
                 except (MultipleMatchError, NoMatchError):
                     continue
 
-            types = set(types)
-            if len(types) > 1:
+            if not types:
+                raise NoMatchError("Can't find a match")
+            if len(set(types)) > 1:
                 raise MultipleMatchError("Could not read HDUs")
 
             cls = types[0]
