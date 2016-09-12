@@ -55,10 +55,21 @@ class TRACEMap(GenericMap):
         self.meta['obsrvtry'] = "TRACE"
         self._nickname = self.detector
         # Colour maps
-        self.plot_settings['cmap'] = cm.get_cmap('trace' + self.measurement)
+        self.plot_settings['cmap'] = cm.get_cmap('trace' + str(self.meta['WAVE_LEN']))
         self.plot_settings['norm'] = colors.LogNorm()
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an TRACE image"""
         return header.get('instrume') == 'TRACE'
+
+    @property
+    def measurement(self):
+        """
+        Returns the measurement type.
+        """
+        s = self.meta['WAVE_LEN']
+        if s == 'WL':
+            s = 'white-light'
+            
+        return s

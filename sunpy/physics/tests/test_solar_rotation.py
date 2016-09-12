@@ -56,13 +56,13 @@ def known_displacements_layer_index1():
 def test_calculate_solar_rotate_shift(aia171_test_mapcube, known_displacements_layer_index0, known_displacements_layer_index1):
     # Test that the default works
     test_output = calculate_solar_rotate_shift(aia171_test_mapcube)
-    assert_allclose(test_output['x'].to('arcsec').value, known_displacements_layer_index0['x'], rtol=5e-2, atol=0)
-    assert_allclose(test_output['y'].to('arcsec').value, known_displacements_layer_index0['y'], rtol=5e-2, atol=0)
+    assert_allclose(test_output['x'].to('arcsec').value, known_displacements_layer_index0['x'], rtol=5e-2, atol=1e-5)
+    assert_allclose(test_output['y'].to('arcsec').value, known_displacements_layer_index0['y'], rtol=5e-2, atol=1e-5)
 
     # Test that the rotation relative to a nonzero layer_index works
     test_output = calculate_solar_rotate_shift(aia171_test_mapcube, layer_index=1)
-    assert_allclose(test_output['x'].to('arcsec').value, known_displacements_layer_index1['x'], rtol=5e-2, atol=0)
-    assert_allclose(test_output['y'].to('arcsec').value, known_displacements_layer_index1['y'], rtol=5e-2, atol=0)
+    assert_allclose(test_output['x'].to('arcsec').value, known_displacements_layer_index1['x'], rtol=5e-2, atol=1e-5)
+    assert_allclose(test_output['y'].to('arcsec').value, known_displacements_layer_index1['y'], rtol=5e-2, atol=1e-5)
 
 
 def test_mapcube_solar_derotate(aia171_test_mapcube, aia171_test_submap):
@@ -90,6 +90,6 @@ def test_mapcube_solar_derotate(aia171_test_mapcube, aia171_test_submap):
     assert(isinstance(tmc, map.MapCube))
 
     # Test that the shape of data is correct when clipped
-    clipped_shape = (25, 19)
+    clipped_shape = (24, 20)
     for m in tmc:
         assert(m.data.shape == clipped_shape)

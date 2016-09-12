@@ -3,7 +3,7 @@
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import itertools
 import operator
@@ -18,6 +18,7 @@ from astropy import units
 
 import sunpy
 from sunpy.database import commands, tables, serialize
+from sunpy.database.tables import _create_display_table
 from sunpy.database.caching import LRUCache
 from sunpy.database.commands import CompositeOperation
 from sunpy.database.attrs import walker
@@ -373,12 +374,21 @@ class Database(object):
         """
         self.session.commit()
 
-    def _download_and_collect_entries(self, query_result, client=None,
-            path=None, progress=False):
+    def _download_and_collect_entries(self, query_result, **kwargs):
+
+        client = kwargs.pop('client', None)
+        path = kwargs.pop('path', None)
+        progress = kwargs.pop('progress', False)
+        methods = kwargs.pop('methods', ('URL-FILE_Rice', 'URL-FILE'))
+
+        if kwargs:
+            k, v = kwargs.popitem()
+            raise TypeError('unexpected keyword argument {0!r}'.format(k))
+
         if client is None:
             client = VSOClient()
 
-        paths = client.get(query_result, path).wait(progress=progress)
+        paths = client.get(query_result, path, methods).wait(progress=progress)
 
         for (path, block) in zip(paths, query_result):
             qr_entry = tables.DatabaseEntry._from_query_result_block(block)
@@ -420,20 +430,18 @@ class Database(object):
         """
         if not query:
             raise TypeError('at least one attribute required')
-        client = kwargs.pop('client', None)
-        path = kwargs.pop('path', None)
-        progress = kwargs.pop('progress', False)
-        if kwargs:
-            k, v = kwargs.popitem()
-            raise TypeError('unexpected keyword argument {0!r}'.format(k))
+        
+        client = kwargs.get('client', None)
         if client is None:
             client = VSOClient()
         qr = client.query(*query)
+
         # don't do anything if querying the VSO results in no data
         if not qr:
             return
+
         entries = list(self._download_and_collect_entries(
-            qr, client, path, progress))
+            qr, **kwargs))
         dump = serialize.dump_query(and_(*query))
         (dump_exists,), = self.session.query(
             exists().where(tables.JSONDump.dump == tables.JSONDump(dump).dump))
@@ -476,16 +484,13 @@ class Database(object):
         """
         if not query:
             raise TypeError('at least one attribute required')
-        path = kwargs.pop('path', None)
-        if kwargs:
-            k, v = kwargs.popitem()
-            raise TypeError('unexpected keyword argument {0!r}'.format(k))
+        
         dump = serialize.dump_query(and_(*query))
         (dump_exists,), = self.session.query(
             exists().where(tables.JSONDump.dump == tables.JSONDump(dump).dump))
         if dump_exists:
             return self.query(*query)
-        return self.download(*query, path=path)
+        return self.download(*query, **kwargs)
 
     def query(self, *query, **kwargs):
         """
@@ -758,7 +763,7 @@ class Database(object):
         if not query_result:
             return
         self.add_many(self._download_and_collect_entries(
-            query_result, client, path, progress))
+            query_result, client=client, path=path, progress=progress))
 
     def add_from_vso_query_result(self, query_result,
             ignore_already_added=False):
@@ -954,6 +959,12 @@ class Database(object):
         """
         self._command_manager.redo(n)  # pragma: no cover
 
+    def display_entries(self, columns=None, sort=False):
+        print(_create_display_table(self, columns, sort))
+
+    def show_in_browser(self, columns=None, sort=False, jsviewer=True):
+        _create_display_table(self, columns, sort).show_in_browser(jsviewer)
+
     def __getitem__(self, key):
         if isinstance(key, slice):
             entries = []
@@ -996,3 +1007,12 @@ class Database(object):
     def __len__(self):
         """Get the number of rows in the table."""
         return self.session.query(tables.DatabaseEntry).count()
+
+    def __repr__(self):
+        return _create_display_table(self).__repr__()
+
+    def __str__(self):
+        return _create_display_table(self).__str__()
+
+    def _repr_html_(self):
+        return _create_display_table(self)._repr_html_()
