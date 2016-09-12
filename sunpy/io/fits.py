@@ -46,6 +46,9 @@ __all__ = ['read', 'get_header', 'write', 'extract_waveunit']
 __author__ = "Keith Hughitt, Stuart Mumford, Simon Liedtke"
 __email__ = "keith.hughitt@nasa.gov"
 
+HDPair = collections.namedtuple('HDPair', ['data', 'header'])
+
+
 def read(filepath, hdus=None, memmap=None, **kwargs):
     """
     Read a fits file
@@ -80,12 +83,13 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
 
         headers = get_header(hdulist)
         pairs = []
-        for hdu,header in zip(hdulist, headers):
-            pairs.append((hdu.data, header))
+        for hdu, header in zip(hdulist, headers):
+            pairs.append(HDPair(hdu.data, header))
     finally:
         hdulist.close()
 
     return pairs
+
 
 def get_header(afile):
     """
@@ -103,13 +107,13 @@ def get_header(afile):
     headers : `list`
         A list of FileHeader headers.
     """
-    if isinstance(afile,fits.HDUList):
+    if isinstance(afile, fits.HDUList):
         hdulist = afile
         close = False
     else:
         hdulist = fits.open(afile)
         hdulist.verify('silentfix')
-        close=True
+        close = True
 
     try:
         headers= []
@@ -140,6 +144,7 @@ def get_header(afile):
         if close:
             hdulist.close()
     return headers
+
 
 def write(fname, data, header, **kwargs):
     """

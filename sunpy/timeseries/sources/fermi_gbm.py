@@ -3,14 +3,13 @@
 
 from __future__ import absolute_import, print_function
 
-
 from collections import OrderedDict
 
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas
 
-from sunpy.io.fits import fits
+import sunpy.io
 from sunpy.instr import fermi
 from sunpy.timeseries import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
@@ -74,7 +73,7 @@ class GBMSummaryLightCurve(GenericTimeSeries):
         **kwargs : `dict`
             Any additional plot arguments that should be used when plotting.
         """
-        figure=plt.figure()
+        figure = plt.figure()
         axes = plt.gca()
         data_lab = self.data.columns.values
 
@@ -82,76 +81,85 @@ class GBMSummaryLightCurve(GenericTimeSeries):
             axes.plot(self.data.index, self.data[d], label=d)
 
         axes.set_yscale("log")
-        axes.set_title('Fermi GBM Summary data ' + str(self.meta.get('DETNAM').values()))
-        axes.set_xlabel('Start time: ' +
-                        self.data.index[0].strftime('%Y-%m-%d %H:%M:%S UT'))
+        axes.set_title('Fermi GBM Summary data ' + str(self.meta.get(
+            'DETNAM').values()))
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(
+            '%Y-%m-%d %H:%M:%S UT'))
         axes.set_ylabel('Counts/s/keV')
         axes.legend()
         figure.autofmt_xdate()
 
         plt.show()
 
-
     @classmethod
     def _parse_file(cls, filepath):
         """Parses GBM CSPEC FITS data files to create TimeSeries."""
-        with fits.open(filepath) as hdulist:
-            header=MetaDict(OrderedDict(hdulist[0].header))
-            #these GBM files have three FITS extensions.
-            #extn1 - this gives the energy range for each of the 128 energy bins
-            #extn2 - this contains the data, e.g. counts, exposure time, time of observation
-            #extn3 - eclipse times?
-            energy_bins=hdulist[1].data
-            count_data=hdulist[2].data
-            misc=hdulist[3].data
+        hdus = sunpy.io.read_file(filepath)
+        return cls._parse_hdus(hdus)
 
-            #rebin the 128 energy channels into some summary ranges
-            #4-15 keV, 15 - 25 keV, 25-50 keV, 50-100 keV, 100-300 keV, 300-800 keV, 800 - 2000 keV
-            #put the data in the units of counts/s/keV
-            summary_counts=_bin_data_for_summary(energy_bins,count_data)
+    @classmethod
+    def _parse_hdus(cls, hdulist):
+        header = MetaDict(OrderedDict(hdulist[0].header))
+        print(header)
+        # these GBM files have three FITS extensions.
+        # extn1 - this gives the energy range for each of the 128 energy bins
+        # extn2 - this contains the data, e.g. counts, exposure time, time of observation
+        # extn3 - eclipse times?
+        energy_bins = hdulist[1].data
+        count_data = hdulist[2].data
+        misc = hdulist[3].data
 
-            gbm_times=[]
-            #get the time information in datetime format with the correct MET adjustment
-            for t in count_data['time']:
-                gbm_times.append(fermi.met_to_utc(t))
-            column_labels=['4-15 keV','15-25 keV','25-50 keV','50-100 keV','100-300 keV',
-                           '300-800 keV','800-2000 keV']
+        # rebin the 128 energy channels into some summary ranges
+        # 4-15 keV, 15 - 25 keV, 25-50 keV, 50-100 keV, 100-300 keV, 300-800 keV, 800 - 2000 keV
+        # put the data in the units of counts/s/keV
+        summary_counts = _bin_data_for_summary(energy_bins, count_data)
 
-            # Add the units data
-            units = OrderedDict([('4-15 keV', u.ct),
-                                 ('15-25 keV', u.ct),
-                                 ('25-50 keV', u.ct),
-                                 ('50-100 keV', u.ct),
-                                 ('100-300 keV', u.ct),
-                                 ('300-800 keV', u.ct),
-                                 ('800-2000 keV', u.ct)])
-            # Todo: check units used.
-            return pandas.DataFrame(summary_counts, columns=column_labels, index=gbm_times), header, units
+        gbm_times = []
+        # get the time information in datetime format with the correct MET adjustment
+        for t in count_data['time']:
+            gbm_times.append(fermi.met_to_utc(t))
+        column_labels = ['4-15 keV', '15-25 keV', '25-50 keV', '50-100 keV',
+                         '100-300 keV', '300-800 keV', '800-2000 keV']
+
+        # Add the units data
+        units = OrderedDict([('4-15 keV', u.ct), ('15-25 keV', u.ct),
+                             ('25-50 keV', u.ct), ('50-100 keV', u.ct),
+                             ('100-300 keV', u.ct), ('300-800 keV', u.ct),
+                             ('800-2000 keV', u.ct)])
+        # Todo: check units used.
+        return pandas.DataFrame(summary_counts,
+                                columns=column_labels,
+                                index=gbm_times), header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to a GBM summary lightcurve timeseries"""
-        #return header.get('instrume', '').startswith('')
-        return kwargs.get('source', '').startswith('GBMSummary')
+        if 'source' in kwargs.keys():
+            return kwargs.get('source', '').startswith('GBMSummary')
+        if 'meta' in kwargs.keys():
+            return kwargs['meta'].get('INSTRUME', '').startswith('GBM')
 
-def _bin_data_for_summary(energy_bins,count_data):
+
+def _bin_data_for_summary(energy_bins, count_data):
     """Missing doc string"""
     #find the indices corresponding to some standard summary energy bins
-    ebands=[4,15,25,50,100,300,800,2000]
-    indices=[]
+    ebands = [4, 15, 25, 50, 100, 300, 800, 2000]
+    indices = []
     for e in ebands:
-        indices.append(np.searchsorted(energy_bins['e_max'],e))
+        indices.append(np.searchsorted(energy_bins['e_max'], e))
 
     #rebin the 128 energy channels into some summary ranges
     #4-15 keV, 15 - 25 keV, 25-50 keV, 50-100 keV, 100-300 keV, 300-800 keV, 800 - 2000 keV
     #put the data in the units of counts/s/keV
-    summary_counts=[]
-    for i in range(0,len(count_data['counts'])):
-        counts_in_bands=[]
-        for j in range(1,len(ebands)):
-            counts_in_bands.append(np.sum(count_data['counts'][i][indices[j-1]:indices[j]]) /
-                                (count_data['exposure'][i] * (energy_bins['e_max'][indices[j]] -
-                                                              energy_bins['e_min'][indices[j-1]])))
+    summary_counts = []
+    for i in range(0, len(count_data['counts'])):
+        counts_in_bands = []
+        for j in range(1, len(ebands)):
+            counts_in_bands.append(
+                np.sum(count_data['counts'][i][indices[j - 1]:indices[j]]) /
+                (count_data['exposure'][i] *
+                 (energy_bins['e_max'][indices[j]] -
+                  energy_bins['e_min'][indices[j - 1]])))
 
         summary_counts.append(counts_in_bands)
 
@@ -160,11 +168,12 @@ def _bin_data_for_summary(energy_bins,count_data):
 
 def _parse_detector(detector):
     """Missing Doc String"""
-    oklist=['n0','n1','n2','n3','n4','n5','n6','n7','n8','n9','n10','n11']
+    oklist = ['n0', 'n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'n8', 'n9',
+              'n10', 'n11']
     altlist = [str(i) for i in range(12)]
     if detector in oklist:
         return detector
     elif detector in altlist:
-        return 'n'+detector
+        return 'n' + detector
     else:
         raise ValueError('Detector string could not be interpreted')

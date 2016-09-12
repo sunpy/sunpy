@@ -59,33 +59,33 @@ def test_solar_cycle_number():
 
 
 def test_solar_semidiameter_angular_size():
-    assert_quantity_allclose(sun.solar_semidiameter_angular_size("2012/11/11"), 968.383 * u.arcsec, atol=1e-3 * u.arcsec)
-    assert_quantity_allclose(sun.solar_semidiameter_angular_size("2043/03/01"), 968.274 * u.arcsec, atol=1e-3 * u.arcsec)
-    assert_quantity_allclose(sun.solar_semidiameter_angular_size("2001/07/21"), 943.706 * u.arcsec, atol=1e-3 * u.arcsec)
+    assert_quantity_allclose(sun.solar_semidiameter_angular_size("2012/11/11"), 968.612 * u.arcsec, atol=1e-3 * u.arcsec)
+    assert_quantity_allclose(sun.solar_semidiameter_angular_size("2043/03/01"), 968.042 * u.arcsec, atol=1e-3 * u.arcsec)
+    assert_quantity_allclose(sun.solar_semidiameter_angular_size("2001/07/21"), 943.775 * u.arcsec, atol=1e-3 * u.arcsec)
 
 
 def test_mean_ecliptic_longitude():
-    assert_quantity_allclose(sun.mean_ecliptic_longitude("2012/11/11"), 229.558 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.mean_ecliptic_longitude("2101/04/29"), 35.824 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.mean_ecliptic_longitude("2003/09/15"), 172.568 * u.deg, atol=3 * u.deg)
+    assert_quantity_allclose(sun.mean_ecliptic_longitude("2012/11/11"), 230.544 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.mean_ecliptic_longitude("2101/04/29"), 36.811 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.mean_ecliptic_longitude("2003/09/15"), 173.554 * u.deg, atol=1e-3 * u.deg)
 
 
 def test_equation_of_center():
-    assert_quantity_allclose(sun.equation_of_center("2012/11/11"), -1.559 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.equation_of_center("2014/05/27"), 1.203 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.equation_of_center("2134/01/01"), -0.194 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.equation_of_center("2012/11/11"), -1.540 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.equation_of_center("2014/05/27"), 1.178 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.equation_of_center("2134/01/01"), -0.161 * u.deg, atol=1e-3 * u.deg)
 
 
 def test_true_anomaly():
-    assert_quantity_allclose(sun.true_anomaly("2012/11/11"), 304.837 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.true_anomaly("2242/06/29"), 169.055 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.true_anomaly("2020/01/01"), 355.715 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.true_anomaly("2012/11/11"), 305.842 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.true_anomaly("2242/06/29"), 170.010 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.true_anomaly("2020/01/01"), 356.735 * u.deg, atol=1e-3 * u.deg)
 
 
 def test_apparent_longitude():
-    assert_quantity_allclose(sun.apparent_longitude("2012/11/11"), 227.989 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.apparent_longitude("2014/05/27"), 64.687 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.apparent_longitude("2134/02/12"), 322.053 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.apparent_longitude("2012/11/11"), 228.994 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.apparent_longitude("2014/05/27"), 65.648 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.apparent_longitude("2134/02/12"), 323.066 * u.deg, atol=1e-3 * u.deg)
 
 
 def test_true_obliquity_of_ecliptic():
@@ -95,15 +95,15 @@ def test_true_obliquity_of_ecliptic():
 
 
 def test_true_rightasenscion():
-    assert_quantity_allclose(sun.true_rightascension("2012/11/11"), 359.318 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.true_rightascension("2142/02/03"), 359.328 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.true_rightascension("2013/12/11"), 359.102 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.true_rightascension("2012/11/11"), 226.550 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.true_rightascension("2142/02/03"), 316.466 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.true_rightascension("2013/12/11"), 258.150 * u.deg, atol=1e-3 * u.deg)
 
 
 def test_true_declination():
-    assert_quantity_allclose(sun.true_declination("2012/11/11"), -0.669 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.true_declination("2245/12/01"), -0.380 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.true_declination("2014/05/27"), 0.427 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.true_declination("2012/11/11"), -17.467 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.true_declination("2245/12/01"), -21.717 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.true_declination("2014/05/27"), 21.245 * u.deg, atol=1e-3 * u.deg)
 
 
 def test_apparent_obliquity_of_ecliptic():
@@ -113,13 +113,13 @@ def test_apparent_obliquity_of_ecliptic():
 
 
 def test_apparent_rightascension():
-    assert_quantity_allclose(sun.apparent_rightascension("2012/11/11"), 15.035 * u.hourangle, atol=1e-3 * u.hourangle)
-    assert_quantity_allclose(sun.apparent_rightascension("2013/12/13"), 17.282 * u.hourangle, atol=1e-3 * u.hourangle)
-    assert_quantity_allclose(sun.apparent_rightascension("2512/04/09"), 1.134 * u.hourangle, atol=1e-3 * u.hourangle)
+    assert_quantity_allclose(sun.apparent_rightascension("2012/11/11"), 15.103 * u.hourangle, atol=1e-3 * u.hourangle)
+    assert_quantity_allclose(sun.apparent_rightascension("2013/12/13"), 17.356 * u.hourangle, atol=1e-3 * u.hourangle)
+    assert_quantity_allclose(sun.apparent_rightascension("2512/04/09"), 1.196 * u.hourangle, atol=1e-3 * u.hourangle)
 
 
 def test_solar_north():
-    assert_quantity_allclose(sun.solar_north("2012/11/11"), 15.149 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.solar_north("2019/10/10"), -1.693 * u.deg, atol=1e-3 * u.deg)
-    assert_quantity_allclose(sun.solar_north("2542/02/20"), 41.351 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.solar_north("2012/11/11"), 22.346 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.solar_north("2019/10/10"), 26.260 * u.deg, atol=1e-3 * u.deg)
+    assert_quantity_allclose(sun.solar_north("2542/02/20"), -17.981 * u.deg, atol=1e-3 * u.deg)
 
