@@ -2,8 +2,8 @@
 TimeSeries
 ===========
 
-Time series data are a fundamental part of many data analysis projects as much
-in heliophysics as other areas. SunPy therefore provides a TimeSeries object to
+Time series data are a fundamental part of many data analysis projects
+in heliophysics as well as other areas. SunPy therefore provides a TimeSeries object to
 handle this type of data. This directly supersedes the now depreciated Lightcurve
 datatype.
 Once you've read through this guide check out the :doc:`/code_ref/timeseries`
@@ -33,7 +33,7 @@ local GOES FITS file try the following: ::
 
     >>> my_timeseries = sunpy.timeseries.TimeSeries('/mydirectory/myts.fits', source='GOES')   # doctest: +SKIP
 
-SunPy can automatically detects the source for most FITS files, however timeseries
+SunPy can automatically detect the source for most FITS files. However timeseries
 (and lightcurve) data are stored in a variety of file formats (FITS, txt, csv)
 and it's not always possible to detect the source. For this reason, it's good
 practice to explicitly state the source for the file.
@@ -59,7 +59,7 @@ The time series concatenate method can be used to make a time series from multip
 2. Creating Custom TimeSeries
 -----------------------------
 
-Sometimes you will have data that you want to create into a TimeSeries, you can use the factory to create a `~sunpy.timeseries.timeseriesbase.GenericTimeSeries` from a variety of data sources currently including `pandas.DataFrame` and `astropy.table.table.Table`.
+Sometimes you will have data that you want to create into a TimeSeries. You can use the factory to create a `~sunpy.timeseries.timeseriesbase.GenericTimeSeries` from a variety of data sources currently including `pandas.DataFrame` and `astropy.table.table.Table`.
 
 2.1 Creating Custom TimeSeries from a Pandas DataFrame
 -------------------------------------------------------
@@ -110,8 +110,8 @@ A Pandas `~pandas.core.frame.DataFrame` is the underlying object used to store t
 An advantage of this method is it allows you to include metadata and AstroPy `~astropy.units.quantity.Quantity` values, which are both supported in tables, without additional arguments.
 For example: ::
 
-    >>> import numpy as np
 	>>> import datetime
+
     >>> from astropy.time import Time
     >>> import astropy.units as u
     >>> from astropy.table import Table
@@ -241,14 +241,14 @@ Caution should be taken when adding a new column because this column won't have 
 5.2 Truncating a TimeSeries
 ---------------------------
 
-Being time related data, it is often useful to truncate into a specific region of the data, this is easily achieved by using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.truncate` method.
-For example, to trim our GOES data into a region of interest use: ::
+Being time related data, it is often useful to truncate into a specific period of the data, this is easily achieved by using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.truncate` method.
+For example, to trim our GOES data into a period of interest use: ::
 
     >>> from sunpy.time import TimeRange
     >>> tr = TimeRange('2012-06-01 05:00','2012-06-01 06:30')
     >>> my_timeseries_trunc = my_timeseries.truncate(tr)
 
-This takes a number of different arguments, such as the start end dates (as datetime or string objects) or a `~sunpy.time.TimeRange` as used above.
+This takes a number of different arguments, such as the start and end dates (as datetime or string objects) or a `~sunpy.time.TimeRange` as used above.
 Note the truncated TimeSeries will have a truncated `~sunpy.timeseries.metadata.TimeSeriesMetaData` object, which may include dropping metadata entries for data totally cut out from the TimeSeries.
 If you want to truncate using slice-like values you can, for example taking every 2nd value from 0 to 10000 can be done using: ::
 
@@ -262,12 +262,13 @@ Caution should be used when removing values from the data manually, the TimeSeri
 Because the data is stored in a Pandas `~pandas.core.frame.DataFrame` object you can manipulate it using normal Pandas methods, such as the `~pandas.DataFrame.resample` method.
 To downsample you can use: ::
 
-    >>> downsampled = my_timeseries_trunc.data.resample('10T').mean()
+    >>> downsampled_dataframe = my_timeseries_trunc.data.resample('10T').mean()
+    >>> downsampled_timeseries = sunpy.timeseries.TimeSeries(downsampled_dataframe, my_timeseries_trunc.meta, my_timeseries_trunc.units) # ToDo: Fix this!
 
 Note, here 10T means sample every 10 minutes and 'mean' is the method used to combine the data. Alternatively the sum method is often used.
 You can also upsample, such as: ::
 
-    >>> upsampled = my_timeseries_trunc.data.resample('30S').ffill()
+    >>> upsampled_data = my_timeseries_trunc.data.resample('30S').ffill()
 
 Note, here we upsample to 30 second intervals using '30S' and use the fill-forward. Alternatively the back-fill method could be used.
 Caution should be used when resampling the data, the TimeSeries can't guarantee AstroPy Units are correctly preserved when you interact with the data directly.
@@ -288,7 +289,11 @@ For example: ::
     >>> concatenated_timeseries = goes_timeseries_1.concatenate(goes_timeseries_2)
 
 This will result in a TimeSeries identical to if you used the factory to create it in one step.
-A limitation of the TimeSeries class is that often it is not easy to determine the source observatory/instrument of a file, generally because the file formats used vary depending on the scientific working groups, thus some sources need to be explicitly stated (as a keyword argument) and so it's not possible to concatenate files from multiple sources with the factory.
+A limitation of the TimeSeries class is that often it is not easy to
+determine the source observatory/instrument of a file, generally
+because the file formats used vary depending on the scientific working
+groups, thus some sources need to be explicitly stated (as a keyword argument)
+and so it's not possible to concatenate files from multiple sources with the factory.
 For doing this you can still use the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.concatenate` method, this will create a new TimeSeries with all the rows and columns of the source and concatenated TimeSeries in one: ::
 
     >>> concatenated_timeseries = goes_timeseries.concatenate(eve_timeseries)
@@ -342,7 +347,12 @@ For example: ::
 
     >>> meta_str = meta.to_string(depth = 20, width=99)
 
-Similar to the TimeSeries, the metadata has some properties for convenient access to the global metadata details, including `~sunpy.timeseries.metadata.TimeSeriesMetaData.columns` as a list of strings, `~sunpy.timeseries.metadata.TimeSeriesMetaData.index` values and `~sunpy.timeseries.metadata.TimeSeriesMetaData.time_range` of the data.
+Similar to the TimeSeries, the metadata has some properties for
+convenient access to the global metadata details, including
+`~sunpy.timeseries.metadata.TimeSeriesMetaData.columns` as a list of
+strings, `~sunpy.timeseries.metadata.TimeSeriesMetaData.index` values
+and `~sunpy.timeseries.metadata.TimeSeriesMetaData.time_range` of the
+data.
 Beyond this, there are properties to get lists of details for all the entries in the `~sunpy.timeseries.metadata.TimeSeriesMetaData` object, including `~sunpy.timeseries.metadata.TimeSeriesMetaData.timeranges`, `~sunpy.timeseries.metadata.TimeSeriesMetaData.columns` (as a list of string column names) and `~sunpy.timeseries.metadata.TimeSeriesMetaData.metas`.
 Similar to TimeSeries objects you can `~sunpy.timeseries.metadata.TimeSeriesMetaData.truncate` and `~sunpy.timeseries.metadata.TimeSeriesMetaData.concatenate` `~sunpy.timeseries.metadata.TimeSeriesMetaData` objects, but generally you won't need to do this as it's done automatically when actioned on the TimeSeries.
 Note that when truncating a `~sunpy.timeseries.metadata.TimeSeriesMetaData` object you will remove any entries outside of the given `~sunpy.time.TimeRange`.
@@ -362,7 +372,7 @@ A common usage case for the metadata is to find out the instrument/s that gather
 Note, `~sunpy.timeseries.metadata.TimeSeriesMetaData.values` removes duplicate strings and sorts the returned list.
 You can update the values for these entries efficiently using the `~sunpy.timeseries.metadata.TimeSeriesMetaData.update` method which takes a dictionary argument and updates the values to each of the dictionaries that match the given colname and time filters, for example: ::
 
-    >>> my_timeseries.meta.get({'telescop': 'G15'}, colname='xrsa', overwrite=True)
+    >>> my_timeseries.meta.upate({'telescop': 'G15'}, colname='xrsa', overwrite=True)
 
 Here we have to specify the overwrite=False keyword parameter to allow us to overwrite values for keys already present in the `~sunpy.util.metadata.MetaDict` objects, this helps protect the integrity of the original metadata and without this set (or with it set to False) you can still add new key/value pairs.
 Note that the `~sunpy.util.metadata.MetaDict` objects are both case-insensitive for key strings and have ordered entries, where possible the order is preserved when updating values.
