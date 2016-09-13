@@ -76,6 +76,37 @@ class TestTimeSeries(object):
         assert isinstance(ts_from_glob, sunpy.timeseries.sources.eve.EVELightCurve)
 
 #==============================================================================
+# Implicit Sources Tests
+#==============================================================================
+
+    def test_implicit_fermi_gbm(self):
+        # Test a GBMSummary TimeSeries
+        ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath)
+        assert isinstance(ts_gbm, sunpy.timeseries.sources.fermi_gbm.GBMSummaryLightCurve)
+
+    def test_implicit_norh(self):
+        # Test a NoRH TimeSeries
+        ts_norh = sunpy.timeseries.TimeSeries(norrh_filepath)
+        assert isinstance(ts_norh, sunpy.timeseries.sources.norh.NoRHLightCurve)
+
+    def test_implicit_goes(self):
+        # Test a GOES TimeSeries
+        ts_goes = sunpy.timeseries.TimeSeries(goes_filepath)
+        assert isinstance(ts_goes, sunpy.timeseries.sources.goes.GOESLightCurve)
+
+    @pytest.mark.xfail
+    def test_implicit_lyra(self):
+        # Test a LYRA TimeSeries
+        ts_lyra = sunpy.timeseries.TimeSeries(lyra_filepath)
+        assert isinstance(ts_lyra, sunpy.timeseries.sources.lyra.LYRALightCurve)
+
+    @pytest.mark.xfail
+    def test_implicit_rhessi(self):
+        # Test a RHESSI TimeSeries
+        ts_rhessi = sunpy.timeseries.TimeSeries(rhessi_filepath)
+        assert isinstance(ts_rhessi, sunpy.timeseries.sources.rhessi.RHESSISummaryLightCurve)
+
+#==============================================================================
 # Sources Tests
 #==============================================================================
 
@@ -86,7 +117,7 @@ class TestTimeSeries(object):
 
     def test_fermi_gbm(self):
         #Test a GBMSummary TimeSeries
-        ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath)
+        ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
         assert isinstance(ts_gbm, sunpy.timeseries.sources.fermi_gbm.GBMSummaryLightCurve)
 
     def test_norrh(self):
