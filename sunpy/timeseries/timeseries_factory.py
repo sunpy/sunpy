@@ -436,6 +436,10 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
             new_timeseries.append(new_ts)
 
+        # data_header_pairs is a list of HDUs as read by sunpy.io
+        # For each set of HDus find the matching class and read the
+        # data_header_unit_tuples by calling the _parse_hdus method
+        # of the class.
         for pairs in data_header_pairs:
             # Pairs may be x long where x is the number of HDUs in the file.
             headers = [pair.header for pair in pairs]
@@ -450,9 +454,16 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     continue
 
             if not types:
-                raise NoMatchError("Can't find a match")
+                # If no specific classes have been found we can read the data
+                # if we only have one data header pair:
+                if len(pairs) == 1:
+                    already_timeseries.append(GenericTimeSeries(pairs[0].data,
+                                                                pairs[0].header))
+                else:
+                    raise NoMatchError("Input read by sunpy.io can not find a "
+                                       "matching class for reading multiple HDUs")
             if len(set(types)) > 1:
-                raise MultipleMatchError("Could not read HDUs")
+                raise MultipleMatchError("Multiple HDUs return multiple matching classes.")
 
             cls = types[0]
 

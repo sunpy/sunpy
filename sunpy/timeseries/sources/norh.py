@@ -9,9 +9,9 @@ from collections import OrderedDict
 import numpy as np
 import matplotlib.pyplot as plt
 
-from astropy.io import fits
 import pandas
 
+import sunpy.io
 from sunpy.timeseries import GenericTimeSeries
 from sunpy.time import parse_time
 from sunpy.util.metadata import MetaDict
@@ -22,6 +22,7 @@ from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['NoRHLightCurve']
+
 
 class NoRHLightCurve(GenericTimeSeries):
     """
@@ -82,33 +83,42 @@ class NoRHLightCurve(GenericTimeSeries):
         axes.legend()
         plt.show()
 
+
     @classmethod
     def _parse_file(cls, filepath):
         """This method parses NoRH tca and tcz correlation FITS files."""
-        with fits.open(filepath) as hdulist:
-            header = MetaDict(OrderedDict(hdulist[0].header))
-            # For these NoRH files, the time series data is recorded in the primary
-            # HDU
-            data = hdulist[0].data
+        hdus = sunpy.io.read_file(filepath)
+        return cls._parse_hdus(hdus)
 
-            # No explicit time array in FITS file, so construct the time array from
-            # the FITS header
-            obs_start_time=parse_time(header['DATE-OBS'] + 'T' + header['CRVAL1'])
-            length = len(data)
-            cadence = np.float(header['CDELT1'])
-            sec_array = np.linspace(0, length-1, (length/cadence))
+    @classmethod
+    def _parse_hdus(cls, hdulist):
+        """This method parses NoRH tca and tcz correlation FITS files."""
+        header = MetaDict(OrderedDict(hdulist[0].header))
+        # For these NoRH files, the time series data is recorded in the primary
+        # HDU
+        data = hdulist[0].data
 
-            norh_time = []
-            for s in sec_array:
-                norh_time.append(obs_start_time + datetime.timedelta(0,s))
+        # No explicit time array in FITS file, so construct the time array from
+        # the FITS header
+        obs_start_time=parse_time(header['DATE-OBS'] + 'T' + header['CRVAL1'])
+        length = len(data)
+        cadence = np.float(header['CDELT1'])
+        sec_array = np.linspace(0, length-1, (length/cadence))
 
-            # Add the units data
-            units = OrderedDict([('Correlation Coefficient', u.dimensionless_unscaled)])
-            # Todo: check units used.
-            return pandas.DataFrame(data, index=norh_time, columns=('Correlation Coefficient',)), header, units
+        norh_time = []
+        for s in sec_array:
+            norh_time.append(obs_start_time + datetime.timedelta(0,s))
+
+        # Add the units data
+        units = OrderedDict([('Correlation Coefficient', u.dimensionless_unscaled)])
+        # Todo: check units used.
+        return pandas.DataFrame(data, index=norh_time, columns=('Correlation Coefficient',)), header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to a Nobeyama Radioheliograph Correlation lightcurve"""
         #return header.get('instrume', '').startswith('')
-        return kwargs.get('source', '').startswith('NoRH')
+        if 'source' in kwargs.keys():
+            return kwargs.get('source', '').startswith('NoRH')
+        if 'meta' in kwargs.keys():
+            return kwargs['meta'].get('ORIGIN', '').startswith('NOBEYAMA RADIO OBS')
