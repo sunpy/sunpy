@@ -5,7 +5,7 @@ import scipy.ndimage as ndimage
 
 
 def multiscale_gaussian(data, sigma=[1.25, 2.5, 5, 10, 20, 40], k=0.7,
-                        gamma=3.2, h=0.7, weights=None):
+                        gamma=3.2, h=0.7, weights=None, truncate=3):
     """
     Multi-scale Gaussian normalization.
 
@@ -22,7 +22,7 @@ def multiscale_gaussian(data, sigma=[1.25, 2.5, 5, 10, 20, 40], k=0.7,
 
     gamma : float, optional
         The value used to calulcate the  global gamma-transformed image.
-        Ideally should be betwen 2.5 to 4.
+        Ideally should be between 2.5 to 4.
 
     h : float, optional
         Global weight.
@@ -30,6 +30,9 @@ def multiscale_gaussian(data, sigma=[1.25, 2.5, 5, 10, 20, 40], k=0.7,
     weights : list, optional
         Used to weight all the transformed images during the calculation of the
         final image. If not specificed, all weights are one.
+
+    width : `int`
+        An odd integer defining the width of the kernel to be convolved.
 
     Returns
     -------
@@ -54,17 +57,33 @@ def multiscale_gaussian(data, sigma=[1.25, 2.5, 5, 10, 20, 40], k=0.7,
     if not weights:
         weights = np.ones(len(sigma))
 
+    # 1. Replace spurious negative pixels with zero
     data[data <= 0] = 1e-15  # Makes sure that all values are above zero
     image = np.zeros(data.shape)
 
-    for s, weight in itertools.izip(sigma, weights):
-        conv = ndimage.filters.gaussian_filter(data, sigma=s, truncate=3)
+    for s, weight in zip(sigma, weights):
+        # 2 & 3 Create kernel and convolve with image
+        conv = ndimage.filters.gaussian_filter(data, sigma=s, truncate=truncate)
+        # 5. Calculate difference between image and the local mean image,
+        # square the difference, and convolve with kernel. Square-root the
+        # resulting image to give ‘local standard deviation’ image sigmaw
         lm_sub = data - conv
-        sigmaw = np.sqrt(ndimage.filters.gaussian_filter(lm_sub ** 2, sigma=s, truncate=3))
-        image += np.arctan(k * (lm_sub / sigmaw)) * weight
+        np.subtract(data, conv, out=conv)
+        lm_sub = conv
+        sigmaw = np.sqrt(ndimage.filters.gaussian_filter(lm_sub ** 2, sigma=s, truncate=truncate))
+        Ci = lm_sub / sigmaw
+        # 6. Apply arctan transformation on Ci to give C'i
+        image += np.arctan(k * Ci) * weight
 
+    # 8. Take weighted mean of C'i to give a weighted mean locally normalised
+    # image.
+    image /= len(sigma)
+
+    # 9. Calculate global gamma-transformed image C'g
     data_min = data.min()
     data_max = data.max()
-    global_gamma = h * ((data-data_min)/(data_max-data_min)) ** (1/gamma)
+    Cprime_g = ((data - data_min) / (data_max - data_min)) ** (1/gamma)
 
-    return global_gamma + ((1-h)/len(sigma)) * image
+    I = (h * Cprime_g) + ((1 - h) * image)
+
+    return I

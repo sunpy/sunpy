@@ -1,4 +1,4 @@
-from sunpy import AIA_171_IMAGE
+from sunpy.data.sample import AIA_171_IMAGE
 from sunpy import map
 from sunpy.image.normalization import multiscale_gaussian
 
