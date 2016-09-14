@@ -9,6 +9,7 @@ Latest
 * Now the `sunpy.database.tables.display_entries()` prints an astropy table.
 * Additional methods added inside the `sunpy.database` class to make it easier
   to display the database contents.
+* Added an implementation of the Multi-scale Gaussian Normalisation algorithm.
 
 0.7.0
 -----
@@ -146,8 +147,6 @@ Bug Fixes:
     * Fix EIT test data and sunpy FITS saving
     * Some documentation fixes
     * fix file paths to use os.path.join for platform independance.
-
- * Added a normalization module 
 
 0.4.0
 -----

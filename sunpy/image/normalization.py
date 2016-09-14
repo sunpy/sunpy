@@ -25,7 +25,7 @@ def multiscale_gaussian(data, sigma=[1.25, 2.5, 5, 10, 20, 40], k=0.7,
         Ideally should be between 2.5 to 4.
 
     h : float, optional
-        Global weight.
+        Weight of global filter to gaussian filters.
 
     weights : list, optional
         Used to weight all the transformed images during the calculation of the
@@ -33,6 +33,9 @@ def multiscale_gaussian(data, sigma=[1.25, 2.5, 5, 10, 20, 40], k=0.7,
 
     width : `int`
         An odd integer defining the width of the kernel to be convolved.
+
+    truncate : `int`
+        The number of sigmas to truncate the kernel.
 
     Returns
     -------
