@@ -3,25 +3,23 @@
 from __future__ import absolute_import, print_function, division
 # pylint: disable=W0221,W0222,E1101,E1121
 
-__author__ = ["Alex Hamilton"]
-__email__ = "####"
-
 from collections import OrderedDict
 import datetime
 import matplotlib.dates
 from matplotlib import pyplot as plt
-from astropy.io import fits
-import sunpy.io
 from numpy import nan
 from numpy import floor
 from pandas import DataFrame
 
+import sunpy.io
 from sunpy.timeseries import GenericTimeSeries
 from sunpy.time import parse_time, TimeRange, is_time_in_given_format
 from sunpy.util.metadata import MetaDict
 from astropy import units as u
 
-Y__all__ = ['XRTMap', 'SOTMap']
+__author__ = ["Alex Hamilton"]
+__email__ = "####"
+
 
 class GOESLightCurve(GenericTimeSeries):
     """
@@ -148,14 +146,14 @@ class GOESLightCurve(GenericTimeSeries):
 
     @classmethod
     def _parse_file(cls, filepath):
-        """Parses GOES FITS data files to create TimeSeries."""
+        """Parses a GOES FITS file from
+        http://umbra.nascom.nasa.gov/goes/fits/"""
+
         hdus = sunpy.io.read_file(filepath)
         return cls._parse_hdus(hdus)
 
     @classmethod
     def _parse_hdus(cls, hdulist):
-        """Parses a GOES FITS file from
-        http://umbra.nascom.nasa.gov/goes/fits/"""
         header = MetaDict(OrderedDict(hdulist[0].header))
         if len(hdulist) == 4:
             if is_time_in_given_format(hdulist[0].header['DATE-OBS'], '%d/%m/%Y'):
@@ -176,7 +174,7 @@ class GOESLightCurve(GenericTimeSeries):
             raise ValueError("Don't know how to parse this file")
 
         times = [start_time + datetime.timedelta(seconds=int(floor(s)),
-                                                 microseconds=int((s - floor(s)) * 1e6)) for s in seconds_from_start]
+                                                    microseconds=int((s - floor(s)) * 1e6)) for s in seconds_from_start]
 
         # remove bad values as defined in header comments
         xrsb[xrsb == -99999] = nan
@@ -191,16 +189,14 @@ class GOESLightCurve(GenericTimeSeries):
 
         # Add the units data
         units = OrderedDict([('xrsa', u.ct),
-                             ('xrsb', u.ct)])
+                                ('xrsb', u.ct)])
         # ToDo: check: http://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf
         return data, header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
-        """Determines if the file corresponds to a GOES lightcurve TimeSeries"""
-        # Check if source is explicitly assigned
+        """Determines if header corresponds to a GOES lightcurve TimeSeries"""
         if 'source' in kwargs.keys():
             return kwargs.get('source', '').startswith('GOES')
-        # Check if HDU defines the source instrument
         if 'meta' in kwargs.keys():
-            return kwargs['meta'].get('INSTRUME', '').startswith('GOES')
+            return kwargs['meta'].get('TELESCOP', '').startswith('GOES')

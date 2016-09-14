@@ -100,7 +100,6 @@ class GBMSummaryLightCurve(GenericTimeSeries):
     @classmethod
     def _parse_hdus(cls, hdulist):
         header = MetaDict(OrderedDict(hdulist[0].header))
-        print(header)
         # these GBM files have three FITS extensions.
         # extn1 - this gives the energy range for each of the 128 energy bins
         # extn2 - this contains the data, e.g. counts, exposure time, time of observation
