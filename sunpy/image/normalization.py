@@ -1,5 +1,5 @@
 from __future__ import division
-import itertools
+
 import numpy as np
 import scipy.ndimage as ndimage
 
@@ -59,21 +59,35 @@ def multiscale_gaussian(data, sigma=[1.25, 2.5, 5, 10, 20, 40], k=0.7,
 
     # 1. Replace spurious negative pixels with zero
     data[data <= 0] = 1e-15  # Makes sure that all values are above zero
-    image = np.zeros(data.shape)
+    image = np.empty(data.shape, dtype=data.dtype)
+    conv = np.empty(data.shape, dtype=data.dtype)
+    sigmaw = np.empty(data.shape, dtype=data.dtype)
 
     for s, weight in zip(sigma, weights):
         # 2 & 3 Create kernel and convolve with image
-        conv = ndimage.filters.gaussian_filter(data, sigma=s, truncate=truncate)
+        ndimage.filters.gaussian_filter(data, sigma=s,
+                                        truncate=truncate, output=conv)
         # 5. Calculate difference between image and the local mean image,
         # square the difference, and convolve with kernel. Square-root the
         # resulting image to give ‘local standard deviation’ image sigmaw
-        lm_sub = data - conv
-        np.subtract(data, conv, out=conv)
-        lm_sub = conv
-        sigmaw = np.sqrt(ndimage.filters.gaussian_filter(lm_sub ** 2, sigma=s, truncate=truncate))
-        Ci = lm_sub / sigmaw
+        conv -= data
+        conv **= 2
+        ndimage.filters.gaussian_filter(conv, sigma=s,
+                                        truncate=truncate, output=sigmaw)
+        np.sqrt(sigmaw, out=sigmaw)
+        conv /= sigmaw
+
         # 6. Apply arctan transformation on Ci to give C'i
-        image += np.arctan(k * Ci) * weight
+        conv *= k
+        conv *= weight
+        np.arctan(conv, out=conv)
+
+        image += conv
+
+    # delete these arrays here as it reduces the total memory consumption when
+    # we create the Cprime_g temp array below.
+    del conv
+    del sigmaw
 
     # 8. Take weighted mean of C'i to give a weighted mean locally normalised
     # image.
@@ -82,8 +96,12 @@ def multiscale_gaussian(data, sigma=[1.25, 2.5, 5, 10, 20, 40], k=0.7,
     # 9. Calculate global gamma-transformed image C'g
     data_min = data.min()
     data_max = data.max()
-    Cprime_g = ((data - data_min) / (data_max - data_min)) ** (1/gamma)
+    Cprime_g = (data - data_min)
+    Cprime_g /= (data_max - data_min)
+    Cprime_g **= (1/gamma)
+    Cprime_g *= h
 
-    I = (h * Cprime_g) + ((1 - h) * image)
+    image *= (1 - h)
+    image += Cprime_g
 
-    return I
+    return image
