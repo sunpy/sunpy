@@ -133,12 +133,13 @@ class GBMSummaryLightCurve(GenericTimeSeries):
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
-        """Determines if header corresponds to a GBM summary lightcurve timeseries"""
+        """Determines if the file corresponds to a GBM summary lightcurve timeseries"""
+        # Check if source is explicitly assigned
         if 'source' in kwargs.keys():
             return kwargs.get('source', '').startswith('GBMSummary')
+        # Check if HDU defines the source instrument
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('INSTRUME', '').startswith('GBM')
-
 
 def _bin_data_for_summary(energy_bins, count_data):
     """Missing doc string"""
