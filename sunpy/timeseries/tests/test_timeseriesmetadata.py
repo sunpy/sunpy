@@ -2,7 +2,6 @@
 """
 Created on Wed Jul 20 10:24:06 2016
 
-@author: alex_
 """
 
 
@@ -56,6 +55,32 @@ def basic_4_md():
 
 
 #==============================================================================
+# Test Creating TimeSeriesMetaData With Limited Input
+#==============================================================================
+
+def test_create_mithout_metadata():
+    tr = TimeRange('2010-01-01 13:59:57.468999', '2010-01-02 13:59:56.091999')
+    colnames = [ 'column1', 'column2' ]
+    tsmd_1 = TimeSeriesMetaData(timerange=tr, colnames=colnames)
+    assert isinstance(tsmd_1, TimeSeriesMetaData)
+    assert tsmd_1.metadata[0][1] == colnames
+    tsmd_2 = TimeSeriesMetaData(timerange=tr)
+    assert isinstance(tsmd_1, TimeSeriesMetaData)
+    assert tsmd_2.metadata[0][1] == []
+    assert tsmd_1.metadata[0][0] == tsmd_2.metadata[0][0] == tr
+    assert tsmd_1.metadata[0][2] == tsmd_2.metadata[0][2] == MetaDict()
+    assert len(tsmd_1.metadata) == len(tsmd_2.metadata) == 1
+
+def test_create_mithout_metadata_or_timerange():
+    # without a timerange we should get errors
+    colnames = [ 'column1', 'column2' ]
+    with pytest.raises(ValueError):
+        TimeSeriesMetaData(colnames=colnames)
+    with pytest.raises(ValueError):
+        TimeSeriesMetaData()
+
+
+#==============================================================================
 # Test Appending TimeSeriesMetaData Objects
 #==============================================================================
 
@@ -106,10 +131,10 @@ def test_complex_append_md(basic_1_md, basic_2_md, basic_3_md, basic_4_md, compl
     assert complex_append_md.metadata[2] == basic_2_md.metadata[0]
     assert complex_append_md.metadata[3] == basic_3_md.metadata[0]
 
-def test_append_not_timerange(basic_1_md):
+def test_append_invalid_timerange(basic_1_md):
     appended = copy.deepcopy(basic_1_md)
     with pytest.raises(ValueError):
-        appended.append('nottimerange', basic_1_md.metadata[0][1], basic_1_md.metadata[0][2])
+        appended.append('not_a_timerange', basic_1_md.metadata[0][1], basic_1_md.metadata[0][2])
 
 
 #==============================================================================
@@ -291,9 +316,35 @@ def test_equality(basic_1_md, basic_2_md, basic_ascending_append_md):
     assert basic_1_md == basic_1_copy_md
     assert basic_1_md != basic_2_md
     assert basic_1_md != basic_ascending_append_md
-    
-def test_to_string(basic_1_md):
-    assert isinstance(basic_1_md.to_string(), str)
+
+def test_to_string_basic(basic_1_md):
+    default_str = basic_1_md.to_string()
+    assert isinstance(default_str, str)
+
+    # check this matches the __str__ and __repr__ methods
+    default_str == basic_1_md.__str__() == basic_1_md.__repr__()
+
+def test_to_string_depth(basic_1_md):
+    depth_1_str = basic_1_md.to_string(depth=1)
+    assert len(depth_1_str.split('\n')) == 7
+    assert len(depth_1_str.split('...')) == 4
+    assert basic_1_md.metadata[0][1][0] in depth_1_str
+
+    # for depth of 2 the time-range will take exactly 2 lines
+    depth_2_str = basic_1_md.to_string(depth=2)
+    assert len(depth_2_str.split('\n')) == 8
+    assert len(depth_2_str.split('...')) == 2
+    assert (basic_1_md.metadata[0][1][0] in depth_2_str) and (basic_1_md.metadata[0][1][1] in depth_2_str)
+
+def test_to_string_width(basic_1_md):
+    width_110_str = basic_1_md.to_string(width=110)
+    split = width_110_str.split('\n')
+    assert len(split[0]) == len(split[1]) == len(split[2]) == len(split[3]) == 110
+
+    width_60_str = basic_1_md.to_string(width=60)
+    split = width_60_str.split('\n')
+    assert len(split[0]) == len(split[1]) == len(split[2]) == len(split[3]) == 60
+
 
 def test_timeranges(basic_ascending_append_md):
     lis = []

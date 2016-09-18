@@ -51,10 +51,10 @@ class TimeSeriesMetaData:
             # In the event no metadata dictionary is sent we default to something usable
             if isinstance(timerange, TimeRange) and isinstance(colnames, list):
                 self.metadata.append((timerange, colnames, MetaDict()))
-            if isinstance(timerange, TimeRange):
+            elif isinstance(timerange, TimeRange):
                 self.metadata.append((timerange, [], MetaDict()))
                 warnings.warn("No time range given for metadata. This will mean the metadata can't be linked to columns in data.", Warning)
-            if isinstance(colnames, list):
+            else:
                 raise ValueError("You cannot create a TimeSeriesMetaData object without specifying a TimeRange")
 
     def __eq__(self, other):
@@ -80,7 +80,7 @@ class TimeSeriesMetaData:
         else:
             match = False
         return match
-        
+
     def __ne__(self, other):
         """
         Check two TimeSeriesMetaData objects are not the same, they don't have
