@@ -333,18 +333,11 @@ class GenericTimeSeries:
         # Check the sources match if specified.
         same_source = kwargs.get('same_source', False)
         if same_source and not (isinstance(otherts, self.__class__)):
-            raise TypeError("TimeSeries classes must match.")
+            raise TypeError("TimeSeries classes must match if specified.")
 
-        """
-        # Metadata is implemented as with the legacy LightCurve class.
-        # ToDo: Debate: we want to consider how to do this in future.
-        meta = OrderedDict()
-        meta.update({str(self.data.index[0]):TimeSeriesMetaData(self.meta.metadata.copy())})
-        meta.update({str(otherts.data.index[0]):otherts.meta.copy()})
-        """
         # Concatenate the metadata and data
         meta = self.meta.concatenate(otherts.meta)
-        data = pd.concat([self.data.copy(), otherts.data])
+        data = pd.concat([self.data.copy(), otherts.data], **kwargs)
 
         # Add all the new units to the dictionary.
         units = OrderedDict()

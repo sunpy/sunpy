@@ -115,6 +115,10 @@ def generic_ts():
     return sunpy.timeseries.TimeSeries(data, meta, units)
 
 
+#==============================================================================
+# Test Creating TimeSeries From Various Dataformats
+#==============================================================================
+
 @pytest.fixture
 def table_ts():
     # Generate the data and the corresponding dates
@@ -133,16 +137,6 @@ def table_ts():
 
     # Create TS from dataframe and check
     return sunpy.timeseries.TimeSeries(table, meta, units)
-
-#==============================================================================
-# Test Creating TimeSeries From Various Dataformats
-#==============================================================================
-
-
-# ToDo:
-###ts_goes.to_dataframe()
-###ts_goes.to_table()
-###ts_goes.to_array()
 
 #==============================================================================
 # Test Resulting TimeSeries Parameters
@@ -185,16 +179,6 @@ def test_data_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts, 
     assert isinstance(table_ts.data, DataFrame)
 
     # ToDo: check length? (should match the number of columns)
-# ToDo: is this a good way of going?
-# ToDo: test for all:
-###ts_lyra.data
-###ts_lyra.meta
-###ts_lyra.time_range # Returns a SunPy TimeRange object.
-###ts_lyra.name
-###ts_lyra.nickname
-###ts_lyra.detector
-###ts_lyra.instrument
-###ts_lyra.observatory
 
 #==============================================================================
 # Test Truncation Operations
@@ -288,12 +272,6 @@ def test_concatenation_of_slices(eve_test_ts, concatenated_slices_test_ts):
     eve_test_ts.meta.metadata[0][2] == concatenated_slices_test_ts.meta.metadata[0][2] == concatenated_slices_test_ts.meta.metadata[1][2]
     # ToDo: Will TSMD.concatenate() want to re-merge the metadata entries back into one?
 
-
-# Or asseperate tests:
-#def test_concatenation_of_slices_dataframe(eve_test_ts, concatenated_slices_test_ts):
-#def test_concatenation_of_slices_timerange(eve_test_ts, concatenated_slices_test_ts):
-#def test_concatenation_of_slices_metadata(eve_test_ts, concatenated_slices_test_ts):
-
 @pytest.fixture
 def concatenation_different_data_test_ts(eve_test_ts, fermi_gbm_test_ts):
     # Take two different data sources and concatenate
@@ -323,9 +301,34 @@ def test_concatenation_of_different_data(eve_test_ts, fermi_gbm_test_ts, concate
     assert_frame_equal(concatenation_different_data_test_ts.data, comined_df)
 
 def test_concatenation_different_data_error(eve_test_ts, fermi_gbm_test_ts):
-    # Take two different data sources and concatenate
+    # Take two different data sources and concatenate but set with the same_source
+    # kwarg as true, this should not concatenate.
     with pytest.raises(TypeError):
         eve_test_ts.concatenate(fermi_gbm_test_ts, same_source=True)
+
+def test_generic_construction_concatenation():
+    # Generate the data and the corrisponding dates
+    base = datetime.datetime.today()
+    times = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+    intensity1 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
+    intensity2 = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
+
+    # Create the data DataFrame, header MetaDict and units OrderedDict
+    data = DataFrame(intensity1, index=times, columns=['intensity'])
+    data2 = DataFrame(intensity2, index=times, columns=['intensity2'])
+    units = OrderedDict([('intensity', u.W/u.m**2)])
+    units2 = OrderedDict([('intensity', u.W/u.m**2)])
+    meta = MetaDict({'key':'value'})
+    meta2 = MetaDict({'key2':'value2'})
+
+    # Create TS individually
+    ts_1 = sunpy.timeseries.TimeSeries(data, meta, units)
+    ts_2 = sunpy.timeseries.TimeSeries(data2, meta2, units2)
+    ts_concat = ts_1.concatenate(ts_2, axis=1)
+    assert isinstance(ts_concat, sunpy.timeseries.timeseriesbase.GenericTimeSeries)
+    assert len(ts_concat.data) == len(times)
+    assert ts_concat.columns == ['intensity', 'intensity2']
+    assert len(ts_concat.meta.metadata) == 2
 
 #==============================================================================
 # Test Data Manipulation
@@ -364,6 +367,31 @@ def test_add_column_from_array(eve_test_ts, add_column_from_array_ts, column_qua
     # Test the full list of columns are pressent
     assert set(add_column_from_array_ts.data.columns) == set(eve_test_ts.data.columns) | set(['array_added'])
 
+def test_add_column_from_array_no_units(eve_test_ts, column_quantity):
+    ts = eve_test_ts.add_column('array_added', column_quantity.value)
+    assert (ts.quantity('array_added') == column_quantity.value).all()
+
+#==============================================================================
+# Test Exporting to different formats
+#==============================================================================
+
+def test_ts_to_table(generic_ts):
+    tbl = generic_ts.to_table()
+    assert isinstance(tbl, Table)
+    assert tbl.keys() == [ 'date', generic_ts.columns[0] ]
+    assert len(tbl) == len(generic_ts.data)
+    assert (tbl[generic_ts.columns[0]].quantity == generic_ts.quantity(generic_ts.columns[0])).all()
+
+def test_ts_to_dataframe(generic_ts):
+    df = generic_ts.to_dataframe()
+    assert isinstance(df, DataFrame)
+    assert_frame_equal(df, generic_ts.data)
+
+def test_ts_to_array(generic_ts):
+    arr = generic_ts.to_array()
+    assert isinstance(arr, np.ndarray)
+    assert len(arr) == len(generic_ts.data)
+
 #==============================================================================
 # Test Other Functions
 #==============================================================================
@@ -375,12 +403,15 @@ def test_equality(generic_ts, table_ts):
     assert generic_ts != generic_copy_ts
     assert generic_ts != table_ts
 
+def test_equality_different_ts_types(generic_ts, table_ts):
+    # this should fail as they're not the smae type and can't match
+    assert not (generic_ts == eve_test_ts)
+
 def test_ts_index(generic_ts):
     assert (generic_ts.index == generic_ts.data.index).all()
 
 def test_ts_sort_index(generic_ts):
     assert generic_ts.sort_index().data.equals(generic_ts.data.sort_index())
-
 
 # ToDo:
 ###Extracting column as quantity or array#ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
