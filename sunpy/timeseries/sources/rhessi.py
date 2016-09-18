@@ -12,6 +12,7 @@ from sunpy.timeseries import GenericTimeSeries
 from sunpy.time import TimeRange, parse_time
 from sunpy.util.metadata import MetaDict
 from sunpy.instr import rhessi
+import sunpy.io
 from astropy import units as u
 
 __all__ = ['RHESSISummaryLightCurve']
@@ -108,11 +109,17 @@ class RHESSISummaryLightCurve(GenericTimeSeries):
 
     @classmethod
     def _parse_file(cls, filepath):
-        """Parses a RHESSI FITS file"""
-        header, d = rhessi.parse_obssumm_file(filepath)
+        """Parses rhessi FITS data files to create TimeSeries."""
+        #header, d, hdus = rhessi.parse_obssumm_file(filepath)
+        hdus = sunpy.io.read_file(filepath)
+        return cls._parse_hdus(hdus)
+
+    @classmethod
+    def _parse_hdus(cls, hdulist):
+        """Parses a RHESSI FITS HDU list form a FITS file."""
+        header, d = rhessi.parse_obssumm_hdulist(hdulist)
         header = MetaDict(OrderedDict(header))
         data = DataFrame(d['data'], columns=d['labels'], index=d['time'])
-
         # Add the units data
         units = OrderedDict([('3 - 6 keV', u.dimensionless_unscaled),
                              ('6 - 12 keV', u.dimensionless_unscaled),
@@ -128,6 +135,10 @@ class RHESSISummaryLightCurve(GenericTimeSeries):
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
-        """Determines if header corresponds to a RHESSI X-ray Summary lightcurve"""
-        #return header.get('instrume', '').startswith('')
-        return kwargs.get('source', '').startswith('RHESSI')
+        """Determines if the file corresponds to a RHESSI X-ray Summary lightcurve"""
+        # Check if source is explicitly assigned
+        if 'source' in kwargs.keys():
+            return kwargs.get('source', '').startswith('RHESSI')
+        # Check if HDU defines the source instrument
+        if 'meta' in kwargs.keys():
+            return kwargs['meta'].get('telescop', '').startswith('HESSI')
