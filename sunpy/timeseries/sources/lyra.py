@@ -7,8 +7,8 @@ import sys
 from collections import OrderedDict
 
 from matplotlib import pyplot as plt
-from astropy.io import fits
 import pandas
+import sunpy.io
 
 from sunpy.timeseries import GenericTimeSeries
 from sunpy.time import parse_time
@@ -119,19 +119,29 @@ class LYRALightCurve(GenericTimeSeries):
 
     @classmethod
     def _parse_file(cls, filepath):
-        """Parses LYRA data from a FITS file"""
+        """Parses Lyra FITS data files to create TimeSeries."""
+        hdus = sunpy.io.read_file(filepath)
+        return cls._parse_hdus(hdus)
+
+    @classmethod
+    def _parse_hdus(cls, hdulist):
+        """Parses LYRA HDU list from a FITS file"""
         # Open file with PyFITS
-        hdulist = fits.open(filepath)
         fits_record = hdulist[1].data
         # secondary_header = hdulist[1].header
 
         # Start and end dates.  Different LYRA FITS files have
         # different tags for the date obs.
+        """
+        print(hdulist[0].header)
         if 'date-obs' in hdulist[0].header:
             start_str = hdulist[0].header['date-obs']
         elif 'date_obs' in hdulist[0].header:
             start_str = hdulist[0].header['date_obs']
         # end_str = hdulist[0].header['date-end']
+        """
+        metadata = MetaDict(OrderedDict(hdulist[0].header))
+        start_str = metadata.get('date-obs', metadata.get('date_obs', ''))
 
         # start = datetime.datetime.strptime(start_str, '%Y-%m-%dT%H:%M:%S.%f')
         start = parse_time(start_str)
@@ -162,17 +172,21 @@ class LYRALightCurve(GenericTimeSeries):
         # Return the header and the data
         data = pandas.DataFrame(table, index=times)
         data.sort_index(inplace=True)
-        
+
         # Add the units data
         units = OrderedDict([('CHANNEL1', u.W/u.m**2),
                              ('CHANNEL2', u.W/u.m**2),
                              ('CHANNEL3', u.W/u.m**2),
                              ('CHANNEL4', u.W/u.m**2)])
         # ToDo: check: http://www.wmo-sat.info/oscar/instruments/view/733
-        return data, MetaDict(OrderedDict(hdulist[0].header)), units
+        return data, metadata, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
-        """Determines if header corresponds to a LYRA LightCurve timeseries"""
-        #return header.get('instrume', '').startswith('')
-        return kwargs.get('source', '').startswith('LYRA')
+        """Determines if the file corresponds to a LYRA LightCurve timeseries"""
+        # Check if source is explicitly assigned
+        if 'source' in kwargs.keys():
+            return kwargs.get('source', '').startswith('LYRA')
+        # Check if HDU defines the source instrument
+        if 'meta' in kwargs.keys():
+            return kwargs['meta'].get('INSTRUME', '').startswith('LYRA')
