@@ -2,11 +2,10 @@ from __future__ import absolute_import
 
 from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr
 from sunpy.net.vso.attrs import _VSOSimpleAttr
-from sunpy.net.vso.attrs import Time, Sample, Wavelength
+from sunpy.net.vso.attrs import Time, Wavelength
 
 
-__all__ = ['Series', 'Protocol', 'Notify', 'Compression', 'Wavelength', 'Time',
-           'Segment', 'Sample']
+__all__ = ['Series', 'Protocol', 'Notify', 'Compression', 'Segment']
 
 
 class Series(_VSOSimpleAttr):

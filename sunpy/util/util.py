@@ -15,6 +15,7 @@ __all__ = ['to_signed', 'unique', 'print_table',
            'minimal_pairs', 'polyfun_at',
            'expand_list', 'expand_list_generator', 'Deprecated']
 
+
 def to_signed(dtype):
     """ Return dtype that can hold data of passed dtype but is signed.
     Raise ValueError if no such dtype exists.
@@ -33,6 +34,7 @@ def to_signed(dtype):
             raise ValueError("Cannot losslessly convert uint64 to int.")
         dtype = "int{0:d}".format(min(dtype.itemsize * 2 * 8, 64))
     return np.dtype(dtype)
+
 
 def unique(itr, key=None):
     """
@@ -66,6 +68,7 @@ def unique(itr, key=None):
             if x not in items:
                 yield elem
                 items.add(x)
+
 
 def print_table(lst, colsep=' ', linesep='\n'):
     """
