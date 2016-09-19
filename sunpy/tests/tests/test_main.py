@@ -48,6 +48,8 @@ def test_main_with_cover(monkeypatch):
     covpath = os.path.abspath(
         os.path.join(sunpy.tests.testdir, os.path.join(os.pardir, 'map')))
     assert args in (['--cov', covpath, '-k-online', '-m not figure', os.path.join('sunpy', 'map')],
+                    ['--cov', os.path.join('sunpy', 'map'), '-k-online', '-m not figure', os.path.join(root_dir, 'map')],
+                    ['--cov', os.path.join('sunpy', 'map'), '-k-online', '-m not figure', os.path.join('sunpy', 'map')],
                     ['--cov', covpath, '-k-online', '-m not figure', os.path.join(root_dir, 'map')])
 
 
