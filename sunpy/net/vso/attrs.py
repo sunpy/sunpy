@@ -111,7 +111,7 @@ class Wavelength(Attr, _Range):
     def __repr__(self):
         return "<Wavelength({0!r}, {1!r}, '{2!s}')>".format(self.min.value,
                                                             self.max.value,
-                                                            self).unit
+                                                            self.unit)
 
 
 class Time(Attr, _Range):
