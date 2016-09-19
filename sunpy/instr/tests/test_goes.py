@@ -350,7 +350,8 @@ def test_calculate_xray_luminosity():
       Quantity(np.array([9.54399250e+17, 9.54399250e+17, 9.52985195e+17,
                          9.52985195e+17, 9.51571139e+17], dtype="float32"),
                          unit="J/s")
-    assert_frame_equal(goeslc_test.data, goeslc_expected.data)
+    assert_frame_equal(goeslc_test.data, goeslc_expected.data,
+                       check_less_precise=True)
 
 def test_goes_lx_errors():
     # Define input values of flux and time.
