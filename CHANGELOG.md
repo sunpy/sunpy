@@ -1,10 +1,14 @@
 Latest
 ------
 
+* Simplified map names when plotting.
 * Add time format used by some SDO HMI FITS keywords
 * Fix bug in `wcs.convert_data_to_pixel` where crpix[1] was used for both axes.
 * Fix some leftover instances of `GenericMap.units`
 * Fixed bugs in `sun` equations
+* Now the `sunpy.database.tables.display_entries()` prints an astropy table.
+* Additional methods added inside the `sunpy.database` class to make it easier
+  to display the database contents.
 
 0.7.0
 -----
