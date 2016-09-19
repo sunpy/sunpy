@@ -39,10 +39,10 @@ class QueryResponseBlock(object):
         self.time = TimeRange(map0.get('Time_start'), map0.get('Time_end'))
 
 
-def iter_urls(amap_, url_list):
+def iter_urls(amap, url_list):
     """Helper Function"""
     for aurl in url_list:
-        tmp = QueryResponseBlock(amap_, aurl)
+        tmp = QueryResponseBlock(amap, aurl)
         yield tmp
 
 
@@ -55,8 +55,8 @@ class QueryResponse(list):
         super(QueryResponse, self).__init__(lst)
 
     @classmethod
-    def create(cls, map_, lst):
-        return cls(iter_urls(map_, lst))
+    def create(cls, amap, lst):
+        return cls(iter_urls(amap, lst))
 
     def time_range(self):
         """
