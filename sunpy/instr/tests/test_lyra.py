@@ -76,7 +76,7 @@ def test_split_series_using_lytaf():
                                                    dummy_data, LYTAF_TEST)
     assert type(split_no_lytaf) == list
     assert type(split_no_lytaf[0]) == dict
-    assert list(split_no_lytaf[0].keys()) == ['subtimes', 'subdata']
+    assert not set(split_no_lytaf[0].keys()).symmetric_difference({'subtimes', 'subdata'})
     assert split_no_lytaf[0]["subtimes"] == dummy_time
     assert split_no_lytaf[0]["subdata"].all() == dummy_data.all()
 
