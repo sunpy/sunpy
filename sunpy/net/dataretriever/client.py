@@ -1,6 +1,6 @@
-#Author :Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-#This module was developed under funding provided by
-#Google Summer of Code 2014
+# Author :Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
+# This module was developed under funding provided by
+# Google Summer of Code 2014
 
 import copy
 import datetime
@@ -10,10 +10,11 @@ import astropy.table
 
 from sunpy.time import TimeRange
 from sunpy import config
-TIME_FORMAT = config.get("general", "time_format")
 
 from ..download import Downloader, Results
 from ..vso.attrs import Time
+
+TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['QueryResponse', 'GenericClient']
 
@@ -38,10 +39,10 @@ class QueryResponseBlock(object):
         self.time = TimeRange(map0.get('Time_start'), map0.get('Time_end'))
 
 
-def iter_urls(map_, url_list):
+def iter_urls(amap_, url_list):
     """Helper Function"""
     for aurl in url_list:
-        tmp = QueryResponseBlock(map_, aurl)
+        tmp = QueryResponseBlock(amap_, aurl)
         yield tmp
 
 
@@ -51,12 +52,10 @@ class QueryResponse(list):
     """
 
     def __init__(self, lst):
-
         super(QueryResponse, self).__init__(lst)
 
     @classmethod
     def create(cls, map_, lst):
-
         return cls(iter_urls(map_, lst))
 
     def time_range(self):
@@ -64,8 +63,8 @@ class QueryResponse(list):
         Returns the time-span for which records are available
         """
         return (datetime.date.strftime(
-            min(qrblock.time.start for qrblock in self), '%Y/%m/%d'),
-                datetime.date.strftime(
+            min(qrblock.time.start
+                for qrblock in self), '%Y/%m/%d'), datetime.date.strftime(
                     max(qrblock.time.end for qrblock in self), '%Y/%m/%d'))
 
     def __repr__(self):
@@ -78,13 +77,13 @@ class QueryResponse(list):
         return self._build_table()._repr_html_()
 
     def _build_table(self):
-        columns = OrderedDict((('Start Time', []), ('End Time', []), (
-            'Source', []), ('Instrument', [])))
+        columns = OrderedDict((('Start Time', []), ('End Time', []),
+                               ('Source', []), ('Instrument', [])))
         for i, qrblock in enumerate(self):
             columns['Start Time'].append((qrblock.time.start.date(
             ) + datetime.timedelta(days=i)).strftime(TIME_FORMAT))
             columns['End Time'].append((qrblock.time.start.date(
-            ) + datetime.timedelta(days=i+1)).strftime(TIME_FORMAT))
+            ) + datetime.timedelta(days=i + 1)).strftime(TIME_FORMAT))
             columns['Source'].append(qrblock.source)
             columns['Instrument'].append(qrblock.instrument)
 
@@ -213,8 +212,8 @@ class GenericClient(object):
         res = Results(lambda x: None, 0, lambda map_: self._link(map_))
 
         dobj = Downloader(max_conn=len(urls), max_total=len(urls))
-        for aurl, ncall in list(zip(urls, map(lambda x: res.require([x]),
-                                              urls))):
+        for aurl, ncall in list(
+                zip(urls, map(lambda x: res.require([x]), urls))):
             dobj.download(aurl, kwargs.get('Path', None), ncall,
                           kwargs.get('ErrorBack', None))
 
