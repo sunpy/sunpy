@@ -32,10 +32,10 @@ class GOESClient(GenericClient):
 
         sat_list = []
         for sat_num in goes_operational:
-            if ((start > goes_operational[sat_num].start and
-                 start < goes_operational[sat_num].end) and
-                (end > goes_operational[sat_num].start and
-                 end < goes_operational[sat_num].end)):
+            if ((start >= goes_operational[sat_num].start and
+                 start <= goes_operational[sat_num].end) and
+                (end >= goes_operational[sat_num].start and
+                 end <= goes_operational[sat_num].end)):
                 # if true then the satellite with sat_num is available
                 sat_list.append(sat_num)
 
