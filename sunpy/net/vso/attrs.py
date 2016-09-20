@@ -142,6 +142,9 @@ class Time(Attr, _Range):
         else:
             self.start = parse_time(start)
             self.end = parse_time(end)
+
+        if self.start > self.end:
+            raise ValueError("End time must be after start time.")
         self.near = None if near is None else parse_time(near)
 
         _Range.__init__(self, self.start, self.end, self.__class__)
