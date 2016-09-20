@@ -16,6 +16,7 @@ from sunpy.time import parse_time
 from sunpy.net.jsoc import JSOCClient, JSOCResponse
 from sunpy.net.download import Results
 import sunpy.net.jsoc.attrs as attrs
+import sunpy.net.vso.attrs as vso_attrs
 
 client = JSOCClient()
 
@@ -158,7 +159,7 @@ def test_empty_jsoc_response():
 def test_query():
     Jresp = client.query(
         attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:01:30'),
-        attrs.Series('hmi.M_45s'), attrs.Sample(90 * u.second))
+        attrs.Series('hmi.M_45s'), vso_attrs.Sample(90 * u.second))
     assert isinstance(Jresp, JSOCResponse)
     assert len(Jresp) == 2
 
@@ -243,7 +244,6 @@ def test_request_status_fail():
 
 
 @pytest.mark.online
-#@pytest.mark.xfail
 def test_wait_get():
     responses = client.query(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
@@ -274,7 +274,7 @@ def test_results_filenames():
     path = tempfile.mkdtemp()
     aa = client.get(responses, path=path)
     assert isinstance(aa, Results)
-    files = aa.wait()
+    files = aa.wait(progress=False)
     assert len(files) == len(responses)
     for hmiurl in aa.map_:
         assert os.path.isfile(hmiurl)
@@ -283,5 +283,4 @@ def test_results_filenames():
 @pytest.mark.online
 def test_invalid_query():
     with pytest.raises(ValueError):
-        resp = client.query(
-            attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'))
+        client.query(attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'))
