@@ -30,6 +30,7 @@ import sunpy.timeseries
 from sunpy.time import TimeRange
 from sunpy.util.metadata import MetaDict
 from sunpy.timeseries import TimeSeriesMetaData
+from sunpy.tests.helpers import figure_test, skip_wcsaxes
 
 import sunpy.data.sample
 import sunpy.data.test
@@ -412,6 +413,16 @@ def test_ts_index(generic_ts):
 
 def test_ts_sort_index(generic_ts):
     assert generic_ts.sort_index().data.equals(generic_ts.data.sort_index())
+
+#_validate_units
+
+#_validate_meta
+
+@skip_wcsaxes
+@figure_test
+def test_eve_peek(eve_test_ts):
+    eve_test_ts.peek()
+
 
 # ToDo:
 ###Extracting column as quantity or array#ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
