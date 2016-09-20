@@ -49,14 +49,14 @@ def test_query():
 def test_get(time, instrument):
     qr1 = LCClient.query(time, instrument)
     res = LCClient.get(qr1)
-    download_list = res.wait()
+    download_list = res.wait(progress=False)
     assert len(download_list) == len(qr1)
 
 @pytest.mark.online
 def test_new_logic():
     qr = LCClient.query(Time('2012/10/4','2012/10/6'), Instrument('goes'))
     res = LCClient.get(qr)
-    download_list = res.wait()
+    download_list = res.wait(progress=False)
     assert len(download_list) == len(qr)
 
 @pytest.mark.online

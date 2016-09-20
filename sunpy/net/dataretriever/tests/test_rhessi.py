@@ -49,7 +49,7 @@ def test_query():
 def test_get(time, instrument):
     qr1 = LCClient.query(time, instrument)
     res = LCClient.get(qr1)
-    download_list = res.wait()
+    download_list = res.wait(progress=False)
     assert len(download_list) == len(qr1)
 
 @pytest.mark.online
