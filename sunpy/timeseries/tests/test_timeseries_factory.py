@@ -16,6 +16,7 @@ import numpy as np
 from pandas import DataFrame
 from collections import OrderedDict
 from sunpy.util.metadata import MetaDict
+import sunpy.io
 import astropy.units as u
 from astropy.table import Table
 from astropy.time import Time
@@ -168,6 +169,21 @@ class TestTimeSeries(object):
 #==============================================================================
 # Manual TimeSeries Tests
 #==============================================================================
+
+    def test_meta_from_fits_header(self):
+        # Generate the data and the corrisponding dates
+        base = datetime.datetime.today()
+        times = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+        intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
+        data = DataFrame(intensity, index=times, columns=['intensity'])
+
+        # Use a FITS file HDU
+        hdulist = sunpy.io.read_file(goes_filepath)
+        meta = hdulist[0].header
+        meta_md = MetaDict(OrderedDict(meta))
+        ts_hdu_meta = sunpy.timeseries.TimeSeries(data, meta)
+        ts_md_meta = sunpy.timeseries.TimeSeries(data, meta_md)
+        assert ts_hdu_meta == ts_md_meta
 
     def test_generic_construction_basic(self):
         # Generate the data and the corrisponding dates
