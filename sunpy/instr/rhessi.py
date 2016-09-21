@@ -17,6 +17,9 @@ import numpy as np
 from astropy.io import fits
 from astropy import units as u
 
+import sunpy.map
+import sunpy.sun.constants
+
 from sunpy.time import TimeRange, parse_time
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.sun.sun import sunearth_distance
@@ -92,6 +95,9 @@ def get_obssumm_dbase_file(time_range):
 
     _time_range = TimeRange(time_range)
     data_location = 'dbase/'
+
+    if _time_range.start < parse_time("2002/02/01"):
+        raise ValueError("RHESSI summary files are not available for before 2002-02-01")
 
     url_root = get_base_url() + data_location
     url = url_root + _time_range.start.strftime("hsi_obssumm_filedb_%Y%m.txt")
@@ -169,8 +175,8 @@ def parse_obssumm_dbase_file(filename):
 def get_obssum_filename(time_range):
     """
     Download the RHESSI observing summary data from one of the RHESSI
-    servers, parses it, and returns the name of the obssumm file relevant for
-    the time range
+    servers, parses it, and returns the name of the obssumm files relevant for
+    the time range.
 
     Parameters
     ----------
@@ -179,13 +185,13 @@ def get_obssum_filename(time_range):
 
     Returns
     -------
-    out : string
-        Returns the filename of the observation summary file
+    out : list
+        Returns the filenames of the observation summary file
 
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> rhessi.get_obssumm_filename(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
+    >>> rhessi.get_obssum_filename(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
 
     .. note::
         This API is currently limited to providing data from whole days only.
@@ -199,9 +205,10 @@ def get_obssum_filename(time_range):
     result = parse_obssumm_dbase_file(f[0])
     _time_range = TimeRange(time_range)
 
-    index_number = _time_range.start.day - 1
+    index_number_start = _time_range.start.day - 1
+    index_number_end = _time_range.end.day - 1
 
-    return get_base_url() + data_location + filename + 's' for filename in result.get('filename')[index_number_start:index_number_end]]
+    return [data_servers[0] + data_location + filename + 's' for filename in result.get('filename')[index_number_start:index_number_end]]
 
 
 def get_obssumm_file(time_range):
@@ -277,7 +284,8 @@ def parse_obssumm_file(filename):
               '50 - 100 keV', '100 - 300 keV', '300 - 800 keV', '800 - 7000 keV',
               '7000 - 20000 keV']
 
-    # the data stored in the fits file are "compressed" countrates stored as one byte
+    # The data stored in the FITS file are "compressed" countrates stored as
+    # one byte
     compressed_countrate = np.array(afits[6].data.field('countrate'))
 
     countrate = uncompress_countrate(compressed_countrate)
@@ -285,7 +293,7 @@ def parse_obssumm_file(filename):
 
     time_array = [reference_time_ut + timedelta(0,time_interval_sec * a) for a in np.arange(dim)]
 
-    #TODO generate the labels for the dict automatically from labels
+    # TODO generate the labels for the dict automatically from labels
     data = {'time': time_array, 'data': countrate, 'labels': labels}
 
     return header, data
