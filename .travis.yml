@@ -26,7 +26,7 @@ env:
         - ASTROPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
         - CONDA_CHANNELS='astropy astropy-ci-extras conda-forge'
-        - CONDA_DEPENDENCIES='glymur openjpeg Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest wcsaxes pyyaml pandas nomkl pytest-cov coverage'
+        - CONDA_DEPENDENCIES='glymur openjpeg Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest wcsaxes pyyaml pandas nomkl pytest-cov coverage hypothesis'
         - PIP_DEPENDENCIES='suds-jurko sphinx-gallery'
 
     matrix:
