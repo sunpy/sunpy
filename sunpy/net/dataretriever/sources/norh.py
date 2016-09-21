@@ -68,7 +68,7 @@ class NoRHClient(GenericClient):
         """
         self.map_['source'] = 'NAOJ'
         self.map_['provider'] = 'NRO'
-        self.map_['instrument'] = 'RadioHelioGraph'
+        self.map_['instrument'] = 'NORH'
         self.map_['phyobs'] = ''
 
     @classmethod
