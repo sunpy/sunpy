@@ -1,6 +1,6 @@
 import pytest
 
-from sunpy.time.timerange import TimeRange
+from sunpy.time.timerange import TimeRange, parse_time
 from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.goes as goes
@@ -44,14 +44,20 @@ def test_no_satellite():
         LCClient.query(Time("1950/01/01", "1950/02/02"), Instrument('goes'))
 
 
+@example(a.Time("1983-05-01", "1983-05-02"))
 # This example tests a time range with a satellite jump and no overlap
 @example(a.Time("2009-11-30", "2009-12-3"))
 @given(goes_time())
 def test_query(time):
-    qr1 = LCClient.query(time, Instrument('goes'))
-    assert isinstance(qr1, QueryResponse)
-    assert qr1.time_range().start == time.start
-    assert qr1.time_range().end == time.end
+    tr = TimeRange(time.start, time.end)
+    if parse_time("1983-05-01") in tr:
+        with pytest.raises(ValueError):
+            LCClient.query(time, Instrument('goes'))
+    else:
+        qr1 = LCClient.query(time, Instrument('goes'))
+        assert isinstance(qr1, QueryResponse)
+        assert qr1.time_range().start == time.start
+        assert qr1.time_range().end == time.end
 
 
 @pytest.mark.online
