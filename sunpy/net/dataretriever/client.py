@@ -62,10 +62,8 @@ class QueryResponse(list):
         """
         Returns the time-span for which records are available
         """
-        return (datetime.date.strftime(
-            min(qrblock.time.start
-                for qrblock in self), '%Y/%m/%d'), datetime.date.strftime(
-                    max(qrblock.time.end for qrblock in self), '%Y/%m/%d'))
+        return TimeRange(min(qrblock.time.start for qrblock in self),
+                         max(qrblock.time.end for qrblock in self))
 
     def __repr__(self):
         return repr(self._build_table())
