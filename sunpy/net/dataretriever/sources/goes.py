@@ -8,13 +8,23 @@ from sunpy.time import parse_time, TimeRange
 
 from ..client import GenericClient
 
+from sunpy import config
+TIME_FORMAT = config.get("general", "time_format")
+
 __all__ = ['GOESClient']
 
 
 class GOESClient(GenericClient):
+    def _get_goes_sat_num(self, date):
+        """
+        Determines the satellite number for a given date.
 
-    def _get_goes_sat_num(self, start, end):
-        """Parses the query time to determine which GOES satellite to use."""
+        Parameters
+        ----------
+
+        date : `datetime.datetime`
+            The date to determine which satellite is active.
+        """
         goes_operational = {
             2: TimeRange('1981-01-01', '1983-04-30'),
             5: TimeRange('1983-05-02', '1984-07-31'),
@@ -30,23 +40,23 @@ class GOESClient(GenericClient):
             15: TimeRange('2010-09-01', datetime.datetime.utcnow())
         }
 
-        sat_list = []
+        results = []
         for sat_num in goes_operational:
-            if ((start >= goes_operational[sat_num].start and
-                 start <= goes_operational[sat_num].end) and
-                (end >= goes_operational[sat_num].start and
-                 end <= goes_operational[sat_num].end)):
+            if date in goes_operational[sat_num]:
                 # if true then the satellite with sat_num is available
-                sat_list.append(sat_num)
+                results.append(sat_num)
 
-        if not sat_list:
-            # if no satellites were found then raise an exception
-            raise Exception('No operational GOES satellites within time range')
+        if results:
+            # Return the newest satellite
+            return max(results)
         else:
-            return sat_list
+            # if no satellites were found then raise an exception
+            raise ValueError('No operational GOES satellites on {}'.format(
+                date.strftime(TIME_FORMAT)))
 
     def _get_url_for_timerange(self, timerange, **kwargs):
-        """Returns a URL to the GOES data for the specified date.
+        """
+        Returns a URL to the GOES data for the specified date.
 
         Parameters
         ----------
@@ -59,25 +69,23 @@ class GOESClient(GenericClient):
             types depend on the satellite number specified. (default = xrs_2s)
         """
         # find out which satellite and datatype to query from the query times
-        sat_num = self._get_goes_sat_num(timerange.start, timerange.end)
         base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
-        total_days = (timerange.end - timerange.start).days + 1 
-        all_dates = timerange.split(total_days)
+        start_time = datetime.datetime.combine(timerange.start.date(),
+                                               datetime.datetime.min.time())
+        total_days = int(timerange.days.value) + 1
         result = list()
-#       Earlier we assumed that an entire range (consequently all dates within the range) were assigned the
-#       same GOES sat number, which meant we supplied timerange.start and timerange.end to
-#       _get_goes_sat_num. But now, we iterate over all the dates individually and hence
-#       _get_goes_sat_num gets each single date as an argument (the timerange.start and timerange.end
-#       for a single day is the day itself (trivial) ). That is why the same date. Its iterating over all the dates
-#       indivually.
-        for day in all_dates:
+
+        # Iterate over each day in the input timerange and generate a URL for
+        # it.
+        for day in range(total_days):
+            date = start_time + datetime.timedelta(days=day)
             regex = "{date:%Y}/go{sat:02d}"
-            if (day.end < parse_time('1999/01/15')):
+            if (date < parse_time('1999/01/15')):
                 regex += "{date:%y%m%d}.fits"
             else:
                 regex += "{date:%Y%m%d}.fits"
             url = base_url + regex.format(
-                    date=day.end, sat=self._get_goes_sat_num(day.end, day.end)[0])
+                date=date, sat=self._get_goes_sat_num(date))
             result.append(url)
         return result
 
@@ -104,8 +112,8 @@ class GOESClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chkattr =  ['Time', 'Instrument']
-        chklist =  [x.__class__.__name__ in chkattr for x in query]
+        chkattr = ['Time', 'Instrument']
+        chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value == 'goes':
                 return all(chklist)
