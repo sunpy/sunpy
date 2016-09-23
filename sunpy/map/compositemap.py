@@ -45,7 +45,7 @@ class CompositeMap(object):
         Returns the layering preference (z-order) for a map within the composite.
     get_colors(index=None)
         Returns the colors for a map within the CompositeMap.
-    get_norm(index=None)
+    get_normalization(index=None)
         Returns the normalization for a map within the CompositeMap.
     get_levels(index=None)
         Returns the list of contour levels for a map within the CompositeMap
@@ -194,7 +194,7 @@ class CompositeMap(object):
         else:
             return self._maps[index].plot_settings['cmap']
 
-    def get_mpl_color_normalizer(self, index=None):
+    def get_normalization(self, index=None):
         """Returns the color normalizer for a map within the
         composite.
 
@@ -211,9 +211,9 @@ class CompositeMap(object):
             a list.
         """
         if index is None:
-            return [_map.mpl_color_normalizer for _map in self._maps]
+            return [_map.plot_settings['norm'] for _map in self._maps]
         else:
-            return self._maps[index].mpl_color_normalizer
+            return self._maps[index].plot_settings['norm']
 
     def get_levels(self, index=None):
         """Returns the list of contour levels for a map within the
@@ -281,7 +281,7 @@ class CompositeMap(object):
         """
         self._maps[index].plot_settings['cmap'] = cm
 
-    def set_norm(self, index, norm):
+    def set_normalization(self, index, norm):
         """Sets the normalization for a layer in the composite image.
 
         Parameters
