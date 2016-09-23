@@ -53,11 +53,11 @@ class CompositeMap(object):
         Sets the norm for a layer in the composite image.
     set_levels(index, levels, percent=False)
         Sets the contour levels for a layer in the CompositeMap.
-    set_colors(index=None, cm)
+    set_colors(index, cm)
         Sets the color map for a layer in the CompositeMap.
-    set_alpha(index=None, alpha)
+    set_alpha(index, alpha)
         Sets the alpha-channel value for a layer in the CompositeMap.
-    set_zorder(index=None, zorder)
+    set_zorder(index, zorder)
         Set the layering preference (z-order) for a map within the CompositeMap.
     plot(figure=None, overlays=None, draw_limb=False, gamma=1.0,
     draw_grid=False, colorbar=True, basic_plot=False,title="SunPy Plot",
@@ -236,24 +236,6 @@ class CompositeMap(object):
         else:
             return self._maps[index].levels
 
-    def set_mpl_color_normalizer(self, index, norm):
-        """Sets the color normalizer for a layer in the composite image.
-
-        Parameters
-        ----------
-        index : `int`
-            The index of the map in the composite map.
-
-        norm : a color normalizer
-            The function used to stretch the color table.
-
-        Returns
-        -------
-        `~sunpy.map.CompositeMap`
-            Sets the color normalizer of the map at index 'index' in the
-            composite map to the value given by 'norm'."""
-        self._maps[index].mpl_color_normalizer = norm
-
     def set_levels(self, index, levels, percent=False):
         """
         Sets the contour levels for a layer in the composite image.
@@ -298,6 +280,26 @@ class CompositeMap(object):
             A composite map with colormap 'cm' at layer 'index'.
         """
         self._maps[index].plot_settings['cmap'] = cm
+
+    def set_norm(self, index, norm):
+        """Sets the normalization for a layer in the composite image.
+
+        Parameters
+        ----------
+        index : `int`
+            The index of the map in the composite map.
+
+        norm : `matplotlib.colors.Normalize`
+            A normalizer that stretches the color table as requires.
+            Note that Astropy has a number of Normalization objects
+            that may be useful.
+
+        Returns
+        -------
+        `~sunpy.map.CompositeMap`
+            A composite map with normalization 'norm' at layer 'index'.
+        """
+        self._maps[index].plot_settings['norm'] = norm
 
     def set_alpha(self, index, alpha):
         """Sets the alpha-channel value for a layer in the composite image.
