@@ -149,8 +149,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     def _validate_meta(self, meta):
         """
         Validate a meta argument for use as metadata.
+        Currently only validates by class.
         """
         if isinstance(meta, astropy.io.fits.header.Header):
+            return True
+        elif isinstance(meta, sunpy.io.header.FileHeader):
             return True
         elif isinstance(meta, dict):
             return True
@@ -188,9 +191,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         Parameters
         ----------
         t: `~astropy.table.table.Table`
-            The input table. The datetime column ust be the first column or the
+            The input table. The datetime column must be the first column or the
             (single) primary key index.
-
 
         Returns
         -------
@@ -294,6 +296,10 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                                 units.update(args[i+1])
                                 i += 1  # an extra increment to account for the units
                             elif self._validate_meta(args[i+1]):
+                                # if we have an astropy.io FITS header then convert
+                                # to preserve multi-line comments
+                                if isinstance(args[i+1], astropy.io.fits.header.Header):
+                                    args[i+1] = MetaDict(sunpy.io.header.FileHeader(args[i+1]))
                                 meta.update(args[i+1])
                                 i += 1  # an extra increment to account for the meta
 
@@ -357,7 +363,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 data_header_pairs += pairs
 
             else:
-                raise ValueError("File not found or invalid input")
+                #raise ValueError("File not found or invalid input")
+                raise NoMatchError("File not found or invalid input")
             i += 1
 
         # TODO:
@@ -443,7 +450,11 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # matches the arguments.  If it does, use that type
         for triple in data_header_unit_tuples:
             data, header, units = triple
-            meta = MetaDict(header)
+            # Make a MetaDict from various input types
+            meta = header
+            if isinstance(meta, astropy.io.fits.header.Header):
+                meta = sunpy.io.header.FileHeader(meta)
+            meta = MetaDict(meta)
 
             try:
                 new_ts = self._check_registered_widgets(data=data, meta=meta,
