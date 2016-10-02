@@ -54,6 +54,14 @@ def basic_4_md():
     return TimeSeriesMetaData(tup)
 
 
+@pytest.fixture
+def overlap_and_interleave_with_basic_1_md():
+    tr = TimeRange('2010-01-01 01:01:00.0', '2010-01-02 01:01:00.0')
+    colnames = [ 'column1', 'column2' ]
+    metadict = MetaDict(OrderedDict([('other_key1', 'value1'), ('other_key2', 'value2'), ('all_same', 'value3'), ('all_different', 'diff_5')]))
+    lis = [ ( tr, colnames, metadict ) ]
+    return TimeSeriesMetaData(lis)
+
 #==============================================================================
 # Test Creating TimeSeriesMetaData With Limited Input
 #==============================================================================
@@ -345,6 +353,14 @@ def test_to_string_width(basic_1_md):
     split = width_60_str.split('\n')
     assert len(split[0]) == len(split[1]) == len(split[2]) == len(split[3]) == 60
 
+def test_to_string_few_metadict_entries(basic_1_md):
+    tr = basic_1_md.metadata[0][0]
+    colnames = basic_1_md.metadata[0][1]
+    metadict = MetaDict(OrderedDict([('md1_key1', 'value1')]))
+    lis = [ ( tr, colnames, metadict ) ]
+    basic_1_md_less_metadict_entries = TimeSeriesMetaData(lis)
+    depth_3_str = basic_1_md_less_metadict_entries.to_string(depth = 3)
+    assert isinstance(depth_3_str, str)
 
 def test_timeranges(basic_ascending_append_md):
     lis = []
@@ -387,5 +403,10 @@ def test_remove_columns(complex_append_md):
     assert cols_removed_md.metadata[0][1] == cols_removed_md.metadata[2][1] == cols_removed_md.metadata[3][1] == [complex_append_md.metadata[0][1][1]]
     assert cols_removed_md.metadata[1][1] == [complex_append_md.metadata[1][1][0]]
 
-def test_validate_meta(complex_append_md):
+def test_validate_meta_good(complex_append_md):
     assert complex_append_md._validate_meta(complex_append_md)
+
+def test_validate_meta_interleaved(basic_1_md, overlap_and_interleave_with_basic_1_md):
+    concatenated = copy.deepcopy(basic_1_md)
+    concatenated = concatenated.concatenate(overlap_and_interleave_with_basic_1_md)
+    assert concatenated._validate_meta(concatenated)

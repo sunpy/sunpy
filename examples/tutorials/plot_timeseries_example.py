@@ -14,6 +14,7 @@ developed.
 from __future__ import print_function, division
 
 import os
+import copy
 
 import sunpy.data.sample
 import sunpy.timeseries
@@ -38,14 +39,14 @@ ts_noaa_pre = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_LIGHTCUR
 ts_norh = sunpy.timeseries.TimeSeries(sunpy.data.sample.NORH_LIGHTCURVE, source='NoRH')
 ts_rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_LIGHTCURVE, source='RHESSI')
 ts_gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_LIGHTCURVE, source='GBMSummary')
-# Note: currently you need to define a source, in future this may become implicit for some sources, depending on if the file contains such data.
-# Debate: would it be better for consistency to simply always demand the source?
+# Note: for some FITS files a source can be determined implicitly, however it
+# is good practice to delcare it explicitly when possible.
 
 ##############################################################################
 # You can create a list of TimeSeries objects by using multiple files.
 # TimeSeries sources down have the facility to download data for a given time
 # (this is meant to be un Unidown), so for now we have to use the old LightCurve
-# class to download files that arnt in the sample data.
+# class to download files that aren’t in the sample data.
 goes_lc_1 = lc.GOESLightCurve.create(TimeRange('2012/06/01', '2012/06/02'))
 goes_lc_2 = lc.GOESLightCurve.create(TimeRange('2012/06/02', '2012/06/03'))
 goes_lc_3 = lc.GOESLightCurve.create(TimeRange('2012/06/03', '2012/06/04'))
@@ -63,7 +64,7 @@ combined_goes_ts.peek()
 # with the factory. The issue is that several source filetypes don't contain
 # metadata that enables us to reliably implicitly gather the source and ATM the
 # source is given as a single keyword argument for simplicity. But you can merge
-# different Timeseries classes using concatenate.
+# different TimeSeries classes using concatenate.
 # Debate: are we OK for one source at a time?
 
 ##############################################################################
@@ -82,21 +83,33 @@ combined_goes_ts.peek()
 ts_lyra.data
 ts_lyra.meta
 ts_lyra.units
-# Further data is avalible:
-ts_lyra.time_range # Returns a SunPy TimeRange object.
-ts_lyra.name
-ts_lyra.nickname
-ts_lyra.detector
-ts_lyra.instrument
-ts_lyra.observatory
-# Note: much of the behaviour of these is yet to be sorted for specific instruments.
+# There are a couple of other useful properties you can quickly get:
+ts_lyra.time_range
+ts_lyra.index
+ts_lyra.columns
+# Further data is available from within the metadata, you can filter out for a
+# key using the TimeSeriesMetaData.get() method:
 combined_goes_ts.meta.get('telescop')
-# Note: this returns a TimeSeriesMetaData object, to get a list use the values method:
+# Note: this returns a TimeSeriesMetaData object, to get a list of just the
+# values for this key use the values property of the metadata:
 combined_goes_ts.meta.get('telescop').values()
-# Note: this returns a list because there may be one or more results.
+# Note: this always returns a list because there may be one or more results.
 
 ##############################################################################
-# The TimeSeriesMetaData can be sumerised:
+# The ID used in the data Pandas DataFrame object will be a datetime, as can
+# be seen using ts_lyra.index.
+# You can access a specific value within the TimeSeries data DataFrame using
+# all the normal Pandas methods.
+# For example, the row with the index of 2015-01-01 00:02:00.008000:
+ts_lyra.data.loc[parse_time('2015-01-01 00:02:00.008000')]
+# Pandas will actually parse a string to a datetime automatically if it can:
+ts_lyra.data.loc['2015-01-01 00:02:00.008000']
+# Pandas includes methods to find the indexes of the max/min values in a dataframe:
+lyra_ch1_max_index = ts_lyra.data['CHANNEL1'].idxmax()
+lyra_ch1_min_index = ts_lyra.data['CHANNEL1'].idxmin()
+
+##############################################################################
+# The TimeSeriesMetaData can be summarised:
 combined_goes_ts.meta
 print(combined_goes_ts.meta)
 print(combined_goes_ts.meta.to_string(2))
@@ -110,6 +123,8 @@ ts_eve.peek(subplots=True)
 ##############################################################################
 # An individual column can be extracted from a TimeSeries:
 ts_eve_extract = ts_eve.extract('CMLon')
+# Note: no matter the source type of the original TimeSeries, the extracted
+# TimeSeries is always generic.
 
 ##############################################################################
 # You can truncate a TimeSeries using the truncate() method.
@@ -127,20 +142,28 @@ ts_goes_trunc.peek()
 # Debate: how should we deal with metadata when truncating.
 
 ##############################################################################
-# You can call Pandas resample method, for example to downsample:
-downsampled = ts_goes_trunc.resample('10T', 'mean')
-downsampled.peek()
-# Note: you can use 'mean', 'sum' and 'std' methods, and it should work with
-# other methods that exist in Pandas.
+# You can use Pandas resample method, for example to downsample:
+df_downsampled = ts_goes_trunc.data.resample('10T', 'mean')
+# To get this into a similar dataframe we can copy the original:
+ts_downsampled = copy.deepcopy(ts_goes_trunc)
+ts_downsampled.data = df_downsampled
+ts_downsampled.peek()
+# You can use 'mean', 'sum' and 'std' methods and any other methods in Pandas.
+# Note: changing values within the datframe directly will often affect the units
+# involved, but these won't be picked up by the TimeSeries object. Take care
+# when doing this to ensure dimensional consistancy.
 
 ##############################################################################
-# To upsample:
-upsampled = downsampled.resample('1T', 'ffill')
-upsampled.peek()
+# Similarly, to upsample:
+df_upsampled = ts_downsampled.data.resample('1T', 'ffill')
+# And this can be made into a TimeSeries using:
+ts_upsampled = copy.deepcopy(ts_downsampled)
+ts_upsampled.data = df_upsampled
+ts_upsampled.peek()
 # Note: 'ffill', 'bfill' and 'pad' methods work, and as before others should also.
 # You can also resample using astropy quantities:
-upsampled = downsampled.resample(u.Quantity(0.5,u.min), 'ffill')
-upsampled.peek()
+df_upsampled = ts_downsampled.data.resample(u.Quantity(0.5,u.min), 'ffill')
+# Note: once again this won't necessarily perserve unit consistancy.
 
 ##############################################################################
 # The data from the TimeSeries can be retrieved in a number of formats:
@@ -152,9 +175,9 @@ ts_goes.to_array()
 ##############################################################################
 # Creating a TimeSeries from scratch can be done in a lot of ways, much like a
 # Map.
-# Input data can be in the form of a Pandas DataFrame (prefered), an astropy
+# Input data can be in the form of a Pandas DataFrame (preferred), an astropy
 # Table or a Numpy Array.
-# To generate some data and the corrisponding dates
+# To generate some data and the corresponding dates
 base = datetime.datetime.today()
 dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
 intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
@@ -213,18 +236,4 @@ ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
 # the column using the unit keyword:
 qua_new = u.Quantity(qua.value * 0.00001, ts_eve.units[colname])
 unit = u.W/(u.km**2)
-ts_eve = ts_eve.add_column(colname, qua_new, unit=unit, overwrite=True)#
-
-##############################################################################
-# MetaData
-# Get
-date_obs = combined_goes_ts.meta.get('date-obs').values()
-date_obs = combined_goes_ts.meta.get('date-obs', time=parse_time('2012-06-02T21:08:12')).values()
-date_obs = combined_goes_ts.meta.get('date-obs', time=parse_time('2012-06-02T21:08:12'), colname='xrsa').values()
-date_obs = combined_goes_ts.meta.get('date-obs', time='2012-06-02T21:08:12', colname='xrsa')
-date_obs = combined_goes_ts.meta.get('date-obs')
-# Overwrite
-combined_goes_ts.meta.update({'object':'changed'})
-combined_goes_ts.meta.update({'object':'changed'}, overwrite=True)
-# Note: last one re-arranges order. Is this desired?
-
+ts_eve = ts_eve.add_column(colname, qua_new, unit=unit, overwrite=True)
