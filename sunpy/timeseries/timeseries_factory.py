@@ -267,52 +267,38 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # For each of the arguments, handle each of the cases
         i = 0
         while i < len(args):
-            print('\n\nstart loop    ' + str(i))
             arg = args[i]
-            print(str(type(arg)) + '    ' + str(i))
 
             # Data-header pair in a tuple
             if (isinstance(arg, (np.ndarray, Table, pd.DataFrame))):# and self._validate_meta(args[i+1])):
                 # Assume a Pandas Dataframe is given
-                print('10')
                 data = arg
                 units = OrderedDict()
                 meta = MetaDict()
 
                 # Convert the data argument into a Pandas DataFrame if needed.
                 if isinstance(data, Table):
-                    print('11    ' + str(i))
                     # We have an AstroPy Table:
                     data, meta, units = self._from_table(data)
                 elif isinstance(data, np.ndarray):
-                    print('12    ' + str(i))
                     # We have a numpy ndarray:
                     data = pd.DataFrame(data=arg)
                     # TODO: should this include an index? Maybe default is first column?
 
                 # If there are 1 or 2 more arguments:
                 for _ in range(2):
-                    print('13    ' + str(i))
                     if (len(args) > i+1):
-                        print('13a    ' + str(i))
                         # If that next argument isn't data but is metaddata or units:
                         if not isinstance(args[i+1], (np.ndarray, Table, pd.DataFrame)):
-                            print('13b    ' + str(i))
                             if self._validate_units(args[i+1]):
-                                print('13c    ' + str(i))
                                 units.update(args[i+1])
                                 i += 1  # an extra increment to account for the units
-                                print('13d    ' + str(i))
                             elif self._validate_meta(args[i+1]):
-                                print('13e    ' + str(i))
                                 meta.update(args[i+1])
                                 i += 1  # an extra increment to account for the meta
-                                print('13f    ' + str(i))
 
                 # Add a 3-tuple for this TimeSeries.
-                print('14    ' + str(i))
                 data_header_unit_tuples.append((data, meta, units))
-                print('15    ' + str(i))
 
             # Filepath
             elif (isinstance(arg, six.string_types) and
@@ -372,7 +358,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
             else:
                 raise ValueError("File not found or invalid input")
-            print('\n\nend loop\n\n')
             i += 1
 
         # TODO:

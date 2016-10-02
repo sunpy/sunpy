@@ -347,16 +347,6 @@ class TimeSeriesMetaData:
             for key in dictionary:
                 if key in new_keys:
                     self.metadata[i][2][key] = dictionary[key]
-            """
-            else:
-                #ToDo: if any new.keys in... iterate through keys, if key is false throw an error otherwise update.
-                # Overwrite the original dict over the new to keeps old values.
-                old_meta = copy.copy(self.metadata[i][2])
-                new_meta = copy.copy(MetaDict(dictionary))
-                new_meta.update(old_meta)
-                # Now recreate the tuple
-                self.metadata[i] = ( self.metadata[i][0], self.metadata[i][1], new_meta )
-            """
 
     def _truncate(self, timerange):
         """Removes metadata entries outside of the new (truncated) TimeRange.
@@ -540,10 +530,10 @@ class TimeSeriesMetaData:
         for entry in self.metadata:
             # Make lists for each of the columns for each metadata entry
             # Padded to the widths given in liswidths
-            listr = [ str(entry[0].start), '            to            ', str(entry[0].end) ]
+            lis_range = [ str(entry[0].start), '            to            ', str(entry[0].end) ]
             # Shorten TimeRange representation if depth of only 2
             if depth == 2:
-                listr = [ str(entry[0].start), str(entry[0].end) ]
+                lis_range = [ str(entry[0].start), str(entry[0].end) ]
             liscols = []
             for col in entry[1]:
                 liscols.append(col.ljust(100)[:liswidths[1]])
@@ -554,40 +544,68 @@ class TimeSeriesMetaData:
 
             # Add lines of the entry upto the given depth
             for i in range(0, depth):
-                if len(listr) > i or len(entry[1]) > i or len(lismeta) > i :
+                # What to do in the event any of the lists have more entries
+                # then the current depth
+                if len(lis_range) > i or len(entry[1]) > i or len(lismeta) > i :
+                    # The start of the line Str is just a vertical bar/pipe
                     line = '|'
-                    if len(listr) > i:
-                        line += listr[i].ljust(100)[:liswidths[0]]
+                    # Check we have a time range entry to print
+                    if len(lis_range) > i:
+                        # Simply add that time range entry to the line Str
+                        line += lis_range[i].ljust(100)[:liswidths[0]]
                     else:
+                        # No entry to add, so just add a blank space
                         line += ''.ljust(100)[:liswidths[0]]
+                    # Add a column break vertical bar/pipe
                     line += colspace
+                    # Check we have another column name entry to print
                     if len(entry[1]) > i:
+                        # Simply add that column name to the line Str
                         line += entry[1][i].ljust(100)[:liswidths[1]]
                     else:
+                        # No entry to add, so just add a blank space
                         line += ''.ljust(100)[:liswidths[1]]
+                    # Add a column break vertical bar/pipe
                     line += colspace
+                    # Check we have another meta key/value pair to print
                     if len(lismeta) > i:
+                        # Simply add that key/value pair to the line Str
                         line += lismeta[i].ljust(100)[:liswidths[2]]
                     else:
+                        # No entry to add, so just add a blank space
                         line += ''.ljust(100)[:liswidths[2]]
+                    # Finish the line Str with vertical bar/pipe and \n
                     full += line + '|\n'
-            # Add a line to show if the columns are truncated.
-            if len(listr) >= depth or len(entry[1]) >= depth or len(lismeta) >= depth:
+            # Reached the depth limit, add line to show if the columns are truncated
+            if len(lis_range) >= depth or len(entry[1]) >= depth or len(lismeta) >= depth:
+                # The start of the line Str is just a vertical bar/pipe
                 line = '|'
-                if len(listr) > depth:
+                # Check we have more time range entries to print
+                if len(lis_range) > depth:
+                    # We have more time range entries, use ellipsis to show this
                     line += '...'.ljust(100)[:liswidths[0]]
                 else:
+                    # No entry to add, so just add a blank space
                     line += ''.ljust(100)[:liswidths[0]]
+                # Add a column break vertical bar/pipe
                 line += colspace
+                # Check we have more than one column name entry to print
                 if len(entry[1]) > depth:
+                    # We have more column name entries, use ellipsis
                     line += '...'.ljust(100)[:liswidths[1]]
                 else:
+                    # No more column name entries, so just add a blank space
                     line += ''.ljust(100)[:liswidths[1]]
+                # Add a column break vertical bar/pipe
                 line += colspace
+                # Check we have more meta key/value pairs to print
                 if len(lismeta) > depth:
+                    # We have more key/value pairs, use ellipsis to show this
                     line += '...'.ljust(100)[:liswidths[2]]
                 else:
+                    # No morekey/value pairs, add a blank space
                     line += ''.ljust(100)[:liswidths[2]]
+                # Finish the line Str with vertical bar/pipe and \n
                 full += line + '|\n'
             # Add a line to close the table
             full += rowspace + '\n'
