@@ -366,16 +366,16 @@ class TimeSeriesMetaData:
             out_of_range = False
 
             # Find truncations
-            if start < timerange.start and end > timerange.start:#d or f
+            if start < timerange.start and end > timerange.start:
                 # Truncate the start
                 start = timerange.start
-            elif start > timerange.end:#c
+            elif start > timerange.end:
                 # Metadata time range starts after truncated data ends.
                 out_of_range = True
-            if end > timerange.end and start < timerange.end:#e or f
+            if end > timerange.end and start < timerange.end:
                 # Truncate the end
                 end = timerange.end
-            elif end < timerange.start: # a
+            elif end < timerange.start:
                 # Metadata time range finishes before truncated data starts.
                 out_of_range = True
 
@@ -487,7 +487,6 @@ class TimeSeriesMetaData:
         Validate a meta argument.
         """
         # Checking for metadata that may overlap.
-        #for x, y in itertools.combinations(self.metadata, 2):
         indices = range(0, len(self.metadata))
         for i, j in itertools.combinations(indices, 2):
             # Check if the TimeRanges overlap

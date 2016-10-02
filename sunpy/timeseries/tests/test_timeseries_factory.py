@@ -20,7 +20,8 @@ import sunpy.io
 import astropy.units as u
 from astropy.table import Table
 from astropy.time import Time
-
+from astropy.io import fits
+from sunpy.util.datatype_factory_base import NoMatchError
 
 #==============================================================================
 # TimeSeries Factory Tests
@@ -177,10 +178,19 @@ class TestTimeSeries(object):
         intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
         data = DataFrame(intensity, index=times, columns=['intensity'])
 
-        # Use a FITS file HDU
+        # Use a FITS file HDU using sunpy.io
         hdulist = sunpy.io.read_file(goes_filepath)
         meta = hdulist[0].header
         meta_md = MetaDict(OrderedDict(meta))
+        ts_hdu_meta = sunpy.timeseries.TimeSeries(data, meta)
+        ts_md_meta = sunpy.timeseries.TimeSeries(data, meta_md)
+        assert ts_hdu_meta == ts_md_meta
+
+        # Use a FITS file HDU using astropy.io
+        hdulist = fits.open(goes_filepath)
+        meta = hdulist[0].header
+        hdulist.close()
+        meta_md = MetaDict(sunpy.io.header.FileHeader(meta))
         ts_hdu_meta = sunpy.timeseries.TimeSeries(data, meta)
         ts_md_meta = sunpy.timeseries.TimeSeries(data, meta_md)
         assert ts_hdu_meta == ts_md_meta
@@ -252,7 +262,6 @@ class TestTimeSeries(object):
         ts_od = sunpy.timeseries.TimeSeries(data, meta_od, units)
         assert ts_md == ts_di == ts_od
         assert ts_md.meta.metadata[0][2] == ts_di.meta.metadata[0][2] == ts_od.meta.metadata[0][2]
-
 
 
     def test_generic_construction_ts_list(self):
@@ -363,18 +372,24 @@ class TestTimeSeries(object):
     def test_invalid_manual_data(self):
         meta = MetaDict({'key':'value'})
         data = []
-        with pytest.raises(ValueError):
+        with pytest.raises(NoMatchError):
             sunpy.timeseries.TimeSeries(data, meta)
 
     def test_invalid_filepath(self):
         invalid_filepath = os.path.join(filepath, 'invalid_filepath_here')
-        with pytest.raises(ValueError):
+        with pytest.raises(NoMatchError):
             sunpy.timeseries.TimeSeries(invalid_filepath)
+        # Now with silence_errors kwarg set
+        with pytest.raises(NoMatchError):
+            sunpy.timeseries.TimeSeries(invalid_filepath, silence_errors=True)
 
     def test_invalid_file(self):
         invalid_filepath = os.path.join(filepath, 'annotation_ppt.db')
         with pytest.raises(TypeError):
             sunpy.timeseries.TimeSeries(invalid_filepath)
+        # Now with silence_errors kwarg set
+        with pytest.raises(TypeError):
+            sunpy.timeseries.TimeSeries(invalid_filepath, silence_errors=True)
 
     def test_validate_units(self):
         valid_units = OrderedDict([('Watt Per Meter Squared', u.Unit("W / m2")), ('Meter Cubed', u.Unit("m3"))])
@@ -386,8 +401,22 @@ class TestTimeSeries(object):
         invalid_units_2 = MetaDict(OrderedDict([('Watt Per Meter Squared', u.Unit("W / m2")), ('Meter Cubed', u.Unit("m3"))]))
         assert not sunpy.timeseries.TimeSeries._validate_units(invalid_units_2)
 
-    def test_validate_meta(self):
+    def test_validate_meta_basic(self):
         valid_meta_1 = MetaDict({'key':'value'})
         assert sunpy.timeseries.TimeSeries._validate_meta(valid_meta_1)
         valid_meta_2 = OrderedDict({'key':'value'})
         assert sunpy.timeseries.TimeSeries._validate_meta(valid_meta_2)
+        invalid_meta = []
+        assert not sunpy.timeseries.TimeSeries._validate_meta(invalid_meta)
+
+    def test_validate_meta_astropy_header(self):
+        # Manually open a goes file for the sunpy.io.header.FileHeader test
+        hdus = sunpy.io.read_file(goes_filepath)
+        header = hdus[0].header
+        assert sunpy.timeseries.TimeSeries._validate_meta(header)
+        # Manually open a goes file for the astropy.io.fits.header.Header test
+        hdulist = fits.open(goes_filepath)
+        header = hdulist[0].header
+        hdulist.close()
+        assert sunpy.timeseries.TimeSeries._validate_meta(header)
+
