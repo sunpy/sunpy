@@ -203,14 +203,10 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         table = copy.deepcopy(t)
         # Default the time index to the first column
         index_name = table.colnames[0]
-        print('table.primary_key: ' + str(table.primary_key))
         if table.primary_key:
-            print('if table.primary_key: True')
             if len(table.primary_key) == 1:
-                print('if len(table.primary_key) == 1: True')
                 table.primary_key[0]
             else:
-                print('if len(table.primary_key) == 1: False')
                 raise ValueError("Invalid input Table, TimeSeries doesn't support conversion of tables with more then one index column.")
 
         # Extract and remove the input table
@@ -360,7 +356,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 url = arg
                 path = download_file(url, default_dir)
                 pairs = self._read_file(path, **kwargs)
-                data_header_pairs += pairs
+                #data_header_pairs += pairs
+                filepaths.append(pairs[1])
 
             else:
                 #raise ValueError("File not found or invalid input")
