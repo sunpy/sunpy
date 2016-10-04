@@ -43,10 +43,6 @@ class CompositeMap(object):
         Returns the alpha-channel value for a layer in the composite image
     get_zorder(index=None)
         Returns the layering preference (z-order) for a map within the composite.
-    get_colors(index=None)
-        Returns the colors for a map within the CompositeMap.
-    get_normalization(index=None)
-        Returns the normalization for a map within the CompositeMap.
     get_levels(index=None)
         Returns the list of contour levels for a map within the CompositeMap
     set_norm(self, index, norm)
@@ -174,8 +170,8 @@ class CompositeMap(object):
         else:
             return self._maps[index].zorder
 
-    def get_colors(self, index=None):
-        """Returns the colors for a map within the composite map.
+    def get_plot_settings(self, index=None):
+        """Returns the plot settings for a map within the composite map.
 
         Parameters
         ----------
@@ -184,36 +180,15 @@ class CompositeMap(object):
 
         Returns
         -------
-        {`sunpy.cm` | `list`}
-            The colormaps of the map(s) in the composite map.  If None then the
-            colormaps of all the maps are returned in a list.
+        {`dict` | `list`}
+            The plot settings of the map(s) in the composite map.  If None
+            then the plot settings of all the maps are returned in a list.
         """
 
         if index is None:
-            return [_map.plot_settings['cmap'] for _map in self._maps]
+            return [_map.plot_settings for _map in self._maps]
         else:
-            return self._maps[index].plot_settings['cmap']
-
-    def get_normalization(self, index=None):
-        """Returns the color normalizer for a map within the
-        composite.
-
-        Parameters
-        ----------
-        index : {`int` | None}
-            The index of the map in the composite map.
-
-        Returns
-        -------
-        {color normalizer | `list`}
-            The color normalizer(s) of the map(s) in the composite map.
-            If None then the color normalizers of all the maps are returned in
-            a list.
-        """
-        if index is None:
-            return [_map.plot_settings['norm'] for _map in self._maps]
-        else:
-            return self._maps[index].plot_settings['norm']
+            return self._maps[index].plot_settings
 
     def get_levels(self, index=None):
         """Returns the list of contour levels for a map within the
@@ -281,25 +256,24 @@ class CompositeMap(object):
         """
         self._maps[index].plot_settings['cmap'] = cm
 
-    def set_normalization(self, index, norm):
-        """Sets the normalization for a layer in the composite image.
+    def set_plot_settings(self, index, plot_settings):
+        """Sets the plot settings for a layer in the composite image.
 
         Parameters
         ----------
         index : `int`
             The index of the map in the composite map.
 
-        norm : `matplotlib.colors.Normalize`
-            A normalizer that stretches the color table as requires.
-            Note that Astropy has a number of Normalization objects
-            that may be useful.
+        plot_settings : `dict`
+            A dictionary of the form
 
         Returns
         -------
         `~sunpy.map.CompositeMap`
-            A composite map with normalization 'norm' at layer 'index'.
+            A composite map with plot settings 'plot_settings' at layer
+            'index'.
         """
-        self._maps[index].plot_settings['norm'] = norm
+        self._maps[index].plot_settings = plot_settings
 
     def set_alpha(self, index, alpha):
         """Sets the alpha-channel value for a layer in the composite image.
