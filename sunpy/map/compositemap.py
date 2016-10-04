@@ -316,12 +316,12 @@ class CompositeMap(object):
         `matplotlib.axes.Axes`
         """
         if index is None:
-            for i,amap in enumerate(self._maps):
-                if hasattr(amap,'rsun_obs'):
+            for i, amap in enumerate(self._maps):
+                if hasattr(amap, 'rsun_obs'):
                     index = i
                     break
 
-        index_check = hasattr(self._maps[index],'rsun_obs')
+        index_check = hasattr(self._maps[index], 'rsun_obs')
         if not index_check or index is None:
             raise ValueError("Specified index does not have all the required attributes to draw limb.")
 
@@ -347,14 +347,14 @@ class CompositeMap(object):
         `matplotlib.axes.Axes` object
         """
         needed_attrs = ['rsun_meters', 'dsun', 'heliographic_latitude',
-                            'heliographic_longitude']
+                        'heliographic_longitude']
         if index is None:
             for i, amap in enumerate(self._maps):
-                if all([hasattr(amap,k) for k in needed_attrs]):
+                if all([hasattr(amap, k) for k in needed_attrs]):
                     index = i
                     break
 
-        index_check = all([hasattr(self._maps[index],k) for k in needed_attrs])
+        index_check = all([hasattr(self._maps[index], k) for k in needed_attrs])
         if not index_check or index is None:
             raise ValueError("Specified index does not have all the required attributes to draw grid.")
 
@@ -375,6 +375,9 @@ class CompositeMap(object):
         annotate : `bool`
             If true, the data is plotted at it's natural scale; with
             title and axis labels.
+
+        title : `str`
+            Title of the composite map.
 
         **matplot_args : `dict`
             Matplotlib Any additional imshow arguments that should be used
@@ -454,6 +457,12 @@ class CompositeMap(object):
         basic_plot : `bool`
             If true, the data is plotted by itself at it's natural scale; no
             title, labels, or axes are shown.
+
+        draw_limb : `bool`
+            If true, draws a circle representing the solar limb.
+
+        draw_grid :  `bool`
+            If true, draws a grid over the surface of the Sun.
 
         **matplot_args : dict
             Matplotlib Any additional imshow arguments that should be used
