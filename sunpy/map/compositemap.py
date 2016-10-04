@@ -41,18 +41,18 @@ class CompositeMap(object):
         Prints a list of the currently included maps.
     get_alpha(index=None)
         Returns the alpha-channel value for a layer in the composite image
+    get_levels(index=None)
+        Returns the list of contour levels for a map within the CompositeMap.
+    get_plot_settings(index=None)
+        Returns the plot settings for a map within the CompositeMap.
     get_zorder(index=None)
         Returns the layering preference (z-order) for a map within the composite.
-    get_levels(index=None)
-        Returns the list of contour levels for a map within the CompositeMap
-    set_norm(self, index, norm)
-        Sets the norm for a layer in the composite image.
-    set_levels(index, levels, percent=False)
-        Sets the contour levels for a layer in the CompositeMap.
-    set_colors(index, cm)
-        Sets the color map for a layer in the CompositeMap.
     set_alpha(index, alpha)
         Sets the alpha-channel value for a layer in the CompositeMap.
+    set_levels(index, levels, percent=False)
+        Sets the contour levels for a layer in the CompositeMap.
+    set_plot_settings(index, plot_setiings)
+        Set the plot settings for a map with the CompositeMap.
     set_zorder(index, zorder)
         Set the layering preference (z-order) for a map within the CompositeMap.
     plot(figure=None, overlays=None, draw_limb=False, gamma=1.0,
@@ -97,7 +97,7 @@ class CompositeMap(object):
 
         Parameters
         ----------
-        map : `~sunpy.map.GenericMap` or subclass
+        amap : `~sunpy.map.GenericMap` or subclass
             Map instance to be added
         zorder : `int`
             The index to use when determining where the map should lie along
@@ -143,11 +143,54 @@ class CompositeMap(object):
         return self._maps[index]
 
     def get_alpha(self, index=None):
-        """Returns the alpha-channel value for a layer in the composite image"""
+        """
+        Returns the alpha-channel value for a layer in the composite image.
+        """
         if index is None:
             return [_map.alpha for _map in self._maps]
         else:
             return self._maps[index].alpha
+
+    def get_levels(self, index=None):
+        """Returns the list of contour levels for a map within the
+        composite.
+
+        Parameters
+        ----------
+        index : {`int` | None}
+            The index of the map in the composite map.
+
+        Returns
+        -------
+        `list`
+            A list of the contour levels of map at index 'index' in the
+            composite map.  If index is None, then the contour levels of all
+            the maps are returned as a list of lists.
+        """
+        if index is None:
+            return [_map.levels for _map in self._maps]
+        else:
+            return self._maps[index].levels
+
+    def get_plot_settings(self, index=None):
+        """Returns the plot settings for a map within the composite map.
+
+        Parameters
+        ----------
+        index : {`int` | None}
+            The index of the map in the composite map.
+
+        Returns
+        -------
+        {`dict` | `list`}
+            The plot settings of the map(s) in the composite map.  If None
+            then the plot settings of all the maps are returned in a list.
+        """
+
+        if index is None:
+            return [_map.plot_settings for _map in self._maps]
+        else:
+            return self._maps[index].plot_settings
 
     def get_zorder(self, index=None):
         """Returns the layering preference (z-order) for a map within the
@@ -170,46 +213,26 @@ class CompositeMap(object):
         else:
             return self._maps[index].zorder
 
-    def get_plot_settings(self, index=None):
-        """Returns the plot settings for a map within the composite map.
+    def set_alpha(self, index, alpha):
+        """Sets the alpha-channel value for a layer in the composite image.
 
         Parameters
         ----------
-        index : {`int` | None}
+        index : `int`
             The index of the map in the composite map.
+
+        alpha : `float`
+            A float in the range 0 to 1.
 
         Returns
         -------
-        {`dict` | `list`}
-            The plot settings of the map(s) in the composite map.  If None
-            then the plot settings of all the maps are returned in a list.
+        `~sunpy.map.CompositeMap`
+            A composite map with alpha-channel value 'alpha' at layer 'index'.
         """
-
-        if index is None:
-            return [_map.plot_settings for _map in self._maps]
+        if 0 <= alpha <= 1:
+            self._maps[index].alpha = alpha
         else:
-            return self._maps[index].plot_settings
-
-    def get_levels(self, index=None):
-        """Returns the list of contour levels for a map within the
-        composite.
-
-        Parameters
-        ----------
-        index : {`int` | None}
-            The index of the map in the composite map.
-
-        Returns
-        -------
-        `list`
-            A list of the contour levels of map at index 'index' in the
-            composite map.  If index is None, then the contour levels of all
-            the maps are returned as a list of lists.
-        """
-        if index is None:
-            return [_map.levels for _map in self._maps]
-        else:
-            return self._maps[index].levels
+            raise OutOfRangeAlphaValue("Alpha value must be between 0 and 1.")
 
     def set_levels(self, index, levels, percent=False):
         """
@@ -238,24 +261,6 @@ class CompositeMap(object):
         else:
             self._maps[index].levels = [self._maps[index].max()*level/100.0 for level in levels]
 
-    def set_colors(self, index, cm):
-        """Sets the color map for a layer in the composite image.
-
-        Parameters
-        ----------
-        index : `int`
-            The index of the map in the composite map.
-
-        cm : a color map
-            The contour levels.
-
-        Returns
-        -------
-        `~sunpy.map.CompositeMap`
-            A composite map with colormap 'cm' at layer 'index'.
-        """
-        self._maps[index].plot_settings['cmap'] = cm
-
     def set_plot_settings(self, index, plot_settings):
         """Sets the plot settings for a layer in the composite image.
 
@@ -274,27 +279,6 @@ class CompositeMap(object):
             'index'.
         """
         self._maps[index].plot_settings = plot_settings
-
-    def set_alpha(self, index, alpha):
-        """Sets the alpha-channel value for a layer in the composite image.
-
-        Parameters
-        ----------
-        index : `int`
-            The index of the map in the composite map.
-
-        alpha : `float`
-            A float in the range 0 to 1.
-
-        Returns
-        -------
-        `~sunpy.map.CompositeMap`
-            A composite map with alpha-channel value 'alpha' at layer 'index'.
-        """
-        if 0 <= alpha <= 1:
-            self._maps[index].alpha = alpha
-        else:
-            raise OutOfRangeAlphaValue("Alpha value must be between 0 and 1.")
 
     def set_zorder(self, index, zorder):
         """Set the layering order (z-order) for a map within the
