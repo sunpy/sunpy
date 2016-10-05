@@ -23,7 +23,8 @@ def get_extensions():
         # Squash some warnings
         cfg['extra_compile_args'].extend(['-Wno-unused-but-set-variable',
                                           '-Wno-unused-variable',
-                                          '-Wno-unused-result'])
+                                          '-Wno-unused-result',
+                                          '-Wno-sign-compare'])
 
         e = Extension('sunpy.io._pyana', **cfg)
         return [e]
