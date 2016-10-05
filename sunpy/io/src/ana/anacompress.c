@@ -41,7 +41,7 @@ int anacrunchrun8(uint8_t *x,uint8_t *array,int slice,int nx,int ny,int limit,in
  for (iy=0;iy<ny;iy++) {                 	/* start of iy (outer) loop */
  /* load the first value */
  x[i++] = array[iy*nx];
- 
+
  /* compute and store the first differences for this line */
  p = (array+nx*iy);	nc=nx-1;
  d=dif; yq=(int) *p++;	zq=(int) *p++;
@@ -125,7 +125,7 @@ int anacrunchrun8(uint8_t *x,uint8_t *array,int slice,int nx,int ny,int limit,in
 	 else { y.i=(y.i & mask)<<j; x[i]=x[i] | y.b[0];}
     if (nb>1) { x[i+1]=y.b[1]; if (nb>2) x[i+2]=y.b[2]; }
   }
- 
+
  r1=r1+slice;       			/* bump r1 pass the fixed part */
  i=r1>>3;                j=r1 & 7;
  /* note that r3 is the # of bits required minus 1 */
@@ -144,7 +144,8 @@ int anacrunchrun8(uint8_t *x,uint8_t *array,int slice,int nx,int ny,int limit,in
  /* printf("big one \n");*/
  if (j == 0) x[i]=0;     /* gotta zero the virgins */
  r0=j+31;        j=r0%8;         i2=i+r0/8;
- for (k=i+1;k<i2;k++) x[k]=0;    x[i2]=bits[j];
+ for (k=i+1;k<i2;k++) x[k]=0;
+ x[i2]=bits[j];
  /* recompute the difference and load 9 bits (always 2 bytes) */
  r1=r1+32;
  i=r1/8;
@@ -174,7 +175,7 @@ int anacrunchrun8(uint8_t *x,uint8_t *array,int slice,int nx,int ny,int limit,in
  /* we have to put these in a form readable by the Vax (these may be used
 	 by fcwrite) */
   if(t_endian){ // big endian
-   bswapi32(&(ch->tsize),1); bswapi32(&(ch->bsize),1); bswapi32(&(ch->nblocks),1); 
+   bswapi32(&(ch->tsize),1); bswapi32(&(ch->bsize),1); bswapi32(&(ch->nblocks),1);
   }
  free(dif);
  return  i;      /*return # of bytes used */
@@ -255,7 +256,8 @@ int anacrunch8(uint8_t *x,uint8_t *array,int slice,int nx,int ny,int limit,int t
  /* printf("big one \n"); */
  if (j == 0) x[i]=0;     /* gotta zero the virgins */
  r0=j+31;        j=r0%8;         i2=i+r0/8;
- for (k=i+1;k<i2;k++) x[k]=0;    x[i2]=bits[j];
+ for (k=i+1;k<i2;k++) x[k]=0;
+ x[i2]=bits[j];
  /* recompute the difference and load 9 bits (always 2 bytes) */
  r1=r1+32;
  i=r1/8;
@@ -424,7 +426,8 @@ int anacrunchrun(uint8_t *x,int16_t *array,int slice,int nx,int ny,int limit,int
  /* printf("big one \n");*/
  if (j == 0) x[i]=0;     /* gotta zero the virgins */
  r0=j+31;        j=r0%8;         i2=i+r0/8;
- for (k=i+1;k<i2;k++) x[k]=0;    x[i2]=bits[j];
+ for (k=i+1;k<i2;k++) x[k]=0;
+ x[i2]=bits[j];
  /* recompute the difference and load 17 bits (always 3 bytes) */
  r1=r1+32;
  i=r1/8;
@@ -454,7 +457,7 @@ int anacrunchrun(uint8_t *x,int16_t *array,int slice,int nx,int ny,int limit,int
  /* we have to put these in a form readable by the Vax (these may be used
 	 by fcwrite) */
  if(t_endian){ // big endian
-   bswapi32(&(ch->tsize),1); bswapi32(&(ch->bsize),1); bswapi32(&(ch->nblocks),1); 
+   bswapi32(&(ch->tsize),1); bswapi32(&(ch->bsize),1); bswapi32(&(ch->nblocks),1);
  }
  free(dif);
  return  i;      /*return # of bytes used */
@@ -464,7 +467,7 @@ int anacrunchrun(uint8_t *x,int16_t *array,int slice,int nx,int ny,int limit,int
 
 int anacrunch(uint8_t *x,int16_t *array,int slice,int nx,int ny,int limit,int t_endian)
 // compress 16 bit array into x (a byte array) using ny blocks each of size
-// nx, bit slice size slice, returns # of bytes in x 
+// nx, bit slice size slice, returns # of bytes in x
  {
   uint8_t bits[8]={1,2,4,8,16,32,64,128};
   unsigned register i,j,r1,in;
@@ -487,9 +490,9 @@ int anacrunch(uint8_t *x,int16_t *array,int slice,int nx,int ny,int limit,int t_
   mask-=1;                                // no inline expon. in C
   unsigned nb;                            // determine the # of bytes to transfer to 32 bit int for fixed portion
   if(slice==0){
-    nb=0; 
+    nb=0;
   }else{
-    if(slice<2){ 
+    if(slice<2){
       nb=1;
     }else{
       if(slice<10) nb=2; else nb=3;
@@ -602,7 +605,7 @@ int anacrunch(uint8_t *x,int16_t *array,int slice,int nx,int ny,int limit,int t_
   if(t_endian){  // we have to put these in a form readable by the Vax (these may be used by fcwrite)
     bswapi32(&(ch->tsize),1);
     bswapi32(&(ch->bsize),1);
-    bswapi32(&(ch->nblocks),1); 
+    bswapi32(&(ch->nblocks),1);
   }
   return i;     // return # of bytes used
 }
@@ -701,7 +704,8 @@ int anacrunch32(uint8_t *x,int32_t *array,int slice,int nx,int ny,int limit,int 
  big++;
  if (j == 0) x[i]=0;     /* gotta zero the virgins */
  r0=j+31;        j=r0%8;         i2=i+r0/8;
- for (k=i+1;k<i2;k++) x[k]=0;    x[i2]=bits[j];
+ for (k=i+1;k<i2;k++) x[k]=0;
+ x[i2]=bits[j];
  /* recompute the difference and load 33 bits (always 5 bytes) */
  r1=r1+32;
  i=r1/8;
@@ -725,9 +729,8 @@ int anacrunch32(uint8_t *x,int32_t *array,int slice,int nx,int ny,int limit,int 
  /* we have to put these in a form readable by the Vax (these may be used
 	 by fcwrite) */
  if(t_endian){ // big endian
-   bswapi32(&(ch->tsize),1); bswapi32(&(ch->bsize),1); bswapi32(&(ch->nblocks),1); 
+   bswapi32(&(ch->tsize),1); bswapi32(&(ch->bsize),1); bswapi32(&(ch->nblocks),1);
  }
  /* printf("number of big ones for this I*4 = %d\n", big); */
  return  i;      /*return # of bytes used */
  }       /* end of routine */
-
