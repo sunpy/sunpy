@@ -13,6 +13,7 @@ Latest
 * `sunpy.io.fits.read` will now return any parse-able HDUs even if some raise an error.
 * `VSOClient` no longer prints a lot of XML junk if the query fails.
 * Remove unused `sunpy.visualization.plotting` module
+* Port the pyana wrapper to Python 3
 
 0.7.0
 -----

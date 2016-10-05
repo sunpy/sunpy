@@ -56,12 +56,93 @@ static PyMethodDef PyanaMethods[] = {
 };
 
 
-// Init module methods
-PyMODINIT_FUNC init_pyana(void) {
-    (void) Py_InitModule("_pyana", PyanaMethods);
-	// Init numpy usage
-	import_array();
+// Copied from https://docs.python.org/2/howto/cporting.html
+
+
+struct module_state {
+    PyObject *error;
+};
+
+#if PY_MAJOR_VERSION >= 3
+#define GETSTATE(m) ((struct module_state*)PyModule_GetState(m))
+#else
+#define GETSTATE(m) (&_state)
+static struct module_state _state;
+#endif
+
+static PyObject *
+error_out(PyObject *m) {
+    struct module_state *st = GETSTATE(m);
+    PyErr_SetString(st->error, "something bad happened");
+    return NULL;
 }
+
+static PyMethodDef pyana_methods[] = {
+    {"fzread",  pyana_fzread, METH_VARARGS, "Load an ANA F0 file."},
+    {"fzwrite",  pyana_fzwrite, METH_VARARGS, "Save an ANA F0 file."},
+    {NULL, NULL}
+};
+
+#if PY_MAJOR_VERSION >= 3
+
+static int pyana_traverse(PyObject *m, visitproc visit, void *arg) {
+    Py_VISIT(GETSTATE(m)->error);
+    return 0;
+}
+
+static int pyana_clear(PyObject *m) {
+    Py_CLEAR(GETSTATE(m)->error);
+    return 0;
+}
+
+
+static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "_pyana",
+        NULL,
+        sizeof(struct module_state),
+        pyana_methods,
+        NULL,
+        pyana_traverse,
+        pyana_clear,
+        NULL
+};
+
+#define INITERROR return NULL
+
+PyMODINIT_FUNC
+PyInit__pyana(void)
+
+#else
+#define INITERROR return
+
+void
+init_pyana(void)
+#endif
+{
+#if PY_MAJOR_VERSION >= 3
+    PyObject *module = PyModule_Create(&moduledef);
+#else
+    PyObject *module = Py_InitModule("_pyana", PyanaMethods);
+#endif
+
+    if (module == NULL)
+        INITERROR;
+    struct module_state *st = GETSTATE(module);
+
+    st->error = PyErr_NewException("myextension.Error", NULL, NULL);
+    if (st->error == NULL) {
+        Py_DECREF(module);
+        INITERROR;
+    }
+
+    import_array();
+
+#if PY_MAJOR_VERSION >= 3
+    return module;
+#endif
+}
+
 
 /*!
 @brief load an ANA f0 file data and header
