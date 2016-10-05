@@ -70,18 +70,11 @@ struct module_state {
 static struct module_state _state;
 #endif
 
-static PyObject *
-error_out(PyObject *m) {
-    struct module_state *st = GETSTATE(m);
-    PyErr_SetString(st->error, "something bad happened");
-    return NULL;
-}
-
-static PyMethodDef pyana_methods[] = {
-    {"fzread",  pyana_fzread, METH_VARARGS, "Load an ANA F0 file."},
-    {"fzwrite",  pyana_fzwrite, METH_VARARGS, "Save an ANA F0 file."},
-    {NULL, NULL}
-};
+// static PyMethodDef pyana_methods[] = {
+//     {"fzread",  pyana_fzread, METH_VARARGS, "Load an ANA F0 file."},
+//     {"fzwrite",  pyana_fzwrite, METH_VARARGS, "Save an ANA F0 file."},
+//     {NULL, NULL}
+// };
 
 #if PY_MAJOR_VERSION >= 3
 
@@ -101,7 +94,7 @@ static struct PyModuleDef moduledef = {
         "_pyana",
         NULL,
         sizeof(struct module_state),
-        pyana_methods,
+        PyanaMethods,
         NULL,
         pyana_traverse,
         pyana_clear,
