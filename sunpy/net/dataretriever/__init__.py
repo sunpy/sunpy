@@ -33,7 +33,7 @@ instance of client.
 >>> print len(results)
 1 # Indicating only a single client was used to service the query.
 
->>> downresp = Fido.get(results)
+>>> downresp = Fido.fetch(results)
 >>> files = downresp.wait()
 
 The get method returns a DownloadResponse object.  This is list of Results
