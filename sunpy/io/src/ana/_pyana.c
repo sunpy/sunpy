@@ -70,12 +70,6 @@ struct module_state {
 static struct module_state _state;
 #endif
 
-// static PyMethodDef pyana_methods[] = {
-//     {"fzread",  pyana_fzread, METH_VARARGS, "Load an ANA F0 file."},
-//     {"fzwrite",  pyana_fzwrite, METH_VARARGS, "Save an ANA F0 file."},
-//     {NULL, NULL}
-// };
-
 #if PY_MAJOR_VERSION >= 3
 
 static int pyana_traverse(PyObject *m, visitproc visit, void *arg) {
