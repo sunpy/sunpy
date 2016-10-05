@@ -9,6 +9,7 @@ Latest
 * Now the `sunpy.database.tables.display_entries()` prints an astropy table.
 * Additional methods added inside the `sunpy.database` class to make it easier
   to display the database contents.
+* `sunpy.io.fits.read` will now return any parse-able HDUs even if some raise an error.
 
 0.7.0
 -----
