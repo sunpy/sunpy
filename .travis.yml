@@ -55,7 +55,7 @@ matrix:
            env: JOB="Figures" PYTHON_VERSION=2.7 SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
 
          - os: linux
-           env: JOB="Online" PYTHON_VERSION=3.5 SETUP_CMD='test --online --coverage'
+           env: JOB="Online" PYTHON_VERSION=3.5 SETUP_CMD='test --online --coverage -V'
 
          - os: linux
            env: JOB="Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
