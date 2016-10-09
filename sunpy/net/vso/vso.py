@@ -16,6 +16,9 @@ import os
 import sys
 import logging
 import threading
+import requests
+import warnings
+import socket
 
 from datetime import datetime, timedelta
 from functools import partial
@@ -43,8 +46,8 @@ from sunpy.extern.six.moves import input
 
 TIME_FORMAT = config.get("general", "time_format")
 
-DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
-DEFAULT_PORT = 'nsoVSOi'
+DEFAULT_URL_PORT = [{'url' : 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl', 'port' : 'nsoVSOi', 'transport' : WellBehavedHttpTransport}]
+
 RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
 
 # Override the logger that dumps the whole Schema
@@ -95,6 +98,21 @@ def iter_errors(response):
         if not hasattr(prov_item, 'record') or not prov_item.record:
             yield prov_item
 
+def check_connection(url):
+    try:
+        return True if requests.get(url).status_code == 200 else False
+    except (socket.error, socket.timeout) as e:
+        warnings.warn("Connection failed with error {}. \n Retrying with different url and port.".format(e))
+    
+def get_online_vso_url(api, url, port):
+    if api is None:
+        if url is None or port is None:
+            for mirror in DEFAULT_URL_PORT:
+                bool_ans = check_connection(mirror['url'])
+                if bool_ans:
+                    api = client.Client(mirror['url'], transport=mirror['transport']())
+                    api.set_options(port=mirror['port'])
+                    return api
 
 # TODO: Python 3 this should subclass from UserList
 class QueryResponse(list):
@@ -216,16 +234,8 @@ class VSOClient(object):
     method_order = [
         'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR', 'URL-FILE', 'URL-packaged'
     ]
-
     def __init__(self, url=None, port=None, api=None):
-        if api is None:
-            if url is None:
-                url = DEFAULT_URL
-            if port is None:
-                port = DEFAULT_PORT
-
-            api = client.Client(url, transport=WellBehavedHttpTransport())
-            api.set_options(port=port)
+        api = get_online_vso_url(api, url, port)
         self.api = api
 
     def make(self, atype, **kwargs):
