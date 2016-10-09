@@ -174,7 +174,8 @@ def fallback_test(api,url,port):
             url = DEFAULT_URL
         if port is None:
             port = DEFAULT_PORT
-
+        api = client.Client(url, transport = WellBehavedHttpTransport())
+        api.set_options(port=port)
 
 class QueryResponse(list):
     def __init__(self, lst, queryresult=None, table=None):
@@ -281,10 +282,7 @@ class VSOClient(object):
         'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR', 'URL-FILE', 'URL-packaged'
     ]
     def __init__(self, url=None, port=None, api=None):
-        
         fallback_test(api,url,port)
-            api = client.Client(url, transport = WellBehavedHttpTransport())
-            api.set_options(port=port)
         self.api = api
 
     def make(self, atype, **kwargs):
