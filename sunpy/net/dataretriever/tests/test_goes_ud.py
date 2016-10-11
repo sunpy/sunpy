@@ -43,7 +43,7 @@ def test_no_satellite():
     with pytest.raises(ValueError):
         LCClient.query(Time("1950/01/01", "1950/02/02"), Instrument('goes'))
 
-
+@example(a.Time("2006-08-01", "2006-08-01"))
 @example(a.Time("1983-05-01", "1983-05-02"))
 # This example tests a time range with a satellite jump and no overlap
 @example(a.Time("2009-11-30", "2009-12-3"))
@@ -64,6 +64,7 @@ def test_query(time):
 @pytest.mark.parametrize("time, instrument", [
     (Time('2012/01/17', '2012/01/19'), Instrument('goes')),
     (Time('2012/10/4', '2012/10/6'), Instrument('goes')),
+    (Time("2006/08/01", "2006/08/01"), Instrument('goes'))
 ])
 def test_get(time, instrument):
     qr1 = LCClient.query(time, instrument)
