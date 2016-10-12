@@ -1,6 +1,7 @@
 Latest
 ------
 
+* Get and set methods for composite maps now use Map plot_settings.
 * Simplified map names when plotting.
 * Add time format used by some SDO HMI FITS keywords
 * Fix bug in `wcs.convert_data_to_pixel` where crpix[1] was used for both axes.
