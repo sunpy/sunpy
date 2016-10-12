@@ -300,6 +300,8 @@ class DatabaseEntry(Base):
 
         """
         time_start = timestamp2datetime('%Y%m%d%H%M%S', qr_block.time.start)
+        if not qr_block.time.end:
+            qr_block.time.end = qr_block.time.start
         time_end = timestamp2datetime('%Y%m%d%H%M%S', qr_block.time.end)
         wave = qr_block.wave
         unit = None
