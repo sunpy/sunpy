@@ -176,6 +176,28 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     return heliocframe.realize_frame(representation)
 
 
+@frame_transform_graph.transform(FunctionTransform, Helioprojective,
+                                 Helioprojective)
+def hpc_to_hpc(heliopcoord, heliopframe):
+    """
+    This converts from HPC to HPC, with different observer location parameters.
+    It does this by transforming through HGS.
+    """
+    if (heliopcoord.B0 == heliopframe.B0 and
+        heliopcoord.L0 == heliopframe.L0 and
+        heliopcoord.D0 == heliopframe.D0):
+
+        return heliopframe.realize_frame(heliopcoord._data)
+
+    hgs = heliopcoord.transform_to(HeliographicStonyhurst)
+    hgs.B0 = heliopframe.B0
+    hgs.L0 = heliopframe.L0
+    hgs.D0 = heliopframe.D0
+    hpc = hgs.transform_to(heliopframe)
+
+    return hpc
+
+
 # Make a transformation graph for the documentation, borrowed lovingly from
 # Astropy.
 

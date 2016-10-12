@@ -2,7 +2,7 @@
 #
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 from time import strptime, mktime
 from datetime import datetime
@@ -10,6 +10,7 @@ import fnmatch
 import os
 
 from astropy.units import Unit, nm, equivalencies
+import astropy.table
 from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean,\
     Table, ForeignKey
 from sqlalchemy.orm import relationship
@@ -299,6 +300,8 @@ class DatabaseEntry(Base):
 
         """
         time_start = timestamp2datetime('%Y%m%d%H%M%S', qr_block.time.start)
+        if not qr_block.time.end:
+            qr_block.time.end = qr_block.time.start
         time_end = timestamp2datetime('%Y%m%d%H%M%S', qr_block.time.end)
         wave = qr_block.wave
         unit = None
@@ -594,7 +597,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
             break
 
 
-def display_entries(database_entries, columns, sort=False):
+def _create_display_table(database_entries, columns=None, sort=False):
     """Generate a table to display the database entries.
 
     Parameters
@@ -612,12 +615,15 @@ def display_entries(database_entries, columns, sort=False):
     Returns
     -------
     str
-        A formatted table that can be printed on the console or written to a
+        An astropy table that can be printed on the console or written to a
         file.
 
     """
-    header = [columns]
-    rulers = [['-' * len(col) for col in columns]]
+    if columns is None:
+        columns = ['id', 'observation_time_start', 'observation_time_end',
+                    'instrument', 'source', 'provider', 'physobs', 'wavemin',
+                    'wavemax', 'path', 'fileid', 'tags', 'starred',
+                    'download_time', 'size']
     data = []
     for entry in database_entries:
         row = []
@@ -646,4 +652,23 @@ def display_entries(database_entries, columns, sort=False):
         raise TypeError('given iterable is empty')
     if sort:
         data.sort()
-    return print_table(header + rulers + data)
+    return astropy.table.Table(rows=data, names=columns)
+
+
+def display_entries(database_entries, columns=None, sort=False):
+    """Print a table to display the database entries.
+
+    Parameters
+    ----------
+    database_entries : iterable of :class:`DatabaseEntry` instances
+        The database entries will be the rows in the resulting table.
+
+    columns : iterable of str
+        The columns that will be displayed in the resulting table. Possible
+        values for the strings are all attributes of :class:`DatabaseEntry`.
+
+    sort : bool (optional)
+        If True, sorts the entries before displaying them.
+
+    """
+    return _create_display_table(database_entries, columns, sort).__str__()

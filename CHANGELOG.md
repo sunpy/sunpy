@@ -1,10 +1,20 @@
 Latest
 ------
 
+* Get and set methods for composite maps now use Map plot_settings.
+* Simplified map names when plotting.
+* Add time format used by some SDO HMI FITS keywords
 * Fix bug in `wcs.convert_data_to_pixel` where crpix[1] was used for both axes.
+* Fix some leftover instances of `GenericMap.units`
+* Fixed bugs in `sun` equations
+* Now the `sunpy.database.tables.display_entries()` prints an astropy table.
+* Additional methods added inside the `sunpy.database` class to make it easier
+  to display the database contents.
+* `sunpy.io.fits.read` will now return any parse-able HDUs even if some raise an error.
 
 0.7.0
 -----
+* Fixed test failures with numpy developer version.[#1808]
 * Added `timeout` parameter in `sunpy.data.download_sample_data()`
 * Fixed `aiaprep` to return properly sized map.
 * Deprecation warnings fixed when using image coalignment.

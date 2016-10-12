@@ -119,6 +119,7 @@ def _resample_neighbor(orig, dimensions, offset, m1):
     """Resample Map using closest-value interpolation."""
 
     dimlist = []
+    dimensions = np.asarray(dimensions, dtype=int)
 
     for i in range(orig.ndim):
         base = np.indices(dimensions)[i]
@@ -226,8 +227,8 @@ def reshape_image_to_4d_superpixel(img, dimensions, offset):
 
     # Reshape up to a higher dimensional array which is useful for higher
     # level operations
-    return (img[offsets[0]:offsets[0] + na*dimensions[0],
-                offsets[1]:offsets[1] + nb*dimensions[1]]).reshape(na, dimensions[0], nb, dimensions[1])
+    return (img[int(offset[0]):int(offset[0] + na*dimensions[0]),
+                int(offset[1]):int(offset[1] + nb*dimensions[1])]).reshape(na, dimensions[0], nb, dimensions[1])
 
 
 class UnrecognizedInterpolationMethod(ValueError):
