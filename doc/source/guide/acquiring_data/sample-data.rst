@@ -12,6 +12,8 @@ download the sample data simply run the following command::
     import sunpy.data
     sunpy.data.download_sample_data()
 
+With a bad Internet connection it helps to set the overwrite=False parameter
+in dowload_sample_data.
 This will download the data to your sample-data directory which can be
 customized by editing the sunpyrc file (see :doc:`../customization`).
 After running this you can then import the sample data files shortcuts which
