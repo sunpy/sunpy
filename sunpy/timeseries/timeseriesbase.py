@@ -306,7 +306,6 @@ class GenericTimeSeries:
         object._sanitize_metadata()
         object._sanitize_units()
         return object
-        # Debate: should this return the same TimeSeries type as the original?
 
     def concatenate(self, otherts, **kwargs):
         """Concatenate with another time series. This function will check and
@@ -501,8 +500,8 @@ class GenericTimeSeries:
         redundant_cols = list(set(self.meta.columns) - set(self.columns))
         self.meta._remove_columns(redundant_cols)
 
-
 # #### Export/Output Methods #### #
+
     def to_table(self, **kwargs):
         """
         Return an Astropy Table of the give TimeSeries object.

@@ -27,16 +27,21 @@ class TimeSeriesMetaData:
     --------
     >>> from sunpy.timeseries import TimeSeriesMetaData
     >>> from sunpy.time import TimeRange, parse_time
-    >>> from collections import MetaDict
+    >>> from sunpy.util import MetaDict
     >>> tr = TimeRange('2012-06-01 00:00','2012-06-02 00:00')
-    >>> md = TimeSeriesMetaData()
-    >>> md.append(tr, ['GOES'], MetaDict([('tr','tr')]))
+    >>> md = TimeSeriesMetaData(timerange=tr, colnames=['GOES'], meta=MetaDict([('goes_key','goes_val')]))
+    >>> tr2 = TimeRange('2012-06-01 12:00','2012-06-02 12:00')
+    >>> md.append(tr2, ['EVE'], MetaDict([('eve_key','eve_val')]))
     >>> md.find(parse_time('2012-06-01T21:08:12'))
+    >>> md.find(parse_time('2012-06-01T21:08:12')).columns
+    >>> md.find(parse_time('2012-06-01T21:08:12')).values()
+    >>> md.find(parse_time('2012-06-01T21:08:12')).metas
     >>> md.find(parse_time('2012-06-01T21:08:12'), 'GOES')   # doctest: +SKIP
     """
 
     def __init__(self, meta=None, timerange=None, colnames=None, **kwargs):
         self.metadata = []
+        # Parse in arguments
         if not isinstance(meta, type(None)):
             if isinstance(meta, (dict, MetaDict)) and isinstance(timerange, TimeRange) and isinstance(colnames, list):
                 # Given a single metadata entry as a dictionary with additional timerange and colnames.
@@ -155,11 +160,6 @@ class TimeSeriesMetaData:
         time : `str` or `~datetime.datetime` optional
             The string (parsed using the `~sunpy.time.parse_time`) or datetime
             that you need metadata for.
-
-        ####ToDo: implmentation decision.
-        row : `int` optional
-            Integer index of the row within the data (dataframe) to get the
-            datetime index from.
 
         colname : `str` optional
             A string that can be used to narrow results to specific columns.
