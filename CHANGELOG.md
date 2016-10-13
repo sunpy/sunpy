@@ -2,6 +2,7 @@
 ------
 
 * Remove Map always forcing warnings on.
+* `Map.center` now uses `Map.wcs` to correctly handle rotation.
 
 
 0.7.3
