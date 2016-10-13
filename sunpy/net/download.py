@@ -23,7 +23,6 @@ import sunpy
 from sunpy.util.progressbar import TTYProgressBar as ProgressBar
 
 
-
 def default_name(path, sock, url):
     name = sock.headers.get('Content-Disposition', url.rsplit('/', 1)[-1])
     return os.path.join(path, name)
@@ -53,6 +52,9 @@ class Downloader(object):
 
             with closing(urllib.request.urlopen(url)) as sock:
                 fullname = path(sock, url)
+                dir_ = os.path.abspath(os.path.dirname(fullname))
+                if not os.path.exists(dir_):
+                    os.makedirs(dir_)
 
                 with open(fullname, 'wb') as fd:
                     while True:
@@ -142,6 +144,8 @@ class Downloader(object):
             path = partial(default_name, default_dir)
         elif isinstance(path, six.string_types):
             path = partial(default_name, path)
+        elif not callable(path):
+            raise ValueError("path must be: None, string or callable")
 
         # Use default callbacks if none were specified
         if callback is None:
