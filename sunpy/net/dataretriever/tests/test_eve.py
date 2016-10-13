@@ -11,6 +11,9 @@ from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
+from hypothesis import given, settings
+from .strategies import time_attr
+
 LCClient = eve.EVEClient()
 
 
@@ -86,14 +89,8 @@ def test_fido(query):
 
 
 @pytest.mark.online
-@pytest.mark.parametrize(
-    'time',
-    [
-        a.Time('2008/10/4', '2008/10/6'),
-        a.Time('2009/01/4', '2009/01/6'),
-        a.Time('2012/05/4', '2012/05/6'),
-        a.Time('2016/06/4', '2016/06/6'),
-    ])
+@given(time_attr())
+@settings(max_examples=2, timeout=-1)
 def test_levels(time):
     """
     Test the correct handling of level 0 / 1.

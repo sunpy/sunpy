@@ -1,3 +1,6 @@
+import os
+import tempfile
+
 import pytest
 import hypothesis.strategies as st
 from hypothesis import given
@@ -63,3 +66,13 @@ def check_response(query, unifiedresp):
         for res in block:
             assert res.time.start in query_tr
             assert query_instr.lower() == res.instrument.lower()
+
+
+@pytest.mark.online
+def test_save_path():
+    with tempfile.TemporaryDirectory() as target_dir:
+        qr = Fido.search(a.Instrument('EVE'), a.Time("2016/10/01", "2016/10/02"), a.Level(0))
+        files = Fido.fetch(qr, path=os.path.join(target_dir, "{instrument}"+os.path.sep+"{level}"))
+        for f in files:
+            assert target_dir in f
+            assert "eve{}0".format(os.path.sep) in f
