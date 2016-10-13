@@ -208,7 +208,7 @@ def get_obssum_filename(time_range):
     index_number_start = _time_range.start.day - 1
     index_number_end = _time_range.end.day - 1
 
-    return [data_servers[0] + data_location + filename + 's' for filename in result.get('filename')[index_number_start:index_number_end]]
+    return [get_base_url() + data_location + filename + 's' for filename in result.get('filename')[index_number_start:index_number_end]]
 
 
 def get_obssumm_file(time_range):
