@@ -1,7 +1,9 @@
 import datetime
 import pytest
 
+from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
+from sunpy.net.vso import VSOClient
 from sunpy.net.vso.attrs import Time, Instrument, Source, Level
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.eve as eve
@@ -55,8 +57,8 @@ def test_query():
     qr1 = LCClient.query(Time('2012/8/9', '2012/8/10'), Instrument('eve'))
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 2
-    assert qr1.time_range()[0] == '2012/08/09'
-    assert qr1.time_range()[1] == '2012/08/10'
+    assert qr1.time_range().start == parse_time('2012/08/09')
+    assert qr1.time_range().end == parse_time('2012/08/10')
 
 
 @pytest.mark.online
@@ -81,3 +83,30 @@ def test_fido(query):
     assert isinstance(qr[0].client, eve.EVEClient)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
+
+
+@pytest.mark.online
+@pytest.mark.parametrize(
+    'time',
+    [
+        a.Time('2008/10/4', '2008/10/6'),
+        a.Time('2009/01/4', '2009/01/6'),
+        a.Time('2012/05/4', '2012/05/6'),
+        a.Time('2016/06/4', '2016/06/6'),
+    ])
+def test_levels(time):
+    """
+    Test the correct handling of level 0 / 1.
+    The default should be level 1 from VSO, level 0 comes from EVEClient.
+    """
+    eve_a = a.Instrument('EVE')
+    qr = Fido.search(time, eve_a)
+    assert isinstance(qr[0].client, VSOClient)
+
+    qr = Fido.search(time, eve_a, a.Level(0))
+    assert isinstance(qr[0].client, eve.EVEClient)
+
+    qr = Fido.search(time, eve_a, a.Level(0) | a.Level(1))
+    clients = {type(a.client) for a in qr}
+    assert clients.symmetric_difference({VSOClient, eve.EVEClient}) == set()
+
