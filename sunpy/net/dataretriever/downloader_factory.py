@@ -146,14 +146,14 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         query = attr.and_(*query)
         return UnifiedResponse(query_walker.create(query, self))
 
-    def fetch(self, qr, wait=True, progress=True, **kwargs):
+    def fetch(self, query_result, wait=True, progress=True, **kwargs):
         """
         Downloads the files pointed at by URLs contained within UnifiedResponse
         object.
 
         Parameters
         ----------
-        qr : `sunpy.net.dataretriever.downloader_factory.UnifiedResponse`
+        query_result : `sunpy.net.dataretriever.downloader_factory.UnifiedResponse`
             Container returned by query method.
 
         wait : `bool`
@@ -174,7 +174,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> file_paths = downresp.wait()
         """
         reslist = []
-        for block in qr:
+        for block in query_result:
             reslist.append(block.client.get(block, **kwargs))
 
         results = DownloadResponse(reslist)
