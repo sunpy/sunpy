@@ -452,14 +452,10 @@ scale:\t\t {scale}
     @property
     def center(self):
         """
-        The offset between the center of the Sun and the center of the map.
+        Return the world (data) coordinates of the center pixel of the array.
         """
-        return Pair(wcs.get_center(self.dimensions[0], self.scale.x,
-                                   self.reference_pixel.x,
-                                   self.reference_coordinate.x),
-                    wcs.get_center(self.dimensions[1], self.scale.y,
-                                   self.reference_pixel.y,
-                                   self.reference_coordinate.y))
+        center = u.Quantity(self.dimensions) / 2.
+        return Pair(*self.pixel_to_data(*center))
 
     @property
     def shifted_value(self):
