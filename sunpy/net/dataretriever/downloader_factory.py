@@ -73,20 +73,30 @@ class DownloadResponse(list):
         return filelist
 
 
-qwalker = attr.AttrWalker()
+"""
+Construct a simple AttrWalker to split up searches into blocks of attrs being
+'anded' with AttrAnd.
+
+This pipeline only understands AttrAnd and AttrOr, Fido.search passes in an
+AttrAnd object of all the query parameters, if an AttrOr is encountered the
+query is split into the component parts of the OR, which at somepoint will end
+up being an AttrAnd object, at which point it is passed into
+_get_registered_widget.
+"""
+query_walker = attr.AttrWalker()
 
 
-@qwalker.add_creator(attr.AttrAnd)
-def _create(wlk, query, dobj):
-    qresponseobj, qclient = dobj._get_registered_widget(*query.attrs)
+@query_walker.add_creator(attr.AttrAnd)
+def _create_and(walker, query, factory):
+    qresponseobj, qclient = factory._get_registered_widget(*query.attrs)
     return [(qresponseobj, qclient)]
 
 
-@qwalker.add_creator(attr.AttrOr)
-def _create(wlk, query, dobj):
+@query_walker.add_creator(attr.AttrOr)
+def _create_or(walker, query, factory):
     qblocks = []
-    for iattr in query.attrs:
-        qblocks.extend(wlk.create(iattr, dobj))
+    for attrblock in query.attrs:
+        qblocks.extend(walker.create(attr.and_(attrblock), factory))
 
     return qblocks
 
@@ -98,7 +108,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         Examples
         --------
-        Query for LYRALightCurve data for the timerange ('2012/3/4','2012/3/6')
+        Query for LYRALightCurve data for the time range ('2012/3/4','2012/3/6')
 
         >>> from sunpy.net.vso.attrs import Time, Instrument
         >>> unifresp = Fido.search(Time('2012/3/4', '2012/3/6'), Instrument('lyra'))
@@ -134,7 +144,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         parts individually.
         """
         query = attr.and_(*query)
-        return UnifiedResponse(qwalker.create(query, self))
+        return UnifiedResponse(query_walker.create(query, self))
 
     def fetch(self, qr, wait=True, progress=True, **kwargs):
         """
