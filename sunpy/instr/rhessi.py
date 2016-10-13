@@ -199,9 +199,10 @@ def get_obssum_filename(time_range):
     result = parse_obssumm_dbase_file(f[0])
     _time_range = TimeRange(time_range)
 
-    index_number = _time_range.start.day - 1
+    index_number_start = _time_range.start.day - 1
+    index_number_end = _time_range.end.day - 1
 
-    return get_base_url() + data_location + filename + 's' for filename in result.get('filename')[index_number_start:index_number_end]]
+    return [get_base_url() + data_location + filename + 's' for filename in result.get('filename')[index_number_start:index_number_end]]
 
 
 def get_obssumm_file(time_range):
@@ -285,7 +286,7 @@ def parse_obssumm_file(filename):
 
     time_array = [reference_time_ut + timedelta(0,time_interval_sec * a) for a in np.arange(dim)]
 
-    #TODO generate the labels for the dict automatically from labels
+    # TODO generate the labels for the dict automatically from labels
     data = {'time': time_array, 'data': countrate, 'labels': labels}
 
     return header, data
