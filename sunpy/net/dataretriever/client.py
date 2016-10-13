@@ -24,9 +24,9 @@ TIME_FORMAT = config.get("general", "time_format")
 __all__ = ['QueryResponse', 'GenericClient']
 
 
-
 def simple_path(path, sock, url):
     return path
+
 
 class QueryResponseBlock(object):
     """
@@ -40,6 +40,7 @@ class QueryResponseBlock(object):
         map0 : Dict with relevant information
         url  : Uniform Resource Locator
         """
+        self.map_ = map0
         self.source = map0.get('source', "Data not Available")
         self.provider = map0.get('provider', "Data not Available")
         self.phyobs = map0.get('phyobs', "Data not Available")
@@ -212,7 +213,6 @@ class GenericClient(object):
         -------
         Results Object
         """
-        details = qres.client.map_
 
         urls = []
         for qrblock in qres:
@@ -226,13 +226,13 @@ class GenericClient(object):
         default_dir = sunpy.config.get("downloads", "download_dir")
 
         paths = []
-        for filename in filenames:
+        for i, filename in enumerate(filenames):
             if path is None:
                 fname = os.path.join(default_dir, '{file}')
             elif isinstance(path, six.string_types) and '{file}' not in path:
                 fname = os.path.join(path, '{file}')
 
-            temp_dict = details.copy()
+            temp_dict = qres[i].map_.copy()
             temp_dict['file'] = filename
             fname  = fname.format(**temp_dict)
             fname = os.path.expanduser(fname)
