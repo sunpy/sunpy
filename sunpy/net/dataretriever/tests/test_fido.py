@@ -140,6 +140,7 @@ def test_multiple_match():
     Fido.registry = new_registry
 
     class DummyClient():
+        @classmethod
         def _can_handle_query(cls, *query):
             return True
     Fido.registry.update({DummyClient: DummyClient._can_handle_query})

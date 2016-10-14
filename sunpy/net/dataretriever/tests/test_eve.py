@@ -12,6 +12,7 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 from hypothesis import given, settings
+from hypothesis.extra.datetime import datetimes
 from .strategies import time_attr
 
 LCClient = eve.EVEClient()
@@ -88,7 +89,7 @@ def test_fido(query):
 
 
 @pytest.mark.online
-@given(time_attr())
+@given(time_attr(time=datetimes(timezones=[], max_year=datetime.datetime.utcnow().year, min_year=2010)))
 @settings(max_examples=2, timeout=-1)
 def test_levels(time):
     """
