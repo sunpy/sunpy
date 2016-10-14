@@ -5,6 +5,8 @@ import pytest
 import hypothesis.strategies as st
 from hypothesis import given
 
+import astropy.units as u
+
 from sunpy.net import Fido, attrs as a
 from sunpy.time import TimeRange
 
@@ -21,6 +23,8 @@ def offline_query(draw, instrument=offline_instruments()):
     # If we have AttrAnd then we don't have GOES
     if isinstance(query, a.Instrument) and query.value == 'goes':
         query = query & draw(goes_time())
+    if isinstance(query, a.Instrument) and query.value == 'norh':
+        query = query & a.Wavelength(17*u.GHz)
     else:
         query = query & draw(time_attr())
     return query
