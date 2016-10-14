@@ -9,45 +9,53 @@ from scipy.io import readsav
 from astropy.table import QTable
 import astropy.units as u
 
-__author__ = "Tessa D. Wilkinson"
+__author__ = ["Tessa D. Wilkinson","Will Barnes"]
 
 
 def aia_instr_properties_to_table(input_directory, channel_list, version, save=True):
     """
-
     Given  a .genx directory, this function searches for aia instrument files and saves the properties to a table.
 
     Parameters
     ----------
-    input_directory : string,
-        the path location that leads to ssw_aia_response_data/ (output of .genx.tar file)
+    input_directory : string
+        path to top of AIA response file directory tree
     channel_list : list
-        a list of channel wavelengths to search for
-    version: int
-        the version of aia instrument files to grab
+        channel wavelengths to search for
+    version : int
+        version of AIA instrument files
 
     Returns:
     --------
-    outfile: channel_properties_[version number] .csv
+    table : `~astropy.table.QTable`
     """
 
     #correspondence between property names
-    properties = [('wave','wavelength'),('wavemin','minimum_wavelength'),('wavestep','wavelength_interval'),
-                  ('wavenumsteps','number_wavelength_intervals'),('effarea','effective_area'),
-                  ('geoarea','geometric_area_ccd'),('platescale','plate_scale'),('elecperdn','electron_per_dn'),
-                  ('elecperev','electron_per_ev'),('fp_filter','focal_plane_filter_efficiency'),
-                  ('ent_filter','entire_filter_efficiency'),('primary','primary_mirror_reflectance'),
-                  ('secondary','secondary_mirror_reflectance'),('ccd','quantum_efficiency_ccd'),
-                  ('contam','ccd_contamination')]
+    properties = [('wave','wavelength'), ('wavemin','minimum_wavelength'),
+                    ('wavestep','wavelength_interval'),
+                    ('wavenumsteps','number_wavelength_intervals'),
+                    ('effarea','effective_area'),
+                    ('geoarea','geometric_area_ccd'),
+                    ('platescale','plate_scale'),
+                    ('elecperdn','electron_per_dn'),
+                    ('elecperev','electron_per_ev'),
+                    ('fp_filter','focal_plane_filter_efficiency'),
+                    ('ent_filter','entrance_filter_efficiency'),
+                    ('primary','primary_mirror_reflectance'),
+                    ('secondary','secondary_mirror_reflectance'),
+                    ('ccd','quantum_efficiency_ccd'),
+                    ('contam','ccd_contamination')]
     #corresponding units for each field
     unitless = u.m/u.m
-    units = [u.angstrom,u.angstrom,u.angstrom,unitless,u.cm**2,u.cm**2,1/u.cm,u.electron/u.count,u.electron/u.eV,
-             unitless,unitless,unitless,unitless,unitless,unitless]
+    units = [u.angstrom, u.angstrom, u.angstrom, unitless, u.cm**2, u.cm**2,
+                1/u.cm, u.electron/u.count, u.electron/u.eV, unitless,
+                unitless, unitless, unitless, unitless, unitless]
     units = {p[1] : u for p,u in zip(properties,units)}
     units['channel'] = u.angstrom
     #set instrument files; these are the names used by SSW, should be static
-    instrument_files = [os.path.join(input_directory,'aia_V{0}_all_fullinst'.format(version)),
-                        os.path.join(input_directory,'aia_V{0}_fuv_fullinst'.format(version))]
+    instrument_files = [
+        os.path.join(input_directory,'aia_V{0}_all_fullinst'.format(version)),
+        os.path.join(input_directory,'aia_V{0}_fuv_fullinst'.format(version))]
     field_name = 'A{0}_FULL'
 
     #read in values

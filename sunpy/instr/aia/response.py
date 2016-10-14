@@ -13,7 +13,7 @@ from scipy import integrate
 from .aia_read_genx2table import aia_instr_properties_to_table
 from .make_ion_contribution_table import save_contribution_csv
 
-__author__ = ["Tessa D. Wilkinson","Will Barnes"] # github: tdwilkinson
+__author__ = ["Tessa D. Wilkinson","Will Barnes"]
 
 
 class Response():
@@ -35,7 +35,7 @@ class Response():
 
     channel_colors = {94:'#ff3a3a',131:'#6060ff',171:'#f1de1f',193:'#4cec4c',211:'#ed64c6',335:'#45deed',304:'k',1600:'b',1700:'g',4500:'r'}
 
-    def __init__(self, channel_list=[94,131,171,193,335,211,304], path_to_genx_dir='', version=6):  # data_table,
+    def __init__(self, channel_list=[94,131,171,193,335,211,304], path_to_genx_dir='', version=6):  
         self._get_channel_info(channel_list,path_to_genx_dir,version)
 
 
@@ -64,13 +64,6 @@ class Response():
         Effective Area = Geo_Area * Reflectance of Primary and Secondary Mirrors * Transmission Efficiency of filters
                         * Quantum Efficiency of CCD * Correction for time-varying contamination
 
-        Parameters
-        ----------
-        :param channel, int
-            the wavelength center of the channel to probe
-
-        Variables:
-        ----------
         These are the variables needed to calculate the effective area for this instrument:
 
         Reflectance = The combined reflectance of the primary and secondary mirrors.
@@ -79,32 +72,38 @@ class Response():
         Contamination = The correction for the time-varying contamination. This variable will change the most between
                         .genx versions
 
+        Parameters
+        ----------
+        channel : int
+            the wavelength center of the channel to probe
+
         Returns
         -------
         effective_area: np.array
             returns the effective area of the instrument over the entire wavelength range
 
         """
-        # Returns the entire channel wavelengths  effective area as calculated with .genx values
         reflectance = self._channel_info[channel]['primary_mirror_reflectance']*self._channel_info[channel]['secondary_mirror_reflectance']
-        transmission_efficiency = self._channel_info[channel]['focal_plane_filter_efficiency']*self._channel_info[channel]['entire_filter_efficiency']
+        transmission_efficiency = self._channel_info[channel]['focal_plane_filter_efficiency']*self._channel_info[channel]['entrance_filter_efficiency']
 
         # effective area equation:
-        eff_area = self._channel_info[channel]['geometric_area_ccd']*reflectance*transmission_efficiency*self._channel_info[channel]['ccd_contamination']*self._channel_info[channel]['quantum_efficiency_ccd']
+        effective_area = self._channel_info[channel]['geometric_area_ccd']*reflectance*transmission_efficiency*self._channel_info[channel]['ccd_contamination']*self._channel_info[channel]['quantum_efficiency_ccd']
 
-        return eff_area
+        return effective_area
 
 
     def _calculate_system_gain(self, channel):
         """
-        The CCD camera system gain is calculated using  a standard conversion of photons to detected electrons with the
-        camera gain.
+        The CCD camera system gain is calculated using  a standard conversion of photons to detected electrons with the camera gain.
 
         Parameters
         --------
-        :param: channel, int
-            the wavelength center of the channel to probe
+        channel : int
+            the wavelength center of the channel
 
+        Notes
+        -----
+        The energy of a photon E = hf = hc / lambda . Expressing hc in units of eV = 12398.4953
         """
         # convert hc to convenient units
         hc = (constants.h * constants.c).to(u.eV * u.angstrom)
@@ -118,34 +117,10 @@ class Response():
 
     def calculate_wavelength_response(self):
         """
-        Describes the (AIA) instrument wavelength response by calculating effective area as a function of wavelength for
-         the strongest emission lines present in the solar feature. This should display a peaked value around the
-         channel wavelength centers.
+        Describes the (AIA) instrument wavelength response by calculating effective area as a function of wavelength for the strongest emission lines present in the solar feature. This should display a peaked value around the channel wavelength centers.
 
         formula:
         Wavelength Response = Effective Area * Gain of the Intrument System
-
-        Parameters
-          --------
-        :param: channel, int
-            the wavelength center of the channel to probe
-
-        :param: use_genx_values, bool
-            Default is to use the values imported by genx files. Otherwise, the ccd system gain is calculated with the
-            equation from Boerner et al 2012.
-
-
-
-        Returns
-        -------
-        :return: response dictionary
-            response dictionary contains the response per wavelength of effective area where the keys are the channel
-            wavelength centers and both the responses and wavelenghts are returned as values.
-
-
-        NOTE:
-        The energy of a photon E = hf = hc / lambda . Expressing hc in units of eV = 12398.4953
-
         """
 
         self.wavelength_response = {}
@@ -303,8 +278,6 @@ class Response():
 
         # define temperature response dictionary
         self.temperature_response = {'temperature': temperature_array, 'temperature response': temp_response}
-
-
 
 
     def get_temperature_response_functions(self):
