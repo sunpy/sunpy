@@ -93,6 +93,9 @@ def get_obssumm_dbase_file(time_range):
     _time_range = TimeRange(time_range)
     data_location = 'dbase/'
 
+    if _time_range.start < parse_time("2002/02/01"):
+        raise ValueError("RHESSI summary files are not available for before 2002-02-01")
+
     url_root = get_base_url() + data_location
     url = url_root + _time_range.start.strftime("hsi_obssumm_filedb_%Y%m.txt")
 
@@ -169,8 +172,8 @@ def parse_obssumm_dbase_file(filename):
 def get_obssum_filename(time_range):
     """
     Download the RHESSI observing summary data from one of the RHESSI
-    servers, parses it, and returns the name of the obssumm file relevant for
-    the time range
+    servers, parses it, and returns the name of the obssumm files relevant for
+    the time range.
 
     Parameters
     ----------
@@ -179,13 +182,13 @@ def get_obssum_filename(time_range):
 
     Returns
     -------
-    out : string
-        Returns the filename of the observation summary file
+    out : list
+        Returns the filenames of the observation summary file
 
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> rhessi.get_obssumm_filename(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
+    >>> rhessi.get_obssum_filename(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
 
     .. note::
         This API is currently limited to providing data from whole days only.
@@ -278,7 +281,8 @@ def parse_obssumm_file(filename):
               '50 - 100 keV', '100 - 300 keV', '300 - 800 keV', '800 - 7000 keV',
               '7000 - 20000 keV']
 
-    # the data stored in the fits file are "compressed" countrates stored as one byte
+    # The data stored in the FITS file are "compressed" countrates stored as
+    # one byte
     compressed_countrate = np.array(afits[6].data.field('countrate'))
 
     countrate = uncompress_countrate(compressed_countrate)

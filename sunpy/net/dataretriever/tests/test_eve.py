@@ -1,13 +1,19 @@
 import datetime
 import pytest
 
+from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
+from sunpy.net.vso import VSOClient
 from sunpy.net.vso.attrs import Time, Instrument, Source, Level
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.eve as eve
 from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
+
+from hypothesis import given, settings
+from hypothesis.extra.datetime import datetimes
+from .strategies import time_attr
 
 LCClient = eve.EVEClient()
 
@@ -55,14 +61,13 @@ def test_query():
     qr1 = LCClient.query(Time('2012/8/9', '2012/8/10'), Instrument('eve'))
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 2
-    assert qr1.time_range()[0] == '2012/08/09'
-    assert qr1.time_range()[1] == '2012/08/10'
+    assert qr1.time_range().start == parse_time('2012/08/09')
+    assert qr1.time_range().end == parse_time('2012/08/10')
 
 
 @pytest.mark.online
 @pytest.mark.parametrize("time,instrument", [
     (Time('2012/11/27', '2012/11/27'), Instrument('eve')),
-    (Time('2012/10/4', '2012/10/6'), Instrument('eve')),
 ])
 def test_get(time, instrument):
     qr1 = LCClient.query(time, instrument)
@@ -81,3 +86,24 @@ def test_fido(query):
     assert isinstance(qr[0].client, eve.EVEClient)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
+
+
+@pytest.mark.online
+@given(time_attr(time=datetimes(timezones=[], max_year=datetime.datetime.utcnow().year, min_year=2010)))
+@settings(max_examples=2, timeout=-1)
+def test_levels(time):
+    """
+    Test the correct handling of level 0 / 1.
+    The default should be level 1 from VSO, level 0 comes from EVEClient.
+    """
+    eve_a = a.Instrument('EVE')
+    qr = Fido.search(time, eve_a)
+    assert isinstance(qr[0].client, VSOClient)
+
+    qr = Fido.search(time, eve_a, a.Level(0))
+    assert isinstance(qr[0].client, eve.EVEClient)
+
+    qr = Fido.search(time, eve_a, a.Level(0) | a.Level(1))
+    clients = {type(a.client) for a in qr}
+    assert clients.symmetric_difference({VSOClient, eve.EVEClient}) == set()
+
