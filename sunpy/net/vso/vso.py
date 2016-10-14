@@ -193,6 +193,7 @@ class VSOClient(object):
     method_order = [
         'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR', 'URL-FILE', 'URL-packaged'
     ]
+
     def __init__(self, url=None, port=None, api=None):
         if api is None:
             if url is None:
@@ -200,7 +201,7 @@ class VSOClient(object):
             if port is None:
                 port = DEFAULT_PORT
 
-            api = client.Client(url, transport = WellBehavedHttpTransport())
+            api = client.Client(url, transport=WellBehavedHttpTransport())
             api.set_options(port=port)
         self.api = api
 
