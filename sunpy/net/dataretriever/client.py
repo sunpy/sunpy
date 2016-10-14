@@ -180,7 +180,7 @@ class GenericClient(object):
                 a_min = elem.min
                 a_max = elem.max
                 if a_min == a_max:
-                    self.map_[elem.__class__.__name__.lower()]  = a_min
+                    self.map_[elem.__class__.__name__.lower()] = a_min
                 else:
                     self.map_[elem.__class__.__name__.lower()] = (a_min, a_max)
             else:
