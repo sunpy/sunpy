@@ -5,10 +5,13 @@
 import copy
 import os
 import datetime
+from abc import ABCMeta
 from collections import OrderedDict
 from functools import partial
 
+import numpy as np
 import astropy.table
+import astropy.units as u
 
 import sunpy
 from sunpy.extern import six
@@ -17,16 +20,16 @@ from sunpy.util import replacement_filename
 from sunpy import config
 
 from ..download import Downloader, Results
-from ..vso.attrs import Time
+from ..vso.attrs import Time, _Range
 
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['QueryResponse', 'GenericClient']
 
 
-
 def simple_path(path, sock, url):
     return path
+
 
 class QueryResponseBlock(object):
     """
@@ -40,12 +43,14 @@ class QueryResponseBlock(object):
         map0 : Dict with relevant information
         url  : Uniform Resource Locator
         """
+        self.map_ = map0
         self.source = map0.get('source', "Data not Available")
         self.provider = map0.get('provider', "Data not Available")
         self.phyobs = map0.get('phyobs', "Data not Available")
         self.instrument = map0.get('instrument', "Data not Available")
         self.url = url
         self.time = TimeRange(map0.get('Time_start'), map0.get('Time_end'))
+        self.wavelength = map0.get('wavelength', np.NaN)
 
 
 def iter_urls(amap, url_list):
@@ -71,10 +76,8 @@ class QueryResponse(list):
         """
         Returns the time-span for which records are available
         """
-        return (datetime.date.strftime(
-            min(qrblock.time.start
-                for qrblock in self), '%Y/%m/%d'), datetime.date.strftime(
-                    max(qrblock.time.end for qrblock in self), '%Y/%m/%d'))
+        return TimeRange(min(qrblock.time.start for qrblock in self),
+                         max(qrblock.time.end for qrblock in self))
 
     def __repr__(self):
         return repr(self._build_table())
@@ -87,7 +90,8 @@ class QueryResponse(list):
 
     def _build_table(self):
         columns = OrderedDict((('Start Time', []), ('End Time', []),
-                               ('Source', []), ('Instrument', [])))
+                               ('Source', []), ('Instrument', []),
+                               ('Wavelength', [])))
         for i, qrblock in enumerate(self):
             columns['Start Time'].append((qrblock.time.start.date(
             ) + datetime.timedelta(days=i)).strftime(TIME_FORMAT))
@@ -95,10 +99,40 @@ class QueryResponse(list):
             ) + datetime.timedelta(days=i + 1)).strftime(TIME_FORMAT))
             columns['Source'].append(qrblock.source)
             columns['Instrument'].append(qrblock.instrument)
+            columns['Wavelength'].append(str(u.Quantity(qrblock.wavelength)))
 
         return astropy.table.Table(columns)
 
 
+# GenericMap subclass registry.
+CLIENTS = OrderedDict()
+
+
+class GenericClientMeta(ABCMeta):
+    """
+    Registration metaclass for `~sunpy.map.GenericMap`.
+
+    This class checks for the existance of a method named ``is_datasource_for``
+    when a subclass of `GenericMap` is defined. If it exists it will add that
+    class to the registry.
+    """
+
+    _registry = CLIENTS
+
+    def __new__(mcls, name, bases, members):
+        cls = super(GenericClientMeta, mcls).__new__(mcls, name, bases, members)
+
+        if cls.__name__ is 'GenericClient':
+            return cls
+        # The registry contains the class as the key and the validation method
+        # as the item.
+        if '_can_handle_query' in members:
+            mcls._registry[cls] = cls._can_handle_query
+
+        return cls
+
+
+@six.add_metaclass(GenericClientMeta)
 class GenericClient(object):
     """
     Base class for simple web clients for the data retriever module. This class
@@ -138,15 +172,29 @@ class GenericClient(object):
             None.
         """
         for elem in args:
-            if issubclass(elem.__class__, Time):
+            if isinstance(elem, Time):
                 self.map_['TimeRange'] = TimeRange(elem.start, elem.end)
                 self.map_['Time_start'] = elem.start
                 self.map_['Time_end'] = elem.end
+            elif isinstance(elem, _Range):
+                a_min = elem.min
+                a_max = elem.max
+                if a_min == a_max:
+                    self.map_[elem.__class__.__name__.lower()] = a_min
+                else:
+                    self.map_[elem.__class__.__name__.lower()] = (a_min, a_max)
             else:
-                try:
+                if hasattr(elem, 'value'):
                     self.map_[elem.__class__.__name__.lower()] = elem.value
-                except Exception:
-                    self.map_[elem.__class__.__name__.lower()] = None
+                else:
+                    # This will only get hit if the attr is something like
+                    # Extent, which is a unique subclass of Attr. Currently no
+                    # unidown Clients support this, so we skip this line.
+                    # Anything that hits this will require special code to
+                    # convert it into the map_ dict.
+                    raise ValueError(
+                        "GenericClient can not add {} to the map_ dictionary to pass "
+                        "to the Client.".format(elem.__class__.__name__))  # pragma: no cover
         self._makeimap()
 
     def _get_url_for_timerange(cls, timerange, **kwargs):
@@ -214,7 +262,6 @@ class GenericClient(object):
         -------
         Results Object
         """
-        details = qres.client.map_
 
         urls = []
         for qrblock in qres:
@@ -228,13 +275,13 @@ class GenericClient(object):
         default_dir = sunpy.config.get("downloads", "download_dir")
 
         paths = []
-        for filename in filenames:
+        for i, filename in enumerate(filenames):
             if path is None:
                 fname = os.path.join(default_dir, '{file}')
             elif isinstance(path, six.string_types) and '{file}' not in path:
                 fname = os.path.join(path, '{file}')
 
-            temp_dict = details.copy()
+            temp_dict = qres[i].map_.copy()
             temp_dict['file'] = filename
             fname  = fname.format(**temp_dict)
             fname = os.path.expanduser(fname)

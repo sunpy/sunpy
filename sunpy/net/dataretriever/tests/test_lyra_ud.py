@@ -9,6 +9,9 @@ from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
+from hypothesis import given
+from .strategies import time_attr
+
 LCClient = lyra.LYRAClient()
 
 
@@ -38,20 +41,21 @@ def test_get_url_for_date():
     assert url == 'http://proba2.oma.be/lyra/data/bsd/2013/02/13/lyra_20130213-000000_lev2_std.fits'
 
 
-def test_can_handle_query():
+@given(time_attr())
+def test_can_handle_query(time):
     ans1 = lyra.LYRAClient._can_handle_query(
-        Time('2011/8/9', '2011/8/10'), Instrument('lyra'))
+        time, Instrument('lyra'))
     assert ans1 is True
-    ans2 = lyra.LYRAClient._can_handle_query(Time('2013/1/7', '2013/1/7'))
+    ans2 = lyra.LYRAClient._can_handle_query(time)
     assert ans2 is False
 
 
-def test_query():
-    qr1 = LCClient.query(Time('2012/11/10', '2012/11/11'), Instrument('lyra'))
+@given(time_attr())
+def test_query(time):
+    qr1 = LCClient.query(time, Instrument('lyra'))
     assert isinstance(qr1, QueryResponse)
-    assert len(qr1) == 2
-    assert qr1.time_range()[0] == '2012/11/10'
-    assert qr1.time_range()[1] == '2012/11/11'
+    assert qr1.time_range().start == time.start
+    assert qr1.time_range().end == time.end
 
 
 @pytest.mark.online

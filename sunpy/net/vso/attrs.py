@@ -35,6 +35,7 @@ __all__ = ['Wavelength', 'Time', 'Extent', 'Field', 'Provider', 'Source',
 
 TIMEFORMAT = '%Y%m%d%H%M%S'
 
+
 class _Range(object):
     def __init__(self, min_, max_, create):
         self.min = min_
@@ -88,8 +89,8 @@ class Wavelength(Attr, _Range):
 
         # VSO just accept inputs as Angstroms, kHz or keV, the following
         # converts to any of these units depending on the spectral inputs
-        # Note: the website asks for GHz, however it seems that using GHz produces
-        # weird responses on VSO.
+        # Note: the website asks for GHz, however it seems that using GHz
+        # produces weird responses on VSO.
         supported_units = [u.AA, u.kHz, u.keV]
         for unit in supported_units:
             if wavemin.unit.is_equivalent(unit):
@@ -142,6 +143,9 @@ class Time(Attr, _Range):
         else:
             self.start = parse_time(start)
             self.end = parse_time(end)
+
+        if self.start > self.end:
+            raise ValueError("End time must be after start time.")
         self.near = None if near is None else parse_time(near)
 
         _Range.__init__(self, self.start, self.end, self.__class__)
@@ -162,6 +166,7 @@ class Time(Attr, _Range):
 
     def __repr__(self):
         return '<Time({s.start!r}, {s.end!r}, {s.near!r})>'.format(s=self)
+
 
 class Extent(Attr):
     # pylint: disable=R0913
