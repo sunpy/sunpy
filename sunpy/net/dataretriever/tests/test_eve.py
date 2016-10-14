@@ -67,7 +67,6 @@ def test_query():
 @pytest.mark.online
 @pytest.mark.parametrize("time,instrument", [
     (Time('2012/11/27', '2012/11/27'), Instrument('eve')),
-    (Time('2012/10/4', '2012/10/6'), Instrument('eve')),
 ])
 def test_get(time, instrument):
     qr1 = LCClient.query(time, instrument)
