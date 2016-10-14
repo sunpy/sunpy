@@ -5,6 +5,7 @@
 import copy
 import os
 import datetime
+from abc import ABCMeta
 from collections import OrderedDict
 from functools import partial
 
@@ -103,6 +104,35 @@ class QueryResponse(list):
         return astropy.table.Table(columns)
 
 
+# GenericMap subclass registry.
+CLIENTS = OrderedDict()
+
+
+class GenericClientMeta(ABCMeta):
+    """
+    Registration metaclass for `~sunpy.map.GenericMap`.
+
+    This class checks for the existance of a method named ``is_datasource_for``
+    when a subclass of `GenericMap` is defined. If it exists it will add that
+    class to the registry.
+    """
+
+    _registry = CLIENTS
+
+    def __new__(mcls, name, bases, members):
+        cls = super(GenericClientMeta, mcls).__new__(mcls, name, bases, members)
+
+        if cls.__name__ is 'GenericClient':
+            return cls
+        # The registry contains the class as the key and the validation method
+        # as the item.
+        if '_can_handle_query' in members:
+            mcls._registry[cls] = cls._can_handle_query
+
+        return cls
+
+
+@six.add_metaclass(GenericClientMeta)
 class GenericClient(object):
     """
     Base class for simple web clients for the data retriever module. This class
@@ -154,10 +184,17 @@ class GenericClient(object):
                 else:
                     self.map_[elem.__class__.__name__.lower()] = (a_min, a_max)
             else:
-                try:
+                if hasattr(elem, 'value'):
                     self.map_[elem.__class__.__name__.lower()] = elem.value
-                except Exception:
-                    self.map_[elem.__class__.__name__.lower()] = None
+                else:
+                    # This will only get hit if the attr is something like
+                    # Extent, which is a unique subclass of Attr. Currently no
+                    # unidown Clients support this, so we skip this line.
+                    # Anything that hits this will require special code to
+                    # convert it into the map_ dict.
+                    raise ValueError(
+                        "GenericClient can not add {} to the map_ dictionary to pass "
+                        "to the Client.".format(elem.__class__.__name__))  # pragma: no cover
         self._makeimap()
 
     def _get_url_for_timerange(cls, timerange, **kwargs):
