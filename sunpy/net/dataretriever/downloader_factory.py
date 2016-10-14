@@ -6,8 +6,10 @@ from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 
+from sunpy.net.dataretriever.clients import CLIENTS
 from sunpy.net.vso import VSOClient
 from .. import attr
+from .. import attrs as a
 
 __all__ = ['Fido']
 
@@ -88,8 +90,15 @@ query_walker = attr.AttrWalker()
 
 @query_walker.add_creator(attr.AttrAnd)
 def _create_and(walker, query, factory):
-    qresponseobj, qclient = factory._get_registered_widget(*query.attrs)
-    return [(qresponseobj, qclient)]
+    att = {type(x) for x in query.attrs}
+    if a.Time not in att:
+        error = "The following part of the query did not have a time specified:\n"
+        for at in query.attrs:
+            error += str(at) + ', '
+        raise ValueError(error)
+
+    # Return the response and the client
+    return [factory._make_query_to_client(*query.attrs)]
 
 
 @query_walker.add_creator(attr.AttrOr)
@@ -185,7 +194,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             return results
 
     def __call__(self, *args, **kwargs):
-        raise NotImplementedError
+        raise TypeError("'{}' object is not callable".format(
+            self.__class__.__name__))
 
     def _check_registered_widgets(self, *args):
         """Factory helper function"""
@@ -197,11 +207,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         n_matches = len(candidate_widget_types)
         if n_matches == 0:
-            if self.default_widget_type is None:
-                raise NoMatchError(
-                    "No client understands this query, check your arguments to search.")
-            else:
-                return [self.default_widget_type]
+            # There is no default client
+            raise NoMatchError(
+                "This query was not understood by any clients. Did you miss an OR?")
         elif n_matches == 2:
             # If two clients have reported they understand this query, and one
             # of them is the VSOClient, then we ignore VSOClient.
@@ -212,18 +220,30 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         if len(candidate_widget_types) > 1:
             candidate_names = [cls.__name__ for cls in candidate_widget_types]
             raise MultipleMatchError(
-                "Multiple clients understood this search,"
-                " please provide a more specific query. {}".format(
-                    candidate_names))
+                "The following clients matched this query. "
+                "Please make your query more specific.\n"
+                "{}".format(candidate_names))
 
         return candidate_widget_types
 
-    def _get_registered_widget(self, *args):
-        """Factory helper function"""
-        candidate_widget_types = self._check_registered_widgets(*args)
+    def _make_query_to_client(self, *query):
+        """
+        Given a query, look up the client and perform the query.
+
+        Parameters
+        ----------
+        query : collection of `~sunpy.net.vso.attr` objects
+
+        Returns
+        -------
+        response : `~sunpy.net.dataretriever.client.QueryResponse`
+
+        client : Instance of client class
+        """
+        candidate_widget_types = self._check_registered_widgets(*query)
         tmpclient = candidate_widget_types[0]()
-        return tmpclient.query(*args), tmpclient
+        return tmpclient.query(*query), tmpclient
 
 
-Fido = UnifiedDownloaderFactory(
-    additional_validation_functions=['_can_handle_query'])
+Fido = UnifiedDownloaderFactory(registry=CLIENTS,
+                                additional_validation_functions=['_can_handle_query'])

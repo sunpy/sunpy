@@ -80,6 +80,13 @@ def test_wavelength_range():
             a.Wavelength(17 * u.GHz, 34 * u.GHz))
 
 
+def test_query_wrong_wave():
+    c = norh.NoRHClient()
+    with pytest.raises(ValueError):
+        c.query(a.Time("2016/10/1", "2016/10/2"), a.Instrument('norh'),
+                a.Wavelength(50*u.GHz))
+
+
 @pytest.mark.online
 @pytest.mark.parametrize("time,instrument,wave", [
     (a.Time('2012/10/4', '2012/10/6'), a.Instrument('norh'), a.Wavelength(17*u.GHz)),
