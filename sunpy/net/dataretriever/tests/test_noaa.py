@@ -1,5 +1,6 @@
 import pytest
 
+from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.dataretriever.client import QueryResponse
@@ -43,8 +44,8 @@ def test_query():
         Time('2012/8/9', '2012/8/10'), Instrument('noaa-indices'))
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 1
-    assert qr1.time_range()[0] == '2012/08/09'
-    assert qr1.time_range()[1] == '2012/08/10'
+    assert qr1.time_range().start == parse_time('2012/08/09')
+    assert qr1.time_range().end == parse_time('2012/08/10')
 
 
 @pytest.mark.online

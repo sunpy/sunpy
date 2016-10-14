@@ -39,6 +39,8 @@ class Attr(object):
             return AttrOr([elem & self for elem in other.attrs])
         if self.collides(other):
             return NotImplemented
+        if isinstance(other, AttrAnd):
+            return AttrAnd([self] + list(other.attrs))
         return AttrAnd([self, other])
 
     def __hash__(self):
@@ -48,6 +50,8 @@ class Attr(object):
         # Optimization.
         if self == other:
             return self
+        if isinstance(other, AttrOr):
+            return AttrOr([self] + list(other.attrs))
         return AttrOr([self, other])
 
     def collides(self, other):
@@ -254,6 +258,7 @@ def and_(*args):
     for elem in args:
         value &= elem
     return value
+
 
 def or_(*args):
     """ Trick operator precedence.

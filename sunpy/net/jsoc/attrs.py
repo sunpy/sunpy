@@ -72,7 +72,6 @@ def _create(wlk, query):
 def _apply(wlk, query, imap):
 
     for iattr in query.attrs:
-        print(iattr, imap)
         wlk.apply(iattr, imap)
 
 
@@ -84,7 +83,6 @@ def _apply1(wlk, query, imap):
 
 @walker.add_applier(Time)
 def _apply2(wlk, query, imap):
-
     imap['start_time'] = query.start
     imap['end_time'] = query.end
 
