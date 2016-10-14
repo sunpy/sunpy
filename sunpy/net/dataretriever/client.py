@@ -8,7 +8,9 @@ import datetime
 from collections import OrderedDict
 from functools import partial
 
+import numpy as np
 import astropy.table
+import astropy.units as u
 
 import sunpy
 from sunpy.extern import six
@@ -17,7 +19,7 @@ from sunpy.util import replacement_filename
 from sunpy import config
 
 from ..download import Downloader, Results
-from ..vso.attrs import Time
+from ..vso.attrs import Time, _Range
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -47,6 +49,7 @@ class QueryResponseBlock(object):
         self.instrument = map0.get('instrument', "Data not Available")
         self.url = url
         self.time = TimeRange(map0.get('Time_start'), map0.get('Time_end'))
+        self.wavelength = map0.get('wavelength', np.NaN)
 
 
 def iter_urls(amap, url_list):
@@ -86,7 +89,8 @@ class QueryResponse(list):
 
     def _build_table(self):
         columns = OrderedDict((('Start Time', []), ('End Time', []),
-                               ('Source', []), ('Instrument', [])))
+                               ('Source', []), ('Instrument', []),
+                               ('Wavelength', [])))
         for i, qrblock in enumerate(self):
             columns['Start Time'].append((qrblock.time.start.date(
             ) + datetime.timedelta(days=i)).strftime(TIME_FORMAT))
@@ -94,6 +98,7 @@ class QueryResponse(list):
             ) + datetime.timedelta(days=i + 1)).strftime(TIME_FORMAT))
             columns['Source'].append(qrblock.source)
             columns['Instrument'].append(qrblock.instrument)
+            columns['Wavelength'].append(str(u.Quantity(qrblock.wavelength)))
 
         return astropy.table.Table(columns)
 
@@ -137,10 +142,17 @@ class GenericClient(object):
             None.
         """
         for elem in args:
-            if issubclass(elem.__class__, Time):
+            if isinstance(elem, Time):
                 self.map_['TimeRange'] = TimeRange(elem.start, elem.end)
                 self.map_['Time_start'] = elem.start
                 self.map_['Time_end'] = elem.end
+            elif isinstance(elem, _Range):
+                a_min = elem.min
+                a_max = elem.max
+                if a_min == a_max:
+                    self.map_[elem.__class__.__name__.lower()]  = a_min
+                else:
+                    self.map_[elem.__class__.__name__.lower()] = (a_min, a_max)
             else:
                 try:
                     self.map_[elem.__class__.__name__.lower()] = elem.value
