@@ -10,7 +10,7 @@ import astropy.units as u
 
 from sunpy.net import attr
 from sunpy.net import Fido, attrs as a
-from sunpy.net.dataretriever.downloader_factory import DownloadResponse
+from sunpy.net.dataretriever.downloader_factory import DownloadResponse, UnifiedResponse
 from sunpy.net.dataretriever.client import CLIENTS
 from sunpy.util.datatype_factory_base import NoMatchError, MultipleMatchError
 from sunpy.time import TimeRange, parse_time
@@ -89,6 +89,7 @@ def test_save_path():
             assert target_dir in f
             assert "eve{}0".format(os.path.sep) in f
 
+
 """
 Factory Tests
 """
@@ -153,10 +154,24 @@ def test_multiple_match():
 
 @pytest.mark.online
 def test_no_wait_fetch():
-        qr = Fido.search(a.Instrument('EVE'), a.Time("2016/10/01", "2016/10/02"),
+        qr = Fido.search(a.Instrument('EVE'),
+                         a.Time("2016/10/01", "2016/10/02"),
                          a.Level(0))
         res = Fido.fetch(qr, wait=False)
         assert isinstance(res, DownloadResponse)
         assert isinstance(res.wait(), list)
 
+"""
+UnifiedResponse Tests
+"""
 
+
+@pytest.mark.xfail
+def test_unifiedresponse_slicing():
+    """
+    This should pass, a fix is incoming from @Cadair
+    """
+    results = Fido.search(
+        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+    assert isinstance(results[0:2], UnifiedResponse)
+    assert isinstance(results[0], UnifiedResponse)
