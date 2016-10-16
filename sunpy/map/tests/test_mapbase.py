@@ -648,6 +648,11 @@ def test_more_than_two_dimensions():
     bad_data = np.random.rand(2,2,2)
     hdr = fits.Header()
     hdr['TELESCOP'] = 'XXX'
-    bad_map = sunpy.map.Map(bad_data, hdr)
+    # Test fails if there is no user warning
+    warnings.simplefilter('always')
+    pytest.warns(Warning,'sunpy.map.Map(bad_data, hdr)')
     # Test fails if the bad_map.__repr__() causes an exception
+    bad_map = sunpy.map.Map(bad_data, hdr)
     repr(bad_map)
+    # Test fails if map.ndim > 2
+    assert bad_map.ndim is 2
