@@ -639,3 +639,15 @@ def test_hc_warn():
 
     with pytest.warns(UserWarning):
         sunpy.map.Map((data, header))
+
+def test_more_than_two_dimensions():
+    """Check to see if an appropriate error is provided when a FIT data with more than two dimensions is loaded
+    Fixes #1919
+    To replicate the bug we need to load a >2-dim dataset with a OBSERVATORY header
+    """
+    bad_data = np.random.rand(2,2,2)
+    hdr = fits.Header()
+    hdr['TELESCOP'] = 'XXX'
+    bad_map = sunpy.map.Map(bad_data, hdr)
+    # Test fails if the bad_map.__repr__() causes an exception
+    repr(bad_map)
