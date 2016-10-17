@@ -22,7 +22,7 @@ __all__ = ['HelioviewerClient']
 
 class HelioviewerClient(object):
     """Helioviewer.org Client"""
-    def __init__(self, url="http://legacy.helioviewer.org/api/"):
+    def __init__(self, url="https://legacy.helioviewer.org/api/"):
         """
         url : location of the Helioviewer API.  The default location points to
             version 1 of the API.  Version 1 of the Helioviewer API is
