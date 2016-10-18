@@ -8,7 +8,6 @@ __authors__ = ["Alex Hamilton, Stuart Mumford"]
 __email__ = "stuart@mumford.me.uk"
 
 import warnings
-import inspect
 from abc import ABCMeta
 from collections import OrderedDict
 import copy
@@ -17,9 +16,8 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 from sunpy import config
-from sunpy.time import TimeRange, parse_time
+from sunpy.time import TimeRange
 from sunpy.extern import six
-from sunpy.sun import sun
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.util.metadata import MetaDict
 
@@ -86,18 +84,17 @@ class GenericTimeSeries:
 
     All other keywords are passed to _is_source_for and then __init__.
 
-    Examples ########
+    Examples
     --------
     >>> from sunpy.timeseries import TimeSeries
     >>> import datetime
     >>> import numpy as np
     >>> import pandas as pd
     >>> base = datetime.datetime.today()
-    >>> dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+    >>> times = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
     >>> intensity = np.sin(np.arange(0, 12 * np.pi, step=(12 * np.pi) / (24 * 60)))
-    >>> ts = Timeseries({"param1": intensity}, index=dates)
-    >>> df = DataFrame(intensity, index=times, columns=['intensity'])
-    >>> ts = Timeseries({"param1": intensity}, index=dates)
+    >>> df = pd.DataFrame(intensity, index=times, columns=['intensity'])
+    >>> ts = TimeSeries(df)
     >>> ts.peek()   # doctest: +SKIP
 
     References
