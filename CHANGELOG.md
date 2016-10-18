@@ -3,7 +3,9 @@
 
 * Remove Map always forcing warnings on.
 * `Map.center` now uses `Map.wcs` to correctly handle rotation.
-
+* Fix link in coordinates documentation.
+* Update helioviewer URL to HTTPS (fixes access to Helioviewer).
+* Fix processing of TRACE and YOHKOH measurement properties.
 
 0.7.3
 ------
