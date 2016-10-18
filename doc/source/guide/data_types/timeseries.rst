@@ -28,7 +28,7 @@ To create the sample `sunpy.timeseries.sources.goes.GOESLightCurve` type the
     >>> import sunpy.data.sample
     >>> my_timeseries = ts.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='GOES')
 
-This is calling the TimeSeries factory (TimeSeries) to create a time series from a sample FITS file.
+This is calling the `~sunpy.timeseries.TimeSeries` factory to create a time series from a sample FITS file.
 If you have not downloaded the data already you should get an error and some
 instruction on how to download the sample data.
 
@@ -103,7 +103,6 @@ Furthermore we could specify the metadata/header and units of this time series b
     >>> meta = OrderedDict({'key':'value'})
     >>> units = OrderedDict([('intensity', u.W/u.m**2)])
     >>> ts_custom = ts.TimeSeries(data, meta, units)
-
 
 2.2 Creating Custom TimeSeries from an AstroPy Table
 -----------------------------------------------------
@@ -230,7 +229,7 @@ Or similarly using a datetime values (as string or datetime object): ::
 You can even change all the values for a given time: ::
 
     >>> my_timeseries.data['xrsa']['2012-06-01 00:00'] = 1
-    
+
 Note, you will need to be careful to consider units when modifying the TimeSeries data directly.
 For further details about editing Pandas DataFames you can read the `pandas documentation website
 <http://pandas.pydata.org/pandas-docs/stable/>`_.
