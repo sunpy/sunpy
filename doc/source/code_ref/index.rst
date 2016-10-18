@@ -22,6 +22,7 @@ API Reference
    spectra
    sun
    time
+   timeseries
    util
    visualization
    wcs
