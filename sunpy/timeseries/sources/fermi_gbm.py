@@ -4,16 +4,15 @@
 from __future__ import absolute_import, print_function
 
 from collections import OrderedDict
-
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas
+import pandas as pd
 
 import sunpy.io
 from sunpy.instr import fermi
-#from sunpy.timeseries import GenericTimeSeries
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
+
 from astropy import units as u
 
 __all__ = ['GBMSummaryLightCurve']
@@ -73,6 +72,12 @@ class GBMSummaryLightCurve(GenericTimeSeries):
         ----------
         **kwargs : `dict`
             Any additional plot arguments that should be used when plotting.
+            
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
         """
         figure = plt.figure()
         axes = plt.gca()
@@ -91,6 +96,7 @@ class GBMSummaryLightCurve(GenericTimeSeries):
         figure.autofmt_xdate()
 
         plt.show()
+        return figure
 
     @classmethod
     def _parse_file(cls, filepath):
@@ -127,7 +133,7 @@ class GBMSummaryLightCurve(GenericTimeSeries):
                              ('100-300 keV', u.ct), ('300-800 keV', u.ct),
                              ('800-2000 keV', u.ct)])
         # Todo: check units used.
-        return pandas.DataFrame(summary_counts,
+        return pd.DataFrame(summary_counts,
                                 columns=column_labels,
                                 index=gbm_times), header, units
 

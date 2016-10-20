@@ -27,10 +27,9 @@ from astropy.time import Time
 
 import sunpy
 import sunpy.timeseries
-from sunpy.time import TimeRange
 from sunpy.util.metadata import MetaDict
 from sunpy.timeseries import TimeSeriesMetaData
-from sunpy.tests.helpers import figure_test, skip_wcsaxes
+from sunpy.tests.helpers import figure_test
 
 import sunpy.data.sample
 import sunpy.data.test
@@ -412,7 +411,6 @@ def test_ts_sort_index(generic_ts):
 
 #_validate_meta
 
-@skip_wcsaxes
 @figure_test
 def test_eve_peek(eve_test_ts):
     eve_test_ts.peek()

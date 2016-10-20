@@ -4,14 +4,13 @@ from __future__ import absolute_import
 
 from collections import OrderedDict
 import datetime
-
 from matplotlib import pyplot as plt
 from pandas.io.parsers import read_csv
 import numpy as np
 
-#from sunpy.timeseries import GenericTimeSeries
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
+
 from astropy import units as u
 
 __all__ = ['NOAAIndicesTimeSeries', 'NOAAPredictIndicesTimeSeries']

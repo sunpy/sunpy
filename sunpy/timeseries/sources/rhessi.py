@@ -8,9 +8,7 @@ import matplotlib.dates
 import matplotlib.pyplot as plt
 from pandas import DataFrame
 
-#from sunpy.timeseries import GenericTimeSeries
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
-from sunpy.time import TimeRange, parse_time
 from sunpy.util.metadata import MetaDict
 from sunpy.instr import rhessi
 import sunpy.io

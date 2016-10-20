@@ -199,8 +199,8 @@ type: ::
 
     import sunpy.timeseries as ts
     import sunpy.data.sample
-    my_timeseries = ts.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='GOES') 
-    my_timeseries.peek()
+    ts_plot = ts.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='GOES') 
+    ts_plot.peek()
 
 This will open a matplotlib plot on your screen. The `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.peek`
 method provides a view on data customised for each source while `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.plot`
@@ -271,12 +271,12 @@ To downsample you can use: ::
     >>> downsampled_dataframe = my_timeseries_trunc.data.resample('10T').mean()
     >>> downsampled_timeseries = sunpy.timeseries.TimeSeries(downsampled_dataframe, my_timeseries_trunc.meta, my_timeseries_trunc.units) # ToDo: Fix this!
 
-Note, here 10T means sample every 10 minutes and 'mean' is the method used to combine the data. Alternatively the sum method is often used.
+Note, here ``10T`` means sample every 10 minutes and 'mean' is the method used to combine the data. Alternatively the sum method is often used.
 You can also upsample, such as: ::
 
     >>> upsampled_data = my_timeseries_trunc.data.resample('30S').ffill()
 
-Note, here we upsample to 30 second intervals using '30S' and use the fill-forward. Alternatively the back-fill method could be used.
+Note, here we upsample to 30 second intervals using ``30S`` and use the fill-forward. Alternatively the back-fill method could be used.
 Caution should be used when resampling the data, the TimeSeries can't guarantee AstroPy Units are correctly preserved when you interact with the data directly.
 
 5.4 Concatenating TimeSeries

@@ -8,20 +8,22 @@ Created on Thu Jun 23 12:08:21 2016
 import os
 import glob
 import pytest
-import sunpy.data.sample
-import sunpy.data.test
-import sunpy.timeseries
 import datetime
 import numpy as np
 from pandas import DataFrame
 from collections import OrderedDict
+
+import sunpy.data.sample
+import sunpy.data.test
+import sunpy.timeseries
 from sunpy.util.metadata import MetaDict
 import sunpy.io
+from sunpy.util.datatype_factory_base import NoMatchError
+
 import astropy.units as u
 from astropy.table import Table
 from astropy.time import Time
 from astropy.io import fits
-from sunpy.util.datatype_factory_base import NoMatchError
 
 #==============================================================================
 # TimeSeries Factory Tests

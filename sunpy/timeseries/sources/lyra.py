@@ -5,18 +5,16 @@ from __future__ import absolute_import, division, print_function
 import datetime
 import sys
 from collections import OrderedDict
-
 from matplotlib import pyplot as plt
 import pandas
-import sunpy.io
 
-#from sunpy.timeseries import GenericTimeSeries
+import sunpy.io
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.time import parse_time
 from sunpy.util.metadata import MetaDict
-from astropy import units as u
-
 from sunpy import config
+
+from astropy import units as u
 
 TIME_FORMAT = config.get("general", "time_format")
 

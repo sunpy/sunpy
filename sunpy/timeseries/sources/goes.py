@@ -7,19 +7,20 @@ from collections import OrderedDict
 import datetime
 import matplotlib.dates
 from matplotlib import pyplot as plt
-from numpy import nan
-from numpy import floor
+import numpy as np
 from pandas import DataFrame
 
 import sunpy.io
-#from sunpy.timeseries import GenericTimeSeries
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.time import parse_time, TimeRange, is_time_in_given_format
 from sunpy.util.metadata import MetaDict
+
 from astropy import units as u
 
 __author__ = ["Alex Hamilton"]
 __email__ = "####"
+
+__all__ = ['GOESLightCurve']
 
 
 class GOESLightCurve(GenericTimeSeries):
@@ -174,12 +175,12 @@ class GOESLightCurve(GenericTimeSeries):
         else:
             raise ValueError("Don't know how to parse this file")
 
-        times = [start_time + datetime.timedelta(seconds=int(floor(s)),
-                                                    microseconds=int((s - floor(s)) * 1e6)) for s in seconds_from_start]
+        times = [start_time + datetime.timedelta(seconds=int(np.floor(s)),
+                                                    microseconds=int((s - np.floor(s)) * 1e6)) for s in seconds_from_start]
 
         # remove bad values as defined in header comments
-        xrsb[xrsb == -99999] = nan
-        xrsa[xrsa == -99999] = nan
+        xrsb[xrsb == -99999] = np.nan
+        xrsa[xrsa == -99999] = np.nan
 
         # fix byte ordering
         newxrsa = xrsa.byteswap().newbyteorder()
