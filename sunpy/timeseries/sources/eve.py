@@ -13,7 +13,8 @@ import matplotlib.pyplot as plt
 from pandas.io.parsers import read_csv
 from os.path import basename
 
-from sunpy.timeseries import GenericTimeSeries
+#from sunpy.timeseries.timeseriesbase import GenericTimeSeries
+from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
 from astropy import units as u
 

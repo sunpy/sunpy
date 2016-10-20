@@ -279,9 +279,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     # We have an AstroPy Table:
                     data, meta, units = self._from_table(data)
                 elif isinstance(data, np.ndarray):
-                    # We have a numpy ndarray:
-                    data = pd.DataFrame(data=arg)
-                    # TODO: should this include an index? Maybe default is first column?
+                    # We have a numpy ndarray. We assume the first column is a dt index
+                    data = pd.DataFrame(data=data[:,1:], index=Time(data[:,0]))
 
                 # If there are 1 or 2 more arguments:
                 for _ in range(2):
