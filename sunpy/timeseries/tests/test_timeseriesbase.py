@@ -45,20 +45,14 @@ filepath = sunpy.data.test.rootdir
 
 eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
 fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
-norrh_filepath = os.path.join(filepath, '')
+norh_filepath = os.path.join(filepath, 'tca110810_truncated')
 goes_filepath = os.path.join(filepath, 'goes.fits')
-lyra_filepath = os.path.join(filepath, '')
-rhessi_filepath = os.path.join(filepath, '')
-noaa_ind_filepath = os.path.join(filepath, '')
-noaa_pre_filepath = os.path.join(filepath, '')
+lyra_filepath = os.path.join(filepath, 'lyra_20150101-000000_lev3_std_truncated.fits.gz')
+rhessi_filepath = os.path.join(filepath, 'hsi_obssumm_20120601_018_truncated.fits.gz')
+noaa_ind_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
+noaa_pre_filepath = os.path.join(filepath, 'predicted-sunspot-radio-flux_truncated.txt')
 
 goes_filepath = sunpy.data.sample.GOES_LIGHTCURVE
-norrh_filepath = sunpy.data.sample.NORH_LIGHTCURVE
-lyra_filepath = sunpy.data.sample.LYRA_LEVEL3_LIGHTCURVE
-rhessi_filepath = sunpy.data.sample.RHESSI_LIGHTCURVE
-noaa_ind_filepath = sunpy.data.sample.NOAAINDICES_LIGHTCURVE
-noaa_pre_filepath = sunpy.data.sample.NOAAPREDICT_LIGHTCURVE
-
 
 @pytest.fixture
 def eve_test_ts():
@@ -71,9 +65,9 @@ def fermi_gbm_test_ts():
     return sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
 
 @pytest.fixture
-def norrh_test_ts():
+def norh_test_ts():
     #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NoRH')
-    return sunpy.timeseries.TimeSeries(norrh_filepath, source='NoRH')
+    return sunpy.timeseries.TimeSeries(norh_filepath, source='NoRH')
 
 @pytest.fixture
 def goes_test_ts():
@@ -143,10 +137,10 @@ def table_ts():
 # Test Resulting TimeSeries Parameters
 #==============================================================================
 
-def test_units_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts, lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts, noaa_pre_test_ts, generic_ts, table_ts):
+def test_units_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts, lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts, noaa_pre_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.units, OrderedDict)
     assert isinstance(fermi_gbm_test_ts.units, OrderedDict)
-    assert isinstance(norrh_test_ts.units, OrderedDict)
+    assert isinstance(norh_test_ts.units, OrderedDict)
     assert isinstance(goes_test_ts.units, OrderedDict)
     assert isinstance(lyra_test_ts.units, OrderedDict)
     assert isinstance(rhessi_test_ts.units, OrderedDict)
@@ -155,10 +149,10 @@ def test_units_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts,
     assert isinstance(generic_ts.units, OrderedDict)
     assert isinstance(table_ts.units, OrderedDict)
 
-def test_meta_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts, lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts, noaa_pre_test_ts, generic_ts, table_ts):
+def test_meta_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts, lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts, noaa_pre_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(fermi_gbm_test_ts.meta, TimeSeriesMetaData)
-    assert isinstance(norrh_test_ts.meta, TimeSeriesMetaData)
+    assert isinstance(norh_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(goes_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(lyra_test_ts.meta, TimeSeriesMetaData)
     assert isinstance(rhessi_test_ts.meta, TimeSeriesMetaData)
@@ -167,10 +161,10 @@ def test_meta_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts, 
     assert isinstance(generic_ts.meta, TimeSeriesMetaData)
     assert isinstance(table_ts.meta, TimeSeriesMetaData)
 
-def test_data_type(eve_test_ts, fermi_gbm_test_ts, norrh_test_ts, goes_test_ts, lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts, noaa_pre_test_ts, generic_ts, table_ts):
+def test_data_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts, lyra_test_ts, rhessi_test_ts, noaa_ind_test_ts, noaa_pre_test_ts, generic_ts, table_ts):
     assert isinstance(eve_test_ts.data, DataFrame)
     assert isinstance(fermi_gbm_test_ts.data, DataFrame)
-    assert isinstance(norrh_test_ts.data, DataFrame)
+    assert isinstance(norh_test_ts.data, DataFrame)
     assert isinstance(goes_test_ts.data, DataFrame)
     assert isinstance(lyra_test_ts.data, DataFrame)
     assert isinstance(rhessi_test_ts.data, DataFrame)

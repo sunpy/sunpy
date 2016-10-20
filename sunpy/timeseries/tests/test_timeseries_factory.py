@@ -30,29 +30,17 @@ from sunpy.util.datatype_factory_base import NoMatchError
 filepath = sunpy.data.test.rootdir
 a_list_of_many = glob.glob(os.path.join(filepath, "goes", "*"))
 
-eve_filepath = os.path.join(filepath, '')
+eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
 fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
-norrh_filepath = os.path.join(filepath, '')
+norh_filepath = os.path.join(filepath, 'tca110810_truncated')
 goes_filepath = os.path.join(filepath, 'goes.fits')
-lyra_filepath = os.path.join(filepath, '')
-rhessi_filepath = os.path.join(filepath, '')
-noaa_ind_filepath = os.path.join(filepath, '')
-noaa_pre_filepath = os.path.join(filepath, '')
+lyra_filepath = os.path.join(filepath, 'lyra_20150101-000000_lev3_std_truncated.fits.gz')
+rhessi_filepath = os.path.join(filepath, 'hsi_obssumm_20120601_018_truncated.fits.gz')
+noaa_ind_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
+noaa_pre_filepath = os.path.join(filepath, 'predicted-sunspot-radio-flux_truncated.txt')
 
 goes_filepath = sunpy.data.sample.GOES_LIGHTCURVE
-eve_filepath = sunpy.data.sample.EVE_LIGHTCURVE
-norrh_filepath = sunpy.data.sample.NORH_LIGHTCURVE
-lyra_filepath = sunpy.data.sample.LYRA_LEVEL3_LIGHTCURVE
-rhessi_filepath = sunpy.data.sample.RHESSI_LIGHTCURVE
-noaa_ind_filepath = sunpy.data.sample.NOAAINDICES_LIGHTCURVE
-noaa_pre_filepath = sunpy.data.sample.NOAAPREDICT_LIGHTCURVE
 
-a_list_of_many_goes = ['C:\\Users\\alex_\\sunpy\\data\\go1420101102.fits',
- 'C:\\Users\\alex_\\sunpy\\data\\go1420101103.fits',
- 'C:\\Users\\alex_\\sunpy\\data\\go1420101104.fits',
- 'C:\\Users\\alex_\\sunpy\\data\\go1520101105.fits',
- 'C:\\Users\\alex_\\sunpy\\data\\go1520101106.fits',
- 'C:\\Users\\alex_\\sunpy\\data\\go1520101107.fits']
 a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
 
 #==============================================================================
@@ -105,7 +93,7 @@ class TestTimeSeries(object):
 
     def test_implicit_norh(self):
         # Test a NoRH TimeSeries
-        ts_norh = sunpy.timeseries.TimeSeries(norrh_filepath)
+        ts_norh = sunpy.timeseries.TimeSeries(norh_filepath)
         assert isinstance(ts_norh, sunpy.timeseries.sources.norh.NoRHLightCurve)
 
     def test_implicit_goes(self):
@@ -137,10 +125,10 @@ class TestTimeSeries(object):
         ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
         assert isinstance(ts_gbm, sunpy.timeseries.sources.fermi_gbm.GBMSummaryLightCurve)
 
-    def test_norrh(self):
+    def test_norh(self):
         #Test a NoRH TimeSeries
-        ts_norrh = sunpy.timeseries.TimeSeries(norrh_filepath, source='NoRH')
-        assert isinstance(ts_norrh, sunpy.timeseries.sources.norh.NoRHLightCurve)
+        ts_norh = sunpy.timeseries.TimeSeries(norh_filepath, source='NoRH')
+        assert isinstance(ts_norh, sunpy.timeseries.sources.norh.NoRHLightCurve)
 
     def test_goes(self):
         #Test a GOES TimeSeries

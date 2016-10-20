@@ -1,0 +1,35 @@
+:Recent_Solar_Indices: RecentIndices.txt
+:Created: 2016 Jan 04 0534 UTC
+# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center (SWPC).
+# Please send comments and suggestions to swpc.webmaster@noaa.gov
+#
+# Source SWO: SWPC Space Weather Operations (SWO).
+# Source RI: S.I.D.C. Brussels International Sunspot Number.
+# Source 10.7cm radio flux values (sfu): Penticton, B.C., Canada.
+# 
+# Source Ap: GeoForschungsZentrum, Postdam, Germany
+#            Prior to January 1997, Institut fur Geophysik, Gottingen, Germany
+# Source Ap for final month is NOAA/SWPC estimated Ap.
+#
+# Data not yet available or not calculable: -1.0
+#
+# Values for most recent 6 months are considered preliminary. 
+# Final values from National Geophysical Data Center www.ngdc.noaa.gov
+#
+#                               Recent Solar Indices
+#                         of Observed Monthly Mean Values
+#
+#       -----------Sunspot Numbers--------- ----Radio Flux---  ---Geomagnetic---
+#       ---Observed---- Ratio   --Smoothed- Observed Smoothed  Observed Smoothed
+# YR MO    SWO     RI   RI/SW    SWO   RI     10.7cm  10.7cm      Ap       Ap
+#-------------------------------------------------------------------------------
+1991 01   213.5   136.9  0.64   220.5 147.6    229.4    205.5         8     17.4
+1991 02   270.2   167.5  0.62   221.5 147.6    243.0    206.3        10     18.4
+1991 03   227.9   141.9  0.62   220.7 146.6    230.0    205.9        27     19.1
+1991 04   215.9   140.0  0.65   220.7 146.5    198.8    206.8        17     20.0
+1991 05   182.5   121.3  0.66   219.6 145.5    190.3    207.1        18     21.7
+1991 06   231.8   169.7  0.73   218.9 145.2    206.8    207.4        44     23.0
+1991 07   245.7   173.7  0.71   219.5 146.3    212.0    207.7        27     23.6
+1991 08   251.5   176.3  0.70   218.3 146.6    210.3    206.8        30     24.7
+1991 09   185.8   125.3  0.67   214.2 144.9    180.6    203.9        20     25.0
+1991 10   220.1   144.1  0.65   208.4 141.7    201.3    199.7        31     24.3
