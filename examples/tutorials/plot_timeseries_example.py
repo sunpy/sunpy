@@ -19,11 +19,13 @@ import copy
 import sunpy.data.sample
 import sunpy.timeseries
 from sunpy.time import TimeRange, parse_time
-
 from sunpy import lightcurve as lc
+
 import astropy.units as u
-from collections import OrderedDict
+from astropy.time import Time
 from astropy.table import Table
+
+from collections import OrderedDict
 import numpy as np
 import datetime
 from pandas import DataFrame
@@ -144,7 +146,7 @@ ts_goes_trunc.peek()
 ##############################################################################
 # You can use Pandas resample method, for example to downsample:
 df_downsampled = ts_goes_trunc.data.resample('10T', 'mean')
-# To get this into a similar dataframe we can copy the original:
+# To get this into a similar TimeSeries we can copy the original:
 ts_downsampled = copy.deepcopy(ts_goes_trunc)
 ts_downsampled.data = df_downsampled
 ts_downsampled.peek()
@@ -161,9 +163,6 @@ ts_upsampled = copy.deepcopy(ts_downsampled)
 ts_upsampled.data = df_upsampled
 ts_upsampled.peek()
 # Note: 'ffill', 'bfill' and 'pad' methods work, and as before others should also.
-# You can also resample using astropy quantities:
-df_upsampled = ts_downsampled.data.resample(u.Quantity(0.5,u.min), 'ffill')
-# Note: once again this won't necessarily perserve unit consistancy.
 
 ##############################################################################
 # The data from the TimeSeries can be retrieved in a number of formats:
@@ -188,18 +187,26 @@ meta = MetaDict({'key':'value'})
 # Create the time series
 ts_custom = sunpy.timeseries.TimeSeries(data, meta, units)
 
-
-arr = np.array([[1,2],[3,4]])
-from astropy.time import Time
+# A more manual dataset would be a numpy array, which we can creat using:
 tm = Time(['2000:002', '2001:345', '2002:345'])
 a = [1, 4, 5]
 b = [2.0, 5.0, 8.2]
 c = ['x', 'y', 'z']
-t = Table([a, b, c], names=('a', 'b', 'c'), meta={'name': 'first table'})
-t['b'].unit = 's' # Adding units
-df = t.to_pandas()
+arr = np.stack([tm, a, b, c], axis=1)
+# Note: this array needs to have the times in the first column, this can be in
+# any form that can be converted using astropy.time.Time().
+
+# We can use the array directly:
 ts_from_arr   = sunpy.timeseries.TimeSeries(arr,{})
+
+# We can use this to create a table and even include units:
+t = Table([tm, a, b, c], names=('time', 'a', 'b', 'c'), meta={'name': 'table'})
+t['b'].unit = 's' # Adding units
 ts_from_table = sunpy.timeseries.TimeSeries(t,{})
+
+# If you wanted to make a dataframe from this array then you could use:
+df = DataFrame(data=arr[:,1:])
+df.index = tm
 ts_from_df    = sunpy.timeseries.TimeSeries(df,{})
 
 ##############################################################################

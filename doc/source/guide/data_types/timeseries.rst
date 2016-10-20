@@ -29,10 +29,11 @@ To create the sample `sunpy.timeseries.sources.goes.GOESLightCurve` type the
     >>> my_timeseries = ts.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='GOES')
 
 This is calling the `~sunpy.timeseries.TimeSeries` factory to create a time series from a sample FITS file.
+The TimeSeries factory uses `sunpy.io.fits` to read the FITS file.
 If you have not downloaded the data already you should get an error and some
 instruction on how to download the sample data.
 
-The variable my_timeseries is a :ref:`timeseries` object. To create one from a
+The variable ``my_timeseries`` is a :ref:`timeseries` object. To create one from a
 local GOES FITS file try the following: ::
 
     >>> my_timeseries = ts.TimeSeries('/mydirectory/myts.fits', source='GOES')   # doctest: +SKIP
@@ -57,7 +58,7 @@ the keyword argument ``concatenate=True``, such as:
 
     >>> my_timeseries = ts.TimeSeries('/mydirectory/myts1.fits', '/mydirectory/myts2.fits', source='GOES', concatenate=True)   # doctest: +SKIP
 
-Note these must all be from the same source/instrument if using concatenate from within the TimeSeries factory.
+Note these must all be from the same source/instrument if using `~sunpy.timeseries.TimeSeriesBase.concatenate` from within the TimeSeries factory.
 The time series `~sunpy.timeseries.TimeSeriesBase.concatenate` method can be used to make a time series from multiple TimeSeries from different sources once they are already in the form of a TimeSeries objects.
 
 2. Creating Custom TimeSeries
@@ -78,7 +79,7 @@ it into a TimeSeries object: ::
 
 The first line imports the numpy module used to create and store the data.
 The second line creates a basic numpy array of values representing a sine wave.
-We can use this array along with a suitable time storing object (such as AstroPy `~astropy.time.core.Time` or a list of datetimes) to make a Panda `~pandas.core.frame.DataFrame`.
+We can use this array along with a suitable time storing object (such as AstroPy `~astropy.time` or a list of `datetime` objects) to make a Panda `~pandas.core.frame.DataFrame`.
 A suitable list of times must contain the same number of values as the data, this can be created using: ::
 
     >>> import datetime
@@ -124,7 +125,7 @@ For example: ::
     >>> table.add_index('time')
     >>> ts_table = ts.TimeSeries(table)
 
-Note that due to the properties of the `~astropy.time.core.Time` object, this will be a mixin column which as actually a single object, this limits the versatility of the `~astropy.table.table.Table` a little. For more on mixin columns see the AstroPy docs :ref:<astropy:http://docs.astropy.org/en/stable/table/mixin_columns.html>.
+Note that due to the properties of the `~astropy.time.core.Time` object, this will be a mixin column which as actually a single object, this limits the versatility of the `~astropy.table.table.Table` a little. For more on mixin columns see the `AstroPy docs<astropy:http://docs.astropy.org/en/stable/table/mixin_columns.html>`_.
 The units will be taken from the table quantities for each column, the metadata will simply be the table.meta dictionary.
 You could also implicitly add metadata and units, these will be added to the relevant dictionaries using the dictionary update method, with the explicit user-given values taking precedence.
 
