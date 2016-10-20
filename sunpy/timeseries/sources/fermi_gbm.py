@@ -11,7 +11,8 @@ import pandas
 
 import sunpy.io
 from sunpy.instr import fermi
-from sunpy.timeseries import GenericTimeSeries
+#from sunpy.timeseries import GenericTimeSeries
+from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
 from astropy import units as u
 
