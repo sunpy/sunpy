@@ -5,20 +5,17 @@ from __future__ import absolute_import
 
 import datetime
 from collections import OrderedDict
-
 import numpy as np
 import matplotlib.pyplot as plt
-
 import pandas
 
 import sunpy.io
-#from sunpy.timeseries import GenericTimeSeries
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.time import parse_time
 from sunpy.util.metadata import MetaDict
-from astropy import units as u
-
 from sunpy import config
+
+from astropy import units as u
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -70,9 +67,15 @@ class NoRHLightCurve(GenericTimeSeries):
         ----------
         **kwargs : `dict`
             Any additional plot arguments that should be used when plotting.
+
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
         """
 
-        plt.figure()
+        figure = plt.figure()
         axes = plt.gca()
         #data_lab=self.meta['OBS-FREQ'][0:2] + ' ' + self.meta['OBS-FREQ'][2:5]
         data_lab=str(self.meta.get('OBS-FREQ').values()).replace('[','').replace(']','').replace('\'','')
@@ -83,7 +86,9 @@ class NoRHLightCurve(GenericTimeSeries):
         axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
         axes.set_ylabel('Correlation')
         axes.legend()
+
         plt.show()
+        return figure
 
 
     @classmethod

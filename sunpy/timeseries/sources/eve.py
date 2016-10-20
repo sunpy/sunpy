@@ -4,17 +4,16 @@ from __future__ import absolute_import
 
 import os
 import codecs
-
 import numpy
 from datetime import datetime
 from collections import OrderedDict
-
 import matplotlib.pyplot as plt
 from pandas.io.parsers import read_csv
 from os.path import basename
 
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.util.metadata import MetaDict
+
 from astropy import units as u
 
 __all__ = ['EVELightCurve']
