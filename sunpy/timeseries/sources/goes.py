@@ -12,7 +12,8 @@ from numpy import floor
 from pandas import DataFrame
 
 import sunpy.io
-from sunpy.timeseries import GenericTimeSeries
+#from sunpy.timeseries import GenericTimeSeries
+from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 from sunpy.time import parse_time, TimeRange, is_time_in_given_format
 from sunpy.util.metadata import MetaDict
 from astropy import units as u
