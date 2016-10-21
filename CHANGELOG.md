@@ -1,6 +1,7 @@
 Latest
 ------
 
+* Get and set methods for composite maps now use Map plot_settings.
 * Simplified map names when plotting.
 * Add time format used by some SDO HMI FITS keywords
 * Fix bug in `wcs.convert_data_to_pixel` where crpix[1] was used for both axes.
@@ -9,6 +10,9 @@ Latest
 * Now the `sunpy.database.tables.display_entries()` prints an astropy table.
 * Additional methods added inside the `sunpy.database` class to make it easier
   to display the database contents.
+* `sunpy.io.fits.read` will now return any parse-able HDUs even if some raise an error.
+* `VSOClient` no longer prints a lot of XML junk if the query fails.
+* Remove unused `sunpy.visualization.plotting` module
 
 0.7.0
 -----

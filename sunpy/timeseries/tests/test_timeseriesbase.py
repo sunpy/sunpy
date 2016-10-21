@@ -386,6 +386,49 @@ def test_ts_to_array(generic_ts):
     assert isinstance(arr, np.ndarray)
     assert len(arr) == len(generic_ts.data)
 
+
+#==============================================================================
+# Test Exporting to different formats
+#==============================================================================
+
+@figure_test
+def test_eve_peek(eve_test_ts):
+    eve_test_ts.peek()
+
+@figure_test
+def test_fermi_gbm_peek(fermi_gbm_test_ts):
+    fermi_gbm_test_ts.peek()
+
+@figure_test
+def test_norh_peek(norh_test_ts):
+    norh_test_ts.peek()
+
+"""
+@figure_test
+def test_goes_peek(goes_test_ts):
+    goes_test_ts.peek()
+"""
+
+@figure_test
+def test_lyra_peek(lyra_test_ts):
+    lyra_test_ts.peek()
+
+@figure_test
+def test_rhessi_peek(rhessi_test_ts):
+    rhessi_test_ts.peek()
+
+@figure_test
+def test_noaa_ind_peek(noaa_ind_test_ts):
+    noaa_ind_test_ts.peek()
+
+@figure_test
+def test_noaa_pre_peek(noaa_pre_test_ts):
+    noaa_pre_test_ts.peek()
+
+@figure_test
+def test_generic_ts_peek(generic_ts):
+    generic_ts.peek()
+
 #==============================================================================
 # Test Other Functions
 #==============================================================================
@@ -411,9 +454,7 @@ def test_ts_sort_index(generic_ts):
 
 #_validate_meta
 
-@figure_test
-def test_eve_peek(eve_test_ts):
-    eve_test_ts.peek()
+
 
 
 # ToDo:
