@@ -33,6 +33,9 @@ References
 from __future__ import absolute_import, division, print_function
 import os
 import re
+import sys
+import warnings
+import traceback
 import itertools
 import collections
 
@@ -72,21 +75,28 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
     Also all comments in the original file are concatenated into a single
     'comment' key in the returned FileHeader.
     """
-    hdulist = fits.open(filepath, memmap=memmap)
-    if hdus is not None:
-        if isinstance(hdus, int):
-            hdulist = hdulist[hdus]
-        elif isinstance(hdus, collections.Iterable):
-            hdulist = [hdulist[i] for i in hdus]
-    try:
+    with fits.open(filepath, memmap=memmap) as hdulist:
+        if hdus is not None:
+            if isinstance(hdus, int):
+                hdulist = hdulist[hdus]
+            elif isinstance(hdus, collections.Iterable):
+                hdulist = [hdulist[i] for i in hdus]
+
         hdulist.verify('silentfix+warn')
 
         headers = get_header(hdulist)
         pairs = []
-        for hdu, header in zip(hdulist, headers):
-            pairs.append(HDPair(hdu.data, header))
-    finally:
-        hdulist.close()
+
+        for i, (hdu, header) in enumerate(zip(hdulist, headers)):
+            try:
+                pairs.append(HDPair(hdu.data, header))
+            except (KeyError, ValueError) as e:
+                message = "Error when reading HDU {}. Skipping.\n".format(i)
+                for line in traceback.format_tb(sys.exc_info()[2]):
+                    message += line
+                    message += '\n'
+                message += repr(e)
+                warnings.warn(message, Warning, stacklevel=2)
 
     return pairs
 
