@@ -569,11 +569,22 @@ scale:\t\t {scale}
         return u.Quantity(heliographic_longitude, 'deg')
 
     @property
+    def observer_coordinate(self):
+        """
+        The Heliographic Stonyhurst Coordinate of the observer.
+        """
+        return SkyCoord(lat=self.heliographic_latitude,
+                        lon=self.heliographic_longitude,
+                        distance=self.dsun,
+                        frame='heliographic_stonyhurst')
+
+    @property
     def reference_coordinate(self):
         """Reference point WCS axes in data units (i.e. crval1, crval2). This value
         includes a shift if one is set."""
-        return Pair(self.meta.get('crval1', 0.) * self.spatial_units.x,
-                    self.meta.get('crval2', 0.) * self.spatial_units.y)
+        return SkyCoord(self.meta.get('crval1', 0.) * self.spatial_units.x,
+                        self.meta.get('crval2', 0.) * self.spatial_units.y,
+                        frame=self.coordinate_frame)
 
     @property
     def reference_pixel(self):
@@ -694,21 +705,14 @@ scale:\t\t {scale}
                               Warning)
 
 # #### Data conversion routines #### #
-
-    @u.quantity_input(x=u.deg, y=u.deg)
-    def data_to_pixel(self, x, y, origin=0):
+    def data_to_pixel(self, coordinate, origin=0):
         """
         Convert a data (world) coordinate to a pixel coordinate by using
         `~astropy.wcs.WCS.wcs_world2pix`.
 
         Parameters
         ----------
-
-        x : `~astropy.units.Quantity`
-            Data coordinate of the CTYPE1 axis. (Normally solar-x).
-
-        y : `~astropy.units.Quantity`
-            Data coordinate of the CTYPE2 axis. (Normally solar-y).
+        coordinate : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseFrame`
 
         origin : int
             Origin of the top-left corner. i.e. count from 0 or 1.
@@ -724,8 +728,13 @@ scale:\t\t {scale}
         y : `~astropy.units.Quantity`
             Pixel coordinate on the CTYPE2 axis.
         """
-        x, y = self.wcs.wcs_world2pix(x.to(u.deg).value,
-                                      y.to(u.deg).value, origin)
+        if not isinstance(coordinate, [SkyCoord,
+                                       astropy.coordinates.BaseCoordinateFrame]):
+            raise ValueError("data_to_pixel takes a Astropy coordinate frame or SkyCoord instance.")
+        native_frame = coordinate.transform_to(self.coordinate_frame)
+        x = native_frame.Tx.to(u.deg).value
+        y = native_frame.Ty.to(u.deg).value
+        x, y = self.wcs.wcs_world2pix(x, y, origin)
 
         return x * u.pixel, y * u.pixel
 
