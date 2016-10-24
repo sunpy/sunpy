@@ -1314,7 +1314,8 @@ scale:\t\t {scale}
 
     @u.quantity_input(grid_spacing=u.deg)
     def draw_grid(self, axes=None, grid_spacing=15*u.deg, **kwargs):
-        """Draws a grid over the surface of the Sun
+        """
+        Draws a grid over the surface of the Sun
 
         Parameters
         ----------
@@ -1336,85 +1337,30 @@ scale:\t\t {scale}
 
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
-
-        lines = []
-
-        # Do not automatically rescale axes when plotting the overlay
-        axes.set_autoscale_on(False)
-
-        transform = wcsaxes_compat.get_world_transform(axes)
-
-        XX, YY = np.meshgrid(np.arange(self.data.shape[0]),
-                             np.arange(self.data.shape[1]))
-        x, y = self.pixel_to_data(XX*u.pix, YY*u.pix)
-        dsun = self.dsun
-
-        b0 = self.heliographic_latitude.to(u.deg).value
-        l0 = self.heliographic_longitude.to(u.deg).value
-        units = self.spatial_units
-
-        # Prep the plot kwargs
-        plot_kw = {'color': 'white',
-                   'linestyle': 'dotted',
-                   'zorder': 100,
-                   'transform': transform}
-        plot_kw.update(kwargs)
-
-        hg_longitude_deg = np.linspace(-180, 180, num=361) + l0
-        hg_latitude_deg = np.arange(-90, 90, grid_spacing.to(u.deg).value)
-
-        # draw the latitude lines
-        for lat in hg_latitude_deg:
-            x, y = wcs.convert_hg_hpc(hg_longitude_deg, lat * np.ones(361),
-                                      b0_deg=b0, l0_deg=l0, dsun_meters=dsun,
-                                      angle_units=units.x, occultation=True)
-            valid = np.logical_and(np.isfinite(x), np.isfinite(y))
-            x = x[valid]
-            y = y[valid]
-            if wcsaxes_compat.is_wcsaxes(axes):
-                x = (x*u.arcsec).to(u.deg).value
-                y = (y*u.arcsec).to(u.deg).value
-            lines += axes.plot(x, y, **plot_kw)
-
-        hg_longitude_deg = np.arange(-180, 180, grid_spacing.to(u.deg).value) + l0
-        hg_latitude_deg = np.linspace(-90, 90, num=181)
-
-        # draw the longitude lines
-        for lon in hg_longitude_deg:
-            x, y = wcs.convert_hg_hpc(lon * np.ones(181), hg_latitude_deg,
-                                      b0_deg=b0, l0_deg=l0, dsun_meters=dsun,
-                                      angle_units=units[0], occultation=True)
-            valid = np.logical_and(np.isfinite(x), np.isfinite(y))
-            x = x[valid]
-            y = y[valid]
-            if wcsaxes_compat.is_wcsaxes(axes):
-                x = (x*u.arcsec).to(u.deg).value
-                y = (y*u.arcsec).to(u.deg).value
-            lines += axes.plot(x, y, **plot_kw)
-
-        # Turn autoscaling back on.
-        axes.set_autoscale_on(True)
-        return lines
+        if not wcsaxes_compat.is_wcsaxes(axes):
+            raise TypeError("Overlay grids can only be plotted on WCSAxes plots.")
+        return wcsaxes_compat.wcsaxes_heliographic_overlay(axes)
 
     def draw_limb(self, axes=None, **kwargs):
-        """Draws a circle representing the solar limb
+        """
+        Draws a circle representing the solar limb
 
-            Parameters
-            ----------
-            axes: `~matplotlib.axes` or None
-                Axes to plot limb on or None to use current axes.
+        Parameters
+        ----------
+        axes: `~matplotlib.axes` or None
+            Axes to plot limb on or None to use current axes.
 
-            Returns
-            -------
-            circ: list
-                A list containing the `matplotlib.patches.Circle` object that
-                has been added to the axes.
+        Returns
+        -------
+        circ: list
+            A list containing the `matplotlib.patches.Circle` object that
+            has been added to the axes.
 
-            Notes
-            -----
-            keyword arguments are passed onto the Circle Patch, see:
-            http://matplotlib.org/api/artist_api.html#matplotlib.patches.Patch
-            http://matplotlib.org/api/artist_api.html#matplotlib.patches.Circle
+        Notes
+        -----
+        keyword arguments are passed onto the Circle Patch, see:
+        http://matplotlib.org/api/artist_api.html#matplotlib.patches.Patch
+        http://matplotlib.org/api/artist_api.html#matplotlib.patches.Circle
         """
 
         if not axes:

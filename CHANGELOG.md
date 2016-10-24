@@ -38,6 +38,7 @@ Latest
 * Fix Map parsing of some header values to allow valid float strings like 'nan'
   and 'inf'.
 * Drop support for Python 3.4.
+* SunPy now requires WCSAxes and Map.draw_grid only works with WCSAxes.
 
 0.7.0
 -----
