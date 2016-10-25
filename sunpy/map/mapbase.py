@@ -1514,7 +1514,8 @@ scale:\t\t {scale}
             axes = plt.Axes(figure, [0., 0., 1., 1.])
             axes.set_axis_off()
             figure.add_axes(axes)
-            matplot_args.update({'annotate':False})
+            matplot_args.update({'annotate': False})
+            matplot_args.update({"_basic_plot": True})
 
         # Normal plot
         else:
@@ -1570,20 +1571,24 @@ scale:\t\t {scale}
 
         """
 
+        # extract hiddden kwarg
+        _basic_plot = imshow_kwargs.pop("_basic_plot", None)
+
         # Get current axes
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
 
-        # Check that the image is properly oriented
-        if (not wcsaxes_compat.is_wcsaxes(axes) and
-            not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2)))):
-            warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
-                          Warning)
+        if not _basic_plot:
+            # Check that the image is properly oriented
+            if (not wcsaxes_compat.is_wcsaxes(axes) and
+                not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2)))):
+                warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
+                            Warning)
 
-        if not wcsaxes_compat.is_wcsaxes(axes) and wcsaxes_compat.HAVE_WCSAXES:
-            warnings.warn("WCSAxes is installed but not being used."
-                          " Plots may not have the expected behaviour.",
-                          Warning)
+            if not wcsaxes_compat.is_wcsaxes(axes) and wcsaxes_compat.HAVE_WCSAXES:
+                warnings.warn("WCSAxes is installed but not being used."
+                            " Plots may not have the expected behaviour.",
+                            Warning)
 
         # Normal plot
         imshow_args = deepcopy(self.plot_settings)
