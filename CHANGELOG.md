@@ -13,6 +13,7 @@ Latest
 * `sunpy.io.fits.read` will now return any parse-able HDUs even if some raise an error.
 * `VSOClient` no longer prints a lot of XML junk if the query fails.
 * Remove unused `sunpy.visualization.plotting` module
+* `Map.peek(basic_plot=True)` no longer issues warnings
 
 0.7.0
 -----
