@@ -76,6 +76,9 @@ class GOESLightCurve(GenericTimeSeries):
         fig : `~matplotlib.Figure`
             A plot figure.
         """
+        # Check we have a timeseries valid for plotting
+        self._validate_data_for_ploting()
+
         figure = plt.figure()
         axes = plt.gca()
 

@@ -81,6 +81,9 @@ class LYRALightCurve(GenericTimeSeries):
         fig : `~matplotlib.Figure`
             A plot figure.
         """
+        # Check we have a timeseries valid for plotting
+        self._validate_data_for_ploting()
+
         lyranames = (('Lyman alpha','Herzberg cont.','Al filter','Zr filter'),
                  ('120-123nm','190-222nm','17-80nm + <5nm','6-20nm + <2nm'))
 

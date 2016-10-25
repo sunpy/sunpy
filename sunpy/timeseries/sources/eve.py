@@ -83,6 +83,9 @@ class EVELightCurve(GenericTimeSeries):
         fig : `~matplotlib.Figure`
             A plot figure.
         """
+        # Check we have a timeseries valid for plotting
+        self._validate_data_for_ploting()
+
         figure = plt.figure()
         # Choose title if none was specified
         if "title" not in kwargs and column is None:
