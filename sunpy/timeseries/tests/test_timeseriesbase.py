@@ -10,6 +10,7 @@ Created on Thu Jun 23 12:29:55 2016
 
 
 import os
+import glob
 import pytest
 import datetime
 import warnings
@@ -26,6 +27,7 @@ from astropy.table import Table
 from astropy.time import Time
 
 import sunpy
+from sunpy.time import TimeRange
 import sunpy.timeseries
 from sunpy.util.metadata import MetaDict
 from sunpy.timeseries import TimeSeriesMetaData
@@ -33,8 +35,6 @@ from sunpy.tests.helpers import figure_test
 
 import sunpy.data.sample
 import sunpy.data.test
-testpath = sunpy.data.test.rootdir
-
 
 #==============================================================================
 # TimeSeries Tests
@@ -52,6 +52,8 @@ noaa_ind_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
 noaa_pre_filepath = os.path.join(filepath, 'predicted-sunspot-radio-flux_truncated.txt')
 
 goes_filepath = sunpy.data.sample.GOES_LIGHTCURVE
+
+a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
 
 @pytest.fixture
 def eve_test_ts():
@@ -108,6 +110,9 @@ def generic_ts():
     # Create the time series
     return sunpy.timeseries.TimeSeries(data, meta, units)
 
+@pytest.fixture
+def concatenate_multi_files_ts():
+    return sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE', concatenate=True)
 
 #==============================================================================
 # Test Creating TimeSeries From Various Dataformats
@@ -175,7 +180,7 @@ def test_data_type(eve_test_ts, fermi_gbm_test_ts, norh_test_ts, goes_test_ts, l
     # ToDo: check length? (should match the number of columns)
 
 #==============================================================================
-# Test Truncation Operations
+# Test Basic Single-Timeseries Truncation Operations
 #==============================================================================
 
 @pytest.fixture
@@ -186,7 +191,7 @@ def truncation_slice_test_ts_1(eve_test_ts):
 @pytest.fixture
 def truncation_slice_test_ts_2(eve_test_ts):
     # Truncate by slicing the first half off.
-    return eve_test_ts.truncate(int(len(eve_test_ts.data)/2), None, None)
+    return eve_test_ts.truncate(int(len(eve_test_ts.data)/2), len(eve_test_ts.data), None)
 
 def test_truncation_slices(eve_test_ts, truncation_slice_test_ts_1, truncation_slice_test_ts_2):
     # Test resulting DataFrame are similar
@@ -222,6 +227,107 @@ def test_truncation_dates(eve_test_ts, truncation_dates_test_ts):
     # Check the resulting timerange in both TS and TSMD
     assert truncation_dates_test_ts.time_range == truncation_dates_test_ts.meta.time_range == eve_test_ts.time_range.split(3)[1]
 
+#==============================================================================
+# Test Basic Single-Timeseries Truncation Operations
+#==============================================================================
+
+@pytest.fixture
+def truncated_none_ts(concatenate_multi_files_ts):
+    # This timerange covers the whole range of metadata, so no change is expected
+    a = concatenate_multi_files_ts.meta.metadata[0][0].start - datetime.timedelta(days=1)
+    b = concatenate_multi_files_ts.meta.metadata[-1][0].end + datetime.timedelta(days=1)
+    tr = TimeRange(a, b)
+    truncated = copy.deepcopy(concatenate_multi_files_ts)
+    truncated = truncated.truncate(tr)
+    return truncated
+
+def test_truncated_none_ts(concatenate_multi_files_ts, truncated_none_ts):
+    assert concatenate_multi_files_ts.meta == truncated_none_ts.meta
+
+@pytest.fixture
+def truncated_start_ts(concatenate_multi_files_ts):
+    # This time range starts after the original, so expect truncation
+    a = concatenate_multi_files_ts.meta.metadata[1][0].center
+    b = concatenate_multi_files_ts.meta.metadata[-1][0].end + datetime.timedelta(days=1)
+    tr = TimeRange(a, b)
+    truncated = copy.deepcopy(concatenate_multi_files_ts)
+    truncated = truncated.truncate(tr)
+    return truncated
+
+def test_truncated_start_ts(concatenate_multi_files_ts, truncated_start_ts):
+    # Check the 3 untouched metadata entries match
+    assert concatenate_multi_files_ts.meta.metadata[2:] == truncated_start_ts.meta.metadata[1:]
+    # Now check the truncated (but not truncated out) meta entry
+    assert concatenate_multi_files_ts.meta.metadata[1][0].start != truncated_start_ts.meta.metadata[0][0].start
+    assert concatenate_multi_files_ts.meta.metadata[1][0].end == truncated_start_ts.meta.metadata[0][0].end
+    assert concatenate_multi_files_ts.meta.metadata[1][1] == truncated_start_ts.meta.metadata[0][1]
+    assert concatenate_multi_files_ts.meta.metadata[1][2] == truncated_start_ts.meta.metadata[0][2]
+
+@pytest.fixture
+def truncated_end_ts(concatenate_multi_files_ts):
+    # This time range ends before the original, so expect truncation
+    a = concatenate_multi_files_ts.meta.metadata[0][0].start - datetime.timedelta(days=1)
+    b = concatenate_multi_files_ts.meta.metadata[-2][0].center
+    tr = TimeRange(a, b)
+    truncated = copy.deepcopy(concatenate_multi_files_ts)
+    truncated = truncated.truncate(tr)
+    return truncated
+
+def test_truncated_end_ts(concatenate_multi_files_ts, truncated_end_ts):
+    # Check the 3 untouched metadata entries match
+    assert concatenate_multi_files_ts.meta.metadata[:-2] == truncated_end_ts.meta.metadata[:3]
+    # Now check the truncated (but not truncated out) meta entry
+    assert concatenate_multi_files_ts.meta.metadata[-2][0].start == truncated_end_ts.meta.metadata[-1][0].start
+    assert concatenate_multi_files_ts.meta.metadata[-2][0].end != truncated_end_ts.meta.metadata[-1][0].end
+    assert concatenate_multi_files_ts.meta.metadata[-2][1] == truncated_end_ts.meta.metadata[-1][1]
+    assert concatenate_multi_files_ts.meta.metadata[-2][2] == truncated_end_ts.meta.metadata[-1][2]
+
+@pytest.fixture
+def truncated_both_ts(concatenate_multi_files_ts):
+    # This time range starts after and ends before the original, so expect truncation
+    a = concatenate_multi_files_ts.meta.metadata[1][0].center
+    b = concatenate_multi_files_ts.meta.metadata[-2][0].center
+    tr = TimeRange(a, b)
+    truncated = copy.deepcopy(concatenate_multi_files_ts)
+    truncated = truncated.truncate(tr)
+    return truncated
+
+def test_truncated_both_ts(concatenate_multi_files_ts, truncated_both_ts):
+    # Check the 1 untouched metadata entry matches the original
+    assert concatenate_multi_files_ts.meta.metadata[2:-2] == truncated_both_ts.meta.metadata[1:-1]
+    # Check the start truncated (but not truncated out) meta entry
+    assert concatenate_multi_files_ts.meta.metadata[1][0].start != truncated_both_ts.meta.metadata[0][0].start
+    assert concatenate_multi_files_ts.meta.metadata[1][0].end == truncated_both_ts.meta.metadata[0][0].end
+    assert concatenate_multi_files_ts.meta.metadata[1][1] == truncated_both_ts.meta.metadata[0][1]
+    assert concatenate_multi_files_ts.meta.metadata[1][2] == truncated_both_ts.meta.metadata[0][2]
+    # Check the end truncated (but not truncated out) meta entry
+    assert concatenate_multi_files_ts.meta.metadata[-2][0].start == truncated_both_ts.meta.metadata[-1][0].start
+    assert concatenate_multi_files_ts.meta.metadata[-2][0].end != truncated_both_ts.meta.metadata[-1][0].end
+    assert concatenate_multi_files_ts.meta.metadata[-2][1] == truncated_both_ts.meta.metadata[-1][1]
+    assert concatenate_multi_files_ts.meta.metadata[-2][2] == truncated_both_ts.meta.metadata[-1][2]
+
+@pytest.fixture
+def truncated_new_tr_all_before_ts(concatenate_multi_files_ts):
+    # Time range begins and ends before the data
+    a = concatenate_multi_files_ts.meta.metadata[0][0].start - datetime.timedelta(days=2)
+    b = concatenate_multi_files_ts.meta.metadata[0][0].start - datetime.timedelta(days=1)
+    tr = TimeRange(a, b)
+    truncated = copy.deepcopy(concatenate_multi_files_ts)
+    truncated = truncated.truncate(tr)
+    return truncated
+
+@pytest.fixture
+def truncated_new_tr_all_after_ts(concatenate_multi_files_ts):
+    # Time range begins and ends after the data
+    a = concatenate_multi_files_ts.meta.metadata[-1][0].end + datetime.timedelta(days=1)
+    b = concatenate_multi_files_ts.meta.metadata[-1][0].end + datetime.timedelta(days=2)
+    tr = TimeRange(a, b)
+    truncated = copy.deepcopy(concatenate_multi_files_ts)
+    truncated = truncated.truncate(tr)
+    return truncated
+
+def test_truncated_outside_tr_ts(truncated_new_tr_all_before_ts, truncated_new_tr_all_after_ts):
+    assert truncated_new_tr_all_before_ts.meta.metadata == truncated_new_tr_all_after_ts.meta.metadata == []
 
 #==============================================================================
 # Test Extraction Operations

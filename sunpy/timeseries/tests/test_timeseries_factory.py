@@ -30,7 +30,6 @@ from astropy.io import fits
 #==============================================================================
 
 filepath = sunpy.data.test.rootdir
-a_list_of_many = glob.glob(os.path.join(filepath, "goes", "*"))
 
 eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
 fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')

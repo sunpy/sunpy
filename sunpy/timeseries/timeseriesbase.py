@@ -265,10 +265,18 @@ class GenericTimeSeries:
             end   = b
 
         # If an interval integer was given then use in truncation.
-        truncated = self.data.sort_index()[start:end:int]
+        truncated_data = self.data.sort_index()[start:end:int]
+
+        # Truncate the metadata
+        # Check there is data still
+        truncated_meta = TimeSeriesMetaData([])
+        if len(truncated_data) > 0:
+            tr = TimeRange(truncated_data.index.min(), truncated_data.index.max())
+            truncated_meta = TimeSeriesMetaData(copy.deepcopy(self.meta.metadata))
+            truncated_meta._truncate(tr)
 
         # Build similar TimeSeries object and sanatise metadata and units.
-        object = self.__class__(truncated.sort_index(), TimeSeriesMetaData(copy.copy(self.meta.metadata)), copy.copy(self.units))
+        object = self.__class__(truncated_data.sort_index(), truncated_meta, copy.copy(self.units))
         object._sanitize_metadata()
         object._sanitize_units()
         return object

@@ -161,6 +161,7 @@ def test_concatenate(basic_ascending_append_md, basic_4_md, complex_append_md):
 
 @pytest.fixture
 def truncated_none_md(basic_ascending_append_md):
+    # This timerange covers the whole range of metadata, so no change is expected
     tr = TimeRange('2010-01-01 1:59:57.468999', '2010-01-04 23:59:56.091999')
     truncated = copy.deepcopy(basic_ascending_append_md)
     truncated._truncate(tr)
@@ -168,6 +169,7 @@ def truncated_none_md(basic_ascending_append_md):
 
 @pytest.fixture
 def truncated_start_md(basic_ascending_append_md):
+    # This time range starts after the original, so expect truncation
     tr = TimeRange('2010-01-02 20:59:57.468999', '2010-01-04 23:59:56.091999')
     truncated = copy.deepcopy(basic_ascending_append_md)
     truncated._truncate(tr)
@@ -175,6 +177,7 @@ def truncated_start_md(basic_ascending_append_md):
 
 @pytest.fixture
 def truncated_end_md(basic_ascending_append_md):
+    # This time range ends before the original, so expect truncation
     tr = TimeRange('2010-01-01 1:59:57.468999', '2010-01-03 1:59:56.091999')
     truncated = copy.deepcopy(basic_ascending_append_md)
     truncated._truncate(tr)
@@ -182,7 +185,24 @@ def truncated_end_md(basic_ascending_append_md):
 
 @pytest.fixture
 def truncated_both_md(basic_ascending_append_md):
+    # This time range starts after and ends before the original, so expect truncation
     tr = TimeRange('2010-01-02 20:59:57.468999', '2010-01-03 1:59:56.091999')
+    truncated = copy.deepcopy(basic_ascending_append_md)
+    truncated._truncate(tr)
+    return truncated
+
+@pytest.fixture
+def truncated_new_tr_all_before_md(basic_ascending_append_md):
+    # Time range begins and ends before the data
+    tr = TimeRange('2010-01-01 01:01:01.000000', '2010-01-01 02:01:01.000000')
+    truncated = copy.deepcopy(basic_ascending_append_md)
+    truncated._truncate(tr)
+    return truncated
+
+@pytest.fixture
+def truncated_new_tr_all_after_md(basic_ascending_append_md):
+    # Time range begins and ends after the data
+    tr = TimeRange('2010-01-04 01:01:01.000000', '2010-01-04 02:01:01.000000')
     truncated = copy.deepcopy(basic_ascending_append_md)
     truncated._truncate(tr)
     return truncated
@@ -206,6 +226,9 @@ def test_truncated_end_tr(basic_ascending_append_md, truncated_end_md):
 def test_truncated_both_tr(truncated_both_md):
     tr = TimeRange('2010-01-02 20:59:57.468999', '2010-01-03 1:59:56.091999')
     assert truncated_both_md.time_range == tr
+
+def test_truncated_tr_outside(truncated_new_tr_all_before_md, truncated_new_tr_all_after_md):
+    assert truncated_new_tr_all_before_md.metadata == truncated_new_tr_all_after_md.metadata == []
 
 def test_basic_ascending_append_tr(basic_1_md, basic_3_md, basic_ascending_append_md):
     tr = TimeRange(basic_1_md.time_range.start, basic_3_md.time_range.end)

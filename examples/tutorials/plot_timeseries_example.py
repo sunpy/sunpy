@@ -72,8 +72,9 @@ combined_goes_ts.peek()
 ##############################################################################
 # You can concatenate manually:
 combined_goes_ts = lis_goes_ts[0].concatenate(lis_goes_ts[1])
-combined_goes_ts.peek()
-# Debate: how should we deal with metadata when concatenating.
+fig = combined_goes_ts.peek()
+# Note: peek returns a matplotlib figure object, which can be saved to a file using:
+fig.savefig('figure.png')
 
 ##############################################################################
 # The TimeSeries object has 3 primary data storage components:
