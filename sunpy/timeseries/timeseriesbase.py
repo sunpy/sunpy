@@ -402,12 +402,26 @@ class GenericTimeSeries:
         fig : `~matplotlib.Figure`
             A plot figure.
         """
+        # Check we have a timeseries valid for plotting
+        self._validate_data_for_ploting()
 
+        # Now make the plot
         figure = plt.figure()
         self.plot(**kwargs)
         figure.show()
 
         return figure
+
+    def _validate_data_for_ploting(self):
+        """Raises an exception if the timeseries is invalid for plotting.
+        To be added into all the peek methods in all source sup-classes.
+        Currently only checks if we have an empty timeseries, where:
+        len(self.data) == 0
+
+        """
+        # Check we have a valid TS
+        if len(self.data) == 0:
+            raise ValueError('The timeseries can\'t be plotted as it has no data present. (len(self.data) == 0)')
 
 # #### Miscellaneous #### #
 

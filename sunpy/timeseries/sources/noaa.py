@@ -73,6 +73,8 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         fig : `~matplotlib.Figure`
             A plot figure.
         """
+        # Check we have a timeseries valid for plotting
+        self._validate_data_for_ploting()
 
         figure = plt.figure()
         axes = plt.gca()
@@ -144,7 +146,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
             data = data.set_index('time')
             data = data.drop('mm',1)
             data = data.drop('yyyy',1)
-            
+
             # Add the units data
             units = OrderedDict([('sunspot SWO', u.dimensionless_unscaled),
                                  ('sunspot RI', u.dimensionless_unscaled),
@@ -256,7 +258,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
             data = data.set_index('time')
             data = data.drop('mm',1)
             data = data.drop('yyyy',1)
-            
+
             # Add the units data
             units = OrderedDict([('sunspot', u.dimensionless_unscaled),
                                  ('sunspot low', u.dimensionless_unscaled),
