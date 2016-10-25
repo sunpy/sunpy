@@ -494,7 +494,7 @@ def test_ts_to_array(generic_ts):
 
 
 #==============================================================================
-# Test Exporting to different formats
+# Test Basic Working Peek
 #==============================================================================
 
 @figure_test
@@ -534,6 +534,72 @@ def test_noaa_pre_peek(noaa_pre_test_ts):
 @figure_test
 def test_generic_ts_peek(generic_ts):
     generic_ts.peek()
+
+#==============================================================================
+# Test Peek Of Invalid Data for all sources
+#==============================================================================
+
+def test_eve_invalid_peek(eve_test_ts):
+    a = eve_test_ts.time_range.start - datetime.timedelta(days=2)
+    b = eve_test_ts.time_range.start - datetime.timedelta(days=1)
+    empty_ts = eve_test_ts.truncate(TimeRange(a,b))
+    with pytest.raises(ValueError):
+        empty_ts.peek()
+
+
+def test_fermi_gbm_invalid_peek(fermi_gbm_test_ts):
+    a = fermi_gbm_test_ts.time_range.start - datetime.timedelta(days=2)
+    b = fermi_gbm_test_ts.time_range.start - datetime.timedelta(days=1)
+    empty_ts = fermi_gbm_test_ts.truncate(TimeRange(a,b))
+    with pytest.raises(ValueError):
+        empty_ts.peek()
+
+def test_norh_invalid_peek(norh_test_ts):
+    a = norh_test_ts.time_range.start - datetime.timedelta(days=2)
+    b = norh_test_ts.time_range.start - datetime.timedelta(days=1)
+    empty_ts = norh_test_ts.truncate(TimeRange(a,b))
+    with pytest.raises(ValueError):
+        empty_ts.peek()
+
+"""
+def test_goes_peek(goes_test_ts):
+    goes_test_ts.peek()
+"""
+
+def test_lyra_invalid_peek(lyra_test_ts):
+    a = lyra_test_ts.time_range.start - datetime.timedelta(days=2)
+    b = lyra_test_ts.time_range.start - datetime.timedelta(days=1)
+    empty_ts = lyra_test_ts.truncate(TimeRange(a,b))
+    with pytest.raises(ValueError):
+        empty_ts.peek()
+
+def test_rhessi_invalid_peek(rhessi_test_ts):
+    a = rhessi_test_ts.time_range.start - datetime.timedelta(days=2)
+    b = rhessi_test_ts.time_range.start - datetime.timedelta(days=1)
+    empty_ts = rhessi_test_ts.truncate(TimeRange(a,b))
+    with pytest.raises(ValueError):
+        empty_ts.peek()
+
+def test_noaa_ind_invalid_peek(noaa_ind_test_ts):
+    a = noaa_ind_test_ts.time_range.start - datetime.timedelta(days=2)
+    b = noaa_ind_test_ts.time_range.start - datetime.timedelta(days=1)
+    empty_ts = noaa_ind_test_ts.truncate(TimeRange(a,b))
+    with pytest.raises(ValueError):
+        empty_ts.peek()
+
+def test_noaa_pre_invalid_peek(noaa_pre_test_ts):
+    a = noaa_pre_test_ts.time_range.start - datetime.timedelta(days=2)
+    b = noaa_pre_test_ts.time_range.start - datetime.timedelta(days=1)
+    empty_ts = noaa_pre_test_ts.truncate(TimeRange(a,b))
+    with pytest.raises(ValueError):
+        empty_ts.peek()
+
+def test_generic_ts_invalid_peek(generic_ts):
+    a = generic_ts.time_range.start - datetime.timedelta(days=2)
+    b = generic_ts.time_range.start - datetime.timedelta(days=1)
+    empty_ts = generic_ts.truncate(TimeRange(a,b))
+    with pytest.raises(ValueError):
+        empty_ts.peek()
 
 #==============================================================================
 # Test Other Functions
