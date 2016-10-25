@@ -199,15 +199,21 @@ type: ::
 
     import sunpy.timeseries as ts
     import sunpy.data.sample
-    ts_plot = ts.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='GOES') 
-    ts_plot.peek()
+    ts_plot = ts.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='GOES')
+    fig = ts_plot.peek()
 
 This will open a matplotlib plot on your screen. The `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.peek`
 method provides a view on data customised for each source while `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.plot`
 provides a more generic plot.
+Note that `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.peek` returns a
+`matplotlib.figure.Figure` object, if you want to save this to a PNG file you
+can use the `savefig` method:
+
+    >>> fig.savefig('figure.png')
 
 In addition, to enable users to modify the plot it is possible to grab the
-matplotlib axes object by using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.plot` command.
+matplotlib axes object by using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.plot`
+command.
 This makes it possible to use the SunPy plot as the foundation for a
 more complicated figure. For a bit more information about this and some
 examples see :ref:`plotting`.
