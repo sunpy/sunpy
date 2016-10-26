@@ -61,7 +61,7 @@ class GOESLightCurve(GenericTimeSeries):
             import sunpy.timeseries
             import sunpy.data.sample
             ts_goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='GOES')
-            goes.peek()
+            ts_goes.peek()
 
         Parameters
         ----------
