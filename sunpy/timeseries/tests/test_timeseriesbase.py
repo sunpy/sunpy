@@ -27,7 +27,7 @@ from astropy.table import Table
 from astropy.time import Time
 
 import sunpy
-from sunpy.time import TimeRange
+from sunpy.time import TimeRange, parse_time
 import sunpy.timeseries
 from sunpy.util.metadata import MetaDict
 from sunpy.timeseries import TimeSeriesMetaData
@@ -98,7 +98,7 @@ def noaa_pre_test_ts():
 @pytest.fixture
 def generic_ts():
     # Generate the data and the corrisponding dates
-    base = datetime.datetime.today()
+    base = parse_time("2016/10/01T05:00:00")
     dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
     intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
 
