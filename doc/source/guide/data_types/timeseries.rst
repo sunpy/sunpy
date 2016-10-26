@@ -22,7 +22,7 @@ To make things easy, SunPy can download several example files which are used
 throughout the docs. These files have names like
 `~sunpy.data.sample.EVE_LIGHTCURVE` and `~sunpy.data.sample.GOES_LIGHTCURVE`.
 To create the sample `sunpy.timeseries.sources.goes.GOESLightCurve` type the
- following into your interactive Python shell: ::
+following into your interactive Python shell: ::
 
     >>> import sunpy.timeseries as ts
     >>> import sunpy.data.sample
@@ -125,7 +125,7 @@ For example: ::
     >>> table.add_index('time')
     >>> ts_table = ts.TimeSeries(table)
 
-Note that due to the properties of the `~astropy.time.core.Time` object, this will be a mixin column which as actually a single object, this limits the versatility of the `~astropy.table.table.Table` a little. For more on mixin columns see the `AstroPy docs<astropy:http://docs.astropy.org/en/stable/table/mixin_columns.html>`_.
+Note that due to the properties of the `~astropy.time.Time` object, this will be a mixin column which as actually a single object, this limits the versatility of the `~astropy.table.Table` a little. For more on mixin columns see the `AstroPy docs <http://docs.astropy.org/en/stable/table/mixin_columns.html>`_.
 The units will be taken from the table quantities for each column, the metadata will simply be the table.meta dictionary.
 You could also implicitly add metadata and units, these will be added to the relevant dictionaries using the dictionary update method, with the explicit user-given values taking precedence.
 
@@ -192,7 +192,7 @@ A TimeSeries can also return an AstroPy `~astropy.units.quantity.Quantity` for a
 
 The SunPy TimeSeries object has its own built-in plot methods so that
 it is easy to quickly view your time series. To create a plot just
-type: ::
+type:
 
 .. plot::
     :include-source:
