@@ -64,9 +64,9 @@ class EVELightCurve(GenericTimeSeries):
 
         .. plot::
 
-           import sunpy.timeseries
+            import sunpy.timeseries
             from sunpy.data.sample import EVE_LIGHTCURVE
-            eve = sunpy.timeseries.TimeSeries(EVE_LIGHTCURVE)
+            eve = sunpy.timeseries.TimeSeries(EVE_LIGHTCURVE, source='eve')
             eve.peek(subplots=True)
 
         Parameters
@@ -204,4 +204,4 @@ class EVELightCurve(GenericTimeSeries):
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to an EVE image"""
         #return header.get('instrume', '').startswith('')
-        return kwargs.get('source', '').startswith('EVE')
+        return kwargs.get('source', '').lower().startswith('eve')

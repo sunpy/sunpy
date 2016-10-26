@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-=========================================
+============================================
 Interacting with Data Using SunPy TimeSeries
-=========================================
+============================================
 
 This is an early run-through of the basic functionality of the SunPy TimeSeries
 class.
