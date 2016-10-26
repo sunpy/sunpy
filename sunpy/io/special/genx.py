@@ -1,14 +1,13 @@
 import xdrlib
 from collections import OrderedDict
+from functools import partial
 
 class ssw_xdrlib(xdrlib.Unpacker):
     """
     `xdrlib.Unpacker` customisation to read strings as written by IDL.
     """
     def unpack_string(self):
-        print('position:', self.get_position())
         n = self.unpack_uint()
-        print(n)
         if n > 0:
             n = self.unpack_uint()
             print('second read', n)
@@ -44,6 +43,9 @@ def read_struct_skeleton(xdrdata):
             tagdict[tt] = [dim] + arr_size
     return tagdict
 
+def unsuported_dtype(dtype):
+    raise ValueError("Can't read {} data type".format(dtype))
+
 def struct_to_data(xdrdata, subskeleton):
     """"
     Converts the dictionary with the keys and IDL's size output to
@@ -55,13 +57,14 @@ def struct_to_data(xdrdata, subskeleton):
         3: xdrdata.unpack_int, # long
         4: xdrdata.unpack_float,
         5: xdrdata.unpack_double,
+        6: partial(unsuported_dtype, 'Complex'), # FIXME: How to read complex?
         7: xdrdata.unpack_string,
-        8: xdrdata.unpack_uint, # short
+        9: partial(unsuported_dtype, 'Double Complex'), # FIXME: How to read Double complex?
         12: xdrdata.unpack_uint, # unsign int
         13: xdrdata.unpack_uint, # unsign Long int
-        14: xdrdata.unpack_int, # Long64          # FIXME: How to do 64?
-        15: xdrdata.unpack_uint, # unsign Long64   # FIXME: How to do 64?
-    }
+        14: partial(unsuported_dtype, 'Long 64'), # Long64          # FIXME: How to do 64?
+        15: partial(unsuported_dtype, 'Unsign Long 64'), # unsign Long64   # FIXME: How to do 64?
+    } 
     for key in subskeleton:
         if isinstance(subskeleton[key], OrderedDict):
             struct_to_data(xdrdata, subskeleton[key])
@@ -72,7 +75,6 @@ def struct_to_data(xdrdata, subskeleton):
                 subskeleton[key] = types_dict[sswtype]()
             else:
                 subskeleton[key] = xdrdata.unpack_farray(sswsize[-1], types_dict[sswtype])
-
 
 def read_genx(filename):
     """
@@ -107,8 +109,8 @@ def read_genx(filename):
     arr_size = xdrdata.unpack_farray(dim + 2, xdrdata.unpack_int) # [1, 8, 1] = Main structure for the data
     mainsize = arr_size[2] # number of upper level strs
     skeleton = read_struct_skeleton(xdrdata)
-    print(skeleton)
     struct_to_data(xdrdata, skeleton)
+    xdrdata.done()
     skeleton['HEADER'] = OrderedDict([('version', version), ('xdr', xdr), ('creation', creation),
                                       ('idl_version', OrderedDict([('arch', arch),
                                                                    ('os', os),
