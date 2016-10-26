@@ -1,6 +1,9 @@
 import xdrlib
 from collections import OrderedDict
 from functools import partial
+import copy
+
+import numpy as np
 
 class ssw_xdrlib(xdrlib.Unpacker):
     """
@@ -10,7 +13,6 @@ class ssw_xdrlib(xdrlib.Unpacker):
         n = self.unpack_uint()
         if n > 0:
             n = self.unpack_uint()
-            print('second read', n)
         return self.unpack_fstring(n).decode()
 
 def read_struct_skeleton(xdrdata):
@@ -28,7 +30,7 @@ def read_struct_skeleton(xdrdata):
         dim = xdrdata.unpack_uint()
         arr_size = xdrdata.unpack_farray(dim + 2, xdrdata.unpack_int) # [7, 1]
         typedata = arr_size[-2]
-        if typedata == 8: # it's not a structure
+        if typedata == 8: # it's a structure
             if dim == 2 and arr_size[0] == 1:
                 # For when structures has been defined with 2 dim but only has one:
                 # bb = replicate({tata: 1, bebe:2, casa:'asa'}, 3)
@@ -38,7 +40,10 @@ def read_struct_skeleton(xdrdata):
                 #            2           1           3           8           3
                 dim = 1
                 arr_size[0] = arr_size[1]
-            tagdict[tt] = read_struct_skeleton(xdrdata)
+            if arr_size[-1] > 1:
+                tagdict[tt] = np.array([read_struct_skeleton(xdrdata)] * arr_size[-1]).reshape(arr_size[0:-2])
+            else:
+                tagdict[tt] = read_struct_skeleton(xdrdata)
         else:
             tagdict[tt] = [dim] + arr_size
     return tagdict
@@ -64,17 +69,27 @@ def struct_to_data(xdrdata, subskeleton):
         13: xdrdata.unpack_uint, # unsign Long int
         14: partial(unsuported_dtype, 'Long 64'), # Long64          # FIXME: How to do 64?
         15: partial(unsuported_dtype, 'Unsign Long 64'), # unsign Long64   # FIXME: How to do 64?
-    } 
+    }
     for key in subskeleton:
         if isinstance(subskeleton[key], OrderedDict):
             struct_to_data(xdrdata, subskeleton[key])
+        elif isinstance(subskeleton[key], np.ndarray):
+            testlist = list()
+            struct_shape = subskeleton[key].shape
+            for i,elem in enumerate(subskeleton[key].flatten()):
+                elem2 = copy.deepcopy(elem)
+                struct_to_data(xdrdata, elem2)
+                testlist.append(elem2)
+            subskeleton[key] = np.array(testlist).reshape(struct_shape)
+            #subkeleton[key] = testlist
+            #subkeleton[key] = [struct_to_data(xdrdata, copy.deepcopy(subkey)) for n in range(sswsize[-1])]
         else:
             sswsize = subskeleton[key]
             sswtype = sswsize[-2]
             if sswsize[0] == 0:
                 subskeleton[key] = types_dict[sswtype]()
             else:
-                subskeleton[key] = xdrdata.unpack_farray(sswsize[-1], types_dict[sswtype])
+                subskeleton[key] = np.array(xdrdata.unpack_farray(sswsize[-1], types_dict[sswtype])).reshape(sswsize[1:-2])
 
 def read_genx(filename):
     """
