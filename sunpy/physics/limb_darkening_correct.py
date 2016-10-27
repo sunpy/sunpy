@@ -1,5 +1,5 @@
 import numpy as np
-
+from astropy import units as u
 __author__ = ["Norbert Gyenge"]
 
 
@@ -35,18 +35,20 @@ def limb_darkening_correct(observation, limb_cut=True):
 
     Examples
     --------
-        >>> myfit = sunpy.map.Map('test.fits')
-        >>> myfit_c = limb_darkening_correct(myfit, limb_cut=True)"""
-    
-    wavelength = observation.meta['WAVELNTH']
-    x_center = observation.meta['crpix1']
-    y_center = observation.meta['crpix2']
-    radius = observation.meta['RSUN_OBS'] / observation.meta['CDELT1']
-    x_dim = observation.meta['NAXIS1']
-    y_dim = observation.meta['NAXIS2']
+        >>> mymap = sunpy.map.Map('test.fits')
+        >>> limb_darkening_correct(mymap, limb_cut=True)"""
 
-    x_2 = np.power(np.arange(x_dim) - x_center, 2)
-    y_2 = np.power(np.arange(y_dim) - y_center, 2)
+    wavelength = observation.wavelength.value
+
+    if wavelength < 4000 or wavelength > 15000:
+        raise ValueError("The wavelength of the observation must be between 4000 and 15000 A.")
+
+    x_center, y_center = observation.data_to_pixel(0*u.arcsec, 0*u.arcsec)
+    radius = observation.rsun_obs / observation.scale[0]
+    x_dim, y_dim = observation.dimensions
+
+    x_2 = np.power(np.arange(x_dim.value) - x_center.value, 2)
+    y_2 = np.power(np.arange(y_dim.value) - y_center.value, 2)
 
     a = np.array([-8.9829751, 0.0069093916, -1.8144591e-6, 2.2540875e-10,
                   -1.3389747e-14, 3.0453572e-19])
@@ -59,17 +61,20 @@ def limb_darkening_correct(observation, limb_cut=True):
     ul = sum(a * wavelength)
     vl = sum(b * wavelength)
 
-    dist_grid = np.empty((x_dim, y_dim), dtype=np.float)
+    dist_grid = np.empty((int(x_dim.value), int(y_dim.value)), dtype=np.float)
+    
+    for i in range(0, int(y_dim.value)-1):
+        dist_grid[:][i] = np.sqrt(y_2[i] + x_2)
+        
+    dist_grid = dist_grid / radius.value
+
     e1 = 1 - ul - vl + ul * np.cos(np.arcsin(dist_grid))
     e2 = vl * np.power(np.cos(np.arcsin(dist_grid)), 2)
     limbfilt = e1 + e2
+
     observation.data = observation.data / limbfilt
-    observation.data[dist_grid >= 1] = np.nan
 
     if limb_cut is True:
-        for i in range(0, y_dim-1):
-            dist_grid[:][i] = np.sqrt(y_2[i] + x_2)
-            dist_grid = dist_grid / radius
-            observation.data[dist_grid >= 1] = np.nan
+        observation.data[dist_grid >= 1] = np.nan
 
     return observation
