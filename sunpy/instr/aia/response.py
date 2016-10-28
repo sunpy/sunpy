@@ -1,4 +1,7 @@
-"""Provides functions for calculating wavelength and temperature response of SDO/AIA"""
+"""
+Provides functions for calculating wavelength and temperature response of
+SDO/AIA
+"""
 
 from __future__ import (absolute_import, division, print_function, unicode_literals)
 import os
@@ -35,7 +38,7 @@ class Response():
 
     channel_colors = {94:'#ff3a3a',131:'#6060ff',171:'#f1de1f',193:'#4cec4c',211:'#ed64c6',335:'#45deed',304:'k',1600:'b',1700:'g',4500:'r'}
 
-    def __init__(self, channel_list=[94,131,171,193,335,211,304], path_to_genx_dir='', version=6):  
+    def __init__(self, channel_list=[94,131,171,193,335,211,304], path_to_genx_dir='', version=6):
         self._get_channel_info(channel_list,path_to_genx_dir,version)
 
 
