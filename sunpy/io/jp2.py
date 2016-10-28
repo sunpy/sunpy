@@ -13,7 +13,8 @@ from sunpy.io.header import FileHeader
 
 __all__ = ['read', 'get_header', 'write']
 
-def read(filepath, **kwargs):
+
+def read(filepath):
     """
     Reads a JPEG2000 file
 
@@ -32,6 +33,7 @@ def read(filepath, **kwargs):
     data = Jp2k(filepath).read()[::-1]
 
     return [(data, header[0])]
+
 
 def get_header(filepath):
     """
@@ -63,13 +65,22 @@ def get_header(filepath):
     if 'comment' in pydict:
         pydict['comment'] = pydict['comment'].replace("\n", "")
 
-    return [FileHeader(pydict)]
+    # Is this file a Helioviewer Project JPEG2000 file?
+    xmlstring = ET.tostring(xml_box[0].xml.find('helioviewer'))
+    if xmlstring is not None:
+        pydict['helioviewer'] = True
+    else:
+        pydict['helioviewer'] = False
+
+    return [FileHeader(pydict), xmlstring]
+
 
 def write(fname, data, header):
     """
     Place holder for required file writer
     """
     raise NotImplementedError("No jp2 writer is implemented")
+
 
 def _is_float(s):
     """Check to see if a string value is a valid float"""
