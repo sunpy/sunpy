@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division
-import astropy.wcs.utils
 
+import astropy.units as u
+import astropy.wcs.utils
 from astropy.wcs import WCSSUB_CELESTIAL
 
 from .frames import *
@@ -18,21 +19,14 @@ def solar_wcs_frame_mapping(wcs):
     # SunPy Map adds some extra attributes to the WCS object.
     # We check for them here, and default to None.
     dateobs = wcs.wcs.dateobs if wcs.wcs.dateobs else None
-    hglon = None
-    hglat = None
-    dsun = None
 
-    if hasattr(wcs, 'heliographic_longitude'):
-        hglon = wcs.heliographic_longitude
+    if hasattr(wcs, 'heliographic_observer'):
+        observer = wcs.heliographic_observer
+    else:
+        observer = HeliographicStonyhurst(0 * u.deg, 0 * u.deg, 1 * u.AU)
 
-    if hasattr(wcs, 'heliographic_latitude'):
-        hglat = wcs.heliographic_latitude
-
-    if hasattr(wcs, 'dsun'):
-        dsun = wcs.dsun
-
-    # First we try the Celestial sub, which rectifies the order. It will return
-    # any thing matching ??LN*, ??LT*
+    # First we try the Celestial sub, which rectifies the order.
+    # It will return any thing matching ??LN*, ??LT*
     wcss = wcs.sub([WCSSUB_CELESTIAL])
 
     # If the SUB works, use it.
@@ -43,7 +37,7 @@ def solar_wcs_frame_mapping(wcs):
     ycoord = wcs.wcs.ctype[1][0:4]
 
     if xcoord == 'HPLN' and ycoord == 'HPLT':
-        return Helioprojective(dateobs=dateobs, L0=hglon, B0=hglat, D0=dsun)
+        return Helioprojective(dateobs=dateobs, observer=observer)
 
     if xcoord == 'HGLN' and ycoord == 'HGLT':
         return HeliographicStonyhurst(dateobs=dateobs)
@@ -52,7 +46,7 @@ def solar_wcs_frame_mapping(wcs):
         return HeliographicCarrington(dateobs=dateobs)
 
     if xcoord == 'SOLX' and ycoord == 'SOLY':
-        return Heliocentric(dateobs=dateobs, L0=hglon, B0=hglat, D0=dsun)
+        return Heliocentric(dateobs=dateobs, observer=observer)
 
 
 astropy.wcs.utils.WCS_FRAME_MAPPINGS.append([solar_wcs_frame_mapping])

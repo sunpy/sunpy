@@ -20,7 +20,8 @@ from astropy.coordinates import SkyCoord
 
 import sunpy.io as io
 import sunpy.wcs as wcs
-import sunpy.coordinates # Import to register with Astropy
+import sunpy.coordinates
+from sunpy.coordinates.representation import UnitSphericalWrap180Representation
 from sunpy import config
 from sunpy.extern import six
 from sunpy.visualization import toggle_pylab, wcsaxes_compat
@@ -233,14 +234,12 @@ scale:\t\t {scale}
         # Make these a quantity array to prevent the numpy setting element of
         # array with sequence error.
         w2.wcs.cdelt = u.Quantity(self.scale)
-        w2.wcs.crval = u.Quantity(self.reference_coordinate)
+        w2.wcs.crval = u.Quantity([self._reference_longitude, self._reference_latitude])
         w2.wcs.ctype = self.coordinate_system
         w2.wcs.pc = self.rotation_matrix
         w2.wcs.cunit = self.spatial_units
         w2.wcs.dateobs = self.date.isoformat()
-        w2.heliographic_latitude = self.heliographic_latitude
-        w2.heliographic_longitude = self.heliographic_longitude
-        w2.dsun = self.dsun
+        w2.heliographic_observer = self.observer_coordinate
 
         # Astropy WCS does not understand the SOHO default of "solar-x" and
         # "solar-y" ctypes.  This overrides the default assignment and
@@ -430,25 +429,25 @@ scale:\t\t {scale}
     def xrange(self):
         """Return the X range of the image from edge to edge."""
         # TODO: This should be reading from the WCS object
-        xmin = self.center.x - self.dimensions[0] / 2. * self.scale.x
-        xmax = self.center.x + self.dimensions[0] / 2. * self.scale.x
+        xmin = self.center.Tx - self.dimensions[0] / 2. * self.scale.x
+        xmax = self.center.Tx + self.dimensions[0] / 2. * self.scale.x
         return u.Quantity([xmin, xmax])
 
     @property
     def yrange(self):
         """Return the Y range of the image from edge to edge."""
         # TODO: This should be reading from the WCS object
-        ymin = self.center.y - self.dimensions[1] / 2. * self.scale.y
-        ymax = self.center.y + self.dimensions[1] / 2. * self.scale.y
+        ymin = self.center.Ty - self.dimensions[1] / 2. * self.scale.y
+        ymax = self.center.Ty + self.dimensions[1] / 2. * self.scale.y
         return u.Quantity([ymin, ymax])
 
     @property
     def center(self):
         """
-        Return the world (data) coordinates of the center pixel of the array.
+        Return a coordinate object for the center pixel of the array.
         """
         center = u.Quantity(self.dimensions) / 2.
-        return Pair(*self.pixel_to_data(*center))
+        return self.pixel_to_data(*center)
 
     @property
     def shifted_value(self):
@@ -579,11 +578,23 @@ scale:\t\t {scale}
                         frame='heliographic_stonyhurst')
 
     @property
+    def _reference_longitude(self):
+        """
+        FITS-WCS compatible longitude. Used in self.wcs and
+        self.reference_coordinate.
+        """
+        return self.meta.get('crval1', 0.) * self.spatial_units.x
+
+    @property
+    def _reference_latitude(self):
+        return self.meta.get('crval2', 0.) * self.spatial_units.y
+
+    @property
     def reference_coordinate(self):
         """Reference point WCS axes in data units (i.e. crval1, crval2). This value
         includes a shift if one is set."""
-        return SkyCoord(self.meta.get('crval1', 0.) * self.spatial_units.x,
-                        self.meta.get('crval2', 0.) * self.spatial_units.y,
+        return SkyCoord(self._reference_longitude,
+                        self._reference_latitude,
                         frame=self.coordinate_frame)
 
     @property
@@ -728,8 +739,8 @@ scale:\t\t {scale}
         y : `~astropy.units.Quantity`
             Pixel coordinate on the CTYPE2 axis.
         """
-        if not isinstance(coordinate, [SkyCoord,
-                                       astropy.coordinates.BaseCoordinateFrame]):
+        if not isinstance(coordinate, (SkyCoord,
+                                       astropy.coordinates.BaseCoordinateFrame)):
             raise ValueError("data_to_pixel takes a Astropy coordinate frame or SkyCoord instance.")
         native_frame = coordinate.transform_to(self.coordinate_frame)
         x = native_frame.Tx.to(u.deg).value
@@ -863,8 +874,8 @@ scale:\t\t {scale}
             new_meta['CD2_2'] *= scale_factor_y
         new_meta['crpix1'] = (dimensions[0].value + 1) / 2.
         new_meta['crpix2'] = (dimensions[1].value + 1) / 2.
-        new_meta['crval1'] = self.center.x.value
-        new_meta['crval2'] = self.center.y.value
+        new_meta['crval1'] = self.center.Tx.value
+        new_meta['crval2'] = self.center.Ty.value
 
         # Create new map instance
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
@@ -966,8 +977,8 @@ scale:\t\t {scale}
 
         # The FITS-WCS transform is by definition defined around the
         # reference coordinate in the header.
-        rotation_center = u.Quantity([self.reference_coordinate.x,
-                                      self.reference_coordinate.y])
+        rotation_center = u.Quantity([self.reference_coordinate.Tx,
+                                      self.reference_coordinate.Ty])
 
         # Copy meta data
         new_meta = self.meta.copy()
@@ -1002,7 +1013,7 @@ scale:\t\t {scale}
         temp_map = self._new_instance(new_data, new_meta, self.plot_settings)
 
         # Convert the axis of rotation from data coordinates to pixel coordinates
-        pixel_rotation_center = u.Quantity(temp_map.data_to_pixel(*rotation_center,
+        pixel_rotation_center = u.Quantity(temp_map.data_to_pixel(self.reference_coordinate,
                                                                   origin=0)).value
 
         if recenter:
@@ -1164,8 +1175,11 @@ scale:\t\t {scale}
             if range_b[1] is None:
                 range_b[1] = self.yrange[1]
 
-            x1, y1 = np.ceil(u.Quantity(self.data_to_pixel(range_a[0], range_b[0]))).value
-            x2, y2 = np.floor(u.Quantity(self.data_to_pixel(range_a[1], range_b[1])) + 1*u.pix).value
+            coord1 = SkyCoord(range_a[0], range_b[0], frame=self.coordinate_frame)
+            coord2 = SkyCoord(range_a[1], range_b[1], frame=self.coordinate_frame)
+
+            x1, y1 = np.ceil(u.Quantity(self.data_to_pixel(coord1))).value
+            x2, y2 = np.floor(u.Quantity(self.data_to_pixel(coord2)) + 1*u.pix).value
 
             x_pixels = [x1, x2]
             y_pixels = [y1, y2]
@@ -1295,8 +1309,8 @@ scale:\t\t {scale}
             new_meta['CD2_2'] *= dimensions[1].value
         new_meta['crpix1'] = (new_nx + 1) / 2.
         new_meta['crpix2'] = (new_ny + 1) / 2.
-        new_meta['crval1'] = self.center.x.to(self.spatial_units.x).value + 0.5*(offset[0]*self.scale.x).to(self.spatial_units.x).value
-        new_meta['crval2'] = self.center.y.to(self.spatial_units.y).value + 0.5*(offset[1]*self.scale.y).to(self.spatial_units.y).value
+        new_meta['crval1'] = self.center.Tx.to(self.spatial_units.x).value + 0.5*(offset[0]*self.scale.x).to(self.spatial_units.x).value
+        new_meta['crval2'] = self.center.Ty.to(self.spatial_units.y).value + 0.5*(offset[1]*self.scale.y).to(self.spatial_units.y).value
 
         # Create new map instance
         if self.mask is not None:
