@@ -86,10 +86,10 @@ def test_wcs(aia171_test_map):
                                  aia171_test_map.reference_pixel.y.value])
     assert all(wcs.wcs.cdelt == [aia171_test_map.scale.x.value,
                                  aia171_test_map.scale.y.value])
-    assert all(wcs.wcs.crval == [aia171_test_map.reference_coordinate.x.value,
-                                 aia171_test_map.reference_coordinate.y.value])
+    assert all(wcs.wcs.crval == [aia171_test_map._reference_longitude.value,
+                                 aia171_test_map._reference_latitude.value])
     assert set(wcs.wcs.ctype) == set([aia171_test_map.coordinate_system.x,
-                             aia171_test_map.coordinate_system.y])
+                                      aia171_test_map.coordinate_system.y])
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
     assert set(wcs.wcs.cunit) == set([u.Unit(a) for a in aia171_test_map.spatial_units])
 
@@ -182,9 +182,9 @@ def test_units(generic_map):
 def test_coordinate_frame(aia171_test_map):
     frame = aia171_test_map.coordinate_frame
     assert isinstance(frame, sunpy.coordinates.Helioprojective)
-    assert frame.L0 == aia171_test_map.heliographic_longitude
-    assert frame.B0 == aia171_test_map.heliographic_latitude
-    assert frame.D0 == aia171_test_map.dsun
+    assert frame.observer.lat == aia171_test_map.observer_coordinate.frame.lat
+    assert frame.observer.lon == aia171_test_map.observer_coordinate.frame.lon
+    assert frame.observer.radius == aia171_test_map.observer_coordinate.frame.radius
     assert frame.dateobs == aia171_test_map.date
 
 
@@ -192,14 +192,14 @@ def test_coordinate_frame(aia171_test_map):
 # Test Rotation WCS conversion
 #==============================================================================
 def test_rotation_matrix_pci_j(generic_map):
-    np.testing.assert_allclose (generic_map.rotation_matrix,
-                                np.matrix([[0., -1.], [1., 0.]]))
+    np.testing.assert_allclose(generic_map.rotation_matrix,
+                               np.matrix([[0., -1.], [1., 0.]]))
 
 
 def test_rotation_matrix_crota(aia171_test_map):
-    np.testing.assert_allclose (aia171_test_map.rotation_matrix,
-                                np.matrix([[9.99999943e-01, -3.38820761e-04],
-                                           [3.38820761e-04, 9.99999943e-01]]))
+    np.testing.assert_allclose(aia171_test_map.rotation_matrix,
+                               np.matrix([[9.99999943e-01, -3.38820761e-04],
+                                          [3.38820761e-04, 9.99999943e-01]]))
 
 
 def test_rotation_matrix_cd_cdelt():
@@ -219,6 +219,7 @@ def test_rotation_matrix_cd_cdelt():
     cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.matrix([[0., -1.], [1., 0]]))
 
+
 def test_rotation_matrix_cd_cdelt_square():
     data = np.ones([6,6], dtype=np.float64)
     header = {'CRVAL1': 0,
@@ -236,6 +237,7 @@ def test_rotation_matrix_cd_cdelt_square():
     cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.matrix([[0., -1], [1., 0]]))
 
+
 def test_swap_cd():
     amap = sunpy.map.Map(os.path.join(testpath, 'swap_lv1_20140606_000113.fits'))
     np.testing.assert_allclose(amap.rotation_matrix, np.matrix([[1., 0], [0, 1.]]))
@@ -246,15 +248,17 @@ def test_data_range(generic_map):
     assert generic_map.xrange[1].value - generic_map.xrange[0].value == generic_map.meta['cdelt1'] * generic_map.meta['naxis1']
     assert generic_map.yrange[1].value - generic_map.yrange[0].value == generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
 
-    assert np.average(generic_map.xrange.value) == generic_map.center.x.value
-    assert np.average(generic_map.yrange.value) == generic_map.center.y.value
+    assert np.average(generic_map.xrange.value) == generic_map.center.Tx.value
+    assert np.average(generic_map.yrange.value) == generic_map.center.Ty.value
 
 
 def test_data_to_pixel(generic_map):
-    """Make sure conversion from data units to pixels is internally consistent"""
+    """Make sure conversion from data units to pixels is internally
+    consistent"""
     # Note: FITS pixels start from 1,1
-    test_pixel = generic_map.data_to_pixel(*generic_map.reference_coordinate, origin=1)
+    test_pixel = generic_map.data_to_pixel(generic_map.reference_coordinate, origin=1)
     assert_quantity_allclose(test_pixel, generic_map.reference_pixel)
+
 
 def test_default_shift():
     """Test that the default shift is zero"""
@@ -277,18 +281,19 @@ def test_default_shift():
 
 def test_shift_applied(generic_map):
     """Test that adding a shift actually updates the reference coordinate"""
-    original_reference_coord = (generic_map.reference_coordinate.x, generic_map.reference_coordinate.y)
+    original_reference_coord = (generic_map.reference_coordinate.Tx, generic_map.reference_coordinate.Ty)
     x_shift = 5 * u.arcsec
     y_shift = 13 * u.arcsec
     shifted_map = generic_map.shift(x_shift, y_shift)
-    assert shifted_map.reference_coordinate.x - x_shift == original_reference_coord[0]
-    assert shifted_map.reference_coordinate.y - y_shift == original_reference_coord[1]
+    assert shifted_map.reference_coordinate.Tx - x_shift == original_reference_coord[0]
+    assert shifted_map.reference_coordinate.Ty - y_shift == original_reference_coord[1]
     crval1 = ((generic_map.meta.get('crval1') * generic_map.spatial_units.x + \
              shifted_map.shifted_value.x).to(shifted_map.spatial_units.x)).value
     assert shifted_map.meta.get('crval1') == crval1
     crval2 = ((generic_map.meta.get('crval2') * generic_map.spatial_units.y + \
              shifted_map.shifted_value.y).to(shifted_map.spatial_units.y)).value
     assert shifted_map.meta.get('crval2') == crval2
+
 
 def test_set_shift(generic_map):
     """Test that previously applied shift is stored in the shifted_value property"""
@@ -298,6 +303,7 @@ def test_set_shift(generic_map):
     resultant_shift = shifted_map.shifted_value
     assert resultant_shift.x == x_shift
     assert resultant_shift.y == y_shift
+
 
 def test_shift_history(generic_map):
     """Test the shifted_value is added to a non-zero previous shift"""
@@ -312,6 +318,7 @@ def test_shift_history(generic_map):
     resultant_shift = final_shifted_map.shifted_value
     assert resultant_shift.x == x_shift1 + x_shift2
     assert resultant_shift.y == y_shift1 + y_shift2
+
 
 def test_submap(generic_map):
     """Check data and header information for a submap"""
@@ -361,8 +368,8 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
         == float(generic_map.data.shape[0]) / resampled_map.data.shape[0]
     assert resampled_map.meta['crpix1'] == (resampled_map.data.shape[1] + 1) / 2.
     assert resampled_map.meta['crpix2'] == (resampled_map.data.shape[0] + 1) / 2.
-    assert resampled_map.meta['crval1'] == generic_map.center.x.value
-    assert resampled_map.meta['crval2'] == generic_map.center.y.value
+    assert resampled_map.meta['crval1'] == generic_map.center.Tx.value
+    assert resampled_map.meta['crval2'] == generic_map.center.Ty.value
     for key in generic_map.meta:
         if key not in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2',
                        'crval1', 'crval2'):
@@ -510,8 +517,7 @@ def test_as_mpl_axes_aia171(aia171_test_map):
     assert all([ct1 == ct2 for ct1, ct2 in zip(ax.wcs.wcs.ctype,
                                                aia171_test_map.wcs.wcs.ctype)])
     # Map adds these attributes, so we use them to check.
-    assert hasattr(ax.wcs, 'heliographic_latitude')
-    assert hasattr(ax.wcs, 'heliographic_longitude')
+    assert hasattr(ax.wcs, 'heliographic_observer')
 
 
 @figure_test

@@ -14,7 +14,7 @@ from astropy.coordinates.representation import (CartesianRepresentation,
                                                 SphericalRepresentation)
 from astropy.coordinates.baseframe import (BaseCoordinateFrame,
                                            RepresentationMapping)
-from astropy.coordinates import FrameAttribute
+from astropy.coordinates import FrameAttribute, CoordinateAttribute
 
 from sunpy import sun  # For Carrington rotation number
 from .representation import (SphericalWrap180Representation, UnitSphericalWrap180Representation)
@@ -182,7 +182,7 @@ class Heliocentric(BaseCoordinateFrame):
     or cylindrical representation.
     Cylindrical representation replaces (x, y) with
     (rho, psi) where rho is the impact parameter and
-    psi is the position angle in degrees.
+    
 
     Parameters
     ----------
@@ -224,11 +224,11 @@ class Heliocentric(BaseCoordinateFrame):
         'cylindrical': [RepresentationMapping('phi', 'psi', u.deg)]
     }
 
-    # d = FrameAttribute(default=(1*u.au).to(u.km))
-    D0 = FrameAttribute(default=(1*u.au).to(u.km))
     dateobs = TimeFrameAttributeSunPy()
-    L0 = FrameAttribute(default=0*u.deg)
-    B0 = FrameAttribute(default=0*u.deg)
+    observer = CoordinateAttribute(HeliographicStonyhurst,
+                                   default=HeliographicStonyhurst(0*u.deg,
+                                                                  0*u.deg,
+                                                                  1*u.AU))
 
 
 class Helioprojective(BaseCoordinateFrame):
@@ -298,11 +298,12 @@ class Helioprojective(BaseCoordinateFrame):
         ]
     }
 
-    D0 = FrameAttribute(default=(1*u.au).to(u.km))
     dateobs = TimeFrameAttributeSunPy()
-    L0 = FrameAttribute(default=0*u.deg)
-    B0 = FrameAttribute(default=0*u.deg)
     rsun = FrameAttribute(default=RSUN_METERS.to(u.km))
+    observer = CoordinateAttribute(HeliographicStonyhurst,
+                                   default=HeliographicStonyhurst(0*u.deg,
+                                                                  0*u.deg,
+                                                                  1*u.AU))
 
     def __init__(self, *args, **kwargs):
         _rep_kwarg = kwargs.get('representation', None)
@@ -345,8 +346,8 @@ class Helioprojective(BaseCoordinateFrame):
         rep = self.represent_as(UnitSphericalWrap180Representation)
         lat, lon = rep.lat, rep.lon
         alpha = np.arccos(np.cos(lat) * np.cos(lon)).to(lat.unit)
-        c = self.D0**2 - self.rsun**2
-        b = -2 * self.D0.to(u.m) * np.cos(alpha)
+        c = self.observer.radius**2 - self.rsun**2
+        b = -2 * self.observer.radius.to(u.m) * np.cos(alpha)
         d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2
         return self.realize_frame(SphericalWrap180Representation(lon=lon,
                                                                  lat=lat,

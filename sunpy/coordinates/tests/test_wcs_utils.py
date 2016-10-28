@@ -90,14 +90,15 @@ def test_wcs_extras():
 
     wcs = generic_map.wcs
 
-    assert wcs.heliographic_latitude.value == 0
-    assert wcs.heliographic_longitude.value == 0
-    assert wcs.dsun.value == 10
+    assert wcs.heliographic_observer.lat.value == 0
+    assert wcs.heliographic_observer.lon.value == 0
+    assert wcs.heliographic_observer.radius.value == 10
 
     result = solar_wcs_frame_mapping(wcs)
 
     assert isinstance(result, Helioprojective)
-    assert result.D0.value == 10
-    assert result.L0.value == 0
-    assert result.B0.value == 0
+    assert result.observer.lat.value == 0
+    assert result.observer.lon.value == 0
+    assert result.observer.radius.value == 10
+
 
