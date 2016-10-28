@@ -66,13 +66,9 @@ def get_header(filepath):
         pydict['comment'] = pydict['comment'].replace("\n", "")
 
     # Is this file a Helioviewer Project JPEG2000 file?
-    xmlstring = ET.tostring(xml_box[0].xml.find('helioviewer'))
-    if xmlstring is not None:
-        pydict['helioviewer'] = True
-    else:
-        pydict['helioviewer'] = False
+    pydict['helioviewer'] = xml_box[0].xml.find('helioviewer') is not None
 
-    return [FileHeader(pydict), xmlstring]
+    return [FileHeader(pydict)]
 
 
 def write(fname, data, header):
