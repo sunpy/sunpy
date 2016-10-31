@@ -20,7 +20,7 @@ from sunpy.util import replacement_filename
 from sunpy import config
 
 from ..download import Downloader, Results
-from ..vso.attrs import Time, _Range
+from ..vso.attrs import Time, Wavelength, _Range
 
 TIME_FORMAT = config.get("general", "time_format")
 
