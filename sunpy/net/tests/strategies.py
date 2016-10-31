@@ -38,7 +38,7 @@ def online_instruments():
     Returns a strategy for any instrument that does not need the internet to do
     a query
     """
-    online_instr = ['rhessi', 'bbso']
+    online_instr = ['rhessi', 'bbso', 'vsm']
     online_instr = st.builds(a.Instrument, st.sampled_from(online_instr))
 
     return online_instr
