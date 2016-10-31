@@ -188,10 +188,6 @@ class GenericClient(object):
         \*\*kwargs: `dict`
             None.
         """
-#       Currently Fido doesn't support Parsing Wavelength support.
-#       i.e. If you pass Wavelength object it will ot recognize it.
-#       To do recognize it, we store a key called wavelength and make it
-#       hold a .vso.attrs.Wavelength object.
         for elem in args:
             if isinstance(elem, Time):
                 self.map_['TimeRange'] = TimeRange(elem.start, elem.end)
