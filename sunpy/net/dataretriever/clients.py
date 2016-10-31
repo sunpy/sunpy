@@ -9,6 +9,7 @@ from .sources.rhessi import RHESSIClient
 from .sources.noaa import NOAAIndicesClient, NOAAPredictClient, SRSClient
 from .sources.kanzelhohe import KanzelhoheClient
 from .sources.bbso import BBSOClient
+from .sources.gong import GONGClient, FARSIDEClient
 
 # Import and register other sources
 from sunpy.net.jsoc.jsoc import JSOCClient
