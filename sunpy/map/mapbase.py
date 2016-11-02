@@ -165,7 +165,7 @@ class GenericMap(NDData):
         keywords are exactly equal.
     """
 
-    def __init__(self, data, header, **kwargs):
+    def __init__(self, data, header, plot_settings=None, **kwargs):
 
         super(GenericMap, self).__init__(data, meta=header, **kwargs)
 
@@ -185,12 +185,15 @@ class GenericMap(NDData):
             norm = None
         else:
             norm = colors.Normalize()
+
         # Visualization attributes
         self.plot_settings = {'cmap': cm.gray,
                               'norm': norm,
                               'interpolation': 'nearest',
                               'origin': 'lower'
                               }
+        if plot_settings:
+            self.plot_settings.update(plot_settings)
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
@@ -221,15 +224,14 @@ scale:\t\t {scale}
            dim=u.Quantity(self.dimensions),
            scale=u.Quantity(self.scale),
            tmf=TIME_FORMAT) + self.data.__repr__())
-                                                                        
-    def _modified_copy(self, data, meta, plot_settings=None, **kwargs):
+
+    @classmethod
+    def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
         """
-        Method to create new modified map object with the required changes
+        Instantiate a new instance of this class using given data.
+        This is a shortcut for ``type(self)(data, meta, plot_settings)``
         """
-        new_map = type(self)(data, meta, **kwargs)
-        if plot_settings:
-            new_map.plot_settings = plot_settings
-        return new_map
+        return cls(data, meta, plot_settings=plot_settings, **kwargs)
 
     @property
     def wcs(self):
@@ -503,7 +505,7 @@ scale:\t\t {scale}
                                self.spatial_units.y + y).to(self.spatial_units.y)).value
 
         #Create new map with the modification
-        new_map = self._modified_copy(self.data, new_meta, self.plot_settings)
+        new_map = self._new_instance(self.data, new_meta, self.plot_settings)
 
         new_map._shift = Pair(self.shifted_value.x + x,
                               self.shifted_value.y + y)
@@ -867,7 +869,7 @@ scale:\t\t {scale}
         new_meta['crval2'] = self.center.y.value
 
         # Create new map instance
-        new_map = self._modified_copy(new_data, new_meta, self.plot_settings)
+        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
 
     def rotate(self, angle=None, rmatrix=None, order=4, scale=1.0,
@@ -1062,7 +1064,7 @@ scale:\t\t {scale}
         new_meta.pop('CD2_2', None)
 
         #Create new map with the modification
-        new_map = self._modified_copy(new_data, new_meta, self.plot_settings)
+        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
 
     def submap(self, range_a, range_b):
@@ -1211,10 +1213,10 @@ scale:\t\t {scale}
         if self.mask is not None:
             new_mask = self.mask[yslice, xslice].copy()
             #Create new map with the modification
-            new_map = self._modified_copy(new_data, new_meta, self.plot_settings, mask=new_mask)
+            new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
             return new_map
         #Create new map with the modification
-        new_map = self._modified_copy(new_data, new_meta, self.plot_settings)
+        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
 
     @u.quantity_input(dimensions=u.pixel, offset=u.pixel)
@@ -1272,7 +1274,7 @@ scale:\t\t {scale}
         new_array = func(func(reshaped, axis=3), axis=1)
 
         # Update image scale and number of pixels
-        
+
         # create copy of new meta data
         new_meta = self.meta.copy()
 
@@ -1301,7 +1303,7 @@ scale:\t\t {scale}
             new_mask = None
 
         #Create new map with the modified data
-        new_map = self._modified_copy(new_data, new_meta, self.plot_settings, mask=new_mask)
+        new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
         return new_map
 
 # #### Visualization #### #
