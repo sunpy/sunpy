@@ -36,10 +36,20 @@ class NorthOffsetFrame():
             origin_frame = origin_frame.frame
 
         rep = origin_frame.represent_as(SphericalRepresentation)
-        new_rep = SphericalRepresentation(lon=rep.lon,
-                                          lat=rep.lat - 90*u.deg,
+        lon = rep.lon
+        lat = rep.lat
+        if rep.lat > 0*u.deg:
+            lat = lat - 90*u.deg
+            rotation = None
+        else:
+            lon = lon - 180*u.deg
+            lat = -90*u.deg - lat
+            rotation = 180*u.deg
+        new_rep = SphericalRepresentation(lon=lon,
+                                          lat=lat,
                                           distance=rep.distance)
 
         new_origin = origin_frame.realize_frame(new_rep)
         kwargs['origin'] = new_origin
+        kwargs['rotation'] = rotation
         return SkyOffsetFrame(*args, **kwargs)
