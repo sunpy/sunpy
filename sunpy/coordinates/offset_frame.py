@@ -38,7 +38,7 @@ class NorthOffsetFrame():
         rep = origin_frame.represent_as(SphericalRepresentation)
         lon = rep.lon
         lat = rep.lat
-        if rep.lat > 0*u.deg:
+        if lat > 0*u.deg:
             lat = lat - 90*u.deg
             rotation = None
         else:
