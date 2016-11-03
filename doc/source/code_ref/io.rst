@@ -19,3 +19,6 @@ File Readers
 .. automodapi:: sunpy.io.ana
     :headings: ^#
 
+.. _iospecialgenx:
+.. automodapi:: sunpy.io.special.genx
+    :headings: ^#
