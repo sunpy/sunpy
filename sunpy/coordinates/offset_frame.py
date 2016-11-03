@@ -65,7 +65,8 @@ class NorthOffsetFrame():
     keyword argument and then create a `~astropy.coordinates.SkyOffsetFrame`.
 
     Using this frame is equivalent to using
-    `~astropy.coordinates.SkyOffsetFrame` with ``lat = lat - 90*u.deg``
+    `~astropy.coordinates.SkyOffsetFrame` with ``lat = lat - 90*u.deg`` for a
+    position of the north pole in the original northern hemisphere.
     """
 
     def __new__(cls, *args, **kwargs):
@@ -75,7 +76,11 @@ class NorthOffsetFrame():
         if hasattr(origin_frame, 'frame'):
             origin_frame = origin_frame.frame
 
-        rep = origin_frame.represent_as(SphericalRepresentation)
+        if not isinstance(origin_frame.data, SphericalRepresentation):
+            rep = origin_frame.represent_as(SphericalRepresentation)
+        else:
+            rep = origin_frame.data
+
         lon = rep.lon
         lat = rep.lat
         if lat > 0*u.deg:
@@ -85,11 +90,13 @@ class NorthOffsetFrame():
             lon = lon - 180*u.deg
             lat = -90*u.deg - lat
             rotation = 180*u.deg
-        new_rep = SphericalRepresentation(lon=lon,
-                                          lat=lat,
-                                          distance=rep.distance)
+
+        new_rep = origin_frame.representation(lon=lon,
+                                              lat=lat,
+                                              distance=rep.distance)
 
         new_origin = origin_frame.realize_frame(new_rep)
         kwargs['origin'] = new_origin
         kwargs['rotation'] = rotation
+
         return SkyOffsetFrame(*args, **kwargs)
