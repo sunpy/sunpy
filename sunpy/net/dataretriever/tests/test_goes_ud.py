@@ -13,6 +13,7 @@ from sunpy.net.vso.attrs import Time, Instrument, Physobs
 import sunpy.net.dataretriever.sources.goes as goes
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
+from sunpy.net import attrs as a
 
 from hypothesis import given, example
 from sunpy.net.tests.strategies import goes_time
