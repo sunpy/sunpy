@@ -5,25 +5,24 @@ from __future__ import (absolute_import, division, print_function,unicode_litera
 import os
 
 import numpy as np
-from scipy.io import readsav
 from astropy.table import QTable
 import astropy.units as u
+
+from sunpy.io.special import read_genx
 
 __author__ = ["Tessa D. Wilkinson","Will Barnes"]
 
 
-def aia_instr_properties_to_table(input_directory, channel_list, version, save=True):
+def aia_instr_properties_to_table(channel_list,instrument_files):
     """
     Given  a .genx directory, this function searches for aia instrument files and saves the properties to a table.
 
     Parameters
     ----------
-    input_directory : string
-        path to top of AIA response file directory tree
-    channel_list : list
+    channel_list : array-like
         channel wavelengths to search for
-    version : int
-        version of AIA instrument files
+    instrument_files : `list`
+        AIA .genx instrument files
 
     Returns:
     --------
@@ -48,32 +47,29 @@ def aia_instr_properties_to_table(input_directory, channel_list, version, save=T
     #corresponding units for each field
     unitless = u.m/u.m
     units = [u.angstrom, u.angstrom, u.angstrom, unitless, u.cm**2, u.cm**2,
-                1/u.cm, u.electron/u.count, u.electron/u.eV, unitless,
-                unitless, unitless, unitless, unitless, unitless]
+            u.steradian/u.pixel, u.electron/u.count, u.electron/u.eV, unitless,
+            unitless, unitless, unitless, unitless, unitless]
     units = {p[1] : u for p,u in zip(properties,units)}
     units['channel'] = u.angstrom
-    #set instrument files; these are the names used by SSW, should be static
-    instrument_files = [
-        os.path.join(input_directory,'aia_V{0}_all_fullinst'.format(version)),
-        os.path.join(input_directory,'aia_V{0}_fuv_fullinst'.format(version))]
+    #field name format
     field_name = 'A{0}_FULL'
 
     #read in values
     rows = []
     for instr_file in instrument_files:
-        instrument_data = readsav(instr_file)['data']
+        instrument_data = read_genx(instr_file)
         for channel in channel_list:
-            if field_name.format(channel).upper() not in instrument_data.dtype.names:
+            if field_name.format(channel) not in instrument_data.keys():
                 continue
             row = {'channel':channel}
-            channel_data = instrument_data[field_name.format(channel)][0]
+            channel_data = instrument_data[field_name.format(channel)]
             for prop in properties:
-                if prop[0].upper() not in channel_data.dtype.names:
+                if prop[0].upper() not in channel_data.keys():
                     print('Cannot find {0} for channel {1} in file {2}'.format(prop[0],channel,instr_file))
                     print('Setting {} to 1'.format(prop[1]))
                     row[prop[1]] = 1
                 else:
-                    row[prop[1]] = channel_data[prop[0]][0]
+                    row[prop[1]] = channel_data[prop[0].upper()]
             rows.append(row)
 
     #assign units

@@ -38,11 +38,14 @@ class Response():
 
     channel_colors = {94:'#ff3a3a',131:'#6060ff',171:'#f1de1f',193:'#4cec4c',211:'#ed64c6',335:'#45deed',304:'k',1600:'b',1700:'g',4500:'r'}
 
-    def __init__(self, channel_list=[94,131,171,193,335,211,304], path_to_genx_dir='', version=6):
-        self._get_channel_info(channel_list,path_to_genx_dir,version)
+    def __init__(self, channel_list=[94,131,171,193,335,211,304], ssw_path='', version=6):
+        tmp = os.path.join(ssw_path,'sdo','aia','response',
+                                'aia_V{}_{}_fullinst.genx')
+        instrument_files = [tmp.format(version,'all'),tmp.format(version,'fuv')]
+        self._get_channel_info(channel_list,instrument_files)
 
 
-    def _get_channel_info(self,channel_list, path_to_genx_dir,version):
+    def _get_channel_info(self,channel_list,instrument_files):
         """
         Get instrument info for channels in channel list. Creates self._channel_info
 
@@ -50,7 +53,8 @@ class Response():
         -----
         This will probably change once instrument data is acquired through other means.
         """
-        data_table = aia_instr_properties_to_table(path_to_genx_dir,channel_list,version,save=True)
+        data_table = aia_instr_properties_to_table(channel_list,
+                                                    instrument_files)
         self._channel_info = {}
         for c in channel_list:
             index = channel_list.index(c)
@@ -106,7 +110,8 @@ class Response():
 
         Notes
         -----
-        The energy of a photon E = hf = hc / lambda . Expressing hc in units of eV = 12398.4953
+        The energy of a photon E = hf = hc / lambda . 12398.4953 = hc in eV
+        Angstrom
         """
         # convert hc to convenient units
         hc = (constants.h * constants.c).to(u.eV * u.angstrom)
@@ -124,6 +129,10 @@ class Response():
 
         formula:
         Wavelength Response = Effective Area * Gain of the Intrument System
+
+        Notes
+        -----
+        Does the platescale need to be included in this calculation?
         """
 
         self.wavelength_response = {}
