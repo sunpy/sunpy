@@ -6,6 +6,8 @@
 * Fix link in coordinates documentation.
 * Update helioviewer URL to HTTPS (fixes access to Helioviewer).
 * Fix processing of TRACE and YOHKOH measurement properties.
+* Remove warnings when using `Map.peek(basic_plot=True)`
+* Update docstrings for HPC and HCC frames.
 
 0.7.3
 ------
