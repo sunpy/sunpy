@@ -26,7 +26,7 @@ class NorthOffsetFrame():
     latitude measure angular distance from the point.
 
     In this example the new frame is shifted so the new north pole is at (20,
-    20)˚ in the Heliographic Stonyhurst frame. The new grid is overplotted in
+    20) in the Heliographic Stonyhurst frame. The new grid is overplotted in
     blue.
 
     .. plot::
