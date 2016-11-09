@@ -12,6 +12,7 @@ PATTERN_EXAMPLES = [
     ('%b%y', datetime.timedelta(days=31)),
     ('%m%y', datetime.timedelta(days=31)),
     ('%H%d', datetime.timedelta(hours=1)),
+    ('%y%b', datetime.timedelta(days=31)),
 ]
 
 def testDirectoryDatePattern():
@@ -45,6 +46,12 @@ def testDirectoryRangeFalse():
                       '20090102/', '20090103/']
     timerange = TimeRange('2009/12/30', '2010/01/03')
     assert s.range(timerange) != directory_list
+
+def testNoDateDirectory():
+    s = Scraper('mySpacecraft/myInstrument/xMinutes/aaa%y%b.ext')
+    directory_list = ['mySpacecraft/myInstrument/xMinutes/']
+    timerange = TimeRange('2009/11/20', '2010/01/03')
+    assert s.range(timerange) == directory_list
 
 @pytest.mark.parametrize('pattern, mintime', PATTERN_EXAMPLES)
 def test_smallerPattern(pattern, mintime):
@@ -98,6 +105,12 @@ def testURL_pattern():
     assert not s._URL_followsPattern('fd_20130410_231211.fts.gz')
     assert not s._URL_followsPattern('fd_20130410_ar_231211.fts.gz')
 
+def testURL_patternMilliseconds():
+    s = Scraper('fd_%Y%m%d_%H%M%S_%e.fts')
+    assert s._URL_followsPattern('fd_20130410_231211_119.fts')
+    assert not s._URL_followsPattern('fd_20130410_231211.fts.gz')
+    assert not s._URL_followsPattern('fd_20130410_ar_231211.fts.gz')
+
 # Local files don't work
 # def testFilesRange_sameDirectory_local():
 #     s = Scraper('/'.join(['file:/',sunpy.data.test.rootdir,
@@ -126,3 +139,12 @@ def testFilesRange_sameDirectory_remote():
     timerange = TimeRange(startdate, enddate)
     assert len(s.filelist(timerange)) == 0
 
+@pytest.mark.online
+def testFilesRange_sameDirectory_months_remote():
+    pattern = ('http://www.srl.caltech.edu/{spacecraft}/DATA/{instrument}/'
+               'Ahead/1minute/AeH%y%b.1m')
+    s = Scraper(pattern, spacecraft='STEREO', instrument = 'HET')
+    startdate = datetime.datetime(2007, 8, 1)
+    enddate = datetime.datetime(2007, 9, 10)
+    timerange = TimeRange(startdate, enddate)
+    assert len(s.filelist(timerange)) == 2
