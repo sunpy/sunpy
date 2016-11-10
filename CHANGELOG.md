@@ -1,7 +1,13 @@
 0.7.4
 ------
 
-
+* Remove Map always forcing warnings on.
+* `Map.center` now uses `Map.wcs` to correctly handle rotation.
+* Fix link in coordinates documentation.
+* Update helioviewer URL to HTTPS (fixes access to Helioviewer).
+* Fix processing of TRACE and YOHKOH measurement properties.
+* Remove warnings when using `Map.peek(basic_plot=True)`
+* Update docstrings for HPC and HCC frames.
 
 0.7.3
 ------
@@ -20,6 +26,14 @@
 
 * Fix bug in `wcs.convert_data_to_pixel` where crpix[1] was used for both axes.
 * Fix some leftover instances of `GenericMap.units`
+* Fixed bugs in `sun` equations
+* Now the `sunpy.database.tables.display_entries()` prints an astropy table.
+* Additional methods added inside the `sunpy.database` class to make it easier
+  to display the database contents.
+* `sunpy.io.fits.read` will now return any parse-able HDUs even if some raise an error.
+* `VSOClient` no longer prints a lot of XML junk if the query fails.
+* Remove unused `sunpy.visualization.plotting` module
+* `Map.peek(basic_plot=True)` no longer issues warnings
 
 0.7.0
 -----
