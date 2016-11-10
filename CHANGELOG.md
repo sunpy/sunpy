@@ -1,6 +1,7 @@
 0.7.5
 -----
 
+* Fix test faliure (mapbase) with 0.7.4
 
 0.7.4
 -----
