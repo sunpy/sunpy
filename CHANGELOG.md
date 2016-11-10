@@ -1,5 +1,9 @@
+0.7.5
+-----
+
+
 0.7.4
-------
+-----
 
 * Remove Map always forcing warnings on.
 * `Map.center` now uses `Map.wcs` to correctly handle rotation.
@@ -10,7 +14,7 @@
 * Update docstrings for HPC and HCC frames.
 
 0.7.3
-------
+-----
 
 * Fix ConfigParser for Python 3.5.2 - This allows SunPy to run under Python 3.5.2
 * Fix incorrect ordering of keys in `MapMeta`
