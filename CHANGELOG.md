@@ -14,6 +14,8 @@ Latest
 * `VSOClient` no longer prints a lot of XML junk if the query fails.
 * Remove unused `sunpy.visualization.plotting` module
 * `Map.peek(basic_plot=True)` no longer issues warnings
+* Remove the `sunpy.map.nddata_compat` module, this makes `Map.data` and
+  `Map.meta` read only.
 
 0.7.0
 -----
