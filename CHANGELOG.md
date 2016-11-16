@@ -14,6 +14,7 @@ Latest
 * `VSOClient` no longer prints a lot of XML junk if the query fails.
 * Remove unused `sunpy.visualization.plotting` module
 * Port the pyana wrapper to Python 3
+* `Map.peek(basic_plot=True)` no longer issues warnings
 
 0.7.0
 -----
