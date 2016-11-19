@@ -47,6 +47,13 @@ def test_transform(lon, lat):
     assert_quantity_allclose(north.lat, t_north.lat, atol=1e6*u.deg)
 
 
+def test_south_pole():
+    s = SkyCoord(-10*u.deg, 0*u.deg, frame='heliographic_stonyhurst')
+    off = NorthOffsetFrame(north=s)
+    assert_quantity_allclose(off.origin.lon, 170*u.deg)
+    assert_quantity_allclose(off.origin.lat, -90*u.deg)
+
+
 def test_error():
     with pytest.raises(TypeError):
         NorthOffsetFrame()
