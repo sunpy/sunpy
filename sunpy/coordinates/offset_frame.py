@@ -1,5 +1,5 @@
 import astropy.units as u
-from astropy.coordinates import SkyOffsetFrame, SphericalRepresentation
+from astropy.coordinates import SkyOffsetFrame, SphericalRepresentation, UnitSphericalRepresentation
 
 __all__ = ['NorthOffsetFrame']
 
@@ -91,9 +91,14 @@ class NorthOffsetFrame(object):
             lat = -90*u.deg - lat
             rotation = 180*u.deg
 
-        new_rep = origin_frame.representation(lon=lon,
-                                              lat=lat,
-                                              distance=rep.distance)
+        if isinstance(origin_frame.data, UnitSphericalRepresentation):
+            new_rep = origin_frame.representation(lon=lon,
+                                                  lat=lat)
+
+        else:
+            new_rep = origin_frame.representation(lon=lon,
+                                                  lat=lat,
+                                                  distance=rep.distance)
 
         new_origin = origin_frame.realize_frame(new_rep)
         kwargs['origin'] = new_origin
