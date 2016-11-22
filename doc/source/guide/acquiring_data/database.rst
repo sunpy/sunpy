@@ -544,7 +544,7 @@ year:
 
 5.3 Changing custom attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-What sill annoys me a bit is that there are entries in the database where
+What still annoys me a bit is that there are entries in the database where
 the end of the observation time is `None`. Let us change them to the same
 value to the start of the observation time (because we can and because it
 looks prettier, not because it is accurate). The :meth:`Database.edit`
@@ -720,7 +720,7 @@ When using the :class:`sunpy.net.vso.attrs.Wave` attribute, you have to
 specify a unit using ``astropy.units.Quantity``. If not an error is
 raised. This also implies that there is no default unit that is
 used by the class. To know how you can specify a detail using astropy
-check `astropy.units <https://astropy.readthedocs.org/en/stable/units/index.html>`_.
+check `astropy.units`.
 
     >>> from astropy import units as u
     >>> print display_entries(

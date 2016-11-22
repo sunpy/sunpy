@@ -3,6 +3,7 @@ import os
 import io
 import hashlib
 import json
+import tempfile
 
 import matplotlib.pyplot as plt
 
@@ -14,6 +15,8 @@ try:
         hash_library = json.load(infile)
 except IOError:
     hash_library = {}
+
+file_list = {}
 
 def hash_figure(figure=None):
     """
@@ -33,7 +36,7 @@ def hash_figure(figure=None):
     if figure is None:
         figure = plt.gcf()
 
-    imgdata = io.BytesIO()
+    imgdata = tempfile.NamedTemporaryFile(delete=False)
     figure.savefig(imgdata, format='png')
 
     imgdata.seek(0)
@@ -42,6 +45,7 @@ def hash_figure(figure=None):
 
     hasher = hashlib.sha256()
     hasher.update(buf)
+    file_list[hasher.hexdigest()] = imgdata.name
     return hasher.hexdigest()
 
 def verify_figure_hash(name, figure=None):

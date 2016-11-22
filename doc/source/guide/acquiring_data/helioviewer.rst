@@ -13,7 +13,7 @@ homepage <http://www.openjpeg.org>`_.
 The other package you will need is `Glymur
 <https://pypi.python.org/pypi/Glymur/>`_.  Glymur is an interface
 between Python and the OpenJPEG libraries.  Please follow the
-instructions `here <https://glymur.readthedocs.org/en/latest/>`_ to
+instructions `here <https://glymur.readthedocs.io/en/latest/>`_ to
 install Glymur on your system.
 
 To interact with the Helioviewer API, users first create a "HelioviewerClient"
@@ -48,20 +48,22 @@ please use the code snippet above to get an up-to-date list of available data so
 
 Suppose we next want to download a PNG image of the latest
 AIA 304 image available on Helioviewer.org. We could use the explicit
-approach as shown in the following example.
+approach as shown in the following example.::
 
-.. plot::
-    :include-source:
+   >>> from sunpy.net.helioviewer import HelioviewerClient
+   >>> import matplotlib.pyplot as plt
+   >>> from matplotlib.image import imread
+   >>> hv = HelioviewerClient()
+   >>> file = hv.download_png('2099/01/01', 4.8, "[SDO,AIA,AIA,304,1,100]", x0=0, y0=0, width=512, height=512)
+   >>> im = imread(file)
+   >>> plt.imshow(im)
+   >>> plt.axis('off')
+   >>> plt.show()
 
-    from sunpy.net.helioviewer import HelioviewerClient
-    import matplotlib.pyplot as plt
-    from matplotlib.image import imread
-    hv = HelioviewerClient()
-    file = hv.download_png('2099/01/01', 4.8, "[SDO,AIA,AIA,304,1,100]", x0=0, y0=0, width=512, height=512)
-    im = imread(file)
-    plt.imshow(im)
-    plt.axis('off')
-    plt.show()
+
+.. image:: helioviewer-1.png
+
+
 
 Where 4.8 refers to the image resolution in arcseconds per pixel (larger values
 mean lower resolution), the "1" and "100" in the layer string refer to the
@@ -90,41 +92,40 @@ Now suppose we wanted to create a composite PNG image using data from two
 different AIA wavelengths and LASCO C2 coronagraph data. The layer string is
 extended to include the additional data sources, and opacity is throttled
 down for the second AIA layer so that it does not completely block out the
-lower layer.
+lower layer.::
 
-.. plot::
-    :include-source:
+   >>> from sunpy.net.helioviewer import HelioviewerClient
+   >>> import matplotlib.pyplot as plt
+   >>> from matplotlib.image import imread
+   >>> hv = HelioviewerClient()
+   >>> file = hv.download_png('2099/01/01', 6, "[SDO,AIA,AIA,304,1,100],[SDO,AIA,AIA,193,1,50],[SOHO,LASCO,C2,white-light,1,100]", x0=0, y0=0, width=768, height=768)
+   >>> im = imread(file)
+   >>> plt.imshow(im)
+   >>> plt.axis('off')
+   >>> plt.show()
 
-    from sunpy.net.helioviewer import HelioviewerClient
-    import matplotlib.pyplot as plt
-    from matplotlib.image import imread
-    hv = HelioviewerClient()
-    file = hv.download_png('2099/01/01', 6, "[SDO,AIA,AIA,304,1,100],[SDO,AIA,AIA,193,1,50],[SOHO,LASCO,C2,white-light,1,100]", x0=0, y0=0, width=768, height=768)
-    im = imread(file)
-    plt.imshow(im)
-    plt.axis('off')
-    plt.show()
+.. image:: helioviewer-2.png
 
 Next, let's see how we can download a JPEG 2000 image and load it into a SunPy
 Map object.
 
 The overall syntax is similar to the *download_png* request, expect instead of
 specifying a single string to indicate which layers to use, here we
-can specify the values as separate keyword arguments.
+can specify the values as separate keyword arguments.::
 
-.. plot::
-    :include-source:
+   >>> from sunpy.net.helioviewer import HelioviewerClient
+   >>> import matplotlib.pyplot as plt
+   >>> from astropy.units import Quantity
+   >>> from sunpy.map import Map
+   >>> hv = HelioviewerClient()
+   >>> filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')
+   >>> hmi = Map(filepath)
+   >>> xrange = Quantity([200, 550], 'arcsec')
+   >>> yrange = Quantity([-400, 200], 'arcsec')
+   >>> hmi.submap(xrange, yrange).peek()
 
-    from sunpy.net.helioviewer import HelioviewerClient
-    import matplotlib.pyplot as plt
-    from astropy.units import Quantity
-    from sunpy.map import Map
-    hv = HelioviewerClient()
-    filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')
-    hmi = Map(filepath)
-    xrange = Quantity([200, 550], 'arcsec')
-    yrange = Quantity([-400, 200], 'arcsec')
-    hmi.submap(xrange, yrange).peek()
+
+.. image:: helioviewer-3.png
 
 Every JP2 file provided by the Helioviewer Project has been processed to generate an image that
 can be used for browse purposes.  This typically involves following the standard image processing

@@ -9,14 +9,18 @@ from __future__ import absolute_import
 
 import os
 import re
-import urllib2
 import threading
 
 from functools import partial
 from contextlib import closing
 from collections import defaultdict, deque
 
+from sunpy.extern import six
+from sunpy.extern.six.moves import urllib
+from sunpy.extern.six import iteritems
+
 import sunpy
+
 
 def default_name(path, sock, url):
     name = sock.headers.get('Content-Disposition', url.rsplit('/', 1)[-1])
@@ -45,7 +49,7 @@ class Downloader(object):
                 self.connections[server] += 1
                 self.conns += 1
 
-            with closing(urllib2.urlopen(url)) as sock:
+            with closing(urllib.request.urlopen(url)) as sock:
                 fullname = path(sock, url)
 
                 with open(fullname, 'wb') as fd:
@@ -57,7 +61,7 @@ class Downloader(object):
                             break
                         else:
                             fd.write(rec)
-        except Exception, e:
+        except Exception as e:
             # TODO: Fix the silent failing
             if errback is not None:
                 with self.mutex:
@@ -134,7 +138,7 @@ class Downloader(object):
 
         if path is None:
             path = partial(default_name, default_dir)
-        elif isinstance(path, basestring):
+        elif isinstance(path, six.string_types):
             path = partial(default_name, path)
 
         # Use default callbacks if none were specified
@@ -159,7 +163,7 @@ class Downloader(object):
         if self.q[server]:
             self._attempt_download(*self.q[server].pop())
         else:
-            for k, v in self.q.iteritems():  # pylint: disable=W0612
+            for k, v in iteritems(self.q):  # pylint: disable=W0612
                 while v:
                     if self._attempt_download(*v[0]):
                         v.popleft()

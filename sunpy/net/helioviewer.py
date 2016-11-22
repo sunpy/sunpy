@@ -9,25 +9,31 @@ __author__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
-import urllib
-import urllib2
-
 import json
-
+import codecs
 import sunpy
 from sunpy.time import parse_time
 from sunpy.util.net import download_fileobj
+
+from sunpy.extern.six.moves import urllib
 
 __all__ = ['HelioviewerClient']
 
 
 class HelioviewerClient(object):
     """Helioviewer.org Client"""
-    def __init__(self, url="http://helioviewer.org/api/"):
+    def __init__(self, url="https://legacy.helioviewer.org/api/"):
+        """
+        url : location of the Helioviewer API.  The default location points to
+            version 1 of the API.  Version 1 of the Helioviewer API is
+            currently planned to be supported until the end of April 2017.
+        """
         self._api = url
 
     def get_data_sources(self, **kwargs):
-        """Returns a structured list of datasources available at Helioviewer.org"""
+        """
+        Returns a structured list of datasources available at helioviewer.org.
+        """
         params = {"action": "getDataSources"}
         params.update(kwargs)
 
@@ -37,8 +43,8 @@ class HelioviewerClient(object):
         """Finds the closest image available for the specified source and date.
 
         For more information on what types of requests are available and the
-        expected usage for the response, consult the Helioviewer
-        API documentation: http://helioviewer.org/api
+        expected usage for the response, consult the Helioviewer API
+        documentation: http://legacy.helioviewer.org/api/docs/v1/ .
 
         Parameters
         ----------
@@ -218,15 +224,16 @@ class HelioviewerClient(object):
         """Returns True if Helioviewer is online and available."""
         try:
             self.get_data_sources()
-        except urllib2.URLError:
+        except urllib.error.URLError:
             return False
 
         return True
 
     def _get_json(self, params):
         """Returns a JSON result as a string"""
-        response = self._request(params).read()
-        return json.loads(response)
+        reader = codecs.getreader("utf-8")
+        response = self._request(params)
+        return json.load(reader(response))
 
     def _get_file(self, params, directory=None, overwrite=False):
         """Downloads a file and return the filepath to that file"""
@@ -256,7 +263,8 @@ class HelioviewerClient(object):
         -------
         out : result of request
         """
-        response = urllib2.urlopen(self._api, urllib.urlencode(params))
+        response = urllib.request.urlopen(
+            self._api, urllib.parse.urlencode(params).encode('utf-8'))
 
         return response
 

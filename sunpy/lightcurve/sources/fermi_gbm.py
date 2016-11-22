@@ -1,9 +1,8 @@
 """Provides programs to process and analyse Fermi/GBM lightcurve data."""
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 
-import urlparse
 from collections import OrderedDict
 
 import numpy as np
@@ -14,6 +13,7 @@ from sunpy.io.fits import fits
 from sunpy.instr import fermi
 from sunpy.lightcurve import LightCurve
 
+from sunpy.extern.six.moves import urllib
 
 __all__ = ['GBMSummaryLightCurve']
 
@@ -63,7 +63,8 @@ class GBMSummaryLightCurve(LightCurve):
         .. plot::
 
             from sunpy.lightcurve import GBMSummaryLightCurve
-            gbm = GBMSummaryLightCurve.create('2011-06-07')
+            from sunpy.data.sample import GBM_LIGHTCURVE
+            gbm = GBMSummaryLightCurve.create(GBM_LIGHTCURVE)
             gbm.peek()
 
         Parameters
@@ -74,14 +75,15 @@ class GBMSummaryLightCurve(LightCurve):
         """
         figure=plt.figure()
         axes = plt.gca()
-        data_lab=self.data.columns.values
+        data_lab = self.data.columns.values
 
         for d in data_lab:
-            axes.plot(self.data.index,self.data[d],label=d)
+            axes.plot(self.data.index, self.data[d], label=d)
 
         axes.set_yscale("log")
         axes.set_title('Fermi GBM Summary data ' + self.meta['DETNAM'])
-        axes.set_xlabel('Start time: ' + self.data.index[0].strftime('%Y-%m-%d %H:%M:%S UT'))
+        axes.set_xlabel('Start time: ' +
+                        self.data.index[0].strftime('%Y-%m-%d %H:%M:%S UT'))
         axes.set_ylabel('Counts/s/keV')
         axes.legend()
         figure.autofmt_xdate()
@@ -89,36 +91,41 @@ class GBMSummaryLightCurve(LightCurve):
         plt.show()
 
     @classmethod
-    def _get_url_for_date(cls,date, **kwargs):
+    def _get_url_for_date(cls, date, **kwargs):
         """Returns the url for Fermi/GBM data for the given date."""
-        baseurl='http://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
-        #date is a datetime object
+        baseurl = 'http://heasarc.gsfc.nasa.gov/FTP/fermi/data/gbm/daily/'
+        # date is a datetime object
         if 'detector' in kwargs:
-            det=_parse_detector(kwargs['detector'])
-            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/%d/' + 'current/' +
-                                                              'glg_cspec_'+det+'_%y%m%d_v00.pha'))
+            det = _parse_detector(kwargs['detector'])
+            final_url = urllib.parse.urljoin(
+                baseurl, date.strftime('%Y/%m/%d/' + 'current/' +
+                                       'glg_cspec_' + det + '_%y%m%d_v00.pha'))
         else:
-            #if user doesn't specify a detector, find the one pointing closest to the Sun.'
-            #OR: maybe user should have to specify detector or fail.
+            # if user doesn't specify a detector, find the one pointing
+            # closest to the Sun.'
+            # OR: maybe user should have to specify detector or fail.
             det = cls._get_closest_detector_for_date(date)
-            print 'No detector specified. Detector with smallest mean angle to Sun is ' + str(det)
-            print 'Using Detector ' + str(det)
-            print 'For Fermi detector pointing information, use tools in sunpy/instr/fermi'
-            final_url=urlparse.urljoin(baseurl, date.strftime('%Y/%m/%d/' + 'current/' +
-                                                              'glg_cspec_'+det+'_%y%m%d_v00.pha'))
+            print('No detector specified. Detector with smallest mean angle '
+                  'to Sun is ' + str(det))
+            print('Using Detector ' + str(det))
+            print('For Fermi detector pointing information, use tools in '
+                  'sunpy/instr/fermi')
+            final_url = urllib.parse.urljoin(
+                baseurl, date.strftime('%Y/%m/%d/' + 'current/' +
+                                       'glg_cspec_' + det + '_%y%m%d_v00.pha'))
 
         return final_url
 
     @classmethod
-    def _get_closest_detector_for_date(cls,date,**kwargs):
+    def _get_closest_detector_for_date(cls, date, **kwargs):
         """Returns the GBM detector with the smallest mean angle to the Sun
         for the given date"""
         pointing_file = fermi.download_weekly_pointing_file(date)
-        det_angles = fermi.get_detector_sun_angles_for_date(date,pointing_file)
-        det_angle_means=[]
+        det_angles = fermi.get_detector_sun_angles_for_date(date, pointing_file)
+        det_angle_means = []
         for n in det_angles.keys():
             if not n == 'time':
-                det_angle_values=[]
+                det_angle_values = []
                 for angle in det_angles[n]:
                     det_angle_values.append(angle.value)
 

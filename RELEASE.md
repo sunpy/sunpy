@@ -1,63 +1,48 @@
-The SunPy project is happy to announce the release of SunPy 0.6.0.
-This is a major SunPy release with lots of changes that will make SunPy even
-better than it was before.
-This release consists of 1,341 commits from 29 different people and
-13 new contributors!
+The SunPy project is happy to announce the release of SunPy 0.7.0.
 
-The major changes in this release are:
+SunPy 0.7 is the next major release of SunPy and contains 665 commits from 27
+people, 11 of which have never contributed before. The major features of this
+release are:
 
-    * Most functions throughout the SunPy code base expect Astropy
-      Quantity objects, and return Astropy Quantity objects.
-    * Python 2.6 support has ended, we do not expect this release to
-      work under Python 2.6.
-    * Sample data has been removed from SunPy but helpers for
-      downloading sample data have been added to sunpy.data.
-    * TimeRange has a new property based API, e.g. start and end are
-      now properties.
-    * Map.rotate() now pads arrays to prevent loss of data under
-      rotation.
-    * Map.rotate() now defaults to the slower but more accurate
-      bi-quartic interpolation method (order=4).
-    * SunPy colormaps are now registered with matplotlib, allowing
-      their use from imshow and similar functions after the import
-      of sunpy.cm.
-    * JSOC client export calls now checks for an email address.
-    * Solar rotation calculation functionality has been added, along
-      with functionality to de-rotate MapCubes.
-    * Files downloaded through the VSO now keep their file
-      extension.
+* Python 3.4 and 3.5 support. This is the first version of SunPy to support
+  Python 3, we recommend that users start to consider moving to Python 3, please
+  report any issues you may have.
+* New coordinate framework. The new `sunpy.coordinates` module provides a
+  high-level interface to converting between different physical coordinate
+  systems such as Helioprojective and Heliographic.
+* New `draw_rectangle` and `draw_contours` helpers for `Map`.
+* New functions `flareclass_to_flux` and `flux_to_flareclass` which convert
+  between GOES flux to GOES class numbers (e.g. X12, M3.4).
+* Support for masks in SunPy `Map` and `MapCube`.
 
 The people who have contributed to this release are:
 
-
     Stuart Mumford
-    Daniel Ryan
+    Pritish Chakraborty
     Steven Christe
     Jack Ireland
-    Brigitta Sipocz *
-    Asish Panda
-    Andrew Inglis
-    Albert Y. Shih
-    Rishabh Sharma
+    Brigitta Sipocz
     David Perez-Suarez
-    Rajul Srivastava
+    Punyaslok Pattnaik *
+    Michael S Kirk *
     Andrew Leonard
-    Ruben De Visscher *
-    Dumindu Buddhika *
-    Goran Cetusic *
-    Jongyeob Park *
-    Chloé Guennou *
-    Ishtyaq Habib *
-    Nabil Freij
-    Simon Liedtke
-    Abigail Stevens *
-    Alex Hamilton *
-    Ambar Mehrotra *
-    Erik M. Bray *
-    Jaylen Wimbish *
-    Juan Camilo Buitrago-Casas *
+    Alex Hamilton
+    Andrew Inglis
+    Daniel Ryan
+    Sally Dacie *
+    Sanskar Modi *
+    Albert Y. Shih
+    Erik M. Bray
     Larry Manley
-    Norbert Gyenge
-    Rishabh Mishra *
-
+    Priyank Lodha *
+    Nabil Freij
+    Ankit *
+    Igor Babuschkin *
+    Ole Streicher *
+    Simon Liedtke
+    Sudarshan Konge *
+    Tessa D. Wilkinson *
+    Thomas Robitaille
+    yasintoda *
+     
 Where an * indicates their first contribution.

@@ -344,7 +344,7 @@ Coding Standards
 All code that is part of the SunPy project should follow The Style Guide for
 Python (`PEP 8 <http://www.python.org/dev/peps/pep-0008/>`_) and
 the `coding style and conventions proposed by Astropy
-<https://astropy.readthedocs.org/en/stable/development/codeguide.html#coding-style-conventions>`_.
+<http://docs.astropy.org/en/stable/development/codeguide.html#coding-style-conventions>`_.
 Additionally, all
 code that goes in the trunk should be checked using `PyLint
 <http://www.logilab.org/card/pylint_manual>`_. PyLint is an open source tool

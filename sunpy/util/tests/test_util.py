@@ -12,14 +12,6 @@ def test_to_signed():
     """
     assert util.to_signed(np.dtype('uint32')) == np.dtype('int64')
 
-def test_goes_flare_class():
-    """
-    This should convert a list of GOES classes into a list of numbers.
-    """
-    lst = ['A1.0', 'M1.0', 'C1.0', 'B1.0', 'X1.0']
-    assert util.goes_flare_class(lst) == \
-        [1.0e-08, 1.0e-05, 1.0e-06, 1.0e-07, 1.0e-04]
-
 def test_unique():
     """
     This should add the unique values of itr to unique_list.

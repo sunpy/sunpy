@@ -7,6 +7,8 @@ import numpy as np
 import pandas
 from sunpy.extern import six
 
+import astropy.time
+
 __all__ = ['find_time', 'extract_time', 'parse_time', 'is_time', 'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format']
 
 # Mapping of time format codes to regular expressions.
@@ -46,6 +48,7 @@ TIME_FORMAT_LIST = [
     "%Y:%j:%H:%M:%S",          # Example 2012:124:21:08:12
     "%Y:%j:%H:%M:%S.%f",       # Example 2012:124:21:08:12.999999
     "%Y%m%d%H%M%S",            # Example 20140101000001 (JSOC / VSO)
+    "%Y.%m.%d_%H:%M:%S_TAI",   # Example 2016.05.04_21:08:12_TAI
 ]
 
 
@@ -189,6 +192,8 @@ def parse_time(time_string, time_format=''):
         return np.array([datetime(*(dt.timetuple()[:6])) for dt in ii])
     elif time_string is 'now':
         return datetime.utcnow()
+    elif isinstance(time_string, astropy.time.Time):
+        return time_string.datetime
     else:
         # remove trailing zeros and the final dot to allow any
         # number of zeros. This solves issue #289

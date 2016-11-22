@@ -1,5 +1,4 @@
-from __future__ import absolute_import
-from __future__ import division
+from __future__ import absolute_import, division
 
 import tempfile
 import os.path
@@ -14,33 +13,38 @@ from sunpy.time import parse_time
 from sunpy import lightcurve
 from sunpy.instr import lyra
 
+from sunpy.extern.six.moves import range
+
 # Define location for test LYTAF database files
 TEST_DATA_PATH = rootdir
 
 # Define some test data for test_remove_lytaf_events()
-TIME = np.array([datetime.datetime(2013, 2, 1)+datetime.timedelta(minutes=i)
+TIME = np.array([datetime.datetime(2013, 2, 1) + datetime.timedelta(minutes=i)
                  for i in range(120)])
-CHANNELS = [np.zeros(len(TIME))+0.4, np.zeros(len(TIME))+0.1]
+CHANNELS = [np.zeros(len(TIME)) + 0.4, np.zeros(len(TIME)) + 0.1]
 EMPTY_LYTAF = np.empty((0,), dtype=[("insertion_time", object),
                                     ("begin_time", object),
                                     ("reference_time", object),
                                     ("end_time", object),
                                     ("event_type", object),
                                     ("event_definition", object)])
-LYTAF_TEST = np.append(EMPTY_LYTAF,
-                       np.array([(datetime.datetime.utcfromtimestamp(1371459961),
-                                  datetime.datetime.utcfromtimestamp(1359677220),
-                                  datetime.datetime.utcfromtimestamp(1359677250),
-                                  datetime.datetime.utcfromtimestamp(1359677400),
-                                  "LAR", "Large Angle Rotation.")],
-                                dtype=EMPTY_LYTAF.dtype))
-LYTAF_TEST = np.append(LYTAF_TEST,
-                       np.array([(datetime.datetime.utcfromtimestamp(1371460063),
-                                  datetime.datetime.utcfromtimestamp(1359681764),
-                                  datetime.datetime.utcfromtimestamp(1359682450),
-                                  datetime.datetime.utcfromtimestamp(1359683136),
-                                  "UV occ.", "Occultation in the UV spectrum.")],
-                                dtype=LYTAF_TEST.dtype))
+LYTAF_TEST = np.append(
+    EMPTY_LYTAF,
+    np.array([(datetime.datetime.utcfromtimestamp(1371459961),
+               datetime.datetime.utcfromtimestamp(1359677220),
+               datetime.datetime.utcfromtimestamp(1359677250),
+               datetime.datetime.utcfromtimestamp(1359677400),
+               "LAR", "Large Angle Rotation.")],
+             dtype=EMPTY_LYTAF.dtype))
+LYTAF_TEST = np.append(
+    LYTAF_TEST,
+    np.array([(datetime.datetime.utcfromtimestamp(1371460063),
+               datetime.datetime.utcfromtimestamp(1359681764),
+               datetime.datetime.utcfromtimestamp(1359682450),
+               datetime.datetime.utcfromtimestamp(1359683136),
+               "UV occ.", "Occultation in the UV spectrum.")],
+             dtype=LYTAF_TEST.dtype))
+
 
 @pytest.mark.online
 def test_split_series_using_lytaf():
@@ -49,8 +53,8 @@ def test_split_series_using_lytaf():
     lyra.download_lytaf_database(lytaf_dir=tmp_dir)
     assert os.path.exists(os.path.join(tmp_dir, 'annotation_ppt.db'))
 
-    #test split_series_using_lytaf
-    #construct a dummy signal for testing purposes
+    # test split_series_using_lytaf
+    # construct a dummy signal for testing purposes
     basetime = parse_time('2010-06-13 02:00')
     seconds = 3600
     dummy_time = [basetime + datetime.timedelta(0, s) for s in range(seconds)]
@@ -72,10 +76,12 @@ def test_split_series_using_lytaf():
                                                    dummy_data, LYTAF_TEST)
     assert type(split_no_lytaf) == list
     assert type(split_no_lytaf[0]) == dict
-    assert split_no_lytaf[0].keys() == ['subtimes', 'subdata']
+    assert not set(split_no_lytaf[0].keys()).symmetric_difference({'subtimes', 'subdata'})
     assert split_no_lytaf[0]["subtimes"] == dummy_time
     assert split_no_lytaf[0]["subdata"].all() == dummy_data.all()
 
+
+@pytest.mark.online
 def test_remove_lytaf_events_from_lightcurve():
     """Test if artefacts are correctly removed from a LYRAlightCurve."""
     # Create sample LYRALightCurve
@@ -131,6 +137,7 @@ def test_remove_lytaf_events_from_lightcurve():
     # Assert expected result is returned
     pandas.util.testing.assert_frame_equal(lyralc_test.data, dataframe_expected)
 
+
 def test_remove_lytaf_events_1():
     """Test _remove_lytaf_events() with some artifacts found and others not."""
     # Run _remove_lytaf_events
@@ -182,6 +189,7 @@ def test_remove_lytaf_events_1():
                                   artifacts_status_expected["not_removed"])
     assert artifacts_status_test["not_found"] == \
       artifacts_status_expected["not_found"]
+
 
 def test_remove_lytaf_events_2():
     """Test _remove_lytaf_events() with no user artifacts found."""
@@ -316,22 +324,25 @@ def test_get_lytaf_events():
     # are incorrectly input.
     with pytest.raises(ValueError):
         lytaf_test = lyra.get_lytaf_events("2008-01-01", "2014-01-01",
-                                               lytaf_path="test_data",
-                                               combine_files=["gigo"],
-                                               force_use_local_lytaf=True)
+                                           lytaf_path="test_data",
+                                           combine_files=["gigo"],
+                                           force_use_local_lytaf=True)
+
 
 def test_get_lytaf_event_types():
     """Test that LYTAF event types are printed."""
     lyra.get_lytaf_event_types(lytaf_path=TEST_DATA_PATH)
 
+
 def test_lytaf_event2string():
     """Test _lytaf_event2string() associates correct numbers and events."""
-    out_test = lyra._lytaf_event2string(range(12))
+    out_test = lyra._lytaf_event2string(list(range(12)))
     assert out_test == ['LAR', 'N/A', 'UV occult.', 'Vis. occult.', 'Offpoint',
                         'SAA', 'Auroral zone', 'Moon in LYRA', 'Moon in SWAP',
                         'Venus in LYRA', 'Venus in SWAP']
     out_test_single = lyra._lytaf_event2string(1)
     assert out_test_single == ['LAR']
+
 
 def test_prep_columns():
     """Test whether _prep_columns correctly prepares data."""

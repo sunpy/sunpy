@@ -1,15 +1,66 @@
 Latest
 ------
 
+* Get and set methods for composite maps now use Map plot_settings.
+* Simplified map names when plotting.
+* Add time format used by some SDO HMI FITS keywords
+* Fix bug in `wcs.convert_data_to_pixel` where crpix[1] was used for both axes.
+* Fix some leftover instances of `GenericMap.units`
+* Fixed bugs in `sun` equations
+* Now the `sunpy.database.tables.display_entries()` prints an astropy table.
+* Additional methods added inside the `sunpy.database` class to make it easier
+  to display the database contents.
+* `sunpy.io.fits.read` will now return any parse-able HDUs even if some raise an error.
+* `VSOClient` no longer prints a lot of XML junk if the query fails.
+* Remove unused `sunpy.visualization.plotting` module
+* Port the pyana wrapper to Python 3
+* `Map.peek(basic_plot=True)` no longer issues warnings
+* Remove the `sunpy.map.nddata_compat` module, this makes `Map.data` and
+  `Map.meta` read only.
+
+0.7.0
+-----
+* Fixed test failures with numpy developer version.[#1808]
+* Added `timeout` parameter in `sunpy.data.download_sample_data()`
+* Fixed `aiaprep` to return properly sized map.
+* Deprecation warnings fixed when using image coalignment.
+* Sunpy is now Python 3.x compatible (3.4 and 3.5).
+* Added a unit check and warnings for map metadata.
 * Added IRIS SJI color maps.
 * Updated `show_colormaps()` with new string filter to show a subset of color maps.
 * Fixed MapCube animations by working around a bug in Astropy's ImageNormalize
 * Remove ``vso.QueryResponse.num_records()`` in favour of `len(qr)`
-* add a `draw_rectangle` helper to `GenericMap` which can plot rectanges in the
+* Add a `draw_rectangle` helper to `GenericMap` which can plot rectangles in the
   native coordinate system of the map.
-
 * Added the ability to shift maps to correct for incorrect map location, for example.
-* Bug fix for rhessi summary light curve values.
+* Bug fix for RHESSI summary light curve values.
+* Mapcube solar derotation and coalignment now pass keywords to the routine used to
+  shift the images, scipy.ndimage.interpolation.shift.
+* Add automatic registration of ``GenericMap`` subclasses with the factory as
+  long as they define an ``is_datasource_for`` method.
+* Added functions ``flareclass_to_flux`` and ``flux_to_flareclass`` which convert
+  between GOES flux to GOES class numbers (e.g. X12, M3.4).
+* Removed old ``sunpy.util.goes_flare_class()``
+* Bug fix for RHESSI summary light curve values.
+* The ``MapCube.as_array`` function now returns a masked numpy array if at least
+  one of the input maps in the MapCube has a mask.
+* Map superpixel method now respects maps that have masks.
+* Map superpixel method now accepts numpy functions as an argument, or any user-defined
+  function.
+* Map superpixel method no longer has the restriction that the number of original pixels
+  in the x (or y) side of the superpixel exactly divides the number of original
+  pixels in the x (or y) side of the original map data.
+* `sunpy.physics.transforms` has been deprecated and the code moved into `sunpy.physics`.
+* Add the `sunpy.coordinates` module, this adds the core physical solar coordinates frame within the astropy coordinates framework.
+* Added ability of maps to draw contours on top of themselves (`draw_contours`)
+* Added concatenate functionality to lightcurve base class.
+* Fix Map to allow astropy.io.fits Header objects as valid input for meta arguments.
+* Added an examples gallery using `sphinx-gallery`.
+* API clean up to constants. Removed constant() function which is now replaced by get().
+* Prevent helioviewer tests from checking access to the API endpoint when running tests offline.
+* `GenericMap.units` is renamed to `GenericMap.spatial_units` to avoid confusion with `NDData.unit`.
+* `GenericMap` now has a `coordinate_frame` property which returns an `astropy.coordinates` frame with all the meta data from the map populated.
+* `GenericMap` now has a `_mpl_axes` method which allows it to be specified as a projection to `matplotlib` methods and will return a `WCSAxes` object with `WCS` projection.
 
 0.6.0
 -----

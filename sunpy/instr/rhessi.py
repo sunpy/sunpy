@@ -5,11 +5,10 @@
     .. warning:: This module is in development.
 
 """
+from __future__ import absolute_import, print_function
 
-from __future__ import absolute_import
-
-import urllib
 import csv
+import socket
 from datetime import datetime
 from datetime import timedelta
 
@@ -18,12 +17,13 @@ import numpy as np
 from astropy.io import fits
 from astropy import units as u
 
-import sunpy.map
-import sunpy.sun.constants
-
 from sunpy.time import TimeRange, parse_time
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.sun.sun import sunearth_distance
+
+from sunpy.extern.six.moves import urllib
+from sunpy.extern.six.moves.urllib.request import urlopen
+from sunpy.extern.six.moves.urllib.error import URLError
 
 __all__ = ['get_obssumm_dbase_file', 'parse_obssumm_dbase_file',
            'get_obssum_filename', 'get_obssumm_file', 'parse_obssumm_file',
@@ -41,6 +41,20 @@ data_servers = ('http://hesperia.gsfc.nasa.gov/hessidata/',
 
 lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
                  'navy', 'orange', 'green')
+
+
+def get_base_url():
+    """
+    Find the first mirror which is online
+    """
+
+    for server in data_servers:
+        try:
+            urlopen(server, timeout=1)
+        except (URLError, socket.timeout):
+            pass
+        else:
+            return server
 
 
 def get_obssumm_dbase_file(time_range):
@@ -79,10 +93,10 @@ def get_obssumm_dbase_file(time_range):
     _time_range = TimeRange(time_range)
     data_location = 'dbase/'
 
-    url_root = data_servers[0] + data_location
+    url_root = get_base_url() + data_location
     url = url_root + _time_range.start.strftime("hsi_obssumm_filedb_%Y%m.txt")
 
-    f = urllib.urlretrieve(url)
+    f = urllib.request.urlretrieve(url)
 
     return f
 
@@ -117,12 +131,12 @@ def parse_obssumm_dbase_file(filename):
         This API is currently limited to providing data from whole days only.
 
     """
-    with open(filename, "rb") as fd:
+    with open(filename, "rt") as fd:
         reader = csv.reader(fd, delimiter=' ', skipinitialspace=True)
-        headerline = reader.next()
-        headerline = reader.next()
-        headerline = reader.next()
-        headerline = reader.next()
+        headerline = next(reader)
+        headerline = next(reader)
+        headerline = next(reader)
+        headerline = next(reader)
 
         obssumm_filename = []
         orbit_start = []
@@ -187,7 +201,7 @@ def get_obssum_filename(time_range):
 
     index_number = _time_range.start.day - 1
 
-    return data_servers[0] + data_location + result.get('filename')[index_number] + 's'
+    return get_base_url() + data_location + result.get('filename')[index_number] + 's'
 
 
 def get_obssumm_file(time_range):
@@ -220,13 +234,12 @@ def get_obssumm_file(time_range):
     time_range = TimeRange(time_range)
     data_location = 'metadata/catalog/'
 
-    # TODO need to check which is the closest servers
-    url_root = data_servers[0] + data_location
+    url_root = get_base_url() + data_location
 
     url = url_root + get_obssum_filename(time_range)
 
     print('Downloading file: ' + url)
-    f = urllib.urlretrieve(url)
+    f = urllib.request.urlretrieve(url)
 
     return f
 
@@ -365,7 +378,7 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
     tempa = (np.arange(image_dim[0]*image_dim[1]) %  image_dim[0]) - (image_dim[0]-1)/2.
     tempb = tempa.reshape(image_dim[0],image_dim[1]).transpose().reshape(image_dim[0]*image_dim[1])
 
-    pixel = np.array(zip(tempa,tempb))*pixel_size[0]
+    pixel = np.array(list(zip(tempa,tempb)))*pixel_size[0]
     phase_pixel = (2*np.pi/harm_ang_pitch)* ( np.outer(pixel[:,0], np.cos(this_roll_angle - grid_angle)) -
                                               np.outer(pixel[:,1], np.sin(this_roll_angle - grid_angle))) + phase_map_center
     phase_modulation = np.cos(phase_pixel)

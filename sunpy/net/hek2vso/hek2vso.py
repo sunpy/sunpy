@@ -99,7 +99,7 @@ def vso_attribute_parse(phrase):
                  vso.attrs.Instrument(phrase['obs_instrument'])]
         avg_wave_len = phrase['obs_meanwavel'] * units.Unit(phrase['obs_wavelunit'])
         query.append(vso.attrs.Wave(avg_wave_len, avg_wave_len))
-    except KeyError, TypeError:
+    except (KeyError, TypeError):
         raise TypeError("'{dtype!s}' is an improper data type".format(dtype=type(phrase)))
     return query
 

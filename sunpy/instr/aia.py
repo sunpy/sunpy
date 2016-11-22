@@ -2,6 +2,7 @@
 """
 Provides processing routines for data captured with the AIA instrument on SDO.
 """
+import numpy as np
 import astropy.units as u
 
 from sunpy.map.sources.sdo import AIAMap
@@ -49,7 +50,15 @@ def aiaprep(aiamap):
         scale = 0.6*u.arcsec # pragma: no cover # can't test this because it needs a full res image
     scale_factor = aiamap.scale.x / scale
 
-    newmap = aiamap.rotate(recenter=True, scale=scale_factor.value, missing=aiamap.min())
+    tempmap = aiamap.rotate(recenter=True, scale=scale_factor.value, missing=aiamap.min())
+
+    # extract center from padded aiamap.rotate output
+    # crpix1 and crpix2 will be equal (recenter=True), as aiaprep does not work with submaps
+    center = np.floor(tempmap.meta['crpix1'])
+    range_side = (center + np.array([-1, 1]) * aiamap.data.shape[0] / 2) * u.pix
+    newmap = tempmap.submap(range_side, range_side)
+
+    newmap.meta['r_sun'] = newmap.meta['rsun_obs'] / newmap.meta['cdelt1']
     newmap.meta['lvl_num'] = 1.5
 
     return newmap

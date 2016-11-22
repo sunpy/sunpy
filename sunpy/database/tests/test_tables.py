@@ -7,22 +7,25 @@ from collections import Hashable
 from datetime import datetime
 
 import pytest
+import os
 
 from astropy import units as u
+from astropy import conf
 
 from sunpy.database import Database
 from sunpy.database.tables import FitsHeaderEntry, FitsKeyComment, Tag,\
     DatabaseEntry, entries_from_query_result, entries_from_dir,\
-    entries_from_file, display_entries, WaveunitNotFoundError
+    entries_from_file, _create_display_table, display_entries,\
+    WaveunitNotFoundError
 from sunpy.net import vso
 from sunpy.data.test import rootdir as testdir
 from sunpy.data.test.waveunit import waveunitdir, MQ_IMAGE
-from sunpy.tests.helpers import skip_windows
-import pytest
-import os
+from sunpy.extern.six import next
+
 
 RHESSI_IMAGE = os.path.join(testdir, 'hsi_image_20101016_191218.fits')
 EIT_195_IMAGE = os.path.join(testdir, 'EIT/efz20040301.000010_s.fits')
+
 
 @pytest.fixture
 def query_result():
@@ -157,9 +160,9 @@ def test_entries_from_file():
         FitsHeaderEntry('COMMENT', ''),
         FitsHeaderEntry('HISTORY', '')]
     assert entry.fits_header_entries == expected_fits_header_entries
-    assert entry.fits_key_comments == [
+    assert entry.fits_key_comments.sort() == [
         FitsKeyComment('SIMPLE', 'Written by IDL:  Mon Aug 12 08:48:08 2013'),
-        FitsKeyComment('BITPIX', 'Integer*2 (short integer)')]
+        FitsKeyComment('BITPIX', 'Integer*2 (short integer)')].sort()
     assert entry.instrument == 'Spectroheliograph'
     assert entry.observation_time_start == datetime(2013, 8, 12, 8, 42, 53)
     assert entry.observation_time_end == datetime(2013, 8, 12, 8, 42, 53)
@@ -171,9 +174,9 @@ def test_entries_from_file():
 def test_entries_from_file_withoutwaveunit():
     # does not raise `WaveunitNotFoundError`, because no wavelength information
     # is present in this file
-    entries_from_file(RHESSI_IMAGE).next()
+    next(entries_from_file(RHESSI_IMAGE))
     with pytest.raises(WaveunitNotFoundError):
-        entries_from_file(EIT_195_IMAGE).next()
+        next(entries_from_file(EIT_195_IMAGE))
 
 
 def test_entries_from_dir():
@@ -228,7 +231,7 @@ def test_entries_from_dir():
         FitsHeaderEntry('SOLAR_R', 64.0),
         FitsHeaderEntry('COMMENT', ''),
         FitsHeaderEntry('HISTORY', '')]
-    assert entry.fits_key_comments == [
+    assert entry.fits_key_comments.sort() == [
         FitsKeyComment('WAVEUNIT', 'in meters'),
         FitsKeyComment('NAXIS2', 'number of rows'),
         FitsKeyComment('CDELT2', 'pixel scale y, in solar radius/pixel'),
@@ -244,7 +247,7 @@ def test_entries_from_dir():
         FitsKeyComment('BITPIX', 'IEEE 32-bit floating point values'),
         FitsKeyComment('DATE', 'Date of file creation'),
         FitsKeyComment('FREQUNIT', 'in MHz'),
-        FitsKeyComment('EXPTIME', 'in seconds')]
+        FitsKeyComment('EXPTIME', 'in seconds')].sort()
 
 
 def test_entries_from_dir_recursively_true():
@@ -252,6 +255,7 @@ def test_entries_from_dir_recursively_true():
         entries_from_dir(testdir, True, default_waveunit='angstrom'))
     assert len(entries) == 60
     # Older val = 31.
+
 
 def test_entries_from_dir_recursively_false():
     entries = list(
@@ -337,22 +341,23 @@ def test_entry_from_query_results_with_none_wave_and_default_unit(
             wavemax=None)]
 
 
-def test_display_entries_missing_entries():
+def test_create_display_table_missing_entries():
     with pytest.raises(TypeError):
-        display_entries([], ['some', 'columns'])
+        _create_display_table([], ['some', 'columns'])
 
 
-def test_display_entries_empty_db():
+def test_create_display_table_empty_db():
     with pytest.raises(TypeError):
-        display_entries(Database('sqlite:///'), ['id'])
+        _create_display_table(Database('sqlite:///'), ['id'])
 
 
-def test_display_entries_missing_columns():
+def test_create_display_table_missing_columns():
     with pytest.raises(TypeError):
-        display_entries([DatabaseEntry()], [])
+        _create_display_table([DatabaseEntry()], [])
 
 
-def test_display_entries():
+def test_create_display_table():
+    conf.max_width = 500
     entries = [
         DatabaseEntry(
             id=1, source='SOHO', provider='SDAC', physobs='intensity',
@@ -373,8 +378,9 @@ def test_display_entries():
         'id', 'source', 'provider', 'physobs', 'fileid', 'download_time',
         'observation_time_start', 'instrument', 'size',
         'wavemin', 'path', 'starred', 'tags']
-    table = display_entries(entries, columns)
+    table = _create_display_table(entries, columns)
     filedir = os.path.dirname(os.path.realpath(__file__))
     with open(os.path.join(filedir,'test_table.txt'), 'r') as f:
         stored_table = f.read()
-    assert table.strip() == stored_table.strip()
+    assert table.__str__().strip() == stored_table.strip()
+    conf.reset('max_width')

@@ -26,6 +26,7 @@ _known_extensions = {
     ('fz', 'f0'): 'ana'
 }
 
+
 # Define a dict which raises a custom error message if the value is None
 class Readers(dict):
     def __init__(self, *args):
@@ -58,10 +59,18 @@ def read_file(filepath, filetype=None, **kwargs):
         Supported reader or extension to manually specify the filetype.
         Supported readers are ('jp2', 'fits', 'ana')
 
+    memmap : bool
+        Should memory mapping be used, i.e. keep data on disk rather than in RAM.
+        This is currently only supported by the FITS reader.
+
     Returns
     -------
     pairs : `list`
         A list of (data, header) tuples.
+
+    Notes
+    -----
+    Other keyword arguments are passed to the reader used.
     """
     if filetype:
         return _readers[filetype].read(filepath, **kwargs)
@@ -143,6 +152,7 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
     # Nothing has matched, panic
     raise ValueError("This filetype is not supported")
 
+
 def _detect_filetype(filepath):
     """
     Attempts to determine the type of data contained in a file.  This is only
@@ -179,7 +189,7 @@ def _detect_filetype(filepath):
         return 'fits'
 
     # Check for "KEY_WORD  =" at beginning of file
-    match = re.match(r"[A-Z0-9_]{0,8} *=", first80)
+    match = re.match(r"[A-Z0-9_]{0,8} *=".encode('ascii'), first80)
     if match is not None:
         return 'fits'
 

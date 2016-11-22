@@ -13,4 +13,4 @@ glymur
 suds-jurko
 beautifulsoup4
 requests
-wcsaxes>=0.6
+wcsaxes>=0.8

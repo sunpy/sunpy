@@ -1,4 +1,5 @@
 .DS_Store
+.idea
 .pydevproject
 .settings
 .project
@@ -17,7 +18,7 @@ dist
 sunpy.egg-info
 paver-minilib.zip
 doc/build/*
-doc/source/api
+doc/source/generated
 doc/html
 docs
 .tox/
@@ -30,7 +31,7 @@ sunpy/cython_version.py
 sunpy/data/sample/*.fits
 sunpy/data/sample/*.csv
 sunpy/data/sample/*.fit
-
+.cache
 
 ### https://raw.github.com/github/gitignore/master/Global/OSX.gitignore
 

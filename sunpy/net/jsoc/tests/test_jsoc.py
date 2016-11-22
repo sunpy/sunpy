@@ -5,7 +5,6 @@ Created on Wed Mar 26 20:17:06 2014
 @author: stuart
 """
 import os
-import time
 import tempfile
 import datetime
 import astropy.table
@@ -17,7 +16,6 @@ from sunpy.time import parse_time
 from sunpy.net.jsoc import JSOCClient, JSOCResponse
 from sunpy.net.vso.vso import Results
 import sunpy.net.jsoc.attrs as attrs
-
 
 client = JSOCClient()
 

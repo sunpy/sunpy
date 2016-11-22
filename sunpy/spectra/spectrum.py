@@ -36,7 +36,6 @@ class Spectrum(np.ndarray):
         return np.asarray(data).view(cls)
 
     def __init__(self, data, freq_axis):
-        self.data = data
         self.freq_axis = freq_axis
 
     def plot(self, axes=None, **matplot_args):

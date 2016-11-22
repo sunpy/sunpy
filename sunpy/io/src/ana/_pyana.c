@@ -2,7 +2,7 @@
 @brief A C extension for Python to read ana f0 files
 @author Tim van Werkhoven <t.i.m.vanwerkhoven@gmail.com>
 
-Based on Michiel van Noort's IDL DLM library 'f0' which contains a cleaned up 
+Based on Michiel van Noort's IDL DLM library 'f0' which contains a cleaned up
 version of the original anarw routines.
 */
 
@@ -11,7 +11,7 @@ version of the original anarw routines.
 #include <numpy/arrayobject.h> 	// For numpy
 #include <sys/time.h>			// For timestamps
 #include <time.h>				// For timestamps
-//#include "anadecompress.h"  
+//#include "anadecompress.h"
 //#include "anacompress.h"
 #include "types.h"
 #include "anarw.h"
@@ -56,12 +56,80 @@ static PyMethodDef PyanaMethods[] = {
 };
 
 
-// Init module methods
-PyMODINIT_FUNC init_pyana(void) {
-    (void) Py_InitModule("_pyana", PyanaMethods);
-	// Init numpy usage
-	import_array();
+// Copied from https://docs.python.org/2/howto/cporting.html
+
+
+struct module_state {
+    PyObject *error;
+};
+
+#if PY_MAJOR_VERSION >= 3
+#define GETSTATE(m) ((struct module_state*)PyModule_GetState(m))
+#else
+#define GETSTATE(m) (&_state)
+static struct module_state _state;
+#endif
+
+#if PY_MAJOR_VERSION >= 3
+
+static int pyana_traverse(PyObject *m, visitproc visit, void *arg) {
+    Py_VISIT(GETSTATE(m)->error);
+    return 0;
 }
+
+static int pyana_clear(PyObject *m) {
+    Py_CLEAR(GETSTATE(m)->error);
+    return 0;
+}
+
+
+static struct PyModuleDef moduledef = {
+        PyModuleDef_HEAD_INIT,
+        "_pyana",
+        NULL,
+        sizeof(struct module_state),
+        PyanaMethods,
+        NULL,
+        pyana_traverse,
+        pyana_clear,
+        NULL
+};
+
+#define INITERROR return NULL
+
+PyMODINIT_FUNC
+PyInit__pyana(void)
+
+#else
+#define INITERROR return
+
+void
+init_pyana(void)
+#endif
+{
+#if PY_MAJOR_VERSION >= 3
+    PyObject *module = PyModule_Create(&moduledef);
+#else
+    PyObject *module = Py_InitModule("_pyana", PyanaMethods);
+#endif
+
+    if (module == NULL)
+        INITERROR;
+    struct module_state *st = GETSTATE(module);
+
+    st->error = PyErr_NewException("myextension.Error", NULL, NULL);
+    if (st->error == NULL) {
+        Py_DECREF(module);
+        INITERROR;
+    }
+
+    import_array();
+
+#if PY_MAJOR_VERSION >= 3
+    return module;
+#endif
+}
+
 
 /*!
 @brief load an ANA f0 file data and header
@@ -78,17 +146,17 @@ static PyObject *pyana_fzread(PyObject *self, PyObject *args) {
 	int	nd=-1, type=-1, *ds, size=-1, d; // Various properties
 	// Data manipulation
 	PyArrayObject *anadata;			// Final ndarray
-	
+
 	// Parse arguments
 	if (!PyArg_ParseTuple(args, "s|i", &filename, &debug)) {
 		return NULL;
 	}
-	
+
 	// Read ANA file
 	if (debug == 1)
 		printf("pyana_fzread(): Reading in ANA file\n");
 	anaraw = ana_fzread(filename, &ds, &nd, &header, &type, &size);
-		
+
 	if (NULL == anaraw) {
 		PyErr_SetString(PyExc_ValueError, "In pyana_fzread: could not read ana file, data returned is NULL.");
 		return NULL;
@@ -97,11 +165,11 @@ static PyObject *pyana_fzread(PyObject *self, PyObject *args) {
 		PyErr_SetString(PyExc_ValueError, "In pyana_fzread: could not read ana file, type invalid.");
 		return NULL;
 	}
-	
+
 	// Mold into numpy array
-	npy_intp npy_dims[nd];		// Dimensions array 
+	npy_intp npy_dims[nd];		// Dimensions array
 	int npy_type;					// Numpy datatype
-	
+
 	// Calculate total datasize
 	if (debug == 1)
 		printf("pyana_fzread(): Dimensions: ");
@@ -114,7 +182,7 @@ static PyObject *pyana_fzread(PyObject *self, PyObject *args) {
 	}
 	if (debug == 1)
 		printf("\npyana_fzread(): Datasize: %d\n", size);
-	
+
 	// Convert datatype from ANA type to PyArray type
 	switch (type) {
 		case (INT8): npy_type = PyArray_INT8; break;
@@ -123,31 +191,31 @@ static PyObject *pyana_fzread(PyObject *self, PyObject *args) {
 		case (FLOAT32): npy_type = PyArray_FLOAT32; break;
 		case (FLOAT64): npy_type = PyArray_FLOAT64; break;
 		case (INT64): npy_type = PyArray_INT64; break;
-		default: 
+		default:
 			PyErr_SetString(PyExc_ValueError, "In pyana_fzread: datatype of ana file unknown/unsupported.");
 			return NULL;
 	}
 	if (debug == 1)
 		printf("pyana_fzread(): Read %d bytes, %d dimensions\n", size, nd);
-	
-	// Create numpy array from the data 
+
+	// Create numpy array from the data
 	anadata = (PyArrayObject*) PyArray_SimpleNewFromData(nd, npy_dims,
 		npy_type, (void *) anaraw);
 	// Make sure Python owns the data, so it will free the data after use
 	PyArray_FLAGS(anadata) |= NPY_OWNDATA;
-	
+
 	if (!PyArray_CHKFLAGS(anadata, NPY_OWNDATA)) {
 		PyErr_SetString(PyExc_RuntimeError, "In pyana_fzread: unable to own the data, will cause memory leak. Aborting");
 		return NULL;
 	}
-	
+
 	// Return the data in a dict with some metainfo attached
-	// NB: Use 'N' for PyArrayObject s, because when using 'O' it will create 
+	// NB: Use 'N' for PyArrayObject s, because when using 'O' it will create
 	// another reference count such that the memory will never be deallocated.
 	// See:
-	// http://www.mail-archive.com/numpy-discussion@scipy.org/msg13354.html 
+	// http://www.mail-archive.com/numpy-discussion@scipy.org/msg13354.html
 	// ([Numpy-discussion] numpy CAPI questions)
-	return Py_BuildValue("{s:N,s:{s:i,s:(ii),s:s}}", 
+	return Py_BuildValue("{s:N,s:{s:i,s:(ii),s:s}}",
 		"data", anadata,
 		"header",
 		"size", size,
@@ -173,13 +241,13 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
 	// Processed data goes here
 	PyObject *anadata_align;
 	uint8_t *anadata_bytes;
-	// ANA file writing 
+	// ANA file writing
 	int	type, d;
-	
+
 	// Parse arguments from Python function
-    if (!PyArg_ParseTuple(args, "sO!|isi", &filename, &PyArray_Type, &anadata, &compress, &header, &debug))
-        return NULL;
-	
+  if (!PyArg_ParseTuple(args, "sO!|isi", &filename, &PyArray_Type, &anadata, &compress, &header, &debug))
+      return NULL;
+
 	// Check if filename was parsed correctly (should be, otherwise
 	// PyArg_ParseTuple should have raised an error, obsolete?)
 	if (NULL == filename) {
@@ -194,31 +262,31 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
 		gettimeofday(tv_time, NULL);
 		tm_time = gmtime(&(tv_time->tv_sec));
 		asprintf(&header, "#%-42s compress=%d date=%02d:%02d:%02d.%03ld\n",
-			filename, 
-			compress, 
+			filename,
+			compress,
 			tm_time->tm_hour, tm_time->tm_min, tm_time->tm_sec, (long) (tv_time->tv_usec/1000));
 	}
 	if (debug == 1) printf("pyana_fzwrite(): Header: '%s'\n", header);
-	
+
 	// Convert datatype from PyArray type to ANA type, and verify that ANA
 	// supports it
 	switch (PyArray_TYPE((PyObject *) anadata)) {
-		case (PyArray_INT8): 
-			type = INT8; 
-			if (debug == 1) 
+		case (PyArray_INT8):
+			type = INT8;
+			if (debug == 1)
 				printf("pyana_fzwrite(): Found type PyArray_INT8\n");
 			break;
-		case (PyArray_INT16): 
-			type = INT16; 
-			if (debug == 1) 
+		case (PyArray_INT16):
+			type = INT16;
+			if (debug == 1)
 				printf("pyana_fzwrite(): Found type PyArray_INT16\n");
 			break;
-		case (PyArray_FLOAT32): 
-			type = FLOAT32; 
-			if (debug == 1) 
+		case (PyArray_FLOAT32):
+			type = FLOAT32;
+			if (debug == 1)
 				printf("pyana_fzwrite(): Found type PyArray_FLOAT32\n");
 			break;
-		case (PyArray_FLOAT64): 
+		case (PyArray_FLOAT64):
 			type = FLOAT64;
 			if (debug == 1)
 				printf("pyana_fzwrite(): Found type PyArray_FLOAT64\n");
@@ -234,8 +302,8 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
 		PyErr_SetString(PyExc_RuntimeError, "In pyana_fzwrite: datatype requested cannot be compressed.");
 		return NULL;
 	}
-	if (debug == 1) 
-		printf("pyana_fzwrite(): pyarray datatype is %d, ana datatype is %d\n", 
+	if (debug == 1)
+		printf("pyana_fzwrite(): pyarray datatype is %d, ana datatype is %d\n",
 		PyArray_TYPE((PyObject *) anadata), type);
 
 
@@ -243,7 +311,7 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
 	// NPY_CARRAY_RO requirement which ensures a C-contiguous and aligned
 	// array will be made
 	anadata_align = PyArray_FromArray(anadata, PyArray_DESCR((PyObject *) anadata), NPY_CARRAY_RO);
-	
+
 	// Get a pointer to the aligned data
 	anadata_bytes = (uint8_t *) PyArray_BYTES(anadata_align);
 	// Get the number of dimensions
@@ -253,7 +321,7 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
 	// Get the dimensions and number of elements
 	npy_intp *npy_dims = PyArray_DIMS(anadata_align);
 	//npy_intp npy_nelem = PyArray_SIZE(anadata_align);
-	
+
 	if (debug == 1) printf("pyana_fzwrite(): Dimensions: ");
 	for (d=0; d<nd; d++) {
 		// ANA stores dimensions the other way around?
@@ -266,10 +334,10 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
 	// Write ANA file
 	if (debug == 1) printf("pyana_fzwrite(): Compress: %d\n", compress);
 	if (compress == 1)
-		ana_fcwrite(anadata_bytes, filename, dims, nd, header, type, 5);	
+		ana_fcwrite(anadata_bytes, filename, dims, nd, header, type, 5);
 	else
 		ana_fzwrite(anadata_bytes, filename, dims, nd, header, type);
-	
+
 	free(dims);
 	// If we didn't crash up to here, we're probably ok :P
 	return Py_BuildValue("i", 1);

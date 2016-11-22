@@ -97,7 +97,7 @@ To get a list of all of the attributes check the documentation by typing::
     >>> help(my_map)   # doctest: +SKIP
 
 From SunPy version 0.6 many attributes return `~astropy.units.quantity.Quantity`
-objects, please refer to the `Astropy documentation <http://astropy.readthedocs.org/en/latest/units/>`_.
+objects, please refer to the `astropy.units`.
 
 The meta data for the map is accessed by ::
 
@@ -178,7 +178,7 @@ examples see :ref:`plotting`.
 
 .. note::
 
-   If the `wcsaxes <http://wcsaxes.readthedocs.org/en/latest/>`_ package is not
+   If the `wcsaxes <http://wcsaxes.readthedocs.io/en/latest/>`_ package is not
    installed the `~sunpy.map.GenericMap.plot()` and `~sunpy.map.GenericMap.peek()`
    methods assume that the data is not rotated,
    i.e. the solar y axis is oriented with the columns of the array. If this condition

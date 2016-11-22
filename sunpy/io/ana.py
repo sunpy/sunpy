@@ -29,7 +29,7 @@ from sunpy.io.header import FileHeader
 __all__ = ['read', 'get_header', 'write']
 
 
-def read(filename, debug=False):
+def read(filename, debug=False, **kwargs):
     """
     Loads an ANA file and returns the data and a header in a list of (data,
     header) tuples.

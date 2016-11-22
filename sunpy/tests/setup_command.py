@@ -11,7 +11,7 @@ from __future__ import absolute_import, division, print_function
 
 import os
 
-from astropy_helpers.test_helpers import AstropyTest
+from astropy_helpers.commands.test import AstropyTest
 from astropy_helpers.compat import _fix_user_options
 
 
@@ -30,11 +30,14 @@ class SunPyTest(AstropyTest):
         ('plugins=', 'p',
          'Plugins to enable when running pytest.'),
         # Run online tests?
-        ('online', None,
+        ('online', 'R',
          'Also run tests that do require a internet connection.'),
         # Run only online tests?
         ('online-only', None,
          'Only run test that do require a internet connection.'),
+        # Run tests that check figure generation
+        ('figure', None,
+         'Run tests that compare figures against stored hashes.'),
         # Calculate test coverage
         ('coverage', 'c',
          'Create a coverage report. Requires the coverage package.'),
@@ -62,10 +65,12 @@ class SunPyTest(AstropyTest):
         self.args = None
         self.online = False
         self.online_only = False
+        self.figure = False
         self.coverage = False
         self.cov_report = 'term' if self.coverage else None
         self.docs_path = os.path.abspath('doc')
         self.parallel = 0
+        self.temp_root = None
 
     def _validate_required_deps(self):
         """
@@ -87,6 +92,11 @@ class SunPyTest(AstropyTest):
         cmd_pre = ''  # Commands to run before the test function
         cmd_post = ''  # Commands to run after the test function
 
+        if self.coverage:
+            pre, post = self._generate_coverage_commands()
+            cmd_pre += pre
+            cmd_post += post
+
         online = self.online
         offline = not self.online_only
 
@@ -98,10 +108,15 @@ class SunPyTest(AstropyTest):
                'parallel={1.parallel!r}, '
                'online={online!r}, '
                'offline={offline!r}, '
-               'coverage={1.coverage!r}, '
+               'figure={figure!r}, '
                'cov_report={1.cov_report!r})); '
                '{cmd_post}'
                'sys.exit(result)')
-        x = cmd.format('pass', self, online=online, offline=offline,
-                          cmd_pre=cmd_pre, cmd_post=cmd_post)
+        x = cmd.format('pass',
+                       self,
+                       online=online,
+                       offline=offline,
+                       figure=self.figure,
+                       cmd_pre=cmd_pre,
+                       cmd_post=cmd_post)
         return x

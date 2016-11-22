@@ -195,7 +195,7 @@ class MDIMap(GenericMap):
         """
         Returns the type of data in the map.
         """
-        return "magnetogram" if self.meta.get('content', " ").find('Mag') != -1 else "continuum"
+        return "magnetogram" if self.meta.get('dpc_obsr', " ").find('Mag') != -1 else "continuum"
 
     def _fix_dsun(self):
         """ Solar radius in arc-seconds at 1 au

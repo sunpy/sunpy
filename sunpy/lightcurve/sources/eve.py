@@ -63,8 +63,9 @@ class EVELightCurve(LightCurve):
 
         .. plot::
 
-            import sunpy
-            eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
+            import sunpy.lightcurve
+            from sunpy.data.sample import EVE_LIGHTCURVE
+            eve = sunpy.lightcurve.EVELightCurve.create(EVE_LIGHTCURVE)
             eve.peek(subplots=True)
 
         Parameters
@@ -127,9 +128,9 @@ class EVELightCurve(LightCurve):
             line1 = fp.readline()
             fp.seek(0)
 
-            if line1.startswith("Date"):
+            if line1.startswith("Date".encode('ascii')):
                 return cls._parse_average_csv(fp)
-            elif line1.startswith(";"):
+            elif line1.startswith(";".encode('ascii')):
                 return cls._parse_level_0cs(fp)
 
     @staticmethod
@@ -146,34 +147,36 @@ class EVELightCurve(LightCurve):
         fields = []
         line = fp.readline()
         # Read header at top of file
-        while line.startswith(";"):
+        while line.startswith(";".encode('ascii')):
             header.append(line)
-            if '; Missing data:' in line :
+            if '; Missing data:'.encode('ascii') in line :
                 is_missing_data = True
-                missing_data_val = line.split(':')[1].strip()
+                missing_data_val = line.split(':'.encode('ascii'))[1].strip()
 
             line = fp.readline()
 
         meta = OrderedDict()
         for hline in header :
-            if hline == '; Format:\n' or hline == '; Column descriptions:\n':
+            if hline == '; Format:\n'.encode('ascii') or hline == '; Column descriptions:\n'.encode('ascii'):
                 continue
-            elif ('Created' in hline) or ('Source' in hline):
-                meta[hline.split(':',1)[0].replace(';',' ').strip()] = hline.split(':',1)[1].strip()
-            elif ':' in hline :
-                meta[hline.split(':')[0].replace(';',' ').strip()] = hline.split(':')[1].strip()
+            elif ('Created'.encode('ascii') in hline) or ('Source'.encode('ascii') in hline):
+                meta[hline.split(':'.encode('ascii'),
+                                 1)[0].replace(';'.encode('ascii'),
+                                               ' '.encode('ascii')).strip()] = hline.split(':'.encode('ascii'), 1)[1].strip()
+            elif ':'.encode('ascii') in hline :
+                meta[hline.split(':'.encode('ascii'))[0].replace(';'.encode('ascii'), ' '.encode('ascii')).strip()] = hline.split(':'.encode('ascii'))[1].strip()
 
         fieldnames_start = False
         for hline in header:
-            if hline.startswith("; Format:"):
+            if hline.startswith("; Format:".encode('ascii')):
                 fieldnames_start = False
             if fieldnames_start:
-                fields.append(hline.split(":")[0].replace(';', ' ').strip())
-            if hline.startswith("; Column descriptions:"):
+                fields.append(hline.split(":".encode('ascii'))[0].replace(';'.encode('ascii'), ' '.encode('ascii')).strip())
+            if hline.startswith("; Column descriptions:".encode('ascii')):
                 fieldnames_start = True
 
         # Next line is YYYY DOY MM DD
-        date_parts = line.split(" ")
+        date_parts = line.split(" ".encode('ascii'))
 
         year = int(date_parts[0])
         month = int(date_parts[2])
@@ -186,7 +189,7 @@ class EVELightCurve(LightCurve):
         # function to parse date column (HHMM)
         parser = lambda x: datetime(year, month, day, int(x[0:2]), int(x[2:4]))
 
-        data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, header = None)
+        data = read_csv(fp, sep="\s*".encode('ascii'), names=fields, index_col=0, date_parser=parser, header=None, engine='python')
         if is_missing_data :   #If missing data specified in header
             data[data == float(missing_data_val)] = numpy.nan
 

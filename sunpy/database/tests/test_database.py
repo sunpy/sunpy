@@ -6,19 +6,19 @@
 from __future__ import absolute_import
 
 import glob
-import ConfigParser
 import os
 import os.path
 import shutil
-import sys
 
 import pytest
 import sqlalchemy
 
+from astropy import units
+
 import sunpy
 from sunpy.database import Database, EntryAlreadyAddedError,\
     EntryAlreadyStarredError, EntryAlreadyUnstarredError, NoSuchTagError,\
-    EntryNotFoundError, TagAlreadyAssignedError, disable_undo
+    EntryNotFoundError, TagAlreadyAssignedError, disable_undo, split_database
 from sunpy.database.tables import DatabaseEntry, Tag, FitsHeaderEntry,\
     FitsKeyComment, JSONDump
 from sunpy.database.commands import EmptyCommandStackError, NoSuchEntryError
@@ -27,11 +27,14 @@ from sunpy.database import attrs
 from sunpy.net import vso, hek
 from sunpy.data.test.waveunit import waveunitdir
 from sunpy.io import fits
+from sunpy.extern.six.moves import range
+from sunpy.extern.six.moves import configparser
 
 import sunpy.data.test
 
 testpath = sunpy.data.test.rootdir
 RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
+
 
 @pytest.fixture
 def database_using_lrucache():
@@ -53,6 +56,7 @@ def query_result():
     return vso.VSOClient().query(
         vso.attrs.Time('20130801T200000', '20130801T200030'),
         vso.attrs.Instrument('PLASTIC'))
+
 
 @pytest.fixture
 def download_qr():
@@ -78,7 +82,7 @@ def download_query():
 @pytest.fixture
 def filled_database():
     database = Database('sqlite:///:memory:')
-    for i in xrange(1, 11):
+    for i in range(1, 11):
         entry = DatabaseEntry()
         database.add(entry)
         # every fourth entry gets the tag 'foo'
@@ -90,18 +94,21 @@ def filled_database():
     database.commit()
     return database
 
+
 def test_config_url(monkeypatch):
-    monkeypatch.setattr("sunpy.config", ConfigParser.SafeConfigParser())
+    monkeypatch.setattr("sunpy.config", configparser.SafeConfigParser())
     url = 'sqlite:///'
     sunpy.config.add_section('database')
     sunpy.config.set('database', 'url', url)
     database = Database()
     assert database.url == url
 
+
 def test_config_url_none(monkeypatch):
-    monkeypatch.setattr("sunpy.config", ConfigParser.SafeConfigParser())
-    with pytest.raises(ConfigParser.NoSectionError):
+    monkeypatch.setattr("sunpy.config", configparser.SafeConfigParser())
+    with pytest.raises(configparser.NoSectionError):
         Database()
+
 
 def test_tags_unique(database):
     entry = DatabaseEntry()
@@ -116,7 +123,7 @@ def test_tags_unique(database):
 def test_setting_cache_size(database_using_lrucache):
     assert database_using_lrucache.cache_maxsize == 3
     assert database_using_lrucache.cache_size == 0
-    for _ in xrange(5):
+    for _ in range(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 3
     assert database_using_lrucache.cache_size == 3
@@ -124,7 +131,7 @@ def test_setting_cache_size(database_using_lrucache):
     database_using_lrucache.set_cache_size(5)
     assert database_using_lrucache.cache_size == 3
     assert database_using_lrucache.cache_maxsize == 5
-    for _ in xrange(5):
+    for _ in range(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 5
     assert database_using_lrucache.cache_size == 5
@@ -134,7 +141,7 @@ def test_setting_cache_size(database_using_lrucache):
 def test_setting_cache_size_shrinking(database_using_lrucache):
     assert database_using_lrucache.cache_maxsize == 3
     assert database_using_lrucache.cache_size == 0
-    for _ in xrange(5):
+    for _ in range(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 3
     assert database_using_lrucache.cache_maxsize == 3
@@ -146,7 +153,7 @@ def test_setting_cache_size_shrinking(database_using_lrucache):
     assert list(database_using_lrucache) == [
         DatabaseEntry(id=4),
         DatabaseEntry(id=5)]
-    for _ in xrange(5):
+    for _ in range(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 2
     assert database_using_lrucache.cache_maxsize == 2
@@ -156,7 +163,7 @@ def test_setting_cache_size_shrinking(database_using_lrucache):
 def test_setting_cache_size_undo(database_using_lrucache):
     assert database_using_lrucache.cache_maxsize == 3
     assert database_using_lrucache.cache_size == 0
-    for _ in xrange(5):
+    for _ in range(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 3
     database_using_lrucache.set_cache_size(1)
@@ -361,7 +368,7 @@ def test_unstar_undo(database):
 
 def test_add_many(database):
     assert len(database) == 0
-    database.add_many((DatabaseEntry() for _ in xrange(5)))
+    database.add_many((DatabaseEntry() for _ in range(5)))
     assert len(database) == 5
     database.undo()
     with pytest.raises(EmptyCommandStackError):
@@ -410,7 +417,9 @@ def test_add_entry_from_hek_qr(database):
         hek.attrs.EventType('FL'))
     assert len(database) == 0
     database.add_from_hek_query_result(hek_res)
-    assert len(database) == 1678
+    # This number loves to change, so we are just going to test that it's added
+    # *something*
+    assert len(database) > 1
 
 
 @pytest.mark.online
@@ -658,14 +667,14 @@ def test_lru_cache(database_using_lrucache):
     database_using_lrucache.add(entry2)
     database_using_lrucache.add(entry3)
     assert len(database_using_lrucache) == 3
-    assert database_using_lrucache._cache.items() == [
+    assert list(database_using_lrucache._cache.items()) == [
         (1, entry1), (2, entry2), (3, entry3)]
     database_using_lrucache.get_entry_by_id(1)
     database_using_lrucache.get_entry_by_id(3)
     entry4 = DatabaseEntry()
     database_using_lrucache.add(entry4)
     assert len(database_using_lrucache) == 3
-    assert database_using_lrucache._cache.items() == [
+    assert list(database_using_lrucache._cache.items()) == [
         (1, entry1), (3, entry3), (4, entry4)]
 
 
@@ -676,7 +685,7 @@ def test_lfu_cache(database_using_lfucache):
     database_using_lfucache.add(entry2)
     database_using_lfucache.add(entry3)
     assert len(database_using_lfucache) == 3
-    assert database_using_lfucache._cache.items() == [
+    assert list(database_using_lfucache._cache.items()) == [
         (1, entry1), (2, entry2), (3, entry3)]
     # access the entries #1 and #2 to increment their counters
     database_using_lfucache.get_entry_by_id(1)
@@ -684,7 +693,7 @@ def test_lfu_cache(database_using_lfucache):
     entry4 = DatabaseEntry()
     database_using_lfucache.add(entry4)
     assert len(database_using_lfucache) == 3
-    assert database_using_lfucache._cache.items() == [
+    assert list(database_using_lfucache._cache.items()) == [
         (1, entry1), (2, entry2), (4, entry4)]
 
 
@@ -716,11 +725,6 @@ def test_query(filled_database):
 def test_download_missing_arg(database):
     with pytest.raises(TypeError):
         database.download()
-
-
-def test_download_unexpected_kwarg(database):
-    with pytest.raises(TypeError):
-        database.download(vso.attrs.Source('SOHO'), foo=42)
 
 
 @pytest.mark.online
@@ -767,11 +771,6 @@ def test_fetch_missing_arg(database):
         database.fetch()
 
 
-def test_fetch_unexpected_kwarg(database):
-    with pytest.raises(TypeError):
-        database.fetch(vso.attrs.Source('SOHO'), foo=42)
-
-
 @pytest.mark.online
 def test_fetch(database, download_query, tmpdir):
     assert len(database) == 0
@@ -807,7 +806,7 @@ def test_fetch_separate_filenames():
     db.fetch(*download_query, path=path)
 
     # Test
-    assert len(db) == 8
+    assert len(db) == 4
 
     dir_contents = os.listdir(tmp_test_dir)
     assert 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits' in dir_contents
@@ -840,3 +839,65 @@ def test_disable_undo(database, download_query, tmpdir):
         db.clear()
     with pytest.raises(EmptyCommandStackError):
         database.undo()
+
+
+@pytest.fixture
+def default_waveunit_database():
+    unit_database = Database('sqlite:///:memory:', default_waveunit = units.meter)
+    str_database = Database('sqlite:///:memory:', default_waveunit = "m")
+    return unit_database, str_database
+
+
+def test_default_waveunit(default_waveunit_database):
+    unit_database, str_database = default_waveunit_database
+    assert isinstance(unit_database.default_waveunit, units.UnitBase)
+    assert isinstance(str_database.default_waveunit, units.UnitBase)
+
+
+@pytest.fixture
+def split_function_database():
+    """
+    Generates a custom database to test the split_database function
+    """
+    database = Database('sqlite:///:memory:')
+    for i in range(1, 11):
+        entry = DatabaseEntry()
+        database.add(entry)
+        # every fourth entry gets the instrument 'EIA'
+        if i % 4 == 0:
+            database.edit(entry, instrument='EIA')
+        # every fifth entry gets the instrument 'AIA_3'
+        elif i % 5 == 0:
+            database.edit(entry, instrument='AIA_3')
+        # every other entry gets instrument 'RHESSI'
+        else:
+            database.edit(entry, instrument='RHESSI')
+        # all  entries have provider 'xyz'
+        database.edit(entry, provider='xyz')
+    database.commit()
+    return database
+
+
+def test_split_database(split_function_database, database):
+    # Send all entries with instrument='EIA' to destination_database
+    split_function_database, database = split_database(
+        split_function_database, database, vso.attrs.Instrument('EIA'))
+
+    observed_source_entries = split_function_database.query(
+        vso.attrs.Provider('xyz'), sortby='id')
+    observed_destination_entries = database.query(vso.attrs.Provider('xyz'))
+
+    assert observed_source_entries == [
+        DatabaseEntry(id=1, instrument='RHESSI', provider='xyz'),
+        DatabaseEntry(id=2, instrument='RHESSI', provider='xyz'),
+        DatabaseEntry(id=3, instrument='RHESSI', provider='xyz'),
+        DatabaseEntry(id=5, instrument='AIA_3', provider='xyz'),
+        DatabaseEntry(id=6, instrument='RHESSI', provider='xyz'),
+        DatabaseEntry(id=7, instrument='RHESSI', provider='xyz'),
+        DatabaseEntry(id=9, instrument='RHESSI', provider='xyz'),
+        DatabaseEntry(id=10, instrument='AIA_3', provider='xyz'),
+    ]
+    assert observed_destination_entries == [
+        DatabaseEntry(id=4, instrument='EIA', provider='xyz'),
+        DatabaseEntry(id=8, instrument='EIA', provider='xyz'),
+    ]

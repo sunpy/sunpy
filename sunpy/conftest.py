@@ -2,6 +2,7 @@ from __future__ import absolute_import, print_function
 from functools import partial
 
 import os
+import socket
 import tempfile
 import json
 
@@ -29,7 +30,7 @@ GOOGLE_URL = 'http://www.google.com'
 def site_reachable(url):
     try:
         urlopen(url, timeout=1)
-    except URLError:
+    except (URLError, socket.timeout):
         return False
     else:
         return True
@@ -49,7 +50,19 @@ def pytest_runtest_setup(item):
             msg = 'skipping test {0} (reason: client seems to be offline)'
             pytest.skip(msg.format(item.name))
 
+
 def pytest_unconfigure(config):
+    tempdir = tempfile.mkdtemp(suffix="_figures")
+    # the hash_library is indexed by the name of the test but we want to look
+    # things up with the hash value
+    inv_hash_library = {v: k for k, v in hash.hash_library.items()}
+
+    for h in hash.file_list:
+        test_name = inv_hash_library.get(h, '')
+        if test_name != '':
+            os.rename(hash.file_list[h], os.path.join(tempdir, test_name + '.png'))
+    print('All test files for figure hashes can be found in {0}'.format(tempdir))
+
     #Check if additions have been made to the hash library
     if len(hash.hash_library) > hash_library_original_len:
         #Write the new hash library in JSON

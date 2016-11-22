@@ -46,8 +46,7 @@ Dere, K.P., et al. 2009 A&A, 498, 915 DOI: 10.1051/0004-6361/200911712
 
 """
 
-from __future__ import absolute_import
-from __future__ import division
+from __future__ import absolute_import, division
 
 import os.path
 import datetime
@@ -69,8 +68,15 @@ from sunpy import lightcurve
 from sunpy.util.net import check_download_file
 from sunpy import sun
 
+GOES_CONVERSION_DICT = {'X': u.Quantity(1e-4, "W/m^2"),
+                        'M': u.Quantity(1e-5, "W/m^2"),
+                        'C': u.Quantity(1e-6, "W/m^2"),
+                        'B': u.Quantity(1e-7, "W/m^2"),
+                        'A': u.Quantity(1e-8, "W/m^2")}
+
 __all__ = ['get_goes_event_list', 'calculate_temperature_em',
-           'calculate_radiative_loss_rate', 'calculate_xray_luminosity']
+           'calculate_radiative_loss_rate', 'calculate_xray_luminosity', 'flux_to_flareclass',
+           'flareclass_to_flux']
 
 try:
     # Check required data files are present in user's default download dir
@@ -373,7 +379,7 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
     # ENSURE INPUTS ARE OF CORRECT TYPE AND VALID VALUES
     longflux = longflux.to(u.W/u.m/u.m)
     shortflux = shortflux.to(u.W/u.m/u.m)
-    int(satellite)
+    satellite = int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
                          "valid GOES satellite (>1).")
@@ -386,7 +392,7 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
     # PREPARE DATA
     # GOES 6 long channel flux before 1983-Jun-28 must be corrected by a
     # factor of 4.43/5.32
-    if date < datetime.datetime(1983, 06, 28) and satellite == 6:
+    if date < datetime.datetime(1983, 6, 28) and satellite == 6:
         longflux_corrected = longflux*(4.43/5.32)
     else:
         longflux_corrected = longflux
@@ -1268,3 +1274,96 @@ def _calc_xraylum(flux, date=None):
     else:
         xraylum = 4 * np.pi * sun.constants.au.to("m")**2 * flux
     return xraylum
+
+def flareclass_to_flux(flareclass):
+    """
+    Converts a GOES flare class into the corresponding X-ray flux.
+
+    Parameters
+    ----------
+    flareclass : str
+        The case-insensitive flare class (e.g., 'X3.2', 'm1.5', 'A9.6').
+
+    Returns
+    -------
+    flux : `~astropy.units.Quantity`
+        X-ray flux between 1 and 8 Angstroms as measured near Earth in W/m^2.
+
+    Raises
+    ------
+    TypeError
+        Input must be a string.
+
+    Examples
+    --------
+    >>> flareclass_to_flux('A1.0')
+    1e-08 W / m2
+    >>> flareclass_to_flux('c4.7')
+    4.7e-06 W / m2
+    >>> flareclass_to_flux('X2.4')
+    0.00024 W / m2
+    """
+    if type(flareclass) != type('str'):
+        raise TypeError("Input must be a string")
+    #TODO should probably make sure the string is in the expected format.
+
+    flareclass = flareclass.upper()
+    #invert the conversion dictionary
+    #conversion_dict = {v: k for k, v in GOES_CONVERSION_DICT.items()}
+    return float(flareclass[1:]) * GOES_CONVERSION_DICT[flareclass[0]]
+
+@u.quantity_input(goesflux=u.watt/u.m**2)
+def flux_to_flareclass(goesflux):
+    """
+    Converts X-ray flux into the corresponding GOES flare class.
+
+    Parameters
+    ----------
+    flux : `~astropy.units.Quantity`
+        X-ray flux between 1 and 8 Angstroms (usually measured by GOES) as
+        measured at the Earth in W/m^2
+
+    Returns
+    -------
+    flareclass : str
+        The flare class e.g.: 'X3.2', 'M1.5', 'A9.6'.
+
+    Raises
+    ------
+    ValueError
+        Flux cannot be negative.
+
+    References
+    ----------
+    `Solar Flare Classification <https://en.wikipedia.org/wiki/Solar_flare#Classification>`_
+
+    Examples
+    --------
+    >>> flux_to_flareclass(1e-08 * u.watt/u.m**2)
+    'A1'
+    >>> flux_to_flareclass(4.7e-06 * u.watt/u.m**2)
+    'C4.7'
+    >>> flux_to_flareclass(0.00024 * u.watt/u.m**2)
+    'X2.4'
+    >>> flux_to_flareclass(7.8e-09 * u.watt/u.m**2)
+    'A0.78'
+    >>> flux_to_flareclass(0.00682 * u.watt/u.m**2)
+    'X68.2'
+    """
+
+    if goesflux.value < 0:
+        raise ValueError("Flux cannot be negative")
+
+    decade = np.floor(np.log10(goesflux.to('W/m**2').value))
+    #invert the conversion dictionary
+    conversion_dict = {v: k for k, v in GOES_CONVERSION_DICT.items()}
+    if decade < -8:
+        str_class = "A"
+        decade = -8
+    elif decade > -4:
+        str_class = "X"
+        decade = -4
+    else:
+        str_class = conversion_dict.get(u.Quantity(10 ** decade, "W/m**2" ))
+    goes_subclass = 10 ** -decade * goesflux.to('W/m**2').value
+    return "{0}{1:.3g}".format(str_class, goes_subclass)

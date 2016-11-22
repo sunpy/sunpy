@@ -133,7 +133,7 @@ def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
     # coord = inv_proj_tan(coord)
 
     # note that crpix[] counts pixels starting at 1
-    pixelx = (x - crval[0]) / cdelt[0] + (crpix[1] - 1)
+    pixelx = (x - crval[0]) / cdelt[0] + (crpix[0] - 1)
     pixely = (y - crval[1]) / cdelt[1] + (crpix[1] - 1)
 
     return pixelx, pixely

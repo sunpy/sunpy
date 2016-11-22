@@ -4,10 +4,8 @@
 # This module was developed with funding provided by
 # the ESA Summer of Code (2011).
 #
-#pylint: disable=W0401,C0103,R0904,W0141
-
-from __future__ import absolute_import
-from __future__ import division
+# pylint: disable=W0401,C0103,R0904,W0141
+from __future__ import absolute_import, division, print_function
 
 """
 This module provides a wrapper around the VSO API.
@@ -16,6 +14,7 @@ This module provides a wrapper around the VSO API.
 import re
 import os
 import sys
+import logging
 import threading
 
 from datetime import datetime, timedelta
@@ -36,11 +35,19 @@ from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import replacement_filename, Deprecated
 from sunpy.time import parse_time
 
+from sunpy.extern.six import iteritems, text_type, u, PY2
+from sunpy.extern.six.moves import input
+
 TIME_FORMAT = config.get("general", "time_format")
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 DEFAULT_PORT = 'nsoVSOi'
 RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
+
+# Override the logger that dumps the whole Schema
+# to stderr so it doesn't do that.
+suds_log = logging.getLogger('suds.umx.typed')
+suds_log.setLevel(50)
 
 
 # TODO: Name
@@ -216,6 +223,9 @@ class QueryResponse(list):
             record_items[key] = []
 
         def validate_time(time):
+            # Handle if the time is None when coming back from VSO
+            if time is None:
+                return ['None']
             if record.time.start is not None:
                 return [datetime.strftime(parse_time(time), TIME_FORMAT)]
             else:
@@ -285,7 +295,7 @@ class VSOClient(object):
         To assign subattributes, use foo__bar=1 to assign
         ['foo']['bar'] = 1. """
         obj = self.api.factory.create(atype)
-        for k, v in kwargs.iteritems():
+        for k, v in iteritems(kwargs):
             split = k.split('__')
             tip = split[-1]
             rest = split[:-1]
@@ -296,7 +306,7 @@ class VSOClient(object):
 
             if isinstance(v, dict):
                 # Do not throw away type information for dicts.
-                for k, v in v.iteritems():
+                for k, v in iteritems(v):
                     item[tip][k] = v
             else:
                 item[tip] = v
@@ -367,7 +377,7 @@ class VSOClient(object):
                     continue
                 if not hasattr(provideritem.record, 'recorditem'):
                     continue
-                if not provideritem.provider in providers:
+                if provideritem.provider not in providers:
                     providers[provider] = provideritem
                     fileids |= set(
                         record_item.fileid
@@ -382,21 +392,26 @@ class VSOClient(object):
                             )
                             providers[provider].no_of_records_found += 1
                             providers[provider].no_of_records_returned += 1
-        return self.make('QueryResponse', provideritem=providers.values())
+        return self.make('QueryResponse',
+                         provideritem=list(providers.values()))
 
     @staticmethod
     def mk_filename(pattern, response, sock, url, overwrite=False):
         name = get_filename(sock, url)
         if not name:
-            if not isinstance(response.fileid, unicode):
-                name = unicode(response.fileid, "ascii", "ignore")
+            if not isinstance(response.fileid, text_type):
+                name = u(response.fileid, "ascii", "ignore")
             else:
                 name = response.fileid
 
         fs_encoding = sys.getfilesystemencoding()
         if fs_encoding is None:
             fs_encoding = "ascii"
-        name = slugify(name).encode(fs_encoding, "ignore")
+
+        name = slugify(name)
+
+        if PY2:
+            name = name.encode(fs_encoding, "ignore")
 
         if not name:
             name = "file"
@@ -520,8 +535,8 @@ class VSOClient(object):
             kwargs.update({'time_end': tend})
 
         queryreq = self.api.factory.create('QueryRequest')
-        for key, value in kwargs.iteritems():
-            for k, v in ALIASES.get(key, sdk(key))(value).iteritems():
+        for key, value in iteritems(kwargs):
+            for k, v in iteritems(ALIASES.get(key, sdk(key))(value)):
                 if k.startswith('time'):
                     v = parse_time(v).strftime(TIMEFORMAT)
                 attr = k.split('_')
@@ -628,12 +643,11 @@ class VSOClient(object):
         # Adding the site parameter to the info
         info = {}
         if site is not None:
-            info['site']=site
+            info['site'] = site
 
         self.download_all(
             self.api.service.GetData(
-                self.make_getdatarequest(query_response, methods, info)
-                ),
+                self.make_getdatarequest(query_response, methods, info)),
             methods, downloader, path,
             fileids, res
         )
@@ -665,7 +679,7 @@ class VSOClient(object):
 
         return self.create_getdatarequest(
             dict((k, [x.fileid for x in v])
-                 for k, v in self.by_provider(response).iteritems()),
+                 for k, v in iteritems(self.by_provider(response))),
             methods, info
         )
 
@@ -681,7 +695,7 @@ class VSOClient(object):
             request__info=info,
             request__datacontainer__datarequestitem=[
                 self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
-                for k, v in maps.iteritems()
+                for k, v in iteritems(maps)
             ]
         )
 
@@ -714,7 +728,8 @@ class VSOClient(object):
                             dresponse.method.methodtype[0],
                             dataitem.url,
                             dw,
-                            res.require(map(str, dataitem.fileiditem.fileid)),
+                            res.require(
+                                list(map(str, dataitem.fileiditem.fileid))),
                             res.add_error,
                             path,
                             qr[dataitem.fileiditem.fileid[0]]
@@ -826,9 +841,9 @@ class InteractiveVSOClient(VSOClient):
         """
         while True:
             for n, elem in enumerate(choices):
-                print "({num:d}) {choice!s}".format(num=n + 1, choice=elem)
+                print("({num:d}) {choice!s}".format(num=n + 1, choice=elem))
             try:
-                choice = raw_input("Method number: ")
+                choice = input("Method number: ")
             except KeyboardInterrupt:
                 raise NoData
             if not choice:
@@ -864,7 +879,7 @@ class InteractiveVSOClient(VSOClient):
             improve documentation. what does this function do?
 
         """
-        choice = raw_input(field + ': ')
+        choice = input(field + ': ')
         if not choice:
             raise NoData
         return choice

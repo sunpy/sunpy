@@ -52,10 +52,10 @@ def aia171_test_template(aia171_test_shift,
                          aia171_test_map_layer,
                          aia171_test_map_layer_shape):
     # Test template
-    a1 = aia171_test_shift[0] + aia171_test_map_layer_shape[0] / 4
-    a2 = aia171_test_shift[0] + 3 * aia171_test_map_layer_shape[0] / 4
-    b1 = aia171_test_shift[1] + aia171_test_map_layer_shape[1] / 4
-    b2 = aia171_test_shift[1] + 3 * aia171_test_map_layer_shape[1] / 4
+    a1 = aia171_test_shift[0] + aia171_test_map_layer_shape[0] // 4
+    a2 = aia171_test_shift[0] + 3 * aia171_test_map_layer_shape[0] // 4
+    b1 = aia171_test_shift[1] + aia171_test_map_layer_shape[1] // 4
+    b2 = aia171_test_shift[1] + 3 * aia171_test_map_layer_shape[1] // 4
     return aia171_test_map_layer[a1: a2, b1:b2]
 
 
@@ -200,7 +200,7 @@ def test_calculate_match_template_shift(aia171_test_mc,
     assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0 )
 
     # Test setting the template as a ndarray
-    template_ndarray = aia171_test_map_layer[ny / 4: 3 * ny / 4, nx / 4: 3 * nx / 4]
+    template_ndarray = aia171_test_map_layer[ny // 4: 3 * ny // 4, nx // 4: 3 * nx // 4]
     test_displacements = calculate_match_template_shift(aia171_test_mc, template=template_ndarray)
     assert_allclose(test_displacements['x'], aia171_mc_arcsec_displacements['x'], rtol=5e-2, atol=0)
     assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0)
@@ -314,3 +314,16 @@ def test_apply_shifts(aia171_test_map):
         clipped = calculate_clipping(astropy_displacements["y"], astropy_displacements["x"])
         assert(test_mc[i].data.shape[0] == mc[i].data.shape[0] - np.max(clipped[0].value))
         assert(test_mc[i].data.shape[1] == mc[i].data.shape[1] - np.max(clipped[1].value))
+
+    # Test that keywords are correctly passed
+    # Test for an individual keyword
+    test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"], clip=False,
+                           cval=np.nan)
+    assert(np.all(np.logical_not(np.isfinite(test_mc[1].data[:, -1]))))
+
+    # Test for a combination of keywords, and that changing the interpolation
+    # order and how the edges are treated changes the results.
+    test_mc1 = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"], clip=False,
+                            order=2, mode='reflect')
+    test_mc2 = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"], clip=False)
+    assert(np.all(test_mc1[1].data[:, -1] != test_mc2[1].data[:, -1]))

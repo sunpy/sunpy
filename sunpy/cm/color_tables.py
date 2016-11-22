@@ -18,7 +18,7 @@ def _mkx(i, steps, n):
     """ Generate list according to pattern of g0 and b0. """
     x = []
     for step in steps:
-        x.extend(range(i, step + n, n))
+        x.extend(list(range(i, step + n, n)))
         i = step + (n - 1)
     return x
 

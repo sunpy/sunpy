@@ -12,13 +12,17 @@ from sunpy.net.vso import attrs as vso_attrs
 from sunpy.net.attr import AttrWalker, Attr, ValueAttr, AttrAnd, AttrOr
 from sunpy.database.tables import DatabaseEntry, Tag as TableTag,\
     FitsHeaderEntry as TableFitsHeaderEntry
+from sunpy.extern import six
 
 __all__ = [
     'Starred', 'Tag', 'Path', 'DownloadTime', 'FitsHeaderEntry', 'walker']
 
-# This frozenset has been hardcoded to denote VSO attributes that are currently supported, on derdon's request.
-SUPPORTED_SIMPLE_VSO_ATTRS = frozenset(['source', 'provider', 'physobs', 'instrument'])
+# This frozenset has been hardcoded to denote VSO attributes that are
+# currently supported, on derdon's request.
+SUPPORTED_SIMPLE_VSO_ATTRS = frozenset(['source', 'provider', 'physobs',
+                                        'instrument'])
 SUPPORTED_NONVSO_ATTRS = frozenset(['starred'])
+
 
 class _BooleanAttr(object):
     def __init__(self, value, make):
@@ -39,7 +43,10 @@ class _BooleanAttr(object):
         attr.value = self.value or other.value
         return attr
 
-    def __nonzero__(self):
+    def __nonzero__(self):  # py 2.x
+        return self.value
+
+    def __bool__(self):  # py 3.x
         return self.value
 
     def __invert__(self):
@@ -49,6 +56,9 @@ class _BooleanAttr(object):
 
     def __eq__(self, other):
         return isinstance(other, self.make) and self.value == other.value
+
+    def __hash__(self):
+        return super(_BooleanAttr, self).__hash__()
 
     def collides(self, other):  # pragma: no cover
         return False
@@ -161,7 +171,7 @@ def _create(wlk, root, session):
 @walker.add_creator(ValueAttr)
 def _create(wlk, root, session):
     query = session.query(DatabaseEntry)
-    for key, value in root.attrs.iteritems():
+    for key, value in six.iteritems(root.attrs):
         typ = key[0]
         if typ == 'tag':
             criterion = TableTag.name.in_([value])

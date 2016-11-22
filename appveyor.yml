@@ -4,43 +4,35 @@
 environment:
 
   global:
+      PYTHON: "C:\\conda"
+      MINICONDA_VERSION: "latest"
       # SDK v7.0 MSVC Express 2008's SetEnv.cmd script will fail if the
       # /E:ON and /V:ON options are not enabled in the batch script intepreter
       # See: http://stackoverflow.com/a/13751649/163740
-      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\continuous-integration\\appveyor\\run_with_env.cmd"
-      PYTHON: "C:\\conda"
-      MINICONDA_VERSION: "3.5.5"
+      CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci-helpers\\appveyor\\windows_sdk.cmd"
+      CONDA_CHANNELS: "astropy astropy-ci-extras sunpy jevans"
+      CONDA_DEPENDENCIES: "numpy scipy astropy matplotlib pandas requests beautifulsoup4 sqlalchemy scikit-image pytest wcsaxes suds-jurko"
+      PIP_DEPENDENCIES: "Glymur"
 
   matrix:
       - PYTHON_VERSION: "2.7"
+        NUMPY_VERSION: "stable"
+      - PYTHON_VERSION: "3.5"
+        NUMPY_VERSION: "stable"
+matrix:
+    fast_finish: true
 
 platform:
     - x64
 
 install:
-    # Install miniconda using a powershell script.
-    - "powershell ./continuous-integration/appveyor/install-miniconda.ps1"
+    - "git clone git://github.com/astropy/ci-helpers.git"
+    - "powershell ci-helpers/appveyor/install-miniconda.ps1"
     - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
-  
-    # Check that we have the expected version and architecture for Python
-    - "%CMD_IN_ENV% python --version"
-  
-    # Install the build and runtime dependencies of the project.
-    - "conda update --yes conda"
-    # Create a conda environment using the astropy bonus packages
-    - "conda create -q --yes -n test -c astropy-ci-extras python=%PYTHON_VERSION%"
-    - "conda config --add channels https://conda.binstar.org/sunpy --add channels astropy"
     - "activate test"
-
-    # Install default dependancies
-    - "conda install -q --yes numpy scipy astropy matplotlib pandas requests beautiful-soup sqlalchemy scikit-image pytest wcsaxes"
-
-    # Install sunpy conda packages
-    - "conda install -q --yes suds-jurko glymur"
 
 # Not a .NET project, we build SunPy in the install step instead
 build: false
 
 test_script:
     - "%CMD_IN_ENV% python setup.py test"
-

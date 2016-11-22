@@ -16,6 +16,8 @@ prep_map = aiaprep(original)
 def test_aiaprep():
     # Test that header info for the map has been correctly updated
     # Check all of these for Map attributes and .meta values?
+    # Check array shape
+    assert prep_map.data.shape == original.data.shape
     # Check crpix values
     assert prep_map.meta['crpix1'] == prep_map.data.shape[1]/2.0 + 0.5
     assert prep_map.meta['crpix2'] == prep_map.data.shape[0]/2.0 + 0.5

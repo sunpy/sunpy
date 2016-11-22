@@ -49,8 +49,8 @@ class GOESLightCurve(LightCurve):
         .. plot::
 
             from sunpy import lightcurve as lc
-            from sunpy.time import TimeRange
-            goes = lc.GOESLightCurve.create(TimeRange('2012/06/01', '2012/06/05'))
+            from sunpy.data.sample import GOES_LIGHTCURVE
+            goes = lc.GOESLightCurve.create(GOES_LIGHTCURVE)
             goes.peek()
 
         Parameters
@@ -221,5 +221,5 @@ class GOESLightCurve(LightCurve):
         newxrsb = xrsb.byteswap().newbyteorder()
 
         data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb}, index=times)
-        data.sort(inplace=True)
+        data.sort_index(inplace=True)
         return header, data

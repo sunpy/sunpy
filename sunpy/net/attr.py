@@ -27,8 +27,10 @@ Please note that & is evaluated first, so A & B | C is equivalent to
 from __future__ import absolute_import
 
 from sunpy.util.multimethod import MultiMethod
+from sunpy.extern.six import iteritems
 
 # XXX: Maybe allow other normal forms.
+
 
 class Attr(object):
     """ This is the base for all attributes. """
@@ -40,7 +42,7 @@ class Attr(object):
         return AttrAnd([self, other])
 
     def __hash__(self):
-        return hash(frozenset(vars(self).iteritems()))
+        return hash(frozenset(iteritems(vars(self))))
 
     def __or__(self, other):
         # Optimization.
@@ -176,7 +178,7 @@ class ValueAttr(Attr):
         return "<ValueAttr({att!r})>".format(att=self.attrs)
 
     def __hash__(self):
-        return hash(frozenset(self.attrs.iteritems()))
+        return hash(frozenset(iteritems(self.attrs.iteritems)))
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):

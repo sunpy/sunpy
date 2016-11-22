@@ -25,6 +25,7 @@ shall use SDO's AIA instrument as an example in this tutorial. The general way t
 a Map from one of the supported data products is with the `~sunpy.map.map()` function from the `~sunpy.map` submodule.
 `~sunpy.map.map()` takes either a filename, a list of filenames or a data array and header. We can test map with:
 
+
 .. plot::
     :include-source:
 
@@ -48,6 +49,7 @@ remote file. Let's create some fake data and pass it into a lightcurve object.
 .. plot::
     :include-source:
 
+    import numpy as np
     import sunpy.data.sample
     from sunpy.lightcurve import LightCurve
     times = np.arange(1000) * 2.0
@@ -163,7 +165,7 @@ Not all constants have a shortcut assigned to them (as above). The rest of the c
 are stored in a dictionary. The following code grabs the dictionary and gets all of the
 keys.::
 
-    >>> solar_constants = con.physical_constants
+    >>> solar_constants = con.constants
     >>> solar_constants.keys()   # doctest: +NORMALIZE_WHITESPACE
     ['solar flux unit', 'surface area', 'average density', 'radius', 'surface
     gravity', 'ellipticity', 'visual magnitude', 'center density', 'average
@@ -173,43 +175,9 @@ keys.::
     inertia', 'escape velocity', 'perihelion distance', 'GM', 'oblateness',
     'mean distance', 'age', 'mass', 'luminosity', 'center temperature']
 
-You can also use the following function to print out a table of all of the values
-available. ::
-
-    >>> con.print_all()   # doctest: +NORMALIZE_WHITESPACE
-    Name                                 Value            Units    Error
-    -------------------------------------------------------------------------------------
-    solar flux unit                      1e-22      W / (Hz m2)    0
-    surface area                     6.087e+18               m2    0
-    average density                       1409          kg / m3    0
-    radius                         695508000.0                m    26000.0
-    surface gravity                        274            m / s    0
-    ellipticity                          5e-05                     0
-    visual magnitude                    -26.75                     0
-    center density                    162200.0          kg / m3    0
-    average angular size                959.63           arcsec    0
-    absolute magnitude                    4.83                     0
-    sunspot cycle                         11.4               yr    0
-    effective temperature               5778.0                K    0
-    aphelion distance                1.521e+11                m    0
-    mean energy production           0.0001937           J / kg    0
-    mass conversion rate          4300000000.0           kg / s    0
-    average intensity               20090000.0      W / (m2 sr)    0
-    volume                          1.4122e+27               m3    0
-    metallicity                         0.0122                     0.0
-    moment of inertia                  5.7e+54          kg / m2    0
-    escape velocity                   617700.0            m / s    0
-    perihelion distance              1.471e+11                m    0
-    GM                             132712000.0         km3 / s2    0
-    oblateness                            8.01          marcsec    0.14
-    mean distance              1.495978707e+11                m    0.0
-    age                           4600000000.0               yr    100000000.0
-    mass                            1.9891e+30               kg    5e+25
-    luminosity                       3.846e+26                W    5e+22
-    center temperature              15710000.0                K    0
-
-These constants are provided as a convenience so that everyone is using the same
-(accepted values). For more information check out :ref:`sun_code_ref`.
+You can also use the function `sunpy.constants.print_all()` to print out a table of all of the values
+available. These constants are provided as a convenience so that everyone is using the same
+(accepted) values. For more information check out :ref:`sun_code_ref`.
 
 Quantities and Units
 --------------------
@@ -415,20 +383,18 @@ including generating a PNG and downloading a `JPEG 2000 <http://wiki.helioviewer
 image and loading it into a SunPy Map.
 
 
-A simple example of a helioviewer query and a plot of the result follows.
+A simple example of a helioviewer query and generating a plot of the result follows::
 
-.. plot::
-    :include-source:
 
-    from sunpy.net.helioviewer import HelioviewerClient
-    import matplotlib.pyplot as plt
-    from matplotlib.image import imread
-    hv = HelioviewerClient()
-    file = hv.download_png('2099/01/01', 4.8, "[SDO,AIA,AIA,304,1,100]", x0=0, y0=0, width=512, height=512)
-    im = imread(file)
-    plt.imshow(im)
-    plt.axis('off')
-    plt.show()
+   >>> from sunpy.net.helioviewer import HelioviewerClient
+   >>> import matplotlib.pyplot as plt
+   >>> from matplotlib.image import imread
+   >>> hv = HelioviewerClient()
+   >>> file = hv.download_png('2099/01/01', 4.8, "[SDO,AIA,AIA,304,1,100]", x0=0, y0=0, width=512, height=512)
+   >>> im = imread(file)
+   >>> plt.imshow(im)
+   >>> plt.axis('off')
+   >>> plt.show()
 
 This downloads a PNG image of the latest AIA 304 image available on `Helioviewer.org <http://helioviewer.org>`_.  In the
  `~sunpy.net.helioviewer.HelioviewerClient.download_png` command the value, 4.8, refers to the image resolution in arcseconds per pixel (larger values mean lower resolution), x0 and y0 are the center points about which to focus and the width and height are the pixel values for the image dimensions. For more information checkout the :doc:`helioviewer guide <acquiring_data/helioviewer>`.
