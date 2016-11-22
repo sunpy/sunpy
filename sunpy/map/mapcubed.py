@@ -14,6 +14,7 @@ from sunpy.visualization import wcsaxes_compat
 from sunpy.util import expand_list
 from sunpy.extern.six.moves import range
 import astropy.units as u
+from sunpy.time import parse_time
 
 from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")
@@ -177,10 +178,7 @@ Scale:\t\t {scale}
     @property
     def date(self):
         """Observation time"""
-        time = []
-        for m in self._meta:
-            time.append(m.date)
-        return time
+        return [parse_time(m.get('date-obs', 'now')) for m in self._meta]
 
     @property
     def scale(self):
@@ -227,14 +225,15 @@ Scale:\t\t {scale}
     def lightcurve(self, location_a, location_b, range_c=None):
         return self
 
-    @u.quantity_input(dimensions=u.pixel)
-    def superpixel(self, dimensions, method='sum'):
+    @u.quantity_input(dimensions=u.pixel, offset=u.pixel)
+    def superpixel(self, dimensions, offset=(0, 0)*u.pixel, func=np.sum):
         """Returns a new map consisting of superpixels formed from the
         original data.  Useful for increasing signal to noise ratio in images.
         """
         new_maps = []
+        print(offset)
         for i in range(0, len(self)):
-            new_maps.append(self._get_map(i).superpixel(dimensions, method=method))
+            new_maps.append(self._get_map(i).superpixel(dimensions, offset=offset, func=func))
         return MapCubed(new_maps)
 
     @u.quantity_input(dimensions=u.pixel)
