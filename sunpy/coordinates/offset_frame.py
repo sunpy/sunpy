@@ -67,6 +67,11 @@ class NorthOffsetFrame(object):
     Using this frame is equivalent to using
     `~astropy.coordinates.SkyOffsetFrame` with ``lat = lat - 90*u.deg`` for a
     position of the north pole in the original northern hemisphere.
+
+    This class will only work for Heliographic-Stonyhurst and Heliographic
+    Carrington frames, and not helioprojective. If you want to rotate a
+    helioprojective frame, it would be more natural to use the
+    `~astropy.coordinates.SkyOffsetFrame`.
     """
 
     def __new__(cls, *args, **kwargs):
