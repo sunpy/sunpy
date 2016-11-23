@@ -15,6 +15,8 @@ from sunpy.util import expand_list
 from sunpy.extern.six.moves import range
 import astropy.units as u
 from sunpy.time import parse_time
+from sunpy.lightcurve import LightCurve
+from pandas import DataFrame
 
 from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")
@@ -223,7 +225,9 @@ Scale:\t\t {scale}
         return MapCubed(new_maps)
 
     def lightcurve(self, location_a, location_b, range_c=None):
-        return self
+        """Given a pixel index return a lightcurve."""
+        return LightCurve(DataFrame({"{0},{1}".format(location_a, location_b):self.data[location_a,location_b, :]},
+                                    index=self.date))
 
     @u.quantity_input(dimensions=u.pixel, offset=u.pixel)
     def superpixel(self, dimensions, offset=(0, 0)*u.pixel, func=np.sum):
@@ -496,7 +500,7 @@ Scale:\t\t {scale}
                 for i in range(0, len(self)):
                     self._get_map(i).resample(resample)
             else:
-                raise ValueError('Maps in mapcube do not all have the same shape.')
+                raise ValueError('Maps do not all have the same shape.')
 
         return MapCubeAnimator(self, **kwargs)
 
