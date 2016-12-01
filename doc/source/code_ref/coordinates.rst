@@ -212,6 +212,9 @@ sunpy.coordinates Package
 .. automodapi:: sunpy.coordinates.representation
     :headings: ^#
 
+.. automodapi:: sunpy.coordinates.offset_frame
+    :headings: ^#
+
 .. automodapi:: sunpy.coordinates.wcs_utils
     :headings: ^#
 
