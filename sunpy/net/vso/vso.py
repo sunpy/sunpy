@@ -14,6 +14,7 @@ This module provides a wrapper around the VSO API.
 import re
 import os
 import sys
+import logging
 import threading
 
 from datetime import datetime, timedelta
@@ -44,6 +45,11 @@ TIME_FORMAT = config.get("general", "time_format")
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 DEFAULT_PORT = 'nsoVSOi'
 RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
+
+# Override the logger that dumps the whole Schema
+# to stderr so it doesn't do that.
+suds_log = logging.getLogger('suds.umx.typed')
+suds_log.setLevel(50)
 
 
 # TODO: Name
