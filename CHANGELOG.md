@@ -16,6 +16,11 @@ Latest
 * Added VSO query result block level caching in the database module. This
   prevents redownloading of files which have already been downloaded.
   Especially helpful in case of overlapping queries.
+* Port the pyana wrapper to Python 3
+* `Map.peek(basic_plot=True)` no longer issues warnings
+* Remove the `sunpy.map.nddata_compat` module, this makes `Map.data` and
+  `Map.meta` read only.
+* Add a `NorthOffsetFrame` class for generating HGS-like coordinate systems with a shifted north pole.
 
 0.7.0
 -----

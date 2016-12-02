@@ -26,7 +26,7 @@ env:
         - ASTROPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
         - CONDA_CHANNELS='astropy astropy-ci-extras conda-forge'
-        - CONDA_DEPENDENCIES='glymur openjpeg Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest wcsaxes pyyaml pandas nomkl pytest-cov coverage'
+        - CONDA_DEPENDENCIES='glymur openjpeg Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest wcsaxes pyyaml pandas nomkl pytest-cov coverage hypothesis'
         - PIP_DEPENDENCIES='suds-jurko sphinx-gallery'
 
     matrix:
@@ -86,7 +86,10 @@ after_success:
 
 # Notify the IRC channel of build status
 notifications:
-  irc: "chat.freenode.net#SunPy"
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/d1bf84e1bc1293e4dbc5
+      - "https://scalar.vector.im/api/neb/services/hooks/dHJhdmlzLWNpLyU0MENhZGFpciUzQW1hdHJpeC5vcmcvJTIxTWVSZEZwRW9uTG9Dd2hvSGVUJTNBbWF0cml4Lm9yZw"
+    on_success: change  # always|never|change
+    on_failure: always
+    on_start: never

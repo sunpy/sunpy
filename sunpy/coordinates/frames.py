@@ -230,15 +230,19 @@ class Helioprojective(BaseCoordinateFrame):
     representation: `~astropy.coordinates.BaseRepresentation` or None.
         A representation object. If specified, other parameters must
         be in keyword form.
-    Tx: `Angle` object.
+    Tx: `~astropy.coordinates.Angle`  or `~astropy.units.Quantity`
         X-axis coordinate.
-    Ty: `Angle` object.
+    Ty: `~astropy.coordinates.Angle`  or `~astropy.units.Quantity`
         Y-axis coordinate.
-    distance: Z-axis coordinate.
+    distance: `~astropy.units.Quantity`
         The radial distance from the observer to the coordinate point.
+    L0: `~astropy.coordinates.Angle`
+        The Heliographic (Stonyhurst) Longitude of the observer.
+    B0: `~astropy.coordinates.Angle` or `~astropy.units.Quantity`
+        The Heliographic (Stonyhurst) Latitude of the observer.
     D0: `Quantity` object.
         Represents the distance between observer and solar center.
-        Defaults to 1AU.
+        **Defaults to 1 AU**.
 
     Examples
     --------
@@ -297,7 +301,6 @@ class Helioprojective(BaseCoordinateFrame):
                                                             lon=self._data.lon,
                                                             distance=self._data.distance)
                 self.representation = SphericalWrap180Representation
-
 
     def calculate_distance(self):
         """
