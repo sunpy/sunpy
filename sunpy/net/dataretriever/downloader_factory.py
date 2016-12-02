@@ -1,12 +1,14 @@
 # Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
 # This module was developed under funding provided by
 # Google Summer of Code 2014
+from collections import MutableSequence
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 
 from sunpy.net.dataretriever.clients import CLIENTS
+from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.vso import VSOClient
 from .. import attr
 from .. import attrs as a
@@ -14,7 +16,7 @@ from .. import attrs as a
 __all__ = ['Fido']
 
 
-class UnifiedResponse(list):
+class UnifiedResponse(MutableSequence):
     """
     The object used to store responses from the unified downloader.
 
@@ -25,15 +27,59 @@ class UnifiedResponse(list):
 
     """
     def __init__(self, lst):
+        """
+        Input to this constructor can be one of a few things:
+
+        1. A list of one UnifiedResponse object
+        2. A list of tuples (QueryResponse, client)
+        """
 
         tmplst = []
-        for block in lst:
-            block[0].client = block[1]
-            tmplst.append(block[0])
-        super(UnifiedResponse, self).__init__(tmplst)
         self._numfile = 0
-        for qblock in self:
-            self._numfile += len(qblock)
+        if isinstance(lst, QueryResponse):
+            if not hasattr(lst, 'client'):
+                raise("QueryResponse is only a valid input if it has a client attribute.")
+            tmplst.append(lst)
+        else:
+            for block in lst:
+                if isinstance(block, tuple) and len(block) == 2:
+                    block[0].client = block[1]
+                    tmplst.append(block[0])
+                    self._numfile += len(block)
+                elif hasattr(block, 'client'):
+                    tmplst.append(block)
+                else:
+                    raise Exception("{} is not a valid input to UnifiedResponse.".format(lst))
+
+        self._list = tmplst
+
+    def __len__(self):
+        return len(self._list)
+
+    def __getitem__(self, aslice):
+        ret = self._list[aslice]
+        if ret:
+            if isinstance(ret, list):
+                return type(self)(ret)
+            else:
+                return type(self)(ret)
+
+        return ret
+
+    def __delitem__(self, i):
+        del self._list[i]
+
+    def __setitem__(self, aslice, v):
+        self._list[aslice] = v
+
+    def insert(self, i, v):
+        self._list.insert(i, v)
+
+    def get_response(self, i):
+        """
+        Get the actual response rather than another UnifiedResponse object.
+        """
+        return self._list[i]
 
     @property
     def file_num(self):
@@ -42,6 +88,7 @@ class UnifiedResponse(list):
     def _repr_html_(self):
         ret = ''
         for block in self:
+            block = self.get_response(0)
             ret += block._repr_html_()
 
         return ret

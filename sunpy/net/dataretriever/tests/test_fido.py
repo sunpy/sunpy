@@ -75,6 +75,7 @@ def check_response(query, unifiedresp):
         raise ValueError("No Time Specified")
 
     for block in unifiedresp:
+        block = block.get_response(0)
         for res in block:
             assert res.time.start in query_tr
             assert query_instr.lower() == res.instrument.lower()
@@ -166,11 +167,7 @@ UnifiedResponse Tests
 """
 
 
-@pytest.mark.xfail
 def test_unifiedresponse_slicing():
-    """
-    This should pass, a fix is incoming from @Cadair
-    """
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
     assert isinstance(results[0:2], UnifiedResponse)

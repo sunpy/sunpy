@@ -80,7 +80,7 @@ class QueryResponse(list):
                          max(qrblock.time.end for qrblock in self))
 
     def __repr__(self):
-        return repr(self._build_table())
+        return repr(type(self)) + repr(self._build_table())
 
     def __str__(self):
         return str(self._build_table())
