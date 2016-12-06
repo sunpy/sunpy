@@ -51,7 +51,7 @@ class NoRHTimeSeries(GenericTimeSeries):
     """
 
     def __init__(self, data, header, units, **kwargs):
-        super(NoRHLightCurve,self).__init__(data, header, units, **kwargs)
+        super(NoRHTimeSeries,self).__init__(data, header, units, **kwargs)
 
     def peek(self, **kwargs):
         """Plots the NoRH lightcurve TimeSeries
