@@ -146,17 +146,17 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('INSTRUME', '').startswith('GBM')
 
+
 def _bin_data_for_summary(energy_bins, count_data):
-    """Missing doc string"""
-    #find the indices corresponding to some standard summary energy bins
+    """ Rebin the 128 energy channels into some summary ranges, 4-15 keV, 15-25 keV,
+        25-50 keV, 50-100 keV, 100-300 keV, 300-800 keV, 800 - 2000 keV and put the data in the units of counts/s/keV"""
+
+    # find the indices corresponding to some standard summary energy bins
     ebands = [4, 15, 25, 50, 100, 300, 800, 2000]
     indices = []
     for e in ebands:
         indices.append(np.searchsorted(energy_bins['e_max'], e))
 
-    #rebin the 128 energy channels into some summary ranges
-    #4-15 keV, 15 - 25 keV, 25-50 keV, 50-100 keV, 100-300 keV, 300-800 keV, 800 - 2000 keV
-    #put the data in the units of counts/s/keV
     summary_counts = []
     for i in range(0, len(count_data['counts'])):
         counts_in_bands = []
@@ -173,7 +173,7 @@ def _bin_data_for_summary(energy_bins, count_data):
 
 
 def _parse_detector(detector):
-    """Missing Doc String"""
+    """Check and fix detector name strings."""
     oklist = ['n0', 'n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'n8', 'n9',
               'n10', 'n11']
     altlist = [str(i) for i in range(12)]
