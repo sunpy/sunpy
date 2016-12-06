@@ -26,6 +26,10 @@ import astropy.units as u
 from astropy.table import Table
 from astropy.table import Column
 
+# define and register a new unit, needed for RHESSI
+det = u.def_unit('detector')
+u.add_enabled_units([det])
+
 TIME_FORMAT = config.get("general", "time_format")
 
 

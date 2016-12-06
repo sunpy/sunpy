@@ -192,10 +192,9 @@ class XRSTimeSeries(GenericTimeSeries):
         data = DataFrame({'xrsa': newxrsa, 'xrsb': newxrsb}, index=times)
         data.sort_index(inplace=True)
 
-        # Add the units data
-        units = OrderedDict([('xrsa', u.ct),
-                                ('xrsb', u.ct)])
-        # ToDo: check: http://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf
+        # Add the units
+        units = OrderedDict([('xrsa', u.W/u.m**2),
+                                ('xrsb', u.W/u.m**2)])
         return data, header, units
 
     @classmethod
