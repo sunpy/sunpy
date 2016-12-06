@@ -130,14 +130,11 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
                          '100-300 keV', '300-800 keV', '800-2000 keV']
 
         # Add the units data
-        units = OrderedDict([('4-15 keV', u.ct), ('15-25 keV', u.ct),
-                             ('25-50 keV', u.ct), ('50-100 keV', u.ct),
-                             ('100-300 keV', u.ct), ('300-800 keV', u.ct),
-                             ('800-2000 keV', u.ct)])
-        # Todo: check units used.
-        return pd.DataFrame(summary_counts,
-                                columns=column_labels,
-                                index=gbm_times), header, units
+        units = OrderedDict([('4-15 keV', u.ct / u.s / u.keV), ('15-25 keV', u.ct / u.s / u.keV),
+                             ('25-50 keV', u.ct / u.s / u.keV), ('50-100 keV', u.ct / u.s / u.keV),
+                             ('100-300 keV', u.ct / u.s / u.keV), ('300-800 keV', u.ct / u.s / u.keV),
+                             ('800-2000 keV', u.ct / u.s / u.keV)])
+        return pd.DataFrame(summary_counts, columns=column_labels, index=gbm_times), header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
