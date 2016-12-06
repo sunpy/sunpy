@@ -7,10 +7,10 @@ from __future__ import absolute_import
 from sunpy.timeseries.metadata import TimeSeriesMetaData
 from sunpy.timeseries.timeseries_factory import TimeSeries
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
-from sunpy.timeseries.sources.eve import EVELightCurve
-from sunpy.timeseries.sources.goes import GOESLightCurve
+from sunpy.timeseries.sources.eve import EVESpWxTimeSeries
+from sunpy.timeseries.sources.goes import XRSTimeSeries
 from sunpy.timeseries.sources.noaa import NOAAIndicesTimeSeries, NOAAPredictIndicesTimeSeries
-from sunpy.timeseries.sources.lyra import LYRALightCurve
-from sunpy.timeseries.sources.norh import NoRHLightCurve
-from sunpy.timeseries.sources.rhessi import RHESSISummaryLightCurve
-from sunpy.timeseries.sources.fermi_gbm import GBMSummaryLightCurve
+from sunpy.timeseries.sources.lyra import LYRATimeSeries
+from sunpy.timeseries.sources.norh import NoRHTimeSeries
+from sunpy.timeseries.sources.rhessi import RHESSISummaryTimeSeries
+from sunpy.timeseries.sources.fermi_gbm import GBMSummaryTimeSeries

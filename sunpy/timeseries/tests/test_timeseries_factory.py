@@ -52,9 +52,9 @@ class TestTimeSeries(object):
     def test_factory_concatenate_same_source(self):
         # Test making a TimeSeries that is the concatenation of multiple files
         ts_from_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE', concatenate=True)
-        assert isinstance(ts_from_list, sunpy.timeseries.sources.eve.EVELightCurve)
+        assert isinstance(ts_from_list, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
         ts_from_folder = sunpy.timeseries.TimeSeries(os.path.join(filepath, "eve"), source='EVE', concatenate=True)
-        assert isinstance(ts_from_folder, sunpy.timeseries.sources.eve.EVELightCurve)
+        assert isinstance(ts_from_folder, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
         # text the two methods get identical dataframes
         assert ts_from_list == ts_from_folder
         # test the frames have correct headings/keys (correct concatenation axis)
@@ -63,9 +63,9 @@ class TestTimeSeries(object):
     def test_factory_concatenate_different_source(self):
         # Test making a TimeSeries that is the concatenation of multiple files
         ts_from_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE', concatenate=True)
-        assert isinstance(ts_from_list, sunpy.timeseries.sources.eve.EVELightCurve)
+        assert isinstance(ts_from_list, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
         ts_from_folder = sunpy.timeseries.TimeSeries(os.path.join(filepath, "eve"), source='EVE', concatenate=True)
-        assert isinstance(ts_from_folder, sunpy.timeseries.sources.eve.EVELightCurve)
+        assert isinstance(ts_from_folder, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
         # text the two methods get identical dataframes
         assert ts_from_list == ts_from_folder
         # test the frames have correct headings/keys (correct concatenation axis)
@@ -76,12 +76,12 @@ class TestTimeSeries(object):
         ts_list = sunpy.timeseries.TimeSeries(a_list_of_many, source='EVE')
         assert isinstance(ts_list, list)
         for ts in ts_list:
-          assert isinstance(ts, sunpy.timeseries.sources.eve.EVELightCurve)
+          assert isinstance(ts, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
     def test_factory_generate_from_glob(self):
         # Test making a TimeSeries from a glob
         ts_from_glob = sunpy.timeseries.TimeSeries(os.path.join(filepath, "eve", "*"), source='EVE', concatenate=True)
-        assert isinstance(ts_from_glob, sunpy.timeseries.sources.eve.EVELightCurve)
+        assert isinstance(ts_from_glob, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
 #==============================================================================
 # Individual Implicit Source Tests
@@ -90,27 +90,27 @@ class TestTimeSeries(object):
     def test_implicit_fermi_gbm(self):
         # Test a GBMSummary TimeSeries
         ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath)
-        assert isinstance(ts_gbm, sunpy.timeseries.sources.fermi_gbm.GBMSummaryLightCurve)
+        assert isinstance(ts_gbm, sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries)
 
     def test_implicit_norh(self):
         # Test a NoRH TimeSeries
         ts_norh = sunpy.timeseries.TimeSeries(norh_filepath)
-        assert isinstance(ts_norh, sunpy.timeseries.sources.norh.NoRHLightCurve)
+        assert isinstance(ts_norh, sunpy.timeseries.sources.norh.NoRHTimeSeries)
 
     def test_implicit_goes(self):
         # Test a GOES TimeSeries
         ts_goes = sunpy.timeseries.TimeSeries(goes_filepath)
-        assert isinstance(ts_goes, sunpy.timeseries.sources.goes.GOESLightCurve)
+        assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_implicit_lyra(self):
         # Test a LYRA TimeSeries
         ts_lyra = sunpy.timeseries.TimeSeries(lyra_filepath)
-        assert isinstance(ts_lyra, sunpy.timeseries.sources.lyra.LYRALightCurve)
+        assert isinstance(ts_lyra, sunpy.timeseries.sources.lyra.LYRATimeSeries)
 
     def test_implicit_rhessi(self):
         # Test a RHESSI TimeSeries
         ts_rhessi = sunpy.timeseries.TimeSeries(rhessi_filepath)
-        assert isinstance(ts_rhessi, sunpy.timeseries.sources.rhessi.RHESSISummaryLightCurve)
+        assert isinstance(ts_rhessi, sunpy.timeseries.sources.rhessi.RHESSISummaryTimeSeries)
 
 #==============================================================================
 # Individual Explicit Sources Tests
@@ -119,32 +119,32 @@ class TestTimeSeries(object):
     def test_eve(self):
         #Test an EVE TimeSeries
         ts_eve = sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
-        assert isinstance(ts_eve, sunpy.timeseries.sources.eve.EVELightCurve)
+        assert isinstance(ts_eve, sunpy.timeseries.sources.eve.EVESpWxTimeSeries)
 
     def test_fermi_gbm(self):
         #Test a GBMSummary TimeSeries
         ts_gbm = sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
-        assert isinstance(ts_gbm, sunpy.timeseries.sources.fermi_gbm.GBMSummaryLightCurve)
+        assert isinstance(ts_gbm, sunpy.timeseries.sources.fermi_gbm.GBMSummaryTimeSeries)
 
     def test_norh(self):
         #Test a NoRH TimeSeries
         ts_norh = sunpy.timeseries.TimeSeries(norh_filepath, source='NoRH')
-        assert isinstance(ts_norh, sunpy.timeseries.sources.norh.NoRHLightCurve)
+        assert isinstance(ts_norh, sunpy.timeseries.sources.norh.NoRHTimeSeries)
 
     def test_goes(self):
         #Test a GOES TimeSeries
         ts_goes = sunpy.timeseries.TimeSeries(goes_filepath, source='GOES')
-        assert isinstance(ts_goes, sunpy.timeseries.sources.goes.GOESLightCurve)
+        assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_lyra(self):
         #Test a LYRA TimeSeries
         ts_lyra = sunpy.timeseries.TimeSeries(lyra_filepath, source='LYRA')
-        assert isinstance(ts_lyra, sunpy.timeseries.sources.lyra.LYRALightCurve)
+        assert isinstance(ts_lyra, sunpy.timeseries.sources.lyra.LYRATimeSeries)
 
     def test_rhessi(self):
         #Test a RHESSI TimeSeries
         ts_rhessi = sunpy.timeseries.TimeSeries(rhessi_filepath, source='RHESSI')
-        assert isinstance(ts_rhessi, sunpy.timeseries.sources.rhessi.RHESSISummaryLightCurve)
+        assert isinstance(ts_rhessi, sunpy.timeseries.sources.rhessi.RHESSISummaryTimeSeries)
 
     def test_noaa_ind(self):
         #Test a NOAAPredictIndices TimeSeries
