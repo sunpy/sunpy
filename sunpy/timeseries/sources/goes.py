@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Hinode XRT and SOT Map subclass definitions"""
+"""GOES XRT and SOT Map subclass definitions"""
 from __future__ import absolute_import, print_function, division
 # pylint: disable=W0221,W0222,E1101,E1121
 
@@ -20,10 +20,10 @@ from astropy import units as u
 __author__ = ["Alex Hamilton"]
 __email__ = "####"
 
-__all__ = ['GOESLightCurve']
+__all__ = ['XRSTimeSeries']
 
 
-class GOESLightCurve(GenericTimeSeries):
+class XRSTimeSeries(GenericTimeSeries):
     """
     GOES XRS Lightcurve Time Series
 

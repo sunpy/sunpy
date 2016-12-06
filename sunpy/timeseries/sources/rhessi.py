@@ -14,10 +14,10 @@ from sunpy.instr import rhessi
 import sunpy.io
 from astropy import units as u
 
-__all__ = ['RHESSISummaryLightCurve']
+__all__ = ['RHESSISummaryTimeSeries']
 
 
-class RHESSISummaryLightCurve(GenericTimeSeries):
+class RHESSISummaryTimeSeries(GenericTimeSeries):
     """
     RHESSI X-ray Summary Lightcurve TimeSeries.
 

@@ -18,9 +18,9 @@ from astropy import units as u
 
 TIME_FORMAT = config.get("general", "time_format")
 
-__all__ = ['LYRALightCurve']
+__all__ = ['LYRATimeSeries']
 
-class LYRALightCurve(GenericTimeSeries):
+class LYRATimeSeries(GenericTimeSeries):
     """
     Proba-2 LYRA Lightcurve TimeSeries.
 

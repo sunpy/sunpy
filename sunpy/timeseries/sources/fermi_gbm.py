@@ -15,10 +15,10 @@ from sunpy.util.metadata import MetaDict
 
 from astropy import units as u
 
-__all__ = ['GBMSummaryLightCurve']
+__all__ = ['GBMSummaryTimeSeries']
 
 
-class GBMSummaryLightCurve(GenericTimeSeries):
+class GBMSummaryTimeSeries(GenericTimeSeries):
     """
     Fermi/GBM Summary Lightcurve TimeSeries.
 
