@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Provides programs to process and analyse Fermi/GBM lightcurve data."""
-
+"""FERMI GBM TimeSeries subclass definitions."""
 from __future__ import absolute_import, print_function
 
 from collections import OrderedDict

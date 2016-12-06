@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Provides programs to process and analyze PROBA2/LYRA data."""
+"""Proba-2 TimeSeries subclass definitions."""
 from __future__ import absolute_import, division, print_function
 
 import datetime
