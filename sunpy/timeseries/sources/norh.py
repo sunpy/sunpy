@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Provides programs to process and analyse NoRH lightcurve data."""
+"""Nobeyama Radioheliograph TimeSeries subclass definitions."""
 
 from __future__ import absolute_import
 

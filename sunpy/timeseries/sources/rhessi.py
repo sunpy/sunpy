@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Provides programs to process and analyze RHESSI X-ray data."""
+"""RHESSI TimeSeries subclass definitions."""
 from __future__ import absolute_import
 
 from collections import OrderedDict

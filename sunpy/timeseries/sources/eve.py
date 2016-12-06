@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Provides programs to process and analyze EVE data."""
+"""EVE TimeSeries subclass definitions."""
 from __future__ import absolute_import
 
 import os
