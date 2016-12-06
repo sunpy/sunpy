@@ -19,10 +19,10 @@ from astropy import units as u
 
 TIME_FORMAT = config.get("general", "time_format")
 
-__all__ = ['NoRHLightCurve']
+__all__ = ['NoRHTimeSeries']
 
 
-class NoRHLightCurve(GenericTimeSeries):
+class NoRHTimeSeries(GenericTimeSeries):
     """
     Nobeyama Radioheliograph Correlation Lightcurve TimeSeries.
 

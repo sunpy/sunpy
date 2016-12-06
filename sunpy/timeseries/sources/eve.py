@@ -16,10 +16,10 @@ from sunpy.util.metadata import MetaDict
 
 from astropy import units as u
 
-__all__ = ['EVELightCurve']
+__all__ = ['EVESpWxTimeSeries']
 
 
-class EVELightCurve(GenericTimeSeries):
+class EVESpWxTimeSeries(GenericTimeSeries):
     """
     SDO EVE LightCurve for level 0CS data.
 
