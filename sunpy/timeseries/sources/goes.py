@@ -25,7 +25,7 @@ __all__ = ['XRSTimeSeries']
 
 class XRSTimeSeries(GenericTimeSeries):
     """
-    GOES XRS Lightcurve Time Series
+    GOES XRS Time Series
 
     Each GOES satellite there are two X-ray Sensors (XRS) which provide solar X
     ray fluxes for the wavelength bands of 0.5 to 4 Å (short channel)
@@ -50,7 +50,6 @@ class XRSTimeSeries(GenericTimeSeries):
     Notes:
     http://umbra.nascom.nasa.gov/goes/fits/goes_fits_files_notes.txt
     """
-
 
     def peek(self, title="GOES Xray Flux"):
         """Plots GOES XRS light curve is the usual manner. An example is shown

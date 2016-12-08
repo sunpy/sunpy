@@ -13,7 +13,7 @@ class MetaDict(OrderedDict):
     """
     A class to hold meta data associated with a Map derivative.
 
-    This class handles everything a lower case. This allows case insensitive
+    This class handles everything in lower case. This allows case insensitive
     indexing.
     """
     def __init__(self, *args):
