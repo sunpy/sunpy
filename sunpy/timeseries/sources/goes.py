@@ -193,7 +193,7 @@ class XRSTimeSeries(GenericTimeSeries):
 
         # Add the units
         units = OrderedDict([('xrsa', u.W/u.m**2),
-                                ('xrsb', u.W/u.m**2)])
+                             ('xrsb', u.W/u.m**2)])
         return data, header, units
 
     @classmethod
