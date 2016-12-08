@@ -23,9 +23,11 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
 
     The RHESSI mission consists of a single spin-stabilized
     spacecraft in a low-altitude orbit inclined 38 degrees to
-    the Earth's equator. The only instrument on board is an
-    Germaniun imaging spectrometer with the ability to obtain high
-    fidelity solar images in X rays (down to 3 keV) to gamma rays (1 MeV).
+    the Earth's equator. The only instrument on board is a set of 9
+    Germanium spectrometers with the ability to obtain high
+    fidelity solar spectra from X rays (down to 3 keV) to gamma rays (1 MeV).
+    Each spectrometer is coupled to a set of grids with different pitches
+    which enable fourier-style imaging as the spacecraft spins.
 
     RHESSI provides summary lightcurves in the following passbands
 
