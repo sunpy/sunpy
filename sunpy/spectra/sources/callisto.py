@@ -438,11 +438,9 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         f1 = np.polyfit(pairs_freqs, factors, 3)
         f2 = np.polyfit(pairs_freqs, constants, 3)
 
-        return (
-            one,
-            two * polyfun_at(f1, two.freq_axis)[:, np.newaxis] +
-                polyfun_at(f2, two.freq_axis)[:, np.newaxis]
-        )
+        return (one,
+                two * np.polyval(f1, two.freq_axis)[:, np.newaxis] +
+                np.polyval(f2, two.freq_axis)[:, np.newaxis])
 
     def extend(self, minutes=15, **kwargs):
         """Requests subsequent files from the server. If minutes is negative,

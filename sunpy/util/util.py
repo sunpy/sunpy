@@ -1,7 +1,6 @@
 from __future__ import absolute_import, division, print_function
 
 import os
-import types
 import warnings
 from itertools import count
 
@@ -10,10 +9,10 @@ import numpy as np
 from sunpy.extern import six
 from sunpy.extern.six.moves import map, zip
 
-__all__ = ['to_signed', 'unique', 'print_table',
-           'replacement_filename', 'merge', 'common_base',
-           'minimal_pairs', 'polyfun_at',
-           'expand_list', 'expand_list_generator', 'Deprecated']
+__all__ = ['to_signed', 'unique', 'print_table', 'replacement_filename',
+           'merge', 'common_base', 'minimal_pairs', 'expand_list',
+           'expand_list_generator', 'Deprecated']
+
 
 def to_signed(dtype):
     """ Return dtype that can hold data of passed dtype but is signed.
@@ -33,6 +32,7 @@ def to_signed(dtype):
             raise ValueError("Cannot losslessly convert uint64 to int.")
         dtype = "int{0:d}".format(min(dtype.itemsize * 2 * 8, 64))
     return np.dtype(dtype)
+
 
 def unique(itr, key=None):
     """
@@ -67,6 +67,7 @@ def unique(itr, key=None):
                 yield elem
                 items.add(x)
 
+
 def print_table(lst, colsep=' ', linesep='\n'):
     """
     ?
@@ -94,28 +95,6 @@ def print_table(lst, colsep=' ', linesep='\n'):
             col.ljust(n) for n, col in zip(width, row)
         ) for row in lst
     )
-
-
-def polyfun_at(coeff, p):
-    """ Return value of polynomial with coefficients (highest first) at
-    point (can also be an np.ndarray for more than one point) p.
-
-    Parameters
-    ----------
-    coeff : not documented yet
-        not documented yet
-    p : not documented yet
-        not documented yet
-
-    Returns
-    -------
-    not documented yet
-
-    .. todo::
-        improve documentation. what does this do?  Does numpy have this functionality?
-
-    """
-    return np.sum(k * p ** n for n, k in enumerate(reversed(coeff)))
 
 
 def minimal_pairs(one, other):
@@ -163,6 +142,8 @@ def minimal_pairs(one, other):
 
 
 DONT = object()
+
+
 def find_next(one, other, pad=DONT):
     """ Given two sorted sequences one and other, for every element
     in one, return the one larger than it but nearest to it in other.
@@ -225,6 +206,7 @@ def merge(items, key=(lambda x: x)):
         except StopIteration:
             del state[item]
 
+
 def replacement_filename(path):
     """ Return replacement path for already used path. Enumerates
     until an unused filename is found. E.g., "/home/florian/foo.fits"
@@ -246,13 +228,13 @@ def replacement_filename(path):
                 return newpath
 
 
-def expand_list(input):
+def expand_list(inp):
     """
     Expand a list of lists.
 
     Parameters
     ----------
-    input : `list`
+    inp : `list`
 
     Returns
     -------
@@ -268,19 +250,21 @@ def expand_list(input):
         improve documentation. Can this handle Arbitrarily nested lists?
 
     """
-    return [item for item in expand_list_generator(input)]
+    return [item for item in expand_list_generator(inp)]
 
-def expand_list_generator(input):
+
+def expand_list_generator(inp):
     """
     .. todo::
         improve documentation. what does this function do?
     """
-    for item in input:
+    for item in inp:
         if type(item) in [list, tuple]:
             for nested_item in expand_list_generator(item):
                 yield nested_item
         else:
             yield item
+
 
 #==============================================================================
 # Deprecation decorator: http://code.activestate.com/recipes/391367-deprecated/
