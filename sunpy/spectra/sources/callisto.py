@@ -16,7 +16,7 @@ from scipy.optimize import leastsq
 from scipy.ndimage import gaussian_filter1d
 
 from sunpy.time import parse_time
-from sunpy.util import polyfun_at, minimal_pairs
+from sunpy.util import minimal_pairs
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.util.net import download_file
 
