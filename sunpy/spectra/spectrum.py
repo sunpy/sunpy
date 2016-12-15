@@ -37,6 +37,22 @@ class Spectrum(np.ndarray):
 
     def __init__(self, data, freq_axis):
         self.freq_axis = freq_axis
+        data_shape = np.shape(data)
+        freq_shape = np.shape(freq_axis)
+        #Four if-else statements because, different methods 
+        #of numpy-array declaration return tuples of different length.
+        if (len(data_shape)==1 and len(freq_shape)==1):
+        	if not data_shape[0]==freq_shape[0]:
+        		raise ValueError
+        elif (len(data_shape)==1 and len(freq_shape)>1):
+        	if not data_shape[0]==freq_shape[1]:
+        		raise ValueError
+        elif (len(data_shape)>1 and len(freq_shape)==1):
+        	if not data_shape[1]==freq_shape[0]:
+        		raise ValueError
+        elif (len(data_shape)>1 and len(data_shape)>1):
+        	if not data_shape[1]==freq_shape[1]:
+        		raise ValueError
 
     def plot(self, axes=None, **matplot_args):
         """
