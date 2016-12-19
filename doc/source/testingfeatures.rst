@@ -4,7 +4,7 @@ Testing new features
 
 New features are constantly being developed for SunPy by contributors from
 around the world. These new features are normally submitted as a
-:ref:`Pull Request <developer-s-guide>`. Due to the review process imposed
+:ref:`Pull Request <dev-reference-label>`. Due to the review process imposed
 on pull requests to maintain the stability and consistency of the code base,
 it may take some time for a new feature to get accepted into the `master`
 branch, and a bit more to get into the next stable release version.
