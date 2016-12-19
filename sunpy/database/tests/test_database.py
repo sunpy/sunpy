@@ -501,6 +501,15 @@ def test_add_from_file(database):
     for entry in database:
         assert entry.fileid == fileid
 
+def test_add_from_file_hdu_index(database):
+    assert len(database) == 0
+    database.add_from_file(RHESSI_IMAGE)
+    assert len(database) == 4
+    # make sure that all entries have the same fileid
+    i = 0
+    for entry in database:
+        assert entry.hdu_index == i
+        i += 1
 
 def test_add_from_file_duplicates(database):
     database.add_from_file(RHESSI_IMAGE)
