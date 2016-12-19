@@ -622,7 +622,7 @@ def _create_display_table(database_entries, columns=None, sort=False):
 
     """
     if columns is None:
-        columns = ['id','hdu_index' 'observation_time_start', 'observation_time_end',
+        columns = ['id', 'hdu_index', 'observation_time_start', 'observation_time_end',
                     'instrument', 'source', 'provider', 'physobs', 'wavemin',
                     'wavemax', 'path', 'fileid', 'tags', 'starred',
                     'download_time', 'size']
