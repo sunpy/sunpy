@@ -26,6 +26,10 @@ this to an older version of Python if you need to. Then we can activate it as ::
 
  source activate sunpy-featureX
 
+or in windows ::
+
+  activate sunpy-featureX
+
 We proceed to remove the installed version of sunpy (only in this environment)
 ::
 
@@ -60,6 +64,10 @@ your python and play with it. Once you are done with testing go back to your
 original environment by ::
 
  source deactivate
+
+or for windows, only ::
+
+ deactivate
 
 Remember, each time you start a new shell you will be using your default
 environment, so you have to use reactivate your new feature environment.
