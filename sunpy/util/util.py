@@ -1,7 +1,10 @@
+"""
+General utility functions.
+"""
+
 from __future__ import absolute_import, division, print_function
 
 import os
-import types
 import warnings
 from itertools import count
 
@@ -10,13 +13,15 @@ import numpy as np
 from sunpy.extern import six
 from sunpy.extern.six.moves import map, zip
 
-__all__ = ['to_signed', 'unique', 'print_table',
-           'replacement_filename', 'merge', 'common_base',
-           'minimal_pairs', 'polyfun_at',
-           'expand_list', 'expand_list_generator', 'Deprecated']
+__all__ = [
+    'to_signed', 'unique', 'print_table', 'replacement_filename', 'merge',
+    'common_base', 'minimal_pairs', 'polyfun_at', 'expand_list',
+    'expand_list_generator', 'Deprecated']
+
 
 def to_signed(dtype):
-    """ Return dtype that can hold data of passed dtype but is signed.
+    """
+    Return dtype that can hold data of passed dtype but is signed.
     Raise ValueError if no such dtype exists.
 
     Parameters
@@ -27,12 +32,14 @@ def to_signed(dtype):
     Returns
     -------
     `numpy.dtype`
+
     """
     if dtype.kind == "u":
         if dtype.itemsize == 8:
             raise ValueError("Cannot losslessly convert uint64 to int.")
         dtype = "int{0:d}".format(min(dtype.itemsize * 2 * 8, 64))
     return np.dtype(dtype)
+
 
 def unique(itr, key=None):
     """
@@ -50,9 +57,6 @@ def unique(itr, key=None):
     -------
     not documented yet
 
-
-    .. todo::
-        improve documentation. what does this function do?
     """
     items = set()
     if key is None:
@@ -66,6 +70,7 @@ def unique(itr, key=None):
             if x not in items:
                 yield elem
                 items.add(x)
+
 
 def print_table(lst, colsep=' ', linesep='\n'):
     """
@@ -84,20 +89,15 @@ def print_table(lst, colsep=' ', linesep='\n'):
     -------
     ?
 
-    .. todo::
-        improve documentation.
-
     """
     width = [max(map(len, col)) for col in zip(*lst)]
     return linesep.join(
-        colsep.join(
-            col.ljust(n) for n, col in zip(width, row)
-        ) for row in lst
-    )
+        colsep.join(col.ljust(n) for n, col in zip(width, row)) for row in lst)
 
 
 def polyfun_at(coeff, p):
-    """ Return value of polynomial with coefficients (highest first) at
+    """
+    Return value of polynomial with coefficients (highest first) at
     point (can also be an np.ndarray for more than one point) p.
 
     Parameters
@@ -115,7 +115,7 @@ def polyfun_at(coeff, p):
         improve documentation. what does this do?  Does numpy have this functionality?
 
     """
-    return np.sum(k * p ** n for n, k in enumerate(reversed(coeff)))
+    return np.sum(k * p**n for n, k in enumerate(reversed(coeff)))
 
 
 def minimal_pairs(one, other):
@@ -163,6 +163,8 @@ def minimal_pairs(one, other):
 
 
 DONT = object()
+
+
 def find_next(one, other, pad=DONT):
     """ Given two sorted sequences one and other, for every element
     in one, return the one larger than it but nearest to it in other.
@@ -215,8 +217,8 @@ def merge(items, key=(lambda x: x)):
     while state:
         for item, (value, tk) in six.iteritems(state):
             # Value is biggest.
-            if all(tk >= k for it, (v, k)
-                in six.iteritems(state) if it is not item):
+            if all(tk >= k for it, (v, k) in six.iteritems(state)
+                   if it is not item):
                 yield value
                 break
         try:
@@ -224,6 +226,7 @@ def merge(items, key=(lambda x: x)):
             state[item] = (n, key(n))
         except StopIteration:
             del state[item]
+
 
 def replacement_filename(path):
     """ Return replacement path for already used path. Enumerates
@@ -270,6 +273,7 @@ def expand_list(input):
     """
     return [item for item in expand_list_generator(input)]
 
+
 def expand_list_generator(input):
     """
     .. todo::
@@ -282,6 +286,7 @@ def expand_list_generator(input):
         else:
             yield item
 
+
 #==============================================================================
 # Deprecation decorator: http://code.activestate.com/recipes/391367-deprecated/
 # and http://www.artima.com/weblogs/viewpost.jsp?thread=240845
@@ -292,15 +297,17 @@ class Deprecated(object):
 
     @Deprecated("no more")
     """
+
     def __init__(self, message=""):
         self.message = message
 
     def __call__(self, func):
         def newFunc(*args, **kwargs):
-            warnings.warn("Call to deprecated function {0}. \n {1}".format(
-                                                                func.__name__,
-                                                                self.message),
-                          category=Warning, stacklevel=2)
+            warnings.warn(
+                "Call to deprecated function {0}. \n {1}".format(func.__name__,
+                                                                 self.message),
+                category=Warning,
+                stacklevel=2)
             return func(*args, **kwargs)
 
         newFunc.__name__ = func.__name__
