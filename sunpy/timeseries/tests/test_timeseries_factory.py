@@ -25,9 +25,9 @@ from astropy.table import Table
 from astropy.time import Time
 from astropy.io import fits
 
-#==============================================================================
+# ==============================================================================
 # TimeSeries Factory Tests
-#==============================================================================
+# ==============================================================================
 
 filepath = sunpy.data.test.rootdir
 
@@ -40,13 +40,14 @@ rhessi_filepath = os.path.join(filepath, 'hsi_obssumm_20120601_018_truncated.fit
 noaa_ind_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
 noaa_pre_filepath = os.path.join(filepath, 'predicted-sunspot-radio-flux_truncated.txt')
 
-goes_filepath = sunpy.data.sample.GOES_LIGHTCURVE
+goes_filepath = os.path.join(filepath, 'go1520120601.fits.gz')
 
 a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
 
-#==============================================================================
+# ==============================================================================
 # Multi file Tests
-#==============================================================================
+# ==============================================================================
+
 
 class TestTimeSeries(object):
     def test_factory_concatenate_same_source(self):
