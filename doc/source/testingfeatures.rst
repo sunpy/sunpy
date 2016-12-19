@@ -2,24 +2,27 @@
 Testing new features
 ====================
 
-All the time new features are created to SunPy by contributors from around the
-world. They are normally done as :ref:`Pull Request <developer-s-guide>`. These
-pull request may take time to get part of the `master` branch, and a bit more to
-get into the stable release version.
+New features are constantly being developed for SunPy by contributors from
+around the world. These new features are normally submitted as a
+:ref:`Pull Request <developer-s-guide>`. Due to the review process imposed
+on pull requests to maintain the stability and consistency of the code base,
+it may take some time for a new feature to get accepted into the `master`
+branch, and a bit more to get into the next stable release version.
 
-If you are brave enough and want to test new features, and provide feedback to
-the authors, then you can follow up the steps below.
+In order to make it easier for people to test out new features (and hopefully provide valuable
+feedback to the authors) we've put together this tutorial.
 
 This assumes you have installed sunpy using anaconda, though a similar result
 can be obtained using `virtualenv`.
 
-We start creating a new environment, so your current one still works as
+We start by creating a new environment, so your current one still works as
 expected::
 
  conda create -n sunpy-featureX python=3.5 sunpy
 
 This creates an environment called `sunpy-featureX` (change `featureX` for
-something more meaningful in your case). Then we can activate it as ::
+something more meaningful in your case) and specifies python 3.5. You can change
+this to an older version of Python if you need to. Then we can activate it as ::
 
  source activate sunpy-featureX
 
@@ -29,16 +32,16 @@ We proceed to remove the installed version of sunpy (only in this environment)
  conda remove sunpy
 
 and now we can proceed to install the development version by cloning the git
-repository into a place where you want ::
+repository ::
 
  cd to/a/place/I/want
  git clone https://github.com/sunpy/sunpy.git
  cd sunpy
 
-That will download the latest development version of sunpy, and if it's that
-what you want to try then skip the next step. However, if you want to test
-something that it's still as a pull request and awaiting for approval you have
-to do as follows. First `find out which pull request you want to test
+That will download the latest development (`master) version of sunpy. You can
+stop here if you just want and now you can test the bleeding edge of SunPy!
+However, let's continue and `install` someone's new feature awaiting for approval
+as a pull request. First `find out which pull request you want to test
 <https://github.com/sunpy/sunpy/pulls>`_. Each pull request has a number like
 `#1234`, use that number to get the feature you want to test as ::
 
@@ -52,21 +55,14 @@ Next step is to install sunpy in your new environment ::
 
  python setup.py install
 
-Once you've done so, you have the new feature for testing in your computer, all
-you need to do to use it is to do as usual, start your python and play with it.
-Once you are done with testing such feature, go back to your default environment
-by ::
+Once you've done so, you have the new feature ready for testing. Just start
+your python and play with it. Once you are done with testing go back to your
+original environment by ::
 
  source deactivate
 
-Remember, each time you start a new shell will be using your default, so you
-have only to use ::
-
- source activate sunpy-featureX
-
-to go back to the feature you installed. This will be just available from the
-terminal you are using, so you could have two versions of sunpy at the same
-time.
+Remember, each time you start a new shell you will be using your default
+environment, so you have to use reactivate your new feature environment.
 
 **Final Note**
 
