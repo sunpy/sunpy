@@ -50,6 +50,8 @@ PARSERS = [
     # Everything starts with ""
     ("", parse_filename)
 ]
+
+
 def query(start, end, instruments=None, url=DEFAULT_URL):
     """Get URLs for callisto data from instruments between start and end.
 
@@ -106,14 +108,16 @@ def download(urls, directory):
 
 
 def _parse_header_time(date, time):
-    """Returns `~datetime.datetime` object from date and time fields of header. """
+    """
+    Returns `~datetime.datetime` object from date and time fields of header.
+    """
     if time is not None:
         date = date + 'T' + time
     return parse_time(date)
 
 
 class CallistoSpectrogram(LinearTimeSpectrogram):
-    """ Classed used for dynamic spectra coming from the Callisto network.
+    """ Class used for dynamic spectra coming from the Callisto network.
 
     Attributes
     ----------
@@ -264,7 +268,6 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             t_label, f_label, content, instruments,
             header, axes.header, swapped
         )
-
 
     def __init__(self, data, time_axis, freq_axis, start, end,
             t_init=None, t_delt=None, t_label="Time", f_label="Frequency",
