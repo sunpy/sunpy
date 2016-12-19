@@ -13,7 +13,7 @@ from sunpy.instr.aia import aiaprep
 
 @pytest.fixture
 def original():
-    return sunpy.map.Map(test.get_test_filename("aia_171_level1.fits"))
+    return sunpy.map.Map(test.get_test_filepath("aia_171_level1.fits"))
 
 @pytest.fixture
 def prep_map(original):
