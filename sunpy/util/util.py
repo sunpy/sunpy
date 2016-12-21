@@ -13,7 +13,7 @@ from sunpy.extern.six.moves import map, zip
 __all__ = ['to_signed', 'unique', 'print_table',
            'replacement_filename', 'merge', 'common_base',
            'minimal_pairs', 'polyfun_at',
-           'expand_list', 'expand_list_generator', 'Deprecated']
+           'expand_list', 'expand_list_generator']
 
 def to_signed(dtype):
     """ Return dtype that can hold data of passed dtype but is signed.
@@ -45,14 +45,6 @@ def unique(itr, key=None):
 
     key : object
         not documented yet
-
-    Returns
-    -------
-    not documented yet
-
-
-    .. todo::
-        improve documentation. what does this function do?
     """
     items = set()
     if key is None:
@@ -68,26 +60,6 @@ def unique(itr, key=None):
                 items.add(x)
 
 def print_table(lst, colsep=' ', linesep='\n'):
-    """
-    ?
-
-    Parameters
-    ----------
-    lst : ?
-        ?
-    colsep : ?
-        ?
-    linesep : ?
-        ?
-
-    Returns
-    -------
-    ?
-
-    .. todo::
-        improve documentation.
-
-    """
     width = [max(map(len, col)) for col in zip(*lst)]
     return linesep.join(
         colsep.join(
@@ -97,22 +69,14 @@ def print_table(lst, colsep=' ', linesep='\n'):
 
 
 def polyfun_at(coeff, p):
-    """ Return value of polynomial with coefficients (highest first) at
+    """
+    Return value of polynomial with coefficients (highest first) at
     point (can also be an np.ndarray for more than one point) p.
 
     Parameters
     ----------
-    coeff : not documented yet
-        not documented yet
-    p : not documented yet
-        not documented yet
-
-    Returns
-    -------
-    not documented yet
-
-    .. todo::
-        improve documentation. what does this do?  Does numpy have this functionality?
+    coeff
+    p
 
     """
     return np.sum(k * p ** n for n, k in enumerate(reversed(coeff)))
@@ -131,10 +95,6 @@ def minimal_pairs(one, other):
     -------
     `tuple`
          Pairs of values in `one` and `other` with minimal distance
-
-    .. todo::
-        improve documentation. what does this do?
-
     """
     lbestdiff = bestdiff = bestj = besti = None
     for i, freq in enumerate(one):
@@ -164,13 +124,10 @@ def minimal_pairs(one, other):
 
 DONT = object()
 def find_next(one, other, pad=DONT):
-    """ Given two sorted sequences one and other, for every element
+    """
+    Given two sorted sequences one and other, for every element
     in one, return the one larger than it but nearest to it in other.
     If no such exists and pad is not DONT, return value of pad as "partner".
-
-    .. todo::
-        improve documentation. what does this do?
-
     """
     n = 0
     for elem1 in one:
@@ -185,10 +142,8 @@ def find_next(one, other, pad=DONT):
 
 
 def common_base(objs):
-    """ Find class that every item of objs is an instance of.
-
-    .. todo::
-        improve documentation. what does this do?
+    """
+    Find class that every item of objs is an instance of.
     """
     for cls in objs[0].__class__.__mro__:
         if all(isinstance(obj, cls) for obj in objs):
@@ -197,12 +152,10 @@ def common_base(objs):
 
 
 def merge(items, key=(lambda x: x)):
-    """ Given sorted lists of iterables, return new iterable that returns
+    """
+    Given sorted lists of iterables, return new iterable that returns
     elements of all iterables sorted with respect to key.
-
-    .. todo::
-        improve documentation. what does this do?
-"""
+    """
     state = {}
     for item in map(iter, items):
         try:
@@ -226,13 +179,11 @@ def merge(items, key=(lambda x: x)):
             del state[item]
 
 def replacement_filename(path):
-    """ Return replacement path for already used path. Enumerates
+    """
+    Return replacement path for already used path. Enumerates
     until an unused filename is found. E.g., "/home/florian/foo.fits"
     becomes "/home/florian/foo.0.fits", if that is used
     "/home/florian/foo.1.fits", etc.
-
-    .. todo::
-        improve documentation. what does this do?
     """
     if not os.path.exists(path):
         return path
@@ -263,47 +214,13 @@ def expand_list(input):
     ----------
     Taken from :http://stackoverflow.com/a/2185971/2486799
 
-
-    .. todo::
-        improve documentation. Can this handle Arbitrarily nested lists?
-
     """
     return [item for item in expand_list_generator(input)]
 
 def expand_list_generator(input):
-    """
-    .. todo::
-        improve documentation. what does this function do?
-    """
     for item in input:
         if type(item) in [list, tuple]:
             for nested_item in expand_list_generator(item):
                 yield nested_item
         else:
             yield item
-
-#==============================================================================
-# Deprecation decorator: http://code.activestate.com/recipes/391367-deprecated/
-# and http://www.artima.com/weblogs/viewpost.jsp?thread=240845
-#==============================================================================
-class Deprecated(object):
-    """ Use this decorator to deprecate a function or method, you can pass an
-    additional message to the decorator:
-
-    @Deprecated("no more")
-    """
-    def __init__(self, message=""):
-        self.message = message
-
-    def __call__(self, func):
-        def newFunc(*args, **kwargs):
-            warnings.warn("Call to deprecated function {0}. \n {1}".format(
-                                                                func.__name__,
-                                                                self.message),
-                          category=Warning, stacklevel=2)
-            return func(*args, **kwargs)
-
-        newFunc.__name__ = func.__name__
-        newFunc.__doc__ = func.__doc__
-        newFunc.__dict__.update(func.__dict__)
-        return newFunc

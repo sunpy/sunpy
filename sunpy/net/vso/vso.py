@@ -32,7 +32,7 @@ from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
-from sunpy.util import replacement_filename, Deprecated
+from sunpy.util import replacement_filename
 from sunpy.time import parse_time
 
 from sunpy.extern.six import iteritems, text_type, u, PY2
