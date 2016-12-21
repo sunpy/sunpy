@@ -211,11 +211,6 @@ class QueryResponse(list):
                   if record.time.end is not None), TIMEFORMAT)
         )
 
-    @Deprecated("Use `print qr` to view the contents of the response")
-    def show(self):
-        """Print out human-readable summary of records retrieved"""
-        print(str(self))
-
     def build_table(self):
         keywords = ['Start Time', 'End Time', 'Source', 'Instrument', 'Type']
         record_items = {}
@@ -831,12 +826,6 @@ class InteractiveVSOClient(VSOClient):
             choices : not documented yet
 
             response : not documented yet
-
-        Returns
-        -------
-
-        .. todo::
-            improve documentation. what does this function do?
 
         """
         while True:
