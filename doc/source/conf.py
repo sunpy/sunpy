@@ -132,6 +132,11 @@ latex_documents = [('index', project + '.tex', project + u' Documentation',
 man_pages = [('index', project.lower(), project + u' Documentation',
               [author], 1)]
 
+# -- Swap to Napoleon ---------------------------------------------------------
+
+extensions.remove('astropy_helpers.sphinx.ext.numpydoc')
+extensions.append('sphinx.ext.napoleon')
+
 
 # -- Options for the edit_on_github extension ---------------------------------
 extensions += ['astropy_helpers.sphinx.ext.edit_on_github',
