@@ -116,13 +116,3 @@ def test_expand_list():
     """
     lst = [1, 2, 3, [4, 5, 6], 7, (8, 9)]
     assert util.expand_list(lst) == [1, 2, 3, 4, 5, 6, 7, 8, 9]
-
-def test_deprecated():
-    """
-    This should trigger a deprecation warning.
-    """
-    depr = util.Deprecated()
-    with warnings.catch_warnings(record=True) as current_warnings:
-        depr_func = depr(lambda x: x)
-        depr_func(1)
-        assert len(current_warnings) == 1
