@@ -18,6 +18,7 @@ Latest
 * Remove the `sunpy.map.nddata_compat` module, this makes `Map.data` and
   `Map.meta` read only.
 * Add a `NorthOffsetFrame` class for generating HGS-like coordinate systems with a shifted north pole.
+* Remove deprecated `VSOClient.show` method.
 
 0.7.0
 -----
