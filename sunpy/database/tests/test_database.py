@@ -443,7 +443,7 @@ def test_download_from_qr(database, download_qr, tmpdir):
 def test_add_entry_from_qr(database, query_result):
     assert len(database) == 0
     database.add_from_vso_query_result(query_result)
-    assert len(database) == 10
+    assert len(database) == 25
     database.undo()
     assert len(database) == 0
     database.redo()
