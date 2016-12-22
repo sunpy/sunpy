@@ -183,7 +183,7 @@ def merge(items, key=(lambda x: x)):
 
     .. todo::
         improve documentation. what does this do?
-"""
+    """
     state = {}
     for item in map(iter, items):
         try:
@@ -197,7 +197,7 @@ def merge(items, key=(lambda x: x)):
         for item, (value, tk) in six.iteritems(state):
             # Value is biggest.
             if all(tk >= k for it, (v, k)
-                in six.iteritems(state) if it is not item):
+               in six.iteritems(state) if it is not item):
                 yield value
                 break
         try:
