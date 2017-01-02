@@ -1299,11 +1299,11 @@ def flareclass_to_flux(flareclass):
     --------
     >>> from sunpy.instr.goes import flareclass_to_flux
     >>> flareclass_to_flux('A1.0')
-    1e-08 W / m2
+    <Quantity 1e-08 W / m2>
     >>> flareclass_to_flux('c4.7')
-    4.7e-06 W / m2
+    <Quantity 4.7e-06 W / m2>
     >>> flareclass_to_flux('X2.4')
-    0.00024 W / m2
+    < Quantity 0.00024 W / m2>
     """
     if type(flareclass) != type('str'):
         raise TypeError("Input must be a string")
