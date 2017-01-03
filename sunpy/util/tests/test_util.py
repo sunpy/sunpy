@@ -1,16 +1,16 @@
 """This module tests the functions implemented in sunpy.util.util."""
 from __future__ import absolute_import, division, print_function
-
 import warnings
-
 import numpy as np
-
 from sunpy.util import util
+
+
 def test_to_signed():
     """
     This should return a signed type that can hold uint32.
     """
     assert util.to_signed(np.dtype('uint32')) == np.dtype('int64')
+
 
 def test_unique():
     """
@@ -22,6 +22,7 @@ def test_unique():
         unique_list.append(elem)
     assert unique_list == [6, 1, 2, 7, 41.2, '41.2']
 
+
 def test_unique_key():
     """
     This should add each element of itr to unique_list if no preceding
@@ -32,6 +33,7 @@ def test_unique_key():
     for elem in util.unique(itr, lambda x: x % 10):
         unique_list.append(elem)
     assert unique_list == [7, 3, 104, 6, 10]
+
 
 def test_print_table():
     """
@@ -48,12 +50,6 @@ def test_print_table():
                '3|1.732  |9  ')
     assert util.print_table(lst, colsep='|') == expected
 
-def test_polyfun_at():
-    """
-    This should evaluate the polynomial x^3 + 5x^2 - 6x + 3 at x = 5.
-    """
-    coeff = [1, 5, -6, 3]
-    assert util.polyfun_at(coeff, 5) == 223
 
 def test_minimal_pairs():
     """
@@ -65,6 +61,7 @@ def test_minimal_pairs():
     assert list(util.minimal_pairs(list1, list2)) == [(1, 0, 2), (2, 1, 2),
                                                       (4, 2, 1), (5, 4, 1)]
 
+
 def test_find_next():
     """
     This should return a generator yielding the nearest larger element in
@@ -75,6 +72,7 @@ def test_find_next():
     list2 = [0, 2, 3, 5, 0, 0, 5, 9, 10, 15]
     assert list(util.find_next(list1, list2, None)) == [(1, 2), (2, 3), (3, 5),
                         (4, 5), (5, 9), (6, 10), (7, 15), (8, None), (9, None)]
+
 
 def test_common_base():
     """
@@ -94,6 +92,7 @@ def test_common_base():
     objs = [inst_b, inst_c]
     assert util.common_base(objs) == TestA
 
+
 def test_merge():
     """
     This should return a sorted (from greatest to least) merged list
@@ -104,11 +103,13 @@ def test_merge():
     result = list(util.merge([list1, list2]))
     assert result[::-1] == sorted(result)
 
+
 def test_replacement_filename():
     """
     This should return a replacement path for the current file.
     """
     assert util.replacement_filename(__file__).endswith('test_util.0.py')
+
 
 def test_expand_list():
     """
@@ -116,6 +117,7 @@ def test_expand_list():
     """
     lst = [1, 2, 3, [4, 5, 6], 7, (8, 9)]
     assert util.expand_list(lst) == [1, 2, 3, 4, 5, 6, 7, 8, 9]
+
 
 def test_deprecated():
     """

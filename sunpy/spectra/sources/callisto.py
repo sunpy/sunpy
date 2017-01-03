@@ -16,7 +16,7 @@ from scipy.optimize import leastsq
 from scipy.ndimage import gaussian_filter1d
 
 from sunpy.time import parse_time
-from sunpy.util import polyfun_at, minimal_pairs
+from sunpy.util import minimal_pairs
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.util.net import download_file
 
@@ -50,6 +50,8 @@ PARSERS = [
     # Everything starts with ""
     ("", parse_filename)
 ]
+
+
 def query(start, end, instruments=None, url=DEFAULT_URL):
     """Get URLs for callisto data from instruments between start and end.
 
@@ -106,14 +108,16 @@ def download(urls, directory):
 
 
 def _parse_header_time(date, time):
-    """Returns `~datetime.datetime` object from date and time fields of header. """
+    """
+    Returns `~datetime.datetime` object from date and time fields of header.
+    """
     if time is not None:
         date = date + 'T' + time
     return parse_time(date)
 
 
 class CallistoSpectrogram(LinearTimeSpectrogram):
-    """ Classed used for dynamic spectra coming from the Callisto network.
+    """ Class used for dynamic spectra coming from the Callisto network.
 
     Attributes
     ----------
@@ -264,7 +268,6 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             t_label, f_label, content, instruments,
             header, axes.header, swapped
         )
-
 
     def __init__(self, data, time_axis, freq_axis, start, end,
             t_init=None, t_delt=None, t_label="Time", f_label="Frequency",
@@ -438,11 +441,9 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         f1 = np.polyfit(pairs_freqs, factors, 3)
         f2 = np.polyfit(pairs_freqs, constants, 3)
 
-        return (
-            one,
-            two * polyfun_at(f1, two.freq_axis)[:, np.newaxis] +
-                polyfun_at(f2, two.freq_axis)[:, np.newaxis]
-        )
+        return (one,
+                two * np.polyval(f1, two.freq_axis)[:, np.newaxis] +
+                np.polyval(f2, two.freq_axis)[:, np.newaxis])
 
     def extend(self, minutes=15, **kwargs):
         """Requests subsequent files from the server. If minutes is negative,
