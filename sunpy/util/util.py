@@ -266,10 +266,10 @@ def expand_list_generator(inp):
             yield item
 
 
-#==============================================================================
+# ==============================================================================
 # Deprecation decorator: http://code.activestate.com/recipes/391367-deprecated/
 # and http://www.artima.com/weblogs/viewpost.jsp?thread=240845
-#==============================================================================
+# ==============================================================================
 class Deprecated(object):
     """ Use this decorator to deprecate a function or method, you can pass an
     additional message to the decorator:
