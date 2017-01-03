@@ -5,7 +5,6 @@ General utility functions.
 from __future__ import absolute_import, division, print_function
 
 import os
-import warnings
 from itertools import count
 
 import numpy as np
@@ -13,10 +12,10 @@ import numpy as np
 from sunpy.extern import six
 from sunpy.extern.six.moves import map, zip
 
-__all__ = ['to_signed', 'unique', 'print_table',
-           'replacement_filename', 'merge', 'common_base',
-           'minimal_pairs', 'polyfun_at',
-           'expand_list', 'expand_list_generator']
+__all__ = ['to_signed', 'unique', 'print_table', 'replacement_filename',
+           'merge', 'common_base', 'minimal_pairs', 'expand_list',
+           'expand_list_generator']
+
 
 def to_signed(dtype):
     """
@@ -70,20 +69,6 @@ def print_table(lst, colsep=' ', linesep='\n'):
     width = [max(map(len, col)) for col in zip(*lst)]
     return linesep.join(
         colsep.join(col.ljust(n) for n, col in zip(width, row)) for row in lst)
-
-
-def polyfun_at(coeff, p):
-    """
-    Return value of polynomial with coefficients (highest first) at
-    point (can also be an np.ndarray for more than one point) p.
-
-    Parameters
-    ----------
-    coeff
-    p
-
-    """
-    return np.sum(k * p**n for n, k in enumerate(reversed(coeff)))
 
 
 def minimal_pairs(one, other):
@@ -204,13 +189,13 @@ def replacement_filename(path):
                 return newpath
 
 
-def expand_list(input):
+def expand_list(inp):
     """
     Expand a list of lists.
 
     Parameters
     ----------
-    input : `list`
+    inp : `list`
 
     Returns
     -------
@@ -222,11 +207,11 @@ def expand_list(input):
     Taken from :http://stackoverflow.com/a/2185971/2486799
 
     """
-    return [item for item in expand_list_generator(input)]
+    return [item for item in expand_list_generator(inp)]
 
 
-def expand_list_generator(input):
-    for item in input:
+def expand_list_generator(inp):
+    for item in inp:
         if type(item) in [list, tuple]:
             for nested_item in expand_list_generator(item):
                 yield nested_item
