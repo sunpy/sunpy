@@ -58,7 +58,7 @@ class UnifiedResponse(MutableSequence):
                     self._numfile += len(block[0])
                 elif hasattr(block, 'client'):
                     tmplst.append(block)
-                    self._numfile += len(block[0])
+                    self._numfile += len(block)
                 else:
                     raise Exception("{} is not a valid input to UnifiedResponse.".format(lst))
 
