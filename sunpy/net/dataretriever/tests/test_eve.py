@@ -7,13 +7,13 @@ from sunpy.net.vso import VSOClient
 from sunpy.net.vso.attrs import Time, Instrument, Source, Level
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.eve as eve
-from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
+from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 from hypothesis import given, settings
 from hypothesis.extra.datetime import datetimes
-from .strategies import time_attr
+from sunpy.net.tests.strategies import time_attr
 
 LCClient = eve.EVEClient()
 

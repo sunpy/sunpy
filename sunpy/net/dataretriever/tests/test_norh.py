@@ -6,12 +6,12 @@ import astropy.units as u
 from sunpy.time.timerange import TimeRange
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.norh as norh
-from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
+from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 from hypothesis import given
-from .strategies import time_attr
+from sunpy.net.tests.strategies import time_attr
 
 @pytest.mark.parametrize("timerange,url_start,url_end", [
     (TimeRange('2012/4/21', '2012/4/21'),

@@ -227,7 +227,7 @@ class GenericClient(object):
     def _can_handle_query(cls, *query):
         """
         Method the
-        `sunpy.net.dataretriever.downloader_factory.UnifiedDownloaderFactory`
+        `sunpy.net.fido_factory.UnifiedDownloaderFactory`
         class uses to dispatch queries to this Client.
         """
         raise NotImplementedError

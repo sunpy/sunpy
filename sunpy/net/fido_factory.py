@@ -1,3 +1,11 @@
+"""
+This module contains the factory code for the ``sunpy.net.Fido`` factory. As
+well as defining ``Fido`` which is an instance of
+`sunpy.net.fido_factory.UnifiedDownloaderFactory` it defines
+`~sunpy.net.fido_factory.UnifiedResponse` which ``Fido.search`` returns.
+`~sunpy.net.fido_factory.DownloadResponse` objects are returned by ``Fido.fetch``.
+
+"""
 # Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
 # This module was developed under funding provided by
 # Google Summer of Code 2014
@@ -10,10 +18,10 @@ from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.net.dataretriever.clients import CLIENTS
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.vso import VSOClient
-from .. import attr
-from .. import attrs as a
+from . import attr
+from . import attrs as a
 
-__all__ = ['Fido']
+__all__ = ['Fido', 'UnifiedResponse', 'UnifiedDownloaderFactory', 'DownloadResponse']
 
 
 class UnifiedResponse(MutableSequence):
@@ -158,6 +166,11 @@ def _create_or(walker, query, factory):
 
 
 class UnifiedDownloaderFactory(BasicRegistrationFactory):
+    """
+    sunpy.net.Fido(\*args, \*\*kwargs)
+
+    Search and Download data from a variety of supported sources.
+    """
     def search(self, *query):
         """
         Query for data in form of multiple parameters.
@@ -189,7 +202,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         Returns
         -------
-        `sunpy.net.dataretriever.downloader_factory.UnifiedResponse` object
+        `sunpy.net.fido_factory.UnifiedResponse` object
             Container of responses returned by clients servicing query.
 
         Notes
@@ -209,7 +222,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         Parameters
         ----------
-        query_result : `sunpy.net.dataretriever.downloader_factory.UnifiedResponse`
+        query_result : `sunpy.net.fido_factory.UnifiedResponse`
             Container returned by query method.
 
         wait : `bool`
@@ -220,7 +233,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         Returns
         -------
-        `sunpy.net.dataretriever.downloader_factory.DownloadResponse`
+        `sunpy.net.fido_factory.DownloadResponse`
 
         Example
         --------

@@ -10,7 +10,7 @@ import astropy.units as u
 
 from sunpy.net import attr
 from sunpy.net import Fido, attrs as a
-from sunpy.net.dataretriever.downloader_factory import DownloadResponse, UnifiedResponse
+from sunpy.net.fido_factory import DownloadResponse, UnifiedResponse
 from sunpy.net.dataretriever.client import CLIENTS
 from sunpy.util.datatype_factory_base import NoMatchError, MultipleMatchError
 from sunpy.time import TimeRange, parse_time
