@@ -19,7 +19,7 @@ Latest
   `Map.meta` read only.
 * Add a `NorthOffsetFrame` class for generating HGS-like coordinate systems with a shifted north pole.
 * Remove deprecated `VSOClient.show` method.
-* Deprecate `sunpy.wcs`, `sunpy.coordinates` and `sunpy.map` now provide all
+* Deprecate `sunpy.wcs`: `sunpy.coordinates` and `sunpy.map` now provide all
   that functionality in a more robust manner.
 
 0.7.0
