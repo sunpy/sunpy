@@ -43,19 +43,22 @@ class UnifiedResponse(MutableSequence):
         """
 
         tmplst = []
+        # numfile is the number of files not the number of results.
         self._numfile = 0
         if isinstance(lst, QueryResponse):
             if not hasattr(lst, 'client'):
                 raise("QueryResponse is only a valid input if it has a client attribute.")
             tmplst.append(lst)
+            self._numfile = len(lst)
         else:
             for block in lst:
                 if isinstance(block, tuple) and len(block) == 2:
                     block[0].client = block[1]
                     tmplst.append(block[0])
-                    self._numfile += len(block)
+                    self._numfile += len(block[0])
                 elif hasattr(block, 'client'):
                     tmplst.append(block)
+                    self._numfile += len(block[0])
                 else:
                     raise Exception("{} is not a valid input to UnifiedResponse.".format(lst))
 
@@ -90,13 +93,22 @@ class UnifiedResponse(MutableSequence):
         return self._list[i]
 
     @property
+    def responses(self):
+        """
+        A generator of all the `sunpy.net.dataretriever.client.QueryResponse`
+        objects contained in the `~sunpy.net.fido_factory.UnifiedResponse`
+        object.
+        """
+        for i in range(len(self)):
+            yield self.get_response(i)
+
+    @property
     def file_num(self):
         return self._numfile
 
     def _repr_html_(self):
         ret = ''
-        for block in self:
-            block = self.get_response(0)
+        for block in self.responses:
             ret += block._repr_html_()
 
         return ret
@@ -243,7 +255,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> file_paths = downresp.wait()
         """
         reslist = []
-        for block in query_result:
+        for block in query_result.responses:
             reslist.append(block.client.get(block, **kwargs))
 
         results = DownloadResponse(reslist)

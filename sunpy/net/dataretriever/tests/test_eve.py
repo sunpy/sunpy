@@ -82,15 +82,16 @@ def test_get(time, instrument):
     [(a.Time('2012/10/4', '2012/10/6') & a.Instrument('eve') & a.Level(0))])
 def test_fido(query):
     qr = Fido.search(query)
+    client = qr.get_response(0).client
     assert isinstance(qr, UnifiedResponse)
-    assert isinstance(qr[0].client, eve.EVEClient)
+    assert isinstance(client, eve.EVEClient)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
 
 
 @pytest.mark.online
 @given(time_attr(time=datetimes(timezones=[], max_year=datetime.datetime.utcnow().year, min_year=2010)))
-@settings(max_examples=2, timeout=-1)
+@settings(max_examples=2, timeout=90)
 def test_levels(time):
     """
     Test the correct handling of level 0 / 1.
@@ -98,12 +99,14 @@ def test_levels(time):
     """
     eve_a = a.Instrument('EVE')
     qr = Fido.search(time, eve_a)
-    assert isinstance(qr[0].client, VSOClient)
+    client = qr.get_response(0).client
+    assert isinstance(client, VSOClient)
 
     qr = Fido.search(time, eve_a, a.Level(0))
-    assert isinstance(qr[0].client, eve.EVEClient)
+    client = qr.get_response(0).client
+    assert isinstance(client, eve.EVEClient)
 
     qr = Fido.search(time, eve_a, a.Level(0) | a.Level(1))
-    clients = {type(a.client) for a in qr}
+    clients = {type(a.client) for a in qr.responses}
     assert clients.symmetric_difference({VSOClient, eve.EVEClient}) == set()
 
