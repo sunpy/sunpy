@@ -11,7 +11,7 @@ import astropy.units as u
 from sunpy.net import attr
 from sunpy.net import Fido, attrs as a
 from sunpy.net.fido_factory import DownloadResponse, UnifiedResponse
-from sunpy.net.dataretriever.client import CLIENTS
+from sunpy.net.dataretriever.client import CLIENTS, QueryResponse
 from sunpy.util.datatype_factory_base import NoMatchError, MultipleMatchError
 from sunpy.time import TimeRange, parse_time
 from sunpy import config
@@ -74,8 +74,7 @@ def check_response(query, unifiedresp):
     if not query_tr:
         raise ValueError("No Time Specified")
 
-    for block in unifiedresp:
-        block = block.get_response(0)
+    for block in unifiedresp.responses:
         for res in block:
             assert res.time.start in query_tr
             assert query_instr.lower() == res.instrument.lower()
@@ -172,3 +171,12 @@ def test_unifiedresponse_slicing():
         a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
     assert isinstance(results[0:2], UnifiedResponse)
     assert isinstance(results[0], UnifiedResponse)
+
+def test_responses():
+    results = Fido.search(
+        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+
+    for i, resp in enumerate(results.responses):
+        assert isinstance(resp, QueryResponse)
+
+    assert i + 1 == len(results)
