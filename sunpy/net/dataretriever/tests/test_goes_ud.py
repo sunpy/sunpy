@@ -4,12 +4,12 @@ from sunpy.time.timerange import TimeRange, parse_time
 from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.goes as goes
-from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
+from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 from hypothesis import given, example
-from .strategies import goes_time
+from sunpy.net.tests.strategies import goes_time
 
 LCClient = goes.GOESClient()
 

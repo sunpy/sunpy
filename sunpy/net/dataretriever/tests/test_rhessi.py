@@ -7,7 +7,7 @@ from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.dataretriever.client import QueryResponse
-from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
+from sunpy.net.fido_factory import UnifiedResponse
 
 LCClient = rhessi.RHESSIClient()
 

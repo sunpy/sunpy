@@ -1,5 +1,5 @@
 from __future__ import absolute_import
 
-from sunpy.net.helioviewer import *
+__all__ = ["Fido"]
 
-from sunpy.net.dataretriever import Fido
+from sunpy.net.downloader_factory import Fido

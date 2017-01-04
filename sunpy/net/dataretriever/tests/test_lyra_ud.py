@@ -5,12 +5,12 @@ from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument, Source
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.lyra as lyra
-from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
+from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 from hypothesis import given
-from .strategies import time_attr
+from sunpy.net.tests.strategies import time_attr
 
 LCClient = lyra.LYRAClient()
 
