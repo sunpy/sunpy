@@ -121,13 +121,6 @@ class GenericMap(NDData):
     Pair(x=Unit("arcsec"), y=Unit("arcsec"))
     >>> aia.peek()   # doctest: +SKIP
 
-    References
-    ----------
-    | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
-    | http://docs.scipy.org/doc/numpy/user/basics.subclassing.html
-    | http://docs.scipy.org/doc/numpy/reference/ufuncs.html
-    | http://www.scipy.org/Subclasses
-
     Notes
     -----
 

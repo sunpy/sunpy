@@ -1,6 +1,9 @@
 from __future__ import absolute_import
 
 import numpy as np
+
+from astropy.utils.decorators import deprecated
+
 import sunpy.sun as sun
 
 import astropy.units as u
@@ -26,9 +29,11 @@ def _convert_angle_units(unit='arcsec'):
     else:
         raise ValueError("The units specified are either invalid or is not supported at this time.")
 
+@deprecated("0.8.0", alternative="sunpy.map.GenericMap.pixel_to_data")
 def convert_pixel_to_data(size, scale, reference_pixel,
                           reference_coordinate, x=None, y=None):
-    """Calculate the data coordinate for particular pixel indices.
+    """
+    Calculate the data coordinate for particular pixel indices.
 
     Parameters
     ----------
@@ -53,10 +58,6 @@ def convert_pixel_to_data(size, scale, reference_pixel,
     -----
     This function assumes a gnomic projection which is correct for a detector at the focus
     of an optic observing the Sun.
-
-    Examples
-    --------
-
     """
     cdelt = np.array(scale)
     crpix = np.array(reference_pixel)
@@ -76,8 +77,10 @@ def convert_pixel_to_data(size, scale, reference_pixel,
 
     return coordx, coordy
 
+@deprecated("0.8.0")
 def get_center(size, scale, reference_pixel, reference_coordinate):
-    """Returns the center of the image in data coordinates.
+    """
+    Returns the center of the image in data coordinates.
 
     Parameters
     ----------
@@ -101,8 +104,11 @@ def get_center(size, scale, reference_pixel, reference_coordinate):
     """
     return scale * (size - 1 * u.pix) / 2. + reference_coordinate - (reference_pixel - 1 * u.pix) * scale
 
+
+@deprecated("0.8.0", alternative="sunpy.map.GenericMap.data_to_pixel")
 def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
-    """Calculate the pixel indices for a given data coordinate.
+    """
+    Calculate the pixel indices for a given data coordinate.
 
     Parameters
     ----------
@@ -119,10 +125,6 @@ def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
     -------
     out : ndarray
         The  pixel coordinates (x,y) at that data coordinate.
-
-    Examples
-    --------
-
     """
 
     # TODO: Needs to check what coordinate system the data is given in
@@ -138,8 +140,11 @@ def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
 
     return pixelx, pixely
 
+
+@deprecated("0.8.0", alternative="sunpy.coordinates")
 def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
-    """Converts from Helioprojective-Cartesian (HPC) coordinates into
+    """
+    Converts from Helioprojective-Cartesian (HPC) coordinates into
     Heliocentric-Cartesian (HCC) coordinates. Returns all three dimensions, x, y, z in
     meters.
 
@@ -198,8 +203,11 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     else:
         return rx, ry
 
+
+@deprecated("0.8.0", alternative="sunpy.coordinates")
 def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
-    """Convert Heliocentric-Cartesian (HCC) to angular
+    """
+    Convert Heliocentric-Cartesian (HCC) to angular
     Helioprojective-Cartesian (HPC) coordinates (in degrees).
 
     Parameters
@@ -250,8 +258,11 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
 
     return hpcx, hpcy
 
+
+@deprecated("0.8.0", alternative="sunpy.coordinates")
 def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
-    """Convert from Heliocentric-Cartesian (HCC) (given in meters) to
+    """
+    Convert from Heliocentric-Cartesian (HCC) (given in meters) to
     Stonyhurst Heliographic coordinates (HG) given in degrees, with
     radial output in meters.
 
@@ -306,9 +317,12 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
     else:
         return np.rad2deg(hgln), np.rad2deg(hglt)
 
+
+@deprecated("0.8.0", alternative="sunpy.coordinates")
 def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
                    z=False, r=rsun_meters):
-    """Convert from Stonyhurst Heliographic coordinates (given in degrees) to
+    """
+    Convert from Stonyhurst Heliographic coordinates (given in degrees) to
     Heliocentric-Cartesian coordinates (given in meters).
 
     Parameters
@@ -373,9 +387,12 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
     else:
         return x, y
 
+
+@deprecated("0.8.0", alternative="sunpy.coordinates")
 def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec',
                    occultation=False):
-    """Convert from Heliographic coordinates (HG) to Helioprojective-Cartesian
+    """
+    Convert from Heliographic coordinates (HG) to Helioprojective-Cartesian
     (HPC).
 
     Parameters
@@ -415,8 +432,10 @@ def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None, a
     x, y = convert_hcc_hpc(tempx, tempy, dsun_meters=dsun_meters, angle_units=angle_units)
     return x, y
 
+@deprecated("0.8.0", alternative="sunpy.coordinates")
 def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec'):
-    """Convert from Helioprojective-Cartesian (HPC) to Heliographic coordinates
+    """
+    Convert from Helioprojective-Cartesian (HPC) to Heliographic coordinates
     (HG) in degrees.
 
     Parameters
@@ -453,8 +472,11 @@ def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcs
     lon, lat = convert_hcc_hg(tempx, tempy, b0_deg=b0_deg, l0_deg=l0_deg)
     return lon, lat
 
+
+@deprecated("0.8.0", alternative="sunpy.map")
 def proj_tan(x, y, force=False):
-    """Applies the gnomonic (TAN) projection to intermediate relative
+    """
+    Applies the gnomonic (TAN) projection to intermediate relative
     coordinates. This function is not currently implemented!"""
     # if pixels are within 3 degrees of the Sun then skip the calculation unless
     # force is True. This applies to all sdo images so this function is just
@@ -462,9 +484,12 @@ def proj_tan(x, y, force=False):
     # TODO: write proj_tan function
     return x, y
 
+@deprecated("0.8.0", alternative="sunpy.coordinates")
 def convert_to_coord(x, y, from_coord, to_coord, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec'):
-    """Apply a coordinate transform to coordinates. Right now can only do hpc
-    to hcc to hg"""
+    """
+    Apply a coordinate transform to coordinates. Right now can only do hpc
+    to hcc to hg
+    """
 
     if (from_coord == 'hcc') and (to_coord == 'hg'):
         rx, ry = convert_hcc_hg(x, y, b0_deg=b0_deg, l0_deg=l0_deg)
