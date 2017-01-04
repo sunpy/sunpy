@@ -25,4 +25,3 @@ API Reference
    util
    visualization
    wcs
-   client
