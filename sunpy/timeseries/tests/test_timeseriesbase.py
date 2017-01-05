@@ -31,7 +31,6 @@ from sunpy.util.metadata import MetaDict
 from sunpy.timeseries import TimeSeriesMetaData
 from sunpy.tests.helpers import figure_test
 
-import sunpy.data.sample
 import sunpy.data.test
 
 #==============================================================================
