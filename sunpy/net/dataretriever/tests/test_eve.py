@@ -91,7 +91,7 @@ def test_fido(query):
 
 @pytest.mark.online
 @given(time_attr(time=datetimes(timezones=[], max_year=datetime.datetime.utcnow().year, min_year=2010)))
-@settings(max_examples=2, timeout=90)
+@settings(max_examples=2, timeout=240)
 def test_levels(time):
     """
     Test the correct handling of level 0 / 1.
