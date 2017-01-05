@@ -490,18 +490,18 @@ def test_download_from_qr(database, download_qr, tmpdir):
 def test_add_entry_from_qr(database, query_result):
     assert len(database) == 0
     database.add_from_vso_query_result(query_result)
-    assert len(database) == 10
+    assert len(database) == 25
     database.undo()
     assert len(database) == 0
     database.redo()
-    assert len(database) == 10
+    assert len(database) == 25
 
 
 @pytest.mark.online
 def test_add_entries_from_qr_duplicates(database, query_result):
     assert len(database) == 0
     database.add_from_vso_query_result(query_result)
-    assert len(database) == 10
+    assert len(database) == 25
     with pytest.raises(EntryAlreadyAddedError):
         database.add_from_vso_query_result(query_result)
 
@@ -510,9 +510,9 @@ def test_add_entries_from_qr_duplicates(database, query_result):
 def test_add_entries_from_qr_ignore_duplicates(database, query_result):
     assert len(database) == 0
     database.add_from_vso_query_result(query_result)
-    assert len(database) == 10
+    assert len(database) == 25
     database.add_from_vso_query_result(query_result, True)
-    assert len(database) == 20
+    assert len(database) == 50
 
 
 def test_add_fom_path(database):

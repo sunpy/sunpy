@@ -66,22 +66,6 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
             self._annotate_plot(0)
 
     def updatefig(self, val, im, slider):
-        """
-        ?
-
-        Parameters
-        ----------
-            val : ?
-                ?
-
-            im : ?
-                ?
-
-        Returns
-        -------
-        .. todo::
-            improve documentation
-        """
         # Remove all the objects that need to be removed from the
         # plot
         while self.remove_obj:
