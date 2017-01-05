@@ -85,7 +85,7 @@ def solar_semidiameter_angular_size(t='now'):
 
     """
     solar_semidiameter_rad = (constants.radius.to(u.AU)) / sunearth_distance(t)
-    return Angle(solar_semidiameter_rad.to(u.arcsec, equivalencies = u.dimensionless_angles()))
+    return Angle(solar_semidiameter_rad.to(u.arcsec, equivalencies=u.dimensionless_angles()))
 
 
 def position(t='now'):
