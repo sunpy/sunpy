@@ -20,6 +20,7 @@ TIME_CONVERSIONS = {'%Y': '\d{4}', '%y': '\d{2}',
                     '%M': '\d{2}',
                     '%S': '\d{2}', '%e': '\d{3}', '%f': '\d{6}'}
 
+
 class Scraper(object):
     """
     A Scraper to scrap web data archives based on dates.
@@ -43,8 +44,8 @@ class Scraper(object):
     >>> # Downloading data from SolarMonitor.org
     >>> from sunpy.util.scraper import Scraper
     >>> solmon_pattern = ('http://solarmonitor.org/data/'
-                          '%Y/%m/%d/fits/{instrument}/'
-                          '{instrument}_{wave:05d}_fd_%Y%m%d_%H%M%S.fts.gz')
+    ...                   '%Y/%m/%d/fits/{instrument}/'
+    ...                   '{instrument}_{wave:05d}_fd_%Y%m%d_%H%M%S.fts.gz')
     >>> solmon = Scraper(solmon_pattern, instrument = 'swap', wave = 174)
     >>> print(solmon.pattern)
     http://solarmonitor.org/data/%Y/%m/%d/fits/swap/swap_00174_fd_%Y%m%d_%H%M%S.fts.gz
