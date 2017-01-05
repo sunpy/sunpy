@@ -379,7 +379,7 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
     # ENSURE INPUTS ARE OF CORRECT TYPE AND VALID VALUES
     longflux = longflux.to(u.W/u.m/u.m)
     shortflux = shortflux.to(u.W/u.m/u.m)
-    int(satellite)
+    satellite = int(satellite)
     if satellite < 1:
         raise ValueError("satellite must be the number of a "
                          "valid GOES satellite (>1).")

@@ -42,15 +42,15 @@ def aia171_test_mapcube(aia171_test_submap):
 # Known displacements for these mapcube layers when the layer index is set to 0
 @pytest.fixture
 def known_displacements_layer_index0():
-    return {'x': np.asarray([1.222134e-12, -9.142634e+00, -1.830314e+01]),
-            'y': np.asarray([1.506351e-12, 1.955316e-01, 3.805245e-01])}
+    return {'x': np.asarray([ -2.64321898e-12, -9.10078156e+00, -1.82203188e+01]),
+            'y': np.asarray([ -3.35376171e-12,  2.06812274e-01,  4.03135364e-01])}
 
 
 # Known displacements for these mapcube layers when the layer index is set to 1
 @pytest.fixture
 def known_displacements_layer_index1():
-    return {'x': np.asarray([9.123862e+00, 6.821210e-13, -9.142596e+00]),
-            'y': np.asarray([-2.061722e-01, 9.663381e-13, 1.956522e-01])}
+    return {'x': np.asarray([9.08112778e+00, 5.62749847e-12, -9.10074423e+00]),
+            'y': np.asarray([-2.17404844e-01, 7.16227078e-12, 2.06935463e-01])}
 
 
 def test_calculate_solar_rotate_shift(aia171_test_mapcube, known_displacements_layer_index0, known_displacements_layer_index1):

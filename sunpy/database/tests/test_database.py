@@ -417,7 +417,9 @@ def test_add_entry_from_hek_qr(database):
         hek.attrs.EventType('FL'))
     assert len(database) == 0
     database.add_from_hek_query_result(hek_res)
-    assert len(database) == 1678
+    # This number loves to change, so we are just going to test that it's added
+    # *something*
+    assert len(database) > 1
 
 
 @pytest.mark.online
@@ -488,18 +490,18 @@ def test_download_from_qr(database, download_qr, tmpdir):
 def test_add_entry_from_qr(database, query_result):
     assert len(database) == 0
     database.add_from_vso_query_result(query_result)
-    assert len(database) == 10
+    assert len(database) == 25
     database.undo()
     assert len(database) == 0
     database.redo()
-    assert len(database) == 10
+    assert len(database) == 25
 
 
 @pytest.mark.online
 def test_add_entries_from_qr_duplicates(database, query_result):
     assert len(database) == 0
     database.add_from_vso_query_result(query_result)
-    assert len(database) == 10
+    assert len(database) == 25
     with pytest.raises(EntryAlreadyAddedError):
         database.add_from_vso_query_result(query_result)
 
@@ -508,9 +510,9 @@ def test_add_entries_from_qr_duplicates(database, query_result):
 def test_add_entries_from_qr_ignore_duplicates(database, query_result):
     assert len(database) == 0
     database.add_from_vso_query_result(query_result)
-    assert len(database) == 10
+    assert len(database) == 25
     database.add_from_vso_query_result(query_result, True)
-    assert len(database) == 20
+    assert len(database) == 50
 
 
 def test_add_fom_path(database):
@@ -851,7 +853,7 @@ def test_fetch_separate_filenames():
     db.fetch(*download_query, path=path)
 
     # Test
-    assert len(db) == 8
+    assert len(db) == 4
 
     dir_contents = os.listdir(tmp_test_dir)
     assert 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits' in dir_contents

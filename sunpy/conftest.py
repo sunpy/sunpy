@@ -2,6 +2,7 @@ from __future__ import absolute_import, print_function
 from functools import partial
 
 import os
+import socket
 import tempfile
 import json
 
@@ -29,7 +30,7 @@ GOOGLE_URL = 'http://www.google.com'
 def site_reachable(url):
     try:
         urlopen(url, timeout=1)
-    except URLError:
+    except (URLError, socket.timeout):
         return False
     else:
         return True
@@ -48,6 +49,7 @@ def pytest_runtest_setup(item):
         if 'online' in item.keywords and not is_online():
             msg = 'skipping test {0} (reason: client seems to be offline)'
             pytest.skip(msg.format(item.name))
+
 
 def pytest_unconfigure(config):
     tempdir = tempfile.mkdtemp(suffix="_figures")

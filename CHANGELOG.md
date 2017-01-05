@@ -1,6 +1,7 @@
 Latest
 ------
 
+* Get and set methods for composite maps now use Map plot_settings.
 * Simplified map names when plotting.
 * Add time format used by some SDO HMI FITS keywords
 * Fix bug in `wcs.convert_data_to_pixel` where crpix[1] was used for both axes.
@@ -12,6 +13,17 @@ Latest
 * Added VSO query result block level caching in the database module. This
   prevents redownloading of files which have already been downloaded.
   Especially helpful in case of overlapping queries.
+* `sunpy.io.fits.read` will now return any parse-able HDUs even if some raise an error.
+* `VSOClient` no longer prints a lot of XML junk if the query fails.
+* Remove unused `sunpy.visualization.plotting` module
+* Port the pyana wrapper to Python 3
+* `Map.peek(basic_plot=True)` no longer issues warnings
+* Remove the `sunpy.map.nddata_compat` module, this makes `Map.data` and
+  `Map.meta` read only.
+* Add a `NorthOffsetFrame` class for generating HGS-like coordinate systems with a shifted north pole.
+* Remove deprecated `VSOClient.show` method.
+* Deprecate `sunpy.wcs`: `sunpy.coordinates` and `sunpy.map` now provide all
+  that functionality in a more robust manner.
 
 0.7.0
 -----

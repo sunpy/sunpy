@@ -14,6 +14,7 @@ This module provides a wrapper around the VSO API.
 import re
 import os
 import sys
+import logging
 import threading
 
 from datetime import datetime, timedelta
@@ -31,7 +32,7 @@ from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
-from sunpy.util import replacement_filename, Deprecated
+from sunpy.util import replacement_filename
 from sunpy.time import parse_time
 
 from sunpy.extern.six import iteritems, text_type, u, PY2
@@ -42,6 +43,11 @@ TIME_FORMAT = config.get("general", "time_format")
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 DEFAULT_PORT = 'nsoVSOi'
 RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
+
+# Override the logger that dumps the whole Schema
+# to stderr so it doesn't do that.
+suds_log = logging.getLogger('suds.umx.typed')
+suds_log.setLevel(50)
 
 
 # TODO: Name
@@ -204,11 +210,6 @@ class QueryResponse(list):
                 max(record.time.end for record in self
                   if record.time.end is not None), TIMEFORMAT)
         )
-
-    @Deprecated("Use `print qr` to view the contents of the response")
-    def show(self):
-        """Print out human-readable summary of records retrieved"""
-        print(str(self))
 
     def build_table(self):
         keywords = ['Start Time', 'End Time', 'Source', 'Instrument', 'Type']
@@ -825,12 +826,6 @@ class InteractiveVSOClient(VSOClient):
             choices : not documented yet
 
             response : not documented yet
-
-        Returns
-        -------
-
-        .. todo::
-            improve documentation. what does this function do?
 
         """
         while True:

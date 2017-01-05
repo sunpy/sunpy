@@ -43,7 +43,7 @@ class TestNOAAIndicesLightCurve(object):
     def test_header(self):
         """Test presence of GOES satellite number in header"""
         lc1 = sunpy.lightcurve.NOAAIndicesLightCurve.create()
-        assert lc1.header.keys() == ['comments']
+        assert 'comments' in lc1.header.keys()
 
 
 class TestNOAAPredictIndicesLightCurve(object):
@@ -82,4 +82,4 @@ class TestNOAAPredictIndicesLightCurve(object):
     def test_header(self):
         """Test presence of GOES satellite number in header"""
         lc1 = sunpy.lightcurve.NOAAPredictIndicesLightCurve.create()
-        assert lc1.header.keys() == ['comments']
+        assert 'comments' in lc1.header.keys()

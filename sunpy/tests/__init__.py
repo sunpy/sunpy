@@ -49,7 +49,7 @@ def main(modulename='', coverage=False, cov_report=False,
     if not modulename:
         module = __import__('sunpy')
     else:
-        module = __import__('sunpy.{0}.tests'.format(modulename), fromlist=[modulename])
+        module = __import__('sunpy.{0}'.format(modulename), fromlist=['sunpy'])
     path = None
     for path in module.__path__:
         if os.path.exists(path):
@@ -62,9 +62,7 @@ def main(modulename='', coverage=False, cov_report=False,
     all_args = []
     if coverage:
         print(path, modulename)
-        modulepath = os.path.abspath(
-            os.path.join(path, os.path.join(os.pardir, os.pardir, modulename)))
-        all_args.extend(['--cov', modulepath])
+        all_args.extend(['--cov', path])
     if cov_report:
         all_args.extend(['--cov-report', cov_report])
     if not online:

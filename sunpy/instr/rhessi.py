@@ -8,6 +8,7 @@
 from __future__ import absolute_import, print_function
 
 import csv
+import socket
 from datetime import datetime
 from datetime import timedelta
 
@@ -16,14 +17,13 @@ import numpy as np
 from astropy.io import fits
 from astropy import units as u
 
-import sunpy.map
-import sunpy.sun.constants
-
 from sunpy.time import TimeRange, parse_time
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.sun.sun import sunearth_distance
 
 from sunpy.extern.six.moves import urllib
+from sunpy.extern.six.moves.urllib.request import urlopen
+from sunpy.extern.six.moves.urllib.error import URLError
 
 __all__ = ['get_obssumm_dbase_file', 'parse_obssumm_dbase_file',
            'get_obssum_filename', 'get_obssumm_file', 'parse_obssumm_file',
@@ -41,6 +41,20 @@ data_servers = ('http://hesperia.gsfc.nasa.gov/hessidata/',
 
 lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
                  'navy', 'orange', 'green')
+
+
+def get_base_url():
+    """
+    Find the first mirror which is online
+    """
+
+    for server in data_servers:
+        try:
+            urlopen(server, timeout=1)
+        except (URLError, socket.timeout):
+            pass
+        else:
+            return server
 
 
 def get_obssumm_dbase_file(time_range):
@@ -79,7 +93,7 @@ def get_obssumm_dbase_file(time_range):
     _time_range = TimeRange(time_range)
     data_location = 'dbase/'
 
-    url_root = data_servers[0] + data_location
+    url_root = get_base_url() + data_location
     url = url_root + _time_range.start.strftime("hsi_obssumm_filedb_%Y%m.txt")
 
     f = urllib.request.urlretrieve(url)
@@ -187,7 +201,7 @@ def get_obssum_filename(time_range):
 
     index_number = _time_range.start.day - 1
 
-    return data_servers[0] + data_location + result.get('filename')[index_number] + 's'
+    return get_base_url() + data_location + result.get('filename')[index_number] + 's'
 
 
 def get_obssumm_file(time_range):
@@ -220,8 +234,7 @@ def get_obssumm_file(time_range):
     time_range = TimeRange(time_range)
     data_location = 'metadata/catalog/'
 
-    # TODO need to check which is the closest servers
-    url_root = data_servers[0] + data_location
+    url_root = get_base_url() + data_location
 
     url = url_root + get_obssum_filename(time_range)
 
