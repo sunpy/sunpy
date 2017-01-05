@@ -238,21 +238,29 @@ class Provider(_VSOSimpleAttr):
 
 class Source(_VSOSimpleAttr):
     """
-    ?
+    Data sources that VSO can search on. More information about each source
+    may be found within in the VSO Registry. User Interface programmers should
+    note that some names may be encoded as UTF-8. Please note that 'Source' is
+    used internally by VSO to represent what the VSO Data Model refers to as
+    'Observatory'.  For a list of sources see http://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE.
     """
     pass
 
 
 class Instrument(_VSOSimpleAttr):
     """
-    Specifies the Instrument to search for data for.
+    Specifies the Instruments the VSO can search for.
+    More information about each instrument may be found within the VSO
+    Registry. For a list of instruments see http://sdac.virtualsolar.org/cgi/show_details?keyword=INSTRUMENT.
     """
     pass
 
 
 class Physobs(_VSOSimpleAttr):
     """
-    Specifies the physical observable to search for data for.
+    Specifies the physical observable the VSO can search for. See
+    http://sdac.virtualsolar.org/cgi/show_details?keyword=PHYSOBS for a list
+    of physical observables.
     """
     pass
 
