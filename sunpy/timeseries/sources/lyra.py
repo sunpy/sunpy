@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Provides programs to process and analyze PROBA2/LYRA data."""
+"""Proba-2 TimeSeries subclass definitions."""
 from __future__ import absolute_import, division, print_function
 
 import datetime
@@ -18,9 +18,9 @@ from astropy import units as u
 
 TIME_FORMAT = config.get("general", "time_format")
 
-__all__ = ['LYRALightCurve']
+__all__ = ['LYRATimeSeries']
 
-class LYRALightCurve(GenericTimeSeries):
+class LYRATimeSeries(GenericTimeSeries):
     """
     Proba-2 LYRA Lightcurve TimeSeries.
 

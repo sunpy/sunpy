@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Provides programs to process and analyze RHESSI X-ray data."""
+"""RHESSI TimeSeries subclass definitions."""
 from __future__ import absolute_import
 
 from collections import OrderedDict
@@ -14,18 +14,20 @@ from sunpy.instr import rhessi
 import sunpy.io
 from astropy import units as u
 
-__all__ = ['RHESSISummaryLightCurve']
+__all__ = ['RHESSISummaryTimeSeries']
 
 
-class RHESSISummaryLightCurve(GenericTimeSeries):
+class RHESSISummaryTimeSeries(GenericTimeSeries):
     """
     RHESSI X-ray Summary Lightcurve TimeSeries.
 
     The RHESSI mission consists of a single spin-stabilized
     spacecraft in a low-altitude orbit inclined 38 degrees to
-    the Earth's equator. The only instrument on board is an
-    Germaniun imaging spectrometer with the ability to obtain high
-    fidelity solar images in X rays (down to 3 keV) to gamma rays (1 MeV).
+    the Earth's equator. The only instrument on board is a set of 9
+    Germanium spectrometers with the ability to obtain high
+    fidelity solar spectra from X rays (down to 3 keV) to gamma rays (1 MeV).
+    Each spectrometer is coupled to a set of grids with different pitches
+    which enable fourier-style imaging as the spacecraft spins.
 
     RHESSI provides summary lightcurves in the following passbands
 
@@ -123,15 +125,15 @@ class RHESSISummaryLightCurve(GenericTimeSeries):
         header = MetaDict(OrderedDict(header))
         data = DataFrame(d['data'], columns=d['labels'], index=d['time'])
         # Add the units data
-        units = OrderedDict([('3 - 6 keV', u.dimensionless_unscaled),
-                             ('6 - 12 keV', u.dimensionless_unscaled),
-                             ('12 - 25 keV', u.dimensionless_unscaled),
-                             ('25 - 50 keV', u.dimensionless_unscaled),
-                             ('50 - 100 keV', u.dimensionless_unscaled),
-                             ('100 - 300 keV', u.dimensionless_unscaled),
-                             ('300 - 800 keV', u.dimensionless_unscaled),
-                             ('800 - 7000 keV', u.dimensionless_unscaled),
-                             ('7000 - 20000 keV', u.dimensionless_unscaled)])
+        units = OrderedDict([('3 - 6 keV', u.ct / u.s / u.Unit('detector')),
+                             ('6 - 12 keV', u.ct / u.s / u.Unit('detector')),
+                             ('12 - 25 keV', u.ct / u.s / u.Unit('detector')),
+                             ('25 - 50 keV', u.ct / u.s / u.Unit('detector')),
+                             ('50 - 100 keV', u.ct / u.s / u.Unit('detector')),
+                             ('100 - 300 keV', u.ct / u.s / u.Unit('detector')),
+                             ('300 - 800 keV', u.ct / u.s / u.Unit('detector')),
+                             ('800 - 7000 keV', u.ct / u.s / u.Unit('detector')),
+                             ('7000 - 20000 keV', u.ct / u.s / u.Unit('detector'))])
         # Todo: check units used. http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm
         return data, header, units
 
