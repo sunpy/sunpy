@@ -13,7 +13,6 @@ import numpy as np
 from pandas import DataFrame
 from collections import OrderedDict
 
-import sunpy.data.sample
 import sunpy.data.test
 import sunpy.timeseries
 from sunpy.util.metadata import MetaDict
