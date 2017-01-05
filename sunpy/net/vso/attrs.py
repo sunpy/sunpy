@@ -11,8 +11,8 @@ Attributes that can be used to construct VSO queries. Attributes are the
 fundamental building blocks of queries that, together with the two
 operations of AND and OR (and in some rare cases XOR) can be used to
 construct complex queries. Most attributes can only be used once in an
-AND-expression, if you still attempt to do so it is called a collision,
-for a quick example think about how the system should handle
+AND-expression, if you still attempt to do so it is called a collision.
+For a quick example think about how the system should handle
 Instrument('aia') & Instrument('eit').
 """
 from __future__ import absolute_import
@@ -74,8 +74,8 @@ class Wavelength(Attr, _Range):
         Notes
         -----
         The VSO understands the 'wavelength' in one of three units, Angstroms,
-        kHz or keV. Therefore any unit which is directly convertable to these
-        units is valid input
+        kHz or keV. Therefore any unit which is directly convertible to these
+        units is valid input.
         """
 
         if not wavemax:
@@ -131,7 +131,8 @@ class Time(Attr, _Range):
 
     near: SunPy Time String
         Return a singular record closest in time to this value as possible,
-        inside the start and end window. Note: not all providers support this.
+        inside the start and end window. Note: not all providers support this
+        functionality.
 
     """
     def __init__(self, start, end=None, near=None):
@@ -169,6 +170,25 @@ class Time(Attr, _Range):
 
 
 class Extent(Attr):
+    """
+    Specify the spatial field-of-view of the query.
+
+    Parameters
+    ----------
+
+    x : ?
+        ?
+
+    y : ?
+        ?
+
+    width : ?
+        ?
+
+    atype : ?
+        ?
+
+    """
     # pylint: disable=R0913
     def __init__(self, x, y, width, length, atype):
         Attr.__init__(self)
@@ -184,6 +204,9 @@ class Extent(Attr):
 
 
 class Field(ValueAttr):
+    """
+    ?
+    """
     def __init__(self, fielditem):
         ValueAttr.__init__(self, {
             ('field', 'fielditem'): fielditem
@@ -207,10 +230,16 @@ class _VSOSimpleAttr(Attr):
 
 
 class Provider(_VSOSimpleAttr):
+    """
+    Specifies the VSO data provider to search for data for.
+    """
     pass
 
 
 class Source(_VSOSimpleAttr):
+    """
+    ?
+    """
     pass
 
 
@@ -222,26 +251,44 @@ class Instrument(_VSOSimpleAttr):
 
 
 class Physobs(_VSOSimpleAttr):
+    """
+    Specifies the physical observable to search for data for.
+    """
     pass
 
 
 class Pixels(_VSOSimpleAttr):
+    """
+    ?
+    """
     pass
 
 
 class Level(_VSOSimpleAttr):
+    """
+    Specifies the data processing level to search for.
+    """
     pass
 
 
 class Resolution(_VSOSimpleAttr):
+    """
+    ?
+    """
     pass
 
 
 class Detector(_VSOSimpleAttr):
+    """
+    ?
+    """
     pass
 
 
 class Filter(_VSOSimpleAttr):
+    """
+    ?
+    """
     pass
 
 
@@ -262,10 +309,16 @@ class Sample(_VSOSimpleAttr):
 
 
 class Quicklook(_VSOSimpleAttr):
+    """
+    ?
+    """
     pass
 
 
 class PScale(_VSOSimpleAttr):
+    """
+    ?
+    """
     pass
 
 
