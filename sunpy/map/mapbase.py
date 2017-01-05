@@ -31,7 +31,7 @@ from sunpy.image.transform import affine_transform
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
 
-from .nddata_compat import NDDataCompat as NDData
+from astropy.nddata import NDData
 
 TIME_FORMAT = config.get("general", "time_format")
 Pair = namedtuple('Pair', 'x y')
@@ -121,13 +121,6 @@ class GenericMap(NDData):
     Pair(x=Unit("arcsec"), y=Unit("arcsec"))
     >>> aia.peek()   # doctest: +SKIP
 
-    References
-    ----------
-    | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
-    | http://docs.scipy.org/doc/numpy/user/basics.subclassing.html
-    | http://docs.scipy.org/doc/numpy/reference/ufuncs.html
-    | http://www.scipy.org/Subclasses
-
     Notes
     -----
 
@@ -165,7 +158,7 @@ class GenericMap(NDData):
         keywords are exactly equal.
     """
 
-    def __init__(self, data, header, **kwargs):
+    def __init__(self, data, header, plot_settings=None, **kwargs):
 
         super(GenericMap, self).__init__(data, meta=header, **kwargs)
 
@@ -185,12 +178,15 @@ class GenericMap(NDData):
             norm = None
         else:
             norm = colors.Normalize()
+
         # Visualization attributes
         self.plot_settings = {'cmap': cm.gray,
                               'norm': norm,
                               'interpolation': 'nearest',
                               'origin': 'lower'
                               }
+        if plot_settings:
+            self.plot_settings.update(plot_settings)
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
@@ -221,6 +217,14 @@ scale:\t\t {scale}
            dim=u.Quantity(self.dimensions),
            scale=u.Quantity(self.scale),
            tmf=TIME_FORMAT) + self.data.__repr__())
+
+    @classmethod
+    def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
+        """
+        Instantiate a new instance of this class using given data.
+        This is a shortcut for ``type(self)(data, meta, plot_settings)``
+        """
+        return cls(data, meta, plot_settings=plot_settings, **kwargs)
 
     @property
     def wcs(self):
@@ -485,10 +489,6 @@ scale:\t\t {scale}
         out : `~sunpy.map.GenericMap` or subclass
             A new shifted Map.
         """
-        new_map = deepcopy(self)
-        new_map._shift = Pair(self.shifted_value.x + x,
-                              self.shifted_value.y + y)
-
         new_meta = self.meta.copy()
 
         # Update crvals
@@ -497,7 +497,11 @@ scale:\t\t {scale}
         new_meta['crval2'] = ((self.meta['crval2'] *
                                self.spatial_units.y + y).to(self.spatial_units.y)).value
 
-        new_map.meta = new_meta
+        #Create new map with the modification
+        new_map = self._new_instance(self.data, new_meta, self.plot_settings)
+
+        new_map._shift = Pair(self.shifted_value.x + x,
+                              self.shifted_value.y + y)
 
         return new_map
 
@@ -841,7 +845,6 @@ scale:\t\t {scale}
         scale_factor_x = float(self.dimensions[0] / dimensions[0])
         scale_factor_y = float(self.dimensions[1] / dimensions[1])
 
-        new_map = deepcopy(self)
         # Update image scale and number of pixels
         new_meta = self.meta.copy()
 
@@ -859,8 +862,7 @@ scale:\t\t {scale}
         new_meta['crval2'] = self.center.y.value
 
         # Create new map instance
-        new_map.data = new_data
-        new_map.meta = new_meta
+        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
 
     def rotate(self, angle=None, rmatrix=None, order=4, scale=1.0,
@@ -962,9 +964,8 @@ scale:\t\t {scale}
         rotation_center = u.Quantity([self.reference_coordinate.x,
                                       self.reference_coordinate.y])
 
-        # Copy Map
-        new_map = deepcopy(self)
-
+        # Copy meta data
+        new_meta = self.meta.copy()
         if angle is not None:
             # Calculate the parameters for the affine_transform
             c = np.cos(np.deg2rad(angle))
@@ -972,39 +973,40 @@ scale:\t\t {scale}
             rmatrix = np.matrix([[c, -s], [s, c]])
 
         # Calculate the shape in pixels to contain all of the image data
-        extent = np.max(np.abs(np.vstack((new_map.data.shape * rmatrix,
-                                          new_map.data.shape * rmatrix.T))), axis=0)
+        extent = np.max(np.abs(np.vstack((self.data.shape * rmatrix,
+                                          self.data.shape * rmatrix.T))), axis=0)
         # Calculate the needed padding or unpadding
-        diff = np.asarray(np.ceil((extent - new_map.data.shape) / 2), dtype=int).ravel()
+        diff = np.asarray(np.ceil((extent - self.data.shape) / 2), dtype=int).ravel()
         # Pad the image array
         pad_x = int(np.max((diff[1], 0)))
         pad_y = int(np.max((diff[0], 0)))
-        new_map.data = np.pad(new_map.data,
+
+        new_data = np.pad(self.data,
                               ((pad_y, pad_y), (pad_x, pad_x)),
                               mode='constant',
                               constant_values=(missing, missing))
-        new_map.meta['crpix1'] += pad_x
-        new_map.meta['crpix2'] += pad_y
+        new_meta['crpix1'] += pad_x
+        new_meta['crpix2'] += pad_y
 
         # All of the following pixel calculations use a pixel origin of 0
 
-        pixel_array_center = (np.flipud(new_map.data.shape) - 1) / 2.0
+        pixel_array_center = (np.flipud(new_data.shape) - 1) / 2.0
 
         # Convert the axis of rotation from data coordinates to pixel coordinates
-        pixel_rotation_center = u.Quantity(new_map.data_to_pixel(*rotation_center,
-                                                                 origin=0)).value
+        pixel_rotation_center = u.Quantity(self.data_to_pixel(*rotation_center,
+                                                               origin=0)).value
         if recenter:
             pixel_center = pixel_rotation_center
         else:
             pixel_center = pixel_array_center
 
         # Apply the rotation to the image data
-        new_map.data = affine_transform(new_map.data.T,
-                                        np.asarray(rmatrix),
-                                        order=order, scale=scale,
-                                        image_center=np.flipud(pixel_center),
-                                        recenter=recenter, missing=missing,
-                                        use_scipy=use_scipy).T
+        new_data = affine_transform(new_data.T,
+                                    np.asarray(rmatrix),
+                                    order=order, scale=scale,
+                                    image_center=np.flipud(pixel_center),
+                                    recenter=recenter, missing=missing,
+                                    use_scipy=use_scipy).T
 
         if recenter:
             new_reference_pixel = pixel_array_center
@@ -1015,45 +1017,47 @@ scale:\t\t {scale}
             new_reference_pixel = np.array(new_reference_pixel).ravel()
 
         # Define the new reference_pixel
-        new_map.meta['crval1'] = rotation_center[0].value
-        new_map.meta['crval2'] = rotation_center[1].value
-        new_map.meta['crpix1'] = new_reference_pixel[0] + 1 # FITS pixel origin is 1
-        new_map.meta['crpix2'] = new_reference_pixel[1] + 1 # FITS pixel origin is 1
+        new_meta['crval1'] = rotation_center[0].value
+        new_meta['crval2'] = rotation_center[1].value
+        new_meta['crpix1'] = new_reference_pixel[0] + 1 # FITS pixel origin is 1
+        new_meta['crpix2'] = new_reference_pixel[1] + 1 # FITS pixel origin is 1
 
         # Unpad the array if necessary
         unpad_x = -np.min((diff[1], 0))
         if unpad_x > 0:
-            new_map.data = new_map.data[:, unpad_x:-unpad_x]
-            new_map.meta['crpix1'] -= unpad_x
+            new_data = new_data[:, unpad_x:-unpad_x]
+            new_meta['crpix1'] -= unpad_x
         unpad_y = -np.min((diff[0], 0))
         if unpad_y > 0:
-            new_map.data = new_map.data[unpad_y:-unpad_y, :]
-            new_map.meta['crpix2'] -= unpad_y
+            new_data = new_data[unpad_y:-unpad_y, :]
+            new_meta['crpix2'] -= unpad_y
 
         # Calculate the new rotation matrix to store in the header by
         # "subtracting" the rotation matrix used in the rotate from the old one
         # That being calculate the dot product of the old header data with the
         # inverse of the rotation matrix.
-        pc_C = np.dot(new_map.rotation_matrix, rmatrix.I)
-        new_map.meta['PC1_1'] = pc_C[0,0]
-        new_map.meta['PC1_2'] = pc_C[0,1]
-        new_map.meta['PC2_1'] = pc_C[1,0]
-        new_map.meta['PC2_2'] = pc_C[1,1]
+        pc_C = np.dot(self.rotation_matrix, rmatrix.I)
+        new_meta['PC1_1'] = pc_C[0,0]
+        new_meta['PC1_2'] = pc_C[0,1]
+        new_meta['PC2_1'] = pc_C[1,0]
+        new_meta['PC2_2'] = pc_C[1,1]
 
         # Update pixel size if image has been scaled.
         if scale != 1.0:
-            new_map.meta['cdelt1'] = (new_map.scale.x / scale).value
-            new_map.meta['cdelt2'] = (new_map.scale.y / scale).value
+            new_meta['cdelt1'] = (self.scale.x / scale).value
+            new_meta['cdelt2'] = (self.scale.y / scale).value
 
         # Remove old CROTA kwargs because we have saved a new PCi_j matrix.
-        new_map.meta.pop('CROTA1', None)
-        new_map.meta.pop('CROTA2', None)
+        new_meta.pop('CROTA1', None)
+        new_meta.pop('CROTA2', None)
         # Remove CDi_j header
-        new_map.meta.pop('CD1_1', None)
-        new_map.meta.pop('CD1_2', None)
-        new_map.meta.pop('CD2_1', None)
-        new_map.meta.pop('CD2_2', None)
+        new_meta.pop('CD1_1', None)
+        new_meta.pop('CD1_2', None)
+        new_meta.pop('CD2_1', None)
+        new_meta.pop('CD2_2', None)
 
+        #Create new map with the modification
+        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
 
     def submap(self, range_a, range_b):
@@ -1192,17 +1196,20 @@ scale:\t\t {scale}
         new_data = self.data[yslice, xslice].copy()
 
         # Make a copy of the header with updated centering information
-        new_map = deepcopy(self)
-        new_map.meta['crpix1'] = self.reference_pixel.x.value - x_pixels[0]
-        new_map.meta['crpix2'] = self.reference_pixel.y.value - y_pixels[0]
-        new_map.meta['naxis1'] = new_data.shape[1]
-        new_map.meta['naxis2'] = new_data.shape[0]
+        new_meta = self.meta.copy()
+        new_meta['crpix1'] = self.reference_pixel.x.value - x_pixels[0]
+        new_meta['crpix2'] = self.reference_pixel.y.value - y_pixels[0]
+        new_meta['naxis1'] = new_data.shape[1]
+        new_meta['naxis2'] = new_data.shape[0]
 
         # Create new map instance
-        new_map.data = new_data
         if self.mask is not None:
-            new_map.mask = self.mask[yslice, xslice].copy()
-
+            new_mask = self.mask[yslice, xslice].copy()
+            #Create new map with the modification
+            new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
+            return new_map
+        #Create new map with the modification
+        new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
 
     @u.quantity_input(dimensions=u.pixel, offset=u.pixel)
@@ -1260,8 +1267,9 @@ scale:\t\t {scale}
         new_array = func(func(reshaped, axis=3), axis=1)
 
         # Update image scale and number of pixels
-        new_map = deepcopy(self)
-        new_meta = new_map.meta
+
+        # create copy of new meta data
+        new_meta = self.meta.copy()
 
         new_nx = new_array.shape[1]
         new_ny = new_array.shape[0]
@@ -1281,11 +1289,14 @@ scale:\t\t {scale}
 
         # Create new map instance
         if self.mask is not None:
-            new_map.data = np.ma.getdata(new_array)
-            new_map.mask = np.ma.getmask(new_array)
+            new_data = np.ma.getdata(new_array)
+            new_mask = np.ma.getmask(new_array)
         else:
-            new_map.data = new_array
-            new_map.mask = None
+            new_data = new_array
+            new_mask = None
+
+        #Create new map with the modified data
+        new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
         return new_map
 
 # #### Visualization #### #
@@ -1546,7 +1557,7 @@ scale:\t\t {scale}
             axes = plt.Axes(figure, [0., 0., 1., 1.])
             axes.set_axis_off()
             figure.add_axes(axes)
-            matplot_args.update({'annotate':False})
+            matplot_args.update({'annotate': False, "_basic_plot": True})
 
         # Normal plot
         else:
@@ -1602,20 +1613,24 @@ scale:\t\t {scale}
 
         """
 
+        # extract hiddden kwarg
+        _basic_plot = imshow_kwargs.pop("_basic_plot", False)
+
         # Get current axes
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
 
-        # Check that the image is properly oriented
-        if (not wcsaxes_compat.is_wcsaxes(axes) and
-            not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2)))):
-            warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
-                          Warning)
+        if not _basic_plot:
+            # Check that the image is properly oriented
+            if (not wcsaxes_compat.is_wcsaxes(axes) and
+                not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2)))):
+                warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
+                              Warning)
 
-        if not wcsaxes_compat.is_wcsaxes(axes) and wcsaxes_compat.HAVE_WCSAXES:
-            warnings.warn("WCSAxes is installed but not being used."
-                          " Plots may not have the expected behaviour.",
-                          Warning)
+            if not wcsaxes_compat.is_wcsaxes(axes) and wcsaxes_compat.HAVE_WCSAXES:
+                warnings.warn("WCSAxes is installed but not being used."
+                              " Plots may not have the expected behaviour.",
+                              Warning)
 
         # Normal plot
         imshow_args = deepcopy(self.plot_settings)
@@ -1658,7 +1673,7 @@ scale:\t\t {scale}
         if wcsaxes_compat.is_wcsaxes(axes):
             wcsaxes_compat.default_wcs_grid(axes)
 
-        #Set current image (makes colorbar work)
+        # Set current image (makes colorbar work)
         plt.sca(axes)
         plt.sci(ret)
         return ret

@@ -4,11 +4,12 @@ SunPy coordinates
 The SunPy coordinates submodule is an implementation of the common solar physics
 coordinate frames using the :ref:`Astropy coordinates framework <astropy:astropy-coordinates>`.
 
-.. warning::
+.. note::
 
    The accuracy of the transformations in this module have not been rigorously
-   verified. They have been compared to `sunpy.wcs` and match to numerical
-   precision. Independent verification will be added at a later date.
+   verified. They have been compared to the previous `sunpy.wcs` implementation
+   and match to numerical precision. Independent verification will be added at a
+   later date.
 
 
 Getting Started
@@ -210,6 +211,9 @@ sunpy.coordinates Package
     :headings: ^#
 
 .. automodapi:: sunpy.coordinates.representation
+    :headings: ^#
+
+.. automodapi:: sunpy.coordinates.offset_frame
     :headings: ^#
 
 .. automodapi:: sunpy.coordinates.wcs_utils
