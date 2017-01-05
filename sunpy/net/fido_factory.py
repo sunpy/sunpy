@@ -27,12 +27,6 @@ __all__ = ['Fido', 'UnifiedResponse', 'UnifiedDownloaderFactory', 'DownloadRespo
 class UnifiedResponse(MutableSequence):
     """
     The object used to store responses from the unified downloader.
-
-    Properties
-    ----------
-    file_num : int
-        The total number of files found as a result of the query.
-
     """
     def __init__(self, lst):
         """
