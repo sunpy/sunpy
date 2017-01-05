@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Provides programs to process and analyse NoRH lightcurve data."""
+"""Nobeyama Radioheliograph TimeSeries subclass definitions."""
 
 from __future__ import absolute_import
 
@@ -19,10 +19,10 @@ from astropy import units as u
 
 TIME_FORMAT = config.get("general", "time_format")
 
-__all__ = ['NoRHLightCurve']
+__all__ = ['NoRHTimeSeries']
 
 
-class NoRHLightCurve(GenericTimeSeries):
+class NoRHTimeSeries(GenericTimeSeries):
     """
     Nobeyama Radioheliograph Correlation Lightcurve TimeSeries.
 
@@ -51,7 +51,7 @@ class NoRHLightCurve(GenericTimeSeries):
     """
 
     def __init__(self, data, header, units, **kwargs):
-        super(NoRHLightCurve,self).__init__(data, header, units, **kwargs)
+        super(NoRHTimeSeries,self).__init__(data, header, units, **kwargs)
 
     def peek(self, **kwargs):
         """Plots the NoRH lightcurve TimeSeries

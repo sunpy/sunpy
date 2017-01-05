@@ -26,6 +26,10 @@ import astropy.units as u
 from astropy.table import Table
 from astropy.table import Column
 
+# define and register a new unit, needed for RHESSI
+det = u.def_unit('detector')
+u.add_enabled_units([det])
+
 TIME_FORMAT = config.get("general", "time_format")
 
 
@@ -195,7 +199,6 @@ class GenericTimeSeries:
         elif not unit:
             unit = u.dimensionless_unscaled
 
-
         # Make a copy of all the TimeSeries components.
         data  = copy.copy(self.data)
         meta  = TimeSeriesMetaData(copy.copy(self.meta.metadata))
@@ -243,7 +246,7 @@ class GenericTimeSeries:
             recognised by pandas, or a index integer.
 
         int : `int`
-            If specified, the interger indicating the slicing intervals.
+            If specified, the integer indicating the slicing intervals.
 
         Returns
         -------
@@ -281,8 +284,6 @@ class GenericTimeSeries:
         object._sanitize_units()
         return object
 
-
-
     def extract(self, column_name):
         """Returns a new time series with the chosen column.
 
@@ -313,7 +314,7 @@ class GenericTimeSeries:
         return object
 
     def concatenate(self, otherts, **kwargs):
-        """Concatenate with another time series. This function will check and
+        """Concatenate with another TimeSeries. This function will check and
         remove any duplicate times. It will keep the column values from the
         original time series to which the new time series is being added.
 
@@ -333,6 +334,10 @@ class GenericTimeSeries:
         Debate: decide if we want to be able to concatenate multiple time series
         at once.
         """
+
+        # check to see if nothing needs to be done
+        if self == otherts:
+            return self
 
         # Check the sources match if specified.
         same_source = kwargs.get('same_source', False)
@@ -596,7 +601,6 @@ class GenericTimeSeries:
         else:
             match = False
         return match
-
 
     def __ne__(self, other):
         """

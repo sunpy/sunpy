@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Provides programs to process and analyze EVE data."""
+"""EVE TimeSeries subclass definitions."""
 from __future__ import absolute_import
 
 import os
@@ -16,10 +16,10 @@ from sunpy.util.metadata import MetaDict
 
 from astropy import units as u
 
-__all__ = ['EVELightCurve']
+__all__ = ['EVESpWxTimeSeries']
 
 
-class EVELightCurve(GenericTimeSeries):
+class EVESpWxTimeSeries(GenericTimeSeries):
     """
     SDO EVE LightCurve for level 0CS data.
 
@@ -180,9 +180,9 @@ class EVELightCurve(GenericTimeSeries):
             data[data == float(missing_data_val)] = numpy.nan
 
         # Add the units data
-        units = OrderedDict([('XRS-B proxy', u.dimensionless_unscaled),
-                             ('XRS-A proxy', u.dimensionless_unscaled),
-                             ('SEM proxy', u.dimensionless_unscaled),
+        units = OrderedDict([('XRS-B proxy', u.W/u.m**2),
+                             ('XRS-A proxy', u.W/u.m**2),
+                             ('SEM proxy', u.W/u.m**2),
                              ('0.1-7ESPquad', u.W/u.m**2),
                              ('17.1ESP', u.W/u.m**2),
                              ('25.7ESP', u.W/u.m**2),
@@ -195,8 +195,8 @@ class EVELightCurve(GenericTimeSeries):
                              ('q1ESP', u.dimensionless_unscaled),
                              ('q2ESP', u.dimensionless_unscaled),
                              ('q3ESP', u.dimensionless_unscaled),
-                             ('CMLat', u.W/u.m**2),
-                             ('CMLon', u.W/u.m**2)])
+                             ('CMLat', u.deg),
+                             ('CMLon', u.deg)])
         # Todo: check units used.
         return data, meta, units
 

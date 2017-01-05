@@ -7,8 +7,6 @@ Created on Thu Jun 23 12:29:55 2016
 @author: alex_
 """
 
-
-
 import os
 import glob
 import pytest
@@ -97,7 +95,7 @@ def noaa_pre_test_ts():
 
 @pytest.fixture
 def generic_ts():
-    # Generate the data and the corrisponding dates
+    # Generate the data and the corresponding dates
     base = parse_time("2016/10/01T05:00:00")
     dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
     intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
