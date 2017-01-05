@@ -824,7 +824,9 @@ def test_download_duplicates(database, download_query, tmpdir):
     download_time = database[0].download_time
     database.download(*download_query, path=str(tmpdir.join('{file}.fits')))
     assert len(database) == 4
-    assert database[0].download_time != download_time
+    # The old file should be untouched because of the query result block
+    # level caching
+    assert database[0].download_time == download_time
 
 
 def test_fetch_missing_arg(database):
