@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """
 ============================================
 Interacting with Data Using SunPy TimeSeries
@@ -34,7 +34,7 @@ from sunpy.util.metadata import MetaDict
 ##############################################################################
 # Creating a TimeSeries from a file can be done using the factory.
 ts_eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_LIGHTCURVE, source='EVE')
-ts_goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='GOES')
+ts_goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='XRS')
 ts_lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_LIGHTCURVE, source='LYRA')
 ts_noaa_ind = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_LIGHTCURVE, source='NOAAIndices')
 ts_noaa_pre = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_LIGHTCURVE, source='NOAAPredictIndices')
@@ -56,11 +56,11 @@ filepath_1 = os.path.join(sunpy.config.get('downloads', 'download_dir'), 'go1520
 filepath_2 = os.path.join(sunpy.config.get('downloads', 'download_dir'), 'go1520120602.fits')
 filepath_3 = os.path.join(sunpy.config.get('downloads', 'download_dir'), 'go1520120603.fits')
 # Using these new files you get a list:
-lis_goes_ts = sunpy.timeseries.TimeSeries(filepath_1, filepath_2, source='GOES')
-lis_goes_ts = sunpy.timeseries.TimeSeries(filepath_1, filepath_2, filepath_3, source='GOES')
+lis_goes_ts = sunpy.timeseries.TimeSeries(filepath_1, filepath_2, source='XRS')
+lis_goes_ts = sunpy.timeseries.TimeSeries(filepath_1, filepath_2, filepath_3, source='XRS')
 # Using concatenate=True kwarg you can merge the files into one TimeSeries:
-combined_goes_ts = sunpy.timeseries.TimeSeries(filepath_1, filepath_2, source='GOES', concatenate=True)
-combined_goes_ts = sunpy.timeseries.TimeSeries(filepath_1, filepath_2, filepath_3, source='GOES', concatenate=True)
+combined_goes_ts = sunpy.timeseries.TimeSeries(filepath_1, filepath_2, source='XRS', concatenate=True)
+combined_goes_ts = sunpy.timeseries.TimeSeries(filepath_1, filepath_2, filepath_3, source='XRS', concatenate=True)
 combined_goes_ts.peek()
 # Note: ATM we only accept TimeSeries of a single class being created together
 # with the factory. The issue is that several source filetypes don't contain

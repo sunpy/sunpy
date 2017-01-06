@@ -11,10 +11,10 @@ To see :ref:`ts-sources` for a list of all of them.
 
 Creating a TimeSeries
 ---------------------
-TimeSeries can either be creating manually or automatically by downloading
-their own data (the most common case). To create a custom `~sunpy.timeseries.GenericTimeSeries`
+TimeSeries can either be created manually or from source files using the factory.
+To create a custom `~sunpy.timeseries.GenericTimeSeries`
 see the example in the class documentation below. Subclasses of `~sunpy.timeseries.GenericTimeSeries`
-for specific instrument provide their own methods for opening files for their data.
+for specific instruments provide their own methods for opening files for their data.
 For more information see :ref:`ts-sources`.
 
 .. _ts-sources:
@@ -30,7 +30,7 @@ The following example shows the factory loading a sample file::
 
     >>> import sunpy.timeseries as ts
     >>> import sunpy.data.sample
-    >>> goes = ts.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='GOES')
+    >>> goes = ts.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='XRS')
 
 The `~sunpy.timeseries.TimeSeries` factory will load the file and create the timeseries
 instance. The following instrument classes are supported.

@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 """GOES XRS TimeSeries subclass definitions."""
 from __future__ import absolute_import, print_function, division
 # pylint: disable=W0221,W0222,E1101,E1121
@@ -37,7 +37,7 @@ class XRSTimeSeries(GenericTimeSeries):
     --------
     >>> import sunpy.timeseries
     >>> import sunpy.data.sample
-    >>> goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='GOES')
+    >>> goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='XRS')
     >>> goes.peek()   # doctest: +SKIP
 
     References
@@ -59,7 +59,7 @@ class XRSTimeSeries(GenericTimeSeries):
 
             import sunpy.timeseries
             import sunpy.data.sample
-            ts_goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='GOES')
+            ts_goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='XRS')
             ts_goes.peek()
 
         Parameters
@@ -150,7 +150,7 @@ class XRSTimeSeries(GenericTimeSeries):
 
     @classmethod
     def _parse_file(cls, filepath):
-        """Parses a GOES FITS file from
+        """Parses a GOES/XRS FITS file from
         http://umbra.nascom.nasa.gov/goes/fits/"""
 
         hdus = sunpy.io.read_file(filepath)
@@ -200,6 +200,6 @@ class XRSTimeSeries(GenericTimeSeries):
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to a GOES lightcurve TimeSeries"""
         if 'source' in kwargs.keys():
-            return kwargs.get('source', '').startswith('GOES')
+            return kwargs.get('source', '').lower().startswith('xrs')
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('TELESCOP', '').startswith('GOES')

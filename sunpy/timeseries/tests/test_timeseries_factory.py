@@ -133,7 +133,7 @@ class TestTimeSeries(object):
 
     def test_goes(self):
         #Test a GOES TimeSeries
-        ts_goes = sunpy.timeseries.TimeSeries(goes_filepath, source='GOES')
+        ts_goes = sunpy.timeseries.TimeSeries(goes_filepath, source='XRS')
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
     def test_lyra(self):

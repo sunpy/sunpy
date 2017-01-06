@@ -35,7 +35,7 @@ goes_files = [ 'go1420101102.fits', 'go1420101103.fits', 'go1420101104.fits', 'g
 goes_filepaths = []
 for file in goes_files:
     goes_filepaths.append(os.path.join(sunpy.config.get('downloads', 'download_dir'), file))
-goes_ts = sunpy.timeseries.TimeSeries(*goes_filepaths, source='GOES', concatenate=True)
+goes_ts = sunpy.timeseries.TimeSeries(*goes_filepaths, source='XRS', concatenate=True)
 
 # Getting NORH data over same dates
 start_date = "2010-11-02"
