@@ -271,11 +271,7 @@ class Physobs(_VSOSimpleAttr):
 
 class Pixels(_VSOSimpleAttr):
     """
-    Pixel Scale (PSCALE) is in arc seconds.
-
-    Currently only implemented for SDO, which is 0.6 arcsec per pixel at full
-    resolution for AIA.  Reference: documentation in SSWIDL routine
-    vso_search.pro.
+    ?
     """
     pass
 
@@ -333,7 +329,11 @@ class Quicklook(_VSOSimpleAttr):
 
 class PScale(_VSOSimpleAttr):
     """
-    ?
+    Pixel Scale (PSCALE) is in arc seconds.
+
+    Currently only implemented for SDO, which is 0.6 arcsec per pixel at full
+    resolution for AIA.  Reference: documentation in SSWIDL routine
+    vso_search.pro.
     """
     pass
 
