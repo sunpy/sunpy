@@ -174,6 +174,15 @@ def iter_errors(response):
         if not hasattr(prov_item, 'record') or not prov_item.record:
             yield prov_item
 
+def fallback_test(api,url,port):
+    if api is None:
+        if url is None:
+            url = DEFAULT_URL
+        if port is None:
+            port = DEFAULT_PORT
+        api = client.Client(url, transport = WellBehavedHttpTransport())
+        api.set_options(port=port)
+    return api
 
 class QueryResponse(list):
     def __init__(self, lst, queryresult=None, table=None):
@@ -275,14 +284,7 @@ class VSOClient(object):
         'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR', 'URL-FILE', 'URL-packaged'
     ]
     def __init__(self, url=None, port=None, api=None):
-        if api is None:
-            if url is None:
-                url = DEFAULT_URL
-            if port is None:
-                port = DEFAULT_PORT
-
-            api = client.Client(url, transport = WellBehavedHttpTransport())
-            api.set_options(port=port)
+        api = fallback_test(api,url,port)
         self.api = api
 
     def make(self, atype, **kwargs):
