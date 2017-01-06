@@ -21,7 +21,7 @@ currently supports.
 To make things easy, SunPy can download several example files which are used
 throughout the docs. These files have names like
 `~sunpy.data.sample.EVE_LIGHTCURVE` and `~sunpy.data.sample.GOES_LIGHTCURVE`.
-To create the sample `sunpy.timeseries.sources.goes.GOESLightCurve` type the
+To create the sample `sunpy.timeseries.sources.goes.XRSTimeSeries` type the
 following into your interactive Python shell: ::
 
     >>> import sunpy.timeseries as ts
@@ -48,7 +48,7 @@ The factory has the ability to make a list of TimeSeries objects using a list of
     >>> my_ts_list = ts.TimeSeries('/goesdirectory/', source='XRS')   # doctest: +SKIP
     >>> my_ts_list = ts.TimeSeries(glob, source='XRS')   # doctest: +SKIP
 
-Note that the factory will only work with files from a single source, generating a source specific child of the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries` class such as the `~sunpy.timeseries.sources.goes.GOESLightCurve` above. For this reason, all the files should be from that same source for the factory to work correctly.
+Note that the factory will only work with files from a single source, generating a source specific child of the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries` class such as the `~sunpy.timeseries.sources.goes.XRSTimeSeries` above. For this reason, all the files should be from that same source for the factory to work correctly.
 
 1.1 Creating a Single TimeSeries from Multiple Files
 ----------------------------------------------------
