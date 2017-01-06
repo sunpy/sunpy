@@ -12,6 +12,7 @@ import astropy.io.fits
 from astropy.table import Table
 import astropy
 from astropy.time import Time
+import astropy.units as u
 
 import sunpy
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries, TIMESERIES_CLASSES
@@ -175,9 +176,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             return False
 
         for key in units:
-            if not isinstance(units[key], astropy.units.UnitBase):
+            if not isinstance(units[key], u.UnitBase):
                 # If this is not a unit then this can't be a valid units dict.
-                warnings.warn('Invalid unit given for "'+str(key)+'"', Warning)
                 return False
 
         # Passed all the tests

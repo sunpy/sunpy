@@ -12,8 +12,8 @@ currently supports.
 
 .. warning::
 
-   The TimeSeries superseeds the old LightCurve class, however it currently doesn't implement data download methods.
-   For the time being if you need to download data you are recommended to use the `~sunpy.lightcurve.LightCurve` class and can open the files using the `~sunpy.timeseries.TimeSeries` factory.
+   The TimeSeries superseeds the old LightCurve class but doesn't implement data download methods.
+   To download TimeSeries data files use `sunpy.net`.
 
 1. Creating a TimeSeries from a data source
 -------------------------------------------
@@ -26,7 +26,7 @@ following into your interactive Python shell: ::
 
     >>> import sunpy.timeseries as ts
     >>> import sunpy.data.sample
-    >>> my_timeseries = ts.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='GOES')
+    >>> my_timeseries = ts.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='XRS')
 
 This is calling the `~sunpy.timeseries.TimeSeries` factory to create a time series from a sample FITS file.
 The TimeSeries factory uses `sunpy.io.fits` to read the FITS file.
@@ -34,9 +34,9 @@ If you have not downloaded the data already you should get an error and some
 instruction on how to download the sample data.
 
 The variable ``my_timeseries`` is a :ref:`timeseries` object. To create one from a
-local GOES FITS file try the following: ::
+local GOES/XRS FITS file try the following: ::
 
-    >>> my_timeseries = ts.TimeSeries('/mydirectory/myts.fits', source='GOES')   # doctest: +SKIP
+    >>> my_timeseries = ts.TimeSeries('/mydirectory/myts.fits', source='XRS')   # doctest: +SKIP
 
 SunPy can automatically detect the source for most FITS files. However timeseries
 (and lightcurve) data are stored in a variety of file formats (FITS, txt, csv)
@@ -44,9 +44,9 @@ and it's not always possible to detect the source. For this reason, it's good
 practice to explicitly state the source for the file.
 The factory has the ability to make a list of TimeSeries objects using a list of filepaths, a folder or a glob, for example: ::
 
-    >>> my_ts_list = ts.TimeSeries('filepath1', 'filepath2', source='GOES')   # doctest: +SKIP
-    >>> my_ts_list = ts.TimeSeries('/goesdirectory/', source='GOES')   # doctest: +SKIP
-    >>> my_ts_list = ts.TimeSeries(glob, source='GOES')   # doctest: +SKIP
+    >>> my_ts_list = ts.TimeSeries('filepath1', 'filepath2', source='XRS')   # doctest: +SKIP
+    >>> my_ts_list = ts.TimeSeries('/goesdirectory/', source='XRS')   # doctest: +SKIP
+    >>> my_ts_list = ts.TimeSeries(glob, source='XRS')   # doctest: +SKIP
 
 Note that the factory will only work with files from a single source, generating a source specific child of the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries` class such as the `~sunpy.timeseries.sources.goes.GOESLightCurve` above. For this reason, all the files should be from that same source for the factory to work correctly.
 
@@ -56,7 +56,7 @@ Note that the factory will only work with files from a single source, generating
 You can create a single time series from multiple files for a given source using
 the keyword argument ``concatenate=True``, such as:
 
-    >>> my_timeseries = ts.TimeSeries('/mydirectory/myts1.fits', '/mydirectory/myts2.fits', source='GOES', concatenate=True)   # doctest: +SKIP
+    >>> my_timeseries = ts.TimeSeries('/mydirectory/myts1.fits', '/mydirectory/myts2.fits', source='XRS', concatenate=True)   # doctest: +SKIP
 
 Note these must all be from the same source/instrument if using `~sunpy.timeseries.TimeSeriesBase.concatenate` from within the TimeSeries factory.
 The time series `~sunpy.timeseries.TimeSeriesBase.concatenate` method can be used to make a time series from multiple TimeSeries from different sources once they are already in the form of a TimeSeries objects.
@@ -84,7 +84,7 @@ A suitable list of times must contain the same number of values as the data, thi
 
     >>> import datetime
     >>> base = datetime.datetime.today()
-    >>> times = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
+    >>> times = [base - datetime.timedelta(minutes=x) for x in range(24*60, 0, -1)]
 
 The Pandas `~pandas.core.frame.DataFrame` will use the dates list as the index: ::
 
@@ -118,7 +118,7 @@ For example: ::
     >>> from astropy.table import Table
 
     >>> base = datetime.datetime.today()
-    >>> times = Time([base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)])
+    >>> times = [base - datetime.timedelta(minutes=x) for x in range(24*60, 0, -1)]
     >>> intensity = u.Quantity(np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60)))), u.W/u.m**2)
     >>> tbl_meta = {'t_key':'t_value'}
     >>> table = Table([times, intensity], names=['time', 'intensity'], meta=tbl_meta)
@@ -127,7 +127,7 @@ For example: ::
 
 Note that due to the properties of the `~astropy.time.Time` object, this will be a mixin column which as actually a single object, this limits the versatility of the `~astropy.table.Table` a little. For more on mixin columns see the `AstroPy docs <http://docs.astropy.org/en/stable/table/mixin_columns.html>`_.
 The units will be taken from the table quantities for each column, the metadata will simply be the table.meta dictionary.
-You could also implicitly add metadata and units, these will be added to the relevant dictionaries using the dictionary update method, with the explicit user-given values taking precedence.
+You can also explicitly add metadata and units, these will be added to the relevant dictionaries using the dictionary update method, with the explicit user-given values taking precedence.
 
     >>> from sunpy.util.metadata import MetaDict
     >>> from collections import OrderedDict
@@ -199,7 +199,7 @@ type:
 
     import sunpy.timeseries as ts
     import sunpy.data.sample
-    ts_plot = ts.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='GOES')
+    ts_plot = ts.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='XRS')
     fig = ts_plot.peek()
 
 This will open a matplotlib plot on your screen. The `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.peek`
@@ -292,7 +292,7 @@ It's common to want to combine a number of TimeSeries together into a single Tim
 In the simplest scenario this is to combine data from a single source over several time ranges, for example if you wanted to combine the daily GOES data to get a week or more of constant data in one TimeSeries.
 This can be performed using the TimeSeries factory with the ``concatenate=True`` keyword argument: ::
 
-    >>> concatenated_timeseries = sunpy.timeseries.TimeSeries(filepath1, filepath2, source='GOES', concatenate=True)
+    >>> concatenated_timeseries = sunpy.timeseries.TimeSeries(filepath1, filepath2, source='XRS', concatenate=True)
 
 Note, you can list any number of files, or a folder or use a glob to select the input files to be concatenated.
 It's possible to concatenate two TimeSeries after creating them with the factory using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.concatenate` method.

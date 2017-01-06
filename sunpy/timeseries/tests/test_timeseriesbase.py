@@ -76,8 +76,8 @@ def norh_test_ts():
 
 @pytest.fixture
 def goes_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='GOES')
-    return sunpy.timeseries.TimeSeries(goes_filepath, source='GOES')
+    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='XRS')
+    return sunpy.timeseries.TimeSeries(goes_filepath, source='XRS')
 
 
 @pytest.fixture
