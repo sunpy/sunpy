@@ -372,7 +372,7 @@ scale:\t\t {scale}
     def date(self):
         """
         Image observation time
-        Meta keyword : date-obs
+        Meta keyword : ``date-obs``, default: ``"now"``.
         """
         time = parse_time(self.meta.get('date-obs', 'now'))
         if time is None:
@@ -386,7 +386,7 @@ scale:\t\t {scale}
     def detector(self):
         """
         Detector name
-        Meta keyword : detector
+        Meta keyword : ``detector``, default: ``""``.
         """
         return self.meta.get('detector', "")
 
@@ -394,7 +394,7 @@ scale:\t\t {scale}
     def dsun(self):
         """
         The observer distance from the Sun.
-        Meta keyword : dsun_obs
+        Meta keyword : ``dsun_obs``, default: ``None``.
         """
         dsun = self.meta.get('dsun_obs', None)
 
@@ -411,7 +411,7 @@ scale:\t\t {scale}
     def exposure_time(self):
         """
         Exposure time of the image in seconds.
-        Meta keyword : exptime
+        Meta keyword : ``exptime``, default: ``0.0``.
         """
         return self.meta.get('exptime', 0.0) * u.s
 
@@ -419,7 +419,7 @@ scale:\t\t {scale}
     def instrument(self):
         """
         Instrument name
-        Meta keyword : instrume
+        Meta keyword : ``instrume``, default: ``""``.
         """
         return self.meta.get('instrume', "").replace("_", " ")
 
@@ -427,7 +427,8 @@ scale:\t\t {scale}
     def measurement(self):
         """
         Measurement name, defaults to the wavelength of image
-        Meta keyword : wavelnth(magnitude), waveunit(unit)
+        Meta keyword : ``wavelnth``, default: ``"0"``.
+                       ``waveunit``, default: ``""``.
         """
         return u.Quantity(self.meta.get('wavelnth', 0),
                           self.meta.get('waveunit', ""))
@@ -436,7 +437,8 @@ scale:\t\t {scale}
     def wavelength(self):
         """
         wavelength of the observation
-        Meta keyword : wavelnth(magnitude), waveunit(unit)
+        Meta keyword : ``wavelnth``, default: ``"0"``.
+                       ``waveunit``, default: ``""``.
         """
         return u.Quantity(self.meta.get('wavelnth', 0),
                           self.meta.get('waveunit', ""))
@@ -445,9 +447,7 @@ scale:\t\t {scale}
     def observatory(self):
         """
         Observatory or Telescope name
-        Meta keyword : obsrvtry
-        if observatory is not available than
-        Meta keyword : telescop is used
+        Meta keyword : ``obsrvtry``/ ``telescop``, default: ``""``.
         """
         return self.meta.get('obsrvtry',
                              self.meta.get('telescop', "")).replace("_", " ")
@@ -524,7 +524,7 @@ scale:\t\t {scale}
     def rsun_meters(self):
         """
         Radius of the sun in meters
-        Meta keyword : rsun_ref
+        Meta keyword : ``rsun_ref``, default: ``"constants.radius"``.
         """
         return u.Quantity(self.meta.get('rsun_ref', constants.radius), 'meter')
 
@@ -532,7 +532,7 @@ scale:\t\t {scale}
     def rsun_obs(self):
         """
         Radius of the Sun.
-        Meta keyword : rsun_obs(magnitude), solar_r/radius(unit)
+        Meta keyword : ``rsun_obs``/ ``solar_r``/ ``radius``, default: ``None``.
         """
         rsun_arcseconds = self.meta.get('rsun_obs',
                                         self.meta.get('solar_r',
@@ -552,7 +552,7 @@ scale:\t\t {scale}
     def coordinate_system(self):
         """
         Coordinate system used for x and y axes (ctype1/2)
-        Meta keyword : ctype1, ctype2, HPLN-TAN, HPLT-TAN
+        Meta keyword : ``ctype1``/ ``HPLN-TAN``, ``ctype2``/ ``HPLT-TAN``.
         """
         return Pair(self.meta.get('ctype1', 'HPLN-TAN'),
                     self.meta.get('ctype2', 'HPLT-TAN'))
@@ -561,7 +561,7 @@ scale:\t\t {scale}
     def carrington_longitude(self):
         """
         Carrington longitude (crln_obs)
-        Meta keyword : crln_obs
+        Meta keyword : ``crln_obs``, default: ``None``.
         """
         carrington_longitude = self.meta.get('crln_obs', None)
 
@@ -578,9 +578,7 @@ scale:\t\t {scale}
     def heliographic_latitude(self):
         """
         Heliographic latitude
-        Meta keyword : hglt_obs
-        if hglt_obs is not available than
-        Meta keyword : crlt_obs or solar_b0 is used
+        Meta keyword : ``hglt_obs``/ ``crlt_obs``/ ``solar_b0``, default: ``None``.
         """
         heliographic_latitude = self.meta.get('hglt_obs',
                                               self.meta.get('crlt_obs',
@@ -599,7 +597,7 @@ scale:\t\t {scale}
     def heliographic_longitude(self):
         """
         Heliographic longitude
-        Meta keyword : hgln_obs
+        Meta keyword : ``hgln_obs``, default: ``0``.
         """
         return u.Quantity(self.meta.get('hgln_obs', 0.), 'deg')
 
@@ -608,7 +606,8 @@ scale:\t\t {scale}
         """
         Reference point WCS axes in data units (i.e. crval1, crval2). This value
         includes a shift if one is set.
-        Meta keyword : crval1, crval2
+        Meta keyword : ``crval1``, default: ``0``.
+                       ``crval2``, default: ``0``.
         """
         return Pair(self.meta.get('crval1', 0.) * self.spatial_units.x,
                     self.meta.get('crval2', 0.) * self.spatial_units.y)
@@ -617,7 +616,8 @@ scale:\t\t {scale}
     def reference_pixel(self):
         """
         Reference point axes in pixels (i.e. crpix1, crpix2)
-        Meta keyword : crpix1, crpix2, naxis1, naxis2
+        Meta keyword : ``crpix1``, default: ``naxis1``.
+                       ``crpix2``, default: ``naxis2``.
         """
         return Pair(self.meta.get('crpix1',
                                   (self.meta.get('naxis1') + 1) / 2.) * u.pixel,
@@ -628,7 +628,8 @@ scale:\t\t {scale}
     def scale(self):
         """
         Image scale along the x and y axes in units/pixel (i.e. cdelt1, cdelt2)
-        Meta keyword : cdelt1, cdelt2
+        Meta keyword : ``cdelt1``, default: ``1.``.
+                       ``cdelt2``, default: ``1.``.
         """
         # TODO: Fix this if only CDi_j matrix is provided
         return Pair(self.meta.get('cdelt1', 1.) * self.spatial_units.x / u.pixel,
@@ -638,7 +639,8 @@ scale:\t\t {scale}
     def spatial_units(self):
         """
         Image coordinate units along the x and y axes (i.e. cunit1, cunit2).
-        Meta keyword : cunit1, cunit2
+        Meta keyword : ``cunit1``\ ``arcsec``.
+                       ``cunit2``\ ``arcsec``.
         """
         return Pair(u.Unit(self.meta.get('cunit1', 'arcsec')),
                     u.Unit(self.meta.get('cunit2', 'arcsec')))
@@ -648,7 +650,9 @@ scale:\t\t {scale}
         """
         Matrix describing the rotation required to align solar North with
         the top of the image.
-        Meta keyword : PC1_1, PC1_2, PC2_1, PC2_2, CD1_1, CD1_2, CD2_1, CD2_2
+        Meta keyword : ``PC1_1``, ``PC1_2``, ``PC2_1``, ``PC2_2``, ``CD1_1``, ``CD1_2``, ``CD2_1``, ``CD2_2``.
+                        returns np matrix with ``PC1_1``, ``PC1_2``, ``PC2_1``, ``PC2_2``
+                        else with ``CD1_1``, ``CD1_2``, ``CD2_1``, ``CD2_2``.
         """
         if 'PC1_1' in self.meta:
             return np.matrix([[self.meta['PC1_1'], self.meta['PC1_2']],
