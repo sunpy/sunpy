@@ -64,9 +64,9 @@ def pytest_unconfigure(config):
                 os.rename(hash.file_list[h], os.path.join(tempdir, test_name + '.png'))
         print('All test files for figure hashes can be found in {0}'.format(tempdir))
 
-    #Check if additions have been made to the hash library
+    # Check if the new hash library is larger than the old one
     if len(hash.hash_library) > hash_library_original_len:
-        #Write the new hash library in JSON
+        # Write the new hash library in JSON
         tempdir = tempfile.mkdtemp()
         hashfile = os.path.join(tempdir, hash.HASH_LIBRARY_NAME)
         with open(hashfile, 'w') as outfile:
