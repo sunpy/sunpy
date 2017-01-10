@@ -19,6 +19,7 @@ except IOError:
 
 file_list = {}
 
+
 def hash_figure(figure=None):
     """
     For a matplotlib.figure.Figure, returns the SHA256 hash as a hexadecimal string.
@@ -48,6 +49,7 @@ def hash_figure(figure=None):
     hasher.update(buf)
     file_list[hasher.hexdigest()] = imgdata.name
     return hasher.hexdigest()
+
 
 def verify_figure_hash(name, figure=None):
     """
