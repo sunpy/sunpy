@@ -1,4 +1,5 @@
 from __future__ import absolute_import, division, print_function
+from sys import version_info
 import os
 import io
 import hashlib
@@ -7,7 +8,7 @@ import tempfile
 
 import matplotlib.pyplot as plt
 
-HASH_LIBRARY_NAME = 'figure_hashes.json'
+HASH_LIBRARY_NAME = 'figure_hashes_{0}.{1}.json'.format(version_info.major, version_info.minor)
 
 # Load the hash library if it exists
 try:
