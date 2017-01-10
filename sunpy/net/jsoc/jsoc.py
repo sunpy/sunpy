@@ -204,7 +204,6 @@ class JSOCClient(object):
         for block in walker.create(query):
             iargs = kwargs.copy()
             iargs.update(block)
-
             return_results.append(self._lookup_records(iargs))
 
         return_results.query_args = iargs
@@ -495,11 +494,23 @@ class JSOCClient(object):
         if sample:
             sample = '@{}s'.format(sample)
 
+        if 'harp' in series:
+            if kwargs:
+                series += '[{0}]'.format(kwargs.get('primarykey_harpnum',''))
+            else:
+                series += '[]'
+
         dataset = '{series}[{start}-{end}{sample}]{wavelength}{segment}'.format(
                    series=series, start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                    end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                    sample=sample,
                    wavelength=wavelength, segment=segment)
+
+        # Which other primarykeys we want? it seems that harpnum=XXXX does not work anymore
+        # if kwargs:
+        #     for key in kwargs.keys():
+        #         if 'primarykey' in key:
+        #             dataset += '[{k}={value}]'.format(k=key.replace('primarykey_',''),value=kwargs[key])
 
         return dataset
 
@@ -525,6 +536,9 @@ class JSOCClient(object):
         kwargs.pop('sample',None)
 
         # Build full POST payload
+        filename_ext = '{T_REC:A}.{CAMERA}.{segment}'
+        if 'harp' in series:
+            filename_ext = '{HARPNUM}.' + filename_ext
         payload = {'ds': dataset,
                    'format': 'json',
                    'method': 'url',
@@ -533,10 +547,18 @@ class JSOCClient(object):
                    'process': 'n=0|no_op',
                    'protocol': jprotocol,
                    'requestor': 'none',
-                   'filenamefmt': '{0}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format(series)}
+                   'filenamefmt': '{0}.{1}'.format(series, filename_ext)}
 
-        payload.update(kwargs)
+        payload.update(self._clean_primarykey(kwargs))
         return payload
+
+    def _clean_primarykey(self, kwargs):
+        kwarg_copy = kwargs.copy()
+        for key in kwarg_copy.keys():
+            if 'primarykey' in key:
+                keyname = key.replace('primarykey_','')
+                kwarg_copy[keyname] = kwarg_copy.pop(key)
+        return kwarg_copy
 
     def _send_jsoc_request(self, start_time, end_time, series, notify=None,
                            protocol='FITS', compression='rice', **kwargs):
@@ -562,8 +584,10 @@ class JSOCClient(object):
         """
         Do a LookData request to JSOC to workout what results the query returns
         """
-        keywords = ['DATE', 'TELESCOP', 'INSTRUME', 'T_OBS', 'WAVELNTH',
+        keywords = ['T_OBS', 'TELESCOP', 'INSTRUME', 'WAVELNTH',
                     'WAVEUNIT']
+        # note waveunit returns "Invalid KeyLink" for HMI,
+        # eg:  http://jsoc.stanford.edu/cgi-bin/ajax/jsoc_info?&op=rs_list&ds=hmi.sharp_cea_720s[637][2011.05.31_23:59:00_TAI-2011.06.01_00:01:00_TAI]{Bp}&key=DATE,TELESCOP,INSTRUME,T_OBS,WAVELNTH,WAVEUNIT
 
         if not all([k in iargs for k in ('start_time', 'end_time', 'series')]):
             error_message = "Both Time and Series must be specified for a "\
@@ -573,7 +597,7 @@ class JSOCClient(object):
         postthis = {'ds': self._make_recordset(**iargs),
                     'op': 'rs_list',
                     'key': str(keywords)[1:-1].replace(' ', '').replace("'", ''),
-                    'seg': '**NONE**',
+                    'seg': '**NONE**', # TODO: segments would give an idea of files (eg: Bp,Bt)
                     'link': '**NONE**'}
 
         r = requests.get(JSOC_INFO_URL, params=postthis)

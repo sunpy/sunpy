@@ -226,3 +226,23 @@ def test_results_filenames():
 def test_invalid_query():
     with pytest.raises(ValueError):
         resp = client.query(attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'))
+
+@pytest.mark.online
+def test_harp_none():
+    response = client.query(attrs.Time('2011-05-31T23:59:00', '2011-06-01T00:01:00'),
+                            attrs.Series('hmi.sharp_cea_720s'), attrs.Segment('Bp'))
+    assert len(response) == 10
+
+@pytest.mark.online
+def test_harp_one():
+    response = client.query(attrs.Time('2011-05-31T23:59:00', '2011-06-01T00:01:00'),
+                            attrs.Series('hmi.sharp_cea_720s'), attrs.Segment('Bp'),
+                            attrs.PrimaryKey('HARPNUM', '637'))
+    assert len(response) == 1
+
+@pytest.mark.online
+def test_harp_multi():
+    response = client.query(attrs.Time('2011-05-31T23:59:00', '2011-06-01T00:01:00'),
+                            attrs.Series('hmi.sharp_cea_720s'), attrs.Segment('Bp'),
+                            attrs.PrimaryKey('HARPNUM', '622, 633, 637'))
+    assert len(response) == 3

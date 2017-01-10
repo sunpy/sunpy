@@ -94,6 +94,16 @@ class Wavelength(_VSOSimpleAttr):
     __ror__ = __or__
 
 
+class PrimaryKey(_VSOSimpleAttr):
+    """
+    Extra key,values pair produced by the user to query jsoc
+    """
+    def __init__(self, key, value):
+        Attr.__init__(self)
+        self.__class__.__name__ = 'PrimaryKey_{}'.format(key)
+        self.value = value
+
+
 walker = AttrWalker()
 
 
