@@ -68,7 +68,7 @@ def pytest_unconfigure(config):
         #Write the new hash library in JSON
         tempdir = tempfile.mkdtemp()
         hashfile = os.path.join(tempdir, hash.HASH_LIBRARY_NAME)
-        with open(hashfile, 'wb') as outfile:
+        with open(hashfile, 'w') as outfile:
             json.dump(hash.hash_library, outfile, sort_keys=True, indent=4, separators=(',', ': '))
         print("The hash library has expanded and should be copied to sunpy/tests/")
         print("  " + hashfile)
