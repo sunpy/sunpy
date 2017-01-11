@@ -127,7 +127,7 @@ class RHESSISummaryLightCurve(LightCurve):
         elif len(args) == 2:
             time_range = TimeRange(parse_time(args[0]), parse_time(args[1]))
         url = rhessi.get_obssum_filename(time_range)
-        return url
+        return url[0]
 
     @staticmethod
     def _parse_fits(filepath):

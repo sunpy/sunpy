@@ -17,6 +17,8 @@ import pandas
 from sunpy import config
 from sunpy.time import is_time, TimeRange, parse_time
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
+from sunpy.map.header import MapMeta
+import sunpy.time
 from sunpy.extern.six.moves import urllib
 from sunpy.extern import six
 

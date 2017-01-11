@@ -212,7 +212,7 @@ class TimeRange(object):
         Parameters
         ----------
         n : int
-            The number of times to split the time range (must > 1)
+            The number of times to split the time range (must >= 1)
 
         Returns
         -------
@@ -326,6 +326,14 @@ class TimeRange(object):
         # Only a timedelta object is acceptable here
         self._t1 = self._t1 + dt_start
         self._t2 = self._t2 + dt_end
+
+    def get_dates(self):
+        """
+        Return all partial days contained within the timerange
+        """
+        dates = []
+        dates =[ self.start.date() + timedelta(days=i) for i in range(int(self.days.value) + 1) ]
+        return dates
 
     def __contains__(self, time):
         """
