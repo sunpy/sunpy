@@ -54,7 +54,7 @@ or something else?)
 MAP_CLASSES = OrderedDict()
 
 
-class GenericMetaDict(ABCMeta):
+class GenericMapMetaclass(ABCMeta):
     """
     Registration metaclass for `~sunpy.map.GenericMap`.
 
@@ -66,7 +66,7 @@ class GenericMetaDict(ABCMeta):
     _registry = MAP_CLASSES
 
     def __new__(mcls, name, bases, members):
-        cls = super(GenericMetaDict, mcls).__new__(mcls, name, bases, members)
+        cls = super(GenericMapMetaclass, mcls).__new__(mcls, name, bases, members)
 
         # The registry contains the class as the key and the validation method
         # as the item.
@@ -76,7 +76,7 @@ class GenericMetaDict(ABCMeta):
         return cls
 
 
-@six.add_metaclass(GenericMetaDict)
+@six.add_metaclass(GenericMapMetaclass)
 class GenericMap(NDData):
     """
     A Generic spatially-aware 2D data array
