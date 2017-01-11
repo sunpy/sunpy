@@ -29,11 +29,12 @@ from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time
 from sunpy.extern.six import iteritems
 
-__all__ = ['Wave', 'Time', 'Extent', 'Field', 'Provider', 'Source',
+__all__ = ['Wavelength', 'Time', 'Extent', 'Field', 'Provider', 'Source',
            'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',
            'Detector', 'Filter', 'Sample', 'Quicklook', 'PScale']
 
 TIMEFORMAT = '%Y%m%d%H%M%S'
+
 
 class _Range(object):
     def __init__(self, min_, max_, create):
@@ -56,26 +57,52 @@ class _Range(object):
         return self.min <= other.min and self.max >= other.max
 
 
-class Wave(Attr, _Range):
-    def __init__(self, wavemin, wavemax):
+class Wavelength(Attr, _Range):
+    def __init__(self, wavemin, wavemax=None):
+        """
+        Specifies the wavelength or spectral energy range of the detector.
+
+        Parameters
+        ----------
+        wavemin : `~astropy.units.Quantity`
+            The lower bounds of the range.
+
+        wavemax : `~astropy.units.Quantity`
+            The upper bound of the range, if not specified it will default to
+            the lower bound.
+
+        Notes
+        -----
+        The VSO understands the 'wavelength' in one of three units, Angstroms,
+        kHz or keV. Therefore any unit which is directly convertable to these
+        units is valid input
+        """
+
+        if not wavemax:
+            wavemax = wavemin
+
         if not all(isinstance(var, u.Quantity) for var in [wavemin, wavemax]):
             raise TypeError("Wave inputs must be astropy Quantities")
+
+        if not all([wavemin.isscalar, wavemax.isscalar]):
+            raise ValueError("Both wavemin and wavemax must be scalar values")
 
         # VSO just accept inputs as Angstroms, kHz or keV, the following
         # converts to any of these units depending on the spectral inputs
         # Note: the website asks for GHz, however it seems that using GHz
         # produces weird responses on VSO.
-        convert = {'m': u.AA, 'Hz': u.kHz, 'eV': u.keV}
-        for k in convert.keys():
-            if wavemin.decompose().unit == (1 * u.Unit(k)).decompose().unit:
-                unit = convert[k]
-        try:
-            self.min, self.max = sorted(
-                value.to(unit) for value in [wavemin, wavemax]
-                )
-            self.unit = unit
-        except NameError:
-            raise ValueError("'{0}' is not a spectral supported unit".format(wavemin.unit))
+        supported_units = [u.AA, u.kHz, u.keV]
+        for unit in supported_units:
+            if wavemin.unit.is_equivalent(unit):
+                break
+            else:
+                unit = None
+        if unit is None:
+            raise u.UnitsError("This unit is not convertable to any of {}".format(supported_units))
+
+        self.min, self.max = sorted([wavemin.to(unit), wavemax.to(unit)])
+        self.unit = unit
+
         Attr.__init__(self)
         _Range.__init__(self, self.min, self.max, self.__class__)
 
@@ -83,9 +110,9 @@ class Wave(Attr, _Range):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return "<Wave({0!r}, {1!r}, '{2!s}')>".format(self.min.value,
-                                                      self.max.value,
-                                                      self.unit)
+        return "<Wavelength({0!r}, {1!r}, '{2!s}')>".format(self.min.value,
+                                                            self.max.value,
+                                                            self.unit)
 
 
 class Time(Attr, _Range):
@@ -116,6 +143,9 @@ class Time(Attr, _Range):
         else:
             self.start = parse_time(start)
             self.end = parse_time(end)
+
+        if self.start > self.end:
+            raise ValueError("End time must be after start time.")
         self.near = None if near is None else parse_time(near)
 
         _Range.__init__(self, self.start, self.end, self.__class__)
@@ -136,6 +166,7 @@ class Time(Attr, _Range):
 
     def __repr__(self):
         return '<Time({s.start!r}, {s.end!r}, {s.near!r})>'.format(s=self)
+
 
 class Extent(Attr):
     # pylint: disable=R0913
@@ -184,6 +215,9 @@ class Source(_VSOSimpleAttr):
 
 
 class Instrument(_VSOSimpleAttr):
+    """
+    Specifies the Instrument to search for data for.
+    """
     pass
 
 
@@ -305,7 +339,7 @@ walker.add_converter(_VSOSimpleAttr)(
     lambda x: ValueAttr({(x.__class__.__name__.lower(), ): x.value})
 )
 
-walker.add_converter(Wave)(
+walker.add_converter(Wavelength)(
     lambda x: ValueAttr({
             ('wave', 'wavemin'): x.min.value,
             ('wave', 'wavemax'): x.max.value,
@@ -359,7 +393,7 @@ def _(attr, results):
     return set(results)
 
 
-@filter_results.add_dec(Wave)
+@filter_results.add_dec(Wavelength)
 def _(attr, results):
     return set(
         it for it in results

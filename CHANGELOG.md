@@ -21,6 +21,8 @@ Latest
 * Remove deprecated `VSOClient.show` method.
 * Deprecate `sunpy.wcs`: `sunpy.coordinates` and `sunpy.map` now provide all
   that functionality in a more robust manner.
+* Removed `HelioviewerClient` from the `sunpy.net` namespace. It should now be
+  imported with `from sunpy.net.helioviewer import HelioviewerClient`.
 
 0.7.0
 -----
