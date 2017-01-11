@@ -40,9 +40,13 @@ class BasicRegistrationFactory(object):
 
     """
 
-    def __init__(self, default_widget_type=None, additional_validation_functions=[]):
+    def __init__(self, default_widget_type=None,
+                 additional_validation_functions=[], registry=None):
 
-        self.registry = dict()
+        if registry:
+            self.registry = registry
+        else:
+            self.registry = dict()
 
         self.default_widget_type = default_widget_type
 

@@ -22,7 +22,9 @@ from functools import partial
 from collections import defaultdict
 from suds import client, TypeNotFound
 
-from astropy.table import Table
+import astropy
+from astropy.table import Table, Column
+import astropy.units as u
 
 from sunpy import config
 from sunpy.net import download
@@ -64,88 +66,6 @@ class _Str(str):
 
 
 # ----------------------------------------
-
-
-class Results(object):
-    """ Returned by VSOClient.get. Use .wait to wait
-    for completion of download.
-    """
-    def __init__(self, callback, n=0, done=None):
-        self.callback = callback
-        self.n = self.total = n
-        self.map_ = {}
-        self.done = done
-        self.evt = threading.Event()
-        self.errors = []
-        self.lock = threading.RLock()
-
-        self.progress = None
-
-    def submit(self, keys, value):
-        """
-        Submit
-
-        Parameters
-        ----------
-        keys : list
-            names under which to save the value
-        value : object
-            value to save
-        """
-        for key in keys:
-            self.map_[key] = value
-        self.poke()
-
-    def poke(self):
-        """ Signal completion of one item that was waited for. This can be
-        because it was submitted, because it lead to an error or for any
-        other reason. """
-        with self.lock:
-            self.n -= 1
-            if self.progress is not None:
-                self.progress.poke()
-            if not self.n:
-                if self.done is not None:
-                    self.map_ = self.done(self.map_)
-                self.callback(self.map_)
-                self.evt.set()
-
-    def require(self, keys):
-        """ Require that keys be submitted before the Results object is
-        finished (i.e., wait returns). Returns a callback method that can
-        be used to submit the result by simply calling it with the result.
-
-        keys : list
-            name of keys under which to save the result
-        """
-        with self.lock:
-            self.n += 1
-            self.total += 1
-            return partial(self.submit, keys)
-
-    def wait(self, timeout=100, progress=False):
-        """ Wait for result to be complete and return it. """
-        # Giving wait a timeout somehow circumvents a CPython bug that the
-        # call gets uninterruptible.
-        if progress:
-            with self.lock:
-                self.progress = ProgressBar(self.total, self.total - self.n)
-                self.progress.start()
-                self.progress.draw()
-
-        while not self.evt.wait(timeout):
-            pass
-        if progress:
-            self.progress.finish()
-
-        return self.map_
-
-    def add_error(self, exception):
-        """ Signal a required result cannot be submitted because of an
-        error. """
-        self.errors.append(exception)
-        self.poke()
-
 
 def _parse_waverange(string):
     min_, max_, unit = RANGE.match(string).groups()[::2]
@@ -274,6 +194,7 @@ class VSOClient(object):
     method_order = [
         'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR', 'URL-FILE', 'URL-packaged'
     ]
+
     def __init__(self, url=None, port=None, api=None):
         if api is None:
             if url is None:
@@ -281,7 +202,7 @@ class VSOClient(object):
             if port is None:
                 port = DEFAULT_PORT
 
-            api = client.Client(url, transport = WellBehavedHttpTransport())
+            api = client.Client(url, transport=WellBehavedHttpTransport())
             api.set_options(port=port)
         self.api = api
 
@@ -618,16 +539,16 @@ class VSOClient(object):
         if downloader is None:
             downloader = download.Downloader()
             downloader.init()
-            res = Results(
+            res = download.Results(
                 lambda _: downloader.stop(), 1,
                 lambda mp: self.link(query_response, mp)
             )
         else:
-            res = Results(
+            res = download.Results(
                 lambda _: None, 1, lambda mp: self.link(query_response, mp)
             )
         if path is None:
-            path = os.path.join(config.get('downloads','download_dir'),
+            path = os.path.join(config.get('downloads', 'download_dir'),
                                 '{file}')
         path = os.path.expanduser(path)
 
@@ -812,6 +733,11 @@ class VSOClient(object):
     def unknown_method(self, response):
         """ Override to pick a new method if the current one is unknown. """
         raise NoData
+
+    @classmethod
+    def _can_handle_query(cls, *query):
+        return all([x.__class__.__name__ in attrs.__all__ for x in query])
+
 
 
 class InteractiveVSOClient(VSOClient):

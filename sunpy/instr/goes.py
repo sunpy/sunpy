@@ -1275,6 +1275,7 @@ def _calc_xraylum(flux, date=None):
         xraylum = 4 * np.pi * sun.constants.au.to("m")**2 * flux
     return xraylum
 
+
 def flareclass_to_flux(flareclass):
     """
     Converts a GOES flare class into the corresponding X-ray flux.
@@ -1296,12 +1297,13 @@ def flareclass_to_flux(flareclass):
 
     Examples
     --------
+    >>> from sunpy.instr.goes import flareclass_to_flux
     >>> flareclass_to_flux('A1.0')
-    1e-08 W / m2
+    <Quantity 1e-08 W / m2>
     >>> flareclass_to_flux('c4.7')
-    4.7e-06 W / m2
+    <Quantity 4.7e-06 W / m2>
     >>> flareclass_to_flux('X2.4')
-    0.00024 W / m2
+    < Quantity 0.00024 W / m2>
     """
     if type(flareclass) != type('str'):
         raise TypeError("Input must be a string")
@@ -1311,6 +1313,7 @@ def flareclass_to_flux(flareclass):
     #invert the conversion dictionary
     #conversion_dict = {v: k for k, v in GOES_CONVERSION_DICT.items()}
     return float(flareclass[1:]) * GOES_CONVERSION_DICT[flareclass[0]]
+
 
 @u.quantity_input(goesflux=u.watt/u.m**2)
 def flux_to_flareclass(goesflux):
@@ -1339,6 +1342,8 @@ def flux_to_flareclass(goesflux):
 
     Examples
     --------
+    >>> from sunpy.instr.goes import flux_to_flareclass
+    >>> import astropy.units as u
     >>> flux_to_flareclass(1e-08 * u.watt/u.m**2)
     'A1'
     >>> flux_to_flareclass(4.7e-06 * u.watt/u.m**2)
