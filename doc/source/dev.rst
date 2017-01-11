@@ -847,7 +847,7 @@ All such tests are automatically marked with the pytest mark
 You will need to update the library of figure hashes after you create a new
 figure test or after a figure has intentionally changed due to code improvement.
 Once you have confirmed that the only figure-test failures are anticipated ones,
-remove the existing hash library (found at `sunpy/tests/figure_hashes_X.Y.json`)
+remove the existing hash library (found at `sunpy/tests/figure_hashes_pyX.json`)
 and then run the entire suite of SunPy tests.  Note that all figure tests will
 fail since a new hash library needs to be built.  The test report will tell you
 where the new hash library has been created, which you then copy to
