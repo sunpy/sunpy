@@ -35,6 +35,7 @@ SILENT = 0
 WARN = 1
 FAIL = 2
 
+
 def _fmt_t(types):
     return ', '.join(type_.__name__ for type_ in types)
 
