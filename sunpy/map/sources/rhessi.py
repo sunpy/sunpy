@@ -60,8 +60,10 @@ class RHESSIMap(GenericMap):
     @property
     def detector(self):
         """
-        Meta keyword : ``telescop``.
         Returns the name of the detector
+        .. rubric:: Metadata keyword:
+
+        * ``telescop``
         """
         return self.meta['telescop']
 

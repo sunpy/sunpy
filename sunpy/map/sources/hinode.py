@@ -76,7 +76,10 @@ class XRTMap(GenericMap):
     @property
     def measurement(self):
         """
-        Meta keyword : ``EC_FW1_``/ ``EC_FW2_``.
+        .. rubric:: Metadata keyword:
+
+        * ``EC_FW1_``
+        * ``EC_FW2_``
         """
         fw1 = self.meta.get('EC_FW1_').replace("_", " ")
         fw2 = self.meta.get('EC_FW2_').replace("_", " ")

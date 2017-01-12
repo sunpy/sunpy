@@ -68,8 +68,10 @@ class TRACEMap(GenericMap):
     @property
     def measurement(self):
         """
-        Meta keyword : ``WAVE_LEN``.
         Returns the measurement type.
+        .. rubric:: Metadata keyword:
+
+        * ``WAVE_LEN``
         """
         s = self.meta['WAVE_LEN']
         if s == 'WL':

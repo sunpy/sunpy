@@ -374,7 +374,9 @@ scale:\t\t {scale}
     def date(self):
         """
         Image observation time
-        Meta keyword : ``date-obs``, default: ``"now"``.
+        .. rubric:: Metadata keyword:
+
+        * ``date-obs`` Default: ``now``
         """
         time = parse_time(self.meta.get('date-obs', 'now'))
         if time is None:
@@ -388,7 +390,9 @@ scale:\t\t {scale}
     def detector(self):
         """
         Detector name
-        Meta keyword : ``detector``, default: ``""``.
+        .. rubric:: Metadata keyword:
+
+        * ``detector`` Default: ""
         """
         return self.meta.get('detector', "")
 
@@ -396,7 +400,9 @@ scale:\t\t {scale}
     def dsun(self):
         """
         The observer distance from the Sun.
-        Meta keyword : ``dsun_obs``, default: ``None``.
+        .. rubric:: Metadata keyword:
+
+        * ``dsun_obs`` Default: None
         """
         dsun = self.meta.get('dsun_obs', None)
 
@@ -413,7 +419,9 @@ scale:\t\t {scale}
     def exposure_time(self):
         """
         Exposure time of the image in seconds.
-        Meta keyword : ``exptime``, default: ``0.0``.
+        .. rubric:: Metadata keyword:
+
+        * ``exptime`` Default: 0.0
         """
         return self.meta.get('exptime', 0.0) * u.s
 
@@ -421,16 +429,20 @@ scale:\t\t {scale}
     def instrument(self):
         """
         Instrument name
-        Meta keyword : ``instrume``, default: ``""``.
+        .. rubric:: Metadata keyword:
+
+        * ``instrume`` Default: ""
         """
         return self.meta.get('instrume', "").replace("_", " ")
 
     @property
     def measurement(self):
         """
-        Measurement name, defaults to the wavelength of image
-        Meta keyword : ``wavelnth``, default: ``"0"``.
-                       ``waveunit``, default: ``""``.
+        Measurement name, defaults to the wavelength of image.
+        .. rubric:: Metadata keywords:
+
+        * ``wavelnth`` Default: 0
+        * ``waveunit`` Default: ""
         """
         return u.Quantity(self.meta.get('wavelnth', 0),
                           self.meta.get('waveunit', ""))
@@ -439,8 +451,10 @@ scale:\t\t {scale}
     def wavelength(self):
         """
         wavelength of the observation
-        Meta keyword : ``wavelnth``, default: ``"0"``.
-                       ``waveunit``, default: ``""``.
+        .. rubric:: Metadata keyword:
+
+        * ``wavelnth`` Default: 0
+        * ``waveunit`` Default: ""
         """
         return u.Quantity(self.meta.get('wavelnth', 0),
                           self.meta.get('waveunit', ""))
@@ -449,7 +463,12 @@ scale:\t\t {scale}
     def observatory(self):
         """
         Observatory or Telescope name
-        Meta keyword : ``obsrvtry``/ ``telescop``, default: ``""``.
+        .. rubric:: Metadata keyword:
+
+        * First available:
+         1. ``obsrvtry``
+         2. ``telescop``
+         3. Default: ""
         """
         return self.meta.get('obsrvtry',
                              self.meta.get('telescop', "")).replace("_", " ")
@@ -526,7 +545,9 @@ scale:\t\t {scale}
     def rsun_meters(self):
         """
         Radius of the sun in meters
-        Meta keyword : ``rsun_ref``, default: ``"constants.radius"``.
+        .. rubric:: Metadata keyword:
+
+        * ``rsun_ref`` Default: constants.radius
         """
         return u.Quantity(self.meta.get('rsun_ref', constants.radius), 'meter')
 
@@ -534,7 +555,13 @@ scale:\t\t {scale}
     def rsun_obs(self):
         """
         Radius of the Sun.
-        Meta keyword : ``rsun_obs``/ ``solar_r``/ ``radius``, default: ``None``.
+        ..rubric:: Metadata keyword:
+
+        * First available:
+         1. ``rsun_obs``
+         2. ``solar_r``
+         3. ``radius``
+         4. Default: None
         """
         rsun_arcseconds = self.meta.get('rsun_obs',
                                         self.meta.get('solar_r',
@@ -554,7 +581,15 @@ scale:\t\t {scale}
     def coordinate_system(self):
         """
         Coordinate system used for x and y axes (ctype1/2)
-        Meta keyword : ``ctype1``/ ``HPLN-TAN``, ``ctype2``/ ``HPLT-TAN``.
+        .. rubric:: Metadata keywords:
+
+        * First available:
+         1. ``ctype1``
+         2. ``HPLN-TAN``
+
+        * First available:
+         1.``ctype2``
+         3. ``HPLT-TAN``
         """
         return Pair(self.meta.get('ctype1', 'HPLN-TAN'),
                     self.meta.get('ctype2', 'HPLT-TAN'))
@@ -563,7 +598,9 @@ scale:\t\t {scale}
     def carrington_longitude(self):
         """
         Carrington longitude (crln_obs)
-        Meta keyword : ``crln_obs``, default: ``None``.
+        .. rubric:: Metadata keyword:
+
+        * ``crln_obs`` Default: None
         """
         carrington_longitude = self.meta.get('crln_obs', None)
 
@@ -580,7 +617,13 @@ scale:\t\t {scale}
     def heliographic_latitude(self):
         """
         Heliographic latitude
-        Meta keyword : ``hglt_obs``/ ``crlt_obs``/ ``solar_b0``, default: ``None``.
+        .. rubric:: Metadata keywords:
+
+        * First available:
+         1. ``hglt_obs``
+         2. ``crlt_obs``
+         3. ``solar_b0``
+         4. Default: ``None``.
         """
         heliographic_latitude = self.meta.get('hglt_obs',
                                               self.meta.get('crlt_obs',
@@ -599,7 +642,9 @@ scale:\t\t {scale}
     def heliographic_longitude(self):
         """
         Heliographic longitude
-        Meta keyword : ``hgln_obs``, default: ``0``.
+        .. rubric:: Metadata keyword:
+
+        * ``hgln_obs`` Default: 0
         """
         return u.Quantity(self.meta.get('hgln_obs', 0.), 'deg')
 
@@ -608,8 +653,10 @@ scale:\t\t {scale}
         """
         Reference point WCS axes in data units (i.e. crval1, crval2). This value
         includes a shift if one is set.
-        Meta keyword : ``crval1``, default: ``0``.
-                       ``crval2``, default: ``0``.
+        .. rubric:: Metadata keywords:
+
+        * ``crval1`` Default: 0
+        * ``crval2`` Default: 0
         """
         return Pair(self.meta.get('crval1', 0.) * self.spatial_units.x,
                     self.meta.get('crval2', 0.) * self.spatial_units.y)
@@ -618,8 +665,15 @@ scale:\t\t {scale}
     def reference_pixel(self):
         """
         Reference point axes in pixels (i.e. crpix1, crpix2)
-        Meta keyword : ``crpix1``, default: ``naxis1``.
-                       ``crpix2``, default: ``naxis2``.
+        .. rubric:: Metadata keywords:
+
+        * First available:
+         1. ``crpix1``
+         2. ``naxis1``
+
+        * First available:
+         1. ``crpix2``
+         2. ``naxis2``
         """
         return Pair(self.meta.get('crpix1',
                                   (self.meta.get('naxis1') + 1) / 2.) * u.pixel,
@@ -630,8 +684,10 @@ scale:\t\t {scale}
     def scale(self):
         """
         Image scale along the x and y axes in units/pixel (i.e. cdelt1, cdelt2)
-        Meta keyword : ``cdelt1``, default: ``1.``.
-                       ``cdelt2``, default: ``1.``.
+        .. rubric:: Metadata keywords:
+
+        * ``cdelt1`` Default: 1
+        * ``cdelt2`` Default: 1
         """
         # TODO: Fix this if only CDi_j matrix is provided
         return Pair(self.meta.get('cdelt1', 1.) * self.spatial_units.x / u.pixel,
@@ -641,8 +697,10 @@ scale:\t\t {scale}
     def spatial_units(self):
         """
         Image coordinate units along the x and y axes (i.e. cunit1, cunit2).
-        Meta keyword : ``cunit1``\ ``arcsec``.
-                       ``cunit2``\ ``arcsec``.
+        .. rubric:: Metadata keywords:
+
+        * ``cunit1``
+        * ``cunit2``
         """
         return Pair(u.Unit(self.meta.get('cunit1', 'arcsec')),
                     u.Unit(self.meta.get('cunit2', 'arcsec')))
@@ -652,9 +710,16 @@ scale:\t\t {scale}
         """
         Matrix describing the rotation required to align solar North with
         the top of the image.
-        Meta keyword : ``PC1_1``, ``PC1_2``, ``PC2_1``, ``PC2_2``, ``CD1_1``, ``CD1_2``, ``CD2_1``, ``CD2_2``.
-                        returns np matrix with ``PC1_1``, ``PC1_2``, ``PC2_1``, ``PC2_2``
-                        else with ``CD1_1``, ``CD1_2``, ``CD2_1``, ``CD2_2``.
+         .. rubric:: Metadata keywords:
+
+        * ``PC1_1``
+        * ``PC1_2``
+        * ``PC2_1``
+        * ``PC2_2``
+        * ``CD1_1``
+        * ``CD1_2``
+        * ``CD2_1``
+        * ``CD2_2``
         """
         if 'PC1_1' in self.meta:
             return np.matrix([[self.meta['PC1_1'], self.meta['PC1_2']],

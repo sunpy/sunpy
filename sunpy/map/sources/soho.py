@@ -74,8 +74,11 @@ class EITMap(GenericMap):
     @property
     def rsun_obs(self):
         """
-        Meta keyword : ``solar_r``, ``cdelt1``.
         Returns the solar radius as measured by EIT in arcseconds.
+        .. rubric:: Metadata keyword:
+
+        * ``solar_r``
+        * ``cdelt1``
         """
         return Quantity(self.meta['solar_r'] * self.meta['cdelt1'], 'arcsec')
 

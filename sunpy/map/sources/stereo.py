@@ -51,8 +51,10 @@ class EUVIMap(GenericMap):
     @property
     def rsun_arcseconds(self):
         """
-        Meta keyword : ``rsun``, default: ``None``.
         Radius of the sun in arcseconds.
+        .. rubric:: Metadata keyword:
+
+        * ``rsun`` Default: None
 
         References
         ----------
