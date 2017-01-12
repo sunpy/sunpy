@@ -55,7 +55,7 @@ matrix:
            env: JOB="Figures 2.7" PYTHON_VERSION=2.7 SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
 
          - os: linux
-           env: JOB="Figures 3.5" PYTHON_VERSION=3.5 SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
+           env: JOB="Figures 3.5" PYTHON_VERSION=3.5 SETUP_CMD='test --figure'
 
          - os: linux
            env: JOB="Online" PYTHON_VERSION=3.5 SETUP_CMD='test --online --coverage'
@@ -79,7 +79,7 @@ install:
 before_script:
     # Download the sample data for the build of the documentation.
     - if [[ $SETUP_CMD == *sphinx* ]]; then python -c "import sunpy.data; sunpy.data.download_sample_data()"; fi
-    - if [[ $SETUP_CMD == *figure* ]]; then wget https://raw.githubusercontent.com/sunpy/sunpy-figure-tests/master/conda_env.yml; conda env create --file conda_env.yml; source activate sunpy-figure-tests; fi
+    - if [[ $SETUP_CMD == *figure* ]] && [[ $PYTHON_VERSION == 2.7 ]]; then wget https://raw.githubusercontent.com/sunpy/sunpy-figure-tests/master/conda_env.yml; conda env create --file conda_env.yml; source activate sunpy-figure-tests; fi
 
 script:
     - $MAIN_CMD $SETUP_CMD
