@@ -8,6 +8,7 @@ from .frames import *
 
 __all__ = ['solar_wcs_frame_mapping']
 
+
 def solar_wcs_frame_mapping(wcs):
     """
     This function registers the coordinates frames to their FITS-WCS coordinate
@@ -30,9 +31,8 @@ def solar_wcs_frame_mapping(wcs):
     if hasattr(wcs, 'dsun'):
         dsun = wcs.dsun
 
-
-    # First we try the Celestial sub, which rectifies the order.
-    # It will return any thing matching ??LN*, ??LT*
+    # First we try the Celestial sub, which rectifies the order. It will return
+    # any thing matching ??LN*, ??LT*
     wcss = wcs.sub([WCSSUB_CELESTIAL])
 
     # If the SUB works, use it.
@@ -56,13 +56,3 @@ def solar_wcs_frame_mapping(wcs):
 
 
 astropy.wcs.utils.WCS_FRAME_MAPPINGS.append([solar_wcs_frame_mapping])
-
-# The following is a patch for wcsaxes 0.6 and lower:
-try:
-    import wcsaxes.wcs_utils
-    if hasattr(wcsaxes.wcs_utils, 'WCS_FRAME_MAPPINGS'):
-        wcsaxes.wcs_utils.WCS_FRAME_MAPPINGS.append([solar_wcs_frame_mapping])
-except ImportError:
-    pass
-
-    # Now we try for heliocentric without the sub.

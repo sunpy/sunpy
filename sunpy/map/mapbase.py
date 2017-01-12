@@ -285,15 +285,8 @@ scale:\t\t {scale}
         """
         # This code is reused from Astropy
 
-        try:
-            from wcsaxes import WCSAxes
-        except ImportError:
-            raise ImportError("Using WCS instances as Matplotlib projections "
-                              "requires the WCSAxes package to be installed. "
-                              "See http://wcsaxes.readthedocs.io for more "
-                              "details.")
-        else:
-            return WCSAxes, {'wcs': self.wcs}
+        from astropy.visualisation.wcsaxes import WCSAxes
+        return WCSAxes, {'wcs': self.wcs}
 
     # Some numpy extraction
     @property
