@@ -133,8 +133,8 @@ pyplot `~matplotlib.pyplot.imshow` command in that it will create a figure and
 axes object for you if you haven't already.
 
 When you create a plot with `~sunpy.map.GenericMap.peek` or
-`~sunpy.map.GenericMap.plot`, if possible SunPy will use `wcsaxes
-<http://wcsaxes.readthedocs.io/>`_ to represent coordinates on the image
+`~sunpy.map.GenericMap.plot`, if possible SunPy will use
+`astropy.visualization.wcsaxes` to represent coordinates on the image
 accurately, for more information see :ref:`wcsaxes-plotting`.
 
 Using `~sunpy.map.GenericMap.plot` it is possible to customise the look of the
@@ -161,8 +161,9 @@ contours on the Map:
     plt.show()
 
 
-In this example, the `~matplotlib.figure.Figure` and `~wcsaxes.WCSAxes`
-instances are created explicitly, and then used to modify the plot:
+In this example, the `~matplotlib.figure.Figure` and
+`~astropy.visualization.wcsaxes.WCSAxes` instances are created explicitly, and
+then used to modify the plot:
 
 .. plot::
     :include-source:
@@ -198,9 +199,10 @@ instances are created explicitly, and then used to modify the plot:
     plt.colorbar()
     plt.show()
 
-It is possible to create the same plot, explicitly not using `wcsaxes`, however,
-this will not have the features of `wcsaxes` which include correct
-representation of rotation and plotting in different coordinate systems.
+It is possible to create the same plot, explicitly not using
+`~astropy.visualizatiion.wcsaxes`, however, this will not have the features of
+`~astropy.visualizatiion.wcsaxes` which include correct representation of
+rotation and plotting in different coordinate systems.
 
 .. plot::
     :include-source:
@@ -237,22 +239,23 @@ representation of rotation and plotting in different coordinate systems.
 Plotting Maps with wcsaxes
 --------------------------
 
-By default :ref:`map` checks if the `wcsaxes <http://wcsaxes.readthedocs.io/>`_
-package has been installed. If it is installed,
-then `wcsaxes` is used to improve the representation of world coordinates,
-and calling `~sunpy.map.GenericMap.plot` or `~sunpy.map.GenericMap.peek()` will use
-wcsaxes for plotting. Unless a standard `matplotlib.axes.Axes` object is created.
+By default :ref:`map` uses the `astropy.visualization.wcsaxes` module to improve
+the representation of world coordinates, and calling
+`~sunpy.map.GenericMap.plot` or `~sunpy.map.GenericMap.peek()` will use wcsaxes
+for plotting. Unless a standard `matplotlib.axes.Axes` object is explicitly
+created.
 
-To explicitly create a `wcsaxes.WCSAxes` instance do the following ::
+To explicitly create a `~astropy.visualization.wcsaxes.WCSAxes` instance do the
+following ::
 
     >>> fig = plt.figure()   # doctest: +SKIP
     >>> ax = plt.subplot(projection=smap)   # doctest: +SKIP
 
-when plotting on a `~wcsaxes.WCSAxes` axes, it will by default plot in pixel
-coordinates, you can override this behavior and plot in 'world' coordinates
-by getting the transformation from the axes with ``ax.get_transform('world')``.
-Note: World coordinates are always in **degrees** so you will have to convert
-to degrees.::
+when plotting on an `~astropy.visualization.wcsaxes.WCSAxes` axes, it will by
+default plot in pixel coordinates, you can override this behavior and plot in
+'world' coordinates by getting the transformation from the axes with
+``ax.get_transform('world')``. Note: World coordinates are always in **degrees**
+so you will have to convert to degrees.::
 
     >>> smap.plot()   # doctest: +SKIP
     >>> ax.plot((100*u.arcsec).to(u.deg), (500*u.arcsec).to(u.deg),
