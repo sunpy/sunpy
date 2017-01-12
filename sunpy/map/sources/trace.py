@@ -66,6 +66,7 @@ class TRACEMap(GenericMap):
     @property
     def measurement(self):
         """
+        Meta keyword : ``WAVE_LEN``.
         Returns the measurement type.
         """
         s = self.meta['WAVE_LEN']

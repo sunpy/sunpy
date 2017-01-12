@@ -62,13 +62,17 @@ class SXTMap(GenericMap):
 
     @property
     def dsun(self):
-        """ For Yohkoh Maps, dsun_obs is not always defined. Uses approximation
-        defined above it is not defined."""
+        """
+        Meta keyword : ``dsun_obs``/ ``dsun_apparent``.
+        For Yohkoh Maps, dsun_obs is not always defined. Uses approximation
+        defined above it is not defined.
+        """
         return self.meta.get('dsun_obs', self.meta['dsun_apparent'])
 
     @property
     def measurement(self):
         """
+        Meta keyword : ``wavelnth``, default: ``""``.
         Returns the type of data observed.
         """
         s = self.meta.get('wavelnth', '')

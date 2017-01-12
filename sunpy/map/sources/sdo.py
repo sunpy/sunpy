@@ -50,6 +50,7 @@ class AIAMap(GenericMap):
     @property
     def observatory(self):
         """
+        Meta keyword : ``telescop``.
         Returns the observatory.
         """
         return self.meta['telescop'].split('/')[0]
@@ -57,6 +58,7 @@ class AIAMap(GenericMap):
     @property
     def processing_level(self):
         """
+        Meta keyword : ``lvl_num``.
         Returns the FITS processing level.
         """
         return self.meta['lvl_num']
@@ -97,6 +99,7 @@ class HMIMap(GenericMap):
     @property
     def measurement(self):
         """
+        Meta keyword : ``content``.
         Returns the measurement type.
         """
         return self.meta['content'].split(" ")[0].lower()
@@ -104,6 +107,7 @@ class HMIMap(GenericMap):
     @property
     def observatory(self):
         """
+        Meta keyword : ``telescop``.
         Returns the observatory.
         """
         return self.meta['telescop'].split('/')[0]

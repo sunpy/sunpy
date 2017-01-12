@@ -73,6 +73,7 @@ class EITMap(GenericMap):
     @property
     def rsun_obs(self):
         """
+        Meta keyword : ``solar_r``, ``cdelt1``.
         Returns the solar radius as measured by EIT in arcseconds.
         """
         return Quantity(self.meta['solar_r'] * self.meta['cdelt1'], 'arcsec')
@@ -193,6 +194,7 @@ class MDIMap(GenericMap):
     @property
     def measurement(self):
         """
+        Meta keyword : ``dpc_obsr``, default: ``" "``.
         Returns the type of data in the map.
         """
         return "magnetogram" if self.meta.get('dpc_obsr', " ").find('Mag') != -1 else "continuum"
