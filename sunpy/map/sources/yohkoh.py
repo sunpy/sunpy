@@ -81,7 +81,7 @@ class SXTMap(GenericMap):
         Returns the type of data observed.
         .. rubric:: Metadata keyword:
 
-        * ``wavelnth`` Default: ""
+        * ``wavelnth`` Default: ``""``
         """
         s = self.meta.get('wavelnth', '')
         if s == 'Al.1':

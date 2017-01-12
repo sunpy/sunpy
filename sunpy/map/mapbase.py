@@ -376,7 +376,7 @@ scale:\t\t {scale}
         Image observation time
         .. rubric:: Metadata keyword:
 
-        * ``date-obs`` Default: ``now``
+        * ``date-obs`` Default: ``'now'``
         """
         time = parse_time(self.meta.get('date-obs', 'now'))
         if time is None:
@@ -392,7 +392,7 @@ scale:\t\t {scale}
         Detector name
         .. rubric:: Metadata keyword:
 
-        * ``detector`` Default: ""
+        * ``detector`` Default: ``""``
         """
         return self.meta.get('detector', "")
 
@@ -402,7 +402,7 @@ scale:\t\t {scale}
         The observer distance from the Sun.
         .. rubric:: Metadata keyword:
 
-        * ``dsun_obs`` Default: None
+        * ``dsun_obs`` Default: `None`
         """
         dsun = self.meta.get('dsun_obs', None)
 
@@ -421,7 +421,7 @@ scale:\t\t {scale}
         Exposure time of the image in seconds.
         .. rubric:: Metadata keyword:
 
-        * ``exptime`` Default: 0.0
+        * ``exptime`` Default: ``0.0``
         """
         return self.meta.get('exptime', 0.0) * u.s
 
@@ -431,7 +431,7 @@ scale:\t\t {scale}
         Instrument name
         .. rubric:: Metadata keyword:
 
-        * ``instrume`` Default: ""
+        * ``instrume`` Default: ``""``
         """
         return self.meta.get('instrume', "").replace("_", " ")
 
@@ -441,8 +441,8 @@ scale:\t\t {scale}
         Measurement name, defaults to the wavelength of image.
         .. rubric:: Metadata keywords:
 
-        * ``wavelnth`` Default: 0
-        * ``waveunit`` Default: ""
+        * ``wavelnth`` Default: ``0``
+        * ``waveunit`` Default: ``""``
         """
         return u.Quantity(self.meta.get('wavelnth', 0),
                           self.meta.get('waveunit', ""))
@@ -453,8 +453,8 @@ scale:\t\t {scale}
         wavelength of the observation
         .. rubric:: Metadata keyword:
 
-        * ``wavelnth`` Default: 0
-        * ``waveunit`` Default: ""
+        * ``wavelnth`` Default: ``0``
+        * ``waveunit`` Default: ``""``
         """
         return u.Quantity(self.meta.get('wavelnth', 0),
                           self.meta.get('waveunit', ""))
@@ -468,7 +468,7 @@ scale:\t\t {scale}
         * First available:
          1. ``obsrvtry``
          2. ``telescop``
-         3. Default: ""
+         3. Default: ``""``
         """
         return self.meta.get('obsrvtry',
                              self.meta.get('telescop', "")).replace("_", " ")
@@ -547,7 +547,7 @@ scale:\t\t {scale}
         Radius of the sun in meters
         .. rubric:: Metadata keyword:
 
-        * ``rsun_ref`` Default: constants.radius
+        * ``rsun_ref`` Default: `sunpy.constants.radius`
         """
         return u.Quantity(self.meta.get('rsun_ref', constants.radius), 'meter')
 
@@ -561,7 +561,7 @@ scale:\t\t {scale}
          1. ``rsun_obs``
          2. ``solar_r``
          3. ``radius``
-         4. Default: None
+         4. Default: `None`
         """
         rsun_arcseconds = self.meta.get('rsun_obs',
                                         self.meta.get('solar_r',
@@ -583,13 +583,8 @@ scale:\t\t {scale}
         Coordinate system used for x and y axes (ctype1/2)
         .. rubric:: Metadata keywords:
 
-        * First available:
-         1. ``ctype1``
-         2. ``HPLN-TAN``
-
-        * First available:
-         1.``ctype2``
-         3. ``HPLT-TAN``
+        * ``ctype1`` Default: ``'HPLN-TAN'``
+        * ``ctype2`` Default: ``'HPLT-TAN'``
         """
         return Pair(self.meta.get('ctype1', 'HPLN-TAN'),
                     self.meta.get('ctype2', 'HPLT-TAN'))
@@ -600,7 +595,7 @@ scale:\t\t {scale}
         Carrington longitude (crln_obs)
         .. rubric:: Metadata keyword:
 
-        * ``crln_obs`` Default: None
+        * ``crln_obs`` Default: `None`
         """
         carrington_longitude = self.meta.get('crln_obs', None)
 
@@ -623,7 +618,7 @@ scale:\t\t {scale}
          1. ``hglt_obs``
          2. ``crlt_obs``
          3. ``solar_b0``
-         4. Default: ``None``.
+         4. Default: `None`
         """
         heliographic_latitude = self.meta.get('hglt_obs',
                                               self.meta.get('crlt_obs',
@@ -644,7 +639,7 @@ scale:\t\t {scale}
         Heliographic longitude
         .. rubric:: Metadata keyword:
 
-        * ``hgln_obs`` Default: 0
+        * ``hgln_obs`` Default: ``0``
         """
         return u.Quantity(self.meta.get('hgln_obs', 0.), 'deg')
 
@@ -655,8 +650,8 @@ scale:\t\t {scale}
         includes a shift if one is set.
         .. rubric:: Metadata keywords:
 
-        * ``crval1`` Default: 0
-        * ``crval2`` Default: 0
+        * ``crval1`` Default: ``0``
+        * ``crval2`` Default: ``0``
         """
         return Pair(self.meta.get('crval1', 0.) * self.spatial_units.x,
                     self.meta.get('crval2', 0.) * self.spatial_units.y)
@@ -686,8 +681,8 @@ scale:\t\t {scale}
         Image scale along the x and y axes in units/pixel (i.e. cdelt1, cdelt2)
         .. rubric:: Metadata keywords:
 
-        * ``cdelt1`` Default: 1
-        * ``cdelt2`` Default: 1
+        * ``cdelt1`` Default: ``1``
+        * ``cdelt2`` Default: ``1``
         """
         # TODO: Fix this if only CDi_j matrix is provided
         return Pair(self.meta.get('cdelt1', 1.) * self.spatial_units.x / u.pixel,
@@ -699,8 +694,8 @@ scale:\t\t {scale}
         Image coordinate units along the x and y axes (i.e. cunit1, cunit2).
         .. rubric:: Metadata keywords:
 
-        * ``cunit1``
-        * ``cunit2``
+        * ``cunit1`` Default: ``'arcsec'``
+        * ``cunit2`` Default: ``'arcsec'``
         """
         return Pair(u.Unit(self.meta.get('cunit1', 'arcsec')),
                     u.Unit(self.meta.get('cunit2', 'arcsec')))
@@ -712,14 +707,8 @@ scale:\t\t {scale}
         the top of the image.
          .. rubric:: Metadata keywords:
 
-        * ``PC1_1``
-        * ``PC1_2``
-        * ``PC2_1``
-        * ``PC2_2``
-        * ``CD1_1``
-        * ``CD1_2``
-        * ``CD2_1``
-        * ``CD2_2``
+        * ``PCi_j``
+        * ``CDi_j``
         """
         if 'PC1_1' in self.meta:
             return np.matrix([[self.meta['PC1_1'], self.meta['PC1_2']],

@@ -54,7 +54,7 @@ class EUVIMap(GenericMap):
         Radius of the sun in arcseconds.
         .. rubric:: Metadata keyword:
 
-        * ``rsun`` Default: None
+        * ``rsun`` Default: `None`
 
         References
         ----------
