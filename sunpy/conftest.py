@@ -20,6 +20,8 @@ except ImportError:
 else:
     matplotlib.use('Agg')
 
+from astropy.tests import disable_internet
+
 from sunpy.tests import hash
 
 hash_library_original_len = len(hash.hash_library)
@@ -40,15 +42,22 @@ is_online = partial(site_reachable, GOOGLE_URL)
 
 
 def pytest_runtest_setup(item):
-    """pytest hook to skip all tests that have the mark 'online' if the
+    """
+    pytest hook to skip all tests that have the mark 'online' if the
     client is online (simply detected by checking whether http://www.google.com
     can be requested).
-
     """
     if isinstance(item, item.Function):
         if 'online' in item.keywords and not is_online():
             msg = 'skipping test {0} (reason: client seems to be offline)'
             pytest.skip(msg.format(item.name))
+
+        if 'online' not in item.keywords:
+            disable_internet.turn_off_internet()
+
+
+def pytest_runtest_teardown(item, nextitem):
+    disable_internet.turn_on_internet()
 
 
 def pytest_unconfigure(config):

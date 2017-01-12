@@ -425,9 +425,9 @@ def test_walker_create_vso_instrument(vso_session):
 
 @pytest.mark.online
 def test_walker_create_wave(vso_session):
-    entries = walker.create(vso.attrs.Wave(0 * u.AA, 10 * u.AA), vso_session)
+    entries = walker.create(vso.attrs.Wavelength(0 * u.AA, 10 * u.AA), vso_session)
     assert len(entries) == 2
-    entries = walker.create(vso.attrs.Wave(5 * u.AA, 10 * u.AA), vso_session)
+    entries = walker.create(vso.attrs.Wavelength(5 * u.AA, 10 * u.AA), vso_session)
     assert len(entries) == 0
 
 

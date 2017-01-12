@@ -20,6 +20,7 @@ from sunpy.extern.six.moves import urllib
 from sunpy.extern.six import iteritems
 
 import sunpy
+from sunpy.util.progressbar import TTYProgressBar as ProgressBar
 
 
 def default_name(path, sock, url):
@@ -51,6 +52,9 @@ class Downloader(object):
 
             with closing(urllib.request.urlopen(url)) as sock:
                 fullname = path(sock, url)
+                dir_ = os.path.abspath(os.path.dirname(fullname))
+                if not os.path.exists(dir_):
+                    os.makedirs(dir_)
 
                 with open(fullname, 'wb') as fd:
                     while True:
@@ -140,6 +144,8 @@ class Downloader(object):
             path = partial(default_name, default_dir)
         elif isinstance(path, six.string_types):
             path = partial(default_name, path)
+        elif not callable(path):
+            raise ValueError("path must be: None, string or callable")
 
         # Use default callbacks if none were specified
         if callback is None:
@@ -171,3 +177,85 @@ class Downloader(object):
                             return
                     else:
                         break
+
+
+
+class Results(object):
+    """ Returned by VSOClient.get. Use .wait to wait
+    for completion of download.
+    """
+    def __init__(self, callback, n=0, done=None):
+        self.callback = callback
+        self.n = self.total = n
+        self.map_ = {}
+        self.done = done
+        self.evt = threading.Event()
+        self.errors = []
+        self.lock = threading.RLock()
+
+        self.progress = None
+
+    def submit(self, keys, value):
+        """
+        Submit
+
+        Parameters
+        ----------
+        keys : list
+            names under which to save the value
+        value : object
+            value to save
+        """
+        for key in keys:
+            self.map_[key] = value
+        self.poke()
+
+    def poke(self):
+        """ Signal completion of one item that was waited for. This can be
+        because it was submitted, because it lead to an error or for any
+        other reason. """
+        with self.lock:
+            self.n -= 1
+            if self.progress is not None:
+                self.progress.poke()
+            if not self.n:
+                if self.done is not None:
+                    self.map_ = self.done(self.map_)
+                self.callback(self.map_)
+                self.evt.set()
+
+    def require(self, keys):
+        """ Require that keys be submitted before the Results object is
+        finished (i.e., wait returns). Returns a callback method that can
+        be used to submit the result by simply calling it with the result.
+
+        keys : list
+            name of keys under which to save the result
+        """
+        with self.lock:
+            self.n += 1
+            self.total += 1
+            return partial(self.submit, keys)
+
+    def wait(self, timeout=100, progress=True):
+        """ Wait for result to be complete and return it. """
+        # Giving wait a timeout somehow circumvents a CPython bug that the
+        # call gets ininterruptible.
+        if progress:
+            with self.lock:
+                self.progress = ProgressBar(self.total, self.total - self.n)
+                self.progress.start()
+                self.progress.draw()
+
+        while not self.evt.wait(timeout):
+            pass
+        if progress:
+            self.progress.finish()
+
+        return self.map_
+
+    def add_error(self, exception):
+        """ Signal a required result cannot be submitted because of an
+        error. """
+        self.errors.append(exception)
+        self.poke()

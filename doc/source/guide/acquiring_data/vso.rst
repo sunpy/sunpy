@@ -78,7 +78,7 @@ can be used to specify dates and time).  The second argument:
 
 sets the instrument we are looking for. The third argument:
 
-    ``vso.attrs.Wave(142*u.AA, 123*u.AA)``
+    ``vso.attrs.Wavelength(142*u.AA, 123*u.AA)``
 
 sets the values for wavelength i.e, for wavemax(maximum value) and
 similarly wavemin(for minimum value) for the query. Also the ``u.AA``
@@ -127,7 +127,7 @@ setting conditions that the returned records must satisfy.  You can
 set the wavelength; for example, to return the 171 Angstrom EIT results
 
     >>> import astropy.units as u
-    >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'), vso.attrs.Wave(171*u.AA,171*u.AA) )
+    >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'), vso.attrs.Wavelength(171*u.AA,171*u.AA) )
     >>> len(qr)
     4
 
