@@ -1,6 +1,6 @@
 """Yohkoh SXT Map subclass definitions"""
 from __future__ import absolute_import, division, absolute_import
-#pylint: disable=W0221,W0222,E1101,E1121
+# pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
@@ -16,7 +16,9 @@ from sunpy.sun import constants
 
 __all__ = ['SXTMap']
 
+
 class SXTMap(GenericMap):
+
     """Yohkoh SXT Image Map
 
     The Yohkoh Soft X-ray Telescope (SXT) the full solar disk

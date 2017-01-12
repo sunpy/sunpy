@@ -1,6 +1,6 @@
 """RHESSI Map subclass definitions"""
 from __future__ import absolute_import, print_function, division
-#pylint: disable=W0221,W0222,E1121
+# pylint: disable=W0221,W0222,E1121
 
 __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"
@@ -12,7 +12,9 @@ import astropy.units as u
 
 __all__ = ['RHESSIMap']
 
+
 class RHESSIMap(GenericMap):
+
     """RHESSI Image Map.
 
     The RHESSI mission consists of a single spin-stabilized
@@ -42,7 +44,7 @@ class RHESSIMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
 
         self._nickname = self.detector
-        #TODO Currently (8/29/2011), cannot read fits files containing more than one image (schriste)
+        # TODO Currently (8/29/2011), cannot read fits files containing more than one image (schriste)
         # Fix some broken/misapplied keywords
         if self.meta['ctype1'] == 'arcsec':
             self.meta['cunit1'] = 'arcsec'

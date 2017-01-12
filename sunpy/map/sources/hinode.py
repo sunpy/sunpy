@@ -1,6 +1,6 @@
 """Hinode XRT and SOT Map subclass definitions"""
 from __future__ import absolute_import, print_function, division
-#pylint: disable=W0221,W0222,E1101,E1121
+# pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]
 __email__ = "jack.ireland@nasa.gov"
@@ -19,10 +19,13 @@ __all__ = ['XRTMap', 'SOTMap']
 # http://darts.jaxa.jp/pub/ssw/hinode/xrt/idl/util/xrt_prep.pro
 # SATURATION_LIMIT = 2500
 
+
 def _lower_list(L):
     return [item.lower() for item in L]
 
+
 class XRTMap(GenericMap):
+
     """Hinode XRT map definition.
 
     The X-Ray Telescope (XRT) is a high resolution grazing incidence telescope,
@@ -84,7 +87,9 @@ class XRTMap(GenericMap):
         """Determines if header corresponds to an XRT image"""
         return header.get('instrume') == 'XRT'
 
+
 class SOTMap(GenericMap):
+
     """Hinode SOT Image Map definition.
 
     The Hinode Solar Optical Telescope (SOT) consists of a 50 cm
@@ -102,7 +107,7 @@ class SOTMap(GenericMap):
     * `Hinode SOT Instrument Paper <http://arxiv.org/pdf/0711.1715.pdf>`_
     * `Data Analsis Guide <https://sot.lmsal.com/doc/rep/sot254/fid366/SOT00042_33_SOT_Analysis_Guide_SAG.pdf>`_
     """
-    #TODO: get a link for the SOT FITS headers
+    # TODO: get a link for the SOT FITS headers
     # Add in some information about the the possible instrument, observation
     # type, observable ion and wavelength
 
@@ -125,14 +130,14 @@ class SOTMap(GenericMap):
         self.meta['telescop'] = "Hinode"
         self._nickname = self.detector
 
-        #TODO (add other options, Now all threated as intensity. This follows Hinode SDC archive)
+        # TODO (add other options, Now all threated as intensity. This follows Hinode SDC archive)
         # StokesQUV -> grey, Velocity -> EIS, Width -> EIS, Mag Field Azi -> IDL 5 (STD gamma II)
         # 'WB' -> red
         # 'NB'(0 = red); (>0 = gray), # nb has 1 stokes I, the rest quv
         # 'SP' (<=1 = red); (>1 = gray) #sp has 2 stokes I, the rest quv
         color = {'SOT/WB': 'intensity',
-                 'SOT/NB': 'intensity', # For the 1st dimension
-                 'SOT/SP': 'intensity', # For the 1st 2 dimensions
+                 'SOT/NB': 'intensity',  # For the 1st dimension
+                 'SOT/SP': 'intensity',  # For the 1st 2 dimensions
                  }
 
         self.plot_settings['cmap'] = cm.get_cmap('hinodesot' + color[self.instrument])

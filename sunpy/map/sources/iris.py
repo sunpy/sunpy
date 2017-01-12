@@ -6,7 +6,9 @@ from sunpy.map import GenericMap
 
 __all__ = ['SJIMap']
 
+
 class SJIMap(GenericMap):
+
     """
     A 2D IRIS Slit Jaw Imager Map.
 

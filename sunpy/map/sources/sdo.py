@@ -1,6 +1,6 @@
 """SDO Map subclass definitions"""
 from __future__ import absolute_import, print_function, division
-#pylint: disable=W0221,W0222,E1101,E1121
+# pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -14,7 +14,9 @@ from sunpy.cm import cm
 
 __all__ = ['AIAMap', 'HMIMap']
 
+
 class AIAMap(GenericMap):
+
     """AIA Image Map.
 
     The Atmospheric Imaging Assembly is a set of four telescopes that employ
@@ -68,7 +70,9 @@ class AIAMap(GenericMap):
         """Determines if header corresponds to an AIA image"""
         return header.get('instrume', '').startswith('AIA')
 
+
 class HMIMap(GenericMap):
+
     """HMI Image Map.
 
     HMI consists of a refracting telescope, a polarization selector,
@@ -86,6 +90,7 @@ class HMIMap(GenericMap):
     * `Instrument Page <http://hmi.stanford.edu>`_
     * `Analysis Guide <http://hmi.stanford.edu/doc/magnetic/guide.pdf>`_
     """
+
     def __init__(self, data, header, **kwargs):
 
         GenericMap.__init__(self, data, header, **kwargs)

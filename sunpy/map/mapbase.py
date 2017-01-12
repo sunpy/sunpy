@@ -53,6 +53,7 @@ MAP_CLASSES = OrderedDict()
 
 
 class GenericMapMeta(ABCMeta):
+
     """
     Registration metaclass for `~sunpy.map.GenericMap`.
 
@@ -76,6 +77,7 @@ class GenericMapMeta(ABCMeta):
 
 @six.add_metaclass(GenericMapMeta)
 class GenericMap(NDData):
+
     """
     A Generic spatially-aware 2D data array
 
@@ -512,7 +514,7 @@ scale:\t\t {scale}
         new_meta['crval2'] = ((self.meta['crval2'] *
                                self.spatial_units.y + y).to(self.spatial_units.y)).value
 
-        #Create new map with the modification
+        # Create new map with the modification
         new_map = self._new_instance(self.data, new_meta, self.plot_settings)
 
         new_map._shift = Pair(self.shifted_value.x + x,
@@ -1001,7 +1003,7 @@ scale:\t\t {scale}
                     error_msg = "no 'unit' attribute"
                 raise TypeError("Argument '{0}' to function '{1}' has {2}. "
                                 "You may want to pass in an astropy Quantity instead."
-                                 .format('angle', 'rotate', error_msg))
+                                .format('angle', 'rotate', error_msg))
 
         # Interpolation parameter sanity
         if order not in range(6):
@@ -1030,9 +1032,9 @@ scale:\t\t {scale}
         pad_y = int(np.max((diff[0], 0)))
 
         new_data = np.pad(self.data,
-                              ((pad_y, pad_y), (pad_x, pad_x)),
-                              mode='constant',
-                              constant_values=(missing, missing))
+                          ((pad_y, pad_y), (pad_x, pad_x)),
+                          mode='constant',
+                          constant_values=(missing, missing))
         new_meta['crpix1'] += pad_x
         new_meta['crpix2'] += pad_y
 
@@ -1042,7 +1044,7 @@ scale:\t\t {scale}
 
         # Convert the axis of rotation from data coordinates to pixel coordinates
         pixel_rotation_center = u.Quantity(self.data_to_pixel(*rotation_center,
-                                                               origin=0)).value
+                                                              origin=0)).value
         if recenter:
             pixel_center = pixel_rotation_center
         else:
@@ -1067,8 +1069,8 @@ scale:\t\t {scale}
         # Define the new reference_pixel
         new_meta['crval1'] = rotation_center[0].value
         new_meta['crval2'] = rotation_center[1].value
-        new_meta['crpix1'] = new_reference_pixel[0] + 1 # FITS pixel origin is 1
-        new_meta['crpix2'] = new_reference_pixel[1] + 1 # FITS pixel origin is 1
+        new_meta['crpix1'] = new_reference_pixel[0] + 1  # FITS pixel origin is 1
+        new_meta['crpix2'] = new_reference_pixel[1] + 1  # FITS pixel origin is 1
 
         # Unpad the array if necessary
         unpad_x = -np.min((diff[1], 0))
@@ -1085,10 +1087,10 @@ scale:\t\t {scale}
         # That being calculate the dot product of the old header data with the
         # inverse of the rotation matrix.
         pc_C = np.dot(self.rotation_matrix, rmatrix.I)
-        new_meta['PC1_1'] = pc_C[0,0]
-        new_meta['PC1_2'] = pc_C[0,1]
-        new_meta['PC2_1'] = pc_C[1,0]
-        new_meta['PC2_2'] = pc_C[1,1]
+        new_meta['PC1_1'] = pc_C[0, 0]
+        new_meta['PC1_2'] = pc_C[0, 1]
+        new_meta['PC2_1'] = pc_C[1, 0]
+        new_meta['PC2_2'] = pc_C[1, 1]
 
         # Update pixel size if image has been scaled.
         if scale != 1.0:
@@ -1104,7 +1106,7 @@ scale:\t\t {scale}
         new_meta.pop('CD2_1', None)
         new_meta.pop('CD2_2', None)
 
-        #Create new map with the modification
+        # Create new map with the modification
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
 
@@ -1174,17 +1176,17 @@ scale:\t\t {scale}
 
         # Do manual Quantity input validation to allow for two unit options
         if ((isinstance(range_a, u.Quantity) and isinstance(range_b, u.Quantity)) or
-            (hasattr(range_a, 'unit') and hasattr(range_b, 'unit'))):
+                (hasattr(range_a, 'unit') and hasattr(range_b, 'unit'))):
 
             if (range_a.unit.is_equivalent(self.spatial_units.x) and
-                range_b.unit.is_equivalent(self.spatial_units.y)):
+                    range_b.unit.is_equivalent(self.spatial_units.y)):
                 units = 'data'
             elif range_a.unit.is_equivalent(u.pixel) and range_b.unit.is_equivalent(u.pixel):
                 units = 'pixels'
             else:
                 raise u.UnitsError("range_a and range_b but be "
-                                   "in units convertable to {} or {}".format(self.spatial_units['x'],
-                                                                             u.pixel))
+                                   "in units convertable to {} or {}".format(
+                                       self.spatial_units['x'], u.pixel))
         else:
             raise TypeError("Arguments range_a and range_b to function submap "
                             "have an invalid unit attribute "
@@ -1202,7 +1204,8 @@ scale:\t\t {scale}
                 range_b[1] = self.yrange[1]
 
             x1, y1 = np.ceil(u.Quantity(self.data_to_pixel(range_a[0], range_b[0]))).value
-            x2, y2 = np.floor(u.Quantity(self.data_to_pixel(range_a[1], range_b[1])) + 1*u.pix).value
+            x2, y2 = np.floor(
+                u.Quantity(self.data_to_pixel(range_a[1], range_b[1])) + 1*u.pix).value
 
             x_pixels = [x1, x2]
             y_pixels = [y1, y2]
@@ -1253,10 +1256,10 @@ scale:\t\t {scale}
         # Create new map instance
         if self.mask is not None:
             new_mask = self.mask[yslice, xslice].copy()
-            #Create new map with the modification
+            # Create new map with the modification
             new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
             return new_map
-        #Create new map with the modification
+        # Create new map with the modification
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
 
@@ -1332,8 +1335,10 @@ scale:\t\t {scale}
             new_meta['CD2_2'] *= dimensions[1].value
         new_meta['crpix1'] = (new_nx + 1) / 2.
         new_meta['crpix2'] = (new_ny + 1) / 2.
-        new_meta['crval1'] = self.center.x.to(self.spatial_units.x).value + 0.5*(offset[0]*self.scale.x).to(self.spatial_units.x).value
-        new_meta['crval2'] = self.center.y.to(self.spatial_units.y).value + 0.5*(offset[1]*self.scale.y).to(self.spatial_units.y).value
+        new_meta['crval1'] = self.center.x.to(
+            self.spatial_units.x).value + 0.5*(offset[0]*self.scale.x).to(self.spatial_units.x).value
+        new_meta['crval2'] = self.center.y.to(
+            self.spatial_units.y).value + 0.5*(offset[1]*self.scale.y).to(self.spatial_units.y).value
 
         # Create new map instance
         if self.mask is not None:
@@ -1343,7 +1348,7 @@ scale:\t\t {scale}
             new_data = new_array
             new_mask = None
 
-        #Create new map with the modified data
+        # Create new map with the modified data
         new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
         return new_map
 
@@ -1462,10 +1467,10 @@ scale:\t\t {scale}
             radius = self.rsun_obs.to(u.deg).value
         else:
             radius = self.rsun_obs.value
-        c_kw = {'radius':radius,
-                'fill':False,
-                'color':'white',
-                'zorder':100,
+        c_kw = {'radius': radius,
+                'fill': False,
+                'color': 'white',
+                'zorder': 100,
                 'transform': transform
                 }
         c_kw.update(kwargs)
@@ -1521,9 +1526,9 @@ scale:\t\t {scale}
         width = width.to(axes_unit).value
         height = height.to(axes_unit).value
 
-        kwergs = {'transform':wcsaxes_compat.get_world_transform(axes),
-                  'color':'white',
-                  'fill':False}
+        kwergs = {'transform': wcsaxes_compat.get_world_transform(axes),
+                  'color': 'white',
+                  'fill': False}
         kwergs.update(kwargs)
         rect = plt.Rectangle(bottom_left, width, height, **kwergs)
 
@@ -1671,10 +1676,15 @@ scale:\t\t {scale}
         if not _basic_plot:
             # Check that the image is properly oriented
             if (not wcsaxes_compat.is_wcsaxes(axes) and
+<<<<<<< 5a69cbe41b8d81dfe46745ec028bac3d0d21a06a
                 not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2)))):
                 warnings.warn("WCSAxes is not being used as the axes for this plot and the"
                               " coordinate system is not aligned to the pixel axes."
                               " Plot axes may be incorrect",
+=======
+                    not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2)))):
+                warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
+>>>>>>> pep8 corrections
                               Warning)
 
             elif not wcsaxes_compat.is_wcsaxes(axes):
@@ -1730,6 +1740,7 @@ scale:\t\t {scale}
 
 
 class InvalidHeaderInformation(ValueError):
+
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
     pass
