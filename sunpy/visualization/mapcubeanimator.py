@@ -5,7 +5,7 @@ __all__ = ['MapCubeAnimator']
 from copy import deepcopy
 
 from sunpy.visualization import imageanimator, wcsaxes_compat
-from sunpy.visualization.wcsaxes_compat import HAVE_WCSAXES, FORCE_NO_WCSAXES
+from sunpy.visualization.wcsaxes_compat import FORCE_NO_WCSAXES
 
 class MapCubeAnimator(imageanimator.BaseFuncAnimator):
     """
@@ -121,7 +121,7 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         """
         Create an axes which is wcsaxes if we have that...
         """
-        if HAVE_WCSAXES and not FORCE_NO_WCSAXES:
+        if not FORCE_NO_WCSAXES:
             return self.fig.add_subplot(111, projection=self.mapcube[0].wcs)
         else:
             return self.fig.add_subplot(111)

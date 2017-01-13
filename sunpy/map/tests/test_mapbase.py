@@ -15,7 +15,7 @@ import astropy.wcs
 from astropy.io import fits
 import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
-from astropy.visualisation import wcsaxes
+from astropy.visualization import wcsaxes
 import matplotlib.pyplot as plt
 
 import sunpy

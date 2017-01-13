@@ -6,7 +6,10 @@ import matplotlib.pyplot as plt
 
 import astropy.units as u
 
-from astropy.visualiastion import wcsaxes
+try:
+    from astropy.visualization import wcsaxes
+except ImportError:
+    raise ImportError("Astropy >= 1.3 is required to use SunPy")
 
 FORCE_NO_WCSAXES = False
 
