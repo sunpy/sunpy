@@ -70,6 +70,7 @@ class SXTMap(GenericMap):
         .. rubric:: Metadata keyword:
 
         * First available:
+
          1. ``dsun_obs``
          2. ``dsun_apparent``
         """

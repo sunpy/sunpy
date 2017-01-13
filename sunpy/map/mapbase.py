@@ -466,6 +466,7 @@ scale:\t\t {scale}
         .. rubric:: Metadata keyword:
 
         * First available:
+
          1. ``obsrvtry``
          2. ``telescop``
          3. Default: ``""``
@@ -558,6 +559,7 @@ scale:\t\t {scale}
         ..rubric:: Metadata keyword:
 
         * First available:
+
          1. ``rsun_obs``
          2. ``solar_r``
          3. ``radius``
@@ -615,6 +617,7 @@ scale:\t\t {scale}
         .. rubric:: Metadata keywords:
 
         * First available:
+
          1. ``hglt_obs``
          2. ``crlt_obs``
          3. ``solar_b0``
@@ -663,10 +666,12 @@ scale:\t\t {scale}
         .. rubric:: Metadata keywords:
 
         * First available:
+
          1. ``crpix1``
          2. ``naxis1``
 
         * First available:
+
          1. ``crpix2``
          2. ``naxis2``
         """
@@ -705,7 +710,7 @@ scale:\t\t {scale}
         """
         Matrix describing the rotation required to align solar North with
         the top of the image.
-         .. rubric:: Metadata keywords:
+        .. rubric:: Metadata keywords:
 
         * ``PCi_j``
         * ``CDi_j``
