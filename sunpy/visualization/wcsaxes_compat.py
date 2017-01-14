@@ -11,9 +11,11 @@ try:
 except ImportError:
     raise ImportError("Astropy >= 1.3 is required to use SunPy")
 
-FORCE_NO_WCSAXES = False
+#  Force is put here to enable disabling all checks in this module. It should
+#  only be used by tests and other such hacks.
+_FORCE_NO_WCSAXES = False
 
-__all__ = ['is_wcsaxes', 'FORCE_NO_WCSAXES']
+__all__ = ['is_wcsaxes']
 
 
 def is_wcsaxes(axes):
@@ -31,7 +33,7 @@ def is_wcsaxes(axes):
         Result of the test
     """
 
-    if FORCE_NO_WCSAXES:
+    if not _FORCE_NO_WCSAXES:
         return isinstance(axes, wcsaxes.WCSAxes)
     else:
         return False
@@ -59,7 +61,7 @@ def gca_wcs(wcs, fig=None):
         fig = plt.gcf()
 
     if not len(fig.get_axes()):
-        if not FORCE_NO_WCSAXES:
+        if not _FORCE_NO_WCSAXES:
             ax = plt.gca(projection=wcs)
         else:
             ax = plt.gca()
