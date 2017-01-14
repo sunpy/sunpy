@@ -23,6 +23,7 @@ else:
 from astropy.tests import disable_internet
 
 from sunpy.tests import hash
+from sunpy.tests.helpers import figure_test_pngfiles
 
 hash_library_original_len = len(hash.hash_library)
 
@@ -61,16 +62,11 @@ def pytest_runtest_teardown(item, nextitem):
 
 
 def pytest_unconfigure(config):
-    if len(hash.file_list) > 0:
+    if len(figure_test_pngfiles) > 0:
         tempdir = tempfile.mkdtemp(suffix="_figures")
-        # the hash_library is indexed by the name of the test but we want to look
-        # things up with the hash value
-        inv_hash_library = {v: k for k, v in hash.hash_library.items()}
 
-        for h in hash.file_list:
-            test_name = inv_hash_library.get(h, '')
-            if test_name != '':
-                os.rename(hash.file_list[h], os.path.join(tempdir, test_name + '.png'))
+        for test_name in figure_test_pngfiles:
+            os.rename(figure_test_pngfiles[test_name], os.path.join(tempdir, test_name + '.png'))
         print('All test files for figure hashes can be found in {0}'.format(tempdir))
 
     # Check if the new hash library is larger than the old one
