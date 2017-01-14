@@ -4,7 +4,6 @@ import os
 import io
 import hashlib
 import json
-import tempfile
 
 import matplotlib.pyplot as plt
 
@@ -17,10 +16,8 @@ try:
 except IOError:
     hash_library = {}
 
-file_list = {}
 
-
-def hash_figure(figure=None):
+def hash_figure(figure=None, out_stream=None):
     """
     For a matplotlib.figure.Figure, returns the SHA256 hash as a hexadecimal string.
 
@@ -28,6 +25,9 @@ def hash_figure(figure=None):
     ----------
     figure : matplotlib.figure.Figure
         If None is specified, the current figure is used (as determined by matplotlib.pyplot.gcf())
+
+    out_stream : I/O stream (e.g., an open file)
+        If not None, write a PNG of the figure to the stream
 
     Returns
     -------
@@ -38,16 +38,20 @@ def hash_figure(figure=None):
     if figure is None:
         figure = plt.gcf()
 
-    imgdata = tempfile.NamedTemporaryFile(delete=False)
+    if out_stream is None:
+        imgdata = io.BytesIO()
+    else:
+        imgdata = out_stream
+
     figure.savefig(imgdata, format='png')
 
     imgdata.seek(0)
     buf = imgdata.read()
-    imgdata.close()
+    if out_stream is None:
+        imgdata.close()
 
     hasher = hashlib.sha256()
     hasher.update(buf)
-    file_list[hasher.hexdigest()] = imgdata.name
     return hasher.hexdigest()
 
 

@@ -4,6 +4,7 @@
 
 from __future__ import absolute_import, division, print_function
 import warnings
+import tempfile
 
 import pytest
 import numpy as np
@@ -100,10 +101,15 @@ def assert_quantity_allclose(actual, desired, rtol=1.e-7, atol=0, err_msg='', ve
                                    rtol=rtol, atol=atol, err_msg=err_msg, verbose=verbose)
 
 
+figure_test_pngfiles = {}
+
+
 def figure_test(test_function):
     """
     A decorator for a test that verifies the hash of the current figure or the returned figure,
     with the name of the test function as the hash identifier in the library.
+    A PNG is also created with a temporary filename, with the lookup stored in the
+    `figure_test_pngfiles` dictionary.
 
     All such decorated tests are marked with `pytest.mark.figure` for convenient filtering.
 
@@ -118,7 +124,10 @@ def figure_test(test_function):
     def wrapper(*args, **kwargs):
         plt.figure()
         name = "{0}.{1}".format(test_function.__module__, test_function.__name__)
-        figure_hash = hash.hash_figure(test_function(*args, **kwargs))
+        pngfile = tempfile.NamedTemporaryFile(delete=False)
+        figure_hash = hash.hash_figure(test_function(*args, **kwargs), out_stream=pngfile)
+        figure_test_pngfiles[name] = pngfile.name
+        pngfile.close()
         if name not in hash.hash_library:
             hash.hash_library[name] = figure_hash
             pytest.fail("Hash not present: {0}".format(name))
