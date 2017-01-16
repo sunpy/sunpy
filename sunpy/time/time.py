@@ -149,7 +149,7 @@ def extract_time(string):
     return bestmatch
 
 
-def parse_time(time_string, time_format=''):
+def parse_time(time_string, time_format='', time_string_parse_format=None):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
     utime -- Time since epoch 1 Jan 1979
@@ -211,6 +211,14 @@ def parse_time(time_string, time_format=''):
                     continue
                 return datetime.strptime(ts, time_format) + time_delta
             except ValueError:
+                pass
+        if time_string_parse_format is not None:
+            try:
+                print ("time_string_parse_format")
+                ts, time_delta = _regex_parse_time(time_string,
+                                                       time_string_parse_format)
+                return datetime.strptime(ts, time_string_parse_format) + time_delta
+            except:
                 pass
         raise ValueError("{tstr!s} is not a valid time string!".format(tstr=time_string))
 

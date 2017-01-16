@@ -786,7 +786,7 @@ class Database(object):
             ignore_already_added)
 
     def add_from_dir(self, path, recursive=False, pattern='*',
-            ignore_already_added=False):
+            ignore_already_added=False, time_string_parse_format=None):
         """Search the given directory for FITS files and use their FITS headers
         to add new entries to the database. Note that one entry in the database
         is assigned to a list of FITS headers, so not the number of FITS headers
@@ -819,7 +819,8 @@ class Database(object):
         """
         cmds = CompositeOperation()
         entries = tables.entries_from_dir(
-            path, recursive, pattern, self.default_waveunit)
+            path, recursive, pattern, self.default_waveunit,
+            time_string_parse_format=time_string_parse_format)
         for database_entry, filepath in entries:
             if database_entry in list(self) and not ignore_already_added:
                 raise EntryAlreadyAddedError(database_entry)
