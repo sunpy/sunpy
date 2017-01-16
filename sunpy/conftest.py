@@ -65,16 +65,14 @@ def pytest_unconfigure(config):
     if len(figure_test_pngfiles) > 0:
         tempdir = tempfile.mkdtemp(suffix="_figures")
 
+        # Rename each PNG with the name of the corresponding test
         for test_name in figure_test_pngfiles:
             os.rename(figure_test_pngfiles[test_name], os.path.join(tempdir, test_name + '.png'))
-        print('All test files for figure hashes can be found in {0}'.format(tempdir))
 
-    # Check if the new hash library is larger than the old one
-    if len(hash.hash_library) > hash_library_original_len:
         # Write the new hash library in JSON
-        tempdir = tempfile.mkdtemp()
         hashfile = os.path.join(tempdir, hash.HASH_LIBRARY_NAME)
         with open(hashfile, 'w') as outfile:
             json.dump(hash.hash_library, outfile, sort_keys=True, indent=4, separators=(',', ': '))
-        print("The hash library has expanded and should be copied to sunpy/tests/")
-        print("  " + hashfile)
+
+        print('All test files for figure hashes can be found in {0}'.format(tempdir))
+        print("The corresponding hash library is {0}".format(hashfile))
