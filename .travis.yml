@@ -26,7 +26,7 @@ env:
         - ASTROPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
         - CONDA_CHANNELS='astropy astropy-ci-extras conda-forge'
-        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest wcsaxes pyyaml pandas nomkl pytest-cov coverage hypothesis'
+        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest pyyaml pandas nomkl pytest-cov coverage hypothesis'
         - PIP_DEPENDENCIES='suds-jurko sphinx-gallery glymur'
 
     matrix:
@@ -64,7 +64,7 @@ matrix:
            env: JOB="Doctest" PYTHON_VERSION=3.5 SETUP_CMD='build_sphinx -b doctest'
 
          - os: linux
-           env: JOB="Numpy Dev" PYTHON_VERSION=3.5 SETUP_CMD='test' ASTROPY_VERSION='stable' NUMPY_VERSION='dev'
+           env: JOB="Numpy Dev" PYTHON_VERSION=3.5 SETUP_CMD='test' NUMPY_VERSION='dev'
 
     # allow_failures has to repeat the environment from the matrix above to mark it as such
     allow_failures:
