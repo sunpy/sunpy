@@ -68,6 +68,7 @@ matrix:
 
     # allow_failures has to repeat the environment from the matrix above to mark it as such
     allow_failures:
+      - env: JOB="Figures 3.5" PYTHON_VERSION=3.5 SETUP_CMD='test --figure'
       - env: JOB="Doctest" PYTHON_VERSION=3.5 SETUP_CMD='build_sphinx -b doctest'
       - env: JOB="Numpy Dev" PYTHON_VERSION=3.5 SETUP_CMD='test' ASTROPY_VERSION='stable' NUMPY_VERSION='dev'
 
