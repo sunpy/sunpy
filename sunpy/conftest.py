@@ -22,10 +22,8 @@ else:
 
 from astropy.tests import disable_internet
 
-from sunpy.tests import hash
-from sunpy.tests.helpers import figure_test_pngfiles
-
-hash_library_original_len = len(hash.hash_library)
+from sunpy.tests.hash import HASH_LIBRARY_NAME
+from sunpy.tests.helpers import new_hash_library, figure_test_pngfiles
 
 GOOGLE_URL = 'http://www.google.com'
 
@@ -70,9 +68,9 @@ def pytest_unconfigure(config):
             os.rename(figure_test_pngfiles[test_name], os.path.join(tempdir, test_name + '.png'))
 
         # Write the new hash library in JSON
-        hashfile = os.path.join(tempdir, hash.HASH_LIBRARY_NAME)
+        hashfile = os.path.join(tempdir, HASH_LIBRARY_NAME)
         with open(hashfile, 'w') as outfile:
-            json.dump(hash.hash_library, outfile, sort_keys=True, indent=4, separators=(',', ': '))
+            json.dump(new_hash_library, outfile, sort_keys=True, indent=4, separators=(',', ': '))
 
         print('All test files for figure hashes can be found in {0}'.format(tempdir))
         print("The corresponding hash library is {0}".format(hashfile))
