@@ -55,7 +55,7 @@ matrix:
            env: JOB="Figures 2.7" PYTHON_VERSION=2.7 SETUP_CMD='test --figure' CONDA_DEPENDENCIES='' # conda env is loaded from a separate file
 
          - os: linux
-           env: JOB="Figures 3.5" PYTHON_VERSION=3.5 SETUP_CMD='test --figure' ASTROPY_VERSION=1.2.1
+           env: JOB="Figures 3.5" PYTHON_VERSION=3.5 SETUP_CMD='test --figure' ASTROPY_VERSION=1.2.1 MATPLOTLIB_VERSION=1.5.3
 
          - os: linux
            env: JOB="Online" PYTHON_VERSION=3.5 SETUP_CMD='test --online --coverage -V'
@@ -68,7 +68,7 @@ matrix:
 
     # allow_failures has to repeat the environment from the matrix above to mark it as such
     allow_failures:
-      - env: JOB="Figures 3.5" PYTHON_VERSION=3.5 SETUP_CMD='test --figure' ASTROPY_VERSION=1.2.1
+      - env: JOB="Figures 3.5" PYTHON_VERSION=3.5 SETUP_CMD='test --figure' ASTROPY_VERSION=1.2.1 MATPLOTLIB_VERSION=1.5.3
       - env: JOB="Doctest" PYTHON_VERSION=3.5 SETUP_CMD='build_sphinx -b doctest'
       - env: JOB="Numpy Dev" PYTHON_VERSION=3.5 SETUP_CMD='test' ASTROPY_VERSION='stable' NUMPY_VERSION='dev'
 
