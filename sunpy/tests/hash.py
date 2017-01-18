@@ -7,7 +7,7 @@ import json
 
 import matplotlib.pyplot as plt
 
-HASH_LIBRARY_NAME = 'figure_hashes_py{0}.json'.format(version_info.major)
+HASH_LIBRARY_NAME = 'figure_hashes_py{0}{1}.json'.format(version_info.major, version_info.minor)
 
 # Load the hash library if it exists
 try:
