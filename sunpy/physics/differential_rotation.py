@@ -1,7 +1,10 @@
 from __future__ import division
 from datetime import timedelta
+from copy import deepcopy
 
 import numpy as np
+from skimage.util import img_as_float
+from skimage import transform
 
 from astropy import units as u
 from astropy.coordinates import SkyCoord, Longitude
@@ -10,7 +13,7 @@ from sunpy.time import parse_time
 from sunpy.coordinates import frames
 
 __author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
-__all__ = ['diff_rot', 'solar_rotate_coordinate']
+__all__ = ['diff_rot', 'solar_rotate_coordinate', 'diffrot_map']
 
 
 @u.quantity_input(duration=u.s, latitude=u.degree)
@@ -146,14 +149,14 @@ def solar_rotate_coordinate(coordinate, new_observer_time, new_observer_location
 
 
 def _to_norm(arr):
-    '''
+    """
     Helper function to normalise/scale an array.  This is needed for example
-    for scikit-image which uses floats between 0 and 1
+    for scikit-image which uses floats between 0 and 1.
 
     Parameters
     ----------
     arr : `~numpy.ndarray`
-        Array of floats to normalise
+        Array to normalise.
 
     Returns
     -------
@@ -167,8 +170,7 @@ def _to_norm(arr):
     >>> out = _to_norm(np.array([-1, 0, 1]))
     >>> out
     array([ 0. ,  0.5,  1. ])
-    '''
-    from skimage.util import img_as_float
+    """
     arr = np.array(arr, dtype='double')
     arr = img_as_float(arr, force_copy=True)
     if arr.min() < 0:
@@ -176,8 +178,9 @@ def _to_norm(arr):
     arr /= arr.max()
     return arr
 
+
 def _un_norm(arr, original):
-    '''
+    """
     Helper function to un-normalise (or re-scale) an array based in
     the values of the original array.
 
@@ -191,7 +194,8 @@ def _un_norm(arr, original):
     Returns
     -------
     arr : `~numpy.ndarray`
-        Array with values between `original.min()` and `original.max()`
+        Array with values between `original.min()` and `original.max()` . Note
+        that the type of the original image is not guaranteed to be reproduced.
 
     Examples
     --------
@@ -202,14 +206,16 @@ def _un_norm(arr, original):
     >>> out = _un_norm(normalised, original)
     >>> out
     array([-1.,  0.,  1.])
-    '''
+    """
     level = 0 if original.min() > 0 else np.abs(original.min())
     arr *= original.max() + level
     arr -= level
     return arr
 
-def _warp_sun(xy, smap, timedelta):
-    '''
+
+@u.quantity_input(dt=u.s)
+def _warp_sun(xy, smap, dt):
+    """
     Function that returns a new list of coordinates for each input coord.
     This is an inverse function needed by the scikit-image `transform.warp`
     function.
@@ -220,62 +226,80 @@ def _warp_sun(xy, smap, timedelta):
         Array from `transform.warp`
     smap : `~sunpy.map`
         Original map that we want to transform
-    timedelta : `~datetime.timedelta`
-        Desired interval for the differential rotation
+    dt : `~astropy.units.Quantity`
+        Desired interval to rotate the input map by solar differential rotation.
 
     Returns
     -------
     xy2 : `~numpy.ndarray`
         Array with the inverse transformation
-    '''
-    #Calculate the hpc coords
+    """
+    # Calculate the hpc coords
     x = np.arange(0, smap.dimensions.x.value)
     y = np.arange(0, smap.dimensions.y.value)
     xx, yy = np.meshgrid(x, y)
     hpc_coords = smap.pixel_to_data(xx * u.pix, yy * u.pix)
 
+    rotated_time = smap.date + timedelta(seconds=dt.to(u.s).value), smap.date
     vstart = {"b0": smap.heliographic_latitude, "l0": smap.heliographic_longitude}
-    vend = vstart
+    vend = _calc_P_B0_SD(rotated_time)
 
-    #Do the diff rot
-    rotted = rot_hpc(hpc_coords[1], hpc_coords[0], smap.date + timedelta,
-                     smap.date, occultation=True, vstart=vstart, vend=vend)
-    # `transform.warp` needs the inverse rotation, therefore it's needed
-    # to provide the transform from the desired date to the original date
+    # Do the diff rot
+    rotted = rot_hpc(hpc_coords[1], hpc_coords[0], rotated_time, smap.date,
+                     occultation=True, vstart=vstart, vend=vend)
+    # The scikit image function `transform.warp` needs the inverse rotation,
+    # therefore we provide the transform from the desired date to the original
+    # date.
 
-    #Go back to pixel coords
-    x2,y2 = smap.data_to_pixel(rotted[0], rotted[1])
+    # Go back to pixel co-ordinates
+    x2, y2 = smap.data_to_pixel(rotted[0], rotted[1])
 
-    #Restack the data to make it correct output form
-    xy2 = np.column_stack([x2.value.flat,y2.value.flat])
+    # Re-stack the data to make it correct output form
+    xy2 = np.column_stack([x2.value.flat, y2.value.flat])
 
-    #Remove NaNs
-    mask = np.isnan(xy2)
-    xy2[mask] = 0.0
+    # Returned a masked array with the non-finite entries masked.
+    return np.ma.array(xy2, mask=not(np.isfinite(xy2)))
 
-    return xy2
 
-def difrot_map(smap, timedelta):
-    '''
-    Function to compensate for differential rotation in a sunpy map
+@u.quantity_input(dt=u.s)
+def diffrot_map(smap, dt):
+    """
+    Function to apply solar differential rotation to a sunpy map.
 
     Parameters
     ----------
     smap : `~sunpy.map`
-        Original map that we want to transform
-    timedelta : `~datetime.timedelta`
-        Desired interval for the differential rotation
+        Original map that we want to transform.
+    dt : `~astropy.units.Quantity`
+        Desired interval between the input map and returned map.
 
     Returns
     -------
-    rotmap : `~sunpy.map`
-        Array with the inverse transformation
-    '''
-    from skimage import transform
+   `~sunpy.map`
+        A map with the result of applying solar differential rotation to the
+        input map.
+    """
+    # Check for masked maps
+    if smap.mask is not None:
+        smap_data = np.ma.array(smap.data, mask=smap.mask)
+    else:
+        smap_data = smap.data
 
-    out = transform.warp(_to_norm(smap.data), inverse_map=_warp_sun,
-                         map_args={'smap':smap, 'timedelta': timedelta })
+    # Apply solar differential rotation as a scikit-image warp
+    out = transform.warp(_to_norm(smap_data), inverse_map=_warp_sun,
+                         map_args={'smap': smap, 'dt': dt})
+
+    # Recover the original intensity range.
     out = _un_norm(out, smap.data)
-    rotmap = sunpy.map.Map((out, smap.meta))
-    rotmap_rotdate = rotmap.date + timedelta # FixMe update the map date (maybe a new keyword in Map?)
-    return rotmap
+
+    # Update the meta information with the new date and time.
+    out_meta = deepcopy(smap.meta)
+    date_keys = ('date-obs', 'date_obs')
+    date_key_flag = False
+    for k in date_keys:
+        if k in out_meta:
+            out_meta[k] = smap.date + timedelta(seconds=dt.to(u.s).value)
+            date_key_flag = True
+    if not date_key_flag:
+        raise ValueError('Input map does not have date information in the standard map meta keys {:s}.'.format(', '.join(date_keys)))
+    return sunpy.map.Map((out, out_meta))
