@@ -104,11 +104,13 @@ def test_solar_rotate_coordinate():
     np.testing.assert_almost_equal(d.distance.to(u.km).value, 150083151.97246578, decimal=1)
 
 
+
 def test_to_norm():
     array_simple = np.array([10., 20., 30., 100.])
-    assert_allclose(_to_norm(array_simple), np.array([0.1, 0.2, 0.3, 1.]))    
+    assert_allclose(_to_norm(array_simple), np.array([0.1, 0.2, 0.3, 1.]))
     array_simple_neg = np.array([-10., 0., 10., 90.])
     assert_allclose(_to_norm(array_simple_neg), np.array([0, 0.1, 0.2, 1.]))
+
 
 def test_un_norm():
     array_simple = np.array([10, 20, 30, 100.])
@@ -125,3 +127,11 @@ def test_un_norm():
     np.testing.assert_almost_equal(d.observer.lat.to(u.deg).value, 7.248, decimal=3)
     np.testing.assert_almost_equal(d.observer.radius.to(u.AU).value, 1.006954, decimal=6)
     assert isinstance(d.observer, frames.HeliographicStonyhurst)
+
+def test_warp_sun():
+    pass
+
+
+# Test a full disk map and a submap
+def test_diffrot_map():
+    pass
