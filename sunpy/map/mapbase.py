@@ -16,6 +16,7 @@ from matplotlib import patches, cm, colors
 
 import astropy.wcs
 import astropy.units as u
+from astropy.visualization.wcsaxes import WCSAxes
 from astropy.coordinates import SkyCoord
 
 import sunpy.io as io
