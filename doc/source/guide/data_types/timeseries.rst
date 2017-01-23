@@ -154,7 +154,7 @@ in tables, without additional arguments.  For example: ::
     >>> ts_table = ts.TimeSeries(table)
 
 Note that due to the properties of the `~astropy.time.Time` object, this will be
-a mixin column which as actually a single object, this limits the versatility of
+a mixin column which since it is a single object, limits the versatility of
 the `~astropy.table.Table` a little. For more on mixin columns see the `AstroPy
 docs <http://docs.astropy.org/en/stable/table/mixin_columns.html>`_.  The units
 will be taken from the table quantities for each column, the metadata will
@@ -198,7 +198,7 @@ You can also get a quick overview of that data using: ::
     >>> my_timeseries.data.info()
 
 Time series are columnar data so to get at a particular datum you need to
-first index the column then the element you want. To get the names of the
+first index the column, then the element you want. To get the names of the
 available columns: ::
 
     >>> my_timeseries.data.columns
@@ -244,7 +244,7 @@ type:
 
 This will open a matplotlib plot on your screen. The `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.peek`
 method provides a view on data customised for each source while `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.plot`
-provides a more generic plot.  Note that `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.peek`
+provides a more general plot.  Note that `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.peek`
 returns a `matplotlib.figure.Figure` object, if you want to save this to a PNG
 file you can use the `savefig` method:
 
@@ -253,8 +253,8 @@ file you can use the `savefig` method:
 In addition, to enable users to modify the plot it is possible to grab the
 matplotlib axes object by using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.plot`
 command.  This makes it possible to use the SunPy plot as the foundation for a
-more complicated figure. For a bit more information about this and some
-examples see :ref:`plotting`.
+more complicated figure. For a more information about this and some examples see
+:ref:`plotting`.
 
 
 5 Manipulating TimeSeries
@@ -264,8 +264,8 @@ examples see :ref:`plotting`.
 ----------------------
 
 Since the timeseries data is stored as a Pandas `~pandas.core.frame.DataFrame`
-you can easily modify the data directly using all of the usual methods: for
-example, you can modify a single cells value using: ::
+you can easily modify the data directly using all of the usual Pandas methods:
+for example, you can modify a single cells value using: ::
 
     >>> my_timeseries.data['xrsa'][0] = 0.1
 
@@ -298,8 +298,8 @@ similarly if you use an array of values it won't add an entry into the units
 5.2 Truncating a TimeSeries
 ---------------------------
 
-Being time related data, it is often useful to truncate into a specific period
-of the data, this is easily achieved by using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.truncate`
+It is often useful to truncate an existing TimeSeries object to retain a
+specific time range.  This is easily achieved by using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.truncate`
 method. For example, to trim our GOES data into a period of interest use: ::
 
     >>> from sunpy.time import TimeRange
