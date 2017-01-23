@@ -11,7 +11,9 @@ and to see what data sources it currently supports.
 
 Sections 1 and 2 below describe how to create TimeSeries objects.  Section 3
 describes how to inspect the TimeSeries object to examine the data itself and
-the metadata.  Section 4 describes how to plot a TimeSeries object,
+the metadata.  Section 4 describes how to plot a TimeSeries object, Section 5
+describes how a TimeSeries object can be manipulated, and Section 6 describes
+in detail the TimeSeries metadata.
 
 .. warning::
 
@@ -22,10 +24,9 @@ the metadata.  Section 4 describes how to plot a TimeSeries object,
 1. Creating a TimeSeries from an observational data source
 ----------------------------------------------------------
 
- A TimeSeries object can be
-created from local files; for convenience, SunPy can download several example
-files which are used throughout the docs. These files have names like
-`~sunpy.data.sample.EVE_LIGHTCURVE` and `~sunpy.data.sample.GOES_LIGHTCURVE`.)
+A TimeSeries object can be created from local files.  For convenience, SunPy can
+download several example timeseries of observational data. These files have names like
+`~sunpy.data.sample.EVE_LIGHTCURVE` and `~sunpy.data.sample.GOES_LIGHTCURVE`.
 To create the sample `sunpy.timeseries.sources.goes.XRSTimeSeries` type the
 following into your interactive Python shell: ::
 
@@ -34,7 +35,7 @@ following into your interactive Python shell: ::
     >>> my_timeseries = ts.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='XRS')
 
 This is calling the `~sunpy.timeseries.TimeSeries` factory to create a time
-series from a FITS file. The TimeSeries factory uses `sunpy.io.fits` to
+series from a GOES XRS FITS file. The TimeSeries factory uses `sunpy.io.fits` to
 read the FITS file. Note that if you have not downloaded the data already you
 should get an error and some instruction on how to download the sample data.
 
@@ -43,24 +44,26 @@ a local GOES/XRS FITS file try the following: ::
 
     >>> my_timeseries = ts.TimeSeries('/mydirectory/myts.fits', source='XRS')   # doctest: +SKIP
 
-SunPy will attempt to detect automatically the source for most FITS files.
-However timeseries (and lightcurve) data are stored in a variety of file types
-(FITS, txt, csv) and formats, and so it is not always possible to detect the
-source. For this reason, it is good practice to explicitly state the source for
-the file.
+SunPy will attempt to detect automatically the instrument source for most FITS
+files. However timeseries data are stored in a variety of file types (FITS, txt,
+csv) and formats, and so it is not always possible to detect the source. For
+this reason, it is good practice to explicitly state the source for the file.
+SunPy ships with a number of known instrumental sources.  If you would like
+SunPy to include another instrumental source please follow the `SunPy
+contribution guide <http://http://sunpy.org/contribute/>`.
 
-The factory has the ability to make a list of TimeSeries objects using a list of
-filepaths, a folder or a glob, for example: ::
+The `~sunpy.timeseries.TimeSeries` factory has the ability to make a list of
+TimeSeries objects using a list of filepaths, a folder or a glob, for example: ::
 
     >>> my_ts_list = ts.TimeSeries('filepath1', 'filepath2', source='XRS')   # doctest: +SKIP
     >>> my_ts_list = ts.TimeSeries('/goesdirectory/', source='XRS')   # doctest: +SKIP
     >>> my_ts_list = ts.TimeSeries(glob, source='XRS')   # doctest: +SKIP
 
-Note that this functionality will only work with files from a single source,
-generating a source specific child of the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries`
+Note that this functionality will only work with files from the same single
+source, generating a source specific child of the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries`
 class such as the `~sunpy.timeseries.sources.goes.XRSTimeSeries` above. For this
 reason, all the files should be from that same source for the `~sunpy.timeseries.TimeSeries`
-factory to work correctly.
+factory to work as intended.
 
 1.1 Creating a Single TimeSeries from Multiple Files
 ----------------------------------------------------
@@ -70,10 +73,10 @@ the keyword argument ``concatenate=True``, such as:
 
     >>> my_timeseries = ts.TimeSeries('/mydirectory/myts1.fits', '/mydirectory/myts2.fits', source='XRS', concatenate=True)   # doctest: +SKIP
 
-Note these must all be from the same source/instrument if using
+Note these must all be from the same source if using
 `~sunpy.timeseries.TimeSeriesBase.concatenate` from within the TimeSeries
-factory. The time series `~sunpy.timeseries.TimeSeriesBase.concatenate` method
-can be used to make a time series from multiple TimeSeries from different
+factory. However, if time series `~sunpy.timeseries.TimeSeriesBase.concatenate` method
+can be used to make a single time series from multiple TimeSeries from different
 sources once they are already in the form of TimeSeries objects.
 
 2. Creating Custom TimeSeries
