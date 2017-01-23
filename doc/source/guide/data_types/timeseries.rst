@@ -3,24 +3,29 @@ TimeSeries
 ===========
 
 Time series data are a fundamental part of many data analysis projects
-in heliophysics as well as other areas. SunPy therefore provides a TimeSeries object to
-handle this type of data. This directly supersedes the now depreciated Lightcurve
-datatype.
-Once you've read through this guide check out the :doc:`/code_ref/timeseries`
-for a more thorough look at SunPy TimeSeries and to see what data sources it
-currently supports.
+in heliophysics as well as other areas. SunPy therefore provides a TimeSeries
+object to handle this type of data. This new object supersedes the now
+deprecated Lightcurve datatype. Once you've read through this guide check out
+the :doc:`/code_ref/timeseries` for a more thorough look at SunPy TimeSeries
+and to see what data sources it currently supports.
+
+Sections 1 and 2 below describe how to create TimeSeries objects.  Section 3
+describes how to inspect the TimeSeries object to examine the data itself and
+the metadata.  Section 4 describes how to plot a TimeSeries object,
 
 .. warning::
 
-   The TimeSeries superseeds the old LightCurve class but doesn't implement data download methods.
-   To download TimeSeries data files use `sunpy.net`.
+   The TimeSeries supersedes the previous LightCurve object but does not
+   implement data download methods. To download TimeSeries data files use
+   `sunpy.net`.
 
-1. Creating a TimeSeries from a data source
--------------------------------------------
+1. Creating a TimeSeries from an observational data source
+----------------------------------------------------------
 
-To make things easy, SunPy can download several example files which are used
-throughout the docs. These files have names like
-`~sunpy.data.sample.EVE_LIGHTCURVE` and `~sunpy.data.sample.GOES_LIGHTCURVE`.
+ A TimeSeries object can be
+created from local files; for convenience, SunPy can download several example
+files which are used throughout the docs. These files have names like
+`~sunpy.data.sample.EVE_LIGHTCURVE` and `~sunpy.data.sample.GOES_LIGHTCURVE`.)
 To create the sample `sunpy.timeseries.sources.goes.XRSTimeSeries` type the
 following into your interactive Python shell: ::
 
@@ -28,27 +33,34 @@ following into your interactive Python shell: ::
     >>> import sunpy.data.sample
     >>> my_timeseries = ts.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='XRS')
 
-This is calling the `~sunpy.timeseries.TimeSeries` factory to create a time series from a sample FITS file.
-The TimeSeries factory uses `sunpy.io.fits` to read the FITS file.
-If you have not downloaded the data already you should get an error and some
-instruction on how to download the sample data.
+This is calling the `~sunpy.timeseries.TimeSeries` factory to create a time
+series from a FITS file. The TimeSeries factory uses `sunpy.io.fits` to
+read the FITS file. Note that if you have not downloaded the data already you
+should get an error and some instruction on how to download the sample data.
 
-The variable ``my_timeseries`` is a :ref:`timeseries` object. To create one from a
-local GOES/XRS FITS file try the following: ::
+The variable ``my_timeseries`` is a :ref:`timeseries` object. To create one from
+a local GOES/XRS FITS file try the following: ::
 
     >>> my_timeseries = ts.TimeSeries('/mydirectory/myts.fits', source='XRS')   # doctest: +SKIP
 
-SunPy can automatically detect the source for most FITS files. However timeseries
-(and lightcurve) data are stored in a variety of file formats (FITS, txt, csv)
-and it's not always possible to detect the source. For this reason, it's good
-practice to explicitly state the source for the file.
-The factory has the ability to make a list of TimeSeries objects using a list of filepaths, a folder or a glob, for example: ::
+SunPy will attempt to detect automatically the source for most FITS files.
+However timeseries (and lightcurve) data are stored in a variety of file types
+(FITS, txt, csv) and formats, and so it is not always possible to detect the
+source. For this reason, it is good practice to explicitly state the source for
+the file.
+
+The factory has the ability to make a list of TimeSeries objects using a list of
+filepaths, a folder or a glob, for example: ::
 
     >>> my_ts_list = ts.TimeSeries('filepath1', 'filepath2', source='XRS')   # doctest: +SKIP
     >>> my_ts_list = ts.TimeSeries('/goesdirectory/', source='XRS')   # doctest: +SKIP
     >>> my_ts_list = ts.TimeSeries(glob, source='XRS')   # doctest: +SKIP
 
-Note that the factory will only work with files from a single source, generating a source specific child of the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries` class such as the `~sunpy.timeseries.sources.goes.XRSTimeSeries` above. For this reason, all the files should be from that same source for the factory to work correctly.
+Note that this functionality will only work with files from a single source,
+generating a source specific child of the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries`
+class such as the `~sunpy.timeseries.sources.goes.XRSTimeSeries` above. For this
+reason, all the files should be from that same source for the `~sunpy.timeseries.TimeSeries`
+factory to work correctly.
 
 1.1 Creating a Single TimeSeries from Multiple Files
 ----------------------------------------------------
@@ -58,20 +70,26 @@ the keyword argument ``concatenate=True``, such as:
 
     >>> my_timeseries = ts.TimeSeries('/mydirectory/myts1.fits', '/mydirectory/myts2.fits', source='XRS', concatenate=True)   # doctest: +SKIP
 
-Note these must all be from the same source/instrument if using `~sunpy.timeseries.TimeSeriesBase.concatenate` from within the TimeSeries factory.
-The time series `~sunpy.timeseries.TimeSeriesBase.concatenate` method can be used to make a time series from multiple TimeSeries from different sources once they are already in the form of a TimeSeries objects.
+Note these must all be from the same source/instrument if using
+`~sunpy.timeseries.TimeSeriesBase.concatenate` from within the TimeSeries
+factory. The time series `~sunpy.timeseries.TimeSeriesBase.concatenate` method
+can be used to make a time series from multiple TimeSeries from different
+sources once they are already in the form of TimeSeries objects.
 
 2. Creating Custom TimeSeries
 -----------------------------
 
-Sometimes you will have data that you want to create into a TimeSeries. You can use the factory to create a `~sunpy.timeseries.timeseriesbase.GenericTimeSeries` from a variety of data sources currently including `pandas.DataFrame` and `astropy.table.table.Table`.
+Sometimes you will have data that you want to create into a TimeSeries. You can
+use the factory to create a `~sunpy.timeseries.timeseriesbase.GenericTimeSeries`
+from a variety of data sources currently including `pandas.DataFrame` and
+`astropy.table.table.Table`.
 
 2.1 Creating Custom TimeSeries from a Pandas DataFrame
--------------------------------------------------------
+------------------------------------------------------
 
 A TimeSeries object must be supplied with some data when it is
 created.  The data can either be in your current Python session, in a
-local file, or in a remote file.  Let's create some fake data and pass
+local file, or in a remote file.  Let's create some data and pass
 it into a TimeSeries object: ::
 
     >>> import numpy as np
@@ -106,7 +124,7 @@ Furthermore we could specify the metadata/header and units of this time series b
     >>> ts_custom = ts.TimeSeries(data, meta, units)
 
 2.2 Creating Custom TimeSeries from an AstroPy Table
------------------------------------------------------
+----------------------------------------------------
 
 A Pandas `~pandas.core.frame.DataFrame` is the underlying object used to store the data within a TimeSeries, so the above example is the most lightweight to create a custom TimeSeries, but being scientific data it will often be more convenient to use an AstroPy `~astropy.table.table.Table` and let the factory convert this.
 An advantage of this method is it allows you to include metadata and AstroPy `~astropy.units.quantity.Quantity` values, which are both supported in tables, without additional arguments.
@@ -225,7 +243,9 @@ examples see :ref:`plotting`.
 5.1 Modifying the Data
 ----------------------
 
-Being a Pandas `~pandas.core.frame.DataFrame` you can easily modify the data directly using all of the usual methods, for example you can modify a single cells value using: ::
+Since the timeseries data is stored as a Pandas `~pandas.core.frame.DataFrame`
+you can easily modify the data directly using all of the usual methods: for
+example, you can modify a single cells value using: ::
 
     >>> my_timeseries.data['xrsa'][0] = 0.1
 
@@ -237,36 +257,47 @@ You can even change all the values for a given time: ::
 
     >>> my_timeseries.data['xrsa']['2012-06-01 00:00'] = 1
 
-Note, you will need to be careful to consider units when modifying the TimeSeries data directly.
-For further details about editing Pandas DataFames you can read the `pandas documentation website
-<http://pandas.pydata.org/pandas-docs/stable/>`_.
+Note, you will need to be careful to consider units when modifying the
+TimeSeries data directly. For further details about editing Pandas DataFames you
+can read the `pandas documentation website <http://pandas.pydata.org/pandas-docs/stable/>`_.
 
-Additionally the TimeSeries provides the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.add_column` method which will either add a new column or update a current column if the colname is already present. This can take numpy array or preferably an AstroPy `~astropy.units.quantity.Quantity` value.
-For example: ::
+Additionally the TimeSeries provides the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.add_column`
+method which will either add a new column or update a current column if the
+colname is already present. This can take numpy array or preferably an AstroPy
+`~astropy.units.quantity.Quantity` value.  For example: ::
 
     >>> values = u.Quantity(my_timeseries.data['xrsa'].values, my_timeseries.units['xrsa']) * 1000
     >>> my_timeseries.add_column('new col', values)
 
-Note that the values will be converted into the column units if an AstroPy `~astropy.units.quantity.Quantity` is given.
-Caution should be taken when adding a new column because this column won't have any associated MetaData entry, similarly if you use an array of values it won't add an entry into the units `~collections.OrderedDict`.
+Note that the values will be converted into the column units if an AstroPy
+`~astropy.units.quantity.Quantity` is given. Caution should be taken when adding
+a new column because this column won't have any associated MetaData entry,
+similarly if you use an array of values it won't add an entry into the units
+`~collections.OrderedDict`.
 
 5.2 Truncating a TimeSeries
 ---------------------------
 
-Being time related data, it is often useful to truncate into a specific period of the data, this is easily achieved by using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.truncate` method.
-For example, to trim our GOES data into a period of interest use: ::
+Being time related data, it is often useful to truncate into a specific period
+of the data, this is easily achieved by using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.truncate`
+method. For example, to trim our GOES data into a period of interest use: ::
 
     >>> from sunpy.time import TimeRange
     >>> tr = TimeRange('2012-06-01 05:00','2012-06-01 06:30')
     >>> my_timeseries_trunc = my_timeseries.truncate(tr)
 
-This takes a number of different arguments, such as the start and end dates (as datetime or string objects) or a `~sunpy.time.TimeRange` as used above.
-Note the truncated TimeSeries will have a truncated `~sunpy.timeseries.metadata.TimeSeriesMetaData` object, which may include dropping metadata entries for data totally cut out from the TimeSeries.
-If you want to truncate using slice-like values you can, for example taking every 2nd value from 0 to 10000 can be done using: ::
+This takes a number of different arguments, such as the start and end dates (as
+datetime or string objects) or a `~sunpy.time.TimeRange` as used above. Note
+that the truncated TimeSeries will have a truncated `~sunpy.timeseries.metadata.TimeSeriesMetaData`
+object, which may include dropping metadata entries for data totally cut out from the TimeSeries.
+If you want to truncate using slice-like values you can, for example taking
+every 2nd value from 0 to 10000 can be done using: ::
 
     >>> my_timeseries_trunc = my_timeseries.truncate(0,100000,2)
 
-Caution should be used when removing values from the data manually, the TimeSeries can't guarantee AstroPy units are correctly preserved when you interact with the data directly.
+Caution should be used when removing values from the data manually, the
+TimeSeries can't guarantee AstroPy units are correctly preserved when you
+interact with the data directly.
 
 5.3 Down and Up Sampling a TimeSeries Using Pandas
 --------------------------------------------------
@@ -319,72 +350,126 @@ The metadata object is described in more detail in the next section.
 5.5 Creating an AstroPy Table from a TimeSeries
 -----------------------------------------------
 
-If you want to take the data from your TimeSeries and use it as a `~astropy.table.table.Table` this can be done using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.to_table` method.
-For example: ::
+If you want to take the data from your TimeSeries and use it as a `~astropy.table.table.Table`
+this can be done using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.to_table`
+method.  For example: ::
 
     >>> table = my_timeseries.to_table()
 
-Note that this `~astropy.table.table.Table` will contain a mixin column for containing the AstroPy `~astropy.time.core.Time` object representing the index, it will also add the relevant units to the columns.
-One of the most useful reasons for doing this is that AstroPy `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.to_table` objects have some very nice options for viewing the data including the basic console view: ::
+Note that this `~astropy.table.table.Table` will contain a mixin column for
+containing the AstroPy `~astropy.time.core.Time` object representing the index,
+it will also add the relevant units to the columns. One of the most useful
+reasons for doing this is that AstroPy `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.to_table`
+objects have some very nice options for viewing the data, including the basic
+console view: ::
 
     >>> table
 
-And the more sophisticated browser view using the `~astropy.table.table.Table.show_in_browser` method: ::
+and the more sophisticated browser view using the `~astropy.table.table.Table.show_in_browser`
+method: ::
 
     >>> table.show_in_browser(jsviewer=True)
 
-For further details about editing AstroPy tables you can read the `astropy documentation website
-<http://docs.astropy.org/en/stable/table/>`_.
+For further details about editing AstroPy tables you can read the `astropy
+documentation website <http://docs.astropy.org/en/stable/table/>`_.
 
 
 6. A Detailed Look at the Metadata
 ----------------------------------
 
-TimeSeries store metadata in a `~sunpy.timeseries.metadata.TimeSeriesMetaData` object, this object is designed to be able to store multiple basic `~sunpy.util.metadata.MetaDict` (case-insensitive ordered dictionary) objects and able to identify the relevant metadata for a given cell in the data.
-This enables a single TimeSeries to be created by combining/concatenating multiple TimeSeries source files together into one and to keep a reliable track of all the metadata relevant to each cell, column or row.
-The metadata can be accessed by: ::
+TimeSeries store metadata in a `~sunpy.timeseries.metadata.TimeSeriesMetaData`
+object, this object is designed to be able to store multiple basic `~sunpy.util.metadata.MetaDict`
+(case-insensitive ordered dictionary) objects and able to identify the relevant
+metadata for a given cell in the data. This enables a single TimeSeries to be
+created by combining/concatenating multiple TimeSeries source files together
+into one and to keep a reliable track of all the metadata relevant to each cell,
+column or row.  The metadata can be accessed by: ::
 
     >>> meta = my_timeseries.meta
 
-You can easily get an overview of the metadata, this will show you a basic representation of the metadata entries that are relevant to this TimeSeries. ::
+You can easily get an overview of the metadata, this will show you a basic
+representation of the metadata entries that are relevant to this TimeSeries. ::
 
     >>> meta
 
-The data within a `~sunpy.timeseries.metadata.TimeSeriesMetaData` object is stored as a list of tuples, each tuple representing the metadata from a source file or timeseries. The tuple will contain a `~sunpy.time.TimeRange` telling us which rows the metadata applies to, a list of column name strings for which the metadata applies to and finally a `~sunpy.util.metadata.MetaDict` object for storing the key/value pairs of the metadata itself.
-Each time a TimeSeries is concatenated to the original a new set of rows and/or columns will be added to the `~pandas.core.frame.DataFrame` and a new entry will be added into the metadata.
-Note that entries are ordered chronologically based on `~sunpy.time.timerange.TimeRange.start` and generally it's expected that no two TimeSeries will overlap on both columns and time range, for example it's not good practice for alternate row values in a single column to be relevant to different metadata entries. This would make it impossible to uniquely identify the metadata relevant to each cell.
+The data within a `~sunpy.timeseries.metadata.TimeSeriesMetaData` object is
+stored as a list of tuples, each tuple representing the metadata from a source
+file or timeseries. The tuple will contain a `~sunpy.time.TimeRange` telling us
+which rows the metadata applies to, a list of column name strings for which the
+metadata applies to and finally a `~sunpy.util.metadata.MetaDict` object for
+storing the key/value pairs of the metadata itself.  Each time a TimeSeries is
+concatenated to the original a new set of rows and/or columns will be added to
+the `~pandas.core.frame.DataFrame` and a new entry will be added into the
+metadata.  Note that entries are ordered chronologically based on
+`~sunpy.time.timerange.TimeRange.start` and generally it's expected that no two
+TimeSeries will overlap on both columns and time range.  For example it is not
+good practice for alternate row values in a single column to be relevant to
+different metadata entries as this would make it impossible to uniquely identify
+the metadata relevant to each cell.
 
-If you want the string that's printed then you can use the `~sunpy.timeseries.metadata.TimeSeriesMetaData.to_string` method, this has the advantage of having optional keyword arguments that allows you to set the depth (number of rows for each entry) and width (total number of characters wide) to better fit your output.
-For example: ::
+If you want the string that's printed then you can use the
+`~sunpy.timeseries.metadata.TimeSeriesMetaData.to_string` method.  This has the
+advantage of having optional keyword arguments that allows you to set the depth
+(number of rows for each entry) and width (total number of characters wide)
+to better fit your output.  For example: ::
 
     >>> meta_str = meta.to_string(depth = 20, width=99)
 
-Similar to the TimeSeries, the metadata has some properties for
-convenient access to the global metadata details, including
+Similar to the TimeSeries, the metadata has some properties for convenient
+access to the global metadata details, including
 `~sunpy.timeseries.metadata.TimeSeriesMetaData.columns` as a list of
 strings, `~sunpy.timeseries.metadata.TimeSeriesMetaData.index` values
-and `~sunpy.timeseries.metadata.TimeSeriesMetaData.time_range` of the
-data.
-Beyond this, there are properties to get lists of details for all the entries in the `~sunpy.timeseries.metadata.TimeSeriesMetaData` object, including `~sunpy.timeseries.metadata.TimeSeriesMetaData.timeranges`, `~sunpy.timeseries.metadata.TimeSeriesMetaData.columns` (as a list of string column names) and `~sunpy.timeseries.metadata.TimeSeriesMetaData.metas`.
-Similar to TimeSeries objects you can `~sunpy.timeseries.metadata.TimeSeriesMetaData.truncate` and `~sunpy.timeseries.metadata.TimeSeriesMetaData.concatenate` `~sunpy.timeseries.metadata.TimeSeriesMetaData` objects, but generally you won't need to do this as it's done automatically when actioned on the TimeSeries.
-Note that when truncating a `~sunpy.timeseries.metadata.TimeSeriesMetaData` object you will remove any entries outside of the given `~sunpy.time.TimeRange`.
-You can also `~sunpy.timeseries.metadata.TimeSeriesMetaData.append` a new entry (as a tuple or list), which will add the entry in the correct chronological position.
-It is frequently necessary to locate the metadata for a given column, row or cell which can be uniquely identified by both, to do this you can use the `~sunpy.timeseries.metadata.TimeSeriesMetaData.find` method, by adding colname and/or time/row keyword arguments you get a `~sunpy.timeseries.metadata.TimeSeriesMetaData` object returned which contains only the relevant entries. You can then use the `~sunpy.timeseries.metadata.TimeSeriesMetaData.metas` property to get a list of just the relevant `~sunpy.util.metadata.MetaDict` objects.
-For example: ::
+and `~sunpy.timeseries.metadata.TimeSeriesMetaData.time_range` of the data.
+Beyond this, there are properties to get lists of details for all the entries in
+the `~sunpy.timeseries.metadata.TimeSeriesMetaData` object, including
+`~sunpy.timeseries.metadata.TimeSeriesMetaData.timeranges`,
+`~sunpy.timeseries.metadata.TimeSeriesMetaData.columns` (as a list of string
+column names) and `~sunpy.timeseries.metadata.TimeSeriesMetaData.metas`.
+Similar to TimeSeries objects you can `~sunpy.timeseries.metadata.TimeSeriesMetaData.truncate`
+and `~sunpy.timeseries.metadata.TimeSeriesMetaData.concatenate` `~sunpy.timeseries.metadata.TimeSeriesMetaData`
+objects, but generally you won't need to do this as it is done automatically
+when actioned on the TimeSeries.
+Note that when truncating a `~sunpy.timeseries.metadata.TimeSeriesMetaData`
+object you will remove any entries outside of the given `~sunpy.time.TimeRange`.
+You can also `~sunpy.timeseries.metadata.TimeSeriesMetaData.append` a new entry
+(as a tuple or list), which will add the entry in the correct chronological
+position.  It is frequently necessary to locate the metadata for a given column,
+row or cell which can be uniquely identified by both, to do this you can use the
+`~sunpy.timeseries.metadata.TimeSeriesMetaData.find` method, by adding colname
+and/or time/row keyword arguments you get a `~sunpy.timeseries.metadata.TimeSeriesMetaData`
+object returned which contains only the relevant entries. You can then use the
+`~sunpy.timeseries.metadata.TimeSeriesMetaData.metas` property to get a list of
+just the relevant `~sunpy.util.metadata.MetaDict` objects.  For example: ::
 
     >>> tsmd_return = my_timeseries.meta.find(colname='xrsa', time='2012-06-01 00:00:33.904999')
     >>> tsmd_return.metas
 
-Note, the colname and time filters are optional, but omitting both filters just returns an identical `~sunpy.timeseries.metadata.TimeSeriesMetaData` object to the TimeSeries original.
-A common usage case for the metadata is to find out the instrument/s that gathered the data, in this case you can use the `~sunpy.timeseries.metadata.TimeSeriesMetaData.get` method, this takes a single key string or list of key strings with the optional filters and will search for any matching values. Get returns another `~sunpy.timeseries.metadata.TimeSeriesMetaData` object, but removes all unwanted key/value pairs, this can be converted into a simple list of strings using the `~sunpy.timeseries.metadata.TimeSeriesMetaData.values` method: ::
+Note, the colname and time filters are optional, but omitting both filters just
+returns an identical `~sunpy.timeseries.metadata.TimeSeriesMetaData` object to
+the TimeSeries original.  A common use case for the metadata is to find out the
+instrument/s that gathered the data and in this case you can use the
+`~sunpy.timeseries.metadata.TimeSeriesMetaData.get` method.  This method takes a
+single key string or list of key strings with the optional filters and will
+search for any matching values. This method returns another `~sunpy.timeseries.metadata.TimeSeriesMetaData`
+object, but removes all unwanted key/value pairs.  The result can be converted
+into a simple list of strings using the `~sunpy.timeseries.metadata.TimeSeriesMetaData.values`
+method: ::
 
     >>> tsmd_return = my_timeseries.meta.get('telescop', colname='xrsa')
     >>> tsmd_return.values()
 
-Note, `~sunpy.timeseries.metadata.TimeSeriesMetaData.values` removes duplicate strings and sorts the returned list.
-You can update the values for these entries efficiently using the `~sunpy.timeseries.metadata.TimeSeriesMetaData.update` method which takes a dictionary argument and updates the values to each of the dictionaries that match the given colname and time filters, for example: ::
+Note `~sunpy.timeseries.metadata.TimeSeriesMetaData.values` removes duplicate
+strings and sorts the returned list.  You can update the values for these
+entries efficiently using the `~sunpy.timeseries.metadata.TimeSeriesMetaData.update`
+method which takes a dictionary argument and updates the values to each of the
+dictionaries that match the given colname and time filters, for example: ::
 
     >>> my_timeseries.meta.upate({'telescop': 'G15'}, colname='xrsa', overwrite=True)
 
-Here we have to specify the overwrite=False keyword parameter to allow us to overwrite values for keys already present in the `~sunpy.util.metadata.MetaDict` objects, this helps protect the integrity of the original metadata and without this set (or with it set to False) you can still add new key/value pairs.
-Note that the `~sunpy.util.metadata.MetaDict` objects are both case-insensitive for key strings and have ordered entries, where possible the order is preserved when updating values.
+Here we have to specify the overwrite=False keyword parameter to allow us to
+overwrite values for keys already present in the `~sunpy.util.metadata.MetaDict`
+objects, this helps protect the integrity of the original metadata and without
+this set (or with it set to False) you can still add new key/value pairs.
+Note that the `~sunpy.util.metadata.MetaDict` objects are both case-insensitive
+for key strings and have ordered entries, where possible the order is preserved
+when updating values.
