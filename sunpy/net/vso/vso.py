@@ -19,7 +19,7 @@ import threading
 
 from datetime import datetime, timedelta
 from functools import partial
-from collections import defaultdict, UserList
+from collections import defaultdict
 from suds import client, TypeNotFound
 
 import astropy
@@ -96,7 +96,8 @@ def iter_errors(response):
             yield prov_item
 
 
-class QueryResponse(UserList):
+# TODO: Python 3 this should subclass from UserList
+class QueryResponse(list):
     def __init__(self, lst, queryresult=None, table=None):
         super(QueryResponse, self).__init__(lst)
         self.queryresult = queryresult
