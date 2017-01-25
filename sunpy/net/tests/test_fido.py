@@ -161,6 +161,7 @@ def test_no_wait_fetch():
         assert isinstance(res, DownloadResponse)
         assert isinstance(res.wait(), list)
 
+
 """
 UnifiedResponse Tests
 """
@@ -172,6 +173,7 @@ def test_unifiedresponse_slicing():
     assert isinstance(results[0:2], UnifiedResponse)
     assert isinstance(results[0], UnifiedResponse)
 
+
 def test_responses():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
@@ -180,3 +182,13 @@ def test_responses():
         assert isinstance(resp, QueryResponse)
 
     assert i + 1 == len(results)
+
+
+def test_repr():
+    results = Fido.search(
+        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+
+    rep = repr(results)
+    rep = rep.split('\n')
+    # 6 header lines, the results table and a blank line at the end
+    assert len(rep) == 6 + len(list(results.responses)[0]) + 1
