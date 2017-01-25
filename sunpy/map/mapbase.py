@@ -1016,6 +1016,7 @@ scale:\t\t {scale}
         # Convert the axis of rotation from data coordinates to pixel coordinates
         pixel_rotation_center = u.Quantity(temp_map.data_to_pixel(self.reference_coordinate,
                                                                   origin=0)).value
+        del temp_map
 
         if recenter:
             pixel_center = pixel_rotation_center
