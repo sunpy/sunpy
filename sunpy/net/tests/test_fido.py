@@ -164,6 +164,8 @@ def test_no_wait_fetch():
 
 """
 UnifiedResponse Tests
+
+Use LYRA here because it does not use the internet to return results.
 """
 
 
