@@ -200,8 +200,8 @@ then used to modify the plot:
     plt.show()
 
 It is possible to create the same plot, explicitly not using
-`~astropy.visualizatiion.wcsaxes`, however, this will not have the features of
-`~astropy.visualizatiion.wcsaxes` which include correct representation of
+`~astropy.visualization.wcsaxes`, however, this will not have the features of
+`~astropy.visualization.wcsaxes` which include correct representation of
 rotation and plotting in different coordinate systems.
 
 .. plot::
