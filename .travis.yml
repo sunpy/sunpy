@@ -49,7 +49,7 @@ matrix:
            env: JOB="Numpy Prev" PYTHON_VERSION=2.7 SETUP_CMD='test' NUMPY_VERSION=$PREVIOUS_NUMPY
 
          - os: linux
-           env: JOB="Documentation" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -w'
+           env: JOB="Documentation" PYTHON_VERSION=2.7 SPHINX_VERSION=1.4 SETUP_CMD='build_sphinx -w'
 
          - os: linux
            env: JOB="Figures" PYTHON_VERSION=2.7 SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
