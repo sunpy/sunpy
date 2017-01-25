@@ -57,12 +57,8 @@ matrix:
          - os: linux
            env: JOB="Online" PYTHON_VERSION=3.5 SETUP_CMD='test --online --coverage'
 
-         - os: linux
-           env: JOB="Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
-
     # allow_failures has to repeat the environment from the matrix above to mark it as such
     allow_failures:
-      - env: JOB="Doctest" PYTHON_VERSION=2.7 SETUP_CMD='build_sphinx -b doctest'
       - env: JOB="Online" PYTHON_VERSION=3.5 SETUP_CMD='test --online --coverage'
 
 install:
