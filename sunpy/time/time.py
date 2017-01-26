@@ -81,7 +81,8 @@ def _regex_parse_time(inp, format):
     except IndexError:
         return inp, timedelta(days=0)
     if match.group("hour") == "24":
-        if not all(_n_or_eq(_group_or_none(match, g, int), 00)
+        if not all(
+                   _n_or_eq(_group_or_none(match, g, int), 00)
                    for g in ["minute", "second", "microsecond"]
                   ):
             raise ValueError
@@ -184,10 +185,10 @@ def parse_time(time_string, time_format='', **kwargs):
         return time_string
     elif isinstance(time_string, tuple):
         return datetime(*time_string)
-    elif time_format == 'utime' or  isinstance(time_string, (int, float)):
+    elif time_format == 'utime' or isinstance(time_string, (int, float)):
         return datetime(1979, 1, 1) + timedelta(0, time_string)
     elif isinstance(time_string, pandas.tseries.index.DatetimeIndex):
-    	return time_string._mpl_repr()
+        return time_string._mpl_repr()
     elif isinstance(time_string, np.ndarray) and 'datetime64' in str(time_string.dtype):
         ii = [ss.astype(datetime) for ss in time_string]
         # Validate (in an agnostic way) that we are getting a datetime rather than a date
