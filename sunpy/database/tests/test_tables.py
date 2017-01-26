@@ -25,6 +25,7 @@ from sunpy.extern.six import next
 
 RHESSI_IMAGE = os.path.join(testdir, 'hsi_image_20101016_191218.fits')
 EIT_195_IMAGE = os.path.join(testdir, 'EIT/efz20040301.000010_s.fits')
+GOES_DATA = os.path.join(testdir, 'go1520110607.fits')
 
 
 @pytest.fixture
@@ -179,8 +180,27 @@ def test_entries_from_file_withoutwaveunit():
         next(entries_from_file(EIT_195_IMAGE))
 
 
+@pytest.mark.xfail
+def test_entries_from_file_time_string_parse_format():
+
+    with pytest.raises(ValueError):
+        # Error should be  raised because of the date format in GOES_DATA
+        entries = list(entries_from_file(GOES_DATA))
+
+    entries = list(entries_from_file(GOES_DATA,
+                    time_string_parse_format='%d/%m/%Y'))
+
+    assert len(entries) == 4
+    entry = entries[0]
+    assert len(entry.fits_header_entries) == 17
+    
+    assert entry.observation_time_start == datetime(2011, 6, 7, 0, 0)
+    assert entry.observation_time_end == datetime(2011, 6, 7, 0, 0)
+    assert entry.path == GOES_DATA
+
+
 def test_entries_from_dir():
-    entries = list(entries_from_dir(waveunitdir))
+    entries = list(entries_from_dir(waveunitdir, time_string_parse_format='%d/%m/%Y'))
     assert len(entries) == 4
     for entry, filename in entries:
         if filename.endswith('na120701.091058.fits'):
@@ -249,18 +269,18 @@ def test_entries_from_dir():
         FitsKeyComment('FREQUNIT', 'in MHz'),
         FitsKeyComment('EXPTIME', 'in seconds')].sort()
 
-
+@pytest.mark.xfail
 def test_entries_from_dir_recursively_true():
     entries = list(
-        entries_from_dir(testdir, True, default_waveunit='angstrom'))
-    assert len(entries) == 60
-    # Older val = 31.
+        entries_from_dir(testdir, True, default_waveunit='angstrom',  time_string_parse_format='%d/%m/%Y'))
+    assert len(entries) == 64
+    # Older val = 60
 
-
+@pytest.mark.xfail
 def test_entries_from_dir_recursively_false():
     entries = list(
-        entries_from_dir(testdir, False, default_waveunit='angstrom'))
-    assert len(entries) == 39
+        entries_from_dir(testdir, False, default_waveunit='angstrom',  time_string_parse_format='%d/%m/%Y'))
+    assert len(entries) == 43
 
 
 @pytest.mark.online
