@@ -36,7 +36,8 @@ __all__ = [
 Base = declarative_base()
 
 # required for the many-to-many relation on tags:entries
-association_table = Table('association', Base.metadata,
+association_table = Table(
+                          'association', Base.metadata,
                           Column('tag_name', String, ForeignKey('tags.name')),
                           Column('entry_id', Integer, ForeignKey('data.id'))
                          )
