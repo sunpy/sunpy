@@ -180,7 +180,6 @@ def test_entries_from_file_withoutwaveunit():
         next(entries_from_file(EIT_195_IMAGE))
 
 
-@pytest.mark.xfail
 def test_entries_from_file_time_string_parse_format():
 
     with pytest.raises(ValueError):
@@ -269,14 +268,14 @@ def test_entries_from_dir():
         FitsKeyComment('FREQUNIT', 'in MHz'),
         FitsKeyComment('EXPTIME', 'in seconds')].sort()
 
-@pytest.mark.xfail
+
 def test_entries_from_dir_recursively_true():
     entries = list(
         entries_from_dir(testdir, True, default_waveunit='angstrom',  time_string_parse_format='%d/%m/%Y'))
     assert len(entries) == 64
     # Older val = 60
 
-@pytest.mark.xfail
+
 def test_entries_from_dir_recursively_false():
     entries = list(
         entries_from_dir(testdir, False, default_waveunit='angstrom',  time_string_parse_format='%d/%m/%Y'))
