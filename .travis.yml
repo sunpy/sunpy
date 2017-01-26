@@ -1,3 +1,4 @@
+language: c
 # Setting sudo to false opts in to Travis-CI container-based builds.
 sudo: false
 
@@ -43,8 +44,9 @@ matrix:
          - os: linux
            env: ASTROPY_VERSION='development'
 
+         # Numpy 1.10 is not built on 3.6
          - os: linux
-           env: NUMPY_VERSION=$PREVIOUS_NUMPY
+           env: NUMPY_VERSION=$PREVIOUS_NUMPY PYTHON_VERSION=3.5
 
          - os: linux
            env: SETUP_CMD='build_docs -w'
