@@ -214,7 +214,6 @@ def parse_time(time_string, time_format='', time_string_parse_format=None):
                 pass
         if time_string_parse_format is not None:
             try:
-                print ("time_string_parse_format")
                 ts, time_delta = _regex_parse_time(time_string,
                                                        time_string_parse_format)
                 return datetime.strptime(ts, time_string_parse_format) + time_delta
