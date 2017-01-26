@@ -527,9 +527,9 @@ def entries_from_file(file, default_waveunit=None,
             # NOTE: the key DATE-END or DATE_END is not part of the official
             # FITS standard, but many FITS files use it in their header
             elif key in ('DATE-END', 'DATE_END'):
-                entry.observation_time_end = parse_time(value, time_string_parse_format=time_string_parse_format)
+                entry.observation_time_end = parse_time(value, _time_string_parse_format=time_string_parse_format)
             elif key in ('DATE-OBS', 'DATE_OBS'):
-                entry.observation_time_start = parse_time(value, time_string_parse_format=time_string_parse_format)
+                entry.observation_time_start = parse_time(value, _time_string_parse_format=time_string_parse_format)
         yield entry
 
 

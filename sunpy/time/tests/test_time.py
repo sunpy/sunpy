@@ -139,9 +139,9 @@ def test_day_of_year():
 
 def test_time_string_parse_format():
     assert parse_time('01/06/2012',
-        time_string_parse_format='%d/%m/%Y') == datetime(2012, 6, 1, 0, 0)
+        _time_string_parse_format='%d/%m/%Y') == datetime(2012, 6, 1, 0, 0)
     assert parse_time('06/01/2012',
-        time_string_parse_format='%d/%m/%Y') == datetime(2012, 1, 6, 0, 0)
+        _time_string_parse_format='%d/%m/%Y') == datetime(2012, 1, 6, 0, 0)
     with pytest.raises(ValueError):
         parse_time('01/06/2012')
     with pytest.raises(ValueError):
