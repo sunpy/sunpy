@@ -150,7 +150,7 @@ def split_database(source_database, destination_database, *query_string):
     >>> client = vso.VSOClient()
     >>> qr = client.query(vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'))
     >>> database1.add_from_vso_query_result(qr)
-    >>> database1, database2 = split_database(database1, database2, 
+    >>> database1, database2 = split_database(database1, database2,
     ...            vso.attrs.Instrument('AIA') | vso.attrs.Instrument('ERNE'))
     """
 

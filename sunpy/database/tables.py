@@ -39,7 +39,7 @@ Base = declarative_base()
 association_table = Table('association', Base.metadata,
                           Column('tag_name', String, ForeignKey('tags.name')),
                           Column('entry_id', Integer, ForeignKey('data.id'))
-)
+                         )
 
 
 class WaveunitNotFoundError(Exception):
