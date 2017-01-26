@@ -20,8 +20,7 @@ addons:
 env:
     global:
         - PREVIOUS_NUMPY=1.10.4
-        - PYTHON_VERSION=3.5
-        - TEST_MODE='offline'
+        - PYTHON_VERSION=3.6
         - NUMPY_VERSION='stable'
         - ASTROPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
@@ -33,43 +32,47 @@ env:
         - PYTHON_VERSION=2.7 SETUP_CMD='egg_info' 
         - PYTHON_VERSION=3.4 SETUP_CMD='egg_info'
         - PYTHON_VERSION=3.5 SETUP_CMD='egg_info'
+        - PYTHON_VERSION=3.6 SETUP_CMD='egg_info'
         - PYTHON_VERSION=2.7 SETUP_CMD='test'
         - PYTHON_VERSION=3.4 SETUP_CMD='test'
         - PYTHON_VERSION=3.5 SETUP_CMD='test'
+        - PYTHON_VERSION=3.6 SETUP_CMD='test'
 
 matrix:
     include:
          - os: osx
-           env: PYTHON_VERSION=2.7 SETUP_CMD='test'
+           env: SETUP_CMD='test'
 
          - os: linux
-           env: JOB="Astropy Dev" PYTHON_VERSION=3.5 SETUP_CMD='test' ASTROPY_VERSION='development'
+           env: JOB="Astropy Dev" SETUP_CMD='test' ASTROPY_VERSION='development'
 
          - os: linux
-           env: JOB="Numpy Prev" PYTHON_VERSION=3.5 SETUP_CMD='test' NUMPY_VERSION=$PREVIOUS_NUMPY
+           env: JOB="Numpy Prev" SETUP_CMD='test' NUMPY_VERSION=$PREVIOUS_NUMPY
 
          - os: linux
            env: JOB="Documentation" PYTHON_VERSION=3.5 SETUP_CMD='build_sphinx -w'
 
+        # Figure test runs use an env stored in the repo so don't have conda
+        # requirements
          - os: linux
-           env: JOB="Figures 2.7" PYTHON_VERSION=2.7 SETUP_CMD='test --figure' CONDA_DEPENDENCIES='' # conda env is loaded from a separate file
+           env: JOB="Figures 2.7" PYTHON_VERSION=2.7 SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
 
          - os: linux
-           env: JOB="Figures 3.5" PYTHON_VERSION=3.5 SETUP_CMD='test --figure' CONDA_DEPENDENCIES='' # conda env is loaded from a separate file
+           env: JOB="Figures 3.5" PYTHON_VERSION=3.5 SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
 
          - os: linux
-           env: JOB="Online" PYTHON_VERSION=3.5 SETUP_CMD='test --online --coverage -V'
+           env: JOB="Online" SETUP_CMD='test --online --coverage -V'
 
          - os: linux
-           env: JOB="Doctest" PYTHON_VERSION=3.5 SETUP_CMD='build_sphinx -b doctest'
+           env: JOB="Doctest" SETUP_CMD='build_sphinx -b doctest'
 
          - os: linux
-           env: JOB="Numpy Dev" PYTHON_VERSION=3.5 SETUP_CMD='test' ASTROPY_VERSION='stable' NUMPY_VERSION='dev'
+           env: JOB="Numpy Dev" SETUP_CMD='test' NUMPY_VERSION='dev'
 
     # allow_failures has to repeat the environment from the matrix above to mark it as such
     allow_failures:
-      - env: JOB="Doctest" PYTHON_VERSION=3.5 SETUP_CMD='build_sphinx -b doctest'
-      - env: JOB="Numpy Dev" PYTHON_VERSION=3.5 SETUP_CMD='test' ASTROPY_VERSION='stable' NUMPY_VERSION='dev'
+      - env: JOB="Doctest" SETUP_CMD='build_sphinx -b doctest'
+      - env: JOB="Numpy Dev" SETUP_CMD='test' NUMPY_VERSION='dev'
 
 install:
     - git clone git://github.com/astropy/ci-helpers.git
