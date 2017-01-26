@@ -39,6 +39,16 @@ Latest
   and 'inf'.
 * Drop support for Python 3.4.
 * SunPy now requires WCSAxes and Map.draw_grid only works with WCSAxes.
+* `Helioprojective` and `HelioCentric` frames now have an `observer` attribute
+  which itself is a coordinate object (`SkyCoord`) instead of `B0`, `L0` and
+  `D0` to describe the position of the observer.
+* `GenericMap.draw_grid` now uses `WCSAxes`, this may be less performant than
+  the previous implementation, but it handles rotation and other projections
+  properly.
+* `GenericMap.data_to_pixel` and `GenericMap.pixel_to_data` now accept and
+  return `SkyCoord` objects only.
+* `GenericMap` has a new property `observer_coordinate` which returns a
+  `SkyCoord` describing the position of the observer.
 
 0.7.0
 -----
