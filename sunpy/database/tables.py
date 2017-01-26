@@ -37,8 +37,8 @@ Base = declarative_base()
 
 # required for the many-to-many relation on tags:entries
 association_table = Table('association', Base.metadata,
-    Column('tag_name', String, ForeignKey('tags.name')),
-    Column('entry_id', Integer, ForeignKey('data.id'))
+                          Column('tag_name', String, ForeignKey('tags.name')),
+                          Column('entry_id', Integer, ForeignKey('data.id'))
 )
 
 
@@ -527,11 +527,15 @@ def entries_from_file(file, default_waveunit=None,
             # NOTE: the key DATE-END or DATE_END is not part of the official
             # FITS standard, but many FITS files use it in their header
             elif key in ('DATE-END', 'DATE_END'):
-                entry.observation_time_end = parse_time(value,
-                        _time_string_parse_format=time_string_parse_format)
+                entry.observation_time_end = parse_time(
+                        value,
+                        _time_string_parse_format=time_string_parse_format
+                        )
             elif key in ('DATE-OBS', 'DATE_OBS'):
-                entry.observation_time_start = parse_time(value,
-                        _time_string_parse_format=time_string_parse_format)
+                entry.observation_time_start = parse_time(
+                        value,
+                        _time_string_parse_format=time_string_parse_format
+                        )
         yield entry
 
 
@@ -594,8 +598,10 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
                     sunpy_filetools.InvalidJPEG2000FileExtension):
                 continue
             if filetype == 'fits':
-                for entry in entries_from_file(path, default_waveunit,
-                        time_string_parse_format=time_string_parse_format):
+                for entry in entries_from_file(
+                        path, default_waveunit,
+                        time_string_parse_format=time_string_parse_format
+                        ):
                     yield entry, path
         if not recursive:
             break
@@ -625,9 +631,9 @@ def _create_display_table(database_entries, columns=None, sort=False):
     """
     if columns is None:
         columns = ['id', 'observation_time_start', 'observation_time_end',
-                    'instrument', 'source', 'provider', 'physobs', 'wavemin',
-                    'wavemax', 'path', 'fileid', 'tags', 'starred',
-                    'download_time', 'size']
+                   'instrument', 'source', 'provider', 'physobs', 'wavemin',
+                   'wavemax', 'path', 'fileid', 'tags', 'starred',
+                   'download_time', 'size']
     data = []
     for entry in database_entries:
         row = []
