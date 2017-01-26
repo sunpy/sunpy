@@ -250,6 +250,7 @@ class DatabaseEntry(Base):
     size = Column(Float)
     wavemin = Column(Float)
     wavemax = Column(Float)
+    hdu_index = Column(Integer)
     path = Column(String)
     download_time = Column(DateTime)
     starred = Column(Boolean, default=False)
@@ -507,6 +508,7 @@ def entries_from_file(file, default_waveunit=None,
                 continue
             entry.fits_header_entries.append(FitsHeaderEntry(key, value))
         waveunit = fits.extract_waveunit(header)
+        entry.hdu_index = headers.index(header)
         if waveunit is None:
             waveunit = default_waveunit
         unit = None
@@ -635,6 +637,7 @@ def _create_display_table(database_entries, columns=None, sort=False):
                    'instrument', 'source', 'provider', 'physobs', 'wavemin',
                    'wavemax', 'path', 'fileid', 'tags', 'starred',
                    'download_time', 'size']
+
     data = []
     for entry in database_entries:
         row = []
@@ -643,6 +646,8 @@ def _create_display_table(database_entries, columns=None, sort=False):
                 row.append('Yes' if entry.starred else 'No')
             elif col == 'tags':
                 row.append(', '.join(map(str, entry.tags)) or 'N/A')
+            elif col == 'hdu_index':
+                row.append(entry.hdu_index)
             # do not display microseconds in datetime columns
             elif col in (
                     'observation_time_start',
