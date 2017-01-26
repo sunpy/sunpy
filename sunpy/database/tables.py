@@ -433,7 +433,7 @@ def entries_from_query_result(qr, default_waveunit=None):
 
 
 def entries_from_file(file, default_waveunit=None,
-        time_string_parse_format=None):
+                      time_string_parse_format=None):
     """Use the headers of a FITS file to generate an iterator of
     :class:`sunpy.database.tables.DatabaseEntry` instances. Gathered
     information will be saved in the attribute `fits_header_entries`. If the
@@ -527,14 +527,16 @@ def entries_from_file(file, default_waveunit=None,
             # NOTE: the key DATE-END or DATE_END is not part of the official
             # FITS standard, but many FITS files use it in their header
             elif key in ('DATE-END', 'DATE_END'):
-                entry.observation_time_end = parse_time(value, _time_string_parse_format=time_string_parse_format)
+                entry.observation_time_end = parse_time(value,
+                        _time_string_parse_format=time_string_parse_format)
             elif key in ('DATE-OBS', 'DATE_OBS'):
-                entry.observation_time_start = parse_time(value, _time_string_parse_format=time_string_parse_format)
+                entry.observation_time_start = parse_time(value,
+                        _time_string_parse_format=time_string_parse_format)
         yield entry
 
 
 def entries_from_dir(fitsdir, recursive=False, pattern='*',
-        default_waveunit=None, time_string_parse_format=None):
+                     default_waveunit=None, time_string_parse_format=None):
     """Search the given directory for FITS files and use the corresponding FITS
     headers to generate instances of :class:`DatabaseEntry`. FITS files are
     detected by reading the content of each file, the `pattern` argument may be
