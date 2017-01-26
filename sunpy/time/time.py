@@ -217,7 +217,7 @@ def parse_time(time_string, time_format='', **kwargs):
         if time_string_parse_format is not None:
             try:
                 ts, time_delta = _regex_parse_time(time_string,
-                                                       time_string_parse_format)
+                                                   time_string_parse_format)
                 return datetime.strptime(ts, time_string_parse_format) + time_delta
             except:
                 pass
