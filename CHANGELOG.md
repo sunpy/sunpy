@@ -1,7 +1,9 @@
 0.7.5
 -----
 
-* Fix test faliure (mapbase) with 0.7.4
+* Fix test faliure (mapbase) with 1.7.4
+* Restrict supported Astropy version to 1.0\<astropy\<1.3
+* Add Figure test env to SunPy repo.
 
 0.7.4
 -----
