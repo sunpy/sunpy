@@ -1735,15 +1735,10 @@ scale:\t\t {scale}
         if not _basic_plot:
             # Check that the image is properly oriented
             if (not wcsaxes_compat.is_wcsaxes(axes) and
-<<<<<<< 5a69cbe41b8d81dfe46745ec028bac3d0d21a06a
                 not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2)))):
                 warnings.warn("WCSAxes is not being used as the axes for this plot and the"
                               " coordinate system is not aligned to the pixel axes."
                               " Plot axes may be incorrect",
-=======
-                    not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2)))):
-                warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
->>>>>>> pep8 corrections
                               Warning)
 
             elif not wcsaxes_compat.is_wcsaxes(axes):
