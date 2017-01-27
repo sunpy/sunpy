@@ -20,9 +20,7 @@ from astropy.visualization.wcsaxes import WCSAxes
 from astropy.coordinates import SkyCoord
 
 import sunpy.io as io
-import sunpy.wcs as wcs
 import sunpy.coordinates
-from sunpy.coordinates.representation import UnitSphericalWrap180Representation
 from sunpy import config
 from sunpy.extern import six
 from sunpy.visualization import toggle_pylab, wcsaxes_compat
