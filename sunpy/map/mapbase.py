@@ -1618,16 +1618,22 @@ scale:\t\t {scale}
                 axes.set_title(title)
 
             # x-axis label
-            if self.coordinate_system.x == 'HG':
-                xlabel = 'Longitude [{lon}]'.format(lon=self.spatial_units.x)
+            if self.coordinate_system.x.startswith('HGLN'):
+                xlabel = 'Heliographic Longitude [{lon}]'.format(lon=self.spatial_units.x)
+            elif self.coordinate_system.x.startswith('CRLN'):
+                xlabel = 'Carrington Longitude [{lon}]'.format(lon=self.spatial_units.x)
+            elif self.coordinate_system.x.startswith('HPLN'):
+                xlabel = 'Helioprojective Longitude (Solar-X) [{xpos}]'.format(xpos=self.spatial_units.x)
             else:
-                xlabel = 'X-position [{xpos}]'.format(xpos=self.spatial_units.x)
+                xlabel = "{} [{}]".format(self.coordinate_system.x, self.spatial_units.x)
 
             # y-axis label
-            if self.coordinate_system.y == 'HG':
+            if self.coordinate_system.y.startswith(('HGLT', 'CRLT')):
                 ylabel = 'Latitude [{lat}]'.format(lat=self.spatial_units.y)
+            elif self.coordinate_system.y.startswith('HPLT'):
+                ylabel = 'Helioprojective Latitude (Solar-Y) [{ypos}]'.format(ypos=self.spatial_units.y)
             else:
-                ylabel = 'Y-position [{ypos}]'.format(ypos=self.spatial_units.y)
+                ylabel = "{} [{}]".format(self.coordinate_system.y, self.spatial_units.y)
 
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
@@ -1642,7 +1648,7 @@ scale:\t\t {scale}
             ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **imshow_args)
 
         if wcsaxes_compat.is_wcsaxes(axes):
-            wcsaxes_compat.default_wcs_grid(axes)
+            wcsaxes_compat.default_wcs_grid(axes, units=self.spatial_units)
 
         # Set current image (makes colorbar work)
         plt.sca(axes)
