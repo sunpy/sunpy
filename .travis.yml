@@ -52,10 +52,7 @@ matrix:
            env: JOB="Documentation" PYTHON_VERSION=2.7 SPHINX_VERSION=1.4 SETUP_CMD='build_sphinx -w'
 
          - os: linux
-           env: JOB="Figures 2.7" PYTHON_VERSION=2.7 SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
-
-         - os: linux
-           env: JOB="Figures 3.5" PYTHON_VERSION=3.5 SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
+           env: JOB="Figures" PYTHON_VERSION=2.7 SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
 
          - os: linux
            env: JOB="Online" PYTHON_VERSION=3.5 SETUP_CMD='test --online --coverage'
