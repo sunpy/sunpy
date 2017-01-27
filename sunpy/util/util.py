@@ -50,9 +50,6 @@ def unique(itr, key=None):
     -------
     not documented yet
 
-
-    .. todo::
-        improve documentation. what does this function do?
     """
     items = set()
     if key is None:
@@ -83,9 +80,6 @@ def print_table(lst, colsep=' ', linesep='\n'):
     Returns
     -------
     ?
-
-    .. todo::
-        improve documentation.
 
     """
     width = [max(map(len, col)) for col in zip(*lst)]
@@ -132,9 +126,6 @@ def minimal_pairs(one, other):
     `tuple`
          Pairs of values in `one` and `other` with minimal distance
 
-    .. todo::
-        improve documentation. what does this do?
-
     """
     lbestdiff = bestdiff = bestj = besti = None
     for i, freq in enumerate(one):
@@ -168,9 +159,6 @@ def find_next(one, other, pad=DONT):
     in one, return the one larger than it but nearest to it in other.
     If no such exists and pad is not DONT, return value of pad as "partner".
 
-    .. todo::
-        improve documentation. what does this do?
-
     """
     n = 0
     for elem1 in one:
@@ -186,9 +174,6 @@ def find_next(one, other, pad=DONT):
 
 def common_base(objs):
     """ Find class that every item of objs is an instance of.
-
-    .. todo::
-        improve documentation. what does this do?
     """
     for cls in objs[0].__class__.__mro__:
         if all(isinstance(obj, cls) for obj in objs):
@@ -199,10 +184,7 @@ def common_base(objs):
 def merge(items, key=(lambda x: x)):
     """ Given sorted lists of iterables, return new iterable that returns
     elements of all iterables sorted with respect to key.
-
-    .. todo::
-        improve documentation. what does this do?
-"""
+    """
     state = {}
     for item in map(iter, items):
         try:
@@ -230,9 +212,6 @@ def replacement_filename(path):
     until an unused filename is found. E.g., "/home/florian/foo.fits"
     becomes "/home/florian/foo.0.fits", if that is used
     "/home/florian/foo.1.fits", etc.
-
-    .. todo::
-        improve documentation. what does this do?
     """
     if not os.path.exists(path):
         return path
@@ -263,17 +242,11 @@ def expand_list(input):
     ----------
     Taken from :http://stackoverflow.com/a/2185971/2486799
 
-
-    .. todo::
-        improve documentation. Can this handle Arbitrarily nested lists?
-
     """
     return [item for item in expand_list_generator(input)]
 
 def expand_list_generator(input):
     """
-    .. todo::
-        improve documentation. what does this function do?
     """
     for item in input:
         if type(item) in [list, tuple]:

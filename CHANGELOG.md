@@ -1,5 +1,12 @@
+0.7.5
+-----
+
+* Fix test faliure (mapbase) with 1.7.4
+* Restrict supported Astropy version to 1.0\<astropy\<1.3
+* Add Figure test env to SunPy repo.
+
 0.7.4
-------
+-----
 
 * Remove Map always forcing warnings on.
 * `Map.center` now uses `Map.wcs` to correctly handle rotation.
@@ -10,7 +17,7 @@
 * Update docstrings for HPC and HCC frames.
 
 0.7.3
-------
+-----
 
 * Fix ConfigParser for Python 3.5.2 - This allows SunPy to run under Python 3.5.2
 * Fix incorrect ordering of keys in `MapMeta`

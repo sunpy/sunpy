@@ -239,11 +239,11 @@ def test_swap_cd():
 
 def test_data_range(generic_map):
     """Make sure xrange and yrange work"""
-    assert generic_map.xrange[1].value - generic_map.xrange[0].value == generic_map.meta['cdelt1'] * generic_map.meta['naxis1']
-    assert generic_map.yrange[1].value - generic_map.yrange[0].value == generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
+    assert_quantity_allclose(generic_map.xrange[1].value - generic_map.xrange[0].value, generic_map.meta['cdelt1'] * generic_map.meta['naxis1'])
+    assert_quantity_allclose(generic_map.yrange[1].value - generic_map.yrange[0].value, generic_map.meta['cdelt2'] * generic_map.meta['naxis2'])
 
-    assert np.average(generic_map.xrange.value) == generic_map.center.x.value
-    assert np.average(generic_map.yrange.value) == generic_map.center.y.value
+    assert_quantity_allclose(np.average(generic_map.xrange.value), generic_map.center.x.value)
+    assert_quantity_allclose(np.average(generic_map.yrange.value), generic_map.center.y.value)
 
 
 def test_data_to_pixel(generic_map):
