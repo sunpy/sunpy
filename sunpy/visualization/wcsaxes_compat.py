@@ -127,7 +127,8 @@ def default_wcs_grid(axes):
     x.set_major_formatter('s.s')
     y.set_major_formatter('s.s')
 
-    axes.coords.grid(color='white', alpha=0.6)
+    axes.coords.grid(color='white', alpha=0.6, linestyle='dotted',
+                     linewidth=0.5)
 
 
 def wcsaxes_heliographic_overlay(axes):
