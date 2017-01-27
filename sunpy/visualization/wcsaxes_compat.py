@@ -9,7 +9,11 @@ import matplotlib.pyplot as plt
 import astropy.units as u
 
 try:
-    import wcsaxes
+    try:
+        from astropy.visualization import wcsaxes
+    except ImportError:
+        import wcsaxes
+
     HAVE_WCSAXES = True
 
 except ImportError:

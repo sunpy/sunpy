@@ -46,7 +46,10 @@ else:
 
 
 try:
-    import wcsaxes
+    try:
+        from astropy.visualization import wcsaxes
+    except ImportError:
+        import wcsaxes
 except ImportError:
     SKIP_WCSAXES = True
 else:
