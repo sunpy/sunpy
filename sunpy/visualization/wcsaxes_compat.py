@@ -98,7 +98,7 @@ def get_world_transform(axes):
     return transform
 
 
-def default_wcs_grid(axes):
+def default_wcs_grid(axes, units):
     """
     Apply some default wcsaxes grid formatting.
 
@@ -106,6 +106,9 @@ def default_wcs_grid(axes):
     ----------
     axes : `wcsaxes.WCSAxes` object.
         The `~wcsaxes.WCSAxes` object to draw the world coordinate grid on.
+
+    unit : `sunpy.map.mapbase.Pair` or `tuple`
+        The axes units axes x y order.
     """
     if not isinstance(axes, wcsaxes.WCSAxes):
         raise TypeError("This axes is not a WCSAxes")
@@ -124,8 +127,15 @@ def default_wcs_grid(axes):
     if y.coord_type != 'latitude':
         y.set_coord_type('latitude')
 
-    x.set_major_formatter('s.s')
-    y.set_major_formatter('s.s')
+    if units[0] is u.deg:
+        x.set_major_formatter('dd')
+    else:
+        x.set_major_formatter('s.s')
+
+    if units[1] is u.deg:
+        y.set_major_formatter('dd')
+    else:
+        y.set_major_formatter('s.s')
 
     axes.coords.grid(color='white', alpha=0.6, linestyle='dotted',
                      linewidth=0.5)
