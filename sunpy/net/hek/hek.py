@@ -154,24 +154,89 @@ def parse_hek_response_to_quantities(result):
     for key, value in result.iteritems():
         for key_, value_ in result[key].iteritems():
             if key_ == "WhereWhen":
-                result[key][key_] = fix_where_when(value_)
+                result[key][key_] = check_and_fix_where_when(value_)
             if key_ == "Why":
                 check_why(value_)
             if key_ == "Who":
                 check_who(value_)
+            if key_ == "How":
+                result[key][key_] = check_and_fix_how(value_)
 
 
-def fix_where_when(data):
+def check_and_fix_how(data):
+    for key, value in data.iteritems():
+        if key == "lmsal:method":
+            if value["lmsal:FRM_Contact"] == "":
+                raise ValueError("FRM_Contact not present")
+            
+            if value["lmsal:FRM_DateRn"] == "":
+                raise ValueError("FRM_DateRun not present")
+            
+            if value["lmsal:FRM_HmanFlag"] == "":
+                raise ValueError("FRM_HumanFlag not present")
+            
+            if value["lmsal:FRM_Identifier"] == "":
+                raise ValueError("FRM_Identifier not present")
+            
+            if value["lmsal:FRM_Institte"] == "":
+                raise ValueError("FRM_Institute not present")
+            
+            if value["lmsal:FRM_Name"] == "":
+                raise ValueError("FRM_Name not present")
+            
+            if value["lmsal:FRM_ParamSet"] == "":
+                raise ValueError("FRM_ParamSet not present")
+
+        if key == "lmsal:data":
+            if value["lmsal:OBS_ChannelID"] == "":
+                raise ValueError("OBS_ChannelID not present")
+            
+            if value["lmsal:OBS_Instrment"] == "":
+                raise ValueError("OBS_Instrument not present")
+            
+            if value["lmsal:OBS_MeanWavel"] == "":
+                raise ValueError("OBS_MeanWavel not present")
+            elif value["lmsal:OBS_MeanWavel"]:
+                value["lmsal:OBS_MeanWavel"] = float(value["lmsal:OBS_MeanWavel"])
+            
+            if value["lmsal:OBS_Wavelnit"] == "":
+                raise ValueError("OBS_Wavelunit not present")
+    return data
+
+
+def check_and_fix_where_when(data):
     for key, value in data.iteritems():
         if key == "ObsDataLocation":
             for key_, value_ in value.iteritems():
                 if key_ == "ObservationLocation":
                     if value_["AstroCoordSystem"] == "":
                         raise ValueError("Event_CoordSystem not present")
+                    
                     if value_["AstroCoordArea"]["TimeInterval"]["StartTime"] and value_["AstroCoordArea"]["TimeInterval"]["StopTime"]:
                         value_["AstroCoordArea"]["TimeInterval"] = TimeRange(value_["AstroCoordArea"]["TimeInterval"]["StartTime"]['ISOTime'], value_["AstroCoordArea"]["TimeInterval"]["StopTime"]['ISOTime'])
                     elif value_["AstroCoordArea"]["TimeInterval"]["StartTime"]['ISOTime'] == "" or value_["AstroCoordArea"]["TimeInterval"]["StopTime"]['ISOTime'] == "":
                         raise ValueError("Event_StartTime or Event_EndTime not present")
+                    
+                    if value_["AstroCoordArea"]["Box2"]["Center"]["C1"] == "":
+                        raise ValueError("Event_Coord1 not present")
+                    elif value_["AstroCoordArea"]["Box2"]["Center"]["C1"]:
+                        value_["AstroCoordArea"]["Box2"]["Center"]["C1"] = float(value_["AstroCoordArea"]["Box2"]["Center"]["C1"])
+                    
+                    if value_["AstroCoordArea"]["Box2"]["Center"]["C2"] == "":
+                        raise ValueError("Event_Coord2 not present")
+                    elif value_["AstroCoordArea"]["Box2"]["Center"]["C2"]:
+                        value_["AstroCoordArea"]["Box2"]["Center"]["C2"] = float(value_["AstroCoordArea"]["Box2"]["Center"]["C2"])
+                    
+                    if value_["AstroCoords"]["Position2D"]["Error2"]["C1"] == "":
+                        raise ValueError("Event_C1Error not present")
+                    elif value_["AstroCoords"]["Position2D"]["Error2"]["C1"]:
+                        value_["AstroCoords"]["Position2D"]["Error2"]["C1"] = float(value_["AstroCoords"]["Position2D"]["Error2"]["C1"])
+                    
+                    if value_["AstroCoords"]["Position2D"]["Error2"]["C2"] == "":
+                        raise ValueError("Event_C2Error not present")
+                    elif value_["AstroCoords"]["Position2D"]["Error2"]["C2"]:
+                        value_["AstroCoords"]["Position2D"]["Error2"]["C2"] = float(value_["AstroCoords"]["Position2D"]["Error2"]["C2"])
+    return data
 
 
 def check_who(data):
