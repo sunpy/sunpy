@@ -111,6 +111,16 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         figure.autofmt_xdate()
         figure.show()
 
+    @staticmethod
+    def _source():
+        """Returns rhessi string, used to specify the source class of the TimeSeries."""
+        return 'rhessi'
+
+    @property
+    def source(self):
+        """Returns 'rhessi' string, used to specify the source class of the TimeSeries."""
+        return self._source()
+
     @classmethod
     def _parse_file(cls, filepath):
         """Parses rhessi FITS data files to create TimeSeries."""
@@ -142,7 +152,8 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         """Determines if the file corresponds to a RHESSI X-ray Summary lightcurve"""
         # Check if source is explicitly assigned
         if 'source' in kwargs.keys():
-            return kwargs.get('source', '').startswith('RHESSI')
+            if kwargs.get('source', ''):
+                return kwargs.get('source', '').lower().startswith(cls._source())
         # Check if HDU defines the source instrument
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('telescop', '').startswith('HESSI')

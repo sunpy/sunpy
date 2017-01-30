@@ -108,6 +108,16 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         figure.show()
         return figure
 
+    @staticmethod
+    def _source():
+        """Returns 'eve' string, used to specify the source class of the TimeSeries."""
+        return 'eve'
+
+    @property
+    def source(self):
+        """Returns 'eve' string, used to specify the source class of the TimeSeries."""
+        return self._source()
+
     @classmethod
     def _parse_file(cls, filepath):
         """Parses an EVE CSV file."""
@@ -203,5 +213,5 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     @classmethod
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to an EVE image"""
-        #return header.get('instrume', '').startswith('')
-        return kwargs.get('source', '').lower().startswith('eve')
+        if kwargs.get('source', ''):
+            return kwargs.get('source', '').lower().startswith(cls._source())

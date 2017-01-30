@@ -92,6 +92,15 @@ class NoRHTimeSeries(GenericTimeSeries):
         plt.show()
         return figure
 
+    @staticmethod
+    def _source():
+        """Returns 'norh' string, used to specify the source class of the TimeSeries."""
+        return 'norh'
+
+    @property
+    def source(self):
+        """Returns 'norh' string, used to specify the source class of the TimeSeries."""
+        return self._source()
 
     @classmethod
     def _parse_file(cls, filepath):
@@ -126,8 +135,8 @@ class NoRHTimeSeries(GenericTimeSeries):
     @classmethod
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to a Nobeyama Radioheliograph Correlation lightcurve"""
-        #return header.get('instrume', '').startswith('')
         if 'source' in kwargs.keys():
-            return kwargs.get('source', '').startswith('NoRH')
+            if kwargs.get('source', ''):
+                return kwargs.get('source', '').lower().startswith(cls._source())
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('ORIGIN', '').startswith('NOBEYAMA RADIO OBS')

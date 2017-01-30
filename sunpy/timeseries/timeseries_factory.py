@@ -211,8 +211,12 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             else:
                 raise ValueError("Invalid input Table, TimeSeries doesn't support conversion of tables with more then one index column.")
 
-        # Extract and remove the input table
-        index = pd.to_datetime(table[index_name])
+        # Extract, convert and remove the index column from the input table
+        index = table[index_name]
+        # Convert if the index is given as an astropy Time object
+        if isinstance(index, Time):
+            index = index.datetime
+        index = pd.to_datetime(index)
         table.remove_column(index_name)
 
         # Extract the column values from the table

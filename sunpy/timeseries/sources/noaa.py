@@ -110,6 +110,16 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         figure.show()
         return figure
 
+    @staticmethod
+    def _source():
+        """Returns 'noaaindices' string, used to specify the source class of the TimeSeries."""
+        return 'noaaindices'
+
+    @property
+    def source(self):
+        """Returns 'noaaindices' string, used to specify the source class of the TimeSeries."""
+        return self._source()
+
     @classmethod
     def _parse_file(cls, filepath):
         """Parses an NOAA indices csv file"""
@@ -166,8 +176,8 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     @classmethod
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to an NOAA indices timeseries"""
-        #return header.get('instrume', '').startswith('')
-        return kwargs.get('source', '').startswith('NOAAIndices')
+        if kwargs.get('source', ''):
+            return kwargs.get('source', '').lower().startswith(cls._source())
 
 
 class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
@@ -243,6 +253,16 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         return figure
 
     @staticmethod
+    def _source():
+        """Returns 'noaapredictindices' string, used to specify the source class of the TimeSeries."""
+        return 'noaapredictindices'
+
+    @property
+    def source(self):
+        """Returns 'noaapredictindices' string, used to specify the source class of the TimeSeries."""
+        return self._source()
+
+    @staticmethod
     def _parse_file(filepath):
         """Parses an NOAA indices csv file"""
         header = ''
@@ -274,5 +294,5 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     @classmethod
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to an NOAA predict indices timeseries"""
-        #return header.get('instrume', '').startswith('')
-        return kwargs.get('source', '').startswith('NOAAPredictIndices')
+        if kwargs.get('source', ''):
+            return kwargs.get('source', '').lower().startswith(cls._source())

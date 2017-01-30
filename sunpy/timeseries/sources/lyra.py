@@ -119,6 +119,16 @@ class LYRATimeSeries(GenericTimeSeries):
 
         return figure
 
+    @staticmethod
+    def _source():
+        """Returns 'lyra' string, used to specify the source class of the TimeSeries."""
+        return 'lyra'
+
+    @property
+    def source(self):
+        """Returns 'lyra' string, used to specify the source class of the TimeSeries."""
+        return self._source()
+
     @classmethod
     def _parse_file(cls, filepath):
         """Parses Lyra FITS data files to create TimeSeries."""
@@ -188,7 +198,8 @@ class LYRATimeSeries(GenericTimeSeries):
         """Determines if the file corresponds to a LYRA LightCurve timeseries"""
         # Check if source is explicitly assigned
         if 'source' in kwargs.keys():
-            return kwargs.get('source', '').startswith('LYRA')
+            if kwargs.get('source', ''):
+                return kwargs.get('source', '').lower().startswith(cls._source())
         # Check if HDU defines the source instrument
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('INSTRUME', '').startswith('LYRA')
