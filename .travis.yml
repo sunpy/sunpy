@@ -24,7 +24,7 @@ env:
         - MAIN_CMD='python setup.py'
         - SETUP_CMD='test'
         - CONDA_CHANNELS='astropy astropy-ci-extras conda-forge'
-        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest wcsaxes pyyaml pandas nomkl pytest-cov coverage hypothesis'
+        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest pyyaml pandas nomkl pytest-cov coverage hypothesis'
         - PIP_DEPENDENCIES='suds-jurko sphinx-gallery glymur'
 
     matrix:
@@ -81,7 +81,8 @@ install:
 before_script:
     # Download the sample data for the build of the documentation.
     - if [[ $SETUP_CMD == *build_docs* ]]; then python -c "import sunpy.data; sunpy.data.download_sample_data()"; fi
-    - if [[ $SETUP_CMD == *figure* ]]; then wget https://raw.githubusercontent.com/sunpy/sunpy-figure-tests/master/conda_env_$PYTHON_VERSION.yml; conda env create --file conda_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; fi
+    - if [[ $SETUP_CMD == *figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; fi
+
 
 script:
     - $MAIN_CMD $SETUP_CMD
