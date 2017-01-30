@@ -11,4 +11,3 @@ pytest
 mock
 sqlalchemy
 sphinx_rtd_theme
-wcsaxes>=0.4
