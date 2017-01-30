@@ -457,6 +457,11 @@ def entries_from_file(file, default_waveunit=None,
         The wavelength unit that is used for a header if it cannot be
         found.
 
+    time_string_parse_format : str, optional
+        Fallback timestamp format which will be passed to `strftime` if 
+        `sunpy.time.parse_time` is unable to automatically read the 
+        `date-obs` metadata.
+
     Raises
     ------
     sunpy.database.WaveunitNotFoundError
@@ -570,6 +575,11 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
     default_waveunit : str, optional
         See
         :meth:`sunpy.database.tables.DatabaseEntry.add_fits_header_entries_from_file`.
+
+    time_string_parse_format : str, optional
+        Fallback timestamp format which will be passed to `strftime` if 
+        `sunpy.time.parse_time` is unable to automatically read the 
+        `date-obs` metadata.
 
     Returns
     -------
