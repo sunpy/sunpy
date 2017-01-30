@@ -458,8 +458,8 @@ def entries_from_file(file, default_waveunit=None,
         found.
 
     time_string_parse_format : str, optional
-        Fallback timestamp format which will be passed to `strftime` if 
-        `sunpy.time.parse_time` is unable to automatically read the 
+        Fallback timestamp format which will be passed to `strftime` if
+        `sunpy.time.parse_time` is unable to automatically read the
         `date-obs` metadata.
 
     Raises
@@ -577,8 +577,8 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
         :meth:`sunpy.database.tables.DatabaseEntry.add_fits_header_entries_from_file`.
 
     time_string_parse_format : str, optional
-        Fallback timestamp format which will be passed to `strftime` if 
-        `sunpy.time.parse_time` is unable to automatically read the 
+        Fallback timestamp format which will be passed to `strftime` if
+        `sunpy.time.parse_time` is unable to automatically read the
         `date-obs` metadata.
 
     Returns
