@@ -203,14 +203,16 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         table = copy.deepcopy(t)
         # Default the time index to the first column
         index_name = table.colnames[0]
+        # Check if another column is defined as the index/primary_key
         if table.primary_key:
+            # Check there is only one primary_key/index column
             if len(table.primary_key) == 1:
                 table.primary_key[0]
             else:
                 raise ValueError("Invalid input Table, TimeSeries doesn't support conversion of tables with more then one index column.")
 
         # Extract and remove the input table
-        index = Time(table[index_name])
+        index = pd.to_datetime(table[index_name])
         table.remove_column(index_name)
 
         # Extract the column values from the table
