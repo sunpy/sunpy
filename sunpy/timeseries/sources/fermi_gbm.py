@@ -100,6 +100,16 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         plt.show()
         return figure
 
+    @staticmethod
+    def _source():
+        """Returns 'gbmsummary' string, used to specify the source class of the TimeSeries."""
+        return 'gbmsummary'
+
+    @property
+    def source(self):
+        """Returns 'gbmsummary' string, used to specify the source class of the TimeSeries."""
+        return self._source()
+
     @classmethod
     def _parse_file(cls, filepath):
         """Parses GBM CSPEC FITS data files to create TimeSeries."""
@@ -141,7 +151,8 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         """Determines if the file corresponds to a GBM summary lightcurve timeseries"""
         # Check if source is explicitly assigned
         if 'source' in kwargs.keys():
-            return kwargs.get('source', '').startswith('GBMSummary')
+            if kwargs.get('source', ''):
+                return kwargs.get('source', '').lower().startswith(cls._source())
         # Check if HDU defines the source instrument
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('INSTRUME', '').startswith('GBM')

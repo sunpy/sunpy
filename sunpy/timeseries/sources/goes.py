@@ -114,6 +114,16 @@ class XRSTimeSeries(GenericTimeSeries):
 
         return figure
 
+    @staticmethod
+    def _source():
+        """Returns 'xrs' string, used to specify the source class of the TimeSeries."""
+        return 'xrs'
+
+    @property
+    def source(self):
+        """Returns 'xrs' string, used to specify the source class of the TimeSeries."""
+        return self._source()
+
     # ToDo: is this part of the DL pipeline? If so delete.
     @classmethod
     def _get_goes_sat_num(self, start, end):
@@ -200,6 +210,7 @@ class XRSTimeSeries(GenericTimeSeries):
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to a GOES lightcurve TimeSeries"""
         if 'source' in kwargs.keys():
-            return kwargs.get('source', '').lower().startswith('xrs')
+            if kwargs.get('source', ''):
+                return kwargs.get('source', '').lower().startswith(cls._source())
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('TELESCOP', '').startswith('GOES')
