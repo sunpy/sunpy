@@ -58,6 +58,8 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     * `EVE Data Acess <http://lasp.colorado.edu/home/eve/data/data-access/>`_
     * `Instrument Paper <http://link.springer.com/article/10.1007%2Fs11207-009-9487-6>`_
     """
+    # Class attribute used to specify the source class of the TimeSeries.
+    _source = 'eve'
 
     def peek(self, column=None, **kwargs):
         """Plots the time series in a new figure. An example is shown below.
@@ -107,16 +109,6 @@ class EVESpWxTimeSeries(GenericTimeSeries):
             data.plot(**kwargs)
         figure.show()
         return figure
-
-    @staticmethod
-    def _source():
-        """Returns 'eve' string, used to specify the source class of the TimeSeries."""
-        return 'eve'
-
-    @property
-    def source(self):
-        """Returns 'eve' string, used to specify the source class of the TimeSeries."""
-        return self._source()
 
     @classmethod
     def _parse_file(cls, filepath):
@@ -214,4 +206,4 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to an EVE image"""
         if kwargs.get('source', ''):
-            return kwargs.get('source', '').lower().startswith(cls._source())
+            return kwargs.get('source', '').lower().startswith(cls._source)

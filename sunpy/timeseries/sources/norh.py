@@ -50,6 +50,9 @@ class NoRHTimeSeries(GenericTimeSeries):
     * `Nobeyama Correlation Plots <http://solar.nro.nao.ac.jp/norh/html/cor_plot/>`_
     """
 
+    # Class attribute used to specify the source class of the TimeSeries.
+    _source = 'norh'
+
     def __init__(self, data, header, units, **kwargs):
         super(NoRHTimeSeries,self).__init__(data, header, units, **kwargs)
 
@@ -92,16 +95,6 @@ class NoRHTimeSeries(GenericTimeSeries):
         plt.show()
         return figure
 
-    @staticmethod
-    def _source():
-        """Returns 'norh' string, used to specify the source class of the TimeSeries."""
-        return 'norh'
-
-    @property
-    def source(self):
-        """Returns 'norh' string, used to specify the source class of the TimeSeries."""
-        return self._source()
-
     @classmethod
     def _parse_file(cls, filepath):
         """This method parses NoRH tca and tcz correlation FITS files."""
@@ -137,6 +130,6 @@ class NoRHTimeSeries(GenericTimeSeries):
         """Determines if header corresponds to a Nobeyama Radioheliograph Correlation lightcurve"""
         if 'source' in kwargs.keys():
             if kwargs.get('source', ''):
-                return kwargs.get('source', '').lower().startswith(cls._source())
+                return kwargs.get('source', '').lower().startswith(cls._source)
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('ORIGIN', '').startswith('NOBEYAMA RADIO OBS')

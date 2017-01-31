@@ -58,6 +58,9 @@ class LYRATimeSeries(GenericTimeSeries):
     * `LYRA Instrument Homepage <http://proba2.sidc.be/about/LYRA>`_
     """
 
+    # Class attribute used to specify the source class of the TimeSeries.
+    _source = 'lyra'
+
     def peek(self, names=3, **kwargs):
         """Plots the LYRA data. An example is shown below.
 
@@ -118,16 +121,6 @@ class LYRATimeSeries(GenericTimeSeries):
         figure.show()
 
         return figure
-
-    @staticmethod
-    def _source():
-        """Returns 'lyra' string, used to specify the source class of the TimeSeries."""
-        return 'lyra'
-
-    @property
-    def source(self):
-        """Returns 'lyra' string, used to specify the source class of the TimeSeries."""
-        return self._source()
 
     @classmethod
     def _parse_file(cls, filepath):
@@ -199,7 +192,7 @@ class LYRATimeSeries(GenericTimeSeries):
         # Check if source is explicitly assigned
         if 'source' in kwargs.keys():
             if kwargs.get('source', ''):
-                return kwargs.get('source', '').lower().startswith(cls._source())
+                return kwargs.get('source', '').lower().startswith(cls._source)
         # Check if HDU defines the source instrument
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('INSTRUME', '').startswith('LYRA')

@@ -50,6 +50,9 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     * `NOAA Product List <http://www.swpc.noaa.gov/products-and-data>`_
     """
 
+    # Class attribute used to specify the source class of the TimeSeries.
+    _source = 'noaaindices'
+
     def peek(self, type='sunspot SWO', **plot_args):
         """Plots NOAA Indices as a function of time. An example is shown below.
 
@@ -110,16 +113,6 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         figure.show()
         return figure
 
-    @staticmethod
-    def _source():
-        """Returns 'noaaindices' string, used to specify the source class of the TimeSeries."""
-        return 'noaaindices'
-
-    @property
-    def source(self):
-        """Returns 'noaaindices' string, used to specify the source class of the TimeSeries."""
-        return self._source()
-
     @classmethod
     def _parse_file(cls, filepath):
         """Parses an NOAA indices csv file"""
@@ -177,7 +170,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to an NOAA indices timeseries"""
         if kwargs.get('source', ''):
-            return kwargs.get('source', '').lower().startswith(cls._source())
+            return kwargs.get('source', '').lower().startswith(cls._source)
 
 
 class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
@@ -209,6 +202,9 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     * `NOAA Product List <http://www.swpc.noaa.gov/products-and-data>`_
 
     """
+
+    # Class attribute used to specify the source class of the TimeSeries.
+    _source = 'noaapredictindices'
 
     def peek(self, **plot_args):
         """Plots predicted NOAA Indices as a function of time. An example is shown below.
@@ -253,16 +249,6 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         return figure
 
     @staticmethod
-    def _source():
-        """Returns 'noaapredictindices' string, used to specify the source class of the TimeSeries."""
-        return 'noaapredictindices'
-
-    @property
-    def source(self):
-        """Returns 'noaapredictindices' string, used to specify the source class of the TimeSeries."""
-        return self._source()
-
-    @staticmethod
     def _parse_file(filepath):
         """Parses an NOAA indices csv file"""
         header = ''
@@ -295,4 +281,4 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     def is_datasource_for(cls, **kwargs):
         """Determines if header corresponds to an NOAA predict indices timeseries"""
         if kwargs.get('source', ''):
-            return kwargs.get('source', '').lower().startswith(cls._source())
+            return kwargs.get('source', '').lower().startswith(cls._source)
