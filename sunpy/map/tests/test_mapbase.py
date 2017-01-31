@@ -42,6 +42,12 @@ def heliographic_test_map():
 
 
 @pytest.fixture
+def heliographic_test_map():
+    return sunpy.map.Map(
+        os.path.join(testpath, 'heliographic_phase_map.fits.gz'))
+
+
+@pytest.fixture
 def aia171_test_map_with_mask(aia171_test_map):
     shape = aia171_test_map.data.shape
     mask = np.zeros_like(aia171_test_map.data, dtype=bool)
@@ -98,14 +104,14 @@ def test_wcs(aia171_test_map):
         aia171_test_map.reference_pixel.y.value
     ])
     assert all(wcs.wcs.cdelt ==
-               [aia171_test_map.scale.x.value, aia171_test_map.scale.y.value])
+               [aia171_test_map.scale.lon.value, aia171_test_map.scale.lon.value])
     assert all(wcs.wcs.crval == [
         aia171_test_map._reference_longitude.value,
         aia171_test_map._reference_latitude.value
     ])
     assert set(wcs.wcs.ctype) == set([
-        aia171_test_map.coordinate_system.x,
-        aia171_test_map.coordinate_system.y
+        aia171_test_map.coordinate_system.lon,
+        aia171_test_map.coordinate_system.lat
     ])
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
     assert set(wcs.wcs.cunit) == set(
@@ -276,10 +282,8 @@ def test_swap_cd():
 
 def test_data_range(generic_map):
     """Make sure xrange and yrange work"""
-    assert generic_map.xrange[1].value - generic_map.xrange[
-        0].value == generic_map.meta['cdelt1'] * generic_map.meta['naxis1']
-    assert generic_map.yrange[1].value - generic_map.yrange[
-        0].value == generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
+    assert generic_map.xrange[1].value - generic_map.xrange[0].value == generic_map.meta['cdelt1'] * generic_map.meta['naxis1']
+    assert generic_map.yrange[1].value - generic_map.yrange[0].value == generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
 
     assert np.average(generic_map.xrange.value) == generic_map.center.Tx.value
     assert np.average(generic_map.yrange.value) == generic_map.center.Ty.value
@@ -312,8 +316,8 @@ def test_default_shift():
         'NAXIS2': 6
     }
     cd_map = sunpy.map.Map((data, header))
-    assert cd_map.shifted_value.x.value == 0
-    assert cd_map.shifted_value.y.value == 0
+    assert cd_map.shifted_value.lon.value == 0
+    assert cd_map.shifted_value.lat.value == 0
 
 
 def test_shift_applied(generic_map):
@@ -327,11 +331,11 @@ def test_shift_applied(generic_map):
         0]
     assert shifted_map.reference_coordinate.Ty - y_shift == original_reference_coord[
         1]
-    crval1 = ((generic_map.meta.get('crval1') * generic_map.spatial_units.x + \
-             shifted_map.shifted_value.x).to(shifted_map.spatial_units.x)).value
+    crval1 = ((generic_map.meta.get('crval1') * generic_map.spatial_units.lon + \
+               shifted_map.shifted_value.lon).to(shifted_map.spatial_units.lon)).value
     assert shifted_map.meta.get('crval1') == crval1
-    crval2 = ((generic_map.meta.get('crval2') * generic_map.spatial_units.y + \
-             shifted_map.shifted_value.y).to(shifted_map.spatial_units.y)).value
+    crval2 = ((generic_map.meta.get('crval2') * generic_map.spatial_units.lat + \
+               shifted_map.shifted_value.lat).to(shifted_map.spatial_units.lat)).value
     assert shifted_map.meta.get('crval2') == crval2
 
 
@@ -341,8 +345,8 @@ def test_set_shift(generic_map):
     y_shift = 13 * u.arcsec
     shifted_map = generic_map.shift(x_shift, y_shift)
     resultant_shift = shifted_map.shifted_value
-    assert resultant_shift.x == x_shift
-    assert resultant_shift.y == y_shift
+    assert resultant_shift.lon == x_shift
+    assert resultant_shift.lat == y_shift
 
 
 def test_shift_history(generic_map):
@@ -356,8 +360,8 @@ def test_shift_history(generic_map):
     final_shifted_map = shifted_map1.shift(x_shift2, y_shift2)
 
     resultant_shift = final_shifted_map.shifted_value
-    assert resultant_shift.x == x_shift1 + x_shift2
-    assert resultant_shift.y == y_shift1 + y_shift2
+    assert resultant_shift.lon == x_shift1 + x_shift2
+    assert resultant_shift.lat == y_shift1 + y_shift2
 
 
 def test_submap(generic_map):
@@ -626,3 +630,30 @@ def test_validate_meta(generic_map):
         for count, meta_property in enumerate(
             ('cunit1', 'cunit2', 'waveunit')):
             assert meta_property.upper() in str(w[count].message)
+
+
+# Heliographic Map Tests
+
+
+def test_hg_coord(heliographic_test_map):
+    assert heliographic_test_map.coordinate_system.lon == "CRLN-CAR"
+    assert heliographic_test_map.coordinate_system.lat == "CRLT-CAR"
+    assert isinstance(heliographic_test_map.coordinate_frame,
+                      sunpy.coordinates.HeliographicCarrington)
+
+
+def test_hg_pix_to_data(heliographic_test_map):
+    out = heliographic_test_map.pixel_to_data(180*u.pix, 90*u.pix)
+    assert isinstance(out, SkyCoord)
+    assert isinstance(out.frame, sunpy.coordinates.HeliographicCarrington)
+    assert_quantity_allclose(out.lon, 0*u.deg)
+    assert_quantity_allclose(out.lat, 0*u.deg)
+
+
+def test_hg_data_to_pix(heliographic_test_map):
+    out = heliographic_test_map.data_to_pixel(SkyCoord(0*u.deg, 0*u.deg,
+                                                       frame=heliographic_test_map.coordinate_frame))
+    assert_quantity_allclose(out[0], 180*u.pix)
+    assert_quantity_allclose(out[1], 90*u.pix)
+
+
