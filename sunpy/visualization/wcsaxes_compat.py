@@ -6,6 +6,8 @@ import matplotlib.pyplot as plt
 
 import astropy.units as u
 
+from astropy.utils.misc import isiterable
+
 try:
     from astropy.visualization import wcsaxes
 except ImportError:
@@ -141,7 +143,7 @@ def default_wcs_grid(axes, units):
                      linewidth=0.5)
 
 
-def wcsaxes_heliographic_overlay(axes):
+def wcsaxes_heliographic_overlay(axes, grid_spacing=10*u.deg):
     """
     Create a heliographic overlay using wcsaxes.
 
@@ -152,11 +154,23 @@ def wcsaxes_heliographic_overlay(axes):
     axes : `wcsaxes.WCSAxes` object.
         The `~wcsaxes.WCSAxes` object to create the HGS overlay on.
 
+    grid_spacing: float
+        Spacing for longitude and latitude grid.
+
     Returns
     -------
     overlay : wcsaxes overlay
         The overlay object.
     """
+
+    # Unpack spacing
+    if isinstance(grid_spacing, u.Quantity) and grid_spacing.size == 1:
+        lon_space = lat_space = grid_spacing
+    elif grid_spacing.size == 2:
+        lon_space, lat_space = grid_spacing
+    else:
+        raise ValueError("grid_spacing must be a Quantity or a tuple of two Quantites")
+
     overlay = axes.get_coords_overlay('heliographic_stonyhurst')
 
     lon = overlay[0]
@@ -171,8 +185,8 @@ def wcsaxes_heliographic_overlay(axes):
     lon.set_ticks_position('tr')
     lat.set_ticks_position('tr')
 
-    lon.set_ticks(spacing=10. * u.deg, color='white')
-    lat.set_ticks(spacing=10. * u.deg, color='white')
+    lon.set_ticks(spacing=lon_space, color='white')
+    lat.set_ticks(spacing=lat_space, color='white')
 
     overlay.grid(color='white', alpha=0.5)
 
