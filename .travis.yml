@@ -1,6 +1,4 @@
-# We use C because conda manages our Python version
 language: c
-
 # Setting sudo to false opts in to Travis-CI container-based builds.
 sudo: false
 
@@ -19,57 +17,62 @@ addons:
 # Configure the build environment. Global varibles are defined for all configurations.
 env:
     global:
+        - COLUMNS=240
         - PREVIOUS_NUMPY=1.10.4
-        - PYTHON_VERSION=3.5
-        - TEST_MODE='offline'
+        - PYTHON_VERSION=3.6
         - NUMPY_VERSION='stable'
         - ASTROPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
+        - SETUP_CMD='test'
         - CONDA_CHANNELS='astropy astropy-ci-extras conda-forge'
         - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest pyyaml pandas nomkl pytest-cov coverage hypothesis'
-        - PIP_DEPENDENCIES='suds-jurko sphinx-gallery glymur'
+        - PIP_DEPENDENCIES='suds-jurko sphinx-gallery glymur pytest-sugar'
 
     matrix:
-        - PYTHON_VERSION=2.7 SETUP_CMD='egg_info' 
-        - PYTHON_VERSION=3.4 SETUP_CMD='egg_info'
-        - PYTHON_VERSION=3.5 SETUP_CMD='egg_info'
-        - PYTHON_VERSION=2.7 SETUP_CMD='test'
-        - PYTHON_VERSION=3.4 SETUP_CMD='test'
-        - PYTHON_VERSION=3.5 SETUP_CMD='test'
+        - SETUP_CMD='egg_info' PYTHON_VERSION=2.7 
+        - SETUP_CMD='egg_info' PYTHON_VERSION=3.4
+        - SETUP_CMD='egg_info' PYTHON_VERSION=3.5
+        - SETUP_CMD='egg_info' PYTHON_VERSION=3.6
+        - PYTHON_VERSION=2.7
+        - PYTHON_VERSION=3.4
+        - PYTHON_VERSION=3.5
+        - PYTHON_VERSION=3.6
 
 matrix:
     include:
          - os: osx
-           env: PYTHON_VERSION=2.7 SETUP_CMD='test'
 
          - os: linux
-           env: JOB="Astropy Dev" PYTHON_VERSION=3.5 SETUP_CMD='test' ASTROPY_VERSION='development'
+           env: ASTROPY_VERSION='development'
+
+         # Numpy 1.10 is not built on 3.6
+         - os: linux
+           env: NUMPY_VERSION=$PREVIOUS_NUMPY PYTHON_VERSION=3.5
 
          - os: linux
-           env: JOB="Numpy Prev" PYTHON_VERSION=3.5 SETUP_CMD='test' NUMPY_VERSION=$PREVIOUS_NUMPY
+           env: SETUP_CMD='build_docs -w'
+
+         # Figure test runs use an env stored in the repo so don't have conda
+         # requirements
+         - os: linux
+           env: SETUP_CMD='test --figure' PYTHON_VERSION=2.7 CONDA_DEPENDENCIES=''
 
          - os: linux
-           env: JOB="Documentation" PYTHON_VERSION=3.5 SETUP_CMD='build_sphinx -w'
+           env: SETUP_CMD='test --figure' PYTHON_VERSION=3.5 CONDA_DEPENDENCIES=''
 
          - os: linux
-           env: JOB="Figures 2.7" PYTHON_VERSION=2.7 SETUP_CMD='test --figure' CONDA_DEPENDENCIES='' # conda env is loaded from a separate file
+           env: SETUP_CMD='test --online --coverage -V'
 
          - os: linux
-           env: JOB="Figures 3.5" PYTHON_VERSION=3.5 SETUP_CMD='test --figure' CONDA_DEPENDENCIES='' # conda env is loaded from a separate file
+           env: SETUP_CMD='build_docs -b doctest'
 
          - os: linux
-           env: JOB="Online" PYTHON_VERSION=3.5 SETUP_CMD='test --online --coverage -V'
-
-         - os: linux
-           env: JOB="Doctest" PYTHON_VERSION=3.5 SETUP_CMD='build_sphinx -b doctest'
-
-         - os: linux
-           env: JOB="Numpy Dev" PYTHON_VERSION=3.5 SETUP_CMD='test' NUMPY_VERSION='dev'
+           env: NUMPY_VERSION='dev'
 
     # allow_failures has to repeat the environment from the matrix above to mark it as such
     allow_failures:
-      - env: JOB="Doctest" PYTHON_VERSION=3.5 SETUP_CMD='build_sphinx -b doctest'
-      - env: JOB="Numpy Dev" PYTHON_VERSION=3.5 SETUP_CMD='test' ASTROPY_VERSION='stable' NUMPY_VERSION='dev'
+      - env: SETUP_CMD='build_docs -b doctest'
+      - env: NUMPY_VERSION='dev'
 
 install:
     - git clone git://github.com/astropy/ci-helpers.git
@@ -78,8 +81,9 @@ install:
 
 before_script:
     # Download the sample data for the build of the documentation.
-    - if [[ $SETUP_CMD == *sphinx* ]]; then python -c "import sunpy.data; sunpy.data.download_sample_data()"; fi
+    - if [[ $SETUP_CMD == *build_docs* ]]; then python -c "import sunpy.data; sunpy.data.download_sample_data()"; fi
     - if [[ $SETUP_CMD == *figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; fi
+
 
 script:
     - $MAIN_CMD $SETUP_CMD
