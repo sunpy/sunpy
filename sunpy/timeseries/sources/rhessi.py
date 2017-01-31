@@ -56,6 +56,9 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
     * Mission Paper `<http://link.springer.com/article/10.1023%2FA%3A1022428818870>`_
     """
 
+    # Class attribute used to specify the source class of the TimeSeries.
+    _source = 'rhessi'
+
     def peek(self, title="RHESSI Observing Summary Count Rate", **kwargs):
         """Plots RHESSI Count Rate light curve. An example is shown below.
 
@@ -111,16 +114,6 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         figure.autofmt_xdate()
         figure.show()
 
-    @staticmethod
-    def _source():
-        """Returns rhessi string, used to specify the source class of the TimeSeries."""
-        return 'rhessi'
-
-    @property
-    def source(self):
-        """Returns 'rhessi' string, used to specify the source class of the TimeSeries."""
-        return self._source()
-
     @classmethod
     def _parse_file(cls, filepath):
         """Parses rhessi FITS data files to create TimeSeries."""
@@ -153,7 +146,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         # Check if source is explicitly assigned
         if 'source' in kwargs.keys():
             if kwargs.get('source', ''):
-                return kwargs.get('source', '').lower().startswith(cls._source())
+                return kwargs.get('source', '').lower().startswith(cls._source)
         # Check if HDU defines the source instrument
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('telescop', '').startswith('HESSI')

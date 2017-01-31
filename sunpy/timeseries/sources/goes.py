@@ -51,6 +51,9 @@ class XRSTimeSeries(GenericTimeSeries):
     http://umbra.nascom.nasa.gov/goes/fits/goes_fits_files_notes.txt
     """
 
+    # Class attribute used to specify the source class of the TimeSeries.
+    _source = 'xrs'
+
     def peek(self, title="GOES Xray Flux"):
         """Plots GOES XRS light curve is the usual manner. An example is shown
         below.
@@ -113,16 +116,6 @@ class XRSTimeSeries(GenericTimeSeries):
         figure.show()
 
         return figure
-
-    @staticmethod
-    def _source():
-        """Returns 'xrs' string, used to specify the source class of the TimeSeries."""
-        return 'xrs'
-
-    @property
-    def source(self):
-        """Returns 'xrs' string, used to specify the source class of the TimeSeries."""
-        return self._source()
 
     # ToDo: is this part of the DL pipeline? If so delete.
     @classmethod
@@ -211,6 +204,6 @@ class XRSTimeSeries(GenericTimeSeries):
         """Determines if header corresponds to a GOES lightcurve TimeSeries"""
         if 'source' in kwargs.keys():
             if kwargs.get('source', ''):
-                return kwargs.get('source', '').lower().startswith(cls._source())
+                return kwargs.get('source', '').lower().startswith(cls._source)
         if 'meta' in kwargs.keys():
             return kwargs['meta'].get('TELESCOP', '').startswith('GOES')

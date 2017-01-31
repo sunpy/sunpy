@@ -107,6 +107,9 @@ class GenericTimeSeries:
 
     """
 
+    # Class attribute used to specify the source class of the TimeSeries.
+    _source = None
+
     def __init__(self, data, meta=None, units=None, **kwargs):
         self.data = data
         tr = TimeRange(self.data.index.min(), self.data.index.max())
@@ -133,17 +136,12 @@ class GenericTimeSeries:
         #self._validate_meta()
         #self._validate_units()
 
-    @staticmethod
-    def _source():
-        """Returns a string/object used to specify the source class of the TimeSeries."""
-        return None
-
 # #### Attribute definitions #### #
 
     @property
     def source(self):
         """Returns a string/object used to specify the source class of the TimeSeries."""
-        return self._source()
+        return self._source
 
     @property
     def columns(self):
