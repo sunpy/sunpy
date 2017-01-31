@@ -421,6 +421,123 @@ def test_add_entry_from_hek_qr(database):
     # *something*
     assert len(database) > 1
 
+def num_entries_from_vso_query(db, query, path=None, file_pattern='',
+    caching=True):
+    db.download_from_vso_query_result(
+        query, path=path, caching=caching)
+    fits_pattern = file_pattern
+    num_of_fits_headers = sum(
+        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+    return num_of_fits_headers
+
+@pytest.mark.online
+def test_vso_query_block_caching(database, download_qr, tmpdir):
+
+    assert len(database) == 0
+
+    # Download for all query response blocks and save the length
+    # of database in num_of_fits_headers
+    num_of_fits_headers = num_entries_from_vso_query(database, download_qr,
+        path=str(tmpdir.join('{file}.fits')), file_pattern=str(tmpdir.join('*.fits')))
+
+    assert len(database) == num_of_fits_headers and len(database) > 0
+
+    # Emptying the database
+    database.clear()
+    database.commit()
+
+    # Only downloading for the first query response block
+    num_of_fits_headers_1 = num_entries_from_vso_query(database, download_qr[:1],
+        path=str(tmpdir.join('{file}.type1')), file_pattern=str(tmpdir.join('*.type1')))
+
+    assert len(database) == num_of_fits_headers_1 and len(database) > 0
+
+    # Downloading for all query response blocks
+    num_of_fits_headers_2 = num_entries_from_vso_query(database, download_qr,
+        path=str(tmpdir.join('{file}.type2')), file_pattern=str(tmpdir.join('*.type2')))
+
+    # Final length of the database should be the same as num_of_fits_headers.
+    # This is done to ensure that the first query response block's files weren't
+    # redownloaded. If they were redownloaded then length will be greater than
+    # num_of_fits_headers as new entries are added to the database in case of a
+    # download.
+
+    assert len(database) == num_of_fits_headers_1 + num_of_fits_headers_2
+    assert len(database) > 0
+
+    assert num_of_fits_headers_1+num_of_fits_headers_2 == num_of_fits_headers
+
+@pytest.mark.online
+def test_vso_query_block_caching_with_caching_off_flag(database,
+    download_qr, tmpdir):
+
+    assert len(database) == 0
+
+    # Download for all query response blocks and save the length
+    # of database in num_of_fits_headers
+
+    num_of_fits_headers = num_entries_from_vso_query(database, download_qr,
+        path=str(tmpdir.join('{file}.fits')), file_pattern=str(tmpdir.join('*.fits')))
+
+    assert len(database) == num_of_fits_headers and len(database) > 0
+
+    # Only downloading for the first query response block with caching disabled
+
+    num_of_fits_headers_1 = num_entries_from_vso_query(database, download_qr[:1],
+        path=str(tmpdir.join('{file}.type1')), file_pattern=str(tmpdir.join('*.type1')),
+        caching=False)
+
+    # The files for the first query response block should be downloaded again
+    assert len(database) == num_of_fits_headers + num_of_fits_headers_1
+    assert len(database) > 0
+
+
+@pytest.mark.online
+def test_vso_query_block_caching(database, download_qr, tmpdir):
+
+    assert len(database) == 0
+
+    # Download for all query response blocks and save the length
+    # of database in num_of_fits_headers
+    database.download_from_vso_query_result(
+        download_qr, path=str(tmpdir.join('{file}.fits')))
+    fits_pattern = str(tmpdir.join('*.fits'))
+    num_of_fits_headers = sum(
+        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+
+    assert len(database) == num_of_fits_headers and len(database) > 0
+
+    # Emptying the database
+    database.clear()
+    database.commit()
+
+    # Only downloading for the first query response block
+    database.download_from_vso_query_result(
+        download_qr[:1], path=str(tmpdir.join('{file}.type1')))
+    fits_pattern = str(tmpdir.join('*.type1'))
+    num_of_fits_headers_1 = sum(
+        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+
+    assert len(database) == num_of_fits_headers_1 and len(database) > 0
+
+    # Downloading for all query response blocks
+    database.download_from_vso_query_result(
+        download_qr, path=str(tmpdir.join('{file}.type2')))
+    fits_pattern = str(tmpdir.join('*.type2'))
+    num_of_fits_headers_2 = sum(
+        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+
+    # Final length of the database should be the same as num_of_fits_headers.
+    # This is done to ensure that the first query response block's files weren't
+    # redownloaded. If they were redownloaded then length will be greater than
+    # num_of_fits_headers as new entries are added to the database in case of a
+    # download.
+
+    assert len(database) == num_of_fits_headers_1 + num_of_fits_headers_2
+    assert len(database) > 0
+
+    assert num_of_fits_headers_1+num_of_fits_headers_2 == num_of_fits_headers
+
 
 @pytest.mark.online
 def test_download_from_qr(database, download_qr, tmpdir):
@@ -769,7 +886,9 @@ def test_download_duplicates(database, download_query, tmpdir):
     download_time = database[0].download_time
     database.download(*download_query, path=str(tmpdir.join('{file}.fits')))
     assert len(database) == 4
-    assert database[0].download_time != download_time
+    # The old file should be untouched because of the query result block
+    # level caching
+    assert database[0].download_time == download_time
 
 
 def test_fetch_missing_arg(database):

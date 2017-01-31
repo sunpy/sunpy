@@ -366,6 +366,26 @@ class DatabaseEntry(Base):
             self.fits_header_entries == other.fits_header_entries and
             self.tags == other.tags)
 
+    def _compare_attributes(self, other, attribute_list):
+        """Compare a given list of attributes of two :class:`DatabaseEntry` 
+        instances and return True if all of them match.
+
+        Parameters
+        ----------
+        other : :class:`DatabaseEntry` instance
+
+        attribute_list : list
+            The list of attributes that will be compared in both instances,
+            self and other.
+
+        """
+        if len(attribute_list) == 0 :
+            raise TypeError('At least one attribute required')
+        for attribute in attribute_list:
+            if getattr(self, attribute) != getattr(other, attribute):
+                return False
+        return True
+
     def __hash__(self):
         return super(DatabaseEntry, self).__hash__()
 
