@@ -818,6 +818,11 @@ class Database(object):
         ignore_already_added : bool, optional
             See :meth:`sunpy.database.Database.add`.
 
+        time_string_parse_format : str, optional
+            Fallback timestamp format which will be passed to
+            `~datetime.datetime.strftime` if `sunpy.time.parse_time` is unable to
+            automatically read the `date-obs` metadata.
+
         """
         cmds = CompositeOperation()
         entries = tables.entries_from_dir(
