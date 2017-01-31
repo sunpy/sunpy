@@ -7,7 +7,6 @@ dependencies:
 - glymur=0.8.8=py35_0
 - hypothesis=3.6.1=py35_0
 - openjpeg=2.1.2=2
-- sunpy=0.7.3=py35_1
 - wcsaxes=0.9=py35_0
 - astropy=1.3=np111py35_0
 - beautifulsoup4=4.5.3=py35_0
@@ -34,11 +33,11 @@ dependencies:
 - libxml2=2.9.4=0
 - libxslt=1.1.29=0
 - lxml=3.7.2=py35_0
-- matplotlib=1.5.3=np111py35_1
+- matplotlib=2.0.0=np111py35_0
 - mkl=2017.0.1=0
 - networkx=1.11=py35_0
 - numpy=1.11.3=py35_0
-- openssl=1.0.2j=0
+- openssl=1.0.2k=0
 - pandas=0.19.2=np111py35_1
 - pcre=8.39=1
 - pillow=4.0.0=py35_0
