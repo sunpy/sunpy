@@ -17,7 +17,7 @@ addons:
 # Configure the build environment. Global varibles are defined for all configurations.
 env:
     global:
-        - COLUMNS=140
+        - COLUMNS=180
         - PREVIOUS_NUMPY=1.10.4
         - PYTHON_VERSION=3.6
         - NUMPY_VERSION='stable'
