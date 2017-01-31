@@ -178,6 +178,7 @@ def wcsaxes_heliographic_overlay(axes):
 
     if axes.title:
         x, y = axes.title.get_position()
-        axes.title.set_position([x, y + 0.05])
+        if y == 1.0:
+            axes.title.set_position([x, y + 0.05])
 
     return overlay
