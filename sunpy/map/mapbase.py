@@ -192,27 +192,31 @@ class GenericMap(NDData):
             " coordinate is not yet implemented.")
 
     def __repr__(self):
-        if not self.observatory:
-            return self.data.__repr__()
         return (
-"""SunPy {dtype!s}
+"""SunPy Map
 ---------
-Observatory:\t {obs}
-Instrument:\t {inst}
-Detector:\t {det}
-Measurement:\t {meas}
-Wavelength:\t {wave}
-Obs Date:\t {date:{tmf}}
-dt:\t\t {dt:f}
-Dimension:\t {dim}
-scale:\t\t {scale}
+Observatory:\t\t {obs}
+Instrument:\t\t {inst}
+Detector:\t\t {det}
+Measurement:\t\t {meas}
+Wavelength:\t\t {wave}
+Observation Date:\t {date:{tmf}}
+Exposure Time:\t\t {dt:f}
+Dimension:\t\t {dim}
+Coordinate System:\t {coord.name}
+Scale:\t\t\t {scale}
+Reference Pixel:\t {refpix}
+Reference Coord:\t {refcoord}
 
-""".format(dtype=self.__class__.__name__,
-           obs=self.observatory, inst=self.instrument, det=self.detector,
+""".format(obs=self.observatory, inst=self.instrument, det=self.detector,
            meas=self.measurement, wave=self.wavelength, date=self.date,
            dt=self.exposure_time,
            dim=u.Quantity(self.dimensions),
            scale=u.Quantity(self.scale),
+           coord=self.coordinate_frame,
+           refpix=u.Quantity(self.reference_pixel),
+           refcoord=u.Quantity((self.reference_coordinate.data.lon,
+                                self.reference_coordinate.data.lat)),
            tmf=TIME_FORMAT) + self.data.__repr__())
 
     @classmethod
@@ -1327,33 +1331,35 @@ scale:\t\t {scale}
 # #### Visualization #### #
 
     @u.quantity_input(grid_spacing=u.deg)
-    def draw_grid(self, axes=None, grid_spacing=15*u.deg, **kwargs):
+    def draw_grid(self, axes=None, grid_spacing=15*u.deg):
         """
-        Draws a grid over the surface of the Sun
+        Draws a coordinate overlay on the plot in Heliographic Stonyhurst
+        coordinate system.
+
+        To overlay other coordinate systems see the `WCSAxes Documentation
+        <http://docs.astropy.org/en/stable/visualization/wcsaxes/overlaying_coordinate_systems.html>`_
 
         Parameters
         ----------
         axes: `~matplotlib.axes` or None
         Axes to plot limb on or None to use current axes.
 
-        grid_spacing: float
-            Spacing (in degrees) for longitude and latitude grid.
+        grid_spacing: `~astropy.units.Quantity`
+            Spacing for longitude and latitude grid, if length two it specifies
+            (lon, lat) spacing.
 
         Returns
         -------
-        lines: list
-            A list of `matplotlib.lines.Line2D` objects that have been plotted.
-
-        Notes
-        -----
-        keyword arguments are passed onto matplotlib.pyplot.plot
+        overlay: `~astropy.visualization.wcsaxes.coordinates_map.CoordinatesMap`
+            The wcsaxes coordinate overlay instance.
         """
 
         if not axes:
             axes = wcsaxes_compat.gca_wcs(self.wcs)
         if not wcsaxes_compat.is_wcsaxes(axes):
             raise TypeError("Overlay grids can only be plotted on WCSAxes plots.")
-        return wcsaxes_compat.wcsaxes_heliographic_overlay(axes)
+        return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
+                                                           grid_spacing=grid_spacing)
 
     def draw_limb(self, axes=None, **kwargs):
         """
@@ -1398,7 +1404,7 @@ scale:\t\t {scale}
 
         return [circ]
 
-    @u.quantity_input(bottom_left=u.deg, width=u.deg, height=u.deg)
+    @u.quantity_input(width=u.deg, height=u.deg)
     def draw_rectangle(self, bottom_left, width, height, axes=None, **kwargs):
         """
         Draw a rectangle defined in world coordinates on the plot.
@@ -1406,7 +1412,7 @@ scale:\t\t {scale}
         Parameters
         ----------
 
-        bottom_left : `astropy.units.Quantity`
+        bottom_left : `~astropy.coordinates.SkyCoord` or `~astropy.coordinates.BaseCoordinateFrame`
             The bottom left corner of the rectangle.
 
         width : `astropy.units.Quantity`
@@ -1416,13 +1422,15 @@ scale:\t\t {scale}
             The height of the rectangle.
 
         axes : `matplotlib.axes.Axes`
-            The axes on which to plot the rectangle, defaults to the current axes.
+            The axes on which to plot the rectangle, defaults to the current
+            axes.
 
         Returns
         -------
 
         rect : `list`
-            A list containing the `~matplotlib.patches.Rectangle` object, after it has been added to ``axes``.
+            A list containing the `~matplotlib.patches.Rectangle` object, after
+            it has been added to ``axes``.
 
         Notes
         -----
@@ -1440,14 +1448,18 @@ scale:\t\t {scale}
         else:
             axes_unit = self.spatial_units[0]
 
-        bottom_left = bottom_left.to(axes_unit).value
+        coord = bottom_left.transform_to(self.coordinate_frame)
+        bottom_left = u.Quantity((coord.data.lon, coord.data.lat),
+                                 unit=axes_unit).value
+
         width = width.to(axes_unit).value
         height = height.to(axes_unit).value
 
-        kwergs = {'transform':wcsaxes_compat.get_world_transform(axes),
-                  'color':'white',
-                  'fill':False}
+        kwergs = {'transform': wcsaxes_compat.get_world_transform(axes),
+                  'color': 'white',
+                  'fill': False}
         kwergs.update(kwargs)
+
         rect = plt.Rectangle(bottom_left, width, height, **kwergs)
 
         axes.add_artist(rect)
