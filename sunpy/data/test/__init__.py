@@ -8,9 +8,11 @@ from astropy.utils.data import get_pkg_data_filename
 
 import sunpy
 
-__all__ = ['rootdir', 'file_list', 'get_test_filepath']
+__all__ = ['rootdir', 'file_list', 'get_test_filepath',
+           'print_all_test_filepaths']
 
 rootdir = os.path.join(os.path.dirname(sunpy.__file__), "data", "test")
+
 
 def get_test_filepath(filename, **kwargs):
     """
@@ -39,6 +41,22 @@ def get_test_filepath(filename, **kwargs):
 
     """
     return get_pkg_data_filename(filename, package="sunpy.data.test", **kwargs)
+
+
+def print_all_test_filepaths():
+    """
+    Prints the filepaths of all test data files under the ``data/test``
+    directory.
+
+    """
+
+    for (dirpath, _, filenames) in os.walk(rootdir):
+        for fname in filenames:
+            if not fname.startswith("__init__.py"):
+                if dirpath == rootdir:
+                    print(fname)
+                else:
+                    print(os.path.join(os.path.basename(dirpath), fname))
 
 
 file_list = glob.glob(os.path.join(rootdir, '*.[!p]*'))
