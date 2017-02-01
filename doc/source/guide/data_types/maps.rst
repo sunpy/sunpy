@@ -178,12 +178,13 @@ examples see :ref:`plotting`.
 
 .. note::
 
-   If the `wcsaxes <http://wcsaxes.readthedocs.io/en/latest/>`_ package is not
-   installed the `~sunpy.map.GenericMap.plot()` and `~sunpy.map.GenericMap.peek()`
-   methods assume that the data is not rotated,
-   i.e. the solar y axis is oriented with the columns of the array. If this condition
-   is not met, when the map is plotted a warning will be issued. You can create
-   an oriented map by using `~sunpy.map.GenericMap.rotate()` before you plot the Map.
+   If the `astropy.visualization.wcsaxes` package is not used (it is used by
+   default) the `~sunpy.map.GenericMap.plot()` and
+   `~sunpy.map.GenericMap.peek()` methods assume that the data is not rotated,
+   i.e. the solar y axis is oriented with the columns of the array. If this
+   condition is not met (in the metadata), when the map is plotted a warning
+   will be issued. You can create an oriented map by using
+   `~sunpy.map.GenericMap.rotate()` before you plot the Map.
 
 Plotting Keywords
 *****************

@@ -6,16 +6,12 @@ AIA to STEREO Coordinate Conversion
 In this example we demonstrate how you can identify a point or region on the
 surface of the Sun in an AIA image and then convert that point to a point in a
 STEREO image.
-
-.. note::
-    This example requires `WCSAxes` which is an optional SunPy dependency.
 """
 
 import matplotlib.pyplot as plt
 
 import astropy.units as u
 from astropy.coordinates import SkyCoord
-import wcsaxes
 
 import sunpy.map
 import sunpy.coordinates
