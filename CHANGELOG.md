@@ -1,6 +1,9 @@
 Latest
 ------
 
+* User can now pass a custom time format as an argument inside 
+  `sunpy.database.add_from_dir()` in case the `date-obs` metadata cannot
+  be read automatically from the files.
 * Get and set methods for composite maps now use Map plot_settings.
 * Simplified map names when plotting.
 * Add time format used by some SDO HMI FITS keywords
