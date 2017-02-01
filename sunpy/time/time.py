@@ -180,7 +180,7 @@ def parse_time(time_string, time_format='', **kwargs):
     datetime.datetime(2005, 8, 4, 0, 1, 2)
     """
     if isinstance(time_string, pandas.tslib.Timestamp):
-        return time_string.to_datetime()
+        return time_string.to_pydatetime()
     elif isinstance(time_string, datetime) or time_format == 'datetime':
         return time_string
     elif isinstance(time_string, tuple):

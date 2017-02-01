@@ -128,4 +128,5 @@ def figure_test(test_function):
             pytest.fail("Hash not present: {0}".format(name))
         else:
             assert hash.hash_library[name] == figure_hash
+        plt.close()
     return wrapper
