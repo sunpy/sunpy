@@ -1,6 +1,6 @@
 """SOHO Map subclass definitions"""
 from __future__ import absolute_import, print_function, division
-#pylint: disable=W0221,W0222,E1101,E1121
+# pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -42,6 +42,7 @@ def _dsunAtSoho(date, rad_d, rad_1au=None):
 
 
 class EITMap(GenericMap):
+
     """SOHO EIT Image Map.
 
     SOHO EIT is an extreme ultraviolet (EUV) imager able to image the solar
@@ -74,6 +75,10 @@ class EITMap(GenericMap):
     def rsun_obs(self):
         """
         Returns the solar radius as measured by EIT in arcseconds.
+        .. rubric:: Metadata keyword:
+
+        * ``solar_r``
+        * ``cdelt1``
         """
         return Quantity(self.meta['solar_r'] * self.meta['cdelt1'], 'arcsec')
 
@@ -87,6 +92,7 @@ class EITMap(GenericMap):
 
 
 class LASCOMap(GenericMap):
+
     """SOHO LASCO Image Map
 
     The Large Angle and Spectrometric COronagraph (LASCO) is a set of three
@@ -148,6 +154,7 @@ class LASCOMap(GenericMap):
 
 
 class MDIMap(GenericMap):
+
     """
     SOHO MDI Image Map
 
@@ -189,10 +196,10 @@ class MDIMap(GenericMap):
         else:
             self.plot_settings['norm'] = colors.Normalize(-vmax, vmax)
 
-
     @property
     def measurement(self):
         """
+        Meta keyword : ``dpc_obsr``, default: ``" "``.
         Returns the type of data in the map.
         """
         return "magnetogram" if self.meta.get('dpc_obsr', " ").find('Mag') != -1 else "continuum"

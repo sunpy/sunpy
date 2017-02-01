@@ -1,6 +1,6 @@
 """STEREO Map subclass definitions"""
 from __future__ import absolute_import, print_function, division
-#pylint: disable=W0221,W0222,E1121
+# pylint: disable=W0221,W0222,E1121
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -16,7 +16,9 @@ from sunpy.cm import cm
 
 __all__ = ['EUVIMap', 'CORMap', 'HIMap']
 
+
 class EUVIMap(GenericMap):
+
     """STEREO-SECCHI EUVI Image Map
 
     EUVI is an extreme ultraviolet (EUV) imager. Part of the STEREO-SECCHI
@@ -36,7 +38,8 @@ class EUVIMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
 
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
-        self.plot_settings['cmap'] = cm.get_cmap('sohoeit{wl:d}'.format(wl=int(self.wavelength.value)))
+        self.plot_settings['cmap'] = cm.get_cmap(
+            'sohoeit{wl:d}'.format(wl=int(self.wavelength.value)))
         self.plot_settings['norm'] = ImageNormalize(stretch=PowerStretch(0.25))
         self.meta['waveunit'] = 'Angstrom'
 
@@ -49,6 +52,9 @@ class EUVIMap(GenericMap):
     def rsun_arcseconds(self):
         """
         Radius of the sun in arcseconds.
+        .. rubric:: Metadata keyword:
+
+        * ``rsun`` Default: `None`
 
         References
         ----------
@@ -63,6 +69,7 @@ class EUVIMap(GenericMap):
 
 
 class CORMap(GenericMap):
+
     """STEREO-SECCHI CORonograph Image Map.
 
     Part of the STEREO-SECCHI suite of remote sensing telescopes,
@@ -111,6 +118,7 @@ class CORMap(GenericMap):
 
 
 class HIMap(GenericMap):
+
     """STEREO-SECCHI Heliospheric Imager (HI) Map.
 
     The HI is a wide-angle visible-light imaging system
@@ -128,6 +136,7 @@ class HIMap(GenericMap):
     * `STEREO SECCHI <http://secchi.nrl.navy.mil>`_
     * `HI Instrument Page <http://www.stereo.rl.ac.uk>`_
     """
+
     def __init__(self, data, header, **kwargs):
 
         GenericMap.__init__(self, data, header, **kwargs)

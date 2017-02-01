@@ -53,6 +53,7 @@ MAP_CLASSES = OrderedDict()
 
 
 class GenericMapMeta(ABCMeta):
+
     """
     Registration metaclass for `~sunpy.map.GenericMap`.
 
@@ -76,6 +77,7 @@ class GenericMapMeta(ABCMeta):
 
 @six.add_metaclass(GenericMapMeta)
 class GenericMap(NDData):
+
     """
     A Generic spatially-aware 2D data array
 
@@ -370,7 +372,12 @@ scale:\t\t {scale}
 
     @property
     def date(self):
-        """Image observation time"""
+        """
+        Image observation time
+        .. rubric:: Metadata keyword:
+
+        * ``date-obs`` Default: ``'now'``
+        """
         time = parse_time(self.meta.get('date-obs', 'now'))
         if time is None:
             warnings.warn_explicit("Missing metadata for observation time."
@@ -381,12 +388,22 @@ scale:\t\t {scale}
 
     @property
     def detector(self):
-        """Detector name"""
+        """
+        Detector name
+        .. rubric:: Metadata keyword:
+
+        * ``detector`` Default: ``""``
+        """
         return self.meta.get('detector', "")
 
     @property
     def dsun(self):
-        """The observer distance from the Sun."""
+        """
+        The observer distance from the Sun.
+        .. rubric:: Metadata keyword:
+
+        * ``dsun_obs`` Default: `None`
+        """
         dsun = self.meta.get('dsun_obs', None)
 
         if dsun is None:
@@ -400,29 +417,60 @@ scale:\t\t {scale}
 
     @property
     def exposure_time(self):
-        """Exposure time of the image in seconds."""
+        """
+        Exposure time of the image in seconds.
+        .. rubric:: Metadata keyword:
+
+        * ``exptime`` Default: ``0.0``
+        """
         return self.meta.get('exptime', 0.0) * u.s
 
     @property
     def instrument(self):
-        """Instrument name"""
+        """
+        Instrument name
+        .. rubric:: Metadata keyword:
+
+        * ``instrume`` Default: ``""``
+        """
         return self.meta.get('instrume', "").replace("_", " ")
 
     @property
     def measurement(self):
-        """Measurement name, defaults to the wavelength of image"""
+        """
+        Measurement name, defaults to the wavelength of image.
+        .. rubric:: Metadata keywords:
+
+        * ``wavelnth`` Default: ``0``
+        * ``waveunit`` Default: ``""``
+        """
         return u.Quantity(self.meta.get('wavelnth', 0),
                           self.meta.get('waveunit', ""))
 
     @property
     def wavelength(self):
-        """wavelength of the observation"""
+        """
+        wavelength of the observation
+        .. rubric:: Metadata keyword:
+
+        * ``wavelnth`` Default: ``0``
+        * ``waveunit`` Default: ``""``
+        """
         return u.Quantity(self.meta.get('wavelnth', 0),
                           self.meta.get('waveunit', ""))
 
     @property
     def observatory(self):
-        """Observatory or Telescope name"""
+        """
+        Observatory or Telescope name
+        .. rubric:: Metadata keyword:
+
+        * First available:
+
+         1. ``obsrvtry``
+         2. ``telescop``
+         3. Default: ``""``
+        """
         return self.meta.get('obsrvtry',
                              self.meta.get('telescop', "")).replace("_", " ")
 
@@ -486,7 +534,7 @@ scale:\t\t {scale}
         new_meta['crval2'] = ((self.meta['crval2'] *
                                self.spatial_units.y + y).to(self.spatial_units.y)).value
 
-        #Create new map with the modification
+        # Create new map with the modification
         new_map = self._new_instance(self.data, new_meta, self.plot_settings)
 
         new_map._shift = Pair(self.shifted_value.x + x,
@@ -496,12 +544,27 @@ scale:\t\t {scale}
 
     @property
     def rsun_meters(self):
-        """Radius of the sun in meters"""
+        """
+        Radius of the sun in meters
+        .. rubric:: Metadata keyword:
+
+        * ``rsun_ref`` Default: `sunpy.constants.radius`
+        """
         return u.Quantity(self.meta.get('rsun_ref', constants.radius), 'meter')
 
     @property
     def rsun_obs(self):
-        """Radius of the Sun."""
+        """
+        Radius of the Sun.
+        ..rubric:: Metadata keyword:
+
+        * First available:
+
+         1. ``rsun_obs``
+         2. ``solar_r``
+         3. ``radius``
+         4. Default: `None`
+        """
         rsun_arcseconds = self.meta.get('rsun_obs',
                                         self.meta.get('solar_r',
                                                       self.meta.get('radius',
@@ -518,13 +581,24 @@ scale:\t\t {scale}
 
     @property
     def coordinate_system(self):
-        """Coordinate system used for x and y axes (ctype1/2)"""
+        """
+        Coordinate system used for x and y axes (ctype1/2)
+        .. rubric:: Metadata keywords:
+
+        * ``ctype1`` Default: ``'HPLN-TAN'``
+        * ``ctype2`` Default: ``'HPLT-TAN'``
+        """
         return Pair(self.meta.get('ctype1', 'HPLN-TAN'),
                     self.meta.get('ctype2', 'HPLT-TAN'))
 
     @property
     def carrington_longitude(self):
-        """Carrington longitude (crln_obs)"""
+        """
+        Carrington longitude (crln_obs)
+        .. rubric:: Metadata keyword:
+
+        * ``crln_obs`` Default: `None`
+        """
         carrington_longitude = self.meta.get('crln_obs', None)
 
         if carrington_longitude is None:
@@ -538,7 +612,17 @@ scale:\t\t {scale}
 
     @property
     def heliographic_latitude(self):
-        """Heliographic latitude"""
+        """
+        Heliographic latitude
+        .. rubric:: Metadata keywords:
+
+        * First available:
+
+         1. ``hglt_obs``
+         2. ``crlt_obs``
+         3. ``solar_b0``
+         4. Default: `None`
+        """
         heliographic_latitude = self.meta.get('hglt_obs',
                                               self.meta.get('crlt_obs',
                                                             self.meta.get('solar_b0', None)))
@@ -554,19 +638,43 @@ scale:\t\t {scale}
 
     @property
     def heliographic_longitude(self):
-        """Heliographic longitude"""
+        """
+        Heliographic longitude
+        .. rubric:: Metadata keyword:
+
+        * ``hgln_obs`` Default: ``0``
+        """
         return u.Quantity(self.meta.get('hgln_obs', 0.), 'deg')
 
     @property
     def reference_coordinate(self):
-        """Reference point WCS axes in data units (i.e. crval1, crval2). This value
-        includes a shift if one is set."""
+        """
+        Reference point WCS axes in data units (i.e. crval1, crval2). This value
+        includes a shift if one is set.
+        .. rubric:: Metadata keywords:
+
+        * ``crval1`` Default: ``0``
+        * ``crval2`` Default: ``0``
+        """
         return Pair(self.meta.get('crval1', 0.) * self.spatial_units.x,
                     self.meta.get('crval2', 0.) * self.spatial_units.y)
 
     @property
     def reference_pixel(self):
-        """Reference point axes in pixels (i.e. crpix1, crpix2)"""
+        """
+        Reference point axes in pixels (i.e. crpix1, crpix2)
+        .. rubric:: Metadata keywords:
+
+        * First available:
+
+         1. ``crpix1``
+         2. ``naxis1``
+
+        * First available:
+
+         1. ``crpix2``
+         2. ``naxis2``
+        """
         return Pair(self.meta.get('crpix1',
                                   (self.meta.get('naxis1') + 1) / 2.) * u.pixel,
                     self.meta.get('crpix2',
@@ -576,6 +684,10 @@ scale:\t\t {scale}
     def scale(self):
         """
         Image scale along the x and y axes in units/pixel (i.e. cdelt1, cdelt2)
+        .. rubric:: Metadata keywords:
+
+        * ``cdelt1`` Default: ``1``
+        * ``cdelt2`` Default: ``1``
         """
         # TODO: Fix this if only CDi_j matrix is provided
         return Pair(self.meta.get('cdelt1', 1.) * self.spatial_units.x / u.pixel,
@@ -585,6 +697,10 @@ scale:\t\t {scale}
     def spatial_units(self):
         """
         Image coordinate units along the x and y axes (i.e. cunit1, cunit2).
+        .. rubric:: Metadata keywords:
+
+        * ``cunit1`` Default: ``'arcsec'``
+        * ``cunit2`` Default: ``'arcsec'``
         """
         return Pair(u.Unit(self.meta.get('cunit1', 'arcsec')),
                     u.Unit(self.meta.get('cunit2', 'arcsec')))
@@ -594,6 +710,10 @@ scale:\t\t {scale}
         """
         Matrix describing the rotation required to align solar North with
         the top of the image.
+        .. rubric:: Metadata keywords:
+
+        * ``PCi_j``
+        * ``CDi_j``
         """
         if 'PC1_1' in self.meta:
             return np.matrix([[self.meta['PC1_1'], self.meta['PC1_2']],
@@ -942,7 +1062,7 @@ scale:\t\t {scale}
                     error_msg = "no 'unit' attribute"
                 raise TypeError("Argument '{0}' to function '{1}' has {2}. "
                                 "You may want to pass in an astropy Quantity instead."
-                                 .format('angle', 'rotate', error_msg))
+                                .format('angle', 'rotate', error_msg))
 
         # Interpolation parameter sanity
         if order not in range(6):
@@ -971,9 +1091,9 @@ scale:\t\t {scale}
         pad_y = int(np.max((diff[0], 0)))
 
         new_data = np.pad(self.data,
-                              ((pad_y, pad_y), (pad_x, pad_x)),
-                              mode='constant',
-                              constant_values=(missing, missing))
+                          ((pad_y, pad_y), (pad_x, pad_x)),
+                          mode='constant',
+                          constant_values=(missing, missing))
         new_meta['crpix1'] += pad_x
         new_meta['crpix2'] += pad_y
 
@@ -983,7 +1103,7 @@ scale:\t\t {scale}
 
         # Convert the axis of rotation from data coordinates to pixel coordinates
         pixel_rotation_center = u.Quantity(self.data_to_pixel(*rotation_center,
-                                                               origin=0)).value
+                                                              origin=0)).value
         if recenter:
             pixel_center = pixel_rotation_center
         else:
@@ -1008,8 +1128,8 @@ scale:\t\t {scale}
         # Define the new reference_pixel
         new_meta['crval1'] = rotation_center[0].value
         new_meta['crval2'] = rotation_center[1].value
-        new_meta['crpix1'] = new_reference_pixel[0] + 1 # FITS pixel origin is 1
-        new_meta['crpix2'] = new_reference_pixel[1] + 1 # FITS pixel origin is 1
+        new_meta['crpix1'] = new_reference_pixel[0] + 1  # FITS pixel origin is 1
+        new_meta['crpix2'] = new_reference_pixel[1] + 1  # FITS pixel origin is 1
 
         # Unpad the array if necessary
         unpad_x = -np.min((diff[1], 0))
@@ -1026,10 +1146,10 @@ scale:\t\t {scale}
         # That being calculate the dot product of the old header data with the
         # inverse of the rotation matrix.
         pc_C = np.dot(self.rotation_matrix, rmatrix.I)
-        new_meta['PC1_1'] = pc_C[0,0]
-        new_meta['PC1_2'] = pc_C[0,1]
-        new_meta['PC2_1'] = pc_C[1,0]
-        new_meta['PC2_2'] = pc_C[1,1]
+        new_meta['PC1_1'] = pc_C[0, 0]
+        new_meta['PC1_2'] = pc_C[0, 1]
+        new_meta['PC2_1'] = pc_C[1, 0]
+        new_meta['PC2_2'] = pc_C[1, 1]
 
         # Update pixel size if image has been scaled.
         if scale != 1.0:
@@ -1045,7 +1165,7 @@ scale:\t\t {scale}
         new_meta.pop('CD2_1', None)
         new_meta.pop('CD2_2', None)
 
-        #Create new map with the modification
+        # Create new map with the modification
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
 
@@ -1115,17 +1235,17 @@ scale:\t\t {scale}
 
         # Do manual Quantity input validation to allow for two unit options
         if ((isinstance(range_a, u.Quantity) and isinstance(range_b, u.Quantity)) or
-            (hasattr(range_a, 'unit') and hasattr(range_b, 'unit'))):
+                (hasattr(range_a, 'unit') and hasattr(range_b, 'unit'))):
 
             if (range_a.unit.is_equivalent(self.spatial_units.x) and
-                range_b.unit.is_equivalent(self.spatial_units.y)):
+                    range_b.unit.is_equivalent(self.spatial_units.y)):
                 units = 'data'
             elif range_a.unit.is_equivalent(u.pixel) and range_b.unit.is_equivalent(u.pixel):
                 units = 'pixels'
             else:
                 raise u.UnitsError("range_a and range_b but be "
-                                   "in units convertable to {} or {}".format(self.spatial_units['x'],
-                                                                             u.pixel))
+                                   "in units convertable to {} or {}".format(
+                                       self.spatial_units['x'], u.pixel))
         else:
             raise TypeError("Arguments range_a and range_b to function submap "
                             "have an invalid unit attribute "
@@ -1143,7 +1263,8 @@ scale:\t\t {scale}
                 range_b[1] = self.yrange[1]
 
             x1, y1 = np.ceil(u.Quantity(self.data_to_pixel(range_a[0], range_b[0]))).value
-            x2, y2 = np.floor(u.Quantity(self.data_to_pixel(range_a[1], range_b[1])) + 1*u.pix).value
+            x2, y2 = np.floor(
+                u.Quantity(self.data_to_pixel(range_a[1], range_b[1])) + 1*u.pix).value
 
             x_pixels = [x1, x2]
             y_pixels = [y1, y2]
@@ -1194,10 +1315,10 @@ scale:\t\t {scale}
         # Create new map instance
         if self.mask is not None:
             new_mask = self.mask[yslice, xslice].copy()
-            #Create new map with the modification
+            # Create new map with the modification
             new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
             return new_map
-        #Create new map with the modification
+        # Create new map with the modification
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
 
@@ -1273,8 +1394,10 @@ scale:\t\t {scale}
             new_meta['CD2_2'] *= dimensions[1].value
         new_meta['crpix1'] = (new_nx + 1) / 2.
         new_meta['crpix2'] = (new_ny + 1) / 2.
-        new_meta['crval1'] = self.center.x.to(self.spatial_units.x).value + 0.5*(offset[0]*self.scale.x).to(self.spatial_units.x).value
-        new_meta['crval2'] = self.center.y.to(self.spatial_units.y).value + 0.5*(offset[1]*self.scale.y).to(self.spatial_units.y).value
+        new_meta['crval1'] = self.center.x.to(
+            self.spatial_units.x).value + 0.5*(offset[0]*self.scale.x).to(self.spatial_units.x).value
+        new_meta['crval2'] = self.center.y.to(
+            self.spatial_units.y).value + 0.5*(offset[1]*self.scale.y).to(self.spatial_units.y).value
 
         # Create new map instance
         if self.mask is not None:
@@ -1284,7 +1407,7 @@ scale:\t\t {scale}
             new_data = new_array
             new_mask = None
 
-        #Create new map with the modified data
+        # Create new map with the modified data
         new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
         return new_map
 
@@ -1403,10 +1526,10 @@ scale:\t\t {scale}
             radius = self.rsun_obs.to(u.deg).value
         else:
             radius = self.rsun_obs.value
-        c_kw = {'radius':radius,
-                'fill':False,
-                'color':'white',
-                'zorder':100,
+        c_kw = {'radius': radius,
+                'fill': False,
+                'color': 'white',
+                'zorder': 100,
                 'transform': transform
                 }
         c_kw.update(kwargs)
@@ -1462,9 +1585,9 @@ scale:\t\t {scale}
         width = width.to(axes_unit).value
         height = height.to(axes_unit).value
 
-        kwergs = {'transform':wcsaxes_compat.get_world_transform(axes),
-                  'color':'white',
-                  'fill':False}
+        kwergs = {'transform': wcsaxes_compat.get_world_transform(axes),
+                  'color': 'white',
+                  'fill': False}
         kwergs.update(kwargs)
         rect = plt.Rectangle(bottom_left, width, height, **kwergs)
 
@@ -1671,6 +1794,7 @@ scale:\t\t {scale}
 
 
 class InvalidHeaderInformation(ValueError):
+
     """Exception to raise when an invalid header tag value is encountered for a
     FITS/JPEG 2000 file."""
     pass
