@@ -8,7 +8,7 @@ import numpy as np
 import astropy.units as u
 import sunpy
 import sunpy.map
-from sunpy.map.header import MapMeta
+from sunpy.util.metadata import MetaDict
 import pytest
 import os
 import sunpy.data.test
@@ -145,5 +145,5 @@ def test_all_meta(mapcube_all_the_same):
     that they are all map meta objects."""
     meta = mapcube_all_the_same.all_meta()
     assert len(meta) == 2
-    assert np.all(np.asarray([isinstance(h, MapMeta) for h in meta]))
+    assert np.all(np.asarray([isinstance(h, MetaDict) for h in meta]))
     assert np.all(np.asarray([meta[i] == mapcube_all_the_same[i].meta for i in range(0, len(meta))]))

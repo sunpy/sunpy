@@ -251,6 +251,8 @@ def get_obssumm_file(time_range):
 def parse_obssumm_file(filename):
     """
     Parse a RHESSI observation summary file.
+    Note: this is for the Lightcurve datatype only, the TimSeries uses the
+    parse_obssumm_hdulist(hdulist) method to enable implicit source detection.
 
     Parameters
     ----------
@@ -295,6 +297,43 @@ def parse_obssumm_file(filename):
 
     return header, data
 
+def parse_obssumm_hdulist(hdulist):
+    """
+    Parse a RHESSI observation summary file.
+
+    Parameters
+    ----------
+    hdulist : list
+        The HDU list from the fits file.
+
+    Returns
+    -------
+    out : `dict`
+        Returns a dictionary.
+
+    """
+    header = hdulist[0].header
+
+    reference_time_ut = parse_time(hdulist[5].data.field('UT_REF')[0])
+    time_interval_sec = hdulist[5].data.field('TIME_INTV')[0]
+    # label_unit = fits[5].data.field('DIM1_UNIT')[0]
+    # labels = fits[5].data.field('DIM1_IDS')
+    labels = ['3 - 6 keV', '6 - 12 keV', '12 - 25 keV', '25 - 50 keV',
+              '50 - 100 keV', '100 - 300 keV', '300 - 800 keV', '800 - 7000 keV',
+              '7000 - 20000 keV']
+
+    # the data stored in the fits file are "compressed" countrates stored as one byte
+    compressed_countrate = np.array(hdulist[6].data.field('countrate'))
+
+    countrate = uncompress_countrate(compressed_countrate)
+    dim = np.array(countrate[:,0]).size
+
+    time_array = [reference_time_ut + timedelta(0, time_interval_sec * a) for a in np.arange(dim)]
+
+    #TODO generate the labels for the dict automatically from labels
+    data = {'time': time_array, 'data': countrate, 'labels': labels}
+
+    return header, data
 
 def uncompress_countrate(compressed_countrate):
     """Convert the compressed count rate inside of observing summary file from
@@ -457,8 +496,8 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
     detector_list = (np.arange(9)+1) * np.array(det_index_mask)
     for detector in detector_list:
         if detector > 0:
-            image = image + _backproject(calibrated_event_list, detector=detector, pixel_size=pixel_size.value
-                                         , image_dim=image_dim.value)
+            image = image + _backproject(calibrated_event_list, detector=detector, pixel_size=pixel_size.value,
+                                         image_dim=image_dim.value)
 
     dict_header = {
         "DATE-OBS": time_range.center().strftime("%Y-%m-%d %H:%M:%S"),
@@ -481,7 +520,7 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
         "DSUN_OBS": sunearth_distance(time_range.center()) * sunpy.sun.constants.au.value
     }
 
-    header = sunpy.map.MapMeta(dict_header)
+    header = sunpy.map.MetaDict(dict_header)
     result_map = sunpy.map.Map(image, header)
 
     return result_map

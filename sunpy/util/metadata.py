@@ -6,14 +6,14 @@ from __future__ import absolute_import, division, print_function
 
 from collections import OrderedDict
 
-__all__ = ['MapMeta']
+__all__ = ['MetaDict']
 
 
-class MapMeta(OrderedDict):
+class MetaDict(OrderedDict):
     """
     A class to hold meta data associated with a Map derivative.
 
-    This class handles everything a lower case. This allows case insensitive
+    This class handles everything in lower case. This allows case insensitive
     indexing.
     """
     def __init__(self, *args):
@@ -29,10 +29,10 @@ class MapMeta(OrderedDict):
             elif isinstance(adict, dict):
                 tags = OrderedDict((k.upper(), v) for k, v in adict.items())
             else:
-                raise TypeError("Can not create a MapMeta from this type input")
+                raise TypeError("Can not create a MetaDict from this type input")
             args[0] = tags
 
-        super(MapMeta, self).__init__(*args)
+        super(MetaDict, self).__init__(*args)
 
     def __contains__(self, key):
         """Override __contains__"""
@@ -60,7 +60,7 @@ class MapMeta(OrderedDict):
 
     def update(self, d2):
         """Override .update() to perform case-insensitively"""
-        return OrderedDict.update(self, dict((k.lower(), v) for k, v in d2.items()))
+        return OrderedDict.update(self, OrderedDict((k.lower(), v) for k, v in d2.items()))
 
     def setdefault(self, key, default=None):
         """Override .setdefault() to perform case-insensitively"""

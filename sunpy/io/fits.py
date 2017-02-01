@@ -49,6 +49,9 @@ __all__ = ['read', 'get_header', 'write', 'extract_waveunit']
 __author__ = "Keith Hughitt, Stuart Mumford, Simon Liedtke"
 __email__ = "keith.hughitt@nasa.gov"
 
+HDPair = collections.namedtuple('HDPair', ['data', 'header'])
+
+
 def read(filepath, hdus=None, memmap=None, **kwargs):
     """
     Read a fits file
@@ -83,9 +86,10 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
 
         headers = get_header(hdulist)
         pairs = []
+
         for i, (hdu, header) in enumerate(zip(hdulist, headers)):
             try:
-                pairs.append((hdu.data, header))
+                pairs.append(HDPair(hdu.data, header))
             except (KeyError, ValueError) as e:
                 message = "Error when reading HDU {}. Skipping.\n".format(i)
                 for line in traceback.format_tb(sys.exc_info()[2]):

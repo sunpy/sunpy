@@ -188,6 +188,21 @@ class TimeRange(object):
         result = self.dt.microseconds * u.Unit('us') + self.dt.seconds * u.Unit('s') + self.dt.days * u.Unit('day')
         return result
 
+    def __eq__(self, other):
+        """
+        Check two TimeRange objects have the same start and end datetime.
+
+        Parameters
+        ----------
+        other : `~sunpy.time.timerange.TimeRange`
+            The second TimeRange object to compare to.
+
+        Returns
+        -------
+        result : `bool`
+        """
+        return ((self.start == other.start) and (self.end == other.end))
+
     def __repr__(self):
         """
         Returns a human-readable representation of the TimeRange instance."""
@@ -364,3 +379,5 @@ class TimeRange(object):
         """
         this_time = parse_time(time)
         return this_time >= self.start and this_time <= self.end
+    
+  
