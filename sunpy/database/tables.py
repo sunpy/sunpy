@@ -36,10 +36,11 @@ __all__ = [
 Base = declarative_base()
 
 # required for the many-to-many relation on tags:entries
-association_table = Table('association', Base.metadata,
-    Column('tag_name', String, ForeignKey('tags.name')),
-    Column('entry_id', Integer, ForeignKey('data.id'))
-)
+association_table = Table(
+                          'association', Base.metadata,
+                          Column('tag_name', String, ForeignKey('tags.name')),
+                          Column('entry_id', Integer, ForeignKey('data.id'))
+                         )
 
 
 class WaveunitNotFoundError(Exception):
@@ -433,7 +434,8 @@ def entries_from_query_result(qr, default_waveunit=None):
         yield DatabaseEntry._from_query_result_block(block, default_waveunit)
 
 
-def entries_from_file(file, default_waveunit=None):
+def entries_from_file(file, default_waveunit=None,
+                      time_string_parse_format=None):
     """Use the headers of a FITS file to generate an iterator of
     :class:`sunpy.database.tables.DatabaseEntry` instances. Gathered
     information will be saved in the attribute `fits_header_entries`. If the
@@ -454,6 +456,11 @@ def entries_from_file(file, default_waveunit=None):
     default_waveunit : str, optional
         The wavelength unit that is used for a header if it cannot be
         found.
+
+    time_string_parse_format : str, optional
+        Fallback timestamp format which will be passed to
+        `~datetime.datetime.strftime` if `sunpy.time.parse_time` is unable to
+        automatically read the `date-obs` metadata.
 
     Raises
     ------
@@ -528,14 +535,20 @@ def entries_from_file(file, default_waveunit=None):
             # NOTE: the key DATE-END or DATE_END is not part of the official
             # FITS standard, but many FITS files use it in their header
             elif key in ('DATE-END', 'DATE_END'):
-                entry.observation_time_end = parse_time(value)
+                entry.observation_time_end = parse_time(
+                        value,
+                        _time_string_parse_format=time_string_parse_format
+                        )
             elif key in ('DATE-OBS', 'DATE_OBS'):
-                entry.observation_time_start = parse_time(value)
+                entry.observation_time_start = parse_time(
+                        value,
+                        _time_string_parse_format=time_string_parse_format
+                        )
         yield entry
 
 
 def entries_from_dir(fitsdir, recursive=False, pattern='*',
-        default_waveunit=None):
+                     default_waveunit=None, time_string_parse_format=None):
     """Search the given directory for FITS files and use the corresponding FITS
     headers to generate instances of :class:`DatabaseEntry`. FITS files are
     detected by reading the content of each file, the `pattern` argument may be
@@ -562,6 +575,11 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
     default_waveunit : str, optional
         See
         :meth:`sunpy.database.tables.DatabaseEntry.add_fits_header_entries_from_file`.
+
+    time_string_parse_format : str, optional
+        Fallback timestamp format which will be passed to
+        `~datetime.datetime.strftime` if `sunpy.time.parse_time` is unable to
+        automatically read the `date-obs` metadata.
 
     Returns
     -------
@@ -593,7 +611,10 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
                     sunpy_filetools.InvalidJPEG2000FileExtension):
                 continue
             if filetype == 'fits':
-                for entry in entries_from_file(path, default_waveunit):
+                for entry in entries_from_file(
+                        path, default_waveunit,
+                        time_string_parse_format=time_string_parse_format
+                        ):
                     yield entry, path
         if not recursive:
             break
@@ -622,10 +643,11 @@ def _create_display_table(database_entries, columns=None, sort=False):
 
     """
     if columns is None:
-        columns = ['id', 'hdu_index', 'observation_time_start', 'observation_time_end',
-                    'instrument', 'source', 'provider', 'physobs', 'wavemin',
-                    'wavemax', 'path', 'fileid', 'tags', 'starred',
-                    'download_time', 'size']
+        columns = ['id', 'observation_time_start', 'observation_time_end',
+                   'instrument', 'source', 'provider', 'physobs', 'wavemin',
+                   'wavemax', 'path', 'fileid', 'tags', 'starred',
+                   'download_time', 'size']
+
     data = []
     for entry in database_entries:
         row = []
