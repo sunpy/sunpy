@@ -93,6 +93,9 @@ def get_obssumm_dbase_file(time_range):
     _time_range = TimeRange(time_range)
     data_location = 'dbase/'
 
+    if _time_range.start < parse_time("2002/02/01"):
+        raise ValueError("RHESSI summary files are not available for before 2002-02-01")
+
     url_root = get_base_url() + data_location
     url = url_root + _time_range.start.strftime("hsi_obssumm_filedb_%Y%m.txt")
 
@@ -169,8 +172,8 @@ def parse_obssumm_dbase_file(filename):
 def get_obssum_filename(time_range):
     """
     Download the RHESSI observing summary data from one of the RHESSI
-    servers, parses it, and returns the name of the obssumm file relevant for
-    the time range
+    servers, parses it, and returns the name of the obssumm files relevant for
+    the time range.
 
     Parameters
     ----------
@@ -179,13 +182,13 @@ def get_obssum_filename(time_range):
 
     Returns
     -------
-    out : string
-        Returns the filename of the observation summary file
+    out : list
+        Returns the filenames of the observation summary file
 
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> rhessi.get_obssumm_filename(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
+    >>> rhessi.get_obssum_filename(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
 
     .. note::
         This API is currently limited to providing data from whole days only.
@@ -199,9 +202,10 @@ def get_obssum_filename(time_range):
     result = parse_obssumm_dbase_file(f[0])
     _time_range = TimeRange(time_range)
 
-    index_number = _time_range.start.day - 1
+    index_number_start = _time_range.start.day - 1
+    index_number_end = _time_range.end.day - 1
 
-    return get_base_url() + data_location + result.get('filename')[index_number] + 's'
+    return [get_base_url() + data_location + filename + 's' for filename in result.get('filename')[index_number_start:index_number_end]]
 
 
 def get_obssumm_file(time_range):
@@ -279,7 +283,8 @@ def parse_obssumm_file(filename):
               '50 - 100 keV', '100 - 300 keV', '300 - 800 keV', '800 - 7000 keV',
               '7000 - 20000 keV']
 
-    # the data stored in the fits file are "compressed" countrates stored as one byte
+    # The data stored in the FITS file are "compressed" countrates stored as
+    # one byte
     compressed_countrate = np.array(afits[6].data.field('countrate'))
 
     countrate = uncompress_countrate(compressed_countrate)
@@ -287,7 +292,7 @@ def parse_obssumm_file(filename):
 
     time_array = [reference_time_ut + timedelta(0,time_interval_sec * a) for a in np.arange(dim)]
 
-    #TODO generate the labels for the dict automatically from labels
+    # TODO generate the labels for the dict automatically from labels
     data = {'time': time_array, 'data': countrate, 'labels': labels}
 
     return header, data
@@ -323,7 +328,7 @@ def parse_obssumm_hdulist(hdulist):
     countrate = uncompress_countrate(compressed_countrate)
     dim = np.array(countrate[:,0]).size
 
-    time_array = [reference_time_ut + timedelta(0,time_interval_sec * a) for a in np.arange(dim)]
+    time_array = [reference_time_ut + timedelta(0, time_interval_sec * a) for a in np.arange(dim)]
 
     #TODO generate the labels for the dict automatically from labels
     data = {'time': time_array, 'data': countrate, 'labels': labels}
@@ -351,6 +356,7 @@ def uncompress_countrate(compressed_countrate):
         if i < 15:
             sum = lkup[16 * (i + 1) - 1] + 2 ** i
     return lkup[compressed_countrate]
+
 
 def hsi_linecolors():
     """Define discrete colors to use for RHESSI plots
@@ -399,8 +405,8 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
     """
     afits = fits.open(calibrated_event_list)
 
-    #info_parameters = fits[2]
-    #detector_efficiency = info_parameters.data.field('cbe_det_eff$$REL')
+    # info_parameters = fits[2]
+    # detector_efficiency = info_parameters.data.field('cbe_det_eff$$REL')
 
     afits = fits.open(calibrated_event_list)
 
@@ -427,6 +433,7 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
     bproj_image = np.inner(probability_of_transmission, count).reshape(image_dim)
 
     return bproj_image
+
 
 def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
                    image_dim=(64, 64) * u.pix):
@@ -489,8 +496,8 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
     detector_list = (np.arange(9)+1) * np.array(det_index_mask)
     for detector in detector_list:
         if detector > 0:
-            image = image + _backproject(calibrated_event_list, detector=detector, pixel_size=pixel_size.value
-										 , image_dim=image_dim.value)
+            image = image + _backproject(calibrated_event_list, detector=detector, pixel_size=pixel_size.value,
+                                         image_dim=image_dim.value)
 
     dict_header = {
         "DATE-OBS": time_range.center().strftime("%Y-%m-%d %H:%M:%S"),
