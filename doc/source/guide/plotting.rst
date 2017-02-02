@@ -170,6 +170,7 @@ then used to modify the plot:
 
     import matplotlib.pyplot as plt
     import astropy.units as u
+    from astropy.coordinates import SkyCoord
 
     import sunpy.map
     import sunpy.data.sample
@@ -188,10 +189,10 @@ then used to modify the plot:
     xc = [0,100,1000] * u.arcsec
     yc = [0,100,1000] * u.arcsec
 
-    # ax.get_transform() tells WCSAxes what coordinates to plot in.
-    # 'world' coordinates are always in degrees
-    p = plt.plot(xc.to(u.deg), yc.to(u.deg), 'o',
-                 transform=ax.get_transform('world'))
+    coords = SkyCoord([0,100,1000] * u.arcsec, [0,100,1000] * u.arcsec,
+                      frame=smap.coordinate_frame)
+
+    p = ax.plot_coord(coords, 'o')
 
     # Set title.
     ax.set_title('Custom plot with WCSAxes')
@@ -270,6 +271,7 @@ units to plot a AIA image and a zoomed in view of an active region.
     import matplotlib.pyplot as plt
     from matplotlib import patches
     import astropy.units as u
+    from astropy.coordinates import SkyCoord
 
     import sunpy.map
     import sunpy.data.sample
@@ -282,8 +284,11 @@ units to plot a AIA image and a zoomed in view of an active region.
 
     # Create a SunPy Map, and a second submap over the region of interest.
     smap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    submap = smap.submap(u.Quantity([x0 - length, x0 + length]),
-                         u.Quantity([y0 - length, y0 + length]))
+    bottom_left = SkyCoord(x0 - length, y0 - length,
+                           frame=smap.coordinate_frame)
+    top_right = SkyCoord(x0 + length, y0 + length,
+                         frame=smap.coordinate_frame)
+    submap = smap.submap(bottom_left, top_right)
 
 
     # Create a new matplotlib figure, larger than default.
@@ -295,13 +300,8 @@ units to plot a AIA image and a zoomed in view of an active region.
     # Plot the Map on the axes with default settings.
     smap.plot()
 
-    # Define a region to highlight with a box
-    # We have to convert the region of interest to degress, and then get the raw values.
-    bottom_left = u.Quantity([x0 - length, y0 - length])
-    length2 = length * 2
-
     # Draw a box on the image
-    smap.draw_rectangle(bottom_left, length2, length2)
+    smap.draw_rectangle(bottom_left, length * 2, length * 2)
 
     # Create a second axis on the plot.
     ax2 = fig.add_subplot(2,1,2, projection=submap)

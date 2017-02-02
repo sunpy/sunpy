@@ -1144,25 +1144,58 @@ Reference Coord:\t {refcoord}
         >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
         >>> import sunpy.data.sample
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-
-        >>> aia.submap([0,5]*u.pixel, [0,5]*u.pixel)   # doctest: +NORMALIZE_WHITESPACE
-        SunPy AIAMap
+        >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=m.coordinate_frame)
+        >>> tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=m.coordinate_frame
+        >>> aia.submap(bl, tr)   # doctest: +NORMALIZE_WHITESPACE
+        SunPy Map
         ---------
-        Observatory:         SDO
-        Instrument:  AIA 3
-        Detector:    AIA
-        Measurement:         171.0 Angstrom
-        Wavelength:  171.0 Angstrom
-        Obs Date:    2011-03-19 10:54:00
-        dt:          1.999601 s
-        Dimension:   [ 5.  5.] pix
-        scale:               [ 2.4  2.4] arcsec / pix
+        Observatory:		 SDO
+        Instrument:		 AIA 3
+        Detector:		 AIA
+        Measurement:		 171.0 Angstrom
+        Wavelength:		 171.0 Angstrom
+        Observation Date:	 2011-03-19 10:54:00
+        Exposure Time:		 1.999601 s
+        Dimension:		 [ 333.  333.] pix
+        Coordinate System:	 helioprojective
+        Scale:			 [ 2.4  2.4] arcsec / pix
+        Reference Pixel:	 [ 125.5  125.5] pix
+        Reference Coord:	 [ 0.  0.] arcsec
+        <BLANKLINE>
+        array([[ 365.625 ,  438.1875,  395.1875, ...,  201.375 ,  204.4375,  216.    ],
+            [ 386.125 ,  389.5   ,  370.3125, ...,  207.3125,  202.1875,  196.75  ],
+            [ 380.75  ,  342.875 ,  320.875 , ...,  187.5   ,  196.9375,
+                178.875 ],
+            ...,
+            [ 225.3125,  219.1875,  211.1875, ...,  359.8125,  324.5625,
+                305.375 ],
+            [ 228.625 ,  228.8125,  225.8125, ...,  358.5   ,  318.    ,
+                297.1875],
+            [ 220.6875,  221.125 ,  209.625 , ...,  390.4375,  329.375 ,
+                302.3125]])
+
+        >>> aia.submap([0,0]*u.pixel, [5,5]*u.pixel)   # doctest: +NORMALIZE_WHITESPACE
+        SunPy Map
+        ---------
+        Observatory:		 SDO
+        Instrument:		 AIA 3
+        Detector:		 AIA
+        Measurement:		 171.0 Angstrom
+        Wavelength:		 171.0 Angstrom
+        Observation Date:	 2011-03-19 10:54:00
+        Exposure Time:		 1.999601 s
+        Dimension:		 [ 5.  5.] pix
+        Coordinate System:	 helioprojective
+        Scale:			 [ 2.4  2.4] arcsec / pix
+        Reference Pixel:	 [ 512.5  512.5] pix
+        Reference Coord:	 [ 0.  0.] arcsec
         <BLANKLINE>
         array([[ 0.3125, -0.0625, -0.125 ,  0.    , -0.375 ],
-               [ 1.    ,  0.1875, -0.8125,  0.125 ,  0.3125],
-               [-1.1875,  0.375 , -0.5   ,  0.25  , -0.4375],
-               [-0.6875, -0.3125,  0.8125,  0.0625,  0.1875],
-               [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
+            [ 1.    ,  0.1875, -0.8125,  0.125 ,  0.3125],
+            [-1.1875,  0.375 , -0.5   ,  0.25  , -0.4375],
+            [-0.6875, -0.3125,  0.8125,  0.0625,  0.1875],
+            [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
+
         """
 
         if isinstance(bottom_left, (astropy.coordinates.SkyCoord,
@@ -1392,10 +1425,10 @@ Reference Coord:\t {refcoord}
             radius = self.rsun_obs.to(u.deg).value
         else:
             radius = self.rsun_obs.value
-        c_kw = {'radius':radius,
-                'fill':False,
-                'color':'white',
-                'zorder':100,
+        c_kw = {'radius': radius,
+                'fill': False,
+                'color': 'white',
+                'zorder': 100,
                 'transform': transform
                 }
         c_kw.update(kwargs)
@@ -1652,7 +1685,11 @@ Reference Coord:\t {refcoord}
             axes.set_ylabel(ylabel)
 
         if not wcsaxes_compat.is_wcsaxes(axes):
-            imshow_args.update({'extent': list(self.xrange.value) + list(self.yrange.value)})
+            bl = self._get_lon_lat(self.bottom_left_coord)
+            tr = self._get_lon_lat(self.top_right_coord)
+            x_range = list(u.Quantity([bl[0], tr[0]]).to(self.spatial_units.lon).value)
+            y_range = list(u.Quantity([bl[1], tr[1]]).to(self.spatial_units.lon).value)
+            imshow_args.update({'extent': x_range + y_range})
         imshow_args.update(imshow_kwargs)
 
         if self.mask is None:
