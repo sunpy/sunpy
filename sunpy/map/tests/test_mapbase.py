@@ -282,11 +282,11 @@ def test_swap_cd():
 
 def test_data_range(generic_map):
     """Make sure xrange and yrange work"""
-    assert generic_map.xrange[1].value - generic_map.xrange[0].value == generic_map.meta['cdelt1'] * generic_map.meta['naxis1']
-    assert generic_map.yrange[1].value - generic_map.yrange[0].value == generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
+    assert (generic_map.xrange[1] - generic_map.xrange[0]).to(u.arcsec).value == generic_map.meta['cdelt1'] * generic_map.meta['naxis1']
+    assert (generic_map.yrange[1] - generic_map.yrange[0]).to(u.arcsec).value == generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
 
-    assert np.average(generic_map.xrange.value) == generic_map.center.Tx.value
-    assert np.average(generic_map.yrange.value) == generic_map.center.Ty.value
+    assert_quantity_allclose(np.average(generic_map.xrange)*u.deg, generic_map.center.Tx)
+    assert_quantity_allclose(np.average(generic_map.yrange)*u.deg, generic_map.center.Ty)
 
 
 def test_data_to_pixel(generic_map):
@@ -370,14 +370,12 @@ def test_submap(generic_map):
     height = generic_map.data.shape[0]
 
     # Create a submap of the top-right quadrant of the image
-    submap = generic_map.submap([width / 2., width] * u.pix,
-                                [height / 2., height] * u.pix)
+    submap = generic_map.submap([width / 2., height / 2.] * u.pix,
+                                [width, height] * u.pix)
 
     # Check to see if submap properties were updated properly
-    assert submap.reference_pixel.x.value == generic_map.meta[
-        'crpix1'] - width / 2.
-    assert submap.reference_pixel.y.value == generic_map.meta[
-        'crpix2'] - height / 2.
+    assert submap.reference_pixel.x.value == generic_map.meta['crpix1'] - width / 2.
+    assert submap.reference_pixel.y.value == generic_map.meta['crpix2'] - height / 2.
     assert submap.data.shape[1] == width / 2.
     assert submap.data.shape[0] == height / 2.
 
@@ -522,22 +520,19 @@ def test_rotate(aia171_test_map):
         rotated_map_3.std(), rotated_map_5.std(), rtol=2e-3)
 
     # Rotation of a rectangular map by a large enough angle will change which dimension is larger
-    aia171_test_map_crop = aia171_test_map.submap([0, 1000] * u.arcsec,
-                                                  [0, 400] * u.arcsec)
+    aia171_test_map_crop = aia171_test_map.submap(SkyCoord([[0, 0], [1000, 400]] * u.arcsec,
+                                                           frame=aia171_test_map.coordinate_frame))
+
     aia171_test_map_crop_rot = aia171_test_map_crop.rotate(60 * u.deg)
-    assert aia171_test_map_crop.data.shape[
-        0] < aia171_test_map_crop.data.shape[1]
-    assert aia171_test_map_crop_rot.data.shape[
-        0] > aia171_test_map_crop_rot.data.shape[1]
+    assert aia171_test_map_crop.data.shape[0] < aia171_test_map_crop.data.shape[1]
+    assert aia171_test_map_crop_rot.data.shape[0] > aia171_test_map_crop_rot.data.shape[1]
 
     # Same test as above, to test the other direction
-    aia171_test_map_crop = aia171_test_map.submap([0, 400] * u.arcsec,
-                                                  [0, 1000] * u.arcsec)
+    aia171_test_map_crop = aia171_test_map.submap(SkyCoord([[0, 0], [400, 1000]] * u.arcsec,
+                                                           frame=aia171_test_map.coordinate_frame))
     aia171_test_map_crop_rot = aia171_test_map_crop.rotate(60 * u.deg)
-    assert aia171_test_map_crop.data.shape[
-        0] > aia171_test_map_crop.data.shape[1]
-    assert aia171_test_map_crop_rot.data.shape[
-        0] < aia171_test_map_crop_rot.data.shape[1]
+    assert aia171_test_map_crop.data.shape[0] > aia171_test_map_crop.data.shape[1]
+    assert aia171_test_map_crop_rot.data.shape[0] < aia171_test_map_crop_rot.data.shape[1]
 
 
 def test_rotate_pad_crpix(generic_map):

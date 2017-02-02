@@ -171,8 +171,8 @@ def aia171_test_mc_pixel_displacements():
 
 @pytest.fixture
 def aia171_mc_arcsec_displacements(aia171_test_mc_pixel_displacements, aia171_test_map):
-    return {'x': np.asarray([0.0, aia171_test_mc_pixel_displacements[1] * aia171_test_map.scale.x.value]) * u.arcsec,
-            'y': np.asarray([0.0, aia171_test_mc_pixel_displacements[0] * aia171_test_map.scale.y.value]) * u.arcsec}
+    return {'x': np.asarray([0.0, aia171_test_mc_pixel_displacements[1] * aia171_test_map.scale.lon.value]) * u.arcsec,
+            'y': np.asarray([0.0, aia171_test_mc_pixel_displacements[0] * aia171_test_map.scale.lat.value]) * u.arcsec}
 
 
 @pytest.fixture
@@ -206,7 +206,7 @@ def test_calculate_match_template_shift(aia171_test_mc,
     assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0)
 
     # Test setting the template as GenericMap
-    submap = aia171_test_map.submap([nx / 4, 3 * nx / 4]*u.pix, [ny / 4, 3 * ny / 4]*u.pix)
+    submap = aia171_test_map.submap([nx / 4, ny / 4]*u.pix, [3 * nx / 4, 3 * ny / 4]*u.pix)
     test_displacements = calculate_match_template_shift(aia171_test_mc, template=submap)
     assert_allclose(test_displacements['x'], aia171_mc_arcsec_displacements['x'], rtol=5e-2, atol=0)
     assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0)
@@ -242,8 +242,8 @@ def test_mapcube_coalign_by_match_template(aia171_test_mc,
     # All output layers should have the same size
     # which is smaller than the input by a known amount
     test_mc = mapcube_coalign_by_match_template(aia171_test_mc)
-    x_displacement_pixels = test_displacements['x'] / test_mc[0].scale.x
-    y_displacement_pixels = test_displacements['y'] / test_mc[0].scale.y
+    x_displacement_pixels = test_displacements['x'] / test_mc[0].scale.lon
+    y_displacement_pixels = test_displacements['y'] / test_mc[0].scale.lat
     expected_clipping = calculate_clipping(y_displacement_pixels, x_displacement_pixels)
     number_of_pixels_clipped = [np.sum(np.abs(expected_clipping[0])), np.sum(np.abs(expected_clipping[1]))]
 
@@ -254,8 +254,8 @@ def test_mapcube_coalign_by_match_template(aia171_test_mc,
     # All output layers should have the same size
     # which is smaller than the input by a known amount
     test_mc = mapcube_coalign_by_match_template(aia171_test_mc, clip=True)
-    x_displacement_pixels = test_displacements['x'] / test_mc[0].scale.x
-    y_displacement_pixels = test_displacements['y'] / test_mc[0].scale.y
+    x_displacement_pixels = test_displacements['x'] / test_mc[0].scale.lon
+    y_displacement_pixels = test_displacements['y'] / test_mc[0].scale.lat
     expected_clipping = calculate_clipping(y_displacement_pixels, x_displacement_pixels)
     number_of_pixels_clipped = [np.sum(np.abs(expected_clipping[0])), np.sum(np.abs(expected_clipping[1]))]
 
