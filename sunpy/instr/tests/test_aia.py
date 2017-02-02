@@ -9,11 +9,14 @@ import sunpy.map
 import sunpy.data.test as test
 from sunpy.instr.aia import aiaprep
 
-# Define the original and prepped images first so they're available to all functions
+# Define the original and prepped images first so they're available to all
+# functions
+
 
 @pytest.fixture
 def original():
     return sunpy.map.Map(test.get_test_filepath("aia_171_level1.fits"))
+
 
 @pytest.fixture
 def prep_map(original):

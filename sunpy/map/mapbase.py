@@ -16,6 +16,7 @@ from matplotlib import patches, cm, colors
 
 import astropy.wcs
 import astropy.units as u
+from astropy.utils.decorators import deprecated
 from astropy.visualization.wcsaxes import WCSAxes
 from astropy.coordinates import SkyCoord
 
@@ -442,34 +443,34 @@ Reference Coord:\t {refcoord}
                              self.meta.get('telescop', "")).replace("_", " ")
 
     @property
+    @deprecated("0.8", "This property is only valid for non-rotated WCS")
     def xrange(self):
-        """
-        Return the Longitude (X) range of the image from edge to edge.
-
-        *Note:* This does not imply that the values are linear along this
-         range, this just calculates the longitude values for the first and
-         last pixel.
-        """
-        cmin = self.pixel_to_data(0*u.pix, 0*u.pix)
-        lon_min, lat_min = self._get_lon_lat(cmin)
-        cmax = self.pixel_to_data(*self.dimensions)
-        lon_max, lat_max = self._get_lon_lat(cmax)
-        return u.Quantity([lon_min, lon_max])
+        """Return the X range of the image from edge to edge."""
+        xmin = self.center.data.lon - self.dimensions[0] / 2. * self.scale.lon
+        xmax = self.center.data.lon + self.dimensions[0] / 2. * self.scale.lon
+        return u.Quantity([xmin, xmax])
 
     @property
+    @deprecated("0.8", "This property is only valid for non-rotated WCS")
     def yrange(self):
-        """
-        Return the Latitude (Y) range of the image from edge to edge.
+        """Return the Y range of the image from edge to edge."""
+        ymin = self.center.data.lat - self.dimensions[1] / 2. * self.scale.lat
+        ymax = self.center.data.lat + self.dimensions[1] / 2. * self.scale.lat
+        return u.Quantity([ymin, ymax])
 
-        *Note:* This does not imply that the values are linear along this
-         range, this just calculates the latitude values for the first and
-         last pixel.
+    @property
+    def bottom_left_coord(self):
         """
-        cmin = self.pixel_to_data(0*u.pix, 0*u.pix)
-        lon_min, lat_min = self._get_lon_lat(cmin)
-        cmax = self.pixel_to_data(*self.dimensions)
-        lon_max, lat_max = self._get_lon_lat(cmax)
-        return u.Quantity([lat_min, lat_max])
+        The physical coordinate for the bottom left [0,0] pixel.
+        """
+        return self.pixel_to_data(0*u.pix, 0*u.pix)
+
+    @property
+    def top_right_coord(self):
+        """
+        The physical coordinate for the top left pixel.
+        """
+        return self.pixel_to_data(*self.dimensions)
 
     @property
     def center(self):
@@ -1113,18 +1114,22 @@ Reference Coord:\t {refcoord}
 
         return new_map
 
-    def submap(self, range_a, range_b):
+    def submap(self, bottom_left, top_right=None):
         """
-        Returns a submap of the map with the specified range.
+        Returns a submap of the map defined by the rectangle given by the
+        [bottom_left, top_right] coordinates.
 
         Parameters
         ----------
-        range_a : `astropy.units.Quantity`
-            The range of the Map to select across either the x axis.
-            Can be either in data units (normally arcseconds) or pixel units.
-        range_b : `astropy.units.Quantity`
-            The range of the Map to select across either the y axis.
-            Can be either in data units (normally arcseconds) or pixel units.
+        bottom_left : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
+            The bottom_left coordinate of the rectangle. If a `SkyCoord` it can
+            have shape ``(2,)`` and also define ``top_right``. If specifying
+            pixel coordinates it must be given as an `~astropy.units.Quantity`
+            object with units of `~astropy.units.pixel`.
+        top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
+            The top_right coordinate of the rectangle. Can only be omitted if
+            ``bottom_left`` has shape ``(2,)``. If a `SkyCoord` it can have
+            shape ``(2,)`` and also define ``top_right``.
 
         Returns
         -------
@@ -1139,23 +1144,6 @@ Reference Coord:\t {refcoord}
         >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
         >>> import sunpy.data.sample
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-        >>> aia.submap([-5,5]*u.arcsec, [-5,5]*u.arcsec)   # doctest: +NORMALIZE_WHITESPACE
-        SunPy AIAMap
-        ---------
-        Observatory:         SDO
-        Instrument:  AIA 3
-        Detector:    AIA
-        Measurement:         171.0 Angstrom
-        Wavelength:  171.0 Angstrom
-        Obs Date:    2011-03-19 10:54:00
-        dt:          1.999601 s
-        Dimension:   [ 4.  4.] pix
-        scale:               [ 2.4  2.4] arcsec / pix
-        <BLANKLINE>
-        array([[ 273.4375,  247.4375,  303.5   ,  305.3125],
-               [ 302.3125,  298.125 ,  299.    ,  261.5   ],
-               [ 289.75  ,  269.25  ,  256.375 ,  242.3125],
-               [ 241.75  ,  248.8125,  263.0625,  249.0625]])
 
         >>> aia.submap([0,5]*u.pixel, [0,5]*u.pixel)   # doctest: +NORMALIZE_WHITESPACE
         SunPy AIAMap
@@ -1177,59 +1165,44 @@ Reference Coord:\t {refcoord}
                [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
         """
 
-        # Do manual Quantity input validation to allow for two unit options
-        if ((isinstance(range_a, u.Quantity) and isinstance(range_b, u.Quantity)) or
-            (hasattr(range_a, 'unit') and hasattr(range_b, 'unit'))):
-
-            if (range_a.unit.is_equivalent(self.spatial_units.lon) and
-                range_b.unit.is_equivalent(self.spatial_units.lat)):
-                units = 'data'
-            elif range_a.unit.is_equivalent(u.pixel) and range_b.unit.is_equivalent(u.pixel):
-                units = 'pixels'
+        if isinstance(bottom_left, (astropy.coordinates.SkyCoord,
+                                    astropy.coordinates.BaseCoordinateFrame)):
+            if not top_right:
+                if bottom_left.shape[0] != 2:
+                    raise ValueError("If top_right is not specified bottom_left must have length two")
+                else:
+                    lon, lat = self._get_lon_lat(bottom_left)
+                    top_right = u.Quantity([lon[1], lat[1]])
+                    bottom_left = u.Quantity([lon[0], lat[0]])
             else:
-                raise u.UnitsError("range_a and range_b but be "
-                                   "in units convertable to {} or {}".format(self.spatial_units['x'],
-                                                                             u.pixel))
+                bottom_left = u.Quantity(self._get_lon_lat(bottom_left))
+                top_right = u.Quantity(self._get_lon_lat(top_right))
+
+            top_left = u.Quantity([bottom_left[0], top_right[1]])
+            bottom_right = u.Quantity([top_right[0], bottom_left[1]])
+
+            corners = u.Quantity([bottom_left, bottom_right, top_left, top_right])
+            coord = SkyCoord(corners, frame=self.coordinate_frame)
+            pixel_corners = self.data_to_pixel(coord)
+
+            x_pixels = u.Quantity([np.min(pixel_corners.x), np.max(pixel_corners.x)]).value
+            x_pixels[0] = np.ceil(x_pixels[0])
+            x_pixels[1] = np.floor(x_pixels[1] + 1)
+            y_pixels = u.Quantity([np.min(pixel_corners.y), np.max(pixel_corners.y)]).value
+            y_pixels[0] = np.ceil(y_pixels[0])
+            y_pixels[1] = np.floor(y_pixels[1] + 1)
+
+        elif (isinstance(bottom_left, u.Quantity) and bottom_left.unit.is_equivalent(u.pix) and
+              isinstance(top_right, u.Quantity) and bottom_left.unit.is_equivalent(u.pix)):
+
+            warnings.warn("GenericMap.submap now takes pixel values as `bottom_left`"
+                          " and `top_right` not `range_a` and `range_b`", Warning)
+
+            x_pixels = u.Quantity([bottom_left[0], top_right[0]]).value
+            y_pixels = u.Quantity([top_right[1], bottom_left[1]]).value
+
         else:
-            raise TypeError("Arguments range_a and range_b to function submap "
-                            "have an invalid unit attribute "
-                            "You may want to pass in an astropy Quantity instead.")
-
-        if units is "data":
-            # Check edges (e.g. [:512,..] or [:,...])
-            if range_a[0] is None:
-                range_a[0] = self.xrange[0]
-            if range_a[1] is None:
-                range_a[1] = self.xrange[1]
-            if range_b[0] is None:
-                range_b[0] = self.yrange[0]
-            if range_b[1] is None:
-                range_b[1] = self.yrange[1]
-
-            coord1 = SkyCoord(range_a[0], range_b[0], frame=self.coordinate_frame)
-            coord2 = SkyCoord(range_a[1], range_b[1], frame=self.coordinate_frame)
-
-            x1, y1 = np.ceil(u.Quantity(self.data_to_pixel(coord1))).value
-            x2, y2 = np.floor(u.Quantity(self.data_to_pixel(coord2)) + 1*u.pix).value
-
-            x_pixels = [x1, x2]
-            y_pixels = [y1, y2]
-
-        elif units is "pixels":
-            # Check edges
-            if range_a[0] is None:
-                range_a[0] = 0
-            if range_a[1] is None:
-                range_a[1] = self.data.shape[1]
-            if range_b[0] is None:
-                range_b[0] = 0
-            if range_b[1] is None:
-                range_b[1] = self.data.shape[0]
-
-            x_pixels = range_a.value
-            y_pixels = range_b.value
-        else:
-            raise ValueError("Invalid unit. Must be one of 'data' or 'pixels'")
+            raise ValueError("Invalid input, bottom_left and top_right must either be SkyCoord or Quantity in pixels.")
 
         # Sort the pixel values so we always slice in the correct direction
         x_pixels.sort()
@@ -1261,10 +1234,10 @@ Reference Coord:\t {refcoord}
         # Create new map instance
         if self.mask is not None:
             new_mask = self.mask[yslice, xslice].copy()
-            #Create new map with the modification
+            # Create new map with the modification
             new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
             return new_map
-        #Create new map with the modification
+        # Create new map with the modification
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
 

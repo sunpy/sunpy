@@ -49,7 +49,11 @@ Latest
   return `SkyCoord` objects only.
 * `GenericMap` has a new property `observer_coordinate` which returns a
   `SkyCoord` describing the position of the observer.
-
+* `GenericMap.submap` now takes arguments of the form `bottom_left` and
+  `top_right` rather than `range_a` and `range_b`. This change enables submap to
+  properly handle rotated maps and take input in the form of `SkyCoord` objects.
+  
+  
 0.7.0
 -----
 * Fixed test failures with numpy developer version.[#1808]
