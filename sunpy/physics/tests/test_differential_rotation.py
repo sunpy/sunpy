@@ -1,5 +1,5 @@
 from __future__ import absolute_import
-
+import os
 import pytest
 
 import numpy as np
@@ -14,6 +14,8 @@ from sunpy.coordinates import frames
 from sunpy.coordinates.ephemeris import get_earth
 from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinate, _un_norm, _to_norm
 from sunpy.time import parse_time
+import sunpy.data.test
+import sunpy.map
 
 #pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
 
@@ -41,6 +43,22 @@ from sunpy.time import parse_time
 # of an arcsecond.  I suspect that the reason for the small differences is
 # because the sunpy's ephemeris and coordinate transformation infrastructure
 # was largely based on that in SSWIDL.
+
+
+testpath = sunpy.data.test.rootdir
+
+
+@pytest.fixture
+def aia171_test_map():
+    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
+
+
+@pytest.fixture
+def aia171_test_map_with_mask(aia171_test_map):
+    shape = aia171_test_map.data.shape
+    mask = np.zeros_like(aia171_test_map.data, dtype=bool)
+    mask[0:shape[0]//2, 0:shape[1]//2] = True
+    return sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
 
 
 @pytest.fixture
