@@ -83,7 +83,7 @@ def hcc_to_hpc(helioccoord, heliopframe):
 
     # d is calculated as the distance between the points
     # (x,y,z) and (0,0,D0).
-    distance = np.sqrt(x**2 + y**2 + (helioccoord.observer.radius.to(u.m) - z)**2)
+    distance = np.sqrt(x**2 + y**2 + (helioccoord.observer.radius - z)**2)
 
     hpcx = np.rad2deg(np.arctan2(x, helioccoord.observer.radius - z))
     hpcy = np.rad2deg(np.arcsin(y / distance))
@@ -128,7 +128,7 @@ def hcc_to_hgs(helioccoord, heliogframe):
     y = helioccoord.y.to(u.m)
     z = helioccoord.z.to(u.m)
 
-    l0_rad = helioccoord.observer.lon.to(u.rad)
+    l0_rad = helioccoord.observer.lon
     b0_deg = helioccoord.observer.lat
 
     cosb = np.cos(np.deg2rad(b0_deg))

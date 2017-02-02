@@ -182,7 +182,7 @@ class Heliocentric(BaseCoordinateFrame):
     or cylindrical representation.
     Cylindrical representation replaces (x, y) with
     (rho, psi) where rho is the impact parameter and
-    
+    psi is the position angle in degrees.
 
     Parameters
     ----------

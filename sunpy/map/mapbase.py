@@ -776,7 +776,7 @@ Reference Coord:\t {refcoord}
             raise ValueError("data_to_pixel takes a Astropy coordinate frame or SkyCoord instance.")
 
         native_frame = coordinate.transform_to(self.coordinate_frame)
-        lon, lat = u.Quantity(self._get_lon_lat(native_frame)).to(u.deg).value
+        lon, lat = u.Quantity(self._get_lon_lat(native_frame)).to(u.deg)
         x, y = self.wcs.wcs_world2pix(lon, lat, origin)
 
         return PixelPair(x * u.pixel, y * u.pixel)
