@@ -410,8 +410,8 @@ class CompositeMap(object):
             elif self._maps[0].coordinate_system.lat.startswith('HPLT'):
                 ylabel = 'Helioprojective Latitude (Solar-Y) [{ypos}]'.format(ypos=self._maps[0].spatial_units.lat)
             else:
-                ylabel = "{} [{}]".format(self._maps[0].coordinate_system.lat, self.spatial_units.lat)
-                ylabel = 'Y-position [{soly}]'.format(soly=self._maps[0].spatial_units.y)
+                ylabel = "{} [{}]".format(self._maps[0].coordinate_system.lat, self._maps[0].spatial_units.lat)
+                ylabel = 'Y-position [{soly}]'.format(soly=self._maps[0].spatial_units.lat)
 
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)

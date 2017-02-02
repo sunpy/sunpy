@@ -6,6 +6,8 @@ the `astropy.coordinates` module.
 """
 from __future__ import absolute_import, division
 
+import warnings
+
 import numpy as np
 
 from astropy import units as u
