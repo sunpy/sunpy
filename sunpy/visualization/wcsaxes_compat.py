@@ -109,7 +109,7 @@ def default_wcs_grid(axes, units):
     axes : `wcsaxes.WCSAxes` object.
         The `~wcsaxes.WCSAxes` object to draw the world coordinate grid on.
 
-    unit : `sunpy.map.mapbase.Pair` or `tuple`
+    units : `tuple`
         The axes units axes x y order.
     """
     if not isinstance(axes, wcsaxes.WCSAxes):
@@ -143,6 +143,7 @@ def default_wcs_grid(axes, units):
                      linewidth=0.5)
 
 
+@u.quantity_input(grid_spacing=u.deg)
 def wcsaxes_heliographic_overlay(axes, grid_spacing=10*u.deg):
     """
     Create a heliographic overlay using wcsaxes.
@@ -154,8 +155,8 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing=10*u.deg):
     axes : `wcsaxes.WCSAxes` object.
         The `~wcsaxes.WCSAxes` object to create the HGS overlay on.
 
-    grid_spacing: float
-        Spacing for longitude and latitude grid.
+    grid_spacing: `astropy.units.Quantity`
+        Spacing for longitude and latitude grid in degrees.
 
     Returns
     -------
@@ -169,7 +170,7 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing=10*u.deg):
     elif grid_spacing.size == 2:
         lon_space, lat_space = grid_spacing
     else:
-        raise ValueError("grid_spacing must be a Quantity or a tuple of two Quantites")
+        raise ValueError("grid_spacing must be a Quantity of length one or two.")
 
     overlay = axes.get_coords_overlay('heliographic_stonyhurst')
 

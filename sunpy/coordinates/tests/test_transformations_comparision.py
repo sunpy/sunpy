@@ -23,8 +23,6 @@ import pytest
 def test_hpc_hcc(Tx, Ty):
     hpc = Helioprojective(Tx, Ty)
     hcc = hpc.transform_to(Heliocentric)
-    l0_deg = hpc.observer.lon
-    b0_deg = hpc.observer.lat
     d0 = hpc.observer.radius
 
     x, y, z = wcs.convert_hpc_hcc(Tx.value, Ty.value, angle_units='arcsec',
