@@ -45,13 +45,16 @@ print(res)
 
 ###############################################################################
 # Download the files:
-files = vc.get(res).wait()
 
+files = vc.get(res).wait()
+print(files)
 
 ###############################################################################
 # Create a dictionary with the two maps, cropped down to full disk.
-maps = {m.detector: m.submap((-1100, 1100) * u.arcsec,
-                             (-1100, 1100) * u.arcsec) for m in sunpy.map.Map(files)}
+maps = {m.detector: m.submap(SkyCoord([-1100, 1100]*u.arcsec,
+                                      [-1100, 1100]*u.arcsec,
+                                      frame=m.coordinate_frame))
+        for m in sunpy.map.Map(files)}
 
 ###############################################################################
 # Plot both maps
@@ -65,24 +68,24 @@ for i, m in enumerate(maps.values()):
 
 aia_width = 200 * u.arcsec
 aia_height = 250 * u.arcsec
-aia_bottom_left = (-800, -300) * u.arcsec
-
+aia_bottom_left = SkyCoord([[-800, -300]] * u.arcsec,
+                           frame=maps['AIA'].coordinate_frame)
+aia_top_right = SkyCoord(aia_bottom_left.Tx + aia_width,
+                         aia_bottom_left.Ty + aia_height,
+                         frame=maps['AIA'].coordinate_frame)
 
 ###############################################################################
 # Plot a rectangle around the region we want to crop
 m = maps['AIA']
 fig = plt.figure()
-ax = fig.add_subplot(111, projection=m.wcs)
+ax = fig.add_subplot(111, projection=m)
 m.plot(axes=ax)
 m.draw_rectangle(aia_bottom_left, aia_width, aia_height)
 
 
 ###############################################################################
 # Create a submap of this area
-subaia = maps['AIA'].submap(u.Quantity((aia_bottom_left[0],
-                                        aia_bottom_left[0] + aia_width)),
-                            u.Quantity((aia_bottom_left[1],
-                                        aia_bottom_left[1] + aia_height)))
+subaia = maps['AIA'].submap(aia_bottom_left, aia_top_right)
 subaia.peek()
 
 ###############################################################################
@@ -90,11 +93,13 @@ subaia.peek()
 # create a `SkyCoord` object with the four corners of the box. When we create
 # this object, we use `Map.coordinate_frame` so that the location parameters of
 # SDO are correctly set.
-hpc_aia = SkyCoord((aia_bottom_left,
-                    aia_bottom_left + u.Quantity((aia_width, 0 * u.arcsec)),
-                    aia_bottom_left + u.Quantity((0 * u.arcsec, aia_height)),
-                    aia_bottom_left + u.Quantity((aia_width, aia_height))),
-                   frame=maps['AIA'].coordinate_frame)
+
+a = ([aia_bottom_left.Tx, aia_bottom_left.Ty],
+     [aia_bottom_left.Tx + aia_width, aia_bottom_left.Ty],
+     [aia_bottom_left.Tx, aia_bottom_left.Ty + aia_height],
+     [aia_top_right.Tx, aia_top_right.Ty])
+
+hpc_aia = SkyCoord(a, frame=maps['AIA'].coordinate_frame)
 
 print(hpc_aia)
 
@@ -129,13 +134,12 @@ for i, (m, coord) in enumerate(zip([maps['EUVI'], maps['AIA']],
     # coord[3] is the top-right corner coord[0] is the bottom-left corner.
     w = (coord[3].Tx - coord[0].Tx)
     h = (coord[3].Ty - coord[0].Ty)
-    m.draw_rectangle(u.Quantity((coord[0].Tx, coord[0].Ty)), w, h,
+    m.draw_rectangle(coord[0], w, h,
                      transform=ax.get_transform('world'))
 
 ###############################################################################
 # We can now zoom in on the region in the EUVI image:
-subeuvi = maps['EUVI'].submap(u.Quantity((hpc_B[0].Tx, hpc_B[3].Tx)),
-                              u.Quantity((hpc_B[0].Ty, hpc_B[3].Ty)))
+subeuvi = maps['EUVI'].submap(hpc_B[0], hpc_B[3])
 subeuvi.peek()
 
 ###############################################################################
