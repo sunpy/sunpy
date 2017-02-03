@@ -156,7 +156,7 @@ class GenericMap(NDData):
     .. warning::
         This class currently assumes that a header with the CDi_j matrix
         information also includes the CDELT keywords, without these keywords
-        this class will not process the WCS information. This will be fixed.
+        this class will not process the WCS.
         Also the rotation_matrix does not work if the CDELT1 and CDELT2
         keywords are exactly equal.
     """
@@ -1218,6 +1218,8 @@ Reference Coord:\t {refcoord}
             coord = SkyCoord(corners, frame=self.coordinate_frame)
             pixel_corners = self.data_to_pixel(coord)
 
+            # Round the pixel values, we use floor+1 so that we always have at
+            # least one pixel width of data.
             x_pixels = u.Quantity([np.min(pixel_corners.x), np.max(pixel_corners.x)]).value
             x_pixels[0] = np.ceil(x_pixels[0])
             x_pixels[1] = np.floor(x_pixels[1] + 1)
