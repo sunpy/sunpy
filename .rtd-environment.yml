@@ -1,6 +1,6 @@
 name: sunpy-rtd
 channels:
-    - openastronomy
+    - conda-forge
 dependencies:
 - astropy
 - beautiful-soup
