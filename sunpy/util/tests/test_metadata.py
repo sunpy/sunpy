@@ -3,203 +3,223 @@ import pytest
 from sunpy.util.metadata import MetaDict
 
 
-class Base:
+def check_contents(metadict_inst, expected):
+    assert len(metadict_inst) == len(expected)
 
-    def setup_method(self):
-
-        self.seas = [['labrador', 'americas'],
-                     ['Norwegian', 'Europe'],
-                     ['BALTIC', 'europe'],
-                     ['LaPteV', 'arctic']]
-
-        # distinct keys to self.seas
-        self.more_seas = [['Aegean', 'greece'],
-                          ['CAtaLaN', 'mediterranean'],
-                          ['IONIAN', 'italy'],
-                          ['amundsen', 's.ocean']]
-
-        # some similar, 'like',  keys to self.seas
-        self.yet_more_seas = [['norwegian', 'NORWAY'],
-                              ['SCOTIA', 's.ocean'],
-                              ['laptev', 'russia'],
-                              ['Mawson', 'E.Antartica']]
-
-        self.md = MetaDict(self.seas)
-
-    @staticmethod
-    def check_contents(metadict_inst, expected):
-        assert len(metadict_inst) == len(expected)
-
-        for key, val in expected:
-            assert metadict_inst[key.upper()] == val
-
-    @staticmethod
-    def check_insertion_order(metadict_inst, expected):
-
-        def normalise_keys(lst_pairs):
-            return [key.lower() for key, _ in lst_pairs]
-
-        assert normalise_keys(metadict_inst.items()) == \
-            normalise_keys(expected)
-
-    @staticmethod
-    def check(metadict_inst, expected):
-        """ Check a MetaDict instance
-
-        actual against expected contents and ensure insertion order is
-        preserved.
-
-        :param metadict_inst: a MetaDict
-        :param expected: iterable of key/value pairs
-        """
-        Base.check_contents(metadict_inst, expected)
-        Base.check_insertion_order(metadict_inst, expected)
-
-    @staticmethod
-    def pairs_to_dict(lst_of_pairs):
-        """ convert a list/tuple of lists/tuples to a dictionary
-
-        E.g.  [['a', 1], ['b', 2]] -> {'a': 1, 'b': 2}
-        """
-        return {kv_pair[0]: kv_pair[1] for kv_pair in lst_of_pairs}
+    for key, val in expected:
+        assert metadict_inst[key.upper()] == val
 
 
-class TestInitialisation(Base):
-    """ All forms of instantiating a MetaDict
+def check_insertion_order(metadict_inst, expected):
+
+    def normalise_keys(lst_pairs):
+        return [key.lower() for key, _ in lst_pairs]
+
+    assert normalise_keys(metadict_inst.items()) == \
+        normalise_keys(expected)
+
+
+def check(metadict_inst, expected):
+    """ Check a MetaDict instance
+
+    actual against expected contents and ensure insertion order is
+    preserved.
+
+    :param metadict_inst: a MetaDict
+    :param expected: iterable of key/value pairs
+    """
+    check_contents(metadict_inst, expected)
+    check_insertion_order(metadict_inst, expected)
+
+
+def pairs_to_dict(lst_of_pairs):
+    """ convert a list/tuple of lists/tuples to a dictionary
+
+    E.g.  [['a', 1], ['b', 2]] -> {'a': 1, 'b': 2}
+    """
+    return {kv_pair[0]: kv_pair[1] for kv_pair in lst_of_pairs}
+
+
+@pytest.fixture
+def std_test_data():
+    return [['labrador', 'americas'],
+            ['Norwegian', 'Europe'],
+            ['BALTIC', 'europe'],
+            ['LaPteV', 'arctic']]
+
+
+@pytest.fixture
+def differet_keys_data():
+    """
+    Contains distinct keys from 'std_test_data'
+    """
+    return [['Aegean', 'greece'],
+            ['CAtaLaN', 'mediterranean'],
+            ['IONIAN', 'italy'],
+            ['amundsen', 's.ocean']]
+
+
+@pytest.fixture
+def same_diff_keys_data():
+    """
+    Contains a mixture of same and distinct keys from 'std_test_data'
+    """
+    return [['norwegian', 'NORWAY'],
+            ['SCOTIA', 's.ocean'],
+            ['laptev', 'russia'],
+            ['Mawson', 'E.Antartica']]
+
+
+@pytest.fixture
+def combined_data():
+    """
+    The expected result of combining the 'std_test_data' &
+    'same_diff_keys_data' in a MetaDict
+    """
+    return [['labrador', 'americas'],
+            ['Norwegian', 'NORWAY'],
+            ['BALTIC', 'europe'],
+            ['LaPteV', 'russia'],
+            ['SCOTIA', 's.ocean'],
+            ['Mawson', 'E.Antartica']]
+
+
+@pytest.fixture
+def std_metadict(std_test_data):
+    return MetaDict(std_test_data)
+
+
+class TestInit:
+    """
+    All the ways on instantiating a MetaDict
     """
 
-    def test_with_dict(self):
-        in_dict = TestInitialisation.pairs_to_dict(self.seas)
+    def test_lst_of_lsts(self, std_test_data):
+        check(MetaDict(std_test_data), std_test_data)
 
+    def test_init_with_tuple_of_tuples(self, std_test_data):
+        in_tuple = tuple(tuple(kv_pair) for kv_pair in std_test_data)
+        check(MetaDict(in_tuple), std_test_data)
+
+    def test_with_dict(self, std_test_data):
         # Using traditional dictionary, order of insertion is *not* preserved
-        TestInitialisation.check_contents(MetaDict(in_dict), self.seas)
+        check_contents(MetaDict(pairs_to_dict(std_test_data)), std_test_data)
 
-    def test_with_list_of_lists(self):
-        TestInitialisation.check(MetaDict(self.more_seas), self.more_seas)
-
-    def test_init_with_tuple_of_tuples(self):
-        in_tuple = tuple(tuple(kv_pair) for kv_pair in self.seas)
-
-        TestInitialisation.check(MetaDict(in_tuple), self.seas)
-
-    def test_with_metadict(self):
-        TestInitialisation.check(MetaDict(MetaDict(self.yet_more_seas)),
-                                 self.yet_more_seas)
+    def test_with_metadict(self, same_diff_keys_data):
+        check(MetaDict(MetaDict(same_diff_keys_data)), same_diff_keys_data)
 
     def test_with_illegal_arg(self):
         with pytest.raises(TypeError):
             MetaDict(set(('a', 'b', 'c', 'd')))
 
 
-class TestMethods(Base):
+class TestMethods:
+    """
+    Most of the API of MetaDict barring the initialization and 'update' methods
+    """
 
-    def test_membership(self):
-        assert 'LABRADOR' in self.md
-        assert 'labrador' in self.md
-        assert 'baLtiC' in self.md
+    def test_membership(self, std_metadict):
+        assert 'LABRADOR' in std_metadict
+        assert 'labrador' in std_metadict
+        assert 'baLtiC' in std_metadict
 
-        assert 'pechora' not in self.md
+        assert 'pechora' not in std_metadict
 
-    def test_getitem(self):
-        assert self.md['norwegian'] == 'Europe'
-        assert self.md['NORWEGIAN'] != 'europe'
-        assert self.md['laptev'] == 'arctic'
+    def test_getitem(self, std_metadict):
+        assert std_metadict['norwegian'] == 'Europe'
+        assert std_metadict['NORWEGIAN'] != 'europe'
+        assert std_metadict['laptev'] == 'arctic'
 
-        assert self.md['Norwegian'] != 'europe'
+        assert std_metadict['Norwegian'] != 'europe'
 
         with pytest.raises(KeyError):
-            self.md['key-not-exists']
+            std_metadict['key-not-exists']
 
-    def test_get(self):
-        assert self.md.get('baltic') == 'europe'
-        assert self.md.get('atlantic') is None
+    def test_get(self, std_metadict):
+        assert std_metadict.get('baltic') == 'europe'
+        assert std_metadict.get('atlantic') is None
 
         default_value = 'Unknown'
-        assert self.md.get('sargasso', default=default_value) == default_value
+        assert std_metadict.get('sargasso', default=default_value) \
+            == default_value
 
-    def test_setitem_existing(self):
-        len_before = len(self.md)
-        self.md['NORWEGIAN'] = 'Scandinavia'
-        assert len(self.md) == len_before
+    def test_setitem_existing(self, std_metadict):
+        len_before = len(std_metadict)
+        std_metadict['NORWEGIAN'] = 'Scandinavia'
+        assert len(std_metadict) == len_before
 
-        assert self.md['norwegian'] == 'Scandinavia'
-        assert self.md['NoRwEgIaN'] == 'Scandinavia'
+        assert std_metadict['norwegian'] == 'Scandinavia'
+        assert std_metadict['NoRwEgIaN'] == 'Scandinavia'
 
-    def test_setitem_new(self):
-        len_before = len(self.md)
-        self.md['Irish'] = 'N.Europe'
-        assert len(self.md) == len_before + 1
+    def test_setitem_new(self, std_metadict):
+        len_before = len(std_metadict)
+        std_metadict['Irish'] = 'N.Europe'
+        assert len(std_metadict) == len_before + 1
 
-        assert self.md['Irish'] == 'N.Europe'
-        assert self.md['irish'] == 'N.Europe'
-        assert self.md['IRISH'] == 'N.Europe'
+        assert std_metadict['Irish'] == 'N.Europe'
+        assert std_metadict['irish'] == 'N.Europe'
+        assert std_metadict['IRISH'] == 'N.Europe'
 
-        assert self.md['IrisH'] != 'n.europe'
+        assert std_metadict['IrisH'] != 'n.europe'
 
-    def test_setdefault(self):
-        self.md.setdefault('poseidon', 'NOT-FOUND')
-        assert self.md.get('Poseidon') == 'NOT-FOUND'
-        assert self.md['pOSeidon'] == 'NOT-FOUND'
+    def test_setdefault(self, std_metadict):
+        std_metadict.setdefault('poseidon', 'NOT-FOUND')
+        assert std_metadict.get('Poseidon') == 'NOT-FOUND'
+        assert std_metadict['pOSeidon'] == 'NOT-FOUND'
 
         # Should only impact key 'poseidon'
-        assert self.md.get('Wandel') is None
+        assert std_metadict.get('Wandel') is None
 
-    def test_has_key(self):
+    def test_has_key(self, std_metadict):
 
         # suppress pep8/flake8 'W601 .has_key() is deprecated, ...' warnings
         # as MetaDict explicitly supports the 'has_key()' method
-        assert self.md.has_key('laptev') is True  # noqa
-        assert self.md.has_key('BALtIC') is True  # noqa
+        assert std_metadict.has_key('laptev') is True  # noqa
+        assert std_metadict.has_key('BALtIC') is True  # noqa
 
-        assert self.md.has_key('Beaufort') is False  # noqa
+        assert std_metadict.has_key('Beaufort') is False  # noqa
 
-    def test_pop(self):
-        len_before = len(self.md)
+    def test_pop(self, std_metadict):
+        len_before = len(std_metadict)
 
-        self.md.pop('kara') is None
-        assert len(self.md) == len_before
+        std_metadict.pop('kara') is None
+        assert len(std_metadict) == len_before
 
         default_value = 'not-recognized'
-        assert self.md.pop('lincoln', default=default_value) == default_value
-        assert len(self.md) == len_before
+        assert std_metadict.pop('lincoln', default=default_value) \
+            == default_value
+        assert len(std_metadict) == len_before
 
-        assert self.md.pop('baltic') == 'europe'
-        assert len(self.md) == len_before - 1
+        assert std_metadict.pop('baltic') == 'europe'
+        assert len(std_metadict) == len_before - 1
 
 
-class TestUpdateMethod(Base):
-    """ MetaDict.update(...)
-    """
+class TestUpdateMethod:
 
-    def setup(self):
+    def test_update_with_distinct_keys(self, std_metadict, std_test_data,
+                                       differet_keys_data):
 
-        # Expected when self.seas & self.yet_more_seas are added to a MetaDict
-        self.combined = [['labrador', 'americas'],
-                         ['Norwegian', 'NORWAY'],
-                         ['BALTIC', 'europe'],
-                         ['LaPteV', 'russia'],
-                         ['SCOTIA', 's.ocean'],
-                         ['Mawson', 'E.Antartica']]
+        std_metadict.update(MetaDict(differet_keys_data))
 
-    def test_update_with_distinct_keys(self):
-        self.md.update(MetaDict(self.more_seas))
+        check(std_metadict, std_test_data + differet_keys_data)
 
-        TestUpdateMethod.check(self.md, self.seas + self.more_seas)
-
-    def test_update_with_like_keys(self):
+    def test_update_with_like_keys(self, std_metadict, same_diff_keys_data,
+                                   combined_data):
         # values of existing keys should be updated but, original insertion
         # order should be preserved
-        self.md.update(MetaDict(self.yet_more_seas))
 
-        TestUpdateMethod.check(self.md, self.combined)
+        std_metadict.update(MetaDict(same_diff_keys_data))
 
-    def test_update_with_dict(self):
+        check(std_metadict, combined_data)
+
+    def test_update_with_dict(self, std_metadict, same_diff_keys_data,
+                              combined_data):
         # Updating with a dictionary, order is *not* preserved
-        self.md.update(TestUpdateMethod.pairs_to_dict(self.yet_more_seas))
+        std_metadict.update(pairs_to_dict(same_diff_keys_data))
 
-        TestUpdateMethod.check_contents(self.md, self.combined)
+        check_contents(std_metadict, combined_data)
 
-    def test_update_with_same_metadict(self):
-        self.md.update(self.md)
+    def test_update_with_same_metadict(self, std_metadict, std_test_data):
+        std_metadict.update(std_metadict)
 
-        TestUpdateMethod.check(self.md, self.seas)
+        check(std_metadict, std_test_data)
