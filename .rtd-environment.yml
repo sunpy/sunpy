@@ -56,7 +56,7 @@ dependencies:
 - wheel
 - xz
 - zlib
-- glymur
 - openjpeg
 - pip:
     - sphinx-gallery
+    - glymur
