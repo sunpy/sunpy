@@ -79,7 +79,10 @@ script:
 
 # Notify the IRC channel of build status
 notifications:
-  irc: "chat.freenode.net#SunPy"
   webhooks:
     urls:
       - https://webhooks.gitter.im/e/d1bf84e1bc1293e4dbc5
+      - "https://scalar.vector.im/api/neb/services/hooks/dHJhdmlzLWNpLyU0MENhZGFpciUzQW1hdHJpeC5vcmcvJTIxTWVSZEZwRW9uTG9Dd2hvSGVUJTNBbWF0cml4Lm9yZw"
+    on_success: change  # always|never|change
+    on_failure: always
+    on_start: never

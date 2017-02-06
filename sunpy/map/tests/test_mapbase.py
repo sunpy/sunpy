@@ -491,7 +491,10 @@ def test_rotate_invalid_order(generic_map):
 
 @skip_wcsaxes
 def test_as_mpl_axes_aia171(aia171_test_map):
-    import wcsaxes  # import here because of skip
+    try:
+        from astropy.visualization import wcsaxes
+    except ImportError:
+        import wcsaxes
     ax = plt.subplot(projection=aia171_test_map)
     assert isinstance(ax, wcsaxes.WCSAxes)
     # This test doesn't work, it seems that WCSAxes copies or changes the WCS
