@@ -170,6 +170,35 @@ class HeliographicCarrington(HeliographicStonyhurst):
 
     dateobs = TimeFrameAttributeSunPy()
 
+    def sol_string(self, form='minimal'):
+        datetime = self.dateobs.datetime
+        sol_str_list = [
+            'SOL{yr:04d}-{mon:02d}-{day:02d}'.format(
+            yr=datetime.year,
+            mon=datetime.month,
+            day=datetime.day),
+        ]
+
+        if form == 'minimal':
+            return sol_str_list[0]
+        elif form == 'standard' or form == 'full':
+            lon = self.lon.wrap_at(360*u.deg)
+            colat = self.lat + 90*u.deg
+            sol_str_list.append(
+                'T{hr:02d}:{min:02d}:{sec:02d}L{lon:03.0f}C{colat:03.0f}'
+                .format(hr=datetime.hour, min=datetime.minute,
+                        sec=datetime.second, lon=lon.value,
+                        colat=colat.value))
+            if form == 'full':
+                # FIXME: not sure about the precision
+                sol_str_list.append(
+                    'R{rad:f}'.format(rad=self.radius.to(u.m) / RSUN_METERS))
+        else:
+            raise ValueError('Invalid form for Solar Object Locator {0}'
+                             .format(form))
+
+        return ''.join(sol_str_list)
+        
 
 class Heliocentric(BaseCoordinateFrame):
     """
