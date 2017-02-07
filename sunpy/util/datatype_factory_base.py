@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function
 
 import inspect
 
+
 class BasicRegistrationFactory(object):
     """
     Generalized registerable factory type.
@@ -43,14 +44,15 @@ class BasicRegistrationFactory(object):
     def __init__(self, default_widget_type=None,
                  additional_validation_functions=[], registry=None):
 
-        if registry:
-            self.registry = registry
-        else:
+        if registry is None:
             self.registry = dict()
+        else:
+            self.registry = registry
 
         self.default_widget_type = default_widget_type
 
-        self.validation_functions = ['_factory_validation_function'] + additional_validation_functions
+        self.validation_functions = \
+            ['_factory_validation_function'] + additional_validation_functions
 
     def __call__(self, *args, **kwargs):
         """ Method for running the factory.
@@ -82,7 +84,9 @@ class BasicRegistrationFactory(object):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types identified ({0}).  Specify enough keywords to guarantee unique type identification.".format(n_matches))
+            raise MultipleMatchError("Too many candidate types identified ({0})."
+                                     "Specify enough keywords to guarantee unique type "
+                                     "identification.".format(n_matches))
 
         # Only one is found
         WidgetType = candidate_widget_types[0]
@@ -133,10 +137,12 @@ class BasicRegistrationFactory(object):
                         found = True
                         break
                     else:
-                        raise ValidationFunctionError("{0}.{1} must be a classmethod.".format(WidgetType.__name__, vfunc_str))
+                        raise ValidationFunctionError("{0}.{1} must be a classmethod."
+                                                      .format(WidgetType.__name__, vfunc_str))
 
             if not found:
-                raise ValidationFunctionError("No proper validation function for class {0} found.".format(WidgetType.__name__))
+                raise ValidationFunctionError("No proper validation function for class {0} "
+                                              "found.".format(WidgetType.__name__))
 
     def unregister(self, WidgetType):
         """ Remove a widget from the factory's registry."""
