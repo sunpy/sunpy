@@ -10,7 +10,7 @@ environment:
       # /E:ON and /V:ON options are not enabled in the batch script intepreter
       # See: http://stackoverflow.com/a/13751649/163740
       CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci-helpers\\appveyor\\windows_sdk.cmd"
-      CONDA_CHANNELS: "conda-forge astropy-ci-extras"
+      CONDA_CHANNELS: "conda-forge, astropy-ci-extras"
       CONDA_DEPENDENCIES: "numpy scipy astropy matplotlib pandas requests beautifulsoup4 sqlalchemy scikit-image pytest wcsaxes suds-jurko hypothesis"
       PIP_DEPENDENCIES: "Glymur"
 
