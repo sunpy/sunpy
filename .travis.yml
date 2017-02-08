@@ -1,4 +1,5 @@
-language: c
+language: python
+
 # Setting sudo to false opts in to Travis-CI container-based builds.
 sudo: false
 
@@ -14,12 +15,17 @@ addons:
             - texlive-latex-extra
             - dvipng
 
+python:
+    - 2.7
+    - 3.4
+    - 3.5
+    - 3.6
+
 # Configure the build environment. Global varibles are defined for all configurations.
 env:
     global:
         - COLUMNS=240
         - PREVIOUS_NUMPY=1.10.4
-        - PYTHON_VERSION=3.6
         - NUMPY_VERSION='stable'
         - ASTROPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
@@ -29,35 +35,35 @@ env:
         - PIP_DEPENDENCIES='suds-jurko sphinx-gallery glymur pytest-sugar'
 
     matrix:
-        - SETUP_CMD='egg_info' PYTHON_VERSION=2.7
-        - SETUP_CMD='egg_info' PYTHON_VERSION=3.4
-        - SETUP_CMD='egg_info' PYTHON_VERSION=3.5
-        - SETUP_CMD='egg_info' PYTHON_VERSION=3.6
-        - PYTHON_VERSION=2.7
+        - SETUP_CMD='egg_info'
 
 matrix:
     include:
          - os: osx
+           language: generic
+           env: PYTHON_VERSION=3.6
 
-         - os: linux
+         - python: 2.7
+
+         - python: 3.6
            env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
 
          # Previous numpy is tested on an older python version
-         - os: linux
-           env: NUMPY_VERSION=$PREVIOUS_NUMPY PYTHON_VERSION=3.4
+         - python: 3.4
+           env: NUMPY_VERSION=$PREVIOUS_NUMPY
 
-         - os: linux
+         - python: 3.6
            env: SETUP_CMD='build_docs -w'
 
          # Figure test runs use an env stored in the repo so don't have conda
          # requirements
-         - os: linux
-           env: SETUP_CMD='test --figure' PYTHON_VERSION=2.7 CONDA_DEPENDENCIES=''
+         - python: 2.7
+           env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
 
-         - os: linux
-           env: SETUP_CMD='test --figure' PYTHON_VERSION=3.5 CONDA_DEPENDENCIES=''
+         - python: 3.5
+           env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
 
-         - os: linux
+         - python: 3.6
            env: SETUP_CMD='test --online --coverage -V'
 
 install:
