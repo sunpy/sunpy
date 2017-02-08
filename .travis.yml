@@ -34,7 +34,6 @@ env:
         - SETUP_CMD='egg_info' PYTHON_VERSION=3.5
         - SETUP_CMD='egg_info' PYTHON_VERSION=3.6
         - PYTHON_VERSION=2.7
-        - PYTHON_VERSION=3.6
 
 matrix:
     include:
