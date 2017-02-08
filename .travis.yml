@@ -61,13 +61,6 @@ matrix:
          - os: linux
            env: SETUP_CMD='test --online --coverage -V'
 
-         - os: linux
-           env: SETUP_CMD='build_docs -b doctest'
-
-    # allow_failures has to repeat the environment from the matrix above to mark it as such
-    allow_failures:
-      - env: SETUP_CMD='build_docs -b doctest'
-
 install:
     - git clone git://github.com/astropy/ci-helpers.git
     - source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh
