@@ -39,11 +39,12 @@ env:
 
 matrix:
     include:
+         - python: 2.7
+           env: SETUP_CMD='test'
+
          - os: osx
            language: generic
            env: PYTHON_VERSION=3.6
-
-         - python: 2.7
 
          - python: 3.6
            env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
