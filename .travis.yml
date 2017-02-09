@@ -40,8 +40,11 @@ env:
 
 matrix:
     include:
-         - python: 2.7
-           env: SETUP_CMD='test'
+         # We order the jobs, so the longest running tests are in the top
+         # three positions of the matrix
+         - python: 3.6
+           env: SETUP_CMD='test --online --coverage -V'
+                EVENT_TYPE='push pull_request cron'
 
          - os: osx
            language: generic
@@ -50,6 +53,9 @@ matrix:
          - python: 3.6
            env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
                 EVENT_TYPE='push pull_request cron'
+
+         - python: 2.7
+           env: SETUP_CMD='test'
 
          # Previous numpy is tested on an older python version
          - python: 3.4
@@ -66,10 +72,6 @@ matrix:
 
          - python: 3.5
            env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
-
-         - python: 3.6
-           env: SETUP_CMD='test --online --coverage -V'
-                EVENT_TYPE='push pull_request cron'
 
 install:
     - git clone git://github.com/astropy/ci-helpers.git
