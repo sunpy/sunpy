@@ -78,8 +78,11 @@ class MultiMethod(object):
             will be issued, and with FAIL a TypeError is raised when
             attempting to override an existing definition.
         """
+        if override not in (SILENT, WARN, FAIL):
+            raise ValueError("Invalid value '{0}' for override.".format(override))
+
         overriden = False
-        if override:
+        if override != SILENT:
             for signature, _ in self.methods:
                 if all(issubclass(a, b) for a, b in zip(types, signature)):
                     overriden = True
@@ -87,14 +90,10 @@ class MultiMethod(object):
             raise TypeError
         elif overriden and override == WARN:
             # pylint: disable=W0631
-            warn(
-                'Definition ({0}) overrides prior definition ({1}).'.format(
-                _fmt_t(types), _fmt_t(signature)),
-                TypeWarning,
-                stacklevel=3
-            )
-        elif overriden:
-            raise ValueError('Invalid value for override.')
+            warn('Definition ({0}) overrides prior definition ({1}).'.format(_fmt_t(types),
+                                                                             _fmt_t(signature)),
+                 TypeWarning, stacklevel=3)
+
         self.methods.append((types, fun))
 
     def add_dec(self, *types, **kwargs):
@@ -103,6 +102,7 @@ class MultiMethod(object):
         override to control overriding behaviour. Compare add.
         """
         self.cache = {}
+
         def _dec(fun):
             self.add(fun, types, kwargs.get('override', SILENT))
             return fun
