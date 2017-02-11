@@ -19,22 +19,39 @@ def check_insertion_order(metadict_inst, expected):
 
 
 def check(metadict_inst, expected):
-    """ Check a MetaDict instance
+    """
+    Check a MetaDict instance
 
-    actual against expected contents and ensure insertion order is
-    preserved.
+    Ensure content and insertion order are preserved
 
-    :param metadict_inst: a MetaDict
-    :param expected: iterable of key/value pairs
+    Parameters
+    ----------
+    metadict_inst: sunpy.util.metadata.MetaDict
+                  a Metadict instance under test
+
+    expected: iterable object of key/value pairs
+             the value we expect from a test
     """
     check_contents(metadict_inst, expected)
     check_insertion_order(metadict_inst, expected)
 
 
 def pairs_to_dict(lst_of_pairs):
-    """ convert a list/tuple of lists/tuples to a dictionary
+    """
+    Convert a list/tuple of lists/tuples to a dictionary
 
-    E.g.  [['a', 1], ['b', 2]] -> {'a': 1, 'b': 2}
+    Parameters
+    ----------
+    lst_of_pairs: iteterable object of iterable objects
+                  an iterable containing iterables, each of these
+                  contained iterables is a key/value pair.
+
+    Examples
+    --------
+    >>> pairs_to_dict([['a', 1], ['b', 2]])
+    {'a': 1, 'b': 2}
+    >>> pairs_to_dict([('x', 34), ('y', 56)])
+    {'x': 34, 'y': 56}
     """
     return {kv_pair[0]: kv_pair[1] for kv_pair in lst_of_pairs}
 
@@ -139,6 +156,9 @@ def test_get_method(std_metadict):
 
 
 def test_setitem_op_existing(std_metadict):
+    """
+    Update an existing entry
+    """
     len_before = len(std_metadict)
     std_metadict['NORWEGIAN'] = 'Scandinavia'
     assert len(std_metadict) == len_before
@@ -148,6 +168,9 @@ def test_setitem_op_existing(std_metadict):
 
 
 def test_setitem_op_new(std_metadict):
+    """
+    Add a new entry
+    """
     len_before = len(std_metadict)
     std_metadict['Irish'] = 'N.Europe'
     assert len(std_metadict) == len_before + 1
