@@ -37,6 +37,7 @@ dependencies:
 - pyparsing
 - pyqt
 - pytest
+- pytest-mock
 - python
 - python-dateutil
 - pytz
