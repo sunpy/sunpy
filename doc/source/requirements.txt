@@ -7,7 +7,10 @@ suds
 pandas>=0.16
 beautifulsoup4
 astropy>=1.0
+hypothesis
 pytest
+pytest-cov
+pytest-mock
 mock
 sqlalchemy
 sphinx_rtd_theme

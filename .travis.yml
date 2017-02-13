@@ -31,7 +31,7 @@ env:
         - MAIN_CMD='python setup.py'
         - SETUP_CMD='test'
         - CONDA_CHANNELS='astropy astropy-ci-extras conda-forge'
-        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest pyyaml pandas nomkl pytest-cov coverage hypothesis'
+        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest pyyaml pandas nomkl pytest-cov pytest-mock coverage hypothesis'
         - PIP_DEPENDENCIES='suds-jurko sphinx-gallery glymur pytest-sugar'
         - EVENT_TYPE='pull_request push'
 
