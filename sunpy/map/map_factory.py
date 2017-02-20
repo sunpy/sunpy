@@ -1,8 +1,5 @@
 from __future__ import absolute_import, division, print_function
 
-__authors__ = ["Russell Hewett, Stuart Mumford"]
-__email__ = "stuart@mumford.me.uk"
-
 import os
 import glob
 from collections import OrderedDict
@@ -31,6 +28,9 @@ from sunpy.extern import six
 
 from sunpy.extern.six.moves.urllib.request import urlopen
 
+__authors__ = ["Russell Hewett, Stuart Mumford"]
+__email__ = "stuart@mumford.me.uk"
+
 # Make a mock DatabaseEntry class if sqlalchemy is not installed
 
 try:
@@ -40,6 +40,7 @@ except ImportError:
         pass
 
 __all__ = ['Map', 'MapFactory']
+
 
 class MapFactory(BasicRegistrationFactory):
     """
@@ -62,7 +63,8 @@ class MapFactory(BasicRegistrationFactory):
 
     >>> mymap = sunpy.map.Map((data, header))   # doctest: +SKIP
 
-    headers are some base of `dict` or `collections.OrderedDict`, including `sunpy.io.header.FileHeader` or `sunpy.util.metadata.MetaDict` classes.
+    headers are some base of `dict` or `collections.OrderedDict`, including `sunpy.io.header.FileHeader` 
+    or `sunpy.util.metadata.MetaDict` classes.
 
     * data, header pairs, not in tuples
 
@@ -100,11 +102,13 @@ class MapFactory(BasicRegistrationFactory):
 
     * Lists of any of the above
 
-    >>> mymap = sunpy.map.Map(['file1.fits', 'file2.fits', 'file3.fits', 'directory1/'])   # doctest: +SKIP
+    >>> mymap = sunpy.map.Map(['file1.fits', 'file2.fits', 'file3.fits',
+                               'directory1/'])   # doctest: +SKIP
 
     * Any mixture of the above not in a list
 
-    >>> mymap = sunpy.map.Map((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits')   # doctest: +SKIP
+    >>> mymap = sunpy.map.Map((data, header), data2, header2, 'file1.fits', 
+                               url_str, 'eit_*.fits')   # doctest: +SKIP
     """
 
     def _read_file(self, fname, **kwargs):
@@ -112,14 +116,14 @@ class MapFactory(BasicRegistrationFactory):
             that file. """
 
         # File gets read here.  This needs to be generic enough to seamlessly
-        #call a fits file or a jpeg2k file, etc
+        # call a fits file or a jpeg2k file, etc
         pairs = read_file(fname, **kwargs)
 
         new_pairs = []
         for pair in pairs:
             filedata, filemeta = pair
             assert isinstance(filemeta, FileHeader)
-            #This tests that the data is more than 1D
+            # This tests that the data is more than 1D
             if len(np.shape(filedata)) > 1:
                 data = filedata
                 meta = MetaDict(filemeta)
@@ -175,9 +179,9 @@ class MapFactory(BasicRegistrationFactory):
 
             # Data-header pair in a tuple
             if ((type(arg) in [tuple, list]) and
-                len(arg) == 2 and
-                isinstance(arg[0], np.ndarray) and
-                self._validate_meta(arg[1])):
+                 len(arg) == 2 and
+                 isinstance(arg[0], np.ndarray) and
+                 self._validate_meta(arg[1])):
 
                 arg[1] = OrderedDict(arg[1])
                 data_header_pairs.append(arg)
@@ -188,7 +192,7 @@ class MapFactory(BasicRegistrationFactory):
 
                 pair = (args[i], OrderedDict(args[i+1]))
                 data_header_pairs.append(pair)
-                i += 1 # an extra increment to account for the data-header pairing
+                i += 1   # an extra increment to account for the data-header pairing
 
             # Data-wcs object pair in a tuple
             elif ((type(arg) in [tuple, list]) and
@@ -205,20 +209,20 @@ class MapFactory(BasicRegistrationFactory):
                   isinstance(args[i+1], WCS)):
 
                 arg_header = args[i+1].to_header()
-                if(self._validate_meta(arg_header)):    
+                if(self._validate_meta(arg_header)):
                     pair = (args[i], OrderedDict(arg_header))
                     data_header_pairs.append(pair)
-                    i += 1 # an extra increment to account for the data-header pairing
+                    i += 1    # an extra increment to account for the data-header pairing
 
             # File name
-            elif (isinstance(arg,six.string_types) and
+            elif (isinstance(arg, six.string_types) and
                   os.path.isfile(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
-           # Directory
-            elif (isinstance(arg,six.string_types) and
+            # Directory
+            elif (isinstance(arg, six.string_types) and
                   os.path.isdir(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
                 files = [os.path.join(path, elem) for elem in os.listdir(path)]
@@ -226,8 +230,8 @@ class MapFactory(BasicRegistrationFactory):
                     data_header_pairs += self._read_file(afile, **kwargs)
 
             # Glob
-            elif (isinstance(arg,six.string_types) and '*' in arg):
-                files = glob.glob( os.path.expanduser(arg) )
+            elif (isinstance(arg, six.string_types) and '*' in arg):
+                files = glob.glob(os.path.expanduser(arg))
                 for afile in files:
                     data_header_pairs += self._read_file(afile, **kwargs)
 
@@ -236,7 +240,7 @@ class MapFactory(BasicRegistrationFactory):
                 already_maps.append(arg)
 
             # A URL
-            elif (isinstance(arg,six.string_types) and
+            elif (isinstance(arg, six.string_types) and
                   _is_url(arg)):
                 default_dir = sunpy.config.get("downloads", "download_dir")
                 url = arg
@@ -252,11 +256,10 @@ class MapFactory(BasicRegistrationFactory):
                 raise ValueError("File not found or invalid input")
 
             i += 1
-        #TODO:
+        # TODO:
         # In the end, if there are already maps it should be put in the same
         # order as the input, currently they are not.
         return data_header_pairs, already_maps
-
 
     def __call__(self, *args, **kwargs):
         """ Method for running the factory. Takes arbitrary arguments and
@@ -284,7 +287,7 @@ class MapFactory(BasicRegistrationFactory):
         Extra keyword arguments are passed through to `sunpy.io.read_file` such
         as `memmap` for FITS files.
         """
-        
+
         # Hack to get around Python 2.x not backporting PEP 3102.
         composite = kwargs.pop('composite', False)
         cube = kwargs.pop('cube', False)
@@ -342,7 +345,8 @@ class MapFactory(BasicRegistrationFactory):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types identified ({0}).  Specify enough keywords to guarantee unique type identification.".format(n_matches))
+            raise MultipleMatchError("Too many candidate types identified ({0})"
+                                    "Specify enough keywords to guarantee unique type identification.".format(n_matches))
 
         # Only one is found
         WidgetType = candidate_widget_types[0]
@@ -357,20 +361,24 @@ def _is_url(arg):
         return False
     return True
 
+
 class InvalidMapInput(ValueError):
     """Exception to raise when input variable is not a Map instance and does
     not point to a valid Map input file."""
     pass
+
 
 class InvalidMapType(ValueError):
     """Exception to raise when an invalid type of map is requested with Map
     """
     pass
 
+
 class NoMapsFound(ValueError):
     """Exception to raise when input does not point to any valid maps or files
     """
     pass
+
 
 Map = MapFactory(default_widget_type=GenericMap,
                  additional_validation_functions=['is_datasource_for'])
