@@ -9,6 +9,7 @@ from collections import OrderedDict
 
 import numpy as np
 import astropy.io.fits
+from astropy.wcs import WCS
 
 import sunpy
 from sunpy.map.mapbase import GenericMap, MAP_CLASSES
@@ -148,7 +149,6 @@ class MapFactory(BasicRegistrationFactory):
                          '*.fits')
 
         """
-
         data_header_pairs = list()
         already_maps = list()
 
@@ -178,6 +178,26 @@ class MapFactory(BasicRegistrationFactory):
                 data_header_pairs.append(pair)
                 i += 1 # an extra increment to account for the data-header pairing
 
+            # Data-wcs object pair in a tuple
+            elif ((type(arg) in [tuple, list]) and
+                  len(arg) == 2 and
+                  isinstance(arg[0], np.ndarray)):
+
+                arg_header = arg[1].to_header()
+                if(self._validate_meta(arg_header)):
+                    arg[1] = OrderedDict(arg_header)
+                    data_header_pairs.append(arg)
+
+            # Data-wcs object pair not in a tuple
+            elif (isinstance(arg, np.ndarray) and
+                  isinstance(args[i+1], WCS)):
+
+                arg_header = args[i+1].to_header()
+                if(self._validate_meta(arg_header)):    
+                    pair = (args[i], OrderedDict(arg_header))
+                    data_header_pairs.append(pair)
+                    i += 1 # an extra increment to account for the data-header pairing
+
             # File name
             elif (isinstance(arg,six.string_types) and
                   os.path.isfile(os.path.expanduser(arg))):
@@ -185,7 +205,7 @@ class MapFactory(BasicRegistrationFactory):
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
-            # Directory
+           # Directory
             elif (isinstance(arg,six.string_types) and
                   os.path.isdir(os.path.expanduser(arg))):
                 path = os.path.expanduser(arg)
@@ -252,7 +272,7 @@ class MapFactory(BasicRegistrationFactory):
         Extra keyword arguments are passed through to `sunpy.io.read_file` such
         as `memmap` for FITS files.
         """
-
+        
         # Hack to get around Python 2.x not backporting PEP 3102.
         composite = kwargs.pop('composite', False)
         cube = kwargs.pop('cube', False)
@@ -267,7 +287,6 @@ class MapFactory(BasicRegistrationFactory):
         for pair in data_header_pairs:
             data, header = pair
             meta = MetaDict(header)
-
             try:
                 new_map = self._check_registered_widgets(data, meta, **kwargs)
             except (NoMatchError, MultipleMatchError, ValidationFunctionError):
