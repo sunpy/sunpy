@@ -68,6 +68,16 @@ class MapFactory(BasicRegistrationFactory):
 
     >>> mymap = sunpy.map.Map(data, header)   # doctest: +SKIP
 
+    * data, wcs object, in tuple
+
+    >>> wcs = WCS(AIA_171_IMAGE)
+    >>> mymap = sunpy.map.Map((data, wcs))    #doctest: +SKIP
+
+    * data, wcs object, not in tuple
+
+    >>> wcs = WCS(AIA_171_IMAGE)
+    >>> mymap = sunpy.map.Map(data, wcs)    #doctest: +SKIP
+
     * File names
 
     >>> mymap = sunpy.map.Map('file1.fits')   # doctest: +SKIP
@@ -133,6 +143,8 @@ class MapFactory(BasicRegistrationFactory):
         mixture of the following entries:
         * tuples of data,header
         * data, header not in a tuple
+        * data, wcs object in a tuple
+        * data, wcs object not in a tuple
         * filename, which will be read
         * directory, from which all files will be read
         * glob, from which all files will be read
