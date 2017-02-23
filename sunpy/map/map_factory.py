@@ -197,7 +197,8 @@ class MapFactory(BasicRegistrationFactory):
             # Data-wcs object pair in a tuple
             elif ((type(arg) in [tuple, list]) and
                   len(arg) == 2 and
-                  isinstance(arg[0], np.ndarray)):
+                  isinstance(arg[0], np.ndarray) and
+                  isinstance(arg[1], WCS)):
 
                 arg_header = arg[1].to_header()
                 if(self._validate_meta(arg_header)):
