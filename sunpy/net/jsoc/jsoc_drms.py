@@ -284,11 +284,9 @@ class JSOCClient(object):
             raise TypeError(warn_message.format(list(kwargs.keys())))
 
 
-
-
     def export_request(self, jsoc_response, method = 'url'):
 
-        query_string = _make_recordset(jsoc_response[0].get('start_time'),jsoc_response[0].get('end_time'),
+        query_string = self._make_recordset(jsoc_response[0].get('start_time'),jsoc_response[0].get('end_time'),
                                        jsoc_response[0].get('series'),jsoc_response[0].get('wavelength'),
                                        jsoc_response[0].get('segment'))
         email = jsoc_response[0].get('notify', '')
@@ -303,9 +301,13 @@ class JSOCClient(object):
 
         return response
 
-    def download_data(self, r):
+    def download_data(self, response, path = None):
 
-        r.download(out_dir)    #How to save in the directory created at ~ 
+        if path is None:
+            path = config.get('downloads', 'download_dir')
+        path = os.path.expanduser(path)
+
+        response.download(path)
 
     def check_request(self, requestIDs):
         """
@@ -348,158 +350,6 @@ class JSOCClient(object):
             allstatus.append(status)
 
         return allstatus
-
-    def get(self, jsoc_response, path=None, overwrite=False, progress=True,
-            max_conn=5, downloader=None,sleep=10):
-        """
-        Make the request for the data in jsoc_response and wait for it to be
-        staged and then download the data.
-
-        Parameters
-        ----------
-        jsoc_response : JSOCResponse object
-            A response object
-
-        path : string
-            Path to save data to, defaults to SunPy download dir
-
-        overwrite : bool
-            Replace files with the same name if True
-
-        progress : bool
-            Print progress info to terminal
-
-        max_conns : int
-            Maximum number of download connections.
-
-        downloader: `sunpy.download.Downloader` instance
-            A Custom downloader to use
-
-        sleep : int
-            The number of seconds to wait between calls to JSOC to check the status
-            of the request.
-
-        Returns
-        -------
-        results : a :class:`sunpy.net.vso.Results` instance
-            A Results object
-        """
-
-        # Make staging request to JSOC
-        requestIDs = self.request_data(jsoc_response)
-        # Add them to the response for good measure
-        jsoc_response.requestIDs = requestIDs
-        time.sleep(sleep/2.)
-
-        r = Results(lambda x: None, done=lambda maps: [v['path'] for v in maps.values()])
-
-        while requestIDs:
-            for i, request_id in enumerate(requestIDs):
-                u = self._request_status(request_id)
-
-                if progress:
-                    self.check_request(request_id)
-
-                if u.status_code == 200 and u.json()['status'] == '0':
-                    rID = requestIDs.pop(i)
-                    r = self.get_request(rID, path=path, overwrite=overwrite,
-                                 progress=progress, results=r)
-
-                else:
-                    time.sleep(sleep)
-
-        return r
-
-    def get_request(self, requestIDs, path=None, overwrite=False, progress=True,
-                    max_conn=5, downloader=None, results=None):
-        """
-        Query JSOC to see if request_id is ready for download.
-
-        If the request is ready for download, download it.
-
-        Parameters
-        ----------
-        requestIDs : list or string
-            One or many requestID strings
-
-        path : string
-            Path to save data to, defaults to SunPy download dir
-
-        overwrite : bool
-            Replace files with the same name if True
-
-        progress : bool
-            Print progress info to terminal
-
-        max_conns : int
-            Maximum number of download connections.
-
-        downloader : `sunpy.download.Downloader` instance
-            A Custom downloader to use
-
-        results: Results instance
-            A Results manager to use.
-
-        Returns
-        -------
-        res: Results
-            A Results instance or None if no URLs to download
-        """
-
-        # Convert IDs to a list if not already
-
-        if not isiterable(requestIDs) or isinstance(requestIDs, six.string_types):
-            requestIDs = [requestIDs]
-
-        if path is None:
-            path = config.get('downloads', 'download_dir')
-        path = os.path.expanduser(path)
-
-        if downloader is None:
-            downloader = Downloader(max_conn=max_conn, max_total=max_conn)
-
-        # A Results object tracks the number of downloads requested and the
-        # number that have been completed.
-        if results is None:
-            results = Results(lambda _: downloader.stop())
-
-        urls = []
-        for request_id in requestIDs:
-            u = self._request_status(request_id)
-
-            if u.status_code == 200 and u.json()['status'] == '0':
-                for ar in u.json()['data']:
-                    is_file = os.path.isfile(os.path.join(path, ar['filename']))
-                    if overwrite or not is_file:
-                        url_dir = BASE_DL_URL + u.json()['dir'] + '/'
-                        urls.append(urllib.parse.urljoin(url_dir, ar['filename']))
-
-                    else:
-                        print_message = "Skipping download of file {} as it " \
-                                        "has already been downloaded"
-                        print(print_message.format(ar['filename']))
-                        # Add the file on disk to the output
-                        results.map_.update({ar['filename']:{'path':os.path.join(path, ar['filename'])}})
-
-                if progress:
-                    print_message = "{0} URLs found for download. Totalling {1}MB"
-                    print(print_message.format(len(urls), u.json()['size']))
-
-            else:
-                if progress:
-                    self.check_request(request_id)
-
-        if urls:
-            for url in urls:
-                downloader.download(url, callback=results.require([url]),
-                                    errback=lambda x: print(x), path=path)
-
-        else:
-            # Make Results think it has finished.
-            results.require([])
-            results.poke()
-
-        return results
 
     def _process_time(self, time):
         """
