@@ -79,16 +79,19 @@ class JSOCClient(object):
 
     Notes
     -----
-    This Client mocks input to this site: http://jsoc.stanford.edu/ajax/exportdata.html
+    This Client mocks input to this site:
+    http://jsoc.stanford.edu/ajax/exportdata.html
     Therefore that is a good resource if things are mis-behaving.
-    The full list of 'series' is available through this site: http://jsoc.stanford.edu/
+    The full list of 'series' is available through this site:
+    http://jsoc.stanford.edu/
 
-    You can build more complex queries by specifying parameters to POST to JSOC via keyword
-    arguments. You can generate these kwargs using the Export Data page at JSOC.
+    You can build more complex queries by specifying parameters to POST to JSOC
+    via keyword arguments. You can generate these kwargs using the Export Data page
+    at JSOC.
 
-    JSOC now requires a validated email address, you can pass in your validated email address
-    using the `~sunpy.net.jsoc.attrs.Notify` attribute. You have to register your email address
-    with JSOC http://jsoc.stanford.edu/ajax/register_email.html.
+    JSOC now requires a validated email address, you can pass in your validated email
+    address using the `~sunpy.net.jsoc.attrs.Notify` attribute. You have to register
+    your email address with JSOC http://jsoc.stanford.edu/ajax/register_email.html.
 
 
     Examples
@@ -163,7 +166,8 @@ class JSOCClient(object):
     get into the queue.
 
     >>> status = client.check_request(requestIDs)
-    Request JSOC_20140724_955 was submitted 10 seconds ago, it is not ready to download.
+    Request JSOC_20140724_955 was submitted 10 seconds ago, it is not ready to
+    download.
 
     Once the status code is 0 you can download the data using the `get_request`
     method:
@@ -216,7 +220,6 @@ class JSOCClient(object):
 
         return return_results
 
-
     def _make_recordset(self, start_time, end_time, series, wavelength='',
                         segment='', **kwargs):
         # Build the dataset string
@@ -241,10 +244,10 @@ class JSOCClient(object):
         if segment != '':
             if isinstance(segment, str):
                 segment = segment
-            else isinstance(segment, (list, tuple)):
+            else if isinstance(segment, (list, tuple)):
                 segment = ', '.join(segment)
-            else
-                raise TypeError("The given segment format is not supported." 
+            else:
+                raise TypeError("The given segment format is not supported."
                                 "Please enter a string or a list of strings.")
             print(segment)
             segment = '{{{segment}}}'.format(segment=segment)
@@ -260,7 +263,6 @@ class JSOCClient(object):
                    wavelength=wavelength, segment=segment)
 
         return dataset
-        
 
     def request_data(self, jsoc_response, **kwargs):
         """
@@ -283,12 +285,13 @@ class JSOCClient(object):
             warn_message = "request_data got unexpected keyword arguments {0}"
             raise TypeError(warn_message.format(list(kwargs.keys())))
 
+    def export_request(self, jsoc_response, method='url'):
 
-    def export_request(self, jsoc_response, method = 'url'):
-
-        query_string = self._make_recordset(jsoc_response[0].get('start_time'),jsoc_response[0].get('end_time'),
-                                       jsoc_response[0].get('series'),jsoc_response[0].get('wavelength'),
-                                       jsoc_response[0].get('segment'))
+        query_string = self._make_recordset(jsoc_response[0].get('start_time'),
+                                            jsoc_response[0].get('end_time'),
+                                            jsoc_response[0].get('series'),
+                                            jsoc_response[0].get('wavelength'),
+                                            jsoc_response[0].get('segment'))
         email = jsoc_response[0].get('notify', '')
         protocol = jsoc_response[0].get('protocol', 'FITS')
 
@@ -301,7 +304,7 @@ class JSOCClient(object):
 
         return response
 
-    def download_data(self, response, path = None):
+    def download_data(self, response, path=None):
 
         if path is None:
             path = config.get('downloads', 'download_dir')
@@ -333,12 +336,12 @@ class JSOCClient(object):
             status = int(u.json()['status'])
 
             if status == 0:  # Data ready to download
-                print("Request {0} was exported at {1} and is ready to "\
+                print("Request {0} was exported at {1} and is ready to "
                       "download.".format(u.json()['requestid'],
-                                           u.json()['exptime']))
+                                         u.json()['exptime']))
             elif status == 1:
-                print_message = "Request {0} was submitted {1} seconds ago, " \
-                                "it is not ready to download."
+                print_message = "Request {0} was submitted {1} seconds ago, "
+                "it is not ready to download."
                 print(print_message.format(u.json()['requestid'],
                                            u.json()['wait']))
             else:
@@ -380,6 +383,3 @@ class JSOCClient(object):
                    'Time', 'Segment']
 
         return all([x.__class__.__name__ in chkattr for x in query])
-
-
-
