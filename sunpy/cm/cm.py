@@ -180,7 +180,11 @@ def show_colormaps(filter=None):
     a = np.linspace(0, 1, 256).reshape(1, -1)  # pylint: disable=E1103
     a = np.vstack((a, a))
 
-    fig = plt.figure(figsize=(5, 10), dpi=64)
+
+    
+
+    fig = plt.figure(figsize=(5, 10),dpi=64)
+
     fig.subplots_adjust(top=0.99, bottom=0.01, left=0.2, right=0.99)
     for i, name in enumerate(maps):
         ax = plt.subplot(nmaps, 1, i + 1)

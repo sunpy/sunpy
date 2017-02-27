@@ -24,7 +24,7 @@ def test_fitstoIRIS():
 def test_is_datasource_for():
     """Test the is_datasource_for method of SJIMap.
     Note that header data to be provided as an argument
-    can be a MapMeta object."""
+    can be a MetaDict object."""
     for amap in irislist:
         if isinstance(amap, SJIMap):
             assert amap.is_datasource_for(amap.data, amap.meta)

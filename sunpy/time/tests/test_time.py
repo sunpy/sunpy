@@ -9,6 +9,8 @@ import numpy as np
 import pandas
 from sunpy.extern.six.moves import range
 
+import pytest
+
 LANDING = datetime(1966, 2, 3)
 
 
@@ -30,8 +32,11 @@ def test_parse_time_tuple():
 
 
 def test_parse_time_int():
-    assert parse_time(765548612.0,'utime') == datetime(2003, 4, 5, 12, 23, 32)
-    assert parse_time(1009685652.0,'utime') == datetime(2010, 12, 30, 4, 14, 12)
+    assert parse_time(765548612.0, 'utime') == datetime(2003, 4, 5,
+                                                        12, 23, 32)
+    assert parse_time(1009685652.0, 'utime') == datetime(2010, 12, 30,
+                                                         4, 14, 12)
+
 
 def test_parse_time_pandas_timestamp():
     ts = pandas.Timestamp(LANDING)
@@ -41,8 +46,9 @@ def test_parse_time_pandas_timestamp():
     assert isinstance(dt, datetime)
     assert dt == LANDING
 
+
 def test_parse_time_pandas_index():
-    inputs = [datetime(2012, 1, i) for i in range(1,13)]
+    inputs = [datetime(2012, 1, i) for i in range(1, 13)]
     ind = pandas.tseries.index.DatetimeIndex(inputs)
 
     dts = parse_time(ind)
@@ -60,6 +66,7 @@ def test_parse_time_numpy_date():
     assert isinstance(dts, np.ndarray)
     assert all([isinstance(dt, datetime) for dt in dts])
 
+
 def test_parse_time_numpy_datetime():
     inputs = np.arange('2005-02-01T00', '2005-02-01T10', dtype='datetime64')
 
@@ -67,6 +74,7 @@ def test_parse_time_numpy_datetime():
 
     assert isinstance(dts, np.ndarray)
     assert all([isinstance(dt, datetime) for dt in dts])
+
 
 def test_ISO():
     assert parse_time('1966-02-03') == LANDING
@@ -134,3 +142,17 @@ def test_day_of_year():
     assert time.day_of_year('2012/01/31') == 31
     assert time.day_of_year('2012/09/30') == 274
 
+
+def test_time_string_parse_format():
+    assert parse_time('01/06/2012',
+                      _time_string_parse_format='%d/%m/%Y') == datetime(2012, 6, 1, 0, 0)
+    assert parse_time('06/01/2012',
+                      _time_string_parse_format='%d/%m/%Y') == datetime(2012, 1, 6, 0, 0)
+    assert parse_time('06/01/85',
+                      _time_string_parse_format='%d/%m/%y') == datetime(1985, 1, 6, 0, 0)
+    assert parse_time('6/1/85',
+                      _time_string_parse_format='%d/%m/%y') == datetime(1985, 1, 6, 0, 0)
+    with pytest.raises(ValueError):
+        parse_time('01/06/2012')
+    with pytest.raises(ValueError):
+        parse_time('01/06/2012', time_string_parse_format='%d/%m/%m')

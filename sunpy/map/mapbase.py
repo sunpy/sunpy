@@ -16,11 +16,12 @@ from matplotlib import patches, cm, colors
 
 import astropy.wcs
 import astropy.units as u
+from astropy.visualization.wcsaxes import WCSAxes
 from astropy.coordinates import Longitude, Latitude
 
 import sunpy.io as io
 import sunpy.wcs as wcs
-import sunpy.coordinates
+import sunpy.coordinates # Import to register with Astropy
 from sunpy import config
 from sunpy.extern import six
 from sunpy.visualization import toggle_pylab, wcsaxes_compat
@@ -35,9 +36,6 @@ from astropy.nddata import NDData
 
 TIME_FORMAT = config.get("general", "time_format")
 Pair = namedtuple('Pair', 'x y')
-
-__authors__ = "Russell Hewett, Stuart Mumford, Keith Hughitt," \
-              " Steven Christe, Jack Ireland"
 
 __all__ = ['GenericMap']
 
@@ -54,7 +52,7 @@ or something else?)
 MAP_CLASSES = OrderedDict()
 
 
-class GenericMapMeta(ABCMeta):
+class GenericMapMetaclass(ABCMeta):
     """
     Registration metaclass for `~sunpy.map.GenericMap`.
 
@@ -66,7 +64,7 @@ class GenericMapMeta(ABCMeta):
     _registry = MAP_CLASSES
 
     def __new__(mcls, name, bases, members):
-        cls = super(GenericMapMeta, mcls).__new__(mcls, name, bases, members)
+        cls = super(GenericMapMetaclass, mcls).__new__(mcls, name, bases, members)
 
         # The registry contains the class as the key and the validation method
         # as the item.
@@ -76,7 +74,7 @@ class GenericMapMeta(ABCMeta):
         return cls
 
 
-@six.add_metaclass(GenericMapMeta)
+@six.add_metaclass(GenericMapMetaclass)
 class GenericMap(NDData):
     """
     A Generic spatially-aware 2D data array
@@ -198,7 +196,7 @@ class GenericMap(NDData):
         if not self.observatory:
             return self.data.__repr__()
         return (
-"""SunPy {dtype!s}
+"""SunPy Map
 ---------
 Observatory:\t {obs}
 Instrument:\t {inst}
@@ -210,8 +208,7 @@ dt:\t\t {dt:f}
 Dimension:\t {dim}
 scale:\t\t {scale}
 
-""".format(dtype=self.__class__.__name__,
-           obs=self.observatory, inst=self.instrument, det=self.detector,
+""".format(obs=self.observatory, inst=self.instrument, det=self.detector,
            meas=self.measurement, wave=self.wavelength, date=self.date,
            dt=self.exposure_time,
            dim=u.Quantity(self.dimensions),
@@ -285,15 +282,7 @@ scale:\t\t {scale}
         """
         # This code is reused from Astropy
 
-        try:
-            from wcsaxes import WCSAxes
-        except ImportError:
-            raise ImportError("Using WCS instances as Matplotlib projections "
-                              "requires the WCSAxes package to be installed. "
-                              "See http://wcsaxes.readthedocs.io for more "
-                              "details.")
-        else:
-            return WCSAxes, {'wcs': self.wcs}
+        return WCSAxes, {'wcs': self.wcs}
 
     # Some numpy extraction
     @property
@@ -1626,12 +1615,14 @@ scale:\t\t {scale}
             # Check that the image is properly oriented
             if (not wcsaxes_compat.is_wcsaxes(axes) and
                 not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2)))):
-                warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
+                warnings.warn("WCSAxes is not being used as the axes for this plot and the"
+                              " coordinate system is not aligned to the pixel axes."
+                              " Plot axes may be incorrect",
                               Warning)
 
-            if not wcsaxes_compat.is_wcsaxes(axes) and wcsaxes_compat.HAVE_WCSAXES:
-                warnings.warn("WCSAxes is installed but not being used."
-                              " Plots may not have the expected behaviour.",
+            elif not wcsaxes_compat.is_wcsaxes(axes):
+                warnings.warn("WCSAxes not being used as the axes object for this plot."
+                              " Plots may have expected behaviour",
                               Warning)
 
         # Normal plot
