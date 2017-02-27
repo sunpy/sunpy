@@ -16,7 +16,7 @@ from astropy.utils.decorators import wraps
 
 from sunpy.tests import hash
 
-__all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'skip_wcsaxes', 'warnings_as_errors']
+__all__ = ['skip_windows', 'skip_glymur', 'skip_ana', 'warnings_as_errors']
 
 # SunPy's JPEG2000 capabilities rely on the glymur library.  First we check to
 # make sure that glymur imports correctly before proceeding.
@@ -45,20 +45,12 @@ else:
     SKIP_ANA = SKIP_ANA or False
 
 
-try:
-    import wcsaxes
-except ImportError:
-    SKIP_WCSAXES = True
-else:
-    SKIP_WCSAXES = False
-
 skip_windows = pytest.mark.skipif(platform.system() == 'Windows', reason="Windows")
 
 skip_glymur = pytest.mark.skipif(SKIP_GLYMUR, reason="Glymur can not be imported")
 
 skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available")
 
-skip_wcsaxes = pytest.mark.skipif(SKIP_WCSAXES, reason="wcsaxes is not available")
 
 
 @pytest.fixture
@@ -136,4 +128,5 @@ def figure_test(test_function):
             pytest.fail("Hash not present: {0}".format(name))
         else:
             assert hash.hash_library[name] == figure_hash
+        plt.close()
     return wrapper

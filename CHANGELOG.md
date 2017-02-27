@@ -1,6 +1,9 @@
 Latest
 ------
 
+* User can now pass a custom time format as an argument inside 
+  `sunpy.database.add_from_dir()` in case the `date-obs` metadata cannot
+  be read automatically from the files.
 * Get and set methods for composite maps now use Map plot_settings.
 * Simplified map names when plotting.
 * Add time format used by some SDO HMI FITS keywords
@@ -24,6 +27,8 @@ Latest
 * Added hdu index in `sunpy.database.tables.DatabaseEntry` as a column in the table.
 * Removed `HelioviewerClient` from the `sunpy.net` namespace. It should now be
   imported with `from sunpy.net.helioviewer import HelioviewerClient`.
+* Removed compatibility with standalone ``wcsaxes`` and instead depend on the
+  version in astropy 1.3. SunPy now therefore depends on astropy>=1.3.
 
 0.7.0
 -----

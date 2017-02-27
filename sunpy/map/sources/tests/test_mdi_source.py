@@ -22,7 +22,7 @@ def test_fitstoMDI():
 def test_is_datasource_for():
     """Test the is_datasource_for method of MDIMap.
     Note that header data to be provided as an argument
-    can be a MapMeta object."""
+    can be a MetaDict object."""
     assert mdi.is_datasource_for(mdi.data, mdi.meta)
 
 def test_observatory():
