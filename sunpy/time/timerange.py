@@ -185,8 +185,8 @@ class TimeRange(object):
         -------
         value : `astropy.units.Quantity`
         """
-        result = self.dt.microseconds * u.Unit('us') + self.dt.seconds * u.Unit('s') + self.dt.days * u.Unit('day')
-        return result
+        return (self.dt.microseconds * u.Unit('us') + self.dt.seconds * u.Unit('s') +
+                self.dt.days * u.Unit('day'))
 
     def __eq__(self, other):
         """
@@ -201,7 +201,28 @@ class TimeRange(object):
         -------
         result : `bool`
         """
-        return ((self.start == other.start) and (self.end == other.end))
+        if isinstance(other, TimeRange):
+            return (self.start == other.start) and (self.end == other.end)
+
+        return NotImplemented
+
+    def __ne__(self, other):
+        """
+        Check two TimeRange objects have different start or end datetimes.
+
+        Parameters
+        ----------
+        other : `~sunpy.time.timerange.TimeRange`
+            The second TimeRange object to compare to.
+
+        Returns
+        -------
+        result : `bool`
+        """
+        if isinstance(other, TimeRange):
+            return (self.start != other.start) or (self.end != other.end)
+
+        return NotImplemented
 
     def __repr__(self):
         """
@@ -347,7 +368,7 @@ class TimeRange(object):
         Return all partial days contained within the timerange
         """
         dates = []
-        dates =[ self.start.date() + timedelta(days=i) for i in range(int(self.days.value) + 1) ]
+        dates = [self.start.date() + timedelta(days=i) for i in range(int(self.days.value) + 1)]
         return dates
 
     def __contains__(self, time):
@@ -379,5 +400,3 @@ class TimeRange(object):
         """
         this_time = parse_time(time)
         return this_time >= self.start and this_time <= self.end
-    
-  
