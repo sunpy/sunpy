@@ -847,8 +847,8 @@ scale:\t\t {scale}
             new_meta['CD2_2'] *= scale_factor_y
         new_meta['crpix1'] = (dimensions[0].value + 1) / 2.
         new_meta['crpix2'] = (dimensions[1].value + 1) / 2.
-        new_meta['naxis1'] = dimensions[0]
-        new_meta['naxis2'] = dimensions[1]
+        new_meta['naxis1'] = dimensions[1].value
+        new_meta['naxis2'] = dimensions[0].value
         new_meta['crval1'] = self.center.x.value
         new_meta['crval2'] = self.center.y.value
 
