@@ -1,4 +1,5 @@
-language: c
+language: python
+
 # Setting sudo to false opts in to Travis-CI container-based builds.
 sudo: false
 
@@ -14,65 +15,64 @@ addons:
             - texlive-latex-extra
             - dvipng
 
+python:
+    - 2.7
+    - 3.4
+    - 3.5
+    - 3.6
+
 # Configure the build environment. Global varibles are defined for all configurations.
 env:
     global:
         - COLUMNS=240
         - PREVIOUS_NUMPY=1.10.4
-        - PYTHON_VERSION=3.6
         - NUMPY_VERSION='stable'
         - ASTROPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
         - SETUP_CMD='test'
         - CONDA_CHANNELS='astropy astropy-ci-extras conda-forge'
         - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib requests beautifulsoup4 sqlalchemy scikit-image pytest pyyaml pandas nomkl pytest-cov coverage hypothesis'
-        - PIP_DEPENDENCIES='suds-jurko sphinx-gallery glymur  drms pytest-sugar'
+
+        - PIP_DEPENDENCIES='suds-jurko sphinx-gallery glymur drms pytest-sugar'
+        - EVENT_TYPE='pull_request push'
 
     matrix:
-        - SETUP_CMD='egg_info' PYTHON_VERSION=2.7 
-        - SETUP_CMD='egg_info' PYTHON_VERSION=3.4
-        - SETUP_CMD='egg_info' PYTHON_VERSION=3.5
-        - SETUP_CMD='egg_info' PYTHON_VERSION=3.6
-        - PYTHON_VERSION=2.7
-        - PYTHON_VERSION=3.4
-        - PYTHON_VERSION=3.5
-        - PYTHON_VERSION=3.6
+        - SETUP_CMD='egg_info'
 
 matrix:
     include:
+         # We order the jobs, so the longest running tests are in the top
+         # three positions of the matrix
+         - python: 3.6
+           env: SETUP_CMD='test --online --coverage -V'
+                EVENT_TYPE='push pull_request cron'
+
          - os: osx
+           language: generic
+           env: PYTHON_VERSION=3.6
 
-         - os: linux
-           env: ASTROPY_VERSION='development'
+         - python: 3.6
+           env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
+                EVENT_TYPE='push pull_request cron'
 
-         # Numpy 1.10 is not built on 3.6
-         - os: linux
-           env: NUMPY_VERSION=$PREVIOUS_NUMPY PYTHON_VERSION=3.5
+         - python: 2.7
+           env: SETUP_CMD='test'
 
-         - os: linux
+         # Previous numpy is tested on an older python version
+         - python: 3.4
+           env: NUMPY_VERSION=$PREVIOUS_NUMPY
+
+         - python: 3.6
            env: SETUP_CMD='build_docs -w'
+                EVENT_TYPE='push pull_request cron'
 
          # Figure test runs use an env stored in the repo so don't have conda
          # requirements
-         - os: linux
-           env: SETUP_CMD='test --figure' PYTHON_VERSION=2.7 CONDA_DEPENDENCIES=''
+         - python: 2.7
+           env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
 
-         - os: linux
-           env: SETUP_CMD='test --figure' PYTHON_VERSION=3.5 CONDA_DEPENDENCIES=''
-
-         - os: linux
-           env: SETUP_CMD='test --online --coverage -V'
-
-         - os: linux
-           env: SETUP_CMD='build_docs -b doctest'
-
-         - os: linux
-           env: NUMPY_VERSION='dev'
-
-    # allow_failures has to repeat the environment from the matrix above to mark it as such
-    allow_failures:
-      - env: SETUP_CMD='build_docs -b doctest'
-      - env: NUMPY_VERSION='dev'
+         - python: 3.5
+           env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
 
 install:
     - git clone git://github.com/astropy/ci-helpers.git
