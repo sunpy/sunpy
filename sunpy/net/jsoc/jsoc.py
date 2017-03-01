@@ -6,7 +6,6 @@ import time
 import warnings
 
 import requests
-import drms
 import numpy as np
 import astropy.units as u
 import astropy.time
@@ -79,19 +78,16 @@ class JSOCClient(object):
 
     Notes
     -----
-    This Client mocks input to this site:
-    http://jsoc.stanford.edu/ajax/exportdata.html
+    This Client mocks input to this site: http://jsoc.stanford.edu/ajax/exportdata.html
     Therefore that is a good resource if things are mis-behaving.
-    The full list of 'series' is available through this site:
-    http://jsoc.stanford.edu/
+    The full list of 'series' is available through this site: http://jsoc.stanford.edu/
 
-    You can build more complex queries by specifying parameters to POST to JSOC
-    via keyword arguments. You can generate these kwargs using the Export Data page
-    at JSOC.
+    You can build more complex queries by specifying parameters to POST to JSOC via keyword
+    arguments. You can generate these kwargs using the Export Data page at JSOC.
 
-    JSOC now requires a validated email address, you can pass in your validated email
-    address using the `~sunpy.net.jsoc.attrs.Notify` attribute. You have to register
-    your email address with JSOC http://jsoc.stanford.edu/ajax/register_email.html.
+    JSOC now requires a validated email address, you can pass in your validated email address
+    using the `~sunpy.net.jsoc.attrs.Notify` attribute. You have to register your email address
+    with JSOC http://jsoc.stanford.edu/ajax/register_email.html.
 
 
     Examples
@@ -166,8 +162,7 @@ class JSOCClient(object):
     get into the queue.
 
     >>> status = client.check_request(requestIDs)
-    Request JSOC_20140724_955 was submitted 10 seconds ago, it is not ready to
-    download.
+    Request JSOC_20140724_955 was submitted 10 seconds ago, it is not ready to download.
 
     Once the status code is 0 you can download the data using the `get_request`
     method:
@@ -215,10 +210,177 @@ class JSOCClient(object):
             iargs = kwargs.copy()
             iargs.update(block)
             blocks.append(iargs)
-
             return_results.append(self._lookup_records(iargs))
-
+        return_results.query_args = blocks
         return return_results
+
+    def request_data(self, jsoc_response, **kwargs):
+        """
+        Request that JSOC stages the data for download.
+
+        Parameters
+        ----------
+        jsoc_response : JSOCResponse object
+            The results of a query
+
+        Returns
+        -------
+        requestIDs : list of strings
+            List of the JSOC request identifiers
+
+        """
+        # A little (hidden) debug feature
+        return_responses = kwargs.pop('return_resp', False)
+        if len(kwargs):
+            warn_message = "request_data got unexpected keyword arguments {0}"
+            raise TypeError(warn_message.format(list(kwargs.keys())))
+
+        responses = []
+        requestIDs = []
+        for block in jsoc_response.query_args:
+            query_string = self._make_recordset(block.get('start_time'),
+                                                block.get('end_time'),
+                                                block.get('series'),
+                                                block.get('wavelength'),
+                                                block.get('segment'))
+            email = block.get('notify', '')
+            protocol = block.get('protocol', 'FITS')
+
+            if not email:
+                raise ValueError("JSOC queries now require a valid email address "
+                                 "before they will be accepted by the server")
+            else:
+                client = drms.Client(email=email, verbose=True)
+                response = client.export(query_string, method=method, protocol=protocol)
+                responses.append(response)
+                requestIDs.append(response.id)
+
+        if return_responses:
+            return responses
+
+        return requestIDs
+
+    def check_request(self, requestIDs):
+        """
+        Check the status of a request and print out a message about it
+
+        Parameters
+        ----------
+        requestIDs : list or string
+            A list of requestIDs to check
+
+        Returns
+        -------
+        status : list
+            A list of status' that were returned by JSOC
+        """
+        # Convert IDs to a list if not already
+        if not isiterable(requestIDs) or isinstance(requestIDs, six.string_types):
+            requestIDs = [requestIDs]
+
+        allstatus = []
+        for request_id in requestIDs:
+            u = self._request_status(request_id)
+            status = int(u.json()['status'])
+
+            if status == 0:  # Data ready to download
+                print("Request {0} was exported at {1} and is ready to "
+                      "download.".format(u.json()['requestid'],
+                                         u.json()['exptime']))
+            elif status == 1:
+                print_message = "Request {0} was submitted {1} seconds ago, "
+                "it is not ready to download."
+                print(print_message.format(u.json()['requestid'],
+                                           u.json()['wait']))
+            else:
+                print_message = "Request returned status: {0} with error: {1}"
+                json_status = u.json()['status']
+                json_error = u.json()['error']
+                print(print_message.format(json_status, json_error))
+
+            allstatus.append(status)
+
+        return allstatus
+
+    def get(self, jsoc_response, path=None):
+        """
+        Make the request for the data in jsoc_response and wait for it to be
+        staged and then download the data.
+
+        Parameters
+        ----------
+        jsoc_response : JSOCResponse object
+            A response object
+
+        path : string
+            Path to save data to, defaults to SunPy download dir
+
+        overwrite : bool
+            Replace files with the same name if True
+
+        progress : bool
+            Print progress info to terminal
+
+        max_conns : int
+            Maximum number of download connections.
+
+        downloader: `sunpy.download.Downloader` instance
+            A Custom downloader to use
+
+        sleep : int
+            The number of seconds to wait between calls to JSOC to check the status
+            of the request.
+
+        Returns
+        -------
+        results : a :class:`sunpy.net.vso.Results` instance
+            A Results object
+        """
+
+        for block in jsoc_response.query_args:
+            query_string = self._make_recordset(block.get('start_time'),
+                                                block.get('end_time'),
+                                                block.get('series'),
+                                                block.get('wavelength'),
+                                                block.get('segment'))
+            email = block.get('notify', '')
+            protocol = block.get('protocol', 'FITS')
+
+            if not email:
+                raise ValueError("JSOC queries now require a valid email address "
+                                 "before they will be accepted by the server")
+            else:
+                client = drms.Client(email=email, verbose=True)
+                response = client.export(query_string, method=method, protocol=protocol)
+
+            if path is None:
+                path = config.get('downloads', 'download_dir')
+            path = os.path.expanduser(path)
+
+            response.download(path)
+
+    def _process_time(self, time):
+        """
+        Take a UTC time string or datetime instance and generate a astropy.time
+        object in TAI frame. Alternatively convert a astropy time object to TAI
+
+        Parameters
+        ----------
+        time: six.string_types or datetime or astropy.time
+            Input time
+
+        Returns
+        -------
+        datetime, in TAI
+        """
+        # Convert from any input (in UTC) to TAI
+        if isinstance(time, six.string_types):
+            time = parse_time(time)
+
+        time = astropy.time.Time(time, scale='utc')
+        time = time.tai  # Change the scale to TAI
+
+        return time.datetime
 
     def _make_recordset(self, start_time, end_time, series, wavelength='',
                         segment='', **kwargs):
@@ -263,119 +425,6 @@ class JSOCClient(object):
                    wavelength=wavelength, segment=segment)
 
         return dataset
-
-    def request_data(self, jsoc_response, **kwargs):
-        """
-        Request that JSOC stages the data for download.
-
-        Parameters
-        ----------
-        jsoc_response : JSOCResponse object
-            The results of a query
-
-        Returns
-        -------
-        requestIDs : list of strings
-            List of the JSOC request identifiers
-
-        """
-        # A little (hidden) debug feature
-        return_responses = kwargs.pop('return_resp', False)
-        if len(kwargs):
-            warn_message = "request_data got unexpected keyword arguments {0}"
-            raise TypeError(warn_message.format(list(kwargs.keys())))
-
-    def export_request(self, jsoc_response, method='url'):
-
-        query_string = self._make_recordset(jsoc_response[0].get('start_time'),
-                                            jsoc_response[0].get('end_time'),
-                                            jsoc_response[0].get('series'),
-                                            jsoc_response[0].get('wavelength'),
-                                            jsoc_response[0].get('segment'))
-        email = jsoc_response[0].get('notify', '')
-        protocol = jsoc_response[0].get('protocol', 'FITS')
-
-        if not email:
-            raise ValueError("JSOC queries now require a valid email address "
-                             "before they will be accepted by the server")
-        else:
-            client = drms.Client(email=email, verbose=True)
-            response = client.export(query_string, method=method, protocol=protocol)
-
-        return response
-
-    def download_data(self, response, path=None):
-
-        if path is None:
-            path = config.get('downloads', 'download_dir')
-        path = os.path.expanduser(path)
-
-        response.download(path)
-
-    def check_request(self, requestIDs):
-        """
-        Check the status of a request and print out a message about it
-
-        Parameters
-        ----------
-        requestIDs : list or string
-            A list of requestIDs to check
-
-        Returns
-        -------
-        status : list
-            A list of status' that were returned by JSOC
-        """
-        # Convert IDs to a list if not already
-        if not isiterable(requestIDs) or isinstance(requestIDs, six.string_types):
-            requestIDs = [requestIDs]
-
-        allstatus = []
-        for request_id in requestIDs:
-            u = self._request_status(request_id)
-            status = int(u.json()['status'])
-
-            if status == 0:  # Data ready to download
-                print("Request {0} was exported at {1} and is ready to "
-                      "download.".format(u.json()['requestid'],
-                                         u.json()['exptime']))
-            elif status == 1:
-                print_message = "Request {0} was submitted {1} seconds ago, "
-                "it is not ready to download."
-                print(print_message.format(u.json()['requestid'],
-                                           u.json()['wait']))
-            else:
-                print_message = "Request returned status: {0} with error: {1}"
-                json_status = u.json()['status']
-                json_error = u.json()['error']
-                print(print_message.format(json_status, json_error))
-
-            allstatus.append(status)
-
-        return allstatus
-
-    def _process_time(self, time):
-        """
-        Take a UTC time string or datetime instance and generate a astropy.time
-        object in TAI frame. Alternatively convert a astropy time object to TAI
-
-        Parameters
-        ----------
-        time: six.string_types or datetime or astropy.time
-            Input time
-
-        Returns
-        -------
-        datetime, in TAI
-        """
-        # Convert from any input (in UTC) to TAI
-        if isinstance(time, six.string_types):
-            time = parse_time(time)
-
-        time = astropy.time.Time(time, scale='utc')
-        time = time.tai  # Change the scale to TAI
-
-        return time.datetime
 
     @classmethod
     def _can_handle_query(cls, *query):
