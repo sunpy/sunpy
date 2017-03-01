@@ -54,7 +54,7 @@ class UnifiedResponse(MutableSequence):
                     tmplst.append(block)
                     self._numfile += len(block)
                 else:
-                    raise Exception("{} is not a valid input to UnifiedResponse.".format(lst))
+                    raise Exception("{} is not a valid input to UnifiedResponse.".format(type(lst)))
 
         self._list = tmplst
 
@@ -64,10 +64,7 @@ class UnifiedResponse(MutableSequence):
     def __getitem__(self, aslice):
         ret = self._list[aslice]
         if ret:
-            if isinstance(ret, list):
-                return type(self)(ret)
-            else:
-                return type(self)(ret)
+            return type(self)(ret)
 
         return ret
 
@@ -103,7 +100,19 @@ class UnifiedResponse(MutableSequence):
     def _repr_html_(self):
         ret = ''
         for block in self.responses:
+            ret += "Results from the {}:\n".format(block.client.__class__.__name__)
             ret += block._repr_html_()
+            ret += '\n'
+
+        return ret
+
+    def __repr__(self):
+        ret = super(UnifiedResponse, self).__repr__()
+        ret += '\n'
+        for block in self.responses:
+            ret += "Results from the {}:\n".format(block.client.__class__.__name__)
+            ret += repr(block)
+            ret += '\n'
 
         return ret
 
