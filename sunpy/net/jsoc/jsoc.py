@@ -7,6 +7,7 @@ import warnings
 
 import requests
 import numpy as np
+import drms
 import astropy.units as u
 import astropy.time
 import astropy.table
@@ -205,13 +206,18 @@ class JSOCClient(object):
 
         return_results = JSOCResponse()
         query = and_(*query)
+
         blocks = []
         for block in walker.create(query):
+
             iargs = kwargs.copy()
             iargs.update(block)
             blocks.append(iargs)
+
             return_results.append(self._lookup_records(iargs))
+
         return_results.query_args = blocks
+
         return return_results
 
     def request_data(self, jsoc_response, **kwargs):
@@ -302,7 +308,7 @@ class JSOCClient(object):
 
         return allstatus
 
-    def get(self, jsoc_response, path=None):
+    def get(self, jsoc_response, path=None, method = 'URL'):
         """
         Make the request for the data in jsoc_response and wait for it to be
         staged and then download the data.
@@ -406,12 +412,11 @@ class JSOCClient(object):
         if segment != '':
             if isinstance(segment, str):
                 segment = segment
-            else if isinstance(segment, (list, tuple)):
+            elif isinstance(segment, (list, tuple)):
                 segment = ', '.join(segment)
             else:
                 raise TypeError("The given segment format is not supported."
                                 "Please enter a string or a list of strings.")
-            print(segment)
             segment = '{{{segment}}}'.format(segment=segment)
 
         sample = kwargs.get('sample', '')
@@ -425,6 +430,39 @@ class JSOCClient(object):
                    wavelength=wavelength, segment=segment)
 
         return dataset
+
+    def _lookup_records(self, iargs):
+        """
+        Do a LookData request to JSOC to workout what results the query returns
+        """
+        keywords = ['DATE', 'TELESCOP', 'INSTRUME', 'T_OBS', 'WAVELNTH',
+                    'WAVEUNIT']
+
+        if not all([k in iargs for k in ('start_time', 'end_time', 'series')]):
+            error_message = "Both Time and Series must be specified for a "\
+                            "JSOC Query"
+            raise ValueError(error_message)
+
+        postthis = {'ds': self._make_recordset(**iargs),
+                    'op': 'rs_list',
+                    'key': str(keywords)[1:-1].replace(' ', '').replace("'", ''),
+                    'seg': '**NONE**',
+                    'link': '**NONE**'}
+
+        r = requests.get(JSOC_INFO_URL, params=postthis)
+
+        result = r.json()
+
+        out_table = {}
+        if 'keywords' in result:
+            for col in result['keywords']:
+                out_table.update({col['name']:col['values']})
+
+            # sort the table before returning
+            return astropy.table.Table(out_table)[keywords]
+
+        else:
+            return astropy.table.Table()
 
     @classmethod
     def _can_handle_query(cls, *query):
