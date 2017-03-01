@@ -37,7 +37,8 @@ from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import replacement_filename
 from sunpy.time import parse_time
 
-from sunpy.extern.six import iteritems, text_type, u, PY2
+from sunpy.extern import six
+from sunpy.extern.six import iteritems, text_type
 from sunpy.extern.six.moves import input
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -95,6 +96,7 @@ def iter_errors(response):
             yield prov_item
 
 
+# TODO: Python 3 this should subclass from UserList
 class QueryResponse(list):
     def __init__(self, lst, queryresult=None, table=None):
         super(QueryResponse, self).__init__(lst)
@@ -132,7 +134,7 @@ class QueryResponse(list):
         )
 
     def build_table(self):
-        keywords = ['Start Time', 'End Time', 'Source', 'Instrument', 'Type']
+        keywords = ['Start Time', 'End Time', 'Source', 'Instrument', 'Type', 'Wavelength']
         record_items = {}
         for key in keywords:
             record_items[key] = []
@@ -153,6 +155,26 @@ class QueryResponse(list):
             record_items['Instrument'].append(str(record.instrument))
             record_items['Type'].append(str(record.extent.type)
                                 if record.extent.type is not None else ['N/A'])
+            # If we have a start and end Wavelength, make a quantity
+            if hasattr(record, 'wave') and record.wave.wavemin and record.wave.wavemax:
+                record_items['Wavelength'].append(u.Quantity([float(record.wave.wavemin),
+                                                              float(record.wave.wavemax)],
+                                                             unit=record.wave.waveunit))
+            # If not save None
+            else:
+                record_items['Wavelength'].append(None)
+        # If we have no wavelengths for the whole list, drop the col
+        if all([a is None for a in record_items['Wavelength']]):
+            record_items.pop('Wavelength')
+            keywords.remove('Wavelength')
+        else:
+            # Make whole column a quantity
+            try:
+                with u.set_enabled_equivalencies(u.spectral()):
+                    record_items['Wavelength'] = u.Quantity(record_items['Wavelength'])
+            # If we have mixed units or some Nones just represent as strings
+            except (u.UnitConversionError, TypeError):
+                record_items['Wavelength'] = [str(a) for a in record_items['Wavelength']]
 
         return Table(record_items)[keywords]
 
@@ -316,7 +338,7 @@ class VSOClient(object):
         name = get_filename(sock, url)
         if not name:
             if not isinstance(response.fileid, text_type):
-                name = u(response.fileid, "ascii", "ignore")
+                name = six.u(response.fileid, "ascii", "ignore")
             else:
                 name = response.fileid
 
@@ -326,7 +348,7 @@ class VSOClient(object):
 
         name = slugify(name)
 
-        if PY2:
+        if six.PY2:
             name = name.encode(fs_encoding, "ignore")
 
         if not name:
