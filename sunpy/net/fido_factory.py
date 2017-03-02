@@ -54,7 +54,7 @@ class UnifiedResponse(MutableSequence):
                     tmplst.append(block)
                     self._numfile += len(block)
                 else:
-                    raise Exception("{} is not a valid input to UnifiedResponse.".format(lst))
+                    raise Exception("{} is not a valid input to UnifiedResponse.".format(type(lst)))
 
         self._list = tmplst
 
@@ -76,6 +76,9 @@ class UnifiedResponse(MutableSequence):
 
     def __setitem__(self, aslice, v):
         self._list[aslice] = v
+
+    def __iter__(self):
+        return self.responses
 
     def insert(self, i, v):
         self._list.insert(i, v)
