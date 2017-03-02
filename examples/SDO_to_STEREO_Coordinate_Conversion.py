@@ -104,23 +104,10 @@ hpc_aia = SkyCoord(a, frame=maps['AIA'].coordinate_frame)
 print(hpc_aia)
 
 ###############################################################################
-# Now we convert these coordinates into Heliographic Stonyhurst coordinates,
-# which are on the Sun, with the zero meridian facing the Earth.
-hgs = hpc_aia.transform_to('heliographic_stonyhurst')
-print(hgs)
-
-###############################################################################
-# Now we need to provide the position information from the STEREO Imager:
-hgs.D0 = maps['EUVI'].dsun
-hgs.L0 = maps['EUVI'].heliographic_longitude
-hgs.B0 = maps['EUVI'].heliographic_latitude
-
-###############################################################################
-# We do this on the Heliographic frame because when in a Heliographic frame
-# these parameters have no effect on the frame, but they are used when the
-# frame is converted back to Helioprojective. And now we can convert back to
-# Helioprojective, but this time from the view-point of STEREO B:
-hpc_B = hgs.transform_to('helioprojective')
+# We can now transform to from the AIA frame to the EUVI frame.
+# This transformation first transforms to Heliographic Stonyhurst coordinates
+# and then into the EUVI frame.
+hpc_B = hpc_aia.transform_to(maps['EUVI'].coordinate_frame)
 print(hpc_B)
 
 ###############################################################################

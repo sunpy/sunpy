@@ -3,7 +3,16 @@ import numpy as np
 import astropy.units as u
 from astropy.tests.helper import quantity_allclose
 
+<<<<<<< Updated upstream
 from sunpy.coordinates import Helioprojective, HeliographicStonyhurst
+=======
+<<<<<<< Updated upstream
+from sunpy.coordinates import Helioprojective
+=======
+from astropy.coordinates import SkyCoord
+from sunpy.coordinates import Helioprojective, HeliographicStonyhurst
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
 
 
 def test_hpc_hpc():
@@ -29,6 +38,22 @@ def test_hpc_hpc():
     theta = np.arctan2(dd, (D0 - rsun))
 
     assert quantity_allclose(theta, hpc_new.Tx, rtol=1e-3)
+
+
+def test_hpc_hpc_sc():
+    # Use some unphysical values for solar parameters for testing
+    rsun = 1*u.m
+    D0 = 1*u.km
+    L0 = 1*u.deg
+    observer_in = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, radius=D0)
+    observer_out = HeliographicStonyhurst(lat=0*u.deg, lon=L0, radius=D0)
+
+    sc_in = SkyCoord(0*u.arcsec, 0*u.arcsec, rsun=rsun, observer=observer_in, frame='helioprojective')
+    hpc_out = Helioprojective(observer=observer_out, rsun=rsun)
+
+    hpc_new = sc_in.transform_to(hpc_out)
+
+    assert hpc_new.observer == hpc_out.observer
 
 
 def test_hpc_hpc_null():
