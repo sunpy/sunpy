@@ -226,19 +226,22 @@ class TimeRange(object):
 
     def __repr__(self):
         """
-        Returns a human-readable representation of the TimeRange instance."""
+        Returns a human-readable representation of the TimeRange instance.
+        """
 
         t1 = self.start.strftime(TIME_FORMAT)
         t2 = self.end.strftime(TIME_FORMAT)
         center = self.center.strftime(TIME_FORMAT)
+        fully_qualified_name = '{0}.{1}'.format(self.__class__.__module__, self.__class__.__name__)
 
-        return ('    Start:'.ljust(11) + t1 +
+        return ('   <{0} object at {1}'.format(fully_qualified_name, hex(id(self))) +
+                '\n    Start:'.ljust(12) + t1 +
                 '\n    End:'.ljust(12) + t2 +
                 '\n    Center:'.ljust(12) + center +
                 '\n    Duration:'.ljust(12) + str(self.days.value) + ' days or' +
                 '\n    '.ljust(12) + str(self.hours.value) + ' hours or' +
                 '\n    '.ljust(12) + str(self.minutes.value) + ' minutes or' +
-                '\n    '.ljust(12) + str(self.seconds.value) + ' seconds' +
+                '\n    '.ljust(12) + str(self.seconds.value) + ' seconds' + '>'
                 '\n')
 
     def split(self, n=2):
