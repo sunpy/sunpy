@@ -1,6 +1,7 @@
 0.7.7
 -----
 
+* Fix errors with Numpy 1.12
 
 0.7.6
 -----
