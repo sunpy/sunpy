@@ -55,6 +55,7 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
     Examples
     --------
     >>> from astropy.coordinates import SkyCoord
+    >>> import sunpy.coordinates
     >>> import astropy.units as u
     >>> sc = SkyCoord(1*u.deg, 1*u.deg, 2*u.km,
     ...               frame="heliographic_stonyhurst",
@@ -140,6 +141,7 @@ class HeliographicCarrington(HeliographicStonyhurst):
     Examples
     --------
     >>> from astropy.coordinates import SkyCoord
+    >>> import sunpy.coordinates
     >>> import astropy.units as u
     >>> sc = SkyCoord(1*u.deg, 2*u.deg, 3*u.km,
     ...               frame="heliographic_carrington",
@@ -199,6 +201,7 @@ class Heliocentric(BaseCoordinateFrame):
     Examples
     --------
     >>> from astropy.coordinates import SkyCoord, CartesianRepresentation
+    >>> import sunpy.coordinates
     >>> import astropy.units as u
     >>> sc = SkyCoord(CartesianRepresentation(10*u.km, 1*u.km, 2*u.km),
     ...               dateobs="2011/01/05T00:00:50", frame="heliocentric")
@@ -255,6 +258,7 @@ class Helioprojective(BaseCoordinateFrame):
     Examples
     --------
     >>> from astropy.coordinates import SkyCoord
+    >>> import sunpy.coordinates
     >>> import astropy.units as u
     >>> sc = SkyCoord(0*u.deg, 0*u.deg, 5*u.km, dateobs="2010/01/01T00:00:00",
     ...               frame="helioprojective")
