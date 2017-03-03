@@ -1260,4 +1260,8 @@ class LinearTimeSpectrogram(Spectrogram):
                     *list(map(int, end.split(":")))
                 )
             end = self.time_to_x(end)
+        if start:
+            start = int(start)
+        if end:
+            end = int(end)
         return self[:, start:end]
