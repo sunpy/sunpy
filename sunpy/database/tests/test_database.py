@@ -3,6 +3,8 @@
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
 
+
+""" Using tests from Sunpy.data.test  """
 from __future__ import absolute_import
 
 import glob
