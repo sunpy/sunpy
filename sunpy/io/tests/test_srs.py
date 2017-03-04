@@ -14,10 +14,11 @@ filenames = [{'file': '20150906SRS.txt', 'rows': 5},
              {'file': '20150306SRS.txt', 'rows': 4},
              {'file': '20150101SRS.txt', 'rows': 9}]
 
+
 @pytest.mark.parametrize("path, number_of_rows",
                          [(os.path.join(testpath, elem['file']), elem['rows'])
                           for elem in filenames])
 def test_number_of_rows(path, number_of_rows):
-    table = srs.read(path)
+    table = srs.read_srs(path)
     assert len(table) == number_of_rows
 
