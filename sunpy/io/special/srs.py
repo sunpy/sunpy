@@ -2,6 +2,7 @@
 This module implements SRS File Reader.
 """
 import datetime
+from collections import OrderedDict
 
 import numpy as np
 from astropy.table import QTable, MaskedColumn, Column, vstack
@@ -30,7 +31,9 @@ def read_srs(filepath):
     """
     with open(filepath) as srs:
         file_lines = srs.readlines()
+
     header, section_lines = split_lines(file_lines)
+
     return make_table(header, section_lines)
 
 
@@ -42,10 +45,11 @@ def make_table(header, section_lines):
     meta_data = get_meta_data(header)
 
     tables = []
-    for lines in section_lines:
+    for i, lines in enumerate(section_lines):
         if lines:
+            key = list(meta_data['id'].keys())[i]
             t1 = astropy.io.ascii.read(lines)
-            t1.add_column(Column(data=["I"] * len(t1), name="ID"), index=0)
+            t1.add_column(Column(data=[key] * len(t1), name="ID"), index=0)
             tables.append(t1)
 
     out_table = vstack(tables)
@@ -63,6 +67,8 @@ def make_table(header, section_lines):
         del out_table['Lat']
 
     # Give columns more sensible names
+    out_table.rename_column("Nmbr", "Number")
+    out_table.rename_column("NN", "Number of Sunspots")
     out_table.rename_column("Lo", "Carrington Longitude")
     out_table.rename_column("MagType", "Mag Type")
     out_table.rename_column("LL", "Longitudinal Extent")
@@ -135,7 +141,7 @@ def get_meta_data(header):
                                                      "%Y %b %d %H%M UTC")
 
     # Get ID descriptions
-    meta_data['id'] = {}
+    meta_data['id'] = OrderedDict()
     for h in header:
         if h.startswith(("I.", "IA.", "II.")):
             i = h.find('.')
@@ -192,5 +198,6 @@ def parse_lat_col(column, latitude_column):
     """
     for i, loc in enumerate(column):
         if loc:
+            latitude_column.mask[i] = False
             latitude_column[i] = parse_latitude(loc)
     return latitude_column
