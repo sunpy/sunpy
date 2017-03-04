@@ -1,176 +1,196 @@
 """
 This module implements SRS File Reader.
 """
-import re
-import collections
+import datetime
 
-from astropy.table import Table, Column, MaskedColumn
+import numpy as np
+from astropy.table import QTable, MaskedColumn, Column, vstack
+import astropy.io.ascii
+import astropy.units as u
 
 __all__ = ['read_srs']
 
 
 def read_srs(filepath):
     """
-    Method for reading an SRS File.
+    Parse a SRS table from NOAA SWPC.
+
+    Parameters
+    ----------
+    filepath : `str`
+        The full path to a SRS table.
+
+    Returns
+    -------
+
+    table : `astropy.table.QTable`
+        Table containing a stacked table from all the tables in the SRS file.
+        The header information is stored in the ``.meta`` attribute.
+
     """
-    File = open(filepath, 'r')
-    lines = list()
-    for line in File:
-        arr = line.split()
-        store = list()
-        for i in range(0, min(len(arr), 8)):
-            store.append(arr[i])
-        lines.append(store)
+    with open(filepath) as srs:
+        file_lines = srs.readlines()
+    header, section_lines = split_lines(file_lines)
+    return make_table(header, section_lines)
 
-    # Store table meta-data. Only first two lines
-    # of SRS text file store the meta-data.
-    meta_data = collections.OrderedDict()
-    regex = re.compile('[^a-zA-Z]')
-    try:
-        meta_data[regex.sub('', lines[0][0])] = lines[0][1]
-        meta_data[regex.sub('', lines[1][0])] = ' '.join(lines[1][1:])
-    except IndexError:
-        print("SRS meta-data is not available.")
 
-    # Problem: An array of strings. We need to extract
-    # three tables from these I, IA and II.
+def make_table(header, section_lines):
+    """
+    From the seperated section lines and the header, clean up the data and
+    convert to a QTable.
+    """
+    meta_data = get_meta_data(header)
 
-    table = list(
-    )  # This table holds the three tables which we would later merge.
-    indices = list()
+    tables = []
+    for lines in section_lines:
+        if lines:
+            t1 = astropy.io.ascii.read(lines)
+            t1.add_column(Column(data=["I"] * len(t1), name="ID"), index=0)
+            tables.append(t1)
 
-    for i in range(0, len(lines)):
-        if (lines[i][0][0] == 'I'):
-            indices.append(i)
-    indices.append(len(lines))
-    indices.sort()
+    out_table = vstack(tables)
 
-    for i in range(0, len(indices) - 1):
-        cols = lines[indices[i] + 1]
-        temp_table = Table(names=cols, dtype=['object_'] * len(cols))
-        # If a table is empty, we are not adding it.
-        for j in range(indices[i] + 2, indices[i + 1]):
-            temp_string = lines[j]
-            temp_array = temp_string
-            if (len(temp_array) == len(cols)):
-                temp_table.add_row(temp_array)
-        # Make the table, data-type aware while
-        # you're building it.
-        # If it is empty, don't do anything
-        # Just add the empty table as it is.
-        if len(temp_table) > 0:
-            for cols in temp_table.columns.values():
-                # Make the table columns unit-aware. First convert string to
-                # floats, ones which can be converted that is.
-                try:
-                    column = temp_table[cols.name].astype(float)
-                    temp_table.replace_column(cols.name, column)
-                except ValueError:
-                    pass
-        table.append(temp_table)
+    # Parse the Location column in Table 1
+    if 'Location' in out_table.columns:
+        col_lat, col_lon = parse_location(out_table['Location'])
+        del out_table['Location']
+        out_table.add_column(col_lat)
+        out_table.add_column(col_lon)
 
-    # "table" now has three different tables i.e.
-    # I, IA and II.
-    attributes = list()
+    # Parse the Lat column in Table 3
+    if 'Lat' in out_table.columns:
+        parse_lat_col(out_table['Lat'], out_table['Latitude'])
+        del out_table['Lat']
 
-    for item in table:
-        for cols in item.columns.values():
-            attributes.append(cols.name)
-    attributes = list(set(attributes))
-    # "attributes" is for the master table.
+    # Give columns more sensible names
+    out_table.rename_column("Lo", "Carrington Longitude")
+    out_table.rename_column("MagType", "Mag Type")
+    out_table.rename_column("LL", "Longitudinal Extent")
 
-    # We are adding those columns in the tables
-    # that the tables don't have and initializing
-    # them with 'None'.
-    for item in table:
-        for attrs in attributes:
-            item_attr = [cols.name for cols in item.columns.values()]
-            if attrs not in item_attr:
-                new_column = MaskedColumn(
-                    ['-'] * len(item),
-                    name=attrs,
-                    dtype='object_',
-                    mask=[True] * len(item))
-                item.add_column(new_column)
+    # Define a Solar Hemispere Unit
+    a = {}
+    u.def_unit(
+        "SH",
+        represents=(2 * np.pi * u.solRad**2),
+        prefixes=True,
+        namespace=a,
+        doc="A solar hemisphere is the area of the visible solar disk.")
 
-    # Just add a column for ID
-    Map = {0: 'I', 1: 'IA', 2: 'II'}
-    # Map is for - > 0th table is I, 1st table is IA, 2nd Table is II.
-    for i in range(0, len(table)):
-        table[i].add_column(
-            Column(data=[Map[i]] * len(table[i]), name='ID', dtype='object_'))
+    # Set units on the table
+    out_table['Carrington Longitude'].unit = u.deg
+    out_table['Area'].unit = a['uSH']
+    out_table['Longitudinal Extent'].unit = u.deg
 
-    attributes.insert(0, 'ID')
-    master = Table(
-        names=attributes, dtype=['object_'] * len(attributes), meta=meta_data)
-    # We will store all the three tables as a single table, basically
-    # store all rows of all the three (or less) tables in 'master'
+    out_table.meta = meta_data
 
-    # Why are we doing This ?
-    # We first decide an order of the columns in the master table.
-    # This order is arbitrary (choose and fix on any order you like).
-    # The columns in the three (or less) tables in 'table', don't follow
-    # the same order we fixed on 'master'. We need to make them. Once we
-    # do that all that remains is to add all the rows to 'master'
-    for items in table:
-        # Take care of order of columns.
-        # OrderedDict because we care about order
-        # of columns.
-        dict_of_columns = collections.OrderedDict()
-        for columns in items.columns.values():
-            dict_of_columns[columns.name] = items[columns.name]
-        new_table = Table(
-        )  # The re-ordered table. Ordered according to 'master'
-        for cols in attributes:
-            new_table.add_column(dict_of_columns[cols])
-        for rows in new_table:
-            master.add_row(rows)
+    return QTable(out_table)
 
-    # Pre-process 'Location' variable.
-    latsign = {'N': 1, 'S': -1}
+
+def split_lines(file_lines):
+    """
+    Given all the lines in the file split based on the three sections and
+    return the lines for the header and a list of lines for each section that
+    is not 'None'
+    """
+    section_lines = []
+    for i, line in enumerate(file_lines):
+        if line.startswith(("I.", "IA.", "II.")):
+            section_lines.append(i)
+
+    header = file_lines[:section_lines[0]]
+    header += [file_lines[s] for s in section_lines]
+
+    # Append comments to the comment lines
+    for l in section_lines:
+        file_lines[l] = '# ' + file_lines[l]
+
+    t1_lines = file_lines[section_lines[0]:section_lines[1]]
+    # Remove the space so table reads it correctly
+    t1_lines[1] = t1_lines[1].replace('Mag Type', 'MagType')
+    t2_lines = file_lines[section_lines[1]:section_lines[2]]
+    t3_lines = file_lines[section_lines[2]:]
+
+    lines = [t1_lines, t2_lines, t3_lines]
+    for i, ll in enumerate(lines):
+        if ll[2].strip() == 'None':
+            lines[i] = None
+
+    return header, lines
+
+
+def get_meta_data(header):
+    """
+    Convert a list of header lines into a meta data dict.
+    """
+    meta_lines = []
+    for l in header:
+        if l.startswith(':'):
+            meta_lines.append(l)
+
+    meta_data = {}
+    for m in meta_lines:
+        k, v = m.strip().split(':')[1:]
+        meta_data[k.lower()] = v.strip()
+    meta_data['issued'] = datetime.datetime.strptime(meta_data['issued'],
+                                                     "%Y %b %d %H%M UTC")
+
+    # Get ID descriptions
+    meta_data['id'] = {}
+    for h in header:
+        if h.startswith(("I.", "IA.", "II.")):
+            i = h.find('.')
+            k = h[:i]
+            v = h[i + 2:]
+            meta_data['id'][k] = v.strip()
+
+    meta_data['header'] = [h.strip() for h in header]
+    return meta_data
+
+
+def parse_longitude(value):
+    """
+    Parse longitude in the form 'W10' or 'E10'
+    """
     lonsign = {'W': 1, 'E': -1}
-    latitude, longitude = list(), list()
-    mask_arr = list()
-    for value in master['Location']:
-        # If value is NULL, just mask it.
-        if value.__class__.__name__ == 'MaskedConstant':
-            latitude.append('-'), longitude.append('-')
-            mask_arr.append(True)
+    if "W" in value or "E" in value:
+        return lonsign[value[3]] * float(value[4:])
+
+
+def parse_latitude(value):
+    """
+    Parse latitude in the form 'S10' or 'N10'
+    """
+    latsign = {'N': 1, 'S': -1}
+    if "N" in value or "S" in value:
+        return latsign[value[0]] * float(value[1:3])
+
+
+def parse_location(column):
+    """
+    Given a column of location data in the form 'S10E10' convert to two columns
+    of angles.
+    """
+    latitude = MaskedColumn(name="Latitude", unit=u.deg)
+    longitude = MaskedColumn(name="Longitude", unit=u.deg)
+
+    for i, loc in enumerate(column):
+        if loc:
+            lati = parse_latitude(loc)
+            longi = parse_longitude(loc)
+            latitude = latitude.insert(i, lati)
+            longitude = longitude.insert(i, longi)
         else:
-            lati = latsign[value[0]] * float(value[1:3])
-            longi = lonsign[value[3]] * float(value[4:])
-            latitude.append(lati), longitude.append(longi)
-            mask_arr.append(False)
+            latitude = latitude.insert(i, None, mask=True)
+            longitude = longitude.insert(i, None, mask=True)
+    return latitude, longitude
 
-    # All columns in master are of type object_,
-    # Convert them to the requisite types. The rows
-    # or the column data is of the correct data type, courtesy
-    # previous pre-processing, now make the column data type aware in
-    # Master.
-    for cols in master.columns.values():
-        flag = False
-        # Check if column has a floating point number.
-        # Ignore masked values.
-        for vals in master[cols.name]:
-            if vals.__class__.__name__ != 'MaskedConstant':
-                try:
-                    float(vals)
-                    flag = True
-                except ValueError:
-                    pass
-        if flag:
-            column = master[cols.name].astype(float)
-            master.replace_column(cols.name, column)
 
-    master.rename_column('Lo', 'CarringtonLong')
-    master.add_column(
-        MaskedColumn(
-            data=latitude, name='Latitude', mask=mask_arr, unit='u.deg'))
-    master.add_column(
-        MaskedColumn(
-            data=longitude, name='Longitude', mask=mask_arr, unit='u.deg'))
-    master.remove_column('Location')
-    master['Area'].unit = 'u.m**2'
-    master['Lat'].unit = 'u.deg'
-    master['CarringtonLong'].unit = 'u.deg'
-    return master
+def parse_lat_col(column, latitude_column):
+    """
+    Given an input column of Latitudes in the form 'S10' parse them and add
+    them to an existing column of Latitudes.
+    """
+    for i, loc in enumerate(column):
+        if loc:
+            latitude_column[i] = parse_latitude(loc)
+    return latitude_column
