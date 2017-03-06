@@ -3,6 +3,8 @@
 from __future__ import absolute_import, division, print_function
 
 import os.path
+import socket
+import warnings
 from zipfile import ZipFile
 from shutil import move
 
@@ -40,8 +42,8 @@ _files = {
     "AIA_171_ROLL_IMAGE": ("aiacalibim5.fits.gz", ""),
     "AIA_94_CUTOUT": ("ssw_cutout_20121030_153001_AIA_94_.fts", ""),
     "EVE_LIGHTCURVE": ("20120620_EVE_L0CS_DIODES_1m.txt", ""),
-# Uncomment this if it needs to be used. Commented out to save bandwidth.
-#    "LYRA_LIGHTCURVE": ("lyra_20110810-000000_lev2_std.fits.gz", ""),
+    # Uncomment this if it needs to be used. Commented out to save bandwidth.
+    # "LYRA_LIGHTCURVE": ("lyra_20110810-000000_lev2_std.fits.gz", ""),
     "LYRA_LEVEL3_LIGHTCURVE": ("lyra_20150101-000000_lev3_std.fits.gz", ""),
     "GOES_LIGHTCURVE": ("go1520120601.fits.gz", ""),
     "GBM_LIGHTCURVE": ("glg_cspec_n5_110607_v00.pha", ""),
@@ -74,6 +76,10 @@ def download_sample_data(progress=True, overwrite=True, timeout=None):
     -------
     None
     """
+    # Creating the directory for sample files to be downloaded
+    if not os.path.isdir(config.get('downloads', 'sample_dir')):
+        os.makedirs(config.get('downloads', 'sample_dir'))
+
     number_of_files_fetched = 0
     print("Downloading sample files to {}".format(sampledata_dir))
     for file_name in six.itervalues(_files):
@@ -85,21 +91,27 @@ def download_sample_data(progress=True, overwrite=True, timeout=None):
 
         for base_url in _base_urls:
             full_file_name = file_name[0] + file_name[1]
-            if url_exists(os.path.join(base_url, full_file_name)):
-                f = download_file(os.path.join(base_url, full_file_name), timeout=timeout)
-                real_name, ext = os.path.splitext(full_file_name)
+            try:
+                exists = url_exists(os.path.join(base_url, full_file_name))
+                if exists:
+                    f = download_file(os.path.join(base_url, full_file_name))
+                    real_name, ext = os.path.splitext(full_file_name)
 
-                if file_name[1] == '.zip':
-                    print("Unpacking: {}".format(real_name))
-                    with ZipFile(f, 'r') as zip_file:
-                        zip_file.extract(real_name, sampledata_dir)
-                    os.remove(f)
-                else:
-                    # move files to the data directory
-                    move(f, os.path.join(sampledata_dir, file_name[0]))
-                # increment the number of files obtained to check later
-                number_of_files_fetched += 1
-                break
+                    if file_name[1] == '.zip':
+                        print("Unpacking: {}".format(real_name))
+                        with ZipFile(f, 'r') as zip_file:
+                            zip_file.extract(real_name, sampledata_dir)
+                        os.remove(f)
+                    else:
+                        # move files to the data directory
+                        move(f, os.path.join(sampledata_dir, file_name[0]))
+                    # increment the number of files obtained to check later
+                    number_of_files_fetched += 1
+                    break
+            except (socket.error, socket.timeout) as e:
+                warnings.warn("Download failed with error {}. \n"
+                              "Retrying with different mirror.".format(e))
 
     if number_of_files_fetched < len(list(_files.keys())):
-        raise URLError("Could not download all samples files. Problem with accessing sample data servers.")
+        raise URLError("Could not download all samples files."
+                       "Problem with accessing sample data servers.")
