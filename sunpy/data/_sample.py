@@ -76,6 +76,10 @@ def download_sample_data(progress=True, overwrite=True, timeout=None):
     -------
     None
     """
+    # Creating the directory for sample files to be downloaded
+    if not os.path.isdir(config.get('downloads', 'sample_dir')):
+        os.makedirs(config.get('downloads', 'sample_dir'))
+
     number_of_files_fetched = 0
     print("Downloading sample files to {}".format(sampledata_dir))
     for file_name in six.itervalues(_files):
