@@ -41,15 +41,15 @@ def load_config():
     ]
     _fix_filepaths(config, filepaths)
 
-    # check for sunpy working directory and create it if it doesn't exist
-    if not os.path.isdir(config.get('downloads', 'download_dir')):
-        os.mkdir(config.get('downloads', 'download_dir'))
-
-    if not os.path.isdir(config.get('downloads', 'sample_dir')):
-        os.mkdir(config.get('downloads', 'sample_dir'))
-
     return config
 
+def create_download_dir():
+    '''
+    Get the config of download directory and create one if not present.
+    '''
+    config = load_config()
+    if not os.path.isdir(config.get('downloads', 'download_dir')):
+        os.makedirs(config.get('downloads', 'download_dir'))
 
 def print_config():
     """Print current configuration options"""
@@ -157,10 +157,6 @@ def _fix_filepaths(config, filepaths):
         val = config.get(*f)
 
         filepath = _expand_filepath(val, working_dir)
-
-        # Create dir if it doesn't already exist
-        if not os.path.isdir(filepath):
-            os.makedirs(filepath)
 
         # Replace config value with full filepath
         params = f + (filepath,)

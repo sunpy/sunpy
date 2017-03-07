@@ -14,13 +14,14 @@ import pandas
 from sunpy.time import parse_time
 from sunpy import config
 from sunpy.util.net import check_download_file
+from sunpy.util.config import create_download_dir
 from sunpy import lightcurve
 
 from sunpy.extern.six.moves import urllib
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 LYTAF_PATH = config.get("downloads", "download_dir")
-
+create_download_dir()
 
 def remove_lytaf_events_from_lightcurve(lc, artifacts=None,
                                         return_artifacts=False,
