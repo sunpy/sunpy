@@ -66,6 +66,7 @@ from sunpy.time import parse_time
 from sunpy import config
 from sunpy import lightcurve
 from sunpy.util.net import check_download_file
+from sunpy.util.config import create_download_dir
 from sunpy import sun
 
 GOES_CONVERSION_DICT = {'X': u.Quantity(1e-4, "W/m^2"),
@@ -88,6 +89,7 @@ except socket.gaierror:
 GOES_REMOTE_PATH = "http://{0}/ssw/gen/idl/synoptic/goes/".format(HOST)
 # Define location where data files should be downloaded to.
 DATA_PATH = config.get("downloads", "download_dir")
+create_download_dir()
 # Define variables for file names
 FILE_TEMP_COR = "goes_chianti_temp_cor.csv"
 FILE_TEMP_PHO = "goes_chianti_temp_pho.csv"

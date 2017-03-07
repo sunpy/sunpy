@@ -25,6 +25,7 @@ from sunpy.io.header import FileHeader
 
 from sunpy.util.net import download_file
 from sunpy.util import expand_list
+from sunpy.util.config import create_download_dir
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
@@ -358,6 +359,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             elif (isinstance(arg,six.string_types) and
                   _is_url(arg)):
                 default_dir = sunpy.config.get("downloads", "download_dir")
+                create_download_dir()
                 url = arg
                 path = download_file(url, default_dir)
                 pairs = self._read_file(path, **kwargs)

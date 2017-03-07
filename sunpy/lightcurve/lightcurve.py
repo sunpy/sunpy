@@ -17,6 +17,7 @@ import pandas
 from sunpy import config
 from sunpy.time import is_time, TimeRange, parse_time
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
+from sunpy.util.config import create_download_dir
 from sunpy.extern.six.moves import urllib
 from sunpy.extern import six
 
@@ -275,6 +276,7 @@ for compatibility with map, please use meta instead""", Warning)
             download_dir = os.path.expanduser(kwargs["directory"])
         else:
             download_dir = config.get("downloads", "download_dir")
+            create_download_dir()
 
         # overwrite the existing file if the keyword is present
         if "overwrite" in kwargs:
