@@ -165,12 +165,12 @@ def reshape_image_to_4d_superpixel(img, dimensions, offset):
     An application of this reshaping is the following.  Let's say you have an
     array
 
-    x = np.array([[0, 0, 0, 1, 1, 1],
+    `x = np.array([[0, 0, 0, 1, 1, 1],
                   [0, 0, 1, 1, 0, 0],
                   [1, 1, 0, 0, 1, 1],
                   [0, 0, 0, 0, 1, 1],
                   [1, 0, 1, 0, 1, 1],
-                  [0, 0, 1, 0, 0, 0]])
+                  [0, 0, 1, 0, 0, 0]])`
 
     and you want to sum over 2x2 non-overlapping sub-arrays.  For example, you
     could have a noisy image and you want to increase the signal-to-noise ratio.
@@ -180,17 +180,17 @@ def reshape_image_to_4d_superpixel(img, dimensions, offset):
 
     This summing can be done by reshaping the array
 
-    y = x.reshape(3,2,3,2)
+    `y = x.reshape(3,2,3,2)`
 
     and then summing over the 1st and third directions
 
-    y2 = y.sum(axis=3).sum(axis=1)
+    `y2 = y.sum(axis=3).sum(axis=1)`
 
     which gives the expected array.
 
-    array([[0, 3, 2],
+    `array([[0, 3, 2],
            [2, 0, 4],
-           [1, 2, 2]])
+           [1, 2, 2]])`
 
     Parameters
     ----------
