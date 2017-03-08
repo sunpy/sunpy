@@ -557,7 +557,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
 
     # Ensure input values of flux ratio are within limits of model table
     if np.min(fluxratio) < np.min(modelratio) or \
-      np.max(fluxratio) > np.max(modelratio):
+       np.max(fluxratio) > np.max(modelratio):
         raise ValueError(
             "For GOES {0}, all values in fluxratio input must be within " +
             "the range {1} - {2}.".format(satellite, np.min(modelratio),
@@ -701,7 +701,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     # Initialize lists to hold model data of temperature - long channel
     # flux relationship read in from csv file.
-    modeltemp = [] # modelled temperature is in log_10 space in units of MK
+    modeltemp = []   # modelled temperature is in log_10 space in units of MK
     modelflux = []
     # Determine name of column in csv file containing model ratio values
     # for relevant GOES satellite
@@ -720,8 +720,8 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     # Ensure input values of flux ratio are within limits of model table
     if np.min(log10_temp) < np.min(modeltemp) or \
-      np.max(log10_temp) > np.max(modeltemp) or \
-      np.isnan(np.min(log10_temp)):
+       np.max(log10_temp) > np.max(modeltemp) or \
+       np.isnan(np.min(log10_temp)):
         raise ValueError("All values in temp must be within the range "
                          "{0} - {1} MK.".format(np.min(10**modeltemp),
                                                 np.max(10**modeltemp)))
@@ -863,6 +863,7 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
 
     return lc_new
 
+
 @u.quantity_input(temp=u.MK, em=u.cm**(-3))
 def _calc_rad_loss(temp, em, obstime=None, force_download=False,
                    download_dir=None):
@@ -960,7 +961,7 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
 
     # Initialize lists to hold model data of temperature - rad loss rate
     # relationship read in from csv file
-    modeltemp = [] # modelled temperature is in log_10 space in units of MK
+    modeltemp = []    # modelled temperature is in log_10 space in units of MK
     model_loss_rate = []
 
     # Read data from csv file into lists, being sure to skip commented
@@ -976,7 +977,7 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
     model_loss_rate = np.asarray(model_loss_rate)
     # Ensure input values of flux ratio are within limits of model table
     if temp.value.min() < modeltemp.min() or \
-        temp.value.max() > modeltemp.max():
+    temp.value.max() > modeltemp.max():
         raise ValueError("All values in temp must be within the range " +
                          "{0} - {1} MK.".format(np.min(modeltemp/1e6),
                                                 np.max(modeltemp/1e6)))
@@ -1021,11 +1022,11 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
         rad_loss_cumul = cumtrapz(rad_loss, obstime_seconds)
         rad_loss_cumul = u.Quantity(rad_loss_cumul, unit=rad_loss.unit*u.s)
         # Enter results into output dictionary.
-        rad_loss_out = {"rad_loss_rate":rad_loss,
-                        "rad_loss_cumul" : rad_loss_cumul,
-                        "rad_loss_int":rad_loss_int}
+        rad_loss_out = {"rad_loss_rate": rad_loss,
+                        "rad_loss_cumul": rad_loss_cumul,
+                        "rad_loss_int": rad_loss_int}
     else:
-        rad_loss_out = {"rad_loss_rate":rad_loss}
+        rad_loss_out = {"rad_loss_rate": rad_loss}
 
     return rad_loss_out
 
@@ -1225,14 +1226,15 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
         shortlum_cumul = cumtrapz(shortlum.value, obstime_seconds)
         shortlum_cumul = u.Quantity(shortlum_cumul,
                                     unit=shortlum.unit*u.s)
-        lx_out = {"longlum":longlum, "shortlum":shortlum,
-                  "longlum_cumul":longlum_cumul,
-                  "shortlum_cumul":shortlum_cumul,
-                  "longlum_int":longlum_int, "shortlum_int":shortlum_int}
+        lx_out = {"longlum": longlum, "shortlum": shortlum,
+                  "longlum_cumul": longlum_cumul,
+                  "shortlum_cumul": shortlum_cumul,
+                  "longlum_int": longlum_int, "shortlum_int": shortlum_int}
     else:
-        lx_out = {"longlum":longlum, "shortlum":shortlum}
+        lx_out = {"longlum": longlum, "shortlum": shortlum}
 
     return lx_out
+
 
 @u.quantity_input(flux=u.W/u.m/u.m)
 def _calc_xraylum(flux, date=None):
@@ -1305,13 +1307,13 @@ def flareclass_to_flux(flareclass):
     >>> flareclass_to_flux('X2.4')
     0.00024 W / m2
     """
-    if type(flareclass) != type('str'):
+    if not isinstance(flareclass, type('str')):
         raise TypeError("Input must be a string")
-    #TODO should probably make sure the string is in the expected format.
+    # TODO should probably make sure the string is in the expected format.
 
     flareclass = flareclass.upper()
-    #invert the conversion dictionary
-    #conversion_dict = {v: k for k, v in GOES_CONVERSION_DICT.items()}
+    # invert the conversion dictionary
+    # conversion_dict = {v: k for k, v in GOES_CONVERSION_DICT.items()}
     return float(flareclass[1:]) * GOES_CONVERSION_DICT[flareclass[0]]
 
 @u.quantity_input(goesflux=u.watt/u.m**2)
@@ -1357,7 +1359,7 @@ def flux_to_flareclass(goesflux):
         raise ValueError("Flux cannot be negative")
 
     decade = np.floor(np.log10(goesflux.to('W/m**2').value))
-    #invert the conversion dictionary
+    # invert the conversion dictionary
     conversion_dict = {v: k for k, v in GOES_CONVERSION_DICT.items()}
     if decade < -8:
         str_class = "A"
@@ -1366,6 +1368,6 @@ def flux_to_flareclass(goesflux):
         str_class = "X"
         decade = -4
     else:
-        str_class = conversion_dict.get(u.Quantity(10 ** decade, "W/m**2" ))
+        str_class = conversion_dict.get(u.Quantity(10 ** decade, "W/m**2"))
     goes_subclass = 10 ** -decade * goesflux.to('W/m**2').value
     return "{0}{1:.3g}".format(str_class, goes_subclass)

@@ -23,6 +23,7 @@ LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 LYTAF_PATH = config.get("downloads", "download_dir")
 create_download_dir()
 
+
 def remove_lytaf_events_from_lightcurve(lc, artifacts=None,
                                         return_artifacts=False,
                                         lytaf_path=None,
@@ -115,6 +116,7 @@ def remove_lytaf_events_from_lightcurve(lc, artifacts=None,
         return lc_new, artifact_status
     else:
         return lc_new
+
 
 def _remove_lytaf_events(time, channels=None, artifacts=None,
                          return_artifacts=False, fitsfile=None,
@@ -520,6 +522,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
 
     return lytaf
 
+
 def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
     """Prints the different event types in the each of the LYTAF databases.
 
@@ -650,20 +653,21 @@ def split_series_using_lytaf(timearray, data, lytaf):
             # can't index h+1 here. Go to end of series
             subtimes = datetime_array[disc[h]:-1]
             subdata = data[disc[h]:-1]
-            subseries = {'subtimes':subtimes, 'subdata':subdata}
+            subseries = {'subtimes': subtimes, 'subdata': subdata}
             split_series.append(subseries)
         else:
             subtimes = datetime_array[disc[h]:disc[h+1]]
             subdata = data[disc[h]:disc[h+1]]
-            subseries = {'subtimes':subtimes, 'subdata':subdata}
+            subseries = {'subtimes': subtimes, 'subdata': subdata}
             split_series.append(subseries)
 
     return split_series
 
+
 def _lytaf_event2string(integers):
     if type(integers) == int:
         integers = [integers]
-    #else:
+    # else:
     #    n=len(integers)
     out = []
 
@@ -692,6 +696,7 @@ def _lytaf_event2string(integers):
             out.append('Venus in SWAP')
 
     return out
+
 
 def _prep_columns(time, channels=None, filecolumns=None):
     """

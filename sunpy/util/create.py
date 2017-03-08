@@ -16,6 +16,7 @@ from sunpy.extern.six.moves import map
 
 __all__ = ['Parent']
 
+
 class Parent(object):
     _create = ConditionalDispatch()
 
@@ -86,9 +87,9 @@ Parent._create.add(
     [type, six.string_types], check=False
 )
 Parent._create.add(
-# pylint: disable=W0108
-# The lambda is necessary because introspection is performed on the
-# argspec of the function.
+    # pylint: disable=W0108
+    # The lambda is necessary because introspection is performed on the
+    # argspec of the function.
     run_cls('from_dir'),
     lambda cls, directory: os.path.isdir(os.path.expanduser(directory)),
     [type, six.string_types], check=False
@@ -97,8 +98,8 @@ Parent._create.add(
 Parent._create.add(
     run_cls('from_single_glob'),
     lambda cls, singlepattern: ('*' in singlepattern and
-                           len(glob.glob(
-                               os.path.expanduser(singlepattern))) == 1),
+                                len(glob.glob(
+                                os.path.expanduser(singlepattern))) == 1),
     [type, six.string_types], check=False
 )
 # This case only gets executed under the condition that the previous one wasn't.
