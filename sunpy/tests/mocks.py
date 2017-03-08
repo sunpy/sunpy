@@ -106,6 +106,7 @@ class MockHTTPResponse(MockObject):
         The url of the connection
 
     headers : `dict` of `str` optional, default: empty dictionary
+        HTTP header fields of the response message.
 
     Limitations
     -----------
