@@ -36,14 +36,14 @@ class Response():
     ----------
     """
 
-    channel_colors = {94:'#ff3a3a',131:'#6060ff',171:'#f1de1f',193:'#4cec4c',211:'#ed64c6',335:'#45deed',304:'k',1600:'b',1700:'g',4500:'r'}
+
+    channel_colors = {94:'#ff3a3a',131:'#6060ff',171:'#f1de1f',193:'#4cec4c',211:'#ed64c6',
+                        335:'#45deed',304:'k',1600:'b',1700:'g',4500:'r'}
 
     def __init__(self, channel_list=[94,131,171,193,335,211,304], ssw_path='', version=6):
-        tmp = os.path.join(ssw_path,'sdo','aia','response',
-                                'aia_V{}_{}_fullinst.genx')
+        tmp = os.path.join(ssw_path,'sdo','aia','response','aia_V{}_{}_fullinst.genx')
         instrument_files = [tmp.format(version,'all'),tmp.format(version,'fuv')]
         self._get_channel_info(channel_list,instrument_files)
-
 
     def _get_channel_info(self,channel_list,instrument_files):
         """
@@ -53,15 +53,13 @@ class Response():
         -----
         This will probably change once instrument data is acquired through other means.
         """
-        data_table = aia_instr_properties_to_table(channel_list,
-                                                    instrument_files)
+        data_table = aia_instr_properties_to_table(channel_list,instrument_files)
         self._channel_info = {}
         for c in channel_list:
             index = channel_list.index(c)
             self._channel_info[c] = {property : data_table[property][index] for property in data_table.columns.keys()}
 
-
-    def _calculate_effective_area(self, channel):
+    def calculate_effective_area(self, channel):
         """
         AIA photometric calibration was obtained by making component-level measurements of all the optical elements in
         the AIA telescopes (mirrors, filters, and CCD), and combining those measurements analytically to produce a model
@@ -98,8 +96,7 @@ class Response():
 
         return effective_area
 
-
-    def _calculate_system_gain(self, channel):
+    def calculate_system_gain(self, channel):
         """
         The CCD camera system gain is calculated using  a standard conversion of photons to detected electrons with the camera gain.
 
@@ -122,7 +119,6 @@ class Response():
         # gain = elecperphot / elecperdn
         return electron_per_photon/self._channel_info[channel]['electron_per_dn']
 
-
     def calculate_wavelength_response(self):
         """
         Describes the (AIA) instrument wavelength response by calculating effective area as a function of wavelength for the strongest emission lines present in the solar feature. This should display a peaked value around the channel wavelength centers.
@@ -137,10 +133,9 @@ class Response():
 
         self.wavelength_response = {}
         for channel in self._channel_info:
-            system_gain = self._calculate_system_gain(channel)
-            effective_area = self._calculate_effective_area(channel)
+            system_gain = self.calculate_system_gain(channel)
+            effective_area = self.calculate_effective_area(channel)
             self.wavelength_response[channel] = {'wavelength':self._channel_info[channel]['wavelength'], 'response':system_gain*effective_area}
-
 
     def peek_wavelength_response(self):
         """
@@ -162,7 +157,6 @@ class Response():
         ax.set_xlim([lambda_min-lambda_diff,lambda_max+lambda_diff])
         ax.legend(loc='best')
         plt.show()
-
 
     def wavelength_range_index(self, channel):
         """
@@ -195,7 +189,6 @@ class Response():
                 break
 
         return index
-
 
     def calculate_temperature_response(self, channel, trapz1=False, trapz2=False, **kwargs):
         """
@@ -291,7 +284,6 @@ class Response():
         # define temperature response dictionary
         self.temperature_response = {'temperature': temperature_array, 'temperature response': temp_response}
 
-
     def get_temperature_response_functions(self):
         '''
 
@@ -300,9 +292,6 @@ class Response():
         :return: dictionary
             Each key is the channel and the value is a dictionary with temperatures and temperature response array
         '''
-
-
-
         out_dictionary = {}
 
         for channel_wavelength in self.channel_list:
