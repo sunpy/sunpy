@@ -8,6 +8,7 @@ from sunpy.extern.six.moves import range
 
 __all__ = ['resample', 'reshape_image_to_4d_superpixel']
 
+
 def resample(orig, dimensions, method='linear', center=False, minusone=False):
     """Returns a new `numpy.ndarray` that has been resampled up or down.
 
@@ -62,15 +63,15 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
         orig = orig.astype(np.float64)
 
     dimensions = np.asarray(dimensions, dtype=np.float64)
-    m1 = np.array(minusone, dtype=np.int64) # array(0) or array(1)
+    m1 = np.array(minusone, dtype=np.int64)  # array(0) or array(1)
     offset = np.float64(center * 0.5)       # float64(0.) or float64(0.5)
 
     # Resample data
     if method == 'neighbor':
         data = _resample_neighbor(orig, dimensions, offset, m1)
-    elif method in ['nearest','linear']:
+    elif method in ['nearest', 'linear']:
         data = _resample_nearest_linear(orig, dimensions, method,
-                                             offset, m1)
+                                        offset, m1)
     elif method == 'spline':
         data = _resample_spline(orig, dimensions, offset, m1)
     else:
@@ -105,7 +106,7 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
         new_data = new_data.transpose(trorder)
 
         mint = scipy.interpolate.interp1d(old_coords[i], new_data,
-            bounds_error=False, fill_value=min(old_coords[i]), kind=method)
+                                          bounds_error=False, fill_value=min(old_coords[i]), kind=method)
         new_data = mint(dimlist[i])
 
     if orig.ndim > 1:
@@ -135,15 +136,15 @@ def _resample_spline(orig, dimensions, offset, m1):
 
     oslices = [slice(0, j) for j in orig.shape]
     # FIXME: not used?!
-    old_coords = np.ogrid[oslices] #pylint: disable=W0612
+    old_coords = np.ogrid[oslices]  # pylint: disable=W0612
     nslices = [slice(0, j) for j in list(dimensions)]
     newcoords = np.mgrid[nslices]
 
     newcoords_dims = list(range(np.rank(newcoords)))
 
-    #make first index last
+    # make first index last
     newcoords_dims.append(newcoords_dims.pop(0))
-    newcoords_tr = newcoords.transpose(newcoords_dims) #pylint: disable=W0612
+    newcoords_tr = newcoords.transpose(newcoords_dims)  # pylint: disable=W0612
 
     # makes a view that affects newcoords
     newcoords_tr += offset
@@ -163,14 +164,14 @@ def reshape_image_to_4d_superpixel(img, dimensions, offset):
     makes it very easy to perform operations on superpixels.
 
     An application of this reshaping is the following.  Let's say you have an
-    array
+    array::
 
-    `x = np.array([[0, 0, 0, 1, 1, 1],
-                  [0, 0, 1, 1, 0, 0],
-                  [1, 1, 0, 0, 1, 1],
-                  [0, 0, 0, 0, 1, 1],
-                  [1, 0, 1, 0, 1, 1],
-                  [0, 0, 1, 0, 0, 0]])`
+        `x = np.array([[0, 0, 0, 1, 1, 1],
+                       [0, 0, 1, 1, 0, 0],
+                       [1, 1, 0, 0, 1, 1],
+                       [0, 0, 0, 0, 1, 1],
+                       [1, 0, 1, 0, 1, 1],
+                       [0, 0, 1, 0, 0, 0]])`
 
     and you want to sum over 2x2 non-overlapping sub-arrays.  For example, you
     could have a noisy image and you want to increase the signal-to-noise ratio.
@@ -178,19 +179,19 @@ def reshape_image_to_4d_superpixel(img, dimensions, offset):
     superpixel array of the original data.  Every pixel in the superpixel array
     is the sum of the values in a 2x2 sub-array of the original array,
 
-    This summing can be done by reshaping the array
+    This summing can be done by reshaping the array::
 
-    `y = x.reshape(3,2,3,2)`
+        `y = x.reshape(3,2,3,2)`
 
     and then summing over the 1st and third directions
 
-    `y2 = y.sum(axis=3).sum(axis=1)`
+        `y2 = y.sum(axis=3).sum(axis=1)`
 
-    which gives the expected array.
+    which gives the expected array::
 
-    `array([[0, 3, 2],
-           [2, 0, 4],
-           [1, 2, 2]])`
+        `array([[0, 3, 2],
+               [2, 0, 4],
+               [1, 2, 2]])`
 
     Parameters
     ----------
@@ -226,8 +227,8 @@ def reshape_image_to_4d_superpixel(img, dimensions, offset):
 
     # Reshape up to a higher dimensional array which is useful for higher
     # level operations
-    return (img[int(offset[0]):int(offset[0] + na*dimensions[0]),
-                int(offset[1]):int(offset[1] + nb*dimensions[1])]).reshape(na, dimensions[0], nb, dimensions[1])
+    return (img[int(offset[0]):int(offset[0] + na * dimensions[0]),
+                int(offset[1]):int(offset[1] + nb * dimensions[1])]).reshape(na, dimensions[0], nb, dimensions[1])
 
 
 class UnrecognizedInterpolationMethod(ValueError):
