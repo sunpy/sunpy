@@ -17,7 +17,7 @@ import sunpy
 from sunpy.extern import six
 from sunpy.time import TimeRange
 from sunpy.util import replacement_filename
-from sunpy.util.config import create_download_dir
+from sunpy.util.config import get_and_create_download_dir
 from sunpy import config
 
 from ..download import Downloader, Results
@@ -272,14 +272,10 @@ class GenericClient(object):
         for url in urls:
             filenames.append(url.split('/')[-1])
 
-        # Create function to compute the filepath to download to if not set
-        default_dir = sunpy.config.get("downloads", "download_dir")
-        create_download_dir()
-
         paths = []
         for i, filename in enumerate(filenames):
             if path is None:
-                fname = os.path.join(default_dir, '{file}')
+                fname = os.path.join(get_and_create_download_dir(), '{file}')
             elif isinstance(path, six.string_types) and '{file}' not in path:
                 fname = os.path.join(path, '{file}')
 

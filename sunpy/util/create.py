@@ -8,7 +8,7 @@ import glob
 
 from sunpy import config
 from sunpy.util.net import download_file
-from sunpy.util.config import create_download_dir
+from sunpy.util.config import get_and_create_download_dir
 
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.extern import six
@@ -75,9 +75,7 @@ class Parent(object):
         url : str
             URL to retrieve the data from
         """
-        default_dir = config.get("downloads", "download_dir")
-        create_download_dir()
-        path = download_file(url, default_dir)
+        path = download_file(url, get_and_create_download_dir())
         return cls.read(path)
 
 

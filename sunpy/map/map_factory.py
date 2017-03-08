@@ -18,7 +18,7 @@ from sunpy.io.header import FileHeader
 from sunpy.util.net import download_file
 from sunpy.util import expand_list
 from sunpy.util.metadata import MetaDict
-from sunpy.util.config import create_download_dir
+from sunpy.util.config import get_and_create_download_dir
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
@@ -211,10 +211,8 @@ class MapFactory(BasicRegistrationFactory):
             # A URL
             elif (isinstance(arg, six.string_types) and
                   _is_url(arg)):
-                default_dir = sunpy.config.get("downloads", "download_dir")
-                create_download_dir()
                 url = arg
-                path = download_file(url, default_dir)
+                path = download_file(url, get_and_create_download_dir())
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
