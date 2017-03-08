@@ -66,7 +66,7 @@ from sunpy.time import parse_time
 from sunpy import config
 from sunpy import lightcurve
 from sunpy.util.net import check_download_file
-from sunpy.util.config import create_download_dir
+from sunpy.util.config import get_and_create_download_dir
 from sunpy import sun
 
 GOES_CONVERSION_DICT = {'X': u.Quantity(1e-4, "W/m^2"),
@@ -87,9 +87,6 @@ try:
 except socket.gaierror:
     HOST = ''
 GOES_REMOTE_PATH = "http://{0}/ssw/gen/idl/synoptic/goes/".format(HOST)
-# Define location where data files should be downloaded to.
-DATA_PATH = config.get("downloads", "download_dir")
-create_download_dir()
 # Define variables for file names
 FILE_TEMP_COR = "goes_chianti_temp_cor.csv"
 FILE_TEMP_PHO = "goes_chianti_temp_pho.csv"
@@ -256,7 +253,7 @@ def calculate_temperature_em(goeslc, abundances="coronal",
     if not isinstance(goeslc, lightcurve.LightCurve):
         raise TypeError("goeslc must be a LightCurve object.")
     if not download_dir:
-        download_dir = DATA_PATH
+        download_dir = get_and_create_download_dir()
 
     # Find temperature and emission measure with _goes_chianti_tem
     temp, em = _goes_chianti_tem(
@@ -377,7 +374,7 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
 
     """
     if not download_dir:
-        download_dir = DATA_PATH
+        download_dir = get_and_create_download_dir()
     # ENSURE INPUTS ARE OF CORRECT TYPE AND VALID VALUES
     longflux = longflux.to(u.W/u.m/u.m)
     shortflux = shortflux.to(u.W/u.m/u.m)
@@ -513,7 +510,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
 
     """
     if not download_dir:
-        download_dir = DATA_PATH
+        download_dir = get_and_create_download_dir()
     # If download kwarg is True, or required data files cannot be
     # found locally, download required data files.
     check_download_file(FILE_TEMP_COR, GOES_REMOTE_PATH, download_dir,
@@ -546,7 +543,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
     label = "ratioGOES{0}".format(satellite)
     # Read data representing appropriate temperature--flux ratio
     # relationship depending on satellite number and assumed abundances.
-    with open(os.path.join(DATA_PATH, data_file), "r") as csvfile:
+    with open(os.path.join(get_and_create_download_dir(), data_file), "r") as csvfile:
         startline = dropwhile(lambda l: l.startswith("#"), csvfile)
         csvreader = csv.DictReader(startline, delimiter=";")
         for row in csvreader:
@@ -669,7 +666,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     """
     if not download_dir:
-        download_dir = DATA_PATH
+        download_dir = get_and_create_download_dir()
     # If download kwarg is True, or required data files cannot be
     # found locally, download required data files.
     check_download_file(FILE_EM_COR, GOES_REMOTE_PATH, download_dir,
@@ -709,7 +706,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
 
     # Read data representing appropriate temperature--long flux
     # relationship depending on satellite number and assumed abundances.
-    with open(os.path.join(DATA_PATH, data_file), "r") as csvfile:
+    with open(os.path.join(get_and_create_download_dir(), data_file), "r") as csvfile:
         startline = dropwhile(lambda l: l.startswith("#"), csvfile)
         csvreader = csv.DictReader(startline, delimiter=";")
         for row in csvreader:
@@ -833,7 +830,7 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
 
     """
     if not download_dir:
-        download_dir = DATA_PATH
+        download_dir = get_and_create_download_dir()
     # Check that input argument is of correct type
     if not isinstance(goeslc, lightcurve.LightCurve):
         raise TypeError("goeslc must be a LightCurve object.")
@@ -948,7 +945,7 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
     <Quantity [  3.01851392e+19,  3.01851392e+19] J / s>
     """
     if not download_dir:
-        download_dir = DATA_PATH
+        download_dir = get_and_create_download_dir()
     # Check inputs are correct
     temp = temp.to(u.K)
     em = em.to(1/u.cm**3)
@@ -966,7 +963,7 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
 
     # Read data from csv file into lists, being sure to skip commented
     # lines beginning with "#"
-    with open(os.path.join(DATA_PATH, FILE_RAD_COR),
+    with open(os.path.join(get_and_create_download_dir(), FILE_RAD_COR),
               "r") as csvfile:
         startline = csvfile.readlines()[7:]
         csvreader = csv.reader(startline, delimiter=" ")
