@@ -45,10 +45,10 @@ def aia_instr_properties_to_table(channel_list,instrument_files):
                     ('ccd','quantum_efficiency_ccd'),
                     ('contam','ccd_contamination')]
     #corresponding units for each field
-    unitless = u.m/u.m
-    units = [u.angstrom, u.angstrom, u.angstrom, unitless, u.cm**2, u.cm**2,
-            u.steradian/u.pixel, u.electron/u.count, u.electron/u.eV, unitless,
-            unitless, unitless, unitless, unitless, unitless]
+    units = [u.angstrom, u.angstrom, u.angstrom, u.dimensionless, u.cm**2, u.cm**2,
+            u.steradian/u.pixel, u.electron/u.count, u.electron/u.eV, u.dimensionless,
+            u.dimensionless, u.dimensionless, u.dimensionless, u.dimensionless,
+            u.dimensionless]
     units = {p[1] : u for p,u in zip(properties,units)}
     units['channel'] = u.angstrom
     #field name format
