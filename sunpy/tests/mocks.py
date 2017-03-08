@@ -5,7 +5,6 @@ Author: Michael Charlton <m.charlton@mac.com>
 """
 
 import io
-import os
 
 from collections import MutableMapping, defaultdict
 
@@ -106,7 +105,7 @@ class MockHTTPResponse(MockObject):
     url : `str` optional, default: ''
         The url of the connection
 
-    headers : `dict` of str optional, default: empty dictionary
+    headers : `dict` of `str` optional, default: empty dictionary
 
     Limitations
     -----------
@@ -133,9 +132,10 @@ class MockHTTPResponse(MockObject):
         self['headers'] = headers_store
 
 
-class MockOpenFile(MockObject):
+class MockOpenTextFile(MockObject):
     """
-    Partial implementation of a file like object.
+    Partial implementation of a file like object for reading/wrtiing text files. Binary files
+    are *not* supported.
 
     Many methods not implemented, no attempt is made to keep track of where we are
     in the file say in regards to any read operation.
@@ -160,10 +160,10 @@ class MockOpenFile(MockObject):
     Examples
     --------
 
-    >>> dummy_read_only = MockOpenFile()
-    >>> named_write = MockOpenFile(file='a.txt', mode='w')
-    >>> named_read = MockOpenFile('b.txt')
-    >>> named_rd_wr = MockOpenFile('c.txt', 'r+', data='Hello, world')
+    >>> dummy_read_only = MockOpenTextFile()
+    >>> named_write = MockOpenTextFile(file='a.txt', mode='w')
+    >>> named_read = MockOpenTextFile('b.txt')
+    >>> named_rd_wr = MockOpenTextFile('c.txt', 'r+', data='Hello, world')
     """
     def __init__(self, *args, **kwargs):
 
@@ -182,7 +182,7 @@ class MockOpenFile(MockObject):
         if 'mode' not in kwargs:
             kwargs['mode'] = 'r'
 
-        super(MockOpenFile, self).__init__(**kwargs)
+        super(MockOpenTextFile, self).__init__(**kwargs)
         self.setdefault('file', 'N/A')
         self['name'] = self['file']
         self.setdefault('closed', False)
@@ -206,7 +206,9 @@ class MockOpenFile(MockObject):
         if self.closed:
             raise ValueError('I/O operation on closed file')
 
-        new_line = os.linesep
+        # Documentation recommends using '\n' as the line terminator when reading/writing text
+        # files. See `os.linesep` in https://docs.python.org/3/library/os.html
+        new_line = '\n'
         return ['{0}{1}'.format(line, new_line) for line in self.data.split(new_line)]
 
     def readable(self):

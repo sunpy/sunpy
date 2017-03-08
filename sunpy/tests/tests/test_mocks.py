@@ -3,7 +3,7 @@ import re
 
 import pytest
 
-from ..mocks import MockObject, MockOpenFile, MockHTTPResponse
+from ..mocks import MockObject, MockOpenTextFile, MockHTTPResponse
 
 
 @pytest.fixture
@@ -97,36 +97,39 @@ def test_MockObject_del(mocked_mockobject):
 
 def test_MockObject_iter(mocked_mockobject):
     """
-    Test Test MockOpenFile.__iter__
+    Test Test MockOpenTextFile.__iter__
     """
     assert list(iter(mocked_mockobject)) == ['records']
 
 
-def test_repr_MockObject(mocked_mockobject):
+def test_repr_MockObject():
     """
-    Test MockOpenFile.__repr__
+    Test MockObject.__repr__
     """
-    mo_p = re.compile(r"^(?P<_><)sunpy\.tests\.mocks\.MockObject \{'records': 12\} "
-                      "at 0x[0-9A-Fa-f]+(?(_)>|)$")
+    empty = MockObject()
 
-    assert mo_p.match(repr(mocked_mockobject)) is not None
+    mo_p = re.compile(r"^(?P<_><)sunpy\.tests\.mocks\.MockObject \{\} "
+                      "at 0x[0-9A-Fa-f]+L?(?(_)>|)$")
+    assert mo_p.match(repr(empty)) is not None
 
 
-def test_read_only_mode_MockOpenFile():
+def test_read_only_mode_MockOpenTextFile():
     """
     Reading from a read only file, wrtiting should be prohibited.
     """
-    data = r'a\nbc\nd'
+    new_line = '\n'
+    content = r'a{0}bc{0}nd{0}{0}'.format(new_line)
 
-    read_only = MockOpenFile('rom.txt', data=data)
+    read_only = MockOpenTextFile('rom.txt', data=content)
     assert read_only.readable() is True
     assert read_only.writable() is False
 
     with pytest.raises(io.UnsupportedOperation):
         read_only.write('')
 
-    assert read_only.read() == data
-    assert read_only.readlines() == ['{}\n'.format(line) for line in data.split('\n')]
+    assert read_only.read() == content
+    assert read_only.readlines() == ['{0}{1}'.format(line, new_line)
+                                     for line in content.split(new_line)]
     read_only.close()
 
     with pytest.raises(ValueError):
@@ -142,11 +145,11 @@ def test_read_only_mode_MockOpenFile():
         read_only.readlines()
 
 
-def test_write_only_mode_MockOpenFile():
+def test_write_only_mode_MockOpenTextFile():
     """
     Writing to to write-only file, reading should be prohibited.
     """
-    write_only = MockOpenFile('write.txt', 'w')
+    write_only = MockOpenTextFile('write.txt', 'w')
 
     assert write_only.readable() is False
     assert write_only.writable() is True
@@ -160,11 +163,11 @@ def test_write_only_mode_MockOpenFile():
     assert num_chars == len(data)
 
 
-def test_read_and_write_MockOpenFile():
+def test_read_and_write_MockOpenTextFile():
     """
     Reading & wrtiting to a file with read/write access.
     """
-    rd_wr = MockOpenFile(mode='r+')
+    rd_wr = MockOpenTextFile(mode='r+')
 
     assert rd_wr.name == 'N/A'
     assert rd_wr.readable() is True
@@ -187,14 +190,14 @@ def test_read_and_write_MockOpenFile():
     rd_wr.close()
 
 
-def test_repr_MockOpenFile():
+def test_repr_MockOpenTextFile():
     """
-    Test MockOpenFile.__repr__
+    Test MockOpenTextFile.__repr__
     """
-    mo_p = re.compile((r"^(?P<_><)sunpy\.tests\.mocks\.MockOpenFile file \'a\' "
-                       "mode \'r\' at 0x[0-9A-Fa-f]+(?(_)>|)$"))
+    mo_p = re.compile((r"^(?P<_><)sunpy\.tests\.mocks\.MockOpenTextFile file \'a\' "
+                       "mode \'r\' at 0x[0-9A-Fa-f]+L?(?(_)>|)$"))
 
-    assert mo_p.match(repr(MockOpenFile('a', 'r'))) is not None
+    assert mo_p.match(repr(MockOpenTextFile('a', 'r'))) is not None
 
 
 def test_MockHTTPResponse():
