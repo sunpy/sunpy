@@ -580,14 +580,14 @@ class Database(object):
         except KeyError:
             raise EntryNotFoundError(entry_id)
 
-    def get_entry_by_hdu_index(self, file, hdu_index=0):
+    def get_entry_by_hdu_index(self, file_name, hdu_index=0):
         """Get a hdu index entry by its unique index number. If an entry with the
         given index does not exist, :exc:`sunpy.database.HDUEntryNotFoundError` is
         raised.
 
         """
         try:
-            entries = read_file(file)
+            entries = read_file(file_name)
             return entries[hdu_index]
         except KeyError:
             raise HDUEntryNotFoundError(hdu_index)
