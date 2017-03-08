@@ -80,6 +80,12 @@ class Spectrum(np.ndarray):
             axes.hold(washold)
 
         return lines
+    
+    def check_dimensions():		#Function to raise error when dim(data)!=dim(freq_axis)
+    	spec = Spectrum(data,freq_axis)
+  	    if not (np.shape(spec.data) == np.shape(spec.freq_axis)):
+            raise ValueError
+
 
     def peek(self, **matplot_args):
         """
