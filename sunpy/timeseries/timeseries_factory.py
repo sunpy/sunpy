@@ -72,7 +72,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
     >>> my_timeseries = sunpy.timeseries.TimeSeries((data, header))   # doctest: +SKIP
 
-    headers and units are some base of `dict` or `~collections.OrderedDict` or `~sunpy.util.metadata.MetaDict`.
+    headers and units are some base of `dict` or `~collections.OrderedDict` or
+    `~sunpy.util.metadata.MetaDict`.
 
     * data, header pairs, or data, header units triples, not in tuples
 
@@ -87,7 +88,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     * Multiple files can be combined into one TimeSeries, as long as they are
     the same source   # doctest: +SKIP
 
-    >>> my_timeseries = sunpy.timeseries.TimeSeries(['goesfile1.fits', 'goesfile2.fits'], concatenate=True)
+    >>> my_timeseries = sunpy.timeseries.TimeSeries(['goesfile1.fits', 'goesfile2.fits'],
+        concatenate=True)
 
     * All fits files in a directory by giving a directory
 
@@ -103,11 +105,13 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
     * Lists of any of the above
 
-    >>> my_timeseries = sunpy.timeseries.TimeSeries(['file1.fits', 'file2.fits', 'file3.fits', 'directory1/'])   # doctest: +SKIP
+    >>> my_timeseries = sunpy.timeseries.TimeSeries(['file1.fits', 'file2.fits',
+        'file3.fits', 'directory1/'])   # doctest: +SKIP
 
     * Any mixture of the above not in a list
 
-    >>> my_timeseries = sunpy.timeseries.TimeSeries((data, header), data2, header2, 'file1.fits', url, 'eit_*.fits')   # doctest: +SKIP
+    >>> my_timeseries = sunpy.timeseries.TimeSeries((data, header), data2, header2,
+        'file1.fits', url, 'eit_*.fits')   # doctest: +SKIP
     """
 
     def _read_file(self, fname, **kwargs):
@@ -210,7 +214,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             if len(table.primary_key) == 1:
                 table.primary_key[0]
             else:
-                raise ValueError("Invalid input Table, TimeSeries doesn't support conversion of tables with more then one index column.")
+                raise ValueError("Invalid input Table, TimeSeries doesn't support conversion"
+                                 " of tables with more then one index column.")
 
         # Extract, convert and remove the index column from the input table
         index = table[index_name]
@@ -275,7 +280,8 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             arg = args[i]
 
             # Data-header pair in a tuple
-            if (isinstance(arg, (np.ndarray, Table, pd.DataFrame))):# and self._validate_meta(args[i+1])):
+            if (isinstance(arg, (np.ndarray, Table, pd.DataFrame))):
+                # and self._validate_meta(args[i+1])):
                 # Assume a Pandas Dataframe is given
                 data = arg
                 units = OrderedDict()
@@ -287,7 +293,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     data, meta, units = self._from_table(data)
                 elif isinstance(data, np.ndarray):
                     # We have a numpy ndarray. We assume the first column is a dt index
-                    data = pd.DataFrame(data=data[:,1:], index=Time(data[:,0]))
+                    data = pd.DataFrame(data=data[:, 1:], index=Time(data[:, 0]))
 
                 # If there are 1 or 2 more arguments:
                 for _ in range(2):
@@ -356,18 +362,18 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 already_timeseries.append(arg)
 
             # A URL
-            elif (isinstance(arg,six.string_types) and
+            elif (isinstance(arg, six.string_types) and
                   _is_url(arg)):
                 default_dir = sunpy.config.get("downloads", "download_dir")
                 create_download_dir()
                 url = arg
                 path = download_file(url, default_dir)
                 pairs = self._read_file(path, **kwargs)
-                #data_header_pairs += pairs
+                # data_header_pairs += pairs
                 filepaths.append(pairs[1])
 
             else:
-                #raise ValueError("File not found or invalid input")
+                # raise ValueError("File not found or invalid input")
                 raise NoMatchError("File not found or invalid input")
             i += 1
 
@@ -508,7 +514,9 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types identified ({0}).  Specify enough keywords to guarantee unique type identification.".format(n_matches))
+            raise MultipleMatchError("Too many candidate types identified ({0})."
+                                     "Specify enough keywords to guarantee unique type "
+                                     "identification.".format(n_matches))
 
         # Only one suitable source class is found
         return candidate_widget_types[0]
@@ -535,6 +543,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # Now return a TimeSeries from the given file.
         return WidgetType(data, meta, units, **kwargs)
 
+
 def _is_url(arg):
     try:
         urlopen(arg)
@@ -542,21 +551,25 @@ def _is_url(arg):
         return False
     return True
 
+
 class InvalidTimeSeriesInput(ValueError):
     """Exception to raise when input variable is not a TimeSeries instance and
     does not point to a valid TimeSeries input file."""
     pass
+
 
 class InvalidTimeSeriesType(ValueError):
     """Exception to raise when an invalid type of time series is requested with
     TimeSeries."""
     pass
 
+
 class NoTimeSeriesFound(ValueError):
     """Exception to raise when input does not point to any valid time series or
     files."""
     pass
 
+
 TimeSeries = TimeSeriesFactory(default_widget_type=GenericTimeSeries,
-                 additional_validation_functions=['is_datasource_for'])
+                               additional_validation_functions=['is_datasource_for'])
 TimeSeries.registry = TIMESERIES_CLASSES

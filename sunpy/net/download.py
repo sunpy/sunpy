@@ -23,6 +23,7 @@ import sunpy
 from sunpy.util.progressbar import TTYProgressBar as ProgressBar
 from sunpy.util.config import create_download_dir
 
+
 def default_name(path, sock, url):
     name = sock.headers.get('Content-Disposition', url.rsplit('/', 1)[-1])
     return os.path.join(path, name)
@@ -178,7 +179,6 @@ class Downloader(object):
                             return
                     else:
                         break
-
 
 
 class Results(object):

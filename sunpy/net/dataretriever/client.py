@@ -285,7 +285,7 @@ class GenericClient(object):
 
             temp_dict = qres[i].map_.copy()
             temp_dict['file'] = filename
-            fname  = fname.format(**temp_dict)
+            fname = fname.format(**temp_dict)
             fname = os.path.expanduser(fname)
 
             if os.path.exists(fname):
@@ -299,10 +299,10 @@ class GenericClient(object):
 
         dobj = Downloader(max_conn=len(urls), max_total=len(urls))
 
-        # We cast to list here in list(zip... to force execution of 
+        # We cast to list here in list(zip... to force execution of
         # res.require([x]) at the start of the loop.
         for aurl, ncall, fname in list(zip(urls, map(lambda x: res.require([x]),
-                                              urls), paths)):
+                                           urls), paths)):
             dobj.download(aurl, fname, ncall, error_callback)
 
         return res
