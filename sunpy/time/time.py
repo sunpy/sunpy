@@ -9,7 +9,7 @@ from sunpy.extern import six
 
 import astropy.time
 
-__all__ = ['find_time', 'extract_time', 'parse_time', 'is_time',
+__all__ = ['find_time', 'parse_time', 'is_time',
            'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format']
 
 # Mapping of time format codes to regular expressions.
@@ -118,38 +118,7 @@ def _iter_empty(iter):
         return True
     return False
 
-
-def extract_time(string):
-    """ Find subset of string that corresponds to a datetime and return
-    its value as a a datetime. If more than one or none is found, raise
-    ValueError. """
-    matched = None
-    bestmatch = None
-    for time_format in TIME_FORMAT_LIST:
-        found = find_time(string, time_format)
-        try:
-            match = next(found)
-        except StopIteration:
-            continue
-        else:
-            if matched is not None:
-                if time_format.startswith(matched):
-                    # Already matched is a substring of the one just matched.
-                    matched = time_format
-                    bestmatch = match
-                elif not matched.startswith(time_format):
-                    # If just matched is substring of time_format, just ignore
-                    # just matched.
-                    raise ValueError("Ambiguous string")
-            else:
-                matched = time_format
-                bestmatch = match
-            if not _iter_empty(found):
-                raise ValueError("Ambiguous string")
-    if not matched:
-        raise ValueError("Time not found")
-    return bestmatch
-
+#extract_time removed along with its calling function.
 
 def parse_time(time_string, time_format='', **kwargs):
     """Given a time string will parse and return a datetime object.
