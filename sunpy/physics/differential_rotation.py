@@ -4,6 +4,7 @@ import numpy as np
 from astropy import units as u
 from astropy.coordinates import Longitude, Latitude, Angle
 from sunpy.time import parse_time, julian_day
+from astropy.coordinates import SkyCoord
 
 from sunpy.wcs import convert_hpc_hg, convert_hg_hpc
 from sunpy.sun import constants, sun
@@ -91,8 +92,8 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     return np.round(rotation_deg, 4) * u.deg
 
 
-@u.quantity_input(x=u.arcsec, y=u.arcsec)
-def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwargs):
+@u.quantity_input(x=SkyCoord)
+def rot_hpc(coord, tstart, tend, frame_time='synodic', rot_type='howard', **kwargs):
     """Given a location on the Sun referred to using the Helioprojective
     Cartesian co-ordinate system (typically quoted in the units of arcseconds)
     use the solar rotation profile to find that location at some later or
@@ -104,11 +105,8 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
 
     Parameters
     ----------
-    x : `~astropy.units.Quantity`
-        Helio-projective x-co-ordinate in arcseconds (can be an array).
-
-    y : `~astropy.units.Quantity`
-        Helio-projective y-co-ordinate in arcseconds (can be an array).
+    coord : `astropy.coordinates.SkyCoord`
+        Helio-projective sunpy-co-ordinate (can be an array).
 
     tstart : `sunpy.time.time`
         date/time to which x and y are referred.
@@ -127,11 +125,9 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
 
     Returns
     -------
-    x : `~astropy.units.Quantity`
-        Rotated helio-projective x-co-ordinate in arcseconds (can be an array).
+    new_coord : `astropy.coordinates.SkyCoord`
+        Rotated helio-projective sunpy-co-ordinate (can be an array).
 
-    y : `~astropy.units.Quantity`
-        Rotated helio-projective y-co-ordinate in arcseconds (can be an array).
 
     Examples
     --------
@@ -153,10 +149,15 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
     by convert_hpc_hg.  This leads to very slightly different results from
     rot_hpc compared to rot_xy.
     """
+    x = coord.Tx
+    y = coord.Ty 
 
+    '''
+    # Is this necessary?
     # must have pairs of co-ordinates
     if np.array(x).shape != np.array(y).shape:
         raise ValueError('Input co-ordinates must have the same shape.')
+    '''
 
     # Make sure we have enough time information to perform a solar differential
     # rotation
@@ -195,7 +196,7 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
                                 occultation=False)
     newx = Angle(newx, u.arcsec)
     newy = Angle(newy, u.arcsec)
-    return newx.to(u.arcsec), newy.to(u.arcsec)
+    return SkyCoord(newx, newy, frame='helioprojective')
 
 
 def _calc_P_B0_SD(date):
