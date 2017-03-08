@@ -46,7 +46,7 @@ def test_MockObject_attr(mocked_mockobject):
 
 def test_MockObject_get(mocked_mockobject):
     """
-    Getting attributes from MockObject using dot and bracket notation.
+    Getting attributes from `MockObject` using dot and bracket notation.
     """
     assert mocked_mockobject['records'] == 12
     assert mocked_mockobject.records == 12
@@ -60,8 +60,8 @@ def test_MockObject_get(mocked_mockobject):
 
 def test_MockObject_set_get(mocked_mockobject):
     """
-    Setting attributes in MockObject using bracket notation and *not*
-    using dot notation.
+    Setting attributes in `MockObject` using bracket notation *not*
+    dot notation.
     """
 
     # Only change the value of existing & new items using 'bracket' notation
@@ -82,14 +82,14 @@ def test_MockObject_set_get(mocked_mockobject):
 
 def test_MockObject_len():
     """
-    Testing MockObject.__len__
+    Testing `MockObject.__len__`
     """
     assert len(MockObject(responses=['a', 'b', 'c', 'd'], requests=(1, 2, 3))) == 2
 
 
 def test_MockObject_del(mocked_mockobject):
     """
-    Ensure MockObject.__delitem__ is *not* implemented.
+    Ensure `MockObject.__delitem__` is *not* implemented.
     """
     with pytest.raises(NotImplementedError):
         del mocked_mockobject['records']
@@ -97,14 +97,14 @@ def test_MockObject_del(mocked_mockobject):
 
 def test_MockObject_iter(mocked_mockobject):
     """
-    Test Test MockOpenTextFile.__iter__
+    Test `MockObject.__iter__`
     """
     assert list(iter(mocked_mockobject)) == ['records']
 
 
 def test_repr_MockObject():
     """
-    Test MockObject.__repr__
+    Test `MockObject.__repr__`
     """
     empty = MockObject()
 
@@ -115,7 +115,7 @@ def test_repr_MockObject():
 
 def test_read_only_mode_MockOpenTextFile():
     """
-    Reading from a read only file, wrtiting should be prohibited.
+    Reading from a read only file, writing should be prohibited.
     """
     new_line = '\n'
     content = r'a{0}bc{0}nd{0}{0}'.format(new_line)
@@ -192,7 +192,7 @@ def test_read_and_write_MockOpenTextFile():
 
 def test_repr_MockOpenTextFile():
     """
-    Test MockOpenTextFile.__repr__
+    Test `MockOpenTextFile.__repr__`
     """
     mo_p = re.compile((r"^(?P<_><)sunpy\.tests\.mocks\.MockOpenTextFile file \'a\' "
                        "mode \'r\' at 0x[0-9A-Fa-f]+L?(?(_)>|)$"))
