@@ -74,6 +74,9 @@ class UnifiedResponse(MutableSequence):
     def __setitem__(self, aslice, v):
         self._list[aslice] = v
 
+    def __iter__(self):
+        return self.responses
+
     def insert(self, i, v):
         self._list.insert(i, v)
 
@@ -194,18 +197,22 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         --------
         Query for LYRALightCurve data for the time range ('2012/3/4','2012/3/6')
 
-        >>> from sunpy.net.vso.attrs import Time, Instrument
-        >>> unifresp = Fido.search(Time('2012/3/4', '2012/3/6'), Instrument('lyra'))
+        >>> from sunpy.net import Fido, attrs as a
+        >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra'))
 
         Query for data from Nobeyama Radioheliograph and RHESSI
 
-        >>> unifresp = Fido.search(Time('2012/3/4', '2012/3/6'), Instrument('norh') | Instrument('rhessi'))
+        >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
+                                   a.Instrument('norh') | a.Instrument('rhessi'))
 
         Query for 304 Angstrom SDO AIA data with a cadence of 10 minutes
 
         >>> import astropy.units as u
-        >>> from sunpy.net.vso.attrs import Time, Instrument, Wavelength, Sample
-        >>> unifresp = Fido.search(Time('2012/3/4', '2012/3/6'), Instrument('AIA'), Wavelength(304*u.angstrom, 304*u.angstrom), Sample(10*u.minute))
+        >>> from sunpy.net import Fido, attrs as a
+        >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
+                                   a.Instrument('AIA'),
+                                   a.Wavelength(304*u.angstrom, 304*u.angstrom),
+                                   a.Sample(10*u.minute))
 
         Parameters
         ----------
