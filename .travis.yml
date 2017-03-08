@@ -61,7 +61,7 @@ matrix:
          - python: 3.4
            env: NUMPY_VERSION=$PREVIOUS_NUMPY
 
-         - python: 3.6
+         - python: 3.5
            env: SETUP_CMD='build_docs -w'
                 EVENT_TYPE='push pull_request cron'
 
