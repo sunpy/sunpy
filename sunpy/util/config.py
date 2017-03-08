@@ -44,7 +44,7 @@ def load_config():
     return config
 
 
-def create_download_dir():
+def get_and_create_download_dir():
     '''
     Get the config of download directory and create one if not present.
     '''
@@ -52,6 +52,7 @@ def create_download_dir():
     if not os.path.isdir(config.get('downloads', 'download_dir')):
         os.makedirs(config.get('downloads', 'download_dir'))
 
+    return config.get('downloads', 'download_dir')
 
 def print_config():
     """Print current configuration options"""
