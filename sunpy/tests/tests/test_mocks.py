@@ -183,10 +183,6 @@ def test_read_and_write_MockOpenTextFile():
 
     assert rd_wr.read() == data
 
-    rd_wr.flush()
-
-    assert rd_wr.read() == data
-
     rd_wr.close()
 
 

@@ -228,9 +228,6 @@ class MockOpenTextFile(MockObject):
         self.closed = True
         self.data = ''
 
-    def flush(self):
-        return
-
     def __repr__(self):
         return ("<{module}.{name} file '{file}' mode '{mode}' "
                 "at {address}>".format(module=self.__module__, name=self.__class__.__name__,
