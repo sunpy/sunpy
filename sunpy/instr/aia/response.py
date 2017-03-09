@@ -6,6 +6,7 @@ SDO/AIA
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 import os
+import warnings
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -68,7 +69,7 @@ class Response(object):
             self._channel_info[c] = {property: data_table[property][index]
                                      for property in data_table.columns.keys()}
 
-    def calculate_effective_area(self, channel):
+    def calculate_effective_area(self, channel, **kwargs):
         """
         Calculate the effective area for a given channel of the instrument.
 
@@ -106,6 +107,8 @@ class Response(object):
         .. [1] Boerner et al., 2012, Sol. Phys., `275, 41
         <http://adsabs.harvard.edu/abs/2012SoPh..275...41B>`_
         """
+        include_crosstalk = kwargs.get('include_crosstalk',False)
+
         reflectance = (self._channel_info[channel]['primary_mirror_reflectance']
                        * self._channel_info[channel]['secondary_mirror_reflectance'])
         transmission_efficiency = (self._channel_info[channel]['focal_plane_filter_efficiency']
@@ -115,7 +118,55 @@ class Response(object):
                           * self._channel_info[channel]['ccd_contamination']
                           * self._channel_info[channel]['quantum_efficiency_ccd'])
 
+        if include_crosstalk:
+            effective_area += self.calculate_crosstalk(channel)
+
         return effective_area
+
+    def calculate_crosstalk(self, channel):
+        """
+        Calculate effects due to channel crosstalk.
+
+        The focal-plane filters on Telescopes 1 (131 and 335) and 4 (94 and 304)
+        do not perfectly reject light from the opposite channels. This function
+        implements a correction for the given channel, based on the method in
+        SSW, specifically that in `sdo/aia/idl/response/aia_bp_blend_channels.pro`.
+        See section 2.2.1 and Figure 10 of [1]_ for more details.
+
+        References
+        ----------
+        .. [1] Boerner et al., 2012, Sol. Phys., `275, 41
+        <http://adsabs.harvard.edu/abs/2012SoPh..275...41B>`_
+        """
+        # check which channel is the contaminator
+        if channel == 94:
+            cross_channel = 304
+        elif channel == 131:
+            cross_channel = 335
+        elif channel == 304:
+            cross_channel = 94
+        elif channel == 335:
+            cross_channel = 131
+        else:
+            cross_channel = None
+
+        # check to see if the contamination can/should be calculated
+        if cross_channel not in self._channel_info or cross_channel is None:
+            if cross_channel is not None:
+                warnings.warn(('{cross} is not included in the channel list. '
+                               'Cross-contamination between {cross} and '
+                               '{primary} will not be included.').format(
+                                cross=cross_channel, primary=channel))
+            return (np.zeros(len(self._channel_info[channel]['wavelength']))
+                    * self._channel_info[channel]['effective_area'].unit)
+
+        return (self._channel_info[cross_channel]['primary_mirror_reflectance']
+                * self._channel_info[cross_channel]['secondary_mirror_reflectance']
+                * self._channel_info[cross_channel]['quantum_efficiency_ccd']
+                * self._channel_info[cross_channel]['ccd_contamination']
+                * self._channel_info[cross_channel]['geometric_area_ccd']
+                * self._channel_info[cross_channel]['entrance_filter_efficiency']
+                * self._channel_info[channel]['focal_plane_filter_efficiency'])
 
     def calculate_system_gain(self, channel):
         """
@@ -142,7 +193,7 @@ class Response(object):
                 / self._channel_info[channel]['electron_per_dn'])
         return gain
 
-    def calculate_wavelength_response(self):
+    def calculate_wavelength_response(self, include_crosstalk=True):
         """
         Calculate the wavelength response function for all channels of the
         instrument.
@@ -154,11 +205,17 @@ class Response(object):
             R_i(\lambda) = A_{eff}(\lambda)G(\lambda)
 
         in units of :math:`\mathrm{cm}^2` DN :math:`\mathrm{photon}^{-1}`.
+
+        Parameters
+        ----------
+        include_crosstalk : `bool`
+            See `calculate_crosstalk`
         """
         self.wavelength_response = {}
         for channel in self._channel_info:
             system_gain = self.calculate_system_gain(channel)
-            effective_area = self.calculate_effective_area(channel)
+            effective_area = self.calculate_effective_area(channel,
+                                                           include_crosstalk=include_crosstalk)
             self.wavelength_response[channel] = {
                 'wavelength': self._channel_info[channel]['wavelength'],
                 'response': system_gain*effective_area}
