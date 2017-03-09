@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function
 from datetime import datetime
 
 from sunpy import time
-from sunpy.time import parse_time, extract_time, is_time_in_given_format, get_day, find_time
+from sunpy.time import parse_time, is_time_in_given_format, get_day, find_time
 
 import astropy.time
 import numpy as np
