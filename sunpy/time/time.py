@@ -118,7 +118,7 @@ def _iter_empty(iter):
         return True
     return False
 
-
+@deprecated
 def extract_time(string):
     """ Find subset of string that corresponds to a datetime and return
     its value as a a datetime. If more than one or none is found, raise
