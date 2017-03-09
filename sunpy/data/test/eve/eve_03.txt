@@ -1,0 +1,46 @@
+; DATA_list: 20160610_EVE_L0CS_DIODES_1m.txt
+; Created: Fri Jun 10 15:58:11 2016 UTC
+; Origin: SDO/EVE Science Processing and Operations Center, LASP/CU
+; Units: W/m^2 for irradiance, dark is counts/(0.25s sample), quadrants are unitless, solar lat & lon are deg
+; Source: SDO-EVE ESP and MEGS-P instruments, http://lasp.colorado.edu/eve
+; Product: Level 0CS, 1-minute averaged SDO-EVE Solar Indices from broadband photometers
+; Version: 4.0, code updated 2014-Jan-02
+; Missing data: -1.00e+00
+; Column descriptions:
+;  HHMM: hour and minute in UT
+;  XRS-B proxy: a model of the expected XRS-B 0.1-0.8 nm value, calculated using two-component method
+;  XRS-A proxy: a model of the expected XRS-A value
+;  SEM proxy: a model of the expected SEM 26-34 nm value
+;  0.1-7ESPquad: the total irradiance over the ESP quadrant diode 0.1-7 nm
+;  17.1ESP: ESP irradiance measurement near 17.1 nm
+;  25.7ESP: ESP irradiance measurement near 25.7 nm
+;  30.4ESP: ESP irradiance measurement near 30.4 nm
+;  36.6ESP: ESP irradiance measurement near 36.6 nm
+;  darkESP: ESP dark diode count rates (background)
+;  121.6MEGS-P: MEGS-P irradiance measurement at H I Lyman-alpha 121.6 nm
+;  darkMEGS-P: MEGS-P dark diode count rates (background)
+;  q0ESP: ESP quadrant 0 fraction (q0ESP to q3ESP add up to 1.0)
+;  q1ESP: ESP quadrant 1 fraction
+;  q2ESP: ESP quadrant 2 fraction
+;  q3ESP: ESP quadrant 3 fraction
+;  CMLat: Latitude centroid of ESP quad diode irradiance at the sun in degrees
+;  CMLon: Longitude centroid of ESP quad diode irradiance at the sun in degrees
+;  x_cool proxy: Cool component for calculating XRS-B proxy
+;  oldXRSB proxy: XRS-B calculated using the version 2 method
+; Format:
+;  YYYY DOY MO DD
+;  HHMM XRS-B    XRS-A      SEM      0.1-7     17.1      25.7      30.4      36.6      dark      121.6     dark      q0        q1        q2        q3        CM    CM       x_cool oldXRSB
+;       proxy    proxy     proxy     ESPquad   ESP       ESP       ESP       ESP       ESP       MEGS-P    MEGS-P    ESP       ESP       ESP       ESP       Lat   Lon      proxy  proxy
+;---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+;END_OF_HEADER
+2016 162 06 10
+0020  2.16e-07  1.84e-10  4.96e-04  3.07e-04  4.82e-04  2.63e-04  5.80e-04 -1.00e+00  4.98e+01 -1.00e+00  4.02e+01  3.16e-01  2.17e-01  2.71e-01  1.97e-01 -10.9 -22.4  5.90e+02  1.01e-07
+0021  2.12e-07  1.80e-10  4.97e-04  3.08e-04  4.82e-04  2.63e-04  5.81e-04 -1.00e+00  4.98e+01 -1.00e+00  4.02e+01  3.16e-01  2.17e-01  2.70e-01  1.96e-01 -10.8 -22.7  5.90e+02  1.00e-07
+0022  2.16e-07  1.85e-10  4.98e-04  3.07e-04  4.82e-04  2.63e-04  5.82e-04 -1.00e+00  4.98e+01 -1.00e+00  4.02e+01  3.16e-01  2.18e-01  2.68e-01  1.98e-01 -10.6 -23.1  5.90e+02  1.01e-07
+0023  2.10e-07  1.78e-10  4.98e-04  3.07e-04  4.82e-04  2.63e-04  5.82e-04 -1.00e+00  4.98e+01 -1.00e+00  4.02e+01  3.17e-01  2.16e-01  2.71e-01  1.96e-01 -11.2 -22.9  5.90e+02  9.97e-08
+0024  2.24e-07  1.94e-10  4.96e-04  3.08e-04  4.82e-04  2.63e-04  5.80e-04 -1.00e+00  4.97e+01 -1.00e+00  4.02e+01  3.17e-01  2.16e-01  2.71e-01  1.97e-01 -11.0 -22.4  5.90e+02  1.03e-07
+0025  2.10e-07  1.78e-10  4.97e-04  3.08e-04  4.82e-04  2.63e-04  5.81e-04 -1.00e+00  4.97e+01 -1.00e+00  4.02e+01  3.16e-01  2.16e-01  2.72e-01  1.96e-01 -11.2 -22.2  5.91e+02  9.97e-08
+0026  2.04e-07  1.73e-10  4.97e-04  3.08e-04  4.82e-04  2.64e-04  5.81e-04 -1.00e+00  4.98e+01 -1.00e+00  4.01e+01  3.17e-01  2.14e-01  2.68e-01  2.01e-01 -10.7 -21.4  5.91e+02  9.82e-08
+0027  2.12e-07  1.81e-10  4.97e-04  3.07e-04  4.82e-04  2.64e-04  5.80e-04 -1.00e+00  4.98e+01 -1.00e+00  4.01e+01  3.19e-01  2.16e-01  2.68e-01  1.97e-01 -10.9 -23.9  5.91e+02  1.00e-07
+0028  2.00e-07  1.69e-10  4.98e-04  3.06e-04  4.82e-04  2.64e-04  5.82e-04 -1.00e+00  4.98e+01 -1.00e+00  4.01e+01  3.19e-01  2.17e-01  2.70e-01  1.94e-01 -11.4 -24.4  5.91e+02  9.72e-08
+0029  2.11e-07  1.80e-10  4.98e-04  3.08e-04  4.82e-04  2.64e-04  5.82e-04 -1.00e+00  4.98e+01 -1.00e+00  4.01e+01  3.18e-01  2.16e-01  2.69e-01  1.98e-01 -10.9 -22.7  5.91e+02  1.00e-07

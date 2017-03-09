@@ -2,19 +2,26 @@ from __future__ import absolute_import
 
 import tempfile
 
+import pytest
 import numpy as np
 
-import sunpy
+import sunpy.map
 import sunpy.data.test as test
 from sunpy.instr.aia import aiaprep
 
 
 # Define the original and prepped images first so they're available to all functions
-original = sunpy.map.Map(test.aia_171_level1)
-prep_map = aiaprep(original)
+
+@pytest.fixture
+def original():
+    return sunpy.map.Map(test.get_test_filepath("aia_171_level1.fits"))
+
+@pytest.fixture
+def prep_map(original):
+    return aiaprep(original)
 
 
-def test_aiaprep():
+def test_aiaprep(original, prep_map):
     # Test that header info for the map has been correctly updated
     # Check all of these for Map attributes and .meta values?
     # Check array shape
@@ -32,7 +39,7 @@ def test_aiaprep():
     assert prep_map.meta['lvl_num'] == 1.5
 
 
-def test_filesave():
+def test_filesave(prep_map):
     # Test that adjusted header values are still correct after saving the map
     # and reloading it.
     afilename = tempfile.NamedTemporaryFile(suffix='fits').name

@@ -15,6 +15,7 @@ import astropy.wcs
 from astropy.io import fits
 import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
+from astropy.visualization import wcsaxes
 import matplotlib.pyplot as plt
 
 import sunpy
@@ -23,9 +24,10 @@ import sunpy.map
 import sunpy.coordinates
 import sunpy.data.test
 from sunpy.time import parse_time
-from sunpy.tests.helpers import figure_test, skip_wcsaxes
+from sunpy.tests.helpers import figure_test
 
 testpath = sunpy.data.test.rootdir
+
 
 @pytest.fixture
 def aia171_test_map():
@@ -42,7 +44,7 @@ def aia171_test_map_with_mask(aia171_test_map):
 
 @pytest.fixture
 def generic_map():
-    data = np.ones([6,6], dtype=np.float64)
+    data = np.ones([6, 6], dtype=np.float64)
     header = {'CRVAL1': 0,
               'CRVAL2': 0,
               'CRPIX1': 5,
@@ -63,6 +65,7 @@ def generic_map():
               'wavelnth': 10,
               'waveunit': 'm'}
     return sunpy.map.Map((data, header))
+
 
 def test_fits_data_comparison(aia171_test_map):
     """Make sure the data is the same in pyfits and SunPy"""
@@ -89,6 +92,7 @@ def test_wcs(aia171_test_map):
                              aia171_test_map.coordinate_system.y])
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
     assert set(wcs.wcs.cunit) == set([u.Unit(a) for a in aia171_test_map.spatial_units])
+
 
 def test_dtype(generic_map):
     assert generic_map.dtype == np.float64
@@ -489,9 +493,7 @@ def test_rotate_invalid_order(generic_map):
         generic_map.rotate(order=-1)
 
 
-@skip_wcsaxes
 def test_as_mpl_axes_aia171(aia171_test_map):
-    import wcsaxes  # import here because of skip
     ax = plt.subplot(projection=aia171_test_map)
     assert isinstance(ax, wcsaxes.WCSAxes)
     # This test doesn't work, it seems that WCSAxes copies or changes the WCS
@@ -504,31 +506,26 @@ def test_as_mpl_axes_aia171(aia171_test_map):
     assert hasattr(ax.wcs, 'heliographic_longitude')
 
 
-@skip_wcsaxes
 @figure_test
 def test_plot_aia171(aia171_test_map):
     aia171_test_map.plot()
 
 
-@skip_wcsaxes
 @figure_test
 def test_peek_aia171(aia171_test_map):
     aia171_test_map.peek()
 
 
-@skip_wcsaxes
 @figure_test
 def test_peek_grid_aia171(aia171_test_map):
     aia171_test_map.peek(draw_grid=True)
 
 
-@skip_wcsaxes
 @figure_test
 def test_peek_limb_aia171(aia171_test_map):
     aia171_test_map.peek(draw_limb=True)
 
 
-@skip_wcsaxes
 @figure_test
 def test_peek_grid_limb_aia171(aia171_test_map):
     aia171_test_map.peek(draw_grid=True, draw_limb=True)
@@ -540,7 +537,6 @@ def test_plot_aia171_nowcsaxes(aia171_test_map):
     aia171_test_map.plot(axes=ax)
 
 
-@skip_wcsaxes
 @figure_test
 def test_plot_masked_aia171(aia171_test_map_with_mask):
     aia171_test_map_with_mask.plot()
@@ -552,7 +548,6 @@ def test_plot_masked_aia171_nowcsaxes(aia171_test_map_with_mask):
     aia171_test_map_with_mask.plot(axes=ax)
 
 
-@skip_wcsaxes
 @figure_test
 def test_plot_aia171_superpixel(aia171_test_map):
     aia171_test_map.superpixel((9, 7)*u.pix, offset=(4, 4)*u.pix).plot()
@@ -564,7 +559,6 @@ def test_plot_aia171_superpixel_nowcsaxes(aia171_test_map):
     aia171_test_map.superpixel((9, 7)*u.pix, offset=(4, 4)*u.pix).plot(axes=ax)
 
 
-@skip_wcsaxes
 @figure_test
 def test_plot_masked_aia171_superpixel(aia171_test_map_with_mask):
     aia171_test_map_with_mask.superpixel((9, 7)*u.pix, offset=(4, 4)*u.pix).plot()

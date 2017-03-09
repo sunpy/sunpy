@@ -25,6 +25,7 @@ from sunpy.extern.six import next
 
 RHESSI_IMAGE = os.path.join(testdir, 'hsi_image_20101016_191218.fits')
 EIT_195_IMAGE = os.path.join(testdir, 'EIT/efz20040301.000010_s.fits')
+GOES_DATA = os.path.join(testdir, 'go1520110607.fits')
 
 
 @pytest.fixture
@@ -45,7 +46,7 @@ def qr_block_with_missing_physobs():
     return vso.VSOClient().query(
         vso.attrs.Time('20130805T120000', '20130805T121000'),
         vso.attrs.Instrument('SWAVES'), vso.attrs.Source('STEREO_A'),
-        vso.attrs.Provider('SSC'), vso.attrs.Wave(10 * u.kHz, 160 * u.kHz))[0]
+        vso.attrs.Provider('SSC'), vso.attrs.Wavelength(10 * u.kHz, 160 * u.kHz))[0]
 
 
 @pytest.fixture
@@ -179,8 +180,26 @@ def test_entries_from_file_withoutwaveunit():
         next(entries_from_file(EIT_195_IMAGE))
 
 
+def test_entries_from_file_time_string_parse_format():
+
+    with pytest.raises(ValueError):
+        # Error should be  raised because of the date format in GOES_DATA
+        entries = list(entries_from_file(GOES_DATA))
+
+    entries = list(entries_from_file(GOES_DATA,
+                   time_string_parse_format='%d/%m/%Y'))
+
+    assert len(entries) == 4
+    entry = entries[0]
+    assert len(entry.fits_header_entries) == 17
+
+    assert entry.observation_time_start == datetime(2011, 6, 7, 0, 0)
+    assert entry.observation_time_end == datetime(2011, 6, 7, 0, 0)
+    assert entry.path == GOES_DATA
+
+
 def test_entries_from_dir():
-    entries = list(entries_from_dir(waveunitdir))
+    entries = list(entries_from_dir(waveunitdir, time_string_parse_format='%d/%m/%Y'))
     assert len(entries) == 4
     for entry, filename in entries:
         if filename.endswith('na120701.091058.fits'):
@@ -251,16 +270,17 @@ def test_entries_from_dir():
 
 
 def test_entries_from_dir_recursively_true():
-    entries = list(
-        entries_from_dir(testdir, True, default_waveunit='angstrom'))
-    assert len(entries) == 60
-    # Older val = 31.
+    entries = list(entries_from_dir(testdir, True,
+                                    default_waveunit='angstrom',
+                                    time_string_parse_format='%d/%m/%Y'))
+    assert len(entries) == 100
 
 
 def test_entries_from_dir_recursively_false():
-    entries = list(
-        entries_from_dir(testdir, False, default_waveunit='angstrom'))
-    assert len(entries) == 39
+    entries = list(entries_from_dir(testdir, False,
+                                    default_waveunit='angstrom',
+                                    time_string_parse_format='%d/%m/%Y'))
+    assert len(entries) == 79
 
 
 @pytest.mark.online
@@ -326,7 +346,7 @@ def test_entry_from_query_results_with_none_wave_and_default_unit(
             instrument='VIRGO', size=329.0, wavemin=None,
             wavemax=None),
         DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs ='intensity',
+            source='SOHO', provider='SDAC', physobs='intensity',
             fileid='/archive/soho/private/data/processed/virgo/level1/1212/SPM/121222_1.S02',
             observation_time_start=datetime(2012, 12, 23, 23, 59, 3),
             observation_time_end=datetime(2012, 12, 24, 23, 59, 2),
@@ -380,7 +400,7 @@ def test_create_display_table():
         'wavemin', 'path', 'starred', 'tags']
     table = _create_display_table(entries, columns)
     filedir = os.path.dirname(os.path.realpath(__file__))
-    with open(os.path.join(filedir,'test_table.txt'), 'r') as f:
+    with open(os.path.join(filedir, 'test_table.txt'), 'r') as f:
         stored_table = f.read()
     assert table.__str__().strip() == stored_table.strip()
     conf.reset('max_width')
