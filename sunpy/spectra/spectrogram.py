@@ -339,7 +339,9 @@ class Spectrogram(Parent):
 
         soffset = 0 if x_range.start is None else x_range.start
         soffset = int(soffset)
-        eoffset = self.shape[1] if x_range.stop is None else x_range.stop  # pylint: disable=E1101
+        eoffset = self.shape[1] 
+        if x_range.stop is None 
+        else x_range.stop  # pylint: disable=E1101
         eoffset -= 1
         eoffset = int(eoffset)
 
@@ -760,10 +762,10 @@ class Spectrogram(Parent):
             raise ValueError("Maximum and minimum must be different.")
         if self.data.max() == self.data.min():
             raise ValueError("Spectrogram needs to contain distinct values.")
-        data = self.data.astype(dtype) # pylint: disable=E1101
+        data = self.data.astype(dtype)   # pylint: disable=E1101
         return self._with_data(
-            vmin + (vmax - vmin) * (data - self.data.min()) / # pylint: disable=E1101
-            (self.data.max() - self.data.min()) # pylint: disable=E1101
+            vmin + (vmax - vmin) * (data - self.data.min()) /    # pylint: disable=E1101
+            (self.data.max() - self.data.min())    # pylint: disable=E1101
         )
 
     def interpolate(self, frequency):
@@ -786,9 +788,9 @@ class Spectrogram(Parent):
             raise ValueError("Frequency not in interpolation range")
         if lfreq is None:
             raise ValueError("Frequency not in interpolation range")
-        diff = frequency - freq # pylint: disable=W0631
+        diff = frequency - freq    # pylint: disable=W0631
         ldiff = lfreq - frequency
-        return (ldiff * value + diff * lvalue) / (diff + ldiff) # pylint: disable=W0631
+        return (ldiff * value + diff * lvalue) / (diff + ldiff)    # pylint: disable=W0631
 
     def linearize_freqs(self, delta_freq=None):
         """Rebin frequencies so that the frequency axis is linear.
@@ -899,8 +901,8 @@ class LinearTimeSpectrogram(Spectrogram):
     ]
 
     def __init__(self, data, time_axis, freq_axis, start, end,
-        t_init=None, t_delt=None, t_label="Time", f_label="Frequency",
-        content="", instruments=None):
+                 t_init=None, t_delt=None, t_label="Time", f_label="Frequency",
+                 content="", instruments=None):
         if t_delt is None:
             t_delt = _min_delt(freq_axis)
 
@@ -953,8 +955,8 @@ class LinearTimeSpectrogram(Spectrogram):
         factor = self.t_delt / float(new_delt)
 
         # The last data-point does not change!
-        new_size = floor((self.shape[1] - 1) * factor + 1) # pylint: disable=E1101
-        data = ndimage.zoom(self.data, (1, new_size / self.shape[1])) # pylint: disable=E1101
+        new_size = floor((self.shape[1] - 1) * factor + 1)    # pylint: disable=E1101
+        data = ndimage.zoom(self.data, (1, new_size / self.shape[1]))    # pylint: disable=E1101
 
         params = self._get_params()
         params.update({
@@ -971,7 +973,7 @@ class LinearTimeSpectrogram(Spectrogram):
 
     @classmethod
     def join_many(cls, specs, mk_arr=None, nonlinear=False,
-        maxgap=0, fill=JOIN_REPEAT):
+                  maxgap=0, fill=JOIN_REPEAT):
         """Produce new Spectrogram that contains spectrograms
         joined together in time.
 
@@ -1124,7 +1126,7 @@ class LinearTimeSpectrogram(Spectrogram):
         diff = time - self.start
         diff_s = SECONDS_PER_DAY * diff.days + diff.seconds
         result = diff_s // self.t_delt
-        if 0 <= result <= self.shape[1]: # pylint: disable=E1101
+        if 0 <= result <= self.shape[1]:    # pylint: disable=E1101
             return result
         raise ValueError("Out of range.")
 
@@ -1240,7 +1242,9 @@ class LinearTimeSpectrogram(Spectrogram):
                 # XXX: We could do better than that.
                 if get_day(self.start) != get_day(self.end):
                     raise TypeError(
-                        "Time ambiguous because data spans over more than one day"
+                       """Time ambiguous because data spans
+                                over more than one day
+                       """
                     )
                 start = datetime.datetime(
                     self.start.year, self.start.month, self.start.day,
@@ -1253,7 +1257,9 @@ class LinearTimeSpectrogram(Spectrogram):
             except ValueError:
                 if get_day(self.start) != get_day(self.end):
                     raise TypeError(
-                        "Time ambiguous because data spans over more than one day"
+                        """Time ambiguous because data spans
+                               over more than one day
+                        """
                     )
                 end = datetime.datetime(
                     self.start.year, self.start.month, self.start.day,
