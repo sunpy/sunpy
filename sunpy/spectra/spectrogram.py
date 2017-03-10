@@ -274,28 +274,28 @@ class Spectrogram(Parent):
 
     Attributes
     ----------
-    data : `~numpy.ndarray`
+    `~data` : `~numpy.ndarray`
         two-dimensional array of the image data of the spectrogram.
-    time_axis : `~numpy.ndarray`
+    `~time_axis` : `~numpy.ndarray`
         one-dimensional array containing the offset from the start
         for each column of data.
-    freq_axis : `~numpy.ndarray`
+    `~freq_axis` : `~numpy.ndarray`
         one-dimensional array containing information about the
         frequencies each row of the image corresponds to.
-    start : `~datetime.datetime`
+    `~start` : `~datetime.datetime`
         starting time of the measurement
-    end : `~datetime.datetime`
+    `~end` : `~datetime.datetime`
         end time of the measurement
-    t_init : int
+    `~t_init` : `~int`
         offset from the start of the day the measurement began. If None
         gets automatically set from start.
-    t_label : str
+    `~t_label` : '~str'
         label for the time axis
-    f_label : str
+    '~f_label' : '~str`
         label for the frequency axis
-    content : str
+    `~content` : `~str`
         header for the image
-    instruments : str array
+    `~instruments` : `~str array`
         instruments that recorded the data, may be more than one if
         it was constructed using combine_frequencies or join_many.
     """
