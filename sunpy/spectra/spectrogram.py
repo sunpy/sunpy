@@ -339,8 +339,7 @@ class Spectrogram(Parent):
 
         soffset = 0 if x_range.start is None else x_range.start
         soffset = int(soffset)
-        eoffset = self.shape[1] 
-        if x_range.stop is None else x_range.stop   # pylint: disable=E1101
+        eoffset = self.shape[1] if x_range.stop is None else x_range.stop   # pylint: disable=E1101
         eoffset -= 1
         eoffset = int(eoffset)
 
