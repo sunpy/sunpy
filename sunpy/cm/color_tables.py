@@ -69,10 +69,10 @@ aia_wave_dict = {1600: (c3, c3, c2), 1700: (c1, c0, c0), 4500: (c0, c0, b0 / 2.0
                 }
 
 def aia_color_table(wavelength):
-    '''Returns one of the fundamental color tables for SDO AIA images.
+    """Returns one of the fundamental color tables for SDO AIA images.
        Based on aia_lct.pro part of SDO/AIA on SSWIDL written by
        Karel Schriver (2010/04/12).
-    '''
+    """
     try:
         r, g, b = aia_wave_dict[wavelength]
     except KeyError:
@@ -84,7 +84,7 @@ def aia_color_table(wavelength):
     # Now create the color dictionary in the correct format
     cdict = create_cdict(r, g, b)
 
-    return colors.LinearSegmentedColormap('mytable', cdict)
+    return colors.LinearSegmentedColormap('SDO AIA {:s}'.format(str(wavelength)), cdict)
 
 eit_yellow_r = np.array(
       [  0,   1,   2,   3,   5,   6,   7,   8,  10,  11,  12,  14,  15,
@@ -253,7 +253,7 @@ eit_dark_red_b = np.concatenate((np.zeros(204).astype('int'), np.array(
 
 
 def eit_color_table(wavelength):
-    '''Returns one of the fundamental color tables for SOHO EIT images.'''
+    """Returns one of the fundamental color tables for SOHO EIT images."""
     # SOHO EIT Color tables
     # EIT 171 IDL Name EIT Dark Bot Blue
     # EIT 195 IDL Name EIT Dark Bot Green
@@ -272,11 +272,10 @@ def eit_color_table(wavelength):
             "171, 195, 284, 304."
         )
 
-
     # Now create the color dictionary in the correct format
     cdict = create_cdict(r, g, b)
 
-    return colors.LinearSegmentedColormap('mytable', cdict)
+    return colors.LinearSegmentedColormap('SOHO EIT {:s}'.format(str(wavelength)), cdict)
 
 lasco_c2_r = np.concatenate((np.array(
       [   0.,    1.,    2.,    5.,    8.,   11.,   14.,   17.,   20.,
@@ -331,7 +330,7 @@ lasco_c3_b = np.concatenate((np.array(
 
 
 def lasco_color_table(number):
-    '''Returns one of the fundamental color tables for SOHO LASCO images.'''
+    """Returns one of the fundamental color tables for SOHO LASCO images."""
     # SOHO LASCO Color tables
     # LASCO C2 white light IDL Name
     # LASCO C3 white light IDL Name
@@ -348,7 +347,7 @@ def lasco_color_table(number):
 
     # Now create the color dictionary in the correct format
     cdict = create_cdict(r, g, b)
-    return colors.LinearSegmentedColormap('mytable', cdict)
+    return colors.LinearSegmentedColormap('SOHO LASCO C{:s}'.format(str(number)), cdict)
 
 # Translated from the JP2Gen IDL SXT code lct_yla_gold.pro.  Might be better
 # to explicitly copy the numbers from the IDL calculation.  This is a little
@@ -363,7 +362,7 @@ grayscale = np.arange(256)
 
 
 def sxt_color_table(sxt_filter):
-    '''Returns one of the fundamental color tables for Yokhoh SXT images.'''
+    """Returns one of the fundamental color tables for Yokhoh SXT images."""
     try:
         r, g, b = {
             'al': (sxt_gold_r, sxt_gold_g, sxt_gold_b),
@@ -377,14 +376,14 @@ def sxt_color_table(sxt_filter):
 
     # Now create the color dictionary in the correct format
     cdict = create_cdict(r, g, b)
-    return colors.LinearSegmentedColormap('mytable', cdict)
+    return colors.LinearSegmentedColormap('Yohkoh SXT {:s}'.format(sxt_filter.title()), cdict)
 
 
 def xrt_color_table():
-    '''Returns the color table used for all Hinode XRT images.'''
+    """Returns the color table used for all Hinode XRT images."""
     # Now create the color dictionary in the correct format
     cdict = create_cdict(r0, g0, b0)
-    return colors.LinearSegmentedColormap('mytable', cdict)
+    return colors.LinearSegmentedColormap('Hinode XRT', cdict)
 
 # Stereo Secchi COR colour tables
 stereo_cor1_b = np.array(
@@ -521,8 +520,8 @@ stereo_cor2_r = np.array(
 
 
 def cor_color_table(number):
-    '''Returns one of the fundamental color tables for STEREO coronagraph
-    images.'''
+    """Returns one of the fundamental color tables for STEREO coronagraph
+    images."""
     # STEREO COR Color tables
     try:
         r, g, b = {
@@ -538,7 +537,7 @@ def cor_color_table(number):
     # Now create the color dictionary in the correct format
     cdict = create_cdict(r, g, b)
 
-    return colors.LinearSegmentedColormap('mytable', cdict)
+    return colors.LinearSegmentedColormap('STEREO COR{:s}'.format(str(number)), cdict)
 
 
 # Standard TRACE color RGB triples, as defined by the SSWIDL program
@@ -1007,7 +1006,7 @@ trace_1700_b = np.array(
        121, 121, 121, 121, 122, 122, 122, 123, 123])
 
 def trace_color_table(measurement):
-    '''Returns one of the standard color tables for TRACE JP2 files.'''
+    """Returns one of the standard color tables for TRACE JP2 files."""
     # TRACE color tables
     try:
         r, g, b = {
@@ -1030,11 +1029,11 @@ def trace_color_table(measurement):
     cdict = create_cdict(r, g, b)
 
     # Return the color table
-    return colors.LinearSegmentedColormap('mytable', cdict)
+    return colors.LinearSegmentedColormap('TRACE {:s}'.format(measurement), cdict)
 
 def sot_color_table(measurement):
-    '''Returns one of the standard color tables for SOT files (following osdc convention).
-    The relations between observation and color have been defined in hinode.py'''
+    """Returns one of the standard color tables for SOT files (following osdc convention).
+    The relations between observation and color have been defined in hinode.py"""
     try:
         r, g, b = {
             'intensity': (r0, g0, b0),
@@ -1051,7 +1050,7 @@ def sot_color_table(measurement):
             )
 
     cdict = create_cdict(r, g, b)
-    return colors.LinearSegmentedColormap('mytable', cdict)
+    return colors.LinearSegmentedColormap('Hinode SOT {:s}'.format(measurement), cdict)
 
 def iris_sji_color_table(measurement, aialike=False):
     """Return the standard color table for IRIS SJI files"""
@@ -1109,7 +1108,7 @@ def iris_sji_color_table(measurement, aialike=False):
     # Now create the color dictionary in the correct format
     cdict = create_cdict(r, g, b)
     # Return the color table
-    return colors.LinearSegmentedColormap('mytable', cdict)
+    return colors.LinearSegmentedColormap('IRIS SJI {:s}'.format(measurement), cdict)
 
 
 hmi_mag_r = np.array(
@@ -1215,7 +1214,7 @@ def hmi_mag_color_table():
     * `Stanford Colortable (pdf) <http://jsoc.stanford.edu/data/hmi/HMI_M.ColorTable.pdf>`_
     """
     cdict = create_cdict(hmi_mag_r, hmi_mag_g, hmi_mag_b)
-    return colors.LinearSegmentedColormap('mytable', cdict)
+    return colors.LinearSegmentedColormap('SDO HMI magnetogram', cdict)
 
 hi1_blue = np.array(
        [  0,   1,   2,   4,   5,   6,   8,   9,  10,  12,  13,  14,  16,
@@ -1353,10 +1352,10 @@ hi2_red = np.array(
 def stereo_hi_color_table(camera):
     if camera == 1:
         cdict = create_cdict(hi1_red, hi1_green, hi1_blue)
-        return colors.LinearSegmentedColormap('HI1', cdict)
+        return colors.LinearSegmentedColormap('STEREO HI1', cdict)
     elif camera == 2:
         cdict = create_cdict(hi2_red, hi2_green, hi2_blue)
-        return colors.LinearSegmentedColormap('HI2', cdict)
+        return colors.LinearSegmentedColormap('STEREO HI2', cdict)
     else:
         raise ValueError("Valid HI cameras are 1 and 2")
 
