@@ -12,12 +12,14 @@ from sunpy.extern.six.moves.urllib.request import urlopen
 __all__ = ['Scraper']
 
 # regular expressions to convert datetime format
+# added `%e` as for milliseconds `%f/1000`
 TIME_CONVERSIONS = {'%Y': '\d{4}', '%y': '\d{2}',
-                    '%b': '[A-Z]..', '%B': '\W', '%m': '\d{2}',
+                    '%b': '[A-Z][a-z]{2}', '%B': '\W', '%m': '\d{2}',
                     '%d': '\d{2}', '%j': '\d{3}',
                     '%H': '\d{2}', '%I': '\d{2}',
                     '%M': '\d{2}',
-                    '%S': '\d{2}'}
+                    '%S': '\d{2}', '%e': '\d{3}', '%f': '\d{6}'}
+
 
 class Scraper(object):
     """
@@ -42,8 +44,8 @@ class Scraper(object):
     >>> # Downloading data from SolarMonitor.org
     >>> from sunpy.util.scraper import Scraper
     >>> solmon_pattern = ('http://solarmonitor.org/data/'
-                          '%Y/%m/%d/fits/{instrument}/'
-                          '{instrument}_{wave:05d}_fd_%Y%m%d_%H%M%S.fts.gz')
+    ...                   '%Y/%m/%d/fits/{instrument}/'
+    ...                   '{instrument}_{wave:05d}_fd_%Y%m%d_%H%M%S.fts.gz')
     >>> solmon = Scraper(solmon_pattern, instrument = 'swap', wave = 174)
     >>> print(solmon.pattern)
     http://solarmonitor.org/data/%Y/%m/%d/fits/swap/swap_00174_fd_%Y%m%d_%H%M%S.fts.gz
@@ -57,7 +59,13 @@ class Scraper(object):
     """
     def __init__(self, pattern, **kwargs):
         self.pattern = pattern.format(**kwargs)
-        self.now = datetime.datetime.now().strftime(self.pattern)
+        milliseconds = re.search('\%e', self.pattern)
+        if not milliseconds:
+            self.now = datetime.datetime.now().strftime(self.pattern)
+        else:
+            now = datetime.datetime.now()
+            milliseconds_ = int(now.microsecond / 1000.)
+            self.now = now.strftime(self.pattern[0:milliseconds.start()] + str(milliseconds_) + self.pattern[milliseconds.end():])
 
     def matches(self, filepath, date):
         return date.strftime(self.pattern) == filepath
@@ -115,9 +123,8 @@ class Scraper(object):
         url_to_list = lambda txt: re.sub(r'\.|_', '/', txt).split('/')
         pattern_list = url_to_list(self.pattern)
         url_list = url_to_list(url)
-
         time_order = ['%Y', '%y', '%b', '%B', '%m', '%d', '%j',
-                      '%H', '%I', '%M', '%S']
+                      '%H', '%I', '%M', '%S', '%e', '%f']
         final_date = []
         final_pattern = []
         # Find in directory and filename
@@ -139,10 +146,13 @@ class Scraper(object):
         #   Create new empty lists
         final_date = list()
         final_pattern = list()
+        re_together = re_together.replace('[A-Z]', '\\[A-Z]')
         for p,r in zip(pattern_together.split('%')[1:], re_together.split('\\')[1:]):
-            regexp = '\\{}'.format(r)
+            if p == 'e':
+                continue
+            regexp = '\\{}'.format(r) if not r.startswith('[') else r
             pattern = '%{}'.format(p)
-            date_part = re.match(regexp, date_together)
+            date_part = re.search(regexp, date_together)
             date_together = date_together[:date_part.start()] + \
                             date_together[date_part.end():]
             if pattern not in final_pattern:
@@ -182,7 +192,7 @@ class Scraper(object):
             try:
                 opn = urlopen(directory)
                 try:
-                    soup = BeautifulSoup(opn)
+                    soup = BeautifulSoup(opn, "lxml")
                     for link in soup.find_all("a"):
                         href = link.get("href")
                         if href.endswith(self.pattern.split('.')[-1]):
