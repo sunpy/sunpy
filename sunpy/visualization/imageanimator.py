@@ -453,7 +453,7 @@ class BaseFuncAnimator(object):
         self.slider_functions[slider.slider_ind](val, self.im, slider)
 
 
-class ImageAnimator(BaseFuncAnimator):
+class ArrayAnimator(BaseFuncAnimator):
     """
     Create a matplotlib backend independent data explorer
 
@@ -471,10 +471,10 @@ class ImageAnimator(BaseFuncAnimator):
     Parameters
     ----------
     data: ndarray
-        The data to be visualised > 2D
+        The data to be visualised >= 2D
 
     image_axes: list
-        The two axes that make the image
+        The axes that make the image
 
     fig: mpl.figure
         Figure to use
@@ -501,15 +501,12 @@ class ImageAnimator(BaseFuncAnimator):
     button_func: list
         List of functions to map to the buttons
 
-    Extra keywords are passed to imshow.
     """
 
     def __init__(self, data, image_axes=[-2, -1], axis_range=None, **kwargs):
 
         self.naxis = data.ndim
         self.num_sliders = self.naxis - 2
-        if len(image_axes) != 2:
-            raise ValueError("There can only be two spatial axes")
 
         all_axes = list(range(self.naxis))
         # Handle negative indexes
@@ -536,7 +533,7 @@ class ImageAnimator(BaseFuncAnimator):
         for i in self.slider_axes:
             self.frame_slice[i] = 0
 
-        base_kwargs = {'slider_functions': [self._updateimage]*self.num_sliders,
+        base_kwargs = {'slider_functions': [self.update_plot] * self.num_sliders,
                        'slider_ranges': [self.axis_range[i] for i in self.slider_axes]}
         base_kwargs.update(kwargs)
         BaseFuncAnimator.__init__(self, data, **base_kwargs)
@@ -553,25 +550,6 @@ class ImageAnimator(BaseFuncAnimator):
             The label to set
         """
         self.sliders[i]._slider.label.set_text(label)
-
-    def plot_start_image(self, ax):
-        # Create extent arg
-        extent = []
-        # reverse because numpy is in y-x and extent is x-y
-        for i in self.image_axes[::-1]:
-            extent += self.axis_range[i]
-
-        imshow_args = {'interpolation': 'nearest',
-                       'origin': 'lower',
-                       'extent': extent,
-                       }
-
-        imshow_args.update(self.imshow_kwargs)
-        im = ax.imshow(self.data[self.frame_slice], **imshow_args)
-        if self.if_colorbar:
-            self._add_colorbar(im)
-
-        return im
 
     def _sanitize_axis_range(self, axis_range, data):
         """
@@ -629,7 +607,85 @@ class ImageAnimator(BaseFuncAnimator):
                 raise ValueError("axis_range should be either: None, [min,max], or a linspace for slider axes")
         return axis_range
 
-    def _updateimage(self, val, im, slider):
+
+class ImageAnimator(ArrayAnimator):
+    """Create a matplotlib backend independent data explorer
+
+    The following keyboard shortcuts are defined in the viewer:
+
+    - 'left': previous step on active slider
+    - 'right': next step on active slider
+    - 'top': change the active slider up one
+    - 'bottom': change the active slider down one
+    - 'p': play/pause active slider
+
+    This viewer can have user defined buttons added by specifying the labels
+    and functions called when those buttons are clicked as keyword arguments.
+
+    Parameters
+    ----------
+    data: ndarray
+        The data to be visualised = 2D
+
+    image_axes: list
+        The two axes that make the image
+
+    fig: mpl.figure
+        Figure to use
+
+    axis_range: list of physical coordinates for array or None
+        If None array indices will be used for all axes.
+        If a list it should contain one element for each axis of the numpy array.
+        For the image axes a [min, max] pair should be specified which will be
+        passed to :func:`matplotlib.pyplot.imshow` as extent.
+        For the slider axes a [min, max] pair can be specified or an array the
+        same length as the axis which will provide all values for that slider.
+        If None is specified for an axis then the array indices will be used
+        for that axis.
+
+    interval: int
+        Animation interval in ms
+
+    colorbar: bool
+        Plot colorbar
+
+    button_labels: list
+        List of strings to label buttons
+
+    button_func: list
+        List of functions to map to the buttons
+
+    Extra keywords are passed to imshow.
+
+    """
+
+    def __init__(self, data, image_axes=[-2, -1], axis_range=None, **kwargs):
+        # Check that number of axes is 2.
+        if len(image_axes) != 2:
+            raise ValueError("There can only be two spatial axes")
+        # Run init for parent class
+        super(ImageAnimator, self).__init__(data, image_axes=image_axes, axis_range=axis_range, **kwargs)
+
+    def plot_start_image(self, ax):
+        # Create extent arg
+        extent = []
+        # reverse because numpy is in y-x and extent is x-y
+        for i in self.image_axes[::-1]:
+            extent += self.axis_range[i]
+
+        imshow_args = {'interpolation': 'nearest',
+                       'origin': 'lower',
+                       'extent': extent,
+                       }
+
+        imshow_args.update(self.imshow_kwargs)
+        im = ax.imshow(self.data[self.frame_slice], **imshow_args)
+        if self.if_colorbar:
+            self._add_colorbar(im)
+
+        return im
+
+    def update_plot(self, val, im, slider):
         val = int(val)
         ax = self.slider_axes[slider.slider_ind]
         ind = np.argmin(np.abs(self.axis_range[ax] - val))
@@ -637,3 +693,4 @@ class ImageAnimator(BaseFuncAnimator):
         if val != slider.cval:
             im.set_array(self.data[self.frame_slice])
             slider.cval = val
+
