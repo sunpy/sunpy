@@ -185,18 +185,57 @@ class TimeRange(object):
         -------
         value : `astropy.units.Quantity`
         """
-        result = self.dt.microseconds * u.Unit('us') + self.dt.seconds * u.Unit('s') + self.dt.days * u.Unit('day')
-        return result
+        return (self.dt.microseconds * u.Unit('us') + self.dt.seconds * u.Unit('s') +
+                self.dt.days * u.Unit('day'))
+
+    def __eq__(self, other):
+        """
+        Check two TimeRange objects have the same start and end datetime.
+
+        Parameters
+        ----------
+        other : `~sunpy.time.timerange.TimeRange`
+            The second TimeRange object to compare to.
+
+        Returns
+        -------
+        result : `bool`
+        """
+        if isinstance(other, TimeRange):
+            return (self.start == other.start) and (self.end == other.end)
+
+        return NotImplemented
+
+    def __ne__(self, other):
+        """
+        Check two TimeRange objects have different start or end datetimes.
+
+        Parameters
+        ----------
+        other : `~sunpy.time.timerange.TimeRange`
+            The second TimeRange object to compare to.
+
+        Returns
+        -------
+        result : `bool`
+        """
+        if isinstance(other, TimeRange):
+            return (self.start != other.start) or (self.end != other.end)
+
+        return NotImplemented
 
     def __repr__(self):
         """
-        Returns a human-readable representation of the TimeRange instance."""
+        Returns a human-readable representation of the TimeRange instance.
+        """
 
         t1 = self.start.strftime(TIME_FORMAT)
         t2 = self.end.strftime(TIME_FORMAT)
         center = self.center.strftime(TIME_FORMAT)
+        fully_qualified_name = '{0}.{1}'.format(self.__class__.__module__, self.__class__.__name__)
 
-        return ('    Start:'.ljust(11) + t1 +
+        return ('   <{0} object at {1}>'.format(fully_qualified_name, hex(id(self))) +
+                '\n    Start:'.ljust(12) + t1 +
                 '\n    End:'.ljust(12) + t2 +
                 '\n    Center:'.ljust(12) + center +
                 '\n    Duration:'.ljust(12) + str(self.days.value) + ' days or' +
@@ -212,7 +251,7 @@ class TimeRange(object):
         Parameters
         ----------
         n : int
-            The number of times to split the time range (must > 1)
+            The number of times to split the time range (must >= 1)
 
         Returns
         -------
@@ -326,6 +365,14 @@ class TimeRange(object):
         # Only a timedelta object is acceptable here
         self._t1 = self._t1 + dt_start
         self._t2 = self._t2 + dt_end
+
+    def get_dates(self):
+        """
+        Return all partial days contained within the timerange
+        """
+        dates = []
+        dates = [self.start.date() + timedelta(days=i) for i in range(int(self.days.value) + 1)]
+        return dates
 
     def __contains__(self, time):
         """

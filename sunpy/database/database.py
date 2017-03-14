@@ -150,7 +150,8 @@ def split_database(source_database, destination_database, *query_string):
     >>> client = vso.VSOClient()
     >>> qr = client.query(vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'))
     >>> database1.add_from_vso_query_result(qr)
-    >>> database1, database2 = split_database(database1, database2, vso.attrs.Instrument('AIA') | vso.attrs.Instrument('ERNE'))
+    >>> database1, database2 = split_database(database1, database2,
+    ...            vso.attrs.Instrument('AIA') | vso.attrs.Instrument('ERNE'))
     """
 
     query_string = and_(*query_string)
@@ -288,7 +289,7 @@ class Database(object):
 
     """
     def __init__(self, url=None, CacheClass=LRUCache, cache_size=float('inf'),
-            default_waveunit=None):
+                 default_waveunit=None):
         if url is None:
             url = sunpy.config.get('database', 'url')
         self._engine = create_engine(url)
@@ -430,7 +431,7 @@ class Database(object):
         """
         if not query:
             raise TypeError('at least one attribute required')
-        
+
         client = kwargs.get('client', None)
         if client is None:
             client = VSOClient()
@@ -484,7 +485,7 @@ class Database(object):
         """
         if not query:
             raise TypeError('at least one attribute required')
-        
+
         dump = serialize.dump_query(and_(*query))
         (dump_exists,), = self.session.query(
             exists().where(tables.JSONDump.dump == tables.JSONDump(dump).dump))
@@ -725,7 +726,7 @@ class Database(object):
             self._cache[database_entry.id] = database_entry
 
     def add_from_hek_query_result(self, query_result,
-            ignore_already_added=False):
+                                  ignore_already_added=False):
         """Add database entries from a HEK query result.
 
         Parameters
@@ -742,7 +743,8 @@ class Database(object):
         self.add_from_vso_query_result(vso_qr, ignore_already_added)
 
     def download_from_vso_query_result(self, query_result, client=None,
-            path=None, progress=False, ignore_already_added=False):
+                                       path=None, progress=False,
+                                       ignore_already_added=False):
         """download(query_result, client=sunpy.net.vso.VSOClient(),
         path=None, progress=False, ignore_already_added=False)
 
@@ -766,7 +768,7 @@ class Database(object):
             query_result, client=client, path=path, progress=progress))
 
     def add_from_vso_query_result(self, query_result,
-            ignore_already_added=False):
+                                  ignore_already_added=False):
         """Generate database entries from a VSO query result and add all the
         generated entries to this database.
 
@@ -786,7 +788,7 @@ class Database(object):
             ignore_already_added)
 
     def add_from_dir(self, path, recursive=False, pattern='*',
-            ignore_already_added=False):
+                     ignore_already_added=False, time_string_parse_format=None):
         """Search the given directory for FITS files and use their FITS headers
         to add new entries to the database. Note that one entry in the database
         is assigned to a list of FITS headers, so not the number of FITS headers
@@ -816,10 +818,16 @@ class Database(object):
         ignore_already_added : bool, optional
             See :meth:`sunpy.database.Database.add`.
 
+        time_string_parse_format : str, optional
+            Fallback timestamp format which will be passed to
+            `~datetime.datetime.strftime` if `sunpy.time.parse_time` is unable to
+            automatically read the `date-obs` metadata.
+
         """
         cmds = CompositeOperation()
         entries = tables.entries_from_dir(
-            path, recursive, pattern, self.default_waveunit)
+            path, recursive, pattern, self.default_waveunit,
+            time_string_parse_format=time_string_parse_format)
         for database_entry, filepath in entries:
             if database_entry in list(self) and not ignore_already_added:
                 raise EntryAlreadyAddedError(database_entry)
