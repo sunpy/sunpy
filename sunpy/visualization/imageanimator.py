@@ -505,9 +505,6 @@ class ArrayAnimator(BaseFuncAnimator):
 
     def __init__(self, data, image_axes=[-2, -1], axis_range=None, **kwargs):
 
-        self.naxis = data.ndim
-        self.num_sliders = self.naxis - 2
-
         all_axes = list(range(self.naxis))
         # Handle negative indexes
         self.image_axes = [all_axes[i] for i in image_axes]
@@ -612,7 +609,7 @@ class ArrayAnimator(BaseFuncAnimator):
 
 
 class ImageAnimator(ArrayAnimator):
-    """Create a matplotlib backend independent data explorer
+    """Create a matplotlib backend independent data explorer for 2D images.
 
     The following keyboard shortcuts are defined in the viewer:
 
@@ -666,6 +663,9 @@ class ImageAnimator(ArrayAnimator):
         # Check that number of axes is 2.
         if len(image_axes) != 2:
             raise ValueError("There can only be two spatial axes")
+        # Define number of slider axes.
+        self.naxis = data.ndim
+        self.num_sliders = self.naxis-2
         # Run init for parent class
         super(ImageAnimator, self).__init__(data, image_axes=image_axes,
                                             axis_range=axis_range, **kwargs)
@@ -696,4 +696,106 @@ class ImageAnimator(ArrayAnimator):
         self.frame_slice[ax] = ind
         if val != slider.cval:
             im.set_array(self.data[self.frame_slice])
+            slider.cval = val
+
+
+class LineAnimator(ArrayAnimator):
+    """Create a matplotlib backend independent data explorer for 1D plots.
+
+    The following keyboard shortcuts are defined in the viewer:
+
+    - 'left': previous step on active slider
+    - 'right': next step on active slider
+    - 'top': change the active slider up one
+    - 'bottom': change the active slider down one
+    - 'p': play/pause active slider
+
+    This viewer can have user defined buttons added by specifying the labels
+    and functions called when those buttons are clicked as keyword arguments.
+
+    Parameters
+    ----------
+    ydata: ndarray
+        The y-axis data to be visualised = 2D
+
+    xdata: ndarray
+        The x-axis data against which the slices of the ydata is plotted.
+        Must 1D of same length as the image_axis of ydata.
+        If None, array indices are used.
+
+    image_axis: `int`
+        The axis used to plot against xdata.
+
+    fig: `matplotlib.figure`
+        Figure to use
+
+    axis_range: list of physical coordinates for array or None
+        If None array indices will be used for all axes.
+        If a list it should contain one element for each axis of the numpy array.
+        For the image axes a [min, max] pair should be specified which will be
+        passed to :func:`matplotlib.pyplot.plot` as extent.
+        For the slider axes a [min, max] pair can be specified or an array the
+        same length as the axis which will provide all values for that slider.
+        If None is specified for an axis then the array indices will be used
+        for that axis.
+
+    interval: int
+        Animation interval in ms
+
+    button_labels: list
+        List of strings to label buttons
+
+    button_func: list
+        List of functions to map to the buttons
+
+    Extra keywords are passed to plot.
+
+    """
+
+    def __init__(self, ydata, xdata=None, image_axis=0, axis_range=None, xlim=None, ylim=None,
+                 **kwargs):
+        # Check inputs.
+        image_axis = int(image_axis)
+        if image_axis != 0 and image_axis != 1:
+            raise ValueError("images_axis must be either 0 or 1 referring to "
+                             "the axis of ydata to be used for a single plot.")
+        if ydata.ndim != 2:
+            raise ValueError("ydata must have two dimensions.  One for data "
+                             "for each single plot and one for time/iteration.")
+        if xdata is None:
+            xdata = np.arange(ydata.shape[image_axis])
+        elif xdata.ndim != 1:
+            raise ValueError("xdata must have one dimension.")
+        if ydata.shape[image_axis] != len(xdata):
+            raise ValueError("image axis of ydata and xdata must be of same length.")
+        # Attach data to class.
+        self.xdata = xdata
+        if ylim is None:
+            self.ylim = (ydata.min(), ydata.max())
+        else:
+            self.ylim = ylim
+        if xlim is None:
+            self.xlim = (xdata.min(), xdata.max())
+        else:
+            self.xlim = xlim
+        # Define number of slider axes.
+        self.naxis = ydata.ndim
+        self.num_sliders = self.naxis-1
+        # Run init for base class
+        super(LineAnimator, self).__init__(ydata, image_axes=[image_axis],
+                                           axis_range=axis_range, **kwargs)
+
+    def plot_start_image(self, ax):
+        ax.set_ylim(self.ylim)
+        ax.set_xlim(self.xlim)
+        line, = ax.plot(self.xdata, self.data[self.frame_slice])
+        return line
+
+    def update_plot(self, val, line, slider):
+        val = int(val)
+        ax = self.slider_axes[slider.slider_ind]
+        ind = np.argmin(np.abs(self.axis_range[ax] - val))
+        self.frame_slice[ax] = ind
+        if val != slider.cval:
+            line.set_ydata(self.data[self.frame_slice])
             slider.cval = val
