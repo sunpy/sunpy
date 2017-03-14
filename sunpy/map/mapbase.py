@@ -689,6 +689,14 @@ scale:\t\t {scale}
                 warnings.warn("Unknown value for " + meta_property.upper(),
                               Warning)
 
+    @property
+    def _from_helioviewer(self):
+        """
+        Tests if the header contains the keyword 'helioviewer'.  If so, then
+        the image comes from a Helioviewer JP2 file.
+        :return:
+        """
+        return 'helioviewer' in self.meta.keys()
 
 # #### Data conversion routines #### #
 
