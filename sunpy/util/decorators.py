@@ -23,4 +23,4 @@ def deprecated(since, **kwargs):
 
     with catch_warnings(AstropyDeprecationWarning) as w:
         a_deprecated(since, **kwargs)
-        warnings.warn(w.message, SunpyDeprecationWarning)
+        warnings.warn(w[0].message, SunpyDeprecationWarning)
