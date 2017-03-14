@@ -1,20 +1,19 @@
 from __future__ import absolute_import
 
+import astropy.units as u
 import numpy as np
 
-from astropy.utils.decorators import deprecated
-
 import sunpy.sun as sun
-
-import astropy.units as u
+from sunpy.utils.decorators import deprecated
 
 rsun_meters = sun.constants.radius.si.value
 
 __all__ = ['_convert_angle_units', 'convert_pixel_to_data', 'convert_hpc_hg',
            'convert_data_to_pixel', 'convert_hpc_hcc', 'convert_hcc_hpc',
            'convert_hcc_hg', 'convert_hg_hcc', 'proj_tan',
-           'convert_hg_hpc',  'convert_to_coord',
+           'convert_hg_hpc', 'convert_to_coord',
            'get_center']
+
 
 def _convert_angle_units(unit='arcsec'):
     """Determine the conversion factor between the data units and radians."""
@@ -28,6 +27,7 @@ def _convert_angle_units(unit='arcsec'):
         return np.deg2rad(1) / (60 * 60 * 1000.0)
     else:
         raise ValueError("The units specified are either invalid or is not supported at this time.")
+
 
 @deprecated("0.8.0", alternative="sunpy.map.GenericMap.pixel_to_data")
 def convert_pixel_to_data(size, scale, reference_pixel,
@@ -76,6 +76,7 @@ def convert_pixel_to_data(size, scale, reference_pixel,
     coordx, coordy = proj_tan(coordx, coordy)
 
     return coordx, coordy
+
 
 @deprecated("0.8.0")
 def get_center(size, scale, reference_pixel, reference_coordinate):
