@@ -283,12 +283,12 @@ class BaseFuncAnimator(object):
         elif event.key == 'right':
             self._step(self.sliders[self.active_slider]._slider)
         elif event.key == 'up':
-            self._set_active_slider((self.active_slider+1)%self.num_sliders)
+            self._set_active_slider((self.active_slider+1) % self.num_sliders)
         elif event.key == 'down':
-            self._set_active_slider((self.active_slider-1)%self.num_sliders)
+            self._set_active_slider((self.active_slider-1) % self.num_sliders)
         elif event.key == 'p':
             self._click_slider_button(event, self.slider_buttons[self.active_slider]._button,
-                               self.sliders[self.active_slider]._slider)
+                                      self.sliders[self.active_slider]._slider)
 
 # =============================================================================
 #   Active Slider methods
@@ -386,7 +386,7 @@ class BaseFuncAnimator(object):
                               self.slider_ranges[i][0],
                               self.slider_ranges[i][-1]-1,
                               valinit=self.slider_ranges[i][0],
-                              valfmt = '%4.1f')
+                              valfmt='%4.1f')
             sframe.on_changed(self._slider_changed, sframe)
             sframe.slider_ind = i
             sframe.cval = sframe.val
@@ -471,7 +471,7 @@ class ArrayAnimator(BaseFuncAnimator):
     Parameters
     ----------
     data: ndarray
-        The data to be visualised >= 2D
+        The data to be visualised
 
     image_axes: list
         The axes that make the image
@@ -566,10 +566,12 @@ class ArrayAnimator(BaseFuncAnimator):
         Where axis_range is a list it must have the same length as the number
         of axis as the array and each element must be one of the following:
 
-                * None: Build a min,max pair or linspace array of array indices
-                * [min, max]: leave for image axes or convert to a array for slider axes (from min to max in axis length steps)
-                * [min, max] pair where min == max: convert to array indies min,max pair or array.
-                * array of axis length, check that it was passed for a slider axes and do nothing if it was, error if it is not.
+            * None: Build a min,max pair or linspace array of array indices
+            * [min, max]: leave for image axes or convert to a array for slider axes
+            (from min to max in axis length steps)
+            * [min, max] pair where min == max: convert to array indies min,max pair or array.
+            * array of axis length, check that it was passed for a slider axes and do nothing
+            if it was, error if it is not.
         """
         # If no axis range at all make it all [min,max] pairs
         if axis_range is None:
@@ -586,7 +588,7 @@ class ArrayAnimator(BaseFuncAnimator):
                 # If min==max or None
                 if axis_range[i] is None or axis_range[i][0] == axis_range[i][1]:
                     if i in self.slider_axes:
-                        axis_range[i] = np.linspace(0,d,d)
+                        axis_range[i] = np.linspace(0, d, d)
                     else:
                         axis_range[i] = [0, d]
                         # min max pair for slider axes should be converted
@@ -594,17 +596,18 @@ class ArrayAnimator(BaseFuncAnimator):
                 elif i in self.slider_axes:
                     axis_range[i] = np.linspace(axis_range[i][0], axis_range[i][1], d)
 
-            #If we have a whole list of values for the axis, make sure we are a slider axis.
+            # If we have a whole list of values for the axis, make sure we are a slider axis.
             elif len(axis_range[i]) == d:
                 if i not in self.slider_axes:
                     raise ValueError("Slider axes mis-match, non-slider axes need [min,max] pairs")
                 else:
-                    #Make sure the resulting element is a ndarray
+                    # Make sure the resulting element is a ndarray
                     axis_range[i] = np.array(axis_range[i])
 
-            #panic
+            # panic
             else:
-                raise ValueError("axis_range should be either: None, [min,max], or a linspace for slider axes")
+                raise ValueError("axis_range should be either: None, [min,max], "
+                                 "or a linspace for slider axes")
         return axis_range
 
 
@@ -664,7 +667,8 @@ class ImageAnimator(ArrayAnimator):
         if len(image_axes) != 2:
             raise ValueError("There can only be two spatial axes")
         # Run init for parent class
-        super(ImageAnimator, self).__init__(data, image_axes=image_axes, axis_range=axis_range, **kwargs)
+        super(ImageAnimator, self).__init__(data, image_axes=image_axes,
+                                            axis_range=axis_range, **kwargs)
 
     def plot_start_image(self, ax):
         # Create extent arg
@@ -693,4 +697,3 @@ class ImageAnimator(ArrayAnimator):
         if val != slider.cval:
             im.set_array(self.data[self.frame_slice])
             slider.cval = val
-
