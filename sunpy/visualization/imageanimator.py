@@ -628,7 +628,7 @@ class ImageAnimator(ArrayAnimator):
     Parameters
     ----------
     data: ndarray
-        The data to be visualised = 2D
+        The data to be visualised >= 2D
 
     image_axes: list
         The two axes that make the image
