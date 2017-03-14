@@ -4,7 +4,7 @@ import astropy.units as u
 import numpy as np
 
 import sunpy.sun as sun
-from sunpy.utils.decorators import deprecated
+from sunpy.util.decorators import deprecated
 
 rsun_meters = sun.constants.radius.si.value
 

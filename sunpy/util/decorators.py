@@ -4,11 +4,11 @@
 from __future__ import print_function
 
 from astropy.utils.decorators import deprecated as a_deprecated
-from astropy.utils.exception import AstropyDeprecationWarning
+from astropy.utils.exceptions import AstropyDeprecationWarning
 from astropy.tests.helper import catch_warnings
 import warnings
 
-from sunpy.utils.exception import SunpyDeprecationWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 
 __all__ = ['deprecated']
