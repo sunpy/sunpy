@@ -691,9 +691,9 @@ class ImageAnimator(ArrayAnimator):
 
     def update_plot(self, val, im, slider):
         val = int(val)
-        ax = self.slider_axes[slider.slider_ind]
-        ind = np.argmin(np.abs(self.axis_range[ax] - val))
-        self.frame_slice[ax] = ind
+        ax_ind = self.slider_axes[slider.slider_ind]
+        ind = np.argmin(np.abs(self.axis_range[ax_ind] - val))
+        self.frame_slice[ax_ind] = ind
         if val != slider.cval:
             im.set_array(self.data[self.frame_slice])
             slider.cval = val
@@ -793,9 +793,9 @@ class LineAnimator(ArrayAnimator):
 
     def update_plot(self, val, line, slider):
         val = int(val)
-        ax = self.slider_axes[slider.slider_ind]
-        ind = np.argmin(np.abs(self.axis_range[ax] - val))
-        self.frame_slice[ax] = ind
+        ax_ind = self.slider_axes[slider.slider_ind]
+        ind = np.argmin(np.abs(self.axis_range[ax_ind] - val))
+        self.frame_slice[ax_ind] = ind
         if val != slider.cval:
             line.set_ydata(self.data[self.frame_slice])
             slider.cval = val
