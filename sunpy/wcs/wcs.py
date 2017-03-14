@@ -26,7 +26,8 @@ def _convert_angle_units(unit='arcsec'):
     elif unit == 'mas':
         return np.deg2rad(1) / (60 * 60 * 1000.0)
     else:
-        raise ValueError("The units specified are either invalid or is not supported at this time.")
+        raise ValueError("The units specified are either invalid or is not "
+                         "supported at this time.")
 
 
 @deprecated("0.8.0", alternative="sunpy.map.GenericMap.pixel_to_data")
@@ -40,14 +41,18 @@ def convert_pixel_to_data(size, scale, reference_pixel,
     size : 2d ndarray
         Number of pixels in width and height.
     scale : 2d ndarray
-        The size of a pixel (dx,dy) in data coordinates (equivalent to WCS/CDELT)
+        The size of a pixel (dx,dy) in data coordinates
+        (equivalent to WCS/CDELT)
     reference_pixel : 2d ndarray
-        The reference pixel (x,y) at which the reference coordinate is given (equivalent to WCS/CRPIX)
+        The reference pixel (x,y) at which the reference coordinate is given
+        (equivalent to WCS/CRPIX)
     reference_coordinate : 2d ndarray
-        The data coordinate (x, y) as measured at the reference pixel (equivalent to WCS/CRVAL)
+        The data coordinate (x, y) as measured at the reference pixel
+        (equivalent to WCS/CRVAL)
     x,y : int or ndarray
-        The pixel values at which data coordinates are requested. If none are given,
-        returns coordinates for every pixel.
+        The pixel values at which data coordinates are requested. If none are
+        given, returns coordinates for every pixel.
+
 
     Returns
     -------
@@ -56,8 +61,8 @@ def convert_pixel_to_data(size, scale, reference_pixel,
 
     Notes
     -----
-    This function assumes a gnomic projection which is correct for a detector at the focus
-    of an optic observing the Sun.
+    This function assumes a gnomic projection which is correct for a detector
+    at the focus of an optic observing the Sun.
     """
     cdelt = np.array(scale)
     crpix = np.array(reference_pixel)
@@ -88,11 +93,14 @@ def get_center(size, scale, reference_pixel, reference_coordinate):
     size : 2d ndarray
         Number of pixels in width and height.
     scale : 2d ndarray
-        The size of a pixel (dx,dy) in data coordinates (equivalent to WCS/CDELT)
+        The size of a pixel (dx,dy) in data coordinates
+        (equivalent to WCS/CDELT)
     reference_pixel : 2d ndarray
-        The reference pixel (x,y) at which the reference coordinate is given (equivalent to WCS/CRPIX)
+        The reference pixel (x,y) at which the reference coordinate is given
+        (equivalent to WCS/CRPIX)
     reference_coordinate : 2d ndarray
-        The data coordinate (x, y) as measured at the reference pixel (equivalent to WCS/CRVAL)
+        The data coordinate (x, y) as measured at the reference pixel
+        (equivalent to WCS/CRVAL)
 
     Returns
     -------
@@ -103,7 +111,8 @@ def get_center(size, scale, reference_pixel, reference_coordinate):
     --------
 
     """
-    return scale * (size - 1 * u.pix) / 2. + reference_coordinate - (reference_pixel - 1 * u.pix) * scale
+    return (scale * (size - 1 * u.pix) / 2. + reference_coordinate -
+            (reference_pixel - 1 * u.pix) * scale)
 
 
 @deprecated("0.8.0", alternative="sunpy.map.GenericMap.data_to_pixel")
@@ -116,11 +125,14 @@ def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
     x, y : float
         Data coordinate in same units as reference coordinate
     scale : 2d ndarray
-        The size of a pixel (dx,dy) in data coordinates (equivalent to WCS/CDELT)
+        The size of a pixel (dx,dy) in data coordinates
+        (equivalent to WCS/CDELT)
     reference_pixel : 2d ndarray
-        The reference pixel (x,y) at which the reference coordinate is given (equivalent to WCS/CRPIX)
+        The reference pixel (x,y) at which the reference coordinate is given
+        (equivalent to WCS/CRPIX)
     reference_coordinate : 2d ndarray
-        The data coordinate (x, y) as measured at the reference pixel (equivalent to WCS/CRVAL)
+        The data coordinate (x, y) as measured at the reference pixel
+        (equivalent to WCS/CRVAL)
 
     Returns
     -------
@@ -146,8 +158,8 @@ def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
 def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     """
     Converts from Helioprojective-Cartesian (HPC) coordinates into
-    Heliocentric-Cartesian (HCC) coordinates. Returns all three dimensions, x, y, z in
-    meters.
+    Heliocentric-Cartesian (HCC) coordinates. Returns all three dimensions,
+    x, y, z in meters.
 
     Parameters
     ----------
@@ -198,8 +210,7 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     ry = distance * siny
     rz = dsun_meters - distance * cosy * cosx
 
-
-    if np.all(z == True):
+    if np.all(z is True):
         return rx, ry, rz
     else:
         return rx, ry
@@ -383,7 +394,7 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
         x[zz < 0] = np.nan
         y[zz < 0] = np.nan
 
-    if np.all(z == True):
+    if np.all(z is True):
         return x, y, zz
     else:
         return x, y
@@ -429,9 +440,11 @@ def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None, a
     (380.05656560308898, 743.78281283290016)
     """
 
-    tempx, tempy = convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=b0_deg, l0_deg=l0_deg, occultation=occultation)
+    tempx, tempy = convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=b0_deg,
+                                  l0_deg=l0_deg, occultation=occultation)
     x, y = convert_hcc_hpc(tempx, tempy, dsun_meters=dsun_meters, angle_units=angle_units)
     return x, y
+
 
 @deprecated("0.8.0", alternative="sunpy.coordinates")
 def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec'):
@@ -485,8 +498,10 @@ def proj_tan(x, y, force=False):
     # TODO: write proj_tan function
     return x, y
 
+
 @deprecated("0.8.0", alternative="sunpy.coordinates")
-def convert_to_coord(x, y, from_coord, to_coord, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec'):
+def convert_to_coord(x, y, from_coord, to_coord, b0_deg=0, l0_deg=0,
+                     dsun_meters=None, angle_units='arcsec'):
     """
     Apply a coordinate transform to coordinates. Right now can only do hpc
     to hcc to hg
@@ -495,13 +510,15 @@ def convert_to_coord(x, y, from_coord, to_coord, b0_deg=0, l0_deg=0, dsun_meters
     if (from_coord == 'hcc') and (to_coord == 'hg'):
         rx, ry = convert_hcc_hg(x, y, b0_deg=b0_deg, l0_deg=l0_deg)
     elif (from_coord == 'hpc') and (to_coord == 'hg'):
-        rx, ry = convert_hpc_hg(x, y, b0_deg=b0_deg, l0_deg=l0_deg, dsun_meters=dsun_meters, angle_units=angle_units)
+        rx, ry = convert_hpc_hg(x, y, b0_deg=b0_deg, l0_deg=l0_deg,
+                                dsun_meters=dsun_meters, angle_units=angle_units)
     elif (from_coord == 'hg') and (to_coord == 'hcc'):
         rx, ry = convert_hg_hcc(x, y, b0_deg=b0_deg, l0_deg=l0_deg)
     elif (from_coord == 'hcc') and (to_coord == 'hpc'):
         rx, ry = convert_hcc_hpc(x, y, dsun_meters=dsun_meters, angle_units=angle_units)
     elif (from_coord == 'hg') and (to_coord == 'hpc'):
-        rx, ry = convert_hg_hpc(x, y, b0_deg=b0_deg, l0_deg=l0_deg, dsun_meters=dsun_meters, angle_units=angle_units)
+        rx, ry = convert_hg_hpc(x, y, b0_deg=b0_deg, l0_deg=l0_deg,
+                                dsun_meters=dsun_meters, angle_units=angle_units)
     elif (from_coord == 'hpc') and (to_coord == 'hcc'):
         rx, ry = convert_hpc_hcc(x, y, dsun_meters=dsun_meters, angle_units=angle_units)
 
