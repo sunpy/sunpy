@@ -727,6 +727,10 @@ class VSOClient(object):
 
     @staticmethod
     def by_provider(response):
+        """
+        Returns a dictionary of provider corresponding 
+        to records in the response. 
+        """
         map_ = defaultdict(list)
         for record in response:
             map_[record.provider].append(record)
@@ -734,6 +738,10 @@ class VSOClient(object):
 
     @staticmethod
     def by_fileid(response):
+        """
+        Returns a dictionary of fileids corresponding 
+        to records in the response.
+        """
         return dict(
             (record.fileid, record) for record in response
         )
