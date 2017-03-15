@@ -867,6 +867,7 @@ def search(*args, **kwargs):
         g_client = InteractiveVSOClient()
     return g_client.search(*args, **kwargs)
 
+
 search.__doc__ = InteractiveVSOClient.search.__doc__
 
 
@@ -876,6 +877,7 @@ def get(query_response, path=None, methods=('URL-FILE',), downloader=None):
     if g_client is None:
         g_client = InteractiveVSOClient()
     return g_client.get(query_response, path, methods, downloader)
+
 
 get.__doc__ = VSOClient.get.__doc__
 
