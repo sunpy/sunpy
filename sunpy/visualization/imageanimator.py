@@ -551,7 +551,7 @@ class ArrayAnimator(BaseFuncAnimator):
     def _sanitize_axis_range(self, axis_range, data):
         """
         This method takes the various allowed values of axis_range and returns
-        them in a standadized way for the rest of the class to use.
+        them in a standardized way for the rest of the class to use.
 
         The outputted axis range describes the physical coordinates of the
         array axes.
@@ -560,8 +560,48 @@ class ArrayAnimator(BaseFuncAnimator):
         If axis_range is None then all axis are assumed to be not scaled and
         use array indices.
 
+        Where axis_range is a list it must have the same length as the number
+        of axis as the array and each element must be one of the following:
+
+            * None: Build a min,max pair or linspace array of array indices
+            * [min, max]: leave for image axes or convert to a array for slider axes
+            (from min to max in axis length steps)
+            * [min, max] pair where min == max: convert to array indies min,max pair or array.
+            * array of axis length, check that it was passed for a slider axes and do nothing
+            if it was, error if it is not.
         """
-        raise NotImplementedError("Please define your _sanitize_axis_range function")
+        # If no axis range at all make it all [min,max] pairs
+        if axis_range is None:
+            axis_range = [[0, i] for i in data.shape]
+
+        # need the same number of axis ranges as axes
+        if len(axis_range) != data.ndim:
+            raise ValueError("axis_range must equal number of axes")
+
+        # For each axis validate and translate the axis_range
+        for i, d in enumerate(data.shape):
+            # If [min,max] pair or None
+            if axis_range[i] is None or len(axis_range[i]) == 2:
+                # If min==max or None
+                if axis_range[i] is None or axis_range[i][0] == axis_range[i][1]:
+                    if i in self.slider_axes:
+                        axis_range[i] = np.linspace(0, d, d)
+                    else:
+                        axis_range[i] = [0, d]
+                        # min max pair for slider axes should be converted
+                        # to an array
+                elif i in self.slider_axes:
+                    axis_range[i] = np.linspace(axis_range[i][0], axis_range[i][1], d)
+
+            # If we have a whole list of values for the axis, make sure we are a slider axis.
+            elif len(axis_range[i]) == d:
+                axis_range[i] = np.array(axis_range[i])
+
+            # panic
+            else:
+                raise ValueError("axis_range should be either: None, [min,max], "
+                                 "or a linspace for slider axes")
+        return axis_range
 
 
 class ImageAnimator(ArrayAnimator):
@@ -676,42 +716,15 @@ class ImageAnimator(ArrayAnimator):
             * array of axis length, check that it was passed for a slider axes and do nothing
             if it was, error if it is not.
         """
-        # If no axis range at all make it all [min,max] pairs
-        if axis_range is None:
-            axis_range = [[0, i] for i in data.shape]
-
-        # need the same number of axis ranges as axes
-        if len(axis_range) != data.ndim:
-            raise ValueError("axis_range must equal number of axes")
-
-        # For each axis validate and translate the axis_range
+        # Run super class's version of this function.
+        axis_range = super(ImageAnimator, self)._sanitize_axis_range(axis_range, data)
+        # Check that axis ranges which are array type are only for slider axes.
         for i, d in enumerate(data.shape):
-            # If [min,max] pair or None
-            if axis_range[i] is None or len(axis_range[i]) == 2:
-                # If min==max or None
-                if axis_range[i] is None or axis_range[i][0] == axis_range[i][1]:
-                    if i in self.slider_axes:
-                        axis_range[i] = np.linspace(0, d, d)
-                    else:
-                        axis_range[i] = [0, d]
-                        # min max pair for slider axes should be converted
-                        # to an array
-                elif i in self.slider_axes:
-                    axis_range[i] = np.linspace(axis_range[i][0], axis_range[i][1], d)
-
-            # If we have a whole list of values for the axis, make sure we are a slider axis.
-            elif len(axis_range[i]) == d:
+            if len(axis_range[i]) == d:
                 if i not in self.slider_axes:
                     raise ValueError("Slider axes mis-match, non-slider axes need [min,max] pairs")
-                else:
-                    # Make sure the resulting element is a ndarray
-                    axis_range[i] = np.array(axis_range[i])
-
-            # panic
-            else:
-                raise ValueError("axis_range should be either: None, [min,max], "
-                                 "or a linspace for slider axes")
         return axis_range
+
 
 
 class LineAnimator(ArrayAnimator):
@@ -825,58 +838,3 @@ class LineAnimator(ArrayAnimator):
         if val != slider.cval:
             line.set_ydata(self.data[self.frame_slice])
             slider.cval = val
-
-    def _sanitize_axis_range(self, axis_range, data):
-        """
-        This method takes the various allowed values of axis_range and returns
-        them in a standardized way for the rest of the class to use.
-
-        The outputted axis range describes the physical coordinates of the
-        array axes.
-
-        The allowed values of axis range is either None or a list.
-        If axis_range is None then all axis are assumed to be not scaled and
-        use array indices.
-
-        Where axis_range is a list it must have the same length as the number
-        of axis as the array and each element must be one of the following:
-
-            * None: Build a min,max pair or linspace array of array indices
-            * [min, max]: leave for image axes or convert to a array for slider axes
-            (from min to max in axis length steps)
-            * [min, max] pair where min == max: convert to array indies min,max pair or array.
-            * array of axis length.
-
-        """
-        # If no axis range at all make it all [min,max] pairs
-        if axis_range is None:
-            axis_range = [[0, i] for i in data.shape]
-
-        # need the same number of axis ranges as axes
-        if len(axis_range) != data.ndim:
-            raise ValueError("axis_range must equal number of axes")
-
-        # For each axis validate and translate the axis_range
-        for i, d in enumerate(data.shape):
-            # If [min,max] pair or None
-            if axis_range[i] is None or len(axis_range[i]) == 2:
-                # If min==max or None
-                if axis_range[i] is None or axis_range[i][0] == axis_range[i][1]:
-                    if i in self.slider_axes:
-                        axis_range[i] = np.linspace(0, d, d)
-                    else:
-                        axis_range[i] = [0, d]
-                        # min max pair for slider axes should be converted
-                        # to an array
-                elif i in self.slider_axes:
-                    axis_range[i] = np.linspace(axis_range[i][0], axis_range[i][1], d)
-
-            # If we have a whole list of values for the axis, make sure we are a slider axis.
-            elif len(axis_range[i]) == d:
-                axis_range[i] = np.array(axis_range[i])
-
-            # panic
-            else:
-                raise ValueError("axis_range should be either: None, [min,max], "
-                                 "or a linspace for slider axes")
-        return axis_range
