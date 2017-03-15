@@ -54,6 +54,18 @@ def get_and_create_download_dir():
 
     return config.get('downloads', 'download_dir')
 
+
+def get_and_create_sample_dir():
+    '''
+    Get the config of download directory and create one if not present.
+    '''
+    config = load_config()
+    if not os.path.isdir(config.get('downloads', 'sample_dir')):
+        os.makedirs(config.get('downloads', 'sample_dir'))
+
+    return config.get('downloads', 'sample_dir')
+
+
 def print_config():
     """Print current configuration options"""
     print("FILES USED:")

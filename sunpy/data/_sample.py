@@ -14,6 +14,7 @@ from sunpy.extern import six
 from sunpy.extern.six.moves.urllib.error import URLError
 
 from sunpy.util.net import url_exists
+from sunpy.util.config import get_and_create_sample_dir
 from sunpy import config
 
 __author__ = "Steven Christe"
@@ -77,8 +78,7 @@ def download_sample_data(progress=True, overwrite=True, timeout=None):
     None
     """
     # Creating the directory for sample files to be downloaded
-    if not os.path.isdir(config.get('downloads', 'sample_dir')):
-        os.makedirs(config.get('downloads', 'sample_dir'))
+    sampledata_dir = get_and_create_sample_dir()
 
     number_of_files_fetched = 0
     print("Downloading sample files to {}".format(sampledata_dir))
