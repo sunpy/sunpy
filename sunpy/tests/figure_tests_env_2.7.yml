@@ -39,6 +39,7 @@ dependencies:
 - libxslt=1.1.29=0
 - lxml=3.7.2=py27_0
 - matplotlib=2.0.0=np111py27_0
+- mock=2.0.0=py27_0
 - networkx=1.11=py27_0
 - nomkl=1.0=0
 - numpy=1.11.3=py27_nomkl_0
@@ -54,6 +55,7 @@ dependencies:
 - pyparsing=2.1.4=py27_0
 - pyqt=5.6.0=py27_2
 - pytest=3.0.5=py27_0
+- pytest-mock=1.5.0=py27_0
 - python=2.7.11=0
 - python-dateutil=2.6.0=py27_0
 - pytz=2016.10=py27_0
