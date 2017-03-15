@@ -1,7 +1,8 @@
 Latest
 ------
 
-* User can now pass a custom time format as an argument inside 
+* Removed `extract_time` function from `sunpy.time` and also tests related to the function from `sunpy.time.tests`
+* User can now pass a custom time format as an argument inside
   `sunpy.database.add_from_dir()` in case the `date-obs` metadata cannot
   be read automatically from the files.
 * Get and set methods for composite maps now use Map plot_settings.
@@ -29,6 +30,8 @@ Latest
   imported with `from sunpy.net.helioviewer import HelioviewerClient`.
 * Removed compatibility with standalone ``wcsaxes`` and instead depend on the
   version in astropy 1.3. SunPy now therefore depends on astropy>=1.3.
+* Update to `TimeRange.__repr__`; now includes the qualified name and `id` of
+  the object.
 
 0.7.0
 -----

@@ -41,6 +41,11 @@ if on_rtd:
 import sunpy.data
 sunpy.data.download_sample_data(overwrite=False)
 
+# -- Shut up numpy warnings from WCSAxes
+
+import numpy as np
+np.seterr(invalid='ignore')
+
 # -- General configuration ----------------------------------------------------
 
 
