@@ -54,7 +54,7 @@ class UnifiedResponse(MutableSequence):
                     tmplst.append(block)
                     self._numfile += len(block)
                 else:
-                    raise Exception("{} is not a valid input to UnifiedResponse.".format(lst))
+                    raise Exception("{} is not a valid input to UnifiedResponse.".format(type(lst)))
 
         self._list = tmplst
 
@@ -64,10 +64,7 @@ class UnifiedResponse(MutableSequence):
     def __getitem__(self, aslice):
         ret = self._list[aslice]
         if ret:
-            if isinstance(ret, list):
-                return type(self)(ret)
-            else:
-                return type(self)(ret)
+            return type(self)(ret)
 
         return ret
 
@@ -76,6 +73,9 @@ class UnifiedResponse(MutableSequence):
 
     def __setitem__(self, aslice, v):
         self._list[aslice] = v
+
+    def __iter__(self):
+        return self.responses
 
     def insert(self, i, v):
         self._list.insert(i, v)
@@ -103,7 +103,19 @@ class UnifiedResponse(MutableSequence):
     def _repr_html_(self):
         ret = ''
         for block in self.responses:
+            ret += "Results from the {}:\n".format(block.client.__class__.__name__)
             ret += block._repr_html_()
+            ret += '\n'
+
+        return ret
+
+    def __repr__(self):
+        ret = super(UnifiedResponse, self).__repr__()
+        ret += '\n'
+        for block in self.responses:
+            ret += "Results from the {}:\n".format(block.client.__class__.__name__)
+            ret += repr(block)
+            ret += '\n'
 
         return ret
 
@@ -185,18 +197,22 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         --------
         Query for LYRALightCurve data for the time range ('2012/3/4','2012/3/6')
 
-        >>> from sunpy.net.vso.attrs import Time, Instrument
-        >>> unifresp = Fido.search(Time('2012/3/4', '2012/3/6'), Instrument('lyra'))
+        >>> from sunpy.net import Fido, attrs as a
+        >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra'))
 
         Query for data from Nobeyama Radioheliograph and RHESSI
 
-        >>> unifresp = Fido.search(Time('2012/3/4', '2012/3/6'), Instrument('norh') | Instrument('rhessi'))
+        >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
+                                   a.Instrument('norh') | a.Instrument('rhessi'))
 
         Query for 304 Angstrom SDO AIA data with a cadence of 10 minutes
 
         >>> import astropy.units as u
-        >>> from sunpy.net.vso.attrs import Time, Instrument, Wavelength, Sample
-        >>> unifresp = Fido.search(Time('2012/3/4', '2012/3/6'), Instrument('AIA'), Wavelength(304*u.angstrom, 304*u.angstrom), Sample(10*u.minute))
+        >>> from sunpy.net import Fido, attrs as a
+        >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
+                                   a.Instrument('AIA'),
+                                   a.Wavelength(304*u.angstrom, 304*u.angstrom),
+                                   a.Sample(10*u.minute))
 
         Parameters
         ----------

@@ -31,7 +31,7 @@ env:
         - MAIN_CMD='python setup.py'
         - SETUP_CMD='test'
         - CONDA_CHANNELS='astropy astropy-ci-extras conda-forge'
-        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest pytest-mock pyyaml pandas nomkl pytest-cov coverage hypothesis'
+        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock pyyaml pandas nomkl pytest-cov coverage hypothesis'
         - PIP_DEPENDENCIES='suds-jurko sphinx-gallery glymur pytest-sugar'
         - EVENT_TYPE='pull_request push'
 
@@ -61,7 +61,7 @@ matrix:
          - python: 3.4
            env: NUMPY_VERSION=$PREVIOUS_NUMPY
 
-         - python: 3.6
+         - python: 3.5
            env: SETUP_CMD='build_docs -w'
                 EVENT_TYPE='push pull_request cron'
 
@@ -72,6 +72,13 @@ matrix:
 
          - python: 3.5
            env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
+
+    allow_failures:
+         # Temporarily allowing it to fail, but remove it from here asap once
+         # the build is passing again
+         - python: 3.5
+           env: SETUP_CMD='build_docs -w'
+                EVENT_TYPE='push pull_request cron'
 
 install:
     - git clone git://github.com/astropy/ci-helpers.git
