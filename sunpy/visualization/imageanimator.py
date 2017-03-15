@@ -733,7 +733,7 @@ class LineAnimator(ArrayAnimator):
     data: ndarray
         The y-axis data to be visualised = 2D
 
-    image_axis: `int`
+    data_yaxis: `int`
         The axis used to plot against xdata.
 
     fig: `matplotlib.figure`
@@ -742,11 +742,11 @@ class LineAnimator(ArrayAnimator):
     axis_range: `list` of physical coordinates for array or None
         If None array indices will be used for all axes.
         X-axis values must be supplied (if desired) as an array in the
-        element of axis_range corresponding to the image_axis in the
-        data input arg, i.e. xdata = axis_range[image_axis].
+        element of axis_range corresponding to the data_yaxis in the
+        data input arg, i.e. xdata = axis_range[data_yaxis].
         Also, the number of x-axis values must correspond to the number
-        of y-axis values, i.e. len(axis_range[image_axis]) must equal
-        len(data[image_axis]).
+        of y-axis values, i.e. len(axis_range[data_yaxis]) must equal
+        len(data[data_yaxis]).
         For the slider axes a [min, max] pair can be specified or an array the
         same length as the axis which will provide all values for that slider.
         If None is specified for an axis then the array indices will be used
@@ -777,19 +777,19 @@ class LineAnimator(ArrayAnimator):
 
     """
 
-    def __init__(self, data, image_axis=0, axis_range=None, ylabel=None, xlabel=None,
+    def __init__(self, data, data_yaxis=0, axis_range=None, ylabel=None, xlabel=None,
                  xlim=None, ylim=None, **kwargs):
         # Check inputs.
-        image_axis = int(image_axis)
-        if image_axis != 0 and image_axis != 1:
-            raise ValueError("images_axis must be either 0 or 1 referring to "
+        data_yaxis = int(data_yaxis)
+        if data_yaxis != 0 and data_yaxis != 1:
+            raise ValueError("data_yaxis must be either 0 or 1 referring to "
                              "the axis of data to be used for a single plot.")
         if data.ndim != 2:
             raise ValueError("data must have two dimensions.  One for data "
                              "for each single plot and one for time/iteration.")
         # Attach data to class.
-        axis_range[image_axis] = np.array(axis_range[image_axis])
-        self.xdata = axis_range[image_axis]
+        axis_range[data_yaxis] = np.array(axis_range[data_yaxis])
+        self.xdata = axis_range[data_yaxis]
         if ylim is None:
             ylim = (data.min(), data.max())
         if xlim is None:
@@ -802,7 +802,7 @@ class LineAnimator(ArrayAnimator):
         self.naxis = data.ndim
         self.num_sliders = self.naxis-1
         # Run init for base class
-        super(LineAnimator, self).__init__(data, image_axes=[image_axis],
+        super(LineAnimator, self).__init__(data, image_axes=[data_yaxis],
                                            axis_range=axis_range, **kwargs)
 
     def plot_start_image(self, ax):
