@@ -739,23 +739,38 @@ class LineAnimator(ArrayAnimator):
     fig: `matplotlib.figure`
         Figure to use
 
-    axis_range: list of physical coordinates for array or None
+    axis_range: `list` of physical coordinates for array or None
         If None array indices will be used for all axes.
-        If a list it should contain one element for each axis of the numpy array.
-        For the image axes a [min, max] pair should be specified which will be
-        passed to :func:`matplotlib.pyplot.plot` as extent.
+        X-axis values must be supplied (if desired) as an array in the
+        element of axis_range corresponding to the image_axis in the
+        data input arg, i.e. xdata = axis_range[image_axis].
+        Also, the number of x-axis values must correspond to the number
+        of y-axis values, i.e. len(axis_range[image_axis]) must equal
+        len(data[image_axis]).
         For the slider axes a [min, max] pair can be specified or an array the
         same length as the axis which will provide all values for that slider.
         If None is specified for an axis then the array indices will be used
         for that axis.
 
-    interval: int
+    xlabel: `str`
+        Label of x-axis of plot.
+
+    ylabel: `str`
+        Label of y-axis of plot.
+
+    xlim: `tuple`
+        Limits of x-axis of plot.
+
+    ylim: `tuple`
+        Limits of y-axis of plot.
+
+    interval: `int`
         Animation interval in ms
 
-    button_labels: list
+    button_labels: `list`
         List of strings to label buttons
 
-    button_func: list
+    button_func: `list`
         List of functions to map to the buttons
 
     Extra keywords are passed to plot.
