@@ -1,6 +1,7 @@
 Latest
 ------
 
+* Removed `extract_time` function from `sunpy.time` and also tests related to the function from `sunpy.time.tests`
 * User can now pass a custom time format as an argument inside
   `sunpy.database.add_from_dir()` in case the `date-obs` metadata cannot
   be read automatically from the files.
