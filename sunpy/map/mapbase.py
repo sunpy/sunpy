@@ -946,7 +946,7 @@ scale:\t\t {scale}
         extent = np.max(np.abs(np.vstack((new_map.data.shape * rmatrix,
                                           new_map.data.shape * rmatrix.T))), axis=0)
         # Calculate the needed padding or unpadding
-        diff = np.asarray(np.ceil((extent - new_map.data.shape) / 2)).ravel()
+        diff = np.asarray(np.ceil((extent - new_map.data.shape) / 2), dtype=int).ravel()
         # Pad the image array
         pad_x = int(np.max((diff[1], 0)))
         pad_y = int(np.max((diff[0], 0)))

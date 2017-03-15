@@ -114,12 +114,12 @@ def test_scale(scale_factor):
     w = original.shape[0]/2.0 - 0.5
     new_c = (newim.shape[0]/2.0) - 0.5
     expected = np.zeros(original.shape)
-    upper = w+new_c+1
+    upper = int(w+new_c+1)
     if scale_factor > 1:
-        lower = new_c-w
+        lower = int(new_c-w)
         expected = newim[lower:upper, lower:upper]
     else:
-        lower = w-new_c
+        lower = int(w-new_c)
         expected[lower:upper, lower:upper] = newim
     scale = affine_transform(original, rmatrix=rmatrix, scale=scale_factor)
     compare_results(expected, scale)
@@ -147,12 +147,12 @@ def test_all(angle, dx, dy, scale_factor):
     # Old width and new center of image
     w = np.array(original.shape[0])/2.0 - 0.5
     new_c = (np.array(scale.shape[0])/2.0 - 0.5)
-    upper = w+new_c+1
+    upper = int(w+new_c+1)
     if scale_factor > 1:
-        lower = new_c-w
+        lower = int(new_c-w)
         new = scale[lower:upper, lower:upper]
     else:
-        lower = w-new_c
+        lower = int(w-new_c)
         new[lower:upper, lower:upper] = scale
     disp = np.array([dx, dy])
     rcen = image_center + disp
@@ -163,12 +163,12 @@ def test_all(angle, dx, dy, scale_factor):
                         recenter=True, image_center=rcen)
     w = np.array(expected.shape[0])/2.0 - 0.5
     new_c = (np.array(rotscaleshift.shape[0])/2.0 - 0.5)
-    upper = w+new_c+1
+    upper = int(w+new_c+1)
     if scale_factor > 1:
-        lower = new_c-w
+        lower = int(new_c-w)
         expected = rotscaleshift[lower:upper, lower:upper]
     else:
-        lower = w-new_c
+        lower = int(w-new_c)
         expected[lower:upper, lower:upper] = rotscaleshift
     compare_results(expected, rotscaleshift)
 
@@ -176,7 +176,7 @@ def test_all(angle, dx, dy, scale_factor):
     transformed = affine_transform(original, rmatrix=rmatrix, scale=1.0, recenter=True,
                       image_center=rcen)
     rcen = image_center - np.dot(rmatrix, np.array([dx, dy]))
-    dx, dy = np.dot(rmatrix, disp)
+    dx, dy = np.asarray(np.dot(rmatrix, disp), dtype=int)
     rmatrix = np.array([[c, s], [-s, c]])
     inverse = affine_transform(transformed, rmatrix=rmatrix, scale=1.0, recenter=True,
                   image_center=rcen)

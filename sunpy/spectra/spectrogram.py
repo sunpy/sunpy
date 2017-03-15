@@ -804,7 +804,7 @@ class Spectrogram(Parent):
             # Nyquist–Shannon sampling theorem
             delta_freq = _min_delt(self.freq_axis) / 2.
         nsize = (self.freq_axis.max() - self.freq_axis.min()) / delta_freq + 1
-        new = np.zeros((nsize, self.shape[1]), dtype=self.data.dtype)
+        new = np.zeros((int(nsize), self.shape[1]), dtype=self.data.dtype)
 
         freqs = self.freq_axis - self.freq_axis.max()
         freqs = freqs / delta_freq
@@ -821,7 +821,7 @@ class Spectrogram(Parent):
         fillfrom = np.abs(fillfrom)
 
         for row, from_, to_ in zip(self, fillfrom, fillto):
-            new[from_: to_] = row
+            new[int(from_): int(to_)] = row
 
         vrs = self._get_params()
         vrs.update({
@@ -960,7 +960,7 @@ class LinearTimeSpectrogram(Spectrogram):
         params.update({
             'time_axis': np.linspace(
                 self.time_axis[0],
-                self.time_axis[(new_size - 1) * new_delt / self.t_delt],
+                self.time_axis[int((new_size - 1) * new_delt / self.t_delt)],
                 new_size
             ),
             't_delt': new_delt,
@@ -1144,7 +1144,7 @@ class LinearTimeSpectrogram(Spectrogram):
         # XXX: Could do without resampling by using
         # sp.t_init below, not sure if good idea.
         specs = [sp.resample_time(delt) for sp in specs]
-        cut = [sp[:, (start - sp.t_init) / delt:] for sp in specs]
+        cut = [sp[:, int((start - sp.t_init) / delt):] for sp in specs]
 
         length = min(sp.shape[1] for sp in cut)
         return [sp[:, :length] for sp in cut]
@@ -1260,4 +1260,8 @@ class LinearTimeSpectrogram(Spectrogram):
                     *list(map(int, end.split(":")))
                 )
             end = self.time_to_x(end)
+        if start:
+            start = int(start)
+        if end:
+            end = int(end)
         return self[:, start:end]
