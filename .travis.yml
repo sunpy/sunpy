@@ -76,7 +76,7 @@ matrix:
     allow_failures:
          # Temporarily allowing it to fail, but remove it from here asap once
          # the build is passing again
-         - python: 3.5
+         - python: 2.7
            env: SETUP_CMD='build_docs -w'
                 EVENT_TYPE='push pull_request cron'
 
