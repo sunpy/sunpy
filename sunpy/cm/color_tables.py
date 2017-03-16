@@ -1360,7 +1360,7 @@ def stereo_hi_color_table(camera):
         raise ValueError("Valid HI cameras are 1 and 2")
 
 def create_cdict(r, g, b):
-    """ Create the color tuples in the correct format"""
+    """Create the color tuples in the correct format."""
     i = np.linspace(0, 1, r0.size)
 
     cdict = dict(
