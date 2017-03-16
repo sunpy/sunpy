@@ -576,7 +576,7 @@ class ArrayAnimator(BaseFuncAnimator):
 
         # need the same number of axis ranges as axes
         if len(axis_range) != data.ndim:
-            raise ValueError("axis_range must equal number of axes")
+            raise ValueError("Length of axis_range must equal number of axes")
 
         # For each axis validate and translate the axis_range
         for i, d in enumerate(data.shape):
@@ -599,8 +599,9 @@ class ArrayAnimator(BaseFuncAnimator):
 
             # panic
             else:
-                raise ValueError("axis_range should be either: None, [min,max], "
-                                 "or a linspace for slider axes")
+                raise ValueError("axis_range must be None or a list with length equal to number "
+                                 "of axes in data whose elements are either None, [min,max], "
+                                 "or a list/array of same length as the plot/image axis of data.")
         return axis_range
 
 
