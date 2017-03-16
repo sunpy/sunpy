@@ -58,12 +58,12 @@ def webservice_parser(service='HEC'):
     link = RL.LINK + '/' + service.lower()
     xml = link_test(link)
     if xml is None:
-        return xml
+        return None
     root = EL.fromstring(xml)
     links = []
 
-    #WARNING: getiterator is deprecated in Python 2.7+
-    #Fix for 3.x support
+    # WARNING: getiterator is deprecated in Python 2.7+
+    # Fix for 3.x support
     for interface in root.getiterator('interface'):
         service_type = interface.attrib
         key = list(service_type.keys())
@@ -114,7 +114,9 @@ def endpoint_parser(link):
     soup = BeautifulSoup(endpoint_page)
     endpoints = []
     for web_link in soup.find_all('a'):
-        endpoints.append(web_link.get('href'))
+        url = web_link.get('href')
+        if url not in endpoints:
+            endpoints.append(url)
     return endpoints
 
 
@@ -149,7 +151,7 @@ def taverna_parser(link):
     if endpoints is None:
         return None
     for web_link in endpoints:
-        if 'Taverna' in web_link:
+        if 'Taverna' in web_link and web_link not in taverna_links:
             taverna_links.append(web_link)
     if len(taverna_links) == 0:
         return None
