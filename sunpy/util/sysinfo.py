@@ -5,7 +5,7 @@ import datetime
 
 import logging
 
-logger=logging.getLogger()
+logger = logging.getLogger()
 
 
 __all__ = ['get_sys_dict', 'system_info']
@@ -102,9 +102,7 @@ def system_info():
 
     """
     global logger
-    logger.setLevel(logging.INFO)
-    
-    
+    logger.setLevel(logging.INFO)  
     ch = logging.StreamHandler()
     ch.setLevel(logging.INFO)
     logger.addHandler(ch)
@@ -128,14 +126,14 @@ def system_info():
 
     if sys_prop['System'] == "Linux":
         distro = " ".join(platform.linux_distribution())
-        logger.info("OS: %s (Linux %s %s),distro, platform.release(), sys_prop['Processor'])
+        logger.info("OS: %s (Linux %s %s), distro, platform.release(), sys_prop['Processor'])
     elif sys_prop['System'] == "Darwin":
-        logger.info("OS: Mac OS X %s (%s)",platform.mac_ver()[0], sys_prop['Processor'])
+        logger.info("OS: Mac OS X %s (%s)", platform.mac_ver()[0], sys_prop['Processor'])
     elif sys_prop['System'] == "Windows":
-        logger.info("OS: Windows %s %s (%s)",platform.release(),
+        logger.info("OS: Windows %s %s (%s)", platform.release(),
                                                  platform.version(), sys_prop['Processor'])
     else:
-        logger.info("Unknown OS (%s)",(sys_prop['Processor']))
+        logger.info("Unknown OS (%s)", (sys_prop['Processor']))
 
     print("\n")
 # required libraries
