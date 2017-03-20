@@ -8,9 +8,11 @@
 from __future__ import absolute_import, print_function
 
 import csv
+import posixpath
+import re
 import socket
-from datetime import datetime
-from datetime import timedelta
+import warnings
+from datetime import datetime, timedelta
 
 import numpy as np
 
@@ -23,8 +25,9 @@ from sunpy.coordinates import get_sunearth_distance
 import sunpy.map
 
 from sunpy.extern.six.moves import urllib
-from sunpy.extern.six.moves.urllib.request import urlopen
+from sunpy.extern.six.moves.urllib.request import urlopen, urlretrieve
 from sunpy.extern.six.moves.urllib.error import URLError
+
 
 __all__ = ['get_obssumm_dbase_file', 'parse_obssumm_dbase_file',
            'get_obssum_filename', 'get_obssumm_file', 'parse_obssumm_file',
@@ -48,14 +51,14 @@ def get_base_url():
     """
     Find the first mirror which is online
     """
-
     for server in data_servers:
         try:
             urlopen(server, timeout=1)
+            return server
         except (URLError, socket.timeout):
             pass
-        else:
-            return server
+
+    raise IOError('Unable to find an online HESSI server from {0}'.format(data_servers))
 
 
 def get_obssumm_dbase_file(time_range):
@@ -78,7 +81,7 @@ def get_obssumm_dbase_file(time_range):
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
+    >>> fname, hdrs = rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
 
     References
     ----------
@@ -88,21 +91,17 @@ def get_obssumm_dbase_file(time_range):
         This API is currently limited to providing data from whole days only.
 
     """
-
-    #    http://hesperia.gsfc.nasa.gov/hessidata/dbase/hsi_obssumm_filedb_200311.txt
-
     _time_range = TimeRange(time_range)
-    data_location = 'dbase/'
 
     if _time_range.start < parse_time("2002/02/01"):
         raise ValueError("RHESSI summary files are not available for before 2002-02-01")
 
-    url_root = get_base_url() + data_location
-    url = url_root + _time_range.start.strftime("hsi_obssumm_filedb_%Y%m.txt")
+    _check_one_day(_time_range)
 
-    f = urllib.request.urlretrieve(url)
+    url = posixpath.join(get_base_url(), 'dbase',
+                         _time_range.start.strftime("hsi_obssumm_filedb_%Y%m.txt"))
 
-    return f
+    return urlretrieve(url)
 
 
 def parse_obssumm_dbase_file(filename):
@@ -124,8 +123,8 @@ def parse_obssumm_dbase_file(filename):
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> f = rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
-    >>> rhessi.parse_obssumm_dbase_file(f[0])   # doctest: +SKIP
+    >>> fname, _ = rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
+    >>> rhessi.parse_obssumm_dbase_file(fname)   # doctest: +SKIP
 
     References
     ----------
@@ -135,12 +134,15 @@ def parse_obssumm_dbase_file(filename):
         This API is currently limited to providing data from whole days only.
 
     """
-    with open(filename, "rt") as fd:
+    # An example dbase file can be found at:
+    # http://hesperia.gsfc.nasa.gov/hessidata/dbase/hsi_obssumm_filedb_200311.txt
+
+    with open(filename) as fd:
         reader = csv.reader(fd, delimiter=' ', skipinitialspace=True)
-        headerline = next(reader)
-        headerline = next(reader)
-        headerline = next(reader)
-        headerline = next(reader)
+        _ = next(reader)  # skip 'HESSI Filedb File:' row
+        _ = next(reader)  # skip 'Created: ...' row
+        _ = next(reader)  # skip 'Number of Files: ...' row
+        column_names = next(reader)  # ['Filename', 'Orb_st', 'Orb_end',...]
 
         obssumm_filename = []
         orbit_start = []
@@ -154,19 +156,19 @@ def parse_obssumm_dbase_file(filename):
             obssumm_filename.append(row[0])
             orbit_start.append(int(row[1]))
             orbit_end.append(int(row[2]))
-            start_time.append(datetime.strptime(row[3], '%d-%b-%y'))
-            end_time.append(datetime.strptime(row[5], '%d-%b-%y'))
+            start_time.append(datetime.strptime(row[3], '%d-%b-%y'))  # skip time
+            end_time.append(datetime.strptime(row[5], '%d-%b-%y'))  # skip time
             status_flag.append(int(row[7]))
             number_of_packets.append(int(row[8]))
 
         return {
-            headerline[0].lower(): obssumm_filename,
-            headerline[1].lower(): orbit_start,
-            headerline[2].lower(): orbit_end,
-            headerline[3].lower(): start_time,
-            headerline[4].lower(): end_time,
-            headerline[5].lower(): status_flag,
-            headerline[6].lower(): number_of_packets
+            column_names[0].lower(): obssumm_filename,
+            column_names[1].lower(): orbit_start,
+            column_names[2].lower(): orbit_end,
+            column_names[3].lower(): start_time,
+            column_names[4].lower(): end_time,
+            column_names[5].lower(): status_flag,
+            column_names[6].lower(): number_of_packets
         }
 
 
@@ -190,6 +192,7 @@ def get_obssum_filename(time_range):
     --------
     >>> import sunpy.instr.rhessi as rhessi
     >>> rhessi.get_obssum_filename(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
+    ['http://soleil.i4ds.ch/hessidata/metadata/catalog/hsi_obssumm_20110404_042.fits']
 
     .. note::
         This API is currently limited to providing data from whole days only.
@@ -197,17 +200,16 @@ def get_obssum_filename(time_range):
     """
     # need to download and inspect the dbase file to determine the filename
     # for the observing summary data
-    f = get_obssumm_dbase_file(time_range)
-    data_location = 'metadata/catalog/'
 
-    result = parse_obssumm_dbase_file(f[0])
+    dbase_file_name, _ = get_obssumm_dbase_file(time_range)
+    dbase_dat = parse_obssumm_dbase_file(dbase_file_name)
+
     _time_range = TimeRange(time_range)
-
     index_number_start = _time_range.start.day - 1
     index_number_end = _time_range.end.day - 1
 
-    return [get_base_url() + data_location + filename
-            + 's' for filename in result.get('filename')[index_number_start:index_number_end]]
+    return [posixpath.join(get_base_url(), 'metadata', 'catalog', filename + 's')
+            for filename in dbase_dat.get('filename')[index_number_start:index_number_end]]
 
 
 def get_obssumm_file(time_range):
@@ -230,21 +232,18 @@ def get_obssumm_file(time_range):
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
+    >>> fname, hdrs = rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
 
     .. note::
         This API is currently limited to providing data from whole days only.
 
     """
+    _check_one_day(TimeRange(time_range))
 
-    time_range = TimeRange(time_range)
+    filenames = get_obssum_filename(time_range)
 
-    url = get_obssum_filename(time_range)[0]
-
-    print('Downloading file: ' + url)
-    f = urllib.request.urlretrieve(url)
-
-    return f
+    # As we only support providing data from one whole day, only get the first file
+    return urlretrieve(filenames[0])
 
 
 def parse_obssumm_file(filename):
@@ -260,27 +259,23 @@ def parse_obssumm_file(filename):
 
     Returns
     -------
-    out : `dict`
-        Returns a dictionary.
+    value : `tuple`
+        Return a `tuple` (fits_header, data). Where fits_header is of type
+        `~astropy.io.fits.header.Header` and data of type `dict`
 
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> f = rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
-    >>> data = rhessi.parse_obssumm_file(f[0])   # doctest: +SKIP
+    >>> fname, _ = rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
+    >>> data = rhessi.parse_obssumm_file(fname)   # doctest: +SKIP
 
     """
 
     afits = fits.open(filename)
-    header = afits[0].header
+    fits_header = afits[0].header
 
     reference_time_ut = parse_time(afits[5].data.field('UT_REF')[0])
     time_interval_sec = afits[5].data.field('TIME_INTV')[0]
-    # label_unit = fits[5].data.field('DIM1_UNIT')[0]
-    # labels = fits[5].data.field('DIM1_IDS')
-    labels = ['3 - 6 keV', '6 - 12 keV', '12 - 25 keV', '25 - 50 keV',
-              '50 - 100 keV', '100 - 300 keV', '300 - 800 keV', '800 - 7000 keV',
-              '7000 - 20000 keV']
 
     # The data stored in the FITS file are "compressed" countrates stored as
     # one byte
@@ -291,10 +286,10 @@ def parse_obssumm_file(filename):
 
     time_array = [reference_time_ut + timedelta(0, time_interval_sec * a) for a in np.arange(dim)]
 
-    # TODO generate the labels for the dict automatically from labels
-    data = {'time': time_array, 'data': countrate, 'labels': labels}
+    labels = _build_energy_bands(label=afits[5].data.field('DIM1_UNIT')[0],
+                                 bands=afits[5].data.field('DIM1_IDS')[0])
 
-    return header, data
+    return fits_header, dict(time=time_array, data=countrate, labels=labels)
 
 
 def parse_obssumm_hdulist(hdulist):
@@ -381,7 +376,7 @@ def hsi_linecolors():
 
     References
     ----------
-    hsi_linecolors.pro `<http://hesperia.gsfc.nasa.gov/ssw/hessi/idl/gen/hsi_linecolors.pro`_
+    hsi_linecolors.pro `<http://hesperia.gsfc.nasa.gov/ssw/hessi/idl/gen/hsi_linecolors.pro>`_
     """
     return ('black', 'magenta', 'lime', 'cyan', 'y', 'red', 'blue', 'orange',
             'olive')
