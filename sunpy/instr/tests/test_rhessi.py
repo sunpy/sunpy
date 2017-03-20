@@ -200,7 +200,7 @@ def test_parse_obssumm_dbase_file():
     mock_file.return_value.__iter__.return_value = hessi_data()
 
     dbase_data = {}
-    with mock.patch('sunpy.instr.rhessi.open', mock_file):
+    with mock.patch('sunpy.instr.rhessi.open', mock_file, create=True):
         dbase_data = rhessi.parse_obssumm_dbase_file(None)
 
     assert len(dbase_data.keys()) == 7
