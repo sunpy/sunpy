@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import abc
+import six
+
 import numpy as np
 
 import matplotlib.pyplot as plt
@@ -453,6 +456,7 @@ class BaseFuncAnimator(object):
         self.slider_functions[slider.slider_ind](val, self.im, slider)
 
 
+@six.add_metaclass
 class ArrayAnimator(BaseFuncAnimator):
     """
     Create a matplotlib backend independent data explorer
@@ -604,6 +608,24 @@ class ArrayAnimator(BaseFuncAnimator):
                                  "of axes in data whose elements are either None, [min,max], "
                                  "or a list/array of same length as the plot/image axis of data.")
         return axis_range
+
+    @abc.abstractmethod
+    def plot_start_image(self):
+        """
+        Abstract method for plotting first slice of array.
+
+        Must exists here but be defined in subclass.
+
+        """
+
+    @abc.abstractmethod
+    def update_plot(self):
+        """
+        Abstract method for updating plot.
+
+        Must exists here but be defined in subclass.
+
+        """
 
 
 class ImageAnimator(ArrayAnimator):
