@@ -11,7 +11,7 @@ import mpl_toolkits.axes_grid1.axes_size as Size
 
 from sunpy.extern.six.moves import range
 
-__all__ = ['BaseFuncAnimator', 'ImageAnimator']
+__all__ = ['BaseFuncAnimator', 'ImageAnimator', 'LineAnimator']
 
 
 class SliderPB(widgets.Slider):
@@ -471,7 +471,7 @@ class ArrayAnimator(BaseFuncAnimator):
     Parameters
     ----------
     data: ndarray
-        The data to be visualised
+        The data to be visualized
 
     image_axes: list
         The axes that make the image
@@ -505,6 +505,7 @@ class ArrayAnimator(BaseFuncAnimator):
 
     def __init__(self, data, image_axes=[-2, -1], axis_range=None, **kwargs):
 
+        self.naxis = data.ndim
         all_axes = list(range(self.naxis))
         # Handle negative indexes
         self.image_axes = [all_axes[i] for i in image_axes]
@@ -660,12 +661,11 @@ class ImageAnimator(ArrayAnimator):
         # Check that number of axes is 2.
         if len(image_axes) != 2:
             raise ValueError("There can only be two spatial axes")
-        # Define number of slider axes.
-        self.naxis = data.ndim
-        self.num_sliders = self.naxis-2
         # Run init for parent class
         super(ImageAnimator, self).__init__(data, image_axes=image_axes,
                                             axis_range=axis_range, **kwargs)
+        # Define number of slider axes.
+        self.num_sliders = self.naxis-2
 
     def plot_start_image(self, ax):
         # Create extent arg
@@ -791,19 +791,23 @@ class LineAnimator(ArrayAnimator):
 
     """
 
-    def __init__(self, data, data_yaxis=0, axis_range=None, ylabel=None, xlabel=None,
+    def __init__(self, data, plot_axis_index=0, axis_range=None, ylabel=None, xlabel=None,
                  xlim=None, ylim=None, **kwargs):
         # Check inputs.
-        data_yaxis = int(data_yaxis)
-        if data_yaxis != 0 and data_yaxis != 1:
-            raise ValueError("data_yaxis must be either 0 or 1 referring to "
-                             "the axis of data to be used for a single plot.")
-        if data.ndim != 2:
-            raise ValueError("data must have two dimensions.  One for data "
-                             "for each single plot and one for time/iteration.")
+        plot_axis_index = int(plot_axis_index)
+        if plot_axis_index not in range(-2, 2):
+            raise ValueError("plot_axis_index must be either 0 or 1 (or equivalent "
+                             "negative indices) referring to the axis of data to be "
+                             "used for a single plot.")
+        if data.ndim < 2:
+            raise ValueError("data must have at least two dimensions.  One for data "
+                             "for each single plot and at least one for time/iteration.")
+        # Run init for base class
+        super(LineAnimator, self).__init__(data, image_axes=[plot_axis_index],
+                                           axis_range=axis_range, **kwargs)
         # Attach data to class.
-        axis_range[data_yaxis] = np.array(axis_range[data_yaxis])
-        self.xdata = axis_range[data_yaxis]
+        axis_range[plot_axis_index] = np.array(axis_range[plot_axis_index])
+        self.xdata = axis_range[plot_axis_index]
         if ylim is None:
             ylim = (data.min(), data.max())
         if xlim is None:
@@ -813,11 +817,7 @@ class LineAnimator(ArrayAnimator):
         self.xlabel = xlabel
         self.ylabel = ylabel
         # Define number of slider axes.
-        self.naxis = data.ndim
         self.num_sliders = self.naxis-1
-        # Run init for base class
-        super(LineAnimator, self).__init__(data, image_axes=[data_yaxis],
-                                           axis_range=axis_range, **kwargs)
 
     def plot_start_image(self, ax):
         ax.set_xlim(self.xlim)
