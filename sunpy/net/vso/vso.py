@@ -196,26 +196,20 @@ class QueryResponse(list):
 class DownloadFailed(Exception):
     pass
 
-
 class MissingInformation(Exception):
     pass
-
 
 class UnknownMethod(Exception):
     pass
 
-
 class MultipleChoices(Exception):
     pass
-
 
 class UnknownVersion(Exception):
     pass
 
-
 class UnknownStatus(Exception):
     pass
-
 
 class VSOClient(object):
     """ Main VSO Client. """
@@ -507,7 +501,7 @@ class VSOClient(object):
     def latest(self):
         """ Return newest record (limited to last week). """
         return self.query_legacy(
-            datetime.utcnow() - timedelta(7),
+            datetime.utcnow()  - timedelta(7),
             datetime.utcnow(),
             time_near=datetime.utcnow()
         )
@@ -728,15 +722,16 @@ class VSOClient(object):
         if method.startswith('URL'):
             return dw.download(url, partial(self.mk_filename, *args),
                         callback, errback
-                               )
+            )
         raise NoData
 
     @staticmethod
     def by_provider(response):
+        """ 
+        Returns a dictionary of provider 
+        corresponding to records in the response. 
         """
-        Returns a dictionary of provider corresponding 
-        to records in the response. 
-        """
+        
         map_ = defaultdict(list)
         for record in response:
             map_[record.provider].append(record)
@@ -744,10 +739,11 @@ class VSOClient(object):
 
     @staticmethod
     def by_fileid(response):
+        """ 
+        Returns a dictionary of fileids 
+        corresponding to records in the response. 
         """
-        Returns a dictionary of fileids corresponding 
-        to records in the response.
-        """
+        
         return dict(
             (record.fileid, record) for record in response
         )
@@ -773,6 +769,7 @@ class VSOClient(object):
     @classmethod
     def _can_handle_query(cls, *query):
         return all([x.__class__.__name__ in attrs.__all__ for x in query])
+
 
 
 class InteractiveVSOClient(VSOClient):
@@ -858,8 +855,6 @@ class InteractiveVSOClient(VSOClient):
 
 
 g_client = None
-
-
 def search(*args, **kwargs):
     # pylint: disable=W0603
     global g_client
@@ -867,9 +862,7 @@ def search(*args, **kwargs):
         g_client = InteractiveVSOClient()
     return g_client.search(*args, **kwargs)
 
-
 search.__doc__ = InteractiveVSOClient.search.__doc__
-
 
 def get(query_response, path=None, methods=('URL-FILE',), downloader=None):
     # pylint: disable=W0603
@@ -877,7 +870,6 @@ def get(query_response, path=None, methods=('URL-FILE',), downloader=None):
     if g_client is None:
         g_client = InteractiveVSOClient()
     return g_client.get(query_response, path, methods, downloader)
-
 
 get.__doc__ = VSOClient.get.__doc__
 
@@ -889,4 +881,4 @@ if __name__ == "__main__":
         vso.attrs.Time((2011, 1, 1), (2011, 1, 1, 10)),
         vso.attrs.Instrument('aia')
     )
-    # res = client.get(result, path="/download/path").wait()
+    #res = client.get(result, path="/download/path").wait()
