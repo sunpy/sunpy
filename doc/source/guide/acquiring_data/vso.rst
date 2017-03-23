@@ -31,12 +31,12 @@ Note
 -----
 
 There are (at least) two Python 3 compatible forks of the suds Python library:
-<https://bitbucket.org/jurko/suds/>
-<https://github.com/cackharot/suds-py3/>
+`suds-jurko<https://bitbucket.org/jurko/suds>`_
+`suds-py3<https://github.com/cackharot/suds-py3>`_
 
 The suds-jurko fork works with VSO and `suds-py3` does not since it depends on `suds-jurko`.
 
-While installing from pip or conda the package <https://bitbucket.org/jurko/suds/> is used. But while on Arch Linux the package <https://github.com/cackharot/suds-py3/> is used. It is thus required to update from `python-suds` to `python-suds-jurko`.
+While installing from pip or conda the package `suds-jurko<https://bitbucket.org/jurko/suds>`_ is used. But while on Arch Linux the     `suds-py3<https://github.com/cackharot/suds-py3>`_  package is used. It is thus required in Arch Linux to update from `python-suds` to `python-suds-jurko`.
 
 
 Searching the VSO
