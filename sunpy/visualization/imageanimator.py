@@ -456,7 +456,7 @@ class BaseFuncAnimator(object):
         self.slider_functions[slider.slider_ind](val, self.im, slider)
 
 
-@six.add_metaclass
+@six.add_metaclass(abc.ABCMeta)
 class ArrayAnimator(BaseFuncAnimator):
     """
     Create a matplotlib backend independent data explorer
@@ -509,7 +509,6 @@ class ArrayAnimator(BaseFuncAnimator):
 
     def __init__(self, data, image_axes=[-2, -1], axis_range=None, **kwargs):
 
-        self.naxis = data.ndim
         all_axes = list(range(self.naxis))
         # Handle negative indexes
         self.image_axes = [all_axes[i] for i in image_axes]
@@ -683,11 +682,12 @@ class ImageAnimator(ArrayAnimator):
         # Check that number of axes is 2.
         if len(image_axes) != 2:
             raise ValueError("There can only be two spatial axes")
+        # Define number of slider axes.
+        self.naxis = data.ndim
+        self.num_sliders = self.naxis-2
         # Run init for parent class
         super(ImageAnimator, self).__init__(data, image_axes=image_axes,
                                             axis_range=axis_range, **kwargs)
-        # Define number of slider axes.
-        self.num_sliders = self.naxis-2
 
     def plot_start_image(self, ax):
         # Create extent arg
@@ -767,9 +767,9 @@ class LineAnimator(ArrayAnimator):
     Parameters
     ----------
     data: ndarray
-        The y-axis data to be visualised = 2D
+        The y-axis data to be visualized
 
-    data_yaxis: `int`
+    plot_axis_index: `int`
         The axis used to plot against xdata.
 
     fig: `matplotlib.figure`
@@ -778,11 +778,11 @@ class LineAnimator(ArrayAnimator):
     axis_range: `list` of physical coordinates for array or None
         If None array indices will be used for all axes.
         X-axis values must be supplied (if desired) as an array in the
-        element of axis_range corresponding to the data_yaxis in the
-        data input arg, i.e. xdata = axis_range[data_yaxis].
+        element of axis_range corresponding to the plot_axis_index in the
+        data input arg, i.e. xdata = axis_range[plot_axis_index].
         Also, the number of x-axis values must correspond to the number
-        of y-axis values, i.e. len(axis_range[data_yaxis]) must equal
-        len(data[data_yaxis]).
+        of y-axis values, i.e. len(axis_range[plot_axis_index]) must equal
+        len(data[plot_axis_index]).
         For the slider axes a [min, max] pair can be specified or an array the
         same length as the axis which will provide all values for that slider.
         If None is specified for an axis then the array indices will be used
@@ -824,12 +824,15 @@ class LineAnimator(ArrayAnimator):
         if data.ndim < 2:
             raise ValueError("data must have at least two dimensions.  One for data "
                              "for each single plot and at least one for time/iteration.")
-        # Run init for base class
-        super(LineAnimator, self).__init__(data, image_axes=[plot_axis_index],
-                                           axis_range=axis_range, **kwargs)
+        # Define number of slider axes.
+        self.naxis = data.ndim
+        self.num_sliders = self.naxis-1
         # Attach data to class.
-        axis_range[plot_axis_index] = np.array(axis_range[plot_axis_index])
-        self.xdata = axis_range[plot_axis_index]
+        if axis_range is None:
+            self.xdata = np.arange(data.shape[plot_axis_index])
+        else:
+            axis_range[plot_axis_index] = np.array(axis_range[plot_axis_index])
+            self.xdata = axis_range[plot_axis_index]
         if ylim is None:
             ylim = (data.min(), data.max())
         if xlim is None:
@@ -838,8 +841,9 @@ class LineAnimator(ArrayAnimator):
         self.xlim = xlim
         self.xlabel = xlabel
         self.ylabel = ylabel
-        # Define number of slider axes.
-        self.num_sliders = self.naxis-1
+        # Run init for base class
+        super(LineAnimator, self).__init__(data, image_axes=[plot_axis_index],
+                                           axis_range=axis_range, **kwargs)
 
     def plot_start_image(self, ax):
         ax.set_xlim(self.xlim)
