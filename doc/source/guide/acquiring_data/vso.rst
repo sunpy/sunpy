@@ -27,6 +27,18 @@ that matches your request, you choose the data you want to download.
 The VSO client handles the particulars of how the data from
 the data provider is downloaded to your computer.
 
+Note
+-----
+
+There are (at least) two Python 3 compatible forks of the suds Python library:
+<https://bitbucket.org/jurko/suds/>
+<https://github.com/cackharot/suds-py3/>
+
+The suds-jurko fork works with VSO and `suds-py3` does not since it depends on `suds-jurko`.
+
+While installing from pip or conda the package <https://bitbucket.org/jurko/suds/> is used. But while on Arch Linux the package <https://github.com/cackharot/suds-py3/> is used. It is thus required to update from `python-suds` to `python-suds-jurko`.
+
+
 Searching the VSO
 -----------------
 
