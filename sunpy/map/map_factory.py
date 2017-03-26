@@ -64,7 +64,8 @@ class MapFactory(BasicRegistrationFactory):
 
     >>> mymap = sunpy.map.Map((data, header))   # doctest: +SKIP
 
-    headers are some base of `dict` or `collections.OrderedDict`, including `sunpy.io.header.FileHeader` 
+    headers are some base of `dict` or `collections.OrderedDict`,
+    including `sunpy.io.header.FileHeader`
     or `sunpy.util.metadata.MetaDict` classes.
 
     * data, header pairs, not in tuples
@@ -110,7 +111,7 @@ class MapFactory(BasicRegistrationFactory):
 
     * Any mixture of the above not in a list
 
-    >>> mymap = sunpy.map.Map((data, header), data2, header2, 'file1.fits', 
+    >>> mymap = sunpy.map.Map((data, header), data2, header2, 'file1.fits',
                                url_str, 'eit_*.fits')   # doctest: +SKIP
     """
 
@@ -182,9 +183,9 @@ class MapFactory(BasicRegistrationFactory):
 
             # Data-header pair in a tuple
             if ((type(arg) in [tuple, list]) and
-                 len(arg) == 2 and
-                 isinstance(arg[0], np.ndarray) and
-                 self._validate_meta(arg[1])):
+                len(arg) == 2 and
+                isinstance(arg[0], np.ndarray) and
+                self._validate_meta(arg[1])):
 
                 arg[1] = OrderedDict(arg[1])
                 data_header_pairs.append(arg)
@@ -350,7 +351,8 @@ class MapFactory(BasicRegistrationFactory):
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
             raise MultipleMatchError("Too many candidate types identified ({0})"
-                                    "Specify enough keywords to guarantee unique type identification.".format(n_matches))
+                                     "Specify enough keywords to guarantee unique type"
+                                     " identification.".format(n_matches))
 
         # Only one is found
         WidgetType = candidate_widget_types[0]
