@@ -66,12 +66,12 @@ aia_wave_dict = {1600: (c3, c3, c2), 1700: (c1, c0, c0), 4500: (c0, c0, b0 / 2.0
                  94: (c2, c3, c0), 131: (g0, r0, r0), 171: (r0, c0, b0),
                  193: (c1, c0, c2), 211: (c1, c0, c3), 304: (r0, g0, b0),
                  335: (c2, c0, c1)
-                }
+                 }
 
 def aia_color_table(wavelength):
     """Returns one of the fundamental color tables for SDO AIA images.
        Based on aia_lct.pro part of SDO/AIA on SSWIDL written by
-       Karel Schriver (2010/04/12).
+       Karel Schrijver (2010/04/12).
     """
     try:
         r, g, b = aia_wave_dict[wavelength]
