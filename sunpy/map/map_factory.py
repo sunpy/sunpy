@@ -53,6 +53,7 @@ class MapFactory(BasicRegistrationFactory):
     Examples
     --------
     >>> import sunpy.map
+    >>> import sunpy.data
     >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
     >>> import sunpy.data.sample
     >>> mymap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
@@ -72,11 +73,13 @@ class MapFactory(BasicRegistrationFactory):
 
     * data, wcs object, in tuple
 
+    >>> from astropy.wcs import WCS
     >>> wcs = WCS(AIA_171_IMAGE)
     >>> mymap = sunpy.map.Map((data, wcs))    #doctest: +SKIP
 
     * data, wcs object, not in tuple
 
+    >>> from astropy.wcs import WCS
     >>> wcs = WCS(AIA_171_IMAGE)
     >>> mymap = sunpy.map.Map(data, wcs)    #doctest: +SKIP
 
