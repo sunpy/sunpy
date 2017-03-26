@@ -156,7 +156,13 @@ class TestMap(object):
         assert isinstance(sot,sunpy.map.sources.SOTMap)
 
         #Test SWAPMap
+        swap = sunpy.map.Map(os.path.join(filepath, "SWAP", "resampled0_swap.fits"))
+        assert isinstance(swap, sunpy.map.sources.SWAPMap)
 
         #Test XRTMap
+        xrt = sunpy.map.Map(os.path.join(filepath, "HinodeXRT.fits"))
+        assert isinstance(xrt, sunpy.map.sources.XRTMap)
 
         #Test SXTMap
+        sxt = sunpy.map.Map(os.path.join(filepath, "sxtp_20000101_005818_131.fts.fits"))
+        assert isinstance(sxt, sunpy.map.sources.SXTMap)
