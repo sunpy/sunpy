@@ -117,6 +117,8 @@ class TestMap(object):
         aia = sunpy.map.Map(AIA_171_IMAGE)
         assert isinstance(aia,sunpy.map.sources.AIAMap)
         #Test a HMIMap
+        hmi = sunpy.map.Map(os.path.join(filepath, "hmi.v_45s.20160401_000000_TAI.2.Dopplergram.fits"))
+        assert isinstance(hmi, sunpy.map.sources.HMIMap)
 
     def test_soho(self):
         #Test EITMap, LASCOMap & MDIMap
