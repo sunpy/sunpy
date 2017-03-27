@@ -27,6 +27,8 @@ from sunpy.util.create import Parent
 from sunpy.spectra.spectrum import Spectrum
 from sunpy.extern.six.moves import zip, range
 
+from details_plots import log_10_product
+
 __all__ = ['Spectrogram', 'LinearTimeSpectrogram']
 
 # 1080 because that usually is the maximum vertical pixel count on modern
@@ -42,6 +44,8 @@ SECONDS_PER_DAY = 86400
 REFERENCE = 0
 COPY = 1
 DEEPCOPY = 2
+
+log_y_axis = True # Default is True
 
 
 def figure(*args, **kwargs):
@@ -519,7 +523,15 @@ class Spectrogram(Parent):
         xa.set_major_formatter(
             FuncFormatter(self.time_formatter)
         )
-
+        fig, ax = plt.subplots()
+        if log_y_axis:
+            yformatter = plt.FuncFormatter(log_10_product)
+            ax.set_yscale('log')
+            ax.yaxis.set_major_formatter(yformatter)
+        
+        cmap = cm.nipy_spectral
+        cax = ax.pcolormesh( figure ,cmap = cmap, vmin, vmax)
+        ax.colorbar()
         if linear:
             # Start with a number that is divisible by 5.
             init = (self.freq_axis[0] % 5) / data.delt
