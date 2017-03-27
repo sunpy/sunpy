@@ -19,6 +19,7 @@ from sunpy.io.header import FileHeader
 from sunpy.util.net import download_file
 from sunpy.util import expand_list
 from sunpy.util.metadata import MetaDict
+from sunpy.util.config import get_and_create_download_dir
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
@@ -68,7 +69,7 @@ class MapFactory(BasicRegistrationFactory):
     including `sunpy.io.header.FileHeader`
     or `sunpy.util.metadata.MetaDict` classes.
 
-    * data, header pairs, not in tuples
+   * data, header pairs, not in tuples
 
     >>> mymap = sunpy.map.Map(data, header)   # doctest: +SKIP
 
@@ -113,6 +114,7 @@ class MapFactory(BasicRegistrationFactory):
 
     >>> mymap = sunpy.map.Map((data, header), data2, header2, 'file1.fits',
                                url_str, 'eit_*.fits')   # doctest: +SKIP
+
     """
 
     def _read_file(self, fname, **kwargs):
@@ -219,6 +221,7 @@ class MapFactory(BasicRegistrationFactory):
                     data_header_pairs.append(pair)
                     i += 1    # an extra increment to account for the data-header pairing
 
+
             # File name
             elif (isinstance(arg, six.string_types) and
                   os.path.isfile(os.path.expanduser(arg))):
@@ -247,9 +250,8 @@ class MapFactory(BasicRegistrationFactory):
             # A URL
             elif (isinstance(arg, six.string_types) and
                   _is_url(arg)):
-                default_dir = sunpy.config.get("downloads", "download_dir")
                 url = arg
-                path = download_file(url, default_dir)
+                path = download_file(url, get_and_create_download_dir())
                 pairs = self._read_file(path, **kwargs)
                 data_header_pairs += pairs
 
@@ -350,9 +352,10 @@ class MapFactory(BasicRegistrationFactory):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types identified ({0})"
+
+            raise MultipleMatchError("Too many candidate types identified ({0})."
                                      "Specify enough keywords to guarantee unique type"
-                                     " identification.".format(n_matches))
+                                     "identification.".format(n_matches))
 
         # Only one is found
         WidgetType = candidate_widget_types[0]
