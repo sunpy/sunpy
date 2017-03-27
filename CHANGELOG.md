@@ -1,7 +1,7 @@
 0.7.8
 -----
 
-* Backported PR#2019 to fix issue #2018
+* Data directory should not be created on import (Issue #2018)
 
 0.7.7
 -----
