@@ -2,32 +2,28 @@
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
 """Classes for spectral analysis."""
-from __future__ import division, print_function, absolute_import
+from __future__ import absolute_import, division, print_function
 
 import datetime
-
-from random import randint
 from copy import copy
 from math import floor
+from random import randint
 
+import matplotlib.cm as cm
 import numpy as np
+from matplotlib import pyplot as plt
+from matplotlib.colorbar import Colorbar
+from matplotlib.figure import Figure
+from matplotlib.ticker import FuncFormatter, IndexLocator, MaxNLocator
 from numpy import ma
-
 from scipy import ndimage
 
-from matplotlib import pyplot as plt
-from matplotlib.figure import Figure
-from matplotlib.ticker import FuncFormatter, MaxNLocator, IndexLocator
-from matplotlib.colorbar import Colorbar
-
-from sunpy.time import parse_time, get_day
-from sunpy.util import to_signed, common_base, merge
+from sunpy.extern.six.moves import range, zip
+from sunpy.spectra.spectrum import Spectrum
+from sunpy.time import get_day, parse_time
+from sunpy.util import common_base, merge, to_signed
 from sunpy.util.cond_dispatch import ConditionalDispatch
 from sunpy.util.create import Parent
-from sunpy.spectra.spectrum import Spectrum
-from sunpy.extern.six.moves import zip, range
-
-from details_plots import log_10_product
 
 __all__ = ['Spectrogram', 'LinearTimeSpectrogram']
 
@@ -44,8 +40,6 @@ SECONDS_PER_DAY = 86400
 REFERENCE = 0
 COPY = 1
 DEEPCOPY = 2
-
-log_y_axis = True # Default is True
 
 
 def figure(*args, **kwargs):
@@ -87,6 +81,19 @@ def _union(sets):
         union |= s
     return union
 
+def log_10_product(x, pos):
+    """The two args are the value and tick position.
+    Label ticks with the product of the exponentiation.
+    The algorithm plots out nicely formatted explicit numbers for values
+    greater and less then 1.0."""
+    if x >= 1.0:
+        return '%i' % (x)
+    else:
+        n = 0
+        while x * (10 ** n) <= 1:
+            n = n + 1
+        fmt = '%.' + str(n - 1) + 'f'
+        return fmt % (x)
 
 class _LinearView(object):
     """Helper class for frequency channel linearization.
@@ -446,7 +453,7 @@ class Spectrogram(Parent):
 
     def plot(self, figure=None, overlays=[], colorbar=True, vmin=None,
              vmax=None, linear=True, showz=True, yres=DEFAULT_YRES,
-             max_dist=None, **matplotlib_args):
+             max_dist=None, log_y_axis=False, **matplotlib_args):
         """
         Plot spectrogram onto figure.
 
@@ -478,6 +485,8 @@ class Spectrogram(Parent):
             If not None, mask elements that are further than max_dist away
             from actual data points (ie, frequencies that actually have data
             from the receiver and are not just nearest-neighbour interpolated).
+        log_y_axis : bool
+            If set to True, plots the figure with a logarithmic y axis.
         """
         # [] as default argument is okay here because it is only read.
         # pylint: disable=W0102,R0914
@@ -528,9 +537,8 @@ class Spectrogram(Parent):
             yformatter = plt.FuncFormatter(log_10_product)
             ax.set_yscale('log')
             ax.yaxis.set_major_formatter(yformatter)
-        
         cmap = cm.nipy_spectral
-        cax = ax.pcolormesh( figure ,cmap = cmap, vmin, vmax)
+        cax = ax.pcolormesh(figure.axes[0],figure.axes[1], cmap=cmap, vmin=None, vmax=None)
         ax.colorbar()
         if linear:
             # Start with a number that is divisible by 5.
@@ -772,10 +780,10 @@ class Spectrogram(Parent):
             raise ValueError("Maximum and minimum must be different.")
         if self.data.max() == self.data.min():
             raise ValueError("Spectrogram needs to contain distinct values.")
-        data = self.data.astype(dtype) # pylint: disable=E1101
+        data = self.data.astype(dtype)  # pylint: disable=E1101
         return self._with_data(
-            vmin + (vmax - vmin) * (data - self.data.min()) / # pylint: disable=E1101
-            (self.data.max() - self.data.min()) # pylint: disable=E1101
+            vmin + (vmax - vmin) * (data - self.data.min()) /  # pylint: disable=E1101
+            (self.data.max() - self.data.min())  # pylint: disable=E1101
         )
 
     def interpolate(self, frequency):
@@ -798,9 +806,9 @@ class Spectrogram(Parent):
             raise ValueError("Frequency not in interpolation range")
         if lfreq is None:
             raise ValueError("Frequency not in interpolation range")
-        diff = frequency - freq # pylint: disable=W0631
+        diff = frequency - freq  # pylint: disable=W0631
         ldiff = lfreq - frequency
-        return (ldiff * value + diff * lvalue) / (diff + ldiff) # pylint: disable=W0631
+        return (ldiff * value + diff * lvalue) / (diff + ldiff)  # pylint: disable=W0631
 
     def linearize_freqs(self, delta_freq=None):
         """Rebin frequencies so that the frequency axis is linear.
