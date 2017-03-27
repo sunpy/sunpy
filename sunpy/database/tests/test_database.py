@@ -36,6 +36,14 @@ testpath = sunpy.data.test.rootdir
 RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
 
 
+"""
+The 'hsi_image_20101016_191218.fits' file lies in the sunpy/data/test.
+RHESSI_IMAGE  = sunpy/data/test/hsi_image_20101016_191218.fits
+
+So, the tests in the database depends on the test under sunpy/data.
+"""
+
+
 @pytest.fixture
 def database_using_lrucache():
     return Database('sqlite:///:memory:', LRUCache, cache_size=3)
