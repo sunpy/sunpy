@@ -3,6 +3,8 @@
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
 
+
+""" Using tests from Sunpy.data.test  """
 from __future__ import absolute_import
 
 import glob
@@ -26,12 +28,18 @@ from sunpy.database.caching import LRUCache, LFUCache
 from sunpy.database import attrs
 from sunpy.net import vso, hek
 from sunpy.data.test.waveunit import waveunitdir
+# importing the waveunitdir from sunpy/data/test/waveunit
+
 from sunpy.io import fits
 from sunpy.extern.six.moves import range
 from sunpy.extern.six.moves import configparser
 
 import sunpy.data.test
 
+"""
+Using Sunpy.data.test
+
+"""
 testpath = sunpy.data.test.rootdir
 RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
 
