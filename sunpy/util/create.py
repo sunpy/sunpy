@@ -8,12 +8,14 @@ import glob
 
 from sunpy import config
 from sunpy.util.net import download_file
+from sunpy.util.config import get_and_create_download_dir
 
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.extern import six
 from sunpy.extern.six.moves import map
 
 __all__ = ['Parent']
+
 
 class Parent(object):
     _create = ConditionalDispatch()
@@ -73,8 +75,7 @@ class Parent(object):
         url : str
             URL to retrieve the data from
         """
-        default_dir = config.get("downloads", "download_dir")
-        path = download_file(url, default_dir)
+        path = download_file(url, get_and_create_download_dir())
         return cls.read(path)
 
 
@@ -84,9 +85,9 @@ Parent._create.add(
     [type, six.string_types], check=False
 )
 Parent._create.add(
-# pylint: disable=W0108
-# The lambda is necessary because introspection is performed on the
-# argspec of the function.
+    # pylint: disable=W0108
+    # The lambda is necessary because introspection is performed on the
+    # argspec of the function.
     run_cls('from_dir'),
     lambda cls, directory: os.path.isdir(os.path.expanduser(directory)),
     [type, six.string_types], check=False
@@ -95,8 +96,8 @@ Parent._create.add(
 Parent._create.add(
     run_cls('from_single_glob'),
     lambda cls, singlepattern: ('*' in singlepattern and
-                           len(glob.glob(
-                               os.path.expanduser(singlepattern))) == 1),
+                                len(glob.glob(
+                                os.path.expanduser(singlepattern))) == 1),
     [type, six.string_types], check=False
 )
 # This case only gets executed under the condition that the previous one wasn't.
