@@ -55,7 +55,7 @@ For more information or to ask questions about SunPy, check out:
 
  * [SunPy Documentation](http://docs.sunpy.org/en/latest/)
  * [SunPy Mailing List](https://groups.google.com/forum/#!forum/sunpy)
- * Matrix:[matrix.org](https://riot.im/app/#/login)
+ * Matrix:[matrix.org](https://riot.im/app/#/room/#sunpy-general:matrix.org)
  
 Contributing
 ------------
