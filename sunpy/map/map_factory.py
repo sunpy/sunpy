@@ -64,7 +64,7 @@ class MapFactory(BasicRegistrationFactory):
     >>> mymap = sunpy.map.Map((data, header))   # doctest: +SKIP
 
     headers are some base of `dict` or `collections.OrderedDict`, including
-    `sunpy.io.header.FileHeader` or `sunpy.map.header.MapMeta classes.
+    `sunpy.io.header.FileHeader` or `sunpy.map.header.MapMeta` classes.
 
     * data, header pairs, not in tuples
 
