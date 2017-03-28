@@ -31,9 +31,11 @@ Latest
 * Removed compatibility with standalone ``wcsaxes`` and instead depend on the
   version in astropy 1.3. SunPy now therefore depends on astropy>=1.3.
 * Update to `TimeRange.__repr__`; now includes the qualified name and `id` of
-the object.
-* A new `sunpy.visualization.LineAnimator` class has been added to
-  animate 1D data.
+  the object.
+* A new `sunpy.visualization.imageanimator.LineAnimator` class has been added to
+  animate 1D data.  This has resulted in API change for the
+  `sunpy.visualization.imageanimator.ImageAnimator` class.  The updateimage
+  method has been renamed to update_plot.
 
 0.7.0
 -----
