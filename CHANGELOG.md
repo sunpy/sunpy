@@ -1,6 +1,7 @@
 0.7.8
 -----
 
+* The SunPy data directory "~/sunpy" is no longer created until it is used (issue #2018)
 
 0.7.7
 -----

@@ -807,7 +807,7 @@ def test_fetch_separate_filenames():
     )
 
     if not os.path.isdir(tmp_test_dir):
-        os.mkdir(tmp_test_dir)
+        os.makedirs(tmp_test_dir)
 
     path = tmp_test_dir + '{file}'
 
