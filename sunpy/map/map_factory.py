@@ -11,13 +11,13 @@ import sunpy
 from sunpy.map.mapbase import GenericMap, MAP_CLASSES
 from sunpy.map.compositemap import CompositeMap
 from sunpy.map.mapcube import MapCube
+from sunpy.map.header import MapMeta
 
 from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
 
 from sunpy.util.net import download_file
 from sunpy.util import expand_list
-from sunpy.util.metadata import MetaDict
 from sunpy.util.config import get_and_create_download_dir
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
@@ -64,7 +64,7 @@ class MapFactory(BasicRegistrationFactory):
     >>> mymap = sunpy.map.Map((data, header))   # doctest: +SKIP
 
     headers are some base of `dict` or `collections.OrderedDict`, including
-    `sunpy.io.header.FileHeader` or `sunpy.util.metadata.MetaDict` classes.
+    `sunpy.io.header.FileHeader` or `sunpy.map.header.MapMeta classes.
 
     * data, header pairs, not in tuples
 
@@ -116,7 +116,7 @@ class MapFactory(BasicRegistrationFactory):
             # This tests that the data is more than 1D
             if len(np.shape(filedata)) > 1:
                 data = filedata
-                meta = MetaDict(filemeta)
+                meta = MapMeta(filemeta)
                 new_pairs.append((data, meta))
         return new_pairs
 
@@ -269,7 +269,7 @@ class MapFactory(BasicRegistrationFactory):
         # matches the arguments.  If it does, use that type.
         for pair in data_header_pairs:
             data, header = pair
-            meta = MetaDict(header)
+            meta = MapMeta(header)
 
             try:
                 new_map = self._check_registered_widgets(data, meta, **kwargs)
