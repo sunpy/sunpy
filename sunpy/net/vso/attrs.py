@@ -427,6 +427,7 @@ class Filter(_VSOSimpleAttr):
     """
     pass
 
+
 # The walker specifies how the Attr-tree is converted to a query the
 # server can handle.
 walker = AttrWalker()
@@ -491,7 +492,7 @@ walker.add_converter(Extent)(
 walker.add_converter(Time)(
     lambda x: ValueAttr({
             ('time', 'start'): x.start.strftime(TIMEFORMAT),
-            ('time', 'end'): x.end.strftime(TIMEFORMAT) ,
+            ('time', 'end'): x.end.strftime(TIMEFORMAT),
             ('time', 'near'): (
                 x.near.strftime(TIMEFORMAT) if x.near is not None else None),
     })
