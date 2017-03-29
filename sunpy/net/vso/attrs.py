@@ -36,6 +36,17 @@ __all__ = ['Wavelength', 'Time', 'Extent', 'Field', 'Provider', 'Source',
 TIMEFORMAT = '%Y%m%d%H%M%S'
 
 
+class Field(ValueAttr):
+    """
+    A subclass of the value attribute.  Used in defining a decorator for the
+    dummy attribute.
+    """
+    def __init__(self, fielditem):
+        ValueAttr.__init__(self, {
+            ('field', 'fielditem'): fielditem
+        })
+
+
 class _Range(object):
     def __init__(self, min_, max_, create):
         self.min = min_
@@ -55,6 +66,22 @@ class _Range(object):
 
     def __contains__(self, other):
         return self.min <= other.min and self.max >= other.max
+
+
+class _VSOSimpleAttr(Attr):
+    """ A _SimpleAttr is an attribute that is not composite, i.e. that only
+    has a single value, such as, e.g., Instrument('eit'). """
+    def __init__(self, value):
+        Attr.__init__(self)
+
+        self.value = value
+
+    def collides(self, other):
+        return isinstance(other, self.__class__)
+
+    def __repr__(self):
+        return "<{cname!s}({val!r})>".format(
+            cname=self.__class__.__name__, val=self.value)
 
 
 class Wavelength(Attr, _Range):
@@ -171,22 +198,8 @@ class Time(Attr, _Range):
 
 class Extent(Attr):
     """
-    Specify the spatial field-of-view of the query.
-
-    Parameters
-    ----------
-
-    x : ?
-        ?
-
-    y : ?
-        ?
-
-    width : ?
-        ?
-
-    atype : ?
-        ?
+    Specify the spatial field-of-view of the query. Due to a bug in the VSO,
+    the Extent attribute is not used.
 
     """
     # pylint: disable=R0913
@@ -201,32 +214,6 @@ class Extent(Attr):
 
     def collides(self, other):
         return isinstance(other, self.__class__)
-
-
-class Field(ValueAttr):
-    """
-    ?
-    """
-    def __init__(self, fielditem):
-        ValueAttr.__init__(self, {
-            ('field', 'fielditem'): fielditem
-        })
-
-
-class _VSOSimpleAttr(Attr):
-    """ A _SimpleAttr is an attribute that is not composite, i.e. that only
-    has a single value, such as, e.g., Instrument('eit'). """
-    def __init__(self, value):
-        Attr.__init__(self)
-
-        self.value = value
-
-    def collides(self, other):
-        return isinstance(other, self.__class__)
-
-    def __repr__(self):
-        return "<{cname!s}({val!r})>".format(
-            cname=self.__class__.__name__, val=self.value)
 
 
 class Provider(_VSOSimpleAttr):
