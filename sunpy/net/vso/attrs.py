@@ -436,6 +436,7 @@ walker = AttrWalker()
 # to the attribute tree passed in as root. Different attributes require
 # different functions for conversion into query blocks.
 
+
 @walker.add_creator(ValueAttr, AttrAnd)
 # pylint: disable=E0102,C0103,W0613
 def _create(wlk, root, api):
@@ -443,6 +444,7 @@ def _create(wlk, root, api):
     value = api.factory.create('QueryRequestBlock')
     wlk.apply(root, api, value)
     return [value]
+
 
 @walker.add_applier(ValueAttr)
 # pylint: disable=E0102,C0103,W0613
@@ -457,12 +459,14 @@ def _apply(wlk, root, api, queryblock):
             block = block[elem]
         block[lst] = v
 
+
 @walker.add_applier(AttrAnd)
 # pylint: disable=E0102,C0103,W0613
 def _apply(wlk, root, api, queryblock):
     """ Implementation detail. """
     for attr in root.attrs:
         wlk.apply(attr, api, queryblock)
+
 
 @walker.add_creator(AttrOr)
 # pylint: disable=E0102,C0103,W0613
@@ -513,6 +517,7 @@ walker.add_converter(Wavelength)(
 # one type of data (that is, VSO data).
 filter_results = MultiMethod(lambda *a, **kw: (a[0], ))
 
+
 # If we filter with ANDed together attributes, the only items are the ones
 # that match all of them - this is implementing  by ANDing the pool of items
 # with the matched items - only the ones that match everything are there
@@ -524,6 +529,7 @@ def _(attr, results):
         res &= filter_results(elem, res)
     return res
 
+
 # If we filter with ORed attributes, the only attributes that should be
 # removed are the ones that match none of them. That's why we build up the
 # resulting set by ORing all the matching items.
@@ -533,6 +539,7 @@ def _(attr, results):
     for elem in attr.attrs:
         res |= filter_results(elem, results)
     return res
+
 
 # Filter out items by comparing attributes.
 @filter_results.add_dec(_VSOSimpleAttr)
@@ -544,6 +551,7 @@ def _(attr, results):
         if not hasattr(item, attrname) or
         getattr(item, attrname).lower() == attr.value.lower()
     )
+
 
 # The dummy attribute does not filter at all.
 @filter_results.add_dec(DummyAttr, Field)
@@ -565,6 +573,7 @@ def _(attr, results):
         attr.max >= it.wave.wavemin.to(u.angstrom, equivalencies=u.spectral())
     )
 
+
 @filter_results.add_dec(Time)
 def _(attr, results):
     return set(
@@ -578,6 +587,7 @@ def _(attr, results):
         and
         attr.max >= datetime.strptime(it.time.start, TIMEFORMAT)
     )
+
 
 @filter_results.add_dec(Extent)
 def _(attr, results):
