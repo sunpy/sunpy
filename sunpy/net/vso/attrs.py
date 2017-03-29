@@ -232,6 +232,14 @@ class _VSOSimpleAttr(Attr):
 class Provider(_VSOSimpleAttr):
     """
     Specifies the VSO data provider to search for data for.
+
+    Parameter
+    ---------
+    value : string
+
+    More information about each source may be found within in the VSO Registry.
+    For a list of sources see
+    http://sdac.virtualsolar.org/cgi/show_details?keyword=PROVIDER.
     """
     pass
 
@@ -239,6 +247,10 @@ class Provider(_VSOSimpleAttr):
 class Source(_VSOSimpleAttr):
     """
     Data sources that VSO can search on.
+
+    Parameter
+    ---------
+    value : string
 
     More information about each source may be found within in the VSO Registry.
     User Interface programmers should note that some names may be encoded as
@@ -253,8 +265,28 @@ class Instrument(_VSOSimpleAttr):
     """
     Specifies the Instruments the VSO can search for.
 
+    Parameter
+    ---------
+    value : string
+
     More information about each instrument may be found within the VSO
     Registry. For a list of instruments see http://sdac.virtualsolar.org/cgi/show_details?keyword=INSTRUMENT.
+    """
+    pass
+
+
+class Detector(_VSOSimpleAttr):
+    """
+    The detector from which the data comes from.
+
+    Parameter
+    ---------
+    value : string
+
+    For a list of values understood by the VSO see
+    http://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE.
+
+    Reference: documentation in SSWIDL routine vso_search.pro.
     """
     pass
 
@@ -263,43 +295,89 @@ class Physobs(_VSOSimpleAttr):
     """
     Specifies the physical observable the VSO can search for.
 
-    See http://sdac.virtualsolar.org/cgi/show_details?keyword=PHYSOBS for a
-    list of physical observables.
-    """
-    pass
+    Parameter
+    ---------
+    value : string
 
-
-class Pixels(_VSOSimpleAttr):
-    """
-    ?
+    More information about each instrument may be found within the VSO
+    Registry.  For a list of physical observables see
+    http://sdac.virtualsolar.org/cgi/show_details?keyword=PHYSOBS.
     """
     pass
 
 
 class Level(_VSOSimpleAttr):
     """
-    Specifies the data processing level to search for.
+    Specifies the data processing level to search for.  The data processing
+    level is specified by the instrument PI.  May not work with all archives.
+
+    Parameter
+    ---------
+    value : float or string
+
+    The value can be entered in of three ways
+    (1) May be entered as a string or any numeric type for equality matching
+    (2) May be a string of the format '(min) - (max)' for range matching
+    (3) May be a string of the form '(operator) (number)' where operator is
+    one of: lt gt le ge < > <= >=
+
+    """
+    pass
+
+
+class Pixels(_VSOSimpleAttr):
+    """
+    Pixels are (currently) limited to a single dimension (and only implemented
+    for SDO data)  We hope to change this in the future to support TRACE,
+    Hinode and other investigations where this changed between observations.
+
+    Reference: documentation in SSWIDL routine vso_search.pro.
     """
     pass
 
 
 class Resolution(_VSOSimpleAttr):
     """
-    ?
+    Resolution level of the data.
+
+    Parameter
+    ---------
+    value : float or string
+
+    The value can be entered in of three ways
+    (1) May be entered as a string or any numeric type for equality matching
+    (2) May be a string of the format '(min) - (max)' for range matching
+    (3) May be a string of the form '(operator) (number)' where operator is
+    one of: lt gt le ge < > <= >=
+
+    This attribute is currently implemented for SDO/AIA and HMI only.
+    The "resolution" is a function of the highest level of data available.
+    If the CCD is 2048x2048, but is binned to 512x512 before downlink,
+    the 512x512 product is designated as '1'.  If a 2048x2048 and 512x512
+    product are both available, the 512x512 product is designated '0.25'.
+
+    Reference: documentation in SSWIDL routine vso_search.pro.
     """
     pass
 
 
-class Detector(_VSOSimpleAttr):
+class PScale(_VSOSimpleAttr):
     """
-    ?
-    """
-    pass
+    Pixel Scale (PSCALE) is in arc seconds.
 
+    Parameter
+    ---------
+    value : float or string
 
-class Filter(_VSOSimpleAttr):
-    """
-    ?
+    The value can be entered in of three ways
+    (1) May be entered as a string or any numeric type for equality matching
+    (2) May be a string of the format '(min) - (max)' for range matching
+    (3) May be a string of the form '(operator) (number)' where operator is
+    one of: lt gt le ge < > <= >=
+
+    Currently only implemented for SDO, which is 0.6 arcsec per pixel at full
+    resolution for AIA.  Reference: documentation in SSWIDL routine
+    vso_search.pro.
     """
     pass
 
@@ -310,7 +388,6 @@ class Sample(_VSOSimpleAttr):
 
     Parameters
     ----------
-
     value : `astropy.units.Quantity`
         A sampling rate convertible to seconds.
     """
@@ -322,21 +399,33 @@ class Sample(_VSOSimpleAttr):
 
 class Quicklook(_VSOSimpleAttr):
     """
-    ?
+    Retrieve 'quicklook' data if available.
+
+    Parameters
+    ----------
+    value : boolean
+        Set to True to retrieve quicklook data if available.
+
+    Quicklook items are assumed to be generated with a focus on speed rather
+    than scientific accuracy.  They are useful for instrument planning and
+    space weather but should not be used for science publication.
+    This concept is sometimes called 'browse' or 'near real time' (nrt)
+    Quicklook products are *not* searched by default.   Reference:
+    documentation in SSWIDL routine vso_search.pro.
     """
     pass
 
 
-class PScale(_VSOSimpleAttr):
+class Filter(_VSOSimpleAttr):
     """
-    Pixel Scale (PSCALE) is in arc seconds.
+    This attribute is a placeholder for the future.
 
-    Currently only implemented for SDO, which is 0.6 arcsec per pixel at full
-    resolution for AIA.  Reference: documentation in SSWIDL routine
-    vso_search.pro.
+    Parameter
+    ---------
+    value : string
+
     """
     pass
-
 
 # The walker specifies how the Attr-tree is converted to a query the
 # server can handle.
