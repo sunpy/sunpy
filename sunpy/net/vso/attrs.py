@@ -149,7 +149,7 @@ class Time(Attr, _Range):
     Parameters
     ----------
 
-    start : SunPy Time String or `~sunpy.time.TimeRange`.
+    start : SunPy time string or `~sunpy.time.TimeRange`.
         The start time in a format parseable by `~sunpy.time.parse_time` or
         a `sunpy.time.TimeRange` object.
 
