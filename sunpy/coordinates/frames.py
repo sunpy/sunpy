@@ -158,7 +158,7 @@ class HeliographicCarrington(HeliographicStonyhurst):
     """
 
     name = "heliographic_carrington"
-    default_representation = SphericalWrap180Representation
+    default_representation = SphericalWrapRepresentation
 
     _frame_specific_representation_info = {
         'spherical': [RepresentationMapping('lon', 'lon', 'recommended'),
