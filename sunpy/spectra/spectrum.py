@@ -37,6 +37,9 @@ class Spectrum(np.ndarray):
 
     def __init__(self, data, freq_axis):
         self.freq_axis = freq_axis
+        spec = Spectrum(data, freq_axis) 
+        if not (np.shape(spec.data) == np.shape(spec.freq_axis)):
+  	        raise ValueError
 
     def plot(self, axes=None, **matplot_args):
         """
@@ -81,11 +84,7 @@ class Spectrum(np.ndarray):
 
         return lines
 
-    def check_dimensions():
-        spec = Spectrum(data, freq_axis) # Function to raise error when dim(data)!=dim(freq_axis)
-        if not (np.shape(spec.data) == np.shape(spec.freq_axis)):
-  	        raise ValueError
-  	    
+            
 
 
     def peek(self, **matplot_args):
