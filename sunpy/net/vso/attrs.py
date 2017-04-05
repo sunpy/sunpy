@@ -11,8 +11,8 @@ Attributes that can be used to construct VSO queries. Attributes are the
 fundamental building blocks of queries that, together with the two
 operations of AND and OR (and in some rare cases XOR) can be used to
 construct complex queries. Most attributes can only be used once in an
-AND-expression, if you still attempt to do so it is called a collision,
-for a quick example think about how the system should handle
+AND-expression, if you still attempt to do so it is called a collision.
+For a quick example think about how the system should handle
 Instrument('aia') & Instrument('eit').
 """
 from __future__ import absolute_import
@@ -36,6 +36,17 @@ __all__ = ['Wavelength', 'Time', 'Extent', 'Field', 'Provider', 'Source',
 TIMEFORMAT = '%Y%m%d%H%M%S'
 
 
+class Field(ValueAttr):
+    """
+    A subclass of the value attribute.  Used in defining a decorator for the
+    dummy attribute.
+    """
+    def __init__(self, fielditem):
+        ValueAttr.__init__(self, {
+            ('field', 'fielditem'): fielditem
+        })
+
+
 class _Range(object):
     def __init__(self, min_, max_, create):
         self.min = min_
@@ -57,6 +68,22 @@ class _Range(object):
         return self.min <= other.min and self.max >= other.max
 
 
+class _VSOSimpleAttr(Attr):
+    """ A _SimpleAttr is an attribute that is not composite, i.e. that only
+    has a single value, such as, e.g., Instrument('eit'). """
+    def __init__(self, value):
+        Attr.__init__(self)
+
+        self.value = value
+
+    def collides(self, other):
+        return isinstance(other, self.__class__)
+
+    def __repr__(self):
+        return "<{cname!s}({val!r})>".format(
+            cname=self.__class__.__name__, val=self.value)
+
+
 class Wavelength(Attr, _Range):
     def __init__(self, wavemin, wavemax=None):
         """
@@ -74,8 +101,8 @@ class Wavelength(Attr, _Range):
         Notes
         -----
         The VSO understands the 'wavelength' in one of three units, Angstroms,
-        kHz or keV. Therefore any unit which is directly convertable to these
-        units is valid input
+        kHz or keV. Therefore any unit which is directly convertible to these
+        units is valid input.
         """
 
         if not wavemax:
@@ -121,8 +148,7 @@ class Time(Attr, _Range):
 
     Parameters
     ----------
-
-    start : SunPy Time String or `~sunpy.time.TimeRange`.
+    start : SunPy time string or `~sunpy.time.TimeRange`.
         The start time in a format parseable by `~sunpy.time.parse_time` or
         a `sunpy.time.TimeRange` object.
 
@@ -131,7 +157,8 @@ class Time(Attr, _Range):
 
     near: SunPy Time String
         Return a singular record closest in time to this value as possible,
-        inside the start and end window. Note: not all providers support this.
+        inside the start and end window. Note: not all providers support this
+        functionality.
 
     """
     def __init__(self, start, end=None, near=None):
@@ -169,6 +196,11 @@ class Time(Attr, _Range):
 
 
 class Extent(Attr):
+    """
+    Specify the spatial field-of-view of the query. Due to a bug in the VSO,
+    the Extent attribute is not used.
+
+    """
     # pylint: disable=R0913
     def __init__(self, x, y, width, length, atype):
         Attr.__init__(self)
@@ -183,65 +215,156 @@ class Extent(Attr):
         return isinstance(other, self.__class__)
 
 
-class Field(ValueAttr):
-    def __init__(self, fielditem):
-        ValueAttr.__init__(self, {
-            ('field', 'fielditem'): fielditem
-        })
-
-
-class _VSOSimpleAttr(Attr):
-    """ A _SimpleAttr is an attribute that is not composite, i.e. that only
-    has a single value, such as, e.g., Instrument('eit'). """
-    def __init__(self, value):
-        Attr.__init__(self)
-
-        self.value = value
-
-    def collides(self, other):
-        return isinstance(other, self.__class__)
-
-    def __repr__(self):
-        return "<{cname!s}({val!r})>".format(
-            cname=self.__class__.__name__, val=self.value)
-
-
 class Provider(_VSOSimpleAttr):
+    """
+    Specifies the VSO data provider to search for data for.
+
+    Parameter
+    ---------
+    value : string
+
+    More information about each source may be found within in the VSO Registry.
+    For a list of sources see
+    http://sdac.virtualsolar.org/cgi/show_details?keyword=PROVIDER.
+    """
     pass
 
 
 class Source(_VSOSimpleAttr):
+    """
+    Data sources that VSO can search on.
+
+    Parameter
+    ---------
+    value : string
+
+    More information about each source may be found within in the VSO Registry.
+    User Interface programmers should note that some names may be encoded as
+    UTF-8. Please note that 'Source' is used internally by VSO to represent
+    what the VSO Data Model refers to as 'Observatory'.  For a list of sources
+    see http://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE.
+    """
     pass
 
 
 class Instrument(_VSOSimpleAttr):
     """
-    Specifies the Instrument to search for data for.
+    Specifies the Instruments the VSO can search for.
+
+    Parameter
+    ---------
+    value : string
+
+    More information about each instrument may be found within the VSO
+    Registry. For a list of instruments see http://sdac.virtualsolar.org/cgi/show_details?keyword=INSTRUMENT.
+    """
+    pass
+
+
+class Detector(_VSOSimpleAttr):
+    """
+    The detector from which the data comes from.
+
+    Parameter
+    ---------
+    value : string
+
+    For a list of values understood by the VSO see
+    http://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE.
+
+    Reference: documentation in SSWIDL routine vso_search.pro.
     """
     pass
 
 
 class Physobs(_VSOSimpleAttr):
-    pass
+    """
+    Specifies the physical observable the VSO can search for.
 
+    Parameter
+    ---------
+    value : string
 
-class Pixels(_VSOSimpleAttr):
+    More information about each instrument may be found within the VSO
+    Registry.  For a list of physical observables see
+    http://sdac.virtualsolar.org/cgi/show_details?keyword=PHYSOBS.
+    """
     pass
 
 
 class Level(_VSOSimpleAttr):
+    """
+    Specifies the data processing level to search for.  The data processing
+    level is specified by the instrument PI.  May not work with all archives.
+
+    Parameter
+    ---------
+    value : float or string
+
+    The value can be entered in of three ways
+    (1) May be entered as a string or any numeric type for equality matching
+    (2) May be a string of the format '(min) - (max)' for range matching
+    (3) May be a string of the form '(operator) (number)' where operator is
+    one of: lt gt le ge < > <= >=
+
+    """
+    pass
+
+
+class Pixels(_VSOSimpleAttr):
+    """
+    Pixels are (currently) limited to a single dimension (and only implemented
+    for SDO data)  We hope to change this in the future to support TRACE,
+    Hinode and other investigations where this changed between observations.
+
+    Reference: documentation in SSWIDL routine vso_search.pro.
+    """
     pass
 
 
 class Resolution(_VSOSimpleAttr):
+    """
+    Resolution level of the data.
+
+    Parameter
+    ---------
+    value : float or string
+
+    The value can be entered in of three ways
+    (1) May be entered as a string or any numeric type for equality matching
+    (2) May be a string of the format '(min) - (max)' for range matching
+    (3) May be a string of the form '(operator) (number)' where operator is
+    one of: lt gt le ge < > <= >=
+
+    This attribute is currently implemented for SDO/AIA and HMI only.
+    The "resolution" is a function of the highest level of data available.
+    If the CCD is 2048x2048, but is binned to 512x512 before downlink,
+    the 512x512 product is designated as '1'.  If a 2048x2048 and 512x512
+    product are both available, the 512x512 product is designated '0.25'.
+
+    Reference: documentation in SSWIDL routine vso_search.pro.
+    """
     pass
 
 
-class Detector(_VSOSimpleAttr):
-    pass
+class PScale(_VSOSimpleAttr):
+    """
+    Pixel Scale (PSCALE) is in arc seconds.
 
+    Parameter
+    ---------
+    value : float or string
 
-class Filter(_VSOSimpleAttr):
+    The value can be entered in of three ways
+    (1) May be entered as a string or any numeric type for equality matching
+    (2) May be a string of the format '(min) - (max)' for range matching
+    (3) May be a string of the form '(operator) (number)' where operator is
+    one of: lt gt le ge < > <= >=
+
+    Currently only implemented for SDO, which is 0.6 arcsec per pixel at full
+    resolution for AIA.  Reference: documentation in SSWIDL routine
+    vso_search.pro.
+    """
     pass
 
 
@@ -251,7 +374,6 @@ class Sample(_VSOSimpleAttr):
 
     Parameters
     ----------
-
     value : `astropy.units.Quantity`
         A sampling rate convertible to seconds.
     """
@@ -262,10 +384,33 @@ class Sample(_VSOSimpleAttr):
 
 
 class Quicklook(_VSOSimpleAttr):
+    """
+    Retrieve 'quicklook' data if available.
+
+    Parameters
+    ----------
+    value : boolean
+        Set to True to retrieve quicklook data if available.
+
+    Quicklook items are assumed to be generated with a focus on speed rather
+    than scientific accuracy.  They are useful for instrument planning and
+    space weather but should not be used for science publication.
+    This concept is sometimes called 'browse' or 'near real time' (nrt)
+    Quicklook products are *not* searched by default.   Reference:
+    documentation in SSWIDL routine vso_search.pro.
+    """
     pass
 
 
-class PScale(_VSOSimpleAttr):
+class Filter(_VSOSimpleAttr):
+    """
+    This attribute is a placeholder for the future.
+
+    Parameter
+    ---------
+    value : string
+
+    """
     pass
 
 
@@ -278,6 +423,7 @@ walker = AttrWalker()
 # to the attribute tree passed in as root. Different attributes require
 # different functions for conversion into query blocks.
 
+
 @walker.add_creator(ValueAttr, AttrAnd)
 # pylint: disable=E0102,C0103,W0613
 def _create(wlk, root, api):
@@ -285,6 +431,7 @@ def _create(wlk, root, api):
     value = api.factory.create('QueryRequestBlock')
     wlk.apply(root, api, value)
     return [value]
+
 
 @walker.add_applier(ValueAttr)
 # pylint: disable=E0102,C0103,W0613
@@ -299,12 +446,14 @@ def _apply(wlk, root, api, queryblock):
             block = block[elem]
         block[lst] = v
 
+
 @walker.add_applier(AttrAnd)
 # pylint: disable=E0102,C0103,W0613
 def _apply(wlk, root, api, queryblock):
     """ Implementation detail. """
     for attr in root.attrs:
         wlk.apply(attr, api, queryblock)
+
 
 @walker.add_creator(AttrOr)
 # pylint: disable=E0102,C0103,W0613
@@ -329,7 +478,7 @@ walker.add_converter(Extent)(
 walker.add_converter(Time)(
     lambda x: ValueAttr({
             ('time', 'start'): x.start.strftime(TIMEFORMAT),
-            ('time', 'end'): x.end.strftime(TIMEFORMAT) ,
+            ('time', 'end'): x.end.strftime(TIMEFORMAT),
             ('time', 'near'): (
                 x.near.strftime(TIMEFORMAT) if x.near is not None else None),
     })
@@ -355,6 +504,7 @@ walker.add_converter(Wavelength)(
 # one type of data (that is, VSO data).
 filter_results = MultiMethod(lambda *a, **kw: (a[0], ))
 
+
 # If we filter with ANDed together attributes, the only items are the ones
 # that match all of them - this is implementing  by ANDing the pool of items
 # with the matched items - only the ones that match everything are there
@@ -366,6 +516,7 @@ def _(attr, results):
         res &= filter_results(elem, res)
     return res
 
+
 # If we filter with ORed attributes, the only attributes that should be
 # removed are the ones that match none of them. That's why we build up the
 # resulting set by ORing all the matching items.
@@ -375,6 +526,7 @@ def _(attr, results):
     for elem in attr.attrs:
         res |= filter_results(elem, results)
     return res
+
 
 # Filter out items by comparing attributes.
 @filter_results.add_dec(_VSOSimpleAttr)
@@ -386,6 +538,7 @@ def _(attr, results):
         if not hasattr(item, attrname) or
         getattr(item, attrname).lower() == attr.value.lower()
     )
+
 
 # The dummy attribute does not filter at all.
 @filter_results.add_dec(DummyAttr, Field)
@@ -407,6 +560,7 @@ def _(attr, results):
         attr.max >= it.wave.wavemin.to(u.angstrom, equivalencies=u.spectral())
     )
 
+
 @filter_results.add_dec(Time)
 def _(attr, results):
     return set(
@@ -420,6 +574,7 @@ def _(attr, results):
         and
         attr.max >= datetime.strptime(it.time.start, TIMEFORMAT)
     )
+
 
 @filter_results.add_dec(Extent)
 def _(attr, results):
