@@ -37,8 +37,8 @@ class Spectrum(np.ndarray):
 
     def __init__(self, data, freq_axis):
         self.freq_axis = freq_axis
-        if np.shape(data) != np.shape(freq_axis):
-  	        raise ValueError
+        if np.shape(data)[0] != np.shape(freq_axis)[0]:
+  	        raise ValueError('Dimensions of data and Frequency axis do not match')
 
     def plot(self, axes=None, **matplot_args):
         """
