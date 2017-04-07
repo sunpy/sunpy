@@ -2,6 +2,7 @@
 -----
 
 * The SunPy data directory "~/sunpy" is no longer created until it is used (issue #2018)
+* Change the default representation for the Heliographic Carrington frame so Longitude follows the convention of going from 0-360 degrees.
 
 0.7.7
 -----
