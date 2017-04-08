@@ -3,7 +3,8 @@
 North Offset Frame
 ===============
 
-This example is about North Offset Frame
+It is used to create a frame derived from Heliographic, which has the north pole at some point of interest. 
+In this frame, lines of longitude form circles radially away from the point, and lines of latitude measure angular distance from the point.
 """
 
 import sunpy.coordinates as sc
@@ -34,6 +35,10 @@ m.plot()
 overlay = ax.get_coords_overlay(f)
 overlay[0].set_ticks(spacing=20. * u.deg, color='white')
 overlay.grid(ls='-', color='red')
+###################################################
+# In this example the new frame is shifted so the new north pole is at (20, 20) in the Heliographic Stonyhurst frame. The new grid is overplotted in red.
+
+
 
 #####################################################################################
 # Now let's try and select a range of pixels based on longitude in this frame, we want a raidal wedge of pixels away from our new north pole.
