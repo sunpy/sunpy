@@ -100,7 +100,22 @@ def get_world_transform(axes):
     return transform
 
 
-def default_wcs_grid(axes, units):
+def solar_coord_type_from_ctype(ctype):
+    """
+    Determine whether a particular WCS ctype corresponds to an angle or scalar
+    coordinate.
+    """
+    if ctype[:4] in ['HPLN', 'HGLN']:
+        return 'longitude', 180.
+    elif ctype[:4] in ['CRLN']:
+        return 'longitude', None
+    elif ctype[:4] in ['HPLT', 'HGLT', 'CRLN']:
+        return 'latitude', None
+    else:
+        return 'scalar', None
+
+
+def default_wcs_grid(axes, units, ctypes):
     """
     Apply some default wcsaxes grid formatting.
 
@@ -124,20 +139,22 @@ def default_wcs_grid(axes, units):
     x.set_ticks_position('bl')
     y.set_ticks_position('bl')
 
-    if x.coord_type != 'longitude':
-        x.set_coord_type('longitude', coord_wrap=180.)
-    if y.coord_type != 'latitude':
-        y.set_coord_type('latitude')
+    x.set_coord_type(**solar_coord_type_from_ctype(ctypes[0]))
+    y.set_coord_type(**solar_coord_type_from_ctype(ctypes[1]))
 
     if units[0] is u.deg:
         x.set_major_formatter('dd')
-    else:
+    elif units[0] is u.arcsec:
         x.set_major_formatter('s.s')
+    else:
+        x.set_major_formatter('x.x')
 
     if units[1] is u.deg:
         y.set_major_formatter('dd')
-    else:
+    elif units[1] is u.arcsec:
         y.set_major_formatter('s.s')
+    else:
+        y.set_major_formatter('x.x')
 
     axes.coords.grid(color='white', alpha=0.6, linestyle='dotted',
                      linewidth=0.5)
