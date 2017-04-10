@@ -1602,7 +1602,8 @@ Reference Coord:\t {refcoord}
 
     @toggle_pylab
     def plot(self, annotate=True, axes=None, title=True, **imshow_kwargs):
-        """ Plots the map object using matplotlib, in a method equivalent
+        """
+        Plots the map object using matplotlib, in a method equivalent
         to plt.imshow() using nearest neighbour interpolation.
 
         Parameters
