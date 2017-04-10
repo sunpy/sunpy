@@ -13,7 +13,7 @@ from astropy.visualization.mpl_normalize import ImageNormalize
 from sunpy.map import GenericMap
 from sunpy.cm import cm
 
-from helioviewer import source_stretch
+from source_type import source_stretch
 
 __all__ = ['EUVIMap', 'CORMap', 'HIMap']
 
