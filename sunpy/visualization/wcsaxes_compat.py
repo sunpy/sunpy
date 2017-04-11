@@ -100,17 +100,26 @@ def get_world_transform(axes):
     return transform
 
 
+def ctype_longitude_wrap(ctype):
+    """
+    Return the longitude wrapping for a given ctype. If the wrapping is either
+    360 or not specified then this function returns `None`.
+    """
+    if ctype[:4] in ['HPLN', 'HGLN']:
+        return 180.
+
+
 def solar_coord_type_from_ctype(ctype):
     """
     Determine whether a particular WCS ctype corresponds to an angle or scalar
     coordinate.
     """
-    if ctype[:4] in ['HPLN', 'HGLN']:
-        return 'longitude', 180.
-    elif ctype[:4] in ['CRLN']:
-        return 'longitude', None
-    elif ctype[:4] in ['HPLT', 'HGLT', 'CRLN']:
-        return 'latitude', None
+    wrapping = ctype_longitude_wrap(ctype)
+
+    if ctype[2:4] == 'LN':
+        return 'longitude', wrapping
+    elif ctype[2:4] == 'LT':
+        return 'latitude', wrapping
     else:
         return 'scalar', None
 
@@ -139,8 +148,8 @@ def default_wcs_grid(axes, units, ctypes):
     x.set_ticks_position('bl')
     y.set_ticks_position('bl')
 
-    x.set_coord_type(**solar_coord_type_from_ctype(ctypes[0]))
-    y.set_coord_type(**solar_coord_type_from_ctype(ctypes[1]))
+    x.set_coord_type(*solar_coord_type_from_ctype(ctypes[0]))
+    y.set_coord_type(*solar_coord_type_from_ctype(ctypes[1]))
 
     if units[0] is u.deg:
         x.set_major_formatter('dd')
