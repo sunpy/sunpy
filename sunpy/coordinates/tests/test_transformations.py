@@ -3,16 +3,8 @@ import numpy as np
 import astropy.units as u
 from astropy.tests.helper import quantity_allclose
 
-<<<<<<< Updated upstream
 from sunpy.coordinates import Helioprojective, HeliographicStonyhurst
-=======
-<<<<<<< Updated upstream
-from sunpy.coordinates import Helioprojective
-=======
 from astropy.coordinates import SkyCoord
-from sunpy.coordinates import Helioprojective, HeliographicStonyhurst
->>>>>>> Stashed changes
->>>>>>> Stashed changes
 
 
 def test_hpc_hpc():
