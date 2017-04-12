@@ -20,7 +20,7 @@ installed run the following two commands:
     $ conda install sunpy
 
 
-If you want to develop SunPy you will need to install using git. The best way to
+If you want to develop SunPy you will need to install from git. The best way to
 do this is to create a new conda environment and install the git version of
 SunPy in it:
 
