@@ -284,7 +284,7 @@ def break_time(t='now', time_format=''):
         time = parse_time(t, time_format).strftime("%Y%m%d_%H%M%S")
         return time
     except ValueError:
-        print(str(t) + " is not a valid time string!")
+        pass
 
 
 def get_day(dt):
