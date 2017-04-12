@@ -942,7 +942,7 @@ scale:\t\t {scale}
                     error_msg = "no 'unit' attribute"
                 raise TypeError("Argument '{0}' to function '{1}' has {2}. "
                                 "You may want to pass in an astropy Quantity instead."
-                                 .format('angle', 'rotate', error_msg))
+                                .format('angle', 'rotate', error_msg))
 
         # Interpolation parameter sanity
         if order not in range(6):
@@ -964,6 +964,7 @@ scale:\t\t {scale}
         # Calculate the shape in pixels to contain all of the image data
         extent = np.max(np.abs(np.vstack((self.data.shape * rmatrix,
                                           self.data.shape * rmatrix.T))), axis=0)
+
         # Calculate the needed padding or unpadding
         diff = np.asarray(np.ceil((extent - self.data.shape) / 2), dtype=int).ravel()
         # Pad the image array
@@ -971,9 +972,9 @@ scale:\t\t {scale}
         pad_y = int(np.max((diff[0], 0)))
 
         new_data = np.pad(self.data,
-                              ((pad_y, pad_y), (pad_x, pad_x)),
-                              mode='constant',
-                              constant_values=(missing, missing))
+                          ((pad_y, pad_y), (pad_x, pad_x)),
+                          mode='constant',
+                          constant_values=(missing, missing))
         new_meta['crpix1'] += pad_x
         new_meta['crpix2'] += pad_y
 
@@ -981,9 +982,13 @@ scale:\t\t {scale}
 
         pixel_array_center = (np.flipud(new_data.shape) - 1) / 2.0
 
+        # Create a temporary map so we can use it for the data to pixel calculation.
+        temp_map = self._new_instance(new_data, new_meta, self.plot_settings)
+
         # Convert the axis of rotation from data coordinates to pixel coordinates
-        pixel_rotation_center = u.Quantity(self.data_to_pixel(*rotation_center,
-                                                               origin=0)).value
+        pixel_rotation_center = u.Quantity(temp_map.data_to_pixel(*rotation_center,
+                                                                  origin=0)).value
+
         if recenter:
             pixel_center = pixel_rotation_center
         else:
@@ -1008,8 +1013,8 @@ scale:\t\t {scale}
         # Define the new reference_pixel
         new_meta['crval1'] = rotation_center[0].value
         new_meta['crval2'] = rotation_center[1].value
-        new_meta['crpix1'] = new_reference_pixel[0] + 1 # FITS pixel origin is 1
-        new_meta['crpix2'] = new_reference_pixel[1] + 1 # FITS pixel origin is 1
+        new_meta['crpix1'] = new_reference_pixel[0] + 1  # FITS pixel origin is 1
+        new_meta['crpix2'] = new_reference_pixel[1] + 1  # FITS pixel origin is 1
 
         # Unpad the array if necessary
         unpad_x = -np.min((diff[1], 0))
@@ -1026,10 +1031,10 @@ scale:\t\t {scale}
         # That being calculate the dot product of the old header data with the
         # inverse of the rotation matrix.
         pc_C = np.dot(self.rotation_matrix, rmatrix.I)
-        new_meta['PC1_1'] = pc_C[0,0]
-        new_meta['PC1_2'] = pc_C[0,1]
-        new_meta['PC2_1'] = pc_C[1,0]
-        new_meta['PC2_2'] = pc_C[1,1]
+        new_meta['PC1_1'] = pc_C[0, 0]
+        new_meta['PC1_2'] = pc_C[0, 1]
+        new_meta['PC2_1'] = pc_C[1, 0]
+        new_meta['PC2_2'] = pc_C[1, 1]
 
         # Update pixel size if image has been scaled.
         if scale != 1.0:
@@ -1045,8 +1050,9 @@ scale:\t\t {scale}
         new_meta.pop('CD2_1', None)
         new_meta.pop('CD2_2', None)
 
-        #Create new map with the modification
+        # Create new map with the modification
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
+
         return new_map
 
     def submap(self, range_a, range_b):
