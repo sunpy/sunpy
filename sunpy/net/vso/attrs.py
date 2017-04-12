@@ -219,8 +219,8 @@ class Provider(_VSOSimpleAttr):
     """
     Specifies the VSO data provider to search for data for.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     value : string
 
     More information about each source may be found within in the VSO Registry.
@@ -234,8 +234,8 @@ class Source(_VSOSimpleAttr):
     """
     Data sources that VSO can search on.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     value : string
 
     More information about each source may be found within in the VSO Registry.
@@ -251,12 +251,13 @@ class Instrument(_VSOSimpleAttr):
     """
     Specifies the Instruments the VSO can search for.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     value : string
 
     More information about each instrument may be found within the VSO
-    Registry. For a list of instruments see http://sdac.virtualsolar.org/cgi/show_details?keyword=INSTRUMENT.
+    Registry. For a list of instruments see
+    http://sdac.virtualsolar.org/cgi/show_details?keyword=INSTRUMENT.
     """
     pass
 
@@ -265,8 +266,8 @@ class Detector(_VSOSimpleAttr):
     """
     The detector from which the data comes from.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     value : string
 
     For a list of values understood by the VSO see
@@ -281,8 +282,8 @@ class Physobs(_VSOSimpleAttr):
     """
     Specifies the physical observable the VSO can search for.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     value : string
 
     More information about each instrument may be found within the VSO
@@ -297,8 +298,8 @@ class Level(_VSOSimpleAttr):
     Specifies the data processing level to search for.  The data processing
     level is specified by the instrument PI.  May not work with all archives.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     value : float or string
 
     The value can be entered in of three ways
@@ -326,8 +327,8 @@ class Resolution(_VSOSimpleAttr):
     """
     Resolution level of the data.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     value : float or string
 
     The value can be entered in of three ways
@@ -351,8 +352,8 @@ class PScale(_VSOSimpleAttr):
     """
     Pixel Scale (PSCALE) is in arc seconds.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     value : float or string
 
     The value can be entered in of three ways
@@ -406,8 +407,8 @@ class Filter(_VSOSimpleAttr):
     """
     This attribute is a placeholder for the future.
 
-    Parameter
-    ---------
+    Parameters
+    ----------
     value : string
 
     """
