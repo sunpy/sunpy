@@ -11,6 +11,8 @@ from astropy.visualization import LinearStretch
 __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
 
+__all__ = ['from_helioviewer_project', 'source_stretch']
+
 
 def from_helioviewer_project(meta):
     """
@@ -51,7 +53,7 @@ def source_stretch(meta, fits_stretch):
     if from_helioviewer_project(meta):
         # Helioviewer JPEG2000 files already have a stretched data values, so
         # just use a linear stretch.
-        return LinearStretch()
+        return LinearStretch
     else:
         # Not a Helioviewer JPEG2000 file, so assume the data has not been
         # stretched and so use the FITS stretching as defined in the instrument
