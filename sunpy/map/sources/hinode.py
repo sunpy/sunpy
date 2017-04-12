@@ -19,8 +19,10 @@ __all__ = ['XRTMap', 'SOTMap']
 # http://darts.jaxa.jp/pub/ssw/hinode/xrt/idl/util/xrt_prep.pro
 # SATURATION_LIMIT = 2500
 
+
 def _lower_list(L):
     return [item.lower() for item in L]
+
 
 class XRTMap(GenericMap):
     """Hinode XRT map definition.
