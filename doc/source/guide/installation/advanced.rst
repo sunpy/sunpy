@@ -141,6 +141,11 @@ To install SunPy with database dependencies (sqlalchemy)::
 
 .. note::
 
+   ``suds-py3`` is not compatible where as ``suds-jurko`` works fine with Sunpy. Hence we depend on ``suds-jurko`` for operations under various modules under `~sunpy.net`.  
+
+
+.. note::
+
     If you get a ``PermissionError`` this means that you do not have the
     required administrative access to install new packages to your Python
     installation.  In this case you may consider using the ``--user`` option
