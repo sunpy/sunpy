@@ -12,7 +12,7 @@ from astropy_helpers import setup_helpers
 
 def get_extensions():
 
-    if platform.system() == 'Windows' or sys.version_info.major == 3:
+    if platform.system() == 'Windows':
         return list()
     else:
         # 'numpy' will be replaced with the proper path to the numpy includes
@@ -23,7 +23,8 @@ def get_extensions():
         # Squash some warnings
         cfg['extra_compile_args'].extend(['-Wno-unused-but-set-variable',
                                           '-Wno-unused-variable',
-                                          '-Wno-unused-result'])
+                                          '-Wno-unused-result',
+                                          '-Wno-sign-compare'])
 
         e = Extension('sunpy.io._pyana', **cfg)
         return [e]

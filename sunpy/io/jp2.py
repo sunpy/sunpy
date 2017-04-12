@@ -1,8 +1,7 @@
 """JPEG 2000 File Reader"""
 from __future__ import absolute_import, division, print_function
 
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
+import collections
 
 from xml.etree import cElementTree as ET
 
@@ -13,8 +12,13 @@ from sunpy.io.header import FileHeader
 
 __all__ = ['read', 'get_header', 'write']
 
+__author__ = "Keith Hughitt"
+__email__ = "keith.hughitt@nasa.gov"
 
-def read(filepath):
+HDPair = collections.namedtuple('HDPair', ['data', 'header'])
+
+
+def read(filepath, **kwargs):
     """
     Reads a JPEG2000 file
 
@@ -32,7 +36,8 @@ def read(filepath):
 
     data = Jp2k(filepath).read()[::-1]
 
-    return [(data, header[0])]
+    return [HDPair(data, header[0])]
+
 
 
 def get_header(filepath):

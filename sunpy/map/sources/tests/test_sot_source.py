@@ -24,7 +24,7 @@ def test_fitstoSOT():
 def test_is_datasource_for():
     """Test the is_datasource_for method of SOTMap.
     Note that header data to be provided as an argument
-    can be a MapMeta object."""
+    can be a MetaDict object."""
     assert sot.is_datasource_for(sot.data, sot.meta)
 
 def test_observatory():

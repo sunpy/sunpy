@@ -1,6 +1,9 @@
 Latest
 ------
 
+* User can now pass a custom time format as an argument inside
+  `sunpy.database.add_from_dir()` in case the `date-obs` metadata cannot
+  be read automatically from the files.
 * Get and set methods for composite maps now use Map plot_settings.
 * Simplified map names when plotting.
 * Add time format used by some SDO HMI FITS keywords
@@ -13,6 +16,21 @@ Latest
 * `sunpy.io.fits.read` will now return any parse-able HDUs even if some raise an error.
 * `VSOClient` no longer prints a lot of XML junk if the query fails.
 * Remove unused `sunpy.visualization.plotting` module
+* Port the pyana wrapper to Python 3
+* `Map.peek(basic_plot=True)` no longer issues warnings
+* Remove the `sunpy.map.nddata_compat` module, this makes `Map.data` and
+  `Map.meta` read only.
+* Add a `NorthOffsetFrame` class for generating HGS-like coordinate systems with a shifted north pole.
+* Remove deprecated `VSOClient.show` method.
+* Deprecate `sunpy.wcs`: `sunpy.coordinates` and `sunpy.map` now provide all
+  that functionality in a more robust manner.
+* Added hdu index in `sunpy.database.tables.DatabaseEntry` as a column in the table.
+* Removed `HelioviewerClient` from the `sunpy.net` namespace. It should now be
+  imported with `from sunpy.net.helioviewer import HelioviewerClient`.
+* Removed compatibility with standalone ``wcsaxes`` and instead depend on the
+  version in astropy 1.3. SunPy now therefore depends on astropy>=1.3.
+* Update to `TimeRange.__repr__`; now includes the qualified name and `id` of
+  the object.
 
 0.7.0
 -----

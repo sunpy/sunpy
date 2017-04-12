@@ -10,6 +10,7 @@ API Reference
    sunpy
    cm
    coordinates
+   data
    database
    image
    instr/index
@@ -22,6 +23,7 @@ API Reference
    spectra
    sun
    time
+   timeseries
    util
    visualization
    wcs

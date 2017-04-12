@@ -63,7 +63,7 @@ dependencies installed (with the potential exception of `glymur`).
 
 SunPy has the following strict requirements:
 
-- `Python <http://www.python.org/>`_ 2.7
+- `Python <http://www.python.org/>`_ 2.7.x, 3.4.x or later
 
 - `NumPy <http://www.numpy.org/>`_  1.6.0 or later
 
@@ -88,8 +88,6 @@ are needed. SunPy will import even if these dependencies are not installed.
 - `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: For `~sunpy.spectra.Callisto` Spectrograms and `~sunpy.net.helio`
 
 - `requests <http://docs.python-requests.org/en/latest/>`_: For the `~sunpy.net.jsoc` submodule.
-
-- `wcsaxes <http://wcsaxes.readthedocs.io/en/latest/>`_: For `sunpy.map` plotting improvements.
 
 - `glymur <https://glymur.readthedocs.io/en/latest/>`_ 0.5.9 or later: To enable reading of JPEG2000 files.
   Glymur requires the installation of the `OpenJPEG C library <http://code.google.com/p/openjpeg/downloads/list>`_.

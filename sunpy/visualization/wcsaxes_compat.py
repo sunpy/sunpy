@@ -2,23 +2,20 @@
 """
 Helpers and Functions to make WCSAxes work in SunPy
 """
-import warnings
-
 import matplotlib.pyplot as plt
 
 import astropy.units as u
 
 try:
-    import wcsaxes
-    HAVE_WCSAXES = True
-
+    from astropy.visualization import wcsaxes
 except ImportError:
-    HAVE_WCSAXES = False
-    warnings.warn("SunPy plotting is improved by installing the WCSAxes module: http://wcsaxes.readthedocs.io/")
+    raise ImportError("Astropy >= 1.3 is required to use SunPy")
 
-FORCE_NO_WCSAXES = False
+#  Force is put here to enable disabling all checks in this module. It should
+#  only be used by tests and other such hacks.
+_FORCE_NO_WCSAXES = False
 
-__all__ = ['HAVE_WCSAXES', 'is_wcsaxes', 'FORCE_NO_WCSAXES']
+__all__ = ['is_wcsaxes']
 
 
 def is_wcsaxes(axes):
@@ -36,7 +33,7 @@ def is_wcsaxes(axes):
         Result of the test
     """
 
-    if HAVE_WCSAXES and not FORCE_NO_WCSAXES:
+    if not _FORCE_NO_WCSAXES:
         return isinstance(axes, wcsaxes.WCSAxes)
     else:
         return False
@@ -64,7 +61,7 @@ def gca_wcs(wcs, fig=None):
         fig = plt.gcf()
 
     if not len(fig.get_axes()):
-        if HAVE_WCSAXES and not FORCE_NO_WCSAXES:
+        if not _FORCE_NO_WCSAXES:
             ax = plt.gca(projection=wcs)
         else:
             ax = plt.gca()
@@ -130,7 +127,8 @@ def default_wcs_grid(axes):
     x.set_major_formatter('s.s')
     y.set_major_formatter('s.s')
 
-    axes.coords.grid(color='white', alpha=0.6)
+    axes.coords.grid(color='white', alpha=0.6, linestyle='dotted',
+                     linewidth=0.5)
 
 
 def wcsaxes_heliographic_overlay(axes):
