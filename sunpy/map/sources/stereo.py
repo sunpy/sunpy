@@ -38,7 +38,7 @@ class EUVIMap(GenericMap):
 
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = cm.get_cmap('sohoeit{wl:d}'.format(wl=int(self.wavelength.value)))
-        self.plot_settings['norm'] = ImageNormalize(PowerStretch(0.25))
+        self.plot_settings['norm'] = ImageNormalize(source_stretch(self.meta, PowerStretch(0.25)))
         self.meta['waveunit'] = 'Angstrom'
 
         # Try to identify when the FITS meta data does not have the correct
