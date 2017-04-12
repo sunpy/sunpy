@@ -534,7 +534,10 @@ scale:\t\t {scale}
                                    inspect.currentframe().f_back.f_lineno)
             carrington_longitude = (sun.heliographic_solar_center(self.date))[0]
 
-        return u.Quantity(float(carrington_longitude), 'deg')
+        if isinstance(carrington_longitude, six.string_types):
+            carrington_longitude = float(carrington_longitude)
+
+        return u.Quantity(carrington_longitude, 'deg')
 
     @property
     def heliographic_latitude(self):
@@ -550,12 +553,20 @@ scale:\t\t {scale}
                                    inspect.currentframe().f_back.f_lineno)
             heliographic_latitude = (sun.heliographic_solar_center(self.date))[1]
 
-        return u.Quantity(float(heliographic_latitude), 'deg')
+        if isinstance(heliographic_latitude, six.string_types):
+            heliographic_latitude = float(heliographic_latitude)
+
+        return u.Quantity(heliographic_latitude, 'deg')
 
     @property
     def heliographic_longitude(self):
         """Heliographic longitude"""
-        return u.Quantity(float(self.meta.get('hgln_obs', 0.)), 'deg')
+        heliographic_longitude = self.meta.get('hgln_obs', 0.)
+
+        if isinstance(heliographic_longitude, six.string_types):
+            heliographic_longitude = float(heliographic_longitude)
+
+        return u.Quantity(heliographic_longitude, 'deg')
 
     @property
     def reference_coordinate(self):
