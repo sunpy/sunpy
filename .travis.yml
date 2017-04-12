@@ -73,13 +73,6 @@ matrix:
          - python: 3.5
            env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
 
-    allow_failures:
-         # Temporarily allowing it to fail, but remove it from here asap once
-         # the build is passing again
-         - python: 2.7
-           env: SETUP_CMD='build_docs -w'
-                EVENT_TYPE='push pull_request cron'
-
 install:
     - git clone git://github.com/astropy/ci-helpers.git
     - source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh
