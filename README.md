@@ -11,7 +11,7 @@ Installation
 
 To begin, install the following requirements:
 
- * [Python](http://www.python.org) (2.7)
+ * [Python](http://www.python.org) (2.7.x, 3.4.x or later)
  * [Astropy](http://astropy.org) (1.0.0)
  * [NumPy](http://numpy.scipy.org/)
  * [SciPy](http://www.scipy.org/)

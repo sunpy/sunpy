@@ -82,6 +82,7 @@ def test_download_http():
     path_fun = partial(default_name, tmp)
 
     dw = Downloader(1, 1)
+    _stop = lambda _: dw.stop()
 
     timeout = CalledProxy(dw.stop)
     timer = threading.Timer(60, timeout)

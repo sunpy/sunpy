@@ -22,7 +22,9 @@ from functools import partial
 from collections import defaultdict
 from suds import client, TypeNotFound
 
-from astropy.table import Table
+import astropy
+from astropy.table import Table, Column
+import astropy.units as u
 
 from sunpy import config
 from sunpy.net import download
@@ -32,10 +34,11 @@ from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
-from sunpy.util import replacement_filename, Deprecated
+from sunpy.util import replacement_filename
 from sunpy.time import parse_time
 
-from sunpy.extern.six import iteritems, text_type, u, PY2
+from sunpy.extern import six
+from sunpy.extern.six import iteritems, text_type
 from sunpy.extern.six.moves import input
 
 TIME_FORMAT = config.get("general", "time_format")
@@ -65,88 +68,6 @@ class _Str(str):
 
 # ----------------------------------------
 
-
-class Results(object):
-    """ Returned by VSOClient.get. Use .wait to wait
-    for completion of download.
-    """
-    def __init__(self, callback, n=0, done=None):
-        self.callback = callback
-        self.n = self.total = n
-        self.map_ = {}
-        self.done = done
-        self.evt = threading.Event()
-        self.errors = []
-        self.lock = threading.RLock()
-
-        self.progress = None
-
-    def submit(self, keys, value):
-        """
-        Submit
-
-        Parameters
-        ----------
-        keys : list
-            names under which to save the value
-        value : object
-            value to save
-        """
-        for key in keys:
-            self.map_[key] = value
-        self.poke()
-
-    def poke(self):
-        """ Signal completion of one item that was waited for. This can be
-        because it was submitted, because it lead to an error or for any
-        other reason. """
-        with self.lock:
-            self.n -= 1
-            if self.progress is not None:
-                self.progress.poke()
-            if not self.n:
-                if self.done is not None:
-                    self.map_ = self.done(self.map_)
-                self.callback(self.map_)
-                self.evt.set()
-
-    def require(self, keys):
-        """ Require that keys be submitted before the Results object is
-        finished (i.e., wait returns). Returns a callback method that can
-        be used to submit the result by simply calling it with the result.
-
-        keys : list
-            name of keys under which to save the result
-        """
-        with self.lock:
-            self.n += 1
-            self.total += 1
-            return partial(self.submit, keys)
-
-    def wait(self, timeout=100, progress=False):
-        """ Wait for result to be complete and return it. """
-        # Giving wait a timeout somehow circumvents a CPython bug that the
-        # call gets uninterruptible.
-        if progress:
-            with self.lock:
-                self.progress = ProgressBar(self.total, self.total - self.n)
-                self.progress.start()
-                self.progress.draw()
-
-        while not self.evt.wait(timeout):
-            pass
-        if progress:
-            self.progress.finish()
-
-        return self.map_
-
-    def add_error(self, exception):
-        """ Signal a required result cannot be submitted because of an
-        error. """
-        self.errors.append(exception)
-        self.poke()
-
-
 def _parse_waverange(string):
     min_, max_, unit = RANGE.match(string).groups()[::2]
     return {
@@ -175,6 +96,7 @@ def iter_errors(response):
             yield prov_item
 
 
+# TODO: Python 3 this should subclass from UserList
 class QueryResponse(list):
     def __init__(self, lst, queryresult=None, table=None):
         super(QueryResponse, self).__init__(lst)
@@ -211,13 +133,8 @@ class QueryResponse(list):
                   if record.time.end is not None), TIMEFORMAT)
         )
 
-    @Deprecated("Use `print qr` to view the contents of the response")
-    def show(self):
-        """Print out human-readable summary of records retrieved"""
-        print(str(self))
-
     def build_table(self):
-        keywords = ['Start Time', 'End Time', 'Source', 'Instrument', 'Type']
+        keywords = ['Start Time', 'End Time', 'Source', 'Instrument', 'Type', 'Wavelength']
         record_items = {}
         for key in keywords:
             record_items[key] = []
@@ -238,6 +155,26 @@ class QueryResponse(list):
             record_items['Instrument'].append(str(record.instrument))
             record_items['Type'].append(str(record.extent.type)
                                 if record.extent.type is not None else ['N/A'])
+            # If we have a start and end Wavelength, make a quantity
+            if hasattr(record, 'wave') and record.wave.wavemin and record.wave.wavemax:
+                record_items['Wavelength'].append(u.Quantity([float(record.wave.wavemin),
+                                                              float(record.wave.wavemax)],
+                                                             unit=record.wave.waveunit))
+            # If not save None
+            else:
+                record_items['Wavelength'].append(None)
+        # If we have no wavelengths for the whole list, drop the col
+        if all([a is None for a in record_items['Wavelength']]):
+            record_items.pop('Wavelength')
+            keywords.remove('Wavelength')
+        else:
+            # Make whole column a quantity
+            try:
+                with u.set_enabled_equivalencies(u.spectral()):
+                    record_items['Wavelength'] = u.Quantity(record_items['Wavelength'])
+            # If we have mixed units or some Nones just represent as strings
+            except (u.UnitConversionError, TypeError):
+                record_items['Wavelength'] = [str(a) for a in record_items['Wavelength']]
 
         return Table(record_items)[keywords]
 
@@ -279,6 +216,7 @@ class VSOClient(object):
     method_order = [
         'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR', 'URL-FILE', 'URL-packaged'
     ]
+
     def __init__(self, url=None, port=None, api=None):
         if api is None:
             if url is None:
@@ -286,7 +224,7 @@ class VSOClient(object):
             if port is None:
                 port = DEFAULT_PORT
 
-            api = client.Client(url, transport = WellBehavedHttpTransport())
+            api = client.Client(url, transport=WellBehavedHttpTransport())
             api.set_options(port=port)
         self.api = api
 
@@ -400,7 +338,7 @@ class VSOClient(object):
         name = get_filename(sock, url)
         if not name:
             if not isinstance(response.fileid, text_type):
-                name = u(response.fileid, "ascii", "ignore")
+                name = six.u(response.fileid, "ascii", "ignore")
             else:
                 name = response.fileid
 
@@ -410,7 +348,7 @@ class VSOClient(object):
 
         name = slugify(name)
 
-        if PY2:
+        if six.PY2:
             name = name.encode(fs_encoding, "ignore")
 
         if not name:
@@ -623,16 +561,16 @@ class VSOClient(object):
         if downloader is None:
             downloader = download.Downloader()
             downloader.init()
-            res = Results(
+            res = download.Results(
                 lambda _: downloader.stop(), 1,
                 lambda mp: self.link(query_response, mp)
             )
         else:
-            res = Results(
+            res = download.Results(
                 lambda _: None, 1, lambda mp: self.link(query_response, mp)
             )
         if path is None:
-            path = os.path.join(config.get('downloads','download_dir'),
+            path = os.path.join(config.get('downloads', 'download_dir'),
                                 '{file}')
         path = os.path.expanduser(path)
 
@@ -818,6 +756,11 @@ class VSOClient(object):
         """ Override to pick a new method if the current one is unknown. """
         raise NoData
 
+    @classmethod
+    def _can_handle_query(cls, *query):
+        return all([x.__class__.__name__ in attrs.__all__ for x in query])
+
+
 
 class InteractiveVSOClient(VSOClient):
     """ Client for use in the REPL. Prompts user for data if required. """
@@ -831,12 +774,6 @@ class InteractiveVSOClient(VSOClient):
             choices : not documented yet
 
             response : not documented yet
-
-        Returns
-        -------
-
-        .. todo::
-            improve documentation. what does this function do?
 
         """
         while True:

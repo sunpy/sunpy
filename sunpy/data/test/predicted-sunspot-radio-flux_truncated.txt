@@ -1,0 +1,30 @@
+:Predicted_Sunspot_Numbers_and_Radio_Flux: Predict.txt
+:Created: 2016 Jan 04 0500 UTC
+# Prepared by the U.S. Dept. of Commerce, NOAA, Space Weather Prediction Center (SWPC).
+# Please send comments and suggestions to swpc.webmaster@noaa.gov
+#
+# Sunspot Number: S.I.D.C. Brussels International Sunspot Number.
+# 10.7cm Radio Flux value: Penticton, B.C. Canada.
+# Predicted values are based on the consensus of the Solar Cycle 24 Prediction Panel.
+#
+# See the README3 file for further information.
+#
+# Missing or not applicable data:  -1
+#
+#         Predicted Sunspot Number And Radio Flux Values
+#                     With Expected Ranges
+#
+#         -----Sunspot Number------  ----10.7 cm Radio Flux----
+# YR MO   PREDICTED    HIGH    LOW   PREDICTED    HIGH    LOW
+#--------------------------------------------------------------
+2015 07        41.6    42.6    40.6      116.1   117.1   115.1
+2015 08        41.9    43.9    39.9      113.6   114.6   112.6
+2015 09        43.0    46.0    40.0      111.7   113.7   109.7
+2015 10        43.7    48.7    38.7      109.6   112.6   106.6
+2015 11        43.5    48.5    38.5      107.6   111.6   103.6
+2015 12        43.3    49.3    37.3      105.7   109.7   101.7
+2016 01        43.5    50.5    36.5      104.3   109.3    99.3
+2016 02        43.7    50.7    36.7      103.5   109.5    97.5
+2016 03        43.4    51.4    35.4      102.7   109.7    95.7
+2016 04        43.1    52.1    34.1      101.9   109.9    93.9
+2016 05        43.0    52.0    34.0      100.7   108.7    92.7
