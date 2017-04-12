@@ -34,6 +34,8 @@ Latest
   the object.
 * Change the default representation for the Heliographic Carrington frame so
   Longitude follows the convention of going from 0-360 degrees.
+* Fix Map parsing of some header values to allow valid float strings like 'nan'
+  and 'inf'.
 
 0.7.0
 -----
