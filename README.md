@@ -69,4 +69,8 @@ if you have any questions. Help is always welcome so let us know what you like
 to work on, or check out the [issues page](https://github.com/sunpy/sunpy/issues)
 for a list of some known outstanding items.
 
+### Code of Conduct
+
+When you are interacting with the SunPy community you are asked to follow
+our [Code of Conduct](https://github.com/sunpy/sunpy/wiki/Code-of-Conduct).
 
