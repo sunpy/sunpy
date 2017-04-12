@@ -2,12 +2,14 @@
 HMI Daily Synoptic Map
 ----------------------
 
-In this example we will load a FITS file not directly supported by SunPy, and
-build a custom coordinate frame to display the coordinate system correctly.
+In this example we load the Daily Synoptic Maps produced by the HMI team. This
+data is an interesting demonstration of SunPy's Map class as it is not in the
+more common Helioprojective coordinate system, it is in Heliographic Carrington
+coordinates and in a non-trivial Cylindrical Equal Area projection.
 
-This notebook plots the HMI Daily Synoptic Maps, the file used in this example
+This example plots the HMI Daily Synoptic Maps, the file used in this example
 can be downloaded from
-[here](http://jsoc.stanford.edu/data/hmi/synoptic/hmi.Mldailysynframe_720s_nrt.fits).
+`here <http://jsoc.stanford.edu/data/hmi/synoptic/hmi.Mldailysynframe_720s_nrt.fits>`_
 """
 
 import numpy as np
