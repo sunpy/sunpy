@@ -141,7 +141,7 @@ To install SunPy with database dependencies (sqlalchemy)::
 
 .. note::
 
-   ``suds-py3`` is not compatible where as ``suds-jurko`` works fine with Sunpy. Hence we depend on ``suds-jurko`` for operations under various modules under `~sunpy.net`.  
+   ``suds-py3`` is not compatible where as ``suds-jurko`` works fine with SunPy. Hence we depend on ``suds-jurko`` for operations under various modules under `~sunpy.net`.  
 
 
 .. note::
