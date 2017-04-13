@@ -39,7 +39,6 @@ def read(filepath, **kwargs):
     return [HDPair(data, header[0])]
 
 
-
 def get_header(filepath):
     """
     Reads the header from the file
@@ -69,9 +68,6 @@ def get_header(filepath):
     # Remove newlines from comment
     if 'comment' in pydict:
         pydict['comment'] = pydict['comment'].replace("\n", "")
-
-    # Is this file a Helioviewer Project JPEG2000 file?
-    pydict['helioviewer'] = xml_box[0].xml.find('helioviewer') is not None
 
     return [FileHeader(pydict)]
 
