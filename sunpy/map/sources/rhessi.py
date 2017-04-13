@@ -8,9 +8,9 @@ __email__ = "steven.d.christe@nasa.gov"
 from sunpy.map import GenericMap
 from sunpy.cm import cm
 
-import astropy.units as u
 
 __all__ = ['RHESSIMap']
+
 
 class RHESSIMap(GenericMap):
     """RHESSI Image Map.
@@ -42,7 +42,8 @@ class RHESSIMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
 
         self._nickname = self.detector
-        #TODO Currently (8/29/2011), cannot read fits files containing more than one image (schriste)
+        # TODO Currently (8/29/2011), cannot read fits files containing more
+        # than one image (schriste)
         # Fix some broken/misapplied keywords
         if self.meta['ctype1'] == 'arcsec':
             self.meta['cunit1'] = 'arcsec'
