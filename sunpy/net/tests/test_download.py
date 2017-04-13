@@ -51,6 +51,17 @@ def wait_for(n, callback): #pylint: disable=W0613
 def path_fun(*args, **kwargs):
     raise ValueError
 
+
+def get_and_create_temp_directory(tmpdir):
+    sunpy.config = MockConfig()
+    sunpy.config.add_section(
+        "downloads", {"download_dir": tmpdir}
+    )
+    if not os.path.isdir(sunpy.config.get('downloads', 'download_dir')):
+        os.makedirs(sunpy.config.get('downloads', 'download_dir'))
+
+    return sunpy.config.get('downloads', 'download_dir')
+
 @pytest.mark.online
 def test_path_exception():
     x = threading.Event()
@@ -109,11 +120,7 @@ def test_download_default_dir():
 
     try:
         tmpdir = tempfile.mkdtemp()
-
-        sunpy.config = MockConfig()
-        sunpy.config.add_section(
-            "downloads", {"download_dir": tmpdir}
-        )
+        path = get_and_create_temp_directory(tmpdir)
 
         dw = Downloader(1, 1)
         _stop = lambda _: dw.stop()
@@ -122,6 +129,7 @@ def test_download_default_dir():
         errback = CalledProxy(_stop)
         dw.download(
             'http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js',
+            path=path,
             callback=_stop,
             errback=errback
         )

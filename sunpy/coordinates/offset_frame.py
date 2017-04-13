@@ -10,7 +10,7 @@ class NorthOffsetFrame(object):
     `astropy.coordinates.SkyOffsetFrame`
 
     Coordinates in a NorthOffsetFrame are both centered on the position
-    specified bu the ``north`` keyword *and* they are oriented in the same
+    specified by the ``north`` keyword *and* they are oriented in the same
     manner as the ``north`` frame.
 
     Unlike `~astropy.coordinates.SkyOffsetFrame` a `NorthOffsetFrame` allows

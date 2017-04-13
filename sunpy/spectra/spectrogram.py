@@ -1246,9 +1246,10 @@ class LinearTimeSpectrogram(Spectrogram):
                     self.start.year, self.start.month, self.start.day,
                     *list(map(int, start.split(":")))
                 )
+
         if start:
             start = int(start)
         if end:
             end = int(end)
-        
+
         return self[:, start:end]

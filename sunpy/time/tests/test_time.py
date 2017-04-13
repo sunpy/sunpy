@@ -3,7 +3,7 @@ from __future__ import absolute_import, division, print_function
 from datetime import datetime
 
 from sunpy import time
-from sunpy.time import parse_time, extract_time, is_time_in_given_format, get_day, find_time
+from sunpy.time import parse_time, is_time_in_given_format, get_day, find_time
 
 import astropy.time
 import numpy as np
@@ -201,22 +201,6 @@ def test__iter_empty():
     assert time.time._iter_empty(one_count) is False
     assert time.time._iter_empty(one_count) is True
 
-
-def test_extract_time_illegal_args():
-
-    with pytest.raises(ValueError):
-        extract_time('2017')
-
-    with pytest.raises(ValueError):
-        extract_time('This is an ambiguous 2017-02-12-9 2017-02-12-9 timestring')
-
-
-def test_extract_time_best_effort():
-    """
-    Make a 'best-effort' guess as to what the time could be
-    """
-    assert extract_time('2017-02-12-9-02-12-9') == datetime(year=2017, month=2, day=12,
-                                                            hour=0, minute=0, second=0)
 
 
 def test_is_time():
