@@ -1246,22 +1246,9 @@ class LinearTimeSpectrogram(Spectrogram):
                     self.start.year, self.start.month, self.start.day,
                     *list(map(int, start.split(":")))
                 )
-            start = self.time_to_x(start)
-        if end is not None:
-            try:
-                end = parse_time(end)
-            except ValueError:
-                if get_day(self.start) != get_day(self.end):
-                    raise TypeError(
-                        "Time ambiguous because data spans over more than one day"
-                    )
-                end = datetime.datetime(
-                    self.start.year, self.start.month, self.start.day,
-                    *list(map(int, end.split(":")))
-                )
-            end = self.time_to_x(end)
         if start:
             start = int(start)
         if end:
             end = int(end)
+        
         return self[:, start:end]
