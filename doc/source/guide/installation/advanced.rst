@@ -131,6 +131,8 @@ To install SunPy with database dependencies (sqlalchemy)::
 
     pip install sunpy[database]
 
+Other available options are: `[image]`, `[jpeg2000]` and `[tests]`
+
 .. warning::
     Users of the Anaconda python distribution should follow the instructions
     for :ref:`anaconda_install`.
