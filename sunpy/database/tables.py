@@ -221,6 +221,9 @@ class DatabaseEntry(Base):
         This is the same value as ``wavemin``. The value is stored twice,
         because each ``suds.sudsobject.QueryResponseBlock`` which is used by
         the vso package contains both these values.
+    hdu_index : int
+        This value provides a list of all available HDUs and in what
+        files they are located.
     path : string
         A local file path where the according FITS file is saved.
     download_time : datetime
