@@ -99,6 +99,25 @@ def testExtractDates_usingPattern():
     timeURL = datetime.datetime(2014, 5, 14, 20, 1, 35)
     assert s._extractDateURL(testURL) == timeURL
 
+def testExtractDates_notSeparators():
+    s = Scraper('data/%Y/%m/swap%m%d_%H%M%S')
+    testURL = 'data/2014/05/swap0514_200135'
+    timeURL = datetime.datetime(2014, 5, 14, 20, 1, 35)
+    assert s._extractDateURL(testURL) == timeURL
+def testExtractDates_notSeparators_andSimilar():
+    s = Scraper('data/%Y/Jun%b%d_%H%M%S')
+    testURL = 'data/2014/JunJun14_200135'
+    timeURL = datetime.datetime(2014, 6, 14, 20, 1, 35)
+    assert s._extractDateURL(testURL) == timeURL
+    testURL = 'data/2014/JunMay14_200135'
+    timeURL = datetime.datetime(2014, 5, 14, 20, 1, 35)
+    assert s._extractDateURL(testURL) == timeURL
+    # and testing with the month afterwards
+    s = Scraper('data/%Y/%dJun%b_%H%M%S')
+    testURL = 'data/2014/14JunJun_200135'
+    timeURL = datetime.datetime(2014, 6, 14, 20, 1, 35)
+    assert s._extractDateURL(testURL) == timeURL
+
 def testURL_pattern():
     s = Scraper('fd_%Y%m%d_%H%M%S.fts')
     assert s._URL_followsPattern('fd_20130410_231211.fts')
@@ -108,6 +127,8 @@ def testURL_pattern():
 @pytest.mark.xfail
 def testURL_patternMilliseconds():
     s = Scraper('fd_%Y%m%d_%H%M%S_%e.fts')
+    # NOTE: Seems that if below fails randomly - not understood why
+    #       with `== True` fails a bit less...
     assert s._URL_followsPattern('fd_20130410_231211_119.fts')
     assert not s._URL_followsPattern('fd_20130410_231211.fts.gz')
     assert not s._URL_followsPattern('fd_20130410_ar_231211.fts.gz')
