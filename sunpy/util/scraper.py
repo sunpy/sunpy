@@ -65,7 +65,9 @@ class Scraper(object):
         else:
             now = datetime.datetime.now()
             milliseconds_ = int(now.microsecond / 1000.)
-            self.now = now.strftime(self.pattern[0:milliseconds.start()] + str(milliseconds_) + self.pattern[milliseconds.end():])
+            self.now = now.strftime(self.pattern[0:milliseconds.start()] +
+                                    str(milliseconds_) +
+                                    self.pattern[milliseconds.end():])
 
     def matches(self, filepath, date):
         return date.strftime(self.pattern) == filepath
@@ -90,9 +92,9 @@ class Scraper(object):
             range given. Notice that these directories may not exist
             in the archive.
         """
-        #find directory structure - without file names
+        # find directory structure - without file names
         directorypattern = os.path.dirname(self.pattern) + '/'
-        #TODO what if there's not slashes?
+        # TODO what if there's not slashes?
         rangedelta = timerange.dt
         timestep = self._smallerPattern(directorypattern)
         if timestep is None:
@@ -102,13 +104,13 @@ class Scraper(object):
             n_steps = rangedelta.total_seconds()/timestep.total_seconds()
             TotalTimeElements = int(round(n_steps)) + 1
             directories = [(timerange.start + n * timestep).strftime(directorypattern)
-                        for n in range(TotalTimeElements)] #todo if date <= endate
+                           for n in range(TotalTimeElements)]  # TODO if date <= endate
             return directories
 
     def _URL_followsPattern(self, url):
         """Check whether the url provided follows the pattern"""
         pattern = self.pattern
-        for k,v in six.iteritems(TIME_CONVERSIONS):
+        for k, v in six.iteritems(TIME_CONVERSIONS):
             pattern = pattern.replace(k, v)
         matches = re.match(pattern, url)
         if matches:
@@ -154,7 +156,7 @@ class Scraper(object):
         final_date = list()
         final_pattern = list()
         re_together = re_together.replace('[A-Z]', '\\[A-Z]')
-        for p,r in zip(pattern_together.split('%')[1:], re_together.split('\\')[1:]):
+        for p, r in zip(pattern_together.split('%')[1:], re_together.split('\\')[1:]):
             if p == 'e':
                 continue
             regexp = '\\{}'.format(r) if not r.startswith('[') else r
@@ -226,7 +228,7 @@ class Scraper(object):
                 return datetime.timedelta(hours=1)
             elif any(day in directoryPattern for day in ["%d", "%j"]):
                 return datetime.timedelta(days=1)
-            elif any(month in directoryPattern for month in ["%b","%B","%m"]):
+            elif any(month in directoryPattern for month in ["%b", "%B", "%m"]):
                 return datetime.timedelta(days=31)
             elif any(year in directoryPattern for year in ["%Y", "%y"]):
                 return datetime.timedelta(days=365)
@@ -234,4 +236,3 @@ class Scraper(object):
                 return None
         except:
             raise
-
