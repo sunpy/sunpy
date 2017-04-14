@@ -41,10 +41,10 @@ yohkohsxtwh = ct.sxt_color_table('wh')
 
 hinodexrt = ct.xrt_color_table()
 hinodesotintensity = ct.sot_color_table('intensity')
-#hinodesotstokesquv = ct.sot_color_table('stokesQUV')
-#hinodesotmagneticf = ct.sot_color_table('magnetic field')
-#hinodesotvelocity = ct.sot_color_table('velocity')
-#hinodesotwidth =  ct.sot_color_table('width')
+# hinodesotstokesquv = ct.sot_color_table('stokesQUV')
+# hinodesotmagneticf = ct.sot_color_table('magnetic field')
+# hinodesotvelocity = ct.sot_color_table('velocity')
+# hinodesotwidth =  ct.sot_color_table('width')
 
 trace171 = ct.trace_color_table('171')
 trace195 = ct.trace_color_table('195')
@@ -83,10 +83,10 @@ cmlist = {
           'yohkohsxtwh': yohkohsxtwh,
           'hinodexrt': hinodexrt,
           'hinodesotintensity': hinodesotintensity,
-          #'hinodesotstokesquv': hinodesotstokesquv,
-          #'hinodesotmagneticf': hinodesotmagneticf,
-          #'hinodesotvelocity': hinodesotvelocity,
-          #'hinodesotwidth': hinodesotwidth,
+          # 'hinodesotstokesquv': hinodesotstokesquv,
+          # 'hinodesotmagneticf': hinodesotmagneticf,
+          # 'hinodesotvelocity': hinodesotvelocity,
+          # 'hinodesotwidth': hinodesotwidth,
           'trace171': trace171,
           'trace195': trace195,
           'trace284': trace284,
@@ -169,7 +169,7 @@ def show_colormaps(filter=None):
     """
 
     if filter:
-        maps =  sorted({k:v for (k,v) in cmlist.items() if k.lower().count(filter.lower())})
+        maps = sorted({k: v for (k, v) in cmlist.items() if k.lower().count(filter.lower())})
         if len(maps) == 0:
             raise KeyError('No color maps found for key - ' + filter)
     else:
@@ -180,7 +180,11 @@ def show_colormaps(filter=None):
     a = np.linspace(0, 1, 256).reshape(1, -1)  # pylint: disable=E1103
     a = np.vstack((a, a))
 
+
+    
+
     fig = plt.figure(figsize=(5, 10),dpi=64)
+
     fig.subplots_adjust(top=0.99, bottom=0.01, left=0.2, right=0.99)
     for i, name in enumerate(maps):
         ax = plt.subplot(nmaps, 1, i + 1)

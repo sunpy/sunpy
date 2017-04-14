@@ -365,7 +365,7 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
     assert resampled_map.meta['crval2'] == generic_map.center.y.value
     for key in generic_map.meta:
         if key not in ('cdelt1', 'cdelt2', 'crpix1', 'crpix2',
-                       'crval1', 'crval2'):
+                       'crval1', 'crval2', 'naxis1', 'naxis2'):
             assert resampled_map.meta[key] == generic_map.meta[key]
 
 
