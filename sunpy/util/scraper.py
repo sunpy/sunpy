@@ -131,6 +131,13 @@ class Scraper(object):
         for pattern_elem, url_elem in zip(pattern_list, url_list):
             time_formats = [x for x in time_order if x in pattern_elem]
             if len(time_formats) > 0:
+                # Find whether there's text that should not be here
+                toremove = re.split('%.', pattern_elem)
+                if len(toremove) > 0:
+                    for bit in toremove:
+                        if bit != '':
+                            url_elem = url_elem.replace(bit, '', 1)
+                            pattern_elem = pattern_elem.replace(bit, '', 1)
                 final_date.append(url_elem)
                 final_pattern.append(pattern_elem)
                 for time_bit in time_formats:
