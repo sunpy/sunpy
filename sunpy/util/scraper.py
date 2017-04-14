@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from sunpy.extern import six
 from sunpy.extern.six.moves import range, zip
 from sunpy.extern.six.moves.urllib.request import urlopen
+from sunpy.extern.six.moves.urllib.parse import urlsplit
 
 __all__ = ['Scraper']
 
@@ -60,6 +61,7 @@ class Scraper(object):
     """
     def __init__(self, pattern, **kwargs):
         self.pattern = pattern.format(**kwargs)
+        self.domain = "{0.scheme}://{0.netloc}/".format(urlsplit(self.pattern))
         milliseconds = re.search('\%e', self.pattern)
         if not milliseconds:
             self.now = datetime.datetime.now().strftime(self.pattern)
@@ -220,8 +222,11 @@ class Scraper(object):
                     soup = BeautifulSoup(opn, "lxml")
                     for link in soup.find_all("a"):
                         href = link.get("href")
-                        if href.endswith(self.pattern.split('.')[-1]):
-                            fullpath = directory + href
+                        if href is not None and href.endswith(self.pattern.split('.')[-1]):
+                            if href[0] == '/':
+                                fullpath = self.domain + href[1:]
+                            else:
+                                fullpath = directory + href
                             if self._URL_followsPattern(fullpath):
                                 datehref = self._extractDateURL(fullpath)
                                 if (datehref >= timerange.start and
