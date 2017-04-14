@@ -69,24 +69,9 @@ class BBSOClient(GenericClient):
         suffix_gz = suffix + '.gz'  #Download compressed files as well, if available.
         total_days = (timerange.end - timerange.start).days + 1
         all_dates = timerange.split(total_days)
-        crawler = Scraper(suffix, level=level)
-        crawler_gz = Scraper(suffix_gz, level=level)
-        result = list()
-        for day in all_dates:
-            url_to_open = 'http://www.bbso.njit.edu/pub/archive/{date:%Y/%m/%d/}'.format(
-                date=day.end)
-            html_page = urlopen(url_to_open)
-            soup = BeautifulSoup(html_page)
-            for link in soup.findAll('a'):
-                url = str(link.get('href'))
-                if crawler._URL_followsPattern(url):
-                    datehref = crawler._extractDateURL(url)
-                    if datehref >= timerange.start and datehref <= timerange.end:
-                        result.append(prefix + url)
-                if crawler_gz._URL_followsPattern(url):
-                    datehref = crawler_gz._extractDateURL(url)
-                    if datehref >= timerange.start and datehref <= timerange.end:
-                        result.append(prefix + url)
+        crawler = Scraper(prefix + suffix, level=level)
+        crawler_gz = Scraper(prefix + suffix_gz, level=level)
+        result = crawler.filelist(timerange) + crawler_gz.filelist(timerange)
         return result
 
     def _makeimap(self):
@@ -94,9 +79,9 @@ class BBSOClient(GenericClient):
         Helper Function:used to hold information about source.
         """
         self.map_['source'] = 'Global Halpha Network'
-        self.map_['instrument'] = 'bbso'
+        self.map_['instrument'] = 'BBSO'
         self.map_['phyobs'] = 'IRRADIANCE'
-        self.map_['wavelength'] = '174 AA'
+        self.map_['wavelength'] = '6562.8 AA'
 
     @classmethod
     def _can_handle_query(cls, *query):

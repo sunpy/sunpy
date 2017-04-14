@@ -5,7 +5,7 @@ import pytest
 from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument, Level
 from sunpy.net.dataretriever.client import QueryResponse
-from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
+from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
@@ -39,8 +39,6 @@ def test_can_handle_query():
 
 
 @pytest.mark.online
-#This test downloads 2 fits files
-#each of size 8.4MB, total size 16.8MB
 def test_query():
     qr = BClient.query(
         Time('2016/5/18 15:28:00', '2016/5/18 16:30:00'),
