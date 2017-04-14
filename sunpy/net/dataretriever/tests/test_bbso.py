@@ -2,6 +2,7 @@
 # the Google Summer of Code 2016.
 import pytest
 
+from sunpy.time import parse_time
 from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument, Level
 from sunpy.net.dataretriever.client import QueryResponse
@@ -46,8 +47,8 @@ def test_query():
         Level='fr')
     assert isinstance(qr, QueryResponse)
     assert len(qr) == 2
-    assert qr.time_range()[0] == '2016/05/18'
-    assert qr.time_range()[1] == '2016/05/18'
+    assert qr.time_range().start == parse_time('2016/05/18 15:30:25')
+    assert qr.time_range().end == parse_time('2016/05/18 16:00:33')
 
 
 #This test downloads 2 fits files
