@@ -5,6 +5,7 @@ import datetime
 
 from bs4 import BeautifulSoup
 
+from sunpy.time.timerange import TimeRange
 from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
 
@@ -73,6 +74,17 @@ class BBSOClient(GenericClient):
         crawler_gz = Scraper(prefix + suffix_gz, level=level)
         result = crawler.filelist(timerange) + crawler_gz.filelist(timerange)
         return result
+
+    def _get_time_for_url(self, urls):
+        prefix = 'http://www.bbso.njit.edu'
+        suffix = '/pub/archive/%Y/%m/%d/bbso_halph_{level}_%Y%m%d_%H%M%S.fts'
+        level = 'fr'
+        crawler = Scraper(prefix + suffix, level=level)
+        times = list()
+        for url in urls:
+            t0 = crawler._extractDateURL(url)
+            times.append(TimeRange(t0, t0))
+        return times
 
     def _makeimap(self):
         """
