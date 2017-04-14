@@ -7,6 +7,7 @@ import datetime
 from ftplib import FTP
 from urllib.error import HTTPError
 from urllib.request import urlopen
+from urllib.parse import urlsplit
 
 from bs4 import BeautifulSoup
 
@@ -63,6 +64,7 @@ class Scraper:
     def __init__(self, pattern, **kwargs):
         self.pattern = pattern.format(**kwargs)
         milliseconds = re.search(r'\%e', self.pattern)
+        self.domain = "{0.scheme}://{0.netloc}/".format(urlsplit(self.pattern))
         if not milliseconds:
             self.now = datetime.datetime.now().strftime(self.pattern)
         else:
@@ -228,8 +230,11 @@ class Scraper:
                     soup = BeautifulSoup(opn, "html.parser")
                     for link in soup.find_all("a"):
                         href = link.get("href")
-                        if href.endswith(self.pattern.split('.')[-1]):
-                            fullpath = directory + href
+                        if href is not None and href.endswith(self.pattern.split('.')[-1]):
+                            if href[0] == '/':
+                                fullpath = self.domain + href[1:]
+                            else:
+                                fullpath = directory + href
                             if self._URL_followsPattern(fullpath):
                                 datehref = self._extractDateURL(fullpath)
                                 if (datehref.to_datetime() >= timerange.start.to_datetime() and
