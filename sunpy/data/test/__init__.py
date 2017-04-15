@@ -40,5 +40,22 @@ def get_test_filepath(filename, **kwargs):
     """
     return get_pkg_data_filename(filename, package="sunpy.data.test", **kwargs)
 
+def get_available_test_data():
+    """
+    Prints all available test data
+
+    """
+    file_name=""
+    for fn in get_pkg_data_filenames('test', 'sunpy.data','*'):
+        for file_path in reversed(fn):
+            if(file_path == '/'):
+                if(file_name == "__init__.py" or file_name == "bug.py"):
+                    break
+                else:
+                    print (file_name[::-1])
+                    file_name=""
+                    break
+            else:
+                file_name=file_name+file_path
 
 file_list = glob.glob(os.path.join(rootdir, '*.[!p]*'))
