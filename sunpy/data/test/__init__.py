@@ -8,7 +8,7 @@ from astropy.utils.data import get_pkg_data_filename
 
 import sunpy
 
-__all__ = ['rootdir', 'file_list', 'get_test_filepath']
+__all__ = ['rootdir', 'file_list', 'get_test_filepath', 'get_available_test_data']
 
 rootdir = os.path.join(os.path.dirname(sunpy.__file__), "data", "test")
 
