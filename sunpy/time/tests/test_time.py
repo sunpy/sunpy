@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function
 
 from datetime import datetime
+from datetime import tzinfo
 
 from sunpy import time
 from sunpy.time import parse_time, is_time_in_given_format, get_day, find_time
@@ -31,7 +32,32 @@ def test_parse_time_trailing_zeros():
 def test_parse_time_tuple():
     assert parse_time((1966, 2, 3)) == LANDING
 
+def test_parse_time_numpy_datetime64():
+    assert parse_time(np.datetime64(datetime(2000, 1, 2, 12, 0, 0))) == datetime(2000, 1, 2, 12, 0, 0)
 
+class GMT5(tzinfo): 
+    def utcoffset(self,dt): 
+        return timedelta(hours=-05,minutes=00) 
+    def tzname(self,dt): 
+        return "GMT -5" 
+    def dst(self,dt): 
+        return timedelta(0) 
+        
+class GMT4(tzinfo): 
+    def utcoffset(self,dt): 
+        return timedelta(hours=04,minutes=00) 
+    def tzname(self,dt): 
+        return "GMT +4" 
+    def dst(self,dt): 
+        return timedelta(0) 
+
+gmt5 = GMT5() 
+gmt4 = GMT4() 
+
+def test_parse_time_string_time_zone():
+    assert parse_time('2014-02-07T16:47:51.8288000-0500') == datetime(2014,2,7,16,47,51,828800,tzinfo = gmt5)
+    assert parse_time('2015-02-05T12:32:49.345678+0400') == datetime(2015,2,5,12,32,49,345678,tzinfo = gmt4)
+    
 def test_parse_time_int():
     assert parse_time(765548612.0, 'utime') == datetime(2003, 4, 5,
                                                         12, 23, 32)
