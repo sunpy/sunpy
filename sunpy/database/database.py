@@ -840,7 +840,8 @@ class Database(object):
         if cmds:
             self._command_manager.do(cmds)
 
-    def add_from_file(self, file, ignore_already_added=False):
+    def add_from_file(self, file, ignore_already_added=False,
+                      default_waveunit=None):
         """Generate as many database entries as there are FITS headers in the
         given file and add them to the database.
 
@@ -854,9 +855,15 @@ class Database(object):
         ignore_already_added : bool, optional
             See :meth:`sunpy.database.Database.add`.
 
+        default_waveunit : str
+            The default waveunti to assume for this file only, if not specified
+            uses the Databases default value.
         """
+        if not default_waveunit:
+            default_waveunit = self.default_waveunit
+
         self.add_many(
-            tables.entries_from_file(file, self.default_waveunit),
+            tables.entries_from_file(file, default_waveunit),
             ignore_already_added)
 
     def edit(self, database_entry, **kwargs):
