@@ -11,11 +11,14 @@ import csv
 import socket
 from datetime import datetime
 from datetime import timedelta
+from itertools import dropwhile, islice, takewhile
 
 import numpy as np
 
 from astropy.io import fits
 from astropy import units as u
+from sunpy.util.odict import OrderedDict
+
 
 from sunpy.time import TimeRange, parse_time
 from sunpy.sun.sun import solar_semidiameter_angular_size
@@ -524,3 +527,93 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
     result_map = sunpy.map.Map(image, header)
 
     return result_map
+
+
+
+
+class RHESSIFlareList(object):
+    '''An object containing the RHESSI flare list, a daily updated file of every solar event detected by RHESSI.
+
+    Attributes
+    ----------
+    flare_list : list
+        A list of dictionaries. Each dictionary contains an event from the RHESSI flare list
+    meta : string
+        String information describing the flare list properties in more detail
+
+    Methods
+    -------
+    find_events_by_date_range : returns a list of events that lie between the given start and end dates
+    '''
+
+    
+ 
+    def __init__(self):     
+       # '''Read in the RHESSI flare list from a remote file.'''
+        base_url='http://hesperia.gsfc.nasa.gov/hessidata/dbase/hessi_flare_list.txt'
+        filepath=urllib.urlretrieve(base_url)
+
+        #define the header information for this file - info in actual file not parser-friendly
+        key_list = ['Flare ID','Start date','Start time','Peak','End','Dur (s)','Peak c/s','Total Counts','Energy (keV)',
+                    'X pos (arcsec)','Y pos (arcsec)','Radial (arcsec)','AR','Flags']
+
+        #do some manipulation of the input file
+        file = open(filepath[0],'r')
+        #extract useful meta information about the flare list from the footer of the input file
+        metainfo = dropwhile(lambda l: l.startswith('Notes:') == False, file)
+        self.meta = '\n'.join(list(metainfo))
+        
+        #trim the input file to ignore header and footer information
+        file.seek(0)
+        file_with_trimmed_header = islice(file,7,None)
+        file_with_trimmed_header_and_footer = takewhile(lambda l: l.startswith('Notes:') == False,file_with_trimmed_header)
+        
+        #use CSV reader on the trimmed file
+        csvfile = csv.reader(file_with_trimmed_header_and_footer)
+
+
+        #the flare list will be a list of dictionaries
+        flare_list=[]
+        
+        #read the file line by line
+        for line in csvfile:
+            #check for any blank or empty lines and ignore them 
+            if not line:
+                continue
+            elif line[0] == '':
+                continue
+                
+            #if not a blank line, the line should be a flare entry
+            else:
+                #need to split each line into its individual columns - not playing nicely with csv.reader or csv.DictReader
+                flare_info=line[0].split()
+                #each flare entry is its own dictionary. Use an ordered dict for better display of event information
+                flare_event_dict=OrderedDict()
+            
+                #for each line, map the columns to the custom keys given by key_list
+                #TODO - make this more pythonic
+                for i in range(0,len(key_list)):
+                    #Flags is the last keyword and can have multiple entries, so dump everything remaining in the line to there
+                    if key_list[i] == 'Flags':
+                        flare_event_dict[key_list[i]] = flare_info[i:]
+                    elif key_list[i] in ['Dur (s)','Peak c/s','Total Counts','X pos (arcsec)','Y pos (arcsec)','Radial (arcsec)']:
+                        flare_event_dict[key_list[i]] = float(flare_info[i])
+                    else:
+                        flare_event_dict[key_list[i]] = flare_info[i]
+                #append the flare list
+                flare_list.append(flare_event_dict)
+
+        self.flare_list = flare_list
+        
+
+    def find_events_by_date_range(self,start_date,end_date):
+        '''Return events from the flare list that between the given dates'''
+        t1 = parse_time(start_date)
+        t2 = parse_time(end_date) + timedelta(1)
+        
+        records = [item for item in self.flare_list if parse_time(item['Start date']) >= t1 and parse_time(item['Start date']) <= t2]
+        return records
+
+
+    
+    
