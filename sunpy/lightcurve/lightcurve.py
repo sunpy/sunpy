@@ -63,6 +63,7 @@ class LightCurve(object):
     create = classmethod(_cond_dispatch.wrapper())
 
     def __init__(self, data, meta=None):
+        data.sort(inplace=True)
         self.data = pandas.DataFrame(data)
         if meta == '' or meta is None:
             self.meta = OrderedDict()
