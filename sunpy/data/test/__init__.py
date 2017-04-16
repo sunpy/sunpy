@@ -5,6 +5,7 @@ import os
 import glob
 
 from astropy.utils.data import get_pkg_data_filename
+from astropy.utils.data import get_pkg_data_filenames
 
 import sunpy
 
@@ -47,15 +48,19 @@ def get_available_test_data():
     """
     file_name=""
     for fn in get_pkg_data_filenames('test', 'sunpy.data','*'):
-        for file_path in reversed(fn):
-            if(file_path == '/'):
-                if(file_name == "__init__.py" or file_name == "bug.py"):
-                    break
+        if(os.path.isdir(fn)):
+            for dir_contents in os.listdir(fn):
+                print (dir_contents)
+        else:
+            for file_path in reversed(fn):
+                if(file_path == '/'):
+                    if(file_name == "__init__.py" or file_name == "bug.py"):
+                        break
+                    else:
+                        print (file_name[::-1])
+                        file_name=""
+                        break
                 else:
-                    print (file_name[::-1])
-                    file_name=""
-                    break
-            else:
-                file_name=file_name+file_path
+                    file_name=file_name+file_path
 
 file_list = glob.glob(os.path.join(rootdir, '*.[!p]*'))
