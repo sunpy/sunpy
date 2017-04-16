@@ -531,7 +531,8 @@ def entries_from_file(file, default_waveunit=None,
                 entry.instrument = value
             elif key == 'WAVELNTH':
                 if unit is None:
-                    raise WaveunitNotFoundError(file)
+                    warnings.warn("No wavelength unit information was found for this file.",
+                                  Warning)
                 # use the value of `unit` to convert the wavelength to nm
                 entry.wavemin = entry.wavemax = unit.to(
                     nm, value, equivalencies.spectral())
