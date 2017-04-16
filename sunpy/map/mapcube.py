@@ -42,6 +42,9 @@ class MapCube(object):
     maps : {List}
         This attribute holds the list of Map instances obtained from parameter args.
 
+    nmaps : int
+        A convenience attribute to expose the number of maps in the mapcube.
+
     Examples
     --------
     >>> import sunpy.map
@@ -58,6 +61,9 @@ class MapCube(object):
         derotate = kwargs.pop('derotate', False)
 
         self.maps = expand_list(args)
+
+        # Convenience attribute to expose the number of maps in the mapcube
+        self.nmaps = len(self.maps)
 
         for m in self.maps:
             if not isinstance(m, GenericMap):
