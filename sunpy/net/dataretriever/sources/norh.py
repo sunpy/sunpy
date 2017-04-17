@@ -2,6 +2,7 @@
 #  This Module was developed under funding provided by
 #  Google Summer of Code 2014
 
+import datetime
 import astropy.units as u
 
 from sunpy.time import TimeRange
@@ -65,6 +66,17 @@ class NoRHClient(GenericClient):
         #       tca160504_224657 on ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2016/05/
         #       as it doesn't follow pattern.
         return norh.filelist(timerange)
+
+    def _get_time_for_url(self, urls):
+        baseurl = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d'
+        freq = urls[0].split('/')[-1][0:3]  # extract the frequency label
+        crawler = Scraper(baseurl, freq=freq)
+        times = list()
+        for url in urls:
+            t0 = crawler._extractDateURL(url)
+            # hard coded full day as that's the normal.
+            times.append(TimeRange(t0, t0 + datetime.timedelta(days=1)))
+        return times
 
     def _makeimap(self):
         """
