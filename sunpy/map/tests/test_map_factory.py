@@ -164,5 +164,5 @@ class TestMap(object):
         assert isinstance(xrt, sunpy.map.sources.XRTMap)
 
         #Test SXTMap
-        sxt = sunpy.map.Map(os.path.join(filepath, "sxtp_20000101_005818_131.fts.fits"))
+        sxt = sunpy.map.Map(os.path.join(filepath, "sxtp_20000101_005818_131modified.fts.fits"))
         assert isinstance(sxt, sunpy.map.sources.SXTMap)
