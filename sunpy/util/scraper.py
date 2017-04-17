@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function
 import os
 import datetime
 import re
+from ftplib import FTP
 
 from bs4 import BeautifulSoup
 from sunpy.extern import six
@@ -194,9 +195,20 @@ class Scraper(object):
         >>> timerange = TimeRange('2015-01-01','2015-01-01T16:00:00')
         >>> print(solmon.filelist(timerange))
         ['http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_025423.fts.gz']
+
+        Note
+        ----
+
+        The search is strict with the time range, so if the archive scraped
+        contains daily files, but the range doesn't start from the beginning
+        of the day, then the file for that day won't be selected. The end of
+        the timerange will normally be OK as includes the file on such end.
+
         """
         directories = self.range(timerange)
         filesurls = []
+        if directories[0][0:3] == "ftp":  # TODO use urlsplit from pr #1807
+            return self._ftpfileslist(timerange)
         for directory in directories:
             try:
                 opn = urlopen(directory)
@@ -214,8 +226,28 @@ class Scraper(object):
                 finally:
                     opn.close()
             except:
-                pass
+                raise
         return filesurls
+
+    def _ftpfileslist(self, timerange):
+        directories = self.range(timerange)
+        filesurls = list()
+        domain = directories[0].find('//')
+        domain_slash = directories[0].find('/', 6)  # TODO: Use also urlsplit from pr #1807
+        ftpurl = directories[0][domain + 2:domain_slash]
+        with FTP(ftpurl, user="anonymous", passwd="data@sunpy.org") as ftp:
+            for directory in directories:
+                ftp.cwd(directory[domain_slash:])
+                for file_i in ftp.nlst():
+                    fullpath = directory + file_i
+                    if self._URL_followsPattern(fullpath):
+                        datehref = self._extractDateURL(fullpath)
+                        if (datehref >= timerange.start and
+                            datehref <= timerange.end):
+                            filesurls.append(fullpath)
+        filesurls = ['ftp://anonymous:data@sunpy.org@' + url[domain + 2:] for url in filesurls]
+        return filesurls
+
 
     def _smallerPattern(self, directoryPattern):
         """Obtain the smaller time step for the given pattern"""
