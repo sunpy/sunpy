@@ -17,7 +17,7 @@ from sunpy.net.tests.strategies import time_attr
 
 LCClient = eve.EVEClient()
 
-
+@pytest.mark.online
 @pytest.mark.parametrize("timerange,url_start,url_end", [
     (TimeRange('2012/4/21', '2012/4/21'),
      'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt',
@@ -37,12 +37,6 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
-
-
-@pytest.mark.online
-def test_get_url_for_date():
-    url = LCClient._get_url_for_date(datetime.date(2013, 2, 13))
-    assert url == 'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2013/20130213_EVE_L0CS_DIODES_1m.txt'
 
 
 def test_can_handle_query():
