@@ -30,8 +30,36 @@ def aia171_test_map():
 
 @pytest.fixture
 def heliographic_test_map():
-    return sunpy.map.Map(
-        os.path.join(testpath, 'heliographic_phase_map.fits.gz'))
+    return sunpy.map.Map(os.path.join(testpath, 'heliographic_phase_map.fits.gz'))
+
+
+@pytest.fixture
+def heliocentric_test_map():
+    data = np.ones([100, 100], dtype=np.float64)
+    header = {
+        'CRVAL1': 0,
+        'CRVAL2': 0,
+        'CRPIX1': 5,
+        'CRPIX2': 5,
+        'CDELT1': 10,
+        'CDELT2': 10,
+        'CUNIT1': 'km',
+        'CUNIT2': 'km',
+        'CTYPE1': 'SOLX    ',
+        'CTYPE2': 'SOLY    ',
+        'PC1_1': 0,
+        'PC1_2': -1,
+        'PC2_1': 1,
+        'PC2_2': 0,
+        'NAXIS1': 6,
+        'NAXIS2': 6,
+        'date-obs': '1970/01/01T00:00:00',
+        'obsrvtry': 'Foo',
+        'detector': 'bar',
+        'wavelnth': 10,
+        'waveunit': 'm'
+    }
+    return sunpy.map.Map((data, header))
 
 
 @pytest.fixture
@@ -52,6 +80,18 @@ def test_plot_aia171(aia171_test_map):
 @figure_test
 def test_peek_aia171(aia171_test_map):
     aia171_test_map.peek()
+
+
+@pytest.mark.xfail
+@figure_test
+def test_plot_hc(heliocentric_test_map):
+    heliocentric_test_map.plot()
+
+
+@pytest.mark.xfail
+@figure_test
+def test_peek_hc(heliocentric_test_map):
+    heliocentric_test_map.peek()
 
 
 @figure_test
