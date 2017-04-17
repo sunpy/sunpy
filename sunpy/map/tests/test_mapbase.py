@@ -25,7 +25,6 @@ import sunpy.map
 import sunpy.coordinates
 import sunpy.data.test
 from sunpy.time import parse_time
-from sunpy.tests.helpers import figure_test
 
 testpath = sunpy.data.test.rootdir
 
@@ -40,7 +39,7 @@ def heliographic_test_map():
     return sunpy.map.Map(os.path.join(testpath, 'heliographic_phase_map.fits.gz'))
 
 @pytest.fixture
-def heliocentric_generic_map():
+def heliocentric_test_map():
     data = np.ones([6, 6], dtype=np.float64)
     header = {
         'CRVAL1': 0,
@@ -52,7 +51,7 @@ def heliocentric_generic_map():
         'CUNIT1': 'km',
         'CUNIT2': 'km',
         'CTYPE1': 'SOLX    ',
-        'CTYPE1': 'SOLY    ',
+        'CTYPE2': 'SOLY    ',
         'PC1_1': 0,
         'PC1_2': -1,
         'PC2_1': 1,
@@ -629,3 +628,12 @@ def test_hg_data_to_pix(heliographic_test_map):
             0 * u.deg, 0 * u.deg, frame=heliographic_test_map.coordinate_frame))
     assert_quantity_allclose(out[0], 180 * u.pix)
     assert_quantity_allclose(out[1], 90 * u.pix)
+
+# Heliocentric Map Tests
+
+
+def test_hc_coord(heliocentric_test_map):
+    assert heliocentric_test_map.coordinate_system[0] == "SOLX    "
+    assert heliocentric_test_map.coordinate_system[1] == "SOLY    "
+    assert isinstance(heliocentric_test_map.coordinate_frame,
+                      sunpy.coordinates.Heliocentric)
