@@ -100,22 +100,18 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
         # Make 3D if specified as 2D
         # If representation was explicitly passed, do not change the rep.
         if not _rep_kwarg:
-            # The base __init__ will make this a UnitSphericalRepresentation
-            # This makes it Wrap180 instead
-            if (isinstance(self._data, UnitSphericalRepresentation) and
-                    self.default_representation is SphericalWrap180Representation):
+            # If we were passed a 3D rep extract the distance, otherwise
+            # calculate it from RSUN.
+            distance = None
+            if isinstance(self._data, SphericalRepresentation):
+                distance = self._data.distance
+            elif isinstance(self._data, UnitSphericalRepresentation):
+                distance = RSUN_METERS.to(u.km)
 
-                self._data = SphericalWrap180Representation(
-                    lat=self._data.lat, lon=self._data.lon, distance=RSUN_METERS.to(u.km))
-                self.representation = SphericalWrap180Representation
-
-            # Make a Spherical Wrap180 instead
-            if (isinstance(self._data, SphericalRepresentation) and
-                    self.default_representation is SphericalWrap180Representation):
-
-                self._data = SphericalWrap180Representation(
-                    lat=self._data.lat, lon=self._data.lon, distance=self._data.distance)
-                self.representation = SphericalWrap180Representation
+            if distance:
+                self._data = self.default_representation(lat=self._data.lat,
+                                                         lon=self._data.lon,
+                                                         distance=distance)
 
 
 class HeliographicCarrington(HeliographicStonyhurst):
