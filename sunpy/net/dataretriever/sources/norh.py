@@ -4,7 +4,8 @@
 
 import astropy.units as u
 
-from sunpy.extern.six.moves.urllib.parse import urljoin
+from sunpy.time import TimeRange
+from sunpy.util.scraper import Scraper
 
 from sunpy.net import attrs as a
 from ..client import GenericClient
@@ -28,32 +29,12 @@ class NoRHClient(GenericClient):
         urls : list
             list of URLs corresponding to the requested time range
         """
-        days = timerange.get_dates()
-        urls = []
-        for day in days:
-            urls.append(self._get_url_for_date(day, **kwargs))
-        return urls
 
-    def _get_url_for_date(self, date, **kwargs):
-        """
-        Return URL for corresponding date.
-
-        Parameters
-        ----------
-        date : Python datetime object
-
-        Returns
-        -------
-        string
-            The URL for the corresponding date.
-        """
-
-        # default urllib password anonymous@ is not accepted by the NoRH FTP
-        # server. include an accepted password in base url
-        baseurl = 'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/'
+        baseurl = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d'
 
         # We allow queries with no Wavelength but error here so that the query
         # does not get passed to VSO and spit out garbage.
+        # NOTE: should not error on the function?
         if 'wavelength' not in kwargs.keys() or not kwargs['wavelength']:
             raise ValueError("Queries to NORH should specify either 17GHz or 34GHz as a Wavelength."
                              "see http://solar.nro.nao.ac.jp/norh/doc/manuale/node65.html")
@@ -67,16 +48,23 @@ class NoRHClient(GenericClient):
 
         wavelength = wavelength.to(u.GHz, equivalencies=u.spectral())
         if wavelength == 34 * u.GHz:
-            final_url = urljoin(baseurl,
-                                date.strftime('%Y/%m/' + 'tcz' + '%y%m%d'))
+            freq = 'tcz'
         elif wavelength == 17 * u.GHz:
-            final_url = urljoin(baseurl,
-                                date.strftime('%Y/%m/' + 'tca' + '%y%m%d'))
+            freq = 'tca'
         else:
             raise ValueError("NORH Data can be downloaded for 17GHz or 34GHz,"
                              " see http://solar.nro.nao.ac.jp/norh/doc/manuale/node65.html")
 
-        return final_url
+        # If start of time range is before 00:00, converted to such, so
+        # files of the requested time ranger are included.
+        # This is done because the archive contains daily files.
+        if timerange.start.time() != datetime.time(0, 0):
+            timerange = TimeRange('{:%Y-%m-%d}'.format(timerange.start), timerange.end)
+        norh = Scraper(baseurl, freq=freq)
+        # TODO: warn user that some files may have not been listed, like for example:
+        #       tca160504_224657 on ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2016/05/
+        #       as it doesn't follow pattern.
+        return norh.filelist(timerange)
 
     def _makeimap(self):
         """

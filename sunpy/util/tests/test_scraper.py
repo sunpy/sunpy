@@ -189,3 +189,11 @@ def testFilesRange_sameDirectory_months_remote():
     enddate = datetime.datetime(2007, 9, 10)
     timerange = TimeRange(startdate, enddate)
     assert len(s.filelist(timerange)) == 2
+
+
+@pytest.mark.online
+def test_ftp():
+    pattern = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/tca%y%m%d'
+    s = Scraper(pattern)
+    timerange = TimeRange('2016/5/18 15:28:00', '2016/5/20 16:30:50')
+    assert len(s.filelist(timerange)) == 2
