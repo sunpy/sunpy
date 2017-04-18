@@ -13,6 +13,7 @@ __all__ = ['rootdir', 'file_list', 'get_test_filepath', 'get_available_test_data
 
 rootdir = os.path.join(os.path.dirname(sunpy.__file__), "data", "test")
 
+
 def get_test_filepath(filename, **kwargs):
     """
     Return the full path to a test file in the ``data/test`` directory.
@@ -40,6 +41,7 @@ def get_test_filepath(filename, **kwargs):
 
     """
     return get_pkg_data_filename(filename, package="sunpy.data.test", **kwargs)
+
 
 def get_available_test_data():
     """
@@ -79,5 +81,6 @@ def get_available_test_data():
                             break
                     else:
                         file_name = file_name + file_path
-        
+
+
 file_list = glob.glob(os.path.join(rootdir, '*.[!p]*'))
