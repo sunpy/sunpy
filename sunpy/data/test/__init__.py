@@ -49,38 +49,24 @@ def get_available_test_data():
 
     """
     file_name = ""
+    dir_path = '/'
     if(os.name == 'nt'):
-        for fn in get_pkg_data_filenames('test', 'sunpy.data', '*'):
-            if(os.path.isdir(fn)):
-                for dir_contents in os.listdir(fn):
-                    print(dir_contents)
-            else:
-                for file_path in reversed(fn):
-                    if(file_path == '\\'):
-                        if(file_name == "__init__.py"):
-                            break
-                        else:
-                            print(file_name[::-1])
-                            file_name = ""
-                            break
+        dir_path = '\\'
+    for fn in get_pkg_data_filenames('test', 'sunpy.data', '*'):
+        if(os.path.isdir(fn)):
+            for dir_contents in os.listdir(fn):
+                print(dir_contents)
+        else:
+            for file_path in reversed(fn):
+                if(file_path == dir_path):
+                    if(file_name == "__init__.py"[::-1]):
+                        break
                     else:
-                        file_name = file_name + file_path
-    else:
-        for fn in get_pkg_data_filenames('test', 'sunpy.data', '*'):
-            if(os.path.isdir(fn)):
-                for dir_contents in os.listdir(fn):
-                    print(dir_contents)
-            else:
-                for file_path in reversed(fn):
-                    if(file_path == '/'):
-                        if(file_name == "__init__.py"):
-                            break
-                        else:
-                            print(file_name[::-1])
-                            file_name = ""
-                            break
-                    else:
-                        file_name = file_name + file_path
+                        print(file_name[::-1])
+                        file_name = ""
+                        break
+                else:
+                    file_name = file_name + file_path
 
 
 file_list = glob.glob(os.path.join(rootdir, '*.[!p]*'))
