@@ -1,2 +1,1 @@
 .. automodapi:: sunpy.instr.goes
-
