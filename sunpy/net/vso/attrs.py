@@ -385,8 +385,6 @@ class Sample(_VSOSimpleAttr):
 
 
 class Quicklook(_VSOSimpleAttr):
-
-
     """
     Retrieve 'quicklook' data if available.
 
@@ -408,7 +406,6 @@ class Quicklook(_VSOSimpleAttr):
             value = 1
         else:
             value = 0
-
 
 
 class Filter(_VSOSimpleAttr):
