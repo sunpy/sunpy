@@ -54,6 +54,12 @@ Latest
   properly handle rotated maps and take input in the form of `SkyCoord` objects.
   
   
+* When referring to physical coordinates `Pair.x` has been replaced with
+  `SpatialPair.axis1`. This means values returned by `GenericMap` now
+  differentiate between physical and pixel coordinates.
+* Fix Map parsing of some header values to allow valid float strings like 'nan'
+  and 'inf'.
+
 0.7.0
 -----
 * Fixed test failures with numpy developer version.[#1808]
