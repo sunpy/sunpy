@@ -262,7 +262,12 @@ class Sample(_VSOSimpleAttr):
 
 
 class Quicklook(_VSOSimpleAttr):
-    pass
+    def __init__(self,value):
+        super(Sample,self).__init__(value)
+        if(self.value == 'True'):
+            value = 1
+        else:
+            value = 0
 
 
 class PScale(_VSOSimpleAttr):
