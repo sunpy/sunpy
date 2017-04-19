@@ -26,6 +26,8 @@ import sunpy.coordinates
 import sunpy.data.test
 from sunpy.time import parse_time
 
+from sunpy.extern import six
+
 testpath = sunpy.data.test.rootdir
 
 
@@ -91,12 +93,13 @@ def test_wcs(aia171_test_map):
 
     assert all(wcs.wcs.crpix ==
                [aia171_test_map.reference_pixel.x.value, aia171_test_map.reference_pixel.y.value])
-    assert all(wcs.wcs.cdelt == [aia171_test_map.scale.lon.value, aia171_test_map.scale.lon.value])
+    assert all(wcs.wcs.cdelt == [aia171_test_map.scale.axis1.value,
+                                 aia171_test_map.scale.axis1.value])
     assert all(
         wcs.wcs.crval ==
         [aia171_test_map._reference_longitude.value, aia171_test_map._reference_latitude.value])
     assert set(wcs.wcs.ctype) == set(
-        [aia171_test_map.coordinate_system.lon, aia171_test_map.coordinate_system.lat])
+        [aia171_test_map.coordinate_system.axis1, aia171_test_map.coordinate_system.axis2])
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
     assert set(wcs.wcs.cunit) == set([u.Unit(a) for a in aia171_test_map.spatial_units])
 
@@ -125,12 +128,12 @@ def test_std(generic_map):
     assert generic_map.std() == 0
 
 
-#==============================================================================
+# ==============================================================================
 # Test the default value of a load of properties
 # TODO: Test the header keyword extraction
-#==============================================================================
+# ==============================================================================
 def test_name(generic_map):
-    assert type(generic_map.name) == type('str')
+    assert isinstance(generic_map.name, six.string_types)
 
 
 def test_nickname(generic_map):
@@ -293,8 +296,8 @@ def test_default_shift():
         'NAXIS2': 6
     }
     cd_map = sunpy.map.Map((data, header))
-    assert cd_map.shifted_value.lon.value == 0
-    assert cd_map.shifted_value.lat.value == 0
+    assert cd_map.shifted_value[0].value == 0
+    assert cd_map.shifted_value[1].value == 0
 
 
 def test_shift_applied(generic_map):
@@ -306,11 +309,11 @@ def test_shift_applied(generic_map):
     shifted_map = generic_map.shift(x_shift, y_shift)
     assert shifted_map.reference_coordinate.Tx - x_shift == original_reference_coord[0]
     assert shifted_map.reference_coordinate.Ty - y_shift == original_reference_coord[1]
-    crval1 = ((generic_map.meta.get('crval1') * generic_map.spatial_units.lon + \
-               shifted_map.shifted_value.lon).to(shifted_map.spatial_units.lon)).value
+    crval1 = ((generic_map.meta.get('crval1') * generic_map.spatial_units[0] +
+               shifted_map.shifted_value[0]).to(shifted_map.spatial_units[0])).value
     assert shifted_map.meta.get('crval1') == crval1
-    crval2 = ((generic_map.meta.get('crval2') * generic_map.spatial_units.lat + \
-               shifted_map.shifted_value.lat).to(shifted_map.spatial_units.lat)).value
+    crval2 = ((generic_map.meta.get('crval2') * generic_map.spatial_units[1] +
+               shifted_map.shifted_value[1]).to(shifted_map.spatial_units[1])).value
     assert shifted_map.meta.get('crval2') == crval2
 
 
@@ -320,8 +323,8 @@ def test_set_shift(generic_map):
     y_shift = 13 * u.arcsec
     shifted_map = generic_map.shift(x_shift, y_shift)
     resultant_shift = shifted_map.shifted_value
-    assert resultant_shift.lon == x_shift
-    assert resultant_shift.lat == y_shift
+    assert resultant_shift[0] == x_shift
+    assert resultant_shift[1] == y_shift
 
 
 def test_shift_history(generic_map):
@@ -335,8 +338,8 @@ def test_shift_history(generic_map):
     final_shifted_map = shifted_map1.shift(x_shift2, y_shift2)
 
     resultant_shift = final_shifted_map.shifted_value
-    assert resultant_shift.lon == x_shift1 + x_shift2
-    assert resultant_shift.lat == y_shift1 + y_shift2
+    assert resultant_shift[0] == x_shift1 + x_shift2
+    assert resultant_shift[1] == y_shift1 + y_shift2
 
 
 def test_submap(generic_map):
@@ -580,8 +583,8 @@ def test_validate_meta(generic_map):
 
 
 def test_hg_coord(heliographic_test_map):
-    assert heliographic_test_map.coordinate_system.lon == "CRLN-CAR"
-    assert heliographic_test_map.coordinate_system.lat == "CRLT-CAR"
+    assert heliographic_test_map.coordinate_system[0] == "CRLN-CAR"
+    assert heliographic_test_map.coordinate_system[1] == "CRLT-CAR"
     assert isinstance(heliographic_test_map.coordinate_frame,
                       sunpy.coordinates.HeliographicCarrington)
 
