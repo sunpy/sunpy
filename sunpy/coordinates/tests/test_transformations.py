@@ -59,3 +59,6 @@ def test_hpc_hpc_null():
     assert quantity_allclose(hpc_new.Tx, hpc_in.Tx)
     assert quantity_allclose(hpc_new.Ty, hpc_in.Ty)
     assert hpc_out.observer == hpc_new.observer
+
+
+def test_hgc_hgs_dateobs():
