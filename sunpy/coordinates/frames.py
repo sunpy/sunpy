@@ -232,17 +232,6 @@ class Heliocentric(BaseCoordinateFrame):
                                                                   0*u.deg,
                                                                   1*u.AU))
 
-    def __init__(self, *args, **kwargs):
-        BaseCoordinateFrame.__init__(self, *args, **kwargs)
-
-        # If there is no z then we default to 0 km because as described in
-        # Thompson 2006 z can be expressed as distance relative to RSUN.
-        if isinstance(self._data, CartesianRepresentation) and not self._data.z:
-            self._data = CartesianRepresentation(x=self._data.x,
-                                                 y=self._data.y,
-                                                 z=0*u.km)
-
-
 
 class Helioprojective(BaseCoordinateFrame):
     """

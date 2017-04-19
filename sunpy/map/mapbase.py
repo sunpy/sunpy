@@ -746,6 +746,14 @@ Reference Coord:\t {refcoord}
                 warnings.warn("Unknown value for " + meta_property.upper(),
                               Warning)
 
+        if (self.coordinate_system[0].startswith(('SOLX', 'SOLY')) or
+            self.coordinate_system[1].startswith(('SOLX', 'SOLY'))):
+
+            warnings.warn("SunPy Map currently does not support three dimensional data,"
+                          " and therefore can not represent heliocentric coordinates. "
+                          "Creating a map in this frame will almost certainly result in errors.")
+
+
 # #### Data conversion routines #### #
     def data_to_pixel(self, coordinate, origin=0):
         """
