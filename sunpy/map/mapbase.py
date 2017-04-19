@@ -24,7 +24,7 @@ import sunpy.io as io
 import sunpy.coordinates
 from sunpy import config
 from sunpy.extern import six
-from sunpy.visualization import toggle_pylab, wcsaxes_compat
+from sunpy.visualization import toggle_pylab, wcsaxes_compat, axis_labels_from_ctype
 from sunpy.sun import constants
 from sunpy.sun import sun
 from sunpy.time import parse_time, is_time
@@ -36,7 +36,7 @@ from astropy.nddata import NDData
 
 TIME_FORMAT = config.get("general", "time_format")
 PixelPair = namedtuple('PixelPair', 'x y')
-SpatialPair = namedtuple('SpatialPair', 'lon lat')
+SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
 
 __all__ = ['GenericMap']
 
@@ -125,13 +125,12 @@ class GenericMap(NDData):
 
     A number of the properties of this class are returned as two-value named
     tuples that can either be indexed by position ([0] or [1]) or be accessed
-    by the names (.x and .y) or (.lat and .lon). Things that refer to pixel
+    by the names (.x and .y) or (.axis1 and .axis2). Things that refer to pixel
     axes use the ``.x``, ``.y`` convention, where x and y refer to the FITS
-    axes (x for columns y for rows). Spatial axes use ``.lon`` and ``.lat`` for
-    longitude and latitude, which are commonly (for helioprojective
-    coordinates) known as solar-x and solar-y, these generally map to axis 1
-    and 2 in the FITS-WCS convention respectively, i.e. ``CRVAL1`` would be
-    ``.lon`` and ``CRVAL2`` would be ``.lat``.
+    axes (x for columns y for rows). Spatial axes use ``.axis1`` and ``.axis2``
+    which correspond to the first and second axes in the header. ``axis1``
+    corresponds to the coordinate axis for ``x`` and ``axis2`` corresponds to
+    ``y``.
 
     This class makes some assumptions about the WCS information contained in
     the meta data. The first and most extensive assumption is that it is
@@ -239,7 +238,7 @@ Reference Coord:\t {refcoord}
         SphericalWrap180Representation first.
         """
         r = frame.represent_as(sunpy.coordinates.representation.SphericalWrap180Representation)
-        return r.lon.to(self.spatial_units.lon), r.lat.to(self.spatial_units.lat)
+        return r.lon.to(self.spatial_units[0]), r.lat.to(self.spatial_units[1])
 
     @property
     def wcs(self):
@@ -446,16 +445,16 @@ Reference Coord:\t {refcoord}
     @deprecated("0.8", "This property is only valid for non-rotated WCS")
     def xrange(self):
         """Return the X range of the image from edge to edge."""
-        xmin = self.center.data.lon - self.dimensions[0] / 2. * self.scale.lon
-        xmax = self.center.data.lon + self.dimensions[0] / 2. * self.scale.lon
+        xmin = self.center.data.lon - self.dimensions[0] / 2. * self.scale[0]
+        xmax = self.center.data.lon + self.dimensions[0] / 2. * self.scale[0]
         return u.Quantity([xmin, xmax])
 
     @property
     @deprecated("0.8", "This property is only valid for non-rotated WCS")
     def yrange(self):
         """Return the Y range of the image from edge to edge."""
-        ymin = self.center.data.lat - self.dimensions[1] / 2. * self.scale.lat
-        ymax = self.center.data.lat + self.dimensions[1] / 2. * self.scale.lat
+        ymin = self.center.data.lat - self.dimensions[1] / 2. * self.scale[1]
+        ymax = self.center.data.lat + self.dimensions[1] / 2. * self.scale[1]
         return u.Quantity([ymin, ymax])
 
     @property
@@ -486,8 +485,8 @@ Reference Coord:\t {refcoord}
         `~sunpy.map.GenericMap.shift`."""
         return self._shift
 
-    @u.quantity_input(lon=u.deg, lat=u.deg)
-    def shift(self, lon, lat):
+    @u.quantity_input(axis1=u.deg, axis2=u.deg)
+    def shift(self, axis1, axis2):
         """
         Returns a map shifted by a specified amount to, for example, correct
         for a bad map location. These values are applied directly to the
@@ -497,10 +496,10 @@ Reference Coord:\t {refcoord}
         Parameters
         ----------
 
-        lon : `~astropy.units.Quantity`
+        axis1 : `~astropy.units.Quantity`
             The shift to apply to the Longitude (solar-x) coordinate.
 
-        lat : `~astropy.units.Quantity`
+        axis2 : `~astropy.units.Quantity`
             The shift to apply to the Latitude (solar-y) coordinate
 
         Returns
@@ -512,15 +511,15 @@ Reference Coord:\t {refcoord}
 
         # Update crvals
         new_meta['crval1'] = ((self.meta['crval1'] *
-                               self.spatial_units.lon + lon).to(self.spatial_units.lon)).value
+                               self.spatial_units[0] + axis1).to(self.spatial_units[0])).value
         new_meta['crval2'] = ((self.meta['crval2'] *
-                               self.spatial_units.lat + lat).to(self.spatial_units.lat)).value
+                               self.spatial_units[1] + axis2).to(self.spatial_units[1])).value
 
-        #Create new map with the modification
+        # Create new map with the modification
         new_map = self._new_instance(self.data, new_meta, self.plot_settings)
 
-        new_map._shift = SpatialPair(self.shifted_value.lon + lon,
-                                     self.shifted_value.lat + lat)
+        new_map._shift = SpatialPair(self.shifted_value[0] + axis1,
+                                     self.shifted_value[1] + axis2)
 
         return new_map
 
@@ -614,11 +613,11 @@ Reference Coord:\t {refcoord}
         FITS-WCS compatible longitude. Used in self.wcs and
         self.reference_coordinate.
         """
-        return self.meta.get('crval1', 0.) * self.spatial_units.lon
+        return self.meta.get('crval1', 0.) * self.spatial_units[0]
 
     @property
     def _reference_latitude(self):
-        return self.meta.get('crval2', 0.) * self.spatial_units.lat
+        return self.meta.get('crval2', 0.) * self.spatial_units[1]
 
     @property
     def reference_coordinate(self):
@@ -632,7 +631,7 @@ Reference Coord:\t {refcoord}
     def reference_pixel(self):
         """Reference point axes in pixels (i.e. crpix1, crpix2)"""
         return PixelPair(self.meta.get('crpix1',
-                                      (self.meta.get('naxis1') + 1) / 2.) * u.pixel,
+                                       (self.meta.get('naxis1') + 1) / 2.) * u.pixel,
                          self.meta.get('crpix2',
                                        (self.meta.get('naxis2') + 1) / 2.) * u.pixel)
 
@@ -642,8 +641,8 @@ Reference Coord:\t {refcoord}
         Image scale along the x and y axes in units/pixel (i.e. cdelt1, cdelt2)
         """
         # TODO: Fix this if only CDi_j matrix is provided
-        return SpatialPair(self.meta.get('cdelt1', 1.) * self.spatial_units.lon / u.pixel,
-                           self.meta.get('cdelt2', 1.) * self.spatial_units.lat / u.pixel)
+        return SpatialPair(self.meta.get('cdelt1', 1.) * self.spatial_units[0] / u.pixel,
+                           self.meta.get('cdelt2', 1.) * self.spatial_units[1] / u.pixel)
 
     @property
     def spatial_units(self):
@@ -681,7 +680,7 @@ Reference Coord:\t {refcoord}
         This method can be overriden if an instruments header does not use this
         conversion.
         """
-        lam = self.scale.lat / self.scale.lon
+        lam = self.scale[0] / self.scale[1]
         p = np.deg2rad(self.meta.get('CROTA2', 0))
 
         return np.matrix([[np.cos(p), -1 * lam * np.sin(p)],
@@ -824,8 +823,8 @@ Reference Coord:\t {refcoord}
             x = u.Quantity(x, u.deg)
             y = u.Quantity(y, u.deg)
         else:
-            x = u.Quantity(x, self.spatial_units.lon)
-            y = u.Quantity(y, self.spatial_units.lat)
+            x = u.Quantity(x, self.spatial_units[0])
+            y = u.Quantity(y, self.spatial_units[1])
 
         return SkyCoord(x, y, frame=self.coordinate_frame)
 
@@ -1105,8 +1104,8 @@ Reference Coord:\t {refcoord}
 
         # Update pixel size if image has been scaled.
         if scale != 1.0:
-            new_meta['cdelt1'] = (self.scale.lon / scale).value
-            new_meta['cdelt2'] = (self.scale.lat / scale).value
+            new_meta['cdelt1'] = (self.scale[0] / scale).value
+            new_meta['cdelt2'] = (self.scale[1] / scale).value
 
         # Remove old CROTA kwargs because we have saved a new PCi_j matrix.
         new_meta.pop('CROTA1', None)
@@ -1347,8 +1346,8 @@ Reference Coord:\t {refcoord}
         new_ny = new_array.shape[0]
 
         # Update metadata
-        new_meta['cdelt1'] = (dimensions[0] * self.scale.lon).value
-        new_meta['cdelt2'] = (dimensions[1] * self.scale.lat).value
+        new_meta['cdelt1'] = (dimensions[0] * self.scale[0]).value
+        new_meta['cdelt2'] = (dimensions[1] * self.scale[1]).value
         if 'CD1_1' in new_meta:
             new_meta['CD1_1'] *= dimensions[0].value
             new_meta['CD2_1'] *= dimensions[0].value
@@ -1357,8 +1356,8 @@ Reference Coord:\t {refcoord}
         new_meta['crpix1'] = (new_nx + 1) / 2.
         new_meta['crpix2'] = (new_ny + 1) / 2.
         lon, lat = self._get_lon_lat(self.center.frame)
-        new_meta['crval1'] = lon.to(self.spatial_units.lon).value + 0.5*(offset[0]*self.scale.lon).to(self.spatial_units.lon).value
-        new_meta['crval2'] = lat.to(self.spatial_units.lat).value + 0.5*(offset[1]*self.scale.lat).to(self.spatial_units.lat).value
+        new_meta['crval1'] = lon.to(self.spatial_units[0]).value + 0.5*(offset[0]*self.scale[0]).to(self.spatial_units[0]).value
+        new_meta['crval2'] = lat.to(self.spatial_units[1]).value + 0.5*(offset[1]*self.scale[1]).to(self.spatial_units[1]).value
 
         # Create new map instance
         if self.mask is not None:
@@ -1674,36 +1673,16 @@ Reference Coord:\t {refcoord}
             if title:
                 axes.set_title(title)
 
-            # x-axis label
-            if self.coordinate_system.lon.startswith('HGLN'):
-                xlabel = 'Heliographic Longitude [{lon}]'.format(lon=self.spatial_units.lon)
-            elif self.coordinate_system.lon.startswith('CRLN'):
-                xlabel = 'Carrington Longitude [{lon}]'.format(lon=self.spatial_units.lon)
-            elif self.coordinate_system.lon.startswith('HPLN'):
-                xlabel = 'Helioprojective Longitude (Solar-X) [{xpos}]'.format(xpos=self.spatial_units.lon)
-            elif self.coordinate_system.lon.startswith('SOLX'):
-                xlabel = 'Heliocentric X [{xpos}]'.format(xpos=self.spatial_units.lon)
-            else:
-                xlabel = "{} [{}]".format(self.coordinate_system.lon, self.spatial_units.lon)
-
-            # y-axis label
-            if self.coordinate_system.lat.startswith(('HGLT', 'CRLT')):
-                ylabel = 'Latitude [{lat}]'.format(lat=self.spatial_units.lat)
-            elif self.coordinate_system.lat.startswith('HPLT'):
-                ylabel = 'Helioprojective Latitude (Solar-Y) [{ypos}]'.format(ypos=self.spatial_units.lat)
-            elif self.coordinate_system.lat.startswith('SOLY'):
-                ylabel = 'Heliocentric Y [{xpos}]'.format(xpos=self.spatial_units.lon)
-            else:
-                ylabel = "{} [{}]".format(self.coordinate_system.lat, self.spatial_units.lat)
-
-            axes.set_xlabel(xlabel)
-            axes.set_ylabel(ylabel)
+            axes.set_xlabel(axis_labels_from_ctype(self.coordinate_system[0],
+                                                   self.spatial_units[0]))
+            axes.set_ylabel(axis_labels_from_ctype(self.coordinate_system[1],
+                                                   self.spatial_units[1]))
 
         if not wcsaxes_compat.is_wcsaxes(axes):
             bl = self._get_lon_lat(self.bottom_left_coord)
             tr = self._get_lon_lat(self.top_right_coord)
-            x_range = list(u.Quantity([bl[0], tr[0]]).to(self.spatial_units.lon).value)
-            y_range = list(u.Quantity([bl[1], tr[1]]).to(self.spatial_units.lon).value)
+            x_range = list(u.Quantity([bl[0], tr[0]]).to(self.spatial_units[0]).value)
+            y_range = list(u.Quantity([bl[1], tr[1]]).to(self.spatial_units[0]).value)
             imshow_args.update({'extent': x_range + y_range})
         imshow_args.update(imshow_kwargs)
 
@@ -1719,6 +1698,7 @@ Reference Coord:\t {refcoord}
         # Set current image (makes colorbar work)
         plt.sca(axes)
         plt.sci(ret)
+
         return ret
 
 
