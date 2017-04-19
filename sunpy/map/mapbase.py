@@ -117,7 +117,7 @@ class GenericMap(NDData):
 
 
     >>> aia.spatial_units
-    SpatialPair(lon=Unit("arcsec"), lat=Unit("arcsec"))
+    SpatialPair(axis1=Unit("arcsec"), axis2=Unit("arcsec"))
     >>> aia.peek()   # doctest: +SKIP
 
     Notes
