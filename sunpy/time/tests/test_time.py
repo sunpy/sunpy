@@ -3,8 +3,9 @@ from __future__ import absolute_import, division, print_function
 from datetime import datetime
 
 from sunpy import time
-from sunpy.time import parse_time
+from sunpy.time import parse_time, is_time_in_given_format, get_day, find_time
 
+import astropy.time
 import numpy as np
 import pandas
 from sunpy.extern.six.moves import range
@@ -74,6 +75,21 @@ def test_parse_time_numpy_datetime():
 
     assert isinstance(dts, np.ndarray)
     assert all([isinstance(dt, datetime) for dt in dts])
+
+
+def test_parse_time_astropy():
+    astropy_time = parse_time(astropy.time.Time(['2016-01-02T23:00:01']))
+
+    assert astropy_time == datetime(year=2016, month=1, day=2, hour=23, minute=0, second=1)
+
+
+def test_parse_time_now():
+    """
+    Ensure 'parse_time' can be called with 'now' argument to get utc
+    """
+    # TODO: once mocking support is merged in, we can perform a like for like comparison,
+    #       the following at least ensures that 'now' is a legal argument.
+    assert isinstance(parse_time('now'), datetime) is True
 
 
 def test_ISO():
@@ -156,3 +172,59 @@ def test_time_string_parse_format():
         parse_time('01/06/2012')
     with pytest.raises(ValueError):
         parse_time('01/06/2012', time_string_parse_format='%d/%m/%m')
+
+    with pytest.raises(ValueError):
+        parse_time('2016', _time_string_parse_format='zz')
+
+
+def test__iter_empty():
+
+    class CountDown(object):
+
+        def __init__(self, start_from=0):
+            self.start = start_from
+
+        def __iter__(self):
+            return self
+
+        def __next__(self):
+            self.start -= 1
+
+            if self.start < 0:
+                raise StopIteration
+
+            return self.start
+
+        next = __next__   # Support Py2.x
+
+    one_count = CountDown(1)
+    assert time.time._iter_empty(one_count) is False
+    assert time.time._iter_empty(one_count) is True
+
+
+
+def test_is_time():
+    assert time.is_time(datetime.utcnow()) is True
+    assert time.is_time('2017-02-14 08:08:12.999', "%Y-%m-%d %H:%M:%S.%f") is True
+
+    assert time.is_time(None) is False
+    assert time.is_time('2016-14-14 19:08', "%Y-%b-%d %H:%M:%S") is False
+
+
+def test_is_time_in_given_format():
+    assert is_time_in_given_format('2017-02-14 08:08:12.999', "%Y-%m-%d %H:%M:%S.%f") is True
+    assert is_time_in_given_format('2017-02-14 08:08:12.999', "%Y-%m-%dT%H:%M:%S.%f") is False
+
+
+def test_get_day():
+    end_of_day = datetime(year=2017, month=1, day=1, hour=23, minute=59, second=59,
+                          microsecond=999)
+
+    begining_of_day = get_day(end_of_day)
+    assert begining_of_day.year == 2017
+    assert begining_of_day.month == 1
+    assert begining_of_day.day == 1
+    assert begining_of_day.hour == 0
+    assert begining_of_day.minute == 0
+    assert begining_of_day.second == 0
+    assert begining_of_day.microsecond == 0

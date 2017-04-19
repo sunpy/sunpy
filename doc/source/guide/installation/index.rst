@@ -5,8 +5,7 @@ Installation
 SunPy is a Python package for solar physics.  It relies on and enables the use
 of the wider ecosystem of scientific Python packages for solar physics.
 Therefore a working SunPy installation is more about installing the scientific
-Python ecosystem than SunPy itself.  SunPy is Python 2.7.x, 3.4.x and 3.5.x
-compatible.
+Python ecosystem than SunPy itself.  SunPy supports and is compatible with Python 2.7. and 3.4+.
 
 If you are new to Python and scientific Python then continue to follow this
 guide to get setup with the whole environment. If you already have a working
@@ -50,12 +49,6 @@ to install SunPy::
 
 You now have a working SunPy installation. You can check your SunPy install
 by following the instructions in :ref:`testing-sunpy`.
-
-.. note::
-
-    Currently Glymur / JPEG2000 support is not tested under Anaconda on any
-    platforms. However, an external installation of openJPEG should work with
-    the glymur installation in conda.
 
 Updating SunPy to a New Version
 ###############################
