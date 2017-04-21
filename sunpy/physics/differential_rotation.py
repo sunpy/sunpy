@@ -2,10 +2,9 @@ from __future__ import division
 
 import numpy as np
 from astropy import units as u
-from astropy.coordinates import Longitude, Latitude, Angle
+from astropy.coordinates import Longitude, Latitude, Angle, SkyCoord
 from sunpy.time import parse_time, julian_day
 
-from sunpy.wcs import convert_hpc_hg, convert_hg_hpc
 from sunpy.sun import constants, sun
 
 __author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
@@ -92,8 +91,7 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
 
 
 def solar_rotate_coord(start_coordinate, tend, frame_time='synodic', rot_type='howard', **kwargs):
-    """Given a location on the Sun referred to using the Helioprojective
-    Cartesian co-ordinate system (typically quoted in the units of arcseconds)
+    """Given a location on the Sun
     use the solar rotation profile to find that location at some later or
     earlier time.  Note that this function assumes that the data was observed
     from the Earth or near Earth vicinity.  Specifically, data from SOHO and
@@ -103,11 +101,8 @@ def solar_rotate_coord(start_coordinate, tend, frame_time='synodic', rot_type='h
 
     Parameters
     ----------
-    x : `~astropy.units.Quantity`
-        Helio-projective x-co-ordinate in arcseconds (can be an array).
-
-    y : `~astropy.units.Quantity`
-        Helio-projective y-co-ordinate in arcseconds (can be an array).
+    start_coordinate : `~sunpy.coordinates`
+        a sunpy co-ordinate
 
     tstart : `sunpy.time.time`
         date/time to which x and y are referred.
@@ -126,17 +121,21 @@ def solar_rotate_coord(start_coordinate, tend, frame_time='synodic', rot_type='h
 
     Returns
     -------
-    x : `~astropy.units.Quantity`
-        Rotated helio-projective x-co-ordinate in arcseconds (can be an array).
-
-    y : `~astropy.units.Quantity`
-        Rotated helio-projective y-co-ordinate in arcseconds (can be an array).
+    `~sunpy.coordinates`
+        The locations of the input co-ordinates after the application of
+         solar rotation in the input co-ordiinate frame.
 
     Examples
     --------
     >>> import astropy.units as u
-    >>> from sunpy.physics.differential_rotation import rot_hpc
-    >>> rot_hpc( -570 * u.arcsec, 120 * u.arcsec, '2010-09-10 12:34:56', '2010-09-10 13:34:56')
+    >>> from astropy.coordinates import SkyCoord
+    >>> import sunpy.coordinates
+    >>> from sunpy.physics.differential_rotation import solar_rotate_coord
+    >>> c = SkyCoord(-570 * u.arcsec, 120 * u.arcsec, dateobs='2010-09-10 12:34:56')
+    >>> solar_rotate_coord(c, '2010-09-10 13:34:56')
+    <SkyCoord (Helioprojective: D0=149597870.7 km, dateobs=2001-01-01 00:00:00, L0=0.0 deg, B0=0.0 deg, rsun=695508.0 km): (Tx, Ty) in arcsec
+    (-100.,  500.)>
+
     (<Angle -562.9105822671319 arcsec>, <Angle 119.31920621992195 arcsec>)
 
     Notes
@@ -153,48 +152,30 @@ def solar_rotate_coord(start_coordinate, tend, frame_time='synodic', rot_type='h
     rot_hpc compared to rot_xy.
     """
 
-    # must have pairs of co-ordinates
-    if np.array(x).shape != np.array(y).shape:
-        raise ValueError('Input co-ordinates must have the same shape.')
-
     # Make sure we have enough time information to perform a solar differential
     # rotation
     # Start time
-    dstart = parse_time(tstart)
+    if start_coordinate.dateobs is None:
+        raise ValueError('Input co-ordinate(s) must not be of type NoneType')
+    dstart = parse_time(start_coordinate.dateobs)
     dend = parse_time(tend)
     interval = (dend - dstart).total_seconds() * u.s
 
-    # Get the Sun's position from the vantage point at the start time
-    vstart = kwargs.get("vstart", _calc_P_B0_SD(dstart))
     # Compute heliographic co-ordinates - returns (longitude, latitude). Points
     # off the limb are returned as nan
-    longitude, latitude = convert_hpc_hg(x.to(u.arcsec).value,
-                                         y.to(u.arcsec).value,
-                                         b0_deg=vstart["b0"].to(u.deg).value,
-                                         l0_deg=vstart["l0"].to(u.deg).value,
-                                         dsun_meters=(constants.au * sun.sunearth_distance(t=dstart)).value,
-                                         angle_units='arcsec')
-    longitude = Longitude(longitude, u.deg)
-    latitude = Angle(latitude, u.deg)
+
+    heliographic_coordinate = start_coordinate.transform_to('heliographic_stonyhurst')
+
     # Compute the differential rotation
-    drot = diff_rot(interval, latitude, frame_time=frame_time,
-                    rot_type=rot_type)
+    drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree),
+                    frame_time=frame_time, rot_type=rot_type)
 
-    # Convert back to heliocentric cartesian in units of arcseconds
-    vend = kwargs.get("vend", _calc_P_B0_SD(dend))
+    # Rotate the input co-ordinate
+    heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot,
+                                    heliographic_coordinate.lat, dateobs=dend,
+                                    frame='heliographic_stonyhurst')
 
-    # It appears that there is a difference in how the SSWIDL function
-    # hel2arcmin and the sunpy function below performs this co-ordinate
-    # transform.
-    newx, newy = convert_hg_hpc(longitude.to(u.deg).value + drot.to(u.deg).value,
-                                latitude.to(u.deg).value,
-                                b0_deg=vend["b0"].to(u.deg).value,
-                                l0_deg=vend["l0"].to(u.deg).value,
-                                dsun_meters=(constants.au * sun.sunearth_distance(t=dend)).value,
-                                occultation=False)
-    newx = Angle(newx, u.arcsec)
-    newy = Angle(newy, u.arcsec)
-    return newx.to(u.arcsec), newy.to(u.arcsec)
+    return heliographic_rotated.transform_to(start_coordinate.name)
 
 
 def _calc_P_B0_SD(date):
