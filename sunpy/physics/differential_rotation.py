@@ -5,7 +5,8 @@ from astropy import units as u
 from astropy.coordinates import Longitude, Latitude, Angle, SkyCoord
 from sunpy.time import parse_time, julian_day
 
-from sunpy.sun import constants, sun
+from sunpy.sun import constants
+import sunpy.sun as sun
 
 __author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
 __all__ = ['diff_rot', 'rot_hpc']
@@ -87,28 +88,28 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
         rotation_deg -= 0.9856 * delta_days
 
     #return Longitude((np.round(rotation_deg, 4)), u.deg)
-    return np.round(rotation_deg, 4) * u.deg
+    #return np.round(rotation_deg, 4) * u.deg
 
 
-def solar_rotate_coord(start_coordinate, tend, frame_time='synodic', rot_type='howard', **kwargs):
-    """Given a location on the Sun
+    return rotation_deg * u.deg
+
+
+def solar_rotate_coord_from_earth(start_coordinate, tend, frame_time='synodic', rot_type='howard', **kwargs):
+    """Given a location on the Sun as seen from the Earth,
     use the solar rotation profile to find that location at some later or
     earlier time.  Note that this function assumes that the data was observed
     from the Earth or near Earth vicinity.  Specifically, data from SOHO and
     STEREO observatories are not supported.  Note also that the function does
-    NOT use solar B0 and L0 values provided in source FITS files - these
-    quantities are calculated.
+    NOT use solar B0 and L0 values provided in the input start co-ordinate -
+    these quantities are calculated.
 
     Parameters
     ----------
     start_coordinate : `~sunpy.coordinates`
         a sunpy co-ordinate
 
-    tstart : `sunpy.time.time`
-        date/time to which x and y are referred.
-
     tend : `sunpy.time.time`
-    date/time at which x and y will be rotated to.
+        date/time at which the input co-ordinate will be rotated to.
 
     rot_type : {'howard' | 'snodgrass' | 'allen'}
         | howard: Use values for small magnetic features from Howard et al.
@@ -130,13 +131,11 @@ def solar_rotate_coord(start_coordinate, tend, frame_time='synodic', rot_type='h
     >>> import astropy.units as u
     >>> from astropy.coordinates import SkyCoord
     >>> import sunpy.coordinates
-    >>> from sunpy.physics.differential_rotation import solar_rotate_coord
-    >>> c = SkyCoord(-570 * u.arcsec, 120 * u.arcsec, dateobs='2010-09-10 12:34:56')
-    >>> solar_rotate_coord(c, '2010-09-10 13:34:56')
-    <SkyCoord (Helioprojective: D0=149597870.7 km, dateobs=2001-01-01 00:00:00, L0=0.0 deg, B0=0.0 deg, rsun=695508.0 km): (Tx, Ty) in arcsec
-    (-100.,  500.)>
-
-    (<Angle -562.9105822671319 arcsec>, <Angle 119.31920621992195 arcsec>)
+    >>> from sunpy.physics.differential_rotation import solar_rotate_coord_from_earth
+    >>> c = SkyCoord(-570 * u.arcsec, 120 * u.arcsec, dateobs='2010-09-10 12:34:56', frame='helioprojective')
+    >>> solar_rotate_coord(c, dateobs)
+    <SkyCoord (Helioprojective: D0=150634662.59404698 km, dateobs=2010-09-10 13:34:56, L0=0d00m00s, B0=7d14m46.821s, rsun=695508.0 km): (Tx, Ty, distance) in (arcsec, arcsec, km)
+    (-562.90765805,  119.31706625,   1.50079871e+08)>
 
     Notes
     -----
@@ -163,17 +162,27 @@ def solar_rotate_coord(start_coordinate, tend, frame_time='synodic', rot_type='h
 
     # Compute heliographic co-ordinates - returns (longitude, latitude). Points
     # off the limb are returned as nan
-
-    heliographic_coordinate = start_coordinate.transform_to('heliographic_stonyhurst')
+    vstart = _calc_P_B0_SD(dend)
+    heliographic_coordinate = \
+        SkyCoord(start_coordinate.Tx, start_coordinate.Ty, dateobs=dstart,
+                 B0=vstart['b0'], L0=vstart['l0'],
+                 D0=sun.sunearth_distance(dstart).to(u.km),
+                 frame=start_coordinate.name).transform_to('heliographic_stonyhurst')
 
     # Compute the differential rotation
     drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree),
                     frame_time=frame_time, rot_type=rot_type)
 
     # Rotate the input co-ordinate
+    vend = _calc_P_B0_SD(dend)
     heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot,
                                     heliographic_coordinate.lat, dateobs=dend,
+                                    B0=vend['b0'], L0=vend['l0'],
+                                    D0=sun.sunearth_distance(dend).to(u.km),
                                     frame='heliographic_stonyhurst')
+
+    #check the sunpy co-ordinate transformations against Bill Thompson's implementations
+    #of the same function
 
     return heliographic_rotated.transform_to(start_coordinate.name)
 
