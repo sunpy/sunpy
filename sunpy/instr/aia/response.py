@@ -1,30 +1,35 @@
 """
-Provides functions for calculating wavelength and temperature response of
-SDO/AIA
+Calculate SDO/AIA wavelength and temperature response functions.
 """
 
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
 import os
 import warnings
+from collections import namedtuple
 
 import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pd
+import h5py
 import astropy.units as u
-import astropy.constants as constants
-from scipy import integrate
+import astropy.constants as const
+from scipy.interpolate import splev, splrep
+try:
+    from ChiantiPy.tools.data import MasterList
+except ImportError:
+    warnings.warn('Cannot import ChiantiPy. You will not be able to calculate the temperature response functions.')
 
-from .aia_read_genx2table import aia_instr_properties_to_table
-from .make_ion_contribution_table import save_contribution_csv
+from sunpy import config
+from .response_utils import aia_instr_properties_to_table, make_emiss_table, EmissTableInterface
 
 __author__ = ["Tessa D. Wilkinson", "Will Barnes"]
 
 
 class Response(object):
     """
+    Calculate the SDO/AIA wavelength and temperature response functions.
+
     This class calculates the wavelength and temperature response functions for
-    the 7 EUV channels of the Atmospheric Imaging Assembly (AIA) instrument on
+    the channels of the Atmospheric Imaging Assembly (AIA) instrument on
     the Solar Dynamics Observatory spacecraft. The response functions are
     calculated using AIA instrument information obtained from
     Solar Software (SSW) .genx files. Temperature response functions are
@@ -32,34 +37,38 @@ class Response(object):
 
     Parameters
     ----------
+    channel_list : `list`, optional
 
     Examples
     --------
+    >>> from sunpy.instr.aia import Response
+    >>> response = Response()
+    >>> wavelength_response = response.calculate_wavelength_response()
+    >>> temperature_response = response.calculate_temperature_response()
 
     Notes
     -----
+    Calculating the temperature response functions requires tabulated emissivities,
+    for both the continuum and line contributions, for each ion. The first time the temperature
+    response functions are calculated, this table is automatically generated. You can also
+    generate your own emissivity table using `make_emiss_table` and then passing the appropriate
+    filename to the temperature response function method.
 
     References
     ----------
+    .. [1] Boerner et al., 2012, Sol. Phys., `275, 41
+        <http://adsabs.harvard.edu/abs/2012SoPh..275...41B>`_
     """
 
-    def __init__(self, channel_list=[94, 131, 171, 193, 335, 211, 304],
-                 ssw_path='', version=6):
-        tmp = os.path.join(ssw_path, 'sdo', 'aia', 'response',
-                           'aia_V{}_{}_fullinst.genx')
-        instrument_files = [tmp.format(version, 'all'), tmp.format(version,
-                                                                   'fuv')]
+    def __init__(self, channel_list=[94, 131, 171, 193, 335, 211, 304], ssw_path='', version=6):
+        tmp = os.path.join(ssw_path, 'sdo', 'aia', 'response', 'aia_V{}_{}_fullinst.genx')
+        instrument_files = [tmp.format(version,'all'), tmp.format(version,'fuv')]
         self._get_channel_info(channel_list, instrument_files)
 
     def _get_channel_info(self, channel_list, instrument_files):
         """
-        Get instrument info for channels in channel list. Creates
-        self._channel_info
-
-        Notes
-        -----
-        Will probably change once instrument data is acquired through other
-        means.
+        Get instrument info for channels in channel list. Creates the dictionary
+        `self._channel_info`.
         """
         data_table = aia_instr_properties_to_table(channel_list,
                                                    instrument_files)
@@ -108,7 +117,6 @@ class Response(object):
         <http://adsabs.harvard.edu/abs/2012SoPh..275...41B>`_
         """
         include_crosstalk = kwargs.get('include_crosstalk',False)
-
         reflectance = (self._channel_info[channel]['primary_mirror_reflectance']
                        * self._channel_info[channel]['secondary_mirror_reflectance'])
         transmission_efficiency = (self._channel_info[channel]['focal_plane_filter_efficiency']
@@ -117,7 +125,6 @@ class Response(object):
                           * reflectance*transmission_efficiency
                           * self._channel_info[channel]['ccd_contamination']
                           * self._channel_info[channel]['quantum_efficiency_ccd'])
-
         if include_crosstalk:
             effective_area += self.calculate_crosstalk(channel)
 
@@ -170,27 +177,21 @@ class Response(object):
 
     def calculate_system_gain(self, channel):
         """
-        Calculate the gain of the CCD camera system for a given channel of the
-        instrument in units of DN :math:`\mathrm{photon}^{-1}`.
+        Calculate the gain of the CCD camera system for a given channel in units of DN
+        :math:`\mathrm{photon}^{-1}`.
 
         Parameters
         ----------
         channel : `int`
             the wavelength center of the channel
-
-        Notes
-        -----
-        The energy of a photon :math:`E=hf=hc/\lambda=12398/\lambda`, where
-        12398 is :math:`hc` expressed in units of :math:`\mathrm{eV}\AA`.
         """
         # convert hc to convenient units
-        hc = (constants.h * constants.c).to(u.eV * u.angstrom)
+        hc = (const.h * const.c).to(u.eV * u.angstrom)
         # energy per photon in units of eV
-        ev_per_photon = hc/(self._channel_info[channel]['wavelength'])/u.photon
+        ev_per_photon = hc/self._channel_info[channel]['wavelength']/u.photon
         electron_per_ev = self._channel_info[channel]['electron_per_ev']
         electron_per_photon = ev_per_photon*electron_per_ev
-        gain = (electron_per_photon
-                / self._channel_info[channel]['electron_per_dn'])
+        gain = electron_per_photon/self._channel_info[channel]['electron_per_dn']
         return gain
 
     def calculate_wavelength_response(self, include_crosstalk=True):
@@ -198,7 +199,7 @@ class Response(object):
         Calculate the wavelength response function for all channels of the
         instrument.
 
-        The wavelength response function for channel :math:`i` is a product of
+        The wavelength response function for channel :math:`i` is the product of
         the effective area and the instrument gain,
 
         .. math::
@@ -211,189 +212,94 @@ class Response(object):
         include_crosstalk : `bool`
             See `calculate_crosstalk`
         """
-        self.wavelength_response = {}
+        Response = namedtuple('Response', 'wavelength response')
+        wavelength_response = {}
         for channel in self._channel_info:
             system_gain = self.calculate_system_gain(channel)
             effective_area = self.calculate_effective_area(channel,
                                                            include_crosstalk=include_crosstalk)
-            self.wavelength_response[channel] = {
-                'wavelength': self._channel_info[channel]['wavelength'],
-                'response': system_gain*effective_area}
+            wavelength_response[channel] = Response(
+                wavelength=self._channel_info[channel]['wavelength'],
+                response=system_gain*effective_area)
 
-    def peek_wavelength_response(self):
+        return wavelength_response
+
+    def calculate_temperature_response(self, ion_list=MasterList,
+                                       emiss_table_file=os.path.join(config.get('downloads', 'download_dir'), 'aia_emiss_table.h5'),
+                                       **kwargs):
         """
-        Quick plot of wavelength response functions versus wavelength.
-        """
-        channel_colors = {94: '#ff3a3a', 131: '#6060ff', 171: '#f1de1f',
-                          193: '#4cec4c', 211: '#ed64c6', 335: '#45deed',
-                          304: 'k', 1600: 'b', 1700: 'g', 4500: 'r'}
+        Calculate the temperature response functions.
 
-        if not hasattr(self, 'wavelength_response'):
-            self.calculate_wavelength_response()
+        According to [1]_, the temperature response function for channel :math:`i` is
+        given by,
 
-        fig = plt.figure(figsize=(8, 8))
-        ax = fig.gca()
-        for key in self.wavelength_response:
-            ax.plot(self.wavelength_response[key]['wavelength'],
-                    (self.wavelength_response[key]['response']
-                    / np.max(self.wavelength_response[key]['response'])),
-                    label='{0} {1:latex}'.format(key, u.angstrom),
-                    color=channel_colors[key])
+        .. math::
+           K_i(T) = \int_0^{\infty}\mathrm{d}\lambda\,G(\lambda,n,T)R_i(\lambda),
 
-        ax.set_xlabel(r'$\lambda$ ({0:latex})'.format(
-            self.wavelength_response[key]['wavelength'].unit))
-        ax.set_ylabel(r'$R_i(\lambda)$ (norm.) ({0:latex})'.format(
-            self.wavelength_response[key]['response'].unit))
-        lambda_min = np.min([float(k) for k in self.wavelength_response])
-        lambda_max = np.max([float(k) for k in self.wavelength_response])
-        lambda_diff = np.fabs(lambda_max-lambda_min)*0.25
-        ax.set_xlim([lambda_min-lambda_diff, lambda_max+lambda_diff])
-        ax.legend(loc='best')
-        plt.show()
+        in units of DN :math:`\mathrm{cm}^{5}\,\mathrm{s}^{-1}\,\mathrm{pixel}^{-1}` where
+        :math:`R_i(\lambda)` is the wavelength response function of channel :math:`i` and
+        :math:`G(\lambda,T)` is the contribution function. Note that :math:`G` includes both
+        the line and continuum contributions such that,
 
-    def wavelength_range_index(self, channel):
-        """
-        Often times in ChiantiPy, the index of the wavelength is more useful than the the wavelength itself.
-        This function returns the index of a channels center wavelength from the wavelength array.
+        .. math::
+           G(\lambda,n,T) = G_{ff}(\lambda,T) + G_{fb}(\lambda,T) + G_{tp}(\lambda,T) + \sum_{Z,z}\\frac{1}{4\pi}\mathrm{Ab}(Z)\\frac{N(Z^{+z})}{N(Z)}\\varepsilon_{Z,z}(\lambda,n,T)\\frac{1}{n}
 
-        Parameter
-        ---------
-        :param channel: int
-            specify which channel of which to obtain data
-
-        Returns
-        -------
-        :return: the index value
-
-        Notes
-        ------
-        This function should be thrown out.
-        """
-
-        num = self._channel_info[channel]['number_wavelength_intervals']
-        intervals = self._channel_info[channel]['wavelength_interval']
-        min_wave = self._channel_info[channel]['minimum_wavelength']
-        wave_range = np.arange(0, float(num)) * float(intervals) + float(min_wave)
-
-        wavelength_range = self._channel_info[channel]['wavelength_range']
-
-        # assert wavelength_range.all() == wave_range.all() # check these are the same
-
-        # obtain index for values as specific wavelength in wavelength range
-        for n, value in enumerate(wavelength_range):
-            if channel < value < channel + 1:
-                index = n
-                break
-
-        return index
-
-    def calculate_temperature_response(self, channel, trapz1=False, trapz2=False, **kwargs):
-        """
-        Calculates temperature for various features using ChiantiPy which analyze the sensitivity of light from the
-        plasma per temperature as measured by AIA. The instrument temperature-response functions also provide some basic
-        insight into the interpretation of the images from the various channels.
+        where :math:`G_{ff}(\lambda,T),\,G_{fb}(\lambda,T),\,G_{tp}(\lambda,T)` are the free-free,
+        free-bound, and two-photon continuum emissivities.
 
         Parameters
         ----------
-        :param: channel, int
-            The wavelength center of the channel to probe
+        ion_list : array-like, optional
+            List of ion names, e.g. 'fe_15' for Fe XV. Defaults to all ions in CHIANTI database
+        emiss_table_file : `str`, optional
+            Defaults to 'aia_emiss_table.h5' in the default download directory for SunPy
 
-        :param: trapz1, bool
-            An alternative integration method for calculating this response. The default is simpson integration.
+        .. warning:: The first time you calculate the temperature response functions, you will
+        need to build the emission table by calculating the contribution function for each ion. This
+        may take up to 30 minutes, but will only need to be done once.
 
-        :param: trapz2, bool
-            An alternative integration method for calculating this response. the default is simpson integration.
-
-        :param: temperature_array, array
-            The default to this 10. ** (5.0 + 0.05 * np.arange(61.)) to give an outgoing array that goes from 10**5 to
-            10**8 in temperature range. This can be adjusted to be smaller and become less time intensive for the ion
-            calculation.
-
-        :return: dict
-            temperature response - dictionary with channel wavelength center as keys and temperatures and temperature
-            response values as items
-
+        References
+        ----------
+        .. [1] Boerner et al., 2012, Sol. Phys., `275, 41
+        <http://adsabs.harvard.edu/abs/2012SoPh..275...41B>`_
         """
-        print(channel)
+        if not os.path.exists(emiss_table_file):
+            warnings.warn('Building emissivity table {}. This may take a few minutes, but only needs to be done once.'.format(emiss_table_file))
+            make_emiss_table(emiss_table_file, MasterList)
 
-        # isobaric model pressure is 10^15 - needed?
-        pressure = 10 ** 15 * (u.Kelvin / u.cm ** 3)
+        wavelength_response = self.calculate_wavelength_response(include_crosstalk=kwargs.get('include_crosstalk', True))
+        table_interface = EmissTableInterface(emiss_table_file)
+        tmp_tresponse = {channel: np.zeros(table_interface.temperature.shape) for channel in wavelength_response}
 
-        # default temperature
-        temperature_array = kwargs.get('temperature', 10. ** (5.0 + 0.05 * np.arange(61.)))
+        for ion in ion_list:
+            tmp_ion = table_interface[ion]
+            for channel in wavelength_response:
+                # interpolate wavelength response
+                wave_interp = splrep(wavelength_response[channel].wavelength.value,
+                                     wavelength_response[channel].response.value)
+                # line emission
+                rsp_func = splev(tmp_ion.transitions.value, wave_interp, ext=1)
+                rsp_func = np.where(rsp_func < 0.0, 0.0, rsp_func)
+                line_contrib = (np.dot(tmp_ion.contribution_function.value, rsp_func)
+                                * tmp_ion.contribution_function.unit
+                                * wavelength_response[channel].response.unit)
+                # continuum
+                cont_total = tmp_ion.two_photon_continuum + tmp_ion.free_free_continuum + tmp_ion.free_bound_continuum
+                rsp_func = splev(table_interface.continuum_wavelength.value, wave_interp)
+                rps_func = np.where(rsp_func < 0.0, 0.0, rsp_func)*np.gradient(table_interface.continuum_wavelength.value)
+                cont_contrib = (np.dot(cont_total.value, rsp_func)
+                                * cont_total.unit*table_interface.continuum_wavelength.unit
+                                * wavelength_response[channel].response.unit)
+                # total
+                if not hasattr(tmp_tresponse[channel],'unit'):
+                    tmp_tresponse[channel] = (tmp_tresponse[channel]*line_contrib.unit
+                                              * self._channel_info[channel]['plate_scale'].unit)
+                tmp_tresponse[channel] += (line_contrib + cont_contrib)*self._channel_info[channel]['plate_scale']
 
-        # GENERALIZATION: try density = t * pressure to get array ( / temperature * kb)
-        density = 1.e+9
+        Response = namedtuple('Response', 'temperature density response')
+        return {channel: Response(temperature=table_interface.temperature,
+                                  density=table_interface.density,
+                                  response=tmp_tresponse[channel])
+                for channel in tmp_tresponse}
 
-        # calculate wavelength response # expect this to be run first
-        self.calculate_wavelength_response(channel)
 
-        # save ion contribution into a dataframe for faster computation
-        ion_contribution_dataframe = kwargs.get('ion_contribution_dataframe', 'test.csv')
-
-        # check for path. does this work with defining your own ion data frame ^^ ?
-        if not os.path.exists(ion_contribution_dataframe):
-            # load wavelength response function for all channels
-            self.get_wavelength_response_functions()
-
-            print('WARNING: Making an Ion datatable will take a while!')
-            save_contribution_csv(self.channel_list, self.wavelength_response_functions, temperature_array,
-                                  density=density)
-
-        data = pd.read_csv('test.csv', delimiter=',', header=0, index_col=0)
-
-        # from saved data table, define all wavelengths in range around channel into 2D matrix
-        array = []
-        discrete_wavelengths = []
-
-        # from saved data table, only search wavelength columns around the channel in question
-        for number in np.arange(channel - 3, channel + 3, .001):
-            if str(number) in data.keys():
-                store_per_wavelength = []
-                discrete_wavelengths.append(number)
-                for ion_contribution_per_temp in data[str(number)]:
-                    store_per_wavelength.append(ion_contribution_per_temp)
-                array.append(store_per_wavelength)
-
-        # change the vertical values to be horizontal before interpolation
-        matrix = np.vstack((array)).T
-
-        # evaluate wavelength response function at specific wavelengths, DOES affect magnitude:
-        response_interpolated = []
-        for wavelength in discrete_wavelengths:
-            response_interpolated.append(self.wavelength_response[channel]['wavelength'][wavelength])
-
-        # multiply ion contributions array by wave-length response array
-        response = matrix * response_interpolated
-
-        # integrate through wavelength range to sample specifically near discrete_wavelength values
-        # method 1: composite trapezoidal integration
-        if trapz1:
-            temp_response = integrate.cumtrapz(response, discrete_wavelengths)
-
-        # method 2: another trapezoidal integration
-        elif trapz2:
-            temp_response = integrate.trapz(response, discrete_wavelengths)
-        else:
-            # method 3: simpson integration
-            temp_response = integrate.simps(response, discrete_wavelengths)
-
-        # define temperature response dictionary
-        self.temperature_response = {'temperature': temperature_array,
-                                     'temperature response': temp_response}
-
-    def get_temperature_response_functions(self):
-        '''
-
-        Calculate the  temperature response functions for each channel in self.channel_list
-
-        :return: dictionary
-            Each key is the channel and the value is a dictionary with temperatures and temperature response array
-        '''
-        out_dictionary = {}
-
-        for channel_wavelength in self.channel_list:
-            self.calculate_temperature_response(channel_wavelength)
-            out_dictionary[channel_wavelength] = self.temperature_response[channel_wavelength]
-
-        self.temperature_response_functions = out_dictionary
