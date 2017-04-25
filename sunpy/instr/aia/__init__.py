@@ -6,10 +6,5 @@ on the Solar Dynamics Observatory (SDO).
 """
 from .aiaprep import aiaprep
 from .response import Response
-from .aia_read_genx2table import aia_instr_properties_to_table
 
-
-
-
-
-
+from .response_utils import make_emiss_table, EmissTableInterface, aia_instr_properties_to_table
