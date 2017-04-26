@@ -108,9 +108,10 @@ package_info['package_data'][PACKAGENAME].extend(c_files)
 extras_require = {'database': ["sqlalchemy"],
                   'image': ["scikit-image"],
                   'jpeg2000': ["glymur"],
-                  'net': ["suds-jurko", "beautifulsoup4", "requests"]}
+                  'net': ["suds-jurko", "beautifulsoup4", "requests"],
+                  'tests': ["pytest", "pytest-cov", "pytest-mock", "mock", "hypothesis"]}
 extras_require['all'] = extras_require['database'] + extras_require['image'] + \
-                        extras_require['net'] + ["wcsaxes>=0.8"]
+                        extras_require['net'] + extras_require['tests']
 
 setup(name=PACKAGENAME,
       version=VERSION,
