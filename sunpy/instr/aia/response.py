@@ -18,8 +18,12 @@ try:
 except ImportError:
     warnings.warn('Cannot import ChiantiPy. You will not be able to calculate the temperature response functions.')
 
-from sunpy import config
+from sunpy.util.config import get_and_create_download_dir
+from sunpy.util.net import check_download_file
 from .response_utils import aia_instr_properties_to_table, make_emiss_table, EmissTableInterface
+
+SSW_AIA_REMOTE_PATH = 'https://hesperia.gsfc.nasa.gov/ssw/sdo/aia/response/'
+AIA_INSTR_FILES = ['aia_V6_all_fullinst.genx', 'aia_V6_fuv_fullinst.genx']
 
 __author__ = ["Tessa D. Wilkinson", "Will Barnes"]
 
@@ -33,11 +37,15 @@ class Response(object):
     the Solar Dynamics Observatory spacecraft. The response functions are
     calculated using AIA instrument information obtained from
     Solar Software (SSW) .genx files. Temperature response functions are
-    calculated using atomic data from the CHIANTI atomic database.
+    calculated using atomic data from the CHIANTI atomic database. See [1]_ for
+    more details.
 
     Parameters
     ----------
     channel_list : `list`, optional
+    instrument_files : `list`, optional
+        If no instrument files are supplied and they do not exist locally, the
+        necessary files are automatically downloaded.
 
     Examples
     --------
@@ -60,18 +68,24 @@ class Response(object):
         <http://adsabs.harvard.edu/abs/2012SoPh..275...41B>`_
     """
 
-    def __init__(self, channel_list=[94, 131, 171, 193, 335, 211, 304], ssw_path='', version=6):
-        tmp = os.path.join(ssw_path, 'sdo', 'aia', 'response', 'aia_V{}_{}_fullinst.genx')
-        instrument_files = [tmp.format(version,'all'), tmp.format(version,'fuv')]
+    def __init__(self, channel_list=[94, 131, 171, 193, 335, 211, 304], instrument_files=None):
         self._get_channel_info(channel_list, instrument_files)
 
     def _get_channel_info(self, channel_list, instrument_files):
         """
-        Get instrument info for channels in channel list. Creates the dictionary
-        `self._channel_info`.
+        Get instrument info for channels in channel list.
+
+        Download the instrument files if needed or if they were not specified at the command
+        line. Creates the dictionary `self._channel_info`.
         """
-        data_table = aia_instr_properties_to_table(channel_list,
-                                                   instrument_files)
+        if instrument_files is None:
+            instrument_files = []
+            download_dir = get_and_create_download_dir()
+            for instr_file in AIA_INSTR_FILES:
+                check_download_file(instr_file, SSW_AIA_REMOTE_PATH, download_dir=download_dir)
+                instrument_files.append(os.path.join(download_dir, instr_file))
+
+        data_table = aia_instr_properties_to_table(channel_list, instrument_files)
         self._channel_info = {}
         for c in channel_list:
             index = channel_list.index(c)
@@ -96,10 +110,9 @@ class Response(object):
         - :math:`D`: correction to account for time-dependent contamination and deterioration
         - :math:`Q`: quantum efficiency of the CCD
 
-       The effective area contains information about the efficiency of the
-       telescope optics and its sensitivity as a function of wavelength. All of
-       the instrument-specific information used here is currently read from the
-       appropriate .genx files in SolarSoft.
+        The effective area contains information about the efficiency of the
+        telescope optics and its sensitivity as a function of wavelength. All of the telescope
+        properties are read from the AIA instrument files available in SolarSoft.
 
         Parameters
         ----------
@@ -110,13 +123,8 @@ class Response(object):
         -------
         effective_area : array-like
             effective area of the instrument over the entire wavelength range
-
-        References
-        ----------
-        .. [1] Boerner et al., 2012, Sol. Phys., `275, 41
-        <http://adsabs.harvard.edu/abs/2012SoPh..275...41B>`_
         """
-        include_crosstalk = kwargs.get('include_crosstalk',False)
+        include_crosstalk = kwargs.get('include_crosstalk', False)
         reflectance = (self._channel_info[channel]['primary_mirror_reflectance']
                        * self._channel_info[channel]['secondary_mirror_reflectance'])
         transmission_efficiency = (self._channel_info[channel]['focal_plane_filter_efficiency']
@@ -139,11 +147,6 @@ class Response(object):
         implements a correction for the given channel, based on the method in
         SSW, specifically that in `sdo/aia/idl/response/aia_bp_blend_channels.pro`.
         See section 2.2.1 and Figure 10 of [1]_ for more details.
-
-        References
-        ----------
-        .. [1] Boerner et al., 2012, Sol. Phys., `275, 41
-        <http://adsabs.harvard.edu/abs/2012SoPh..275...41B>`_
         """
         # check which channel is the contaminator
         if channel == 94:
@@ -224,9 +227,7 @@ class Response(object):
 
         return wavelength_response
 
-    def calculate_temperature_response(self, ion_list=MasterList,
-                                       emiss_table_file=os.path.join(config.get('downloads', 'download_dir'), 'aia_emiss_table.h5'),
-                                       **kwargs):
+    def calculate_temperature_response(self, ion_list=None, emiss_table_file=None, **kwargs):
         """
         Calculate the temperature response functions.
 
@@ -254,15 +255,14 @@ class Response(object):
         emiss_table_file : `str`, optional
             Defaults to 'aia_emiss_table.h5' in the default download directory for SunPy
 
-        .. warning:: The first time you calculate the temperature response functions, you will
-        need to build the emission table by calculating the contribution function for each ion. This
-        may take up to 30 minutes, but will only need to be done once.
 
-        References
-        ----------
-        .. [1] Boerner et al., 2012, Sol. Phys., `275, 41
-        <http://adsabs.harvard.edu/abs/2012SoPh..275...41B>`_
+        .. warning::
+            The first time you calculate the temperature response functions, you will
+            need to build the emission table by calculating the contribution function for each
+            ion. This may take up to 30 minutes, but will only need to be done once.
         """
+        if emiss_table_file is None:
+            emiss_table_file = os.path.join(get_and_create_download_dir(), 'aia_emiss_table.h5')
         if not os.path.exists(emiss_table_file):
             warnings.warn('Building emissivity table {}. This may take a few minutes, but only needs to be done once.'.format(emiss_table_file))
             make_emiss_table(emiss_table_file, MasterList)
@@ -270,6 +270,9 @@ class Response(object):
         wavelength_response = self.calculate_wavelength_response(include_crosstalk=kwargs.get('include_crosstalk', True))
         table_interface = EmissTableInterface(emiss_table_file)
         tmp_tresponse = {channel: np.zeros(table_interface.temperature.shape) for channel in wavelength_response}
+
+        if ion_list is None:
+            ion_list = MasterList
 
         for ion in ion_list:
             tmp_ion = table_interface[ion]
