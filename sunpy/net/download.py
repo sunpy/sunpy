@@ -21,6 +21,7 @@ from sunpy.extern.six import iteritems
 
 import sunpy
 from sunpy.util.progressbar import TTYProgressBar as ProgressBar
+from sunpy.util.config import get_and_create_download_dir
 
 
 def default_name(path, sock, url):
@@ -138,10 +139,9 @@ class Downloader(object):
         server = self._get_server(url)
 
         # Create function to compute the filepath to download to if not set
-        default_dir = sunpy.config.get("downloads", "download_dir")
 
         if path is None:
-            path = partial(default_name, default_dir)
+            path = partial(default_name, get_and_create_download_dir())
         elif isinstance(path, six.string_types):
             path = partial(default_name, path)
         elif not callable(path):
@@ -177,7 +177,6 @@ class Downloader(object):
                             return
                     else:
                         break
-
 
 
 class Results(object):

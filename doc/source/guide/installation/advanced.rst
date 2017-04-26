@@ -92,7 +92,17 @@ are needed. SunPy will import even if these dependencies are not installed.
 - `glymur <https://glymur.readthedocs.io/en/latest/>`_ 0.5.9 or later: To enable reading of JPEG2000 files.
   Glymur requires the installation of the `OpenJPEG C library <http://code.google.com/p/openjpeg/downloads/list>`_.
 
-- `pytest <http://pytest.org/latest/>`_: To run tests.
+To run the tests:
+
+- `hypothesis <https://github.com/HypothesisWorks/hypothesis-python>`_
+
+- `mock <https://github.com/testing-cabal/mock>`_
+
+- `pytest <http://pytest.org/latest/>`_
+
+- `pytest-cov <https://github.com/pytest-dev/pytest-cov>`_
+
+- `pytest-mock <https://github.com/pytest-dev/pytest-mock/>`_
 
 The packages that will be installed as dependencies by default and are the ones
 required to import the core datatypes `~sunpy.map`, `~sunpy.lightcurve` and
@@ -128,6 +138,11 @@ To install SunPy with database dependencies (sqlalchemy)::
 .. note::
 
     You will need a C compiler (e.g. ``gcc`` or ``clang``) to be installed.
+
+.. note::
+
+   ``suds-py3`` is not compatible where as ``suds-jurko`` works fine with SunPy. Hence we depend on ``suds-jurko`` for operations under various modules under `~sunpy.net`.  
+
 
 .. note::
 

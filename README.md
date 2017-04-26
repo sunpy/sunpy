@@ -1,36 +1,42 @@
 # [SunPy](http://sunpy.org)
-[![Downloads](https://img.shields.io/pypi/dm/sunpy.svg)](https://pypi.python.org/pypi/sunpy/) [![Latest Version](https://img.shields.io/pypi/v/sunpy.svg)](https://pypi.python.org/pypi/sunpy/) [![Build Status](https://secure.travis-ci.org/sunpy/sunpy.svg)] (http://travis-ci.org/sunpy/sunpy)[![Build status](https://ci.appveyor.com/api/projects/status/xow461iejsjvp9vl?svg=true)](https://ci.appveyor.com/project/sunpy/sunpy)[![Coverage Status](https://coveralls.io/repos/sunpy/sunpy/badge.svg?branch=master)](https://coveralls.io/r/sunpy/sunpy?branch=master) [![Code Health](https://landscape.io/github/sunpy/sunpy/master/landscape.svg)](https://landscape.io/github/sunpy/sunpy/master)
+[![Downloads](https://img.shields.io/pypi/dm/sunpy.svg)](https://pypi.python.org/pypi/sunpy/) 
+[![Latest Version](https://img.shields.io/pypi/v/sunpy.svg)](https://pypi.python.org/pypi/sunpy/) 
+[![Build Status](https://secure.travis-ci.org/sunpy/sunpy.svg)](http://travis-ci.org/sunpy/sunpy)
+[![Build status](https://ci.appveyor.com/api/projects/status/xow461iejsjvp9vl?svg=true)](https://ci.appveyor.com/project/sunpy/sunpy)[![Coverage Status](https://coveralls.io/repos/sunpy/sunpy/badge.svg?branch=master)](https://coveralls.io/r/sunpy/sunpy?branch=master) [![Code Health](https://landscape.io/github/sunpy/sunpy/master/landscape.svg)](https://landscape.io/github/sunpy/sunpy/master)
 [![Code Issues](https://www.quantifiedcode.com/api/v1/project/9edd3e28230840038713e1c7dc3eb141/badge.svg)](https://www.quantifiedcode.com/app/project/9edd3e28230840038713e1c7dc3eb141)[![Research software impact](http://depsy.org/api/package/pypi/sunpy/badge.svg)](http://depsy.org/package/python/sunpy)
 
-SunPy is an open-source Python library for solar physics data analysis.
+SunPy is an open-source Python library for solar physics data analysis. See [sunpy.org](http://sunpy.org) for more information about the project.
 
-[![Visit our IRC channel](https://kiwiirc.com/buttons/chat.freenode.com/sunpy.png)](https://kiwiirc.com/client/chat.freenode.com/#sunpy)
+For some examples of using SunPy see our [gallery](http://docs.sunpy.org/en/stable/generated/gallery/index.html).
+
 
 Installation
 ------------
 
-To begin, install the following requirements:
+The recommended way to install SunPy is
+with [conda](https://www.continuum.io/downloads). To install SunPy once conda is
+installed run the following two commands:
 
- * [Python](http://www.python.org) (2.7.x, 3.4.x or later)
- * [Astropy](http://astropy.org) (1.0.0)
- * [NumPy](http://numpy.scipy.org/)
- * [SciPy](http://www.scipy.org/)
- * [Matplotlib](http://matplotlib.sourceforge.net/) (1.1+)
- * [suds-jurko](https://bitbucket.org/jurko/suds)
- * [pandas](http://pandas.pydata.org/) (0.10.0+)
- * [beautifulsoup4](http://www.crummy.com/software/BeautifulSoup/)
- * [sqlalchemy](http://www.sqlalchemy.org/)
+    $ conda config --append channels conda-forge
+    $ conda install sunpy
 
-Next, use git to grab the latest version of SunPy:
 
-    git clone https://github.com/sunpy/sunpy.git
-    cd sunpy
-    python setup.py install
+If you want to develop SunPy you will need to install from git. The best way to
+do this is to create a new conda environment and install the git version of
+SunPy in it:
 
-Done!
+    $ conda config --append channels conda-forge
+    $ conda create -n sunpy-dev python sunpy hypothesis pytest-mock
+    $ source activate sunpy-dev
+    $ conda remove sunpy
+    $ git clone https://github.com/sunpy/sunpy.git sunpy-git
+    $ cd sunpy-git
+    $ pip install -e .
 
-For detailed installation instructions, see the [installation guide](http://docs.sunpy.org/en/latest/guide/installation/index.html)
-in the SunPy docs.
+For detailed installation instructions, see
+the
+[installation guide](http://docs.sunpy.org/en/latest/guide/installation/index.html) in
+the SunPy docs.
 
 Usage
 -----
@@ -39,9 +45,8 @@ Here is a quick example of plotting an AIA image:
 
 ```python
 >>> import sunpy.map
->>> import sunpy.data.sample
->>> import matplotlib.cm as cm
->>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+>>> from sunpy.data.sample import AIA_171_IMAGE
+>>> aia = sunpy.map.Map(AIA_171_IMAGE)
 >>> aia.peek()
 ```
 
@@ -52,8 +57,8 @@ For more information or to ask questions about SunPy, check out:
 
  * [SunPy Documentation](http://docs.sunpy.org/en/latest/)
  * [SunPy Mailing List](https://groups.google.com/forum/#!forum/sunpy)
- * IRC: #sunpy on [freenode.net](http://webchat.freenode.net/)
-
+ * [SunPy Matrix Channel](https://riot.im/app/#/room/#sunpy-general:matrix.org)
+ 
 Contributing
 ------------
 
@@ -65,4 +70,8 @@ if you have any questions. Help is always welcome so let us know what you like
 to work on, or check out the [issues page](https://github.com/sunpy/sunpy/issues)
 for a list of some known outstanding items.
 
+### Code of Conduct
+
+When you are interacting with the SunPy community you are asked to follow
+our [Code of Conduct](https://github.com/sunpy/sunpy/wiki/Code-of-Conduct).
 
