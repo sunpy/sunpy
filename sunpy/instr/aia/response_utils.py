@@ -161,7 +161,7 @@ def make_emiss_table(emiss_table_file, ion_list=None, temperature=None, density=
         dset_wavelength = hf.create_dataset('continuum_wavelength', data=continuum_wavelength.value)
         dset_wavelength.attrs['unit'] = continuum_wavelength.unit.to_string()
 
-        with ProgressBar(len(ion_list)) as progress:
+        with ProgressBar(len(ion_list), ipython_widget=kwargs.get('notebook', False)) as progress:
             for ion in ion_list:
                 group = hf.create_group(ion)
                 tmp_ion = ch.ion(ion, temperature=temperature.value, eDensity=density.value, abundance=abundance_file)

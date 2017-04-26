@@ -267,8 +267,8 @@ class Response(object):
         if emiss_table_file is None:
             emiss_table_file = os.path.join(get_and_create_download_dir(), 'aia_emiss_table.h5')
         if not os.path.exists(emiss_table_file):
-            warnings.warn('Building emissivity table {}. This may take a few minutes, but only needs to be done once.'.format(emiss_table_file))
-            make_emiss_table(emiss_table_file)
+            warnings.warn('Building emissivity table {}. This may take a while, but only needs to be done once.'.format(emiss_table_file))
+            make_emiss_table(emiss_table_file, **kwargs)
 
         wavelength_response = self.calculate_wavelength_response(include_crosstalk=include_crosstalk)
         table_interface = EmissTableInterface(emiss_table_file)
