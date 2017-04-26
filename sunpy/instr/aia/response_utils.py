@@ -11,12 +11,19 @@ from collections import namedtuple
 import h5py
 import numpy as np
 from astropy.table import QTable
+from astropy.utils.console import ProgressBar
 import astropy.units as u
+try:
+    import h5py
+except ImportError:
+    warnings.warn('Cannot import h5py. You will not be able to build the emissivity table '
+                  + 'needed for the temperature response functions.')
 try:
     import ChiantiPy.core as ch
     import ChiantiPy.tools.data as ch_data
 except ImportError:
-    warnings.warn('Cannot import ChiantiPy. You will not be able to calculate the temperature response functions.')
+    warnings.warn('Cannot import ChiantiPy. You will not be able to build the emissivity table '
+                  + 'needed for the temperature response functions.')
 
 from sunpy.io.special import read_genx
 
@@ -99,10 +106,8 @@ def aia_instr_properties_to_table(channel_list, instrument_files):
     return table
 
 
-@u.quantity_input(temperature=u.K, density=u.cm**(-3), continuum_wavelength=u.angstrom)
-def make_emiss_table(emiss_table_file, ion_list, temperature=np.logspace(5, 8, 50)*u.K,
-                     density=1e15/np.logspace(5, 8, 50)*u.cm**(-3),
-                     continuum_wavelength=np.arange(10., 500., 1.)*u.angstrom, **kwargs):
+def make_emiss_table(emiss_table_file, ion_list=None, temperature=None, density=None,
+                     continuum_wavelength=None, **kwargs):
     """
     Build line and continuum emissivity table.
 
@@ -120,17 +125,28 @@ def make_emiss_table(emiss_table_file, ion_list, temperature=np.logspace(5, 8, 5
     Parameters
     ----------
     emiss_table_file : `str`
-    ion_list : `list`
-        List of ion names, e.g. 'fe_15' for Fe XV
+    ion_list : `list`, optional
+        List of ion names, e.g. 'fe_15' for Fe XV. Defaults to all ions in CHIANTI database
     temperature : array-like, optional
+        in K
     density : array-like, optional
-        Default is to assume a constant pressure of :math:`10^{15}\,\mathrm{K}\,\mathrm{cm}^{-3}`
+        in :math:`\mathrm{cm}^{-3}`. Default to constant pressure of :math:`10^{15}\,\mathrm{K}\,\mathrm{cm}^{-3}`
     continuum_wavelength : array-like, optional
+        in angstroms
 
     See also
     --------
     EmissTableInterface : Easily access data in emissivity table files.
     """
+    if temperature is None:
+        temperature = np.logspace(5, 8, 50)*u.K
+    if density is None:
+        density = 1e15/np.logspace(5, 8, 50)*u.cm**(-3)
+    if continuum_wavelength is None:
+        continuum_wavelength = np.arange(10., 500., 1.)*u.angstrom
+
+    if ion_list is None:
+        ion_list = ch_data.MasterList
 
     ch_data.Defaults['flux'] = 'photon'
     abundance_file = kwargs.get('abundance_file', 'sun_coronal_1992_feldman')
@@ -145,48 +161,51 @@ def make_emiss_table(emiss_table_file, ion_list, temperature=np.logspace(5, 8, 5
         dset_wavelength = hf.create_dataset('continuum_wavelength', data=continuum_wavelength.value)
         dset_wavelength.attrs['unit'] = continuum_wavelength.unit.to_string()
 
-        for ion in ion_list:
-            group = hf.create_group(ion)
-            tmp_ion = ch.ion(ion, temperature=temperature.value, eDensity=density.value, abundance=abundance_file)
-            # useful metadata
-            group.attrs['spectroscopic_name'] = tmp_ion.Spectroscopic
-            group.attrs['abundance_file'] = tmp_ion.AbundanceName
-            group.attrs['ionization_equilibrium_file'] = tmp_ion.IoneqName
-            group.attrs['Z'] = tmp_ion.Z
-            group.attrs['stage'] = tmp_ion.Ion
-            # line emission
-            tmp_ion.emiss()
-            emissivity = tmp_ion.Emiss['emiss'][np.argsort(tmp_ion.Emiss['wvl']), :].T*u.photon/u.s/u.steradian
-            wavelength = np.sort(tmp_ion.Emiss['wvl'])*u.angstrom
-            gofnt = tmp_ion.Abundance*emissivity*tmp_ion.IoneqOne[:,np.newaxis]/density[:,np.newaxis]
-            # two-photon continuum
-            tmp_ion.twoPhoton(continuum_wavelength.value)
-            if 'rate' in tmp_ion.TwoPhoton:
-                two_photon_continuum = tmp_ion.TwoPhoton['rate']
-            else:
-                two_photon_continuum = np.zeros((temperature.size, continuum_wavelength.size))
-            # free-free continuum
-            tmp_continuum = ch.Continuum(ion, temperature.value, abundance=abundance_file)
-            tmp_continuum.calculate_free_free_emission(continuum_wavelength.value)
-            free_free_continuum = tmp_continuum.free_free_emission
-            # free-bound continuum
-            try:
-                tmp_continuum.calculate_free_bound_emission(continuum_wavelength.value)
-                free_bound_continuum = tmp_continuum.free_bound_emission
-            except ValueError:
-                # free-bound information is not available for all ions
-                free_bound_continuum = np.zeros((temperature.size, continuum_wavelength.size))
-            # store results
-            dset_gofnt = group.create_dataset('contribution_function', data=gofnt.value)
-            dset_gofnt.attrs['unit'] = gofnt.unit.to_string()
-            dset_transitions = group.create_dataset('transitions', data=wavelength.value)
-            dset_transitions.attrs['unit'] = wavelength.unit.to_string()
-            dset_tp = group.create_dataset('two_photon_continuum', data=two_photon_continuum)
-            dset_tp.attrs['unit'] = 'photon cm^3 s^-1 sr^-1 angstrom^-1'
-            dset_ff = group.create_dataset('free_free_continuum', data=free_free_continuum)
-            dset_ff.attrs['unit'] = 'photon cm^3 s^-1 sr^-1 angstrom^-1'
-            dset_fb = group.create_dataset('free_bound_continuum', data=free_bound_continuum)
-            dset_fb.attrs['unit'] = 'photon cm^3 s^-1 sr^-1 angstrom^-1'
+        with ProgressBar(len(ion_list)) as progress:
+            for ion in ion_list:
+                group = hf.create_group(ion)
+                tmp_ion = ch.ion(ion, temperature=temperature.value, eDensity=density.value, abundance=abundance_file)
+                # useful metadata
+                group.attrs['spectroscopic_name'] = tmp_ion.Spectroscopic
+                group.attrs['abundance_file'] = tmp_ion.AbundanceName
+                group.attrs['ionization_equilibrium_file'] = tmp_ion.IoneqName
+                group.attrs['Z'] = tmp_ion.Z
+                group.attrs['stage'] = tmp_ion.Ion
+                # line emission
+                tmp_ion.emiss()
+                emissivity = tmp_ion.Emiss['emiss'][np.argsort(tmp_ion.Emiss['wvl']), :].T*u.photon/u.s/u.steradian
+                wavelength = np.sort(tmp_ion.Emiss['wvl'])*u.angstrom
+                gofnt = tmp_ion.Abundance*emissivity*tmp_ion.IoneqOne[:,np.newaxis]/density[:,np.newaxis]
+                # two-photon continuum
+                tmp_ion.twoPhoton(continuum_wavelength.value)
+                if 'rate' in tmp_ion.TwoPhoton:
+                    two_photon_continuum = tmp_ion.TwoPhoton['rate']
+                else:
+                    two_photon_continuum = np.zeros((temperature.size, continuum_wavelength.size))
+                # free-free continuum
+                tmp_continuum = ch.Continuum(ion, temperature.value, abundance=abundance_file)
+                tmp_continuum.calculate_free_free_emission(continuum_wavelength.value)
+                free_free_continuum = tmp_continuum.free_free_emission
+                # free-bound continuum
+                try:
+                    tmp_continuum.calculate_free_bound_emission(continuum_wavelength.value)
+                    free_bound_continuum = tmp_continuum.free_bound_emission
+                except ValueError:
+                    # free-bound information is not available for all ions
+                    free_bound_continuum = np.zeros((temperature.size, continuum_wavelength.size))
+                # store results
+                dset_gofnt = group.create_dataset('contribution_function', data=gofnt.value)
+                dset_gofnt.attrs['unit'] = gofnt.unit.to_string()
+                dset_transitions = group.create_dataset('transitions', data=wavelength.value)
+                dset_transitions.attrs['unit'] = wavelength.unit.to_string()
+                dset_tp = group.create_dataset('two_photon_continuum', data=two_photon_continuum)
+                dset_tp.attrs['unit'] = 'photon cm^3 s^-1 sr^-1 angstrom^-1'
+                dset_ff = group.create_dataset('free_free_continuum', data=free_free_continuum)
+                dset_ff.attrs['unit'] = 'photon cm^3 s^-1 sr^-1 angstrom^-1'
+                dset_fb = group.create_dataset('free_bound_continuum', data=free_bound_continuum)
+                dset_fb.attrs['unit'] = 'photon cm^3 s^-1 sr^-1 angstrom^-1'
+                # update progress bar
+                progress.update()
 
 
 class EmissTableInterface(object):
@@ -194,35 +213,35 @@ class EmissTableInterface(object):
     Interface to the ion emission table.
     """
 
-    def __init__(self,emiss_table_file):
+    def __init__(self, emiss_table_file):
         self.emiss_table_file = emiss_table_file
 
     @property
     def temperature(self):
-        with h5py.File(self.emiss_table_file,'r') as hf:
-            temperature = np.array(hf['temperature'])*u.Unit(hf['temperature'].attrs['unit'])
+        with h5py.File(self.emiss_table_file, 'r') as hf:
+            temperature = u.Quantity(hf['temperature'], hf['temperature'].attrs['unit'])
         return temperature
 
     @property
     def density(self):
-        with h5py.File(self.emiss_table_file,'r') as hf:
-            density = np.array(hf['density'])*u.Unit(hf['density'].attrs['unit'])
+        with h5py.File(self.emiss_table_file, 'r') as hf:
+            density = u.Quantity(hf['density'], hf['density'].attrs['unit'])
         return density
 
     @property
     def continuum_wavelength(self):
-        with h5py.File(self.emiss_table_file,'r') as hf:
-            continuum_wavelength = (np.array(hf['continuum_wavelength'])
-                                    * u.Unit(hf['continuum_wavelength'].attrs['unit']))
+        with h5py.File(self.emiss_table_file, 'r') as hf:
+            continuum_wavelength = u.Quantity(hf['continuum_wavelength'],
+                                              hf['continuum_wavelength'].attrs['unit'])
         return continuum_wavelength
 
     def __getitem__(self, key):
         with h5py.File(self.emiss_table_file, 'r') as hf:
             if key not in hf:
-                raise KeyError('{} not found in emission table {}'.format(key,self.emiss_table_file))
+                raise KeyError('{} not found in emission table {}'.format(key, self.emiss_table_file))
             ion_dict = dict(hf[key].attrs)
             for ds in hf[key]:
-                ion_dict[ds] = np.array(hf['/'.join([key, ds])])*u.Unit(hf['/'.join([key, ds])].attrs['unit'])
+                ion_dict[ds] = u.Quantity(hf['/'.join([key, ds])], hf['/'.join([key, ds])].attrs['unit'])
 
         ion = namedtuple('ion', ' '.join([k for k in ion_dict.keys()]))
         return ion(**ion_dict)

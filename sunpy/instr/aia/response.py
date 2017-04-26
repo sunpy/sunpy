@@ -9,14 +9,13 @@ import warnings
 from collections import namedtuple
 
 import numpy as np
-import h5py
 import astropy.units as u
 import astropy.constants as const
 from scipy.interpolate import splev, splrep
 try:
     from ChiantiPy.tools.data import MasterList
 except ImportError:
-    warnings.warn('Cannot import ChiantiPy. You will not be able to calculate the temperature response functions.')
+    MasterList = None
 
 from sunpy.util.config import get_and_create_download_dir
 from sunpy.util.net import check_download_file
@@ -43,6 +42,7 @@ class Response(object):
     Parameters
     ----------
     channel_list : `list`, optional
+        AIA channels, defaults to the 7 EUV channels, [94,]
     instrument_files : `list`, optional
         If no instrument files are supplied and they do not exist locally, the
         necessary files are automatically downloaded.
@@ -68,7 +68,9 @@ class Response(object):
         <http://adsabs.harvard.edu/abs/2012SoPh..275...41B>`_
     """
 
-    def __init__(self, channel_list=[94, 131, 171, 193, 335, 211, 304], instrument_files=None):
+    def __init__(self, channel_list=None, instrument_files=None):
+        if channel_list is None:
+            channel_list = [94, 131, 171, 193, 335, 211, 304]
         self._get_channel_info(channel_list, instrument_files)
 
     def _get_channel_info(self, channel_list, instrument_files):
@@ -92,7 +94,7 @@ class Response(object):
             self._channel_info[c] = {property: data_table[property][index]
                                      for property in data_table.columns.keys()}
 
-    def calculate_effective_area(self, channel, **kwargs):
+    def calculate_effective_area(self, channel, include_crosstalk=True, **kwargs):
         """
         Calculate the effective area for a given channel of the instrument.
 
@@ -118,13 +120,13 @@ class Response(object):
         ----------
         channel : `int`
             wavelength center of the channel
+        include_crosstalk : `bool`
 
         Returns
         -------
         effective_area : array-like
             effective area of the instrument over the entire wavelength range
         """
-        include_crosstalk = kwargs.get('include_crosstalk', False)
         reflectance = (self._channel_info[channel]['primary_mirror_reflectance']
                        * self._channel_info[channel]['secondary_mirror_reflectance'])
         transmission_efficiency = (self._channel_info[channel]['focal_plane_filter_efficiency']
@@ -145,7 +147,7 @@ class Response(object):
         The focal-plane filters on Telescopes 1 (131 and 335) and 4 (94 and 304)
         do not perfectly reject light from the opposite channels. This function
         implements a correction for the given channel, based on the method in
-        SSW, specifically that in `sdo/aia/idl/response/aia_bp_blend_channels.pro`.
+        SSW, specifically that in `sdo/aia/idl/response/aia_bp_blend_channels.pro <https://hesperia.gsfc.nasa.gov/ssw/sdo/aia/idl/response/aia_bp_blend_channels.pro>`_.
         See section 2.2.1 and Figure 10 of [1]_ for more details.
         """
         # check which channel is the contaminator
@@ -227,7 +229,8 @@ class Response(object):
 
         return wavelength_response
 
-    def calculate_temperature_response(self, ion_list=None, emiss_table_file=None, **kwargs):
+    def calculate_temperature_response(self, ion_list=None, emiss_table_file=None,
+                                       include_crosstalk=True, **kwargs):
         """
         Calculate the temperature response functions.
 
@@ -265,13 +268,15 @@ class Response(object):
             emiss_table_file = os.path.join(get_and_create_download_dir(), 'aia_emiss_table.h5')
         if not os.path.exists(emiss_table_file):
             warnings.warn('Building emissivity table {}. This may take a few minutes, but only needs to be done once.'.format(emiss_table_file))
-            make_emiss_table(emiss_table_file, MasterList)
+            make_emiss_table(emiss_table_file)
 
-        wavelength_response = self.calculate_wavelength_response(include_crosstalk=kwargs.get('include_crosstalk', True))
+        wavelength_response = self.calculate_wavelength_response(include_crosstalk=include_crosstalk)
         table_interface = EmissTableInterface(emiss_table_file)
         tmp_tresponse = {channel: np.zeros(table_interface.temperature.shape) for channel in wavelength_response}
 
         if ion_list is None:
+            if MasterList is None:
+                raise ImportError('CHIANTI ion list not available. Install ChiantiPy or provide a list of ions.')
             ion_list = MasterList
 
         for ion in ion_list:
