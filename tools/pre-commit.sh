@@ -13,14 +13,14 @@ fi
 
 #If the code OR the docs have changed run the docs
 if  [ $NUM_SUNPY -gt 0 -o  $NUM_DOCS -gt  0 ]; then
-    
+
     CWD="$(pwd)"
     DOC_DIR=$BASE_DIR/doc/source
-    rm -r $DOC_DIR/_build
+    rm -r $DOC_DIR/../build
     rm -r $DOC_DIR/api
     rm -r $DOC_DIR/_generated
 
     cd $DOC_DIR
-    $SPHINX -W -b html -d ./_build/doctrees . ./_build/html
+    $SPHINX -W -b html -d ../build/doctrees . ../build/html
     cd $CWD
 fi

@@ -1,4 +1,5 @@
 .DS_Store
+.idea
 .pydevproject
 .settings
 .project
@@ -10,13 +11,15 @@
 *.def
 *~
 *.swp
+*.thumbs
 MANIFEST
 build
 dist
 sunpy.egg-info
 paver-minilib.zip
-doc/source/_build/*
-doc/source/api
+doc/build/*
+doc/source/generated
+doc/source/api/
 doc/html
 docs
 .tox/
@@ -24,3 +27,47 @@ docs
 htmlcov
 result.xml
 sunpy/version.py
+sunpy/_compiler.c
+sunpy/cython_version.py
+sunpy/data/sample/*.fits
+sunpy/data/sample/*.csv
+sunpy/data/sample/*.fit
+.cache
+
+### https://raw.github.com/github/gitignore/master/Global/OSX.gitignore
+
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Icon must ends with two \r.
+Icon
+
+
+# Thumbnails
+._*
+
+# Files that might appear on external disk
+.Spotlight-V100
+.Trashes
+
+
+### https://raw.github.com/github/gitignore/master/Global/Windows.gitignore
+
+# Windows image file caches
+Thumbs.db
+ehthumbs.db
+
+# Folder config file
+Desktop.ini
+
+# Recycle Bin used on file shares
+$RECYCLE.BIN/
+
+# Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+

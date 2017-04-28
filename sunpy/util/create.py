@@ -1,17 +1,21 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import os
 import glob
 
 from sunpy import config
 from sunpy.util.net import download_file
+from sunpy.util.config import get_and_create_download_dir
 
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
+from sunpy.extern import six
+from sunpy.extern.six.moves import map
 
 __all__ = ['Parent']
+
 
 class Parent(object):
     _create = ConditionalDispatch()
@@ -22,7 +26,7 @@ class Parent(object):
 
     @classmethod
     def read_many(cls, filenames):
-        return map(cls.read, filenames)
+        return list(map(cls.read, filenames))
 
     @classmethod
     def from_glob(cls, pattern):
@@ -38,14 +42,14 @@ class Parent(object):
         """
         matches = glob.glob(os.path.expanduser(singlepattern))
         if len(matches) != 1:
-            raise ValueError("Invalid number of matches: %d" % len(matches))
+            raise ValueError("Invalid number of matches: {0:d}".format(len(matches)))
         return cls.read(matches[0])
 
     @classmethod
     def from_files(cls, filenames):
         """ Return list of object read from given list of
         filenames. """
-        filenames = map(os.path.expanduser, filenames)
+        filenames = list(map(os.path.expanduser, filenames))
         return cls.read_many(filenames)
 
     @classmethod
@@ -71,41 +75,40 @@ class Parent(object):
         url : str
             URL to retrieve the data from
         """
-        default_dir = config.get("downloads", "download_dir")
-        path = download_file(url, default_dir)
+        path = download_file(url, get_and_create_download_dir())
         return cls.read(path)
 
 
 Parent._create.add(
     run_cls('from_file'),
     lambda cls, filename: os.path.isfile(os.path.expanduser(filename)),
-    [type, basestring], check=False
+    [type, six.string_types], check=False
 )
 Parent._create.add(
-# pylint: disable=W0108
-# The lambda is necessary because introspection is peformed on the
-# argspec of the function.
+    # pylint: disable=W0108
+    # The lambda is necessary because introspection is performed on the
+    # argspec of the function.
     run_cls('from_dir'),
     lambda cls, directory: os.path.isdir(os.path.expanduser(directory)),
-    [type, basestring], check=False
+    [type, six.string_types], check=False
 )
 # If it is not a kwarg and only one matches, do not return a list.
 Parent._create.add(
     run_cls('from_single_glob'),
     lambda cls, singlepattern: ('*' in singlepattern and
-                           len(glob.glob(
-                               os.path.expanduser(singlepattern))) == 1),
-    [type, basestring], check=False
+                                len(glob.glob(
+                                os.path.expanduser(singlepattern))) == 1),
+    [type, six.string_types], check=False
 )
 # This case only gets executed under the condition that the previous one wasn't.
 # This is either because more than one file matched, or because the user
-# explicitely used pattern=, in both cases we want a list.
+# explicitly used pattern=, in both cases we want a list.
 Parent._create.add(
     run_cls('from_glob'),
     lambda cls, pattern: '*' in pattern and glob.glob(
         os.path.expanduser(pattern)
         ),
-    [type, basestring], check=False
+    [type, six.string_types], check=False
 )
 Parent._create.add(
     run_cls('from_files'),
@@ -115,5 +118,5 @@ Parent._create.add(
 Parent._create.add(
     run_cls('from_url'),
     lambda cls, url: True,
-    types=[type, basestring], check=False
+    types=[type, six.string_types], check=False
 )

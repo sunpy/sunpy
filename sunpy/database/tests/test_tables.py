@@ -5,18 +5,37 @@
 
 from collections import Hashable
 from datetime import datetime
-import os.path
+
+import pytest
+import os
+
+from astropy import units as u
+from astropy import conf
 
 from sunpy.database import Database
 from sunpy.database.tables import FitsHeaderEntry, FitsKeyComment, Tag,\
     DatabaseEntry, entries_from_query_result, entries_from_dir,\
-    entries_from_file, display_entries, WaveunitNotFoundError
+    entries_from_file, _create_display_table, display_entries,\
+    WaveunitNotFoundError
 from sunpy.net import vso
 from sunpy.data.test import rootdir as testdir
 from sunpy.data.test.waveunit import waveunitdir, MQ_IMAGE
-from sunpy.data.sample import RHESSI_IMAGE, EIT_195_IMAGE
+from sunpy.extern.six import next
 
-import pytest
+
+RHESSI_IMAGE = os.path.join(testdir, 'hsi_image_20101016_191218.fits')
+EIT_195_IMAGE = os.path.join(testdir, 'EIT/efz20040301.000010_s.fits')
+GOES_DATA = os.path.join(testdir, 'go1520110607.fits')
+
+"""
+The hsi_image_20101016_191218.fits file and go1520110607.fits file lie in the sunpy/data/tests dirctory.
+The efz20040301.000010_s.fits file lies in the sunpy/data/tests/EIT directory.
+
+RHESSI_IMAGE = sunpy/data/test/hsi_image_20101016_191218.fits
+EIT_195_IMAGE = sunpy/data/test/EIT/efz20040301.000010_s.fits
+GOES_DATA = sunpy/data/test/go1520110607.fits
+
+"""
 
 
 @pytest.fixture
@@ -37,7 +56,7 @@ def qr_block_with_missing_physobs():
     return vso.VSOClient().query(
         vso.attrs.Time('20130805T120000', '20130805T121000'),
         vso.attrs.Instrument('SWAVES'), vso.attrs.Source('STEREO_A'),
-        vso.attrs.Provider('SSC'), vso.attrs.Wave(10, 160, 'kHz'))[0]
+        vso.attrs.Provider('SSC'), vso.attrs.Wavelength(10 * u.kHz, 160 * u.kHz))[0]
 
 
 @pytest.fixture
@@ -152,9 +171,9 @@ def test_entries_from_file():
         FitsHeaderEntry('COMMENT', ''),
         FitsHeaderEntry('HISTORY', '')]
     assert entry.fits_header_entries == expected_fits_header_entries
-    assert entry.fits_key_comments == [
+    assert entry.fits_key_comments.sort() == [
         FitsKeyComment('SIMPLE', 'Written by IDL:  Mon Aug 12 08:48:08 2013'),
-        FitsKeyComment('BITPIX', 'Integer*2 (short integer)')]
+        FitsKeyComment('BITPIX', 'Integer*2 (short integer)')].sort()
     assert entry.instrument == 'Spectroheliograph'
     assert entry.observation_time_start == datetime(2013, 8, 12, 8, 42, 53)
     assert entry.observation_time_end == datetime(2013, 8, 12, 8, 42, 53)
@@ -166,18 +185,36 @@ def test_entries_from_file():
 def test_entries_from_file_withoutwaveunit():
     # does not raise `WaveunitNotFoundError`, because no wavelength information
     # is present in this file
-    entries_from_file(RHESSI_IMAGE).next()
+    next(entries_from_file(RHESSI_IMAGE))
     with pytest.raises(WaveunitNotFoundError):
-        entries_from_file(EIT_195_IMAGE).next()
+        next(entries_from_file(EIT_195_IMAGE))
+
+
+def test_entries_from_file_time_string_parse_format():
+
+    with pytest.raises(ValueError):
+        # Error should be  raised because of the date format in GOES_DATA
+        entries = list(entries_from_file(GOES_DATA))
+
+    entries = list(entries_from_file(GOES_DATA,
+                   time_string_parse_format='%d/%m/%Y'))
+
+    assert len(entries) == 4
+    entry = entries[0]
+    assert len(entry.fits_header_entries) == 17
+
+    assert entry.observation_time_start == datetime(2011, 6, 7, 0, 0)
+    assert entry.observation_time_end == datetime(2011, 6, 7, 0, 0)
+    assert entry.path == GOES_DATA
 
 
 def test_entries_from_dir():
-    entries = list(entries_from_dir(waveunitdir))
+    entries = list(entries_from_dir(waveunitdir, time_string_parse_format='%d/%m/%Y'))
     assert len(entries) == 4
     for entry, filename in entries:
         if filename.endswith('na120701.091058.fits'):
             break
-    assert entry.path == os.path.join(waveunitdir, filename)
+    assert entry.path in (os.path.join(waveunitdir, filename), filename)
     assert filename.startswith(waveunitdir)
     assert len(entry.fits_header_entries) == 42
     assert entry.fits_header_entries == [
@@ -223,7 +260,7 @@ def test_entries_from_dir():
         FitsHeaderEntry('SOLAR_R', 64.0),
         FitsHeaderEntry('COMMENT', ''),
         FitsHeaderEntry('HISTORY', '')]
-    assert entry.fits_key_comments == [
+    assert entry.fits_key_comments.sort() == [
         FitsKeyComment('WAVEUNIT', 'in meters'),
         FitsKeyComment('NAXIS2', 'number of rows'),
         FitsKeyComment('CDELT2', 'pixel scale y, in solar radius/pixel'),
@@ -239,19 +276,21 @@ def test_entries_from_dir():
         FitsKeyComment('BITPIX', 'IEEE 32-bit floating point values'),
         FitsKeyComment('DATE', 'Date of file creation'),
         FitsKeyComment('FREQUNIT', 'in MHz'),
-        FitsKeyComment('EXPTIME', 'in seconds')]
+        FitsKeyComment('EXPTIME', 'in seconds')].sort()
 
 
 def test_entries_from_dir_recursively_true():
-    entries = list(
-        entries_from_dir(testdir, True, default_waveunit='angstrom'))
-    assert len(entries) == 28
+    entries = list(entries_from_dir(testdir, True,
+                                    default_waveunit='angstrom',
+                                    time_string_parse_format='%d/%m/%Y'))
+    assert len(entries) == 100
 
 
 def test_entries_from_dir_recursively_false():
-    entries = list(
-        entries_from_dir(testdir, False, default_waveunit='angstrom'))
-    assert len(entries) == 11
+    entries = list(entries_from_dir(testdir, False,
+                                    default_waveunit='angstrom',
+                                    time_string_parse_format='%d/%m/%Y'))
+    assert len(entries) == 79
 
 
 @pytest.mark.online
@@ -279,8 +318,29 @@ def test_entry_from_query_results_with_none_wave(qr_with_none_waves):
 def test_entry_from_query_results_with_none_wave_and_default_unit(
         qr_with_none_waves):
     entries = list(entries_from_query_result(qr_with_none_waves, 'nm'))
-    assert len(entries) == 4
+    assert len(entries) == 7
     assert entries == [
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_blue_intensity_series.tar.gz',
+            observation_time_start=datetime(1996, 4, 11, 0, 0, 0),
+            observation_time_end=datetime(2014, 3, 30, 23, 59, 0),
+            instrument='VIRGO', size=32652.0, wavemin=None,
+            wavemax=None),
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_green_intensity_series.tar.gz',
+            observation_time_start=datetime(1996, 4, 11, 0, 0, 0),
+            observation_time_end=datetime(2014, 3, 30, 23, 59, 0),
+            instrument='VIRGO', size=32652.0, wavemin=None,
+            wavemax=None),
+        DatabaseEntry(
+            source='SOHO', provider='SDAC', physobs='intensity',
+            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_red_intensity_series.tar.gz',
+            observation_time_start=datetime(1996, 4, 11, 0, 0, 0),
+            observation_time_end=datetime(2014, 3, 30, 23, 59, 0),
+            instrument='VIRGO', size=32652.0, wavemin=None,
+            wavemax=None),
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
             fileid='/archive/soho/private/data/processed/virgo/level1/1212/HK/121222_1.H01',
@@ -296,7 +356,7 @@ def test_entry_from_query_results_with_none_wave_and_default_unit(
             instrument='VIRGO', size=329.0, wavemin=None,
             wavemax=None),
         DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs ='intensity',
+            source='SOHO', provider='SDAC', physobs='intensity',
             fileid='/archive/soho/private/data/processed/virgo/level1/1212/SPM/121222_1.S02',
             observation_time_start=datetime(2012, 12, 23, 23, 59, 3),
             observation_time_end=datetime(2012, 12, 24, 23, 59, 2),
@@ -311,22 +371,23 @@ def test_entry_from_query_results_with_none_wave_and_default_unit(
             wavemax=None)]
 
 
-def test_display_entries_missing_entries():
+def test_create_display_table_missing_entries():
     with pytest.raises(TypeError):
-        display_entries([], ['some', 'columns'])
+        _create_display_table([], ['some', 'columns'])
 
 
-def test_display_entries_empty_db():
+def test_create_display_table_empty_db():
     with pytest.raises(TypeError):
-        display_entries(Database('sqlite:///'), ['id'])
+        _create_display_table(Database('sqlite:///'), ['id'])
 
 
-def test_display_entries_missing_columns():
+def test_create_display_table_missing_columns():
     with pytest.raises(TypeError):
-        display_entries([DatabaseEntry()], [])
+        _create_display_table([DatabaseEntry()], [])
 
 
-def test_display_entries():
+def test_create_display_table():
+    conf.max_width = 500
     entries = [
         DatabaseEntry(
             id=1, source='SOHO', provider='SDAC', physobs='intensity',
@@ -347,8 +408,9 @@ def test_display_entries():
         'id', 'source', 'provider', 'physobs', 'fileid', 'download_time',
         'observation_time_start', 'instrument', 'size',
         'wavemin', 'path', 'starred', 'tags']
-    table = display_entries(entries, columns)
+    table = _create_display_table(entries, columns)
     filedir = os.path.dirname(os.path.realpath(__file__))
-    with open(os.path.join(filedir,'test_table.txt'), 'r') as f:
+    with open(os.path.join(filedir, 'test_table.txt'), 'r') as f:
         stored_table = f.read()
-    assert table.strip() == stored_table.strip()
+    assert table.__str__().strip() == stored_table.strip()
+    conf.reset('max_width')

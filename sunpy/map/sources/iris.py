@@ -4,72 +4,50 @@ import numpy as np
 
 from sunpy.map import GenericMap
 
-__all__ = ['IRISMap']
+__all__ = ['SJIMap']
 
-class IRISMap(GenericMap):
+class SJIMap(GenericMap):
     """
-    A 2D IRIS Map
+    A 2D IRIS Slit Jaw Imager Map.
+
+    The Interface Region Imaging Spectrograph (IRIS) small explorer spacecraft
+    provides simultaneous spectra and images of the photosphere, chromosphere,
+    transition region, and corona with 0.33 to 0.4 arcsec spatial resolution,
+    2-second temporal resolution and 1 km/s velocity resolution over a
+    field-of- view of up to 175 arcsec by 175 arcsec.  IRIS consists of a 19-cm
+    UV telescope that feeds a slit-based dual-bandpass imaging spectrograph.
+
+    Slit-jaw images in four different passbands (C ii 1330, Si iv 1400,
+    Mg ii k 2796 and Mg ii wing 2830  A) can be taken simultaneously with
+    spectral rasters that sample regions up to 130 arcsec by 175 arcsec at a
+    variety of spatial samplings (from 0.33 arcsec and up).
+    IRIS is sensitive to emission from plasma at temperatures between
+    5000 K and 10 MK.
+
+    IRIS was launched into a Sun-synchronous orbit on 27 June 2013.
+
+    .. warning::
+
+        This object can only handle level 1 SJI files.
+
+    References
+    ----------
+    * `IRIS Mission Page <http://iris.lmsal.com>`_
+    * `IRIS Analysis Guide <https://iris.lmsal.com/itn26/itn26.pdf>`_
+    * `IRIS Instrument Paper <https://www.lmsal.com/iris_science/doc?cmd=dcur&proj_num=IS0196&file_type=pdf>`_
     """
-    
-    def __init__(self, data, header, **kwargs):    
+
+    def __init__(self, data, header, **kwargs):
         GenericMap.__init__(self, data, header, **kwargs)
 
-    def iris_rot(self, missing=0.0, interpolation='bicubic', interp_param=-0.5):
-        """
-        Return aligned map based on header keywords
-        
-        Parameters
-        ----------
-        missing: float
-           The numerical value to fill any missing points after rotation.
-           Default: 0.0
-        interpolation: {'nearest' | 'bilinear' | 'spline' | 'bicubic'}
-            Interpolation method to use in the transform. 
-            Spline uses the 
-            scipy.ndimage.interpolation.affline_transform routine.
-            nearest, bilinear and bicubic all replicate the IDL rot() function.
-            Default: 'bicubic'
-        interp_par: Int or Float
-            Optional parameter for controlling the interpolation.
-            Spline interpolation requires an integer value between 1 and 5 for 
-            the degree of the spline fit.
-            Default: 3
-            BiCubic interpolation requires a flaot value between -1 and 0.
-            Default: 0.5
-            Other interpolation options ingore the argument.
-            
-        Returns
-        -------
-        New rotated, rescaled, translated map
-        
-        Notes
-        -----
-        Apart from interpolation='spline' all other options use a compiled 
-        C-API extension. If for some reason this is not compiled correctly this
-        routine will fall back upon the scipy implementation of order = 3.
-        For more infomation see:
-            http://sunpy.readthedocs.org/en/latest/guide/troubleshooting.html#crotate-warning
-        """
-        
-        cords = np.matrix([[self.meta['pc1_1'], self.meta['pc1_2']],
-                           [self.meta['pc2_1'], self.meta['pc2_2']]])
-        
-        #Return a new map
-        img2 = self.rotate(rmatrix=cords, recenter=False,
-                           missing=missing, interpolation=interpolation,
-                           interp_param=interp_param)
-             
-        # modify the header to show the fact it's been corrected
-        img2.meta['pc1_1'] = 1
-        img2.meta['pc1_2'] = 0
-        img2.meta['pc2_1'] = 0
-        img2.meta['pc2_2'] = 1
-    
-        return img2    
+        self.meta['detector'] = "SJI"
+        self.meta['waveunit'] = "Angstrom"
+        self.meta['wavelnth'] = header['twave1']
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
-        """Determines if header corresponds to an AIA image"""
+        """Determines if header corresponds to an IRIS SJI image"""
         tele = header.get('TELESCOP', '').startswith('IRIS')
         obs = header.get('INSTRUME', '').startswith('SJI')
+        level = header.get('lvl_num') == 1
         return tele and obs

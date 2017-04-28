@@ -1,21 +1,44 @@
 """SunPy test data files"""
 from __future__ import absolute_import
-import sunpy
+
 import os
+import glob
 
-__author__ = "Keith Hughitt"
-__email__ = "keith.hughitt@nasa.gov"
+from astropy.utils.data import get_pkg_data_filename
 
-rootdir = os.path.join(os.path.dirname(sunpy.__file__), "data", "test") 
+import sunpy
 
-#
-# EVE
-#
-EVE_LEVEL0_CSV = os.path.join(rootdir, "LATEST_EVE_L0CS_DIODES_1m.txt")
-EVE_AVERAGES_CSV = os.path.join(rootdir, "EVE_He_II_304_averages.csv")
+__all__ = ['rootdir', 'file_list', 'get_test_filepath']
 
-#
-# JPEG2000 sample
-#
-AIA_193_JP2 = os.path.join(rootdir,
-                           "2013_06_24__17_31_30_84__SDO_AIA_AIA_193.jp2")
+rootdir = os.path.join(os.path.dirname(sunpy.__file__), "data", "test")
+
+def get_test_filepath(filename, **kwargs):
+    """
+    Return the full path to a test file in the ``data/test`` directory.
+
+    Parameters
+    ----------
+    filename : `str`
+        The name of the file inside the ``data/test`` directory.
+
+    Return
+    ------
+    filepath : `str`
+        The full path to the file.
+
+    See Also
+    --------
+
+    astropy.utils.data.get_pkg_data_filename : Get package data filename
+
+    Notes
+    -----
+
+    This is a wrapper around `astropy.utils.data.get_pkg_data_filename` which
+    sets the ``package`` kwarg to be 'sunpy.data.test`.
+
+    """
+    return get_pkg_data_filename(filename, package="sunpy.data.test", **kwargs)
+
+
+file_list = glob.glob(os.path.join(rootdir, '*.[!p]*'))

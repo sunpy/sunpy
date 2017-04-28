@@ -37,7 +37,7 @@ class CCTests(unittest.TestCase):
         self.failUnless(cc.matchany(end, -1))
 
     def testnparray(self):
-        # Let's test that the shape of the array matchs the expected
+        # Let's test that the shape of the array matches the expected
         # To do so we need to use np.array, instead of lists.
         cc = Chaincode([0, 0], "2460")
         shape = (2,5)
@@ -52,13 +52,13 @@ class CCTests(unittest.TestCase):
         cc = Chaincode([0, 0], "002")
         boundingbox = [[-1, 0], [-1, 0]]
         self.failIf(np.all(cc.BoundingBox() != np.array(boundingbox)))
-                      
+
     def testSubBoundingBoxX(self):
-        cc = Chaincode([0, 0], "44464660012075602223") 
+        cc = Chaincode([0, 0], "44464660012075602223")
         self.failUnless(cc.subBoundingBox(xedge=[0.1, 2]) == [0, 3])
 
     def testSubBoundingBoxY(self):
-        cc = Chaincode([0, 0], "44464660012075602223") 
+        cc = Chaincode([0, 0], "44464660012075602223")
         self.failUnless(cc.subBoundingBox(yedge=[-1, 0.5]) == [0, 3])
 
 

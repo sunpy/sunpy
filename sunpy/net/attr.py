@@ -27,8 +27,10 @@ Please note that & is evaluated first, so A & B | C is equivalent to
 from __future__ import absolute_import
 
 from sunpy.util.multimethod import MultiMethod
+from sunpy.extern.six import iteritems
 
 # XXX: Maybe allow other normal forms.
+
 
 class Attr(object):
     """ This is the base for all attributes. """
@@ -37,15 +39,19 @@ class Attr(object):
             return AttrOr([elem & self for elem in other.attrs])
         if self.collides(other):
             return NotImplemented
+        if isinstance(other, AttrAnd):
+            return AttrAnd([self] + list(other.attrs))
         return AttrAnd([self, other])
 
     def __hash__(self):
-        return hash(frozenset(vars(self).iteritems()))
+        return hash(frozenset(iteritems(vars(self))))
 
     def __or__(self, other):
         # Optimization.
         if self == other:
             return self
+        if isinstance(other, AttrOr):
+            return AttrOr([self] + list(other.attrs))
         return AttrOr([self, other])
 
     def collides(self, other):
@@ -102,7 +108,7 @@ class AttrAnd(Attr):
     __rand__ = __and__
 
     def __repr__(self):
-        return "<AttrAnd(%r)>" % self.attrs
+        return "<AttrAnd({att!r})>".format(att=self.attrs)
 
     def __eq__(self, other):
         if not isinstance(other, AttrAnd):
@@ -153,7 +159,7 @@ class AttrOr(Attr):
         return False
 
     def __repr__(self):
-        return "<AttrOr(%r)>" % self.attrs
+        return "<AttrOr({att!r})>".format(att=self.attrs)
 
     def __eq__(self, other):
         if not isinstance(other, AttrOr):
@@ -173,10 +179,10 @@ class ValueAttr(Attr):
         self.attrs = attrs
 
     def __repr__(self):
-        return "<ValueAttr(%r)>" % (self.attrs)
+        return "<ValueAttr({att!r})>".format(att=self.attrs)
 
     def __hash__(self):
-        return hash(frozenset(self.attrs.iteritems()))
+        return hash(frozenset(iteritems(self.attrs.iteritems)))
 
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
@@ -244,7 +250,7 @@ class AttrWalker(object):
 
 
 def and_(*args):
-    """ Trick operator precendence.
+    """ Trick operator precedence.
 
     and_(foo < bar, bar < baz)
     """
@@ -253,8 +259,9 @@ def and_(*args):
         value &= elem
     return value
 
+
 def or_(*args):
-    """ Trick operator precendence.
+    """ Trick operator precedence.
 
     or_(foo < bar, bar < baz)
     """

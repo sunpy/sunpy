@@ -1,75 +1,101 @@
 language: python
 
+# Setting sudo to false opts in to Travis-CI container-based builds.
+sudo: false
+
+# The apt packages below are needed but can no longer be installed with
+# sudo apt-get.
+addons:
+    apt:
+        packages:
+            - libatlas-dev
+            - liblapack-dev
+            - gfortran
+            - graphviz
+            - texlive-latex-extra
+            - dvipng
+
 python:
-  - 2.6
-  - 2.7
+    - 2.7
+    - 3.4
+    - 3.5
+    - 3.6
 
-virtualenv:
-     system_site_packages: false
-
-# Configure the build environment. Global varibles are defined for all
-# configurations. Each configuration in the matrix is run for each python version
-# above.
+# Configure the build environment. Global varibles are defined for all configurations.
 env:
     global:
-        - PIP_WHEEL_COMMAND="--use-mirrors --find-links http://sunpy.cadair.com/wheelhouse/index.html --use-wheel --upgrade"
-        - SUDS_PKG='suds-jurko==0.4.1.jurko.4'
-        - TEST_MODE='tests'
+        - COLUMNS=240
+        - PREVIOUS_NUMPY=1.10.4
+        - NUMPY_VERSION='stable'
+        - ASTROPY_VERSION='stable'
+        - MAIN_CMD='python setup.py'
+        - SETUP_CMD='test'
+        - CONDA_CHANNELS='astropy astropy-ci-extras conda-forge'
+        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock pyyaml pandas nomkl pytest-cov coverage hypothesis'
+        - PIP_DEPENDENCIES='suds-jurko sphinx-gallery glymur pytest-sugar'
+        - EVENT_TYPE='pull_request push'
+
     matrix:
-        - NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.13.1
-        - NUMPY_VERSION=1.7.1 PANDAS_VERSION=0.13.1
-        - NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.12.0
+        - SETUP_CMD='egg_info'
+
 matrix:
-     include:
-        - python: 2.7
-          env: TEST_MODE='sphinx' NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.13.1
-        - python: 2.7
-          env: TEST_MODE='offline' NUMPY_VERSION=1.8.1 PANDAS_VERSION=0.13.1
+    include:
+         # We order the jobs, so the longest running tests are in the top
+         # three positions of the matrix
+         - python: 3.6
+           env: SETUP_CMD='test --online --coverage -V'
+                EVENT_TYPE='push pull_request cron'
 
-before_install:
-# Pick the suds version based on the python version
-   - if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then SUDS_PKG='suds' ;fi
-# Make sure the system is upto date and install scipy requirements
-   - sudo apt-get update -qq
-   - sudo apt-get install -qq libatlas-dev liblapack-dev gfortran
-   - if [[ $TEST_MODE == 'sphinx' ]]; then sudo apt-get install graphviz texlive-latex-extra dvipng; fi
-# Make sure pip is at the latest version (>1.4 for wheels)
-   - pip install pip --upgrade
-# Wheels also need a recent version of setuptools
-   - pip install setuptools>=0.8 --upgrade
-# Install more upto date openjpeg library.
-   - wget http://openjpeg.googlecode.com/files/openjpeg-1.5.0-Linux-x86_64.tar.gz
-   - sudo tar -xvf openjpeg-1.5.0-Linux-x86_64.tar.gz --strip-components=1 -C /
-# Install coveralls
-   - pip install $PIP_WHEEL_COMMAND coveralls pytest-cov
+         - os: osx
+           language: generic
+           env: PYTHON_VERSION=3.6
 
-# Install all SunPy dependacies using wheels.
+         - python: 3.6
+           env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
+                EVENT_TYPE='push pull_request cron'
+
+         - python: 2.7
+           env: SETUP_CMD='test'
+
+         # Previous numpy is tested on an older python version
+         - python: 3.4
+           env: NUMPY_VERSION=$PREVIOUS_NUMPY
+
+         - python: 2.7
+           env: SETUP_CMD='build_docs -w'
+                EVENT_TYPE='push pull_request cron'
+
+         # Figure test runs use an env stored in the repo so don't have conda
+         # requirements
+         - python: 2.7
+           env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
+
+         - python: 3.5
+           env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
+
 install:
-# Install Numpy first so we force the version we are using
-   - pip install $PIP_WHEEL_COMMAND numpy==$NUMPY_VERSION
-   - pip install $PIP_WHEEL_COMMAND matplotlib
-   - pip install $PIP_WHEEL_COMMAND scipy
-   - pip install $PIP_WHEEL_COMMAND pandas==$PANDAS_VERSION
-   - pip install $PIP_WHEEL_COMMAND astropy>=0.3.1
-   - pip install $PIP_WHEEL_COMMAND $SUDS_PKG beautifulsoup4 requests
-   - pip install $PIP_WHEEL_COMMAND pytest 
-   - pip install $PIP_WHEEL_COMMAND glymur
-# Install scikit-image package - originally included in order to test image coalignment functionality
-   - pip install $PIP_WHEEL_COMMAND cython
-   - pip install $PIP_WHEEL_COMMAND scikit-image
-# Install sphinx if needed
-   - if [[ $TEST_MODE == 'sphinx' ]]; then pip install $PIP_WHEEL_COMMAND sphinx>=1.2; fi 
+    - git clone git://github.com/astropy/ci-helpers.git
+    - source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh
+    - source continuous-integration/travis/openjpeg.sh  # so glymur knows where to look
 
-# Install SunPy and run tests.
+before_script:
+    # Download the sample data for the build of the documentation.
+    - if [[ $SETUP_CMD == *build_docs* ]]; then python -c "import sunpy.data; sunpy.data.download_sample_data()"; fi
+    - if [[ $SETUP_CMD == *figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; fi
+
+
 script:
-   - python setup.py develop
-   - if [[ $TEST_MODE == 'sphinx' ]]; then cd doc/source && sphinx-build -W -b html -d _build/doctrees   . _build/html; fi
-   - if [[ $TEST_MODE == 'tests' ]]; then py.test --cov-report html --cov sunpy; fi
-   - if [[ $TEST_MODE == 'offline' ]]; then py.test --cov-report html --cov sunpy -k-online; fi
+    - $MAIN_CMD $SETUP_CMD
 
 after_success:
-   - if [[ $TEST_MODE == 'tests' ]]; then coveralls; fi
+    - if [[ $SETUP_CMD == *coverage* ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
 
 # Notify the IRC channel of build status
 notifications:
-  irc: "chat.freenode.net#SunPy"
+  webhooks:
+    urls:
+      - https://webhooks.gitter.im/e/d1bf84e1bc1293e4dbc5
+      - "https://scalar.vector.im/api/neb/services/hooks/dHJhdmlzLWNpLyU0MENhZGFpciUzQW1hdHJpeC5vcmcvJTIxTWVSZEZwRW9uTG9Dd2hvSGVUJTNBbWF0cml4Lm9yZw"
+    on_success: change  # always|never|change
+    on_failure: always
+    on_start: never

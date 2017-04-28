@@ -6,6 +6,7 @@
 from datetime import datetime
 
 import pytest
+from astropy import units as u
 
 from sunpy.database.database import Database
 from sunpy.database import tables
@@ -13,6 +14,7 @@ from sunpy.database.attrs import walker, Starred, Tag, Path, DownloadTime,\
     FitsHeaderEntry
 from sunpy.net.attr import DummyAttr, AttrAnd, AttrOr
 from sunpy.net import vso
+from sunpy.extern.six.moves import range
 
 
 @pytest.fixture
@@ -23,7 +25,7 @@ def obj():
 @pytest.fixture
 def session():
     database = Database('sqlite:///:memory:')
-    for i in xrange(1, 11):
+    for i in range(1, 11):
         entry = tables.DatabaseEntry()
         database.add(entry)
         # every entry has a fake download time of 2005-06-15 i:00:00
@@ -423,9 +425,9 @@ def test_walker_create_vso_instrument(vso_session):
 
 @pytest.mark.online
 def test_walker_create_wave(vso_session):
-    entries = walker.create(vso.attrs.Wave(0, 10), vso_session)
+    entries = walker.create(vso.attrs.Wavelength(0 * u.AA, 10 * u.AA), vso_session)
     assert len(entries) == 2
-    entries = walker.create(vso.attrs.Wave(5, 10), vso_session)
+    entries = walker.create(vso.attrs.Wavelength(5 * u.AA, 10 * u.AA), vso_session)
     assert len(entries) == 0
 
 

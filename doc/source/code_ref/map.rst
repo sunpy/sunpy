@@ -14,74 +14,122 @@ SunPy map
 
 Overview
 --------
-One of core classes in SunPy is a Map. A SunPy Map object is simply a 
+One of core classes in SunPy is a Map. A SunPy Map object is simply a
 spatially-aware data array, often an image. In order to make it easy to work
 with image data in SunPy, the Map object provides a number of methods for
 commonly performed operations.
 
-2D map objects are subclasses of sunpy.map.MapBase and all Map objects are 
-created using the Map factory sunpy.map.Map.
+2D map objects are subclasses of `~sunpy.map.MapBase` and all Map objects are
+created using the Map factory `~sunpy.map.Map`.
 
-.. Todo:
+A number of instrument are supported by subclassing this base object. See
+:ref:`map-sources` to see a list of all of them. More complex subclasses are also
+available. See :ref:`map-classes`.
+
+.. todo :
     1. Map factory and registration
     2. MapBase and Generic Map
-    3. MapMeta and the seperation from the file io
+    3. MapMeta and the separation from the file io
 
 
 Creating Map Objects
 --------------------
-SunPy Map objects are constructed using the special factory 
-class :class:`Map`: ::
+SunPy Map objects are constructed using the special factory
+class `~sunpy.map.Map`: ::
 
->>> x = sunpy.map.Map('file.fits')
+    x = sunpy.map.Map('file.fits')
 
-The result of a call to `Map` will be either a `mapbase.GenericMap` object, 
-or a subclass of `mapbase.GenericMap` which either deals with a specific type of data, 
-e.g. `AIAMap` or `LASCOMap`, or if no instrument matches, a 2D map `mapbase.GenericMap`.
+The result of a call to `~sunpy.map.Map` will be either a `~sunpy.map.mapbase.GenericMap` object,
+or a subclass of `~sunpy.map.mapbase.GenericMap` which either deals with a specific type of data,
+e.g. `~sunpy.map.sources.sdo.AIAMap` or `~sunpy.map.sources.soho.LASCOMap`
+(see :ref:`map-classes` to see a list of all of them), or if no
+instrument matches, a 2D map `~sunpy.map.mapbase.GenericMap`.
 
 
-.. autoclass:: sunpy.map.Map
-   
+.. autoclass:: sunpy.map.map_factory.MapFactory
+
+
+Using Map Objects
+-----------------
+
+Once a map object has been created using `~sunpy.map.Map` it will be a instance
+or a subclass of the `~sunpy.map.mapbase.GenericMap` class. Irrespective of
+the instrument the map is constructed for, all maps behave the same and are
+interchangeable with one another. It is possible to manipulate the map or access
+meta data about the map from the methods and properties of the map class.
+The following documentation of `~sunpy.map.mapbase.GenericMap` lists the
+attributes and methods that are available on all Map objects.
+
+.. autoclass:: sunpy.map.mapbase.GenericMap
+   :members:
+
+.. _map-classes:
+
 Map Classes
 -----------
-There are a series of base map classes which are specalised for each 
-instrument. These subclass GenericMap and then register with
-the Map factory class, which will direct instatiation of an instrument class if the correct
-parameters are met. 
+Defined in `sunpy.map.sources` are a set of `~sunpy.map.GenericMap` subclasses
+which convert the specific metadata and other differences in each instruments
+data to the standard `~sunpy.map.GenericMap` interface.
+These 'sources' also define things like the colormap and default
+normalisation for each instrument.
+These subclasses also provide a method, which describes to the ``Map`` factory
+which data and metadata pairs match its instrument.
 
 .. automodapi:: sunpy.map
     :no-main-docstr:
     :no-heading:
 
-Writing a new Map Class
------------------------
+.. _map-sources:
 
-Map classes can be registered with the Map factory, even if the new class is not
-officially part of SunPy.  This is good for prototyping new instruments.  For
-example, to add a Map type for a future instrument, consider the code skeleton ::
+Instrument Map Classes
+----------------------
 
-    import sunpy
-    
-    class FutureMap(sunpy.GenericMap):
-    
+.. automodapi:: sunpy.map.sources
+
+
+Writing a new Instrument Map Class
+----------------------------------
+
+Any subclass of `~sunpy.map.GenericMap` which defines a method named
+`~sunpy.map.GenericMap.is_datasource_for` will automatically be registered with
+the ``Map`` factory. The ``is_datasource_for`` method describes the form of the
+data and metadata for which the `~sunpy.map.GenericMap` subclass is valid. For
+example it might check the value of the ``INSTRUMENT`` key in the metadata
+dictionary.
+This makes it straightforward to define your own
+`~sunpy.map.GenericMap` subclass for a new instrument or a custom data source
+like simulated data. These classes only have to be imported for this to work, as
+demonstrated by the following example.
+
+.. code-block:: python
+
+    import sunpy.map
+    class FutureMap(sunpy.map.GenericMap):
+
         def __init__(self, data, header, **kwargs):
-        
-            GenericMap.__init__(self, data, header, **kwargs)
-            
+
+            super(FutureMap, self).__init__(data, header, **kwargs)
+
             # Any Future Instrument specific keyword manipulation
-       
+
        # Specify a classmethod that determines if the data-header pair matches
        # the new instrument
        @classmethod
        def is_datasource_for(cls, data, header, **kwargs):
             """Determines if header corresponds to an AIA image"""
             return header.get('instrume', '').startswith('FUTURESCOPE')
-            
-Then, to be able to instantiate a FutureMap using the Map() factory, one must
-register the FutureMap type with the factory ::
 
-    sunpy.map.Map.register(FutureMap, FutureMap.is_datasource_for)
-    
-If this line is placed correctly, for example in your subpackages __init__.py,
-it can be guaranteed that the FutureMap is always accessible when your package
-is imported.
+
+This class will now be available through the ``Map`` factory as long as this
+class has been defined, i.e. imported into the current session.
+
+If you do not want to create a method named ``is_datasource_for`` you can
+manually register your class and matching method using the following method
+
+.. code-block:: python
+
+    import sunpy.map
+
+    sunpy.map.Map.register(FutureMap, FutureMap.some_matching_method)
+
+

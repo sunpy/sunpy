@@ -6,20 +6,23 @@
 from __future__ import absolute_import
 
 from sqlalchemy import or_, and_, not_
-from astropy.units import Unit, nm, equivalencies
 
 from sunpy.time import parse_time
 from sunpy.net.vso import attrs as vso_attrs
 from sunpy.net.attr import AttrWalker, Attr, ValueAttr, AttrAnd, AttrOr
 from sunpy.database.tables import DatabaseEntry, Tag as TableTag,\
     FitsHeaderEntry as TableFitsHeaderEntry
+from sunpy.extern import six
 
 __all__ = [
     'Starred', 'Tag', 'Path', 'DownloadTime', 'FitsHeaderEntry', 'walker']
 
-# This frozenset has been hardcoded to denote VSO attributes that are currently supported, on derdon's request.
-SUPPORTED_SIMPLE_VSO_ATTRS = frozenset(['source', 'provider', 'physobs', 'instrument'])
+# This frozenset has been hardcoded to denote VSO attributes that are
+# currently supported, on derdon's request.
+SUPPORTED_SIMPLE_VSO_ATTRS = frozenset(['source', 'provider', 'physobs',
+                                        'instrument'])
 SUPPORTED_NONVSO_ATTRS = frozenset(['starred'])
+
 
 class _BooleanAttr(object):
     def __init__(self, value, make):
@@ -40,7 +43,10 @@ class _BooleanAttr(object):
         attr.value = self.value or other.value
         return attr
 
-    def __nonzero__(self):
+    def __nonzero__(self):  # py 2.x
+        return self.value
+
+    def __bool__(self):  # py 3.x
         return self.value
 
     def __invert__(self):
@@ -50,6 +56,9 @@ class _BooleanAttr(object):
 
     def __eq__(self, other):
         return isinstance(other, self.make) and self.value == other.value
+
+    def __hash__(self):
+        return super(_BooleanAttr, self).__hash__()
 
     def collides(self, other):  # pragma: no cover
         return False
@@ -162,7 +171,7 @@ def _create(wlk, root, session):
 @walker.add_creator(ValueAttr)
 def _create(wlk, root, session):
     query = session.query(DatabaseEntry)
-    for key, value in root.attrs.iteritems():
+    for key, value in six.iteritems(root.attrs):
         typ = key[0]
         if typ == 'tag':
             criterion = TableTag.name.in_([value])
@@ -196,16 +205,13 @@ def _create(wlk, root, session):
         elif typ == 'path':
             path, inverted = value
             if inverted:
+                # pylint: disable=E711
                 query = query.filter(or_(
                     DatabaseEntry.path != path, DatabaseEntry.path == None))
             else:
                 query = query.filter(DatabaseEntry.path == path)
         elif typ == 'wave':
-            min_, max_, unit = value
-            waveunit = Unit(unit)
-            # convert min_ and max_ to nm from the unit `waveunit`
-            wavemin = waveunit.to(nm, min_, equivalencies.spectral())
-            wavemax = waveunit.to(nm, max_, equivalencies.spectral())
+            wavemin, wavemax, waveunit = value
             query = query.filter(and_(
                 DatabaseEntry.wavemin >= wavemin,
                 DatabaseEntry.wavemax <= wavemax))
@@ -253,9 +259,9 @@ def _convert(attr):
     return ValueAttr({(attr.__class__.__name__.lower(), ): attr.value})
 
 
-@walker.add_converter(vso_attrs.Wave)
+@walker.add_converter(vso_attrs.Wavelength)
 def _convert(attr):
-    return ValueAttr({('wave', ): (attr.min, attr.max, attr.unit)})
+    return ValueAttr({('wave', ): (attr.min.value, attr.max.value, str(attr.unit))})
 
 
 @walker.add_converter(vso_attrs.Time)

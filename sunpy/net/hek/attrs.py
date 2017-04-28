@@ -11,18 +11,25 @@
 """
 Attributes that can be used to construct HEK queries. They are different to
 the VSO ones in that a lot of them are wrappers that conveniently expose
-the comparisions by overloading Python operators. So, e.g., you are able
+the comparisons by overloading Python operators. So, e.g., you are able
 to say AR & AR.NumSpots < 5 to find all active regions with less than 5 spots.
 As with the VSO query, you can use the fundamental logic operators AND and OR
 to construct queries of almost arbitrary complexity. Note that complex queries
 result in multiple requests to the server which might make them less efficient.
 """
-
 from __future__ import absolute_import
 
 from datetime import datetime
 from sunpy.net import attr
 from sunpy.time import parse_time
+
+from sunpy.extern import six
+
+
+# Ugly hack for the deprecated apply decorator, this needs to be cleaned up
+def apply(f):
+    return f()
+
 
 class _ParamAttr(attr.Attr):
     """ A _ParamAttr is used to represent equality or inequality checks
@@ -33,7 +40,7 @@ class _ParamAttr(attr.Attr):
         self.name = name
         self.op = op
         self.value = value
-    
+
     def collides(self, other):
         if not isinstance(other, self.__class__):
             return False
@@ -44,13 +51,13 @@ class _ParamAttr(attr.Attr):
 class _BoolParamAttr(_ParamAttr):
     def __init__(self, name, value='true'):
         _ParamAttr.__init__(self, name, '=', value)
-    
+
     def __neg__(self):
         if self.value == 'true':
             return _BoolParamAttr(self.name, 'false')
         else:
             return _BoolParamAttr(self.name)
-    
+
     def __pos__(self):
         return _BoolParamAttr(self.name)
 
@@ -61,30 +68,30 @@ class _ListAttr(attr.Attr):
     item is added to that list. """
     def __init__(self, key, item):
         attr.Attr.__init__(self)
-        
+
         self.key = key
         self.item = item
-    
+
     def collides(self, other):
         return False
-    
+
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
         return vars(self) == vars(other)
-    
+
     def __hash__(self):
-        return hash(tuple(vars(self).itervalues()))
+        return hash(tuple(six.itervalues(vars(self))))
 
 
 class EventType(attr.Attr):
     def __init__(self, item):
         attr.Attr.__init__(self)
         self.item = item
-    
+
     def collides(self, other):
         return isinstance(other, EventType)
-    
+
     def __or__(self, other):
         if isinstance(other, EventType):
             return EventType(self.item + ',' + other.item)
@@ -99,18 +106,18 @@ class Time(attr.Attr):
         attr.Attr.__init__(self)
         self.start = start
         self.end = end
-    
+
     def collides(self, other):
         return isinstance(other, Time)
-    
+
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
         return vars(self) == vars(other)
-    
+
     def __hash__(self):
-        return hash(tuple(vars(self).itervalues()))
-    
+        return hash(tuple(six.itervalues(vars(self))))
+
     @classmethod
     def dt(cls, start, end):
         return cls(datetime(*start), datetime(*end))
@@ -118,64 +125,64 @@ class Time(attr.Attr):
 
 # pylint: disable=R0913
 class SpatialRegion(attr.Attr):
-    def __init__(
-        self, x1=-1200, y1=-1200, x2=1200, y2=1200, sys='helioprojective'):
+    def __init__(self, x1=-5000, y1=-5000, x2=5000, y2=5000,
+                 sys='helioprojective'):
         attr.Attr.__init__(self)
-        
+
         self.x1 = x1
         self.y1 = y1
         self.x2 = x2
         self.y2 = y2
         self.sys = sys
-    
+
     def collides(self, other):
         return isinstance(other, SpatialRegion)
-    
+
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
         return vars(self) == vars(other)
-    
+
     def __hash__(self):
-        return hash(tuple(vars(self).itervalues()))
+        return hash(tuple(six.itervalues(vars(self))))
 
 
 class Contains(attr.Attr):
     def __init__(self, *types):
         attr.Attr.__init__(self)
         self.types = types
-    
+
     def collides(self, other):
         return False
-    
+
     def __eq__(self, other):
         if not isinstance(other, self.__class__):
             return False
         return vars(self) == vars(other)
-    
+
     def __hash__(self):
-        return hash(tuple(vars(self).itervalues()))
+        return hash(tuple(six.itervalues(vars(self))))
 
 
 class _ComparisonParamAttrWrapper(object):
     def __init__(self, name):
         self.name = name
-    
+
     def __lt__(self, other):
         return _ParamAttr(self.name, '<', other)
-    
+
     def __le__(self, other):
         return _ParamAttr(self.name, '<=', other)
-    
+
     def __gt__(self, other):
         return _ParamAttr(self.name, '>', other)
-    
+
     def __ge__(self, other):
         return _ParamAttr(self.name, '>=', other)
-    
+
     def __eq__(self, other):
         return _ParamAttr(self.name, '=', other)
-    
+
     def __ne__(self, other):
         return _ParamAttr(self.name, '!=', other)
 
@@ -200,11 +207,11 @@ def _a(wlk, root, state, dct):
     dct['type'] = 'contains'
     if not Contains in state:
         state[Contains] = 1
-    
+
     nid = state[Contains]
     n = 0
     for n, type_ in enumerate(root.types):
-        dct['event_type%d' % (nid + n)] = type_
+        dct['event_type{num:d}'.format(num=(nid + n))] = type_
     state[Contains] += n
     return dct
 
@@ -246,11 +253,11 @@ def _a(wlk, root, state, dct):
 def _a(wlk, root, state, dct):
     if not _ParamAttr in state:
         state[_ParamAttr] = 0
-    
+
     nid = state[_ParamAttr]
-    dct['param%d' % nid] = root.name
-    dct['op%d' % nid] = root.op
-    dct['value%d' % nid] = root.value
+    dct['param{num:d}'.format(num=nid)] = root.name
+    dct['op{num:d}'.format(num=nid)] = root.op
+    dct['value{num:d}'.format(num=nid)] = root.value
     state[_ParamAttr] += 1
     return dct
 

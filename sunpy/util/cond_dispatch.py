@@ -4,14 +4,15 @@
 """ Offer a callable object that dispatches based on arbitrary conditions
 and function signature. That means, whenever it is called, it finds the
 registered methods that match the input's signature and then checks for
-user-defined conditions and types. 
+user-defined conditions and types.
 
 First, we need to create a new ConditionalDispatch
 
+>>> from sunpy.util.cond_dispatch import ConditionalDispatch
 >>> fun = ConditionalDispatch()
 
-We then can start adding branches, in this case we add a branch for 
-even integers, in which case the function applied is a muliplication by
+We then can start adding branches, in this case we add a branch for
+even integers, in which case the function applied is a multiplication by
 three.
 
 >>> fun.add(lambda x: 3 * x, lambda x: x % 2 == 0, [int])
@@ -47,7 +48,7 @@ that this branch is always executed for floats.
 >>> fun.add(lambda y: 5 * y, None, [float])
 
 Also note that the float branch takes y, while the integer branch takes x.
-Thus, if the user explicitely passes fun(x=1) using a keyword argument, only
+Thus, if the user explicitly passes fun(x=1) using a keyword argument, only
 the integer branch is considered. This can be useful if the user wants
 control over which kind of data they are passing the the function.
 
@@ -71,11 +72,13 @@ Traceback (most recent call last):
 TypeError: There are no functions matching your input parameter signature.
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import inspect
 
-from itertools import izip, chain, repeat
+from itertools import chain, repeat
+
+from sunpy.extern.six.moves import zip
 
 __all__ = ['run_cls', 'matches_types', 'arginize', 'correct_argspec',
            'matches_signature', 'ConditionalDispatch', 'fmt_argspec_types']
@@ -84,9 +87,9 @@ __all__ = ['run_cls', 'matches_types', 'arginize', 'correct_argspec',
 def run_cls(name):
     """ run_cls("foo")(cls, *args, **kwargs) -> cls.foo(*args, **kwargs) """
     fun = lambda cls, *args, **kwargs: getattr(cls, name)(*args, **kwargs)
-    fun.__name__ = name
+    fun.__name__ = str(name)
     fun.run_cls = True
-    return fun    
+    return fun
 
 
 def matches_types(fun, types, args, kwargs):
@@ -94,7 +97,7 @@ def matches_types(fun, types, args, kwargs):
     in the order they are defined in the function. kwargs are automatically
     converted into that order. """
     return all(
-        isinstance(obj, cls) for obj, cls in izip(
+        isinstance(obj, cls) for obj, cls in zip(
             arginize(fun, args, kwargs), types
         )
     )
@@ -108,7 +111,7 @@ def arginize(fun, a, kw):
         raise ValueError
     names = args[len(a):]
     if defaults:
-        defs = dict(izip(args[-len(defaults):], defaults))
+        defs = dict(zip(args[-len(defaults):], defaults))
     else:
         defs = {}
     return list(a) + [kw.get(name, defs.get(name, None)) for name in names]
@@ -119,7 +122,7 @@ def correct_argspec(fun):
     args, varargs, keywords, defaults = inspect.getargspec(fun)
     if inspect.ismethod(fun):
         args = args[1:]
-    return args, varargs, keywords, defaults 
+    return args, varargs, keywords, defaults
 
 
 def matches_signature(fun, a, kw):
@@ -130,13 +133,13 @@ def matches_signature(fun, a, kw):
         return False
     skw = set(kw)
     sargs = set(args[len(a):])
-    
+
     # There mayn't be unexpected parameters unless there is a **kwargs
     # in fun's signature.
     if keywords is None and skw - sargs != set():
         return False
     rest = set(args[len(a):])  - set(kw)
-    
+
     # If there are any arguments that weren't passed but do not have
     # defaults, the signature does not match.
     defs = set() if defaults is None else set(defaults)
@@ -149,7 +152,7 @@ class ConditionalDispatch(object):
     def __init__(self):
         self.funcs = []
         self.nones = []
-    
+
     @classmethod
     def from_existing(cls, cond_dispatch):
         new = cls()
@@ -162,10 +165,10 @@ class ConditionalDispatch(object):
             self.add(fun, condition)
             return fun
         return _dec
-    
+
     def add(self, fun, condition=None, types=None, check=True):
         """ Add fun to ConditionalDispatch under the condition that the
-        arguments must match. If condition is left out, the function is 
+        arguments must match. If condition is left out, the function is
         executed for every input that matches the signature. Functions are
         considered in the order they are added, but ones with condition=None
         are considered as the last: that means, a function with condition None
@@ -182,7 +185,7 @@ class ConditionalDispatch(object):
             )
         else:
             self.funcs.append((fun, condition, types))
-    
+
     def __call__(self, *args, **kwargs):
         matched = False
         for fun, condition, types in self.funcs:
@@ -195,7 +198,7 @@ class ConditionalDispatch(object):
             if (matches_signature(fun, args, kwargs) and
                 (types is None or matches_types(fun, types, args, kwargs))):
                 return fun(*args, **kwargs)
-        
+
         if matched:
             raise TypeError(
                 "Your input did not fulfill the condition for any function."
@@ -205,10 +208,10 @@ class ConditionalDispatch(object):
                 "There are no functions matching your input parameter "
                 "signature."
             )
-    
+
     def wrapper(self):
         return lambda *args, **kwargs: self(*args, **kwargs)
-    
+
     def get_signatures(self, prefix="", start=0):
         """ Return an iterator containing all possible function signatures.
         If prefix is given, use it as function name in signatures, else
@@ -230,7 +233,7 @@ class ConditionalDispatch(object):
                 yield prefix + inspect.formatargspec(
                     args, varargs, keywords, defaults
                 )
-        
+
         for fun, types in self.nones:
             if types is not None:
                 yield prefix + fmt_argspec_types(fun, types, st)
@@ -243,17 +246,17 @@ class ConditionalDispatch(object):
 
     def generate_docs(self):
         fns = (item[0] for item in chain(self.funcs, self.nones))
-        return '\n\n'.join("%s -> :py:meth:`%s`" % (sig, fun.__name__)
+        return '\n\n'.join("{0} -> :py:meth:`{1}`".format(sig, fun.__name__)
             for sig, fun in
             # The 1 prevents the cls from incorrectly being shown in the
             # documentation.
-            izip(self.get_signatures("create", -1), fns)
+            zip(self.get_signatures("create", -1), fns)
         )
 
 
 def fmt_argspec_types(fun, types, start=0):
     args, varargs, keywords, defaults = correct_argspec(fun)
-    
+
     args = args[start:]
     types = types[start:]
 
@@ -261,15 +264,20 @@ def fmt_argspec_types(fun, types, start=0):
     if defaults is None:
         defaults = []
     defs = chain(repeat(NULL, len(args) - len(defaults)), defaults)
-    
+
     spec = []
-    for key, value, type_ in izip(args, defs, types):
+    for key, value, type_ in zip(args, defs, types):
+        # This is a work around for a bug introduced during Python 3 porting.
+        # for some reason the type was being passed in as a length 1 tuple.
+        # This extracts the type under that condition. SM 6/10/15
+        if isinstance(type_, tuple) and len(type_) == 1:
+            type_ = type_[0]
         if value is NULL:
-            spec.append("%s: %s" % (key, type_.__name__))
+            spec.append("{0}: {1}".format(key, type_.__name__))
         else:
-            spec.append("%s: %s = %s" % (key, type_.__name__, value))
+            spec.append("{0}: {1} = {2}".format(key, type_.__name__, value))
     if varargs is not None:
-        spec.append('*%s' % varargs)
+        spec.append('*{!s}'.format(varargs))
     if keywords is not None:
-        spec.append('**%s' % keywords)
+        spec.append('**{!s}'.format(keywords))
     return '(' + ', '.join(spec) + ')'

@@ -7,8 +7,6 @@ SunPy util
 
 .. automodapi:: sunpy.util.config
 
-.. automodapi:: sunpy.util.counter
-
 .. automodapi:: sunpy.util.create
 
 .. automodapi:: sunpy.util.datatype_factory_base
@@ -17,9 +15,8 @@ SunPy util
 
 .. automodapi:: sunpy.util.net
 
-.. automodapi:: sunpy.util.odict
-
 .. automodapi:: sunpy.util.progressbar
 
 .. automodapi:: sunpy.util.xml
 
+.. automodapi:: sunpy.util.scraper

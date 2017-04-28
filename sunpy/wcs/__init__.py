@@ -1,36 +1,45 @@
 """
-The WCS package provides functions to parse World Coordinate System (WCS) 
-coordinates for solar images as well as convert between various solar 
+
+.. warning::
+    As of version 0.8.0 the `sunpy.wcs` package is deprecated and will be
+    removed in a future version, you should now transition to using
+    `sunpy.coordinates` and `sunpy.map.GenericMap.data_to_pixel` /
+    `sunpy.map.GenericMap.pixel_to_data` (or `astropy.wcs` directly) for the
+    functionality provided in this module.
+
+
+The WCS package provides functions to parse World Coordinate System (WCS)
+coordinates for solar images as well as convert between various solar
 coordinate systems. The solar coordinates supported are
 
-* Helioprojective-Cartesian (HPC): The most often used solar coordinate 
-    system. Describes positions on the Sun as angles measured from the 
-    center of the solar disk (usually in arcseconds) using cartesian 
+* Helioprojective-Cartesian (HPC): The most often used solar coordinate
+    system. Describes positions on the Sun as angles measured from the
+    center of the solar disk (usually in arcseconds) using cartesian
     coordinates (X, Y)
-* Helioprojective-Radial (HPR): Describes positions on the Sun using angles, 
-    similar to HPC, but uses a radial coordinate (rho, psi) system centered 
+* Helioprojective-Radial (HPR): Describes positions on the Sun using angles,
+    similar to HPC, but uses a radial coordinate (rho, psi) system centered
     on solar disk where psi is measured in the counter clock wise direction.
 * Heliocentric-Cartesian (HCC): The same as HPC but with positions expressed
-    in true (deprojected) physical distances instead of angles on the 
+    in true (deprojected) physical distances instead of angles on the
     celestial sphere.
 * Heliocentric-Radial (HCR): The same as HPR but with rho expressed in
-    true (deprojected) physical distances instead of angles on the celestial 
+    true (deprojected) physical distances instead of angles on the celestial
     sphere.
-* Stonyhurst-Heliographic (HG): Expressed positions on the Sun using 
-    longitude and latitude on the solar sphere but with the origin which is 
-    at the intersection of the solar equator and the central meridian as 
-    seen from Earth. This means that the coordinate system remains fixed 
+* Stonyhurst-Heliographic (HG): Expressed positions on the Sun using
+    longitude and latitude on the solar sphere but with the origin which is
+    at the intersection of the solar equator and the central meridian as
+    seen from Earth. This means that the coordinate system remains fixed
     with respect to Earth while the Sun rotates underneath it.
-* Carrington-Heliographic (HG): Carrington longitude is offset 
-    from Stonyhurst longitude by a time-dependent scalar value, L0. At the 
-    start of each Carrington rotation, L0 = 360, and steadily decreases 
-    until it reaches L0 = 0, at which point the next Carrington rotation 
-    starts. 
-    
+* Carrington-Heliographic (HG): Carrington longitude is offset
+    from Stonyhurst longitude by a time-dependent scalar value, L0. At the
+    start of each Carrington rotation, L0 = 360, and steadily decreases
+    until it reaches L0 = 0, at which point the next Carrington rotation
+    starts.
+
 Some definitions
 
-* b0: Tilt of the solar North rotational axis toward the observer 
-    (helio- graphic latitude of the observer). Note that SOLAR_B0, 
+* b0: Tilt of the solar North rotational axis toward the observer
+    (helio- graphic latitude of the observer). Note that SOLAR_B0,
     HGLT_OBS, and CRLT_OBS are all synonyms.
 * l0: Carrington longitude of central meridian as seen from Earth.
 * dsun_meters: Distance between observer and the Sun. Default is 1 AU.
@@ -43,5 +52,10 @@ References
 | PDF <http://fits.gsfc.nasa.gov/wcs/coordinates.pdf>
 """
 from __future__ import absolute_import
+
+import warnings
+from astropy.utils.exceptions import AstropyDeprecationWarning
+
+warnings.warn("As of v0.8.0, the `sunpy.wcs` module is deprecated and will be removed in a future version. Use `sunpy.coordinates` or `sunpy.map` for coordinate transformations.", AstropyDeprecationWarning)
 
 from sunpy.wcs.wcs import *

@@ -3,23 +3,35 @@
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import itertools
 import operator
 from datetime import datetime
 from contextlib import contextmanager
+import os.path
 
 from sqlalchemy import create_engine, exists
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
+
+from astropy import units
 
 import sunpy
 from sunpy.database import commands, tables, serialize
+from sunpy.database.tables import _create_display_table
 from sunpy.database.caching import LRUCache
+from sunpy.database.commands import CompositeOperation
 from sunpy.database.attrs import walker
 from sunpy.net.hek2vso import H2VClient
 from sunpy.net.attr import and_
 from sunpy.net.vso import VSOClient
+from sunpy.extern.six.moves import range
+
+__authors__ = ['Simon Liedtke', 'Rajul Srivastava']
+__emails__ = [
+    'liedtke.simon@googlemail.com',
+    'rajul09@gmail.com'
+]
 
 
 class EntryNotFoundError(Exception):
@@ -105,6 +117,58 @@ class TagAlreadyAssignedError(Exception):
         return errmsg.format(self.database_entry, self.tag_name)
 
 
+def split_database(source_database, destination_database, *query_string):
+    """
+    Queries the source database with the query string, and moves the
+    matched entries to the destination database. When this function is
+    called, the `~sunpy.database.Database.undo` feature is disabled for both databases.
+
+    Parameters
+    ----------
+    source_database : `~sunpy.database.database.Database`
+        A SunPy `~Database` object. This is the database on which the queries
+        will be made.
+    destination_database : `~sunpy.database.database.Database`
+        A SunPy `~Database` object. This is the database to which the matched
+        entries will be moved.
+    query_string : `list`
+        A variable number of attributes that are chained together via the
+        boolean AND operator. The | operator may be used between attributes
+        to express the boolean OR operator.
+
+    Examples
+    --------
+    The function call in the following example moves those entries from
+    database1 to database2 which have `~sunpy.net.vso.attrs.Instrument` = 'AIA' or
+    'ERNE'.
+
+    >>> from sunpy.database import Database, split_database
+    >>> from sunpy.database.tables import display_entries
+    >>> from sunpy.net import vso
+    >>> database1 = Database('sqlite:///:memory:')
+    >>> database2 = Database('sqlite:///:memory:')
+    >>> client = vso.VSOClient()
+    >>> qr = client.query(vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'))
+    >>> database1.add_from_vso_query_result(qr)
+    >>> database1, database2 = split_database(database1, database2,
+    ...            vso.attrs.Instrument('AIA') | vso.attrs.Instrument('ERNE'))
+    """
+
+    query_string = and_(*query_string)
+    filtered_entries = source_database.query(query_string)
+    with disable_undo(source_database):
+        with disable_undo(destination_database):
+            source_database.remove_many(filtered_entries)
+            source_database.commit()
+            source_database.session.commit()
+            source_database.session.close()
+
+            destination_database.add_many(filtered_entries)
+            destination_database.commit()
+
+    return source_database, destination_database
+
+
 @contextmanager
 def disable_undo(database):
     """A context manager to disable saving the used commands in the undo
@@ -113,12 +177,15 @@ def disable_undo(database):
 
     Examples
     --------
+    >>> from sunpy.database import disable_undo, Database
+    >>> from sunpy.database.tables import DatabaseEntry
+    >>> database = Database('sqlite:///:memory:')
+    >>> entry = DatabaseEntry()
     >>> with disable_undo(database) as db:
     ...     db.add(entry)
-    >>> database.undo()
-    >>> Traceback (most recent call last):
-        ...
-    EmptyCommandStackError
+
+    # This will raise an EmptyCommandStackError
+    >>> database.undo()   # doctest: +SKIP
     """
     database._enable_history = False
     yield database
@@ -143,12 +210,16 @@ class Database(object):
         The default value is :class:`sunpy.database.caching.LRUCache`.
     cache_size : int
         The maximum number of database entries, default is no limit.
-    default_waveunit : str, optional
+    default_waveunit : `str` or `~astropy.units.Unit`, optional
         The wavelength unit that will be used if an entry is added to the
         database but its wavelength unit cannot be found (either in the file or
         the VSO query result block, depending on the way the entry was added).
-        If `None` (the default), attempting to add an entry without knowing the
-        wavelength unit results in a
+        If an `~astropy.units.Unit` is passed, it is assigned to ``default_waveunit``.
+        If a `str` is passed, it will be converted to `~astropy.units.Unit` through
+        the `astropy.units.Unit()` initializer, and then assigned to default_waveunit.
+        If an invalid string is passed, `~sunpy.database.WaveunitNotConvertibleError`
+        is raised. If `None` (the default), attempting to add an entry without knowing
+        the wavelength unit results in a
         :exc:`sunpy.database.WaveunitNotFoundError`.
     """
     """
@@ -173,7 +244,7 @@ class Database(object):
     Methods
     -------
     set_cache_size(cache_size)
-        Set a new value for the maxiumum number of database entries in the
+        Set a new value for the maximum number of database entries in the
         cache. Use the value ``float('inf')`` to disable caching.
     commit()
         Flush pending changes and commit the current transaction.
@@ -218,14 +289,19 @@ class Database(object):
 
     """
     def __init__(self, url=None, CacheClass=LRUCache, cache_size=float('inf'),
-            default_waveunit=None):
+                 default_waveunit=None):
         if url is None:
             url = sunpy.config.get('database', 'url')
         self._engine = create_engine(url)
         self._session_cls = sessionmaker(bind=self._engine)
-        self.session = self._session_cls()
+        self.session = scoped_session(self._session_cls)
         self._command_manager = commands.CommandManager()
         self.default_waveunit = default_waveunit
+        if self.default_waveunit is not None:
+            try:
+                self.default_waveunit = units.Unit(default_waveunit)
+            except ValueError:
+                raise tables.WaveunitNotConvertibleError(default_waveunit)
         self._enable_history = True
 
         class Cache(CacheClass):
@@ -233,7 +309,10 @@ class Database(object):
                 self.remove(database_entry)
 
             def append(this, value):
-                this[max(this or [0]) + 1] = value
+                try:
+                    this[max(this or [0]) + 1] = value
+                except TypeError:
+                    this[1] = value
         self._create_tables()
         self._cache = Cache(cache_size)
         for entry in self:
@@ -253,7 +332,7 @@ class Database(object):
         return self._cache.maxsize
 
     def set_cache_size(self, cache_size):
-        """Set a new value for the maxiumum number of database entries in the
+        """Set a new value for the maximum number of database entries in the
         cache. Use the value ``float('inf')`` to disable caching. If the new
         cache is smaller than the previous one and cannot contain all the
         entries anymore, entries are removed from the cache until the number of
@@ -263,7 +342,7 @@ class Database(object):
         :class:`sunpy.database.caching.LFUCache`).
 
         """
-        cmds = []
+        cmds = CompositeOperation()
         # remove items from the cache if the given argument is lower than the
         # current cache size
         while cache_size < self.cache_size:
@@ -272,7 +351,7 @@ class Database(object):
             entry_id, entry = self._cache.to_be_removed
             cmd = commands.RemoveEntry(self.session, entry)
             if self._enable_history:
-                cmds.append(cmd)
+                cmds.add(cmd)
             else:
                 cmd()
             del self._cache[entry_id]
@@ -296,31 +375,46 @@ class Database(object):
         """
         self.session.commit()
 
-    def _download_and_collect_entries(self, query_result, client=None,
-            path=None, progress=False):
+    def _download_and_collect_entries(self, query_result, **kwargs):
+
+        client = kwargs.pop('client', None)
+        path = kwargs.pop('path', None)
+        progress = kwargs.pop('progress', False)
+        methods = kwargs.pop('methods', ('URL-FILE_Rice', 'URL-FILE'))
+
+        if kwargs:
+            k, v = kwargs.popitem()
+            raise TypeError('unexpected keyword argument {0!r}'.format(k))
+
         if client is None:
             client = VSOClient()
-        for block in query_result:
-            paths = client.get([block], path).wait(progress=progress)
-            for path in paths:
-                qr_entry = tables.DatabaseEntry._from_query_result_block(block)
-                file_entries = list(
-                    tables.entries_from_file(path, self.default_waveunit))
-                for entry in file_entries:
-                    entry.source = qr_entry.source
-                    entry.provider = qr_entry.provider
-                    entry.physobs = qr_entry.physobs
-                    entry.fileid = qr_entry.fileid
-                    entry.observation_time_start =\
-                        qr_entry.observation_time_start
-                    entry.observation_time_end = qr_entry.observation_time_end
-                    entry.instrument = qr_entry.instrument
-                    entry.size = qr_entry.size
-                    entry.wavemin = qr_entry.wavemin
-                    entry.wavemax = qr_entry.wavemax
-                    entry.path = path
-                    entry.download_time = datetime.utcnow()
-                    yield entry
+
+        paths = client.get(query_result, path, methods).wait(progress=progress)
+
+        for (path, block) in zip(paths, query_result):
+            qr_entry = tables.DatabaseEntry._from_query_result_block(block)
+
+            if os.path.isfile(path):
+                entries = tables.entries_from_file(path, self.default_waveunit)
+            elif os.path.isdir(path):
+                entries = tables.entries_from_dir(path, self.default_waveunit)
+            else:
+                raise ValueError('The path is neither a file nor directory')
+
+            for entry in entries:
+                entry.source = qr_entry.source
+                entry.provider = qr_entry.provider
+                entry.physobs = qr_entry.physobs
+                entry.fileid = qr_entry.fileid
+                entry.observation_time_start = qr_entry.observation_time_start
+                entry.observation_time_end = qr_entry.observation_time_end
+                entry.instrument = qr_entry.instrument
+                entry.size = qr_entry.size
+                entry.wavemin = qr_entry.wavemin
+                entry.wavemax = qr_entry.wavemax
+                entry.path = path
+                entry.download_time = datetime.utcnow()
+                yield entry
 
     def download(self, *query, **kwargs):
         """download(*query, client=sunpy.net.vso.VSOClient(), path=None, progress=False)
@@ -337,20 +431,18 @@ class Database(object):
         """
         if not query:
             raise TypeError('at least one attribute required')
-        client = kwargs.pop('client', None)
-        path = kwargs.pop('path', None)
-        progress = kwargs.pop('progress', False)
-        if kwargs:
-            k, v = kwargs.popitem()
-            raise TypeError('unexpected keyword argument {0!r}'.format(k))
+
+        client = kwargs.get('client', None)
         if client is None:
             client = VSOClient()
         qr = client.query(*query)
+
         # don't do anything if querying the VSO results in no data
         if not qr:
             return
+
         entries = list(self._download_and_collect_entries(
-            qr, client, path, progress))
+            qr, **kwargs))
         dump = serialize.dump_query(and_(*query))
         (dump_exists,), = self.session.query(
             exists().where(tables.JSONDump.dump == tables.JSONDump(dump).dump))
@@ -393,16 +485,13 @@ class Database(object):
         """
         if not query:
             raise TypeError('at least one attribute required')
-        path = kwargs.pop('path', None)
-        if kwargs:
-            k, v = kwargs.popitem()
-            raise TypeError('unexpected keyword argument {0!r}'.format(k))
+
         dump = serialize.dump_query(and_(*query))
         (dump_exists,), = self.session.query(
             exists().where(tables.JSONDump.dump == tables.JSONDump(dump).dump))
         if dump_exists:
             return self.query(*query)
-        return self.download(*query, path=path)
+        return self.download(*query, **kwargs)
 
     def query(self, *query, **kwargs):
         """
@@ -449,7 +538,7 @@ class Database(object):
         The query in the following example searches for all non-starred entries
         with the tag 'foo' or 'bar' (or both).
 
-        >>> database.query(~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'))
+        >>> database.query(~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'))   # doctest: +SKIP
 
         """
         if not query:
@@ -458,9 +547,16 @@ class Database(object):
         if kwargs:
             k, v = kwargs.popitem()
             raise TypeError('unexpected keyword argument {0!r}'.format(k))
-        return sorted(
-            walker.create(and_(*query), self.session),
-            key=operator.attrgetter(sortby))
+
+        db_entries = walker.create(and_(*query), self.session)
+
+        # If any of the DatabaseEntry-s lack the sorting attribute, the
+        # sorting key should fall back to 'id', orherwise it fails with
+        # TypeError on py3
+        if any([getattr(entry, sortby) is None for entry in db_entries]):
+            sortby = 'id'
+
+        return sorted(db_entries, key=operator.attrgetter(sortby))
 
     def get_entry_by_id(self, entry_id):
         """Get a database entry by its unique ID number. If an entry with the
@@ -504,7 +600,7 @@ class Database(object):
             raise TypeError('at least one tag must be given')
         # avoid duplicates
         tag_names = set(tags)
-        cmds = []
+        cmds = CompositeOperation()
         for tag_name in tag_names:
             try:
                 tag = self.get_tag(tag_name)
@@ -515,7 +611,7 @@ class Database(object):
                 tag = tables.Tag(tag_name)
             cmd = commands.AddTag(self.session, database_entry, tag)
             if self._enable_history:
-                cmds.append(cmd)
+                cmds.add(cmd)
             else:
                 cmd()
         if cmds:
@@ -533,16 +629,16 @@ class Database(object):
 
         """
         tag = self.get_tag(tag_name)
-        cmds = []
+        cmds = CompositeOperation()
         remove_tag_cmd = commands.RemoveTag(self.session, database_entry, tag)
         remove_tag_cmd()
         if self._enable_history:
-            cmds.append(remove_tag_cmd)
+            cmds.add(remove_tag_cmd)
         if not tag.data:
             remove_entry_cmd = commands.RemoveEntry(self.session, tag)
             remove_entry_cmd()
             if self._enable_history:
-                cmds.append(remove_entry_cmd)
+                cmds.add(remove_entry_cmd)
         if self._enable_history:
             self._command_manager.push_undo_command(cmds)
 
@@ -583,7 +679,7 @@ class Database(object):
             See Database.add
 
         """
-        cmds = []
+        cmds = CompositeOperation()
         for database_entry in database_entries:
             # use list(self) instead of simply self because __contains__ checks
             # for existence in the database and not only all attributes except
@@ -592,7 +688,7 @@ class Database(object):
                 raise EntryAlreadyAddedError(database_entry)
             cmd = commands.AddEntry(self.session, database_entry)
             if self._enable_history:
-                cmds.append(cmd)
+                cmds.add(cmd)
             else:
                 cmd()
             if database_entry.id is None:
@@ -630,7 +726,7 @@ class Database(object):
             self._cache[database_entry.id] = database_entry
 
     def add_from_hek_query_result(self, query_result,
-            ignore_already_added=False):
+                                  ignore_already_added=False):
         """Add database entries from a HEK query result.
 
         Parameters
@@ -647,7 +743,8 @@ class Database(object):
         self.add_from_vso_query_result(vso_qr, ignore_already_added)
 
     def download_from_vso_query_result(self, query_result, client=None,
-            path=None, progress=False, ignore_already_added=False):
+                                       path=None, progress=False,
+                                       ignore_already_added=False):
         """download(query_result, client=sunpy.net.vso.VSOClient(),
         path=None, progress=False, ignore_already_added=False)
 
@@ -668,10 +765,10 @@ class Database(object):
         if not query_result:
             return
         self.add_many(self._download_and_collect_entries(
-            query_result, client, path, progress))
+            query_result, client=client, path=path, progress=progress))
 
     def add_from_vso_query_result(self, query_result,
-            ignore_already_added=False):
+                                  ignore_already_added=False):
         """Generate database entries from a VSO query result and add all the
         generated entries to this database.
 
@@ -691,10 +788,10 @@ class Database(object):
             ignore_already_added)
 
     def add_from_dir(self, path, recursive=False, pattern='*',
-            ignore_already_added=False):
+                     ignore_already_added=False, time_string_parse_format=None):
         """Search the given directory for FITS files and use their FITS headers
         to add new entries to the database. Note that one entry in the database
-        is assined to a list of FITS headers, so not the number of FITS headers
+        is assigned to a list of FITS headers, so not the number of FITS headers
         but the number of FITS files which have been read determine the number
         of database entries that will be added. FITS files are detected by
         reading the content of each file, the `pattern` argument may be used to
@@ -721,16 +818,22 @@ class Database(object):
         ignore_already_added : bool, optional
             See :meth:`sunpy.database.Database.add`.
 
+        time_string_parse_format : str, optional
+            Fallback timestamp format which will be passed to
+            `~datetime.datetime.strftime` if `sunpy.time.parse_time` is unable to
+            automatically read the `date-obs` metadata.
+
         """
-        cmds = []
+        cmds = CompositeOperation()
         entries = tables.entries_from_dir(
-            path, recursive, pattern, self.default_waveunit)
+            path, recursive, pattern, self.default_waveunit,
+            time_string_parse_format=time_string_parse_format)
         for database_entry, filepath in entries:
             if database_entry in list(self) and not ignore_already_added:
                 raise EntryAlreadyAddedError(database_entry)
             cmd = commands.AddEntry(self.session, database_entry)
             if self._enable_history:
-                cmds.append(cmd)
+                cmds.add(cmd)
             else:
                 cmd()
             self._cache.append(database_entry)
@@ -779,11 +882,11 @@ class Database(object):
         database_entries : iterable of sunpy.database.tables.DatabaseEntry
             The database entries that will be removed from the database.
         """
-        cmds = []
+        cmds = CompositeOperation()
         for database_entry in database_entries:
             cmd = commands.RemoveEntry(self.session, database_entry)
             if self._enable_history:
-                cmds.append(cmd)
+                cmds.add(cmd)
             else:
                 cmd()
             try:
@@ -810,14 +913,14 @@ class Database(object):
             pass
 
     def clear(self):
-        """Remove all entries from the databse. This operation can be undone
+        """Remove all entries from the database. This operation can be undone
         using the :meth:`undo` method.
 
         """
-        cmds = []
+        cmds = CompositeOperation()
         for entry in self:
             for tag in entry.tags:
-                cmds.append(commands.RemoveTag(self.session, entry, tag))
+                cmds.add(commands.RemoveTag(self.session, entry, tag))
             # TODO: also remove all FITS header entries and all FITS header
             # comments from each entry before removing the entry itself!
         # remove all entries from all helper tables
@@ -826,15 +929,14 @@ class Database(object):
             tables.FitsKeyComment]
         for table in database_tables:
             for entry in self.session.query(table):
-                cmds.append(commands.RemoveEntry(self.session, entry))
+                cmds.add(commands.RemoveEntry(self.session, entry))
         for entry in self:
-            cmds.append(commands.RemoveEntry(self.session, entry))
+            cmds.add(commands.RemoveEntry(self.session, entry))
             del self._cache[entry.id]
         if self._enable_history:
             self._command_manager.do(cmds)
         else:
-            for cmd in cmds:
-                cmd()
+            cmds()
 
     def clear_histories(self):
         """Clears all entries from the undo and redo history.
@@ -865,13 +967,19 @@ class Database(object):
         """
         self._command_manager.redo(n)  # pragma: no cover
 
+    def display_entries(self, columns=None, sort=False):
+        print(_create_display_table(self, columns, sort))
+
+    def show_in_browser(self, columns=None, sort=False, jsviewer=True):
+        _create_display_table(self, columns, sort).show_in_browser(jsviewer)
+
     def __getitem__(self, key):
         if isinstance(key, slice):
             entries = []
             start = 0 if key.start is None else key.start
             stop = len(self) if key.stop is None else key.stop
             step = 1 if key.step is None else key.step
-            for i in xrange(start, stop, step):
+            for i in range(start, stop, step):
                 try:
                     entry = self[i]
                 except IndexError:
@@ -907,3 +1015,12 @@ class Database(object):
     def __len__(self):
         """Get the number of rows in the table."""
         return self.session.query(tables.DatabaseEntry).count()
+
+    def __repr__(self):
+        return _create_display_table(self).__repr__()
+
+    def __str__(self):
+        return _create_display_table(self).__str__()
+
+    def _repr_html_(self):
+        return _create_display_table(self)._repr_html_()

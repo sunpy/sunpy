@@ -9,13 +9,14 @@
 This module is meant to parse the HELIO registry and return WSDL endpoints to
 facilitate the interfacing between further modules and HELIO.
 """
-from __future__ import absolute_import
-from urllib2 import urlopen, URLError
-#import sunpy.util.etree as EL 
+from __future__ import absolute_import, print_function
+
 import xml.etree.ElementTree as EL
-from sunpy.net.helio import registry_links as RL
 from bs4 import BeautifulSoup
 from contextlib import closing
+
+from sunpy.net.helio import registry_links as RL
+from sunpy.extern.six.moves import urllib
 
 __author__ = 'Michael Malocha'
 __version__ = 'September 22nd, 2013'
@@ -54,7 +55,7 @@ def webservice_parser(service='HEC'):
     'http://festung1.oats.inaf.it:8080/helio-hec/HelioLongQueryService',
     'http://hec.helio-vo.eu/helio_hec/HelioLongQueryService']
     """
-    link = RL.LINK + service.lower()
+    link = RL.LINK + '/' + service.lower()
     xml = link_test(link)
     if xml is None:
         return xml
@@ -65,7 +66,7 @@ def webservice_parser(service='HEC'):
     #Fix for 3.x support
     for interface in root.getiterator('interface'):
         service_type = interface.attrib
-        key = service_type.keys()
+        key = list(service_type.keys())
         if len(key) > 0:
             value = service_type[key[0]]
             if value == 'vr:WebService':
@@ -178,13 +179,13 @@ def link_test(link):
     >>> parser.link_test('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')
     u'<html>\n<head>...</body>\n</html>\n'
 
-    >>> print parser.link_test('http://rrnx.invalid_url5523.com')
+    >>> print(parser.link_test('http://rrnx.invalid_url5523.com'))
     None
     """
     try:
-        with closing(urlopen(link)) as fd:
+        with closing(urllib.request.urlopen(link, timeout=LINK_TIMEOUT)) as fd:
             return fd.read()
-    except (ValueError, URLError):
+    except (ValueError, urllib.error.URLError):
         return None
 
 

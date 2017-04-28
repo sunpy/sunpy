@@ -9,13 +9,13 @@ from sunpy.time import TimeRange
 
 timerange_a = TimeRange('2004/01/01', '2007/01/01')
 
-class TestNOAAIndicesLightCurve():
-    
+class TestNOAAIndicesLightCurve(object):
+
     @pytest.mark.online
     def test_create(self):
-       lc = sunpy.lightcurve.NOAAIndicesLightCurve.create()
-       assert isinstance(lc, sunpy.lightcurve.NOAAIndicesLightCurve)
-    
+        lc = sunpy.lightcurve.NOAAIndicesLightCurve.create()
+        assert isinstance(lc, sunpy.lightcurve.NOAAIndicesLightCurve)
+
     @pytest.mark.online
     def test_isempty(self):
         lc = sunpy.lightcurve.NOAAIndicesLightCurve.create()
@@ -24,7 +24,7 @@ class TestNOAAIndicesLightCurve():
     @pytest.mark.online
     def test_url(self):
         """Test creation with url"""
-        url = 'http://www.swpc.noaa.gov/ftpdir/weekly/RecentIndices.txt'
+        url = 'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt'
         lc1 = sunpy.lightcurve.NOAAIndicesLightCurve.create(url)
         assert isinstance(lc1, sunpy.lightcurve.NOAAIndicesLightCurve)
 
@@ -37,23 +37,23 @@ class TestNOAAIndicesLightCurve():
     def test_get_url(self):
         """Test the getting of url"""
         g = sunpy.lightcurve.NOAAIndicesLightCurve
-        assert g._get_url_for_date_range(timerange_a) == 'http://www.swpc.noaa.gov/ftpdir/weekly/RecentIndices.txt'
-        
+        assert g._get_url_for_date_range(timerange_a) == 'ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt'
+
     @pytest.mark.online
     def test_header(self):
         """Test presence of GOES satellite number in header"""
         lc1 = sunpy.lightcurve.NOAAIndicesLightCurve.create()
-        assert lc1.header.keys() == ['comments']
+        assert 'comments' in lc1.header.keys()
 
-    
-class TestNOAAPredictIndicesLightCurve():
+
+class TestNOAAPredictIndicesLightCurve(object):
 
     @pytest.mark.online
     def test_create(self):
         """Test creation with no input"""
         lc = sunpy.lightcurve.NOAAPredictIndicesLightCurve.create()
         assert isinstance(lc, sunpy.lightcurve.NOAAPredictIndicesLightCurve)
-    
+
     @pytest.mark.online
     def test_isempty(self):
         """Test presence of data"""
@@ -69,17 +69,17 @@ class TestNOAAPredictIndicesLightCurve():
     @pytest.mark.online
     def test_url(self):
         """Test creation with url"""
-        url = 'http://www.swpc.noaa.gov/ftpdir/weekly/Predict.txt'
+        url = 'http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt'
         lc1 = sunpy.lightcurve.NOAAPredictIndicesLightCurve.create(url)
         assert isinstance(lc1, sunpy.lightcurve.NOAAPredictIndicesLightCurve)
 
     def test_get_url(self):
         """Test the getting of url"""
         g = sunpy.lightcurve.NOAAPredictIndicesLightCurve
-        assert g._get_url_for_date_range(timerange_a) == 'http://www.swpc.noaa.gov/ftpdir/weekly/Predict.txt'
-        
+        assert g._get_url_for_date_range(timerange_a) == 'http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt'
+
     @pytest.mark.online
     def test_header(self):
         """Test presence of GOES satellite number in header"""
         lc1 = sunpy.lightcurve.NOAAPredictIndicesLightCurve.create()
-        assert lc1.header.keys() == ['comments']
+        assert 'comments' in lc1.header.keys()

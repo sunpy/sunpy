@@ -1,18 +1,20 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 import pytest
 
 from sunpy.util.cond_dispatch import ConditionalDispatch
 
-def pytest_funcarg__oddeven(request):
+
+@pytest.fixture
+def oddeven(request):
     f = ConditionalDispatch()
     # Multiply even numbers by two.
     f.add(lambda x: 2 * x, lambda x: x % 2 == 0)
-    # Mulitply odd numbers by three.
-    f.add(lambda x: 3 * x, lambda x: x % 2 == 1)    
+    # Multiply odd numbers by three.
+    f.add(lambda x: 3 * x, lambda x: x % 2 == 1)
     return f
 
 
@@ -24,10 +26,8 @@ def test_dispatch(oddeven):
 def test_wrong_sig(oddeven):
     with pytest.raises(TypeError) as exc_info:
         oddeven(y=2)
-    assert exc_info.value.message == (
-        "There are no functions matching your input parameter "
-        "signature."
-    )
+    assert "There are no functions matching your input parameter signature." in str(
+        exc_info.value)
 
 
 def test_nocond():
@@ -36,9 +36,8 @@ def test_nocond():
     f.add(lambda x: 2 * x, lambda x: x % 2 == 0)
     with pytest.raises(TypeError) as exc_info:
         f(3)
-    assert exc_info.value.message == (
-        "Your input did not fulfill the condition for any function."
-    )
+        assert "Your input did not fulfill the condition for any function." in str(
+            exc_info.value)
 
 
 def test_else():

@@ -22,16 +22,19 @@
 Multimethod implementation in pure Python.
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 from warnings import warn
-from itertools import izip
+
+from sunpy.extern.six.moves import zip, map
+from sunpy.extern import six
 
 __all__ = ['TypeWarning', 'MultiMethod']
 
 SILENT = 0
 WARN = 1
 FAIL = 2
+
 
 def _fmt_t(types):
     return ', '.join(type_.__name__ for type_ in types)
@@ -43,8 +46,8 @@ class TypeWarning(UserWarning):
 
 class MultiMethod(object):
     """ A multimethod is a callable object that decides which code to execute
-    based on the type of one or more of its arguments. 
-    
+    based on the type of one or more of its arguments.
+
     Parameters
     ----------
     get : function
@@ -53,15 +56,15 @@ class MultiMethod(object):
     """
     def __init__(self, get):
         self.get = get
-        
+
         self.methods = []
         self.cache = {}
-    
+
     def add(self, fun, types, override=SILENT):
         """ Add fun to the multimethod. It will be executed if get returns
         values of the types passed as types. Must return tuples of same
         length for any input.
-        
+
         Parameters
         ----------
         fun : function
@@ -71,57 +74,57 @@ class MultiMethod(object):
         override : SILENT, WARN or FAIL
             control behaviour when overriding existing definitions.
             If it is set to SILENT, prior definitions are silently
-            overriden, if it is set to WARN a TypeWarning
+            overridden, if it is set to WARN a TypeWarning
             will be issued, and with FAIL a TypeError is raised when
             attempting to override an existing definition.
         """
+        if override not in (SILENT, WARN, FAIL):
+            raise ValueError("Invalid value '{0}' for override.".format(override))
+
         overriden = False
-        if override:
+        if override != SILENT:
             for signature, _ in self.methods:
-                if all(issubclass(a, b) for a, b in izip(types, signature)):
+                if all(issubclass(a, b) for a, b in zip(types, signature)):
                     overriden = True
         if overriden and override == FAIL:
             raise TypeError
         elif overriden and override == WARN:
             # pylint: disable=W0631
-            warn(
-                'Definition (%s) overrides prior definition (%s).' %
-                (_fmt_t(types), _fmt_t(signature)),
-                TypeWarning,
-                stacklevel=3
-            )
-        elif overriden:
-            raise ValueError('Invalid value for override.')
+            warn('Definition ({0}) overrides prior definition ({1}).'.format(_fmt_t(types),
+                                                                             _fmt_t(signature)),
+                 TypeWarning, stacklevel=3)
+
         self.methods.append((types, fun))
-    
+
     def add_dec(self, *types, **kwargs):
         """ Return a decorator that adds the function it receives to the
         multimethod with the types passed as \*args. Using keyword arg
         override to control overriding behaviour. Compare add.
         """
         self.cache = {}
+
         def _dec(fun):
             self.add(fun, types, kwargs.get('override', SILENT))
             return fun
         return _dec
-    
+
     def __call__(self, *args, **kwargs):
         objs = self.get(*args, **kwargs)
-        
+
         # pylint: disable=W0141
         types = tuple(map(type, objs))
-        
-        # This code is duplicate for performace reasons.
+
+        # This code is duplicate for performance reasons.
         cached = self.cache.get(types, None)
         if cached is not None:
             return cached(*args, **kwargs)
-        
+
         for signature, fun in reversed(self.methods):
             if all(issubclass(ty, sig) for ty, sig in zip(types, signature)):
                 self.cache[types] = fun
                 return fun(*args, **kwargs)
-        raise TypeError('%r' % types)
-    
+        raise TypeError('{0!r}'.format(types))
+
     # XXX: Other Python implementations.
     def super(self, *args, **kwargs):
         """ Like __call__, only that when you give it super(cls, obj) items,
@@ -139,16 +142,16 @@ class MultiMethod(object):
             x.__self__ if isinstance(x, super) else x
             for x in args
         ]
-        
-        for k, elem in kwargs.iteritems():
+
+        for k, elem in six.iteritems(kwargs):
             if isinstance(elem, super):
                 kwargs[k] = elem.__self__
-        
-        # This code is duplicate for performace reasons.
+
+        # This code is duplicate for performance reasons.
         cached = self.cache.get(types, None)
         if cached is not None:
             return cached(*nargs, **kwargs)
-        
+
         for signature, fun in reversed(self.methods):
             if all(issubclass(ty, sig) for ty, sig in zip(types, signature)):
                 self.cache[types] = fun

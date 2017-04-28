@@ -6,10 +6,11 @@ Created on Fri Jun 21 15:05:09 2013
 """
 import os
 import glob
-import numpy as np
-import sys
+import tempfile
 
 import pytest
+import numpy as np
+from astropy.io import fits
 
 import sunpy
 import sunpy.map
@@ -25,10 +26,14 @@ except ImportError:
 filepath = sunpy.data.test.rootdir
 a_list_of_many = glob.glob(os.path.join(filepath, "EIT", "*"))
 a_fname = a_list_of_many[0]
+
+AIA_171_IMAGE = os.path.join(filepath, 'aia_171_level1.fits')
+RHESSI_IMAGE = os.path.join(filepath, 'hsi_image_20101016_191218.fits')
+
 #==============================================================================
 # Map Factory Tests
 #==============================================================================
-class TestMap:
+class TestMap(object):
     def test_mapcube(self):
         #Test making a MapCube
         cube = sunpy.map.Map(a_list_of_many, cube=True)
@@ -36,7 +41,7 @@ class TestMap:
 
     def test_composite(self):
         #Test making a CompositeMap
-        comp = sunpy.map.Map(sunpy.AIA_171_IMAGE, sunpy.RHESSI_IMAGE,
+        comp = sunpy.map.Map(AIA_171_IMAGE, RHESSI_IMAGE,
                          composite=True)
         assert isinstance(comp, sunpy.map.CompositeMap)
 
@@ -66,6 +71,14 @@ class TestMap:
         # Data-header pair not in a tuple
         pair_map = sunpy.map.Map(amap.data, amap.meta)
         assert isinstance(pair_map, sunpy.map.GenericMap)
+        # Data-header from FITS
+        with fits.open(a_fname) as hdul:
+            data = hdul[0].data
+            header = hdul[0].header
+        pair_map = sunpy.map.Map((data, header))
+        assert isinstance(pair_map, sunpy.map.GenericMap)
+        pair_map = sunpy.map.Map(data, header)
+        assert isinstance(pair_map, sunpy.map.GenericMap)
         #Custom Map
         data = np.arange(0,100).reshape(10,10)
         header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
@@ -85,23 +98,23 @@ class TestMap:
     @pytest.mark.online
     def test_url_pattern(self):
         # A URL
-        amap = sunpy.map.Map("https://raw.github.com/sunpy/sunpy/master/sunpy/data/sample/AIA20110319_105400_0171.fits")
+        amap = sunpy.map.Map("http://data.sunpy.org/sample-data/AIA20110319_105400_0171.fits")
         assert isinstance(amap, sunpy.map.GenericMap)
 
     def test_save(self):
         #Test save out
         eitmap = sunpy.map.Map(a_fname)
-        eitmap.save("eit_save.fits", filetype='fits', clobber=True)
-        backin = sunpy.map.Map("eit_save.fits")
+        afilename = tempfile.NamedTemporaryFile(suffix='fits').name
+        eitmap.save(afilename, filetype='fits', clobber=True)
+        backin = sunpy.map.Map(afilename)
         assert isinstance(backin, sunpy.map.sources.EITMap)
-        os.remove("eit_save.fits")
 
 #==============================================================================
 # Sources Tests
 #==============================================================================
     def test_sdo(self):
         #Test an AIAMap
-        aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+        aia = sunpy.map.Map(AIA_171_IMAGE)
         assert isinstance(aia,sunpy.map.sources.AIAMap)
         #Test a HMIMap
 
@@ -120,18 +133,21 @@ class TestMap:
         assert isinstance(mdi_m,sunpy.map.sources.MDIMap)
 
     def test_stereo(self):
-        #Test EUVIMap & CORMap
+        #Test EUVIMap & CORMap & HIMap
         euvi = sunpy.map.Map(os.path.join(filepath, "euvi_20090615_000900_n4euA_s.fts"))
         assert isinstance(euvi,sunpy.map.sources.EUVIMap)
 
         cor = sunpy.map.Map(os.path.join(filepath, "cor1_20090615_000500_s4c1A.fts"))
         assert isinstance(cor,sunpy.map.sources.CORMap)
 
+        hi = sunpy.map.Map(os.path.join(filepath,"hi_20110910_114721_s7h2A.fts"))
+        assert isinstance(hi,sunpy.map.sources.HIMap)
+
     def test_rhessi(self):
         #Test RHESSIMap
-        rhessi = sunpy.map.Map(sunpy.RHESSI_IMAGE)
+        rhessi = sunpy.map.Map(RHESSI_IMAGE)
         assert isinstance(rhessi,sunpy.map.sources.RHESSIMap)
-    
+
     def test_sot(self):
         #Test SOTMap
         sot = sunpy.map.Map(os.path.join(filepath , "FGMG4_20110214_030443.7.fits"))

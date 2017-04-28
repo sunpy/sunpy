@@ -7,47 +7,47 @@ Developer's Guide
 Developer's Guide Overview
 --------------------------
 This article describes the guidelines to be followed by developers working on
-SunPy. You if you are thinking of contributing to SunPy please read the following
+SunPy. If you are thinking of contributing to SunPy please read the following
 carefully.
 
 Version Control
 ---------------
 
-Source-code for SunPy is managed using `Git <http://git-scm.com>`_, 
-a Distributed Version Control system. Code branches are hosted on 
-`GitHub.com <http://github.com/sunpy/sunpy>`_, a free project hosting  website 
+Source-code for SunPy is managed using `Git <http://git-scm.com>`_,
+a Distributed Version Control system. Code branches are hosted on
+`GitHub.com <http://github.com/sunpy/sunpy>`_, a free project hosting  website
 for Open-Source software.
 
-Creating Your Own Repo 
+Creating Your Own Repo
 ^^^^^^^^^^^^^^^^^^^^^^
 
 **Overview**
 
 Each person contributing to SunPy should create their own code repository on
-GitHub by forking the master repository or repo.eas All development is then done on that 
-fork, using topic branches to isolate work on different features. New 
-contributers can then initiate pull requests to have their code incorporated 
-into the SunPy master repository. Regular contributers can become members of the 
-`SunPy team <https://github.com/sunpy>`_ on GitHub. Code will be reviewed by regular 
+GitHub by forking the master repository or repo. All development is then done on that
+fork, using topic branches to isolate work on different features. New
+contributors can then initiate pull requests to have their code incorporated
+into the SunPy master repository. Regular contributors can become members of the
+`SunPy team <https://github.com/sunpy>`_ on GitHub. Code will be reviewed by regular
 contributors and comments will usually be provided before code is accepted.
 
 **Getting Started**
 
 Creating your own repo on GitHub is easy to do. If you followed the SunPy installation
-instructions you should already have git installed. Go ahead and create a free account 
-on `create an account on GitHub <https://github.com/signup/free>`_. Github has some 
+instructions you should already have git installed. Go ahead and create a free account
+on `create an account on GitHub <https://github.com/signup/free>`_. Github has some
 `great resources to help <https://help.github.com/>`_. Here is a quick overview of the
-process. 
+process.
 
 **Adding an SSH key to GitHub**
 
-Next, you need to tell GitHub who you are. In order to push any code to GitHub 
-you need to create a public SSH key and associate it with your GitHub account. 
-For instructions on how this is done, see the article on GitHub on 
-`Setting up git <http://help.github.com/set-up-git-redirect>`_ under 
-"Set Up SSH Keys". You only need to do this once, although if you plan to 
-work from multiple computers you will need to go through the process for each 
-computer you wish to work on. Once you have created your account and 
+Next, you need to tell GitHub who you are. In order to push any code to GitHub
+you need to create a public SSH key and associate it with your GitHub account.
+For instructions on how this is done, see the article on GitHub on
+`Setting up git <http://help.github.com/set-up-git-redirect>`_ under
+"Set Up SSH Keys". You only need to do this once, although if you plan to
+work from multiple computers you will need to go through the process for each
+computer you wish to work on. Once you have created your account and
 associated a public SSH key it, you are ready to go.
 
 **Using HTTPS**
@@ -59,27 +59,27 @@ This way you can type in your username and password to access your repositories.
 
 **Identifying yourself**
 
-Begin by identifying yourself to git (so all of your commits have this information) and logging in to GitHub: :: 
+Begin by identifying yourself to git (so all of your commits have this information) and logging in to GitHub: ::
 
  git config --global user.name "Firstname Lastname"
  git config --global user.email "your_email@youremail.com"
- 
+
 **Forking SunPy**
 
-Each contributer to SunPy has their own copy of the SunPy master repo. When
+Each contributor to SunPy has their own copy of the SunPy master repo. When
 working on the code, changes are made to this copied repo, and only when the
 changes are completed, and have been verified to work, are they pull requested back
 to the upstream repo. GitHub provides a simple mechanism to setup your own
-personal repo by providing an option to `fork a repository 
+personal repo by providing an option to `fork a repository
 <http://help.github.com/fork-a-repo/>`_. When you create a fork of a GitHub
 project, a copy of the repo will automatically be created for you, and a link
 will be provided which you can use to download the code to your machine and
 begin working on it.
 
-To begin, fork the main SunPy repo on GitHub by clicking on the `Fork` button 
+To begin, fork the main SunPy repo on GitHub by clicking on the `Fork` button
 on the `SunPy project page <https://github.com/sunpy/sunpy>`_
 
-Next, you need to download the forked repository. Clone the fork to your 
+Next, you need to download the forked repository. Clone the fork to your
 local machine, edit and run: ::
 
  git clone git@github.com:your_username/sunpy.git
@@ -100,35 +100,68 @@ the commands: ::
  git pull upstream master
 
 This will merge the upstream code automatically with your code so you don't need to worry
-about it overwriting your changes. After running either of these commands, 
+about it overwriting your changes. After running either of these commands,
 your local copy of your personal repo is just a copy of the main repo.
-This is the same procedure that you will use in the future to keep yourself syncronized with the
+This is the same procedure that you will use in the future to keep yourself synchronised with the
 main repo. To make sure everything is setup correctly, let's make some changes
 to our personal local repo and push those to our personal repo on GitHub. Go ahead and modify one
-of the files, or create a new file (and then run :command:`git add`). 
+of the files, or create a new file (and then run :command:`git add`).
 
 Commit and push the changes to GitHub: ::
 
  git commit -a -m "My first commit"
  git push
 
-You local repo is now synced with GitHub and ahead of the main repo as it contains 
+You local repo is now synced with GitHub and ahead of the main repo as it contains
 your personal contribution. Remember to commit after you've done a unit of work (i.e.
-often). This will make it easier for you (in the future) and everyone else to understand 
+often). This will make it easier for you (in the future) and everyone else to understand
 what you are doing. Also make sure to make your commit statements clear and understandable.
 
 **Installing SunPy**
 
-In order to use the version of SunPy located  in your personal repository. 
+In order to use the version of SunPy located  in your personal repository.
 You need to install it using the `setup.py` script located in the top-level folder.
 The `setup.py` script has several flags: ::
-`develop` : Installs SunPy and builds all external libraries. 
+`develop` : Installs SunPy and builds all external libraries.
 `build` or `build_ext`:  (Re)Builds the external libraries.
-`clean --all`: Cleans all build files 
+`clean --all`: Cleans all build files
 
 Use the `setup.py` script like so: ::
 
  sudo python setup.py develop
+
+If you are interested in having different versions of sunpy in your
+machine and you want to switch from one to another you could use
+virtual environments. This is an easy task if you used conda as your
+python package manager.
+
+After a standard conda installation, :ref:`assuming you have also installed
+the latest stable version of sunpy <main-install>`, you then proceed to create a new environment
+as::
+
+ conda create -n sunpy-dev python=2.7 sunpy
+
+This will create a new environment called `sunpy-dev` with all of the
+dependencies needed by sunpy. We then proceed to change to the new
+environment::
+
+ source activate sunpy-dev
+
+Then we need to remove the stable version from this environment ::
+
+ conda remove sunpy
+
+to then install the version in your git repository ::
+
+ cd to/sunpy/git/repository
+ python setup.py develop
+
+At this stage you can use the development version in which you are
+working on.
+If you want to go back to the stable installation you can just change
+the environment by ::
+
+ source deactivate
 
 **Conclusion**
 
@@ -136,34 +169,34 @@ That's it! You now have your own personal SunPy repo to develop on. You could
 hack away at it to your heart's content, pushing changes to your fork on GitHub to share
 with others and to ensure that you have a backup online.
 
-But what about when you want to start contributing back to the main SunPy 
+But what about when you want to start contributing back to the main SunPy
 repo? That is the topic of the next section.
 
 Branches
 ^^^^^^^^
 
-Developers should create topic branches within their repos for most of their 
-main coding. Every repo starts with a single branch called `master`, which 
+Developers should create topic branches within their repos for most of their
+main coding. Every repo starts with a single branch called `master`, which
 seldom needs to be used. Instead, work on any particular feature, bug, or
 portion of the code is done in its own separate branch. This way changes on
 any particular issue are isolated from other unrelated changes. Users can even
-work on several different branches simultaneously. 
+work on several different branches simultaneously.
 
 To create a new branch run: ::
- 
+
  git branch branchname
 
 To switch to the new branch: ::
 
  git checkout branchname
 
-(or alternatively, :command:`git checkout -b branchname` will accomplish 
+(or alternatively, :command:`git checkout -b branchname` will accomplish
 the above).
 
-Developers should create new branches for the features they are working on. 
-When they have finished making changes and the code has been tested and 
-verified to be working well, the code can be merged back into the SunPy 
-repo. This is usually done through something called a pull request. 
+Developers should create new branches for the features they are working on.
+When they have finished making changes and the code has been tested and
+verified to be working well, the code can be merged back into the SunPy
+repo. This is usually done through something called a pull request.
 
 Example Workflow
 ^^^^^^^^^^^^^^^^
@@ -184,7 +217,7 @@ do this, run :command:`git pull`: ::
 
 This will ensure that you don't edit a file that has changed since your last pull
 which will lead to merge conflicts later on.
-    
+
 **Code away**
 
 Assuming there are no merge conflicts (which shouldn't happen unless two people
@@ -193,7 +226,7 @@ coding. If there are conflicts check out our conflicts section.
 
 **Push your changes to GitHub**
 
-As you code away on your local repo, you will need to keep git aware of what you are doing 
+As you code away on your local repo, you will need to keep git aware of what you are doing
 and also your remote copy up to date.
 
 To add a file, create the file then run: ::
@@ -205,7 +238,7 @@ If you delete a file run: ::
     git rm <yourfilename>
 
 To move a file: ::
- 
+
     git mv <source> <destination>
 
 To check to see if git is happy run: ::
@@ -228,9 +261,9 @@ The local and remote copies of your repo are now synced.
 Once you have made your desired changes, and committed and pushed your personal
 branch, you need to decide whether or not to merge those changes back into the
 main SunPy repo. If the changes you made are finished and have been tested and proven
-stable (see the testing section below), then they can be merged into SunPy. 
+stable (see the testing section below), then they can be merged into SunPy.
 For now, lets assume that
-your changes are complete and they are ready to be added to the main SunPy repo. 
+your changes are complete and they are ready to be added to the main SunPy repo.
 All contributed code to SunPy must be submitted as a "pull request". To do this go to the github
 website and to your repo (remember to select the branch) then click on the "Pull
 Request" button (in the upper right hand corner next to the Fork button which you've
@@ -238,8 +271,8 @@ used before). All initial pull requests must be made to the master branch unless
 This will submit your code to a review. You will likely
 receive some constructive comments on your code. To address these you can simply work
 on your code and push those changes to your local repo. Those changes will be reflected
-in your pull request. Once a member of 
-the SunPy dev team approves your pull request then your code will be 
+in your pull request. Once a member of
+the SunPy dev team approves your pull request then your code will be
 merged into the main SunPy repo
 and your code will be part of the main SunPy code. Congratulations!
 
@@ -249,9 +282,9 @@ motions a few times it becomes very quick.
 **Conflict resolution**
 
 It may so happen that when you try to sync with the main repo there is a conflict error.
-This means that someone else has been working on the same section of code 
-that you have. In such cases, the merge 
-command will issue a conflict warning and will then expect you do the merge 
+This means that someone else has been working on the same section of code
+that you have. In such cases, the merge
+command will issue a conflict warning and will then expect you do the merge
 yourself. You can type: ::
 
    git mergetool
@@ -262,45 +295,82 @@ FileMerge (if you have XCode installed). You can check on your progress by typin
 
    git status
 
-Once you are done, you should then commit your changes, in this case 
+Once you are done, you should then commit your changes, in this case
 the resolution of the conflict with: ::
 
    git commit -m "Resolved conflict between my and online version of file.py"
 
 You can then proceed to push this change up to your branch.
 
+**Backporting contribution**
+
+Sometimes a contribution needs to be backported to the latest stable branch, this
+may be due to a bug being fixed or something similar.
+There are different ways to do so, if the contribution contains just a couple
+of commits, then the easiest is to `cherry-pick` them.
+Assuming you are in the branch of your new feature (eg. `new_feature`), this
+is what you need to do:
+
+First you need to find out which commits you want to copy to the other branch: ::
+
+  git log
+
+Download/update the upstream branches to your local machine: ::
+
+  git fetch upstream
+
+Create a new branch from the version you want to backport, X.y: ::
+
+  git checkout -b new_feature_X.y upstream/X.y
+
+Copy the commits using `cherry-pick`, `xxxxxxxx` (`yyyyyyyy`) refers to the
+oldest (newest) commit you want to backport. `^` at the end of the oldest is
+to include it, otherwise will take the ones after that point: ::
+
+  git cherry-pick xxxxxxxx^..yyyyyyyy
+
+Push that new branch to your repository on github: ::
+
+  git push origin new_feature_X.y
+
+Once done, then you can create a new pull request to the X.y branch.
+Remember to keep the same title that the original but adding [X.y] at the beginning.
+Also add a reference to the original pull request in the comments with
+the appropriate format: `#pr-number`.
+
+
 Coding Standards
 ----------------
-All code that is part of the SunPy project should follow The Style Guide for 
-Python (`PEP 8 <http://www.python.org/dev/peps/pep-0008/>`_) and 
-the `coding style and convections proposed by Astropy 
-<https://astropy.readthedocs.org/en/stable/development/codeguide.html#coding-style-conventions>`_.
+All code that is part of the SunPy project should follow The Style Guide for
+Python (`PEP 8 <http://www.python.org/dev/peps/pep-0008/>`_) and
+the `coding style and conventions proposed by Astropy
+<http://docs.astropy.org/en/stable/development/codeguide.html#coding-style-conventions>`_.
 Additionally, all
-code that goes in the trunk should be checked using `PyLint 
-<http://www.logilab.org/card/pylint_manual>`_. PyLint is an open source tool 
-which analyzes Python code and checks for compliance with PEP8, as well as 
-common coding errors and other potentially confusing or erroneous code 
+code that goes in the trunk should be checked using `PyLint
+<http://www.logilab.org/card/pylint_manual>`_. PyLint is an open source tool
+which analyzes Python code and checks for compliance with PEP8, as well as
+common coding errors and other potentially confusing or erroneous code
 statements. Checking the SunPy trunk code this helps to ensure some baseline
-level of quality and consistency for the code, and also helps to prevent 
+level of quality and consistency for the code, and also helps to prevent
 potential problems from slipping through the cracks into the production code.
 
-If you followed the installation instructions for devs, pylint should already be 
-installed on your system. To run PyLint on a file, simply call pylint from the 
+If you followed the installation instructions for devs, pylint should already be
+installed on your system. To run PyLint on a file, simply call pylint from the
 command-line, passing in the name of the file you wish to check: ::
 
     pylint file.py
-    
+
 By default PyLint will print lines with potential problems along
 with a summary report. To disable the summary report you can add either `-rn`
 or `--reports=no` to the command: ::
 
     pylint -rn file.py
-    
+
 Further, a paver task has been created so that all of the SunPy code can be
 checked at once: ::
 
     paver pylint
-    
+
 The output from PyLint will look something like: ::
 
  C: 87: Line too long (635/80)
@@ -310,7 +380,7 @@ The output from PyLint will look something like: ::
  W: 14: Unused import cm
  W: 16: Unused import Circle
 
-Each line includes a line number, the category of the warning message, and a 
+Each line includes a line number, the category of the warning message, and a
 short description of the issue encountered.
 
 The categories include:
@@ -327,20 +397,28 @@ warnings will help you to spot coding mistakes or areas that could be improved
 with refactoring. In other cases, however, the warning message may not apply
 and what you have there is exactly as it should be. In these cases it is
 possible to silence PyLint for that line. PyLint warning messages can be
-disabled at three different levels: globally (using a .pylintrc file), 
+disabled at three different levels: globally (using a .pylintrc file),
 file-wide, and for a single line.
 
-(To be finished...) 
+(To be finished...)
+
+Global Settings
+---------------
+SunPy makes use of a settings file (:file:`sunpyrc`). This file contains a
+number of global settings such as where files should be downloaded by default
+or the default format for displaying times. When developing new functionality
+check this file and make use of the default values if appropriate or, if needed,
+define a new value. More information can be found in :doc:`guide/customization`.
 
 Documentation
 -------------
 
-All code must be documented. Undocumented code will not be accepted into SunPy. 
-Documentation should follow the guidelines in `PEP 8 
-<http://www.python.org/dev/peps/pep-0008/>`_ and `PEP 257 (Docstring 
-conventions) <http://www.python.org/dev/peps/pep-0257/>`_. Documentation for 
-modules, classes, and functions should follow the `NumPy/SciPy documentation 
-style guide 
+All code must be documented. Undocumented code will not be accepted into SunPy.
+Documentation should follow the guidelines in `PEP 8
+<http://www.python.org/dev/peps/pep-0008/>`_ and `PEP 257 (Docstring
+conventions) <http://www.python.org/dev/peps/pep-0257/>`_. Documentation for
+modules, classes, and functions should follow the `NumPy/SciPy documentation
+style guide
 <https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt>`_. We provide
 an example of good documentation below or you can just browse some of SunPy code
 itself for examples. All of the SunPy documentation (like this page!) is built by Sphinx
@@ -351,38 +429,32 @@ Sphinx
 
 **Overview**
 
-`Sphinx <http://sphinx.pocoo.org/>`_ is tool for generating high-quality 
+`Sphinx <http://sphinx.pocoo.org/>`_ is a tool for generating high-quality
 documentation in various formats (HTML, pdf, etc) and is especially well-suited
-for documenting Python projects. Sphinx works by parsing files written using a 
-`a Mediawiki-like syntax 
-<http://docutils.sourceforge.net/docs/user/rst/quickstart.html>`_ called 
-`reStructuredText <http://docutils.sourceforge.net/rst.html>`_. In addition 
+for documenting Python projects. Sphinx works by parsing files written using a
+`a Mediawiki-like syntax
+<http://docutils.sourceforge.net/docs/user/rst/quickstart.html>`_ called
+`reStructuredText <http://docutils.sourceforge.net/rst.html>`_. In addition
 to parsing static files of reStructuredText, Sphinx can also be told to parse
 code comments. In fact, in addition to what you are reading right now, the
-`Python documenation <http://www.python.org/doc/>`_ was also created using
+`Python documentation <http://www.python.org/doc/>`_ was also created using
 Sphinx.
 
 **Usage**
 
 All of the SunPy documentation is contained in the ``doc/source`` folder and code
-comments. To generate the documentation you must have Sphinx (as well as Numpydoc) installed
-on your computer. Enter the ``doc/source`` folder and
-run: ::
+comments. To generate the documentation you must have Sphinx
+(as well as Numpydoc and astropy-helpers) installed on your computer.
+Enter the ``doc/source`` folder and run: ::
 
     make html
 
-This will generate HTML documentation for SunPy.
+This will generate HTML documentation for SunPy. To clean up and delete the
+generated documentation run: ::
 
-Additionally, there is a `paver <http://paver.github.com/paver/>`_ command that
-can be used to accomplish the same thing: ::
+    make clean
 
-    paver prepare_docs
-    
-Which is a shortcut for the sphinx command: ::
-
-    sphinx-build source/ html/
-
-For more information on how to use Sphinx, consult the `Sphinx documentation 
+For more information on how to use Sphinx, consult the `Sphinx documentation
 <http://sphinx.pocoo.org/contents.html>`_.
 
 The rest of this section will describe how to document the SunPy code in order
@@ -390,14 +462,114 @@ to guarantee that well-formatted documentation will be created.
 
 **doctest**
 
-The example codes in the Guide section of the docs are configured with the Sphinx 
+The example codes in the Guide section of the docs are configured with the Sphinx
 `doctest extension <http://sphinx-doc.org/ext/doctest.html>`_.
-This will test the example code to make sure it runs correctly, it can be executed 
+This will test the example code to make sure it runs correctly, it can be executed
 using: ::
 
-  sphinx-build -t doctest -b doctest ./ _build
+  sphinx-build -t doctest -b doctest ./ ../build
 
 from inside the ``doc/source`` folder.
+
+Use of quantities and units
+"""""""""""""""""""""""""""
+
+Much code perform calculations using physical quantities.  SunPy uses astropy's
+`quantities and units <http://docs.astropy.org/en/stable/units/index.html>`__
+implementation to store, express and convert physical quantities. New classes
+and functions should adhere to SunPy's `quantity and unit usage guidelines
+<https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__.  This document
+sets out SunPy's reasons and requirements for the usage of quantities and
+units.  Briefly, SunPy's `policy <https://github.com/sunpy/sunpy-SEP/blob/master/SEP-0003.md>`__
+is that *all user-facing function/object arguments which accept physical
+quantities as input **MUST** accept astropy quantities, and **ONLY** astropy
+quantities*.
+
+Developers should consult the
+`Astropy Quantities and Units page <http://docs.astropy.org/en/stable/units/index.html>`__
+for the latest updates on using quantities and units.  The `astropy tutorial on quantities and units
+<http://www.astropy.org/astropy-tutorials/Quantities.html>`__ also provides useful examples on their
+capabilities.
+
+Astropy provides the decorator `~astropy.units.quantity_input` that
+checks the units of the input arguments to a function against the
+expected units of the argument.  We recommend using this decorator to
+perform function argument unit checks.  The decorator ensures that the
+units of the input to the function are convertible to that specified
+by the decorator, for example ::
+
+    import astropy.units as u
+    @u.quantity_input(myangle=u.arcsec)
+    def myfunction(myangle):
+        return myangle**2
+
+This function only accepts arguments that are convertible to arcseconds.
+Therefore, ::
+
+    >>> myfunction(20 * u.degree)
+    <Quantity 400.0 deg2>
+
+returns the expected answer but ::
+
+    >>> myfunction(20 * u.km)
+
+raises an error.
+
+The following is an example of a use-facing function that returns the area of a
+square, in units that are the square of the input length unit::
+
+    @u.quantity_input(side_length=u.m)
+    def get_area_of_square(side_length):
+        """
+        Compute the area of a square.
+
+        Parameters
+        ----------
+        side_length : `~astropy.units.quantity.Quantity`
+            Side length of the square
+
+        Returns
+        -------
+        area : `~astropy.units.quantity.Quantity`
+            Area of the square.
+        """
+
+        return (side_length ** 2)
+
+This more advanced example shows how a private function that does not accept
+quantities can be wrapped by a function that does::
+
+    @u.quantity_input(side_length=u.m)
+    def some_function(length):
+        """
+        Does something useful.
+
+        Parameters
+        ----------
+        length : `~astropy.units.quantity.Quantity`
+            A length.
+
+        Returns
+        -------
+        length : `~astropy.units.quantity.Quantity`
+            Another length
+        """
+
+        # the following function either
+        # a] does not accept Quantities
+        # b] is slow if using Quantities
+        result = _private_wrapper_function(length.convert('meters').value)
+
+        # now convert back to a quantity
+        result = Quantity(result_meters, units_of_the_private_wrapper_function)
+
+        return result
+
+In this example, the non-user facing function *_private_wrapper_function* requires a numerical input in units of
+meters, and returns a numerical output.  The developer knows that the result of *_private_wrapper_function* is in the
+units *units_of_the_private_wrapper_function*, and sets the result of *some_function* to return the answer in those
+units.
+
 
 Examples
 ^^^^^^^^
@@ -405,15 +577,15 @@ Examples
 Modules
 """""""
 
-Each module or package should begin with a docstring describing its overall 
-purpose and functioning. Below that meta-tags containing author, license, email 
+Each module or package should begin with a docstring describing its overall
+purpose and functioning. Below that meta-tags containing author, license, email
 and credits information may also be listed.
 
 Example: ::
 
     """This is an example module comment.
-     
-    An explanation of the purpose of the module would go here and will appear 
+
+    An explanation of the purpose of the module would go here and will appear
     in the generated documentation
     """
     #
@@ -426,24 +598,24 @@ Example: ::
     __license__ = "xxx"
 
 For details about what sections can be included, see the section on `documenting
-modules 
+modules
 <https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt>`_ in the
 NumPy/SciPy style guide.
 
 Classes
 """""""
 
-Class docstrings should include a clear and concise docstring explaining the 
-overall purpose of the class, required and optional input parameters, and the 
+Class docstrings should include a clear and concise docstring explaining the
+overall purpose of the class, required and optional input parameters, and the
 return value. Additionally, notes, references and examples are encouraged.
 
 Example (:class:`sunpy.map.Map`) ::
 
     """
     Map(data, header)
-    
+
     A spatially-aware data array based on the SolarSoft Map object
-    
+
     Parameters
     ----------
     data : numpy.ndarray, list
@@ -476,12 +648,12 @@ Example (:class:`sunpy.map.Map`) ::
 
     Examples
     --------
-    >>> aia = sunpy.map.Map(sunpy.AIA_171_IMAGE)
+    >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     >>> aia.T
     Map([[ 0.3125,  1.    , -1.1875, ..., -0.625 ,  0.5625,  0.5   ],
     [-0.0625,  0.1875,  0.375 , ...,  0.0625,  0.0625, -0.125 ],
     [-0.125 , -0.8125, -0.5   , ..., -0.3125,  0.5625,  0.4375],
-    ..., 
+    ...,
     [ 0.625 ,  0.625 , -0.125 , ...,  0.125 , -0.0625,  0.6875],
     [-0.625 , -0.625 , -0.625 , ...,  0.125 , -0.0625,  0.6875],
     [ 0.    ,  0.    , -1.1875, ...,  0.125 ,  0.    ,  0.6875]])
@@ -491,11 +663,11 @@ Example (:class:`sunpy.map.Map`) ::
     >>> import matplotlib.cm as cm
     >>> import matplotlib.colors as colors
     >>> aia.peek(cmap=cm.hot, norm=colors.Normalize(1, 2048))
-    
+
     See Also
     --------
     numpy.ndarray Parent class for the Map object
-    
+
     References
     ----------
     | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
@@ -507,19 +679,19 @@ Example (:class:`sunpy.map.Map`) ::
 Functions
 """""""""
 
-Functions should include a clear and concise docstring explaining the overall 
-purpose of the function, required and optional input parameters, and the return 
+Functions should include a clear and concise docstring explaining the overall
+purpose of the function, required and optional input parameters, and the return
 value. Additionally, notes, references and examples are encouraged.
 
-Example (`numpy.matlib.ones 
+Example (`numpy.matlib.ones
 <https://github.com/numpy/numpy/blob/master/numpy/matlib.py>`_): ::
 
     def ones(shape, dtype=None, order='C'):
         """
         Matrix of ones.
-     
+
         Return a matrix of given shape and type, filled with ones.
-     
+
         Parameters
         ----------
         shape : {sequence of ints, int}
@@ -529,38 +701,38 @@ Example (`numpy.matlib.ones
         order : {'C', 'F'}, optional
             Whether to store matrix in C- or Fortran-contiguous order,
             default is 'C'.
-     
+
         Returns
         -------
         out : matrix
             Matrix of ones of given shape, dtype, and order.
-     
+
         See Also
         --------
         ones : Array of ones.
         matlib.zeros : Zero matrix.
-     
+
         Notes
         -----
         If `shape` has length one i.e. ``(N,)``, or is a scalar ``N``,
         `out` becomes a single row matrix of shape ``(1,N)``.
-     
+
         Examples
         --------
         >>> np.matlib.ones((2,3))
         matrix([[ 1.,  1.,  1.],
                 [ 1.,  1.,  1.]])
-     
+
         >>> np.matlib.ones(2)
         matrix([[ 1.,  1.]])
-     
+
         """
         a = ndarray.__new__(matrix, shape, dtype, order=order)
         a.fill(1)
         return a
-        
+
 For details about what sections can be included, see the section on `documenting
-functions 
+functions
 <https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt>`_ in the
 NumPy/SciPy style guide.
 
@@ -583,7 +755,7 @@ the URL.
 Make sure there is a space before and after each colon in your class and
 function docs (e.g. attribute : type, instead of attribute: type). Also, for
 some sections (e.g. Attributes) numpydoc seems to complain when a description
-spans more than one line, particuarly if it is the first attribute listed.
+spans more than one line, particularly if it is the first attribute listed.
 
 **WARNING: Block quote ends without a blank line; unexpected unindent.**
 
@@ -619,7 +791,7 @@ below.::
    def double(x):
        return 2 * x
 
-We can write a test case for this function by defining a new function 
+We can write a test case for this function by defining a new function
 containing the test (or tests) we want to perform. Suppose we want to check
 that the correct behaviour occurs when we pass a value of 5 to `double()`. We
 would write the test function like this: ::
@@ -627,10 +799,10 @@ would write the test function like this: ::
   def test_answer():
       assert double(5) == 10
 
-There are two things to note here. Firstly, names of test cases should always 
+There are two things to note here. Firstly, names of test cases should always
 begin with `test_`. This is because `pytest` searches for test cases named this
 way. Secondly, we use `assert` to assert our expectation of what the result of
-the test should be. In this example, the test returns true and so the test 
+the test should be. In this example, the test returns true and so the test
 passes.
 
 The example given above is one in which the function and test reside in the
@@ -650,6 +822,35 @@ test is skipped, otherwise it is run. Marking tests is pretty
 straightforward in pytest: use the decorator ``@pytest.mark.online`` to
 mark a test function as needing an internet connection.
 
+Writing a unit test for a figure
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+You can write SunPy unit tests that test the generation of matplotlib figures
+by adding the decorator `sunpy.tests.helpers.figure_test`.
+Here is a simple example: ::
+
+    import matplotlib.pyplot as plt
+    from sunpy.tests.helpers import figure_test
+
+    @figure_test
+    def test_simple_plot():
+        plt.plot([0,1])
+
+The current figure at the end of the unit test, or an explicitly returned
+figure, has its hash compared against an established hash library (more on
+this below).  If the hashes do not match, the figure has changed, and thus
+the test is considered to have failed.
+
+All such tests are automatically marked with the pytest mark
+`pytest.mark.figure`.  See the next section for how to use marks.
+
+You will need to update the library of figure hashes after you create a new
+figure test or after a figure has intentionally changed due to code improvement.
+After you have confirmed that any conflicting hashes are associated with desired
+changes in figures, copy the hash-library file listed at the end of the test
+report to `sunpy/tests/`.  Be forewarned that the hash library will likely need
+to be updated for multiple versions of Python.
+
 Running unit tests
 ^^^^^^^^^^^^^^^^^^
 
@@ -658,7 +859,7 @@ To find and run all the SunPy unit tests, simply run ::
   py.test
 
 from the root of the SunPy tree (i.e. the directory containing `INSTALL.TXT`,
-`sunpy`, `doc`, etc.). This will produce a lot of output and you'll probably 
+`sunpy`, `doc`, etc.). This will produce a lot of output and you'll probably
 want to run only selected test modules at a time. This is done by specifying
 the module on the command line, e.g.::
 
@@ -667,7 +868,7 @@ the module on the command line, e.g.::
 for the tests for `sunpy.util.xml`.
 
 To run only tests that been marked with a specific pytest mark using the
-deocrator ``@pytest.mark`` (the the section *Writing a unit test*), use the
+decorator ``@pytest.mark`` (see the section *Writing a unit test*), use the
 following command (where ``MARK`` is the name of the mark)::
 
   py.test -k MARK
@@ -689,9 +890,9 @@ you need to use the option ``-rs`` for skipped tests and ``-rx`` for
 xfailed tests, respectively. Or use ``-rxs`` for detailed information on
 both skipped and xfailed tests.
 
-.. Unit tests should be written as often as possible using `unittest 
-.. <http://docs.python.org/release/3.1.3/library/unittest.html>`_. See the 
-.. `Unit Testing section <http://diveintopython3.org/unit-testing.html>`_ of 
+.. Unit tests should be written as often as possible using `unittest
+.. <http://docs.python.org/release/3.1.3/library/unittest.html>`_. See the
+.. `Unit Testing section <http://diveintopython3.org/unit-testing.html>`_ of
 .. Dive into Python 3 for more information about unit testing in Python.
 
 .. SunPy uses `tox <http://tox.testrun.org/>`_ to automate testing with
@@ -712,27 +913,27 @@ When to write unit tests
 A rule of thumb for unit testing is to have at least one unit test per public
 function.
 
-Testing Your Code Before Commiting
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Testing Your Code Before Committing
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 When you commit your changes and make a Pull Request to the main SunPy repo on
 GitHub, your code will be tested by Travis CI to make sure that all the tests
 pass and the documentation builds without any warnings. Before you commit your
 code you should check that this is the case. There is a helper script in
 `sunpy/tools/pre-commit.sh` that is designed to run these tests automatically
-everytime you run `git commit` to install it copy the file from
+every time you run `git commit` to install it copy the file from
 `sunpy/tools/pre-commit.sh` to `sunpy/.git/hooks/pre-commit`, you should also
 check the script to make sure that it is configured properly for your system.
 
-Continuous Intergration
-^^^^^^^^^^^^^^^^^^^^^^^
+Continuous Integration
+^^^^^^^^^^^^^^^^^^^^^^
 
 SunPy makes use of the `Travis CI service <https://travis-ci.org/sunpy/sunpy>`_.
-This service builds a version of SunPy and runs all the tests. It also integrates 
-with GitHub and will report the test results on any Pull Request when they are 
+This service builds a version of SunPy and runs all the tests. It also integrates
+with GitHub and will report the test results on any Pull Request when they are
 submitted and when they are updated.
 
-The Travis CI server not only builds SunPy from source, but currently it builds all 
-of SunPy's dependancies from source as well using pip, all of this behaviour is 
+The Travis CI server not only builds SunPy from source, but currently it builds all
+of SunPy's dependencies from source as well using pip, all of this behaviour is
 specified in the .travis.yml file in the root of the SunPy repo.
 
 New Functionality
@@ -740,11 +941,11 @@ New Functionality
 For SunPy, we would encourage all developers to thoroughly `cover <http://en.wikipedia.org/wiki/Code_coverage>`_
 their code by writing unit tests for each new function created.
 
-Developers who want to take an aggresive approach to reducing bugs may even
-wish to consider adopting a practice such as Test Drive Development (TDD) 
+Developers who want to take an aggressive approach to reducing bugs may even
+wish to consider adopting a practice such as Test Drive Development (TDD)
 whereby unit tests are written before any actual code is written. The tests
 begin by failing, and then as they code is developed the user re-runs the
-tests until all of them are passing.  
+tests until all of them are passing.
 
 Bugs discovered
 """""""""""""""

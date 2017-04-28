@@ -9,24 +9,31 @@ __author__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
 import os
-import urllib
-import urllib2
-
 import json
-
+import codecs
 import sunpy
 from sunpy.time import parse_time
 from sunpy.util.net import download_fileobj
 
+from sunpy.extern.six.moves import urllib
+
 __all__ = ['HelioviewerClient']
 
-class HelioviewerClient:
+
+class HelioviewerClient(object):
     """Helioviewer.org Client"""
-    def __init__(self, url="http://helioviewer.org/api/"):
+    def __init__(self, url="https://legacy.helioviewer.org/api/"):
+        """
+        url : location of the Helioviewer API.  The default location points to
+            version 1 of the API.  Version 1 of the Helioviewer API is
+            currently planned to be supported until the end of April 2017.
+        """
         self._api = url
 
     def get_data_sources(self, **kwargs):
-        """Returns a structured list of datasources available at Helioviewer.org"""
+        """
+        Returns a structured list of datasources available at helioviewer.org.
+        """
         params = {"action": "getDataSources"}
         params.update(kwargs)
 
@@ -36,12 +43,12 @@ class HelioviewerClient:
         """Finds the closest image available for the specified source and date.
 
         For more information on what types of requests are available and the
-        expected usage for the response, consult the Helioviewer
-        API documenation: http://helioviewer.org/api
+        expected usage for the response, consult the Helioviewer API
+        documentation: http://legacy.helioviewer.org/api/docs/v1/ .
 
         Parameters
         ----------
-        date : datetime, string
+        date : `datetime.datetime`, `str`
             A string or datetime object for the desired date of the image
         observatory : string
             (Optional) Observatory name
@@ -56,8 +63,8 @@ class HelioviewerClient:
 
         Returns
         -------
-        out : dict
-            A dictionary containing metainformation for the closest image matched
+        out : `dict`
+            A dictionary containing meta-information for the closest image matched
 
         Examples
         --------
@@ -66,6 +73,7 @@ class HelioviewerClient:
         >>> client = HelioviewerClient()
         >>> metadata = client.get_closest_image('2012/01/01', sourceId=11)
         >>> print(metadata['date'])
+        2012-01-01 00:00:07
         """
         params = {
             "action": "getClosestImage",
@@ -91,7 +99,7 @@ class HelioviewerClient:
 
         Parameters
         ----------
-        date : datetime, string
+        date : `datetime.datetime`, string
             A string or datetime object for the desired date of the image
         directory : string
             (Optional) Directory to download JPEG 2000 image to.
@@ -116,15 +124,15 @@ class HelioviewerClient:
 
         Examples
         --------
-        >>> import sunpy
+        >>> import sunpy.map
         >>> from sunpy.net import helioviewer
         >>> hv = helioviewer.HelioviewerClient()
-        >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', instrument='AIA', detector='AIA', measurement='171')
-        >>> aia = sunpy.make_map(filepath)
-        >>> aia.show()
+        >>> filepath = hv.download_jp2('2012/07/03 14:30:00', observatory='SDO', instrument='AIA', detector='AIA', measurement='171')   # doctest: +SKIP
+        >>> aia = sunpy.map.Map(filepath)   # doctest: +SKIP
+        >>> aia.peek()   # doctest: +SKIP
 
         >>> data_sources = hv.get_data_sources()
-        >>> hv.download_jp2('2012/07/03 14:30:00', sourceId=data_sources['SOHO']['LASCO']['C2']['white-light']['sourceId'])
+        >>> hv.download_jp2('2012/07/03 14:30:00', sourceId=data_sources['SOHO']['LASCO']['C2']['white-light']['sourceId'])   # doctest: +SKIP
         """
         params = {
             "action": "getJP2Image",
@@ -148,12 +156,12 @@ class HelioviewerClient:
         image may be specified using either the top-left and bottom-right
         coordinates in arc-seconds, or a center point in arc-seconds and a
         width and height in pixels. See the Helioviewer.org API Coordinates
-        Appendix for more infomration about working with coordinates in
+        Appendix for more information about working with coordinates in
         Helioviewer.org.
 
         Parameters
         ----------
-        date : datetime, string
+        date : `datetime.datetime`, string
             A string or datetime object for the desired date of the image
         image_scale : float
             The zoom scale of the image. Default scales that can be used are
@@ -162,7 +170,7 @@ class HelioviewerClient:
         layers : string
             Each layer string is comma-separated with these values, e.g.:
             "[sourceId,visible,opacity]" or "[obs,inst,det,meas,visible,opacity]"
-            Mulitple layer string are by commas: "[layer1],[layer2],[layer3]"
+            Multiple layer string are by commas: "[layer1],[layer2],[layer3]"
         directory : string
             (Optional)  Directory to download JPEG 2000 image to.
         x1 : float
@@ -198,10 +206,8 @@ class HelioviewerClient:
         --------
         >>> from sunpy.net.helioviewer import HelioviewerClient
         >>> hv = HelioviewerClient()
-        >>> hv.download_png('2012/07/16 10:08:00', 2.4, "[SDO,AIA,AIA,171,1,100]", x0=0, y0=0, width=1024, height=1024)
-        '/home/user/sunpy/data/2012_07_16_10_08_00_AIA_171.png
-        >>> hv.download_png('2012/07/16 10:08:00', 4.8, "[SDO,AIA,AIA,171,1,100],[SOHO,LASCO,C2,white-light,1,100]", x1=-2800, x2=2800, y1=-2800, y2=2800, directory='~/Desktop')
-        '/home/user/Desktop/2012_07_16_10_08_00_AIA_171__LASCO_C2.png'
+        >>> hv.download_png('2012/07/16 10:08:00', 2.4, "[SDO,AIA,AIA,171,1,100]", x0=0, y0=0, width=1024, height=1024)   # doctest: +SKIP
+        >>> hv.download_png('2012/07/16 10:08:00', 4.8, "[SDO,AIA,AIA,171,1,100],[SOHO,LASCO,C2,white-light,1,100]", x1=-2800, x2=2800, y1=-2800, y2=2800, directory='~/Desktop')   # doctest: +SKIP
         """
         params = {
             "action": "takeScreenshot",
@@ -215,18 +221,19 @@ class HelioviewerClient:
         return self._get_file(params, directory, overwrite=overwrite)
 
     def is_online(self):
-        """Returns True if Helioviewer is online and available"""
+        """Returns True if Helioviewer is online and available."""
         try:
             self.get_data_sources()
-        except urllib2.URLError:
+        except urllib.error.URLError:
             return False
 
         return True
 
     def _get_json(self, params):
         """Returns a JSON result as a string"""
-        response = self._request(params).read()
-        return json.loads(response)
+        reader = codecs.getreader("utf-8")
+        response = self._request(params)
+        return json.load(reader(response))
 
     def _get_file(self, params, directory=None, overwrite=False):
         """Downloads a file and return the filepath to that file"""
@@ -249,14 +256,15 @@ class HelioviewerClient:
 
         Parameters
         ----------
-        params : dict
+        params : `dict`
             Parameters to send
 
         Returns
         -------
         out : result of request
         """
-        response = urllib2.urlopen(self._api, urllib.urlencode(params))
+        response = urllib.request.urlopen(
+            self._api, urllib.parse.urlencode(params).encode('utf-8'))
 
         return response
 

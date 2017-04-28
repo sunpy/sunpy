@@ -1,0 +1,8 @@
+CHANGELOG.md merge=union
+continuous-integration/python3.sh merge=union
+*fits binary
+*fit binary
+*fts binary
+*fit.gz binary
+*fits.gz binary
+*fts.gz binary

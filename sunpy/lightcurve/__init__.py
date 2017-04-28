@@ -17,27 +17,4 @@ from sunpy.lightcurve.sources.lyra import *
 from sunpy.lightcurve.sources.logical import *
 from sunpy.lightcurve.sources.norh import *
 from sunpy.lightcurve.sources.rhessi import *
-
-#def make_lightcurve(*args, **kwargs):
-#    """Processes one or more inputs and returns a LightCurve instance.
-#    
-#    Parameters
-#    ----------
-#    args : filepath, url, or start and end dates
-#        The input for a LightCurve object should either be a filepath, a URL,
-#        or a date range to be queried for the particular instrument.
-#        
-#    Returns
-#    -------
-#    out : LightCurve
-#        Returns a LightCurve subclass instance
-#        
-#    Examples
-#    --------
-#    >>> import sunpy
-#    >>> sunpy.make_lightcurve("file.fts")
-#    """
-#    if len(args) is 0:
-#        raise TypeError("Invalid input.")
-#    
-#    return LightCurve.read(args[0])
+from sunpy.lightcurve.sources.fermi_gbm import *

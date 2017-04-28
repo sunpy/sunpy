@@ -18,36 +18,78 @@ class RHESSISummaryLightCurve(LightCurve):
     """
     RHESSI X-ray Summary LightCurve.
 
+    The RHESSI mission consists of a single spin-stabilized
+    spacecraft in a low-altitude orbit inclined 38 degrees to
+    the Earth's equator. The only instrument on board is an
+    Germaniun imaging spectrometer with the ability to obtain high
+    fidelity solar images in X rays (down to 3 keV) to gamma rays (1 MeV).
+
+    RHESSI provides summary lightcurves in the following passbands
+
+    * 3 - 6 keV
+    * 6 - 12 keV
+    * 12 - 25 keV
+    * 25 - 50 keV
+    * 50 - 100 keV
+    * 100 - 300 keV
+    * 300 - 800 keV
+    * 800 - 7000 keV
+    * 7000 - 20000 keV
+
+    RHESSI was launched on 5 February 2002.
+
     Examples
     --------
     >>> from sunpy import lightcurve as lc
     >>> rhessi = lc.RHESSISummaryLightCurve.create()
     >>> rhessi = lc.RHESSISummaryLightCurve.create('2012/06/01', '2012/06/05')
-    >>> rhessi.peek()
+    >>> rhessi.peek()   # doctest: +SKIP
 
     References
     ----------
-    | http://sprg.ssl.berkeley.edu/~jimm/hessi/hsi_obs_summ_soc.html#hsi_obs_summ_rate
+    * RHESSI Homepage `<http://hesperia.gsfc.nasa.gov/rhessi3/index.html>`_
+    * Mission Paper `<http://link.springer.com/article/10.1023%2FA%3A1022428818870>`_
     """
 
     def peek(self, title="RHESSI Observing Summary Count Rate", **kwargs):
-        """Plots RHESSI Count Rate light curve"""
+        """Plots RHESSI Count Rate light curve. An example is shown below.
+
+        .. plot::
+
+            from sunpy import lightcurve as lc
+            from sunpy.data.sample import RHESSI_LIGHTCURVE
+            rhessi = lc.RHESSISummaryLightCurve.create(RHESSI_LIGHTCURVE)
+            rhessi.peek()
+
+        Parameters
+        ----------
+        title : str
+            The title of the plot.
+
+        **kwargs : dict
+            Any additional plot arguments that should be used
+            when plotting.
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
+        """
         figure = plt.figure()
         axes = plt.gca()
 
-        dates = matplotlib.dates.date2num(self.data.index)
+        #dates = matplotlib.dates.date2num(self.data.index)
 
-        lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
-                         'navy', 'orange', 'green')
+        lc_linecolors = rhessi.hsi_linecolors()
 
-        for item, frame in self.data.iteritems():
-            axes.plot_date(dates, frame.values, '-', label=item, lw=2)
+        for lc_color, (item, frame) in zip(lc_linecolors, self.data.iteritems()):
+            axes.plot_date(self.data.index, frame.values, '-', label=item, lw=2, color=lc_color)
 
         axes.set_yscale("log")
         axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
 
-        axes.set_title('RHESSI Observing Summary Count Rates, Corrected')
-        axes.set_ylabel('Corrected Count Rates s$^{-1}$ detector$^{-1}$')
+        axes.set_title('RHESSI Observing Summary Count Rates')
+        axes.set_ylabel('Count Rate s$^{-1}$ detector$^{-1}$')
 
         axes.yaxis.grid(True, 'major')
         axes.xaxis.grid(False, 'major')
@@ -63,7 +105,7 @@ class RHESSISummaryLightCurve(LightCurve):
 
     @classmethod
     def _get_default_uri(cls):
-        """Retrieve the latest RHESSI data."""
+        """Retrieves the latest RHESSI data."""
         today = datetime.datetime.today()
         days_back = 3
         time_range = TimeRange(today - datetime.timedelta(days=days_back),
@@ -76,7 +118,7 @@ class RHESSISummaryLightCurve(LightCurve):
 
         Parameters
         ----------
-        args : TimeRange, datetimes, date strings
+        args : `~sunpy.time.TimeRange`, `datetime.datetime, str
             Date range should be specified using a TimeRange, or start
             and end dates at datetime instances or date strings.
         """
@@ -84,10 +126,7 @@ class RHESSISummaryLightCurve(LightCurve):
             time_range = args[0]
         elif len(args) == 2:
             time_range = TimeRange(parse_time(args[0]), parse_time(args[1]))
-            if time_range.end() < time_range.start():
-                raise ValueError('start time > end time')
-        url = rhessi.get_obssum_filename(time_range)
-        return url
+        return rhessi.get_obssum_filename(time_range)[0]
 
     @staticmethod
     def _parse_fits(filepath):

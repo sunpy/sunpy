@@ -4,10 +4,8 @@
 # This module was developed with funding provided by
 # the ESA Summer of Code (2011).
 #
-#pylint: disable=W0401,C0103,R0904,W0141
-
-from __future__ import absolute_import
-from __future__ import division
+# pylint: disable=W0401,C0103,R0904,W0141
+from __future__ import absolute_import, division, print_function
 
 """
 This module provides a wrapper around the VSO API.
@@ -16,12 +14,17 @@ This module provides a wrapper around the VSO API.
 import re
 import os
 import sys
+import logging
 import threading
 
 from datetime import datetime, timedelta
 from functools import partial
 from collections import defaultdict
 from suds import client, TypeNotFound
+
+import astropy
+from astropy.table import Table, Column
+import astropy.units as u
 
 from sunpy import config
 from sunpy.net import download
@@ -31,12 +34,23 @@ from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso import attrs
 from sunpy.net.vso.attrs import walker, TIMEFORMAT
-from sunpy.util import print_table, replacement_filename
+from sunpy.util import replacement_filename
 from sunpy.time import parse_time
+
+from sunpy.extern import six
+from sunpy.extern.six import iteritems, text_type
+from sunpy.extern.six.moves import input
+
+TIME_FORMAT = config.get("general", "time_format")
 
 DEFAULT_URL = 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl'
 DEFAULT_PORT = 'nsoVSOi'
 RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
+
+# Override the logger that dumps the whole Schema
+# to stderr so it doesn't do that.
+suds_log = logging.getLogger('suds.umx.typed')
+suds_log.setLevel(50)
 
 
 # TODO: Name
@@ -53,88 +67,6 @@ class _Str(str):
 
 
 # ----------------------------------------
-
-
-class Results(object):
-    """ Returned by VSOClient.get. Use .wait to wait
-    for completion of download.
-    """
-    def __init__(self, callback, n=0, done=None):
-        self.callback = callback
-        self.n = self.total = n
-        self.map_ = {}
-        self.done = done
-        self.evt = threading.Event()
-        self.errors = []
-        self.lock = threading.RLock()
-
-        self.progress = None
-
-    def submit(self, keys, value):
-        """
-        Submit
-
-        Parameters
-        ----------
-        keys : list
-            names under which to save the value
-        value : object
-            value to save
-        """
-        for key in keys:
-            self.map_[key] = value
-        self.poke()
-
-    def poke(self):
-        """ Signal completion of one item that was waited for. This can be
-        because it was submitted, because it lead to an error or for any
-        other reason. """
-        with self.lock:
-            self.n -= 1
-            if self.progress is not None:
-               self.progress.poke()
-            if not self.n:
-                if self.done is not None:
-                    self.map_ = self.done(self.map_)
-                self.callback(self.map_)
-                self.evt.set()
-
-    def require(self, keys):
-        """ Require that keys be submitted before the Results object is
-        finished (i.e., wait returns). Returns a callback method that can
-        be used to submit the result by simply calling it with the result.
-
-        keys : list
-            name of keys under which to save the result
-        """
-        with self.lock:
-            self.n += 1
-            self.total += 1
-            return partial(self.submit, keys)
-
-    def wait(self, timeout=100, progress=False):
-        """ Wait for result to be complete and return it. """
-        # Giving wait a timeout somehow circumvents a CPython bug that the
-        # call gets ininterruptible.
-        if progress:
-            with self.lock:
-                self.progress = ProgressBar(self.total, self.total - self.n)
-                self.progress.start()
-                self.progress.draw()
-
-        while not self.evt.wait(timeout):
-            pass
-        if progress:
-            self.progress.finish()
-
-        return self.map_
-
-    def add_error(self, exception):
-        """ Signal a required result cannot be submitted because of an
-        error. """
-        self.errors.append(exception)
-        self.poke()
-
 
 def _parse_waverange(string):
     min_, max_, unit = RANGE.match(string).groups()[::2]
@@ -164,11 +96,13 @@ def iter_errors(response):
             yield prov_item
 
 
+# TODO: Python 3 this should subclass from UserList
 class QueryResponse(list):
-    def __init__(self, lst, queryresult=None):
+    def __init__(self, lst, queryresult=None, table=None):
         super(QueryResponse, self).__init__(lst)
         self.queryresult = queryresult
         self.errors = []
+        self.table = None
 
     def query(self, *query):
         """ Furtherly reduce the query response by matching it against
@@ -188,10 +122,6 @@ class QueryResponse(list):
         # Warn about -1 values?
         return sum(record.size for record in self if record.size > 0)
 
-    def num_records(self):
-        """ Return number of records. """
-        return len(self)
-
     def time_range(self):
         """ Return total time-range all records span across. """
         return (
@@ -203,27 +133,65 @@ class QueryResponse(list):
                   if record.time.end is not None), TIMEFORMAT)
         )
 
-    def show(self):
-        """Print out human-readable summary of records retrieved"""
+    def build_table(self):
+        keywords = ['Start Time', 'End Time', 'Source', 'Instrument', 'Type', 'Wavelength']
+        record_items = {}
+        for key in keywords:
+            record_items[key] = []
 
-        table = [
-          [
-            str(datetime.strptime(record.time.start, TIMEFORMAT))
-              if record.time.start is not None else 'N/A',
-            str(datetime.strptime(record.time.end, TIMEFORMAT))
-              if record.time.end is not None else 'N/A',
-            record.source,
-            record.instrument,
-            record.extent.type
-              if record.extent.type is not None else 'N/A'
-          ] for record in self]
-        table.insert(0, ['----------','--------','------','----------','----'])
-        table.insert(0, ['Start time','End time','Source','Instrument','Type'])
+        def validate_time(time):
+            # Handle if the time is None when coming back from VSO
+            if time is None:
+                return ['None']
+            if record.time.start is not None:
+                return [datetime.strftime(parse_time(time), TIME_FORMAT)]
+            else:
+                return ['N/A']
 
-        print(print_table(table, colsep = '  ', linesep='\n'))
+        for record in self:
+            record_items['Start Time'].append(validate_time(record.time.start))
+            record_items['End Time'].append(validate_time(record.time.end))
+            record_items['Source'].append(str(record.source))
+            record_items['Instrument'].append(str(record.instrument))
+            record_items['Type'].append(str(record.extent.type)
+                                if record.extent.type is not None else ['N/A'])
+            # If we have a start and end Wavelength, make a quantity
+            if hasattr(record, 'wave') and record.wave.wavemin and record.wave.wavemax:
+                record_items['Wavelength'].append(u.Quantity([float(record.wave.wavemin),
+                                                              float(record.wave.wavemax)],
+                                                             unit=record.wave.waveunit))
+            # If not save None
+            else:
+                record_items['Wavelength'].append(None)
+        # If we have no wavelengths for the whole list, drop the col
+        if all([a is None for a in record_items['Wavelength']]):
+            record_items.pop('Wavelength')
+            keywords.remove('Wavelength')
+        else:
+            # Make whole column a quantity
+            try:
+                with u.set_enabled_equivalencies(u.spectral()):
+                    record_items['Wavelength'] = u.Quantity(record_items['Wavelength'])
+            # If we have mixed units or some Nones just represent as strings
+            except (u.UnitConversionError, TypeError):
+                record_items['Wavelength'] = [str(a) for a in record_items['Wavelength']]
+
+        return Table(record_items)[keywords]
 
     def add_error(self, exception):
         self.errors.append(exception)
+
+    def __str__(self):
+        """Print out human-readable summary of records retrieved"""
+        return str(self.build_table())
+
+    def __repr__(self):
+        """Print out human-readable summary of records retrieved"""
+        return repr(self.build_table())
+
+    def _repr_html_(self):
+        return self.build_table()._repr_html_()
+
 
 class DownloadFailed(Exception):
     pass
@@ -248,6 +216,7 @@ class VSOClient(object):
     method_order = [
         'URL-TAR_GZ', 'URL-ZIP', 'URL-TAR', 'URL-FILE', 'URL-packaged'
     ]
+
     def __init__(self, url=None, port=None, api=None):
         if api is None:
             if url is None:
@@ -255,7 +224,7 @@ class VSOClient(object):
             if port is None:
                 port = DEFAULT_PORT
 
-            api = client.Client(url, transport = WellBehavedHttpTransport())
+            api = client.Client(url, transport=WellBehavedHttpTransport())
             api.set_options(port=port)
         self.api = api
 
@@ -264,7 +233,7 @@ class VSOClient(object):
         To assign subattributes, use foo__bar=1 to assign
         ['foo']['bar'] = 1. """
         obj = self.api.factory.create(atype)
-        for k, v in kwargs.iteritems():
+        for k, v in iteritems(kwargs):
             split = k.split('__')
             tip = split[-1]
             rest = split[:-1]
@@ -275,7 +244,7 @@ class VSOClient(object):
 
             if isinstance(v, dict):
                 # Do not throw away type information for dicts.
-                for k, v in v.iteritems():
+                for k, v in iteritems(v):
                     item[tip][k] = v
             else:
                 item[tip] = v
@@ -292,14 +261,26 @@ class VSOClient(object):
         Query all data from eit or aia between 2010-01-01T00:00 and
         2010-01-01T01:00.
 
+        >>> from datetime import datetime
+        >>> from sunpy.net import vso
+        >>> client = vso.VSOClient()
         >>> client.query(
-        ...    vso.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
-        ...    vso.Instrument('eit') | vso.Instrument('aia')
-        ... )
+        ...    vso.attrs.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
+        ...    vso.attrs.Instrument('eit') | vso.attrs.Instrument('aia'))   # doctest: +NORMALIZE_WHITESPACE
+        <Table masked=False length=5>
+           Start Time [1]       End Time [1]     Source  Instrument   Type
+             string152           string152      string32  string24  string64
+        ------------------- ------------------- -------- ---------- --------
+        2010-01-01 00:00:08 2010-01-01 00:00:20     SOHO        EIT FULLDISK
+        2010-01-01 00:12:08 2010-01-01 00:12:20     SOHO        EIT FULLDISK
+        2010-01-01 00:24:10 2010-01-01 00:24:22     SOHO        EIT FULLDISK
+        2010-01-01 00:36:08 2010-01-01 00:36:20     SOHO        EIT FULLDISK
+        2010-01-01 00:48:09 2010-01-01 00:48:21     SOHO        EIT FULLDISK
 
         Returns
         -------
-        out : :py:class:`QueryResult` (enhanced list) of matched items. Return value of same type as the one of :py:meth:`VSOClient.query`.
+        out : :py:class:`QueryResult` (enhanced list) of matched items. Return
+        value of same type as the one of :py:meth:`VSOClient.query`.
         """
         query = and_(*query)
 
@@ -334,7 +315,7 @@ class VSOClient(object):
                     continue
                 if not hasattr(provideritem.record, 'recorditem'):
                     continue
-                if not provideritem.provider in providers:
+                if provideritem.provider not in providers:
                     providers[provider] = provideritem
                     fileids |= set(
                         record_item.fileid
@@ -349,21 +330,26 @@ class VSOClient(object):
                             )
                             providers[provider].no_of_records_found += 1
                             providers[provider].no_of_records_returned += 1
-        return self.make('QueryResponse', provideritem=providers.values())
+        return self.make('QueryResponse',
+                         provideritem=list(providers.values()))
 
     @staticmethod
     def mk_filename(pattern, response, sock, url, overwrite=False):
         name = get_filename(sock, url)
         if not name:
-            if not isinstance(response.fileid, unicode):
-                name = unicode(response.fileid, "ascii", "ignore")
+            if not isinstance(response.fileid, text_type):
+                name = six.u(response.fileid, "ascii", "ignore")
             else:
                 name = response.fileid
 
         fs_encoding = sys.getfilesystemencoding()
         if fs_encoding is None:
             fs_encoding = "ascii"
-        name = slugify(name).encode(fs_encoding, "ignore")
+
+        name = slugify(name)
+
+        if six.PY2:
+            name = name.encode(fs_encoding, "ignore")
 
         if not name:
             name = "file"
@@ -448,8 +434,11 @@ class VSOClient(object):
         Query all data from eit between 2010-01-01T00:00 and
         2010-01-01T01:00.
 
-        >>> qr = client.query_legacy(
-        ...     datetime(2010, 1, 1), datetime(2010, 1, 1, 1), instrument='eit')
+        >>> from datetime import datetime
+        >>> from sunpy.net import vso
+        >>> client = vso.VSOClient()
+        >>> qr = client.query_legacy(datetime(2010, 1, 1),
+        ...                          datetime(2010, 1, 1, 1), instrument='eit')
 
         Returns
         -------
@@ -484,8 +473,8 @@ class VSOClient(object):
             kwargs.update({'time_end': tend})
 
         queryreq = self.api.factory.create('QueryRequest')
-        for key, value in kwargs.iteritems():
-            for k, v in ALIASES.get(key, sdk(key))(value).iteritems():
+        for key, value in iteritems(kwargs):
+            for k, v in iteritems(ALIASES.get(key, sdk(key))(value)):
                 if k.startswith('time'):
                     v = parse_time(v).strftime(TIMEFORMAT)
                 attr = k.split('_')
@@ -498,11 +487,11 @@ class VSOClient(object):
                     try:
                         item = item[elem]
                     except KeyError:
-                        raise ValueError("Unexpected argument %s." % key)
+                        raise ValueError("Unexpected argument {key!s}.".format(key=key))
                 if lst not in item:
-                    raise ValueError("Unexpected argument %s." % key)
+                    raise ValueError("Unexpected argument {key!s}.".format(key=key))
                 if item[lst]:
-                    raise ValueError("Got multiple values for %s." % k)
+                    raise ValueError("Got multiple values for {k!s}.".format(k=k))
                 item[lst] = v
         try:
             return QueryResponse.create(self.api.service.Query(queryreq))
@@ -517,7 +506,8 @@ class VSOClient(object):
             time_near=datetime.utcnow()
         )
 
-    def get(self, query_response, path=None, methods=('URL-FILE',), downloader=None, site=None):
+    def get(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),
+            downloader=None, site=None):
         """
         Download data specified in the query_response.
 
@@ -525,17 +515,26 @@ class VSOClient(object):
         ----------
         query_response : sunpy.net.vso.QueryResponse
             QueryResponse containing the items to be downloaded.
+
         path : str
             Specify where the data is to be downloaded. Can refer to arbitrary
             fields of the QueryResponseItem (instrument, source, time, ...) via
             string formatting, moreover the file-name of the file downloaded can
-            be refered to as file, e.g.
+            be referred to as file, e.g.
             "{source}/{instrument}/{time.start}/{file}".
+
         methods : {list of str}
-            Methods acceptable to user.
+            Download methods, defaults to URL-FILE_Rice then URL-FILE.
+            Methods are a concatenation of one PREFIX followed by any number of
+            SUFFIXES i.e. `PREFIX-SUFFIX_SUFFIX2_SUFFIX3`.
+            The full list of `PREFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_PREFIX>`_
+            and `SUFFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_SUFFIX>`_
+            are listed on the VSO site.
+
         downloader : sunpy.net.downloader.Downloader
             Downloader used to download the data.
-        site: str
+
+        site : str
             There are a number of caching mirrors for SDO and other
             instruments, some available ones are listed below.
 
@@ -562,17 +561,19 @@ class VSOClient(object):
         if downloader is None:
             downloader = download.Downloader()
             downloader.init()
-            res = Results(
+            res = download.Results(
                 lambda _: downloader.stop(), 1,
                 lambda mp: self.link(query_response, mp)
             )
         else:
-            res = Results(
+            res = download.Results(
                 lambda _: None, 1, lambda mp: self.link(query_response, mp)
             )
         if path is None:
-            path = os.path.join(config.get('downloads','download_dir'),
+            path = os.path.join(config.get('downloads', 'download_dir'),
                                 '{file}')
+        path = os.path.expanduser(path)
+
         fileids = VSOClient.by_fileid(query_response)
         if not fileids:
             res.poke()
@@ -580,12 +581,11 @@ class VSOClient(object):
         # Adding the site parameter to the info
         info = {}
         if site is not None:
-            info['site']=site
+            info['site'] = site
 
         self.download_all(
             self.api.service.GetData(
-                self.make_getdatarequest(query_response, methods, info)
-                ),
+                self.make_getdatarequest(query_response, methods, info)),
             methods, downloader, path,
             fileids, res
         )
@@ -617,7 +617,7 @@ class VSOClient(object):
 
         return self.create_getdatarequest(
             dict((k, [x.fileid for x in v])
-                 for k, v in self.by_provider(response).iteritems()),
+                 for k, v in iteritems(self.by_provider(response))),
             methods, info
         )
 
@@ -633,7 +633,7 @@ class VSOClient(object):
             request__info=info,
             request__datacontainer__datarequestitem=[
                 self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
-                for k, v in maps.iteritems()
+                for k, v in iteritems(maps)
             ]
         )
 
@@ -666,7 +666,8 @@ class VSOClient(object):
                             dresponse.method.methodtype[0],
                             dataitem.url,
                             dw,
-                            res.require(map(str, dataitem.fileiditem.fileid)),
+                            res.require(
+                                list(map(str, dataitem.fileiditem.fileid))),
                             res.add_error,
                             path,
                             qr[dataitem.fileiditem.fileid[0]]
@@ -726,6 +727,11 @@ class VSOClient(object):
 
     @staticmethod
     def by_provider(response):
+        """ 
+        Returns a dictionary of provider 
+        corresponding to records in the response. 
+        """
+        
         map_ = defaultdict(list)
         for record in response:
             map_[record.provider].append(record)
@@ -733,6 +739,11 @@ class VSOClient(object):
 
     @staticmethod
     def by_fileid(response):
+        """ 
+        Returns a dictionary of fileids 
+        corresponding to records in the response. 
+        """
+        
         return dict(
             (record.fileid, record) for record in response
         )
@@ -755,15 +766,31 @@ class VSOClient(object):
         """ Override to pick a new method if the current one is unknown. """
         raise NoData
 
+    @classmethod
+    def _can_handle_query(cls, *query):
+        return all([x.__class__.__name__ in attrs.__all__ for x in query])
+
+
 
 class InteractiveVSOClient(VSOClient):
     """ Client for use in the REPL. Prompts user for data if required. """
     def multiple_choices(self, choices, response):
+        """
+        not documented yet
+
+        Parameters
+        ----------
+
+            choices : not documented yet
+
+            response : not documented yet
+
+        """
         while True:
             for n, elem in enumerate(choices):
-                print "(%d) %s" % (n + 1, elem)
+                print("({num:d}) {choice!s}".format(num=n + 1, choice=elem))
             try:
-                choice = raw_input("Method number: ")
+                choice = input("Method number: ")
             except KeyboardInterrupt:
                 raise NoData
             if not choice:
@@ -781,7 +808,25 @@ class InteractiveVSOClient(VSOClient):
                     continue
 
     def missing_information(self, info, field):
-        choice = raw_input(field + ': ')
+        """
+        not documented yet
+
+        Parameters
+        ----------
+        info : not documented yet
+                not documented yet
+        field : not documented yet
+            not documented yet
+
+        Returns
+        -------
+        choice : not documented yet
+
+        .. todo::
+            improve documentation. what does this function do?
+
+        """
+        choice = input(field + ': ')
         if not choice:
             raise NoData
         return choice

@@ -1,45 +1,48 @@
-The SunPy development team is pleased to announce the release of SunPy 0.4.0.
-This release contains many new features, some of which are contributed by people 
-who participated in GSOC 2013. It includes the addition of a new local database for storing
-and searching data, it features a HEK to VSO translator and a new HELIO module in net.
-As well as this major work has been undertaken on the documentation and a new website developed.
+The SunPy project is happy to announce the release of SunPy 0.7.0.
 
-This release contains 1025 commits from 19 people.
+SunPy 0.7 is the next major release of SunPy and contains 665 commits from 27
+people, 11 of which have never contributed before. The major features of this
+release are:
 
-New Features:
-
-    * **Major** documentation refactor. A far reaching re-write and restructure.
-    * Add a SunPy Database to store and search local data.
-    * Add beta support for querying the HELIO HEC
-    * Add beta HEK to VSO query translation.
-    * Add the ability to download the GOES event list.
-    * Add support for downloading and querying the LYTAF database.
-    * Add support for ANA data.
-    * Updated sun.constants to use astropy.constants objects which include units, source,
-    and error instide. For more info check out http://docs.astropy.org/en/latest/constants/index.html
-    * Add some beta support for IRIS data products
-    * Add a new MapCubeAnimator class with interactive widgets which is returned by mapcube.peek().
-    * The Glymur library is now used to read JPEG2000 files.
-    * GOESLightCurve now supports all GOES satellites.
-
-
+* Python 3.4 and 3.5 support. This is the first version of SunPy to support
+  Python 3, we recommend that users start to consider moving to Python 3, please
+  report any issues you may have.
+* New coordinate framework. The new `sunpy.coordinates` module provides a
+  high-level interface to converting between different physical coordinate
+  systems such as Helioprojective and Heliographic.
+* New `draw_rectangle` and `draw_contours` helpers for `Map`.
+* New functions `flareclass_to_flux` and `flux_to_flareclass` which convert
+  between GOES flux to GOES class numbers (e.g. X12, M3.4).
+* Support for masks in SunPy `Map` and `MapCube`.
 
 The people who have contributed to this release are:
 
     Stuart Mumford
-    Simon Liedtke
+    Pritish Chakraborty
     Steven Christe
     Jack Ireland
-    Andrew Inglis
-    Nabil Freij
-    Samuel Bennett
+    Brigitta Sipocz
     David Perez-Suarez
-    Pritish Chakraborty
+    Punyaslok Pattnaik *
+    Michael S Kirk *
+    Andrew Leonard
+    Alex Hamilton
+    Andrew Inglis
+    Daniel Ryan
+    Sally Dacie *
+    Sanskar Modi *
     Albert Y. Shih
-    John Evans
-    Michael Malocha
-    Florian Mayer
-    Russell Hewett
-    Jose Iván Campos
-    Keith Hughitt
-    Tiago Pereira
+    Erik M. Bray
+    Larry Manley
+    Priyank Lodha *
+    Nabil Freij
+    Ankit *
+    Igor Babuschkin *
+    Ole Streicher *
+    Simon Liedtke
+    Sudarshan Konge *
+    Tessa D. Wilkinson *
+    Thomas Robitaille
+    yasintoda *
+     
+Where an * indicates their first contribution.

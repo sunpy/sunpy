@@ -30,36 +30,42 @@ References
 | http://stsdas.stsci.edu/download/wikidocs/The_PyFITS_Handbook.pdf
 
 """
-from __future__ import absolute_import
-
+from __future__ import absolute_import, division, print_function
 import os
 import re
+import sys
+import warnings
+import traceback
 import itertools
 import collections
 
 from astropy.io import fits
 
 from sunpy.io.header import FileHeader
+from sunpy.extern.six.moves import zip
 
 __all__ = ['read', 'get_header', 'write', 'extract_waveunit']
 
 __author__ = "Keith Hughitt, Stuart Mumford, Simon Liedtke"
 __email__ = "keith.hughitt@nasa.gov"
 
-def read(filepath, hdus=None):
+HDPair = collections.namedtuple('HDPair', ['data', 'header'])
+
+
+def read(filepath, hdus=None, memmap=None, **kwargs):
     """
     Read a fits file
 
     Parameters
     ----------
-    filepath : string
+    filepath : `str`
         The fits file to be read
-    hdu: int or iterable
+    hdu: `int` or iterable
         The HDU indexes to read from the file
 
     Returns
     -------
-    pairs : list
+    pairs : `list`
         A list of (data, header) tuples
 
     Notes
@@ -69,23 +75,31 @@ def read(filepath, hdus=None):
     Also all comments in the original file are concatenated into a single
     'comment' key in the returned FileHeader.
     """
-    hdulist = fits.open(filepath)
-    if hdus is not None:
-        if isinstance(hdus, int):
-            hdulist = hdulist[hdus]
-        elif isinstance(hdus, collections.Iterable):
-            hdulist = [hdulist[i] for i in hdus]
-    try:
-        hdulist.verify('silentfix')
+    with fits.open(filepath, memmap=memmap) as hdulist:
+        if hdus is not None:
+            if isinstance(hdus, int):
+                hdulist = hdulist[hdus]
+            elif isinstance(hdus, collections.Iterable):
+                hdulist = [hdulist[i] for i in hdus]
+
+        hdulist.verify('silentfix+warn')
 
         headers = get_header(hdulist)
         pairs = []
-        for hdu,header in itertools.izip(hdulist, headers):
-            pairs.append((hdu.data, header))
-    finally:
-        hdulist.close()
+
+        for i, (hdu, header) in enumerate(zip(hdulist, headers)):
+            try:
+                pairs.append(HDPair(hdu.data, header))
+            except (KeyError, ValueError) as e:
+                message = "Error when reading HDU {}. Skipping.\n".format(i)
+                for line in traceback.format_tb(sys.exc_info()[2]):
+                    message += line
+                    message += '\n'
+                message += repr(e)
+                warnings.warn(message, Warning, stacklevel=2)
 
     return pairs
+
 
 def get_header(afile):
     """
@@ -95,21 +109,21 @@ def get_header(afile):
 
     Parameters
     ----------
-    afile : string or fits.HDUList
-        The file to be read, or HDUList to process
+    afile : `str` or fits.HDUList
+        The file to be read, or HDUList to process.
 
     Returns
     -------
-    headers : list
-        A list of FileHeader headers
+    headers : `list`
+        A list of FileHeader headers.
     """
-    if isinstance(afile,fits.HDUList):
+    if isinstance(afile, fits.HDUList):
         hdulist = afile
         close = False
     else:
         hdulist = fits.open(afile)
         hdulist.verify('silentfix')
-        close=True
+        close = True
 
     try:
         headers= []
@@ -127,7 +141,7 @@ def get_header(afile):
             header['COMMENT'] = comment
             header['HISTORY'] = history
 
-            #Strip out KEYCOMMENTS to a dict, the hard way
+            # Strip out KEYCOMMENTS to a dict, the hard way
             keydict = {}
             for card in hdu.header.cards:
                 if card.comment != '':
@@ -141,25 +155,27 @@ def get_header(afile):
             hdulist.close()
     return headers
 
+
 def write(fname, data, header, **kwargs):
     """
-    Take a data header pair and write a fits file
+    Take a data header pair and write a FITS file.
 
     Parameters
     ----------
-    fname: str
+    fname : `str`
         File name, with extension
 
-    data: ndarray
+    data : `numpy.ndarray`
         n-dimensional data array
 
-    header: dict
+    header : `dict`
         A header dictionary
     """
-    #Copy header so the one in memory is left alone while changing it for write
+    # Copy header so the one in memory is left alone while changing it for
+    # write.
     header = header.copy()
 
-    #The comments need to be added to the header seperately from the normal
+    # The comments need to be added to the header separately from the normal
     # kwargs. Find and deal with them:
     fits_header = fits.Header()
     # Check Header
@@ -177,9 +193,9 @@ def write(fname, data, header, **kwargs):
                     fits_header.add_history(hist)
             elif k != '':
                 fits_header.append(fits.Card(k, str(v).split('\n')))
-        else:
-            fits_header.append(fits.Card(k,v))
 
+        else:
+            fits_header.append(fits.Card(k, v))
 
     if isinstance(key_comments, dict):
         for k,v in key_comments.items():
@@ -205,7 +221,7 @@ def extract_waveunit(header):
 
     Returns
     -------
-    waveunit : str
+    waveunit : `str`
         The wavelength unit that could be found or ``None`` otherwise.
 
     Examples
@@ -267,6 +283,6 @@ def extract_waveunit(header):
             if m is not None:
                 waveunit = m.group(1)
                 break
-    if waveunit == '': 
-        return None # To fix problems associated with HMI FITS.        
+    if waveunit == '':
+        return None # To fix problems associated with HMI FITS.
     return waveunit

@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
-
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 import datetime
-import urllib2
 
 import numpy as np
 
@@ -18,12 +16,13 @@ from scipy.optimize import leastsq
 from scipy.ndimage import gaussian_filter1d
 
 from sunpy.time import parse_time
-from sunpy.util import polyfun_at, minimal_pairs
+from sunpy.util import minimal_pairs
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.util.net import download_file
 
 from sunpy.spectra.spectrogram import LinearTimeSpectrogram, REFERENCE
-
+from sunpy.extern.six.moves import urllib
+from sunpy.extern.six import next, itervalues
 
 __all__ = ['CallistoSpectrogram']
 
@@ -31,7 +30,8 @@ TIME_STR = "%Y%m%d%H%M%S"
 DEFAULT_URL = 'http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/'
 _DAY = datetime.timedelta(days=1)
 
-DATA_SIZE = datetime.timedelta(seconds=15*60)
+DATA_SIZE = datetime.timedelta(seconds=15 * 60)
+
 
 def parse_filename(href):
     name = href.split('.')[0]
@@ -50,13 +50,15 @@ PARSERS = [
     # Everything starts with ""
     ("", parse_filename)
 ]
+
+
 def query(start, end, instruments=None, url=DEFAULT_URL):
-    """ Get URLs for callisto data from instruments between start and end.
-    
+    """Get URLs for callisto data from instruments between start and end.
+
     Parameters
     ----------
-    start : parse_time compatible
-    end : parse_time compatible
+    start : `~sunpy.time.parse_time` compatible
+    end : `~sunpy.time.parse_time` compatible
     instruments : sequence
         Sequence of instruments whose data is requested.
     url : str
@@ -64,8 +66,8 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
     """
     day = datetime.datetime(start.year, start.month, start.day)
     while day <= end:
-        directory = url + '%d/%02d/%02d/' % (day.year, day.month, day.day)
-        opn = urllib2.urlopen(directory)
+        directory = url + day.strftime('%Y/%m/%d/')
+        opn = urllib.request.urlopen(directory)
         try:
             soup = BeautifulSoup(opn)
             for link in soup.find_all("a"):
@@ -80,10 +82,10 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
                 inst, no, dstart = result
 
                 if (instruments is not None and
-                    inst not in instruments and 
+                    inst not in instruments and
                     (inst, int(no)) not in instruments):
                     continue
-                
+
                 dend = dstart + DATA_SIZE
                 if dend > start and dstart < end:
                     yield directory + href
@@ -93,8 +95,8 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
 
 
 def download(urls, directory):
-    """ Download files from urls into directory.
-    
+    """Download files from urls into directory.
+
     Parameters
     ----------
     urls : list of str
@@ -106,23 +108,23 @@ def download(urls, directory):
 
 
 def _parse_header_time(date, time):
-    """ Return datetime object from date and time fields of header. """
+    """Returns `~datetime.datetime` object from date and time fields of
+    header. """
     if time is not None:
         date = date + 'T' + time
     return parse_time(date)
 
 
 class CallistoSpectrogram(LinearTimeSpectrogram):
-    """ Classed used for dynamic spectra coming from the Callisto network.
-    
-    
+    """ Class used for dynamic spectra coming from the Callisto network.
+
     Attributes
     ----------
-    header : fits.Header
+    header : `~astropy.io.fits.Header`
         main header of the FITS file
-    axes_header : fits.Header
-        header foe the axes table
-    swapped : boolean
+    axes_header : `~astropy.io.fits.Header`
+        header for the axes table
+    swapped : bool
         flag that specifies whether originally in the file the x-axis was
         frequency
     """
@@ -141,7 +143,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         ('swapped', REFERENCE),
         ('axes_header', REFERENCE)
     ]
-    
+
     # List of instruments retrieved in July 2012 from
     # http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/
     INSTRUMENTS = set([
@@ -152,7 +154,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     def save(self, filepath):
         """ Save modified spectrogram back to filepath.
-        
+
         Parameters
         ----------
         filepath : str
@@ -172,10 +174,10 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         table = fits.new_table(cols, header=self.axes_header)
 
         hdulist = fits.HDUList([data, table])
-        hdulist.writeto(filepath)   
+        hdulist.writeto(filepath)
 
     def get_header(self):
-        """ Return updated header. """
+        """Returns the updated header."""
         header = self.header.copy()
 
         if self.swapped:
@@ -188,10 +190,10 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def read(cls, filename, **kwargs):
-        """ Read in FITS file and return a new CallistoSpectrogram. 
+        """Reads in FITS file and return a new CallistoSpectrogram.
         Any unknown (i.e. any except filename) keyword arguments get
         passed to fits.open.
-        
+
         Parameters
         ----------
         filename : str
@@ -210,7 +212,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         )
 
         swapped = "time" not in header["CTYPE1"].lower()
-        
+
         # Swap dimensions so x-axis is always time.
         if swapped:
             t_delt = header["CDELT2"]
@@ -241,8 +243,8 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             try:
                 fq = axes.data['frequency']
             except KeyError:
-                fq = None 
-        
+                fq = None
+
         if tm is not None:
             # Fix dimensions (whyever they are (1, x) in the first place)
             time_axis = np.squeeze(tm)
@@ -251,7 +253,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             time_axis = \
                 np.linspace(0, data.shape[1] - 1) * t_delt + t_init # pylint: disable=E1101
 
-        if fq is not None:  
+        if fq is not None:
             freq_axis = np.squeeze(fq)
         else:
             freq_axis = \
@@ -259,14 +261,13 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
         content = header["CONTENT"]
         instruments = set([header["INSTRUME"]])
-    
+
         return cls(
             data, time_axis, freq_axis, start, end, t_init, t_delt,
-            t_label, f_label, content, instruments, 
+            t_label, f_label, content, instruments,
             header, axes.header, swapped
         )
 
-        
     def __init__(self, data, time_axis, freq_axis, start, end,
             t_init=None, t_delt=None, t_label="Time", f_label="Frequency",
             content="", instruments=None, header=None, axes_header=None,
@@ -287,17 +288,17 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def is_datasource_for(cls, header):
-        """ Check if class supports data from the given FITS file.
-        
+        """Check if class supports data from the given FITS file.
+
         Parameters
         ----------
-        header : fits.Header
+        header : `~astropy.io.fits.Header`
             main header of the FITS file
         """
         return header.get('instrume', '').strip() in cls.INSTRUMENTS
 
     def remove_border(self):
-        """ Remove duplicate entries on the borders. """
+        """Remove duplicate entries on the borders."""
         left = 0
         while self.freq_axis[left] == self.freq_axis[0]:
             left += 1
@@ -308,8 +309,8 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     @classmethod
     def read_many(cls, filenames, sort_by=None):
-        """ Return list of CallistoSpectrogram objects read from filenames.
-        
+        """Returns a list of CallistoSpectrogram objects read from filenames.
+
         Parameters
         ----------
         filenames : list of str
@@ -318,90 +319,88 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             optional attribute of the resulting objects to sort from, e.g.
             start to sort by starting time.
         """
-        objs = map(cls.read, filenames)
+        objs = list(map(cls.read, filenames))
         if sort_by is not None:
             objs.sort(key=lambda x: getattr(x, sort_by))
         return objs
-    
+
     @classmethod
     def from_range(cls, instrument, start, end, **kwargs):
-        """ Automatically download data from instrument between start and
+        """Automatically download data from instrument between start and
         end and join it together.
-        
+
         Parameters
         ----------
         instrument : str
             instrument to retrieve the data from
-        start : parse_time compatible
+        start : `~sunpy.time.parse_time` compatible
             start of the measurement
-        end : parse_time compatible
+        end : `~sunpy.time.parse_time` compatible
             end of the measurement
         """
         kw = {
             'maxgap': None,
             'fill': cls.JOIN_REPEAT,
         }
-        
+
         kw.update(kwargs)
         start = parse_time(start)
         end = parse_time(end)
         urls = query(start, end, [instrument])
-        data = map(cls.from_url, urls)
+        data = list(map(cls.from_url, urls))
         freq_buckets = defaultdict(list)
         for elem in data:
             freq_buckets[tuple(elem.freq_axis)].append(elem)
         try:
             return cls.combine_frequencies(
-                [cls.join_many(elem, **kw) for elem in freq_buckets.itervalues()]
+                [cls.join_many(elem, **kw) for elem in itervalues(freq_buckets)]
             )
         except ValueError:
             raise ValueError("No data found.")
-    
+
     def _overlap(self, other):
         """ Find frequency and time overlap of two spectrograms. """
         one, two = self.intersect_time([self, other])
         ovl = one.freq_overlap(two)
         return one.clip_freq(*ovl), two.clip_freq(*ovl)
-    
+
     @staticmethod
     def _to_minimize(a, b):
-        """
-        Function to be minimized for matching to frequency channels.
-        """
+        """Function to be minimized for matching to frequency channels."""
         def _fun(p):
             if p[0] <= 0.2 or abs(p[1]) >= a.max():
                 return float("inf")
             return a - (p[0] * b + p[1])
         return _fun
-    
+
     def _homogenize_params(self, other, maxdiff=1):
         """
         Return triple with a tuple of indices (in self and other, respectively),
         factors and constants at these frequencies.
-        
+
         Parameters
         ----------
-        other : CallistoSpectrogram
+        other : `sunpy.spectra.CallistoSpectrogram`
             Spectrogram to be homogenized with the current one.
         maxdiff : float
             Threshold for which frequencies are considered equal.
         """
-            
+
         pairs_indices = [
             (x, y) for x, y, d in minimal_pairs(self.freq_axis, other.freq_axis)
             if d <= maxdiff
         ]
-        
+
         pairs_data = [
             (self[n_one, :], other[n_two, :]) for n_one, n_two in pairs_indices
         ]
-        
+
         # XXX: Maybe unnecessary.
         pairs_data_gaussian = [
             (gaussian_filter1d(a, 15), gaussian_filter1d(b, 15))
             for a, b in pairs_data
         ]
-        
+
         # If we used integer arithmetic, we would accept more invalid
         # values.
         pairs_data_gaussian64 = np.float64(pairs_data_gaussian)
@@ -409,22 +408,22 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             leastsq(self._to_minimize(a,b), [1, 0])[0]
             for a, b in pairs_data_gaussian64
         ]
-        
+
         factors = [x for x, y in least]
         constants = [y for x, y in least]
-        
+
         return pairs_indices, factors, constants
-    
+
     def homogenize(self, other, maxdiff=1):
         """ Return overlapping part of self and other as (self, other) tuple.
         Homogenize intensities so that the images can be used with
-        combine_frequencies. Note that this works best when most of the 
+        combine_frequencies. Note that this works best when most of the
         picture is signal, so use :py:meth:`in_interval` to select the subset
         of your image before applying this method.
-        
+
         Parameters
         ----------
-        other : CallistoSpectrogram
+        other : `sunpy.spectra.CallistoSpectrogram`
             Spectrogram to be homogenized with the current one.
         maxdiff : float
             Threshold for which frequencies are considered equal.
@@ -435,25 +434,23 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         )
         # XXX: Maybe (xd.freq_axis[x] + yd.freq_axis[y]) / 2.
         pairs_freqs = [one.freq_axis[x] for x, y in pairs_indices]
-        
+
         # XXX: Extrapolation does not work this way.
         # XXX: Improve.
         f1 = np.polyfit(pairs_freqs, factors, 3)
         f2 = np.polyfit(pairs_freqs, constants, 3)
-        
-        return (
-            one,
-            two * polyfun_at(f1, two.freq_axis)[:, np.newaxis] +
-                polyfun_at(f2, two.freq_axis)[:, np.newaxis]
-        )
-    
+
+        return (one,
+                two * np.polyval(f1, two.freq_axis)[:, np.newaxis] +
+                np.polyval(f2, two.freq_axis)[:, np.newaxis])
+
     def extend(self, minutes=15, **kwargs):
-        """ Request subsequent files from the server. If minutes is negative,
+        """Requests subsequent files from the server. If minutes is negative,
         retrieve preceding files. """
         if len(self.instruments) != 1:
             raise ValueError
-        
-        instrument = iter(self.instruments).next()
+
+        instrument = next(iter(self.instruments))
         if minutes > 0:
             data = CallistoSpectrogram.from_range(
                 instrument,
@@ -464,18 +461,22 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
                 instrument,
                 self.start - datetime.timedelta(minutes=-minutes), self.start
             )
-        
+
         data = data.clip_freq(self.freq_axis[-1], self.freq_axis[0])
         return CallistoSpectrogram.join_many([self, data], **kwargs)
-    
+
     @classmethod
     def from_url(cls, url):
-        """ Return CallistoSpectrogram read from URL.
-        
+        """Returns CallistoSpectrogram read from URL.
+
         Parameters
         ----------
         url : str
             URL to retrieve the data from
+
+        Returns
+        -------
+        newSpectrogram : `sunpy.spectra.CallistoSpectrogram`
         """
         return cls.read(url)
 
@@ -486,17 +487,25 @@ CallistoSpectrogram._create.add(
     check=False
 )
 
-CallistoSpectrogram.create.im_func.__doc__ = (
-    """ Create CallistoSpectrogram from given input dispatching to the
-    appropriate from_* function.
+try:
+    CallistoSpectrogram.create.im_func.__doc__ = (
+        """Create CallistoSpectrogram from given input dispatching to the
+        appropriate from_* function.
 
-Possible signatures:
+    Possible signatures:
 
-""" + CallistoSpectrogram._create.generate_docs()
-)
+    """ + CallistoSpectrogram._create.generate_docs())
+except AttributeError:
+    CallistoSpectrogram.create.__func__.__doc__ = (
+        """Create CallistoSpectrogram from given input dispatching to the
+        appropriate from_* function.
+
+    Possible signatures:
+
+    """ + CallistoSpectrogram._create.generate_docs())
+
 
 if __name__ == "__main__":
     opn = CallistoSpectrogram.read("callisto/BIR_20110922_103000_01.fit")
     opn.subtract_bg().clip(0).plot(ratio=2).show()
-    print "Press return to exit"
-    raw_input()
+    print("Press return to exit")

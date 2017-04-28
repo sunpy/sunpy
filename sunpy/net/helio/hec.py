@@ -1,6 +1,8 @@
 """
 Access the Helio Event Catalogue
 """
+from __future__ import print_function, absolute_import
+
 from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.net.helio import parser
 from sunpy.time import parse_time
@@ -9,30 +11,32 @@ import suds
 from astropy.io.votable.table import parse_single_table
 import io
 
+from sunpy.extern import six
+from sunpy.extern.six.moves import range, input
+
 __author__ = 'Michael Malocha'
 __version__ = 'September 22nd, 2013'
 
 __all__ = ['HECClient']
 
 
-        
-
 def suds_unwrapper(wrapped_data):
     """
     Removes suds wrapping from returned xml data
 
-    When grabbing data via votable_interceptor.last_payload from the suds.client.Client
-    module, it returns the xml data in an un-helpful "<s:Envelope>" that needs
-    to be removed. This function politely cleans it up.
+    When grabbing data via votable_interceptor.last_payload from the
+    suds.client.Client module, it returns the xml data in an un-helpful
+    "<s:Envelope>" that needs to be removed. This function politely cleans
+    it up.
 
     Parameters
     ----------
-    wrapped_data: str
+    wrapped_data : `str`
         Contains the wrapped xml results from a WSDL query
 
     Returns
     -------
-    unwrapped: str
+    unwrapped : `str`
         The xml results with the wrapper removed
 
     Examples
@@ -44,7 +48,7 @@ def suds_unwrapper(wrapped_data):
     >>> client = Client(hec.parser.wsdl_retriever(), plugins=[self.votable_interceptor], transport=WellBehavedHttpTransport())
     >>> client.service.getTableNames()
     >>> temp = client.last_received().str()
-    >>> print temp
+    >>> print(temp)
     <?xml version="1.0" encoding="UTF-8"?>
     <S:Envelope ..... >
        <S:Body>
@@ -58,7 +62,7 @@ def suds_unwrapper(wrapped_data):
        </S:Body>
     </S:Envelope>
     >>> temp = hec.suds_unwrapper(temp)
-    >>> print temp
+    >>> print(temp)
     <?xml version="1.0" encoding="UTF-8"?>
     <VOTABLE xmlns="http://www.ivoa.net/xml/VOTable/v1.1" version="1.1">
         <RESOURCE>
@@ -88,16 +92,17 @@ def votable_handler(xml_table):
 
     Parameters
     ----------
-    xml_table: str
+    xml_table : str
         Contains the VOtable style xml data
 
     Returns
     -------
-    votable: astropy.io.votable.tree.Table
+    votable : `astropy.io.votable.tree.Table`
         A properly formatted VOtable object
 
     Examples
     --------
+    >>> from sunpy.net.helio import hec
     >>> temp = hec.suds_unwrapper(xml_string)
     >>> type(temp)
     unicode
@@ -120,9 +125,9 @@ class VotableInterceptor(suds.plugin.MessagePlugin):
         self.last_payload = None
 
     def received(self, context):
-        #recieved xml as a string
-        self.last_payload = unicode(suds_unwrapper(context.reply))
-        #clean up reply to prevent parsing
+        # received xml as a string
+        self.last_payload = six.u(suds_unwrapper(context.reply))
+        # clean up reply to prevent parsing
         context.reply = ""
         return context
 
@@ -140,11 +145,12 @@ class HECClient(object):
 
         Parameters
         ----------
-        link: str
+        link : str
             Contains URL to valid WSDL endpoint
 
         Examples
         --------
+        >>> from sunpy.net.helio import hec
         >>> hc = hec.HECClient()
         """
         if link is None:
@@ -163,13 +169,13 @@ class HECClient(object):
 
         Parameters
         ----------
-        start_time: str
+        start_time : str
             The datetime where the query window opens
 
-        end_time: str
+        end_time : str
             The datetime where the query window closes
 
-        table: str
+        table : str
             The table to query from. If the table is unknown, the user will be
             prompted to pick from a list of tables.
 
@@ -178,26 +184,17 @@ class HECClient(object):
 
         Returns
         -------
-        results: astropy.io.votable.tree.Table
+        results: `astropy.io.votable.tree.Table`
             Table containing the results from the query
 
         Examples
         --------
+        >>> from sunpy.net.helio import hec
         >>> hc = hec.HECClient()
         >>> start = '2005/01/03'
         >>> end = '2005/12/03'
-        >>> temp = hc.time_query(start, end, max_records=10)
-        >>> print temp.array
-        [ (31463, '2005-01-03T01:37:36', '2005-01-03T01:37:54', '2005-01-03T01:39:00', 717, 982.0, 113.0, 989.0, 84, 22, 9456, 6, 5010320)
-         (31464, '2005-01-03T01:51:36', '2005-01-03T01:59:18', '2005-01-03T02:17:24', 717, 989.0, 117.0, 996.0, 1548, 656, 2286912, 12, 5010301)
-         (31465, '2005-01-03T03:26:28', '2005-01-03T03:42:50', '2005-01-03T03:46:04', 717, 994.0, 117.0, 1001.0, 1176, 38, 157800, 6, 5010332)
-         (31466, '2005-01-03T03:46:04', '2005-01-03T04:07:10', '2005-01-03T04:07:52', 715, -154.0, 124.0, 198.0, 1308, 1328, 2049360, 12, 5010302)
-         (31467, '2005-01-03T05:00:24', '2005-01-03T05:00:30', '2005-01-03T05:19:36', 715, -139.0, 107.0, 176.0, 1152, 224, 894816, 6, 5010313)
-         (31468, '2005-01-03T06:40:48', '2005-01-03T06:42:46', '2005-01-03T06:50:12', 717, 990.0, 105.0, 996.0, 564, 23, 50782, 6, 5010314)
-         (31469, '2005-01-03T08:27:56', '2005-01-03T08:28:26', '2005-01-03T08:29:08', 717, 971.0, 104.0, 977.0, 72, 36, 11197, 6, 5010334)
-         (31470, '2005-01-03T09:31:00', '2005-01-03T09:33:34', '2005-01-03T09:34:52', 717, 960.0, 99.0, 965.0, 232, 108, 56486, 6, 5010322)
-         (31471, '2005-01-03T09:34:52', '2005-01-03T09:59:46', '2005-01-03T10:06:04', 717, 994.0, 108.0, 1000.0, 1872, 40, 55920, 6, 5010336)
-         (31472, '2005-01-03T11:06:48', '2005-01-03T11:07:18', '2005-01-03T11:15:56', 717, 974.0, 116.0, 981.0, 548, 2160, 2240376, 12, 5010304)]
+        >>> temp = hc.time_query(start, end, max_records=10)   # doctest: +SKIP
+
         """
         while table is None:
             table = self.make_table_list()
@@ -212,23 +209,26 @@ class HECClient(object):
 
     def get_table_names(self):
         """
-        Returns a list of the available tables to query
+        Returns a list of the available tables to query.
 
-        Returns the names of all the tables that can be queried via the webservice
+        Returns the names of all the tables that can be queried via the
+        webservice.
 
         Returns
         -------
-        tables.array: numpy.ma.core.MaskedArray
+        tables.array: `numpy.ma.core.MaskedArray`
             A VOtable table of available tables names
 
         Examples
         --------
+        >>> from sunpy.net.helio import hec
         >>> hc = hec.HECClient()
-        >>> print hc.get_table_names()
-        [('hi_cme_list',) ('cactus_stereoa_cme',) ('aad_gle',)
-            ...
-         ('wind_sw_crossing_time',) ('ulysses_hxr_flare',)
-         ('wind_typeii_soho_cme',)]
+        >>> print(hc.get_table_names())   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+        [('timed_see_flare',) ('hi_event',) ('yohkoh_flare_list',)
+         ('wind_mfi_bs_crossing_time',) ('seeds_soho',) ('seeds_stb',)
+         ...
+         ('rhessi_hxr_flare',) ('cactus_soho_flow',) ('cactus_soho_cme',)
+         ('stereob_het_sep',)]
 
         """
         self.hec_client.service.getTableNames()
@@ -246,24 +246,15 @@ class HECClient(object):
 
         Returns
         -------
-        temp: str
+        temp: `str`
             contains the name of the table that the user picked.
 
         Examples
         --------
-        >>> hc.make_table_list()
-          1) aad_gle
-          2) aastar_list
-          3) apstar_list
-          4) bas_magnetic_storms
-          ...
-        108) wind_waves_type_ii_burst
-        109) yohkoh_flare_list
-        110) yohkoh_hxr_flare
-        111) yohkoh_sxt_trace_list
+        >>> from sunpy.net.helio import hec
+        >>> hc = hec.HECClient()
+        >>> hc.make_table_list()   # doctest: +SKIP
 
-        Please enter a table number between 1 and 111 ('e' to exit): 108
-        'wind_waves_type_ii_burst'
         """
         table_list = []
         tables = self.get_table_names()
@@ -273,19 +264,21 @@ class HECClient(object):
                 table_list.append(table)
         table_list.sort()
         for index, table in enumerate(table_list):
-            print ('{number:3d}) {table}'.format(number = index + 1, table = table))
+            print(('{number:3d}) {table}'.format(number=index + 1,
+                                                 table=table)))
+
         while True:
-            input = raw_input("\nPlease enter a table number between 1 and %i "
-                              "('e' to exit): " % len(table_list))
-            if input.lower() == "e" or input.lower() == "exit":
+            stdinput = input("\nPlease enter a table number between 1 and "
+                             "{elem:d} "
+                             "('e' to exit): ".format(elem=len(table_list)))
+            if stdinput.lower() == "e" or stdinput.lower() == "exit":
                 temp = None
                 break
-            temp = [int(s) for s in input.split() if s.isdigit()]
+            temp = [int(s) for s in stdinput.split() if s.isdigit()]
             temp = temp[0] - 1
             if temp in range(0, len(table_list)):
                 temp = table_list[temp]
                 break
             else:
-                print "Choice outside of bounds"
+                print("Choice outside of bounds")
         return temp
-

@@ -1,7 +1,7 @@
 .. _customizing-sunpy:
 
 **********************
-Customizing sunpy
+Customizing SunPy
 **********************
 
 .. _customizing-with-sunpyrc-files:
@@ -9,27 +9,26 @@ Customizing sunpy
 The :file:`sunpyrc` file
 =============================
 
-Sunpy uses :file:`sunpyrc` configuration files to customize certain
-properties. You can control a number of key features of SunPy such as 
+Sunpy uses a :file:`sunpyrc` configuration file to customize certain
+properties. You can control a number of key features of SunPy such as
 where your data will download to. SunPy looks for :file:`sunpyrc` in two
 locations, in the following order:
 
 1. :file:`.sunpy/sunpyrc`, for the user's default customizations.
-2. :file:`{INSTALL}/sunpy/data/sunpyrc`, where :file:`{INSTALL}`
-   is something like :file:`/usr/lib/python2.5/site-packages` on Linux, and
-   maybe :file:`C:\\Python25\\Lib\\site-packages` on Windows. Every time you
-   install SunPy, this file will be overwritten, so if you want your
-   customizations to be saved, please move this file to your :file:`.sunpyrc`
-   directory.
+2. :file:`{INSTALL}/sunpy/data/sunpyrc`. You can find where SunPy is installed
+   by printing out `sunpy.__file__` after importing SunPy.
 
-To display where the currently active :file:`sunpyrc` file was
-loaded from, one can do the following::
+To display where the currently active :file:`sunpyrc` file was loaded from,
+one can do the following::
 
   >>> import sunpy
-  >>> sunpy.print_config()
+  >>> sunpy.print_config()   # doctest: +SKIP
 
-The default sunpyrc file lives in sunpy/data/. We recommend that you make a copy of this
-file and put it where Sunpy will find it. See below for the example config file.
+To maintain your own customizations place a copy of the default sunpyrc file
+into :file:`.sunpy`. Do not edit the default file directly as every
+time you install or update SunPy, this file will be overwritten.
+
+See below for the example config file.
 
 .. _customizing-with-dynamic-settings:
 

@@ -7,10 +7,10 @@ from __future__ import absolute_import
 import pytest
 import sunpy.lightcurve
 from sunpy.time import TimeRange
-from numpy import all
+import numpy as np
 
 
-class TestRHESSISummaryLightCurve():
+class TestRHESSISummaryLightCurve(object):
 
     @pytest.fixture
     def timerange_a(self):
@@ -23,7 +23,7 @@ class TestRHESSISummaryLightCurve():
     @pytest.mark.online
     def test_hsi_range(self, timerange_a):
         """Test creation with two times"""
-        lc1 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_a.start(), timerange_a.end())
+        lc1 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_a.start, timerange_a.end)
         assert isinstance(lc1, sunpy.lightcurve.RHESSISummaryLightCurve)
 
     @pytest.mark.online
@@ -55,7 +55,7 @@ class TestRHESSISummaryLightCurve():
     @pytest.mark.online
     def test_hsi_url(self):
         """Test creation with url"""
-        url = 'http://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20030302_146.fits'
+        url = 'http://soleil.i4ds.ch/hessidata/metadata/catalog/hsi_obssumm_20030302_146.fits'
         lc1 = sunpy.lightcurve.RHESSISummaryLightCurve.create(url)
         assert isinstance(lc1, sunpy.lightcurve.RHESSISummaryLightCurve)
 
@@ -63,13 +63,14 @@ class TestRHESSISummaryLightCurve():
     def test_filename(self, timerange_a, timerange_b):
         """Compare data from two different time ranges to make
         sure they are not the same"""
-        lc1 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_a)
-        lc2 = sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_b)
-        assert not all(lc1.data[lc1.data.columns[0]] == lc2.data[lc2.data.columns[0]])
+        lc1 = np.array(sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_a).data)
+        lc2 = np.array(sunpy.lightcurve.RHESSISummaryLightCurve.create(timerange_b).data)
+        with pytest.raises(AssertionError):
+            np.testing.assert_allclose(lc1, lc2)
 
     @pytest.mark.online
     def test_get_url(self, timerange_a, timerange_b):
         """Test the getting of urls"""
         g = sunpy.lightcurve.RHESSISummaryLightCurve
-        assert g._get_url_for_date_range(timerange_a) == 'http://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20080601_068.fits'
-        assert g._get_url_for_date_range(timerange_b) == 'http://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20040603_110.fits'
+        assert 'hessidata/metadata/catalog/hsi_obssumm_20080601_068.fits' in g._get_url_for_date_range(timerange_a)
+        assert 'hessidata/metadata/catalog/hsi_obssumm_20040603_110.fits' in g._get_url_for_date_range(timerange_b)

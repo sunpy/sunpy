@@ -23,6 +23,11 @@
 ; Default Value: <user's home directory>/sunpy
 ; working_dir = /home/$USER/sunpy
 
+; Time Format to be used for displaying time in output (e.g. graphs)
+; The default time format is based on ISO8601 (replacing the T with space)
+; note that the extra '%'s are escape characters
+time_format = %%Y-%%m-%%d %%H:%%M:%%S
+
 ;;;;;;;;;;;;;
 ; Downloads ;
 ;;;;;;;;;;;;;
@@ -33,3 +38,19 @@
 ; Default value: data/
 ;download_dir = /tmp
 download_dir = data
+
+; Location where the sample data will be downloaded. Path should be specified
+; relative to the SunPy working directory.
+sample_dir = data/sample_data
+
+;;;;;;;;;;;;
+; Database ;
+;;;;;;;;;;;;
+[database]
+
+; Location to specify sunpy database parameters.
+; The default url of the database location can specified here. The url of
+; the database comprises the database driver, its location and name, as well
+; as optional authentication parameters 
+; Default value: sqlite:////<user's home directory>/sunpy/sunpydb.sqlite
+; url = sqlite:////home/$USER/sunpy/sunpydb.sqlite

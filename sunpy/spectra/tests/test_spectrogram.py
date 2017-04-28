@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
 
-from __future__ import absolute_import
+from __future__ import absolute_import, print_function
 
 from datetime import datetime
 import pytest
@@ -10,9 +10,9 @@ import numpy as np
 
 from numpy.testing import assert_array_almost_equal
 
-from sunpy.spectra.spectrogram import(
-    Spectrogram, LinearTimeSpectrogram, _LinearView
-)
+from sunpy.spectra.spectrogram import (Spectrogram, LinearTimeSpectrogram,
+                                       _LinearView)
+from sunpy.extern.six.moves import range
 
 
 def is_linear(arr):
@@ -178,7 +178,7 @@ def test_join():
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
-    # The - 1 is because resampling other procuces an image of size
+    # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     # The - 2 is because there is one second overlap.
     assert z.shape == (200, 3 * 3600 - 2 - 1)
@@ -206,7 +206,7 @@ def test_join_dtype():
         datetime(2010, 10, 10, 0, 29),
         datetime(2010, 10, 10, 1, 29), 1799, 1,
     )
-    
+
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
@@ -228,7 +228,7 @@ def test_join_different_dtype():
         datetime(2010, 10, 10, 0, 29),
         datetime(2010, 10, 10, 1, 29), 1799, 1,
     )
-    
+
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
@@ -254,7 +254,7 @@ def test_join_midnight():
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
-    # The - 1 is because resampling other procuces an image of size
+    # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
@@ -282,7 +282,7 @@ def test_join_month():
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
-    # The - 1 is because resampling other procuces an image of size
+    # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
@@ -310,7 +310,7 @@ def test_join_year():
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
-    # The - 1 is because resampling other procuces an image of size
+    # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
@@ -337,9 +337,10 @@ def test_join_over_midnight():
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=0
     )
+    # FIXME: not used?!
     oz = other.resample_time(0.5)
 
-    # The - 1 is because resampling other procuces an image of size
+    # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
@@ -369,8 +370,7 @@ def test_join_gap():
         LinearTimeSpectrogram.join_many(
             [one, other], nonlinear=False, maxgap=0
         )
-
-    assert excinfo.value.message == "Too large gap."
+        assert excinfo.value.message == "Too large gap."
 
 
 def test_join_with_gap():
@@ -424,14 +424,14 @@ def test_join_with_gap_fill():
     z = LinearTimeSpectrogram.join_many(
         [one, other], nonlinear=False, maxgap=2, fill=np.NaN
     )
-    # The - 1 is because resampling other procuces an image of size
+    # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     # The + 2 is because there is one second without data inserted.
     assert z.shape == (200, 3 * 3600 + 2 - 1)
 
     assert np.array_equal(z.data[:, :3600], one.data)
 
-    print type(z.data)
+    print(type(z.data))
 
     # Second data to unpack masked array
     assert np.isnan(z.data.data[:, 3600:3602]).all()
@@ -462,7 +462,7 @@ def test_join_nonlinear():
         [one, other], nonlinear=True, maxgap=2
     )
 
-    # The - 1 is because resampling other procuces an image of size
+    # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
 
@@ -509,10 +509,9 @@ def test_rescale_error():
 
     with pytest.raises(ValueError) as excinfo:
         spec.rescale(0, 1)
-    assert (
-        excinfo.value.message ==
-        "Spectrogram needs to contain distinct values."
-    )
+        assert (
+            excinfo.value.message ==
+            "Spectrogram needs to contain distinct values.")
 
 
 def test_rescale_error2():
@@ -526,7 +525,8 @@ def test_rescale_error2():
 
     with pytest.raises(ValueError) as excinfo:
         spec.rescale(1, 1)
-    assert excinfo.value.message == "Maximum and minimum must be different."
+        assert (excinfo.value.message ==
+                "Maximum and minimum must be different.")
 
 
 def test_resample():
@@ -576,7 +576,7 @@ def test_combine_freqs():
 
     # print comb
 
-    for freq in xrange(10):
+    for freq in range(10):
         assert np.array_equal(
             comb[9 - freq, :], stuff[freq % 2][4 - freq // 2, :]
         )
@@ -601,10 +601,10 @@ def test_join_diff_freq():
         1800,
         0.25
     )
-    
+
     with pytest.raises(ValueError) as excinfo:
         LinearTimeSpectrogram.join_many([spec, spec2])
-    assert excinfo.value.message == "Frequency channels do not match."
+        assert excinfo.value.message == "Frequency channels do not match."
 
 
 def test_intersect_time():
@@ -685,7 +685,7 @@ def test_in_interval():
         900,
         1
     )
-    
+
     assert np.array_equal(spec.in_interval("00:15", "00:30").data, spec.data)
 
 
@@ -699,7 +699,7 @@ def test_in_interval2():
         900,
         1
     )
-    
+
     assert np.array_equal(
         spec.in_interval("2010-01-01T00:15:00", "00:30").data, spec.data
     )
@@ -718,16 +718,16 @@ def test_linearize():
     # 0   1   2   3   4   5  6  7  8
     # -------- ----------- ----- ---
     # 20 17.5 15 12.5 10 7.5 5 2.5 0
-    
+
     linear = spec.linearize_freqs()
     assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
-    
+
     assert (linear[0] == image[0, :]).all()
     assert (linear[1] == image[0, :]).all()
     assert (linear[2] == image[0, :]).all()
     assert (linear[3] == image[1, :]).all()
     assert (linear[4] == image[1, :]).all()
-    assert (linear[5] == image[1, :]).all()    
+    assert (linear[5] == image[1, :]).all()
     assert (linear[6] == image[2, :]).all()
     assert (linear[7] == image[2, :]).all()
     assert (linear[8] == image[3, :]).all()
@@ -743,16 +743,16 @@ def test_linear_view():
         900,
         1
     )
-    
+
     linear = _LinearView(spec)
     # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
-    
+
     assert (linear[0] == image[0, :]).all()
     assert (linear[1] == image[0, :]).all()
     assert (linear[2] == image[0, :]).all()
     assert (linear[3] == image[1, :]).all()
     assert (linear[4] == image[1, :]).all()
-    assert (linear[5] == image[1, :]).all()    
+    assert (linear[5] == image[1, :]).all()
     assert (linear[6] == image[2, :]).all()
     assert (linear[7] == image[2, :]).all()
     assert (linear[8] == image[3, :]).all()
@@ -768,7 +768,7 @@ def test_linear_view_indexerror():
         900,
         1
     )
-    
+
     linear = _LinearView(spec)
     # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
     with pytest.raises(IndexError):
@@ -785,7 +785,7 @@ def test_linear_view_negative():
         900,
         1
     )
-    
+
     linear = _LinearView(spec)
     # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
     assert (linear[8] == image[3, :]).all()
@@ -802,10 +802,10 @@ def test_linear_view_freqs():
         900,
         1
     )
-    
+
     linear = _LinearView(spec)
     # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
-    
+
     assert linear.get_freq(0) == 20
     assert linear.get_freq(1) == 20
     assert linear.get_freq(2) == 20

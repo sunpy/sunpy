@@ -21,14 +21,14 @@ If this happens you will encounter the following warning upon using the rotate
 method
 ::
 
-    rot_map = mymap.rotate(10)
+    >>> rot_map = mymap.rotate(10)   # doctest: +SKIP
     sunpy/map/map.py:829: Warning: The C extension sunpy.image.Crotate is not installed, falling back to the interpolation='spline' of order=3
       warnings.warn("The C extension sunpy.image.Crotate is not installed, falling back to the interpolation='spline' of order=3" ,Warning)
 
-What happens is, because the C-API extension is not found, the rotate() function 
+What happens is, because the C-API extension is not found, the rotate() function
 defaults to the spline interpolation method of order 3 which is implemented in scipy.
 
-To fix the C-API you should try and reinstall SunPy, if this still fails please 
+To fix the C-API you should try and reinstall SunPy, if this still fails please
 ask the mailing list for assistance.
 
 .. _sunpy-version:
@@ -39,34 +39,34 @@ Obtaining sunpy version
 To find out your sunpy version number, import it and print the
 ``__version__`` attribute::
 
-    import sunpy
-    sunpy.__version__
+    >>> import sunpy   # doctest: +SKIP
+    >>> sunpy.__version__   # doctest: +SKIP
 
 .. _locating-sunpy-install:
 
 System Info
 ===========
 
-To quickly collect information on your system, you can use our convienience function
+To quickly collect information on your system, you can use our convenience function
 ``system_info`` which you can run through: ::
 
-    import sunpy
-    sunpy.util.system_info()
+    >>> import sunpy
+    >>> sunpy.util.system_info()   # doctest: +SKIP
 
 The output should look something like: ::
 
     ==========================================================
      SunPy Installation Information
-    
+
      Sunday, 18. November 2012 11:06PM UT
     ==========================================================
-    
+
     ###########
      General
     ###########
     OS: Mac OS X 10.8.2 (i386)
     Python: 2.7.3 (64bit)
-    
+
     ####################
      Required libraries
     ####################
@@ -76,7 +76,7 @@ The output should look something like: ::
     Matplotlib: 1.2.x
     PyFITS: 3.0.8
     pandas: 0.8.1
-    
+
     #######################
      Recommended libraries
     #######################
@@ -92,9 +92,9 @@ This information is especially useful if you are running into a bug and need hel
 You can find what directory sunpy is installed in by importing it
 and printing the ``__file__`` attribute::
 
-    import sunpy
-    sunpy.__file__
- 
+    >>> import sunpy   # doctest: +SKIP
+    >>> sunpy.__file__   # doctest: +SKIP
+
 .. _locating-matplotlib-config-dir:
 
 :file:`.sunpy` directory location
@@ -104,20 +104,8 @@ Each user should have a :file:`.sunpy/` directory which should contain a
 :ref:`sunpyrc <customizing-with-sunpyrc-files>` file. To locate your :file:`.sunpy/`
 directory, use :func:`sunpy.print_config`::
 
-    import sunpy as sun
-    sun.print_config()
-
-The output should look something like: ::
-
-    FILES USED:
-        sunpy/data/sunpyrc
-
-    CONFIGURATION:
-    [general]
-    working_dir = /Users/schriste/sunpy
-
-    [downloads]
-    download_dir = /Users/schriste/sunpy/data
+    >>> import sunpy as sun   # doctest: +SKIP
+    >>> sun.print_config()   # doctest: +SKIP
 
 On unix-like systems, this directory is generally located in your
 :envvar:`HOME` directory.  On windows, it is in your documents and
@@ -143,8 +131,8 @@ If not, please provide the following information in your e-mail to the
 
   * sunpy version::
 
-        import sunpy
-        sunpy.util.system_info()
+        >>> import sunpy   # doctest: +SKIP
+        >>> sunpy.util.system_info()   # doctest: +SKIP
 
   * how you obtained sunpy.
 
@@ -161,6 +149,6 @@ If not, please provide the following information in your e-mail to the
     problem.
 
 You will likely get a faster response writing to the mailing list than
-filing a bug in the `bug tracker <http://github.com/sunpy/sunpy/issues>`_.  
-If your problem has been determined to be a bug and can not be quickly solved, the issues 
+filing a bug in the `bug tracker <http://github.com/sunpy/sunpy/issues>`_.
+If your problem has been determined to be a bug and can not be quickly solved, the issues
 may be filed a bug in the tracker so the issue doesn't get lost.

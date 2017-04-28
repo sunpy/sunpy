@@ -5,13 +5,15 @@
 
 from __future__ import absolute_import
 
+import fnmatch 
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import pytest
 
 from sunpy.database.commands import AddEntry, RemoveEntry, EditEntry,\
     AddTag, RemoveTag, NoSuchEntryError, NonRemovableTagError,\
-    EmptyCommandStackError, CommandManager
+    EmptyCommandStackError, CommandManager, CompositeOperation
 from sunpy.database.tables import DatabaseEntry, Tag
 
 
@@ -34,9 +36,9 @@ def test_add_entry_repr(session):
     repr_result = repr(AddEntry(session, entry))
     expected_repr_result = (
         '<AddEntry('
-            'session <sqlalchemy.orm.session.Session object at {0:#x}>, '
+            'session <sqlalchemy.orm.session.Session object at *>, '
             'entry id 5)>'.format(id(session)))
-    assert repr_result == expected_repr_result
+    assert fnmatch.fnmatch(repr_result, expected_repr_result)
 
 
 def test_add_entry(session):
@@ -85,7 +87,7 @@ def test_add_entry_undo_precommit(session):
 def test_edit_entry_repr():
     entry = DatabaseEntry(id=7)
     expected_repr_result = "<EditEntry(kwargs {'foo': 'bar'}, entry id 7)>"
-    assert repr(EditEntry(entry, foo='bar')) == expected_repr_result
+    assert fnmatch.fnmatch(repr(EditEntry(entry, foo='bar')), expected_repr_result)
 
 
 def test_edit_entry_invalid(session):
@@ -119,9 +121,9 @@ def test_remove_entry_repr(session):
     entry = DatabaseEntry(id=3)
     expected_repr_result = (
         '<RemoveEntry('
-            'session <sqlalchemy.orm.session.Session object at {0:#x}>, '
+            'session <sqlalchemy.orm.session.Session object at *>, '
             'entry <DatabaseEntry(id 3)>)>'.format(id(session)))
-    assert repr(RemoveEntry(session, entry)) == expected_repr_result
+    assert fnmatch.fnmatch(repr(RemoveEntry(session, entry)), expected_repr_result)
 
 
 def test_remove_existing_entry(session):
@@ -156,9 +158,9 @@ def test_add_tag_repr(session):
     expected_repr_result = (
         "<AddTag("
             "tag 'spam', "
-            "session <sqlalchemy.orm.session.Session object at {0:#x}>, "
+            "session <sqlalchemy.orm.session.Session object at *>, "
             "entry id 12)>".format(id(session)))
-    assert repr(AddTag(session, entry, tag)) == expected_repr_result
+    assert fnmatch.fnmatch(repr(AddTag(session, entry, tag)), expected_repr_result)
 
 
 def test_add_tag(session):
@@ -198,9 +200,9 @@ def test_remove_tag_repr(session):
     expected_repr_result = (
         "<RemoveTag("
             "tag 'foo', "
-            "session <sqlalchemy.orm.session.Session object at {0:#x}>, "
+            "session <sqlalchemy.orm.session.Session object at *>, "
             "entry id 8)>".format(id(session)))
-    assert repr(RemoveTag(session, entry, tag)) == expected_repr_result
+    assert fnmatch.fnmatch(repr(RemoveTag(session, entry, tag)), expected_repr_result)
 
 
 def test_remove_nonexisting_tag(session):
@@ -278,10 +280,10 @@ def test_cmd_manager_redo(session, command_manager):
 
 def test_undo_redo_multiple_cmds_at_once(session, command_manager):
     assert command_manager.undo_commands == []
-    command_manager.do([
+    command_manager.do(CompositeOperation([
         AddEntry(session, DatabaseEntry()),
         AddEntry(session, DatabaseEntry()),
-        AddEntry(session, DatabaseEntry())])
+        AddEntry(session, DatabaseEntry())]))
     assert len(command_manager.undo_commands) == 1
     assert session.query(DatabaseEntry).count() == 3
     command_manager.undo()

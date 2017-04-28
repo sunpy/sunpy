@@ -23,39 +23,7 @@ from sunpy.util.progressbar import TTYProgressBar
 __author__ = 'Michael Malocha'
 __version__ = 'Aug 10th, 2013'
 
-__all__ = ['wave_unit_catcher', 'translate_results_to_query', 'vso_attribute_parse', 'H2VClient']
-
-def wave_unit_catcher(wavelength, wave_units):
-    """
-    Catch and convert wavelength to angstroms.
-
-    Designed to discover the units of the wavelength passed in and convert
-    it into angstroms. Returns an integer or None.
-
-    Parameters
-    ----------
-    wavelength : int
-        Wavelength value.
-    units : str
-        Units of the wavelength.
-
-    Examples
-    --------
-    >>> wave_unit_catcher(2.11e-06, 'cm')
-    210.99999999999997
-
-    >>> wave_unit_catcher(9.4e-07, 'cm')
-    93.99999999999999
-
-    >>> wave_unit_catcher(5e-08, 'mm')
-    0.4999999999999999
-    """
-    try:
-        converted_value = getattr(units, wave_units).to(units.angstrom,
-                                                        wavelength)
-    except AttributeError:
-        raise AttributeError("'%s' is not a supported unit" % wave_units)
-    return converted_value
+__all__ = ['translate_results_to_query', 'vso_attribute_parse', 'H2VClient']
 
 
 def translate_results_to_query(results):
@@ -68,24 +36,25 @@ def translate_results_to_query(results):
 
     Parameters
     ----------
-    results : sunpy.net.hek.hek.Response or list of sunpy.net.hek.hek.Response
+    results : `sunpy.net.hek.hek.Response` or list of `sunpy.net.hek.hek.Response`
         The HEK results from a HEK query to be translated.
 
     Examples
     --------
-    >>> h = hek.HEKClient()
+    >>> from sunpy.net.hek import hek, HEKClient
+    >>> from sunpy.net.hek2vso import hek2vso, H2VClient
+    >>> h = HEKClient()
     >>> h2v = H2VClient()
-    >>> q = h.query(hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))
+    >>> q = h.query(hek.attrs.Time('2011/08/09 07:23:56',
+    ...             '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))
     >>> len(q)
     19
 
-    >>> translate_results_to_query(q[0]) # doctest: +ELLIPSIS
-    [[<Time(datetime.datetime(2011, 8, 8, 1, 30, 4), datetime.datetime(2011, 8, 10, 0, 0, 4), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <sunpy.net.vso.attrs.Wave at 0x...>]]
+    >>> hek2vso.translate_results_to_query(q[0])
+    [[<Time(datetime.datetime(2011, 8, 8, 1, 30, 4), datetime.datetime(2011, 8, 10, 0, 0, 4), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(210.99999999999997, 210.99999999999997, 'Angstrom')>]]
 
-    >>> translate_results_to_query(q) # doctest: +ELLIPSIS
-    [[<Time(datetime.datetime(2011, 8, 8, 1, 30, 4), datetime.datetime(2011, 8, 10, 0, 0, 4), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <sunpy.net.vso.attrs.Wave at 0x...>],
-    ...
-    [<Time(datetime.datetime(2011, 8, 9, 8, 1, 21), datetime.datetime(2011, 8, 9, 8, 16, 45), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <sunpy.net.vso.attrs.Wave at 0x...>]]
+    >>> hek2vso.translate_results_to_query(q)   # doctest: +ELLIPSIS
+    [[<Time(datetime.datetime(2011, 8, 8, 1, 30, 4), datetime.datetime(2011, 8, 10, 0, 0, 4), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(210.99999999999997, 210.99999999999997, 'Angstrom')>], ..., [<Time(datetime.datetime(2011, 8, 9, 8, 1, 21), datetime.datetime(2011, 8, 9, 8, 16, 45), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(303.99999999999994, 303.99999999999994, 'Angstrom')>]]
     """
     queries = []
     if type(results) is list:
@@ -107,33 +76,31 @@ def vso_attribute_parse(phrase):
 
     Parameters
     ----------
-    phrase: dictionary containing a sunpy.net.hek.hek.Response
+    phrase : `dict` containing a `sunpy.net.hek.hek.Response`.
         The single HEK result to be parsed for VSO attribute data.
 
     Examples
     --------
-    >>> h = hek.HEKClient()
+    >>> from sunpy.net.hek import hek, HEKClient
+    >>> from sunpy.net.hek2vso import hek2vso, H2VClient
+    >>> h = HEKClient()
     >>> h2v = H2VClient()
     >>> q = h.query(hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))
     >>> len(q)
     19
 
-    >>> vso_attribute_parse(q[9])
-    [<Time(datetime.datetime(2011, 8, 9, 7, 22, 38), datetime.datetime(2011, 8, 9, 8, 32, 2), None)>,
-    <Source(u'SDO')>,
-    <Instrument(u'AIA')>,
-    <sunpy.net.vso.attrs.Wave at 0x10628f950>]
+    >>> hek2vso.vso_attribute_parse(q[9])
+    [<Time(datetime.datetime(2011, 8, 9, 7, 22, 38), datetime.datetime(2011, 8, 9, 8, 32, 2), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(210.99999999999997, 210.99999999999997, 'Angstrom')>]
     """
     try:
         query = [vso.attrs.Time(phrase['event_starttime'],
                                 phrase['event_endtime']),
                  vso.attrs.Source(phrase['obs_observatory']),
                  vso.attrs.Instrument(phrase['obs_instrument'])]
-        avg_wave_len = wave_unit_catcher(phrase['obs_meanwavel'],
-                                         phrase['obs_wavelunit'])
-        query.append(vso.attrs.Wave(avg_wave_len, avg_wave_len))
-    except KeyError, TypeError:
-        raise TypeError("'%s' is an improper data type" % type(phrase))
+        avg_wave_len = phrase['obs_meanwavel'] * units.Unit(phrase['obs_wavelunit'])
+        query.append(vso.attrs.Wavelength(avg_wave_len, avg_wave_len))
+    except (KeyError, TypeError):
+        raise TypeError("'{dtype!s}' is an improper data type".format(dtype=type(phrase)))
     return query
 
 
@@ -148,6 +115,7 @@ class H2VClient(object):
 
     Examples
     --------
+    >>> from sunpy.net.hek import hek
     >>> from sunpy.net import hek2vso
     >>> h2v = hek2vso.H2VClient()
     """
@@ -169,9 +137,9 @@ class H2VClient(object):
 
         Parameters
         ----------
-        client_query: list
+        client_query : `list`
             The list containing the HEK style query.
-        limit: int
+        limit : `int`
             An approximate limit to the desired number of VSO results.
 
         Examples
@@ -199,11 +167,11 @@ class H2VClient(object):
 
         Parameters
         ----------
-        hek_results: sunpy.net.hek.hek.Response or list of Responses
+        hek_results : `sunpy.net.hek.hek.Response` or list of such Responses
             The results from a HEK query in the form of a list.
-        limit: int
+        limit : int
             An approximate limit to the desired number of VSO results.
-        progress: Boolean
+        progress : Boolean
             A flag to turn off the progress bar, defaults to "off"
 
         Examples

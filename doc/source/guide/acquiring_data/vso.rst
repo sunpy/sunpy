@@ -3,13 +3,13 @@ Downloading Data from the VSO
 -----------------------------
 
 The main interface which SunPy provides to search for and download data is provided by
-SunPy's VSO module. This module provides an interface to the 
+SunPy's VSO module. This module provides an interface to the
 `Virtual Solar Observatory (VSO) <http://virtualsolar.org>`_
-which is a service which presents a homogenoeous interface to heterogeneous 
-data-sets and services.  Using the VSO, a user can query multiple data providers 
+which is a service which presents a homogeneous interface to heterogeneous
+data-sets and services.  Using the VSO, a user can query multiple data providers
 simultaneously, and then download the relevant data.  SunPy uses the VSO through the ``vso``
 module, which was developed through support from the `European Space
-Agency Summer of Code in Space (ESA-SOCIS) 2011 
+Agency Summer of Code in Space (ESA-SOCIS) 2011
 <http://sophia.estec.esa.int/socis2011/>`_.
 
 Setup
@@ -20,9 +20,9 @@ SunPy's VSO module is in ``sunpy.net``.  It can be imported as follows:
     >>> from sunpy.net import vso
     >>> client=vso.VSOClient()
 
-This creates your client object. Obtaining data via the VSO is a two-stage process.  
+This creates your client object. Obtaining data via the VSO is a two-stage process.
 You first ask the VSO to find the data you want.  The VSO
-queries various data-providers looking for your data. If there is any data 
+queries various data-providers looking for your data. If there is any data
 that matches your request, you choose the data you want to download.
 The VSO client handles the particulars of how the data from
 the data provider is downloaded to your computer.
@@ -47,7 +47,7 @@ describes how to download data from those query results.
 Constructing a Query
 ^^^^^^^^^^^^^^^^^^^^
 
-Let's start with a very simple query.  We could ask for all SOHO/EIT 
+Let's start with a very simple query.  We could ask for all SOHO/EIT
 data between January 1st and 2nd, 2001.
 
     >>> qr = client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'))
@@ -56,12 +56,12 @@ The variable ``qr`` is a Python list of
 response objects, each one of which is a record found by the VSO. You can find how many
 records were found by typing
 
-    >>> qr.num_records()
+    >>> len(qr)
     122
 
 To get a little bit more information about the records found, try
 
-    >>> qr.show() # doctest:+SKIP
+    >>> print(qr) # doctest:+SKIP
     ...
 
 
@@ -70,15 +70,26 @@ better what we've done.  The first argument:
 
     ``vso.attrs.Time('2001/1/1', '2001/1/2')``
 
-sets the start and end times for the query (any date/time 
-format understood by SunPy's :ref:`parse_time function <parse-time>` 
+sets the start and end times for the query (any date/time
+format understood by SunPy's :ref:`parse_time function <parse-time>`
 can be used to specify dates and time).  The second argument:
 
     ``vso.attrs.Instrument('eit')``
 
-sets the instrument we are looking for.  So what is going on here?
+sets the instrument we are looking for. The third argument:
+
+    ``vso.attrs.Wavelength(142*u.AA, 123*u.AA)``
+
+sets the values for wavelength i.e, for wavemax(maximum value) and
+similarly wavemin(for minimum value) for the query. Also the ``u.AA``
+part comes from ``astropy.units.Quantity`` where `AA` is Angstrom. It
+should be noted that specifying spectral units in arguments is
+necessary or an error will be raised. To know more check
+`astropy.units`.
+
+So what is going on here?
 The notion is that a VSO query has a set of attribute objects -
-described in ``vso.attrs`` - that are specifed to construct the query.
+described in ``vso.attrs`` - that are specified to construct the query.
 For the full list of vso attributes, use
 
     >>> help(vso.attrs) # doctest:+SKIP
@@ -97,9 +108,9 @@ in complex ways that are not possible with the legacy query style.
 So, let's look for the EIT and MDI data on the same day:
 
     >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit') | vso.attrs.Instrument('mdi'))
-    >>> qr.num_records()
-    144
-    >>> qr.show() # doctest:+SKIP
+    >>> len(qr)
+    3549
+    >>> print(qr) # doctest:+SKIP
     ...
 
 The two instrument types are joined together by the operator "|".
@@ -108,15 +119,16 @@ of conditions which get passed to the VSO.  Let's say you want all the
 EIT data from two separate days:
 
     >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2') | vso.attrs.Time('2007/8/9', '2007/8/10'), vso.attrs.Instrument('eit') )
-    >>> qr.num_records()
+    >>> len(qr)
     227
 
 Each of the arguments in this query style can be thought of as
 setting conditions that the returned records must satisfy.  You can
 set the wavelength; for example, to return the 171 Angstrom EIT results
 
-    >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'), vso.attrs.Wave(171,171) )
-    >>> qr.num_records()
+    >>> import astropy.units as u
+    >>> qr=client.query(vso.attrs.Time('2001/1/1', '2001/1/2'), vso.attrs.Instrument('eit'), vso.attrs.Wavelength(171*u.AA,171*u.AA) )
+    >>> len(qr)
     4
 
 Using the Legacy Query Style
@@ -130,7 +142,7 @@ As before,  we want EIT data between 2001/01/01 and 2001/01/02
 
     >>> qr=client.query_legacy(tstart='2001/01/01', tend='2001/01/02', instrument='EIT')
 
-which is almost identical to what you would type in SSWIDL.  
+which is almost identical to what you would type in SSWIDL.
 So, what's happening with this command?  The client is going
 out to the web to query the VSO to ask how many files EIT images are
 in the archive between the start of 2001/01/01 and the start of
@@ -143,16 +155,16 @@ both gives the same result. The variable ``qr`` is a Python list of
 response objects, each one of which is a record found by the VSO. How
 many records have been found?  You can find that out be typing
 
-    >>> qr.num_records()
+    >>> len(qr)
     122
 
 To get a little bit more information, try
 
-    >>> qr.show() # doctest:+SKIP
+    >>> print(qr) # doctest:+SKIP
     ...
 
 The Solarsoft legacy query has more keywords available: to find out
-more about the legacy query, type: 
+more about the legacy query, type:
 
     >>> help(client.query_legacy) # doctest:+SKIP
 
@@ -166,7 +178,7 @@ which yields four results, the same as the VSO IDL client.
 Downloading data
 ----------------
 All queries return a query response list. This list can then used to get the data. This
-list can also be edited as you see fit. For example you can further reduce the number of 
+list can also be edited as you see fit. For example you can further reduce the number of
 results and only get those. So having located the data you want, you can download it using the
 following command:
 

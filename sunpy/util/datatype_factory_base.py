@@ -1,5 +1,11 @@
+from __future__ import absolute_import, division, print_function
+
+import inspect
+
+
 class BasicRegistrationFactory(object):
-    """ Generalized registerable factory type.
+    """
+    Generalized registerable factory type.
 
     Widgets (classes) can be registered with an instance of this class.
     Arguments to the factory's `__call__` method are then passed to a function
@@ -35,13 +41,18 @@ class BasicRegistrationFactory(object):
 
     """
 
-    def __init__(self, default_widget_type=None, additional_validation_functions=[]):
+    def __init__(self, default_widget_type=None,
+                 additional_validation_functions=[], registry=None):
 
-        self.registry = dict()
+        if registry is None:
+            self.registry = dict()
+        else:
+            self.registry = registry
 
         self.default_widget_type = default_widget_type
 
-        self.validation_functions = ['_factory_validation_function'] + additional_validation_functions
+        self.validation_functions = (['_factory_validation_function'] +
+                                     additional_validation_functions)
 
     def __call__(self, *args, **kwargs):
         """ Method for running the factory.
@@ -73,7 +84,9 @@ class BasicRegistrationFactory(object):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
-            raise MultipleMatchError("Too many candidate types idenfitied ({0}).  Specify enough keywords to guarantee unique type identification.".format(n_matches))
+            raise MultipleMatchError("Too many candidate types identified ({0})."
+                                     "Specify enough keywords to guarantee unique type "
+                                     "identification.".format(n_matches))
 
         # Only one is found
         WidgetType = candidate_widget_types[0]
@@ -85,7 +98,7 @@ class BasicRegistrationFactory(object):
 
         If `validation_function` is not specified, tests `WidgetType` for
         existence of any function in in the list `self.validation_functions`,
-        which is a list of strings which must be callable class attribut
+        which is a list of strings which must be callable class attribute
 
         Parameters
         ----------
@@ -117,28 +130,30 @@ class BasicRegistrationFactory(object):
                     vfunc = getattr(WidgetType, vfunc_str)
 
                     # check if classmethod: stackoverflow #19227724
-                    _classmethod = vfunc.__self__ is WidgetType
+                    _classmethod = inspect.ismethod(vfunc) and vfunc.__self__ is WidgetType
 
                     if _classmethod:
                         self.registry[WidgetType] = vfunc
                         found = True
                         break
                     else:
-                        raise ValidationFunctionError("{0}.{1} must be a classmethod.".format(WidgetType.__name__, vfunc_str))
+                        raise ValidationFunctionError("{0}.{1} must be a classmethod."
+                                                      .format(WidgetType.__name__, vfunc_str))
 
             if not found:
-                raise ValidationFunctionError("No proper validation function for class {0} found.".format(WidgetType.__name__))
+                raise ValidationFunctionError("No proper validation function for class {0} "
+                                              "found.".format(WidgetType.__name__))
 
     def unregister(self, WidgetType):
         """ Remove a widget from the factory's registry."""
         self.registry.pop(WidgetType)
 
 
-class NoMatchError(StandardError):
+class NoMatchError(Exception):
     """Exception for when no candidate class is found."""
 
 
-class MultipleMatchError(StandardError):
+class MultipleMatchError(Exception):
     """Exception for when too many candidate classes are found."""
 
 
