@@ -29,10 +29,7 @@ def from_helioviewer_project(meta):
     returned.  If not, False is returned.
 
     """
-    if 'helioviewer' in meta.keys():
-        return True
-    else:
-        return False
+    return 'helioviewer' in meta.keys()
 
 
 def source_stretch(meta, fits_stretch):
