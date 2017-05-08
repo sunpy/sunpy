@@ -157,7 +157,7 @@ def parse_time(time_string, time_format='', **kwargs):
         return datetime(*time_string)
     elif time_format == 'utime' or isinstance(time_string, (int, float)):
         return datetime(1979, 1, 1) + timedelta(0, time_string)
-    elif isinstance(time_string, pandas.core.indexes.datetimes.DatetimeIndex):
+    elif isinstance(time_string, pandas.DatetimeIndex):
         return time_string._mpl_repr()
     elif isinstance(time_string, np.ndarray) and 'datetime64' in str(time_string.dtype):
         ii = [ss.astype(datetime) for ss in time_string]
