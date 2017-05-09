@@ -34,13 +34,14 @@ def from_helioviewer_project(meta):
 
 def source_stretch(meta, fits_stretch):
     """
+    Assign the correct source-dependent image stretching function.
 
     Parameters
     ----------
     meta : `~sunpy.map.MapMeta`
-    fits_stretch :
-        image stretching function used when the source image data comes from a
-        FITS file
+    fits_stretch : `~astropy.visualization.BaseStretch`
+        Image stretching function used when the source image data comes from a
+        FITS file.
 
     Returns
     -------
