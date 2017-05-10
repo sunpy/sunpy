@@ -994,7 +994,7 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
         if len(obstime) != n:
             raise IOError("obstime must have same number of elements as "
                           "temp and em.")
-        if type(obstime) == pandas.tseries.index.DatetimeIndex:
+        if type(obstime) == pandas.DatetimeIndex:
             obstime = obstime.to_pydatetime
         if any(type(obst) == str for obst in obstime):
             parse_time(obstime)
@@ -1194,7 +1194,7 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
         if not len(longflux) == len(shortflux) == len(obstime):
             raise ValueError("longflux, shortflux, and obstime must all have "
                              "same number of elements.")
-        if type(obstime) == pandas.tseries.index.DatetimeIndex:
+        if type(obstime) == pandas.DatetimeIndex:
             obstime = obstime.to_pydatetime
         if any(type(obst) == str for obst in obstime):
             parse_time(obstime)
