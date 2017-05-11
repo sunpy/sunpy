@@ -3,6 +3,8 @@
 
 * The SunPy data directory "~/sunpy" is no longer created until it is used (issue #2018)
 * Change the default representation for the Heliographic Carrington frame so Longitude follows the convention of going from 0-360 degrees.
+* Fix for surface gravity unit.
+* Support for Pandas 0.20.1
 
 0.7.7
 -----
@@ -72,6 +74,8 @@
   the object.
 * Change the default representation for the Heliographic Carrington frame so
   Longitude follows the convention of going from 0-360 degrees.
+* Fix Map parsing of some header values to allow valid float strings like 'nan'
+  and 'inf'.
 
 0.7.0
 -----
