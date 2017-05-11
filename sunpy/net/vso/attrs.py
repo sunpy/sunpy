@@ -402,10 +402,10 @@ class Quicklook(_VSOSimpleAttr):
     """
     def __init__(self,value):
         super(Sample,self).__init__(value)
-        if(self.value == 'True'):
-            value = 1
+        if(self.value == True):
+            self.value = 1
         else:
-            value = 0
+            self.value = 0
 
 
 class Filter(_VSOSimpleAttr):
