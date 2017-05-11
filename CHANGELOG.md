@@ -1,3 +1,11 @@
+0.7.8
+-----
+
+* The SunPy data directory "~/sunpy" is no longer created until it is used (issue #2018)
+* Change the default representation for the Heliographic Carrington frame so Longitude follows the convention of going from 0-360 degrees.
+* Fix for surface gravity unit.
+* Support for Pandas 0.20.1
+
 0.7.7
 -----
 
@@ -51,6 +59,23 @@
 * `VSOClient` no longer prints a lot of XML junk if the query fails.
 * Remove unused `sunpy.visualization.plotting` module
 * `Map.peek(basic_plot=True)` no longer issues warnings
+* Remove the `sunpy.map.nddata_compat` module, this makes `Map.data` and
+  `Map.meta` read only.
+* Add a `NorthOffsetFrame` class for generating HGS-like coordinate systems with a shifted north pole.
+* Remove deprecated `VSOClient.show` method.
+* Deprecate `sunpy.wcs`: `sunpy.coordinates` and `sunpy.map` now provide all
+  that functionality in a more robust manner.
+* Added hdu index in `sunpy.database.tables.DatabaseEntry` as a column in the table.
+* Removed `HelioviewerClient` from the `sunpy.net` namespace. It should now be
+  imported with `from sunpy.net.helioviewer import HelioviewerClient`.
+* Removed compatibility with standalone ``wcsaxes`` and instead depend on the
+  version in astropy 1.3. SunPy now therefore depends on astropy>=1.3.
+* Update to `TimeRange.__repr__`; now includes the qualified name and `id` of
+  the object.
+* Change the default representation for the Heliographic Carrington frame so
+  Longitude follows the convention of going from 0-360 degrees.
+* Fix Map parsing of some header values to allow valid float strings like 'nan'
+  and 'inf'.
 
 0.7.0
 -----
