@@ -9,7 +9,6 @@
 [![DOI](https://zenodo.org/badge/2165383.svg)](https://zenodo.org/badge/latestdoi/2165383)
 
 
-
 SunPy is an open-source Python library for solar physics data analysis. See [sunpy.org](http://sunpy.org) for more information about the project.
 
 For some examples of using SunPy see our [gallery](http://docs.sunpy.org/en/stable/generated/gallery/index.html).
