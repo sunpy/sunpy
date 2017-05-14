@@ -70,7 +70,7 @@ maps = {m.detector: m.submap((-1100, 1100) * u.arcsec,
 # Calculate points on the limb in the AIA image for the half that can be seen
 # from STEREO.
 
-r = maps['AIA'].rsun_obs - 1 * u.arcsec # remove the one arcsec so it's on disk.
+r = maps['AIA'].rsun_obs - 1 * u.arcsec  # remove the one arcsec so it's on disk.
 # Adjust the following range if you only want to plot on STEREO_A
 th = np.linspace(-180*u.deg, 0*u.deg)
 x = r * np.sin(th)
