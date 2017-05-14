@@ -40,7 +40,7 @@ aia = (vso.attrs.Instrument('AIA') &
        vso.attrs.Sample(24 * u.hour) &
        vso.attrs.Time('2011-01-01', '2011-01-02'))
 
-wave = vso.attrs.Wave(30 * u.nm, 31 * u.nm)
+wave = vso.attrs.Wavelength(30 * u.nm, 31 * u.nm)
 
 
 vc = vso.VSOClient()
