@@ -402,7 +402,7 @@ class Quicklook(_VSOSimpleAttr):
     """
     def __init__(self,value):
         super(Quicklook,self).__init__(value)
-        if(self.value):
+        if self.value:
             self.value = 1
         else:
             self.value = 0
