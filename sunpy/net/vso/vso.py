@@ -15,7 +15,6 @@ import re
 import os
 import sys
 import logging
-import threading
 import requests
 import warnings
 import socket
@@ -25,14 +24,12 @@ from functools import partial
 from collections import defaultdict
 from suds import client, TypeNotFound
 
-import astropy
-from astropy.table import Table, Column
 import astropy.units as u
+from astropy.table import QTable as Table
 
 from sunpy import config
 from sunpy.net import download
 from sunpy.net.proxyfix import WellBehavedHttpTransport
-from sunpy.util.progressbar import TTYProgressBar as ProgressBar
 from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso import attrs
@@ -118,6 +115,7 @@ def get_online_vso_url(api, url, port):
                     mirror['url'], transport=mirror['transport']())
                 api.set_options(port=mirror['port'])
                 return api
+
 
 # TODO: Python 3 this should subclass from UserList
 class QueryResponse(list):
@@ -362,7 +360,7 @@ class VSOClient(object):
         name = get_filename(sock, url)
         if not name:
             if not isinstance(response.fileid, text_type):
-                name = u(response.fileid, "ascii", "ignore")
+                name = six.u(response.fileid, "ascii", "ignore")
             else:
                 name = response.fileid
 
@@ -372,7 +370,7 @@ class VSOClient(object):
 
         name = slugify(name)
 
-        if PY2:
+        if six.PY2:
             name = name.encode(fs_encoding, "ignore")
 
         if not name:
@@ -754,11 +752,11 @@ class VSOClient(object):
 
     @staticmethod
     def by_provider(response):
-        """ 
-        Returns a dictionary of provider 
-        corresponding to records in the response. 
         """
-        
+        Returns a dictionary of provider
+        corresponding to records in the response.
+        """
+
         map_ = defaultdict(list)
         for record in response:
             map_[record.provider].append(record)
@@ -766,11 +764,11 @@ class VSOClient(object):
 
     @staticmethod
     def by_fileid(response):
-        """ 
-        Returns a dictionary of fileids 
-        corresponding to records in the response. 
         """
-        
+        Returns a dictionary of fileids
+        corresponding to records in the response.
+        """
+
         return dict(
             (record.fileid, record) for record in response
         )
@@ -796,7 +794,6 @@ class VSOClient(object):
     @classmethod
     def _can_handle_query(cls, *query):
         return all([x.__class__.__name__ in attrs.__all__ for x in query])
-
 
 
 class InteractiveVSOClient(VSOClient):
