@@ -101,7 +101,7 @@ def iter_errors(response):
 
 def check_connection(url):
     try:
-        return True if requests.get(url).status_code == 200 else False
+        return requests.get(url).status_code == 200
     except (socket.error, socket.timeout) as e:
         warnings.warn(
             "Connection failed with error {}. \n Retrying with different url and port.".format(e))
