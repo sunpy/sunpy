@@ -5,7 +5,7 @@ import numpy as np
 import sunpy.map
 from astropy.wcs import WCS
 
-from .frames import Helioprojective, Heliocentric, HeliographicStonyhurst, HeliographicCarrington
+from sunpy.coordinates.frames import Helioprojective, Heliocentric, HeliographicStonyhurst, HeliographicCarrington
 from ..wcs_utils import solar_wcs_frame_mapping
 
 
