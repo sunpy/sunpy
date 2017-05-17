@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import astropy.units as u
 
 from sunpy.map import GenericMap
+from sunpy.visualization import axis_labels_from_ctype
 
 from sunpy.util import expand_list
 from sunpy.extern import six
@@ -394,27 +395,10 @@ class CompositeMap(object):
             axes = plt.gca()
 
         if annotate:
-            # x-axis label
-            if self._maps[0].coordinate_system.lon.startswith('HGLN'):
-                xlabel = 'Heliographic Longitude [{lon}]'.format(lon=self._maps[0].spatial_units.lon)
-            elif self._maps[0].coordinate_system.lon.startswith('CRLN'):
-                xlabel = 'Carrington Longitude [{lon}]'.format(lon=self._maps[0].spatial_units.lon)
-            elif self._maps[0].coordinate_system.lon.startswith('HPLN'):
-                xlabel = 'Helioprojective Longitude (Solar-X) [{xpos}]'.format(xpos=self._maps[0].spatial_units.lon)
-            else:
-                xlabel = "{} [{}]".format(self._maps[0].coordinate_system.lon, self._maps[0].spatial_units.lon)
-
-            # y-axis label
-            if self._maps[0].coordinate_system.lat.startswith(('HGLT', 'CRLT')):
-                ylabel = 'Latitude [{lat}]'.format(lat=self._maps[0].spatial_units.lat)
-            elif self._maps[0].coordinate_system.lat.startswith('HPLT'):
-                ylabel = 'Helioprojective Latitude (Solar-Y) [{ypos}]'.format(ypos=self._maps[0].spatial_units.lat)
-            else:
-                ylabel = "{} [{}]".format(self._maps[0].coordinate_system.lat, self._maps[0].spatial_units.lat)
-                ylabel = 'Y-position [{soly}]'.format(soly=self._maps[0].spatial_units.lat)
-
-            axes.set_xlabel(xlabel)
-            axes.set_ylabel(ylabel)
+            axes.set_xlabel(axis_labels_from_ctype(self._maps[0].coordinate_system[0],
+                                                   self._maps[0].spatial_units[0]))
+            axes.set_ylabel(axis_labels_from_ctype(self._maps[0].coordinate_system[1],
+                                                   self._maps[0].spatial_units[1]))
 
             axes.set_title(title)
 

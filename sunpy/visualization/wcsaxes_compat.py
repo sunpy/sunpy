@@ -6,8 +6,6 @@ import matplotlib.pyplot as plt
 
 import astropy.units as u
 
-from astropy.utils.misc import isiterable
-
 try:
     from astropy.visualization import wcsaxes
 except ImportError:
@@ -100,26 +98,21 @@ def get_world_transform(axes):
     return transform
 
 
-def ctype_longitude_wrap(ctype):
-    """
-    Return the longitude wrapping for a given ctype. If the wrapping is either
-    360 or not specified then this function returns `None`.
-    """
-    if ctype[:4] in ['HPLN', 'HGLN']:
-        return 180.
-
-
 def solar_coord_type_from_ctype(ctype):
     """
     Determine whether a particular WCS ctype corresponds to an angle or scalar
     coordinate.
     """
-    wrapping = ctype_longitude_wrap(ctype)
 
     if ctype[2:4] == 'LN':
-        return 'longitude', wrapping
+        if ctype[:4] in ['HPLN', 'HGLN']:
+            return 'longitude', 180.
+
+        return 'longitude', None
+
     elif ctype[2:4] == 'LT':
-        return 'latitude', wrapping
+        return 'latitude', None
+
     else:
         return 'scalar', None
 

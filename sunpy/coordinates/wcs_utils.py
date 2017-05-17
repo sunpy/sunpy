@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division
 
-import astropy.units as u
 import astropy.wcs.utils
 from astropy.wcs import WCSSUB_CELESTIAL
 
-from .frames import *
+from .frames import Helioprojective, Heliocentric, HeliographicStonyhurst, HeliographicCarrington
 
 __all__ = ['solar_wcs_frame_mapping']
 
@@ -23,7 +22,7 @@ def solar_wcs_frame_mapping(wcs):
     if hasattr(wcs, 'heliographic_observer'):
         observer = wcs.heliographic_observer
     else:
-        observer = HeliographicStonyhurst(0 * u.deg, 0 * u.deg, 1 * u.AU)
+        observer = None
 
     # First we try the Celestial sub, which rectifies the order.
     # It will return any thing matching ??LN*, ??LT*

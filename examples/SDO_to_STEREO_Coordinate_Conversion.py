@@ -94,12 +94,12 @@ subaia.peek()
 # this object, we use `Map.coordinate_frame` so that the location parameters of
 # SDO are correctly set.
 
-a = ([aia_bottom_left.Tx, aia_bottom_left.Ty],
-     [aia_bottom_left.Tx + aia_width, aia_bottom_left.Ty],
-     [aia_bottom_left.Tx, aia_bottom_left.Ty + aia_height],
-     [aia_top_right.Tx, aia_top_right.Ty])
+corners = ([aia_bottom_left.Tx, aia_bottom_left.Ty],
+           [aia_bottom_left.Tx + aia_width, aia_bottom_left.Ty],
+           [aia_bottom_left.Tx, aia_bottom_left.Ty + aia_height],
+           [aia_top_right.Tx, aia_top_right.Ty])
 
-hpc_aia = SkyCoord(a, frame=maps['AIA'].coordinate_frame)
+hpc_aia = SkyCoord(corners, frame=maps['AIA'].coordinate_frame)
 
 print(hpc_aia)
 

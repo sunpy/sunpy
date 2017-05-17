@@ -189,14 +189,13 @@ then used to modify the plot:
     xc = [0,100,1000] * u.arcsec
     yc = [0,100,1000] * u.arcsec
 
-    coords = SkyCoord([0,100,1000] * u.arcsec, [0,100,1000] * u.arcsec,
-                      frame=smap.coordinate_frame)
+    coords = SkyCoord(xc, yc, frame=smap.coordinate_frame)
 
     p = ax.plot_coord(coords, 'o')
 
     # Set title.
     ax.set_title('Custom plot with WCSAxes')
-    
+
     plt.colorbar()
     plt.show()
 
@@ -230,7 +229,7 @@ rotation and plotting in different coordinate systems.
 
     # Set title.
     ax.set_title('Custom plot without WCSAxes')
-    
+
     plt.colorbar()
     plt.show()
 
