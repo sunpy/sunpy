@@ -266,8 +266,12 @@ def test_data_range(generic_map):
     assert (generic_map.yrange[1] - generic_map.yrange[0]
             ).to(u.arcsec).value == generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
 
-    assert_quantity_allclose(np.average(generic_map.xrange) * u.deg, generic_map.center.Tx)
-    assert_quantity_allclose(np.average(generic_map.yrange) * u.deg, generic_map.center.Ty)
+    # the weird unit-de-unit thing here is to work around and inconsistency in
+    # the way np.average works with astropy 1.3 and 2.0dev
+    assert_quantity_allclose(np.average(u.Quantity(generic_map.xrange).value) * u.deg,
+                             generic_map.center.Tx)
+    assert_quantity_allclose(np.average(u.Quantity(generic_map.yrange).value) * u.deg,
+                             generic_map.center.Ty)
 
 
 def test_data_to_pixel(generic_map):
