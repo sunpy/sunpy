@@ -912,7 +912,7 @@ if sys.version_info[:2] < (2, 7):
             if level >= current_threshold:
                 if args:
                     msg = msg % args
-                sys.stderr.write('%s\n' % msg)
+                sys.stderr.write('{0!s}\n'.format(msg))
                 sys.stderr.flush()
 
     log = log()

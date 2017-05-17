@@ -246,7 +246,7 @@ def mk_gen(rest):
     ret = ''
     ret += '@apply\nclass Misc(object):\n'
     for elem in sorted(rest):
-        ret += '    %s = %s(%r)\n' %(elem, fields[elem], elem)
+        ret += '    {0!s} = {1!s}({2!r})\n'.format(elem, fields[elem], elem)
     return ret
 
 def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='EventType'):
@@ -260,14 +260,14 @@ def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='EventType'
     if not keys:
         if not nokeys:
             raise ValueError
-        return '%s = EventType(%r)' % (key, name.lower())
+        return '{0!s} = EventType({1!r})'.format(key, name.lower())
     ret = ''
-    ret += '@apply\nclass %s(%s):\n' % (name, base)
+    ret += '@apply\nclass {0!s}({1!s}):\n'.format(name, base)
     for k, v in keys:
-        ret += '    %s = %s(%r)\n' % (k[len(key) + pad:], v, k)
+        ret += '    {0!s} = {1!s}({2!r})\n'.format(k[len(key) + pad:], v, k)
     if init:
         ret += '''    def __init__(self):
-        EventType.__init__(self, %r)''' % name.lower()
+        EventType.__init__(self, {0!r})'''.format(name.lower())
     return ret
 
 if __name__ == '__main__':
