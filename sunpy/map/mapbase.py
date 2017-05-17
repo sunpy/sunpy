@@ -604,7 +604,7 @@ Reference Coord:\t {refcoord}
         """
         return SkyCoord(lat=self.heliographic_latitude,
                         lon=self.heliographic_longitude,
-                        distance=self.dsun,
+                        radius=self.dsun,
                         frame='heliographic_stonyhurst')
 
     @property
