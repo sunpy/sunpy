@@ -1124,7 +1124,7 @@ Reference Coord:\t {refcoord}
     def submap(self, bottom_left, top_right=None):
         """
         Returns a submap of the map defined by the rectangle given by the
-        [bottom_left, top_right] coordinates.
+        ``[bottom_left, top_right]`` coordinates.
 
         Parameters
         ----------
@@ -1135,8 +1135,7 @@ Reference Coord:\t {refcoord}
             object with units of `~astropy.units.pixel`.
         top_right : `astropy.units.Quantity` or `~astropy.coordinates.SkyCoord`
             The top_right coordinate of the rectangle. Can only be omitted if
-            ``bottom_left`` has shape ``(2,)``. If a `SkyCoord` it can have
-            shape ``(2,)`` and also define ``top_right``.
+            ``bottom_left`` has shape ``(2,)``.
 
         Returns
         -------
@@ -1209,7 +1208,7 @@ Reference Coord:\t {refcoord}
                                     astropy.coordinates.BaseCoordinateFrame)):
             if not top_right:
                 if bottom_left.shape[0] != 2:
-                    raise ValueError("If top_right is not specified bottom_left must have length two")
+                    raise ValueError("If top_right is not specified bottom_left must have length two.")
                 else:
                     lon, lat = self._get_lon_lat(bottom_left)
                     top_right = u.Quantity([lon[1], lat[1]])
@@ -1367,7 +1366,7 @@ Reference Coord:\t {refcoord}
             new_data = new_array
             new_mask = None
 
-        #Create new map with the modified data
+        # Create new map with the modified data
         new_map = self._new_instance(new_data, new_meta, self.plot_settings, mask=new_mask)
         return new_map
 
@@ -1376,7 +1375,7 @@ Reference Coord:\t {refcoord}
     @u.quantity_input(grid_spacing=u.deg)
     def draw_grid(self, axes=None, grid_spacing=15*u.deg):
         """
-        Draws a coordinate overlay on the plot in Heliographic Stonyhurst
+        Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
         coordinate system.
 
         To overlay other coordinate systems see the `WCSAxes Documentation
