@@ -46,7 +46,7 @@ class AIAMap(GenericMap):
         self.meta['detector'] = "AIA"
         self._nickname = self.detector
         self.plot_settings['cmap'] = cm.get_cmap(self._get_cmap_name())
-        self.plot_settings['norm'] = ImageNormalize(source_stretch(self.meta, AsinhStretch(0.01)))
+        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, AsinhStretch(0.01)))
 
     @property
     def observatory(self):

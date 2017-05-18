@@ -26,5 +26,5 @@ def test_from_helioviewer_project():
 def test_source_stretch():
     aia_fits_stretch = aia.plot_settings['norm'].stretch
     assert source_stretch(aia.meta, aia_fits_stretch) is aia_fits_stretch
-    assert source_stretch(hvjp2.meta, aia_fits_stretch) is LinearStretch
+    assert isinstance(source_stretch(hvjp2.meta, aia_fits_stretch), LinearStretch)
 
