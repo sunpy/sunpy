@@ -29,26 +29,23 @@ def from_helioviewer_project(meta):
     returned.  If not, False is returned.
 
     """
-    if 'helioviewer' in meta.keys():
-        return True
-    else:
-        return False
+    return 'helioviewer' in meta.keys()
 
 
 def source_stretch(meta, fits_stretch):
     """
+    Assign the correct source-dependent image stretching function.
 
     Parameters
     ----------
     meta : `~sunpy.map.MapMeta`
-    fits_stretch :
-        image stretching function used when the source image data comes from a
-        FITS file
+    fits_stretch : `~astropy.visualization.BaseStretch`
+        Image stretching function used when the source image data comes from a
+        FITS file.
 
     Returns
     -------
-    An image stretching function appropriate to where the source image data
-    comes from.
+    An image stretching function appropriate to the image data source.
     """
     if from_helioviewer_project(meta):
         # Helioviewer JPEG2000 files already have a stretched data values, so
