@@ -2,9 +2,12 @@
 
 -r base.txt
 
-# Pytest and the optional pytest coverage plugin for tests
+# To execute the tests, install:
+hypothesis
+mock
 pytest
 pytest-cov
+pytest-mock
 
 # Optional dependencies for extra functionality
 sqlalchemy

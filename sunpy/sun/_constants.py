@@ -72,7 +72,7 @@ physical_constants['average density'] = Constant('rho', "Mean density",
 
 # following needs error estimate if appropriate
 physical_constants['surface gravity'] = Constant('g', "Surface gravity",
-                                                 274, 'm s**-1', 0,
+                                                 274, 'm s**-2', 0,
                                                  allen, system='si')
 
 # following needs error estimate if appropriate

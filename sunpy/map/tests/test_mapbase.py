@@ -455,6 +455,14 @@ def test_rotate(aia171_test_map):
     assert aia171_test_map_crop_rot.data.shape[0] < aia171_test_map_crop_rot.data.shape[1]
 
 
+def test_rotate_pad_crpix(generic_map):
+    rotated_map = generic_map.rotate(30*u.deg)
+    # This tests that the reference pixel of the map is in the expected place.
+    assert rotated_map.data.shape != generic_map.data.shape
+    assert_quantity_allclose(u.Quantity(rotated_map.reference_pixel),
+                             u.Quantity((6.049038105675565, 7.5490381056760265), u.pix))
+
+
 def test_rotate_recenter(generic_map):
     rotated_map = generic_map.rotate(20*u.deg, recenter=True)
     pixel_array_center = (np.flipud(rotated_map.data.shape) - 1) / 2.0

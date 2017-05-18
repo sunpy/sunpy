@@ -50,12 +50,6 @@ to install SunPy::
 You now have a working SunPy installation. You can check your SunPy install
 by following the instructions in :ref:`testing-sunpy`.
 
-.. note::
-
-    Currently Glymur / JPEG2000 support is not tested under Anaconda on any
-    platforms. However, an external installation of openJPEG should work with
-    the glymur installation in conda.
-
 Updating SunPy to a New Version
 ###############################
 
