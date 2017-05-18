@@ -119,8 +119,6 @@ def _iter_empty(iter):
     return False
 
 
-
-
 def parse_time(time_string, time_format='', **kwargs):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
