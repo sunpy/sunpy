@@ -195,7 +195,9 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
                                 occultation=False)
     newx = Angle(newx, u.arcsec)
     newy = Angle(newy, u.arcsec)
-    return newx.to(u.arcsec), newy.to(u.arcsec)
+    c = SkyCoord(newx*u.arcsec, newyu.arcsec, frame='helioprojective')
+    
+    return c.Tx,c.Ty
 
 
 def _calc_P_B0_SD(date):
