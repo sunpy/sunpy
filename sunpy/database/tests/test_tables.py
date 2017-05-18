@@ -27,6 +27,16 @@ RHESSI_IMAGE = os.path.join(testdir, 'hsi_image_20101016_191218.fits')
 EIT_195_IMAGE = os.path.join(testdir, 'EIT/efz20040301.000010_s.fits')
 GOES_DATA = os.path.join(testdir, 'go1520110607.fits')
 
+"""
+The hsi_image_20101016_191218.fits file and go1520110607.fits file lie in the sunpy/data/tests dirctory.
+The efz20040301.000010_s.fits file lies in the sunpy/data/tests/EIT directory.
+
+RHESSI_IMAGE = sunpy/data/test/hsi_image_20101016_191218.fits
+EIT_195_IMAGE = sunpy/data/test/EIT/efz20040301.000010_s.fits
+GOES_DATA = sunpy/data/test/go1520110607.fits
+
+"""
+
 
 @pytest.fixture
 def query_result():

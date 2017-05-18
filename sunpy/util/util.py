@@ -17,7 +17,6 @@ __all__ = ['to_signed', 'unique', 'print_table', 'replacement_filename',
            'expand_list_generator']
 
 
-
 def to_signed(dtype):
     """
     Return dtype that can hold data of passed dtype but is signed.
