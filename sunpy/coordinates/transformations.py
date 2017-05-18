@@ -49,6 +49,7 @@ def hgs_to_hgc(hgscoord, hgcframe):
         u.deg)
     representation = SphericalWrap180Representation(c_lon, hgscoord.lat,
                                                     hgscoord.radius)
+    hgcframe = hgcframe.__class__(dateobs=hgscoord.dateobs)
     return hgcframe.realize_frame(representation)
 
 
@@ -58,7 +59,11 @@ def hgc_to_hgs(hgccoord, hgsframe):
     """
     Convert from Heliograpic Carrington to Heliographic Stonyhurst.
     """
-    s_lon = hgccoord.spherical.lon - _carrington_offset(hgccoord.dateobs).to(
+    if hgccoord.dateobs:
+        dateobs = hgccoord.dateobs
+    else:
+        dateobs = hgsframe.dateobs
+    s_lon = hgccoord.spherical.lon - _carrington_offset(dateobs).to(
         u.deg)
     representation = SphericalWrap180Representation(s_lon, hgccoord.lat,
                                                     hgccoord.radius)
