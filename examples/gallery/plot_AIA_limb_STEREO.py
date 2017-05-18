@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-=================================
-Drawing AIA Limb on STEREO Images
-=================================
-
+========================================
+Drawing AIA Coordinates on STEREO Images
+========================================
 
 In this example we use a STEREO-B and an SDO image to demonstrate how to
-overplot the limb as seen by AIA on an EUVI-B image. This makes use of
-functionality added in Astropy 1.3.
+overplot the limb as seen by AIA on an EUVI-B image. Then we overplot the AIA
+coordinate grid on the STEREO image.
+
+This makes use of functionality added in Astropy 1.3.
 """
 
 ##############################################################################
@@ -82,7 +83,7 @@ coords = SkyCoord(x, y, frame=maps['AIA'].coordinate_frame)
 ##############################################################################
 # Plot both maps
 
-fig = plt.figure(figsize=(15, 5))
+fig = plt.figure(figsize=(10, 4))
 ax1 = fig.add_subplot(1, 2, 1, projection=maps['AIA'])
 maps['AIA'].plot(axes=ax1)
 maps['AIA'].draw_limb()
@@ -90,3 +91,44 @@ maps['AIA'].draw_limb()
 ax2 = fig.add_subplot(1, 2, 2, projection=maps['EUVI'])
 maps['EUVI'].plot(axes=ax2)
 ax2.plot_coord(coords, color='w')
+
+
+##############################################################################
+# We can also plot the helioprojective coordinate grid as seen by SDO on the
+# STEREO image.
+
+fig = plt.figure()
+ax = plt.subplot(projection=maps['EUVI'])
+
+maps['EUVI'].plot()
+
+# Move the title so it does not clash with the extra labels.
+tx, ty = ax.title.get_position()
+ax.title.set_position([tx, ty + 0.08])
+
+# Change the default grid labels.
+stereo_x, stereo_y = ax.coords
+stereo_x.set_axislabel("Helioprojective Longitude (STEREO B) [arcsec]")
+stereo_y.set_axislabel("Helioprojective Latitude (STEREO B) [arcsec]")
+
+# Add a new coordinate overlay in the SDO frame.
+overlay = ax.get_coords_overlay(maps['AIA'].coordinate_frame)
+overlay.grid()
+
+# Configure the grid:
+x, y = overlay
+
+# Set the ticks to be on the top and left axes.
+x.set_ticks_position('tr')
+y.set_ticks_position('tr')
+
+# Wrap the longitude at 180 deg rather than the default 360.
+x.set_coord_type('longitude', 180.)
+
+# Change the defaults to arcseconds
+x.set_major_formatter('s.s')
+y.set_major_formatter('s.s')
+
+# Add axes labels
+x.set_axislabel("Helioprojective Longitude (SDO) [arcsec]")
+y.set_axislabel("Helioprojective Latitude (SDO) [arcsec]")
