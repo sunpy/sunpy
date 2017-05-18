@@ -67,19 +67,7 @@ class Spectrum(np.ndarray):
         params = {}
         params.update(matplot_args)
 
-        # This is taken from mpl.pyplot.plot() as we are trying to
-        # replicate that functionality
-
-        # allow callers to override the hold state by passing hold=True|False
-        washold = axes.ishold()
-        hold = matplot_args.pop('hold', None)
-
-        if hold is not None:
-            axes.hold(hold)
-        try:
-            lines = axes.plot(self.freq_axis, self, **params)
-        finally:
-            axes.hold(washold)
+        lines = axes.plot(self.freq_axis, self, **params)
 
         return lines
 
