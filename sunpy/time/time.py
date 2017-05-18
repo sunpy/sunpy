@@ -196,7 +196,7 @@ def parse_time(time_string, time_format='', **kwargs):
                     return datetime.strptime(time_string, time_string_parse_format)
             except:
                 pass
-        raise ValueError("{tstr!s} is not a valid time string!".format(tstr=time_string))
+        raise ValueError("'{tstr!s}' is not a valid time string!".format(tstr=time_string))
 
 
 def is_time(time_string, time_format=''):
