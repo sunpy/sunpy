@@ -922,16 +922,17 @@ Reference Coord:\t {refcoord}
     def rotate(self, angle=None, rmatrix=None, order=4, scale=1.0,
                recenter=False, missing=0.0, use_scipy=False):
         """
-        Returns a new rotated and rescaled map.  Specify either a rotation
-        angle or a rotation matrix, but not both.  If neither an angle or a
-        rotation matrix are specified, the map will be rotated by the rotation
-        angle in the metadata.
+        Returns a new rotated and rescaled map.
+
+        Specify either a rotation angle or a rotation matrix, but not both. If
+        neither an angle or a rotation matrix are specified, the map will be
+        rotated by the rotation angle in the metadata.
 
         The map will be rotated around the reference coordinate defined in the
         meta data.
 
-        Also updates the rotation_matrix attribute and any appropriate header
-        data so that they correctly describe the new map.
+        This method also updates the ``rotation_matrix`` attribute and any
+        appropriate header data so that they correctly describe the new map.
 
         Parameters
         ----------
