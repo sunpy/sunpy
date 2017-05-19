@@ -1,5 +1,6 @@
 from __future__ import division
 
+from astropy.coordinates import SkyCoord
 import numpy as np
 from astropy import units as u
 from astropy.coordinates import Longitude, Latitude, Angle
