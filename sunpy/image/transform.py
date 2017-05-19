@@ -118,15 +118,11 @@ def affine_transform(image, rmatrix, order=3, scale=1.0, image_center=None,
         tform = skimage.transform.AffineTransform(skmatrix)
 
         # Transform the image using the skimage function
-        if np.issubdtype(image.dtype, np.integer):
-            warnings.warn("Input integer data has been cast to float64", RuntimeWarning)
+        if not np.issubdtype(image.dtype, np.float64):
+            warnings.warn("Input data has been cast to float64", RuntimeWarning)
             adjusted_image = image.astype(np.float64)
         else:
             adjusted_image = image.copy()
-        if np.any(np.isnan(adjusted_image)) and order >= 4:
-            warnings.warn("Setting NaNs to 0 for higher-order scikit-image rotation",
-                          RuntimeWarning)
-            adjusted_image = np.nan_to_num(adjusted_image)
 
         rotated_image = skimage.transform.warp(adjusted_image, tform, order=order,
                                                mode='constant', cval=missing)
