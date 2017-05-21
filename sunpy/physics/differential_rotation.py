@@ -1,9 +1,9 @@
 from __future__ import division
 
-from astropy.coordinates import SkyCoord
+
 import numpy as np
 from astropy import units as u
-from astropy.coordinates import Longitude, Latitude, Angle
+
 from sunpy.time import parse_time, julian_day
 
 from sunpy.wcs import convert_hpc_hg, convert_hg_hpc
@@ -176,10 +176,9 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
                                          l0_deg=vstart["l0"].to(u.deg).value,
                                          dsun_meters=(constants.au * sun.sunearth_distance(t=dstart)).value,
                                          angle_units='arcsec')
-    longitude = Longitude(longitude, u.deg)
-    latitude = Angle(latitude, u.deg)
+    
     # Compute the differential rotation
-    drot = diff_rot(interval, latitude, frame_time=frame_time,
+    drot = diff_rot(interval, latitude * u.deg, frame_time=frame_time,
                     rot_type=rot_type)
 
     # Convert back to heliocentric cartesian in units of arcseconds
@@ -188,17 +187,15 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
     # It appears that there is a difference in how the SSWIDL function
     # hel2arcmin and the sunpy function below performs this co-ordinate
     # transform.
-    newx, newy = convert_hg_hpc(longitude.to(u.deg).value + drot.to(u.deg).value,
-                                latitude.to(u.deg).value,
+    newx, newy = convert_hg_hpc(longitude + drot.to(u.deg).value,
+                                latitude,
                                 b0_deg=vend["b0"].to(u.deg).value,
                                 l0_deg=vend["l0"].to(u.deg).value,
                                 dsun_meters=(constants.au * sun.sunearth_distance(t=dend)).value,
                                 occultation=False)
-    newx = Angle(newx, u.arcsec)
-    newy = Angle(newy, u.arcsec)
-    c = SkyCoord(newx*u.arcsec, newy*u.arcsec, frame='helioprojective')
-    
-    return c.Tx,c.Ty
+    nx = newx * u.arcsec 
+    ny = newy * u.arcsec
+    return nx,ny
 
 
 def _calc_P_B0_SD(date):
