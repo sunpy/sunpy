@@ -395,9 +395,9 @@ def _sun_pos(date):
     # convert the internal variables to those listed in the top of the
     # comment section in this code and in the original IDL code.  Quantities
     # are assigned following the advice in Astropy "Working with Angles"
-    return {"longitude": Longitude(longmed, u.deg),
-            "ra": Longitude(ra, u.deg),
-            "dec": Latitude(dec, u.deg),
-            "app_long": Longitude(l, u.deg),
-            "obliq": Angle(oblt, u.deg)}
+    return {"longitude": (longmed * u.deg),
+            "ra": (ra * u.deg),
+            "dec": (dec * u.deg),
+            "app_long": (l * u.deg),
+            "obliq": (oblt * u.deg)}
 
