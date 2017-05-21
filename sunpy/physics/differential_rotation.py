@@ -273,10 +273,10 @@ def _calc_P_B0_SD(date):
     sd_const = constants.radius / constants.au
     sd = np.arcsin(sd_const / r) * 10800.0 / np.pi
 
-    return {"p": Angle(p, u.deg),
-            "b0": Angle(b, u.deg),
-            "sd": Angle(sd.value, u.arcmin),
-            "l0": Angle(0.0, u.deg)}
+    return {"p": (p * u.deg),
+            "b0": (b * u.deg),
+            "sd": (sd.value * u.arcmin),
+            "l0": (0.0 * u.deg)}
 
 
 def _sun_pos(date):
