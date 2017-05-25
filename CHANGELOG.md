@@ -42,9 +42,8 @@ Latest
 * `Helioprojective` and `HelioCentric` frames now have an `observer` attribute
   which itself is a coordinate object (`SkyCoord`) instead of `B0`, `L0` and
   `D0` to describe the position of the observer.
-* `GenericMap.draw_grid` now uses `WCSAxes`, this may be less performant than
-  the previous implementation, but it handles rotation and other projections
-  properly.
+* `GenericMap.draw_grid` now uses `WCSAxes`, it will only work on a `WCSAxes`
+  plot, this may be less performant than the previous implementation.
 * `GenericMap.data_to_pixel` and `GenericMap.pixel_to_data` now accept and
   return `SkyCoord` objects only.
 * `GenericMap` has a new property `observer_coordinate` which returns a
@@ -52,13 +51,12 @@ Latest
 * `GenericMap.submap` now takes arguments of the form `bottom_left` and
   `top_right` rather than `range_a` and `range_b`. This change enables submap to
   properly handle rotated maps and take input in the form of `SkyCoord` objects.
-  
-  
 * When referring to physical coordinates `Pair.x` has been replaced with
   `SpatialPair.axis1`. This means values returned by `GenericMap` now
   differentiate between physical and pixel coordinates.
 * Fix Map parsing of some header values to allow valid float strings like 'nan'
   and 'inf'.
+
 
 0.7.0
 -----
