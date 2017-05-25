@@ -37,7 +37,7 @@ class QueryResponseBlock(object):
     Represents url, source along with other information
     """
 
-    def __init__(self, map0, url):
+    def __init__(self, map0, url, time=None):
         """
         Parameters
         ----------
@@ -50,14 +50,14 @@ class QueryResponseBlock(object):
         self.phyobs = map0.get('phyobs', "Data not Available")
         self.instrument = map0.get('instrument', "Data not Available")
         self.url = url
-        self.time = TimeRange(map0.get('Time_start'), map0.get('Time_end'))
+        self.time = TimeRange(map0.get('Time_start'), map0.get('Time_end')) if time is None else time
         self.wavelength = map0.get('wavelength', np.NaN)
 
 
-def iter_urls(amap, url_list):
+def iter_urls(amap, url_list, time):
     """Helper Function"""
-    for aurl in url_list:
-        tmp = QueryResponseBlock(amap, aurl)
+    for aurl, t in zip(url_list, time):
+        tmp = QueryResponseBlock(amap, aurl, t)
         yield tmp
 
 
@@ -70,8 +70,10 @@ class QueryResponse(list):
         super(QueryResponse, self).__init__(lst)
 
     @classmethod
-    def create(cls, amap, lst):
-        return cls(iter_urls(amap, lst))
+    def create(cls, amap, lst, time=None):
+        if time is None:
+            time = [None] * len(lst)
+        return cls(iter_urls(amap, lst, time))
 
     def time_range(self):
         """
@@ -94,10 +96,8 @@ class QueryResponse(list):
                                ('Source', []), ('Instrument', []),
                                ('Wavelength', [])))
         for i, qrblock in enumerate(self):
-            columns['Start Time'].append((qrblock.time.start.date(
-            ) + datetime.timedelta(days=i)).strftime(TIME_FORMAT))
-            columns['End Time'].append((qrblock.time.start.date(
-            ) + datetime.timedelta(days=i + 1)).strftime(TIME_FORMAT))
+            columns['Start Time'].append((qrblock.time.start).strftime(TIME_FORMAT))
+            columns['End Time'].append((qrblock.time.end).strftime(TIME_FORMAT))
             columns['Source'].append(qrblock.source)
             columns['Instrument'].append(qrblock.instrument)
             columns['Wavelength'].append(str(u.Quantity(qrblock.wavelength)))
@@ -248,6 +248,8 @@ class GenericClient(object):
         kwergs.update(kwargs)
         urls = self._get_url_for_timerange(
             self.map_.get('TimeRange'), **kwergs)
+        if getattr(self, "_get_time_for_url", None):
+            return QueryResponse.create(self.map_, urls, self._get_time_for_url(urls))
         return QueryResponse.create(self.map_, urls)
 
     def get(self, qres, path=None, error_callback=None, **kwargs):
