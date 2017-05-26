@@ -118,9 +118,6 @@ def _iter_empty(iter):
         return True
     return False
 
-
-
-
 def parse_time(time_string, time_format='', **kwargs):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
@@ -280,7 +277,11 @@ def day_of_year(time_string):
 def break_time(t='now', time_format=''):
     """Given a time returns a string. Useful for naming files."""
     # TODO: should be able to handle a time range
-    return parse_time(t, time_format).strftime("%Y%m%d_%H%M%S")
+    try:
+        time = parse_time(t, time_format).strftime("%Y%m%d_%H%M%S")
+        return time
+    except ValueError:
+        pass
 
 
 def get_day(dt):
