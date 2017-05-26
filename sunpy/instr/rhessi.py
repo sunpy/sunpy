@@ -476,14 +476,6 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
     if not (isinstance(image_dim, u.Quantity) and image_dim.unit == 'pix'):
         raise ValueError("Must be astropy Quantity in pixels")
 
-    try:
-        import sunpy.data.sample
-    except ImportError:
-        import sunpy.data
-        sunpy.data.download_sample()
-    # This may need to be moved up to data from sample
-    calibrated_event_list = sunpy.data.sample.RHESSI_EVENT_LIST
-
     afits = fits.open(calibrated_event_list)
     info_parameters = afits[2]
     xyoffset = info_parameters.data.field('USED_XYOFFSET')[0]
