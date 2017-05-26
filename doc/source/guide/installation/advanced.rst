@@ -131,6 +131,8 @@ To install SunPy with database dependencies (sqlalchemy)::
 
     pip install sunpy[database]
 
+Other available options are: `[image]`, `[jpeg2000]` and `[tests]`
+
 .. warning::
     Users of the Anaconda python distribution should follow the instructions
     for :ref:`anaconda_install`.
@@ -138,6 +140,11 @@ To install SunPy with database dependencies (sqlalchemy)::
 .. note::
 
     You will need a C compiler (e.g. ``gcc`` or ``clang``) to be installed.
+
+.. note::
+
+   ``suds-py3`` is not compatible where as ``suds-jurko`` works fine with SunPy. Hence we depend on ``suds-jurko`` for operations under various modules under `~sunpy.net`.  
+
 
 .. note::
 

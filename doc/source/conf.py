@@ -170,7 +170,7 @@ try:
 
     sphinx_gallery_conf = {
         # path to store the module using example template
-        'mod_example_dir': 'generated{}modules'.format(os.sep),
+        'backreferences_dir': 'generated{}modules'.format(os.sep),
         # execute all examples except those that start with "skip_"
         'filename_pattern': '^((?!skip_).)*$',
         # path to the examples scripts
