@@ -409,8 +409,6 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
     >>> import sunpy.instr.rhessi as rhessi
 
     """
-    afits = fits.open(calibrated_event_list)
-
     # info_parameters = fits[2]
     # detector_efficiency = info_parameters.data.field('cbe_det_eff$$REL')
 
