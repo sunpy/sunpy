@@ -21,14 +21,14 @@ from sunpy.net import Fido, attrs as a
 from sunpy.time import TimeRange, parse_time
 
 
-
 ##############################################################################
 # Search for Data
 
 goes_res = Fido.search(a.Time("2010-11-02", "2010-11-07"), a.Instrument('goes'))
 goes_res
 
-norh_res = Fido.search(a.Time("2010-11-02", "2010-11-07"), a.Instrument('norh'), a.Wavelength(17 * u.GHz))
+norh_res = Fido.search(a.Time("2010-11-02", "2010-11-07"), a.Instrument('norh'),
+                       a.Wavelength(17 * u.GHz))
 norh_res
 
 
@@ -48,7 +48,8 @@ norh_ts = sunpy.timeseries.TimeSeries(norh_files, source='NoRH', concatenate=Tru
 # Combining
 large_ts = goes_ts.concatenate(norh_ts)
 
-# ToDo: Fix: plot doesn't work, it's of type goes TS and so it doesn't plot non-goes data. Should concanate default to GenericTimeSeries???
+# ToDo: Fix: plot doesn't work, it's of type goes TS and so it doesn't plot
+# non-goes data. Should concanate default to GenericTimeSeries???
 
 ##############################################################################
 # The metadata can be easily viewed:
@@ -72,13 +73,14 @@ large_ts.meta.metadata
 large_ts.meta.time_range
 # Further properties can be used to get lists of details, such as:
 # lists of the values:
-large_ts.meta.timeranges # List of the time ranges
-large_ts.meta.columns    # List of the column names
-large_ts.meta.metas      # List of the meta dictionaries
+large_ts.meta.timeranges  # List of the time ranges
+large_ts.meta.columns  # List of the column names
+large_ts.meta.metas  # List of the meta dictionaries
 
 ##############################################################################
 # When you truncate the TimeSeries, the metadata is truncated too:
-large_trunc_ts = large_ts.truncate(TimeRange('2010-11-03 13:59:57.468999', '2010-11-05 13:59:56.091999'))
+large_trunc_ts = large_ts.truncate(TimeRange('2010-11-03 13:59:57.468999',
+                                             '2010-11-05 13:59:56.091999'))
 print(large_trunc_ts.meta.to_string(2))
 
 ##############################################################################
@@ -102,10 +104,10 @@ large_trunc_ts.meta.get('telescop').values()
 ##############################################################################
 # You can update values similar to dictionaries, though all of the contained
 # MetaDict objects will be updated that match your filter criteria:
-large_trunc_ts.meta.update({'new_key_1':'added to all.'})
-large_trunc_ts.meta.update({'new_key_2':'added to some.'}, colname='xrsa')
+large_trunc_ts.meta.update({'new_key_1': 'added to all.'})
+large_trunc_ts.meta.update({'new_key_2': 'added to some.'}, colname='xrsa')
 print(large_trunc_ts.meta.to_string(2))
 # but you can't overwrite previous entries without setting the overwrite kwarg,
 # this is to protect the integrity of the metadata:
-large_trunc_ts.meta.update({'new_key_1':'changed'}, overwrite=True)
+large_trunc_ts.meta.update({'new_key_1': 'changed'}, overwrite=True)
 print(large_trunc_ts.meta.to_string(2))
