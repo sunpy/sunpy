@@ -4,18 +4,20 @@
 from __future__ import absolute_import
 
 import datetime
-from collections import OrderedDict
+
+import pandas
 import numpy as np
 import matplotlib.pyplot as plt
-import pandas
+from collections import OrderedDict
+
+import astropy.units as u
 
 import sunpy.io
-from sunpy.timeseries.timeseriesbase import GenericTimeSeries
+from sunpy import config
 from sunpy.time import parse_time
 from sunpy.util.metadata import MetaDict
-from sunpy import config
+from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 
-from astropy import units as u
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -54,10 +56,11 @@ class NoRHTimeSeries(GenericTimeSeries):
     _source = 'norh'
 
     def __init__(self, data, header, units, **kwargs):
-        super(NoRHTimeSeries,self).__init__(data, header, units, **kwargs)
+        super(NoRHTimeSeries, self).__init__(data, header, units, **kwargs)
 
     def peek(self, **kwargs):
-        """Plots the NoRH lightcurve TimeSeries
+        """
+        Plots the NoRH lightcurve TimeSeries
 
         .. plot::
 
@@ -82,11 +85,11 @@ class NoRHTimeSeries(GenericTimeSeries):
 
         figure = plt.figure()
         axes = plt.gca()
-        #data_lab=self.meta['OBS-FREQ'][0:2] + ' ' + self.meta['OBS-FREQ'][2:5]
-        data_lab=str(self.meta.get('OBS-FREQ').values()).replace('[','').replace(']','').replace('\'','')
-        axes.plot(self.data.index,self.data,label=data_lab)
+        data_lab = str(self.meta.get('OBS-FREQ').values()).replace('[', '').replace(
+            ']', '').replace('\'', '')
+        axes.plot(self.data.index, self.data, label=data_lab)
         axes.set_yscale("log")
-        axes.set_ylim(1e-4,1)
+        axes.set_ylim(1e-4, 1)
         axes.set_title('Nobeyama Radioheliograph')
         axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
         axes.set_ylabel('Correlation')
@@ -111,19 +114,20 @@ class NoRHTimeSeries(GenericTimeSeries):
 
         # No explicit time array in FITS file, so construct the time array from
         # the FITS header
-        obs_start_time=parse_time(header['DATE-OBS'] + 'T' + header['CRVAL1'])
+        obs_start_time = parse_time(header['DATE-OBS'] + 'T' + header['CRVAL1'])
         length = len(data)
         cadence = np.float(header['CDELT1'])
-        sec_array = np.linspace(0, length-1, int(length/cadence))
+        sec_array = np.linspace(0, length - 1, int(length / cadence))
 
         norh_time = []
         for s in sec_array:
-            norh_time.append(obs_start_time + datetime.timedelta(0,s))
+            norh_time.append(obs_start_time + datetime.timedelta(0, s))
 
         # Add the units data
         units = OrderedDict([('Correlation Coefficient', u.dimensionless_unscaled)])
         # Todo: check units used.
-        return pandas.DataFrame(data, index=norh_time, columns=('Correlation Coefficient',)), header, units
+        return pandas.DataFrame(
+            data, index=norh_time, columns=('Correlation Coefficient', )), header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):
