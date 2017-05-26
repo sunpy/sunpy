@@ -41,14 +41,14 @@ env:
 matrix:
     include:
          # We order the jobs, so the longest running tests are in the top
-         # three positions of the matrix
-         - python: 3.6
-           env: SETUP_CMD='test --online --coverage -V'
-                EVENT_TYPE='push pull_request cron'
-
+         # four positions of the matrix
          - os: osx
            language: generic
            env: PYTHON_VERSION=3.6
+
+         - python: 3.6
+           env: SETUP_CMD='test --online --coverage -V'
+                EVENT_TYPE='push pull_request cron'
 
          - python: 3.6
            env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
@@ -64,6 +64,7 @@ matrix:
          - python: 2.7
            env: SETUP_CMD='build_docs -w'
                 EVENT_TYPE='push pull_request cron'
+                SPHINX_VERSION=1.5.6
 
          # Figure test runs use an env stored in the repo so don't have conda
          # requirements
@@ -74,10 +75,9 @@ matrix:
            env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
 
     allow_failures:
-         # Temporarily allowing it to fail, but remove it from here asap once
-         # the build is passing again
-         - python: 2.7
-           env: SETUP_CMD='build_docs -w'
+         # Net is failing and we really need to fix it sometime
+         - python: 3.6
+           env: SETUP_CMD='test --online --coverage -V'
                 EVENT_TYPE='push pull_request cron'
 
 install:
