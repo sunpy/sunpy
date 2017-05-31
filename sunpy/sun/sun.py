@@ -186,12 +186,12 @@ def apparent_longitude(t='now'):
 def true_latitude(t='now'): # pylint: disable=W0613
     """Returns the true latitude. Never more than 1.2 arcsec from 0,
     set to 0 here."""
-    return 0.0 * u.deg
+    return Latitude(0.0 * u.deg)
 
 
 def apparent_latitude(t='now'): # pylint: disable=W0613
     """Returns the true latitude. Set to 0 here."""
-    return 0.0 * u.deg
+    return Latitude(0.0 * u.deg)
 
 
 def true_obliquity_of_ecliptic(t='now'):
