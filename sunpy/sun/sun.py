@@ -31,30 +31,30 @@ from sunpy.time import parse_time, julian_day, julian_centuries
 from sunpy.sun import constants
 
 __all__ = ["print_params"
-           ,"heliographic_solar_center"
-           ,"solar_north"
-           ,"apparent_declination"
-           ,"apparent_rightascension"
-           ,"apparent_obliquity_of_ecliptic"
-           ,"true_declination"
-           ,"true_rightascension"
-           ,"true_obliquity_of_ecliptic"
-           ,"apparent_latitude"
-           ,"true_latitude"
-           ,"apparent_longitude"
-           ,"sunearth_distance"
-           ,"true_anomaly"
-           ,"true_longitude"
-           ,"equation_of_center"
-           ,"geometric_mean_longitude"
-           ,"carrington_rotation_number"
-           ,"mean_anomaly"
-           ,"longitude_Sun_perigee"
-           ,"mean_ecliptic_longitude"
-           ,"eccentricity_SunEarth_orbit"
-           ,"position"
-           ,"solar_semidiameter_angular_size"
-           ,"solar_cycle_number"]
+           , "heliographic_solar_center"
+           , "solar_north"
+           , "apparent_declination"
+           , "apparent_rightascension"
+           , "apparent_obliquity_of_ecliptic"
+           , "true_declination"
+           , "true_rightascension"
+           , "true_obliquity_of_ecliptic"
+           , "apparent_latitude"
+           , "true_latitude"
+           , "apparent_longitude"
+           , "sunearth_distance"
+           , "true_anomaly"
+           , "true_longitude"
+           , "equation_of_center"
+           , "geometric_mean_longitude"
+           , "carrington_rotation_number"
+           , "mean_anomaly"
+           , "longitude_Sun_perigee"
+           , "mean_ecliptic_longitude"
+           , "eccentricity_SunEarth_orbit"
+           , "position"
+           , "solar_semidiameter_angular_size"
+           , "solar_cycle_number"]
 
 __authors__ = ["Steven Christe"]
 __email__ = "steven.d.christe@nasa.gov"
@@ -84,7 +84,7 @@ def solar_semidiameter_angular_size(t='now'):
 
     """
     solar_semidiameter_rad = (constants.radius.to(u.AU)) / sunearth_distance(t)
-    return Angle(solar_semidiameter_rad.to(u.arcsec, equivalencies = u.dimensionless_angles()))
+    return Angle(solar_semidiameter_rad.to(u.arcsec, equivalencies=u.dimensionless_angles()))
 
 
 def position(t='now'):
@@ -93,7 +93,7 @@ def position(t='now'):
     """
     ra = true_rightascension(t)
     dec = true_declination(t)
-    return (ra, dec)
+    return ra, dec
 
 
 def eccentricity_SunEarth_orbit(t='now'):
@@ -183,13 +183,13 @@ def apparent_longitude(t='now'):
     return Longitude(result)
 
 
-def true_latitude(t='now'): # pylint: disable=W0613
+def true_latitude(t='now'):  # pylint: disable=W0613
     """Returns the true latitude. Never more than 1.2 arcsec from 0,
     set to 0 here."""
     return Latitude(0.0 * u.deg)
 
 
-def apparent_latitude(t='now'): # pylint: disable=W0613
+def apparent_latitude(t='now'):  # pylint: disable=W0613
     """Returns the true latitude. Set to 0 here."""
     return Latitude(0.0 * u.deg)
 
