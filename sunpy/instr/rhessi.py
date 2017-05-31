@@ -20,6 +20,7 @@ from astropy import units as u
 from sunpy.time import TimeRange, parse_time
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.sun.sun import sunearth_distance
+import sunpy.map
 
 from sunpy.extern.six.moves import urllib
 from sunpy.extern.six.moves.urllib.request import urlopen
@@ -288,7 +289,7 @@ def parse_obssumm_file(filename):
     compressed_countrate = np.array(afits[6].data.field('countrate'))
 
     countrate = uncompress_countrate(compressed_countrate)
-    dim = np.array(countrate[:,0]).size
+    dim = np.array(countrate[:, 0]).size
 
     time_array = [reference_time_ut + timedelta(0,time_interval_sec * a) for a in np.arange(dim)]
 
@@ -296,6 +297,7 @@ def parse_obssumm_file(filename):
     data = {'time': time_array, 'data': countrate, 'labels': labels}
 
     return header, data
+
 
 def parse_obssumm_hdulist(hdulist):
     """
@@ -319,21 +321,23 @@ def parse_obssumm_hdulist(hdulist):
     # label_unit = fits[5].data.field('DIM1_UNIT')[0]
     # labels = fits[5].data.field('DIM1_IDS')
     labels = ['3 - 6 keV', '6 - 12 keV', '12 - 25 keV', '25 - 50 keV',
-              '50 - 100 keV', '100 - 300 keV', '300 - 800 keV', '800 - 7000 keV',
-              '7000 - 20000 keV']
+              '50 - 100 keV', '100 - 300 keV', '300 - 800 keV',
+              '800 - 7000 keV', '7000 - 20000 keV']
 
-    # the data stored in the fits file are "compressed" countrates stored as one byte
+    # The data stored in the fits file are "compressed" countrates stored as
+    # one byte
     compressed_countrate = np.array(hdulist[6].data.field('countrate'))
 
     countrate = uncompress_countrate(compressed_countrate)
-    dim = np.array(countrate[:,0]).size
+    dim = np.array(countrate[:, 0]).size
 
     time_array = [reference_time_ut + timedelta(0, time_interval_sec * a) for a in np.arange(dim)]
 
-    #TODO generate the labels for the dict automatically from labels
+    #  TODO generate the labels for the dict automatically from labels
     data = {'time': time_array, 'data': countrate, 'labels': labels}
 
     return header, data
+
 
 def uncompress_countrate(compressed_countrate):
     """Convert the compressed count rate inside of observing summary file from
@@ -373,7 +377,9 @@ def hsi_linecolors():
     ----------
     hsi_linecolors.pro `<http://hesperia.gsfc.nasa.gov/ssw/hessi/idl/gen/hsi_linecolors.pro`_
     """
-    return ('black', 'magenta', 'lime', 'cyan', 'y', 'red', 'blue', 'orange', 'olive')
+    return ('black', 'magenta', 'lime', 'cyan', 'y', 'red', 'blue', 'orange',
+            'olive')
+
 
 def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
                  image_dim=(64, 64)):
@@ -403,8 +409,6 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
     >>> import sunpy.instr.rhessi as rhessi
 
     """
-    afits = fits.open(calibrated_event_list)
-
     # info_parameters = fits[2]
     # detector_efficiency = info_parameters.data.field('cbe_det_eff$$REL')
 
@@ -421,12 +425,12 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
     grid_transmission = afits[fits_detector_index].data.field('gridtran')
     count = afits[fits_detector_index].data.field('count')
 
-    tempa = (np.arange(image_dim[0]*image_dim[1]) %  image_dim[0]) - (image_dim[0]-1)/2.
-    tempb = tempa.reshape(image_dim[0],image_dim[1]).transpose().reshape(image_dim[0]*image_dim[1])
+    tempa = (np.arange(image_dim[0]*image_dim[1]) % image_dim[0]) - (image_dim[0]-1)/2.
+    tempb = tempa.reshape(image_dim[0], image_dim[1]).transpose().reshape(image_dim[0]*image_dim[1])
 
-    pixel = np.array(list(zip(tempa,tempb)))*pixel_size[0]
-    phase_pixel = (2*np.pi/harm_ang_pitch)* ( np.outer(pixel[:,0], np.cos(this_roll_angle - grid_angle)) -
-                                              np.outer(pixel[:,1], np.sin(this_roll_angle - grid_angle))) + phase_map_center
+    pixel = np.array(list(zip(tempa, tempb)))*pixel_size[0]
+    phase_pixel = (2*np.pi/harm_ang_pitch)*(np.outer(pixel[:, 0], np.cos(this_roll_angle - grid_angle)) -
+                                            np.outer(pixel[:, 1], np.sin(this_roll_angle - grid_angle))) + phase_map_center
     phase_modulation = np.cos(phase_pixel)
     gridmod = modamp * grid_transmission
     probability_of_transmission = gridmod*phase_modulation + grid_transmission
@@ -475,14 +479,6 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
         raise ValueError("'{0}' is not a valid pixel_size unit".format(pixel_size.unit))
     if not (isinstance(image_dim, u.Quantity) and image_dim.unit == 'pix'):
         raise ValueError("Must be astropy Quantity in pixels")
-
-    try:
-        import sunpy.data.sample
-    except ImportError:
-        import sunpy.data
-        sunpy.data.download_sample()
-    # This may need to be moved up to data from sample
-    calibrated_event_list = sunpy.data.sample.RHESSI_EVENT_LIST
 
     afits = fits.open(calibrated_event_list)
     info_parameters = afits[2]
