@@ -31,10 +31,10 @@ env:
         - MAIN_CMD='python setup.py'
         - SETUP_CMD='test'
         - CONDA_CHANNELS='astropy astropy-ci-extras conda-forge'
-        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock pyyaml pandas nomkl pytest-cov coverage hypothesis sphinx-gallery'
-        - PIP_DEPENDENCIES='suds-jurko glymur pytest-sugar'
+        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock pyyaml pandas nomkl pytest-cov coverage hypothesis'
+        - PIP_DEPENDENCIES='suds-jurko glymur pytest-sugar sphinx-gallery'
         - EVENT_TYPE='pull_request push'
-        - SPHINX_VERSION='1.5.3'
+        - SPHINX_VERSION='1.5.6'
 
     matrix:
         - SETUP_CMD='egg_info'
