@@ -37,6 +37,7 @@ Latest
   Longitude follows the convention of going from 0-360 degrees.
 * Fix Map parsing of some header values to allow valid float strings like 'nan'
   and 'inf'.
+* Drop support for Python 3.4.
 
 0.7.0
 -----
