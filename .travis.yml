@@ -17,6 +17,7 @@ addons:
 
 python:
     - 2.7
+    - 3.4
     - 3.5
     - 3.6
 
@@ -24,7 +25,7 @@ python:
 env:
     global:
         - COLUMNS=240
-        - PREVIOUS_NUMPY=1.10.4
+        - PREVIOUS_NUMPY=1.11.3
         - NUMPY_VERSION='stable'
         - ASTROPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
@@ -60,10 +61,9 @@ matrix:
          - python: 3.5
            env: NUMPY_VERSION=$PREVIOUS_NUMPY
 
-         - python: 2.7
+         - python: 3.6
            env: SETUP_CMD='build_docs -w'
                 EVENT_TYPE='push pull_request cron'
-                SPHINX_VERSION=1.5.6
 
          # Figure test runs use an env stored in the repo so don't have conda
          # requirements
