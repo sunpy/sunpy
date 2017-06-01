@@ -63,7 +63,7 @@ dependencies installed (with the potential exception of `glymur`).
 
 SunPy has the following strict requirements:
 
-- `Python <http://www.python.org/>`_ 2.7.x, 3.4.x or later
+- `Python <http://www.python.org/>`_ 2.7.x, 3.5.x or later
 
 - `NumPy <http://www.numpy.org/>`_  1.6.0 or later
 
