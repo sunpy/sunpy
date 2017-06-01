@@ -174,7 +174,7 @@ try:
         # execute all examples except those that start with "skip_"
         'filename_pattern': '^((?!skip_).)*$',
         # path to the examples scripts
-        'examples_dirs': '..{}..{}examples'.format(os.sep, os.sep),
+        'examples_dirs': '..{0}..{0}examples'.format(os.sep),
         'gallery_dirs': 'generated{}gallery'.format(os.sep),
         'default_thumb_file': '..{}logo{}sunpy_icon_128x128.png'.format(os.sep, os.sep),
         'reference_url': {
