@@ -1,6 +1,7 @@
 Latest
 ------
 
+* Maps from Helioviewer JPEG2000 files now have correct image scaling.
 * Removed `extract_time` function from `sunpy.time` and also tests related to the function from `sunpy.time.tests`
 * User can now pass a custom time format as an argument inside
   `sunpy.database.add_from_dir()` in case the `date-obs` metadata cannot
@@ -36,6 +37,7 @@ Latest
   Longitude follows the convention of going from 0-360 degrees.
 * Fix Map parsing of some header values to allow valid float strings like 'nan'
   and 'inf'.
+* Drop support for Python 3.4.
 
 0.7.0
 -----

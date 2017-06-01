@@ -10,6 +10,7 @@ from sunpy.cm import cm
 
 __all__ = ['SWAPMap']
 
+
 class SWAPMap(GenericMap):
     """PROBA2 SWAP Image Map.
 
@@ -31,8 +32,8 @@ class SWAPMap(GenericMap):
 
         GenericMap.__init__(self, data, header, **kwargs)
 
-                # It needs to be verified that these must actually be set and are not
-                # already in the header.
+        # It needs to be verified that these must actually be set and
+        # are not already in the header.
         self.meta['detector'] = "SWAP"
 #        self.meta['instrme'] = "SWAP"
         self.meta['obsrvtry'] = "PROBA2"
