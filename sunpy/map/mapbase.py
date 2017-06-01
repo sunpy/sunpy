@@ -693,7 +693,6 @@ scale:\t\t {scale}
                 warnings.warn("Unknown value for " + meta_property.upper(),
                               Warning)
 
-
 # #### Data conversion routines #### #
 
     @u.quantity_input(x=u.deg, y=u.deg)
