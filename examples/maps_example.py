@@ -15,6 +15,8 @@ from __future__ import print_function, division
 import numpy as np
 import astropy.units as u
 
+import matplotlib.pyplot as plt
+
 import sunpy.map
 import sunpy.data.sample
 
@@ -106,3 +108,4 @@ aia_rotated_submap = aia_submap.rotate(angle = 10 * u.deg)
 aia_rotated_submap.peek(draw_limb=True, draw_grid=True)
 # Note: the data array is expanded so that none of the original data is lost
 # through clipping.
+plt.show()
