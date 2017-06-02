@@ -8,10 +8,10 @@
 # pull requests.
 
 # Number of days of inactivity before a pull request becomes stale
-daysUntilStale: 240
+daysUntilStale: 150
 
 # Number of days of inactivity before a stale pull request is closed
-daysUntilClose: 60
+daysUntilClose: 30
 
 # Pull requests with these labels will never be considered stale
 exemptLabels: []
