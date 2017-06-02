@@ -13,9 +13,10 @@ In this example you will be learning how to create and modify SunPy Map objects.
 from __future__ import print_function, division
 
 import numpy as np
-import astropy.units as u
-
 import matplotlib.pyplot as plt
+import astropy.units as u
+from astropy.coordinates import SkyCoord
+
 
 import sunpy.map
 import sunpy.data.sample
@@ -27,7 +28,7 @@ import sunpy.data.sample
 # ``mymap = sunpy.map.Map('file1.fits')``
 # ``mymap = sunpy.map.Map(url_str)``
 # Or using creating manually by using tuple with the data/header within:
-data = np.random.rand(20,15)
+data = np.random.rand(20, 15)
 header = {}
 manual_map = sunpy.map.Map((data, header))
 
@@ -65,10 +66,6 @@ aia_map.peek(draw_limb=True)
 print(aia_map.meta)
 
 ##############################################################################
-# Which allows it to accurately specify ranges:
-print(aia_map.xrange)
-print(aia_map.yrange)
-
 # And find out information about the observation device and date:
 print(aia_map.date)
 print(aia_map.observatory)
@@ -78,33 +75,39 @@ print(aia_map.coordinate_system)
 print(aia_map.measurement)
 
 ##############################################################################
-# To see only a part of the image you create a submap, specifying ranges in
-# AstroPy Quantities:
-rangex = u.Quantity([aia_map.xrange[0], 0 * u.arcsec])
-rangey = u.Quantity([aia_map.yrange[0], 0 * u.arcsec])
-aia_submap = aia_map.submap(rangex, rangey)
+# Maps also hold coordinate objects for the coordinate system they are in.
+print(aia_map.coordinate_frame)
+
+##############################################################################
+# To see only a part of the image you create a submap, by specifying the top
+# left and bottom right corners of the rectangle as either `SkyCoord` or
+# `Quantity` objects.
+bottom_left = aia_map.bottom_left_coord
+top_right = SkyCoord(0 * u.arcsec, 0 * u.arcsec, frame=aia_map.coordinate_frame)
+aia_submap = aia_map.submap(bottom_left, top_right)
 aia_submap.peek(draw_limb=True)
 
 ##############################################################################
 # Similarly, if you want to reduce the angular resolution of the map you can use
-# the `~sunpy.map.GenericMap.resample` method, specifying the dimensions as an Astropy Quantity in pixels:
+# the `~sunpy.map.GenericMap.resample` method, specifying the dimensions as an
+# Astropy Quantity in pixels:
 dimensions = u.Quantity([50, 50], u.pixel)
 aia_resampled_map = aia_map.resample(dimensions)
 aia_resampled_map.peek(draw_limb=True, draw_grid=True)
 
 ##############################################################################
-# Similar to resampling you can use the `~sunpy.map.GenericMap.superpixel` method, this will reduce the
-# resolution of the image by combining the number of pixels (in each dimension)
-# in the dimensions argument into one single pixel.
-# This can be used to increase the signal to noise ratio.
-# For this the new dimensions must divide original image size exactly.
+# Similar to resampling you can use the `~sunpy.map.GenericMap.superpixel`
+# method, this will reduce the resolution of the image by combining the number
+# of pixels (in each dimension) in the dimensions argument into one single
+# pixel. This can be used to increase the signal to noise ratio. For this the
+# new dimensions must divide original image size exactly.
 dimensions = u.Quantity(aia_map.dimensions) / 16
 aia_superpixel_map = aia_map.superpixel(dimensions)
 aia_superpixel_map.peek(draw_limb=True)
 
 ##############################################################################
 # Maps can also be rotated using the `~sunpy.map.GenericMap.rotate` method:
-aia_rotated_submap = aia_submap.rotate(angle = 10 * u.deg)
+aia_rotated_submap = aia_submap.rotate(angle=10 * u.deg)
 aia_rotated_submap.peek(draw_limb=True, draw_grid=True)
 # Note: the data array is expanded so that none of the original data is lost
 # through clipping.

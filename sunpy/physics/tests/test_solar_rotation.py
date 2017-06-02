@@ -9,6 +9,7 @@ import pytest
 import numpy as np
 from numpy.testing import assert_allclose
 
+from astropy.coordinates import SkyCoord
 import astropy.units as u
 
 import sunpy.data.test
@@ -25,7 +26,8 @@ def aia171_test_map():
 
 @pytest.fixture
 def aia171_test_submap(aia171_test_map):
-    return aia171_test_map.submap((0, 400)*u.arcsec, (0, 500)*u.arcsec)
+    return aia171_test_map.submap(SkyCoord(((0, 0), (400, 500))*u.arcsec,
+                                           frame=aia171_test_map.coordinate_frame))
 
 
 @pytest.fixture
