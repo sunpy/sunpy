@@ -63,8 +63,9 @@ files = vc.get(res).wait()
 ##############################################################################
 # Create a dictionary with the two maps, cropped down to full disk.
 
-maps = {m.detector: m.submap((-1100, 1100) * u.arcsec,
-                             (-1100, 1100) * u.arcsec) for m in sunpy.map.Map(files)}
+maps = {m.detector: m.submap(SkyCoord([-1100, 1100], [-1100, 1100],
+                                      unit=u.arcsec, frame=m.coordinate_frame))
+        for m in sunpy.map.Map(files)}
 
 
 ##############################################################################
