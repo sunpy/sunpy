@@ -70,4 +70,5 @@ $RECYCLE.BIN/
 *.msm
 *.msp
 
-
+# VScode
+.vscode
