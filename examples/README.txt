@@ -1,7 +1,14 @@
+.. _examples:
 
-.. _tutorials:
+Example Gallery
+---------------
 
-Tutorials and Guides
-####################
+This gallery contains some examples of how to use SunPy. Most of these examples
+require the SunPy sample data, which you can download by running::
 
-This section contains longer worked guides or tutorials.
+     >>> import sunpy.data
+     >>> sunpy.data.download_sample_data()
+
+Once downloaded the data will be stored in your user directory and you will not
+need to download it again.
+
