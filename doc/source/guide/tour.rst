@@ -38,33 +38,31 @@ This returns a map named `aia` which can be manipulated with standard SunPy map 
 For more information about maps checkout the :doc:`map guide <data_types/maps>`
 and the :ref:`map`.
 
-Lightcurve
+TimeSeries
 ----------
 
 SunPy handles time series data, fundamental to the study of any real world phenomenon,
-by creating a lightcurve object. A lightcurve consists of two parts; times and measurements taken at those times. The
+by creating a TimeSeries object. A timeseries consists of two parts; times and measurements taken at those times. The
 data can either be in your current Python session, alternatively within a local or
-remote file. Let's create some fake data and pass it into a lightcurve object.
+remote file. Let's create some fake data and pass it into a timeseries object.
 
 .. plot::
     :include-source:
 
     import numpy as np
     import sunpy.data.sample
-    from sunpy.lightcurve import LightCurve
-    times = np.arange(1000) * 2.0
-    signal = np.sin(np.arange(1000)*0.02 ) + np.random.random(1000)
-    light_curve = LightCurve.create({"signal": signal},index = times)
-    light_curve.peek()
+    import sunpy.timeseries as ts
 
-Within LightCurve.create, we have a dictionary that contains a single entry with key
-"signal" containing a list of 1000 entries (0-999). The accompanying set of times is
-passed in via the index keyword argument. If no times are passed into index, a default
-set of time indices is generated.
+    my_timeseries = ts.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='XRS')
+    my_timeseries.peek()
 
-For more information about lightcurves, check out the
-:doc:`lightcurve guide <data_types/lightcurve>` and the
-and the :ref:`lightcurve_code_ref`.
+We've created this timeseries object by passing TimeSeries a string which represent the name of a GOES lightcurve file.
+The ``.peek()`` method plots the timeseries data and displays the plot with some default settings.
+You can also use ``my_timeseries.plot()`` if you want more control over the style of the output plot.
+
+For more information about TimeSeries, check out the
+:doc:`timeseries guide <data_types/timeseries>` and the
+and the :ref:`timeseries_code_ref`.
 
 .. this should be a better example, for example grabbing goes data...
 
