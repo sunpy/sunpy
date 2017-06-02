@@ -90,8 +90,9 @@ and the :ref:`spectra_code_ref`.
 Plotting
 --------
 
-SunPy uses a matplotlib like interface to it's plotting so more complex
+SunPy uses a matplotlib-like interface to its plotting so more complex
 plots can be built by combining SunPy with matplotlib.
+If you're not familiar with plotting in matplotlib, you should `learn the basics <http://matplotlib.org/users/tutorials.html>`__ before continuing with this guide.
 
 Let's begin by creating a simple plot of an AIA image. To make things easy,
 SunPy includes several example files which are used throughout the docs. These
