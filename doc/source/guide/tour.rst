@@ -31,6 +31,7 @@ a Map from one of the supported data products is with the `~sunpy.map.map()` fun
 
     import sunpy.data.sample
     import sunpy.map
+    
     aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     aia.peek()
 
@@ -79,6 +80,7 @@ an international network of Solar Radio Spectrometers, is a specific example.
     import sunpy.spectra
     import sunpy.data.sample
     from sunpy.spectra.sources.callisto import CallistoSpectrogram
+
     image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_IMAGE)
     image.peek()
 
@@ -102,6 +104,7 @@ Try typing the below example into your interactive Python shell.
 
     import sunpy.map
     import sunpy.data.sample
+
     aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     aia.peek()
 
@@ -123,12 +126,15 @@ plots can be built by combining SunPy with matplotlib.
     import sunpy.map
     import matplotlib.pyplot as plt
     import sunpy.data.sample
+
     aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     fig = plt.figure()
     ax = plt.subplot(111, projection=aia)
     aia.plot()
     aia.draw_limb()
+    aia.draw_grid()
     plt.colorbar()
+    aia.draw_limb()
     plt.show()
 
 For more information check out :ref:`plotting`.
