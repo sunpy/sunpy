@@ -93,11 +93,11 @@ def test_plot_aia171_nowcsaxes(aia171_test_map):
 @figure_test
 def test_rectangle_aia171(aia171_test_map):
     aia171_test_map.plot()
-    bottom = SkyCoord(
+    bottom_left = SkyCoord(
         0 * u.arcsec, 0 * u.arcsec, frame=aia171_test_map.coordinate_frame)
     w = 100 * u.arcsec
     h = 100 * u.arcsec
-    aia171_test_map.draw_rectangle(bottom, w, h)
+    aia171_test_map.draw_rectangle(bottom_left, w, h)
 
 
 @figure_test

@@ -329,7 +329,7 @@ class Helioprojective(BaseCoordinateFrame):
 
     def calculate_distance(self):
         """
-        This method calculates the third coordnate of the Helioprojective
+        This method calculates the third coordinate of the Helioprojective
         frame. It assumes that the coordinate point is on the disk of the Sun
         at the rsun radius.
 
@@ -349,7 +349,7 @@ class Helioprojective(BaseCoordinateFrame):
         lat, lon = rep.lat, rep.lon
         alpha = np.arccos(np.cos(lat) * np.cos(lon)).to(lat.unit)
         c = self.observer.radius**2 - self.rsun**2
-        b = -2 * self.observer.radius.to(u.m) * np.cos(alpha)
+        b = -2 * self.observer.radius * np.cos(alpha)
         d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2
         return self.realize_frame(SphericalWrap180Representation(lon=lon,
                                                                  lat=lat,

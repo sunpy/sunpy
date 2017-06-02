@@ -8,7 +8,8 @@ from astropy.coordinates import SkyCoord
 
 
 def test_hpc_hpc():
-    # Use some unphysical values for solar parameters for testing
+    # Use some unphysical values for solar parameters for testing, to make it
+    # easier to calculate expected results.
     rsun = 1*u.m
     D0 = 1*u.km
     L0 = 1*u.deg
@@ -33,7 +34,8 @@ def test_hpc_hpc():
 
 
 def test_hpc_hpc_sc():
-    # Use some unphysical values for solar parameters for testing
+    # Use some unphysical values for solar parameters for testing, to make it
+    # easier to calculate expected results.
     rsun = 1*u.m
     D0 = 1*u.km
     L0 = 1*u.deg
@@ -59,4 +61,3 @@ def test_hpc_hpc_null():
     assert quantity_allclose(hpc_new.Tx, hpc_in.Tx)
     assert quantity_allclose(hpc_new.Ty, hpc_in.Ty)
     assert hpc_out.observer == hpc_new.observer
-
