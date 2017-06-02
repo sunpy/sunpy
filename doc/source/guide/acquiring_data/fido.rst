@@ -1,0 +1,68 @@
+-----------------------------
+Downloading Data using Fido
+-----------------------------
+
+This guide outlines how to search for and download data using SunPy's
+Federated Internet Data Obtainer...or more usually (and
+sanely) referred to as Fido.  Fido is a unified API for seeking
+and downloading solar physics data irrespective of the underlining
+client or webservice through which the data is obtained, e.g. VSO,
+JSOC etc.  It therefore supplies a single easy and consistent way to
+obtain most forms of solar physics.
+
+Setup
+-----
+
+SunPy's Fido module is in ``sunpy.net``.  It can be imported as follows:
+
+    >>> from sunpy.net import Fido
+
+Searching for Data Using Fido
+-----------------------
+
+To search for data with Fido, your query needs at minimum a start time,
+an end time, and an instrument.  Enter these properties using SunPy's
+attrs module.
+
+    >>> from sunpy.net import attrs as a
+    >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra'))
+
+This returns an UnifiedResponse object containing information on the
+available online files which fit the criteria specified by the attrs
+objects in the above call.  It does not download the files.  For
+downloading, see the Downloading Data with Fido section below.
+
+To see a summary of results of our query, simple type the name of the
+variable set to the Fido search, in this case, unifresp.
+
+    >>> unifresp
+    
+Queries can be made more flexible or specific by adding more attrs
+objects to the Fido search.  Specific passbands taken with given
+instruments can be searched for by supplying an astropy Quantity to
+the Wavelength attribute.
+
+    >>> import astropy.units as u
+    >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('norh'), a.Wavelength(17*u.GHz))
+
+Data of a given cadence can also be specified using the Sample
+attribute.
+
+    >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'), a.Wavelength(171*u.angstrom, a.Sample(10*u.minute)))
+
+To search for data from multiple instruments use the pipe ``|``
+operator.  This joins queries together just as the logical ``OR``
+operator would.
+
+    >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra') | a.Instrument("rhessi"))
+    
+Downloading data
+----------------
+Once you have located your files via a ```Fido.search```, you can download
+them via ```Fido.fetch```
+
+    >>> downresp = Fido.fetch(unifresp)
+
+This downloads the files to the location set in you sunpy config
+file.  It also returns a list ```downresp```, of absolute file paths
+of where the files have been downloaded to.
