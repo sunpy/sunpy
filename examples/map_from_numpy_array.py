@@ -16,6 +16,7 @@ import numpy as np
 
 import sunpy.map
 import sunpy.data.sample
+import matplotlib.pyplot as plt
 
 ##############################################################################
 # SunPy Maps store 2D data in a numpy array and additional data in a metadata
@@ -36,3 +37,4 @@ print(manual_map.coordinate_system)
 ##############################################################################
 # You can quickly plot a map using the peek method:
 manual_map.peek()
+plt.show()
