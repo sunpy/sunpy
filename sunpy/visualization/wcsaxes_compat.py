@@ -145,14 +145,14 @@ def default_wcs_grid(axes, units, ctypes):
     y.set_coord_type(*solar_coord_type_from_ctype(ctypes[1]))
 
     if units[0] is u.deg:
-        x.set_major_formatter('dd')
+        x.set_major_formatter('d.d')
     elif units[0] is u.arcsec:
         x.set_major_formatter('s.s')
     else:
         x.set_major_formatter('x.x')
 
     if units[1] is u.deg:
-        y.set_major_formatter('dd')
+        y.set_major_formatter('d.d')
     elif units[1] is u.arcsec:
         y.set_major_formatter('s.s')
     else:

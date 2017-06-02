@@ -25,7 +25,7 @@ def solar_wcs_frame_mapping(wcs):
         observer = None
 
     # First we try the Celestial sub, which rectifies the order.
-    # It will return any thing matching ??LN*, ??LT*
+    # It will return anything matching ??LN*, ??LT*
     wcss = wcs.sub([WCSSUB_CELESTIAL])
 
     # If the SUB works, use it.
