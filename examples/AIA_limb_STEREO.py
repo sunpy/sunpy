@@ -132,3 +132,4 @@ y.set_major_formatter('s.s')
 # Add axes labels
 x.set_axislabel("Helioprojective Longitude (SDO) [arcsec]")
 y.set_axislabel("Helioprojective Latitude (SDO) [arcsec]")
+plt.show()
