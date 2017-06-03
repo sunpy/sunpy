@@ -13,8 +13,10 @@ In this example you will be learning how to create and modify SunPy Map objects.
 from __future__ import print_function, division
 
 import numpy as np
+import matplotlib.pyplot as plt
 import astropy.units as u
 from astropy.coordinates import SkyCoord
+
 
 import sunpy.map
 import sunpy.data.sample
@@ -109,3 +111,4 @@ aia_rotated_submap = aia_submap.rotate(angle=10 * u.deg)
 aia_rotated_submap.peek(draw_limb=True, draw_grid=True)
 # Note: the data array is expanded so that none of the original data is lost
 # through clipping.
+plt.show()

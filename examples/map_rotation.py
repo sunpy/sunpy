@@ -14,6 +14,8 @@ from __future__ import print_function, division
 
 import astropy.units as u
 
+import matplotlib.pyplot as plt
+
 import sunpy.map
 import sunpy.data.sample
 
@@ -42,3 +44,4 @@ aia_rotated = aia_map.rotate(angle = 0.5 * u.rad)
 # through clipping.
 # Also note that subsequent rotations are not compunded, the map is only rotated
 # by the specified amount from the original maps orientation.
+plt.show()

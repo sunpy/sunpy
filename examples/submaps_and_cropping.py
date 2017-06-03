@@ -17,6 +17,7 @@ from astropy.coordinates import SkyCoord
 
 import sunpy.map
 import sunpy.data.sample
+import matplotlib.pyplot as plt
 
 ##############################################################################
 # Sunpy sample data contains a number of suitable maps, where the sunpy.data.sample.NAME
@@ -40,3 +41,4 @@ top_right = SkyCoord(0*u.arcsec, -200 * u.arcsec, frame=swap_map.coordinate_fram
 bottom_left = SkyCoord(-900 * u.arcsec, -900 * u.arcsec, frame=swap_map.coordinate_frame)
 swap_submap = swap_map.submap(bottom_left, top_right)
 swap_submap.peek(draw_limb=True, draw_grid=True)
+plt.show()
