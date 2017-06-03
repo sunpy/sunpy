@@ -175,8 +175,8 @@ def parse_time(time_string, time_format=''):
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
     datetime.datetime(2005, 8, 4, 0, 1, 2)
     """
-    if isinstance(time_string, pandas.tslib.Timestamp):
-    	return time_string.to_datetime()
+    if isinstance(time_string, pandas.Timestamp):
+        return time_string.to_pydatetime()
     elif isinstance(time_string, datetime) or time_format == 'datetime':
         return time_string
     elif isinstance(time_string, tuple):
