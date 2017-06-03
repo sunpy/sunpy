@@ -40,7 +40,7 @@ def aia171_test_map_with_mask(aia171_test_map):
     mask[0:shape[0] // 2, 0:shape[1] // 2] = True
     return sunpy.map.Map(np.ma.array(
         aia171_test_map.data, mask=mask),
-                         aia171_test_map.meta)
+        aia171_test_map.meta)
 
 
 @figure_test

@@ -291,7 +291,7 @@ def parse_obssumm_file(filename):
     countrate = uncompress_countrate(compressed_countrate)
     dim = np.array(countrate[:, 0]).size
 
-    time_array = [reference_time_ut + timedelta(0,time_interval_sec * a) for a in np.arange(dim)]
+    time_array = [reference_time_ut + timedelta(0, time_interval_sec * a) for a in np.arange(dim)]
 
     # TODO generate the labels for the dict automatically from labels
     data = {'time': time_array, 'data': countrate, 'labels': labels}
@@ -416,8 +416,8 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
 
     fits_detector_index = detector + 2
     detector_index = detector - 1
-    grid_angle = np.pi/2. - grid_orientation[detector_index]
-    harm_ang_pitch = grid_pitch[detector_index]/1
+    grid_angle = np.pi / 2. - grid_orientation[detector_index]
+    harm_ang_pitch = grid_pitch[detector_index] / 1
 
     phase_map_center = afits[fits_detector_index].data.field('phase_map_ctr')
     this_roll_angle = afits[fits_detector_index].data.field('roll_angle')
@@ -425,15 +425,15 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
     grid_transmission = afits[fits_detector_index].data.field('gridtran')
     count = afits[fits_detector_index].data.field('count')
 
-    tempa = (np.arange(image_dim[0]*image_dim[1]) % image_dim[0]) - (image_dim[0]-1)/2.
-    tempb = tempa.reshape(image_dim[0], image_dim[1]).transpose().reshape(image_dim[0]*image_dim[1])
+    tempa = (np.arange(image_dim[0] * image_dim[1]) % image_dim[0]) - (image_dim[0] - 1) / 2.
+    tempb = tempa.reshape(image_dim[0], image_dim[1]).transpose().reshape(image_dim[0] * image_dim[1])
 
-    pixel = np.array(list(zip(tempa, tempb)))*pixel_size[0]
-    phase_pixel = (2*np.pi/harm_ang_pitch)*(np.outer(pixel[:, 0], np.cos(this_roll_angle - grid_angle)) -
-                                            np.outer(pixel[:, 1], np.sin(this_roll_angle - grid_angle))) + phase_map_center
+    pixel = np.array(list(zip(tempa, tempb))) * pixel_size[0]
+    phase_pixel = (2 * np.pi / harm_ang_pitch) * (np.outer(pixel[:, 0], np.cos(this_roll_angle - grid_angle)) - np.outer(
+        pixel[:, 1], np.sin(this_roll_angle - grid_angle))) + phase_map_center
     phase_modulation = np.cos(phase_pixel)
     gridmod = modamp * grid_transmission
-    probability_of_transmission = gridmod*phase_modulation + grid_transmission
+    probability_of_transmission = gridmod * phase_modulation + grid_transmission
     bproj_image = np.inner(probability_of_transmission, count).reshape(image_dim)
 
     return bproj_image
@@ -489,7 +489,7 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
 
     # find out what detectors were used
     det_index_mask = afits[1].data.field('det_index_mask')[0]
-    detector_list = (np.arange(9)+1) * np.array(det_index_mask)
+    detector_list = (np.arange(9) + 1) * np.array(det_index_mask)
     for detector in detector_list:
         if detector > 0:
             image = image + _backproject(calibrated_event_list, detector=detector, pixel_size=pixel_size.value,
@@ -500,13 +500,13 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
         "CDELT1": pixel_size[0],
         "NAXIS1": image_dim[0],
         "CRVAL1": xyoffset[0],
-        "CRPIX1": image_dim[0].value/2 + 0.5,
+        "CRPIX1": image_dim[0].value / 2 + 0.5,
         "CUNIT1": "arcsec",
         "CTYPE1": "HPLN-TAN",
         "CDELT2": pixel_size[1],
         "NAXIS2": image_dim[1],
         "CRVAL2": xyoffset[1],
-        "CRPIX2": image_dim[0].value/2 + 0.5,
+        "CRPIX2": image_dim[0].value / 2 + 0.5,
         "CUNIT2": "arcsec",
         "CTYPE2": "HPLT-TAN",
         "HGLT_OBS": 0,

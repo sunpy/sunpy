@@ -121,6 +121,7 @@ class VotableInterceptor(suds.plugin.MessagePlugin):
     '''
     Adapted example from http://stackoverflow.com/questions/15259929/configure-suds-to-use-custom-response-xml-parser-for-big-response-payloads
     '''
+
     def __init__(self, *args, **kwargs):
         self.last_payload = None
 

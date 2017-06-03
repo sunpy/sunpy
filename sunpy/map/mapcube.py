@@ -1,6 +1,6 @@
 """A Python MapCube Object"""
 from __future__ import absolute_import, division, print_function
-#pylint: disable=W0401,W0614,W0201,W0212,W0404
+# pylint: disable=W0401,W0614,W0201,W0212,W0404
 
 from copy import deepcopy
 
@@ -49,7 +49,8 @@ class MapCube(object):
 
     Mapcubes can be co-aligned using the routines in sunpy.image.coalignment.
     """
-    #pylint: disable=W0613,E1101
+    # pylint: disable=W0613,E1101
+
     def __init__(self, *args, **kwargs):
         """Creates a new Map instance"""
 
@@ -62,7 +63,7 @@ class MapCube(object):
         for m in self.maps:
             if not isinstance(m, GenericMap):
                 raise ValueError(
-                           'MapCube expects pre-constructed map objects.')
+                    'MapCube expects pre-constructed map objects.')
 
         # Optionally sort data
         if sortby is not None:
@@ -91,7 +92,7 @@ class MapCube(object):
     # Sorting methods
     @classmethod
     def _sort_by_date(cls):
-        return lambda m: m.date # maps.sort(key=attrgetter('date'))
+        return lambda m: m.date  # maps.sort(key=attrgetter('date'))
 
     def _derotate(self):
         """Derotates the layers in the MapCube"""
@@ -170,7 +171,7 @@ class MapCube(object):
         fig = axes.get_figure()
 
         if not plot_function:
-            plot_function = lambda fig, ax, smap: []
+            def plot_function(fig, ax, smap): return []
         removes = []
 
         # Normal plot

@@ -97,7 +97,7 @@ Parent._create.add(
     run_cls('from_single_glob'),
     lambda cls, singlepattern: ('*' in singlepattern and
                                 len(glob.glob(
-                                os.path.expanduser(singlepattern))) == 1),
+                                    os.path.expanduser(singlepattern))) == 1),
     [type, six.string_types], check=False
 )
 # This case only gets executed under the condition that the previous one wasn't.
@@ -107,7 +107,7 @@ Parent._create.add(
     run_cls('from_glob'),
     lambda cls, pattern: '*' in pattern and glob.glob(
         os.path.expanduser(pattern)
-        ),
+    ),
     [type, six.string_types], check=False
 )
 Parent._create.add(

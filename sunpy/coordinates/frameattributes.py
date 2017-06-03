@@ -10,6 +10,7 @@ from sunpy.time import parse_time
 
 __all__ = ['TimeFrameAttributeSunPy']
 
+
 class TimeFrameAttributeSunPy(TimeFrameAttribute):
     """
     Frame attribute descriptor for quantities that are Time objects.
@@ -29,6 +30,7 @@ class TimeFrameAttributeSunPy(TimeFrameAttribute):
     frame_attr : descriptor
         A new data descriptor to hold a frame attribute
     """
+
     def convert_input(self, value):
         """
         Convert input value to a Time object and validate by running through the
@@ -80,4 +82,3 @@ class TimeFrameAttributeSunPy(TimeFrameAttribute):
                              .format(self.name, value))
 
         return out, converted
-

@@ -43,6 +43,7 @@ class TimeRange(object):
     >>> time_range = TimeRange('2010/03/04 00:10', 400 * u.s)
     >>> time_range = TimeRange('2010/03/04 00:10', 400 * u.day)
     """
+
     def __init__(self, a, b=None):
         """Creates a new TimeRange instance"""
         # If a is a TimeRange object, copy attributes to new instance.

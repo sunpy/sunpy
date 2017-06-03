@@ -138,7 +138,7 @@ def matches_signature(fun, a, kw):
     # in fun's signature.
     if keywords is None and skw - sargs != set():
         return False
-    rest = set(args[len(a):])  - set(kw)
+    rest = set(args[len(a):]) - set(kw)
 
     # If there are any arguments that weren't passed but do not have
     # defaults, the signature does not match.
@@ -190,13 +190,13 @@ class ConditionalDispatch(object):
         matched = False
         for fun, condition, types in self.funcs:
             if (matches_signature(condition, args, kwargs) and
-                (types is None or matches_types(condition, types, args, kwargs))):
+                    (types is None or matches_types(condition, types, args, kwargs))):
                 matched = True
                 if condition(*args, **kwargs):
                     return fun(*args, **kwargs)
         for fun, types in self.nones:
             if (matches_signature(fun, args, kwargs) and
-                (types is None or matches_types(fun, types, args, kwargs))):
+                    (types is None or matches_types(fun, types, args, kwargs))):
                 return fun(*args, **kwargs)
 
         if matched:
@@ -247,11 +247,11 @@ class ConditionalDispatch(object):
     def generate_docs(self):
         fns = (item[0] for item in chain(self.funcs, self.nones))
         return '\n\n'.join("{0} -> :py:meth:`{1}`".format(sig, fun.__name__)
-            for sig, fun in
-            # The 1 prevents the cls from incorrectly being shown in the
-            # documentation.
-            zip(self.get_signatures("create", -1), fns)
-        )
+                           for sig, fun in
+                           # The 1 prevents the cls from incorrectly being shown in the
+                           # documentation.
+                           zip(self.get_signatures("create", -1), fns)
+                           )
 
 
 def fmt_argspec_types(fun, types, start=0):

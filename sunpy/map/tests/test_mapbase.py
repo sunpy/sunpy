@@ -497,7 +497,7 @@ def test_rotate(aia171_test_map):
 
 
 def test_rotate_pad_crpix(generic_map):
-    rotated_map = generic_map.rotate(30*u.deg)
+    rotated_map = generic_map.rotate(30 * u.deg)
     # This tests that the reference pixel of the map is in the expected place.
     assert rotated_map.data.shape != generic_map.data.shape
     assert_quantity_allclose(u.Quantity(rotated_map.reference_pixel),

@@ -5,6 +5,7 @@ from sunpy.extern.six.moves import range
 
 __all__ = ['TTYProgressBar']
 
+
 class TTYProgressBar(object):
     """
     A simple progress bar to visualize progress on a TTY (teletypewriter).
@@ -42,10 +43,10 @@ class TTYProgressBar(object):
         """
         self.output.write(
             self.LEFT_BORDER + " " * (len(self.SYMBOL) * self.width) +
-                self.RIGHT_BORDER
+            self.RIGHT_BORDER
         )
         self.output.flush()
-        self.output.write("\b" * (self.width+len(self.RIGHT_BORDER)))
+        self.output.write("\b" * (self.width + len(self.RIGHT_BORDER)))
 
     def finish(self):
         """

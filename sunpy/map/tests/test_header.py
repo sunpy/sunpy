@@ -5,26 +5,28 @@ from sunpy.util.metadata import MetaDict
 #==============================================================================
 # Test, read, get_header and write through the file independent layer
 #==============================================================================
+
+
 def test_upcasing():
-    meta = MetaDict({'wibble':1, 'WOBBLE':2})
+    meta = MetaDict({'wibble': 1, 'WOBBLE': 2})
     #__getitem__
     assert meta['wibble'] == meta['WIBBLE']
-    #get
+    # get
     assert meta.get('wibble') == meta.get('WIBBLE')
-    #has_key
+    # has_key
     assert ('wibble' in meta) == ('WIBBLE' in meta)
-    #Copy
+    # Copy
     meta2 = meta.copy()
     assert meta2 == meta
-    #pop
+    # pop
     assert meta.pop('wibble') == meta2.pop('WIBBLE')
-    #update
-    meta.update({'spam':'eggs'})
-    meta2.update({'SPAM':'eggs'})
+    # update
+    meta.update({'spam': 'eggs'})
+    meta2.update({'SPAM': 'eggs'})
     assert meta == meta2
-    #setdefault
-    meta.setdefault('dave',3)
-    meta2.setdefault('DAVE',3)
+    # setdefault
+    meta.setdefault('dave', 3)
+    meta2.setdefault('DAVE', 3)
     assert meta.get('DAVE') == meta2.get('dave')
     #__setitem__
     meta['wibble'] = 10

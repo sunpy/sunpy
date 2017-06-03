@@ -197,7 +197,7 @@ def test_entries_from_file_time_string_parse_format():
         entries = list(entries_from_file(GOES_DATA))
 
     entries = list(entries_from_file(GOES_DATA,
-                   time_string_parse_format='%d/%m/%Y'))
+                                     time_string_parse_format='%d/%m/%Y'))
 
     assert len(entries) == 4
     entry = entries[0]

@@ -466,7 +466,7 @@ class VSOClient(object):
         -------
         out : :py:class:`QueryResult` (enhanced list) of matched items. Return value of same type as the one of :py:class:`VSOClient.query`.
         """
-        sdk = lambda key: lambda value: {key: value}
+        def sdk(key): return lambda value: {key: value}
         ALIASES = {
             'wave_min': sdk('wave_wavemin'),
             'wave_max': sdk('wave_wavemax'),

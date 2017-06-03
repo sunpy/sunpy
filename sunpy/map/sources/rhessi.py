@@ -1,6 +1,6 @@
 """RHESSI Map subclass definitions"""
 from __future__ import absolute_import, print_function, division
-#pylint: disable=W0221,W0222,E1121
+# pylint: disable=W0221,W0222,E1121
 
 __author__ = "Steven Christe"
 __email__ = "steven.d.christe@nasa.gov"

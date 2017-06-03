@@ -58,49 +58,49 @@ a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
 
 @pytest.fixture
 def eve_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='EVE')
+    # ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='EVE')
     return sunpy.timeseries.TimeSeries(eve_filepath, source='EVE')
 
 
 @pytest.fixture
 def fermi_gbm_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='GBMSummary')
+    # ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='GBMSummary')
     return sunpy.timeseries.TimeSeries(fermi_gbm_filepath, source='GBMSummary')
 
 
 @pytest.fixture
 def norh_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NoRH')
+    # ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NoRH')
     return sunpy.timeseries.TimeSeries(norh_filepath, source='NoRH')
 
 
 @pytest.fixture
 def goes_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='XRS')
+    # ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='XRS')
     return sunpy.timeseries.TimeSeries(goes_filepath, source='XRS')
 
 
 @pytest.fixture
 def lyra_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='LYRA')
+    # ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='LYRA')
     return sunpy.timeseries.TimeSeries(lyra_filepath, source='LYRA')
 
 
 @pytest.fixture
 def rhessi_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='RHESSI')
+    # ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='RHESSI')
     return sunpy.timeseries.TimeSeries(rhessi_filepath, source='RHESSI')
 
 
 @pytest.fixture
 def noaa_ind_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAIndices')
+    # ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAIndices')
     return sunpy.timeseries.TimeSeries(noaa_ind_filepath, source='NOAAIndices')
 
 
 @pytest.fixture
 def noaa_pre_test_ts():
-    #ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAPredictIndices')
+    # ToDo: return sunpy.timeseries.TimeSeries(os.path.join(testpath, filename), source='NOAAPredictIndices')
     return sunpy.timeseries.TimeSeries(
         noaa_pre_filepath, source='NOAAPredictIndices')
 
@@ -139,7 +139,7 @@ def table_ts():
         [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)])
     intensity = u.Quantity(
         np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60)))), u.W / u.m
-        **2)
+        ** 2)
 
     # Create the units and meta objects
     units = OrderedDict([('intensity', u.W / u.m**2)])
@@ -766,6 +766,6 @@ def test_ts_sort_index(generic_ts):
 #_validate_meta
 
 # ToDo:
-###Extracting column as quantity or array#ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
-###Updating a column using quantity or array#ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
-###Updating the units# ts_eve = ts_eve.add_column(colname, qua_new, unit=unit, overwrite=True)
+# Extracting column as quantity or array#ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
+# Updating a column using quantity or array#ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
+# Updating the units# ts_eve = ts_eve.add_column(colname, qua_new, unit=unit, overwrite=True)

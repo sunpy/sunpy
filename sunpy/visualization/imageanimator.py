@@ -283,12 +283,12 @@ class BaseFuncAnimator(object):
         elif event.key == 'right':
             self._step(self.sliders[self.active_slider]._slider)
         elif event.key == 'up':
-            self._set_active_slider((self.active_slider+1)%self.num_sliders)
+            self._set_active_slider((self.active_slider + 1) % self.num_sliders)
         elif event.key == 'down':
-            self._set_active_slider((self.active_slider-1)%self.num_sliders)
+            self._set_active_slider((self.active_slider - 1) % self.num_sliders)
         elif event.key == 'p':
             self._click_slider_button(event, self.slider_buttons[self.active_slider]._button,
-                               self.sliders[self.active_slider]._slider)
+                                      self.sliders[self.active_slider]._slider)
 
 # =============================================================================
 #   Active Slider methods
@@ -325,13 +325,13 @@ class BaseFuncAnimator(object):
         large_pad_size = Size.Fraction(0.1, Size.AxesY(self.axes))
 
         # Define size of useful axes cells, 50% each in x 20% for buttons in y.
-        small_x = Size.Fraction((1.-2.*pad)/10, Size.AxesX(self.axes))
-        ysize = Size.Fraction((1.-2.*pad)/15., Size.AxesY(self.axes))
+        small_x = Size.Fraction((1. - 2. * pad) / 10, Size.AxesX(self.axes))
+        ysize = Size.Fraction((1. - 2. * pad) / 15., Size.AxesY(self.axes))
 
         # Set up grid, 3x3 with cells for padding.
         if self.num_buttons > 0:
-            xsize = Size.Fraction((1.-2.*pad)/self.num_buttons, Size.AxesX(self.axes))
-            horiz = [xsize] + [pad_size, xsize]*(self.num_buttons-1) + \
+            xsize = Size.Fraction((1. - 2. * pad) / self.num_buttons, Size.AxesX(self.axes))
+            horiz = [xsize] + [pad_size, xsize] * (self.num_buttons - 1) + \
                     [Size.Fraction(0.1, Size.AxesY(self.axes)), small_x]
             vert = [ysize, pad_size] * self.num_sliders + \
                    [large_pad_size, large_pad_size, Size.AxesY(self.axes)]
@@ -339,7 +339,7 @@ class BaseFuncAnimator(object):
             vert = [ysize, pad_size] * self.num_sliders + \
                    [large_pad_size, Size.AxesY(self.axes)]
             horiz = [Size.Fraction(0.8, Size.AxesX(self.axes))] + \
-                    [Size.Fraction(0.1, Size.AxesX(self.axes))]*2
+                    [Size.Fraction(0.1, Size.AxesX(self.axes))] * 2
 
         self.divider.set_horizontal(horiz)
         self.divider.set_vertical(vert)
@@ -349,22 +349,22 @@ class BaseFuncAnimator(object):
         if self.if_colorbar:
             nx1 = -3
             self.cax = self.fig.add_axes((0., 0., 0.141, 1.))
-            locator = self.divider.new_locator(nx=-2, ny=len(vert)-1, nx1=-1)
+            locator = self.divider.new_locator(nx=-2, ny=len(vert) - 1, nx1=-1)
             self.cax.set_axes_locator(locator)
         else:
             # Main figure spans all horiz and is in the top (2) in vert.
             nx1 = -1
 
         self.axes.set_axes_locator(
-            self.divider.new_locator(nx=0, ny=len(vert)-1, nx1=nx1))
+            self.divider.new_locator(nx=0, ny=len(vert) - 1, nx1=nx1))
 
     def _add_widgets(self):
         self.buttons = []
         for i in range(0, self.num_buttons):
-            x = i*2
+            x = i * 2
             # The i+1/10. is a bug that if you make two axes directly on top of
             # one another then the divider doesn't work.
-            self.buttons.append(self.fig.add_axes((0., 0., 0.+i/10., 1.)))
+            self.buttons.append(self.fig.add_axes((0., 0., 0. + i / 10., 1.)))
             locator = self.divider.new_locator(nx=x, ny=self.button_ny)
             self.buttons[-1].set_axes_locator(locator)
             self.buttons[-1]._button = widgets.Button(self.buttons[-1],
@@ -375,7 +375,7 @@ class BaseFuncAnimator(object):
         self.slider_buttons = []
         for i in range(self.num_sliders):
             x = i * 2
-            self.sliders.append(self.fig.add_axes((0., 0., 0.01+i/10., 1.)))
+            self.sliders.append(self.fig.add_axes((0., 0., 0.01 + i / 10., 1.)))
             if self.num_buttons == 0:
                 nx1 = 1
             else:
@@ -384,20 +384,20 @@ class BaseFuncAnimator(object):
             self.sliders[-1].set_axes_locator(locator)
             sframe = SliderPB(self.sliders[-1], "{slide:d}".format(slide=i),
                               self.slider_ranges[i][0],
-                              self.slider_ranges[i][-1]-1,
+                              self.slider_ranges[i][-1] - 1,
                               valinit=self.slider_ranges[i][0],
-                              valfmt = '%4.1f')
+                              valfmt='%4.1f')
             sframe.on_changed(self._slider_changed, sframe)
             sframe.slider_ind = i
             sframe.cval = sframe.val
             self.sliders[-1]._slider = sframe
 
             self.slider_buttons.append(
-                self.fig.add_axes((0., 0., 0.05+x/10., 1.)))
+                self.fig.add_axes((0., 0., 0.05 + x / 10., 1.)))
             if self.num_buttons == 0:
                 nx = 2
             else:
-                nx = 2 + 2*(self.num_buttons-1)
+                nx = 2 + 2 * (self.num_buttons - 1)
             locator = self.divider.new_locator(nx=nx, ny=x)
 
             self.slider_buttons[-1].set_axes_locator(locator)
@@ -438,7 +438,7 @@ class BaseFuncAnimator(object):
         if s.val >= s.valmax:
             s.set_val(s.valmin)
         else:
-            s.set_val(s.val+1)
+            s.set_val(s.val + 1)
         self.fig.canvas.draw()
 
     def _previous(self, slider):
@@ -446,7 +446,7 @@ class BaseFuncAnimator(object):
         if s.val <= s.valmin:
             s.set_val(s.valmax)
         else:
-            s.set_val(s.val-1)
+            s.set_val(s.val - 1)
         self.fig.canvas.draw()
 
     def _slider_changed(self, val, slider):
@@ -536,7 +536,7 @@ class ImageAnimator(BaseFuncAnimator):
         for i in self.slider_axes:
             self.frame_slice[i] = 0
 
-        base_kwargs = {'slider_functions': [self._updateimage]*self.num_sliders,
+        base_kwargs = {'slider_functions': [self._updateimage] * self.num_sliders,
                        'slider_ranges': [self.axis_range[i] for i in self.slider_axes]}
         base_kwargs.update(kwargs)
         BaseFuncAnimator.__init__(self, data, **base_kwargs)
@@ -608,7 +608,7 @@ class ImageAnimator(BaseFuncAnimator):
                 # If min==max or None
                 if axis_range[i] is None or axis_range[i][0] == axis_range[i][1]:
                     if i in self.slider_axes:
-                        axis_range[i] = np.linspace(0,d,d)
+                        axis_range[i] = np.linspace(0, d, d)
                     else:
                         axis_range[i] = [0, d]
                         # min max pair for slider axes should be converted
@@ -616,15 +616,15 @@ class ImageAnimator(BaseFuncAnimator):
                 elif i in self.slider_axes:
                     axis_range[i] = np.linspace(axis_range[i][0], axis_range[i][1], d)
 
-            #If we have a whole list of values for the axis, make sure we are a slider axis.
+            # If we have a whole list of values for the axis, make sure we are a slider axis.
             elif len(axis_range[i]) == d:
                 if i not in self.slider_axes:
                     raise ValueError("Slider axes mis-match, non-slider axes need [min,max] pairs")
                 else:
-                    #Make sure the resulting element is a ndarray
+                    # Make sure the resulting element is a ndarray
                     axis_range[i] = np.array(axis_range[i])
 
-            #panic
+            # panic
             else:
                 raise ValueError("axis_range should be either: None, [min,max], or a linspace for slider axes")
         return axis_range

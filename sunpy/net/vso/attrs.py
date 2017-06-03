@@ -41,6 +41,7 @@ class Field(ValueAttr):
     A subclass of the value attribute.  Used in defining a decorator for the
     dummy attribute.
     """
+
     def __init__(self, fielditem):
         ValueAttr.__init__(self, {
             ('field', 'fielditem'): fielditem
@@ -71,6 +72,7 @@ class _Range(object):
 class _VSOSimpleAttr(Attr):
     """ A _SimpleAttr is an attribute that is not composite, i.e. that only
     has a single value, such as, e.g., Instrument('eit'). """
+
     def __init__(self, value):
         Attr.__init__(self)
 
@@ -161,6 +163,7 @@ class Time(Attr, _Range):
         functionality.
 
     """
+
     def __init__(self, start, end=None, near=None):
         if end is None and not isinstance(start, _TimeRange):
             raise ValueError("Specify start and end or start has to be a TimeRange")
@@ -202,6 +205,7 @@ class Extent(Attr):
 
     """
     # pylint: disable=R0913
+
     def __init__(self, x, y, width, length, atype):
         Attr.__init__(self)
 
@@ -400,8 +404,9 @@ class Quicklook(_VSOSimpleAttr):
     Quicklook products are *not* searched by default.   Reference:
     documentation in SSWIDL routine vso_search.pro.
     """
-    def __init__(self,value):
-        super(Quicklook,self).__init__(value)
+
+    def __init__(self, value):
+        super(Quicklook, self).__init__(value)
         if self.value:
             self.value = 1
         else:
@@ -483,10 +488,10 @@ walker.add_converter(Extent)(
 
 walker.add_converter(Time)(
     lambda x: ValueAttr({
-            ('time', 'start'): x.start.strftime(TIMEFORMAT),
-            ('time', 'end'): x.end.strftime(TIMEFORMAT),
-            ('time', 'near'): (
-                x.near.strftime(TIMEFORMAT) if x.near is not None else None),
+        ('time', 'start'): x.start.strftime(TIMEFORMAT),
+        ('time', 'end'): x.end.strftime(TIMEFORMAT),
+        ('time', 'near'): (
+            x.near.strftime(TIMEFORMAT) if x.near is not None else None),
     })
 )
 
@@ -496,9 +501,9 @@ walker.add_converter(_VSOSimpleAttr)(
 
 walker.add_converter(Wavelength)(
     lambda x: ValueAttr({
-            ('wave', 'wavemin'): x.min.value,
-            ('wave', 'wavemax'): x.max.value,
-            ('wave', 'waveunit'): x.unit,
+        ('wave', 'wavemin'): x.min.value,
+        ('wave', 'wavemax'): x.max.value,
+        ('wave', 'waveunit'): x.unit,
     })
 )
 

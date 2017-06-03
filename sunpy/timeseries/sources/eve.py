@@ -133,7 +133,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     @staticmethod
     def _parse_level_0cs(fp):
         """Parses and EVE Level 0CS file."""
-        is_missing_data = False      #boolean to check for missing data
+        is_missing_data = False  # boolean to check for missing data
         missing_data_val = numpy.nan
         header = []
         fields = []
@@ -141,21 +141,21 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         # Read header at top of file
         while line.startswith(";"):
             header.append(line)
-            if '; Missing data:' in line :
+            if '; Missing data:' in line:
                 is_missing_data = True
                 missing_data_val = line.split(':')[1].strip()
 
             line = fp.readline()
 
         meta = MetaDict()
-        for hline in header :
+        for hline in header:
             if hline == '; Format:\n' or hline == '; Column descriptions:\n':
                 continue
             elif ('Created' in hline) or ('Source' in hline):
                 meta[hline.split(':',
                                  1)[0].replace(';',
                                                ' ').strip()] = hline.split(':', 1)[1].strip()
-            elif ':' in hline :
+            elif ':' in hline:
                 meta[hline.split(':')[0].replace(';', ' ').strip()] = hline.split(':')[1].strip()
 
         fieldnames_start = False
@@ -175,23 +175,23 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         day = int(date_parts[3])
 
         # function to parse date column (HHMM)
-        parser = lambda x: datetime(year, month, day, int(x[0:2]), int(x[2:4]))
+        def parser(x): return datetime(year, month, day, int(x[0:2]), int(x[2:4]))
 
         data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, header=None, engine='python')
-        if is_missing_data :   #If missing data specified in header
+        if is_missing_data:  # If missing data specified in header
             data[data == float(missing_data_val)] = numpy.nan
 
         # Add the units data
-        units = OrderedDict([('XRS-B proxy', u.W/u.m**2),
-                             ('XRS-A proxy', u.W/u.m**2),
-                             ('SEM proxy', u.W/u.m**2),
-                             ('0.1-7ESPquad', u.W/u.m**2),
-                             ('17.1ESP', u.W/u.m**2),
-                             ('25.7ESP', u.W/u.m**2),
-                             ('30.4ESP', u.W/u.m**2),
-                             ('36.6ESP', u.W/u.m**2),
+        units = OrderedDict([('XRS-B proxy', u.W / u.m**2),
+                             ('XRS-A proxy', u.W / u.m**2),
+                             ('SEM proxy', u.W / u.m**2),
+                             ('0.1-7ESPquad', u.W / u.m**2),
+                             ('17.1ESP', u.W / u.m**2),
+                             ('25.7ESP', u.W / u.m**2),
+                             ('30.4ESP', u.W / u.m**2),
+                             ('36.6ESP', u.W / u.m**2),
                              ('darkESP', u.ct),
-                             ('121.6MEGS-P', u.W/u.m**2),
+                             ('121.6MEGS-P', u.W / u.m**2),
                              ('darkMEGS-P', u.ct),
                              ('q0ESP', u.dimensionless_unscaled),
                              ('q1ESP', u.dimensionless_unscaled),

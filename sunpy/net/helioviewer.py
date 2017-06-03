@@ -3,7 +3,7 @@ This module provides a wrapper around the Helioviewer API.
 """
 from __future__ import absolute_import
 
-#pylint: disable=E1101,F0401,W0231
+# pylint: disable=E1101,F0401,W0231
 
 __author__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
@@ -22,6 +22,7 @@ __all__ = ['HelioviewerClient']
 
 class HelioviewerClient(object):
     """Helioviewer.org Client"""
+
     def __init__(self, url="https://legacy.helioviewer.org/api/"):
         """
         url : location of the Helioviewer API.  The default location points to

@@ -111,7 +111,7 @@ def mean_ecliptic_longitude(t='now'):
     return Longitude(result)
 
 
-def longitude_Sun_perigee(t='now'): # pylint: disable=W0613
+def longitude_Sun_perigee(t='now'):  # pylint: disable=W0613
     # T = julian_centuries(t)
     return 1
 
@@ -145,8 +145,8 @@ def equation_of_center(t='now'):
     T = julian_centuries(t)
     mna = mean_anomaly(t)
     result = ((1.9194600 - 0.0047890 * T - 0.0000140 * T ** 2) * np.sin(mna)
-    + (0.0200940 - 0.0001000 * T) *
-    np.sin(2 * mna) + 0.0002930 * np.sin(3 * mna))
+              + (0.0200940 - 0.0001000 * T) *
+              np.sin(2 * mna) + 0.0002930 * np.sin(3 * mna))
     result = result * u.deg
     return Angle(result)
 
@@ -260,15 +260,15 @@ def heliographic_solar_center(t='now'):
     jd = julian_day(t)
     T = julian_centuries(t)
     # Heliographic coordinates in degrees
-    theta = ((jd - 2398220)*360/25.38) * u.deg
+    theta = ((jd - 2398220) * 360 / 25.38) * u.deg
     i = 7.25 * u.deg
     k = (74.3646 + 1.395833 * T) * u.deg
     lamda = true_longitude(t) - 0.00569 * u.deg
     diff = lamda - k
     # Latitude at center of disk (deg):
-    he_lat = np.arcsin(np.sin(diff)*np.sin(i))
+    he_lat = np.arcsin(np.sin(diff) * np.sin(i))
     # Longitude at center of disk (deg):
-    y = -np.sin(diff)*np.cos(i)
+    y = -np.sin(diff) * np.cos(i)
     x = -np.cos(diff)
     rpol = (np.arctan2(y, x))
     he_lon = rpol - theta
@@ -283,9 +283,9 @@ def print_params(t='now'):
     print('Distance = ' + str(sunearth_distance(t)))
     print('Semidiameter = ' + str(solar_semidiameter_angular_size(t)))
     print('True (long, lat) = (' + str(true_longitude(t)) + ', '
-                                                 + str(true_latitude(t)) + ')')
+          + str(true_latitude(t)) + ')')
     print('Apparent (long, lat) = (' + str(apparent_longitude(t)) + ', '
-                                                 + str(apparent_latitude(t)) + ')')
+          + str(apparent_latitude(t)) + ')')
     print('True (RA, Dec) = (' + str(true_rightascension(t)) + ', '
           + str(true_declination(t)) + ')')
     print('Apparent (RA, Dec) = (' + str(apparent_rightascension(t)) + ', '

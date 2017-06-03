@@ -130,7 +130,7 @@ def test_get_dates():
     (tbegin_str, dt),
     (tbegin_str, datetime.timedelta(days=1)),
     (sunpy.time.TimeRange(tbegin_str, tfin_str))
-    ])
+])
 def test_timerange_input(ainput):
     timerange = sunpy.time.TimeRange(ainput)
     assert isinstance(timerange, sunpy.time.TimeRange)
@@ -143,7 +143,7 @@ def test_timerange_input(ainput):
     (tbegin_str, tfin_str),
     (tfin_str, -dt),
     (tfin_str, tbegin_str)
-    ])
+])
 def test_start_lessthan_end(ainput):
     """Test that the start and end time for a timerange is always in the
     right order"""

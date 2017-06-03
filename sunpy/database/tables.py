@@ -37,10 +37,10 @@ Base = declarative_base()
 
 # required for the many-to-many relation on tags:entries
 association_table = Table(
-                          'association', Base.metadata,
-                          Column('tag_name', String, ForeignKey('tags.name')),
-                          Column('entry_id', Integer, ForeignKey('data.id'))
-                         )
+    'association', Base.metadata,
+    Column('tag_name', String, ForeignKey('tags.name')),
+    Column('entry_id', Integer, ForeignKey('data.id'))
+)
 
 
 class WaveunitNotFoundError(Exception):
@@ -48,6 +48,7 @@ class WaveunitNotFoundError(Exception):
     header or in a VSO query result block.
 
     """
+
     def __init__(self, obj):
         self.obj = obj
 
@@ -61,6 +62,7 @@ class WaveunitNotConvertibleError(Exception):
     astropy.units.Unit instance.
 
     """
+
     def __init__(self, waveunit):
         self.waveunit = waveunit
 
@@ -539,14 +541,14 @@ def entries_from_file(file, default_waveunit=None,
             # FITS standard, but many FITS files use it in their header
             elif key in ('DATE-END', 'DATE_END'):
                 entry.observation_time_end = parse_time(
-                        value,
-                        _time_string_parse_format=time_string_parse_format
-                        )
+                    value,
+                    _time_string_parse_format=time_string_parse_format
+                )
             elif key in ('DATE-OBS', 'DATE_OBS'):
                 entry.observation_time_start = parse_time(
-                        value,
-                        _time_string_parse_format=time_string_parse_format
-                        )
+                    value,
+                    _time_string_parse_format=time_string_parse_format
+                )
         yield entry
 
 
@@ -617,7 +619,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
                 for entry in entries_from_file(
                         path, default_waveunit,
                         time_string_parse_format=time_string_parse_format
-                        ):
+                ):
                     yield entry, path
         if not recursive:
             break

@@ -300,7 +300,7 @@ class GenericClient(object):
         # We cast to list here in list(zip... to force execution of
         # res.require([x]) at the start of the loop.
         for aurl, ncall, fname in list(zip(urls, map(lambda x: res.require([x]),
-                                           urls), paths)):
+                                                     urls), paths)):
             dobj.download(aurl, fname, ncall, error_callback)
 
         return res

@@ -509,12 +509,14 @@ def test_add_from_file(database):
     for entry in database:
         assert entry.fileid == fileid
 
+
 def test_add_from_file_hdu_index(database):
     assert len(database) == 0
     database.add_from_file(RHESSI_IMAGE)
     assert len(database) == 4
     for i, entry in enumerate(database):
         assert entry.hdu_index == i
+
 
 def test_add_from_file_duplicates(database):
     database.add_from_file(RHESSI_IMAGE)
@@ -857,8 +859,8 @@ def test_disable_undo(database, download_query, tmpdir):
 
 @pytest.fixture
 def default_waveunit_database():
-    unit_database = Database('sqlite:///:memory:', default_waveunit = units.meter)
-    str_database = Database('sqlite:///:memory:', default_waveunit = "m")
+    unit_database = Database('sqlite:///:memory:', default_waveunit=units.meter)
+    str_database = Database('sqlite:///:memory:', default_waveunit="m")
     return unit_database, str_database
 
 

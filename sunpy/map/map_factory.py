@@ -170,16 +170,16 @@ class MapFactory(BasicRegistrationFactory):
             if ((type(arg) in [tuple, list]) and
                 len(arg) == 2 and
                 isinstance(arg[0], np.ndarray) and
-                self._validate_meta(arg[1])):
+                    self._validate_meta(arg[1])):
 
                 arg[1] = OrderedDict(arg[1])
                 data_header_pairs.append(arg)
 
             # Data-header pair not in a tuple
             elif (isinstance(arg, np.ndarray) and
-                  self._validate_meta(args[i+1])):
+                  self._validate_meta(args[i + 1])):
 
-                pair = (args[i], OrderedDict(args[i+1]))
+                pair = (args[i], OrderedDict(args[i + 1]))
                 data_header_pairs.append(pair)
                 i += 1   # an extra increment to account for the data-header pairing
 

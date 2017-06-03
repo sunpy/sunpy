@@ -57,6 +57,7 @@ class Scraper(object):
     The now attribute does not return an existent file, but just how the
     pattern looks with the actual time.
     """
+
     def __init__(self, pattern, **kwargs):
         self.pattern = pattern.format(**kwargs)
         milliseconds = re.search('\%e', self.pattern)
@@ -65,7 +66,8 @@ class Scraper(object):
         else:
             now = datetime.datetime.now()
             milliseconds_ = int(now.microsecond / 1000.)
-            self.now = now.strftime(self.pattern[0:milliseconds.start()] + str(milliseconds_) + self.pattern[milliseconds.end():])
+            self.now = now.strftime(self.pattern[0:milliseconds.start()
+                                                 ] + str(milliseconds_) + self.pattern[milliseconds.end():])
 
     def matches(self, filepath, date):
         return date.strftime(self.pattern) == filepath
@@ -90,25 +92,25 @@ class Scraper(object):
             range given. Notice that these directories may not exist
             in the archive.
         """
-        #find directory structure - without file names
+        # find directory structure - without file names
         directorypattern = os.path.dirname(self.pattern) + '/'
-        #TODO what if there's not slashes?
+        # TODO what if there's not slashes?
         rangedelta = timerange.dt
         timestep = self._smallerPattern(directorypattern)
         if timestep is None:
             return [directorypattern]
         else:
             # Number of elements in the time range (including end)
-            n_steps = rangedelta.total_seconds()/timestep.total_seconds()
+            n_steps = rangedelta.total_seconds() / timestep.total_seconds()
             TotalTimeElements = int(round(n_steps)) + 1
             directories = [(timerange.start + n * timestep).strftime(directorypattern)
-                        for n in range(TotalTimeElements)] #todo if date <= endate
+                           for n in range(TotalTimeElements)]  # todo if date <= endate
             return directories
 
     def _URL_followsPattern(self, url):
         """Check whether the url provided follows the pattern"""
         pattern = self.pattern
-        for k,v in six.iteritems(TIME_CONVERSIONS):
+        for k, v in six.iteritems(TIME_CONVERSIONS):
             pattern = pattern.replace(k, v)
         matches = re.match(pattern, url)
         if matches:
@@ -120,7 +122,7 @@ class Scraper(object):
         # url_to_list substitutes '.' and '_' for '/' to then create
         # a list of all the blocks in times - assuming they are all
         # separated with either '.', '_' or '/'
-        url_to_list = lambda txt: re.sub(r'\.|_', '/', txt).split('/')
+        def url_to_list(txt): return re.sub(r'\.|_', '/', txt).split('/')
         pattern_list = url_to_list(self.pattern)
         url_list = url_to_list(url)
         time_order = ['%Y', '%y', '%b', '%B', '%m', '%d', '%j',
@@ -147,14 +149,14 @@ class Scraper(object):
         final_date = list()
         final_pattern = list()
         re_together = re_together.replace('[A-Z]', '\\[A-Z]')
-        for p,r in zip(pattern_together.split('%')[1:], re_together.split('\\')[1:]):
+        for p, r in zip(pattern_together.split('%')[1:], re_together.split('\\')[1:]):
             if p == 'e':
                 continue
             regexp = '\\{}'.format(r) if not r.startswith('[') else r
             pattern = '%{}'.format(p)
             date_part = re.search(regexp, date_together)
             date_together = date_together[:date_part.start()] + \
-                            date_together[date_part.end():]
+                date_together[date_part.end():]
             if pattern not in final_pattern:
                 final_pattern.append('%{}'.format(p))
                 final_date.append(date_part.group())
@@ -200,7 +202,7 @@ class Scraper(object):
                             if self._URL_followsPattern(fullpath):
                                 datehref = self._extractDateURL(fullpath)
                                 if (datehref >= timerange.start and
-                                    datehref <= timerange.end):
+                                        datehref <= timerange.end):
                                     filesurls.append(fullpath)
                 finally:
                     opn.close()
@@ -219,7 +221,7 @@ class Scraper(object):
                 return datetime.timedelta(hours=1)
             elif any(day in directoryPattern for day in ["%d", "%j"]):
                 return datetime.timedelta(days=1)
-            elif any(month in directoryPattern for month in ["%b","%B","%m"]):
+            elif any(month in directoryPattern for month in ["%b", "%B", "%m"]):
                 return datetime.timedelta(days=31)
             elif any(year in directoryPattern for year in ["%Y", "%y"]):
                 return datetime.timedelta(days=365)
@@ -227,4 +229,3 @@ class Scraper(object):
                 return None
         except:
             raise
-

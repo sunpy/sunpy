@@ -34,6 +34,7 @@ from sunpy.extern.six import iteritems
 
 class Attr(object):
     """ This is the base for all attributes. """
+
     def __and__(self, other):
         if isinstance(other, AttrOr):
             return AttrOr([elem & self for elem in other.attrs])
@@ -74,6 +75,7 @@ class DummyAttr(Attr):
     for from\_, to in times:
         attr |= Time(from\_, to)
     """
+
     def __and__(self, other):
         return other
 
@@ -92,6 +94,7 @@ class DummyAttr(Attr):
 
 class AttrAnd(Attr):
     """ Attribute representing attributes ANDed together. """
+
     def __init__(self, attrs):
         Attr.__init__(self)
         self.attrs = attrs
@@ -124,6 +127,7 @@ class AttrAnd(Attr):
 
 class AttrOr(Attr):
     """ Attribute representing attributes ORed together. """
+
     def __init__(self, attrs):
         Attr.__init__(self)
         self.attrs = attrs

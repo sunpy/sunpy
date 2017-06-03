@@ -16,6 +16,7 @@ __all__ = ['_convert_angle_units', 'convert_pixel_to_data', 'convert_hpc_hg',
            'convert_hg_hpc',  'convert_to_coord',
            'get_center']
 
+
 def _convert_angle_units(unit='arcsec'):
     """Determine the conversion factor between the data units and radians."""
     if unit == 'degrees':
@@ -28,6 +29,7 @@ def _convert_angle_units(unit='arcsec'):
         return np.deg2rad(1) / (60 * 60 * 1000.0)
     else:
         raise ValueError("The units specified are either invalid or is not supported at this time.")
+
 
 @deprecated("0.8.0", alternative="sunpy.map.GenericMap.pixel_to_data")
 def convert_pixel_to_data(size, scale, reference_pixel,
@@ -76,6 +78,7 @@ def convert_pixel_to_data(size, scale, reference_pixel,
     coordx, coordy = proj_tan(coordx, coordy)
 
     return coordx, coordy
+
 
 @deprecated("0.8.0")
 def get_center(size, scale, reference_pixel, reference_coordinate):
@@ -196,7 +199,6 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     rx = distance * cosy * sinx
     ry = distance * siny
     rz = dsun_meters - distance * cosy * cosx
-
 
     if np.all(z == True):
         return rx, ry, rz
@@ -432,6 +434,7 @@ def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None, a
     x, y = convert_hcc_hpc(tempx, tempy, dsun_meters=dsun_meters, angle_units=angle_units)
     return x, y
 
+
 @deprecated("0.8.0", alternative="sunpy.coordinates")
 def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec'):
     """
@@ -483,6 +486,7 @@ def proj_tan(x, y, force=False):
     # here as a place holder for the future
     # TODO: write proj_tan function
     return x, y
+
 
 @deprecated("0.8.0", alternative="sunpy.coordinates")
 def convert_to_coord(x, y, from_coord, to_coord, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec'):

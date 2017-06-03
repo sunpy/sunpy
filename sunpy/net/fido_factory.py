@@ -28,6 +28,7 @@ class UnifiedResponse(MutableSequence):
     """
     The object used to store responses from the unified downloader.
     """
+
     def __init__(self, lst):
         """
         Input to this constructor can be one of a few things:
@@ -189,6 +190,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
     Search and Download data from a variety of supported sources.
     """
+
     def search(self, *query):
         """
         Query for data in form of multiple parameters.

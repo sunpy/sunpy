@@ -21,6 +21,7 @@ TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['LYRALightCurve']
 
+
 class LYRALightCurve(LightCurve):
     """
     Proba-2 LYRA LightCurve.
@@ -86,11 +87,11 @@ class LYRALightCurve(LightCurve):
         fig : `~matplotlib.Figure`
             A plot figure.
         """
-        lyranames = (('Lyman alpha','Herzberg cont.','Al filter','Zr filter'),
-                 ('120-123nm','190-222nm','17-80nm + <5nm','6-20nm + <2nm'))
+        lyranames = (('Lyman alpha', 'Herzberg cont.', 'Al filter', 'Zr filter'),
+                     ('120-123nm', '190-222nm', '17-80nm + <5nm', '6-20nm + <2nm'))
 
         # Choose title if none was specified
-        #if not kwargs.has_key("title"):
+        # if not kwargs.has_key("title"):
         #    if len(self.data.columns) > 1:
         #        kwargs['title'] = 'LYRA data'
         #    else:
@@ -100,7 +101,7 @@ class LYRALightCurve(LightCurve):
         #        else:
         #            kwargs['title'] = 'LYRA data'
         figure = plt.figure()
-        plt.subplots_adjust(left=0.17,top=0.94,right=0.94,bottom=0.15)
+        plt.subplots_adjust(left=0.17, top=0.94, right=0.94, bottom=0.15)
         axes = plt.gca()
 
         axes = self.data.plot(ax=axes, subplots=True, sharex=True, **kwargs)
@@ -110,12 +111,12 @@ class LYRALightCurve(LightCurve):
                 name = lyranames[names][i]
             else:
                 name = lyranames[0][i] + ' \n (' + lyranames[1][i] + ')'
-            axes[i].set_ylabel( "{name} \n (W/m**2)".format(name=name), fontsize=9.5)
+            axes[i].set_ylabel("{name} \n (W/m**2)".format(name=name), fontsize=9.5)
 
-        axes[0].set_title("LYRA ({0:{1}})".format(self.data.index[0],TIME_FORMAT))
+        axes[0].set_title("LYRA ({0:{1}})".format(self.data.index[0], TIME_FORMAT))
         axes[-1].set_xlabel("Time")
         for axe in axes:
-            axe.locator_params(axis='y',nbins=6)
+            axe.locator_params(axis='y', nbins=6)
 
         figure.show()
 
@@ -176,7 +177,7 @@ class LYRALightCurve(LightCurve):
 
         for i, col in enumerate(fits_record.columns[1:-1]):
             # temporary patch for big-endian data bug on pandas 0.13
-            if fits_record.field(i+1).dtype.byteorder == '>' and sys.byteorder =='little':
+            if fits_record.field(i + 1).dtype.byteorder == '>' and sys.byteorder == 'little':
                 table[col.name] = fits_record.field(i + 1).byteswap().newbyteorder()
             else:
                 table[col.name] = fits_record.field(i + 1)

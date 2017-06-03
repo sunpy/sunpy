@@ -7,20 +7,25 @@ import numpy as np
 
 __all__ = ['read_genx']
 
+
 class SSWUnpacker(xdrlib.Unpacker):
     """
     `xdrlib.Unpacker` customisation to read strings and complex data as written
     by IDL.
     """
+
     def unpack_string(self):
         n = self.unpack_uint()
         if n > 0:
             n = self.unpack_uint()
         return self.unpack_fstring(n).decode('utf-8')
+
     def unpack_complex(self):
         return complex(self.unpack_float(), self.unpack_float())
+
     def unpack_complex_double(self):
         return complex(self.unpack_double(), self.unpack_double())
+
 
 def read_struct_skeleton(xdrdata):
     """
@@ -35,9 +40,9 @@ def read_struct_skeleton(xdrdata):
     tagdict = OrderedDict()
     for tt in tags:
         dim = xdrdata.unpack_uint()
-        arr_size = xdrdata.unpack_farray(dim + 2, xdrdata.unpack_int) # [7, 1]
+        arr_size = xdrdata.unpack_farray(dim + 2, xdrdata.unpack_int)  # [7, 1]
         typedata = arr_size[-2]
-        if typedata == 8: # it's a structure
+        if typedata == 8:  # it's a structure
             if dim == 2 and arr_size[0] == 1:
                 # For when structures has been defined with 2 dim but only has one:
                 # bb = replicate({tata: 1, bebe:2, casa:'asa'}, 3)
@@ -55,6 +60,7 @@ def read_struct_skeleton(xdrdata):
             tagdict[tt] = [dim] + arr_size
     return tagdict
 
+
 def struct_to_data(xdrdata, subskeleton):
     """"
     Converts the dictionary with the keys and IDL's size output to
@@ -64,19 +70,19 @@ def struct_to_data(xdrdata, subskeleton):
     read in the right order (that's why `OrderedDict` is used). Then the data is
     read and the `subskeleton` is updated with the data itself.
     """
-    #http://www.harrisgeospatial.com/docs/SIZE.html
+    # http://www.harrisgeospatial.com/docs/SIZE.html
     types_dict = {
-        2: (xdrdata.unpack_int, np.int16), # int
-        3: (xdrdata.unpack_int, np.int32), # long
+        2: (xdrdata.unpack_int, np.int16),  # int
+        3: (xdrdata.unpack_int, np.int32),  # long
         4: (xdrdata.unpack_float, np.float32),
         5: (xdrdata.unpack_double, np.float64),
         6: (xdrdata.unpack_complex, np.complex),
         7: (xdrdata.unpack_string, None),
         9: (xdrdata.unpack_complex_double, np.complex64),
-        12: (xdrdata.unpack_uint, np.uint16), # unsign int
-        13: (xdrdata.unpack_uint, np.uint32), # unsign Long int
-        14: (xdrdata.unpack_hyper, np.int64), # Long64
-        15: (xdrdata.unpack_uhyper, np.uint64), # unsign Long64
+        12: (xdrdata.unpack_uint, np.uint16),  # unsign int
+        13: (xdrdata.unpack_uint, np.uint32),  # unsign Long int
+        14: (xdrdata.unpack_hyper, np.int64),  # Long64
+        15: (xdrdata.unpack_uhyper, np.uint64),  # unsign Long64
     }
     for key in subskeleton:
         if isinstance(subskeleton[key], OrderedDict):
@@ -97,6 +103,7 @@ def struct_to_data(xdrdata, subskeleton):
             else:
                 subskeleton[key] = np.array(xdrdata.unpack_farray(sswsize[-1], types_dict[sswtype][0]),
                                             dtype=types_dict[sswtype][1]).reshape(sswsize[1:-2][::-1])
+
 
 def read_genx(filename):
     """solarsoft genx file reader
@@ -138,21 +145,20 @@ def read_genx(filename):
 
     # HEADER information
     version, xdr = xdrdata.unpack_int(), xdrdata.unpack_int()
-    creation =  xdrdata.unpack_string()
+    creation = xdrdata.unpack_string()
     if version == 2:
-        arch =  xdrdata.unpack_string()
-        os =  xdrdata.unpack_string()
-        release =  xdrdata.unpack_string()
+        arch = xdrdata.unpack_string()
+        os = xdrdata.unpack_string()
+        release = xdrdata.unpack_string()
     text = xdrdata.unpack_string()
 
-
-    dim = xdrdata.unpack_int() # TODO: I don't think will have dim>1 but need
-                               # to check, if it's larger like savegen has run
-                               # with a multidimensional structure, then
-                               # probably the read_struct_skeleton will have to
-                               # run as in multi-dim structure.
-    arr_size = xdrdata.unpack_farray(dim + 2, xdrdata.unpack_int) # [1, 8, 1] = Main structure for the data
-    mainsize = arr_size[2] # number of upper level strs
+    dim = xdrdata.unpack_int()  # TODO: I don't think will have dim>1 but need
+    # to check, if it's larger like savegen has run
+    # with a multidimensional structure, then
+    # probably the read_struct_skeleton will have to
+    # run as in multi-dim structure.
+    arr_size = xdrdata.unpack_farray(dim + 2, xdrdata.unpack_int)  # [1, 8, 1] = Main structure for the data
+    mainsize = arr_size[2]  # number of upper level strs
     skeleton = read_struct_skeleton(xdrdata)
     struct_to_data(xdrdata, skeleton)
     xdrdata.done()

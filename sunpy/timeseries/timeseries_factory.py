@@ -297,18 +297,18 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
                 # If there are 1 or 2 more arguments:
                 for _ in range(2):
-                    if (len(args) > i+1):
+                    if (len(args) > i + 1):
                         # If that next argument isn't data but is metaddata or units:
-                        if not isinstance(args[i+1], (np.ndarray, Table, pd.DataFrame)):
-                            if self._validate_units(args[i+1]):
-                                units.update(args[i+1])
+                        if not isinstance(args[i + 1], (np.ndarray, Table, pd.DataFrame)):
+                            if self._validate_units(args[i + 1]):
+                                units.update(args[i + 1])
                                 i += 1  # an extra increment to account for the units
-                            elif self._validate_meta(args[i+1]):
+                            elif self._validate_meta(args[i + 1]):
                                 # if we have an astropy.io FITS header then convert
                                 # to preserve multi-line comments
-                                if isinstance(args[i+1], astropy.io.fits.header.Header):
-                                    args[i+1] = MetaDict(sunpy.io.header.FileHeader(args[i+1]))
-                                meta.update(args[i+1])
+                                if isinstance(args[i + 1], astropy.io.fits.header.Header):
+                                    args[i + 1] = MetaDict(sunpy.io.header.FileHeader(args[i + 1]))
+                                meta.update(args[i + 1])
                                 i += 1  # an extra increment to account for the meta
 
                 # Add a 3-tuple for this TimeSeries.

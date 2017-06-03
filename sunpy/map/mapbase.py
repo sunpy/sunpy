@@ -198,7 +198,7 @@ class GenericMap(NDData):
 
     def __repr__(self):
         return (
-"""SunPy Map
+            """SunPy Map
 ---------
 Observatory:\t\t {obs}
 Instrument:\t\t {inst}
@@ -214,15 +214,15 @@ Reference Pixel:\t {refpix}
 Reference Coord:\t {refcoord}
 
 """.format(obs=self.observatory, inst=self.instrument, det=self.detector,
-           meas=self.measurement, wave=self.wavelength, date=self.date,
-           dt=self.exposure_time,
-           dim=u.Quantity(self.dimensions),
-           scale=u.Quantity(self.scale),
-           coord=self.coordinate_frame,
-           refpix=u.Quantity(self.reference_pixel),
-           refcoord=u.Quantity((self.reference_coordinate.data.lon,
-                                self.reference_coordinate.data.lat)),
-           tmf=TIME_FORMAT) + self.data.__repr__())
+                meas=self.measurement, wave=self.wavelength, date=self.date,
+                dt=self.exposure_time,
+                dim=u.Quantity(self.dimensions),
+                scale=u.Quantity(self.scale),
+                coord=self.coordinate_frame,
+                refpix=u.Quantity(self.reference_pixel),
+                refcoord=u.Quantity((self.reference_coordinate.data.lon,
+                                     self.reference_coordinate.data.lat)),
+                tmf=TIME_FORMAT) + self.data.__repr__())
 
     @classmethod
     def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
@@ -462,7 +462,7 @@ Reference Coord:\t {refcoord}
         """
         The physical coordinate for the bottom left [0,0] pixel.
         """
-        return self.pixel_to_data(0*u.pix, 0*u.pix)
+        return self.pixel_to_data(0 * u.pix, 0 * u.pix)
 
     @property
     def top_right_coord(self):
@@ -684,7 +684,7 @@ Reference Coord:\t {refcoord}
         p = np.deg2rad(self.meta.get('CROTA2', 0))
 
         return np.matrix([[np.cos(p), -1 * lam * np.sin(p)],
-                          [1/lam * np.sin(p), np.cos(p)]])
+                          [1 / lam * np.sin(p), np.cos(p)]])
 
 # #### Miscellaneous #### #
 
@@ -746,7 +746,7 @@ Reference Coord:\t {refcoord}
                               Warning)
 
         if (self.coordinate_system[0].startswith(('SOLX', 'SOLY')) or
-            self.coordinate_system[1].startswith(('SOLX', 'SOLY'))):
+                self.coordinate_system[1].startswith(('SOLX', 'SOLY'))):
 
             warnings.warn("SunPy Map currently does not support three dimensional data,"
                           " and therefore can not represent heliocentric coordinates. "
@@ -1284,7 +1284,7 @@ Reference Coord:\t {refcoord}
         return new_map
 
     @u.quantity_input(dimensions=u.pixel, offset=u.pixel)
-    def superpixel(self, dimensions, offset=(0, 0)*u.pixel, func=np.sum):
+    def superpixel(self, dimensions, offset=(0, 0) * u.pixel, func=np.sum):
         """Returns a new map consisting of superpixels formed by applying
         'func' to the original map data.
 
@@ -1356,8 +1356,10 @@ Reference Coord:\t {refcoord}
         new_meta['crpix1'] = (new_nx + 1) / 2.
         new_meta['crpix2'] = (new_ny + 1) / 2.
         lon, lat = self._get_lon_lat(self.center.frame)
-        new_meta['crval1'] = lon.to(self.spatial_units[0]).value + 0.5*(offset[0]*self.scale[0]).to(self.spatial_units[0]).value
-        new_meta['crval2'] = lat.to(self.spatial_units[1]).value + 0.5*(offset[1]*self.scale[1]).to(self.spatial_units[1]).value
+        new_meta['crval1'] = lon.to(self.spatial_units[0]).value + 0.5 * (offset[0]
+                                                                          * self.scale[0]).to(self.spatial_units[0]).value
+        new_meta['crval2'] = lat.to(self.spatial_units[1]).value + 0.5 * (offset[1]
+                                                                          * self.scale[1]).to(self.spatial_units[1]).value
 
         # Create new map instance
         if self.mask is not None:
@@ -1374,7 +1376,7 @@ Reference Coord:\t {refcoord}
 # #### Visualization #### #
 
     @u.quantity_input(grid_spacing=u.deg)
-    def draw_grid(self, axes=None, grid_spacing=15*u.deg):
+    def draw_grid(self, axes=None, grid_spacing=15 * u.deg):
         """
         Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
         coordinate system.
@@ -1650,7 +1652,7 @@ Reference Coord:\t {refcoord}
         if not _basic_plot:
             # Check that the image is properly oriented
             if (not wcsaxes_compat.is_wcsaxes(axes) and
-                not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2)))):
+                    not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2)))):
                 warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
                               Warning)
 

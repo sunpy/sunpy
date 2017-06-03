@@ -67,7 +67,7 @@ class EVEClient(GenericClient):
         """
         base_url = 'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
         return urljoin(base_url,
-                                date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt')
+                       date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt')
 
     def _makeimap(self):
         """

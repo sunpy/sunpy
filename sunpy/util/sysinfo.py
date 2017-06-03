@@ -7,7 +7,6 @@ import datetime
 __all__ = ['get_sys_dict', 'system_info']
 
 
-
 def get_sys_dict():
     """
     Test which packages are installed on system.
@@ -78,19 +77,18 @@ def get_sys_dict():
     except ImportError:
         requests_version = "NOT INSTALLED"
 
-
-
-    sys_prop = {'Time':datetime.datetime.utcnow().strftime("%A, %d. %B %Y %I:%M%p UT"),
-                'System':platform.system(), 'Processor':platform.processor(),
-                'SunPy':sunpy_version, 'SunPy_git':sunpy_git_description,
-                'Arch':platform.architecture()[0], "Python":platform.python_version(),
-                'NumPy':numpy_version,
-                'SciPy':scipy_version, 'matplotlib':matplotlib_version,
-                'Astropy':astropy_version, 'Pandas':pandas_version,
-                'beautifulsoup':bs4_version, 'PyQt':pyqt_version,
-                'SUDS':suds_version, 'Sqlalchemy':sqlalchemy_version, 'Requests':requests_version
+    sys_prop = {'Time': datetime.datetime.utcnow().strftime("%A, %d. %B %Y %I:%M%p UT"),
+                'System': platform.system(), 'Processor': platform.processor(),
+                'SunPy': sunpy_version, 'SunPy_git': sunpy_git_description,
+                'Arch': platform.architecture()[0], "Python": platform.python_version(),
+                'NumPy': numpy_version,
+                'SciPy': scipy_version, 'matplotlib': matplotlib_version,
+                'Astropy': astropy_version, 'Pandas': pandas_version,
+                'beautifulsoup': bs4_version, 'PyQt': pyqt_version,
+                'SUDS': suds_version, 'Sqlalchemy': sqlalchemy_version, 'Requests': requests_version
                 }
     return sys_prop
+
 
 def system_info():
     """
@@ -132,7 +130,7 @@ def system_info():
     print("###########")
 
     for sys_info in ['Python', 'NumPy', 'SciPy',
-              'matplotlib', 'Astropy', 'Pandas']:
+                     'matplotlib', 'Astropy', 'Pandas']:
         print('{0}: {1}'.format(sys_info, sys_prop[sys_info]))
 
     print("\n")

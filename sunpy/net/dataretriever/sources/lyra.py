@@ -45,7 +45,7 @@ class LYRAClient(GenericClient):
             The URL for the corresponding date.
         """
 
-        filename = "lyra_{0:%Y%m%d-}000000_lev{1:d}_std.fits".format(date, kwargs.get('level',2))
+        filename = "lyra_{0:%Y%m%d-}000000_lev{1:d}_std.fits".format(date, kwargs.get('level', 2))
         base_url = "http://proba2.oma.be/lyra/data/bsd/"
         url_path = urljoin(date.strftime('%Y/%m/%d/'), filename)
 
@@ -74,8 +74,8 @@ class LYRAClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chkattr =  ['Time', 'Instrument', 'Level']
-        chklist =  [x.__class__.__name__ in chkattr for x in query]
+        chkattr = ['Time', 'Instrument', 'Level']
+        chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value == 'lyra':
                 return all(chklist)

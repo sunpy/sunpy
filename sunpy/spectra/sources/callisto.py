@@ -83,7 +83,7 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
 
                 if (instruments is not None and
                     inst not in instruments and
-                    (inst, int(no)) not in instruments):
+                        (inst, int(no)) not in instruments):
                     continue
 
                 dend = dstart + DATA_SIZE
@@ -162,7 +162,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         """
         main_header = self.get_header()
         data = fits.PrimaryHDU(self, header=main_header)
-        ## XXX: Update axes header.
+        # XXX: Update axes header.
 
         freq_col = fits.Column(
             name="frequency", format="D8.3", array=self.freq_axis
@@ -181,11 +181,11 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         header = self.header.copy()
 
         if self.swapped:
-            header['NAXIS2'] = self.shape[1] # pylint: disable=E1101
-            header['NAXIS1'] = self.shape[0] # pylint: disable=E1101
+            header['NAXIS2'] = self.shape[1]  # pylint: disable=E1101
+            header['NAXIS1'] = self.shape[0]  # pylint: disable=E1101
         else:
-            header['NAXIS1'] = self.shape[1] # pylint: disable=E1101
-            header['NAXIS2'] = self.shape[0] # pylint: disable=E1101
+            header['NAXIS1'] = self.shape[1]  # pylint: disable=E1101
+            header['NAXIS2'] = self.shape[0]  # pylint: disable=E1101
         return header
 
     @classmethod
@@ -251,13 +251,13 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         else:
             # Otherwise, assume it's linear.
             time_axis = \
-                np.linspace(0, data.shape[1] - 1) * t_delt + t_init # pylint: disable=E1101
+                np.linspace(0, data.shape[1] - 1) * t_delt + t_init  # pylint: disable=E1101
 
         if fq is not None:
             freq_axis = np.squeeze(fq)
         else:
             freq_axis = \
-                np.linspace(0, data.shape[0] - 1) * f_delt + f_init # pylint: disable=E1101
+                np.linspace(0, data.shape[0] - 1) * f_delt + f_init  # pylint: disable=E1101
 
         content = header["CONTENT"]
         instruments = set([header["INSTRUME"]])
@@ -269,9 +269,9 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         )
 
     def __init__(self, data, time_axis, freq_axis, start, end,
-            t_init=None, t_delt=None, t_label="Time", f_label="Frequency",
-            content="", instruments=None, header=None, axes_header=None,
-            swapped=False):
+                 t_init=None, t_delt=None, t_label="Time", f_label="Frequency",
+                 content="", instruments=None, header=None, axes_header=None,
+                 swapped=False):
         # Because of how object creation works, there is no avoiding
         # unused arguments in this case.
         # pylint: disable=W0613
@@ -305,7 +305,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         right = self.shape[0] - 1
         while self.freq_axis[right] == self.freq_axis[-1]:
             right -= 1
-        return self[left-1:right+2, :]
+        return self[left - 1:right + 2, :]
 
     @classmethod
     def read_many(cls, filenames, sort_by=None):
@@ -405,7 +405,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         # values.
         pairs_data_gaussian64 = np.float64(pairs_data_gaussian)
         least = [
-            leastsq(self._to_minimize(a,b), [1, 0])[0]
+            leastsq(self._to_minimize(a, b), [1, 0])[0]
             for a, b in pairs_data_gaussian64
         ]
 

@@ -116,4 +116,3 @@ class SphericalWrap180Representation(SphericalRepresentation):
     recommended_units = {'lon': u.deg, 'lat': u.deg}
 
     _unitrep = UnitSphericalWrap180Representation
-

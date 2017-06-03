@@ -187,7 +187,7 @@ def hpc_to_hpc(heliopcoord, heliopframe):
     """
     if (heliopcoord.observer.lat == heliopframe.observer.lat and
         heliopcoord.observer.lon == heliopframe.observer.lon and
-        heliopcoord.observer.radius == heliopframe.observer.radius):
+            heliopcoord.observer.radius == heliopframe.observer.radius):
         return heliopframe.realize_frame(heliopcoord._data)
 
     hgs = heliopcoord.transform_to(HeliographicStonyhurst)

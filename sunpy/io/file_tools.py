@@ -40,12 +40,14 @@ class Readers(dict):
                               "please check that you have the required dependencies installed.")
         return val
 
-#Map the readers
+
+# Map the readers
 _readers = Readers({
-            'fits':fits,
-            'jp2':jp2,
-            'ana':ana
+    'fits': fits,
+    'jp2': jp2,
+    'ana': ana
 })
+
 
 def read_file(filepath, filetype=None, **kwargs):
     """
@@ -84,6 +86,7 @@ def read_file(filepath, filetype=None, **kwargs):
     readername = _detect_filetype(filepath)
     return _readers[readername].read(filepath, **kwargs)
 
+
 def read_file_header(filepath, filetype=None, **kwargs):
     """
     Reads the header from a given file.
@@ -115,6 +118,7 @@ def read_file_header(filepath, filetype=None, **kwargs):
 
     readername = _detect_filetype(filepath)
     return _readers[readername].get_header(filepath, **kwargs)
+
 
 def write_file(fname, data, header, filetype='auto', **kwargs):
     """
@@ -212,13 +216,16 @@ def _detect_filetype(filepath):
     raise UnrecognizedFileTypeError("The requested filetype is not currently "
                                     "supported by SunPy.")
 
+
 class UnrecognizedFileTypeError(IOError):
     """Exception to raise when an unknown file type is encountered"""
     pass
 
+
 class ReaderError(ImportError):
     """Exception to raise when an unknown file type is encountered"""
     pass
+
 
 class InvalidJPEG2000FileExtension(IOError):
     pass

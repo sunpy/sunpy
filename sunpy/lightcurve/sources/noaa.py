@@ -28,8 +28,8 @@ class NOAAIndicesLightCurve(LightCurve):
     4. Radio flux at 10.7 cm is produced by Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html> 
        and the units are in sfu.
     5. The Ap Geomagnetic Index is produced by the United States Air Force (USAF).
-    
-                                          
+
+
 
     Examples
     --------
@@ -107,7 +107,7 @@ class NOAAIndicesLightCurve(LightCurve):
 
         figure.show()
         return figure
-        
+
     @classmethod
     def _get_default_uri(cls):
         """Return the url to download indices"""
@@ -128,15 +128,17 @@ class NOAAIndicesLightCurve(LightCurve):
             while line.startswith((":", "#")):
                 header += line
                 line = fp.readline()
-            fields = ('yyyy', 'mm', 'sunspot SWO', 'sunspot RI', 'sunspot ratio', 'sunspot SWO smooth', 'sunspot RI smooth', 'radio flux', 'radio flux smooth', 'geomagnetic ap', 'geomagnetic smooth')
-            data = read_csv(fp, delim_whitespace=True, names = fields, comment='#', dtype={'yyyy':np.str, 'mm':np.str})
+            fields = ('yyyy', 'mm', 'sunspot SWO', 'sunspot RI', 'sunspot ratio', 'sunspot SWO smooth',
+                      'sunspot RI smooth', 'radio flux', 'radio flux smooth', 'geomagnetic ap', 'geomagnetic smooth')
+            data = read_csv(fp, delim_whitespace=True, names=fields, comment='#', dtype={'yyyy': np.str, 'mm': np.str})
             data = data.dropna(how='any')
-            timeindex = [datetime.datetime.strptime(x + y, '%Y%m') for x,y in zip(data['yyyy'], data['mm'])]
-            data['time']=timeindex
+            timeindex = [datetime.datetime.strptime(x + y, '%Y%m') for x, y in zip(data['yyyy'], data['mm'])]
+            data['time'] = timeindex
             data = data.set_index('time')
-            data = data.drop('mm',1)
-            data = data.drop('yyyy',1)
+            data = data.drop('mm', 1)
+            data = data.drop('yyyy', 1)
             return {'comments': header}, data
+
 
 class NOAAPredictIndicesLightCurve(LightCurve):
     """
@@ -231,12 +233,14 @@ class NOAAPredictIndicesLightCurve(LightCurve):
             while line.startswith((":", "#")):
                 header += line
                 line = fp.readline()
-            fields = ('yyyy', 'mm', 'sunspot', 'sunspot low', 'sunspot high', 'radio flux', 'radio flux low', 'radio flux high')
-            data = read_csv(filepath, delim_whitespace=True, names = fields, comment='#', skiprows=2, dtype={'yyyy':np.str, 'mm':np.str})
+            fields = ('yyyy', 'mm', 'sunspot', 'sunspot low', 'sunspot high',
+                      'radio flux', 'radio flux low', 'radio flux high')
+            data = read_csv(filepath, delim_whitespace=True, names=fields, comment='#',
+                            skiprows=2, dtype={'yyyy': np.str, 'mm': np.str})
             data = data.dropna(how='any')
-            timeindex = [datetime.datetime.strptime(x + y, '%Y%m') for x,y in zip(data['yyyy'], data['mm'])]
-            data['time']=timeindex
+            timeindex = [datetime.datetime.strptime(x + y, '%Y%m') for x, y in zip(data['yyyy'], data['mm'])]
+            data['time'] = timeindex
             data = data.set_index('time')
-            data = data.drop('mm',1)
-            data = data.drop('yyyy',1)
+            data = data.drop('mm', 1)
+            data = data.drop('yyyy', 1)
             return {'comments': header}, data

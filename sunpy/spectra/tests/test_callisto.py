@@ -153,7 +153,7 @@ def test_create_single_glob(CALLISTO_IMAGE, CALLISTO_IMAGE_GLOB_INDEX, CALLISTO_
 
 
 # seems like this does not work anymore and can't figure out what it is for
-#def test_create_single_glob_kw(CALLISTO_IMAGE):
+# def test_create_single_glob_kw(CALLISTO_IMAGE):
 #    PATTERN = os.path.join( os.path.dirname(CALLISTO_IMAGE), "BIR_*")
 #    ca = CallistoSpectrogram.create(singlepattern=PATTERN)
 #    assert np.array_equal(ca[0].data, CallistoSpectrogram.read(CALLISTO_IMAGE).data)
@@ -376,7 +376,7 @@ def test_homogenize_rightfq():
         np.concatenate([
             np.arange(3600)[np.newaxis, :], b,
             np.arange(3600)[np.newaxis, :]
-            ], 0),
+        ], 0),
         np.arange(3600),
         np.array([0, 1, 2]),
         datetime(2011, 1, 1),

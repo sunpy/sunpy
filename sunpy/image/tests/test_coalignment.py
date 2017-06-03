@@ -21,6 +21,7 @@ from sunpy.image.coalignment import parabolic_turning_point, \
     apply_shifts
 from sunpy.extern.six.moves import range
 
+
 @pytest.fixture
 def aia171_test_clipping():
     return np.asarray([0.2, -0.3, -1.0001])
@@ -125,7 +126,7 @@ def test_find_best_match_location(aia171_test_map_layer, aia171_test_template,
 
     result = match_template_to_layer(aia171_test_map_layer, aia171_test_template)
     match_location = u.Quantity(find_best_match_location(result))
-    assert_allclose(match_location.value, np.array(result.shape)/2. - 0.5 + aia171_test_shift, rtol=1e-3, atol=0)
+    assert_allclose(match_location.value, np.array(result.shape) / 2. - 0.5 + aia171_test_shift, rtol=1e-3, atol=0)
 
 
 def test_lower_clip(aia171_test_clipping):
@@ -144,7 +145,7 @@ def test_upper_clip(aia171_test_clipping):
 
 def test_calculate_clipping(aia171_test_clipping):
     answer = calculate_clipping(aia171_test_clipping * u.pix, aia171_test_clipping * u.pix)
-    assert_array_almost_equal(answer, ([2.0, 1.0]*u.pix, [2.0, 1.0]*u.pix))
+    assert_array_almost_equal(answer, ([2.0, 1.0] * u.pix, [2.0, 1.0] * u.pix))
 
 
 def test_clip_edges():
@@ -157,13 +158,15 @@ def test_clip_edges():
 
 
 def test__default_fmap_function():
-    assert(_default_fmap_function([1,2,3]).dtype == np.float64(1).dtype)
+    assert(_default_fmap_function([1, 2, 3]).dtype == np.float64(1).dtype)
 
 #
 # The following tests test functions that have mapcubes as inputs
 #
 # Setup the test mapcubes that have displacements
 # Pixel displacements have the y-displacement as the first entry
+
+
 @pytest.fixture
 def aia171_test_mc_pixel_displacements():
     return np.asarray([1.6, 10.1])
@@ -197,7 +200,7 @@ def test_calculate_match_template_shift(aia171_test_mc,
     # Test to see if the code can recover the displacements.
     test_displacements = calculate_match_template_shift(aia171_test_mc)
     assert_allclose(test_displacements['x'], aia171_mc_arcsec_displacements['x'], rtol=5e-2, atol=0)
-    assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0 )
+    assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0)
 
     # Test setting the template as a ndarray
     template_ndarray = aia171_test_map_layer[ny // 4: 3 * ny // 4, nx // 4: 3 * nx // 4]
@@ -206,7 +209,7 @@ def test_calculate_match_template_shift(aia171_test_mc,
     assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0)
 
     # Test setting the template as GenericMap
-    submap = aia171_test_map.submap([nx / 4, ny / 4]*u.pix, [3 * nx / 4, 3 * ny / 4]*u.pix)
+    submap = aia171_test_map.submap([nx / 4, ny / 4] * u.pix, [3 * nx / 4, 3 * ny / 4] * u.pix)
     test_displacements = calculate_match_template_shift(aia171_test_mc, template=submap)
     assert_allclose(test_displacements['x'], aia171_mc_arcsec_displacements['x'], rtol=5e-2, atol=0)
     assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0)
@@ -269,6 +272,7 @@ def test_mapcube_coalign_by_match_template(aia171_test_mc,
             assert_allclose(aia171_test_mc[im].reference_pixel[i_s] - test_mc[im].reference_pixel[i_s],
                             test_displacements[s][im] / m.scale[i_s],
                             rtol=5e-2, atol=0)
+
 
 def test_apply_shifts(aia171_test_map):
     # take two copies of the AIA image and create a test mapcube.

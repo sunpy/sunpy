@@ -17,7 +17,6 @@ from sunpy import map
 from sunpy.physics.solar_rotation import calculate_solar_rotate_shift, mapcube_solar_derotate
 
 
-
 @pytest.fixture
 def aia171_test_map():
     testpath = sunpy.data.test.rootdir
@@ -26,7 +25,7 @@ def aia171_test_map():
 
 @pytest.fixture
 def aia171_test_submap(aia171_test_map):
-    return aia171_test_map.submap(SkyCoord(((0, 0), (400, 500))*u.arcsec,
+    return aia171_test_map.submap(SkyCoord(((0, 0), (400, 500)) * u.arcsec,
                                            frame=aia171_test_map.coordinate_frame))
 
 
@@ -44,8 +43,8 @@ def aia171_test_mapcube(aia171_test_submap):
 # Known displacements for these mapcube layers when the layer index is set to 0
 @pytest.fixture
 def known_displacements_layer_index0():
-    return {'x': np.asarray([ -2.64321898e-12, -9.10078156e+00, -1.82203188e+01]),
-            'y': np.asarray([ -3.35376171e-12,  2.06812274e-01,  4.03135364e-01])}
+    return {'x': np.asarray([-2.64321898e-12, -9.10078156e+00, -1.82203188e+01]),
+            'y': np.asarray([-3.35376171e-12,  2.06812274e-01,  4.03135364e-01])}
 
 
 # Known displacements for these mapcube layers when the layer index is set to 1
@@ -55,7 +54,8 @@ def known_displacements_layer_index1():
             'y': np.asarray([-2.17404844e-01, 7.16227078e-12, 2.06935463e-01])}
 
 
-def test_calculate_solar_rotate_shift(aia171_test_mapcube, known_displacements_layer_index0, known_displacements_layer_index1):
+def test_calculate_solar_rotate_shift(
+        aia171_test_mapcube, known_displacements_layer_index0, known_displacements_layer_index1):
     # Test that the default works
     test_output = calculate_solar_rotate_shift(aia171_test_mapcube)
     assert_allclose(test_output['x'].to('arcsec').value, known_displacements_layer_index0['x'], rtol=5e-2, atol=1e-5)

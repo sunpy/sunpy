@@ -1,6 +1,6 @@
 """SDO Map subclass definitions"""
 from __future__ import absolute_import, print_function, division
-#pylint: disable=W0221,W0222,E1101,E1121
+# pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -86,6 +86,7 @@ class HMIMap(GenericMap):
     * `Instrument Page <http://hmi.stanford.edu>`_
     * `Analysis Guide <http://hmi.stanford.edu/doc/magnetic/guide.pdf>`_
     """
+
     def __init__(self, data, header, **kwargs):
 
         GenericMap.__init__(self, data, header, **kwargs)

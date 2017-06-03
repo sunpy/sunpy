@@ -54,6 +54,7 @@ class MultiMethod(object):
         function which receives args and kwargs and returns a tuple of
         values to consider for dispatch.
     """
+
     def __init__(self, get):
         self.get = get
 

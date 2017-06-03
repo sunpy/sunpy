@@ -82,9 +82,9 @@ def _regex_parse_time(inp, format):
         return inp, timedelta(days=0)
     if match.group("hour") == "24":
         if not all(
-                   _n_or_eq(_group_or_none(match, g, int), 00)
-                   for g in ["minute", "second", "microsecond"]
-                  ):
+            _n_or_eq(_group_or_none(match, g, int), 00)
+            for g in ["minute", "second", "microsecond"]
+        ):
             raise ValueError
         from_, to = match.span("hour")
         return inp[:from_] + "00" + inp[to:], timedelta(days=1)
@@ -190,7 +190,7 @@ def parse_time(time_string, time_format='', **kwargs):
             # clause is related to SunPy's database module.
             try:
                 ts, time_delta = _regex_parse_time(time_string,
-                                                       time_string_parse_format)
+                                                   time_string_parse_format)
                 if ts and time_delta:
                     return datetime.strptime(ts, time_string_parse_format) + time_delta
                 else:

@@ -238,7 +238,7 @@ def test_hpc_distance_3D():
 @pytest.mark.parametrize('frame',
                          [HeliographicStonyhurst, HeliographicCarrington])
 @pytest.mark.parametrize("args, kwargs", two_D_parameters[:2] + two_D_parameters[4:] +
-                         [(None, {'lat': 0*u.deg, 'lon': 0*u.arcsec})])
+                         [(None, {'lat': 0 * u.deg, 'lon': 0 * u.arcsec})])
 def test_create_hgs_2d(frame, args, kwargs):
     hgs1 = init_frame(frame, args, kwargs)
 

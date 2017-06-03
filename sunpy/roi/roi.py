@@ -92,8 +92,8 @@ class roi(object):
         else:
             endstring = self.end_time.isoformat()
         return('SunPy Region-of-interest (ROI) object' +
-        '\n-------------------------------------' +
-        '\nSource: \t\t' + self.source +
-        '\nStart time:\t\t' + startstring +
-        '\nEnd time: \t\t' + endstring +
-        '\nEvent description:\t' + str(self.description))
+               '\n-------------------------------------' +
+               '\nSource: \t\t' + self.source +
+               '\nStart time:\t\t' + startstring +
+               '\nEnd time: \t\t' + endstring +
+               '\nEvent description:\t' + str(self.description))

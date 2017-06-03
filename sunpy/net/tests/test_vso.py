@@ -180,7 +180,9 @@ def test_wave_xor():
     a ^= va.Wavelength(600 * u.AA, 800 * u.AA)
 
     assert a == attr.AttrOr(
-        [va.Wavelength(0 * u.AA, 200 * u.AA), va.Wavelength(400 * u.AA, 600 * u.AA), va.Wavelength(800 * u.AA, 1000 * u.AA)])
+        [va.Wavelength(0 * u.AA, 200 * u.AA),
+         va.Wavelength(400 * u.AA, 600 * u.AA),
+         va.Wavelength(800 * u.AA, 1000 * u.AA)])
 
 
 def test_err_dummyattr_create():
@@ -200,9 +202,11 @@ def test_wave_repr():
     assert repr(wav) == "<Wavelength(12.0, 16.0, 'Angstrom')>"
     assert repr(moarwav) == "<Wavelength(12.0, 15.0, 'Angstrom')>"
 
+
 def test_str():
     qr = QueryResponse([])
     assert str(qr) == 'Start Time End Time Source Instrument Type\n---------- -------- ------ ---------- ----'
+
 
 def test_repr():
     qr = QueryResponse([])

@@ -87,7 +87,7 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     if frame_time == 'synodic':
         rotation_deg -= 0.9856 * delta_days
 
-    #return Longitude((np.round(rotation_deg, 4)), u.deg)
+    # return Longitude((np.round(rotation_deg, 4)), u.deg)
     return np.round(rotation_deg, 4) * u.deg
 
 
@@ -329,30 +329,30 @@ def _sun_pos(date):
     # mean anomaly ME
     me = 358.4758440 + np.mod(35999.049750 * t, 360.0)
     ellcor = (6910.10 - 17.20 * t) * np.sin(np.deg2rad(me)) + \
-    72.30 * np.sin(np.deg2rad(2.0 * me))
+        72.30 * np.sin(np.deg2rad(2.0 * me))
     l = l + ellcor
 
     # allow for the Venus perturbations using the mean anomaly of Venus MV
     mv = 212.603219 + np.mod(58517.8038750 * t, 360.0)
     vencorr = 4.80 * np.cos(np.deg2rad(299.10170 + mv - me)) + \
-          5.50 * np.cos(np.deg2rad(148.31330 + 2.0 * mv - 2.0 * me)) + \
-          2.50 * np.cos(np.deg2rad(315.94330 + 2.0 * mv - 3.0 * me)) + \
-          1.60 * np.cos(np.deg2rad(345.25330 + 3.0 * mv - 4.0 * me)) + \
-          1.00 * np.cos(np.deg2rad(318.150 + 3.0 * mv - 5.0 * me))
+        5.50 * np.cos(np.deg2rad(148.31330 + 2.0 * mv - 2.0 * me)) + \
+        2.50 * np.cos(np.deg2rad(315.94330 + 2.0 * mv - 3.0 * me)) + \
+        1.60 * np.cos(np.deg2rad(345.25330 + 3.0 * mv - 4.0 * me)) + \
+        1.00 * np.cos(np.deg2rad(318.150 + 3.0 * mv - 5.0 * me))
     l = l + vencorr
 
     # Allow for the Mars perturbations using the mean anomaly of Mars MM
     mm = 319.5294250 + np.mod(19139.858500 * t, 360.0)
     marscorr = 2.0 * np.cos(np.deg2rad(343.88830 - 2.0 * mm + 2.0 * me)) + \
-            1.80 * np.cos(np.deg2rad(200.40170 - 2.0 * mm + me))
+        1.80 * np.cos(np.deg2rad(200.40170 - 2.0 * mm + me))
     l = l + marscorr
 
     # Allow for the Jupiter perturbations using the mean anomaly of Jupiter MJ
     mj = 225.3283280 + np.mod(3034.69202390 * t, 360.00)
     jupcorr = 7.20 * np.cos(np.deg2rad(179.53170 - mj + me)) + \
-          2.60 * np.cos(np.deg2rad(263.21670 - mj)) + \
-          2.70 * np.cos(np.deg2rad(87.14500 - 2.0 * mj + 2.0 * me)) + \
-          1.60 * np.cos(np.deg2rad(109.49330 - 2.0 * mj + me))
+        2.60 * np.cos(np.deg2rad(263.21670 - mj)) + \
+        2.70 * np.cos(np.deg2rad(87.14500 - 2.0 * mj + 2.0 * me)) + \
+        1.60 * np.cos(np.deg2rad(109.49330 - 2.0 * mj + me))
     l = l + jupcorr
 
     # Allow for the Moons perturbations using the mean elongation of the Moon
@@ -377,12 +377,12 @@ def _sun_pos(date):
 
     # Form the True Obliquity
     oblt = 23.4522940 - 0.01301250 * t + \
-    (9.20 * np.cos(np.deg2rad(omega))) / 3600.0
+        (9.20 * np.cos(np.deg2rad(omega))) / 3600.0
 
     # Form Right Ascension and Declination
     l = l / 3600.0
-    ra = np.rad2deg(np.arctan2(np.sin(np.deg2rad(l)) * \
-                        np.cos(np.deg2rad(oblt)), np.cos(np.deg2rad(l))))
+    ra = np.rad2deg(np.arctan2(np.sin(np.deg2rad(l)) *
+                               np.cos(np.deg2rad(oblt)), np.cos(np.deg2rad(l))))
 
     if isinstance(ra, np.ndarray):
         ra[ra < 0.0] += 360.0
@@ -400,4 +400,3 @@ def _sun_pos(date):
             "dec": Latitude(dec, u.deg),
             "app_long": Longitude(l, u.deg),
             "obliq": Angle(oblt, u.deg)}
-

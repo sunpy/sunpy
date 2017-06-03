@@ -5,15 +5,17 @@ from astropy import units as u
 from astropy.coordinates import Longitude, Latitude, Angle
 from sunpy.physics.differential_rotation import diff_rot, _sun_pos, _calc_P_B0_SD, rot_hpc
 from sunpy.tests.helpers import assert_quantity_allclose
-#pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
+# pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
 
 # Please note the numbers in these tests are not checked for physical
 # accuracy, only that they are the values the function was outputting upon
 # implementation.
 
+
 @pytest.fixture
 def seconds_per_day():
     return 24 * 60 * 60.0 * u.s
+
 
 def test_single(seconds_per_day):
     rot = diff_rot(10 * seconds_per_day, 30 * u.deg)

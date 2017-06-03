@@ -62,7 +62,7 @@ def mapcube_all_the_same_some_have_masks(aia_map, masked_aia_map):
 def mapcube_different(aia_map):
     """ Mapcube allows that the size of the image data in each map be
     different.  This mapcube contains such maps."""
-    return sunpy.map.Map([aia_map, aia_map.superpixel((4, 4)*u.pix)], cube=True)
+    return sunpy.map.Map([aia_map, aia_map.superpixel((4, 4) * u.pix)], cube=True)
 
 
 def test_all_maps_same_shape(mapcube_all_the_same, mapcube_different):

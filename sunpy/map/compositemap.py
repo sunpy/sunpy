@@ -74,13 +74,14 @@ class CompositeMap(object):
     >>> comp_map.peek()   # doctest: +SKIP
 
     """
+
     def __init__(self, *args, **kwargs):
         self._maps = expand_list(args)
 
         for m in self._maps:
             if not isinstance(m, GenericMap):
                 raise ValueError(
-                           'CompositeMap expects pre-constructed map objects.')
+                    'CompositeMap expects pre-constructed map objects.')
 
         # Default alpha and zorder values
         alphas = [1] * len(self._maps)
@@ -260,7 +261,7 @@ class CompositeMap(object):
         if percent is False:
             self._maps[index].levels = levels
         else:
-            self._maps[index].levels = [self._maps[index].max()*level/100.0 for level in levels]
+            self._maps[index].levels = [self._maps[index].max() * level / 100.0 for level in levels]
 
     def set_plot_settings(self, index, plot_settings):
         """Sets the plot settings for a layer in the composite image.
@@ -329,7 +330,7 @@ class CompositeMap(object):
         return self._maps[index].draw_limb(axes=axes)
 
     @u.quantity_input(grid_spacing=u.deg)
-    def draw_grid(self, index=None, axes=None, grid_spacing=20*u.deg):
+    def draw_grid(self, index=None, axes=None, grid_spacing=20 * u.deg):
         """Draws a grid over the surface of the Sun.
 
         Parameters
@@ -362,7 +363,7 @@ class CompositeMap(object):
         ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing)
         return ax
 
-    def plot(self, axes=None, annotate=True, # pylint: disable=W0613
+    def plot(self, axes=None, annotate=True,  # pylint: disable=W0613
              title="SunPy Composite Plot", **matplot_args):
         """Plots the composite map object using matplotlib
 
@@ -468,11 +469,11 @@ class CompositeMap(object):
             axes = plt.Axes(figure, [0., 0., 1., 1.])
             axes.set_axis_off()
             figure.add_axes(axes)
-            matplot_args.update({'annotate':False})
+            matplot_args.update({'annotate': False})
         else:
             axes = figure.add_subplot(111)
 
-        ret = self.plot(axes=axes,**matplot_args)
+        ret = self.plot(axes=axes, **matplot_args)
 
         if not isinstance(colorbar, bool) and isinstance(colorbar, int):
             figure.colorbar(ret[colorbar])

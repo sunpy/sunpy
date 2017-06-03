@@ -43,6 +43,7 @@ def test_no_satellite():
     with pytest.raises(ValueError):
         LCClient.query(Time("1950/01/01", "1950/02/02"), Instrument('goes'))
 
+
 @example(a.Time("2006-08-01", "2006-08-01"))
 @example(a.Time("1983-05-01", "1983-05-02"))
 # This example tests a time range with a satellite jump and no overlap

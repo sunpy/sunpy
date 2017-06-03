@@ -63,9 +63,9 @@ Websites
 
 from __future__ import absolute_import, division, print_function
 from astropy.table import Table
-from sunpy.extern.six import  iteritems
+from sunpy.extern.six import iteritems
 
-from sunpy.sun import _constants as _con # pylint: disable=E0611
+from sunpy.sun import _constants as _con  # pylint: disable=E0611
 
 __all__ = ['get', 'find', 'print_all']
 
@@ -121,8 +121,8 @@ def find(sub=None):
     if sub is None:
         result = list(constants.keys())
     else:
-        result = [key for key in constants \
-                 if sub.lower() in key.lower()]
+        result = [key for key in constants
+                  if sub.lower() in key.lower()]
 
     result.sort()
     return result

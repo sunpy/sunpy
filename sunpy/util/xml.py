@@ -2,7 +2,7 @@
 
 from __future__ import absolute_import, division, print_function
 
-from xml.dom.minidom import parseString #pylint: disable=E0611,F0401
+from xml.dom.minidom import parseString  # pylint: disable=E0611,F0401
 
 __all__ = ['NotTextNodeError', 'xml_to_dict', 'node_to_dict', 'get_node_text']
 
@@ -11,8 +11,11 @@ __all__ = ['NotTextNodeError', 'xml_to_dict', 'node_to_dict', 'get_node_text']
 # Author: Christoph Dietze
 # URL   : http://code.activestate.com/recipes/116539/
 #
+
+
 class NotTextNodeError(Exception):
     pass
+
 
 def xml_to_dict(xmlstring):
     """
@@ -36,6 +39,7 @@ def xml_to_dict(xmlstring):
        {u'outer': {u'inner': u'two'}}
     """
     return node_to_dict(parseString(xmlstring))
+
 
 def node_to_dict(node):
     """
@@ -78,6 +82,7 @@ def node_to_dict(node):
         dic.update({n.nodeName: text})
         continue
     return dic
+
 
 def get_node_text(node):
     """

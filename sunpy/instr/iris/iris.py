@@ -46,7 +46,7 @@ def SJI_to_cube(filename, start=0, stop=None, hdu=0):
     if not stop:
         stop = len(splits)
 
-    headers = [hdus[hdu][1]]*(stop-start)
+    headers = [hdus[hdu][1]] * (stop - start)
     datas = hdus[hdu][0][start:stop]
 
     # Make the cube:

@@ -81,4 +81,3 @@ def test_main_figures(monkeypatch):
     args = sunpy.tests.main(figure=True)
     assert args in (['-k-online', 'sunpy'],
                     ['-k-online', root_dir])
-

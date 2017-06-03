@@ -39,8 +39,9 @@ class MockConfig(object):
         return self.dct[one][other]
 
 
-def wait_for(n, callback): #pylint: disable=W0613
+def wait_for(n, callback):  # pylint: disable=W0613
     items = []
+
     def _fun(handler):
         items.append(handler)
         if len(items) == n:
@@ -62,6 +63,7 @@ def get_and_create_temp_directory(tmpdir):
 
     return sunpy.config.get('downloads', 'download_dir')
 
+
 @pytest.mark.online
 def test_path_exception():
     x = threading.Event()
@@ -75,6 +77,7 @@ def test_path_exception():
     x.wait(10)
     assert x.isSet()
     dw.stop()
+
 
 @pytest.mark.online
 def test_download_http():
@@ -93,7 +96,8 @@ def test_download_http():
     path_fun = partial(default_name, tmp)
 
     dw = Downloader(1, 1)
-    _stop = lambda _: dw.stop()
+
+    def _stop(_): return dw.stop()
 
     timeout = CalledProxy(dw.stop)
     timer = threading.Timer(60, timeout)
@@ -114,6 +118,7 @@ def test_download_http():
     for item in items:
         assert os.path.exists(item['path'])
 
+
 @pytest.mark.online
 def test_download_default_dir():
     _config = sunpy.config
@@ -123,7 +128,8 @@ def test_download_default_dir():
         path = get_and_create_temp_directory(tmpdir)
 
         dw = Downloader(1, 1)
-        _stop = lambda _: dw.stop()
+
+        def _stop(_): return dw.stop()
 
         timeout = CalledProxy(dw.stop)
         errback = CalledProxy(_stop)
@@ -145,12 +151,14 @@ def test_download_default_dir():
     finally:
         sunpy.config = _config
 
+
 @pytest.mark.online
 def test_download_dir():
     tmpdir = tempfile.mkdtemp()
 
     dw = Downloader(1, 1)
-    _stop = lambda _: dw.stop()
+
+    def _stop(_): return dw.stop()
     timeout = CalledProxy(dw.stop)
     errback = CalledProxy(_stop)
 

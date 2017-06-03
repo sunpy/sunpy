@@ -202,7 +202,6 @@ def test__iter_empty():
     assert time.time._iter_empty(one_count) is True
 
 
-
 def test_is_time():
     assert time.is_time(datetime.utcnow()) is True
     assert time.is_time('2017-02-14 08:08:12.999', "%Y-%m-%d %H:%M:%S.%f") is True

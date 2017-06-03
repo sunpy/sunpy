@@ -297,7 +297,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
                             array=string_time)]
         if channels:
             for i, f in enumerate(channels):
-                cols.append(fits.Column(name=filecolumns[i+1], format="D",
+                cols.append(fits.Column(name=filecolumns[i + 1], format="D",
                                         array=f))
         coldefs = fits.ColDefs(cols)
         tbhdu = fits.new_table(coldefs)
@@ -647,15 +647,15 @@ def split_series_using_lytaf(timearray, data, lytaf):
     # now extract the good data regions and ignore the bad ones
     for h in range(0, limit, 2):
 
-        if h == limit-1:
+        if h == limit - 1:
             # can't index h+1 here. Go to end of series
             subtimes = datetime_array[disc[h]:-1]
             subdata = data[disc[h]:-1]
             subseries = {'subtimes': subtimes, 'subdata': subdata}
             split_series.append(subseries)
         else:
-            subtimes = datetime_array[disc[h]:disc[h+1]]
-            subdata = data[disc[h]:disc[h+1]]
+            subtimes = datetime_array[disc[h]:disc[h + 1]]
+            subdata = data[disc[h]:disc[h + 1]]
             subseries = {'subtimes': subtimes, 'subdata': subdata}
             split_series.append(subseries)
 

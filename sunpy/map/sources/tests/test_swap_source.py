@@ -15,15 +15,19 @@ import sunpy.data.test
 path = sunpy.data.test.rootdir
 fitslist = glob.glob(os.path.join(path, "SWAP", "*"))
 
+
 @pytest.fixture(scope="module", params=fitslist)
 def createSWAP(request):
     """Creates an SWAPMap from a FITS file."""
     return Map(request.param)
 
 # SWAP Tests
+
+
 def test_fitstoSWAP(createSWAP):
     """Tests the creation of SWAPMap using FITS."""
     assert isinstance(createSWAP, SWAPMap)
+
 
 def test_is_datasource_for(createSWAP):
     """Test the is_datasource_for method of SWAPMap.
@@ -31,9 +35,11 @@ def test_is_datasource_for(createSWAP):
     can be a MetaDict object."""
     assert createSWAP.is_datasource_for(createSWAP.data, createSWAP.meta)
 
+
 def test_observatory(createSWAP):
     """Tests the observatory property of the SWAPMap object."""
     assert createSWAP.observatory == "PROBA2"
+
 
 def test_measurement(createSWAP):
     """Tests the measurement property of the SWAPMap object."""

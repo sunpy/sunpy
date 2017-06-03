@@ -88,13 +88,13 @@ class NorthOffsetFrame(object):
 
         lon = rep.lon
         lat = rep.lat
-        if lat > 0*u.deg:
-            lat = lat - 90*u.deg
+        if lat > 0 * u.deg:
+            lat = lat - 90 * u.deg
             rotation = None
         else:
-            lon = lon - 180*u.deg
-            lat = -90*u.deg - lat
-            rotation = 180*u.deg
+            lon = lon - 180 * u.deg
+            lat = -90 * u.deg - lat
+            rotation = 180 * u.deg
 
         if isinstance(origin_frame.data, UnitSphericalRepresentation):
             new_rep = origin_frame.representation(lon=lon,

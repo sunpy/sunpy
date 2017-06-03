@@ -221,9 +221,9 @@ def find_best_match_location(corr):
 
     # Get the correlation function around the maximum
     array_around_maximum = corr[np.max([0, cor_max_y - 1]): np.min([cor_max_y + 2, corr.shape[0] - 1]),
-                                  np.max([0, cor_max_x - 1]): np.min([cor_max_x + 2, corr.shape[1] - 1])]
+                                np.max([0, cor_max_x - 1]): np.min([cor_max_x + 2, corr.shape[1] - 1])]
     y_shift_relative_to_maximum, x_shift_relative_to_maximum = \
-    get_correlation_shifts(array_around_maximum)
+        get_correlation_shifts(array_around_maximum)
 
     # Get shift relative to correlation array
     y_shift_relative_to_correlation_array = y_shift_relative_to_maximum + cor_max_y * u.pix
@@ -459,8 +459,8 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
     # Calculate a template.  If no template is passed then define one
     # from the index layer.
     if template is None:
-        tplate = mc.maps[layer_index].data[int(ny/4): int(3*ny/4),
-                                           int(nx/4): int(3*nx/4)]
+        tplate = mc.maps[layer_index].data[int(ny / 4): int(3 * ny / 4),
+                                           int(nx / 4): int(3 * nx / 4)]
     elif isinstance(template, GenericMap):
         tplate = template.data
     elif isinstance(template, np.ndarray):

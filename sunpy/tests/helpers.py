@@ -52,7 +52,6 @@ skip_glymur = pytest.mark.skipif(SKIP_GLYMUR, reason="Glymur can not be imported
 skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available")
 
 
-
 @pytest.fixture
 def warnings_as_errors(request):
     warnings.simplefilter('error')

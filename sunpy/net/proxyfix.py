@@ -1,5 +1,6 @@
 from suds.transport.http import HttpTransport as SudsHttpTransport
 
+
 class WellBehavedHttpTransport(SudsHttpTransport):
     """HttpTransport which properly obeys the ``*_proxy`` environment variables."""
 

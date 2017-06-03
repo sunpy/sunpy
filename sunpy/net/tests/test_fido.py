@@ -30,7 +30,7 @@ def offline_query(draw, instrument=offline_instruments()):
     query = draw(instrument)
     # If we have AttrAnd then we don't have GOES
     if isinstance(query, a.Instrument) and query.value == 'norh':
-        query &= a.Wavelength(17*u.GHz)
+        query &= a.Wavelength(17 * u.GHz)
     if isinstance(query, a.Instrument) and query.value == 'goes':
         query &= draw(goes_time())
     else:
@@ -84,7 +84,7 @@ def check_response(query, unifiedresp):
 def test_save_path():
     with tempfile.TemporaryDirectory() as target_dir:
         qr = Fido.search(a.Instrument('EVE'), a.Time("2016/10/01", "2016/10/02"), a.Level(0))
-        files = Fido.fetch(qr, path=os.path.join(target_dir, "{instrument}"+os.path.sep+"{level}"))
+        files = Fido.fetch(qr, path=os.path.join(target_dir, "{instrument}" + os.path.sep + "{level}"))
         for f in files:
             assert target_dir in f
             assert "eve{}0".format(os.path.sep) in f
@@ -121,7 +121,7 @@ def test_no_time_error():
 def test_no_match():
     with pytest.raises(NoMatchError):
         Fido.search(a.Time("2016/10/01", "2016/10/02"), a.jsoc.Series("bob"),
-                    a.vso.Sample(10*u.s))
+                    a.vso.Sample(10 * u.s))
 
 
 def test_call_error():
@@ -154,12 +154,12 @@ def test_multiple_match():
 
 @pytest.mark.online
 def test_no_wait_fetch():
-        qr = Fido.search(a.Instrument('EVE'),
-                         a.Time("2016/10/01", "2016/10/02"),
-                         a.Level(0))
-        res = Fido.fetch(qr, wait=False)
-        assert isinstance(res, DownloadResponse)
-        assert isinstance(res.wait(), list)
+    qr = Fido.search(a.Instrument('EVE'),
+                     a.Time("2016/10/01", "2016/10/02"),
+                     a.Level(0))
+    res = Fido.fetch(qr, wait=False)
+    assert isinstance(res, DownloadResponse)
+    assert isinstance(res.wait(), list)
 
 
 """

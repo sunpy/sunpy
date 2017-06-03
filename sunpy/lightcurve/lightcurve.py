@@ -123,7 +123,7 @@ class LightCurve(object):
         url = cls._get_url_for_date_range(timerange, **kwargs)
         filepath = cls._download(
             url, kwargs,
-            err = "Unable to download data for specified date range"
+            err="Unable to download data for specified date range"
         )
         result = cls.from_file(filepath)
         result.data = result.data.truncate(timerange.start, timerange.end)

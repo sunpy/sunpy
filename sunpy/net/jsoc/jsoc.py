@@ -352,7 +352,7 @@ class JSOCClient(object):
         requestIDs = self.request_data(jsoc_response)
         # Add them to the response for good measure
         jsoc_response.requestIDs = requestIDs
-        time.sleep(sleep/2.)
+        time.sleep(sleep / 2.)
 
         r = Results(lambda x: None, done=lambda maps: [v['path'] for v in maps.values()])
 
@@ -443,7 +443,7 @@ class JSOCClient(object):
                         print(print_message.format(ar['filename']))
                         # Add the file on disk to the output
                         results.map_.update({ar['filename']:
-                                            {'path': os.path.join(path, ar['filename'])}})
+                                             {'path': os.path.join(path, ar['filename'])}})
 
                 if progress:
                     print_message = "{0} URLs found for download. Totalling {1}MB"
@@ -511,10 +511,10 @@ class JSOCClient(object):
             sample = '@{}s'.format(sample)
 
         dataset = '{series}[{start}-{end}{sample}]{wavelength}{segment}'.format(
-                   series=series, start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                   end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                   sample=sample,
-                   wavelength=wavelength, segment=segment)
+            series=series, start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+            end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+            sample=sample,
+            wavelength=wavelength, segment=segment)
 
         return dataset
 

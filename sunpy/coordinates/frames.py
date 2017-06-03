@@ -228,9 +228,9 @@ class Heliocentric(BaseCoordinateFrame):
 
     dateobs = TimeFrameAttributeSunPy()
     observer = CoordinateAttribute(HeliographicStonyhurst,
-                                   default=HeliographicStonyhurst(0*u.deg,
-                                                                  0*u.deg,
-                                                                  1*u.AU))
+                                   default=HeliographicStonyhurst(0 * u.deg,
+                                                                  0 * u.deg,
+                                                                  1 * u.AU))
 
 
 class Helioprojective(BaseCoordinateFrame):
@@ -303,9 +303,9 @@ class Helioprojective(BaseCoordinateFrame):
     dateobs = TimeFrameAttributeSunPy()
     rsun = FrameAttribute(default=RSUN_METERS.to(u.km))
     observer = CoordinateAttribute(HeliographicStonyhurst,
-                                   default=HeliographicStonyhurst(0*u.deg,
-                                                                  0*u.deg,
-                                                                  1*u.AU))
+                                   default=HeliographicStonyhurst(0 * u.deg,
+                                                                  0 * u.deg,
+                                                                  1 * u.AU))
 
     def __init__(self, *args, **kwargs):
         _rep_kwarg = kwargs.get('representation', None)
@@ -350,7 +350,7 @@ class Helioprojective(BaseCoordinateFrame):
         alpha = np.arccos(np.cos(lat) * np.cos(lon)).to(lat.unit)
         c = self.observer.radius**2 - self.rsun**2
         b = -2 * self.observer.radius * np.cos(alpha)
-        d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2
+        d = ((-1 * b) - np.sqrt(b**2 - 4 * c)) / 2
         return self.realize_frame(SphericalWrap180Representation(lon=lon,
                                                                  lat=lat,
                                                                  distance=d))
