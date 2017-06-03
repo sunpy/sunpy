@@ -5,7 +5,7 @@ import numpy as np
 import sunpy.map
 from astropy.wcs import WCS
 
-from ..frames import *
+from sunpy.coordinates.frames import Helioprojective, Heliocentric, HeliographicStonyhurst, HeliographicCarrington
 from ..wcs_utils import solar_wcs_frame_mapping
 
 
@@ -56,12 +56,13 @@ def test_none():
 
 def test_wcs_extras():
     """
-    To enable proper creation of the coordinate systems, Map sticks three extra attributes on the WCS object:
+    To enable proper creation of the coordinate systems, Map sticks three extra
+    attributes on the WCS object:
     * heliographic_longitude
     * heliographic_latitude
     * dsun
     """
-    data = np.ones([6,6], dtype=np.float64)
+    data = np.ones([6, 6], dtype=np.float64)
     header = {'CRVAL1': 0,
               'CRVAL2': 0,
               'CRPIX1': 5,
@@ -90,14 +91,13 @@ def test_wcs_extras():
 
     wcs = generic_map.wcs
 
-    assert wcs.heliographic_latitude.value == 0
-    assert wcs.heliographic_longitude.value == 0
-    assert wcs.dsun.value == 10
+    assert wcs.heliographic_observer.lat.value == 0
+    assert wcs.heliographic_observer.lon.value == 0
+    assert wcs.heliographic_observer.radius.value == 10
 
     result = solar_wcs_frame_mapping(wcs)
 
     assert isinstance(result, Helioprojective)
-    assert result.D0.value == 10
-    assert result.L0.value == 0
-    assert result.B0.value == 0
-
+    assert result.observer.lat.value == 0
+    assert result.observer.lon.value == 0
+    assert result.observer.radius.value == 10
