@@ -30,7 +30,6 @@ from sunpy.extern import six
 
 testpath = sunpy.data.test.rootdir
 
-
 @pytest.fixture
 def aia171_test_map():
     return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
@@ -640,19 +639,18 @@ def test_hc_warn():
     with pytest.warns(UserWarning):
         sunpy.map.Map((data, header))
 
+# Dimension testing
+
+
 def test_more_than_two_dimensions():
-    """Check to see if an appropriate error is provided when a FIT data with more than two dimensions is loaded
-    Fixes #1919
-    To replicate the bug we need to load a >2-dim dataset with a OBSERVATORY header
-    """
-    bad_data = np.random.rand(2,2,2)
+    """Checks to see if an appropriate error is raised when a FITs with more than two dimensions is loaded.
+    We need to load a >2-dim dataset with a TELESCOP header"""
+
+    # Data crudely represnts 4 stokes, 4 wavelengths with Y,X of 3 and 5.
+    bad_data = np.random.rand(4, 4, 3, 5)
     hdr = fits.Header()
     hdr['TELESCOP'] = 'XXX'
-    # Test fails if there is no user warning
-    warnings.simplefilter('always')
-    pytest.warns(Warning,'sunpy.map.Map(bad_data, hdr)')
-    # Test fails if the bad_map.__repr__() causes an exception
     bad_map = sunpy.map.Map(bad_data, hdr)
-    repr(bad_map)
-    # Test fails if map.ndim > 2
+    # Test fails if map.ndim > 2 and if the dimensions of the array are wrong.
     assert bad_map.ndim is 2
+    assert_quantity_allclose(bad_map.dimensions, (5 * u.pix, 3 * u.pix))
