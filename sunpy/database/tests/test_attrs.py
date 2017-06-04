@@ -48,9 +48,7 @@ def session():
 @pytest.fixture
 def vso_session():
     client = vso.VSOClient()
-    qr = client.query(
-        vso.attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
-        vso.attrs.Instrument('RHESSI'))
+    qr = client.query(vso.attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)), vso.attrs.Instrument('RHESSI'))
     entries = tables.entries_from_query_result(qr)
     database = Database('sqlite:///:memory:')
     for entry in entries:
@@ -64,7 +62,7 @@ def test_starred_nonzero():
 
 
 def test_starred_invert():
-    assert not ~Starred()
+    assert not~Starred()
 
 
 def test_starred_and_different_types(obj):
@@ -113,17 +111,13 @@ def test_path_repr():
 
 def test_downloadtime_repr():
     download_time = DownloadTime('2008-12-8', datetime(2009, 6, 12))
-    expected_repr = (
-        '<DownloadTime(datetime.datetime(2008, 12, 8, 0, 0), '
-        'datetime.datetime(2009, 6, 12, 0, 0))>')
+    expected_repr = ('<DownloadTime(datetime.datetime(2008, 12, 8, 0, 0), ' 'datetime.datetime(2009, 6, 12, 0, 0))>')
     assert repr(download_time) == expected_repr
 
 
 def test_inverted_downloadtime_repr():
     download_time = ~DownloadTime('2008-12-8', datetime(2009, 6, 12))
-    expected_repr = (
-        '<~DownloadTime(datetime.datetime(2008, 12, 8, 0, 0), '
-        'datetime.datetime(2009, 6, 12, 0, 0))>')
+    expected_repr = ('<~DownloadTime(datetime.datetime(2008, 12, 8, 0, 0), ' 'datetime.datetime(2009, 6, 12, 0, 0))>')
     assert repr(download_time) == expected_repr
 
 
@@ -146,19 +140,16 @@ def test_walker_create_starred_true(session):
     fits_header_entry.id = 1
     assert len(entries) == 5
     assert entries == [
-        tables.DatabaseEntry(
-            id=2, starred=True, download_time=datetime(2005, 6, 15, 2)),
-        tables.DatabaseEntry(
-            id=4, starred=True, download_time=datetime(2005, 6, 15, 4)),
-        tables.DatabaseEntry(
-            id=6, path='/tmp', starred=True,
-            download_time=datetime(2005, 6, 15, 6)),
-        tables.DatabaseEntry(
-            id=8, starred=True, download_time=datetime(2005, 6, 15, 8)),
-        tables.DatabaseEntry(
-            id=10, starred=True, tags=[tag],
-            download_time=datetime(2005, 6, 15, 10),
-            fits_header_entries=[fits_header_entry])]
+        tables.DatabaseEntry(id=2, starred=True, download_time=datetime(2005, 6, 15, 2)), tables.DatabaseEntry(
+            id=4, starred=True, download_time=datetime(2005, 6, 15, 4)), tables.DatabaseEntry(
+                id=6, path='/tmp', starred=True, download_time=datetime(2005, 6, 15, 6)), tables.DatabaseEntry(
+                    id=8, starred=True, download_time=datetime(2005, 6, 15, 8)), tables.DatabaseEntry(
+                        id=10,
+                        starred=True,
+                        tags=[tag],
+                        download_time=datetime(2005, 6, 15, 10),
+                        fits_header_entries=[fits_header_entry])
+    ]
 
 
 def test_walker_create_starred_false(session):
@@ -167,15 +158,12 @@ def test_walker_create_starred_false(session):
     tag.id = 1
     assert len(entries) == 5
     assert entries == [
-        tables.DatabaseEntry(id=1, download_time=datetime(2005, 6, 15, 1)),
-        tables.DatabaseEntry(
-            id=3, path='/tmp', download_time=datetime(2005, 6, 15, 3)),
-        tables.DatabaseEntry(
-            id=5, tags=[tag], download_time=datetime(2005, 6, 15, 5)),
-        tables.DatabaseEntry(
-            id=7, download_time=datetime(2005, 6, 15, 7)),
-        tables.DatabaseEntry(
-            id=9, path='/tmp', download_time=datetime(2005, 6, 15, 9))]
+        tables.DatabaseEntry(id=1, download_time=datetime(2005, 6, 15, 1)), tables.DatabaseEntry(
+            id=3, path='/tmp', download_time=datetime(2005, 6, 15, 3)), tables.DatabaseEntry(
+                id=5, tags=[tag], download_time=datetime(2005, 6, 15, 5)), tables.DatabaseEntry(
+                    id=7, download_time=datetime(2005, 6, 15, 7)), tables.DatabaseEntry(
+                        id=9, path='/tmp', download_time=datetime(2005, 6, 15, 9))
+    ]
 
 
 def test_walker_create_tag_positive(session):
@@ -186,34 +174,28 @@ def test_walker_create_tag_positive(session):
     fits_header_entry.id = 1
     assert len(entries) == 2
     assert entries == [
-        tables.DatabaseEntry(
-            id=5, tags=[tag], download_time=datetime(2005, 6, 15, 5)),
-        tables.DatabaseEntry(
-            id=10, starred=True, tags=[tag],
+        tables.DatabaseEntry(id=5, tags=[tag], download_time=datetime(2005, 6, 15, 5)), tables.DatabaseEntry(
+            id=10,
+            starred=True,
+            tags=[tag],
             download_time=datetime(2005, 6, 15, 10),
-            fits_header_entries=[fits_header_entry])]
+            fits_header_entries=[fits_header_entry])
+    ]
 
 
 def test_walker_create_tag_negative(session):
     entries = walker.create(~Tag('foo'), session)
     assert len(entries) == 8
     assert entries == [
-        tables.DatabaseEntry(id=1, download_time=datetime(2005, 6, 15, 1)),
-        tables.DatabaseEntry(
-            id=2, starred=True, download_time=datetime(2005, 6, 15, 2)),
-        tables.DatabaseEntry(
-            id=3, path='/tmp', download_time=datetime(2005, 6, 15, 3)),
-        tables.DatabaseEntry(
-            id=4, starred=True, download_time=datetime(2005, 6, 15, 4)),
-        tables.DatabaseEntry(
-            id=6, path='/tmp', starred=True,
-            download_time=datetime(2005, 6, 15, 6)),
-        tables.DatabaseEntry(
-            id=7, download_time=datetime(2005, 6, 15, 7)),
-        tables.DatabaseEntry(
-            id=8, starred=True, download_time=datetime(2005, 6, 15, 8)),
-        tables.DatabaseEntry(
-            id=9, path='/tmp', download_time=datetime(2005, 6, 15, 9))]
+        tables.DatabaseEntry(id=1, download_time=datetime(2005, 6, 15, 1)), tables.DatabaseEntry(
+            id=2, starred=True, download_time=datetime(2005, 6, 15, 2)), tables.DatabaseEntry(
+                id=3, path='/tmp', download_time=datetime(2005, 6, 15, 3)), tables.DatabaseEntry(
+                    id=4, starred=True, download_time=datetime(2005, 6, 15, 4)), tables.DatabaseEntry(
+                        id=6, path='/tmp', starred=True, download_time=datetime(2005, 6, 15, 6)), tables.DatabaseEntry(
+                            id=7, download_time=datetime(2005, 6, 15, 7)), tables.DatabaseEntry(
+                                id=8, starred=True, download_time=datetime(2005, 6, 15, 8)), tables.DatabaseEntry(
+                                    id=9, path='/tmp', download_time=datetime(2005, 6, 15, 9))
+    ]
 
 
 def test_walker_create_anded_query(session):
@@ -224,7 +206,9 @@ def test_walker_create_anded_query(session):
     fits_header_entry = tables.FitsHeaderEntry('INSTRUME', 'EIT')
     fits_header_entry.id = 1
     assert tables.DatabaseEntry(
-        id=10, starred=True, tags=[tag],
+        id=10,
+        starred=True,
+        tags=[tag],
         download_time=datetime(2005, 6, 15, 10),
         fits_header_entries=[fits_header_entry]) in entries
 
@@ -236,19 +220,15 @@ def test_walker_create_ored_query(session):
     tag.id = 1
     fits_header_entry = tables.FitsHeaderEntry('INSTRUME', 'EIT')
     fits_header_entry.id = 1
+    assert tables.DatabaseEntry(id=2, starred=True, download_time=datetime(2005, 6, 15, 2)) in entries
+    assert tables.DatabaseEntry(id=4, starred=True, download_time=datetime(2005, 6, 15, 4)) in entries
+    assert tables.DatabaseEntry(id=5, tags=[tag], download_time=datetime(2005, 6, 15, 5)) in entries
+    assert tables.DatabaseEntry(id=6, path='/tmp', starred=True, download_time=datetime(2005, 6, 15, 6)) in entries
+    assert tables.DatabaseEntry(id=8, starred=True, download_time=datetime(2005, 6, 15, 8)) in entries
     assert tables.DatabaseEntry(
-        id=2, starred=True, download_time=datetime(2005, 6, 15, 2)) in entries
-    assert tables.DatabaseEntry(
-        id=4, starred=True, download_time=datetime(2005, 6, 15, 4)) in entries
-    assert tables.DatabaseEntry(
-        id=5, tags=[tag], download_time=datetime(2005, 6, 15, 5)) in entries
-    assert tables.DatabaseEntry(
-        id=6, path='/tmp', starred=True,
-        download_time=datetime(2005, 6, 15, 6)) in entries
-    assert tables.DatabaseEntry(
-        id=8, starred=True, download_time=datetime(2005, 6, 15, 8)) in entries
-    assert tables.DatabaseEntry(
-        id=10, starred=True, tags=[tag],
+        id=10,
+        starred=True,
+        tags=[tag],
         download_time=datetime(2005, 6, 15, 10),
         fits_header_entries=[fits_header_entry]) in entries
 
@@ -261,16 +241,14 @@ def test_walker_create_complex_query(session):
     tag.id = 1
     fits_header_entry = tables.FitsHeaderEntry('INSTRUME', 'EIT')
     fits_header_entry.id = 1
+    assert tables.DatabaseEntry(id=1, download_time=datetime(2005, 6, 15, 1)) in entries
+    assert tables.DatabaseEntry(id=3, path='/tmp', download_time=datetime(2005, 6, 15, 3)) in entries
+    assert tables.DatabaseEntry(id=7, download_time=datetime(2005, 6, 15, 7)) in entries
+    assert tables.DatabaseEntry(id=9, path='/tmp', download_time=datetime(2005, 6, 15, 9)) in entries
     assert tables.DatabaseEntry(
-        id=1, download_time=datetime(2005, 6, 15, 1)) in entries
-    assert tables.DatabaseEntry(
-        id=3, path='/tmp', download_time=datetime(2005, 6, 15, 3)) in entries
-    assert tables.DatabaseEntry(
-        id=7, download_time=datetime(2005, 6, 15, 7)) in entries
-    assert tables.DatabaseEntry(
-        id=9, path='/tmp', download_time=datetime(2005, 6, 15, 9)) in entries
-    assert tables.DatabaseEntry(
-        id=10, starred=True, tags=[tag],
+        id=10,
+        starred=True,
+        tags=[tag],
         download_time=datetime(2005, 6, 15, 10),
         fits_header_entries=[fits_header_entry]) in entries
 
@@ -282,13 +260,9 @@ def test_walker_create_path_attr_notfound(session):
 def test_walker_create_path_attr_exists(session):
     entries = walker.create(Path('/tmp'), session)
     assert len(entries) == 3
-    assert tables.DatabaseEntry(
-        id=3, path='/tmp', download_time=datetime(2005, 6, 15, 3)) in entries
-    assert tables.DatabaseEntry(
-        id=6, path='/tmp', starred=True,
-        download_time=datetime(2005, 6, 15, 6)) in entries
-    assert tables.DatabaseEntry(
-        id=9, path='/tmp', download_time=datetime(2005, 6, 15, 9)) in entries
+    assert tables.DatabaseEntry(id=3, path='/tmp', download_time=datetime(2005, 6, 15, 3)) in entries
+    assert tables.DatabaseEntry(id=6, path='/tmp', starred=True, download_time=datetime(2005, 6, 15, 6)) in entries
+    assert tables.DatabaseEntry(id=9, path='/tmp', download_time=datetime(2005, 6, 15, 9)) in entries
 
 
 def test_walker_create_path_inverted(session):
@@ -299,40 +273,34 @@ def test_walker_create_path_inverted(session):
     entries = walker.create(~Path('/tmp'), session)
     assert len(entries) == 7
     assert entries == [
-        tables.DatabaseEntry(
-            id=1, download_time=datetime(2005, 6, 15, 1)),
-        tables.DatabaseEntry(
-            id=2, starred=True, download_time=datetime(2005, 6, 15, 2)),
-        tables.DatabaseEntry(
-            id=4, starred=True, download_time=datetime(2005, 6, 15, 4)),
-        tables.DatabaseEntry(
-            id=5, tags=[tag], download_time=datetime(2005, 6, 15, 5)),
-        tables.DatabaseEntry(id=7, download_time=datetime(2005, 6, 15, 7)),
-        tables.DatabaseEntry(
-            id=8, starred=True, download_time=datetime(2005, 6, 15, 8)),
-        tables.DatabaseEntry(
-            id=10, starred=True, tags=[tag],
-            download_time=datetime(2005, 6, 15, 10),
-            fits_header_entries=[fits_header_entry])]
+        tables.DatabaseEntry(id=1, download_time=datetime(2005, 6, 15, 1)), tables.DatabaseEntry(
+            id=2, starred=True, download_time=datetime(2005, 6, 15, 2)), tables.DatabaseEntry(
+                id=4, starred=True, download_time=datetime(2005, 6, 15, 4)), tables.DatabaseEntry(
+                    id=5, tags=[tag], download_time=datetime(2005, 6, 15, 5)), tables.DatabaseEntry(
+                        id=7, download_time=datetime(2005, 6, 15, 7)), tables.DatabaseEntry(
+                            id=8, starred=True, download_time=datetime(2005, 6, 15, 8)), tables.DatabaseEntry(
+                                id=10,
+                                starred=True,
+                                tags=[tag],
+                                download_time=datetime(2005, 6, 15, 10),
+                                fits_header_entries=[fits_header_entry])
+    ]
 
 
 def test_walker_create_downloadtime_notfound(session):
-    download_time = DownloadTime(
-        datetime(2005, 6, 15, 11), datetime(2005, 6, 15, 11))
+    download_time = DownloadTime(datetime(2005, 6, 15, 11), datetime(2005, 6, 15, 11))
     entries = walker.create(download_time, session)
     assert entries == []
 
 
 def test_walker_create_downloadtime_exists(session):
-    download_time = DownloadTime(
-        datetime(2005, 6, 15, 7), datetime(2005, 6, 15, 9))
+    download_time = DownloadTime(datetime(2005, 6, 15, 7), datetime(2005, 6, 15, 9))
     entries = walker.create(download_time, session)
     assert entries == [
-        tables.DatabaseEntry(id=7, download_time=datetime(2005, 6, 15, 7)),
-        tables.DatabaseEntry(
-            id=8, starred=True, download_time=datetime(2005, 6, 15, 8)),
-        tables.DatabaseEntry(
-            id=9, path='/tmp', download_time=datetime(2005, 6, 15, 9))]
+        tables.DatabaseEntry(id=7, download_time=datetime(2005, 6, 15, 7)), tables.DatabaseEntry(
+            id=8, starred=True, download_time=datetime(2005, 6, 15, 8)), tables.DatabaseEntry(
+                id=9, path='/tmp', download_time=datetime(2005, 6, 15, 9))
+    ]
 
 
 def test_walker_create_downloadtime_inverted(session):
@@ -340,28 +308,22 @@ def test_walker_create_downloadtime_inverted(session):
     tag.id = 1
     fits_header_entry = tables.FitsHeaderEntry('INSTRUME', 'EIT')
     fits_header_entry.id = 1
-    download_time = ~DownloadTime(
-        datetime(2005, 6, 15, 7), datetime(2005, 6, 15, 9))
+    download_time = ~DownloadTime(datetime(2005, 6, 15, 7), datetime(2005, 6, 15, 9))
     entries = walker.create(download_time, session)
     assert len(entries) == 7
     assert entries == [
-        tables.DatabaseEntry(
-            id=1, download_time=datetime(2005, 6, 15, 1)),
-        tables.DatabaseEntry(
-            id=2, starred=True, download_time=datetime(2005, 6, 15, 2)),
-        tables.DatabaseEntry(
-            id=3, path='/tmp', download_time=datetime(2005, 6, 15, 3)),
-        tables.DatabaseEntry(
-            id=4, starred=True, download_time=datetime(2005, 6, 15, 4)),
-        tables.DatabaseEntry(
-            id=5, tags=[tag], download_time=datetime(2005, 6, 15, 5)),
-        tables.DatabaseEntry(
-            id=6, starred=True, path='/tmp',
-            download_time=datetime(2005, 6, 15, 6)),
-        tables.DatabaseEntry(
-            id=10, starred=True, tags=[tag],
-            download_time=datetime(2005, 6, 15, 10),
-            fits_header_entries=[fits_header_entry])]
+        tables.DatabaseEntry(id=1, download_time=datetime(2005, 6, 15, 1)),
+        tables.DatabaseEntry(id=2, starred=True, download_time=datetime(2005, 6, 15, 2)), tables.DatabaseEntry(
+            id=3, path='/tmp', download_time=datetime(2005, 6, 15, 3)), tables.DatabaseEntry(
+                id=4, starred=True, download_time=datetime(2005, 6, 15, 4)), tables.DatabaseEntry(
+                    id=5, tags=[tag], download_time=datetime(2005, 6, 15, 5)), tables.DatabaseEntry(
+                        id=6, starred=True, path='/tmp', download_time=datetime(2005, 6, 15, 6)), tables.DatabaseEntry(
+                            id=10,
+                            starred=True,
+                            tags=[tag],
+                            download_time=datetime(2005, 6, 15, 10),
+                            fits_header_entries=[fits_header_entry])
+    ]
 
 
 def test_walker_create_fitsheader(session):
@@ -371,10 +333,14 @@ def test_walker_create_fitsheader(session):
     fits_header_entry = tables.FitsHeaderEntry('INSTRUME', 'EIT')
     fits_header_entry.id = 1
     assert len(entries) == 1
-    assert entries == [tables.DatabaseEntry(
-        id=10, starred=True, tags=[tag],
-        download_time=datetime(2005, 6, 15, 10),
-        fits_header_entries=[fits_header_entry])]
+    assert entries == [
+        tables.DatabaseEntry(
+            id=10,
+            starred=True,
+            tags=[tag],
+            download_time=datetime(2005, 6, 15, 10),
+            fits_header_entries=[fits_header_entry])
+    ]
 
 
 def test_walker_create_fitsheader_inverted(session):
@@ -383,44 +349,46 @@ def test_walker_create_fitsheader_inverted(session):
     entries = walker.create(~FitsHeaderEntry('INSTRUME', 'EIT'), session)
     assert len(entries) == 9
     assert entries == [
-        tables.DatabaseEntry(
-            id=1, download_time=datetime(2005, 6, 15, 1)),
-        tables.DatabaseEntry(
-            id=2, starred=True, download_time=datetime(2005, 6, 15, 2)),
-        tables.DatabaseEntry(
-            id=3, path='/tmp', download_time=datetime(2005, 6, 15, 3)),
-        tables.DatabaseEntry(
-            id=4, starred=True, download_time=datetime(2005, 6, 15, 4)),
-        tables.DatabaseEntry(
-            id=5, tags=[tag], download_time=datetime(2005, 6, 15, 5)),
-        tables.DatabaseEntry(
-            id=6, starred=True, path='/tmp',
-            download_time=datetime(2005, 6, 15, 6)),
-        tables.DatabaseEntry(id=7, download_time=datetime(2005, 6, 15, 7)),
-        tables.DatabaseEntry(
-            id=8, starred=True, download_time=datetime(2005, 6, 15, 8)),
-        tables.DatabaseEntry(
-            id=9, path='/tmp', download_time=datetime(2005, 6, 15, 9))]
+        tables.DatabaseEntry(id=1, download_time=datetime(2005, 6, 15, 1)),
+        tables.DatabaseEntry(id=2, starred=True, download_time=datetime(2005, 6, 15, 2)), tables.DatabaseEntry(
+            id=3, path='/tmp', download_time=datetime(2005, 6, 15, 3)), tables.DatabaseEntry(
+                id=4, starred=True, download_time=datetime(2005, 6, 15, 4)), tables.DatabaseEntry(
+                    id=5, tags=[tag], download_time=datetime(2005, 6, 15, 5)), tables.DatabaseEntry(
+                        id=6, starred=True, path='/tmp', download_time=datetime(2005, 6, 15, 6)), tables.DatabaseEntry(
+                            id=7, download_time=datetime(2005, 6, 15, 7)), tables.DatabaseEntry(
+                                id=8, starred=True, download_time=datetime(2005, 6, 15, 8)), tables.DatabaseEntry(
+                                    id=9, path='/tmp', download_time=datetime(2005, 6, 15, 9))
+    ]
 
 
 @pytest.mark.online
 def test_walker_create_vso_instrument(vso_session):
     entries = walker.create(vso.attrs.Instrument('RHESSI'), vso_session)
     assert entries == [
-        tables.DatabaseEntry(id=1, source=u'RHESSI', provider=u'LSSP',
-                             physobs=u'intensity',
-                             fileid=u'/hessidata/2011/09/20/hsi_20110920_010920',
-                             observation_time_start=datetime(2011, 9, 20, 1, 9, 20),
-                             observation_time_end=datetime(2011, 9, 20, 2, 27, 40),
-                             instrument=u'RHESSI', size=-1.0, wavemin=0.4132806430668068,
-                             wavemax=7.293187818826002e-05),
-        tables.DatabaseEntry(id=2, source=u'RHESSI', provider=u'LSSP',
-                             physobs=u'intensity',
-                             fileid=u'/hessidata/2011/09/19/hsi_20110919_233340',
-                             observation_time_start=datetime(2011, 9, 19, 23, 33, 40),
-                             observation_time_end=datetime(2011, 9, 20, 1, 9, 20),
-                             instrument=u'RHESSI', size=-1.0, wavemin=0.4132806430668068,
-                             wavemax=7.293187818826002e-05)]
+        tables.DatabaseEntry(
+            id=1,
+            source=u'RHESSI',
+            provider=u'LSSP',
+            physobs=u'intensity',
+            fileid=u'/hessidata/2011/09/20/hsi_20110920_010920',
+            observation_time_start=datetime(2011, 9, 20, 1, 9, 20),
+            observation_time_end=datetime(2011, 9, 20, 2, 27, 40),
+            instrument=u'RHESSI',
+            size=-1.0,
+            wavemin=0.4132806430668068,
+            wavemax=7.293187818826002e-05), tables.DatabaseEntry(
+                id=2,
+                source=u'RHESSI',
+                provider=u'LSSP',
+                physobs=u'intensity',
+                fileid=u'/hessidata/2011/09/19/hsi_20110919_233340',
+                observation_time_start=datetime(2011, 9, 19, 23, 33, 40),
+                observation_time_end=datetime(2011, 9, 20, 1, 9, 20),
+                instrument=u'RHESSI',
+                size=-1.0,
+                wavemin=0.4132806430668068,
+                wavemax=7.293187818826002e-05)
+    ]
 
 
 @pytest.mark.online
@@ -433,15 +401,20 @@ def test_walker_create_wave(vso_session):
 
 @pytest.mark.online
 def test_walker_create_time(vso_session):
-    time = vso.attrs.Time(
-        datetime(2011, 9, 17, 0, 0, 0), datetime(2011, 9, 20, 0, 0, 0))
+    time = vso.attrs.Time(datetime(2011, 9, 17, 0, 0, 0), datetime(2011, 9, 20, 0, 0, 0))
     entries = walker.create(time, vso_session)
     assert len(entries) == 1
     assert entries == [
-        tables.DatabaseEntry(id=2, source=u'RHESSI', provider=u'LSSP',
-                             physobs=u'intensity',
-                             fileid=u'/hessidata/2011/09/19/hsi_20110919_233340',
-                             observation_time_start=datetime(2011, 9, 19, 23, 33, 40),
-                             observation_time_end=datetime(2011, 9, 20, 1, 9, 20),
-                             instrument=u'RHESSI', size=-1.0, wavemin=0.4132806430668068,
-                             wavemax=7.293187818826002e-05)]
+        tables.DatabaseEntry(
+            id=2,
+            source=u'RHESSI',
+            provider=u'LSSP',
+            physobs=u'intensity',
+            fileid=u'/hessidata/2011/09/19/hsi_20110919_233340',
+            observation_time_start=datetime(2011, 9, 19, 23, 33, 40),
+            observation_time_end=datetime(2011, 9, 20, 1, 9, 20),
+            instrument=u'RHESSI',
+            size=-1.0,
+            wavemin=0.4132806430668068,
+            wavemax=7.293187818826002e-05)
+    ]

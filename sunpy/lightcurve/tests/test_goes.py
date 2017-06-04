@@ -1,4 +1,3 @@
-
 """
 GOES LightCurve Tests
 """
@@ -10,7 +9,6 @@ from sunpy.time import TimeRange
 
 
 class TestGOESLightCurve(object):
-
     @pytest.fixture
     def timerange_a(self):
         return TimeRange('2008/06/01', '2008/06/02')

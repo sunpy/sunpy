@@ -203,7 +203,7 @@ class TestTimeSeries(object):
         assert ts_generic.meta.metadata[0][2] == meta
 
         # Create TS using a tuple of values
-        ts_tuple = sunpy.timeseries.TimeSeries(((data, meta, units),))
+        ts_tuple = sunpy.timeseries.TimeSeries(((data, meta, units), ))
         assert isinstance(ts_tuple, sunpy.timeseries.timeseriesbase.GenericTimeSeries)
         assert ts_generic == ts_tuple
 
@@ -386,9 +386,7 @@ class TestTimeSeries(object):
         assert not sunpy.timeseries.TimeSeries._validate_units(invalid_units_1)
         # Test for being a MetaDict object
         invalid_units_2 = MetaDict(
-            OrderedDict(
-                [('Watt Per Meter Squared', u.Unit("W / m2")),
-                 ('Meter Cubed', u.Unit("m3"))]))
+            OrderedDict([('Watt Per Meter Squared', u.Unit("W / m2")), ('Meter Cubed', u.Unit("m3"))]))
         assert not sunpy.timeseries.TimeSeries._validate_units(invalid_units_2)
 
     def test_validate_meta_basic(self):

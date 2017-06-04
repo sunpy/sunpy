@@ -101,8 +101,9 @@ def struct_to_data(xdrdata, subskeleton):
             if sswsize[0] == 0:
                 subskeleton[key] = types_dict[sswtype][0]()
             else:
-                subskeleton[key] = np.array(xdrdata.unpack_farray(sswsize[-1], types_dict[sswtype][0]),
-                                            dtype=types_dict[sswtype][1]).reshape(sswsize[1:-2][::-1])
+                subskeleton[key] = np.array(
+                    xdrdata.unpack_farray(sswsize[-1], types_dict[sswtype][0]),
+                    dtype=types_dict[sswtype][1]).reshape(sswsize[1:-2][::-1])
 
 
 def read_genx(filename):
@@ -164,9 +165,7 @@ def read_genx(filename):
     xdrdata.done()
     skeleton['HEADER'] = OrderedDict([('VERSION', version), ('XDR', xdr), ('CREATION', creation)])
     if version == 2:
-        skeleton['HEADER']['IDL_VERSION'] = OrderedDict([('ARCH', arch),
-                                                         ('OS', os),
-                                                         ('RELEASE', release)])
+        skeleton['HEADER']['IDL_VERSION'] = OrderedDict([('ARCH', arch), ('OS', os), ('RELEASE', release)])
     skeleton['HEADER']['TEXT'] = text
     # TODO: for python >= 3.2; so we can keep the original order as how it's stored in the file
     # skeleton.move_to_end('HEADER', last=False)

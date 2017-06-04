@@ -5,7 +5,6 @@
 # the ESA Summer of Code (2011).
 #
 # pylint: disable=C0103,R0903
-
 """ Facilities to interface with the HEK. """
 
 from __future__ import absolute_import
@@ -64,8 +63,7 @@ class HEKClient(object):
 
         while True:
             data['page'] = page
-            fd = urllib.request.urlopen(
-                self.url, urllib.parse.urlencode(data).encode('utf-8'))
+            fd = urllib.request.urlopen(self.url, urllib.parse.urlencode(data).encode('utf-8'))
             try:
                 result = json.load(reader(fd))
             finally:
@@ -106,12 +104,12 @@ class Response(dict):
     HEK feature/event properties and their values, for that record from the
     HEK.  Each Response object also has extra properties that relate HEK
     concepts to VSO concepts."""
+
     @property
     def vso_time(self):
         return v_attrs.Time(
             datetime.strptime(self['event_starttime'], "%Y-%m-%dT%H:%M:%S"),
-            datetime.strptime(self['event_endtime'], "%Y-%m-%dT%H:%M:%S")
-        )
+            datetime.strptime(self['event_endtime'], "%Y-%m-%dT%H:%M:%S"))
 
     @property
     def vso_instrument(self):
@@ -123,17 +121,12 @@ class Response(dict):
     def vso_all(self):
         return attr.and_(self.vso_time, self.vso_instrument)
 
-    def get_voevent(self, as_dict=True,
-                    base_url="http://www.lmsal.com/hek/her?"):
+    def get_voevent(self, as_dict=True, base_url="http://www.lmsal.com/hek/her?"):
         """Retrieves the VOEvent object associated with a given event and
         returns it as either a Python dictionary or an XML string."""
 
         # Build URL
-        params = {
-            "cmd": "export-voevent",
-            "cosec": 1,
-            "ivorn": self['kb_archivid']
-        }
+        params = {"cmd": "export-voevent", "cosec": 1, "ivorn": self['kb_archivid']}
         url = base_url + urllib.parse.urlencode(params)
 
         # Query and read response
@@ -151,8 +144,5 @@ if __name__ == '__main__':
     from sunpy.net.hek import attrs as a
 
     c = HEKClient()
-    b = c.query(
-        a.Time((2010, 1, 1), (2010, 1, 2)) | a.Time((2010, 1, 3), (2010, 1, 4)),
-        a.AR, a.FL
-    )
+    b = c.query(a.Time((2010, 1, 1), (2010, 1, 2)) | a.Time((2010, 1, 3), (2010, 1, 4)), a.AR, a.FL)
     pprint(b[0].vso_all)

@@ -3,7 +3,6 @@
 # e-mail: mmalocha13@gmail.com
 # Version: June 11th, 2013
 #
-
 """
 This module was built to test the HEK2VSO class.
 """
@@ -18,7 +17,6 @@ from astropy import units as u
 from sunpy.net import hek
 from sunpy.net import vso
 from sunpy.net import hek2vso
-
 
 startTime = '2011/08/09 07:23:56'
 endTime = '2011/08/09 12:40:29'

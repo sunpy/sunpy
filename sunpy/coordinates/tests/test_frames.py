@@ -8,17 +8,11 @@ import astropy.units as u
 
 from astropy.tests.helper import assert_quantity_allclose
 
-from astropy.coordinates import (UnitSphericalRepresentation,
-                                 SphericalRepresentation,
-                                 CartesianRepresentation)
+from astropy.coordinates import (UnitSphericalRepresentation, SphericalRepresentation, CartesianRepresentation)
 
 from ... import sun
-from ..frames import (Helioprojective,
-                      HeliographicStonyhurst,
-                      Heliocentric,
-                      HeliographicCarrington)
-from ..representation import (UnitSphericalWrap180Representation,
-                              SphericalWrap180Representation)
+from ..frames import (Helioprojective, HeliographicStonyhurst, Heliocentric, HeliographicCarrington)
+from ..representation import (UnitSphericalWrap180Representation, SphericalWrap180Representation)
 
 RSUN_METERS = sun.constants.get('radius').si.to(u.m)
 DSUN_METERS = sun.constants.get('mean distance').si.to(u.m)
@@ -36,40 +30,32 @@ def init_frame(frame, args, kwargs):
 """
 These are common 2D params, kwargs are frame specific
 """
-two_D_parameters = [
-    ([0 * u.deg, 0 * u.arcsec], None),
-    ([0 * u.deg, 0 * u.arcsec], {'dateobs': '2011/01/01T00:00:00'}),
-    ([0 * u.deg, 0 * u.arcsec], {'representation': 'unitsphericalwrap180'}),
-    ([0 * u.deg, 0 * u.arcsec], {'representation': 'unitspherical'}),
-    ([UnitSphericalWrap180Representation(0 * u.deg, 0 * u.arcsec)], None),
-    ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)], None), (
-        [UnitSphericalWrap180Representation(0 * u.deg, 0 * u.arcsec)],
-        {'dateobs': '2011/01/01T00:00:00'})
-]
+two_D_parameters = [([0 * u.deg, 0 * u.arcsec], None), ([0 * u.deg, 0 * u.arcsec], {'dateobs': '2011/01/01T00:00:00'}),
+                    ([0 * u.deg, 0 * u.arcsec],
+                     {'representation': 'unitsphericalwrap180'}), ([0 * u.deg, 0 * u.arcsec],
+                                                                   {'representation': 'unitspherical'}),
+                    ([UnitSphericalWrap180Representation(0 * u.deg, 0 * u.arcsec)],
+                     None), ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)],
+                             None), ([UnitSphericalWrap180Representation(0 * u.deg, 0 * u.arcsec)],
+                                     {'dateobs': '2011/01/01T00:00:00'})]
 """
 These are common 3D params, kwargs are frame specific
 """
-three_D_parameters = [
-    ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], None),
-    ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], {'dateobs': '2011/01/01T00:00:00'}),
-    ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], {'representation': 'sphericalwrap180'
-                                           }),
-    ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], {'representation': 'spherical'}),
-    ([SphericalWrap180Representation(0 * u.deg, 0 * u.arcsec, 1 * u.Mm)],
-     None),
-    ([SphericalRepresentation(0 * u.deg, 0 * u.arcsec, 1 * u.Mm)], None), (
-        [SphericalWrap180Representation(0 * u.deg, 0 * u.arcsec, 1 * u.Mm)],
-        {'dateobs': '2011/01/01T00:00:00'})
-]
+three_D_parameters = [([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], None), ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], {
+    'dateobs': '2011/01/01T00:00:00'
+}), ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], {'representation': 'sphericalwrap180'}), ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm],
+                                                                                    {'representation': 'spherical'}),
+                      ([SphericalWrap180Representation(0 * u.deg, 0 * u.arcsec, 1 * u.Mm)],
+                       None), ([SphericalRepresentation(0 * u.deg, 0 * u.arcsec, 1 * u.Mm)],
+                               None), ([SphericalWrap180Representation(0 * u.deg, 0 * u.arcsec, 1 * u.Mm)],
+                                       {'dateobs': '2011/01/01T00:00:00'})]
 
 # ==============================================================================
 # Helioprojective Tests
 # ==============================================================================
 
 
-@pytest.mark.parametrize('args, kwargs',
-                         two_D_parameters + [(None, {'Tx': 0 * u.deg,
-                                                     'Ty': 0 * u.arcsec})])
+@pytest.mark.parametrize('args, kwargs', two_D_parameters + [(None, {'Tx': 0 * u.deg, 'Ty': 0 * u.arcsec})])
 def test_create_hpc_2d(args, kwargs):
     hpc1 = init_frame(Helioprojective, args, kwargs)
 
@@ -93,12 +79,9 @@ def test_create_hpc_2d(args, kwargs):
     assert hpc1.Ty.unit is u.arcsec
 
 
-@pytest.mark.parametrize(
-    'args, kwargs',
-    three_D_parameters + [(None, {'Tx': 0 * u.deg,
-                                  'Ty': 0 * u.arcsec,
-                                  'distance': 1 * u.Mm}),
-                          ([0 * u.deg, 0 * u.arcsec], {'distance': 1 * u.Mm})])
+@pytest.mark.parametrize('args, kwargs',
+                         three_D_parameters + [(None, {'Tx': 0 * u.deg, 'Ty': 0 * u.arcsec, 'distance': 1 * u.Mm}),
+                                               ([0 * u.deg, 0 * u.arcsec], {'distance': 1 * u.Mm})])
 def test_create_3d(args, kwargs):
     hpc1 = init_frame(Helioprojective, args, kwargs)
 
@@ -125,8 +108,7 @@ def test_create_3d(args, kwargs):
 
 
 def test_cart_init():
-    hpc1 = Helioprojective(CartesianRepresentation(0 * u.km, 0 * u.km, 1 *
-                                                   u.Mm))
+    hpc1 = Helioprojective(CartesianRepresentation(0 * u.km, 0 * u.km, 1 * u.Mm))
 
     assert isinstance(hpc1, Helioprojective)
     assert isinstance(hpc1._data, CartesianRepresentation)
@@ -230,15 +212,15 @@ def test_hpc_distance_3D():
 
     assert hpc2 is hpc1
 
+
 # ==============================================================================
 # ## Heliographic Tests
 # ==============================================================================
 
 
-@pytest.mark.parametrize('frame',
-                         [HeliographicStonyhurst, HeliographicCarrington])
-@pytest.mark.parametrize("args, kwargs", two_D_parameters[:2] + two_D_parameters[4:] +
-                         [(None, {'lat': 0 * u.deg, 'lon': 0 * u.arcsec})])
+@pytest.mark.parametrize('frame', [HeliographicStonyhurst, HeliographicCarrington])
+@pytest.mark.parametrize(
+    "args, kwargs", two_D_parameters[:2] + two_D_parameters[4:] + [(None, {'lat': 0 * u.deg, 'lon': 0 * u.arcsec})])
 def test_create_hgs_2d(frame, args, kwargs):
     hgs1 = init_frame(frame, args, kwargs)
 
@@ -262,8 +244,7 @@ def test_create_hgs_2d(frame, args, kwargs):
     assert hgs1.radius.unit is u.km
 
 
-@pytest.mark.parametrize('frame',
-                         [HeliographicStonyhurst, HeliographicCarrington])
+@pytest.mark.parametrize('frame', [HeliographicStonyhurst, HeliographicCarrington])
 @pytest.mark.parametrize("args, kwargs", two_D_parameters[2:4])
 def test_create_hgs_force_2d(frame, args, kwargs):
     hgs1 = init_frame(frame, args, kwargs)
@@ -287,14 +268,10 @@ def test_create_hgs_force_2d(frame, args, kwargs):
     assert hgs1.lat.unit is u.deg
 
 
-@pytest.mark.parametrize('frame',
-                         [HeliographicStonyhurst, HeliographicCarrington])
-@pytest.mark.parametrize(
-    "args, kwargs",
-    three_D_parameters + [(None, {'lat': 0 * u.deg,
-                                  'lon': 0 * u.arcsec,
-                                  'radius': 1 * u.Mm}),
-                          ([0 * u.deg, 0 * u.arcsec], {'radius': 1 * u.Mm})])
+@pytest.mark.parametrize('frame', [HeliographicStonyhurst, HeliographicCarrington])
+@pytest.mark.parametrize("args, kwargs",
+                         three_D_parameters + [(None, {'lat': 0 * u.deg, 'lon': 0 * u.arcsec, 'radius': 1 * u.Mm}),
+                                               ([0 * u.deg, 0 * u.arcsec], {'radius': 1 * u.Mm})])
 def test_create_hgs_3d(frame, args, kwargs):
     hgs1 = init_frame(frame, args, kwargs)
 
@@ -326,9 +303,7 @@ def test_create_hgs_3d(frame, args, kwargs):
 
 
 def test_hgs_cart_init():
-    hpc1 = HeliographicStonyhurst(CartesianRepresentation(0 * u.km,
-                                                          0 * u.km,
-                                                          1 * u.Mm))
+    hpc1 = HeliographicStonyhurst(CartesianRepresentation(0 * u.km, 0 * u.km, 1 * u.Mm))
 
     assert isinstance(hpc1, HeliographicStonyhurst)
     assert isinstance(hpc1._data, CartesianRepresentation)
@@ -337,14 +312,11 @@ def test_hgs_cart_init():
 # ==============================================================================
 # ## Heliocentric Tests
 # ==============================================================================
-@pytest.mark.parametrize(
-    'args, kwargs',
-    [((10 * u.km, 10 * u.km, 10 * u.km), None), (None, {'x': 10 * u.km,
-                                                        'y': 10 * u.km,
-                                                        'z': 10 * u.km}),
-     ([CartesianRepresentation(10 * u.km, 10 * u.km, 10 * u.km)], None),
-     ([CartesianRepresentation(10 * u.km, 10 * u.km, 10 * u.km)],
-      {'dateobs': '2011/01/01T00:00:00'})])
+@pytest.mark.parametrize('args, kwargs', [((10 * u.km, 10 * u.km, 10 * u.km),
+                                           None), (None, {'x': 10 * u.km, 'y': 10 * u.km, 'z': 10 * u.km}),
+                                          ([CartesianRepresentation(10 * u.km, 10 * u.km, 10 * u.km)],
+                                           None), ([CartesianRepresentation(10 * u.km, 10 * u.km, 10 * u.km)],
+                                                   {'dateobs': '2011/01/01T00:00:00'})])
 def test_create_hcc_3d(args, kwargs):
     hcc = init_frame(Heliocentric, args, kwargs)
 

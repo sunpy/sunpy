@@ -135,8 +135,7 @@ class TimeSeriesMetaData:
                 if timerange.start > meta[0].start:
                     pos = i + 1
         else:
-            raise ValueError(
-                'Incorrect datatime or data for append to TimeSeriesMetaData.')
+            raise ValueError('Incorrect datatime or data for append to TimeSeriesMetaData.')
 
         # Prepare tuple to append.
         new_metadata = (timerange, columns, metadata)
@@ -186,7 +185,7 @@ class TimeSeriesMetaData:
         # Find all results with suitable timerange.
         results_indices = []
         for i, meta in enumerate(self.metadata):
-            if dt in meta[0] or not(dt):
+            if dt in meta[0] or not (dt):
                 results_indices.append(i)
 
         # Filter out only those with the correct column.
@@ -491,15 +490,15 @@ class TimeSeriesMetaData:
         indices = range(0, len(self.metadata))
         for i, j in itertools.combinations(indices, 2):
             # Check if the TimeRanges overlap
-            if not((self.metadata[i][0].end <= self.metadata[j][0].start)
-                   or(self.metadata[i][0].start >= self.metadata[j][0].end)):
+            if not ((self.metadata[i][0].end <= self.metadata[j][0].start) or
+                    (self.metadata[i][0].start >= self.metadata[j][0].end)):
                 # Check column headings overlap
                 col_overlap = list(set(self.metadata[i][1]) & set(self.metadata[j][1]))
                 # If we have an overlap then show a warning
                 if col_overlap:
                     warnings.warn_explicit(
-                        'Metadata entries ' + str(i) + ' and ' + str(j) + ' contain interleaved data.', Warning, __file__,
-                        inspect.currentframe().f_back.f_lineno)
+                        'Metadata entries ' + str(i) + ' and ' + str(j) + ' contain interleaved data.', Warning,
+                        __file__, inspect.currentframe().f_back.f_lineno)
 
         # ToDo: Check all entries are in tr.start time order.
 

@@ -22,7 +22,8 @@ from sunpy.extern.six.moves import urllib
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 
 
-def remove_lytaf_events_from_lightcurve(lc, artifacts=None,
+def remove_lytaf_events_from_lightcurve(lc,
+                                        artifacts=None,
                                         return_artifacts=False,
                                         lytaf_path=None,
                                         force_use_local_lytaf=False):
@@ -102,24 +103,29 @@ def remove_lytaf_events_from_lightcurve(lc, artifacts=None,
     time, channels, artifact_status = _remove_lytaf_events(
         lc.data.index,
         channels=[np.asanyarray(lc.data[col]) for col in data_columns],
-        artifacts=artifacts, return_artifacts=True, lytaf_path=lytaf_path,
+        artifacts=artifacts,
+        return_artifacts=True,
+        lytaf_path=lytaf_path,
         force_use_local_lytaf=force_use_local_lytaf)
     # Create new copy copy of lightcurve and replace data with
     # artifact-free time series.
     lc_new = copy.deepcopy(lc)
-    lc_new.data = pandas.DataFrame(
-        index=time, data=dict((col, channels[i])
-                              for i, col in enumerate(data_columns)))
+    lc_new.data = pandas.DataFrame(index=time, data=dict((col, channels[i]) for i, col in enumerate(data_columns)))
     if return_artifacts:
         return lc_new, artifact_status
     else:
         return lc_new
 
 
-def _remove_lytaf_events(time, channels=None, artifacts=None,
-                         return_artifacts=False, fitsfile=None,
-                         csvfile=None, filecolumns=None,
-                         lytaf_path=None, force_use_local_lytaf=False):
+def _remove_lytaf_events(time,
+                         channels=None,
+                         artifacts=None,
+                         return_artifacts=False,
+                         fitsfile=None,
+                         csvfile=None,
+                         filecolumns=None,
+                         lytaf_path=None,
+                         force_use_local_lytaf=False):
     """
     Removes periods of LYRA artifacts from a time series.
 
@@ -224,16 +230,14 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
     if not lytaf_path:
         lytaf_path = get_and_create_download_dir()
     if channels and type(channels) is not list:
-        raise TypeError("channels must be None or a list of numpy arrays "
-                        "of dtype 'float64'.")
+        raise TypeError("channels must be None or a list of numpy arrays " "of dtype 'float64'.")
     if not artifacts:
         raise ValueError("User has supplied no artifacts to remove.")
     if type(artifacts) is str:
         artifacts = [artifacts]
     if not all(isinstance(artifact_type, str) for artifact_type in artifacts):
         raise TypeError("All elements in artifacts must in strings.")
-    all_lytaf_event_types = get_lytaf_event_types(lytaf_path=lytaf_path,
-                                                  print_event_types=False)
+    all_lytaf_event_types = get_lytaf_event_types(lytaf_path=lytaf_path, print_event_types=False)
     for artifact in artifacts:
         if artifact not in all_lytaf_event_types:
             print(all_lytaf_event_types)
@@ -243,8 +247,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
     clean_channels = copy.deepcopy(channels)
     artifacts_not_found = []
     # Get LYTAF file for given time range
-    lytaf = get_lytaf_events(time[0], time[-1], lytaf_path=lytaf_path,
-                             force_use_local_lytaf=force_use_local_lytaf)
+    lytaf = get_lytaf_events(time[0], time[-1], lytaf_path=lytaf_path, force_use_local_lytaf=force_use_local_lytaf)
 
     # Find events in lytaf which are to be removed from time series.
     artifact_indices = np.empty(0, dtype="int64")
@@ -271,8 +274,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
         bad_indices = np.empty(0, dtype="int64")
         all_indices = np.arange(len(time))
         for index in artifact_indices:
-            bad_period = np.logical_and(time >= lytaf["begin_time"][index],
-                                        time <= lytaf["end_time"][index])
+            bad_period = np.logical_and(time >= lytaf["begin_time"][index], time <= lytaf["end_time"][index])
             bad_indices = np.append(bad_indices, all_indices[bad_period])
         clean_time = np.delete(clean_time, bad_indices)
         if channels:
@@ -281,10 +283,10 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
     # If return_artifacts kwarg is True, return a list containing
     # information on what artifacts found, removed, etc.  See docstring.
     if return_artifacts:
-        artifact_status = {"lytaf": lytaf,
-                           "removed": lytaf[artifact_indices],
-                           "not_removed": np.delete(lytaf, artifact_indices),
-                           "not_found": artifacts_not_found}
+        artifact_status = {
+            "lytaf": lytaf, "removed": lytaf[artifact_indices], "not_removed": np.delete(lytaf, artifact_indices),
+            "not_found": artifacts_not_found
+        }
     # Output FITS file if fits kwarg is set
     if fitsfile:
         # Create time array of time strings rather than datetime objects
@@ -293,12 +295,10 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
         # below.
         string_time, filecolumns = _prep_columns(time, channels, filecolumns)
         # Prepare column objects.
-        cols = [fits.Column(name=filecolumns[0], format="26A",
-                            array=string_time)]
+        cols = [fits.Column(name=filecolumns[0], format="26A", array=string_time)]
         if channels:
             for i, f in enumerate(channels):
-                cols.append(fits.Column(name=filecolumns[i + 1], format="D",
-                                        array=f))
+                cols.append(fits.Column(name=filecolumns[i + 1], format="D", array=f))
         coldefs = fits.ColDefs(cols)
         tbhdu = fits.new_table(coldefs)
         hdu = fits.PrimaryHDU()
@@ -340,9 +340,12 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
             return clean_time, clean_channels
 
 
-def get_lytaf_events(start_time, end_time, lytaf_path=None,
+def get_lytaf_events(start_time,
+                     end_time,
+                     lytaf_path=None,
                      combine_files=("lyra", "manual", "ppt", "science"),
-                     csvfile=None, force_use_local_lytaf=False):
+                     csvfile=None,
+                     force_use_local_lytaf=False):
     """
     Extracts combined lytaf file for given time range.
 
@@ -413,8 +416,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     start_time = parse_time(start_time)
     end_time = parse_time(end_time)
     # Check combine_files contains correct inputs
-    if not all(suffix in ["lyra", "manual", "ppt", "science"]
-               for suffix in combine_files):
+    if not all(suffix in ["lyra", "manual", "ppt", "science"] for suffix in combine_files):
         raise ValueError("Elements in combine_files must be strings equalling "
                          "'lyra', 'manual', 'ppt', or 'science'.")
     # Remove any duplicates from combine_files input
@@ -427,12 +429,10 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
 
     # Define numpy record array which will hold the information from
     # the annotation file.
-    lytaf = np.empty((0,), dtype=[("insertion_time", object),
-                                  ("begin_time", object),
-                                  ("reference_time", object),
-                                  ("end_time", object),
-                                  ("event_type", object),
-                                  ("event_definition", object)])
+    lytaf = np.empty(
+        (0, ),
+        dtype=[("insertion_time", object), ("begin_time", object), ("reference_time", object), ("end_time", object),
+               ("event_type", object), ("event_definition", object)])
     # Access annotation files
     for suffix in combine_files:
         # Check database files are present
@@ -446,12 +446,10 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
         # user.  If not, download newest version.
         # First get start time of first event and end time of last
         # event in lytaf.
-        cursor.execute("select begin_time from event order by begin_time asc "
-                       "limit 1;")
+        cursor.execute("select begin_time from event order by begin_time asc " "limit 1;")
         db_first_begin_time = cursor.fetchone()[0]
         db_first_begin_time = datetime.datetime.fromtimestamp(db_first_begin_time)
-        cursor.execute("select end_time from event order by end_time desc "
-                       "limit 1;")
+        cursor.execute("select end_time from event order by end_time desc " "limit 1;")
         db_last_end_time = cursor.fetchone()[0]
         db_last_end_time = datetime.datetime.fromtimestamp(db_last_end_time)
         # If lytaf does not include entire input time range...
@@ -461,8 +459,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
                 cursor.close()
                 connection.close()
                 # ...Download latest lytaf file...
-                check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path,
-                                    replace=True)
+                check_download_file(dbname, LYTAF_REMOTE_PATH, lytaf_path, replace=True)
                 # ...and open new version of lytaf database.
                 connection = sqlite3.connect(os.path.join(lytaf_path, dbname))
                 cursor = connection.cursor()
@@ -487,13 +484,13 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
         # Enter desired information into the lytaf numpy record array
         for event_row in event_rows:
             id_index = eventType_id.index(event_row[4])
-            lytaf = np.append(lytaf,
-                              np.array((datetime.datetime.utcfromtimestamp(event_row[0]),
-                                        datetime.datetime.utcfromtimestamp(event_row[1]),
-                                        datetime.datetime.utcfromtimestamp(event_row[2]),
-                                        datetime.datetime.utcfromtimestamp(event_row[3]),
-                                        eventType_type[id_index],
-                                        eventType_definition[id_index]), dtype=lytaf.dtype))
+            lytaf = np.append(
+                lytaf,
+                np.array(
+                    (datetime.datetime.utcfromtimestamp(event_row[0]), datetime.datetime.utcfromtimestamp(event_row[1]),
+                     datetime.datetime.utcfromtimestamp(event_row[2]), datetime.datetime.utcfromtimestamp(event_row[3]),
+                     eventType_type[id_index], eventType_definition[id_index]),
+                    dtype=lytaf.dtype))
         # Close file
         cursor.close()
         connection.close()
@@ -559,14 +556,12 @@ def get_lytaf_event_types(lytaf_path=None, print_event_types=True):
         event_types = cursor.fetchall()
         all_event_types.append(event_types)
         if print_event_types:
-            print("----------------\n{0} database\n----------------"
-                  .format(suffix))
+            print("----------------\n{0} database\n----------------".format(suffix))
             for event_type in event_types:
                 print(str(event_type[0]))
             print(" ")
     # Unpack event types in all_event_types into single list
-    all_event_types = [event_type[0] for event_types in all_event_types
-                       for event_type in event_types]
+    all_event_types = [event_type[0] for event_types in all_event_types for event_type in event_types]
     return all_event_types
 
 
@@ -627,8 +622,7 @@ def split_series_using_lytaf(timearray, data, lytaf):
     disc = tmp_discontinuity[0]
 
     if len(disc) == 0:
-        print('No events found within time series interval. '
-              'Returning original series.')
+        print('No events found within time series interval. ' 'Returning original series.')
         return [{'subtimes': datetime_array, 'subdata': data}]
 
     # -1 in diffmask means went from good data to bad
@@ -733,8 +727,7 @@ def _prep_columns(time, channels=None, filecolumns=None):
     # is the number of arrays in channels (assuming 0-indexed counting).
     else:
         if channels:
-            filecolumns = ["channel{0}".format(fluxnum)
-                           for fluxnum in range(len(channels))]
+            filecolumns = ["channel{0}".format(fluxnum) for fluxnum in range(len(channels))]
             filecolumns.insert(0, "time")
         else:
             filecolumns = ["time"]

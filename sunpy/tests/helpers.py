@@ -44,7 +44,6 @@ except ImportError:
 else:
     SKIP_ANA = SKIP_ANA or False
 
-
 skip_windows = pytest.mark.skipif(platform.system() == 'Windows', reason="Windows")
 
 skip_glymur = pytest.mark.skipif(SKIP_GLYMUR, reason="Glymur can not be imported")
@@ -75,8 +74,8 @@ def assert_quantity_allclose(actual, desired, rtol=1.e-7, atol=0, err_msg='', ve
             else:
                 atol = atol.to(actual.unit).value
 
-        np.testing.assert_allclose(actual.value, desired.to(actual.unit).value,
-                                   rtol=rtol, atol=atol, err_msg=err_msg, verbose=verbose)
+        np.testing.assert_allclose(
+            actual.value, desired.to(actual.unit).value, rtol=rtol, atol=atol, err_msg=err_msg, verbose=verbose)
 
     elif isinstance(actual, u.Quantity):
         raise TypeError("If `actual` is a Quantity, `desired` should also be a Quantity")
@@ -87,10 +86,10 @@ def assert_quantity_allclose(actual, desired, rtol=1.e-7, atol=0, err_msg='', ve
     else:
 
         if isinstance(atol, u.Quantity):
-            raise TypeError("If `actual` and `desired` are not Quantities, `atol` parameter should also not be a Quantity")
+            raise TypeError(
+                "If `actual` and `desired` are not Quantities, `atol` parameter should also not be a Quantity")
 
-        np.testing.assert_allclose(actual, desired,
-                                   rtol=rtol, atol=atol, err_msg=err_msg, verbose=verbose)
+        np.testing.assert_allclose(actual, desired, rtol=rtol, atol=atol, err_msg=err_msg, verbose=verbose)
 
 
 new_hash_library = {}
@@ -113,6 +112,7 @@ def figure_test(test_function):
     def test_simple_plot():
         plt.plot([0,1])
     """
+
     @pytest.mark.figure
     @wraps(test_function)
     def wrapper(*args, **kwargs):
@@ -128,4 +128,5 @@ def figure_test(test_function):
         else:
             assert hash.hash_library[name] == figure_hash
         plt.close()
+
     return wrapper

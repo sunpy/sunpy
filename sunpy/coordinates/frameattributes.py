@@ -66,19 +66,16 @@ class TimeFrameAttributeSunPy(TimeFrameAttribute):
             try:
                 out = Time(parse_time(value))
             except Exception as err:
-                raise ValueError('Invalid time input {0}={1!r}\n{2}'
-                                 .format(self.name, value, err))
+                raise ValueError('Invalid time input {0}={1!r}\n{2}'.format(self.name, value, err))
             converted = True
         else:
             try:
                 out = Time(value)
             except Exception as err:
-                raise ValueError('Invalid time input {0}={1!r}\n{2}'
-                                 .format(self.name, value, err))
+                raise ValueError('Invalid time input {0}={1!r}\n{2}'.format(self.name, value, err))
             converted = True
 
         if not out.isscalar:
-            raise ValueError('Time input {0}={1!r} must be a single (scalar) value'
-                             .format(self.name, value))
+            raise ValueError('Time input {0}={1!r} must be a single (scalar) value'.format(self.name, value))
 
         return out, converted

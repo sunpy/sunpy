@@ -43,8 +43,7 @@ class TestMap(object):
 
     def test_composite(self):
         # Test making a CompositeMap
-        comp = sunpy.map.Map(AIA_171_IMAGE, RHESSI_IMAGE,
-                             composite=True)
+        comp = sunpy.map.Map(AIA_171_IMAGE, RHESSI_IMAGE, composite=True)
         assert isinstance(comp, sunpy.map.CompositeMap)
 
     def test_patterns(self):
@@ -114,6 +113,7 @@ class TestMap(object):
 #==============================================================================
 # Sources Tests
 #==============================================================================
+
     def test_sdo(self):
         # Test an AIAMap
         aia = sunpy.map.Map(AIA_171_IMAGE)

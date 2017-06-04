@@ -18,20 +18,17 @@ from sunpy.net.tests.strategies import time_attr
 LCClient = eve.EVEClient()
 
 
-@pytest.mark.parametrize("timerange,url_start,url_end", [
-    (TimeRange('2012/4/21', '2012/4/21'),
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt',
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt'
-     ),
-    (TimeRange('2012/5/5', '2012/5/6'),
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120505_EVE_L0CS_DIODES_1m.txt',
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120506_EVE_L0CS_DIODES_1m.txt'
-     ),
-    (TimeRange('2012/7/7', '2012/7/14'),
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120707_EVE_L0CS_DIODES_1m.txt',
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120714_EVE_L0CS_DIODES_1m.txt'
-     )
-])
+@pytest.mark.parametrize(
+    "timerange,url_start,url_end",
+    [(TimeRange('2012/4/21', '2012/4/21'),
+      'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt',
+      'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt'),
+     (TimeRange('2012/5/5', '2012/5/6'),
+      'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120505_EVE_L0CS_DIODES_1m.txt',
+      'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120506_EVE_L0CS_DIODES_1m.txt'),
+     (TimeRange('2012/7/7', '2012/7/14'),
+      'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120707_EVE_L0CS_DIODES_1m.txt',
+      'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120714_EVE_L0CS_DIODES_1m.txt')])
 def test_get_url_for_time_range(timerange, url_start, url_end):
     urls = LCClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)
@@ -46,13 +43,11 @@ def test_get_url_for_date():
 
 
 def test_can_handle_query():
-    ans1 = eve.EVEClient._can_handle_query(
-        Time('2012/8/9', '2012/8/10'), Instrument('eve'), Level(0))
+    ans1 = eve.EVEClient._can_handle_query(Time('2012/8/9', '2012/8/10'), Instrument('eve'), Level(0))
     assert ans1 is True
     ans2 = eve.EVEClient._can_handle_query(Time('2012/7/7', '2012/7/7'))
     assert ans2 is False
-    ans3 = eve.EVEClient._can_handle_query(
-        Time('2012/8/9', '2012/8/10'), Instrument('eve'), Source('sdo'))
+    ans3 = eve.EVEClient._can_handle_query(Time('2012/8/9', '2012/8/10'), Instrument('eve'), Source('sdo'))
     assert ans3 is False
 
 
@@ -77,9 +72,7 @@ def test_get(time, instrument):
 
 
 @pytest.mark.online
-@pytest.mark.parametrize(
-    'query',
-    [(a.Time('2012/10/4', '2012/10/6') & a.Instrument('eve') & a.Level(0))])
+@pytest.mark.parametrize('query', [(a.Time('2012/10/4', '2012/10/6') & a.Instrument('eve') & a.Level(0))])
 def test_fido(query):
     qr = Fido.search(query)
     client = qr.get_response(0).client

@@ -32,6 +32,7 @@ def createAIAMap(request):
     aiaobj = Map(request.param)
     return aiaobj
 
+
 # AIA Tests
 
 

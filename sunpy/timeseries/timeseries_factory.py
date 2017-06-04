@@ -315,8 +315,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 data_header_unit_tuples.append((data, meta, units))
 
             # Filepath
-            elif (isinstance(arg, six.string_types) and
-                  os.path.isfile(os.path.expanduser(arg))):
+            elif (isinstance(arg, six.string_types) and os.path.isfile(os.path.expanduser(arg))):
 
                 path = os.path.expanduser(arg)
 
@@ -328,8 +327,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                     filepaths.append(result)
 
             # Directory
-            elif (isinstance(arg, six.string_types) and
-                  os.path.isdir(os.path.expanduser(arg))):
+            elif (isinstance(arg, six.string_types) and os.path.isdir(os.path.expanduser(arg))):
 
                 path = os.path.expanduser(arg)
                 files = [os.path.join(path, elem) for elem in os.listdir(path)]
@@ -362,8 +360,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 already_timeseries.append(arg)
 
             # A URL
-            elif (isinstance(arg, six.string_types) and
-                  _is_url(arg)):
+            elif (isinstance(arg, six.string_types) and _is_url(arg)):
                 url = arg
                 path = download_file(url, get_and_create_download_dir())
                 pairs = self._read_file(path, **kwargs)
@@ -404,8 +401,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
         # Hack to get around Python 2.x not backporting PEP 3102.
         silence_errors = kwargs.pop('silence_errors', False)
 
-        (data_header_unit_tuples, data_header_pairs,
-         already_timeseries, filepaths) = self._parse_args(*args, **kwargs)
+        (data_header_unit_tuples, data_header_pairs, already_timeseries, filepaths) = self._parse_args(*args, **kwargs)
 
         new_timeseries = list()
 
@@ -442,8 +438,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
                 # If no specific classes have been found we can read the data
                 # if we only have one data header pair:
                 if len(pairs) == 1:
-                    already_timeseries.append(GenericTimeSeries(pairs[0].data,
-                                                                pairs[0].header))
+                    already_timeseries.append(GenericTimeSeries(pairs[0].data, pairs[0].header))
                 else:
                     raise NoMatchError("Input read by sunpy.io can not find a "
                                        "matching class for reading multiple HDUs")
@@ -465,8 +460,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             meta = MetaDict(meta)
 
             try:
-                new_ts = self._check_registered_widgets(data=data, meta=meta,
-                                                        units=units, **kwargs)
+                new_ts = self._check_registered_widgets(data=data, meta=meta, units=units, **kwargs)
             except (NoMatchError, MultipleMatchError, ValidationFunctionError):
                 if not silence_errors:
                     raise
@@ -568,6 +562,6 @@ class NoTimeSeriesFound(ValueError):
     pass
 
 
-TimeSeries = TimeSeriesFactory(default_widget_type=GenericTimeSeries,
-                               additional_validation_functions=['is_datasource_for'])
+TimeSeries = TimeSeriesFactory(
+    default_widget_type=GenericTimeSeries, additional_validation_functions=['is_datasource_for'])
 TimeSeries.registry = TIMESERIES_CLASSES

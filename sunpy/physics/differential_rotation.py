@@ -66,9 +66,7 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     sin2l = (np.sin(latitude))**2
     sin4l = sin2l**2
 
-    rot_params = {'howard': [2.894, -0.428, -0.370],
-                  'snodgrass': [2.851, -0.343, -0.474]
-                  }
+    rot_params = {'howard': [2.894, -0.428, -0.370], 'snodgrass': [2.851, -0.343, -0.474]}
 
     if rot_type not in ['howard', 'allen', 'snodgrass']:
         raise ValueError("""rot_type must equal one of
@@ -169,17 +167,17 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
     vstart = kwargs.get("vstart", _calc_P_B0_SD(dstart))
     # Compute heliographic co-ordinates - returns (longitude, latitude). Points
     # off the limb are returned as nan
-    longitude, latitude = convert_hpc_hg(x.to(u.arcsec).value,
-                                         y.to(u.arcsec).value,
-                                         b0_deg=vstart["b0"].to(u.deg).value,
-                                         l0_deg=vstart["l0"].to(u.deg).value,
-                                         dsun_meters=(constants.au * sun.sunearth_distance(t=dstart)).value,
-                                         angle_units='arcsec')
+    longitude, latitude = convert_hpc_hg(
+        x.to(u.arcsec).value,
+        y.to(u.arcsec).value,
+        b0_deg=vstart["b0"].to(u.deg).value,
+        l0_deg=vstart["l0"].to(u.deg).value,
+        dsun_meters=(constants.au * sun.sunearth_distance(t=dstart)).value,
+        angle_units='arcsec')
     longitude = Longitude(longitude, u.deg)
     latitude = Angle(latitude, u.deg)
     # Compute the differential rotation
-    drot = diff_rot(interval, latitude, frame_time=frame_time,
-                    rot_type=rot_type)
+    drot = diff_rot(interval, latitude, frame_time=frame_time, rot_type=rot_type)
 
     # Convert back to heliocentric cartesian in units of arcseconds
     vend = kwargs.get("vend", _calc_P_B0_SD(dend))
@@ -187,12 +185,13 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
     # It appears that there is a difference in how the SSWIDL function
     # hel2arcmin and the sunpy function below performs this co-ordinate
     # transform.
-    newx, newy = convert_hg_hpc(longitude.to(u.deg).value + drot.to(u.deg).value,
-                                latitude.to(u.deg).value,
-                                b0_deg=vend["b0"].to(u.deg).value,
-                                l0_deg=vend["l0"].to(u.deg).value,
-                                dsun_meters=(constants.au * sun.sunearth_distance(t=dend)).value,
-                                occultation=False)
+    newx, newy = convert_hg_hpc(
+        longitude.to(u.deg).value + drot.to(u.deg).value,
+        latitude.to(u.deg).value,
+        b0_deg=vend["b0"].to(u.deg).value,
+        l0_deg=vend["l0"].to(u.deg).value,
+        dsun_meters=(constants.au * sun.sunearth_distance(t=dend)).value,
+        occultation=False)
     newx = Angle(newx, u.arcsec)
     newy = Angle(newy, u.arcsec)
     return newx.to(u.arcsec), newy.to(u.arcsec)
@@ -244,8 +243,8 @@ def _calc_P_B0_SD(date):
 
     # calculate P, the position angle of the pole
     p = np.rad2deg(
-        np.arctan(-np.tan(np.deg2rad(oblt)) * np.cos(np.deg2rad(appl))) +
-        np.arctan(-0.127220 * np.cos(np.deg2rad(arg))))
+        np.arctan(-np.tan(np.deg2rad(oblt)) * np.cos(np.deg2rad(appl))) + np.arctan(
+            -0.127220 * np.cos(np.deg2rad(arg))))
 
     # B0 the tilt of the axis...
     b = np.rad2deg(np.arcsin(0.12620 * np.sin(np.deg2rad(arg))))
@@ -273,10 +272,7 @@ def _calc_P_B0_SD(date):
     sd_const = constants.radius / constants.au
     sd = np.arcsin(sd_const / r) * 10800.0 / np.pi
 
-    return {"p": Angle(p, u.deg),
-            "b0": Angle(b, u.deg),
-            "sd": Angle(sd.value, u.arcmin),
-            "l0": Angle(0.0, u.deg)}
+    return {"p": Angle(p, u.deg), "b0": Angle(b, u.deg), "sd": Angle(sd.value, u.arcmin), "l0": Angle(0.0, u.deg)}
 
 
 def _sun_pos(date):
@@ -381,22 +377,19 @@ def _sun_pos(date):
 
     # Form Right Ascension and Declination
     l = l / 3600.0
-    ra = np.rad2deg(np.arctan2(np.sin(np.deg2rad(l)) *
-                               np.cos(np.deg2rad(oblt)), np.cos(np.deg2rad(l))))
+    ra = np.rad2deg(np.arctan2(np.sin(np.deg2rad(l)) * np.cos(np.deg2rad(oblt)), np.cos(np.deg2rad(l))))
 
     if isinstance(ra, np.ndarray):
         ra[ra < 0.0] += 360.0
     elif ra < 0.0:
         ra = ra + 360.0
 
-    dec = np.rad2deg(np.arcsin(np.sin(np.deg2rad(l)) *
-                               np.sin(np.deg2rad(oblt))))
+    dec = np.rad2deg(np.arcsin(np.sin(np.deg2rad(l)) * np.sin(np.deg2rad(oblt))))
 
     # convert the internal variables to those listed in the top of the
     # comment section in this code and in the original IDL code.  Quantities
     # are assigned following the advice in Astropy "Working with Angles"
-    return {"longitude": Longitude(longmed, u.deg),
-            "ra": Longitude(ra, u.deg),
-            "dec": Latitude(dec, u.deg),
-            "app_long": Longitude(l, u.deg),
-            "obliq": Angle(oblt, u.deg)}
+    return {
+        "longitude": Longitude(longmed, u.deg), "ra": Longitude(ra, u.deg), "dec": Latitude(dec, u.deg),
+        "app_long": Longitude(l, u.deg), "obliq": Angle(oblt, u.deg)
+    }

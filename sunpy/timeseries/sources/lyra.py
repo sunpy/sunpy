@@ -88,8 +88,8 @@ class LYRATimeSeries(GenericTimeSeries):
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
 
-        lyranames = (('Lyman alpha', 'Herzberg cont.', 'Al filter', 'Zr filter'),
-                     ('120-123nm', '190-222nm', '17-80nm + <5nm', '6-20nm + <2nm'))
+        lyranames = (('Lyman alpha', 'Herzberg cont.', 'Al filter', 'Zr filter'), ('120-123nm', '190-222nm',
+                                                                                   '17-80nm + <5nm', '6-20nm + <2nm'))
 
         # Choose title if none was specified
         # if not kwargs.has_key("title"):
@@ -156,11 +156,9 @@ class LYRATimeSeries(GenericTimeSeries):
         # First column are times.  For level 2 data, the units are [s].
         # For level 3 data, the units are [min]
         if hdulist[1].header['TUNIT1'] == 's':
-            times = [start + datetime.timedelta(seconds=n)
-                     for n in fits_record.field(0)]
+            times = [start + datetime.timedelta(seconds=n) for n in fits_record.field(0)]
         elif hdulist[1].header['TUNIT1'] == 'MIN':
-            times = [start + datetime.timedelta(minutes=int(n))
-                     for n in fits_record.field(0)]
+            times = [start + datetime.timedelta(minutes=int(n)) for n in fits_record.field(0)]
         else:
             raise ValueError("Time unit in LYRA fits file not recognised.  "
                              "Value = {0}".format(hdulist[1].header['TUNIT1']))
@@ -180,9 +178,7 @@ class LYRATimeSeries(GenericTimeSeries):
         data.sort_index(inplace=True)
 
         # Add the units data
-        units = OrderedDict([('CHANNEL1', u.W / u.m**2),
-                             ('CHANNEL2', u.W / u.m**2),
-                             ('CHANNEL3', u.W / u.m**2),
+        units = OrderedDict([('CHANNEL1', u.W / u.m**2), ('CHANNEL2', u.W / u.m**2), ('CHANNEL3', u.W / u.m**2),
                              ('CHANNEL4', u.W / u.m**2)])
         # ToDo: check: http://www.wmo-sat.info/oscar/instruments/view/733
         return data, metadata, units

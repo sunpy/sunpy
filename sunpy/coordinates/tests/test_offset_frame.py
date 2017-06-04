@@ -11,14 +11,12 @@ from sunpy.coordinates import NorthOffsetFrame
 
 
 @st.composite
-def latitude(draw, lat=st.floats(min_value=-90, max_value=90,
-                                 allow_nan=False, allow_infinity=False)):
+def latitude(draw, lat=st.floats(min_value=-90, max_value=90, allow_nan=False, allow_infinity=False)):
     return draw(lat) * u.deg
 
 
 @st.composite
-def lonitude(draw, lon=st.floats(min_value=-180, max_value=180,
-                                 allow_nan=False, allow_infinity=False)):
+def lonitude(draw, lon=st.floats(min_value=-180, max_value=180, allow_nan=False, allow_infinity=False)):
     return draw(lon) * u.deg
 
 
@@ -26,8 +24,7 @@ def test_null():
     """
     test init of a frame where the origins are the same.
     """
-    off = NorthOffsetFrame(north=SkyCoord(0 * u.deg, 90 * u.deg,
-                                          frame='heliographic_stonyhurst'))
+    off = NorthOffsetFrame(north=SkyCoord(0 * u.deg, 90 * u.deg, frame='heliographic_stonyhurst'))
     assert isinstance(off, SkyOffsetFrame)
     assert off.origin.lat == 0 * u.deg
     assert off.origin.lon == 0 * u.deg

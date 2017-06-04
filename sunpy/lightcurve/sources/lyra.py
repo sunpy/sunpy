@@ -87,8 +87,8 @@ class LYRALightCurve(LightCurve):
         fig : `~matplotlib.Figure`
             A plot figure.
         """
-        lyranames = (('Lyman alpha', 'Herzberg cont.', 'Al filter', 'Zr filter'),
-                     ('120-123nm', '190-222nm', '17-80nm + <5nm', '6-20nm + <2nm'))
+        lyranames = (('Lyman alpha', 'Herzberg cont.', 'Al filter', 'Zr filter'), ('120-123nm', '190-222nm',
+                                                                                   '17-80nm + <5nm', '6-20nm + <2nm'))
 
         # Choose title if none was specified
         # if not kwargs.has_key("title"):
@@ -128,8 +128,7 @@ class LYRALightCurve(LightCurve):
         dt = parse_time(date or datetime.datetime.utcnow())
 
         # Filename
-        filename = "lyra_{0:%Y%m%d-}000000_lev{1:d}_std.fits".format(
-            dt, kwargs.get('level', 2))
+        filename = "lyra_{0:%Y%m%d-}000000_lev{1:d}_std.fits".format(dt, kwargs.get('level', 2))
         # URL
         base_url = "http://proba2.oma.be/lyra/data/bsd/"
         url_path = urllib.parse.urljoin(dt.strftime('%Y/%m/%d/'), filename)
@@ -163,11 +162,9 @@ class LYRALightCurve(LightCurve):
         # First column are times.  For level 2 data, the units are [s].
         # For level 3 data, the units are [min]
         if hdulist[1].header['TUNIT1'] == 's':
-            times = [start + datetime.timedelta(seconds=n)
-                     for n in fits_record.field(0)]
+            times = [start + datetime.timedelta(seconds=n) for n in fits_record.field(0)]
         elif hdulist[1].header['TUNIT1'] == 'MIN':
-            times = [start + datetime.timedelta(minutes=int(n))
-                     for n in fits_record.field(0)]
+            times = [start + datetime.timedelta(minutes=int(n)) for n in fits_record.field(0)]
         else:
             raise ValueError("Time unit in LYRA fits file not recognised.  "
                              "Value = {0}".format(hdulist[1].header['TUNIT1']))

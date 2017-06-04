@@ -11,7 +11,6 @@ timerange_a = TimeRange('2004/01/01', '2007/01/01')
 
 
 class TestNOAAIndicesLightCurve(object):
-
     @pytest.mark.online
     def test_create(self):
         lc = sunpy.lightcurve.NOAAIndicesLightCurve.create()
@@ -48,7 +47,6 @@ class TestNOAAIndicesLightCurve(object):
 
 
 class TestNOAAPredictIndicesLightCurve(object):
-
     @pytest.mark.online
     def test_create(self):
         """Test creation with no input"""

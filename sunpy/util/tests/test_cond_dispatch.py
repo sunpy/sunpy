@@ -26,8 +26,7 @@ def test_dispatch(oddeven):
 def test_wrong_sig(oddeven):
     with pytest.raises(TypeError) as exc_info:
         oddeven(y=2)
-    assert "There are no functions matching your input parameter signature." in str(
-        exc_info.value)
+    assert "There are no functions matching your input parameter signature." in str(exc_info.value)
 
 
 def test_nocond():
@@ -36,8 +35,7 @@ def test_nocond():
     f.add(lambda x: 2 * x, lambda x: x % 2 == 0)
     with pytest.raises(TypeError) as exc_info:
         f(3)
-        assert "Your input did not fulfill the condition for any function." in str(
-            exc_info.value)
+        assert "Your input did not fulfill the condition for any function." in str(exc_info.value)
 
 
 def test_else():

@@ -32,6 +32,7 @@ class Spectrum(np.ndarray):
     >>> spec = Spectrum(data, freq_axis)
     >>> spec.peek()   # doctest: +SKIP
     """
+
     def __new__(cls, data, *args, **kwargs):
         return np.asarray(data).view(cls)
 

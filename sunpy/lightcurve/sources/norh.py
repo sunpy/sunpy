@@ -93,11 +93,9 @@ class NoRHLightCurve(LightCurve):
         # date is a datetime object
         if 'wavelength' in kwargs:
             if kwargs['wavelength'] == '34':
-                final_url = urllib.parse.urljoin(
-                    baseurl, date.strftime('%Y/%m/tcz%y%m%d'))
+                final_url = urllib.parse.urljoin(baseurl, date.strftime('%Y/%m/tcz%y%m%d'))
         else:
-            final_url = urllib.parse.urljoin(
-                baseurl, date.strftime('%Y/%m/tca%y%m%d'))
+            final_url = urllib.parse.urljoin(baseurl, date.strftime('%Y/%m/tca%y%m%d'))
 
         return final_url
 

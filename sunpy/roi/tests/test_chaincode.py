@@ -6,7 +6,6 @@ import numpy as np
 
 
 class CCTests(unittest.TestCase):
-
     def testEnds(self):
         cc = Chaincode([0, 0], "2460")  # Can I test more than one path? How?
         end = [0, 0]

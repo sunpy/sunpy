@@ -21,6 +21,7 @@ def createSWAP(request):
     """Creates an SWAPMap from a FITS file."""
     return Map(request.param)
 
+
 # SWAP Tests
 
 

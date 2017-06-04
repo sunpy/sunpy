@@ -53,25 +53,9 @@ def aia171_test_map_with_mask(aia171_test_map):
 def generic_map():
     data = np.ones([6, 6], dtype=np.float64)
     header = {
-        'CRVAL1': 0,
-        'CRVAL2': 0,
-        'CRPIX1': 5,
-        'CRPIX2': 5,
-        'CDELT1': 10,
-        'CDELT2': 10,
-        'CUNIT1': 'arcsec',
-        'CUNIT2': 'arcsec',
-        'PC1_1': 0,
-        'PC1_2': -1,
-        'PC2_1': 1,
-        'PC2_2': 0,
-        'NAXIS1': 6,
-        'NAXIS2': 6,
-        'date-obs': '1970/01/01T00:00:00',
-        'obsrvtry': 'Foo',
-        'detector': 'bar',
-        'wavelnth': 10,
-        'waveunit': 'm'
+        'CRVAL1': 0, 'CRVAL2': 0, 'CRPIX1': 5, 'CRPIX2': 5, 'CDELT1': 10, 'CDELT2': 10, 'CUNIT1': 'arcsec',
+        'CUNIT2': 'arcsec', 'PC1_1': 0, 'PC1_2': -1, 'PC2_1': 1, 'PC2_2': 0, 'NAXIS1': 6, 'NAXIS2': 6,
+        'date-obs': '1970/01/01T00:00:00', 'obsrvtry': 'Foo', 'detector': 'bar', 'wavelnth': 10, 'waveunit': 'm'
     }
     return sunpy.map.Map((data, header))
 
@@ -91,15 +75,10 @@ def test_wcs(aia171_test_map):
     wcs = aia171_test_map.wcs
     assert isinstance(wcs, astropy.wcs.WCS)
 
-    assert all(wcs.wcs.crpix ==
-               [aia171_test_map.reference_pixel.x.value, aia171_test_map.reference_pixel.y.value])
-    assert all(wcs.wcs.cdelt == [aia171_test_map.scale.axis1.value,
-                                 aia171_test_map.scale.axis1.value])
-    assert all(
-        wcs.wcs.crval ==
-        [aia171_test_map._reference_longitude.value, aia171_test_map._reference_latitude.value])
-    assert set(wcs.wcs.ctype) == set(
-        [aia171_test_map.coordinate_system.axis1, aia171_test_map.coordinate_system.axis2])
+    assert all(wcs.wcs.crpix == [aia171_test_map.reference_pixel.x.value, aia171_test_map.reference_pixel.y.value])
+    assert all(wcs.wcs.cdelt == [aia171_test_map.scale.axis1.value, aia171_test_map.scale.axis1.value])
+    assert all(wcs.wcs.crval == [aia171_test_map._reference_longitude.value, aia171_test_map._reference_latitude.value])
+    assert set(wcs.wcs.ctype) == set([aia171_test_map.coordinate_system.axis1, aia171_test_map.coordinate_system.axis2])
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
     assert set(wcs.wcs.cunit) == set([u.Unit(a) for a in aia171_test_map.spatial_units])
 
@@ -175,13 +154,11 @@ def test_coordinate_system(generic_map):
 
 
 def test_carrington_longitude(generic_map):
-    assert generic_map.carrington_longitude == (
-        sunpy.sun.heliographic_solar_center(generic_map.date))[0]
+    assert generic_map.carrington_longitude == (sunpy.sun.heliographic_solar_center(generic_map.date))[0]
 
 
 def test_heliographic_latitude(generic_map):
-    assert generic_map.heliographic_latitude == (
-        sunpy.sun.heliographic_solar_center(generic_map.date))[1]
+    assert generic_map.heliographic_latitude == (sunpy.sun.heliographic_solar_center(generic_map.date))[1]
 
 
 def test_heliographic_longitude(generic_map):
@@ -210,25 +187,14 @@ def test_rotation_matrix_pci_j(generic_map):
 
 def test_rotation_matrix_crota(aia171_test_map):
     np.testing.assert_allclose(aia171_test_map.rotation_matrix,
-                               np.matrix([[9.99999943e-01, -3.38820761e-04],
-                                          [3.38820761e-04, 9.99999943e-01]]))
+                               np.matrix([[9.99999943e-01, -3.38820761e-04], [3.38820761e-04, 9.99999943e-01]]))
 
 
 def test_rotation_matrix_cd_cdelt():
     data = np.ones([6, 6], dtype=np.float64)
     header = {
-        'CRVAL1': 0,
-        'CRVAL2': 0,
-        'CRPIX1': 5,
-        'CRPIX2': 5,
-        'CDELT1': 10,
-        'CDELT2': 9,
-        'CD1_1': 0,
-        'CD1_2': -9,
-        'CD2_1': 10,
-        'CD2_2': 0,
-        'NAXIS1': 6,
-        'NAXIS2': 6
+        'CRVAL1': 0, 'CRVAL2': 0, 'CRPIX1': 5, 'CRPIX2': 5, 'CDELT1': 10, 'CDELT2': 9, 'CD1_1': 0, 'CD1_2': -9,
+        'CD2_1': 10, 'CD2_2': 0, 'NAXIS1': 6, 'NAXIS2': 6
     }
     cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.matrix([[0., -1.], [1., 0]]))
@@ -237,18 +203,8 @@ def test_rotation_matrix_cd_cdelt():
 def test_rotation_matrix_cd_cdelt_square():
     data = np.ones([6, 6], dtype=np.float64)
     header = {
-        'CRVAL1': 0,
-        'CRVAL2': 0,
-        'CRPIX1': 5,
-        'CRPIX2': 5,
-        'CDELT1': 10,
-        'CDELT2': 10,
-        'CD1_1': 0,
-        'CD1_2': -10,
-        'CD2_1': 10,
-        'CD2_2': 0,
-        'NAXIS1': 6,
-        'NAXIS2': 6
+        'CRVAL1': 0, 'CRVAL2': 0, 'CRPIX1': 5, 'CRPIX2': 5, 'CDELT1': 10, 'CDELT2': 10, 'CD1_1': 0, 'CD1_2': -10,
+        'CD2_1': 10, 'CD2_2': 0, 'NAXIS1': 6, 'NAXIS2': 6
     }
     cd_map = sunpy.map.Map((data, header))
     np.testing.assert_allclose(cd_map.rotation_matrix, np.matrix([[0., -1], [1., 0]]))
@@ -261,17 +217,15 @@ def test_swap_cd():
 
 def test_data_range(generic_map):
     """Make sure xrange and yrange work"""
-    assert (generic_map.xrange[1] - generic_map.xrange[0]
-            ).to(u.arcsec).value == generic_map.meta['cdelt1'] * generic_map.meta['naxis1']
-    assert (generic_map.yrange[1] - generic_map.yrange[0]
-            ).to(u.arcsec).value == generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
+    assert (generic_map.xrange[1] -
+            generic_map.xrange[0]).to(u.arcsec).value == generic_map.meta['cdelt1'] * generic_map.meta['naxis1']
+    assert (generic_map.yrange[1] -
+            generic_map.yrange[0]).to(u.arcsec).value == generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
 
     # the weird unit-de-unit thing here is to work around and inconsistency in
     # the way np.average works with astropy 1.3 and 2.0dev
-    assert_quantity_allclose(np.average(u.Quantity(generic_map.xrange).value) * u.deg,
-                             generic_map.center.Tx)
-    assert_quantity_allclose(np.average(u.Quantity(generic_map.yrange).value) * u.deg,
-                             generic_map.center.Ty)
+    assert_quantity_allclose(np.average(u.Quantity(generic_map.xrange).value) * u.deg, generic_map.center.Tx)
+    assert_quantity_allclose(np.average(u.Quantity(generic_map.yrange).value) * u.deg, generic_map.center.Ty)
 
 
 def test_data_to_pixel(generic_map):
@@ -286,18 +240,8 @@ def test_default_shift():
     """Test that the default shift is zero"""
     data = np.ones([6, 6], dtype=np.float64)
     header = {
-        'CRVAL1': 0,
-        'CRVAL2': 0,
-        'CRPIX1': 5,
-        'CRPIX2': 5,
-        'CDELT1': 10,
-        'CDELT2': 9,
-        'CD1_1': 0,
-        'CD1_2': -9,
-        'CD2_1': 10,
-        'CD2_2': 0,
-        'NAXIS1': 6,
-        'NAXIS2': 6
+        'CRVAL1': 0, 'CRVAL2': 0, 'CRPIX1': 5, 'CRPIX2': 5, 'CDELT1': 10, 'CDELT2': 9, 'CD1_1': 0, 'CD1_2': -9,
+        'CD2_1': 10, 'CD2_2': 0, 'NAXIS1': 6, 'NAXIS2': 6
     }
     cd_map = sunpy.map.Map((data, header))
     assert cd_map.shifted_value[0].value == 0
@@ -306,8 +250,7 @@ def test_default_shift():
 
 def test_shift_applied(generic_map):
     """Test that adding a shift actually updates the reference coordinate"""
-    original_reference_coord = (generic_map.reference_coordinate.Tx,
-                                generic_map.reference_coordinate.Ty)
+    original_reference_coord = (generic_map.reference_coordinate.Tx, generic_map.reference_coordinate.Ty)
     x_shift = 5 * u.arcsec
     y_shift = 13 * u.arcsec
     shifted_map = generic_map.shift(x_shift, y_shift)
@@ -402,30 +345,23 @@ def test_resample_metadata(generic_map, sample_method, new_dimensions):
 def test_superpixel(aia171_test_map, aia171_test_map_with_mask):
     dimensions = (2, 2) * u.pix
     superpixel_map_sum = aia171_test_map.superpixel(dimensions)
-    assert_quantity_allclose(superpixel_map_sum.dimensions[1],
-                             aia171_test_map.dimensions[1] / dimensions[1] * u.pix)
-    assert_quantity_allclose(superpixel_map_sum.dimensions[0],
-                             aia171_test_map.dimensions[0] / dimensions[0] * u.pix)
-    assert_quantity_allclose(superpixel_map_sum.data[0][0],
-                             (aia171_test_map.data[0][0] + aia171_test_map.data[0][1] +
-                              aia171_test_map.data[1][0] + aia171_test_map.data[1][1]))
+    assert_quantity_allclose(superpixel_map_sum.dimensions[1], aia171_test_map.dimensions[1] / dimensions[1] * u.pix)
+    assert_quantity_allclose(superpixel_map_sum.dimensions[0], aia171_test_map.dimensions[0] / dimensions[0] * u.pix)
+    assert_quantity_allclose(superpixel_map_sum.data[0][0], (aia171_test_map.data[0][0] + aia171_test_map.data[0][1] +
+                                                             aia171_test_map.data[1][0] + aia171_test_map.data[1][1]))
 
     superpixel_map_avg = aia171_test_map.superpixel(dimensions, func=np.mean)
-    assert_quantity_allclose(superpixel_map_avg.dimensions[1],
-                             aia171_test_map.dimensions[1] / dimensions[1] * u.pix)
-    assert_quantity_allclose(superpixel_map_avg.dimensions[0],
-                             aia171_test_map.dimensions[0] / dimensions[0] * u.pix)
+    assert_quantity_allclose(superpixel_map_avg.dimensions[1], aia171_test_map.dimensions[1] / dimensions[1] * u.pix)
+    assert_quantity_allclose(superpixel_map_avg.dimensions[0], aia171_test_map.dimensions[0] / dimensions[0] * u.pix)
     assert_quantity_allclose(superpixel_map_avg.data[0][0],
-                             (aia171_test_map.data[0][0] + aia171_test_map.data[0][1] +
-                              aia171_test_map.data[1][0] + aia171_test_map.data[1][1]) / 4.0)
+                             (aia171_test_map.data[0][0] + aia171_test_map.data[0][1] + aia171_test_map.data[1][0] +
+                              aia171_test_map.data[1][1]) / 4.0)
 
     # Test that the mask is respected
     superpixel_map_sum = aia171_test_map_with_mask.superpixel(dimensions)
     assert superpixel_map_sum.mask is not None
-    assert_quantity_allclose(superpixel_map_sum.mask.shape[0],
-                             aia171_test_map.dimensions[1] / dimensions[1])
-    assert_quantity_allclose(superpixel_map_sum.mask.shape[1],
-                             aia171_test_map.dimensions[0] / dimensions[0])
+    assert_quantity_allclose(superpixel_map_sum.mask.shape[0], aia171_test_map.dimensions[1] / dimensions[1])
+    assert_quantity_allclose(superpixel_map_sum.mask.shape[1], aia171_test_map.dimensions[0] / dimensions[0])
 
     # Test that the offset is respected
     superpixel_map_sum = aia171_test_map_with_mask.superpixel(dimensions, offset=(1, 1) * u.pix)
@@ -436,12 +372,10 @@ def test_superpixel(aia171_test_map, aia171_test_map_with_mask):
 
     dimensions = (7, 9) * u.pix
     superpixel_map_sum = aia171_test_map_with_mask.superpixel(dimensions, offset=(4, 4) * u.pix)
-    assert_quantity_allclose(
-        superpixel_map_sum.dimensions[0],
-        np.int((aia171_test_map.dimensions[0] / dimensions[0]).value) * u.pix - 1 * u.pix)
-    assert_quantity_allclose(
-        superpixel_map_sum.dimensions[1],
-        np.int((aia171_test_map.dimensions[1] / dimensions[1]).value) * u.pix - 1 * u.pix)
+    assert_quantity_allclose(superpixel_map_sum.dimensions[0],
+                             np.int((aia171_test_map.dimensions[0] / dimensions[0]).value) * u.pix - 1 * u.pix)
+    assert_quantity_allclose(superpixel_map_sum.dimensions[1],
+                             np.int((aia171_test_map.dimensions[1] / dimensions[1]).value) * u.pix - 1 * u.pix)
 
 
 def calc_new_matrix(angle):
@@ -480,8 +414,7 @@ def test_rotate(aia171_test_map):
 
     # Rotation of a rectangular map by a large enough angle will change which dimension is larger
     aia171_test_map_crop = aia171_test_map.submap(
-        SkyCoord(
-            [[0, 0], [1000, 400]] * u.arcsec, frame=aia171_test_map.coordinate_frame))
+        SkyCoord([[0, 0], [1000, 400]] * u.arcsec, frame=aia171_test_map.coordinate_frame))
 
     aia171_test_map_crop_rot = aia171_test_map_crop.rotate(60 * u.deg)
     assert aia171_test_map_crop.data.shape[0] < aia171_test_map_crop.data.shape[1]
@@ -489,8 +422,7 @@ def test_rotate(aia171_test_map):
 
     # Same test as above, to test the other direction
     aia171_test_map_crop = aia171_test_map.submap(
-        SkyCoord(
-            [[0, 0], [400, 1000]] * u.arcsec, frame=aia171_test_map.coordinate_frame))
+        SkyCoord([[0, 0], [400, 1000]] * u.arcsec, frame=aia171_test_map.coordinate_frame))
     aia171_test_map_crop_rot = aia171_test_map_crop.rotate(60 * u.deg)
     assert aia171_test_map_crop.data.shape[0] > aia171_test_map_crop.data.shape[1]
     assert aia171_test_map_crop_rot.data.shape[0] < aia171_test_map_crop_rot.data.shape[1]
@@ -500,8 +432,8 @@ def test_rotate_pad_crpix(generic_map):
     rotated_map = generic_map.rotate(30 * u.deg)
     # This tests that the reference pixel of the map is in the expected place.
     assert rotated_map.data.shape != generic_map.data.shape
-    assert_quantity_allclose(u.Quantity(rotated_map.reference_pixel),
-                             u.Quantity((6.049038105675565, 7.5490381056760265), u.pix))
+    assert_quantity_allclose(
+        u.Quantity(rotated_map.reference_pixel), u.Quantity((6.049038105675565, 7.5490381056760265), u.pix))
 
 
 def test_rotate_recenter(generic_map):
@@ -558,25 +490,9 @@ def test_validate_meta(generic_map):
     """Check to see if_validate_meta displays an appropriate error"""
     with warnings.catch_warnings(record=True) as w:
         bad_header = {
-            'CRVAL1': 0,
-            'CRVAL2': 0,
-            'CRPIX1': 5,
-            'CRPIX2': 5,
-            'CDELT1': 10,
-            'CDELT2': 10,
-            'CUNIT1': 'ARCSEC',
-            'CUNIT2': 'ARCSEC',
-            'PC1_1': 0,
-            'PC1_2': -1,
-            'PC2_1': 1,
-            'PC2_2': 0,
-            'NAXIS1': 6,
-            'NAXIS2': 6,
-            'date-obs': '1970/01/01T00:00:00',
-            'obsrvtry': 'Foo',
-            'detector': 'bar',
-            'wavelnth': 10,
-            'waveunit': 'ANGSTROM'
+            'CRVAL1': 0, 'CRVAL2': 0, 'CRPIX1': 5, 'CRPIX2': 5, 'CDELT1': 10, 'CDELT2': 10, 'CUNIT1': 'ARCSEC',
+            'CUNIT2': 'ARCSEC', 'PC1_1': 0, 'PC1_2': -1, 'PC2_1': 1, 'PC2_2': 0, 'NAXIS1': 6, 'NAXIS2': 6, 'date-obs':
+                '1970/01/01T00:00:00', 'obsrvtry': 'Foo', 'detector': 'bar', 'wavelnth': 10, 'waveunit': 'ANGSTROM'
         }
         bad_map = sunpy.map.Map((generic_map.data, bad_header))
         for count, meta_property in enumerate(('cunit1', 'cunit2', 'waveunit')):
@@ -589,8 +505,7 @@ def test_validate_meta(generic_map):
 def test_hg_coord(heliographic_test_map):
     assert heliographic_test_map.coordinate_system[0] == "CRLN-CAR"
     assert heliographic_test_map.coordinate_system[1] == "CRLT-CAR"
-    assert isinstance(heliographic_test_map.coordinate_frame,
-                      sunpy.coordinates.HeliographicCarrington)
+    assert isinstance(heliographic_test_map.coordinate_frame, sunpy.coordinates.HeliographicCarrington)
 
 
 def test_hg_pix_to_data(heliographic_test_map):
@@ -603,10 +518,10 @@ def test_hg_pix_to_data(heliographic_test_map):
 
 def test_hg_data_to_pix(heliographic_test_map):
     out = heliographic_test_map.data_to_pixel(
-        SkyCoord(
-            0 * u.deg, 0 * u.deg, frame=heliographic_test_map.coordinate_frame))
+        SkyCoord(0 * u.deg, 0 * u.deg, frame=heliographic_test_map.coordinate_frame))
     assert_quantity_allclose(out[0], 180 * u.pix)
     assert_quantity_allclose(out[1], 90 * u.pix)
+
 
 # Heliocentric Map Tests
 
@@ -614,26 +529,9 @@ def test_hg_data_to_pix(heliographic_test_map):
 def test_hc_warn():
     data = np.ones([6, 6], dtype=np.float64)
     header = {
-        'CRVAL1': 0,
-        'CRVAL2': 0,
-        'CRPIX1': 5,
-        'CRPIX2': 5,
-        'CDELT1': 10,
-        'CDELT2': 10,
-        'CUNIT1': 'km',
-        'CUNIT2': 'km',
-        'CTYPE1': 'SOLX    ',
-        'CTYPE2': 'SOLY    ',
-        'PC1_1': 0,
-        'PC1_2': -1,
-        'PC2_1': 1,
-        'PC2_2': 0,
-        'NAXIS1': 6,
-        'NAXIS2': 6,
-        'date-obs': '1970/01/01T00:00:00',
-        'obsrvtry': 'Foo',
-        'detector': 'bar',
-        'wavelnth': 10,
+        'CRVAL1': 0, 'CRVAL2': 0, 'CRPIX1': 5, 'CRPIX2': 5, 'CDELT1': 10, 'CDELT2': 10, 'CUNIT1': 'km', 'CUNIT2': 'km',
+        'CTYPE1': 'SOLX    ', 'CTYPE2': 'SOLY    ', 'PC1_1': 0, 'PC1_2': -1, 'PC2_1': 1, 'PC2_2': 0, 'NAXIS1': 6,
+        'NAXIS2': 6, 'date-obs': '1970/01/01T00:00:00', 'obsrvtry': 'Foo', 'detector': 'bar', 'wavelnth': 10,
         'waveunit': 'm'
     }
 

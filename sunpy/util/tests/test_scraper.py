@@ -39,16 +39,14 @@ def testDirectoryObsPattern():
 
 def testDirectoryRange():
     s = Scraper('%Y/%m/%d/%Y%m%d_%H.fit.gz')
-    directory_list = ['2009/12/30/', '2009/12/31/', '2010/01/01/',
-                      '2010/01/02/', '2010/01/03/']
+    directory_list = ['2009/12/30/', '2009/12/31/', '2010/01/01/', '2010/01/02/', '2010/01/03/']
     timerange = TimeRange('2009-12-30', '2010-01-03')
     assert s.range(timerange) == directory_list
 
 
 def testDirectoryRangeFalse():
     s = Scraper('%Y%m%d/%Y%m%d_%H.fit.gz')
-    directory_list = ['20091230/', '20091231/', '20100101/',
-                      '20090102/', '20090103/']
+    directory_list = ['20091230/', '20091231/', '20100101/', '20090102/', '20090103/']
     timerange = TimeRange('2009/12/30', '2010/01/03')
     assert s.range(timerange) != directory_list
 
@@ -126,6 +124,7 @@ def testURL_patternMilliseconds():
     assert not s._URL_followsPattern('fd_20130410_231211.fts.gz')
     assert not s._URL_followsPattern('fd_20130410_ar_231211.fts.gz')
 
+
 # Local files don't work
 # def testFilesRange_sameDirectory_local():
 #     s = Scraper('/'.join(['file:/',sunpy.data.test.rootdir,
@@ -160,8 +159,7 @@ def testFilesRange_sameDirectory_remote():
 @pytest.mark.xfail
 @pytest.mark.online
 def testFilesRange_sameDirectory_months_remote():
-    pattern = ('http://www.srl.caltech.edu/{spacecraft}/DATA/{instrument}/'
-               'Ahead/1minute/AeH%y%b.1m')
+    pattern = ('http://www.srl.caltech.edu/{spacecraft}/DATA/{instrument}/' 'Ahead/1minute/AeH%y%b.1m')
     s = Scraper(pattern, spacecraft='STEREO', instrument='HET')
     startdate = datetime.datetime(2007, 8, 1)
     enddate = datetime.datetime(2007, 9, 10)

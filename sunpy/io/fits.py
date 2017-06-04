@@ -205,8 +205,7 @@ def write(fname, data, header, **kwargs):
 
     fitskwargs = {'output_verify': 'fix'}
     fitskwargs.update(kwargs)
-    fits.writeto(os.path.expanduser(fname), data, header=fits_header,
-                 **fitskwargs)
+    fits.writeto(os.path.expanduser(fname), data, header=fits_header, **fitskwargs)
 
 
 def extract_waveunit(header):
@@ -236,6 +235,7 @@ def extract_waveunit(header):
         ...     unit = astropy.units.Unit(waveunit)
 
     """
+
     # algorithm: try the following procedures in the following order and return
     # as soon as a waveunit could be detected
     # 1. read header('WAVEUNIT'). If None, go to step 2.
@@ -257,18 +257,9 @@ def extract_waveunit(header):
     waveunit = header.get('WAVEUNIT')
     if waveunit is not None:
         metre_submultiples = {
-            0: parse_waveunit_comment(waveunit_comment),
-            -1: 'dm',
-            -2: 'cm',
-            -3: 'mm',
-            -6: 'um',
-            -9: 'nm',
-            -10: 'angstrom',
-            -12: 'pm',
-            -15: 'fm',
-            -18: 'am',
-            -21: 'zm',
-            -24: 'ym'}
+            0: parse_waveunit_comment(waveunit_comment), -1: 'dm', -2: 'cm', -3: 'mm', -6: 'um', -9: 'nm',
+            -10: 'angstrom', -12: 'pm', -15: 'fm', -18: 'am', -21: 'zm', -24: 'ym'
+        }
         waveunit = metre_submultiples.get(waveunit, str(waveunit).lower())
     elif waveunit_comment is not None:
         waveunit = parse_waveunit_comment(waveunit_comment)

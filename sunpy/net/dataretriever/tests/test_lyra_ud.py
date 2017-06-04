@@ -15,20 +15,16 @@ from sunpy.net.tests.strategies import time_attr
 LCClient = lyra.LYRAClient()
 
 
-@pytest.mark.parametrize("timerange,url_start,url_end", [
-    (TimeRange('2012/1/7', '2012/1/7'),
-     'http://proba2.oma.be/lyra/data/bsd/2012/01/07/lyra_20120107-000000_lev2_std.fits',
-     'http://proba2.oma.be/lyra/data/bsd/2012/01/07/lyra_20120107-000000_lev2_std.fits'
-     ),
-    (TimeRange('2012/12/1', '2012/12/2'),
-     'http://proba2.oma.be/lyra/data/bsd/2012/12/01/lyra_20121201-000000_lev2_std.fits',
-     'http://proba2.oma.be/lyra/data/bsd/2012/12/02/lyra_20121202-000000_lev2_std.fits'
-     ),
-    (TimeRange('2012/4/7', '2012/4/14'),
-     'http://proba2.oma.be/lyra/data/bsd/2012/04/07/lyra_20120407-000000_lev2_std.fits',
-     'http://proba2.oma.be/lyra/data/bsd/2012/04/14/lyra_20120414-000000_lev2_std.fits'
-     )
-])
+@pytest.mark.parametrize("timerange,url_start,url_end",
+                         [(TimeRange('2012/1/7', '2012/1/7'),
+                           'http://proba2.oma.be/lyra/data/bsd/2012/01/07/lyra_20120107-000000_lev2_std.fits',
+                           'http://proba2.oma.be/lyra/data/bsd/2012/01/07/lyra_20120107-000000_lev2_std.fits'),
+                          (TimeRange('2012/12/1', '2012/12/2'),
+                           'http://proba2.oma.be/lyra/data/bsd/2012/12/01/lyra_20121201-000000_lev2_std.fits',
+                           'http://proba2.oma.be/lyra/data/bsd/2012/12/02/lyra_20121202-000000_lev2_std.fits'),
+                          (TimeRange('2012/4/7', '2012/4/14'),
+                           'http://proba2.oma.be/lyra/data/bsd/2012/04/07/lyra_20120407-000000_lev2_std.fits',
+                           'http://proba2.oma.be/lyra/data/bsd/2012/04/14/lyra_20120414-000000_lev2_std.fits')])
 def test_get_url_for_time_range(timerange, url_start, url_end):
     urls = LCClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)
@@ -43,8 +39,7 @@ def test_get_url_for_date():
 
 @given(time_attr())
 def test_can_handle_query(time):
-    ans1 = lyra.LYRAClient._can_handle_query(
-        time, Instrument('lyra'))
+    ans1 = lyra.LYRAClient._can_handle_query(time, Instrument('lyra'))
     assert ans1 is True
     ans2 = lyra.LYRAClient._can_handle_query(time)
     assert ans2 is False
@@ -71,10 +66,8 @@ def test_get(time, instrument):
 
 
 @pytest.mark.online
-@pytest.mark.parametrize(
-    "time, instrument",
-    [(a.Time('2012/10/4', '2012/10/6'), a.Instrument('lyra')),
-     (a.Time('2013/10/5', '2013/10/7'), a.Instrument('lyra'))])
+@pytest.mark.parametrize("time, instrument", [(a.Time('2012/10/4', '2012/10/6'), a.Instrument('lyra')), (a.Time(
+    '2013/10/5', '2013/10/7'), a.Instrument('lyra'))])
 def test_fido(time, instrument):
     qr = Fido.search(time, instrument)
     assert isinstance(qr, UnifiedResponse)

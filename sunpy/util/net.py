@@ -19,10 +19,10 @@ from unicodedata import normalize
 from sunpy.util import replacement_filename
 from sunpy.extern import six
 
-__all__ = ['slugify', 'get_content_disposition', 'get_filename',
-           'get_system_filename', 'get_system_filename_slugify',
-           'download_file', 'download_fileobj', 'check_download_file',
-           'url_exists']
+__all__ = [
+    'slugify', 'get_content_disposition', 'get_filename', 'get_system_filename', 'get_system_filename_slugify',
+    'download_file', 'download_fileobj', 'check_download_file', 'url_exists'
+]
 
 # Characters not allowed in slugified version.
 _punct_re = re.compile(r'[:\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
@@ -37,8 +37,7 @@ def slugify(text, delim=u'_', encoding="ascii"):
     name_and_extension = text.rsplit(period, 1)
     name = name_and_extension[0]
 
-    name = six.text_type(delim).join(
-        filter(None, (word for word in _punct_re.split(name.lower()))))
+    name = six.text_type(delim).join(filter(None, (word for word in _punct_re.split(name.lower()))))
 
     if len(name_and_extension) == 2:
         extension = name_and_extension[1]
@@ -125,8 +124,7 @@ def download_fileobj(opn, directory, url='', default=u"file", overwrite=False):
     return path
 
 
-def check_download_file(filename, remotepath, download_dir, remotename=None,
-                        replace=False):
+def check_download_file(filename, remotepath, download_dir, remotename=None, replace=False):
     """
     Downloads a file from remotepath to localpath if it isn't there.
 
@@ -166,8 +164,7 @@ def check_download_file(filename, remotepath, download_dir, remotename=None,
         if not isinstance(remotename, six.string_types):
             remotename = filename
 
-        download_file(urljoin(remotepath, remotename),
-                      download_dir, default=filename, overwrite=replace)
+        download_file(urljoin(remotepath, remotename), download_dir, default=filename, overwrite=replace)
 
 
 def url_exists(url, timeout=2):

@@ -12,9 +12,10 @@ import numpy as np
 from sunpy.extern import six
 from sunpy.extern.six.moves import map, zip
 
-__all__ = ['to_signed', 'unique', 'print_table', 'replacement_filename',
-           'merge', 'common_base', 'minimal_pairs', 'expand_list',
-           'expand_list_generator']
+__all__ = [
+    'to_signed', 'unique', 'print_table', 'replacement_filename', 'merge', 'common_base', 'minimal_pairs',
+    'expand_list', 'expand_list_generator'
+]
 
 
 def to_signed(dtype):
@@ -67,8 +68,7 @@ def unique(itr, key=None):
 
 def print_table(lst, colsep=' ', linesep='\n'):
     width = [max(map(len, col)) for col in zip(*lst)]
-    return linesep.join(
-        colsep.join(col.ljust(n) for n, col in zip(width, row)) for row in lst)
+    return linesep.join(colsep.join(col.ljust(n) for n, col in zip(width, row)) for row in lst)
 
 
 def minimal_pairs(one, other):
@@ -159,8 +159,7 @@ def merge(items, key=(lambda x: x)):
     while state:
         for item, (value, tk) in six.iteritems(state):
             # Value is biggest.
-            if all(tk >= k for it, (v, k) in six.iteritems(state)
-                   if it is not item):
+            if all(tk >= k for it, (v, k) in six.iteritems(state) if it is not item):
                 yield value
                 break
         try:

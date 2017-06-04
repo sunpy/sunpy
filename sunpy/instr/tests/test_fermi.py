@@ -34,8 +34,7 @@ def test_detector_angles():
     assert_almost_equal(det['n10'][0].value, 106.97884, decimal=1)
     assert_almost_equal(det['n11'][0].value, 121.09603, decimal=1)
 
-    det2 = fermi.get_detector_sun_angles_for_time(
-        parse_time('2012-02-15 02:00'), file)
+    det2 = fermi.get_detector_sun_angles_for_time(parse_time('2012-02-15 02:00'), file)
     assert len(det2) == 13
     assert type(det2) == dict
     assert_almost_equal(det2['n0'].value, 83.76092, decimal=1)

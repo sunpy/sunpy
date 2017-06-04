@@ -31,8 +31,8 @@ def test_none(attr):
     assert not converted
 
 
-@pytest.mark.parametrize('input', [Time('2012-01-01 00:00:00'), '2012/01/01T00:00:00',
-                                   '20120101000000', '2012/01/01 00:00:00'])
+@pytest.mark.parametrize('input',
+                         [Time('2012-01-01 00:00:00'), '2012/01/01T00:00:00', '20120101000000', '2012/01/01 00:00:00'])
 def test_convert(attr, input):
     result, converted = attr.convert_input(input)
 
@@ -42,8 +42,8 @@ def test_convert(attr, input):
     assert result == output
 
 
-@pytest.mark.parametrize('input', [Time('2012-01-01 00:00:00'), '2012/01/01T00:00:00',
-                                   '20120101000000', '2012/01/01 00:00:00'])
+@pytest.mark.parametrize('input',
+                         [Time('2012-01-01 00:00:00'), '2012/01/01T00:00:00', '20120101000000', '2012/01/01 00:00:00'])
 def test_on_frame(input):
     hpc1 = Helioprojective(dateobs=input)
 

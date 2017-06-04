@@ -152,15 +152,11 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
             data = data.drop('yyyy', 1)
 
             # Add the units data
-            units = OrderedDict([('sunspot SWO', u.dimensionless_unscaled),
-                                 ('sunspot RI', u.dimensionless_unscaled),
-                                 ('sunspot ratio', u.dimensionless_unscaled),
-                                 ('sunspot SWO smooth', u.dimensionless_unscaled),
-                                 ('sunspot RI smooth', u.dimensionless_unscaled),
-                                 ('radio flux', u.W / u.m**2),
-                                 ('radio flux smooth', u.W / u.m**2),
-                                 ('geomagnetic ap', u.dimensionless_unscaled),
-                                 ('geomagnetic smooth', u.dimensionless_unscaled)])
+            units = OrderedDict([('sunspot SWO', u.dimensionless_unscaled), ('sunspot RI', u.dimensionless_unscaled), (
+                'sunspot ratio', u.dimensionless_unscaled), ('sunspot SWO smooth', u.dimensionless_unscaled),
+                                 ('sunspot RI smooth', u.dimensionless_unscaled), ('radio flux', u.W / u.m**2), (
+                                     'radio flux smooth', u.W / u.m**2), ('geomagnetic ap', u.dimensionless_unscaled), (
+                                         'geomagnetic smooth', u.dimensionless_unscaled)])
             # Todo: check units
             # Todo: fix header/meta, it's returning rubbish.
             return data, MetaDict({'comments': header}), units
@@ -257,10 +253,15 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
             while line.startswith((":", "#")):
                 header += line
                 line = fp.readline()
-            fields = ('yyyy', 'mm', 'sunspot', 'sunspot low', 'sunspot high',
-                      'radio flux', 'radio flux low', 'radio flux high')
-            data = read_csv(filepath, delim_whitespace=True, names=fields, comment='#',
-                            skiprows=2, dtype={'yyyy': np.str, 'mm': np.str})
+            fields = ('yyyy', 'mm', 'sunspot', 'sunspot low', 'sunspot high', 'radio flux', 'radio flux low',
+                      'radio flux high')
+            data = read_csv(
+                filepath,
+                delim_whitespace=True,
+                names=fields,
+                comment='#',
+                skiprows=2,
+                dtype={'yyyy': np.str, 'mm': np.str})
             data = data.dropna(how='any')
             timeindex = [datetime.datetime.strptime(x + y, '%Y%m') for x, y in zip(data['yyyy'], data['mm'])]
             data['time'] = timeindex
@@ -269,12 +270,9 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
             data = data.drop('yyyy', 1)
 
             # Add the units data
-            units = OrderedDict([('sunspot', u.dimensionless_unscaled),
-                                 ('sunspot low', u.dimensionless_unscaled),
-                                 ('sunspot high', u.dimensionless_unscaled),
-                                 ('radio flux', u.W / u.m**2),
-                                 ('radio flux low', u.W / u.m**2),
-                                 ('radio flux high', u.W / u.m**2)])
+            units = OrderedDict([('sunspot', u.dimensionless_unscaled), ('sunspot low', u.dimensionless_unscaled),
+                                 ('sunspot high', u.dimensionless_unscaled), ('radio flux', u.W / u.m**2), (
+                                     'radio flux low', u.W / u.m**2), ('radio flux high', u.W / u.m**2)])
             # Todo: check units used.
             return data, MetaDict({'comments': header}), units
 

@@ -31,14 +31,10 @@ def load_config():
     # Specify the database url as a default so that the user's home
     # directory can be located in an OS-independent manner
     if not config.has_option('database', 'url'):
-        config.set('database', 'url', "sqlite:///" + os.path.join(
-            _get_home(), "sunpy/sunpydb.sqlite"))
+        config.set('database', 'url', "sqlite:///" + os.path.join(_get_home(), "sunpy/sunpydb.sqlite"))
 
     # Use absolute filepaths and adjust OS-dependent paths as needed
-    filepaths = [
-        ('downloads', 'download_dir'),
-        ('downloads', 'sample_dir')
-    ]
+    filepaths = [('downloads', 'download_dir'), ('downloads', 'sample_dir')]
     _fix_filepaths(config, filepaths)
 
     return config
@@ -136,8 +132,7 @@ def _get_user_configdir():
 
     if configdir is not None:
         if not _is_writable_dir(configdir):
-            raise RuntimeError('Could not write to SUNPY_CONFIGDIR="{0}"'
-                               .format(configdir))
+            raise RuntimeError('Could not write to SUNPY_CONFIGDIR="{0}"'.format(configdir))
 
         return configdir
 
@@ -174,7 +169,7 @@ def _fix_filepaths(config, filepaths):
         filepath = _expand_filepath(val, working_dir)
 
         # Replace config value with full filepath
-        params = f + (filepath,)
+        params = f + (filepath, )
         config.set(*params)
 
 

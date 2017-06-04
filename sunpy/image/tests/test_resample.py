@@ -54,7 +54,6 @@ def test_resample_spline():
 
 
 def test_reshape(aia171_test_map, shape):
-
     def _n(a, b, c):
         return int(np.floor((a - b) / c))
 
@@ -73,20 +72,16 @@ def test_reshape(aia171_test_map, shape):
     d = (9, 7)
     o = (1, 4)
     im = reshape_image_to_4d_superpixel(aia171_test_map.data, d, o)
-    assert im.shape == (_n(shape[0], o[0], d[0]), d[0],
-                        _n(shape[1], o[1], d[1]), d[1])
+    assert im.shape == (_n(shape[0], o[0], d[0]), d[0], _n(shape[1], o[1], d[1]), d[1])
     im = reshape_image_to_4d_superpixel(aia171_test_map.data, d, o)
-    assert im.shape == (_n(shape[0], o[0], d[0]), d[0],
-                        _n(shape[1], o[1], d[1]), d[1])
+    assert im.shape == (_n(shape[0], o[0], d[0]), d[0], _n(shape[1], o[1], d[1]), d[1])
 
     d = (9, 7)
     o = (5, 4)
     im = reshape_image_to_4d_superpixel(aia171_test_map.data, d, o)
-    assert im.shape == (_n(shape[0], o[0], d[0]), d[0],
-                        _n(shape[1], o[1], d[1]), d[1])
+    assert im.shape == (_n(shape[0], o[0], d[0]), d[0], _n(shape[1], o[1], d[1]), d[1])
 
     d = (9, 7)
     o = (4, 4)
     im = reshape_image_to_4d_superpixel(aia171_test_map.data, d, o)
-    assert im.shape == (_n(shape[0], o[0], d[0]), d[0],
-                        _n(shape[1], o[1], d[1]), d[1])
+    assert im.shape == (_n(shape[0], o[0], d[0]), d[0], _n(shape[1], o[1], d[1]), d[1])

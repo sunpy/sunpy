@@ -152,9 +152,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
             if hline == '; Format:\n' or hline == '; Column descriptions:\n':
                 continue
             elif ('Created' in hline) or ('Source' in hline):
-                meta[hline.split(':',
-                                 1)[0].replace(';',
-                                               ' ').strip()] = hline.split(':', 1)[1].strip()
+                meta[hline.split(':', 1)[0].replace(';', ' ').strip()] = hline.split(':', 1)[1].strip()
             elif ':' in hline:
                 meta[hline.split(':')[0].replace(';', ' ').strip()] = hline.split(':')[1].strip()
 
@@ -175,30 +173,20 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         day = int(date_parts[3])
 
         # function to parse date column (HHMM)
-        def parser(x): return datetime(year, month, day, int(x[0:2]), int(x[2:4]))
+        def parser(x):
+            return datetime(year, month, day, int(x[0:2]), int(x[2:4]))
 
         data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, header=None, engine='python')
         if is_missing_data:  # If missing data specified in header
             data[data == float(missing_data_val)] = numpy.nan
 
         # Add the units data
-        units = OrderedDict([('XRS-B proxy', u.W / u.m**2),
-                             ('XRS-A proxy', u.W / u.m**2),
-                             ('SEM proxy', u.W / u.m**2),
-                             ('0.1-7ESPquad', u.W / u.m**2),
-                             ('17.1ESP', u.W / u.m**2),
-                             ('25.7ESP', u.W / u.m**2),
-                             ('30.4ESP', u.W / u.m**2),
-                             ('36.6ESP', u.W / u.m**2),
-                             ('darkESP', u.ct),
-                             ('121.6MEGS-P', u.W / u.m**2),
-                             ('darkMEGS-P', u.ct),
-                             ('q0ESP', u.dimensionless_unscaled),
-                             ('q1ESP', u.dimensionless_unscaled),
-                             ('q2ESP', u.dimensionless_unscaled),
-                             ('q3ESP', u.dimensionless_unscaled),
-                             ('CMLat', u.deg),
-                             ('CMLon', u.deg)])
+        units = OrderedDict([('XRS-B proxy', u.W / u.m**2), ('XRS-A proxy', u.W / u.m**2), ('SEM proxy', u.W / u.m**2),
+                             ('0.1-7ESPquad', u.W / u.m**2), ('17.1ESP', u.W / u.m**2), ('25.7ESP', u.W / u.m**2), (
+                                 '30.4ESP', u.W / u.m**2), ('36.6ESP', u.W / u.m**2), ('darkESP', u.ct),
+                             ('121.6MEGS-P', u.W / u.m**2), ('darkMEGS-P', u.ct), ('q0ESP', u.dimensionless_unscaled), (
+                                 'q1ESP', u.dimensionless_unscaled), ('q2ESP', u.dimensionless_unscaled), (
+                                     'q3ESP', u.dimensionless_unscaled), ('CMLat', u.deg), ('CMLon', u.deg)])
         # Todo: check units used.
         return data, meta, units
 

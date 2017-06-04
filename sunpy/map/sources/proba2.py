@@ -35,7 +35,7 @@ class SWAPMap(GenericMap):
         # It needs to be verified that these must actually be set and
         # are not already in the header.
         self.meta['detector'] = "SWAP"
-#        self.meta['instrme'] = "SWAP"
+        #        self.meta['instrme'] = "SWAP"
         self.meta['obsrvtry'] = "PROBA2"
 
         self._nickname = self.detector

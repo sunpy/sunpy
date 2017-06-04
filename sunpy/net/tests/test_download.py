@@ -46,6 +46,7 @@ def wait_for(n, callback):  # pylint: disable=W0613
         items.append(handler)
         if len(items) == n:
             callback(items)
+
     return _fun
 
 
@@ -55,9 +56,7 @@ def path_fun(*args, **kwargs):
 
 def get_and_create_temp_directory(tmpdir):
     sunpy.config = MockConfig()
-    sunpy.config.add_section(
-        "downloads", {"download_dir": tmpdir}
-    )
+    sunpy.config.add_section("downloads", {"download_dir": tmpdir})
     if not os.path.isdir(sunpy.config.get('downloads', 'download_dir')):
         os.makedirs(sunpy.config.get('downloads', 'download_dir'))
 
@@ -68,9 +67,7 @@ def get_and_create_temp_directory(tmpdir):
 def test_path_exception():
     x = threading.Event()
     dw = Downloader(1, 2)
-    dw.download(
-        "http://google.at", path_fun, errback=wait_for(1, lambda a: x.set())
-    )
+    dw.download("http://google.at", path_fun, errback=wait_for(1, lambda a: x.set()))
     th = threading.Thread(target=dw.wait)
     th.daemon = True
     th.start()
@@ -90,6 +87,7 @@ def test_download_http():
                 items.append(handler)
                 if len(items) == n:
                     callback(items)
+
         return _fun
 
     tmp = tempfile.mkdtemp()
@@ -97,7 +95,8 @@ def test_download_http():
 
     dw = Downloader(1, 1)
 
-    def _stop(_): return dw.stop()
+    def _stop(_):
+        return dw.stop()
 
     timeout = CalledProxy(dw.stop)
     timer = threading.Timer(60, timeout)
@@ -129,7 +128,8 @@ def test_download_default_dir():
 
         dw = Downloader(1, 1)
 
-        def _stop(_): return dw.stop()
+        def _stop(_):
+            return dw.stop()
 
         timeout = CalledProxy(dw.stop)
         errback = CalledProxy(_stop)
@@ -137,8 +137,7 @@ def test_download_default_dir():
             'http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js',
             path=path,
             callback=_stop,
-            errback=errback
-        )
+            errback=errback)
 
         timer = threading.Timer(10, timeout)
         timer.start()
@@ -158,16 +157,14 @@ def test_download_dir():
 
     dw = Downloader(1, 1)
 
-    def _stop(_): return dw.stop()
+    def _stop(_):
+        return dw.stop()
+
     timeout = CalledProxy(dw.stop)
     errback = CalledProxy(_stop)
 
     dw.download(
-        'http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js',
-        tmpdir,
-        callback=_stop,
-        errback=errback
-    )
+        'http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js', tmpdir, callback=_stop, errback=errback)
 
     timer = threading.Timer(10, timeout)
     timer.start()

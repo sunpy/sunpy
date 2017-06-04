@@ -201,10 +201,8 @@ class HECClient(object):
             table = self.make_table_list()
         start_time = parse_time(start_time)
         end_time = parse_time(end_time)
-        self.hec_client.service.TimeQuery(STARTTIME=start_time.isoformat(),
-                                          ENDTIME=end_time.isoformat(),
-                                          FROM=table,
-                                          MAXRECORDS=max_records)
+        self.hec_client.service.TimeQuery(
+            STARTTIME=start_time.isoformat(), ENDTIME=end_time.isoformat(), FROM=table, MAXRECORDS=max_records)
         results = votable_handler(self.votable_interceptor.last_payload)
         return results
 
@@ -265,8 +263,7 @@ class HECClient(object):
                 table_list.append(table)
         table_list.sort()
         for index, table in enumerate(table_list):
-            print(('{number:3d}) {table}'.format(number=index + 1,
-                                                 table=table)))
+            print(('{number:3d}) {table}'.format(number=index + 1, table=table)))
 
         while True:
             stdinput = input("\nPlease enter a table number between 1 and "

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # Author: Florian Mayer <florian.mayer@bitsrc.org>
-
 """ Offer a callable object that dispatches based on arbitrary conditions
 and function signature. That means, whenever it is called, it finds the
 registered methods that match the input's signature and then checks for
@@ -80,8 +79,10 @@ from itertools import chain, repeat
 
 from sunpy.extern.six.moves import zip
 
-__all__ = ['run_cls', 'matches_types', 'arginize', 'correct_argspec',
-           'matches_signature', 'ConditionalDispatch', 'fmt_argspec_types']
+__all__ = [
+    'run_cls', 'matches_types', 'arginize', 'correct_argspec', 'matches_signature', 'ConditionalDispatch',
+    'fmt_argspec_types'
+]
 
 
 def run_cls(name):
@@ -96,11 +97,7 @@ def matches_types(fun, types, args, kwargs):
     """ See if args and kwargs match are instances of types. types are given
     in the order they are defined in the function. kwargs are automatically
     converted into that order. """
-    return all(
-        isinstance(obj, cls) for obj, cls in zip(
-            arginize(fun, args, kwargs), types
-        )
-    )
+    return all(isinstance(obj, cls) for obj, cls in zip(arginize(fun, args, kwargs), types))
 
 
 def arginize(fun, a, kw):
@@ -164,6 +161,7 @@ class ConditionalDispatch(object):
         def _dec(fun):
             self.add(fun, condition)
             return fun
+
         return _dec
 
     def add(self, fun, condition=None, types=None, check=True):
@@ -180,9 +178,7 @@ class ConditionalDispatch(object):
         if condition is None:
             self.nones.append((fun, types))
         elif check and correct_argspec(fun) != correct_argspec(condition):
-            raise ValueError(
-                "Signature of condition must match signature of fun."
-            )
+            raise ValueError("Signature of condition must match signature of fun.")
         else:
             self.funcs.append((fun, condition, types))
 
@@ -190,24 +186,18 @@ class ConditionalDispatch(object):
         matched = False
         for fun, condition, types in self.funcs:
             if (matches_signature(condition, args, kwargs) and
-                    (types is None or matches_types(condition, types, args, kwargs))):
+                (types is None or matches_types(condition, types, args, kwargs))):
                 matched = True
                 if condition(*args, **kwargs):
                     return fun(*args, **kwargs)
         for fun, types in self.nones:
-            if (matches_signature(fun, args, kwargs) and
-                    (types is None or matches_types(fun, types, args, kwargs))):
+            if (matches_signature(fun, args, kwargs) and (types is None or matches_types(fun, types, args, kwargs))):
                 return fun(*args, **kwargs)
 
         if matched:
-            raise TypeError(
-                "Your input did not fulfill the condition for any function."
-            )
+            raise TypeError("Your input did not fulfill the condition for any function.")
         else:
-            raise TypeError(
-                "There are no functions matching your input parameter "
-                "signature."
-            )
+            raise TypeError("There are no functions matching your input parameter " "signature.")
 
     def wrapper(self):
         return lambda *args, **kwargs: self(*args, **kwargs)
@@ -230,9 +220,7 @@ class ConditionalDispatch(object):
             else:
                 args, varargs, keywords, defaults = correct_argspec(condition)
                 args = args[st:]
-                yield prefix + inspect.formatargspec(
-                    args, varargs, keywords, defaults
-                )
+                yield prefix + inspect.formatargspec(args, varargs, keywords, defaults)
 
         for fun, types in self.nones:
             if types is not None:
@@ -240,18 +228,16 @@ class ConditionalDispatch(object):
             else:
                 args, varargs, keywords, defaults = correct_argspec(condition)
                 args = args[st:]
-                yield prefix + inspect.formatargspec(
-                    args, varargs, keywords, defaults
-                )
+                yield prefix + inspect.formatargspec(args, varargs, keywords, defaults)
 
     def generate_docs(self):
         fns = (item[0] for item in chain(self.funcs, self.nones))
-        return '\n\n'.join("{0} -> :py:meth:`{1}`".format(sig, fun.__name__)
-                           for sig, fun in
-                           # The 1 prevents the cls from incorrectly being shown in the
-                           # documentation.
-                           zip(self.get_signatures("create", -1), fns)
-                           )
+        return '\n\n'.join(
+            "{0} -> :py:meth:`{1}`".format(sig, fun.__name__)
+            for sig, fun in
+            # The 1 prevents the cls from incorrectly being shown in the
+            # documentation.
+            zip(self.get_signatures("create", -1), fns))
 
 
 def fmt_argspec_types(fun, types, start=0):

@@ -188,9 +188,9 @@ def show_colormaps(filter=None):
         plt.axis("off")
         plt.imshow(a, aspect='auto', cmap=get_cmap(name), origin='lower')
         pos = list(ax.get_position().bounds)
-        fig.text(pos[0] - 0.01, pos[1], name, fontsize=10,
-                 horizontalalignment='right')
+        fig.text(pos[0] - 0.01, pos[1], name, fontsize=10, horizontalalignment='right')
     plt.show()
+
 
 # def test_equalize(data):
 #    """Returns a color map which performs histogram equalization on the data.

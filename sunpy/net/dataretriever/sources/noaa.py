@@ -2,14 +2,12 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 
-
 from ..client import GenericClient
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient']
 
 
 class NOAAIndicesClient(GenericClient):
-
     @staticmethod
     def _get_default_uri():
         """Return the url to download indices"""
@@ -53,7 +51,6 @@ class NOAAIndicesClient(GenericClient):
 
 
 class NOAAPredictClient(GenericClient):
-
     @staticmethod
     def _get_default_uri():
         """Return the url to download indices"""

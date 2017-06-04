@@ -108,8 +108,8 @@ class RHESSISummaryLightCurve(LightCurve):
         """Retrieves the latest RHESSI data."""
         today = datetime.datetime.today()
         days_back = 3
-        time_range = TimeRange(today - datetime.timedelta(days=days_back),
-                               today - datetime.timedelta(days=days_back - 1))
+        time_range = TimeRange(
+            today - datetime.timedelta(days=days_back), today - datetime.timedelta(days=days_back - 1))
         return cls._get_url_for_date_range(time_range)
 
     @staticmethod

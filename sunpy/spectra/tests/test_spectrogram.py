@@ -10,8 +10,7 @@ import numpy as np
 
 from numpy.testing import assert_array_almost_equal
 
-from sunpy.spectra.spectrogram import (Spectrogram, LinearTimeSpectrogram,
-                                       _LinearView)
+from sunpy.spectra.spectrogram import (Spectrogram, LinearTimeSpectrogram, _LinearView)
 from sunpy.extern.six.moves import range
 
 
@@ -34,11 +33,10 @@ def dict_eq(one, other):
 
 
 def mk_spec(image):
-    return Spectrogram(
-        image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
-        np.linspace(0, image.shape[0] - 1, image.shape[0]),
-        datetime(2010, 10, 10), datetime(2010, 10, 10, 1), 0
-    )
+    return Spectrogram(image,
+                       np.linspace(0, image.shape[1] - 1, image.shape[1]),
+                       np.linspace(0, image.shape[0] - 1, image.shape[0]),
+                       datetime(2010, 10, 10), datetime(2010, 10, 10, 1), 0)
 
 
 def test_subtract_bg():
@@ -56,9 +54,7 @@ def test_subtract_bg():
 
     spectrogram = mk_spec(image)
     sbg = spectrogram.subtract_bg()
-    assert np.array_equal(
-        spectrogram.subtract_bg()[:, 1800:].data, signal
-    )
+    assert np.array_equal(spectrogram.subtract_bg()[:, 1800:].data, signal)
 
     assert dict_eq(spectrogram._get_params(), sbg._get_params())
 
@@ -107,9 +103,7 @@ def test_slice_time_axis():
     new = spectrogram[:, 59:3599]
     assert new.shape == (200, 3600 - 59 - 1)
     assert new.t_init == 59
-    assert np.array_equal(new.time_axis,
-                          np.linspace(0, 3600 - 60 - 1, 3600 - 59 - 1)
-                          )
+    assert np.array_equal(new.time_axis, np.linspace(0, 3600 - 60 - 1, 3600 - 59 - 1))
     assert new.start == datetime(2010, 10, 10, 0, 0, 59)
     assert np.array_equal(new.data, rnd[:, 59:3599])
 
@@ -137,11 +131,10 @@ def test_slice_both_axis():
 
 def test_time_to_x():
     image = np.zeros((200, 3600))
-    spectrogram = LinearTimeSpectrogram(
-        image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
-        np.linspace(0, image.shape[0] - 1, image.shape[0]),
-        datetime(2010, 10, 10), datetime(2010, 10, 10, 1), 0, 1
-    )
+    spectrogram = LinearTimeSpectrogram(image,
+                                        np.linspace(0, image.shape[1] - 1, image.shape[1]),
+                                        np.linspace(0, image.shape[0] - 1, image.shape[0]),
+                                        datetime(2010, 10, 10), datetime(2010, 10, 10, 1), 0, 1)
     ret = spectrogram.time_to_x(datetime(2010, 10, 10, 0, 0, 59))
     assert isinstance(ret, int)
     assert ret == 59
@@ -149,11 +142,10 @@ def test_time_to_x():
 
 def test_time_to_x_nonlinear():
     image = np.zeros((200, 3600))
-    spectrogram = Spectrogram(
-        image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
-        np.linspace(0, image.shape[0] - 1, image.shape[0]),
-        datetime(2010, 10, 10), datetime(2010, 10, 10, 1)
-    )
+    spectrogram = Spectrogram(image,
+                              np.linspace(0, image.shape[1] - 1, image.shape[1]),
+                              np.linspace(0, image.shape[0] - 1, image.shape[0]),
+                              datetime(2010, 10, 10), datetime(2010, 10, 10, 1))
     ret = spectrogram.time_to_x(datetime(2010, 10, 10, 0, 0, 59))
     assert isinstance(ret, int)
     assert ret == 59
@@ -162,22 +154,25 @@ def test_time_to_x_nonlinear():
 def test_join():
     image = np.random.rand(200, 3600)
     one = LinearTimeSpectrogram(
-        image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
+        image,
+        np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
-        datetime(2010, 10, 10), datetime(2010, 10, 10, 0, 30), 0, 0.5,
-    )
+        datetime(2010, 10, 10),
+        datetime(2010, 10, 10, 0, 30),
+        0,
+        0.5, )
 
     image = np.random.rand(200, 3600)
     other = LinearTimeSpectrogram(
-        image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        image,
+        np.linspace(0, image.shape[1] - 1, image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
         datetime(2010, 10, 10, 0, 29),
-        datetime(2010, 10, 10, 1, 29), 1799, 1,
-    )
+        datetime(2010, 10, 10, 1, 29),
+        1799,
+        1, )
 
-    z = LinearTimeSpectrogram.join_many(
-        [one, other], nonlinear=False, maxgap=0
-    )
+    z = LinearTimeSpectrogram.join_many([one, other], nonlinear=False, maxgap=0)
     # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     # The - 2 is because there is one second overlap.
@@ -194,66 +189,75 @@ def test_join():
 def test_join_dtype():
     image = np.random.rand(200, 3600).astype(np.uint8)
     one = LinearTimeSpectrogram(
-        image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
+        image,
+        np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
-        datetime(2010, 10, 10), datetime(2010, 10, 10, 0, 30), 0, 0.5,
-    )
+        datetime(2010, 10, 10),
+        datetime(2010, 10, 10, 0, 30),
+        0,
+        0.5, )
 
     image = np.random.rand(200, 3600).astype(np.uint8)
     other = LinearTimeSpectrogram(
-        image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        image,
+        np.linspace(0, image.shape[1] - 1, image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
         datetime(2010, 10, 10, 0, 29),
-        datetime(2010, 10, 10, 1, 29), 1799, 1,
-    )
+        datetime(2010, 10, 10, 1, 29),
+        1799,
+        1, )
 
-    z = LinearTimeSpectrogram.join_many(
-        [one, other], nonlinear=False, maxgap=0
-    )
+    z = LinearTimeSpectrogram.join_many([one, other], nonlinear=False, maxgap=0)
     assert z.dtype == np.dtype('uint8')
 
 
 def test_join_different_dtype():
     image = np.random.rand(200, 3600).astype(np.uint16)
     one = LinearTimeSpectrogram(
-        image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
+        image,
+        np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
-        datetime(2010, 10, 10), datetime(2010, 10, 10, 0, 30), 0, 0.5,
-    )
+        datetime(2010, 10, 10),
+        datetime(2010, 10, 10, 0, 30),
+        0,
+        0.5, )
 
     image = np.random.rand(200, 3600).astype(np.uint8)
     other = LinearTimeSpectrogram(
-        image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        image,
+        np.linspace(0, image.shape[1] - 1, image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
         datetime(2010, 10, 10, 0, 29),
-        datetime(2010, 10, 10, 1, 29), 1799, 1,
-    )
+        datetime(2010, 10, 10, 1, 29),
+        1799,
+        1, )
 
-    z = LinearTimeSpectrogram.join_many(
-        [one, other], nonlinear=False, maxgap=0
-    )
+    z = LinearTimeSpectrogram.join_many([one, other], nonlinear=False, maxgap=0)
     assert z.dtype == np.dtype('uint16')
 
 
 def test_join_midnight():
     image = np.random.rand(200, 3600)
     one = LinearTimeSpectrogram(
-        image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
+        image,
+        np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
         datetime(2010, 10, 10, 23, 30),
-        datetime(2010, 10, 10, 23, 59, 59), 84600, 0.5,
-    )
+        datetime(2010, 10, 10, 23, 59, 59),
+        84600,
+        0.5, )
 
     image = np.random.rand(200, 3600)
     other = LinearTimeSpectrogram(
-        image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        image,
+        np.linspace(0, image.shape[1] - 1, image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
-        datetime(2010, 10, 11, 0, 0), datetime(2010, 10, 11, 1), 0, 1,
-    )
+        datetime(2010, 10, 11, 0, 0),
+        datetime(2010, 10, 11, 1),
+        0,
+        1, )
 
-    z = LinearTimeSpectrogram.join_many(
-        [one, other], nonlinear=False, maxgap=0
-    )
+    z = LinearTimeSpectrogram.join_many([one, other], nonlinear=False, maxgap=0)
     # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
@@ -266,22 +270,25 @@ def test_join_midnight():
 def test_join_month():
     image = np.random.rand(200, 3600)
     one = LinearTimeSpectrogram(
-        image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
+        image,
+        np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
         datetime(2012, 7, 31, 23, 30),
-        datetime(2012, 7, 31, 23, 59, 59), 84600, 0.5,
-    )
+        datetime(2012, 7, 31, 23, 59, 59),
+        84600,
+        0.5, )
 
     image = np.random.rand(200, 3600)
     other = LinearTimeSpectrogram(
-        image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        image,
+        np.linspace(0, image.shape[1] - 1, image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
-        datetime(2012, 8, 1), datetime(2012, 8, 1, 1), 0, 1,
-    )
+        datetime(2012, 8, 1),
+        datetime(2012, 8, 1, 1),
+        0,
+        1, )
 
-    z = LinearTimeSpectrogram.join_many(
-        [one, other], nonlinear=False, maxgap=0
-    )
+    z = LinearTimeSpectrogram.join_many([one, other], nonlinear=False, maxgap=0)
     # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
@@ -294,22 +301,25 @@ def test_join_month():
 def test_join_year():
     image = np.random.rand(200, 3600)
     one = LinearTimeSpectrogram(
-        image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
+        image,
+        np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
         datetime(2012, 12, 31, 23, 30),
-        datetime(2013, 1, 1, 0, 0, 0), 84600, 0.5,
-    )
+        datetime(2013, 1, 1, 0, 0, 0),
+        84600,
+        0.5, )
 
     image = np.random.rand(200, 3600)
     other = LinearTimeSpectrogram(
-        image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        image,
+        np.linspace(0, image.shape[1] - 1, image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
-        datetime(2013, 1, 1), datetime(2013, 1, 1, 1), 0, 1,
-    )
+        datetime(2013, 1, 1),
+        datetime(2013, 1, 1, 1),
+        0,
+        1, )
 
-    z = LinearTimeSpectrogram.join_many(
-        [one, other], nonlinear=False, maxgap=0
-    )
+    z = LinearTimeSpectrogram.join_many([one, other], nonlinear=False, maxgap=0)
     # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     assert z.shape == (200, 3 * 3600 - 1)
@@ -322,21 +332,29 @@ def test_join_year():
 def test_join_over_midnight():
     image = np.random.rand(200, 3600)
     one = LinearTimeSpectrogram(
-        image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
+        image,
+        np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
         datetime(2010, 10, 10, 23, 45),
-        datetime(2010, 10, 11, 0, 15,), 85500, 0.5,
-    )
+        datetime(
+            2010,
+            10,
+            11,
+            0,
+            15, ),
+        85500,
+        0.5, )
     image = np.random.rand(200, 3600)
     other = LinearTimeSpectrogram(
-        image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        image,
+        np.linspace(0, image.shape[1] - 1, image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
-        datetime(2010, 10, 11, 0, 15), datetime(2010, 10, 11, 1, 15), 900, 1,
-    )
+        datetime(2010, 10, 11, 0, 15),
+        datetime(2010, 10, 11, 1, 15),
+        900,
+        1, )
 
-    z = LinearTimeSpectrogram.join_many(
-        [one, other], nonlinear=False, maxgap=0
-    )
+    z = LinearTimeSpectrogram.join_many([one, other], nonlinear=False, maxgap=0)
     # FIXME: not used?!
     oz = other.resample_time(0.5)
 
@@ -353,45 +371,60 @@ def test_join_over_midnight():
 def test_join_gap():
     image = np.random.rand(200, 3600)
     one = LinearTimeSpectrogram(
-        image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
+        image,
+        np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
         datetime(2010, 10, 10, 23, 45),
-        datetime(2010, 10, 11, 0, 15,), 85500, 0.5,
-    )
+        datetime(
+            2010,
+            10,
+            11,
+            0,
+            15, ),
+        85500,
+        0.5, )
 
     image = np.random.rand(200, 3600)
     other = LinearTimeSpectrogram(
-        image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        image,
+        np.linspace(0, image.shape[1] - 1, image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
         datetime(2010, 10, 11, 0, 15, 1),
-        datetime(2010, 10, 11, 1, 15), 901, 1,
-    )
+        datetime(2010, 10, 11, 1, 15),
+        901,
+        1, )
     with pytest.raises(ValueError) as excinfo:
-        LinearTimeSpectrogram.join_many(
-            [one, other], nonlinear=False, maxgap=0
-        )
+        LinearTimeSpectrogram.join_many([one, other], nonlinear=False, maxgap=0)
         assert excinfo.value.message == "Too large gap."
 
 
 def test_join_with_gap():
     image = np.random.rand(200, 3600)
     one = LinearTimeSpectrogram(
-        image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
+        image,
+        np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
         datetime(2010, 10, 10, 23, 45),
-        datetime(2010, 10, 11, 0, 15,), 85500, 0.5,
-    )
+        datetime(
+            2010,
+            10,
+            11,
+            0,
+            15, ),
+        85500,
+        0.5, )
 
     image = np.random.rand(200, 3600)
     other = LinearTimeSpectrogram(
-        image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        image,
+        np.linspace(0, image.shape[1] - 1, image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
-        datetime(2010, 10, 11, 0, 15), datetime(2010, 10, 11, 1, 15), 901, 1,
-    )
+        datetime(2010, 10, 11, 0, 15),
+        datetime(2010, 10, 11, 1, 15),
+        901,
+        1, )
 
-    z = LinearTimeSpectrogram.join_many(
-        [one, other], nonlinear=False, maxgap=1, fill=0
-    )
+    z = LinearTimeSpectrogram.join_many([one, other], nonlinear=False, maxgap=1, fill=0)
 
     # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
@@ -408,22 +441,30 @@ def test_join_with_gap():
 def test_join_with_gap_fill():
     image = np.random.rand(200, 3600)
     one = LinearTimeSpectrogram(
-        image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
+        image,
+        np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
         datetime(2010, 10, 10, 23, 45),
-        datetime(2010, 10, 11, 0, 15,), 85500, 0.5,
-    )
+        datetime(
+            2010,
+            10,
+            11,
+            0,
+            15, ),
+        85500,
+        0.5, )
 
     image = np.random.rand(200, 3600)
     other = LinearTimeSpectrogram(
-        image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        image,
+        np.linspace(0, image.shape[1] - 1, image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
-        datetime(2010, 10, 11, 0, 15), datetime(2010, 10, 11, 1, 15), 901, 1,
-    )
+        datetime(2010, 10, 11, 0, 15),
+        datetime(2010, 10, 11, 1, 15),
+        901,
+        1, )
 
-    z = LinearTimeSpectrogram.join_many(
-        [one, other], nonlinear=False, maxgap=2, fill=np.NaN
-    )
+    z = LinearTimeSpectrogram.join_many([one, other], nonlinear=False, maxgap=2, fill=np.NaN)
     # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
     # The + 2 is because there is one second without data inserted.
@@ -442,25 +483,32 @@ def test_join_with_gap_fill():
 def test_join_nonlinear():
     image = np.random.rand(200, 3600)
     one = LinearTimeSpectrogram(
-        image, np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
+        image,
+        np.linspace(0, 0.5 * (image.shape[1] - 1), image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
         datetime(2010, 10, 10, 23, 45),
-        datetime(2010, 10, 11, 0, 15,), 85500, 0.5,
-    )
+        datetime(
+            2010,
+            10,
+            11,
+            0,
+            15, ),
+        85500,
+        0.5, )
 
     image = np.random.rand(200, 3600)
     other = LinearTimeSpectrogram(
-        image, np.linspace(0, image.shape[1] - 1, image.shape[1]),
+        image,
+        np.linspace(0, image.shape[1] - 1, image.shape[1]),
         np.linspace(0, image.shape[0] - 1, image.shape[0]),
         datetime(2010, 10, 11, 0, 15),
-        datetime(2010, 10, 11, 1, 15), 901, 1,
-    )
+        datetime(2010, 10, 11, 1, 15),
+        901,
+        1, )
 
     oz = other.resample_time(0.5)
 
-    z = LinearTimeSpectrogram.join_many(
-        [one, other], nonlinear=True, maxgap=2
-    )
+    z = LinearTimeSpectrogram.join_many([one, other], nonlinear=True, maxgap=2)
 
     # The - 1 is because resampling other produces an image of size
     # 2 * 3600 - 1
@@ -477,9 +525,7 @@ def test_auto_t_init():
     assert Spectrogram(image,
                        np.linspace(0, image.shape[1] - 1, image.shape[1]),
                        np.linspace(0, image.shape[0] - 1, image.shape[0]),
-                       datetime(2010, 1, 1, 0, 15),
-                       datetime(2010, 1, 1, 0, 30)
-                       ).t_init == 900
+                       datetime(2010, 1, 1, 0, 15), datetime(2010, 1, 1, 0, 30)).t_init == 900
 
 
 def test_rescale():
@@ -487,9 +533,7 @@ def test_rescale():
     spec = Spectrogram(image,
                        np.linspace(0, image.shape[1] - 1, image.shape[1]),
                        np.linspace(0, image.shape[0] - 1, image.shape[0]),
-                       datetime(2010, 1, 1, 0, 15),
-                       datetime(2010, 1, 1, 0, 30)
-                       )
+                       datetime(2010, 1, 1, 0, 15), datetime(2010, 1, 1, 0, 30))
 
     nspec = spec.rescale()
 
@@ -503,15 +547,11 @@ def test_rescale_error():
     spec = Spectrogram(image,
                        np.linspace(0, image.shape[1] - 1, image.shape[1]),
                        np.linspace(0, image.shape[0] - 1, image.shape[0]),
-                       datetime(2010, 1, 1, 0, 15),
-                       datetime(2010, 1, 1, 0, 30)
-                       )
+                       datetime(2010, 1, 1, 0, 15), datetime(2010, 1, 1, 0, 30))
 
     with pytest.raises(ValueError) as excinfo:
         spec.rescale(0, 1)
-        assert (
-            excinfo.value.message ==
-            "Spectrogram needs to contain distinct values.")
+        assert (excinfo.value.message == "Spectrogram needs to contain distinct values.")
 
 
 def test_rescale_error2():
@@ -519,23 +559,18 @@ def test_rescale_error2():
     spec = Spectrogram(image,
                        np.linspace(0, image.shape[1] - 1, image.shape[1]),
                        np.linspace(0, image.shape[0] - 1, image.shape[0]),
-                       datetime(2010, 1, 1, 0, 15),
-                       datetime(2010, 1, 1, 0, 30)
-                       )
+                       datetime(2010, 1, 1, 0, 15), datetime(2010, 1, 1, 0, 30))
 
     with pytest.raises(ValueError) as excinfo:
         spec.rescale(1, 1)
-        assert (excinfo.value.message ==
-                "Maximum and minimum must be different.")
+        assert (excinfo.value.message == "Maximum and minimum must be different.")
 
 
 def test_resample():
     image = np.array([[0, 1, 2], [0, 1, 2]])
-    spec = LinearTimeSpectrogram(
-        image, np.array([0, 1, 2]), np.array([0]),
-        datetime(2012, 1, 1), datetime(2012, 1, 1, 0, 0, 3),
-        0, 1
-    )
+    spec = LinearTimeSpectrogram(image,
+                                 np.array([0, 1, 2]),
+                                 np.array([0]), datetime(2012, 1, 1), datetime(2012, 1, 1, 0, 0, 3), 0, 1)
     r = spec.resample_time(0.5)
     assert r.shape[1] == 5
     assert np.array_equal(r.time_axis, np.linspace(0, 2, 5))
@@ -543,11 +578,9 @@ def test_resample():
 
 def test_upsample():
     image = np.array([[0, 1, 2, 3], [0, 1, 2, 3]])
-    spec = LinearTimeSpectrogram(
-        image, np.array([0, 1, 2]), np.array([0]),
-        datetime(2012, 1, 1), datetime(2012, 1, 1, 0, 0, 3),
-        0, 1
-    )
+    spec = LinearTimeSpectrogram(image,
+                                 np.array([0, 1, 2]),
+                                 np.array([0]), datetime(2012, 1, 1), datetime(2012, 1, 1, 0, 0, 3), 0, 1)
     r = spec.resample_time(2)
     assert r.shape[1] == 2
 
@@ -557,29 +590,19 @@ def test_combine_freqs():
     spec = LinearTimeSpectrogram(image,
                                  np.linspace(0, image.shape[1] - 1, image.shape[1]),
                                  np.array([8, 6, 4, 2, 0]),
-                                 datetime(2010, 1, 1, 0, 15),
-                                 datetime(2010, 1, 1, 0, 30),
-                                 900,
-                                 0.25
-                                 )
+                                 datetime(2010, 1, 1, 0, 15), datetime(2010, 1, 1, 0, 30), 900, 0.25)
     image = np.random.rand(5, 3600)
     spec2 = LinearTimeSpectrogram(image,
                                   np.linspace(0, image.shape[1] - 1, image.shape[1]),
                                   np.array([9, 7, 5, 3, 1]),
-                                  datetime(2010, 1, 1, 0, 15),
-                                  datetime(2010, 1, 1, 0, 30),
-                                  900,
-                                  0.25
-                                  )
+                                  datetime(2010, 1, 1, 0, 15), datetime(2010, 1, 1, 0, 30), 900, 0.25)
     comb = LinearTimeSpectrogram.combine_frequencies([spec, spec2])
     stuff = [spec, spec2]
 
     # print comb
 
     for freq in range(10):
-        assert np.array_equal(
-            comb[9 - freq, :], stuff[freq % 2][4 - freq // 2, :]
-        )
+        assert np.array_equal(comb[9 - freq, :], stuff[freq % 2][4 - freq // 2, :])
 
 
 def test_join_diff_freq():
@@ -587,20 +610,12 @@ def test_join_diff_freq():
     spec = LinearTimeSpectrogram(image,
                                  np.linspace(0, 0.25 * (image.shape[1] - 1), image.shape[1]),
                                  np.array([8, 6, 4, 2, 0]),
-                                 datetime(2010, 1, 1, 0, 15),
-                                 datetime(2010, 1, 1, 0, 30),
-                                 900,
-                                 0.25
-                                 )
+                                 datetime(2010, 1, 1, 0, 15), datetime(2010, 1, 1, 0, 30), 900, 0.25)
     image = np.random.rand(5, 3600)
     spec2 = LinearTimeSpectrogram(image,
                                   np.linspace(0, 0.25 * (image.shape[1] - 1), image.shape[1]),
                                   np.array([9, 7, 5, 3, 1]),
-                                  datetime(2010, 1, 1, 0, 15),
-                                  datetime(2010, 1, 1, 0, 30),
-                                  1800,
-                                  0.25
-                                  )
+                                  datetime(2010, 1, 1, 0, 15), datetime(2010, 1, 1, 0, 30), 1800, 0.25)
 
     with pytest.raises(ValueError) as excinfo:
         LinearTimeSpectrogram.join_many([spec, spec2])
@@ -612,24 +627,14 @@ def test_intersect_time():
     spec = LinearTimeSpectrogram(image,
                                  np.linspace(0, 0.25 * (image.shape[1] - 1), image.shape[1]),
                                  np.array([8, 6, 4, 2, 0]),
-                                 datetime(2010, 1, 1, 0, 15),
-                                 datetime(2010, 1, 1, 0, 30),
-                                 900,
-                                 0.25
-                                 )
+                                 datetime(2010, 1, 1, 0, 15), datetime(2010, 1, 1, 0, 30), 900, 0.25)
     image = np.random.rand(5, 3600)
     spec2 = LinearTimeSpectrogram(image,
                                   np.linspace(0, 0.25 * (image.shape[1] - 1), image.shape[1]),
                                   np.array([9, 7, 5, 3, 1]),
-                                  datetime(2010, 1, 1, 0, 15),
-                                  datetime(2010, 1, 1, 0, 30),
-                                  901,
-                                  0.25
-                                  )
+                                  datetime(2010, 1, 1, 0, 15), datetime(2010, 1, 1, 0, 30), 901, 0.25)
 
-    one, other = LinearTimeSpectrogram.intersect_time(
-        [spec, spec2]
-    )
+    one, other = LinearTimeSpectrogram.intersect_time([spec, spec2])
 
     assert one.shape[1] == other.shape[1]
     assert one.shape[1] == 3596
@@ -647,11 +652,7 @@ def test_check_linearity():
     spec = LinearTimeSpectrogram(image,
                                  np.linspace(0, 0.25 * (image.shape[1] - 1), image.shape[1]),
                                  np.array([8, 6, 4, 2, 0]),
-                                 datetime(2010, 1, 1, 0, 15),
-                                 datetime(2010, 1, 1, 0, 30),
-                                 900,
-                                 0.25
-                                 )
+                                 datetime(2010, 1, 1, 0, 15), datetime(2010, 1, 1, 0, 30), 900, 0.25)
     assert spec.check_linearity()
     spec.time_axis[1] += 0.1
     assert not spec.check_linearity()
@@ -668,11 +669,7 @@ def test_flatten():
     spec = LinearTimeSpectrogram(image,
                                  np.linspace(0, 0.25 * (image.shape[1] - 1), image.shape[1]),
                                  np.array([8, 6, 4, 2, 0]),
-                                 datetime(2010, 1, 1, 0, 15),
-                                 datetime(2010, 1, 1, 0, 30),
-                                 900,
-                                 0.25
-                                 )
+                                 datetime(2010, 1, 1, 0, 15), datetime(2010, 1, 1, 0, 30), 900, 0.25)
     assert np.array_equal(flat, spec.data.flatten())
 
 
@@ -681,11 +678,7 @@ def test_in_interval():
     spec = LinearTimeSpectrogram(image,
                                  np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
                                  np.array([8, 6, 4, 2, 0]),
-                                 datetime(2010, 1, 1, 0, 15),
-                                 datetime(2010, 1, 1, 0, 30),
-                                 900,
-                                 1
-                                 )
+                                 datetime(2010, 1, 1, 0, 15), datetime(2010, 1, 1, 0, 30), 900, 1)
 
     assert np.array_equal(spec.in_interval("00:15", "00:30").data, spec.data)
 
@@ -695,15 +688,9 @@ def test_in_interval2():
     spec = LinearTimeSpectrogram(image,
                                  np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
                                  np.array([8, 6, 4, 2, 0]),
-                                 datetime(2010, 1, 1, 0, 15),
-                                 datetime(2010, 1, 1, 0, 30),
-                                 900,
-                                 1
-                                 )
+                                 datetime(2010, 1, 1, 0, 15), datetime(2010, 1, 1, 0, 30), 900, 1)
 
-    assert np.array_equal(
-        spec.in_interval("2010-01-01T00:15:00", "00:30").data, spec.data
-    )
+    assert np.array_equal(spec.in_interval("2010-01-01T00:15:00", "00:30").data, spec.data)
 
 
 def test_linearize():
@@ -711,11 +698,7 @@ def test_linearize():
     spec = LinearTimeSpectrogram(image,
                                  np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
                                  np.array([20, 10, 5, 0]),
-                                 datetime(2010, 1, 1, 0, 15),
-                                 datetime(2010, 1, 1, 0, 30),
-                                 900,
-                                 1
-                                 )
+                                 datetime(2010, 1, 1, 0, 15), datetime(2010, 1, 1, 0, 30), 900, 1)
     # 0   1   2   3   4   5  6  7  8
     # -------- ----------- ----- ---
     # 20 17.5 15 12.5 10 7.5 5 2.5 0
@@ -739,11 +722,7 @@ def test_linear_view():
     spec = LinearTimeSpectrogram(image,
                                  np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
                                  np.array([20, 10, 5, 0]),
-                                 datetime(2010, 1, 1, 0, 15),
-                                 datetime(2010, 1, 1, 0, 30),
-                                 900,
-                                 1
-                                 )
+                                 datetime(2010, 1, 1, 0, 15), datetime(2010, 1, 1, 0, 30), 900, 1)
 
     linear = _LinearView(spec)
     # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
@@ -764,11 +743,7 @@ def test_linear_view_indexerror():
     spec = LinearTimeSpectrogram(image,
                                  np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
                                  np.array([20, 10, 5, 0]),
-                                 datetime(2010, 1, 1, 0, 15),
-                                 datetime(2010, 1, 1, 0, 30),
-                                 900,
-                                 1
-                                 )
+                                 datetime(2010, 1, 1, 0, 15), datetime(2010, 1, 1, 0, 30), 900, 1)
 
     linear = _LinearView(spec)
     # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
@@ -781,11 +756,7 @@ def test_linear_view_negative():
     spec = LinearTimeSpectrogram(image,
                                  np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
                                  np.array([20, 10, 5, 0]),
-                                 datetime(2010, 1, 1, 0, 15),
-                                 datetime(2010, 1, 1, 0, 30),
-                                 900,
-                                 1
-                                 )
+                                 datetime(2010, 1, 1, 0, 15), datetime(2010, 1, 1, 0, 30), 900, 1)
 
     linear = _LinearView(spec)
     # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()
@@ -798,11 +769,7 @@ def test_linear_view_freqs():
     spec = LinearTimeSpectrogram(image,
                                  np.linspace(0, 1 * (image.shape[1] - 1), image.shape[1]),
                                  np.array([20, 10, 5, 0]),
-                                 datetime(2010, 1, 1, 0, 15),
-                                 datetime(2010, 1, 1, 0, 30),
-                                 900,
-                                 1
-                                 )
+                                 datetime(2010, 1, 1, 0, 15), datetime(2010, 1, 1, 0, 30), 900, 1)
 
     linear = _LinearView(spec)
     # assert ((linear.freq_axis[:-1] - linear.freq_axis[1:]) == 2.5).all()

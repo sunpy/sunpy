@@ -16,8 +16,7 @@ def timedelta(draw):
     Timedelta strategy that limits the maximum timedelta to being positive and
     abs max is about 100 weeks + 100 days + 100 hours + a bit
     """
-    keys = st.sampled_from(['days', 'seconds', 'microseconds', 'milliseconds',
-                            'minutes', 'hours', 'weeks'])
+    keys = st.sampled_from(['days', 'seconds', 'microseconds', 'milliseconds', 'minutes', 'hours', 'weeks'])
     values = st.floats(min_value=0, max_value=100)
     return datetime.timedelta(**draw(st.dictionaries(keys, values)))
 
@@ -46,9 +45,8 @@ def online_instruments():
 
 
 @st.composite
-def time_attr(draw, time=datetimes(timezones=[],
-                                   max_year=datetime.datetime.utcnow().year,
-                                   min_year=1900),
+def time_attr(draw,
+              time=datetimes(timezones=[], max_year=datetime.datetime.utcnow().year, min_year=1900),
               delta=timedelta()):
     """
     Create an a.Time where it's always positive and doesn't have a massive time
@@ -63,9 +61,8 @@ def time_attr(draw, time=datetimes(timezones=[],
 
 
 @st.composite
-def goes_time(draw, time=datetimes(timezones=[],
-                                   max_year=datetime.datetime.utcnow().year,
-                                   min_year=1981),
+def goes_time(draw,
+              time=datetimes(timezones=[], max_year=datetime.datetime.utcnow().year, min_year=1981),
               delta=timedelta()):
     """
     Create an a.Time where it's always positive and doesn't have a massive time
@@ -83,7 +80,6 @@ def goes_time(draw, time=datetimes(timezones=[],
 
 
 def rhessi_time():
-    time = datetimes(timezones=[], max_year=datetime.datetime.utcnow().year,
-                     min_year=2002)
+    time = datetimes(timezones=[], max_year=datetime.datetime.utcnow().year, min_year=2002)
     time = time.filter(lambda x: x > parse_time('2002-02-01'))
     return time_attr(time=time)

@@ -10,7 +10,6 @@ __all__ = ['RHESSIClient']
 
 
 class RHESSIClient(GenericClient):
-
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns a URL to the RHESSI data for the specified date range.

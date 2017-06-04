@@ -11,13 +11,11 @@ from __future__ import absolute_import, division
 from collections import OrderedDict
 
 from astropy import units as u
-from astropy.coordinates.representation import (SphericalRepresentation,
-                                                UnitSphericalRepresentation,
+from astropy.coordinates.representation import (SphericalRepresentation, UnitSphericalRepresentation,
                                                 CartesianRepresentation)
 from astropy.coordinates import Longitude, Latitude
 
-__all__ = ['Longitude180', 'SphericalWrap180Representation',
-           'UnitSphericalWrap180Representation']
+__all__ = ['Longitude180', 'SphericalWrap180Representation', 'UnitSphericalWrap180Representation']
 
 
 class Longitude180(Longitude):
@@ -51,11 +49,7 @@ class Longitude180(Longitude):
     """
 
     def __new__(cls, angle, unit=None, wrap_angle=180 * u.deg, **kwargs):
-        self = super(Longitude180, cls).__new__(cls,
-                                                angle,
-                                                unit=unit,
-                                                wrap_angle=wrap_angle,
-                                                **kwargs)
+        self = super(Longitude180, cls).__new__(cls, angle, unit=unit, wrap_angle=wrap_angle, **kwargs)
         return self
 
 
@@ -111,8 +105,7 @@ class SphericalWrap180Representation(SphericalRepresentation):
         If True, arrays will be copied rather than referenced.
     """
 
-    attr_classes = OrderedDict([('lon', Longitude180), ('lat', Latitude),
-                                ('distance', u.Quantity)])
+    attr_classes = OrderedDict([('lon', Longitude180), ('lat', Latitude), ('distance', u.Quantity)])
     recommended_units = {'lon': u.deg, 'lat': u.deg}
 
     _unitrep = UnitSphericalWrap180Representation

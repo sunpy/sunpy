@@ -14,13 +14,11 @@ from sunpy.database.tables import DatabaseEntry, Tag as TableTag,\
     FitsHeaderEntry as TableFitsHeaderEntry
 from sunpy.extern import six
 
-__all__ = [
-    'Starred', 'Tag', 'Path', 'DownloadTime', 'FitsHeaderEntry', 'walker']
+__all__ = ['Starred', 'Tag', 'Path', 'DownloadTime', 'FitsHeaderEntry', 'walker']
 
 # This frozenset has been hardcoded to denote VSO attributes that are
 # currently supported, on derdon's request.
-SUPPORTED_SIMPLE_VSO_ATTRS = frozenset(['source', 'provider', 'physobs',
-                                        'instrument'])
+SUPPORTED_SIMPLE_VSO_ATTRS = frozenset(['source', 'provider', 'physobs', 'instrument'])
 SUPPORTED_NONVSO_ATTRS = frozenset(['starred'])
 
 
@@ -64,8 +62,7 @@ class _BooleanAttr(object):
         return False
 
     def __repr__(self):
-        return '<{0}{1}()>'.format(
-            '~' if not self.value else '', self.__class__.__name__)
+        return '<{0}{1}()>'.format('~' if not self.value else '', self.__class__.__name__)
 
 
 class Starred(_BooleanAttr, Attr):
@@ -87,8 +84,7 @@ class Tag(Attr):
         return False
 
     def __repr__(self):
-        return '<{0}Tag({1!r})>'.format(
-            '~' if self.inverted else '', self.tagname)
+        return '<{0}Tag({1!r})>'.format('~' if self.inverted else '', self.tagname)
 
 
 class Path(Attr):
@@ -105,8 +101,7 @@ class Path(Attr):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return '<{0}Path({1!r})>'.format(
-            '~' if self.inverted else '', self.value)
+        return '<{0}Path({1!r})>'.format('~' if self.inverted else '', self.value)
 
 
 # TODO: support excluding ranges as soon as
@@ -127,8 +122,7 @@ class DownloadTime(Attr, vso_attrs._Range):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return '<{0}DownloadTime({1!r}, {2!r})>'.format(
-            '~' if self.inverted else '', self.start, self.end)
+        return '<{0}DownloadTime({1!r}, {2!r})>'.format('~' if self.inverted else '', self.start, self.end)
 
 
 class FitsHeaderEntry(Attr):
@@ -146,8 +140,7 @@ class FitsHeaderEntry(Attr):
         return False
 
     def __repr__(self):
-        return '<{0}FitsHeaderEntry({1!r}, {2!r})>'.format(
-            '~' if self.inverted else '', self.key, self.value)
+        return '<{0}FitsHeaderEntry({1!r}, {2!r})>'.format('~' if self.inverted else '', self.key, self.value)
 
 
 walker = AttrWalker()
@@ -187,39 +180,36 @@ def _create(wlk, root, session):
             key_criterion = TableFitsHeaderEntry.key == key
             value_criterion = TableFitsHeaderEntry.value == val
             if inverted:
-                query = query.filter(not_(and_(
-                    DatabaseEntry.fits_header_entries.any(key_criterion),
-                    DatabaseEntry.fits_header_entries.any(value_criterion))))
+                query = query.filter(
+                    not_(
+                        and_(
+                            DatabaseEntry.fits_header_entries.any(key_criterion),
+                            DatabaseEntry.fits_header_entries.any(value_criterion))))
             else:
-                query = query.filter(and_(
-                    DatabaseEntry.fits_header_entries.any(key_criterion),
-                    DatabaseEntry.fits_header_entries.any(value_criterion)))
+                query = query.filter(
+                    and_(
+                        DatabaseEntry.fits_header_entries.any(key_criterion),
+                        DatabaseEntry.fits_header_entries.any(value_criterion)))
         elif typ == 'download time':
             start, end, inverted = value
             if inverted:
-                query = query.filter(
-                    ~DatabaseEntry.download_time.between(start, end))
+                query = query.filter(~DatabaseEntry.download_time.between(start, end))
             else:
-                query = query.filter(
-                    DatabaseEntry.download_time.between(start, end))
+                query = query.filter(DatabaseEntry.download_time.between(start, end))
         elif typ == 'path':
             path, inverted = value
             if inverted:
                 # pylint: disable=E711
-                query = query.filter(or_(
-                    DatabaseEntry.path != path, DatabaseEntry.path == None))
+                query = query.filter(or_(DatabaseEntry.path != path, DatabaseEntry.path == None))
             else:
                 query = query.filter(DatabaseEntry.path == path)
         elif typ == 'wave':
             wavemin, wavemax, waveunit = value
-            query = query.filter(and_(
-                DatabaseEntry.wavemin >= wavemin,
-                DatabaseEntry.wavemax <= wavemax))
+            query = query.filter(and_(DatabaseEntry.wavemin >= wavemin, DatabaseEntry.wavemax <= wavemax))
         elif typ == 'time':
             start, end, near = value
-            query = query.filter(and_(
-                DatabaseEntry.observation_time_start < end,
-                DatabaseEntry.observation_time_end > start))
+            query = query.filter(
+                and_(DatabaseEntry.observation_time_start < end, DatabaseEntry.observation_time_end > start))
         else:
             if typ.lower() not in SUPPORTED_SIMPLE_VSO_ATTRS.union(SUPPORTED_NONVSO_ATTRS):
                 raise NotImplementedError("The attribute {0!r} is not yet supported to query a database.".format(typ))
@@ -244,14 +234,12 @@ def _convert(attr):
 
 @walker.add_converter(DownloadTime)
 def _convert(attr):
-    return ValueAttr({
-        ('download time', ): (attr.start, attr.end, attr.inverted)})
+    return ValueAttr({('download time', ): (attr.start, attr.end, attr.inverted)})
 
 
 @walker.add_converter(FitsHeaderEntry)
 def _convert(attr):
-    return ValueAttr(
-        {('fitsheaderentry', ): (attr.key, attr.value, attr.inverted)})
+    return ValueAttr({('fitsheaderentry', ): (attr.key, attr.value, attr.inverted)})
 
 
 @walker.add_converter(vso_attrs._VSOSimpleAttr)

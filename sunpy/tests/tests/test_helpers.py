@@ -37,4 +37,5 @@ def test_assert_quantity_allclose():
 
     with pytest.raises(TypeError) as exc:
         assert_quantity_allclose([1, 2], [1, 2], atol=0.3 * u.m)
-    assert exc.value.args[0] == "If `actual` and `desired` are not Quantities, `atol` parameter should also not be a Quantity"
+    assert exc.value.args[
+        0] == "If `actual` and `desired` are not Quantities, `atol` parameter should also not be a Quantity"

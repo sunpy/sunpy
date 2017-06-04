@@ -2,7 +2,6 @@
 
 from __future__ import absolute_import, print_function
 
-
 from collections import OrderedDict
 
 import numpy as np
@@ -82,8 +81,7 @@ class GBMSummaryLightCurve(LightCurve):
 
         axes.set_yscale("log")
         axes.set_title('Fermi GBM Summary data ' + self.meta['DETNAM'])
-        axes.set_xlabel('Start time: ' +
-                        self.data.index[0].strftime('%Y-%m-%d %H:%M:%S UT'))
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime('%Y-%m-%d %H:%M:%S UT'))
         axes.set_ylabel('Counts/s/keV')
         axes.legend()
         figure.autofmt_xdate()
@@ -98,21 +96,17 @@ class GBMSummaryLightCurve(LightCurve):
         if 'detector' in kwargs:
             det = _parse_detector(kwargs['detector'])
             final_url = urllib.parse.urljoin(
-                baseurl, date.strftime('%Y/%m/%d/' + 'current/' +
-                                       'glg_cspec_' + det + '_%y%m%d_v00.pha'))
+                baseurl, date.strftime('%Y/%m/%d/' + 'current/' + 'glg_cspec_' + det + '_%y%m%d_v00.pha'))
         else:
             # if user doesn't specify a detector, find the one pointing
             # closest to the Sun.'
             # OR: maybe user should have to specify detector or fail.
             det = cls._get_closest_detector_for_date(date)
-            print('No detector specified. Detector with smallest mean angle '
-                  'to Sun is ' + str(det))
+            print('No detector specified. Detector with smallest mean angle ' 'to Sun is ' + str(det))
             print('Using Detector ' + str(det))
-            print('For Fermi detector pointing information, use tools in '
-                  'sunpy/instr/fermi')
+            print('For Fermi detector pointing information, use tools in ' 'sunpy/instr/fermi')
             final_url = urllib.parse.urljoin(
-                baseurl, date.strftime('%Y/%m/%d/' + 'current/' +
-                                       'glg_cspec_' + det + '_%y%m%d_v00.pha'))
+                baseurl, date.strftime('%Y/%m/%d/' + 'current/' + 'glg_cspec_' + det + '_%y%m%d_v00.pha'))
 
         return final_url
 
@@ -156,8 +150,9 @@ class GBMSummaryLightCurve(LightCurve):
         # get the time information in datetime format with the correct MET adjustment
         for t in count_data['time']:
             gbm_times.append(fermi.met_to_utc(t))
-        column_labels = ['4-15 keV', '15-25 keV', '25-50 keV', '50-100 keV', '100-300 keV',
-                         '300-800 keV', '800-2000 keV']
+        column_labels = [
+            '4-15 keV', '15-25 keV', '25-50 keV', '50-100 keV', '100-300 keV', '300-800 keV', '800-2000 keV'
+        ]
         return header, pandas.DataFrame(summary_counts, columns=column_labels, index=gbm_times)
 
 
@@ -176,9 +171,9 @@ def _bin_data_for_summary(energy_bins, count_data):
     for i in range(0, len(count_data['counts'])):
         counts_in_bands = []
         for j in range(1, len(ebands)):
-            counts_in_bands.append(np.sum(count_data['counts'][i][indices[j - 1]:indices[j]]) /
-                                   (count_data['exposure'][i] * (energy_bins['e_max'][indices[j]] -
-                                                                 energy_bins['e_min'][indices[j - 1]])))
+            counts_in_bands.append(
+                np.sum(count_data['counts'][i][indices[j - 1]:indices[j]]) /
+                (count_data['exposure'][i] * (energy_bins['e_max'][indices[j]] - energy_bins['e_min'][indices[j - 1]])))
 
         summary_counts.append(counts_in_bands)
 

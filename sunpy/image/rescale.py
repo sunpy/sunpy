@@ -55,8 +55,7 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
 
     # Verify that number dimensions requested matches original shape
     if len(dimensions) != orig.ndim:
-        raise UnequalNumDimensions("Number of dimensions must remain the same "
-                                   "when calling resample.")
+        raise UnequalNumDimensions("Number of dimensions must remain the same " "when calling resample.")
 
     #@note: will this be okay for integer (e.g. JPEG 2000) data?
     if orig.dtype not in [np.float64, np.float32]:
@@ -64,19 +63,17 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
 
     dimensions = np.asarray(dimensions, dtype=np.float64)
     m1 = np.array(minusone, dtype=np.int64)  # array(0) or array(1)
-    offset = np.float64(center * 0.5)       # float64(0.) or float64(0.5)
+    offset = np.float64(center * 0.5)  # float64(0.) or float64(0.5)
 
     # Resample data
     if method == 'neighbor':
         data = _resample_neighbor(orig, dimensions, offset, m1)
     elif method in ['nearest', 'linear']:
-        data = _resample_nearest_linear(orig, dimensions, method,
-                                        offset, m1)
+        data = _resample_nearest_linear(orig, dimensions, method, offset, m1)
     elif method == 'spline':
         data = _resample_spline(orig, dimensions, offset, m1)
     else:
-        raise UnrecognizedInterpolationMethod("Unrecognized interpolation "
-                                              "method requested.")
+        raise UnrecognizedInterpolationMethod("Unrecognized interpolation " "method requested.")
 
     return data
 
@@ -89,15 +86,14 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
     # calculate new dims
     for i in range(orig.ndim):
         base = np.arange(dimensions[i])
-        dimlist.append((orig.shape[i] - m1) / (dimensions[i] - m1) *
-                       (base + offset) - offset)
+        dimlist.append((orig.shape[i] - m1) / (dimensions[i] - m1) * (base + offset) - offset)
 
     # specify old coordinates
     old_coords = [np.arange(i, dtype=np.float) for i in orig.shape]
 
     # first interpolation - for ndims = any
-    mint = scipy.interpolate.interp1d(old_coords[-1], orig, bounds_error=False,
-                                      fill_value=min(old_coords[-1]), kind=method)
+    mint = scipy.interpolate.interp1d(
+        old_coords[-1], orig, bounds_error=False, fill_value=min(old_coords[-1]), kind=method)
 
     new_data = mint(dimlist[-1])
 
@@ -105,8 +101,8 @@ def _resample_nearest_linear(orig, dimensions, method, offset, m1):
     for i in range(orig.ndim - 2, -1, -1):
         new_data = new_data.transpose(trorder)
 
-        mint = scipy.interpolate.interp1d(old_coords[i], new_data,
-                                          bounds_error=False, fill_value=min(old_coords[i]), kind=method)
+        mint = scipy.interpolate.interp1d(
+            old_coords[i], new_data, bounds_error=False, fill_value=min(old_coords[i]), kind=method)
         new_data = mint(dimlist[i])
 
     if orig.ndim > 1:
@@ -124,8 +120,7 @@ def _resample_neighbor(orig, dimensions, offset, m1):
 
     for i in range(orig.ndim):
         base = np.indices(dimensions)[i]
-        dimlist.append((orig.shape[i] - m1) / (dimensions[i] - m1) *
-                       (base + offset) - offset)
+        dimlist.append((orig.shape[i] - m1) / (dimensions[i] - m1) * (base + offset) - offset)
     cd = np.array(dimlist).round().astype(int)
 
     return orig[list(cd)]
@@ -227,8 +222,8 @@ def reshape_image_to_4d_superpixel(img, dimensions, offset):
 
     # Reshape up to a higher dimensional array which is useful for higher
     # level operations
-    return (img[int(offset[0]):int(offset[0] + na * dimensions[0]),
-                int(offset[1]):int(offset[1] + nb * dimensions[1])]).reshape(na, dimensions[0], nb, dimensions[1])
+    return (img[int(offset[0]):int(offset[0] + na * dimensions[0]), int(offset[1]):int(offset[1] + nb * dimensions[1])]
+            ).reshape(na, dimensions[0], nb, dimensions[1])
 
 
 class UnrecognizedInterpolationMethod(ValueError):

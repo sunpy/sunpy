@@ -97,13 +97,10 @@ class NorthOffsetFrame(object):
             rotation = 180 * u.deg
 
         if isinstance(origin_frame.data, UnitSphericalRepresentation):
-            new_rep = origin_frame.representation(lon=lon,
-                                                  lat=lat)
+            new_rep = origin_frame.representation(lon=lon, lat=lat)
 
         else:
-            new_rep = origin_frame.representation(lon=lon,
-                                                  lat=lat,
-                                                  distance=rep.distance)
+            new_rep = origin_frame.representation(lon=lon, lat=lat, distance=rep.distance)
 
         new_origin = origin_frame.realize_frame(new_rep)
         kwargs['origin'] = new_origin

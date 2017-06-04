@@ -13,12 +13,10 @@ __all__ = ['Scraper']
 
 # regular expressions to convert datetime format
 # added `%e` as for milliseconds `%f/1000`
-TIME_CONVERSIONS = {'%Y': '\d{4}', '%y': '\d{2}',
-                    '%b': '[A-Z][a-z]{2}', '%B': '\W', '%m': '\d{2}',
-                    '%d': '\d{2}', '%j': '\d{3}',
-                    '%H': '\d{2}', '%I': '\d{2}',
-                    '%M': '\d{2}',
-                    '%S': '\d{2}', '%e': '\d{3}', '%f': '\d{6}'}
+TIME_CONVERSIONS = {
+    '%Y': '\d{4}', '%y': '\d{2}', '%b': '[A-Z][a-z]{2}', '%B': '\W', '%m': '\d{2}', '%d': '\d{2}', '%j': '\d{3}',
+    '%H': '\d{2}', '%I': '\d{2}', '%M': '\d{2}', '%S': '\d{2}', '%e': '\d{3}', '%f': '\d{6}'
+}
 
 
 class Scraper(object):
@@ -66,8 +64,8 @@ class Scraper(object):
         else:
             now = datetime.datetime.now()
             milliseconds_ = int(now.microsecond / 1000.)
-            self.now = now.strftime(self.pattern[0:milliseconds.start()
-                                                 ] + str(milliseconds_) + self.pattern[milliseconds.end():])
+            self.now = now.strftime(self.pattern[0:milliseconds.start()] + str(milliseconds_) +
+                                    self.pattern[milliseconds.end():])
 
     def matches(self, filepath, date):
         return date.strftime(self.pattern) == filepath
@@ -119,14 +117,16 @@ class Scraper(object):
 
     def _extractDateURL(self, url):
         """Extracts the date from a particular url following the pattern"""
+
         # url_to_list substitutes '.' and '_' for '/' to then create
         # a list of all the blocks in times - assuming they are all
         # separated with either '.', '_' or '/'
-        def url_to_list(txt): return re.sub(r'\.|_', '/', txt).split('/')
+        def url_to_list(txt):
+            return re.sub(r'\.|_', '/', txt).split('/')
+
         pattern_list = url_to_list(self.pattern)
         url_list = url_to_list(url)
-        time_order = ['%Y', '%y', '%b', '%B', '%m', '%d', '%j',
-                      '%H', '%I', '%M', '%S', '%e', '%f']
+        time_order = ['%Y', '%y', '%b', '%B', '%m', '%d', '%j', '%H', '%I', '%M', '%S', '%e', '%f']
         final_date = []
         final_pattern = []
         # Find in directory and filename
@@ -160,8 +160,7 @@ class Scraper(object):
             if pattern not in final_pattern:
                 final_pattern.append('%{}'.format(p))
                 final_date.append(date_part.group())
-        return datetime.datetime.strptime(' '.join(final_date),
-                                          ' '.join(final_pattern))
+        return datetime.datetime.strptime(' '.join(final_date), ' '.join(final_pattern))
 
     def filelist(self, timerange):
         """
@@ -201,8 +200,7 @@ class Scraper(object):
                             fullpath = directory + href
                             if self._URL_followsPattern(fullpath):
                                 datehref = self._extractDateURL(fullpath)
-                                if (datehref >= timerange.start and
-                                        datehref <= timerange.end):
+                                if (datehref >= timerange.start and datehref <= timerange.end):
                                     filesurls.append(fullpath)
                 finally:
                     opn.close()

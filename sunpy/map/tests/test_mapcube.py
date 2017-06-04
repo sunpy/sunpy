@@ -34,8 +34,7 @@ def masked_aia_map(aia_map):
     aia_map_data = aia_map.data
     aia_map_mask = np.zeros_like(aia_map_data)
     aia_map_mask[0:2, 0:3] = True
-    return sunpy.map.Map(np.ma.masked_array(aia_map_data, mask=aia_map_mask),
-                         aia_map.meta)
+    return sunpy.map.Map(np.ma.masked_array(aia_map_data, mask=aia_map_mask), aia_map.meta)
 
 
 @pytest.fixture
@@ -71,19 +70,15 @@ def test_all_maps_same_shape(mapcube_all_the_same, mapcube_different):
     assert not mapcube_different.all_maps_same_shape()
 
 
-def test_at_least_one_map_has_mask(mapcube_all_the_same,
-                                   mapcube_all_the_same_all_have_masks,
-                                   mapcube_all_the_same_some_have_masks
-                                   ):
+def test_at_least_one_map_has_mask(mapcube_all_the_same, mapcube_all_the_same_all_have_masks,
+                                   mapcube_all_the_same_some_have_masks):
     """ Test that we can detect the presence of at least one masked map."""
     assert not mapcube_all_the_same.at_least_one_map_has_mask()
     assert mapcube_all_the_same_all_have_masks.at_least_one_map_has_mask()
     assert mapcube_all_the_same_some_have_masks.at_least_one_map_has_mask()
 
 
-def test_as_array(mapcube_all_the_same,
-                  mapcube_different,
-                  mapcube_all_the_same_all_have_masks,
+def test_as_array(mapcube_all_the_same, mapcube_different, mapcube_all_the_same_all_have_masks,
                   mapcube_all_the_same_some_have_masks):
     """Make sure the data in the mapcube returns correctly, when all the
     maps have the same shape.  When they don't have the same shape, make

@@ -42,6 +42,7 @@ class Chaincode(np.ndarray):
     >>> ax.plot(x[0], y[0], 'go-')   # doctest: +SKIP
     >>> fig.show()   # doctest: +SKIP
     """
+
     def __new__(cls, origin, chaincode, **kargs):
         if isinstance(origin, list):
             obj = np.asarray(origin).view(cls)
@@ -95,8 +96,7 @@ class Chaincode(np.ndarray):
             improve documentation. what does this function do?
 
         """
-        return np.alltrue(np.allclose(self.coordinates[:, index],
-                                      np.asarray(coordinates)))
+        return np.alltrue(np.allclose(self.coordinates[:, index], np.asarray(coordinates)))
 
     def BoundingBox(self):
         """
@@ -127,10 +127,10 @@ class Chaincode(np.ndarray):
         Extract the x or y boundaries of the chaincode from
         a defined limits xedge or yedge.
         """
-# It needs to check whether the input are lists and with 2 elements..
-#        try:
-#            if (type(xedge) == list) or (type(yedge) == list):
-#
+        # It needs to check whether the input are lists and with 2 elements..
+        #        try:
+        #            if (type(xedge) == list) or (type(yedge) == list):
+        #
         if xedge is not None:
             edge = xedge
             IndexMask = 0  # we want to mask X
@@ -144,6 +144,6 @@ class Chaincode(np.ndarray):
             return None
         mask = (self.coordinates[IndexMask, :] >= edge[0]) & \
             (self.coordinates[IndexMask, :] <= edge[1])
-# Should the edges be included?
+        # Should the edges be included?
         mx = np.ma.masked_array(self.coordinates[IndexValue, :], mask=(~mask))
         return [mx.min(), mx.max()]

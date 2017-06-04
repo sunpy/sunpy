@@ -80,8 +80,7 @@ class CompositeMap(object):
 
         for m in self._maps:
             if not isinstance(m, GenericMap):
-                raise ValueError(
-                    'CompositeMap expects pre-constructed map objects.')
+                raise ValueError('CompositeMap expects pre-constructed map objects.')
 
         # Default alpha and zorder values
         alphas = [1] * len(self._maps)
@@ -348,8 +347,7 @@ class CompositeMap(object):
         -------
         `matplotlib.axes.Axes` object
         """
-        needed_attrs = ['rsun_meters', 'dsun', 'heliographic_latitude',
-                        'heliographic_longitude']
+        needed_attrs = ['rsun_meters', 'dsun', 'heliographic_latitude', 'heliographic_longitude']
         if index is None:
             for i, amap in enumerate(self._maps):
                 if all([hasattr(amap, k) for k in needed_attrs]):
@@ -363,8 +361,12 @@ class CompositeMap(object):
         ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing)
         return ax
 
-    def plot(self, axes=None, annotate=True,  # pylint: disable=W0613
-             title="SunPy Composite Plot", **matplot_args):
+    def plot(
+            self,
+            axes=None,
+            annotate=True,  # pylint: disable=W0613
+            title="SunPy Composite Plot",
+            **matplot_args):
         """Plots the composite map object using matplotlib
 
         Parameters
@@ -396,10 +398,8 @@ class CompositeMap(object):
             axes = plt.gca()
 
         if annotate:
-            axes.set_xlabel(axis_labels_from_ctype(self._maps[0].coordinate_system[0],
-                                                   self._maps[0].spatial_units[0]))
-            axes.set_ylabel(axis_labels_from_ctype(self._maps[0].coordinate_system[1],
-                                                   self._maps[0].spatial_units[1]))
+            axes.set_xlabel(axis_labels_from_ctype(self._maps[0].coordinate_system[0], self._maps[0].spatial_units[0]))
+            axes.set_ylabel(axis_labels_from_ctype(self._maps[0].coordinate_system[1], self._maps[0].spatial_units[1]))
 
             axes.set_title(title)
 
@@ -436,8 +436,7 @@ class CompositeMap(object):
         plt.sci(ret[0])
         return ret
 
-    def peek(self, colorbar=True, basic_plot=False, draw_limb=True,
-             draw_grid=False, **matplot_args):
+    def peek(self, colorbar=True, basic_plot=False, draw_limb=True, draw_grid=False, **matplot_args):
         """Displays the map in a new figure.
 
         Parameters
@@ -486,7 +485,7 @@ class CompositeMap(object):
             if draw_grid:
                 self.draw_grid(axes=axes)
 
-        elif isinstance(draw_grid, six.integer_types + (float,)):
+        elif isinstance(draw_grid, six.integer_types + (float, )):
             self.draw_grid(axes=axes, grid_spacing=draw_grid)
         else:
             raise TypeError("draw_grid should be bool, int, long or float")

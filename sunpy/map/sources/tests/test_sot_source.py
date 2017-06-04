@@ -43,23 +43,20 @@ def test_measurement():
 
 def test_instruments():
     """Tests the Instruments object of SOTMap."""
-    assert (sot.Instruments == ['SOT/WB',
-                                'SOT/NB', 'SOT/SP', 'SOT/CT'])
+    assert (sot.Instruments == ['SOT/WB', 'SOT/NB', 'SOT/SP', 'SOT/CT'])
 
 
 def test_waves():
     """Tests the Waves object of SOTMap."""
-    assert (sot.Waves == ['6302A', 'BFI no move',
-                          'CN bandhead 3883', 'Ca II H line',
-                          'G band 4305', 'NFI no move', 'TF Fe I 6302',
-                          'TF Mg I 5172', 'TF Na I 5896',
-                          'blue cont 4504', 'green cont 5550',
-                          'red cont 6684'])
+    assert (sot.Waves == [
+        '6302A', 'BFI no move', 'CN bandhead 3883', 'Ca II H line', 'G band 4305', 'NFI no move', 'TF Fe I 6302',
+        'TF Mg I 5172', 'TF Na I 5896', 'blue cont 4504', 'green cont 5550', 'red cont 6684'
+    ])
 
 
 def test_obstype():
     """Tests the Observation_Type object of SOTMap."""
-    assert (sot.Observation_Type == ['FG (simple)',
-                                     'FG focus scan', 'FG shuttered I and V',
-                                     'FG shutterless I and V', 'FG shutterless I and V with 0.2s intervals',
-                                     'FG shutterless Stokes', 'SP IQUV 4D array'])
+    assert (sot.Observation_Type == [
+        'FG (simple)', 'FG focus scan', 'FG shuttered I and V', 'FG shutterless I and V',
+        'FG shutterless I and V with 0.2s intervals', 'FG shutterless Stokes', 'SP IQUV 4D array'
+    ])

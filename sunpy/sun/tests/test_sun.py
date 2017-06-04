@@ -47,6 +47,7 @@ def test_mean_anomaly():
     assert_quantity_allclose(sun.mean_anomaly("2008/07/29"), 203.933 * u.deg, atol=1 * u.deg)
     assert_quantity_allclose(sun.mean_anomaly("2011/01/31"), 26.742 * u.deg, atol=1 * u.deg)
 
+
 # These values are tested from the functions after the integration of astropy.units
 
 
@@ -59,12 +60,12 @@ def test_solar_cycle_number():
 
 
 def test_solar_semidiameter_angular_size():
-    assert_quantity_allclose(sun.solar_semidiameter_angular_size(
-        "2012/11/11"), 968.612 * u.arcsec, atol=1e-3 * u.arcsec)
-    assert_quantity_allclose(sun.solar_semidiameter_angular_size(
-        "2043/03/01"), 968.042 * u.arcsec, atol=1e-3 * u.arcsec)
-    assert_quantity_allclose(sun.solar_semidiameter_angular_size(
-        "2001/07/21"), 943.775 * u.arcsec, atol=1e-3 * u.arcsec)
+    assert_quantity_allclose(
+        sun.solar_semidiameter_angular_size("2012/11/11"), 968.612 * u.arcsec, atol=1e-3 * u.arcsec)
+    assert_quantity_allclose(
+        sun.solar_semidiameter_angular_size("2043/03/01"), 968.042 * u.arcsec, atol=1e-3 * u.arcsec)
+    assert_quantity_allclose(
+        sun.solar_semidiameter_angular_size("2001/07/21"), 943.775 * u.arcsec, atol=1e-3 * u.arcsec)
 
 
 def test_mean_ecliptic_longitude():

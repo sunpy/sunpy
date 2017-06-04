@@ -21,11 +21,7 @@ except ImportError:
 __all__ = ['read_file', 'read_file_header', 'write_file']
 
 # File formats supported by SunPy
-_known_extensions = {
-    ('fts', 'fits'): 'fits',
-    ('jp2', 'j2k', 'jpc', 'jpt'): 'jp2',
-    ('fz', 'f0'): 'ana'
-}
+_known_extensions = {('fts', 'fits'): 'fits', ('jp2', 'j2k', 'jpc', 'jpt'): 'jp2', ('fz', 'f0'): 'ana'}
 
 
 # Define a dict which raises a custom error message if the value is None
@@ -42,11 +38,7 @@ class Readers(dict):
 
 
 # Map the readers
-_readers = Readers({
-    'fits': fits,
-    'jp2': jp2,
-    'ana': ana
-})
+_readers = Readers({'fits': fits, 'jp2': jp2, 'ana': ana})
 
 
 def read_file(filepath, filetype=None, **kwargs):
@@ -205,16 +197,14 @@ def _detect_filetype(filepath):
     # [1] http://www.sno.phy.queensu.ca/~phil/exiftool/
     # [2] http://www.jpeg.org/public/fcd15444-2.pdf
     # [3] ftp://ftp.remotesensing.org/jpeg2000/fcd15444-1.pdf
-    jp2_signatures = [b"\x00\x00\x00\x0cjP  \x0d\x0a\x87\x0a",
-                      b"\x00\x00\x00\x0cjP\x1a\x1a\x0d\x0a\x87\x0a"]
+    jp2_signatures = [b"\x00\x00\x00\x0cjP  \x0d\x0a\x87\x0a", b"\x00\x00\x00\x0cjP\x1a\x1a\x0d\x0a\x87\x0a"]
 
     for sig in jp2_signatures:
         if line1 + line2 == sig:
             return 'jp2'
 
     # Raise an error if an unsupported filetype is encountered
-    raise UnrecognizedFileTypeError("The requested filetype is not currently "
-                                    "supported by SunPy.")
+    raise UnrecognizedFileTypeError("The requested filetype is not currently " "supported by SunPy.")
 
 
 class UnrecognizedFileTypeError(IOError):

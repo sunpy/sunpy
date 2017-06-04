@@ -16,17 +16,13 @@ __all__ = ['SWavesSpectrogram']
 class SWavesSpectrogram(LinearTimeSpectrogram):
     _create = ConditionalDispatch.from_existing(LinearTimeSpectrogram._create)
     create = classmethod(_create.wrapper())
-    COPY_PROPERTIES = LinearTimeSpectrogram.COPY_PROPERTIES + [
-        ('bg', REFERENCE)
-    ]
+    COPY_PROPERTIES = LinearTimeSpectrogram.COPY_PROPERTIES + [('bg', REFERENCE)]
 
     @staticmethod
     def swavesfile_to_date(filename):
         _, name = os.path.split(filename)
         date = name.split('_')[2]
-        return datetime.datetime(
-            int(date[0:4]), int(date[4:6]), int(date[6:])
-        )
+        return datetime.datetime(int(date[0:4]), int(date[4:6]), int(date[6:]))
 
     @classmethod
     def read(cls, filename, **kwargs):
@@ -48,34 +44,27 @@ class SWavesSpectrogram(LinearTimeSpectrogram):
         freq_axis = freq_axis[::-1]
         data = data[::-1, :]
 
-        return cls(data, time_axis, freq_axis, start, end, t_init, t_delt,
-                   t_label, f_label, content, bg)
+        return cls(data, time_axis, freq_axis, start, end, t_init, t_delt, t_label, f_label, content, bg)
 
-    def __init__(self, data, time_axis, freq_axis, start, end,
-                 t_init, t_delt, t_label, f_label, content, bg):
+    def __init__(self, data, time_axis, freq_axis, start, end, t_init, t_delt, t_label, f_label, content, bg):
         # Because of how object creation works, there is no avoiding
         # unused arguments in this case.
         # pylint: disable=W0613
 
-        super(SWavesSpectrogram, self).__init__(
-            data, time_axis, freq_axis, start, end,
-            t_init, t_delt, t_label, f_label,
-            content, set(["SWAVES"])
-        )
+        super(SWavesSpectrogram, self).__init__(data, time_axis, freq_axis, start, end, t_init, t_delt, t_label,
+                                                f_label, content, set(["SWAVES"]))
         self.bg = bg
 
 
 try:
-    SWavesSpectrogram.create.im_func.__doc__ = (
-        """ Create SWavesSpectrogram from given input dispatching to the
+    SWavesSpectrogram.create.im_func.__doc__ = (""" Create SWavesSpectrogram from given input dispatching to the
         appropriate from_* function.
 
     Possible signatures:
 
     """ + SWavesSpectrogram._create.generate_docs())
 except AttributeError:
-    SWavesSpectrogram.create.__func__.__doc__ = (
-        """ Create SWavesSpectrogram from given input dispatching to the
+    SWavesSpectrogram.create.__func__.__doc__ = (""" Create SWavesSpectrogram from given input dispatching to the
         appropriate from_* function.
 
     Possible signatures:

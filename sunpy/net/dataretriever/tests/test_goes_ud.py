@@ -14,14 +14,13 @@ from sunpy.net.tests.strategies import goes_time
 LCClient = goes.GOESClient()
 
 
-@pytest.mark.parametrize(
-    "timerange,url_start,url_end",
-    [(TimeRange('1995/06/03', '1995/06/05'),
-      'http://umbra.nascom.nasa.gov/goes/fits/1995/go07950603.fits',
-      'http://umbra.nascom.nasa.gov/goes/fits/1995/go07950605.fits'),
-     (TimeRange('2008/06/02', '2008/06/04'),
-      'http://umbra.nascom.nasa.gov/goes/fits/2008/go1020080602.fits',
-      'http://umbra.nascom.nasa.gov/goes/fits/2008/go1020080604.fits')])
+@pytest.mark.parametrize("timerange,url_start,url_end",
+                         [(TimeRange('1995/06/03',
+                                     '1995/06/05'), 'http://umbra.nascom.nasa.gov/goes/fits/1995/go07950603.fits',
+                           'http://umbra.nascom.nasa.gov/goes/fits/1995/go07950605.fits'),
+                          (TimeRange('2008/06/02',
+                                     '2008/06/04'), 'http://umbra.nascom.nasa.gov/goes/fits/2008/go1020080602.fits',
+                           'http://umbra.nascom.nasa.gov/goes/fits/2008/go1020080604.fits')])
 def test_get_url_for_time_range(timerange, url_start, url_end):
     urls = LCClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)
@@ -82,10 +81,8 @@ def test_new_logic():
 
 
 @pytest.mark.online
-@pytest.mark.parametrize(
-    "time, instrument",
-    [(a.Time("2012/10/4", "2012/10/6"), a.Instrument("goes")),
-     (a.Time('2013/10/5', '2013/10/7'), a.Instrument("goes"))])
+@pytest.mark.parametrize("time, instrument", [(a.Time("2012/10/4", "2012/10/6"), a.Instrument("goes")), (a.Time(
+    '2013/10/5', '2013/10/7'), a.Instrument("goes"))])
 def test_fido(time, instrument):
     qr = Fido.search(a.Time('2012/10/4', '2012/10/6'), Instrument('goes'))
     assert isinstance(qr, UnifiedResponse)

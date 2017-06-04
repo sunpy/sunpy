@@ -49,15 +49,13 @@ def aia171_test_map_layer_shape(aia171_test_map_layer):
 
 
 @pytest.fixture
-def aia171_test_template(aia171_test_shift,
-                         aia171_test_map_layer,
-                         aia171_test_map_layer_shape):
+def aia171_test_template(aia171_test_shift, aia171_test_map_layer, aia171_test_map_layer_shape):
     # Test template
     a1 = aia171_test_shift[0] + aia171_test_map_layer_shape[0] // 4
     a2 = aia171_test_shift[0] + 3 * aia171_test_map_layer_shape[0] // 4
     b1 = aia171_test_shift[1] + aia171_test_map_layer_shape[1] // 4
     b2 = aia171_test_shift[1] + 3 * aia171_test_map_layer_shape[1] // 4
-    return aia171_test_map_layer[a1: a2, b1:b2]
+    return aia171_test_map_layer[a1:a2, b1:b2]
 
 
 @pytest.fixture
@@ -66,7 +64,7 @@ def aia171_test_template_shape(aia171_test_template):
 
 
 def test_parabolic_turning_point():
-    assert(parabolic_turning_point(np.asarray([6.0, 2.0, 0.0])) == 1.5)
+    assert (parabolic_turning_point(np.asarray([6.0, 2.0, 0.0])) == 1.5)
 
 
 def test_repair_image_nonfinite():
@@ -76,17 +74,19 @@ def test_repair_image_nonfinite():
             a[i] = non_number
             b = a.reshape(3, 3)
             c = repair_image_nonfinite(b)
-            assert(np.isfinite(c).all())
+            assert (np.isfinite(c).all())
 
 
-def test_match_template_to_layer(aia171_test_map_layer,
-                                 aia171_test_template,
-                                 aia171_test_map_layer_shape,
+def test_match_template_to_layer(aia171_test_map_layer, aia171_test_template, aia171_test_map_layer_shape,
                                  aia171_test_template_shape):
 
     result = match_template_to_layer(aia171_test_map_layer, aia171_test_template)
-    assert_allclose(result.shape[0], aia171_test_map_layer_shape[0] - aia171_test_template_shape[0] + 1, )
-    assert_allclose(result.shape[1], aia171_test_map_layer_shape[1] - aia171_test_template_shape[1] + 1, )
+    assert_allclose(
+        result.shape[0],
+        aia171_test_map_layer_shape[0] - aia171_test_template_shape[0] + 1, )
+    assert_allclose(
+        result.shape[1],
+        aia171_test_map_layer_shape[1] - aia171_test_template_shape[1] + 1, )
     assert_allclose(np.max(result), 1.00, rtol=1e-2, atol=0)
 
 
@@ -113,16 +113,15 @@ def test_get_correlation_shifts():
     # Input array is too big in either direction
     test_array = np.zeros((4, 3))
     y_test, x_test = get_correlation_shifts(test_array)
-    assert(y_test is None)
-    assert(x_test is None)
+    assert (y_test is None)
+    assert (x_test is None)
     test_array = np.zeros((3, 4))
     y_test, x_test = get_correlation_shifts(test_array)
-    assert(y_test is None)
-    assert(x_test is None)
+    assert (y_test is None)
+    assert (x_test is None)
 
 
-def test_find_best_match_location(aia171_test_map_layer, aia171_test_template,
-                                  aia171_test_shift):
+def test_find_best_match_location(aia171_test_map_layer, aia171_test_template, aia171_test_shift):
 
     result = match_template_to_layer(aia171_test_map_layer, aia171_test_template)
     match_location = u.Quantity(find_best_match_location(result))
@@ -130,17 +129,17 @@ def test_find_best_match_location(aia171_test_map_layer, aia171_test_template,
 
 
 def test_lower_clip(aia171_test_clipping):
-    assert(_lower_clip(aia171_test_clipping) == 2.0)
+    assert (_lower_clip(aia171_test_clipping) == 2.0)
     # No element is less than zero
     test_array = np.asarray([1.1, 0.1, 3.0])
-    assert(_lower_clip(test_array) == 0)
+    assert (_lower_clip(test_array) == 0)
 
 
 def test_upper_clip(aia171_test_clipping):
-    assert(_upper_clip(aia171_test_clipping) == 1.0)
+    assert (_upper_clip(aia171_test_clipping) == 1.0)
     # No element is greater than zero
     test_array = np.asarray([-1.1, -0.1, -3.0])
-    assert(_upper_clip(test_array) == 0)
+    assert (_upper_clip(test_array) == 0)
 
 
 def test_calculate_clipping(aia171_test_clipping):
@@ -153,12 +152,13 @@ def test_clip_edges():
     yclip = [4, 0] * u.pix
     xclip = [1, 2] * u.pix
     new_a = clip_edges(a, yclip, xclip)
-    assert(a.shape[0] - (yclip[0].value + yclip[1].value) == new_a.shape[0])
-    assert(a.shape[1] - (xclip[0].value + xclip[1].value) == new_a.shape[1])
+    assert (a.shape[0] - (yclip[0].value + yclip[1].value) == new_a.shape[0])
+    assert (a.shape[1] - (xclip[0].value + xclip[1].value) == new_a.shape[1])
 
 
 def test__default_fmap_function():
-    assert(_default_fmap_function([1, 2, 3]).dtype == np.float64(1).dtype)
+    assert (_default_fmap_function([1, 2, 3]).dtype == np.float64(1).dtype)
+
 
 #
 # The following tests test functions that have mapcubes as inputs
@@ -174,13 +174,14 @@ def aia171_test_mc_pixel_displacements():
 
 @pytest.fixture
 def aia171_mc_arcsec_displacements(aia171_test_mc_pixel_displacements, aia171_test_map):
-    return {'x': np.asarray([0.0, aia171_test_mc_pixel_displacements[1] * aia171_test_map.scale[0].value]) * u.arcsec,
-            'y': np.asarray([0.0, aia171_test_mc_pixel_displacements[0] * aia171_test_map.scale[1].value]) * u.arcsec}
+    return {
+        'x': np.asarray([0.0, aia171_test_mc_pixel_displacements[1] * aia171_test_map.scale[0].value]) * u.arcsec,
+        'y': np.asarray([0.0, aia171_test_mc_pixel_displacements[0] * aia171_test_map.scale[1].value]) * u.arcsec
+    }
 
 
 @pytest.fixture
-def aia171_test_mc(aia171_test_map, aia171_test_map_layer,
-                   aia171_test_mc_pixel_displacements):
+def aia171_test_mc(aia171_test_map, aia171_test_map_layer, aia171_test_mc_pixel_displacements):
     # Create a map that has been shifted a known amount.
     d1 = sp_shift(aia171_test_map_layer, aia171_test_mc_pixel_displacements)
     m1 = map.Map((d1, aia171_test_map.meta))
@@ -188,11 +189,8 @@ def aia171_test_mc(aia171_test_map, aia171_test_map_layer,
     return map.Map([aia171_test_map, m1], cube=True)
 
 
-def test_calculate_match_template_shift(aia171_test_mc,
-                                        aia171_mc_arcsec_displacements,
-                                        aia171_test_map,
-                                        aia171_test_map_layer,
-                                        aia171_test_map_layer_shape):
+def test_calculate_match_template_shift(aia171_test_mc, aia171_mc_arcsec_displacements, aia171_test_map,
+                                        aia171_test_map_layer, aia171_test_map_layer_shape):
     # Define these local variables to make the code more readable
     ny = aia171_test_map_layer_shape[0]
     nx = aia171_test_map_layer_shape[1]
@@ -203,7 +201,7 @@ def test_calculate_match_template_shift(aia171_test_mc,
     assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0)
 
     # Test setting the template as a ndarray
-    template_ndarray = aia171_test_map_layer[ny // 4: 3 * ny // 4, nx // 4: 3 * nx // 4]
+    template_ndarray = aia171_test_map_layer[ny // 4:3 * ny // 4, nx // 4:3 * nx // 4]
     test_displacements = calculate_match_template_shift(aia171_test_mc, template=template_ndarray)
     assert_allclose(test_displacements['x'], aia171_mc_arcsec_displacements['x'], rtol=5e-2, atol=0)
     assert_allclose(test_displacements['y'], aia171_mc_arcsec_displacements['y'], rtol=5e-2, atol=0)
@@ -220,8 +218,7 @@ def test_calculate_match_template_shift(aia171_test_mc,
         dummy_return_value = calculate_match_template_shift(aia171_test_mc, template='broken')
 
 
-def test_mapcube_coalign_by_match_template(aia171_test_mc,
-                                           aia171_test_map_layer_shape):
+def test_mapcube_coalign_by_match_template(aia171_test_mc, aia171_test_map_layer_shape):
     # Define these local variables to make the code more readable
     ny = aia171_test_map_layer_shape[0]
     nx = aia171_test_map_layer_shape[1]
@@ -233,13 +230,13 @@ def test_mapcube_coalign_by_match_template(aia171_test_mc,
     test_mc = mapcube_coalign_by_match_template(aia171_test_mc, shift=test_displacements)
 
     # Make sure the output is a mapcube
-    assert(isinstance(test_mc, map.MapCube))
+    assert (isinstance(test_mc, map.MapCube))
 
     # Test returning with no clipping.  Output layers should have the same size
     # as the original input layer.
     test_mc = mapcube_coalign_by_match_template(aia171_test_mc, clip=False)
-    assert(test_mc[0].data.shape == aia171_test_map_layer_shape)
-    assert(test_mc[1].data.shape == aia171_test_map_layer_shape)
+    assert (test_mc[0].data.shape == aia171_test_map_layer_shape)
+    assert (test_mc[1].data.shape == aia171_test_map_layer_shape)
 
     # Test the returned mapcube using the default - clipping on.
     # All output layers should have the same size
@@ -250,8 +247,8 @@ def test_mapcube_coalign_by_match_template(aia171_test_mc,
     expected_clipping = calculate_clipping(y_displacement_pixels, x_displacement_pixels)
     number_of_pixels_clipped = [np.sum(np.abs(expected_clipping[0])), np.sum(np.abs(expected_clipping[1]))]
 
-    assert(test_mc[0].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
-    assert(test_mc[1].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
+    assert (test_mc[0].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
+    assert (test_mc[1].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
 
     # Test the returned mapcube explicitly using clip=True.
     # All output layers should have the same size
@@ -262,16 +259,18 @@ def test_mapcube_coalign_by_match_template(aia171_test_mc,
     expected_clipping = calculate_clipping(y_displacement_pixels, x_displacement_pixels)
     number_of_pixels_clipped = [np.sum(np.abs(expected_clipping[0])), np.sum(np.abs(expected_clipping[1]))]
 
-    assert(test_mc[0].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
-    assert(test_mc[1].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
+    assert (test_mc[0].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
+    assert (test_mc[1].data.shape == (ny - number_of_pixels_clipped[0].value, nx - number_of_pixels_clipped[1].value))
 
     # Test that the reference pixel of each map in the coaligned mapcube is
     # correct.
     for im, m in enumerate(aia171_test_mc):
         for i_s, s in enumerate(['x', 'y']):
-            assert_allclose(aia171_test_mc[im].reference_pixel[i_s] - test_mc[im].reference_pixel[i_s],
-                            test_displacements[s][im] / m.scale[i_s],
-                            rtol=5e-2, atol=0)
+            assert_allclose(
+                aia171_test_mc[im].reference_pixel[i_s] - test_mc[im].reference_pixel[i_s],
+                test_displacements[s][im] / m.scale[i_s],
+                rtol=5e-2,
+                atol=0)
 
 
 def test_apply_shifts(aia171_test_map):
@@ -280,8 +279,7 @@ def test_apply_shifts(aia171_test_map):
 
     # Pixel displacements have the y-displacement as the first entry
     numerical_displacements = {"x": np.asarray([0.0, -2.7]), "y": np.asarray([0.0, -10.4])}
-    astropy_displacements = {"x": numerical_displacements["x"] * u.pix,
-                             "y": numerical_displacements["y"] * u.pix}
+    astropy_displacements = {"x": numerical_displacements["x"] * u.pix, "y": numerical_displacements["y"] * u.pix}
 
     # Test to see if the code can detect the fact that the input shifts are not
     # astropy quantities
@@ -294,21 +292,21 @@ def test_apply_shifts(aia171_test_map):
 
     # Test returning with no extra options - the code returns a mapcube only
     test_output = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"])
-    assert(isinstance(test_output, map.MapCube))
+    assert (isinstance(test_output, map.MapCube))
 
     # Test returning with no clipping.  Output layers should have the same size
     # as the original input layer.
     test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"], clip=False)
-    assert(test_mc[0].data.shape == aia171_test_map.data.shape)
-    assert(test_mc[1].data.shape == aia171_test_map.data.shape)
+    assert (test_mc[0].data.shape == aia171_test_map.data.shape)
+    assert (test_mc[1].data.shape == aia171_test_map.data.shape)
 
     # Test returning with clipping.  Output layers should be smaller than the
     # original layer by a known amount.
-    test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"],  clip=True)
+    test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"], clip=True)
     for i in range(0, len(test_mc.maps)):
         clipped = calculate_clipping(astropy_displacements["y"], astropy_displacements["x"])
-        assert(test_mc[i].data.shape[0] == mc[i].data.shape[0] - np.max(clipped[0].value))
-        assert(test_mc[i].data.shape[1] == mc[i].data.shape[1] - np.max(clipped[1].value))
+        assert (test_mc[i].data.shape[0] == mc[i].data.shape[0] - np.max(clipped[0].value))
+        assert (test_mc[i].data.shape[1] == mc[i].data.shape[1] - np.max(clipped[1].value))
 
     # Test returning with default clipping.  The default clipping is set to
     # true, that is the mapcube is clipped.  Output layers should be smaller
@@ -316,18 +314,17 @@ def test_apply_shifts(aia171_test_map):
     test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"])
     for i in range(0, len(test_mc.maps)):
         clipped = calculate_clipping(astropy_displacements["y"], astropy_displacements["x"])
-        assert(test_mc[i].data.shape[0] == mc[i].data.shape[0] - np.max(clipped[0].value))
-        assert(test_mc[i].data.shape[1] == mc[i].data.shape[1] - np.max(clipped[1].value))
+        assert (test_mc[i].data.shape[0] == mc[i].data.shape[0] - np.max(clipped[0].value))
+        assert (test_mc[i].data.shape[1] == mc[i].data.shape[1] - np.max(clipped[1].value))
 
     # Test that keywords are correctly passed
     # Test for an individual keyword
-    test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"], clip=False,
-                           cval=np.nan)
-    assert(np.all(np.logical_not(np.isfinite(test_mc[1].data[:, -1]))))
+    test_mc = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"], clip=False, cval=np.nan)
+    assert (np.all(np.logical_not(np.isfinite(test_mc[1].data[:, -1]))))
 
     # Test for a combination of keywords, and that changing the interpolation
     # order and how the edges are treated changes the results.
-    test_mc1 = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"], clip=False,
-                            order=2, mode='reflect')
+    test_mc1 = apply_shifts(
+        mc, astropy_displacements["y"], astropy_displacements["x"], clip=False, order=2, mode='reflect')
     test_mc2 = apply_shifts(mc, astropy_displacements["y"], astropy_displacements["x"], clip=False)
-    assert(np.all(test_mc1[1].data[:, -1] != test_mc2[1].data[:, -1]))
+    assert (np.all(test_mc1[1].data[:, -1] != test_mc2[1].data[:, -1]))

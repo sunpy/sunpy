@@ -64,7 +64,6 @@ class MissingClassMethodDifferentValidationWidget(BaseWidget):
 
 
 class TestBasicRegistrationFactory(object):
-
     def test_default_factory(self):
 
         DefaultFactory = BasicRegistrationFactory()
@@ -74,8 +73,7 @@ class TestBasicRegistrationFactory(object):
 
         DefaultFactory.register(StandardWidget)
         DefaultFactory.register(FancyWidget)
-        DefaultFactory.register(ExternallyValidatedWidget,
-                                validation_function=external_validation_function)
+        DefaultFactory.register(ExternallyValidatedWidget, validation_function=external_validation_function)
 
         assert type(DefaultFactory()) is DefaultWidget
         assert type(DefaultFactory(style='standard')) is StandardWidget

@@ -23,6 +23,7 @@ def createEIT(request):
     """Creates an EITMap from a FITS file."""
     return Map(request.param)
 
+
 # EIT Tests
 
 

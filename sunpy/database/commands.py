@@ -16,9 +16,9 @@ from sunpy.extern import six
 from sunpy.extern.six.moves import range
 
 __all__ = [
-    'EmptyCommandStackError', 'NoSuchEntryError', 'NonRemovableTagError',
-    'DatabaseOperation', 'AddEntry', 'RemoveEntry', 'EditEntry',
-    'CommandManager']
+    'EmptyCommandStackError', 'NoSuchEntryError', 'NonRemovableTagError', 'DatabaseOperation', 'AddEntry',
+    'RemoveEntry', 'EditEntry', 'CommandManager'
+]
 
 
 class EmptyCommandStackError(Exception):
@@ -38,9 +38,8 @@ class NoSuchEntryError(Exception):
         self.database_entry = database_entry
 
     def __str__(self):  # pragma: no cover
-        return (
-            'the database entry {0!r} cannot be removed because it '
-            'is not stored in the database'.format(self.database_entry))
+        return ('the database entry {0!r} cannot be removed because it '
+                'is not stored in the database'.format(self.database_entry))
 
 
 class NonRemovableTagError(Exception):
@@ -143,8 +142,8 @@ class AddEntry(DatabaseOperation):
             make_transient(self.database_entry)
 
     def __repr__(self):
-        return '<{0}(session {1!r}, entry id {2})>'.format(
-            self.__class__.__name__, self.session, self.database_entry.id)
+        return '<{0}(session {1!r}, entry id {2})>'.format(self.__class__.__name__, self.session,
+                                                           self.database_entry.id)
 
 
 class RemoveEntry(DatabaseOperation):
@@ -172,8 +171,7 @@ class RemoveEntry(DatabaseOperation):
         self.session.add(self.entry)
 
     def __repr__(self):
-        return '<{0}(session {1!r}, entry {2!r})>'.format(
-            self.__class__.__name__, self.session, self.entry)
+        return '<{0}(session {1!r}, entry {2!r})>'.format(self.__class__.__name__, self.session, self.entry)
 
 
 class EditEntry(DatabaseOperation):
@@ -204,8 +202,7 @@ class EditEntry(DatabaseOperation):
             setattr(self.database_entry, k, v)
 
     def __repr__(self):
-        return '<EditEntry(kwargs {0!r}, entry id {1})>'.format(
-            self.kwargs, self.database_entry.id)
+        return '<EditEntry(kwargs {0!r}, entry id {1})>'.format(self.kwargs, self.database_entry.id)
 
 
 class AddTag(DatabaseOperation):
@@ -237,8 +234,7 @@ class AddTag(DatabaseOperation):
                 pass
 
     def __repr__(self):
-        return "<AddTag(tag '{0}', session {1!r}, entry id {2})>".format(
-            self.tag, self.session, self.database_entry.id)
+        return "<AddTag(tag '{0}', session {1!r}, entry id {2})>".format(self.tag, self.session, self.database_entry.id)
 
 
 class RemoveTag(DatabaseOperation):
@@ -288,8 +284,8 @@ class RemoveTag(DatabaseOperation):
                 self.database_entry.tags.append(self.tag)
 
     def __repr__(self):
-        return "<RemoveTag(tag '{0}', session {1!r}, entry id {2})>".format(
-            self.tag, self.session, self.database_entry.id)
+        return "<RemoveTag(tag '{0}', session {1!r}, entry id {2})>".format(self.tag, self.session,
+                                                                            self.database_entry.id)
 
 
 class CommandManager(object):

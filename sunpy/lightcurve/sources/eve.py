@@ -162,9 +162,7 @@ class EVELightCurve(LightCurve):
             if hline == '; Format:\n' or hline == '; Column descriptions:\n':
                 continue
             elif ('Created' in hline) or ('Source' in hline):
-                meta[hline.split(':',
-                                 1)[0].replace(';',
-                                               ' ').strip()] = hline.split(':', 1)[1].strip()
+                meta[hline.split(':', 1)[0].replace(';', ' ').strip()] = hline.split(':', 1)[1].strip()
             elif ':' in hline:
                 meta[hline.split(':')[0].replace(';', ' ').strip()] = hline.split(':')[1].strip()
 
@@ -183,13 +181,15 @@ class EVELightCurve(LightCurve):
         year = int(date_parts[0])
         month = int(date_parts[2])
         day = int(date_parts[3])
+
         #last_pos = fp.tell()
         #line = fp.readline()
         #el = line.split()
         # len
 
         # function to parse date column (HHMM)
-        def parser(x): return datetime(year, month, day, int(x[0:2]), int(x[2:4]))
+        def parser(x):
+            return datetime(year, month, day, int(x[0:2]), int(x[2:4]))
 
         data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, header=None, engine='python')
         if is_missing_data:  # If missing data specified in header

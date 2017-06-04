@@ -39,8 +39,6 @@ PixelPair = namedtuple('PixelPair', 'x y')
 SpatialPair = namedtuple('SpatialPair', 'axis1 axis2')
 
 __all__ = ['GenericMap']
-
-
 """
 Questions
 ---------
@@ -182,23 +180,16 @@ class GenericMap(NDData):
             norm = colors.Normalize()
 
         # Visualization attributes
-        self.plot_settings = {'cmap': cm.gray,
-                              'norm': norm,
-                              'interpolation': 'nearest',
-                              'origin': 'lower'
-                              }
+        self.plot_settings = {'cmap': cm.gray, 'norm': norm, 'interpolation': 'nearest', 'origin': 'lower'}
         if plot_settings:
             self.plot_settings.update(plot_settings)
 
     def __getitem__(self, key):
         """ This should allow indexing by physical coordinate """
-        raise NotImplementedError(
-            "The ability to index Map by physical"
-            " coordinate is not yet implemented.")
+        raise NotImplementedError("The ability to index Map by physical" " coordinate is not yet implemented.")
 
     def __repr__(self):
-        return (
-            """SunPy Map
+        return ("""SunPy Map
 ---------
 Observatory:\t\t {obs}
 Instrument:\t\t {inst}
@@ -213,16 +204,19 @@ Scale:\t\t\t {scale}
 Reference Pixel:\t {refpix}
 Reference Coord:\t {refcoord}
 
-""".format(obs=self.observatory, inst=self.instrument, det=self.detector,
-                meas=self.measurement, wave=self.wavelength, date=self.date,
-                dt=self.exposure_time,
-                dim=u.Quantity(self.dimensions),
-                scale=u.Quantity(self.scale),
-                coord=self.coordinate_frame,
-                refpix=u.Quantity(self.reference_pixel),
-                refcoord=u.Quantity((self.reference_coordinate.data.lon,
-                                     self.reference_coordinate.data.lat)),
-                tmf=TIME_FORMAT) + self.data.__repr__())
+""".format(obs=self.observatory,
+           inst=self.instrument,
+           det=self.detector,
+           meas=self.measurement,
+           wave=self.wavelength,
+           date=self.date,
+           dt=self.exposure_time,
+           dim=u.Quantity(self.dimensions),
+           scale=u.Quantity(self.scale),
+           coord=self.coordinate_frame,
+           refpix=u.Quantity(self.reference_pixel),
+           refcoord=u.Quantity((self.reference_coordinate.data.lon, self.reference_coordinate.data.lat)),
+           tmf=TIME_FORMAT) + self.data.__repr__())
 
     @classmethod
     def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
@@ -356,9 +350,8 @@ Reference Coord:\t {refcoord}
 
     def _base_name(self):
         """Abstract the shared bit between name and latex_name"""
-        return "{nickname} {{measurement}} {date:{tmf}}".format(nickname=self.nickname,
-                                                                date=parse_time(self.date),
-                                                                tmf=TIME_FORMAT)
+        return "{nickname} {{measurement}} {date:{tmf}}".format(
+            nickname=self.nickname, date=parse_time(self.date), tmf=TIME_FORMAT)
 
     @property
     def name(self):
@@ -389,9 +382,7 @@ Reference Coord:\t {refcoord}
         time = parse_time(self.meta.get('date-obs', 'now'))
         if time is None:
             warnings.warn_explicit("Missing metadata for observation time."
-                                   " Using current time.",
-                                   Warning, __file__,
-                                   inspect.currentframe().f_back.f_lineno)
+                                   " Using current time.", Warning, __file__, inspect.currentframe().f_back.f_lineno)
         return parse_time(time)
 
     @property
@@ -406,8 +397,7 @@ Reference Coord:\t {refcoord}
 
         if dsun is None:
             warnings.warn_explicit("Missing metadata for Sun-spacecraft"
-                                   " separation: assuming Sun-Earth distance",
-                                   Warning, __file__,
+                                   " separation: assuming Sun-Earth distance", Warning, __file__,
                                    inspect.currentframe().f_back.f_lineno)
             dsun = sun.sunearth_distance(self.date).to(u.m)
 
@@ -426,20 +416,17 @@ Reference Coord:\t {refcoord}
     @property
     def measurement(self):
         """Measurement name, defaults to the wavelength of image"""
-        return u.Quantity(self.meta.get('wavelnth', 0),
-                          self.meta.get('waveunit', ""))
+        return u.Quantity(self.meta.get('wavelnth', 0), self.meta.get('waveunit', ""))
 
     @property
     def wavelength(self):
         """wavelength of the observation"""
-        return u.Quantity(self.meta.get('wavelnth', 0),
-                          self.meta.get('waveunit', ""))
+        return u.Quantity(self.meta.get('wavelnth', 0), self.meta.get('waveunit', ""))
 
     @property
     def observatory(self):
         """Observatory or Telescope name"""
-        return self.meta.get('obsrvtry',
-                             self.meta.get('telescop', "")).replace("_", " ")
+        return self.meta.get('obsrvtry', self.meta.get('telescop', "")).replace("_", " ")
 
     @property
     @deprecated("0.8", "This property is only valid for non-rotated WCS")
@@ -510,16 +497,13 @@ Reference Coord:\t {refcoord}
         new_meta = self.meta.copy()
 
         # Update crvals
-        new_meta['crval1'] = ((self.meta['crval1'] *
-                               self.spatial_units[0] + axis1).to(self.spatial_units[0])).value
-        new_meta['crval2'] = ((self.meta['crval2'] *
-                               self.spatial_units[1] + axis2).to(self.spatial_units[1])).value
+        new_meta['crval1'] = ((self.meta['crval1'] * self.spatial_units[0] + axis1).to(self.spatial_units[0])).value
+        new_meta['crval2'] = ((self.meta['crval2'] * self.spatial_units[1] + axis2).to(self.spatial_units[1])).value
 
         # Create new map with the modification
         new_map = self._new_instance(self.data, new_meta, self.plot_settings)
 
-        new_map._shift = SpatialPair(self.shifted_value[0] + axis1,
-                                     self.shifted_value[1] + axis2)
+        new_map._shift = SpatialPair(self.shifted_value[0] + axis1, self.shifted_value[1] + axis2)
 
         return new_map
 
@@ -531,15 +515,11 @@ Reference Coord:\t {refcoord}
     @property
     def rsun_obs(self):
         """Radius of the Sun."""
-        rsun_arcseconds = self.meta.get('rsun_obs',
-                                        self.meta.get('solar_r',
-                                                      self.meta.get('radius',
-                                                                    None)))
+        rsun_arcseconds = self.meta.get('rsun_obs', self.meta.get('solar_r', self.meta.get('radius', None)))
 
         if rsun_arcseconds is None:
             warnings.warn_explicit("Missing metadata for solar radius:"
-                                   " assuming photospheric limb as seen from Earth",
-                                   Warning, __file__,
+                                   " assuming photospheric limb as seen from Earth", Warning, __file__,
                                    inspect.currentframe().f_back.f_lineno)
             rsun_arcseconds = sun.solar_semidiameter_angular_size(self.date).to('arcsec').value
 
@@ -548,8 +528,7 @@ Reference Coord:\t {refcoord}
     @property
     def coordinate_system(self):
         """Coordinate system used for x and y axes (ctype1/2)"""
-        return SpatialPair(self.meta.get('ctype1', 'HPLN-TAN'),
-                           self.meta.get('ctype2', 'HPLT-TAN'))
+        return SpatialPair(self.meta.get('ctype1', 'HPLN-TAN'), self.meta.get('ctype2', 'HPLT-TAN'))
 
     @property
     def carrington_longitude(self):
@@ -558,8 +537,7 @@ Reference Coord:\t {refcoord}
 
         if carrington_longitude is None:
             warnings.warn_explicit("Missing metadata for Carrington longitude:"
-                                   " assuming Earth-based observer",
-                                   Warning, __file__,
+                                   " assuming Earth-based observer", Warning, __file__,
                                    inspect.currentframe().f_back.f_lineno)
             carrington_longitude = (sun.heliographic_solar_center(self.date))[0]
 
@@ -571,14 +549,11 @@ Reference Coord:\t {refcoord}
     @property
     def heliographic_latitude(self):
         """Heliographic latitude"""
-        heliographic_latitude = self.meta.get('hglt_obs',
-                                              self.meta.get('crlt_obs',
-                                                            self.meta.get('solar_b0', None)))
+        heliographic_latitude = self.meta.get('hglt_obs', self.meta.get('crlt_obs', self.meta.get('solar_b0', None)))
 
         if heliographic_latitude is None:
             warnings.warn_explicit("Missing metadata for heliographic latitude:"
-                                   " assuming Earth-based observer",
-                                   Warning, __file__,
+                                   " assuming Earth-based observer", Warning, __file__,
                                    inspect.currentframe().f_back.f_lineno)
             heliographic_latitude = (sun.heliographic_solar_center(self.date))[1]
 
@@ -602,10 +577,11 @@ Reference Coord:\t {refcoord}
         """
         The Heliographic Stonyhurst Coordinate of the observer.
         """
-        return SkyCoord(lat=self.heliographic_latitude,
-                        lon=self.heliographic_longitude,
-                        radius=self.dsun,
-                        frame='heliographic_stonyhurst')
+        return SkyCoord(
+            lat=self.heliographic_latitude,
+            lon=self.heliographic_longitude,
+            radius=self.dsun,
+            frame='heliographic_stonyhurst')
 
     @property
     def _reference_longitude(self):
@@ -623,17 +599,14 @@ Reference Coord:\t {refcoord}
     def reference_coordinate(self):
         """Reference point WCS axes in data units (i.e. crval1, crval2). This value
         includes a shift if one is set."""
-        return SkyCoord(self._reference_longitude,
-                        self._reference_latitude,
-                        frame=self.coordinate_frame)
+        return SkyCoord(self._reference_longitude, self._reference_latitude, frame=self.coordinate_frame)
 
     @property
     def reference_pixel(self):
         """Reference point axes in pixels (i.e. crpix1, crpix2)"""
-        return PixelPair(self.meta.get('crpix1',
-                                       (self.meta.get('naxis1') + 1) / 2.) * u.pixel,
-                         self.meta.get('crpix2',
-                                       (self.meta.get('naxis2') + 1) / 2.) * u.pixel)
+        return PixelPair(
+            self.meta.get('crpix1', (self.meta.get('naxis1') + 1) / 2.) * u.pixel,
+            self.meta.get('crpix2', (self.meta.get('naxis2') + 1) / 2.) * u.pixel)
 
     @property
     def scale(self):
@@ -641,16 +614,16 @@ Reference Coord:\t {refcoord}
         Image scale along the x and y axes in units/pixel (i.e. cdelt1, cdelt2)
         """
         # TODO: Fix this if only CDi_j matrix is provided
-        return SpatialPair(self.meta.get('cdelt1', 1.) * self.spatial_units[0] / u.pixel,
-                           self.meta.get('cdelt2', 1.) * self.spatial_units[1] / u.pixel)
+        return SpatialPair(
+            self.meta.get('cdelt1', 1.) * self.spatial_units[0] / u.pixel,
+            self.meta.get('cdelt2', 1.) * self.spatial_units[1] / u.pixel)
 
     @property
     def spatial_units(self):
         """
         Image coordinate units along the x and y axes (i.e. cunit1, cunit2).
         """
-        return SpatialPair(u.Unit(self.meta.get('cunit1', 'arcsec')),
-                           u.Unit(self.meta.get('cunit2', 'arcsec')))
+        return SpatialPair(u.Unit(self.meta.get('cunit1', 'arcsec')), u.Unit(self.meta.get('cunit2', 'arcsec')))
 
     @property
     def rotation_matrix(self):
@@ -659,12 +632,10 @@ Reference Coord:\t {refcoord}
         the top of the image.
         """
         if 'PC1_1' in self.meta:
-            return np.matrix([[self.meta['PC1_1'], self.meta['PC1_2']],
-                              [self.meta['PC2_1'], self.meta['PC2_2']]])
+            return np.matrix([[self.meta['PC1_1'], self.meta['PC1_2']], [self.meta['PC2_1'], self.meta['PC2_2']]])
 
         elif 'CD1_1' in self.meta:
-            cd = np.matrix([[self.meta['CD1_1'], self.meta['CD1_2']],
-                            [self.meta['CD2_1'], self.meta['CD2_2']]])
+            cd = np.matrix([[self.meta['CD1_1'], self.meta['CD1_2']], [self.meta['CD2_1'], self.meta['CD2_2']]])
 
             cdelt = u.Quantity(self.scale).value
 
@@ -683,8 +654,7 @@ Reference Coord:\t {refcoord}
         lam = self.scale[0] / self.scale[1]
         p = np.deg2rad(self.meta.get('CROTA2', 0))
 
-        return np.matrix([[np.cos(p), -1 * lam * np.sin(p)],
-                          [1 / lam * np.sin(p), np.cos(p)]])
+        return np.matrix([[np.cos(p), -1 * lam * np.sin(p)], [1 / lam * np.sin(p), np.cos(p)]])
 
 # #### Miscellaneous #### #
 
@@ -719,8 +689,7 @@ Reference Coord:\t {refcoord}
 
     def _get_cmap_name(self):
         """Build the default color map name."""
-        cmap_string = (self.observatory + self.meta['detector'] +
-                       str(int(self.wavelength.to('angstrom').value)))
+        cmap_string = (self.observatory + self.meta['detector'] + str(int(self.wavelength.to('angstrom').value)))
         return cmap_string.lower()
 
     def _validate_meta(self):
@@ -739,21 +708,19 @@ Reference Coord:\t {refcoord}
 
         for meta_property in ('cunit1', 'cunit2', 'waveunit'):
             if (self.meta.get(meta_property) and
-                u.Unit(self.meta.get(meta_property),
-                       parse_strict='silent').physical_type == 'unknown'):
+                    u.Unit(self.meta.get(meta_property), parse_strict='silent').physical_type == 'unknown'):
 
-                warnings.warn("Unknown value for " + meta_property.upper(),
-                              Warning)
+                warnings.warn("Unknown value for " + meta_property.upper(), Warning)
 
-        if (self.coordinate_system[0].startswith(('SOLX', 'SOLY')) or
-                self.coordinate_system[1].startswith(('SOLX', 'SOLY'))):
+        if (self.coordinate_system[0].startswith(('SOLX', 'SOLY')) or self.coordinate_system[1].startswith(
+            ('SOLX', 'SOLY'))):
 
             warnings.warn("SunPy Map currently does not support three dimensional data,"
                           " and therefore can not represent heliocentric coordinates. "
                           "Creating a map in this frame will almost certainly result in errors.")
 
-
 # #### Data conversion routines #### #
+
     def data_to_pixel(self, coordinate, origin=0):
         """
         Convert a data (world) coordinate to a pixel coordinate by using
@@ -778,8 +745,7 @@ Reference Coord:\t {refcoord}
         y : `~astropy.units.Quantity`
             Pixel coordinate on the CTYPE2 axis.
         """
-        if not isinstance(coordinate, (SkyCoord,
-                                       astropy.coordinates.BaseCoordinateFrame)):
+        if not isinstance(coordinate, (SkyCoord, astropy.coordinates.BaseCoordinateFrame)):
             raise ValueError("data_to_pixel takes a Astropy coordinate frame or SkyCoord instance.")
 
         native_frame = coordinate.transform_to(self.coordinate_frame)
@@ -828,7 +794,6 @@ Reference Coord:\t {refcoord}
 
         return SkyCoord(x, y, frame=self.coordinate_frame)
 
-
 # #### I/O routines #### #
 
     def save(self, filepath, filetype='auto', **kwargs):
@@ -845,8 +810,7 @@ Reference Coord:\t {refcoord}
         filetype : str
             'auto' or any supported file extension
         """
-        io.write_file(filepath, self.data, self.meta, filetype=filetype,
-                      **kwargs)
+        io.write_file(filepath, self.data, self.meta, filetype=filetype, **kwargs)
 
 # #### Image processing routines #### #
 
@@ -891,8 +855,7 @@ Reference Coord:\t {refcoord}
         #   coordinates in a Map are at pixel centers
 
         # Make a copy of the original data and perform resample
-        new_data = sunpy_image_resample(self.data.copy().T, dimensions,
-                                        method, center=True)
+        new_data = sunpy_image_resample(self.data.copy().T, dimensions, method, center=True)
         new_data = new_data.T
 
         scale_factor_x = float(self.dimensions[0] / dimensions[0])
@@ -919,8 +882,7 @@ Reference Coord:\t {refcoord}
         new_map = self._new_instance(new_data, new_meta, self.plot_settings)
         return new_map
 
-    def rotate(self, angle=None, rmatrix=None, order=4, scale=1.0,
-               recenter=False, missing=0.0, use_scipy=False):
+    def rotate(self, angle=None, rmatrix=None, order=4, scale=1.0, recenter=False, missing=0.0, use_scipy=False):
         """
         Returns a new rotated and rescaled map.
 
@@ -997,8 +959,7 @@ Reference Coord:\t {refcoord}
                 if not equivalent:
                     raise u.UnitsError("Argument '{0}' to function '{1}'"
                                        " must be in units convertable to"
-                                       " '{2}'.".format('angle', 'rotate',
-                                                        u.deg.to_string()))
+                                       " '{2}'.".format('angle', 'rotate', u.deg.to_string()))
 
             # Either there is no .unit or no .is_equivalent
             except AttributeError:
@@ -1007,8 +968,8 @@ Reference Coord:\t {refcoord}
                 else:
                     error_msg = "no 'unit' attribute"
                 raise TypeError("Argument '{0}' to function '{1}' has {2}. "
-                                "You may want to pass in an astropy Quantity instead."
-                                .format('angle', 'rotate', error_msg))
+                                "You may want to pass in an astropy Quantity instead.".format(
+                                    'angle', 'rotate', error_msg))
 
         # Interpolation parameter sanity
         if order not in range(6):
@@ -1028,8 +989,7 @@ Reference Coord:\t {refcoord}
             rmatrix = np.matrix([[c, -s], [s, c]])
 
         # Calculate the shape in pixels to contain all of the image data
-        extent = np.max(np.abs(np.vstack((self.data.shape * rmatrix,
-                                          self.data.shape * rmatrix.T))), axis=0)
+        extent = np.max(np.abs(np.vstack((self.data.shape * rmatrix, self.data.shape * rmatrix.T))), axis=0)
 
         # Calculate the needed padding or unpadding
         diff = np.asarray(np.ceil((extent - self.data.shape) / 2), dtype=int).ravel()
@@ -1037,10 +997,8 @@ Reference Coord:\t {refcoord}
         pad_x = int(np.max((diff[1], 0)))
         pad_y = int(np.max((diff[0], 0)))
 
-        new_data = np.pad(self.data,
-                          ((pad_y, pad_y), (pad_x, pad_x)),
-                          mode='constant',
-                          constant_values=(missing, missing))
+        new_data = np.pad(
+            self.data, ((pad_y, pad_y), (pad_x, pad_x)), mode='constant', constant_values=(missing, missing))
         new_meta['crpix1'] += pad_x
         new_meta['crpix2'] += pad_y
 
@@ -1052,8 +1010,7 @@ Reference Coord:\t {refcoord}
         temp_map = self._new_instance(new_data, new_meta, self.plot_settings)
 
         # Convert the axis of rotation from data coordinates to pixel coordinates
-        pixel_rotation_center = u.Quantity(temp_map.data_to_pixel(self.reference_coordinate,
-                                                                  origin=0)).value
+        pixel_rotation_center = u.Quantity(temp_map.data_to_pixel(self.reference_coordinate, origin=0)).value
         del temp_map
 
         if recenter:
@@ -1062,19 +1019,21 @@ Reference Coord:\t {refcoord}
             pixel_center = pixel_array_center
 
         # Apply the rotation to the image data
-        new_data = affine_transform(new_data.T,
-                                    np.asarray(rmatrix),
-                                    order=order, scale=scale,
-                                    image_center=np.flipud(pixel_center),
-                                    recenter=recenter, missing=missing,
-                                    use_scipy=use_scipy).T
+        new_data = affine_transform(
+            new_data.T,
+            np.asarray(rmatrix),
+            order=order,
+            scale=scale,
+            image_center=np.flipud(pixel_center),
+            recenter=recenter,
+            missing=missing,
+            use_scipy=use_scipy).T
 
         if recenter:
             new_reference_pixel = pixel_array_center
         else:
             # Calculate new pixel coordinates for the rotation center
-            new_reference_pixel = pixel_center + np.dot(rmatrix,
-                                                        pixel_rotation_center - pixel_center)
+            new_reference_pixel = pixel_center + np.dot(rmatrix, pixel_rotation_center - pixel_center)
             new_reference_pixel = np.array(new_reference_pixel).ravel()
 
         # Define the new reference_pixel
@@ -1205,8 +1164,7 @@ Reference Coord:\t {refcoord}
 
         """
 
-        if isinstance(bottom_left, (astropy.coordinates.SkyCoord,
-                                    astropy.coordinates.BaseCoordinateFrame)):
+        if isinstance(bottom_left, (astropy.coordinates.SkyCoord, astropy.coordinates.BaseCoordinateFrame)):
             if not top_right:
                 if bottom_left.shape[0] != 2:
                     raise ValueError("If top_right is not specified bottom_left must have length two.")
@@ -1328,12 +1286,11 @@ Reference Coord:\t {refcoord}
         # Make a copy of the original data, perform reshaping, and apply the
         # function.
         if self.mask is not None:
-            reshaped = reshape_image_to_4d_superpixel(np.ma.array(self.data.copy(), mask=self.mask),
-                                                      [dimensions.value[1], dimensions.value[0]],
-                                                      [offset.value[1], offset.value[0]])
+            reshaped = reshape_image_to_4d_superpixel(
+                np.ma.array(self.data.copy(), mask=self.mask), [dimensions.value[1], dimensions.value[0]],
+                [offset.value[1], offset.value[0]])
         else:
-            reshaped = reshape_image_to_4d_superpixel(self.data.copy(),
-                                                      [dimensions.value[1], dimensions.value[0]],
+            reshaped = reshape_image_to_4d_superpixel(self.data.copy(), [dimensions.value[1], dimensions.value[0]],
                                                       [offset.value[1], offset.value[0]])
         new_array = func(func(reshaped, axis=3), axis=1)
 
@@ -1356,10 +1313,10 @@ Reference Coord:\t {refcoord}
         new_meta['crpix1'] = (new_nx + 1) / 2.
         new_meta['crpix2'] = (new_ny + 1) / 2.
         lon, lat = self._get_lon_lat(self.center.frame)
-        new_meta['crval1'] = lon.to(self.spatial_units[0]).value + 0.5 * (offset[0]
-                                                                          * self.scale[0]).to(self.spatial_units[0]).value
-        new_meta['crval2'] = lat.to(self.spatial_units[1]).value + 0.5 * (offset[1]
-                                                                          * self.scale[1]).to(self.spatial_units[1]).value
+        new_meta['crval1'] = lon.to(self.spatial_units[0]).value + 0.5 * (
+            offset[0] * self.scale[0]).to(self.spatial_units[0]).value
+        new_meta['crval2'] = lat.to(self.spatial_units[1]).value + 0.5 * (
+            offset[1] * self.scale[1]).to(self.spatial_units[1]).value
 
         # Create new map instance
         if self.mask is not None:
@@ -1403,8 +1360,7 @@ Reference Coord:\t {refcoord}
             axes = wcsaxes_compat.gca_wcs(self.wcs)
         if not wcsaxes_compat.is_wcsaxes(axes):
             raise TypeError("Overlay grids can only be plotted on WCSAxes plots.")
-        return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
-                                                           grid_spacing=grid_spacing)
+        return wcsaxes_compat.wcsaxes_heliographic_overlay(axes, grid_spacing=grid_spacing)
 
     def draw_limb(self, axes=None, **kwargs):
         """
@@ -1436,12 +1392,7 @@ Reference Coord:\t {refcoord}
             radius = self.rsun_obs.to(u.deg).value
         else:
             radius = self.rsun_obs.value
-        c_kw = {'radius': radius,
-                'fill': False,
-                'color': 'white',
-                'zorder': 100,
-                'transform': transform
-                }
+        c_kw = {'radius': radius, 'fill': False, 'color': 'white', 'zorder': 100, 'transform': transform}
         c_kw.update(kwargs)
 
         circ = patches.Circle([0, 0], **c_kw)
@@ -1494,15 +1445,12 @@ Reference Coord:\t {refcoord}
             axes_unit = self.spatial_units[0]
 
         coord = bottom_left.transform_to(self.coordinate_frame)
-        bottom_left = u.Quantity((coord.data.lon, coord.data.lat),
-                                 unit=axes_unit).value
+        bottom_left = u.Quantity((coord.data.lon, coord.data.lat), unit=axes_unit).value
 
         width = width.to(axes_unit).value
         height = height.to(axes_unit).value
 
-        kwergs = {'transform': wcsaxes_compat.get_world_transform(axes),
-                  'color': 'white',
-                  'fill': False}
+        kwergs = {'transform': wcsaxes_compat.get_world_transform(axes), 'color': 'white', 'fill': False}
         kwergs.update(kwargs)
 
         rect = plt.Rectangle(bottom_left, width, height, **kwergs)
@@ -1547,13 +1495,11 @@ Reference Coord:\t {refcoord}
         # TODO: allow for use of direct input of contours but requires units of
         # map flux which is not yet implemented
 
-        cs = axes.contour(self.data, 0.01 * levels.to('percent').value * self.data.max(),
-                          **contour_args)
+        cs = axes.contour(self.data, 0.01 * levels.to('percent').value * self.data.max(), **contour_args)
         return cs
 
     @toggle_pylab
-    def peek(self, draw_limb=False, draw_grid=False,
-             colorbar=True, basic_plot=False, **matplot_args):
+    def peek(self, draw_limb=False, draw_grid=False, colorbar=True, basic_plot=False, **matplot_args):
         """Displays the map in a new figure
 
         Parameters
@@ -1653,13 +1599,11 @@ Reference Coord:\t {refcoord}
             # Check that the image is properly oriented
             if (not wcsaxes_compat.is_wcsaxes(axes) and
                     not np.array_equal(self.rotation_matrix, np.matrix(np.identity(2)))):
-                warnings.warn("This map is not properly oriented. Plot axes may be incorrect",
-                              Warning)
+                warnings.warn("This map is not properly oriented. Plot axes may be incorrect", Warning)
 
             elif not wcsaxes_compat.is_wcsaxes(axes):
                 warnings.warn("WCSAxes not being used as the axes object for this plot."
-                              " Plots may have expected behaviour",
-                              Warning)
+                              " Plots may have expected behaviour", Warning)
 
         # Normal plot
         imshow_args = deepcopy(self.plot_settings)
@@ -1675,10 +1619,8 @@ Reference Coord:\t {refcoord}
             if title:
                 axes.set_title(title)
 
-            axes.set_xlabel(axis_labels_from_ctype(self.coordinate_system[0],
-                                                   self.spatial_units[0]))
-            axes.set_ylabel(axis_labels_from_ctype(self.coordinate_system[1],
-                                                   self.spatial_units[1]))
+            axes.set_xlabel(axis_labels_from_ctype(self.coordinate_system[0], self.spatial_units[0]))
+            axes.set_ylabel(axis_labels_from_ctype(self.coordinate_system[1], self.spatial_units[1]))
 
         if not wcsaxes_compat.is_wcsaxes(axes):
             bl = self._get_lon_lat(self.bottom_left_coord)
@@ -1694,8 +1636,7 @@ Reference Coord:\t {refcoord}
             ret = axes.imshow(np.ma.array(np.asarray(self.data), mask=self.mask), **imshow_args)
 
         if wcsaxes_compat.is_wcsaxes(axes):
-            wcsaxes_compat.default_wcs_grid(axes, units=self.spatial_units,
-                                            ctypes=self.coordinate_system)
+            wcsaxes_compat.default_wcs_grid(axes, units=self.spatial_units, ctypes=self.coordinate_system)
 
         # Set current image (makes colorbar work)
         plt.sca(axes)

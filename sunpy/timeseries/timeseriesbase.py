@@ -32,11 +32,9 @@ u.add_enabled_units([det])
 
 TIME_FORMAT = config.get("general", "time_format")
 
-
 # pylint: disable=E1101,E1121,W0404,W0612,W0613
 __authors__ = ["Alex Hamilton"]
 __email__ = "####"
-
 
 # GenericTimeSeries subclass registry.
 TIMESERIES_CLASSES = OrderedDict()
@@ -136,7 +134,7 @@ class GenericTimeSeries:
         # self._validate_meta()
         # self._validate_units()
 
-# #### Attribute definitions #### #
+        # #### Attribute definitions #### #
 
     @property
     def source(self):
@@ -238,9 +236,7 @@ class GenericTimeSeries:
             A new time series in ascending chronological order.
         """
         return GenericTimeSeries(
-            self.data.sort_index(**kwargs),
-            TimeSeriesMetaData(copy.copy(self.meta.metadata)),
-            copy.copy(self.units))
+            self.data.sort_index(**kwargs), TimeSeriesMetaData(copy.copy(self.meta.metadata)), copy.copy(self.units))
 
     def truncate(self, a, b=None, int=None):
         """Returns a truncated version of the TimeSeries object.
@@ -318,8 +314,8 @@ class GenericTimeSeries:
         data = self.data[[column_name]].dropna()
 
         # Build generic TimeSeries object and sanatise metadata and units.
-        object = GenericTimeSeries(data.sort_index(), TimeSeriesMetaData(
-            copy.copy(self.meta.metadata)), copy.copy(self.units))
+        object = GenericTimeSeries(data.sort_index(),
+                                   TimeSeriesMetaData(copy.copy(self.meta.metadata)), copy.copy(self.units))
         object._sanitize_metadata()
         object._sanitize_units()
         return object
@@ -460,8 +456,7 @@ class GenericTimeSeries:
         #
         for meta_property in ('cunit1', 'cunit2', 'waveunit'):
             if (self.meta.get(meta_property) and
-                u.Unit(self.meta.get(meta_property),
-                       parse_strict='silent').physical_type == 'unknown'):
+                    u.Unit(self.meta.get(meta_property), parse_strict='silent').physical_type == 'unknown'):
 
                 warnings.warn("Unknown value for " + meta_property.upper(), Warning)
 

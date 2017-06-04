@@ -41,10 +41,7 @@ class TTYProgressBar(object):
         """
         Draw empty bar to output.
         """
-        self.output.write(
-            self.LEFT_BORDER + " " * (len(self.SYMBOL) * self.width) +
-            self.RIGHT_BORDER
-        )
+        self.output.write(self.LEFT_BORDER + " " * (len(self.SYMBOL) * self.width) + self.RIGHT_BORDER)
         self.output.flush()
         self.output.write("\b" * (self.width + len(self.RIGHT_BORDER)))
 

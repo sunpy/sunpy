@@ -72,10 +72,8 @@ class GOESLightCurve(LightCurve):
 
         dates = matplotlib.dates.date2num(parse_time(self.data.index))
 
-        axes.plot_date(dates, self.data['xrsa'], '-',
-                       label='0.5--4.0 $\AA$', color='blue', lw=2)
-        axes.plot_date(dates, self.data['xrsb'], '-',
-                       label='1.0--8.0 $\AA$', color='red', lw=2)
+        axes.plot_date(dates, self.data['xrsa'], '-', label='0.5--4.0 $\AA$', color='blue', lw=2)
+        axes.plot_date(dates, self.data['xrsb'], '-', label='1.0--8.0 $\AA$', color='red', lw=2)
 
         axes.set_yscale("log")
         axes.set_ylim(1e-9, 1e-2)
@@ -110,8 +108,7 @@ class GOESLightCurve(LightCurve):
         time_range = TimeRange(datetime.datetime(now.year, now.month, now.day), now)
         url_does_exist = net.url_exists(cls._get_url_for_date_range(time_range))
         while not url_does_exist:
-            time_range = TimeRange(time_range.start - datetime.timedelta(days=1),
-                                   time_range.start)
+            time_range = TimeRange(time_range.start - datetime.timedelta(days=1), time_range.start)
             url_does_exist = net.url_exists(cls._get_url_for_date_range(time_range))
         return cls._get_url_for_date_range(time_range)
 
@@ -120,25 +117,18 @@ class GOESLightCurve(LightCurve):
         """Parses the query time to determine which GOES satellite to use."""
 
         goes_operational = {
-            2: TimeRange('1980-01-04', '1983-05-01'),
-            5: TimeRange('1983-05-02', '1984-08-01'),
-            6: TimeRange('1983-06-01', '1994-08-19'),
-            7: TimeRange('1994-01-01', '1996-08-14'),
-            8: TimeRange('1996-03-21', '2003-06-19'),
-            9: TimeRange('1997-01-01', '1998-09-09'),
-            10: TimeRange('1998-07-10', '2009-12-02'),
-            11: TimeRange('2006-06-20', '2008-02-16'),
-            12: TimeRange('2002-12-13', '2007-05-09'),
-            13: TimeRange('2006-08-01', '2006-08-01'),
-            14: TimeRange('2009-12-02', '2010-11-05'),
-            15: TimeRange('2010-09-01', datetime.datetime.utcnow())}
+            2: TimeRange('1980-01-04', '1983-05-01'), 5: TimeRange('1983-05-02', '1984-08-01'), 6: TimeRange(
+                '1983-06-01', '1994-08-19'), 7: TimeRange('1994-01-01', '1996-08-14'), 8: TimeRange(
+                    '1996-03-21', '2003-06-19'), 9: TimeRange('1997-01-01', '1998-09-09'), 10: TimeRange(
+                        '1998-07-10', '2009-12-02'), 11: TimeRange('2006-06-20', '2008-02-16'), 12: TimeRange(
+                            '2002-12-13', '2007-05-09'), 13: TimeRange('2006-08-01', '2006-08-01'), 14: TimeRange(
+                                '2009-12-02', '2010-11-05'), 15: TimeRange('2010-09-01', datetime.datetime.utcnow())
+        }
 
         sat_list = []
         for sat_num in goes_operational:
-            if ((start >= goes_operational[sat_num].start and
-                 start <= goes_operational[sat_num].end and
-                 (end >= goes_operational[sat_num].start and
-                  end <= goes_operational[sat_num].end))):
+            if ((start >= goes_operational[sat_num].start and start <= goes_operational[sat_num].end and
+                 (end >= goes_operational[sat_num].start and end <= goes_operational[sat_num].end))):
                 # if true then the satellite with sat_num is available
                 sat_list.append(sat_num)
 
@@ -178,11 +168,9 @@ class GOESLightCurve(LightCurve):
         base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
 
         if start < parse_time('1999/01/15'):
-            url = base_url + "{date:%Y}/go{sat:02d}{date:%y%m%d}.fits".format(
-                date=start, sat=sat_num[0])
+            url = base_url + "{date:%Y}/go{sat:02d}{date:%y%m%d}.fits".format(date=start, sat=sat_num[0])
         else:
-            url = base_url + "{date:%Y}/go{sat:02d}{date:%Y%m%d}.fits".format(
-                date=start, sat=sat_num[0])
+            url = base_url + "{date:%Y}/go{sat:02d}{date:%Y%m%d}.fits".format(date=start, sat=sat_num[0])
         return url
 
     @staticmethod
@@ -209,8 +197,10 @@ class GOESLightCurve(LightCurve):
         else:
             raise ValueError("Don't know how to parse this file")
 
-        times = [start_time + datetime.timedelta(seconds=int(floor(s)),
-                                                 microseconds=int((s - floor(s)) * 1e6)) for s in seconds_from_start]
+        times = [
+            start_time + datetime.timedelta(seconds=int(floor(s)), microseconds=int((s - floor(s)) * 1e6))
+            for s in seconds_from_start
+        ]
 
         # remove bad values as defined in header comments
         xrsb[xrsb == -99999] = nan

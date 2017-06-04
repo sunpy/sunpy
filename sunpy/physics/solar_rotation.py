@@ -63,10 +63,7 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
         # Calculate the rotation of the center of the map 'm' at its
         # observation time to the observation time of the reference layer
         # indicated by "layer_index".
-        newx, newy = rot_hpc(m.center.Tx,
-                             m.center.Ty,
-                             m.date,
-                             mc.maps[layer_index].date, **kwargs)
+        newx, newy = rot_hpc(m.center.Tx, m.center.Ty, m.date, mc.maps[layer_index].date, **kwargs)
 
         # Calculate the shift in arcseconds
         xshift_arcseconds[i] = newx - mc.maps[layer_index].center.Tx

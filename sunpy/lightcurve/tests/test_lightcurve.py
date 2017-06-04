@@ -32,7 +32,6 @@ base_input = np.arange(24 * 60)
     ({"instr1": base_input, "instr2": base_input, "instr3": base_input}, dates),
     ([{'instr1': x, 'instr2': x + 1, 'instr3': x + 2} for x in base_input], dates),
     (pandas.Series(base_input), dates),
-
 ])
 def test_input(data, index):
     """Tests different types of expected input"""
@@ -44,10 +43,7 @@ def test_input(data, index):
     assert lc.data.index[-1] == base + datetime.timedelta(minutes=24 * 60 - 1)
 
 
-@pytest.mark.parametrize(("bad_input"), [
-    (None),
-    (EVE_AVERAGES_CSV)
-])
+@pytest.mark.parametrize(("bad_input"), [(None), (EVE_AVERAGES_CSV)])
 def test_unimplemented(bad_input):
     """Tests input that has not been implemented for the generic LC class"""
     with pytest.raises((TypeError, NotImplementedError)):
@@ -80,9 +76,7 @@ def test_concatenate_meta():
     lc1 = sunpy.lightcurve.LightCurve.create(base_input, index=dates)
     dt = dates[1] - dates[0]
     # create a new lc that is shifted in time so there is some overlap
-    lc2 = sunpy.lightcurve.LightCurve.create(base_input,
-                                             index=[t + (dates[-1] - dates[0]) - 1 * dt for t in
-                                                    dates])
+    lc2 = sunpy.lightcurve.LightCurve.create(base_input, index=[t + (dates[-1] - dates[0]) - 1 * dt for t in dates])
     concat_lc = lc1.concatenate(lc2)
     assert len(concat_lc.meta) == len(lc1.meta) + len(lc2.meta)
 

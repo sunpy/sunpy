@@ -20,37 +20,27 @@ class SunPyTest(AstropyTest):
 
     user_options = [
         # Package to test
-        ('package=', 'P',
-         "The name of a specific package to test, e.g. 'io' or 'utils'.  "
+        ('package=', 'P', "The name of a specific package to test, e.g. 'io' or 'utils'.  "
          "If nothing is specified, all default tests are run."),
         # Print all the things
-        ('verbose-results', 'V',
-         'Turn on verbose output from pytest.'),
+        ('verbose-results', 'V', 'Turn on verbose output from pytest.'),
         # plugins to enable
-        ('plugins=', 'p',
-         'Plugins to enable when running pytest.'),
+        ('plugins=', 'p', 'Plugins to enable when running pytest.'),
         # Run online tests?
-        ('online', 'R',
-         'Also run tests that do require a internet connection.'),
+        ('online', 'R', 'Also run tests that do require a internet connection.'),
         # Run only online tests?
-        ('online-only', None,
-         'Only run test that do require a internet connection.'),
+        ('online-only', None, 'Only run test that do require a internet connection.'),
         # Run tests that check figure generation
-        ('figure', None,
-         'Run tests that compare figures against stored hashes.'),
+        ('figure', None, 'Run tests that compare figures against stored hashes.'),
         # Calculate test coverage
-        ('coverage', 'c',
-         'Create a coverage report. Requires the coverage package.'),
-        ('cov-report=', None,
-         'Specify the type of coverage report to generate. (Default terminal)'),
+        ('coverage', 'c', 'Create a coverage report. Requires the coverage package.'),
+        ('cov-report=', None, 'Specify the type of coverage report to generate. (Default terminal)'),
         # Run tests in parallel
-        ('parallel=', 'j',
-         'Run the tests in parallel on the specified number of '
+        ('parallel=', 'j', 'Run the tests in parallel on the specified number of '
          'CPUs.  If negative, all the cores on the machine will be '
          'used.  Requires the pytest-xdist plugin.'),
         # Pass additional cli args to pytest
-        ('args=', 'a',
-         'Additional arguments to be passed to pytest.')
+        ('args=', 'a', 'Additional arguments to be passed to pytest.')
     ]
 
     user_options = _fix_user_options(user_options)
@@ -80,9 +70,7 @@ class SunPyTest(AstropyTest):
         try:
             import sunpy
         except ImportError:
-            raise ImportError(
-                "The 'test' command requires the sunpy package to be "
-                "installed and importable.")
+            raise ImportError("The 'test' command requires the sunpy package to be " "installed and importable.")
 
     def generate_testing_command(self):
         """
@@ -112,11 +100,6 @@ class SunPyTest(AstropyTest):
                'cov_report={1.cov_report!r})); '
                '{cmd_post}'
                'sys.exit(result)')
-        x = cmd.format('pass',
-                       self,
-                       online=online,
-                       offline=offline,
-                       figure=self.figure,
-                       cmd_pre=cmd_pre,
-                       cmd_post=cmd_post)
+        x = cmd.format(
+            'pass', self, online=online, offline=offline, figure=self.figure, cmd_pre=cmd_pre, cmd_post=cmd_post)
         return x

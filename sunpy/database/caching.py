@@ -174,6 +174,7 @@ class LRUCache(BaseCache):
     """
     LRUCache
     """
+
     @property
     def to_be_removed(self):
         """Return the least recently used key and its corresponding value as a

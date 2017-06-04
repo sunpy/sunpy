@@ -38,8 +38,7 @@ def compare_results(expect, result, allclose=True):
     return t1 and t2
 
 
-@pytest.mark.parametrize("angle, k", [(90.0, 1), (-90.0, -1), (-270.0, 1),
-                                      (-90.0, 3), (360.0, 0), (-360.0, 0)])
+@pytest.mark.parametrize("angle, k", [(90.0, 1), (-90.0, -1), (-270.0, 1), (-90.0, 3), (360.0, 0), (-360.0, 0)])
 def test_rotation(angle, k):
     # Test rotation against expected outcome
     angle = np.radians(angle)
@@ -60,8 +59,7 @@ def test_rotation(angle, k):
     assert compare_results(original, derot)
 
 
-@pytest.mark.parametrize("angle, k", [(90.0, 1), (-90.0, -1), (-270.0, 1),
-                                      (-90.0, 3), (360.0, 0), (-360.0, 0)])
+@pytest.mark.parametrize("angle, k", [(90.0, 1), (-90.0, -1), (-270.0, 1), (-90.0, 3), (360.0, 0), (-360.0, 0)])
 def test_scipy_rotation(angle, k):
     # Test rotation against expected outcome
     angle = np.radians(angle)
@@ -115,8 +113,7 @@ def test_scale(scale_factor):
     rmatrix = np.array([[1.0, 0.0], [0.0, 1.0]])
 
     # Check a scaled image against the expected outcome
-    newim = tf.rescale(original / original.max(), scale_factor, order=4,
-                       mode='constant') * original.max()
+    newim = tf.rescale(original / original.max(), scale_factor, order=4, mode='constant') * original.max()
     # Old width and new center of image
     w = original.shape[0] / 2.0 - 0.5
     new_c = (newim.shape[0] / 2.0) - 0.5
@@ -132,9 +129,8 @@ def test_scale(scale_factor):
     compare_results(expected, scale)
 
 
-@pytest.mark.parametrize("angle, dx, dy, scale_factor", [(90, -100, 50, 0.25),
-                                                         (-90, 50, -100, 0.75),
-                                                         (180, 100, 50, 1.5)])
+@pytest.mark.parametrize("angle, dx, dy, scale_factor", [(90, -100, 50, 0.25), (-90, 50, -100, 0.75), (180, 100, 50,
+                                                                                                       1.5)])
 def test_all(angle, dx, dy, scale_factor):
     """
     Tests to make sure that combinations of scaling, shifting and rotation
@@ -148,8 +144,7 @@ def test_all(angle, dx, dy, scale_factor):
     c = np.cos(angle)
     s = np.sin(angle)
     rmatrix = np.array([[c, -s], [s, c]])
-    scale = tf.rescale(original / original.max(), scale_factor, order=4,
-                       mode='constant') * original.max()
+    scale = tf.rescale(original / original.max(), scale_factor, order=4, mode='constant') * original.max()
     new = np.zeros(original.shape)
 
     # Old width and new center of image
@@ -167,8 +162,7 @@ def test_all(angle, dx, dy, scale_factor):
     rot = np.rot90(new, k=k)
     shift = np.roll(np.roll(rot, dx, axis=1), dy, axis=0)
     expected = shift
-    rotscaleshift = affine_transform(original, rmatrix=rmatrix, scale=scale_factor,
-                                     recenter=True, image_center=rcen)
+    rotscaleshift = affine_transform(original, rmatrix=rmatrix, scale=scale_factor, recenter=True, image_center=rcen)
     w = np.array(expected.shape[0]) / 2.0 - 0.5
     new_c = (np.array(rotscaleshift.shape[0]) / 2.0 - 0.5)
     upper = int(w + new_c + 1)
@@ -181,13 +175,11 @@ def test_all(angle, dx, dy, scale_factor):
     compare_results(expected, rotscaleshift)
 
     # Check a rotated/shifted and restored image against original
-    transformed = affine_transform(original, rmatrix=rmatrix, scale=1.0, recenter=True,
-                                   image_center=rcen)
+    transformed = affine_transform(original, rmatrix=rmatrix, scale=1.0, recenter=True, image_center=rcen)
     rcen = image_center - np.dot(rmatrix, np.array([dx, dy]))
     dx, dy = np.asarray(np.dot(rmatrix, disp), dtype=int)
     rmatrix = np.array([[c, s], [-s, c]])
-    inverse = affine_transform(transformed, rmatrix=rmatrix, scale=1.0, recenter=True,
-                               image_center=rcen)
+    inverse = affine_transform(transformed, rmatrix=rmatrix, scale=1.0, recenter=True, image_center=rcen)
 
     # Need to ignore the portion of the image cut off by the first shift
     # (which isn't the portion you'd expect, because of the rotation)
