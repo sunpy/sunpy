@@ -1,0 +1,72 @@
+from __future__ import absolute_import, division, print_function
+import numpy as np
+import sunpy.coordinates
+from astropy.coordinates import SkyCoord
+import astropy.units as u
+import sunpy.map
+from sunpy.data.sample import AIA_171_IMAGE
+from sunpy.util.great_arc import great_arc, calculate_great_arc
+
+
+# Test the great arc code
+def test_great_arc():
+    # Number of points in the return
+    num = 3
+
+    m = sunpy.map.Map(AIA_171_IMAGE)
+    coordinate_frame = m.coordinate_frame
+    a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=coordinate_frame)
+    b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=coordinate_frame)
+    v = great_arc(a, b, num=num)
+
+    # Return a SkyCoord
+    assert isinstance(v, SkyCoord)
+
+    # Correct number of points along the great arc
+    assert len(v) == 3
+
+    # Start and end point values are as expected
+    np.testing.assert_almost_equal(v[0].Tx.value, a.Tx.value)
+    np.testing.assert_almost_equal(v[0].Ty.value, a.Ty.value)
+    np.testing.assert_almost_equal(v[-1].Tx.value, b.Tx.value)
+    np.testing.assert_almost_equal(v[-1].Ty.value, b.Ty.value)
+
+    # Make sure the output observer is correct
+    for i in range(0, len(v)):
+        assert v[i].observer == a.observer
+
+
+# Test the calculation of the great arc.
+def test_calculate_great_arc():
+    # Testing accuracy
+    decimal = 6
+
+    # Number of points in the return
+    num = 3
+
+    # Different centers - zero and non-zero.  Tests that the great arc
+    # calculation correctly accounts for the location of the center.
+    centers = (np.asarray([0, 0, 0]), np.asarray([1, 2, 3]))
+
+    # Make sure everything works when z is zero.
+    a = np.asarray([1, 0, 0])
+    b = np.asarray([0, 1, 0])
+    for c in centers:
+        test_a = a + c
+        test_b = b + c
+        v_xyz = calculate_great_arc(test_a, test_b, c, num)
+        assert v_xyz.shape == (3, 3)
+        np.testing.assert_almost_equal(v_xyz[0, :], test_a, decimal=decimal)
+        np.testing.assert_almost_equal(v_xyz[1, :], np.asarray([7.07106781e-01, 7.07106781e-01, 0.0]) + c, decimal=decimal)
+        np.testing.assert_almost_equal(v_xyz[2, :], test_b, decimal=decimal)
+
+    # Make sure everything works when z is non-zero.
+    a = [1, 0, 1]
+    b = [0, 1, 1]
+    for c in centers:
+        test_a = a + c
+        test_b = b + c
+        v_xyz = calculate_great_arc(test_a, test_b, c, num)
+        np.testing.assert_almost_equal(v_xyz[0, :], test_a, decimal=decimal)
+        np.testing.assert_almost_equal(v_xyz[1, :], np.asarray([5.77350269e-01, 5.77350269e-01, 1.15470054e+00]) + c, decimal=decimal)
+        np.testing.assert_almost_equal(v_xyz[2, :], test_b, decimal=decimal)
