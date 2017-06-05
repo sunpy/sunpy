@@ -653,4 +653,4 @@ def test_more_than_two_dimensions():
     bad_map = sunpy.map.Map(bad_data, hdr)
     # Test fails if map.ndim > 2 and if the dimensions of the array are wrong.
     assert bad_map.ndim is 2
-    assert_quantity_allclose(bad_map.dimensions, (5 * u.pix, 3 * u.pix))
+    assert_quantity_allclose(bad_map.dimensions, (5, 3) * u.pix)
