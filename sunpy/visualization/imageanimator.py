@@ -570,7 +570,7 @@ class ArrayAnimator(BaseFuncAnimator):
             * None: Build a min,max pair or linspace array of array indices
             * [min, max]: leave for image axes or convert to a array for slider axes
             (from min to max in axis length steps)
-            * [min, max] pair where min == max: convert to array indies min,max pair or array.
+            * [min, max] pair where min == max: convert to array indies min, max pair or array.
             * array of axis length, check that it was passed for a slider axes and do nothing
             if it was, error if it is not.
         """
@@ -601,7 +601,7 @@ class ArrayAnimator(BaseFuncAnimator):
             elif len(axis_range[i]) == d:
                 axis_range[i] = np.array(axis_range[i])
 
-            # panic
+            # If above criteria are not met, raise an error.
             else:
                 raise ValueError("axis_range must be None or a list with length equal to number "
                                  "of axes in data whose elements are either None, [min,max], "
