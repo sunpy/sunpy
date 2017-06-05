@@ -22,7 +22,7 @@ staleLabel: stale
 # Comment to post when marking as stale. Set to `false` to disable
 markComment: >
   This pull request has been automatically marked as stale because it has not
-  had any activity for the past six months. It will be closed if no further
+  had any activity for the past five months. It will be closed if no further
   activity occurs. If the ideas in this pull request are still worth
   implementing, please make sure you open an issue to keep track of that idea!
 
