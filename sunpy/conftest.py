@@ -59,7 +59,7 @@ def pytest_runtest_teardown(item, nextitem):
     disable_internet.turn_on_internet()
 
 
-def pytest_unconfigure(config):
+def pytest_unconfigure():
     if len(figure_test_pngfiles) > 0:
         tempdir = tempfile.mkdtemp(suffix="_figures")
 
