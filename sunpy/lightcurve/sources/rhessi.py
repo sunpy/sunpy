@@ -51,7 +51,7 @@ class RHESSISummaryLightCurve(LightCurve):
     * Mission Paper `<http://link.springer.com/article/10.1023%2FA%3A1022428818870>`_
     """
 
-    def peek(self, title="RHESSI Observing Summary Count Rate", **kwargs):
+    def peek(self):
         """Plots RHESSI Count Rate light curve. An example is shown below.
 
         .. plot::
