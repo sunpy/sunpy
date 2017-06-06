@@ -70,6 +70,8 @@ def suds_unwrapper(wrapped_data):
         </RESOURCE>
      </VOTABLE>
     """
+    if six.PY3:
+        wrapped_data = wrapped_data.decode("utf-8")
     HEADER = '<?xml version="1.0" encoding="UTF-8"?>\n'
     CATCH_1 = '<VOTABLE'
     CATCH_2 = '</VOTABLE>\n'
@@ -110,8 +112,8 @@ def votable_handler(xml_table):
     >>> type(temp)
     astropy.io.votable.tree.Table
     """
-    fake_file = io.StringIO()
-    fake_file.write(xml_table)
+    fake_file = six.BytesIO()
+    fake_file.write(six.b(xml_table))
     votable = parse_single_table(fake_file)
     fake_file.close()
     return votable
