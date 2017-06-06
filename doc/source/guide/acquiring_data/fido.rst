@@ -30,7 +30,7 @@ attrs module.
 This returns an ``sunpy.net.fido_factory.UnifiedResponse`` object containing information on the
 available online files which fit the criteria specified by the attrs
 objects in the above call.  It does not download the files.  For
-downloading, see the `Downloading Data` with Fido section below.
+downloading, see the :ref:`downloading_data` with Fido section below.
 
 To see a summary of results of our query, simple type the name of the
 variable set to the Fido search, in this case, result.
@@ -55,14 +55,16 @@ operator.  This joins queries together just as the logical ``OR``
 operator would.
 
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra') | a.Instrument("rhessi"))
-    
+
+.. _downloading_data:
+
 Downloading data
 ----------------
 Once you have located your files via a ```Fido.search```, you can download
 them via ```Fido.fetch```
 
-    >>> downresp = Fido.fetch(result)
+    >>> downloaded_files = Fido.fetch(result)
 
 This downloads the files to the location set in you sunpy config
-file.  It also returns a list ```downresp```, of absolute file paths
+file.  It also returns a list ```downloaded_files```, of absolute file paths
 of where the files have been downloaded to.
