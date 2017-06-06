@@ -722,11 +722,11 @@ class ImageAnimator(ArrayAnimator):
         This method takes the various allowed values of axis_ranges and returns
         them in a standardized way for the rest of the class to use.
 
-        The outputted axis range describes the physical coordinates of the
+        The outputted axis_ranges describe the physical coordinates of the
         array axes.
 
-        The allowed values of axis range is either None or a list.
-        If axis_ranges is None then all axis are assumed to be not scaled and
+        The allowed values of axis_range is either None or a list.
+        If axis_ranges is None then all axes are assumed to be not scaled and
         use array indices.
 
         Where axis_ranges is a list it must have the same length as the number
@@ -868,3 +868,36 @@ class LineAnimator(ArrayAnimator):
         if val != slider.cval:
             line.set_ydata(self.data[self.frame_slice])
             slider.cval = val
+
+    def _sanitize_axis_ranges(self, axis_ranges, data):
+        """
+        This method takes the various allowed values of axis_ranges and returns
+        them in a standardized way for the rest of the class to use.
+
+        The outputted axis_ranges describe the physical coordinates of the
+        array axes.
+
+        The allowed values of axis_range is either None or a list.
+        If axis_ranges is None then all axes are assumed to be not scaled and
+        use array indices.
+
+        Where axis_ranges is a list it must have the same length as the number
+        of axis as the array and each element must be one of the following:
+
+            * None: Build a min,max pair or linspace array of array indices
+            * [min, max]: leave for image axes or convert to a array for slider axes
+            (from min to max in axis length steps)
+            * [min, max] pair where min == max: convert to array indies min,max pair or array.
+            * array of axis length, check that it was passed for a slider axes and do nothing
+            if it was, error if it is not.
+
+        N.B. The axis range of the plotted axis must be either None or an array of length equal
+        to the length of the plotted axis in data.
+        """
+        # Esnure plot axis is entered correctly.  If not, give a useful error.
+        if axis_ranges[self.image_axes[0]] is not None:
+            if len(axis_ranges[self.image_axes[0]]) != data.shape[self.image_axes[0]]:
+                raise ValueError("The plot_axis_index axis range must be specified as None "
+                                 "or an array. Not [min, max]")
+        super(LineAnimator, self)._sanitize_axis_ranges(axis_ranges, data)
+        
