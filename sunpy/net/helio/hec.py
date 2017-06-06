@@ -70,7 +70,7 @@ def suds_unwrapper(wrapped_data):
         </RESOURCE>
      </VOTABLE>
     """
-    if six.PY3:
+    if six.PY3 and not isinstance(wrapped_data, str):
         wrapped_data = wrapped_data.decode("utf-8")
     HEADER = '<?xml version="1.0" encoding="UTF-8"?>\n'
     CATCH_1 = '<VOTABLE'
