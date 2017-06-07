@@ -76,7 +76,7 @@ class GenericMapMetaclass(ABCMeta):
 
 
 @six.add_metaclass(GenericMapMetaclass)
-class GenericMap(NDData):
+class GenericMap(NDData(unit="arcsec")):
     """
     A Generic spatially-aware 2D data array
 
