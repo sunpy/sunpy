@@ -23,17 +23,13 @@ __email__ = "steven.christe@nasa.gov"
 
 sampledata_dir = config.get("downloads", "sample_dir")
 
-# urls to search for the sample data
-_base_urls = (
-    'http://data.sunpy.org/sample-data/',
-    'https://github.com/sunpy/sunpy-sample-data/raw/master/')
-
 # keys are file shortcuts
 # values consist of filename as well as optional file extension if files are
 # hosted compressed. This extension is removed after download.
-# Shortcut requirements
-#  the name of the class into which the file will opened must be included at the end of the file
+# Shortcut requirements:
+# the name of the class into which the file will opened must be included at the end of the file
 
+# the files should include necessary extensions
 _files = {
     "AIA_171_IMAGE": "AIA20110319_105400_0171.fits",
     "RHESSI_IMAGE": "hsi_image_20101016_191218.fits",
@@ -82,15 +78,15 @@ def download_sample_data(progress=True, overwrite=False, timeout=None):
     -------
     None
     """
-    print("Downloading all sample files to {}".format(sampledata_dir))
+    print("Downloading all sample files to {}. Overwriting if necessary.".format(sampledata_dir))
     for file_name in six.itervalues(_files):
-        download_sample_file(file_name, url_list=_base_urls)
+        get_sample_file(file_name, url_list=_base_urls, overwrite=True)
 
 
-def download_sample_file(filename, url_list, progress=True, overwrite=False, timeout=None):
+def get_sample_file(filename, url_list, progress=True, overwrite=False, timeout=None):
     """
-    Download a sample data file and move it to the sample data directory.
-    Also, uncompresses the file if necessary.
+    Downloads a sample file. Will download  a sample data file and move it to the sample data directory.
+    Also, uncompresses zip files if necessary. Returns the local file if exists.
 
     Parameters
     ----------
@@ -101,14 +97,15 @@ def download_sample_file(filename, url_list, progress=True, overwrite=False, tim
     progress: `bool`
         Show a progress bar during download
     overwrite: `bool`
-        If exist overwrites the downloaded sample data.
+        If True download and overwrite an existing file.
     timeout: `float`
         The timeout in seconds. If `None` the default timeout is used from
         `astropy.utils.data.Conf.remote_timeout`.
 
     Returns
     -------
-    None
+    result: str
+        The local url of the file downloaded. None if it failed.
     """
 
     if filename[-3:] == 'zip':
@@ -117,7 +114,7 @@ def download_sample_file(filename, url_list, progress=True, overwrite=False, tim
         uncompressed_filename = filename
     # check if the (uncompressed) file exists
     if not overwrite and os.path.isfile(os.path.join(sampledata_dir, uncompressed_filename)):
-        print("File {} found and overwrite flag not set so skipping.".format(uncompressed_filename))
+        return os.path.join(sampledata_dir, uncompressed_filename)
     else:
         # check each provided url to find the file
         for base_url in url_list:
@@ -135,11 +132,14 @@ def download_sample_file(filename, url_list, progress=True, overwrite=False, tim
                             unzipped_f = zip_file.extract(real_name, sampledata_dir)
                         os.remove(f)
                         move(unzipped_f, os.path.join(sampledata_dir, uncompressed_filename))
+                        return os.path.join(sampledata_dir, uncompressed_filename)
                     else:
                         # move files to the data directory
                         move(f, os.path.join(sampledata_dir, uncompressed_filename))
-                    # increment the number of files obtained to check later
-                    break
+                        return os.path.join(sampledata_dir, uncompressed_filename)
             except (socket.error, socket.timeout) as e:
                 warnings.warn("Download failed with error {}. \n"
                               "Retrying with different mirror.".format(e))
+        # if reach here then file has not been downloaded.
+        return None
+
