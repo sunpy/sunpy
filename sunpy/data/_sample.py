@@ -52,10 +52,6 @@ _files = {
     "NORH_TIMESERIES": "tca110810"
 }
 
-sample_files = {}
-for key in _files:
-    sample_files[key] = os.path.abspath(os.path.join(sampledata_dir, _files[key]))
-
 # Creating the directory for sample files to be downloaded
 sampledata_dir = get_and_create_sample_dir()
 
