@@ -5,7 +5,7 @@ from sunpy.extern import six
 
 import sys
 from ._sample import sample_files as _sample_files
-from ._sample import download_sample_data
+from ._sample import download_sample_file, download_sample_data
 import os.path
 
 from sunpy import config as _config
@@ -21,7 +21,7 @@ for _key in _sample_files:    # remove zip extension if exists
     else:
         f = _sample_files[_key]
     if not os.path.isfile(os.path.join(_sampledata_dir, f)):
-        download_sample_data(f, _base_urls)
+        download_sample_file(f, _base_urls)
     setattr(sys.modules[__name__], _key, os.path.join(_sampledata_dir, f))
 
 file_dict = _sample_files
