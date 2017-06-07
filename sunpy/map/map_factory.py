@@ -6,11 +6,15 @@ from collections import OrderedDict
 
 import numpy as np
 import astropy.io.fits
+from astropy.wcs import WCS
+
 
 import sunpy
 from sunpy.map.mapbase import GenericMap, MAP_CLASSES
 from sunpy.map.compositemap import CompositeMap
 from sunpy.map.mapcube import MapCube
+
+
 
 from sunpy.io.file_tools import read_file
 from sunpy.io.header import FileHeader
@@ -19,6 +23,8 @@ from sunpy.util.net import download_file
 from sunpy.util import expand_list
 from sunpy.util.metadata import MetaDict
 from sunpy.util.config import get_and_create_download_dir
+
+import sunpy.data.sample
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
@@ -156,6 +162,7 @@ class MapFactory(BasicRegistrationFactory):
 
         data_header_pairs = list()
         already_maps = list()
+        wcs=list()
 
         # Account for nested lists of items
         args = expand_list(args)
@@ -260,8 +267,9 @@ class MapFactory(BasicRegistrationFactory):
         composite = kwargs.pop('composite', False)
         cube = kwargs.pop('cube', False)
         silence_errors = kwargs.pop('silence_errors', False)
+        wcs=WCS(sunpy.data.sample.AIA_171_IMAGE)
 
-        data_header_pairs, already_maps = self._parse_args(*args, **kwargs)
+        data_header_pairs, already_maps,wcs = self._parse_args(*args, **kwargs)
 
         new_maps = list()
 
