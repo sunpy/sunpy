@@ -199,3 +199,25 @@ def url_exists(url, timeout=2):
         return False
     else:
         return True
+
+
+def is_online():
+    """
+    Checks whether client is online.
+
+    Parameters
+    ----------
+    url: str
+        provide a url which is likely to be available.
+
+    Returns
+    -------
+    value: bool
+
+    Examples
+    --------
+    >>> from sunpy.util.net import is_online
+    >>> is_online()
+    >>> True
+    """
+    return url_exists('http://www.google.com')
