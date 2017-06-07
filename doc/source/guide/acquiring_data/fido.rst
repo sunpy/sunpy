@@ -4,55 +4,56 @@ Finding and Downloading Data using Fido
 
 This guide outlines how to search for and download data using SunPy's
 Federated Internet Data Obtainer...or more usually (and
-sanely) referred to as Fido.  Fido is a unified API for seeking
+sanely) referred to as Fido.  Fido is a unified interface for seeking
 and downloading solar physics data irrespective of the underlining
 client or webservice through which the data is obtained, e.g. VSO,
 JSOC etc.  It therefore supplies a single easy and consistent way to
-obtain most forms of solar physics.
+obtain most forms of solar physics data.
 
-Setup
+Import
 -----
 
-SunPy's Fido module is in ``sunpy.net``.  It can be imported as follows:
+SunPy's Fido module is in ``sunpy.net``.  It can be imported as follows::
 
-    >>> from sunpy.net import Fido
+    >>> from sunpy.net import Fido, attrs as a
 
 Searching for Data Using Fido
 -----------------------
 
 To search for data with Fido, your query needs at minimum a start time,
 an end time, and an instrument.  Enter these properties using SunPy's
-attrs module.
+attrs module::
 
     >>> from sunpy.net import attrs as a
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra'))
 
-This returns an ``sunpy.net.fido_factory.UnifiedResponse`` object containing information on the
-available online files which fit the criteria specified by the attrs
-objects in the above call.  It does not download the files.  For
-downloading, see the :ref:`downloading_data` with Fido section below.
+This returns an `sunpy.net.fido_factory.UnifiedResponse` object
+containing information on the available online files which fit the
+criteria specified by the attrs objects in the above call.  It does
+not download the files.  For instructions on how to download data
+using Fido, see :ref:`downloading_data`. 
 
 To see a summary of results of our query, simple type the name of the
-variable set to the Fido search, in this case, result.
+variable set to the Fido search, in this case, result::
 
     >>> result
     
 Queries can be made more flexible or specific by adding more attrs
 objects to the Fido search.  Specific passbands taken with given
 instruments can be searched for by supplying an astropy Quantity to
-the Wavelength attribute.
+the Wavelength attribute::
 
     >>> import astropy.units as u
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('norh'), a.Wavelength(17*u.GHz))
 
 Data of a given cadence can also be specified using the Sample
-attribute.
+attribute::
 
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'), a.Wavelength(171*u.angstrom, a.Sample(10*u.minute)))
 
 To search for data from multiple instruments use the pipe ``|``
 operator.  This joins queries together just as the logical ``OR``
-operator would.
+operator would::
 
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra') | a.Instrument("rhessi"))
 
@@ -61,7 +62,7 @@ operator would.
 Downloading data
 ----------------
 Once you have located your files via a ```Fido.search```, you can download
-them via ```Fido.fetch```
+them via ```Fido.fetch```::
 
     >>> downloaded_files = Fido.fetch(result)
 
