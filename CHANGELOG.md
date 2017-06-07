@@ -33,6 +33,10 @@ Latest
   version in astropy 1.3. SunPy now therefore depends on astropy>=1.3.
 * Update to `TimeRange.__repr__`; now includes the qualified name and `id` of
   the object.
+* A new `sunpy.visualization.imageanimator.LineAnimator` class has been added to
+  animate 1D data.  This has resulted in API change for the
+  `sunpy.visualization.imageanimator.ImageAnimator` class.  The updateimage
+  method has been renamed to update_plot.
 * Change the default representation for the Heliographic Carrington frame so
   Longitude follows the convention of going from 0-360 degrees.
 * Fix Map parsing of some header values to allow valid float strings like 'nan'
