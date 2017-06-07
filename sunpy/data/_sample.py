@@ -66,7 +66,7 @@ sampledata_dir = get_and_create_sample_dir()
 
 def download_sample_data(progress=True, overwrite=False, timeout=None):
     """
-    Download all sample data.
+    Download all sample data at once.
 
     Parameters
     ----------
