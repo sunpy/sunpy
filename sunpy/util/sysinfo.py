@@ -3,6 +3,10 @@ from __future__ import absolute_import, division, print_function
 import platform
 import datetime
 
+import logging
+
+logger = logging.getLogger()
+
 
 __all__ = ['get_sys_dict', 'system_info']
 
@@ -97,12 +101,17 @@ def system_info():
     Takes dictionary from sys_info() and prints the contents in an attractive fashion.
 
     """
+    global logger
+    logger.setLevel(logging.INFO)  
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    logger.addHandler(ch)
     sys_prop = get_sys_dict()
 
 # title
-    print("==========================================================")
-    print(" SunPy Installation Information\n")
-    print("==========================================================\n")
+    logger.info("==========================================================")
+    logger.info(" SunPy Installation Information\n")
+    logger.info("==========================================================\n")
 
 
 # general properties
@@ -110,20 +119,21 @@ def system_info():
     print(" General")
     print("###########")
     # OS and architecture information
+    
 
     for sys_info in ['Time', 'System', 'Processor', 'Arch', 'SunPy', 'SunPy_git']:
-        print('{0} : {1}'.format(sys_info, sys_prop[sys_info]))
+        logger.info('%s : %s', sys_info, sys_prop[sys_info])
 
     if sys_prop['System'] == "Linux":
         distro = " ".join(platform.linux_distribution())
-        print("OS: {0} (Linux {1} {2})".format(distro, platform.release(), sys_prop['Processor']))
+        logger.info("OS: %s (Linux %s %s), distro, platform.release(), sys_prop['Processor'])
     elif sys_prop['System'] == "Darwin":
-        print("OS: Mac OS X {0} ({1})".format(platform.mac_ver()[0], sys_prop['Processor']))
+        logger.info("OS: Mac OS X %s (%s)", platform.mac_ver()[0], sys_prop['Processor'])
     elif sys_prop['System'] == "Windows":
-        print("OS: Windows {0} {1} ({2})".format(platform.release(),
-                                                 platform.version(), sys_prop['Processor']))
+        logger.info("OS: Windows %s %s (%s)", platform.release(),
+                                                 platform.version(), sys_prop['Processor'])
     else:
-        print("Unknown OS ({0})".format(sys_prop['Processor']))
+        logger.info("Unknown OS (%s)", (sys_prop['Processor']))
 
     print("\n")
 # required libraries
@@ -133,7 +143,7 @@ def system_info():
 
     for sys_info in ['Python', 'NumPy', 'SciPy',
               'matplotlib', 'Astropy', 'Pandas']:
-        print('{0}: {1}'.format(sys_info, sys_prop[sys_info]))
+        logger.info('%s: %s',sys_info, sys_prop[sys_info])
 
     print("\n")
 
@@ -144,4 +154,4 @@ def system_info():
 
     for sys_info in ['beautifulsoup', 'PyQt', 'SUDS',
                      'Sqlalchemy', 'Requests']:
-        print('{0}: {1}'.format(sys_info, sys_prop[sys_info]))
+        logger.info('%s: %s',sys_info, sys_prop[sys_info]))
