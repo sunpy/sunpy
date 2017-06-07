@@ -21,10 +21,12 @@ STRING_DATE_4 = '0814/01/28 23:59:59'
 
 LANDING = datetime(1966, 2, 3)
 
+
 def test__all__():
     """should return __all__"""
 
     assert julian.__all__ == ["julian_day", "julian_centuries"]
+
 
 def test_julian_day():
     assert julian.julian_day('1900-01-01 12:00') == 2415021.0
@@ -32,11 +34,13 @@ def test_julian_day():
     result = julian.julian_day('2000-03-01 15:30:26')
     assert_almost_equal(result, 2451605.1461111, decimal=3)
 
+
 def test_julian_day1():
     """should return julian day for date 1"""
     expected_day = 2415021.0
     assert julian.julian_day(DATETIME_DATE_1) == expected_day
     assert julian.julian_day(STRING_DATE_1) == expected_day
+
 
 def test_julian_day2():
     """should return julian day for date 2"""
@@ -45,12 +49,14 @@ def test_julian_day2():
     assert julian.julian_day(DATETIME_DATE_2) == expected_day
     assert julian.julian_day(STRING_DATE_2) == expected_day
 
+
 def test_julian_day3():
     """should return julian day for date 3"""
 
     expected_day = 2515138.7097222223
     assert julian.julian_day(DATETIME_DATE_3) == expected_day
     assert julian.julian_day(STRING_DATE_3) == expected_day
+
 
 def test_julian_day4():
     """should return julian day for date 4"""
@@ -59,15 +65,18 @@ def test_julian_day4():
     assert julian.julian_day(DATETIME_DATE_4) == expected_day
     assert julian.julian_day(STRING_DATE_4) == expected_day
 
+
 def test_julian_day5():
     """should raise value error when passed empty string"""
 
     pytest.raises(ValueError, julian.julian_day, '')
 
+
 def test_julian_day6():
     """should raise value error when passed non-date string"""
 
     pytest.raises(ValueError, julian.julian_day, 'A lovely bunch of coconuts')
+
 
 def test_julian_centuries1():
     """should return julian century for date 1"""
@@ -76,6 +85,7 @@ def test_julian_centuries1():
     assert julian.julian_centuries(DATETIME_DATE_1) == expected_century
     assert julian.julian_centuries(STRING_DATE_1) == expected_century
 
+
 def test_julian_centuries2():
     """should return julian century for date 2"""
 
@@ -83,12 +93,14 @@ def test_julian_centuries2():
     assert julian.julian_centuries(DATETIME_DATE_2) == expected_century
     assert julian.julian_centuries(STRING_DATE_2) == expected_century
 
+
 def test_julian_centuries3():
     """should return julian century for date 3"""
 
     expected_century = 2.741100882196367
     assert julian.julian_centuries(DATETIME_DATE_3) == expected_century
     assert julian.julian_centuries(STRING_DATE_3) == expected_century
+
 
 def test_julian_centuries4():
     """should return julian century for date 4"""
@@ -102,6 +114,7 @@ def test_julian_centuries5():
     """should raise value error when passed empty string"""
 
     pytest.raises(ValueError, julian.julian_centuries, '')
+
 
 def test_julian_centuries6():
     """should raise value error when passed non-date string"""

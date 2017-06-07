@@ -2,7 +2,6 @@
 #
 # This module was developed with funding provided by
 # the Google Summer of Code (2013).
-
 """
 Overview
 ^^^^^^^^
@@ -31,7 +30,7 @@ from sunpy.database.database import Database, EntryAlreadyAddedError,\
 from sunpy.database.commands import NoSuchEntryError, NonRemovableTagError
 
 __all__ = [
-    'Database', 'EntryAlreadyAddedError', 'NoSuchEntryError', 'NoSuchTagError',
-    'NonRemovableTagError', 'EntryAlreadyStarredError',
-    'EntryAlreadyUnstarredError', 'EntryNotFoundError',
-    'TagAlreadyAssignedError', 'disable_undo', 'split_database']
+    'Database', 'EntryAlreadyAddedError', 'NoSuchEntryError', 'NoSuchTagError', 'NonRemovableTagError',
+    'EntryAlreadyStarredError', 'EntryAlreadyUnstarredError', 'EntryNotFoundError', 'TagAlreadyAssignedError',
+    'disable_undo', 'split_database'
+]

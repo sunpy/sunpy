@@ -9,9 +9,11 @@ from astropy.time import Time
 from ..frames import Helioprojective
 from ..frameattributes import TimeFrameAttributeSunPy
 
+
 @pytest.fixture
 def attr():
     return TimeFrameAttributeSunPy()
+
 
 def test_now(attr):
     """ We can't actually test the value independantly """
@@ -20,6 +22,7 @@ def test_now(attr):
     assert isinstance(result, Time)
     assert converted
 
+
 def test_none(attr):
     """ We can't actually test the value independantly """
     result, converted = attr.convert_input(None)
@@ -27,8 +30,9 @@ def test_none(attr):
     assert result is None
     assert not converted
 
-@pytest.mark.parametrize('input', [Time('2012-01-01 00:00:00'), '2012/01/01T00:00:00',
-                                   '20120101000000', '2012/01/01 00:00:00'])
+
+@pytest.mark.parametrize('input',
+                         [Time('2012-01-01 00:00:00'), '2012/01/01T00:00:00', '20120101000000', '2012/01/01 00:00:00'])
 def test_convert(attr, input):
     result, converted = attr.convert_input(input)
 
@@ -38,8 +42,8 @@ def test_convert(attr, input):
     assert result == output
 
 
-@pytest.mark.parametrize('input', [Time('2012-01-01 00:00:00'), '2012/01/01T00:00:00',
-                                   '20120101000000', '2012/01/01 00:00:00'])
+@pytest.mark.parametrize('input',
+                         [Time('2012-01-01 00:00:00'), '2012/01/01T00:00:00', '20120101000000', '2012/01/01 00:00:00'])
 def test_on_frame(input):
     hpc1 = Helioprojective(dateobs=input)
 
@@ -47,6 +51,7 @@ def test_on_frame(input):
 
     assert isinstance(hpc1.dateobs, Time)
     assert hpc1.dateobs == output
+
 
 def test_non_string():
     output = datetime.datetime.now()
@@ -56,13 +61,16 @@ def test_non_string():
     assert isinstance(hpc1.dateobs, Time)
     assert hpc1.dateobs == output
 
+
 def test_on_frame_error():
     with pytest.raises(ValueError):
         hpc1 = Helioprojective(dateobs='ajshdasjdhk')
 
+
 def test_on_frame_error2():
     with pytest.raises(ValueError):
         hpc1 = Helioprojective(dateobs=17263871263)
+
 
 def test_array():
     input = Time(['2012-01-01 00:00:00', '2012-01-01 00:00:05'])

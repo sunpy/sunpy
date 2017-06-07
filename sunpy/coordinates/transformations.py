@@ -10,20 +10,16 @@ from __future__ import absolute_import, division
 import numpy as np
 
 from astropy import units as u
-from astropy.coordinates.representation import (CartesianRepresentation,
-                                                UnitSphericalRepresentation)
+from astropy.coordinates.representation import (CartesianRepresentation, UnitSphericalRepresentation)
 from astropy.coordinates.baseframe import frame_transform_graph
 from astropy.coordinates.transformations import FunctionTransform
 
 from sunpy import sun
 
-from .representation import (SphericalWrap180Representation,
-                             UnitSphericalWrap180Representation)
-from .frames import (HeliographicStonyhurst, HeliographicCarrington,
-                     Heliocentric, Helioprojective)
+from .representation import (SphericalWrap180Representation, UnitSphericalWrap180Representation)
+from .frames import (HeliographicStonyhurst, HeliographicCarrington, Heliocentric, Helioprojective)
 
-__all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
-           'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc']
+__all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc', 'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc']
 
 
 def _carrington_offset(dateobs):
@@ -31,31 +27,27 @@ def _carrington_offset(dateobs):
     Calculate the HG Longitude offest based on a time
     """
     if dateobs is None:
-        raise ValueError("To perform this transformation the coordinate"
-                         " Frame needs a dateobs Attribute")
+        raise ValueError("To perform this transformation the coordinate" " Frame needs a dateobs Attribute")
     return sun.heliographic_solar_center(dateobs)[0]
+
 
 # =============================================================================
 # ------------------------- Transformation Framework --------------------------
 # =============================================================================
 
 
-@frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst,
-                                 HeliographicCarrington)
+@frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst, HeliographicCarrington)
 def hgs_to_hgc(hgscoord, hgcframe):
     """
     Transform from Heliographic Stonyhurst to Heliograpic Carrington.
     """
-    c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.dateobs).to(
-        u.deg)
-    representation = SphericalWrap180Representation(c_lon, hgscoord.lat,
-                                                    hgscoord.radius)
+    c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.dateobs).to(u.deg)
+    representation = SphericalWrap180Representation(c_lon, hgscoord.lat, hgscoord.radius)
     hgcframe = hgcframe.__class__(dateobs=hgscoord.dateobs)
     return hgcframe.realize_frame(representation)
 
 
-@frame_transform_graph.transform(FunctionTransform, HeliographicCarrington,
-                                 HeliographicStonyhurst)
+@frame_transform_graph.transform(FunctionTransform, HeliographicCarrington, HeliographicStonyhurst)
 def hgc_to_hgs(hgccoord, hgsframe):
     """
     Convert from Heliograpic Carrington to Heliographic Stonyhurst.
@@ -64,15 +56,12 @@ def hgc_to_hgs(hgccoord, hgsframe):
         dateobs = hgccoord.dateobs
     else:
         dateobs = hgsframe.dateobs
-    s_lon = hgccoord.spherical.lon - _carrington_offset(dateobs).to(
-        u.deg)
-    representation = SphericalWrap180Representation(s_lon, hgccoord.lat,
-                                                    hgccoord.radius)
+    s_lon = hgccoord.spherical.lon - _carrington_offset(dateobs).to(u.deg)
+    representation = SphericalWrap180Representation(s_lon, hgccoord.lat, hgccoord.radius)
     return hgsframe.realize_frame(representation)
 
 
-@frame_transform_graph.transform(FunctionTransform, Heliocentric,
-                                 Helioprojective)
+@frame_transform_graph.transform(FunctionTransform, Heliocentric, Helioprojective)
 def hcc_to_hpc(helioccoord, heliopframe):
     """
     Convert from Heliocentic Cartesian to Helioprojective Cartesian.
@@ -88,13 +77,11 @@ def hcc_to_hpc(helioccoord, heliopframe):
     hpcx = np.rad2deg(np.arctan2(x, helioccoord.observer.radius - z))
     hpcy = np.rad2deg(np.arcsin(y / distance))
 
-    representation = SphericalWrap180Representation(hpcx, hpcy,
-                                                    distance.to(u.km))
+    representation = SphericalWrap180Representation(hpcx, hpcy, distance.to(u.km))
     return heliopframe.realize_frame(representation)
 
 
-@frame_transform_graph.transform(FunctionTransform, Helioprojective,
-                                 Heliocentric)
+@frame_transform_graph.transform(FunctionTransform, Helioprojective, Heliocentric)
 def hpc_to_hcc(heliopcoord, heliocframe):
     """
     Convert from Helioprojective Cartesian to Heliocentric Cartesian.
@@ -110,16 +97,13 @@ def hpc_to_hcc(heliopcoord, heliocframe):
 
     rx = (heliopcoord.distance.to(u.m)) * cosy * sinx
     ry = (heliopcoord.distance.to(u.m)) * siny
-    rz = (heliopcoord.observer.radius.to(u.m)) - (
-        heliopcoord.distance.to(u.m)) * cosy * cosx
+    rz = (heliopcoord.observer.radius.to(u.m)) - (heliopcoord.distance.to(u.m)) * cosy * cosx
 
-    representation = CartesianRepresentation(
-        rx.to(u.km), ry.to(u.km), rz.to(u.km))
+    representation = CartesianRepresentation(rx.to(u.km), ry.to(u.km), rz.to(u.km))
     return heliocframe.realize_frame(representation)
 
 
-@frame_transform_graph.transform(FunctionTransform, Heliocentric,
-                                 HeliographicStonyhurst)
+@frame_transform_graph.transform(FunctionTransform, Heliocentric, HeliographicStonyhurst)
 def hcc_to_hgs(helioccoord, heliogframe):
     """
     Convert from Heliocentric Cartesian to Heliographic Stonyhurst.
@@ -138,13 +122,11 @@ def hcc_to_hgs(helioccoord, heliogframe):
     hgln = np.arctan2(x, z * cosb - y * sinb) + l0_rad
     hglt = np.arcsin((y * cosb + z * sinb) / hecr)
 
-    representation = SphericalWrap180Representation(
-        np.rad2deg(hgln), np.rad2deg(hglt), hecr.to(u.km))
+    representation = SphericalWrap180Representation(np.rad2deg(hgln), np.rad2deg(hglt), hecr.to(u.km))
     return heliogframe.realize_frame(representation)
 
 
-@frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst,
-                                 Heliocentric)
+@frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst, Heliocentric)
 def hgs_to_hcc(heliogcoord, heliocframe):
     """
     Convert from Heliographic Stonyhurst to Heliograpic Carrington.
@@ -173,21 +155,19 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     y = r * (siny * cosb - cosy * cosx * sinb)
     zz = r * (siny * sinb + cosy * cosx * cosb)
 
-    representation = CartesianRepresentation(
-        x.to(u.km), y.to(u.km), zz.to(u.km))
+    representation = CartesianRepresentation(x.to(u.km), y.to(u.km), zz.to(u.km))
     return heliocframe.realize_frame(representation)
 
 
-@frame_transform_graph.transform(FunctionTransform, Helioprojective,
-                                 Helioprojective)
+@frame_transform_graph.transform(FunctionTransform, Helioprojective, Helioprojective)
 def hpc_to_hpc(heliopcoord, heliopframe):
     """
     This converts from HPC to HPC, with different observer location parameters.
     It does this by transforming through HGS.
     """
     if (heliopcoord.observer.lat == heliopframe.observer.lat and
-        heliopcoord.observer.lon == heliopframe.observer.lon and
-        heliopcoord.observer.radius == heliopframe.observer.radius):
+            heliopcoord.observer.lon == heliopframe.observer.lon and
+            heliopcoord.observer.radius == heliopframe.observer.radius):
         return heliopframe.realize_frame(heliopcoord._data)
 
     hgs = heliopcoord.transform_to(HeliographicStonyhurst)
@@ -209,8 +189,7 @@ def _make_transform_graph_docs():
     import inspect
     from textwrap import dedent
     from sunpy.extern import six
-    from astropy.coordinates.baseframe import (BaseCoordinateFrame,
-                                               frame_transform_graph)
+    from astropy.coordinates.baseframe import (BaseCoordinateFrame, frame_transform_graph)
 
     import copy
     f = copy.deepcopy(frame_transform_graph)
@@ -224,9 +203,9 @@ def _make_transform_graph_docs():
 
     # TODO: Make this just show the SunPy Frames
     isclass = inspect.isclass
-    coosys = [item
-              for item in list(six.itervalues(globals()))
-              if isclass(item) and issubclass(item, BaseCoordinateFrame)]
+    coosys = [
+        item for item in list(six.itervalues(globals())) if isclass(item) and issubclass(item, BaseCoordinateFrame)
+    ]
     graphstr = f.to_dot_graph(addnodes=coosys, priorities=False)
 
     docstr = """

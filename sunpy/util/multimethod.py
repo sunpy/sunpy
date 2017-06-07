@@ -17,7 +17,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-
 """
 Multimethod implementation in pure Python.
 """
@@ -54,6 +53,7 @@ class MultiMethod(object):
         function which receives args and kwargs and returns a tuple of
         values to consider for dispatch.
     """
+
     def __init__(self, get):
         self.get = get
 
@@ -90,9 +90,10 @@ class MultiMethod(object):
             raise TypeError
         elif overriden and override == WARN:
             # pylint: disable=W0631
-            warn('Definition ({0}) overrides prior definition ({1}).'.format(_fmt_t(types),
-                                                                             _fmt_t(signature)),
-                 TypeWarning, stacklevel=3)
+            warn(
+                'Definition ({0}) overrides prior definition ({1}).'.format(_fmt_t(types), _fmt_t(signature)),
+                TypeWarning,
+                stacklevel=3)
 
         self.methods.append((types, fun))
 
@@ -106,6 +107,7 @@ class MultiMethod(object):
         def _dec(fun):
             self.add(fun, types, kwargs.get('override', SILENT))
             return fun
+
         return _dec
 
     def __call__(self, *args, **kwargs):
@@ -132,16 +134,8 @@ class MultiMethod(object):
         class. The normal __call__ does not consider this for performance
         reasons. """
         objs = self.get(*args, **kwargs)
-        types = tuple(
-            [
-                x.__thisclass__.__mro__[1] if isinstance(x, super) else type(x)
-                for x in objs
-            ]
-        )
-        nargs = [
-            x.__self__ if isinstance(x, super) else x
-            for x in args
-        ]
+        types = tuple([x.__thisclass__.__mro__[1] if isinstance(x, super) else type(x) for x in objs])
+        nargs = [x.__self__ if isinstance(x, super) else x for x in args]
 
         for k, elem in six.iteritems(kwargs):
             if isinstance(elem, super):

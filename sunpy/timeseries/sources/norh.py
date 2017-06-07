@@ -18,7 +18,6 @@ from sunpy.time import parse_time
 from sunpy.util.metadata import MetaDict
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries
 
-
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['NoRHTimeSeries']
@@ -85,8 +84,7 @@ class NoRHTimeSeries(GenericTimeSeries):
 
         figure = plt.figure()
         axes = plt.gca()
-        data_lab = str(self.meta.get('OBS-FREQ').values()).replace('[', '').replace(
-            ']', '').replace('\'', '')
+        data_lab = str(self.meta.get('OBS-FREQ').values()).replace('[', '').replace(']', '').replace('\'', '')
         axes.plot(self.data.index, self.data, label=data_lab)
         axes.set_yscale("log")
         axes.set_ylim(1e-4, 1)
@@ -126,8 +124,7 @@ class NoRHTimeSeries(GenericTimeSeries):
         # Add the units data
         units = OrderedDict([('Correlation Coefficient', u.dimensionless_unscaled)])
         # Todo: check units used.
-        return pandas.DataFrame(
-            data, index=norh_time, columns=('Correlation Coefficient', )), header, units
+        return pandas.DataFrame(data, index=norh_time, columns=('Correlation Coefficient', )), header, units
 
     @classmethod
     def is_datasource_for(cls, **kwargs):

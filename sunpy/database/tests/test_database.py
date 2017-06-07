@@ -34,8 +34,6 @@ import sunpy.data.test
 
 testpath = sunpy.data.test.rootdir
 RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
-
-
 """
 The 'hsi_image_20101016_191218.fits' file lies in the sunpy/data/test.
 RHESSI_IMAGE  = sunpy/data/test/hsi_image_20101016_191218.fits
@@ -61,30 +59,25 @@ def database():
 
 @pytest.fixture
 def query_result():
-    return vso.VSOClient().query(
-        vso.attrs.Time('20130801T200000', '20130801T200030'),
-        vso.attrs.Instrument('PLASTIC'))
+    return vso.VSOClient().query(vso.attrs.Time('20130801T200000', '20130801T200030'), vso.attrs.Instrument('PLASTIC'))
 
 
 @pytest.fixture
 def download_qr():
-    return vso.VSOClient().query(
-        vso.attrs.Time('2012-03-29', '2012-03-29'),
-        vso.attrs.Instrument('AIA'))
+    return vso.VSOClient().query(vso.attrs.Time('2012-03-29', '2012-03-29'), vso.attrs.Instrument('AIA'))
 
 
 @pytest.fixture
 def empty_query():
-    return [
-        vso.attrs.Time((2012, 7, 3), (2012, 7, 4)),
-        vso.attrs.Instrument('EIT')]
+    return [vso.attrs.Time((2012, 7, 3), (2012, 7, 4)), vso.attrs.Instrument('EIT')]
 
 
 @pytest.fixture
 def download_query():
     return [
         vso.attrs.Time((2013, 5, 19, 2), (2013, 5, 19, 2), (2013, 5, 19, 2)),
-        vso.attrs.Instrument('VIRGO') | vso.attrs.Instrument('SECCHI')]
+        vso.attrs.Instrument('VIRGO') | vso.attrs.Instrument('SECCHI')
+    ]
 
 
 @pytest.fixture
@@ -158,9 +151,7 @@ def test_setting_cache_size_shrinking(database_using_lrucache):
     assert database_using_lrucache.cache_maxsize == 2
     assert database_using_lrucache.cache_size == 2
     assert len(database_using_lrucache) == 2
-    assert list(database_using_lrucache) == [
-        DatabaseEntry(id=4),
-        DatabaseEntry(id=5)]
+    assert list(database_using_lrucache) == [DatabaseEntry(id=4), DatabaseEntry(id=5)]
     for _ in range(5):
         database_using_lrucache.add(DatabaseEntry())
     assert len(database_using_lrucache) == 2
@@ -421,8 +412,7 @@ def test_add_already_existing_entry_ignore(database):
 @pytest.mark.online
 def test_add_entry_from_hek_qr(database):
     hek_res = hek.HEKClient().query(
-        hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 07:24:00'),
-        hek.attrs.EventType('FL'))
+        hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 07:24:00'), hek.attrs.EventType('FL'))
     assert len(database) == 0
     database.add_from_hek_query_result(hek_res)
     # This number loves to change, so we are just going to test that it's added
@@ -433,11 +423,9 @@ def test_add_entry_from_hek_qr(database):
 @pytest.mark.online
 def test_download_from_qr(database, download_qr, tmpdir):
     assert len(database) == 0
-    database.download_from_vso_query_result(
-        download_qr, path=str(tmpdir.join('{file}.fits')))
+    database.download_from_vso_query_result(download_qr, path=str(tmpdir.join('{file}.fits')))
     fits_pattern = str(tmpdir.join('*.fits'))
-    num_of_fits_headers = sum(
-        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+    num_of_fits_headers = sum(len(fits.get_header(file)) for file in glob.glob(fits_pattern))
     assert len(database) == num_of_fits_headers > 0
     for entry in database:
         assert os.path.dirname(entry.path) == str(tmpdir)
@@ -509,12 +497,14 @@ def test_add_from_file(database):
     for entry in database:
         assert entry.fileid == fileid
 
+
 def test_add_from_file_hdu_index(database):
     assert len(database) == 0
     database.add_from_file(RHESSI_IMAGE)
     assert len(database) == 4
     for i, entry in enumerate(database):
         assert entry.hdu_index == i
+
 
 def test_add_from_file_duplicates(database):
     database.add_from_file(RHESSI_IMAGE)
@@ -546,9 +536,7 @@ def test_remove_many_entries(filled_database):
     filled_database.clear_histories()
     filled_database.remove_many(filled_database[:8])
     assert len(filled_database) == 2
-    assert list(filled_database) == [
-        DatabaseEntry(id=9),
-        DatabaseEntry(id=10, tags=[bar])]
+    assert list(filled_database) == [DatabaseEntry(id=9), DatabaseEntry(id=10, tags=[bar])]
     filled_database.undo()
     assert len(filled_database) == 10
     with pytest.raises(EmptyCommandStackError):
@@ -610,8 +598,7 @@ def test_getitem_custom(filled_database):
     entries = filled_database[1:5:2]
     foo = Tag('foo')
     foo.id = 1
-    assert entries == [
-        DatabaseEntry(id=2), DatabaseEntry(id=4, tags=[foo])]
+    assert entries == [DatabaseEntry(id=2), DatabaseEntry(id=4, tags=[foo])]
 
 
 def test_getitem_exceeding_range(filled_database):
@@ -620,10 +607,7 @@ def test_getitem_exceeding_range(filled_database):
     foo.id = 1
     bar = Tag('bar')
     bar.id = 2
-    assert entries == [
-        DatabaseEntry(id=8, tags=[foo]),
-        DatabaseEntry(id=9),
-        DatabaseEntry(id=10, tags=[bar])]
+    assert entries == [DatabaseEntry(id=8, tags=[foo]), DatabaseEntry(id=9), DatabaseEntry(id=10, tags=[bar])]
 
 
 def test_getitem_negative_index(filled_database):
@@ -635,10 +619,7 @@ def test_getitem_negative_indices_slice(filled_database):
     entries = filled_database[-2:-8:-2]
     bar = Tag('bar')
     bar.id = 2
-    assert entries == [
-        DatabaseEntry(id=9),
-        DatabaseEntry(id=7),
-        DatabaseEntry(id=5, tags=[bar])]
+    assert entries == [DatabaseEntry(id=9), DatabaseEntry(id=7), DatabaseEntry(id=5, tags=[bar])]
 
 
 def test_contains_exists(database):
@@ -681,15 +662,13 @@ def test_lru_cache(database_using_lrucache):
     database_using_lrucache.add(entry2)
     database_using_lrucache.add(entry3)
     assert len(database_using_lrucache) == 3
-    assert list(database_using_lrucache._cache.items()) == [
-        (1, entry1), (2, entry2), (3, entry3)]
+    assert list(database_using_lrucache._cache.items()) == [(1, entry1), (2, entry2), (3, entry3)]
     database_using_lrucache.get_entry_by_id(1)
     database_using_lrucache.get_entry_by_id(3)
     entry4 = DatabaseEntry()
     database_using_lrucache.add(entry4)
     assert len(database_using_lrucache) == 3
-    assert list(database_using_lrucache._cache.items()) == [
-        (1, entry1), (3, entry3), (4, entry4)]
+    assert list(database_using_lrucache._cache.items()) == [(1, entry1), (3, entry3), (4, entry4)]
 
 
 def test_lfu_cache(database_using_lfucache):
@@ -699,16 +678,14 @@ def test_lfu_cache(database_using_lfucache):
     database_using_lfucache.add(entry2)
     database_using_lfucache.add(entry3)
     assert len(database_using_lfucache) == 3
-    assert list(database_using_lfucache._cache.items()) == [
-        (1, entry1), (2, entry2), (3, entry3)]
+    assert list(database_using_lfucache._cache.items()) == [(1, entry1), (2, entry2), (3, entry3)]
     # access the entries #1 and #2 to increment their counters
     database_using_lfucache.get_entry_by_id(1)
     database_using_lfucache.get_entry_by_id(2)
     entry4 = DatabaseEntry()
     database_using_lfucache.add(entry4)
     assert len(database_using_lfucache) == 3
-    assert list(database_using_lfucache._cache.items()) == [
-        (1, entry1), (2, entry2), (4, entry4)]
+    assert list(database_using_lfucache._cache.items()) == [(1, entry1), (2, entry2), (4, entry4)]
 
 
 def test_query_missing_arg(database):
@@ -726,14 +703,12 @@ def test_query(filled_database):
     foo.id = 1
     bar = Tag('bar')
     bar.id = 2
-    entries = filled_database.query(
-        attrs.Tag('foo') | attrs.Tag('bar'), sortby='id')
+    entries = filled_database.query(attrs.Tag('foo') | attrs.Tag('bar'), sortby='id')
     assert len(entries) == 4
     assert entries == [
-        DatabaseEntry(id=4, tags=[foo]),
-        DatabaseEntry(id=5, tags=[bar]),
-        DatabaseEntry(id=8, tags=[foo]),
-        DatabaseEntry(id=10, tags=[bar])]
+        DatabaseEntry(id=4, tags=[foo]), DatabaseEntry(id=5, tags=[bar]), DatabaseEntry(id=8, tags=[foo]),
+        DatabaseEntry(id=10, tags=[bar])
+    ]
 
 
 def test_download_missing_arg(database):
@@ -753,11 +728,9 @@ def test_download_empty_query_result(database, empty_query):
 def test_download(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
-    database.download(
-        *download_query, path=str(tmpdir.join('{file}.fits')), progress=True)
+    database.download(*download_query, path=str(tmpdir.join('{file}.fits')), progress=True)
     fits_pattern = str(tmpdir.join('*.fits'))
-    num_of_fits_headers = sum(
-        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+    num_of_fits_headers = sum(len(fits.get_header(file)) for file in glob.glob(fits_pattern))
     assert len(database) == num_of_fits_headers
     for entry in database:
         assert os.path.dirname(entry.path) == str(tmpdir)
@@ -771,8 +744,7 @@ def test_download(database, download_query, tmpdir):
 def test_download_duplicates(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
-    database.download(
-        *download_query, path=str(tmpdir.join('{file}.fits')), progress=True)
+    database.download(*download_query, path=str(tmpdir.join('{file}.fits')), progress=True)
     assert len(database) == 4
     download_time = database[0].download_time
     database.download(*download_query, path=str(tmpdir.join('{file}.fits')))
@@ -802,15 +774,9 @@ def test_fetch_separate_filenames():
     # Setup
     db = Database('sqlite:///')
 
-    download_query = [
-        vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
-        vso.attrs.Instrument('AIA')
-    ]
+    download_query = [vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'), vso.attrs.Instrument('AIA')]
 
-    tmp_test_dir = os.path.join(
-        sunpy.config.get('downloads', 'download_dir'),
-        'tmp_test_dir/'
-    )
+    tmp_test_dir = os.path.join(sunpy.config.get('downloads', 'download_dir'), 'tmp_test_dir/')
 
     if not os.path.isdir(tmp_test_dir):
         os.makedirs(tmp_test_dir)
@@ -857,8 +823,8 @@ def test_disable_undo(database, download_query, tmpdir):
 
 @pytest.fixture
 def default_waveunit_database():
-    unit_database = Database('sqlite:///:memory:', default_waveunit = units.meter)
-    str_database = Database('sqlite:///:memory:', default_waveunit = "m")
+    unit_database = Database('sqlite:///:memory:', default_waveunit=units.meter)
+    str_database = Database('sqlite:///:memory:', default_waveunit="m")
     return unit_database, str_database
 
 
@@ -894,11 +860,9 @@ def split_function_database():
 
 def test_split_database(split_function_database, database):
     # Send all entries with instrument='EIA' to destination_database
-    split_function_database, database = split_database(
-        split_function_database, database, vso.attrs.Instrument('EIA'))
+    split_function_database, database = split_database(split_function_database, database, vso.attrs.Instrument('EIA'))
 
-    observed_source_entries = split_function_database.query(
-        vso.attrs.Provider('xyz'), sortby='id')
+    observed_source_entries = split_function_database.query(vso.attrs.Provider('xyz'), sortby='id')
     observed_destination_entries = database.query(vso.attrs.Provider('xyz'))
 
     assert observed_source_entries == [

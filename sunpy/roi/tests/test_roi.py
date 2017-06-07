@@ -7,8 +7,7 @@ from sunpy.roi import roi
 
 
 def test_roi_instance():
-    region = roi(times=['2012-06-20 05:00', '2012-06-20 07:00'],
-                 description='dummy_roi')
+    region = roi(times=['2012-06-20 05:00', '2012-06-20 07:00'], description='dummy_roi')
     assert isinstance(region, sunpy.roi.roi)
 
 
@@ -41,8 +40,7 @@ def test_roi_times_list_two_elements():
 
 
 def test_roi_times_list_more_that_2_elements():
-    region = roi(times=['2012-06-20 05:00', '2012-06-20 07:00',
-                        '2012-06-20 09:00'])
+    region = roi(times=['2012-06-20 05:00', '2012-06-20 07:00', '2012-06-20 09:00'])
     assert (region.start_time is None)
     assert (region.end_time is None)
 
@@ -60,6 +58,5 @@ def test_roi_source():
 
 
 def test_roi_time_range():
-    region = roi(times=['2012-06-20 05:00', '2012-06-20 07:00'],
-                 description='dummy_roi')
+    region = roi(times=['2012-06-20 05:00', '2012-06-20 07:00'], description='dummy_roi')
     assert isinstance(region.time_range(), sunpy.time.TimeRange)

@@ -1,6 +1,6 @@
 """SOHO Map subclass definitions"""
 from __future__ import absolute_import, print_function, division
-#pylint: disable=W0221,W0222,E1101,E1121
+# pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -116,13 +116,9 @@ class LASCOMap(GenericMap):
         self.meta['CUNIT2'] = self.meta['CUNIT2'].lower()
 
         # Fill in some missing or broken info
-        datestr = "{date}T{time}".format(date=self.meta.get('date-obs',
-                                                            self.meta.get('date_obs')
-                                                            ),
-                                         time=self.meta.get('time-obs',
-                                                            self.meta.get('time_obs')
-                                                            )
-                                         )
+        datestr = "{date}T{time}".format(
+            date=self.meta.get('date-obs', self.meta.get('date_obs')),
+            time=self.meta.get('time-obs', self.meta.get('time_obs')))
         self.meta['date-obs'] = datestr
 
         # If non-standard Keyword is present, correct it too, for compatibility.

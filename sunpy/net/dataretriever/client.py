@@ -79,8 +79,7 @@ class QueryResponse(list):
         """
         Returns the time-span for which records are available
         """
-        return TimeRange(min(qrblock.time.start for qrblock in self),
-                         max(qrblock.time.end for qrblock in self))
+        return TimeRange(min(qrblock.time.start for qrblock in self), max(qrblock.time.end for qrblock in self))
 
     def __repr__(self):
         return repr(type(self)) + repr(self._build_table())
@@ -92,9 +91,8 @@ class QueryResponse(list):
         return self._build_table()._repr_html_()
 
     def _build_table(self):
-        columns = OrderedDict((('Start Time', []), ('End Time', []),
-                               ('Source', []), ('Instrument', []),
-                               ('Wavelength', [])))
+        columns = OrderedDict((('Start Time', []), ('End Time', []), ('Source', []), ('Instrument', []), ('Wavelength',
+                                                                                                          [])))
         for i, qrblock in enumerate(self):
             columns['Start Time'].append((qrblock.time.start).strftime(TIME_FORMAT))
             columns['End Time'].append((qrblock.time.end).strftime(TIME_FORMAT))
@@ -193,9 +191,8 @@ class GenericClient(object):
                     # unidown Clients support this, so we skip this line.
                     # Anything that hits this will require special code to
                     # convert it into the map_ dict.
-                    raise ValueError(
-                        "GenericClient can not add {} to the map_ dictionary to pass "
-                        "to the Client.".format(elem.__class__.__name__))  # pragma: no cover
+                    raise ValueError("GenericClient can not add {} to the map_ dictionary to pass "
+                                     "to the Client.".format(elem.__class__.__name__))  # pragma: no cover
         self._makeimap()
 
     def _get_url_for_timerange(cls, timerange, **kwargs):
@@ -246,8 +243,7 @@ class GenericClient(object):
 
         kwergs = copy.copy(self.map_)
         kwergs.update(kwargs)
-        urls = self._get_url_for_timerange(
-            self.map_.get('TimeRange'), **kwergs)
+        urls = self._get_url_for_timerange(self.map_.get('TimeRange'), **kwergs)
         if getattr(self, "_get_time_for_url", None):
             return QueryResponse.create(self.map_, urls, self._get_time_for_url(urls))
         return QueryResponse.create(self.map_, urls)
@@ -299,8 +295,7 @@ class GenericClient(object):
 
         # We cast to list here in list(zip... to force execution of
         # res.require([x]) at the start of the loop.
-        for aurl, ncall, fname in list(zip(urls, map(lambda x: res.require([x]),
-                                           urls), paths)):
+        for aurl, ncall, fname in list(zip(urls, map(lambda x: res.require([x]), urls), paths)):
             dobj.download(aurl, fname, ncall, error_callback)
 
         return res

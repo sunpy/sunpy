@@ -10,11 +10,12 @@ import astropy.units as u
 
 rsun_meters = sun.constants.radius.si.value
 
-__all__ = ['_convert_angle_units', 'convert_pixel_to_data', 'convert_hpc_hg',
-           'convert_data_to_pixel', 'convert_hpc_hcc', 'convert_hcc_hpc',
-           'convert_hcc_hg', 'convert_hg_hcc', 'proj_tan',
-           'convert_hg_hpc',  'convert_to_coord',
-           'get_center']
+__all__ = [
+    '_convert_angle_units', 'convert_pixel_to_data', 'convert_hpc_hg', 'convert_data_to_pixel', 'convert_hpc_hcc',
+    'convert_hcc_hpc', 'convert_hcc_hg', 'convert_hg_hcc', 'proj_tan', 'convert_hg_hpc', 'convert_to_coord',
+    'get_center'
+]
+
 
 def _convert_angle_units(unit='arcsec'):
     """Determine the conversion factor between the data units and radians."""
@@ -29,9 +30,9 @@ def _convert_angle_units(unit='arcsec'):
     else:
         raise ValueError("The units specified are either invalid or is not supported at this time.")
 
+
 @deprecated("0.8.0", alternative="sunpy.map.GenericMap.pixel_to_data")
-def convert_pixel_to_data(size, scale, reference_pixel,
-                          reference_coordinate, x=None, y=None):
+def convert_pixel_to_data(size, scale, reference_pixel, reference_coordinate, x=None, y=None):
     """
     Calculate the data coordinate for particular pixel indices.
 
@@ -76,6 +77,7 @@ def convert_pixel_to_data(size, scale, reference_pixel,
     coordx, coordy = proj_tan(coordx, coordy)
 
     return coordx, coordy
+
 
 @deprecated("0.8.0")
 def get_center(size, scale, reference_pixel, reference_coordinate):
@@ -175,8 +177,7 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
     (28876152.176423457, 23100922.071266972, 694524220.8157959)
 
     """
-    c = np.array([_convert_angle_units(unit=angle_units),
-                  _convert_angle_units(unit=angle_units)])
+    c = np.array([_convert_angle_units(unit=angle_units), _convert_angle_units(unit=angle_units)])
 
     cosx = np.cos(x * c[0])
     sinx = np.sin(x * c[0])
@@ -189,14 +190,13 @@ def convert_hpc_hcc(x, y, dsun_meters=None, angle_units='arcsec', z=False):
         dsun_meters = dsun_meters.si.value
 
     q = dsun_meters * cosy * cosx
-    distance = q ** 2 - dsun_meters ** 2 + rsun_meters ** 2
+    distance = q**2 - dsun_meters**2 + rsun_meters**2
     # distance[np.where(distance < 0)] = np.sqrt(-1)
     distance = q - np.sqrt(distance)
 
     rx = distance * cosy * sinx
     ry = distance * siny
     rz = dsun_meters - distance * cosy * cosx
-
 
     if np.all(z == True):
         return rx, ry, rz
@@ -237,7 +237,7 @@ def convert_hcc_hpc(x, y, dsun_meters=None, angle_units='arcsec'):
     """
 
     # Calculate the z coordinate by assuming that it is on the surface of the Sun
-    z = np.sqrt(rsun_meters ** 2 - x ** 2 - y ** 2)
+    z = np.sqrt(rsun_meters**2 - x**2 - y**2)
 
     if dsun_meters is None:
         dsun_meters = sun.constants.au.si.value
@@ -319,8 +319,7 @@ def convert_hcc_hg(x, y, z=None, b0_deg=0, l0_deg=0, radius=False):
 
 
 @deprecated("0.8.0", alternative="sunpy.coordinates")
-def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
-                   z=False, r=rsun_meters):
+def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False, z=False, r=rsun_meters):
     """
     Convert from Stonyhurst Heliographic coordinates (given in degrees) to
     Heliocentric-Cartesian coordinates (given in meters).
@@ -389,8 +388,7 @@ def convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, occultation=False,
 
 
 @deprecated("0.8.0", alternative="sunpy.coordinates")
-def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec',
-                   occultation=False):
+def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec', occultation=False):
     """
     Convert from Heliographic coordinates (HG) to Helioprojective-Cartesian
     (HPC).
@@ -431,6 +429,7 @@ def convert_hg_hpc(hglon_deg, hglat_deg, b0_deg=0, l0_deg=0, dsun_meters=None, a
     tempx, tempy = convert_hg_hcc(hglon_deg, hglat_deg, b0_deg=b0_deg, l0_deg=l0_deg, occultation=occultation)
     x, y = convert_hcc_hpc(tempx, tempy, dsun_meters=dsun_meters, angle_units=angle_units)
     return x, y
+
 
 @deprecated("0.8.0", alternative="sunpy.coordinates")
 def convert_hpc_hg(x, y, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec'):
@@ -483,6 +482,7 @@ def proj_tan(x, y, force=False):
     # here as a place holder for the future
     # TODO: write proj_tan function
     return x, y
+
 
 @deprecated("0.8.0", alternative="sunpy.coordinates")
 def convert_to_coord(x, y, from_coord, to_coord, b0_deg=0, l0_deg=0, dsun_meters=None, angle_units='arcsec'):

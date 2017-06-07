@@ -51,14 +51,8 @@ def test_print_table():
     This should return a string representation of lst with table elements
     left-justified and with columns separated by dashes.
     """
-    lst = [['n', 'sqrt(n)', 'n^2'],
-           ['1', '1', '1'],
-           ['4', '2', '16'],
-           ['3', '1.732', '9']]
-    expected = ('n|sqrt(n)|n^2\n'
-                '1|1      |1  \n'
-                '4|2      |16 \n'
-                '3|1.732  |9  ')
+    lst = [['n', 'sqrt(n)', 'n^2'], ['1', '1', '1'], ['4', '2', '16'], ['3', '1.732', '9']]
+    expected = ('n|sqrt(n)|n^2\n' '1|1      |1  \n' '4|2      |16 \n' '3|1.732  |9  ')
     assert util.print_table(lst, colsep='|') == expected
 
 
@@ -69,8 +63,7 @@ def test_minimal_pairs():
     """
     list1 = [0, 5, 10, 15, 20, 25]
     list2 = [3, 12, 19, 21, 26, 29]
-    assert list(util.minimal_pairs(list1, list2)) == [(1, 0, 2), (2, 1, 2),
-                                                      (4, 2, 1), (5, 4, 1)]
+    assert list(util.minimal_pairs(list1, list2)) == [(1, 0, 2), (2, 1, 2), (4, 2, 1), (5, 4, 1)]
 
 
 def test_find_next():
@@ -81,14 +74,15 @@ def test_find_next():
     """
     list1 = [1, 2, 3, 4, 5, 6, 7, 8, 9]
     list2 = [0, 2, 3, 5, 0, 0, 5, 9, 10, 15]
-    assert list(util.find_next(list1, list2, None)) == [(1, 2), (2, 3), (3, 5), (4, 5), (5, 9),
-                                                        (6, 10), (7, 15), (8, None), (9, None)]
+    assert list(util.find_next(list1, list2, None)) == [(1, 2), (2, 3), (3, 5), (4, 5), (5, 9), (6, 10), (7, 15),
+                                                        (8, None), (9, None)]
 
 
 def test_common_base():
     """
     This should return the base class common to each object in objs.
     """
+
     class TestA(object):
         """Base test class."""
         pass
@@ -100,6 +94,7 @@ def test_common_base():
     class TestC(TestA):
         """Second inherited class."""
         pass
+
     inst_b = TestB()
     inst_c = TestC()
     objs = [inst_b, inst_c]

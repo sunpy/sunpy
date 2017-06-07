@@ -7,7 +7,6 @@ from sunpy.net import vso
 from sunpy.database import attrs as db_attrs
 from sunpy.net.attr import Attr, AttrOr, AttrAnd
 
-
 __all__ = ['dump_query', 'load_query']
 
 
@@ -41,8 +40,9 @@ class QueryEncoder(json.JSONEncoder):
 
 def query_decode(json_object):
     simple_attrs = [
-        'Provider', 'Source', 'Instrument', 'Physobs', 'Pixels', 'Level',
-        'Resolution', 'Detector', 'Filter', 'Sample', 'Quicklook', 'PScale']
+        'Provider', 'Source', 'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution', 'Detector', 'Filter', 'Sample',
+        'Quicklook', 'PScale'
+    ]
     for key in simple_attrs:
         if key in json_object:
             Attr = getattr(vso.attrs, key)

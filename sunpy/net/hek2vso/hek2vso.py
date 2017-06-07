@@ -5,7 +5,6 @@
 # This module was developed with funding from the GSOC 2013 summer of code
 #
 #pylint: disable=W0142
-
 """
 This module translates the results of a HEK query into a VSO query
 and returns the results from the VSO query to the user.
@@ -93,10 +92,10 @@ def vso_attribute_parse(phrase):
     [<Time(datetime.datetime(2011, 8, 9, 7, 22, 38), datetime.datetime(2011, 8, 9, 8, 32, 2), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(210.99999999999997, 210.99999999999997, 'Angstrom')>]
     """
     try:
-        query = [vso.attrs.Time(phrase['event_starttime'],
-                                phrase['event_endtime']),
-                 vso.attrs.Source(phrase['obs_observatory']),
-                 vso.attrs.Instrument(phrase['obs_instrument'])]
+        query = [
+            vso.attrs.Time(phrase['event_starttime'], phrase['event_endtime']),
+            vso.attrs.Source(phrase['obs_observatory']), vso.attrs.Instrument(phrase['obs_instrument'])
+        ]
         avg_wave_len = phrase['obs_meanwavel'] * units.Unit(phrase['obs_wavelunit'])
         query.append(vso.attrs.Wavelength(avg_wave_len, avg_wave_len))
     except (KeyError, TypeError):
@@ -154,8 +153,7 @@ class H2VClient(object):
             sys.stdout.flush()
         self.hek_results = self.hek_client.query(*client_query)
         self._quick_clean()
-        return self.translate_and_query(self.hek_results,
-                                        limit=limit, progress=progress)
+        return self.translate_and_query(self.hek_results, limit=limit, progress=progress)
 
     def translate_and_query(self, hek_results, limit=None, progress=False):
         """

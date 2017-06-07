@@ -1,6 +1,6 @@
 """PROBA2 Map subclass definitions"""
 from __future__ import absolute_import, print_function, division
-#pylint: disable=W0221,W0222,E1101,E1121
+# pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -35,7 +35,7 @@ class SWAPMap(GenericMap):
         # It needs to be verified that these must actually be set and
         # are not already in the header.
         self.meta['detector'] = "SWAP"
-#        self.meta['instrme'] = "SWAP"
+        #        self.meta['instrme'] = "SWAP"
         self.meta['obsrvtry'] = "PROBA2"
 
         self._nickname = self.detector

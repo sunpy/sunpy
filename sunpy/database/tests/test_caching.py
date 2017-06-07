@@ -39,6 +39,7 @@ def test_custom_cache():
 
         def __len__(self):
             return len(self.queue)
+
     cache = FIFO(3)
     cache[1] = 'a'
     cache[2] = 'b'

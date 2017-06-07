@@ -1,6 +1,6 @@
-#Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-#This module was developed under funding provided by
-#Google Summer of Code 2014
+# Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
+# This module was developed under funding provided by
+# Google Summer of Code 2014
 
 import datetime
 
@@ -26,18 +26,12 @@ class GOESClient(GenericClient):
             The date to determine which satellite is active.
         """
         goes_operational = {
-            2: TimeRange('1981-01-01', '1983-04-30'),
-            5: TimeRange('1983-05-02', '1984-07-31'),
-            6: TimeRange('1983-06-01', '1994-08-18'),
-            7: TimeRange('1994-01-01', '1996-08-13'),
-            8: TimeRange('1996-03-21', '2003-06-18'),
-            9: TimeRange('1997-01-01', '1998-09-08'),
-            10: TimeRange('1998-07-10', '2009-12-01'),
-            11: TimeRange('2006-06-20', '2008-02-15'),
-            12: TimeRange('2002-12-13', '2007-05-08'),
-            13: TimeRange('2006-08-01', '2006-08-01'),
-            14: TimeRange('2009-12-02', '2010-10-04'),
-            15: TimeRange('2010-09-01', datetime.datetime.utcnow())
+            2: TimeRange('1981-01-01', '1983-04-30'), 5: TimeRange('1983-05-02', '1984-07-31'), 6: TimeRange(
+                '1983-06-01', '1994-08-18'), 7: TimeRange('1994-01-01', '1996-08-13'), 8: TimeRange(
+                    '1996-03-21', '2003-06-18'), 9: TimeRange('1997-01-01', '1998-09-08'), 10: TimeRange(
+                        '1998-07-10', '2009-12-01'), 11: TimeRange('2006-06-20', '2008-02-15'), 12: TimeRange(
+                            '2002-12-13', '2007-05-08'), 13: TimeRange('2006-08-01', '2006-08-01'), 14: TimeRange(
+                                '2009-12-02', '2010-10-04'), 15: TimeRange('2010-09-01', datetime.datetime.utcnow())
         }
 
         results = []
@@ -51,8 +45,7 @@ class GOESClient(GenericClient):
             return max(results)
         else:
             # if no satellites were found then raise an exception
-            raise ValueError('No operational GOES satellites on {}'.format(
-                date.strftime(TIME_FORMAT)))
+            raise ValueError('No operational GOES satellites on {}'.format(date.strftime(TIME_FORMAT)))
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
@@ -70,8 +63,7 @@ class GOESClient(GenericClient):
         """
         # find out which satellite and datatype to query from the query times
         base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
-        start_time = datetime.datetime.combine(timerange.start.date(),
-                                               datetime.datetime.min.time())
+        start_time = datetime.datetime.combine(timerange.start.date(), datetime.datetime.min.time())
         total_days = int(timerange.days.value) + 1
         result = list()
 
@@ -84,8 +76,7 @@ class GOESClient(GenericClient):
                 regex += "{date:%y%m%d}.fits"
             else:
                 regex += "{date:%Y%m%d}.fits"
-            url = base_url + regex.format(
-                date=date, sat=self._get_goes_sat_num(date))
+            url = base_url + regex.format(date=date, sat=self._get_goes_sat_num(date))
             result.append(url)
         return result
 

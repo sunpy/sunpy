@@ -41,22 +41,17 @@ def test_override(recwarn):
     def foo(foo, bar):
         return 'String'
 
-    pytest.raises(
-        TypeError, mm.add_dec(String, str, override=FAIL), lambda x, y: None
-    )
+    pytest.raises(TypeError, mm.add_dec(String, str, override=FAIL), lambda x, y: None)
 
     mm.add_dec(String, str, override=WARN)(lambda x, y: None)
     w = recwarn.pop(TypeWarning)
     assert 'Definition (String, str) overrides prior definition (str, str).' in str(w.message)
 
     # Illegal value for 'override'
-    pytest.raises(
-        ValueError, mm.add_dec(String, String, override=sys.maxsize), lambda x, y: None
-    )
+    pytest.raises(ValueError, mm.add_dec(String, String, override=sys.maxsize), lambda x, y: None)
 
 
 def test_invalid_arg_for_override_to_add_method():
-
     def dummy_validator():
         pass
 
@@ -68,7 +63,6 @@ def test_invalid_arg_for_override_to_add_method():
 
 
 def test_call_cached():
-
     def sum_together(first, second):
         return first + second
 

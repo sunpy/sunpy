@@ -32,11 +32,9 @@ u.add_enabled_units([det])
 
 TIME_FORMAT = config.get("general", "time_format")
 
-
 # pylint: disable=E1101,E1121,W0404,W0612,W0613
 __authors__ = ["Alex Hamilton"]
 __email__ = "####"
-
 
 # GenericTimeSeries subclass registry.
 TIMESERIES_CLASSES = OrderedDict()
@@ -133,10 +131,10 @@ class GenericTimeSeries:
             self.units = units
 
         # Validate input data
-        #self._validate_meta()
-        #self._validate_units()
+        # self._validate_meta()
+        # self._validate_units()
 
-# #### Attribute definitions #### #
+        # #### Attribute definitions #### #
 
     @property
     def source(self):
@@ -175,7 +173,7 @@ class GenericTimeSeries:
         quantity : `~astropy.units.quantity.Quantity`
         """
         values = self.data[colname].values
-        unit   = self.units[colname]
+        unit = self.units[colname]
         return u.Quantity(values, unit)
 
     def add_column(self, colname, quantity, unit=False, overwrite=True, **kwargs):
@@ -207,8 +205,8 @@ class GenericTimeSeries:
             unit = u.dimensionless_unscaled
 
         # Make a copy of all the TimeSeries components.
-        data  = copy.copy(self.data)
-        meta  = TimeSeriesMetaData(copy.copy(self.meta.metadata))
+        data = copy.copy(self.data)
+        meta = TimeSeriesMetaData(copy.copy(self.meta.metadata))
         units = copy.copy(self.units)
 
         # Add the unit to the units dictionary if already there.
@@ -237,7 +235,8 @@ class GenericTimeSeries:
         newts : `~sunpy.timeseries.TimeSeries`
             A new time series in ascending chronological order.
         """
-        return GenericTimeSeries(self.data.sort_index(**kwargs), TimeSeriesMetaData(copy.copy(self.meta.metadata)), copy.copy(self.units))
+        return GenericTimeSeries(
+            self.data.sort_index(**kwargs), TimeSeriesMetaData(copy.copy(self.meta.metadata)), copy.copy(self.units))
 
     def truncate(self, a, b=None, int=None):
         """Returns a truncated version of the TimeSeries object.
@@ -268,11 +267,11 @@ class GenericTimeSeries:
         if isinstance(a, TimeRange):
             # If we have a TimeRange, extract the values
             start = a.start
-            end   = a.end
+            end = a.end
         else:
             # Otherwise we already have the values
             start = a
-            end   = b
+            end = b
 
         # If an interval integer was given then use in truncation.
         truncated_data = self.data.sort_index()[start:end:int]
@@ -315,7 +314,8 @@ class GenericTimeSeries:
         data = self.data[[column_name]].dropna()
 
         # Build generic TimeSeries object and sanatise metadata and units.
-        object = GenericTimeSeries(data.sort_index(), TimeSeriesMetaData(copy.copy(self.meta.metadata)), copy.copy(self.units))
+        object = GenericTimeSeries(data.sort_index(),
+                                   TimeSeriesMetaData(copy.copy(self.meta.metadata)), copy.copy(self.units))
         object._sanitize_metadata()
         object._sanitize_units()
         return object
@@ -456,10 +456,9 @@ class GenericTimeSeries:
         #
         for meta_property in ('cunit1', 'cunit2', 'waveunit'):
             if (self.meta.get(meta_property) and
-                u.Unit(self.meta.get(meta_property),
-                       parse_strict='silent').physical_type == 'unknown'):
+                    u.Unit(self.meta.get(meta_property), parse_strict='silent').physical_type == 'unknown'):
 
-                warnings.warn("Unknown value for "+meta_property.upper(), Warning)
+                warnings.warn("Unknown value for " + meta_property.upper(), Warning)
 
     def _validate_units(self, units, **kwargs):
         """
@@ -482,7 +481,7 @@ class GenericTimeSeries:
             if not isinstance(units[key], astropy.units.UnitBase):
                 # If this is not a unit then this can't be a valid units dict.
                 result = False
-                warnings.warn("Invalid unit given for \""+str(key)+"\"", Warning)
+                warnings.warn("Invalid unit given for \"" + str(key) + "\"", Warning)
 
         return result
 
@@ -501,12 +500,12 @@ class GenericTimeSeries:
         for column in set(self.data.columns.tolist()) - set(self.units.keys()):
             # For all columns not present in the units dictionary.
             self.units[column] = u.dimensionless_unscaled
-            warnings.warn("Unknown units for \""+str(column)+"\"", Warning)
+            warnings.warn("Unknown units for \"" + str(column) + "\"", Warning)
 
         # Re-arrange so it's in the same order as the columns and removed unused.
         units = OrderedDict()
         for column in self.data.columns.tolist():
-            units.update({column:self.units[column]})
+            units.update({column: self.units[column]})
 
         # Now use the amended units Ordered Dictionary
         self.units = units

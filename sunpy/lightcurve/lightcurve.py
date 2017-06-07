@@ -25,7 +25,6 @@ from sunpy.extern import six
 __authors__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
 
-
 __all__ = ['LightCurve']
 
 
@@ -90,9 +89,7 @@ class LightCurve(object):
         """
         date = parse_time(time)
         url = cls._get_url_for_date(date, **kwargs)
-        filepath = cls._download(
-            url, kwargs, err="Unable to download data for specified date"
-        )
+        filepath = cls._download(url, kwargs, err="Unable to download data for specified date")
         return cls.from_file(filepath)
 
     @classmethod
@@ -106,10 +103,7 @@ class LightCurve(object):
         :return:
         """
         url = cls._get_url_for_date_range(parse_time(start), parse_time(end), **kwargs)
-        filepath = cls._download(
-            url, kwargs,
-            err="Unable to download data for specified date range"
-        )
+        filepath = cls._download(url, kwargs, err="Unable to download data for specified date range")
         result = cls.from_file(filepath)
         result.data = result.data.truncate(start, end)
         return result
@@ -121,10 +115,7 @@ class LightCurve(object):
         input to create method.
         """
         url = cls._get_url_for_date_range(timerange, **kwargs)
-        filepath = cls._download(
-            url, kwargs,
-            err = "Unable to download data for specified date range"
-        )
+        filepath = cls._download(url, kwargs, err="Unable to download data for specified date range")
         result = cls.from_file(filepath)
         result.data = result.data.truncate(timerange.start, timerange.end)
         return result
@@ -182,10 +173,7 @@ class LightCurve(object):
             The time values
         """
 
-        return cls(
-            pandas.DataFrame(data, index=index),
-            meta
-        )
+        return cls(pandas.DataFrame(data, index=index), meta)
 
     @classmethod
     def from_yesterday(cls):
@@ -259,8 +247,7 @@ class LightCurve(object):
         return figure
 
     @staticmethod
-    def _download(uri, kwargs,
-                  err='Unable to download data at specified URL'):
+    def _download(uri, kwargs, err='Unable to download data at specified URL'):
         """Attempts to download data at the specified URI.
 
         Parameters
@@ -286,8 +273,7 @@ class LightCurve(object):
         # If the file is not already there, download it
         filepath = os.path.join(download_dir, _filename)
 
-        if not(os.path.isfile(filepath)) or (overwrite and
-                                             os.path.isfile(filepath)):
+        if not (os.path.isfile(filepath)) or (overwrite and os.path.isfile(filepath)):
             try:
                 response = urllib.request.urlopen(uri)
             except (urllib.error.HTTPError, urllib.error.URLError):
@@ -436,55 +422,27 @@ LightCurve._cond_dispatch.add(
     # type is here because the class parameter is a class,
     # i.e. an instance of type (which is the base meta-class).
     [type, (six.string_types, datetime, tuple)],
-    False
-)
+    False)
 
 LightCurve._cond_dispatch.add(
-    run_cls("from_range"),
-    lambda cls, time1, time2, **kwargs: is_time(time1) and is_time(time2),
-    [type, (six.string_types, datetime, tuple),
-     (six.string_types, datetime, tuple)],
-    False
-)
+    run_cls("from_range"), lambda cls, time1, time2, **kwargs: is_time(time1) and is_time(time2),
+    [type, (six.string_types, datetime, tuple), (six.string_types, datetime, tuple)], False)
 
 LightCurve._cond_dispatch.add(
-    run_cls("from_timerange"),
-    lambda cls, timerange, **kwargs: True,
-    [type, TimeRange],
-    False
-)
+    run_cls("from_timerange"), lambda cls, timerange, **kwargs: True, [type, TimeRange], False)
 
 LightCurve._cond_dispatch.add(
-    run_cls("from_file"),
-    lambda cls, filename: os.path.exists(os.path.expanduser(filename)),
-    [type, six.string_types],
-    False
-)
+    run_cls("from_file"), lambda cls, filename: os.path.exists(os.path.expanduser(filename)), [type, six.string_types],
+    False)
 
-LightCurve._cond_dispatch.add(
-    run_cls("from_url"),
-    lambda cls, url, **kwargs: True,
-    [type, six.string_types],
-    False
-)
+LightCurve._cond_dispatch.add(run_cls("from_url"), lambda cls, url, **kwargs: True, [type, six.string_types], False)
 
 LightCurve._cond_dispatch.add(
     run_cls("from_data"),
-    lambda cls, data, index=None, meta=None: True,
-    [type, (list, dict, np.ndarray, pandas.Series), object, object],
-    False
-)
+    lambda cls, data, index=None, meta=None: True, [type, (list, dict, np.ndarray, pandas.Series), object, object],
+    False)
 
 LightCurve._cond_dispatch.add(
-    run_cls("from_dataframe"),
-    lambda cls, dataframe, meta=None: True,
-    [type, pandas.DataFrame, object],
-    False
-)
+    run_cls("from_dataframe"), lambda cls, dataframe, meta=None: True, [type, pandas.DataFrame, object], False)
 
-LightCurve._cond_dispatch.add(
-    run_cls("from_yesterday"),
-    lambda cls: True,
-    [type],
-    False
-)
+LightCurve._cond_dispatch.add(run_cls("from_yesterday"), lambda cls: True, [type], False)

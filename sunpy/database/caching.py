@@ -174,6 +174,7 @@ class LRUCache(BaseCache):
     """
     LRUCache
     """
+
     @property
     def to_be_removed(self):
         """Return the least recently used key and its corresponding value as a
@@ -221,6 +222,7 @@ class LFUCache(BaseCache):
     """
     LFUCache
     """
+
     def __init__(self, maxsize=float('inf')):
         self.usage_counter = Counter()
         BaseCache.__init__(self, maxsize)

@@ -38,11 +38,8 @@ class TestHelioviewerClient:
     def test_get_closest_image(self, client):
         """Tests getClosestImage API method"""
         # check basic query
-        im1 = client.get_closest_image('1994/01/01',
-                                       observatory='SOHO',
-                                       instrument='EIT',
-                                       detector='EIT',
-                                       measurement='195')
+        im1 = client.get_closest_image(
+            '1994/01/01', observatory='SOHO', instrument='EIT', detector='EIT', measurement='195')
         assert im1['width'] == im1['height'] == 1024
 
         # result should be same when using source id to query
@@ -55,8 +52,7 @@ class TestHelioviewerClient:
     @skip_glymur
     def test_download_jp2(self, client):
         """Tests getJP2Image API method"""
-        filepath = client.download_jp2('2020/01/01', observatory='SOHO',
-                                       instrument='MDI', detector='MDI',
-                                       measurement='continuum')
+        filepath = client.download_jp2(
+            '2020/01/01', observatory='SOHO', instrument='MDI', detector='MDI', measurement='continuum')
         map_ = sunpy.map.Map(filepath)
         assert isinstance(map_, sunpy.map.GenericMap)

@@ -9,8 +9,7 @@ from sunpy.extern import six
 
 import astropy.time
 
-__all__ = ['find_time', 'parse_time', 'is_time',
-           'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format']
+__all__ = ['find_time', 'parse_time', 'is_time', 'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format']
 
 # Mapping of time format codes to regular expressions.
 REGEX = {
@@ -26,31 +25,31 @@ REGEX = {
 }
 
 TIME_FORMAT_LIST = [
-    "%Y-%m-%dT%H:%M:%S.%f",    # Example 2007-05-04T21:08:12.999999
-    "%Y/%m/%dT%H:%M:%S.%f",    # Example 2007/05/04T21:08:12.999999
-    "%Y-%m-%dT%H:%M:%S.%fZ",   # Example 2007-05-04T21:08:12.999Z
-    "%Y-%m-%dT%H:%M:%S",       # Example 2007-05-04T21:08:12
-    "%Y/%m/%dT%H:%M:%S",       # Example 2007/05/04T21:08:12
-    "%Y%m%dT%H%M%S.%f",        # Example 20070504T210812.999999
-    "%Y%m%dT%H%M%S",           # Example 20070504T210812
-    "%Y/%m/%d %H:%M:%S",       # Example 2007/05/04 21:08:12
-    "%Y/%m/%d %H:%M",          # Example 2007/05/04 21:08
-    "%Y/%m/%d %H:%M:%S.%f",    # Example 2007/05/04 21:08:12.999999
-    "%Y-%m-%d %H:%M:%S.%f",    # Example 2007-05-04 21:08:12.999999
-    "%Y-%m-%d %H:%M:%S",       # Example 2007-05-04 21:08:12
-    "%Y-%m-%d %H:%M",          # Example 2007-05-04 21:08
-    "%Y-%b-%d %H:%M:%S",       # Example 2007-May-04 21:08:12
-    "%Y-%b-%d %H:%M",          # Example 2007-May-04 21:08
-    "%Y-%b-%d",                # Example 2007-May-04
-    "%Y-%m-%d",                # Example 2007-05-04
-    "%Y/%m/%d",                # Example 2007/05/04
-    "%d-%b-%Y",                # Example 04-May-2007
-    "%d-%b-%Y %H:%M:%S.%f",    # Example 04-May-2007 21:08:12.999999
-    "%Y%m%d_%H%M%S",           # Example 20070504_210812
-    "%Y:%j:%H:%M:%S",          # Example 2012:124:21:08:12
-    "%Y:%j:%H:%M:%S.%f",       # Example 2012:124:21:08:12.999999
-    "%Y%m%d%H%M%S",            # Example 20140101000001 (JSOC / VSO)
-    "%Y.%m.%d_%H:%M:%S_TAI",   # Example 2016.05.04_21:08:12_TAI
+    "%Y-%m-%dT%H:%M:%S.%f",  # Example 2007-05-04T21:08:12.999999
+    "%Y/%m/%dT%H:%M:%S.%f",  # Example 2007/05/04T21:08:12.999999
+    "%Y-%m-%dT%H:%M:%S.%fZ",  # Example 2007-05-04T21:08:12.999Z
+    "%Y-%m-%dT%H:%M:%S",  # Example 2007-05-04T21:08:12
+    "%Y/%m/%dT%H:%M:%S",  # Example 2007/05/04T21:08:12
+    "%Y%m%dT%H%M%S.%f",  # Example 20070504T210812.999999
+    "%Y%m%dT%H%M%S",  # Example 20070504T210812
+    "%Y/%m/%d %H:%M:%S",  # Example 2007/05/04 21:08:12
+    "%Y/%m/%d %H:%M",  # Example 2007/05/04 21:08
+    "%Y/%m/%d %H:%M:%S.%f",  # Example 2007/05/04 21:08:12.999999
+    "%Y-%m-%d %H:%M:%S.%f",  # Example 2007-05-04 21:08:12.999999
+    "%Y-%m-%d %H:%M:%S",  # Example 2007-05-04 21:08:12
+    "%Y-%m-%d %H:%M",  # Example 2007-05-04 21:08
+    "%Y-%b-%d %H:%M:%S",  # Example 2007-May-04 21:08:12
+    "%Y-%b-%d %H:%M",  # Example 2007-May-04 21:08
+    "%Y-%b-%d",  # Example 2007-May-04
+    "%Y-%m-%d",  # Example 2007-05-04
+    "%Y/%m/%d",  # Example 2007/05/04
+    "%d-%b-%Y",  # Example 04-May-2007
+    "%d-%b-%Y %H:%M:%S.%f",  # Example 04-May-2007 21:08:12.999999
+    "%Y%m%d_%H%M%S",  # Example 20070504_210812
+    "%Y:%j:%H:%M:%S",  # Example 2012:124:21:08:12
+    "%Y:%j:%H:%M:%S.%f",  # Example 2012:124:21:08:12.999999
+    "%Y%m%d%H%M%S",  # Example 20140101000001 (JSOC / VSO)
+    "%Y.%m.%d_%H:%M:%S_TAI",  # Example 2016.05.04_21:08:12_TAI
 ]
 
 
@@ -81,10 +80,7 @@ def _regex_parse_time(inp, format):
     except IndexError:
         return inp, timedelta(days=0)
     if match.group("hour") == "24":
-        if not all(
-                   _n_or_eq(_group_or_none(match, g, int), 00)
-                   for g in ["minute", "second", "microsecond"]
-                  ):
+        if not all(_n_or_eq(_group_or_none(match, g, int), 00) for g in ["minute", "second", "microsecond"]):
             raise ValueError
         from_, to = match.span("hour")
         return inp[:from_] + "00" + inp[to:], timedelta(days=1)
@@ -173,8 +169,7 @@ def parse_time(time_string, time_format='', **kwargs):
         for time_format in TIME_FORMAT_LIST:
             try:
                 try:
-                    ts, time_delta = _regex_parse_time(time_string,
-                                                       time_format)
+                    ts, time_delta = _regex_parse_time(time_string, time_format)
                 except TypeError:
                     break
                 if ts is None:
@@ -189,8 +184,7 @@ def parse_time(time_string, time_format='', **kwargs):
             # is replaced.  The Lead Developer thinks that this the try/except
             # clause is related to SunPy's database module.
             try:
-                ts, time_delta = _regex_parse_time(time_string,
-                                                       time_string_parse_format)
+                ts, time_delta = _regex_parse_time(time_string, time_string_parse_format)
                 if ts and time_delta:
                     return datetime.strptime(ts, time_string_parse_format) + time_delta
                 else:

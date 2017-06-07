@@ -5,7 +5,6 @@
 # the ESA Summer of Code (2011).
 #
 # pylint: disable=C0103,R0903
-
 """
 Attributes that can be used to construct VSO queries. Attributes are the
 fundamental building blocks of queries that, together with the two
@@ -22,16 +21,15 @@ from datetime import datetime
 from astropy import units as u
 
 from sunpy.time import TimeRange as _TimeRange
-from sunpy.net.attr import (
-    Attr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
-)
+from sunpy.net.attr import (Attr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr)
 from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time
 from sunpy.extern.six import iteritems
 
-__all__ = ['Wavelength', 'Time', 'Extent', 'Field', 'Provider', 'Source',
-           'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',
-           'Detector', 'Filter', 'Sample', 'Quicklook', 'PScale']
+__all__ = [
+    'Wavelength', 'Time', 'Extent', 'Field', 'Provider', 'Source', 'Instrument', 'Physobs', 'Pixels', 'Level',
+    'Resolution', 'Detector', 'Filter', 'Sample', 'Quicklook', 'PScale'
+]
 
 TIMEFORMAT = '%Y%m%d%H%M%S'
 
@@ -41,10 +39,9 @@ class Field(ValueAttr):
     A subclass of the value attribute.  Used in defining a decorator for the
     dummy attribute.
     """
+
     def __init__(self, fielditem):
-        ValueAttr.__init__(self, {
-            ('field', 'fielditem'): fielditem
-        })
+        ValueAttr.__init__(self, {('field', 'fielditem'): fielditem})
 
 
 class _Range(object):
@@ -71,6 +68,7 @@ class _Range(object):
 class _VSOSimpleAttr(Attr):
     """ A _SimpleAttr is an attribute that is not composite, i.e. that only
     has a single value, such as, e.g., Instrument('eit'). """
+
     def __init__(self, value):
         Attr.__init__(self)
 
@@ -80,8 +78,7 @@ class _VSOSimpleAttr(Attr):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return "<{cname!s}({val!r})>".format(
-            cname=self.__class__.__name__, val=self.value)
+        return "<{cname!s}({val!r})>".format(cname=self.__class__.__name__, val=self.value)
 
 
 class Wavelength(Attr, _Range):
@@ -137,9 +134,7 @@ class Wavelength(Attr, _Range):
         return isinstance(other, self.__class__)
 
     def __repr__(self):
-        return "<Wavelength({0!r}, {1!r}, '{2!s}')>".format(self.min.value,
-                                                            self.max.value,
-                                                            self.unit)
+        return "<Wavelength({0!r}, {1!r}, '{2!s}')>".format(self.min.value, self.max.value, self.unit)
 
 
 class Time(Attr, _Range):
@@ -161,6 +156,7 @@ class Time(Attr, _Range):
         functionality.
 
     """
+
     def __init__(self, start, end=None, near=None):
         if end is None and not isinstance(start, _TimeRange):
             raise ValueError("Specify start and end or start has to be a TimeRange")
@@ -201,7 +197,9 @@ class Extent(Attr):
     the Extent attribute is not used.
 
     """
+
     # pylint: disable=R0913
+
     def __init__(self, x, y, width, length, atype):
         Attr.__init__(self)
 
@@ -378,6 +376,7 @@ class Sample(_VSOSimpleAttr):
     value : `astropy.units.Quantity`
         A sampling rate convertible to seconds.
     """
+
     @u.quantity_input(value=u.s)
     def __init__(self, value):
         super(Sample, self).__init__(value)
@@ -400,8 +399,9 @@ class Quicklook(_VSOSimpleAttr):
     Quicklook products are *not* searched by default.   Reference:
     documentation in SSWIDL routine vso_search.pro.
     """
-    def __init__(self,value):
-        super(Quicklook,self).__init__(value)
+
+    def __init__(self, value):
+        super(Quicklook, self).__init__(value)
         if self.value:
             self.value = 1
         else:
@@ -475,32 +475,19 @@ def _create(wlk, root, api):
 # known to it. All of those convert types into ValueAttrs, which are
 # handled above by just assigning according to the keys and values of the
 # attrs member.
-walker.add_converter(Extent)(
-    lambda x: ValueAttr(
-        dict((('extent', k), v) for k, v in iteritems(vars(x)))
-    )
-)
+walker.add_converter(Extent)(lambda x: ValueAttr(dict((('extent', k), v) for k, v in iteritems(vars(x)))))
 
-walker.add_converter(Time)(
-    lambda x: ValueAttr({
-            ('time', 'start'): x.start.strftime(TIMEFORMAT),
-            ('time', 'end'): x.end.strftime(TIMEFORMAT),
-            ('time', 'near'): (
-                x.near.strftime(TIMEFORMAT) if x.near is not None else None),
-    })
-)
+walker.add_converter(Time)(lambda x: ValueAttr({
+    ('time', 'start'): x.start.strftime(TIMEFORMAT),
+    ('time', 'end'): x.end.strftime(TIMEFORMAT),
+    ('time', 'near'): (x.near.strftime(TIMEFORMAT) if x.near is not None else None), }))
 
-walker.add_converter(_VSOSimpleAttr)(
-    lambda x: ValueAttr({(x.__class__.__name__.lower(), ): x.value})
-)
+walker.add_converter(_VSOSimpleAttr)(lambda x: ValueAttr({(x.__class__.__name__.lower(), ): x.value}))
 
-walker.add_converter(Wavelength)(
-    lambda x: ValueAttr({
-            ('wave', 'wavemin'): x.min.value,
-            ('wave', 'wavemax'): x.max.value,
-            ('wave', 'waveunit'): x.unit,
-    })
-)
+walker.add_converter(Wavelength)(lambda x: ValueAttr({
+    ('wave', 'wavemin'): x.min.value,
+    ('wave', 'wavemax'): x.max.value,
+    ('wave', 'waveunit'): x.unit, }))
 
 # The idea of using a multi-method here - that means a method which dispatches
 # by type but is not attached to said class - is that the attribute classes are
@@ -538,12 +525,9 @@ def _(attr, results):
 @filter_results.add_dec(_VSOSimpleAttr)
 def _(attr, results):
     attrname = attr.__class__.__name__.lower()
-    return set(
-        item for item in results
-        # Some servers seem to omit some fields. No way to filter there.
-        if not hasattr(item, attrname) or
-        getattr(item, attrname).lower() == attr.value.lower()
-    )
+    return set(item for item in results
+               # Some servers seem to omit some fields. No way to filter there.
+               if not hasattr(item, attrname) or getattr(item, attrname).lower() == attr.value.lower())
 
 
 # The dummy attribute does not filter at all.
@@ -556,38 +540,17 @@ def _(attr, results):
 def _(attr, results):
     return set(
         it for it in results
-        if
-        it.wave.wavemax is not None
-        and
-        attr.min <= it.wave.wavemax.to(u.angstrom, equivalencies=u.spectral())
-        and
-        it.wave.wavemin is not None
-        and
-        attr.max >= it.wave.wavemin.to(u.angstrom, equivalencies=u.spectral())
-    )
+        if it.wave.wavemax is not None and attr.min <= it.wave.wavemax.to(u.angstrom, equivalencies=u.spectral()) and
+        it.wave.wavemin is not None and attr.max >= it.wave.wavemin.to(u.angstrom, equivalencies=u.spectral()))
 
 
 @filter_results.add_dec(Time)
 def _(attr, results):
-    return set(
-        it for it in results
-        if
-        it.time.end is not None
-        and
-        attr.min <= datetime.strptime(it.time.end, TIMEFORMAT)
-        and
-        it.time.start is not None
-        and
-        attr.max >= datetime.strptime(it.time.start, TIMEFORMAT)
-    )
+    return set(it for it in results
+               if it.time.end is not None and attr.min <= datetime.strptime(it.time.end, TIMEFORMAT) and
+               it.time.start is not None and attr.max >= datetime.strptime(it.time.start, TIMEFORMAT))
 
 
 @filter_results.add_dec(Extent)
 def _(attr, results):
-    return set(
-        it for it in results
-        if
-        it.extent.type is not None
-        and
-        it.extent.type.lower() == attr.type.lower()
-    )
+    return set(it for it in results if it.extent.type is not None and it.extent.type.lower() == attr.type.lower())

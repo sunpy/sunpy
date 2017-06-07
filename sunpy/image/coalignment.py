@@ -32,12 +32,11 @@ import sunpy.map
 
 __author__ = 'J. Ireland'
 
-__all__ = ['calculate_shift', 'clip_edges', 'calculate_clipping',
-           'match_template_to_layer', 'find_best_match_location',
-           'get_correlation_shifts', 'parabolic_turning_point',
-           'repair_image_nonfinite', 'apply_shifts',
-           'mapcube_coalign_by_match_template',
-           'calculate_match_template_shift']
+__all__ = [
+    'calculate_shift', 'clip_edges', 'calculate_clipping', 'match_template_to_layer', 'find_best_match_location',
+    'get_correlation_shifts', 'parabolic_turning_point', 'repair_image_nonfinite', 'apply_shifts',
+    'mapcube_coalign_by_match_template', 'calculate_match_template_shift'
+]
 
 
 def _default_fmap_function(data):
@@ -109,8 +108,7 @@ def clip_edges(data, yclips, xclips):
     nx = data.shape[1]
     # The purpose of the int below is to ensure integer type since by default
     # astropy quantities are converted to floats.
-    return data[int(yclips[0].value): ny - int(yclips[1].value),
-                int(xclips[0].value): nx - int(xclips[1].value)]
+    return data[int(yclips[0].value):ny - int(yclips[1].value), int(xclips[0].value):nx - int(xclips[1].value)]
 
 
 #
@@ -146,8 +144,7 @@ def calculate_clipping(y, x):
         columns).  The parameters y0, y1, x0, x1 have the type
         `~astropy.units.Quantity`.
     """
-    return ([_lower_clip(y.value), _upper_clip(y.value)] * u.pix,
-            [_lower_clip(x.value), _upper_clip(x.value)] * u.pix)
+    return ([_lower_clip(y.value), _upper_clip(y.value)] * u.pix, [_lower_clip(x.value), _upper_clip(x.value)] * u.pix)
 
 
 #
@@ -220,10 +217,10 @@ def find_best_match_location(corr):
     cor_max_x, cor_max_y = ij[::-1]
 
     # Get the correlation function around the maximum
-    array_around_maximum = corr[np.max([0, cor_max_y - 1]): np.min([cor_max_y + 2, corr.shape[0] - 1]),
-                                  np.max([0, cor_max_x - 1]): np.min([cor_max_x + 2, corr.shape[1] - 1])]
+    array_around_maximum = corr[np.max([0, cor_max_y - 1]):np.min([cor_max_y + 2, corr.shape[0] - 1]), np.max(
+        [0, cor_max_x - 1]):np.min([cor_max_x + 2, corr.shape[1] - 1])]
     y_shift_relative_to_maximum, x_shift_relative_to_maximum = \
-    get_correlation_shifts(array_around_maximum)
+        get_correlation_shifts(array_around_maximum)
 
     # Get shift relative to correlation array
     y_shift_relative_to_correlation_array = y_shift_relative_to_maximum + cor_max_y * u.pix
@@ -345,7 +342,7 @@ def repair_image_nonfinite(image):
 
         # Get the sub array around the bad index, and find the local mean
         # ignoring nans
-        subarray = repaired_image[y - 1: y + 2, x - 1: x + 2]
+        subarray = repaired_image[y - 1:y + 2, x - 1:x + 2]
         repaired_image[by, bx] = np.mean(subarray[np.isfinite(subarray)])
         bad_index = np.where(np.logical_not(np.isfinite(repaired_image)))
     return repaired_image
@@ -410,8 +407,7 @@ def apply_shifts(mc, yshift, xshift, clip=True, **kwargs):
     return sunpy.map.Map(new_mc, cube=True)
 
 
-def calculate_match_template_shift(mc, template=None, layer_index=0,
-                                   func=_default_fmap_function):
+def calculate_match_template_shift(mc, template=None, layer_index=0, func=_default_fmap_function):
     """
     Calculate the arcsecond shifts necessary to co-register the layers in a
     `~sunpy.map.MapCube` according to a template taken from that
@@ -459,8 +455,7 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
     # Calculate a template.  If no template is passed then define one
     # from the index layer.
     if template is None:
-        tplate = mc.maps[layer_index].data[int(ny/4): int(3*ny/4),
-                                           int(nx/4): int(3*nx/4)]
+        tplate = mc.maps[layer_index].data[int(ny / 4):int(3 * ny / 4), int(nx / 4):int(3 * nx / 4)]
     elif isinstance(template, GenericMap):
         tplate = template.data
     elif isinstance(template, np.ndarray):
@@ -505,9 +500,13 @@ def calculate_match_template_shift(mc, template=None, layer_index=0,
 
 
 # Coalignment by matching a template
-def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
-                                      func=_default_fmap_function, clip=True,
-                                      shift=None, **kwargs):
+def mapcube_coalign_by_match_template(mc,
+                                      template=None,
+                                      layer_index=0,
+                                      func=_default_fmap_function,
+                                      clip=True,
+                                      shift=None,
+                                      **kwargs):
     """
     Co-register the layers in a `~sunpy.map.MapCube` according to a template
     taken from that `~sunpy.map.MapCube`.  This method REQUIRES that
@@ -585,9 +584,7 @@ def mapcube_coalign_by_match_template(mc, template=None, layer_index=0,
     yshift_keep = np.zeros_like(xshift_keep)
 
     if shift is None:
-        shifts = calculate_match_template_shift(mc, template=template,
-                                                layer_index=layer_index,
-                                                func=func)
+        shifts = calculate_match_template_shift(mc, template=template, layer_index=layer_index, func=func)
         xshift_arcseconds = shifts['x']
         yshift_arcseconds = shifts['y']
     else:

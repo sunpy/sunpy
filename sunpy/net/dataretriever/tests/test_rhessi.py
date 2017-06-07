@@ -13,14 +13,10 @@ LCClient = rhessi.RHESSIClient()
 
 
 @pytest.mark.online
-@pytest.mark.parametrize("timerange,url_start", [
-    (TimeRange('2012/7/1', '2012/7/2'),
-     'hessidata/metadata/catalog/hsi_obssumm_20120701_050.fits'),
-    (TimeRange('2013/6/3', '2013/6/4'),
-     'hessidata/metadata/catalog/hsi_obssumm_20130603_042.fits'),
-    (TimeRange('2012/7/1', '2012/7/14'),
-     'hessidata/metadata/catalog/hsi_obssumm_20120701_050.fits')
-])
+@pytest.mark.parametrize("timerange,url_start", [(TimeRange(
+    '2012/7/1', '2012/7/2'), 'hessidata/metadata/catalog/hsi_obssumm_20120701_050.fits'), (TimeRange(
+        '2013/6/3', '2013/6/4'), 'hessidata/metadata/catalog/hsi_obssumm_20130603_042.fits'), (TimeRange(
+            '2012/7/1', '2012/7/14'), 'hessidata/metadata/catalog/hsi_obssumm_20120701_050.fits')])
 def test_get_url_for_time_range(timerange, url_start):
     urls = LCClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)
@@ -28,8 +24,7 @@ def test_get_url_for_time_range(timerange, url_start):
 
 
 def test_can_handle_query():
-    ans1 = rhessi.RHESSIClient._can_handle_query(
-        Time('2012/8/9', '2012/8/9'), Instrument('rhessi'))
+    ans1 = rhessi.RHESSIClient._can_handle_query(Time('2012/8/9', '2012/8/9'), Instrument('rhessi'))
     assert ans1 is True
     ans2 = rhessi.RHESSIClient._can_handle_query(Time('2013/2/7', '2013/2/7'))
     assert ans2 is False
@@ -57,10 +52,8 @@ def test_get(time, instrument):
 
 
 @pytest.mark.online
-@pytest.mark.parametrize(
-    "time, instrument",
-    [(a.Time('2012/10/4', '2012/10/6'), a.Instrument('rhessi')),
-     (a.Time('2013/10/5', '2013/10/7'), a.Instrument('rhessi'))])
+@pytest.mark.parametrize("time, instrument", [(a.Time('2012/10/4', '2012/10/6'), a.Instrument('rhessi')), (a.Time(
+    '2013/10/5', '2013/10/7'), a.Instrument('rhessi'))])
 def test_fido(time, instrument):
     qr = Fido.search(time, instrument)
     assert isinstance(qr, UnifiedResponse)

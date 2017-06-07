@@ -10,9 +10,15 @@ except ImportError:
     pytest = None
 
 
-def main(modulename='', coverage=False, cov_report=False,
-         online=False, offline=True, figure=False, verbose=False,
-         parallel=0, args=None):
+def main(modulename='',
+         coverage=False,
+         cov_report=False,
+         online=False,
+         offline=True,
+         figure=False,
+         verbose=False,
+         parallel=0,
+         args=None):
     """
     Execute the test suite of the sunpy package. The parameters may be
     used to restrict the number of tests that will be executed or to
@@ -55,8 +61,7 @@ def main(modulename='', coverage=False, cov_report=False,
         if os.path.exists(path):
             break
     else:
-        raise ImportError(
-            'No module named {0!r} in the sunpy package'.format(modulename))
+        raise ImportError('No module named {0!r} in the sunpy package'.format(modulename))
     assert path is not None
 
     all_args = []
@@ -83,15 +88,13 @@ def main(modulename='', coverage=False, cov_report=False,
         try:
             import xdist
         except ImportError:
-            raise ImportError(
-                'Parallel testing requires the pytest-xdist plugin '
-                'https://pypi.python.org/pypi/pytest-xdist')
+            raise ImportError('Parallel testing requires the pytest-xdist plugin '
+                              'https://pypi.python.org/pypi/pytest-xdist')
 
         try:
             parallel = int(parallel)
         except ValueError:
-            raise ValueError(
-                "parallel must be an int, got {0}".format(parallel))
+            raise ValueError("parallel must be an int, got {0}".format(parallel))
 
         all_args.extend(['-n', str(parallel)])
 

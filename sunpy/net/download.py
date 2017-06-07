@@ -4,7 +4,6 @@
 # This module was developed with funding provided by
 # the ESA Summer of Code (2011).
 
-
 from __future__ import absolute_import
 
 import os
@@ -80,10 +79,7 @@ class Downloader(object):
 
         # If max downloads has not been exceeded, begin downloading
         if num_connections < self.max_conn and self.conns < self.max_total:
-            th = threading.Thread(
-                target=partial(self._start_download, url,
-                               path, callback, errback)
-            )
+            th = threading.Thread(target=partial(self._start_download, url, path, callback, errback))
             th.daemon = True
             th.start()
             return True
@@ -183,6 +179,7 @@ class Results(object):
     """ Returned by VSOClient.get. Use .wait to wait
     for completion of download.
     """
+
     def __init__(self, callback, n=0, done=None):
         self.callback = callback
         self.n = self.total = n

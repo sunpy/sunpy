@@ -1,6 +1,6 @@
 """STEREO Map subclass definitions"""
 from __future__ import absolute_import, print_function, division
-#pylint: disable=W0221,W0222,E1121
+# pylint: disable=W0221,W0222,E1121
 
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
@@ -43,7 +43,7 @@ class EUVIMap(GenericMap):
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
-        if ('date_obs' in self.meta) and not('date-obs' in self.meta):
+        if ('date_obs' in self.meta) and not ('date-obs' in self.meta):
             self.meta['date-obs'] = self.meta['date_obs']
 
     @property
@@ -94,7 +94,7 @@ class CORMap(GenericMap):
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
-        if ('date_obs' in self.meta) and not('date-obs' in self.meta):
+        if ('date_obs' in self.meta) and not ('date-obs' in self.meta):
             self.meta['date-obs'] = self.meta['date_obs']
 
     @property
@@ -129,6 +129,7 @@ class HIMap(GenericMap):
     * `STEREO SECCHI <http://secchi.nrl.navy.mil>`_
     * `HI Instrument Page <http://www.stereo.rl.ac.uk>`_
     """
+
     def __init__(self, data, header, **kwargs):
 
         GenericMap.__init__(self, data, header, **kwargs)
@@ -140,7 +141,7 @@ class HIMap(GenericMap):
 
         # Try to identify when the FITS meta data does not have the correct
         # date FITS keyword
-        if ('date_obs' in self.meta) and not('date-obs' in self.meta):
+        if ('date_obs' in self.meta) and not ('date-obs' in self.meta):
             self.meta['date-obs'] = self.meta['date_obs']
 
     @property

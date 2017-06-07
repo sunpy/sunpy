@@ -4,7 +4,6 @@ from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr
 from sunpy.net.vso.attrs import _VSOSimpleAttr
 from sunpy.net.vso.attrs import Time, Wavelength
 
-
 __all__ = ['Series', 'Protocol', 'Notify', 'Compression', 'Segment']
 
 
@@ -43,8 +42,7 @@ class Notify(_VSOSimpleAttr):
     def __init__(self, value):
         super(Notify, self).__init__(value)
         if value.find('@') == -1:
-            raise ValueError("Notify attribute must contain an '@' symbol "
-                             "to be a valid email address")
+            raise ValueError("Notify attribute must contain an '@' symbol " "to be a valid email address")
         self.value = value
 
 
@@ -90,8 +88,7 @@ def _apply2(wlk, query, imap):
 @walker.add_applier(Wavelength)
 def _apply_wave(wlk, query, imap):
     if query.min != query.max:
-        raise ValueError(
-            "For JSOC queries Wavelength.min must equal Wavelength.max")
+        raise ValueError("For JSOC queries Wavelength.min must equal Wavelength.max")
 
     imap[query.__class__.__name__.lower()] = query.min
 

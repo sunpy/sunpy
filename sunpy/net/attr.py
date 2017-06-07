@@ -5,7 +5,6 @@
 # the ESA Summer of Code (2011).
 #
 # pylint: disable=C0103,R0903
-
 """
 Allow representation of queries as logic expressions. This module makes
 sure that attributes that are combined using the two logic operations AND (&)
@@ -34,6 +33,7 @@ from sunpy.extern.six import iteritems
 
 class Attr(object):
     """ This is the base for all attributes. """
+
     def __and__(self, other):
         if isinstance(other, AttrOr):
             return AttrOr([elem & self for elem in other.attrs])
@@ -74,6 +74,7 @@ class DummyAttr(Attr):
     for from\_, to in times:
         attr |= Time(from\_, to)
     """
+
     def __and__(self, other):
         return other
 
@@ -92,6 +93,7 @@ class DummyAttr(Attr):
 
 class AttrAnd(Attr):
     """ Attribute representing attributes ANDed together. """
+
     def __init__(self, attrs):
         Attr.__init__(self)
         self.attrs = attrs
@@ -124,6 +126,7 @@ class AttrAnd(Attr):
 
 class AttrOr(Attr):
     """ Attribute representing attributes ORed together. """
+
     def __init__(self, attrs):
         Attr.__init__(self)
         self.attrs = attrs
@@ -205,6 +208,7 @@ class AttrWalker(object):
             for type_ in types:
                 self.createmm.add(fun, (type_, ))
             return fun
+
         return _dec
 
     def add_applier(self, *types):
@@ -212,6 +216,7 @@ class AttrWalker(object):
             for type_ in types:
                 self.applymm.add(fun, (type_, ))
             return fun
+
         return _dec
 
     def add_converter(self, *types):
@@ -220,6 +225,7 @@ class AttrWalker(object):
                 self.applymm.add(self.cv_apply(fun), (type_, ))
                 self.createmm.add(self.cv_create(fun), (type_, ))
             return fun
+
         return _dec
 
     def cv_apply(self, fun):
@@ -227,6 +233,7 @@ class AttrWalker(object):
             args = list(args)
             args[1] = fun(args[1])
             return self.applymm(*args, **kwargs)
+
         return _fun
 
     def cv_create(self, fun):
@@ -234,6 +241,7 @@ class AttrWalker(object):
             args = list(args)
             args[1] = fun(args[1])
             return self.createmm(*args, **kwargs)
+
         return _fun
 
     def create(self, *args, **kwargs):

@@ -34,8 +34,7 @@ class LogicalLightCurve(LightCurve):
 
     def complement(self):
         """Return the logical complement of the original lightcurve."""
-        return LogicalLightCurve.create(np.invert(self.data),
-                                        header=self.header)
+        return LogicalLightCurve.create(np.invert(self.data), header=self.header)
 
     def times(self):
         """Returns a list of time ranges where values are True.
@@ -50,6 +49,5 @@ class LogicalLightCurve(LightCurve):
         timeranges = []
         for i in range(1, labeling[1] + 1):
             eventindices = (labeling[0] == i).nonzero()
-            timeranges.append(TimeRange(self.data.index[eventindices[0][0]],
-                                        self.data.index[eventindices[0][-1]]))
+            timeranges.append(TimeRange(self.data.index[eventindices[0][0]], self.data.index[eventindices[0][-1]]))
         return timeranges

@@ -13,7 +13,6 @@ __all__ = ['NoRHClient']
 
 
 class NoRHClient(GenericClient):
-
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns list of URLS corresponding to value of input timerange.
@@ -67,11 +66,9 @@ class NoRHClient(GenericClient):
 
         wavelength = wavelength.to(u.GHz, equivalencies=u.spectral())
         if wavelength == 34 * u.GHz:
-            final_url = urljoin(baseurl,
-                                date.strftime('%Y/%m/' + 'tcz' + '%y%m%d'))
+            final_url = urljoin(baseurl, date.strftime('%Y/%m/' + 'tcz' + '%y%m%d'))
         elif wavelength == 17 * u.GHz:
-            final_url = urljoin(baseurl,
-                                date.strftime('%Y/%m/' + 'tca' + '%y%m%d'))
+            final_url = urljoin(baseurl, date.strftime('%Y/%m/' + 'tca' + '%y%m%d'))
         else:
             raise ValueError("NORH Data can be downloaded for 17GHz or 34GHz,"
                              " see http://solar.nro.nao.ac.jp/norh/doc/manuale/node65.html")

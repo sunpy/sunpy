@@ -12,6 +12,7 @@ __all__ = ['rootdir', 'file_list', 'get_test_filepath']
 
 rootdir = os.path.join(os.path.dirname(sunpy.__file__), "data", "test")
 
+
 def get_test_filepath(filename, **kwargs):
     """
     Return the full path to a test file in the ``data/test`` directory.

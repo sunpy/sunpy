@@ -10,8 +10,7 @@ except ImportError:
     import mock
 
 from sunpy.net.helio import hec
-from sunpy.net.helio.parser import (endpoint_parser, link_test, taverna_parser, webservice_parser,
-                                    wsdl_retriever)
+from sunpy.net.helio.parser import (endpoint_parser, link_test, taverna_parser, webservice_parser, wsdl_retriever)
 from sunpy.extern.six.moves import urllib
 
 
@@ -103,10 +102,8 @@ def some_taverna_urls():
     """
     Some valid `Taverna` links, duplicates intentional
     """
-    return ('http://www.helio.uk/Taverna/hec?wsdl',
-            'http://not.a.taverna.link/helio?wsdl',
-            'http://www.abc.ord/HelioTavernaService?wsdl',
-            'http://another.not.a.taverna.link/helio?wsdl',
+    return ('http://www.helio.uk/Taverna/hec?wsdl', 'http://not.a.taverna.link/helio?wsdl',
+            'http://www.abc.ord/HelioTavernaService?wsdl', 'http://another.not.a.taverna.link/helio?wsdl',
             'http://www.helio.uk/Taverna/hec?wsdl')
 
 
@@ -118,6 +115,7 @@ def wsdl_urls():
             'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService?wsdl',
             'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_1?wsdl',
             'http://helio.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_0b?wsdl')
+
 
 # Test `sunpy.net.helio.parser.webservice_parser(...)`
 
@@ -148,6 +146,7 @@ def test_webservice_parser_get_links(mock_link_test):
     assert 'http://helio.uk/hec/HelioLongQueryService' in hec_links
     assert 'http://hec.eu/helio_hec/HelioLongQueryService' in hec_links
 
+
 # Test `sunpy.net.helio.parser.endpoint_parser(...)`
 
 
@@ -172,6 +171,7 @@ def test_endpoint_parser_get_links(mock_link_test):
     assert 'http://helio.org/hec/HS1_0b?wsdl' in endpoints
     assert 'http://helio.org/hec/HLQS?wsdl' in endpoints
     assert 'http://helio.org/hec/HLQS1_0?wsdl' in endpoints
+
 
 # `sunpy.net.helio.parser.taverna_parser(...)`
 
@@ -203,6 +203,7 @@ def test_taverna_parser_get_taverna_links(mock_endpoint_parser):
     assert 'http://www.helio.uk/Taverna/hec?wsdl' in taverna_links
     assert 'http://www.abc.ord/HelioTavernaService?wsdl' in taverna_links
 
+
 # Test `sunpy.net.helio.parser.wsdl_retriever(...)`
 
 
@@ -232,6 +233,7 @@ def test_wsdl_retriever_no_taverna_urls(mock_taverna_parser, mock_webservice_par
     """
     assert wsdl_retriever() is None
 
+
 # Test `sunpy.net.helio.parser.link_test(...)`
 
 
@@ -242,7 +244,6 @@ def test_link_test(mock_urlopen):
     """
 
     class MockFile(object):
-
         def __init__(self, content):
             self.content = content
 
@@ -255,6 +256,7 @@ def test_link_test(mock_urlopen):
     expected = '<!doctype html><title>T</title>'
     mock_urlopen.return_value = MockFile(expected)
     assert link_test('http://www/google.com') == expected
+
 
 # The following two tests for `link_test` have empty URLs as arguments. This is because
 # when running the tests under Py2.7, I was getting the following error:

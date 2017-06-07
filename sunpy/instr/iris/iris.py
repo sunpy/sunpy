@@ -39,14 +39,13 @@ def SJI_to_cube(filename, start=0, stop=None, hdu=0):
 
     hdus = sunpy.io.read_file(filename)
     # Get the time delta
-    time_range = sunpy.time.TimeRange(hdus[hdu][1]['STARTOBS'],
-                                      hdus[hdu][1]['ENDOBS'])
+    time_range = sunpy.time.TimeRange(hdus[hdu][1]['STARTOBS'], hdus[hdu][1]['ENDOBS'])
     splits = time_range.split(hdus[hdu][0].shape[0])
 
     if not stop:
         stop = len(splits)
 
-    headers = [hdus[hdu][1]]*(stop-start)
+    headers = [hdus[hdu][1]] * (stop - start)
     datas = hdus[hdu][0][start:stop]
 
     # Make the cube:

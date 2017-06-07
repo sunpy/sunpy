@@ -9,8 +9,8 @@ from sunpy.time import TimeRange
 
 timerange_a = TimeRange('2004/01/01', '2007/01/01')
 
-class TestNOAAIndicesLightCurve(object):
 
+class TestNOAAIndicesLightCurve(object):
     @pytest.mark.online
     def test_create(self):
         lc = sunpy.lightcurve.NOAAIndicesLightCurve.create()
@@ -47,7 +47,6 @@ class TestNOAAIndicesLightCurve(object):
 
 
 class TestNOAAPredictIndicesLightCurve(object):
-
     @pytest.mark.online
     def test_create(self):
         """Test creation with no input"""
@@ -76,7 +75,8 @@ class TestNOAAPredictIndicesLightCurve(object):
     def test_get_url(self):
         """Test the getting of url"""
         g = sunpy.lightcurve.NOAAPredictIndicesLightCurve
-        assert g._get_url_for_date_range(timerange_a) == 'http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt'
+        assert g._get_url_for_date_range(
+            timerange_a) == 'http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt'
 
     @pytest.mark.online
     def test_header(self):

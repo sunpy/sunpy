@@ -12,6 +12,7 @@ import inspect
 
 from sunpy.time import TimeRange, parse_time
 
+
 class TimeSeriesMetaData:
     """
     An object used to store metadata for TimeSeries objects that enables multiple
@@ -58,7 +59,9 @@ class TimeSeriesMetaData:
                 self.metadata.append((timerange, colnames, MetaDict()))
             elif isinstance(timerange, TimeRange):
                 self.metadata.append((timerange, [], MetaDict()))
-                warnings.warn("No time range given for metadata. This will mean the metadata can't be linked to columns in data.", Warning)
+                warnings.warn(
+                    "No time range given for metadata. This will mean the metadata can't be linked to columns in data.",
+                    Warning)
             else:
                 raise ValueError("You cannot create a TimeSeriesMetaData object without specifying a TimeRange")
 
@@ -78,7 +81,7 @@ class TimeSeriesMetaData:
         """
         match = True
         if len(self.metadata) == len(other.metadata):
-            for i in range(0,len(self.metadata)):
+            for i in range(0, len(self.metadata)):
                 #
                 if self.metadata[i] != other.metadata[i]:
                     match = False
@@ -132,8 +135,7 @@ class TimeSeriesMetaData:
                 if timerange.start > meta[0].start:
                     pos = i + 1
         else:
-            raise ValueError(
-                'Incorrect datatime or data for append to TimeSeriesMetaData.')
+            raise ValueError('Incorrect datatime or data for append to TimeSeriesMetaData.')
 
         # Prepare tuple to append.
         new_metadata = (timerange, columns, metadata)
@@ -183,7 +185,7 @@ class TimeSeriesMetaData:
         # Find all results with suitable timerange.
         results_indices = []
         for i, meta in enumerate(self.metadata):
-            if dt in meta[0] or not(dt):
+            if dt in meta[0] or not (dt):
                 results_indices.append(i)
 
         # Filter out only those with the correct column.
@@ -270,7 +272,7 @@ class TimeSeriesMetaData:
         """
         # Make a list of keys if only one is given
         if isinstance(keys, str):
-            keys = [ keys ]
+            keys = [keys]
 
         # Find all metadata entries for the given time/colname filters
         full_metadata = self.find(time=time, colname=colname)
@@ -282,7 +284,7 @@ class TimeSeriesMetaData:
             for curkey, value in entry[2].items():
                 for key in keys:
                     if curkey.lower() == key.lower():
-                        metadict.update({key:value})
+                        metadict.update({key: value})
             metadata.append((entry[0], entry[1], metadict))
 
         # Return a TimeSeriesMetaData object
@@ -362,7 +364,7 @@ class TimeSeriesMetaData:
         for metatuple in self.metadata:
             # Get metadata time range parameters
             start = metatuple[0].start
-            end   = metatuple[0].end
+            end = metatuple[0].end
             out_of_range = False
 
             # Find truncations
@@ -430,7 +432,7 @@ class TimeSeriesMetaData:
         end = self.metadata[0][0].end
         for metatuple in self.metadata:
             if end < metatuple[0].end:
-               end = metatuple[0].end
+                end = metatuple[0].end
         return TimeRange(start, end)
 
     def _remove_columns(self, colnames):
@@ -443,7 +445,7 @@ class TimeSeriesMetaData:
         """
         # Parameters
         if isinstance(colnames, str):
-            colnames = [ colnames ]
+            colnames = [colnames]
 
         # Create a new list with all metadata entries without colnames
         reduced = []
@@ -459,8 +461,6 @@ class TimeSeriesMetaData:
 
         # Update the original list
         self.metadata = reduced
-
-
 
     def _rename_column(self, old, new):
         """
@@ -480,7 +480,7 @@ class TimeSeriesMetaData:
             colnames = [w.replace(old, new) for w in colnames]
 
             # Replace values
-            self.metadata[i] = ( self.metadata[i][0], colnames, self.metadata[i][2] )
+            self.metadata[i] = (self.metadata[i][0], colnames, self.metadata[i][2])
 
     def _validate_meta(self, meta):
         """
@@ -490,13 +490,15 @@ class TimeSeriesMetaData:
         indices = range(0, len(self.metadata))
         for i, j in itertools.combinations(indices, 2):
             # Check if the TimeRanges overlap
-            if not ((self.metadata[i][0].end <= self.metadata[j][0].start) or (self.metadata[i][0].start >= self.metadata[j][0].end)):
+            if not ((self.metadata[i][0].end <= self.metadata[j][0].start) or
+                    (self.metadata[i][0].start >= self.metadata[j][0].end)):
                 # Check column headings overlap
                 col_overlap = list(set(self.metadata[i][1]) & set(self.metadata[j][1]))
                 # If we have an overlap then show a warning
                 if col_overlap:
-                    warnings.warn_explicit('Metadata entries ' + str(i) + ' and ' + str(j) + ' contain interleaved data.',
-                                           Warning, __file__, inspect.currentframe().f_back.f_lineno)
+                    warnings.warn_explicit(
+                        'Metadata entries ' + str(i) + ' and ' + str(j) + ' contain interleaved data.', Warning,
+                        __file__, inspect.currentframe().f_back.f_lineno)
 
         # ToDo: Check all entries are in tr.start time order.
 
@@ -517,8 +519,9 @@ class TimeSeriesMetaData:
         """
         # Parameters
         colspace = ' | '
-        liswidths = (26, 15, width-2-2*len(colspace) - 26 - 15)
-        colheadings = '|' + 'TimeRange'.ljust(100)[:liswidths[0]] + colspace + 'Columns'.ljust(100)[:liswidths[1]] + colspace + 'Meta'.ljust(100)[:liswidths[2]]  + '|'
+        liswidths = (26, 15, width - 2 - 2 * len(colspace) - 26 - 15)
+        colheadings = '|' + 'TimeRange'.ljust(100)[:liswidths[0]] + colspace + 'Columns'.ljust(
+            100)[:liswidths[1]] + colspace + 'Meta'.ljust(100)[:liswidths[2]] + '|'
         rowspace = "-" * (liswidths[0] + len(colspace) + liswidths[1] + len(colspace) + liswidths[2])
         rowspace = '|' + rowspace + '|'
 
@@ -529,10 +532,10 @@ class TimeSeriesMetaData:
         for entry in self.metadata:
             # Make lists for each of the columns for each metadata entry
             # Padded to the widths given in liswidths
-            lis_range = [ str(entry[0].start), '            to            ', str(entry[0].end) ]
+            lis_range = [str(entry[0].start), '            to            ', str(entry[0].end)]
             # Shorten TimeRange representation if depth of only 2
             if depth == 2:
-                lis_range = [ str(entry[0].start), str(entry[0].end) ]
+                lis_range = [str(entry[0].start), str(entry[0].end)]
             liscols = []
             for col in entry[1]:
                 liscols.append(col.ljust(100)[:liswidths[1]])
@@ -545,7 +548,7 @@ class TimeSeriesMetaData:
             for i in range(0, depth):
                 # What to do in the event any of the lists have more entries
                 # then the current depth
-                if len(lis_range) > i or len(entry[1]) > i or len(lismeta) > i :
+                if len(lis_range) > i or len(entry[1]) > i or len(lismeta) > i:
                     # The start of the line Str is just a vertical bar/pipe
                     line = '|'
                     # Check we have a time range entry to print
@@ -612,5 +615,6 @@ class TimeSeriesMetaData:
 
     def __repr__(self):
         return self.to_string()
+
     def __str__(self):
         return self.to_string()

@@ -4,7 +4,6 @@
 #
 # This module was developed with funding from the GSOC 2013 summer of code
 #
-
 """
 This module is meant to parse the HELIO registry and return WSDL endpoints to
 facilitate the interfacing between further modules and HELIO.

@@ -10,13 +10,13 @@ from astropy.coordinates import SkyCoord
 def test_hpc_hpc():
     # Use some unphysical values for solar parameters for testing, to make it
     # easier to calculate expected results.
-    rsun = 1*u.m
-    D0 = 1*u.km
-    L0 = 1*u.deg
-    observer_in = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, radius=D0)
-    observer_out = HeliographicStonyhurst(lat=0*u.deg, lon=L0, radius=D0)
+    rsun = 1 * u.m
+    D0 = 1 * u.km
+    L0 = 1 * u.deg
+    observer_in = HeliographicStonyhurst(lat=0 * u.deg, lon=0 * u.deg, radius=D0)
+    observer_out = HeliographicStonyhurst(lat=0 * u.deg, lon=L0, radius=D0)
 
-    hpc_in = Helioprojective(0*u.arcsec, 0*u.arcsec, rsun=rsun, observer=observer_in)
+    hpc_in = Helioprojective(0 * u.arcsec, 0 * u.arcsec, rsun=rsun, observer=observer_in)
     hpc_out = Helioprojective(observer=observer_out, rsun=rsun)
 
     hpc_new = hpc_in.transform_to(hpc_out)
@@ -36,13 +36,13 @@ def test_hpc_hpc():
 def test_hpc_hpc_sc():
     # Use some unphysical values for solar parameters for testing, to make it
     # easier to calculate expected results.
-    rsun = 1*u.m
-    D0 = 1*u.km
-    L0 = 1*u.deg
-    observer_in = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, radius=D0)
-    observer_out = HeliographicStonyhurst(lat=0*u.deg, lon=L0, radius=D0)
+    rsun = 1 * u.m
+    D0 = 1 * u.km
+    L0 = 1 * u.deg
+    observer_in = HeliographicStonyhurst(lat=0 * u.deg, lon=0 * u.deg, radius=D0)
+    observer_out = HeliographicStonyhurst(lat=0 * u.deg, lon=L0, radius=D0)
 
-    sc_in = SkyCoord(0*u.arcsec, 0*u.arcsec, rsun=rsun, observer=observer_in, frame='helioprojective')
+    sc_in = SkyCoord(0 * u.arcsec, 0 * u.arcsec, rsun=rsun, observer=observer_in, frame='helioprojective')
     hpc_out = Helioprojective(observer=observer_out, rsun=rsun)
 
     hpc_new = sc_in.transform_to(hpc_out)
@@ -52,7 +52,7 @@ def test_hpc_hpc_sc():
 
 def test_hpc_hpc_null():
 
-    hpc_in = Helioprojective(0*u.arcsec, 0*u.arcsec)
+    hpc_in = Helioprojective(0 * u.arcsec, 0 * u.arcsec)
     hpc_out = Helioprojective()
 
     hpc_new = hpc_in.transform_to(hpc_out)

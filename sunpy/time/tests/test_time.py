@@ -33,10 +33,8 @@ def test_parse_time_tuple():
 
 
 def test_parse_time_int():
-    assert parse_time(765548612.0, 'utime') == datetime(2003, 4, 5,
-                                                        12, 23, 32)
-    assert parse_time(1009685652.0, 'utime') == datetime(2010, 12, 30,
-                                                         4, 14, 12)
+    assert parse_time(765548612.0, 'utime') == datetime(2003, 4, 5, 12, 23, 32)
+    assert parse_time(1009685652.0, 'utime') == datetime(2010, 12, 30, 4, 14, 12)
 
 
 def test_parse_time_pandas_timestamp():
@@ -94,22 +92,14 @@ def test_parse_time_now():
 
 def test_ISO():
     assert parse_time('1966-02-03') == LANDING
-    assert (
-        parse_time('1966-02-03T20:17:40') == datetime(1966, 2, 3, 20, 17, 40)
-    )
-    assert (
-        parse_time('19660203T201740') == datetime(1966, 2, 3, 20, 17, 40)
-    )
+    assert (parse_time('1966-02-03T20:17:40') == datetime(1966, 2, 3, 20, 17, 40))
+    assert (parse_time('19660203T201740') == datetime(1966, 2, 3, 20, 17, 40))
 
     lst = [
-        ('2007-05-04T21:08:12.999999',
-         datetime(2007, 5, 4, 21, 8, 12, 999999)),
-        ('20070504T210812.999999',
-         datetime(2007, 5, 4, 21, 8, 12, 999999)),
-        ('2007/05/04 21:08:12.999999',
-         datetime(2007, 5, 4, 21, 8, 12, 999999)),
-        ('2007-05-04 21:08:12.999999',
-         datetime(2007, 5, 4, 21, 8, 12, 999999)),
+        ('2007-05-04T21:08:12.999999', datetime(2007, 5, 4, 21, 8, 12, 999999)),
+        ('20070504T210812.999999', datetime(2007, 5, 4, 21, 8, 12, 999999)),
+        ('2007/05/04 21:08:12.999999', datetime(2007, 5, 4, 21, 8, 12, 999999)),
+        ('2007-05-04 21:08:12.999999', datetime(2007, 5, 4, 21, 8, 12, 999999)),
         ('2007/05/04 21:08:12', datetime(2007, 5, 4, 21, 8, 12)),
         ('2007-05-04 21:08:12', datetime(2007, 5, 4, 21, 8, 12)),
         ('2007-05-04 21:08', datetime(2007, 5, 4, 21, 8)),
@@ -160,14 +150,10 @@ def test_day_of_year():
 
 
 def test_time_string_parse_format():
-    assert parse_time('01/06/2012',
-                      _time_string_parse_format='%d/%m/%Y') == datetime(2012, 6, 1, 0, 0)
-    assert parse_time('06/01/2012',
-                      _time_string_parse_format='%d/%m/%Y') == datetime(2012, 1, 6, 0, 0)
-    assert parse_time('06/01/85',
-                      _time_string_parse_format='%d/%m/%y') == datetime(1985, 1, 6, 0, 0)
-    assert parse_time('6/1/85',
-                      _time_string_parse_format='%d/%m/%y') == datetime(1985, 1, 6, 0, 0)
+    assert parse_time('01/06/2012', _time_string_parse_format='%d/%m/%Y') == datetime(2012, 6, 1, 0, 0)
+    assert parse_time('06/01/2012', _time_string_parse_format='%d/%m/%Y') == datetime(2012, 1, 6, 0, 0)
+    assert parse_time('06/01/85', _time_string_parse_format='%d/%m/%y') == datetime(1985, 1, 6, 0, 0)
+    assert parse_time('6/1/85', _time_string_parse_format='%d/%m/%y') == datetime(1985, 1, 6, 0, 0)
     with pytest.raises(ValueError):
         parse_time('01/06/2012')
     with pytest.raises(ValueError):
@@ -178,9 +164,7 @@ def test_time_string_parse_format():
 
 
 def test__iter_empty():
-
     class CountDown(object):
-
         def __init__(self, start_from=0):
             self.start = start_from
 
@@ -195,12 +179,11 @@ def test__iter_empty():
 
             return self.start
 
-        next = __next__   # Support Py2.x
+        next = __next__  # Support Py2.x
 
     one_count = CountDown(1)
     assert time.time._iter_empty(one_count) is False
     assert time.time._iter_empty(one_count) is True
-
 
 
 def test_is_time():
@@ -217,8 +200,7 @@ def test_is_time_in_given_format():
 
 
 def test_get_day():
-    end_of_day = datetime(year=2017, month=1, day=1, hour=23, minute=59, second=59,
-                          microsecond=999)
+    end_of_day = datetime(year=2017, month=1, day=1, hour=23, minute=59, second=59, microsecond=999)
 
     begining_of_day = get_day(end_of_day)
     assert begining_of_day.year == 2017

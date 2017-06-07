@@ -1,6 +1,6 @@
 """Hinode XRT and SOT Map subclass definitions"""
 from __future__ import absolute_import, print_function, division
-#pylint: disable=W0221,W0222,E1101,E1121
+# pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = ["Jack Ireland, Jose Ivan Campos-Rozo, David Perez-Suarez"]
 __email__ = "jack.ireland@nasa.gov"
@@ -40,10 +40,8 @@ class XRTMap(GenericMap):
     * `XRT Analysis Guide <http://xrt.cfa.harvard.edu/science/tutorials.php>`_
     * `Coronal Temperature Diagnostic Capability of the Hinode/X-Ray Telescope Based on Self-Consistent Calibration <http://arxiv.org/pdf/1011.2867.pdf>`_
     """
-    filter_wheel1_measurements = ["Al_med", "Al_poly", "Be_med",
-                                  "Be_thin", "C_poly", "Open"]
-    filter_wheel2_measurements = ["Open", "Al_mesh", "Al_thick",
-                                  "Be_thick", "Gband", "Ti_poly"]
+    filter_wheel1_measurements = ["Al_med", "Al_poly", "Be_med", "Be_thin", "C_poly", "Open"]
+    filter_wheel2_measurements = ["Open", "Al_mesh", "Al_thick", "Be_thick", "Gband", "Ti_poly"]
 
     def __init__(self, data, header, **kwargs):
 
@@ -63,7 +61,7 @@ class XRTMap(GenericMap):
         fw2 = fw2.replace("_", " ")
 
         self.meta['detector'] = "XRT"
-#        self.meta['instrume'] = "XRT"
+        #        self.meta['instrume'] = "XRT"
         self.meta['telescop'] = "Hinode"
         self.meta['wavelnth'] = np.nan
         self.meta['waveunit'] = 'keV'
@@ -105,15 +103,15 @@ class SOTMap(GenericMap):
 
     Instruments = ['SOT/WB', 'SOT/NB', 'SOT/SP', 'SOT/CT']
 
-    Waves = ['6302A', 'BFI no move', 'CN bandhead 3883',
-             'Ca II H line', 'G band 4305', 'NFI no move',
-             'TF Fe I 6302', 'TF Mg I 5172', 'TF Na I 5896',
-             'blue cont 4504', 'green cont 5550', 'red cont 6684']
+    Waves = [
+        '6302A', 'BFI no move', 'CN bandhead 3883', 'Ca II H line', 'G band 4305', 'NFI no move', 'TF Fe I 6302',
+        'TF Mg I 5172', 'TF Na I 5896', 'blue cont 4504', 'green cont 5550', 'red cont 6684'
+    ]
 
-    Observation_Type = ['FG (simple)', 'FG focus scan',
-                        'FG shuttered I and V', 'FG shutterless I and V',
-                        'FG shutterless I and V with 0.2s intervals',
-                        'FG shutterless Stokes', 'SP IQUV 4D array']
+    Observation_Type = [
+        'FG (simple)', 'FG focus scan', 'FG shuttered I and V', 'FG shutterless I and V',
+        'FG shutterless I and V with 0.2s intervals', 'FG shutterless Stokes', 'SP IQUV 4D array'
+    ]
 
     def __init__(self, data, header, **kwargs):
         GenericMap.__init__(self, data, header, **kwargs)
@@ -128,10 +126,11 @@ class SOTMap(GenericMap):
         # 'WB' -> red
         # 'NB'(0 = red); (>0 = gray), # nb has 1 stokes I, the rest quv
         # 'SP' (<=1 = red); (>1 = gray) #sp has 2 stokes I, the rest quv
-        color = {'SOT/WB': 'intensity',
-                 'SOT/NB': 'intensity',  # For the 1st dimension
-                 'SOT/SP': 'intensity',  # For the 1st 2 dimensions
-                 }
+        color = {
+            'SOT/WB': 'intensity',
+            'SOT/NB': 'intensity',  # For the 1st dimension
+            'SOT/SP': 'intensity',  # For the 1st 2 dimensions
+        }
 
         self.plot_settings['cmap'] = cm.get_cmap('hinodesot' + color[self.instrument])
 

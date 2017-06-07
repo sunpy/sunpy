@@ -26,22 +26,19 @@ from sunpy.extern.six.moves import urllib
 from sunpy.extern.six.moves.urllib.request import urlopen
 from sunpy.extern.six.moves.urllib.error import URLError
 
-__all__ = ['get_obssumm_dbase_file', 'parse_obssumm_dbase_file',
-           'get_obssum_filename', 'get_obssumm_file', 'parse_obssumm_file',
-           'backprojection']
+__all__ = [
+    'get_obssumm_dbase_file', 'parse_obssumm_dbase_file', 'get_obssum_filename', 'get_obssumm_file',
+    'parse_obssumm_file', 'backprojection'
+]
 
 # Measured fixed grid parameters
-grid_pitch = (4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164,
-              211.609, 366.646)
-grid_orientation = (3.53547, 2.75007, 3.53569, 2.74962, 3.92596, 2.35647,
-                    0.786083, 0.00140674, 1.57147)
+grid_pitch = (4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164, 211.609, 366.646)
+grid_orientation = (3.53547, 2.75007, 3.53569, 2.74962, 3.92596, 2.35647, 0.786083, 0.00140674, 1.57147)
 
-data_servers = ('http://hesperia.gsfc.nasa.gov/hessidata/',
-                'http://hessi.ssl.berkeley.edu/hessidata/',
+data_servers = ('http://hesperia.gsfc.nasa.gov/hessidata/', 'http://hessi.ssl.berkeley.edu/hessidata/',
                 'http://soleil.i4ds.ch/hessidata/')
 
-lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red',
-                 'navy', 'orange', 'green')
+lc_linecolors = ('black', 'pink', 'green', 'blue', 'brown', 'red', 'navy', 'orange', 'green')
 
 
 def get_base_url():
@@ -160,13 +157,9 @@ def parse_obssumm_dbase_file(filename):
             number_of_packets.append(int(row[8]))
 
         return {
-            headerline[0].lower(): obssumm_filename,
-            headerline[1].lower(): orbit_start,
-            headerline[2].lower(): orbit_end,
-            headerline[3].lower(): start_time,
-            headerline[4].lower(): end_time,
-            headerline[5].lower(): status_flag,
-            headerline[6].lower(): number_of_packets
+            headerline[0].lower(): obssumm_filename, headerline[1].lower(): orbit_start,
+            headerline[2].lower(): orbit_end, headerline[3].lower(): start_time, headerline[4].lower(): end_time,
+            headerline[5].lower(): status_flag, headerline[6].lower(): number_of_packets
         }
 
 
@@ -206,7 +199,10 @@ def get_obssum_filename(time_range):
     index_number_start = _time_range.start.day - 1
     index_number_end = _time_range.end.day - 1
 
-    return [get_base_url() + data_location + filename + 's' for filename in result.get('filename')[index_number_start:index_number_end]]
+    return [
+        get_base_url() + data_location + filename + 's'
+        for filename in result.get('filename')[index_number_start:index_number_end]
+    ]
 
 
 def get_obssumm_file(time_range):
@@ -280,9 +276,10 @@ def parse_obssumm_file(filename):
     time_interval_sec = afits[5].data.field('TIME_INTV')[0]
     # label_unit = fits[5].data.field('DIM1_UNIT')[0]
     # labels = fits[5].data.field('DIM1_IDS')
-    labels = ['3 - 6 keV', '6 - 12 keV', '12 - 25 keV', '25 - 50 keV',
-              '50 - 100 keV', '100 - 300 keV', '300 - 800 keV', '800 - 7000 keV',
-              '7000 - 20000 keV']
+    labels = [
+        '3 - 6 keV', '6 - 12 keV', '12 - 25 keV', '25 - 50 keV', '50 - 100 keV', '100 - 300 keV', '300 - 800 keV',
+        '800 - 7000 keV', '7000 - 20000 keV'
+    ]
 
     # The data stored in the FITS file are "compressed" countrates stored as
     # one byte
@@ -291,7 +288,7 @@ def parse_obssumm_file(filename):
     countrate = uncompress_countrate(compressed_countrate)
     dim = np.array(countrate[:, 0]).size
 
-    time_array = [reference_time_ut + timedelta(0,time_interval_sec * a) for a in np.arange(dim)]
+    time_array = [reference_time_ut + timedelta(0, time_interval_sec * a) for a in np.arange(dim)]
 
     # TODO generate the labels for the dict automatically from labels
     data = {'time': time_array, 'data': countrate, 'labels': labels}
@@ -320,9 +317,10 @@ def parse_obssumm_hdulist(hdulist):
     time_interval_sec = hdulist[5].data.field('TIME_INTV')[0]
     # label_unit = fits[5].data.field('DIM1_UNIT')[0]
     # labels = fits[5].data.field('DIM1_IDS')
-    labels = ['3 - 6 keV', '6 - 12 keV', '12 - 25 keV', '25 - 50 keV',
-              '50 - 100 keV', '100 - 300 keV', '300 - 800 keV',
-              '800 - 7000 keV', '7000 - 20000 keV']
+    labels = [
+        '3 - 6 keV', '6 - 12 keV', '12 - 25 keV', '25 - 50 keV', '50 - 100 keV', '100 - 300 keV', '300 - 800 keV',
+        '800 - 7000 keV', '7000 - 20000 keV'
+    ]
 
     # The data stored in the fits file are "compressed" countrates stored as
     # one byte
@@ -356,9 +354,9 @@ def uncompress_countrate(compressed_countrate):
     lkup = np.zeros(256, dtype='int')
     sum = 0
     for i in range(0, 16):
-        lkup[16 * i:16 * (i + 1)] = ll * 2 ** i + sum
+        lkup[16 * i:16 * (i + 1)] = ll * 2**i + sum
         if i < 15:
-            sum = lkup[16 * (i + 1) - 1] + 2 ** i
+            sum = lkup[16 * (i + 1) - 1] + 2**i
     return lkup[compressed_countrate]
 
 
@@ -377,12 +375,10 @@ def hsi_linecolors():
     ----------
     hsi_linecolors.pro `<http://hesperia.gsfc.nasa.gov/ssw/hessi/idl/gen/hsi_linecolors.pro`_
     """
-    return ('black', 'magenta', 'lime', 'cyan', 'y', 'red', 'blue', 'orange',
-            'olive')
+    return ('black', 'magenta', 'lime', 'cyan', 'y', 'red', 'blue', 'orange', 'olive')
 
 
-def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
-                 image_dim=(64, 64)):
+def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.), image_dim=(64, 64)):
     """
     Given a stacked calibrated event list fits file create a back
     projection image for an individual detectors. This function is used by
@@ -416,8 +412,8 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
 
     fits_detector_index = detector + 2
     detector_index = detector - 1
-    grid_angle = np.pi/2. - grid_orientation[detector_index]
-    harm_ang_pitch = grid_pitch[detector_index]/1
+    grid_angle = np.pi / 2. - grid_orientation[detector_index]
+    harm_ang_pitch = grid_pitch[detector_index] / 1
 
     phase_map_center = afits[fits_detector_index].data.field('phase_map_ctr')
     this_roll_angle = afits[fits_detector_index].data.field('roll_angle')
@@ -425,22 +421,21 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
     grid_transmission = afits[fits_detector_index].data.field('gridtran')
     count = afits[fits_detector_index].data.field('count')
 
-    tempa = (np.arange(image_dim[0]*image_dim[1]) % image_dim[0]) - (image_dim[0]-1)/2.
-    tempb = tempa.reshape(image_dim[0], image_dim[1]).transpose().reshape(image_dim[0]*image_dim[1])
+    tempa = (np.arange(image_dim[0] * image_dim[1]) % image_dim[0]) - (image_dim[0] - 1) / 2.
+    tempb = tempa.reshape(image_dim[0], image_dim[1]).transpose().reshape(image_dim[0] * image_dim[1])
 
-    pixel = np.array(list(zip(tempa, tempb)))*pixel_size[0]
-    phase_pixel = (2*np.pi/harm_ang_pitch)*(np.outer(pixel[:, 0], np.cos(this_roll_angle - grid_angle)) -
-                                            np.outer(pixel[:, 1], np.sin(this_roll_angle - grid_angle))) + phase_map_center
+    pixel = np.array(list(zip(tempa, tempb))) * pixel_size[0]
+    phase_pixel = (2 * np.pi / harm_ang_pitch) * (np.outer(pixel[:, 0], np.cos(
+        this_roll_angle - grid_angle)) - np.outer(pixel[:, 1], np.sin(this_roll_angle - grid_angle))) + phase_map_center
     phase_modulation = np.cos(phase_pixel)
     gridmod = modamp * grid_transmission
-    probability_of_transmission = gridmod*phase_modulation + grid_transmission
+    probability_of_transmission = gridmod * phase_modulation + grid_transmission
     bproj_image = np.inner(probability_of_transmission, count).reshape(image_dim)
 
     return bproj_image
 
 
-def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
-                   image_dim=(64, 64) * u.pix):
+def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec, image_dim=(64, 64) * u.pix):
     """
     Given a stacked calibrated event list fits file create a back
     projection image.
@@ -489,30 +484,18 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
 
     # find out what detectors were used
     det_index_mask = afits[1].data.field('det_index_mask')[0]
-    detector_list = (np.arange(9)+1) * np.array(det_index_mask)
+    detector_list = (np.arange(9) + 1) * np.array(det_index_mask)
     for detector in detector_list:
         if detector > 0:
-            image = image + _backproject(calibrated_event_list, detector=detector, pixel_size=pixel_size.value,
-                                         image_dim=image_dim.value)
+            image = image + _backproject(
+                calibrated_event_list, detector=detector, pixel_size=pixel_size.value, image_dim=image_dim.value)
 
     dict_header = {
-        "DATE-OBS": time_range.center().strftime("%Y-%m-%d %H:%M:%S"),
-        "CDELT1": pixel_size[0],
-        "NAXIS1": image_dim[0],
-        "CRVAL1": xyoffset[0],
-        "CRPIX1": image_dim[0].value/2 + 0.5,
-        "CUNIT1": "arcsec",
-        "CTYPE1": "HPLN-TAN",
-        "CDELT2": pixel_size[1],
-        "NAXIS2": image_dim[1],
-        "CRVAL2": xyoffset[1],
-        "CRPIX2": image_dim[0].value/2 + 0.5,
-        "CUNIT2": "arcsec",
-        "CTYPE2": "HPLT-TAN",
-        "HGLT_OBS": 0,
-        "HGLN_OBS": 0,
-        "RSUN_OBS": solar_semidiameter_angular_size(time_range.center()).value,
-        "RSUN_REF": sunpy.sun.constants.radius.value,
+        "DATE-OBS": time_range.center().strftime("%Y-%m-%d %H:%M:%S"), "CDELT1": pixel_size[0], "NAXIS1": image_dim[0],
+        "CRVAL1": xyoffset[0], "CRPIX1": image_dim[0].value / 2 + 0.5, "CUNIT1": "arcsec", "CTYPE1": "HPLN-TAN",
+        "CDELT2": pixel_size[1], "NAXIS2": image_dim[1], "CRVAL2": xyoffset[1], "CRPIX2": image_dim[0].value / 2 + 0.5,
+        "CUNIT2": "arcsec", "CTYPE2": "HPLT-TAN", "HGLT_OBS": 0, "HGLN_OBS": 0, "RSUN_OBS":
+            solar_semidiameter_angular_size(time_range.center()).value, "RSUN_REF": sunpy.sun.constants.radius.value,
         "DSUN_OBS": sunearth_distance(time_range.center()) * sunpy.sun.constants.au.value
     }
 

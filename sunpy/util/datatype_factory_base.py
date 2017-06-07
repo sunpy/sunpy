@@ -41,8 +41,7 @@ class BasicRegistrationFactory(object):
 
     """
 
-    def __init__(self, default_widget_type=None,
-                 additional_validation_functions=[], registry=None):
+    def __init__(self, default_widget_type=None, additional_validation_functions=[], registry=None):
 
         if registry is None:
             self.registry = dict()
@@ -51,8 +50,7 @@ class BasicRegistrationFactory(object):
 
         self.default_widget_type = default_widget_type
 
-        self.validation_functions = (['_factory_validation_function'] +
-                                     additional_validation_functions)
+        self.validation_functions = (['_factory_validation_function'] + additional_validation_functions)
 
     def __call__(self, *args, **kwargs):
         """ Method for running the factory.

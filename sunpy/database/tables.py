@@ -24,23 +24,19 @@ from sunpy.extern import six
 
 from sunpy import config
 
-
 TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = [
-    'WaveunitNotFoundError', 'WaveunitNotConvertibleError', 'JSONDump',
-    'FitsHeaderEntry', 'FitsKeyComment', 'Tag', 'DatabaseEntry',
-    'entries_from_query_result', 'entries_from_file', 'entries_from_dir',
-    'display_entries']
+    'WaveunitNotFoundError', 'WaveunitNotConvertibleError', 'JSONDump', 'FitsHeaderEntry', 'FitsKeyComment', 'Tag',
+    'DatabaseEntry', 'entries_from_query_result', 'entries_from_file', 'entries_from_dir', 'display_entries'
+]
 
 Base = declarative_base()
 
 # required for the many-to-many relation on tags:entries
-association_table = Table(
-                          'association', Base.metadata,
+association_table = Table('association', Base.metadata,
                           Column('tag_name', String, ForeignKey('tags.name')),
-                          Column('entry_id', Integer, ForeignKey('data.id'))
-                         )
+                          Column('entry_id', Integer, ForeignKey('data.id')))
 
 
 class WaveunitNotFoundError(Exception):
@@ -48,6 +44,7 @@ class WaveunitNotFoundError(Exception):
     header or in a VSO query result block.
 
     """
+
     def __init__(self, obj):
         self.obj = obj
 
@@ -61,13 +58,12 @@ class WaveunitNotConvertibleError(Exception):
     astropy.units.Unit instance.
 
     """
+
     def __init__(self, waveunit):
         self.waveunit = waveunit
 
     def __str__(self):  # pragma: no cover
-        return (
-            'the waveunit {0!r} cannot be converted to an '
-            'astropy.units.Unit instance'.format(self.waveunit))
+        return ('the waveunit {0!r} cannot be converted to an ' 'astropy.units.Unit instance'.format(self.waveunit))
 
 
 # TODO: move this function outside this package (sunpy.util? sunpy.time?)
@@ -109,10 +105,8 @@ class FitsHeaderEntry(Base):
         self.value = value
 
     def __eq__(self, other):
-        return (
-            (self.id == other.id or self.id is None or other.id is None) and
-            self.key == other.key and
-            self.value == other.value)
+        return ((self.id == other.id or self.id is None or other.id is None) and self.key == other.key and
+                self.value == other.value)
 
     def __hash__(self):
         return super(FitsHeaderEntry, self).__hash__()
@@ -121,8 +115,7 @@ class FitsHeaderEntry(Base):
         return not (self == other)
 
     def __repr__(self):  # pragma: no cover
-        return '<{0}(id {1}, key {2!r}, value {3!r})>'.format(
-            self.__class__.__name__, self.id, self.key, self.value)
+        return '<{0}(id {1}, key {2!r}, value {3!r})>'.format(self.__class__.__name__, self.id, self.key, self.value)
 
 
 class FitsKeyComment(Base):
@@ -138,14 +131,11 @@ class FitsKeyComment(Base):
         self.value = value
 
     def __eq__(self, other):
-        return (
-            (self.id == other.id or self.id is None or other.id is None) and
-            self.key == other.key and
-            self.value == other.value)
+        return ((self.id == other.id or self.id is None or other.id is None) and self.key == other.key and
+                self.value == other.value)
 
     def __lt__(self, other):
-        return ('{0}, {1}'.format(self.key, self.value) <
-                '{0}, {1}'.format(other.key, other.value))
+        return ('{0}, {1}'.format(self.key, self.value) < '{0}, {1}'.format(other.key, other.value))
 
     def __hash__(self):
         return super(FitsKeyComment, self).__hash__()
@@ -154,8 +144,7 @@ class FitsKeyComment(Base):
         return not (self == other)
 
     def __repr__(self):  # pragma: no cover
-        return '<{0}(id {1}, key {2!r}, value {3!r})>'.format(
-            self.__class__.__name__, self.id, self.key, self.value)
+        return '<{0}(id {1}, key {2!r}, value {3!r})>'.format(self.__class__.__name__, self.id, self.key, self.value)
 
 
 class Tag(Base):
@@ -340,10 +329,16 @@ class DatabaseEntry(Base):
         if physobs is not None:
             physobs = str(physobs)
         return cls(
-            source=source, provider=provider, physobs=physobs, fileid=fileid,
-            observation_time_start=time_start, observation_time_end=time_end,
-            instrument=instrument, size=qr_block.size,
-            wavemin=wavemin, wavemax=wavemax)
+            source=source,
+            provider=provider,
+            physobs=physobs,
+            fileid=fileid,
+            observation_time_start=time_start,
+            observation_time_end=time_end,
+            instrument=instrument,
+            size=qr_block.size,
+            wavemin=wavemin,
+            wavemax=wavemax)
 
     def __eq__(self, other):
         wavemins_equal = self.wavemin is None and other.wavemin is None or\
@@ -352,23 +347,13 @@ class DatabaseEntry(Base):
         wavemaxs_equal = self.wavemax is None and other.wavemax is None or\
             self.wavemax is not None and other.wavemax is not None and\
             round(self.wavemax, 10) == round(other.wavemax, 10)
-        return (
-            (self.id == other.id or self.id is None or other.id is None) and
-            self.source == other.source and
-            self.provider == other.provider and
-            self.physobs == other.physobs and
-            self.fileid == other.fileid and
-            self.observation_time_start == other.observation_time_start and
-            self.observation_time_end == other.observation_time_end and
-            self.instrument == other.instrument and
-            self.size == other.size and
-            wavemins_equal and
-            wavemaxs_equal and
-            self.path == other.path and
-            self.download_time == other.download_time and
-            bool(self.starred) == bool(other.starred) and
-            self.fits_header_entries == other.fits_header_entries and
-            self.tags == other.tags)
+        return ((self.id == other.id or self.id is None or other.id is None) and self.source == other.source and
+                self.provider == other.provider and self.physobs == other.physobs and self.fileid == other.fileid and
+                self.observation_time_start == other.observation_time_start and
+                self.observation_time_end == other.observation_time_end and self.instrument == other.instrument and
+                self.size == other.size and wavemins_equal and wavemaxs_equal and self.path == other.path and
+                self.download_time == other.download_time and bool(self.starred) == bool(other.starred) and
+                self.fits_header_entries == other.fits_header_entries and self.tags == other.tags)
 
     def __hash__(self):
         return super(DatabaseEntry, self).__hash__()
@@ -378,10 +363,10 @@ class DatabaseEntry(Base):
 
     def __repr__(self):  # pragma: no cover
         attrs = [
-            'id', 'source', 'provider', 'physobs', 'fileid',
-            'observation_time_start', 'observation_time_end', 'instrument',
-            'size', 'wavemin', 'wavemax', 'path', 'download_time', 'starred',
-            'fits_header_entries', 'tags']
+            'id', 'source', 'provider', 'physobs', 'fileid', 'observation_time_start', 'observation_time_end',
+            'instrument', 'size', 'wavemin', 'wavemax', 'path', 'download_time', 'starred', 'fits_header_entries',
+            'tags'
+        ]
         ret = '<{0}('.format(self.__class__.__name__)
         for attr in attrs:
             value = getattr(self, attr, None)
@@ -437,8 +422,7 @@ def entries_from_query_result(qr, default_waveunit=None):
         yield DatabaseEntry._from_query_result_block(block, default_waveunit)
 
 
-def entries_from_file(file, default_waveunit=None,
-                      time_string_parse_format=None):
+def entries_from_file(file, default_waveunit=None, time_string_parse_format=None):
     """Use the headers of a FITS file to generate an iterator of
     :class:`sunpy.database.tables.DatabaseEntry` instances. Gathered
     information will be saved in the attribute `fits_header_entries`. If the
@@ -533,25 +517,17 @@ def entries_from_file(file, default_waveunit=None,
                 if unit is None:
                     raise WaveunitNotFoundError(file)
                 # use the value of `unit` to convert the wavelength to nm
-                entry.wavemin = entry.wavemax = unit.to(
-                    nm, value, equivalencies.spectral())
+                entry.wavemin = entry.wavemax = unit.to(nm, value, equivalencies.spectral())
             # NOTE: the key DATE-END or DATE_END is not part of the official
             # FITS standard, but many FITS files use it in their header
             elif key in ('DATE-END', 'DATE_END'):
-                entry.observation_time_end = parse_time(
-                        value,
-                        _time_string_parse_format=time_string_parse_format
-                        )
+                entry.observation_time_end = parse_time(value, _time_string_parse_format=time_string_parse_format)
             elif key in ('DATE-OBS', 'DATE_OBS'):
-                entry.observation_time_start = parse_time(
-                        value,
-                        _time_string_parse_format=time_string_parse_format
-                        )
+                entry.observation_time_start = parse_time(value, _time_string_parse_format=time_string_parse_format)
         yield entry
 
 
-def entries_from_dir(fitsdir, recursive=False, pattern='*',
-                     default_waveunit=None, time_string_parse_format=None):
+def entries_from_dir(fitsdir, recursive=False, pattern='*', default_waveunit=None, time_string_parse_format=None):
     """Search the given directory for FITS files and use the corresponding FITS
     headers to generate instances of :class:`DatabaseEntry`. FITS files are
     detected by reading the content of each file, the `pattern` argument may be
@@ -609,15 +585,11 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
         for path in fnmatch.filter(filename_paths, pattern):
             try:
                 filetype = sunpy_filetools._detect_filetype(path)
-            except (
-                    sunpy_filetools.UnrecognizedFileTypeError,
-                    sunpy_filetools.InvalidJPEG2000FileExtension):
+            except (sunpy_filetools.UnrecognizedFileTypeError, sunpy_filetools.InvalidJPEG2000FileExtension):
                 continue
             if filetype == 'fits':
                 for entry in entries_from_file(
-                        path, default_waveunit,
-                        time_string_parse_format=time_string_parse_format
-                        ):
+                        path, default_waveunit, time_string_parse_format=time_string_parse_format):
                     yield entry, path
         if not recursive:
             break
@@ -646,10 +618,10 @@ def _create_display_table(database_entries, columns=None, sort=False):
 
     """
     if columns is None:
-        columns = ['id', 'observation_time_start', 'observation_time_end',
-                   'instrument', 'source', 'provider', 'physobs', 'wavemin',
-                   'wavemax', 'path', 'fileid', 'tags', 'starred',
-                   'download_time', 'size']
+        columns = [
+            'id', 'observation_time_start', 'observation_time_end', 'instrument', 'source', 'provider', 'physobs',
+            'wavemin', 'wavemax', 'path', 'fileid', 'tags', 'starred', 'download_time', 'size'
+        ]
 
     data = []
     for entry in database_entries:
@@ -662,10 +634,7 @@ def _create_display_table(database_entries, columns=None, sort=False):
             elif col == 'hdu_index':
                 row.append(entry.hdu_index)
             # do not display microseconds in datetime columns
-            elif col in (
-                    'observation_time_start',
-                    'observation_time_end',
-                    'download_time'):
+            elif col in ('observation_time_start', 'observation_time_end', 'download_time'):
                 time = getattr(entry, col, None)
                 if time is None:
                     formatted_time = 'N/A'

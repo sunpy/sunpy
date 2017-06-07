@@ -24,8 +24,7 @@ def test_main_stdlib_module():
 def test_main_noargs(monkeypatch):
     monkeypatch.setattr(pytest, 'main', lambda x: x)
     args = sunpy.tests.main()
-    assert args in (['-k-online', '-m not figure', 'sunpy'],
-                    ['-k-online', '-m not figure', root_dir])
+    assert args in (['-k-online', '-m not figure', 'sunpy'], ['-k-online', '-m not figure', root_dir])
 
 
 def test_main_submodule(monkeypatch):
@@ -45,21 +44,18 @@ def test_main_submodule(monkeypatch):
 def test_main_with_cover(monkeypatch):
     monkeypatch.setattr(pytest, 'main', lambda x: x)
     args = sunpy.tests.main('map', coverage=True)
-    covpath = os.path.abspath(
-        os.path.join(sunpy.tests.testdir, os.path.join(os.pardir, 'map')))
-    assert args in (['--cov', covpath, '-k-online', '-m not figure', os.path.join('sunpy', 'map')],
-                    ['--cov', os.path.join('sunpy', 'map'), '-k-online', '-m not figure', os.path.join(root_dir, 'map')],
-                    ['--cov', os.path.join('sunpy', 'map'), '-k-online', '-m not figure', os.path.join('sunpy', 'map')],
+    covpath = os.path.abspath(os.path.join(sunpy.tests.testdir, os.path.join(os.pardir, 'map')))
+    assert args in (['--cov', covpath, '-k-online', '-m not figure', os.path.join('sunpy', 'map')], [
+        '--cov', os.path.join('sunpy', 'map'), '-k-online', '-m not figure', os.path.join(root_dir, 'map')
+    ], ['--cov', os.path.join('sunpy', 'map'), '-k-online', '-m not figure', os.path.join('sunpy', 'map')],
                     ['--cov', covpath, '-k-online', '-m not figure', os.path.join(root_dir, 'map')])
 
 
 def test_main_with_show_uncovered_lines(monkeypatch):
     monkeypatch.setattr(pytest, 'main', lambda x: x)
     args = sunpy.tests.main('map', cov_report='term-missing')
-    assert args in (['--cov-report', 'term-missing', '-k-online', '-m not figure',
-                     os.path.join('sunpy', 'map')],
-                    ['--cov-report', 'term-missing', '-k-online', '-m not figure',
-                     os.path.join(root_dir, 'map')])
+    assert args in (['--cov-report', 'term-missing', '-k-online', '-m not figure', os.path.join('sunpy', 'map')],
+                    ['--cov-report', 'term-missing', '-k-online', '-m not figure', os.path.join(root_dir, 'map')])
 
 
 def test_main_exclude_online(monkeypatch):
@@ -79,6 +75,4 @@ def test_main_only_online(monkeypatch):
 def test_main_figures(monkeypatch):
     monkeypatch.setattr(pytest, 'main', lambda x: x)
     args = sunpy.tests.main(figure=True)
-    assert args in (['-k-online', 'sunpy'],
-                    ['-k-online', root_dir])
-
+    assert args in (['-k-online', 'sunpy'], ['-k-online', root_dir])

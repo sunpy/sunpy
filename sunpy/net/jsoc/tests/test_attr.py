@@ -7,11 +7,10 @@ import sunpy.net.jsoc.attrs as attrs
 from sunpy.net.attr import Attr, AttrOr, AttrAnd
 
 
-@pytest.mark.parametrize(("attr1, attr2"),
-[  (attrs.Series('foo'), attrs.Series('boo')),
-   (attrs.Protocol('a1'), attrs.Protocol('a2')),
-   (attrs.Notify('email@somemail.com'), attrs.Notify('someemail@somemail.com')),
-   (attrs.Compression('rice'), attrs.Compression('rice'))])
+@pytest.mark.parametrize(("attr1, attr2"), [(attrs.Series('foo'), attrs.Series('boo')), (
+    attrs.Protocol('a1'), attrs.Protocol('a2')), (attrs.Notify('email@somemail.com'),
+                                                  attrs.Notify('someemail@somemail.com')), (attrs.Compression('rice'),
+                                                                                            attrs.Compression('rice'))])
 def test_and(attr1, attr2):
     pytest.raises(TypeError, lambda: attr1 & attr2)
 
@@ -44,24 +43,28 @@ def test_complexquery():
     assert isinstance(ans1.attrs[0].attrs[0], AttrAnd)
     assert isinstance(ans1.attrs[0].attrs[1], AttrAnd)
 
+
 def test_wavelength_error():
     with pytest.raises(TypeError):
         w1 = attrs.Wavelength('wobble')
     with pytest.raises(TypeError):
         w1 = attrs.Wavelength(3.24)
     with pytest.raises(TypeError):
-        w1 = attrs.Wavelength((3,3))
+        w1 = attrs.Wavelength((3, 3))
+
 
 def test_wave_self():
-    w1 = attrs.Wavelength(193*u.AA)
+    w1 = attrs.Wavelength(193 * u.AA)
     assert jsoc.jsoc.and_(w1 | w1) is w1
 
+
 def test_duplicate():
-    w1 = attrs.Wavelength(193*u.AA)
-    w2 = attrs.Wavelength(193*u.AA)
+    w1 = attrs.Wavelength(193 * u.AA)
+    w2 = attrs.Wavelength(193 * u.AA)
     assert jsoc.jsoc.and_(w1 | w2).min is w1.min
 
+
 def test_random():
-    w1 = attrs.Wavelength(193*u.AA)
+    w1 = attrs.Wavelength(193 * u.AA)
     w2 = attrs.Series('spam')
     assert jsoc.jsoc.and_(w1 | w2) == AttrOr([w1, w2])

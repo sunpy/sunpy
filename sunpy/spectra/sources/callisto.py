@@ -81,9 +81,7 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
                     continue
                 inst, no, dstart = result
 
-                if (instruments is not None and
-                    inst not in instruments and
-                    (inst, int(no)) not in instruments):
+                if (instruments is not None and inst not in instruments and (inst, int(no)) not in instruments):
                     continue
 
                 dend = dstart + DATA_SIZE
@@ -138,17 +136,13 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
     # This needs to list all attributes that need to be
     # copied to maintain the object and how to handle them.
-    COPY_PROPERTIES = LinearTimeSpectrogram.COPY_PROPERTIES + [
-        ('header', REFERENCE),
-        ('swapped', REFERENCE),
-        ('axes_header', REFERENCE)
-    ]
+    COPY_PROPERTIES = LinearTimeSpectrogram.COPY_PROPERTIES + [('header', REFERENCE), ('swapped', REFERENCE),
+                                                               ('axes_header', REFERENCE)]
 
     # List of instruments retrieved in July 2012 from
     # http://soleil.i4ds.ch/solarradio/data/2002-20yy_Callisto/
     INSTRUMENTS = set([
-        'ALASKA', 'ALMATY', 'BIR', 'DARO', 'HB9SCT', 'HUMAIN',
-        'HURBANOVO', 'KASI', 'KENYA', 'KRIM', 'MALAYSIA', 'MRT1',
+        'ALASKA', 'ALMATY', 'BIR', 'DARO', 'HB9SCT', 'HUMAIN', 'HURBANOVO', 'KASI', 'KENYA', 'KRIM', 'MALAYSIA', 'MRT1',
         'MRT2', 'OOTY', 'OSRA', 'SWMC', 'TRIEST', 'UNAM'
     ])
 
@@ -162,14 +156,10 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         """
         main_header = self.get_header()
         data = fits.PrimaryHDU(self, header=main_header)
-        ## XXX: Update axes header.
+        # XXX: Update axes header.
 
-        freq_col = fits.Column(
-            name="frequency", format="D8.3", array=self.freq_axis
-        )
-        time_col = fits.Column(
-            name="time", format="D8.3", array=self.time_axis
-        )
+        freq_col = fits.Column(name="frequency", format="D8.3", array=self.freq_axis)
+        time_col = fits.Column(name="time", format="D8.3", array=self.time_axis)
         cols = fits.ColDefs([freq_col, time_col])
         table = fits.new_table(cols, header=self.axes_header)
 
@@ -181,11 +171,11 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         header = self.header.copy()
 
         if self.swapped:
-            header['NAXIS2'] = self.shape[1] # pylint: disable=E1101
-            header['NAXIS1'] = self.shape[0] # pylint: disable=E1101
+            header['NAXIS2'] = self.shape[1]  # pylint: disable=E1101
+            header['NAXIS1'] = self.shape[0]  # pylint: disable=E1101
         else:
-            header['NAXIS1'] = self.shape[1] # pylint: disable=E1101
-            header['NAXIS2'] = self.shape[0] # pylint: disable=E1101
+            header['NAXIS1'] = self.shape[1]  # pylint: disable=E1101
+            header['NAXIS2'] = self.shape[0]  # pylint: disable=E1101
         return header
 
     @classmethod
@@ -204,12 +194,8 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         axes = fl[1]
         header = fl[0].header
 
-        start = _parse_header_time(
-            header['DATE-OBS'], header.get('TIME-OBS', header.get('TIME$_OBS'))
-        )
-        end = _parse_header_time(
-            header['DATE-END'], header.get('TIME-END', header.get('TIME$_END'))
-        )
+        start = _parse_header_time(header['DATE-OBS'], header.get('TIME-OBS', header.get('TIME$_OBS')))
+        end = _parse_header_time(header['DATE-END'], header.get('TIME-END', header.get('TIME$_END')))
 
         swapped = "time" not in header["CTYPE1"].lower()
 
@@ -251,36 +237,41 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         else:
             # Otherwise, assume it's linear.
             time_axis = \
-                np.linspace(0, data.shape[1] - 1) * t_delt + t_init # pylint: disable=E1101
+                np.linspace(0, data.shape[1] - 1) * t_delt + t_init  # pylint: disable=E1101
 
         if fq is not None:
             freq_axis = np.squeeze(fq)
         else:
             freq_axis = \
-                np.linspace(0, data.shape[0] - 1) * f_delt + f_init # pylint: disable=E1101
+                np.linspace(0, data.shape[0] - 1) * f_delt + f_init  # pylint: disable=E1101
 
         content = header["CONTENT"]
         instruments = set([header["INSTRUME"]])
 
-        return cls(
-            data, time_axis, freq_axis, start, end, t_init, t_delt,
-            t_label, f_label, content, instruments,
-            header, axes.header, swapped
-        )
+        return cls(data, time_axis, freq_axis, start, end, t_init, t_delt, t_label, f_label, content, instruments,
+                   header, axes.header, swapped)
 
-    def __init__(self, data, time_axis, freq_axis, start, end,
-            t_init=None, t_delt=None, t_label="Time", f_label="Frequency",
-            content="", instruments=None, header=None, axes_header=None,
-            swapped=False):
+    def __init__(self,
+                 data,
+                 time_axis,
+                 freq_axis,
+                 start,
+                 end,
+                 t_init=None,
+                 t_delt=None,
+                 t_label="Time",
+                 f_label="Frequency",
+                 content="",
+                 instruments=None,
+                 header=None,
+                 axes_header=None,
+                 swapped=False):
         # Because of how object creation works, there is no avoiding
         # unused arguments in this case.
         # pylint: disable=W0613
 
-        super(CallistoSpectrogram, self).__init__(
-            data, time_axis, freq_axis, start, end,
-            t_init, t_delt, t_label, f_label,
-            content, instruments
-        )
+        super(CallistoSpectrogram, self).__init__(data, time_axis, freq_axis, start, end, t_init, t_delt, t_label,
+                                                  f_label, content, instruments)
 
         self.header = header
         self.axes_header = axes_header
@@ -305,7 +296,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         right = self.shape[0] - 1
         while self.freq_axis[right] == self.freq_axis[-1]:
             right -= 1
-        return self[left-1:right+2, :]
+        return self[left - 1:right + 2, :]
 
     @classmethod
     def read_many(cls, filenames, sort_by=None):
@@ -352,9 +343,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         for elem in data:
             freq_buckets[tuple(elem.freq_axis)].append(elem)
         try:
-            return cls.combine_frequencies(
-                [cls.join_many(elem, **kw) for elem in itervalues(freq_buckets)]
-            )
+            return cls.combine_frequencies([cls.join_many(elem, **kw) for elem in itervalues(freq_buckets)])
         except ValueError:
             raise ValueError("No data found.")
 
@@ -367,10 +356,12 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
     @staticmethod
     def _to_minimize(a, b):
         """Function to be minimized for matching to frequency channels."""
+
         def _fun(p):
             if p[0] <= 0.2 or abs(p[1]) >= a.max():
                 return float("inf")
             return a - (p[0] * b + p[1])
+
         return _fun
 
     def _homogenize_params(self, other, maxdiff=1):
@@ -386,28 +377,17 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             Threshold for which frequencies are considered equal.
         """
 
-        pairs_indices = [
-            (x, y) for x, y, d in minimal_pairs(self.freq_axis, other.freq_axis)
-            if d <= maxdiff
-        ]
+        pairs_indices = [(x, y) for x, y, d in minimal_pairs(self.freq_axis, other.freq_axis) if d <= maxdiff]
 
-        pairs_data = [
-            (self[n_one, :], other[n_two, :]) for n_one, n_two in pairs_indices
-        ]
+        pairs_data = [(self[n_one, :], other[n_two, :]) for n_one, n_two in pairs_indices]
 
         # XXX: Maybe unnecessary.
-        pairs_data_gaussian = [
-            (gaussian_filter1d(a, 15), gaussian_filter1d(b, 15))
-            for a, b in pairs_data
-        ]
+        pairs_data_gaussian = [(gaussian_filter1d(a, 15), gaussian_filter1d(b, 15)) for a, b in pairs_data]
 
         # If we used integer arithmetic, we would accept more invalid
         # values.
         pairs_data_gaussian64 = np.float64(pairs_data_gaussian)
-        least = [
-            leastsq(self._to_minimize(a,b), [1, 0])[0]
-            for a, b in pairs_data_gaussian64
-        ]
+        least = [leastsq(self._to_minimize(a, b), [1, 0])[0] for a, b in pairs_data_gaussian64]
 
         factors = [x for x, y in least]
         constants = [y for x, y in least]
@@ -429,9 +409,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
             Threshold for which frequencies are considered equal.
         """
         one, two = self._overlap(other)
-        pairs_indices, factors, constants = one._homogenize_params(
-            two, maxdiff
-        )
+        pairs_indices, factors, constants = one._homogenize_params(two, maxdiff)
         # XXX: Maybe (xd.freq_axis[x] + yd.freq_axis[y]) / 2.
         pairs_freqs = [one.freq_axis[x] for x, y in pairs_indices]
 
@@ -440,9 +418,7 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         f1 = np.polyfit(pairs_freqs, factors, 3)
         f2 = np.polyfit(pairs_freqs, constants, 3)
 
-        return (one,
-                two * np.polyval(f1, two.freq_axis)[:, np.newaxis] +
-                np.polyval(f2, two.freq_axis)[:, np.newaxis])
+        return (one, two * np.polyval(f1, two.freq_axis)[:, np.newaxis] + np.polyval(f2, two.freq_axis)[:, np.newaxis])
 
     def extend(self, minutes=15, **kwargs):
         """Requests subsequent files from the server. If minutes is negative,
@@ -452,15 +428,10 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
 
         instrument = next(iter(self.instruments))
         if minutes > 0:
-            data = CallistoSpectrogram.from_range(
-                instrument,
-                self.end, self.end + datetime.timedelta(minutes=minutes)
-            )
+            data = CallistoSpectrogram.from_range(instrument, self.end, self.end + datetime.timedelta(minutes=minutes))
         else:
             data = CallistoSpectrogram.from_range(
-                instrument,
-                self.start - datetime.timedelta(minutes=-minutes), self.start
-            )
+                instrument, self.start - datetime.timedelta(minutes=-minutes), self.start)
 
         data = data.clip_freq(self.freq_axis[-1], self.freq_axis[0])
         return CallistoSpectrogram.join_many([self, data], **kwargs)
@@ -481,29 +452,22 @@ class CallistoSpectrogram(LinearTimeSpectrogram):
         return cls.read(url)
 
 
-CallistoSpectrogram._create.add(
-    run_cls('from_range'),
-    lambda cls, instrument, start, end: True,
-    check=False
-)
+CallistoSpectrogram._create.add(run_cls('from_range'), lambda cls, instrument, start, end: True, check=False)
 
 try:
-    CallistoSpectrogram.create.im_func.__doc__ = (
-        """Create CallistoSpectrogram from given input dispatching to the
+    CallistoSpectrogram.create.im_func.__doc__ = ("""Create CallistoSpectrogram from given input dispatching to the
         appropriate from_* function.
 
     Possible signatures:
 
     """ + CallistoSpectrogram._create.generate_docs())
 except AttributeError:
-    CallistoSpectrogram.create.__func__.__doc__ = (
-        """Create CallistoSpectrogram from given input dispatching to the
+    CallistoSpectrogram.create.__func__.__doc__ = ("""Create CallistoSpectrogram from given input dispatching to the
         appropriate from_* function.
 
     Possible signatures:
 
     """ + CallistoSpectrogram._create.generate_docs())
-
 
 if __name__ == "__main__":
     opn = CallistoSpectrogram.read("callisto/BIR_20110922_103000_01.fit")

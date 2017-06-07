@@ -20,14 +20,11 @@ from sunpy import config
 __author__ = "Steven Christe"
 __email__ = "steven.christe@nasa.gov"
 
-
 sampledata_dir = config.get("downloads", "sample_dir")
 
 # urls to search for the sample data
-_base_urls = (
-    'http://data.sunpy.org/sample-data/',
-    'http://hesperia.gsfc.nasa.gov/~schriste/sunpy-sample-data/',
-    'https://github.com/ehsteve/sunpy-sample-data/raw/master/')
+_base_urls = ('http://data.sunpy.org/sample-data/', 'http://hesperia.gsfc.nasa.gov/~schriste/sunpy-sample-data/',
+              'https://github.com/ehsteve/sunpy-sample-data/raw/master/')
 
 # keys are file shortcuts
 # values consist of filename as well as optional file extension if files are
@@ -84,8 +81,7 @@ def download_sample_data(progress=True, overwrite=True, timeout=None):
     print("Downloading sample files to {}".format(sampledata_dir))
     for file_name in six.itervalues(_files):
         if not overwrite:
-            if os.path.isfile(os.path.join(sampledata_dir,
-                                           file_name[0])):
+            if os.path.isfile(os.path.join(sampledata_dir, file_name[0])):
                 number_of_files_fetched += 1
                 continue
 
@@ -109,9 +105,7 @@ def download_sample_data(progress=True, overwrite=True, timeout=None):
                     number_of_files_fetched += 1
                     break
             except (socket.error, socket.timeout) as e:
-                warnings.warn("Download failed with error {}. \n"
-                              "Retrying with different mirror.".format(e))
+                warnings.warn("Download failed with error {}. \n" "Retrying with different mirror.".format(e))
 
     if number_of_files_fetched < len(list(_files.keys())):
-        raise URLError("Could not download all samples files."
-                       "Problem with accessing sample data servers.")
+        raise URLError("Could not download all samples files." "Problem with accessing sample data servers.")

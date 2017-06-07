@@ -5,11 +5,12 @@ have its own file with one or more classes defined. Typically, these classes
 will be subclasses of the :mod`sunpy.map.Map` class.
 """
 from __future__ import absolute_import, division, print_function
-__all__ = ['XRTMap', 'SOTMap', 'SWAPMap', 'RHESSIMap', 'AIAMap', 'HMIMap',
-           'EITMap', 'LASCOMap', 'MDIMap', 'EUVIMap', 'CORMap', 'HIMap',
-           'SXTMap', 'SJIMap', 'TRACEMap', 'source_stretch']
+__all__ = [
+    'XRTMap', 'SOTMap', 'SWAPMap', 'RHESSIMap', 'AIAMap', 'HMIMap', 'EITMap', 'LASCOMap', 'MDIMap', 'EUVIMap', 'CORMap',
+    'HIMap', 'SXTMap', 'SJIMap', 'TRACEMap', 'source_stretch'
+]
 
-from .. map_factory import Map
+from ..map_factory import Map
 
 from .hinode import XRTMap, SOTMap
 

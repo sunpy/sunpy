@@ -22,6 +22,7 @@ TIME_FORMAT = config.get("general", "time_format")
 
 __all__ = ['NoRHLightCurve']
 
+
 class NoRHLightCurve(LightCurve):
     """
     Nobeyama Radioheliograph Correlation LightCurve.
@@ -70,10 +71,10 @@ class NoRHLightCurve(LightCurve):
 
         plt.figure()
         axes = plt.gca()
-        data_lab=self.meta['OBS-FREQ'][0:2] + ' ' + self.meta['OBS-FREQ'][2:5]
-        axes.plot(self.data.index,self.data,label=data_lab)
+        data_lab = self.meta['OBS-FREQ'][0:2] + ' ' + self.meta['OBS-FREQ'][2:5]
+        axes.plot(self.data.index, self.data, label=data_lab)
         axes.set_yscale("log")
-        axes.set_ylim(1e-4,1)
+        axes.set_ylim(1e-4, 1)
         axes.set_title('Nobeyama Radioheliograph')
         axes.set_xlabel('Start time: ' + self.data.index[0].strftime(TIME_FORMAT))
         axes.set_ylabel('Correlation')
@@ -92,11 +93,9 @@ class NoRHLightCurve(LightCurve):
         # date is a datetime object
         if 'wavelength' in kwargs:
             if kwargs['wavelength'] == '34':
-                final_url = urllib.parse.urljoin(
-                    baseurl, date.strftime('%Y/%m/tcz%y%m%d'))
+                final_url = urllib.parse.urljoin(baseurl, date.strftime('%Y/%m/tcz%y%m%d'))
         else:
-            final_url = urllib.parse.urljoin(
-                baseurl, date.strftime('%Y/%m/tca%y%m%d'))
+            final_url = urllib.parse.urljoin(baseurl, date.strftime('%Y/%m/tca%y%m%d'))
 
         return final_url
 
@@ -111,13 +110,13 @@ class NoRHLightCurve(LightCurve):
 
         # No explicit time array in FITS file, so construct the time array from
         # the FITS header
-        obs_start_time=parse_time(header['DATE-OBS'] + 'T' + header['CRVAL1'])
+        obs_start_time = parse_time(header['DATE-OBS'] + 'T' + header['CRVAL1'])
         length = len(data)
         cadence = np.float(header['CDELT1'])
-        sec_array = np.linspace(0, length-1, (length/cadence))
+        sec_array = np.linspace(0, length - 1, (length / cadence))
 
         norh_time = []
         for s in sec_array:
-            norh_time.append(obs_start_time + datetime.timedelta(0,s))
+            norh_time.append(obs_start_time + datetime.timedelta(0, s))
 
         return header, pandas.DataFrame(data, index=norh_time)

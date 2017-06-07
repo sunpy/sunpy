@@ -21,11 +21,7 @@ except ImportError:
 __all__ = ['read_file', 'read_file_header', 'write_file']
 
 # File formats supported by SunPy
-_known_extensions = {
-    ('fts', 'fits'): 'fits',
-    ('jp2', 'j2k', 'jpc', 'jpt'): 'jp2',
-    ('fz', 'f0'): 'ana'
-}
+_known_extensions = {('fts', 'fits'): 'fits', ('jp2', 'j2k', 'jpc', 'jpt'): 'jp2', ('fz', 'f0'): 'ana'}
 
 
 # Define a dict which raises a custom error message if the value is None
@@ -40,12 +36,10 @@ class Readers(dict):
                               "please check that you have the required dependencies installed.")
         return val
 
-#Map the readers
-_readers = Readers({
-            'fits':fits,
-            'jp2':jp2,
-            'ana':ana
-})
+
+# Map the readers
+_readers = Readers({'fits': fits, 'jp2': jp2, 'ana': ana})
+
 
 def read_file(filepath, filetype=None, **kwargs):
     """
@@ -84,6 +78,7 @@ def read_file(filepath, filetype=None, **kwargs):
     readername = _detect_filetype(filepath)
     return _readers[readername].read(filepath, **kwargs)
 
+
 def read_file_header(filepath, filetype=None, **kwargs):
     """
     Reads the header from a given file.
@@ -115,6 +110,7 @@ def read_file_header(filepath, filetype=None, **kwargs):
 
     readername = _detect_filetype(filepath)
     return _readers[readername].get_header(filepath, **kwargs)
+
 
 def write_file(fname, data, header, filetype='auto', **kwargs):
     """
@@ -201,24 +197,25 @@ def _detect_filetype(filepath):
     # [1] http://www.sno.phy.queensu.ca/~phil/exiftool/
     # [2] http://www.jpeg.org/public/fcd15444-2.pdf
     # [3] ftp://ftp.remotesensing.org/jpeg2000/fcd15444-1.pdf
-    jp2_signatures = [b"\x00\x00\x00\x0cjP  \x0d\x0a\x87\x0a",
-                      b"\x00\x00\x00\x0cjP\x1a\x1a\x0d\x0a\x87\x0a"]
+    jp2_signatures = [b"\x00\x00\x00\x0cjP  \x0d\x0a\x87\x0a", b"\x00\x00\x00\x0cjP\x1a\x1a\x0d\x0a\x87\x0a"]
 
     for sig in jp2_signatures:
         if line1 + line2 == sig:
             return 'jp2'
 
     # Raise an error if an unsupported filetype is encountered
-    raise UnrecognizedFileTypeError("The requested filetype is not currently "
-                                    "supported by SunPy.")
+    raise UnrecognizedFileTypeError("The requested filetype is not currently " "supported by SunPy.")
+
 
 class UnrecognizedFileTypeError(IOError):
     """Exception to raise when an unknown file type is encountered"""
     pass
 
+
 class ReaderError(ImportError):
     """Exception to raise when an unknown file type is encountered"""
     pass
+
 
 class InvalidJPEG2000FileExtension(IOError):
     pass

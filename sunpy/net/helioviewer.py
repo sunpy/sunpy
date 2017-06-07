@@ -3,7 +3,7 @@ This module provides a wrapper around the Helioviewer API.
 """
 from __future__ import absolute_import
 
-#pylint: disable=E1101,F0401,W0231
+# pylint: disable=E1101,F0401,W0231
 
 __author__ = ["Keith Hughitt"]
 __email__ = "keith.hughitt@nasa.gov"
@@ -22,6 +22,7 @@ __all__ = ['HelioviewerClient']
 
 class HelioviewerClient(object):
     """Helioviewer.org Client"""
+
     def __init__(self, url="https://legacy.helioviewer.org/api/"):
         """
         url : location of the Helioviewer API.  The default location points to
@@ -75,10 +76,7 @@ class HelioviewerClient(object):
         >>> print(metadata['date'])
         2012-01-01 00:00:07
         """
-        params = {
-            "action": "getClosestImage",
-            "date": self._format_date(date)
-        }
+        params = {"action": "getClosestImage", "date": self._format_date(date)}
         params.update(kwargs)
 
         response = self._get_json(params)
@@ -134,10 +132,7 @@ class HelioviewerClient(object):
         >>> data_sources = hv.get_data_sources()
         >>> hv.download_jp2('2012/07/03 14:30:00', sourceId=data_sources['SOHO']['LASCO']['C2']['white-light']['sourceId'])   # doctest: +SKIP
         """
-        params = {
-            "action": "getJP2Image",
-            "date": self._format_date(date)
-        }
+        params = {"action": "getJP2Image", "date": self._format_date(date)}
         params.update(kwargs)
 
         # JPIP URL response
@@ -146,8 +141,7 @@ class HelioviewerClient(object):
 
         return self._get_file(params, directory, overwrite=overwrite)
 
-    def download_png(self, date, image_scale, layers, directory=None,
-                     overwrite=False, **kwargs):
+    def download_png(self, date, image_scale, layers, directory=None, overwrite=False, **kwargs):
         """Downloads a PNG image using data from Helioviewer.org.
 
         Returns a single image containing all layers/image types requested.
@@ -210,10 +204,7 @@ class HelioviewerClient(object):
         >>> hv.download_png('2012/07/16 10:08:00', 4.8, "[SDO,AIA,AIA,171,1,100],[SOHO,LASCO,C2,white-light,1,100]", x1=-2800, x2=2800, y1=-2800, y2=2800, directory='~/Desktop')   # doctest: +SKIP
         """
         params = {
-            "action": "takeScreenshot",
-            "date": self._format_date(date),
-            "imageScale": image_scale,
-            "layers": layers,
+            "action": "takeScreenshot", "date": self._format_date(date), "imageScale": image_scale, "layers": layers,
             "display": True
         }
         params.update(kwargs)
@@ -263,8 +254,7 @@ class HelioviewerClient(object):
         -------
         out : result of request
         """
-        response = urllib.request.urlopen(
-            self._api, urllib.parse.urlencode(params).encode('utf-8'))
+        response = urllib.request.urlopen(self._api, urllib.parse.urlencode(params).encode('utf-8'))
 
         return response
 

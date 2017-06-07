@@ -92,10 +92,8 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
             axes.plot(self.data.index, self.data[d], label=d)
 
         axes.set_yscale("log")
-        axes.set_title('Fermi GBM Summary data ' + str(self.meta.get(
-            'DETNAM').values()))
-        axes.set_xlabel('Start time: ' + self.data.index[0].strftime(
-            '%Y-%m-%d %H:%M:%S UT'))
+        axes.set_title('Fermi GBM Summary data ' + str(self.meta.get('DETNAM').values()))
+        axes.set_xlabel('Start time: ' + self.data.index[0].strftime('%Y-%m-%d %H:%M:%S UT'))
         axes.set_ylabel('Counts/s/keV')
         axes.legend()
         figure.autofmt_xdate()
@@ -129,14 +127,14 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         # get the time information in datetime format with the correct MET adjustment
         for t in count_data['time']:
             gbm_times.append(fermi.met_to_utc(t))
-        column_labels = ['4-15 keV', '15-25 keV', '25-50 keV', '50-100 keV',
-                         '100-300 keV', '300-800 keV', '800-2000 keV']
+        column_labels = [
+            '4-15 keV', '15-25 keV', '25-50 keV', '50-100 keV', '100-300 keV', '300-800 keV', '800-2000 keV'
+        ]
 
         # Add the units data
-        units = OrderedDict([('4-15 keV', u.ct / u.s / u.keV), ('15-25 keV', u.ct / u.s / u.keV),
-                             ('25-50 keV', u.ct / u.s / u.keV), ('50-100 keV', u.ct / u.s / u.keV),
-                             ('100-300 keV', u.ct / u.s / u.keV), ('300-800 keV', u.ct / u.s / u.keV),
-                             ('800-2000 keV', u.ct / u.s / u.keV)])
+        units = OrderedDict([('4-15 keV', u.ct / u.s / u.keV), ('15-25 keV', u.ct / u.s / u.keV), (
+            '25-50 keV', u.ct / u.s / u.keV), ('50-100 keV', u.ct / u.s / u.keV), ('100-300 keV', u.ct / u.s / u.keV),
+                             ('300-800 keV', u.ct / u.s / u.keV), ('800-2000 keV', u.ct / u.s / u.keV)])
         return pd.DataFrame(summary_counts, columns=column_labels, index=gbm_times), header, units
 
     @classmethod
@@ -167,9 +165,7 @@ def _bin_data_for_summary(energy_bins, count_data):
         for j in range(1, len(ebands)):
             counts_in_bands.append(
                 np.sum(count_data['counts'][i][indices[j - 1]:indices[j]]) /
-                (count_data['exposure'][i] *
-                 (energy_bins['e_max'][indices[j]] -
-                  energy_bins['e_min'][indices[j - 1]])))
+                (count_data['exposure'][i] * (energy_bins['e_max'][indices[j]] - energy_bins['e_min'][indices[j - 1]])))
 
         summary_counts.append(counts_in_bands)
 
@@ -178,8 +174,7 @@ def _bin_data_for_summary(energy_bins, count_data):
 
 def _parse_detector(detector):
     """Check and fix detector name strings."""
-    oklist = ['n0', 'n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'n8', 'n9',
-              'n10', 'n11']
+    oklist = ['n0', 'n1', 'n2', 'n3', 'n4', 'n5', 'n6', 'n7', 'n8', 'n9', 'n10', 'n11']
     altlist = [str(i) for i in range(12)]
     if detector in oklist:
         return detector

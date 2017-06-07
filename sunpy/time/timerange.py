@@ -43,6 +43,7 @@ class TimeRange(object):
     >>> time_range = TimeRange('2010/03/04 00:10', 400 * u.s)
     >>> time_range = TimeRange('2010/03/04 00:10', 400 * u.day)
     """
+
     def __init__(self, a, b=None):
         """Creates a new TimeRange instance"""
         # If a is a TimeRange object, copy attributes to new instance.
@@ -185,8 +186,7 @@ class TimeRange(object):
         -------
         value : `astropy.units.Quantity`
         """
-        return (self.dt.microseconds * u.Unit('us') + self.dt.seconds * u.Unit('s') +
-                self.dt.days * u.Unit('day'))
+        return (self.dt.microseconds * u.Unit('us') + self.dt.seconds * u.Unit('s') + self.dt.days * u.Unit('day'))
 
     def __eq__(self, other):
         """
@@ -234,15 +234,11 @@ class TimeRange(object):
         center = self.center.strftime(TIME_FORMAT)
         fully_qualified_name = '{0}.{1}'.format(self.__class__.__module__, self.__class__.__name__)
 
-        return ('   <{0} object at {1}>'.format(fully_qualified_name, hex(id(self))) +
-                '\n    Start:'.ljust(12) + t1 +
-                '\n    End:'.ljust(12) + t2 +
-                '\n    Center:'.ljust(12) + center +
-                '\n    Duration:'.ljust(12) + str(self.days.value) + ' days or' +
-                '\n    '.ljust(12) + str(self.hours.value) + ' hours or' +
-                '\n    '.ljust(12) + str(self.minutes.value) + ' minutes or' +
-                '\n    '.ljust(12) + str(self.seconds.value) + ' seconds' +
-                '\n')
+        return ('   <{0} object at {1}>'.format(
+            fully_qualified_name, hex(id(self))) + '\n    Start:'.ljust(12) + t1 + '\n    End:'.ljust(12) + t2 +
+                '\n    Center:'.ljust(12) + center + '\n    Duration:'.ljust(12) + str(self.days.value) + ' days or' +
+                '\n    '.ljust(12) + str(self.hours.value) + ' hours or' + '\n    '.ljust(12) + str(self.minutes.value)
+                + ' minutes or' + '\n    '.ljust(12) + str(self.seconds.value) + ' seconds' + '\n')
 
     def split(self, n=2):
         """
@@ -331,8 +327,7 @@ class TimeRange(object):
         n = 1
         times = [TimeRange(self.start, self.start + window)]
         while times[-1].end < self.end:
-            times.append(TimeRange(self.start + cadence * n,
-                                   self.start + cadence * n + window))
+            times.append(TimeRange(self.start + cadence * n, self.start + cadence * n + window))
             n += 1
         return times
 

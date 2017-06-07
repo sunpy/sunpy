@@ -19,11 +19,7 @@ end = sunpy.time.parse_time(tfin_str)
 delta = end - start
 
 
-@pytest.mark.parametrize("inputs", [
-    (tbegin_str, tfin_str),
-    (tbegin_str, dt),
-    (tbegin_str, datetime.timedelta(days=1))
-])
+@pytest.mark.parametrize("inputs", [(tbegin_str, tfin_str), (tbegin_str, dt), (tbegin_str, datetime.timedelta(days=1))])
 def test_timerange_inputs(inputs):
     timerange = sunpy.time.TimeRange(*inputs)
     assert isinstance(timerange, sunpy.time.TimeRange)
@@ -42,7 +38,7 @@ def test_timerange_invalid_range():
     upper = '2017/03/04 09:30'
 
     with pytest.raises(ValueError):
-        sunpy.time.TimeRange((lower,))
+        sunpy.time.TimeRange((lower, ))
 
     with pytest.raises(ValueError):
         sunpy.time.TimeRange((lower, mid, upper))
@@ -125,12 +121,9 @@ def test_get_dates():
     assert len(leap_year.get_dates()) == 366
 
 
-@pytest.mark.parametrize("ainput", [
-    (tbegin_str, tfin_str),
-    (tbegin_str, dt),
-    (tbegin_str, datetime.timedelta(days=1)),
-    (sunpy.time.TimeRange(tbegin_str, tfin_str))
-    ])
+@pytest.mark.parametrize(
+    "ainput", [(tbegin_str, tfin_str), (tbegin_str, dt), (tbegin_str, datetime.timedelta(days=1)),
+               (sunpy.time.TimeRange(tbegin_str, tfin_str))])
 def test_timerange_input(ainput):
     timerange = sunpy.time.TimeRange(ainput)
     assert isinstance(timerange, sunpy.time.TimeRange)
@@ -139,11 +132,7 @@ def test_timerange_input(ainput):
     assert timerange.dt == delta
 
 
-@pytest.mark.parametrize("ainput", [
-    (tbegin_str, tfin_str),
-    (tfin_str, -dt),
-    (tfin_str, tbegin_str)
-    ])
+@pytest.mark.parametrize("ainput", [(tbegin_str, tfin_str), (tfin_str, -dt), (tfin_str, tbegin_str)])
 def test_start_lessthan_end(ainput):
     """Test that the start and end time for a timerange is always in the
     right order"""
@@ -161,13 +150,14 @@ def timerange_a():
 
 
 def test_center(timerange_a):
-    assert timerange_a.center == datetime.datetime(year=2012, day=1, month=1,
-                                                   hour=12)
+    assert timerange_a.center == datetime.datetime(year=2012, day=1, month=1, hour=12)
 
 
 def test_split(timerange_a):
-    expect = [sunpy.time.TimeRange('2012/1/1T00:00:00', '2012/1/1T12:00:00'),
-              sunpy.time.TimeRange('2012/1/1T12:00:00', '2012/1/2T00:00:00')]
+    expect = [
+        sunpy.time.TimeRange('2012/1/1T00:00:00', '2012/1/1T12:00:00'), sunpy.time.TimeRange(
+            '2012/1/1T12:00:00', '2012/1/2T00:00:00')
+    ]
     split = timerange_a.split(n=2)
     # Doing direct comparisons seem to not work
     assert all([wi.start == ex.start and wi.end == ex.end for wi, ex in zip(split, expect)])
@@ -186,9 +176,10 @@ def test_input_error(timerange_a):
 def test_window(timerange_a):
     timerange = sunpy.time.TimeRange(tbegin_str, tfin_str)
     window = timerange.window(u.Quantity(12 * 60 * 60, 's'), u.Quantity(10, 's'))
-    expect = [sunpy.time.TimeRange('2012/1/1T00:00:00', '2012/1/1T00:00:10'),
-              sunpy.time.TimeRange('2012/1/1T12:00:00', '2012/1/1T12:00:10'),
-              sunpy.time.TimeRange('2012/1/2T00:00:00', '2012/1/2T00:00:10')]
+    expect = [
+        sunpy.time.TimeRange('2012/1/1T00:00:00', '2012/1/1T00:00:10'), sunpy.time.TimeRange(
+            '2012/1/1T12:00:00', '2012/1/1T12:00:10'), sunpy.time.TimeRange('2012/1/2T00:00:00', '2012/1/2T00:00:10')
+    ]
     assert isinstance(window, list)
     # Doing direct comparisons seem to not work
     assert all([wi.start == ex.start and wi.end == ex.end for wi, ex in zip(window, expect)])
@@ -197,9 +188,10 @@ def test_window(timerange_a):
 def test_window_timedelta(timerange_a):
     timerange = sunpy.time.TimeRange(tbegin_str, tfin_str)
     window = timerange.window(datetime.timedelta(hours=12), datetime.timedelta(seconds=10))
-    expect = [sunpy.time.TimeRange('2012/1/1T00:00:00', '2012/1/1T00:00:10'),
-              sunpy.time.TimeRange('2012/1/1T12:00:00', '2012/1/1T12:00:10'),
-              sunpy.time.TimeRange('2012/1/2T00:00:00', '2012/1/2T00:00:10')]
+    expect = [
+        sunpy.time.TimeRange('2012/1/1T00:00:00', '2012/1/1T00:00:10'), sunpy.time.TimeRange(
+            '2012/1/1T12:00:00', '2012/1/1T12:00:10'), sunpy.time.TimeRange('2012/1/2T00:00:00', '2012/1/2T00:00:10')
+    ]
     assert isinstance(window, list)
     # Doing direct comparisons seem to not work
     assert all([wi.start == ex.start and wi.end == ex.end for wi, ex in zip(window, expect)])
@@ -268,6 +260,6 @@ def test_contains(timerange_a):
     assert timerange.end in timerange
     assert '2014/05/04 15:21' in timerange
     assert '1975/4/13' not in timerange
-    assert '2100/1/1'not in timerange
+    assert '2100/1/1' not in timerange
     assert '2014/05/03 12:00' in timerange
     assert '2014/05/05 21:00' in timerange

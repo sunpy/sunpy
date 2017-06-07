@@ -58,58 +58,59 @@ traceWL = ct.trace_color_table('WL')
 hmimag = ct.hmi_mag_color_table()
 
 cmlist = {
-          'sdoaia94': sdoaia94,
-          'sdoaia131': sdoaia131,
-          'sdoaia171': sdoaia171,
-          'sdoaia193': sdoaia193,
-          'sdoaia211': sdoaia211,
-          'sdoaia304': sdoaia304,
-          'sdoaia335': sdoaia335,
-          'sdoaia1600': sdoaia1600,
-          'sdoaia1700': sdoaia1700,
-          'sdoaia4500': sdoaia4500,
-          'sohoeit171': sohoeit171,
-          'sohoeit195': sohoeit195,
-          'sohoeit284': sohoeit284,
-          'sohoeit304': sohoeit304,
-          'soholasco2': soholasco2,
-          'soholasco3': soholasco3,
-          'stereocor1': stereocor1,
-          'stereocor2': stereocor2,
-          'stereohi1': stereohi1,
-          'stereohi2': stereohi2,
-          'rhessi': cm.jet,  # pylint: disable=E1101
-          'yohkohsxtal': yohkohsxtal,
-          'yohkohsxtwh': yohkohsxtwh,
-          'hinodexrt': hinodexrt,
-          'hinodesotintensity': hinodesotintensity,
-          #'hinodesotstokesquv': hinodesotstokesquv,
-          #'hinodesotmagneticf': hinodesotmagneticf,
-          #'hinodesotvelocity': hinodesotvelocity,
-          #'hinodesotwidth': hinodesotwidth,
-          'trace171': trace171,
-          'trace195': trace195,
-          'trace284': trace284,
-          'trace1216': trace1216,
-          'trace1550': trace1550,
-          'trace1600': trace1600,
-          'trace1700': trace1700,
-          'traceWL': traceWL,
-          'hmimag': hmimag,
-          'irissji1330': ct.iris_sji_color_table('1330'),
-          'irissji1400': ct.iris_sji_color_table('1400'),
-          'irissji1600': ct.iris_sji_color_table('1600'),
-          'irissji2796': ct.iris_sji_color_table('2796'),
-          'irissji2832': ct.iris_sji_color_table('2832'),
-          'irissji5000': ct.iris_sji_color_table('5000'),
-          'irissjiFUV': ct.iris_sji_color_table('FUV'),
-          'irissjiNUV': ct.iris_sji_color_table('NUV'),
-          'irissjiSJI_NUV': ct.iris_sji_color_table('SJI_NUV')
+    'sdoaia94': sdoaia94,
+    'sdoaia131': sdoaia131,
+    'sdoaia171': sdoaia171,
+    'sdoaia193': sdoaia193,
+    'sdoaia211': sdoaia211,
+    'sdoaia304': sdoaia304,
+    'sdoaia335': sdoaia335,
+    'sdoaia1600': sdoaia1600,
+    'sdoaia1700': sdoaia1700,
+    'sdoaia4500': sdoaia4500,
+    'sohoeit171': sohoeit171,
+    'sohoeit195': sohoeit195,
+    'sohoeit284': sohoeit284,
+    'sohoeit304': sohoeit304,
+    'soholasco2': soholasco2,
+    'soholasco3': soholasco3,
+    'stereocor1': stereocor1,
+    'stereocor2': stereocor2,
+    'stereohi1': stereohi1,
+    'stereohi2': stereohi2,
+    'rhessi': cm.jet,  # pylint: disable=E1101
+    'yohkohsxtal': yohkohsxtal,
+    'yohkohsxtwh': yohkohsxtwh,
+    'hinodexrt': hinodexrt,
+    'hinodesotintensity': hinodesotintensity,
+    #'hinodesotstokesquv': hinodesotstokesquv,
+    #'hinodesotmagneticf': hinodesotmagneticf,
+    #'hinodesotvelocity': hinodesotvelocity,
+    #'hinodesotwidth': hinodesotwidth,
+    'trace171': trace171,
+    'trace195': trace195,
+    'trace284': trace284,
+    'trace1216': trace1216,
+    'trace1550': trace1550,
+    'trace1600': trace1600,
+    'trace1700': trace1700,
+    'traceWL': traceWL,
+    'hmimag': hmimag,
+    'irissji1330': ct.iris_sji_color_table('1330'),
+    'irissji1400': ct.iris_sji_color_table('1400'),
+    'irissji1600': ct.iris_sji_color_table('1600'),
+    'irissji2796': ct.iris_sji_color_table('2796'),
+    'irissji2832': ct.iris_sji_color_table('2832'),
+    'irissji5000': ct.iris_sji_color_table('5000'),
+    'irissjiFUV': ct.iris_sji_color_table('FUV'),
+    'irissjiNUV': ct.iris_sji_color_table('NUV'),
+    'irissjiSJI_NUV': ct.iris_sji_color_table('SJI_NUV')
 }
 
 # Register the colormaps with matplotlib so plt.get_cmap('sdoaia171') works
 for name, cmap in cmlist.items():
     cm.register_cmap(name=name, cmap=cmap)
+
 
 def get_cmap(name):
     """
@@ -169,7 +170,7 @@ def show_colormaps(filter=None):
     """
 
     if filter:
-        maps =  sorted({k:v for (k,v) in cmlist.items() if k.lower().count(filter.lower())})
+        maps = sorted({k: v for (k, v) in cmlist.items() if k.lower().count(filter.lower())})
         if len(maps) == 0:
             raise KeyError('No color maps found for key - ' + filter)
     else:
@@ -180,16 +181,16 @@ def show_colormaps(filter=None):
     a = np.linspace(0, 1, 256).reshape(1, -1)  # pylint: disable=E1103
     a = np.vstack((a, a))
 
-    fig = plt.figure(figsize=(5, 10),dpi=64)
+    fig = plt.figure(figsize=(5, 10), dpi=64)
     fig.subplots_adjust(top=0.99, bottom=0.01, left=0.2, right=0.99)
     for i, name in enumerate(maps):
         ax = plt.subplot(nmaps, 1, i + 1)
         plt.axis("off")
         plt.imshow(a, aspect='auto', cmap=get_cmap(name), origin='lower')
         pos = list(ax.get_position().bounds)
-        fig.text(pos[0] - 0.01, pos[1], name, fontsize=10,
-                 horizontalalignment='right')
+        fig.text(pos[0] - 0.01, pos[1], name, fontsize=10, horizontalalignment='right')
     plt.show()
+
 
 # def test_equalize(data):
 #    """Returns a color map which performs histogram equalization on the data.

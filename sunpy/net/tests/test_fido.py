@@ -16,8 +16,7 @@ from sunpy.util.datatype_factory_base import NoMatchError, MultipleMatchError
 from sunpy.time import TimeRange, parse_time
 from sunpy import config
 
-from .strategies import (online_instruments, offline_instruments,
-                         time_attr, rhessi_time, goes_time)
+from .strategies import (online_instruments, offline_instruments, time_attr, rhessi_time, goes_time)
 
 TIMEFORMAT = config.get("general", "time_format")
 
@@ -30,7 +29,7 @@ def offline_query(draw, instrument=offline_instruments()):
     query = draw(instrument)
     # If we have AttrAnd then we don't have GOES
     if isinstance(query, a.Instrument) and query.value == 'norh':
-        query &= a.Wavelength(17*u.GHz)
+        query &= a.Wavelength(17 * u.GHz)
     if isinstance(query, a.Instrument) and query.value == 'goes':
         query &= draw(goes_time())
     else:
@@ -84,7 +83,7 @@ def check_response(query, unifiedresp):
 def test_save_path():
     with tempfile.TemporaryDirectory() as target_dir:
         qr = Fido.search(a.Instrument('EVE'), a.Time("2016/10/01", "2016/10/02"), a.Level(0))
-        files = Fido.fetch(qr, path=os.path.join(target_dir, "{instrument}"+os.path.sep+"{level}"))
+        files = Fido.fetch(qr, path=os.path.join(target_dir, "{instrument}" + os.path.sep + "{level}"))
         for f in files:
             assert target_dir in f
             assert "eve{}0".format(os.path.sep) in f
@@ -120,8 +119,7 @@ def test_no_time_error():
 
 def test_no_match():
     with pytest.raises(NoMatchError):
-        Fido.search(a.Time("2016/10/01", "2016/10/02"), a.jsoc.Series("bob"),
-                    a.vso.Sample(10*u.s))
+        Fido.search(a.Time("2016/10/01", "2016/10/02"), a.jsoc.Series("bob"), a.vso.Sample(10 * u.s))
 
 
 def test_call_error():
@@ -144,6 +142,7 @@ def test_multiple_match():
         @classmethod
         def _can_handle_query(cls, *query):
             return True
+
     Fido.registry.update({DummyClient: DummyClient._can_handle_query})
 
     with pytest.raises(MultipleMatchError):
@@ -154,12 +153,10 @@ def test_multiple_match():
 
 @pytest.mark.online
 def test_no_wait_fetch():
-        qr = Fido.search(a.Instrument('EVE'),
-                         a.Time("2016/10/01", "2016/10/02"),
-                         a.Level(0))
-        res = Fido.fetch(qr, wait=False)
-        assert isinstance(res, DownloadResponse)
-        assert isinstance(res.wait(), list)
+    qr = Fido.search(a.Instrument('EVE'), a.Time("2016/10/01", "2016/10/02"), a.Level(0))
+    res = Fido.fetch(qr, wait=False)
+    assert isinstance(res, DownloadResponse)
+    assert isinstance(res.wait(), list)
 
 
 """
@@ -170,15 +167,13 @@ Use LYRA here because it does not use the internet to return results.
 
 
 def test_unifiedresponse_slicing():
-    results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+    results = Fido.search(a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
     assert isinstance(results[0:2], UnifiedResponse)
     assert isinstance(results[0], UnifiedResponse)
 
 
 def test_responses():
-    results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+    results = Fido.search(a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
 
     for i, resp in enumerate(results.responses):
         assert isinstance(resp, QueryResponse)
@@ -187,8 +182,7 @@ def test_responses():
 
 
 def test_repr():
-    results = Fido.search(
-        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+    results = Fido.search(a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
 
     rep = repr(results)
     rep = rep.split('\n')

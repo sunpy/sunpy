@@ -57,17 +57,13 @@ def test_path_inverted():
 
 def test_download_time():
     attr = db_attrs.DownloadTime((1991, 8, 25, 3, 15, 40), (2001, 3, 5))
-    expected = (
-        '{"DownloadTime": '
-        '["1991-08-25 03:15:40", "2001-03-05 00:00:00", false]}')
+    expected = ('{"DownloadTime": ' '["1991-08-25 03:15:40", "2001-03-05 00:00:00", false]}')
     assert json.dumps(attr, cls=QueryEncoder) == expected
 
 
 def test_download_time_inverted():
     attr = ~db_attrs.DownloadTime((1991, 8, 25, 3, 15, 40), (2001, 3, 5))
-    expected = (
-        '{"DownloadTime": '
-        '["1991-08-25 03:15:40", "2001-03-05 00:00:00", true]}')
+    expected = ('{"DownloadTime": ' '["1991-08-25 03:15:40", "2001-03-05 00:00:00", true]}')
     assert json.dumps(attr, cls=QueryEncoder) == expected
 
 
@@ -133,9 +129,7 @@ def test_decode_path():
 
 
 def test_decode_download_time():
-    dump = (
-        '{"DownloadTime": '
-        '["1991-08-25 03:15:40", "2001-03-05 00:00:00", true]}')
+    dump = ('{"DownloadTime": ' '["1991-08-25 03:15:40", "2001-03-05 00:00:00", true]}')
     expected = ~db_attrs.DownloadTime((1991, 8, 25, 3, 15, 40), (2001, 3, 5))
     assert json.loads(dump, object_hook=query_decode) == expected
 

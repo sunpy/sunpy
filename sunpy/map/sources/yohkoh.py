@@ -1,6 +1,6 @@
 """Yohkoh SXT Map subclass definitions"""
 from __future__ import absolute_import, division, absolute_import
-#pylint: disable=W0221,W0222,E1101,E1121
+# pylint: disable=W0221,W0222,E1101,E1121
 
 __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
@@ -60,7 +60,7 @@ class SXTMap(GenericMap):
         # is used, and the solar radius stored in SXT FITS files is in arcseconds.
         self.meta['dsun_apparent'] = constants.au
         if 'solar_r' in self.meta:
-            self.meta['dsun_apparent'] = constants.radius/(np.deg2rad(self.meta['solar_r']/3600.0))
+            self.meta['dsun_apparent'] = constants.radius / (np.deg2rad(self.meta['solar_r'] / 3600.0))
 
     @property
     def dsun(self):

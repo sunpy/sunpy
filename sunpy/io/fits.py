@@ -126,7 +126,7 @@ def get_header(afile):
         close = True
 
     try:
-        headers= []
+        headers = []
         for hdu in hdulist:
             try:
                 comment = "".join(hdu.header['COMMENT']).strip()
@@ -145,7 +145,7 @@ def get_header(afile):
             keydict = {}
             for card in hdu.header.cards:
                 if card.comment != '':
-                    keydict.update({card.keyword:card.comment})
+                    keydict.update({card.keyword: card.comment})
             header['KEYCOMMENTS'] = keydict
             header['WAVEUNIT'] = extract_waveunit(header)
 
@@ -181,7 +181,7 @@ def write(fname, data, header, **kwargs):
     # Check Header
     key_comments = header.pop('KEYCOMMENTS', False)
 
-    for k,v in header.items():
+    for k, v in header.items():
         if isinstance(v, fits.header._HeaderCommentaryCards):
             if k == 'comments':
                 comments = str(v).split('\n')
@@ -198,15 +198,14 @@ def write(fname, data, header, **kwargs):
             fits_header.append(fits.Card(k, v))
 
     if isinstance(key_comments, dict):
-        for k,v in key_comments.items():
+        for k, v in key_comments.items():
             fits_header.comments[k] = v
     elif key_comments:
         raise TypeError("KEYCOMMENTS must be a dictionary")
 
-    fitskwargs = {'output_verify':'fix'}
+    fitskwargs = {'output_verify': 'fix'}
     fitskwargs.update(kwargs)
-    fits.writeto(os.path.expanduser(fname), data, header=fits_header,
-                   **fitskwargs)
+    fits.writeto(os.path.expanduser(fname), data, header=fits_header, **fitskwargs)
 
 
 def extract_waveunit(header):
@@ -236,6 +235,7 @@ def extract_waveunit(header):
         ...     unit = astropy.units.Unit(waveunit)
 
     """
+
     # algorithm: try the following procedures in the following order and return
     # as soon as a waveunit could be detected
     # 1. read header('WAVEUNIT'). If None, go to step 2.
@@ -257,18 +257,9 @@ def extract_waveunit(header):
     waveunit = header.get('WAVEUNIT')
     if waveunit is not None:
         metre_submultiples = {
-            0: parse_waveunit_comment(waveunit_comment),
-            -1: 'dm',
-            -2: 'cm',
-            -3: 'mm',
-            -6: 'um',
-            -9: 'nm',
-            -10: 'angstrom',
-            -12: 'pm',
-            -15: 'fm',
-            -18: 'am',
-            -21: 'zm',
-            -24: 'ym'}
+            0: parse_waveunit_comment(waveunit_comment), -1: 'dm', -2: 'cm', -3: 'mm', -6: 'um', -9: 'nm',
+            -10: 'angstrom', -12: 'pm', -15: 'fm', -18: 'am', -21: 'zm', -24: 'ym'
+        }
         waveunit = metre_submultiples.get(waveunit, str(waveunit).lower())
     elif waveunit_comment is not None:
         waveunit = parse_waveunit_comment(waveunit_comment)
@@ -284,5 +275,5 @@ def extract_waveunit(header):
                 waveunit = m.group(1)
                 break
     if waveunit == '':
-        return None # To fix problems associated with HMI FITS.
+        return None  # To fix problems associated with HMI FITS.
     return waveunit
