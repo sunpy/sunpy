@@ -31,39 +31,43 @@ _base_urls = (
 # keys are file shortcuts
 # values consist of filename as well as optional file extension if files are
 # hosted compressed. This extension is removed after download.
+# Shortcut requirements
+#  the name of the class into which the file will opened must be included at the end of the file
+
 _files = {
-    "AIA_171_IMAGE": ("AIA20110319_105400_0171.fits", ""),
-    "RHESSI_IMAGE": ("hsi_image_20101016_191218.fits", ""),
-    "EIT_195_IMAGE": ("eit_l1_20020625_100011.fits", ""),
-    "CALLISTO_IMAGE": ("BIR_20110922_103000_01.fit", ""),
-    "RHESSI_EVENT_LIST": ("hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits", ""),
-    "SWAP_LEVEL1_IMAGE": ("swap_lv1_20120101_001607.fits", ""),
-    "AIA_193_IMAGE": ("aia.lev1.193A_2013-09-21T16_00_06.84Z.image_lev1.fits", ".zip"),
-    "AIA_171_ROLL_IMAGE": ("aiacalibim5.fits.gz", ""),
-    "AIA_94_CUTOUT": ("ssw_cutout_20121030_153001_AIA_94_.fts", ""),
-    "EVE_LIGHTCURVE": ("20120620_EVE_L0CS_DIODES_1m.txt", ""),
+    "AIA_171_IMAGE": "AIA20110319_105400_0171.fits",
+    "RHESSI_IMAGE": "hsi_image_20101016_191218.fits",
+    "EIT_195_IMAGE": "eit_l1_20020625_100011.fits",
+    "CALLISTO_IMAGE": "BIR_20110922_103000_01.fit",
+    "RHESSI_EVENT_LIST": "hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits",
+    "SWAP_LEVEL1_IMAGE": "swap_lv1_20120101_001607.fits",
+    "AIA_193_IMAGE": "aia.lev1.193A_2013-09-21T16_00_06.84Z.image_lev1.fits.zip",
+    "AIA_171_ROLL_IMAGE": "aiacalibim5.fits.gz",
+    "AIA_94_CUTOUT_IMAGE": "ssw_cutout_20121030_153001_AIA_94_.fts",
+    "EVE_TIMESERIES": "20120620_EVE_L0CS_DIODES_1m.txt",
     # Uncomment this if it needs to be used. Commented out to save bandwidth.
-    # "LYRA_LIGHTCURVE": ("lyra_20110810-000000_lev2_std.fits.gz", ""),
-    "LYRA_LEVEL3_LIGHTCURVE": ("lyra_20150101-000000_lev3_std.fits.gz", ""),
-    "GOES_LIGHTCURVE": ("go1520120601.fits.gz", ""),
-    "GBM_LIGHTCURVE": ("glg_cspec_n5_110607_v00.pha", ""),
-    "NOAAINDICES_LIGHTCURVE": ("RecentIndices.txt", ""),
-    "NOAAPREDICT_LIGHTCURVE": ("predicted-sunspot-radio-flux.txt", ""),
-    "RHESSI_LIGHTCURVE": ("hsi_obssumm_20120601_018.fits.gz", ""),
-    "NORH_LIGHTCURVE": ("tca110810", "")
+    # "LYRA_LIGHTCURVE": ("lyra_20110810-000000_lev2_std.fits.gz", ,
+    "LYRA_LEVEL3_TIMESERIES": "lyra_20150101-000000_lev3_std.fits.gz",
+    "GOES_TIMESERIES": "go1520120601.fits.gz",
+    "GBM_TIMESERIES": "glg_cspec_n5_110607_v00.pha",
+    "NOAAINDICES_TIMESERIES": "RecentIndices.txt",
+    "NOAAPREDICT_TIMESERIES": "predicted-sunspot-radio-flux.txt",
+    "RHESSI_TIMESERIES": "hsi_obssumm_20120601_018.fits.gz",
+    "NORH_TIMESERIES": "tca110810"
 }
 
 sample_files = {}
 for key in _files:
-    sample_files[key] = os.path.abspath(os.path.join(sampledata_dir, _files[key][0]))
+    sample_files[key] = os.path.abspath(os.path.join(sampledata_dir, _files[key]))
 
 # Creating the directory for sample files to be downloaded
 sampledata_dir = get_and_create_sample_dir()
 
+
 def download_sample_data(progress=True, overwrite=False, timeout=None):
     """
     Download all sample data.
-    
+
     Parameters
     ----------
     progress: `bool`
@@ -85,7 +89,7 @@ def download_sample_data(progress=True, overwrite=False, timeout=None):
 
 def download_sample_file(filename, url_list, progress=True, overwrite=False, timeout=None):
     """
-    Download a sample data file and move it to the sample data directory. 
+    Download a sample data file and move it to the sample data directory.
     Also, uncompresses the file if necessary.
 
     Parameters
@@ -111,9 +115,7 @@ def download_sample_file(filename, url_list, progress=True, overwrite=False, tim
         uncompressed_filename = filename[:-4]
     else:
         uncompressed_filename = filename
-    #print(uncompressed_filename)
     # check if the (uncompressed) file exists
-    # print("Downloading sample files to {}".format(sampledata_dir))
     if not overwrite and os.path.isfile(os.path.join(sampledata_dir, uncompressed_filename)):
         print("File {} found and overwrite flag not set so skipping.".format(uncompressed_filename))
     else:
