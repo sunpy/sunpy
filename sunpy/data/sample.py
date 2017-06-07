@@ -3,7 +3,7 @@
 from __future__ import absolute_import
 
 import sys
-from ._sample import sample_files as _sample_files
+from ._sample import _files as _sample_files
 from ._sample import get_sample_file
 
 from sunpy import config as _config
