@@ -9,12 +9,14 @@ import matplotlib.pyplot as plt
 import matplotlib.widgets as widgets
 import matplotlib.animation as mplanim
 
+import astropy.units as u
+
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import mpl_toolkits.axes_grid1.axes_size as Size
 
 from sunpy.extern.six.moves import range
 
-__all__ = ['BaseFuncAnimator', 'ImageAnimator', 'LineAnimator']
+__all__ = ['BaseFuncAnimator', 'ImageAnimator', 'LineAnimator', 'ImageAnimatorWCS']
 
 
 class SliderPB(widgets.Slider):
@@ -878,3 +880,29 @@ class LineAnimator(ArrayAnimator):
         if val != slider.cval:
             line.set_ydata(self.data[self.frame_slice])
             slider.cval = val
+
+class ImageAnimatorWCS(ImageAnimator):
+    """
+    Same parameters as ImageAnimator with a extra parameter for WCS.
+    """
+    def __init__(self, data, wcs=None, image_axes=[-2, -1], axis_ranges=None, **kwargs):
+        self.wcs = wcs
+        super(ImageAnimatorWCS, self).__init__(data, image_axes=image_axes, axis_ranges=axis_ranges, **kwargs)
+
+    def _get_main_axes(self):
+        axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs, slices=(0, 'y', 'x'))
+        axes.coords[2].set_ticks(exclude_overlapping=True)
+        axes.coords[2].set_format_unit(u.nm)
+        return axes
+    
+    def plot_start_image(self, ax):
+        """Sets up plot of initial image."""
+        imshow_args = {'interpolation': 'nearest',
+                       'origin': 'lower',
+                       }
+        imshow_args.update(self.imshow_kwargs)
+        im = ax.imshow(self.data[self.frame_slice], **imshow_args)
+        if self.if_colorbar:
+            self._add_colorbar(im)
+        return im
+ 
