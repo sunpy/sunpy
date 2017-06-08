@@ -77,6 +77,6 @@ class LYRAClient(GenericClient):
         chkattr =  ['Time', 'Instrument', 'Level']
         chklist =  [x.__class__.__name__ in chkattr for x in query]
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value == 'lyra':
+            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'lyra':
                 return all(chklist)
         return False
