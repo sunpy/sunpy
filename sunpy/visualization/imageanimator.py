@@ -934,17 +934,20 @@ class ImageAnimatorWCS(ImageAnimator):
         The unit of y axis.
 
     slices_wcsaxes: tuple
-        Slices parameter of WCSAxes. Default (0, 'y', 'x')
+        Slices parameter of WCSAxes. Example: (0, 'y', 'x') for 3D Data
     Extra keywords are passed to imshow.
 
     """
-    def __init__(self, data, wcs=None, image_axes=[-2, -1], unit_x_axis=None, unit_y_axis=None, slices_wcsaxes=(0, 'y', 'x'), axis_ranges=None, **kwargs):
+    def __init__(self, data, wcs=None, image_axes=[-2, -1], unit_x_axis=None, unit_y_axis=None, slices_wcsaxes=None, axis_ranges=None, **kwargs):
         if wcs is None:
             raise ValueError("wcs data should be provided.")
+        if slices_wcsaxes is not None:
+            self.slices_wcsaxes = slices_wcsaxes
+        else:
+            raise ValueError("slices of wcsaxes should be given")
         self.wcs = wcs
         self.unit_x_axis = unit_x_axis
         self.unit_y_axis = unit_y_axis
-        self.slices_wcsaxes = slices_wcsaxes
         super(ImageAnimatorWCS, self).__init__(data, image_axes=image_axes, axis_ranges=axis_ranges, **kwargs)
 
     def _get_main_axes(self):
@@ -974,6 +977,9 @@ class ImageAnimatorWCS(ImageAnimator):
         ax_ind = self.slider_axes[slider.slider_ind]
         ind = np.argmin(np.abs(self.axis_ranges[ax_ind] - val))
         self.frame_slice[ax_ind] = ind
+        list_slices_wcsaxes = list(self.slices_wcsaxes)
+        list_slices_wcsaxes[ax_ind] = val
+        self.slices_wcsaxes = tuple(list_slices_wcsaxes)
         self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
         if val != slider.cval:
             im.set_array(self.data[self.frame_slice])
