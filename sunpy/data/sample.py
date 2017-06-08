@@ -6,9 +6,6 @@ import sys
 from ._sample import _files as _sample_files
 from ._sample import get_sample_file
 
-from sunpy import config as _config
-_sampledata_dir = _config.get("downloads", "sample_dir")
-
 _base_urls = (
     'http://data.sunpy.org/sample-data/',
     'https://github.com/sunpy/sunpy-sample-data/raw/master/'
