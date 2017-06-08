@@ -1,19 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import abc
-from sunpy.extern import six
 
 import numpy as np
 
 import matplotlib.pyplot as plt
 import matplotlib.widgets as widgets
 import matplotlib.animation as mplanim
-
-import astropy.units as u
-
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import mpl_toolkits.axes_grid1.axes_size as Size
 
+from sunpy.extern import six
 from sunpy.extern.six.moves import range
 
 __all__ = ['BaseFuncAnimator', 'ImageAnimator', 'LineAnimator', 'ImageAnimatorWCS']
@@ -129,10 +126,8 @@ class BaseFuncAnimator(object):
         list of [min,max] pairs to set the ranges for each slider or an array
         of values for all points of the slider.
         (The slider update function decides which to support.)
-
     fig: mpl.figure
         Figure to use
-
     interval: int
         Animation interval in ms
 
@@ -883,16 +878,83 @@ class LineAnimator(ArrayAnimator):
 
 class ImageAnimatorWCS(ImageAnimator):
     """
-    Same parameters as ImageAnimator with a extra parameter for WCS.
+    Create a matplotlib backend independent data explorer for 2D images.
+
+    The following keyboard shortcuts are defined in the viewer:
+
+    - 'left': previous step on active slider
+    - 'right': next step on active slider
+    - 'top': change the active slider up one
+    - 'bottom': change the active slider down one
+    - 'p': play/pause active slider
+
+    This viewer can have user defined buttons added by specifying the labels
+    and functions called when those buttons are clicked as keyword arguments.
+
+    Parameters
+    ----------
+    data: ndarray
+        The data to be visualized >= 2D
+    
+    wcs: sunpycube.wcs_util.WCS
+        The wcs data.
+
+    image_axes: list
+        The two axes that make the image
+
+    fig: mpl.figure
+        Figure to use
+
+    axis_ranges: list of physical coordinates for array or None
+        If None array indices will be used for all axes.
+        If a list it should contain one element for each axis of the numpy array.
+        For the image axes a [min, max] pair should be specified which will be
+        passed to :func:`matplotlib.pyplot.imshow` as extent.
+        For the slider axes a [min, max] pair can be specified or an array the
+        same length as the axis which will provide all values for that slider.
+        If None is specified for an axis then the array indices will be used
+        for that axis.
+
+    interval: int
+        Animation interval in ms
+
+    colorbar: bool
+        Plot colorbar
+
+    button_labels: list
+        List of strings to label buttons
+
+    button_func: list
+        List of functions to map to the buttons
+
+    unit_x_axis: astropy.units
+        The unit of x axis.
+
+    unit_y_axis: astropy.units
+        The unit of y axis.
+
+    slices_wcsaxes: tuple
+        Slices parameter of WCSAxes. Default (0, 'y', 'x')
+    Extra keywords are passed to imshow.
+
     """
-    def __init__(self, data, wcs=None, image_axes=[-2, -1], axis_ranges=None, **kwargs):
+    def __init__(self, data, wcs=None, image_axes=[-2, -1], unit_x_axis=None, unit_y_axis=None, slices_wcsaxes=(0, 'y', 'x'), axis_ranges=None, **kwargs):
+        if wcs is None:
+            raise ValueError("wcs data should be provided.")
         self.wcs = wcs
+        self.unit_x_axis = unit_x_axis
+        self.unit_y_axis = unit_y_axis
+        self.slices_wcsaxes = slices_wcsaxes
         super(ImageAnimatorWCS, self).__init__(data, image_axes=image_axes, axis_ranges=axis_ranges, **kwargs)
 
     def _get_main_axes(self):
-        axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs, slices=(0, 'y', 'x'))
-        axes.coords[2].set_ticks(exclude_overlapping=True)
-        axes.coords[2].set_format_unit(u.nm)
+        axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs, slices=self.slices_wcsaxes)
+        if self.unit_x_axis is not None:
+            axes.coords[2].set_format_unit(self.unit_x_axis)
+            axes.coords[2].set_ticks(exclude_overlapping=True)
+        if self.unit_y_axis is not None:
+            axes.coords[1].set_format_unit(self.unit_y_axis)
+            axes.coords[1].set_ticks(exclude_overlapping=True)
         return axes
     
     def plot_start_image(self, ax):
@@ -905,4 +967,14 @@ class ImageAnimatorWCS(ImageAnimator):
         if self.if_colorbar:
             self._add_colorbar(im)
         return im
- 
+
+    def update_plot(self, val, im, slider):
+        """Updates plot based on slider/array dimension being iterated."""
+        val = int(val)
+        ax_ind = self.slider_axes[slider.slider_ind]
+        ind = np.argmin(np.abs(self.axis_ranges[ax_ind] - val))
+        self.frame_slice[ax_ind] = ind
+        self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
+        if val != slider.cval:
+            im.set_array(self.data[self.frame_slice])
+            slider.cval = val
