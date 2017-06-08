@@ -11,7 +11,6 @@ from shutil import move
 from astropy.utils.data import download_file
 
 from sunpy.extern import six
-from sunpy.extern.six.moves.urllib.error import URLError
 
 from sunpy.util.net import url_exists
 from sunpy.util.config import get_and_create_sample_dir
@@ -114,12 +113,13 @@ def get_sample_file(filename, url_list, progress=True, overwrite=False, timeout=
     else:
         # check each provided url to find the file
         for base_url in url_list:
+            online_filename = filename
             if base_url.count('github'):
-                filename += '?raw=true'
+                online_filename += '?raw=true'
             try:
-                exists = url_exists(os.path.join(base_url, filename))
+                exists = url_exists(os.path.join(base_url, online_filename))
                 if exists:
-                    f = download_file(os.path.join(base_url, filename))
+                    f = download_file(os.path.join(base_url, online_filename))
                     real_name, ext = os.path.splitext(f)
 
                     if ext == '.zip':
@@ -137,5 +137,6 @@ def get_sample_file(filename, url_list, progress=True, overwrite=False, timeout=
                 warnings.warn("Download failed with error {}. \n"
                               "Retrying with different mirror.".format(e))
         # if reach here then file has not been downloaded.
+        print("File {} not found.".format(filename))
         return None
 
