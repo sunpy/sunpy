@@ -3,7 +3,6 @@
 import abc
 
 import numpy as np
-
 import matplotlib.pyplot as plt
 import matplotlib.widgets as widgets
 import matplotlib.animation as mplanim
@@ -933,19 +932,17 @@ class ImageAnimatorWCS(ImageAnimator):
     unit_y_axis: astropy.units
         The unit of y axis.
 
-    slices_wcsaxes: tuple
-        Slices parameter of WCSAxes. Example: (0, 'y', 'x') for 3D Data
     Extra keywords are passed to imshow.
 
     """
-    def __init__(self, data, wcs=None, image_axes=[-2, -1], unit_x_axis=None, unit_y_axis=None, slices_wcsaxes=None, axis_ranges=None, **kwargs):
+    def __init__(self, data, wcs=None, image_axes=[-1, -2], unit_x_axis=None, unit_y_axis=None, axis_ranges=None, **kwargs):
         if wcs is None:
             raise ValueError("wcs data should be provided.")
-        if slices_wcsaxes is not None:
-            self.slices_wcsaxes = slices_wcsaxes
-        else:
-            raise ValueError("slices of wcsaxes should be given")
         self.wcs = wcs
+        list_slices_wcsaxes = [0 for i in range(self.wcs.naxis)]
+        list_slices_wcsaxes[image_axes[0]] = 'x'
+        list_slices_wcsaxes[image_axes[1]] = 'y'
+        self.slices_wcsaxes = tuple(list_slices_wcsaxes)
         self.unit_x_axis = unit_x_axis
         self.unit_y_axis = unit_y_axis
         super(ImageAnimatorWCS, self).__init__(data, image_axes=image_axes, axis_ranges=axis_ranges, **kwargs)
