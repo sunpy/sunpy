@@ -13,6 +13,8 @@ from sunpy.net import attrs as a
 from hypothesis import given
 from sunpy.net.tests.strategies import time_attr
 
+
+@pytest.mark.online
 @pytest.mark.parametrize("timerange,url_start,url_end", [
     (TimeRange('2012/4/21', '2012/4/21'),
      'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/04/tca120421',
@@ -34,9 +36,10 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
     assert urls[-1] == url_end
 
 
-def test_get_url_for_date():
-    url = norh.NoRHClient()._get_url_for_date(datetime.date(2011, 3, 14), wavelength=17*u.GHz)
-    assert url == 'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2011/03/tca110314'
+# FIXME - Do we need this function? time_range superseeds it, right?
+# def test_get_url_for_date():
+#     url = norh.NoRHClient()._get_url_for_date(datetime.date(2011, 3, 14), wavelength=17*u.GHz)
+#     assert url == 'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2011/03/tca110314'
 
 
 @given(time_attr())
@@ -50,6 +53,7 @@ def test_can_handle_query(time):
     assert ans2 is False
 
 
+@pytest.mark.online
 @given(time_attr())
 def test_query(time):
     qr1 = norh.NoRHClient().query(time, a.Instrument('norh'), a.Wavelength(17 * u.GHz))
@@ -58,6 +62,7 @@ def test_query(time):
     assert qr1.time_range().end == time.end
 
 
+@pytest.mark.online
 @given(time_attr())
 def test_query_34(time):
     qr1 = norh.NoRHClient().query(time, a.Instrument('norh'), a.Wavelength(34 * u.GHz))
