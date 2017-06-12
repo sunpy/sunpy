@@ -1,8 +1,8 @@
 """
 This module implements SWAPClient
 """
-#This module was developed with funding provided by
-#the Google Summer of Code 2016.
+# This module was developed with funding provided by
+# the Google Summer of Code 2016.
 
 __author__ = "Sudarshan Konge"
 __email__ = "sudk1896@gmail.com"
@@ -13,6 +13,7 @@ from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
 
 __all__ = ['SWAPClient']
+
 
 class SWAPClient(GenericClient):
     """
@@ -63,7 +64,7 @@ class SWAPClient(GenericClient):
             SWAP_STARTDATE = datetime.datetime(2010, 1, 4)
         if timerange.start < SWAP_STARTDATE:
             raise ValueError('Earliest date for which SWAP data is available is {:%Y-%m-%d}'.format(SWAP_STARTDATE))
-        datatype = {0: 'eng', 1:'bsd', 'q':'qlk', 'Q':'qlk'}
+        datatype = {0: 'eng', 1: 'bsd', 'q': 'qlk', 'Q': 'qlk'}
         prefix = 'http://proba2.oma.be/swap/data/{datatype}/%Y/%m/%d/'
         if level == 0 or level == 1:
             suffix = '{instrument}_lv{level}_%Y%m%d_%H%M%S.fits'
@@ -101,7 +102,6 @@ class SWAPClient(GenericClient):
 
         """
         chkattr = ['Time', 'Instrument', 'Level']
-        chklist = [x.__class__.__name__ in chkattr for x in query]
         chk_var = 0
         for x in query:
             if x.__class__.__name__ == 'Instrument' and type(x.value) is str and x.value.lower() == 'swap':

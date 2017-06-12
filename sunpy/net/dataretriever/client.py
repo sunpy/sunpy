@@ -4,7 +4,6 @@
 
 import copy
 import os
-import datetime
 from abc import ABCMeta
 from collections import OrderedDict, namedtuple
 from functools import partial
@@ -13,7 +12,6 @@ import numpy as np
 import astropy.table
 import astropy.units as u
 
-import sunpy
 from sunpy.extern import six
 from sunpy.time import TimeRange
 from sunpy.util import replacement_filename
