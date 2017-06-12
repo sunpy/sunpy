@@ -8,7 +8,7 @@ import pytest
 from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument, Level
 from sunpy.net.dataretriever.client import QueryResponse
-from sunpy.net.dataretriever.downloader_factory import UnifiedResponse
+from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
 
