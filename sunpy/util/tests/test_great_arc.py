@@ -1,8 +1,9 @@
 from __future__ import absolute_import, division, print_function
+
 import numpy as np
-import sunpy.coordinates
 from astropy.coordinates import SkyCoord
 import astropy.units as u
+import sunpy.coordinates
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
 from sunpy.util.great_arc import great_arc, calculate_great_arc
@@ -17,7 +18,7 @@ def test_great_arc():
     coordinate_frame = m.coordinate_frame
     a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=coordinate_frame)
     b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=coordinate_frame)
-    v = great_arc(a, b, num=num)
+    v = great_arc(a, b, number_points=num)
 
     # Return a SkyCoord
     assert isinstance(v, SkyCoord)
