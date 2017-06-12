@@ -3,40 +3,43 @@
 # which are assumed to be on disk.
 #
 from __future__ import absolute_import, division, print_function
+
 import numpy as np
-import sunpy.coordinates
 from astropy.coordinates import SkyCoord
-import astropy.units as u
+import sunpy.coordinates
 
 
-def great_arc(a, b, center=SkyCoord(0*u.km, 0*u.km, 0*u.km, frame='heliocentric'), num=100):
+def great_arc(start_point, end_point, center=None, number_points=100):
     """
     Calculate a user-specified number of points on a great arc between a start
     and end point on a sphere.
 
     Parameters
     ----------
-    :param a: `~astropy.coordinates.SkyCoord`
+    start_point : `~astropy.coordinates.SkyCoord`
         Start point.
 
-    :param b: `~astropy.coordinates.SkyCoord`
+    end_point : `~astropy.coordinates.SkyCoord`
         End point.
 
-    :param center: `~astropy.coordinates.SkyCoord`
+    center : `~astropy.coordinates.SkyCoord`
         Center of the sphere.
 
-    :param num: int
+    number_points : int
         Number of points along the great arc.
 
-    :return: `~astropy.coordinates.SkyCoord`
+    Returns
+    -------
+    arc : `~astropy.coordinates.SkyCoord`
         Co-ordinates along the great arc in the co-ordinate frame of the
         start point.
 
     Example
     -------
-    >>> import sunpy.coordinates
     >>> from astropy.coordinates import SkyCoord
     >>> import astropy.units as u
+    >>> import sunpy.coordinates
+    >>> from sunpy.coordinates import great_arc
     >>> import sunpy.map
     >>> from sunpy.data.sample import AIA_171_IMAGE
     >>> m = sunpy.map.Map(AIA_171_IMAGE)
@@ -44,21 +47,22 @@ def great_arc(a, b, center=SkyCoord(0*u.km, 0*u.km, 0*u.km, frame='heliocentric'
     >>> b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=m.coordinate_frame)
     >>> v = great_arc(a, b)
     """
-    input_frame = a.frame
-    a_unit = a.transform_to('heliocentric').cartesian.xyz.unit
-    a_xyz = a.transform_to('heliocentric').cartesian.xyz.value
-    b_xyz = b.transform_to('heliocentric').cartesian.xyz.to(a_unit).value
-    c_xyz = center.transform_to('heliocentric').cartesian.xyz.to(a_unit).value
+    start_point_unit = start_point.transform_to('heliocentric').cartesian.xyz.unit
+    if center is None:
+        c = SkyCoord(0*start_point_unit, 0*start_point_unit, 0*start_point_unit, frame='heliocentric')
+    a_cartesian = start_point.transform_to('heliocentric').cartesian.xyz.to(start_point_unit).value
+    b_cartesian = end_point.transform_to('heliocentric').cartesian.xyz.to(start_point_unit).value
+    c_cartesian = c.transform_to('heliocentric').cartesian.xyz.to(start_point_unit).value
 
     # Calculate the points along the great arc.
-    v_xyz = calculate_great_arc(a_xyz, b_xyz, c_xyz, num=num)*a_unit
+    v_cartesian = calculate_great_arc(a_cartesian, b_cartesian, c_cartesian, number_points)*start_point_unit
 
     # Transform the great arc back into the input frame.
-    return SkyCoord(v_xyz[:, 0], v_xyz[:, 1], v_xyz[:, 2],
-                    frame='heliocentric', observer=a.observer).transform_to(input_frame)
+    return SkyCoord(v_cartesian[:, 0], v_cartesian[:, 1], v_cartesian[:, 2],
+                    frame='heliocentric', observer=start_point.observer).transform_to(start_point.frame)
 
 
-def calculate_great_arc(a, b, c, num):
+def calculate_great_arc(a_cartesian, b_cartesian, c_cartesian, number_points):
     """
     Calculate a user-specified number of points on a great arc between a start
     and end point on a sphere where the start and end points are assumed to be
@@ -67,19 +71,21 @@ def calculate_great_arc(a, b, c, num):
 
     Parameters
     ----------
-    :param a: `~numpy.ndarray`
+    a_cartesian : `~numpy.ndarray`
         Start point expressed as a Cartesian xyz triple.
 
-    :param b: `~numpy.ndarray`
+    b_cartesian : `~numpy.ndarray`
         End point expressed as a Cartesian xyz triple.
 
-    :param c: `~numpy.ndarray`
+    c_cartesian : `~numpy.ndarray`
         Center of the sphere expressed as a Cartesian xyz triple
 
-    :param num: int
+    number_points : int
         Number of points along the great arc.
 
-    :return: `~numpy.ndarray`
+    Returns
+    -------
+    arc : `~numpy.ndarray`
         Co-ordinates along the great arc expressed as Cartesian xyz triples.
         The shape of the array is (num, 3).
 
@@ -89,18 +95,16 @@ def calculate_great_arc(a, b, c, num):
     [2] https://en.wikipedia.org/wiki/Great-circle_distance#Vector_version
 
     """
-    x0 = c[0]
-    y0 = c[1]
-    z0 = c[2]
+    center = np.asarray(c_cartesian)
 
     # Vector from center to first point
-    v1 = np.asarray([a[0] - x0, a[1] - y0, a[2] - z0])
+    v1 = np.asarray(a_cartesian) - center
 
     # Distance of the first point from the center
     r = np.linalg.norm(v1)
 
     # Vector from center to second point
-    v2 = np.asarray([b[0] - x0, b[1] - y0, b[2] - z0])
+    v2 = np.asarray(b_cartesian) - center
 
     # The v3 lies in plane of v1 & v2 and is orthogonal to v1
     v3 = np.cross(np.cross(v1, v2), v1)
@@ -110,12 +114,8 @@ def calculate_great_arc(a, b, c, num):
 
     # Range through the inner angle between v1 and v2
     inner_angles = np.linspace(0, np.arctan2(np.linalg.norm(np.cross(v1, v2)),
-                                             np.dot(v1, v2)), num=num)
+                                             np.dot(v1, v2)), num=number_points).reshape(number_points, 1)
 
     # Calculate the Cartesian locations from the first to second points
-    v_xyz = np.zeros(shape=(num, 3))
-    for k in range(0, num):
-        inner_angle = inner_angles[k]
-        v_xyz[k, :] = v1 * np.cos(inner_angle) + v3 * np.sin(inner_angle) + c
-
-    return v_xyz
+    return v1[np.newaxis, :] * np.cos(inner_angles) + \
+           v3[np.newaxis, :] * np.sin(inner_angles) + center
