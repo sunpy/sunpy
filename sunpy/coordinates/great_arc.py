@@ -50,7 +50,7 @@ def great_arc(start, end, center=None, number_points=100):
     """
 
     # Create a helper object that contains all the information we need.
-    gc = GreatArcConvertToCartesian(start, end, center)
+    gc = HelperGreatArcConvertToCartesian(start, end, center)
 
     # Calculate the points along the great arc.
     great_arc_points_cartesian = calculate_great_arc(gc.start_cartesian, gc.end_cartesian, gc.center_cartesian, number_points)*gc.start_unit
@@ -82,14 +82,19 @@ def great_arc_distance(start, end, center=None):
     distance : `astropy.units.Quantity`
         The distance between the two points on the sphere.
     """
-    gc = GreatArcConvertToCartesian(start, end, center)
-    this_great_arc = CalculateGreatArcCartesian(gc.start_cartesian, gc.end_cartesian, gc.center_cartesian)
+    # Create a helper object that contains all the information we needed.
+    gc = HelperGreatArcConvertToCartesian(start, end, center)
+
+    # Calculate the properties of the great arc.
+    this_great_arc = GreatArcPropertiesCartesian(gc.start_cartesian, gc.end_cartesian, gc.center_cartesian)
+
+    # Return the distance on the sphere in the Cartesian distance units.
     return this_great_arc.distance() * gc.start_unit
 
 
-def great_arc_angular_distance(start, end, center=None):
+def great_arc_angular_separation(start, end, center=None):
     """
-    Calculate the angular distance between the start point and end point on a
+    Calculate the angular separation between the start point and end point on a
     sphere.
 
     Parameters
@@ -105,10 +110,16 @@ def great_arc_angular_distance(start, end, center=None):
 
     Returns
     -------
-
+    separation : `astropy.units.Quantity`
+        The angular separation between the two points on the sphere.
     """
-    gc = GreatArcConvertToCartesian(start, end, center)
-    this_great_arc = CalculateGreatArcCartesian(gc.start_cartesian, gc.end_cartesian, gc.center_cartesian)
+    # Create a helper object that contains all the information needed.
+    gc = HelperGreatArcConvertToCartesian(start, end, center)
+
+    # Calculate the properties of the great arc
+    this_great_arc = GreatArcPropertiesCartesian(gc.start_cartesian, gc.end_cartesian, gc.center_cartesian)
+
+    # Return the angular separation on the sphere.
     return np.rad2deg(this_great_arc.inner_angle) * u.degree
 
 
@@ -138,7 +149,7 @@ def calculate_great_arc(start_cartesian, end_cartesian, center_cartesian, number
         Co-ordinates along the great arc expressed as Cartesian xyz triples.
         The shape of the array is (num, 3).
     """
-    this_great_arc = CalculateGreatArcCartesian(start_cartesian, end_cartesian, center_cartesian)
+    this_great_arc = GreatArcPropertiesCartesian(start_cartesian, end_cartesian, center_cartesian)
 
     # Range through the inner angle between v1 and v2
     inner_angles = np.linspace(0, this_great_arc.inner_angle, num=number_points).reshape(number_points, 1)
@@ -149,7 +160,7 @@ def calculate_great_arc(start_cartesian, end_cartesian, center_cartesian, number
            this_great_arc.center
 
 
-class CalculateGreatArcCartesian:
+class GreatArcPropertiesCartesian:
     def __init__(self, start_cartesian, end_cartesian, center_cartesian):
         """
         Calculate the properties of a great arc between a start point and an
@@ -209,7 +220,7 @@ class CalculateGreatArcCartesian:
         return self.r * self.inner_angle
 
 
-class GreatArcConvertToCartesian:
+class HelperGreatArcConvertToCartesian:
     def __init__(self, start, end, center=None):
         """
         A helper class that takes the inputs required to compute a great arc
