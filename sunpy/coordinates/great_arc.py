@@ -49,13 +49,16 @@ def great_arc(start, end, center=None, number_points=100):
     >>> v = great_arc(a, b)
     """
 
+    # Create a helper object that contains all the information we need.
     gc = GreatArcConvertToCartesian(start, end, center)
 
     # Calculate the points along the great arc.
-    v_cartesian = calculate_great_arc(gc.start_cartesian, gc.end_cartesian, gc.center_cartesian, number_points)*gc.start_unit
+    great_arc_points_cartesian = calculate_great_arc(gc.start_cartesian, gc.end_cartesian, gc.center_cartesian, number_points)*gc.start_unit
 
     # Transform the great arc back into the input frame.
-    return SkyCoord(v_cartesian[:, 0], v_cartesian[:, 1], v_cartesian[:, 2],
+    return SkyCoord(great_arc_points_cartesian[:, 0],
+                    great_arc_points_cartesian[:, 1],
+                    great_arc_points_cartesian[:, 2],
                     frame='heliocentric', observer=gc.observer).transform_to(gc.start_frame)
 
 
