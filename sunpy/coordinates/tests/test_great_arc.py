@@ -5,8 +5,8 @@ from astropy.coordinates import SkyCoord
 import astropy.units as u
 import sunpy.coordinates
 import sunpy.map
-from sunpy.data.sample import AIA_171_IMAGE
-from sunpy.util.great_arc import great_arc, calculate_great_arc
+import sunpy.data.test
+from sunpy.coordinates.great_arc import great_arc, calculate_great_arc
 
 
 # Test the great arc code
@@ -14,7 +14,7 @@ def test_great_arc():
     # Number of points in the return
     num = 3
 
-    m = sunpy.map.Map(AIA_171_IMAGE)
+    m = sunpy.map.Map(sunpy.map.Map(sunpy.data.test.get_test_filepath('aia_171_level1.fits')))
     coordinate_frame = m.coordinate_frame
     a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=coordinate_frame)
     b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=coordinate_frame)
