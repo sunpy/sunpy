@@ -5,7 +5,9 @@
 
 from __future__ import absolute_import
 
+import tempfile
 import datetime
+
 import pytest
 from astropy import units as u
 
@@ -207,3 +209,23 @@ def test_str():
 def test_repr():
     qr = QueryResponse([])
     assert "Start Time End Time  Source Instrument   Type" in repr(qr)
+
+@pytest.mark.online
+def test_path(client):
+    """
+    Test that '{file}' is automatically appended to the end of a custom path if
+    it is not specified.
+    """
+    qr = client.query(va.Time('2011-06-07 06:33',
+                              '2011-06-07 06:33:08'),
+                      va.Instrument('aia'),
+                      va.Wavelength(171*u.AA))
+    tmp_dir = tempfile.mkdtemp()
+    files = client.get(qr, path=tmp_dir).wait(progress=False)
+
+    assert len(files) == 1
+
+    # The construction of a VSO filename is bonkers complex, so there is no
+    # practical way to determine what it should be in this test, so we just
+    # put it here.
+    assert "aia_lev1_171a_2011_06_07t06_33_02_77z_image_lev1.fits" in files[0]
