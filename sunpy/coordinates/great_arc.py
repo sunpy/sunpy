@@ -11,8 +11,8 @@ import sunpy.coordinates
 
 def great_arc(start_point, end_point, center=None, number_points=100):
     """
-    Calculate a user-specified number of points on a great arc between a start
-    and end point on a sphere.
+    Calculates a user-specified number of points on an arc of a great circle
+    connecting two points.
 
     Parameters
     ----------
@@ -55,14 +55,14 @@ def great_arc(start_point, end_point, center=None, number_points=100):
     c_cartesian = c.transform_to('heliocentric').cartesian.xyz.to(start_point_unit).value
 
     # Calculate the points along the great arc.
-    v_cartesian = calculate_great_arc(a_cartesian, b_cartesian, c_cartesian, number_points)*start_point_unit
+    v_cartesian = _calculate_great_arc(a_cartesian, b_cartesian, c_cartesian, number_points)*start_point_unit
 
     # Transform the great arc back into the input frame.
     return SkyCoord(v_cartesian[:, 0], v_cartesian[:, 1], v_cartesian[:, 2],
                     frame='heliocentric', observer=start_point.observer).transform_to(start_point.frame)
 
 
-def calculate_great_arc(a_cartesian, b_cartesian, c_cartesian, number_points):
+def _calculate_great_arc(start, end, center, number_points):
     """
     Calculate a user-specified number of points on a great arc between a start
     and end point on a sphere where the start and end points are assumed to be
@@ -71,13 +71,13 @@ def calculate_great_arc(a_cartesian, b_cartesian, c_cartesian, number_points):
 
     Parameters
     ----------
-    a_cartesian : `~numpy.ndarray`
+    start : `~numpy.ndarray`
         Start point expressed as a Cartesian xyz triple.
 
-    b_cartesian : `~numpy.ndarray`
+    end : `~numpy.ndarray`
         End point expressed as a Cartesian xyz triple.
 
-    c_cartesian : `~numpy.ndarray`
+    center : `~numpy.ndarray`
         Center of the sphere expressed as a Cartesian xyz triple
 
     number_points : int
@@ -87,7 +87,7 @@ def calculate_great_arc(a_cartesian, b_cartesian, c_cartesian, number_points):
     -------
     arc : `~numpy.ndarray`
         Co-ordinates along the great arc expressed as Cartesian xyz triples.
-        The shape of the array is (num, 3).
+        The shape of the array is (number_points, 3).
 
     References
     ----------
@@ -95,16 +95,14 @@ def calculate_great_arc(a_cartesian, b_cartesian, c_cartesian, number_points):
     [2] https://en.wikipedia.org/wiki/Great-circle_distance#Vector_version
 
     """
-    center = np.asarray(c_cartesian)
-
     # Vector from center to first point
-    v1 = np.asarray(a_cartesian) - center
+    v1 = start - center
 
     # Distance of the first point from the center
     r = np.linalg.norm(v1)
 
     # Vector from center to second point
-    v2 = np.asarray(b_cartesian) - center
+    v2 = end - center
 
     # The v3 lies in plane of v1 & v2 and is orthogonal to v1
     v3 = np.cross(np.cross(v1, v2), v1)

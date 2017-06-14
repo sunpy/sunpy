@@ -6,7 +6,7 @@ import astropy.units as u
 import sunpy.coordinates
 import sunpy.map
 import sunpy.data.test
-from sunpy.coordinates.great_arc import great_arc, calculate_great_arc
+from sunpy.coordinates.great_arc import great_arc, _calculate_great_arc
 
 
 # Test the great arc code
@@ -55,7 +55,7 @@ def test_calculate_great_arc():
     for c in centers:
         test_a = a + c
         test_b = b + c
-        v_xyz = calculate_great_arc(test_a, test_b, c, num)
+        v_xyz = _calculate_great_arc(test_a, test_b, c, num)
         assert v_xyz.shape == (3, 3)
         np.testing.assert_almost_equal(v_xyz[0, :], test_a, decimal=decimal)
         np.testing.assert_almost_equal(v_xyz[1, :], np.asarray([7.07106781e-01, 7.07106781e-01, 0.0]) + c, decimal=decimal)
@@ -67,7 +67,7 @@ def test_calculate_great_arc():
     for c in centers:
         test_a = a + c
         test_b = b + c
-        v_xyz = calculate_great_arc(test_a, test_b, c, num)
+        v_xyz = _calculate_great_arc(test_a, test_b, c, num)
         np.testing.assert_almost_equal(v_xyz[0, :], test_a, decimal=decimal)
         np.testing.assert_almost_equal(v_xyz[1, :], np.asarray([5.77350269e-01, 5.77350269e-01, 1.15470054e+00]) + c, decimal=decimal)
         np.testing.assert_almost_equal(v_xyz[2, :], test_b, decimal=decimal)
