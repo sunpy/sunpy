@@ -15,7 +15,7 @@ Import
 
 SunPy's Fido module is in ``sunpy.net``.  It can be imported as follows::
 
-    >>> from sunpy.net import Fido
+    >>> from sunpy.net import Fido, attrs as a
 
 Searching for Data Using Fido
 -----------------------
@@ -24,7 +24,6 @@ To search for data with Fido, your query needs at minimum a start time,
 an end time, and an instrument.  Enter these properties using SunPy's
 attrs module::
 
-    >>> from sunpy.net import attrs as a
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra'))
 
 This returns an `sunpy.net.fido_factory.UnifiedResponse` object
