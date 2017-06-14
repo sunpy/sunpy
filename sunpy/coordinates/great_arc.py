@@ -212,9 +212,9 @@ class GreatArcPropertiesCartesian:
 class HelperGreatArcConvertToCartesian:
     def __init__(self, start, end, center=None):
         """
-        A helper class that takes the inputs required to compute a great arc
-        and returns Cartesian triples, co-ordinate frame and unit information
-        required by other functions.
+        A helper class that takes the SunPy co-ordinates required to compute a
+        great arc and returns Cartesian triples, co-ordinate frame and unit
+        information required by other functions.
 
         Parameters
         ----------
