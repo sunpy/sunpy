@@ -15,6 +15,7 @@ from sunpy.extern import six
 from sunpy.util.net import url_exists
 from sunpy.util.config import get_and_create_sample_dir
 from sunpy import config
+from sunpy.data.sample import _base_urls
 
 __author__ = "Steven Christe"
 __email__ = "steven.christe@nasa.gov"
@@ -85,9 +86,9 @@ def get_sample_file(filename, url_list, progress=True, overwrite=False, timeout=
 
     Parameters
     ----------
-    filename: str
+    filename: `str`
         Name of the file
-    url_list: str or list
+    url_list: `str` or `list`
         urls where to look for the file
     progress: `bool`
         Show a progress bar during download
@@ -99,8 +100,8 @@ def get_sample_file(filename, url_list, progress=True, overwrite=False, timeout=
 
     Returns
     -------
-    result: str
-        The local url of the file downloaded. None if it failed.
+    result: `str`
+        The local path of the file. None if it failed.
     """
 
     if filename[-3:] == 'zip':
@@ -137,6 +138,6 @@ def get_sample_file(filename, url_list, progress=True, overwrite=False, timeout=
                 warnings.warn("Download failed with error {}. \n"
                               "Retrying with different mirror.".format(e))
         # if reach here then file has not been downloaded.
-        print("File {} not found.".format(filename))
+        warnings.warn("File {} not found.".format(filename))
         return None
 

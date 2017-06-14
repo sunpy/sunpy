@@ -176,12 +176,12 @@ def url_exists(url, timeout=2):
 
     Parameters
     ----------
-    url: str
+    url: `str`
         A string containing a URL
 
     Returns
     -------
-    value: bool
+    value: `bool`
 
     Examples
     --------
@@ -203,21 +203,16 @@ def url_exists(url, timeout=2):
 
 def is_online():
     """
-    Checks whether client is online.
-
-    Parameters
-    ----------
-    url: str
-        provide a url which is likely to be available.
+    Checks whether an internet connection is available.
 
     Returns
     -------
-    value: bool
+    value: `bool`
 
     Examples
     --------
     >>> from sunpy.util.net import is_online
     >>> is_online()
-    >>> True
+    True
     """
     return url_exists('http://www.google.com')
