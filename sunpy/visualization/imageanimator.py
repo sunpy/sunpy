@@ -878,7 +878,7 @@ class LineAnimator(ArrayAnimator):
 
 class ImageAnimatorWCS(ImageAnimator):
     """
-    Create a matplotlib backend independent data explorer for 2D images that uses wcs data.
+    Animates N-dimensional data with the associated astropy WCS object.
 
     The following keyboard shortcuts are defined in the viewer:
 
@@ -902,7 +902,7 @@ class ImageAnimatorWCS(ImageAnimator):
     image_axes: `list`
         The two axes that make the image
 
-    fig: `mpl.figure`
+    fig: `matplotlib.figure.Figure`
         Figure to use
 
     axis_ranges: list of physical coordinates for array or None
@@ -927,16 +927,17 @@ class ImageAnimatorWCS(ImageAnimator):
     button_func: `list`
         List of functions to map to the buttons
 
-    unit_x_axis: `astropy.units`
+    unit_x_axis: `astropy.units.Unit`
         The unit of x axis.
 
-    unit_y_axis: `astropy.units`
+    unit_y_axis: `astropy.units.Unit`
         The unit of y axis.
 
     Extra keywords are passed to imshow.
 
     """
-    def __init__(self, data, wcs=None, image_axes=[-1, -2], unit_x_axis=None, unit_y_axis=None, axis_ranges=None, **kwargs):
+    def __init__(self, data, wcs=None, image_axes=[-1, -2], unit_x_axis=None, unit_y_axis=None,
+                 axis_ranges=None, **kwargs):
         if not isinstance(wcs, astropy.wcs.WCS):
             raise ValueError("wcs data should be provided.")
         if wcs.wcs.naxis is not data.ndim:
