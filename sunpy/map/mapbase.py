@@ -275,6 +275,7 @@ Reference Coord:\t {refcoord}
         w2.wcs.cunit = self.spatial_units
         w2.wcs.dateobs = self.date.isoformat()
         w2.heliographic_observer = self.observer_coordinate
+        w2.rsun = self.rsun_meters
 
         # Astropy WCS does not understand the SOHO default of "solar-x" and
         # "solar-y" ctypes.  This overrides the default assignment and
