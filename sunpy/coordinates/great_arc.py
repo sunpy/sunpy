@@ -8,6 +8,8 @@ import numpy as np
 from astropy.coordinates import SkyCoord
 import sunpy.coordinates
 
+__all__ = ['great_arc']
+
 
 def great_arc(start_point, end_point, center=None, number_points=100):
     """
