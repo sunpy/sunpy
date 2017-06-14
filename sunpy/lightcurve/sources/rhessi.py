@@ -61,24 +61,14 @@ class RHESSISummaryLightCurve(LightCurve):
             rhessi = lc.RHESSISummaryLightCurve.create(RHESSI_LIGHTCURVE)
             rhessi.peek()
 
-        Parameters
-        ----------
-        title : str
-            The title of the plot.
-
-        **kwargs : dict
-            Any additional plot arguments that should be used
-            when plotting.
-
         Returns
         -------
         fig : `~matplotlib.Figure`
             A plot figure.
+            
         """
         figure = plt.figure()
         axes = plt.gca()
-
-        #dates = matplotlib.dates.date2num(self.data.index)
 
         lc_linecolors = rhessi.hsi_linecolors()
 
