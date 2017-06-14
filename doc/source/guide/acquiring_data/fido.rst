@@ -24,8 +24,8 @@ To search for data with Fido, your query needs at minimum a start time,
 an end time, and an instrument.  Enter these properties using SunPy's
 attrs module::
 
-    >>> from sunpy.net import attrs
-    >>> result = Fido.search(attrs.Time('2012/3/4', '2012/3/6'), attrs.Instrument('lyra'))
+    >>> from sunpy.net import attrs as a
+    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra'))
 
 This returns an `sunpy.net.fido_factory.UnifiedResponse` object
 containing information on the available online files which fit the
@@ -49,15 +49,15 @@ the Wavelength attribute::
 Data of a given cadence can also be specified using the Sample
 attribute::
 
-    >>> result = Fido.search(attrs.Time('2012/3/4', '2012/3/6'), attrs.Instrument('aia'), attrs.Wavelength(171*u.angstrom), attrs.Sample(10*u.minute))
+    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'), a.Wavelength(171*u.angstrom), a.Sample(10*u.minute))
 
 To search for data from multiple instruments, wavelengths, times etc.,
 use the pipe ``|`` operator.  This joins queries together just as the
 logical ``OR`` operator would::
 
-    >>> result = Fido.search(attrs.Time('2012/3/4', '2012/3/6'), attrs.Instrument('lyra') | attrs.Instrument('rhessi'))
+    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra') | a.Instrument('rhessi'))
 
-    >>> result = Fido.search(attrs.Time('2012/3/4', '2012/3/6'), attrs.Instrument('aia'), attrs.Wavelength(171*u.angstrom) | attrs.Wavelength(94*u.angstrom))
+    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'), a.Wavelength(171*u.angstrom) | a.Wavelength(94*u.angstrom))
 
 .. _downloading_data:
 
@@ -69,5 +69,5 @@ them via ```Fido.fetch```::
     >>> downloaded_files = Fido.fetch(result)
 
 This downloads the files to the location set in you sunpy config
-file.  It also returns a list ```downloaded_files```, of absolute file paths
+file.  It also returns a list ``downloaded_files``, of absolute file paths
 of where the files have been downloaded to.
