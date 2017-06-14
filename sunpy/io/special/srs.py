@@ -91,7 +91,7 @@ def make_table(header, section_lines):
 
     # Number should be formatted in 10000 after 2002-06-15.
     if out_table.meta['issued'] > datetime.datetime(2002, 6, 15):
-         out_table['Number'] = [x+10000 for x in out_table['Number']]
+        out_table['Number'] += 10000
 
     return QTable(out_table)
 
