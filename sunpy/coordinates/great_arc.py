@@ -89,7 +89,7 @@ def great_arc_distance(start, end, center=None):
     this_great_arc = GreatArcPropertiesCartesian(gc.start_cartesian, gc.end_cartesian, gc.center_cartesian)
 
     # Return the distance on the sphere in the Cartesian distance units.
-    return this_great_arc.distance() * gc.start_unit
+    return this_great_arc.distance * gc.start_unit
 
 
 def great_arc_angular_separation(start, end, center=None):
@@ -157,7 +157,7 @@ def calculate_great_arc(start_cartesian, end_cartesian, center_cartesian, number
     # Calculate the Cartesian locations from the first to second points
     return this_great_arc.v1[np.newaxis, :] * np.cos(inner_angles) + \
            this_great_arc.v3[np.newaxis, :] * np.sin(inner_angles) + \
-           this_great_arc.center
+           center_cartesian
 
 
 class GreatArcPropertiesCartesian:
@@ -187,16 +187,15 @@ class GreatArcPropertiesCartesian:
         self.start_cartesian = start_cartesian
         self.end_cartesian = end_cartesian
         self.center_cartesian = center_cartesian
-        self.center = np.asarray(self.center_cartesian)
 
         # Vector from center to first point
-        self.v1 = np.asarray(self.start_cartesian) - self.center
+        self.v1 = self.start_cartesian - self.center_cartesian
 
         # Distance of the first point from the center
         self.r = np.linalg.norm(self.v1)
 
         # Vector from center to second point
-        self.v2 = np.asarray(self.end_cartesian) - self.center
+        self.v2 = self.end_cartesian - self.center_cartesian
 
         # The v3 vector lies in plane of v1 & v2 and is orthogonal to v1
         self.v3 = np.cross(np.cross(self.v1, self.v2), self.v1)
@@ -206,18 +205,8 @@ class GreatArcPropertiesCartesian:
         self.inner_angle = np.arctan2(np.linalg.norm(np.cross(self.v1, self.v2)),
                                       np.dot(self.v1, self.v2))
 
-    def distance(self):
-        """
-        Calculate the distance on the sphere between the start point and the end
-        point.
-
-        Returns
-        -------
-        distance : float
-            The distance on the sphere between the start point and the end
-            point.
-        """
-        return self.r * self.inner_angle
+        # Distance on the sphere between the start point and the end point.
+        self.distance = self.r * self.inner_angle
 
 
 class HelperGreatArcConvertToCartesian:

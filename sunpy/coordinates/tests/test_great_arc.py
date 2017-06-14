@@ -6,7 +6,9 @@ import astropy.units as u
 import sunpy.coordinates
 import sunpy.map
 import sunpy.data.test
-from sunpy.coordinates.great_arc import great_arc, calculate_great_arc
+from sunpy.coordinates.great_arc import great_arc, great_arc_distance,\
+    great_arc_angular_separation, calculate_great_arc,\
+    GreatArcPropertiesCartesian, HelperGreatArcConvertToCartesian
 
 
 # Test the great arc code
@@ -35,6 +37,14 @@ def test_great_arc():
     # Make sure the output observer is correct
     for i in range(0, len(v)):
         assert v[i].observer == a.observer
+
+
+def test_great_arc_distance():
+    pass
+
+
+def test_great_arc_angular_separation():
+    pass
 
 
 # Test the calculation of the great arc.
@@ -71,3 +81,11 @@ def test_calculate_great_arc():
         np.testing.assert_almost_equal(v_xyz[0, :], test_a, decimal=decimal)
         np.testing.assert_almost_equal(v_xyz[1, :], np.asarray([5.77350269e-01, 5.77350269e-01, 1.15470054e+00]) + c, decimal=decimal)
         np.testing.assert_almost_equal(v_xyz[2, :], test_b, decimal=decimal)
+
+
+def test_GreatArcPropertiesCartesian():
+    pass
+
+
+def test_HelperGreatArcConvertToCartesian():
+    pass
