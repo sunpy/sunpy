@@ -60,6 +60,9 @@ Latest
   differentiate between physical and pixel coordinates.
 * Fix Map parsing of some header values to allow valid float strings like 'nan'
   and 'inf'.
+* The physical radius of the Sun (length units) is now passed from Map into the
+  coordinate frame so a consistent value is used when calculating distance to
+  the solar surface in the `HelioprojectiveFrame` coordinate frame.
 
 
 0.7.0
