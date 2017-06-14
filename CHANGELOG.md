@@ -63,7 +63,6 @@ Latest
 * The physical radius of the Sun (length units) is now passed from Map into the
   coordinate frame so a consistent value is used when calculating distance to
   the solar surface in the `HelioprojectiveFrame` coordinate frame.
-
 * A new `sunpy.visualization.imageanimator.ImageAnimatorWCS` class has been added to
   animate N-Dimensional data with the associated WCS object.
 
