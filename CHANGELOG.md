@@ -64,6 +64,8 @@ Latest
   coordinate frame so a consistent value is used when calculating distance to
   the solar surface in the `HelioprojectiveFrame` coordinate frame.
 
+* A new `sunpy.visualization.imageanimator.ImageAnimatorWCS` class has been added to
+  animate N-Dimensional data with the associated WCS object.
 
 0.7.0
 -----
