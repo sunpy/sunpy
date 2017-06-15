@@ -6,7 +6,6 @@ from __future__ import absolute_import, division, print_function
 
 import numpy as np
 from astropy.coordinates import SkyCoord
-import sunpy.coordinates
 
 __all__ = ['great_arc']
 
