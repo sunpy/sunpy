@@ -120,6 +120,10 @@ class Scraper(object):
 
     def _extractDateURL(self, url):
         """Extracts the date from a particular url following the pattern"""
+
+        # remove the user and passwd from files if there:
+        url = url.replace("anonymous:data@sunpy.org@", "")
+
         # url_to_list substitutes '.' and '_' for '/' to then create
         # a list of all the blocks in times - assuming they are all
         # separated with either '.', '_' or '/'
