@@ -54,21 +54,16 @@ def test_can_handle_query(time):
 
 
 @pytest.mark.online
-@given(time_attr())
-def test_query(time):
-    qr1 = norh.NoRHClient().query(time, a.Instrument('norh'), a.Wavelength(17 * u.GHz))
+@pytest.mark.parametrize("wave", [a.Wavelength(17*u.GHz), a.Wavelength(34*u.GHz)])
+@given(time=time_attr())
+def test_query(time, wave):
+    qr1 = norh.NoRHClient().query(time, a.Instrument('norh'), wave)
     assert isinstance(qr1, QueryResponse)
-    assert qr1.time_range().start == time.start
-    assert qr1.time_range().end == time.end
-
-
-@pytest.mark.online
-@given(time_attr())
-def test_query_34(time):
-    qr1 = norh.NoRHClient().query(time, a.Instrument('norh'), a.Wavelength(34 * u.GHz))
-    assert isinstance(qr1, QueryResponse)
-    assert qr1.time_range().start == time.start
-    assert qr1.time_range().end == time.end
+    # compare range of time as the smaller of this query is in minutes and
+    # hypothesis may add seconds or milliseconds.
+    assert qr1.time_range().start.date() == time.start.date()
+    # hypothesis can give same start-end, but the query will give you from start to end (so +1)
+    assert time.end <= qr1.time_range().end <= time.end + datetime.timedelta(days=1)
 
 
 # Don't use time_attr here for speed.
