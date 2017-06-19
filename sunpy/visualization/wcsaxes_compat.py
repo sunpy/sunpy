@@ -215,10 +215,10 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing=10*u.deg, **kwargs):
     lon.set_ticks(spacing=lon_space, color=grid_kw['color'])
     lat.set_ticks(spacing=lat_space, color=grid_kw['color'])
 
-    overlay.grid(grid_kw)
+    overlay.grid(**grid_kw)
 
     if axes.title:
         x, y = axes.title.get_position()
         axes.title.set_position([x, y + 0.05])
 
-    return overlay
+    return
