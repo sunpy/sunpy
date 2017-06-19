@@ -57,8 +57,8 @@ class NoRHLightCurve(LightCurve):
         .. plot::
 
             from sunpy import lightcurve as lc
-            from sunpy.data.sample import NORH_LIGHTCURVE
-            norh = lc.NoRHLightCurve.create(NORH_LIGHTCURVE)
+            from sunpy.data.sample import NORH_TIMESERIES
+            norh = lc.NoRHLightCurve.create(NORH_TIMESERIES)
             norh.peek()
 
         Parameters

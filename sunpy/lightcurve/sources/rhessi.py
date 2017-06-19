@@ -57,8 +57,8 @@ class RHESSISummaryLightCurve(LightCurve):
         .. plot::
 
             from sunpy import lightcurve as lc
-            from sunpy.data.sample import RHESSI_LIGHTCURVE
-            rhessi = lc.RHESSISummaryLightCurve.create(RHESSI_LIGHTCURVE)
+            from sunpy.data.sample import RHESSI_TIMESERIES
+            rhessi = lc.RHESSISummaryLightCurve.create(RHESSI_TIMESERIES)
             rhessi.peek()
 
         Parameters

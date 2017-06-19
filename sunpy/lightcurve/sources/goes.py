@@ -49,8 +49,8 @@ class GOESLightCurve(LightCurve):
         .. plot::
 
             from sunpy import lightcurve as lc
-            from sunpy.data.sample import GOES_LIGHTCURVE
-            goes = lc.GOESLightCurve.create(GOES_LIGHTCURVE)
+            from sunpy.data.sample import GOES_TIMESERIES
+            goes = lc.GOESLightCurve.create(GOES_TIMESERIES)
             goes.peek()
 
         Parameters

@@ -26,13 +26,13 @@ in detail the TimeSeries metadata.
 
 A TimeSeries object can be created from local files.  For convenience, SunPy can
 download several example timeseries of observational data. These files have names like
-`~sunpy.data.sample.EVE_LIGHTCURVE` and `~sunpy.data.sample.GOES_LIGHTCURVE`.
+`~sunpy.data.sample.EVE_TIMESERIES` and `~sunpy.data.sample.GOES_TIMESERIES`.
 To create the sample `sunpy.timeseries.sources.goes.XRSTimeSeries` type the
 following into your interactive Python shell: ::
 
     >>> import sunpy.timeseries as ts
     >>> import sunpy.data.sample
-    >>> my_timeseries = ts.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='XRS')
+    >>> my_timeseries = ts.TimeSeries(sunpy.data.sample.GOES_TIMESERIES, source='XRS')
 
 This is calling the `~sunpy.timeseries.TimeSeries` factory to create a time
 series from a GOES XRS FITS file. The TimeSeries factory uses `sunpy.io.fits` to
@@ -239,7 +239,7 @@ type:
 
     import sunpy.timeseries as ts
     import sunpy.data.sample
-    ts_plot = ts.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='XRS')
+    ts_plot = ts.TimeSeries(sunpy.data.sample.GOES_TIMESERIES, source='XRS')
     fig = ts_plot.peek()
 
 This will open a matplotlib plot on your screen. The `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.peek`
