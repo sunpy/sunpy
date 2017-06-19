@@ -370,7 +370,7 @@ class CompositeMap(object):
         ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing, **kwargs)
         return ax
 
-    def plot(self, axes=None, annotate=True, # pylint: disable=W0613
+    def plot(self, axes=None, annotate=True,  # pylint: disable=W0613
              title="SunPy Composite Plot", **matplot_args):
         """Plots the composite map object using matplotlib
 
@@ -476,11 +476,11 @@ class CompositeMap(object):
             axes = plt.Axes(figure, [0., 0., 1., 1.])
             axes.set_axis_off()
             figure.add_axes(axes)
-            matplot_args.update({'annotate':False})
+            matplot_args.update({'annotate': False})
         else:
             axes = figure.add_subplot(111)
 
-        ret = self.plot(axes=axes,**matplot_args)
+        ret = self.plot(axes=axes, **matplot_args)
 
         if not isinstance(colorbar, bool) and isinstance(colorbar, int):
             figure.colorbar(ret[colorbar])
