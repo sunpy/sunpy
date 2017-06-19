@@ -936,7 +936,7 @@ class ImageAnimatorWCS(ImageAnimator):
     Extra keywords are passed to imshow.
 
     """
-    def __init__(self, data, wcs=None, image_axes=[-2, -1], unit_x_axis=None, unit_y_axis=None,
+    def __init__(self, data, wcs=None, image_axes=[-1, -2], unit_x_axis=None, unit_y_axis=None,
                  axis_ranges=None, **kwargs):
         if not isinstance(wcs, astropy.wcs.WCS):
             raise ValueError("wcs data should be provided.")
@@ -944,8 +944,8 @@ class ImageAnimatorWCS(ImageAnimator):
             raise ValueError("Dimensions of data and wcs not matching")
         self.wcs = wcs
         list_slices_wcsaxes = [0 for i in range(self.wcs.naxis)]
-        list_slices_wcsaxes[image_axes[0]] = 'y'
-        list_slices_wcsaxes[image_axes[1]] = 'x'
+        list_slices_wcsaxes[image_axes[0]] = 'x'
+        list_slices_wcsaxes[image_axes[1]] = 'y'
         self.slices_wcsaxes = list_slices_wcsaxes[::-1]
         self.unit_x_axis = unit_x_axis
         self.unit_y_axis = unit_y_axis
