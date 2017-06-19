@@ -77,7 +77,7 @@ def download_sample_data(progress=True, overwrite=False, timeout=None):
     """
     print("Downloading all sample files to {}. Overwriting if necessary.".format(sampledata_dir))
     for file_name in six.itervalues(files):
-        get_sample_file(file_name, url_list=_base_urls, overwrite=True)
+        get_sample_file(file_name, url_list=base_urls, overwrite=True)
 
 
 def get_sample_file(filename, url_list, progress=True, overwrite=False, timeout=None):
