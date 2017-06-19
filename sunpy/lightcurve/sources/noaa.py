@@ -22,14 +22,14 @@ class NOAAIndicesLightCurve(LightCurve):
 
 
     1. The SWO sunspot number is issued by the NOAA Space Weather Prediction Center (SWPC)
-    2. The RI sunspot number is the official International Sunspot Number and is issued by 
+    2. The RI sunspot number is the official International Sunspot Number and is issued by
        the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
     3. The ratio between the SWO and RI indices.
-    4. Radio flux at 10.7 cm is produced by Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html> 
+    4. Radio flux at 10.7 cm is produced by Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>
        and the units are in sfu.
     5. The Ap Geomagnetic Index is produced by the United States Air Force (USAF).
-    
-                                          
+
+
 
     Examples
     --------
@@ -55,8 +55,8 @@ class NOAAIndicesLightCurve(LightCurve):
         ..plot::
 
             from sunpy import lightcurve as lc
-            from sunpy.data.sample import NOAAINDICES_LIGHTCURVE
-            noaa = lc.NOAAIndicesLightCurve.create(NOAAINDICES_LIGHTCURVE)
+            from sunpy.data.sample import NOAAINDICES_TIMESERIES
+            noaa = lc.NOAAIndicesLightCurve.create(NOAAINDICES_TIMESERIES)
             noaa.peek()
 
         Parameters
@@ -65,7 +65,7 @@ class NOAAIndicesLightCurve(LightCurve):
             The type of plot required.
 
         **plot_args : dict
-            Any additional plot arguments that should be used when plotting.  
+            Any additional plot arguments that should be used when plotting.
 
         Returns
         -------
@@ -107,7 +107,7 @@ class NOAAIndicesLightCurve(LightCurve):
 
         figure.show()
         return figure
-        
+
     @classmethod
     def _get_default_uri(cls):
         """Return the url to download indices"""
@@ -176,8 +176,8 @@ class NOAAPredictIndicesLightCurve(LightCurve):
         ..plot::
 
             from sunpy import lightcurve as lc
-            from sunpy.data.sample import NOAAPREDICT_LIGHTCURVE
-            noaa = lc.NOAAPredictIndicesLightCurve.create(NOAAPREDICT_LIGHTCURVE)
+            from sunpy.data.sample import NOAAPREDICT_TIMESERIES
+            noaa = lc.NOAAPredictIndicesLightCurve.create(NOAAPREDICT_TIMESERIES)
             noaa.peek()
 
         Parameters
