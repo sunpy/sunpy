@@ -937,16 +937,16 @@ class ImageAnimatorWCS(ImageAnimator):
 
     """
     def __init__(self, data, wcs=None, image_axes=[-2, -1], unit_x_axis=None, unit_y_axis=None,
-                 slice_axis=[0, 1], axis_ranges=None, **kwargs):
+                 axis_ranges=None, **kwargs):
         if not isinstance(wcs, astropy.wcs.WCS):
             raise ValueError("wcs data should be provided.")
         if wcs.wcs.naxis is not data.ndim:
             raise ValueError("Dimensions of data and wcs not matching")
         self.wcs = wcs
         list_slices_wcsaxes = [0 for i in range(self.wcs.naxis)]
-        list_slices_wcsaxes[slice_axis[0]] = 'x'
-        list_slices_wcsaxes[slice_axis[1]] = 'y'
-        self.slices_wcsaxes = list_slices_wcsaxes
+        list_slices_wcsaxes[image_axes[0]] = 'y'
+        list_slices_wcsaxes[image_axes[1]] = 'x'
+        self.slices_wcsaxes = list_slices_wcsaxes[::-1]
         self.unit_x_axis = unit_x_axis
         self.unit_y_axis = unit_y_axis
         super(ImageAnimatorWCS, self).__init__(data, image_axes=image_axes, axis_ranges=axis_ranges, **kwargs)
