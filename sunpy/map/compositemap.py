@@ -353,7 +353,7 @@ class CompositeMap(object):
 
         Notes
         -----
-        Keyword arguments are passed onto `sunpy.map.mapbase.draw_limb`.
+        Keyword arguments are passed onto `sunpy.map.mapbase.GenericMap.draw_limb`.
 
         Returns
         -------
@@ -388,7 +388,7 @@ class CompositeMap(object):
 
         Notes
         -----
-        Keyword arguments are passed onto `sunpy.map.mapbase.draw_grid`.
+        Keyword arguments are passed onto `sunpy.map.mapbase.GenericMap.draw_grid`.
 
         Returns
         -------
