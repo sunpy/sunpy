@@ -340,7 +340,7 @@ class CompositeMap(object):
         """
         self._maps[index].zorder = zorder
 
-    def draw_limb(self, index=None, axes=None):
+    def draw_limb(self, index=None, axes=None, **kwargs):
         """Draws a circle representing the solar limb.
 
         Parameters
@@ -350,6 +350,10 @@ class CompositeMap(object):
 
         axes : `matplotlib.axes.Axes` or None
             Axes to plot limb on or None to use current axes.
+
+        Notes
+        -----
+        Keyword arguments are passed onto `sunpy.map.mapbase.draw_limb`.
 
         Returns
         -------
@@ -365,10 +369,10 @@ class CompositeMap(object):
         if not index_check or index is None:
             raise ValueError("Specified index does not have all the required attributes to draw limb.")
 
-        return self._maps[index].draw_limb(axes=axes)
+        return self._maps[index].draw_limb(axes=axes, **kwargs)
 
     @u.quantity_input(grid_spacing=u.deg)
-    def draw_grid(self, index=None, axes=None, grid_spacing=20*u.deg):
+    def draw_grid(self, index=None, axes=None, grid_spacing=20*u.deg, **kwargs):
         """Draws a grid over the surface of the Sun.
 
         Parameters
@@ -381,6 +385,10 @@ class CompositeMap(object):
 
         grid_spacing : `float`
             Spacing (in degrees) for longitude and latitude grid.
+
+        Notes
+        -----
+        Keyword arguments are passed onto `sunpy.map.mapbase.draw_grid`.
 
         Returns
         -------
@@ -398,7 +406,7 @@ class CompositeMap(object):
         if not index_check or index is None:
             raise ValueError("Specified index does not have all the required attributes to draw grid.")
 
-        ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing)
+        ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing, **kwargs)
         return ax
 
     def plot(self, axes=None, annotate=True, # pylint: disable=W0613
