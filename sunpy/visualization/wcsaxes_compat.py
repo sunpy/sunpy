@@ -212,8 +212,8 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing=10*u.deg, **kwargs):
     grid_kw = {'color': 'white', 'zorder': 100, 'alpha': 0.5}
     grid_kw.update(kwargs)
 
-    lon.set_ticks(spacing=lon_space, color=grid_kw['white'])
-    lat.set_ticks(spacing=lat_space, color=grid_kw['white'])
+    lon.set_ticks(spacing=lon_space, color=grid_kw['color'])
+    lat.set_ticks(spacing=lat_space, color=grid_kw['color'])
 
     overlay.grid(grid_kw)
 
