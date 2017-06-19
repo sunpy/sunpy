@@ -3,13 +3,9 @@
 from __future__ import absolute_import
 
 import sys
-from ._sample import _files as _sample_files
+from ._sample import files as _sample_files
+from ._sample import base_urls as _base_urls
 from ._sample import get_sample_file
-
-_base_urls = (
-    'http://data.sunpy.org/sample-data/',
-    'https://github.com/sunpy/sunpy-sample-data/raw/master/'
-)
 
 file_list = []
 file_dict = {}

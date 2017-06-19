@@ -15,7 +15,6 @@ from sunpy.extern import six
 from sunpy.util.net import url_exists
 from sunpy.util.config import get_and_create_sample_dir
 from sunpy import config
-from sunpy.data.sample import _base_urls
 
 __author__ = "Steven Christe"
 __email__ = "steven.christe@nasa.gov"
@@ -23,14 +22,16 @@ __email__ = "steven.christe@nasa.gov"
 
 sampledata_dir = config.get("downloads", "sample_dir")
 
-# keys are file shortcuts
-# values consist of filename as well as optional file extension if files are
-# hosted compressed. This extension is removed after download.
+base_urls = (
+    'http://data.sunpy.org/sample-data/',
+    'https://github.com/sunpy/sunpy-sample-data/raw/master/'
+)
+
 # Shortcut requirements:
 # the name of the class into which the file will opened must be included at the end of the file
 
 # the files should include necessary extensions
-_files = {
+files = {
     "AIA_171_IMAGE": "AIA20110319_105400_0171.fits",
     "RHESSI_IMAGE": "hsi_image_20101016_191218.fits",
     "EIT_195_IMAGE": "eit_l1_20020625_100011.fits",
@@ -75,7 +76,7 @@ def download_sample_data(progress=True, overwrite=False, timeout=None):
     None
     """
     print("Downloading all sample files to {}. Overwriting if necessary.".format(sampledata_dir))
-    for file_name in six.itervalues(_files):
+    for file_name in six.itervalues(files):
         get_sample_file(file_name, url_list=_base_urls, overwrite=True)
 
 
