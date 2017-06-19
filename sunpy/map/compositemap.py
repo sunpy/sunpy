@@ -301,7 +301,7 @@ class CompositeMap(object):
         """
         self._maps[index].zorder = zorder
 
-    def draw_limb(self, index=None, axes=None):
+    def draw_limb(self, index=None, axes=None, **kwargs):
         """Draws a circle representing the solar limb.
 
         Parameters
@@ -315,6 +315,10 @@ class CompositeMap(object):
         Returns
         -------
         `matplotlib.axes.Axes`
+
+        Notes
+        -----
+        Keyword arguments are passed onto `sunpy.map.mapbase.GenericMap`.
         """
         if index is None:
             for i, amap in enumerate(self._maps):
@@ -326,7 +330,7 @@ class CompositeMap(object):
         if not index_check or index is None:
             raise ValueError("Specified index does not have all the required attributes to draw limb.")
 
-        return self._maps[index].draw_limb(axes=axes)
+        return self._maps[index].draw_limb(axes=axes, **kwargs)
 
     @u.quantity_input(grid_spacing=u.deg)
     def draw_grid(self, index=None, axes=None, grid_spacing=20*u.deg):
