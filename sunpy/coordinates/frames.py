@@ -6,6 +6,8 @@ the `astropy.coordinates` module.
 """
 from __future__ import absolute_import, division
 
+import warnings
+
 import numpy as np
 
 from astropy import units as u
@@ -14,7 +16,7 @@ from astropy.coordinates.representation import (CartesianRepresentation,
                                                 SphericalRepresentation)
 from astropy.coordinates.baseframe import (BaseCoordinateFrame,
                                            RepresentationMapping)
-from astropy.coordinates import FrameAttribute
+from astropy.coordinates import FrameAttribute, CoordinateAttribute
 
 from sunpy import sun  # For Carrington rotation number
 from .representation import (SphericalWrap180Representation, UnitSphericalWrap180Representation)
@@ -49,6 +51,9 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
     radius: `astropy.units.Quantity` object.
         This quantity holds the radial distance. If not specified, it is, by
         default, the radius of the photosphere. Optional.
+    dateobs: SunPy Time
+        The date and time of the observation, used to convert to heliographic
+        carrington coordinates.
 
     Examples
     --------
@@ -136,6 +141,9 @@ class HeliographicCarrington(HeliographicStonyhurst):
     radius: `astropy.units.Quantity` object, optional, must be keyword.
         This quantity holds the radial distance. If not specified, it is, by
         default, the solar radius. Optional, must be keyword.
+    dateobs: SunPy Time
+        The date and time of the observation, used to convert to heliographic
+        carrington coordinates.
 
     Examples
     --------
@@ -196,9 +204,11 @@ class Heliocentric(BaseCoordinateFrame):
         Y-axis coordinate, optional, must be keyword.
     z: `Quantity` object. Shared by both representations.
         Z-axis coordinate, optional, must be keyword.
-    D0: `Quantity` object.
-        Represents the distance between the observer and the Sun center.
-        Defaults to 1AU.
+    observer: `~sunpy.coordinates.frames.HeliographicStonyhurst`
+        The coordinate of the observer in the solar system.
+    dateobs: SunPy Time
+        The date and time of the observation, used to convert to heliographic
+        carrington coordinates.
 
     Examples
     --------
@@ -224,11 +234,11 @@ class Heliocentric(BaseCoordinateFrame):
         'cylindrical': [RepresentationMapping('phi', 'psi', u.deg)]
     }
 
-    # d = FrameAttribute(default=(1*u.au).to(u.km))
-    D0 = FrameAttribute(default=(1*u.au).to(u.km))
     dateobs = TimeFrameAttributeSunPy()
-    L0 = FrameAttribute(default=0*u.deg)
-    B0 = FrameAttribute(default=0*u.deg)
+    observer = CoordinateAttribute(HeliographicStonyhurst,
+                                   default=HeliographicStonyhurst(0*u.deg,
+                                                                  0*u.deg,
+                                                                  1*u.AU))
 
 
 class Helioprojective(BaseCoordinateFrame):
@@ -250,13 +260,15 @@ class Helioprojective(BaseCoordinateFrame):
         Y-axis coordinate.
     distance: `~astropy.units.Quantity`
         The radial distance from the observer to the coordinate point.
-    L0: `~astropy.coordinates.Angle`
-        The Heliographic (Stonyhurst) Longitude of the observer.
-    B0: `~astropy.coordinates.Angle` or `~astropy.units.Quantity`
-        The Heliographic (Stonyhurst) Latitude of the observer.
-    D0: `Quantity` object.
-        Represents the distance between observer and solar center.
-        **Defaults to 1 AU**.
+    dateobs: SunPy Time
+        The date and time of the observation, used to convert to heliographic
+        carrington coordinates.
+    observer: `~sunpy.coordinates.frames.HeliographicStonyhurst`
+        The coordinate of the observer in the solar system.
+    rsun: `~astropy.units.Quantity`
+        The physical (length) radius of the Sun. Used to calculate the position
+        of the limb for calculating distance from the observer to the
+        coordinate.
 
     Examples
     --------
@@ -298,11 +310,12 @@ class Helioprojective(BaseCoordinateFrame):
         ]
     }
 
-    D0 = FrameAttribute(default=(1*u.au).to(u.km))
     dateobs = TimeFrameAttributeSunPy()
-    L0 = FrameAttribute(default=0*u.deg)
-    B0 = FrameAttribute(default=0*u.deg)
     rsun = FrameAttribute(default=RSUN_METERS.to(u.km))
+    observer = CoordinateAttribute(HeliographicStonyhurst,
+                                   default=HeliographicStonyhurst(0*u.deg,
+                                                                  0*u.deg,
+                                                                  1*u.AU))
 
     def __init__(self, *args, **kwargs):
         _rep_kwarg = kwargs.get('representation', None)
@@ -326,7 +339,7 @@ class Helioprojective(BaseCoordinateFrame):
 
     def calculate_distance(self):
         """
-        This method calculates the third coordnate of the Helioprojective
+        This method calculates the third coordinate of the Helioprojective
         frame. It assumes that the coordinate point is on the disk of the Sun
         at the rsun radius.
 
@@ -345,8 +358,8 @@ class Helioprojective(BaseCoordinateFrame):
         rep = self.represent_as(UnitSphericalWrap180Representation)
         lat, lon = rep.lat, rep.lon
         alpha = np.arccos(np.cos(lat) * np.cos(lon)).to(lat.unit)
-        c = self.D0**2 - self.rsun**2
-        b = -2 * self.D0.to(u.m) * np.cos(alpha)
+        c = self.observer.radius**2 - self.rsun**2
+        b = -2 * self.observer.radius * np.cos(alpha)
         d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2
         return self.realize_frame(SphericalWrap180Representation(lon=lon,
                                                                  lat=lat,
