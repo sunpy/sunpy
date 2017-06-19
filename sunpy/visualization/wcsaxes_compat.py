@@ -163,7 +163,7 @@ def default_wcs_grid(axes, units, ctypes):
 
 
 @u.quantity_input(grid_spacing=u.deg)
-def wcsaxes_heliographic_overlay(axes, grid_spacing=10*u.deg):
+def wcsaxes_heliographic_overlay(axes, grid_spacing=10*u.deg, **kwargs):
     """
     Create a heliographic overlay using wcsaxes.
 
@@ -181,6 +181,10 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing=10*u.deg):
     -------
     overlay : wcsaxes overlay
         The overlay object.
+
+    Notes
+    -----
+    Keywords are passed on to the overlay object.
     """
 
     # Unpack spacing
@@ -205,10 +209,13 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing=10*u.deg):
     lon.set_ticks_position('tr')
     lat.set_ticks_position('tr')
 
-    lon.set_ticks(spacing=lon_space, color='white')
-    lat.set_ticks(spacing=lat_space, color='white')
+    grid_kw = {'color': 'white', 'zorder': 100, 'alpha': 0.5}
+    grid_kw.update(kwargs)
 
-    overlay.grid(color='white', alpha=0.5)
+    lon.set_ticks(spacing=lon_space, color=grid_kw['white'])
+    lat.set_ticks(spacing=lat_space, color=grid_kw['white'])
+
+    overlay.grid(grid_kw)
 
     if axes.title:
         x, y = axes.title.get_position()
