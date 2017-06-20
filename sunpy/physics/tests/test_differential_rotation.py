@@ -1,9 +1,11 @@
 from __future__ import absolute_import
 import pytest
+
 import numpy as np
+from numpy.testing import assert_allclose
 from astropy import units as u
 from astropy.coordinates import Longitude, Latitude, Angle
-from sunpy.physics.differential_rotation import diff_rot, _sun_pos, _calc_P_B0_SD, rot_hpc
+from sunpy.physics.differential_rotation import diff_rot, _sun_pos, _calc_P_B0_SD, rot_hpc, _un_norm, _to_norm
 from sunpy.tests.helpers import assert_quantity_allclose
 #pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
 
@@ -95,3 +97,17 @@ def test_rot_hpc():
     x.unit == u.arcsec
     isinstance(y, Angle)
     y.unit == u.arcsec
+
+def test_to_norm():
+    array_simple = np.array([10., 20., 30., 100.])
+    assert_allclose(_to_norm(array_simple), np.array([0.1, 0.2, 0.3, 1.]))    
+    array_simple_neg = np.array([-10., 0., 10., 90.])
+    assert_allclose(_to_norm(array_simple_neg), np.array([0, 0.1, 0.2, 1.]))
+
+def test_un_norm():
+    array_simple = np.array([10, 20, 30, 100.])
+    assert_allclose(_un_norm(np.array([0.1, 0.2, 0.3, 1.]), array_simple), array_simple)
+    array_simple_neg = np.array([-10, 0, 10, 90])
+    assert_allclose(_un_norm(np.array([0, 0.1, 0.2, 1.]), array_simple_neg), array_simple_neg)
+
+
