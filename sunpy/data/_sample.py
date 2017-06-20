@@ -57,19 +57,14 @@ files = {
 sampledata_dir = get_and_create_sample_dir()
 
 
-def download_sample_data(progress=True, overwrite=False, timeout=None):
+def download_sample_data(progress=True):
     """
-    Download all sample data at once.
+    Download all sample data at once. This will overwrite any existing files.
 
     Parameters
     ----------
     progress: `bool`
         Show a progress bar during download
-    overwrite: `bool`
-        If true, overwrites existing files.
-    timeout: `float`
-        The timeout in seconds. If `None` the default timeout is used from
-        `astropy.utils.data.Conf.remote_timeout`.
 
     Returns
     -------
@@ -77,7 +72,7 @@ def download_sample_data(progress=True, overwrite=False, timeout=None):
     """
     print("Downloading all sample files to {}. Overwriting if necessary.".format(sampledata_dir))
     for file_name in six.itervalues(files):
-        get_sample_file(file_name, url_list=base_urls, overwrite=True)
+        get_sample_file(file_name, progress=progress, url_list=base_urls, overwrite=True)
 
 
 def get_sample_file(filename, url_list, progress=True, overwrite=False, timeout=None):
