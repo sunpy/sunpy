@@ -49,6 +49,9 @@ def gca_wcs(wcs, fig=None, slices=None):
         A `~astropy.wcs.WCS` object used to create a new axes.
     fig : `matplotlib.figure.Figure`
         The figure in which to check for the axes.
+    slices : `tuple`
+        The slice in which way the multidimensional wcs object
+        needs to be sliced.
 
     Returns
     -------
