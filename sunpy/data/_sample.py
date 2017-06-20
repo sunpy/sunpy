@@ -59,14 +59,12 @@ for key in _files:
     sample_files[key] = os.path.abspath(os.path.join(sampledata_dir, _files[key][0]))
 
 
-def download_sample_data(progress=True, overwrite=True, timeout=None):
+def download_sample_data(overwrite=True, timeout=None):
     """
     Download the sample data.
 
     Parameters
     ----------
-    progress: `bool`
-        Show a progress bar during download
     overwrite: `bool`
         If exist overwrites the downloaded sample data.
     timeout: `float`
