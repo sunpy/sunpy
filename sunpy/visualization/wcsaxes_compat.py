@@ -39,7 +39,7 @@ def is_wcsaxes(axes):
         return False
 
 
-def gca_wcs(wcs, fig=None):
+def gca_wcs(wcs, fig=None, slices=None):
     """
     Get the current axes, and return a WCSAxes if possible.
 
@@ -62,7 +62,7 @@ def gca_wcs(wcs, fig=None):
 
     if not len(fig.get_axes()):
         if not _FORCE_NO_WCSAXES:
-            ax = plt.gca(projection=wcs)
+            ax = plt.gca(projection=wcs, slices=slices)
         else:
             ax = plt.gca()
 
