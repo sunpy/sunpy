@@ -64,7 +64,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     >>> import sunpy.timeseries
     >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
     >>> import sunpy.data.sample
-    >>> my_timeseries = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_TIMESERIES)
+    >>> my_timeseries = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)
 
     The SunPy TimeSeries factory accepts a wide variety of inputs for creating time series
 

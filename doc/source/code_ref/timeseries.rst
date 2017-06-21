@@ -30,7 +30,7 @@ The following example shows the factory loading a sample file::
 
     >>> import sunpy.timeseries as ts
     >>> import sunpy.data.sample
-    >>> goes = ts.TimeSeries(sunpy.data.sample.GOES_TIMESERIES, source='XRS')
+    >>> goes = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
 
 The `~sunpy.timeseries.TimeSeries` factory will load the file and create the timeseries
 instance. The following instrument classes are supported.

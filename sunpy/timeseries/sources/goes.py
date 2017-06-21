@@ -37,7 +37,7 @@ class XRSTimeSeries(GenericTimeSeries):
     --------
     >>> import sunpy.timeseries
     >>> import sunpy.data.sample
-    >>> goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_TIMESERIES, source='XRS')
+    >>> goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
     >>> goes.peek()   # doctest: +SKIP
 
     References
@@ -62,7 +62,7 @@ class XRSTimeSeries(GenericTimeSeries):
 
             import sunpy.timeseries
             import sunpy.data.sample
-            ts_goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_TIMESERIES, source='XRS')
+            ts_goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
             ts_goes.peek()
 
         Parameters
