@@ -38,8 +38,7 @@ if on_rtd:
 
 # -- Download Sample Data -----------------------------------------------------
 
-import sunpy.data
-sunpy.data.download_sample_data(overwrite=False)
+import sunpy.data.sample
 
 # -- Shut up numpy warnings from WCSAxes
 
