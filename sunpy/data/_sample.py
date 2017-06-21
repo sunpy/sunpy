@@ -57,13 +57,13 @@ files = {
 sampledata_dir = get_and_create_sample_dir()
 
 
-def download_sample_data(progress=True):
+def download_sample_data(show_progress=True):
     """
     Download all sample data at once. This will overwrite any existing files.
 
     Parameters
     ----------
-    progress: `bool`
+    show_progress: `bool`
         Show a progress bar during download
 
     Returns
@@ -72,10 +72,10 @@ def download_sample_data(progress=True):
     """
     print("Downloading all sample files to {}. Overwriting if necessary.".format(sampledata_dir))
     for file_name in six.itervalues(files):
-        get_sample_file(file_name, progress=progress, url_list=base_urls, overwrite=True)
+        get_sample_file(file_name, show_progress=show_progress, url_list=base_urls, overwrite=True)
 
 
-def get_sample_file(filename, url_list, progress=True, overwrite=False, timeout=None):
+def get_sample_file(filename, url_list, show_progress=True, overwrite=False, timeout=None):
     """
     Downloads a sample file. Will download  a sample data file and move it to the sample data directory.
     Also, uncompresses zip files if necessary. Returns the local file if exists.
@@ -116,7 +116,7 @@ def get_sample_file(filename, url_list, progress=True, overwrite=False, timeout=
             try:
                 exists = url_exists(os.path.join(base_url, online_filename))
                 if exists:
-                    f = download_file(os.path.join(base_url, online_filename))
+                    f = download_file(os.path.join(base_url, online_filename), show_progress=show_progress)
                     real_name, ext = os.path.splitext(f)
 
                     if ext == '.zip':
