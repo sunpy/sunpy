@@ -19,6 +19,18 @@ The easiest interface to the coordinates module is through the `~astropy.coordin
 
   >>> import astropy.units as u
   >>> from astropy.coordinates import SkyCoord
+  >>> from sunpy.coordinates import Helioprojective, Heliocentric, HeliographicStonyhurst
+  >>> c = SkyCoord(-100*u.arcsec, 500*u.arcsec, frame=Helioprojective)
+  >>> c = SkyCoord(x=-72241.0*u.km, y=361206.1*u.km, z=589951.4*u.km, frame=Heliocentric)
+  >>> c = SkyCoord(70*u.deg, -30*u.deg, frame=HeliographicStonyhurst)
+  >>> c
+  <SkyCoord (HelioGraphicStonyhurst: dateobs=None): (lon, lat, rad) in (deg, deg, km)
+      (70.0, -30.0, 695508.0)>
+      
+A variation on this example involes a shorter import and is the following::
+
+  >>> import astropy.units as u
+  >>> from astropy.coordinates import SkyCoord
   >>> import sunpy.coordinates
   >>> c = SkyCoord(-100*u.arcsec, 500*u.arcsec, frame='helioprojective')
   >>> c = SkyCoord(x=-72241.0*u.km, y=361206.1*u.km, z=589951.4*u.km, frame='heliocentric')
@@ -26,7 +38,9 @@ The easiest interface to the coordinates module is through the `~astropy.coordin
   >>> c
   <SkyCoord (HelioGraphicStonyhurst: dateobs=None): (lon, lat, rad) in (deg, deg, km)
       (70.0, -30.0, 695508.0)>
-
+      
+Here the `import sunpy.coordinates` registers the solar physics co-ordinate frames that are unavailable in AstroPy.
+Without this import, `frame='helioprojective'` would cause an error within SkyCoord.
 
 SunPy implements support for the following solar physics coordinate systems:
 
