@@ -8,9 +8,9 @@ be relied on for actual testing of the transformation framework.
 
 from ..frames import Helioprojective, Heliocentric, HeliographicStonyhurst
 from sunpy import wcs
-from sunpy.tests.helpers import assert_quantity_allclose
 
 import astropy.units as u
+from astropy.tests.helper import assert_quantity_allclose
 
 import pytest
 

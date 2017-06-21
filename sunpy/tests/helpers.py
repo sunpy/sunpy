@@ -63,13 +63,11 @@ skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available")
 
 skip_wcsaxes = pytest.mark.skipif(SKIP_WCSAXES, reason="wcsaxes is not available")
 
-
 @pytest.fixture
 def warnings_as_errors(request):
     warnings.simplefilter('error')
 
     request.addfinalizer(lambda *args: warnings.resetwarnings())
-
 
 def assert_quantity_allclose(actual, desired, rtol=1.e-7, atol=0, err_msg='', verbose=True):
     """
@@ -103,7 +101,6 @@ def assert_quantity_allclose(actual, desired, rtol=1.e-7, atol=0, err_msg='', ve
 
         np.testing.assert_allclose(actual, desired,
                                    rtol=rtol, atol=atol, err_msg=err_msg, verbose=verbose)
-
 
 new_hash_library = {}
 
