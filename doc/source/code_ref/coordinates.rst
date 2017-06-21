@@ -19,13 +19,26 @@ The easiest interface to the coordinates module is through the `~astropy.coordin
 
   >>> import astropy.units as u
   >>> from astropy.coordinates import SkyCoord
-  >>> import sunpy.coordinates
-  >>> c = SkyCoord(-100*u.arcsec, 500*u.arcsec, frame='helioprojective')
-  >>> c = SkyCoord(x=-72241.0*u.km, y=361206.1*u.km, z=589951.4*u.km, frame='heliocentric')
-  >>> c = SkyCoord(70*u.deg, -30*u.deg, frame='heliographic_stonyhurst')
+  >>> from sunpy.coordinates import frames
+  >>> c = SkyCoord(-100*u.arcsec, 500*u.arcsec, frame=frames.Helioprojective)
+  >>> c = SkyCoord(x=-72241.0*u.km, y=361206.1*u.km, z=589951.4*u.km, frame=frames.Heliocentric)
+  >>> c = SkyCoord(70*u.deg, -30*u.deg, frame=frames.HeliographicStonyhurst)
   >>> c
   <SkyCoord (HelioGraphicStonyhurst: dateobs=None): (lon, lat, rad) in (deg, deg, km)
       (70.0, -30.0, 695508.0)>
+
+
+It is also possible to use strings to define the frame but in that case make sure to
+explicitly import `sunpy.coordinates` as it registers solar coordinate frames with
+astropy coordinates.
+
+  >>> import astropy.units as u
+  >>> from astropy.coordinates import SkyCoord
+  >>> import sunpy.coordinates
+  >>> c = SkyCoord(-100*u.arcsec, 500*u.arcsec, frame='helioprojective')
+  >>> c
+  <SkyCoord (Helioprojective: D0=149597870.7 km, dateobs=None, L0=0.0 deg, B0=0.0 deg, rsun=695508.0 km): (Tx, Ty) in arcsec
+    (-100.,  500.)>
 
 
 SunPy implements support for the following solar physics coordinate systems:
@@ -48,7 +61,7 @@ than a list of `~astropy.coordinates.SkyCoord` objects, because it will be
 `~astropy.coordinates.SkyCoord` in a ``for`` loop.
 ::
 
-   >>> c = SkyCoord([-500, 400]*u.arcsec, [100, 200]*u.arcsec, frame='helioprojective')
+   >>> c = SkyCoord([-500, 400]*u.arcsec, [100, 200]*u.arcsec, frame=frames.Helioprojective)
    >>> c
    <SkyCoord (HelioProjective: D0=149597870.7 km, dateobs=None, L0=0.0 deg, B0=0.0 deg, rsun=695508.0 km): (Tx, Ty) in arcsec
        [(-500.0, 100.0), (400.0, 200.0)]>
@@ -69,7 +82,7 @@ description of all the properties of the frames see `sunpy.coordinates.frames`.
 
 For the helioprojective frame the coordinates are access as ``Tx`` and ``Ty`` representing theta x and y. These are the same coordinates that are often referred to as 'solar-x' and 'solar-y'.
 
-  >>> c = SkyCoord(-500*u.arcsec, 100*u.arcsec, frame='helioprojective')
+  >>> c = SkyCoord(-500*u.arcsec, 100*u.arcsec, frame=frames.Helioprojective)
   >>> c.Tx
   <Longitude180 -500.0 arcsec>
   >>> c.Ty
@@ -80,7 +93,7 @@ For the helioprojective frame the coordinates are access as ``Tx`` and ``Ty`` re
 
 Heliocentric normally a Cartesian frame so the coordinates are accessed as ``x,y,z``:
 
-  >>> c = SkyCoord(-72241.0*u.km, 361206.1*u.km, 589951.4*u.km, frame='heliocentric')
+  >>> c = SkyCoord(-72241.0*u.km, 361206.1*u.km, 589951.4*u.km, frame=frames.Heliocentric)
   >>> c.x
   <Quantity -72241.0 km>
   >>> c.y
@@ -93,7 +106,7 @@ Heliocentric normally a Cartesian frame so the coordinates are accessed as ``x,y
 
 Both the heliographic frames use latitude, longitude and radius which are accessed as follows:
 
-   >>> c = SkyCoord(70*u.deg, -30*u.deg, frame='heliographic_stonyhurst')
+   >>> c = SkyCoord(70*u.deg, -30*u.deg, frame=frames.HeliographicStonyhurst)
    >>> c.lat
    <Latitude -30.0 deg>
    >>> c.lon
@@ -110,7 +123,7 @@ Both ``Helioprojective`` and ``Heliocentric`` frames are defined by the location
 It is possible to convert from a ``Helioprojective`` frame with one observer location to another ``Helioprojecitve`` frame with a different observer location, by converting through ``Heliographic``, this does involve making an assumption of the radius of the Sun to calculate the position on the solar sphere. The conversion can be performed as follows::
 
   # Input coordinate
-  >>> hpc1 = SkyCoord(0*u.arcsec, 0*u.arcsec, frame='helioprojective')
+  >>> hpc1 = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective)
   # Define the location of the new observer as a Helioprojective frame
   >>> hpc_out = sunpy.coordinates.Helioprojective(L0=10*u.deg)
   # Perform the conversion
@@ -190,7 +203,6 @@ If you want to obtain a un-realized coordinate frame corresponding to a
 `~sunpy.map.GenericMap` object you can do the following::
 
   >>> from astropy.wcs.utils import wcs_to_celestial_frame
-  >>> import sunpy.coordinates
   >>> import sunpy.map
   >>> from sunpy.data.sample import AIA_171_IMAGE
 
