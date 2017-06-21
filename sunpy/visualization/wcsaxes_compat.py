@@ -50,9 +50,11 @@ def gca_wcs(wcs, fig=None, slices=None):
     fig : `matplotlib.figure.Figure`
         The figure in which to check for the axes.
     slices : `tuple`
-        ``slices`` gets passed to `~astropy.visualization.wcsaxes.WCSAxes`.
-        The slice in which way the multidimensional wcs object
-        needs to be sliced.
+        ``slices`` is passed to `~astropy.visualization.wcsaxes.WCSAxes`
+        to describe which two dimensions of the `~astropy.wcs.WCS` object
+        are being plotted.
+        This slices the multidimensional wcs object in the way it needs
+        to be sliced.
 
     Returns
     -------
