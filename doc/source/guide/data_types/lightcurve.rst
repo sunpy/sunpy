@@ -118,8 +118,8 @@ type:
     :include-source:
 
     from sunpy.lightcurve import GOESLightCurve
-    from sunpy.data.sample import GOES_TIMESERIES
-    goes = GOESLightCurve.create(GOES_TIMESERIES)
+    from sunpy.data.sample import GOES_XRS_TIMESERIES
+    goes = GOESLightCurve.create(GOES_XRS_TIMESERIES)
     goes.peek()
 
 This will open a matplotlib plot on your screen. The `~sunpy.lightcurve.LightCurve.peek()`
@@ -137,8 +137,8 @@ which makes use of this methodology.
     :include-source:
 
     from sunpy.lightcurve import GOESLightCurve
-    from sunpy.data.sample import GOES_TIMESERIES
-    goes = GOESLightCurve.create(GOES_TIMESERIES)
+    from sunpy.data.sample import GOES_XRS_TIMESERIES
+    goes = GOESLightCurve.create(GOES_XRS_TIMESERIES)
     fig = plt.figure()
     ax = goes.plot()
     ax.set_ylim(1e-10, 25e-8)
@@ -152,7 +152,7 @@ generated this plot.
 .. plot::
 
     from sunpy.lightcurve import GOESLightCurve
-    from sunpy.data.sample import GOES_TIMESERIES
+    from sunpy.data.sample import GOES_XRS_TIMESERIES
     import matplotlib.pyplot as plt
     from datetime import datetime
     from astropy.time import Time
@@ -164,7 +164,7 @@ generated this plot.
                    (datetime(year,month,day,19,5,0), datetime(year,month,day,19,50,0)),
                    (datetime(year,month,day,20,20,0), datetime(year,month,day,21,10,0)))
 
-    goes = GOESLightCurve.create(GOES_TIMESERIES)
+    goes = GOESLightCurve.create(GOES_XRS_TIMESERIES)
 
     plt.figure()
     plt.subplot(211)

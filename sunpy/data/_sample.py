@@ -45,7 +45,7 @@ files = {
     # Uncomment this if it needs to be used. Commented out to save bandwidth.
     # "LYRA_LIGHTCURVE": ("lyra_20110810-000000_lev2_std.fits.gz", ,
     "LYRA_LEVEL3_TIMESERIES": "lyra_20150101-000000_lev3_std.fits.gz",
-    "GOES_TIMESERIES": "go1520120601.fits.gz",
+    "GOES_XRS_TIMESERIES": "go1520120601.fits.gz",
     "GBM_TIMESERIES": "glg_cspec_n5_110607_v00.pha",
     "NOAAINDICES_TIMESERIES": "RecentIndices.txt",
     "NOAAPREDICT_TIMESERIES": "predicted-sunspot-radio-flux.txt",
