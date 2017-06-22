@@ -5,6 +5,16 @@
 
 from ..client import GenericClient
 import datetime
+import os
+import tarfile
+from functools import partial
+
+import sunpy
+from sunpy.util import replacement_filename
+from sunpy.net.dataretriever.client import simple_path
+
+from sunpy.net.download import Downloader, Results
+
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
 
@@ -110,11 +120,130 @@ class SRSClient(GenericClient):
         base_url = 'ftp://ftp.swpc.noaa.gov/pub/warehouse/'
         total_days = (timerange.end - timerange.start).days + 1
         all_dates = timerange.split(total_days)
+        today_year = datetime.datetime.utcnow().year
         for day in all_dates:
-            suffix = '{date:%Y}/SRS/{date:%Y%m%d}SRS.txt'
+            if today_year == day.center.year:
+                suffix = '{date:%Y}/SRS/{date:%Y%m%d}SRS.txt'
+            else:
+                suffix = '{date:%Y}/{date:%Y}_SRS.tar.gz'
             url = base_url + suffix.format(date=day.end)
             result.append(url)
         return result
+
+    def get(self, qres, path=None, error_callback=None, **kwargs):
+        """
+        Download a set of results.
+
+        Parameters
+        ----------
+        qres : `~sunpy.net.dataretriever.QueryResponse`
+            Results to download.
+
+        Returns
+        -------
+        Results Object
+        """
+
+
+        urls = []
+        for qrblock in qres:
+                urls.append(qrblock.url)
+
+        filenames = []
+        local_filenames = []
+        for i, [url, qre] in enumerate(list(zip(urls, qres))):
+            name = url.split('/')[-1]
+            day = qre.time.start.date() + datetime.timedelta(days=i)    # temporary fix !!! coz All QRBs have same start_time values
+            if name not in filenames:
+                filenames.append(name)
+
+            if name.endswith('.gz'):
+                local_filenames.append('{date:%Y%m%d}SRS.txt'.format(date=day))
+            else:
+                local_filenames.append(name)
+
+        # Create function to compute the filepath to download to if not set
+        default_dir = sunpy.config.get("downloads", "download_dir")
+
+        paths = []      # Files to be actually downloaded
+        for i, filename in enumerate(filenames):
+            if path is None:
+                fname = os.path.join(default_dir, '{file}')
+            elif isinstance(path, six.string_types) and '{file}' not in path:
+                fname = os.path.join(path, '{file}')
+
+            temp_dict = qres[i].map_.copy()
+            temp_dict['file'] = filename
+            fname  = fname.format(**temp_dict)
+            fname = os.path.expanduser(fname)
+
+            if os.path.exists(fname):
+                fname = replacement_filename(fname)
+
+            fname = partial(simple_path, fname)
+
+            paths.append(fname)
+
+        print("paths = "+str(paths))
+
+        local_paths = []    # Those files that will be present after get returns
+        print("local_filenames = "+str(local_filenames))
+        for i, filename in enumerate(local_filenames):
+            if path is None:
+                fname = os.path.join(default_dir, '{file}')
+            elif isinstance(path, six.string_types) and '{file}' not in path:
+                fname = os.path.join(path, '{file}')
+
+            temp_dict = qres[i].map_.copy()
+            temp_dict['file'] = filename
+            fname  = fname.format(**temp_dict)
+            fname = os.path.expanduser(fname)
+
+            if os.path.exists(fname):
+                fname = replacement_filename(fname)
+
+            fname = partial(simple_path, fname)
+
+            local_paths.append(fname)
+
+        print("local paths = "+str(list(map(lambda x: x.args[0], local_paths))))
+
+        res = Results(lambda x: None, 0, lambda map_: self._link(map_))
+
+        urls = list(set(urls))  # remove duplicate urls
+
+        dobj = Downloader(max_conn=len(urls), max_total=len(urls))
+
+
+        # We cast to list here in list(zip... to force execution of
+        # res.require([x]) at the start of the loop.
+        for aurl, ncall, fname in list(zip(urls, map(lambda x: res.require([x]),
+                                              urls), paths)):
+            dobj.download(aurl, fname, ncall, error_callback)
+        res.wait()
+
+        res2 = Results(lambda x: None, 0, lambda map_: self._link(map_))
+
+        for fname, srs_filename in zip(local_paths, local_filenames):
+            fname = fname.args[0]
+            name = fname.split('/')[-1]
+            for i, fname2 in enumerate(paths):
+                fname2 = fname2.args[0]
+                year = fname2.split('/')[-1]
+                year = year.split('_SRS')[0]
+                if year in name:
+                    TarFile = tarfile.open(fname2)
+                    #print(TarFile.getnames())
+                    TarFile.extract('SRS/'+srs_filename, fname)
+                    TarFile.close()
+                    res2.require([name])
+                    print(fname + " extracted")
+                    break
+        #res2.wait()
+        print("aaaaaaaaaaaaaaaaaaaaaaaa")
+
+
+        return res2
 
     def _makeimap(self):
         self.map_['source'] = 'swpc'
