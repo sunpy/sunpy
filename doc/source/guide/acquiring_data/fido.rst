@@ -1,6 +1,6 @@
----------------------------------
+---------------------------------------
 Finding and Downloading Data using Fido
----------------------------------
+---------------------------------------
 
 This guide outlines how to search for and download data using SunPy's
 Federated Internet Data Obtainer...or more usually (and
@@ -11,14 +11,14 @@ JSOC, etc.  It therefore supplies a single, easy and consistent way to
 obtain most forms of solar physics data.
 
 Import
------
+------
 
 SunPy's Fido module is in ``sunpy.net``.  It can be imported as follows::
 
     >>> from sunpy.net import Fido, attrs as a
 
 Searching for Data Using Fido
------------------------
+-----------------------------
 
 To search for data with Fido, your query needs at minimum a start time,
 an end time, and an instrument.  Enter these properties using SunPy's
@@ -57,6 +57,9 @@ logical ``OR`` operator would::
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra') | a.Instrument('rhessi'))
 
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'), a.Wavelength(171*u.angstrom) | a.Wavelength(94*u.angstrom))
+
+The above query searches the Virtual Solar Observatory (VSO) showing 
+that Fido can be used instead of explicitly searching the VSO.
 
 .. _downloading_data:
 
