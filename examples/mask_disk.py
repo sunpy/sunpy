@@ -8,6 +8,7 @@ This example shows how to mask off emission from the disk.
 import numpy as np
 import matplotlib.pyplot as plt
 import numpy.ma as ma
+import astropy.units as u
 from sunpy.data.sample import AIA_171_IMAGE
 from sunpy.map import Map
 ###############################################################################
@@ -23,8 +24,8 @@ x, y = np.meshgrid(*[np.arange(v.value) for v in aia.dimensions]) * u.pixel
 ###############################################################################
 # Now we can convert this to helioprojective coordinates and create a new
 # array which contains the normalized radial position for each pixel
-hpc_x, hpc_y = aia.pixel_to_data(x,y)
-r = np.sqrt(hpc_x ** 2 + hpc_y ** 2) / aia.rsun_obs
+hpc_coords = aia.pixel_to_data(x,y)
+r = np.sqrt(hpc_coords.Tx ** 2 + hpc_coords.Ty ** 2) / aia.rsun_obs
 
 ###############################################################################
 # Finally, we create a mask where all values which are less then Rsun are
@@ -40,4 +41,5 @@ palette.set_bad('black')
 scaled_map = Map(aia.data, aia.meta, mask=mask.mask)
 scaled_map.plot(cmap=palette)
 scaled_map.draw_limb()
-plt.show()
+plt.savefig("mask_disk.png")
+#plt.show()
