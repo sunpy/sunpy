@@ -16,11 +16,11 @@ from sunpy.net import Fido, attrs as a
 ###############################################################################
 # We could ask for all SOHO/EIT data between January 1st and 2nd, 2001.
 attrs_time = a.Time('2005/01/01 00:10', '2005/01/01 00:15')
-qr = Fido.search(attrs_time, a.attrs.Instrument('eit'))
+result = Fido.search(attrs_time, a.Instrument('eit'))
 
 ###############################################################################
 # Let's inspect the result
-print(qr)
+print(result)
 
 ###############################################################################
 # Now lets download this query. If we don't provide a path it will download the
