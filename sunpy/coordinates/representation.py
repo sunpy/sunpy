@@ -12,7 +12,8 @@ from collections import OrderedDict
 
 from astropy import units as u
 from astropy.coordinates.representation import (SphericalRepresentation,
-                                                UnitSphericalRepresentation)
+                                                UnitSphericalRepresentation,
+                                                CartesianRepresentation)
 from astropy.coordinates import Longitude, Latitude
 
 __all__ = ['Longitude180', 'SphericalWrap180Representation',
@@ -115,3 +116,4 @@ class SphericalWrap180Representation(SphericalRepresentation):
     recommended_units = {'lon': u.deg, 'lat': u.deg}
 
     _unitrep = UnitSphericalWrap180Representation
+

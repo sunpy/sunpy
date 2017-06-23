@@ -9,9 +9,14 @@ everyday use.
 """
 
 from __future__ import absolute_import
-
 from astropy.constants import Constant
-import astropy.constants as astrocon
+
+# This is to keep the old solar values until we make the choice to move to IAU2015 Values
+import astropy
+if int(astropy.__version__[0]) >= 2:
+    import astropy.constants.astropyconst13 as astrocon
+else:
+    import astropy.constants as astrocon
 
 __all__ = ['physical_constants']
 
@@ -72,7 +77,7 @@ physical_constants['average density'] = Constant('rho', "Mean density",
 
 # following needs error estimate if appropriate
 physical_constants['surface gravity'] = Constant('g', "Surface gravity",
-                                                 274, 'm s**-1', 0,
+                                                 274, 'm s**-2', 0,
                                                  allen, system='si')
 
 # following needs error estimate if appropriate

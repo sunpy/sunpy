@@ -17,6 +17,7 @@ import pandas
 from sunpy import config
 from sunpy.time import is_time, TimeRange, parse_time
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
+from sunpy.util.config import get_and_create_download_dir
 from sunpy.extern.six.moves import urllib
 from sunpy.extern import six
 
@@ -65,7 +66,7 @@ class LightCurve(object):
         self.data = pandas.DataFrame(data)
         if meta == '' or meta is None:
             self.meta = OrderedDict()
-            self.meta.update({'name':None})
+            self.meta.update({'name': None})
         else:
             self.meta = OrderedDict(meta)
 
@@ -78,7 +79,7 @@ class LightCurve(object):
             Use .meta instead
         """
         warnings.warn("""lightcurve.header has been renamed to lightcurve.meta
-for compatibility with map, please use meta instead""", Warning)
+        for compatibility with map, please use meta instead""", Warning)
         return self.meta
 
     @classmethod
@@ -110,7 +111,7 @@ for compatibility with map, please use meta instead""", Warning)
             err="Unable to download data for specified date range"
         )
         result = cls.from_file(filepath)
-        result.data = result.data.truncate(start,end)
+        result.data = result.data.truncate(start, end)
         return result
 
     @classmethod
@@ -274,7 +275,7 @@ for compatibility with map, please use meta instead""", Warning)
         if "directory" in kwargs:
             download_dir = os.path.expanduser(kwargs["directory"])
         else:
-            download_dir = config.get("downloads", "download_dir")
+            download_dir = get_and_create_download_dir()
 
         # overwrite the existing file if the keyword is present
         if "overwrite" in kwargs:
@@ -355,7 +356,7 @@ for compatibility with map, please use meta instead""", Warning)
         if isinstance(a, TimeRange):
             time_range = a
         else:
-            time_range = TimeRange(a,b)
+            time_range = TimeRange(a, b)
 
         truncated = self.data.truncate(time_range.start, time_range.end)
         return self.__class__.create(truncated, self.meta.copy())
@@ -403,8 +404,8 @@ for compatibility with map, please use meta instead""", Warning)
             raise TypeError("Lightcurve classes must match.")
 
         meta = OrderedDict()
-        meta.update({str(self.data.index[0]):self.meta.copy()})
-        meta.update({str(otherlightcurve.data.index[0]):otherlightcurve.meta.copy()})
+        meta.update({str(self.data.index[0]): self.meta.copy()})
+        meta.update({str(otherlightcurve.data.index[0]): otherlightcurve.meta.copy()})
 
         data = self.data.copy().append(otherlightcurve.data)
 
