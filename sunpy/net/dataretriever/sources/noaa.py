@@ -122,12 +122,13 @@ class SRSClient(GenericClient):
         all_dates = timerange.split(total_days)
         today_year = datetime.datetime.utcnow().year
         for day in all_dates:
-            if today_year == day.center.year:
+            if today_year == day.end.year:
                 suffix = '{date:%Y}/SRS/{date:%Y%m%d}SRS.txt'
             else:
                 suffix = '{date:%Y}/{date:%Y}_SRS.tar.gz'
             url = base_url + suffix.format(date=day.end)
             result.append(url)
+
         return result
 
     def get(self, qres, path=None, error_callback=None, **kwargs):
@@ -144,13 +145,11 @@ class SRSClient(GenericClient):
         Results Object
         """
 
-
-        urls = []
-        for qrblock in qres:
-                urls.append(qrblock.url)
+        urls = [qrblock.url for qrblock in qres]
 
         filenames = []
         local_filenames = []
+
         for i, [url, qre] in enumerate(list(zip(urls, qres))):
             name = url.split('/')[-1]
             day = qre.time.start.date() + datetime.timedelta(days=i)    # temporary fix !!! coz All QRBs have same start_time values
@@ -162,55 +161,13 @@ class SRSClient(GenericClient):
             else:
                 local_filenames.append(name)
 
-        # Create function to compute the filepath to download to if not set
-        default_dir = sunpy.config.get("downloads", "download_dir")
+        paths = self._get_full_filenames(qres, filenames, path)      # Files to be actually downloaded
 
-        paths = []      # Files to be actually downloaded
-        for i, filename in enumerate(filenames):
-            if path is None:
-                fname = os.path.join(default_dir, '{file}')
-            elif isinstance(path, six.string_types) and '{file}' not in path:
-                fname = os.path.join(path, '{file}')
-
-            temp_dict = qres[i].map_.copy()
-            temp_dict['file'] = filename
-            fname  = fname.format(**temp_dict)
-            fname = os.path.expanduser(fname)
-
-            if os.path.exists(fname):
-                fname = replacement_filename(fname)
-
-            fname = partial(simple_path, fname)
-
-            paths.append(fname)
-
-        print("paths = "+str(paths))
-
-        local_paths = []    # Those files that will be present after get returns
-        print("local_filenames = "+str(local_filenames))
-        for i, filename in enumerate(local_filenames):
-            if path is None:
-                fname = os.path.join(default_dir, '{file}')
-            elif isinstance(path, six.string_types) and '{file}' not in path:
-                fname = os.path.join(path, '{file}')
-
-            temp_dict = qres[i].map_.copy()
-            temp_dict['file'] = filename
-            fname  = fname.format(**temp_dict)
-            fname = os.path.expanduser(fname)
-
-            if os.path.exists(fname):
-                fname = replacement_filename(fname)
-
-            fname = partial(simple_path, fname)
-
-            local_paths.append(fname)
-
-        print("local paths = "+str(list(map(lambda x: x.args[0], local_paths))))
+        local_paths = self._get_full_filenames(qres, local_filenames, path)    # Those files that will be present after get returns
 
         res = Results(lambda x: None, 0, lambda map_: self._link(map_))
 
-        urls = list(set(urls))  # remove duplicate urls
+        urls = list(set(urls))  # remove duplicate urls. This will make paths and urls to have same number of elements
 
         dobj = Downloader(max_conn=len(urls), max_total=len(urls))
 
@@ -220,28 +177,44 @@ class SRSClient(GenericClient):
         for aurl, ncall, fname in list(zip(urls, map(lambda x: res.require([x]),
                                               urls), paths)):
             dobj.download(aurl, fname, ncall, error_callback)
+
         res.wait()
 
-        res2 = Results(lambda x: None, 0, lambda map_: self._link(map_))
+        res2 = Results(lambda x: None, 0)
 
         for fname, srs_filename in zip(local_paths, local_filenames):
+
             fname = fname.args[0]
             name = fname.split('/')[-1]
+
+            past_year = False
             for i, fname2 in enumerate(paths):
+
                 fname2 = fname2.args[0]
+
+                if fname2.endswith('.txt'):
+                    continue
+
                 year = fname2.split('/')[-1]
                 year = year.split('_SRS')[0]
+
                 if year in name:
                     TarFile = tarfile.open(fname2)
-                    #print(TarFile.getnames())
-                    TarFile.extract('SRS/'+srs_filename, fname)
+                    filepath = fname.rpartition('/')[0]
+                    member = TarFile.getmember('SRS/'+srs_filename)
+                    member.name = name
+                    TarFile.extract(member, path=filepath)
                     TarFile.close()
-                    res2.require([name])
-                    print(fname + " extracted")
-                    break
-        #res2.wait()
-        print("aaaaaaaaaaaaaaaaaaaaaaaa")
 
+                    callback = res2.require([fname])
+                    callback({'path':fname})
+
+                    past_year = True
+                    break
+
+            if past_year is False:
+                callback = res2.require([fname])
+                callback({'path':fname})
 
         return res2
 
