@@ -27,11 +27,10 @@ def offline_instruments():
     Returns a strategy for any instrument that does not need the internet to do
     a query
     """
-    offline_instr = ['lyra', 'norh', 'noaa-indices', 'noaa-predict', 'goes']
+    offline_instr = ['lyra', 'noaa-indices', 'noaa-predict', 'goes']
     offline_instr = st.builds(a.Instrument, st.sampled_from(offline_instr))
 
-    eve = st.just(a.Instrument('eve') & a.Level(0))
-    return st.one_of(offline_instr, eve)
+    return st.one_of(offline_instr)
 
 
 def online_instruments():
