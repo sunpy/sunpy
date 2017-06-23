@@ -232,6 +232,49 @@ class GenericClient(object):
         """
         raise NotImplementedError
 
+    def _get_full_filenames(self, qres, filenames, path):
+        """
+        Download a set of results.
+
+        Parameters
+        ----------
+        qres : `~sunpy.net.dataretriever.QueryResponse`
+            Results to download.
+
+        filenames : list
+            List of base filenames (ex - "xyz.txt")
+
+        path : string
+            Path to download files to
+
+        Returns
+        -------
+        List of full pathnames for each file (download_directory + filename)
+        """
+        # Create function to compute the filepath to download to if not set
+        default_dir = sunpy.config.get("downloads", "download_dir")
+        
+        paths = []
+        for i, filename in enumerate(filenames):
+            if path is None:
+                fname = os.path.join(default_dir, '{file}')
+            elif isinstance(path, six.string_types) and '{file}' not in path:
+                fname = os.path.join(path, '{file}')
+
+            temp_dict = qres[i].map_.copy()
+            temp_dict['file'] = filename
+            fname  = fname.format(**temp_dict)
+            fname = os.path.expanduser(fname)
+
+            if os.path.exists(fname):
+                fname = replacement_filename(fname)
+
+            fname = partial(simple_path, fname)
+
+            paths.append(fname)
+
+        return paths
+
     def query(self, *args, **kwargs):
         """
         Query this client for a list of results.
@@ -263,35 +306,11 @@ class GenericClient(object):
         Results Object
         """
 
-        urls = []
-        for qrblock in qres:
-            urls.append(qrblock.url)
+        urls = [qrblock.url for qrblock in qres]
 
-        filenames = []
-        for url in urls:
-            filenames.append(url.split('/')[-1])
+        filenames = [url.split('/')[-1] for url in urls]
 
-        # Create function to compute the filepath to download to if not set
-        default_dir = sunpy.config.get("downloads", "download_dir")
-
-        paths = []
-        for i, filename in enumerate(filenames):
-            if path is None:
-                fname = os.path.join(default_dir, '{file}')
-            elif isinstance(path, six.string_types) and '{file}' not in path:
-                fname = os.path.join(path, '{file}')
-
-            temp_dict = qres[i].map_.copy()
-            temp_dict['file'] = filename
-            fname  = fname.format(**temp_dict)
-            fname = os.path.expanduser(fname)
-
-            if os.path.exists(fname):
-                fname = replacement_filename(fname)
-
-            fname = partial(simple_path, fname)
-
-            paths.append(fname)
+        paths = self._get_full_filenames(qres, filenames, path)
 
         res = Results(lambda x: None, 0, lambda map_: self._link(map_))
 
