@@ -8,13 +8,13 @@ from sunpy.extern.six import iteritems
 @pytest.mark.parametrize('this_constant', [value for key, value in iteritems(con.constants)])
 def test_all_constants_are_constants(this_constant):
     """Test that each member of the constants dict is an astropy Constant"""
-    assert type(this_constant) is Constant
+    assert isinstance(this_constant, Constant)
 
 
 @pytest.mark.parametrize('this_key', [key for key, value in iteritems(con.constants)])
 def test_get_function(this_key):
     """Test that the get function works for all the keys"""
-    assert type(con.get(this_key)) is Constant
+    assert isinstance(con.get(this_key), Constant)
 
 
 @pytest.mark.parametrize('this_key', [key for key, value in iteritems(con.constants)])
