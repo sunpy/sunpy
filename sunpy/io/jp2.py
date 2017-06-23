@@ -69,6 +69,9 @@ def get_header(filepath):
     if 'comment' in pydict:
         pydict['comment'] = pydict['comment'].replace("\n", "")
 
+    # Is this file a Helioviewer Project JPEG2000 file?
+    pydict['helioviewer'] = xml_box[0].xml.find('helioviewer') is not None
+
     return [FileHeader(pydict)]
 
 
