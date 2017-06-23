@@ -157,14 +157,14 @@ class Scraper(object):
         for k, v in six.iteritems(TIME_CONVERSIONS):
             re_together = re_together.replace(k, v)
 
-        #   Create new empty lists
+        #   Lists to contain the unique elements of the date and the pattern
         final_date = list()
         final_pattern = list()
         re_together = re_together.replace('[A-Z]', '\\[A-Z]')
         for p, r in zip(pattern_together.split('%')[1:], re_together.split('\\')[1:]):
             if p == 'e':
                 continue
-            regexp = '\\{}'.format(r) if not r.startswith('[') else r
+            regexp = r'\{}'.format(r) if not r.startswith('[') else r
             pattern = '%{}'.format(p)
             date_part = re.search(regexp, date_together)
             date_together = date_together[:date_part.start()] + \
