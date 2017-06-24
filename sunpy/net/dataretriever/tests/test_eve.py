@@ -56,7 +56,7 @@ def test_query():
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 2
     assert qr1.time_range().start == parse_time('2012/08/09')
-    assert qr1.time_range().end == parse_time('2012/08/10')
+    assert qr1.time_range().end == parse_time('2012/08/11') # includes end.
 
 
 @pytest.mark.online
@@ -103,4 +103,3 @@ def test_levels(time):
     qr = Fido.search(time, eve_a, a.Level(0) | a.Level(1))
     clients = {type(a.client) for a in qr.responses}
     assert clients.symmetric_difference({VSOClient, eve.EVEClient}) == set()
-
