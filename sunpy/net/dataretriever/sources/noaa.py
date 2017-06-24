@@ -8,6 +8,7 @@ import datetime
 import os
 import tarfile
 from functools import partial
+from collections import OrderedDict
 
 import sunpy
 from sunpy.util import replacement_filename
@@ -167,7 +168,7 @@ class SRSClient(GenericClient):
 
         res = Results(lambda x: None, 0, lambda map_: self._link(map_))
 
-        urls = list(set(urls))  # remove duplicate urls. This will make paths and urls to have same number of elements
+        urls = list(OrderedDict.fromkeys(urls)) # remove duplicate urls. This will make paths and urls to have same number of elements. OrderedDict is required to maintain ordering because it will be zipped with paths later
 
         dobj = Downloader(max_conn=len(urls), max_total=len(urls))
 
@@ -177,7 +178,7 @@ class SRSClient(GenericClient):
         for aurl, ncall, fname in list(zip(urls, map(lambda x: res.require([x]),
                                               urls), paths)):
             dobj.download(aurl, fname, ncall, error_callback)
-
+        
         res.wait()
 
         res2 = Results(lambda x: None, 0)
