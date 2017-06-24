@@ -11,7 +11,7 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 from hypothesis import given
-from sunpy.net.tests.strategies import time_attr
+from sunpy.net.tests.strategies import time_attr, range_time
 
 
 @pytest.mark.online
@@ -36,12 +36,6 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
     assert urls[-1] == url_end
 
 
-# FIXME - Do we need this function? time_range superseeds it, right?
-# def test_get_url_for_date():
-#     url = norh.NoRHClient()._get_url_for_date(datetime.date(2011, 3, 14), wavelength=17*u.GHz)
-#     assert url == 'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2011/03/tca110314'
-
-
 @given(time_attr())
 def test_can_handle_query(time):
     ans1 = norh.NoRHClient._can_handle_query(time, a.Instrument('norh'))
@@ -55,15 +49,19 @@ def test_can_handle_query(time):
 
 @pytest.mark.online
 @pytest.mark.parametrize("wave", [a.Wavelength(17*u.GHz), a.Wavelength(34*u.GHz)])
-@given(time=time_attr())
+@given(time=range_time(datetime.datetime(1992, 6, 1)))
 def test_query(time, wave):
     qr1 = norh.NoRHClient().query(time, a.Instrument('norh'), wave)
     assert isinstance(qr1, QueryResponse)
-    # compare range of time as the smaller of this query is in minutes and
-    # hypothesis may add seconds or milliseconds.
-    assert qr1.time_range().start.date() == time.start.date()
-    # hypothesis can give same start-end, but the query will give you from start to end (so +1)
-    assert time.end <= qr1.time_range().end <= time.end + datetime.timedelta(days=1)
+    # Not all hypothesis queries are going to produce results, and
+    if qr1:
+        # There are no observations everyday
+        #  so the results found have to be equal or later than the queried time
+        #  (looking at the date because it may search for miliseconds, but only date is available)
+        assert qr1.time_range().start.date() >= time.start.date()
+        #  and the end time equal or smaller.
+        # hypothesis can give same start-end, but the query will give you from start to end (so +1)
+        assert qr1.time_range().end <= time.end + datetime.timedelta(days=1)
 
 
 # Don't use time_attr here for speed.

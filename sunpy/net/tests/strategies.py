@@ -81,8 +81,8 @@ def goes_time(draw, time=datetimes(timezones=[],
     return a.Time(tr)
 
 
-def rhessi_time():
-    time = datetimes(timezones=[], max_year=datetime.datetime.utcnow().year,
-                     min_year=2002)
-    time = time.filter(lambda x: x > parse_time('2002-02-01'))
+def range_time(min_date, max_date=datetime.datetime.utcnow()):
+    time = datetimes(timezones=[], max_year=max_date.year,
+                     min_year=1960)
+    time = time.filter(lambda x: min_date < x < max_date)
     return time_attr(time=time)
