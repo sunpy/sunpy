@@ -5,4 +5,3 @@ from sunpy.data._sample import download_sample_data, list_samples
 
 __author__ = "Steven Christe"
 __email__ = "steven.christe@nasa.gov"
-
