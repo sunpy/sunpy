@@ -107,14 +107,11 @@ class GreatArc:
         self.v3 = self.r * self.v3 / np.linalg.norm(self.v3)
 
         # Inner angle between v1 and v2 in radians
-        self._inner_angle = np.arctan2(np.linalg.norm(np.cross(self.v1, self.v2)),
-                                      np.dot(self.v1, self.v2))
-
-        # Inner angle between v1 and v2 in degrees
-        self.inner_angle = np.rad2deg(self._inner_angle) * u.degree
+        self.inner_angle = np.arctan2(np.linalg.norm(np.cross(self.v1, self.v2)),
+                                      np.dot(self.v1, self.v2)) * u.rad
 
         # Distance on the sphere between the start point and the end point.
-        self.distance = self.r * self._inner_angle * self.distance_unit
+        self.distance = self.r * self.inner_angle.value * self.distance_unit
 
     def _points_handler(self, points):
         """
@@ -138,7 +135,7 @@ class GreatArc:
         end.
         """
         these_points = self._points_handler(points)
-        return these_points.reshape(len(these_points), 1)*self._inner_angle
+        return these_points.reshape(len(these_points), 1)*self.inner_angle
 
     def inner_angles(self, points=None):
         """
@@ -146,14 +143,14 @@ class GreatArc:
         the parameterized points along the arc.  Values are returned in
         degrees.
         """
-        return np.rad2deg(self._calculate_inner_angles(points=points)) * u.degree
+        return self._calculate_inner_angles(points=points)
 
     def distances(self, points=None):
         """
         Calculates the distance from the start co-ordinate to the end
         co-ordinate on the sphere for all the parameterized points.
         """
-        return self.r * self._calculate_inner_angles(points=points) * self.distance_unit
+        return self.r * self._calculate_inner_angles(points=points).value * self.distance_unit
 
     def coordinates(self, points=None):
         """
