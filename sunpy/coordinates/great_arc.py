@@ -36,6 +36,7 @@ class GreatArc:
 
     Example
     -------
+    >>> import matplotlib.pyplot as plt
     >>> from astropy.coordinates import SkyCoord
     >>> import astropy.units as u
     >>> from sunpy.coordinates.great_arc import GreatArc
@@ -45,6 +46,12 @@ class GreatArc:
     >>> a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=m.coordinate_frame)
     >>> b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=m.coordinate_frame)
     >>> v = GreatArc(a, b)
+    >>> fig = plt.figure()
+    >>> ax = fig.add_subplot(1, 1, 1, projection=m)
+    >>> m.plot(axes=ax)
+    >>> ax.plot_coord(v.coordinates(), color='c')
+    >>> plt.show()
+
     """
     def __init__(self, start, end, center=None, points=None):
         # Start point of the great arc
@@ -66,7 +73,7 @@ class GreatArc:
         self._default_points = self._points_handler(points)
 
         # Units of the start point
-        self.start_unit = self.start.transform_to(frames.Heliocentric).cartesian.xyz.unit
+        self.distance_unit = self.start.transform_to(frames.Heliocentric).cartesian.xyz.unit
 
         # Co-ordinate frame
         self.start_frame = self.start.frame
@@ -76,14 +83,14 @@ class GreatArc:
 
         # Set the center of the sphere
         if center is None:
-            self.center = SkyCoord(0*self.start_unit,
-                                   0*self.start_unit,
-                                   0*self.start_unit, frame=frames.Heliocentric)
+            self.center = SkyCoord(0*self.distance_unit,
+                                   0*self.distance_unit,
+                                   0*self.distance_unit, frame=frames.Heliocentric)
 
         # Convert the start, end and center points to their Cartesian values
-        self.start_cartesian = self.start.transform_to(frames.Heliocentric).cartesian.xyz.to(self.start_unit).value
-        self.end_cartesian = self.end.transform_to(frames.Heliocentric).cartesian.xyz.to(self.start_unit).value
-        self.center_cartesian = self.center.transform_to(frames.Heliocentric).cartesian.xyz.to(self.start_unit).value
+        self.start_cartesian = self.start.transform_to(frames.Heliocentric).cartesian.xyz.to(self.distance_unit).value
+        self.end_cartesian = self.end.transform_to(frames.Heliocentric).cartesian.xyz.to(self.distance_unit).value
+        self.center_cartesian = self.center.transform_to(frames.Heliocentric).cartesian.xyz.to(self.distance_unit).value
 
         # Great arc properties calculation
         # Vector from center to first point
@@ -107,7 +114,7 @@ class GreatArc:
         self.inner_angle = np.rad2deg(self._inner_angle) * u.degree
 
         # Distance on the sphere between the start point and the end point.
-        self.distance = self.r * self._inner_angle * self.start_unit
+        self.distance = self.r * self._inner_angle * self.distance_unit
 
     def _points_handler(self, points):
         """
@@ -146,7 +153,7 @@ class GreatArc:
         Calculates the distance from the start co-ordinate to the end
         co-ordinate on the sphere for all the parameterized points.
         """
-        return self.r * self._calculate_inner_angles(points=points) * self.start_unit
+        return self.r * self._calculate_inner_angles(points=points) * self.distance_unit
 
     def coordinates(self, points=None):
         """
@@ -160,7 +167,7 @@ class GreatArc:
         # Calculate the Cartesian locations from the first to second points
         great_arc_points_cartesian = (self.v1[np.newaxis, :] * np.cos(these_inner_angles) +
                                       self.v3[np.newaxis, :] * np.sin(these_inner_angles) +
-                                      self.center_cartesian) * self.start_unit
+                                      self.center_cartesian) * self.distance_unit
 
         # Return the coordinates of the great arc between the start and end
         # points
