@@ -7,8 +7,7 @@ from __future__ import absolute_import, division, print_function
 import numpy as np
 import astropy.units as u
 from astropy.coordinates import SkyCoord
-import sunpy.coordinates
-
+from sunpy.coordinates import frames
 
 class GreatArc:
     """
@@ -39,14 +38,13 @@ class GreatArc:
     -------
     >>> from astropy.coordinates import SkyCoord
     >>> import astropy.units as u
-    >>> import sunpy.coordinates
-    >>> from sunpy.coordinates import great_arc
+    >>> from sunpy.coordinates.great_arc import GreatArc
     >>> import sunpy.map
     >>> from sunpy.data.sample import AIA_171_IMAGE
     >>> m = sunpy.map.Map(AIA_171_IMAGE)
     >>> a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=m.coordinate_frame)
     >>> b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=m.coordinate_frame)
-    >>> v = great_arc(a, b)
+    >>> v = GreatArc(a, b)
     """
     def __init__(self, start, end, center=None, points=None):
         # Start point of the great arc
@@ -68,24 +66,24 @@ class GreatArc:
         self._default_points = self._points_handler(points)
 
         # Units of the start point
-        self.start_unit = self.start.transform_to('heliocentric').cartesian.xyz.unit
+        self.start_unit = self.start.transform_to(frames.Heliocentric).cartesian.xyz.unit
 
         # Co-ordinate frame
         self.start_frame = self.start.frame
 
-        # Observer details
+        #
         self.observer = self.start.observer
 
         # Set the center of the sphere
         if center is None:
             self.center = SkyCoord(0*self.start_unit,
                                    0*self.start_unit,
-                                   0*self.start_unit, frame='heliocentric')
+                                   0*self.start_unit, frame=frames.Heliocentric)
 
         # Convert the start, end and center points to their Cartesian values
-        self.start_cartesian = self.start.transform_to('heliocentric').cartesian.xyz.to(self.start_unit).value
-        self.end_cartesian = self.end.transform_to('heliocentric').cartesian.xyz.to(self.start_unit).value
-        self.center_cartesian = self.center.transform_to('heliocentric').cartesian.xyz.to(self.start_unit).value
+        self.start_cartesian = self.start.transform_to(frames.Heliocentric).cartesian.xyz.to(self.start_unit).value
+        self.end_cartesian = self.end.transform_to(frames.Heliocentric).cartesian.xyz.to(self.start_unit).value
+        self.center_cartesian = self.center.transform_to(frames.Heliocentric).cartesian.xyz.to(self.start_unit).value
 
         # Great arc properties calculation
         # Vector from center to first point
@@ -102,11 +100,14 @@ class GreatArc:
         self.v3 = self.r * self.v3 / np.linalg.norm(self.v3)
 
         # Inner angle between v1 and v2 in radians
-        self.inner_angle = np.arctan2(np.linalg.norm(np.cross(self.v1, self.v2)),
+        self._inner_angle = np.arctan2(np.linalg.norm(np.cross(self.v1, self.v2)),
                                       np.dot(self.v1, self.v2))
 
+        # Inner angle between v1 and v2 in degrees
+        self.inner_angle = np.rad2deg(self._inner_angle) * u.degree
+
         # Distance on the sphere between the start point and the end point.
-        self.distance = self.r * self.inner_angle
+        self.distance = self.r * self._inner_angle * self.start_unit
 
     def _points_handler(self, points):
         """
@@ -130,7 +131,7 @@ class GreatArc:
         end.
         """
         these_points = self._points_handler(points)
-        return these_points.reshape(len(these_points), 1)*self.inner_angle
+        return these_points.reshape(len(these_points), 1)*self._inner_angle
 
     def inner_angles(self, points=None):
         """
@@ -149,19 +150,21 @@ class GreatArc:
 
     def coordinates(self, points=None):
         """
-
+        Calculates the co-ordinates on the sphere from the start to the end
+        co-ordinate for all the parameterized points.  Co-ordinates are
+        returned in the frame of the start coordinate.
         """
         # Calculate the inner angles
         these_inner_angles = self._calculate_inner_angles(points=points)
 
         # Calculate the Cartesian locations from the first to second points
-        great_arc_points_cartesian = self.v1[np.newaxis, :] * np.cos(these_inner_angles) + \
-                                     self.v3[np.newaxis, :] * np.sin(these_inner_angles) + \
-                                     self.center_cartesian
+        great_arc_points_cartesian = (self.v1[np.newaxis, :] * np.cos(these_inner_angles) +
+                                      self.v3[np.newaxis, :] * np.sin(these_inner_angles) +
+                                      self.center_cartesian) * self.start_unit
 
         # Return the coordinates of the great arc between the start and end
         # points
         return SkyCoord(great_arc_points_cartesian[:, 0],
                         great_arc_points_cartesian[:, 1],
                         great_arc_points_cartesian[:, 2],
-                        frame=self.start_frame, observer=self.observer).transform_to(self.start_frame)
+                        frame=frames.Heliocentric, observer=self.observer).transform_to(self.start_frame)
