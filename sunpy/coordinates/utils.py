@@ -9,6 +9,8 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 from sunpy.coordinates import frames
 
+__all__ = ['GreatArc']
+
 
 class GreatArc:
     """
@@ -63,7 +65,7 @@ class GreatArc:
     >>> import matplotlib.pyplot as plt
     >>> from astropy.coordinates import SkyCoord
     >>> import astropy.units as u
-    >>> from sunpy.coordinates.great_arc import GreatArc
+    >>> from sunpy.coordinates.utils import GreatArc
     >>> import sunpy.map
     >>> from sunpy.data.sample import AIA_171_IMAGE
     >>> m = sunpy.map.Map(AIA_171_IMAGE)
