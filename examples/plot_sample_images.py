@@ -16,9 +16,13 @@ import sunpy.map
 for key in file_dict:
     if key.count('IMAGE'):
         try:
-            m = sunpy.map.Map(file_dict[key])
-            plt.figure()
-            m.plot()
-            plt.show()
+            print(key)
+            try:
+                m = sunpy.map.Map(file_dict[key])
+                plt.figure()
+                m.plot()
+                plt.show()
+            except:
+                pass
         except:
             pass
