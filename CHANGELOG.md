@@ -1,6 +1,7 @@
 Latest
 ------
 
+* Calculation of points on an arc of a great circle connecting two points on the Sun.
 * Maps from Helioviewer JPEG2000 files now have correct image scaling.
 * Removed `extract_time` function from `sunpy.time` and also tests related to the function from `sunpy.time.tests`
 * User can now pass a custom time format as an argument inside
@@ -33,6 +34,10 @@ Latest
   version in astropy 1.3. SunPy now therefore depends on astropy>=1.3.
 * Update to `TimeRange.__repr__`; now includes the qualified name and `id` of
   the object.
+* A new `sunpy.visualization.imageanimator.LineAnimator` class has been added to
+  animate 1D data.  This has resulted in API change for the
+  `sunpy.visualization.imageanimator.ImageAnimator` class.  The updateimage
+  method has been renamed to update_plot.
 * Change the default representation for the Heliographic Carrington frame so
   Longitude follows the convention of going from 0-360 degrees.
 * Fix Map parsing of some header values to allow valid float strings like 'nan'
@@ -56,6 +61,9 @@ Latest
   differentiate between physical and pixel coordinates.
 * Fix Map parsing of some header values to allow valid float strings like 'nan'
   and 'inf'.
+* The physical radius of the Sun (length units) is now passed from Map into the
+  coordinate frame so a consistent value is used when calculating distance to
+  the solar surface in the `HelioprojectiveFrame` coordinate frame.
 
 
 0.7.0

@@ -86,7 +86,8 @@ def test_wcs_extras():
               'waveunit': 'm',
               'hglt_obs': 0,
               'hgln_obs': 0,
-              'dsun_obs': 10}
+              'dsun_obs': 10,
+              'rsun_ref': 690000000}
     generic_map = sunpy.map.Map((data, header))
 
     wcs = generic_map.wcs
@@ -94,6 +95,7 @@ def test_wcs_extras():
     assert wcs.heliographic_observer.lat.value == 0
     assert wcs.heliographic_observer.lon.value == 0
     assert wcs.heliographic_observer.radius.value == 10
+    assert wcs.rsun.value == header['rsun_ref']
 
     result = solar_wcs_frame_mapping(wcs)
 
@@ -101,3 +103,4 @@ def test_wcs_extras():
     assert result.observer.lat.value == 0
     assert result.observer.lon.value == 0
     assert result.observer.radius.value == 10
+    assert result.rsun.value == header['rsun_ref']

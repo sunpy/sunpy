@@ -24,6 +24,11 @@ def solar_wcs_frame_mapping(wcs):
     else:
         observer = None
 
+    if hasattr(wcs, 'rsun'):
+        rsun = wcs.rsun
+    else:
+        rsun = None
+
     # First we try the Celestial sub, which rectifies the order.
     # It will return anything matching ??LN*, ??LT*
     wcss = wcs.sub([WCSSUB_CELESTIAL])
@@ -36,7 +41,7 @@ def solar_wcs_frame_mapping(wcs):
     ycoord = wcs.wcs.ctype[1][0:4]
 
     if xcoord == 'HPLN' and ycoord == 'HPLT':
-        return Helioprojective(dateobs=dateobs, observer=observer)
+        return Helioprojective(dateobs=dateobs, observer=observer, rsun=rsun)
 
     if xcoord == 'HGLN' and ycoord == 'HGLT':
         return HeliographicStonyhurst(dateobs=dateobs)

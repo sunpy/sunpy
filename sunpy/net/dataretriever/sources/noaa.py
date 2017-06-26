@@ -91,6 +91,6 @@ class NOAAPredictClient(GenericClient):
         chkattr = ['Time', 'Instrument']
         chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value == 'noaa-predict':
+            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'noaa-predict':
                 return all(chklist)
         return False

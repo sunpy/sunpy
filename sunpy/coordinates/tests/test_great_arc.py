@@ -5,7 +5,6 @@ import pytest
 import numpy as np
 from astropy.coordinates import SkyCoord
 import astropy.units as u
-from sunpy.coordinates import frames
 import sunpy.map
 import sunpy.data.test
 from sunpy.coordinates.utils import GreatArc
@@ -62,22 +61,3 @@ def test_great_arc_coordinates(points_requested, points_expected):
     # Radius of the sphere
     assert gc.radius.unit == u.km
     np.testing.assert_almost_equal(gc.radius.value, 695508.0000017926)
-
-    # Distance on the sphere between the start point and the end point.
-    assert gc.distance.unit == u.km
-    np.testing.assert_almost_equal(gc.distance, 1316712.217959667)
-
-    """
-    # Correct number of points along the great arc.
-    assert len(coordinates) == points_expected
-
-    # Start and end point values are as expected
-    np.testing.assert_almost_equal(coordinates[0].Tx.value, a.Tx.value)
-    np.testing.assert_almost_equal(coordinates[0].Ty.value, a.Ty.value)
-    np.testing.assert_almost_equal(coordinates[-1].Tx.value, b.Tx.value)
-    np.testing.assert_almost_equal(coordinates[-1].Ty.value, b.Ty.value)
-
-    # Make sure the output observer is correct
-    for i in range(0, len(coordinates)):
-        assert coordinates[i].observer == a.observer
-    """

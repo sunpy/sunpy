@@ -3,7 +3,7 @@ from __future__ import absolute_import, division
 import datetime
 
 from astropy.time import Time
-from astropy.coordinates.baseframe import TimeFrameAttribute
+from astropy.coordinates import TimeFrameAttribute
 
 from sunpy.extern import six
 from sunpy.time import parse_time
@@ -80,4 +80,3 @@ class TimeFrameAttributeSunPy(TimeFrameAttribute):
                              .format(self.name, value))
 
         return out, converted
-
