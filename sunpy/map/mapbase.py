@@ -90,8 +90,6 @@ class GenericMap(NDData):
     Examples
     --------
     >>> import sunpy.map
-    >>> import sunpy.data
-    >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
     >>> import sunpy.data.sample
     >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     >>> aia   # doctest: +NORMALIZE_WHITESPACE
@@ -1167,8 +1165,6 @@ Reference Coord:\t {refcoord}
         --------
         >>> import astropy.units as u
         >>> import sunpy.map
-        >>> import sunpy.data
-        >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
         >>> import sunpy.data.sample
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
         >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=m.coordinate_frame)
