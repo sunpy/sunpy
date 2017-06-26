@@ -1,2 +1,2 @@
-from sunpy.net.jsoc.jsoc import *
-from sunpy.net.jsoc.attrs import *
+from sunpy.net.jsoc_drms.jsoc import *
+from sunpy.net.jsoc_drms.attrs import *
