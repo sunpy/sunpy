@@ -8,10 +8,8 @@ This example shows how to edge enhance a coronal loops in an SDO/AIA image.
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import ndimage
-
 import astropy.units as u
 from astropy.coordinates import SkyCoord
-
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
 
