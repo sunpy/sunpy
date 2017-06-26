@@ -35,8 +35,8 @@ x = (bins[:-1] + bins[1:]) / 2
 plt.figure()
 plt.bar(x, hist, align='center', width=width, label='Histogram')
 plt.xlabel('Intensity')
-plt.axvline(dmin, label='Data min={:.2f}'.format(dmin), color='red')
-plt.axvline(dmax, label='Data max={:.2f}'.format(dmax), color='red')
+plt.axvline(dmin, label='Data min={:.2f}'.format(dmin), color='black')
+plt.axvline(dmax, label='Data max={:.2f}'.format(dmax), color='black')
 plt.axvline(aia_smap.data.mean(),
             label='mean={:.2f}'.format(aia_smap.data.mean()), color='green')
 one_sigma = np.array([aia_smap.data.mean() - aia_smap.data.std(),
