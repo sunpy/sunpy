@@ -9,6 +9,7 @@ import astropy.units as u
 from astropy.coordinates import SkyCoord
 from sunpy.coordinates import frames
 
+
 class GreatArc:
     """
     Calculate the properties of a user-specified number of points on a great arc
@@ -26,13 +27,36 @@ class GreatArc:
         Center of the sphere.
 
     points : None | int | numpy.ndarray
-        Number of points along the great arc.
+        Number of points along the great arc.  If None, the arc is calculated
+        at 100 equally spaced points from start to end.  If int, the arc is
+        calculated at "points" equally spaced points from start to end.  If a
+        numpy.ndarray is passed, it must be one dimensional and have values
+        >=0 and <=1.  The values in this array correspond to parameterized
+        locations along the great arc from zero, denoting the start of the arc,
+        to 1, denoting the end of the arc.  Setting this keyword on initializing
+        a GreatArc object sets the locations of the default points along the
+        great arc.
 
-    Returns
+    Methods
     -------
-    arc : `~astropy.coordinates.SkyCoord`
+    inner_angles : `~astropy.units.rad`
+        Radian angles of the points along the great arc from the start to end
+        co-ordinate.
+
+    distances : `astropy.units`
+        Distances of the points along the great arc from the start to end
+        co-ordinate.  The units are defined as those returned after transforming
+        the co-ordinate system of the start co-ordinate into its Cartesian
+        equivalent.
+
+    coordinates : `~astropy.coordinates.SkyCoord`
         Co-ordinates along the great arc in the co-ordinate frame of the
         start point.
+
+    References
+    ----------
+    [1] https://www.mathworks.com/matlabcentral/newsreader/view_thread/277881
+    [2] https://en.wikipedia.org/wiki/Great-circle_distance#Vector_version
 
     Example
     -------
@@ -97,21 +121,21 @@ class GreatArc:
         self.v1 = self.start_cartesian - self.center_cartesian
 
         # Distance of the first point from the center
-        self.r = np.linalg.norm(self.v1)
+        self._r = np.linalg.norm(self.v1)
 
         # Vector from center to second point
         self.v2 = self.end_cartesian - self.center_cartesian
 
         # The v3 vector lies in plane of v1 & v2 and is orthogonal to v1
         self.v3 = np.cross(np.cross(self.v1, self.v2), self.v1)
-        self.v3 = self.r * self.v3 / np.linalg.norm(self.v3)
+        self.v3 = self._r * self.v3 / np.linalg.norm(self.v3)
 
         # Inner angle between v1 and v2 in radians
         self.inner_angle = np.arctan2(np.linalg.norm(np.cross(self.v1, self.v2)),
                                       np.dot(self.v1, self.v2)) * u.rad
 
         # Radius of the sphere
-        self.radius = self.r * self.distance_unit
+        self.radius = self._r * self.distance_unit
 
         # Distance on the sphere between the start point and the end point.
         self.distance = self.radius * self.inner_angle.value
@@ -131,38 +155,85 @@ class GreatArc:
                 return ValueError('All value in points array must be strictly >=0 and <=1.')
             return points
 
-    def _calculate_inner_angles(self, points=None):
+    def inner_angles(self, points=None):
         """
         Calculates the inner angles for the parameterized points along the arc
         and returns the value in radians, from the start co-ordinate to the
         end.
+
+        Parameters
+        ----------
+        points : None | int | numpy.ndarray
+            If None, use the default locations of parameterized points along the
+            arc.  If int, the arc is calculated at "points" equally spaced
+            points from start to end.  If a numpy.ndarray is passed, it must be
+            one dimensional and have values >=0 and <=1.  The values in this
+            array correspond to parameterized locations along the great arc from
+            zero, denoting the start of the arc, to 1, denoting the end of the
+            arc.
+
+        Returns
+        -------
+        inner_angles : `~astropy.units.rad`
+            Radian angles of the points along the great arc from the start to
+            end co-ordinate.
+
         """
         these_points = self._points_handler(points)
         return these_points.reshape(len(these_points), 1)*self.inner_angle
-
-    def inner_angles(self, points=None):
-        """
-        Calculates the inner angles from the start co-ordinate to the end, for
-        the parameterized points along the arc.  Values are returned in
-        degrees.
-        """
-        return self._calculate_inner_angles(points=points)
 
     def distances(self, points=None):
         """
         Calculates the distance from the start co-ordinate to the end
         co-ordinate on the sphere for all the parameterized points.
+
+        Parameters
+        ----------
+        points : None | int | numpy.ndarray
+            If None, use the default locations of parameterized points along the
+            arc.  If int, the arc is calculated at "points" equally spaced
+            points from start to end.  If a numpy.ndarray is passed, it must be
+            one dimensional and have values >=0 and <=1.  The values in this
+            array correspond to parameterized locations along the great arc from
+            zero, denoting the start of the arc, to 1, denoting the end of the
+            arc.
+
+        Returns
+        -------
+        distances : `astropy.units`
+            Distances of the points along the great arc from the start to end
+            co-ordinate.  The units are defined as those returned after
+            transforming the co-ordinate system of the start co-ordinate into
+            its Cartesian equivalent.
         """
-        return self.radius * self._calculate_inner_angles(points=points).value
+        return self.radius * self.inner_angles(points=points).value
 
     def coordinates(self, points=None):
         """
         Calculates the co-ordinates on the sphere from the start to the end
         co-ordinate for all the parameterized points.  Co-ordinates are
         returned in the frame of the start coordinate.
+
+        Parameters
+        ----------
+        points : None | int | numpy.ndarray
+            If None, use the default locations of parameterized points along the
+            arc.  If int, the arc is calculated at "points" equally spaced
+            points from start to end.  If a numpy.ndarray is passed, it must be
+            one dimensional and have values >=0 and <=1.  The values in this
+            array correspond to parameterized locations along the great arc from
+            zero, denoting the start of the arc, to 1, denoting the end of the
+            arc.
+
+        Returns
+        -------
+        arc : `~astropy.coordinates.SkyCoord`
+            Co-ordinates along the great arc in the co-ordinate frame of the
+            start point.
+
         """
         # Calculate the inner angles
-        these_inner_angles = self._calculate_inner_angles(points=points)
+        these_inner_angles = self.inner_angles(points=points)
 
         # Calculate the Cartesian locations from the first to second points
         great_arc_points_cartesian = (self.v1[np.newaxis, :] * np.cos(these_inner_angles) +
