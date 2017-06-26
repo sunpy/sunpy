@@ -62,7 +62,6 @@ class TimeSeriesFactory(BasicRegistrationFactory):
     Examples
     --------
     >>> import sunpy.timeseries
-    >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
     >>> import sunpy.data.sample
     >>> my_timeseries = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)
 
