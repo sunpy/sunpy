@@ -36,7 +36,7 @@ grid_pitch = (4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164,
 grid_orientation = (3.53547, 2.75007, 3.53569, 2.74962, 3.92596, 2.35647,
                     0.786083, 0.00140674, 1.57147)
 
-data_servers = ('http://hesperia.gsfc.nasa.gov/hessidata/',
+data_servers = ('https://hesperia.gsfc.nasa.gov/hessidata/',
                 'http://hessi.ssl.berkeley.edu/hessidata/',
                 'http://soleil.i4ds.ch/hessidata/')
 

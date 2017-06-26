@@ -61,16 +61,14 @@ def webservice_parser(service='HEC'):
         return None
     root = EL.fromstring(xml)
     links = []
-
-    # WARNING: getiterator is deprecated in Python 2.7+
-    # Fix for 3.x support
-    for interface in root.getiterator('interface'):
+    
+    for interface in root.iter('interface'):
         service_type = interface.attrib
         key = list(service_type.keys())
         if len(key) > 0:
             value = service_type[key[0]]
             if value == 'vr:WebService':
-                for url in interface.getiterator('accessURL'):
+                for url in interface.iter('accessURL'):
                     if url.text not in links:
                         links.append(url.text)
     return links
