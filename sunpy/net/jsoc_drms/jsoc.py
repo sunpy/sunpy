@@ -11,6 +11,7 @@ import astropy.units as u
 import astropy.time
 import astropy.table
 from astropy.utils.misc import isiterable
+import drms
 
 from sunpy import config
 from sunpy.time import parse_time, TimeRange
@@ -60,151 +61,8 @@ class JSOCResponse(object):
 
 
 class JSOCClient(object):
-    """
-    This is a Client to the JSOC Data Export service.
-
-    It exposes a similar API to the VSO client, although the underlying model
-    is more complex. The JSOC stages data before you can download it, so a JSOC
-    query is a three stage process, first you query the JSOC for records,
-    a table of these records is returned. Then you can request these records to
-    be staged for download and then you can download them.
-    The last two stages of this process are bundled together into the `get()`
-    method, but they can be separated if you are performing a large or complex
-    query.
-
-    .. warning::
-        JSOC now requires you to register your email address before requesting
-        data. See this site: http://jsoc.stanford.edu/ajax/register_email.html
-
-    Notes
-    -----
-    This Client mocks input to this site: http://jsoc.stanford.edu/ajax/exportdata.html
-    Therefore that is a good resource if things are mis-behaving.
-    The full list of 'series' is available through this site: http://jsoc.stanford.edu/
-
-    You can build more complex queries by specifying parameters to POST to JSOC via keyword
-    arguments. You can generate these kwargs using the Export Data page at JSOC.
-
-    JSOC now requires a validated email address, you can pass in your validated email address
-    using the `~sunpy.net.jsoc.attrs.Notify` attribute. You have to register your email address
-    with JSOC http://jsoc.stanford.edu/ajax/register_email.html.
-
-
-    Examples
-    --------
-
-    *Example 1*
-
-    Query JSOC for some HMI data at 45 second cadence:
-
-    >>> from sunpy.net import jsoc
-    >>> from sunpy.net import attrs as a
-    >>> client = jsoc.JSOCClient()
-    >>> response = client.query(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...                         a.jsoc.Series('hmi.m_45s'), a.jsoc.Notify("sunpy@sunpy.org"))
-
-    the response object holds the records that your query will return:
-
-    >>> print(response)   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-            DATE         TELESCOP  INSTRUME  ... WAVELNTH     WAVEUNIT
-    -------------------- -------- ---------- ... -------- ---------------
-    2014-01-05T17:44:53Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-    2014-01-05T17:46:02Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-    2014-01-05T17:47:11Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-    2014-01-05T17:48:18Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-                     ...      ...        ... ...      ...             ...
-    2014-01-05T17:42:33Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-    2014-01-05T17:43:41Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-    2014-01-05T17:44:52Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-    Length = 81 rows
-
-    You can then make the request and download the data:
-
-    >>> res = client.get(response)   # doctest: +SKIP
-
-    This returns a Results instance which can be used to watch the progress
-    of the download.
-
-    >>> res.wait(progress=True)   # doctest: +SKIP
-
-    *Example 2*
-
-    Query the JSOC for some AIA 171 data, and separate out the staging and the
-    download steps:
-
-    >>> import astropy.units as u
-    >>> from sunpy.net import jsoc
-    >>> from sunpy.net import attrs as a
-    >>> client = jsoc.JSOCClient()
-    >>> response = client.query(a.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
-    ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Segment('image'),
-    ...                         a.jsoc.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))
-
-    the response object holds the records that your query will return:
-
-    >>> print(response)
-            DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH WAVEUNIT
-    -------------------- -------- -------- ----------------------- -------- --------
-    2014-01-06T15:07:12Z  SDO/AIA    AIA_3 2013-12-31T23:59:36.34Z      171 angstrom
-    2014-01-06T15:07:12Z  SDO/AIA    AIA_3 2013-12-31T23:59:48.34Z      171 angstrom
-    2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:00.34Z      171 angstrom
-    2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:12.34Z      171 angstrom
-
-    You can then make the request:
-
-    >>> requestIDs = client.request_data(response)
-    [u'JSOC_20140724_952']
-
-    This returns a list of all the request identifiers for your query.
-
-    You can then check the status of the request, which will print out a status
-    message and return you the status code, a code of 1 means it is not ready
-    to download and a code of 0 means the request is staged and ready. A code
-    of 6 means an error, which is commonly that the request has not had time to
-    get into the queue.
-
-    >>> status = client.check_request(requestIDs)
-    Request JSOC_20140724_955 was submitted 10 seconds ago, it is not ready to download.
-
-    Once the status code is 0 you can download the data using the `get_request`
-    method:
-
-    >>> res = client.get_request(requestIDs)
-
-    This returns a Results instance which can be used to watch the progress
-    of the download.
-
-    >>> res.wait(progress=True)   # doctest: +SKIP
-    """
-
+    
     def query(self, *query, **kwargs):
-        """
-        Build a JSOC query and submit it to JSOC for processing.
-
-        Takes a variable number of :mod:`sunpy.net.jsoc.attrs` as parameters,
-        which are chained together using the AND (`&`) operator.
-
-        Complex queries to be easily formed using logical operators such as
-        `&` and `|`, in the same way as the VSO client.
-
-        Examples
-        --------
-        Request all AIA 304 image data between 2010-01-01T00:00 and
-        2010-01-01T01:00 in rice compressed form.
-
-        >>> import astropy.units as u
-        >>> from sunpy.net import jsoc
-        >>> from sunpy.net import attrs as a
-        >>> client = jsoc.JSOCClient()
-        >>> response = client.query(a.Time('2010-01-01T00:00:00', '2010-01-01T01:00:00'),
-        ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA),
-        ...                         a.jsoc.Compression('rice'), a.jsoc.Segment('image'))
-
-        Returns
-        -------
-        results : JSOCResults object
-            A collection of records that the query returns.
-        """
 
         return_results = JSOCResponse()
         query = and_(*query)
@@ -585,26 +443,20 @@ class JSOCClient(object):
                             "JSOC Query"
             raise ValueError(error_message)
 
+        iargs['start_time'] = self._process_time(iargs['start_time'])
+        iargs['end_time'] = self._process_time(iargs['end_time'])
+
         postthis = {'ds': self._make_recordset(**iargs),
                     'op': 'rs_list',
                     'key': str(keywords)[1:-1].replace(' ', '').replace("'", ''),
                     'seg': '**NONE**',
                     'link': '**NONE**'}
-
-        r = requests.get(JSOC_INFO_URL, params=postthis)
-
-        result = r.json()
-
-        out_table = {}
-        if 'keywords' in result:
-            for col in result['keywords']:
-                out_table.update({col['name']: col['values']})
-
-            # sort the table before returning
-            return astropy.table.Table(out_table)[keywords]
-
-        else:
+        c = drms.Client()
+        r = c.query(postthis['ds'], key=postthis['key'])
+        if r is None:
             return astropy.table.Table()
+        else:
+            return astropy.table.Table.from_pandas(r)
 
     def _multi_request(self, **kwargs):
         """
