@@ -152,9 +152,9 @@ class GreatArc:
             return np.linspace(0, 1, points)
         elif isinstance(points, np.ndarray):
             if points.ndim > 1:
-                return ValueError('One dimensional numpy ndarrays only.')
-            if np.any(points < 0) or np.any(points) > 1:
-                return ValueError('All value in points array must be strictly >=0 and <=1.')
+                raise ValueError('One dimensional numpy ndarrays only.')
+            if np.any(points < 0) or np.any(points > 1):
+                raise ValueError('All value in points array must be strictly >=0 and <=1.')
             return points
 
     def inner_angles(self, points=None):
