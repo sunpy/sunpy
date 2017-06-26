@@ -11,8 +11,8 @@ from sunpy.coordinates import frames
 
 class GreatArc:
     """
-    Calculate a user-specified number of points on a great arc between a start
-    and end point on a sphere.
+    Calculate the properties of a user-specified number of points on a great arc
+    between a start and end point on a sphere.
 
     Parameters
     ----------
@@ -78,7 +78,7 @@ class GreatArc:
         # Co-ordinate frame
         self.start_frame = self.start.frame
 
-        #
+        # Observer
         self.observer = self.start.observer
 
         # Set the center of the sphere
@@ -110,8 +110,11 @@ class GreatArc:
         self.inner_angle = np.arctan2(np.linalg.norm(np.cross(self.v1, self.v2)),
                                       np.dot(self.v1, self.v2)) * u.rad
 
+        # Radius of the sphere
+        self.radius = self.r * self.distance_unit
+
         # Distance on the sphere between the start point and the end point.
-        self.distance = self.r * self.inner_angle.value * self.distance_unit
+        self.distance = self.radius * self.inner_angle.value
 
     def _points_handler(self, points):
         """
@@ -150,7 +153,7 @@ class GreatArc:
         Calculates the distance from the start co-ordinate to the end
         co-ordinate on the sphere for all the parameterized points.
         """
-        return self.r * self._calculate_inner_angles(points=points).value * self.distance_unit
+        return self.radius * self._calculate_inner_angles(points=points).value
 
     def coordinates(self, points=None):
         """
