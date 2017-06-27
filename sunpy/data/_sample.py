@@ -28,7 +28,12 @@ base_urls = (
 )
 
 # Shortcut requirements:
-# the name of the class into which the file will opened must be included at the end of the file
+# start with the instrument name then
+# the wavelength or energy if needed then
+# an optional description if needed then
+# a reference name for the class into which the file will be opened
+# (e.g. IMAGE for Maps, TIMESERIES for TimeSeries, SPECTRUM for Spectrum)
+# All separated by underscores
 
 # the files should include necessary extensions
 files = {
@@ -70,15 +75,17 @@ def download_sample_data(show_progress=True):
     -------
     None
     """
-    print("Downloading all sample files to {}. Overwriting if necessary.".format(sampledata_dir))
     for file_name in six.itervalues(files):
-        get_sample_file(file_name, show_progress=show_progress, url_list=base_urls, overwrite=True)
+        get_sample_file(file_name, show_progress=show_progress,
+                        url_list=base_urls, overwrite=True)
 
 
-def get_sample_file(filename, url_list, show_progress=True, overwrite=False, timeout=None):
+def get_sample_file(filename, url_list, show_progress=True, overwrite=False,
+                    timeout=None):
     """
-    Downloads a sample file. Will download  a sample data file and move it to the sample data directory.
-    Also, uncompresses zip files if necessary. Returns the local file if exists.
+    Downloads a sample file. Will download  a sample data file and move it to
+    the sample data directory. Also, uncompresses zip files if necessary.
+    Returns the local file if exists.
 
     Parameters
     ----------
@@ -86,7 +93,7 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False, tim
         Name of the file
     url_list: `str` or `list`
         urls where to look for the file
-    progress: `bool`
+    show_progress: `bool`
         Show a progress bar during download
     overwrite: `bool`
         If True download and overwrite an existing file.
@@ -105,7 +112,8 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False, tim
     else:
         uncompressed_filename = filename
     # check if the (uncompressed) file exists
-    if not overwrite and os.path.isfile(os.path.join(sampledata_dir, uncompressed_filename)):
+    if not overwrite and os.path.isfile(os.path.join(sampledata_dir,
+                                                     uncompressed_filename)):
         return os.path.join(sampledata_dir, uncompressed_filename)
     else:
         # check each provided url to find the file
@@ -116,20 +124,27 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False, tim
             try:
                 exists = url_exists(os.path.join(base_url, online_filename))
                 if exists:
-                    f = download_file(os.path.join(base_url, online_filename), show_progress=show_progress)
+                    f = download_file(os.path.join(base_url, online_filename),
+                                      show_progress=show_progress,
+                                      timeout=timeout)
                     real_name, ext = os.path.splitext(f)
 
                     if ext == '.zip':
                         print("Unpacking: {}".format(real_name))
                         with ZipFile(f, 'r') as zip_file:
-                            unzipped_f = zip_file.extract(real_name, sampledata_dir)
+                            unzipped_f = zip_file.extract(real_name,
+                                                          sampledata_dir)
                         os.remove(f)
-                        move(unzipped_f, os.path.join(sampledata_dir, uncompressed_filename))
-                        return os.path.join(sampledata_dir, uncompressed_filename)
+                        move(unzipped_f, os.path.join(sampledata_dir,
+                                                      uncompressed_filename))
+                        return os.path.join(sampledata_dir,
+                                            uncompressed_filename)
                     else:
                         # move files to the data directory
-                        move(f, os.path.join(sampledata_dir, uncompressed_filename))
-                        return os.path.join(sampledata_dir, uncompressed_filename)
+                        move(f, os.path.join(sampledata_dir,
+                                             uncompressed_filename))
+                        return os.path.join(sampledata_dir,
+                                            uncompressed_filename)
             except (socket.error, socket.timeout) as e:
                 warnings.warn("Download failed with error {}. \n"
                               "Retrying with different mirror.".format(e))
