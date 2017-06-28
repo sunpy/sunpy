@@ -11,20 +11,22 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 from hypothesis import given
-from sunpy.net.tests.strategies import time_attr
+from sunpy.net.tests.strategies import time_attr, range_time
 
+
+@pytest.mark.online
 @pytest.mark.parametrize("timerange,url_start,url_end", [
     (TimeRange('2012/4/21', '2012/4/21'),
-     'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/04/tca120421',
-     'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/04/tca120421'
+     'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/04/tca120421',
+     'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/04/tca120421'
      ),
     (TimeRange('2012/12/1', '2012/12/2'),
-     'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/12/tca121201',
-     'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/12/tca121202'
+     'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/12/tca121201',
+     'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/12/tca121202'
      ),
     (TimeRange('2012/3/7', '2012/3/14'),
-     'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/tca120307',
-     'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/tca120314'
+     'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/tca120307',
+     'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/03/tca120314'
      )
 ])
 def test_get_url_for_time_range(timerange, url_start, url_end):
@@ -32,11 +34,6 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
-
-
-def test_get_url_for_date():
-    url = norh.NoRHClient()._get_url_for_date(datetime.date(2011, 3, 14), wavelength=17*u.GHz)
-    assert url == 'ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2011/03/tca110314'
 
 
 @given(time_attr())
@@ -50,20 +47,21 @@ def test_can_handle_query(time):
     assert ans2 is False
 
 
-@given(time_attr())
-def test_query(time):
-    qr1 = norh.NoRHClient().query(time, a.Instrument('norh'), a.Wavelength(17 * u.GHz))
+@pytest.mark.online
+@pytest.mark.parametrize("wave", [a.Wavelength(17*u.GHz), a.Wavelength(34*u.GHz)])
+@given(time=range_time(datetime.datetime(1992, 6, 1)))
+def test_query(time, wave):
+    qr1 = norh.NoRHClient().query(time, a.Instrument('norh'), wave)
     assert isinstance(qr1, QueryResponse)
-    assert qr1.time_range().start == time.start
-    assert qr1.time_range().end == time.end
-
-
-@given(time_attr())
-def test_query_34(time):
-    qr1 = norh.NoRHClient().query(time, a.Instrument('norh'), a.Wavelength(34 * u.GHz))
-    assert isinstance(qr1, QueryResponse)
-    assert qr1.time_range().start == time.start
-    assert qr1.time_range().end == time.end
+    # Not all hypothesis queries are going to produce results, and
+    if qr1:
+        # There are no observations everyday
+        #  so the results found have to be equal or later than the queried time
+        #  (looking at the date because it may search for miliseconds, but only date is available)
+        assert qr1.time_range().start.date() >= time.start.date()
+        #  and the end time equal or smaller.
+        # hypothesis can give same start-end, but the query will give you from start to end (so +1)
+        assert qr1.time_range().end <= time.end + datetime.timedelta(days=1)
 
 
 # Don't use time_attr here for speed.
