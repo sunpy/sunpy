@@ -5,14 +5,35 @@ import pytest
 import numpy as np
 from astropy.coordinates import SkyCoord
 import astropy.units as u
+from sunpy.sun import sun
 import sunpy.map
 import sunpy.data.test
+from sunpy.coordinates import frames
 from sunpy.coordinates.utils import GreatArc
 
 
-# Test the great arc code
+# Test the great arc code against calculable quantities
+@pytest.mark.parametrize("start, end", [((0, 0), (0, 45)),
+                                        ((0, 0), (45, 0)),
+                                        ((0, 45), (0, 0)),
+                                        ((45, 0), (0, 0)),
+                                        ((12, 13), (12, 58)),
+                                        ((-10, 6), (-10, 51)),
+                                        ((-20, -50), (-20, -5))])
+def test_great_arc_calculable(start, end):
+    c = SkyCoord(start[0]*u.degree, start[1]*u.degree, frame=frames.HeliographicStonyhurst)
+    d = SkyCoord(end[0]*u.degree, end[1]*u.degree, frame=frames.HeliographicStonyhurst)
+    gc = GreatArc(c, d)
+
+    assert gc.start == c
+    assert gc.end == d
+    np.testing.assert_almost_equal(gc.inner_angle.to('deg').value, 45.0)
+    np.testing.assert_almost_equal(gc.radius.to('km').value, sun.constants.radius.to('km').value)
+    np.testing.assert_almost_equal(gc.distance.to('km').value, sun.constants.radius.to('km').value * 2 * np.pi/8, decimal=1)
+
+
 # Test the calculation of coordinates using varying numbers of points on
-# initialization of the GreatArc object
+# initialization of the GreatArc object.
 @pytest.mark.parametrize("points_requested, points_expected, first_point, last_point, last_inner_angle, last_distance",
                          # Test default
                          [(None, 100, (600, -600), (-100, 800), 1.8683580432741789, 1300377.1981272686),
