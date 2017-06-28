@@ -1,8 +1,9 @@
 from __future__ import division
 
+
 import numpy as np
 from astropy import units as u
-from astropy.coordinates import Longitude, Latitude, Angle
+
 from sunpy.time import parse_time, julian_day
 
 from sunpy.wcs import convert_hpc_hg, convert_hg_hpc
@@ -175,10 +176,9 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
                                          l0_deg=vstart["l0"].to(u.deg).value,
                                          dsun_meters=(constants.au * sun.sunearth_distance(t=dstart)).value,
                                          angle_units='arcsec')
-    longitude = Longitude(longitude, u.deg)
-    latitude = Angle(latitude, u.deg)
+    
     # Compute the differential rotation
-    drot = diff_rot(interval, latitude, frame_time=frame_time,
+    drot = diff_rot(interval, latitude * u.deg, frame_time=frame_time,
                     rot_type=rot_type)
 
     # Convert back to heliocentric cartesian in units of arcseconds
@@ -187,15 +187,15 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
     # It appears that there is a difference in how the SSWIDL function
     # hel2arcmin and the sunpy function below performs this co-ordinate
     # transform.
-    newx, newy = convert_hg_hpc(longitude.to(u.deg).value + drot.to(u.deg).value,
-                                latitude.to(u.deg).value,
+    newx, newy = convert_hg_hpc(longitude + drot.to(u.deg).value,
+                                latitude,
                                 b0_deg=vend["b0"].to(u.deg).value,
                                 l0_deg=vend["l0"].to(u.deg).value,
                                 dsun_meters=(constants.au * sun.sunearth_distance(t=dend)).value,
                                 occultation=False)
-    newx = Angle(newx, u.arcsec)
-    newy = Angle(newy, u.arcsec)
-    return newx.to(u.arcsec), newy.to(u.arcsec)
+    nx = newx * u.arcsec 
+    ny = newy * u.arcsec
+    return nx,ny
 
 
 def _calc_P_B0_SD(date):
@@ -273,10 +273,10 @@ def _calc_P_B0_SD(date):
     sd_const = constants.radius / constants.au
     sd = np.arcsin(sd_const / r) * 10800.0 / np.pi
 
-    return {"p": Angle(p, u.deg),
-            "b0": Angle(b, u.deg),
-            "sd": Angle(sd.value, u.arcmin),
-            "l0": Angle(0.0, u.deg)}
+    return {"p": (p * u.deg),
+            "b0": (b * u.deg),
+            "sd": (sd.value * u.arcmin),
+            "l0": (0.0 * u.deg)}
 
 
 def _sun_pos(date):
@@ -395,9 +395,9 @@ def _sun_pos(date):
     # convert the internal variables to those listed in the top of the
     # comment section in this code and in the original IDL code.  Quantities
     # are assigned following the advice in Astropy "Working with Angles"
-    return {"longitude": Longitude(longmed, u.deg),
-            "ra": Longitude(ra, u.deg),
-            "dec": Latitude(dec, u.deg),
-            "app_long": Longitude(l, u.deg),
-            "obliq": Angle(oblt, u.deg)}
+    return {"longitude": (longmed * u.deg),
+            "ra": (ra * u.deg),
+            "dec": (dec * u.deg),
+            "app_long": (l * u.deg),
+            "obliq": (oblt * u.deg)}
 
