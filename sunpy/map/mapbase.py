@@ -1398,7 +1398,7 @@ Reference Coord:\t {refcoord}
 
         Notes
         -----
-        Keyword arguments are passed onto the `sunpy.visualization.wcsaxes_compat.wcsaxes_heliographic_overlay` object.
+        Keyword arguments are passed onto the `sunpy.visualization.wcsaxes_compat.wcsaxes_heliographic_overlay` function.
         """
 
         if not axes:
@@ -1421,14 +1421,12 @@ Reference Coord:\t {refcoord}
         Returns
         -------
         circ: list
-            A list containing the `matplotlib.patches.Circle` object that
+            A list containing the `~matplotlib.patches.Circle` object that
             has been added to the axes.
 
         Notes
         -----
-        Keyword arguments are passed onto the Circle Patch, see:
-        http://matplotlib.org/api/artist_api.html#matplotlib.patches.Patch
-        http://matplotlib.org/api/artist_api.html#matplotlib.patches.Circle
+        Keyword arguments are passed onto `matplotlib.patches.Circle`.
         """
 
         if not axes:
