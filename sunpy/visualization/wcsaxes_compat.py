@@ -52,8 +52,8 @@ def gca_wcs(wcs, fig=None):
 
     Returns
     -------
-    ax : `matplotlib.axes.Axes` or `wcsaxes.WCSAxes` object.
-        The current axes, or a new one if created.
+    ax : `matplotlib.axes.Axes` or `~astropy.visualization.wcsaxes.WCSAxes`
+        object. The current axes, or a new one if created.
 
     """
 
@@ -76,18 +76,19 @@ def get_world_transform(axes):
     """
     Get the transformation to world coordinates.
 
-    If the axes is a `wcaxes.WCSAxes` instance this returns the transform to
-    the ``'world'`` coordinates, otherwise it returns the transform to the
-    matplotlib data coordinates, which are assumed to be in world coordinates.
+    If the axes is a `~astropy.visualization.wcsaxes.WCSAxes` instance this
+    returns the transform to the ``'world'`` coordinates, otherwise it returns
+    the transform to the matplotlib data coordinates, which are assumed to be in
+    world coordinates.
 
     Parameters
     ----------
-    axes : `wcsaxes.WCSAxes` or `matplotlib.axes.Axes` obejct.
-        The axes to get the transform from.
+    axes : ``~astropy.visualization.wcsaxes.WCSAxes` or `~matplotlib.axes.Axes`
+        object. The axes to get the transform from.
 
     Returns
     -------
-    transform : `matplotlib.transforms.CompositeGenericTransform`
+    transform : `~matplotlib.transforms.CompositeGenericTransform`
         The transformation object.
     """
     if is_wcsaxes(axes):
@@ -123,8 +124,9 @@ def default_wcs_grid(axes, units, ctypes):
 
     Parameters
     ----------
-    axes : `wcsaxes.WCSAxes` object.
-        The `~wcsaxes.WCSAxes` object to draw the world coordinate grid on.
+    axes : ``~astropy.visualization.wcsaxes.WCSAxes` object.
+        The ``~astropy.visualization.wcsaxes.WCSAxes` object to draw the world
+        coordinate grid on.
 
     units : `tuple`
         The axes units axes x y order.
@@ -171,20 +173,21 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing=10*u.deg, **kwargs):
 
     Parameters
     ----------
-    axes : `wcsaxes.WCSAxes` object.
-        The `~wcsaxes.WCSAxes` object to create the HGS overlay on.
+    axes : `~astropy.visualization.wcsaxes.WCSAxes` object.
+        The `~astropy.visualization.wcsaxes.WCSAxes` object to create the HGS overlay on.
 
-    grid_spacing: `astropy.units.Quantity`
+    grid_spacing: `~astropy.units.Quantity`
         Spacing for longitude and latitude grid in degrees.
 
     Returns
     -------
-    overlay : wcsaxes overlay
+    overlay : `~astropy.visualization.wcsaxes.WCSAxes` overlay
         The overlay object.
 
     Notes
     -----
-    Keywords are passed on to the overlay object.
+    Keywords are passed to `~astropy.visualization.wcsaxes.coordinates_map.CoordinatesMap.grid`.
+
     """
 
     # Unpack spacing
