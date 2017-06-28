@@ -39,7 +39,7 @@ def is_wcsaxes(axes):
         return False
 
 
-def gca_wcs(wcs, fig=None):
+def gca_wcs(wcs, fig=None, slices=None):
     """
     Get the current axes, and return a WCSAxes if possible.
 
@@ -49,6 +49,12 @@ def gca_wcs(wcs, fig=None):
         A `~astropy.wcs.WCS` object used to create a new axes.
     fig : `matplotlib.figure.Figure`
         The figure in which to check for the axes.
+    slices : `tuple`
+        ``slices`` is passed to `~astropy.visualization.wcsaxes.WCSAxes`
+        to describe which two dimensions of the `~astropy.wcs.WCS` object
+        are being plotted.
+        This slices the multidimensional wcs object in the way it needs
+        to be sliced.
 
     Returns
     -------
@@ -62,7 +68,7 @@ def gca_wcs(wcs, fig=None):
 
     if not len(fig.get_axes()):
         if not _FORCE_NO_WCSAXES:
-            ax = plt.gca(projection=wcs)
+            ax = plt.gca(projection=wcs, slices=slices)
         else:
             ax = plt.gca()
 
