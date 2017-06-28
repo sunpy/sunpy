@@ -13,6 +13,7 @@ from ..client import GenericClient
 
 __all__ = ['NoRHClient']
 
+BASEURL = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d'
 
 class NoRHClient(GenericClient):
 
@@ -30,8 +31,6 @@ class NoRHClient(GenericClient):
         urls : list
             list of URLs corresponding to the requested time range
         """
-
-        baseurl = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d'
 
         # We allow queries with no Wavelength but error here so that the query
         # does not get passed to VSO and spit out garbage.
@@ -60,16 +59,15 @@ class NoRHClient(GenericClient):
         # This is done because the archive contains daily files.
         if timerange.start.time() != datetime.time(0, 0):
             timerange = TimeRange('{:%Y-%m-%d}'.format(timerange.start), timerange.end)
-        norh = Scraper(baseurl, freq=freq)
+        norh = Scraper(BASEURL, freq=freq)
         # TODO: warn user that some files may have not been listed, like for example:
         #       tca160504_224657 on ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2016/05/
         #       as it doesn't follow pattern.
         return norh.filelist(timerange)
 
     def _get_time_for_url(self, urls):
-        baseurl = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d'
         freq = urls[0].split('/')[-1][0:3]  # extract the frequency label
-        crawler = Scraper(baseurl, freq=freq)
+        crawler = Scraper(BASEURL, freq=freq)
         times = list()
         for url in urls:
             t0 = crawler._extractDateURL(url)
