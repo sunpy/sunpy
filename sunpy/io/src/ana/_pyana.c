@@ -9,8 +9,8 @@ version of the original anarw routines.
 // Headers
 #include <Python.h>				// For python extension
 #include <numpy/arrayobject.h> 	// For numpy
-#include <sys/time.h>			// For timestamps
-#include <time.h>				// For timestamps
+//#include <sys/time.h>			// For timestamps
+//#include <time.h>				// For timestamps
 //#include "anadecompress.h"
 //#include "anacompress.h"
 #include "types.h"
