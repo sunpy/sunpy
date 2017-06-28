@@ -13,6 +13,7 @@ from astropy_helpers import setup_helpers
 def get_extensions():
 
     if platform.system() == 'Windows':
+        cfg = setup_helpers.DistutilsExtensionArgs()
         cfg['include_dirs'].append(relpath("msinttypes"))
         cfg['extra_compile_args'].extend([
                     '/D', '"WIN32"',
