@@ -4,7 +4,6 @@ import os
 import sys
 import platform
 
-from os.path import relpath
 from distutils.core import Extension
 from glob import glob
 
@@ -17,7 +16,7 @@ def get_extensions():
     cfg['include_dirs'].append('numpy')
     cfg['sources'].extend(glob(os.path.join(os.path.dirname(__file__), 'src', 'ana', '*.c')))
     if platform.system() == 'Windows':
-        cfg['include_dirs'].append(relpath("msinttypes"))
+        cfg['include_dirs'].append(os.path.relpath("msinttypes"))
         cfg['extra_compile_args'].extend(['/D', '"WIN32"',
                                           '/D', '"_WINDOWS"',
                                           '/D', '"_MBCS"',
