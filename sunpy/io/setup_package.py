@@ -31,8 +31,8 @@ def get_extensions():
                                           '-Wno-strict-prototypes', '-Wno-unused', '-Wno-comments',
                                           '-Wno-switch', '-Wno-strict-aliasing', '-Wno-return-type',
                                           '-Wno-address'])
-        e = Extension('sunpy.io._pyana', **cfg)
-        return [e]
+    e = Extension('sunpy.io._pyana', **cfg)
+    return [e]
 
 def requires_2to3():
     return False
