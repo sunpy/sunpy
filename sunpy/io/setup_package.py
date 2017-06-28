@@ -16,21 +16,23 @@ def get_extensions():
     cfg['include_dirs'].append('numpy')
     cfg['sources'].extend(glob(os.path.join(os.path.dirname(__file__), 'src', 'ana', '*.c')))
     if platform.system() == 'Windows':
-        cfg['include_dirs'].append(os.path.join(os.path.dirname(__file__), "./msinttypes"))
+        cfg['include_dirs'].append(os.path.join(os.path.dirname(__file__), "msinttypes"))
         cfg['extra_compile_args'].extend(['/D', '"WIN32"',
                                           '/D', '"_WINDOWS"',
                                           '/D', '"_MBCS"',
                                           '/D', '"_USRDLL"',
                                           '/D', '"_CRT_SECURE_NO_DEPRECATE"'])
     else:
-        cfg['extra_compile_args'].extend(['-std=c99', '-O3'])
+        pass
+        #cfg['extra_compile_args'].extend(['-std=c99', '-O3'])
+        #cfg['extra_compile_args'].extend(['-std=c99', '-O3'])
         # Squash some warnings
-        cfg['extra_compile_args'].extend(['-Wno-declaration-after-statement',
-                                          '-Wno-unused-variable', '-Wno-parentheses',
-                                          '-Wno-uninitialized', '-Wno-format',
-                                          '-Wno-strict-prototypes', '-Wno-unused', '-Wno-comments',
-                                          '-Wno-switch', '-Wno-strict-aliasing', '-Wno-return-type',
-                                          '-Wno-address'])
+        #cfg['extra_compile_args'].extend(['-Wno-declaration-after-statement',
+        #                                  '-Wno-unused-variable', '-Wno-parentheses',
+        #                                  '-Wno-uninitialized', '-Wno-format',
+        #                                  '-Wno-strict-prototypes', '-Wno-unused', '-Wno-comments',
+        #                                  '-Wno-switch', '-Wno-strict-aliasing', '-Wno-return-type',
+        #                                  '-Wno-address'])
     e = Extension('sunpy.io._pyana', **cfg)
     return [e]
 
