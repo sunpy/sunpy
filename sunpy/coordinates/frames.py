@@ -60,14 +60,14 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
     ...               frame="heliographic_stonyhurst",
     ...               dateobs="2010/01/01T00:00:45")
     >>> sc
-    <SkyCoord (HelioGraphicStonyhurst): dateobs=2010-01-01 00:00:45,
+    <SkyCoord (HeliographicStonyhurst): dateobs=2010-01-01 00:00:45,
     lon=1.0 deg, lat=1.0 deg, rad=2.0 km>
     >>> sc.frame
-    <HelioGraphicStonyhurst Coordinate: dateobs=2010-01-01 00:00:45,
+    <HeliographicStonyhurst Coordinate: dateobs=2010-01-01 00:00:45,
     lon=1.0 deg, lat=1.0 deg, rad=2.0 km>
-    >>> sc = SkyCoord(HelioGraphicStonyhurst(-10*u.deg, 2*u.deg))
+    >>> sc = SkyCoord(HeliographicStonyhurst(-10*u.deg, 2*u.deg))
     >>> sc
-    <SkyCoord (HelioGraphicStonyhurst): dateobs=None, lon=-10.0 deg,
+    <SkyCoord (HeliographicStonyhurst): dateobs=None, lon=-10.0 deg,
     lat=2.0 deg, rad=695508.0 km>
 
     Notes
