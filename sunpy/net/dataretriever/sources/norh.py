@@ -35,7 +35,6 @@ class NoRHClient(GenericClient):
 
         # We allow queries with no Wavelength but error here so that the query
         # does not get passed to VSO and spit out garbage.
-        # NOTE: should not error on the function?
         if 'wavelength' not in kwargs.keys() or not kwargs['wavelength']:
             raise ValueError("Queries to NORH should specify either 17GHz or 34GHz as a Wavelength."
                              "see http://solar.nro.nao.ac.jp/norh/doc/manuale/node65.html")
