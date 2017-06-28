@@ -4,6 +4,7 @@ import os
 import sys
 import platform
 
+from os.path import relpath
 from distutils.core import Extension
 from glob import glob
 
