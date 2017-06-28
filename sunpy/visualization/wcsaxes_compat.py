@@ -83,7 +83,7 @@ def get_world_transform(axes):
 
     Parameters
     ----------
-    axes : ``~astropy.visualization.wcsaxes.WCSAxes` or `~matplotlib.axes.Axes`
+    axes : `~astropy.visualization.wcsaxes.WCSAxes` or `~matplotlib.axes.Axes`
         object. The axes to get the transform from.
 
     Returns
@@ -124,8 +124,8 @@ def default_wcs_grid(axes, units, ctypes):
 
     Parameters
     ----------
-    axes : ``~astropy.visualization.wcsaxes.WCSAxes` object.
-        The ``~astropy.visualization.wcsaxes.WCSAxes` object to draw the world
+    axes : `~astropy.visualization.wcsaxes.WCSAxes` object.
+        The `~astropy.visualization.wcsaxes.WCSAxes` object to draw the world
         coordinate grid on.
 
     units : `tuple`
@@ -224,4 +224,4 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing=10*u.deg, **kwargs):
         x, y = axes.title.get_position()
         axes.title.set_position([x, y + 0.05])
 
-    return
+    return overlay
