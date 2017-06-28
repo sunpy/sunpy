@@ -16,10 +16,6 @@ def get_extensions():
     cfg['include_dirs'].append('numpy')
     cfg['sources'].extend(glob(os.path.join(os.path.dirname(__file__), 'src', 'ana', '*.c')))
     cfg['extra_compile_args'].extend(['-std=c99', '-O3'])
-    # Squash some warnings
-    cfg['extra_compile_args'].extend(['-Wno-unused-variable',
-                                      '-Wno-unused-result',
-                                      '-Wno-sign-compare'])
 
     e = Extension('sunpy.io._pyana', **cfg)
     return [e]
