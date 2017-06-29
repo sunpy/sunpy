@@ -34,6 +34,8 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
     in the data.  So with solar tracking not chosen, the selected area is
     like a window through which you can see the Sun rotating underneath.
 
+    Parameters
+    ----------
     mc : `sunpy.map.MapCube`
         The input mapcube.
     layer_index : int
