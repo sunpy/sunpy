@@ -64,6 +64,7 @@ matrix:
          - python: 3.6
            env: SETUP_CMD='build_docs -w'
                 EVENT_TYPE='push pull_request cron'
+		SPHINX_VERSION='>1.6'
 
          # Figure test runs use an env stored in the repo so don't have conda
          # requirements
