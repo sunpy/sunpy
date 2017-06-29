@@ -9,7 +9,7 @@ version of the original anarw routines.
 // Headers
 #include <Python.h>				// For python extension
 #include <numpy/arrayobject.h> 	// For numpy
-#ifdef WIN32
+#ifndef __USE_GNU
 #include <time.h>
 #else
 #include <sys/time.h>
