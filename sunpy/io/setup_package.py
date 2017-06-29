@@ -15,11 +15,11 @@ def get_extensions():
     cfg['sources'].extend(glob(os.path.join(os.path.dirname(__file__), 'src', 'ana', '*.c')))
     if platform.system() == 'Windows':
         cfg['include_dirs'].append(os.path.join(os.path.dirname(__file__), "msinttypes"))
-        cfg['extra_compile_args'].extend(['/D', '"WIN32"',
-                                          '/D', '"_WINDOWS"',
-                                          '/D', '"_MBCS"',
-                                          '/D', '"_USRDLL"',
-                                          '/D', '"_CRT_SECURE_NO_DEPRECATE"'])
+        #cfg['extra_compile_args'].extend(['/D', '"WIN32"',
+        #                                  '/D', '"_WINDOWS"',
+        #                                  '/D', '"_MBCS"',
+        #                                  '/D', '"_USRDLL"',
+        #                                  '/D', '"_CRT_SECURE_NO_DEPRECATE"'])
     else:
         cfg['extra_compile_args'].extend(['-std=c99', '-O3'])
         cfg['extra_compile_args'].extend(['-std=c99', '-O3'])
