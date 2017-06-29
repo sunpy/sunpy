@@ -58,8 +58,8 @@ def gca_wcs(wcs, fig=None, slices=None):
 
     Returns
     -------
-    ax : `matplotlib.axes.Axes` or `wcsaxes.WCSAxes` object.
-        The current axes, or a new one if created.
+    ax : `matplotlib.axes.Axes` or `~astropy.visualization.wcsaxes.WCSAxes`
+        object. The current axes, or a new one if created.
 
     """
 
@@ -82,18 +82,19 @@ def get_world_transform(axes):
     """
     Get the transformation to world coordinates.
 
-    If the axes is a `wcaxes.WCSAxes` instance this returns the transform to
-    the ``'world'`` coordinates, otherwise it returns the transform to the
-    matplotlib data coordinates, which are assumed to be in world coordinates.
+    If the axes is a `~astropy.visualization.wcsaxes.WCSAxes` instance this
+    returns the transform to the ``'world'`` coordinates, otherwise it returns
+    the transform to the matplotlib data coordinates, which are assumed to be in
+    world coordinates.
 
     Parameters
     ----------
-    axes : `wcsaxes.WCSAxes` or `matplotlib.axes.Axes` obejct.
-        The axes to get the transform from.
+    axes : `~astropy.visualization.wcsaxes.WCSAxes` or `~matplotlib.axes.Axes`
+        object. The axes to get the transform from.
 
     Returns
     -------
-    transform : `matplotlib.transforms.CompositeGenericTransform`
+    transform : `~matplotlib.transforms.CompositeGenericTransform`
         The transformation object.
     """
     if is_wcsaxes(axes):
@@ -129,8 +130,9 @@ def default_wcs_grid(axes, units, ctypes):
 
     Parameters
     ----------
-    axes : `wcsaxes.WCSAxes` object.
-        The `~wcsaxes.WCSAxes` object to draw the world coordinate grid on.
+    axes : `~astropy.visualization.wcsaxes.WCSAxes` object.
+        The `~astropy.visualization.wcsaxes.WCSAxes` object to draw the world
+        coordinate grid on.
 
     units : `tuple`
         The axes units axes x y order.
@@ -169,7 +171,7 @@ def default_wcs_grid(axes, units, ctypes):
 
 
 @u.quantity_input(grid_spacing=u.deg)
-def wcsaxes_heliographic_overlay(axes, grid_spacing=10*u.deg):
+def wcsaxes_heliographic_overlay(axes, grid_spacing=10*u.deg, **kwargs):
     """
     Create a heliographic overlay using wcsaxes.
 
@@ -177,16 +179,21 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing=10*u.deg):
 
     Parameters
     ----------
-    axes : `wcsaxes.WCSAxes` object.
-        The `~wcsaxes.WCSAxes` object to create the HGS overlay on.
+    axes : `~astropy.visualization.wcsaxes.WCSAxes` object.
+        The `~astropy.visualization.wcsaxes.WCSAxes` object to create the HGS overlay on.
 
-    grid_spacing: `astropy.units.Quantity`
+    grid_spacing: `~astropy.units.Quantity`
         Spacing for longitude and latitude grid in degrees.
 
     Returns
     -------
-    overlay : wcsaxes overlay
+    overlay : `~astropy.visualization.wcsaxes.WCSAxes` overlay
         The overlay object.
+
+    Notes
+    -----
+    Keywords are passed to `~astropy.visualization.wcsaxes.coordinates_map.CoordinatesMap.grid`.
+
     """
 
     # Unpack spacing
@@ -211,10 +218,13 @@ def wcsaxes_heliographic_overlay(axes, grid_spacing=10*u.deg):
     lon.set_ticks_position('tr')
     lat.set_ticks_position('tr')
 
-    lon.set_ticks(spacing=lon_space, color='white')
-    lat.set_ticks(spacing=lat_space, color='white')
+    grid_kw = {'color': 'white', 'zorder': 100, 'alpha': 0.5}
+    grid_kw.update(kwargs)
 
-    overlay.grid(color='white', alpha=0.5)
+    lon.set_ticks(spacing=lon_space, color=grid_kw['color'])
+    lat.set_ticks(spacing=lat_space, color=grid_kw['color'])
+
+    overlay.grid(**grid_kw)
 
     if axes.title:
         x, y = axes.title.get_position()
