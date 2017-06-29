@@ -14,6 +14,7 @@ from sunpy.extern import six
 from sunpy.extern.six.moves.urllib.error import URLError
 
 from sunpy.util.net import url_exists
+from sunpy.util.config import get_and_create_sample_dir
 from sunpy import config
 
 __author__ = "Steven Christe"
@@ -42,8 +43,8 @@ _files = {
     "AIA_171_ROLL_IMAGE": ("aiacalibim5.fits.gz", ""),
     "AIA_94_CUTOUT": ("ssw_cutout_20121030_153001_AIA_94_.fts", ""),
     "EVE_LIGHTCURVE": ("20120620_EVE_L0CS_DIODES_1m.txt", ""),
-# Uncomment this if it needs to be used. Commented out to save bandwidth.
-#    "LYRA_LIGHTCURVE": ("lyra_20110810-000000_lev2_std.fits.gz", ""),
+    # Uncomment this if it needs to be used. Commented out to save bandwidth.
+    # "LYRA_LIGHTCURVE": ("lyra_20110810-000000_lev2_std.fits.gz", ""),
     "LYRA_LEVEL3_LIGHTCURVE": ("lyra_20150101-000000_lev3_std.fits.gz", ""),
     "GOES_LIGHTCURVE": ("go1520120601.fits.gz", ""),
     "GBM_LIGHTCURVE": ("glg_cspec_n5_110607_v00.pha", ""),
@@ -58,14 +59,12 @@ for key in _files:
     sample_files[key] = os.path.abspath(os.path.join(sampledata_dir, _files[key][0]))
 
 
-def download_sample_data(progress=True, overwrite=True, timeout=None):
+def download_sample_data(overwrite=True, timeout=None):
     """
     Download the sample data.
 
     Parameters
     ----------
-    progress: `bool`
-        Show a progress bar during download
     overwrite: `bool`
         If exist overwrites the downloaded sample data.
     timeout: `float`
@@ -76,6 +75,9 @@ def download_sample_data(progress=True, overwrite=True, timeout=None):
     -------
     None
     """
+    # Creating the directory for sample files to be downloaded
+    sampledata_dir = get_and_create_sample_dir()
+
     number_of_files_fetched = 0
     print("Downloading sample files to {}".format(sampledata_dir))
     for file_name in six.itervalues(_files):
@@ -105,7 +107,9 @@ def download_sample_data(progress=True, overwrite=True, timeout=None):
                     number_of_files_fetched += 1
                     break
             except (socket.error, socket.timeout) as e:
-                warnings.warn("Download failed with error {}. \n Retrying with different mirror.".format(e))
+                warnings.warn("Download failed with error {}. \n"
+                              "Retrying with different mirror.".format(e))
 
     if number_of_files_fetched < len(list(_files.keys())):
-        raise URLError("Could not download all samples files. Problem with accessing sample data servers.")
+        raise URLError("Could not download all samples files."
+                       "Problem with accessing sample data servers.")

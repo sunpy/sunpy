@@ -6,6 +6,8 @@ the `astropy.coordinates` module.
 """
 from __future__ import absolute_import, division
 
+import warnings
+
 import numpy as np
 
 from astropy import units as u
@@ -14,19 +16,17 @@ from astropy.coordinates.representation import (CartesianRepresentation,
                                                 SphericalRepresentation)
 from astropy.coordinates.baseframe import (BaseCoordinateFrame,
                                            RepresentationMapping)
-from astropy.coordinates import FrameAttribute
+from astropy.coordinates import FrameAttribute, CoordinateAttribute
 
 from sunpy import sun  # For Carrington rotation number
-from .representation import (SphericalWrap180Representation,
-                             UnitSphericalWrap180Representation)
+from .representation import (SphericalWrap180Representation, UnitSphericalWrap180Representation)
 
 from .frameattributes import TimeFrameAttributeSunPy
 
 RSUN_METERS = sun.constants.get('radius').si.to(u.m)
 DSUN_METERS = sun.constants.get('mean distance').si.to(u.m)
 
-__all__ = ['HeliographicStonyhurst', 'HeliographicCarrington',
-           'Heliocentric', 'Helioprojective']
+__all__ = ['HeliographicStonyhurst', 'HeliographicCarrington', 'Heliocentric', 'Helioprojective']
 
 
 class HeliographicStonyhurst(BaseCoordinateFrame):
@@ -51,10 +51,14 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
     radius: `astropy.units.Quantity` object.
         This quantity holds the radial distance. If not specified, it is, by
         default, the radius of the photosphere. Optional.
+    dateobs: SunPy Time
+        The date and time of the observation, used to convert to heliographic
+        carrington coordinates.
 
     Examples
     --------
     >>> from astropy.coordinates import SkyCoord
+    >>> import sunpy.coordinates
     >>> import astropy.units as u
     >>> sc = SkyCoord(1*u.deg, 1*u.deg, 2*u.km,
     ...               frame="heliographic_stonyhurst",
@@ -79,14 +83,17 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
     default_representation = SphericalWrap180Representation
 
     _frame_specific_representation_info = {
-       'spherical': [RepresentationMapping('lon', 'lon', 'recommended'),
-                     RepresentationMapping('lat', 'lat', 'recommended'),
-                     RepresentationMapping('distance', 'radius', 'recommended')],
-
-       'sphericalwrap180': [RepresentationMapping('lon', 'lon', 'recommended'),
-                            RepresentationMapping('lat', 'lat', 'recommended'),
-                            RepresentationMapping('distance', 'radius', 'recommended')]
-        }
+        'spherical': [
+            RepresentationMapping('lon', 'lon', 'recommended'),
+            RepresentationMapping('lat', 'lat', 'recommended'),
+            RepresentationMapping('distance', 'radius', 'recommended')
+        ],
+        'sphericalwrap180': [
+            RepresentationMapping('lon', 'lon', 'recommended'),
+            RepresentationMapping('lat', 'lat', 'recommended'),
+            RepresentationMapping('distance', 'radius', 'recommended')
+        ]
+    }
 
     dateobs = TimeFrameAttributeSunPy()
 
@@ -98,20 +105,18 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
         # Make 3D if specified as 2D
         # If representation was explicitly passed, do not change the rep.
         if not _rep_kwarg:
-            # The base __init__ will make this a UnitSphericalRepresentation
-            # This makes it Wrap180 instead
-            if isinstance(self._data, UnitSphericalRepresentation):
-                self._data = SphericalWrap180Representation(lat=self._data.lat,
-                                                            lon=self._data.lon,
-                                                            distance=RSUN_METERS.to(u.km))
-                self.representation = SphericalWrap180Representation
-
-            # Make a Spherical Wrap180 instead
+            # If we were passed a 3D rep extract the distance, otherwise
+            # calculate it from RSUN.
+            distance = None
             if isinstance(self._data, SphericalRepresentation):
-                self._data = SphericalWrap180Representation(lat=self._data.lat,
-                                                            lon=self._data.lon,
-                                                            distance=self._data.distance)
-                self.representation = SphericalWrap180Representation
+                distance = self._data.distance
+            elif isinstance(self._data, UnitSphericalRepresentation):
+                distance = RSUN_METERS.to(u.km)
+
+            if distance:
+                self._data = self.default_representation(lat=self._data.lat,
+                                                         lon=self._data.lon,
+                                                         distance=distance)
 
 
 class HeliographicCarrington(HeliographicStonyhurst):
@@ -136,10 +141,14 @@ class HeliographicCarrington(HeliographicStonyhurst):
     radius: `astropy.units.Quantity` object, optional, must be keyword.
         This quantity holds the radial distance. If not specified, it is, by
         default, the solar radius. Optional, must be keyword.
+    dateobs: SunPy Time
+        The date and time of the observation, used to convert to heliographic
+        carrington coordinates.
 
     Examples
     --------
     >>> from astropy.coordinates import SkyCoord
+    >>> import sunpy.coordinates
     >>> import astropy.units as u
     >>> sc = SkyCoord(1*u.deg, 2*u.deg, 3*u.km,
     ...               frame="heliographic_carrington",
@@ -156,17 +165,20 @@ class HeliographicCarrington(HeliographicStonyhurst):
     """
 
     name = "heliographic_carrington"
-    default_representation = SphericalWrap180Representation
+    default_representation = SphericalRepresentation
 
     _frame_specific_representation_info = {
-        'spherical': [RepresentationMapping('lon', 'lon', 'recommended'),
-                      RepresentationMapping('lat', 'lat', 'recommended'),
-                      RepresentationMapping('distance', 'radius', 'recommended')],
-
-        'sphericalwrap180': [RepresentationMapping('lon', 'lon', 'recommended'),
-                             RepresentationMapping('lat', 'lat', 'recommended'),
-                             RepresentationMapping('distance', 'radius', 'recommended')]
-        }
+        'spherical': [
+            RepresentationMapping('lon', 'lon', 'recommended'),
+            RepresentationMapping('lat', 'lat', 'recommended'),
+            RepresentationMapping('distance', 'radius', 'recommended')
+        ],
+        'sphericalwrap180': [
+            RepresentationMapping('lon', 'lon', 'recommended'),
+            RepresentationMapping('lat', 'lat', 'recommended'),
+            RepresentationMapping('distance', 'radius', 'recommended')
+        ]
+    }
 
     dateobs = TimeFrameAttributeSunPy()
 
@@ -192,13 +204,16 @@ class Heliocentric(BaseCoordinateFrame):
         Y-axis coordinate, optional, must be keyword.
     z: `Quantity` object. Shared by both representations.
         Z-axis coordinate, optional, must be keyword.
-    D0: `Quantity` object.
-        Represents the distance between the observer and the Sun center.
-        Defaults to 1AU.
+    observer: `~sunpy.coordinates.frames.HeliographicStonyhurst`
+        The coordinate of the observer in the solar system.
+    dateobs: SunPy Time
+        The date and time of the observation, used to convert to heliographic
+        carrington coordinates.
 
     Examples
     --------
     >>> from astropy.coordinates import SkyCoord, CartesianRepresentation
+    >>> import sunpy.coordinates
     >>> import astropy.units as u
     >>> sc = SkyCoord(CartesianRepresentation(10*u.km, 1*u.km, 2*u.km),
     ...               dateobs="2011/01/05T00:00:50", frame="heliocentric")
@@ -216,13 +231,14 @@ class Heliocentric(BaseCoordinateFrame):
     default_representation = CartesianRepresentation
 
     _frame_specific_representation_info = {
-        'cylindrical': [RepresentationMapping('phi', 'psi', u.deg)]}
+        'cylindrical': [RepresentationMapping('phi', 'psi', u.deg)]
+    }
 
-    # d = FrameAttribute(default=(1*u.au).to(u.km))
-    D0 = FrameAttribute(default=(1*u.au).to(u.km))
     dateobs = TimeFrameAttributeSunPy()
-    L0 = FrameAttribute(default=0*u.deg)
-    B0 = FrameAttribute(default=0*u.deg)
+    observer = CoordinateAttribute(HeliographicStonyhurst,
+                                   default=HeliographicStonyhurst(0*u.deg,
+                                                                  0*u.deg,
+                                                                  1*u.AU))
 
 
 class Helioprojective(BaseCoordinateFrame):
@@ -244,17 +260,20 @@ class Helioprojective(BaseCoordinateFrame):
         Y-axis coordinate.
     distance: `~astropy.units.Quantity`
         The radial distance from the observer to the coordinate point.
-    L0: `~astropy.coordinates.Angle`
-        The Heliographic (Stonyhurst) Longitude of the observer.
-    B0: `~astropy.coordinates.Angle` or `~astropy.units.Quantity`
-        The Heliographic (Stonyhurst) Latitude of the observer.
-    D0: `Quantity` object.
-        Represents the distance between observer and solar center.
-        **Defaults to 1 AU**.
+    dateobs: SunPy Time
+        The date and time of the observation, used to convert to heliographic
+        carrington coordinates.
+    observer: `~sunpy.coordinates.frames.HeliographicStonyhurst`
+        The coordinate of the observer in the solar system.
+    rsun: `~astropy.units.Quantity`
+        The physical (length) radius of the Sun. Used to calculate the position
+        of the limb for calculating distance from the observer to the
+        coordinate.
 
     Examples
     --------
     >>> from astropy.coordinates import SkyCoord
+    >>> import sunpy.coordinates
     >>> import astropy.units as u
     >>> sc = SkyCoord(0*u.deg, 0*u.deg, 5*u.km, dateobs="2010/01/01T00:00:00",
     ...               frame="helioprojective")
@@ -271,25 +290,32 @@ class Helioprojective(BaseCoordinateFrame):
     default_representation = SphericalWrap180Representation
 
     _frame_specific_representation_info = {
-        'spherical': [RepresentationMapping('lon', 'Tx', u.arcsec),
-                      RepresentationMapping('lat', 'Ty', u.arcsec),
-                      RepresentationMapping('distance', 'distance', u.km)],
+        'spherical': [
+            RepresentationMapping('lon', 'Tx', u.arcsec),
+            RepresentationMapping('lat', 'Ty', u.arcsec),
+            RepresentationMapping('distance', 'distance', u.km)
+        ],
+        'sphericalwrap180': [
+            RepresentationMapping('lon', 'Tx', u.arcsec),
+            RepresentationMapping('lat', 'Ty', u.arcsec),
+            RepresentationMapping('distance', 'distance', u.km)
+        ],
+        'unitspherical': [
+            RepresentationMapping('lon', 'Tx', u.arcsec),
+            RepresentationMapping('lat', 'Ty', u.arcsec)
+        ],
+        'unitsphericalwrap180': [
+            RepresentationMapping('lon', 'Tx', u.arcsec),
+            RepresentationMapping('lat', 'Ty', u.arcsec)
+        ]
+    }
 
-        'sphericalwrap180': [RepresentationMapping('lon', 'Tx', u.arcsec),
-                             RepresentationMapping('lat', 'Ty', u.arcsec),
-                             RepresentationMapping('distance', 'distance', u.km)],
-
-        'unitspherical': [RepresentationMapping('lon', 'Tx', u.arcsec),
-                          RepresentationMapping('lat', 'Ty', u.arcsec)],
-
-        'unitsphericalwrap180': [RepresentationMapping('lon', 'Tx', u.arcsec),
-                                 RepresentationMapping('lat', 'Ty', u.arcsec)]}
-
-    D0 = FrameAttribute(default=(1*u.au).to(u.km))
     dateobs = TimeFrameAttributeSunPy()
-    L0 = FrameAttribute(default=0*u.deg)
-    B0 = FrameAttribute(default=0*u.deg)
     rsun = FrameAttribute(default=RSUN_METERS.to(u.km))
+    observer = CoordinateAttribute(HeliographicStonyhurst,
+                                   default=HeliographicStonyhurst(0*u.deg,
+                                                                  0*u.deg,
+                                                                  1*u.AU))
 
     def __init__(self, *args, **kwargs):
         _rep_kwarg = kwargs.get('representation', None)
@@ -302,19 +328,18 @@ class Helioprojective(BaseCoordinateFrame):
             # The base __init__ will make this a UnitSphericalRepresentation
             # This makes it Wrap180 instead
             if isinstance(self._data, UnitSphericalRepresentation):
-                self._data = UnitSphericalWrap180Representation(lat=self._data.lat,
-                                                                lon=self._data.lon)
+                self._data = UnitSphericalWrap180Representation(
+                    lat=self._data.lat, lon=self._data.lon)
                 self.representation = UnitSphericalWrap180Representation
             # Make a Spherical Wrap180 instead
             elif isinstance(self._data, SphericalRepresentation):
-                self._data = SphericalWrap180Representation(lat=self._data.lat,
-                                                            lon=self._data.lon,
-                                                            distance=self._data.distance)
+                self._data = SphericalWrap180Representation(
+                    lat=self._data.lat, lon=self._data.lon, distance=self._data.distance)
                 self.representation = SphericalWrap180Representation
 
     def calculate_distance(self):
         """
-        This method calculates the third coordnate of the Helioprojective
+        This method calculates the third coordinate of the Helioprojective
         frame. It assumes that the coordinate point is on the disk of the Sun
         at the rsun radius.
 
@@ -333,8 +358,8 @@ class Helioprojective(BaseCoordinateFrame):
         rep = self.represent_as(UnitSphericalWrap180Representation)
         lat, lon = rep.lat, rep.lon
         alpha = np.arccos(np.cos(lat) * np.cos(lon)).to(lat.unit)
-        c = self.D0**2 - self.rsun**2
-        b = -2 * self.D0.to(u.m) * np.cos(alpha)
+        c = self.observer.radius**2 - self.rsun**2
+        b = -2 * self.observer.radius * np.cos(alpha)
         d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2
         return self.realize_frame(SphericalWrap180Representation(lon=lon,
                                                                  lat=lat,

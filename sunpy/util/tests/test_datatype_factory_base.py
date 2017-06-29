@@ -89,6 +89,15 @@ class TestBasicRegistrationFactory(object):
         with pytest.raises(ValidationFunctionError):
             DefaultFactory.register(MissingClassMethodWidget)
 
+        DefaultFactory.unregister(StandardWidget)
+        assert type(DefaultFactory(style='standard')) is not StandardWidget
+
+    def test_validation_fun_not_callable(self):
+        TestFactory = BasicRegistrationFactory()
+
+        with pytest.raises(AttributeError):
+            TestFactory.register(StandardWidget, validation_function='not_callable')
+
     def test_no_default_factory(self):
 
         NoDefaultFactory = BasicRegistrationFactory()
@@ -107,6 +116,20 @@ class TestBasicRegistrationFactory(object):
         assert type(NoDefaultFactory(style='standard')) is StandardWidget
         assert type(NoDefaultFactory(style='fancy', feature='present')) is FancyWidget
 
+    def test_with_external_registry(self):
+        external_registry = {}
+
+        FactoryWithExternalRegistry = \
+            BasicRegistrationFactory(registry=external_registry)
+
+        assert len(external_registry) == 0
+
+        FactoryWithExternalRegistry.register(StandardWidget)
+        assert type(FactoryWithExternalRegistry(style='standard')) is StandardWidget
+
+        # Ensure the 'external_registry' is being populated see #1988
+        assert len(external_registry) == 1
+
     def test_multiple_match_factory(self):
 
         MultipleMatchFactory = BasicRegistrationFactory()
@@ -118,7 +141,9 @@ class TestBasicRegistrationFactory(object):
             MultipleMatchFactory(style='standard')
 
     def test_extra_validation_factory(self):
-        ExtraValidationFactory = BasicRegistrationFactory(additional_validation_functions=['different_validation_function'])
+        ExtraValidationFactory = \
+            BasicRegistrationFactory(
+                additional_validation_functions=['different_validation_function'])
 
         ExtraValidationFactory.register(DifferentValidationWidget)
 

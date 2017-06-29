@@ -49,6 +49,6 @@ class RHESSIClient(GenericClient):
         chkattr = ['Time', 'Instrument']
         chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value == 'rhessi':
+            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'rhessi':
                 return all(chklist)
         return False

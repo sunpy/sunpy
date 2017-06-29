@@ -17,7 +17,7 @@ from sunpy.time import TimeRange, parse_time
 from sunpy import config
 
 from .strategies import (online_instruments, offline_instruments,
-                         time_attr, rhessi_time, goes_time)
+                         time_attr, range_time, goes_time)
 
 TIMEFORMAT = config.get("general", "time_format")
 
@@ -43,7 +43,7 @@ def online_query(draw, instrument=online_instruments(), time=time_attr()):
     query = draw(instrument)
     # If we have AttrAnd then we don't have RHESSI
     if isinstance(query, a.Instrument) and query.value == 'rhessi':
-        query = query & draw(rhessi_time())
+        query = query & draw(range_time(parse_time('2002-02-01')))
     return query
 
 
@@ -95,6 +95,7 @@ Factory Tests
 """
 
 
+@pytest.mark.online
 def test_unified_response():
     start = parse_time("2012/1/1")
     end = parse_time("2012/1/2")

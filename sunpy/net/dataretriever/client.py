@@ -17,6 +17,7 @@ import sunpy
 from sunpy.extern import six
 from sunpy.time import TimeRange
 from sunpy.util import replacement_filename
+from sunpy.util.config import get_and_create_download_dir
 from sunpy import config
 
 from ..download import Downloader, Results
@@ -36,7 +37,7 @@ class QueryResponseBlock(object):
     Represents url, source along with other information
     """
 
-    def __init__(self, map0, url):
+    def __init__(self, map0, url, time=None):
         """
         Parameters
         ----------
@@ -49,14 +50,14 @@ class QueryResponseBlock(object):
         self.phyobs = map0.get('phyobs', "Data not Available")
         self.instrument = map0.get('instrument', "Data not Available")
         self.url = url
-        self.time = TimeRange(map0.get('Time_start'), map0.get('Time_end'))
+        self.time = TimeRange(map0.get('Time_start'), map0.get('Time_end')) if time is None else time
         self.wavelength = map0.get('wavelength', np.NaN)
 
 
-def iter_urls(amap, url_list):
+def iter_urls(amap, url_list, time):
     """Helper Function"""
-    for aurl in url_list:
-        tmp = QueryResponseBlock(amap, aurl)
+    for aurl, t in zip(url_list, time):
+        tmp = QueryResponseBlock(amap, aurl, t)
         yield tmp
 
 
@@ -69,8 +70,10 @@ class QueryResponse(list):
         super(QueryResponse, self).__init__(lst)
 
     @classmethod
-    def create(cls, amap, lst):
-        return cls(iter_urls(amap, lst))
+    def create(cls, amap, lst, time=None):
+        if time is None:
+            time = [None] * len(lst)
+        return cls(iter_urls(amap, lst, time))
 
     def time_range(self):
         """
@@ -93,10 +96,8 @@ class QueryResponse(list):
                                ('Source', []), ('Instrument', []),
                                ('Wavelength', [])))
         for i, qrblock in enumerate(self):
-            columns['Start Time'].append((qrblock.time.start.date(
-            ) + datetime.timedelta(days=i)).strftime(TIME_FORMAT))
-            columns['End Time'].append((qrblock.time.start.date(
-            ) + datetime.timedelta(days=i + 1)).strftime(TIME_FORMAT))
+            columns['Start Time'].append((qrblock.time.start).strftime(TIME_FORMAT))
+            columns['End Time'].append((qrblock.time.end).strftime(TIME_FORMAT))
             columns['Source'].append(qrblock.source)
             columns['Instrument'].append(qrblock.instrument)
             columns['Wavelength'].append(str(u.Quantity(qrblock.wavelength)))
@@ -247,6 +248,8 @@ class GenericClient(object):
         kwergs.update(kwargs)
         urls = self._get_url_for_timerange(
             self.map_.get('TimeRange'), **kwergs)
+        if urls and getattr(self, "_get_time_for_url", None):
+            return QueryResponse.create(self.map_, urls, self._get_time_for_url(urls))
         return QueryResponse.create(self.map_, urls)
 
     def get(self, qres, path=None, error_callback=None, **kwargs):
@@ -271,19 +274,16 @@ class GenericClient(object):
         for url in urls:
             filenames.append(url.split('/')[-1])
 
-        # Create function to compute the filepath to download to if not set
-        default_dir = sunpy.config.get("downloads", "download_dir")
-
         paths = []
         for i, filename in enumerate(filenames):
             if path is None:
-                fname = os.path.join(default_dir, '{file}')
+                fname = os.path.join(get_and_create_download_dir(), '{file}')
             elif isinstance(path, six.string_types) and '{file}' not in path:
                 fname = os.path.join(path, '{file}')
 
             temp_dict = qres[i].map_.copy()
             temp_dict['file'] = filename
-            fname  = fname.format(**temp_dict)
+            fname = fname.format(**temp_dict)
             fname = os.path.expanduser(fname)
 
             if os.path.exists(fname):
@@ -297,10 +297,10 @@ class GenericClient(object):
 
         dobj = Downloader(max_conn=len(urls), max_total=len(urls))
 
-        # We cast to list here in list(zip... to force execution of 
+        # We cast to list here in list(zip... to force execution of
         # res.require([x]) at the start of the loop.
         for aurl, ncall, fname in list(zip(urls, map(lambda x: res.require([x]),
-                                              urls), paths)):
+                                           urls), paths)):
             dobj.download(aurl, fname, ncall, error_callback)
 
         return res

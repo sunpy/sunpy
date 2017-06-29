@@ -25,6 +25,7 @@ from .frames import (HeliographicStonyhurst, HeliographicCarrington,
 __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc']
 
+
 def _carrington_offset(dateobs):
     """
     Calculate the HG Longitude offest based on a time
@@ -49,6 +50,7 @@ def hgs_to_hgc(hgscoord, hgcframe):
         u.deg)
     representation = SphericalWrap180Representation(c_lon, hgscoord.lat,
                                                     hgscoord.radius)
+    hgcframe = hgcframe.__class__(dateobs=hgscoord.dateobs)
     return hgcframe.realize_frame(representation)
 
 
@@ -58,7 +60,11 @@ def hgc_to_hgs(hgccoord, hgsframe):
     """
     Convert from Heliograpic Carrington to Heliographic Stonyhurst.
     """
-    s_lon = hgccoord.spherical.lon - _carrington_offset(hgccoord.dateobs).to(
+    if hgccoord.dateobs:
+        dateobs = hgccoord.dateobs
+    else:
+        dateobs = hgsframe.dateobs
+    s_lon = hgccoord.spherical.lon - _carrington_offset(dateobs).to(
         u.deg)
     representation = SphericalWrap180Representation(s_lon, hgccoord.lat,
                                                     hgccoord.radius)
@@ -77,9 +83,9 @@ def hcc_to_hpc(helioccoord, heliopframe):
 
     # d is calculated as the distance between the points
     # (x,y,z) and (0,0,D0).
-    distance = np.sqrt(x**2 + y**2 + (helioccoord.D0.to(u.m) - z)**2)
+    distance = np.sqrt(x**2 + y**2 + (helioccoord.observer.radius - z)**2)
 
-    hpcx = np.rad2deg(np.arctan2(x, helioccoord.D0 - z))
+    hpcx = np.rad2deg(np.arctan2(x, helioccoord.observer.radius - z))
     hpcy = np.rad2deg(np.arcsin(y / distance))
 
     representation = SphericalWrap180Representation(hpcx, hpcy,
@@ -104,7 +110,7 @@ def hpc_to_hcc(heliopcoord, heliocframe):
 
     rx = (heliopcoord.distance.to(u.m)) * cosy * sinx
     ry = (heliopcoord.distance.to(u.m)) * siny
-    rz = (heliopcoord.D0.to(u.m)) - (
+    rz = (heliopcoord.observer.radius.to(u.m)) - (
         heliopcoord.distance.to(u.m)) * cosy * cosx
 
     representation = CartesianRepresentation(
@@ -122,10 +128,8 @@ def hcc_to_hgs(helioccoord, heliogframe):
     y = helioccoord.y.to(u.m)
     z = helioccoord.z.to(u.m)
 
-    l0b0_pair = [helioccoord.L0, helioccoord.B0]
-
-    l0_rad = l0b0_pair[0].to(u.rad)
-    b0_deg = l0b0_pair[1]
+    l0_rad = helioccoord.observer.lon
+    b0_deg = helioccoord.observer.lat
 
     cosb = np.cos(np.deg2rad(b0_deg))
     sinb = np.sin(np.deg2rad(b0_deg))
@@ -149,10 +153,8 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     hglat = heliogcoord.lat
     r = heliogcoord.radius.to(u.m)
 
-    l0b0_pair = [heliocframe.L0, heliocframe.B0]
-
-    l0_rad = l0b0_pair[0].to(u.rad)
-    b0_deg = l0b0_pair[1]
+    l0_rad = heliocframe.observer.lon.to(u.rad)
+    b0_deg = heliocframe.observer.lat
 
     lon = np.deg2rad(hglon)
     lat = np.deg2rad(hglat)
@@ -183,16 +185,13 @@ def hpc_to_hpc(heliopcoord, heliopframe):
     This converts from HPC to HPC, with different observer location parameters.
     It does this by transforming through HGS.
     """
-    if (heliopcoord.B0 == heliopframe.B0 and
-        heliopcoord.L0 == heliopframe.L0 and
-        heliopcoord.D0 == heliopframe.D0):
-
+    if (heliopcoord.observer.lat == heliopframe.observer.lat and
+        heliopcoord.observer.lon == heliopframe.observer.lon and
+        heliopcoord.observer.radius == heliopframe.observer.radius):
         return heliopframe.realize_frame(heliopcoord._data)
 
     hgs = heliopcoord.transform_to(HeliographicStonyhurst)
-    hgs.B0 = heliopframe.B0
-    hgs.L0 = heliopframe.L0
-    hgs.D0 = heliopframe.D0
+    hgs.observer = heliopframe.observer
     hpc = hgs.transform_to(heliopframe)
 
     return hpc

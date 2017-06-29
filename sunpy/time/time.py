@@ -9,7 +9,7 @@ from sunpy.extern import six
 
 import astropy.time
 
-__all__ = ['find_time', 'extract_time', 'parse_time', 'is_time',
+__all__ = ['find_time', 'parse_time', 'is_time',
            'day_of_year', 'break_time', 'get_day', 'is_time_in_given_format']
 
 # Mapping of time format codes to regular expressions.
@@ -119,38 +119,6 @@ def _iter_empty(iter):
     return False
 
 
-def extract_time(string):
-    """ Find subset of string that corresponds to a datetime and return
-    its value as a a datetime. If more than one or none is found, raise
-    ValueError. """
-    matched = None
-    bestmatch = None
-    for time_format in TIME_FORMAT_LIST:
-        found = find_time(string, time_format)
-        try:
-            match = next(found)
-        except StopIteration:
-            continue
-        else:
-            if matched is not None:
-                if time_format.startswith(matched):
-                    # Already matched is a substring of the one just matched.
-                    matched = time_format
-                    bestmatch = match
-                elif not matched.startswith(time_format):
-                    # If just matched is substring of time_format, just ignore
-                    # just matched.
-                    raise ValueError("Ambiguous string")
-            else:
-                matched = time_format
-                bestmatch = match
-            if not _iter_empty(found):
-                raise ValueError("Ambiguous string")
-    if not matched:
-        raise ValueError("Time not found")
-    return bestmatch
-
-
 def parse_time(time_string, time_format='', **kwargs):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
@@ -179,7 +147,7 @@ def parse_time(time_string, time_format='', **kwargs):
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
     datetime.datetime(2005, 8, 4, 0, 1, 2)
     """
-    if isinstance(time_string, pandas.tslib.Timestamp):
+    if isinstance(time_string, pandas.Timestamp):
         return time_string.to_pydatetime()
     elif isinstance(time_string, datetime) or time_format == 'datetime':
         return time_string
@@ -187,7 +155,7 @@ def parse_time(time_string, time_format='', **kwargs):
         return datetime(*time_string)
     elif time_format == 'utime' or isinstance(time_string, (int, float)):
         return datetime(1979, 1, 1) + timedelta(0, time_string)
-    elif isinstance(time_string, pandas.tseries.index.DatetimeIndex):
+    elif isinstance(time_string, pandas.DatetimeIndex):
         return time_string._mpl_repr()
     elif isinstance(time_string, np.ndarray) and 'datetime64' in str(time_string.dtype):
         ii = [ss.astype(datetime) for ss in time_string]
@@ -217,16 +185,19 @@ def parse_time(time_string, time_format='', **kwargs):
 
         time_string_parse_format = kwargs.pop('_time_string_parse_format', None)
         if time_string_parse_format is not None:
+            # Following a comment by the Lead Developer, the Try / except clause
+            # is replaced.  The Lead Developer thinks that this the try/except
+            # clause is related to SunPy's database module.
             try:
                 ts, time_delta = _regex_parse_time(time_string,
-                                                   time_string_parse_format)
+                                                       time_string_parse_format)
                 if ts and time_delta:
                     return datetime.strptime(ts, time_string_parse_format) + time_delta
                 else:
                     return datetime.strptime(time_string, time_string_parse_format)
-            except:
+            except Exception:
                 pass
-        raise ValueError("{tstr!s} is not a valid time string!".format(tstr=time_string))
+        raise ValueError("'{tstr!s}' is not a valid time string!".format(tstr=time_string))
 
 
 def is_time(time_string, time_format=''):
