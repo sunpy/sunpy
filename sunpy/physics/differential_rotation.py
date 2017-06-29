@@ -109,14 +109,8 @@ def solar_rotate_coord_from_earth(start_coordinate, tend, **diff_rot_kwargs):
     tend : `sunpy.time.time`
         date/time at which the input co-ordinate will be rotated to.
 
-    rot_type : {'howard' | 'snodgrass' | 'allen'}
-        | howard: Use values for small magnetic features from Howard et al.
-        | snodgrass: Use Values from Snodgrass et. al
-        | allen: Use values from Allen, Astrophysical Quantities, and simpler
-          equation.
-
-    frame_time : {'sidereal' | 'synodic'}
-        Choose type of day time reference frame.
+    **diff_rot_kwargs : keyword arguments
+        Keyword arguments are passed on as keyword arguments to `~sunpy.physics.differential_rotation.diff_rot`.
 
     Returns
     -------
@@ -158,8 +152,8 @@ def solar_rotate_coord_from_earth(start_coordinate, tend, **diff_rot_kwargs):
     dend = parse_time(tend)
     interval = (dend - dstart).total_seconds() * u.s
 
-    # Compute Stonyhurst Heliographic co-ordinates - returns
-    # (longitude, latitude). Points off the limb are returned as nan
+    # Compute Stonyhurst Heliographic co-ordinates - returns (longitude,
+    # latitude). Points off the limb are returned as nan.
     vstart = _calc_P_B0_SD(dend)
     heliographic_coordinate = \
         SkyCoord(start_coordinate.Tx, start_coordinate.Ty, dateobs=dstart,
