@@ -10,9 +10,9 @@ version of the original anarw routines.
 #include <Python.h>				// For python extension
 #include <numpy/arrayobject.h> 	// For numpy
 #ifdef WIN32
-#include <sys/time.h>
-#else
 #include <time.h>
+#else
+#include <sys/time.h>
 #endif
 //#include "anadecompress.h"
 //#include "anacompress.h"
