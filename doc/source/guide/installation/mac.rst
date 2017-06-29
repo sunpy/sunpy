@@ -104,9 +104,9 @@ Now under Lion, install the stable version of SciPy (0.10) by running: ::
     pip install scipy
 
 Mountain Lion users will need to install the development version of SciPy (0.11)
-by executing the following line:
+by executing the following line: ::
 
-pip install -e git+https://github.com/scipy/scipy#egg=scipy-dev
+    pip install -e git+https://github.com/scipy/scipy#egg=scipy-dev
 
 Now on to matplotlib
 

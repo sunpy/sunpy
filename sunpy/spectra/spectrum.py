@@ -36,6 +36,8 @@ class Spectrum(np.ndarray):
         return np.asarray(data).view(cls)
 
     def __init__(self, data, freq_axis):
+        if np.shape(data)[0] != np.shape(freq_axis)[0]:
+            raise ValueError('Dimensions of data and frequency axis do not match')
         self.freq_axis = freq_axis
 
     def plot(self, axes=None, **matplot_args):
@@ -65,19 +67,7 @@ class Spectrum(np.ndarray):
         params = {}
         params.update(matplot_args)
 
-        # This is taken from mpl.pyplot.plot() as we are trying to
-        # replicate that functionality
-
-        # allow callers to override the hold state by passing hold=True|False
-        washold = axes.ishold()
-        hold = matplot_args.pop('hold', None)
-
-        if hold is not None:
-            axes.hold(hold)
-        try:
-            lines = axes.plot(self.freq_axis, self, **params)
-        finally:
-            axes.hold(washold)
+        lines = axes.plot(self.freq_axis, self, **params)
 
         return lines
 

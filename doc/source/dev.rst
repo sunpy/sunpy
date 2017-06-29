@@ -7,7 +7,7 @@ Developer's Guide
 Developer's Guide Overview
 --------------------------
 This article describes the guidelines to be followed by developers working on
-SunPy. You if you are thinking of contributing to SunPy please read the following
+SunPy. If you are thinking of contributing to SunPy please read the following
 carefully.
 
 Version Control
@@ -142,7 +142,7 @@ as::
  conda create -n sunpy-dev python=2.7 sunpy
 
 This will create a new environment called `sunpy-dev` with all of the
-dependencies needed by sunpy. We the proceed to change to the new
+dependencies needed by sunpy. We then proceed to change to the new
 environment::
 
  source activate sunpy-dev
@@ -506,12 +506,12 @@ by the decorator, for example ::
 This function only accepts arguments that are convertible to arcseconds.
 Therefore, ::
 
-    >>> myangle(20 * u.degree)
+    >>> myfunction(20 * u.degree)
     <Quantity 400.0 deg2>
 
 returns the expected answer but ::
 
-    >>> myangle(20 * u.km)
+    >>> myfunction(20 * u.km)
 
 raises an error.
 

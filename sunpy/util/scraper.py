@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function
 import os
 import datetime
 import re
+from ftplib import FTP
 
 from bs4 import BeautifulSoup
 from sunpy.extern import six
@@ -65,7 +66,9 @@ class Scraper(object):
         else:
             now = datetime.datetime.now()
             milliseconds_ = int(now.microsecond / 1000.)
-            self.now = now.strftime(self.pattern[0:milliseconds.start()] + str(milliseconds_) + self.pattern[milliseconds.end():])
+            self.now = now.strftime(self.pattern[0:milliseconds.start()] +
+                                    str(milliseconds_) +
+                                    self.pattern[milliseconds.end():])
 
     def matches(self, filepath, date):
         return date.strftime(self.pattern) == filepath
@@ -90,9 +93,9 @@ class Scraper(object):
             range given. Notice that these directories may not exist
             in the archive.
         """
-        #find directory structure - without file names
+        # find directory structure - without file names
         directorypattern = os.path.dirname(self.pattern) + '/'
-        #TODO what if there's not slashes?
+        # TODO what if there's not slashes?
         rangedelta = timerange.dt
         timestep = self._smallerPattern(directorypattern)
         if timestep is None:
@@ -102,13 +105,13 @@ class Scraper(object):
             n_steps = rangedelta.total_seconds()/timestep.total_seconds()
             TotalTimeElements = int(round(n_steps)) + 1
             directories = [(timerange.start + n * timestep).strftime(directorypattern)
-                        for n in range(TotalTimeElements)] #todo if date <= endate
+                           for n in range(TotalTimeElements)]  # TODO if date <= endate
             return directories
 
     def _URL_followsPattern(self, url):
         """Check whether the url provided follows the pattern"""
         pattern = self.pattern
-        for k,v in six.iteritems(TIME_CONVERSIONS):
+        for k, v in six.iteritems(TIME_CONVERSIONS):
             pattern = pattern.replace(k, v)
         matches = re.match(pattern, url)
         if matches:
@@ -117,6 +120,10 @@ class Scraper(object):
 
     def _extractDateURL(self, url):
         """Extracts the date from a particular url following the pattern"""
+
+        # remove the user and passwd from files if there:
+        url = url.replace("anonymous:data@sunpy.org@", "")
+
         # url_to_list substitutes '.' and '_' for '/' to then create
         # a list of all the blocks in times - assuming they are all
         # separated with either '.', '_' or '/'
@@ -131,6 +138,13 @@ class Scraper(object):
         for pattern_elem, url_elem in zip(pattern_list, url_list):
             time_formats = [x for x in time_order if x in pattern_elem]
             if len(time_formats) > 0:
+                # Find whether there's text that should not be here
+                toremove = re.split('%.', pattern_elem)
+                if len(toremove) > 0:
+                    for bit in toremove:
+                        if bit != '':
+                            url_elem = url_elem.replace(bit, '', 1)
+                            pattern_elem = pattern_elem.replace(bit, '', 1)
                 final_date.append(url_elem)
                 final_pattern.append(pattern_elem)
                 for time_bit in time_formats:
@@ -143,14 +157,14 @@ class Scraper(object):
         for k, v in six.iteritems(TIME_CONVERSIONS):
             re_together = re_together.replace(k, v)
 
-        #   Create new empty lists
+        #   Lists to contain the unique elements of the date and the pattern
         final_date = list()
         final_pattern = list()
         re_together = re_together.replace('[A-Z]', '\\[A-Z]')
-        for p,r in zip(pattern_together.split('%')[1:], re_together.split('\\')[1:]):
+        for p, r in zip(pattern_together.split('%')[1:], re_together.split('\\')[1:]):
             if p == 'e':
                 continue
-            regexp = '\\{}'.format(r) if not r.startswith('[') else r
+            regexp = r'\{}'.format(r) if not r.startswith('[') else r
             pattern = '%{}'.format(p)
             date_part = re.search(regexp, date_together)
             date_together = date_together[:date_part.start()] + \
@@ -185,9 +199,20 @@ class Scraper(object):
         >>> timerange = TimeRange('2015-01-01','2015-01-01T16:00:00')
         >>> print(solmon.filelist(timerange))
         ['http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_025423.fts.gz']
+
+        Note
+        ----
+
+        The search is strict with the time range, so if the archive scraped
+        contains daily files, but the range doesn't start from the beginning
+        of the day, then the file for that day won't be selected. The end of
+        the timerange will normally be OK as includes the file on such end.
+
         """
         directories = self.range(timerange)
         filesurls = []
+        if directories[0][0:3] == "ftp":  # TODO use urlsplit from pr #1807
+            return self._ftpfileslist(timerange)
         for directory in directories:
             try:
                 opn = urlopen(directory)
@@ -205,8 +230,28 @@ class Scraper(object):
                 finally:
                     opn.close()
             except:
-                pass
+                raise
         return filesurls
+
+    def _ftpfileslist(self, timerange):
+        directories = self.range(timerange)
+        filesurls = list()
+        domain = directories[0].find('//')
+        domain_slash = directories[0].find('/', 6)  # TODO: Use also urlsplit from pr #1807
+        ftpurl = directories[0][domain + 2:domain_slash]
+        with FTP(ftpurl, user="anonymous", passwd="data@sunpy.org") as ftp:
+            for directory in directories:
+                ftp.cwd(directory[domain_slash:])
+                for file_i in ftp.nlst():
+                    fullpath = directory + file_i
+                    if self._URL_followsPattern(fullpath):
+                        datehref = self._extractDateURL(fullpath)
+                        if (datehref >= timerange.start and
+                            datehref <= timerange.end):
+                            filesurls.append(fullpath)
+        filesurls = ['ftp://anonymous:data@sunpy.org@' + url[domain + 2:] for url in filesurls]
+        return filesurls
+
 
     def _smallerPattern(self, directoryPattern):
         """Obtain the smaller time step for the given pattern"""
@@ -219,7 +264,7 @@ class Scraper(object):
                 return datetime.timedelta(hours=1)
             elif any(day in directoryPattern for day in ["%d", "%j"]):
                 return datetime.timedelta(days=1)
-            elif any(month in directoryPattern for month in ["%b","%B","%m"]):
+            elif any(month in directoryPattern for month in ["%b", "%B", "%m"]):
                 return datetime.timedelta(days=31)
             elif any(year in directoryPattern for year in ["%Y", "%y"]):
                 return datetime.timedelta(days=365)
@@ -227,4 +272,3 @@ class Scraper(object):
                 return None
         except:
             raise
-

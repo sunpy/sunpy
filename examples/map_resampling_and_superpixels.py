@@ -15,6 +15,8 @@ from __future__ import print_function, division
 
 import astropy.units as u
 
+import matplotlib.pyplot as plt
+
 import sunpy.map
 import sunpy.data.sample
 
@@ -51,3 +53,4 @@ aia_resampled_map.peek(draw_limb=True, draw_grid=True)
 dimensions = u.Quantity(aia_map.dimensions) / 16
 aia_superpixel_map = aia_map.superpixel(dimensions)
 aia_superpixel_map.peek(draw_limb=True, draw_grid=True)
+plt.show()

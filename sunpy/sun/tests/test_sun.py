@@ -3,8 +3,7 @@ from __future__ import absolute_import
 import astropy.units as u
 
 from sunpy.sun import sun
-from sunpy.tests.helpers import assert_quantity_allclose
-
+from astropy.tests.helper import assert_quantity_allclose
 
 def test_sunearth_distance():
     # Source for these values
