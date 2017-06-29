@@ -13,13 +13,18 @@ from sunpy.coordinates.utils import GreatArc
 
 
 # Test the great arc code against calculable quantities
+# The inner angle is the same between each pair of co-ordinates.  You can
+# calculate these co-ordinates using the inner angle formulae as listed here:
+# https://en.wikipedia.org/wiki/Great-circle_distance
+#
 @pytest.mark.parametrize("start, end", [((0, 0), (0, 45)),
                                         ((0, 0), (45, 0)),
                                         ((0, 45), (0, 0)),
                                         ((45, 0), (0, 0)),
                                         ((12, 13), (12, 58)),
                                         ((-10, 6), (-10, 51)),
-                                        ((-20, -50), (-20, -5))])
+                                        ((-20, -50), (-20, -5)),
+                                        ((10, -50), (87.53163324626676, -55))])
 def test_great_arc_calculable(start, end):
     c = SkyCoord(start[0]*u.degree, start[1]*u.degree, frame=frames.HeliographicStonyhurst)
     d = SkyCoord(end[0]*u.degree, end[1]*u.degree, frame=frames.HeliographicStonyhurst)
