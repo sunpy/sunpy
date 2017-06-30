@@ -3,8 +3,10 @@ from __future__ import absolute_import, division, print_function
 import pytest
 
 import numpy as np
+
 from astropy.coordinates import SkyCoord
 import astropy.units as u
+
 from sunpy.sun import sun
 import sunpy.map
 import sunpy.data.test
@@ -124,7 +126,8 @@ def test_great_arc_coordinates(points_requested, points_expected, first_point,
 # Test that the great arc code rejects wrongly formatted points
 @pytest.mark.parametrize("points", [np.asarray([[0, 0.1], [0.2, 0.3]]),
                                     np.asarray([0.1, 0.2, -0.1, 0.4]),
-                                    np.asarray([0.3, 1.1, 0.6, 0.7])])
+                                    np.asarray([0.3, 1.1, 0.6, 0.7]),
+                                    'strings_not_permitted'])
 def test_great_arc_wrongly_formatted_points(points):
     m = sunpy.map.Map(sunpy.map.Map(sunpy.data.test.get_test_filepath('aia_171_level1.fits')))
     coordinate_frame = m.coordinate_frame
@@ -138,6 +141,9 @@ def test_great_arc_wrongly_formatted_points(points):
 
     with pytest.raises(ValueError):
         dummy = GreatArc(a, b).inner_angles(points=points)
+
+    with pytest.raises(ValueError):
+        dummy = GreatArc(a, b).distances(points=points)
 
     with pytest.raises(ValueError):
         dummy = GreatArc(a, b).distances(points=points)
