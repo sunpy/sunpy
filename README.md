@@ -1,6 +1,12 @@
 # [SunPy](http://sunpy.org)
-[![Downloads](https://img.shields.io/pypi/dm/sunpy.svg)](https://pypi.python.org/pypi/sunpy/) [![Latest Version](https://img.shields.io/pypi/v/sunpy.svg)](https://pypi.python.org/pypi/sunpy/) [![Build Status](https://secure.travis-ci.org/sunpy/sunpy.svg)] (http://travis-ci.org/sunpy/sunpy)[![Build status](https://ci.appveyor.com/api/projects/status/xow461iejsjvp9vl?svg=true)](https://ci.appveyor.com/project/sunpy/sunpy)[![Coverage Status](https://coveralls.io/repos/sunpy/sunpy/badge.svg?branch=master)](https://coveralls.io/r/sunpy/sunpy?branch=master) [![Code Health](https://landscape.io/github/sunpy/sunpy/master/landscape.svg)](https://landscape.io/github/sunpy/sunpy/master)
-[![Code Issues](https://www.quantifiedcode.com/api/v1/project/9edd3e28230840038713e1c7dc3eb141/badge.svg)](https://www.quantifiedcode.com/app/project/9edd3e28230840038713e1c7dc3eb141)[![Research software impact](http://depsy.org/api/package/pypi/sunpy/badge.svg)](http://depsy.org/package/python/sunpy)
+[![Downloads](https://img.shields.io/pypi/dm/sunpy.svg)](https://pypi.python.org/pypi/sunpy/) 
+[![Latest Version](https://img.shields.io/pypi/v/sunpy.svg)](https://pypi.python.org/pypi/sunpy/) 
+[![Build Status](https://secure.travis-ci.org/sunpy/sunpy.svg)](http://travis-ci.org/sunpy/sunpy) 
+[![Build status](https://ci.appveyor.com/api/projects/status/xow461iejsjvp9vl?svg=true)](https://ci.appveyor.com/project/sunpy/sunpy) 
+[![Coverage Status](https://coveralls.io/repos/sunpy/sunpy/badge.svg?branch=master)](https://coveralls.io/r/sunpy/sunpy?branch=master) 
+[![Code Issues](https://www.quantifiedcode.com/api/v1/project/9edd3e28230840038713e1c7dc3eb141/badge.svg)](https://www.quantifiedcode.com/app/project/9edd3e28230840038713e1c7dc3eb141)
+[![Code Health](https://landscape.io/github/sunpy/sunpy/master/landscape.svg)](https://landscape.io/github/sunpy/sunpy/master) 
+[![Research software impact](http://depsy.org/api/package/pypi/sunpy/badge.svg)](http://depsy.org/package/python/sunpy)
 
 SunPy is an open-source Python library for solar physics data analysis.
 
