@@ -27,7 +27,15 @@ __all__ = ['Fido', 'UnifiedResponse', 'UnifiedDownloaderFactory', 'DownloadRespo
 
 class UnifiedResponse(MutableSequence):
     """
-    The object used to store responses from the unified downloader.
+    The object used to store results from `sunpy.net.Fido`.
+
+    The `~sunpy.net.Fido` object returns results from multiple different
+    clients. So it is always possible to sub-select these results, you can
+    index this object with two indices. The first index is the client index,
+    i.e. corresponding to the results from the `~sunpy.net.vso.VSOClient`. The
+    second index can be used to select records from the results returned from
+    that client, for instance if you only want every second result you could
+    index the second dimension with ``::2``.
     """
 
     def __init__(self, lst):
@@ -66,12 +74,62 @@ class UnifiedResponse(MutableSequence):
     def __len__(self):
         return len(self._list)
 
-    def __getitem__(self, aslice):
-        ret = self._list[aslice]
-        if ret:
-            return type(self)(ret)
+    def _handle_record_slice(self, client_resp, record_slice):
+        """
+        Given a slice to be applied to the results from a single client, return
+        an object of the same type as client_resp.
+        """
+        # When we subindex, we want to persist the type of the response object.
+        resp_type = type(client_resp)
+
+        # Make sure we always have an iterable, as most of the response objects
+        # expect one.
+        if isinstance(record_slice, int):
+            resp = [client_resp[record_slice]]
+        else:
+            resp = client_resp[record_slice]
+
+        # Reconstruct a response object with the sub-indexed records.
+        ret = resp_type(resp)
+        # Make sure we pass the client back out again.
+        ret.client = client_resp.client
 
         return ret
+
+    def __getitem__(self, aslice):
+        """
+        Support slicing the UnifiedResponse as a 2D object.
+
+        The first index is to the client and the second index is the records
+        returned from those clients.
+        """
+        # Just a single int as a slice, we are just indexing client.
+        if isinstance(aslice, (int, slice)):
+            ret = self._list[aslice]
+
+        # Make sure we only have a length two slice.
+        elif isinstance(aslice, tuple):
+            if len(aslice) > 2:
+                raise IndexError("UnifiedResponse objects can only be sliced with one or two indices.")
+
+            # Indexing both client and records, but only for one client.
+            if isinstance(aslice[0], int):
+                client_resp = self._list[aslice[0]]
+                ret = self._handle_record_slice(client_resp, aslice[1])
+
+            # Indexing both client and records for multiple clients.
+            else:
+                intermediate = self._list[aslice[0]]
+                ret = []
+                for client_resp in intermediate:
+                    resp = self._handle_record_slice(client_resp, aslice[1])
+                    ret.append(resp)
+
+        else:
+            raise IndexError("UnifiedResponse objects must be sliced with integers.")
+
+        # Construct a new UnifiedResponse object and return
+        return type(self)(ret)
 
     def __delitem__(self, i):
         del self._list[i]
