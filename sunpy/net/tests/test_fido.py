@@ -10,6 +10,7 @@ import astropy.units as u
 
 from sunpy.net import attr
 from sunpy.net import Fido, attrs as a
+from sunpy.net.vso.vso import QueryResponse as vsoQueryResponse
 from sunpy.net.fido_factory import DownloadResponse, UnifiedResponse
 from sunpy.net.dataretriever.client import CLIENTS, QueryResponse
 from sunpy.util.datatype_factory_base import NoMatchError, MultipleMatchError
@@ -175,6 +176,13 @@ def test_unifiedresponse_slicing():
         a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
     assert isinstance(results[0:2], UnifiedResponse)
     assert isinstance(results[0], UnifiedResponse)
+
+
+def test_vso_unifiedresponse():
+    vrep = vsoQueryResponse([])
+    vrep.client = True
+    uresp = UnifiedResponse(vrep)
+    assert isinstance(uresp, UnifiedResponse)
 
 
 def test_responses():
