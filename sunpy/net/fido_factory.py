@@ -17,6 +17,7 @@ from sunpy.util.datatype_factory_base import MultipleMatchError
 
 from sunpy.net.dataretriever.clients import CLIENTS
 from sunpy.net.dataretriever.client import QueryResponse
+import sunpy.net.vso.vso
 from sunpy.net.vso import VSOClient
 from . import attr
 from . import attrs as a
@@ -28,6 +29,7 @@ class UnifiedResponse(MutableSequence):
     """
     The object used to store responses from the unified downloader.
     """
+
     def __init__(self, lst):
         """
         Input to this constructor can be one of a few things:
@@ -39,9 +41,11 @@ class UnifiedResponse(MutableSequence):
         tmplst = []
         # numfile is the number of files not the number of results.
         self._numfile = 0
-        if isinstance(lst, QueryResponse):
+        if isinstance(lst, (QueryResponse, sunpy.net.vso.vso.QueryResponse)):
             if not hasattr(lst, 'client'):
-                raise("QueryResponse is only a valid input if it has a client attribute.")
+                raise ValueError(
+                    "A {} object is only a valid input to UnifiedResponse if it has a client attribute.".
+                    format(type(lst).__name__))
             tmplst.append(lst)
             self._numfile = len(lst)
         else:
@@ -54,7 +58,8 @@ class UnifiedResponse(MutableSequence):
                     tmplst.append(block)
                     self._numfile += len(block)
                 else:
-                    raise Exception("{} is not a valid input to UnifiedResponse.".format(type(lst)))
+                    raise ValueError(
+                        "{} is not a valid input to UnifiedResponse.".format(type(lst)))
 
         self._list = tmplst
 
@@ -189,6 +194,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
     Search and Download data from a variety of supported sources.
     """
+
     def search(self, *query):
         """
         Query for data in form of multiple parameters.
@@ -276,8 +282,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
             return results
 
     def __call__(self, *args, **kwargs):
-        raise TypeError("'{}' object is not callable".format(
-            self.__class__.__name__))
+        raise TypeError("'{}' object is not callable".format(self.__class__.__name__))
 
     def _check_registered_widgets(self, *args):
         """Factory helper function"""
@@ -290,8 +295,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         n_matches = len(candidate_widget_types)
         if n_matches == 0:
             # There is no default client
-            raise NoMatchError(
-                "This query was not understood by any clients. Did you miss an OR?")
+            raise NoMatchError("This query was not understood by any clients. Did you miss an OR?")
         elif n_matches == 2:
             # If two clients have reported they understand this query, and one
             # of them is the VSOClient, then we ignore VSOClient.
@@ -301,10 +305,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         # Finally check that we only have one match.
         if len(candidate_widget_types) > 1:
             candidate_names = [cls.__name__ for cls in candidate_widget_types]
-            raise MultipleMatchError(
-                "The following clients matched this query. "
-                "Please make your query more specific.\n"
-                "{}".format(candidate_names))
+            raise MultipleMatchError("The following clients matched this query. "
+                                     "Please make your query more specific.\n"
+                                     "{}".format(candidate_names))
 
         return candidate_widget_types
 
@@ -327,5 +330,5 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         return tmpclient.query(*query), tmpclient
 
 
-Fido = UnifiedDownloaderFactory(registry=CLIENTS,
-                                additional_validation_functions=['_can_handle_query'])
+Fido = UnifiedDownloaderFactory(
+    registry=CLIENTS, additional_validation_functions=['_can_handle_query'])
