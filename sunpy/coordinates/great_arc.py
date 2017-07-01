@@ -37,9 +37,8 @@ def great_arc(start_point, end_point, center=None, number_points=100):
 
     Example
     -------
-    >>> from astropy.coordinates import SkyCoord
     >>> import astropy.units as u
-    >>> import sunpy.coordinates
+    >>> from astropy.coordinates import SkyCoord
     >>> from sunpy.coordinates import great_arc
     >>> import sunpy.map
     >>> from sunpy.data.sample import AIA_171_IMAGE
