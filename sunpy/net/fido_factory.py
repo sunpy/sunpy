@@ -6,9 +6,8 @@ well as defining ``Fido`` which is an instance of
 `~sunpy.net.fido_factory.DownloadResponse` objects are returned by ``Fido.fetch``.
 
 """
-# Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-# This module was developed under funding provided by
-# Google Summer of Code 2014
+# This module was initially developed under funding provided by Google Summer
+# of Code 2014
 from collections import MutableSequence
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
@@ -17,8 +16,7 @@ from sunpy.util.datatype_factory_base import MultipleMatchError
 
 from sunpy.net.dataretriever.clients import CLIENTS
 from sunpy.net.dataretriever.client import QueryResponse
-import sunpy.net.vso.vso
-from sunpy.net.vso import VSOClient
+from sunpy.net.vso import VSOClient, QueryResponse as vsoQueryResponse
 from . import attr
 from . import attrs as a
 
@@ -27,7 +25,7 @@ __all__ = ['Fido', 'UnifiedResponse', 'UnifiedDownloaderFactory', 'DownloadRespo
 
 class UnifiedResponse(MutableSequence):
     """
-    The object used to store results from `sunpy.net.Fido`.
+    The object used to store results from `~sunpy.net.UnifiedDownloaderFactory.search`.
 
     The `~sunpy.net.Fido` object returns results from multiple different
     clients. So it is always possible to sub-select these results, you can
@@ -36,20 +34,26 @@ class UnifiedResponse(MutableSequence):
     second index can be used to select records from the results returned from
     that client, for instance if you only want every second result you could
     index the second dimension with ``::2``.
+
+    Parameters
+    ----------
+    lst : `object`
+        A single instance or an iterable of ``(QueryResponse, client)`` pairs
+        or ``QueryResponse`` objects with a ``.client`` attribute.
     """
 
     def __init__(self, lst):
         """
         Input to this constructor can be one of a few things:
 
-        1. A list of one UnifiedResponse object
-        2. A list of tuples (QueryResponse, client)
+        1. A ``QueryResponse`` object
+        2. A list of tuples ``(QueryResponse, client)``
         """
 
         tmplst = []
         # numfile is the number of files not the number of results.
         self._numfile = 0
-        if isinstance(lst, (QueryResponse, sunpy.net.vso.vso.QueryResponse)):
+        if isinstance(lst, (QueryResponse, vsoQueryResponse)):
             if not hasattr(lst, 'client'):
                 raise ValueError(
                     "A {} object is only a valid input to UnifiedResponse if it has a client attribute.".
@@ -267,7 +271,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         Query for data from Nobeyama Radioheliograph and RHESSI
 
         >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-                                   a.Instrument('norh') | a.Instrument('rhessi'))
+                                   (a.Instrument('norh') & a.Wavelength(17*u.GHz)) | a.Instrument('rhessi'))
 
         Query for 304 Angstrom SDO AIA data with a cadence of 10 minutes
 
@@ -276,7 +280,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
                                    a.Instrument('AIA'),
                                    a.Wavelength(304*u.angstrom, 304*u.angstrom),
-                                   a.Sample(10*u.minute))
+                                   a.vso.Sample(10*u.minute))
 
         Parameters
         ----------
