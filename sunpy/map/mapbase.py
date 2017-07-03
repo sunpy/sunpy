@@ -1390,7 +1390,7 @@ Reference Coord:\t {refcoord}
 # #### Visualization #### #
 
     @u.quantity_input(grid_spacing=u.deg)
-    def draw_grid(self, axes=None, grid_spacing=15*u.deg):
+    def draw_grid(self, axes=None, grid_spacing=15*u.deg, **kwargs):
         """
         Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
         coordinate system.
@@ -1411,6 +1411,10 @@ Reference Coord:\t {refcoord}
         -------
         overlay: `~astropy.visualization.wcsaxes.coordinates_map.CoordinatesMap`
             The wcsaxes coordinate overlay instance.
+
+        Notes
+        -----
+        Keyword arguments are passed onto the `sunpy.visualization.wcsaxes_compat.wcsaxes_heliographic_overlay` function.
         """
 
         if not axes:
@@ -1418,7 +1422,8 @@ Reference Coord:\t {refcoord}
         if not wcsaxes_compat.is_wcsaxes(axes):
             raise TypeError("Overlay grids can only be plotted on WCSAxes plots.")
         return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
-                                                           grid_spacing=grid_spacing)
+                                                           grid_spacing=grid_spacing,
+                                                           **kwargs)
 
     def draw_limb(self, axes=None, **kwargs):
         """
@@ -1432,14 +1437,12 @@ Reference Coord:\t {refcoord}
         Returns
         -------
         circ: list
-            A list containing the `matplotlib.patches.Circle` object that
+            A list containing the `~matplotlib.patches.Circle` object that
             has been added to the axes.
 
         Notes
         -----
-        keyword arguments are passed onto the Circle Patch, see:
-        http://matplotlib.org/api/artist_api.html#matplotlib.patches.Patch
-        http://matplotlib.org/api/artist_api.html#matplotlib.patches.Circle
+        Keyword arguments are passed onto `matplotlib.patches.Circle`.
         """
 
         if not axes:
