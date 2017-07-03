@@ -19,10 +19,7 @@ from sunpy import config
 __author__ = "Steven Christe"
 __email__ = "steven.christe@nasa.gov"
 
-
-sampledata_dir = config.get("downloads", "sample_dir")
-
-base_urls = (
+_base_urls = (
     'http://data.sunpy.org/sample-data/',
     'https://github.com/sunpy/sunpy-sample-data/raw/master/'
 )
@@ -36,7 +33,7 @@ base_urls = (
 # All separated by underscores
 
 # the files should include necessary extensions
-files = {
+_sample_files = {
     "AIA_171_IMAGE": "AIA20110319_105400_0171.fits",
     "RHESSI_IMAGE": "hsi_image_20101016_191218.fits",
     "EIT_195_IMAGE": "eit_l1_20020625_100011.fits",
@@ -75,9 +72,9 @@ def download_sample_data(show_progress=True):
     -------
     None
     """
-    for file_name in six.itervalues(files):
+    for file_name in six.itervalues(_sample_files):
         get_sample_file(file_name, show_progress=show_progress,
-                        url_list=base_urls, overwrite=True)
+                        url_list=_base_urls, overwrite=True)
 
 
 def get_sample_file(filename, url_list, show_progress=True, overwrite=False,
