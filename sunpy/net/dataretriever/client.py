@@ -248,7 +248,7 @@ class GenericClient(object):
         kwergs.update(kwargs)
         urls = self._get_url_for_timerange(
             self.map_.get('TimeRange'), **kwergs)
-        if getattr(self, "_get_time_for_url", None):
+        if urls and getattr(self, "_get_time_for_url", None):
             return QueryResponse.create(self.map_, urls, self._get_time_for_url(urls))
         return QueryResponse.create(self.map_, urls)
 
