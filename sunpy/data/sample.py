@@ -3,9 +3,7 @@
 from __future__ import absolute_import
 
 import sys
-from ._sample import files as _sample_files
-from ._sample import base_urls as _base_urls
-from ._sample import get_sample_file
+from ._sample import _base_urls, _sample_files, get_sample_file
 
 file_list = []
 file_dict = {}
