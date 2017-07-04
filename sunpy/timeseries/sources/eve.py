@@ -46,7 +46,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
     >>> import sunpy.timeseries
     >>> import sunpy.data.sample
 
-    >>> eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_LIGHTCURVE, source='EVE')
+    >>> eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='EVE')
     >>> eve = sunpy.timeseries.TimeSeries("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt", source='EVE')
     >>> eve.peek(subplots=True)    # doctest: +SKIP
 
@@ -67,8 +67,8 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         .. plot::
 
             import sunpy.timeseries
-            from sunpy.data.sample import EVE_LIGHTCURVE
-            eve = sunpy.timeseries.TimeSeries(EVE_LIGHTCURVE, source='eve')
+            from sunpy.data.sample import EVE_TIMESERIES
+            eve = sunpy.timeseries.TimeSeries(EVE_TIMESERIES, source='eve')
             eve.peek(subplots=True)
 
         Parameters

@@ -48,7 +48,7 @@ class LYRATimeSeries(GenericTimeSeries):
     --------
     >>> import sunpy.timeseries
     >>> import sunpy.data.sample
-    >>> lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_LIGHTCURVE, source='LYRA')
+    >>> lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_TIMESERIES, source='LYRA')
     >>> lyra.peek()   # doctest: +SKIP
 
     References
@@ -68,7 +68,7 @@ class LYRATimeSeries(GenericTimeSeries):
 
             import sunpy.timeseries
             import sunpy.data.sample
-            lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_LIGHTCURVE, source='LYRA')
+            lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_TIMESERIES, source='LYRA')
             lyra.peek()
 
         Parameters

@@ -47,7 +47,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
     --------
     >>> import sunpy.data.sample
     >>> import sunpy.timeseries
-    >>> rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_LIGHTCURVE, source='RHESSI')
+    >>> rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_TIMESERIES, source='RHESSI')
     >>> rhessi.peek()   # doctest: +SKIP
 
     References
@@ -66,7 +66,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
 
             import sunpy.data.sample
             import sunpy.timeseries
-            rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_LIGHTCURVE, source='RHESSI')
+            rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_TIMESERIES, source='RHESSI')
             rhessi.peek()
 
         Parameters
