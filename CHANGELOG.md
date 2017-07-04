@@ -1,6 +1,10 @@
 Latest
 ------
 
+* Sample data now downloads automatically on import if not available and
+  is now pluggable so can be used by affiliated packages. Shortcut names
+  have been normalized and all LIGHTCURVE shortcuts have changed to
+  TIMESERIES.
 * Calculation of points on an arc of a great circle connecting two points on the Sun.
 * Maps from Helioviewer JPEG2000 files now have correct image scaling.
 * Removed `extract_time` function from `sunpy.time` and also tests related to the function from `sunpy.time.tests`

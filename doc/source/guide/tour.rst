@@ -31,7 +31,7 @@ a Map from one of the supported data products is with the `~sunpy.map.map()` fun
 
     import sunpy.data.sample
     import sunpy.map
-    
+
     aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     aia.peek()
 
@@ -54,7 +54,7 @@ remote file. Let's create some fake data and pass it into a timeseries object.
     import sunpy.data.sample
     import sunpy.timeseries as ts
 
-    my_timeseries = ts.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='XRS')
+    my_timeseries = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
     my_timeseries.peek()
 
 We've created this timeseries object by passing TimeSeries a string which represent the name of a GOES lightcurve file.
