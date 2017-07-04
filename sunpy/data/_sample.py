@@ -20,7 +20,7 @@ __author__ = "Steven Christe"
 __email__ = "steven.christe@nasa.gov"
 
 _base_urls = (
-    'http://data.sunpy.org/sunpy/v1/',
+    'http://data.sunpy.org/sample-data/sunpy/v1/',
     'https://github.com/sunpy/sunpy-sample-data/raw/master/'
 )
 
@@ -60,7 +60,7 @@ _sample_files = {
     "GBM_TIMESERIES": "glg_cspec_n5_110607_v00.pha",
     "NOAAINDICES_TIMESERIES": "swpc_solar_cycle_indices.txt",
     "NOAAPREDICT_TIMESERIES": "predicted-sunspot-radio-flux.txt",
-    "RHESSI_TIMESERIES": "hsi_obssumm_20120601_018.fits.gz",
+    # "RHESSI_TIMESERIES": "hsi_obssumm_20120601_018.fits.gz",
     "NORH_TIMESERIES": "tca110607.fits"
 }
 
