@@ -8,6 +8,7 @@ __email__ = "keith.hughitt@nasa.gov"
 from sunpy.map.mapbase import GenericMap
 
 from . mapcube import MapCube
+from . mapcubed import MapCubed
 from . compositemap import CompositeMap
 
 from sunpy.map.map_factory import Map
