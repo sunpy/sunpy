@@ -17,9 +17,10 @@ from sunpy import config
 from sunpy.time import parse_time, TimeRange
 from sunpy.net.download import Downloader, Results
 from sunpy.net.attr import and_
-from sunpy.net.jsoc.attrs import walker
+from sunpy.net.jsoc.attrs import walker, Keys
 from sunpy.extern.six.moves import urllib
 from sunpy.extern import six
+from sunpy.util.metadata import MetaDict
 
 __all__ = ['JSOCClient', 'JSOCResponse']
 
@@ -71,12 +72,25 @@ class JSOCClient(object):
             iargs = kwargs.copy()
             iargs.update(block)
             blocks.append(iargs)
-
             return_results.append(self._lookup_records(iargs))
 
         return_results.query_args = blocks
-
         return return_results
+
+    def get_metadata(self, *query, **kwargs):
+    
+        query = and_(*query)
+        blocks = []
+        dicts = {}
+        for block in walker.create(query):
+            iargs = kwargs.copy()
+            iargs.update(block)
+            iargs.update({'meta':True})
+            blocks.append(iargs)
+            r = self._lookup_records(iargs)
+            dicts.update(r.to_dict('index'))
+
+        return MetaDict(dicts)
 
     def request_data(self, jsoc_response, **kwargs):
         """
@@ -376,67 +390,18 @@ class JSOCClient(object):
 
         return dataset
 
-    def _make_query_payload(self, start_time, end_time, series, notify=None,
-                            protocol='FITS', compression='rice', **kwargs):
-        """
-        Build the POST payload for the query parameters
-        """
-
-        if protocol.upper() == 'FITS' and compression and compression.lower() == 'rice':
-            jprotocol = 'FITS,compress Rice'
-        elif protocol.upper() == 'FITS':
-            jprotocol = 'FITS, **NONE**'
-        else:
-            jprotocol = protocol
-
-        if not notify:
-            raise ValueError("JSOC queries now require a valid email address "
-                             "before they will be accepted by the server")
-
-        dataset = self._make_recordset(start_time, end_time, series, **kwargs)
-        kwargs.pop('wavelength', None)
-        kwargs.pop('sample', None)
-
-        # Build full POST payload
-        payload = {'ds': dataset,
-                   'format': 'json',
-                   'method': 'url',
-                   'notify': notify,
-                   'op': 'exp_request',
-                   'process': 'n=0|no_op',
-                   'protocol': jprotocol,
-                   'requestor': 'none',
-                   'filenamefmt': '{0}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format(series)}
-
-        payload.update(kwargs)
-        return payload
-
-    def _send_jsoc_request(self, start_time, end_time, series, notify=None,
-                           protocol='FITS', compression='rice', **kwargs):
-        """
-        Request that JSOC stages data for download
-
-        This routine puts in a POST request to JSOC
-        """
-
-        payload = self._make_query_payload(start_time, end_time, series,
-                                           notify=notify, protocol=protocol,
-                                           compression=compression, **kwargs)
-
-        r = requests.post(JSOC_EXPORT_URL, data=payload)
-
-        if r.status_code != 200:
-            exception_message = "JSOC POST Request returned code {0}"
-            raise Exception(exception_message.format(r.status_code))
-
-        return r, r.json()
-
     def _lookup_records(self, iargs):
         """
         Do a LookData request to JSOC to workout what results the query returns
         """
-        keywords = ['DATE', 'TELESCOP', 'INSTRUME', 'T_OBS', 'WAVELNTH',
-                    'WAVEUNIT']
+
+        keywords_default = ['DATE', 'TELESCOP', 'INSTRUME', 'T_OBS', 'WAVELNTH']
+        isMeta = iargs.get('meta', False)
+        
+        if isMeta:
+            keywords = '***ALL***'
+        else:
+            keywords = iargs.get('keys', keywords_default)
 
         if not all([k in iargs for k in ('start_time', 'end_time', 'series')]):
             error_message = "Both Time and Series must be specified for a "\
@@ -450,56 +415,24 @@ class JSOCClient(object):
                     'op': 'rs_list',
                     'key': str(keywords)[1:-1].replace(' ', '').replace("'", ''),
                     'seg': '**NONE**',
-                    'link': '**NONE**'}
+                    'link': '**NONE**',
+                    }
+        
         c = drms.Client()
-        r = c.query(postthis['ds'], key=postthis['key'])
-        if r is None:
-            return astropy.table.Table()
+        r = c.query(postthis['ds'], key=postthis['key'], rec_index=isMeta)
+        
+        if isMeta:
+            return r
+        
         else:
-            return astropy.table.Table.from_pandas(r)
-
-    def _multi_request(self, **kwargs):
-        """
-        Make a series of requests to avoid the 100GB limit
-        """
-        start_time = kwargs.pop('start_time', None)
-        end_time = kwargs.pop('end_time', None)
-        series = kwargs.pop('series', None)
-        if any(x is None for x in (start_time, end_time, series)):
-            return []
-        start_time = self._process_time(start_time)
-        end_time = self._process_time(end_time)
-        tr = TimeRange(start_time, end_time)
-        returns = []
-        response, json_response = self._send_jsoc_request(start_time, end_time,
-                                                          series, **kwargs)
-
-        # We skip these lines because a massive request is not a practical test.
-        error_response = 'Request exceeds max byte limit of 100000MB'
-        if (json_response['status'] == 3 and
-                json_response['error'] == error_response):  # pragma: no cover
-            returns.append(self._multi_request(tr.start(), tr.center(), series, **kwargs)[0])
-            # pragma: no cover
-            returns.append(self._multi_request(tr.center(), tr.end(), series, **kwargs)[0])
-            # pragma: no cover
-
-        else:
-            returns.append(response)
-
-        return returns
-
-    def _request_status(self, request_id):
-        """
-        GET the status of a request ID
-        """
-        payload = {'op': 'exp_status', 'requestid': request_id}
-        u = requests.get(JSOC_EXPORT_URL, params=payload)
-
-        return u
+            if r is None:
+                return astropy.table.Table()
+            else:
+                return astropy.table.Table.from_pandas(r)
 
     @classmethod
     def _can_handle_query(cls, *query):
         chkattr = ['Series', 'Protocol', 'Notify', 'Compression', 'Wavelength',
-                   'Time', 'Segment']
+                   'Time', 'Segment', 'Keys']
 
         return all([x.__class__.__name__ in chkattr for x in query])

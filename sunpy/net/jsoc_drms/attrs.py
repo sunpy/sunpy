@@ -5,7 +5,7 @@ from sunpy.net.vso.attrs import _VSOSimpleAttr
 from sunpy.net.vso.attrs import Time, Wavelength
 
 
-__all__ = ['Series', 'Protocol', 'Notify', 'Compression', 'Segment']
+__all__ = ['Series', 'Protocol', 'Notify', 'Compression', 'Segment', 'Keys']
 
 
 class Series(_VSOSimpleAttr):
@@ -19,6 +19,14 @@ class Series(_VSOSimpleAttr):
 
 
 class Segment(_VSOSimpleAttr):
+    """
+    Segments choose which files to download when there are more than
+    one present for each record e.g. 'image'
+    """
+    pass
+
+
+class Keys(_VSOSimpleAttr):
     """
     Segments choose which files to download when there are more than
     one present for each record e.g. 'image'

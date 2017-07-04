@@ -5,7 +5,7 @@ from sunpy.net.vso.attrs import _VSOSimpleAttr
 from sunpy.net.vso.attrs import Time, Wavelength
 
 
-__all__ = ['Series', 'Protocol', 'Notify', 'Compression', 'Segment']
+__all__ = ['Series', 'Protocol', 'Notify', 'Compression', 'Segment', 'Keys']
 
 
 class Series(_VSOSimpleAttr):
@@ -14,6 +14,13 @@ class Series(_VSOSimpleAttr):
 
     See `this<http://jsoc.stanford.edu/JsocSeries_DataProducts_map.html>_`
     for a list of series'.
+    """
+    pass
+
+
+class Keys(_VSOSimpleAttr):
+    """
+    Keys choose which keywords to fetch while making a query request.
     """
     pass
 
