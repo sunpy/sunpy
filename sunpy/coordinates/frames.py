@@ -108,9 +108,7 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
             # If we were passed a 3D rep extract the distance, otherwise
             # calculate it from RSUN.
             distance = None
-            if isinstance(self._data, SphericalRepresentation):
-                distance = self._data.distance
-            elif isinstance(self._data, UnitSphericalRepresentation):
+            if isinstance(self._data, UnitSphericalRepresentation):
                 distance = RSUN_METERS.to(u.km)
 
             if distance:
