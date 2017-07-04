@@ -568,8 +568,8 @@ Reference Coord:\t {refcoord}
     @property
     def coordinate_system(self):
         """Coordinate system used for x and y axes (ctype1/2)"""
-        return SpatialPair(self.meta.get('ctype1', 'HPLN-TAN'),
-                           self.meta.get('ctype2', 'HPLT-TAN'))
+        return SpatialPair(self.meta.get('ctype1', 'HPLN-   '),
+                           self.meta.get('ctype2', 'HPLT-   '))
 
     @property
     def carrington_longitude(self):
