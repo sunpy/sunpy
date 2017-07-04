@@ -305,15 +305,15 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         query = attr.and_(*query)
         return UnifiedResponse(query_walker.create(query, self))
 
-    def fetch(self, query_result, wait=True, progress=True, **kwargs):
+    def fetch(self, *query_results, wait=True, progress=True, **kwargs):
         """
-        Downloads the files pointed at by URLs contained within UnifiedResponse
-        object.
+        Download the records represented by
+        `~sunpy.net.fido_factory.UnifiedResponse` objects.
 
         Parameters
         ----------
-        query_result : `sunpy.net.fido_factory.UnifiedResponse`
-            Container returned by query method.
+        query_results : `sunpy.net.fido_factory.UnifiedResponse`
+            Container returned by query method, or multiple.
 
         wait : `bool`
             fetch will wait until the download is complete before returning.
@@ -333,8 +333,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> file_paths = downresp.wait()
         """
         reslist = []
-        for block in query_result.responses:
-            reslist.append(block.client.get(block, **kwargs))
+        for query_result in query_results:
+            for block in query_result.responses:
+                reslist.append(block.client.get(block, **kwargs))
 
         results = DownloadResponse(reslist)
 
