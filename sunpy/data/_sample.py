@@ -48,7 +48,7 @@ _sample_files = {
     "AIA_193_CUTOUT05_IMAGE": "AIA20110607_065843_0193_cutout.fits",
     "EIT_195_IMAGE": "eit_l1_20110607_203753.fits",
     "RHESSI_IMAGE": "hsi_image_20110607_063300.fits",
-    "CALLISTO_IMAGE": "BIR_20110607_062400_10.fit",
+    "CALLISTO_SPECTRUM": "BIR_20110607_062400_10.fit",
     "RHESSI_EVENT_LIST": "hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits",
     "SWAP_LEVEL1_IMAGE": "swap_lv1_20110607_063329.fits",
     "AIA_171_ROLL_IMAGE": "aiacalibim5.fits.gz",
