@@ -481,14 +481,14 @@ Reference Coord:\t {refcoord}
         """
         The physical coordinate for the bottom left [0,0] pixel.
         """
-        return self.pixel_to_data(0*u.pix, 0*u.pix)
+        return self.pixel_to_world(0*u.pix, 0*u.pix)
 
     @property
     def top_right_coord(self):
         """
         The physical coordinate for the top left pixel.
         """
-        return self.pixel_to_data(*self.dimensions)
+        return self.pixel_to_world(*self.dimensions)
 
     @property
     def center(self):
@@ -496,7 +496,7 @@ Reference Coord:\t {refcoord}
         Return a coordinate object for the center pixel of the array.
         """
         center = u.Quantity(self.dimensions) / 2.
-        return self.pixel_to_data(*center)
+        return self.pixel_to_world(*center)
 
     @property
     def shifted_value(self):
@@ -773,9 +773,9 @@ Reference Coord:\t {refcoord}
 
 
 # #### Data conversion routines #### #
-    def data_to_pixel(self, coordinate, origin=0):
+    def world_to_pixel(self, coordinate, origin=0):
         """
-        Convert a data (world) coordinate to a pixel coordinate by using
+        Convert a world (data) coordinate to a pixel coordinate by using
         `~astropy.wcs.WCS.wcs_world2pix`.
 
         Parameters
@@ -799,7 +799,7 @@ Reference Coord:\t {refcoord}
         """
         if not isinstance(coordinate, (SkyCoord,
                                        astropy.coordinates.BaseCoordinateFrame)):
-            raise ValueError("data_to_pixel takes a Astropy coordinate frame or SkyCoord instance.")
+            raise ValueError("world_to_pixel takes a Astropy coordinate frame or SkyCoord instance.")
 
         native_frame = coordinate.transform_to(self.coordinate_frame)
         lon, lat = u.Quantity(self._get_lon_lat(native_frame)).to(u.deg)
@@ -807,8 +807,16 @@ Reference Coord:\t {refcoord}
 
         return PixelPair(x * u.pixel, y * u.pixel)
 
+    # Thought it would be easier to create a copy this way.
+    @deprecated("0.8.0", alternative="sunpy.map.GenericMap.world_to_pixel")
+    def data_to_pixel(*args):
+        """
+        See `~sunpy.map.mapbase.GenericMap.world_to_pixel`
+        """
+        return world_to_pixel(*args)
+
     @u.quantity_input(x=u.pixel, y=u.pixel)
-    def pixel_to_data(self, x, y, origin=0):
+    def pixel_to_world(self, x, y, origin=0):
         """
         Convert a pixel coordinate to a data (world) coordinate by using
         `~astropy.wcs.WCS.wcs_pix2world`.
@@ -847,6 +855,13 @@ Reference Coord:\t {refcoord}
 
         return SkyCoord(x, y, frame=self.coordinate_frame)
 
+    # Thought it would be easier to create a copy this way.
+    @deprecated("0.8.0", alternative="sunpy.map.GenericMap.pixel_to_world")
+    def pixel_to_data(*args):
+        """
+        See `~sunpy.map.mapbase.GenericMap.pixel_to_world`
+        """
+        return pixel_to_world(*args)
 
 # #### I/O routines #### #
 
@@ -1071,7 +1086,7 @@ Reference Coord:\t {refcoord}
         temp_map = self._new_instance(new_data, new_meta, self.plot_settings)
 
         # Convert the axis of rotation from data coordinates to pixel coordinates
-        pixel_rotation_center = u.Quantity(temp_map.data_to_pixel(self.reference_coordinate,
+        pixel_rotation_center = u.Quantity(temp_map.world_to_pixel(self.reference_coordinate,
                                                                   origin=0)).value
         del temp_map
 
@@ -1240,7 +1255,7 @@ Reference Coord:\t {refcoord}
 
             corners = u.Quantity([bottom_left, bottom_right, top_left, top_right])
             coord = SkyCoord(corners, frame=self.coordinate_frame)
-            pixel_corners = self.data_to_pixel(coord)
+            pixel_corners = self.world_to_pixel(coord)
 
             # Round the pixel values, we use floor+1 so that we always have at
             # least one pixel width of data.
