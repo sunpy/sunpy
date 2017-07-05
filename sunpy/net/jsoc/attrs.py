@@ -5,7 +5,7 @@ from sunpy.net.vso.attrs import _VSOSimpleAttr
 from sunpy.net.vso.attrs import Time, Wavelength
 
 
-__all__ = ['Series', 'Protocol', 'Notify', 'Compression', 'Segment', 'Keys']
+__all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys']
 
 
 class Series(_VSOSimpleAttr):
@@ -53,15 +53,6 @@ class Notify(_VSOSimpleAttr):
             raise ValueError("Notify attribute must contain an '@' symbol "
                              "to be a valid email address")
         self.value = value
-
-
-class Compression(_VSOSimpleAttr):
-    """
-    Compression format for requested files.
-
-    'rice' or None, download FITS files with RICE compression.
-    """
-    pass
 
 
 walker = AttrWalker()
