@@ -19,11 +19,11 @@ import matplotlib.pyplot as plt
 # fails to escape and falls back to the solar surface.
 # This example shows off our coordinated sample data set.
 # This event got a little bit of press coverage (e.g. `National Geographics
-# <http://news.nationalgeographic.com/news/2011/06/110608-solar-flare-sun-science-space/>`,
-# `Discover Magazine <http://blogs.discovermagazine.com/badastronomy/2011/06/07/the-sun-lets-loose-a-huge-explosion/#.WVvrBsaZORs>`)
+# <http://news.nationalgeographic.com/news/2011/06/110608-solar-flare-sun-science-space/>`_,
+# `Discover Magazine <http://blogs.discovermagazine.com/badastronomy/2011/06/07/the-sun-lets-loose-a-huge-explosion/#.WVvrBsaZORs>`_)
 # and the literature contains a number of a papers about it (e.g. `Li et al.
-# <http://iopscience.iop.org/article/10.1088/0004-637X/746/1/13/meta>`,
-# `Inglis et al. <http://iopscience.iop.org/article/10.1088/0004-637X/777/1/30/meta>`)
+# <http://iopscience.iop.org/article/10.1088/0004-637X/746/1/13/meta>`_,
+# `Inglis et al. <http://iopscience.iop.org/article/10.1088/0004-637X/777/1/30/meta>`_)
 
 ###############################################################################
 # The following image of the flare is now fairly iconic.
@@ -39,8 +39,8 @@ goes.peek()
 plt.show()
 
 ###############################################################################
-# Next let's investigate the AIA full disk images that are available. FYI,
-# images are not at the full AIA resolution.
+# Next let's investigate the AIA full disk images that are available. Please
+# note that these images are not at the full AIA resolution.
 
 aia_131_map = sunpy.map.Map(sample_data.AIA_131_IMAGE)
 aia_171_map = sunpy.map.Map(sample_data.AIA_171_IMAGE)
