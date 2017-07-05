@@ -809,11 +809,11 @@ Reference Coord:\t {refcoord}
 
     # Thought it would be easier to create a copy this way.
     @deprecated("0.8.0", alternative="sunpy.map.GenericMap.world_to_pixel")
-    def data_to_pixel(*args):
+    def data_to_pixel(self, coordinate, origin=0):
         """
         See `~sunpy.map.mapbase.GenericMap.world_to_pixel`
         """
-        return world_to_pixel(*args)
+        return self.world_to_pixel(coordinate, origin=0)
 
     @u.quantity_input(x=u.pixel, y=u.pixel)
     def pixel_to_world(self, x, y, origin=0):
@@ -857,11 +857,11 @@ Reference Coord:\t {refcoord}
 
     # Thought it would be easier to create a copy this way.
     @deprecated("0.8.0", alternative="sunpy.map.GenericMap.pixel_to_world")
-    def pixel_to_data(*args):
+    def pixel_to_data(self, x, y, origin=0):
         """
         See `~sunpy.map.mapbase.GenericMap.pixel_to_world`
         """
-        return pixel_to_world(*args)
+        return self.pixel_to_world(x, y, origin=0)
 
 # #### I/O routines #### #
 
