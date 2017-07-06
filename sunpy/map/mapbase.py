@@ -812,7 +812,7 @@ Reference Coord:\t {refcoord}
         """
         See `~sunpy.map.mapbase.GenericMap.world_to_pixel`
         """
-        return self.world_to_pixel(coordinate, origin=0)
+        return self.world_to_pixel(coordinate, origin=origin)
 
     @u.quantity_input(x=u.pixel, y=u.pixel)
     def pixel_to_world(self, x, y, origin=0):
@@ -860,7 +860,7 @@ Reference Coord:\t {refcoord}
         """
         See `~sunpy.map.mapbase.GenericMap.pixel_to_world`
         """
-        return self.pixel_to_world(x, y, origin=0)
+        return self.pixel_to_world(x, y, origin=origin)
 
 # #### I/O routines #### #
 
