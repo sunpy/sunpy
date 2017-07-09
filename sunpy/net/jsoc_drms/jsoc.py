@@ -17,16 +17,14 @@ from sunpy import config
 from sunpy.time import parse_time, TimeRange
 from sunpy.net.download import Downloader, Results
 from sunpy.net.attr import and_
-from sunpy.net.jsoc.attrs import walker, Keys
+from sunpy.net.jsoc import attrs
+from sunpy.net.jsoc.attrs import walker, Keys, PrimeKeys
+from sunpy.net.vso.attrs import _VSOSimpleAttr
 from sunpy.extern.six.moves import urllib
 from sunpy.extern import six
 from sunpy.util.metadata import MetaDict
 
 __all__ = ['JSOCClient', 'JSOCResponse']
-
-JSOC_INFO_URL = 'http://jsoc.stanford.edu/cgi-bin/ajax/jsoc_info'
-JSOC_EXPORT_URL = 'http://jsoc.stanford.edu/cgi-bin/ajax/jsoc_fetch'
-BASE_DL_URL = 'http://jsoc.stanford.edu'
 
 
 class JSOCResponse(object):
@@ -63,6 +61,14 @@ class JSOCResponse(object):
 
 class JSOCClient(object):
     
+    def initialise(self, ser):
+        
+        c = drms.Client()
+        pkeys = c.pkeys(ser)
+        for pkey in pkeys:
+            genClass = type(pkey, (_VSOSimpleAttr,), {})
+            setattr(attrs, genClass.__name__, genClass)
+
     def query(self, *query, **kwargs):
 
         return_results = JSOCResponse()

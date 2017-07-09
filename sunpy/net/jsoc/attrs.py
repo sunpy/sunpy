@@ -5,7 +5,7 @@ from sunpy.net.vso.attrs import _VSOSimpleAttr
 from sunpy.net.vso.attrs import Time, Wavelength
 
 
-__all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys']
+__all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKeys']
 
 
 class Series(_VSOSimpleAttr):
@@ -24,6 +24,17 @@ class Keys(_VSOSimpleAttr):
     """
     pass
 
+class PrimeKeys(object):
+    """
+    Prime Keys 
+    """
+    pass    
+
+class PKey(_VSOSimpleAttr):
+    """
+    Keys choose which keywords to fetch while making a query request.
+    """
+    pass
 
 class Segment(_VSOSimpleAttr):
     """
