@@ -14,7 +14,11 @@ from astropy.coordinates.representation import (CartesianRepresentation,
                                                 SphericalRepresentation)
 from astropy.coordinates import (BaseCoordinateFrame,
                                            RepresentationMapping)
-from astropy.coordinates import Attribute
+
+try:
+    from astropy.coordinates import Attribute
+except ImportError:
+    from astropy.coordinates import FrameAttribute as Attribute
 
 from sunpy import sun  # For Carrington rotation number
 from .representation import (SphericalWrap180Representation, UnitSphericalWrap180Representation)
