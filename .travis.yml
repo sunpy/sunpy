@@ -33,9 +33,11 @@ env:
         - PYTHON_VERSION=2.7 SETUP_CMD='egg_info' 
         - PYTHON_VERSION=3.4 SETUP_CMD='egg_info'
         - PYTHON_VERSION=3.5 SETUP_CMD='egg_info'
+        - PYTHON_VERSION=3.6 SETUP_CMD='egg_info'
         - PYTHON_VERSION=2.7 SETUP_CMD='test'
         - PYTHON_VERSION=3.4 SETUP_CMD='test'
         - PYTHON_VERSION=3.5 SETUP_CMD='test'
+        - PYTHON_VERSION=3.6 SETUP_CMD='test'
 
 matrix:
     include:
@@ -46,7 +48,7 @@ matrix:
            env: JOB="Astropy Dev" PYTHON_VERSION=3.5 SETUP_CMD='test' ASTROPY_VERSION='development'
 
          - os: linux
-           env: JOB="Numpy Prev" PYTHON_VERSION=2.7 SETUP_CMD='test' NUMPY_VERSION=$PREVIOUS_NUMPY
+           env: JOB="Astropy 1.0" PYTHON_VERSION=3.5 SETUP_CMD='test' ASTROPY_VERSION='1.0' NUMPY_VERSION=$PREVIOUS_NUMPY
 
          - os: linux
            env: JOB="Documentation" PYTHON_VERSION=2.7 SPHINX_VERSION=1.4 SETUP_CMD='build_sphinx -w'
