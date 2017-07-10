@@ -16,7 +16,7 @@ from astropy.coordinates.representation import (CartesianRepresentation,
                                                 SphericalRepresentation)
 from astropy.coordinates.baseframe import (BaseCoordinateFrame,
                                            RepresentationMapping)
-from astropy.coordinates import FrameAttribute, CoordinateAttribute
+from astropy.coordinates import Attribute, CoordinateAttribute
 
 from sunpy import sun  # For Carrington rotation number
 from .representation import (SphericalWrap180Representation, UnitSphericalWrap180Representation)
@@ -311,7 +311,7 @@ class Helioprojective(BaseCoordinateFrame):
     }
 
     dateobs = TimeFrameAttributeSunPy()
-    rsun = FrameAttribute(default=RSUN_METERS.to(u.km))
+    rsun = Attribute(default=RSUN_METERS.to(u.km))
     observer = CoordinateAttribute(HeliographicStonyhurst,
                                    default=HeliographicStonyhurst(0*u.deg,
                                                                   0*u.deg,
