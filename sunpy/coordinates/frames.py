@@ -14,7 +14,7 @@ from astropy.coordinates.representation import (CartesianRepresentation,
                                                 SphericalRepresentation)
 from astropy.coordinates.baseframe import (BaseCoordinateFrame,
                                            RepresentationMapping)
-from astropy.coordinates import FrameAttribute
+from astropy.coordinates import Attribute
 
 from sunpy import sun  # For Carrington rotation number
 from .representation import (SphericalWrap180Representation, UnitSphericalWrap180Representation)
@@ -225,10 +225,10 @@ class Heliocentric(BaseCoordinateFrame):
     }
 
     # d = FrameAttribute(default=(1*u.au).to(u.km))
-    D0 = FrameAttribute(default=(1*u.au).to(u.km))
+    D0 = Attribute(default=(1*u.au).to(u.km))
     dateobs = TimeFrameAttributeSunPy()
-    L0 = FrameAttribute(default=0*u.deg)
-    B0 = FrameAttribute(default=0*u.deg)
+    L0 = Attribute(default=0*u.deg)
+    B0 = Attribute(default=0*u.deg)
 
 
 class Helioprojective(BaseCoordinateFrame):
@@ -298,11 +298,11 @@ class Helioprojective(BaseCoordinateFrame):
         ]
     }
 
-    D0 = FrameAttribute(default=(1*u.au).to(u.km))
+    D0 = Attribute(default=(1*u.au).to(u.km))
     dateobs = TimeFrameAttributeSunPy()
-    L0 = FrameAttribute(default=0*u.deg)
-    B0 = FrameAttribute(default=0*u.deg)
-    rsun = FrameAttribute(default=RSUN_METERS.to(u.km))
+    L0 = Attribute(default=0*u.deg)
+    B0 = Attribute(default=0*u.deg)
+    rsun = Attribute(default=RSUN_METERS.to(u.km))
 
     def __init__(self, *args, **kwargs):
         _rep_kwarg = kwargs.get('representation', None)

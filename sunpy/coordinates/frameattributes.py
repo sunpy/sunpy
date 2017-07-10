@@ -3,17 +3,17 @@ from __future__ import absolute_import, division
 import datetime
 
 from astropy.time import Time
-from astropy.coordinates.baseframe import TimeFrameAttribute
+from astropy.coordinates.baseframe import TimeAttribute
 
 from sunpy.extern import six
 from sunpy.time import parse_time
 
 __all__ = ['TimeFrameAttributeSunPy']
 
-class TimeFrameAttributeSunPy(TimeFrameAttribute):
+class TimeFrameAttributeSunPy(TimeAttribute):
     """
     Frame attribute descriptor for quantities that are Time objects.
-    See the `~astropy.coordinates.FrameAttribute` API doc for further
+    See the `~astropy.coordinates.Attribute` API doc for further
     information.
 
     Parameters
