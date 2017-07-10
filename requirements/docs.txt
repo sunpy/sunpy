@@ -1,0 +1,9 @@
+# Dependencies required to build the documentation
+
+-r base.txt
+-r dev.txt
+-r extra.txt
+
+sphinx
+sphinx_rtd_theme
+sphinx-gallery
