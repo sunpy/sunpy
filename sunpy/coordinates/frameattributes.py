@@ -3,7 +3,7 @@ from __future__ import absolute_import, division
 import datetime
 
 from astropy.time import Time
-from astropy.coordinates.baseframe import TimeAttribute
+from astropy.coordinates import TimeAttribute
 
 from sunpy.extern import six
 from sunpy.time import parse_time

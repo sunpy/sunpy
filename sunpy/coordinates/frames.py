@@ -12,7 +12,7 @@ from astropy import units as u
 from astropy.coordinates.representation import (CartesianRepresentation,
                                                 UnitSphericalRepresentation,
                                                 SphericalRepresentation)
-from astropy.coordinates.baseframe import (BaseCoordinateFrame,
+from astropy.coordinates import (BaseCoordinateFrame,
                                            RepresentationMapping)
 from astropy.coordinates import Attribute
 
