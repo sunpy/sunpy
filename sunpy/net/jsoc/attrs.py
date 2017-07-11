@@ -112,7 +112,11 @@ def _apply1(wlk, query, imap):
 @walker.add_applier(PrimeKeys)
 def _apply1(wlk, query, imap):
 
-    imap[query.label] = query.value
+    key = 'primekeys'
+    if key in imap:
+        imap[key][query.label] = query.value
+    else:
+        imap[key] = {query.label:query.value}
 
 
 @walker.add_applier(Segment)
