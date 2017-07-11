@@ -472,7 +472,7 @@ class JSOCClient(object):
         if isMeta:
             return r
 
-        if r is None:
+        if r is None or r.empty:
             return astropy.table.Table()
         else:
             return astropy.table.Table.from_pandas(r)
