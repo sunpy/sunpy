@@ -356,36 +356,52 @@ class JSOCClient(object):
         return time.datetime
 
     def _make_recordset(self, start_time, end_time, series, wavelength='',
-                        segment='', **kwargs):
+                        segment='', primekeys={}, **kwargs):
         # Build the dataset string
         # Extract and format Wavelength
         if wavelength:
-            if not series.startswith('aia'):
-                raise TypeError("This series does not support the wavelength attribute.")
+            if isinstance(wavelength, list):
+                wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
+                wavelength = str(wavelength)
             else:
-                if isinstance(wavelength, list):
-                    wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
-                    wavelength = str(wavelength)
-                else:
-                    wavelength = '[{0}]'.format(int(np.ceil(wavelength.to(u.AA).value)))
+                wavelength = '[{0}]'.format(int(np.ceil(wavelength.to(u.AA).value)))
 
         # Extract and format segment
         if segment:
             if isinstance(segment, list):
                 segment = str(segment)[1:-1].replace(' ', '').replace("'", '')
-            elif not isinstance(segment, six.string_types):
-                raise TypeError("Segments can only be passed as a list or comma-separated strings.")
-            segment = '{{{segment}}}'.format(segment=segment)
+            else:
+                segment = '{{{segment}}}'.format(segment=segment)
 
+        # Extract and format sample
         sample = kwargs.get('sample', '')
         if sample:
             sample = '@{}s'.format(sample)
 
-        dataset = '{series}[{start}-{end}{sample}]{wavelength}{segment}'.format(
-                   series=series, start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                   end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                   sample=sample,
-                   wavelength=wavelength, segment=segment)
+        # Extract and format primekeys
+        pkstr=''
+        c = drms.Client()
+        pkeys = c.pkeys(series)
+        
+        for pkey in pkeys:
+
+            if pkey in ['T_OBS', 'T_REC', 'T_START']:
+                pkstr += '[{start}-{end}{sample}]'.format(
+                    start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                    end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                    sample=sample)
+
+            elif pkey is 'WAVELNTH' and wavelength:
+                pkstr += '[{0}]'.format(wavelength)
+
+            elif pkey not in primekeys.keys():
+                continue
+            else:
+                pkstr += '[{0}]'.format(primekeys.get(pkey,''))
+
+        dataset = '{series}{primekeys}{segment}'.format(series=series,
+                                                        primekeys=pkstr,
+                                                        segment=segment)
 
         return dataset
 
