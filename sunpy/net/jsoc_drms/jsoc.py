@@ -60,9 +60,9 @@ class JSOCResponse(object):
 
 
 class JSOCClient(object):
-    
+
     def initialise(self, ser):
-        
+
         c = drms.Client()
         pkeys = c.pkeys(ser)
         for pkey in pkeys:
@@ -84,14 +84,14 @@ class JSOCClient(object):
         return return_results
 
     def get_metadata(self, *query, **kwargs):
-    
+
         query = and_(*query)
         blocks = []
         dicts = {}
         for block in walker.create(query):
             iargs = kwargs.copy()
             iargs.update(block)
-            iargs.update({'meta':True})
+            iargs.update({'meta': True})
             blocks.append(iargs)
             r = self._lookup_records(iargs)
             dicts.update(r.to_dict('index'))
@@ -124,8 +124,8 @@ class JSOCClient(object):
         requestIDs = []
         for block in jsoc_response.query_args:
             # Do a multi-request for each query block
-            
-            ds =  self._make_recordset(**block)
+
+            ds = self._make_recordset(**block)
             cd = drms.Client(email=block['notify'])
             r = cd.export(ds, method='url', protocol='fits')
             r.wait()
@@ -133,7 +133,7 @@ class JSOCClient(object):
             responses.append(r)
             requestIDs.append(r.id)
 
-        #if return_responses:
+        # if return_responses:
         #    return responses
 
         return responses
@@ -222,7 +222,7 @@ class JSOCClient(object):
         time.sleep(sleep/2.)
 
         r = Results(lambda x: None, done=lambda maps: [v['path'] for v in maps.values()])
-        
+
         for response in responses:
 
             if progress:
@@ -235,7 +235,6 @@ class JSOCClient(object):
                                      progress=progress, results=r)
             else:
                 time.sleep(sleep)
-
 
         return r
 
@@ -278,7 +277,6 @@ class JSOCClient(object):
 
         # Convert Responses to a list if not already
 
-
         if not isiterable(responses) or isinstance(responses, drms.ExportRequest):
             responses = [responses]
 
@@ -319,7 +317,7 @@ class JSOCClient(object):
             else:
                 if progress:
                     self.check_request(response)
-        
+
         if urls:
             for url in urls:
                 downloader.download(url, callback=results.require([url]),
@@ -329,7 +327,7 @@ class JSOCClient(object):
             # Make Results think it has finished.
             results.require([])
             results.poke()
-            
+
         return results
 
     def _process_time(self, time):
@@ -346,7 +344,7 @@ class JSOCClient(object):
         -------
         datetime, in TAI
         """
-        
+
         if isinstance(time, six.string_types):
             time = parse_time(time)
 
@@ -357,7 +355,9 @@ class JSOCClient(object):
 
     def _make_recordset(self, start_time, end_time, series, wavelength='',
                         segment='', primekeys={}, **kwargs):
-        # Build the dataset string
+        """
+        Take the query arguments and build a record string.
+        """
         # Extract and format Wavelength
         if wavelength:
             if isinstance(wavelength, list):
@@ -379,10 +379,10 @@ class JSOCClient(object):
             sample = '@{}s'.format(sample)
 
         # Extract and format primekeys
-        pkstr=''
+        pkstr = ''
         c = drms.Client()
         pkeys = c.pkeys(series)
-        
+
         for pkey in pkeys:
 
             if pkey in ['T_OBS', 'T_REC', 'T_START']:
@@ -397,7 +397,7 @@ class JSOCClient(object):
             elif pkey not in primekeys.keys():
                 continue
             else:
-                pkstr += '[{0}]'.format(primekeys.get(pkey,''))
+                pkstr += '[{0}]'.format(primekeys.get(pkey, ''))
 
         dataset = '{series}{primekeys}{segment}'.format(series=series,
                                                         primekeys=pkstr,
@@ -413,7 +413,7 @@ class JSOCClient(object):
         keywords_default = ['DATE', 'TELESCOP', 'INSTRUME', 'T_OBS', 'WAVELNTH']
         isMeta = iargs.get('meta', False)
         c = drms.Client()
-        
+
         if isMeta:
             keywords = '***ALL***'
         else:
@@ -427,14 +427,14 @@ class JSOCClient(object):
         if not isinstance(keywords, list) and not isinstance(keywords, six.string_types):
             error_message = "Keywords can only be passed as a list or"\
                             " comma-separated strings."
-           raise ValueError(error_message)
+            raise ValueError(error_message)
 
         segments = iargs.get('segments', '')
         if segments:
             if not isinstance(segments, list) and not isinstance(segments, six.string_types):
                 error_message = "Segments can only be passed as a list or"\
                                 " comma-separated strings."
-               raise ValueError(error_message)
+                raise ValueError(error_message)
 
         pkeys = c.pkeys(iargs['series'])
         pkeys_passed = iargs.get('primekeys', None)
@@ -446,7 +446,7 @@ class JSOCClient(object):
 
         wavelength = iargs.get('wavelength', '')
         if wavelength:
-            if not 'WAVELNTH' in pkeys:
+            if 'WAVELNTH' not in pkeys:
                 error_message = "The series {series} does not support wavelength attribute."\
                                 " Following primekeys are supported {pkeys}"
                 raise TypeError(error_message.format(series=iargs['series'], pkeys=pkeys))
@@ -468,12 +468,13 @@ class JSOCClient(object):
                     'seg': '**NONE**',
                     'link': '**NONE**',
                     }
-        
-        
+
+        print(postthis['ds'])
         r = c.query(postthis['ds'], key=postthis['key'], rec_index=isMeta)
-        
-        if isMeta: return r
-        
+
+        if isMeta:
+            return r
+
         if r is None:
             return astropy.table.Table()
         else:
