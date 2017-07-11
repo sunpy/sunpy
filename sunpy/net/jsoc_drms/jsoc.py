@@ -412,6 +412,7 @@ class JSOCClient(object):
 
         keywords_default = ['DATE', 'TELESCOP', 'INSTRUME', 'T_OBS', 'WAVELNTH']
         isMeta = iargs.get('meta', False)
+        c = drms.Client()
         
         if isMeta:
             keywords = '***ALL***'
@@ -424,23 +425,54 @@ class JSOCClient(object):
             raise ValueError(error_message)
 
         if not isinstance(keywords, list) and not isinstance(keywords, six.string_types):
+            error_message = "Keywords can only be passed as a list or"\
+                            " comma-separated strings."
+           raise ValueError(error_message)
 
-           raise ValueError("Keywords can only be passed as a list or comma-separated strings.")
+        segments = iargs.get('segments', '')
+        if segments:
+            if not isinstance(segments, list) and not isinstance(segments, six.string_types):
+                error_message = "Segments can only be passed as a list or"\
+                                " comma-separated strings."
+               raise ValueError(error_message)
+
+        pkeys = c.pkeys(iargs['series'])
+        pkeys_passed = iargs.get('primekeys', None)
+        if pkeys_passed is not None:
+            if not set(list(pkeys_passed.keys())) < set(pkeys):
+                error_message = "Unexpected PrimeKeys were passed. The series {series} "\
+                                "supports the following PrimeKeys {pkeys}"
+                raise TypeError(error_message.format(series=iargs['series'], pkeys=pkeys))
+
+        wavelength = iargs.get('wavelength', '')
+        if wavelength:
+            if not 'WAVELNTH' in pkeys:
+                error_message = "The series {series} does not support wavelength attribute."\
+                                " Following primekeys are supported {pkeys}"
+                raise TypeError(error_message.format(series=iargs['series'], pkeys=pkeys))
+
+        si = c.info(iargs['series'])
+        segs = list(si.segments.index.values)
+        segs_passed = iargs.get('segments', None)
+        if segs_passed is not None:
+            if not set(segs_passed) < set(segs):
+                error_message = "Unexpected Segments were passed. The series {series} "\
+                                "contains the following Segments {segs}"
+                raise TypeError(error_message.format(series=iargs['series'], segs=segs))
 
         iargs['start_time'] = self._process_time(iargs['start_time'])
         iargs['end_time'] = self._process_time(iargs['end_time'])
 
         postthis = {'ds': self._make_recordset(**iargs),
-                    'op': 'rs_list',
                     'key': str(keywords)[1:-1].replace(' ', '').replace("'", ''),
                     'seg': '**NONE**',
                     'link': '**NONE**',
                     }
         
-        c = drms.Client()
+        
         r = c.query(postthis['ds'], key=postthis['key'], rec_index=isMeta)
         
-        return r if isMeta
+        if isMeta: return r
         
         if r is None:
             return astropy.table.Table()
