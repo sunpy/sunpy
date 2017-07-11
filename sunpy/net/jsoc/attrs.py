@@ -24,24 +24,26 @@ class Keys(_VSOSimpleAttr):
     """
     pass
 
+
 class PrimeKeys(Attr):
     """
-    Prime Keys 
+    Prime Keys
     """
     def __init__(self, label, value):
-        
+
         Attr.__init__(self)
         self.label = label
         self.value = value
 
-    ### Fix the __repr__
+    # ## Fix the __repr__
 
     def __repr__(self):
         return "<{cname!s}({val!r})>".format(
             cname=self.__class__.__name__, val=self.value)
 
     def collides(self, other):
-        return False  
+        return False
+
 
 class Segment(Attr):
     """
@@ -49,18 +51,18 @@ class Segment(Attr):
     one present for each record e.g. 'image'
     """
     def __init__(self, value):
-        
+
         Attr.__init__(self)
         self.value = value
 
-    ### Fix the __repr__
+    # ## Fix the __repr__
 
     def __repr__(self):
         return "<{cname!s}({val!r})>".format(
             cname=self.__class__.__name__, val=self.value)
 
     def collides(self, other):
-        return False  
+        return False
 
 
 class Protocol(_VSOSimpleAttr):
@@ -116,7 +118,7 @@ def _apply1(wlk, query, imap):
     if key in imap:
         imap[key][query.label] = query.value
     else:
-        imap[key] = {query.label:query.value}
+        imap[key] = {query.label: query.value}
 
 
 @walker.add_applier(Segment)
