@@ -358,20 +358,12 @@ class JSOCClient(object):
         """
         Take the query arguments and build a record string.
         """
-        # Extract and format Wavelength
-        if wavelength:
-            if isinstance(wavelength, list):
-                wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
-                wavelength = str(wavelength)
-            else:
-                wavelength = '[{0}]'.format(int(np.ceil(wavelength.to(u.AA).value)))
 
         # Extract and format segment
         if segment:
             if isinstance(segment, list):
                 segment = str(segment)[1:-1].replace(' ', '').replace("'", '')
-            else:
-                segment = '{{{segment}}}'.format(segment=segment)
+            segment = '{{{segment}}}'.format(segment=segment)
 
         # Extract and format sample
         sample = kwargs.get('sample', '')
@@ -384,20 +376,25 @@ class JSOCClient(object):
         pkeys = c.pkeys(series)
 
         for pkey in pkeys:
-
             if pkey in ['T_OBS', 'T_REC', 'T_START']:
                 pkstr += '[{start}-{end}{sample}]'.format(
                     start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                     end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                     sample=sample)
 
-            elif pkey is 'WAVELNTH' and wavelength:
-                pkstr += '[{0}]'.format(wavelength)
+            elif pkey == 'WAVELNTH' and wavelength is not '':
+                if isinstance(wavelength, list):
+                    wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
+                    wavelength = str(wavelength)
+                else:
+                    wavelength = '[{0}]'.format(int(np.ceil(wavelength.to(u.AA).value)))
+                pkstr += wavelength
 
-            elif pkey not in primekeys.keys():
-                continue
+            elif len(primekeys)>0:
+                pkstr += '[{0}]'.format(primekeys.pop(pkey, ''))
+
             else:
-                pkstr += '[{0}]'.format(primekeys.get(pkey, ''))
+                break
 
         dataset = '{series}{primekeys}{segment}'.format(series=series,
                                                         primekeys=pkstr,
