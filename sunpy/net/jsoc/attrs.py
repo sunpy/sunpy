@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr
+from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, Attr
 from sunpy.net.vso.attrs import _VSOSimpleAttr
 from sunpy.net.vso.attrs import Time, Wavelength
 
@@ -24,17 +24,24 @@ class Keys(_VSOSimpleAttr):
     """
     pass
 
-class PrimeKeys(object):
+class PrimeKeys(Attr):
     """
     Prime Keys 
     """
-    pass    
+    def __init__(self, label, value):
+        
+        Attr.__init__(self)
+        self.label = label
+        self.value = value
 
-class PKey(_VSOSimpleAttr):
-    """
-    Keys choose which keywords to fetch while making a query request.
-    """
-    pass
+    ### Fix the __repr__
+
+    def __repr__(self):
+        return "<{cname!s}({val!r})>".format(
+            cname=self.__class__.__name__, val=self.value)
+
+    def collides(self, other):
+        return False  
 
 class Segment(_VSOSimpleAttr):
     """
@@ -88,6 +95,12 @@ def _apply(wlk, query, imap):
 def _apply1(wlk, query, imap):
 
     imap[query.__class__.__name__.lower()] = query.value
+
+
+@walker.add_applier(PrimeKeys)
+def _apply1(wlk, query, imap):
+
+    imap[query.label] = query.value
 
 
 @walker.add_applier(Time)
