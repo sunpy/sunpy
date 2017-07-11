@@ -356,7 +356,7 @@ class JSOCClient(object):
         return time.datetime
 
     def _make_recordset(self, start_time, end_time, series, wavelength='',
-                        segment=None, **kwargs):
+                        segment='', **kwargs):
         # Build the dataset string
         # Extract and format Wavelength
         if wavelength:
@@ -370,7 +370,7 @@ class JSOCClient(object):
                     wavelength = '[{0}]'.format(int(np.ceil(wavelength.to(u.AA).value)))
 
         # Extract and format segment
-        if segment is not None:
+        if segment:
             if isinstance(segment, list):
                 segment = str(segment)[1:-1].replace(' ', '').replace("'", '')
             elif not isinstance(segment, six.string_types):
@@ -407,6 +407,10 @@ class JSOCClient(object):
                             "JSOC Query"
             raise ValueError(error_message)
 
+        if not isinstance(keywords, list) and not isinstance(keywords, six.string_types):
+
+           raise ValueError("Keywords can only be passed as a list or comma-separated strings.")
+
         iargs['start_time'] = self._process_time(iargs['start_time'])
         iargs['end_time'] = self._process_time(iargs['end_time'])
 
@@ -420,14 +424,12 @@ class JSOCClient(object):
         c = drms.Client()
         r = c.query(postthis['ds'], key=postthis['key'], rec_index=isMeta)
         
-        if isMeta:
-            return r
+        return r if isMeta
         
+        if r is None:
+            return astropy.table.Table()
         else:
-            if r is None:
-                return astropy.table.Table()
-            else:
-                return astropy.table.Table.from_pandas(r)
+            return astropy.table.Table.from_pandas(r)
 
     @classmethod
     def _can_handle_query(cls, *query):
