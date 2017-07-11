@@ -13,7 +13,9 @@ from astropy import units as u
 from astropy.coordinates.representation import (CartesianRepresentation,
                                                 UnitSphericalRepresentation)
 from astropy.coordinates.baseframe import frame_transform_graph
-from astropy.coordinates.transformations import FunctionTransform
+from astropy.coordinates.transformations import FunctionTransform, DynamicMatrixTransform
+from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_product, matrix_transpose
+from astropy.coordinates import HCRS, get_body_barycentric
 
 from sunpy import sun
 
@@ -195,6 +197,67 @@ def hpc_to_hpc(heliopcoord, heliopframe):
     hpc = hgs.transform_to(heliopframe)
 
     return hpc
+
+
+# The Sun's north pole is oriented RA=286.13 deg, dec=63.87 deg in ICRS, and thus HCRS as well
+# (See Archinal et al. 2011,
+#   "Report of the IAU Working Group on Cartographic Coordinates and Rotational Elements: 2009")
+# The orientation of the north pole in ICRS/HCRS is assumed to be constant in time
+_SOLAR_NORTH_POLE_HCRS = UnitSphericalRepresentation(lon=286.13*u.deg, lat=63.87*u.deg)
+
+
+def _make_rotation_matrix(start_representation, end_representation):
+    """
+    Return the matrix for the direct rotation from one representation to a second representation.
+    The representations need not be normalized first.
+    """
+    A = start_representation.to_cartesian()
+    B = end_representation.to_cartesian()
+    rotation_axis = A.cross(B) / (A.norm() * B.norm())
+    rotation_angle = -np.arcsin(rotation_axis.norm()) # negation is required
+
+    # This line works around some input/output quirks of Astropy's rotation_matrix()
+    matrix = np.array(rotation_matrix(rotation_angle, rotation_axis.xyz.value.tolist()))
+    return matrix
+
+
+@frame_transform_graph.transform(DynamicMatrixTransform, HCRS, HeliographicStonyhurst)
+def hcrs_to_hgs(hcrscoord, hgsframe):
+    """
+    Convert from HCRS to Heliographic Stonyhurst.
+    """
+    # De-tilt the Sun's north pole
+    z_axis = CartesianRepresentation(0, 0, 1)
+    detilt_matrix = _make_rotation_matrix(_SOLAR_NORTH_POLE_HCRS, z_axis)
+
+    # Use the time in the HGS frame unless it is not defined
+    if hgsframe.dateobs is not None:
+        time = hgsframe.dateobs
+    else:
+        time = hcrscoord.obstime
+
+    # Determine the Sun-Earth vector in this de-tilt frame
+    sun_pos_icrs = get_body_barycentric('sun', time)
+    earth_pos_icrs = get_body_barycentric('earth', time)
+    sun_earth_hcrs = earth_pos_icrs - sun_pos_icrs
+    sun_earth_detilt = sun_earth_hcrs.transform(detilt_matrix)
+
+    # Remove the component of the Sun-Earth vector that is parallel to the Sun's north pole
+    hgs_x_axis_detilt = sun_earth_detilt - z_axis * sun_earth_detilt.dot(z_axis)
+
+    # The above vector, which is in the Sun's equatorial plane, is also the X axis of HGS
+    x_axis = CartesianRepresentation(1, 0, 0)
+    rot_matrix = _make_rotation_matrix(hgs_x_axis_detilt, x_axis)
+
+    return matrix_product(rot_matrix, detilt_matrix)
+
+
+@frame_transform_graph.transform(DynamicMatrixTransform, HeliographicStonyhurst, HCRS)
+def hgs_to_hcrs(hgscoord, hcrsframe):
+    """
+    Convert from Heliographic Stonyhurst to HCRS.
+    """
+    return matrix_transpose(hcrs_to_hgs(hcrsframe, hgscoord))
 
 
 # Make a transformation graph for the documentation, borrowed lovingly from
