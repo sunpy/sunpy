@@ -23,7 +23,7 @@ import sunpy.map
 ###############################################################################
 # Use astropy to download the file to a temp location.
 
-filename = download_file('http://jsoc.stanford.edu/data/hmi/synoptic/hmi.Mldailysynframe_720s_nrt.fits', cache=True)
+filename = download_file('http://jsoc.stanford.edu/data/hmi/synoptic/hmi.Synoptic_Mr.2191.fits', cache=True)
 
 
 ###############################################################################
@@ -40,11 +40,12 @@ print(syn_map.meta['CUNIT2'])
 ###############################################################################
 # That is not a unit! What this is telling us is that the latitude coordinate
 # is actually the sine of latitude. According to the Thompson (2006) paper,
-# CUNIT2 should be in degrees and CDELT2 should be multiplied by 180/pi.
+# CUNIT2 should be in degrees and CDELT2 should be multiplied by 180/pi. Also
+# the value of CDELT1 has the wrong sign.
 
 syn_map.meta['CUNIT2'] = 'degree'
 syn_map.meta['CDELT2'] = 180/np.pi * syn_map.meta['CDELT2']
-
+syn_map.meta['CDELT1'] *= -1
 
 ###############################################################################
 # Now we create a SunPy Map from the data and header:
@@ -91,7 +92,6 @@ cb.set_label("LOS Magnetic Field [Gauss]")
 # Another horrible hack to make the ticks draw on the RHS
 axes.set_ylim((1, syn_map.data.shape[0]-1))
 
-plt.title("HMI Daily Synoptic Frame for Carrington Rotation"
-          " {}-{}".format(syn_map.meta['CAR_ROT'], syn_map.meta['CAR_ROT']+1))
+plt.title("{} {}-{}".format(syn_map.meta['content'], syn_map.meta['CAR_ROT'], syn_map.meta['CAR_ROT']+1))
 
 plt.show()
