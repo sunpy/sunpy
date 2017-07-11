@@ -43,12 +43,24 @@ class PrimeKeys(Attr):
     def collides(self, other):
         return False  
 
-class Segment(_VSOSimpleAttr):
+class Segment(Attr):
     """
     Segments choose which files to download when there are more than
     one present for each record e.g. 'image'
     """
-    pass
+    def __init__(self, value):
+        
+        Attr.__init__(self)
+        self.value = value
+
+    ### Fix the __repr__
+
+    def __repr__(self):
+        return "<{cname!s}({val!r})>".format(
+            cname=self.__class__.__name__, val=self.value)
+
+    def collides(self, other):
+        return False  
 
 
 class Protocol(_VSOSimpleAttr):
@@ -101,6 +113,16 @@ def _apply1(wlk, query, imap):
 def _apply1(wlk, query, imap):
 
     imap[query.label] = query.value
+
+
+@walker.add_applier(Segment)
+def _apply1(wlk, query, imap):
+
+    key = 'segment'
+    if key in imap:
+        imap[key].append(query.value)
+    else:
+        imap[key] = [query.value]
 
 
 @walker.add_applier(Time)
