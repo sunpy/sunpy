@@ -50,7 +50,8 @@ class QueryResponseBlock(object):
         self.phyobs = map0.get('phyobs', "Data not Available")
         self.instrument = map0.get('instrument', "Data not Available")
         self.url = url
-        self.time = TimeRange(map0.get('Time_start'), map0.get('Time_end')) if time is None else time
+        self.time = TimeRange(map0.get('Time_start'), map0.get(
+            'Time_end')) if time is None else time
         self.wavelength = map0.get('wavelength', np.NaN)
 
 
@@ -96,8 +97,10 @@ class QueryResponse(list):
                                ('Source', []), ('Instrument', []),
                                ('Wavelength', [])))
         for i, qrblock in enumerate(self):
-            columns['Start Time'].append((qrblock.time.start).strftime(TIME_FORMAT))
-            columns['End Time'].append((qrblock.time.end).strftime(TIME_FORMAT))
+            columns['Start Time'].append(
+                (qrblock.time.start).strftime(TIME_FORMAT))
+            columns['End Time'].append(
+                (qrblock.time.end).strftime(TIME_FORMAT))
             columns['Source'].append(qrblock.source)
             columns['Instrument'].append(qrblock.instrument)
             columns['Wavelength'].append(str(u.Quantity(qrblock.wavelength)))
@@ -121,7 +124,8 @@ class GenericClientMeta(ABCMeta):
     _registry = CLIENTS
 
     def __new__(mcls, name, bases, members):
-        cls = super(GenericClientMeta, mcls).__new__(mcls, name, bases, members)
+        cls = super(GenericClientMeta, mcls).__new__(
+            mcls, name, bases, members)
 
         if cls.__name__ is 'GenericClient':
             return cls
@@ -254,7 +258,7 @@ class GenericClient(object):
         """
         # Create function to compute the filepath to download to if not set
         default_dir = sunpy.config.get("downloads", "download_dir")
-        
+
         paths = []
         for i, filename in enumerate(filenames):
             if path is None:
@@ -264,7 +268,7 @@ class GenericClient(object):
 
             temp_dict = qres[i].map_.copy()
             temp_dict['file'] = filename
-            fname  = fname.format(**temp_dict)
+            fname = fname.format(**temp_dict)
             fname = os.path.expanduser(fname)
 
             if os.path.exists(fname):
@@ -309,7 +313,6 @@ class GenericClient(object):
         Results Object
         """
 
-
         urls = [qrblock.url for qrblock in qres]
 
         filenames = [url.split('/')[-1] for url in urls]
@@ -323,7 +326,7 @@ class GenericClient(object):
         # We cast to list here in list(zip... to force execution of
         # res.require([x]) at the start of the loop.
         for aurl, ncall, fname in list(zip(urls, map(lambda x: res.require([x]),
-                                           urls), paths)):
+                                                     urls), paths)):
             dobj.download(aurl, fname, ncall, error_callback)
 
         return res

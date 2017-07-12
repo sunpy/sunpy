@@ -52,22 +52,23 @@ def make_table(header, section_lines):
 
             if len(t1) == 0:
                 col_data_types = {
-                    #ID : <class 'str'>
-                    'Nmbr' : np.dtype('i4') ,
-                    'Location' : np.dtype('U6') ,
-                    'Lo' : np.dtype('i8') ,
-                    'Area' : np.dtype('i8') ,
-                    'Z' : np.dtype('U3') ,
-                    'LL' : np.dtype('i8') ,
-                    'NN' : np.dtype('i8') ,
-                    'MagType' : np.dtype('S4'),
-                    'Lat' : np.dtype('i8')
+                    # ID : <class 'str'>
+                    'Nmbr': np.dtype('i4'),
+                    'Location': np.dtype('U6'),
+                    'Lo': np.dtype('i8'),
+                    'Area': np.dtype('i8'),
+                    'Z': np.dtype('U3'),
+                    'LL': np.dtype('i8'),
+                    'NN': np.dtype('i8'),
+                    'MagType': np.dtype('S4'),
+                    'Lat': np.dtype('i8')
                 }
                 for c in t1.itercols():
                     # Put data types of columns in empty table to correct types,
                     # or else vstack will fail.
                     c.dtype = col_data_types[c._name]
-                t1.add_column(Column(data=None, name="ID", dtype=('S2')), index=0)
+                t1.add_column(
+                    Column(data=None, name="ID", dtype=('S2')), index=0)
             else:
                 t1.add_column(Column(data=[key] * len(t1), name="ID"), index=0)
 
@@ -86,7 +87,6 @@ def make_table(header, section_lines):
     if 'Lat' in out_table.columns:
         parse_lat_col(out_table['Lat'], out_table['Latitude'])
         del out_table['Lat']
-
 
     # Give columns more sensible names
     out_table.rename_column("Nmbr", "Number")

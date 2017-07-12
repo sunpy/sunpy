@@ -1,6 +1,6 @@
-#Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
-#This module was developed under funding provided by
-#Google Summer of Code 2014
+# Author: Rishabh Sharma <rishabh.sharma.gunner@gmail.com>
+# This module was developed under funding provided by
+# Google Summer of Code 2014
 
 
 from ..client import GenericClient
@@ -18,6 +18,7 @@ from sunpy.net.download import Downloader, Results
 
 
 __all__ = ['NOAAIndicesClient', 'NOAAPredictClient', 'SRSClient']
+
 
 class NOAAIndicesClient(GenericClient):
 
@@ -106,6 +107,7 @@ class NOAAPredictClient(GenericClient):
                 return all(chklist)
         return False
 
+
 class SRSClient(GenericClient):
 
     @staticmethod
@@ -153,7 +155,8 @@ class SRSClient(GenericClient):
 
         for i, [url, qre] in enumerate(list(zip(urls, qres))):
             name = url.split('/')[-1]
-            day = qre.time.start.date() + datetime.timedelta(days=i)    # temporary fix !!! coz All QRBs have same start_time values
+            # temporary fix !!! coz All QRBs have same start_time values
+            day = qre.time.start.date() + datetime.timedelta(days=i)
             if name not in filenames:
                 filenames.append(name)
 
@@ -162,23 +165,27 @@ class SRSClient(GenericClient):
             else:
                 local_filenames.append(name)
 
-        paths = self._get_full_filenames(qres, filenames, path)      # Files to be actually downloaded
+        # Files to be actually downloaded
+        paths = self._get_full_filenames(qres, filenames, path)
 
-        local_paths = self._get_full_filenames(qres, local_filenames, path)    # Those files that will be present after get returns
+        # Those files that will be present after get returns
+        local_paths = self._get_full_filenames(qres, local_filenames, path)
 
         res = Results(lambda x: None, 0, lambda map_: self._link(map_))
 
-        urls = list(OrderedDict.fromkeys(urls)) # remove duplicate urls. This will make paths and urls to have same number of elements. OrderedDict is required to maintain ordering because it will be zipped with paths later
+        # remove duplicate urls. This will make paths and urls to have same
+        # number of elements. OrderedDict is required to maintain ordering
+        # because it will be zipped with paths later
+        urls = list(OrderedDict.fromkeys(urls))
 
         dobj = Downloader(max_conn=len(urls), max_total=len(urls))
-
 
         # We cast to list here in list(zip... to force execution of
         # res.require([x]) at the start of the loop.
         for aurl, ncall, fname in list(zip(urls, map(lambda x: res.require([x]),
-                                              urls), paths)):
+                                                     urls), paths)):
             dobj.download(aurl, fname, ncall, error_callback)
-        
+
         res.wait()
 
         res2 = Results(lambda x: None, 0)
@@ -202,20 +209,20 @@ class SRSClient(GenericClient):
                 if year in name:
                     TarFile = tarfile.open(fname2)
                     filepath = fname.rpartition('/')[0]
-                    member = TarFile.getmember('SRS/'+srs_filename)
+                    member = TarFile.getmember('SRS/' + srs_filename)
                     member.name = name
                     TarFile.extract(member, path=filepath)
                     TarFile.close()
 
                     callback = res2.require([fname])
-                    callback({'path':fname})
+                    callback({'path': fname})
 
                     past_year = True
                     break
 
             if past_year is False:
                 callback = res2.require([fname])
-                callback({'path':fname})
+                callback({'path': fname})
 
         return res2
 
@@ -245,4 +252,3 @@ class SRSClient(GenericClient):
             if x.__class__.__name__ == "Instrument" and x.value == "SOON":
                 return True
         return False
-        
