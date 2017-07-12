@@ -113,7 +113,8 @@ class SRSClient(GenericClient):
     @staticmethod
     def _get_default_uri():
         today = datetime.datetime.utcnow()
-        return ['ftp://ftp.swpc.noaa.gov/pub/warehouse/{date:%Y}/SRS/{date:%Y%m%d}SRS.txt'.format(date=today)]
+        return [('ftp://ftp.swpc.noaa.gov/pub/warehouse/',
+                 '{date:%Y}/SRS/{date:%Y%m%d}SRS.txt').format(date=today)]
 
     def _get_url_for_timerange(self, timerange, **kwargs):
 
