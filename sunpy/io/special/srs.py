@@ -49,7 +49,28 @@ def make_table(header, section_lines):
         if lines:
             key = list(meta_data['id'].keys())[i]
             t1 = astropy.io.ascii.read(lines)
-            t1.add_column(Column(data=[key] * len(t1), name="ID"), index=0)
+
+            if len(t1) == 0:
+                col_data_types = {
+                    #ID : <class 'str'>
+                    'Nmbr' : np.dtype('i4') ,
+                    'Location' : np.dtype('U6') ,
+                    'Lo' : np.dtype('i8') ,
+                    'Area' : np.dtype('i8') ,
+                    'Z' : np.dtype('U3') ,
+                    'LL' : np.dtype('i8') ,
+                    'NN' : np.dtype('i8') ,
+                    'MagType' : np.dtype('S4'),
+                    'Lat' : np.dtype('i8')
+                }
+                for c in t1.itercols():
+                    # Put data types of columns in empty table to correct types,
+                    # or else vstack will fail.
+                    c.dtype = col_data_types[c._name]
+                t1.add_column(Column(data=None, name="ID", dtype=('S2')), index=0)
+            else:
+                t1.add_column(Column(data=[key] * len(t1), name="ID"), index=0)
+
             tables.append(t1)
 
     out_table = vstack(tables)
@@ -65,6 +86,7 @@ def make_table(header, section_lines):
     if 'Lat' in out_table.columns:
         parse_lat_col(out_table['Lat'], out_table['Latitude'])
         del out_table['Lat']
+
 
     # Give columns more sensible names
     out_table.rename_column("Nmbr", "Number")
@@ -123,7 +145,7 @@ def split_lines(file_lines):
     lines = [t1_lines, t2_lines, t3_lines]
     for i, ll in enumerate(lines):
         if ll[2].strip() == 'None':
-            lines[i] = None
+            del ll[2]
 
     return header, lines
 
