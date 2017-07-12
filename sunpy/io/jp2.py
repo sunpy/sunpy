@@ -34,8 +34,8 @@ def read(filepath, **kwargs):
     """
     header = get_header(filepath)
 
-    data = Jp2k(filepath).read()
-    data = data[::-1]
+    data = Jp2k(filepath).read()[::-1]
+
     return [HDPair(data, header[0])]
 
 
