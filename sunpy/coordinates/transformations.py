@@ -206,8 +206,8 @@ def _make_rotation_matrix(start_representation, end_representation):
     """
     A = start_representation.to_cartesian()
     B = end_representation.to_cartesian()
-    rotation_axis = A.cross(B) / (A.norm() * B.norm())
-    rotation_angle = -np.arcsin(rotation_axis.norm()) # negation is required
+    rotation_axis = A.cross(B)
+    rotation_angle = -np.arccos(A.dot(B) / (A.norm() * B.norm()))  # negation is required
 
     # This line works around some input/output quirks of Astropy's rotation_matrix()
     matrix = np.array(rotation_matrix(rotation_angle, rotation_axis.xyz.value.tolist()))
