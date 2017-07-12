@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 import numpy as np
 
-from astropy.utils.decorators import deprecated
+from sunpy.util.decorators import deprecated
 
 import sunpy.sun as sun
 
