@@ -199,13 +199,6 @@ def hpc_to_hpc(heliopcoord, heliopframe):
     return hpc
 
 
-# The Sun's north pole is oriented RA=286.13 deg, dec=63.87 deg in ICRS, and thus HCRS as well
-# (See Archinal et al. 2011,
-#   "Report of the IAU Working Group on Cartographic Coordinates and Rotational Elements: 2009")
-# The orientation of the north pole in ICRS/HCRS is assumed to be constant in time
-_SOLAR_NORTH_POLE_HCRS = UnitSphericalRepresentation(lon=286.13*u.deg, lat=63.87*u.deg)
-
-
 def _make_rotation_matrix(start_representation, end_representation):
     """
     Return the matrix for the direct rotation from one representation to a second representation.
@@ -221,15 +214,22 @@ def _make_rotation_matrix(start_representation, end_representation):
     return matrix
 
 
+# The Sun's north pole is oriented RA=286.13 deg, dec=63.87 deg in ICRS, and thus HCRS as well
+# (See Archinal et al. 2011,
+#   "Report of the IAU Working Group on Cartographic Coordinates and Rotational Elements: 2009")
+# The orientation of the north pole in ICRS/HCRS is assumed to be constant in time
+_solar_north_pole_hcrs = UnitSphericalRepresentation(lon=286.13*u.deg, lat=63.87*u.deg)
+
+
+# Calculate the rotation matrix to de-tilt the Sun's rotation axis to be parallel to the Z axis
+_sun_detilt_matrix = _make_rotation_matrix(_solar_north_pole_hcrs,
+                                           CartesianRepresentation(0, 0, 1))
+
 @frame_transform_graph.transform(DynamicMatrixTransform, HCRS, HeliographicStonyhurst)
 def hcrs_to_hgs(hcrscoord, hgsframe):
     """
     Convert from HCRS to Heliographic Stonyhurst.
     """
-    # De-tilt the Sun's north pole
-    z_axis = CartesianRepresentation(0, 0, 1)
-    detilt_matrix = _make_rotation_matrix(_SOLAR_NORTH_POLE_HCRS, z_axis)
-
     # Use the time in the HGS frame unless it is not defined
     if hgsframe.dateobs is not None:
         time = hgsframe.dateobs
@@ -240,16 +240,17 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
     sun_pos_icrs = get_body_barycentric('sun', time)
     earth_pos_icrs = get_body_barycentric('earth', time)
     sun_earth_hcrs = earth_pos_icrs - sun_pos_icrs
-    sun_earth_detilt = sun_earth_hcrs.transform(detilt_matrix)
+    sun_earth_detilt = sun_earth_hcrs.transform(_sun_detilt_matrix)
 
     # Remove the component of the Sun-Earth vector that is parallel to the Sun's north pole
+    z_axis = CartesianRepresentation(0, 0, 1)
     hgs_x_axis_detilt = sun_earth_detilt - z_axis * sun_earth_detilt.dot(z_axis)
 
     # The above vector, which is in the Sun's equatorial plane, is also the X axis of HGS
     x_axis = CartesianRepresentation(1, 0, 0)
     rot_matrix = _make_rotation_matrix(hgs_x_axis_detilt, x_axis)
 
-    return matrix_product(rot_matrix, detilt_matrix)
+    return matrix_product(rot_matrix, _sun_detilt_matrix)
 
 
 @frame_transform_graph.transform(DynamicMatrixTransform, HeliographicStonyhurst, HCRS)
