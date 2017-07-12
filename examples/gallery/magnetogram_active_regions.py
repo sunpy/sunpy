@@ -36,9 +36,9 @@ end_time = day + datetime.timedelta(minutes=2)
 ##############################################################################
 # Send the search query.
 
-results = Fido.search(a.Time(start_time, end_time),
-					  a.Instrument('HMI') & a.vso.Physobs("LOS_magnetic_field"),
- 					  a.vso.Sample(60* u.second))
+results = Fido.search(	a.Time(start_time, end_time),
+						a.Instrument('HMI') & a.vso.Physobs("LOS_magnetic_field"),
+ 						a.vso.Sample(60 * u.second))
 
 ##############################################################################
 # Download the files.
@@ -66,6 +66,7 @@ print(srs_table)
 
 ##############################################################################
 # We only need the rows which have 'ID' = 'I' or 'IA'.
+
 if 'I' in srs_table['ID'] or 'IA' in srs_table['ID']:
 	srs_table = srs_table[np.logical_or(srs_table['ID'] == 'I', srs_table['ID'] == 'IA')]
 else:
@@ -74,6 +75,7 @@ else:
 
 ##############################################################################
 # Now we extract the latitudes, longitudes and the region numbers.
+
 if srs_table is not None:
 	lats = srs_table['Latitude']
 	lngs = srs_table['Longitude']
@@ -82,9 +84,7 @@ else:
 	lats = lngs = numbers = None
 
 ##############################################################################
-# Now we make the plot.
-
-##############################################################################
+# Now to make the plot.
 # Create the magnetogram plot using the FITS file.
 
 smap = sunpy.map.Map(file_name)
@@ -104,7 +104,7 @@ ax.plot_coord(c, 'o')
 
 for i, num in enumerate(numbers):
 	ax.annotate(num, (lngs[i].value, lats[i].value),
-				xycoords=ax.get_transform('heliographic_stonyhurst'))
+					  xycoords=ax.get_transform('heliographic_stonyhurst'))
 
 ##############################################################################
 # Now we display the combined plot.

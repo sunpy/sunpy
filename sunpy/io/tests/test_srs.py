@@ -25,10 +25,10 @@ COORDINATES = [{'text': 'N10W05', 'latitude': 10,  'longitude': 5},
 
 LOCATION = Column(data=[x['text'] for x in COORDINATES], name='Location')
 LONGLAT = Table()
-LONGLAT.add_column(MaskedColumn(data=[
-                   x['longitude'] for x in COORDINATES], name='Longitude', unit=u.deg, mask=True))
-LONGLAT.add_column(MaskedColumn(
-    data=[x['latitude'] for x in COORDINATES], name='Latitude', unit=u.deg))
+LONGLAT.add_column(MaskedColumn(data=[x['longitude'] for x in COORDINATES], name='Longitude',
+                                unit=u.deg, mask=True))
+LONGLAT.add_column(MaskedColumn(data=[x['latitude'] for x in COORDINATES], name='Latitude',
+                                unit=u.deg))
 
 
 @pytest.mark.parametrize("path, number_of_rows",
