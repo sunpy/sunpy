@@ -37,8 +37,9 @@ end_time = day + datetime.timedelta(minutes=2)
 # Send the search query.
 
 results = Fido.search(	a.Time(start_time, end_time),
-						a.Instrument('HMI') & a.vso.Physobs("LOS_magnetic_field"),
- 						a.vso.Sample(60 * u.second))
+                       a.Instrument('HMI') & a.vso.Physobs(
+                           "LOS_magnetic_field"),
+                       a.vso.Sample(60 * u.second))
 
 ##############################################################################
 # Download the files.
@@ -68,20 +69,21 @@ print(srs_table)
 # We only need the rows which have 'ID' = 'I' or 'IA'.
 
 if 'I' in srs_table['ID'] or 'IA' in srs_table['ID']:
-	srs_table = srs_table[np.logical_or(srs_table['ID'] == 'I', srs_table['ID'] == 'IA')]
+    srs_table = srs_table[np.logical_or(
+        srs_table['ID'] == 'I', srs_table['ID'] == 'IA')]
 else:
-	print("Warning : No I or IA entries for this date.")
-	srs_table = None
+    print("Warning : No I or IA entries for this date.")
+    srs_table = None
 
 ##############################################################################
 # Now we extract the latitudes, longitudes and the region numbers.
 
 if srs_table is not None:
-	lats = srs_table['Latitude']
-	lngs = srs_table['Longitude']
-	numbers = srs_table['Number']
+    lats = srs_table['Latitude']
+    lngs = srs_table['Longitude']
+    numbers = srs_table['Number']
 else:
-	lats = lngs = numbers = None
+    lats = lngs = numbers = None
 
 ##############################################################################
 # Now to make the plot.
@@ -103,8 +105,8 @@ ax.plot_coord(c, 'o')
 # Add the numbers as labels for each point.
 
 for i, num in enumerate(numbers):
-	ax.annotate(num, (lngs[i].value, lats[i].value),
-					  xycoords=ax.get_transform('heliographic_stonyhurst'))
+    ax.annotate(num, (lngs[i].value, lats[i].value),
+                xycoords=ax.get_transform('heliographic_stonyhurst'))
 
 ##############################################################################
 # Now we display the combined plot.
