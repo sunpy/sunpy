@@ -41,16 +41,16 @@ def solar_wcs_frame_mapping(wcs):
     ycoord = wcs.wcs.ctype[1][0:4]
 
     if xcoord == 'HPLN' and ycoord == 'HPLT':
-        return Helioprojective(dateobs=dateobs, observer=observer, rsun=rsun)
+        return Helioprojective(obstime=dateobs, observer=observer, rsun=rsun)
 
     if xcoord == 'HGLN' and ycoord == 'HGLT':
-        return HeliographicStonyhurst(dateobs=dateobs)
+        return HeliographicStonyhurst(obstime=dateobs)
 
     if xcoord == 'CRLN' and ycoord == 'CRLT':
-        return HeliographicCarrington(dateobs=dateobs)
+        return HeliographicCarrington(obstime=dateobs)
 
     if xcoord == 'SOLX' and ycoord == 'SOLY':
-        return Heliocentric(dateobs=dateobs, observer=observer)
+        return Heliocentric(obstime=dateobs, observer=observer)
 
 
 astropy.wcs.utils.WCS_FRAME_MAPPINGS.append([solar_wcs_frame_mapping])

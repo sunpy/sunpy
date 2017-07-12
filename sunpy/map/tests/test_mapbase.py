@@ -199,7 +199,7 @@ def test_coordinate_frame(aia171_test_map):
     assert frame.observer.lat == aia171_test_map.observer_coordinate.frame.lat
     assert frame.observer.lon == aia171_test_map.observer_coordinate.frame.lon
     assert frame.observer.radius == aia171_test_map.observer_coordinate.frame.radius
-    assert frame.dateobs == aia171_test_map.date
+    assert frame.obstime == aia171_test_map.date
 
 
 #==============================================================================

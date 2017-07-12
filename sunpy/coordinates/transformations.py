@@ -28,14 +28,14 @@ __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc']
 
 
-def _carrington_offset(dateobs):
+def _carrington_offset(obstime):
     """
     Calculate the HG Longitude offest based on a time
     """
-    if dateobs is None:
+    if obstime is None:
         raise ValueError("To perform this transformation the coordinate"
-                         " Frame needs a dateobs Attribute")
-    return sun.heliographic_solar_center(dateobs)[0]
+                         " Frame needs a obstime Attribute")
+    return sun.heliographic_solar_center(obstime)[0]
 
 # =============================================================================
 # ------------------------- Transformation Framework --------------------------
@@ -48,11 +48,11 @@ def hgs_to_hgc(hgscoord, hgcframe):
     """
     Transform from Heliographic Stonyhurst to Heliograpic Carrington.
     """
-    c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.dateobs).to(
+    c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.obstime).to(
         u.deg)
     representation = SphericalWrap180Representation(c_lon, hgscoord.lat,
                                                     hgscoord.radius)
-    hgcframe = hgcframe.__class__(dateobs=hgscoord.dateobs)
+    hgcframe = hgcframe.__class__(obstime=hgscoord.obstime)
     return hgcframe.realize_frame(representation)
 
 
@@ -62,11 +62,11 @@ def hgc_to_hgs(hgccoord, hgsframe):
     """
     Convert from Heliograpic Carrington to Heliographic Stonyhurst.
     """
-    if hgccoord.dateobs:
-        dateobs = hgccoord.dateobs
+    if hgccoord.obstime:
+        obstime = hgccoord.obstime
     else:
-        dateobs = hgsframe.dateobs
-    s_lon = hgccoord.spherical.lon - _carrington_offset(dateobs).to(
+        obstime = hgsframe.obstime
+    s_lon = hgccoord.spherical.lon - _carrington_offset(obstime).to(
         u.deg)
     representation = SphericalWrap180Representation(s_lon, hgccoord.lat,
                                                     hgccoord.radius)
@@ -230,15 +230,9 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
     """
     Convert from HCRS to Heliographic Stonyhurst.
     """
-    # Use the time in the HGS frame unless it is not defined
-    if hgsframe.dateobs is not None:
-        time = hgsframe.dateobs
-    else:
-        time = hcrscoord.obstime
-
     # Determine the Sun-Earth vector in this de-tilt frame
-    sun_pos_icrs = get_body_barycentric('sun', time)
-    earth_pos_icrs = get_body_barycentric('earth', time)
+    sun_pos_icrs = get_body_barycentric('sun', hgsframe.obstime)
+    earth_pos_icrs = get_body_barycentric('earth', hgsframe.obstime)
     sun_earth_hcrs = earth_pos_icrs - sun_pos_icrs
     sun_earth_detilt = sun_earth_hcrs.transform(_sun_detilt_matrix)
 
