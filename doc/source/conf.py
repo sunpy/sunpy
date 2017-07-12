@@ -161,6 +161,8 @@ edit_on_github_branch = "master"
 edit_on_github_source_root = ""
 edit_on_github_doc_root = "docs"
 
+edit_on_github_skip_regex = '_.*|api/.*'
+
 
 # -- Sphinx Gallery ----------------------------------------------------------
 try:
