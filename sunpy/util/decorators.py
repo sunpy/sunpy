@@ -11,7 +11,7 @@ import textwrap
 import types
 import warnings
 
-from sunpy.util.expections import SunpyDeprecationWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning
 
 __all__ = ['deprecated']
 
