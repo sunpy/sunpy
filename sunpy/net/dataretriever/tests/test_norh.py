@@ -11,6 +11,7 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 from hypothesis import given
+
 from sunpy.net.tests.strategies import time_attr, range_time
 
 

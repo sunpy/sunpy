@@ -33,6 +33,7 @@ sunpy/data/sample/*.fits
 sunpy/data/sample/*.csv
 sunpy/data/sample/*.fit
 .cache
+examples/figure.png
 
 ### https://raw.github.com/github/gitignore/master/Global/OSX.gitignore
 

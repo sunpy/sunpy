@@ -80,8 +80,3 @@ except AttributeError:
     Possible signatures:
 
     """ + SWavesSpectrogram._create.generate_docs())
-
-if __name__ == "__main__":
-    opn = SWavesSpectrogram.read("/home/florian/swaves_average_20120705_a_hfr.dat")
-    opn.plot(min_=0, linear=False).show()
-    print("Press return to exit")
