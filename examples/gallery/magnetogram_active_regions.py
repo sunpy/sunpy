@@ -66,14 +66,20 @@ print(srs_table)
 
 ##############################################################################
 # We only need the rows which have 'ID' = 'I' or 'IA'.
-
-srs_table = srs_table[np.logical_or(srs_table['ID'] == 'I', srs_table['ID'] == 'IA')]
+if 'I' in srs_table['ID'] or 'IA' in srs_table['ID']:
+	srs_table = srs_table[np.logical_or(srs_table['ID'] == 'I', srs_table['ID'] == 'IA')]
+else:
+	print("Warning : No I or IA entries for this date.")
+	srs_table = None
 
 ##############################################################################
 # Now we extract the latitudes, longitudes and the region numbers.
-lats = srs_table['Latitude']
-lngs = srs_table['Longitude']
-numbers = srs_table['Number']
+if srs_table is not None:
+	lats = srs_table['Latitude']
+	lngs = srs_table['Longitude']
+	numbers = srs_table['Number']
+else:
+	lats = lngs = numbers = None
 
 ##############################################################################
 # Now we make the plot.
