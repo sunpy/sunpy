@@ -124,6 +124,48 @@ def solar_coord_type_from_ctype(ctype):
         return 'scalar', None
 
 
+def default_wcs_ticks(axes, units, ctypes):
+    """
+    Set the ticks and axes type on a solar WCSAxes plot.
+    """
+
+    if not isinstance(axes, wcsaxes.WCSAxes):
+        raise TypeError("This axes is not a WCSAxes")
+
+    x = axes.coords[0]
+    y = axes.coords[1]
+
+    x.set_ticks(color='white')
+    y.set_ticks(color='white')
+
+    x.set_ticks_position('bl')
+    y.set_ticks_position('bl')
+
+    xtype = solar_coord_type_from_ctype(ctypes[0])
+    ytype = solar_coord_type_from_ctype(ctypes[1])
+
+    x.set_coord_type(*xtype)
+    y.set_coord_type(*ytype)
+
+    if xtype[0] == 'scalar':
+        x.set_major_formatter('x.x')
+    elif units[0] is u.deg:
+        x.set_major_formatter('d.d')
+    elif units[0] is u.arcsec:
+        x.set_major_formatter('s.s')
+    else:
+        x.set_major_formatter('x.x')
+
+    if ytype[0] == 'scalar':
+        x.set_major_formatter('x.x')
+    elif units[1] is u.deg:
+        y.set_major_formatter('d.d')
+    elif units[1] is u.arcsec:
+        y.set_major_formatter('s.s')
+    else:
+        y.set_major_formatter('x.x')
+
+
 def default_wcs_grid(axes, units, ctypes):
     """
     Apply some default wcsaxes grid formatting.
@@ -137,34 +179,8 @@ def default_wcs_grid(axes, units, ctypes):
     units : `tuple`
         The axes units axes x y order.
     """
-    if not isinstance(axes, wcsaxes.WCSAxes):
-        raise TypeError("This axes is not a WCSAxes")
 
-    x = axes.coords[0]
-    y = axes.coords[1]
-
-    x.set_ticks(color='white')
-    y.set_ticks(color='white')
-
-    x.set_ticks_position('bl')
-    y.set_ticks_position('bl')
-
-    x.set_coord_type(*solar_coord_type_from_ctype(ctypes[0]))
-    y.set_coord_type(*solar_coord_type_from_ctype(ctypes[1]))
-
-    if units[0] is u.deg:
-        x.set_major_formatter('d.d')
-    elif units[0] is u.arcsec:
-        x.set_major_formatter('s.s')
-    else:
-        x.set_major_formatter('x.x')
-
-    if units[1] is u.deg:
-        y.set_major_formatter('d.d')
-    elif units[1] is u.arcsec:
-        y.set_major_formatter('s.s')
-    else:
-        y.set_major_formatter('x.x')
+    default_wcs_ticks(axes, units, ctypes)
 
     axes.coords.grid(color='white', alpha=0.6, linestyle='dotted',
                      linewidth=0.5)
