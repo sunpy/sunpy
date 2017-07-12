@@ -16,12 +16,12 @@ from matplotlib import patches, cm, colors
 
 import astropy.wcs
 import astropy.units as u
-from astropy.utils.decorators import deprecated
 from astropy.visualization.wcsaxes import WCSAxes
 from astropy.coordinates import SkyCoord
 
 import sunpy.io as io
 import sunpy.coordinates
+from sunpy.util.decorators import deprecated
 from sunpy import config
 from sunpy.extern import six
 from sunpy.visualization import toggle_pylab, wcsaxes_compat, axis_labels_from_ctype
@@ -566,8 +566,8 @@ Reference Coord:\t {refcoord}
     @property
     def coordinate_system(self):
         """Coordinate system used for x and y axes (ctype1/2)"""
-        return SpatialPair(self.meta.get('ctype1', 'HPLN-TAN'),
-                           self.meta.get('ctype2', 'HPLT-TAN'))
+        return SpatialPair(self.meta.get('ctype1', 'HPLN-   '),
+                           self.meta.get('ctype2', 'HPLT-   '))
 
     @property
     def carrington_longitude(self):

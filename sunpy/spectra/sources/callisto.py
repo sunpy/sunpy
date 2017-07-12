@@ -503,9 +503,3 @@ except AttributeError:
     Possible signatures:
 
     """ + CallistoSpectrogram._create.generate_docs())
-
-
-if __name__ == "__main__":
-    opn = CallistoSpectrogram.read("callisto/BIR_20110922_103000_01.fit")
-    opn.subtract_bg().clip(0).plot(ratio=2).show()
-    print("Press return to exit")
