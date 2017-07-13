@@ -406,22 +406,22 @@ def test_walker_create_fitsheader_inverted(session):
 @pytest.mark.online
 def test_walker_create_vso_instrument(vso_session):
     entries = walker.create(vso.attrs.Instrument('RHESSI'), vso_session)
+    # Old Numbers wavemin 0.4132806430668068, wavemax 7.293187818826002e-05
     assert entries == [
         tables.DatabaseEntry(id=1, source=u'RHESSI', provider=u'LSSP',
             physobs=u'intensity',
             fileid=u'/hessidata/2011/09/20/hsi_20110920_010920',
             observation_time_start=datetime(2011, 9, 20, 1, 9, 20),
             observation_time_end=datetime(2011, 9, 20, 2, 27, 40),
-            instrument=u'RHESSI', size=-1.0, wavemin=0.4132806430668068,
-            wavemax=7.293187818826002e-05),
+            instrument=u'RHESSI', size=-1.0, wavemin=0.4132806579880238,
+            wavemax=7.293188082141598e-05),
         tables.DatabaseEntry(id=2, source=u'RHESSI', provider=u'LSSP',
             physobs=u'intensity',
             fileid=u'/hessidata/2011/09/19/hsi_20110919_233340',
             observation_time_start=datetime(2011, 9, 19, 23, 33, 40),
             observation_time_end=datetime(2011, 9, 20, 1, 9, 20),
-            instrument=u'RHESSI', size=-1.0, wavemin=0.4132806430668068,
-            wavemax=7.293187818826002e-05)]
-
+            instrument=u'RHESSI', size=-1.0, wavemin=0.4132806579880238,
+            wavemax=7.293188082141598e-05)]
 
 @pytest.mark.online
 def test_walker_create_wave(vso_session):
@@ -437,11 +437,12 @@ def test_walker_create_time(vso_session):
         datetime(2011, 9, 17, 0, 0, 0), datetime(2011, 9, 20, 0, 0, 0))
     entries = walker.create(time, vso_session)
     assert len(entries) == 1
+    # Old values of wavemin=0.4132806430668068, wavemax=7.293187818826002e-05
     assert entries == [
         tables.DatabaseEntry(id=2, source=u'RHESSI', provider=u'LSSP',
             physobs=u'intensity',
             fileid=u'/hessidata/2011/09/19/hsi_20110919_233340',
             observation_time_start=datetime(2011, 9, 19, 23, 33, 40),
             observation_time_end=datetime(2011, 9, 20, 1, 9, 20),
-            instrument=u'RHESSI', size=-1.0, wavemin=0.4132806430668068,
-            wavemax=7.293187818826002e-05)]
+            instrument=u'RHESSI', size=-1.0, wavemin=0.4132806579880238,
+            wavemax=7.293188082141598e-05)]
