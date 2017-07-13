@@ -202,9 +202,9 @@ def test_coordinate_frame(aia171_test_map):
     assert frame.obstime == aia171_test_map.date
 
 
-#==============================================================================
+# ==============================================================================
 # Test Rotation WCS conversion
-#==============================================================================
+# ==============================================================================
 def test_rotation_matrix_pci_j(generic_map):
     np.testing.assert_allclose(generic_map.rotation_matrix, np.matrix([[0., -1.], [1., 0.]]))
 
@@ -645,8 +645,8 @@ def test_hc_warn():
 
 
 def test_more_than_two_dimensions():
-    """Checks to see if an appropriate error is raised when a FITs with more than two dimensions is loaded.
-    We need to load a >2-dim dataset with a TELESCOP header"""
+    """Checks to see if an appropriate error is raised when a FITS with more than two dimensions is
+    loaded.  We need to load a >2-dim dataset with a TELESCOP header"""
 
     # Data crudely represnts 4 stokes, 4 wavelengths with Y,X of 3 and 5.
     bad_data = np.random.rand(4, 4, 3, 5)
