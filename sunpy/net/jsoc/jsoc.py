@@ -264,7 +264,7 @@ class JSOCClient(object):
             # Do a multi-request for each query block
 
             ds = self._make_recordset(**block)
-            cd = drms.Client(email=block['notify'])
+            cd = drms.Client(email=block.get('notify', ''))
             r = cd.export(ds, method='url', protocol='fits')
             r.wait()
 
