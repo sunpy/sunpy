@@ -243,8 +243,7 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
     sun_earth_detilt = sun_earth_hcrs.transform(_sun_detilt_matrix)
 
     # Remove the component of the Sun-Earth vector that is parallel to the Sun's north pole
-    z_axis = CartesianRepresentation(0, 0, 1)
-    hgs_x_axis_detilt = sun_earth_detilt - z_axis * sun_earth_detilt.dot(z_axis)
+    hgs_x_axis_detilt = CartesianRepresentation(sun_earth_detilt.xyz * [1, 1, 0])
 
     # The above vector, which is in the Sun's equatorial plane, is also the X axis of HGS
     x_axis = CartesianRepresentation(1, 0, 0)
