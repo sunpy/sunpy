@@ -39,8 +39,8 @@ if ON_RTD:
 try:
     import astropy_helpers
 except ImportError:
-    # Building from inside the doc/source directory?
-    if os.path.basename(os.getcwd()) == 'source':
+    # Building from inside the docs directory?
+    if os.path.basename(os.getcwd()) == 'docs':
         a_h_path = os.path.abspath(os.path.join('..', 'astropy_helpers'))
         if os.path.isdir(a_h_path):
             sys.path.insert(1, a_h_path)
@@ -132,7 +132,7 @@ except ImportError:
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = "../logo/favicon.ico"
+html_favicon = "./logo/favicon.ico"
 
 # If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
 # using the given strftime format.
@@ -203,9 +203,9 @@ try:
     sphinx_gallery_conf = {
         'backreferences_dir': 'generated{}modules'.format(os.sep), # path to store the module using example template
         'filename_pattern': '^((?!skip_).)*$', # execute all examples except those that start with "skip_"
-        'examples_dirs': '..{0}..{0}examples'.format(os.sep), # path to the examples scripts
-        'gallery_dirs': 'generated{}gallery'.format(os.sep), # path to save gallery generated examples
-        'default_thumb_file': '..{}logo{}sunpy_icon_128x128.png'.format(os.sep, os.sep),
+        'examples_dirs': os.path.join('..','examples'), # path to the examples scripts
+        'gallery_dirs': os.path.join('generated','gallery'), # path to save gallery generated examples
+        'default_thumb_file': os.path.join('.','logo','sunpy_icon_128x128.png'),
         'reference_url': {
             'sunpy': None,
             'astropy': 'http://docs.astropy.org/en/stable/',
