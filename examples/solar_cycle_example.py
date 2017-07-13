@@ -9,20 +9,20 @@ import datetime
 import matplotlib.pyplot as plt
 
 import sunpy.lightcurve as lc
-from sunpy.data.sample import NOAAINDICES_LIGHTCURVE, NOAAPREDICT_LIGHTCURVE
+from sunpy.data.sample import NOAAINDICES_TIMESERIES, NOAAPREDICT_TIMESERIES
 
 ###############################################################################
 # For this example we will use the SunPy sample data, if you want the current
 # data, delete the argument to the ``create`` function. i.e.
 # ``noaa = lc.NOAAIndicesLightCurve.create()``
-noaa = lc.NOAAIndicesLightCurve.create(NOAAINDICES_LIGHTCURVE)
-noaa_predict = lc.NOAAPredictIndicesLightCurve.create(NOAAPREDICT_LIGHTCURVE)
+noaa = lc.NOAAIndicesLightCurve.create(NOAAINDICES_TIMESERIES)
+noaa_predict = lc.NOAAPredictIndicesLightCurve.create(NOAAPREDICT_TIMESERIES)
 
 ###############################################################################
 # Next lets grab the data again to create a new data structure that we will
 # shift by 12 years to simulate the next solar cycle. We will truncate the
 # data to only plot what is necessary.
-noaa2 = lc.NOAAIndicesLightCurve.create(NOAAINDICES_LIGHTCURVE)
+noaa2 = lc.NOAAIndicesLightCurve.create(NOAAINDICES_TIMESERIES)
 noaa2.data = noaa2.data.shift(2, freq=datetime.timedelta(days=365*12))
 noaa2 = noaa2.truncate('2021/04/01', '2030/01/01')
 

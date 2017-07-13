@@ -16,12 +16,12 @@ from matplotlib import patches, cm, colors
 
 import astropy.wcs
 import astropy.units as u
-from astropy.utils.decorators import deprecated
 from astropy.visualization.wcsaxes import WCSAxes
 from astropy.coordinates import SkyCoord
 
 import sunpy.io as io
 import sunpy.coordinates
+from sunpy.util.decorators import deprecated
 from sunpy import config
 from sunpy.extern import six
 from sunpy.visualization import toggle_pylab, wcsaxes_compat, axis_labels_from_ctype
@@ -90,8 +90,6 @@ class GenericMap(NDData):
     Examples
     --------
     >>> import sunpy.map
-    >>> import sunpy.data
-    >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
     >>> import sunpy.data.sample
     >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     >>> aia   # doctest: +NORMALIZE_WHITESPACE
@@ -568,8 +566,8 @@ Reference Coord:\t {refcoord}
     @property
     def coordinate_system(self):
         """Coordinate system used for x and y axes (ctype1/2)"""
-        return SpatialPair(self.meta.get('ctype1', 'HPLN-TAN'),
-                           self.meta.get('ctype2', 'HPLT-TAN'))
+        return SpatialPair(self.meta.get('ctype1', 'HPLN-   '),
+                           self.meta.get('ctype2', 'HPLT-   '))
 
     @property
     def carrington_longitude(self):
@@ -1167,8 +1165,6 @@ Reference Coord:\t {refcoord}
         --------
         >>> import astropy.units as u
         >>> import sunpy.map
-        >>> import sunpy.data
-        >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
         >>> import sunpy.data.sample
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
         >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=m.coordinate_frame)
@@ -1394,7 +1390,7 @@ Reference Coord:\t {refcoord}
 # #### Visualization #### #
 
     @u.quantity_input(grid_spacing=u.deg)
-    def draw_grid(self, axes=None, grid_spacing=15*u.deg):
+    def draw_grid(self, axes=None, grid_spacing=15*u.deg, **kwargs):
         """
         Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
         coordinate system.
@@ -1415,6 +1411,10 @@ Reference Coord:\t {refcoord}
         -------
         overlay: `~astropy.visualization.wcsaxes.coordinates_map.CoordinatesMap`
             The wcsaxes coordinate overlay instance.
+
+        Notes
+        -----
+        Keyword arguments are passed onto the `sunpy.visualization.wcsaxes_compat.wcsaxes_heliographic_overlay` function.
         """
 
         if not axes:
@@ -1422,7 +1422,8 @@ Reference Coord:\t {refcoord}
         if not wcsaxes_compat.is_wcsaxes(axes):
             raise TypeError("Overlay grids can only be plotted on WCSAxes plots.")
         return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
-                                                           grid_spacing=grid_spacing)
+                                                           grid_spacing=grid_spacing,
+                                                           **kwargs)
 
     def draw_limb(self, axes=None, **kwargs):
         """
@@ -1436,14 +1437,12 @@ Reference Coord:\t {refcoord}
         Returns
         -------
         circ: list
-            A list containing the `matplotlib.patches.Circle` object that
+            A list containing the `~matplotlib.patches.Circle` object that
             has been added to the axes.
 
         Notes
         -----
-        keyword arguments are passed onto the Circle Patch, see:
-        http://matplotlib.org/api/artist_api.html#matplotlib.patches.Patch
-        http://matplotlib.org/api/artist_api.html#matplotlib.patches.Circle
+        Keyword arguments are passed onto `matplotlib.patches.Circle`.
         """
 
         if not axes:
