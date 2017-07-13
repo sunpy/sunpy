@@ -480,8 +480,6 @@ def entries_from_file(file, default_waveunit=None,
     Examples
     --------
     >>> from sunpy.database.tables import entries_from_file
-    >>> import sunpy.data
-    >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
     >>> import sunpy.data.sample
     >>> entries = list(entries_from_file(sunpy.data.sample.SWAP_LEVEL1_IMAGE))
     >>> len(entries)

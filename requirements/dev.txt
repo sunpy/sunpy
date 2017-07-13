@@ -1,0 +1,10 @@
+# Dependencies required for development and tests
+
+-r base.txt
+-r extra.txt
+
+hypothesis
+mock
+pytest
+pytest-cov
+pytest-mock

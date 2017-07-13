@@ -17,11 +17,9 @@ build
 dist
 sunpy.egg-info
 paver-minilib.zip
-doc/build/*
-doc/source/generated
-doc/source/api/
-doc/html
-docs
+docs/_build
+docs/generated
+docs/api/
 .tox/
 .coverage
 htmlcov
@@ -33,6 +31,7 @@ sunpy/data/sample/*.fits
 sunpy/data/sample/*.csv
 sunpy/data/sample/*.fit
 .cache
+examples/figure.png
 
 ### https://raw.github.com/github/gitignore/master/Global/OSX.gitignore
 

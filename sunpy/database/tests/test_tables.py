@@ -99,10 +99,10 @@ def test_entry_from_qr_block(query_result):
     entry = DatabaseEntry._from_query_result_block(query_result[0])
     expected_entry = DatabaseEntry(
         source='SOHO', provider='SDAC', physobs='intensity',
-        fileid='/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.010014',
-        observation_time_start=datetime(2001, 1, 1, 1, 0, 14),
-        observation_time_end=datetime(2001, 1, 1, 1, 0, 21),
-        instrument='EIT', size=2059.0, wavemin=17.1, wavemax=17.1)
+        fileid='/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.000042',
+        observation_time_start=datetime(2001, 1, 1, 0, 0, 42),
+        observation_time_end=datetime(2001, 1, 1, 0, 0, 54),
+        instrument='EIT', size=2059.0, wavemin=19.5, wavemax=19.5)
     assert entry == expected_entry
 
 
@@ -300,10 +300,10 @@ def test_entries_from_query_result(query_result):
     snd_entry = entries[1]
     expected_entry = DatabaseEntry(
         source='SOHO', provider='SDAC', physobs='intensity',
-        fileid='/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.070014',
-        observation_time_start=datetime(2001, 1, 1, 7, 0, 14),
-        observation_time_end=datetime(2001, 1, 1, 7, 0, 21),
-        instrument='EIT', size=2059.0, wavemin=17.1, wavemax=17.1)
+        fileid='/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.001210',
+        observation_time_start=datetime(2001, 1, 1, 0, 12, 10),
+        observation_time_end=datetime(2001, 1, 1, 0, 12, 23),
+        instrument='EIT', size=2059.0, wavemin=19.5, wavemax=19.5)
     assert snd_entry == expected_entry
 
 
@@ -318,29 +318,8 @@ def test_entry_from_query_results_with_none_wave(qr_with_none_waves):
 def test_entry_from_query_results_with_none_wave_and_default_unit(
         qr_with_none_waves):
     entries = list(entries_from_query_result(qr_with_none_waves, 'nm'))
-    assert len(entries) == 7
+    assert len(entries) == 4
     assert entries == [
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_blue_intensity_series.tar.gz',
-            observation_time_start=datetime(1996, 4, 11, 0, 0, 0),
-            observation_time_end=datetime(2014, 3, 30, 23, 59, 0),
-            instrument='VIRGO', size=32652.0, wavemin=None,
-            wavemax=None),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_green_intensity_series.tar.gz',
-            observation_time_start=datetime(1996, 4, 11, 0, 0, 0),
-            observation_time_end=datetime(2014, 3, 30, 23, 59, 0),
-            instrument='VIRGO', size=32652.0, wavemin=None,
-            wavemax=None),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_red_intensity_series.tar.gz',
-            observation_time_start=datetime(1996, 4, 11, 0, 0, 0),
-            observation_time_end=datetime(2014, 3, 30, 23, 59, 0),
-            instrument='VIRGO', size=32652.0, wavemin=None,
-            wavemax=None),
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
             fileid='/archive/soho/private/data/processed/virgo/level1/1212/HK/121222_1.H01',

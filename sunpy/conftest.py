@@ -11,7 +11,6 @@ from sunpy.extern.six.moves.urllib.error import URLError
 
 import pytest
 
-
 # Force MPL to use non-gui backends for testing.
 try:
     import matplotlib
@@ -21,7 +20,6 @@ else:
     matplotlib.use('Agg')
 
 from astropy.tests import disable_internet
-
 from sunpy.tests.hash import HASH_LIBRARY_NAME
 from sunpy.tests.helpers import new_hash_library, figure_test_pngfiles
 
