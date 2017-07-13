@@ -65,7 +65,7 @@ matrix:
            env: SETUP_CMD='build_docs -w'
                 EVENT_TYPE='push pull_request cron'
                 SPHINX_VERSION='>1.6'
- 
+
          # Figure test runs use an env stored in the repo so don't have conda
          # requirements
          - python: 2.7
@@ -73,10 +73,6 @@ matrix:
 
          - python: 3.5
            env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
-
-         - python: 3.6
-           env: SETUP_CMD='test --online --coverage -V'
-                EVENT_TYPE='push pull_request cron'
 
 install:
     - git clone git://github.com/astropy/ci-helpers.git
