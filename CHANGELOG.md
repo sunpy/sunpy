@@ -68,7 +68,8 @@ Latest
 * The physical radius of the Sun (length units) is now passed from Map into the
   coordinate frame so a consistent value is used when calculating distance to
   the solar surface in the `HelioprojectiveFrame` coordinate frame.
-
+* Moved Docs to docs/ to follow the astropy style
+* Added SunPy specific warnings under util.
 
 0.7.0
 -----
