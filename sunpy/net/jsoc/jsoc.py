@@ -247,33 +247,35 @@ class JSOCClient(object):
 
         Returns
         -------
-        requestIDs : list of strings
-            List of the JSOC request identifiers
+        requests : ExportRequest Object or
+                   a list of ExportRequest objects
+            
+            Request Id can be accessed by requests.id
+            Request status can be accessed by requests.status 
 
         """
-        # A little (hidden) debug feature
-        return_responses = kwargs.pop('return_resp', False)
-        if len(kwargs):
-            warn_message = "request_data got unexpected keyword arguments {0}"
-            raise TypeError(warn_message.format(list(kwargs.keys())))
 
         # Do a multi-request for each query block
-        responses = []
-        requestIDs = []
+        requests = []
         for block in jsoc_response.query_args:
-            # Do a multi-request for each query block
 
             ds = self._make_recordset(**block)
             cd = drms.Client(email=block.get('notify', ''))
-            r = cd.export(ds, method='url', protocol='fits')
+            protocol = block.get('protocol', 'fits')
+
+            if protocol != 'fits' and protocol != 'as-is':
+                error_message = "Protocols other than fits and as-is are "\
+                                "are not supported."
+                raise TypeError(error_message)
+
+            method = 'url' if protocol == 'fits' else 'url-quick'
+            r = cd.export(ds, method=method, protocol=protocol)
             r.wait()
 
-            responses.append(r)
-            requestIDs.append(r.id)
+            requests.append(r)
 
-        # if return_responses:
-        #    return responses
-
+        if len(responses) == 1:
+            return responses[0]
         return responses
 
     def check_request(self, responses):
@@ -315,6 +317,8 @@ class JSOCClient(object):
 
             allstatus.append(status)
 
+        if len(allstatus) == 1:
+            return allstatus[0]
         return allstatus
 
     def fetch(self, jsoc_response, path=None, overwrite=False, progress=True,
