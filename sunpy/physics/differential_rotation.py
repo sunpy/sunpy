@@ -4,6 +4,7 @@ import numpy as np
 from astropy import units as u
 from astropy.coordinates import Longitude, Latitude, Angle
 from sunpy.time import parse_time, julian_day
+from astropy.coordinates import SkyCoord
 
 from sunpy.wcs import convert_hpc_hg, convert_hg_hpc
 from sunpy.sun import constants, sun
@@ -39,7 +40,8 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     -----
     * IDL code equivalent: http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/diff_rot.pro
     * Howard rotation: http://adsabs.harvard.edu/abs/1990SoPh..130..295H
-    * A review of rotation parameters (including Snodgrass values): http://link.springer.com/article/10.1023%2FA%3A1005226402796
+    * A review of rotation parameters (including Snodgrass values):
+    http://link.springer.com/article/10.1023%2FA%3A1005226402796
 
     Examples
     --------
@@ -87,12 +89,12 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     if frame_time == 'synodic':
         rotation_deg -= 0.9856 * delta_days
 
-    #return Longitude((np.round(rotation_deg, 4)), u.deg)
+    # return Longitude((np.round(rotation_deg, 4)), u.deg)
     return np.round(rotation_deg, 4) * u.deg
 
 
-@u.quantity_input(x=u.arcsec, y=u.arcsec)
-def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwargs):
+@u.quantity_input(x=SkyCoord)
+def rot_hpc(coord, tstart, tend, frame_time='synodic', rot_type='howard', **kwargs):
     """Given a location on the Sun referred to using the Helioprojective
     Cartesian co-ordinate system (typically quoted in the units of arcseconds)
     use the solar rotation profile to find that location at some later or
@@ -104,11 +106,8 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
 
     Parameters
     ----------
-    x : `~astropy.units.Quantity`
-        Helio-projective x-co-ordinate in arcseconds (can be an array).
-
-    y : `~astropy.units.Quantity`
-        Helio-projective y-co-ordinate in arcseconds (can be an array).
+    coord : `astropy.coordinates.SkyCoord`
+        Helio-projective sunpy-co-ordinate (can be an array).
 
     tstart : `sunpy.time.time`
         date/time to which x and y are referred.
@@ -127,11 +126,9 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
 
     Returns
     -------
-    x : `~astropy.units.Quantity`
-        Rotated helio-projective x-co-ordinate in arcseconds (can be an array).
+    new_coord : `astropy.coordinates.SkyCoord`
+        Rotated helio-projective sunpy-co-ordinate (can be an array).
 
-    y : `~astropy.units.Quantity`
-        Rotated helio-projective y-co-ordinate in arcseconds (can be an array).
 
     Examples
     --------
@@ -153,10 +150,15 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
     by convert_hpc_hg.  This leads to very slightly different results from
     rot_hpc compared to rot_xy.
     """
+    x = coord.Tx
+    y = coord.Ty
 
+    '''
+    # Is this necessary?
     # must have pairs of co-ordinates
     if np.array(x).shape != np.array(y).shape:
         raise ValueError('Input co-ordinates must have the same shape.')
+    '''
 
     # Make sure we have enough time information to perform a solar differential
     # rotation
@@ -173,7 +175,8 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
                                          y.to(u.arcsec).value,
                                          b0_deg=vstart["b0"].to(u.deg).value,
                                          l0_deg=vstart["l0"].to(u.deg).value,
-                                         dsun_meters=(constants.au * sun.sunearth_distance(t=dstart)).value,
+                                         dsun_meters=(constants.au *
+                                         sun.sunearth_distance(t=dstart)).value,
                                          angle_units='arcsec')
     longitude = Longitude(longitude, u.deg)
     latitude = Angle(latitude, u.deg)
@@ -195,7 +198,7 @@ def rot_hpc(x, y, tstart, tend, frame_time='synodic', rot_type='howard', **kwarg
                                 occultation=False)
     newx = Angle(newx, u.arcsec)
     newy = Angle(newy, u.arcsec)
-    return newx.to(u.arcsec), newy.to(u.arcsec)
+    return SkyCoord(newx, newy, frame='helioprojective')
 
 
 def _calc_P_B0_SD(date):
@@ -230,8 +233,8 @@ def _calc_P_B0_SD(date):
     # get the longitude of the sun etc.
     sun_position = _sun_pos(date)
     longmed = sun_position["longitude"].to(u.deg).value
-    #ra = sun_position["ra"]
-    #dec = sun_position["dec"]
+    # ra = sun_position["ra"]
+    # dec = sun_position["dec"]
     appl = sun_position["app_long"].to(u.deg).value
     oblt = sun_position["obliq"].to(u.deg).value
 
@@ -329,30 +332,30 @@ def _sun_pos(date):
     # mean anomaly ME
     me = 358.4758440 + np.mod(35999.049750 * t, 360.0)
     ellcor = (6910.10 - 17.20 * t) * np.sin(np.deg2rad(me)) + \
-    72.30 * np.sin(np.deg2rad(2.0 * me))
+        72.30 * np.sin(np.deg2rad(2.0 * me))
     l = l + ellcor
 
     # allow for the Venus perturbations using the mean anomaly of Venus MV
     mv = 212.603219 + np.mod(58517.8038750 * t, 360.0)
     vencorr = 4.80 * np.cos(np.deg2rad(299.10170 + mv - me)) + \
-          5.50 * np.cos(np.deg2rad(148.31330 + 2.0 * mv - 2.0 * me)) + \
-          2.50 * np.cos(np.deg2rad(315.94330 + 2.0 * mv - 3.0 * me)) + \
-          1.60 * np.cos(np.deg2rad(345.25330 + 3.0 * mv - 4.0 * me)) + \
-          1.00 * np.cos(np.deg2rad(318.150 + 3.0 * mv - 5.0 * me))
+        5.50 * np.cos(np.deg2rad(148.31330 + 2.0 * mv - 2.0 * me)) + \
+        2.50 * np.cos(np.deg2rad(315.94330 + 2.0 * mv - 3.0 * me)) + \
+        1.60 * np.cos(np.deg2rad(345.25330 + 3.0 * mv - 4.0 * me)) + \
+        1.00 * np.cos(np.deg2rad(318.150 + 3.0 * mv - 5.0 * me))
     l = l + vencorr
 
     # Allow for the Mars perturbations using the mean anomaly of Mars MM
     mm = 319.5294250 + np.mod(19139.858500 * t, 360.0)
     marscorr = 2.0 * np.cos(np.deg2rad(343.88830 - 2.0 * mm + 2.0 * me)) + \
-            1.80 * np.cos(np.deg2rad(200.40170 - 2.0 * mm + me))
+        1.80 * np.cos(np.deg2rad(200.40170 - 2.0 * mm + me))
     l = l + marscorr
 
     # Allow for the Jupiter perturbations using the mean anomaly of Jupiter MJ
     mj = 225.3283280 + np.mod(3034.69202390 * t, 360.00)
     jupcorr = 7.20 * np.cos(np.deg2rad(179.53170 - mj + me)) + \
-          2.60 * np.cos(np.deg2rad(263.21670 - mj)) + \
-          2.70 * np.cos(np.deg2rad(87.14500 - 2.0 * mj + 2.0 * me)) + \
-          1.60 * np.cos(np.deg2rad(109.49330 - 2.0 * mj + me))
+        2.60 * np.cos(np.deg2rad(263.21670 - mj)) + \
+        2.70 * np.cos(np.deg2rad(87.14500 - 2.0 * mj + 2.0 * me)) + \
+        1.60 * np.cos(np.deg2rad(109.49330 - 2.0 * mj + me))
     l = l + jupcorr
 
     # Allow for the Moons perturbations using the mean elongation of the Moon
@@ -377,12 +380,12 @@ def _sun_pos(date):
 
     # Form the True Obliquity
     oblt = 23.4522940 - 0.01301250 * t + \
-    (9.20 * np.cos(np.deg2rad(omega))) / 3600.0
+        (9.20 * np.cos(np.deg2rad(omega))) / 3600.0
 
     # Form Right Ascension and Declination
     l = l / 3600.0
-    ra = np.rad2deg(np.arctan2(np.sin(np.deg2rad(l)) * \
-                        np.cos(np.deg2rad(oblt)), np.cos(np.deg2rad(l))))
+    ra = np.rad2deg(np.arctan2(np.sin(np.deg2rad(l)) *
+                    np.cos(np.deg2rad(oblt)), np.cos(np.deg2rad(l))))
 
     if isinstance(ra, np.ndarray):
         ra[ra < 0.0] += 360.0
@@ -400,4 +403,3 @@ def _sun_pos(date):
             "dec": Latitude(dec, u.deg),
             "app_long": Longitude(l, u.deg),
             "obliq": Angle(oblt, u.deg)}
-
