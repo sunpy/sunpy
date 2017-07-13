@@ -203,9 +203,9 @@ try:
     sphinx_gallery_conf = {
         'backreferences_dir': 'generated{}modules'.format(os.sep), # path to store the module using example template
         'filename_pattern': '^((?!skip_).)*$', # execute all examples except those that start with "skip_"
-        'examples_dirs': '..{0}examples'.format(os.sep), # path to the examples scripts
+        'examples_dirs': '..{}examples'.format(os.sep), # path to the examples scripts
         'gallery_dirs': 'generated{}gallery'.format(os.sep), # path to save gallery generated examples
-        'default_thumb_file': '..{}logo{}sunpy_icon_128x128.png'.format(os.sep, os.sep),
+        'default_thumb_file': '.{}logo{}sunpy_icon_128x128.png'.format(os.sep, os.sep),
         'reference_url': {
             'sunpy': None,
             'astropy': 'http://docs.astropy.org/en/stable/',
