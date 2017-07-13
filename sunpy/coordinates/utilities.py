@@ -24,10 +24,9 @@ def get_earth(time='now'):
 
     Returns
     -------
-    out : SkyCoord
+    out : `~astropy.coordinates.SkyCoord`
         SkyCoord for the location of the Earth in the HeliographicStonyhurst frame
-    
     """
     obstime = Time(parse_time(time))
-
-    return SkyCoord(get_body_barycentric('earth', obstime), obstime=obstime).transform_to(HeliographicStonyhurst)
+    earth = SkyCoord(get_body_barycentric('earth', obstime), frame='icrs', obstime=obstime)
+    return earth.transform_to(HeliographicStonyhurst)
