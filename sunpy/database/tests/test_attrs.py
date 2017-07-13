@@ -406,7 +406,6 @@ def test_walker_create_fitsheader_inverted(session):
 @pytest.mark.online
 def test_walker_create_vso_instrument(vso_session):
     entries = walker.create(vso.attrs.Instrument('RHESSI'), vso_session)
-    # Old Numbers wavemin 0.4132806430668068, wavemax 7.293187818826002e-05
     assert entries == [
         tables.DatabaseEntry(id=1, source=u'RHESSI', provider=u'LSSP',
             physobs=u'intensity',
@@ -437,7 +436,6 @@ def test_walker_create_time(vso_session):
         datetime(2011, 9, 17, 0, 0, 0), datetime(2011, 9, 20, 0, 0, 0))
     entries = walker.create(time, vso_session)
     assert len(entries) == 1
-    # Old values of wavemin=0.4132806430668068, wavemax=7.293187818826002e-05
     assert entries == [
         tables.DatabaseEntry(id=2, source=u'RHESSI', provider=u'LSSP',
             physobs=u'intensity',
