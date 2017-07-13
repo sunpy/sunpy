@@ -30,16 +30,13 @@ class PrimeKeys(Attr):
     Prime Keys
     """
     def __init__(self, label, value):
-
         Attr.__init__(self)
         self.label = label
         self.value = value
 
-    # ## Fix the __repr__
-
     def __repr__(self):
-        return "<{cname!s}({val!r})>".format(
-            cname=self.__class__.__name__, val=self.value)
+        return "<{cname!s}({lab!r},{val!r})>".format(
+            cname=self.__class__.__name__, lab=self.label, val=self.value)
 
     def collides(self, other):
         return False
@@ -51,11 +48,8 @@ class Segment(Attr):
     one present for each record e.g. 'image'
     """
     def __init__(self, value):
-
         Attr.__init__(self)
         self.value = value
-
-    # ## Fix the __repr__
 
     def __repr__(self):
         return "<{cname!s}({val!r})>".format(
