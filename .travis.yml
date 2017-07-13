@@ -74,8 +74,6 @@ matrix:
          - python: 3.5
            env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
 
-    allow_failures:
-         # Net is failing and we really need to fix it sometime
          - python: 3.6
            env: SETUP_CMD='test --online --coverage -V'
                 EVENT_TYPE='push pull_request cron'
