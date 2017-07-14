@@ -429,14 +429,16 @@ def test_add_entry_from_hek_qr(database):
     # *something*
     assert len(database) > 1
 
+
 def num_entries_from_vso_query(db, query, path=None, file_pattern='',
-    caching=True):
+                               caching=True):
     db.download_from_vso_query_result(
         query, path=path, caching=caching)
     fits_pattern = file_pattern
     num_of_fits_headers = sum(
         len(fits.get_header(file)) for file in glob.glob(fits_pattern))
     return num_of_fits_headers
+
 
 @pytest.mark.online
 def test_vso_query_block_caching(database, download_qr, tmpdir):
@@ -446,7 +448,7 @@ def test_vso_query_block_caching(database, download_qr, tmpdir):
     # Download for all query response blocks and save the length
     # of database in num_of_fits_headers
     num_of_fits_headers = num_entries_from_vso_query(database, download_qr,
-        path=str(tmpdir.join('{file}.fits')), file_pattern=str(tmpdir.join('*.fits')))
+                                                     path=str(tmpdir.join('{file}.fits')), file_pattern=str(tmpdir.join('*.fits')))
 
     assert len(database) == num_of_fits_headers and len(database) > 0
 
@@ -456,13 +458,13 @@ def test_vso_query_block_caching(database, download_qr, tmpdir):
 
     # Only downloading for the first query response block
     num_of_fits_headers_1 = num_entries_from_vso_query(database, download_qr[:1],
-        path=str(tmpdir.join('{file}.type1')), file_pattern=str(tmpdir.join('*.type1')))
+                                                       path=str(tmpdir.join('{file}.type1')), file_pattern=str(tmpdir.join('*.type1')))
 
     assert len(database) == num_of_fits_headers_1 and len(database) > 0
 
     # Downloading for all query response blocks
     num_of_fits_headers_2 = num_entries_from_vso_query(database, download_qr,
-        path=str(tmpdir.join('{file}.type2')), file_pattern=str(tmpdir.join('*.type2')))
+                                                       path=str(tmpdir.join('{file}.type2')), file_pattern=str(tmpdir.join('*.type2')))
 
     # Final length of the database should be the same as num_of_fits_headers.
     # This is done to ensure that the first query response block's files weren't
@@ -473,11 +475,12 @@ def test_vso_query_block_caching(database, download_qr, tmpdir):
     assert len(database) == num_of_fits_headers_1 + num_of_fits_headers_2
     assert len(database) > 0
 
-    assert num_of_fits_headers_1+num_of_fits_headers_2 == num_of_fits_headers
+    assert num_of_fits_headers_1 + num_of_fits_headers_2 == num_of_fits_headers
+
 
 @pytest.mark.online
 def test_vso_query_block_caching_with_caching_off_flag(database,
-    download_qr, tmpdir):
+                                                       download_qr, tmpdir):
 
     assert len(database) == 0
 
@@ -485,15 +488,15 @@ def test_vso_query_block_caching_with_caching_off_flag(database,
     # of database in num_of_fits_headers
 
     num_of_fits_headers = num_entries_from_vso_query(database, download_qr,
-        path=str(tmpdir.join('{file}.fits')), file_pattern=str(tmpdir.join('*.fits')))
+                                                     path=str(tmpdir.join('{file}.fits')), file_pattern=str(tmpdir.join('*.fits')))
 
     assert len(database) == num_of_fits_headers and len(database) > 0
 
     # Only downloading for the first query response block with caching disabled
 
     num_of_fits_headers_1 = num_entries_from_vso_query(database, download_qr[:1],
-        path=str(tmpdir.join('{file}.type1')), file_pattern=str(tmpdir.join('*.type1')),
-        caching=False)
+                                                       path=str(tmpdir.join('{file}.type1')), file_pattern=str(tmpdir.join('*.type1')),
+                                                       caching=False)
 
     # The files for the first query response block should be downloaded again
     assert len(database) == num_of_fits_headers + num_of_fits_headers_1
@@ -579,12 +582,14 @@ def test_add_from_file(database):
     for entry in database:
         assert entry.fileid == fileid
 
+
 def test_add_from_file_hdu_index(database):
     assert len(database) == 0
     database.add_from_file(RHESSI_IMAGE)
     assert len(database) == 4
     for i, entry in enumerate(database):
         assert entry.hdu_index == i
+
 
 def test_add_from_file_duplicates(database):
     database.add_from_file(RHESSI_IMAGE)
@@ -897,8 +902,10 @@ def test_fetch_separate_filenames():
     dir_contents = os.listdir(tmp_test_dir)
     assert 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits' in dir_contents
     assert 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits' in dir_contents
-    assert os.path.isfile(os.path.join(tmp_test_dir, 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits'))
-    assert os.path.isfile(os.path.join(tmp_test_dir, 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits'))
+    assert os.path.isfile(os.path.join(
+        tmp_test_dir, 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits'))
+    assert os.path.isfile(os.path.join(
+        tmp_test_dir, 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits'))
 
     # Teardown
     shutil.rmtree(tmp_test_dir)
@@ -929,8 +936,9 @@ def test_disable_undo(database, download_query, tmpdir):
 
 @pytest.fixture
 def default_waveunit_database():
-    unit_database = Database('sqlite:///:memory:', default_waveunit = units.meter)
-    str_database = Database('sqlite:///:memory:', default_waveunit = "m")
+    unit_database = Database('sqlite:///:memory:',
+                             default_waveunit=units.meter)
+    str_database = Database('sqlite:///:memory:', default_waveunit="m")
     return unit_database, str_database
 
 
