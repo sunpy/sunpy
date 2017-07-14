@@ -15,29 +15,29 @@ Version Control
 
 Source-code for SunPy is managed using `Git <http://git-scm.com>`_,
 a Distributed Version Control system. Code branches are hosted on
-`GitHub.com <http://github.com/sunpy/sunpy>`_, a free project hosting  website
-for Open-Source software.
+`GitHub.com <http://github.com/sunpy/sunpy>`_, a free project hosting website
+for Open-Source software. To contribute to SunPy you will need to create an
+account on GitHub.
 
 Creating Your Own Repo
 ^^^^^^^^^^^^^^^^^^^^^^
 
 **Overview**
 
-Each person contributing to SunPy should create their own code repository on
-GitHub by forking the master repository or repo. All development is then done on that
-fork, using topic branches to isolate work on different features. New
-contributors can then initiate pull requests to have their code incorporated
-into the SunPy master repository. Regular contributors can become members of the
-`SunPy team <https://github.com/sunpy>`_ on GitHub. Code will be reviewed by regular
-contributors and comments will usually be provided before code is accepted.
+Each person contributing to SunPy should create their own code repository (repo)
+on GitHub by forking the master repository or repo. All development is then
+done on your fork, using topic branches to isolate work on different features.
+New contributors can then initiate pull requests to have their code incorporated
+into the SunPy master repository. Regular contributors may become members of
+the `SunPy team <https://github.com/sunpy>`_ on GitHub. Code will be reviewed
+by and comments will be provided to improve the code before it is accepted.
 
 **Getting Started**
 
-Creating your own repo on GitHub is easy to do. If you followed the SunPy installation
-instructions you should already have git installed. Go ahead and create a free account
-on `create an account on GitHub <https://github.com/signup/free>`_. Github has some
-`great resources to help <https://help.github.com/>`_. Here is a quick overview of the
-process.
+Creating your own fork of SunPy on GitHub is easy to do. Go ahead and create
+a free account on `create an account on GitHub <https://github.com/signup/free>`_.
+Github has some `great resources to help <https://help.github.com/>`_.
+Here is a quick overview of the process.
 
 **Adding an SSH key to GitHub**
 
@@ -47,29 +47,31 @@ For instructions on how this is done, see the article on GitHub on
 `Setting up git <http://help.github.com/set-up-git-redirect>`_ under
 "Set Up SSH Keys". You only need to do this once, although if you plan to
 work from multiple computers you will need to go through the process for each
-computer you wish to work on. Once you have created your account and
-associated a public SSH key it, you are ready to go.
+computer.
 
 **Using HTTPS**
 
 If you do not fancy using SSH you can access GitHub using HTTP/HTTPS.
-A few things to note.
-Using HTTP only allows cloning of public repositories, while HTTPS allows cloning of private repositories but also allows you to have push access.
-This way you can type in your username and password to access your repositories.
+A few things to note. Using HTTP only allows cloning of public repositories,
+while HTTPS allows cloning of private repositories but also allows you to have
+push access. This way you can type in your username and password to access
+your repositories.
 
 **Identifying yourself**
 
-Begin by identifying yourself to git (so all of your commits have this information) and logging in to GitHub: ::
+Begin by identifying yourself to git (so all of your commits are signed with
+this information): ::
 
  git config --global user.name "Firstname Lastname"
  git config --global user.email "your_email@youremail.com"
 
 **Forking SunPy**
 
-Each contributor to SunPy has their own copy of the SunPy master repo. When
-working on the code, changes are made to this copied repo, and only when the
-changes are completed, and have been verified to work, are they pull requested back
-to the upstream repo. GitHub provides a simple mechanism to setup your own
+Each contributor to SunPy must have their own copy of the SunPy master repo.
+When working on the code, changes are made to your copy, and only when the
+changes are completed, and have been verified to work, should they be
+requested to be merged into the SunPy code base (through a pull request).
+GitHub provides a simple mechanism to setup your own
 personal repo by providing an option to `fork a repository
 <http://help.github.com/fork-a-repo/>`_. When you create a fork of a GitHub
 project, a copy of the repo will automatically be created for you, and a link
@@ -82,7 +84,7 @@ on the `SunPy project page <https://github.com/sunpy/sunpy>`_
 Next, you need to download the forked repository. Clone the fork to your
 local machine, edit and run: ::
 
- git clone git@github.com:your_username/sunpy.git
+ git clone git@github.com:<your_username>/sunpy.git
 
 or: ::
 
@@ -94,34 +96,43 @@ as a `remote` in git: ::
 
  git remote add upstream https://github.com/sunpy/sunpy.git
 
-To stay up to date you can grab the latest changes to the SunPy master using
+To stay up to date regularly grab the latest changes to the SunPy master using
 the commands: ::
 
- git pull upstream master
+ git fetch upstream master
+ git merge upstream/master
 
-This will merge the upstream code automatically with your code so you don't need to worry
-about it overwriting your changes. After running either of these commands,
-your local copy of your personal repo is just a copy of the main repo.
-This is the same procedure that you will use in the future to keep yourself synchronised with the
-main repo. To make sure everything is setup correctly, let's make some changes
-to our personal local repo and push those to our personal repo on GitHub. Go ahead and modify one
-of the files, or create a new file (and then run :command:`git add`).
+This will merge the upstream code with your code so you don't
+need to worry about it overwriting your changes. Next let's test this by making
+a change to SunPy. First (always do this!) create a new branch to contain your
+change.
 
-Commit and push the changes to GitHub: ::
+ git checkout -b test
+
+Go ahead and modify one of the files, or create a new file
+(and then run :command:`git add`).
+
+Commit and push the changes to your GitHub: ::
 
  git commit -a -m "My first commit"
  git push
 
-You local repo is now synced with GitHub and ahead of the main repo as it contains
-your personal contribution. Remember to commit after you've done a unit of work (i.e.
-often). This will make it easier for you (in the future) and everyone else to understand
-what you are doing. Also make sure to make your commit statements clear and understandable.
+You local repo is now synced with GitHub and ahead of the main repo as it
+contains your change. Remember to commit after you've done a unit of work (i.e.
+often). This will make it easier for you (in the future) and everyone else to
+understand what you are doing. Also make sure to make your commit statements
+clear and understandable to yourself and others. You can now go back to your
+unchanged version of SunPy on your master branch by running the command
+
+ git checkout master
+
+Remember to always create a new branch to contain a certain set of work.
 
 **Installing SunPy**
 
-In order to use the version of SunPy located  in your personal repository.
-You need to install it using the `setup.py` script located in the top-level folder.
-The `setup.py` script has several flags: ::
+In order to use the version of SunPy located in your personal repository.
+You need to install it using the `setup.py` script located in the top-level
+folder. The `setup.py` script has several flags: ::
 `develop` : Installs SunPy and builds all external libraries.
 `build` or `build_ext`:  (Re)Builds the external libraries.
 `clean --all`: Cleans all build files
@@ -139,7 +150,7 @@ After a standard conda installation, :ref:`assuming you have also installed
 the latest stable version of sunpy <main-install>`, you then proceed to create a new environment
 as::
 
- conda create -n sunpy-dev python=2.7 sunpy
+ conda create -n sunpy-dev python=3 sunpy
 
 This will create a new environment called `sunpy-dev` with all of the
 dependencies needed by sunpy. We then proceed to change to the new
@@ -157,17 +168,16 @@ to then install the version in your git repository ::
  python setup.py develop
 
 At this stage you can use the development version in which you are
-working on.
-If you want to go back to the stable installation you can just change
-the environment by ::
+working on. If you want to go back to the stable installation you can just
+change the environment by ::
 
  source deactivate
 
 **Conclusion**
 
 That's it! You now have your own personal SunPy repo to develop on. You could
-hack away at it to your heart's content, pushing changes to your fork on GitHub to share
-with others and to ensure that you have a backup online.
+hack away at it to your heart's content, pushing changes to your fork on
+GitHub to share with others and to ensure that you have a backup online.
 
 But what about when you want to start contributing back to the main SunPy
 repo? That is the topic of the next section.
@@ -419,10 +429,11 @@ Documentation should follow the guidelines in `PEP 8
 conventions) <http://www.python.org/dev/peps/pep-0257/>`_. Documentation for
 modules, classes, and functions should follow the `NumPy/SciPy documentation
 style guide
-<https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt>`_. We provide
-an example of good documentation below or you can just browse some of SunPy code
-itself for examples. All of the SunPy documentation (like this page!) is built by Sphinx
-and must therefore adhere to Sphinx guidelines.
+<https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt>`_.
+We provide an example of good documentation below or you can just browse some
+of SunPy code itself for examples. All of the SunPy documentation
+(like this page!) is built by Sphinx and must therefore adhere to Sphinx
+guidelines.
 
 Sphinx
 ^^^^^^
@@ -442,23 +453,25 @@ Sphinx.
 
 **Usage**
 
-All of the SunPy documentation is contained in the ``doc/source`` folder and code
-comments. To generate the documentation you must have Sphinx
-(as well as Numpydoc and astropy-helpers) installed on your computer.
-Enter the ``doc/source`` folder and run: ::
+All of the SunPy documentation is contained in the ``doc/source`` folder and
+code comments. The examples from the example gallery can be found in
+``examples``. To build the documentation locally you must have Sphinx
+(as well as Numpydoc, astropy-helpers, and sphinx-gallery) installed on
+your computer. In the root directory run ::
 
-    make html
+    python setup.py build_docs
 
-This will generate HTML documentation for SunPy. To clean up and delete the
-generated documentation run: ::
-
-    make clean
+This will generate HTML documentation for SunPy in the ``docs/_build/html``
+directory. The gallery examples are located under 
+``docs/_build/html/generated/gallery`` Sphinx builds documentation
+iteratively only adding things that have changed. If you'd like to start
+from scratch then just delete the build directory.
 
 For more information on how to use Sphinx, consult the `Sphinx documentation
 <http://sphinx.pocoo.org/contents.html>`_.
 
 The rest of this section will describe how to document the SunPy code in order
-to guarantee that well-formatted documentation will be created.
+to guarantee well-formatted documentation.
 
 **doctest**
 
