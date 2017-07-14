@@ -39,6 +39,7 @@ class EntryNotFoundError(Exception):
     unique ID.
 
     """
+
     def __init__(self, entry_id):
         self.entry_id = entry_id
 
@@ -52,6 +53,7 @@ class EntryAlreadyAddedError(Exception):
     the database although it was already saved in it.
 
     """
+
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
@@ -67,6 +69,7 @@ class EntryAlreadyStarredError(Exception):
     operation.
 
     """
+
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
@@ -81,6 +84,7 @@ class EntryAlreadyUnstarredError(Exception):
     attempted to be removed although the entry is not starred.
 
     """
+
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
@@ -95,6 +99,7 @@ class NoSuchTagError(Exception):
     name.
 
     """
+
     def __init__(self, tag_name):
         self.tag_name = tag_name
 
@@ -108,6 +113,7 @@ class TagAlreadyAssignedError(Exception):
     database entry but the database entry already has this tag assigned.
 
     """
+
     def __init__(self, database_entry, tag_name):
         self.database_entry = database_entry
         self.tag_name = tag_name
@@ -288,6 +294,7 @@ class Database(object):
         Get the number of database entries.
 
     """
+
     def __init__(self, url=None, CacheClass=LRUCache, cache_size=float('inf'),
                  default_waveunit=None):
         if url is None:
@@ -305,6 +312,7 @@ class Database(object):
         self._enable_history = True
 
         class Cache(CacheClass):
+
             def callback(this, entry_id, database_entry):
                 self.remove(database_entry)
 
@@ -393,12 +401,12 @@ class Database(object):
         if caching is True:
             remove_list = []
             for qr in query_result:
-                temp =  tables.DatabaseEntry._from_query_result_block(qr)
+                temp = tables.DatabaseEntry._from_query_result_block(qr)
                 for database_entry in self:
                     if database_entry.path is not None and temp._compare_attributes(
-                        database_entry, ["source", "provider", "physobs", "fileid", 
-                        "observation_time_start", "observation_time_end", 
-                        "instrument", "size", "wavemin", "wavemax"]):
+                        database_entry, ["source", "provider", "physobs", "fileid",
+                                         "observation_time_start", "observation_time_end",
+                                         "instrument", "size", "wavemin", "wavemax"]):
                         remove_list.append(qr)
                         break
 
