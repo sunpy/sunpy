@@ -178,14 +178,6 @@ class JSOCClient(object):
     >>> res.wait(progress=True)   # doctest: +SKIP
     """
 
-    def initialise(self, ser):
-
-        c = drms.Client()
-        pkeys = c.pkeys(ser)
-        for pkey in pkeys:
-            genClass = type(pkey, (_VSOSimpleAttr,), {})
-            setattr(attrs, genClass.__name__, genClass)
-
     def search(self, *query, **kwargs):
         """
         Build a JSOC query and submit it to JSOC for processing.
