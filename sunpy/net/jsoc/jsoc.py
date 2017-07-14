@@ -228,6 +228,19 @@ class JSOCClient(object):
         """
         return self.search(*query, **kwargs)
 
+    def search_metadata(self, *query, **kwargs):
+
+        query = and_(*query)
+        blocks = []
+        for block in walker.create(query):
+            iargs = kwargs.copy()
+            iargs.update(block)
+            iargs.update({'meta': True})
+            blocks.append(iargs)
+            r = self._lookup_records(iargs)
+
+        return r
+
     def request_data(self, jsoc_response, **kwargs):
         """
         Request that JSOC stages the data for download.
