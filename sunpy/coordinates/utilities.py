@@ -18,7 +18,7 @@ __all__ = ['get_earth', 'get_sun_B0', 'get_sun_P']
 def get_earth(time='now'):
     """
     Return a SkyCoord for the location of the Earth at a specified time in the
-    HeliographicStonyhurst frame.
+    HeliographicStonyhurst frame.  The longitude will be 0 by definition.
 
     Parameters
     ----------
@@ -31,8 +31,14 @@ def get_earth(time='now'):
         SkyCoord for the location of the Earth in the HeliographicStonyhurst frame
     """
     obstime = Time(parse_time(time))
-    earth = SkyCoord(get_body_barycentric('earth', obstime), frame='icrs', obstime=obstime)
-    return earth.transform_to(HGS)
+
+    earth_icrs = get_body_barycentric('earth', obstime)
+    earth = SkyCoord(earth_icrs, frame='icrs', obstime=obstime).transform_to(HGS)
+
+    # Explicitly set the longitude to 0
+    earth = SkyCoord(0*u.deg, earth.lat, earth.radius, frame=earth)
+
+    return earth
 
 
 def get_sun_B0(time='now'):
