@@ -3,7 +3,7 @@
 import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
 
-from ..utilities import get_earth
+from ..utilities import *
 
 
 def test_get_earth():
@@ -17,3 +17,15 @@ def test_get_earth():
     assert_quantity_allclose(e2.lon, 0*u.deg, atol=1e-10*u.deg)  # 0 in heliographic Stonyhurst
     assert_quantity_allclose(e2.lat, 7.19*u.deg, atol=5e-3*u.deg)
     assert_quantity_allclose(e2.radius, 1.0092561*u.AU, atol=5e-7*u.AU)
+
+
+def test_get_sun_B0():
+    # Validate against published values from the Astronomical Almanac (2013)
+    assert_quantity_allclose(get_sun_B0('2013-Apr-01'), -6.54*u.deg, atol=5e-3*u.deg)
+    assert_quantity_allclose(get_sun_B0('2013-Dec-01'), 0.88*u.deg, atol=5e-3*u.deg)
+
+
+def test_get_sun_P():
+    # Validate against published values from the Astronomical Almanac (2013)
+    assert_quantity_allclose(get_sun_P('2013-Apr-01'), -26.15*u.deg, atol=1e-2*u.deg)
+    assert_quantity_allclose(get_sun_P('2013-Dec-01'), 16.05*u.deg, atol=1e-2*u.deg)
