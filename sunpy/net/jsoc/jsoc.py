@@ -433,7 +433,7 @@ class JSOCClient(object):
 
         # Convert Responses to a list if not already
 
-        if not isiterable(responses) or isinstance(responses, drms.ExportRequest):
+        if not isiterable(responses):
             responses = [responses]
 
         if path is None:
@@ -592,7 +592,7 @@ class JSOCClient(object):
         pkeys = c.pkeys(iargs['series'])
         pkeys_passed = iargs.get('primekey', None)
         if pkeys_passed is not None:
-            if not set(list(pkeys_passed.keys())) < set(pkeys):
+            if not set(list(pkeys_passed.keys())) <= set(pkeys):
                 error_message = "Unexpected PrimeKeys were passed. The series {series} "\
                                 "supports the following PrimeKeys {pkeys}"
                 raise TypeError(error_message.format(series=iargs['series'], pkeys=pkeys))
@@ -608,7 +608,7 @@ class JSOCClient(object):
         segs = list(si.segments.index.values)
         segs_passed = iargs.get('segment', None)
         if segs_passed is not None:
-            if not set(segs_passed) < set(segs):
+            if not set(segs_passed) <= set(segs):
                 error_message = "Unexpected Segments were passed. The series {series} "\
                                 "contains the following Segments {segs}"
                 raise TypeError(error_message.format(series=iargs['series'], segs=segs))
