@@ -322,6 +322,13 @@ class Helioprojective(BaseCoordinateFrame):
 
         BaseCoordinateFrame.__init__(self, *args, **kwargs)
 
+        # If obstime is set, but observer is not, default to Earth observer
+        if 'obstime' not in self._attr_names_with_defaults and \
+           'observer' in self._attr_names_with_defaults:
+            # Import here to avoid a circular import
+            from .utilities import get_earth
+            self._observer = get_earth(self.obstime)
+
         # Convert from Spherical to SphericalWrap180
         # If representation was explicitly passed, do not change the rep.
         if not _rep_kwarg:
