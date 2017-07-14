@@ -461,9 +461,9 @@ your computer. In the root directory run ::
 
     python setup.py build_docs
 
-This will generate HTML documentation for SunPy in the ``build/sphinx/html``
+This will generate HTML documentation for SunPy in the ``docs/_build/html``
 directory. The gallery examples are located under 
-``build/sphinx/html/generated/gallery`` Sphinx builds documentation
+``docs/_build/html/generated/gallery`` Sphinx builds documentation
 iteratively only adding things that have changed. If you'd like to start
 from scratch then just delete the build directory.
 
