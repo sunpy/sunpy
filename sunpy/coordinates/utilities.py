@@ -5,14 +5,15 @@ import datetime
 import numpy as np
 import astropy.units as u
 from astropy.time import Time
-from astropy.coordinates import SkyCoord, get_body_barycentric, PrecessedGeocentric, Angle
+from astropy.coordinates import SkyCoord, Angle, get_body_barycentric,\
+                                PrecessedGeocentric, AltAz
 from astropy.coordinates.representation import CartesianRepresentation
 
 from sunpy.time import parse_time
 
 from .frames import HeliographicStonyhurst as HGS
 
-__all__ = ['get_earth', 'get_sun_B0', 'get_sun_P']
+__all__ = ['get_earth', 'get_sun_B0', 'get_sun_P', 'get_sun_orientation']
 
 
 def get_earth(time='now'):
@@ -91,7 +92,52 @@ def get_sun_P(time='now'):
     earth_in_sky = earth_north_pole_vector.cross(sky_normal_vector)
 
     # Use a cross product to calculate the signed angle between the two projected north vectors
+    # This has no degeneracy because the P angle is within +/-90 degrees
     cross_vector = sun_in_sky.cross(earth_in_sky) / (sun_in_sky.norm() * earth_in_sky.norm())
     angle = np.arcsin(cross_vector.dot(sky_normal_vector) / sky_normal_vector.norm()).to('deg')
+
+    return Angle(angle)
+
+
+def get_sun_orientation(location, time='now'):
+    """
+    Return the orientation angle for the Sun from a specified Earth location and time.  The
+    orientation angle is the angle between local zenith and solar north, measured eastward from
+    local zenith.
+
+    Parameters
+    ----------
+    location : `~astropy.coordinates.EarthLocation`
+        Observer location on Earth
+    time : various
+        Time to use in a parse_time-compatible format
+
+    Returns
+    -------
+    out : `~astropy.coordinates.Angle`
+        The orientation of the Sun
+    """
+    obstime = Time(parse_time(time))
+
+    sun_center = SkyCoord(0*u.deg, 0*u.deg, 0*u.km, frame=HGS, obstime=obstime)
+    sun_north = SkyCoord(0*u.deg, 90*u.deg, 690000*u.km, frame=HGS, obstime=obstime)
+
+    # Find the Sun center and Sun north in elevation/azimuth coordinates
+    local_frame = AltAz(obstime=obstime, location=location)
+    sky_normal = sun_center.transform_to(local_frame).data  # do not convert yet to Cartesian
+    sun_north = sun_north.transform_to(local_frame).data.to_cartesian()
+
+    # Find the zenith direction at Sun center
+    zenith = sky_normal.unit_vectors()['lat']  # this is the reason for not converting to Cartesian
+
+    # Use cross products to obtain the sky projections of the two vectors
+    sun_north_in_sky = sun_north.cross(sky_normal)
+    zenith_in_sky = zenith.cross(sky_normal)
+
+    # Use a cross product to calculate the signed angle between the two projected vectors
+    # FIXME: This is degenerate, and will definitely be wrong in the southern hemisphere!
+    cross_vector = sun_north_in_sky.cross(zenith_in_sky)
+    cross_vector /= sun_north_in_sky.norm() * zenith_in_sky.norm()
+    angle = np.arcsin(cross_vector.dot(sky_normal) / sky_normal.norm()).to('deg')
 
     return Angle(angle)
