@@ -5,7 +5,7 @@ from sunpy.net.vso.attrs import _VSOSimpleAttr
 from sunpy.net.vso.attrs import Time, Wavelength
 
 
-__all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKeys']
+__all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey']
 
 
 class Series(_VSOSimpleAttr):
@@ -25,7 +25,7 @@ class Keys(_VSOSimpleAttr):
     pass
 
 
-class PrimeKeys(Attr):
+class PrimeKey(Attr):
     """
     Prime Keys
     """
@@ -105,10 +105,10 @@ def _apply1(wlk, query, imap):
     imap[query.__class__.__name__.lower()] = query.value
 
 
-@walker.add_applier(PrimeKeys)
+@walker.add_applier(PrimeKey)
 def _apply1(wlk, query, imap):
 
-    key = 'primekeys'
+    key = 'primekey'
     if key in imap:
         imap[key][query.label] = query.value
     else:

@@ -505,7 +505,7 @@ class JSOCClient(object):
         return time.datetime
 
     def _make_recordset(self, start_time, end_time, series, wavelength='',
-                        segment='', primekeys={}, **kwargs):
+                        segment='', primekey={}, **kwargs):
         """
         Take the query arguments and build a record string.
         """
@@ -541,14 +541,14 @@ class JSOCClient(object):
                     wavelength = '[{0}]'.format(int(np.ceil(wavelength.to(u.AA).value)))
                 pkstr += wavelength
 
-            elif len(primekeys) > 0:
-                pkstr += '[{0}]'.format(primekeys.pop(pkey, ''))
+            elif len(primekey) > 0:
+                pkstr += '[{0}]'.format(primekey.pop(pkey, ''))
 
             else:
                 break
 
-        dataset = '{series}{primekeys}{segment}'.format(series=series,
-                                                        primekeys=pkstr,
+        dataset = '{series}{primekey}{segment}'.format(series=series,
+                                                        primekey=pkstr,
                                                         segment=segment)
 
         return dataset
@@ -585,7 +585,7 @@ class JSOCClient(object):
                 raise ValueError(error_message)
 
         pkeys = c.pkeys(iargs['series'])
-        pkeys_passed = iargs.get('primekeys', None)
+        pkeys_passed = iargs.get('primekey', None)
         if pkeys_passed is not None:
             if not set(list(pkeys_passed.keys())) < set(pkeys):
                 error_message = "Unexpected PrimeKeys were passed. The series {series} "\
@@ -630,6 +630,6 @@ class JSOCClient(object):
     @classmethod
     def _can_handle_query(cls, *query):
         chkattr = ['Series', 'Protocol', 'Notify', 'Wavelength', 'Time',
-                   'Segment', 'Keys']
+                   'Segment', 'Keys', 'PrimeKey']
 
         return all([x.__class__.__name__ in chkattr for x in query])
