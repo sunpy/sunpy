@@ -35,7 +35,7 @@ by and comments will be provided to improve the code before it is accepted.
 **Getting Started**
 
 Creating your own fork of SunPy on GitHub is easy to do. Go ahead and create
-a free accountvon `create an account on GitHub <https://github.com/signup/free>`_.
+a free account on `create an account on GitHub <https://github.com/signup/free>`_.
 Github has some `great resources to help <https://help.github.com/>`_.
 Here is a quick overview of the process.
 
