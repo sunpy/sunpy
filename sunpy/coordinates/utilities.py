@@ -78,30 +78,9 @@ def get_sun_P(time='now'):
     """
     obstime = Time(parse_time(time))
 
-    sun_center = SkyCoord(0*u.deg, 0*u.deg, 0*u.km, frame=HGS, obstime=obstime)
-    sun_north_pole = SkyCoord(0*u.deg, 90*u.deg, 690000*u.km, frame=HGS, obstime=obstime)
-
-    # Represent the two north vectors in precessed geocentric coordinates
     geocentric = PrecessedGeocentric(equinox=obstime, obstime=obstime)
-    sky_normal = sun_center.transform_to(geocentric).data.to_cartesian()
-    sun_north_pole_vector = sun_north_pole.transform_to(geocentric).data.to_cartesian()
-    earth_north_pole_vector = CartesianRepresentation(0, 0, 1)
 
-    # Use cross products to obtain the sky projections of the two north vectors
-    sun_in_sky = sun_north_pole_vector.cross(sky_normal)
-    earth_in_sky = earth_north_pole_vector.cross(sky_normal)
-
-    # Normalize directional vectors
-    sky_normal /= sky_normal.norm()
-    sun_in_sky /= sun_in_sky.norm()
-    earth_in_sky /= earth_in_sky.norm()
-
-    # Calculate the signed angle between the two projected north vectors
-    # Only the sine needs to be calculated because the P angle is within +/-90 degrees
-    sin_theta = sun_in_sky.cross(earth_in_sky).dot(sky_normal)
-    angle = np.arcsin(sin_theta).to('deg')
-
-    return Angle(angle)
+    return _sun_north_angle_to_z(geocentric)
 
 
 def get_sun_orientation(location, time='now'):
@@ -124,28 +103,36 @@ def get_sun_orientation(location, time='now'):
     """
     obstime = Time(parse_time(time))
 
-    sun_center = SkyCoord(0*u.deg, 0*u.deg, 0*u.km, frame=HGS, obstime=obstime)
-    sun_north = SkyCoord(0*u.deg, 90*u.deg, 690000*u.km, frame=HGS, obstime=obstime)
-
-    # Find the Sun center and Sun north in elevation/azimuth coordinates
     local_frame = AltAz(obstime=obstime, location=location)
-    sky_normal = sun_center.transform_to(local_frame).data.to_cartesian()
-    sun_north = sun_north.transform_to(local_frame).data.to_cartesian()
-    zenith = CartesianRepresentation(0, 0, 1)
 
-    # Use cross products to obtain the sky projections of the two vectors
+    return _sun_north_angle_to_z(local_frame)
+
+
+def _sun_north_angle_to_z(frame):
+    """
+    Return the angle between solar north and the Z axis of the provided frame's coordinate system
+    and observation time.
+    """
+    # Find the Sun center and Sun north in HGS at the frame's observation time
+    sun_center = SkyCoord(0*u.deg, 0*u.deg, 0*u.km, frame=HGS, obstime=frame.obstime)
+    sun_north = SkyCoord(0*u.deg, 90*u.deg, 690000*u.km, frame=HGS, obstime=frame.obstime)
+
+    # Find the Sun center and Sun north in the frame's coordinate system
+    sky_normal = sun_center.transform_to(frame).data.to_cartesian()
+    sun_north = sun_north.transform_to(frame).data.to_cartesian()
+
+    # Use cross products to obtain the sky projections of the two vectors (rotated by 90 deg)
     sun_north_in_sky = sun_north.cross(sky_normal)
-    zenith_in_sky = zenith.cross(sky_normal)
+    z_in_sky = CartesianRepresentation(0, 0, 1).cross(sky_normal)
 
     # Normalize directional vectors
     sky_normal /= sky_normal.norm()
     sun_north_in_sky /= sun_north_in_sky.norm()
-    zenith_in_sky /= zenith_in_sky.norm()
+    z_in_sky /= z_in_sky.norm()
 
     # Calculate the signed angle between the two projected vectors
-    cos_theta = sun_north_in_sky.dot(zenith_in_sky)
-    sin_theta = sun_north_in_sky.cross(zenith_in_sky).dot(sky_normal)
+    cos_theta = sun_north_in_sky.dot(z_in_sky)
+    sin_theta = sun_north_in_sky.cross(z_in_sky).dot(sky_normal)
     angle = np.arctan2(sin_theta, cos_theta).to('deg')
-
 
     return Angle(angle)
