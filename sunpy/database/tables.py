@@ -377,7 +377,7 @@ class DatabaseEntry(Base):
             self.tags == other.tags)
 
     def _compare_attributes(self, other, attribute_list):
-        """Compare a given list of attributes of two :class:`DatabaseEntry` 
+        """Compare a given list of attributes of two :class:`DatabaseEntry`
         instances and return True if all of them match.
 
         Parameters

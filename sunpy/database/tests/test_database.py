@@ -448,7 +448,8 @@ def test_vso_query_block_caching(database, download_qr, tmpdir):
     # Download for all query response blocks and save the length
     # of database in num_of_fits_headers
     num_of_fits_headers = num_entries_from_vso_query(database, download_qr,
-                                                     path=str(tmpdir.join('{file}.fits')), file_pattern=str(tmpdir.join('*.fits')))
+                                                     path=str(tmpdir.join('{file}.fits')),
+                                                     file_pattern=str(tmpdir.join('*.fits')))
 
     assert len(database) == num_of_fits_headers and len(database) > 0
 
@@ -458,13 +459,15 @@ def test_vso_query_block_caching(database, download_qr, tmpdir):
 
     # Only downloading for the first query response block
     num_of_fits_headers_1 = num_entries_from_vso_query(database, download_qr[:1],
-                                                       path=str(tmpdir.join('{file}.type1')), file_pattern=str(tmpdir.join('*.type1')))
+                                                       path=str(tmpdir.join('{file}.type1')),
+                                                       file_pattern=str(tmpdir.join('*.type1')))
 
     assert len(database) == num_of_fits_headers_1 and len(database) > 0
 
     # Downloading for all query response blocks
     num_of_fits_headers_2 = num_entries_from_vso_query(database, download_qr,
-                                                       path=str(tmpdir.join('{file}.type2')), file_pattern=str(tmpdir.join('*.type2')))
+                                                       path=str(tmpdir.join('{file}.type2')),
+                                                       file_pattern=str(tmpdir.join('*.type2')))
 
     # Final length of the database should be the same as num_of_fits_headers.
     # This is done to ensure that the first query response block's files weren't
@@ -480,7 +483,7 @@ def test_vso_query_block_caching(database, download_qr, tmpdir):
 
 @pytest.mark.online
 def test_vso_query_block_caching_with_overwrite_off_flag(database,
-                                                       download_qr, tmpdir):
+                                                         download_qr, tmpdir):
 
     assert len(database) == 0
 
@@ -488,14 +491,16 @@ def test_vso_query_block_caching_with_overwrite_off_flag(database,
     # of database in num_of_fits_headers
 
     num_of_fits_headers = num_entries_from_vso_query(database, download_qr,
-                                                     path=str(tmpdir.join('{file}.fits')), file_pattern=str(tmpdir.join('*.fits')))
+                                                     path=str(tmpdir.join('{file}.fits')),
+                                                     file_pattern=str(tmpdir.join('*.fits')))
 
     assert len(database) == num_of_fits_headers and len(database) > 0
 
     # Only downloading for the first query response block with caching disabled
 
     num_of_fits_headers_1 = num_entries_from_vso_query(database, download_qr[:1],
-                                                       path=str(tmpdir.join('{file}.type1')), file_pattern=str(tmpdir.join('*.type1')),
+                                                       path=str(tmpdir.join('{file}.type1')),
+                                                       file_pattern=str(tmpdir.join('*.type1')),
                                                        overwrite=True)
 
     # The files for the first query response block should be downloaded again
