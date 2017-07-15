@@ -168,7 +168,7 @@ class UnifiedResponse(MutableSequence):
         return self._numfile
 
     def _repr_html_(self):
-        ret = ''
+        ret = 'Number of Providers: <{}>\n'.format(len(self.responses))
         for block in self.responses:
             ret += "Results from the {}:\n".format(block.client.__class__.__name__)
             ret += block._repr_html_()
@@ -178,7 +178,12 @@ class UnifiedResponse(MutableSequence):
 
     def __repr__(self):
         ret = super(UnifiedResponse, self).__repr__()
-        ret += '\n'
+        ret += str(self)
+
+        return ret
+
+    def __str__(self):
+        ret += 'Number of Providers: <{}>\n'.format(len(self.responses))
         for block in self.responses:
             ret += "Results from the {}:\n".format(block.client.__class__.__name__)
             ret += repr(block)
