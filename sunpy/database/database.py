@@ -389,7 +389,7 @@ class Database(object):
         path = kwargs.pop('path', None)
         progress = kwargs.pop('progress', False)
         methods = kwargs.pop('methods', ('URL-FILE_Rice', 'URL-FILE'))
-        caching = kwargs.pop('caching', True)
+        overwrite = kwargs.pop('overwrite', False)
 
         if kwargs:
             k, v = kwargs.popitem()
@@ -398,20 +398,26 @@ class Database(object):
         if client is None:
             client = VSOClient()
 
-        if caching is True:
-            remove_list = []
-            for qr in query_result:
-                temp = tables.DatabaseEntry._from_query_result_block(qr)
-                for database_entry in self:
-                    if database_entry.path is not None and temp._compare_attributes(
-                        database_entry, ["source", "provider", "physobs", "fileid",
-                                         "observation_time_start", "observation_time_end",
-                                         "instrument", "size", "wavemin", "wavemax"]):
+        remove_list = []
+        delete_entries = []
+        for qr in query_result:
+            temp = tables.DatabaseEntry._from_query_result_block(qr)
+            for database_entry in self:
+                if database_entry.path is not None and temp._compare_attributes(
+                    database_entry, ["source", "provider", "physobs", "fileid",
+                                     "observation_time_start", "observation_time_end",
+                                     "instrument", "size", "wavemin", "wavemax"]):
+                    if overwrite is False:
                         remove_list.append(qr)
-                        break
+                    elif overwrite is True:
+                        delete_entries.append(database_entry)
+                    break
 
-            for temp in remove_list:
-                query_result.remove(temp)
+        for temp in remove_list:
+            query_result.remove(temp)
+
+        for temp in delete_entries:
+            self.remove(temp)
 
         paths = client.get(query_result, path).wait(progress=progress)
 
@@ -778,7 +784,7 @@ class Database(object):
 
     def download_from_vso_query_result(self, query_result, client=None,
                                        path=None, progress=False,
-                                       ignore_already_added=False, caching=True):
+                                       ignore_already_added=False, overwrite=False):
         """download(query_result, client=sunpy.net.vso.VSOClient(),
         path=None, progress=False, ignore_already_added=False)
 
@@ -800,7 +806,7 @@ class Database(object):
         if not query_result:
             return
         self.add_many(self._download_and_collect_entries(
-            query_result, client=client, path=path, progress=progress, caching=caching))
+            query_result, client=client, path=path, progress=progress, overwrite=overwrite))
 
     def add_from_vso_query_result(self, query_result,
                                   ignore_already_added=False):

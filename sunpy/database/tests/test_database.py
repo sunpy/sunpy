@@ -431,9 +431,9 @@ def test_add_entry_from_hek_qr(database):
 
 
 def num_entries_from_vso_query(db, query, path=None, file_pattern='',
-                               caching=True):
+                               overwrite=False):
     db.download_from_vso_query_result(
-        query, path=path, caching=caching)
+        query, path=path, overwrite=overwrite)
     fits_pattern = file_pattern
     num_of_fits_headers = sum(
         len(fits.get_header(file)) for file in glob.glob(fits_pattern))
@@ -479,7 +479,7 @@ def test_vso_query_block_caching(database, download_qr, tmpdir):
 
 
 @pytest.mark.online
-def test_vso_query_block_caching_with_caching_off_flag(database,
+def test_vso_query_block_caching_with_overwrite_off_flag(database,
                                                        download_qr, tmpdir):
 
     assert len(database) == 0
@@ -496,7 +496,7 @@ def test_vso_query_block_caching_with_caching_off_flag(database,
 
     num_of_fits_headers_1 = num_entries_from_vso_query(database, download_qr[:1],
                                                        path=str(tmpdir.join('{file}.type1')), file_pattern=str(tmpdir.join('*.type1')),
-                                                       caching=False)
+                                                       overwrite=True)
 
     # The files for the first query response block should be downloaded again
     assert len(database) == num_of_fits_headers + num_of_fits_headers_1
