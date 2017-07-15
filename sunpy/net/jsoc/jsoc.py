@@ -529,10 +529,11 @@ class JSOCClient(object):
         # Extract and format primekeys
         pkstr = ''
         c = drms.Client()
-        pkeys = c.pkeys(series)
+        si = c.info(series)
+        pkeys_isTime = si.keywords.loc[si.primekeys].is_time
 
-        for pkey in pkeys:
-            if pkey in ['T_OBS', 'T_REC', 'T_START']:
+        for pkey in pkeys_isTime.index.values:
+            if pkeys_isTime[pkey]:
                 pkstr += '[{start}-{end}{sample}]'.format(
                     start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
                     end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
