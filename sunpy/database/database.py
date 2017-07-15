@@ -17,7 +17,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from astropy import units
 
 import sunpy
-from sunpy.database import commands, tables, serialize
+from sunpy.database import commands, tables
 from sunpy.database.tables import _create_display_table
 from sunpy.database.caching import LRUCache
 from sunpy.database.commands import CompositeOperation
@@ -483,36 +483,9 @@ class Database(object):
 
         entries = list(self._download_and_collect_entries(
             qr, **kwargs))
-        dump = serialize.dump_query(and_(*query))
-        (dump_exists,), = self.session.query(
-            exists().where(tables.JSONDump.dump == tables.JSONDump(dump).dump))
-        if dump_exists:
-            # dump already exists in table jsondumps -> edit instead of add
-            # update all entries with the fileid `entry.fileid`
-            for entry in entries:
-                old_entry = self.session.query(
-                    tables.DatabaseEntry).filter_by(fileid=entry.fileid).first()
-                if old_entry is not None:
-                    attrs = [
-                        'source', 'provider', 'physobs',
-                        'observation_time_start', 'observation_time_end',
-                        'instrument', 'size', 'wavemin', 'wavemax',
-                        'download_time']
-                    kwargs = dict((k, getattr(entry, k)) for k in attrs)
-                    cmd = commands.EditEntry(old_entry, **kwargs)
-                    if self._enable_history:
-                        self._command_manager.do(cmd)
-                    else:
-                        cmd()
-        else:
-            self.add_many(entries)
-            # serialize the query and save the serialization in the database
-            # for two reasons:
-            #   1. to avoid unnecessary downloading in future calls of
-            #      ``fetch``
-            #   2. to know whether to add or to edit entries in future calls of
-            #      ``download`` (this method)
-            self.session.add(tables.JSONDump(dump))
+
+        self.add_many(entries)
+
 
     def fetch(self, *query, **kwargs):
         """fetch(*query[, path])
@@ -526,11 +499,6 @@ class Database(object):
         if not query:
             raise TypeError('at least one attribute required')
 
-        dump = serialize.dump_query(and_(*query))
-        (dump_exists,), = self.session.query(
-            exists().where(tables.JSONDump.dump == tables.JSONDump(dump).dump))
-        if dump_exists:
-            return self.query(*query)
         return self.download(*query, **kwargs)
 
     def query(self, *query, **kwargs):
