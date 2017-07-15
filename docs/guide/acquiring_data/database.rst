@@ -298,41 +298,32 @@ and add new data via :meth:`Database.download`. This means: If you are not
 sure whether the required data already exists in the database, use
 :meth:`Database.fetch` and you use a method to save bandwidth!
 
-As you can see in the following example, the first call of the fetch
-method results in a list of entries. These are the entries which have been
-returned by querying the database. This is the reason why the number of
-saved entries in the database is still 32 even after the fetch method has
-been called. The second fetch call has not been done already on a download
-call, therefore the given query is used to download new data and add these
-resulting entries to the database. Because the query result translates to
-4 records, 4 new entries are added to the database after the fetch call.
+In the following example, you can see that the first fetch call does not
+add any new entries to the database, because they have been downloaded
+earlier.
 
     >>> entries = database.fetch(
     ...     vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
     ...     vso.attrs.Instrument('AIA'))
-    >>> entries is None
-    False
-    >>> len(entries)
-    4
     >>> len(database)
     33
+
+Another fetch call downloads new files because this is a new date range
+whose files have not been downloaded yet.
 
     >>> entries = database.fetch(
     ...     vso.attrs.Time('2013-08-05', '2013-08-05 00:00:05'),
     ...     vso.attrs.Instrument('AIA'))
-    >>> entries is None
-    True
     >>> len(database)
     37
 
-There is another level of caching which ensures a previously downloaded file
-corresponding to a database entry is not downloaded again. This ensures that
-in case of queries which have some results in common, files for the common
-results will not be downloaded again. In the following example, you can see
-that even if the query is a new one, it will have all files in common with the
-previous query. Therefore, no new files are downloaded.
+The caching also ensures that in case of queries which have some results in
+common, files for the common results will not be downloaded again. In the
+following example, you can see that even if the query is a new one, it
+will have all files in common with the previous query. Therefore, no new
+files are downloaded.
 
-    >>> entries = database1.fetch(
+    >>> entries = database.fetch(
         vso.attrs.Time('2012-08-05 00:00:00', '2012-08-05 00:00:01'),
         vso.attrs.Instrument('AIA'))
     >>> len(database)
