@@ -61,7 +61,7 @@ _sample_files = {
     "GBM_TIMESERIES": "glg_cspec_n5_110607_v00.pha",
     "NOAAINDICES_TIMESERIES": "swpc_solar_cycle_indices.txt",
     "NOAAPREDICT_TIMESERIES": "predicted-sunspot-radio-flux.txt",
-    # "RHESSI_TIMESERIES": "hsi_obssumm_20110607_025.fits",
+    "RHESSI_TIMESERIES": "hsi_obssumm_20110607_025.fits",
     "NORH_TIMESERIES": "tca110607.fits"
 }
 
