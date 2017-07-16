@@ -20,7 +20,7 @@ __author__ = "Steven Christe"
 __email__ = "steven.christe@nasa.gov"
 
 _base_urls = (
-    'http://data.sunpy.org/sample-data/sunpy/v1/',
+    'http://data.sunpy.org/sunpy/v1/',
     'https://github.com/sunpy/sample-data/raw/master/sunpy/v1/'
 )
 
@@ -49,7 +49,8 @@ _sample_files = {
     "EIT_195_IMAGE": "eit_l1_20110607_203753.fits",
     "RHESSI_IMAGE": "hsi_image_20110607_063300.fits",
     "CALLISTO_SPECTRUM": "BIR_20110607_062400_10.fit",
-    "RHESSI_EVENT_LIST": "hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits",
+    # Not in the sample-data repo
+    # "RHESSI_EVENT_LIST": "hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits",
     "SWAP_LEVEL1_IMAGE": "swap_lv1_20110607_063329.fits",
     "AIA_171_ROLL_IMAGE": "aiacalibim5.fits.gz",
     "EVE_TIMESERIES": "20110607_EVE_L0CS_DIODES_1m.txt",
