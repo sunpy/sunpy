@@ -159,11 +159,7 @@ class UnifiedResponse(Sequence):
         return self._numfile
 
     def _repr_html_(self):
-        nprov = len(self)
-        if nprov == 1:
-            ret = 'Results from {} Provider:</br></br>'.format(len(self))
-        else:
-            ret = 'Results from {} Providers:</br></br>'.format(len(self))
+        ret = 'Number of Providers: <{}>\n'.format(len(self.responses))
         for block in self.responses:
             ret += "{} Results from the {}:</br>".format(len(block), block.client.__class__.__name__)
             ret += block._repr_html_()
@@ -395,7 +391,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         -------
         response : `~sunpy.net.dataretriever.client.QueryResponse`
 
-        client : Instance of client class
+        client : `object`
+		Instance of client class
         """
         candidate_widget_types = self._check_registered_widgets(*query)
         tmpclient = candidate_widget_types[0]()
