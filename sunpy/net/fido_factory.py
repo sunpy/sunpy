@@ -168,12 +168,15 @@ class UnifiedResponse(MutableSequence):
         return self._numfile
 
     def _repr_html_(self):
-        ret = 'Query Returned Results from {} Providers:\n'.format(len(self))
+        nprov = len(self)
+        if nprov == 1:
+            ret = 'Results from {} Provider:</br></br>'.format(len(self))
+        else:
+            ret = 'Results from {} Providers:</br></br>'.format(len(self))
         for block in self.responses:
-            ret += "{} Results from the {}:\n".format(len(block), block.client.__class__.__name__)
-            ret += "Results from the {}:\n".format(block.client.__class__.__name__)
+            ret += "{} Results from the {}:</br>".format(len(block), block.client.__class__.__name__)
             ret += block._repr_html_()
-            ret += '\n'
+            ret += '</br>'
 
         return ret
 
@@ -184,7 +187,11 @@ class UnifiedResponse(MutableSequence):
         return ret
 
     def __str__(self):
-        ret = 'Query Returned Results from {} Providers:\n\n'.format(len(self))
+        nprov = len(self)
+        if nprov == 1:
+            ret = 'Results from {} Provider:\n\n'.format(len(self))
+        else:
+            ret = 'Results from {} Providers:\n\n'.format(len(self))
         for block in self.responses:
             ret += "{} Results from the {}:\n".format(len(block), block.client.__class__.__name__)
             lines = repr(block).split('\n')
