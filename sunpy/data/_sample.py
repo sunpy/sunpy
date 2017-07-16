@@ -20,8 +20,9 @@ __author__ = "Steven Christe"
 __email__ = "steven.christe@nasa.gov"
 
 _base_urls = (
-    'http://data.sunpy.org/sample-data/sunpy/v1/',
-    'https://github.com/sunpy/sunpy-sample-data/raw/master/'
+    'https://github.com/sunpy/sample-data/tree/master/sunpy/v1',
+    'http://data.sunpy.org/sample-data/sunpy/v1/'
+
 )
 
 # Shortcut requirements:
