@@ -21,7 +21,7 @@ __email__ = "steven.christe@nasa.gov"
 
 _base_urls = (
     'http://data.sunpy.org/sample-data/sunpy/v1/',
-    'https://github.com/sunpy/sunpy-sample-data/raw/master/'
+    'https://github.com/sunpy/sample-data/raw/master/sunpy/v1/'
 )
 
 # Shortcut requirements:
@@ -128,7 +128,8 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False,
             if base_url.count('github'):
                 online_filename += '?raw=true'
             try:
-                exists = url_exists(os.path.join(base_url, online_filename))
+                url = six.moves.urllib_parse.urljoin(base_url, online_filename)
+                exists = url_exists(url)
                 if exists:
                     f = download_file(os.path.join(base_url, online_filename),
                                       show_progress=show_progress,
@@ -157,4 +158,3 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False,
         # if reach here then file has not been downloaded.
         warnings.warn("File {} not found.".format(filename))
         return None
-
