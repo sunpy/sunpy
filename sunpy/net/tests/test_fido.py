@@ -201,5 +201,5 @@ def test_repr():
 
     rep = repr(results)
     rep = rep.split('\n')
-    # 6 header lines, the results table and a blank line at the end
-    assert len(rep) == 6 + len(list(results.responses)[0]) + 1
+    # 6 header lines, the results table and two blank lines at the end
+    assert len(rep) == 7 + len(list(results.responses)[0]) + 2
