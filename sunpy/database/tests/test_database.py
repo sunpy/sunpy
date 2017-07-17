@@ -817,24 +817,24 @@ def test_query(filled_database):
         DatabaseEntry(id=10, tags=[bar])]
 
 
-def test_download_missing_arg(database):
+def test_fetch_missing_arg(database):
     with pytest.raises(TypeError):
-        database.download()
+        database.fetch()
 
 
 @pytest.mark.online
-def test_download_empty_query_result(database, empty_query):
-    database.download(*empty_query)
+def test_fetch_empty_query_result(database, empty_query):
+    database.fetch(*empty_query)
     with pytest.raises(EmptyCommandStackError):
         database.undo()
     assert len(database) == 0
 
 
 @pytest.mark.online
-def test_download(database, download_query, tmpdir):
+def test_fetch(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
-    database.download(
+    database.fetch(
         *download_query, path=str(tmpdir.join('{file}.fits')), progress=True)
     fits_pattern = str(tmpdir.join('*.fits'))
     num_of_fits_headers = sum(
@@ -849,14 +849,14 @@ def test_download(database, download_query, tmpdir):
 
 
 @pytest.mark.online
-def test_download_duplicates(database, download_query, tmpdir):
+def test_fetch_duplicates(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
-    database.download(
+    database.fetch(
         *download_query, path=str(tmpdir.join('{file}.fits')), progress=True)
     assert len(database) == 4
     download_time = database[0].download_time
-    database.download(*download_query, path=str(tmpdir.join('{file}.fits')))
+    database.fetch(*download_query, path=str(tmpdir.join('{file}.fits')))
     assert len(database) == 4
     # The old file should be untouched because of the query result block
     # level caching
@@ -926,7 +926,7 @@ def test_disable_undo(database, download_query, tmpdir):
         db.commit()
         db.remove(entry)
         db.default_waveunit = 'angstrom'
-        db.download(*download_query, path=str(tmpdir.join('{file}.fits')))
+        db.fetch(*download_query, path=str(tmpdir.join('{file}.fits')))
         entry = db[0]
         db.tag(entry, 'foo', 'bar')
         db.remove_tag(entry, 'foo')
