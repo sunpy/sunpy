@@ -48,7 +48,7 @@ except ImportError:
     # If that doesn't work trying to import from astropy_helpers below will
     # still blow up
 
-# Load all of the global Astropy configuration
+    # Load all of the global Astropy configuration
 from astropy_helpers.sphinx.conf import *
 from sunpy.extern import six
 import sunpy
@@ -57,7 +57,6 @@ import sunpy
 
 import numpy as np
 np.seterr(invalid='ignore')
-
 
 # -- Download Sample Data -----------------------------------------------------
 
@@ -93,7 +92,6 @@ exclude_patterns.append('_templates')
 if 'templates_path' not in locals():  # in case parent conf.py defines it
     templates_path = []
 templates_path.append('_templates')
-
 
 # This is added to the end of RST files - a good place to put substitutions to
 # be used globally.
@@ -145,21 +143,17 @@ html_title = '{0} v{1}'.format(project, release)
 # Output file base name for HTML help builder.
 htmlhelp_basename = project + 'doc'
 
-
 # -- Options for LaTeX output --------------------------------------------------
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
-latex_documents = [('index', project + '.tex', project + u' Documentation',
-                    author, 'manual')]
-
+latex_documents = [('index', project + '.tex', project + u' Documentation', author, 'manual')]
 
 # -- Options for manual page output --------------------------------------------
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [('index', project.lower(), project + u' Documentation',
-              [author], 1)]
+man_pages = [('index', project.lower(), project + u' Documentation', [author], 1)]
 
 # -- Swap to Napoleon ---------------------------------------------------------
 extensions.append('sphinx.ext.napoleon')
@@ -183,8 +177,7 @@ extensions += ['astropy_helpers.sphinx.ext.edit_on_github', 'sphinx.ext.doctest'
 from sunpy import version as versionmod
 edit_on_github_project = "sunpy/sunpy"
 if versionmod.release:
-    edit_on_github_branch = "v{0}.{1}.x".format(
-        versionmod.major, versionmod.minor)
+    edit_on_github_branch = "v{0}.{1}.x".format(versionmod.major, versionmod.minor)
 else:
     edit_on_github_branch = "master"
 edit_on_github_source_root = ""
@@ -201,11 +194,14 @@ try:
     extensions += ["sphinx_gallery.gen_gallery"]
 
     sphinx_gallery_conf = {
-        'backreferences_dir': 'generated{}modules'.format(os.sep), # path to store the module using example template
-        'filename_pattern': '^((?!skip_).)*$', # execute all examples except those that start with "skip_"
-        'examples_dirs': os.path.join('..','examples'), # path to the examples scripts
-        'gallery_dirs': os.path.join('generated','gallery'), # path to save gallery generated examples
-        'default_thumb_file': os.path.join('.','logo','sunpy_icon_128x128.png'),
+        'backreferences_dir':
+        'generated{}modules'.format(os.sep),  # path to store the module using example template
+        'filename_pattern':
+        '^((?!skip_).)*$',  # execute all examples except those that start with "skip_"
+        'examples_dirs': os.path.join('..', 'examples'),  # path to the examples scripts
+        'gallery_dirs': os.path.join('generated',
+                                     'gallery'),  # path to save gallery generated examples
+        'default_thumb_file': os.path.join('.', 'logo', 'sunpy_icon_128x128.png'),
         'reference_url': {
             'sunpy': None,
             'astropy': 'http://docs.astropy.org/en/stable/',
@@ -216,6 +212,7 @@ try:
     }
 
 except ImportError:
+
     def setup(app):
         app.warn('The sphinx_gallery extension is not installed, so the '
                  'gallery will not be built.  You will probably see '
