@@ -484,7 +484,43 @@ class Database(object):
         If querying results in no data, no operation is performed. Concrete,
         this means that no entry is added to the database and no file is
         downloaded.
-        
+
+        Examples
+        --------
+        The `~sunpy.Database.fetch` method can be used along with the `overwrite=True`
+        argument to overwrite and redownload files corresponding to the query, even if
+        its entries are already present in the database. Note that the `overwrite=True`
+        argument deletes the old matching database entries and new database entries are
+        added with information from the redownloaded files.
+
+        >>> from sunpy.database import Database
+        >>> from sunpy.database.tables import display_entries
+        >>> from sunpy.net import vso
+        >>> database = Database('sqlite:///:memory:')
+        >>> database.fetch(vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
+        ...                vso.attrs.Instrument('AIA'))
+        >>> print display_entries(database,
+        ...                       ['id', 'observation_time_start', 'observation_time_end',
+        ...                        'instrument', 'wavemin', 'wavemax'])
+            id observation_time_start observation_time_end instrument wavemin wavemax
+            --- ---------------------- -------------------- ---------- ------- -------
+              1    2012-08-05 00:00:01  2012-08-05 00:00:02        AIA     9.4     9.4
+              2    2012-08-05 00:00:01  2012-08-05 00:00:02        AIA     9.4     9.4
+              3    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
+              4    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
+        >>> database.fetch(vso.attrs.Time('2012-08-05', '2012-08-05 00:00:01'),
+        ...                vso.attrs.Instrument('AIA'), overwrite=True)
+        >>> print display_entries(database,
+        ...                       ['id', 'observation_time_start', 'observation_time_end',
+        ...                        'instrument', 'wavemin', 'wavemax'])
+             id observation_time_start observation_time_end instrument wavemin wavemax
+            --- ---------------------- -------------------- ---------- ------- -------
+              3    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
+              4    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
+              5    2012-08-05 00:00:01  2012-08-05 00:00:02        AIA     9.4     9.4
+              6    2012-08-05 00:00:01  2012-08-05 00:00:02        AIA     9.4     9.4
+        Here the first 2 entries (IDs 1 and 2) were overwritten and its files were redownloaded,
+        resulting in the entries with IDs 5 and 6.
         """
 
         if not query:
