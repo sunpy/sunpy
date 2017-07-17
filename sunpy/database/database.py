@@ -26,6 +26,7 @@ from sunpy.net.hek2vso import H2VClient
 from sunpy.net.attr import and_
 from sunpy.net.vso import VSOClient
 from sunpy.extern.six.moves import range
+from sunpy.util import deprecated
 
 __authors__ = ['Simon Liedtke', 'Rajul Srivastava']
 __emails__ = [
@@ -445,17 +446,30 @@ class Database(object):
                 entry.download_time = datetime.utcnow()
                 yield entry
 
+
+    @deprecated('0.8', alternative='database.fetch()')
     def download(self, *query, **kwargs):
-        """download(*query, client=sunpy.net.vso.VSOClient(), path=None, progress=False)
-        Search for data using the VSO interface (see
-        :meth:`sunpy.net.vso.VSOClient.query`). If querying the VSO results in
-        no data, no operation is performed. Concrete, this means that no entry
-        is added to the database and no file is downloaded. Otherwise, the
-        retrieved search result is used to download all files that belong to
-        this search result. After that, all the gathered information (the one
-        from the VSO query result and the one from the downloaded FITS files)
-        is added to the database in a way that each FITS header is represented
-        by one database entry.
+
+        __doc__ = self.fetch.__doc__
+
+        return self.fetch(*query, **kwargs)
+
+
+    def fetch(self, *query, **kwargs):
+
+        """
+        fetch(*query[, path])
+        
+        Check if the query has already been used to collect new data.
+        
+        If yes, query the database using the method
+        :meth:`sunpy.database.Database.query` and return the result.
+
+        Otherwise, the retrieved search result is used to download all files
+        that belong to this search result. After that, all the gathered
+        information (the one from the query result and the one from the
+        downloaded files) is added to the database in a way that each header
+        is represented by one database entry.
 
         It uses the
         :meth:`sunpy.database.Database._download_and_collect_entries` method
@@ -467,7 +481,12 @@ class Database(object):
         not be downloaded again. Files will only be downloaded for those
         blocks which are new or haven't had their files downloaded yet.
 
+        If querying results in no data, no operation is performed. Concrete,
+        this means that no entry is added to the database and no file is
+        downloaded.
+        
         """
+
         if not query:
             raise TypeError('at least one attribute required')
 
@@ -476,7 +495,7 @@ class Database(object):
             client = VSOClient()
         qr = client.query(*query)
 
-        # don't do anything if querying the VSO results in no data
+        # don't do anything if querying results in no data
         if not qr:
             return
 
@@ -485,20 +504,6 @@ class Database(object):
 
         self.add_many(entries)
 
-
-    def fetch(self, *query, **kwargs):
-        """fetch(*query[, path])
-        Check if the query has already been used to collect new data using the
-        :meth:`sunpy.database.Database.download` method. If yes, query the
-        database using the method :meth:`sunpy.database.Database.query` and
-        return the result. Otherwise, call
-        :meth:`sunpy.database.Database.download` and return the result.
-
-        """
-        if not query:
-            raise TypeError('at least one attribute required')
-
-        return self.download(*query, **kwargs)
 
     def query(self, *query, **kwargs):
         """
