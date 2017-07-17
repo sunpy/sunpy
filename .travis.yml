@@ -15,6 +15,10 @@ addons:
             - texlive-latex-extra
             - dvipng
 
+cache:
+  directories:
+  - $HOME/sunpy/data
+
 python:
     - 2.7
     - 3.4
