@@ -53,7 +53,7 @@ Latest
   `D0` to describe the position of the observer.
 * `GenericMap.draw_grid` now uses `WCSAxes`, it will only work on a `WCSAxes`
   plot, this may be less performant than the previous implementation.
-* `GenericMap.data_to_pixel` and `GenericMap.pixel_to_data` now accept and
+* `GenericMap.world_to_pixel` and `GenericMap.pixel_to_world` now accept and
   return `SkyCoord` objects only.
 * `GenericMap` has a new property `observer_coordinate` which returns a
   `SkyCoord` describing the position of the observer.
@@ -163,7 +163,7 @@ Latest
  * Map plot functionality now uses the mask property if it is present, allowing the plotting of masked map data
  * Map Expects Quantities and returns quantities for most parameters.
  * Map now used Astropy.wcs for world <-> pixel conversions.
- * map.data_to_pixel now has a similar API to map.pixel_to_data.
+ * map.world_to_pixel now has a similar API to map.pixel_to_world.
  * map.shape has been replaced with map.dimensions, which is ordered
    x first.
  * map.rsun_arcseconds is now map.rsun_obs as it returns a quantity.
