@@ -418,9 +418,6 @@ class Database(object):
         for temp in delete_entries:
             self.remove(temp)
 
-        for i, database_entry in enumerate(self):
-            self.edit(database_entry, id=i+1)
-
         paths = client.get(query_result, path).wait(progress=progress)
 
         for (path, block) in zip(paths, query_result):
