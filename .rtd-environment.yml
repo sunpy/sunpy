@@ -2,61 +2,24 @@ name: sunpy-rtd
 channels:
     - conda-forge
 dependencies:
-- astropy
-- beautiful-soup
-- bsddb
-- cairo
-- contextlib2
-- cycler
-- db
-- decorator
-- fontconfig
-- freetype
-- funcsigs
-- jbig
-- jpeg
-- libgfortran
-- libpng
-- libtiff
-- libxml2
-- libxslt
-- lxml
-- matplotlib
-- mock
-- networkx
-- numpy
-- openblas
-- openssl
-- pandas
-- pbr
-- pillow
-- pip
-- pixman
-- py
-- pycairo
-- pyparsing
-- pyqt
-- pytest
-- python
-- python-dateutil
-- pytz
-- qt
-- readline
-- requests
-- scikit-image
-- scipy
-- setuptools
-- sip
-- six
-- sqlalchemy
-- sqlite
-- suds-jurko
-- tk
-- wcsaxes
-- wheel
-- xz
-- zlib
-- openjpeg
-- pip:
-    - sphinx-gallery
-    - glymur
+  - python=3.5
+  - numpy
+  - cython
+  - matplotlib
+  - scipy
+  - pillow
+  - pyyaml
+  - jinja2
+  - h5py
+  - scikit-image
+  - pandas
+  - pytz
+  - beautifulsoup4
+  - mpmath
+  - astropy
+  - sphinx
+  - sphinx_rtd_theme
+  - glymur
+  - sphinx-gallery
+  - sqlalchemy
+  - suds-jurko
