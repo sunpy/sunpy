@@ -413,7 +413,7 @@ class Database(object):
                         delete_entries.append(database_entry)
 
         for temp in remove_list:
-            query_result.remove(temp)
+            query_result = [x for x in query_result if x != temp]
 
         for temp in delete_entries:
             self.remove(temp)
