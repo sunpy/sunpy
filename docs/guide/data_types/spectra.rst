@@ -10,7 +10,7 @@ SunPy currently supports reading dynamic spectra from e-Callisto_ instruments.
 The main class that is used for this is
 :py:class:`CallistoSpectrogram <sunpy.spectra.sources.callisto.CallistoSpectrogram>`. SunPy also
 comes with an example image that shows a radio burst observed at `Rosse Observatory`_ (aka. BIR; Birr Castle, Co. Offaly, Ireland) that
-can be found in sunpy.data.sample.CALLISTO_IMAGE.
+can be found in sunpy.data.sample.CALLISTO_SPECTRUM.
 
 .. plot::
     :include-source:
@@ -19,7 +19,7 @@ can be found in sunpy.data.sample.CALLISTO_IMAGE.
     import sunpy.spectra
     import sunpy.data.sample
     from sunpy.spectra.sources.callisto import CallistoSpectrogram
-    image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_IMAGE)
+    image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_SPECTRUM)
     image.peek()
 
 We now notice that there seems to be something interesting that has been
@@ -47,7 +47,7 @@ peek in order to avoid negative values.
     import sunpy
     import sunpy.data.sample
     from sunpy.spectra.sources.callisto import CallistoSpectrogram
-    image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_IMAGE)
+    image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_SPECTRUM)
     nobg = image.subtract_bg()
     nobg.peek(vmin=0)
 
@@ -78,9 +78,9 @@ to the end time of the file.
     import sunpy
     import sunpy.data.sample
     from sunpy.spectra.sources.callisto import CallistoSpectrogram
-    image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_IMAGE)
+    image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_SPECTRUM)
     nobg = image.subtract_bg()
-    interesting = nobg.in_interval("10:38")
+    interesting = nobg.in_interval("06:27")
     interesting.peek(vmin=0)
 
 To get rid of the noise, we could also clip low intensities by setting vmin.
@@ -91,9 +91,9 @@ To get rid of the noise, we could also clip low intensities by setting vmin.
     import sunpy
     import sunpy.data.sample
     from sunpy.spectra.sources.callisto import CallistoSpectrogram
-    image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_IMAGE)
+    image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_SPECTRUM)
     nobg = image.subtract_bg()
-    interesting = nobg.in_interval("10:38")
+    interesting = nobg.in_interval("06:27")
     interesting.peek(vmin=20)
 
 If we want more context, we can also join together different images into
