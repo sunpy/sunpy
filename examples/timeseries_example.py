@@ -35,8 +35,10 @@ from sunpy.net import Fido, attrs as a
 ts_eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='EVE')
 ts_goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
 ts_lyra = sunpy.timeseries.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_TIMESERIES, source='LYRA')
-ts_noaa_ind = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_TIMESERIES, source='NOAAIndices')
-ts_noaa_pre = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_TIMESERIES, source='NOAAPredictIndices')
+ts_noaa_ind = sunpy.timeseries.TimeSeries(
+    sunpy.data.sample.NOAAINDICES_TIMESERIES, source='NOAAIndices')
+ts_noaa_pre = sunpy.timeseries.TimeSeries(
+    sunpy.data.sample.NOAAPREDICT_TIMESERIES, source='NOAAPredictIndices')
 ts_norh = sunpy.timeseries.TimeSeries(sunpy.data.sample.NORH_TIMESERIES, source='NoRH')
 ts_rhessi = sunpy.timeseries.TimeSeries(sunpy.data.sample.RHESSI_TIMESERIES, source='RHESSI')
 ts_gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_TIMESERIES, source='GBMSummary')
@@ -127,7 +129,7 @@ ts_eve_extract = ts_eve.extract('CMLon')
 # This can use string datetime arguments, a SunPy TimeRange or integer value
 # arguments (similar to slicing, but using function notation).
 # Using integers we can get every other entry using:
-ts_goes_trunc = ts_goes.truncate(0,100000,2)
+ts_goes_trunc = ts_goes.truncate(0, 100000, 2)
 # Or using a TimeRange:
 tr = TimeRange('2011-06-07 05:00', '2011-06-07 06:30')
 ts_goes_trunc = ts_goes.truncate(tr)
@@ -173,11 +175,11 @@ ts_goes.to_array()
 # To generate some data and the corresponding dates
 base = datetime.datetime.today()
 dates = [base - datetime.timedelta(minutes=x) for x in range(0, 24 * 60)]
-intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24*60))))
+intensity = np.sin(np.arange(0, 12 * np.pi, ((12 * np.pi) / (24 * 60))))
 # Create the data DataFrame, header MetaDict and units OrderedDict
 data = DataFrame(intensity, index=dates, columns=['intensity'])
-units = OrderedDict([('intensity', u.W/u.m**2)])
-meta = MetaDict({'key':'value'})
+units = OrderedDict([('intensity', u.W / u.m**2)])
+meta = MetaDict({'key': 'value'})
 # Create the time series
 ts_custom = sunpy.timeseries.TimeSeries(data, meta, units)
 
@@ -191,26 +193,24 @@ arr = np.stack([tm, a, b, c], axis=1)
 # any form that can be converted using astropy.time.Time().
 
 # We can use the array directly:
-ts_from_arr   = sunpy.timeseries.TimeSeries(arr,{})
+ts_from_arr = sunpy.timeseries.TimeSeries(arr, {})
 
 # We can use this to create a table and even include units:
 t = Table([tm, a, b, c], names=('time', 'a', 'b', 'c'), meta={'name': 'table'})
-t['b'].unit = 's' # Adding units
-ts_from_table = sunpy.timeseries.TimeSeries(t,{})
+t['b'].unit = 's'  # Adding units
+ts_from_table = sunpy.timeseries.TimeSeries(t, {})
 
 # If you wanted to make a dataframe from this array then you could use:
-df = DataFrame(data=arr[:,1:])
+df = DataFrame(data=arr[:, 1:])
 df.index = tm
-ts_from_df    = sunpy.timeseries.TimeSeries(df,{})
+ts_from_df = sunpy.timeseries.TimeSeries(df, {})
 
 ##############################################################################
 # You can optionally add units data, a dictionary matching column heading keys
 # to an astropy unit.
-units = OrderedDict([('a', u.Unit("ct")),
-             ('b', u.Unit("ct")),
-             ('c', u.Unit("ct"))])
-ts_from_table = sunpy.timeseries.TimeSeries(t,{}, units)
-ts_from_df = sunpy.timeseries.TimeSeries(df,{}, units)
+units = OrderedDict([('a', u.Unit("ct")), ('b', u.Unit("ct")), ('c', u.Unit("ct"))])
+ts_from_table = sunpy.timeseries.TimeSeries(t, {}, units)
+ts_from_df = sunpy.timeseries.TimeSeries(df, {}, units)
 
 ##############################################################################
 # Changing the units for a column simply requires changing the value:
@@ -236,5 +236,5 @@ ts_eve = ts_eve.add_column(colname, qua_new, overwrite=True)
 # Finally, if you want to change the units used, you can specify a new unit for
 # the column using the unit keyword:
 qua_new = u.Quantity(qua.value * 0.00001, ts_eve.units[colname])
-unit = u.W/(u.km**2)
+unit = u.W / (u.km**2)
 ts_eve = ts_eve.add_column(colname, qua_new, unit=unit, overwrite=True)
