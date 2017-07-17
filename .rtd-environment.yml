@@ -2,7 +2,7 @@ name: sunpy-rtd
 channels:
     - conda-forge
 dependencies:
-  - python>=3
+  - python=3.5
   - numpy
   - cython
   - matplotlib
@@ -21,3 +21,5 @@ dependencies:
   - sphinx_rtd_theme
   - glymur
   - sphinx-gallery
+  - sqlalchemy
+  - suds-jurko
