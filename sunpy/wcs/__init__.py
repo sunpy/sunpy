@@ -3,8 +3,8 @@
 .. warning::
     As of version 0.8.0 the `sunpy.wcs` package is deprecated and will be
     removed in a future version, you should now transition to using
-    `sunpy.coordinates` and `sunpy.map.GenericMap.data_to_pixel` /
-    `sunpy.map.GenericMap.pixel_to_data` (or `astropy.wcs` directly) for the
+    `sunpy.coordinates` and `sunpy.map.GenericMap.world_to_pixel` /
+    `sunpy.map.GenericMap.pixel_to_world` (or `astropy.wcs` directly) for the
     functionality provided in this module.
 
 The WCS package provides functions to parse World Coordinate System (WCS)

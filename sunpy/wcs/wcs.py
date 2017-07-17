@@ -29,7 +29,7 @@ def _convert_angle_units(unit='arcsec'):
     else:
         raise ValueError("The units specified are either invalid or is not supported at this time.")
 
-@deprecated("0.8.0", alternative="sunpy.map.GenericMap.pixel_to_data")
+@deprecated("0.8.0", alternative="sunpy.map.GenericMap.pixel_to_world")
 def convert_pixel_to_data(size, scale, reference_pixel,
                           reference_coordinate, x=None, y=None):
     """
@@ -105,7 +105,7 @@ def get_center(size, scale, reference_pixel, reference_coordinate):
     return scale * (size - 1 * u.pix) / 2. + reference_coordinate - (reference_pixel - 1 * u.pix) * scale
 
 
-@deprecated("0.8.0", alternative="sunpy.map.GenericMap.data_to_pixel")
+@deprecated("0.8.0", alternative="sunpy.map.GenericMap.world_to_pixel")
 def convert_data_to_pixel(x, y, scale, reference_pixel, reference_coordinate):
     """
     Calculate the pixel indices for a given data coordinate.
