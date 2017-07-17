@@ -411,13 +411,15 @@ class Database(object):
                         remove_list.append(qr)
                     elif overwrite is True:
                         delete_entries.append(database_entry)
-                    break
 
         for temp in remove_list:
             query_result.remove(temp)
 
         for temp in delete_entries:
             self.remove(temp)
+
+        for i, database_entry in enumerate(self):
+            self.edit(database_entry, id=i+1)
 
         paths = client.get(query_result, path).wait(progress=progress)
 
