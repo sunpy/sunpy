@@ -13,23 +13,22 @@ developed.
 
 from __future__ import print_function, division
 
-import os
+import datetime
 import copy
+from collections import OrderedDict
 
-import sunpy.data.sample
-import sunpy.timeseries
-from sunpy.time import TimeRange, parse_time
-from sunpy import lightcurve as lc
+import numpy as np
+from pandas import DataFrame
 
 import astropy.units as u
 from astropy.time import Time
 from astropy.table import Table
 
-from collections import OrderedDict
-import numpy as np
-import datetime
-from pandas import DataFrame
+import sunpy.data.sample
+import sunpy.timeseries
 from sunpy.util.metadata import MetaDict
+from sunpy.time import TimeRange, parse_time
+from sunpy.net import Fido, attrs as a
 
 ##############################################################################
 # Creating a TimeSeries from a file can be done using the factory.
@@ -45,22 +44,16 @@ ts_gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_TIMESERIES, source='G
 # is good practice to delcare it explicitly when possible.
 
 ##############################################################################
-# You can create a list of TimeSeries objects by using multiple files.
-# TimeSeries sources down have the facility to download data for a given time
-# (this is meant to be un Unidown), so for now we have to use the old LightCurve
-# class to download files that aren’t in the sample data.
-goes_lc_1 = lc.GOESLightCurve.create(TimeRange('2012/06/01', '2012/06/02'))
-goes_lc_2 = lc.GOESLightCurve.create(TimeRange('2012/06/02', '2012/06/03'))
-goes_lc_3 = lc.GOESLightCurve.create(TimeRange('2012/06/03', '2012/06/04'))
-filepath_1 = os.path.join(sunpy.config.get('downloads', 'download_dir'), 'go1520120601.fits')
-filepath_2 = os.path.join(sunpy.config.get('downloads', 'download_dir'), 'go1520120602.fits')
-filepath_3 = os.path.join(sunpy.config.get('downloads', 'download_dir'), 'go1520120603.fits')
+# You can create a list of TimeSeries objects by using multiple files. First
+# however, we shall download these files using `Fido`.
+goes = Fido.search(a.Time("2012/06/01", "2012/06/04"), a.Instrument("GOES"))
+goes_files = Fido.fetch(goes)
+
 # Using these new files you get a list:
-lis_goes_ts = sunpy.timeseries.TimeSeries(filepath_1, filepath_2, source='XRS')
-lis_goes_ts = sunpy.timeseries.TimeSeries(filepath_1, filepath_2, filepath_3, source='XRS')
+lis_goes_ts = sunpy.timeseries.TimeSeries(goes_files[:2], source='XRS')
+lis_goes_ts = sunpy.timeseries.TimeSeries(goes_files, source='XRS')
 # Using concatenate=True kwarg you can merge the files into one TimeSeries:
-combined_goes_ts = sunpy.timeseries.TimeSeries(filepath_1, filepath_2, source='XRS', concatenate=True)
-combined_goes_ts = sunpy.timeseries.TimeSeries(filepath_1, filepath_2, filepath_3, source='XRS', concatenate=True)
+combined_goes_ts = sunpy.timeseries.TimeSeries(goes_files, source='XRS', concatenate=True)
 combined_goes_ts.peek()
 # Note: ATM we only accept TimeSeries of a single class being created together
 # with the factory. The issue is that several source filetypes don't contain
@@ -104,9 +97,9 @@ combined_goes_ts.meta.get('telescop').values()
 # You can access a specific value within the TimeSeries data DataFrame using
 # all the normal Pandas methods.
 # For example, the row with the index of 2015-01-01 00:02:00.008000:
-ts_lyra.data.loc[parse_time('2015-01-01 00:02:00.008000')]
+ts_lyra.data.loc[parse_time('2011-06-07 00:02:00.010')]
 # Pandas will actually parse a string to a datetime automatically if it can:
-ts_lyra.data.loc['2015-01-01 00:02:00.008000']
+ts_lyra.data.loc['2011-06-07 00:02:00.010']
 # Pandas includes methods to find the indexes of the max/min values in a dataframe:
 lyra_ch1_max_index = ts_lyra.data['CHANNEL1'].idxmax()
 lyra_ch1_min_index = ts_lyra.data['CHANNEL1'].idxmin()
@@ -136,10 +129,10 @@ ts_eve_extract = ts_eve.extract('CMLon')
 # Using integers we can get every other entry using:
 ts_goes_trunc = ts_goes.truncate(0,100000,2)
 # Or using a TimeRange:
-tr = TimeRange('2012-06-01 05:00','2012-06-01 06:30')
+tr = TimeRange('2011-06-07 05:00', '2011-06-07 06:30')
 ts_goes_trunc = ts_goes.truncate(tr)
 # Or using strings:
-ts_goes_trunc = ts_goes.truncate('2012-06-01 05:00','2012-06-01 06:30')
+ts_goes_trunc = ts_goes.truncate('2011-06-07 05:00', '2011-06-07 06:30')
 ts_goes_trunc.peek()
 # Note: the strings are parsed using SunPy's string parser.
 # Debate: how should we deal with metadata when truncating.
