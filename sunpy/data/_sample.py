@@ -20,8 +20,8 @@ __author__ = "Steven Christe"
 __email__ = "steven.christe@nasa.gov"
 
 _base_urls = (
-    'http://data.sunpy.org/sample-data/sunpy/v1/',
-    'https://github.com/sunpy/sunpy-sample-data/raw/master/'
+    'http://data.sunpy.org/sunpy/v1/',
+    'https://github.com/sunpy/sample-data/raw/master/sunpy/v1/'
 )
 
 # Shortcut requirements:
@@ -49,7 +49,8 @@ _sample_files = {
     "EIT_195_IMAGE": "eit_l1_20110607_203753.fits",
     "RHESSI_IMAGE": "hsi_image_20110607_063300.fits",
     "CALLISTO_SPECTRUM": "BIR_20110607_062400_10.fit",
-    "RHESSI_EVENT_LIST": "hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits",
+    # Not in the sample-data repo
+    # "RHESSI_EVENT_LIST": "hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits",
     "SWAP_LEVEL1_IMAGE": "swap_lv1_20110607_063329.fits",
     "AIA_171_ROLL_IMAGE": "aiacalibim5.fits.gz",
     "EVE_TIMESERIES": "20110607_EVE_L0CS_DIODES_1m.txt",
@@ -60,7 +61,7 @@ _sample_files = {
     "GBM_TIMESERIES": "glg_cspec_n5_110607_v00.pha",
     "NOAAINDICES_TIMESERIES": "swpc_solar_cycle_indices.txt",
     "NOAAPREDICT_TIMESERIES": "predicted-sunspot-radio-flux.txt",
-    # "RHESSI_TIMESERIES": "hsi_obssumm_20110607_025.fits",
+    "RHESSI_TIMESERIES": "hsi_obssumm_20110607_025.fits",
     "NORH_TIMESERIES": "tca110607.fits"
 }
 
@@ -128,7 +129,8 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False,
             if base_url.count('github'):
                 online_filename += '?raw=true'
             try:
-                exists = url_exists(os.path.join(base_url, online_filename))
+                url = six.moves.urllib_parse.urljoin(base_url, online_filename)
+                exists = url_exists(url)
                 if exists:
                     f = download_file(os.path.join(base_url, online_filename),
                                       show_progress=show_progress,
@@ -157,4 +159,3 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False,
         # if reach here then file has not been downloaded.
         warnings.warn("File {} not found.".format(filename))
         return None
-
