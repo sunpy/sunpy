@@ -101,19 +101,30 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
         The type of frame this attribute can be
     default : object
         Default value for the attribute if not provided
+    fallback_coordinate: `astropy.coordinates.BaseCoordinateFrame`
+        The coordinate value to return if one can not be calculated.
     secondary_attribute : str
         Name of a secondary instance attribute which supplies the value if
         ``default is None`` and no value was supplied during initialization.
     """
 
+    def __init__(self, frame, default=None, fallback_coordinate=None, secondary_attribute=''):
+        if fallback_coordinate is None:
+            # Import here to prevent circular import
+            from .frames import HeliographicStonyhurst
+
+            self.fallback_coordinate = HeliographicStonyhurst(0 * u.deg,
+                                                              0 * u.deg,
+                                                              1 * u.AU)
+
+        super(ObserverCoordinateAttribute, self).__init__(frame, default=default,
+                                                          secondary_attribute=secondary_attribute)
+
     def convert_input(self, value):
         # If we are reaching here, we do not have an instance, so we fall back
         # to the default location when obstime is not set.
         if isinstance(value, six.string_types):
-            from .frames import HeliographicStonyhurst
-            return HeliographicStonyhurst(0 * u.deg,
-                                          0 * u.deg,
-                                          1 * u.AU), True
+            return self.fallback_coordinate, True
         else:
             return super(ObserverCoordinateAttribute, self).convert_input(value)
 
@@ -135,10 +146,12 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
                           SunpyUserWarning, stacklevel=4)
 
             # If obstime is not set, we can't work out where an object is.
-            return HeliographicStonyhurst(0 * u.deg,
-                                          0 * u.deg,
-                                          1 * u.AU)
+            return self.fallback_coordinate
+
         if out == 'earth':
+            # Import here to prevent circular import
+            from .frames import HeliographicStonyhurst
+
             distance = sunpy.sun.sunearth_distance(obstime)
             lon = 0 * u.deg
             lat = sunpy.sun.heliographic_solar_center(obstime)[1]
