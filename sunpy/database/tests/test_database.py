@@ -482,7 +482,7 @@ def test_vso_query_block_caching(database, download_qr, tmpdir):
 
 
 @pytest.mark.online
-def test_vso_query_block_caching_with_overwrite_off_flag(database,
+def test_vso_query_block_caching_with_overwrite_true_flag(database,
                                                          download_qr, tmpdir):
 
     assert len(database) == 0
@@ -504,7 +504,8 @@ def test_vso_query_block_caching_with_overwrite_off_flag(database,
                                                        overwrite=True)
 
     # The files for the first query response block should be downloaded again
-    assert len(database) == num_of_fits_headers + num_of_fits_headers_1
+    # Old entries should be deleted, so len(database) should not change
+    assert len(database) == num_of_fits_headers
     assert len(database) > 0
 
 
