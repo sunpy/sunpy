@@ -1,15 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division
 
-import inspect
 import datetime
 import warnings
 
 import astropy.units as u
 from astropy.time import Time
-from astropy.coordinates import TimeAttribute, CoordinateAttribute
+from astropy.coordinates import (TimeAttribute, CoordinateAttribute,
+                                 get_body_barycentric, ICRS)
 
-import sunpy.sun
 from sunpy.extern import six
 from sunpy.time import parse_time
 from sunpy.util.exceptions import SunpyUserWarning
@@ -148,23 +147,14 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
             # If obstime is not set, we can't work out where an object is.
             return self.fallback_coordinate
 
-        if out == 'earth':
-            # Import here to prevent circular import
-            from .frames import HeliographicStonyhurst
+        out_icrs = get_body_barycentric(out, obstime)
+        return ICRS(out_icrs).transform_to(HeliographicStonyhurst(obstime=obstime))
 
-            distance = sunpy.sun.sunearth_distance(obstime)
-            lon = 0 * u.deg
-            lat = sunpy.sun.heliographic_solar_center(obstime)[1]
-            return HeliographicStonyhurst(lon=lon, lat=lat, radius=distance)
-
-        else:
-            raise ValueError("Only Earth is currently supported as a known observer location.")
 
     def __get__(self, instance, frame_cls=None):
         # If instance is None then we can't get obstime so it doesn't matter.
         if instance is not None:
             out = getattr(instance, '_' + self.name, self.default)
-            print(out)
 
             # Convert strings to coordinates
             if isinstance(out, six.string_types):
