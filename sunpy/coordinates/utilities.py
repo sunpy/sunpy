@@ -19,6 +19,14 @@ from .transformations import _sun_detilt_matrix
 __all__ = ['get_earth', 'get_sun_B0', 'get_sun_L0', 'get_sun_P', 'get_sun_orientation']
 
 
+
+def _astropy_time(time):
+    """
+    Return an `~astropy.time.Time` instance, running it through `~sunpy.time.parse_time` if needed
+    """
+    return time if isinstance(time, Time) else Time(parse_time(time))
+
+
 def get_earth(time='now'):
     """
     Return a SkyCoord for the location of the Earth at a specified time in the
@@ -27,14 +35,14 @@ def get_earth(time='now'):
     Parameters
     ----------
     time : various
-        Time to use in a parse_time-compatible format
+        Time to use as `~astropy.time.Time` or in a parse_time-compatible format
 
     Returns
     -------
     out : `~astropy.coordinates.SkyCoord`
         SkyCoord for the location of the Earth in the HeliographicStonyhurst frame
     """
-    obstime = Time(parse_time(time))
+    obstime = _astropy_time(time)
 
     earth_icrs = get_body_barycentric('earth', obstime)
     earth = SkyCoord(earth_icrs, frame='icrs', obstime=obstime).transform_to(HGS)
@@ -53,7 +61,7 @@ def get_sun_B0(time='now'):
     Parameters
     ----------
     time : various
-        Time to use in a parse_time-compatible format
+        Time to use as `~astropy.time.Time` or in a parse_time-compatible format
 
     Returns
     -------
@@ -85,14 +93,14 @@ def get_sun_L0(time='now'):
     Parameters
     ----------
     time : various
-        Time to use in a parse_time-compatible format
+        Time to use as `~astropy.time.Time` or in a parse_time-compatible format
 
     Returns
     -------
     out : `~astropy.coordinates.Longitude`
         The Carrington longitude
     """
-    obstime = Time(parse_time(time))
+    obstime = _astropy_time(time)
 
     # Calculate the longitude due to the Sun's rotation relative to the stars
     # A sidereal rotation is defined to be exactly 25.38 days
@@ -114,14 +122,14 @@ def get_sun_P(time='now'):
     Parameters
     ----------
     time : various
-        Time to use in a parse_time-compatible format
+        Time to use as `~astropy.time.Time` or in a parse_time-compatible format
 
     Returns
     -------
     out : `~astropy.coordinates.Angle`
         The position angle
     """
-    obstime = Time(parse_time(time))
+    obstime = _astropy_time(time)
 
     geocentric = PrecessedGeocentric(equinox=obstime, obstime=obstime)
 
@@ -139,14 +147,14 @@ def get_sun_orientation(location, time='now'):
     location : `~astropy.coordinates.EarthLocation`
         Observer location on Earth
     time : various
-        Time to use in a parse_time-compatible format
+        Time to use as `~astropy.time.Time` or in a parse_time-compatible format
 
     Returns
     -------
     out : `~astropy.coordinates.Angle`
         The orientation of the Sun
     """
-    obstime = Time(parse_time(time))
+    obstime = _astropy_time(time)
 
     local_frame = AltAz(obstime=obstime, location=location)
 
