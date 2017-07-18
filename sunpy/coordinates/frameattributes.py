@@ -6,8 +6,7 @@ import warnings
 
 import astropy.units as u
 from astropy.time import Time
-from astropy.coordinates import (TimeAttribute, CoordinateAttribute,
-                                 get_body_barycentric, ICRS)
+from astropy.coordinates import TimeAttribute, CoordinateAttribute, get_body_barycentric, ICRS
 
 from sunpy.extern import six
 from sunpy.time import parse_time
@@ -112,12 +111,10 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
             # Import here to prevent circular import
             from .frames import HeliographicStonyhurst
 
-            self.fallback_coordinate = HeliographicStonyhurst(0 * u.deg,
-                                                              0 * u.deg,
-                                                              1 * u.AU)
+            self.fallback_coordinate = HeliographicStonyhurst(0 * u.deg, 0 * u.deg, 1 * u.AU)
 
-        super(ObserverCoordinateAttribute, self).__init__(frame, default=default,
-                                                          secondary_attribute=secondary_attribute)
+        super(ObserverCoordinateAttribute, self).__init__(
+            frame, default=default, secondary_attribute=secondary_attribute)
 
     def convert_input(self, value):
         # If we are reaching here, we do not have an instance, so we fall back
@@ -140,16 +137,17 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
 
         # If no time assume nothing
         if obstime is None:
-            warnings.warn("Can not compute location of object '{}'"
-                          " without obstime attribute being set.".format(out),
-                          SunpyUserWarning, stacklevel=4)
+            warnings.warn(
+                "Can not compute location of object '{}'"
+                " without obstime attribute being set.".format(out),
+                SunpyUserWarning,
+                stacklevel=4)
 
             # If obstime is not set, we can't work out where an object is.
             return self.fallback_coordinate
 
-        out_icrs = get_body_barycentric(out, obstime)
-        return ICRS(out_icrs).transform_to(HeliographicStonyhurst(obstime=obstime))
-
+        out_icrs = ICRS(get_body_barycentric(out, obstime))
+        return out_icrs.transform_to(HeliographicStonyhurst(obstime=obstime))
 
     def __get__(self, instance, frame_cls=None):
         # If instance is None then we can't get obstime so it doesn't matter.
