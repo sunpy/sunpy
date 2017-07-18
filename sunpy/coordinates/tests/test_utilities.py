@@ -41,3 +41,15 @@ def test_get_sun_P():
     # Validate against published values from the Astronomical Almanac (2013)
     assert_quantity_allclose(get_sun_P('2013-Apr-01'), -26.15*u.deg, atol=1e-2*u.deg)
     assert_quantity_allclose(get_sun_P('2013-Dec-01'), 16.05*u.deg, atol=1e-2*u.deg)
+
+
+def test_get_sun_orientation():
+    # Not currently aware of a published value to check against, so just self-check for now
+
+    # Check the Northern Hemisphere
+    angle = get_sun_orientation(EarthLocation(lat=40*u.deg, lon=-75*u.deg), '2017-07-18 12:00')
+    assert_quantity_all_close(angle, -59.4*u.deg, atol=0.1*u.deg)
+
+    # Check the Southern Hemisphere
+    angle = get_sun_orientation(EarthLocation(lat=-40*u.deg, lon=-75*u.deg), '2017-02-18 13:00')
+    assert_quantity_all_close(angle, -110.8*u.deg, atol=0.1*u.deg)
