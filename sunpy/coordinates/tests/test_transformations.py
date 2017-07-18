@@ -2,9 +2,11 @@ import numpy as np
 
 import astropy.units as u
 from astropy.tests.helper import quantity_allclose
+from astropy.coordinates import SkyCoord, get_body_barycentric
+from astropy.time import Time
 
 from sunpy.coordinates import Helioprojective, HeliographicStonyhurst
-from astropy.coordinates import SkyCoord
+from sunpy.time import parse_time
 
 
 def test_hpc_hpc():
@@ -61,3 +63,19 @@ def test_hpc_hpc_null():
     assert quantity_allclose(hpc_new.Tx, hpc_in.Tx)
     assert quantity_allclose(hpc_new.Ty, hpc_in.Ty)
     assert hpc_out.observer == hpc_new.observer
+
+
+def test_hcrs_hgs():
+    # Get the current Earth location in HCRS
+    now = Time(parse_time('now'))
+    earth_hcrs = SkyCoord(get_body_barycentric('earth', now), frame='icrs', obstime=now).hcrs
+
+    # Convert from HCRS to HGS
+    earth_hgs = earth_hcrs.transform_to(HeliographicStonyhurst)
+
+    # The HGS longitude of the Earth should be zero within numerical error
+    assert quantity_allclose(earth_hgs.lon, 0*u.deg, atol=1e-12*u.deg)
+
+    # The HGS latitude and radius should be within valid ranges
+    assert quantity_allclose(earth_hgs.lat, 0*u.deg, atol=7.3*u.deg)
+    assert quantity_allclose(earth_hgs.radius, 1*u.AU, atol=0.017*u.AU)
