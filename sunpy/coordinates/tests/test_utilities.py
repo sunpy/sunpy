@@ -43,6 +43,18 @@ def test_get_sun_P():
     assert_quantity_allclose(get_sun_P('2013-Apr-01'), -26.15*u.deg, atol=1e-2*u.deg)
     assert_quantity_allclose(get_sun_P('2013-Dec-01'), 16.05*u.deg, atol=1e-2*u.deg)
 
+    # Validate against a published value from Astronomical Algorithms (Meeus 1998, p.191)
+    assert_quantity_allclose(get_sun_P('1992-Oct-13'), 26.27*u.deg, atol=5e-3*u.deg)
+
+
+def test_get_sunearth_distance():
+    # Validate against published values from the Astronomical Almanac (2013)
+    assert_quantity_allclose(get_sunearth_distance('2013-Apr-01'), 0.9992311*u.AU, atol=5e-7*u.AU)
+    assert_quantity_allclose(get_sunearth_distance('2013-Dec-01'), 0.9861362*u.AU, atol=5e-7*u.AU)
+
+    # Validate against a published value from Astronomical Algorithms (Meeus 1998, p.191)
+    assert_quantity_allclose(get_sunearth_distance('1992-Oct-13'), 0.997608*u.AU, atol=5e-7*u.AU)
+
 
 def test_get_sun_orientation():
     # Not currently aware of a published value to check against, so just self-check for now
