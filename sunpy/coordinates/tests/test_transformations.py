@@ -44,7 +44,8 @@ def test_hpc_hpc_sc():
     observer_in = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, radius=D0)
     observer_out = HeliographicStonyhurst(lat=0*u.deg, lon=L0, radius=D0)
 
-    sc_in = SkyCoord(0*u.arcsec, 0*u.arcsec, rsun=rsun, observer=observer_in, frame='helioprojective')
+    sc_in = SkyCoord(0*u.arcsec, 0*u.arcsec, rsun=rsun, observer=observer_in,
+                     frame='helioprojective')
     hpc_out = Helioprojective(observer=observer_out, rsun=rsun)
 
     hpc_new = sc_in.transform_to(hpc_out)

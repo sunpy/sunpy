@@ -18,7 +18,7 @@ from astropy.coordinates.baseframe import (BaseCoordinateFrame,
                                            RepresentationMapping)
 from astropy.coordinates import Attribute, CoordinateAttribute
 
-from sunpy import sun  # For Carrington rotation number
+from sunpy import sun
 from .representation import (SphericalWrap180Representation, UnitSphericalWrap180Representation)
 
 from .frameattributes import TimeFrameAttributeSunPy

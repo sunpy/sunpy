@@ -16,8 +16,8 @@ from sunpy.time import parse_time
 from .frames import HeliographicStonyhurst as HGS
 from .transformations import _sun_detilt_matrix
 
-__all__ = ['get_earth', 'get_sun_B0', 'get_sun_L0', 'get_sun_P', 'get_sun_orientation']
-
+__all__ = ['get_earth', 'get_sun_B0', 'get_sun_L0', 'get_sun_P', 'get_sunearth_distance',
+           'get_sun_orientation']
 
 
 def _astropy_time(time):
@@ -104,7 +104,7 @@ def get_sun_L0(time='now'):
 
     # Calculate the longitude due to the Sun's rotation relative to the stars
     # A sidereal rotation is defined to be exactly 25.38 days
-    sidereal_lon= Longitude((obstime.jd - _time_first_rotation.jd) / 25.38 * 360 * u.deg)
+    sidereal_lon = Longitude((obstime.jd - _time_first_rotation.jd) / 25.38 * 360*u.deg)
 
     # Calculate the longitude of the Earth in de-tilted HCRS
     lon_obstime = get_earth(obstime).hcrs.cartesian.transform(_sun_detilt_matrix) \
@@ -134,6 +134,23 @@ def get_sun_P(time='now'):
     geocentric = PrecessedGeocentric(equinox=obstime, obstime=obstime)
 
     return _sun_north_angle_to_z(geocentric)
+
+
+def get_sunearth_distance(time='now'):
+    """
+    Return the distance between the Sun and the Earth at a specified time.
+
+    Parameters
+    ----------
+    time : various
+        Time to use as `~astropy.time.Time` or in a parse_time-compatible format
+
+    Returns
+    -------
+    out : `~astropy.coordinates.Distance`
+        The Sun-Earth distance
+    """
+    return get_earth(time).radius
 
 
 def get_sun_orientation(location, time='now'):

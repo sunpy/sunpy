@@ -25,7 +25,9 @@ from .frames import (HeliographicStonyhurst, HeliographicCarrington,
                      Heliocentric, Helioprojective)
 
 __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
-           'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc']
+           'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',
+           'hpc_to_hpc',
+           'hcrs_to_hgs', 'hgs_to_hcrs']
 
 
 def _carrington_offset(obstime):
@@ -35,7 +37,10 @@ def _carrington_offset(obstime):
     if obstime is None:
         raise ValueError("To perform this transformation the coordinate"
                          " Frame needs a obstime Attribute")
-    return sun.heliographic_solar_center(obstime)[0]
+
+    # Import here to avoid a circular import
+    from .utilities import get_sun_L0
+    return get_sun_L0(obstime)
 
 # =============================================================================
 # ------------------------- Transformation Framework --------------------------
@@ -225,11 +230,16 @@ _solar_north_pole_hcrs = UnitSphericalRepresentation(lon=286.13*u.deg, lat=63.87
 _sun_detilt_matrix = _make_rotation_matrix(_solar_north_pole_hcrs,
                                            CartesianRepresentation(0, 0, 1))
 
+
 @frame_transform_graph.transform(DynamicMatrixTransform, HCRS, HeliographicStonyhurst)
 def hcrs_to_hgs(hcrscoord, hgsframe):
     """
     Convert from HCRS to Heliographic Stonyhurst.
     """
+    if hgsframe.obstime is None:
+        raise ValueError("To perform this transformation the coordinate"
+                         " Frame needs a obstime Attribute")
+
     # Determine the Sun-Earth vector in this de-tilt frame
     sun_pos_icrs = get_body_barycentric('sun', hgsframe.obstime)
     earth_pos_icrs = get_body_barycentric('earth', hgsframe.obstime)
