@@ -35,6 +35,8 @@ plt.show()
 # Now get the pixels out
 pixels = np.asarray(np.rint(great_arc.coordinates().to_pixel(m.wcs)), dtype=int)
 fig, ax = plt.subplots()
-ax.plot(great_arc.inner_angles().to(u.deg), m.data[pixels[0, :], pixels[1, :]])
+x = pixels[0, :]
+y = pixels[1, :]
+ax.plot(great_arc.inner_angles().to(u.deg), m.data[y, x])
 ax.set_xlabel('degrees of arc from initial position')
 ax.set_ylabel('intensity')
