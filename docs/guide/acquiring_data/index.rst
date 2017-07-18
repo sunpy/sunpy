@@ -7,6 +7,7 @@ Acquiring Data with SunPy
 
     sample-data
     vso
+    fido
     hek
     helioviewer
     database
