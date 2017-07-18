@@ -1,19 +1,22 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division
 import datetime
+import warnings
 
 import numpy as np
 import astropy.units as u
 from astropy.time import Time
-from astropy.coordinates import SkyCoord, Angle, get_body_barycentric,\
-                                PrecessedGeocentric, AltAz
-from astropy.coordinates.representation import CartesianRepresentation
+from astropy.coordinates import SkyCoord, Angle, Longitude, PrecessedGeocentric, AltAz, \
+                                get_body_barycentric
+from astropy.coordinates.representation import CartesianRepresentation, SphericalRepresentation
+from astropy._erfa.core import ErfaWarning
 
 from sunpy.time import parse_time
 
 from .frames import HeliographicStonyhurst as HGS
+from .transformations import _sun_detilt_matrix
 
-__all__ = ['get_earth', 'get_sun_B0', 'get_sun_P', 'get_sun_orientation']
+__all__ = ['get_earth', 'get_sun_B0', 'get_sun_L0', 'get_sun_P', 'get_sun_orientation']
 
 
 def get_earth(time='now'):
@@ -58,6 +61,48 @@ def get_sun_B0(time='now'):
         The position angle
     """
     return Angle(get_earth(time).lat)
+
+
+# Ignore warnings that result from going back in time to the first Carrington rotation
+with warnings.catch_warnings():
+    warnings.simplefilter("ignore", ErfaWarning)
+
+    # Carrington rotation 1 starts late in the day on 1853 Nov 9
+    # according to Astronomical Algorithms (Meeus 1998, p.191)
+    _time_first_rotation = Time('1853-11-09 21:36')
+
+    # Longitude of Earth at Carrington rotation 1 in de-tilted HCRS (so that solar north pole is Z)
+    _lon_first_rotation = \
+        get_earth(_time_first_rotation).hcrs.cartesian.transform(_sun_detilt_matrix) \
+        .represent_as(SphericalRepresentation).lon.to('deg')
+
+
+def get_sun_L0(time='now'):
+    """
+    Return the L0 angle for the Sun at a specified time, which is the Carrington longitude of the
+    Sun-disk center as seen from Earth.
+
+    Parameters
+    ----------
+    time : various
+        Time to use in a parse_time-compatible format
+
+    Returns
+    -------
+    out : `~astropy.coordinates.Longitude`
+        The Carrington longitude
+    """
+    obstime = Time(parse_time(time))
+
+    # Calculate the longitude due to the Sun's rotation relative to the stars
+    # A sidereal rotation is defined to be exactly 25.38 days
+    sidereal_lon= Longitude((obstime.jd - _time_first_rotation.jd) / 25.38 * 360 * u.deg)
+
+    # Calculate the longitude of the Earth in de-tilted HCRS
+    lon_obstime = get_earth(obstime).hcrs.cartesian.transform(_sun_detilt_matrix) \
+                  .represent_as(SphericalRepresentation).lon.to('deg')
+
+    return Longitude(lon_obstime - _lon_first_rotation - sidereal_lon)
 
 
 def get_sun_P(time='now'):

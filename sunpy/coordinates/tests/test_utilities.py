@@ -24,6 +24,18 @@ def test_get_sun_B0():
     assert_quantity_allclose(get_sun_B0('2013-Apr-01'), -6.54*u.deg, atol=5e-3*u.deg)
     assert_quantity_allclose(get_sun_B0('2013-Dec-01'), 0.88*u.deg, atol=5e-3*u.deg)
 
+    # Validate against a published value from Astronomical Algorithms (Meeus 1998, p.191)
+    assert_quantity_allclose(get_sun_B0('1992-Oct-13'), 5.99*u.deg, atol=5e-3*u.deg)
+
+
+def test_get_sun_L0():
+    # Validate against published values from the Astronomical Almanac (2013)
+    assert_quantity_allclose(get_sun_L0('2013-Apr-01'), 221.44*u.deg, atol=2e-2*u.deg)
+    assert_quantity_allclose(get_sun_L0('2013-Dec-01'), 237.83*u.deg, atol=2e-2*u.deg)
+
+    # Validate against a published value from Astronomical Algorithms (Meeus 1998, p.191)
+    assert_quantity_allclose(get_sun_L0('1992-Oct-13'), 238.6317*u.deg, atol=5e-5*u.deg)
+
 
 def test_get_sun_P():
     # Validate against published values from the Astronomical Almanac (2013)
