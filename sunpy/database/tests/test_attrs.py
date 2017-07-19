@@ -403,6 +403,7 @@ def test_walker_create_fitsheader_inverted(session):
             id=9, path='/tmp', download_time=datetime(2005, 6, 15, 9))]
 
 
+@pytest.mark.flaky(reruns=5)
 @pytest.mark.online
 def test_walker_create_vso_instrument(vso_session):
     entries = walker.create(vso.attrs.Instrument('RHESSI'), vso_session)
@@ -430,6 +431,7 @@ def test_walker_create_wave(vso_session):
     assert len(entries) == 0
 
 
+@pytest.mark.flaky(reruns=5)
 @pytest.mark.online
 def test_walker_create_time(vso_session):
     time = vso.attrs.Time(
