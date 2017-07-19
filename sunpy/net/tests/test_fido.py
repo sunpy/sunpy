@@ -4,7 +4,7 @@ import tempfile
 
 import pytest
 import hypothesis.strategies as st
-from hypothesis import given
+from hypothesis import given, assume
 
 import astropy.units as u
 
@@ -203,3 +203,62 @@ def test_repr():
     rep = rep.split('\n')
     # 6 header lines, the results table and two blank lines at the end
     assert len(rep) == 7 + len(list(results.responses)[0]) + 2
+
+
+@given(offline_query(), offline_query())
+def test_fido_indexing(query1, query2):
+    # If the queries are the same then it don't work.
+    assume(query1.attrs[1] != query2.attrs[1])
+
+    res = Fido.search(query1 | query2)
+
+    assert len(res) == 2
+    assert len(res[0]) == 1
+    assert len(res[1]) == 1
+
+    aa = res[0, 0]
+    assert isinstance(aa, UnifiedResponse)
+    assert len(aa) == 1
+    assert len(aa.get_response(0)) == 1
+
+    aa = res[:, 0]
+    assert isinstance(aa, UnifiedResponse)
+    assert len(aa) == 2
+    assert len(aa.get_response(0)) == 1
+
+    aa = res[0, :]
+    assert isinstance(aa, UnifiedResponse)
+    assert len(aa) == 1
+
+    with pytest.raises(IndexError):
+        res[0, 0, 0]
+
+    with pytest.raises(IndexError):
+        res["saldkal"]
+
+    with pytest.raises(IndexError):
+        res[1.0132]
+
+
+@given(offline_query(), offline_query())
+def test_fido_iter(query1, query2):
+    # If the queries are the same then it don't work.
+    assume(query1.attrs[1] != query2.attrs[1])
+
+    res = Fido.search(query1 | query2)
+
+    for resp in res:
+        assert isinstance(resp, QueryResponse)
+
+@given(offline_query())
+def test_repr(query):
+    res = Fido.search(query)
+
+    for rep_meth in (res.__repr__, res.__str__, res._repr_html_):
+        if len(res) == 1:
+            assert "Provider" in rep_meth()
+            assert "Providers" not in rep_meth()
+
+        else:
+            assert "Provider" not in rep_meth()
+            assert "Providers" in rep_meth()
