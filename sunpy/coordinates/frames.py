@@ -326,7 +326,7 @@ class Helioprojective(BaseCoordinateFrame):
         if 'obstime' not in self._attr_names_with_defaults and \
            'observer' in self._attr_names_with_defaults:
             # Import here to avoid a circular import
-            from .utilities import get_earth
+            from .ephemeris import get_earth
             self._observer = get_earth(self.obstime)
 
         # Convert from Spherical to SphericalWrap180

@@ -4,7 +4,7 @@ import astropy.units as u
 from astropy.tests.helper import assert_quantity_allclose
 from astropy.coordinates import EarthLocation
 
-from ..utilities import *
+from ..ephemeris import *
 
 
 def test_get_earth():
