@@ -146,14 +146,14 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
             # If obstime is not set, we can't work out where an object is.
             return self.fallback_coordinate
 
-        # Use `get_earth` for earth so lon is always exactly 0
+        from .ephemeris import get_body_heliographic_stonyhurst
+        obscoord = get_body_heliographic_stonyhurst(out, obstime)
         if out == "earth":
-            from .utilities import get_earth
-            sc = get_earth(obstime)
-            return sc.frame
-        else:
-            out_icrs = ICRS(get_body_barycentric(out, obstime))
-            return out_icrs.transform_to(HeliographicStonyhurst(obstime=obstime))
+            rep = obscoord.spherical
+            rep.lon[()] = 0*u.deg
+            obscoord = obscoord.realize_frame(rep)
+
+        return obscoord
 
     def __get__(self, instance, frame_cls=None):
         # If instance is None then we can't get obstime so it doesn't matter.
