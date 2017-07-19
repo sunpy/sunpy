@@ -1,2 +1,8 @@
 pycodestyle:
   max-line-length: 100 # Default is 79 in PEP8
+
+exclude:
+  - ez_setup.py
+  - ah_bootstrap.py
+  - astropy_helpers/
+  - docs/conf.py

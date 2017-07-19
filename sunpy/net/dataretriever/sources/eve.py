@@ -3,13 +3,18 @@
 # Google Summer of Code 2014
 
 from __future__ import absolute_import, division, print_function
+import datetime
 
+from sunpy.time import TimeRange
+from sunpy.util.scraper import Scraper
 from sunpy.extern.six.moves.urllib.parse import urljoin
 
 from ..client import GenericClient
 
 
 __all__ = ['EVEClient']
+BASEURL = ('http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/'
+           'L0CS/SpWx/%Y/%Y%m%d_EVE_L0CS_DIODES_1m.txt')
 
 
 class EVEClient(GenericClient):
@@ -39,7 +44,7 @@ class EVEClient(GenericClient):
 
         Parameters
         ----------
-        timerange: sunpy.time.TimeRange
+        timerange: `sunpy.time.TimeRange`
             time range for which data is to be downloaded.
 
         Returns
@@ -47,27 +52,23 @@ class EVEClient(GenericClient):
         urls : list
             list of URLs corresponding to the requested time range
         """
-        days = timerange.get_dates()
-        urls = []
-        for day in days:
-            urls.append(self._get_url_for_date(day, **kwargs))
-        return urls
 
-    def _get_url_for_date(self, date, **kwargs):
-        """
-        Return URL for corresponding date.
+        # If start of time range is before 00:00, converted to such, so
+        # files of the requested time ranger are included.
+        # This is done because the archive contains daily files.
+        if timerange.start.time() != datetime.time(0, 0):
+            timerange = TimeRange('{:%Y-%m-%d}'.format(timerange.start), timerange.end)
+        eve = Scraper(BASEURL)
+        return eve.filelist(timerange)
 
-        Parameters
-        ----------
-        date : Python datetime object
-
-        Returns
-        -------
-        URL : string
-        """
-        base_url = 'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/'
-        return urljoin(base_url,
-                                date.strftime('%Y/%Y%m%d') + '_EVE_L0CS_DIODES_1m.txt')
+    def _get_time_for_url(self, urls):
+        eve = Scraper(BASEURL)
+        times = list()
+        for url in urls:
+            t0 = eve._extractDateURL(url)
+            # hard coded full day as that's the normal.
+            times.append(TimeRange(t0, t0 + datetime.timedelta(days=1)))
+        return times
 
     def _makeimap(self):
         """

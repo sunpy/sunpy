@@ -16,7 +16,7 @@ from astropy.coordinates.representation import (CartesianRepresentation,
                                                 SphericalRepresentation)
 from astropy.coordinates.baseframe import (BaseCoordinateFrame,
                                            RepresentationMapping)
-from astropy.coordinates import FrameAttribute, CoordinateAttribute
+from astropy.coordinates import Attribute, CoordinateAttribute
 
 from sunpy import sun  # For Carrington rotation number
 from .representation import (SphericalWrap180Representation, UnitSphericalWrap180Representation)
@@ -64,14 +64,14 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
     ...               frame="heliographic_stonyhurst",
     ...               dateobs="2010/01/01T00:00:45")
     >>> sc
-    <SkyCoord (HelioGraphicStonyhurst): dateobs=2010-01-01 00:00:45,
+    <SkyCoord (HeliographicStonyhurst): dateobs=2010-01-01 00:00:45,
     lon=1.0 deg, lat=1.0 deg, rad=2.0 km>
     >>> sc.frame
-    <HelioGraphicStonyhurst Coordinate: dateobs=2010-01-01 00:00:45,
+    <HeliographicStonyhurst Coordinate: dateobs=2010-01-01 00:00:45,
     lon=1.0 deg, lat=1.0 deg, rad=2.0 km>
-    >>> sc = SkyCoord(HelioGraphicStonyhurst(-10*u.deg, 2*u.deg))
+    >>> sc = SkyCoord(HeliographicStonyhurst(-10*u.deg, 2*u.deg))
     >>> sc
-    <SkyCoord (HelioGraphicStonyhurst): dateobs=None, lon=-10.0 deg,
+    <SkyCoord (HeliographicStonyhurst): dateobs=None, lon=-10.0 deg,
     lat=2.0 deg, rad=695508.0 km>
 
     Notes
@@ -311,7 +311,7 @@ class Helioprojective(BaseCoordinateFrame):
     }
 
     dateobs = TimeFrameAttributeSunPy()
-    rsun = FrameAttribute(default=RSUN_METERS.to(u.km))
+    rsun = Attribute(default=RSUN_METERS.to(u.km))
     observer = CoordinateAttribute(HeliographicStonyhurst,
                                    default=HeliographicStonyhurst(0*u.deg,
                                                                   0*u.deg,

@@ -31,7 +31,7 @@ a Map from one of the supported data products is with the `~sunpy.map.map()` fun
 
     import sunpy.data.sample
     import sunpy.map
-    
+
     aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     aia.peek()
 
@@ -54,7 +54,7 @@ remote file. Let's create some fake data and pass it into a timeseries object.
     import sunpy.data.sample
     import sunpy.timeseries as ts
 
-    my_timeseries = ts.TimeSeries(sunpy.data.sample.GOES_LIGHTCURVE, source='XRS')
+    my_timeseries = ts.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES, source='XRS')
     my_timeseries.peek()
 
 We've created this timeseries object by passing TimeSeries a string which represent the name of a GOES lightcurve file.
@@ -81,7 +81,7 @@ an international network of Solar Radio Spectrometers, is a specific example.
     import sunpy.data.sample
     from sunpy.spectra.sources.callisto import CallistoSpectrogram
 
-    image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_IMAGE)
+    image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_SPECTRUM)
     image.peek()
 
 For more information about spectra, check out the :doc:`spectra guide <data_types/spectra>`

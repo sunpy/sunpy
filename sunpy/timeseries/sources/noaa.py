@@ -38,7 +38,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
     --------
     >>> import sunpy.timeseries
     >>> import sunpy.data.sample
-    >>> noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_LIGHTCURVE, source='NOAAIndices')
+    >>> noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_TIMESERIES, source='NOAAIndices')
     >>> noaa.peek()   # doctest: +SKIP
 
     References
@@ -60,7 +60,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
 
             import sunpy.timeseries
             import sunpy.data.sample
-            noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_LIGHTCURVE, source='NOAAIndices')
+            noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAINDICES_TIMESERIES, source='NOAAIndices')
             noaa.peek()
 
         Parameters
@@ -191,7 +191,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     --------
     >>> import sunpy.timeseries
     >>> import sunpy.data.sample
-    >>> noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_LIGHTCURVE, source='NOAAPredictIndices')
+    >>> noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_TIMESERIES, source='NOAAPredictIndices')
     >>> noaa.peek()   # doctest: +SKIP
 
     References
@@ -213,7 +213,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
 
             import sunpy.timeseries
             import sunpy.data.sample
-            noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_LIGHTCURVE, source='NOAAPredictIndices')
+            noaa = sunpy.timeseries.TimeSeries(sunpy.data.sample.NOAAPREDICT_TIMESERIES, source='NOAAPredictIndices')
             noaa.peek()
 
         Parameters

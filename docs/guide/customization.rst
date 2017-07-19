@@ -53,4 +53,4 @@ A sample sunpyrc file
 
     `(download) <../_static/sunpyrc>`__
 
-.. literalinclude:: ../../../sunpy/data/sunpyrc
+.. literalinclude:: ../../sunpy/data/sunpyrc

@@ -164,6 +164,7 @@ def test_query():
     assert len(Jresp) == 2
 
 
+@pytest.mark.flaky(reruns=5)
 @pytest.mark.online
 def test_post_pass():
     responses = client.query(

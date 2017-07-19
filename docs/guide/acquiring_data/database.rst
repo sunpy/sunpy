@@ -173,8 +173,6 @@ the database had been empty, this expression would have raised an
 :exc:`IndexError`. In section 3, more advanced formats of the slicing
 syntax are introduced.
 
-    >>> import sunpy.data
-    >>> sunpy.data.download_sample_data(overwrite=False)  # doctest: +SKIP
     >>> import sunpy.data.sample
     >>> database.add_from_file(sunpy.data.sample.AIA_171_IMAGE)
     >>> len(database)

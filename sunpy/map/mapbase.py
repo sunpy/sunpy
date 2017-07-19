@@ -16,12 +16,12 @@ from matplotlib import patches, cm, colors
 
 import astropy.wcs
 import astropy.units as u
-from astropy.utils.decorators import deprecated
 from astropy.visualization.wcsaxes import WCSAxes
 from astropy.coordinates import SkyCoord
 
 import sunpy.io as io
 import sunpy.coordinates
+from sunpy.util.decorators import deprecated
 from sunpy import config
 from sunpy.extern import six
 from sunpy.visualization import toggle_pylab, wcsaxes_compat, axis_labels_from_ctype
@@ -90,8 +90,6 @@ class GenericMap(NDData):
     Examples
     --------
     >>> import sunpy.map
-    >>> import sunpy.data
-    >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
     >>> import sunpy.data.sample
     >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     >>> aia   # doctest: +NORMALIZE_WHITESPACE
@@ -482,14 +480,14 @@ Reference Coord:\t {refcoord}
         """
         The physical coordinate for the bottom left [0,0] pixel.
         """
-        return self.pixel_to_data(0*u.pix, 0*u.pix)
+        return self.pixel_to_world(0*u.pix, 0*u.pix)
 
     @property
     def top_right_coord(self):
         """
         The physical coordinate for the top left pixel.
         """
-        return self.pixel_to_data(*self.dimensions)
+        return self.pixel_to_world(*self.dimensions)
 
     @property
     def center(self):
@@ -497,7 +495,7 @@ Reference Coord:\t {refcoord}
         Return a coordinate object for the center pixel of the array.
         """
         center = u.Quantity(self.dimensions) / 2.
-        return self.pixel_to_data(*center)
+        return self.pixel_to_world(*center)
 
     @property
     def shifted_value(self):
@@ -568,8 +566,8 @@ Reference Coord:\t {refcoord}
     @property
     def coordinate_system(self):
         """Coordinate system used for x and y axes (ctype1/2)"""
-        return SpatialPair(self.meta.get('ctype1', 'HPLN-TAN'),
-                           self.meta.get('ctype2', 'HPLT-TAN'))
+        return SpatialPair(self.meta.get('ctype1', 'HPLN-   '),
+                           self.meta.get('ctype2', 'HPLT-   '))
 
     @property
     def carrington_longitude(self):
@@ -774,9 +772,9 @@ Reference Coord:\t {refcoord}
 
 
 # #### Data conversion routines #### #
-    def data_to_pixel(self, coordinate, origin=0):
+    def world_to_pixel(self, coordinate, origin=0):
         """
-        Convert a data (world) coordinate to a pixel coordinate by using
+        Convert a world (data) coordinate to a pixel coordinate by using
         `~astropy.wcs.WCS.wcs_world2pix`.
 
         Parameters
@@ -800,7 +798,7 @@ Reference Coord:\t {refcoord}
         """
         if not isinstance(coordinate, (SkyCoord,
                                        astropy.coordinates.BaseCoordinateFrame)):
-            raise ValueError("data_to_pixel takes a Astropy coordinate frame or SkyCoord instance.")
+            raise ValueError("world_to_pixel takes a Astropy coordinate frame or SkyCoord instance.")
 
         native_frame = coordinate.transform_to(self.coordinate_frame)
         lon, lat = u.Quantity(self._get_lon_lat(native_frame)).to(u.deg)
@@ -808,8 +806,16 @@ Reference Coord:\t {refcoord}
 
         return PixelPair(x * u.pixel, y * u.pixel)
 
+    # Thought it would be easier to create a copy this way.
+    @deprecated("0.8.0", alternative="sunpy.map.GenericMap.world_to_pixel")
+    def data_to_pixel(self, coordinate, origin=0):
+        """
+        See `~sunpy.map.mapbase.GenericMap.world_to_pixel`
+        """
+        return self.world_to_pixel(coordinate, origin=origin)
+
     @u.quantity_input(x=u.pixel, y=u.pixel)
-    def pixel_to_data(self, x, y, origin=0):
+    def pixel_to_world(self, x, y, origin=0):
         """
         Convert a pixel coordinate to a data (world) coordinate by using
         `~astropy.wcs.WCS.wcs_pix2world`.
@@ -848,6 +854,13 @@ Reference Coord:\t {refcoord}
 
         return SkyCoord(x, y, frame=self.coordinate_frame)
 
+    # Thought it would be easier to create a copy this way.
+    @deprecated("0.8.0", alternative="sunpy.map.GenericMap.pixel_to_world")
+    def pixel_to_data(self, x, y, origin=0):
+        """
+        See `~sunpy.map.mapbase.GenericMap.pixel_to_world`
+        """
+        return self.pixel_to_world(x, y, origin=origin)
 
 # #### I/O routines #### #
 
@@ -1072,7 +1085,7 @@ Reference Coord:\t {refcoord}
         temp_map = self._new_instance(new_data, new_meta, self.plot_settings)
 
         # Convert the axis of rotation from data coordinates to pixel coordinates
-        pixel_rotation_center = u.Quantity(temp_map.data_to_pixel(self.reference_coordinate,
+        pixel_rotation_center = u.Quantity(temp_map.world_to_pixel(self.reference_coordinate,
                                                                   origin=0)).value
         del temp_map
 
@@ -1167,8 +1180,6 @@ Reference Coord:\t {refcoord}
         --------
         >>> import astropy.units as u
         >>> import sunpy.map
-        >>> import sunpy.data
-        >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
         >>> import sunpy.data.sample
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
         >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=m.coordinate_frame)
@@ -1243,7 +1254,7 @@ Reference Coord:\t {refcoord}
 
             corners = u.Quantity([bottom_left, bottom_right, top_left, top_right])
             coord = SkyCoord(corners, frame=self.coordinate_frame)
-            pixel_corners = self.data_to_pixel(coord)
+            pixel_corners = self.world_to_pixel(coord)
 
             # Round the pixel values, we use floor+1 so that we always have at
             # least one pixel width of data.
@@ -1394,7 +1405,7 @@ Reference Coord:\t {refcoord}
 # #### Visualization #### #
 
     @u.quantity_input(grid_spacing=u.deg)
-    def draw_grid(self, axes=None, grid_spacing=15*u.deg):
+    def draw_grid(self, axes=None, grid_spacing=15*u.deg, **kwargs):
         """
         Draws a coordinate overlay on the plot in the Heliographic Stonyhurst
         coordinate system.
@@ -1415,6 +1426,10 @@ Reference Coord:\t {refcoord}
         -------
         overlay: `~astropy.visualization.wcsaxes.coordinates_map.CoordinatesMap`
             The wcsaxes coordinate overlay instance.
+
+        Notes
+        -----
+        Keyword arguments are passed onto the `sunpy.visualization.wcsaxes_compat.wcsaxes_heliographic_overlay` function.
         """
 
         if not axes:
@@ -1422,7 +1437,8 @@ Reference Coord:\t {refcoord}
         if not wcsaxes_compat.is_wcsaxes(axes):
             raise TypeError("Overlay grids can only be plotted on WCSAxes plots.")
         return wcsaxes_compat.wcsaxes_heliographic_overlay(axes,
-                                                           grid_spacing=grid_spacing)
+                                                           grid_spacing=grid_spacing,
+                                                           **kwargs)
 
     def draw_limb(self, axes=None, **kwargs):
         """
@@ -1436,14 +1452,12 @@ Reference Coord:\t {refcoord}
         Returns
         -------
         circ: list
-            A list containing the `matplotlib.patches.Circle` object that
+            A list containing the `~matplotlib.patches.Circle` object that
             has been added to the axes.
 
         Notes
         -----
-        keyword arguments are passed onto the Circle Patch, see:
-        http://matplotlib.org/api/artist_api.html#matplotlib.patches.Patch
-        http://matplotlib.org/api/artist_api.html#matplotlib.patches.Circle
+        Keyword arguments are passed onto `matplotlib.patches.Circle`.
         """
 
         if not axes:

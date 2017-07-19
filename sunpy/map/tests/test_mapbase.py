@@ -30,6 +30,7 @@ from sunpy.extern import six
 
 testpath = sunpy.data.test.rootdir
 
+
 @pytest.fixture
 def aia171_test_map():
     return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
@@ -170,7 +171,7 @@ def test_rsun_obs(generic_map):
 
 
 def test_coordinate_system(generic_map):
-    assert generic_map.coordinate_system == ('HPLN-TAN', 'HPLT-TAN')
+    assert generic_map.coordinate_system == ('HPLN-   ', 'HPLT-   ')
 
 
 def test_carrington_longitude(generic_map):
@@ -260,10 +261,10 @@ def test_swap_cd():
 
 def test_data_range(generic_map):
     """Make sure xrange and yrange work"""
-    assert (generic_map.xrange[1] - generic_map.xrange[0]
-            ).to(u.arcsec).value == generic_map.meta['cdelt1'] * generic_map.meta['naxis1']
-    assert (generic_map.yrange[1] - generic_map.yrange[0]
-            ).to(u.arcsec).value == generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
+    assert_quantity_allclose((generic_map.xrange[1] - generic_map.xrange[0]
+            ).to(u.arcsec).value, generic_map.meta['cdelt1'] * generic_map.meta['naxis1'])
+    assert_quantity_allclose((generic_map.yrange[1] - generic_map.yrange[0]
+            ).to(u.arcsec).value, generic_map.meta['cdelt2'] * generic_map.meta['naxis2'])
 
     # the weird unit-de-unit thing here is to work around and inconsistency in
     # the way np.average works with astropy 1.3 and 2.0dev
@@ -273,11 +274,11 @@ def test_data_range(generic_map):
                              generic_map.center.Ty)
 
 
-def test_data_to_pixel(generic_map):
+def test_world_to_pixel(generic_map):
     """Make sure conversion from data units to pixels is internally
     consistent"""
     # Note: FITS pixels start from 1,1
-    test_pixel = generic_map.data_to_pixel(generic_map.reference_coordinate, origin=1)
+    test_pixel = generic_map.world_to_pixel(generic_map.reference_coordinate, origin=1)
     assert_quantity_allclose(test_pixel, generic_map.reference_pixel)
 
 
@@ -593,7 +594,7 @@ def test_hg_coord(heliographic_test_map):
 
 
 def test_hg_pix_to_data(heliographic_test_map):
-    out = heliographic_test_map.pixel_to_data(180 * u.pix, 90 * u.pix)
+    out = heliographic_test_map.pixel_to_world(180 * u.pix, 90 * u.pix)
     assert isinstance(out, SkyCoord)
     assert isinstance(out.frame, sunpy.coordinates.HeliographicCarrington)
     assert_quantity_allclose(out.lon, 0 * u.deg)
@@ -601,7 +602,7 @@ def test_hg_pix_to_data(heliographic_test_map):
 
 
 def test_hg_data_to_pix(heliographic_test_map):
-    out = heliographic_test_map.data_to_pixel(
+    out = heliographic_test_map.world_to_pixel(
         SkyCoord(
             0 * u.deg, 0 * u.deg, frame=heliographic_test_map.coordinate_frame))
     assert_quantity_allclose(out[0], 180 * u.pix)
