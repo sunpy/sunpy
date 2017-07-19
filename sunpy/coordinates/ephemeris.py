@@ -17,6 +17,7 @@ from astropy.coordinates.representation import CartesianRepresentation, Spherica
 from astropy._erfa.core import ErfaWarning
 
 from sunpy.time import parse_time
+from sunpy.time.time import _astropy_time
 
 from .frames import HeliographicStonyhurst as HGS
 from .transformations import _sun_detilt_matrix
@@ -24,13 +25,6 @@ from .transformations import _sun_detilt_matrix
 __all__ = ['get_body_heliographic_stonyhurst', 'get_earth',
            'get_sun_B0', 'get_sun_L0', 'get_sun_P', 'get_sunearth_distance',
            'get_sun_orientation']
-
-
-def _astropy_time(time):
-    """
-    Return an `~astropy.time.Time` instance, running it through `~sunpy.time.parse_time` if needed
-    """
-    return time if isinstance(time, Time) else Time(parse_time(time))
 
 
 def get_body_heliographic_stonyhurst(body, time='now'):
