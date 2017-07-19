@@ -13,6 +13,9 @@ import astropy.units as u
 from sunpy.coordinates.utils import GreatArc
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
+
+###############################################################################
+# Make a map.
 m = sunpy.map.Map(AIA_171_IMAGE)
 
 ###############################################################################
@@ -25,7 +28,7 @@ end = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=m.coordinate_frame)
 great_arc = GreatArc(start, end)
 
 ###############################################################################
-# Plot the great arc on the Sun
+# Plot the great arc on the Sun.
 fig = plt.figure()
 ax = plt.subplot(projection=m)
 m.plot(axes=ax)
@@ -35,21 +38,21 @@ plt.show()
 ###############################################################################
 # Now we can calculate the nearest integer pixels of the data that correspond
 # to the location of arc.
-pixels = np.asarray(np.rint(great_arc.coordinates().to_pixel(m.wcs)), dtype=int)
+pixels = np.asarray(np.rint(m.world_to_pixel(great_arc.coordinates())), dtype=int)
 x = pixels[0, :]
 y = pixels[1, :]
 
 ###############################################################################
-# Get the intensity along the arc from the start to the end point
+# Get the intensity along the arc from the start to the end point.
 intensity_along_arc = m.data[y, x]
 
 ###############################################################################
 # Define the angular location of each pixel along the arc from the start point
-# to the end
+# to the end.
 angles = great_arc.inner_angles().to(u.deg)
 
 ###############################################################################
-#
+# Plot the intensity along the arc from the start to the end point.
 fig, ax = plt.subplots()
 ax.plot(angles, intensity_along_arc)
 ax.set_xlabel('degrees of arc from start')
