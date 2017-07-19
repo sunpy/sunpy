@@ -5,7 +5,7 @@ SPHINX=sphinx-build
 BASE_DIR="$(git rev-parse --show-toplevel)"
 
 NUM_SUNPY=$(git diff --name-only --stat HEAD $BASE_DIR/sunpy | wc -l)
-NUM_DOCS=$(git diff --name-only --stat HEAD $BASE_DIR/doc | wc -l)
+NUM_DOCS=$(git diff --name-only --stat HEAD $BASE_DIR/docs | wc -l)
 #IF code has changed run the tests:
 if [ $NUM_SUNPY -gt  0 ]; then
     $PY_TEST $BASE_DIR
@@ -15,12 +15,12 @@ fi
 if  [ $NUM_SUNPY -gt 0 -o  $NUM_DOCS -gt  0 ]; then
 
     CWD="$(pwd)"
-    DOC_DIR=$BASE_DIR/doc/source
-    rm -r $DOC_DIR/../build
+    DOC_DIR=$BASE_DIR/docs
+    rm -r $DOC_DIR/_build
     rm -r $DOC_DIR/api
     rm -r $DOC_DIR/_generated
 
     cd $DOC_DIR
-    $SPHINX -W -b html -d ../build/doctrees . ../build/html
+    $SPHINX -W -b html -d _build/doctrees . -_build/html
     cd $CWD
 fi

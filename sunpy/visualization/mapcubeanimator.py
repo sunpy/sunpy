@@ -2,7 +2,7 @@
 
 from copy import deepcopy
 
-from sunpy.visualization import imageanimator, wcsaxes_compat
+from sunpy.visualization import imageanimator, wcsaxes_compat, axis_labels_from_ctype
 from sunpy.visualization.wcsaxes_compat import _FORCE_NO_WCSAXES
 
 __all__ = ['MapCubeAnimator']
@@ -84,7 +84,9 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
 
         if wcsaxes_compat.is_wcsaxes(im.axes):
             im.axes.reset_wcs(self.mapcube[i].wcs)
-            wcsaxes_compat.default_wcs_grid(im.axes)
+            wcsaxes_compat.default_wcs_ticks(im.axes,
+                                             self.mapcube[i].spatial_units,
+                                             self.mapcube[i].coordinate_system)
 
         # Having this line in means the plot will resize for non-homogenous
         # maps. However it also means that if you zoom in on the plot bad
@@ -105,24 +107,10 @@ class MapCubeAnimator(imageanimator.BaseFuncAnimator):
         # Normal plot
         self.axes.set_title("{s.name}".format(s=self.data[ind]))
 
-        # x-axis label
-        if self.data[ind].coordinate_system.x == 'HG':
-            xlabel = 'Longitude [{lon}]'.format(
-                lon=self.data[ind].spatial_units.x)
-        else:
-            xlabel = 'X-position [{xpos}]'.format(
-                xpos=self.data[ind].spatial_units.x)
-
-        # y-axis label
-        if self.data[ind].coordinate_system.y == 'HG':
-            ylabel = 'Latitude [{lat}]'.format(
-                lat=self.data[ind].spatial_units.y)
-        else:
-            ylabel = 'Y-position [{ypos}]'.format(
-                ypos=self.data[ind].spatial_units.y)
-
-        self.axes.set_xlabel(xlabel)
-        self.axes.set_ylabel(ylabel)
+        self.axes.set_xlabel(axis_labels_from_ctype(self.data[ind].coordinate_system[0],
+                                                    self.data[ind].spatial_units[0]))
+        self.axes.set_ylabel(axis_labels_from_ctype(self.data[ind].coordinate_system[1],
+                                                    self.data[ind].spatial_units[1]))
 
     def _get_main_axes(self):
         """

@@ -2,7 +2,7 @@ name: sunpy-rtd
 channels:
     - conda-forge
 dependencies:
-- astropy >=1.3
+- astropy >=2.0
 - beautifulsoup4
 - cairo
 - contextlib2
@@ -58,6 +58,5 @@ dependencies:
 - xz
 - zlib
 - openjpeg
-- pip:
-    - sphinx-gallery
-    - glymur
+- sphinx-gallery
+- glymur

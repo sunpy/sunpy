@@ -48,4 +48,4 @@ def axis_labels_from_ctype(ctype, unit):
               'HPLT': 'Helioprojective Latitude (Solar-Y) [{}]'.format(unit),
               'SOLY': 'Heliocentric Y [{}]'.format(unit)}
 
-    return labels.get(ctype_short, "{} [{}]".format(ctype_short, unit))
+    return labels.get(ctype_short, "{} [{}]".format(ctype, unit))
