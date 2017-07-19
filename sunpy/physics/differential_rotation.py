@@ -122,10 +122,10 @@ def solar_rotate_coord_from_earth(start_coordinate, tend, **diff_rot_kwargs):
     --------
     >>> import astropy.units as u
     >>> from astropy.coordinates import SkyCoord
-    >>> import sunpy.coordinates
+    >>> from sunpy.coordinates import frames
     >>> from sunpy.physics.differential_rotation import solar_rotate_coord_from_earth
-    >>> c = SkyCoord(-570 * u.arcsec, 120 * u.arcsec, dateobs='2010-09-10 12:34:56', frame='helioprojective')
-    >>> solar_rotate_coord(c, dateobs)
+    >>> c = SkyCoord(-570 * u.arcsec, 120 * u.arcsec, dateobs='2010-09-10 12:34:56', frame=frame.Helioprojective)
+    >>> solar_rotate_coord_from_earth(c, dateobs)
     <SkyCoord (Helioprojective: D0=150634662.59404698 km, dateobs=2010-09-10 13:34:56, L0=0d00m00s, B0=7d14m46.821s, rsun=695508.0 km): (Tx, Ty, distance) in (arcsec, arcsec, km)
     (-562.90765805,  119.31706625,   1.50079871e+08)>
 
