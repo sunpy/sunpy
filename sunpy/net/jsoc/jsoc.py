@@ -18,7 +18,7 @@ from sunpy.time import parse_time, TimeRange
 from sunpy.net.download import Downloader, Results
 from sunpy.net.attr import and_
 from sunpy.net.jsoc import attrs
-from sunpy.net.jsoc.attrs import walker, Keys, PrimeKeys
+from sunpy.net.jsoc.attrs import walker, Keys, PrimeKey
 from sunpy.net.vso.attrs import _VSOSimpleAttr
 from sunpy.extern.six.moves import urllib
 from sunpy.extern import six
@@ -254,9 +254,9 @@ class JSOCClient(object):
         -------
         requests : ExportRequest Object or
                    a list of ExportRequest objects
-            
+
             Request Id can be accessed by requests.id
-            Request status can be accessed by requests.status 
+            Request status can be accessed by requests.status
 
         """
 
@@ -486,29 +486,6 @@ class JSOCClient(object):
 
         return results
 
-    def _process_time(self, time):
-        """
-        Take a UTC time string or datetime instance and generate a astropy.time
-        object in TAI frame. Alternatively convert a astropy time object to TAI
-
-        Parameters
-        ----------
-        time: six.string_types or datetime or astropy.time
-            Input time
-
-        Returns
-        -------
-        datetime, in TAI
-        """
-
-        if isinstance(time, six.string_types):
-            time = parse_time(time)
-
-        time = astropy.time.Time(time, scale='utc')
-        time = time.tai  # Change the scale to TAI
-
-        return time.datetime
-
     def _make_recordset(self, start_time, end_time, series, wavelength='',
                         segment='', primekey={}, **kwargs):
         """
@@ -554,8 +531,8 @@ class JSOCClient(object):
                 break
 
         dataset = '{series}{primekey}{segment}'.format(series=series,
-                                                        primekey=pkstr,
-                                                        segment=segment)
+                                                       primekey=pkstr,
+                                                       segment=segment)
 
         return dataset
 
@@ -613,9 +590,6 @@ class JSOCClient(object):
                 error_message = "Unexpected Segments were passed. The series {series} "\
                                 "contains the following Segments {segs}"
                 raise TypeError(error_message.format(series=iargs['series'], segs=segs))
-
-        iargs['start_time'] = self._process_time(iargs['start_time'])
-        iargs['end_time'] = self._process_time(iargs['end_time'])
 
         postthis = {'ds': self._make_recordset(**iargs),
                     'key': str(keywords)[1:-1].replace(' ', '').replace("'", ''),
