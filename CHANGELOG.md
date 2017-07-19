@@ -74,7 +74,7 @@ Latest
 * Added SunPy specific warnings under util.
 * SunPy coordinate frames can now be transformed to and from Astropy coordinate frames
 * `Helioprojective` frame defaults to an Earth observer with correct L0, B0, and distance
-* Ephemeris calculations with higher accuracy are now available under `sunpy.coordinates.utilities`
+* Ephemeris calculations with higher accuracy are now available under `sunpy.coordinates.ephemeris`
 
 0.7.0
 -----

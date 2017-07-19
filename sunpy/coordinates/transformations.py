@@ -39,7 +39,7 @@ def _carrington_offset(obstime):
                          " Frame needs a obstime Attribute")
 
     # Import here to avoid a circular import
-    from .utilities import get_sun_L0
+    from .ephemeris import get_sun_L0
     return get_sun_L0(obstime)
 
 # =============================================================================
