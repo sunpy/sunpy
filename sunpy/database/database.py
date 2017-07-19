@@ -458,7 +458,7 @@ class Database(object):
     def fetch(self, *query, **kwargs):
 
         """
-        fetch(*query[, path])
+        fetch(*query[, path, overwrite, client, progress, methods])
         
         Check if the query has already been used to collect new data.
         
@@ -476,7 +476,7 @@ class Database(object):
         to download files, which uses query result block level caching. This
         means that files will not be downloaded for any query result block
         that had its files downloaded previously. If files for Query A were
-        already downloaded, and then a Query B is made which has some result
+        already downloaded, and then Query B is made which has some result
         blocks common with Query A, then files for these common blocks will
         not be downloaded again. Files will only be downloaded for those
         blocks which are new or haven't had their files downloaded yet.
@@ -484,6 +484,29 @@ class Database(object):
         If querying results in no data, no operation is performed. Concrete,
         this means that no entry is added to the database and no file is
         downloaded.
+
+        Parameters
+        ----------
+        query : list
+            A variable number of attributes that are chained together via the
+            boolean AND operator. The | operator may be used between attributes
+            to express the boolean OR operator.
+        path : str, optional
+            The directory into which files will be downloaded.
+        overwrite : bool, optional
+            If True, matching database entries from the query results will be
+            deleted and replaced with new database entries, with all files
+            getting downloaded.
+            Otherwise, no new file download and update of matching database
+            entries takes place.
+        client : `sunpy.net.vso.VSOClient`, optional
+            VSO Client instance to use for search and download.
+            If not specified a new instance will be created.
+        progress : bool, optional
+            If True, displays the progress bar during file download.
+        methods : {list of str}, optional
+            Set VSOClient download method, see`~sunpy.net.vso.VSOClient.get`
+            for details.
 
         Examples
         --------
