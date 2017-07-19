@@ -1,9 +1,13 @@
 from __future__ import absolute_import
 
 from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, Attr
-from sunpy.net.vso.attrs import _VSOSimpleAttr
-from sunpy.net.vso.attrs import Time, Wavelength
+from sunpy.net.vso.attrs import _VSOSimpleAttr, _Range
+from sunpy.net.vso.attrs import Wavelength
 
+from sunpy.time import parse_time
+from sunpy.time import TimeRange as _TimeRange
+
+from astropy.time import Time as astropyTime
 
 __all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey']
 
@@ -16,6 +20,62 @@ class Series(_VSOSimpleAttr):
     for a list of series'.
     """
     pass
+
+
+class Time(Attr, _Range):
+    """
+    Specify the time range of the query.
+
+    Parameters
+    ----------
+    start : SunPy time string or `~sunpy.time.TimeRange`.
+        The start time in a format parseable by `~sunpy.time.parse_time` or
+        a `sunpy.time.TimeRange` object.
+
+    end : SunPy Time String
+        The end time of the range.
+
+    near: SunPy Time String
+        Return a singular record closest in time to this value as possible,
+        inside the start and end window. Note: not all providers support this
+        functionality.
+
+    """
+    def __init__(self, start, end=None, near=None, scale='tai'):
+        if end is None and not isinstance(start, _TimeRange):
+            raise ValueError("Specify start and end or start has to be a TimeRange")
+        if isinstance(start, _TimeRange):
+            start_dt = start.start
+            end_dt = start.end
+        else:
+            start_dt = parse_time(start)
+            end_dt = parse_time(end)
+
+        if start_dt > end_dt:
+            raise ValueError("End time must be after start time.")
+        self.near = None if near is None else parse_time(near)
+
+        self.start = astropyTime(start_dt, scale=scale.lower()).tai.value
+        self.end = astropyTime(end_dt, scale=scale.lower()).tai.value
+
+        _Range.__init__(self, self.start, self.end, self.__class__)
+        Attr.__init__(self)
+
+    def collides(self, other):
+        return isinstance(other, self.__class__)
+
+    def __xor__(self, other):
+        if not isinstance(other, self.__class__):
+            raise TypeError
+        if self.near is not None or other.near is not None:
+            raise TypeError
+        return _Range.__xor__(self, other)
+
+    def pad(self, timedelta):
+        return Time(self.start - timedelta, self.start + timedelta)
+
+    def __repr__(self):
+        return '<Time({s.start!r}, {s.end!r}, {s.near!r})>'.format(s=self)
 
 
 class Keys(_VSOSimpleAttr):
