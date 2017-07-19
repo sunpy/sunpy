@@ -7,6 +7,7 @@ import warnings
 
 import requests
 import numpy as np
+import pandas as pd
 import astropy.units as u
 import astropy.time
 import astropy.table
@@ -232,14 +233,15 @@ class JSOCClient(object):
 
         query = and_(*query)
         blocks = []
+        res = pd.DataFrame()
         for block in walker.create(query):
             iargs = kwargs.copy()
             iargs.update(block)
             iargs.update({'meta': True})
             blocks.append(iargs)
-            r = self._lookup_records(iargs)
+            res = res.append(self._lookup_records(iargs))
 
-        return r
+        return res
 
     def request_data(self, jsoc_response, **kwargs):
         """
