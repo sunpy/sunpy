@@ -483,7 +483,7 @@ def test_vso_query_block_caching(database, download_qr, tmpdir):
 
 @pytest.mark.online
 def test_vso_query_block_caching_with_overwrite_true_flag(database,
-                                                         download_qr, tmpdir):
+                                                          download_qr, tmpdir):
 
     assert len(database) == 0
 
