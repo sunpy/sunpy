@@ -446,7 +446,6 @@ class Database(object):
                 entry.download_time = datetime.utcnow()
                 yield entry
 
-
     @deprecated('0.8', alternative='database.fetch()')
     def download(self, *query, **kwargs):
 
@@ -454,14 +453,13 @@ class Database(object):
 
         return self.fetch(*query, **kwargs)
 
-
     def fetch(self, *query, **kwargs):
 
         """
         fetch(*query[, path, overwrite, client, progress, methods])
-        
+
         Check if the query has already been used to collect new data.
-        
+
         If yes, query the database using the method
         :meth:`sunpy.database.Database.query` and return the result.
 
@@ -562,7 +560,6 @@ class Database(object):
             qr, **kwargs))
 
         self.add_many(entries)
-
 
     def query(self, *query, **kwargs):
         """
