@@ -118,9 +118,7 @@ version = sunpy.__version__.split('-', 1)[0]
 release = sunpy.__version__
 
 try:
-    import sphinx_rtd_theme
-    html_theme = 'sphinx_rtd_theme'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+    from sunpy_sphinx_theme.conf import *
 except ImportError:
     html_theme = 'default'
 
