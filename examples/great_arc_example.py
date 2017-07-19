@@ -4,7 +4,7 @@ Drawing and using a Great Arc
 =============================
 
 This example shows you how to define and draw a great arc on an image of the
-Sun, and to extract intensity values along that arc from the data.
+Sun, and to extract intensity values along that arc from the image data.
 """
 import numpy as np
 import matplotlib.pyplot as plt
