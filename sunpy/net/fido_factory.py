@@ -8,7 +8,7 @@ well as defining ``Fido`` which is an instance of
 """
 # This module was initially developed under funding provided by Google Summer
 # of Code 2014
-from collections import MutableSequence
+from collections import Sequence
 
 from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
@@ -23,7 +23,7 @@ from . import attrs as a
 __all__ = ['Fido', 'UnifiedResponse', 'UnifiedDownloaderFactory', 'DownloadResponse']
 
 
-class UnifiedResponse(MutableSequence):
+class UnifiedResponse(Sequence):
     """
     The object used to store results from `~sunpy.net.UnifiedDownloaderFactory.search`.
 
@@ -77,6 +77,9 @@ class UnifiedResponse(MutableSequence):
 
     def __len__(self):
         return len(self._list)
+
+    def __iter__(self):
+        return self.responses
 
     def _handle_record_slice(self, client_resp, record_slice):
         """
@@ -132,20 +135,7 @@ class UnifiedResponse(MutableSequence):
         else:
             raise IndexError("UnifiedResponse objects must be sliced with integers.")
 
-        # Construct a new UnifiedResponse object and return
-        return type(self)(ret)
-
-    def __delitem__(self, i):
-        del self._list[i]
-
-    def __setitem__(self, aslice, v):
-        self._list[aslice] = v
-
-    def __iter__(self):
-        return self.responses
-
-    def insert(self, i, v):
-        self._list.insert(i, v)
+        return ret
 
     def get_response(self, i):
         """
