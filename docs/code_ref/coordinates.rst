@@ -24,7 +24,7 @@ The easiest interface to the coordinates module is through the `~astropy.coordin
   >>> c = SkyCoord(x=-72241.0*u.km, y=361206.1*u.km, z=589951.4*u.km, frame=frames.Heliocentric)
   >>> c = SkyCoord(70*u.deg, -30*u.deg, frame=frames.HeliographicStonyhurst)
   >>> c
-  <SkyCoord (HeliographicStonyhurst: dateobs=None): (lon, lat, rad) in (deg, deg, km)
+  <SkyCoord (HeliographicStonyhurst: obstime=None): (lon, lat, rad) in (deg, deg, km)
       (70.0, -30.0, 695508.0)>
 
 
@@ -37,7 +37,7 @@ astropy coordinates.
   >>> import sunpy.coordinates
   >>> c = SkyCoord(-100*u.arcsec, 500*u.arcsec, frame='helioprojective')
   >>> c
-  <SkyCoord (Helioprojective: D0=149597870.7 km, dateobs=None, L0=0.0 deg, B0=0.0 deg, rsun=695508.0 km): (Tx, Ty) in arcsec
+  <SkyCoord (Helioprojective: D0=149597870.7 km, obstime=None, L0=0.0 deg, B0=0.0 deg, rsun=695508.0 km): (Tx, Ty) in arcsec
     (-100.,  500.)>
 
 
@@ -63,10 +63,10 @@ than a list of `~astropy.coordinates.SkyCoord` objects, because it will be
 
    >>> c = SkyCoord([-500, 400]*u.arcsec, [100, 200]*u.arcsec, frame=frames.Helioprojective)
    >>> c
-   <SkyCoord (HelioProjective: D0=149597870.7 km, dateobs=None, L0=0.0 deg, B0=0.0 deg, rsun=695508.0 km): (Tx, Ty) in arcsec
+   <SkyCoord (HelioProjective: D0=149597870.7 km, obstime=None, L0=0.0 deg, B0=0.0 deg, rsun=695508.0 km): (Tx, Ty) in arcsec
        [(-500.0, 100.0), (400.0, 200.0)]>
    >>> c[0]
-   <SkyCoord (HelioProjective: D0=149597870.7 km, dateobs=None, L0=0.0 deg, B0=0.0 deg, rsun=695508.0 km): (Tx, Ty) in arcsec
+   <SkyCoord (HelioProjective: D0=149597870.7 km, obstime=None, L0=0.0 deg, B0=0.0 deg, rsun=695508.0 km): (Tx, Ty) in arcsec
        (-500.0, 100.0)>
 
 
@@ -167,7 +167,7 @@ themselves and some other usability improvements, for more information see the
 
 The main advantage provided by `~astropy.coordinates.SkyCoord` is the support it
 provides for caching Frame attributes. Frame attributes are extra data specified
-with a frame, some examples in `sunpy.coordinates` are ``dateobs`` or ``L0`` and
+with a frame, some examples in `sunpy.coordinates` are ``obstime`` or ``L0`` and
 ``B0`` for observer location. Only the frames where this data is meaningful have
 these attributes, i.e. only the Helioprojective frames have ``L0`` and ``B0``.
 However, when you transform into another frame and then back to a projective
@@ -209,7 +209,7 @@ If you want to obtain a un-realized coordinate frame corresponding to a
   >>> amap = sunpy.map.Map(AIA_171_IMAGE)
 
   >>> wcs_to_celestial_frame(amap.wcs)
-  <Helioprojective Frame (D0=1.48940609627e+11 m, dateobs=2011-03-1910:54:00.340000, L0=0.0 deg, B0=-7.064078 deg, rsun=695508.0 km)>
+  <Helioprojective Frame (D0=1.48940609627e+11 m, obstime=2011-03-1910:54:00.340000, L0=0.0 deg, B0=-7.064078 deg, rsun=695508.0 km)>
 
 
 

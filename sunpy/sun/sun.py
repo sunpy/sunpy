@@ -29,6 +29,7 @@ from astropy.coordinates import Angle, Longitude, Latitude
 
 from sunpy.time import parse_time, julian_day, julian_centuries
 from sunpy.sun import constants
+from sunpy.util.decorators import deprecated
 
 __all__ = ["print_params",
            "heliographic_solar_center",
@@ -83,7 +84,9 @@ def solar_semidiameter_angular_size(t='now'):
         Radius_{\odot}[rad]=\frac{<Radius_{\odot}[m]>}{D_{\odot \oplus}(t)[m]}
 
     """
-    solar_semidiameter_rad = (constants.radius.to(u.AU)) / sunearth_distance(t)
+    # Import here to avoid a circular import
+    from sunpy.coordinates import get_sunearth_distance
+    solar_semidiameter_rad = (constants.radius.to(u.AU)) / get_sunearth_distance(t)
     return Angle(solar_semidiameter_rad.to(u.arcsec, equivalencies=u.dimensionless_angles()))
 
 
@@ -165,6 +168,7 @@ def true_anomaly(t='now'):
     return Longitude(result)
 
 
+@deprecated('0.8', 'Use sunpy.coordinates.get_sunearth_distance() for higher accuracy')
 def sunearth_distance(t='now'):
     """Returns the Sun Earth distance (AU). There are a set of higher
     accuracy terms not included here."""
@@ -238,6 +242,7 @@ def apparent_declination(t='now'):
     return Latitude(result.to(u.deg))
 
 
+@deprecated('0.8', 'Use sunpy.coordinates.get_sun_P() for higher accuracy')
 def solar_north(t='now'):
     """Returns the position of the Solar north pole in degrees."""
     T = julian_centuries(t)
@@ -255,6 +260,7 @@ def solar_north(t='now'):
     return Angle(result.to(u.deg))
 
 
+@deprecated('0.8', 'Use sunpy.coordinates.get_sun_L0() and .get_sun_B0() for higher accuracy')
 def heliographic_solar_center(t='now'):
     """Returns the position of the solar center in heliographic coordinates."""
     jd = julian_day(t)

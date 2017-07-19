@@ -13,7 +13,9 @@ from astropy import units as u
 from astropy.coordinates.representation import (CartesianRepresentation,
                                                 UnitSphericalRepresentation)
 from astropy.coordinates.baseframe import frame_transform_graph
-from astropy.coordinates.transformations import FunctionTransform
+from astropy.coordinates.transformations import FunctionTransform, DynamicMatrixTransform
+from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_product, matrix_transpose
+from astropy.coordinates import HCRS, get_body_barycentric
 
 from sunpy import sun
 
@@ -23,17 +25,22 @@ from .frames import (HeliographicStonyhurst, HeliographicCarrington,
                      Heliocentric, Helioprojective)
 
 __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
-           'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc']
+           'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',
+           'hpc_to_hpc',
+           'hcrs_to_hgs', 'hgs_to_hcrs']
 
 
-def _carrington_offset(dateobs):
+def _carrington_offset(obstime):
     """
     Calculate the HG Longitude offest based on a time
     """
-    if dateobs is None:
+    if obstime is None:
         raise ValueError("To perform this transformation the coordinate"
-                         " Frame needs a dateobs Attribute")
-    return sun.heliographic_solar_center(dateobs)[0]
+                         " Frame needs a obstime Attribute")
+
+    # Import here to avoid a circular import
+    from .ephemeris import get_sun_L0
+    return get_sun_L0(obstime)
 
 # =============================================================================
 # ------------------------- Transformation Framework --------------------------
@@ -46,11 +53,11 @@ def hgs_to_hgc(hgscoord, hgcframe):
     """
     Transform from Heliographic Stonyhurst to Heliograpic Carrington.
     """
-    c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.dateobs).to(
+    c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.obstime).to(
         u.deg)
     representation = SphericalWrap180Representation(c_lon, hgscoord.lat,
                                                     hgscoord.radius)
-    hgcframe = hgcframe.__class__(dateobs=hgscoord.dateobs)
+    hgcframe = hgcframe.__class__(obstime=hgscoord.obstime)
     return hgcframe.realize_frame(representation)
 
 
@@ -60,11 +67,11 @@ def hgc_to_hgs(hgccoord, hgsframe):
     """
     Convert from Heliograpic Carrington to Heliographic Stonyhurst.
     """
-    if hgccoord.dateobs:
-        dateobs = hgccoord.dateobs
+    if hgccoord.obstime:
+        obstime = hgccoord.obstime
     else:
-        dateobs = hgsframe.dateobs
-    s_lon = hgccoord.spherical.lon - _carrington_offset(dateobs).to(
+        obstime = hgsframe.obstime
+    s_lon = hgccoord.spherical.lon - _carrington_offset(obstime).to(
         u.deg)
     representation = SphericalWrap180Representation(s_lon, hgccoord.lat,
                                                     hgccoord.radius)
@@ -195,6 +202,66 @@ def hpc_to_hpc(heliopcoord, heliopframe):
     hpc = hgs.transform_to(heliopframe)
 
     return hpc
+
+
+def _make_rotation_matrix(start_representation, end_representation):
+    """
+    Return the matrix for the direct rotation from one representation to a second representation.
+    The representations need not be normalized first.
+    """
+    A = start_representation.to_cartesian()
+    B = end_representation.to_cartesian()
+    rotation_axis = A.cross(B)
+    rotation_angle = -np.arccos(A.dot(B) / (A.norm() * B.norm()))  # negation is required
+
+    # This line works around some input/output quirks of Astropy's rotation_matrix()
+    matrix = np.array(rotation_matrix(rotation_angle, rotation_axis.xyz.value.tolist()))
+    return matrix
+
+
+# The Sun's north pole is oriented RA=286.13 deg, dec=63.87 deg in ICRS, and thus HCRS as well
+# (See Archinal et al. 2011,
+#   "Report of the IAU Working Group on Cartographic Coordinates and Rotational Elements: 2009")
+# The orientation of the north pole in ICRS/HCRS is assumed to be constant in time
+_solar_north_pole_hcrs = UnitSphericalRepresentation(lon=286.13*u.deg, lat=63.87*u.deg)
+
+
+# Calculate the rotation matrix to de-tilt the Sun's rotation axis to be parallel to the Z axis
+_sun_detilt_matrix = _make_rotation_matrix(_solar_north_pole_hcrs,
+                                           CartesianRepresentation(0, 0, 1))
+
+
+@frame_transform_graph.transform(DynamicMatrixTransform, HCRS, HeliographicStonyhurst)
+def hcrs_to_hgs(hcrscoord, hgsframe):
+    """
+    Convert from HCRS to Heliographic Stonyhurst.
+    """
+    if hgsframe.obstime is None:
+        raise ValueError("To perform this transformation the coordinate"
+                         " Frame needs a obstime Attribute")
+
+    # Determine the Sun-Earth vector in this de-tilt frame
+    sun_pos_icrs = get_body_barycentric('sun', hgsframe.obstime)
+    earth_pos_icrs = get_body_barycentric('earth', hgsframe.obstime)
+    sun_earth_hcrs = earth_pos_icrs - sun_pos_icrs
+    sun_earth_detilt = sun_earth_hcrs.transform(_sun_detilt_matrix)
+
+    # Remove the component of the Sun-Earth vector that is parallel to the Sun's north pole
+    hgs_x_axis_detilt = CartesianRepresentation(sun_earth_detilt.xyz * [1, 1, 0])
+
+    # The above vector, which is in the Sun's equatorial plane, is also the X axis of HGS
+    x_axis = CartesianRepresentation(1, 0, 0)
+    rot_matrix = _make_rotation_matrix(hgs_x_axis_detilt, x_axis)
+
+    return matrix_product(rot_matrix, _sun_detilt_matrix)
+
+
+@frame_transform_graph.transform(DynamicMatrixTransform, HeliographicStonyhurst, HCRS)
+def hgs_to_hcrs(hgscoord, hcrsframe):
+    """
+    Convert from Heliographic Stonyhurst to HCRS.
+    """
+    return matrix_transpose(hcrs_to_hgs(hcrsframe, hgscoord))
 
 
 # Make a transformation graph for the documentation, borrowed lovingly from

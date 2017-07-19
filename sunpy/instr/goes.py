@@ -69,6 +69,7 @@ from sunpy import lightcurve
 from sunpy.util.net import check_download_file
 from sunpy.util.config import get_and_create_download_dir
 from sunpy import sun
+from sunpy.coordinates import get_sunearth_distance
 
 GOES_CONVERSION_DICT = {'X': u.Quantity(1e-4, "W/m^2"),
                         'M': u.Quantity(1e-5, "W/m^2"),
@@ -1272,7 +1273,7 @@ def _calc_xraylum(flux, date=None):
     """
     if date is not None:
         date = parse_time(date)
-        xraylum = 4 * np.pi * sun.sun.sunearth_distance(t=date).to("m")**2 * flux
+        xraylum = 4 * np.pi * get_sunearth_distance(date).to("m")**2 * flux
     else:
         xraylum = 4 * np.pi * sun.constants.au.to("m")**2 * flux
     return xraylum
