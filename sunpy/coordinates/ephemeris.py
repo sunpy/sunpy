@@ -10,7 +10,8 @@ import warnings
 import numpy as np
 import astropy.units as u
 from astropy.time import Time
-from astropy.coordinates import SkyCoord, Angle, Longitude, PrecessedGeocentric, AltAz, \
+from astropy.coordinates import SkyCoord, Angle, Longitude, \
+                                ICRS, PrecessedGeocentric, AltAz, \
                                 get_body_barycentric
 from astropy.coordinates.representation import CartesianRepresentation, SphericalRepresentation
 from astropy._erfa.core import ErfaWarning
@@ -20,7 +21,8 @@ from sunpy.time import parse_time
 from .frames import HeliographicStonyhurst as HGS
 from .transformations import _sun_detilt_matrix
 
-__all__ = ['get_earth', 'get_sun_B0', 'get_sun_L0', 'get_sun_P', 'get_sunearth_distance',
+__all__ = ['get_body_heliographic_stonyhurst', 'get_earth',
+           'get_sun_B0', 'get_sun_L0', 'get_sun_P', 'get_sunearth_distance',
            'get_sun_orientation']
 
 
@@ -29,6 +31,31 @@ def _astropy_time(time):
     Return an `~astropy.time.Time` instance, running it through `~sunpy.time.parse_time` if needed
     """
     return time if isinstance(time, Time) else Time(parse_time(time))
+
+
+def get_body_heliographic_stonyhurst(body, time='now'):
+    """
+    Return a HeliographicStonyhurst frame for the location of a solar-system body at a specified
+    time.
+
+    Parameters
+    ----------
+    body : str
+        The solar-system body for which to calculate positions
+    time : various
+        Time to use as `~astropy.time.Time` or in a parse_time-compatible format
+
+    Returns
+    -------
+    out : `~sunpy.coordinates.HeliographicStonyhurst`
+        Location of the solar-system body in the HeliographicStonyhurst frame
+    """
+    obstime = _astropy_time(time)
+
+    body_icrs = ICRS(get_body_barycentric(body, obstime))
+    body_hgs = body_icrs.transform_to(HGS(obstime=obstime))
+
+    return body_hgs
 
 
 def get_earth(time='now'):
@@ -46,10 +73,7 @@ def get_earth(time='now'):
     out : `~astropy.coordinates.SkyCoord`
         SkyCoord for the location of the Earth in the HeliographicStonyhurst frame
     """
-    obstime = _astropy_time(time)
-
-    earth_icrs = get_body_barycentric('earth', obstime)
-    earth = SkyCoord(earth_icrs, frame='icrs', obstime=obstime).transform_to(HGS)
+    earth = get_body_heliographic_stonyhurst('earth', time=time)
 
     # Explicitly set the longitude to 0
     earth = SkyCoord(0*u.deg, earth.lat, earth.radius, frame=earth)
