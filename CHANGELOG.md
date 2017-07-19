@@ -72,6 +72,9 @@ Latest
   animate N-Dimensional data with the associated WCS object.
 * Moved Docs to docs/ to follow the astropy style
 * Added SunPy specific warnings under util.
+* SunPy coordinate frames can now be transformed to and from Astropy coordinate frames
+* `Helioprojective` frame defaults to an Earth observer with correct L0, B0, and distance
+* Ephemeris calculations with higher accuracy are now available under `sunpy.coordinates.utilities`
 
 0.7.0
 -----
