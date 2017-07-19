@@ -160,7 +160,7 @@ def test_detector(generic_map):
 
 
 def test_dsun(generic_map):
-    assert generic_map.dsun == sunpy.sun.sunearth_distance(generic_map.date).to(u.m)
+    assert generic_map.dsun == sunpy.coordinates.get_sunearth_distance(generic_map.date).to(u.m)
 
 
 def test_rsun_meters(generic_map):
@@ -176,13 +176,11 @@ def test_coordinate_system(generic_map):
 
 
 def test_carrington_longitude(generic_map):
-    assert generic_map.carrington_longitude == (
-        sunpy.sun.heliographic_solar_center(generic_map.date))[0]
+    assert generic_map.carrington_longitude == sunpy.coordinates.get_sun_L0(generic_map.date)
 
 
 def test_heliographic_latitude(generic_map):
-    assert generic_map.heliographic_latitude == (
-        sunpy.sun.heliographic_solar_center(generic_map.date))[1]
+    assert generic_map.heliographic_latitude == sunpy.coordinates.get_sun_B0(generic_map.date)
 
 
 def test_heliographic_longitude(generic_map):
