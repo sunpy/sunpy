@@ -94,6 +94,7 @@ def test_tag_hashability():
     assert isinstance(Tag(''), Hashable)
 
 
+@pytest.mark.flaky(reruns=5)
 @pytest.mark.online
 def test_entry_from_qr_block(query_result):
     entry = DatabaseEntry._from_query_result_block(query_result[0])
@@ -118,6 +119,7 @@ def test_entry_from_qr_block_with_missing_physobs(qr_block_with_missing_physobs)
     assert entry == expected_entry
 
 
+@pytest.mark.flaky(reruns=5)
 @pytest.mark.online
 def test_entry_from_qr_block_kev(qr_block_with_kev_unit):
     # See issue #766.
