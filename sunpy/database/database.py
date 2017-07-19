@@ -487,13 +487,13 @@ class Database(object):
 
         Parameters
         ----------
-        query : list
+        query : `list`
             A variable number of attributes that are chained together via the
             boolean AND operator. The | operator may be used between attributes
             to express the boolean OR operator.
-        path : str, optional
+        path : `str`, optional
             The directory into which files will be downloaded.
-        overwrite : bool, optional
+        overwrite : `bool`, optional
             If True, matching database entries from the query results will be
             deleted and replaced with new database entries, with all files
             getting downloaded.
@@ -502,9 +502,9 @@ class Database(object):
         client : `sunpy.net.vso.VSOClient`, optional
             VSO Client instance to use for search and download.
             If not specified a new instance will be created.
-        progress : bool, optional
+        progress : `bool`, optional
             If True, displays the progress bar during file download.
-        methods : {list of str}, optional
+        methods : `str` or iterable of `str`, optional
             Set VSOClient download method, see`~sunpy.net.vso.VSOClient.get`
             for details.
 
@@ -588,11 +588,11 @@ class Database(object):
 
         Parameters
         ----------
-        query : list
+        query : `list`
             A variable number of attributes that are chained together via the
             boolean AND operator. The | operator may be used between attributes
             to express the boolean OR operator.
-        sortby : str, optional
+        sortby : `str`, optional
             The column by which to sort the returned entries. The default is to
             sort by the start of the observation. See the attributes of
             :class:`sunpy.database.tables.DatabaseEntry` for a list of all
