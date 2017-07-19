@@ -13,7 +13,7 @@ from sunpy.time import parse_time
 from ..frames import Helioprojective, HeliographicStonyhurst
 from ..frameattributes import TimeFrameAttributeSunPy, ObserverCoordinateAttribute
 from sunpy.util.exceptions import SunpyUserWarning
-from sunpy.coordinates.utilities import get_earth
+from sunpy.coordinates import get_earth
 
 
 @pytest.fixture
