@@ -21,7 +21,7 @@ from astropy.coordinates import Attribute, CoordinateAttribute
 from sunpy import sun
 from .representation import (SphericalWrap180Representation, UnitSphericalWrap180Representation)
 
-from .frameattributes import TimeFrameAttributeSunPy
+from .frameattributes import TimeFrameAttributeSunPy, ObserverCoordinateAttribute
 
 RSUN_METERS = sun.constants.get('radius').si.to(u.m)
 DSUN_METERS = sun.constants.get('mean distance').si.to(u.m)
@@ -235,10 +235,7 @@ class Heliocentric(BaseCoordinateFrame):
     }
 
     obstime = TimeFrameAttributeSunPy()
-    observer = CoordinateAttribute(HeliographicStonyhurst,
-                                   default=HeliographicStonyhurst(0*u.deg,
-                                                                  0*u.deg,
-                                                                  1*u.AU))
+    observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
 
 
 class Helioprojective(BaseCoordinateFrame):
@@ -312,22 +309,12 @@ class Helioprojective(BaseCoordinateFrame):
 
     obstime = TimeFrameAttributeSunPy()
     rsun = Attribute(default=RSUN_METERS.to(u.km))
-    observer = CoordinateAttribute(HeliographicStonyhurst,
-                                   default=HeliographicStonyhurst(0*u.deg,
-                                                                  0*u.deg,
-                                                                  1*u.AU))
+    observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
 
     def __init__(self, *args, **kwargs):
         _rep_kwarg = kwargs.get('representation', None)
 
         BaseCoordinateFrame.__init__(self, *args, **kwargs)
-
-        # If obstime is set, but observer is not, default to Earth observer
-        if 'obstime' not in self._attr_names_with_defaults and \
-           'observer' in self._attr_names_with_defaults:
-            # Import here to avoid a circular import
-            from .ephemeris import get_earth
-            self._observer = get_earth(self.obstime)
 
         # Convert from Spherical to SphericalWrap180
         # If representation was explicitly passed, do not change the rep.
