@@ -206,8 +206,8 @@ def get_obssum_filename(time_range):
     index_number_start = _time_range.start.day - 1
     index_number_end = _time_range.end.day - 1
 
-    return [get_base_url() + data_location +
-            filename + 's' for filename in result.get('filename')[index_number_start:index_number_end]]
+    return [get_base_url() + data_location + filename
+            + 's' for filename in result.get('filename')[index_number_start:index_number_end]]
 
 
 def get_obssumm_file(time_range):
@@ -352,8 +352,9 @@ def uncompress_countrate(compressed_countrate):
     """
 
     # Ensure uncompressed counts are between 0 and 255
-    if not ((compressed_countrate >= 0).all() and (compressed_countrate < 256).all()):
-        raise ValueError('Exepected uncompressed counts {} to in range 0-255'.format(compressed_countrate))
+    if (compressed_countrate.min() < 0) or (compressed_countrate.max() > 255):
+        raise ValueError(
+            'Exepected uncompressed counts {} to in range 0-255'.format(compressed_countrate))
 
     # TODO Must be a better way than creating entire lookup table on each call
     ll = np.arange(0, 16, 1)
@@ -430,15 +431,16 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
     grid_transmission = afits[fits_detector_index].data.field('gridtran')
     count = afits[fits_detector_index].data.field('count')
 
-    tempa = (np.arange(image_dim[0]*image_dim[1]) % image_dim[0]) - (image_dim[0]-1)/2.
+    tempa = (np.arange(image_dim[0] * image_dim[1]) % image_dim[0]) - (image_dim[0]-1)/2.
     tempb = tempa.reshape(image_dim[0], image_dim[1]).transpose().reshape(image_dim[0]*image_dim[1])
 
     pixel = np.array(list(zip(tempa, tempb)))*pixel_size[0]
-    phase_pixel = (2*np.pi/harm_ang_pitch)*(np.outer(pixel[:, 0], np.cos(this_roll_angle - grid_angle)) -
-                                            np.outer(pixel[:, 1], np.sin(this_roll_angle - grid_angle))) + phase_map_center
+    phase_pixel = (2 * np.pi/harm_ang_pitch) *\
+                  (np.outer(pixel[:, 0], np.cos(this_roll_angle - grid_angle)) -
+                   np.outer(pixel[:, 1], np.sin(this_roll_angle - grid_angle))) + phase_map_center
     phase_modulation = np.cos(phase_pixel)
     gridmod = modamp * grid_transmission
-    probability_of_transmission = gridmod*phase_modulation + grid_transmission
+    probability_of_transmission = gridmod * phase_modulation + grid_transmission
     bproj_image = np.inner(probability_of_transmission, count).reshape(image_dim)
 
     return bproj_image
@@ -492,8 +494,8 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
     detector_list = (np.arange(9)+1) * np.array(det_index_mask)
     for detector in detector_list:
         if detector > 0:
-            image = image + _backproject(calibrated_event_list, detector=detector, pixel_size=pixel_size.value,
-                                         image_dim=image_dim)
+            image = image + _backproject(calibrated_event_list, detector=detector,
+                                         pixel_size=pixel_size.value, image_dim=image_dim)
 
     dict_header = {
         "DATE-OBS": time_range.center.strftime("%Y-%m-%d %H:%M:%S"),
