@@ -17,6 +17,7 @@ from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.net.dataretriever.clients import CLIENTS
 from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net.vso import VSOClient, QueryResponse as vsoQueryResponse
+
 from . import attr
 from . import attrs as a
 
@@ -135,7 +136,7 @@ class UnifiedResponse(Sequence):
         else:
             raise IndexError("UnifiedResponse objects must be sliced with integers.")
 
-        return ret
+        return UnifiedResponse(ret)
 
     def get_response(self, i):
         """
