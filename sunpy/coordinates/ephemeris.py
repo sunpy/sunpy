@@ -112,6 +112,13 @@ def get_sun_L0(time='now'):
     Return the L0 angle for the Sun at a specified time, which is the Carrington longitude of the
     Sun-disk center as seen from Earth.
 
+    .. warning::
+       Due to apparent disagreement between published references, the returned L0 may be inaccurate
+       by up to ~2 arcmin, which translates in the worst case to a shift of ~0.5 arcsec in
+       helioprojective coordinates for an observer at 1 AU.  Until this is resolved, be cautious
+       with analysis that depends critically on absolute (as opposed to relative) values of
+       Carrington longitude.
+
     Parameters
     ----------
     time : various
@@ -153,6 +160,7 @@ def get_sun_P(time='now'):
     """
     obstime = _astropy_time(time)
 
+    # Define the frame where its Z axis is aligned with geocentric north
     geocentric = PrecessedGeocentric(equinox=obstime, obstime=obstime)
 
     return _sun_north_angle_to_z(geocentric)
@@ -195,6 +203,7 @@ def get_sun_orientation(location, time='now'):
     """
     obstime = _astropy_time(time)
 
+    # Define the frame where its Z axis is aligned with local zenith
     local_frame = AltAz(obstime=obstime, location=location)
 
     return _sun_north_angle_to_z(local_frame)
