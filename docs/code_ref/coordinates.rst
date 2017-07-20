@@ -120,7 +120,7 @@ Observer Location Information
 
 Both ``Helioprojective`` and ``Heliocentric`` frames are defined by the location of the observer. For example in ``Helioprojective`` the observer is at the origin of the coordinate system. This information is encoded in the ``Helioprojecitve`` and ``Heliocentric`` frames as the attributes `L0`, `B0` and `D0` which are heliographic longitude, latitude and distance from the center of the Sun. These attributes are automatically populated from meta data when coordinate frames are created using map.
 
-It is possible to convert from a ``Helioprojective`` frame with one observer location to another ``Helioprojecitve`` frame with a different observer location, by converting through ``Heliographic``, this does involve making an assumption of the radius of the Sun to calculate the position on the solar sphere. The conversion can be performed as follows::
+It is possible to convert from a ``Helioprojective`` frame with one observer location to another ``Helioprojective`` frame with a different observer location, by converting through ``Heliographic``, this does involve making an assumption of the radius of the Sun to calculate the position on the solar sphere. The conversion can be performed as follows::
 
   # Input coordinate
   >>> hpc1 = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective)
@@ -141,9 +141,8 @@ Design of the Coordinates Module
 This module works by defining a collection of ``Frames``
 (`sunpy.coordinates.frames`), which exists on a transformation graph, where the
 transformations between the coordinate frames are then defined and registered
-with the transformation graph (`sunpy.coordinates.transformations`). Currently,
-the SunPy frames are not transformable to the frames in Astropy, as there is no
-transformation defined between the two sets of frames.
+with the transformation graph (`sunpy.coordinates.transformations`). It is also
+possible to transform SunPy frames to Astropy frames.
 
 Positions within these ``Frames`` are stored as a ``Representation`` of a
 coordinate, a representation being a description of a point in a Cartesian,

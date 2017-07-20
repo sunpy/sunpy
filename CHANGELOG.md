@@ -73,6 +73,7 @@ Latest
 * Moved Docs to docs/ to follow the astropy style
 * Added SunPy specific warnings under util.
 * SunPy coordinate frames can now be transformed to and from Astropy coordinate frames
+* The time attribute for SunPy coordinate frames has been renamed from `dateobs` to `obstime`
 * `Helioprojective` frame defaults to an Earth observer with correct L0, B0, and distance
 * Ephemeris calculations with higher accuracy are now available under `sunpy.coordinates.ephemeris`
 * Add support for SunPy coordinates to specify observer as a string of a major solar system body.
