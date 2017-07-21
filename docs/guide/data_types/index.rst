@@ -7,5 +7,4 @@ Data Types in SunPy
 
     maps
     timeseries
-    lightcurve
     spectra
