@@ -66,13 +66,15 @@ that Fido can be used instead of explicitly searching the VSO.
 Indexing search results
 -----------------------
 
-The `UnifiedResponse` that Fido returns can be indexed to access a subset of
-the search results. When doing this, the results should be treated as a
-two-dimensional array in which the first dimension corresponds to the clients
-which have returned results and the second is time.
+The `~sunpy.net.fido_factory.UnifiedDownloader` that Fido returns can be
+indexed to access a subset of the search results. When doing this, the
+results should be treated as a two-dimensional array in which the first
+dimension corresponds to the clients which have returned results and the
+second to the records returned.
 
 For example, the following code returns a response containing LYRA data from
-the `LYRAClient`, and EVE data from the `VSOClient`::
+the `~sunpy.net.dataretriever.sources.LYRAClient`, and EVE data from the
+`~sunpy.net.vso.vso.VSOClient`::
 
     >>> from sunpy.net import Fido, attrs as a
     >>> uresp = Fido.search(a.Time("2012/1/1", "2012/1/2"),
