@@ -430,6 +430,14 @@ scale:\t\t {scale}
         return self.meta.get('obsrvtry', self.meta.get('telescop', "")).replace("_", " ")
 
     @property
+    def processing_level(self):
+        """
+        Returns the FITS processing level if present.
+        """
+        return self.meta.get('lvl_num', None)
+
+    @property
+    @deprecated("0.8", "This property is only valid for non-rotated WCS")
     def xrange(self):
         """Return the X range of the image from edge to edge."""
         #TODO: This should be reading from the WCS object
