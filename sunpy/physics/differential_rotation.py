@@ -5,8 +5,8 @@ import numpy as np
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-from sunpy.coordinates.ephemeris import get_earth
 from sunpy.time import parse_time
+from sunpy.coordinates.ephemeris import get_earth
 from sunpy.coordinates import frames
 
 __author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
