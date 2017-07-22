@@ -281,9 +281,9 @@ class JSOCClient(object):
 
             requests.append(r)
 
-        if len(responses) == 1:
-            return responses[0]
-        return responses
+        if len(requests) == 1:
+            return requests[0]
+        return requests
 
     def check_request(self, responses):
         """
@@ -592,6 +592,9 @@ class JSOCClient(object):
                 error_message = "Unexpected Segments were passed. The series {series} "\
                                 "contains the following Segments {segs}"
                 raise TypeError(error_message.format(series=iargs['series'], segs=segs))
+
+        iargs['start_time'] = iargs['start_time'].tai.datetime
+        iargs['end_time'] = iargs['end_time'].tai.datetime
 
         postthis = {'ds': self._make_recordset(**iargs),
                     'key': str(keywords)[1:-1].replace(' ', '').replace("'", ''),

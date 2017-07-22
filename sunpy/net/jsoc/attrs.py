@@ -2,6 +2,7 @@ from __future__ import absolute_import
 
 from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, Attr
 from sunpy.net.vso.attrs import _VSOSimpleAttr, _Range
+from sunpy.net.vso.attrs import Time as VSOTime
 from sunpy.net.vso.attrs import Wavelength
 
 from sunpy.time import parse_time
@@ -22,7 +23,7 @@ class Series(_VSOSimpleAttr):
     pass
 
 
-class Time(Attr, _Range):
+class Time(VSOTime):
     """
     Specify the time range of the query.
 
@@ -41,42 +42,24 @@ class Time(Attr, _Range):
         functionality.
 
     """
-    def __init__(self, start, end=None, near=None, scale='tai'):
+    def __init__(self, start, end=None):
         if end is None and not isinstance(start, _TimeRange):
             raise ValueError("Specify start and end or start has to be a TimeRange")
         if isinstance(start, _TimeRange):
-            start_dt = start.start
-            end_dt = start.end
+            self.start = start.start
+            self.end = start.end
         else:
-            start_dt = parse_time(start)
-            end_dt = parse_time(end)
+            self.start = start if isinstance(start, astropyTime) else astropyTime(parse_time(start))
+            self.end = end if isinstance(end, astropyTime) else astropyTime(parse_time(end))
 
-        if start_dt > end_dt:
+        if self.start > self.end:
             raise ValueError("End time must be after start time.")
-        self.near = None if near is None else parse_time(near)
-
-        self.start = astropyTime(start_dt, scale=scale.lower()).tai.value
-        self.end = astropyTime(end_dt, scale=scale.lower()).tai.value
 
         _Range.__init__(self, self.start, self.end, self.__class__)
         Attr.__init__(self)
 
-    def collides(self, other):
-        return isinstance(other, self.__class__)
-
-    def __xor__(self, other):
-        if not isinstance(other, self.__class__):
-            raise TypeError
-        if self.near is not None or other.near is not None:
-            raise TypeError
-        return _Range.__xor__(self, other)
-
-    def pad(self, timedelta):
-        return Time(self.start - timedelta, self.start + timedelta)
-
     def __repr__(self):
-        return '<Time({s.start!r}, {s.end!r}, {s.near!r})>'.format(s=self)
-
+        return '<Time({s.start!r}, {s.end!r})>'.format(s=self)
 
 class Keys(_VSOSimpleAttr):
     """
