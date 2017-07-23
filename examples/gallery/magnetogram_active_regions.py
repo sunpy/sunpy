@@ -25,29 +25,34 @@ from sunpy.time import parse_time
 ##############################################################################
 # Let's select a date (yyyy-mm-dd) for which we will be downloading files.
 
-day = parse_time("2017-01-01")
+day = parse_time("2017-01-25")
 
 ##############################################################################
-# We will select a small time range to avoid downloading too many files.
+# We will select the entire day as our timerange.
 
-start_time = day + datetime.timedelta(minutes=1)
-end_time = day + datetime.timedelta(minutes=2)
+start_time = day
+end_time = day + datetime.timedelta(hours=23, minutes=59, seconds=59)
 
 ##############################################################################
 # Send the search query.
 
-results = Fido.search(	a.Time(start_time, end_time),
-                       a.Instrument('HMI') & a.vso.Physobs(
-                           "LOS_magnetic_field"),
-                       a.vso.Sample(60 * u.second))
+results = Fido.search(a.Time(start_time, end_time),
+                      a.Instrument('HMI') & a.vso.Physobs("LOS_magnetic_field"),
+                      a.vso.Sample(60 * u.second))
 
 ##############################################################################
-# Download the files.
+# We will only download the first file for the day. For that we use slicing
+# On the search results.
 
-downloaded_files = Fido.fetch(results)
+result = results[0, 0]
 
 ##############################################################################
-# We will plot only one file in this example.
+# Download the file.
+
+downloaded_files = Fido.fetch(result)
+
+##############################################################################
+# As the `fetch` method returns a list, our filename is its first element.
 
 file_name = downloaded_files[0]
 
