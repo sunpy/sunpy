@@ -81,14 +81,15 @@ else:
     srs_table = None
 
 ##############################################################################
-# Now we extract the latitudes, longitudes and the region numbers.
+# Now we extract the latitudes, longitudes and the region numbers. We make an
+# empty list if there are no ARs.
 
 if srs_table is not None:
     lats = srs_table['Latitude']
     lngs = srs_table['Longitude']
     numbers = srs_table['Number']
 else:
-    lats = lngs = numbers = None
+    lats = lngs = numbers = []
 
 ##############################################################################
 # Now to make the plot.
@@ -106,16 +107,15 @@ ax.set_autoscale_on(False)
 
 ##############################################################################
 # We make a SkyCoord object and plot the active points on the map.
-
-c = SkyCoord(lngs, lats, frame="heliographic_stonyhurst")
-ax.plot_coord(c, 'o')
-
-##############################################################################
 # Add the numbers as labels for each point.
 
-for i, num in enumerate(numbers):
-    ax.annotate(num, (lngs[i].value, lats[i].value),
-                xycoords=ax.get_transform('heliographic_stonyhurst'))
+if len(lats) > 0:
+    c = SkyCoord(lngs, lats, frame="heliographic_stonyhurst")
+    ax.plot_coord(c, 'o')
+
+    for i, num in enumerate(numbers):
+        ax.annotate(num, (lngs[i].value, lats[i].value),
+                    xycoords=ax.get_transform('heliographic_stonyhurst'))
 
 ##############################################################################
 # Now we display the combined plot.
