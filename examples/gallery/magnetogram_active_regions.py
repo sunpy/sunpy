@@ -91,8 +91,12 @@ else:
 
 smap = sunpy.map.Map(file_name)
 
-im = smap.plot()
-ax = plt.gca()
+ax = plt.subplot(projection=smap)
+
+smap.plot(vmin=-120, vmax=120)
+
+smap.draw_limb()
+
 ax.set_autoscale_on(False)
 
 ##############################################################################
@@ -111,6 +115,4 @@ for i, num in enumerate(numbers):
 ##############################################################################
 # Now we display the combined plot.
 
-smap.plot(vmin=-120, vmax=120)
-smap.draw_limb()
 plt.show()
