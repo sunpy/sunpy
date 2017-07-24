@@ -221,6 +221,9 @@ sunpy.coordinates Package
 .. automodapi:: sunpy.coordinates.transformations
     :headings: ^#
 
+.. automodapi:: sunpy.coordinates.ephemeris
+    :headings: ^#
+
 .. automodapi:: sunpy.coordinates.representation
     :headings: ^#
 
