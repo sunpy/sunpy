@@ -178,6 +178,15 @@ def test_unifiedresponse_slicing():
     assert isinstance(results[0], UnifiedResponse)
 
 
+def test_unifiedresponse_slicing_reverse():
+    results = Fido.search(
+        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+    assert isinstance(results[::-1], UnifiedResponse)
+    assert len(results[::-1]) == len(results)
+    assert isinstance(results[0, ::-1], UnifiedResponse)
+    assert results[0, ::-1]._list[0] == results._list[0][::-1]
+
+
 def test_vso_unifiedresponse():
     vrep = vsoQueryResponse([])
     vrep.client = True
