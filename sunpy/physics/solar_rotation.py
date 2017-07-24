@@ -4,10 +4,12 @@ mapcubes.
 """
 
 import numpy as np
+
+from astropy.coordinates import SkyCoord
 import astropy.units as u
 
 # SunPy imports
-from sunpy.physics.differential_rotation import rot_hpc
+from sunpy.physics.differential_rotation import solar_rotate_coordinate
 from sunpy.image.coalignment import apply_shifts
 
 __author__ = 'J. Ireland'
@@ -43,36 +45,40 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
         this layer.
     ``**kwargs``
         These keywords are passed to the function
-        `sunpy.physics.differential_rotation.rot_hpc`.
+        `sunpy.physics.differential_rotation.solar_rotate_coordinate`.
 
     Returns
     -------
     x, y : `~astropy.units.Quantity`, ~astropy.units.Quantity`
         The shifts relative to the index layer that can be applied
         to the input mapcube in order to compensate for solar rotation.
-        The shifts are given in helioprojective co-ordinates.
+        The shifts are given in arcseconds as understood in helioprojective
+        coordinates systems.
 
     """
     # Size of the data
     nt = len(mc.maps)
 
     # Storage for the shifts in arcseconds
-    xshift_arcseconds = np.zeros((nt)) * u.arcsec
+    xshift_arcseconds = np.zeros(nt) * u.arcsec
     yshift_arcseconds = np.zeros_like(xshift_arcseconds)
+
+    # Layer that
+    rotate_to_this_layer = mc.maps[layer_index]
 
     # Calculate the rotations and the shifts
     for i, m in enumerate(mc):
         # Calculate the rotation of the center of the map 'm' at its
         # observation time to the observation time of the reference layer
         # indicated by "layer_index".
-        newx, newy = rot_hpc(m.center.Tx,
-                             m.center.Ty,
-                             m.date,
-                             mc.maps[layer_index].date, **kwargs)
+        new_coordinate = solar_rotate_coordinate(m.center,
+                                                 rotate_to_this_layer.date,
+                                                 observer_location=rotate_to_this_layer.observer_coordinate,
+                                                 **kwargs)
 
         # Calculate the shift in arcseconds
-        xshift_arcseconds[i] = newx - mc.maps[layer_index].center.Tx
-        yshift_arcseconds[i] = newy - mc.maps[layer_index].center.Ty
+        xshift_arcseconds[i] = new_coordinate.Tx - rotate_to_this_layer.center.Tx
+        yshift_arcseconds[i] = new_coordinate.Ty - rotate_to_this_layer.center.Ty
 
     return {"x": xshift_arcseconds, "y": yshift_arcseconds}
 

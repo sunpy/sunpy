@@ -4,13 +4,14 @@ import numpy as np
 
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from astropy.coordinates.baseframe import BaseCoordinateFrame
 
 from sunpy.time import parse_time
-from sunpy.coordinates.ephemeris import get_earth
+from sunpy.coordinates.ephemeris import get_earth, get_body_heliographic_stonyhurst
 from sunpy.coordinates import frames
 
 __author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
-__all__ = ['diff_rot', 'rot_hpc']
+__all__ = ['diff_rot', 'solar_rotate_coordinate']
 
 
 @u.quantity_input(duration=u.s, latitude=u.degree)
@@ -91,22 +92,31 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     return rotation_deg * u.deg
 
 
-def solar_rotate_coord_from_earth(start_coordinate, tend, **diff_rot_kwargs):
-    """Given a location on the Sun as seen from the Earth, use the solar
-    rotation profile to find that location at some later or earlier time.
-    Note that this function assumes that the data was observed from the Earth or
-    near Earth vicinity.  Specifically, data from SOHO and STEREO observatories
-    are not supported.  Note also that the function does NOT use solar B0 and L0
-    values provided in the input start co-ordinate -
-    these quantities are calculated.
+def solar_rotate_coordinate(coordinate,
+                            observer_time,
+                            observer_location=None, **diff_rot_kwargs):
+    """Given a coordinate on the Sun as seen by an observer at a particular
+    time and location, calculate where that coordinate maps at some later or
+    earlier time, given the solar rotation profile.  Note that if the observer
+    location is defined using a BaseCoordinateFrame or SkyCoord, then it is
+    assumed that this observer location is correct for the observer time that
+    was also passed in.
 
     Parameters
     ----------
-    start_coordinate : `~sunpy.coordinates`
-        a sunpy co-ordinate
+    coordinate : `~sunpy.coordinates`
+        a sunpy coordinate
 
-    tend : `sunpy.time.time`
+    observer_time : `sunpy.time.time`
         date/time at which the input co-ordinate will be rotated to.
+
+    observer_location : None, str, BaseCoordinateFrame, SkyCoord
+        The solar-system body for which to calculate observer locations.  Note
+        that spacecraft are not explicitly supported as yet.  Instruments in
+        Earth orbit can be approximated by using the default setting.  If a
+        BaseCoordinateFrame or SkyCoord are passed in, it is assumed that
+        this observer location is correct for the observer_time that was also
+        passed in.
 
     **diff_rot_kwargs : keyword arguments
         Keyword arguments are passed on as keyword arguments to `~sunpy.physics.differential_rotation.diff_rot`.
@@ -122,47 +132,47 @@ def solar_rotate_coord_from_earth(start_coordinate, tend, **diff_rot_kwargs):
     >>> import astropy.units as u
     >>> from astropy.coordinates import SkyCoord
     >>> from sunpy.coordinates import frames
-    >>> from sunpy.physics.differential_rotation import solar_rotate_coord_from_earth
-    >>> c = SkyCoord(-570 * u.arcsec, 120 * u.arcsec, dateobs='2010-09-10 12:34:56', frame=frame.Helioprojective)
-    >>> solar_rotate_coord_from_earth(c, dateobs)
-    <SkyCoord (Helioprojective: D0=150634662.59404698 km, dateobs=2010-09-10 13:34:56, L0=0d00m00s, B0=7d14m46.821s, rsun=695508.0 km): (Tx, Ty, distance) in (arcsec, arcsec, km)
+    >>> from sunpy.physics.differential_rotation import solar_rotate_coordinate
+    >>> c = SkyCoord(-570 * u.arcsec, 120 * u.arcsec, obstime='2010-09-10 12:34:56', frame=frames.Helioprojective)
+    >>> solar_rotate_coordinate(c, '2010-09-10 13:34:56')
+    <SkyCoord (Helioprojective: D0=150634662.59404698 km, obstime=2010-09-10 13:34:56, L0=0d00m00s, B0=7d14m46.821s, rsun=695508.0 km): (Tx, Ty, distance) in (arcsec, arcsec, km)
     (-562.90765805,  119.31706625,   1.50079871e+08)>
 
-    Notes
-    -----
-    SSWIDL code equivalent: http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/rot_xy.pro .
-    The function rot_xy uses arcmin2hel.pro and hel2arcmin.pro to implement the
-    same functionality as this function.  These two functions seem to perform
-    inverse operations of each other to a high accuracy.  The corresponding
-    equivalent functions here are convert_hpc_hg and convert_hg_hpc
-    respectively. These two functions seem to perform inverse
-    operations of each other to a high accuracy.  However, the values
-    returned by arcmin2hel.pro are slightly different from those provided
-    by convert_hpc_hg.  This leads to very slightly different results from
-    rot_hpc compared to rot_xy.
     """
 
     # Make sure we have enough time information to perform a solar differential
-    # rotation
-    if start_coordinate.dateobs is None:
-        raise ValueError('Input co-ordinate(s) must not be of type NoneType')
+    # rotation.
+    if coordinate.obstime is None:
+        raise ValueError('Input coordinate(s) obstime must not be of type NoneType')
 
     # Calculate the interval between the start and end time
-    interval = (parse_time(tend) - parse_time(start_coordinate.dateobs)).total_seconds() * u.s
+    interval = (parse_time(observer_time) - parse_time(start_coordinate.obstime)).total_seconds() * u.s
 
     # Compute Stonyhurst Heliographic co-ordinates - returns (longitude,
     # latitude). Points off the limb are returned as nan.
-    heliographic_coordinate = start_coordinate.transform_to('heliographic_stonyhurst')
+    heliographic_coordinate = coordinate.transform_to('heliographic_stonyhurst')
 
     # Compute the differential rotation
     drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree),
                     **diff_rot_kwargs)
 
+    # Where is the observer at the end time?
+    if observer_location is None or observer_location.lower() == 'earth':
+        observer = get_earth(time=observer_time)
+    elif isinstance(observer_location, str):
+        observer = get_body_heliographic_stonyhurst(observer_location, time=observer_time)
+    elif isinstance(observer_location, BaseCoordinateFrame):
+        observer = observer_location
+    elif isinstance(observer_location, SkyCoord):
+        observer = observer_location.frame
+    else:
+        raise ValueError("Keyword 'observation_location' must be either None, a valid SkyCoord or CoordinateFrame, or a solar system body understood by get_body_heliographic_stonyhurst.")
+
     # Rotate the input co-ordinate and update the observer
     heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot,
                                     heliographic_coordinate.lat,
-                                    observer=get_earth(time=tend),
+                                    obstime=observer_time,
+                                    observer=observer,
                                     frame=frames.HeliographicStonyhurst)
-
     # Return the rotated coordinates to the input coordinate frame
-    return heliographic_rotated.transform_to(start_coordinate.frame)
+    return heliographic_rotated.transform_to(coordinate.frame.name)
