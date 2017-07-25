@@ -95,7 +95,7 @@ def test_post_notify_fail():
         client.request_data(responses)
 
 
-@pytest.mark.online()
+@pytest.mark.online
 def test_post_wave_series():
     with pytest.raises(TypeError):
         client.search(
@@ -173,6 +173,7 @@ def test_make_recordset():
     assert client._make_recordset(**d2) == r4
 
 
+@pytest.mark.online
 def test_lookup_records_errors():
     d1 = {'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
           'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35)
