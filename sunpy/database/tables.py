@@ -336,13 +336,14 @@ class DatabaseEntry(Base):
         provider = str(qr_block.provider) if qr_block.provider is not None else None
         fileid = str(qr_block.fileid) if qr_block.fileid is not None else None
         instrument = str(qr_block.instrument) if qr_block.instrument is not None else None
+        size = qr_block.size if hasattr(qr_block, 'size') else -1
         physobs = getattr(qr_block, 'physobs', None)
         if physobs is not None:
             physobs = str(physobs)
         return cls(
             source=source, provider=provider, physobs=physobs, fileid=fileid,
             observation_time_start=time_start, observation_time_end=time_end,
-            instrument=instrument, size=qr_block.size,
+            instrument=instrument, size=size,
             wavemin=wavemin, wavemax=wavemax)
 
     def __eq__(self, other):
