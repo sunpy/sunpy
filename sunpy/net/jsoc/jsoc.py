@@ -366,6 +366,9 @@ class JSOCClient(object):
 
         # Make staging request to JSOC
         responses = self.request_data(jsoc_response)
+        # Make response iterable
+        if not isiterable(responses):
+            responses = [responses]
         # Add them to the response for good measure
         jsoc_response.requestIDs = [r.id for r in responses]
         time.sleep(sleep/2.)
@@ -493,14 +496,13 @@ class JSOCClient(object):
         """
         Take the query arguments and build a record string.
         """
-        print('hello')
+
         # Extract and format segment
         if segment:
             if isinstance(segment, list):
                 segment = str(segment)[1:-1].replace(' ', '').replace("'", '')
             segment = '{{{segment}}}'.format(segment=segment)
 
-        print(segment)
 
         # Extract and format sample
         sample = kwargs.get('sample', '')
@@ -538,7 +540,7 @@ class JSOCClient(object):
                                                        primekey=pkstr,
                                                        segment=segment)
 
-        return 5
+        return dataset
 
     def _lookup_records(self, iargs):
         """
