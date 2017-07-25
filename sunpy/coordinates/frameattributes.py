@@ -165,5 +165,9 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
                 out = out.lower()
                 out = self._convert_string_to_coord(out, instance)
                 setattr(instance, '_' + self.name, out)
+            if out is self.fallback_coordinate:
+                out = self._convert_string_to_coord(self.default, instance)
+                setattr(instance, '_' + self.name, out)
+
 
         return super(ObserverCoordinateAttribute, self).__get__(instance, frame_cls=frame_cls)
