@@ -91,6 +91,9 @@ class JSOCClient(object):
     using the `~sunpy.net.jsoc.attrs.Notify` attribute. You have to register your email address
     with JSOC http://jsoc.stanford.edu/ajax/register_email.html.
 
+    The backend of SunPy's JSOC Client uses drms package: https://github.com/kbg/drms
+    The tutorials can be found at:https://drms.readthedocs.io/en/stable/tutorial.html
+    This can be used to build complex queries, by directly inputting the query string.
 
     Examples
     --------
@@ -108,16 +111,25 @@ class JSOCClient(object):
     the response object holds the records that your query will return:
 
     >>> print(response)   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-            DATE         TELESCOP  INSTRUME  ... WAVELNTH     WAVEUNIT
-    -------------------- -------- ---------- ... -------- ---------------
-    2014-01-05T17:44:53Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-    2014-01-05T17:46:02Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-    2014-01-05T17:47:11Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-    2014-01-05T17:48:18Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-                     ...      ...        ... ...      ...             ...
-    2014-01-05T17:42:33Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-    2014-01-05T17:43:41Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
-    2014-01-05T17:44:52Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
+
+    <Table length=81>
+            DATE         TELESCOP  INSTRUME           T_OBS          WAVELNTH
+           str20           str7     str10             str23          float64 
+    -------------------- -------- ---------- ----------------------- --------
+    2014-01-05T17:46:02Z  SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI   6173.0
+    2014-01-05T17:47:11Z  SDO/HMI HMI_FRONT2 2014.01.01_00:01:22_TAI   6173.0
+    2014-01-05T17:48:18Z  SDO/HMI HMI_FRONT2 2014.01.01_00:02:07_TAI   6173.0
+    2014-01-05T17:49:26Z  SDO/HMI HMI_FRONT2 2014.01.01_00:02:52_TAI   6173.0
+    2014-01-05T17:50:34Z  SDO/HMI HMI_FRONT2 2014.01.01_00:03:37_TAI   6173.0
+    2014-01-05T17:51:43Z  SDO/HMI HMI_FRONT2 2014.01.01_00:04:22_TAI   6173.0
+                     ...      ...        ...                     ...      ...
+    2014-01-05T17:40:18Z  SDO/HMI HMI_FRONT2 2014.01.01_00:56:52_TAI   6173.0
+    2014-01-05T17:41:25Z  SDO/HMI HMI_FRONT2 2014.01.01_00:57:37_TAI   6173.0
+    2014-01-05T17:42:33Z  SDO/HMI HMI_FRONT2 2014.01.01_00:58:22_TAI   6173.0
+    2014-01-05T17:43:41Z  SDO/HMI HMI_FRONT2 2014.01.01_00:59:07_TAI   6173.0
+    2014-01-05T17:44:52Z  SDO/HMI HMI_FRONT2 2014.01.01_00:59:52_TAI   6173.0
+    2014-01-05T17:46:04Z  SDO/HMI HMI_FRONT2 2014.01.01_01:00:37_TAI   6173.0
+
     Length = 81 rows
 
     You can then make the request and download the data:
@@ -127,7 +139,23 @@ class JSOCClient(object):
     This returns a Results instance which can be used to watch the progress
     of the download.
 
-    >>> res.wait(progress=True)   # doctest: +SKIP
+    Note
+    ----
+    A registered email address is not required if you only need to query for data,
+    it is used only if you need to make an export request. For example,
+
+    >>> client = jsoc.JSOCClient()
+    >>> response = client.query(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...                         a.jsoc.Series('hmi.m_45s'))
+
+    The above is a successful query operation, and will return query responses as before.
+
+    But, this response object cannot be used to make an export request and will throw an
+    error if done so:
+
+    >>> res = client.get(response)   # doctest: +SKIP
+
+    ValueError: Email address is invalid or not registered
 
     *Example 2*
 
@@ -145,33 +173,49 @@ class JSOCClient(object):
     the response object holds the records that your query will return:
 
     >>> print(response)
-            DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH WAVEUNIT
-    -------------------- -------- -------- ----------------------- -------- --------
-    2014-01-06T15:07:12Z  SDO/AIA    AIA_3 2013-12-31T23:59:36.34Z      171 angstrom
-    2014-01-06T15:07:12Z  SDO/AIA    AIA_3 2013-12-31T23:59:48.34Z      171 angstrom
-    2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:00.34Z      171 angstrom
-    2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:12.34Z      171 angstrom
+
+    <Table length=4>
+            DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH
+           str20           str7     str5            str23           int64  
+    -------------------- -------- -------- ----------------------- --------
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:12.34Z      171
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:24.34Z      171
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:36.34Z      171
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:48.34Z      171
+
 
     You can then make the request:
 
-    >>> requestIDs = client.request_data(response)
-    [u'JSOC_20140724_952']
+    >>> requests = client.request_data(response)
+    <ExportRequest id="JSOC_20170713_1461", status=0>
 
-    This returns a list of all the request identifiers for your query.
+    This returns a list of all the ExportRequest objects for your query. You can
+    get the ExportRequest ID :
 
-    You can then check the status of the request, which will print out a status
+    >>> requests.id
+    'JSOC_20170713_1461'
+
+    >>> requests.status
+    0
+
+    You can also check the status of the request, which will print out a status
     message and return you the status code, a code of 1 means it is not ready
     to download and a code of 0 means the request is staged and ready. A code
     of 6 means an error, which is commonly that the request has not had time to
     get into the queue.
 
-    >>> status = client.check_request(requestIDs)
+    >>> requests.status
+    0
+
+    or
+
+    >>> status = client.check_request(requests)
     Request JSOC_20140724_955 was submitted 10 seconds ago, it is not ready to download.
 
     Once the status code is 0 you can download the data using the `get_request`
     method:
 
-    >>> res = client.get_request(requestIDs)
+    >>> res = client.get_request(requests)
 
     This returns a Results instance which can be used to watch the progress
     of the download.
