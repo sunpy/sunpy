@@ -63,9 +63,8 @@ def test_post_pass():
         attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     aa = client.request_data(responses, return_resp=True)
-    tmpresp = aa[0][0].json()
-    assert tmpresp['status'] == 2
-    assert tmpresp['protocol'] == 'FITS,compress Rice'
+    tmpresp = aa._d
+    assert tmpresp['protocol'] == 'fits'
     assert tmpresp['method'] == 'url'
 
 
@@ -76,16 +75,15 @@ def test_post_wavelength():
         attrs.Series('aia.lev1_euv_12s'), attrs.Wavelength(193 * u.AA) |
         attrs.Wavelength(335 * u.AA), attrs.Notify('jsoc@cadair.com'))
     aa = client.request_data(responses, return_resp=True)
-    tmpresp = aa[0][0].json()
-    assert tmpresp['status'] == 2
-    assert tmpresp['protocol'] == 'FITS,compress Rice'
+    tmpresp = aa[0]._d
+    print(tmpresp)
+    assert tmpresp['protocol'] == 'fits'
     assert tmpresp['method'] == 'url'
-    assert tmpresp['rcount'] == 151
-    tmpresp = aa[1][0].json()
-    assert tmpresp['status'] == 2
-    assert tmpresp['protocol'] == 'FITS,compress Rice'
+    assert tmpresp['count'] == '302'
+    tmpresp = aa[1]._d
+    assert tmpresp['protocol'] == 'fits'
     assert tmpresp['method'] == 'url'
-    assert tmpresp['rcount'] == 151
+    assert tmpresp['count'] == '302'
 
 
 @pytest.mark.online
@@ -94,7 +92,7 @@ def test_post_notify_fail():
         attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
         attrs.Series('hmi.M_45s'))
     with pytest.raises(ValueError):
-        client.request_data(responses, return_resp=True)
+        client.request_data(responses)
 
 
 @pytest.mark.online()
@@ -104,20 +102,6 @@ def test_post_wave_series():
             attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
             attrs.Series('hmi.M_45s') | attrs.Series('aia.lev1_euv_12s'),
             attrs.Wavelength(193 * u.AA) | attrs.Wavelength(335 * u.AA))
-
-
-@pytest.mark.online
-def test_post_fail(recwarn):
-    res = client.search(
-        attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
-        attrs.Series('none'), attrs.Notify('jsoc@cadair.com'))
-    client.request_data(res, return_resp=True)
-    w = recwarn.pop(Warning)
-    assert issubclass(w.category, Warning)
-    assert "Query 0 retuned status 4 with error Series none is not a valid series accessible from hmidb2." == str(
-        w.message)
-    assert w.filename
-    assert w.lineno
 
 
 @pytest.mark.online
@@ -163,17 +147,54 @@ def test_invalid_query():
         client.search(attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'))
 
 
+@pytest.mark.online
 def test_make_recordset():
     d1 = {'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
-          'segment': ['image'],
-          'wavelength': 304*u.AA,
           'series': 'aia.lev1_euv_12s',
           'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35)
-          }
-    r1 = 'aia.lev1_euv_12s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI][304]{image}'
-    r = client._make_recordset(**d1)
-    print(r)
-    #assert client._make_recordset(**d1) == r1
-    print('passed')
+         }
+    r1 = 'aia.lev1_euv_12s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]'
+    assert client._make_recordset(**d1) == r1
+    d1.update({'segment': 'image'})
+    r2 = 'aia.lev1_euv_12s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]{image}'
+    assert client._make_recordset(**d1) == r2
+    d1.update({'segment': ['image'], 'wavelength': 304*u.AA})
+    r3 = 'aia.lev1_euv_12s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI][304]{image}'
+    assert client._make_recordset(**d1) == r3
 
-test_make_recordset()
+    d2 = {'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
+          'series': 'hmi.sharp_720s',
+          'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35)
+         }
+    d2.update({'primekey': {'HARPNUM': '4864'}})
+    r4 = 'hmi.sharp_720s[4864][2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]'
+    assert client._make_recordset(**d2) == r4
+    d2['primekey'] = {'HARPNUM': '4864','Foo': '123'}
+    assert client._make_recordset(**d2) == r4
+
+
+def test_lookup_records_errors():
+    d1 = {'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
+          'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35)
+         }
+    with pytest.raises(ValueError):
+        client._lookup_records(d1)
+
+    d1.update({'series': 'aia.lev1_euv_12s'})
+    d1.update({'keys' : 123})
+    with pytest.raises(ValueError):
+        client._lookup_records(d1)
+
+    d1['keys'] = 'T_OBS'
+    d1.update({'segment': 123})
+    with pytest.raises(ValueError):
+        client._lookup_records(d1)
+
+    d1['segment'] = 'image'
+    d1.update({'primekey': {'foo': 'bar'}})
+    with pytest.raises(TypeError):
+        client._lookup_records(d1)
+
+    d1.update({'segment': 'foo'})
+    with pytest.raises(TypeError):
+        client._lookup_records(d1)

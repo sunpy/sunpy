@@ -11,7 +11,7 @@ from sunpy.net.attr import Attr, AttrOr, AttrAnd
 [  (attrs.Series('foo'), attrs.Series('boo')),
    (attrs.Protocol('a1'), attrs.Protocol('a2')),
    (attrs.Notify('email@somemail.com'), attrs.Notify('someemail@somemail.com')),
-   (attrs.Compression('rice'), attrs.Compression('rice'))])
+])
 def test_and(attr1, attr2):
     pytest.raises(TypeError, lambda: attr1 & attr2)
 
