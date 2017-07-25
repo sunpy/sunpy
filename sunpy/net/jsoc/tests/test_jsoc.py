@@ -37,114 +37,6 @@ def test_jsocresponse_single():
     assert len(j1) == 4
 
 
-def test_payload():
-    start = parse_time('2012/1/1T00:00:00')
-    end = parse_time('2012/1/1T00:00:45')
-
-    payload = client._make_query_payload(start, end, 'hmi.M_42s', notify='@')
-
-    payload_expected = {
-        'ds': '{0}[{1}-{2}]'.format('hmi.M_42s',
-                                    start.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                                    end.strftime("%Y.%m.%d_%H:%M:%S_TAI")),
-        'format': 'json',
-        'method': 'url',
-        'notify': '@',
-        'op': 'exp_request',
-        'process': 'n=0|no_op',
-        'protocol': 'FITS,compress Rice',
-        'requestor': 'none',
-        'filenamefmt':
-        '{0}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format('hmi.M_42s')
-    }
-
-    assert payload == payload_expected
-
-
-def test_payload_nocompression():
-    start = parse_time('2012/1/1T00:00:00')
-    end = parse_time('2012/1/1T00:00:45')
-
-    payload = client._make_query_payload(
-        start, end, 'hmi.M_42s', compression=None, notify='jsoc@cadair.com')
-
-    payload_expected = {
-        'ds': '{0}[{1}-{2}]'.format('hmi.M_42s',
-                                    start.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                                    end.strftime("%Y.%m.%d_%H:%M:%S_TAI")),
-        'format': 'json',
-        'method': 'url',
-        'notify': 'jsoc@cadair.com',
-        'op': 'exp_request',
-        'process': 'n=0|no_op',
-        'protocol': 'FITS, **NONE**',
-        'requestor': 'none',
-        'filenamefmt':
-        '{0}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format('hmi.M_42s')
-    }
-
-    assert payload == payload_expected
-
-
-def test_payload_protocol():
-    start = parse_time('2012/1/1T00:00:00')
-    end = parse_time('2012/1/1T00:00:45')
-
-    payload = client._make_query_payload(
-        start, end, 'hmi.M_42s', protocol='as-is', notify='jsoc@cadair.com')
-
-    payload_expected = {
-        'ds': '{0}[{1}-{2}]'.format('hmi.M_42s',
-                                    start.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                                    end.strftime("%Y.%m.%d_%H:%M:%S_TAI")),
-        'format': 'json',
-        'method': 'url',
-        'notify': 'jsoc@cadair.com',
-        'op': 'exp_request',
-        'process': 'n=0|no_op',
-        'protocol': 'as-is',
-        'requestor': 'none',
-        'filenamefmt':
-        '{0}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format('hmi.M_42s')
-    }
-
-    assert payload == payload_expected
-
-
-def test_process_time_string():
-    start = client._process_time('2012/1/1T00:00:00')
-    assert start == datetime.datetime(year=2012, month=1, day=1, second=34)
-
-
-def test_process_time_datetime():
-    start = client._process_time(datetime.datetime(year=2012, month=1, day=1))
-    assert start == datetime.datetime(year=2012, month=1, day=1, second=34)
-
-
-def test_process_time_astropy():
-    start = client._process_time(
-        astropy.time.Time(
-            '2012-01-01T00:00:00', format='isot', scale='utc'))
-    assert start == datetime.datetime(year=2012, month=1, day=1, second=34)
-
-
-def test_process_time_astropy_tai():
-    start = client._process_time(
-        astropy.time.Time(
-            '2012-01-01T00:00:00', format='isot', scale='tai'))
-    assert start == datetime.datetime(year=2012, month=1, day=1, second=0)
-
-
-@pytest.mark.online
-def test_status_request():
-    r = client._request_status('none')
-    assert r.json() == {
-        u'error':
-        u'requestid none is not an acceptable ID for the external export system (acceptable format is JSOC_YYYYMMDD_NNN_X_IN or JSOC_YYYYMMDD_NNN).',
-        u'status': 4
-    }
-
-
 def test_empty_jsoc_response():
     Jresp = JSOCResponse()
     assert Jresp.table is None
@@ -229,22 +121,6 @@ def test_post_fail(recwarn):
 
 
 @pytest.mark.online
-def test_request_status_fail():
-    resp = client._request_status('none')
-    assert resp.json() == {
-        u'status': 4,
-        u'error':
-        u"requestid none is not an acceptable ID for the external export system (acceptable format is JSOC_YYYYMMDD_NNN_X_IN or JSOC_YYYYMMDD_NNN)."
-    }
-    resp = client._request_status(['none'])
-    assert resp.json() == {
-        u'status': 4,
-        u'error':
-        u"requestid none is not an acceptable ID for the external export system (acceptable format is JSOC_YYYYMMDD_NNN_X_IN or JSOC_YYYYMMDD_NNN)."
-    }
-
-
-@pytest.mark.online
 def test_wait_get():
     responses = client.search(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
@@ -285,3 +161,19 @@ def test_results_filenames():
 def test_invalid_query():
     with pytest.raises(ValueError):
         client.search(attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'))
+
+
+def test_make_recordset():
+    d1 = {'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
+          'segment': ['image'],
+          'wavelength': 304*u.AA,
+          'series': 'aia.lev1_euv_12s',
+          'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35)
+          }
+    r1 = 'aia.lev1_euv_12s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI][304]{image}'
+    r = client._make_recordset(**d1)
+    print(r)
+    #assert client._make_recordset(**d1) == r1
+    print('passed')
+
+test_make_recordset()

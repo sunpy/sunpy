@@ -493,12 +493,14 @@ class JSOCClient(object):
         """
         Take the query arguments and build a record string.
         """
-
+        print('hello')
         # Extract and format segment
         if segment:
             if isinstance(segment, list):
                 segment = str(segment)[1:-1].replace(' ', '').replace("'", '')
             segment = '{{{segment}}}'.format(segment=segment)
+
+        print(segment)
 
         # Extract and format sample
         sample = kwargs.get('sample', '')
@@ -536,7 +538,7 @@ class JSOCClient(object):
                                                        primekey=pkstr,
                                                        segment=segment)
 
-        return dataset
+        return 5
 
     def _lookup_records(self, iargs):
         """
@@ -596,12 +598,13 @@ class JSOCClient(object):
         iargs['start_time'] = iargs['start_time'].tai.datetime
         iargs['end_time'] = iargs['end_time'].tai.datetime
 
+        print(iargs)
         postthis = {'ds': self._make_recordset(**iargs),
                     'key': str(keywords)[1:-1].replace(' ', '').replace("'", ''),
                     'seg': '**NONE**',
                     'link': '**NONE**',
                     }
-
+        print(postthis['ds'])
         r = c.query(postthis['ds'], key=postthis['key'], rec_index=isMeta)
 
         if isMeta:
@@ -618,3 +621,6 @@ class JSOCClient(object):
                    'Segment', 'Keys', 'PrimeKey']
 
         return all([x.__class__.__name__ in chkattr for x in query])
+
+def func():
+    return 5
