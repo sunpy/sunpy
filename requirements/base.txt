@@ -5,3 +5,4 @@ astropy>=2.0
 scipy
 pandas>=0.12.0
 matplotlib>=1.3
+drms
