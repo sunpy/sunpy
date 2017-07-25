@@ -73,7 +73,7 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
         # indicated by "layer_index".
         new_coordinate = solar_rotate_coordinate(m.center,
                                                  rotate_to_this_layer.date,
-                                                 observer_location=rotate_to_this_layer.observer_coordinate,
+                                                 new_observer_location=rotate_to_this_layer.observer_coordinate,
                                                  **kwargs)
 
         # Calculate the shift in arcseconds
