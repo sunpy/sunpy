@@ -26,6 +26,7 @@ from sunpy.net.attr import (
     Attr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
 )
 from sunpy.util.multimethod import MultiMethod
+from sunpy.util.decorators import deprecated
 from sunpy.time import parse_time
 from sunpy.extern.six import iteritems
 
@@ -140,6 +141,14 @@ class Wavelength(Attr, _Range):
         return "<Wavelength({0!r}, {1!r}, '{2!s}')>".format(self.min.value,
                                                             self.max.value,
                                                             self.unit)
+
+
+@deprecated("0.8", message="Wave has been renamed Wavelength",
+            alternative="sunpy.net.vso.attrs.wavelength")
+class Wave(Wavelength):
+    """
+    Wavelength search attribute. See `sunpy.net.vso.attrs.Wavelength`.
+    """
 
 
 class Time(Attr, _Range):
