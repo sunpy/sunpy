@@ -29,7 +29,7 @@ __all__ = ['get_body_heliographic_stonyhurst', 'get_earth',
 
 def get_body_heliographic_stonyhurst(body, time='now'):
     """
-    Return a `~sunpy.coordinates.HeliographicStonyhurst` frame for the location of a
+    Return a `~sunpy.coordinates.frames.HeliographicStonyhurst` frame for the location of a
     solar-system body at a specified time.
 
     Parameters
@@ -41,7 +41,7 @@ def get_body_heliographic_stonyhurst(body, time='now'):
 
     Returns
     -------
-    out : `~sunpy.coordinates.HeliographicStonyhurst`
+    out : `~sunpy.coordinates.frames.HeliographicStonyhurst`
         Location of the solar-system body in the `~sunpy.coordinates.HeliographicStonyhurst` frame
     """
     obstime = _astropy_time(time)
@@ -55,7 +55,7 @@ def get_body_heliographic_stonyhurst(body, time='now'):
 def get_earth(time='now'):
     """
     Return a `~astropy.coordinates.SkyCoord` for the location of the Earth at a specified time in
-    the `~sunpy.coordinates.HeliographicStonyhurst` frame.  The longitude will be 0 by definition.
+    the `~sunpy.coordinates.frames.HeliographicStonyhurst` frame.  The longitude will be 0 by definition.
 
     Parameters
     ----------
@@ -65,7 +65,7 @@ def get_earth(time='now'):
     Returns
     -------
     out : `~astropy.coordinates.SkyCoord`
-        Location of the Earth in the `~sunpy.coordinates.HeliographicStonyhurst` frame
+        Location of the Earth in the `~sunpy.coordinates.frames.HeliographicStonyhurst` frame
     """
     earth = get_body_heliographic_stonyhurst('earth', time=time)
 
