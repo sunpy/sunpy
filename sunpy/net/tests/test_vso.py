@@ -238,7 +238,7 @@ def test_path(client):
 
 def test_non_str_instrument():
     # Sanity Check
-    assert isinstance(va.Instrument("lyra"), va.Instrument("lyra"))
+    assert isinstance(va.Instrument("lyra"), va.Instrument)
 
     with pytest.raises(ValueError):
         va.Instrument(1234)
