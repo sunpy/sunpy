@@ -418,7 +418,7 @@ class Quicklook(_VSOSimpleAttr):
     documentation in SSWIDL routine vso_search.pro.
     """
     def __init__(self,value):
-        super(Quicklook,self).__init__(value)
+        super(Quicklook, self).__init__(value)
         if self.value:
             self.value = 1
         else:
