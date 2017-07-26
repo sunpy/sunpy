@@ -451,7 +451,8 @@ class VSOClient(object):
 
             - May be entered as a string or any numeric type for equality matching
             - May be a string of the format '(min) - (max)' for range matching
-            - May be a string of the form '(operator) (number)' where operator is one of: lt gt le ge < > <= >=
+            - May be a string of the form '(operator) (number)' where operator 
+              is one of: lt gt le ge < > <= >=
 
 
         Examples
@@ -467,7 +468,8 @@ class VSOClient(object):
 
         Returns
         -------
-        out : :py:class:`QueryResult` (enhanced list) of matched items. Return value of same type as the one of :py:class:`VSOClient.query`.
+        out : :py:class:`QueryResult` (enhanced list) of matched items. Return 
+              value of same type as the one of :py:class:`VSOClient.query`.
         """
         sdk = lambda key: lambda value: {key: value}
         ALIASES = {
@@ -555,7 +557,8 @@ class VSOClient(object):
             Download methods, defaults to URL-FILE_Rice then URL-FILE.
             Methods are a concatenation of one PREFIX followed by any number of
             SUFFIXES i.e. `PREFIX-SUFFIX_SUFFIX2_SUFFIX3`.
-            The full list of `PREFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_PREFIX>`_
+            The full list of
+            `PREFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_PREFIX>`_
             and `SUFFIXES <http://sdac.virtualsolar.org/cgi/show_details?keyword=METHOD_SUFFIX>`_
             are listed on the VSO site.
 
@@ -580,7 +583,8 @@ class VSOClient(object):
 
         Returns
         -------
-        out : :py:class:`Results` object that supplies a list of filenames with meta attributes containing the respective QueryResponse.
+        out : :py:class:`Results` object that supplies a list of filenames with meta attributes
+              containing the respective QueryResponse.
 
         Examples
         --------
