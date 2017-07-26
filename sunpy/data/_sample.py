@@ -20,8 +20,8 @@ __author__ = "Steven Christe"
 __email__ = "steven.christe@nasa.gov"
 
 _base_urls = (
-    'http://data.sunpy.org/sample-data/',
-    'https://github.com/sunpy/sunpy-sample-data/raw/master/'
+    'http://data.sunpy.org/sunpy/v1/',
+    'https://github.com/sunpy/sample-data/raw/master/sunpy/v1/'
 )
 
 # Shortcut requirements:
@@ -34,25 +34,35 @@ _base_urls = (
 
 # the files should include necessary extensions
 _sample_files = {
-    "AIA_171_IMAGE": "AIA20110319_105400_0171.fits",
-    "RHESSI_IMAGE": "hsi_image_20101016_191218.fits",
-    "EIT_195_IMAGE": "eit_l1_20020625_100011.fits",
-    "CALLISTO_IMAGE": "BIR_20110922_103000_01.fit",
-    "RHESSI_EVENT_LIST": "hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits",
-    "SWAP_LEVEL1_IMAGE": "swap_lv1_20120101_001607.fits",
-    "AIA_193_IMAGE": "aia.lev1.193A_2013-09-21T16_00_06.84Z.image_lev1.fits.zip",
+    "AIA_131_IMAGE": "AIA20110607_063301_0131_lowres.fits",
+    "AIA_171_IMAGE": "AIA20110607_063302_0171_lowres.fits",
+    "AIA_211_IMAGE": "AIA20110607_063302_0211_lowres.fits",
+    "AIA_335_IMAGE": "AIA20110607_063303_0335_lowres.fits",
+    "AIA_094_IMAGE": "AIA20110607_063305_0094_lowres.fits",
+    "AIA_1600_IMAGE": "AIA20110607_063305_1600_lowres.fits",
+    "AIA_193_IMAGE": "AIA20110607_063307_0193_lowres.fits",
+    "AIA_193_CUTOUT01_IMAGE": "AIA20110607_063307_0193_cutout.fits",
+    "AIA_193_CUTOUT02_IMAGE": "AIA20110607_063931_0193_cutout.fits",
+    "AIA_193_CUTOUT03_IMAGE": "AIA20110607_064555_0193_cutout.fits",
+    "AIA_193_CUTOUT04_IMAGE": "AIA20110607_065219_0193_cutout.fits",
+    "AIA_193_CUTOUT05_IMAGE": "AIA20110607_065843_0193_cutout.fits",
+    "EIT_195_IMAGE": "eit_l1_20110607_203753.fits",
+    "RHESSI_IMAGE": "hsi_image_20110607_063300.fits",
+    "CALLISTO_SPECTRUM": "BIR_20110607_062400_10.fit",
+    # Not in the sample-data repo
+    # "RHESSI_EVENT_LIST": "hsi_calib_ev_20020220_1106_20020220_1106_25_40.fits",
+    "SWAP_LEVEL1_IMAGE": "swap_lv1_20110607_063329.fits",
     "AIA_171_ROLL_IMAGE": "aiacalibim5.fits.gz",
-    "AIA_94_CUTOUT_IMAGE": "ssw_cutout_20121030_153001_AIA_94_.fts",
-    "EVE_TIMESERIES": "20120620_EVE_L0CS_DIODES_1m.txt",
+    "EVE_TIMESERIES": "20110607_EVE_L0CS_DIODES_1m.txt",
     # Uncomment this if it needs to be used. Commented out to save bandwidth.
     # "LYRA_LIGHTCURVE": ("lyra_20110810-000000_lev2_std.fits.gz", ,
-    "LYRA_LEVEL3_TIMESERIES": "lyra_20150101-000000_lev3_std.fits.gz",
-    "GOES_XRS_TIMESERIES": "go1520120601.fits.gz",
+    "LYRA_LEVEL3_TIMESERIES": "lyra_20110607-000000_lev3_std.fits",
+    "GOES_XRS_TIMESERIES": "go1520110607.fits",
     "GBM_TIMESERIES": "glg_cspec_n5_110607_v00.pha",
-    "NOAAINDICES_TIMESERIES": "RecentIndices.txt",
+    "NOAAINDICES_TIMESERIES": "swpc_solar_cycle_indices.txt",
     "NOAAPREDICT_TIMESERIES": "predicted-sunspot-radio-flux.txt",
-    "RHESSI_TIMESERIES": "hsi_obssumm_20120601_018.fits.gz",
-    "NORH_TIMESERIES": "tca110810"
+    "RHESSI_TIMESERIES": "hsi_obssumm_20110607_025.fits",
+    "NORH_TIMESERIES": "tca110607.fits"
 }
 
 # Creating the directory for sample files to be downloaded
@@ -119,7 +129,8 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False,
             if base_url.count('github'):
                 online_filename += '?raw=true'
             try:
-                exists = url_exists(os.path.join(base_url, online_filename))
+                url = six.moves.urllib_parse.urljoin(base_url, online_filename)
+                exists = url_exists(url)
                 if exists:
                     f = download_file(os.path.join(base_url, online_filename),
                                       show_progress=show_progress,
@@ -148,4 +159,3 @@ def get_sample_file(filename, url_list, show_progress=True, overwrite=False,
         # if reach here then file has not been downloaded.
         warnings.warn("File {} not found.".format(filename))
         return None
-

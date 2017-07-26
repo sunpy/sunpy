@@ -15,6 +15,10 @@ addons:
             - texlive-latex-extra
             - dvipng
 
+cache:
+  directories:
+  - $HOME/sunpy/data
+
 python:
     - 2.7
     - 3.4
@@ -32,7 +36,7 @@ env:
         - SETUP_CMD='test'
         - CONDA_CHANNELS='astropy astropy-ci-extras conda-forge'
         - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock pyyaml pandas nomkl pytest-cov coverage hypothesis glymur'
-        - PIP_DEPENDENCIES='suds-jurko sphinx-gallery pytest-sugar'
+        - PIP_DEPENDENCIES='suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures'
         - EVENT_TYPE='pull_request push'
 
     matrix:
@@ -64,7 +68,7 @@ matrix:
          - python: 3.6
            env: SETUP_CMD='build_docs -w'
                 EVENT_TYPE='push pull_request cron'
-                SPHINX_VERSION='>1.6'
+                SPHINX_VERSION='<1.6'
 
          # Figure test runs use an env stored in the repo so don't have conda
          # requirements
@@ -81,7 +85,7 @@ install:
 
 before_script:
     # Download the sample data for the build of the documentation.
-    - if [[ $SETUP_CMD == *build_docs* ]]; then python -c "import sunpy.data; sunpy.data.download_sample_data()"; fi
+    - if [[ $SETUP_CMD == *build_docs* ]]; then python -c "import sunpy.data.sample"; fi
     - if [[ $SETUP_CMD == *figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; fi
 
 
