@@ -214,10 +214,9 @@ def test_repr():
     assert len(rep) == 7 + len(list(results.responses)[0]) + 2
 
 
-@given(offline_query(), offline_query())
-def test_fido_indexing(query1, query2):
-    # If the queries are the same then it don't work.
-    assume(query1.attrs[1] != query2.attrs[1])
+@given(st.tuples(offline_query(), offline_query()).filter(lambda x: x[0] != x[1]))
+def test_fido_indexing(queries):
+    query1, query2 = queries
 
     res = Fido.search(query1 | query2)
 
