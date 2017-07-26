@@ -7,6 +7,8 @@ from .sources.goes import GOESClient
 from .sources.norh import NoRHClient
 from .sources.rhessi import RHESSIClient
 from .sources.noaa import NOAAIndicesClient, NOAAPredictClient
+from .sources.bbso import BBSOClient
+
 
 # Import and register other sources
 from sunpy.net.jsoc.jsoc import JSOCClient
