@@ -258,17 +258,24 @@ class Source(_VSOSimpleAttr):
 
 class Instrument(_VSOSimpleAttr):
     """
-    Specifies the Instruments the VSO can search for.
+    Specifies the Instrument name for the search.
 
     Parameters
     ----------
     value : string
 
-    More information about each instrument may be found within the VSO
-    Registry. For a list of instruments see
+    Notes
+    -----
+
+    More information about each instrument supported by the VSO may be found
+    within the VSO Registry. For a list of instruments see
     http://sdac.virtualsolar.org/cgi/show_details?keyword=INSTRUMENT.
     """
-    pass
+    def __init__(self, value):
+        if not isinstance(value, six.string_types):
+            raise ValueError("Instrument names must be strings")
+
+        super(Instrument, self).__init__(value)
 
 
 class Detector(_VSOSimpleAttr):
