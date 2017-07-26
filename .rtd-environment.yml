@@ -3,7 +3,6 @@ channels:
     - conda-forge
 dependencies:
 - astropy >=2.0
-- astropy_helpers
 - beautifulsoup4
 - cairo
 - contextlib2

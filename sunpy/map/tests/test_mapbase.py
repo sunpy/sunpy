@@ -91,14 +91,13 @@ def test_wcs(aia171_test_map):
     wcs = aia171_test_map.wcs
     assert isinstance(wcs, astropy.wcs.WCS)
 
-    assert all(wcs.wcs.crpix == [
-        aia171_test_map.reference_pixel.x.value, aia171_test_map.reference_pixel.y.value
-    ])
+    assert all(wcs.wcs.crpix ==
+               [aia171_test_map.reference_pixel.x.value, aia171_test_map.reference_pixel.y.value])
+    assert all(wcs.wcs.cdelt == [aia171_test_map.scale.axis1.value,
+                                 aia171_test_map.scale.axis1.value])
     assert all(
-        wcs.wcs.cdelt == [aia171_test_map.scale.axis1.value, aia171_test_map.scale.axis1.value])
-    assert all(wcs.wcs.crval == [
-        aia171_test_map._reference_longitude.value, aia171_test_map._reference_latitude.value
-    ])
+        wcs.wcs.crval ==
+        [aia171_test_map._reference_longitude.value, aia171_test_map._reference_latitude.value])
     assert set(wcs.wcs.ctype) == set(
         [aia171_test_map.coordinate_system.axis1, aia171_test_map.coordinate_system.axis2])
     np.testing.assert_allclose(wcs.wcs.pc, aia171_test_map.rotation_matrix)
@@ -260,24 +259,24 @@ def test_swap_cd():
 
 def test_data_range(generic_map):
     """Make sure xrange and yrange work"""
-    assert_quantity_allclose((generic_map.xrange[1] - generic_map.xrange[0]).to(u.arcsec).value,
-                             generic_map.meta['cdelt1'] * generic_map.meta['naxis1'])
-    assert_quantity_allclose((generic_map.yrange[1] - generic_map.yrange[0]).to(u.arcsec).value,
-                             generic_map.meta['cdelt2'] * generic_map.meta['naxis2'])
+    assert_quantity_allclose((generic_map.xrange[1] - generic_map.xrange[0]
+            ).to(u.arcsec).value, generic_map.meta['cdelt1'] * generic_map.meta['naxis1'])
+    assert_quantity_allclose((generic_map.yrange[1] - generic_map.yrange[0]
+            ).to(u.arcsec).value, generic_map.meta['cdelt2'] * generic_map.meta['naxis2'])
 
     # the weird unit-de-unit thing here is to work around and inconsistency in
     # the way np.average works with astropy 1.3 and 2.0dev
-    assert_quantity_allclose(
-        np.average(u.Quantity(generic_map.xrange).value) * u.deg, generic_map.center.Tx)
-    assert_quantity_allclose(
-        np.average(u.Quantity(generic_map.yrange).value) * u.deg, generic_map.center.Ty)
+    assert_quantity_allclose(np.average(u.Quantity(generic_map.xrange).value) * u.deg,
+                             generic_map.center.Tx)
+    assert_quantity_allclose(np.average(u.Quantity(generic_map.yrange).value) * u.deg,
+                             generic_map.center.Ty)
 
 
-def test_data_to_pixel(generic_map):
+def test_world_to_pixel(generic_map):
     """Make sure conversion from data units to pixels is internally
     consistent"""
     # Note: FITS pixels start from 1,1
-    test_pixel = generic_map.data_to_pixel(generic_map.reference_coordinate, origin=1)
+    test_pixel = generic_map.world_to_pixel(generic_map.reference_coordinate, origin=1)
     assert_quantity_allclose(test_pixel, generic_map.reference_pixel)
 
 
@@ -479,7 +478,8 @@ def test_rotate(aia171_test_map):
 
     # Rotation of a rectangular map by a large enough angle will change which dimension is larger
     aia171_test_map_crop = aia171_test_map.submap(
-        SkyCoord([[0, 0], [1000, 400]] * u.arcsec, frame=aia171_test_map.coordinate_frame))
+        SkyCoord(
+            [[0, 0], [1000, 400]] * u.arcsec, frame=aia171_test_map.coordinate_frame))
 
     aia171_test_map_crop_rot = aia171_test_map_crop.rotate(60 * u.deg)
     assert aia171_test_map_crop.data.shape[0] < aia171_test_map_crop.data.shape[1]
@@ -487,19 +487,19 @@ def test_rotate(aia171_test_map):
 
     # Same test as above, to test the other direction
     aia171_test_map_crop = aia171_test_map.submap(
-        SkyCoord([[0, 0], [400, 1000]] * u.arcsec, frame=aia171_test_map.coordinate_frame))
+        SkyCoord(
+            [[0, 0], [400, 1000]] * u.arcsec, frame=aia171_test_map.coordinate_frame))
     aia171_test_map_crop_rot = aia171_test_map_crop.rotate(60 * u.deg)
     assert aia171_test_map_crop.data.shape[0] > aia171_test_map_crop.data.shape[1]
     assert aia171_test_map_crop_rot.data.shape[0] < aia171_test_map_crop_rot.data.shape[1]
 
 
 def test_rotate_pad_crpix(generic_map):
-    rotated_map = generic_map.rotate(30 * u.deg)
+    rotated_map = generic_map.rotate(30*u.deg)
     # This tests that the reference pixel of the map is in the expected place.
     assert rotated_map.data.shape != generic_map.data.shape
-    assert_quantity_allclose(
-        u.Quantity(rotated_map.reference_pixel),
-        u.Quantity((6.049038105675565, 7.5490381056760265), u.pix))
+    assert_quantity_allclose(u.Quantity(rotated_map.reference_pixel),
+                             u.Quantity((6.049038105675565, 7.5490381056760265), u.pix))
 
 
 def test_rotate_recenter(generic_map):
@@ -592,7 +592,7 @@ def test_hg_coord(heliographic_test_map):
 
 
 def test_hg_pix_to_data(heliographic_test_map):
-    out = heliographic_test_map.pixel_to_data(180 * u.pix, 90 * u.pix)
+    out = heliographic_test_map.pixel_to_world(180 * u.pix, 90 * u.pix)
     assert isinstance(out, SkyCoord)
     assert isinstance(out.frame, sunpy.coordinates.HeliographicCarrington)
     assert_quantity_allclose(out.lon, 0 * u.deg)
@@ -600,11 +600,11 @@ def test_hg_pix_to_data(heliographic_test_map):
 
 
 def test_hg_data_to_pix(heliographic_test_map):
-    out = heliographic_test_map.data_to_pixel(
-        SkyCoord(0 * u.deg, 0 * u.deg, frame=heliographic_test_map.coordinate_frame))
+    out = heliographic_test_map.world_to_pixel(
+        SkyCoord(
+            0 * u.deg, 0 * u.deg, frame=heliographic_test_map.coordinate_frame))
     assert_quantity_allclose(out[0], 180 * u.pix)
     assert_quantity_allclose(out[1], 90 * u.pix)
-
 
 # Heliocentric Map Tests
 
@@ -637,7 +637,6 @@ def test_hc_warn():
 
     with pytest.warns(UserWarning):
         sunpy.map.Map((data, header))
-
 
 # Dimension testing
 

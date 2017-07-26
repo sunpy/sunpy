@@ -81,7 +81,7 @@ an international network of Solar Radio Spectrometers, is a specific example.
     import sunpy.data.sample
     from sunpy.spectra.sources.callisto import CallistoSpectrogram
 
-    image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_IMAGE)
+    image = CallistoSpectrogram.read(sunpy.data.sample.CALLISTO_SPECTRUM)
     image.peek()
 
 For more information about spectra, check out the :doc:`spectra guide <data_types/spectra>`
