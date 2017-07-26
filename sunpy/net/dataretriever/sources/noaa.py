@@ -250,6 +250,7 @@ class SRSClient(GenericClient):
         chkattr = ["Time", "Instrument"]
         chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
-            if x.__class__.__name__ == "Instrument" and x.value == "SOON":
+            if x.__class__.__name__ == "Instrument" and\
+               str(x.value).lower() in ["soon", "srs_table"]:
                 return True
         return False
