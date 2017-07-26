@@ -154,7 +154,7 @@ class SRSClient(GenericClient):
         filenames = []
         local_filenames = []
 
-        for i, [url, qre] in enumerate(list(zip(urls, qres))):
+        for i, [url, qre] in enumerate(zip(urls, qres)):
             name = url.split('/')[-1]
             # temporary fix !!! coz All QRBs have same start_time values
             day = qre.time.start.date() + datetime.timedelta(days=i)
