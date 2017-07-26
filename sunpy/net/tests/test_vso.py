@@ -229,3 +229,11 @@ def test_path(client):
     # practical way to determine what it should be in this test, so we just
     # put it here.
     assert "aia_lev1_171a_2011_06_07t06_33_02_77z_image_lev1.fits" in files[0]
+
+
+def test_non_str_instrument():
+    # Sanity Check
+    assert isinstance(va.Instrument("lyra"), va.Instrument("lyra"))
+
+    with pytest.raises(ValueError):
+        va.Instrument(1234)
