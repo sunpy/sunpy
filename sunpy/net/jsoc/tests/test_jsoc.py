@@ -76,7 +76,6 @@ def test_post_wavelength():
         attrs.Wavelength(335 * u.AA), attrs.Notify('jsoc@cadair.com'))
     aa = client.request_data(responses, return_resp=True)
     tmpresp = aa[0]._d
-    print(tmpresp)
     assert tmpresp['protocol'] == 'fits'
     assert tmpresp['method'] == 'url'
     assert tmpresp['count'] == '302'
