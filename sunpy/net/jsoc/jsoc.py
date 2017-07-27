@@ -233,23 +233,77 @@ class JSOCClient(object):
         Complex queries to be easily formed using logical operators such as
         `&` and `|`, in the same way as the VSO client.
 
-        Examples
-        --------
-        Request all AIA 304 image data between 2010-01-01T00:00 and
-        2010-01-01T01:00 in rice compressed form.
+        *Example 1*
+
+        Request all AIA 304 image data between 2014-01-01T00:00 and
+        2014-01-01T01:00.
 
         >>> import astropy.units as u
         >>> from sunpy.net import jsoc
         >>> from sunpy.net import attrs as a
         >>> client = jsoc.JSOCClient()
-        >>> response = client.search(a.Time('2010-01-01T00:00:00', '2010-01-01T01:00:00'),
-        ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA),
-        ...                         a.jsoc.Segment('image'))
+        >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+        ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA),
+        ...                          a.jsoc.Segment('image'))
+        
+        Returns
+        -------
+        response : JSOCResults object
+            A collection of records that the query returns.
+
+        *Example 2*
+
+        Request keyword data of hmi.v_45s for certain specific keywords only.
+
+        >>> import astropy.units as u
+        >>> from sunpy.net import jsoc
+        >>> from sunpy.net import attrs as a
+        >>> client = jsoc.JSOCClient()
+        >>> response = client.query(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+        ...                         a.jsoc.Series('hmi.v_45s'),
+        ...                         a.jsoc.Keys('T_REC, DATAMEAN, OBS_VR'))
+
 
         Returns
         -------
         response : JSOCResults object
             A collection of records that the query returns.
+        
+        <Table length=81>
+                 T_REC            DATAMEAN     OBS_VR  
+                 str23            float64     float64  
+        ----------------------- ----------- -----------
+        2014.01.01_00:00:45_TAI 1906.518188 1911.202614
+        2014.01.01_00:01:30_TAI 1908.876221 1913.945512
+        2014.01.01_00:02:15_TAI   1911.7771 1916.667999
+        2014.01.01_00:03:00_TAI 1913.422485 1919.369924
+        2014.01.01_00:03:45_TAI 1916.500488 1922.050862
+                            ...         ...         ...
+        2014.01.01_00:57:45_TAI 2054.584473 2058.971861
+        2014.01.01_00:58:30_TAI 2056.094238 2060.075964
+        2014.01.01_00:59:15_TAI 2056.366699 2061.157734
+        2014.01.01_01:00:00_TAI 2057.013428 2062.217153
+        2014.01.01_01:00:45_TAI 2059.014893 2063.254285
+
+        *Example 3*
+
+        Request data of aia.lev1_euv_12s on the basis of primekeys other than T_REC.
+
+        >>> import astropy.units as u
+        >>> from sunpy.net import jsoc
+        >>> from sunpy.net import attrs as a
+        >>> client = jsoc.JSOCClient()
+        >>> response = client.query(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T02:00:00'),
+        ...                         a.jsoc.Series('aia.lev1_euv_12s'),
+        ...                         a.jsoc.PrimeKey('WAVELNTH','171'))
+
+
+
+        Returns
+        -------
+        response : JSOCResults object
+            A collection of records that the query returns.
+
         """
 
         return_results = JSOCResponse()
@@ -274,7 +328,51 @@ class JSOCClient(object):
         return self.search(*query, **kwargs)
 
     def search_metadata(self, *query, **kwargs):
+        """
+        Get the metadata of all the files obtained in a search query.
+        Builds a jsoc query, similar to query() method, and takes similar inputs.
 
+        Complex queries to be easily formed using logical operators such as
+        `&` and `|`, in the same way as the query() function.
+
+        *Example*
+
+        Request metadata or all all AIA 304 image data between 2014-01-01T00:00 and
+        2014-01-01T01:00.
+
+        Since, the function only performs a lookdata, and does not make a proper export
+        request, attributes like Segment need not be passed.
+
+        >>> import astropy.units as u
+        >>> from sunpy.net import jsoc
+        >>> from sunpy.net import attrs as a
+        >>> client = jsoc.JSOCClient()
+        >>> metadata = client.search_metadata(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+        ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))
+        
+        Returns
+        -------
+        metadata : Pandas DataFrame
+            A collection of metadata of all the files.
+
+
+                                                          T_REC                     T_OBS               ...         T_REC_epoch
+        aia.lev1_euv_12s[2014-01-01T00:00:01Z][304]  2014-01-01T00:00:01Z   2014-01-01T00:00:08.57Z     ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:00:13Z][304]  2014-01-01T00:00:13Z   2014-01-01T00:00:20.58Z     ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:00:25Z][304]  2014-01-01T00:00:25Z   2014-01-01T00:00:32.57Z     ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:00:37Z][304]  2014-01-01T00:00:37Z   2014-01-01T00:00:44.58Z     ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:00:49Z][304]  2014-01-01T00:00:49Z   2014-01-01T00:00:56.57Z     ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:01:01Z][304]  2014-01-01T00:01:01Z   2014-01-01T00:01:08.59Z     ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:01:13Z][304]  2014-01-01T00:01:13Z   2014-01-01T00:01:20.59Z     ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:01:25Z][304]  2014-01-01T00:01:25Z   2014-01-01T00:01:32.57Z     ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:01:37Z][304]  2014-01-01T00:01:37Z   2014-01-01T00:01:44.58Z     ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:01:49Z][304]  2014-01-01T00:01:49Z   2014-01-01T00:01:56.58Z     ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:02:01Z][304]  2014-01-01T00:02:01Z   2014-01-01T00:02:08.58Z     ...     1993.01.01_00:00:04_TAI
+ 
+
+        [11 rows x 176 columns]
+
+        """
         query = and_(*query)
         blocks = []
         res = pd.DataFrame()
@@ -301,12 +399,11 @@ class JSOCClient(object):
         requests : ExportRequest Object or
                    a list of ExportRequest objects
 
-            Request Id can be accessed by requests.id
-            Request status can be accessed by requests.status
+                   Request Id can be accessed by requests.id
+                   Request status can be accessed by requests.status
 
         """
 
-        # Do a multi-request for each query block
         requests = []
         for block in jsoc_response.query_args:
 
@@ -335,13 +432,14 @@ class JSOCClient(object):
 
         Parameters
         ----------
-        requestIDs : list or string
-            A list of requestIDs to check
+        requests : ExportRequest Object or
+                   a list of ExportRequest objects,
+                   returned by request_data()
 
         Returns
         -------
-        status : list
-            A list of status' that were returned by JSOC
+        status : int or list
+            A status or list of status' that were returned by JSOC
         """
         # Convert IDs to a list if not already
         if not isiterable(responses) or isinstance(responses, drms.ExportRequest):
@@ -453,8 +551,9 @@ class JSOCClient(object):
 
         Parameters
         ----------
-        requestIDs : list or string
-            One or many requestID strings
+        requests : ExportRequest Object or
+                   a list of ExportRequest objects,
+                   returned by request_data()
 
         path : string
             Path to save data to, defaults to SunPy download dir
@@ -644,13 +743,10 @@ class JSOCClient(object):
         iargs['start_time'] = iargs['start_time'].tai.datetime
         iargs['end_time'] = iargs['end_time'].tai.datetime
 
-        postthis = {'ds': self._make_recordset(**iargs),
-                    'key': str(keywords)[1:-1].replace(' ', '').replace("'", ''),
-                    'seg': '**NONE**',
-                    'link': '**NONE**',
-                    }
+        ds = self._make_recordset(**iargs)
+        key = str(keywords)[1:-1].replace(' ', '').replace("'", '')
 
-        r = c.query(postthis['ds'], key=postthis['key'], rec_index=isMeta)
+        r = c.query(ds, key=key, rec_index=isMeta)
 
         if isMeta:
             return r
@@ -666,6 +762,3 @@ class JSOCClient(object):
                    'Segment', 'Keys', 'PrimeKey']
 
         return all([x.__class__.__name__ in chkattr for x in query])
-
-def func():
-    return 5
