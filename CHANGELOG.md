@@ -1,6 +1,7 @@
 Latest
 ------
 
+* Add tests for RHESSI instrument 
 * Sample data now downloads automatically on import if not available and
   is now pluggable so can be used by affiliated packages. Shortcut names
   have been normalized and all LIGHTCURVE shortcuts have changed to
