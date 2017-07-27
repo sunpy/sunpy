@@ -28,6 +28,7 @@ from sunpy.net.attr import (
 from sunpy.util.multimethod import MultiMethod
 from sunpy.time import parse_time
 from sunpy.extern.six import iteritems
+from sunpy.extern import six
 
 __all__ = ['Wave', 'Time', 'Extent', 'Field', 'Provider', 'Source',
            'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',
@@ -184,7 +185,26 @@ class Source(_VSOSimpleAttr):
 
 
 class Instrument(_VSOSimpleAttr):
-    pass
+    """
+    Specifies the Instrument name for the search.
+
+    Parameters
+    ----------
+    value : string
+
+    Notes
+    -----
+
+    More information about each instrument supported by the VSO may be found
+    within the VSO Registry. For a list of instruments see
+    http://sdac.virtualsolar.org/cgi/show_details?keyword=INSTRUMENT.
+    """
+    def __init__(self, value):
+        if not isinstance(value, six.string_types):
+            raise ValueError("Instrument names must be strings")
+
+        super(Instrument, self).__init__(value)
+
 
 
 class Physobs(_VSOSimpleAttr):

@@ -208,3 +208,10 @@ def test_str():
 def test_repr():
     qr = QueryResponse([])
     assert "Start Time End Time  Source Instrument   Type" in repr(qr)
+
+def test_non_str_instrument():
+    # Sanity Check
+    assert isinstance(va.Instrument("lyra"), va.Instrument)
+
+    with pytest.raises(ValueError):
+        va.Instrument(1234)
