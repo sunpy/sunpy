@@ -55,13 +55,6 @@ class AIAMap(GenericMap):
         """
         return self.meta['telescop'].split('/')[0]
 
-    @property
-    def processing_level(self):
-        """
-        Returns the FITS processing level.
-        """
-        return self.meta['lvl_num']
-
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
         """Determines if header corresponds to an AIA image"""
