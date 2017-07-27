@@ -6,7 +6,7 @@ from .sources.lyra import LYRAClient
 from .sources.goes import GOESClient
 from .sources.norh import NoRHClient
 from .sources.rhessi import RHESSIClient
-from .sources.noaa import NOAAIndicesClient, NOAAPredictClient
+from .sources.noaa import NOAAIndicesClient, NOAAPredictClient, SRSClient
 
 # Import and register other sources
 from sunpy.net.jsoc.jsoc import JSOCClient

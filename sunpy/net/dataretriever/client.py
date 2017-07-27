@@ -21,7 +21,7 @@ from sunpy.util.config import get_and_create_download_dir
 from sunpy import config
 
 from ..download import Downloader, Results
-from ..vso.attrs import Time, _Range
+from ..vso.attrs import Time, Wavelength, _Range
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -50,7 +50,8 @@ class QueryResponseBlock(object):
         self.phyobs = map0.get('phyobs', "Data not Available")
         self.instrument = map0.get('instrument', "Data not Available")
         self.url = url
-        self.time = TimeRange(map0.get('Time_start'), map0.get('Time_end')) if time is None else time
+        self.time = TimeRange(map0.get('Time_start'), map0.get(
+            'Time_end')) if time is None else time
         self.wavelength = map0.get('wavelength', np.NaN)
 
 
@@ -96,8 +97,10 @@ class QueryResponse(list):
                                ('Source', []), ('Instrument', []),
                                ('Wavelength', [])))
         for i, qrblock in enumerate(self):
-            columns['Start Time'].append((qrblock.time.start).strftime(TIME_FORMAT))
-            columns['End Time'].append((qrblock.time.end).strftime(TIME_FORMAT))
+            columns['Start Time'].append(
+                (qrblock.time.start).strftime(TIME_FORMAT))
+            columns['End Time'].append(
+                (qrblock.time.end).strftime(TIME_FORMAT))
             columns['Source'].append(qrblock.source)
             columns['Instrument'].append(qrblock.instrument)
             columns['Wavelength'].append(str(u.Quantity(qrblock.wavelength)))
@@ -121,7 +124,8 @@ class GenericClientMeta(ABCMeta):
     _registry = CLIENTS
 
     def __new__(mcls, name, bases, members):
-        cls = super(GenericClientMeta, mcls).__new__(mcls, name, bases, members)
+        cls = super(GenericClientMeta, mcls).__new__(
+            mcls, name, bases, members)
 
         if cls.__name__ is 'GenericClient':
             return cls
@@ -233,6 +237,49 @@ class GenericClient(object):
         """
         raise NotImplementedError
 
+    def _get_full_filenames(self, qres, filenames, path):
+        """
+        Download a set of results.
+
+        Parameters
+        ----------
+        qres : `~sunpy.net.dataretriever.QueryResponse`
+            Results to download.
+
+        filenames : list
+            List of base filenames (ex - "xyz.txt")
+
+        path : string
+            Path to download files to
+
+        Returns
+        -------
+        List of full pathnames for each file (download_directory + filename)
+        """
+        # Create function to compute the filepath to download to if not set
+        default_dir = sunpy.config.get("downloads", "download_dir")
+
+        paths = []
+        for i, filename in enumerate(filenames):
+            if path is None:
+                fname = os.path.join(default_dir, '{file}')
+            elif isinstance(path, six.string_types) and '{file}' not in path:
+                fname = os.path.join(path, '{file}')
+
+            temp_dict = qres[i].map_.copy()
+            temp_dict['file'] = filename
+            fname = fname.format(**temp_dict)
+            fname = os.path.expanduser(fname)
+
+            if os.path.exists(fname):
+                fname = replacement_filename(fname)
+
+            fname = partial(simple_path, fname)
+
+            paths.append(fname)
+
+        return paths
+
     def query(self, *args, **kwargs):
         """
         Query this client for a list of results.
@@ -266,32 +313,11 @@ class GenericClient(object):
         Results Object
         """
 
-        urls = []
-        for qrblock in qres:
-            urls.append(qrblock.url)
+        urls = [qrblock.url for qrblock in qres]
 
-        filenames = []
-        for url in urls:
-            filenames.append(url.split('/')[-1])
+        filenames = [url.split('/')[-1] for url in urls]
 
-        paths = []
-        for i, filename in enumerate(filenames):
-            if path is None:
-                fname = os.path.join(get_and_create_download_dir(), '{file}')
-            elif isinstance(path, six.string_types) and '{file}' not in path:
-                fname = os.path.join(path, '{file}')
-
-            temp_dict = qres[i].map_.copy()
-            temp_dict['file'] = filename
-            fname = fname.format(**temp_dict)
-            fname = os.path.expanduser(fname)
-
-            if os.path.exists(fname):
-                fname = replacement_filename(fname)
-
-            fname = partial(simple_path, fname)
-
-            paths.append(fname)
+        paths = self._get_full_filenames(qres, filenames, path)
 
         res = Results(lambda x: None, 0, lambda map_: self._link(map_))
 
@@ -300,7 +326,7 @@ class GenericClient(object):
         # We cast to list here in list(zip... to force execution of
         # res.require([x]) at the start of the loop.
         for aurl, ncall, fname in list(zip(urls, map(lambda x: res.require([x]),
-                                           urls), paths)):
+                                                     urls), paths)):
             dobj.download(aurl, fname, ncall, error_callback)
 
         return res
