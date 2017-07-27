@@ -6,6 +6,7 @@ from astropy import units as u
 from astropy.coordinates import SkyCoord
 from astropy.coordinates.baseframe import BaseCoordinateFrame
 
+from sunpy.extern import six
 from sunpy.time import parse_time
 from sunpy.coordinates.ephemeris import get_earth, get_body_heliographic_stonyhurst
 from sunpy.coordinates import frames
@@ -132,11 +133,13 @@ def solar_rotate_coordinate(coordinate,
     >>> from astropy.coordinates import SkyCoord
     >>> from sunpy.coordinates import frames
     >>> from sunpy.physics.differential_rotation import solar_rotate_coordinate
-    >>> c = SkyCoord(-570 * u.arcsec, 120 * u.arcsec, obstime='2010-09-10 12:34:56', frame=frames.Helioprojective)
+    >>> from sunpy.coordinates.ephemeris import get_earth
+    >>> obstime = '2010-09-10 12:34:56'
+    >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=obstime, observer=get_earth(obstime), frame=frames.Helioprojective)
     >>> solar_rotate_coordinate(c, '2010-09-10 13:34:56')
-    <SkyCoord (Helioprojective: D0=150634662.59404698 km, obstime=2010-09-10 13:34:56, L0=0d00m00s, B0=7d14m46.821s, rsun=695508.0 km): (Tx, Ty, distance) in (arcsec, arcsec, km)
-    (-562.90765805,  119.31706625,   1.50079871e+08)>
-
+    <SkyCoord (Helioprojective: obstime=2010-09-10 13:34:56, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-10 13:34:56): (lon, lat, radius) in (deg, deg, AU)
+    ( 0.,  7.24822784,  1.00695436)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+    (-562.37689548,  119.26840368,   1.50083152e+08)>
     """
 
     # Make sure we have enough time information to perform a solar differential
@@ -152,13 +155,12 @@ def solar_rotate_coordinate(coordinate,
     heliographic_coordinate = coordinate.transform_to('heliographic_stonyhurst')
 
     # Compute the differential rotation
-    drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree),
-                    **diff_rot_kwargs)
+    drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
     # Where is the observer at the end time?
     if new_observer_location is None:
         observer = get_earth(time=new_observer_time)
-    elif isinstance(new_observer_location, str):
+    elif isinstance(new_observer_location, six.string_types):
         if new_observer_location.lower() == 'earth':
             observer = get_earth(time=new_observer_time)
         else:

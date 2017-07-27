@@ -2,9 +2,13 @@ from __future__ import absolute_import
 import pytest
 import numpy as np
 from astropy import units as u
+from astropy.coordinates import SkyCoord
 from astropy.coordinates import Longitude, Latitude, Angle
 from astropy.tests.helper import assert_quantity_allclose
+from sunpy.coordinates import frames
+from sunpy.coordinates.ephemeris import get_earth
 from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinate
+
 #pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
 
 # Please note the numbers in these tests are not checked for physical
@@ -56,18 +60,22 @@ def test_fail(seconds_per_day):
         rot = diff_rot(10 * seconds_per_day, 30 * u.deg, rot_type='garbage')
 
 
+def test_solar_rotate_coordinate:
+    # Testing along the Sun-Earth line, observer is on the Earth
+    obstime = '2010-09-10 12:34:56'
+    c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=obstime, observer=get_earth(obstime), frame=frames.Helioprojective)
+    d = solar_rotate_coordinate(c, '2010-09-10 13:34:56')
 
-"""
-def test_rot_hpc():
-    # testing along the Sun-Earth line, observer is on the Earth
-    x, y = rot_hpc(451.4 * u.arcsec, -108.9 * u.arcsec,
+    # Test that a SkyCoordinate is created
+    assert isinstance(d, SkyCoord)
+
+
+    <SkyCoord (Helioprojective: obstime=2010-09-10 13:34:56, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-10 13:34:56): (lon, lat, radius) in (deg, deg, AU)
+    ( 0.,  7.24822784,  1.00695436)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+    (-562.37689548,  119.26840368,   1.50083152e+08)>
                    '2012-06-15', '2012-06-15 16:05:23')
     np.testing.assert_almost_equal(x.to(u.arcsec).value, 574.2, decimal=1)
     np.testing.assert_almost_equal(y.to(u.arcsec).value, -108.4, decimal=1)
     # Test that astropy Angles are returned and that they have the expected
     # units
-    isinstance(x, Angle)
-    x.unit == u.arcsec
-    isinstance(y, Angle)
-    y.unit == u.arcsec
-"""
+
