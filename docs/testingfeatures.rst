@@ -21,7 +21,7 @@ expected::
  conda create -n sunpy-featureX python=3 sunpy
 
 This creates an environment called `sunpy-featureX` (change `featureX` for
-something more meaningful in your case) and specifies python 3.5. You can change
+something more meaningful in your case) and specifies Python 3. You can change
 this to an older version of Python if you need to. Then we can activate it as
 
 Linux, OS X:
@@ -56,16 +56,16 @@ something meaningful to you.
 
 Next step is to install sunpy in your new environment ::
 
- python setup.py install
+ pip install -e .
 
 Once you've done so, you have the new feature ready for testing. Just start
 your python and play with it. Once you are done with testing go back to your
 original environment by
 
 Linux, OS X:
-  `source activate sunpy-featureX`
-Windwos:
-  `activate sunpy-featureX`
+  `source deactivate`
+Windows:
+  `deactivate`
 
 Remember, each time you start a new shell you will be using your default
 environment, so you have to use reactivate your new feature environment.
