@@ -9,6 +9,7 @@ from hypothesis import given, assume
 import astropy.units as u
 
 from sunpy.net import attr
+from sunpy.net.vso import attrs as va
 from sunpy.net import Fido, attrs as a
 from sunpy.net.vso.vso import QueryResponse as vsoQueryResponse
 from sunpy.net.fido_factory import DownloadResponse, UnifiedResponse
@@ -214,9 +215,17 @@ def test_repr():
     assert len(rep) == 7 + len(list(results.responses)[0]) + 2
 
 
-@given(st.tuples(offline_query(), offline_query()).filter(lambda x: x[0] != x[1]))
+def filter_queries(queries):
+    return attr.and_(queries) not in queries
+
+
+@given(st.tuples(offline_query(), offline_query()).filter(filter_queries))
 def test_fido_indexing(queries):
     query1, query2 = queries
+
+    # This is a work around for an aberration where the filter was not catching
+    # this.
+    assume(query1.attrs[1].start != query2.attrs[1].start)
 
     res = Fido.search(query1 | query2)
 
@@ -248,10 +257,13 @@ def test_fido_indexing(queries):
         res[1.0132]
 
 
-@given(offline_query(), offline_query())
-def test_fido_iter(query1, query2):
-    # If the queries are the same then it don't work.
-    assume(query1.attrs[1] != query2.attrs[1])
+@given(st.tuples(offline_query(), offline_query()).filter(filter_queries))
+def test_fido_iter(queries):
+    query1, query2 = queries
+
+    # This is a work around for an aberration where the filter was not catching
+    # this.
+    assume(query1.attrs[1].start != query2.attrs[1].start)
 
     res = Fido.search(query1 | query2)
 
