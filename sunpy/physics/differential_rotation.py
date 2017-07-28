@@ -157,7 +157,7 @@ def solar_rotate_coordinate(coordinate,
     # Compute the differential rotation
     drot = diff_rot(interval, heliographic_coordinate.lat.to(u.degree), **diff_rot_kwargs)
 
-    # Where is the observer at the end time?
+    # Set the observer
     if new_observer_location is None:
         observer = get_earth(time=new_observer_time)
     elif isinstance(new_observer_location, six.string_types):
