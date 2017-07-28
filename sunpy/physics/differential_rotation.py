@@ -170,7 +170,7 @@ def solar_rotate_coordinate(coordinate,
     elif isinstance(new_observer_location, SkyCoord):
         observer = new_observer_location.frame
     else:
-        raise ValueError("Keyword 'observation_location' must be either None, a valid SkyCoord or CoordinateFrame, or a solar system body understood by get_body_heliographic_stonyhurst.")
+        raise ValueError("Keyword 'observer_location' must be either None, a valid SkyCoord or CoordinateFrame, or a solar system body understood by get_body_heliographic_stonyhurst.")
 
     # Rotate the input co-ordinate and update the observer
     heliographic_rotated = SkyCoord(heliographic_coordinate.lon + drot,
