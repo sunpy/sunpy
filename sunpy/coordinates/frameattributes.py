@@ -89,9 +89,12 @@ class TimeFrameAttributeSunPy(TimeAttribute):
 class ObserverCoordinateAttribute(CoordinateAttribute):
     """
     An Attribute to describe the location of the observer in the solar system.
-    The observer location can be given as a string of a known observer, a
-    low-level frame class *or* a `~astropy.coordinates.SkyCoord`, but will
-    always be converted to the low-level frame class when accessed.
+    The observer location can be given as a string of a known observer, which
+    will be converted to a coordinate as long as the ``obstime`` attribute is
+    valid on the instance of the frame. Alternatively a low-level frame class
+    *or* a `~astropy.coordinates.SkyCoord` can be provided to specify the
+    location of the observer. If a `~astropy.coordinates.SkyCoord` is passed it
+    will always be converted to the low-level frame class when accessed.
 
     Parameters
     ----------
@@ -99,16 +102,10 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
         The type of frame this attribute can be
     default : object
         Default value for the attribute if not provided
-    fallback_coordinate: `astropy.coordinates.BaseCoordinateFrame`
-        The coordinate value to return if one can not be calculated.
     secondary_attribute : str
         Name of a secondary instance attribute which supplies the value if
         ``default is None`` and no value was supplied during initialization.
     """
-
-    def __init__(self, frame, default=None, secondary_attribute=''):
-        super(ObserverCoordinateAttribute, self).__init__(
-            frame, default=default, secondary_attribute=secondary_attribute)
 
     def convert_input(self, value):
         # Keep string here.
@@ -143,7 +140,7 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
             observer = getattr(instance, '_' + self.name, self.default)
 
             # We have an instance of a frame, so get obstime
-            obstime = instance.obstime if hasattr(instance, "obstime") else None
+            obstime = getattr(instance, 'obstime', None)
 
             # If the observer is a string and we have obstime then calculate
             # the position of the observer.

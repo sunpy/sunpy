@@ -279,7 +279,7 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
     """
     if hgsframe.obstime is None:
         raise ValueError("To perform this transformation the coordinate"
-                         " Frame needs a obstime Attribute")
+                         " Frame needs an obstime Attribute")
 
     # Determine the Sun-Earth vector in this de-tilt frame
     sun_pos_icrs = get_body_barycentric('sun', hgsframe.obstime)
