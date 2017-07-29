@@ -16,7 +16,7 @@ from astropy.coordinates.representation import (CartesianRepresentation,
                                                 SphericalRepresentation)
 from astropy.coordinates.baseframe import (BaseCoordinateFrame,
                                            RepresentationMapping)
-from astropy.coordinates import Attribute, CoordinateAttribute
+from astropy.coordinates import Attribute, CoordinateAttribute, ConvertError
 
 from sunpy import sun
 from .representation import (SphericalWrap180Representation, UnitSphericalWrap180Representation)
@@ -349,12 +349,18 @@ class Helioprojective(BaseCoordinateFrame):
         if isinstance(self._data, SphericalRepresentation):
             return self
 
+        if not isinstance(self.observer, BaseCoordinateFrame):
+            raise ConvertError("Cannot calculate distance to the solar disk "
+                               "for observer '{}' "
+                               "without `obstime` being specified.".format(self.observer))
+
         rep = self.represent_as(UnitSphericalWrap180Representation)
         lat, lon = rep.lat, rep.lon
         alpha = np.arccos(np.cos(lat) * np.cos(lon)).to(lat.unit)
         c = self.observer.radius**2 - self.rsun**2
         b = -2 * self.observer.radius * np.cos(alpha)
         d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2
+
         return self.realize_frame(SphericalWrap180Representation(lon=lon,
                                                                  lat=lat,
                                                                  distance=d))

@@ -174,7 +174,8 @@ def test_cart_init():
 
 # Test HPC Calculate Distance
 def test_hpc_distance():
-    hpc1 = Helioprojective(0 * u.deg, 0 * u.arcsec)
+    hpc1 = Helioprojective(0 * u.deg, 0 * u.arcsec,
+                           observer=HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
 
     assert isinstance(hpc1, Helioprojective)
     # Check that we have a 2D wrap180 representation
@@ -195,7 +196,8 @@ def test_hpc_distance():
 
 
 def test_hpc_distance_off_limb():
-    hpc1 = Helioprojective(1500 * u.arcsec, 0 * u.arcsec)
+    hpc1 = Helioprojective(1500 * u.arcsec, 0 * u.arcsec,
+                           observer=HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
 
     assert isinstance(hpc1, Helioprojective)
     # Check that we have a 2D wrap180 representation

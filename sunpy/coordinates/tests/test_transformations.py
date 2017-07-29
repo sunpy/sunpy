@@ -1,11 +1,11 @@
 import numpy as np
 
 import astropy.units as u
-from astropy.tests.helper import quantity_allclose
+from astropy.tests.helper import quantity_allclose, assert_quantity_allclose
 from astropy.coordinates import SkyCoord, get_body_barycentric
 from astropy.time import Time
 
-from sunpy.coordinates import Helioprojective, HeliographicStonyhurst
+from sunpy.coordinates import Helioprojective, HeliographicStonyhurst, HeliographicCarrington, get_sun_L0
 from sunpy.time import parse_time
 
 
@@ -80,3 +80,18 @@ def test_hcrs_hgs():
     # The HGS latitude and radius should be within valid ranges
     assert quantity_allclose(earth_hgs.lat, 0*u.deg, atol=7.3*u.deg)
     assert quantity_allclose(earth_hgs.radius, 1*u.AU, atol=0.017*u.AU)
+
+
+def test_hgs_hgc_roundtrip():
+    obstime = "2011-01-01"
+
+    hgsin = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, obstime=obstime)
+    hgcout = hgsin.transform_to(HeliographicCarrington)
+
+    assert_quantity_allclose(hgsin.lat, hgcout.lat)
+    assert_quantity_allclose(hgcout.lon, get_sun_L0(obstime))
+
+    hgsout = hgcout.transform_to(HeliographicStonyhurst)
+
+    assert_quantity_allclose(hgsout.lat, hgsin.lat)
+    assert_quantity_allclose(hgsout.lon, hgsin.lon)
