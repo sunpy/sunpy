@@ -21,7 +21,8 @@ import pytest
                                     (40.0*u.arcsec, 32.0*u.arcsec),
                                     (1500*u.arcsec, 1500*u.arcsec)])
 def test_hpc_hcc(Tx, Ty):
-    hpc = Helioprojective(Tx, Ty)
+    hpc = Helioprojective(Tx, Ty,
+                          observer=HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
     hcc = hpc.transform_to(Heliocentric)
     d0 = hpc.observer.radius
 
@@ -40,7 +41,8 @@ def test_hpc_hcc(Tx, Ty):
                                     (40.0*u.arcsec, 32.0*u.arcsec),
                                     (1500*u.arcsec, 1500*u.arcsec)])
 def test_hpc_hgs(Tx, Ty):
-    hpc = Helioprojective(Tx, Ty)
+    hpc = Helioprojective(Tx, Ty,
+                          observer=HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
     hgs = hpc.transform_to(HeliographicStonyhurst)
     l0_deg = hpc.observer.lon
     b0_deg = hpc.observer.lat
@@ -59,14 +61,14 @@ def test_hpc_hgs(Tx, Ty):
                                       (-80*u.deg, 70*u.deg)])
 def test_hgs_hpc(lon, lat):
     hgs = HeliographicStonyhurst(lon, lat)
-    hpc = hgs.transform_to(Helioprojective)
+    hpc = hgs.transform_to(Helioprojective(observer=HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU)))
     l0_deg = hpc.observer.lon
     b0_deg = hpc.observer.lat
     d0 = hpc.observer.radius
 
     Tx, Ty = wcs.convert_hg_hpc(lon.value, lat.value, angle_units='arcsec',
-                                  b0_deg=b0_deg.to(u.deg).value, l0_deg=l0_deg.to(u.deg).value,
-                                  dsun_meters=d0.to(u.m))
+                                b0_deg=b0_deg.to(u.deg).value, l0_deg=l0_deg.to(u.deg).value,
+                                dsun_meters=d0.to(u.m))
 
     assert_quantity_allclose(Tx*u.arcsec, hpc.Tx)
     assert_quantity_allclose(Ty*u.arcsec, hpc.Ty)
@@ -77,7 +79,7 @@ def test_hgs_hpc(lon, lat):
                                       (-80*u.deg, 70*u.deg)])
 def test_hgs_hcc(lon, lat):
     hgs = HeliographicStonyhurst(lon, lat)
-    hcc = hgs.transform_to(Heliocentric)
+    hcc = hgs.transform_to(Heliocentric(observer=HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU)))
 
     x, y, z = wcs.convert_hg_hcc(lon.value, lat.value,
                                  r=hgs.radius.to(u.m).value,
