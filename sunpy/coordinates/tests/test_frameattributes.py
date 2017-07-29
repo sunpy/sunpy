@@ -104,7 +104,7 @@ def test_coord_get():
 
     # Test default (instance=None)
     obs = Helioprojective.observer
-    assert obs == "earth"
+    assert obs is "earth"
 
     # Test get
     obstime = "2013-04-01"
