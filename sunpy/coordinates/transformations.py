@@ -4,6 +4,14 @@ Coordinate Transformation Functions
 
 This module contains the functions for converting one
 `sunpy.coordinates.frames` object to another.
+
+.. warning::
+
+  The functions in this submodule should never be called directly, transforming
+  between coordinate frames should be done using the ``.transform_to`` methods
+  on `~astropy.coordinates.BaseCoordinateFrame` or
+  `~astropy.coordinates.SkyCoord` instances.
+
 """
 from __future__ import absolute_import, division
 
@@ -13,6 +21,7 @@ from astropy import units as u
 from astropy.coordinates.representation import (CartesianRepresentation,
                                                 UnitSphericalRepresentation)
 from astropy.coordinates.baseframe import frame_transform_graph
+from astropy.coordinates.builtin_frames import _make_transform_graph_docs
 from astropy.coordinates.transformations import FunctionTransform, DynamicMatrixTransform
 from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_product, matrix_transpose
 from astropy.coordinates import HCRS, get_body_barycentric
@@ -262,54 +271,6 @@ def hgs_to_hcrs(hgscoord, hcrsframe):
     Convert from Heliographic Stonyhurst to HCRS.
     """
     return matrix_transpose(hcrs_to_hgs(hcrsframe, hgscoord))
-
-
-# Make a transformation graph for the documentation, borrowed lovingly from
-# Astropy.
-
-
-def _make_transform_graph_docs():
-    """
-    Generates a string for use with the coordinate package's docstring
-    to show the available transforms and coordinate systems
-    """
-    import inspect
-    from textwrap import dedent
-    from sunpy.extern import six
-    from astropy.coordinates.baseframe import (BaseCoordinateFrame,
-                                               frame_transform_graph)
-
-    import copy
-    f = copy.deepcopy(frame_transform_graph)
-    for f1 in frame_transform_graph._graph.keys():
-        if 'sunpy' not in str(f1):
-            del f._graph[f1]
-        else:
-            for f2 in frame_transform_graph._graph[f1].keys():
-                if 'sunpy' not in str(f2):
-                    del f._graph[f1][f2]
-
-    # TODO: Make this just show the SunPy Frames
-    isclass = inspect.isclass
-    coosys = [item
-              for item in list(six.itervalues(globals()))
-              if isclass(item) and issubclass(item, BaseCoordinateFrame)]
-    graphstr = f.to_dot_graph(addnodes=coosys, priorities=False)
-
-    docstr = """
-    The diagram below shows all of the coordinate systems built into the
-    `~astropy.coordinates` package, their aliases (useful for converting
-    other coordinates to them using attribute-style access) and the
-    pre-defined transformations between them.  The user is free to
-    override any of these transformations by defining new transformations
-    between these systems, but the pre-defined transformations should be
-    sufficient for typical usage.
-
-    .. graphviz::
-
-    """
-
-    return dedent(docstr) + '    ' + graphstr.replace('\n', '\n    ')
 
 
 __doc__ += _make_transform_graph_docs()

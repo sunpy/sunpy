@@ -41,6 +41,10 @@ def aia171_test_mapcube(aia171_test_submap):
     m3 = sunpy.map.Map((aia171_test_submap.data, m3header))
     return sunpy.map.Map([aia171_test_submap, m2, m3], cube=True)
 
+# Note that mapcube tests are known to be approximate
+#
+#
+
 
 # Known displacements for these mapcube layers when the layer index is set to 0
 @pytest.fixture
@@ -69,7 +73,8 @@ def test_calculate_solar_rotate_shift(aia171_test_mapcube, known_displacements_l
 
 
 def test_mapcube_solar_derotate(aia171_test_mapcube, aia171_test_submap):
-    # Test that a mapcube is returned when the clipping is False
+    # Test that a mapcube is returned when the clipping is False.  These
+    # tests are no more than approximate.  This is
     tmc = mapcube_solar_derotate(aia171_test_mapcube, clip=False)
     assert(isinstance(tmc, sunpy.map.MapCube))
 

@@ -137,6 +137,15 @@ def test_coord_get():
     assert_quantity_allclose(obs.lat, earth.lat)
     assert_quantity_allclose(obs.radius, earth.radius)
 
+    # Test get
+    obstime = "2013-04-01"
+    obs = Helioprojective(obstime=obstime).observer
+    earth = get_earth(obstime)
+    assert isinstance(obs, HeliographicStonyhurst)
+    assert_quantity_allclose(obs.lon, earth.lon)
+    assert_quantity_allclose(obs.lat, earth.lat)
+    assert_quantity_allclose(obs.radius, earth.radius)
+
     # Test get mars
     obstime = Time(parse_time("2013-04-01"))
     obs = Helioprojective(observer="mars", obstime=obstime).observer
