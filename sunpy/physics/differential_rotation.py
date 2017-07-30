@@ -178,5 +178,6 @@ def solar_rotate_coordinate(coordinate,
                                     obstime=new_observer_time,
                                     observer=observer,
                                     frame=frames.HeliographicStonyhurst)
+
     # Return the rotated coordinates to the input coordinate frame
     return heliographic_rotated.transform_to(coordinate.frame.name)

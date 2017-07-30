@@ -69,6 +69,7 @@ def test_solar_rotate_coordinate():
     newtime = '2010-09-10 13:34:56'
     c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=obstime, observer=get_earth(obstime), frame=frames.Helioprojective)
     d = solar_rotate_coordinate(c, newtime)
+    print(d.observer)
 
     # Test that a SkyCoordinate is created
     assert isinstance(d, SkyCoord)
@@ -76,7 +77,7 @@ def test_solar_rotate_coordinate():
     # Test the coordinate
     np.testing.assert_almost_equal(d.Tx.to(u.arcsec).value, -562.3768, decimal=1)
     np.testing.assert_almost_equal(d.Ty.to(u.arcsec).value, 119.2684, decimal=1)
-    np.testing.assert_almost_equal(d.distance.to(u.km).value, 150083151.9, decimal=1)
+    np.testing.assert_almost_equal(d.distance.to(u.km).value, 150084787.6, decimal=1)
 
     # Test that the SkyCoordinate is Helioprojective
     assert isinstance(d.frame, frames.Helioprojective)
