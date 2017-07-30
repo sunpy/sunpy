@@ -408,9 +408,9 @@ class Database(object):
                     database_entry, ["source", "provider", "physobs", "fileid",
                                      "observation_time_start", "observation_time_end",
                                      "instrument", "size", "wavemin", "wavemax"]):
-                    if overwrite is False:
+                    if not overwrite:
                         remove_list.append(qr)
-                    elif overwrite is True:
+                    else:
                         delete_entries.append(database_entry)
 
         for temp in remove_list:
