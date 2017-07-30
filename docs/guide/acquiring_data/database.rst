@@ -321,8 +321,8 @@ will have all files in common with the previous query. Therefore, no new
 files are downloaded.
 
     >>> entries = database.fetch(
-        vso.attrs.Time('2012-08-05 00:00:00', '2012-08-05 00:00:01'),
-        vso.attrs.Instrument('AIA'))
+    ...     vso.attrs.Time('2012-08-05 00:00:00', '2012-08-05 00:00:01'),
+    ...     vso.attrs.Instrument('AIA'))
     >>> len(database)
     37
 
