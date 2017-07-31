@@ -77,6 +77,10 @@ def test_mapcube_solar_derotate(aia171_test_mapcube, aia171_test_submap):
     tmc = mapcube_solar_derotate(aia171_test_mapcube, clip=False)
     assert(isinstance(tmc, sunpy.map.MapCube))
 
+    # Test that all entries have the same shape when clipping is False
+    for m in tmc:
+        assert(m.data.shape == aia171_test_submap.data.shape)
+
     # Test that a mapcube is returned on default clipping (clipping is True)
     tmc = mapcube_solar_derotate(aia171_test_mapcube)
     assert(isinstance(tmc, sunpy.map.MapCube))
@@ -85,10 +89,6 @@ def test_mapcube_solar_derotate(aia171_test_mapcube, aia171_test_submap):
     clipped_shape = (24, 19)
     for m in tmc:
         assert(m.data.shape == clipped_shape)
-
-    # Test that all entries have the same shape - nothing clipped
-    for m in tmc:
-        assert(m.data.shape == aia171_test_submap.data.shape)
 
     # Test that the returned reference pixels are correctly displaced.
     layer_index = 0
