@@ -138,6 +138,8 @@ html_favicon = "./logo/favicon.ico"
 # "<project> v<release> documentation".
 html_title = '{0} v{1}'.format(project, release)
 
+html_sidebars = {'**': ['docsidebar.html']}
+
 # Output file base name for HTML help builder.
 htmlhelp_basename = project + 'doc'
 
