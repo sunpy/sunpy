@@ -12,8 +12,7 @@ from astropy.coordinates import ICRS, get_body_barycentric
 from sunpy.time import parse_time
 from ..frames import Helioprojective, HeliographicStonyhurst
 from ..frameattributes import TimeFrameAttributeSunPy, ObserverCoordinateAttribute
-from sunpy.util.exceptions import SunpyUserWarning
-from sunpy.coordinates import get_earth
+from sunpy.coordinates import get_earth, frames
 
 
 @pytest.fixture
@@ -88,45 +87,24 @@ def test_array():
 
 # ObserverCoordinateAttribute
 
+
 def test_string_coord():
 
-    class dummyframe(object):
-        obstime = Time(parse_time("2011-01-01"))
-
-    finst = dummyframe()
-
     oca = ObserverCoordinateAttribute(HeliographicStonyhurst)
 
-    coord = oca._convert_string_to_coord("earth", finst)
+    obstime = "2011-01-01"
+    coord = oca._convert_string_to_coord("earth", obstime)
 
     assert isinstance(coord, HeliographicStonyhurst)
 
-    assert coord.obstime == parse_time(finst.obstime)
-
-
-def test_string_coord_default():
-
-    class dummyframe(object):
-        obstime = None
-
-    finst = dummyframe()
-
-    oca = ObserverCoordinateAttribute(HeliographicStonyhurst)
-
-    with pytest.warns(SunpyUserWarning):
-        coord = oca._convert_string_to_coord("earth", finst)
-
-    assert isinstance(coord, HeliographicStonyhurst)
+    assert coord.obstime == parse_time(obstime)
 
 
 def test_coord_get():
 
     # Test default (instance=None)
     obs = Helioprojective.observer
-    assert isinstance(obs, HeliographicStonyhurst)
-    assert_quantity_allclose(obs.lon, 0*u.deg)
-    assert_quantity_allclose(obs.lat, 0*u.deg)
-    assert_quantity_allclose(obs.radius, 1*u.AU)
+    assert obs is "earth"
 
     # Test get
     obstime = "2013-04-01"
@@ -156,3 +134,51 @@ def test_coord_get():
     assert_quantity_allclose(obs.lon, mars.lon)
     assert_quantity_allclose(obs.lat, mars.lat)
     assert_quantity_allclose(obs.radius, mars.radius)
+
+
+def test_default_hcc_observer():
+    h = frames.Heliocentric()
+    assert h.observer is "earth"
+
+    h = frames.Heliocentric(observer="mars")
+    assert h.observer is "mars"
+
+
+def test_obstime_hack():
+    """
+    Test that the obstime can be updated in place, this is used in the transform pipeline.
+    """
+    h = frames.Heliocentric()
+    assert h.observer is "earth"
+
+    obstime = "2011-01-01"
+    h._obstime = obstime
+
+    assert isinstance(h.observer, frames.HeliographicStonyhurst)
+
+    earth = get_earth(obstime)
+    obs = h._observer
+    assert isinstance(obs, HeliographicStonyhurst)
+    assert_quantity_allclose(obs.lon, earth.lon)
+    assert_quantity_allclose(obs.lat, earth.lat)
+    assert_quantity_allclose(obs.radius, earth.radius)
+
+
+"""
+These two tests are to make sure that during the transformation stack the value
+of observer is correctly calculated.
+"""
+
+
+def test_default_observer_transform_hcc():
+    center = frames.HeliographicStonyhurst(0 * u.deg, 0 * u.deg, obstime="2017-07-11 15:00")
+    hpc = center.transform_to(frames.Heliocentric)
+
+    assert_quantity_allclose(hpc.y, -48471.1283979 * u.km)
+
+
+def test_default_observer_transform_hpc():
+    center = frames.HeliographicStonyhurst(0 * u.deg, 0 * u.deg, obstime="2017-07-11 15:00")
+    hpc = center.transform_to(frames.Helioprojective)
+
+    assert_quantity_allclose(hpc.Ty, -66.04425197 * u.arcsec)
