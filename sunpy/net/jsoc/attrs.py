@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 
+from astropy.time import Time as astropyTime
+
 from sunpy.net.attr import AttrWalker, AttrAnd, AttrOr, Attr
 from sunpy.net.vso.attrs import _VSOSimpleAttr, _Range
 from sunpy.net.vso.attrs import Time as VSOTime
@@ -8,7 +10,6 @@ from sunpy.net.vso.attrs import Wavelength
 from sunpy.time import parse_time
 from sunpy.time import TimeRange as _TimeRange
 
-from astropy.time import Time as astropyTime
 
 __all__ = ['Series', 'Protocol', 'Notify', 'Segment', 'Keys', 'PrimeKey']
 
@@ -60,6 +61,7 @@ class Time(VSOTime):
 
     def __repr__(self):
         return '<Time({s.start!r}, {s.end!r})>'.format(s=self)
+
 
 class Keys(_VSOSimpleAttr):
     """
