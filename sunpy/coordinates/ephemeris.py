@@ -20,7 +20,7 @@ from sunpy.time import parse_time
 from sunpy.time.time import _astropy_time
 
 from .frames import HeliographicStonyhurst as HGS
-from .transformations import _sun_detilt_matrix
+from .transformations import _SUN_DETILT_MATRIX
 
 __all__ = ['get_body_heliographic_stonyhurst', 'get_earth',
            'get_sun_B0', 'get_sun_L0', 'get_sun_P', 'get_sunearth_distance',
@@ -103,7 +103,7 @@ with warnings.catch_warnings():
 
     # Longitude of Earth at Carrington rotation 1 in de-tilted HCRS (so that solar north pole is Z)
     _lon_first_rotation = \
-        get_earth(_time_first_rotation).hcrs.cartesian.transform(_sun_detilt_matrix) \
+        get_earth(_time_first_rotation).hcrs.cartesian.transform(_SUN_DETILT_MATRIX) \
         .represent_as(SphericalRepresentation).lon.to('deg')
 
 
@@ -136,7 +136,7 @@ def get_sun_L0(time='now'):
     sidereal_lon = Longitude((obstime.jd - _time_first_rotation.jd) / 25.38 * 360*u.deg)
 
     # Calculate the longitude of the Earth in de-tilted HCRS
-    lon_obstime = get_earth(obstime).hcrs.cartesian.transform(_sun_detilt_matrix) \
+    lon_obstime = get_earth(obstime).hcrs.cartesian.transform(_SUN_DETILT_MATRIX) \
                   .represent_as(SphericalRepresentation).lon.to('deg')
 
     return Longitude(lon_obstime - _lon_first_rotation - sidereal_lon)

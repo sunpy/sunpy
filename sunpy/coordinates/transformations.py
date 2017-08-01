@@ -245,7 +245,7 @@ def hpc_to_hpc(heliopcoord, heliopframe):
     return hpc
 
 
-def _make_rotation_matrix(start_representation, end_representation):
+def _make_rotation_matrix_from_reprs(start_representation, end_representation):
     """
     Return the matrix for the direct rotation from one representation to a second representation.
     The representations need not be normalized first.
@@ -264,37 +264,48 @@ def _make_rotation_matrix(start_representation, end_representation):
 # (See Archinal et al. 2011,
 #   "Report of the IAU Working Group on Cartographic Coordinates and Rotational Elements: 2009")
 # The orientation of the north pole in ICRS/HCRS is assumed to be constant in time
-_solar_north_pole_hcrs = UnitSphericalRepresentation(lon=286.13*u.deg, lat=63.87*u.deg)
+_SOLAR_NORTH_POLE_HCRS = UnitSphericalRepresentation(lon=286.13*u.deg, lat=63.87*u.deg)
 
 
 # Calculate the rotation matrix to de-tilt the Sun's rotation axis to be parallel to the Z axis
-_sun_detilt_matrix = _make_rotation_matrix(_solar_north_pole_hcrs,
+_SUN_DETILT_MATRIX = _make_rotation_matrix_from_reprs(_SOLAR_NORTH_POLE_HCRS,
                                            CartesianRepresentation(0, 0, 1))
 
 
 @frame_transform_graph.transform(DynamicMatrixTransform, HCRS, HeliographicStonyhurst)
 def hcrs_to_hgs(hcrscoord, hgsframe):
     """
-    Convert from HCRS to Heliographic Stonyhurst.
+    Convert from HCRS to Heliographic Stonyhurst (HGS).
+
+    HGS shares the same origin (the Sun) as HCRS, but has its Z axis aligned with the Sun's
+    rotation axis and its X axis aligned with the projection of the Sun-Earth vector onto the Sun's
+    equatorial plane (i.e., the component of the Sun-Earth vector perpendicular to the Z axis).
+    Thus, the transformation matrix is the product of the matrix to align the Z axis (by de-tilting
+    the Sun's rotation axis) and the matrix to align the X axis.  The first matrix is independent
+    of time and is pre-computed, while the second matrix depends on the time-varying Sun-Earth
+    vector.
     """
     if hgsframe.obstime is None:
         raise ValueError("To perform this transformation the coordinate"
                          " Frame needs an obstime Attribute")
 
-    # Determine the Sun-Earth vector in this de-tilt frame
+    # Determine the Sun-Earth vector in ICRS
+    # Since HCRS is ICRS with an origin shift, this is also the Sun-Earth vector in HCRS
     sun_pos_icrs = get_body_barycentric('sun', hgsframe.obstime)
     earth_pos_icrs = get_body_barycentric('earth', hgsframe.obstime)
-    sun_earth_hcrs = earth_pos_icrs - sun_pos_icrs
-    sun_earth_detilt = sun_earth_hcrs.transform(_sun_detilt_matrix)
+    sun_earth = earth_pos_icrs - sun_pos_icrs
+
+    # De-tilt the Sun-Earth vector to the frame with the Sun's rotation axis parallel to the Z axis
+    sun_earth_detilt = sun_earth.transform(_SUN_DETILT_MATRIX)
 
     # Remove the component of the Sun-Earth vector that is parallel to the Sun's north pole
     hgs_x_axis_detilt = CartesianRepresentation(sun_earth_detilt.xyz * [1, 1, 0])
 
     # The above vector, which is in the Sun's equatorial plane, is also the X axis of HGS
     x_axis = CartesianRepresentation(1, 0, 0)
-    rot_matrix = _make_rotation_matrix(hgs_x_axis_detilt, x_axis)
+    rot_matrix = _make_rotation_matrix_from_reprs(hgs_x_axis_detilt, x_axis)
 
-    return matrix_product(rot_matrix, _sun_detilt_matrix)
+    return matrix_product(rot_matrix, _SUN_DETILT_MATRIX)
 
 
 @frame_transform_graph.transform(DynamicMatrixTransform, HeliographicStonyhurst, HCRS)
