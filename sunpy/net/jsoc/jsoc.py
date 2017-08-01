@@ -114,7 +114,7 @@ class JSOCClient(object):
 
     <Table length=81>
             DATE         TELESCOP  INSTRUME           T_OBS          WAVELNTH
-           str20           str7     str10             str23          float64 
+           str20           str7     str10             str23          float64
     -------------------- -------- ---------- ----------------------- --------
     2014-01-05T17:46:02Z  SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI   6173.0
     2014-01-05T17:47:11Z  SDO/HMI HMI_FRONT2 2014.01.01_00:01:22_TAI   6173.0
@@ -176,7 +176,7 @@ class JSOCClient(object):
 
     <Table length=4>
             DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH
-           str20           str7     str5            str23           int64  
+           str20           str7     str5            str23           int64
     -------------------- -------- -------- ----------------------- --------
     2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:12.34Z      171
     2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:24.34Z      171
@@ -268,10 +268,10 @@ class JSOCClient(object):
         -------
         response : JSOCResults object
             A collection of records that the query returns.
-        
+
         <Table length=81>
-                 T_REC            DATAMEAN     OBS_VR  
-                 str23            float64     float64  
+                 T_REC            DATAMEAN     OBS_VR
+                 str23            float64     float64
         ----------------------- ----------- -----------
         2014.01.01_00:00:45_TAI 1906.518188 1911.202614
         2014.01.01_00:01:30_TAI 1908.876221 1913.945512
@@ -313,11 +313,9 @@ class JSOCClient(object):
             iargs = kwargs.copy()
             iargs.update(block)
             blocks.append(iargs)
-
             return_results.append(self._lookup_records(iargs))
 
         return_results.query_args = blocks
-
         return return_results
 
     @deprecated('0.8', alternative='JSOCClient.search')
