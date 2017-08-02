@@ -4,12 +4,14 @@ import tempfile
 
 import pytest
 import hypothesis.strategies as st
-from hypothesis import given
+from hypothesis import given, assume
 
 import astropy.units as u
 
 from sunpy.net import attr
+from sunpy.net.vso import attrs as va
 from sunpy.net import Fido, attrs as a
+from sunpy.net.vso.vso import QueryResponse as vsoQueryResponse
 from sunpy.net.fido_factory import DownloadResponse, UnifiedResponse
 from sunpy.net.dataretriever.client import CLIENTS, QueryResponse
 from sunpy.util.datatype_factory_base import NoMatchError, MultipleMatchError
@@ -177,6 +179,22 @@ def test_unifiedresponse_slicing():
     assert isinstance(results[0], UnifiedResponse)
 
 
+def test_unifiedresponse_slicing_reverse():
+    results = Fido.search(
+        a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
+    assert isinstance(results[::-1], UnifiedResponse)
+    assert len(results[::-1]) == len(results)
+    assert isinstance(results[0, ::-1], UnifiedResponse)
+    assert results[0, ::-1]._list[0] == results._list[0][::-1]
+
+
+def test_vso_unifiedresponse():
+    vrep = vsoQueryResponse([])
+    vrep.client = True
+    uresp = UnifiedResponse(vrep)
+    assert isinstance(uresp, UnifiedResponse)
+
+
 def test_responses():
     results = Fido.search(
         a.Time("2012/1/1", "2012/1/5"), a.Instrument("lyra"))
@@ -193,5 +211,74 @@ def test_repr():
 
     rep = repr(results)
     rep = rep.split('\n')
-    # 6 header lines, the results table and a blank line at the end
-    assert len(rep) == 6 + len(list(results.responses)[0]) + 1
+    # 6 header lines, the results table and two blank lines at the end
+    assert len(rep) == 7 + len(list(results.responses)[0]) + 2
+
+
+def filter_queries(queries):
+    return attr.and_(queries) not in queries
+
+
+@given(st.tuples(offline_query(), offline_query()).filter(filter_queries))
+def test_fido_indexing(queries):
+    query1, query2 = queries
+
+    # This is a work around for an aberration where the filter was not catching
+    # this.
+    assume(query1.attrs[1].start != query2.attrs[1].start)
+
+    res = Fido.search(query1 | query2)
+
+    assert len(res) == 2
+    assert len(res[0]) == 1
+    assert len(res[1]) == 1
+
+    aa = res[0, 0]
+    assert isinstance(aa, UnifiedResponse)
+    assert len(aa) == 1
+    assert len(aa.get_response(0)) == 1
+
+    aa = res[:, 0]
+    assert isinstance(aa, UnifiedResponse)
+    assert len(aa) == 2
+    assert len(aa.get_response(0)) == 1
+
+    aa = res[0, :]
+    assert isinstance(aa, UnifiedResponse)
+    assert len(aa) == 1
+
+    with pytest.raises(IndexError):
+        res[0, 0, 0]
+
+    with pytest.raises(IndexError):
+        res["saldkal"]
+
+    with pytest.raises(IndexError):
+        res[1.0132]
+
+
+@given(st.tuples(offline_query(), offline_query()).filter(filter_queries))
+def test_fido_iter(queries):
+    query1, query2 = queries
+
+    # This is a work around for an aberration where the filter was not catching
+    # this.
+    assume(query1.attrs[1].start != query2.attrs[1].start)
+
+    res = Fido.search(query1 | query2)
+
+    for resp in res:
+        assert isinstance(resp, QueryResponse)
+
+@given(offline_query())
+def test_repr(query):
+    res = Fido.search(query)
+
+    for rep_meth in (res.__repr__, res.__str__, res._repr_html_):
+        if len(res) == 1:
+            assert "Provider" in rep_meth()
+            assert "Providers" not in rep_meth()
+
+        else:
+            assert "Provider" not in rep_meth()
+            assert "Providers" in rep_meth()

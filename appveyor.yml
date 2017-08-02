@@ -12,7 +12,7 @@ environment:
       CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci-helpers\\appveyor\\windows_sdk.cmd"
       CONDA_CHANNELS: "conda-forge astropy-ci-extras"
       CONDA_DEPENDENCIES: "scipy matplotlib mock pandas requests beautifulsoup4 sqlalchemy scikit-image pytest-mock wcsaxes suds-jurko hypothesis glymur"
-      PIP_DEPENDENCIES: ""
+      PIP_DEPENDENCIES: "git+https://github.com/sunpy/sunpy-sphinx-theme.git@v0.1.0a1"
       NUMPY_VERSION: "stable"
       ASTROPY_VERSION: "stable"
 

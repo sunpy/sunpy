@@ -206,7 +206,8 @@ def get_obssum_filename(time_range):
     index_number_start = _time_range.start.day - 1
     index_number_end = _time_range.end.day - 1
 
-    return [get_base_url() + data_location + filename + 's' for filename in result.get('filename')[index_number_start:index_number_end]]
+    return [get_base_url() + data_location + filename
+            + 's' for filename in result.get('filename')[index_number_start:index_number_end]]
 
 
 def get_obssumm_file(time_range):
@@ -237,11 +238,8 @@ def get_obssumm_file(time_range):
     """
 
     time_range = TimeRange(time_range)
-    data_location = 'metadata/catalog/'
 
-    url_root = get_base_url() + data_location
-
-    url = url_root + get_obssum_filename(time_range)
+    url = get_obssum_filename(time_range)[0]
 
     print('Downloading file: ' + url)
     f = urllib.request.urlretrieve(url)
@@ -291,7 +289,7 @@ def parse_obssumm_file(filename):
     countrate = uncompress_countrate(compressed_countrate)
     dim = np.array(countrate[:, 0]).size
 
-    time_array = [reference_time_ut + timedelta(0,time_interval_sec * a) for a in np.arange(dim)]
+    time_array = [reference_time_ut + timedelta(0, time_interval_sec * a) for a in np.arange(dim)]
 
     # TODO generate the labels for the dict automatically from labels
     data = {'time': time_array, 'data': countrate, 'labels': labels}
@@ -352,13 +350,21 @@ def uncompress_countrate(compressed_countrate):
     ----------
     Hsi_obs_summ_decompress.pro `<http://hesperia.gsfc.nasa.gov/ssw/hessi/idl/qlook_archive/hsi_obs_summ_decompress.pro>`_
     """
+
+    # Ensure uncompressed counts are between 0 and 255
+    if (compressed_countrate.min() < 0) or (compressed_countrate.max() > 255):
+        raise ValueError(
+            'Exepected uncompressed counts {} to in range 0-255'.format(compressed_countrate))
+
+    # TODO Must be a better way than creating entire lookup table on each call
     ll = np.arange(0, 16, 1)
     lkup = np.zeros(256, dtype='int')
-    sum = 0
+    _sum = 0
     for i in range(0, 16):
-        lkup[16 * i:16 * (i + 1)] = ll * 2 ** i + sum
+        lkup[16 * i:16 * (i + 1)] = ll * 2 ** i + _sum
         if i < 15:
-            sum = lkup[16 * (i + 1) - 1] + 2 ** i
+            _sum = lkup[16 * (i + 1) - 1] + 2 ** i
+
     return lkup[compressed_countrate]
 
 
@@ -425,15 +431,16 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
     grid_transmission = afits[fits_detector_index].data.field('gridtran')
     count = afits[fits_detector_index].data.field('count')
 
-    tempa = (np.arange(image_dim[0]*image_dim[1]) % image_dim[0]) - (image_dim[0]-1)/2.
+    tempa = (np.arange(image_dim[0] * image_dim[1]) % image_dim[0]) - (image_dim[0]-1)/2.
     tempb = tempa.reshape(image_dim[0], image_dim[1]).transpose().reshape(image_dim[0]*image_dim[1])
 
     pixel = np.array(list(zip(tempa, tempb)))*pixel_size[0]
-    phase_pixel = (2*np.pi/harm_ang_pitch)*(np.outer(pixel[:, 0], np.cos(this_roll_angle - grid_angle)) -
-                                            np.outer(pixel[:, 1], np.sin(this_roll_angle - grid_angle))) + phase_map_center
+    phase_pixel = (2 * np.pi/harm_ang_pitch) *\
+                  (np.outer(pixel[:, 0], np.cos(this_roll_angle - grid_angle)) -
+                   np.outer(pixel[:, 1], np.sin(this_roll_angle - grid_angle))) + phase_map_center
     phase_modulation = np.cos(phase_pixel)
     gridmod = modamp * grid_transmission
-    probability_of_transmission = gridmod*phase_modulation + grid_transmission
+    probability_of_transmission = gridmod * phase_modulation + grid_transmission
     bproj_image = np.inner(probability_of_transmission, count).reshape(image_dim)
 
     return bproj_image
@@ -464,8 +471,10 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
 
     Examples
     --------
+    >>> import sunpy.data
     >>> import sunpy.data.sample
     >>> import sunpy.instr.rhessi as rhessi
+    >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
     >>> map = rhessi.backprojection(sunpy.data.sample.RHESSI_EVENT_LIST)   # doctest: +SKIP
     >>> map.peek()   # doctest: +SKIP
 
@@ -485,8 +494,8 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
     detector_list = (np.arange(9)+1) * np.array(det_index_mask)
     for detector in detector_list:
         if detector > 0:
-            image = image + _backproject(calibrated_event_list, detector=detector, pixel_size=pixel_size.value,
-                                         image_dim=image_dim)
+            image = image + _backproject(calibrated_event_list, detector=detector,
+                                         pixel_size=pixel_size.value, image_dim=image_dim)
 
     dict_header = {
         "DATE-OBS": time_range.center.strftime("%Y-%m-%d %H:%M:%S"),
