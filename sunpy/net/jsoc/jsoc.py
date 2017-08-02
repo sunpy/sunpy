@@ -29,6 +29,10 @@ from sunpy.util import deprecated
 __all__ = ['JSOCClient', 'JSOCResponse']
 
 
+PKEY_LIST_TIME = ['T_START', 'T_REC', 'T_OBS', 'MidTime', 'OBS_DATE',
+             'obsdate', 'DATE_OBS','starttime', 'stoptime', 'UTC_StartTime']
+
+
 class JSOCResponse(object):
     def __init__(self, table=None):
         """
@@ -632,7 +636,7 @@ class JSOCClient(object):
 
         return results
 
-    def _make_recordset(self, start_time, end_time, series, wavelength='',
+    def _make_recordset(self, series, start_time='', end_time='', wavelength='',
                         segment='', primekey={}, **kwargs):
         """
         Take the query arguments and build a record string.
@@ -650,30 +654,56 @@ class JSOCClient(object):
         if sample:
             sample = '@{}s'.format(sample)
 
+        # Populate primekeys dict with Time and Wavelength values
+        if start_time and end_time:
+            if not any(x in PKEY_LIST_TIME for x in primekey):
+                timestr = '{start}-{end}{sample}'.format(
+                        start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                        end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                        sample=sample)
+            else:
+                error_message = "Time attribute has been passed both as a Time()"\
+                                " and PrimeKey(). Please provide any one of them"\
+                                " or separate them by OR operator."
+                raise ValueError(error_message)
+
+        else:
+            for _ in PKEY_LIST_TIME:
+                timestr = '{0}'.format(primekey.pop(_, ''))
+                break
+
+        if wavelength:
+            if not 'WAVELNTH' in primekey:
+                if isinstance(wavelength, list):
+                    wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
+                    wavelength = str(wavelength)
+                else:
+                    wavelength = '{0}'.format(int(np.ceil(wavelength.to(u.AA).value)))
+
+            else:
+                error_message = "Wavelength attribute has been passed both as a Wavelength()"\
+                                " and PrimeKey(). Please provide any one of them"\
+                                " or separate them by OR operator."
+                raise ValueError(error_message)
+
+        else:
+            wavelength = '{0}'.format(primekey.pop('WAVELNTH', ''))
+
+        primekey['TIME'] = timestr
+        primekey['WAVELNTH'] = wavelength
+
         # Extract and format primekeys
         pkstr = ''
         c = drms.Client()
         si = c.info(series)
         pkeys_isTime = si.keywords.loc[si.primekeys].is_time
-
         for pkey in pkeys_isTime.index.values:
-            if pkeys_isTime[pkey]:
-                pkstr += '[{start}-{end}{sample}]'.format(
-                    start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                    end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                    sample=sample)
 
-            elif pkey == 'WAVELNTH' and wavelength is not '':
-                if isinstance(wavelength, list):
-                    wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
-                    wavelength = str(wavelength)
+            if len(primekey) > 0:
+                if pkeys_isTime[pkey]:
+                    pkstr += '[{0}]'.format(primekey.pop('TIME', ''))
                 else:
-                    wavelength = '[{0}]'.format(int(np.ceil(wavelength.to(u.AA).value)))
-                pkstr += wavelength
-
-            elif len(primekey) > 0:
-                pkstr += '[{0}]'.format(primekey.pop(pkey, ''))
-
+                    pkstr += '[{0}]'.format(primekey.pop(pkey, ''))
             else:
                 break
 
