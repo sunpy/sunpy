@@ -889,7 +889,8 @@ class Spectrogram(Parent):
 
 @deprecated("0.8", "this module is being moved to sunpyspectra - https://github.com/sunpy/spectra")
 class LinearTimeSpectrogram(Spectrogram):
-    """Spectrogram evenly sampled in time.
+    """
+    Spectrogram evenly sampled in time.
 
     Attributes
     ----------
