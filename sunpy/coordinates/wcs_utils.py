@@ -15,10 +15,10 @@ def solar_wcs_frame_mapping(wcs):
     type values in the `astropy.wcs.utils.wcs_to_celestial_frame` registry.
     """
 
-    # SunPy Map adds some extra attributes to the WCS object.
-    # We check for them here, and default to None.
     dateobs = wcs.wcs.dateobs if wcs.wcs.dateobs else None
 
+    # SunPy Map adds 'heliographic_observer' and 'rsun' attributes to the WCS
+    # object. We check for them here, and default to None.
     if hasattr(wcs, 'heliographic_observer'):
         observer = wcs.heliographic_observer
     else:
