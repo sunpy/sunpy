@@ -26,8 +26,10 @@ from sunpy.net.attr import (
     Attr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
 )
 from sunpy.util.multimethod import MultiMethod
+from sunpy.util.decorators import deprecated
 from sunpy.time import parse_time
 from sunpy.extern.six import iteritems
+from sunpy.extern import six
 
 __all__ = ['Wavelength', 'Time', 'Extent', 'Field', 'Provider', 'Source',
            'Instrument', 'Physobs', 'Pixels', 'Level', 'Resolution',
@@ -142,6 +144,14 @@ class Wavelength(Attr, _Range):
                                                             self.unit)
 
 
+@deprecated("0.8", message="Wave has been renamed Wavelength",
+            alternative="sunpy.net.vso.attrs.wavelength")
+class Wave(Wavelength):
+    """
+    Wavelength search attribute. See `sunpy.net.vso.attrs.Wavelength`.
+    """
+
+
 class Time(Attr, _Range):
     """
     Specify the time range of the query.
@@ -249,17 +259,24 @@ class Source(_VSOSimpleAttr):
 
 class Instrument(_VSOSimpleAttr):
     """
-    Specifies the Instruments the VSO can search for.
+    Specifies the Instrument name for the search.
 
     Parameters
     ----------
     value : string
 
-    More information about each instrument may be found within the VSO
-    Registry. For a list of instruments see
+    Notes
+    -----
+
+    More information about each instrument supported by the VSO may be found
+    within the VSO Registry. For a list of instruments see
     http://sdac.virtualsolar.org/cgi/show_details?keyword=INSTRUMENT.
     """
-    pass
+    def __init__(self, value):
+        if not isinstance(value, six.string_types):
+            raise ValueError("Instrument names must be strings")
+
+        super(Instrument, self).__init__(value)
 
 
 class Detector(_VSOSimpleAttr):
@@ -400,8 +417,8 @@ class Quicklook(_VSOSimpleAttr):
     Quicklook products are *not* searched by default.   Reference:
     documentation in SSWIDL routine vso_search.pro.
     """
-    def __init__(self,value):
-        super(Quicklook,self).__init__(value)
+    def __init__(self, value):
+        super(Quicklook, self).__init__(value)
         if self.value:
             self.value = 1
         else:

@@ -107,7 +107,7 @@ objects.
 ----------
 
 For quick and easy access to a plot
-all SunPy base objects (e.g. maps, spectra, lightcurves) define their own
+all SunPy base objects (i.e. maps, spectra, timeseries) define their own
 `~sunpy.map.mapbase.GenericMap.peek` command which will create a plot for you and show it without you having to deal
 with any matplotlib setup. This is so that it is easy to take a quick look at
 your data. For example you can make the following plot.
