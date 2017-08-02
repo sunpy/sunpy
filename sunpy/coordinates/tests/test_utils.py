@@ -10,6 +10,7 @@ import sunpy.map
 import sunpy.data.test
 from sunpy.coordinates import frames
 from sunpy.coordinates.utils import GreatArc
+from sunpy.sun import sun
 
 
 # Test the great arc code against calculable quantities
@@ -144,3 +145,19 @@ def test_great_arc_wrongly_formatted_points(points):
 
     with pytest.raises(ValueError):
         dummy = GreatArc(a, b).distances(points=points)
+
+
+# Test that the great arc code properly differentiates between the default
+# points and the requested points.
+def test_great_arc_points_differentiates():
+    m = sunpy.map.Map(sunpy.map.Map(sunpy.data.test.get_test_filepath('aia_171_level1.fits')))
+    coordinate_frame = m.coordinate_frame
+    a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=coordinate_frame)
+    b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=coordinate_frame)
+    gc = GreatArc(a, b)
+    coordinates = gc.coordinates(10)
+    inner_angles = gc.inner_angles(11)
+    distances = gc.distances(12)
+    assert len(coordinates) == 10 and len(gc.coordinates()) == 100
+    assert len(inner_angles) == 11 and len(gc.inner_angles()) == 100
+    assert len(distances) == 12 and len(gc.distances()) == 100
