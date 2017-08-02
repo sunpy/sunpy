@@ -221,7 +221,7 @@ provides for caching Frame attributes. Frame attributes are extra data specified
 with a frame, some examples in `sunpy.coordinates` are ``obstime`` or
 ``observer`` for observer location. Only the frames where this data is
 meaningful have these attributes, i.e. only the Helioprojective frames have
-``observe``. However, when you transform into another frame and then back to a
+``observer``. However, when you transform into another frame and then back to a
 projective frame using `SkyCoord` it will remember the attributes previously
 provided, and repopulate the final frame with them. If you were to do
 transformations using the Frames alone this would not happen.
