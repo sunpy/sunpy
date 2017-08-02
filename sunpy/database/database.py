@@ -520,9 +520,9 @@ class Database(object):
         >>> database = Database('sqlite:///:memory:')
         >>> database.fetch(vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
         ...                vso.attrs.Instrument('AIA'))
-        >>> print display_entries(database,
+        >>> print(display_entries(database,
         ...                       ['id', 'observation_time_start', 'observation_time_end',
-        ...                        'instrument', 'wavemin', 'wavemax'])
+        ...                        'instrument', 'wavemin', 'wavemax']))
             id observation_time_start observation_time_end instrument wavemin wavemax
             --- ---------------------- -------------------- ---------- ------- -------
               1    2012-08-05 00:00:01  2012-08-05 00:00:02        AIA     9.4     9.4
@@ -531,15 +531,16 @@ class Database(object):
               4    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
         >>> database.fetch(vso.attrs.Time('2012-08-05', '2012-08-05 00:00:01'),
         ...                vso.attrs.Instrument('AIA'), overwrite=True)
-        >>> print display_entries(database,
+        >>> print(display_entries(database,
         ...                       ['id', 'observation_time_start', 'observation_time_end',
-        ...                        'instrument', 'wavemin', 'wavemax'])
+        ...                        'instrument', 'wavemin', 'wavemax']))
              id observation_time_start observation_time_end instrument wavemin wavemax
             --- ---------------------- -------------------- ---------- ------- -------
               3    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
               4    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
               5    2012-08-05 00:00:01  2012-08-05 00:00:02        AIA     9.4     9.4
               6    2012-08-05 00:00:01  2012-08-05 00:00:02        AIA     9.4     9.4
+
         Here the first 2 entries (IDs 1 and 2) were overwritten and its files were redownloaded,
         resulting in the entries with IDs 5 and 6.
         """
