@@ -61,4 +61,4 @@ dependencies:
 - sphinx-gallery
 - glymur
 - pip:
-    - git+https://github.com/sunpy/sunpy-sphinx-theme.git@v0.1.0a1
+    - git+https://github.com/sunpy/sunpy-sphinx-theme.git@v0.1.0a2
