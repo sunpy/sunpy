@@ -76,10 +76,10 @@ However, note that these only need to be installed if those particular features
 are needed. SunPy will import even if these dependencies are not installed.
 
 - `Matplotlib <http://matplotlib.org/>`_ [*Highly Recommended*] 1.3.0 or later:
-  For `~sunpy.lightcurve`, `~sunpy.map`, `~sunpy.spectra`, `~sunpy.instr`
+  For `~sunpy.timeseries`, `~sunpy.map`, `~sunpy.spectra`, `~sunpy.instr`
   and `~sunpy.visualization`.
 
-- `pandas <http://pandas.pydata.org/>`_ 0.10 or later: For `~sunpy.lightcurve`.
+- `pandas <http://pandas.pydata.org/>`_ 0.10 or later: For `~sunpy.timeseries`.
 
 - `sqlalchemy <http://www.sqlalchemy.org>`_: For the `~sunpy.database` package.
 
@@ -105,7 +105,7 @@ To run the tests:
 - `pytest-mock <https://github.com/pytest-dev/pytest-mock/>`_
 
 The packages that will be installed as dependencies by default and are the ones
-required to import the core datatypes `~sunpy.map`, `~sunpy.lightcurve` and
+required to import the core datatypes `~sunpy.map`, `~sunpy.timeseries` and
 `~sunpy.spectra`. These are the strict requirements and the following optional
 packages:
 
