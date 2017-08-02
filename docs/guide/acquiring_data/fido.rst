@@ -63,6 +63,43 @@ logical ``OR`` operator would::
 The above query searches the Virtual Solar Observatory (VSO) showing
 that Fido can be used instead of explicitly searching the VSO.
 
+Indexing search results
+-----------------------
+
+The `~sunpy.net.fido_factory.UnifiedDownloader` that Fido returns can be
+indexed to access a subset of the search results. When doing this, the
+results should be treated as a two-dimensional array in which the first
+dimension corresponds to the clients which have returned results and the
+second to the records returned.
+
+For example, the following code returns a response containing LYRA data from
+the `~sunpy.net.dataretriever.sources.LYRAClient`, and EVE data from the
+`~sunpy.net.vso.vso.VSOClient`::
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> uresp = Fido.search(a.Time("2012/1/1", "2012/1/2"),
+                            a.Instrument("lyra") | a.Instrument("eve"))
+
+If you then wanted to inspect just the LYRA data for the whole time range
+specified in the search, you would index this response to see just the
+results returned by the `LYRAClient`::
+
+    >>> uresp[0, :]
+
+Or, equivalently::
+
+    >>> uresp[0]
+
+Normal slicing operations work as with any other Python sequence, e.g.
+`uresp[1, ::10]` to access every tenth file in the result returned by
+the VSOClient.
+
+Note that the first (client) index is still necessary even if results
+are only found for a single client. So in this case the first result
+would be `uresp[0, 0]` rather than `uresp[0]` (the latter would return
+all results from the first - and only - client and is therefore the
+same as `uresp`).
+
 .. _downloading_data:
 
 Downloading data
