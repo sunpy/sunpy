@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 # for exposure to from sunpy.net.vso import *
-from sunpy.net.vso.vso import VSOClient, InteractiveVSOClient
+from sunpy.net.vso.vso import VSOClient, InteractiveVSOClient, QueryResponse
 
 # for, e.g.,
 # >>> from sunpy.net import vso
