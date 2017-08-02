@@ -17,7 +17,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from astropy import units
 
 import sunpy
-from sunpy.database import commands, tables, serialize
+from sunpy.database import commands, tables
 from sunpy.database.tables import _create_display_table
 from sunpy.database.caching import LRUCache
 from sunpy.database.commands import CompositeOperation
@@ -26,6 +26,7 @@ from sunpy.net.hek2vso import H2VClient
 from sunpy.net.attr import and_
 from sunpy.net.vso import VSOClient
 from sunpy.extern.six.moves import range
+from sunpy.util import deprecated
 
 __authors__ = ['Simon Liedtke', 'Rajul Srivastava']
 __emails__ = [
@@ -39,6 +40,7 @@ class EntryNotFoundError(Exception):
     unique ID.
 
     """
+
     def __init__(self, entry_id):
         self.entry_id = entry_id
 
@@ -52,6 +54,7 @@ class EntryAlreadyAddedError(Exception):
     the database although it was already saved in it.
 
     """
+
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
@@ -67,6 +70,7 @@ class EntryAlreadyStarredError(Exception):
     operation.
 
     """
+
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
@@ -81,6 +85,7 @@ class EntryAlreadyUnstarredError(Exception):
     attempted to be removed although the entry is not starred.
 
     """
+
     def __init__(self, database_entry):
         self.database_entry = database_entry
 
@@ -95,6 +100,7 @@ class NoSuchTagError(Exception):
     name.
 
     """
+
     def __init__(self, tag_name):
         self.tag_name = tag_name
 
@@ -108,6 +114,7 @@ class TagAlreadyAssignedError(Exception):
     database entry but the database entry already has this tag assigned.
 
     """
+
     def __init__(self, database_entry, tag_name):
         self.database_entry = database_entry
         self.tag_name = tag_name
@@ -288,6 +295,7 @@ class Database(object):
         Get the number of database entries.
 
     """
+
     def __init__(self, url=None, CacheClass=LRUCache, cache_size=float('inf'),
                  default_waveunit=None):
         if url is None:
@@ -305,6 +313,7 @@ class Database(object):
         self._enable_history = True
 
         class Cache(CacheClass):
+
             def callback(this, entry_id, database_entry):
                 self.remove(database_entry)
 
@@ -381,6 +390,7 @@ class Database(object):
         path = kwargs.pop('path', None)
         progress = kwargs.pop('progress', False)
         methods = kwargs.pop('methods', ('URL-FILE_Rice', 'URL-FILE'))
+        overwrite = kwargs.pop('overwrite', False)
 
         if kwargs:
             k, v = kwargs.popitem()
@@ -389,7 +399,27 @@ class Database(object):
         if client is None:
             client = VSOClient()
 
-        paths = client.get(query_result, path, methods).wait(progress=progress)
+        remove_list = []
+        delete_entries = []
+        for qr in query_result:
+            temp = tables.DatabaseEntry._from_query_result_block(qr)
+            for database_entry in self:
+                if database_entry.path is not None and temp._compare_attributes(
+                    database_entry, ["source", "provider", "physobs", "fileid",
+                                     "observation_time_start", "observation_time_end",
+                                     "instrument", "size", "wavemin", "wavemax"]):
+                    if not overwrite:
+                        remove_list.append(qr)
+                    else:
+                        delete_entries.append(database_entry)
+
+        for temp in remove_list:
+            query_result = [x for x in query_result if x != temp]
+
+        for temp in delete_entries:
+            self.remove(temp)
+
+        paths = client.get(query_result, path).wait(progress=progress)
 
         for (path, block) in zip(paths, query_result):
             qr_entry = tables.DatabaseEntry._from_query_result_block(block)
@@ -416,19 +446,105 @@ class Database(object):
                 entry.download_time = datetime.utcnow()
                 yield entry
 
+    @deprecated('0.8', alternative='database.fetch()')
     def download(self, *query, **kwargs):
-        """download(*query, client=sunpy.net.vso.VSOClient(), path=None, progress=False)
-        Search for data using the VSO interface (see
-        :meth:`sunpy.net.vso.VSOClient.query`). If querying the VSO results in
-        no data, no operation is performed. Concrete, this means that no entry
-        is added to the database and no file is downloaded. Otherwise, the
-        retrieved search result is used to download all files that belong to
-        this search result. After that, all the gathered information (the one
-        from the VSO query result and the one from the downloaded FITS files)
-        is added to the database in a way that each FITS header is represented
-        by one database entry.
+
+        __doc__ = self.fetch.__doc__
+
+        return self.fetch(*query, **kwargs)
+
+    def fetch(self, *query, **kwargs):
 
         """
+        fetch(*query[, path, overwrite, client, progress, methods])
+
+        Check if the query has already been used to collect new data.
+
+        If yes, query the database using the method
+        :meth:`sunpy.database.Database.query` and return the result.
+
+        Otherwise, the retrieved search result is used to download all files
+        that belong to this search result. After that, all the gathered
+        information (the one from the query result and the one from the
+        downloaded files) is added to the database in a way that each header
+        is represented by one database entry.
+
+        It uses the
+        :meth:`sunpy.database.Database._download_and_collect_entries` method
+        to download files, which uses query result block level caching. This
+        means that files will not be downloaded for any query result block
+        that had its files downloaded previously. If files for Query A were
+        already downloaded, and then Query B is made which has some result
+        blocks common with Query A, then files for these common blocks will
+        not be downloaded again. Files will only be downloaded for those
+        blocks which are new or haven't had their files downloaded yet.
+
+        If querying results in no data, no operation is performed. Concrete,
+        this means that no entry is added to the database and no file is
+        downloaded.
+
+        Parameters
+        ----------
+        query : `list`
+            A variable number of attributes that are chained together via the
+            boolean AND operator. The | operator may be used between attributes
+            to express the boolean OR operator.
+        path : `str`, optional
+            The directory into which files will be downloaded.
+        overwrite : `bool`, optional
+            If True, matching database entries from the query results will be
+            deleted and replaced with new database entries, with all files
+            getting downloaded.
+            Otherwise, no new file download and update of matching database
+            entries takes place.
+        client : `sunpy.net.vso.VSOClient`, optional
+            VSO Client instance to use for search and download.
+            If not specified a new instance will be created.
+        progress : `bool`, optional
+            If True, displays the progress bar during file download.
+        methods : `str` or iterable of `str`, optional
+            Set VSOClient download method, see`~sunpy.net.vso.VSOClient.get`
+            for details.
+
+        Examples
+        --------
+        The `~sunpy.Database.fetch` method can be used along with the `overwrite=True`
+        argument to overwrite and redownload files corresponding to the query, even if
+        its entries are already present in the database. Note that the `overwrite=True`
+        argument deletes the old matching database entries and new database entries are
+        added with information from the redownloaded files.
+
+        >>> from sunpy.database import Database
+        >>> from sunpy.database.tables import display_entries
+        >>> from sunpy.net import vso
+        >>> database = Database('sqlite:///:memory:')
+        >>> database.fetch(vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
+        ...                vso.attrs.Instrument('AIA'))
+        >>> print(display_entries(database,
+        ...                       ['id', 'observation_time_start', 'observation_time_end',
+        ...                        'instrument', 'wavemin', 'wavemax']))
+            id observation_time_start observation_time_end instrument wavemin wavemax
+            --- ---------------------- -------------------- ---------- ------- -------
+              1    2012-08-05 00:00:01  2012-08-05 00:00:02        AIA     9.4     9.4
+              2    2012-08-05 00:00:01  2012-08-05 00:00:02        AIA     9.4     9.4
+              3    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
+              4    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
+        >>> database.fetch(vso.attrs.Time('2012-08-05', '2012-08-05 00:00:01'),
+        ...                vso.attrs.Instrument('AIA'), overwrite=True)
+        >>> print(display_entries(database,
+        ...                       ['id', 'observation_time_start', 'observation_time_end',
+        ...                        'instrument', 'wavemin', 'wavemax']))
+             id observation_time_start observation_time_end instrument wavemin wavemax
+            --- ---------------------- -------------------- ---------- ------- -------
+              3    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
+              4    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
+              5    2012-08-05 00:00:01  2012-08-05 00:00:02        AIA     9.4     9.4
+              6    2012-08-05 00:00:01  2012-08-05 00:00:02        AIA     9.4     9.4
+
+        Here the first 2 entries (IDs 1 and 2) were overwritten and its files were redownloaded,
+        resulting in the entries with IDs 5 and 6.
+        """
+
         if not query:
             raise TypeError('at least one attribute required')
 
@@ -437,61 +553,14 @@ class Database(object):
             client = VSOClient()
         qr = client.query(*query)
 
-        # don't do anything if querying the VSO results in no data
+        # don't do anything if querying results in no data
         if not qr:
             return
 
         entries = list(self._download_and_collect_entries(
             qr, **kwargs))
-        dump = serialize.dump_query(and_(*query))
-        (dump_exists,), = self.session.query(
-            exists().where(tables.JSONDump.dump == tables.JSONDump(dump).dump))
-        if dump_exists:
-            # dump already exists in table jsondumps -> edit instead of add
-            # update all entries with the fileid `entry.fileid`
-            for entry in entries:
-                old_entry = self.session.query(
-                    tables.DatabaseEntry).filter_by(fileid=entry.fileid).first()
-                if old_entry is not None:
-                    attrs = [
-                        'source', 'provider', 'physobs',
-                        'observation_time_start', 'observation_time_end',
-                        'instrument', 'size', 'wavemin', 'wavemax',
-                        'download_time']
-                    kwargs = dict((k, getattr(entry, k)) for k in attrs)
-                    cmd = commands.EditEntry(old_entry, **kwargs)
-                    if self._enable_history:
-                        self._command_manager.do(cmd)
-                    else:
-                        cmd()
-        else:
-            self.add_many(entries)
-            # serialize the query and save the serialization in the database
-            # for two reasons:
-            #   1. to avoid unnecessary downloading in future calls of
-            #      ``fetch``
-            #   2. to know whether to add or to edit entries in future calls of
-            #      ``download`` (this method)
-            self.session.add(tables.JSONDump(dump))
 
-    def fetch(self, *query, **kwargs):
-        """fetch(*query[, path])
-        Check if the query has already been used to collect new data using the
-        :meth:`sunpy.database.Database.download` method. If yes, query the
-        database using the method :meth:`sunpy.database.Database.query` and
-        return the result. Otherwise, call
-        :meth:`sunpy.database.Database.download` and return the result.
-
-        """
-        if not query:
-            raise TypeError('at least one attribute required')
-
-        dump = serialize.dump_query(and_(*query))
-        (dump_exists,), = self.session.query(
-            exists().where(tables.JSONDump.dump == tables.JSONDump(dump).dump))
-        if dump_exists:
-            return self.query(*query)
-        return self.download(*query, **kwargs)
+        self.add_many(entries)
 
     def query(self, *query, **kwargs):
         """
@@ -517,11 +586,11 @@ class Database(object):
 
         Parameters
         ----------
-        query : list
+        query : `list`
             A variable number of attributes that are chained together via the
             boolean AND operator. The | operator may be used between attributes
             to express the boolean OR operator.
-        sortby : str, optional
+        sortby : `str`, optional
             The column by which to sort the returned entries. The default is to
             sort by the start of the observation. See the attributes of
             :class:`sunpy.database.tables.DatabaseEntry` for a list of all
@@ -744,13 +813,14 @@ class Database(object):
 
     def download_from_vso_query_result(self, query_result, client=None,
                                        path=None, progress=False,
-                                       ignore_already_added=False):
+                                       ignore_already_added=False, overwrite=False):
         """download(query_result, client=sunpy.net.vso.VSOClient(),
         path=None, progress=False, ignore_already_added=False)
 
         Add new database entries from a VSO query result and download the
         corresponding data files. See :meth:`sunpy.database.Database.download`
-        for information about the parameters `client`, `path`, `progress`.
+        for information about the caching mechanism used and about the
+        parameters `client`, `path`, `progress`.
 
         Parameters
         ----------
@@ -765,7 +835,7 @@ class Database(object):
         if not query_result:
             return
         self.add_many(self._download_and_collect_entries(
-            query_result, client=client, path=path, progress=progress))
+            query_result, client=client, path=path, progress=progress, overwrite=overwrite))
 
     def add_from_vso_query_result(self, query_result,
                                   ignore_already_added=False):

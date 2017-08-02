@@ -189,7 +189,7 @@ syntax are introduced.
     >>> len(entry.fits_header_entries)
     170
     >>> for fits_header_entry in entry.fits_header_entries[:10]:
-    ...     print '{entry.key}\n\t{entry.value}'.format(entry=fits_header_entry)   # doctest: +NORMALIZE_WHITESPACE
+    ...     print('{entry.key}\n\t{entry.value}'.format(entry=fits_header_entry))   # doctest: +NORMALIZE_WHITESPACE
     SIMPLE
     	True
     BITPIX
@@ -212,7 +212,7 @@ syntax are introduced.
        	SDO/AIA
 
     >>> for fits_key_comment in entry.fits_key_comments:
-    ...     print '{comment.key}\n\t{comment.value}'.format(comment=fits_key_comment)   # doctest: +NORMALIZE_WHITESPACE
+    ...     print('{comment.key}\n\t{comment.value}'.format(comment=fits_key_comment))   # doctest: +NORMALIZE_WHITESPACE
     NAXIS
             number of data axes
     NAXIS1
@@ -272,56 +272,57 @@ sections.
     >>> len(database)
     29
 
-2.3.2 Downloading
-^^^^^^^^^^^^^^^^^
-The method :meth:`Database.download` queries the VSO by passing the given
-query on to :meth:`sunpy.net.vso.VSOClient.query`. Note that not the
-number of records of the resulting query result determines the number of
-entries that will be added to the database! The number of entries that
-will be added depends on the total number of FITS headers. The download
-method also accepts an optional keyword argument `path` which is passed
-as-is to :meth:`sunpy.net.vso.VSOClient.get` and determines the value of
-the `path` attribute of each entry.
-
-    >>> database.download(
-    ...     vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
-    ...     vso.attrs.Instrument('AIA'))
-    >>> len(database)
-    33
-
-2.3.3 "Clever" Fetching
+2.3.2 "Clever" Fetching
 ^^^^^^^^^^^^^^^^^^^^^^^
-The method :meth:`Database.fetch` queries the database if the given query
-has already been used once to add entries using the method
-:meth:`Database.download`. Otherwise, the given query is used to download
-and add new data via :meth:`Database.download`. This means: If you are not
-sure whether the required data already exists in the database, use
-:meth:`Database.fetch` and you use a method to save bandwidth!
 
-As you can see in the following example, the first call of the fetch
-method results in a list of entries. These are the entries which have been
-returned by querying the database. This is the reason why the number of
-saved entries in the database is still 32 even after the fetch method has
-been called. The second fetch call has not been done already on a download
-call, therefore the given query is used to download new data and add these
-resulting entries to the database. Because the query result translates to
-4 records, 4 new entries are added to the database after the fetch call.
+The method :meth:`Database.fetch` queries the database if the given query has
+already been used once to add entries. Otherwise, the given query is used to
+download and add new data. The :meth:`Database.fetch`  method also accepts an
+optional keyword argument `path` which is passed as-is to
+:meth:`sunpy.net.vso.VSOClient.get` and determines the value of the `path`
+attribute of each entry.
+
+Note that not the number of records of the resulting query result determines the
+number of entries that will be added to the database! The number of entries that
+will be added depends on the total number of FITS headers.
+
+In the next code snippet you can see that new data is downloaded as this query
+has not been downloaded before.
 
     >>> entries = database.fetch(
     ...     vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
     ...     vso.attrs.Instrument('AIA'))
-    >>> entries is None
-    False
-    >>> len(entries)
-    4
     >>> len(database)
     33
+
+Now you can see that the next fetch call does not
+add any new entries to the database, because they have been downloaded
+earlier. The query is exactly similar to the previous one.
+
+    >>> entries = database.fetch(
+    ...     vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
+    ...     vso.attrs.Instrument('AIA'))
+    >>> len(database)
+    33
+
+Another fetch call downloads new files because this is a new date range
+whose files have not been downloaded yet.
 
     >>> entries = database.fetch(
     ...     vso.attrs.Time('2013-08-05', '2013-08-05 00:00:05'),
     ...     vso.attrs.Instrument('AIA'))
-    >>> entries is None
-    True
+    >>> len(database)
+    37
+
+The caching also ensures that in case of queries which have some results in
+common, files for the common results will not be downloaded again. In the
+following example, you can see that even if the query is a new one, it
+will have all files in common with the previous query. Therefore, no new
+files are downloaded.
+
+    >>> entries = database.fetch(
+    ...     vso.attrs.Time('2012-08-05 00:00:00', '2012-08-05 00:00:01'),
+    ...     vso.attrs.Instrument('AIA'))
     >>> len(database)
     37
 
@@ -363,9 +364,9 @@ respective database entry). Note that *N/A* is displayed if the value
 cannot be found or is not set.
 
     >>> from sunpy.database.tables import display_entries
-    >>> print display_entries(database,
+    >>> print(display_entries(database,
     ...                       ['id', 'observation_time_start', 'observation_time_end',
-    ...                        'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE +SKIP
+    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
     1  2011-03-19 10:54:00    N/A                  AIA_3      17.1    17.1
@@ -417,9 +418,9 @@ all database entries (and is hereby an alias for ``list(database)``),
 oldest one. As you can imagine, ``database[9::10]`` starts with the 10th
 entry and returns a list of every 10th entry from there.
 
-    >>> print display_entries(database[9::10],
+    >>> print(display_entries(database[9::10],
     ...                       ['id', 'observation_time_start', 'observation_time_end',
-    ...                        'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE +SKIP
+    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
     10 N/A                    N/A                  N/A        N/A     N/A
@@ -443,9 +444,9 @@ method to remove those where the just described predicate is true:
     ...
     >>> len(database)
     22
-    >>> print display_entries(database,
+    >>> print(display_entries(database,
     ...                       ['id', 'observation_time_start', 'observation_time_end',
-    ...                        'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE +SKIP
+    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
     1  2011-03-19 10:54:00    N/A                  AIA_3      17.1    17.1
@@ -493,10 +494,10 @@ starred:
     >>> for database_entry in database:
     ...     if database_entry.wavemin > 20:
     ...         database.star(database_entry)
-    >>> print display_entries(
+    >>> print(display_entries(
     ...     filter(lambda entry: entry.starred, database),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE +SKIP
+    ...      'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
     27 2011-05-08 00:00:00    2011-05-08 00:00:01  AIA        21.1    21.1
@@ -526,10 +527,10 @@ year:
     >>> database.tags
     [<Tag(name 'spring')>]
     >>> spring = database.tags[0]
-    >>> print display_entries(
+    >>> print(display_entries(
     ...     filter(lambda entry: spring in entry.tags, database),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE +SKIP
+    ...      'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
     1  2011-03-19 10:54:00    N/A                  AIA_3      17.1    17.1
@@ -553,10 +554,10 @@ arguments which describe which values to change and how.
     ...     if database_entry.observation_time_end is None:
     ...         database.edit(database_entry, observation_time_end=database_entry.observation_time_start)
     ...
-    >>> print display_entries(
+    >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE +SKIP
+    ...      'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
     1  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1
@@ -611,10 +612,10 @@ there are again entries with no end of observation time.
     >>> database.undo(4)  # undo the edits from 5.3 (4 records have been affected)
     >>> database.undo(6)  # undo tagging some entries with the tag 'spring'
     >>> database.undo(4)  # undo starring entries
-    >>> print display_entries(
+    >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'])   # doctest: +NORMALIZE_WHITESPACE +SKIP
+    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred']))   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax tags starred
     -- ---------------------- -------------------- ---------- ------- ------- ---- -------
     1  2011-03-19 10:54:00    N/A                  AIA_3      17.1    17.1    N/A  No
@@ -649,10 +650,10 @@ wavelength >20nm are starred again. Also, there are no entries with no
 stored end of observation time anymore.
 
     >>> database.redo(14)  # redo all undone operations
-    >>> print display_entries(
+    >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'])   # doctest: +NORMALIZE_WHITESPACE +SKIP
+    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred']))   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax tags   starred
     -- ---------------------- -------------------- ---------- ------- ------- ----   -------
     1  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1    spring No
@@ -699,10 +700,10 @@ its behaviour is not documented and that it is different depending on the
 server which is requested. The following query returns the data that was
 added in section 2.3.2, "Downloading":
 
-    >>> print display_entries(
+    >>> print(display_entries(
     ...     database.query(vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'), vso.attrs.Instrument('AIA')),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax'], sort=True)   # doctest: +NORMALIZE_WHITESPACE +SKIP
+    ...      'instrument', 'wavemin', 'wavemax'], sort=True))   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
     30 2012-08-05 00:00:01    2012-08-05 00:00:02  AIA        9.4     9.4
@@ -721,10 +722,10 @@ used by the class. To know how you can specify a detail using astropy
 check `astropy.units`.
 
     >>> from astropy import units as u
-    >>> print display_entries(
+    >>> print(display_entries(
     ...     database.query(vso.attrs.Wavelength(1.0*u.nm, 2.0*u.nm)),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax'], sort=True)   # doctest: +NORMALIZE_WHITESPACE +SKIP
+    ...      'instrument', 'wavemin', 'wavemax'], sort=True))   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
     1  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1
@@ -757,10 +758,10 @@ The following query searches for all entries that have the tag 'spring' or
 with the value 'Angstrom':
 
     >>> import sunpy.database.attrs as dbattrs
-    >>> print display_entries(
+    >>> print(display_entries(
     ...     database.query(dbattrs.Tag('spring') | dbattrs.Starred(), ~dbattrs.FitsHeaderEntry('WAVEUNIT', 'Angstrom')),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'], sort=True)   # doctest: +NORMALIZE_WHITESPACE +SKIP
+    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'], sort=True))   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax tags   starred
     -- ---------------------- -------------------- ---------- ------- ------- ----   -------
     1  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1    spring No
@@ -792,10 +793,10 @@ The following call to :meth:`Database.set_cache_size` sets the cache size
 to 10 and therefore removes the 5 entries that been used least recently.
 
     >>> database.set_cache_size(10)
-    >>> print display_entries(
+    >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax'])   # doctest: +NORMALIZE_WHITESPACE +SKIP
+    ...      'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
     -- ---------------------- -------------------- ---------- ------- -------
     1  2011-03-19 10:54:00    2011-03-19 10:54:00  AIA_3      17.1    17.1

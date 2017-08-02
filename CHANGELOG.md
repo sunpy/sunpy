@@ -1,6 +1,7 @@
 Latest
 ------
 
+* Add tests for RHESSI instrument 
 * Sample data now downloads automatically on import if not available and
   is now pluggable so can be used by affiliated packages. Shortcut names
   have been normalized and all LIGHTCURVE shortcuts have changed to
@@ -78,6 +79,9 @@ Latest
 * Add support for SunPy coordinates to specify observer as a string of a major solar-system body,
   with the default being Earth.  To make transformations using an observer specified as a string,
   `obstime` must be set.
+* Added VSO query result block level caching in the database module. This
+  prevents redownloading of files which have already been downloaded.
+  Especially helpful in case of overlapping queries.
 
 
 0.7.0
