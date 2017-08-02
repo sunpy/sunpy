@@ -119,6 +119,15 @@ release = sunpy.__version__
 
 try:
     from sunpy_sphinx_theme.conf import *
+
+    html_sidebars = {'**': ['docsidebar.html']}
+    html_theme_options = {
+        'navbar_links': [
+            ("Documentation", "http://docs.sunpy.org/en/latest/index"),
+        ],
+        'logo_url': 'http://sunpy.org'
+    }
+
 except ImportError:
     html_theme = 'default'
 
@@ -138,7 +147,6 @@ html_favicon = "./logo/favicon.ico"
 # "<project> v<release> documentation".
 html_title = '{0} v{1}'.format(project, release)
 
-html_sidebars = {'**': ['docsidebar.html']}
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = project + 'doc'
