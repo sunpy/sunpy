@@ -118,9 +118,7 @@ version = sunpy.__version__.split('-', 1)[0]
 release = sunpy.__version__
 
 try:
-    import sphinx_rtd_theme
-    html_theme = 'sphinx_rtd_theme'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+    from sunpy_sphinx_theme.conf import *
 except ImportError:
     html_theme = 'default'
 
@@ -139,6 +137,8 @@ html_favicon = "./logo/favicon.ico"
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
 html_title = '{0} v{1}'.format(project, release)
+
+html_sidebars = {'**': ['docsidebar.html']}
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = project + 'doc'
