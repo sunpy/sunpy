@@ -19,13 +19,13 @@ from sunpy.time import parse_time
 # since it is relatively simple and the values it produces can be easily
 # compared to other implementations of the same simple function.  The same
 # cannot be said for the solar_rotate_coordinate function.  This functionality
-# relies accurate knowledge of the solar ephemeris in particular is important.
+# relies accurate knowledge of the solar ephemeris in particular.
 # There is no reference implementation of the solar_rotate_coordinate function
 # of demonstrated trustworthiness at time of writing in any language.  There
 # are no known independent values or tests that can be used to test the veracity
 # of the solar_rotate_coordinate function.  This being the case, the
 # solar_rotate_coordinate function is tested against values that it generated.
-# Therefore the tests test for consistency, not accuracy.  Note that when the
+# Therefore these tests test for consistency, not accuracy.  Note that when the
 # 0.8.0 branch was released, the solar ephemeris calculation was handed off to
 # the relevant Astropy code.  The solar_rotate_coordinate tests had to be changed
 # for self-consistency.  Note that the change in position comparing the results

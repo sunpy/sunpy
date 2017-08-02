@@ -41,10 +41,6 @@ def aia171_test_mapcube(aia171_test_submap):
     m3 = sunpy.map.Map((aia171_test_submap.data, m3header))
     return sunpy.map.Map([aia171_test_submap, m2, m3], cube=True)
 
-# Note that mapcube tests are known to be approximate
-#
-#
-
 
 # Known displacements for these mapcube layers when the layer index is set to 0
 @pytest.fixture
