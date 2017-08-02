@@ -430,6 +430,85 @@ def test_add_entry_from_hek_qr(database):
     assert len(database) > 1
 
 
+def num_entries_from_vso_query(db, query, path=None, file_pattern='',
+                               overwrite=False):
+    db.download_from_vso_query_result(
+        query, path=path, overwrite=overwrite)
+    fits_pattern = file_pattern
+    num_of_fits_headers = sum(
+        len(fits.get_header(file)) for file in glob.glob(fits_pattern))
+    return num_of_fits_headers
+
+
+@pytest.mark.online
+def test_vso_query_block_caching(database, download_qr, tmpdir):
+
+    assert len(database) == 0
+
+    # Download for all query response blocks and save the length
+    # of database in num_of_fits_headers
+    num_of_fits_headers = num_entries_from_vso_query(database, download_qr,
+                                                     path=str(tmpdir.join('{file}.fits')),
+                                                     file_pattern=str(tmpdir.join('*.fits')))
+
+    assert len(database) == num_of_fits_headers and len(database) > 0
+
+    # Emptying the database
+    database.clear()
+    database.commit()
+
+    # Only downloading for the first query response block
+    num_of_fits_headers_1 = num_entries_from_vso_query(database, download_qr[:1],
+                                                       path=str(tmpdir.join('{file}.type1')),
+                                                       file_pattern=str(tmpdir.join('*.type1')))
+
+    assert len(database) == num_of_fits_headers_1 and len(database) > 0
+
+    # Downloading for all query response blocks
+    num_of_fits_headers_2 = num_entries_from_vso_query(database, download_qr,
+                                                       path=str(tmpdir.join('{file}.type2')),
+                                                       file_pattern=str(tmpdir.join('*.type2')))
+
+    # Final length of the database should be the same as num_of_fits_headers.
+    # This is done to ensure that the first query response block's files weren't
+    # redownloaded. If they were redownloaded then length will be greater than
+    # num_of_fits_headers as new entries are added to the database in case of a
+    # download.
+
+    assert len(database) == num_of_fits_headers_1 + num_of_fits_headers_2
+    assert len(database) > 0
+
+    assert num_of_fits_headers_1 + num_of_fits_headers_2 == num_of_fits_headers
+
+
+@pytest.mark.online
+def test_vso_query_block_caching_with_overwrite_true_flag(database,
+                                                          download_qr, tmpdir):
+
+    assert len(database) == 0
+
+    # Download for all query response blocks and save the length
+    # of database in num_of_fits_headers
+
+    num_of_fits_headers = num_entries_from_vso_query(database, download_qr,
+                                                     path=str(tmpdir.join('{file}.fits')),
+                                                     file_pattern=str(tmpdir.join('*.fits')))
+
+    assert len(database) == num_of_fits_headers and len(database) > 0
+
+    # Only downloading for the first query response block with caching disabled
+
+    num_of_fits_headers_1 = num_entries_from_vso_query(database, download_qr[:1],
+                                                       path=str(tmpdir.join('{file}.type1')),
+                                                       file_pattern=str(tmpdir.join('*.type1')),
+                                                       overwrite=True)
+
+    # The files for the first query response block should be downloaded again
+    # Old entries should be deleted, so len(database) should not change
+    assert len(database) == num_of_fits_headers
+    assert len(database) > 0
+
+
 @pytest.mark.online
 def test_download_from_qr(database, download_qr, tmpdir):
     assert len(database) == 0
@@ -509,12 +588,14 @@ def test_add_from_file(database):
     for entry in database:
         assert entry.fileid == fileid
 
+
 def test_add_from_file_hdu_index(database):
     assert len(database) == 0
     database.add_from_file(RHESSI_IMAGE)
     assert len(database) == 4
     for i, entry in enumerate(database):
         assert entry.hdu_index == i
+
 
 def test_add_from_file_duplicates(database):
     database.add_from_file(RHESSI_IMAGE)
@@ -736,24 +817,24 @@ def test_query(filled_database):
         DatabaseEntry(id=10, tags=[bar])]
 
 
-def test_download_missing_arg(database):
+def test_fetch_missing_arg(database):
     with pytest.raises(TypeError):
-        database.download()
+        database.fetch()
 
 
 @pytest.mark.online
-def test_download_empty_query_result(database, empty_query):
-    database.download(*empty_query)
+def test_fetch_empty_query_result(database, empty_query):
+    database.fetch(*empty_query)
     with pytest.raises(EmptyCommandStackError):
         database.undo()
     assert len(database) == 0
 
 
 @pytest.mark.online
-def test_download(database, download_query, tmpdir):
+def test_fetch(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
-    database.download(
+    database.fetch(
         *download_query, path=str(tmpdir.join('{file}.fits')), progress=True)
     fits_pattern = str(tmpdir.join('*.fits'))
     num_of_fits_headers = sum(
@@ -768,16 +849,18 @@ def test_download(database, download_query, tmpdir):
 
 
 @pytest.mark.online
-def test_download_duplicates(database, download_query, tmpdir):
+def test_fetch_duplicates(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
-    database.download(
+    database.fetch(
         *download_query, path=str(tmpdir.join('{file}.fits')), progress=True)
     assert len(database) == 4
     download_time = database[0].download_time
-    database.download(*download_query, path=str(tmpdir.join('{file}.fits')))
+    database.fetch(*download_query, path=str(tmpdir.join('{file}.fits')))
     assert len(database) == 4
-    assert database[0].download_time != download_time
+    # The old file should be untouched because of the query result block
+    # level caching
+    assert database[0].download_time == download_time
 
 
 def test_fetch_missing_arg(database):
@@ -825,8 +908,10 @@ def test_fetch_separate_filenames():
     dir_contents = os.listdir(tmp_test_dir)
     assert 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits' in dir_contents
     assert 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits' in dir_contents
-    assert os.path.isfile(os.path.join(tmp_test_dir, 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits'))
-    assert os.path.isfile(os.path.join(tmp_test_dir, 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits'))
+    assert os.path.isfile(os.path.join(
+        tmp_test_dir, 'aia_lev1_335a_2012_08_05t00_00_02_62z_image_lev1.fits'))
+    assert os.path.isfile(os.path.join(
+        tmp_test_dir, 'aia_lev1_94a_2012_08_05t00_00_01_12z_image_lev1.fits'))
 
     # Teardown
     shutil.rmtree(tmp_test_dir)
@@ -841,7 +926,7 @@ def test_disable_undo(database, download_query, tmpdir):
         db.commit()
         db.remove(entry)
         db.default_waveunit = 'angstrom'
-        db.download(*download_query, path=str(tmpdir.join('{file}.fits')))
+        db.fetch(*download_query, path=str(tmpdir.join('{file}.fits')))
         entry = db[0]
         db.tag(entry, 'foo', 'bar')
         db.remove_tag(entry, 'foo')
@@ -857,8 +942,9 @@ def test_disable_undo(database, download_query, tmpdir):
 
 @pytest.fixture
 def default_waveunit_database():
-    unit_database = Database('sqlite:///:memory:', default_waveunit = units.meter)
-    str_database = Database('sqlite:///:memory:', default_waveunit = "m")
+    unit_database = Database('sqlite:///:memory:',
+                             default_waveunit=units.meter)
+    str_database = Database('sqlite:///:memory:', default_waveunit="m")
     return unit_database, str_database
 
 

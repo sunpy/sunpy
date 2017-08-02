@@ -73,6 +73,9 @@ Latest
   animate N-Dimensional data with the associated WCS object.
 * Moved Docs to docs/ to follow the astropy style
 * Added SunPy specific warnings under util.
+* Added VSO query result block level caching in the database module. This
+  prevents redownloading of files which have already been downloaded.
+  Especially helpful in case of overlapping queries.
 
 0.7.0
 -----
