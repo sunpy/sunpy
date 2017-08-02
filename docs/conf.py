@@ -123,7 +123,7 @@ try:
     html_sidebars = {'**': ['docsidebar.html']}
     html_theme_options = {
         'navbar_links': [
-            ("Documentation", "http://docs.sunpy.org/en/latest/index"),
+            ("Documentation", "index"),
         ],
         'logo_url': 'http://sunpy.org'
     }
