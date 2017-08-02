@@ -1,0 +1,68 @@
+.. doctest-skip-all
+
+.. _whatsnew-0.8:
+
+**************************
+What's New in SunPy 0.8?
+**************************
+
+Overview
+========
+
+SunPy 0.8 is a major release that adds significant new functionality since
+the 0.7.x series of releases.
+
+On this page, you can read about some of the big changes in this release:
+
+* :ref:`whatsnew-0.8-fido`
+* :ref:`whatsnew-0.8-coordinates`
+* :ref:`whatsnew-0.8-timeseries`
+* :ref:`whatsnew-0.8-renamed-removed`
+
+In addition to these major changes, SunPy 0.8 includes a large number of
+smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+By the numbers:
+
+
+* ??? issues have been closed since v0.7
+* ??? pull requests have been merged since v0.7
+* ??? distinct people have contributed code
+
+.. _whatsnew-0.8-fido:
+
+New data downloading interface
+==============================
+
+???
+
+.. _whatsnew-0.8-coordinates:
+
+New coordinate package
+======================
+
+???
+
+.. _whatsnew-0.8-timeseries:
+
+New timeseries data object
+==========================
+
+???
+
+.. _whatsnew-0.8-renamed-removed:
+
+Renamed/removed functionality
+=============================
+
+Several sub-packages have been moved or removed, and these are described in the
+following sections.
+
+???
+---
+
+
+Full change log
+===============
+
+To see a detailed list of all changes in version v0.8, including changes in
+API, please see the :ref:`changelog`.
