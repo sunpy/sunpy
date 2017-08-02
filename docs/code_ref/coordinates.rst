@@ -74,10 +74,12 @@ Individual coordinates can be accessed via attributes on the SkyCoord object,
 but the names of the components of the coordinates for each frame differ. For a full
 description of all the properties of the frames see `sunpy.coordinates.frames`.
 
-``HelioProjective``
-###################
+`~sunpy.coordinates.Helioprojective`
+####################################
 
-For the helioprojective frame the coordinates are accessed as ``Tx`` and ``Ty`` representing theta x and y. These are the same coordinates that are often referred to as 'solar-x' and 'solar-y'.::
+For the helioprojective frame the coordinates are accessed as ``Tx`` and ``Ty``
+representing theta x and y. These are the same coordinates that are often
+referred to as 'solar-x' and 'solar-y'.::
 
   >>> c = SkyCoord(-500*u.arcsec, 100*u.arcsec, frame=frames.Helioprojective)
   >>> c.Tx
@@ -85,10 +87,10 @@ For the helioprojective frame the coordinates are accessed as ``Tx`` and ``Ty`` 
   >>> c.Ty
   <Latitude 100.0 arcsec>
 
-``Heliocentric``
-################
+`~sunpy.coordinates.Heliocentric`
+#################################
 
-Heliocentric normally a Cartesian frame so the coordinates are accessed as ``x,y,z``::
+Heliocentric normally a Cartesian frame so the coordinates are accessed as ``x, y, z``::
 
   >>> c = SkyCoord(-72241.0*u.km, 361206.1*u.km, 589951.4*u.km, frame=frames.Heliocentric)
   >>> c.x
@@ -98,8 +100,8 @@ Heliocentric normally a Cartesian frame so the coordinates are accessed as ``x,y
   >>> c.z
   <Quantity 589951.4 km>
 
-``HeliographicStonyhurst`` and ``HeliographicCarrington``
-#########################################################
+`~sunpy.coordinates.HeliographicStonyhurst` and `~sunpy.coordinates.HeliographicCarrington`
+###########################################################################################
 
 Both the heliographic frames use latitude, longitude and radius which are accessed as follows::
 
@@ -114,7 +116,14 @@ Both the heliographic frames use latitude, longitude and radius which are access
 Transforming Between Coordinate Frames
 --------------------------------------
 
-Both `~astropy.coordinates.SkyCoord` and `~astropy.coordinates.BaseCoordinateFrame` instances have a `~astropy.coordinates.SkyCoord.transform_to` method. This can be used to transform the frame to any other frame, either implemented in SunPy or in Astropy (see :ref:`<astropy:astropy-coordinates-transforming>` for more details). An example of transforming the center of the solar disk to Carrington coordinates is::
+Both `~astropy.coordinates.SkyCoord` and
+`~astropy.coordinates.BaseCoordinateFrame` instances have a
+`~astropy.coordinates.SkyCoord.transform_to` method. This can be used to
+transform the frame to any other frame, either implemented in SunPy or in
+Astropy `the astropy documentation
+<http://docs.astropy.org/en/stable/coordinates/transforming.html>`_ for more
+details. An example of transforming the center of the solar disk to Carrington
+coordinates is::
 
    >>> c = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective, obstime="2017-07-26")
    >>> c
