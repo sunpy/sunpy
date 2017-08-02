@@ -26,6 +26,7 @@ from sunpy.net.hek2vso import H2VClient
 from sunpy.net.attr import and_
 from sunpy.net.vso import VSOClient
 from sunpy.extern.six.moves import range
+from sunpy.io import read_file
 
 __authors__ = ['Simon Liedtke', 'Rajul Srivastava']
 __emails__ = [
@@ -45,6 +46,17 @@ class EntryNotFoundError(Exception):
     def __str__(self):  # pragma: no cover
         return 'an entry with the ID {0:d} does not exist'.format(
             self.entry_id)
+
+class HDUEntryNotFoundError(Exception):
+    """This exception is raised if a hdu index entry cannot be found by its
+    unique index.
+    """
+    def __init__(self, hdu_index):
+        self.hdu_index = hdu_index
+
+    def __str__(self):
+        return 'an hdu_index entry with the ID {0:d} does not exist'.format(
+            self.hdu_index)
 
 
 class EntryAlreadyAddedError(Exception):
@@ -568,6 +580,18 @@ class Database(object):
             return self._cache[entry_id]
         except KeyError:
             raise EntryNotFoundError(entry_id)
+
+    def get_entry_by_hdu_index(self, file_name, hdu_index=0):
+        """Get a hdu index entry by its unique index number. If an entry with the
+        given index does not exist, :exc:`sunpy.database.HDUEntryNotFoundError` is
+        raised.
+
+        """
+        try:
+            entries = read_file(file_name)
+            return entries[hdu_index]
+        except KeyError:
+            raise HDUEntryNotFoundError(hdu_index)
 
     @property
     def tags(self):
