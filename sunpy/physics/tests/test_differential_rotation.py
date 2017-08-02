@@ -30,9 +30,7 @@ from sunpy.time import parse_time
 # the relevant Astropy code.  The solar_rotate_coordinate tests had to be changed
 # for self-consistency.  Note that the change in position comparing the results
 # of pre- and 0.8.0 sunpy solar_rotate_coordinate was on the order of 0.5
-# arcseconds.  Note also that the pre-0.8.0 version (rot_hpc) was tested against
-# the equivalent SSWIDL implementation and was found to give values less than
-# ????
+# arcseconds.
 
 
 @pytest.fixture
