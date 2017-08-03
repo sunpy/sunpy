@@ -14,10 +14,12 @@ from datetime import timedelta
 import numpy as np
 
 import matplotlib.pyplot as plt
-from matplotlib import patches
+
 from astropy import units as u
+from astropy.coordinates import SkyCoord
 
 import sunpy.map
+from sunpy.coordinates import frames
 import sunpy.data.sample
 from sunpy.net import hek
 from sunpy.time import parse_time
@@ -39,11 +41,11 @@ end_time = aia_map.date + timedelta(hours=2)
 responses = hek_client.query(hek.attrs.Time(start_time, end_time), hek.attrs.CH, hek.attrs.FRM.Name == 'SPoCA')
 
 ##############################################################################
-# Let's find the biggest coronal hole within 60 degrees north/south of the
+# Let's find the biggest coronal hole within 80 degrees north/south of the
 # equator:
 area = 0.0
 for i, response in enumerate(responses):
-    if response['area_atdiskcenter'] > area and np.abs(response['hgc_y']) < 60.0:
+    if response['area_atdiskcenter'] > area and np.abs(response['hgc_y']) < 80.0:
         area = response['area_atdiskcenter']
         response_index = i
 
@@ -53,16 +55,12 @@ ch = responses[response_index]
 p1 = ch["hpc_boundcc"][9: -2]
 p2 = p1.split(',')
 p3 = [v.split(" ") for v in p2]
-ch_boundary = np.asarray([(eval(v[0]), eval(v[1])) for v in p3])
 ch_date = parse_time(ch['event_starttime'])
 
 ##############################################################################
 # The coronal hole was detected at a certain time.  To plot it on a map, we
 # need to rotate it to the map observation time.
-rotated_boundary = np.zeros_like(ch_boundary)
-
-ch_boundary = SkyCoord([(eval(v[0]), eval(v[1])*u.arcsec) for v in p3], obstime=ch_date, observer=get_earth(ch_date))
-
+ch_boundary = SkyCoord([(eval(v[0]), eval(v[1]))*u.arcsec for v in p3], obstime=ch_date, frame=frames.Helioprojective)
 rotated_ch_boundary = solar_rotate_coordinate(ch_boundary, aia_map.date)
 
 
@@ -70,11 +68,9 @@ rotated_ch_boundary = solar_rotate_coordinate(ch_boundary, aia_map.date)
 # Now let's plot the rotated coronal hole boundary on the AIA map, and fill
 # it with some matplotlib hatching.
 fig = plt.figure()
-ax = plt.subplot()
-aia_map.plot()
-coronal_hole = patches.Polygon(rotated_boundary, color='white', fill=False)
+ax = plt.subplot(projection=aia_map)
+aia_map.plot(axes=ax)
+ax.plot_coord(rotated_ch_boundary, color='c')
 ax.set_title('{:s}\n{:s}'.format(aia_map.name, ch['frm_specificid']))
-ax.add_artist(coronal_hole)
 plt.colorbar()
-plt.tight_layout()
 plt.show()
