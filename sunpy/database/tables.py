@@ -351,17 +351,18 @@ class DatabaseEntry(Base):
 
     @classmethod
     def _from_fido_search_result_block(cls, sr_block, default_waveunit=None):
-        """Make a new :class:`DatabaseEntry` instance from a Fido search
+        """
+        Make a new :class:`DatabaseEntry` instance from a Fido search
         result block.
 
         Parameters
         ----------
-        sr_block : sunpy.net.dataretriever.client.QueryResponseBlock
+        sr_block : `sunpy.net.dataretriever.client.QueryResponseBlock`
             A query result block is usually not created directly; instead,
             one gets instances of
             ``sunpy.net.dataretriever.client.QueryResponseBlock`` by iterating
             over each element of a Fido search result.
-        default_waveunit : str, optional
+        default_waveunit : `str`, optional
             The wavelength unit that is used if it cannot be found in the
             `sr_block`.
 
@@ -435,14 +436,15 @@ class DatabaseEntry(Base):
             self.tags == other.tags)
 
     def _compare_attributes(self, other, attribute_list):
-        """Compare a given list of attributes of two :class:`DatabaseEntry`
+        """
+        Compare a given list of attributes of two :class:`DatabaseEntry`
         instances and return True if all of them match.
 
         Parameters
         ----------
         other : :class:`DatabaseEntry` instance
 
-        attribute_list : list
+        attribute_list : `list`
             The list of attributes that will be compared in both instances,
             self and other.
 
@@ -477,16 +479,17 @@ class DatabaseEntry(Base):
 
 
 def entries_from_query_result(qr, default_waveunit=None):
-    """Use a query response returned from :meth:`sunpy.net.vso.VSOClient.query`
+    """
+    Use a query response returned from :meth:`sunpy.net.vso.VSOClient.query`
     or :meth:`sunpy.net.vso.VSOClient.query_legacy` to generate instances of
     :class:`DatabaseEntry`. Return an iterator over those instances.
 
     Parameters
     ----------
-    qr : sunpy.net.vso.vso.QueryResponse
+    qr : `sunpy.net.vso.vso.QueryResponse`
         The query response from which to build the database entries.
 
-    default_waveunit : str, optional
+    default_waveunit : `str`, optional
         See :meth:`sunpy.database.DatabaseEntry.from_query_result_block`.
 
     Examples
@@ -530,13 +533,13 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
 
     Parameters
     ----------
-    search_result : sunpy.net.dataretriever.downloader_factory.UnifiedResponse
+    search_result : `sunpy.net.dataretriever.downloader_factory.UnifiedResponse`
             A UnifiedResponse object that is used to store responses from the
             unified downloader. This is returned by the ``search`` method of a
             :class:`sunpy.net.dataretriever.downloader_factory.UnifiedDownloaderFactory`
             object.
 
-    default_waveunit : str, optional
+    default_waveunit : `str`, optional
         The wavelength unit that is used if it cannot be found in the Query
         Response block.
 
@@ -564,7 +567,7 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
     """
     for entry in sr:
         if isinstance(entry, sunpy.net.vso.vso.QueryResponse):
-            #This is because EVE doesn't return a Fido QueryResponse. It
+            #This is because Fido can search the VSO. It
             #returns a VSO QueryResponse.
             for block in entry:
                 yield DatabaseEntry._from_query_result_block(block,
