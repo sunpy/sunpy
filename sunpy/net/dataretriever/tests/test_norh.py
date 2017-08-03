@@ -52,7 +52,7 @@ def test_can_handle_query(time):
 @pytest.mark.parametrize("wave", [a.Wavelength(17*u.GHz), a.Wavelength(34*u.GHz)])
 @given(time=range_time(datetime.datetime(1992, 6, 1)))
 def test_query(time, wave):
-    qr1 = norh.NoRHClient().query(time, a.Instrument('norh'), wave)
+    qr1 = norh.NoRHClient().search(time, a.Instrument('norh'), wave)
     assert isinstance(qr1, QueryResponse)
     # Not all hypothesis queries are going to produce results, and
     if qr1:
@@ -69,12 +69,12 @@ def test_query(time, wave):
 def test_query_no_wave():
     c = norh.NoRHClient()
     with pytest.raises(ValueError):
-        c.query(a.Time("2016/10/1", "2016/10/2"), a.Instrument('norh'))
+        c.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument('norh'))
 
 
 def test_wavelength_range():
     with pytest.raises(ValueError):
-        norh.NoRHClient().query(
+        norh.NoRHClient().search(
             a.Time("2016/10/1", "2016/10/2"), a.Instrument('norh'),
             a.Wavelength(17 * u.GHz, 34 * u.GHz))
 
@@ -82,7 +82,7 @@ def test_wavelength_range():
 def test_query_wrong_wave():
     c = norh.NoRHClient()
     with pytest.raises(ValueError):
-        c.query(a.Time("2016/10/1", "2016/10/2"), a.Instrument('norh'),
+        c.search(a.Time("2016/10/1", "2016/10/2"), a.Instrument('norh'),
                 a.Wavelength(50*u.GHz))
 
 
@@ -92,7 +92,7 @@ def test_query_wrong_wave():
     (a.Time('2013/10/5', '2013/10/7'), a.Instrument('norh'), a.Wavelength(34*u.GHz))])
 def test_get(time, instrument, wave):
     LCClient = norh.NoRHClient()
-    qr1 = LCClient.query(time, instrument, wave)
+    qr1 = LCClient.search(time, instrument, wave)
     res = LCClient.get(qr1)
     download_list = res.wait(progress=False)
     assert len(download_list) == len(qr1)

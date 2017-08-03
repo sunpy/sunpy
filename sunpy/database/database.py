@@ -155,14 +155,14 @@ def split_database(source_database, destination_database, *query_string):
     >>> database1 = Database('sqlite:///:memory:')
     >>> database2 = Database('sqlite:///:memory:')
     >>> client = vso.VSOClient()
-    >>> qr = client.query(vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'))
+    >>> qr = client.search(vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'))
     >>> database1.add_from_vso_query_result(qr)
     >>> database1, database2 = split_database(database1, database2,
     ...            vso.attrs.Instrument('AIA') | vso.attrs.Instrument('ERNE'))
     """
 
     query_string = and_(*query_string)
-    filtered_entries = source_database.query(query_string)
+    filtered_entries = source_database.search(query_string)
     with disable_undo(source_database):
         with disable_undo(destination_database):
             source_database.remove_many(filtered_entries)
@@ -551,7 +551,7 @@ class Database(object):
         client = kwargs.get('client', None)
         if client is None:
             client = VSOClient()
-        qr = client.query(*query)
+        qr = client.search(*query)
 
         # don't do anything if querying results in no data
         if not qr:
@@ -564,7 +564,7 @@ class Database(object):
 
     def search(self, *query, **kwargs):
         """
-        query(*query[, sortby])
+        search(*query[, sortby])
         Send the given query to the database and return a list of
         database entries that satisfy all of the given attributes.
 
@@ -607,7 +607,7 @@ class Database(object):
         The query in the following example searches for all non-starred entries
         with the tag 'foo' or 'bar' (or both).
 
-        >>> database.query(~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'))   # doctest: +SKIP
+        >>> database.search(~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'))   # doctest: +SKIP
 
         """
         if not query:
