@@ -318,7 +318,9 @@ class GenericClient(object):
 
     @deprecated('0.8', alternative='GenericClient.search')
     def query(self, *query, **kwargs):
-        __doc__ = self.search.__doc__
+        """
+        See `~sunpy.net.dataretriever.client.GenericClient.search`
+        """
         return self.search(*query, **kwargs)
 
     def fetch(self, qres, path=None, error_callback=None, **kwargs):
@@ -355,7 +357,9 @@ class GenericClient(object):
 
     @deprecated('0.8', alternative='GenericClient.fetch')
     def get(self, qres, path=None, error_callback=None, **kwargs):
-        __doc__ = self.fetch.__doc__
+        """
+        See `~sunpy.net.dataretriever.client.GenericClient.fetch`
+        """
         return self.fetch(qres, path=path, error_callback=error_callback, **kwargs)
 
     def _link(self, map_):

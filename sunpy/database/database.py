@@ -448,8 +448,9 @@ class Database(object):
 
     @deprecated('0.8', alternative='database.fetch()')
     def download(self, *query, **kwargs):
-
-        __doc__ = self.fetch.__doc__
+        """
+        See `~sunpy.database.Database.fetch`
+        """
 
         return self.fetch(*query, **kwargs)
 
@@ -629,7 +630,9 @@ class Database(object):
 
     @deprecated('0.8', alternative='database.search')
     def query(self, *query, **kwargs):
-        __doc__ = self.search.__doc__
+        """
+        See `~sunpy.database.Database.search`
+        """
         return self.search(*query, **kwargs)
 
     def get_entry_by_id(self, entry_id):
