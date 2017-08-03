@@ -525,7 +525,8 @@ def entries_from_query_result(qr, default_waveunit=None):
 
 
 def entries_from_fido_search_result(sr, default_waveunit=None):
-    """Use a `sunpy.net.dataretriever.downloader_factory.UnifiedResponse`
+    """
+    Use a `sunpy.net.dataretriever.downloader_factory.UnifiedResponse`
     object returned from
     :meth:`sunpy.net.dataretriever.downloader_factory.UnifiedDownloaderFactory.search`
     to generate instances of :class:`DatabaseEntry`. Return an iterator
