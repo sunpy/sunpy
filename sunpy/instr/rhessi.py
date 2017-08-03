@@ -19,7 +19,7 @@ from astropy import units as u
 
 from sunpy.time import TimeRange, parse_time
 from sunpy.sun.sun import solar_semidiameter_angular_size
-from sunpy.sun.sun import sunearth_distance
+from sunpy.coordinates import get_sunearth_distance
 import sunpy.map
 
 from sunpy.extern.six.moves import urllib
@@ -515,7 +515,7 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
         "HGLN_OBS": 0,
         "RSUN_OBS": solar_semidiameter_angular_size(time_range.center).value,
         "RSUN_REF": sunpy.sun.constants.radius.value,
-        "DSUN_OBS": sunearth_distance(time_range.center) * sunpy.sun.constants.au.value
+        "DSUN_OBS": get_sunearth_distance(time_range.center).value * sunpy.sun.constants.au.value
     }
 
     result_map = sunpy.map.Map(image, dict_header)
