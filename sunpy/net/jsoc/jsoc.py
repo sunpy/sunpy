@@ -670,7 +670,8 @@ class JSOCClient(object):
         else:
             for _ in PKEY_LIST_TIME:
                 timestr = '{0}'.format(primekey.pop(_, ''))
-                break
+                if timestr:
+                    break
 
         if wavelength:
             if not 'WAVELNTH' in primekey:
