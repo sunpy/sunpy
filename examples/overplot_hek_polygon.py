@@ -21,7 +21,7 @@ import sunpy.map
 import sunpy.data.sample
 from sunpy.net import hek
 from sunpy.time import parse_time
-from sunpy.physics.solar_rotation import rot_hpc
+from sunpy.physics.differential_rotation import solar_rotate_coordinate
 
 ##############################################################################
 # Load in an AIA map:
@@ -60,14 +60,11 @@ ch_date = parse_time(ch['event_starttime'])
 # The coronal hole was detected at a certain time.  To plot it on a map, we
 # need to rotate it to the map observation time.
 rotated_boundary = np.zeros_like(ch_boundary)
-n = ch_boundary.shape[0]
-for i in range(0, n):
-    new_coords = rot_hpc(ch_boundary[i, 0] * u.arcsec,
-                         ch_boundary[i, 1] * u.arcsec,
-                         ch_date,
-                         aia_map.date)
-    rotated_boundary[i, 0] = new_coords[0].value
-    rotated_boundary[i, 1] = new_coords[1].value
+
+ch_boundary = SkyCoord([(eval(v[0]), eval(v[1])*u.arcsec) for v in p3], obstime=ch_date, observer=get_earth(ch_date))
+
+rotated_ch_boundary = solar_rotate_coordinate(ch_boundary, aia_map.date)
+
 
 ##############################################################################
 # Now let's plot the rotated coronal hole boundary on the AIA map, and fill
