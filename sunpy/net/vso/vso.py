@@ -558,7 +558,7 @@ class VSOClient(object):
             time_near=datetime.utcnow()
         )
 
-    def get(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),
+    def fetch(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),
             downloader=None, site=None):
         """
         Download data specified in the query_response.
@@ -610,7 +610,7 @@ class VSOClient(object):
 
         Examples
         --------
-        >>> res = get(qr).wait() # doctest:+SKIP
+        >>> res = fetch(qr).wait() # doctest:+SKIP
         """
         if downloader is None:
             downloader = download.Downloader()
@@ -647,6 +647,13 @@ class VSOClient(object):
         )
         res.poke()
         return res
+
+    @deprecated('0.8', alternative='VSOClient.fetch')
+    def get(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),
+            downloader=None, site=None):
+        __doc__ = self.fetch.__doc__
+        return self.fetch(query_response, path=path, methods=methods, downloader=downloader, site=site)
+
 
     @staticmethod
     def link(query_response, maps):
@@ -909,7 +916,7 @@ class InteractiveVSOClient(VSOClient):
             path = os.path.abspath(os.path.expanduser(path))
             if os.path.exists(path) and os.path.isdir(path):
                 path = os.path.join(path, '{file}')
-        return VSOClient.get(self, query_response, path, methods, downloader)
+        return VSOClient.fetch(self, query_response, path, methods, downloader)
 
 
 g_client = None

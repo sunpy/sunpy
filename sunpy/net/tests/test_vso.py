@@ -226,7 +226,7 @@ def test_path(client):
         va.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
         va.Instrument('aia'), va.Wavelength(171 * u.AA))
     tmp_dir = tempfile.mkdtemp()
-    files = client.get(qr, path=tmp_dir).wait(progress=False)
+    files = client.fetch(qr, path=tmp_dir).wait(progress=False)
 
     assert len(files) == 1
 

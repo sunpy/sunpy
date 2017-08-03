@@ -93,7 +93,7 @@ def test_query_wrong_wave():
 def test_get(time, instrument, wave):
     LCClient = norh.NoRHClient()
     qr1 = LCClient.search(time, instrument, wave)
-    res = LCClient.get(qr1)
+    res = LCClient.fetch(qr1)
     download_list = res.wait(progress=False)
     assert len(download_list) == len(qr1)
 

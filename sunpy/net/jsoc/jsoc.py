@@ -121,7 +121,7 @@ class JSOCClient(object):
 
     You can then make the request and download the data:
 
-    >>> res = client.get(response)   # doctest: +SKIP
+    >>> res = client.fetch(response)   # doctest: +SKIP
 
     This returns a Results instance which can be used to watch the progress
     of the download.
@@ -318,7 +318,7 @@ class JSOCClient(object):
 
         return allstatus
 
-    def get(self, jsoc_response, path=None, overwrite=False, progress=True,
+    def fetch(self, jsoc_response, path=None, overwrite=False, progress=True,
             max_conn=5, downloader=None, sleep=10):
         """
         Make the request for the data in jsoc_response and wait for it to be
@@ -378,6 +378,14 @@ class JSOCClient(object):
                     time.sleep(sleep)
 
         return r
+
+    @deprecated('0.8', alternative='JSOCClient.fetch')
+    def get(self, jsoc_response, path=None, overwrite=False, progress=True,
+            max_conn=5, downloader=None, sleep=10):
+        __doc__ = self.fetch.__doc__
+        return self.fetch(jsoc_response, path=path, overwrite=overwrite, progress=progress,
+            max_conn=max_conn, downloader=downloader, sleep=sleep)
+
 
     def get_request(self, requestIDs, path=None, overwrite=False, progress=True,
                     max_conn=5, downloader=None, results=None):
