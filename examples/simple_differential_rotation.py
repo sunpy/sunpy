@@ -25,7 +25,6 @@ from astropy.coordinates import SkyCoord
 
 import sunpy.map
 import sunpy.data.sample
-from sunpy.coordinates import frames
 from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinate
 
 ##############################################################################
