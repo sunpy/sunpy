@@ -101,7 +101,7 @@ class JSOCClient(object):
     >>> from sunpy.net import jsoc
     >>> from sunpy.net import attrs as a
     >>> client = jsoc.JSOCClient()
-    >>> response = client.qsearchuery(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...                         a.jsoc.Series('hmi.m_45s'), a.jsoc.Notify("sunpy@sunpy.org"))
 
     the response object holds the records that your query will return:
