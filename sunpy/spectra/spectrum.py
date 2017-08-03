@@ -6,9 +6,12 @@ from __future__ import absolute_import
 import numpy as np
 from matplotlib import pyplot as plt
 
+from sunpy.util.decorators import deprecated
+
 __all__ = ['Spectrum']
 
 
+@deprecated("0.8", "this module is being moved to sunpyspectra - https://github.com/sunpy/spectra")
 class Spectrum(np.ndarray):
     """
     Class representing a 1 dimensional spectrum.
