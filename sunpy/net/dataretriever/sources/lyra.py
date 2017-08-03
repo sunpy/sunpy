@@ -45,7 +45,7 @@ class LYRAClient(GenericClient):
             The URL for the corresponding date.
         """
 
-        filename = "lyra_{0:%Y%m%d-}000000_lev{1:d}_std.fits".format(date, kwargs.get('level',2))
+        filename = "lyra_{0:%Y%m%d-}000000_lev{1:d}_std.fits".format(date, kwargs.get('level', 2))
         base_url = "http://proba2.oma.be/lyra/data/bsd/"
         url_path = urljoin(date.strftime('%Y/%m/%d/'), filename)
 
@@ -57,7 +57,7 @@ class LYRAClient(GenericClient):
         """
         self.map_['source'] = 'Proba2'
         self.map_['instrument'] = 'lyra'
-        self.map_['phyobs'] = 'irradiance'
+        self.map_['physobs'] = 'irradiance'
         self.map_['provider'] = 'esa'
 
     @classmethod
