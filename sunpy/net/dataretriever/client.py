@@ -6,7 +6,7 @@ import copy
 import os
 import datetime
 from abc import ABCMeta
-from collections import OrderedDict
+from collections import OrderedDict, namedtuple
 from functools import partial
 
 import numpy as np
@@ -44,15 +44,15 @@ class QueryResponseBlock(object):
         map0 : Dict with relevant information
         url  : Uniform Resource Locator
         """
-        self.map_ = map0
+        self._map = map0
         self.source = map0.get('source', "Data not Available")
         self.provider = map0.get('provider', "Data not Available")
-        self.phyobs = map0.get('phyobs', "Data not Available")
+        self.physobs = map0.get('physobs', "Data not Available")
         self.instrument = map0.get('instrument', "Data not Available")
         self.url = url
         self.time = TimeRange(map0.get('Time_start'),
                               map0.get('Time_end')) if time is None else time
-        self.wavelength = map0.get('wavelength', np.NaN)
+        self.wave = map0.get('wavelength', np.NaN)
 
 
 def iter_urls(amap, url_list, time):
@@ -82,6 +82,17 @@ class QueryResponse(list):
         """
         return TimeRange(min(qrblock.time.start for qrblock in self),
                          max(qrblock.time.end for qrblock in self))
+
+    def response_block_properties(self):
+        """
+        Returns a set of class attributes on all the response blocks.
+        """
+        s = {a if not a.startswith('_') else None for a in dir(self[0])}
+        for resp in self[1:]:
+            s = s.intersection({a if not a.startswith('_') else None for a in dir(resp)})
+
+        s.remove(None)
+        return s
 
     def __repr__(self):
         return repr(type(self)) + repr(self._build_table())
@@ -187,7 +198,12 @@ class GenericClient(object):
                 if a_min == a_max:
                     self.map_[elem.__class__.__name__.lower()] = a_min
                 else:
-                    self.map_[elem.__class__.__name__.lower()] = (a_min, a_max)
+                    if isinstance(elem, Wavelength):
+                        prefix = 'wave'
+                    else:
+                        prefix = ''
+                    minmax = namedtuple("minmax", "{0}min {0}max".format(prefix))
+                    self.map_[elem.__class__.__name__.lower()] = minmax(a_min, a_max)
             else:
                 if hasattr(elem, 'value'):
                     self.map_[elem.__class__.__name__.lower()] = elem.value
