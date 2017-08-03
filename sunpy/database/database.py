@@ -562,7 +562,7 @@ class Database(object):
 
         self.add_many(entries)
 
-    def query(self, *query, **kwargs):
+    def search(self, *query, **kwargs):
         """
         query(*query[, sortby])
         Send the given query to the database and return a list of
@@ -626,6 +626,11 @@ class Database(object):
             sortby = 'id'
 
         return sorted(db_entries, key=operator.attrgetter(sortby))
+
+    @deprecated('0.8', alternative='database.search')
+    def query(self, *query, **kwargs):
+        __doc__ = self.search.__doc__
+        return self.search(*query, **kwargs)
 
     def get_entry_by_id(self, entry_id):
         """Get a database entry by its unique ID number. If an entry with the

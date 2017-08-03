@@ -19,6 +19,7 @@ from sunpy.net.attr import and_
 from sunpy.net.jsoc.attrs import walker
 from sunpy.extern.six.moves import urllib
 from sunpy.extern import six
+from sunpy.util import deprecated
 
 __all__ = ['JSOCClient', 'JSOCResponse']
 
@@ -177,7 +178,7 @@ class JSOCClient(object):
     >>> res.wait(progress=True)   # doctest: +SKIP
     """
 
-    def query(self, *query, **kwargs):
+    def search(self, *query, **kwargs):
         """
         Build a JSOC query and submit it to JSOC for processing.
 
@@ -219,6 +220,11 @@ class JSOCClient(object):
         return_results.query_args = blocks
 
         return return_results
+
+    @deprecated('0.8', alternative='JSOCClient.search')
+    def query(self, *query, **kwargs):
+        __doc__ = self.search.__doc__
+        return self.search(*query, **kwargs)
 
     def request_data(self, jsoc_response, **kwargs):
         """
