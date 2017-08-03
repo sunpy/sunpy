@@ -98,7 +98,9 @@ class HEKClient(object):
 
     @deprecated('0.8', alternative='HEKClient.search')
     def query(self, *query):
-        __doc__ = self.search.__doc__
+        """
+        See `~sunpy.net.hek.hek.HEKClient.fetch`
+        """
         return self.search(*query)
 
 

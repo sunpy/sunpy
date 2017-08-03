@@ -231,7 +231,9 @@ class SRSClient(GenericClient):
 
     @deprecated('0.8', alternative='NOAAPredictClient.fetch')
     def get(self, qres, path=None, error_callback=None, **kwargs):
-        __doc__ = self.fetch.__doc__
+        """
+        See `~sunpy.net.dataretriever.sources.noaa.NOAAPredictClient.fetch`
+        """
         return self.fetch(qres, path=path, error_callback=error_callback, **kwargs)
 
     def _makeimap(self):

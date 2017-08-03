@@ -140,7 +140,9 @@ class QueryResponse(list):
 
     @deprecated('0.8', alternative='QueryResponse.search')
     def query(self, *query):
-        __doc__ = self.search.__doc__
+        """
+        See `~sunpy.net.vso.vso.QueryResponse.search`
+        """
         return self.search(*query)
 
     @classmethod
@@ -344,7 +346,9 @@ class VSOClient(object):
 
     @deprecated('0.8', alternative='VSOClient.search')
     def query(self, *query):
-        __doc__ = self.search.__doc__
+        """
+        See `~sunpy.net.vso.vso.VSOClient.search`
+        """
         return self.search(*query)
 
     def merge(self, queryresponses):
@@ -651,7 +655,9 @@ class VSOClient(object):
     @deprecated('0.8', alternative='VSOClient.fetch')
     def get(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),
             downloader=None, site=None):
-        __doc__ = self.fetch.__doc__
+        """
+        See `~sunpy.net.vso.vso.VSOClient.fetch`
+        """
         return self.fetch(query_response, path=path, methods=methods, downloader=downloader, site=site)
 
 
