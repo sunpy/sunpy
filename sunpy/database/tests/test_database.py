@@ -61,7 +61,7 @@ def database():
 
 @pytest.fixture
 def query_result():
-    return vso.VSOClient().query(
+    return vso.VSOClient().search(
         vso.attrs.Time('20130801T200000', '20130801T200030'),
         vso.attrs.Instrument('PLASTIC'))
 

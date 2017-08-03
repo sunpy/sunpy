@@ -52,7 +52,7 @@ PARSERS = [
 ]
 
 
-def query(start, end, instruments=None, url=DEFAULT_URL):
+def search(start, end, instruments=None, url=DEFAULT_URL):
     """Get URLs for callisto data from instruments between start and end.
 
     Parameters
@@ -92,6 +92,11 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
         finally:
             opn.close()
         day += _DAY
+
+@deprecated('0.8', alternative='callisto.search')
+def query(start, end, instruments=None, url=DEFAULT_URL):
+    __doc__ = search.__doc__
+    return self.search(start, end, instruments=instruments, url=url)
 
 
 def download(urls, directory):

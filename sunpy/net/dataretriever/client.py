@@ -19,6 +19,7 @@ from sunpy.time import TimeRange
 from sunpy.util import replacement_filename
 from sunpy.util.config import get_and_create_download_dir
 from sunpy import config
+from sunpy.util import deprecated
 
 from ..download import Downloader, Results
 from ..vso.attrs import Time, Wavelength, _Range
@@ -296,7 +297,7 @@ class GenericClient(object):
 
         return paths
 
-    def query(self, *args, **kwargs):
+    def search(self, *args, **kwargs):
         """
         Query this client for a list of results.
 
@@ -314,6 +315,11 @@ class GenericClient(object):
         if urls and getattr(self, "_get_time_for_url", None):
             return QueryResponse.create(self.map_, urls, self._get_time_for_url(urls))
         return QueryResponse.create(self.map_, urls)
+
+    @deprecated('0.8', alternative='GenericClient.search')
+    def query(self, *query, **kwargs):
+        __doc__ = self.search.__doc__
+        return self.search(*query, **kwargs)
 
     def get(self, qres, path=None, error_callback=None, **kwargs):
         """

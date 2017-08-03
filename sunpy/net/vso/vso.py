@@ -37,6 +37,7 @@ from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import replacement_filename
 from sunpy.time import parse_time
 
+from sunpy.util import deprecated
 from sunpy.extern import six
 from sunpy.extern.six import iteritems, text_type
 from sunpy.extern.six.moves import input
@@ -129,13 +130,18 @@ class QueryResponse(list):
         self.errors = []
         self.table = None
 
-    def query(self, *query):
+    def search(self, *query):
         """ Furtherly reduce the query response by matching it against
         another query, e.g. response.query(attrs.Instrument('aia')). """
         query = and_(*query)
         return QueryResponse(
             attrs.filter_results(query, self), self.queryresult
         )
+
+    @deprecated('0.8', alternative='QueryResponse.search')
+    def query(self, *query):
+        __doc__ = self.search.__doc__
+        return self.search(*query)
 
     @classmethod
     def create(cls, queryresult):
@@ -286,7 +292,7 @@ class VSOClient(object):
                 item[tip] = v
         return obj
 
-    def query(self, *query):
+    def search(self, *query):
         """ Query data from the VSO with the new API. Takes a variable number
         of attributes as parameter, which are chained together using AND.
 
@@ -335,6 +341,11 @@ class VSOClient(object):
                 response.add_error(ex)
 
         return QueryResponse.create(self.merge(responses))
+
+    @deprecated('0.8', alternative='VSOClient.search')
+    def query(self, *query):
+        __doc__ = self.search.__doc__
+        return self.search(*query)
 
     def merge(self, queryresponses):
         """ Merge responses into one. """
