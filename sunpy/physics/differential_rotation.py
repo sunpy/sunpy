@@ -91,7 +91,7 @@ def solar_rotate_coordinate(coordinate, new_observer_time, new_observer_location
     Parameters
     ----------
     coordinate : `~astropy.coordinates.SkyCoord`
-        a sunpy coordinate
+        Any valid coordinate which is transformable to Heliographic Stonyhurst.
     new_observer_time : sunpy-compatible time
         date/time at which the input co-ordinate will be rotated to.
     new_observer_location : `str`, `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`
