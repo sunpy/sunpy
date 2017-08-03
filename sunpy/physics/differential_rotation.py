@@ -3,7 +3,7 @@ from __future__ import division
 import numpy as np
 
 from astropy import units as u
-from astropy.coordinates import SkyCoord
+from astropy.coordinates import SkyCoord, Longitude
 
 from sunpy.time import parse_time
 from sunpy.coordinates import frames
@@ -78,24 +78,23 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     if frame_time == 'synodic':
         rotation_deg -= 0.9856 * delta_days
 
-    return rotation_deg * u.deg
+    return Longitude(rotation_deg * u.deg)
 
 
-def solar_rotate_coordinate(coordinate,
-                            new_observer_time,
-                            new_observer_location="earth", **diff_rot_kwargs):
-    """Given a coordinate on the Sun, calculate where that coordinate maps to
+def solar_rotate_coordinate(coordinate, new_observer_time, new_observer_location="earth", **diff_rot_kwargs):
+    """
+    Given a coordinate on the Sun, calculate where that coordinate maps to
     at some later or earlier time, given the solar rotation profile.  Note that
     if the new observer location is defined using a BaseCoordinateFrame or
     SkyCoord, then it is assumed that the new observer location is correct for
     the new observer time that was also passed in.
     Parameters
     ----------
-    coordinate : `~sunpy.coordinates`
+    coordinate : `~astropy.coordinates.SkyCoord`
         a sunpy coordinate
-    new_observer_time : `sunpy.time.time`
+    new_observer_time : sunpy-compatible time
         date/time at which the input co-ordinate will be rotated to.
-    new_observer_location : None, str, BaseCoordinateFrame, SkyCoord
+    new_observer_location : `str`, `~astropy.coordinates.BaseCoordinateFrame`, `~astropy.coordinates.SkyCoord`
         The solar-system body for which to calculate observer locations.  Note
         that spacecraft are not explicitly supported as yet.  Instruments in
         Earth orbit can be approximated by using the default setting.  If a
@@ -106,7 +105,7 @@ def solar_rotate_coordinate(coordinate,
         Keyword arguments are passed on as keyword arguments to `~sunpy.physics.differential_rotation.diff_rot`.
     Returns
     -------
-    `~sunpy.coordinates`
+    `~astropy.coordinates.SkyCoord``
         The locations of the input coordinates after the application of
         solar rotation in the input coordinate frame.
     Examples
@@ -123,11 +122,6 @@ def solar_rotate_coordinate(coordinate,
     ( 0.,  7.24822784,  1.00695436)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
     (-562.37689548,  119.26840368,   1.50083152e+08)>
     """
-
-    # Make sure we have enough time information to perform a solar differential
-    # rotation.
-    if coordinate.obstime is None:
-        raise ValueError('Input coordinate(s) obstime must not be of type NoneType')
 
     # Calculate the interval between the start and end time
     interval = (parse_time(new_observer_time) - parse_time(coordinate.obstime)).total_seconds() * u.s

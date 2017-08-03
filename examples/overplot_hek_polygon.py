@@ -60,9 +60,8 @@ ch_date = parse_time(ch['event_starttime'])
 ##############################################################################
 # The coronal hole was detected at a certain time.  To plot it on a map, we
 # need to rotate it to the map observation time.
-ch_boundary = SkyCoord([(eval(v[0]), eval(v[1]))*u.arcsec for v in p3], obstime=ch_date, frame=frames.Helioprojective)
+ch_boundary = SkyCoord([(float(v[0]), float(v[1]))*u.arcsec for v in p3], obstime=ch_date, frame=frames.Helioprojective)
 rotated_ch_boundary = solar_rotate_coordinate(ch_boundary, aia_map.date)
-
 
 ##############################################################################
 # Now let's plot the rotated coronal hole boundary on the AIA map, and fill
