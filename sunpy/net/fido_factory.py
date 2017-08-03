@@ -322,8 +322,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         query = attr.and_(*query)
         return UnifiedResponse(query_walker.create(query, self))
 
--   # Python 3: this line should be like this
- -  # def fetch(self, *query_results, wait=True, progress=True, **kwargs):
+    # Python 3: this line should be like this
+    # def fetch(self, *query_results, wait=True, progress=True, **kwargs):
     def fetch(self, *query_results, **kwargs):
         """
         Download the records represented by
