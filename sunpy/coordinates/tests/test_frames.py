@@ -38,20 +38,20 @@ These are common 2D params, kwargs are frame specific
 """
 two_D_parameters = [
     ([0 * u.deg, 0 * u.arcsec], None),
-    ([0 * u.deg, 0 * u.arcsec], {'dateobs': '2011/01/01T00:00:00'}),
+    ([0 * u.deg, 0 * u.arcsec], {'obstime': '2011/01/01T00:00:00'}),
     ([0 * u.deg, 0 * u.arcsec], {'representation': 'unitsphericalwrap180'}),
     ([0 * u.deg, 0 * u.arcsec], {'representation': 'unitspherical'}),
     ([UnitSphericalWrap180Representation(0 * u.deg, 0 * u.arcsec)], None),
     ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)], None), (
         [UnitSphericalWrap180Representation(0 * u.deg, 0 * u.arcsec)],
-        {'dateobs': '2011/01/01T00:00:00'})
+        {'obstime': '2011/01/01T00:00:00'})
 ]
 """
 These are common 3D params, kwargs are frame specific
 """
 three_D_parameters = [
     ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], None),
-    ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], {'dateobs': '2011/01/01T00:00:00'}),
+    ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], {'obstime': '2011/01/01T00:00:00'}),
     ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], {'representation': 'sphericalwrap180'
                                            }),
     ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], {'representation': 'spherical'}),
@@ -59,7 +59,7 @@ three_D_parameters = [
      None),
     ([SphericalRepresentation(0 * u.deg, 0 * u.arcsec, 1 * u.Mm)], None), (
         [SphericalWrap180Representation(0 * u.deg, 0 * u.arcsec, 1 * u.Mm)],
-        {'dateobs': '2011/01/01T00:00:00'})
+        {'obstime': '2011/01/01T00:00:00'})
 ]
 
 # ==============================================================================
@@ -136,7 +136,7 @@ def test_cart_init():
 # # cylindrical Assuming that that is a vaild representation.
 # cylindrical_parameters = [
 #     ([100 * u.km, 25 * u.deg, 1 * u.Mm], {'representation': 'cylindrical'}), (
-#         [100 * u.km, 25 * u.deg, 1 * u.Mm], {'dateobs': '2011/01/01T00:00:00',
+#         [100 * u.km, 25 * u.deg, 1 * u.Mm], {'obstime': '2011/01/01T00:00:00',
 #                                              'representation': 'cylindrical'}),
 #     ([100 * u.km, 25 * u.deg], {'distance': 1 * u.Mm,
 #                                 'representation': 'cylindrical'}),
@@ -147,7 +147,7 @@ def test_cart_init():
 #     ([CylindricalRepresentation(100 * u.km, 25 * u.deg, 1 * u.Mm)],
 #      {'representation': 'cylindrical'}), (
 #          [CylindricalRepresentation(100 * u.km, 25 * u.deg, 1 * u.Mm)],
-#          {'dateobs': '2011/01/01T00:00:00',
+#          {'obstime': '2011/01/01T00:00:00',
 #           'representation': 'cylindrical'})
 # ]
 #
@@ -174,7 +174,8 @@ def test_cart_init():
 
 # Test HPC Calculate Distance
 def test_hpc_distance():
-    hpc1 = Helioprojective(0 * u.deg, 0 * u.arcsec)
+    hpc1 = Helioprojective(0 * u.deg, 0 * u.arcsec,
+                           observer=HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
 
     assert isinstance(hpc1, Helioprojective)
     # Check that we have a 2D wrap180 representation
@@ -195,7 +196,8 @@ def test_hpc_distance():
 
 
 def test_hpc_distance_off_limb():
-    hpc1 = Helioprojective(1500 * u.arcsec, 0 * u.arcsec)
+    hpc1 = Helioprojective(1500 * u.arcsec, 0 * u.arcsec,
+                           observer=HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
 
     assert isinstance(hpc1, Helioprojective)
     # Check that we have a 2D wrap180 representation
@@ -344,7 +346,7 @@ def test_hgs_cart_init():
                                                         'z': 10 * u.km}),
      ([CartesianRepresentation(10 * u.km, 10 * u.km, 10 * u.km)], None),
      ([CartesianRepresentation(10 * u.km, 10 * u.km, 10 * u.km)],
-      {'dateobs': '2011/01/01T00:00:00'})])
+      {'obstime': '2011/01/01T00:00:00'})])
 def test_create_hcc_3d(args, kwargs):
     hcc = init_frame(Heliocentric, args, kwargs)
 

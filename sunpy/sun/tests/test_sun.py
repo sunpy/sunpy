@@ -58,9 +58,9 @@ def test_solar_cycle_number():
 
 
 def test_solar_semidiameter_angular_size():
-    assert_quantity_allclose(sun.solar_semidiameter_angular_size("2012/11/11"), 968.612 * u.arcsec, atol=1e-3 * u.arcsec)
-    assert_quantity_allclose(sun.solar_semidiameter_angular_size("2043/03/01"), 968.042 * u.arcsec, atol=1e-3 * u.arcsec)
-    assert_quantity_allclose(sun.solar_semidiameter_angular_size("2001/07/21"), 943.775 * u.arcsec, atol=1e-3 * u.arcsec)
+    assert_quantity_allclose(sun.solar_semidiameter_angular_size("2012/11/11"), 968.604 * u.arcsec, atol=1e-3 * u.arcsec)
+    assert_quantity_allclose(sun.solar_semidiameter_angular_size("2043/03/01"), 968.059 * u.arcsec, atol=1e-3 * u.arcsec)
+    assert_quantity_allclose(sun.solar_semidiameter_angular_size("2001/07/21"), 943.778 * u.arcsec, atol=1e-3 * u.arcsec)
 
 
 def test_mean_ecliptic_longitude():
