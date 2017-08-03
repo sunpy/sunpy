@@ -1,3 +1,4 @@
+.. _acquiring_data:
 =========================
 Acquiring Data with SunPy
 =========================
@@ -6,9 +7,9 @@ Acquiring Data with SunPy
     :maxdepth: 2
 
     sample-data
-    vso
     fido
     hek
     helioviewer
     database
     io
+    vso
