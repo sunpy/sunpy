@@ -77,9 +77,8 @@ description of all the properties of the frames see `sunpy.coordinates.frames`.
 `~sunpy.coordinates.Helioprojective`
 ####################################
 
-For the helioprojective frame the coordinates are accessed as ``Tx`` and ``Ty``
-representing theta x and y. These are the same coordinates that are often
-referred to as 'solar-x' and 'solar-y'.::
+
+For the helioprojective frame the coordinates are accessed as ``Tx`` and ``Ty`` representing theta x and y. These are the same coordinates that are often referred to as 'solar-x' and 'solar-y'.::
 
   >>> c = SkyCoord(-500*u.arcsec, 100*u.arcsec, frame=frames.Helioprojective)
   >>> c.Tx
@@ -90,7 +89,8 @@ referred to as 'solar-x' and 'solar-y'.::
 `~sunpy.coordinates.Heliocentric`
 #################################
 
-Heliocentric normally a Cartesian frame so the coordinates are accessed as ``x, y, z``::
+
+Heliocentric normally a Cartesian frame so the coordinates are accessed as ``x,y,z``::
 
   >>> c = SkyCoord(-72241.0*u.km, 361206.1*u.km, 589951.4*u.km, frame=frames.Heliocentric)
   >>> c.x
@@ -116,14 +116,7 @@ Both the heliographic frames use latitude, longitude and radius which are access
 Transforming Between Coordinate Frames
 --------------------------------------
 
-Both `~astropy.coordinates.SkyCoord` and
-`~astropy.coordinates.BaseCoordinateFrame` instances have a
-`~astropy.coordinates.SkyCoord.transform_to` method. This can be used to
-transform the frame to any other frame, either implemented in SunPy or in
-Astropy `the astropy documentation
-<http://docs.astropy.org/en/stable/coordinates/transforming.html>`_ for more
-details. An example of transforming the center of the solar disk to Carrington
-coordinates is::
+Both `~astropy.coordinates.SkyCoord` and `~astropy.coordinates.BaseCoordinateFrame` instances have a `~astropy.coordinates.SkyCoord.transform_to` method. This can be used to transform the frame to any other frame, either implemented in SunPy or in Astropy (see :ref:`<astropy:astropy-coordinates-transforming>` for more details). An example of transforming the center of the solar disk to Carrington coordinates is::
 
    >>> c = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective, obstime="2017-07-26")
    >>> c
@@ -221,7 +214,7 @@ provides for caching Frame attributes. Frame attributes are extra data specified
 with a frame, some examples in `sunpy.coordinates` are ``obstime`` or
 ``observer`` for observer location. Only the frames where this data is
 meaningful have these attributes, i.e. only the Helioprojective frames have
-``observer``. However, when you transform into another frame and then back to a
+``observe``. However, when you transform into another frame and then back to a
 projective frame using `SkyCoord` it will remember the attributes previously
 provided, and repopulate the final frame with them. If you were to do
 transformations using the Frames alone this would not happen.
