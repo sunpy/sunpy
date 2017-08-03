@@ -60,7 +60,7 @@ file_name = downloaded_files[0]
 # Now to download and read the SRS file.
 # Download the SRS file.
 
-srs_results = Fido.search(a.Time(start_time, end_time), a.Instrument('SOON'))
+srs_results = Fido.search(a.Time(start_time, end_time), a.Instrument('SRS_TABLE'))
 srs_downloaded_files = Fido.fetch(srs_results)
 
 ##############################################################################
@@ -74,8 +74,8 @@ print(srs_table)
 # We only need the rows which have 'ID' = 'I' or 'IA'.
 
 if 'I' in srs_table['ID'] or 'IA' in srs_table['ID']:
-    srs_table = srs_table[np.logical_or(
-        srs_table['ID'] == 'I', srs_table['ID'] == 'IA')]
+    srs_table = srs_table[np.logical_or(srs_table['ID'] == 'I',
+                                        srs_table['ID'] == 'IA')]
 else:
     print("Warning : No I or IA entries for this date.")
     srs_table = None
