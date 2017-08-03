@@ -157,7 +157,7 @@ In some cases, more than 1 file are present for the same set of query. These dat
 `Segments`. It is necessary to specify the "Segment" which you need to download. Providing a segment won't have any affect
 on the response object returned, but this will be required later, while making an export request.
 
-A list of supported segments can be obtained by :
+A list of supported segments of a series, say ``hmi.sharp_720s`` can be obtained by :
 
 	>>> import drms
 	>>> c = drms.Client()
@@ -170,6 +170,13 @@ by the given series.
 	>>> response = client.query(jsoc.attrs.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
                                 jsoc.attrs.Series('aia.lev1_euv_12s'),
                                 jsoc.attrs.Segment('image'))
+
+To get files for more than 1 segment at the same time, chain ``jsoc.attrs.Segment()`` using ``AND`` operator.
+
+	>>> res = client.query(jsoc.attrs.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+						   jsoc.attrs.Series('hmi.sharp_720s'),
+						   jsoc.attrs.Segment('continuum') & jsoc.attrs.Segment('magnetogram'))
+
 
 Using Sample
 ^^^^^^^^^^^^
