@@ -65,7 +65,7 @@ def test_query(time):
 ])
 def test_get(time, instrument):
     qr1 = LCClient.search(time, instrument)
-    res = LCClient.get(qr1)
+    res = LCClient.fetch(qr1)
     download_list = res.wait(progress=False)
     assert len(download_list) == len(qr1)
 

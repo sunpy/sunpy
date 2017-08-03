@@ -419,7 +419,7 @@ class Database(object):
         for temp in delete_entries:
             self.remove(temp)
 
-        paths = client.get(query_result, path).wait(progress=progress)
+        paths = client.fetch(query_result, path).wait(progress=progress)
 
         for (path, block) in zip(paths, query_result):
             qr_entry = tables.DatabaseEntry._from_query_result_block(block)

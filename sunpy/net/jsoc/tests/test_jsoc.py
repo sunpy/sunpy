@@ -250,7 +250,7 @@ def test_wait_get():
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     path = tempfile.mkdtemp()
-    res = client.get(responses, path=path)
+    res = client.fetch(responses, path=path)
     assert isinstance(res, Results)
     assert res.total == 1
 
@@ -273,7 +273,7 @@ def test_results_filenames():
         attrs.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     path = tempfile.mkdtemp()
-    aa = client.get(responses, path=path)
+    aa = client.fetch(responses, path=path)
     assert isinstance(aa, Results)
     files = aa.wait(progress=False)
     assert len(files) == len(responses)

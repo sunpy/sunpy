@@ -322,9 +322,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         query = attr.and_(*query)
         return UnifiedResponse(query_walker.create(query, self))
 
-    # Python 3: this line should be like this
-    # def fetch(self, *query_results, wait=True, progress=True, **kwargs):
-    def fetch(self, *query_results, **kwargs):
+    def fetch(self, *query_results, wait=True, progress=True, **kwargs):
         """
         Download the records represented by
         `~sunpy.net.fido_factory.UnifiedResponse` objects.
@@ -348,7 +346,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         --------
         >>> from sunpy.net.vso.attrs import Time, Instrument
         >>> unifresp = Fido.search(Time('2012/3/4','2012/3/6'), Instrument('AIA'))
-        >>> downresp = Fido.get(unifresp)
+        >>> downresp = Fido.fetch(unifresp)
         >>> file_paths = downresp.wait()
         """
         wait = kwargs.pop("wait", True)

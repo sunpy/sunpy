@@ -135,7 +135,7 @@ class SRSClient(GenericClient):
 
         return result
 
-    def get(self, qres, path=None, error_callback=None, **kwargs):
+    def fetch(self, qres, path=None, error_callback=None, **kwargs):
         """
         Download a set of results.
 
@@ -228,6 +228,11 @@ class SRSClient(GenericClient):
                 callback({'path': fname})
 
         return res2
+
+    @deprecated('0.8', alternative='NOAAPredictClient.fetch')
+    def get(self, qres, path=None, error_callback=None, **kwargs):
+        __doc__ = self.fetch.__doc__
+        return self.fetch(qres, path=path, error_callback=error_callback, **kwargs)
 
     def _makeimap(self):
         self.map_['source'] = 'swpc'
