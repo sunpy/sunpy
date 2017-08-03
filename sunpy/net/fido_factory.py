@@ -412,7 +412,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         """
         candidate_widget_types = self._check_registered_widgets(*query)
         tmpclient = candidate_widget_types[0]()
-        return tmpclient.query(*query), tmpclient
+        return tmpclient.search(*query), tmpclient
 
 
 Fido = UnifiedDownloaderFactory(

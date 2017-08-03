@@ -132,7 +132,7 @@ class QueryResponse(list):
 
     def search(self, *query):
         """ Furtherly reduce the query response by matching it against
-        another query, e.g. response.query(attrs.Instrument('aia')). """
+        another query, e.g. response.search(attrs.Instrument('aia')). """
         query = and_(*query)
         return QueryResponse(
             attrs.filter_results(query, self), self.queryresult
@@ -306,7 +306,7 @@ class VSOClient(object):
         >>> from datetime import datetime
         >>> from sunpy.net import vso
         >>> client = vso.VSOClient()
-        >>> client.query(
+        >>> client.search(
         ...    vso.attrs.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
         ...    vso.attrs.Instrument('eit') | vso.attrs.Instrument('aia'))   # doctest: +NORMALIZE_WHITESPACE
         <Table masked=False length=5>
@@ -827,6 +827,7 @@ class VSOClient(object):
         return all([x.__class__.__name__ in attrs.__all__ for x in query])
 
 
+@deprecated("0.8.0", alternative="Please use VSOClient")
 class InteractiveVSOClient(VSOClient):
 
     """ Client for use in the REPL. Prompts user for data if required. """
@@ -913,7 +914,7 @@ class InteractiveVSOClient(VSOClient):
 
 g_client = None
 
-
+@deprecated("0.8.0", alternative="Please use the VSO Clients directly")
 def search(*args, **kwargs):
     # pylint: disable=W0603
     global g_client
@@ -924,7 +925,7 @@ def search(*args, **kwargs):
 
 search.__doc__ = InteractiveVSOClient.search.__doc__
 
-
+@deprecated("0.8.0", alternative="Please use the VSO Clients directly")
 def get(query_response, path=None, methods=('URL-FILE',), downloader=None):
     # pylint: disable=W0603
     global g_client

@@ -41,7 +41,7 @@ def test_can_handle_query(time):
 
 def test_no_satellite():
     with pytest.raises(ValueError):
-        LCClient.query(Time("1950/01/01", "1950/02/02"), Instrument('goes'))
+        LCClient.search(Time("1950/01/01", "1950/02/02"), Instrument('goes'))
 
 @example(a.Time("2006-08-01", "2006-08-01"))
 @example(a.Time("1983-05-01", "1983-05-02"))
@@ -52,9 +52,9 @@ def test_query(time):
     tr = TimeRange(time.start, time.end)
     if parse_time("1983-05-01") in tr:
         with pytest.raises(ValueError):
-            LCClient.query(time, Instrument('goes'))
+            LCClient.search(time, Instrument('goes'))
     else:
-        qr1 = LCClient.query(time, Instrument('goes'))
+        qr1 = LCClient.search(time, Instrument('goes'))
         assert isinstance(qr1, QueryResponse)
         assert qr1.time_range().start == time.start
         assert qr1.time_range().end == time.end
@@ -66,7 +66,7 @@ def test_query(time):
     (Time('2012/10/4', '2012/10/6'), Instrument('goes')),
 ])
 def test_get(time, instrument):
-    qr1 = LCClient.query(time, instrument)
+    qr1 = LCClient.search(time, instrument)
     res = LCClient.get(qr1)
     download_list = res.wait(progress=False)
     assert len(download_list) == len(qr1)
@@ -74,7 +74,7 @@ def test_get(time, instrument):
 
 @pytest.mark.online
 def test_new_logic():
-    qr = LCClient.query(Time('2012/10/4', '2012/10/6'), Instrument('goes'))
+    qr = LCClient.search(Time('2012/10/4', '2012/10/6'), Instrument('goes'))
     res = LCClient.get(qr)
     download_list = res.wait(progress=False)
     assert len(download_list) == len(qr)

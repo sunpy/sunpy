@@ -157,7 +157,7 @@ def test_empty_jsoc_response():
 
 @pytest.mark.online
 def test_query():
-    Jresp = client.query(
+    Jresp = client.search(
         attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:01:30'),
         attrs.Series('hmi.M_45s'), vso_attrs.Sample(90 * u.second))
     assert isinstance(Jresp, JSOCResponse)
@@ -167,7 +167,7 @@ def test_query():
 @pytest.mark.flaky(reruns=5)
 @pytest.mark.online
 def test_post_pass():
-    responses = client.query(
+    responses = client.search(
         attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     aa = client.request_data(responses, return_resp=True)
@@ -179,7 +179,7 @@ def test_post_pass():
 
 @pytest.mark.online
 def test_post_wavelength():
-    responses = client.query(
+    responses = client.search(
         attrs.Time('2010/07/30T13:30:00', '2010/07/30T14:00:00'),
         attrs.Series('aia.lev1_euv_12s'), attrs.Wavelength(193 * u.AA) |
         attrs.Wavelength(335 * u.AA), attrs.Notify('jsoc@cadair.com'))
@@ -198,7 +198,7 @@ def test_post_wavelength():
 
 @pytest.mark.online
 def test_post_notify_fail():
-    responses = client.query(
+    responses = client.search(
         attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
         attrs.Series('hmi.M_45s'))
     with pytest.raises(ValueError):
@@ -208,7 +208,7 @@ def test_post_notify_fail():
 @pytest.mark.online()
 def test_post_wave_series():
     with pytest.raises(TypeError):
-        client.query(
+        client.search(
             attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
             attrs.Series('hmi.M_45s') | attrs.Series('aia.lev1_euv_12s'),
             attrs.Wavelength(193 * u.AA) | attrs.Wavelength(335 * u.AA))
@@ -216,7 +216,7 @@ def test_post_wave_series():
 
 @pytest.mark.online
 def test_post_fail(recwarn):
-    res = client.query(
+    res = client.search(
         attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
         attrs.Series('none'), attrs.Notify('jsoc@cadair.com'))
     client.request_data(res, return_resp=True)
@@ -246,7 +246,7 @@ def test_request_status_fail():
 
 @pytest.mark.online
 def test_wait_get():
-    responses = client.query(
+    responses = client.search(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     path = tempfile.mkdtemp()
@@ -257,7 +257,7 @@ def test_wait_get():
 
 @pytest.mark.online
 def test_get_request():
-    responses = client.query(
+    responses = client.search(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
 
@@ -269,7 +269,7 @@ def test_get_request():
 
 @pytest.mark.online
 def test_results_filenames():
-    responses = client.query(
+    responses = client.search(
         attrs.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     path = tempfile.mkdtemp()
@@ -284,4 +284,4 @@ def test_results_filenames():
 @pytest.mark.online
 def test_invalid_query():
     with pytest.raises(ValueError):
-        client.query(attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'))
+        client.search(attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'))

@@ -101,7 +101,7 @@ class JSOCClient(object):
     >>> from sunpy.net import jsoc
     >>> from sunpy.net import attrs as a
     >>> client = jsoc.JSOCClient()
-    >>> response = client.query(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    >>> response = client.qsearchuery(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...                         a.jsoc.Series('hmi.m_45s'), a.jsoc.Notify("sunpy@sunpy.org"))
 
     the response object holds the records that your query will return:
@@ -137,7 +137,7 @@ class JSOCClient(object):
     >>> from sunpy.net import jsoc
     >>> from sunpy.net import attrs as a
     >>> client = jsoc.JSOCClient()
-    >>> response = client.query(a.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
+    >>> response = client.search(a.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
     ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Segment('image'),
     ...                         a.jsoc.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))
 
@@ -197,7 +197,7 @@ class JSOCClient(object):
         >>> from sunpy.net import jsoc
         >>> from sunpy.net import attrs as a
         >>> client = jsoc.JSOCClient()
-        >>> response = client.query(a.Time('2010-01-01T00:00:00', '2010-01-01T01:00:00'),
+        >>> response = client.search(a.Time('2010-01-01T00:00:00', '2010-01-01T01:00:00'),
         ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA),
         ...                         a.jsoc.Compression('rice'), a.jsoc.Segment('image'))
 

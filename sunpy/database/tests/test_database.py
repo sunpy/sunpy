@@ -68,7 +68,7 @@ def query_result():
 
 @pytest.fixture
 def download_qr():
-    return vso.VSOClient().query(
+    return vso.VSOClient().search(
         vso.attrs.Time('2012-03-29', '2012-03-29'),
         vso.attrs.Instrument('AIA'))
 
@@ -420,7 +420,7 @@ def test_add_already_existing_entry_ignore(database):
 
 @pytest.mark.online
 def test_add_entry_from_hek_qr(database):
-    hek_res = hek.HEKClient().query(
+    hek_res = hek.HEKClient().search(
         hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 07:24:00'),
         hek.attrs.EventType('FL'))
     assert len(database) == 0
@@ -794,12 +794,12 @@ def test_lfu_cache(database_using_lfucache):
 
 def test_query_missing_arg(database):
     with pytest.raises(TypeError):
-        database.query()
+        database.search()
 
 
 def test_query_unexpected_kwarg(database):
     with pytest.raises(TypeError):
-        database.query(attrs.Starred(), foo=42)
+        database.search(attrs.Starred(), foo=42)
 
 
 def test_query(filled_database):
@@ -807,7 +807,7 @@ def test_query(filled_database):
     foo.id = 1
     bar = Tag('bar')
     bar.id = 2
-    entries = filled_database.query(
+    entries = filled_database.search(
         attrs.Tag('foo') | attrs.Tag('bar'), sortby='id')
     assert len(entries) == 4
     assert entries == [
@@ -983,9 +983,9 @@ def test_split_database(split_function_database, database):
     split_function_database, database = split_database(
         split_function_database, database, vso.attrs.Instrument('EIA'))
 
-    observed_source_entries = split_function_database.query(
+    observed_source_entries = split_function_database.search(
         vso.attrs.Provider('xyz'), sortby='id')
-    observed_destination_entries = database.query(vso.attrs.Provider('xyz'))
+    observed_destination_entries = database.search(vso.attrs.Provider('xyz'))
 
     assert observed_source_entries == [
         DatabaseEntry(id=1, instrument='RHESSI', provider='xyz'),

@@ -37,7 +37,7 @@ def test_can_handle_query():
 
 @pytest.mark.online
 def test_query():
-    qr1 = LCClient.query(Time('2011/4/9', '2011/4/10'), Instrument('rhessi'))
+    qr1 = LCClient.search(Time('2011/4/9', '2011/4/10'), Instrument('rhessi'))
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 1
     assert qr1.time_range().start == parse_time('2011/04/09')
@@ -50,7 +50,7 @@ def test_query():
     (Time('2012/10/4', '2012/10/5'), Instrument('rhessi')),
 ])
 def test_get(time, instrument):
-    qr1 = LCClient.query(time, instrument)
+    qr1 = LCClient.search(time, instrument)
     res = LCClient.get(qr1)
     download_list = res.wait(progress=False)
     assert len(download_list) == len(qr1)
