@@ -11,7 +11,7 @@ from functools import partial
 from collections import OrderedDict
 
 import sunpy
-from sunpy.util import replacement_filename
+from sunpy.util import replacement_filename, deprecated
 from sunpy.net.dataretriever.client import simple_path
 
 from sunpy.net.download import Downloader, Results
