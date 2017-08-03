@@ -89,9 +89,12 @@ class TimeFrameAttributeSunPy(TimeAttribute):
 class ObserverCoordinateAttribute(CoordinateAttribute):
     """
     An Attribute to describe the location of the observer in the solar system.
-    The observer location can be given as a string of a known observer, a
-    low-level frame class *or* a `~astropy.coordinates.SkyCoord`, but will
-    always be converted to the low-level frame class when accessed.
+    The observer location can be given as a string of a known observer, which
+    will be converted to a coordinate as long as the ``obstime`` attribute is
+    valid on the instance of the frame. Alternatively a low-level frame class
+    *or* a `~astropy.coordinates.SkyCoord` can be provided to specify the
+    location of the observer. If a `~astropy.coordinates.SkyCoord` is passed it
+    will always be converted to the low-level frame class when accessed.
 
     Parameters
     ----------
@@ -99,32 +102,19 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
         The type of frame this attribute can be
     default : object
         Default value for the attribute if not provided
-    fallback_coordinate: `astropy.coordinates.BaseCoordinateFrame`
-        The coordinate value to return if one can not be calculated.
     secondary_attribute : str
         Name of a secondary instance attribute which supplies the value if
         ``default is None`` and no value was supplied during initialization.
     """
 
-    def __init__(self, frame, default=None, fallback_coordinate=None, secondary_attribute=''):
-        if fallback_coordinate is None:
-            # Import here to prevent circular import
-            from .frames import HeliographicStonyhurst
-
-            self.fallback_coordinate = HeliographicStonyhurst(0 * u.deg, 0 * u.deg, 1 * u.AU)
-
-        super(ObserverCoordinateAttribute, self).__init__(
-            frame, default=default, secondary_attribute=secondary_attribute)
-
     def convert_input(self, value):
-        # If we are reaching here, we do not have an instance, so we fall back
-        # to the default location when obstime is not set.
+        # Keep string here.
         if isinstance(value, six.string_types):
-            return self.fallback_coordinate, True
+            return value, False
         else:
             return super(ObserverCoordinateAttribute, self).convert_input(value)
 
-    def _convert_string_to_coord(self, out, instance):
+    def _convert_string_to_coord(self, out, obstime):
         """
         Given a value and and frame instance calculate the position of the
         object given as a string.
@@ -132,22 +122,10 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
 
         # Import here to prevent circular import
         from .frames import HeliographicStonyhurst
-
-        obstime = getattr(instance, 'obstime')
-
-        # If no time assume nothing
-        if obstime is None:
-            warnings.warn(
-                "Can not compute location of object '{}'"
-                " without obstime attribute being set.".format(out),
-                SunpyUserWarning,
-                stacklevel=4)
-
-            # If obstime is not set, we can't work out where an object is.
-            return self.fallback_coordinate
-
         from .ephemeris import get_body_heliographic_stonyhurst
+
         obscoord = get_body_heliographic_stonyhurst(out, obstime)
+
         if out == "earth":
             rep = obscoord.spherical
             rep.lon[()] = 0*u.deg
@@ -158,12 +136,19 @@ class ObserverCoordinateAttribute(CoordinateAttribute):
     def __get__(self, instance, frame_cls=None):
         # If instance is None then we can't get obstime so it doesn't matter.
         if instance is not None:
-            out = getattr(instance, '_' + self.name, self.default)
+            # Get observer if the instance has one, or the default.
+            observer = getattr(instance, '_' + self.name, self.default)
 
-            # Convert strings to coordinates
-            if isinstance(out, six.string_types):
-                out = out.lower()
-                out = self._convert_string_to_coord(out, instance)
-                setattr(instance, '_' + self.name, out)
+            # We have an instance of a frame, so get obstime
+            obstime = getattr(instance, 'obstime', None)
+
+            # If the observer is a string and we have obstime then calculate
+            # the position of the observer.
+            if isinstance(observer, six.string_types):
+                if obstime is not None:
+                    observer = self._convert_string_to_coord(observer.lower(), obstime)
+                    setattr(instance, '_' + self.name, observer)
+                else:
+                    return observer
 
         return super(ObserverCoordinateAttribute, self).__get__(instance, frame_cls=frame_cls)

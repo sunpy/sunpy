@@ -119,6 +119,9 @@ def get_online_vso_url(api, url, port):
 
 # TODO: Python 3 this should subclass from UserList
 class QueryResponse(list):
+    """
+    A container for VSO Records returned from VSO Searches.
+    """
 
     def __init__(self, lst, queryresult=None, table=None):
         super(QueryResponse, self).__init__(lst)

@@ -60,3 +60,5 @@ dependencies:
 - openjpeg
 - sphinx-gallery
 - glymur
+- pip:
+    - git+https://github.com/sunpy/sunpy-sphinx-theme.git@v0.1.0a3

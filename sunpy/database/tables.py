@@ -36,11 +36,10 @@ __all__ = [
 Base = declarative_base()
 
 # required for the many-to-many relation on tags:entries
-association_table = Table(
-                          'association', Base.metadata,
+association_table = Table('association', Base.metadata,
                           Column('tag_name', String, ForeignKey('tags.name')),
                           Column('entry_id', Integer, ForeignKey('data.id'))
-                         )
+                          )
 
 
 class WaveunitNotFoundError(Exception):
@@ -48,6 +47,7 @@ class WaveunitNotFoundError(Exception):
     header or in a VSO query result block.
 
     """
+
     def __init__(self, obj):
         self.obj = obj
 
@@ -61,6 +61,7 @@ class WaveunitNotConvertibleError(Exception):
     astropy.units.Unit instance.
 
     """
+
     def __init__(self, waveunit):
         self.waveunit = waveunit
 
@@ -325,24 +326,27 @@ class DatabaseEntry(Base):
         else:
             if unit is None:
                 raise WaveunitNotFoundError(qr_block)
-            wavemin = unit.to(nm, float(wave.wavemin), equivalencies.spectral())
+            wavemin = unit.to(nm, float(wave.wavemin),
+                              equivalencies.spectral())
         if wave.wavemax is None:
             wavemax = None
         else:
             if unit is None:
                 raise WaveunitNotFoundError(qr_block)
-            wavemax = unit.to(nm, float(wave.wavemax), equivalencies.spectral())
-        source = str(qr_block.source) if qr_block.source is not None else None
-        provider = str(qr_block.provider) if qr_block.provider is not None else None
-        fileid = str(qr_block.fileid) if qr_block.fileid is not None else None
-        instrument = str(qr_block.instrument) if qr_block.instrument is not None else None
+            wavemax = unit.to(nm, float(wave.wavemax),
+                              equivalencies.spectral())
+        source = getattr(qr_block, 'source', None)
+        provider = getattr(qr_block, 'provider', None)
+        fileid = getattr(qr_block, 'fileid', None)
+        instrument = getattr(qr_block, 'instrument', None)
+        size = getattr(qr_block, 'size', -1)
         physobs = getattr(qr_block, 'physobs', None)
         if physobs is not None:
             physobs = str(physobs)
         return cls(
             source=source, provider=provider, physobs=physobs, fileid=fileid,
             observation_time_start=time_start, observation_time_end=time_end,
-            instrument=instrument, size=qr_block.size,
+            instrument=instrument, size=size,
             wavemin=wavemin, wavemax=wavemax)
 
     def __eq__(self, other):
@@ -369,6 +373,26 @@ class DatabaseEntry(Base):
             bool(self.starred) == bool(other.starred) and
             self.fits_header_entries == other.fits_header_entries and
             self.tags == other.tags)
+
+    def _compare_attributes(self, other, attribute_list):
+        """Compare a given list of attributes of two :class:`DatabaseEntry`
+        instances and return True if all of them match.
+
+        Parameters
+        ----------
+        other : :class:`DatabaseEntry` instance
+
+        attribute_list : list
+            The list of attributes that will be compared in both instances,
+            self and other.
+
+        """
+        if len(attribute_list) == 0:
+            raise TypeError('At least one attribute required')
+        for attribute in attribute_list:
+            if getattr(self, attribute) != getattr(other, attribute):
+                return False
+        return True
 
     def __hash__(self):
         return super(DatabaseEntry, self).__hash__()
@@ -537,14 +561,14 @@ def entries_from_file(file, default_waveunit=None,
             # FITS standard, but many FITS files use it in their header
             elif key in ('DATE-END', 'DATE_END'):
                 entry.observation_time_end = parse_time(
-                        value,
-                        _time_string_parse_format=time_string_parse_format
-                        )
+                    value,
+                    _time_string_parse_format=time_string_parse_format
+                )
             elif key in ('DATE-OBS', 'DATE_OBS'):
                 entry.observation_time_start = parse_time(
-                        value,
-                        _time_string_parse_format=time_string_parse_format
-                        )
+                    value,
+                    _time_string_parse_format=time_string_parse_format
+                )
         yield entry
 
 
@@ -615,7 +639,7 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
                 for entry in entries_from_file(
                         path, default_waveunit,
                         time_string_parse_format=time_string_parse_format
-                        ):
+                ):
                     yield entry, path
         if not recursive:
             break

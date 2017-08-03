@@ -69,24 +69,13 @@ def test_calculate_solar_rotate_shift(aia171_test_mapcube, known_displacements_l
 
 
 def test_mapcube_solar_derotate(aia171_test_mapcube, aia171_test_submap):
-    # Test that a mapcube is returned when the clipping is False
+    # Test that a mapcube is returned when the clipping is False.
     tmc = mapcube_solar_derotate(aia171_test_mapcube, clip=False)
     assert(isinstance(tmc, sunpy.map.MapCube))
 
-    # Test that all entries have the same shape - nothing clipped
+    # Test that all entries have the same shape when clipping is False
     for m in tmc:
         assert(m.data.shape == aia171_test_submap.data.shape)
-
-    # Test that the returned reference pixels are correctly displaced.
-    tmc = mapcube_solar_derotate(aia171_test_mapcube, clip=True)
-    tshift = calculate_solar_rotate_shift(aia171_test_mapcube, layer_index=1)
-    for im, m in enumerate(tmc):
-        for i_s, s in enumerate(['x', 'y']):
-            assert_quantity_allclose(m.reference_pixel[i_s],
-                            aia171_test_submap.reference_pixel[i_s] +
-                            tshift[s][im] / m.scale[i_s] -
-                            tshift[s][0] / m.scale[i_s],
-                            rtol=5e-2, atol=0.01*u.pix)
 
     # Test that a mapcube is returned on default clipping (clipping is True)
     tmc = mapcube_solar_derotate(aia171_test_mapcube)
@@ -96,4 +85,16 @@ def test_mapcube_solar_derotate(aia171_test_mapcube, aia171_test_submap):
     clipped_shape = (24, 19)
     for m in tmc:
         assert(m.data.shape == clipped_shape)
+
+    # Test that the returned reference pixels are correctly displaced.
+    layer_index = 0
+    derotated = mapcube_solar_derotate(aia171_test_mapcube, clip=True, layer_index=layer_index)
+    tshift = calculate_solar_rotate_shift(aia171_test_mapcube, layer_index=layer_index)
+    derotated_reference_pixel_at_layer_index = derotated[layer_index].reference_pixel
+    for i, m_derotated in enumerate(derotated):
+        for i_s, s in enumerate(['x', 'y']):
+            diff_in_rotated_reference_pixel = derotated[i].reference_pixel[i_s] - derotated_reference_pixel_at_layer_index[i_s]
+            diff_arcsec = tshift[s][i] - tshift[s][layer_index]
+            diff_pixel = diff_arcsec / m.scale[0]
+            assert_quantity_allclose(diff_in_rotated_reference_pixel, diff_pixel, rtol=5e-2)
 

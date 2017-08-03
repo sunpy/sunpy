@@ -7,13 +7,16 @@ from __future__ import absolute_import, division, print_function
 import numpy as np
 import astropy.units as u
 from astropy.coordinates import SkyCoord
+
 from sunpy.coordinates import frames
 
+__all__ = ['GreatArc']
 
-class GreatArc:
+
+class GreatArc(object):
     """
-    Calculate the properties of a user-specified number of points on a great arc
-    between a start and end point on a sphere.
+    Calculate the properties of a great arc at user-specified points between a
+    start and end point on a sphere.
 
     Parameters
     ----------
@@ -26,7 +29,7 @@ class GreatArc:
     center : `~astropy.coordinates.SkyCoord`
         Center of the sphere.
 
-    points : None | int | numpy.ndarray
+    points : `None`, `int`, `~numpy.ndarray`
         Number of points along the great arc.  If None, the arc is calculated
         at 100 equally spaced points from start to end.  If int, the arc is
         calculated at "points" equally spaced points from start to end.  If a
@@ -43,7 +46,7 @@ class GreatArc:
         Radian angles of the points along the great arc from the start to end
         co-ordinate.
 
-    distances : `astropy.units`
+    distances : `~astropy.units`
         Distances of the points along the great arc from the start to end
         co-ordinate.  The units are defined as those returned after transforming
         the co-ordinate system of the start co-ordinate into its Cartesian
@@ -63,20 +66,20 @@ class GreatArc:
     >>> import matplotlib.pyplot as plt
     >>> from astropy.coordinates import SkyCoord
     >>> import astropy.units as u
-    >>> from sunpy.coordinates.great_arc import GreatArc
+    >>> from sunpy.coordinates.utils import GreatArc
     >>> import sunpy.map
     >>> from sunpy.data.sample import AIA_171_IMAGE
     >>> m = sunpy.map.Map(AIA_171_IMAGE)
     >>> a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=m.coordinate_frame)
     >>> b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=m.coordinate_frame)
-    >>> v = GreatArc(a, b)
-    >>> fig = plt.figure()
-    >>> ax = fig.add_subplot(1, 1, 1, projection=m)
+    >>> great_arc = GreatArc(a, b)
+    >>> ax = plt.subplot(projection=m)
     >>> m.plot(axes=ax)
-    >>> ax.plot_coord(v.coordinates(), color='c')
+    >>> ax.plot_coord(great_arc.coordinates(), color='c')
     >>> plt.show()
 
     """
+
     def __init__(self, start, end, center=None, points=None):
         # Start point of the great arc
         self.start = start
@@ -87,14 +90,14 @@ class GreatArc:
         # Parameterized location of points between the start and the end of the
         # great arc.
         # Default parameterized points location.
-        self._default_points = np.linspace(0, 1, 100)
+        self.default_points = np.linspace(0, 1, 100)
 
         # If the user requests a different set of default parameterized points
         # on initiation of the object, then these become the default.  This
         # allows the user to use the methods without having to specify their
         # choice of points over and over again, while also allowing the
         # flexibility in the methods to calculate other values.
-        self._default_points = self._points_handler(points)
+        self.default_points = self._points_handler(points)
 
         # Units of the start point
         self.distance_unit = self.start.transform_to(frames.Heliocentric).cartesian.xyz.unit
@@ -107,9 +110,9 @@ class GreatArc:
 
         # Set the center of the sphere
         if center is None:
-            self.center = SkyCoord(0*self.distance_unit,
-                                   0*self.distance_unit,
-                                   0*self.distance_unit, frame=frames.Heliocentric)
+            self.center = SkyCoord(0 * self.distance_unit,
+                                   0 * self.distance_unit,
+                                   0 * self.distance_unit, frame=frames.Heliocentric)
 
         # Convert the start, end and center points to their Cartesian values
         self.start_cartesian = self.start.transform_to(frames.Heliocentric).cartesian.xyz.to(self.distance_unit).value
@@ -145,15 +148,17 @@ class GreatArc:
         Interprets the points keyword.
         """
         if points is None:
-            return self._default_points
+            return self.default_points
         elif isinstance(points, int):
             return np.linspace(0, 1, points)
         elif isinstance(points, np.ndarray):
             if points.ndim > 1:
-                return ValueError('One dimensional numpy ndarrays only.')
-            if np.any(points < 0) or np.any(points) > 1:
-                return ValueError('All value in points array must be strictly >=0 and <=1.')
+                raise ValueError('One dimensional numpy ndarrays only.')
+            if np.any(points < 0) or np.any(points > 1):
+                raise ValueError('All value in points array must be strictly >=0 and <=1.')
             return points
+        else:
+            raise ValueError('Incorrectly specified "points" keyword value.')
 
     def inner_angles(self, points=None):
         """
@@ -163,7 +168,7 @@ class GreatArc:
 
         Parameters
         ----------
-        points : None | int | numpy.ndarray
+        points : `None`, `int`, `~numpy.ndarray`
             If None, use the default locations of parameterized points along the
             arc.  If int, the arc is calculated at "points" equally spaced
             points from start to end.  If a numpy.ndarray is passed, it must be
@@ -189,7 +194,7 @@ class GreatArc:
 
         Parameters
         ----------
-        points : None | int | numpy.ndarray
+        points : `None`, `int`, `~numpy.ndarray`
             If None, use the default locations of parameterized points along the
             arc.  If int, the arc is calculated at "points" equally spaced
             points from start to end.  If a numpy.ndarray is passed, it must be
@@ -200,7 +205,7 @@ class GreatArc:
 
         Returns
         -------
-        distances : `astropy.units`
+        distances : `~astropy.units`
             Distances of the points along the great arc from the start to end
             co-ordinate.  The units are defined as those returned after
             transforming the co-ordinate system of the start co-ordinate into
@@ -216,7 +221,7 @@ class GreatArc:
 
         Parameters
         ----------
-        points : None | int | numpy.ndarray
+        points : `None`, `int`, `~numpy.ndarray`
             If None, use the default locations of parameterized points along the
             arc.  If int, the arc is calculated at "points" equally spaced
             points from start to end.  If a numpy.ndarray is passed, it must be

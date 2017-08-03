@@ -13,5 +13,6 @@ You can find the official SunPy website at
   code_ref/index.rst
   generated/gallery/index
   dev
+  testingfeatures
   bugs
   ssw
