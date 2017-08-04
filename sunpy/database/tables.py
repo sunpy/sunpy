@@ -390,14 +390,14 @@ class DatabaseEntry(Base):
         """
         # All attributes of DatabaseEntry that are not in QueryResponseBlock
         # are set as None for now.
-        source = str(sr_block.source) if sr_block.source is not None else None
-        provider = str(sr_block.provider) if sr_block.provider is not None else None
+        source = getattr(sr_block, 'source', None)
+        provider = getattr(sr_block, 'provider', None)
         # physobs is written as phyobs in
         # sunpy.net.dataretriever.client.QueryResponseBlock
         physobs = getattr(sr_block, 'phyobs', None)
         if physobs is not None:
             physobs = str(physobs)
-        instrument = str(sr_block.instrument) if sr_block.instrument is not None else None
+        instrument = getattr(sr_block, 'instrument', None)
         time_start = sr_block.time.start
         time_end = sr_block.time.end
         wavemin = None
