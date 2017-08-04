@@ -50,8 +50,8 @@ class QueryResponseBlock(object):
         self.phyobs = map0.get('phyobs', "Data not Available")
         self.instrument = map0.get('instrument', "Data not Available")
         self.url = url
-        self.time = TimeRange(map0.get('Time_start'), map0.get(
-            'Time_end')) if time is None else time
+        self.time = TimeRange(map0.get('Time_start'),
+                              map0.get('Time_end')) if time is None else time
         self.wavelength = map0.get('wavelength', np.NaN)
 
 

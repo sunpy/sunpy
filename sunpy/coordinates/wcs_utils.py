@@ -15,10 +15,10 @@ def solar_wcs_frame_mapping(wcs):
     type values in the `astropy.wcs.utils.wcs_to_celestial_frame` registry.
     """
 
-    # SunPy Map adds some extra attributes to the WCS object.
-    # We check for them here, and default to None.
     dateobs = wcs.wcs.dateobs if wcs.wcs.dateobs else None
 
+    # SunPy Map adds 'heliographic_observer' and 'rsun' attributes to the WCS
+    # object. We check for them here, and default to None.
     if hasattr(wcs, 'heliographic_observer'):
         observer = wcs.heliographic_observer
     else:
@@ -41,16 +41,16 @@ def solar_wcs_frame_mapping(wcs):
     ycoord = wcs.wcs.ctype[1][0:4]
 
     if xcoord == 'HPLN' and ycoord == 'HPLT':
-        return Helioprojective(dateobs=dateobs, observer=observer, rsun=rsun)
+        return Helioprojective(obstime=dateobs, observer=observer, rsun=rsun)
 
     if xcoord == 'HGLN' and ycoord == 'HGLT':
-        return HeliographicStonyhurst(dateobs=dateobs)
+        return HeliographicStonyhurst(obstime=dateobs)
 
     if xcoord == 'CRLN' and ycoord == 'CRLT':
-        return HeliographicCarrington(dateobs=dateobs)
+        return HeliographicCarrington(obstime=dateobs)
 
     if xcoord == 'SOLX' and ycoord == 'SOLY':
-        return Heliocentric(dateobs=dateobs, observer=observer)
+        return Heliocentric(obstime=dateobs, observer=observer)
 
 
 astropy.wcs.utils.WCS_FRAME_MAPPINGS.append([solar_wcs_frame_mapping])
