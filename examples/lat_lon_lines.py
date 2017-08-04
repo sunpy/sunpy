@@ -9,13 +9,12 @@ import numpy as np
 import astropy.units as u
 import matplotlib.pyplot as plt
 from sunpy.data.sample import AIA_171_IMAGE
+from astropy.coordinates import SkyCoord
+from sunpy.coordinates import frames
 import sunpy.map
 
 ###############################################################################
-# We first create the Map using the sample data and import the coordinate
-# functionality.
-from astropy.coordinates import SkyCoord
-from sunpy.coordinates import frames
+# We first create the Map using the sample data.
 aia = sunpy.map.Map(AIA_171_IMAGE)
 
 ###############################################################################
