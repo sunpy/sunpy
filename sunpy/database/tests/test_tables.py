@@ -45,7 +45,8 @@ def fido_search_result():
         net_attrs.Time("2012/1/1", "2012/1/2"),
         net_attrs.Instrument('lyra')|net_attrs.Instrument('eve')|
         net_attrs.Instrument('goes')|net_attrs.Instrument('noaa-indices')|
-        net_attrs.Instrument('noaa-predict')|net_attrs.Instrument('norh')|
+        net_attrs.Instrument('noaa-predict')|
+        (net_attrs.Instrument('norh')&net_attrs.Wavelength(17*u.GHz))|
         net_attrs.Instrument('rhessi')|
         (net_attrs.Instrument('EVE')&net_attrs.Level(0))
         )
@@ -152,14 +153,14 @@ def test_entries_from_fido_search_result(fido_search_result):
     # 2 entries from norh
     assert entries[60] == DatabaseEntry(
         source='NAOJ', provider='NRO', physobs="",
-        fileid='ftp://anonymous:mozilla@example.com@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/01/tca120101',
+        fileid='ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/01/tca120101',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
-        instrument='RadioHelioGraph')
+        instrument='NORH')
     # 1 entry from rhessi
     assert entries[62] == DatabaseEntry(
-        source="", provider= 'nasa', physobs= 'irradiance',
-        fileid= 'http://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20120101_016.fits',
+        source="rhessi", provider= 'nasa', physobs= 'irradiance',
+        fileid= 'https://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20120101_016.fits',
         observation_time_start = datetime(2012, 1, 1, 0, 0),
         observation_time_end = datetime(2012, 1, 2, 0, 0),
         instrument= 'rhessi')
