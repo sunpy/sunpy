@@ -1,4 +1,5 @@
 .. _acquiring_data:
+
 =========================
 Acquiring Data with SunPy
 =========================
