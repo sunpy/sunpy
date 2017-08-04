@@ -336,10 +336,11 @@ class DatabaseEntry(Base):
                 raise WaveunitNotFoundError(qr_block)
             wavemax = unit.to(nm, float(wave.wavemax),
                               equivalencies.spectral())
-        source = str(qr_block.source) if qr_block.source is not None else None
-        provider = str(qr_block.provider) if qr_block.provider is not None else None
-        fileid = str(qr_block.fileid) if qr_block.fileid is not None else None
-        instrument = str(qr_block.instrument) if qr_block.instrument is not None else None
+        source = getattr(qr_block, 'source', None)
+        provider = getattr(qr_block, 'provider', None)
+        fileid = getattr(qr_block, 'fileid', None)
+        instrument = getattr(qr_block, 'instrument', None)
+        size = getattr(qr_block, 'size', -1)
         physobs = getattr(qr_block, 'physobs', None)
         if physobs is not None:
             physobs = str(physobs)
