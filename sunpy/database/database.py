@@ -879,7 +879,6 @@ class Database(object):
                                                              self.default_waveunit),
                       ignore_already_added)
 
-
     def add_from_dir(self, path, recursive=False, pattern='*',
                      ignore_already_added=False, time_string_parse_format=None):
         """Search the given directory for FITS files and use their FITS headers

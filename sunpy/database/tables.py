@@ -569,18 +569,16 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
     """
     for entry in sr:
         if isinstance(entry, sunpy.net.vso.vso.QueryResponse):
-            #This is because Fido can search the VSO. It
-            #returns a VSO QueryResponse.
+            # This is because Fido can search the VSO. It
+            # returns a VSO QueryResponse.
             for block in entry:
-                yield DatabaseEntry._from_query_result_block(block,
-                            default_waveunit)
+                yield DatabaseEntry._from_query_result_block(block, default_waveunit)
         elif isinstance(entry, sunpy.net.jsoc.jsoc.JSOCResponse):
-            #Adding JSOC results to the DB not supported for now
+            # Adding JSOC results to the DB not supported for now
             raise ValueError("Cannot add JSOC results to database")
         else:
             for block in entry:
-                yield DatabaseEntry._from_fido_search_result_block(block,
-                            default_waveunit)
+                yield DatabaseEntry._from_fido_search_result_block(block, default_waveunit)
 
 
 def entries_from_file(file, default_waveunit=None,
