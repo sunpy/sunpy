@@ -11,6 +11,7 @@ import numpy.ma as ma
 import astropy.units as u
 from sunpy.data.sample import AIA_171_IMAGE
 import sunpy.map
+
 ###############################################################################
 # We first create the Map using the sample data.
 aia = sunpy.map.Map(AIA_171_IMAGE)

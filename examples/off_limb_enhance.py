@@ -9,7 +9,6 @@ import numpy as np
 import astropy.units as u
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
-
 from sunpy.data.sample import AIA_171_IMAGE
 import sunpy.map
 
@@ -50,6 +49,7 @@ plt.ylabel('mean DN')
 plt.xlabel('Rsun')
 plt.legend()
 plt.show()
+
 ###############################################################################
 # We now create our scaling array which we will multiply our original data by 5
 # In order to not affect the emission on the disk, we set the scale factor to

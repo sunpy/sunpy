@@ -3,7 +3,7 @@
 Edge Enhancing Filtering a Map
 ==============================
 
-This example shows how to edge enhance a coronal loops in an SDO/AIA image.
+This example shows how to edge enhance coronal loops in an SDO/AIA image.
 """
 import numpy as np
 import matplotlib.pyplot as plt
