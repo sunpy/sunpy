@@ -59,7 +59,7 @@ Coordinates can be defined very simply::
 The coordinate "a" is in the helioprojective coordinate system, and the coordinate "b"
 is in the heliographic Stonyhurst system.
 
-Maps can also be used define coordinate frames::
+Maps can also be used to define coordinate frames::
 
     >>> import sunpy.map
     >>> import sunpy.data.sample
@@ -92,11 +92,12 @@ Transformation between solar physics coordinate frames is simple::
 Transformation to astropy coordinate systems
 --------------------------------------------
 
-Solar physics coordinates can also be transformed into astrophysical coordinates::
+Solar physics coordinates can also be transformed into astrophysical coordinates.
+For example, to convert to the International Celestial Reference System (ICRS)::
 
-    >>>
-
-
+    >>> c.transform_to('icrs')
+    <SkyCoord (ICRS): (ra, dec, distance) in (deg, deg, km)
+    ( 240.91724178, -6.72107631,  369983.29218687)>
 
 Specification of observer at any major solar system body
 --------------------------------------------------------
