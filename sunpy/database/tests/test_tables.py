@@ -155,24 +155,24 @@ def test_entries_from_fido_search_result(fido_search_result):
     # 2 entries from norh
     assert entries[60] == DatabaseEntry(
         source='NAOJ', provider='NRO', physobs="",
-        fileid=('ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/',
-                'pub/nsro/norh/data/tcx/2012/01/tca120101'),
+        fileid=("ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/"
+                "pub/nsro/norh/data/tcx/2012/01/tca120101"),
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
         instrument='NORH')
     # 1 entry from rhessi
     assert entries[62] == DatabaseEntry(
         source="rhessi", provider='nasa', physobs='irradiance',
-        fileid=('https://hesperia.gsfc.nasa.gov/',
-                'hessidata/metadata/catalog/hsi_obssumm_20120101_016.fits'),
+        fileid=("https://hesperia.gsfc.nasa.gov/"
+                "hessidata/metadata/catalog/hsi_obssumm_20120101_016.fits"),
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
         instrument='rhessi')
     # 2 entries from eve, level 0
     assert entries[63] == DatabaseEntry(
         source='SDO', provider='LASP', physobs='irradiance',
-        fileid=('http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook',
-                '/L0CS/SpWx/2012/20120101_EVE_L0CS_DIODES_1m.txt'),
+        fileid=("http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook"
+                "/L0CS/SpWx/2012/20120101_EVE_L0CS_DIODES_1m.txt"),
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
         instrument='eve')
