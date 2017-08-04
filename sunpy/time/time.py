@@ -119,6 +119,13 @@ def _iter_empty(iter):
     return False
 
 
+def _astropy_time(time):
+    """
+    Return an `~astropy.time.Time` instance, running it through `~sunpy.time.parse_time` if needed
+    """
+    return time if isinstance(time, astropy.time.Time) else astropy.time.Time(parse_time(time))
+
+
 def parse_time(time_string, time_format='', **kwargs):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.

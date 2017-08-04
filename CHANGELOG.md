@@ -73,9 +73,16 @@ Latest
   animate N-Dimensional data with the associated WCS object.
 * Moved Docs to docs/ to follow the astropy style
 * Added SunPy specific warnings under util.
+* SunPy coordinate frames can now be transformed to and from Astropy coordinate frames
+* The time attribute for SunPy coordinate frames has been renamed from `dateobs` to `obstime`
+* Ephemeris calculations with higher accuracy are now available under `sunpy.coordinates.ephemeris`
+* Add support for SunPy coordinates to specify observer as a string of a major solar-system body,
+  with the default being Earth.  To make transformations using an observer specified as a string,
+  `obstime` must be set.
 * Added VSO query result block level caching in the database module. This
   prevents redownloading of files which have already been downloaded.
   Especially helpful in case of overlapping queries.
+
 
 0.7.0
 -----
