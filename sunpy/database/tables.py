@@ -8,8 +8,9 @@ from time import strptime, mktime
 from datetime import datetime
 import fnmatch
 import os
+import math
 
-from astropy.units import Unit, nm, equivalencies
+from astropy.units import Unit, nm, equivalencies, quantity
 import astropy.table
 from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean,\
     Table, ForeignKey
@@ -400,13 +401,34 @@ class DatabaseEntry(Base):
         instrument = getattr(sr_block, 'instrument', None)
         time_start = sr_block.time.start
         time_end = sr_block.time.end
-        wavelength_temp = getattr(sr_block, 'wavelength', None)
+
+        wavelengths = getattr(sr_block, 'wavelength', None)
+
+        wavelength_temp = {}
         if isinstance(wavelength_temp, tuple):
-            wavemin = wavelength_temp[0]
-            wavemax = wavelength_temp[1]
+            # Tuple of values
+            wavelength_temp['wavemin'] = wavelengths[0]
+            wavelength_temp['wavemax'] = wavelengths[1]
         else:
-            wavemin = wavelength_temp
-            wavemax = wavelength_temp
+            # Single Value
+            wavelength_temp['wavemin'] = wavelength_temp['wavemax'] = wavelengths
+
+        final_values = {}
+        for key, val in wavelength_temp.items():
+            if isinstance(val, quantity.Quantity):
+                unit = getattr(val, 'unit', None)
+                if unit is None:
+                    if  default_waveunit is not None:
+                        unit = Unit(default_waveunit)
+                    else:
+                        raise WaveunitNotFoundError(sr_block)
+                final_values[key] = unit.to(nm, float(val.value), equivalencies.spectral())
+            elif val is None or math.isnan(val):
+                final_values[key] = val
+
+        wavemin = final_values['wavemin']
+        wavemax = final_values['wavemax']
+
         # sr_block.url of a QueryResponseBlock attribute is stored in fileid
         fileid = str(sr_block.url) if sr_block.url is not None else None
         size = None
