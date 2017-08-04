@@ -313,9 +313,10 @@ Obtaining Data
 --------------
 
 SunPy supports searching for and fetching data from a variety of sources,
-including the `VSO <>`__ and the `JSOC <>`__. The majority of SunPy's clients
-can be queried using the 'Fido' interface. An example of searching the VSO using
-this is below::
+including the `VSO <http://virtualsolar.org/>`__ and the `JSOC
+<http://jsoc.stanford.edu/>`__. The majority of SunPy's clients can be queried
+using the 'Fido' interface. An example of searching the VSO using this is
+below::
 
   >>> from sunpy.net import Fido, attrs as a
 
@@ -377,7 +378,7 @@ A simple example of this is shown below::
     7    2011-09-20 01:45:00  2011-09-20 01:45:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_45_00_34z_image_lev1.fits aia__lev1:171:1095558335  N/A      No 2017-08-03 19:41:01 66200.0
     8    2011-09-20 01:45:00  2011-09-20 01:45:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_45_00_34z_image_lev1.fits aia__lev1:171:1095558335  N/A      No 2017-08-03 19:41:01 66200.0
     9    2011-09-20 02:00:00  2011-09-20 02:00:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t02_00_00_34z_image_lev1.fits aia__lev1:171:1095559235  N/A      No 2017-08-03 19:41:01 66200.0
-    10    2011-09-20 02:00:00  2011-09-20 02:00:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t02_00_00_34z_image_lev1.fits aia__lev1:171:1095559235  N/A      No 2017-08-03 19:41:01 66200.0
+   10    2011-09-20 02:00:00  2011-09-20 02:00:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t02_00_00_34z_image_lev1.fits aia__lev1:171:1095559235  N/A      No 2017-08-03 19:41:01 66200.0
 
 
 If you then do a second query::
@@ -399,9 +400,9 @@ If you then do a second query::
     7    2011-09-20 01:45:00  2011-09-20 01:45:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_45_00_34z_image_lev1.fits aia__lev1:171:1095558335  N/A      No 2017-08-03 19:41:01 66200.0
     8    2011-09-20 01:45:00  2011-09-20 01:45:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_45_00_34z_image_lev1.fits aia__lev1:171:1095558335  N/A      No 2017-08-03 19:41:01 66200.0
     9    2011-09-20 02:00:00  2011-09-20 02:00:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t02_00_00_34z_image_lev1.fits aia__lev1:171:1095559235  N/A      No 2017-08-03 19:41:01 66200.0
-    10    2011-09-20 02:00:00  2011-09-20 02:00:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t02_00_00_34z_image_lev1.fits aia__lev1:171:1095559235  N/A      No 2017-08-03 19:41:01 66200.0
-    11    2011-09-20 02:15:00  2011-09-20 02:15:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t02_15_00_34z_image_lev1.fits aia__lev1:171:1095560135  N/A      No 2017-08-03 19:42:19 66200.0
-    12    2011-09-20 02:15:00  2011-09-20 02:15:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t02_15_00_34z_image_lev1.fits aia__lev1:171:1095560135  N/A      No 2017-08-03 19:42:19 66200.0
+   10    2011-09-20 02:00:00  2011-09-20 02:00:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t02_00_00_34z_image_lev1.fits aia__lev1:171:1095559235  N/A      No 2017-08-03 19:41:01 66200.0
+   11    2011-09-20 02:15:00  2011-09-20 02:15:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t02_15_00_34z_image_lev1.fits aia__lev1:171:1095560135  N/A      No 2017-08-03 19:42:19 66200.0
+   12    2011-09-20 02:15:00  2011-09-20 02:15:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t02_15_00_34z_image_lev1.fits aia__lev1:171:1095560135  N/A      No 2017-08-03 19:42:19 66200.0
 
 
 A query can then be performed against the database to get the records.
