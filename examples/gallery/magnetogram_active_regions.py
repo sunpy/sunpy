@@ -57,15 +57,14 @@ downloaded_files = Fido.fetch(result)
 file_name = downloaded_files[0]
 
 ##############################################################################
-# Now to download and read the SRS file.
 # Download the SRS file.
 
 srs_results = Fido.search(a.Time(start_time, end_time), a.Instrument('SRS_TABLE'))
 srs_downloaded_files = Fido.fetch(srs_results)
 
 ##############################################################################
-# We get one SRS file per day. So we pass the filename into the SRS reader. So
-# now `srs_table` contains an astropy table.
+# We get one SRS file per day. To read this file, we pass the filename into 
+# the SRS reader. So now `srs_table` contains an astropy table.
 
 srs_table = srs.read_srs(srs_downloaded_files[0])
 print(srs_table)
