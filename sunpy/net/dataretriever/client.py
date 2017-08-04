@@ -114,7 +114,7 @@ class QueryResponse(list):
                 (qrblock.time.end).strftime(TIME_FORMAT))
             columns['Source'].append(qrblock.source)
             columns['Instrument'].append(qrblock.instrument)
-            columns['Wavelength'].append(str(u.Quantity(qrblock.wavelength)))
+            columns['Wavelength'].append(str(u.Quantity(qrblock.wave)))
 
         return astropy.table.Table(columns)
 
@@ -282,7 +282,7 @@ class GenericClient(object):
             elif isinstance(path, six.string_types) and '{file}' not in path:
                 fname = os.path.join(path, '{file}')
 
-            temp_dict = qres[i].map_.copy()
+            temp_dict = qres[i]._map.copy()
             temp_dict['file'] = filename
             fname = fname.format(**temp_dict)
             fname = os.path.expanduser(fname)
