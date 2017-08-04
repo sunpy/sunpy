@@ -6,7 +6,8 @@
 Manipulating Map image data - finding bright regions
 ====================================================
 
-This example shows how you can do basic image processing on SunPy map image data. In this example, we try to find the brightest regions in an AIA image, and count the approximate number of regions of interest.
+This example shows how you can do basic image processing on SunPy map image data.
+In this example, we try to find the brightest regions in an AIA image, and count the approximate number of regions of interest.
 """
 
 ##############################################################################
@@ -14,7 +15,8 @@ This example shows how you can do basic image processing on SunPy map image data
 
 
 import sunpy
-from sunpy import map
+from sunpy import map as smap
+from sunpy.data.sample import AIA_193_IMAGE
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import ndimage
@@ -23,73 +25,70 @@ from scipy import ndimage
 # Now, we create a SunPy Map object from an AIA FITS file.
 
 
-aiamap = map.Map('AIA20110607_062209_0193.fits')
+aiamap = smap.Map(AIA_193_IMAGE)
 
 ##############################################################################
-# Let's plot the map. Here we use the `clim` method to clip the colour table. This show features in an image with high dynamic range more clearly.
+# Let's plot the map.
+# Here we use the `clim` method to clip the colour table.
+# This show features in an image with high dynamic range more clearly.
 
-
+plt.figure()
 aiamap.plot()
 plt.clim([0,2500])
 plt.colorbar()
 plt.show()
 
 ##############################################################################
-# Now we want to find the brightest regions in this image. We start by finding the maximum value in the image data.
+# Now we want to find the brightest regions in this image.
+# We start by finding the maximum value in the image data.
 
 
-m = np.max(aiamap.data)
-
-##############################################################################
-# Now we want to make a mask, which tells us which regions are bright. We choose the criterion that the data should be at least 5% of the maximum value. Pixels with intensity # values greater than this are included in the mask, while all other pixels are excluded. 
-
-
-mask = aiamap.data > m*0.05
-mask
+data_max = np.max(aiamap.data)
 
 ##############################################################################
-# Mask is a `boolean` array. It can be used to modify the original map data.
+# Now we want to make a mask, which tells us which regions are bright.
+# We choose the criterion that the data should be at least 5% of the maximum value.
+# Pixels with intensity values greater than this are included in the mask, while all other pixels are excluded.
 
 
-
-data2 = aiamap.data * mask
+mask = aiamap.data > data_max*0.05
 
 ##############################################################################
-# We now have a new set of data, where all values outside the mask are set to zero. We can create a new SunPy map structure with this data.
+# Mask is a `boolean` array. It can be used to modify the original map object without modifying the data.
+# Once this mask attirtuve is set, we can plot the image again.
 
-
-aiamap2 = map.Map(data2, aiamap.meta)
-
-
-
-aiamap2.plot()
+aiamap.mask = mask
+plt.figure()
+aiamap.plot()
 plt.colorbar()
 plt.show()
 
 ##############################################################################
-# Only the brightest pixels remain in the image. However, these areas are artificially broken up into small regions. Estimating the number of significant hot regions will be
-# difficult. We can solve this by applying some smoothing to the image data. Here we apply a 2D Gaussian smoothing function to the data.
+# Only the brightest pixels remain in the image.
+# However, these areas are artificially broken up into small regions.
+# Estimating the number of significant hot regions will be difficult.
+# We can solve this by applying some smoothing to the image data.
+# Here we apply a 2D Gaussian smoothing function to the data.
 
 
-data3 = ndimage.gaussian_filter(data2,32)
+data3 = ndimage.gaussian_filter(aiamap.data, 32)
 
 ##############################################################################
-# Now we can make a third SunPy map with this smoothed data.
+# Now we can make a second SunPy map with this smoothed data.
 
 
-aiamap3 = sunpy.map.Map(data3, aiamap.meta)
+aiamap2 = smap.Map(data3, aiamap.meta)
 
 ##############################################################################
 # Now we can use the function `label` from the `scipy.ndimage` module, which counts the number of contiguous regions in an image.
 
 
-labels, n = ndimage.label(aiamap3.data)
+labels, n = ndimage.label(aiamap2.data)
 
 ##############################################################################
 # Finally, we plot the smoothed bright image data, along with the estimate of the number of distinct regions. We can see that approximately 6 distinct hot regions are present # above the 5% of the maximum level.
 
 
-aiamap3.plot()
-plt.figtext(0.3,0.2,'Number of regions = ' + str(n),color='white')
+aiamap2.plot()
+plt.figtext(0.3, 0.2, 'Number of regions = {}'.format(n), color='white')
 plt.show()
-
