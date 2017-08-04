@@ -19,12 +19,9 @@ aia = sunpy.map.Map(AIA_171_IMAGE)
 ###############################################################################
 # Now we create a new custom aia with our new mask and
 # plot the result using our modified colormap
-scaled_map = sunpy.map.Map(aia.data, aia.meta, mask=mask.mask)
 mask = ma.masked_greater_equal(r, 1)
-
-
+scaled_map = sunpy.map.Map(aia.data, aia.meta, mask=mask.mask)
 max_indices = np.unravel_index(aia.data.argmax(), aia.data.shape) * u.pixel
-
 hpc_max = aia.pixel_to_data(max_indices[1], max_indices[0])
 
 ###############################################################################
