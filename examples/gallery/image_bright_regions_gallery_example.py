@@ -13,19 +13,16 @@ In this example, we try to find the brightest regions in an AIA image, and count
 ##############################################################################
 # First, import the modules we will need:
 
-
-import sunpy
-from sunpy import map as smap
-from sunpy.data.sample import AIA_193_IMAGE
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import ndimage
+import sunpy.map
+from sunpy.data.sample import AIA_193_IMAGE
 
 ##############################################################################
 # Now, we create a SunPy Map object from an AIA FITS file.
 
-
-aiamap = smap.Map(AIA_193_IMAGE)
+aiamap = sunpy.map.Map(AIA_193_IMAGE)
 
 ##############################################################################
 # Let's plot the map.
@@ -42,14 +39,12 @@ plt.show()
 # Now we want to find the brightest regions in this image.
 # We start by finding the maximum value in the image data.
 
-
 data_max = np.max(aiamap.data)
 
 ##############################################################################
 # Now we want to make a mask, which tells us which regions are bright.
 # We choose the criterion that the data should be at least 5% of the maximum value.
 # Pixels with intensity values greater than this are included in the mask, while all other pixels are excluded.
-
 
 mask = aiamap.data > data_max*0.05
 
@@ -70,24 +65,20 @@ plt.show()
 # We can solve this by applying some smoothing to the image data.
 # Here we apply a 2D Gaussian smoothing function to the data.
 
-
 data2 = ndimage.gaussian_filter(aiamap.data*mask, 32)
 
 ##############################################################################
 # Now we can make a second SunPy map with this smoothed data.
 
-
-aiamap2 = smap.Map(data2, aiamap.meta)
+aiamap2 = sunpy.map.Map(data2, aiamap.meta)
 
 ##############################################################################
 # Now we can use the function `label` from the `scipy.ndimage` module, which counts the number of contiguous regions in an image.
-
 
 labels, n = ndimage.label(aiamap2.data)
 
 ##############################################################################
 # Finally, we plot the smoothed bright image data, along with the estimate of the number of distinct regions. We can see that approximately 6 distinct hot regions are present # above the 5% of the maximum level.
-
 
 aiamap2.plot()
 plt.figtext(0.3, 0.2, 'Number of regions = {}'.format(n), color='white')
