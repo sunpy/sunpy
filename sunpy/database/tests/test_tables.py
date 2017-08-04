@@ -190,7 +190,7 @@ def test_entries_from_fido_search_result_JSOC():
 @pytest.mark.online
 def test_from_fido_search_result_block(fido_search_result):
     entry = DatabaseEntry._from_fido_search_result_block(
-                fido_search_result[0][0])
+                fido_search_result[0, 0][0]._list[0][0])
     expected_entry = DatabaseEntry(
         source='Proba2', provider='esa', physobs='irradiance',
         fileid='http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits',
