@@ -66,12 +66,12 @@ def fido_search_result():
     # No JSOC query
     return Fido.search(
         net_attrs.Time("2012/1/1", "2012/1/2"),
-        net_attrs.Instrument('lyra')|net_attrs.Instrument('eve')|
-        net_attrs.Instrument('goes')|net_attrs.Instrument('noaa-indices')|
-        net_attrs.Instrument('noaa-predict')|
-        (net_attrs.Instrument('norh')&net_attrs.Wavelength(17*units.GHz))|
-        net_attrs.Instrument('rhessi')|
-        (net_attrs.Instrument('EVE')&net_attrs.Level(0))
+        net_attrs.Instrument('lyra') | net_attrs.Instrument('eve') |
+        net_attrs.Instrument('goes') | net_attrs.Instrument('noaa-indices') |
+        net_attrs.Instrument('noaa-predict') |
+        (net_attrs.Instrument('norh') & net_attrs.Wavelength(17*units.GHz)) |
+        net_attrs.Instrument('rhessi') |
+        (net_attrs.Instrument('EVE') & net_attrs.Level(0))
         )
 
 
@@ -586,7 +586,7 @@ def test_add_entry_fido_search_result(database, fido_search_result):
 def test_add_entries_from_fido_search_result_JSOC_client(database):
     assert len(database) == 0
     search_result = Fido.search(
-        net_attrs.jsoc.Time('2014-01-01T00:00:00','2014-01-01T01:00:00'),
+        net_attrs.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
         net_attrs.jsoc.Series('hmi.m_45s'),
         net_attrs.jsoc.Notify("sunpy@sunpy.org")
         )
@@ -595,8 +595,7 @@ def test_add_entries_from_fido_search_result_JSOC_client(database):
 
 
 @pytest.mark.online
-def test_add_entries_from_fido_search_result_duplicates(database,
-        fido_search_result):
+def test_add_entries_from_fido_search_result_duplicates(database, fido_search_result):
     assert len(database) == 0
     database.add_from_fido_search_result(fido_search_result)
     assert len(database) == 65
@@ -605,8 +604,7 @@ def test_add_entries_from_fido_search_result_duplicates(database,
 
 
 @pytest.mark.online
-def test_add_entries_from_fido_search_result_ignore_duplicates(database,
-        fido_search_result):
+def test_add_entries_from_fido_search_result_ignore_duplicates(database, fido_search_result):
     assert len(database) == 0
     database.add_from_fido_search_result(fido_search_result)
     assert len(database) == 65
