@@ -41,20 +41,17 @@ results = Fido.search(a.Time(start_time, end_time),
                       a.vso.Sample(60 * u.second))
 
 ##############################################################################
-# We will only download the first file for the day. For that we use slicing
-# On the search results.
+# We will only download the first file for the day. For that we use fido
+# indexing on the search results which will return the first file for the day.
 
 result = results[0, 0]
 
 ##############################################################################
-# Download the file.
+# Download the file. The `fetch` method returns a list of filenames. As we
+# used indexing to get the first file of the day, the list contains one
+# filename.
 
-downloaded_files = Fido.fetch(result)
-
-##############################################################################
-# As the `fetch` method returns a list, our filename is its first element.
-
-file_name = downloaded_files[0]
+file_name = Fido.fetch(result)
 
 ##############################################################################
 # Download the SRS file.
