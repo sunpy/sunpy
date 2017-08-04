@@ -400,8 +400,13 @@ class DatabaseEntry(Base):
         instrument = getattr(sr_block, 'instrument', None)
         time_start = sr_block.time.start
         time_end = sr_block.time.end
-        wavemin = None
-        wavemax = None
+        wavelength_temp = getattr(sr_block, 'wavelength', None)
+        if isinstance(wavelength_temp, tuple):
+            wavemin = wavelength_temp[0]
+            wavemax = wavelength_temp[1]
+        else:
+            wavemin = wavelength_temp
+            wavemax = wavelength_temp
         # sr_block.url of a QueryResponseBlock attribute is stored in fileid
         fileid = str(sr_block.url) if sr_block.url is not None else None
         size = None
@@ -527,18 +532,18 @@ def entries_from_query_result(qr, default_waveunit=None):
 
 def entries_from_fido_search_result(sr, default_waveunit=None):
     """
-    Use a `sunpy.net.dataretriever.downloader_factory.UnifiedResponse`
+    Use a `sunpy.net.dataretriever.fido_factory.UnifiedResponse`
     object returned from
-    :meth:`sunpy.net.dataretriever.downloader_factory.UnifiedDownloaderFactory.search`
+    :meth:`sunpy.net.dataretriever.fido_factory.UnifiedDownloaderFactory.search`
     to generate instances of :class:`DatabaseEntry`. Return an iterator
     over those instances.
 
     Parameters
     ----------
-    search_result : `sunpy.net.dataretriever.downloader_factory.UnifiedResponse`
+    search_result : `sunpy.net.dataretriever.fido_factory.UnifiedResponse`
             A UnifiedResponse object that is used to store responses from the
             unified downloader. This is returned by the ``search`` method of a
-            :class:`sunpy.net.dataretriever.downloader_factory.UnifiedDownloaderFactory`
+            :class:`sunpy.net.dataretriever.fido_factory.UnifiedDownloaderFactory`
             object.
 
     default_waveunit : `str`, optional

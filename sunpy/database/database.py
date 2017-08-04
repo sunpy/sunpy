@@ -865,10 +865,10 @@ class Database(object):
 
         Parameters
         ----------
-        search_result : `sunpy.net.dataretriever.downloader_factory.UnifiedResponse`
+        search_result : `sunpy.net.fido_factory.UnifiedResponse`
             A UnifiedResponse object that is used to store responses from the
             unified downloader. This is returned by the ``search`` method of a
-            :class:`sunpy.net.dataretriever.downloader_factory.UnifiedDownloaderFactory`
+            :class:`sunpy.net.fido_factory.UnifiedDownloaderFactory`
             object.
 
         ignore_already_added : `bool`
