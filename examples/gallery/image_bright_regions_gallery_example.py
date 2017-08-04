@@ -71,13 +71,13 @@ plt.show()
 # Here we apply a 2D Gaussian smoothing function to the data.
 
 
-data3 = ndimage.gaussian_filter(aiamap.data, 32)
+data2 = ndimage.gaussian_filter(aiamap.data*mask, 32)
 
 ##############################################################################
 # Now we can make a second SunPy map with this smoothed data.
 
 
-aiamap2 = smap.Map(data3, aiamap.meta)
+aiamap2 = smap.Map(data2, aiamap.meta)
 
 ##############################################################################
 # Now we can use the function `label` from the `scipy.ndimage` module, which counts the number of contiguous regions in an image.
