@@ -6,6 +6,7 @@ The brightest pixel location
 How to find and overplot the location of the brightest pixel
 """
 import numpy as np
+import numpy.ma as ma
 import astropy.units as u
 import matplotlib.pyplot as plt
 from sunpy.data.sample import AIA_171_IMAGE
