@@ -393,16 +393,14 @@ class DatabaseEntry(Base):
         # are set as None for now.
         source = getattr(sr_block, 'source', None)
         provider = getattr(sr_block, 'provider', None)
-        # physobs is written as phyobs in
-        # sunpy.net.dataretriever.client.QueryResponseBlock
-        physobs = getattr(sr_block, 'phyobs', None)
+        physobs = getattr(sr_block, 'physobs', None)
         if physobs is not None:
             physobs = str(physobs)
         instrument = getattr(sr_block, 'instrument', None)
         time_start = sr_block.time.start
         time_end = sr_block.time.end
 
-        wavelengths = getattr(sr_block, 'wavelength', None)
+        wavelengths = getattr(sr_block, 'wave', None)
         wavelength_temp = {}
         if isinstance(wavelength_temp, tuple):
             # Tuple of values
