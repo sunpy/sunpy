@@ -95,7 +95,7 @@ class GOESClient(GenericClient):
         """
         self.map_['source'] = 'nasa'
         self.map_['instrument'] = 'goes'
-        self.map_['phyobs'] = 'irradiance'
+        self.map_['physobs'] = 'irradiance'
         self.map_['provider'] = 'sdac'
 
     @classmethod

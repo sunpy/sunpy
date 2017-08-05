@@ -15,6 +15,7 @@ __all__ = ['NoRHClient']
 
 BASEURL = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/{freq}%y%m%d'
 
+
 class NoRHClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
@@ -58,11 +59,14 @@ class NoRHClient(GenericClient):
         # files of the requested time ranger are included.
         # This is done because the archive contains daily files.
         if timerange.start.time() != datetime.time(0, 0):
-            timerange = TimeRange('{:%Y-%m-%d}'.format(timerange.start), timerange.end)
+            timerange = TimeRange('{:%Y-%m-%d}'.format(timerange.start),
+                                  timerange.end)
+
         norh = Scraper(BASEURL, freq=freq)
         # TODO: warn user that some files may have not been listed, like for example:
         #       tca160504_224657 on ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2016/05/
         #       as it doesn't follow pattern.
+
         return norh.filelist(timerange)
 
     def _get_time_for_url(self, urls):
@@ -82,7 +86,7 @@ class NoRHClient(GenericClient):
         self.map_['source'] = 'NAOJ'
         self.map_['provider'] = 'NRO'
         self.map_['instrument'] = 'NORH'
-        self.map_['phyobs'] = ''
+        self.map_['physobs'] = ''
 
     @classmethod
     def _can_handle_query(cls, *query):
