@@ -16,6 +16,7 @@ For more details checkout the :ref:`reference`.
    acquiring_data/index
    data_types/index
    plotting
+   units-coordinates
    time
    roi
    customization

@@ -190,93 +190,79 @@ Quantities and Units
 --------------------
 
 Many capabilities in SunPy make use of physical quantities that are specified
-with units. SunPy uses `~astropy.units` to
-implement this functionality. For example, the solar radius above is a physical quantity
-that can be expressed in length units.  In the example above ::
+with units. SunPy uses `~astropy.units` to implement this functionality.
+Quantities and units are powerful tools for keeping track of variables with
+physical meaning and make it straightforward to convert the same physical
+quantity into different units. To learn more about the capabilities of
+quantities and units, consult :ref:`units-coordinates-sunpy` or
+`the astropy tutorial <http://www.astropy.org/astropy-tutorials/Quantities.html>`__.
 
-    from sunpy.sun import constants as con
-    con.radius
+To demonstrate this, let's look at the solar radius constant. This is a physical quantity
+that can be expressed in length units ::
+
+    >>> from sunpy.sun import constants as con
+    >>> con.radius
     <Constant name=u'Solar radius' value=695508000.0 error=26000.0 units='m' reference=u"Allen's Astrophysical Quantities 4th Ed.">
 
-shows the solar radius in units of meters.  It is simple to express the same physical quantity in different units::
+shows the solar radius in units of meters.  The same physical quantity can be expressed in different units instead using the `.to()` method::
 
-    con.radius.to('km')
-    <Quantity 695508.0 km>
+    >>> con.radius.to('km')
+    >>> <Quantity 695508.0 km>
 
-To get the numerical value of the solar radius in kilometers - without the unit information - use ::
+or equivalently::
 
-    con.radius.to('km').value
+    >>> import astropy.units as u
+    >>> con.radius.to(u.km)
+    >>> <Quantity 695508.0 km>
+
+If, as is sometimes the case, you need just the raw value or the unit from a quantity, you can access these individually
+with the `value` and `unit` attributes, respectively::
+
+    >>> r = con.radius.to(u.km)
+    >>> r.value
     695508.0
+    >>> r.unit
+    Unit("km")
 
-Quantities and units are simple and powerful tools for keeping track of the
-units you're working in, and make it easy to convert the same physical quantity
-into different units. To learn more about the capabilities of quantities and
-units, please consult `the astropy tutorial
-<http://www.astropy.org/astropy-tutorials/Quantities.html>`__.
-
-Here's a simple example of the power of units. Suppose you have the radius of a
-circle and would like to calculate its area. The following code implements
-this::
+This is useful, but the real power of units is in using them in calculations.
+Suppose you have the radius of a circle and would like to calculate its area.
+The following code implements this::
 
     >>> import numpy as np
     >>> import astropy.units as u
-    >>> @u.quantity_input(radius=u.m)
-    ... def circle_area(radius):
+
+    >>> def circle_area(radius):
     ...     return np.pi * radius ** 2
 
 The first line imports numpy, and the second line imports astropy's units
-module. The beginning of the third line (the "@" symbol) indicates that what
-follows is a Python decorator. In this case, the decorator allows us to specify
-what kind of unit the function input variable "radius" in the following function
-"circle_area" should have. In this case, it is meters. The decorator checks that
-the input is convertible to the units specified in the decorator. Calculating
-the area of a circle with radius 4 meters using the function defined above is
-simple ::
+module. The function then calculates the area based on a given radius. When
+it does this, it tracks the units of the input and propagates them through
+the calculation. Therefore, if we define the radius in meters, the area will
+be in meters squared::
 
-    circle_area(4 * u.m)
+    >>> circle_area(4 * u.m)
     <Quantity 50.26548245743669 m2>
 
-The units of the returned area are what we expect, namely the meters squared
-(m2). However, we can also use other units of measurement; for a circle with
-radius 4 kilometers ::
+This also works with different units, for example ::
 
-    circle_area(4 * u.km)
-    <Quantity 50.26548245743669 km2>
-
-Even although the input value of the radius was not in meters, the function does
-not crash; this is because the input unit is convertible to meters. This also
-works across different systems of measurement, for example ::
-
-    circle_area(4 * u.imperial.foot)
+    >>> circle_area(4 * u.imperial.foot)
     <Quantity 50.26548245743669 ft2>
 
-However, if the input unit is not convertible to meters, then an error is thrown ::
+As demonstrated above, we can convert between different systems of measurement.
+For example, if you want the area of a circle in square feet, but were given
+the radius in meters, then you can convert it before passing it into the function::
 
-    >>> circle_area(4 * u.second)   # doctest: +SKIP
-    ...
-    UnitsError: Argument 'radius' to function 'circle_area' must be in units convertable to 'm'.
-
-Also, if no unit is specified, an error is thrown ::
-
-    >>> circle_area(4)   # doctest: +SKIP
-    ...
-    TypeError: Argument 'radius' to function has 'circle_area' no 'unit' attribute. You may want to pass in an astropy Quantity instead.
-
-Using units allows the user to be explicit about what the function
-expects.  Units also make conversions very easy to do.  For example,
-if you want the area of a circle in square feet, but were given
-measurements in meters, then ::
-
-    circle_area((4 * u.m).to(u.imperial.foot))
+    >>> circle_area((4 * u.m).to(u.imperial.foot))
     <Quantity 541.0531502245425 ft2>
 
-or ::
+or you can convert the output::
 
     >>> circle_area(4 * u.m).to(u.imperial.foot ** 2)
     <Quantity 541.0531502245426 ft2>
 
-Astropy units and quantities are very powerful, and are used throughout SunPy.  To find out more about units and
-quantities, please consult the `the astropy tutorial <http://www.astropy.org/astropy-tutorials/Quantities.html>`__ and
+
+This is an extremely brief summary of the powerful capbilities of Astropy units.  To find out more, see
+the `the astropy tutorial <http://www.astropy.org/astropy-tutorials/Quantities.html>`__ and
 `documentation <http://docs.astropy.org/en/stable/units/index.html>`__
 
 
@@ -313,10 +299,10 @@ Obtaining Data
 --------------
 
 SunPy supports searching for and fetching data from a variety of sources,
-including the `VSO <http://virtualsolar.org/>`__ and the `JSOC
-<http://jsoc.stanford.edu/>`__. The majority of SunPy's clients can be queried
-using the 'Fido' interface. An example of searching the VSO using this is
-below::
+including the `VSO <http://virtualsolar.org/>`__ and the
+`JSOC <http://jsoc.stanford.edu/>`__. The majority of SunPy's clients can be
+queried using the 'Fido' interface. An example of searching the VSO using this
+is below::
 
   >>> from sunpy.net import Fido, attrs as a
 
@@ -413,28 +399,3 @@ A query can then be performed against the database to get the records.
 
 You can see that only two extra records were added to the database. For more
 information check out the :ref:`database_guide`.
-
-
-Querying Helioviewer.org
-------------------------
-
-SunPy can be used to make several basic requests using the The `Helioviewer.org API <http://helioviewer.org/api/>`__
-including generating a PNG and downloading a `JPEG 2000 <http://wiki.helioviewer.org/wiki/JPEG_2000>`__
-image and loading it into a SunPy Map.
-
-
-A simple example of a helioviewer query and generating a plot of the result follows::
-
-
-   >>> from sunpy.net.helioviewer import HelioviewerClient
-   >>> import matplotlib.pyplot as plt
-   >>> from matplotlib.image import imread
-   >>> hv = HelioviewerClient()
-   >>> file = hv.download_png('2099/01/01', 4.8, "[SDO,AIA,AIA,304,1,100]", x0=0, y0=0, width=512, height=512)
-   >>> im = imread(file)
-   >>> plt.imshow(im)
-   >>> plt.axis('off')
-   >>> plt.show()
-
-This downloads a PNG image of the latest AIA 304 image available on `Helioviewer.org <http://helioviewer.org>`_.  In the
- `~sunpy.net.helioviewer.HelioviewerClient.download_png` command the value, 4.8, refers to the image resolution in arcseconds per pixel (larger values mean lower resolution), x0 and y0 are the center points about which to focus and the width and height are the pixel values for the image dimensions. For more information checkout the :doc:`helioviewer guide <acquiring_data/helioviewer>`.
