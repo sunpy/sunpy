@@ -8,6 +8,7 @@ from datetime import datetime
 
 import pytest
 import os
+import math
 
 from astropy import units as u
 from astropy import conf
@@ -122,6 +123,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         fileid='http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
+        wavemin=math.nan, wavemax=math.nan,
         instrument='lyra')
     # 54 entries from EVE
     assert entries[2] == DatabaseEntry(
@@ -137,6 +139,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         fileid='http://umbra.nascom.nasa.gov/goes/fits/2012/go1520120101.fits',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
+        wavemin=math.nan, wavemax=math.nan,
         instrument='goes')
     # 1 entry from noaa-indices
     assert entries[58] == DatabaseEntry(
@@ -144,6 +147,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         fileid='ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
+        wavemin=math.nan, wavemax=math.nan,
         instrument='noaa-indices')
     # 1 entry from noaa-predict
     assert entries[59] == DatabaseEntry(
@@ -151,6 +155,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         fileid='http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
+        wavemin=math.nan, wavemax=math.nan,
         instrument='noaa-predict')
     # 2 entries from norh
     assert entries[60] == DatabaseEntry(
@@ -159,6 +164,7 @@ def test_entries_from_fido_search_result(fido_search_result):
                 "pub/nsro/norh/data/tcx/2012/01/tca120101"),
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
+        wavemin=17634850.470588233, wavemax=17634850.470588233,
         instrument='NORH')
     # 1 entry from rhessi
     assert entries[62] == DatabaseEntry(
@@ -167,6 +173,7 @@ def test_entries_from_fido_search_result(fido_search_result):
                 "hessidata/metadata/catalog/hsi_obssumm_20120101_016.fits"),
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
+        wavemin=math.nan, wavemax=math.nan,
         instrument='rhessi')
     # 2 entries from eve, level 0
     assert entries[63] == DatabaseEntry(
@@ -175,6 +182,7 @@ def test_entries_from_fido_search_result(fido_search_result):
                 "/L0CS/SpWx/2012/20120101_EVE_L0CS_DIODES_1m.txt"),
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
+        wavemin=math.nan, wavemax=math.nan,
         instrument='eve')
 
 
@@ -201,6 +209,7 @@ def test_from_fido_search_result_block(fido_search_result):
         fileid='http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
+        wavemin=math.nan, wavemax=math.nan,
         instrument='lyra')
     assert entry == expected_entry
 
