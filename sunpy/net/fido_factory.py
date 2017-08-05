@@ -146,6 +146,15 @@ class UnifiedResponse(Sequence):
         """
         return self._list[i]
 
+    def response_block_properties(self):
+        """
+        Returns a set of class attributes on all the response blocks.
+        """
+        s = self.get_response(0).response_block_properties()
+        for i in range(1, len(self)):
+            s.intersection(self.get_response(i).response_block_properties())
+        return s
+
     @property
     def responses(self):
         """

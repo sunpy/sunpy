@@ -206,6 +206,17 @@ class QueryResponse(list):
     def add_error(self, exception):
         self.errors.append(exception)
 
+    def response_block_properties(self):
+        """
+        Returns a set of class attributes on all the response blocks.
+        """
+        s = {a if not a.startswith('_') else None for a in dir(self[0])}
+        for resp in self[1:]:
+            s = s.intersection({a if not a.startswith('_') else None for a in dir(resp)})
+
+        s.remove(None)
+        return s
+
     def __str__(self):
         """Print out human-readable summary of records retrieved"""
         return str(self.build_table())
