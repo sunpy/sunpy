@@ -14,36 +14,40 @@ on the GOES event list definitions and data.
 
 The functions in this module provide useful software to analyse GOES/XRS
 observations.  First they allow the GOES event list to be imported into a
-python session (get_goes_event_list()).
+Python session (`~sunpy.instr.goes.get_goes_event_list`).
 
-They also allow the thermodynamic properties of the emitting solar plasma to
-be determined.  Temperature and emission measure are obtained using
-calculate_temperature_em(), which calls _goes_chianti_tem(), which in turn
-calls _goes_get_chianti_temp() and _goes_get_chianti_em().  These two
-functions currently rely on lookup tables relating the GOES fluxes to the
-isothermal temperature and volume emission measure.  These tables were
-calculated by functions in SolarSoftWare (SSW) using the CHIANTI atomic
-physics database ([Ref2]_). For more detail, see the docstring of
-calculate_temperature_em() and references therein.
+They also allow the thermodynamic properties of the emitting solar plasma to be
+determined. Temperature and emission measure are obtained using
+`~sunpy.instr.goes.calculate_temperature_em`, which calls
+`~sunpy.instr.goes._goes_chianti_tem`, which in turn calls
+`~sunpy.instr.goes._goes_get_chianti_temp` and
+`~sunpy.instr.goes._goes_get_chianti_em`. These two functions currently rely on
+lookup tables relating the GOES fluxes to the isothermal temperature and volume
+emission measure. These tables were calculated by functions in SolarSoftWare
+(SSW) using the CHIANTI atomic physics database ([Ref2]_). For more detail, see
+the docstring of calculate_temperature_em` and references therein.
 
 The radiative loss rate of the soft X-ray-emitting plasma across all
-wavelengths can be found with calculate_radiative_loss_rate().  This function
-calls _calc_rad_loss() which, like _goes_get_chianti_temp() and
-_goes_get_chianti_em(), makes use of a look up table calculated by functions
-in SSW using CHIANTI.  This table relates the temperature and emission
-measure of the emitting solar plasma to the thermal energy radiative over
-all wavelengths.  For more information on how this is done, see
-the docstring of _calc_rad_loss() and reference therein.
+wavelengths can be found with
+`~sunpy.instr.goes.calculate_radiative_loss_rate`. This function calls
+`~sunpy.instr.goes._calc_rad_loss` which, like
+`~sunpy.instr.goes._goes_get_chianti_temp` and
+`~sunpy.instr.goes._goes_get_chianti_em`, makes use of a look up table
+calculated by functions in SSW using CHIANTI. This table relates the
+temperature and emission measure of the emitting solar plasma to the thermal
+energy radiative over all wavelengths. For more information on how this is
+done, see the docstring of `~sunpy.instr.goes._calc_rad_loss` and reference
+therein.
 
-Meanwhile, the X-ray luminosity in the two GOES passbands can be
-obtained by calculate_xray_luminosity().  To do so, this function calls
-_goes_lx() and calc_xraylum().
+Meanwhile, the X-ray luminosity in the two GOES passbands can be obtained by
+`~sunpy.instr.goes.calculate_xray_luminosity`. To do so, this function calls
+`~sunpy.instr.goes._goes_lx` and ~sunpy.instr.goes.calc_xraylum`.
 
 References
 ----------
 
 .. [Ref1] Hanser, F.A., & Sellers, F.B. 1996, Proc. SPIE, 2812, 344
-.. [Ref2] Dere, K.P., et al. 2009 A&A, 498, 915 DOI: 10.1051/0004-6361/200911712
+.. [Ref2] Dere, K.P., et al. 2009 A&A, 498, 915 DOI: `10.1051/0004-6361/200911712 <https://dx.doi.org/10.1051/0004-6361/200911712>`__
 
 """
 
