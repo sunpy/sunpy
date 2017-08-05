@@ -403,7 +403,6 @@ class DatabaseEntry(Base):
         time_end = sr_block.time.end
 
         wavelengths = getattr(sr_block, 'wavelength', None)
-
         wavelength_temp = {}
         if isinstance(wavelength_temp, tuple):
             # Tuple of values
@@ -439,12 +438,15 @@ class DatabaseEntry(Base):
             wavemin=wavemin, wavemax=wavemax)
 
     def __eq__(self, other):
-        wavemins_equal = self.wavemin is None and other.wavemin is None or\
-            self.wavemin is not None and other.wavemin is not None and\
-            round(self.wavemin, 10) == round(other.wavemin, 10)
-        wavemaxs_equal = self.wavemax is None and other.wavemax is None or\
-            self.wavemax is not None and other.wavemax is not None and\
-            round(self.wavemax, 10) == round(other.wavemax, 10)
+        wavemins_equal = (self.wavemin is None and other.wavemin is None) or\
+                         (math.isnan(self.wavemin) and math.isnan(other.wavemin)) or\
+                         (self.wavemin is not None and other.wavemin is not None and\
+                          round(self.wavemin, 10) == round(other.wavemin, 10))
+        # Order of comparisions is important, because isnan(None) throws error
+        wavemaxs_equal = (self.wavemax is None and other.wavemax is None) or\
+                         (math.isnan(self.wavemax) and math.isnan(other.wavemax)) or\
+                         (self.wavemax is not None and other.wavemax is not None and\
+                          round(self.wavemax, 10) == round(other.wavemax, 10))
         return (
             (self.id == other.id or self.id is None or other.id is None) and
             self.source == other.source and
