@@ -3,6 +3,12 @@
 SunPy spectra
 =============
 
+.. warning::
+
+   The spectra module is being moved to an affiliated package, see `spectra
+   <https://github.com/sunpy/spectra>`__.
+
+
 Overview
 --------
 One of core classes in SunPy is a Spectrum and Spectrogram. These representing

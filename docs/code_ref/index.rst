@@ -13,7 +13,7 @@ Code Reference
    data
    database
    image
-   instr/index
+   instr
    io
    lightcurve
    map
