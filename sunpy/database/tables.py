@@ -8,7 +8,6 @@ from time import strptime, mktime
 from datetime import datetime
 import fnmatch
 import os
-import math
 
 from astropy.units import Unit, nm, equivalencies, quantity
 import astropy.table
@@ -16,6 +15,7 @@ from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean,\
     Table, ForeignKey
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
+import numpy as np
 
 from sunpy.time import parse_time, TimeRange
 from sunpy.io import fits, file_tools as sunpy_filetools
@@ -417,12 +417,12 @@ class DatabaseEntry(Base):
             if isinstance(val, quantity.Quantity):
                 unit = getattr(val, 'unit', None)
                 if unit is None:
-                    if  default_waveunit is not None:
+                    if default_waveunit is not None:
                         unit = Unit(default_waveunit)
                     else:
                         raise WaveunitNotFoundError(sr_block)
                 final_values[key] = unit.to(nm, float(val.value), equivalencies.spectral())
-            elif val is None or math.isnan(val):
+            elif val is None or np.isnan(val):
                 final_values[key] = val
 
         wavemin = final_values['wavemin']
@@ -444,8 +444,8 @@ class DatabaseEntry(Base):
             # This means one is None and the other isnt
             wavemins_equal = False
         else:
-            wavemins_equal = (math.isnan(self.wavemin) and math.isnan(other.wavemin)) or\
-                             (self.wavemin is not None and other.wavemin is not None and\
+            wavemins_equal = (np.isnan(self.wavemin) and np.isnan(other.wavemin)) or\
+                             (self.wavemin is not None and other.wavemin is not None and
                               round(self.wavemin, 10) == round(other.wavemin, 10))
         # Order of comparisions is important, because isnan(None) throws error
         if self.wavemax is None and other.wavemax is None:
@@ -454,8 +454,8 @@ class DatabaseEntry(Base):
             # This means one is None and the other isnt
             wavemaxs_equal = False
         else:
-            wavemaxs_equal = (math.isnan(self.wavemax) and math.isnan(other.wavemax)) or\
-                             (self.wavemax is not None and other.wavemax is not None and\
+            wavemaxs_equal = (np.isnan(self.wavemax) and np.isnan(other.wavemax)) or\
+                             (self.wavemax is not None and other.wavemax is not None and
                               round(self.wavemax, 10) == round(other.wavemax, 10))
         return (
             (self.id == other.id or self.id is None or other.id is None) and
