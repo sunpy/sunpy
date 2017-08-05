@@ -39,7 +39,7 @@ class NOAAIndicesClient(GenericClient):
         """
         self.map_['source'] = 'sdic'
         self.map_['instrument'] = 'noaa-indices'
-        self.map_['phyobs'] = 'sunspot number'
+        self.map_['physobs'] = 'sunspot number'
         self.map_['provider'] = 'swpc'
 
     @classmethod
@@ -83,7 +83,7 @@ class NOAAPredictClient(GenericClient):
         """
         self.map_['source'] = 'ises'
         self.map_['instrument'] = 'noaa-predict'
-        self.map_['phyobs'] = 'sunspot number'
+        self.map_['physobs'] = 'sunspot number'
         self.map_['provider'] = 'swpc'
 
     @classmethod

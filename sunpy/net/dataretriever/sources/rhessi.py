@@ -29,7 +29,7 @@ class RHESSIClient(GenericClient):
         """
         self.map_['source'] = 'rhessi'
         self.map_['instrument'] = 'rhessi'
-        self.map_['phyobs'] = 'irradiance'
+        self.map_['physobs'] = 'irradiance'
         self.map_['provider'] = 'nasa'
 
     @classmethod
