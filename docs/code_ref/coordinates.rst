@@ -162,8 +162,9 @@ which is itself an instance of the
 `~sunpy.coordinates.frames.HeliographicStonyhurst` frame. The default observer
 location is set to the position of the Earth (using
 `~sunpy.coordinates.ephemeris.get_body_heliographic_stonyhurst`) as long as the
-``obstime`` attribute is specified. If the ``obstime`` attribute is not set the
-observer defaults to ``(0°, 0°, 1 AU)`` i.e. the mean position of the Earth. The
+``obstime`` attribute is specified. If the ``obstime`` attribute is not set then
+you will be unable to transform the frame unless an explicit ``observer`` is
+specified, as the time is required to calculate the location of the Earth. The
 location of the observer is automatically populated from meta data when
 coordinate frames are created using map.
 
@@ -181,7 +182,7 @@ position on the solar sphere. The conversion can be performed as follows::
   # Perform the transformation from one to the other.
   >>> hpc2 = hpc1.transform_to(hpc_out)
 
-An example with two maps, i.e. ``aia`` and ``stereo``::
+An example with two maps, named ``aia`` and ``stereo``::
 
   >>> hpc1 = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=aia.coordinate_frame)
   >>> hpc2 = hpc1.transform_to(stereo.coordinate_frame)
