@@ -438,25 +438,23 @@ class DatabaseEntry(Base):
             wavemin=wavemin, wavemax=wavemax)
 
     def __eq__(self, other):
+
         if self.wavemin is None and other.wavemin is None:
             wavemins_equal = True
         elif not all([self.wavemin, other.wavemin]):
             # This means one is None and the other isnt
             wavemins_equal = False
         else:
-            wavemins_equal = (np.isnan(self.wavemin) and np.isnan(other.wavemin)) or\
-                             (self.wavemin is not None and other.wavemin is not None and
-                              round(self.wavemin, 10) == round(other.wavemin, 10))
-        # Order of comparisions is important, because isnan(None) throws error
+            wavemins_equal = np.allclose([self.wavemin], [other.wavemin], equal_nan=True)
+
         if self.wavemax is None and other.wavemax is None:
             wavemaxs_equal = True
         elif not all([self.wavemax, other.wavemax]):
             # This means one is None and the other isnt
             wavemaxs_equal = False
         else:
-            wavemaxs_equal = (np.isnan(self.wavemax) and np.isnan(other.wavemax)) or\
-                             (self.wavemax is not None and other.wavemax is not None and
-                              round(self.wavemax, 10) == round(other.wavemax, 10))
+            wavemaxs_equal = np.allclose([self.wavemax], [other.wavemax], equal_nan=True)
+
         return (
             (self.id == other.id or self.id is None or other.id is None) and
             self.source == other.source and
