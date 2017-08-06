@@ -9,8 +9,9 @@ from skimage import transform
 from astropy import units as u
 from astropy.coordinates import SkyCoord, Longitude
 
+import sunpy.map
 from sunpy.time import parse_time
-from sunpy.coordinates import frames
+from sunpy.coordinates import frames, HeliographicStonyhurst
 
 __author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
 __all__ = ['diff_rot', 'solar_rotate_coordinate', 'diffrot_map']
@@ -234,31 +235,34 @@ def _warp_sun(xy, smap, dt):
     xy2 : `~numpy.ndarray`
         Array with the inverse transformation
     """
+    rotated_time = smap.date - timedelta(seconds=dt.to(u.s).value)
+
     # Calculate the hpc coords
     x = np.arange(0, smap.dimensions.x.value)
     y = np.arange(0, smap.dimensions.y.value)
     xx, yy = np.meshgrid(x, y)
-    hpc_coords = smap.pixel_to_data(xx * u.pix, yy * u.pix)
+    hpc_coords = smap.pixel_to_world(xx * u.pix, yy * u.pix)
 
-    rotated_time = smap.date + timedelta(seconds=dt.to(u.s).value), smap.date
-    vstart = {"b0": smap.heliographic_latitude, "l0": smap.heliographic_longitude}
-    vend = _calc_P_B0_SD(rotated_time)
+    rotated_coord = solar_rotate_coordinate(hpc_coords, rotated_time)
 
-    # Do the diff rot
-    rotted = rot_hpc(hpc_coords[1], hpc_coords[0], rotated_time, smap.date,
-                     occultation=True, vstart=vstart, vend=vend)
-    # The scikit image function `transform.warp` needs the inverse rotation,
-    # therefore we provide the transform from the desired date to the original
-    # date.
+    # To find the values that are behind the sun we need to convert them to HeliographicStonyhurst
+    findOccult = rotated_coord.transform_to(HeliographicStonyhurst)
+    # and find which ones are outside the [-90, 90] range.
+    occult = np.logical_or(np.less(findOccult.lon, -90 * u.deg), np.greater(findOccult.lon, 90 * u.deg))
+
+    # NaN-ing values on the other side of the sun
+    rotated_coord.data.lon[occult] = np.nan * u.deg
+    rotated_coord.data.lat[occult] = np.nan * u.deg
+    rotated_coord.cache.clear()
 
     # Go back to pixel co-ordinates
-    x2, y2 = smap.data_to_pixel(rotted[0], rotted[1])
+    x2, y2 = smap.world_to_pixel(rotated_coord)
 
     # Re-stack the data to make it correct output form
     xy2 = np.column_stack([x2.value.flat, y2.value.flat])
 
     # Returned a masked array with the non-finite entries masked.
-    return np.ma.array(xy2, mask=not(np.isfinite(xy2)))
+    return np.ma.array(xy2, mask=np.isinf(xy2))
 
 
 @u.quantity_input(dt=u.s)
@@ -290,7 +294,7 @@ def diffrot_map(smap, dt):
                          map_args={'smap': smap, 'dt': dt})
 
     # Recover the original intensity range.
-    out = _un_norm(out, smap.data)
+    out = _un_norm(out.T, smap.data)
 
     # Update the meta information with the new date and time.
     out_meta = deepcopy(smap.meta)
