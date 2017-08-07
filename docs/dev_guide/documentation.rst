@@ -28,7 +28,7 @@ code comments. In fact, in addition to what you are reading right now, the
 Sphinx.
 
 Usage
-=====
+#####
 
 All of the SunPy documentation is contained in the ``doc/source`` folder and
 code comments. The examples from the example gallery can be found in
@@ -51,7 +51,7 @@ The rest of this section will describe how to document the SunPy code in order
 to guarantee well-formatted documentation.
 
 doctest
-=======
+#######
 
 The example codes in the Guide section of the docs are configured with the Sphinx
 `doctest extension <http://sphinx-doc.org/ext/doctest.html>`_.
@@ -63,7 +63,7 @@ using: ::
 from inside the ``doc/source`` folder.
 
 Use of quantities and units
-===========================
+---------------------------
 
 Much code perform calculations using physical quantities.  SunPy uses astropy's
 `quantities and units <http://docs.astropy.org/en/stable/units/index.html>`__
@@ -163,10 +163,10 @@ units.
 
 
 Examples
-========
+--------
 
 Modules
-^^^^^^^
+#######
 
 Each module or package should begin with a docstring describing its overall
 purpose and functioning. Below that meta-tags containing author, license, email
@@ -194,7 +194,7 @@ modules
 NumPy/SciPy style guide.
 
 Classes
-^^^^^^^
+#######
 
 Class docstrings should include a clear and concise docstring explaining the
 overall purpose of the class, required and optional input parameters, and the
@@ -268,7 +268,7 @@ Example (:class:`sunpy.map.Map`) ::
     """
 
 Functions
-^^^^^^^^^
+#########
 
 Functions should include a clear and concise docstring explaining the overall
 purpose of the function, required and optional input parameters, and the return
@@ -328,7 +328,7 @@ functions
 NumPy/SciPy style guide.
 
 Trouble-shooting
-################
+----------------
 
 Sphinx can be very particular about formatting, and the warnings and errors
 outputted aren't always obvious.
