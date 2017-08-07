@@ -1,35 +1,25 @@
 Latest
 ------
 
--  Solar rotation calculation and mapcube derotation now use sunpy
-   coordinates.
--  Add tests for RHESSI instrument
+Features:
+
+-  Solar rotation calculation and mapcube derotation now use sunpy coordinates.
 -  Sample data now downloads automatically on import if not available
    and is now pluggable so can be used by affiliated packages. Shortcut
    names have been normalized and all LIGHTCURVE shortcuts have changed
    to TIMESERIES.
 -  Calculation of points on an arc of a great circle connecting two
    points on the Sun.
--  Maps from Helioviewer JPEG2000 files now have correct image scaling.
 -  Removed ``extract_time`` function from ``sunpy.time`` and also tests
    related to the function from ``sunpy.time.tests``
 -  User can now pass a custom time format as an argument inside
    ``sunpy.database.add_from_dir()`` in case the ``date-obs`` metadata
    cannot be read automatically from the files.
--  Get and set methods for composite maps now use Map plot\_settings.
--  Simplified map names when plotting.
 -  Add time format used by some SDO HMI FITS keywords
--  Fix bug in ``wcs.convert_data_to_pixel`` where crpix[1] was used for
-   both axes.
--  Fix some leftover instances of ``GenericMap.units``
--  Fixed bugs in ``sun`` equations
 -  Now the ``sunpy.database.tables.display_entries()`` prints an astropy
    table.
 -  Additional methods added inside the ``sunpy.database`` class to make
    it easier to display the database contents.
--  ``sunpy.io.fits.read`` will now return any parse-able HDUs even if
-   some raise an error.
--  ``VSOClient`` no longer prints a lot of XML junk if the query fails.
 -  Remove unused ``sunpy.visualization.plotting`` module
 -  Port the pyana wrapper to Python 3
 -  ``Map.peek(basic_plot-True)`` no longer issues warnings
@@ -54,11 +44,6 @@ Latest
    been added to animate 1D data. This has resulted in API change for
    the ``sunpy.visualization.imageanimator.ImageAnimator`` class. The
    updateimage method has been renamed to update\_plot.
--  Change the default representation for the Heliographic Carrington
-   frame so Longitude follows the convention of going from 0-360
-   degrees.
--  Fix Map parsing of some header values to allow valid float strings
-   like 'nan' and 'inf'.
 -  Drop support for Python 3.4.
 -  SunPy now requires WCSAxes and Map.draw\_grid only works with
    WCSAxes.
@@ -81,8 +66,6 @@ Latest
    with ``SpatialPair.axis1``. This means values returned by
    ``GenericMap`` now differentiate between physical and pixel
    coordinates.
--  Fix Map parsing of some header values to allow valid float strings
-   like 'nan' and 'inf'.
 -  The physical radius of the Sun (length units) is now passed from Map
    into the coordinate frame so a consistent value is used when
    calculating distance to the solar surface in the
@@ -105,6 +88,27 @@ Latest
 -  Added VSO query result block level caching in the database module.
    This prevents redownloading of files which have already been
    downloaded. Especially helpful in case of overlapping queries.
+-  Change the default representation for the Heliographic Carrington
+   frame so Longitude follows the convention of going from 0-360
+   degrees.
+
+Bug fixes:
+
+-  Add tests for RHESSI instrument
+-  Maps from Helioviewer JPEG2000 files now have correct image scaling.
+-  Get and set methods for composite maps now use Map plot\_settings.
+-  Simplified map names when plotting.
+-  Fix bug in ``wcs.convert_data_to_pixel`` where crpix[1] was used for
+   both axes.
+-  Fix some leftover instances of ``GenericMap.units``
+-  Fixed bugs in ``sun`` equations
+-  ``sunpy.io.fits.read`` will now return any parse-able HDUs even if
+   some raise an error.
+-  ``VSOClient`` no longer prints a lot of XML junk if the query fails.
+-  Fix Map parsing of some header values to allow valid float strings
+   like 'nan' and 'inf'.
+-  Fix Map parsing of some header values to allow valid float strings
+   like 'nan' and 'inf'.
 
 0.7.8
 -----
