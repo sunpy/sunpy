@@ -85,7 +85,7 @@ Ideally, when you start making changes you want to create a git branch to work o
 
     git checkout -b my_fix
 
-You can change my\_fix to anything you prefer.
+You can change ``my_fix`` to anything you prefer.
 If you get stuck or want help, just `ask here`_!
 
 .. _miniconda: https://conda.io/miniconda.html
@@ -129,9 +129,6 @@ This can be sent to a contributor or attached in the Google group.
 
 Just remember, if you hit any problems get in touch!
 
-Finally, a in-depth version of this guide is `located here`_.
-
 .. _friendly guide: https://guides.github.com/activities/hello-world/
 .. _Google Group: https://groups.google.com/forum/#!forum/sunpy
 .. _email a SunPy contributor: stuart@mumford.me.uk
-.. _located here: http://docs.sunpy.org/en/stable/dev.html

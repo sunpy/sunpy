@@ -112,24 +112,6 @@ you need to use the option ``-rs`` for skipped tests and ``-rx`` for
 xfailed tests, respectively. Or use ``-rxs`` for detailed information on
 both skipped and xfailed tests.
 
-.. Unit tests should be written as often as possible using `unittest
-.. <http://docs.python.org/release/3.1.3/library/unittest.html>`_. See the
-.. `Unit Testing section <http://diveintopython3.org/unit-testing.html>`_ of
-.. Dive into Python 3 for more information about unit testing in Python.
-
-.. SunPy uses `tox <http://tox.testrun.org/>`_ to automate testing with
-.. multiple versions of Python. The test environments are isolated and thus
-.. all dependencies will need to be built; this requires the build dependencies
-.. of those Python packages to be present on the system. These call be installed
-.. by calling `sudo aptitude build-dep python-numpy python-scipy python-matplotlib python-pyfits`
-.. on a distribution that derives from Debian. `tox` itself it also required and
-.. can be installed by `pip install tox` (pip is a part of `python-distribute`).
-
-.. The tests can then be run by running `tox` in the project directory.
-.. This will take a very long time on the first run because it will
-.. have to build all dependencies. Subsequent runs will take significantly
-.. less time.
-
 When to write unit tests
 ------------------------
 
