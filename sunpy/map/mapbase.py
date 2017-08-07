@@ -1191,8 +1191,8 @@ Reference Coord:\t {refcoord}
         >>> import sunpy.map
         >>> import sunpy.data.sample
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-        >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=m.coordinate_frame)
-        >>> tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=m.coordinate_frame
+        >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=aia.coordinate_frame)
+        >>> tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=aia.coordinate_frame
         >>> aia.submap(bl, tr)   # doctest: +NORMALIZE_WHITESPACE
         SunPy Map
         ---------
