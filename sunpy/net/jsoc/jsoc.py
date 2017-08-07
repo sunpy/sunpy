@@ -349,7 +349,7 @@ class JSOCClient(object):
         >>> from sunpy.net import jsoc
         >>> from sunpy.net import attrs as a
         >>> client = jsoc.JSOCClient()
-        >>> metadata = client.search_metadata(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+        >>> metadata = client.search_metadata(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:02:00'),
         ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))
         
         Returns
@@ -418,7 +418,7 @@ class JSOCClient(object):
                                 "are not supported."
                 raise TypeError(error_message)
 
-            method = 'url' if protocol == 'fits' else 'url-quick'
+            method = 'url' if protocol == 'fits' else 'url_quick'
             r = cd.export(ds, method=method, protocol=protocol)
             r.wait()
 
@@ -428,7 +428,7 @@ class JSOCClient(object):
             return requests[0]
         return requests
 
-    def check_request(self, responses):
+    def check_request(self, requests):
         """
         Check the status of a request and print out a message about it
 
@@ -444,26 +444,26 @@ class JSOCClient(object):
             A status or list of status' that were returned by JSOC
         """
         # Convert IDs to a list if not already
-        if not isiterable(responses) or isinstance(responses, drms.ExportRequest):
-            responses = [responses]
+        if not isiterable(requests) or isinstance(requests, drms.ExportRequest):
+            requests = [requests]
 
         allstatus = []
-        for response in responses:
-            status = response.status
+        for request in requests:
+            status = request.status
 
             if status == 0:  # Data ready to download
                 print("Request {0} was exported at {1} and is ready to "
-                      "download.".format(response.id,
-                                         response._d['exptime']))
+                      "download.".format(request.id,
+                                         request._d['exptime']))
             elif status == 1:
                 print_message = "Request {0} was submitted {1} seconds ago, "\
                                 "it is not ready to download."
-                print(print_message.format(response.id,
-                                           response._d['wait']))
+                print(print_message.format(request.id,
+                                           request._d['wait']))
             else:
                 print_message = "Request returned status: {0} with error: {1}"
-                json_status = response.status
-                json_error = response._d['error']
+                json_status = request.status
+                json_error = request._d['error']
                 print(print_message.format(json_status, json_error))
 
             allstatus.append(status)
@@ -674,7 +674,7 @@ class JSOCClient(object):
                     break
 
         if wavelength:
-            if not 'WAVELNTH' in primekey:
+            if not primekey.get('WAVELNTH', ''):
                 if isinstance(wavelength, list):
                     wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
                     wavelength = str(wavelength)
@@ -724,7 +724,7 @@ class JSOCClient(object):
         c = drms.Client()
 
         if isMeta:
-            keywords = '***ALL***'
+            keywords = '**ALL**'
         else:
             keywords = iargs.get('keys', keywords_default)
 
