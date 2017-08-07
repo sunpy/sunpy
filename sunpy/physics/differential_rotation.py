@@ -86,7 +86,8 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     return Longitude(rotation_deg * u.deg)
 
 
-def solar_rotate_coordinate(coordinate, new_observer_time, new_observer_location="earth", **diff_rot_kwargs):
+def solar_rotate_coordinate(coordinate, new_observer_time,
+                            new_observer_location="earth", **diff_rot_kwargs):
     """
     Given a coordinate on the Sun, calculate where that coordinate maps to
     at some later or earlier time, given the solar rotation profile.  Note that
@@ -245,10 +246,12 @@ def _warp_sun(xy, smap, dt):
 
     rotated_coord = solar_rotate_coordinate(hpc_coords, rotated_time)
 
-    # To find the values that are behind the sun we need to convert them to HeliographicStonyhurst
+    # To find the values that are behind the sun we need to convert them
+    # to HeliographicStonyhurst
     findOccult = rotated_coord.transform_to(HeliographicStonyhurst)
     # and find which ones are outside the [-90, 90] range.
-    occult = np.logical_or(np.less(findOccult.lon, -90 * u.deg), np.greater(findOccult.lon, 90 * u.deg))
+    occult = np.logical_or(np.less(findOccult.lon, -90 * u.deg),
+                           np.greater(findOccult.lon, 90 * u.deg))
 
     # NaN-ing values on the other side of the sun
     rotated_coord.data.lon[occult] = np.nan * u.deg
@@ -297,13 +300,15 @@ def diffrot_map(smap, dt):
     out = _un_norm(out.T, smap.data)
 
     # Update the meta information with the new date and time.
+    new_time = smap.date + timedelta(seconds=dt.to(u.s).value)
     out_meta = deepcopy(smap.meta)
     date_keys = ('date-obs', 'date_obs')
     date_key_flag = False
     for k in date_keys:
         if k in out_meta:
-            out_meta[k] = smap.date + timedelta(seconds=dt.to(u.s).value)
+            out_meta[k] = "{:%Y-%m-%dT%H:%M:%S}".format(new_time)
             date_key_flag = True
     if not date_key_flag:
-        raise ValueError('Input map does not have date information in the standard map meta keys {:s}.'.format(', '.join(date_keys)))
+        raise ValueError(('Input map does not have date information in the ',
+                          'standard map meta keys {:s}.'.format(', '.join(date_keys))))
     return sunpy.map.Map((out, out_meta))
