@@ -1,3 +1,5 @@
+.. _newcomers:
+
 Newcomer's Guide
 ================
 
