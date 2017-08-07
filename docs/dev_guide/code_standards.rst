@@ -59,5 +59,3 @@ and what you have there is exactly as it should be. In these cases it is
 possible to silence PyLint for that line. PyLint warning messages can be
 disabled at three different levels: globally (using a .pylintrc file),
 file-wide, and for a single line.
-
-(To be finished...)
