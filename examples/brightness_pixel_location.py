@@ -27,6 +27,5 @@ hpc_max = aia.pixel_to_data(max_indices[1], max_indices[0])
 fig = plt.figure()
 ax = plt.subplot(projection=aia)
 aia.plot()
-ax.plot(hpc_max.Tx.to('deg'), hpc_max.Ty.to('deg'), 'bx',
-        transform=ax.get_transform('world'))
+ax.plot_coord(hpc_max)
 plt.show()
