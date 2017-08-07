@@ -9,6 +9,7 @@ You can find the official SunPy website at
 .. toctree::
   :maxdepth: 2
 
+  changelog.rst
   guide/index.rst
   code_ref/index.rst
   generated/gallery/index
