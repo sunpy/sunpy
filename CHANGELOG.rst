@@ -32,7 +32,7 @@ Latest
 -  ``VSOClient`` no longer prints a lot of XML junk if the query fails.
 -  Remove unused ``sunpy.visualization.plotting`` module
 -  Port the pyana wrapper to Python 3
--  ``Map.peek(basic_plot=True)`` no longer issues warnings
+-  ``Map.peek(basic_plot-True)`` no longer issues warnings
 -  Remove the ``sunpy.map.nddata_compat`` module, this makes
    ``Map.data`` and ``Map.meta`` read only.
 -  Add a ``NorthOffsetFrame`` class for generating HGS-like coordinate
@@ -47,7 +47,7 @@ Latest
    ``from sunpy.net.helioviewer import HelioviewerClient``.
 -  Removed compatibility with standalone ``wcsaxes`` and instead depend
    on the version in astropy 1.3. SunPy now therefore depends on
-   astropy>=1.3.
+   astropy>-1.3.
 -  Update to ``TimeRange.__repr__``; now includes the qualified name and
    ``id`` of the object.
 -  A new ``sunpy.visualization.imageanimator.LineAnimator`` class has
@@ -105,6 +105,97 @@ Latest
 -  Added VSO query result block level caching in the database module.
    This prevents redownloading of files which have already been
    downloaded. Especially helpful in case of overlapping queries.
+
+0.7.8
+-----
+
+-  The SunPy data directory "~/sunpy" is no longer created until it is
+   used (issue #2018)
+-  Change the default representation for the Heliographic Carrington
+   frame so Longitude follows the convention of going from 0-360
+   degrees.
+-  Fix for surface gravity unit.
+-  Support for Pandas 0.20.1
+
+0.7.7
+-----
+
+-  Fix errors with Numpy 1.12
+
+0.7.6
+-----
+
+-  Add Astropy 1.3 Support
+
+0.7.5
+-----
+
+-  Fix test faliure (mapbase) with 1.7.4
+-  Restrict supported Astropy version to 1.0<astropy<1.3
+-  Add Figure test env to SunPy repo.
+
+0.7.4
+-----
+
+-  Remove Map always forcing warnings on.
+-  ``Map.center`` now uses ``Map.wcs`` to correctly handle rotation.
+-  Fix link in coordinates documentation.
+-  Update helioviewer URL to HTTPS (fixes access to Helioviewer).
+-  Fix processing of TRACE and YOHKOH measurement properties.
+-  Remove warnings when using ``Map.peek(basic_plot-True)``
+-  Update docstrings for HPC and HCC frames.
+
+0.7.3
+-----
+
+-  Fix ConfigParser for Python 3.5.2 - This allows SunPy to run under
+   Python 3.5.2
+-  Fix incorrect ordering of keys in ``MapMeta``
+-  Add ``sunpy.util.scraper`` to the API documentation.
+
+0.7.2
+-----
+
+-  Fixed bugs in ``sun`` equations
+
+0.7.1
+-----
+
+-  Fix bug in ``wcs.convert_data_to_pixel`` where crpix[1] was used for
+   both axes.
+-  Fix some leftover instances of ``GenericMap.units``
+-  Fixed bugs in ``sun`` equations
+-  Now the ``sunpy.database.tables.display_entries()`` prints an astropy
+   table.
+-  Additional methods added inside the ``sunpy.database`` class to make
+   it easier to display the database contents.
+-  ``sunpy.io.fits.read`` will now return any parse-able HDUs even if
+   some raise an error.
+-  ``VSOClient`` no longer prints a lot of XML junk if the query fails.
+-  Remove unused ``sunpy.visualization.plotting`` module
+-  ``Map.peek(basic_plot-True)`` no longer issues warnings
+-  Remove the ``sunpy.map.nddata_compat`` module, this makes
+   ``Map.data`` and ``Map.meta`` read only.
+-  Add a ``NorthOffsetFrame`` class for generating HGS-like coordinate
+   systems with a shifted north pole.
+-  Remove deprecated ``VSOClient.show`` method.
+-  Deprecate ``sunpy.wcs``: ``sunpy.coordinates`` and ``sunpy.map`` now
+   provide all that functionality in a more robust manner.
+-  Added hdu index in ``sunpy.database.tables.DatabaseEntry`` as a
+   column in the table.
+-  Removed ``HelioviewerClient`` from the ``sunpy.net`` namespace. It
+   should now be imported with
+   ``from sunpy.net.helioviewer import HelioviewerClient``.
+-  Removed compatibility with standalone ``wcsaxes`` and instead depend
+   on the version in astropy 1.3. SunPy now therefore depends on
+   astropy>-1.3.
+-  Update to ``TimeRange.__repr__``; now includes the qualified name and
+   ``id`` of the object.
+-  Change the default representation for the Heliographic Carrington
+   frame so Longitude follows the convention of going from 0-360
+   degrees.
+-  Fix Map parsing of some header values to allow valid float strings
+   like 'nan' and 'inf'.
 
 0.7.0
 -----
@@ -167,6 +258,54 @@ Latest
    specified as a projection to ``matplotlib`` methods and will return a
    ``WCSAxes`` object with ``WCS`` projection.
 
+0.6.5
+-----
+
+-  The draw\_grid keyword of the peek method of Map now accepts booleans
+   or astropy quantities.
+-  Fix bug in ``wcs.convert_data_to_pixel`` where crpix[1] was used for
+   both axes.
+-  Fixed bugs in ``sun`` equations
+
+0.6.4
+-----
+
+-  Bug fix for rhessi summary lightcurve values.
+-  Fix docstring for ``pixel_to_data`` and ``data_to_pixel``.
+-  Fix the URL for the Helioviewer API. (This fixes Helioviewer.)
+-  Fix the way ``reshape_image_to_4d_superpixel`` checks the dimension
+   of the new image.
+-  Fix Map to allow astropy.io.fits Header objects as valid input for
+   meta arguments.
+-  Prevent helioviewer tests from checking access to API when running
+   tests in offline mode.
+
+0.6.3
+-----
+
+-  Change setup.py extras to install suds-jurko not suds.
+
+0.6.2
+-----
+
+-  Changed start of GOES 2 operational time range back to 1980-01-04 so
+   data from 1980 can be read into GOESLightCurve object
+-  Fix bug with numpy 1.10
+-  update astropy\_helpers
+-  Added new sample data
+
+0.6.1
+-----
+
+-  Fixed MapCube animations by working around a bug in Astropy's
+   ImageNormalize
+-  Small fix to RTD builds for Affiliated packages
+-  SunPy can now be installed without having to install Astropy first.
+-  MapCubes processed with ``coalignment.apply_shifts`` now have correct
+   metadata.
+-  Multiple fixes for WCS transformations, especially with solar-x,
+   solar-y CTYPE headers.
+
 0.6.0
 -----
 
@@ -191,7 +330,7 @@ Latest
    bi-quartic.
 -  ``sunpy.image.transform.affine_transform`` now casts integer data to
    float64 and sets NaN values to 0 for all transformations except
-   scikit-image rotation with order <= 3.
+   scikit-image rotation with order <- 3.
 -  CD matrix now updated, if present, when Map pixel size is changed.
 -  Removed now-redundant method for rotating IRIS maps since the
    functionality exists in Map.rotate()
@@ -249,6 +388,56 @@ Latest
 -  Added new sample data file, an AIA cutout file.
 -  Moved documentation build directory to doc/build
 
+0.5.5
+-----
+
+-  Changed default for GOESLightCurve.create() so that it gets the data
+   from the most recent existing GOES fits file.
+-  Improvements to the Map documentation.
+-  Typo fixes in sunpy.wcs documentation.
+
+0.5.4
+-----
+
+-  ``sunpy.image.transform.affine_transform`` now casts integer data to
+   float64 and sets NaN values to 0 for all transformations except
+   scikit-image rotation with order <- 3.
+-  Updated SWPC/NOAA links due to their new website.
+-  Exposed the raw AIA color tables in ``sunpy.cm.color_tables``.
+-  Fixes ``map`` compatibility with Astropy 1.0.x.
+
+0.5.3
+-----
+
+-  Goes peek() plot now works with matplotlib 1.4.x
+-  The ANA file reading C extensions will no longer compile under
+   windows. Windows was not a supported platform for these C extensions
+   previously.
+
+0.5.2
+-----
+
+-  If no CROTA keyword is specified in Map meta data, it will now
+   default to 0 as specified by the FITS WCS standard.
+-  Map now correctly parses and converts the CD matrix, as long as CDELT
+   is specified as well. (Fixes SWAP files)
+-  Fix of HELIO webservice URLs
+-  MapCube.plot() is now fixed and returns a
+   matplotlib.animation.FuncAnimation object.
+
+0.5.1
+-----
+
+-  MAJOR FIX: map.rotate() now works correctly for all submaps and off
+   center rotations.
+-  HELIO URL updated, querys should now work as expected.
+-  All tabs removed from the code base.
+-  All tests now use tempfile rather than creating files in the current
+   directory.
+-  Documentation builds under newer sphinx versions.
+-  ANA and JP2 tests are skipped if dependancies are missing.
+-  ANA tests are skipped on windows.
+
 0.5.0
 -----
 
@@ -276,24 +465,29 @@ Latest
 -  Cleaned up the sunpy namespace, removed .units, /ssw and .sphinx.
    Also moved .coords .physics.transforms.
 -  Added contains functionality to TimeRange module
--  Added t='now' to parse\_time to privide utcnow datetime.
--  Fixed time dependant functions (.sun) to default to t='now'
+-  Added t-'now' to parse\_time to privide utcnow datetime.
+-  Fixed time dependant functions (.sun) to default to t-'now'
 -  Fixed solar\_semidiameter\_angular\_size
 -  Improved line quality and performances issues with map.draw\_grid()
 -  Remove deprecated make\_map command.
 
+0.4.2
+-----
+
+-  Fixes to the operational range of GOES satellites
+-  Fix the URL for HELIO queries.
+
 0.4.1
 -----
 
-Bug Fixes: \* Fix map.rotate() functionality \* Change of source for
-GOES data. \* Fix EIT test data and sunpy FITS saving \* Some
-documentation fixes \* fix file paths to use os.path.join for platform
-independance.
+-  Fix map.rotate() functionality
+-  Change of source for GOES data.
+-  Fix EIT test data and sunpy FITS saving
+-  Some documentation fixes
+-  fix file paths to use os.path.join for platform independance.
 
 0.4.0
 -----
-
-Features:
 
 -  **Major** documentation refactor. A far reaching re-write and
    restructure.
@@ -311,17 +505,12 @@ Features:
    returned by mapcube.peek().
 -  The Glymur library is now used to read JPEG2000 files.
 -  GOESLightCurve now supports all satellites.
-
-Bug Fixes:
-
 -  Add support for VSO queries through proxies.
 -  Fix apparent Right Ascension calulations.
 -  LightCurve meta data member now an OrderedDict Instance
 
 0.3.2
 -----
-
-Bug Fixes:
 
 -  Pass draw\_limb arguments to patches.Circle
 -  Pass graw\_grid arguments to pyplot.plot()
@@ -346,9 +535,7 @@ Known Bugs:
 -  Bug Fix: Pass arguments from Map() to io.read\_file.
 
 0.3.0
-=====
-
-Major Changes:
+-----
 
 -  Removal of Optional PIL dependancy
 -  Parse\_time now looks through nested lists/tuples
@@ -385,8 +572,6 @@ detection \* Automatic fits file detection improved \* extract\_waveunit
 added to io.fits for detection of common ways of storing wavelength unit
 in fits files.
 
-Bug fixes or under the hood changes:
-
 -  A major re-work of all interal imports has resulted in a much cleaner
    namespace, i.e. sunpy.util.util is no longer used to import util.
 -  Some SOHO and STEREO files were not reading properly due to a
@@ -396,9 +581,7 @@ Bug fixes or under the hood changes:
 -  Callisto: Max gap between files removed
 
 0.2.0
-=====
-
-Below are the main features that have been added for this release:
+-----
 
 -  Completely re-written plotting routines for most of the core
    datatypes.
