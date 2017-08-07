@@ -72,8 +72,8 @@ operator would::
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'),
                              a.Wavelength(171*u.angstrom) | a.Wavelength(94*u.angstrom))
 
-The above query searches the Virtual Solar Observatory (VSO) showing that Fido
-can be used instead of explicitly searching the VSO.
+The above query searches the Virtual Solar Observatory (VSO), ``Fido`` is now
+the recommended way to search the VSO in SunPy.
 
 
 Indexing search results

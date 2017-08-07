@@ -14,7 +14,7 @@ download. This will happen when the sample data is imported for the first time.
 
 Maps
 ----
-Maps are the primary data type in SunPy they are spatially aware data arrays.
+Maps are the primary data type in SunPy. They are spatially aware data arrays.
 There are maps for a 2D image, a time series of 2D images or temporally aligned
 2D images.
 
@@ -25,7 +25,7 @@ box'. We shall use SDO's AIA instrument as an example in this tutorial. The
 general way to create a Map from one of the supported data products is with the
 `~sunpy.map.Map()` function from the `sunpy.map` submodule. `~sunpy.map.Map()`
 takes either a filename, a list of filenames or a data array and header. We can
-test map with:
+test ``Map()`` with:
 
 
 .. plot::
@@ -114,9 +114,9 @@ the default AIA 17.1 colormap, a colorbar on the right-hand side and a title and
 labels.
 
 There is lot going on here, but we will walk you through the example. Briefly,
-the first line is just importing SunPy, and the second importing the sample data
+the first line is importing SunPy, and the second importing the sample data
 files. On the third line we create a SunPy Map object which is a spatially-aware
-image. On the last line we then plot the map object, using the built in 'quick
+image. On the last line we then plot the ``Map`` object, using the built in 'quick
 plot' function `~sunpy.map.GenericMap.peek`.
 
 SunPy uses a matplotlib like interface to it's plotting so more complex
