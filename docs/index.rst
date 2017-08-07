@@ -8,6 +8,7 @@ You can find the official SunPy website at
 
 .. toctree::
   :maxdepth: 2
+  :titlesonly:
 
   guide/index.rst
   code_ref/index.rst
@@ -16,8 +17,4 @@ You can find the official SunPy website at
   testingfeatures
   bugs
   ssw
-
-.. toctree::
-  :maxdepth: 1
-
-  changelog.rst
+  changelog

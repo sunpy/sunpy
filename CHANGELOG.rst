@@ -1,7 +1,8 @@
 Latest
-------
+======
 
-Features:
+New Features
+------------
 
 -  Solar rotation calculation and mapcube derotation now use sunpy coordinates.
 -  Sample data now downloads automatically on import if not available
@@ -92,7 +93,8 @@ Features:
    frame so Longitude follows the convention of going from 0-360
    degrees.
 
-Bug fixes:
+Bug fixes
+---------
 
 -  Add tests for RHESSI instrument
 -  Maps from Helioviewer JPEG2000 files now have correct image scaling.
@@ -111,7 +113,7 @@ Bug fixes:
    like 'nan' and 'inf'.
 
 0.7.8
------
+=====
 
 -  The SunPy data directory "~/sunpy" is no longer created until it is
    used (issue #2018)
@@ -122,24 +124,24 @@ Bug fixes:
 -  Support for Pandas 0.20.1
 
 0.7.7
------
+=====
 
 -  Fix errors with Numpy 1.12
 
 0.7.6
------
+=====
 
 -  Add Astropy 1.3 Support
 
 0.7.5
------
+=====
 
 -  Fix test faliure (mapbase) with 1.7.4
 -  Restrict supported Astropy version to 1.0<astropy<1.3
 -  Add Figure test env to SunPy repo.
 
 0.7.4
------
+=====
 
 -  Remove Map always forcing warnings on.
 -  ``Map.center`` now uses ``Map.wcs`` to correctly handle rotation.
@@ -150,7 +152,7 @@ Bug fixes:
 -  Update docstrings for HPC and HCC frames.
 
 0.7.3
------
+=====
 
 -  Fix ConfigParser for Python 3.5.2 - This allows SunPy to run under
    Python 3.5.2
@@ -158,12 +160,12 @@ Bug fixes:
 -  Add ``sunpy.util.scraper`` to the API documentation.
 
 0.7.2
------
+=====
 
 -  Fixed bugs in ``sun`` equations
 
 0.7.1
------
+=====
 
 -  Fix bug in ``wcs.convert_data_to_pixel`` where crpix[1] was used for
    both axes.
@@ -202,7 +204,7 @@ Bug fixes:
    like 'nan' and 'inf'.
 
 0.7.0
------
+=====
 
 -  Fixed test failures with numpy developer version.[#1808]
 -  Added ``timeout`` parameter in ``sunpy.data.download_sample_data()``
@@ -263,7 +265,7 @@ Bug fixes:
    ``WCSAxes`` object with ``WCS`` projection.
 
 0.6.5
------
+=====
 
 -  The draw\_grid keyword of the peek method of Map now accepts booleans
    or astropy quantities.
@@ -272,7 +274,7 @@ Bug fixes:
 -  Fixed bugs in ``sun`` equations
 
 0.6.4
------
+=====
 
 -  Bug fix for rhessi summary lightcurve values.
 -  Fix docstring for ``pixel_to_data`` and ``data_to_pixel``.
@@ -285,12 +287,12 @@ Bug fixes:
    tests in offline mode.
 
 0.6.3
------
+=====
 
 -  Change setup.py extras to install suds-jurko not suds.
 
 0.6.2
------
+=====
 
 -  Changed start of GOES 2 operational time range back to 1980-01-04 so
    data from 1980 can be read into GOESLightCurve object
@@ -299,7 +301,7 @@ Bug fixes:
 -  Added new sample data
 
 0.6.1
------
+=====
 
 -  Fixed MapCube animations by working around a bug in Astropy's
    ImageNormalize
@@ -311,7 +313,7 @@ Bug fixes:
    solar-y CTYPE headers.
 
 0.6.0
------
+=====
 
 -  Enforced the use of Astropy Quantities through out most of SunPy.
 -  Dropped Support for Python 2.6.
@@ -393,7 +395,7 @@ Bug fixes:
 -  Moved documentation build directory to doc/build
 
 0.5.5
------
+=====
 
 -  Changed default for GOESLightCurve.create() so that it gets the data
    from the most recent existing GOES fits file.
@@ -401,7 +403,7 @@ Bug fixes:
 -  Typo fixes in sunpy.wcs documentation.
 
 0.5.4
------
+=====
 
 -  ``sunpy.image.transform.affine_transform`` now casts integer data to
    float64 and sets NaN values to 0 for all transformations except
@@ -411,7 +413,7 @@ Bug fixes:
 -  Fixes ``map`` compatibility with Astropy 1.0.x.
 
 0.5.3
------
+=====
 
 -  Goes peek() plot now works with matplotlib 1.4.x
 -  The ANA file reading C extensions will no longer compile under
@@ -419,7 +421,7 @@ Bug fixes:
    previously.
 
 0.5.2
------
+=====
 
 -  If no CROTA keyword is specified in Map meta data, it will now
    default to 0 as specified by the FITS WCS standard.
@@ -430,7 +432,7 @@ Bug fixes:
    matplotlib.animation.FuncAnimation object.
 
 0.5.1
------
+=====
 
 -  MAJOR FIX: map.rotate() now works correctly for all submaps and off
    center rotations.
@@ -443,7 +445,7 @@ Bug fixes:
 -  ANA tests are skipped on windows.
 
 0.5.0
------
+=====
 
 -  Added additional functionality to the GOES module i.e. the ability to
    calculate GOES temperature and emission measure from GOES fluxes.
@@ -476,13 +478,13 @@ Bug fixes:
 -  Remove deprecated make\_map command.
 
 0.4.2
------
+=====
 
 -  Fixes to the operational range of GOES satellites
 -  Fix the URL for HELIO queries.
 
 0.4.1
------
+=====
 
 -  Fix map.rotate() functionality
 -  Change of source for GOES data.
@@ -491,7 +493,7 @@ Bug fixes:
 -  fix file paths to use os.path.join for platform independance.
 
 0.4.0
------
+=====
 
 -  **Major** documentation refactor. A far reaching re-write and
    restructure.
@@ -514,7 +516,7 @@ Bug fixes:
 -  LightCurve meta data member now an OrderedDict Instance
 
 0.3.2
------
+=====
 
 -  Pass draw\_limb arguments to patches.Circle
 -  Pass graw\_grid arguments to pyplot.plot()
@@ -531,7 +533,7 @@ Known Bugs:
    passed in.
 
 0.3.1
------
+=====
 
 -  Bug Fix: Fix a regression in CompositeMap that made contor plots
    fail.
@@ -539,7 +541,7 @@ Known Bugs:
 -  Bug Fix: Pass arguments from Map() to io.read\_file.
 
 0.3.0
------
+=====
 
 -  Removal of Optional PIL dependancy
 -  Parse\_time now looks through nested lists/tuples
@@ -585,7 +587,7 @@ in fits files.
 -  Callisto: Max gap between files removed
 
 0.2.0
------
+=====
 
 -  Completely re-written plotting routines for most of the core
    datatypes.

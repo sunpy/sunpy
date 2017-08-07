@@ -5,3 +5,4 @@ Full Changelog
 **************
 
 .. include:: ../CHANGELOG.rst
+:titlesonly:
