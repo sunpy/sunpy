@@ -48,9 +48,7 @@ hpc_lat0 = lat0.transform_to(aia.coordinate_frame)
 fig = plt.figure()
 ax = plt.subplot(projection=aia)
 aia.plot()
-ax.plot(hpc_lon0.Tx.to('deg'), hpc_lon0.Ty.to('deg'),
-        transform=ax.get_transform('world'), color='blue')
-ax.plot(hpc_lat0.Tx.to('deg'), hpc_lat0.Ty.to('deg'),
-        transform=ax.get_transform('world'), color='blue')
+ax.plot_coord(hpc_lat0, color="C0")
+ax.plot_coord(hpc_lon0, color="C0")
 aia.draw_grid()
 plt.show()
