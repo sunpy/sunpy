@@ -213,7 +213,7 @@ Grabbing other people's changes
 
 The first thing you want to do before you start coding anything new is to pull
 in the latest code that others have written since you last did any coding. To
-do this, run :s:`git pull`: ::
+do this, run `git pull`: ::
 
     git pull upstream master
 
