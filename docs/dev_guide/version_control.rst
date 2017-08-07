@@ -131,7 +131,7 @@ folder. The `setup.py` script has several flags: ::
 
 Use the `setup.py` script like so: ::
 
- sudo python setup.py develop
+ pip install -e ./
 
 If you are interested in having different versions of sunpy in your
 machine and you want to switch from one to another you could use
@@ -157,7 +157,7 @@ Then we need to remove the stable version from this environment ::
 to then install the version in your git repository ::
 
  cd to/sunpy/git/repository
- python setup.py develop
+ pip install -e ./
 
 At this stage you can use the development version in which you are
 working on. If you want to go back to the stable installation you can just
