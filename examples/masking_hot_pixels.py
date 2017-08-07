@@ -32,6 +32,5 @@ scaled_map = smap.Map(aia.data, aia.meta, mask=mask.mask)
 fig = plt.figure()
 ax = plt.subplot(projection=aia)
 aia.plot()
-ax.plot(hpc_max.Tx.to('deg'), hpc_max.Ty.to('deg'), 'bx',
-        transform=ax.get_transform('world'))
+ax.plot_coord(hpc_max, color='white', marker='x', markersize=10)
 plt.show()
