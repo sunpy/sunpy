@@ -119,7 +119,7 @@ files. On the third line we create a SunPy Map object which is a spatially-aware
 image. On the last line we then plot the ``Map`` object, using the built in 'quick
 plot' function `~sunpy.map.GenericMap.peek`.
 
-SunPy uses a matplotlib like interface to it's plotting so more complex
+SunPy uses a matplotlib-like interface to it's plotting so more complex
 plots can be built by combining SunPy with matplotlib.
 
 .. plot::
@@ -301,7 +301,7 @@ Obtaining Data
 SunPy supports searching for and fetching data from a variety of sources,
 including the `VSO <http://virtualsolar.org/>`__ and the
 `JSOC <http://jsoc.stanford.edu/>`__. The majority of SunPy's clients can be
-queried using the 'Fido' interface. An example of searching the VSO using this
+queried using the ``Fido`` interface. An example of searching the VSO using this
 is below::
 
   >>> from sunpy.net import Fido, attrs as a

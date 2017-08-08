@@ -1,7 +1,7 @@
 SunPy io
 ========
 
-This submodule contains two types of routines, the first reads data, header
+This submodule contains two types of routines, the first reads (data, header)
 pairs from files in a way similar to FITS files. The other is special readers
 for files that are commonly used in solar physics.
 
