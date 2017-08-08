@@ -326,20 +326,15 @@ def diffrot_map(smap, dt, pad=False):
     # Recover the original intensity range.
     out = _un_norm(out, smap.data)
 
-    # Update the meta information with the new date and time.
-
+    # Update the meta information with the new date and time, and reference pixel.
     out_meta = deepcopy(smap.meta)
     date_keys = ('date-obs', 'date_obs')
-    date_key_flag = False
     for k in date_keys:
-        if k in out_meta:
-            out_meta[k] = "{:%Y-%m-%dT%H:%M:%S}".format(new_time)
-            date_key_flag = True
-    if not date_key_flag:
-        raise ValueError(('Input map does not have date information in the ',
-                          'standard map meta keys {:s}.'.format(', '.join(date_keys))))
+        out_meta[k] = "{:%Y-%m-%dT%H:%M:%S}".format(new_time)
+
     if submap:
         crval_rotated = solar_rotate_coordinate(smap.reference_coordinate, new_time)
         out_meta['crval1'] = crval_rotated.Tx.value
         out_meta['crval2'] = crval_rotated.Ty.value
+
     return sunpy.map.Map((out, out_meta))
