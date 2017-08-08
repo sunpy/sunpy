@@ -89,7 +89,8 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
     Remove LARs (Large Angle Rotations) from TimeSeries for 4-Dec-2014:
 
         >>> import sunpy.timeseries as ts
-        >>> ts = ts.TimeSeries("2014-12-02")
+        >>> import sunpy.data.sample
+        >>> ts = ts.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_TIMESERIES, source='LYRA')
         >>> ts_nolars = ts.remove_artifacts_from_timeseries(ts, artifacts=["LAR"])
 
     To also retrieve information on the artifacts during that day:
