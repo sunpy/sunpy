@@ -132,7 +132,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 2, 0, 0),
         instrument='EVE', size=-1.0,
-        wavemin=0.1, wavemax=30.400000000000002)
+        wavemin=0.1, wavemax=30.4)
     # 2 entries from goes
     assert entries[56] == DatabaseEntry(
         source='nasa', provider='sdac', physobs='irradiance',
