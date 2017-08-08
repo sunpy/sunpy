@@ -56,34 +56,27 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     """
 
     latitude = latitude.to(u.deg)
-    delta_seconds = duration.to(u.s).value
-    delta_days = delta_seconds / 24.0 / 3600.0
 
     sin2l = (np.sin(latitude))**2
     sin4l = sin2l**2
 
-    rot_params = {'howard': [2.894, -0.428, -0.370],
-                  'snodgrass': [2.851, -0.343, -0.474]
+    rot_params = {'howard': [2.894, -0.428, -0.370] * u.urad / u.second,
+                  'snodgrass': [2.851, -0.343, -0.474] * u.urad / u.second,
+                  'allen': [14.44, -3.0, 0] * u.deg / u.day
                   }
 
     if rot_type not in ['howard', 'allen', 'snodgrass']:
-        raise ValueError("""rot_type must equal one of
-                        { 'howard' | 'allen' | 'snodgrass' }""")
+        raise ValueError(("rot_type must equal one of "
+                          "{{ {} }}".format(" | ".join(rot_params.keys()))))
 
-    elif rot_type == 'allen':
-        rotation_deg = delta_days * (14.44 - (3.0 * sin2l))
+    A, B, C = rot_params[rot_type]
 
-    else:
-        A, B, C = rot_params[rot_type]
-
-        # This is in micro-radians / sec
-        rotation_rate = A + B * sin2l + C * sin4l
-        rotation_deg = rotation_rate * 1e-6 * delta_seconds / np.deg2rad(1)
+    rotation = (A + B * sin2l + C * sin4l) * duration
 
     if frame_time == 'synodic':
-        rotation_deg -= 0.9856 * delta_days
+        rotation -= 0.9856 * u.deg / u.day * duration
 
-    return Longitude(rotation_deg * u.deg)
+    return Longitude(rotation.to(u.deg))
 
 
 def solar_rotate_coordinate(coordinate, new_observer_time,
