@@ -690,8 +690,10 @@ class JSOCClient(object):
         else:
             wavelength = '{0}'.format(primekey.pop('WAVELNTH', ''))
 
-        primekey['TIME'] = timestr
-        primekey['WAVELNTH'] = wavelength
+        if timestr:
+            primekey['TIME'] = timestr
+        if wavelength:
+            primekey['WAVELNTH'] = wavelength
 
         # Extract and format primekeys
         pkstr = ''
@@ -707,6 +709,10 @@ class JSOCClient(object):
                     pkstr += '[{0}]'.format(primekey.pop(pkey, ''))
             else:
                 break
+
+        if not pkstr:
+            error_message = "Atleast one PrimeKey must be passed."
+            raise ValueError(error_message)
 
         dataset = '{series}{primekey}{segment}'.format(series=series,
                                                        primekey=pkstr,
@@ -728,31 +734,25 @@ class JSOCClient(object):
         else:
             keywords = iargs.get('keys', keywords_default)
 
-        if not all([k in iargs for k in ('start_time', 'end_time', 'series')]):
-            error_message = "Both Time and Series must be specified for a "\
-                            "JSOC Query"
+        if not 'series' in iargs:
+            error_message = "Series must be specified for a JSOC Query"
             raise ValueError(error_message)
 
         if not isinstance(keywords, list) and not isinstance(keywords, six.string_types):
-            error_message = "Keywords can only be passed as a list or"\
-                            " comma-separated strings."
-            raise ValueError(error_message)
+            error_message = "Keywords can only be passed as a list or "\
+                            "comma-separated strings."
+            raise TypeError(error_message)
 
-        segments = iargs.get('segment', '')
-        if segments:
-            if not isinstance(segments, list) and not isinstance(segments, six.string_types):
-                error_message = "Segments can only be passed as a list or"\
-                                " comma-separated strings."
-                raise ValueError(error_message)
-
+        # Raise errors for PrimeKeys
         pkeys = c.pkeys(iargs['series'])
         pkeys_passed = iargs.get('primekey', None)
         if pkeys_passed is not None:
             if not set(list(pkeys_passed.keys())) <= set(pkeys):
                 error_message = "Unexpected PrimeKeys were passed. The series {series} "\
                                 "supports the following PrimeKeys {pkeys}"
-                raise TypeError(error_message.format(series=iargs['series'], pkeys=pkeys))
+                raise ValueError(error_message.format(series=iargs['series'], pkeys=pkeys))
 
+        # Raise errors for wavelength
         wavelength = iargs.get('wavelength', '')
         if wavelength:
             if 'WAVELNTH' not in pkeys:
@@ -760,17 +760,23 @@ class JSOCClient(object):
                                 " Following primekeys are supported {pkeys}"
                 raise TypeError(error_message.format(series=iargs['series'], pkeys=pkeys))
 
+        # Raise errors for segments
         si = c.info(iargs['series'])
         segs = list(si.segments.index.values)
-        segs_passed = iargs.get('segment', None)
-        if segs_passed is not None:
+        segs_passed = iargs.get('segment', '')
+        if segs_passed:
+            if not isinstance(segs_passed, list):
+                error_message = "Segments can only be passed as a list of strings."
+                raise TypeError(error_message)
+
             if not set(segs_passed) <= set(segs):
                 error_message = "Unexpected Segments were passed. The series {series} "\
                                 "contains the following Segments {segs}"
-                raise TypeError(error_message.format(series=iargs['series'], segs=segs))
+                raise ValueError(error_message.format(series=iargs['series'], segs=segs))
 
-        iargs['start_time'] = iargs['start_time'].tai.datetime
-        iargs['end_time'] = iargs['end_time'].tai.datetime
+        if 'start_time' in iargs:
+            iargs['start_time'] = iargs['start_time'].tai.datetime
+            iargs['end_time'] = iargs['end_time'].tai.datetime
 
         ds = self._make_recordset(**iargs)
         key = str(keywords)[1:-1].replace(' ', '').replace("'", '')
