@@ -227,9 +227,15 @@ def test_make_recordset():
     d1 = {'series': 'hmi.sharp_720s',
           'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
           'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35),
-          'segment': ['continuum', 'magnetogram']
+          'segment': ['continuum', 'magnetogram'],
           'primekey': {'HARPNUM': '4864'}
           }
+    exp = 'hmi.sharp_720s[4864][2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]{continuum,magnetogram}'
+    assert client._make_recordset(**d1) == exp
+
+    d1.update({'sample': 300.0})
+    exp = 'hmi.sharp_720s[4864][2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI@300.0s]{continuum,magnetogram}'
+    assert client._make_recordset(**d1) == exp
 
 
 @pytest.mark.online
