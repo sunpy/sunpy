@@ -216,7 +216,7 @@ def _un_norm(arr, original):
 
 
 @u.quantity_input(dt=u.s)
-def _warp_sun(xy, smap, dt):
+def _warp_sun_coordinates(xy, smap, dt):
     """
     Function that returns a new list of coordinates for each input coord.
     This is an inverse function needed by the scikit-image `transform.warp`
@@ -236,40 +236,48 @@ def _warp_sun(xy, smap, dt):
     xy2 : `~numpy.ndarray`
         Array with the inverse transformation
     """
+    # NOTE: The time is being subtracted - this is because this function
+    # calculates the inverse of the transformation.
     rotated_time = smap.date - timedelta(seconds=dt.to(u.s).value)
 
     # Calculate the hpc coords
     x = np.arange(0, smap.dimensions.x.value)
     y = np.arange(0, smap.dimensions.y.value)
     xx, yy = np.meshgrid(x, y)
+    # the xy input array would have the following shape
+    # xy = np.dstack([xx.T.flat, yy.T.flat])[0]
+
+    # We start by converting the pixel to world
     hpc_coords = smap.pixel_to_world(xx * u.pix, yy * u.pix)
 
+    # then diff-rotate the hpc coordinates to the desired time
     rotated_coord = solar_rotate_coordinate(hpc_coords, rotated_time)
 
     # To find the values that are behind the sun we need to convert them
     # to HeliographicStonyhurst
     findOccult = rotated_coord.transform_to(HeliographicStonyhurst)
-    # and find which ones are outside the [-90, 90] range.
-    occult = np.logical_or(np.less(findOccult.lon, -90 * u.deg),
-                           np.greater(findOccult.lon, 90 * u.deg))
 
-    # NaN-ing values on the other side of the sun
+    with np.errstate(invalid='ignore'):
+        # and find which ones are outside the [-90, 90] range.
+        occult = np.logical_or(np.less(findOccult.lon, -90 * u.deg),
+                               np.greater(findOccult.lon, 90 * u.deg))
+
+    # NaN-ing values that move to the other side of the sun
     rotated_coord.data.lon[occult] = np.nan * u.deg
     rotated_coord.data.lat[occult] = np.nan * u.deg
     rotated_coord.cache.clear()
 
     # Go back to pixel co-ordinates
     x2, y2 = smap.world_to_pixel(rotated_coord)
-
     # Re-stack the data to make it correct output form
-    xy2 = np.column_stack([x2.value.flat, y2.value.flat])
-
+    xy2 = np.dstack([x2.T.value.flat, y2.T.value.flat])[0]
     # Returned a masked array with the non-finite entries masked.
-    return np.ma.array(xy2, mask=np.isinf(xy2))
+    xy2 = np.ma.array(xy2, mask=np.isnan(xy2))
+    return xy2
 
 
 @u.quantity_input(dt=u.s)
-def diffrot_map(smap, dt):
+def diffrot_map(smap, dt, pad=False):
     """
     Function to apply solar differential rotation to a sunpy map.
 
@@ -279,6 +287,8 @@ def diffrot_map(smap, dt):
         Original map that we want to transform.
     dt : `~astropy.units.Quantity`
         Desired interval between the input map and returned map.
+    pad : `bool`
+        Whether to create a padded map for submaps to don't loose data
 
     Returns
     -------
@@ -286,21 +296,45 @@ def diffrot_map(smap, dt):
         A map with the result of applying solar differential rotation to the
         input map.
     """
+    new_time = smap.date + timedelta(seconds=dt.to(u.s).value)
+
     # Check for masked maps
     if smap.mask is not None:
         smap_data = np.ma.array(smap.data, mask=smap.mask)
     else:
         smap_data = smap.data
 
+    submap = False
+    # Check whether the input is a submap
+    if ((2 * smap.rsun_obs > smap.top_right_coord.Tx - smap.bottom_left_coord.Tx) or
+        (2 * smap.rsun_obs > smap.top_right_coord.Ty - smap.bottom_left_coord.Ty)):
+        submap = True
+        if pad:
+            # Calculating the largest distance between the corners and their rotation values
+            bottomleft_rotated = solar_rotate_coordinate(smap.bottom_left_coord, new_time)
+            bottom_distance = bottomleft_rotated.separation(smap.bottom_left_coord) / max(smap.scale)
+            topright_rotated = solar_rotate_coordinate(smap.top_right_coord, new_time)
+            top_distance = topright_rotated.separation(smap.top_right_coord) / max(smap.scale)
+            padding = max(bottom_distance.to(u.pix), top_distance.to(u.pix))
+            padding = np.int(np.ceil(padding.value))
+            # Create a new `smap` with the padding around it
+            smap_data = np.pad(smap.data, (padding, padding), 'constant', constant_values=(0, 0))
+            smap_meta = deepcopy(smap.meta)
+            smap_meta['naxis2'], smap_meta['naxis1'] = smap_data.shape
+            smap_meta['crpix1'] += padding
+            smap_meta['crpix2'] += padding
+            smap = sunpy.map.Map(smap_data, smap_meta)
+
+
     # Apply solar differential rotation as a scikit-image warp
-    out = transform.warp(_to_norm(smap_data), inverse_map=_warp_sun,
-                         map_args={'smap': smap, 'dt': dt})
+    out = transform.warp(_to_norm(smap_data), inverse_map=_warp_sun_coordinates,
+                         map_args={"smap": smap, "dt": dt})
 
     # Recover the original intensity range.
-    out = _un_norm(out.T, smap.data)
+    out = _un_norm(out, smap.data)
 
     # Update the meta information with the new date and time.
-    new_time = smap.date + timedelta(seconds=dt.to(u.s).value)
+
     out_meta = deepcopy(smap.meta)
     date_keys = ('date-obs', 'date_obs')
     date_key_flag = False
@@ -311,4 +345,8 @@ def diffrot_map(smap, dt):
     if not date_key_flag:
         raise ValueError(('Input map does not have date information in the ',
                           'standard map meta keys {:s}.'.format(', '.join(date_keys))))
+    if submap:
+        crval_rotated = solar_rotate_coordinate(smap.reference_coordinate, new_time)
+        out_meta['crval1'] = crval_rotated.Tx.value
+        out_meta['crval2'] = crval_rotated.Ty.value
     return sunpy.map.Map((out, out_meta))
