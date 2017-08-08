@@ -143,22 +143,93 @@ def test_lookup_records_errors():
 
     d1.update({'series': 'aia.lev1_euv_12s'})
     d1.update({'keys' : 123})
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         client._lookup_records(d1)
 
     d1['keys'] = 'T_OBS'
-    d1.update({'segment': 123})
+    d1.update({'primekey': {'foo': 'bar'}})
     with pytest.raises(ValueError):
         client._lookup_records(d1)
 
-    d1['segment'] = 'image'
-    d1.update({'primekey': {'foo': 'bar'}})
+    del d1['primekey']
+    d1.update({'segment': 123})
+    with pytest.raises(TypeError):
+        client._lookup_records(d1)
+    
+    d1.update({'segment': 'foo'})
+    with pytest.raises(ValueError):
+        client._lookup_records(d1)
+
+    del d1['segment']
+    d1.update({'series': 'hmi.m_45s'})
     with pytest.raises(TypeError):
         client._lookup_records(d1)
 
-    d1.update({'segment': 'foo'})
-    with pytest.raises(TypeError):
-        client._lookup_records(d1)
+
+@pytest.mark.online
+def test_make_recordset_errors():
+    d1 = {'series': 'aia.lev1_euv_12s'}
+    with pytest.raises(ValueError):
+        client._make_recordset(**d1)
+
+    d1.update({
+        'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
+        'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35),
+        'primekey': {'T_REC' : '2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI'}
+        })
+
+    with pytest.raises(ValueError):
+        client._make_recordset(**d1)
+
+    d1.update({
+        'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
+        'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35),
+        'wavelength' : 604*u.AA,
+        'primekey': {'WAVELNTH' : '604'}
+        })
+
+    with pytest.raises(ValueError):
+        client._make_recordset(**d1)
+
+@pytest.mark.online
+def test_make_recordset():
+    d1 = {'series': 'aia.lev1_euv_12s',
+          'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
+          'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35)
+          }
+    exp = 'aia.lev1_euv_12s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]'
+    assert client._make_recordset(**d1) == exp
+
+    d1.update({'wavelength' : 604*u.AA})
+    exp = 'aia.lev1_euv_12s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI][604]'
+    assert client._make_recordset(**d1) == exp
+
+    del d1['wavelength']
+    d1.update({'primekey': {'WAVELNTH': '604'}})
+    assert client._make_recordset(**d1) == exp
+
+    del d1['start_time'], d1['end_time']
+    d1['primekey'].update({'T_REC': '2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI'})
+    exp = 'aia.lev1_euv_12s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]'
+    assert client._make_recordset(**d1) == exp
+
+    d1 = {'series': 'hmi.v_45s',
+          'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
+          'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35),
+          'segment': 'foo,bar'
+          }
+    exp = 'hmi.v_45s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]{foo,bar}'
+    assert client._make_recordset(**d1) == exp
+
+    d1['segment'] = ['foo', 'bar']
+    assert client._make_recordset(**d1) == exp
+
+    d1 = {'series': 'hmi.sharp_720s',
+          'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
+          'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35),
+          'segment': ['continuum', 'magnetogram']
+          'primekey': {'HARPNUM': '4864'}
+          }
 
 
 @pytest.mark.online
