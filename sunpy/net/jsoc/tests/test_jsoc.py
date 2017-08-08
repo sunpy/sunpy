@@ -234,7 +234,7 @@ def test_make_recordset():
     assert client._make_recordset(**d1) == exp
 
     d1.update({'sample': 300.0})
-    exp = 'hmi.sharp_720s[4864][2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI@300.0s]{continuum,magnetogram}'
+    exp = 'hmi.sharp_720s[][2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI@300.0s]{continuum,magnetogram}'
     assert client._make_recordset(**d1) == exp
 
 
@@ -264,7 +264,7 @@ def test_request_data_protocol():
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     req = client.request_data(responses)
     assert req._d['method'] == 'url'
-    assert req._d['protcol'] == 'fits'
+    assert req._d['protocol'] == 'fits'
 
     responses = client.query(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
@@ -272,7 +272,7 @@ def test_request_data_protocol():
         attrs.Protocol('fits'))
     req = client.request_data(responses)
     assert req._d['method'] == 'url'
-    assert req._d['protcol'] == 'fits'
+    assert req._d['protocol'] == 'fits'
 
     responses = client.query(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
@@ -280,7 +280,7 @@ def test_request_data_protocol():
         attrs.Protocol('as-is'))
     req = client.request_data(responses)
     assert req._d['method'] == 'url_quick'
-    assert req._d['protcol'] == 'as-is'
+    assert req._d['protocol'] == 'as-is'
 
 
 @pytest.mark.online
