@@ -75,6 +75,11 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
             Artifacts listed to be removed by user when defining
             artifacts kwarg which were not found in time series time range.
 
+    Notes
+    -----
+    This function is intended to take TimeSeries objects as input, but the
+    deprecated LightCurve is still supported here.
+
     References
     ----------
     [1] http://proba2.oma.be/data/TARDIS
