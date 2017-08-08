@@ -18,10 +18,7 @@ Python session (`~sunpy.instr.goes.get_goes_event_list`).
 
 They also allow the thermodynamic properties of the emitting solar plasma to be
 determined. Temperature and emission measure are obtained using
-`~sunpy.instr.goes.calculate_temperature_em`, which calls
-`~sunpy.instr.goes._goes_chianti_tem`, which in turn calls
-`~sunpy.instr.goes._goes_get_chianti_temp` and
-`~sunpy.instr.goes._goes_get_chianti_em`. These two functions currently rely on
+`~sunpy.instr.goes.calculate_temperature_em`, this function currently relies on
 lookup tables relating the GOES fluxes to the isothermal temperature and volume
 emission measure. These tables were calculated by functions in SolarSoftWare
 (SSW) using the CHIANTI atomic physics database ([Ref2]_). For more detail, see
@@ -29,19 +26,16 @@ the docstring of calculate_temperature_em` and references therein.
 
 The radiative loss rate of the soft X-ray-emitting plasma across all
 wavelengths can be found with
-`~sunpy.instr.goes.calculate_radiative_loss_rate`. This function calls
-`~sunpy.instr.goes._calc_rad_loss` which, like
-`~sunpy.instr.goes._goes_get_chianti_temp` and
-`~sunpy.instr.goes._goes_get_chianti_em`, makes use of a look up table
-calculated by functions in SSW using CHIANTI. This table relates the
+`~sunpy.instr.goes.calculate_radiative_loss_rate`, which makes use of a look up
+table calculated by functions in SSW using CHIANTI. This table relates the
 temperature and emission measure of the emitting solar plasma to the thermal
-energy radiative over all wavelengths. For more information on how this is
+energy radiated over all wavelengths. For more information on how this is
 done, see the docstring of `~sunpy.instr.goes._calc_rad_loss` and reference
 therein.
 
 Meanwhile, the X-ray luminosity in the two GOES passbands can be obtained by
 `~sunpy.instr.goes.calculate_xray_luminosity`. To do so, this function calls
-`~sunpy.instr.goes._goes_lx` and ~sunpy.instr.goes.calc_xraylum`.
+`~sunpy.instr.goes._goes_lx` and `~sunpy.instr.goes.calc_xraylum`.
 
 References
 ----------

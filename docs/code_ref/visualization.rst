@@ -1,7 +1,7 @@
 SunPy visualization
 ===================
 
-SunPy visualization contains plotting helpers and functions.
+`sunpy.visualization` contains plotting helpers and functions.
 
 .. automodapi:: sunpy.visualization
 

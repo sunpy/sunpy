@@ -5,7 +5,7 @@ Finding and Downloading Data using Fido
 This guide outlines how to search for and download data using SunPy's
 Federated Internet Data Obtainer...or more usually (and
 sanely) referred to as Fido.  Fido is a unified interface for searching
-and fetching solar physics data irrespective of the underlining
+and fetching solar physics data irrespective of the underlying
 client or webservice through which the data is obtained, e.g. VSO,
 JSOC, etc.  It therefore supplies a single, easy and consistent way to
 obtain most forms of solar physics data.

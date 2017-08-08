@@ -17,8 +17,8 @@ __all__ = ['calculate_solar_rotate_shift', 'mapcube_solar_derotate']
 
 def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
     """
-    Calculate the shift that must be applied to each layer
-    of a mapcube in order to compensate for solar rotation.
+    Calculate the shift that must be applied to each map contained in a mapcube
+    in order to compensate for solar rotation.
 
     The center of the map is used to calculate the position of each mapcube
     layer. Shifts are calculated relative to a specified layer in the mapcube.
