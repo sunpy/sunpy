@@ -148,7 +148,6 @@ def solar_rotate_coordinate(coordinate, new_observer_time,
     return heliographic_rotated.transform_to(coordinate.frame.name)
 
 
-
 @u.quantity_input(dt=u.s)
 def _warp_sun_coordinates(xy, smap, dt):
     """
@@ -240,8 +239,8 @@ def diffrot_map(smap, dt, pad=False):
 
     submap = False
     # Check whether the input is a submap
-    if ( (2 * smap.rsun_obs > smap.top_right_coord.Tx - smap.bottom_left_coord.Tx) or
-         (2 * smap.rsun_obs > smap.top_right_coord.Ty - smap.bottom_left_coord.Ty) ) :
+    if ((2 * smap.rsun_obs > smap.top_right_coord.Tx - smap.bottom_left_coord.Tx) or
+        (2 * smap.rsun_obs > smap.top_right_coord.Ty - smap.bottom_left_coord.Ty)):
         submap = True
         if pad:
             # Calculating the largest distance between the corners and their rotation values
