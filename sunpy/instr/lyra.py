@@ -100,12 +100,12 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
 
         >>> import sunpy.timeseries as ts
         >>> import sunpy.data.sample
-        >>> ts = ts.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_TIMESERIES, source='LYRA')
-        >>> ts_nolars = ts.remove_artifacts_from_timeseries(ts, artifacts=["LAR"])
+        >>> lyrats = ts.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_TIMESERIES, source='LYRA')
+        >>> ts_nolars = ts.remove_artifacts_from_timeseries(lyrats, artifacts=["LAR"])
 
     To also retrieve information on the artifacts during that day:
         >>> ts_nolars, artifact_status = ts.remove_artifacts_from_timeseries(
-                ts, artifacts=["LAR"], return_artifacts=True)
+                lyrats, artifacts=["LAR"], return_artifacts=True)
 
     """
     # Check that input argument is of correct type
