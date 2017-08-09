@@ -35,6 +35,8 @@ ON_TRAVIS = os.environ.get('TRAVIS') == 'true'
 if ON_RTD:
     os.environ['SUNPY_CONFIGDIR'] = '/home/docs/'
     os.environ['HOME'] = '/home/docs/'
+    os.environ['LANG'] = 'C'
+    os.environ['LC_ALL'] = 'C'
 
 try:
     import astropy_helpers
