@@ -119,7 +119,59 @@ Major solar system bodies can be used to specify observer locations in SkyCoord:
 New timeseries data object
 ==========================
 
-???
+The TimeSeries object is used to represent columns of time-ordered scalar values,
+and is source-aware, just like the Map object.  This object supersedes the LightCurve object,
+which is now deprecated in 0.8.
+
+The TimeSeries object can be instantiated by passing in a file::
+
+    >>> import sunpy.timeseries
+    >>> import sunpy.data.sample
+    >>> goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)
+
+TimeSeries objects can have more than one column::
+
+    >>> goes.columns
+    ['xrsa', 'xrsb']
+
+and have convenient plotting methods::
+
+    >>> goes.peek()
+
+TimeSeries objects have a 'meta' property that stores the metadata of the timeseries::
+
+    >>> goes.meta
+    |-------------------------------------------------------------------------------------------------|
+    |TimeRange                  | Columns         | Meta                                              |
+    |-------------------------------------------------------------------------------------------------|
+    |2011-06-06 23:59:59.961999 | xrsa            | simple: True                                      |
+    |            to             | xrsb            | bitpix: 8                                         |
+    |2011-06-07 23:59:57.631999 |                 | naxis: 0                                          |
+    |                           |                 | extend: True                                      |
+    |                           |                 | date: 26/06/2012                                  |
+    |                           |                 | numext: 3                                         |
+    |                           |                 | telescop: GOES 15                                 |
+    |                           |                 | instrume: X-ray Detector                          |
+    |                           |                 | object: Sun                                       |
+    |                           |                 | origin: SDAC/GSFC                                 |
+    |                           |                 | ...                                               |
+    |-------------------------------------------------------------------------------------------------|
+
+and the data can be accessed::
+
+    >>> goes.data
+                                        xrsa          xrsb
+    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07
+    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07
+    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07
+    ...
+    2011-06-07 23:59:55.584999  1.000000e-09  1.624800e-07
+    2011-06-07 23:59:57.631999  1.000000e-09  1.598500e-07
+
+Data sources that do not provide FITS files need to have a 'source' keyword to help
+with the identification and interpretation of the data::
+
+    >>> eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='EVE')
 
 .. _whatsnew-0.8-renamed-removed:
 
