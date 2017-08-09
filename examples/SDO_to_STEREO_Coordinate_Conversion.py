@@ -7,6 +7,7 @@ In this example we demonstrate how you can identify a point or region on the
 surface of the Sun in an AIA image and then convert that point to a point in a
 STEREO image.
 """
+from __future__ import print_function, division
 
 import matplotlib.pyplot as plt
 

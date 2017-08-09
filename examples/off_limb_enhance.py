@@ -5,31 +5,40 @@ Enhancing Off-limb emission
 
 This example shows how to enhance emission above the limb.
 """
+from __future__ import print_function, division
+
 import numpy as np
-import astropy.units as u
+
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
-from sunpy.data.sample import AIA_171_IMAGE
+
+import astropy.units as u
+
 import sunpy.map
+from sunpy.data.sample import AIA_171_IMAGE
 
 ###############################################################################
 # We first create the Map using the sample data.
+
 aia = sunpy.map.Map(AIA_171_IMAGE)
 
 ###############################################################################
 # Next we build two arrays which include all of the x and y pixel indices.
 # We must not forget to add the correct units because we will next pass this
 # into a function which requires them.
+
 x, y = np.meshgrid(*[np.arange(v.value) for v in aia.dimensions]) * u.pix
 
 ###############################################################################
 # Now we can convert this to helioprojective coordinates and create a new
 # array which contains the normalized radial position for each pixel
+
 hpc_coords = aia.pixel_to_data(x, y)
 r = np.sqrt(hpc_coords.Tx ** 2 + hpc_coords.Ty ** 2) / aia.rsun_obs
 
 ###############################################################################
 # Let's check how emission above the limb depends on distance
+
 rsun_step_size = 0.01
 rsun_array = np.arange(1, r.max(), rsun_step_size)
 y = np.array([aia.data[(r > this_r) * (r < this_r + rsun_step_size)].mean()
@@ -38,6 +47,7 @@ y = np.array([aia.data[(r > this_r) * (r < this_r + rsun_step_size)].mean()
 ###############################################################################
 # Next let's plot it along with a fit to the data. We perform the fit in
 # log-linear space.
+
 params = np.polyfit(rsun_array[rsun_array < 1.5],
                     np.log10(y[rsun_array < 1.5]), 1)
 
