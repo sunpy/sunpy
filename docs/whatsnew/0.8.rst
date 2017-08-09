@@ -14,6 +14,7 @@ the 0.7.x series of releases.
 
 On this page, you can read about some of the big changes in this release:
 
+* :ref:`whatsnew-0.8-python`
 * :ref:`whatsnew-0.8-fido`
 * :ref:`whatsnew-0.8-coordinates`
 * :ref:`whatsnew-0.8-timeseries`
@@ -27,6 +28,14 @@ By the numbers:
 * ??? issues have been closed since v0.7
 * ??? pull requests have been merged since v0.7
 * ??? distinct people have contributed code
+
+.. _whatsnew-0.8-python:
+
+Supported versions of Python
+============================
+
+SunPy is tested against Python 2.7+, 3.5 and 3.6.  SunPy no longer supports Python 3.4
+
 
 .. _whatsnew-0.8-fido:
 
@@ -181,8 +190,16 @@ Renamed/removed functionality
 Several sub-packages have been moved or removed, and these are described in the
 following sections.
 
-???
----
+sunpy.lightcurve
+----------------
+
+The package ``sunpy.lightcurve`` has been deprecated in favor of `~sunpy.timeseries`,
+and will be removed in a future version of SunPy.
+
+sunpy.physics.transforms
+------------------------
+
+The modules in ``sunpy.physics.transforms`` have been moved to `~sunpy.physics`.
 
 
 Full change log
