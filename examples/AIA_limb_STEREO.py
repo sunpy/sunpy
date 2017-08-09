@@ -7,8 +7,6 @@ Drawing AIA Coordinates on STEREO Images
 In this example we use a STEREO-B and an SDO image to demonstrate how to
 overplot the limb as seen by AIA on an EUVI-B image. Then we overplot the AIA
 coordinate grid on the STEREO image.
-
-This makes use of functionality added in Astropy 1.3.
 """
 
 ##############################################################################
@@ -25,7 +23,7 @@ from astropy.coordinates import SkyCoord
 import sunpy.map
 import sunpy.coordinates
 import sunpy.coordinates.wcs_utils
-from sunpy.net import vso
+from sunpy.net import Fido, attrs as a
 
 
 ##############################################################################
@@ -33,19 +31,18 @@ from sunpy.net import vso
 # early 2011 when the STEREO spacecraft were roughly 90 deg seperated from the
 # Earth.
 
-stereo = (vso.attrs.Source('STEREO_B') &
-          vso.attrs.Instrument('EUVI') &
-          vso.attrs.Time('2011-01-01', '2011-01-01T00:10:00'))
+stereo = (a.vso.Source('STEREO_B') &
+          a.Instrument('EUVI') &
+          a.Time('2011-01-01', '2011-01-01T00:10:00'))
 
-aia = (vso.attrs.Instrument('AIA') &
-       vso.attrs.Sample(24 * u.hour) &
-       vso.attrs.Time('2011-01-01', '2011-01-02'))
+aia = (a.Instrument('AIA') &
+       a.vso.Sample(24 * u.hour) &
+       a.Time('2011-01-01', '2011-01-02'))
 
-wave = vso.attrs.Wavelength(30 * u.nm, 31 * u.nm)
+wave = a.Wavelength(30 * u.nm, 31 * u.nm)
 
 
-vc = vso.VSOClient()
-res = vc.query(wave, aia | stereo)
+res = Fido.search(wave, aia | stereo)
 
 
 ##############################################################################
@@ -57,7 +54,7 @@ print(res)
 ##############################################################################
 # Download the files:
 
-files = vc.get(res).wait()
+files = Fido.fetch(res)
 
 
 ##############################################################################

@@ -1,3 +1,5 @@
+.. _sunpy-coordinates:
+
 SunPy coordinates
 =================
 

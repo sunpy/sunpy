@@ -29,6 +29,7 @@ from sunpy.data.test.waveunit import waveunitdir
 from sunpy.io import fits
 from sunpy.extern.six.moves import range
 from sunpy.extern.six.moves import configparser
+from sunpy.net import Fido, attrs as net_attrs
 
 import sunpy.data.test
 
@@ -60,15 +61,30 @@ def database():
 
 
 @pytest.fixture
+def fido_search_result():
+    # A search query with responses from all instruments
+    # No JSOC query
+    return Fido.search(
+        net_attrs.Time("2012/1/1", "2012/1/2"),
+        net_attrs.Instrument('lyra') | net_attrs.Instrument('eve') |
+        net_attrs.Instrument('goes') | net_attrs.Instrument('noaa-indices') |
+        net_attrs.Instrument('noaa-predict') |
+        (net_attrs.Instrument('norh') & net_attrs.Wavelength(17*units.GHz)) |
+        net_attrs.Instrument('rhessi') |
+        (net_attrs.Instrument('EVE') & net_attrs.Level(0))
+        )
+
+
+@pytest.fixture
 def query_result():
-    return vso.VSOClient().query(
+    return vso.VSOClient().search(
         vso.attrs.Time('20130801T200000', '20130801T200030'),
         vso.attrs.Instrument('PLASTIC'))
 
 
 @pytest.fixture
 def download_qr():
-    return vso.VSOClient().query(
+    return vso.VSOClient().search(
         vso.attrs.Time('2012-03-29', '2012-03-29'),
         vso.attrs.Instrument('AIA'))
 
@@ -420,7 +436,7 @@ def test_add_already_existing_entry_ignore(database):
 
 @pytest.mark.online
 def test_add_entry_from_hek_qr(database):
-    hek_res = hek.HEKClient().query(
+    hek_res = hek.HEKClient().search(
         hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 07:24:00'),
         hek.attrs.EventType('FL'))
     assert len(database) == 0
@@ -553,6 +569,47 @@ def test_add_entries_from_qr_ignore_duplicates(database, query_result):
     assert len(database) == 16
     database.add_from_vso_query_result(query_result, True)
     assert len(database) == 32
+
+
+@pytest.mark.online
+def test_add_entry_fido_search_result(database, fido_search_result):
+    assert len(database) == 0
+    database.add_from_fido_search_result(fido_search_result)
+    assert len(database) == 65
+    database.undo()
+    assert len(database) == 0
+    database.redo()
+    assert len(database) == 65
+
+
+@pytest.mark.online
+def test_add_entries_from_fido_search_result_JSOC_client(database):
+    assert len(database) == 0
+    search_result = Fido.search(
+        net_attrs.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+        net_attrs.jsoc.Series('hmi.m_45s'),
+        net_attrs.jsoc.Notify("sunpy@sunpy.org")
+        )
+    with pytest.raises(ValueError):
+        database.add_from_fido_search_result(search_result)
+
+
+@pytest.mark.online
+def test_add_entries_from_fido_search_result_duplicates(database, fido_search_result):
+    assert len(database) == 0
+    database.add_from_fido_search_result(fido_search_result)
+    assert len(database) == 65
+    with pytest.raises(EntryAlreadyAddedError):
+        database.add_from_fido_search_result(fido_search_result)
+
+
+@pytest.mark.online
+def test_add_entries_from_fido_search_result_ignore_duplicates(database, fido_search_result):
+    assert len(database) == 0
+    database.add_from_fido_search_result(fido_search_result)
+    assert len(database) == 65
+    database.add_from_fido_search_result(fido_search_result, True)
+    assert len(database) == 2*65
 
 
 def test_add_fom_path(database):
@@ -794,12 +851,12 @@ def test_lfu_cache(database_using_lfucache):
 
 def test_query_missing_arg(database):
     with pytest.raises(TypeError):
-        database.query()
+        database.search()
 
 
 def test_query_unexpected_kwarg(database):
     with pytest.raises(TypeError):
-        database.query(attrs.Starred(), foo=42)
+        database.search(attrs.Starred(), foo=42)
 
 
 def test_query(filled_database):
@@ -807,7 +864,7 @@ def test_query(filled_database):
     foo.id = 1
     bar = Tag('bar')
     bar.id = 2
-    entries = filled_database.query(
+    entries = filled_database.search(
         attrs.Tag('foo') | attrs.Tag('bar'), sortby='id')
     assert len(entries) == 4
     assert entries == [
@@ -983,9 +1040,9 @@ def test_split_database(split_function_database, database):
     split_function_database, database = split_database(
         split_function_database, database, vso.attrs.Instrument('EIA'))
 
-    observed_source_entries = split_function_database.query(
+    observed_source_entries = split_function_database.search(
         vso.attrs.Provider('xyz'), sortby='id')
-    observed_destination_entries = database.query(vso.attrs.Provider('xyz'))
+    observed_destination_entries = database.search(vso.attrs.Provider('xyz'))
 
     assert observed_source_entries == [
         DatabaseEntry(id=1, instrument='RHESSI', provider='xyz'),
