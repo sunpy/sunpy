@@ -356,7 +356,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         reslist = []
         for query_result in query_results:
             for block in query_result.responses:
-                reslist.append(block.client.get(block, **kwargs))
+                reslist.append(block.client.fetch(block, **kwargs))
 
         results = DownloadResponse(reslist)
 
@@ -412,7 +412,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         """
         candidate_widget_types = self._check_registered_widgets(*query)
         tmpclient = candidate_widget_types[0]()
-        return tmpclient.query(*query), tmpclient
+        return tmpclient.search(*query), tmpclient
 
 
 Fido = UnifiedDownloaderFactory(
