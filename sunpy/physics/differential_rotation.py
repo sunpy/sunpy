@@ -291,7 +291,7 @@ def diffrot_map(smap, dt, pad=False):
 
     # Update the meta information with the new date and time, and reference pixel.
     out_meta = deepcopy(smap.meta)
-    if out_meta['date_obs']:
+    if out_meta.get('date_obs', False):
         del out_meta['date_obs']
     out_meta['date-obs'] = "{:%Y-%m-%dT%H:%M:%S}".format(new_time)
 

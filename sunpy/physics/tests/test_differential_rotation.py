@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 import os
 import pytest
+from datetime import timedelta
 
 import numpy as np
 from astropy import units as u
@@ -11,12 +12,12 @@ from astropy.tests.helper import assert_quantity_allclose
 
 from sunpy.coordinates import frames
 from sunpy.coordinates.ephemeris import get_earth
-from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinate
+from sunpy.physics.differential_rotation import diff_rot, solar_rotate_coordinate, diffrot_map
 from sunpy.time import parse_time
 import sunpy.data.test
 import sunpy.map
 
-#pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
+# pylint: disable=C0103,R0904,W0201,W0212,W0232,E1103
 
 # Please note the numbers in these tests are not checked for physical
 # accuracy, only that they are the values the function was outputting upon
@@ -46,10 +47,9 @@ import sunpy.map
 
 testpath = sunpy.data.test.rootdir
 
-
 @pytest.fixture
 def aia171_test_map():
-    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
+    return sunpy.map.Map((os.path.join(testpath, 'aia_171_level1.fits')))
 
 
 @pytest.fixture
@@ -58,6 +58,12 @@ def aia171_test_map_with_mask(aia171_test_map):
     mask = np.zeros_like(aia171_test_map.data, dtype=bool)
     mask[0:shape[0]//2, 0:shape[1]//2] = True
     return sunpy.map.Map(np.ma.array(aia171_test_map.data, mask=mask), aia171_test_map.meta)
+
+@pytest.fixture
+def aia171_test_submap(aia171_test_map):
+    bl = SkyCoord(-512 * u.arcsec,  100 * u.arcsec, frame=aia171_test_map.coordinate_frame)
+    ur = SkyCoord(-100 * u.arcsec, 400 * u.arcsec, frame=aia171_test_map.coordinate_frame)
+    return aia171_test_map.submap(bl, ur)
 
 
 @pytest.fixture
@@ -136,6 +142,25 @@ def test_warp_sun():
     pass
 
 
-# Test a full disk map and a submap
-def test_diffrot_map():
-    pass
+def test_diffrot_map(aia171_test_map):
+    # Test a submap without padding
+    aia_srot = diffrot_map(aia171_test_map, -5 * u.day)
+    assert aia_srot.dimensions == aia171_test_map.dimensions
+    assert (aia171_test_map.date - timedelta(days=5)) - aia_srot.date < timedelta(seconds=1)
+
+
+def test_diffrot_submap(aia171_test_submap):
+    # Test a submap without padding
+    aia_srot = diffrot_map(aia171_test_submap, -0.5 * u.day)
+    assert aia_srot.dimensions == aia171_test_submap.dimensions
+    assert (aia171_test_submap.date - timedelta(days=0.5)) - aia_srot.date < timedelta(seconds=1)
+
+
+def test_diffrot_submap_pad(aia171_test_submap):
+    aia_srot = diffrot_map(aia171_test_submap, -0.5 * u.day, pad=True)
+    assert aia_srot.dimensions >= aia171_test_submap.dimensions
+    assert (aia171_test_submap.date - timedelta(days=0.5)) - aia_srot.date < timedelta(seconds=1)
+    assert aia_srot.meta['naxis1'] == 35
+    assert aia_srot.meta['naxis2'] == 18
+
+
