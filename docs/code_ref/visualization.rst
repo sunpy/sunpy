@@ -1,6 +1,7 @@
 SunPy visualization
 ===================
 
+`sunpy.visualization` contains plotting helpers and functions.
 
 .. automodapi:: sunpy.visualization
 
@@ -12,4 +13,3 @@ SunPy visualization
 
 .. automodapi:: sunpy.visualization.wcsaxes_compat
     :headings: ^#
-

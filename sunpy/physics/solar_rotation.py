@@ -17,21 +17,23 @@ __all__ = ['calculate_solar_rotate_shift', 'mapcube_solar_derotate']
 
 def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
     """
-    Calculate the shift that must be applied to each layer
-    of a mapcube in order to compensate for solar rotation.  The center
-    of the map is used to calculate the position of each mapcube layer.
-    Shifts are calculated relative to a specified layer in the mapcube.
-    When using this functionality, it is a good idea to check that the
-    shifts that were applied to were reasonable and expected.  One way of
-    checking this is to animate the original mapcube, animate the derotated
-    mapcube, and compare the differences you see to the calculated shifts.
-    An example use is as follows.  If you select data from the SDO cutout
-    service, it is common to not use the solar tracking implemented by this
-    service.  This is because (at time of writing) the solar tracking
-    implemented by that service moves the image by single pixels at a time.
-    This is not optimal for many use cases, as it introduces artificial jumps
-    in the data.  So with solar tracking not chosen, the selected area is
-    like a window through which you can see the Sun rotating underneath.
+    Calculate the shift that must be applied to each map contained in a mapcube
+    in order to compensate for solar rotation.
+
+    The center of the map is used to calculate the position of each mapcube
+    layer. Shifts are calculated relative to a specified layer in the mapcube.
+    When using this functionality, it is a good idea to check that the shifts
+    that were applied to were reasonable and expected. One way of checking this
+    is to animate the original mapcube, animate the derotated mapcube, and
+    compare the differences you see to the calculated shifts. An example use is
+    as follows. If you select data from the SDO cutout service, it is common to
+    not use the solar tracking implemented by this service. This is because (at
+    time of writing) the solar tracking implemented by that service moves the
+    image by single pixels at a time. This is not optimal for many use cases,
+    as it introduces artificial jumps in the data. So with solar tracking not
+    chosen, the selected area is like a window through which you can see the
+    Sun rotating underneath.
+
     Parameters
     ----------
     mc : `sunpy.map.MapCube`
@@ -87,6 +89,7 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
     One way of checking this is to animate the original mapcube, animate
     the derotated mapcube, and compare the differences you see to the
     calculated shifts.
+
     Parameters
     ----------
     mc : `sunpy.map.MapCube`
@@ -101,12 +104,15 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
     ``**kwargs``
         These keywords are passed to the function
         `sunpy.physics.solar_rotation.calculate_solar_rotate_shift`.
+
     Returns
     -------
     output : `sunpy.map.MapCube`
         The results of the shifts applied to the input mapcube.
+
     Examples
     --------
+
     >>> from sunpy.physics.solar_rotation import mapcube_solar_derotate
     >>> import sunpy.data.sample
     >>> map1 = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)

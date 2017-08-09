@@ -1,11 +1,34 @@
-"""Provides Sun-related parameters
+"""
+Provides Sun-related parameters
 
 The following code is heavily based on IDL function get_sun.pro which itself
 is based on algorithms presented in the book Astronomical Formulae for
 Calculators, by Jean Meeus.
 Every function returning a quantity is of type astropy.units.Quantity
+"""
+from __future__ import absolute_import, division, print_function
 
-A correct answer set to compare to
+import numpy as np
+
+import astropy.units as u
+from astropy.coordinates import Angle, Longitude, Latitude
+
+from sunpy.time import parse_time, julian_day, julian_centuries
+from sunpy.sun import constants
+from sunpy.util.decorators import deprecated
+
+__all__ = [
+    "print_params", "heliographic_solar_center", "solar_north", "apparent_declination",
+    "apparent_rightascension", "apparent_obliquity_of_ecliptic", "true_declination",
+    "true_rightascension", "true_obliquity_of_ecliptic", "apparent_latitude", "true_latitude",
+    "apparent_longitude", "sunearth_distance", "true_anomaly", "true_longitude",
+    "equation_of_center", "geometric_mean_longitude", "carrington_rotation_number", "mean_anomaly",
+    "longitude_Sun_perigee", "mean_ecliptic_longitude", "eccentricity_SunEarth_orbit", "position",
+    "solar_semidiameter_angular_size", "solar_cycle_number"
+]
+
+"""
+A correct answer set to compare to:
 
 Solar Ephemeris for  1-JAN-01  00:00:00
 
@@ -20,42 +43,6 @@ Position angle of north pole in deg = 2.0102649
 Carrington Rotation Number = 1971.4091        check!
 
 """
-from __future__ import absolute_import, division, print_function
-
-import numpy as np
-
-import astropy.units as u
-from astropy.coordinates import Angle, Longitude, Latitude
-
-from sunpy.time import parse_time, julian_day, julian_centuries
-from sunpy.sun import constants
-from sunpy.util.decorators import deprecated
-
-__all__ = ["print_params",
-           "heliographic_solar_center",
-           "solar_north",
-           "apparent_declination",
-           "apparent_rightascension",
-           "apparent_obliquity_of_ecliptic",
-           "true_declination",
-           "true_rightascension",
-           "true_obliquity_of_ecliptic",
-           "apparent_latitude",
-           "true_latitude",
-           "apparent_longitude",
-           "sunearth_distance",
-           "true_anomaly",
-           "true_longitude",
-           "equation_of_center",
-           "geometric_mean_longitude",
-           "carrington_rotation_number",
-           "mean_anomaly",
-           "longitude_Sun_perigee",
-           "mean_ecliptic_longitude",
-           "eccentricity_SunEarth_orbit",
-           "position",
-           "solar_semidiameter_angular_size",
-           "solar_cycle_number"]
 
 __authors__ = ["Steven Christe"]
 __email__ = "steven.d.christe@nasa.gov"
@@ -102,19 +89,19 @@ def position(t='now'):
 def eccentricity_SunEarth_orbit(t='now'):
     """Returns the eccentricity of the Sun Earth Orbit."""
     T = julian_centuries(t)
-    result = 0.016751040 - 0.00004180 * T - 0.0000001260 * T ** 2
+    result = 0.016751040 - 0.00004180 * T - 0.0000001260 * T**2
     return result
 
 
 def mean_ecliptic_longitude(t='now'):
     """Returns the mean ecliptic longitude."""
     T = julian_centuries(t)
-    result = 279.696680 + 36000.76892 * T + 0.0003025 * T ** 2
+    result = 279.696680 + 36000.76892 * T + 0.0003025 * T**2
     result = result * u.deg
     return Longitude(result)
 
 
-def longitude_Sun_perigee(t='now'): # pylint: disable=W0613
+def longitude_Sun_perigee(t='now'):  # pylint: disable=W0613
     # T = julian_centuries(t)
     return 1
 
@@ -123,7 +110,7 @@ def mean_anomaly(t='now'):
     """Returns the mean anomaly (the angle through which the Sun has moved
     assuming a circular orbit) as a function of time."""
     T = julian_centuries(t)
-    result = 358.475830 + 35999.049750 * T - 0.0001500 * T ** 2 - 0.00000330 * T ** 3
+    result = 358.475830 + 35999.049750 * T - 0.0001500 * T**2 - 0.00000330 * T**3
     result = result * u.deg
     return Longitude(result)
 
@@ -138,7 +125,7 @@ def carrington_rotation_number(t='now'):
 def geometric_mean_longitude(t='now'):
     """Returns the geometric mean longitude (in degrees)"""
     T = julian_centuries(t)
-    result = 279.696680 + 36000.76892 * T + 0.0003025 * T ** 2
+    result = 279.696680 + 36000.76892 * T + 0.0003025 * T**2
     result = result * u.deg
     return Longitude(result)
 
@@ -147,9 +134,8 @@ def equation_of_center(t='now'):
     """Returns the Sun's equation of center (in degrees)"""
     T = julian_centuries(t)
     mna = mean_anomaly(t)
-    result = ((1.9194600 - 0.0047890 * T - 0.0000140 * T ** 2) * np.sin(mna)
-    + (0.0200940 - 0.0001000 * T) *
-    np.sin(2 * mna) + 0.0002930 * np.sin(3 * mna))
+    result = ((1.9194600 - 0.0047890 * T - 0.0000140 * T**2) * np.sin(mna) +
+              (0.0200940 - 0.0001000 * T) * np.sin(2 * mna) + 0.0002930 * np.sin(3 * mna))
     result = result * u.deg
     return Angle(result)
 
@@ -174,7 +160,7 @@ def sunearth_distance(t='now'):
     accuracy terms not included here."""
     ta = true_anomaly(t)
     e = eccentricity_SunEarth_orbit(t)
-    result = 1.00000020 * (1.0 - e ** 2) / (1.0 + e * np.cos(ta))
+    result = 1.00000020 * (1.0 - e**2) / (1.0 + e * np.cos(ta))
     return result * u.AU
 
 
@@ -201,7 +187,7 @@ def apparent_latitude(t='now'):  # pylint: disable=W0613
 def true_obliquity_of_ecliptic(t='now'):
     """Returns the true obliquity of the ecliptic."""
     T = julian_centuries(t)
-    result = 23.452294 - 0.0130125 * T - 0.00000164 * T ** 2 + 0.000000503 * T ** 3
+    result = 23.452294 - 0.0130125 * T - 0.00000164 * T**2 + 0.000000503 * T**3
     return Angle(result, u.deg)
 
 
@@ -266,15 +252,15 @@ def heliographic_solar_center(t='now'):
     jd = julian_day(t)
     T = julian_centuries(t)
     # Heliographic coordinates in degrees
-    theta = ((jd - 2398220)*360/25.38) * u.deg
+    theta = ((jd - 2398220) * 360 / 25.38) * u.deg
     i = 7.25 * u.deg
     k = (74.3646 + 1.395833 * T) * u.deg
     lamda = true_longitude(t) - 0.00569 * u.deg
     diff = lamda - k
     # Latitude at center of disk (deg):
-    he_lat = np.arcsin(np.sin(diff)*np.sin(i))
+    he_lat = np.arcsin(np.sin(diff) * np.sin(i))
     # Longitude at center of disk (deg):
-    y = -np.sin(diff)*np.cos(i)
+    y = -np.sin(diff) * np.cos(i)
     x = -np.cos(diff)
     rpol = (np.arctan2(y, x))
     he_lon = rpol - theta
@@ -283,19 +269,20 @@ def heliographic_solar_center(t='now'):
 
 def print_params(t='now'):
     """Print out a summary of Solar ephemeris"""
-    time = parse_time(t)
-    print('Solar Ephemeris for ' + time.ctime())
-    print('')
-    print('Distance = ' + str(sunearth_distance(t)))
-    print('Semidiameter = ' + str(solar_semidiameter_angular_size(t)))
-    print('True (long, lat) = (' + str(true_longitude(t)) + ', '
-                                                 + str(true_latitude(t)) + ')')
-    print('Apparent (long, lat) = (' + str(apparent_longitude(t)) + ', '
-                                                 + str(apparent_latitude(t)) + ')')
-    print('True (RA, Dec) = (' + str(true_rightascension(t)) + ', '
-          + str(true_declination(t)) + ')')
-    print('Apparent (RA, Dec) = (' + str(apparent_rightascension(t)) + ', '
-          + str(apparent_declination(t)) + ')')
-    print('Heliographic long. and lat of disk center = ' + str(heliographic_solar_center(t)))
-    print('Position angle of north pole in = ' + str(solar_north(t)))
-    print('Carrington Rotation Number = ' + str(carrington_rotation_number(t)))
+
+    # import here to avoid circular import
+    from sunpy.coordinates.ephemeris import (get_sun_L0, get_sun_B0,
+                                             get_sun_P, get_sunearth_distance)
+
+    print('Solar Ephemeris for {}\n'.format(parse_time(t).ctime()))
+    print('Distance = {}'.format(get_sunearth_distance(t)))
+    print('Semidiameter = {}'.format(solar_semidiameter_angular_size(t)))
+    print('True (long, lat) = ({}, {})'.format(true_longitude(t), true_latitude(t)))
+    print('Apparent (long, lat) = ({}, {})'.format(apparent_longitude(t), apparent_latitude(t)))
+    print('True (RA, Dec) = ({}, {})'.format(true_rightascension(t), true_declination(t)))
+    print('Apparent (RA, Dec) = ({}, {})'.format(apparent_rightascension(t),
+                                                 apparent_declination(t)))
+    print('Heliographic long. and lat of disk center = ({}, {})'.format(get_sun_L0(t),
+                                                                        get_sun_B0(t)))
+    print('Position angle of north pole in = {}'.format(get_sun_P(t)))
+    print('Carrington Rotation Number = {}'.format(carrington_rotation_number(t)))
