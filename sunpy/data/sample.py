@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
-"""SunPy sample data files"""
+"""
+SunPy sample data files
+
+The following files are available in this submodule:
+
+"""
 from __future__ import absolute_import
 
 import sys
@@ -12,5 +17,6 @@ for _key in _sample_files:
     setattr(sys.modules[__name__], _key, f)
     file_list.append(f)
     file_dict.update({_key: f})
+    __doc__ += '* ``{}``\n'.format(_key)
 
 __all__ = list(_sample_files.keys()) + ['file_dict', 'file_list']

@@ -1,11 +1,10 @@
 SunPy database
 ==============
-..
-    TODO:
-        - WHY was this package developed?
-        - WHAT are the use-cases?
-        - WHICH methods can be undone?
-        - WHICH methods are the most important ones to know?
+
+The database submodule can be used to provide a local cache of the files and
+records retrieved from various remote services. For an introduction to the
+database see :ref:`database_guide`.
+
 
 .. automodapi:: sunpy.database
     :no-inheritance-diagram:
@@ -28,4 +27,3 @@ Submodules
 .. automodapi:: sunpy.database.attrs
     :headings: ^+
     :no-inheritance-diagram:
-

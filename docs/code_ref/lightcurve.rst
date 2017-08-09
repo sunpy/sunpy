@@ -3,6 +3,11 @@
 SunPy lightcurve
 ================
 
+.. warning::
+
+   The lightcurve submodule has been replaced with the `sunpy.timeseries`
+   module. It will be removed in a future version.
+
 Overview
 --------
 One of core classes in SunPy is a LightCurve or timeseries. A number of instruments

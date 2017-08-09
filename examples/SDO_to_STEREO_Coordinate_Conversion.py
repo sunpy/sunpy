@@ -16,7 +16,7 @@ from astropy.coordinates import SkyCoord
 import sunpy.map
 import sunpy.coordinates
 import sunpy.coordinates.wcs_utils
-from sunpy.net import vso
+from sunpy.net import Fido, attrs as a
 
 
 ###############################################################################
@@ -24,19 +24,18 @@ from sunpy.net import vso
 # early 2011 when the STEREO spacecraft were roughly 90 deg seperated from the
 # Earth.
 
-stereo = (vso.attrs.Source('STEREO_B') &
-          vso.attrs.Instrument('EUVI') &
-          vso.attrs.Time('2011-01-01', '2011-01-01T00:10:00'))
+stereo = (a.vso.Source('STEREO_B') &
+          a.Instrument('EUVI') &
+          a.Time('2011-01-01', '2011-01-01T00:10:00'))
 
-aia = (vso.attrs.Instrument('AIA') &
-       vso.attrs.Sample(24 * u.hour) &
-       vso.attrs.Time('2011-01-01', '2011-01-02'))
+aia = (a.Instrument('AIA') &
+       a.vso.Sample(24 * u.hour) &
+       a.Time('2011-01-01', '2011-01-02'))
 
-wave = vso.attrs.Wavelength(30 * u.nm, 31 * u.nm)
+wave = a.Wavelength(30 * u.nm, 31 * u.nm)
 
 
-vc = vso.VSOClient()
-res = vc.search(wave, aia | stereo)
+res = Fido.search(wave, aia | stereo)
 
 ###############################################################################
 # The results from VSO query:
@@ -46,7 +45,7 @@ print(res)
 ###############################################################################
 # Download the files:
 
-files = vc.fetch(res).wait()
+files = Fido.fetch(res)
 print(files)
 
 ###############################################################################
