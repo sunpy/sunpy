@@ -3,7 +3,6 @@ from datetime import timedelta
 from copy import deepcopy
 
 import numpy as np
-from skimage.util import img_as_float
 from skimage import transform
 from astropy import units as u
 from astropy.coordinates import SkyCoord, Longitude
@@ -11,6 +10,7 @@ from astropy.coordinates import SkyCoord, Longitude
 import sunpy.map
 from sunpy.time import parse_time
 from sunpy.coordinates import frames, HeliographicStonyhurst
+from sunpy.image.util import to_norm, un_norm
 
 __all__ = ['diff_rot', 'solar_rotate_coordinate', 'diffrot_map']
 
@@ -148,70 +148,6 @@ def solar_rotate_coordinate(coordinate, new_observer_time,
     return heliographic_rotated.transform_to(coordinate.frame.name)
 
 
-def _to_norm(arr):
-    """
-    Helper function to normalise/scale an array.  This is needed for example
-    for scikit-image which uses floats between 0 and 1.
-
-    Parameters
-    ----------
-    arr : `~numpy.ndarray`
-        Array to normalise.
-
-    Returns
-    -------
-    arr : `~numpy.ndarray`
-        Array with values between 0 (min) and 1 (max)
-
-    Examples
-    --------
-    >>> import numpy as np
-    >>> from sunpy.physics.transforms.differential_rotation import _to_norm
-    >>> out = _to_norm(np.array([-1, 0, 1]))
-    >>> out
-    array([ 0. ,  0.5,  1. ])
-    """
-    arr = np.array(arr, dtype='double')
-    arr = img_as_float(arr, force_copy=True)
-    if arr.min() < 0:
-        arr += np.abs(arr.min())
-    arr /= arr.max()
-    return arr
-
-
-def _un_norm(arr, original):
-    """
-    Helper function to un-normalise (or re-scale) an array based in
-    the values of the original array.
-
-    Parameters
-    ----------
-    arr : `~numpy.ndarray`
-        Array of floats to un-normalise with values in [0,1]
-    original : `~numpy.ndarray`
-        Original array with the min and max values
-
-    Returns
-    -------
-    arr : `~numpy.ndarray`
-        Array with values between `original.min()` and `original.max()` . Note
-        that the type of the original image is not guaranteed to be reproduced.
-
-    Examples
-    --------
-    >>> import numpy as np
-    >>> from sunpy.physics.transforms.differential_rotation import _un_norm
-    >>> original = np.array([-1, 0, 1])
-    >>> normalised = np.array([0., 0.5, 1.])
-    >>> out = _un_norm(normalised, original)
-    >>> out
-    array([-1.,  0.,  1.])
-    """
-    level = 0 if original.min() > 0 else np.abs(original.min())
-    arr *= original.max() + level
-    arr -= level
-    return arr
-
 
 @u.quantity_input(dt=u.s)
 def _warp_sun_coordinates(xy, smap, dt):
@@ -324,11 +260,11 @@ def diffrot_map(smap, dt, pad=False):
             smap = sunpy.map.Map(smap_data, smap_meta)
 
     # Apply solar differential rotation as a scikit-image warp
-    out = transform.warp(_to_norm(smap_data), inverse_map=_warp_sun_coordinates,
+    out = transform.warp(to_norm(smap_data), inverse_map=_warp_sun_coordinates,
                          map_args={"smap": smap, "dt": dt})
 
     # Recover the original intensity range.
-    out = _un_norm(out, smap.data)
+    out = un_norm(out, smap.data)
 
     # Update the meta information with the new date and time, and reference pixel.
     out_meta = deepcopy(smap.meta)
