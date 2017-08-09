@@ -29,6 +29,7 @@ from sunpy.data.test.waveunit import waveunitdir
 from sunpy.io import fits
 from sunpy.extern.six.moves import range
 from sunpy.extern.six.moves import configparser
+from sunpy.net import Fido, attrs as net_attrs
 
 import sunpy.data.test
 
@@ -57,6 +58,21 @@ def database_using_lfucache():
 @pytest.fixture
 def database():
     return Database('sqlite:///:memory:')
+
+
+@pytest.fixture
+def fido_search_result():
+    # A search query with responses from all instruments
+    # No JSOC query
+    return Fido.search(
+        net_attrs.Time("2012/1/1", "2012/1/2"),
+        net_attrs.Instrument('lyra') | net_attrs.Instrument('eve') |
+        net_attrs.Instrument('goes') | net_attrs.Instrument('noaa-indices') |
+        net_attrs.Instrument('noaa-predict') |
+        (net_attrs.Instrument('norh') & net_attrs.Wavelength(17*units.GHz)) |
+        net_attrs.Instrument('rhessi') |
+        (net_attrs.Instrument('EVE') & net_attrs.Level(0))
+        )
 
 
 @pytest.fixture
@@ -553,6 +569,47 @@ def test_add_entries_from_qr_ignore_duplicates(database, query_result):
     assert len(database) == 16
     database.add_from_vso_query_result(query_result, True)
     assert len(database) == 32
+
+
+@pytest.mark.online
+def test_add_entry_fido_search_result(database, fido_search_result):
+    assert len(database) == 0
+    database.add_from_fido_search_result(fido_search_result)
+    assert len(database) == 65
+    database.undo()
+    assert len(database) == 0
+    database.redo()
+    assert len(database) == 65
+
+
+@pytest.mark.online
+def test_add_entries_from_fido_search_result_JSOC_client(database):
+    assert len(database) == 0
+    search_result = Fido.search(
+        net_attrs.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+        net_attrs.jsoc.Series('hmi.m_45s'),
+        net_attrs.jsoc.Notify("sunpy@sunpy.org")
+        )
+    with pytest.raises(ValueError):
+        database.add_from_fido_search_result(search_result)
+
+
+@pytest.mark.online
+def test_add_entries_from_fido_search_result_duplicates(database, fido_search_result):
+    assert len(database) == 0
+    database.add_from_fido_search_result(fido_search_result)
+    assert len(database) == 65
+    with pytest.raises(EntryAlreadyAddedError):
+        database.add_from_fido_search_result(fido_search_result)
+
+
+@pytest.mark.online
+def test_add_entries_from_fido_search_result_ignore_duplicates(database, fido_search_result):
+    assert len(database) == 0
+    database.add_from_fido_search_result(fido_search_result)
+    assert len(database) == 65
+    database.add_from_fido_search_result(fido_search_result, True)
+    assert len(database) == 2*65
 
 
 def test_add_fom_path(database):
