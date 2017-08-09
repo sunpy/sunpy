@@ -3,7 +3,7 @@ import os
 import pytest
 
 import numpy as np
-
+from numpy.testing import assert_allclose
 from astropy import units as u
 from astropy.time import Time
 from astropy.coordinates import SkyCoord

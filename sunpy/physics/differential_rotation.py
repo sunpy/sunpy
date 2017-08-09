@@ -5,7 +5,6 @@ from copy import deepcopy
 import numpy as np
 from skimage.util import img_as_float
 from skimage import transform
-
 from astropy import units as u
 from astropy.coordinates import SkyCoord, Longitude
 
@@ -13,7 +12,6 @@ import sunpy.map
 from sunpy.time import parse_time
 from sunpy.coordinates import frames, HeliographicStonyhurst
 
-__author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
 __all__ = ['diff_rot', 'solar_rotate_coordinate', 'diffrot_map']
 
 
@@ -21,6 +19,7 @@ __all__ = ['diff_rot', 'solar_rotate_coordinate', 'diffrot_map']
 def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     """
     This function computes the change in longitude over days in degrees.
+
     Parameters
     -----------
     duration : `~astropy.units.Quantity`
@@ -33,15 +32,19 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
         allen : Use values from Allen's Astrophysical Quantities, and simpler equation.
     frame_time : {'sidereal' | 'synodic'}
         Choose 'type of day' time reference frame.
+
     Returns
     -------
     longitude_delta : `~astropy.units.Quantity`
         The change in longitude over days (units=degrees)
-    Notes
-    -----
-    * IDL code equivalent: http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/diff_rot.pro
-    * Howard rotation: http://adsabs.harvard.edu/abs/1990SoPh..130..295H
-    * A review of rotation parameters (including Snodgrass values): http://link.springer.com/article/10.1023%2FA%3A1005226402796
+
+    References
+    ----------
+    | * `IDL code equivalent <http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/diff_rot.pro>`_
+    | * `Howard rotation <http://adsabs.harvard.edu/abs/1990SoPh..130..295H>`_
+    | * `A review of rotation parameters (including Snodgrass values)
+    <http://link.springer.com/article/10.1023%2FA%3A1005226402796>`_
+
     Examples
     --------
     Default rotation calculation over two days at 30 degrees latitude:
@@ -49,8 +52,10 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     >>> import astropy.units as u
     >>> from sunpy.physics.differential_rotation import diff_rot
     >>> rotation = diff_rot(2 * u.day, 30 * u.deg)
+
     Default rotation over two days for a number of latitudes:
     >>> rotation = diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg)
+
     With rotation type 'allen':
     >>> rotation = diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg, 'allen')
     """
@@ -299,8 +304,8 @@ def diffrot_map(smap, dt, pad=False):
 
     submap = False
     # Check whether the input is a submap
-    if ((2 * smap.rsun_obs > smap.top_right_coord.Tx - smap.bottom_left_coord.Tx) or
-        (2 * smap.rsun_obs > smap.top_right_coord.Ty - smap.bottom_left_coord.Ty)):
+    if ( (2 * smap.rsun_obs > smap.top_right_coord.Tx - smap.bottom_left_coord.Tx) or
+         (2 * smap.rsun_obs > smap.top_right_coord.Ty - smap.bottom_left_coord.Ty) ) :
         submap = True
         if pad:
             # Calculating the largest distance between the corners and their rotation values
@@ -317,7 +322,6 @@ def diffrot_map(smap, dt, pad=False):
             smap_meta['crpix1'] += padding
             smap_meta['crpix2'] += padding
             smap = sunpy.map.Map(smap_data, smap_meta)
-
 
     # Apply solar differential rotation as a scikit-image warp
     out = transform.warp(_to_norm(smap_data), inverse_map=_warp_sun_coordinates,
