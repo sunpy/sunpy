@@ -272,14 +272,14 @@ def diffrot_map(smap, dt, pad=False):
                 deltax = dx if dx > deltax else deltax
                 deltay = dy if dy > deltay else deltay
 
-            padding = max(deltax.to(u.pix), deltay.to(u.pix))
-            padding = np.int(np.ceil(padding.value))
+            deltax = np.int(np.ceil(deltax.value))
+            deltay = np.int(np.ceil(deltay.value))
             # Create a new `smap` with the padding around it
-            smap_data = np.pad(smap.data, (padding, padding), 'constant', constant_values=(0, 0))
+            smap_data = np.pad(smap.data, ((deltay, deltay), (deltax, deltax)), 'constant', constant_values=0)
             smap_meta = deepcopy(smap.meta)
             smap_meta['naxis2'], smap_meta['naxis1'] = smap_data.shape
-            smap_meta['crpix1'] += padding
-            smap_meta['crpix2'] += padding
+            smap_meta['crpix1'] += deltax
+            smap_meta['crpix2'] += deltay
             smap = sunpy.map.Map(smap_data, smap_meta)
 
     # Apply solar differential rotation as a scikit-image warp
