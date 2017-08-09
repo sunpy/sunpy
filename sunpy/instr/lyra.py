@@ -21,6 +21,14 @@ from sunpy.extern.six.moves import urllib
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 
 
+__all__ = ['remove_lytaf_events_from_lightcurve',
+           'remove_lytaf_events_from_timeseries',
+           'get_lytaf_events',
+           'get_lytaf_event_types',
+           'download_lytaf_database',
+           'split_series_using_lytaf']
+
+
 @deprecated('v0.8',
             message="""``remove_lytaf_events_from_lightcurve`` is deprecated as of SunPy v0.8 due to
             the deprecation of ``LightCurve`` in favour of ``TimeSeries``. You should use
