@@ -16,7 +16,6 @@ from sunpy import config
 from sunpy.util.net import check_download_file
 from sunpy.util.config import get_and_create_download_dir
 from sunpy.util.decorators import deprecated
-from sunpy import timeseries
 
 from sunpy.extern.six.moves import urllib
 
@@ -45,11 +44,11 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
     ----------
     ts : `sunpy.timeseries.TimeSeries`
 
-     artifacts : list of strings
-        Contain the artifact types to be removed.  For list of artifact types
-        see reference [1].  For example, if user wants to remove only large
-        angle rotations, listed at reference [1] as LAR, let artifacts=["LAR"].
-        Default=[], i.e. no artifacts will be removed.
+    artifacts : list of strings
+        Sets the artifact types to be removed.  For a list of artifact types
+        see reference [1].  For example, if a user wants to remove only large
+        angle rotations, listed at reference [1] as LAR, set artifacts=["LAR"].
+        The default is that no artifacts will be removed.
 
     return_artifacts : `bool`
         Set to True to return a `numpy.recarray` containing the start time, end
