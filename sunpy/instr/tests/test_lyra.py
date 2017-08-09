@@ -82,26 +82,32 @@ def test_split_series_using_lytaf():
     assert split_no_lytaf[0]["subdata"].all() == dummy_data.all()
 
 
-# Create sample LYRALightCurve
-lyralc = lightcurve.LYRALightCurve.create("2014-01-01")
-lyralc.data = pandas.DataFrame(index=TIME,
-                               data={"CHANNEL1": CHANNELS[0],
-                                     "CHANNEL2": CHANNELS[1],
-                                     "CHANNEL3": CHANNELS[0],
-                                     "CHANNEL4": CHANNELS[1]})
-# Create sample TimeSeries
-lyrats = timeseries.TimeSeries(
-        os.path.join(rootdir, 'lyra_20150101-000000_lev3_std_truncated.fits.gz'), source='LYRA')
-lyrats.data = pandas.DataFrame(index=TIME,
-                               data={"CHANNEL1": CHANNELS[0],
-                                     "CHANNEL2": CHANNELS[1],
-                                     "CHANNEL3": CHANNELS[0],
-                                     "CHANNEL4": CHANNELS[1]})
+@pytest.fixture
+def get_lyradata(dtype):
+    if dtype == 'lc':
+        # Create sample LYRALightCurve
+        lyrats = lightcurve.LYRALightCurve.create("2014-01-01")
+        lyrats.data = pandas.DataFrame(index=TIME,
+                                       data={"CHANNEL1": CHANNELS[0],
+                                             "CHANNEL2": CHANNELS[1],
+                                             "CHANNEL3": CHANNELS[0],
+                                             "CHANNEL4": CHANNELS[1]})
+    else:
+        # Create sample TimeSeries
+        lyrats = timeseries.TimeSeries(
+            os.path.join(rootdir, 'lyra_20150101-000000_lev3_std_truncated.fits.gz'),
+            source='LYRA')
+        lyrats.data = pandas.DataFrame(index=TIME,
+                                       data={"CHANNEL1": CHANNELS[0],
+                                             "CHANNEL2": CHANNELS[1],
+                                             "CHANNEL3": CHANNELS[0],
+                                             "CHANNEL4": CHANNELS[1]})
+    return lyrats
 
 
 @pytest.mark.online
-@pytest.mark.parametrize('ts', [lyrats, lyralc])
-def test_remove_lytaf_events_from_timeseries(ts):
+@pytest.mark.parametrize('dtype', ['ts', 'lc'])
+def test_remove_lytaf_events_from_timeseries(dtype):
     """Test if artefacts are correctly removed from a TimeSeries.
     Also test LYRALightCurve for backwards compatibility."""
     # Check correct errors are raised due to bad input
@@ -111,6 +117,7 @@ def test_remove_lytaf_events_from_timeseries(ts):
 
     # Run remove_artifacts_from_timeseries, returning artifact
     # status
+    ts = get_lyradata(dtype)
     ts_test, artifact_status_test = \
         lyra.remove_lytaf_events_from_timeseries(
             ts, artifacts=["LAR", "Offpoint"], return_artifacts=True,
