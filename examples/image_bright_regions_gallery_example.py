@@ -1,6 +1,4 @@
-
 # coding: utf-8
-
 """
 ====================================================
 Manipulating Map image data - finding bright regions
@@ -13,10 +11,11 @@ Then count the approximate number of regions of interest.
 
 ##############################################################################
 # First, import the modules we will need:
+from __future__ import print_function, division
 
-import matplotlib.pyplot as plt
-import numpy as np
 from scipy import ndimage
+import matplotlib.pyplot as plt
+
 import sunpy.map
 from sunpy.data.sample import AIA_193_IMAGE
 
@@ -42,15 +41,17 @@ plt.show()
 data_max = aiamap.max()
 
 ##############################################################################
-# Now we want to make a mask, which tells us which regions are bright.
-# We choose the criterion that the data should be at least 5% of the maximum value.
-# Pixels with intensity values greater than this are included in the mask, while all other pixels are excluded.
+# Now we want to make a mask, which tells us which regions are bright. We
+# choose the criterion that the data should be at least 5% of the maximum
+# value. Pixels with intensity values greater than this are included in the
+# mask, while all other pixels are excluded.
 
-mask = aiamap.data < data_max*0.05
+mask = aiamap.data < data_max * 0.05
 
 ##############################################################################
-# Mask is a `boolean` array. It can be used to modify the original map object without modifying the data.
-# Once this mask attribute is set, we can plot the image again.
+# Mask is a `boolean` array. It can be used to modify the original map object
+# without modifying the data. Once this mask attribute is set, we can plot the
+# image again.
 
 aiamap.mask = mask
 plt.figure()
@@ -81,13 +82,15 @@ data2[data2 < 100] = 0
 aiamap2 = sunpy.map.Map(data2, aiamap.meta)
 
 ##############################################################################
-# The function `label` from the `scipy.ndimage` module, counts the number of contiguous regions in an image.
+# The function `label` from the `scipy.ndimage` module, counts the number of
+# contiguous regions in an image.
 
 labels, n = ndimage.label(aiamap2.data)
 
 ##############################################################################
-# Finally, we plot the smoothed bright image data, along with the estimate of the number of distinct regions.
-# We can see that approximately 6 distinct hot regions are present above the 5% of the maximum level.
+# Finally, we plot the smoothed bright image data, along with the estimate of
+# the number of distinct regions. We can see that approximately 6 distinct hot
+# regions are present above the 5% of the maximum level.
 
 plt.figure()
 aiamap2.plot()

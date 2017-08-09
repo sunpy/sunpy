@@ -5,12 +5,16 @@ Map Histogram
 
 How to inspect the histogram of the data of a map.
 """
+from __future__ import print_function, division
+
 import numpy as np
 import matplotlib.pyplot as plt
+
 import astropy.units as u
+
+import sunpy.map
 from astropy.coordinates import SkyCoord
 from sunpy.data.sample import AIA_171_IMAGE
-import sunpy.map
 
 ###############################################################################
 # We first create the Map using the sample data and we will create a submap
