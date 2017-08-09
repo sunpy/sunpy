@@ -120,12 +120,12 @@ def get_goes_event_list(timerange, goes_class_filter=None):
     # query the HEK for a list of events detected by the GOES instrument
     # between tstart and tend (using a GOES-class filter)
     if goes_class_filter:
-        result = client.query(hek.attrs.Time(tstart, tend),
+        result = client.search(hek.attrs.Time(tstart, tend),
                               hek.attrs.EventType(event_type),
                               hek.attrs.FL.GOESCls > goes_class_filter,
                               hek.attrs.OBS.Observatory == 'GOES')
     else:
-        result = client.query(hek.attrs.Time(tstart, tend),
+        result = client.search(hek.attrs.Time(tstart, tend),
                               hek.attrs.EventType(event_type),
                               hek.attrs.OBS.Observatory == 'GOES')
 

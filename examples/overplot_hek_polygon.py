@@ -38,7 +38,7 @@ hek_client = hek.HEKClient()
 # Look for coronal holes detected using the SPoCA feature recognition method:
 start_time = aia_map.date - timedelta(hours=2)
 end_time = aia_map.date + timedelta(hours=2)
-responses = hek_client.query(hek.attrs.Time(start_time, end_time), hek.attrs.CH, hek.attrs.FRM.Name == 'SPoCA')
+responses = hek_client.search(hek.attrs.Time(start_time, end_time), hek.attrs.CH, hek.attrs.FRM.Name == 'SPoCA')
 
 ##############################################################################
 # Let's find the biggest coronal hole within 80 degrees north/south of the

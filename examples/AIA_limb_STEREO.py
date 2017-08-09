@@ -45,7 +45,7 @@ wave = vso.attrs.Wavelength(30 * u.nm, 31 * u.nm)
 
 
 vc = vso.VSOClient()
-res = vc.query(wave, aia | stereo)
+res = vc.search(wave, aia | stereo)
 
 
 ##############################################################################
@@ -57,7 +57,7 @@ print(res)
 ##############################################################################
 # Download the files:
 
-files = vc.get(res).wait()
+files = vc.fetch(res).wait()
 
 
 ##############################################################################
