@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 
-import numpy as np
+import abc
 
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.widgets as widgets
 import matplotlib.animation as mplanim
-
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import mpl_toolkits.axes_grid1.axes_size as Size
+import astropy.wcs
 
+from sunpy.extern import six
 from sunpy.extern.six.moves import range
 
-__all__ = ['BaseFuncAnimator', 'ImageAnimator']
+__all__ = ['BaseFuncAnimator', 'ImageAnimator', 'LineAnimator', 'ImageAnimatorWCS']
 
 
 class SliderPB(widgets.Slider):
@@ -124,10 +126,8 @@ class BaseFuncAnimator(object):
         list of [min,max] pairs to set the ranges for each slider or an array
         of values for all points of the slider.
         (The slider update function decides which to support.)
-
     fig: mpl.figure
         Figure to use
-
     interval: int
         Animation interval in ms
 
@@ -283,12 +283,12 @@ class BaseFuncAnimator(object):
         elif event.key == 'right':
             self._step(self.sliders[self.active_slider]._slider)
         elif event.key == 'up':
-            self._set_active_slider((self.active_slider+1)%self.num_sliders)
+            self._set_active_slider((self.active_slider+1) % self.num_sliders)
         elif event.key == 'down':
-            self._set_active_slider((self.active_slider-1)%self.num_sliders)
+            self._set_active_slider((self.active_slider-1) % self.num_sliders)
         elif event.key == 'p':
             self._click_slider_button(event, self.slider_buttons[self.active_slider]._button,
-                               self.sliders[self.active_slider]._slider)
+                                      self.sliders[self.active_slider]._slider)
 
 # =============================================================================
 #   Active Slider methods
@@ -386,7 +386,7 @@ class BaseFuncAnimator(object):
                               self.slider_ranges[i][0],
                               self.slider_ranges[i][-1]-1,
                               valinit=self.slider_ranges[i][0],
-                              valfmt = '%4.1f')
+                              valfmt='%4.1f')
             sframe.on_changed(self._slider_changed, sframe)
             sframe.slider_ind = i
             sframe.cval = sframe.val
@@ -453,7 +453,8 @@ class BaseFuncAnimator(object):
         self.slider_functions[slider.slider_ind](val, self.im, slider)
 
 
-class ImageAnimator(BaseFuncAnimator):
+@six.add_metaclass(abc.ABCMeta)
+class ArrayAnimator(BaseFuncAnimator):
     """
     Create a matplotlib backend independent data explorer
 
@@ -471,7 +472,177 @@ class ImageAnimator(BaseFuncAnimator):
     Parameters
     ----------
     data: ndarray
-        The data to be visualised > 2D
+        The data to be visualized
+
+    image_axes: list
+        The axes that make the image
+
+    fig: mpl.figure
+        Figure to use
+
+    axis_ranges: list of physical coordinates for array or None
+        If None array indices will be used for all axes.
+        If a list it should contain one element for each axis of the numpy array.
+        For the image axes a [min, max] pair should be specified which will be
+        passed to :func:`matplotlib.pyplot.imshow` as extent.
+        For the slider axes a [min, max] pair can be specified or an array the
+        same length as the axis which will provide all values for that slider.
+        If None is specified for an axis then the array indices will be used
+        for that axis.
+
+    interval: int
+        Animation interval in ms
+
+    colorbar: bool
+        Plot colorbar
+
+    button_labels: list
+        List of strings to label buttons
+
+    button_func: list
+        List of functions to map to the buttons
+
+    """
+
+    def __init__(self, data, image_axes=[-2, -1], axis_ranges=None, **kwargs):
+
+        all_axes = list(range(self.naxis))
+        # Handle negative indexes
+        self.image_axes = [all_axes[i] for i in image_axes]
+
+        slider_axes = list(range(self.naxis))
+        for x in self.image_axes:
+            slider_axes.remove(x)
+
+        if len(slider_axes) != self.num_sliders:
+            raise ValueError("Specific the same number of axes as sliders!")
+        self.slider_axes = slider_axes
+
+        # Verify that combined slider_axes and image_axes make all axes
+        ax = self.slider_axes + self.image_axes
+        ax.sort()
+        if ax != list(range(self.naxis)):
+            raise ValueError("spatial_axes and slider_axes mismatch")
+
+        self.axis_ranges = self._sanitize_axis_ranges(axis_ranges, data)
+
+        # create data slice
+        self.frame_slice = [slice(None)] * self.naxis
+        for i in self.slider_axes:
+            self.frame_slice[i] = 0
+
+        base_kwargs = {'slider_functions': [self.update_plot] * self.num_sliders,
+                       'slider_ranges': [self.axis_ranges[i] for i in self.slider_axes]}
+        base_kwargs.update(kwargs)
+        BaseFuncAnimator.__init__(self, data, **base_kwargs)
+
+    def label_slider(self, i, label):
+        """
+        Change the Slider label
+
+        Parameters
+        ----------
+        i: int
+            The index of the slider to change (0 is bottom)
+        label: str
+            The label to set
+        """
+        self.sliders[i]._slider.label.set_text(label)
+
+    def _sanitize_axis_ranges(self, axis_ranges, data):
+        """
+        This method takes the various allowed values of axis_ranges and returns
+        them in a standardized way for the rest of the class to use.
+
+        The outputted axis range describes the physical coordinates of the
+        array axes.
+
+        The allowed values of axis range is either None or a list.
+        If axis_ranges is None then all axis are assumed to be not scaled and
+        use array indices.
+
+        Where axis_ranges is a list it must have the same length as the number
+        of axis as the array and each element must be one of the following:
+
+            * None: Build a min,max pair or linspace array of array indices
+            * [min, max]: leave for image axes or convert to a array for slider axes
+            (from min to max in axis length steps)
+            * [min, max] pair where min == max: convert to array indies min, max pair or array.
+            * array of axis length, check that it was passed for a slider axes and do nothing
+            if it was, error if it is not.
+        """
+        # If no axis range at all make it all [min,max] pairs
+        if axis_ranges is None:
+            axis_ranges = [[0, i] for i in data.shape]
+
+        # need the same number of axis ranges as axes
+        if len(axis_ranges) != data.ndim:
+            raise ValueError("Length of axis_ranges must equal number of axes")
+
+        # For each axis validate and translate the axis_ranges
+        for i, d in enumerate(data.shape):
+            # If [min,max] pair or None
+            if axis_ranges[i] is None or len(axis_ranges[i]) == 2:
+                # If min==max or None
+                if axis_ranges[i] is None or axis_ranges[i][0] == axis_ranges[i][1]:
+                    if i in self.slider_axes:
+                        axis_ranges[i] = np.linspace(0, d, d)
+                    else:
+                        axis_ranges[i] = [0, d]
+                        # min max pair for slider axes should be converted
+                        # to an array
+                elif i in self.slider_axes:
+                    axis_ranges[i] = np.linspace(axis_ranges[i][0], axis_ranges[i][1], d)
+
+            # If we have a whole list of values for the axis, make sure we are a slider axis.
+            elif len(axis_ranges[i]) == d:
+                axis_ranges[i] = np.array(axis_ranges[i])
+
+            # If above criteria are not met, raise an error.
+            else:
+                raise ValueError("axis_ranges must be None or a list with length equal to number "
+                                 "of axes in data whose elements are either None, [min,max], "
+                                 "or a list/array of same length as the plot/image axis of data.")
+        return axis_ranges
+
+    @abc.abstractmethod
+    def plot_start_image(self):
+        """
+        Abstract method for plotting first slice of array.
+
+        Must exists here but be defined in subclass.
+
+        """
+
+    @abc.abstractmethod
+    def update_plot(self):
+        """
+        Abstract method for updating plot.
+
+        Must exists here but be defined in subclass.
+
+        """
+
+
+class ImageAnimator(ArrayAnimator):
+    """
+    Create a matplotlib backend independent data explorer for 2D images.
+
+    The following keyboard shortcuts are defined in the viewer:
+
+    - 'left': previous step on active slider
+    - 'right': next step on active slider
+    - 'top': change the active slider up one
+    - 'bottom': change the active slider down one
+    - 'p': play/pause active slider
+
+    This viewer can have user defined buttons added by specifying the labels
+    and functions called when those buttons are clicked as keyword arguments.
+
+    Parameters
+    ----------
+    data: ndarray
+        The data to be visualized >= 2D
 
     image_axes: list
         The two axes that make the image
@@ -479,7 +650,7 @@ class ImageAnimator(BaseFuncAnimator):
     fig: mpl.figure
         Figure to use
 
-    axis_range: list of physical coordinates for array or None
+    axis_ranges: list of physical coordinates for array or None
         If None array indices will be used for all axes.
         If a list it should contain one element for each axis of the numpy array.
         For the image axes a [min, max] pair should be specified which will be
@@ -502,64 +673,27 @@ class ImageAnimator(BaseFuncAnimator):
         List of functions to map to the buttons
 
     Extra keywords are passed to imshow.
+
     """
 
-    def __init__(self, data, image_axes=[-2, -1], axis_range=None, **kwargs):
-
-        self.naxis = data.ndim
-        self.num_sliders = self.naxis - 2
+    def __init__(self, data, image_axes=[-2, -1], axis_ranges=None, **kwargs):
+        # Check that number of axes is 2.
         if len(image_axes) != 2:
             raise ValueError("There can only be two spatial axes")
-
-        all_axes = list(range(self.naxis))
-        # Handle negative indexes
-        self.image_axes = [all_axes[i] for i in image_axes]
-
-        slider_axes = list(range(self.naxis))
-        for x in self.image_axes:
-            slider_axes.remove(x)
-
-        if len(slider_axes) != self.num_sliders:
-            raise ValueError("Specific the same number of axes as sliders!")
-        self.slider_axes = slider_axes
-
-        # Verify that combined slider_axes and image_axes make all axes
-        ax = self.slider_axes + self.image_axes
-        ax.sort()
-        if ax != list(range(self.naxis)):
-            raise ValueError("spatial_axes and slider_axes mismatch")
-
-        self.axis_range = self._sanitize_axis_range(axis_range, data)
-
-        # create data slice
-        self.frame_slice = [slice(None)] * self.naxis
-        for i in self.slider_axes:
-            self.frame_slice[i] = 0
-
-        base_kwargs = {'slider_functions': [self._updateimage]*self.num_sliders,
-                       'slider_ranges': [self.axis_range[i] for i in self.slider_axes]}
-        base_kwargs.update(kwargs)
-        BaseFuncAnimator.__init__(self, data, **base_kwargs)
-
-    def label_slider(self, i, label):
-        """
-        Change the Slider label
-
-        Parameters
-        ----------
-        i: int
-            The index of the slider to change (0 is bottom)
-        label: str
-            The label to set
-        """
-        self.sliders[i]._slider.label.set_text(label)
+        # Define number of slider axes.
+        self.naxis = data.ndim
+        self.num_sliders = self.naxis-2
+        # Run init for parent class
+        super(ImageAnimator, self).__init__(data, image_axes=image_axes,
+                                            axis_ranges=axis_ranges, **kwargs)
 
     def plot_start_image(self, ax):
+        """Sets up plot of initial image."""
         # Create extent arg
         extent = []
         # reverse because numpy is in y-x and extent is x-y
         for i in self.image_axes[::-1]:
-            extent += self.axis_range[i]
+            extent += self.axis_ranges[i]
 
         imshow_args = {'interpolation': 'nearest',
                        'origin': 'lower',
@@ -573,67 +707,286 @@ class ImageAnimator(BaseFuncAnimator):
 
         return im
 
-    def _sanitize_axis_range(self, axis_range, data):
-        """
-        This method takes the various allowed values of axis_range and returns
-        them in a standadized way for the rest of the class to use.
+    def update_plot(self, val, im, slider):
+        """Updates plot based on slider/array dimension being iterated."""
+        val = int(val)
+        ax_ind = self.slider_axes[slider.slider_ind]
+        ind = np.argmin(np.abs(self.axis_ranges[ax_ind] - val))
+        self.frame_slice[ax_ind] = ind
+        if val != slider.cval:
+            im.set_array(self.data[self.frame_slice])
+            slider.cval = val
 
-        The outputted axis range describes the physical coordinates of the
+    def _sanitize_axis_ranges(self, axis_ranges, data):
+        """
+        This method takes the various allowed values of axis_ranges and returns
+        them in a standardized way for the rest of the class to use.
+
+        The outputted axis_ranges describe the physical coordinates of the
         array axes.
 
-        The allowed values of axis range is either None or a list.
-        If axis_range is None then all axis are assumed to be not scaled and
+        The allowed values of axis_range is either None or a list.
+        If axis_ranges is None then all axes are assumed to be not scaled and
         use array indices.
 
-        Where axis_range is a list it must have the same length as the number
+        Where axis_ranges is a list it must have the same length as the number
         of axis as the array and each element must be one of the following:
 
-                * None: Build a min,max pair or linspace array of array indices
-                * [min, max]: leave for image axes or convert to a array for slider axes (from min to max in axis length steps)
-                * [min, max] pair where min == max: convert to array indies min,max pair or array.
-                * array of axis length, check that it was passed for a slider axes and do nothing if it was, error if it is not.
+            * None: Build a min,max pair or linspace array of array indices
+            * [min, max]: leave for image axes or convert to a array for slider axes
+            (from min to max in axis length steps)
+            * [min, max] pair where min == max: convert to array indies min,max pair or array.
+            * array of axis length, check that it was passed for a slider axes and do nothing
+            if it was, error if it is not.
         """
-        # If no axis range at all make it all [min,max] pairs
-        if axis_range is None:
-            axis_range = [[0, i] for i in data.shape]
-
-        # need the same number of axis ranges as axes
-        if len(axis_range) != data.ndim:
-            raise ValueError("axis_range must equal number of axes")
-
-        # For each axis validate and translate the axis_range
+        # Run super class's version of this function.
+        axis_ranges = super(ImageAnimator, self)._sanitize_axis_ranges(axis_ranges, data)
+        # Check that axis ranges which are array type are only for slider axes.
         for i, d in enumerate(data.shape):
-            # If [min,max] pair or None
-            if axis_range[i] is None or len(axis_range[i]) == 2:
-                # If min==max or None
-                if axis_range[i] is None or axis_range[i][0] == axis_range[i][1]:
-                    if i in self.slider_axes:
-                        axis_range[i] = np.linspace(0,d,d)
-                    else:
-                        axis_range[i] = [0, d]
-                        # min max pair for slider axes should be converted
-                        # to an array
-                elif i in self.slider_axes:
-                    axis_range[i] = np.linspace(axis_range[i][0], axis_range[i][1], d)
-
-            #If we have a whole list of values for the axis, make sure we are a slider axis.
-            elif len(axis_range[i]) == d:
+            if len(axis_ranges[i]) == d:
                 if i not in self.slider_axes:
                     raise ValueError("Slider axes mis-match, non-slider axes need [min,max] pairs")
-                else:
-                    #Make sure the resulting element is a ndarray
-                    axis_range[i] = np.array(axis_range[i])
+        return axis_ranges
 
-            #panic
-            else:
-                raise ValueError("axis_range should be either: None, [min,max], or a linspace for slider axes")
-        return axis_range
 
-    def _updateimage(self, val, im, slider):
+
+class LineAnimator(ArrayAnimator):
+    """
+    Create a matplotlib backend independent data explorer for 1D plots.
+
+    The following keyboard shortcuts are defined in the viewer:
+
+    - 'left': previous step on active slider
+    - 'right': next step on active slider
+    - 'top': change the active slider up one
+    - 'bottom': change the active slider down one
+    - 'p': play/pause active slider
+
+    This viewer can have user defined buttons added by specifying the labels
+    and functions called when those buttons are clicked as keyword arguments.
+
+    Parameters
+    ----------
+    data: ndarray
+        The y-axis data to be visualized
+
+    plot_axis_index: `int`
+        The axis used to plot against xdata.
+        Default = -1, i.e. last dimension of arrary.
+
+    fig: `matplotlib.figure`
+        Figure to use
+
+    axis_ranges: `list` of physical coordinates for array or None
+        If None array indices will be used for all axes.
+        X-axis values must be supplied (if desired) as an array in the
+        element of axis_ranges corresponding to the plot_axis_index in the
+        data input arg, i.e. xdata = axis_ranges[plot_axis_index].
+        Also, the number of x-axis values must correspond to the number
+        of y-axis values, i.e. len(axis_ranges[plot_axis_index]) must equal
+        len(data[plot_axis_index]).
+        For the slider axes a [min, max] pair can be specified or an array the
+        same length as the axis which will provide all values for that slider.
+        If None is specified for an axis then the array indices will be used
+        for that axis.
+
+    xlabel: `str`
+        Label of x-axis of plot.
+
+    ylabel: `str`
+        Label of y-axis of plot.
+
+    xlim: `tuple`
+        Limits of x-axis of plot.
+
+    ylim: `tuple`
+        Limits of y-axis of plot.
+
+    interval: `int`
+        Animation interval in ms
+
+    button_labels: `list`
+        List of strings to label buttons
+
+    button_func: `list`
+        List of functions to map to the buttons
+
+    Extra keywords are passed to plot.
+
+    """
+
+    def __init__(self, data, plot_axis_index=-1, axis_ranges=None, ylabel=None, xlabel=None,
+                 xlim=None, ylim=None, **kwargs):
+        # Check inputs.
+        plot_axis_index = int(plot_axis_index)
+        if plot_axis_index not in range(-2, 2):
+            raise ValueError("plot_axis_index must be either 0 or 1 (or equivalent "
+                             "negative indices) referring to the axis of data to be "
+                             "used for a single plot.")
+        if data.ndim < 2:
+            raise ValueError("data must have at least two dimensions.  One for data "
+                             "for each single plot and at least one for time/iteration.")
+        # Ensure axis_ranges are input correctly.
+        if axis_ranges[plot_axis_index] is not None:
+            if len(axis_ranges[plot_axis_index]) != data.shape[plot_axis_index]:
+                raise ValueError("The plot_axis_index axis range must be specified as None "
+                                 "or an array. Not [min, max]")
+        # Define number of slider axes.
+        self.naxis = data.ndim
+        self.num_sliders = self.naxis-1
+        # Attach data to class.
+        if axis_ranges is not None and all(axis_range is None for axis_range in axis_ranges):
+            axis_ranges = None
+        if axis_ranges[plot_axis_index] is None:
+            self.xdata = np.arange(data.shape[plot_axis_index])
+        else:
+            self.xdata = np.asarray(axis_ranges[plot_axis_index])
+        if ylim is None:
+            ylim = (data.min(), data.max())
+        if xlim is None:
+            xlim = (self.xdata.min(), self.xdata.max())
+        self.ylim = ylim
+        self.xlim = xlim
+        self.xlabel = xlabel
+        self.ylabel = ylabel
+        # Run init for base class
+        super(LineAnimator, self).__init__(data, image_axes=[plot_axis_index],
+                                           axis_ranges=axis_ranges, **kwargs)
+
+    def plot_start_image(self, ax):
+        """Sets up plot of initial image."""
+        ax.set_xlim(self.xlim)
+        ax.set_ylim(self.ylim)
+        if self.xlabel is not None:
+            ax.set_xlabel(self.xlabel)
+        if self.ylabel is not None:
+            ax.set_ylabel(self.ylabel)
+        plot_args = {}
+        plot_args.update(self.imshow_kwargs)
+        line, = ax.plot(self.xdata, self.data[self.frame_slice], **plot_args)
+        return line
+
+    def update_plot(self, val, line, slider):
+        """Updates plot based on slider/array dimension being iterated."""
         val = int(val)
-        ax = self.slider_axes[slider.slider_ind]
-        ind = np.argmin(np.abs(self.axis_range[ax] - val))
-        self.frame_slice[ax] = ind
+        ax_ind = self.slider_axes[slider.slider_ind]
+        ind = np.argmin(np.abs(self.axis_ranges[ax_ind] - val))
+        self.frame_slice[ax_ind] = ind
         if val != slider.cval:
+            line.set_ydata(self.data[self.frame_slice])
+            slider.cval = val
+
+class ImageAnimatorWCS(ImageAnimator):
+    """
+    Animates N-dimensional data with the associated astropy WCS object.
+
+    The following keyboard shortcuts are defined in the viewer:
+
+    - 'left': previous step on active slider
+    - 'right': next step on active slider
+    - 'top': change the active slider up one
+    - 'bottom': change the active slider down one
+    - 'p': play/pause active slider
+
+    This viewer can have user defined buttons added by specifying the labels
+    and functions called when those buttons are clicked as keyword arguments.
+
+    Parameters
+    ----------
+    data: `numpy.ndarray`
+        The data to be visualized >= 2D
+    
+    wcs: `astropy.wcs.WCS`
+        The wcs data.
+
+    image_axes: `list`
+        The two axes that make the image
+
+    fig: `matplotlib.figure.Figure`
+        Figure to use
+
+    axis_ranges: list of physical coordinates for array or None
+        If None array indices will be used for all axes.
+        If a list it should contain one element for each axis of the numpy array.
+        For the image axes a [min, max] pair should be specified which will be
+        passed to :func:`matplotlib.pyplot.imshow` as extent.
+        For the slider axes a [min, max] pair can be specified or an array the
+        same length as the axis which will provide all values for that slider.
+        If None is specified for an axis then the array indices will be used
+        for that axis.
+
+    interval: `int`
+        Animation interval in ms
+
+    colorbar: `bool`
+        Plot colorbar
+
+    button_labels: `list`
+        List of strings to label buttons
+
+    button_func: `list`
+        List of functions to map to the buttons
+
+    unit_x_axis: `astropy.units.Unit`
+        The unit of x axis.
+
+    unit_y_axis: `astropy.units.Unit`
+        The unit of y axis.
+
+    Extra keywords are passed to imshow.
+
+    """
+    def __init__(self, data, wcs=None, image_axes=[-1, -2], unit_x_axis=None, unit_y_axis=None,
+                 axis_ranges=None, **kwargs):
+        if not isinstance(wcs, astropy.wcs.WCS):
+            raise ValueError("wcs data should be provided.")
+        if wcs.wcs.naxis is not data.ndim:
+            raise ValueError("Dimensions of data and wcs not matching")
+        self.wcs = wcs
+        list_slices_wcsaxes = [0 for i in range(self.wcs.naxis)]
+        list_slices_wcsaxes[image_axes[0]] = 'x'
+        list_slices_wcsaxes[image_axes[1]] = 'y'
+        self.slices_wcsaxes = list_slices_wcsaxes[::-1]
+        self.unit_x_axis = unit_x_axis
+        self.unit_y_axis = unit_y_axis
+        super(ImageAnimatorWCS, self).__init__(data, image_axes=image_axes, axis_ranges=axis_ranges, **kwargs)
+
+    def _get_main_axes(self):
+        axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs, slices=self.slices_wcsaxes)
+        self._set_unit_in_axis(axes)
+        return axes
+
+    def _set_unit_in_axis(self, axes):
+        if self.unit_x_axis is not None:
+            axes.coords[2].set_format_unit(self.unit_x_axis)
+            axes.coords[2].set_ticks(exclude_overlapping=True)
+        if self.unit_y_axis is not None:
+            axes.coords[1].set_format_unit(self.unit_y_axis)
+            axes.coords[1].set_ticks(exclude_overlapping=True)
+
+
+    def plot_start_image(self, ax):
+        """Sets up plot of initial image."""
+        imshow_args = {'interpolation': 'nearest',
+                       'origin': 'lower',
+                       }
+        imshow_args.update(self.imshow_kwargs)
+        im = ax.imshow(self.data[self.frame_slice], **imshow_args)
+        if self.if_colorbar:
+            self._add_colorbar(im)
+        return im
+
+    def update_plot(self, val, im, slider):
+        """Updates plot based on slider/array dimension being iterated."""
+        val = int(val)
+        ax_ind = self.slider_axes[slider.slider_ind]
+        ind = np.argmin(np.abs(self.axis_ranges[ax_ind] - val))
+        self.frame_slice[ax_ind] = ind
+        list_slices_wcsaxes = list(self.slices_wcsaxes)
+        list_slices_wcsaxes[self.wcs.naxis-ax_ind-1] = val
+        self.slices_wcsaxes = list_slices_wcsaxes
+        if val != slider.cval:
+            self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
+            self._set_unit_in_axis(self.axes)
             im.set_array(self.data[self.frame_slice])
             slider.cval = val

@@ -45,7 +45,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
     --------
     >>> import sunpy.timeseries
     >>> import sunpy.data.sample
-    >>> gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_LIGHTCURVE, source='GBMSummary')   # doctest: +SKIP
+    >>> gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_TIMESERIES, source='GBMSummary')   # doctest: +SKIP
     >>> gbm.peek()   # doctest: +SKIP
 
     References
@@ -67,7 +67,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
 
             import sunpy.timeseries
             import sunpy.data.sample
-            gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_LIGHTCURVE, source='GBMSummary')
+            gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_TIMESERIES, source='GBMSummary')
             gbm.peek()
 
         Parameters

@@ -5,12 +5,14 @@ from __future__ import absolute_import, division, absolute_import
 __author__ = "Jack Ireland"
 __email__ = "jack.ireland@nasa.gov"
 
+from astropy.visualization import LogStretch
+from astropy.visualization.mpl_normalize import ImageNormalize
 from sunpy.map import GenericMap
 from sunpy.cm import cm
-
-from matplotlib import colors
+from sunpy.map.sources.source_type import source_stretch
 
 __all__ = ['TRACEMap']
+
 
 class TRACEMap(GenericMap):
     """TRACE Image Map
@@ -56,7 +58,7 @@ class TRACEMap(GenericMap):
         self._nickname = self.detector
         # Colour maps
         self.plot_settings['cmap'] = cm.get_cmap('trace' + str(self.meta['WAVE_LEN']))
-        self.plot_settings['norm'] = colors.LogNorm()
+        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, LogStretch()))
 
     @classmethod
     def is_datasource_for(cls, data, header, **kwargs):
@@ -71,5 +73,4 @@ class TRACEMap(GenericMap):
         s = self.meta['WAVE_LEN']
         if s == 'WL':
             s = 'white-light'
-            
         return s

@@ -50,7 +50,7 @@ def test_parse_time_pandas_timestamp():
 
 def test_parse_time_pandas_index():
     inputs = [datetime(2012, 1, i) for i in range(1, 13)]
-    ind = pandas.tseries.index.DatetimeIndex(inputs)
+    ind = pandas.DatetimeIndex(inputs)
 
     dts = parse_time(ind)
 

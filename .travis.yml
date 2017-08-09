@@ -15,6 +15,10 @@ addons:
             - texlive-latex-extra
             - dvipng
 
+cache:
+  directories:
+  - $HOME/sunpy/data
+
 python:
     - 2.7
     - 3.4
@@ -25,14 +29,14 @@ python:
 env:
     global:
         - COLUMNS=240
-        - PREVIOUS_NUMPY=1.10.4
+        - PREVIOUS_NUMPY=1.11.3
         - NUMPY_VERSION='stable'
         - ASTROPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
         - SETUP_CMD='test'
         - CONDA_CHANNELS='astropy astropy-ci-extras conda-forge'
-        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock pyyaml pandas nomkl pytest-cov coverage hypothesis h5py'
-        - PIP_DEPENDENCIES='suds-jurko sphinx-gallery glymur pytest-sugar'
+        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock pyyaml pandas nomkl pytest-cov coverage hypothesis glymur'
+        - PIP_DEPENDENCIES='suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures git+https://github.com/sunpy/sunpy-sphinx-theme.git@v0.1.0a1'
         - EVENT_TYPE='pull_request push'
 
     matrix:
@@ -41,14 +45,14 @@ env:
 matrix:
     include:
          # We order the jobs, so the longest running tests are in the top
-         # three positions of the matrix
-         - python: 3.6
-           env: SETUP_CMD='test --online --coverage -V'
-                EVENT_TYPE='push pull_request cron'
-
+         # four positions of the matrix
          - os: osx
            language: generic
            env: PYTHON_VERSION=3.6
+
+         - python: 3.6
+           env: SETUP_CMD='test --online --coverage -V'
+                EVENT_TYPE='push pull_request cron'
 
          - python: 3.6
            env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
@@ -58,12 +62,13 @@ matrix:
            env: SETUP_CMD='test'
 
          # Previous numpy is tested on an older python version
-         - python: 3.4
+         - python: 3.5
            env: NUMPY_VERSION=$PREVIOUS_NUMPY
 
-         - python: 2.7
+         - python: 3.6
            env: SETUP_CMD='build_docs -w'
                 EVENT_TYPE='push pull_request cron'
+                SPHINX_VERSION='<1.6'
 
          # Figure test runs use an env stored in the repo so don't have conda
          # requirements
@@ -75,12 +80,12 @@ matrix:
 
 install:
     - git clone git://github.com/astropy/ci-helpers.git
-    - source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh
+    - source ci-helpers/travis/setup_conda.sh
     - source continuous-integration/travis/openjpeg.sh  # so glymur knows where to look
 
 before_script:
     # Download the sample data for the build of the documentation.
-    - if [[ $SETUP_CMD == *build_docs* ]]; then python -c "import sunpy.data; sunpy.data.download_sample_data()"; fi
+    - if [[ $SETUP_CMD == *build_docs* ]]; then python -c "import sunpy.data.sample"; fi
     - if [[ $SETUP_CMD == *figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; fi
 
 

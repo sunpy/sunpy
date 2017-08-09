@@ -51,34 +51,24 @@ class RHESSISummaryLightCurve(LightCurve):
     * Mission Paper `<http://link.springer.com/article/10.1023%2FA%3A1022428818870>`_
     """
 
-    def peek(self, title="RHESSI Observing Summary Count Rate", **kwargs):
+    def peek(self):
         """Plots RHESSI Count Rate light curve. An example is shown below.
 
         .. plot::
 
             from sunpy import lightcurve as lc
-            from sunpy.data.sample import RHESSI_LIGHTCURVE
-            rhessi = lc.RHESSISummaryLightCurve.create(RHESSI_LIGHTCURVE)
+            from sunpy.data.sample import RHESSI_TIMESERIES
+            rhessi = lc.RHESSISummaryLightCurve.create(RHESSI_TIMESERIES)
             rhessi.peek()
-
-        Parameters
-        ----------
-        title : str
-            The title of the plot.
-
-        **kwargs : dict
-            Any additional plot arguments that should be used
-            when plotting.
 
         Returns
         -------
         fig : `~matplotlib.Figure`
             A plot figure.
+            
         """
         figure = plt.figure()
         axes = plt.gca()
-
-        #dates = matplotlib.dates.date2num(self.data.index)
 
         lc_linecolors = rhessi.hsi_linecolors()
 

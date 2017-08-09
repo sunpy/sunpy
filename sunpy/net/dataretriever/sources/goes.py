@@ -95,7 +95,7 @@ class GOESClient(GenericClient):
         """
         self.map_['source'] = 'nasa'
         self.map_['instrument'] = 'goes'
-        self.map_['phyobs'] = 'irradiance'
+        self.map_['physobs'] = 'irradiance'
         self.map_['provider'] = 'sdac'
 
     @classmethod
@@ -115,6 +115,6 @@ class GOESClient(GenericClient):
         chkattr = ['Time', 'Instrument']
         chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
-            if x.__class__.__name__ == 'Instrument' and x.value == 'goes':
+            if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'goes':
                 return all(chklist)
         return False

@@ -2,12 +2,12 @@ name: sunpy-rtd
 channels:
     - conda-forge
 dependencies:
-- astropy
-- beautiful-soup
-- bsddb
+- astropy >=2.0
+- beautifulsoup4
 - cairo
 - contextlib2
 - cycler
+- cython
 - db
 - decorator
 - fontconfig
@@ -37,7 +37,7 @@ dependencies:
 - pyparsing
 - pyqt
 - pytest
-- python
+- python=3.5
 - python-dateutil
 - pytz
 - qt
@@ -51,12 +51,14 @@ dependencies:
 - sqlalchemy
 - sqlite
 - suds-jurko
+- sphinx=1.5.6
+- sphinx_rtd_theme
 - tk
-- wcsaxes
 - wheel
 - xz
 - zlib
 - openjpeg
+- sphinx-gallery
+- glymur
 - pip:
-    - sphinx-gallery
-    - glymur
+    - git+https://github.com/sunpy/sunpy-sphinx-theme.git@v0.1.0a3

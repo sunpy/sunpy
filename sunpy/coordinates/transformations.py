@@ -4,6 +4,14 @@ Coordinate Transformation Functions
 
 This module contains the functions for converting one
 `sunpy.coordinates.frames` object to another.
+
+.. warning::
+
+  The functions in this submodule should never be called directly, transforming
+  between coordinate frames should be done using the ``.transform_to`` methods
+  on `~astropy.coordinates.BaseCoordinateFrame` or
+  `~astropy.coordinates.SkyCoord` instances.
+
 """
 from __future__ import absolute_import, division
 
@@ -11,9 +19,13 @@ import numpy as np
 
 from astropy import units as u
 from astropy.coordinates.representation import (CartesianRepresentation,
-                                                UnitSphericalRepresentation)
+                                                UnitSphericalRepresentation,
+                                                SphericalRepresentation)
 from astropy.coordinates.baseframe import frame_transform_graph
-from astropy.coordinates.transformations import FunctionTransform
+from astropy.coordinates.builtin_frames import _make_transform_graph_docs
+from astropy.coordinates.transformations import FunctionTransform, DynamicMatrixTransform
+from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_product, matrix_transpose
+from astropy.coordinates import HCRS, get_body_barycentric, BaseCoordinateFrame, ConvertError
 
 from sunpy import sun
 
@@ -23,16 +35,22 @@ from .frames import (HeliographicStonyhurst, HeliographicCarrington,
                      Heliocentric, Helioprojective)
 
 __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
-           'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc']
+           'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',
+           'hpc_to_hpc',
+           'hcrs_to_hgs', 'hgs_to_hcrs']
 
-def _carrington_offset(dateobs):
+
+def _carrington_offset(obstime):
     """
     Calculate the HG Longitude offest based on a time
     """
-    if dateobs is None:
+    if obstime is None:
         raise ValueError("To perform this transformation the coordinate"
-                         " Frame needs a dateobs Attribute")
-    return sun.heliographic_solar_center(dateobs)[0]
+                         " Frame needs a obstime Attribute")
+
+    # Import here to avoid a circular import
+    from .ephemeris import get_sun_L0
+    return get_sun_L0(obstime)
 
 # =============================================================================
 # ------------------------- Transformation Framework --------------------------
@@ -45,10 +63,11 @@ def hgs_to_hgc(hgscoord, hgcframe):
     """
     Transform from Heliographic Stonyhurst to Heliograpic Carrington.
     """
-    c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.dateobs).to(
+    c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.obstime).to(
         u.deg)
-    representation = SphericalWrap180Representation(c_lon, hgscoord.lat,
+    representation = SphericalRepresentation(c_lon, hgscoord.lat,
                                                     hgscoord.radius)
+    hgcframe = hgcframe.__class__(obstime=hgscoord.obstime)
     return hgcframe.realize_frame(representation)
 
 
@@ -58,7 +77,11 @@ def hgc_to_hgs(hgccoord, hgsframe):
     """
     Convert from Heliograpic Carrington to Heliographic Stonyhurst.
     """
-    s_lon = hgccoord.spherical.lon - _carrington_offset(hgccoord.dateobs).to(
+    if hgccoord.obstime:
+        obstime = hgccoord.obstime
+    else:
+        obstime = hgsframe.obstime
+    s_lon = hgccoord.spherical.lon - _carrington_offset(obstime).to(
         u.deg)
     representation = SphericalWrap180Representation(s_lon, hgccoord.lat,
                                                     hgccoord.radius)
@@ -71,15 +94,19 @@ def hcc_to_hpc(helioccoord, heliopframe):
     """
     Convert from Heliocentic Cartesian to Helioprojective Cartesian.
     """
+    # Propagate obstime explicitly.
+    if heliopframe.obstime is None:
+        heliopframe._obstime = helioccoord._obstime
+
     x = helioccoord.x.to(u.m)
     y = helioccoord.y.to(u.m)
     z = helioccoord.z.to(u.m)
 
     # d is calculated as the distance between the points
     # (x,y,z) and (0,0,D0).
-    distance = np.sqrt(x**2 + y**2 + (helioccoord.D0.to(u.m) - z)**2)
+    distance = np.sqrt(x**2 + y**2 + (helioccoord.observer.radius - z)**2)
 
-    hpcx = np.rad2deg(np.arctan2(x, helioccoord.D0 - z))
+    hpcx = np.rad2deg(np.arctan2(x, helioccoord.observer.radius - z))
     hpcy = np.rad2deg(np.arcsin(y / distance))
 
     representation = SphericalWrap180Representation(hpcx, hpcy,
@@ -93,6 +120,11 @@ def hpc_to_hcc(heliopcoord, heliocframe):
     """
     Convert from Helioprojective Cartesian to Heliocentric Cartesian.
     """
+    if not isinstance(heliopcoord.observer, BaseCoordinateFrame):
+        raise ConvertError("Cannot transform helioprojective coordinates to "
+                           "heliocentric coordinates for observer '{}' "
+                           "without `obstime` being specified.".format(heliopcoord.observer))
+
     heliopcoord = heliopcoord.calculate_distance()
     x = np.deg2rad(heliopcoord.Tx)
     y = np.deg2rad(heliopcoord.Ty)
@@ -104,7 +136,7 @@ def hpc_to_hcc(heliopcoord, heliocframe):
 
     rx = (heliopcoord.distance.to(u.m)) * cosy * sinx
     ry = (heliopcoord.distance.to(u.m)) * siny
-    rz = (heliopcoord.D0.to(u.m)) - (
+    rz = (heliopcoord.observer.radius.to(u.m)) - (
         heliopcoord.distance.to(u.m)) * cosy * cosx
 
     representation = CartesianRepresentation(
@@ -118,14 +150,17 @@ def hcc_to_hgs(helioccoord, heliogframe):
     """
     Convert from Heliocentric Cartesian to Heliographic Stonyhurst.
     """
+    if not isinstance(helioccoord.observer, BaseCoordinateFrame):
+        raise ConvertError("Cannot transform heliocentric coordinates to "
+                           "heliographic coordinates for observer '{}' "
+                           "without `obstime` being specified.".format(helioccoord.observer))
+
     x = helioccoord.x.to(u.m)
     y = helioccoord.y.to(u.m)
     z = helioccoord.z.to(u.m)
 
-    l0b0_pair = [helioccoord.L0, helioccoord.B0]
-
-    l0_rad = l0b0_pair[0].to(u.rad)
-    b0_deg = l0b0_pair[1]
+    l0_rad = helioccoord.observer.lon
+    b0_deg = helioccoord.observer.lat
 
     cosb = np.cos(np.deg2rad(b0_deg))
     sinb = np.sin(np.deg2rad(b0_deg))
@@ -149,10 +184,16 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     hglat = heliogcoord.lat
     r = heliogcoord.radius.to(u.m)
 
-    l0b0_pair = [heliocframe.L0, heliocframe.B0]
+    if heliocframe.obstime is None:
+        heliocframe._obstime = heliogcoord.obstime
 
-    l0_rad = l0b0_pair[0].to(u.rad)
-    b0_deg = l0b0_pair[1]
+    if not isinstance(heliocframe.observer, BaseCoordinateFrame):
+        raise ConvertError("Cannot transform heliographic coordinates to "
+                           "heliocentric coordinates for observer '{}' "
+                           "without `obstime` being specified.".format(heliocframe.observer))
+
+    l0_rad = heliocframe.observer.lon.to(u.rad)
+    b0_deg = heliocframe.observer.lat
 
     lon = np.deg2rad(hglon)
     lat = np.deg2rad(hglat)
@@ -173,6 +214,7 @@ def hgs_to_hcc(heliogcoord, heliocframe):
 
     representation = CartesianRepresentation(
         x.to(u.km), y.to(u.km), zz.to(u.km))
+
     return heliocframe.realize_frame(representation)
 
 
@@ -183,67 +225,95 @@ def hpc_to_hpc(heliopcoord, heliopframe):
     This converts from HPC to HPC, with different observer location parameters.
     It does this by transforming through HGS.
     """
-    if (heliopcoord.B0 == heliopframe.B0 and
-        heliopcoord.L0 == heliopframe.L0 and
-        heliopcoord.D0 == heliopframe.D0):
-
+    if (heliopcoord.observer == heliopframe.observer or
+        (heliopcoord.observer.lat == heliopframe.observer.lat and
+         heliopcoord.observer.lon == heliopframe.observer.lon and
+         heliopcoord.observer.radius == heliopframe.observer.radius)):
         return heliopframe.realize_frame(heliopcoord._data)
 
+    if not isinstance(heliopframe.observer, BaseCoordinateFrame):
+        raise ConvertError("Cannot transform between helioprojective frames "
+                           "without `obstime` being specified for observer {}.".format(heliopframe.observer))
+    if not isinstance(heliopcoord.observer, BaseCoordinateFrame):
+        raise ConvertError("Cannot transform between helioprojective frames "
+                           "without `obstime` being specified for observer {}.".format(heliopcoord.observer))
+
     hgs = heliopcoord.transform_to(HeliographicStonyhurst)
-    hgs.B0 = heliopframe.B0
-    hgs.L0 = heliopframe.L0
-    hgs.D0 = heliopframe.D0
+    hgs.observer = heliopframe.observer
     hpc = hgs.transform_to(heliopframe)
 
     return hpc
 
 
-# Make a transformation graph for the documentation, borrowed lovingly from
-# Astropy.
-
-
-def _make_transform_graph_docs():
+def _make_rotation_matrix_from_reprs(start_representation, end_representation):
     """
-    Generates a string for use with the coordinate package's docstring
-    to show the available transforms and coordinate systems
+    Return the matrix for the direct rotation from one representation to a second representation.
+    The representations need not be normalized first.
     """
-    import inspect
-    from textwrap import dedent
-    from sunpy.extern import six
-    from astropy.coordinates.baseframe import (BaseCoordinateFrame,
-                                               frame_transform_graph)
+    A = start_representation.to_cartesian()
+    B = end_representation.to_cartesian()
+    rotation_axis = A.cross(B)
+    rotation_angle = -np.arccos(A.dot(B) / (A.norm() * B.norm()))  # negation is required
 
-    import copy
-    f = copy.deepcopy(frame_transform_graph)
-    for f1 in frame_transform_graph._graph.keys():
-        if 'sunpy' not in str(f1):
-            del f._graph[f1]
-        else:
-            for f2 in frame_transform_graph._graph[f1].keys():
-                if 'sunpy' not in str(f2):
-                    del f._graph[f1][f2]
+    # This line works around some input/output quirks of Astropy's rotation_matrix()
+    matrix = np.array(rotation_matrix(rotation_angle, rotation_axis.xyz.value.tolist()))
+    return matrix
 
-    # TODO: Make this just show the SunPy Frames
-    isclass = inspect.isclass
-    coosys = [item
-              for item in list(six.itervalues(globals()))
-              if isclass(item) and issubclass(item, BaseCoordinateFrame)]
-    graphstr = f.to_dot_graph(addnodes=coosys, priorities=False)
 
-    docstr = """
-    The diagram below shows all of the coordinate systems built into the
-    `~astropy.coordinates` package, their aliases (useful for converting
-    other coordinates to them using attribute-style access) and the
-    pre-defined transformations between them.  The user is free to
-    override any of these transformations by defining new transformations
-    between these systems, but the pre-defined transformations should be
-    sufficient for typical usage.
+# The Sun's north pole is oriented RA=286.13 deg, dec=63.87 deg in ICRS, and thus HCRS as well
+# (See Archinal et al. 2011,
+#   "Report of the IAU Working Group on Cartographic Coordinates and Rotational Elements: 2009")
+# The orientation of the north pole in ICRS/HCRS is assumed to be constant in time
+_SOLAR_NORTH_POLE_HCRS = UnitSphericalRepresentation(lon=286.13*u.deg, lat=63.87*u.deg)
 
-    .. graphviz::
 
+# Calculate the rotation matrix to de-tilt the Sun's rotation axis to be parallel to the Z axis
+_SUN_DETILT_MATRIX = _make_rotation_matrix_from_reprs(_SOLAR_NORTH_POLE_HCRS,
+                                           CartesianRepresentation(0, 0, 1))
+
+
+@frame_transform_graph.transform(DynamicMatrixTransform, HCRS, HeliographicStonyhurst)
+def hcrs_to_hgs(hcrscoord, hgsframe):
     """
+    Convert from HCRS to Heliographic Stonyhurst (HGS).
 
-    return dedent(docstr) + '    ' + graphstr.replace('\n', '\n    ')
+    HGS shares the same origin (the Sun) as HCRS, but has its Z axis aligned with the Sun's
+    rotation axis and its X axis aligned with the projection of the Sun-Earth vector onto the Sun's
+    equatorial plane (i.e., the component of the Sun-Earth vector perpendicular to the Z axis).
+    Thus, the transformation matrix is the product of the matrix to align the Z axis (by de-tilting
+    the Sun's rotation axis) and the matrix to align the X axis.  The first matrix is independent
+    of time and is pre-computed, while the second matrix depends on the time-varying Sun-Earth
+    vector.
+    """
+    if hgsframe.obstime is None:
+        raise ValueError("To perform this transformation the coordinate"
+                         " Frame needs an obstime Attribute")
+
+    # Determine the Sun-Earth vector in ICRS
+    # Since HCRS is ICRS with an origin shift, this is also the Sun-Earth vector in HCRS
+    sun_pos_icrs = get_body_barycentric('sun', hgsframe.obstime)
+    earth_pos_icrs = get_body_barycentric('earth', hgsframe.obstime)
+    sun_earth = earth_pos_icrs - sun_pos_icrs
+
+    # De-tilt the Sun-Earth vector to the frame with the Sun's rotation axis parallel to the Z axis
+    sun_earth_detilt = sun_earth.transform(_SUN_DETILT_MATRIX)
+
+    # Remove the component of the Sun-Earth vector that is parallel to the Sun's north pole
+    hgs_x_axis_detilt = CartesianRepresentation(sun_earth_detilt.xyz * [1, 1, 0])
+
+    # The above vector, which is in the Sun's equatorial plane, is also the X axis of HGS
+    x_axis = CartesianRepresentation(1, 0, 0)
+    rot_matrix = _make_rotation_matrix_from_reprs(hgs_x_axis_detilt, x_axis)
+
+    return matrix_product(rot_matrix, _SUN_DETILT_MATRIX)
+
+
+@frame_transform_graph.transform(DynamicMatrixTransform, HeliographicStonyhurst, HCRS)
+def hgs_to_hcrs(hgscoord, hcrsframe):
+    """
+    Convert from Heliographic Stonyhurst to HCRS.
+    """
+    return matrix_transpose(hcrs_to_hgs(hcrsframe, hgscoord))
 
 
 __doc__ += _make_transform_graph_docs()

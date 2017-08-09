@@ -19,6 +19,7 @@ from sunpy.net.attr import and_
 from sunpy.net.jsoc.attrs import walker
 from sunpy.extern.six.moves import urllib
 from sunpy.extern import six
+from sunpy.util import deprecated
 
 __all__ = ['JSOCClient', 'JSOCResponse']
 
@@ -100,7 +101,7 @@ class JSOCClient(object):
     >>> from sunpy.net import jsoc
     >>> from sunpy.net import attrs as a
     >>> client = jsoc.JSOCClient()
-    >>> response = client.query(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...                         a.jsoc.Series('hmi.m_45s'), a.jsoc.Notify("sunpy@sunpy.org"))
 
     the response object holds the records that your query will return:
@@ -120,7 +121,7 @@ class JSOCClient(object):
 
     You can then make the request and download the data:
 
-    >>> res = client.get(response)   # doctest: +SKIP
+    >>> res = client.fetch(response)   # doctest: +SKIP
 
     This returns a Results instance which can be used to watch the progress
     of the download.
@@ -136,7 +137,7 @@ class JSOCClient(object):
     >>> from sunpy.net import jsoc
     >>> from sunpy.net import attrs as a
     >>> client = jsoc.JSOCClient()
-    >>> response = client.query(a.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
+    >>> response = client.search(a.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
     ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Segment('image'),
     ...                         a.jsoc.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))
 
@@ -177,7 +178,7 @@ class JSOCClient(object):
     >>> res.wait(progress=True)   # doctest: +SKIP
     """
 
-    def query(self, *query, **kwargs):
+    def search(self, *query, **kwargs):
         """
         Build a JSOC query and submit it to JSOC for processing.
 
@@ -196,7 +197,7 @@ class JSOCClient(object):
         >>> from sunpy.net import jsoc
         >>> from sunpy.net import attrs as a
         >>> client = jsoc.JSOCClient()
-        >>> response = client.query(a.Time('2010-01-01T00:00:00', '2010-01-01T01:00:00'),
+        >>> response = client.search(a.Time('2010-01-01T00:00:00', '2010-01-01T01:00:00'),
         ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA),
         ...                         a.jsoc.Compression('rice'), a.jsoc.Segment('image'))
 
@@ -219,6 +220,13 @@ class JSOCClient(object):
         return_results.query_args = blocks
 
         return return_results
+
+    @deprecated('0.8', alternative='JSOCClient.search')
+    def query(self, *query, **kwargs):
+        """
+        See `~sunpy.net.jsoc.jsoc.JSOCClient.search`
+        """
+        return self.search(*query, **kwargs)
 
     def request_data(self, jsoc_response, **kwargs):
         """
@@ -312,7 +320,7 @@ class JSOCClient(object):
 
         return allstatus
 
-    def get(self, jsoc_response, path=None, overwrite=False, progress=True,
+    def fetch(self, jsoc_response, path=None, overwrite=False, progress=True,
             max_conn=5, downloader=None, sleep=10):
         """
         Make the request for the data in jsoc_response and wait for it to be
@@ -372,6 +380,16 @@ class JSOCClient(object):
                     time.sleep(sleep)
 
         return r
+
+    @deprecated('0.8', alternative='JSOCClient.fetch')
+    def get(self, jsoc_response, path=None, overwrite=False, progress=True,
+            max_conn=5, downloader=None, sleep=10):
+        """
+        See `~sunpy.net.jsoc.jsoc.JSOCClient.fetch`
+        """
+        return self.fetch(jsoc_response, path=path, overwrite=overwrite, progress=progress,
+            max_conn=max_conn, downloader=downloader, sleep=sleep)
+
 
     def get_request(self, requestIDs, path=None, overwrite=False, progress=True,
                     max_conn=5, downloader=None, results=None):

@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import astropy.units as u
 
 from sunpy.map import GenericMap
+from sunpy.visualization import axis_labels_from_ctype
 
 from sunpy.util import expand_list
 from sunpy.extern import six
@@ -63,8 +64,6 @@ class CompositeMap(object):
     Examples
     --------
     >>> import sunpy.map
-    >>> import sunpy.data
-    >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
     >>> import sunpy.data.sample
     >>> comp_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE,
     ...                          sunpy.data.sample.EIT_195_IMAGE,
@@ -300,7 +299,7 @@ class CompositeMap(object):
         """
         self._maps[index].zorder = zorder
 
-    def draw_limb(self, index=None, axes=None):
+    def draw_limb(self, index=None, axes=None, **kwargs):
         """Draws a circle representing the solar limb.
 
         Parameters
@@ -314,6 +313,10 @@ class CompositeMap(object):
         Returns
         -------
         `matplotlib.axes.Axes`
+
+        Notes
+        -----
+        Keyword arguments are passed onto `sunpy.map.mapbase.GenericMap.draw_limb`.
         """
         if index is None:
             for i, amap in enumerate(self._maps):
@@ -325,10 +328,10 @@ class CompositeMap(object):
         if not index_check or index is None:
             raise ValueError("Specified index does not have all the required attributes to draw limb.")
 
-        return self._maps[index].draw_limb(axes=axes)
+        return self._maps[index].draw_limb(axes=axes, **kwargs)
 
     @u.quantity_input(grid_spacing=u.deg)
-    def draw_grid(self, index=None, axes=None, grid_spacing=20*u.deg):
+    def draw_grid(self, index=None, axes=None, grid_spacing=20*u.deg, **kwargs):
         """Draws a grid over the surface of the Sun.
 
         Parameters
@@ -345,6 +348,10 @@ class CompositeMap(object):
         Returns
         -------
         `matplotlib.axes.Axes` object
+
+        Notes
+        -----
+        Keyword arguments are passed onto `sunpy.map.mapbase.GenericMap.draw_grid`.
         """
         needed_attrs = ['rsun_meters', 'dsun', 'heliographic_latitude',
                         'heliographic_longitude']
@@ -358,10 +365,10 @@ class CompositeMap(object):
         if not index_check or index is None:
             raise ValueError("Specified index does not have all the required attributes to draw grid.")
 
-        ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing)
+        ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing, **kwargs)
         return ax
 
-    def plot(self, axes=None, annotate=True, # pylint: disable=W0613
+    def plot(self, axes=None, annotate=True,  # pylint: disable=W0613
              title="SunPy Composite Plot", **matplot_args):
         """Plots the composite map object using matplotlib
 
@@ -394,20 +401,10 @@ class CompositeMap(object):
             axes = plt.gca()
 
         if annotate:
-            # x-axis label
-            if self._maps[0].coordinate_system.x == 'HG':
-                xlabel = 'Longitude [{lon}]'.format(lon=self._maps[0].spatial_units.x)
-            else:
-                xlabel = 'X-position [{solx}]'.format(solx=self._maps[0].spatial_units.x)
-
-            # y-axis label
-            if self._maps[0].coordinate_system.y == 'HG':
-                ylabel = 'Latitude [{lat}]'.format(lat=self._maps[0].spatial_units.y)
-            else:
-                ylabel = 'Y-position [{soly}]'.format(soly=self._maps[0].spatial_units.y)
-
-            axes.set_xlabel(xlabel)
-            axes.set_ylabel(ylabel)
+            axes.set_xlabel(axis_labels_from_ctype(self._maps[0].coordinate_system[0],
+                                                   self._maps[0].spatial_units[0]))
+            axes.set_ylabel(axis_labels_from_ctype(self._maps[0].coordinate_system[1],
+                                                   self._maps[0].spatial_units[1]))
 
             axes.set_title(title)
 
@@ -477,11 +474,11 @@ class CompositeMap(object):
             axes = plt.Axes(figure, [0., 0., 1., 1.])
             axes.set_axis_off()
             figure.add_axes(axes)
-            matplot_args.update({'annotate':False})
+            matplot_args.update({'annotate': False})
         else:
             axes = figure.add_subplot(111)
 
-        ret = self.plot(axes=axes,**matplot_args)
+        ret = self.plot(axes=axes, **matplot_args)
 
         if not isinstance(colorbar, bool) and isinstance(colorbar, int):
             figure.colorbar(ret[colorbar])

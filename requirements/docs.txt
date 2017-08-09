@@ -1,0 +1,9 @@
+# Dependencies required to build the documentation
+
+-r base.txt
+-r dev.txt
+-r extra.txt
+
+sphinx
+git+https://github.com/sunpy/sunpy-sphinx-theme.git@v0.1.0a1
+sphinx-gallery

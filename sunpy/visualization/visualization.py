@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from matplotlib import pyplot
 
+
 def toggle_pylab(fn):
     """
     A decorator to prevent functions from opening matplotlib windows
@@ -32,3 +33,19 @@ def toggle_pylab(fn):
         return fn_itoggle
     else:
         return fn
+
+
+def axis_labels_from_ctype(ctype, unit):
+    ctype_short = ctype[:4]
+
+    labels = {'HGLN': 'Heliographic Longitude [{}]'.format(unit),
+              'CRLN': 'Carrington Longitude [{}]'.format(unit),
+              'HPLN': 'Helioprojective Longitude (Solar-X) [{}]'.format(unit),
+              'SOLX': 'Heliocentric X [{}]'.format(unit),
+
+              'HGLT': 'Latitude [{}]'.format(unit),
+              'CRLT': 'Latitude [{}]'.format(unit),
+              'HPLT': 'Helioprojective Latitude (Solar-Y) [{}]'.format(unit),
+              'SOLY': 'Heliocentric Y [{}]'.format(unit)}
+
+    return labels.get(ctype_short, "{} [{}]".format(ctype, unit))

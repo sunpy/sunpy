@@ -16,7 +16,7 @@ from scipy.optimize import leastsq
 from scipy.ndimage import gaussian_filter1d
 
 from sunpy.time import parse_time
-from sunpy.util import minimal_pairs
+from sunpy.util import minimal_pairs, deprecated
 from sunpy.util.cond_dispatch import ConditionalDispatch, run_cls
 from sunpy.util.net import download_file
 
@@ -52,7 +52,7 @@ PARSERS = [
 ]
 
 
-def query(start, end, instruments=None, url=DEFAULT_URL):
+def search(start, end, instruments=None, url=DEFAULT_URL):
     """Get URLs for callisto data from instruments between start and end.
 
     Parameters
@@ -92,6 +92,11 @@ def query(start, end, instruments=None, url=DEFAULT_URL):
         finally:
             opn.close()
         day += _DAY
+
+@deprecated('0.8', alternative='callisto.search')
+def query(start, end, instruments=None, url=DEFAULT_URL):
+    __doc__ = search.__doc__
+    return search(start, end, instruments=instruments, url=url)
 
 
 def download(urls, directory):
@@ -503,9 +508,3 @@ except AttributeError:
     Possible signatures:
 
     """ + CallistoSpectrogram._create.generate_docs())
-
-
-if __name__ == "__main__":
-    opn = CallistoSpectrogram.read("callisto/BIR_20110922_103000_01.fit")
-    opn.subtract_bg().clip(0).plot(ratio=2).show()
-    print("Press return to exit")

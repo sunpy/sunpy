@@ -119,6 +119,11 @@ def _iter_empty(iter):
     return False
 
 
+def _astropy_time(time):
+    """
+    Return an `~astropy.time.Time` instance, running it through `~sunpy.time.parse_time` if needed
+    """
+    return time if isinstance(time, astropy.time.Time) else astropy.time.Time(parse_time(time))
 
 
 def parse_time(time_string, time_format='', **kwargs):
@@ -149,7 +154,7 @@ def parse_time(time_string, time_format='', **kwargs):
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
     datetime.datetime(2005, 8, 4, 0, 1, 2)
     """
-    if isinstance(time_string, pandas.tslib.Timestamp):
+    if isinstance(time_string, pandas.Timestamp):
         return time_string.to_pydatetime()
     elif isinstance(time_string, datetime) or time_format == 'datetime':
         return time_string
@@ -157,7 +162,7 @@ def parse_time(time_string, time_format='', **kwargs):
         return datetime(*time_string)
     elif time_format == 'utime' or isinstance(time_string, (int, float)):
         return datetime(1979, 1, 1) + timedelta(0, time_string)
-    elif isinstance(time_string, pandas.tseries.index.DatetimeIndex):
+    elif isinstance(time_string, pandas.DatetimeIndex):
         return time_string._mpl_repr()
     elif isinstance(time_string, np.ndarray) and 'datetime64' in str(time_string.dtype):
         ii = [ss.astype(datetime) for ss in time_string]
@@ -187,16 +192,19 @@ def parse_time(time_string, time_format='', **kwargs):
 
         time_string_parse_format = kwargs.pop('_time_string_parse_format', None)
         if time_string_parse_format is not None:
+            # Following a comment by the Lead Developer, the Try / except clause
+            # is replaced.  The Lead Developer thinks that this the try/except
+            # clause is related to SunPy's database module.
             try:
                 ts, time_delta = _regex_parse_time(time_string,
-                                                   time_string_parse_format)
+                                                       time_string_parse_format)
                 if ts and time_delta:
                     return datetime.strptime(ts, time_string_parse_format) + time_delta
                 else:
                     return datetime.strptime(time_string, time_string_parse_format)
-            except:
+            except Exception:
                 pass
-        raise ValueError("{tstr!s} is not a valid time string!".format(tstr=time_string))
+        raise ValueError("'{tstr!s}' is not a valid time string!".format(tstr=time_string))
 
 
 def is_time(time_string, time_format=''):

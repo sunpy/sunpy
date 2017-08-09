@@ -11,13 +11,14 @@ import os
 
 from astropy import units as u
 from astropy import conf
+import numpy as np
 
 from sunpy.database import Database
 from sunpy.database.tables import FitsHeaderEntry, FitsKeyComment, Tag,\
     DatabaseEntry, entries_from_query_result, entries_from_dir,\
-    entries_from_file, _create_display_table, display_entries,\
-    WaveunitNotFoundError
-from sunpy.net import vso
+    entries_from_file, _create_display_table, WaveunitNotFoundError, \
+    entries_from_fido_search_result
+from sunpy.net import vso, Fido, attrs as net_attrs
 from sunpy.data.test import rootdir as testdir
 from sunpy.data.test.waveunit import waveunitdir, MQ_IMAGE
 from sunpy.extern.six import next
@@ -28,7 +29,8 @@ EIT_195_IMAGE = os.path.join(testdir, 'EIT/efz20040301.000010_s.fits')
 GOES_DATA = os.path.join(testdir, 'go1520110607.fits')
 
 """
-The hsi_image_20101016_191218.fits file and go1520110607.fits file lie in the sunpy/data/tests dirctory.
+The hsi_image_20101016_191218.fits file and go1520110607.fits file lie in the
+sunpy/data/tests dirctory.
 The efz20040301.000010_s.fits file lies in the sunpy/data/tests/EIT directory.
 
 RHESSI_IMAGE = sunpy/data/test/hsi_image_20101016_191218.fits
@@ -39,6 +41,21 @@ GOES_DATA = sunpy/data/test/go1520110607.fits
 
 
 @pytest.fixture
+def fido_search_result():
+    # A search query with responses from all instruments
+    # No JSOC query
+    return Fido.search(
+        net_attrs.Time("2012/1/1", "2012/1/2"),
+        net_attrs.Instrument('lyra') | net_attrs.Instrument('eve') |
+        net_attrs.Instrument('goes') | net_attrs.Instrument('noaa-indices') |
+        net_attrs.Instrument('noaa-predict') |
+        (net_attrs.Instrument('norh') & net_attrs.Wavelength(17 * u.GHz)) |
+        net_attrs.Instrument('rhessi') |
+        (net_attrs.Instrument('EVE') & net_attrs.Level(0))
+    )
+
+
+@pytest.fixture
 def query_result():
     client = vso.VSOClient()
     return client.query_legacy('2001/1/1', '2001/1/2', instrument='EIT')
@@ -46,14 +63,14 @@ def query_result():
 
 @pytest.fixture
 def qr_with_none_waves():
-    return vso.VSOClient().query(
+    return vso.VSOClient().search(
         vso.attrs.Time('20121224T120049.8', '20121224T120049.8'),
         vso.attrs.Provider('SDAC'), vso.attrs.Instrument('VIRGO'))
 
 
 @pytest.fixture
 def qr_block_with_missing_physobs():
-    return vso.VSOClient().query(
+    return vso.VSOClient().search(
         vso.attrs.Time('20130805T120000', '20130805T121000'),
         vso.attrs.Instrument('SWAVES'), vso.attrs.Source('STEREO_A'),
         vso.attrs.Provider('SSC'), vso.attrs.Wavelength(10 * u.kHz, 160 * u.kHz))[0]
@@ -61,7 +78,7 @@ def qr_block_with_missing_physobs():
 
 @pytest.fixture
 def qr_block_with_kev_unit():
-    return vso.VSOClient().query(
+    return vso.VSOClient().search(
         vso.attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
         vso.attrs.Instrument('RHESSI'))[0]
 
@@ -94,21 +111,125 @@ def test_tag_hashability():
     assert isinstance(Tag(''), Hashable)
 
 
+@pytest.mark.flaky(reruns=5)
+@pytest.mark.online
+def test_entries_from_fido_search_result(fido_search_result):
+    entries = list(entries_from_fido_search_result(fido_search_result))
+    # 65 entries for 8 instruments in fido_search_result
+    assert len(entries) == 65
+    # First 2 entries are from lyra
+    assert entries[0] == DatabaseEntry(
+        source='Proba2', provider='esa', physobs='irradiance',
+        fileid='http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits',
+        observation_time_start=datetime(2012, 1, 1, 0, 0),
+        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        wavemin=np.nan, wavemax=np.nan,
+        instrument='lyra')
+    # 54 entries from EVE
+    assert entries[2] == DatabaseEntry(
+        source='SDO', provider='LASP', physobs='irradiance',
+        fileid='EVE_L1_esp_2012001_00',
+        observation_time_start=datetime(2012, 1, 1, 0, 0),
+        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        instrument='EVE', size=-1.0,
+        wavemin=0.1, wavemax=30.4)
+    # 2 entries from goes
+    assert entries[56] == DatabaseEntry(
+        source='nasa', provider='sdac', physobs='irradiance',
+        fileid='http://umbra.nascom.nasa.gov/goes/fits/2012/go1520120101.fits',
+        observation_time_start=datetime(2012, 1, 1, 0, 0),
+        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        wavemin=np.nan, wavemax=np.nan,
+        instrument='goes')
+    # 1 entry from noaa-indices
+    assert entries[58] == DatabaseEntry(
+        source='sdic', provider='swpc', physobs='sunspot number',
+        fileid='ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt',
+        observation_time_start=datetime(2012, 1, 1, 0, 0),
+        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        wavemin=np.nan, wavemax=np.nan,
+        instrument='noaa-indices')
+    # 1 entry from noaa-predict
+    assert entries[59] == DatabaseEntry(
+        source='ises', provider='swpc', physobs='sunspot number',
+        fileid='http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt',
+        observation_time_start=datetime(2012, 1, 1, 0, 0),
+        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        wavemin=np.nan, wavemax=np.nan,
+        instrument='noaa-predict')
+    # 2 entries from norh
+    assert entries[60] == DatabaseEntry(
+        source='NAOJ', provider='NRO', physobs="",
+        fileid=("ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/"
+                "pub/nsro/norh/data/tcx/2012/01/tca120101"),
+        observation_time_start=datetime(2012, 1, 1, 0, 0),
+        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        wavemin=17634850.470588233, wavemax=17634850.470588233,
+        instrument='NORH')
+    # 1 entry from rhessi
+    assert entries[62] == DatabaseEntry(
+        source="rhessi", provider='nasa', physobs='irradiance',
+        fileid=("https://hesperia.gsfc.nasa.gov/"
+                "hessidata/metadata/catalog/hsi_obssumm_20120101_016.fits"),
+        observation_time_start=datetime(2012, 1, 1, 0, 0),
+        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        wavemin=np.nan, wavemax=np.nan,
+        instrument='rhessi')
+    # 2 entries from eve, level 0
+    assert entries[63] == DatabaseEntry(
+        source='SDO', provider='LASP', physobs='irradiance',
+        fileid=("http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook"
+                "/L0CS/SpWx/2012/20120101_EVE_L0CS_DIODES_1m.txt"),
+        observation_time_start=datetime(2012, 1, 1, 0, 0),
+        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        wavemin=np.nan, wavemax=np.nan,
+        instrument='eve')
+
+
+@pytest.mark.online
+def test_entries_from_fido_search_result_JSOC():
+    search_result = Fido.search(
+        net_attrs.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+        net_attrs.jsoc.Series('hmi.m_45s'),
+        net_attrs.jsoc.Notify("sunpy@sunpy.org")
+    )
+    with pytest.raises(ValueError):
+        # Using list() here is important because the
+        # entries_from_fido_search_result function uses yield.
+        # list() uses the generator to run the function body.
+        list(entries_from_fido_search_result(search_result))
+
+
+@pytest.mark.online
+def test_from_fido_search_result_block(fido_search_result):
+    entry = DatabaseEntry._from_fido_search_result_block(
+        fido_search_result[0, 0][0].get_response(0)[0])
+    expected_entry = DatabaseEntry(
+        source='Proba2', provider='esa', physobs='irradiance',
+        fileid='http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits',
+        observation_time_start=datetime(2012, 1, 1, 0, 0),
+        observation_time_end=datetime(2012, 1, 2, 0, 0),
+        wavemin=np.nan, wavemax=np.nan,
+        instrument='lyra')
+    assert entry == expected_entry
+
+
 @pytest.mark.online
 def test_entry_from_qr_block(query_result):
     entry = DatabaseEntry._from_query_result_block(query_result[0])
     expected_entry = DatabaseEntry(
         source='SOHO', provider='SDAC', physobs='intensity',
-        fileid='/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.010014',
-        observation_time_start=datetime(2001, 1, 1, 1, 0, 14),
-        observation_time_end=datetime(2001, 1, 1, 1, 0, 21),
-        instrument='EIT', size=2059.0, wavemin=17.1, wavemax=17.1)
+        fileid='/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.000042',
+        observation_time_start=datetime(2001, 1, 1, 0, 0, 42),
+        observation_time_end=datetime(2001, 1, 1, 0, 0, 54),
+        instrument='EIT', size=2059.0, wavemin=19.5, wavemax=19.5)
     assert entry == expected_entry
 
 
 @pytest.mark.online
 def test_entry_from_qr_block_with_missing_physobs(qr_block_with_missing_physobs):
-    entry = DatabaseEntry._from_query_result_block(qr_block_with_missing_physobs)
+    entry = DatabaseEntry._from_query_result_block(
+        qr_block_with_missing_physobs)
     expected_entry = DatabaseEntry(
         source='STEREO_A', provider='SSC',
         fileid='swaves/2013/swaves_average_20130805_a_hfr.dat',
@@ -118,6 +239,7 @@ def test_entry_from_qr_block_with_missing_physobs(qr_block_with_missing_physobs)
     assert entry == expected_entry
 
 
+@pytest.mark.flaky(reruns=5)
 @pytest.mark.online
 def test_entry_from_qr_block_kev(qr_block_with_kev_unit):
     # See issue #766.
@@ -197,7 +319,7 @@ def test_entries_from_file_time_string_parse_format():
         entries = list(entries_from_file(GOES_DATA))
 
     entries = list(entries_from_file(GOES_DATA,
-                   time_string_parse_format='%d/%m/%Y'))
+                                     time_string_parse_format='%d/%m/%Y'))
 
     assert len(entries) == 4
     entry = entries[0]
@@ -209,7 +331,8 @@ def test_entries_from_file_time_string_parse_format():
 
 
 def test_entries_from_dir():
-    entries = list(entries_from_dir(waveunitdir, time_string_parse_format='%d/%m/%Y'))
+    entries = list(entries_from_dir(
+        waveunitdir, time_string_parse_format='%d/%m/%Y'))
     assert len(entries) == 4
     for entry, filename in entries:
         if filename.endswith('na120701.091058.fits'):
@@ -283,14 +406,14 @@ def test_entries_from_dir_recursively_true():
     entries = list(entries_from_dir(testdir, True,
                                     default_waveunit='angstrom',
                                     time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 100
+    assert len(entries) == 101
 
 
 def test_entries_from_dir_recursively_false():
     entries = list(entries_from_dir(testdir, False,
                                     default_waveunit='angstrom',
                                     time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 79
+    assert len(entries) == 80
 
 
 @pytest.mark.online
@@ -300,10 +423,10 @@ def test_entries_from_query_result(query_result):
     snd_entry = entries[1]
     expected_entry = DatabaseEntry(
         source='SOHO', provider='SDAC', physobs='intensity',
-        fileid='/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.070014',
-        observation_time_start=datetime(2001, 1, 1, 7, 0, 14),
-        observation_time_end=datetime(2001, 1, 1, 7, 0, 21),
-        instrument='EIT', size=2059.0, wavemin=17.1, wavemax=17.1)
+        fileid='/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.001210',
+        observation_time_start=datetime(2001, 1, 1, 0, 12, 10),
+        observation_time_end=datetime(2001, 1, 1, 0, 12, 23),
+        instrument='EIT', size=2059.0, wavemin=19.5, wavemax=19.5)
     assert snd_entry == expected_entry
 
 
@@ -318,29 +441,8 @@ def test_entry_from_query_results_with_none_wave(qr_with_none_waves):
 def test_entry_from_query_results_with_none_wave_and_default_unit(
         qr_with_none_waves):
     entries = list(entries_from_query_result(qr_with_none_waves, 'nm'))
-    assert len(entries) == 7
+    assert len(entries) == 4
     assert entries == [
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_blue_intensity_series.tar.gz',
-            observation_time_start=datetime(1996, 4, 11, 0, 0, 0),
-            observation_time_end=datetime(2014, 3, 30, 23, 59, 0),
-            instrument='VIRGO', size=32652.0, wavemin=None,
-            wavemax=None),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_green_intensity_series.tar.gz',
-            observation_time_start=datetime(1996, 4, 11, 0, 0, 0),
-            observation_time_end=datetime(2014, 3, 30, 23, 59, 0),
-            instrument='VIRGO', size=32652.0, wavemin=None,
-            wavemax=None),
-        DatabaseEntry(
-            source='SOHO', provider='SDAC', physobs='intensity',
-            fileid='/archive/soho/private/data/processed/virgo/spm/SPM_red_intensity_series.tar.gz',
-            observation_time_start=datetime(1996, 4, 11, 0, 0, 0),
-            observation_time_end=datetime(2014, 3, 30, 23, 59, 0),
-            instrument='VIRGO', size=32652.0, wavemin=None,
-            wavemax=None),
         DatabaseEntry(
             source='SOHO', provider='SDAC', physobs='intensity',
             fileid='/archive/soho/private/data/processed/virgo/level1/1212/HK/121222_1.H01',

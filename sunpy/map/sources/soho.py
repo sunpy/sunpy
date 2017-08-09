@@ -16,6 +16,8 @@ from sunpy.map import GenericMap
 from sunpy.sun import constants
 from sunpy.sun import sun
 from sunpy.cm import cm
+from sunpy.map.sources.source_type import source_stretch
+from sunpy.coordinates import get_sunearth_distance
 
 __all__ = ['EITMap', 'LASCOMap', 'MDIMap']
 
@@ -36,7 +38,7 @@ def _dsunAtSoho(date, rad_d, rad_1au=None):
     """
     if not rad_1au:
         rad_1au = sun.solar_semidiameter_angular_size(date)
-    dsun = sun.sunearth_distance(date) * constants.au * (rad_1au / rad_d)
+    dsun = get_sunearth_distance(date) * constants.au * (rad_1au / rad_d)
     # return scalar value not astropy.quantity
     return dsun.value
 
@@ -68,7 +70,7 @@ class EITMap(GenericMap):
         self._fix_dsun()
         self._nickname = self.detector
         self.plot_settings['cmap'] = cm.get_cmap(self._get_cmap_name())
-        self.plot_settings['norm'] = ImageNormalize(stretch=PowerStretch(0.5))
+        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
 
     @property
     def rsun_obs(self):
@@ -131,7 +133,7 @@ class LASCOMap(GenericMap):
         self.meta['waveunit'] = 'nm'
         self._nickname = self.instrument + "-" + self.detector
         self.plot_settings['cmap'] = cm.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
-        self.plot_settings['norm'] = ImageNormalize(stretch=PowerStretch(0.5))
+        self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
 
     @property
     def measurement(self):
@@ -188,7 +190,6 @@ class MDIMap(GenericMap):
             self.plot_settings['norm'] = colors.Normalize(-vmin, vmin)
         else:
             self.plot_settings['norm'] = colors.Normalize(-vmax, vmax)
-
 
     @property
     def measurement(self):
