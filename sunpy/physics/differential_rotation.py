@@ -86,7 +86,7 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     return Longitude(rotation.to(u.deg))
 
 
-  def solar_rotate_coordinate(coordinate,
+def solar_rotate_coordinate(coordinate,
                             new_observer_time,
                             new_observer_location="earth",
                             **diff_rot_kwargs):
