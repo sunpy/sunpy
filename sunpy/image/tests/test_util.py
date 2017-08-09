@@ -5,6 +5,7 @@ import numpy as np
 
 from sunpy.image.util import to_norm, un_norm
 
+
 def test_to_norm():
     array_simple = np.array([10., 20., 30., 100.])
     assert_allclose(to_norm(array_simple), np.array([0.1, 0.2, 0.3, 1.]))

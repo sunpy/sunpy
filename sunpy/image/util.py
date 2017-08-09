@@ -8,6 +8,7 @@ from skimage.util import img_as_float
 
 __all__ = ['to_norm', 'un_norm']
 
+
 def to_norm(arr):
     """
     Helper function to normalise/scale an array.  This is needed for example
