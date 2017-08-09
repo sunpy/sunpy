@@ -2,6 +2,7 @@ from __future__ import division
 from datetime import timedelta
 from copy import deepcopy
 import warnings
+from itertools import product
 
 import numpy as np
 from skimage import transform
@@ -261,11 +262,17 @@ def diffrot_map(smap, dt, pad=False):
         submap = True
         if pad:
             # Calculating the largest distance between the corners and their rotation values
-            bottomleft_rotated = solar_rotate_coordinate(smap.bottom_left_coord, new_time)
-            bottom_distance = bottomleft_rotated.separation(smap.bottom_left_coord) / max(smap.scale)
-            topright_rotated = solar_rotate_coordinate(smap.top_right_coord, new_time)
-            top_distance = topright_rotated.separation(smap.top_right_coord) / max(smap.scale)
-            padding = max(bottom_distance.to(u.pix), top_distance.to(u.pix))
+            deltax = deltay = 0
+            for corner in product(*product([0 * u.pix], [*smap.dimensions])):
+                corner_world = smap.pixel_to_world(*corner)
+                corner_world_rotated = solar_rotate_coordinate(corner_world, new_time)
+                corner_px_rotated = smap.world_to_pixel(corner_world_rotated)
+                dx = np.abs(corner_px_rotated.x - corner[0])
+                dy = np.abs(corner_px_rotated.y - corner[1])
+                deltax = dx if dx > deltax else deltax
+                deltay = dy if dy > deltay else deltay
+
+            padding = max(deltax.to(u.pix), deltay.to(u.pix))
             padding = np.int(np.ceil(padding.value))
             # Create a new `smap` with the padding around it
             smap_data = np.pad(smap.data, (padding, padding), 'constant', constant_values=(0, 0))
