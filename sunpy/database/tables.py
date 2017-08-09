@@ -283,7 +283,7 @@ class DatabaseEntry(Base):
         >>> from sunpy.net import vso
         >>> from sunpy.database.tables import DatabaseEntry
         >>> client = vso.VSOClient()
-        >>> qr = client.query(
+        >>> qr = client.search(
         ...     vso.attrs.Time('2001/1/1', '2001/1/2'),
         ...     vso.attrs.Instrument('eit'))
         >>> entry = DatabaseEntry._from_query_result_block(qr[0])
@@ -434,7 +434,7 @@ def entries_from_query_result(qr, default_waveunit=None):
     >>> from sunpy.net import vso
     >>> from sunpy.database.tables import entries_from_query_result
     >>> client = vso.VSOClient()
-    >>> qr = client.query(
+    >>> qr = client.search(
     ...     vso.attrs.Time('2001/1/1', '2001/1/2'),
     ...     vso.attrs.Instrument('eit'))
     >>> entries = entries_from_query_result(qr)
