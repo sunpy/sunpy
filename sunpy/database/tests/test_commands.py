@@ -5,7 +5,7 @@
 
 from __future__ import absolute_import
 
-import fnmatch 
+import fnmatch
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker

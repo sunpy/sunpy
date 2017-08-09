@@ -1,1 +1,0 @@
-.. automodapi:: sunpy.instr.fermi

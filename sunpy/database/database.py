@@ -155,14 +155,14 @@ def split_database(source_database, destination_database, *query_string):
     >>> database1 = Database('sqlite:///:memory:')
     >>> database2 = Database('sqlite:///:memory:')
     >>> client = vso.VSOClient()
-    >>> qr = client.query(vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'))
+    >>> qr = client.search(vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'))
     >>> database1.add_from_vso_query_result(qr)
     >>> database1, database2 = split_database(database1, database2,
     ...            vso.attrs.Instrument('AIA') | vso.attrs.Instrument('ERNE'))
     """
 
     query_string = and_(*query_string)
-    filtered_entries = source_database.query(query_string)
+    filtered_entries = source_database.search(query_string)
     with disable_undo(source_database):
         with disable_undo(destination_database):
             source_database.remove_many(filtered_entries)
@@ -419,7 +419,7 @@ class Database(object):
         for temp in delete_entries:
             self.remove(temp)
 
-        paths = client.get(query_result, path).wait(progress=progress)
+        paths = client.fetch(query_result, path).wait(progress=progress)
 
         for (path, block) in zip(paths, query_result):
             qr_entry = tables.DatabaseEntry._from_query_result_block(block)
@@ -448,8 +448,9 @@ class Database(object):
 
     @deprecated('0.8', alternative='database.fetch()')
     def download(self, *query, **kwargs):
-
-        __doc__ = self.fetch.__doc__
+        """
+        See `~sunpy.database.Database.fetch`
+        """
 
         return self.fetch(*query, **kwargs)
 
@@ -551,7 +552,7 @@ class Database(object):
         client = kwargs.get('client', None)
         if client is None:
             client = VSOClient()
-        qr = client.query(*query)
+        qr = client.search(*query)
 
         # don't do anything if querying results in no data
         if not qr:
@@ -562,9 +563,9 @@ class Database(object):
 
         self.add_many(entries)
 
-    def query(self, *query, **kwargs):
+    def search(self, *query, **kwargs):
         """
-        query(*query[, sortby])
+        search(*query[, sortby])
         Send the given query to the database and return a list of
         database entries that satisfy all of the given attributes.
 
@@ -607,7 +608,7 @@ class Database(object):
         The query in the following example searches for all non-starred entries
         with the tag 'foo' or 'bar' (or both).
 
-        >>> database.query(~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'))   # doctest: +SKIP
+        >>> database.search(~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'))   # doctest: +SKIP
 
         """
         if not query:
@@ -626,6 +627,13 @@ class Database(object):
             sortby = 'id'
 
         return sorted(db_entries, key=operator.attrgetter(sortby))
+
+    @deprecated('0.8', alternative='database.search')
+    def query(self, *query, **kwargs):
+        """
+        See `~sunpy.database.Database.search`
+        """
+        return self.search(*query, **kwargs)
 
     def get_entry_by_id(self, entry_id):
         """Get a database entry by its unique ID number. If an entry with the
@@ -856,6 +864,28 @@ class Database(object):
             tables.entries_from_query_result(
                 query_result, self.default_waveunit),
             ignore_already_added)
+
+    def add_from_fido_search_result(self, search_result,
+                                    ignore_already_added=False):
+        """
+        Generate database entries from a Fido search result and add all the
+        generated entries to this database.
+
+        Parameters
+        ----------
+        search_result : `sunpy.net.fido_factory.UnifiedResponse`
+            A UnifiedResponse object that is used to store responses from the
+            unified downloader. This is returned by the ``search`` method of a
+            :class:`sunpy.net.fido_factory.UnifiedDownloaderFactory`
+            object.
+
+        ignore_already_added : `bool`
+            See :meth:`sunpy.database.Database.add`.
+
+        """
+        self.add_many(tables.entries_from_fido_search_result(search_result,
+                                                             self.default_waveunit),
+                      ignore_already_added)
 
     def add_from_dir(self, path, recursive=False, pattern='*',
                      ignore_already_added=False, time_string_parse_format=None):
