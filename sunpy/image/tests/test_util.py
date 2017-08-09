@@ -2,6 +2,7 @@ from __future__ import absolute_import, division, print_function
 import pytest
 
 import numpy as np
+from numpy.testing import assert_allclose
 
 from sunpy.image.util import to_norm, un_norm
 
