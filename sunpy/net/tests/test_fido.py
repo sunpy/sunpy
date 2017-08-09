@@ -270,6 +270,7 @@ def test_fido_iter(queries):
     for resp in res:
         assert isinstance(resp, QueryResponse)
 
+
 @given(offline_query())
 def test_repr(query):
     res = Fido.search(query)

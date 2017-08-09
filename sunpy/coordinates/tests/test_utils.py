@@ -28,8 +28,10 @@ from sunpy.coordinates.utils import GreatArc
                                         ((-20, -50), (-20, -5)),
                                         ((10, -50), (87.53163324626676, -55))])
 def test_great_arc_calculable(start, end):
-    c = SkyCoord(start[0]*u.degree, start[1]*u.degree, frame=frames.HeliographicStonyhurst)
-    d = SkyCoord(end[0]*u.degree, end[1]*u.degree, frame=frames.HeliographicStonyhurst)
+    c = SkyCoord(start[0]*u.degree, start[1]*u.degree, frame=frames.HeliographicStonyhurst,
+                 observer=frames.HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
+    d = SkyCoord(end[0]*u.degree, end[1]*u.degree, frame=frames.HeliographicStonyhurst,
+                 observer=frames.HeliographicStonyhurst(0*u.deg, 0*u.deg, 1*u.AU))
     gc = GreatArc(c, d)
 
     assert gc.start == c

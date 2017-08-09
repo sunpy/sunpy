@@ -17,6 +17,7 @@ from sunpy.sun import constants
 from sunpy.sun import sun
 from sunpy.cm import cm
 from sunpy.map.sources.source_type import source_stretch
+from sunpy.coordinates import get_sunearth_distance
 
 __all__ = ['EITMap', 'LASCOMap', 'MDIMap']
 
@@ -37,7 +38,7 @@ def _dsunAtSoho(date, rad_d, rad_1au=None):
     """
     if not rad_1au:
         rad_1au = sun.solar_semidiameter_angular_size(date)
-    dsun = sun.sunearth_distance(date) * constants.au * (rad_1au / rad_d)
+    dsun = get_sunearth_distance(date) * constants.au * (rad_1au / rad_d)
     # return scalar value not astropy.quantity
     return dsun.value
 

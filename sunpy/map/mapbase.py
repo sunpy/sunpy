@@ -31,6 +31,7 @@ from sunpy.time import parse_time, is_time
 from sunpy.image.transform import affine_transform
 from sunpy.image.rescale import reshape_image_to_4d_superpixel
 from sunpy.image.rescale import resample as sunpy_image_resample
+from sunpy.coordinates import get_sun_B0, get_sun_L0, get_sunearth_distance
 
 from astropy.nddata import NDData
 
@@ -427,7 +428,7 @@ Reference Coord:\t {refcoord}
                                    " separation: assuming Sun-Earth distance",
                                    Warning, __file__,
                                    inspect.currentframe().f_back.f_lineno)
-            dsun = sun.sunearth_distance(self.date).to(u.m)
+            dsun = get_sunearth_distance(self.date).to(u.m)
 
         return u.Quantity(dsun, 'm')
 
@@ -586,7 +587,7 @@ Reference Coord:\t {refcoord}
                                    " assuming Earth-based observer",
                                    Warning, __file__,
                                    inspect.currentframe().f_back.f_lineno)
-            carrington_longitude = (sun.heliographic_solar_center(self.date))[0]
+            carrington_longitude = get_sun_L0(self.date)
 
         if isinstance(carrington_longitude, six.string_types):
             carrington_longitude = float(carrington_longitude)
@@ -605,7 +606,7 @@ Reference Coord:\t {refcoord}
                                    " assuming Earth-based observer",
                                    Warning, __file__,
                                    inspect.currentframe().f_back.f_lineno)
-            heliographic_latitude = (sun.heliographic_solar_center(self.date))[1]
+            heliographic_latitude = get_sun_B0(self.date)
 
         if isinstance(heliographic_latitude, six.string_types):
             heliographic_latitude = float(heliographic_latitude)
@@ -630,6 +631,7 @@ Reference Coord:\t {refcoord}
         return SkyCoord(lat=self.heliographic_latitude,
                         lon=self.heliographic_longitude,
                         radius=self.dsun,
+                        obstime=self.date,
                         frame='heliographic_stonyhurst')
 
     @property
@@ -1189,8 +1191,8 @@ Reference Coord:\t {refcoord}
         >>> import sunpy.map
         >>> import sunpy.data.sample
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-        >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=m.coordinate_frame)
-        >>> tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=m.coordinate_frame
+        >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=aia.coordinate_frame)
+        >>> tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=aia.coordinate_frame
         >>> aia.submap(bl, tr)   # doctest: +NORMALIZE_WHITESPACE
         SunPy Map
         ---------

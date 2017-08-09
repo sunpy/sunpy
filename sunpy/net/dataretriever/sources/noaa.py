@@ -39,7 +39,7 @@ class NOAAIndicesClient(GenericClient):
         """
         self.map_['source'] = 'sdic'
         self.map_['instrument'] = 'noaa-indices'
-        self.map_['phyobs'] = 'sunspot number'
+        self.map_['physobs'] = 'sunspot number'
         self.map_['provider'] = 'swpc'
 
     @classmethod
@@ -83,7 +83,7 @@ class NOAAPredictClient(GenericClient):
         """
         self.map_['source'] = 'ises'
         self.map_['instrument'] = 'noaa-predict'
-        self.map_['phyobs'] = 'sunspot number'
+        self.map_['physobs'] = 'sunspot number'
         self.map_['provider'] = 'swpc'
 
     @classmethod
@@ -156,8 +156,10 @@ class SRSClient(GenericClient):
 
         for i, [url, qre] in enumerate(zip(urls, qres)):
             name = url.split('/')[-1]
+
             # temporary fix !!! coz All QRBs have same start_time values
             day = qre.time.start.date() + datetime.timedelta(days=i)
+
             if name not in filenames:
                 filenames.append(name)
 
@@ -174,9 +176,9 @@ class SRSClient(GenericClient):
 
         res = Results(lambda x: None, 0, lambda map_: self._link(map_))
 
-        # remove duplicate urls. This will make paths and urls to have same
-        # number of elements. OrderedDict is required to maintain ordering
-        # because it will be zipped with paths later
+        # remove duplicate urls. This will make paths and urls to have same number of elements.
+        # OrderedDict is required to maintain ordering because it will be zipped with paths later
+
         urls = list(OrderedDict.fromkeys(urls))
 
         dobj = Downloader(max_conn=len(urls), max_total=len(urls))

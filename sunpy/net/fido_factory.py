@@ -57,7 +57,8 @@ class UnifiedResponse(Sequence):
         if isinstance(lst, (QueryResponse, vsoQueryResponse)):
             if not hasattr(lst, 'client'):
                 raise ValueError(
-                    "A {} object is only a valid input to UnifiedResponse if it has a client attribute.".
+                    ("A {} object is only a valid input to UnifiedResponse "
+                    "if it has a client attribute.").
                     format(type(lst).__name__))
             tmplst.append(lst)
             self._numfile = len(lst)
@@ -118,7 +119,8 @@ class UnifiedResponse(Sequence):
         # Make sure we only have a length two slice.
         elif isinstance(aslice, tuple):
             if len(aslice) > 2:
-                raise IndexError("UnifiedResponse objects can only be sliced with one or two indices.")
+                raise IndexError("UnifiedResponse objects can only "
+                                 "be sliced with one or two indices.")
 
             # Indexing both client and records, but only for one client.
             if isinstance(aslice[0], int):
@@ -144,6 +146,15 @@ class UnifiedResponse(Sequence):
         """
         return self._list[i]
 
+    def response_block_properties(self):
+        """
+        Returns a set of class attributes on all the response blocks.
+        """
+        s = self.get_response(0).response_block_properties()
+        for i in range(1, len(self)):
+            s.intersection(self.get_response(i).response_block_properties())
+        return s
+
     @property
     def responses(self):
         """
@@ -165,7 +176,8 @@ class UnifiedResponse(Sequence):
         else:
             ret = 'Results from {} Providers:</br></br>'.format(len(self))
         for block in self.responses:
-            ret += "{} Results from the {}:</br>".format(len(block), block.client.__class__.__name__)
+            ret += "{} Results from the {}:</br>".format(len(block),
+                                                         block.client.__class__.__name__)
             ret += block._repr_html_()
             ret += '</br>'
 
@@ -276,7 +288,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         Query for data from Nobeyama Radioheliograph and RHESSI
 
         >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-                                   (a.Instrument('norh') & a.Wavelength(17*u.GHz)) | a.Instrument('rhessi'))
+                          (a.Instrument('norh') & a.Wavelength(17*u.GHz)) | a.Instrument('rhessi'))
 
         Query for 304 Angstrom SDO AIA data with a cadence of 10 minutes
 
