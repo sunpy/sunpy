@@ -267,9 +267,9 @@ def diffrot_map(smap, dt, pad=False):
 
     # Update the meta information with the new date and time, and reference pixel.
     out_meta = deepcopy(smap.meta)
-    date_keys = ('date-obs', 'date_obs')
-    for k in date_keys:
-        out_meta[k] = "{:%Y-%m-%dT%H:%M:%S}".format(new_time)
+    if out_meta['date_obs']:
+        del out_meta['date_obs']
+    out_meta['date-obs'] = "{:%Y-%m-%dT%H:%M:%S}".format(new_time)
 
     if submap:
         crval_rotated = solar_rotate_coordinate(smap.reference_coordinate, new_time)
