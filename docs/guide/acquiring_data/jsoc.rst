@@ -10,13 +10,18 @@ SunPy's JSOC Client provides an easier interface to query for JSOC data and make
 It uses drms module <https://github.com/kbg/drms> as its backend, and exposes a similar API as
 the VSO Client.
 
+There are two ways of downloading JSOC data. One way is using Sunpy's unified search interface,
+known as FIDO. FIDO supplies a single, easy and consistent way to to obtain most forms of physics
+data. An alternative way to fetch data from JSOC is by using the underlying JSOC Client. This option
+can be preferred when the complex searches are to be made, or when you need to separate the staging
+and downloading steps, which is not supported by FIDO.
+
 Setup
 -----
 
-SunPy's JSOC Client is in ``sunpy.net``.  It can be imported as follows:
+SunPy's FIDO module is in ``sunpy.net``.  It can be imported as follows:
 
-    >>> from sunpy.net import jsoc
-    >>> client = jsoc.JSOCClient()
+    >>> from sunpy.net import Fido, attrs as a
 
 This creates your client object. The JSOC stages data before you can download it,
 so a JSOC query is a three stage process, first you query the JSOC for records,
@@ -46,27 +51,23 @@ Constructing a Basic Query
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Let's start with a very simple query.  We could ask for all `hmi.v_45s` series data
-between January 1st and 2nd, 2014.
+between January 1st from 00:00 to 01:00, 2014.
 
-    >>> res = client.query(jsoc.attrs.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), jsoc.attrs.Series('hmi.v_45s'))
+    >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.v_45s'))
 
-The variable ``qr`` is a Python list of
-response objects, each one of which is a record found by the VSO. You can find how many
-records were found by typing
+This returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing
+information on the available online files which fit the criteria specified by
+the attrs objects in the above call. It does not download the files.
 
-    >>> len(res)
-    81
+To see a summary of results of our query, simple type the name of the
+variable set to the Fido search, in this case, res::
 
-To get a little bit more information about the records found, try
+    >>> res
 
-    >>> print(qr) # doctest:+SKIP
-    ...
-
-
-Now, let's break down the arguments of ``client.query`` to understand
+Now, let's break down the arguments of ``Fido.search`` to understand
 better what we've done.  The first argument:
 
-    ``jsoc.attrs.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00')``
+    ``a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00')``
 
 sets the start and end times for the query (any date/time
 format understood by SunPy's :ref:`parse_time function <parse-time>`
@@ -75,43 +76,43 @@ as default. If you need to pass a Time in some other time scale, such as TAI,
 pass an Astropy Time object, like:
 
 	>>> from astropy.time import Time as T
-	``jsoc.attrs.Time(T('2014-01-01T00:00:00', scale='tai'), T('2014-01-01T01:00:00', scale='tai'))``
+	``a.jsoc.Time(T('2014-01-01T00:00:00', scale='tai'), T('2014-01-01T01:00:00', scale='tai'))``
 
 The second argument:
 
-    ``jsoc.attrs.Series('hmi.v_45s')``
+    ``a.jsoc.Series('hmi.v_45s')``
 
 sets the series we are looking for.
 
 So what is going on here?
 The notion is that a JSOC query has a set of attribute objects -
-described in ``jsoc.attrs`` - that are specified to construct the query.
+described in ``a.jsoc`` - that are specified to construct the query.
 
-``jsoc.attrs.Series()`` is compulsory to be provided in each of the jsoc queries. Apart from this,
-atleast one prime-key must be passed (generally ``jsoc.attrs.Time()``).
+``a.jsoc.Series()`` is compulsory to be provided in each of the jsoc queries. Apart from this,
+atleast one prime-key must be passed (generally ``a.jsoc.Time()``).
 
 Querying with other PrimeKeys
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Other than Time, one other PrimeKey is supported with in-built attribute.
-In case of AIA series, ``jsoc.attrs.Wavelength()`` can be passed as a prime-key.
+In case of AIA series, ``a.jsoc.Wavelength()`` can be passed as a prime-key.
 
     >>> import astropy.units as u	
-	>>> res = client.query(jsoc.attrs.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-						   jsoc.attrs.Series('aia.lev1_euv_12s'), jsoc.attrs.Wavelength(304*u.AA))
+	>>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+						  a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))
 
 Note that, only Time and Wavelength are in-built attributes here. If you need to pass any other primekey,
 it should be passed like this:
 
-	``jsoc.attrs.PrimeKey('HARPNUM', '4864')``
+	``a.jsoc.PrimeKey('HARPNUM', '4864')``
 
 	or, if 2 or more PrimeKeys need to be passed together:
-	``jsoc.attrs.PrimeKey('HARPNUM', '4864') & jsoc.attrs.PrimeKey('CAMERA', '2')``
+	``a.jsoc.PrimeKey('HARPNUM', '4864') & a.jsoc.PrimeKey('CAMERA', '2')``
 
 Also, note that the pre-defined primkeys, Time and Wavelength can also be passed as above, but you need to
 specify the exact keyword for it. For e.g. by :
 
-	``jsoc.attrs.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), jsoc.attrs.PrimeKey('WAVELNTH', '161')``
+	``a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.PrimeKey('WAVELNTH', '161')``
 
 If the correct keyword is not specified, or the passed PrimeKey is not supported by the given series, a
 meaningful error will be thrown, which will give you the primekeys supported by that series. Hence, by looking
@@ -127,34 +128,34 @@ other PrimeKey values passed through PrimeKey attribute, must be passed as a str
 Manually specifying keyword data to fetch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Upon doing ``client.query()`` as described above, only a limited set of keywords are returned in the response
-object. These default keywords are 'DATE', 'TELESCOP', 'INSTRUME', 'T_OBS' and 'WAVELNTH'.
+Upon doing ``Fido.search()`` as described above, only a limited set of keywords are returned in the response
+object. These default keywords are ``'DATE'``, ``'TELESCOP'``, ``'INSTRUME'``, ``'T_OBS'`` and ``'WAVELNTH'``.
 
 If you want to get a manual set of keywords in the response object, you can pass the set of keywords using
-``jsoc.attrs.Keys()`` attribute.
+``a.jsoc.Keys()`` attribute.
 
-	>>> res = client.query(jsoc.attrs.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-					       jsoc.attrs.Series('hmi.v_45s'),
-					       jsoc.attrs.Keys(['TELESCOP', 'INSTRUME', 'T_OBS']))
+	>>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+					      a.jsoc.Series('hmi.v_45s'),
+					      a.jsoc.Keys(['TELESCOP', 'INSTRUME', 'T_OBS']))
 
-The parameter passed into ``jsoc.attrs.Keys()`` can be either a list of strings, or a string with keywords seperated by
+The parameter passed into ``a.jsoc.Keys()`` can be either a list of strings, or a string with keywords seperated by
 comma and a space. Meaning to say,
 
-	``jsoc.attrs.Keys(['TELESCOP', 'INSTRUME', 'T_OBS'])`` and ``jsoc.attrs.Keys('TELESCOP, INSTRUME, T_OBS')``
+	``a.jsoc.Keys(['TELESCOP', 'INSTRUME', 'T_OBS'])`` and ``jsoc.attrs.Keys('TELESCOP, INSTRUME, T_OBS')``
 
 both are correct.
 
 Passing an incorrect keyword won't through an error, but the corresponding column in the astropy table will
 contain ``Invalid KeyLink``.
 
-To get all of the keywords, you can either use the ``search_metadata()`` method, or alternatively pass
-``jsoc.attrs.Keys('***ALL***')`` with the series name and prime-key.
+To get all of the keywords, you can either use the ``JSOCClient.search_metadata()`` method, or alternatively pass
+``a.jsoc.Keys('***ALL***')`` with the series name and prime-key.
 
 
 Using Segments
 ^^^^^^^^^^^^^^
 In some cases, more than 1 file are present for the same set of query. These data are distinguished by what are called
-`Segments`. It is necessary to specify the "Segment" which you need to download. Providing a segment won't have any affect
+``Segments``. It is necessary to specify the "Segment" which you need to download. Providing a segment won't have any affect
 on the response object returned, but this will be required later, while making an export request.
 
 A list of supported segments of a series, say ``hmi.sharp_720s`` can be obtained by :
@@ -167,13 +168,13 @@ A list of supported segments of a series, say ``hmi.sharp_720s`` can be obtained
 Also, if you provide an incorrect segment name, it will throw a meaningful error, specifying which segment values are supported
 by the given series.
 
-	>>> response = client.query(jsoc.attrs.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-                                jsoc.attrs.Series('aia.lev1_euv_12s'),
-                                jsoc.attrs.Segment('image'))
+	>>> response = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+                               a.jsoc.Series('aia.lev1_euv_12s'),
+                               a.jsoc.Segment('image'))
 
-To get files for more than 1 segment at the same time, chain ``jsoc.attrs.Segment()`` using ``AND`` operator.
+To get files for more than 1 segment at the same time, chain ``a.jsoc.Segment()`` using ``AND`` operator.
 
-	>>> res = client.query(jsoc.attrs.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+	>>> res = Fido.search(jsoc.attrs.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
 						   jsoc.attrs.Series('hmi.sharp_720s'),
 						   jsoc.attrs.Segment('continuum') & jsoc.attrs.Segment('magnetogram'))
 
@@ -189,19 +190,17 @@ Complex queries can be built using OR operators.
 
 Let's look for 2 dfifferent series data at the same time:
 
-    >>> res = client.query(jsoc.attrs.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    					   jsoc.attrs.Series('hmi.v_45s') | jsoc.attrs.Series('aia.lev1_euv_12s'))
-    >>> len(res)
-    2188
+    >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    					  a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'))
 
 The two series names are joined together by the operator "|".
 This is the ``OR`` operator.  Think of the above query as setting a set
 of conditions which get passed to the JSOC.  Let's say you want all the
-EIT data from two separate days:
+hmi.v_45s data from two separate days:
 
-    >>> res = client.query(jsoc.attrs.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') | 
-                           jsoc.attrs.Time('2014-01-02T00:00:00', '2014-01-02T01:00:00'),
-                           jsoc.attrs.Series('hmi.v_45s'))
+    >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') | 
+                          a.jsoc.Time('2014-01-02T00:00:00', '2014-01-02T01:00:00'),
+                          a.jsoc.Series('hmi.v_45s'))
 
 Each of the arguments in this query style can be thought of as
 setting conditions that the returned records must satisfy.
