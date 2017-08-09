@@ -73,7 +73,7 @@ data2 = ndimage.gaussian_filter(aiamap.data * ~mask, 16)
 # we get one large region which encompasses the entire array.
 # If you want to see, just remove this line.
 
-data2[data2<100] = 0
+data2[data2 < 100] = 0
 
 ##############################################################################
 # Now we will make a second SunPy map with this smoothed data.
@@ -89,6 +89,7 @@ labels, n = ndimage.label(aiamap2.data)
 # Finally, we plot the smoothed bright image data, along with the estimate of the number of distinct regions.
 # We can see that approximately 6 distinct hot regions are present above the 5% of the maximum level.
 
+plt.figure()
 aiamap2.plot()
 plt.contour(labels)
 plt.figtext(0.3, 0.2, 'Number of regions = {}'.format(n), color='white')
