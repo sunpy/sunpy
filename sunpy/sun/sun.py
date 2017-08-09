@@ -269,18 +269,20 @@ def heliographic_solar_center(t='now'):
 
 def print_params(t='now'):
     """Print out a summary of Solar ephemeris"""
-    time = parse_time(t)
-    print('Solar Ephemeris for ' + time.ctime())
-    print('')
-    print('Distance = ' + str(sunearth_distance(t)))
-    print('Semidiameter = ' + str(solar_semidiameter_angular_size(t)))
-    print('True (long, lat) = (' + str(true_longitude(t)) + ', ' + str(true_latitude(t)) + ')')
-    print('Apparent (long, lat) = (' + str(apparent_longitude(t)) + ', ' +
-          str(apparent_latitude(t)) + ')')
-    print('True (RA, Dec) = (' + str(true_rightascension(t)) + ', ' + str(true_declination(t)) +
-          ')')
-    print('Apparent (RA, Dec) = (' + str(apparent_rightascension(t)) + ', ' +
-          str(apparent_declination(t)) + ')')
-    print('Heliographic long. and lat of disk center = ' + str(heliographic_solar_center(t)))
-    print('Position angle of north pole in = ' + str(solar_north(t)))
-    print('Carrington Rotation Number = ' + str(carrington_rotation_number(t)))
+
+    # import here to avoid circular import
+    from sunpy.coordinates.ephemeris import (get_sun_L0, get_sun_B0,
+                                             get_sun_P, get_sunearth_distance)
+
+    print('Solar Ephemeris for {}\n'.format(parse_time(t).ctime()))
+    print('Distance = {}'.format(get_sunearth_distance(t)))
+    print('Semidiameter = {}'.format(solar_semidiameter_angular_size(t)))
+    print('True (long, lat) = ({}, {})'.format(true_longitude(t), true_latitude(t)))
+    print('Apparent (long, lat) = ({}, {})'.format(apparent_longitude(t), apparent_latitude(t)))
+    print('True (RA, Dec) = ({}, {})'.format(true_rightascension(t), true_declination(t)))
+    print('Apparent (RA, Dec) = ({}, {})'.format(apparent_rightascension(t),
+                                                 apparent_declination(t)))
+    print('Heliographic long. and lat of disk center = ({}, {})'.format(get_sun_L0(t),
+                                                                        get_sun_B0(t)))
+    print('Position angle of north pole in = {}'.format(get_sun_P(t)))
+    print('Carrington Rotation Number = {}'.format(carrington_rotation_number(t)))
