@@ -12,7 +12,6 @@ from astropy.io import fits
 import pandas
 
 from sunpy.time import parse_time
-from sunpy import config
 from sunpy.util.net import check_download_file
 from sunpy.util.config import get_and_create_download_dir
 from sunpy.util.decorators import deprecated
