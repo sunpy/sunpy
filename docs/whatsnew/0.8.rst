@@ -102,6 +102,16 @@ For example, to convert to the International Celestial Reference System (ICRS)::
 Specification of observer at any major solar system body
 --------------------------------------------------------
 
+Major solar system bodies can be used to specify observer locations in SkyCoord::
+
+    >>> from sunpy.coordinates import get_body_heliographic_stonyhurst
+    >>> obstime = '2011-06-07 06:33:02'
+    >>> observer = get_body_heliographic_stonyhurst('Mars', obstime)
+    >>> d = SkyCoord(-45*u.arcsec, 600*u.arcsec, observer=observer, obstime=obstime, frame=frames.Helioprojective)
+    >>> d
+    <SkyCoord (Helioprojective: obstime=2011-06-07 06:33:02, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02): (lon, lat, radius) in (deg, deg, AU)
+    ( 135.78519602,  4.47598707,  1.43448427)>): (Tx, Ty) in arcsec
+    (-45.,  600.)>
 
 
 .. _whatsnew-0.8-timeseries:
