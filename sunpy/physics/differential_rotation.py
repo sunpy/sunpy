@@ -1,6 +1,7 @@
 from __future__ import division
 from datetime import timedelta
 from copy import deepcopy
+import warnings
 
 import numpy as np
 from skimage import transform
@@ -194,27 +195,30 @@ def _warp_sun_coordinates(xy, smap, dt):
     # xy = np.dstack([xx.T.flat, yy.T.flat])[0]
 
     # We start by converting the pixel to world
-    hpc_coords = smap.pixel_to_world(xx * u.pix, yy * u.pix)
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        hpc_coords = smap.pixel_to_world(xx * u.pix, yy * u.pix)
 
-    # then diff-rotate the hpc coordinates to the desired time
-    rotated_coord = solar_rotate_coordinate(hpc_coords, rotated_time)
+        # then diff-rotate the hpc coordinates to the desired time
+        rotated_coord = solar_rotate_coordinate(hpc_coords, rotated_time)
 
-    # To find the values that are behind the sun we need to convert them
-    # to HeliographicStonyhurst
-    findOccult = rotated_coord.transform_to(HeliographicStonyhurst)
+        # To find the values that are behind the sun we need to convert them
+        # to HeliographicStonyhurst
+        findOccult = rotated_coord.transform_to(HeliographicStonyhurst)
 
-    with np.errstate(invalid='ignore'):
-        # and find which ones are outside the [-90, 90] range.
-        occult = np.logical_or(np.less(findOccult.lon, -90 * u.deg),
-                               np.greater(findOccult.lon, 90 * u.deg))
+        with np.errstate(invalid='ignore'):
+            # and find which ones are outside the [-90, 90] range.
+            occult = np.logical_or(np.less(findOccult.lon, -90 * u.deg),
+                                   np.greater(findOccult.lon, 90 * u.deg))
 
-    # NaN-ing values that move to the other side of the sun
-    rotated_coord.data.lon[occult] = np.nan * u.deg
-    rotated_coord.data.lat[occult] = np.nan * u.deg
-    rotated_coord.cache.clear()
+        # NaN-ing values that move to the other side of the sun
+        rotated_coord.data.lon[occult] = np.nan * u.deg
+        rotated_coord.data.lat[occult] = np.nan * u.deg
+        rotated_coord.cache.clear()
 
-    # Go back to pixel co-ordinates
-    x2, y2 = smap.world_to_pixel(rotated_coord)
+        # Go back to pixel co-ordinates
+        x2, y2 = smap.world_to_pixel(rotated_coord)
+
     # Re-stack the data to make it correct output form
     xy2 = np.dstack([x2.T.value.flat, y2.T.value.flat])[0]
     # Returned a masked array with the non-finite entries masked.
