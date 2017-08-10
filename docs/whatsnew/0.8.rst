@@ -43,7 +43,24 @@ SunPy is tested against Python 2.7, 3.5 and 3.6.  SunPy no longer supports Pytho
 New data downloading interface
 ==============================
 
-???
+The new package Fido is the primary interface to search for and download
+observational data. It unifies data search and download from multiple sources
+such as the VSO and non-VSO sources::
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> attrs_time = a.Time('2005/01/01 00:10', '2005/01/01 00:15')
+    >>> result = Fido.search(attrs_time, a.Instrument('eit'))
+    >>> result
+    <sunpy.net.fido_factory.UnifiedResponse object at 0x7f581489bb70>
+    Results from 1 Provider:
+
+    1 Results from the VSOClient:
+        Start Time [1]       End Time [1]    Source Instrument   Type   Wavelength [2]
+                                                                          Angstrom
+        str19               str19         str4     str3      str8      float64
+    ------------------- ------------------- ------ ---------- -------- --------------
+    2005-01-01 00:12:10 2005-01-01 00:12:22   SOHO        EIT FULLDISK 195.0 .. 195.0
+
 
 .. _whatsnew-0.8-coordinates:
 
