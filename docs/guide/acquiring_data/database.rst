@@ -6,7 +6,7 @@ Using the database package
 .. currentmodule:: sunpy.database
 
 The database package offers the possibility to save retrieved data (e.g.
-via the :mod:`sunpy.net.vso` package) onto a local or remote database. The
+via the :mod:`sunpy.net` package) onto a local or remote database. The
 database may be a single file located on a local hard drive (if a SQLite
 database is used) or a local or remote database server (see the SQLAlchemy
 documentation for a `list of supported databases

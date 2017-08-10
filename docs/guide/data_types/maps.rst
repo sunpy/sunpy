@@ -2,12 +2,11 @@
 Maps
 ====
 
-Maps in SunPy are are 2-dimensional data associated with a coordinate system.
-In this guide, we will cover some of the basic functionality of maps.
-Once you've read through this guide check out
-the :doc:`/code_ref/map` for a more thorough look at SunPy maps.
-There you can see what instruments are currently supported or you can access the
-code reference for each instrument-specific map subclass.
+Maps in SunPy are are 2-dimensional data associated with a coordinate system. In
+this guide, we will cover some of the basic functionality of maps. Once you've
+read through this guide check out :doc:`/code_ref/map` for a more thorough look
+at SunPy maps. There you can see what instruments are currently supported or you
+can access the code reference for each instrument-specific map subclass.
 
 Creating maps
 -------------

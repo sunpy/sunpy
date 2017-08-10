@@ -21,7 +21,7 @@ goes = GOESLightCurve.create(tr)
 # Next lets grab the HEK data for this time from the NOAA Space Weather Prediction Center (SWPC)
 
 client = hek.HEKClient()
-flares_hek = client.query(hek.attrs.Time(tr.start,tr.end), hek.attrs.FL, hek.attrs.FRM.Name == 'SWPC')
+flares_hek = client.search(hek.attrs.Time(tr.start,tr.end), hek.attrs.FL, hek.attrs.FRM.Name == 'SWPC')
 
 ###############################################################################
 # Finally lets plot everything together

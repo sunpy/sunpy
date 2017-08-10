@@ -4,12 +4,13 @@
 Plotting in SunPy
 -----------------
 
-SunPy makes use of `matplotlib <http://matplotlib.org/>`_ for all of its plotting needs
-as such it tries to follow the matplotlib plotting philosophy.
-It is therefore useful to go over how matplotlib works as background.
+SunPy makes use of `matplotlib <http://matplotlib.org/>`_ for all of its
+plotting - as such, it tries to follow the matplotlib plotting philosophy. It is
+therefore useful to go over how matplotlib works as background.
 
 1. Matplotlib Tutorial
 ----------------------
+
 The tutorial provided here is a summary of one that can be found in the `matplotlib
 usage documentation <http://matplotlib.org/faq/usage_faq.html>`_.
 
@@ -82,7 +83,7 @@ and access the figures and axes objects. This is shown in the following example.
     x = np.arange(0, 10, 0.2)
     y = np.sin(x)
     fig = plt.figure()
-    ax = fig.add_subplot(111)
+    ax = plt.subplot()
     ax.plot(x, y)
     ax.set_xlabel('x')
     plt.show()
@@ -95,8 +96,8 @@ like change the labels on the x and y axes or add a legend.
 In the previous section, pyplot took care of creating these
 objects for you so you didn't have to worry about creating them yourself.
 
-4. SunPy Plotting Standards
----------------------------
+4. SunPy Plotting Convention
+----------------------------
 
 To be consistent with matplotlib, SunPy has developed a standard plotting policy
 which supports both simple and advanced matplotlib usage. The following examples
@@ -106,11 +107,11 @@ objects.
 4.1 peek()
 ----------
 
-For quick and easy access to a plot
-all SunPy base objects (i.e. maps, spectra, timeseries) define their own
-`~sunpy.map.mapbase.GenericMap.peek` command which will create a plot for you and show it without you having to deal
-with any matplotlib setup. This is so that it is easy to take a quick look at
-your data. For example you can make the following plot.
+For quick and easy access to a plot all SunPy base objects (i.e. maps, spectra,
+timeseries) define their own `~sunpy.map.mapbase.GenericMap.peek` command which
+will create a plot for you and show it without you having to deal with any
+matplotlib setup. This is so that it is easy to take a quick look at your data.
+For example you can make the following plot.
 
 .. plot::
     :include-source:
@@ -133,9 +134,9 @@ pyplot `~matplotlib.pyplot.imshow` command in that it will create a figure and
 axes object for you if you haven't already.
 
 When you create a plot with `~sunpy.map.GenericMap.peek` or
-`~sunpy.map.GenericMap.plot`, if possible SunPy will use
-`astropy.visualization.wcsaxes` to represent coordinates on the image
-accurately, for more information see :ref:`wcsaxes-plotting`.
+`~sunpy.map.GenericMap.plot`, SunPy will use `astropy.visualization.wcsaxes` to
+represent coordinates on the image accurately, for more information see
+:ref:`wcsaxes-plotting`.
 
 Using `~sunpy.map.GenericMap.plot` it is possible to customise the look of the
 plot by combining SunPy and matplotlib commands, for example you can over plot

@@ -45,7 +45,7 @@ def translate_results_to_query(results):
     >>> from sunpy.net.hek2vso import hek2vso, H2VClient
     >>> h = HEKClient()
     >>> h2v = H2VClient()
-    >>> q = h.query(hek.attrs.Time('2011/08/09 07:23:56',
+    >>> q = h.search(hek.attrs.Time('2011/08/09 07:23:56',
     ...             '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))
     >>> len(q)
     19
@@ -85,7 +85,7 @@ def vso_attribute_parse(phrase):
     >>> from sunpy.net.hek2vso import hek2vso, H2VClient
     >>> h = HEKClient()
     >>> h2v = H2VClient()
-    >>> q = h.query(hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))
+    >>> q = h.search(hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))
     >>> len(q)
     19
 
@@ -152,7 +152,7 @@ class H2VClient(object):
         if progress:
             sys.stdout.write('\rQuerying HEK webservice...')
             sys.stdout.flush()
-        self.hek_results = self.hek_client.query(*client_query)
+        self.hek_results = self.hek_client.search(*client_query)
         self._quick_clean()
         return self.translate_and_query(self.hek_results,
                                         limit=limit, progress=progress)
@@ -181,7 +181,7 @@ class H2VClient(object):
         >>> tstart = '2011/08/09 07:23:56'
         >>> tend = '2011/08/09 12:40:29'
         >>> event_type = 'FL'
-        >>> q = h.query(hek.attrs.Time(tstart, tend), hek.attrs.EventType(event_type))
+        >>> q = h.search(hek.attrs.Time(tstart, tend), hek.attrs.EventType(event_type))
         >>> h2v = hek2vso.H2VClient()
         >>> res = h2v.translate_and_query(q)
         """
@@ -193,7 +193,7 @@ class H2VClient(object):
             pbar = TTYProgressBar(result_size)
 
         for query in vso_query:
-            temp = self.vso_client.query(*query)
+            temp = self.vso_client.search(*query)
             self.vso_results.append(temp)
             self.num_of_records += len(temp)
             if limit is not None:
