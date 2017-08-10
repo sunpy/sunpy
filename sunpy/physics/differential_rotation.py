@@ -172,7 +172,7 @@ def _warp_sun_coordinates(xy, smap, dt):
 
     Parameters
     ----------
-    xy :
+    xy : `numpy.ndarray`
         Array from `transform.warp`
     smap : `~sunpy.map`
         Original map that we want to transform
@@ -243,7 +243,7 @@ def diffrot_map(smap, dt, pad=False):
 
     Returns
     -------
-   `~sunpy.map`
+    diffrot_map : `~sunpy.map`
         A map with the result of applying solar differential rotation to the
         input map.
     """

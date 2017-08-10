@@ -162,5 +162,3 @@ def test_diffrot_submap_pad(aia171_test_submap):
     assert (aia171_test_submap.date - timedelta(days=0.5)) - aia_srot.date < timedelta(seconds=1)
     assert aia_srot.meta['naxis1'] == 35
     assert aia_srot.meta['naxis2'] == 18
-
-
