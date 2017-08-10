@@ -4,6 +4,7 @@ Latest
 New Features
 ------------
 
+-  Solar differential rotation for maps and submaps included.
 -  Solar rotation calculation and mapcube derotation now use sunpy coordinates.
 -  Sample data now downloads automatically on import if not available
    and is now pluggable so can be used by affiliated packages. Shortcut
