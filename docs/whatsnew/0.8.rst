@@ -18,6 +18,7 @@ On this page, you can read about some of the big changes in this release:
 * :ref:`whatsnew-0.8-fido`
 * :ref:`whatsnew-0.8-coordinates`
 * :ref:`whatsnew-0.8-timeseries`
+* :ref:`whatsnew-0.8-differential_rotation`
 * :ref:`whatsnew-0.8-renamed-removed`
 
 In addition to these major changes, SunPy 0.8 includes a large number of
@@ -113,10 +114,7 @@ Specification of observer at any major solar system body
 
 Major solar system bodies can be used to specify observer locations in SkyCoord::
 
-    >>> from sunpy.coordinates import get_body_heliographic_stonyhurst
-    >>> obstime = '2011-06-07 06:33:02'
-    >>> observer = get_body_heliographic_stonyhurst('Mars', obstime)
-    >>> d = SkyCoord(-45*u.arcsec, 600*u.arcsec, observer=observer, obstime=obstime, frame=frames.Helioprojective)
+    >>> d = SkyCoord(-45*u.arcsec, 600*u.arcsec, observer='Mars', obstime='2011-06-07 06:33:02', frame=frames.Helioprojective)
     >>> d
     <SkyCoord (Helioprojective: obstime=2011-06-07 06:33:02, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02): (lon, lat, radius) in (deg, deg, AU)
     ( 135.78519602,  4.47598707,  1.43448427)>): (Tx, Ty) in arcsec
@@ -181,6 +179,21 @@ Data sources that do not provide FITS files need to have a 'source' keyword to h
 with the identification and interpretation of the data::
 
     >>> eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='EVE')
+
+.. _whatsnew-0.8-differential_rotation:
+
+Differential rotation of maps
+=============================
+
+Maps can now be transformed using solar differential rates::
+
+    >>> import sunpy.map
+    >>> import sunpy.data.sample
+    >>> from sunpy.physics.differential_rotation import diffrot_map
+    >>> aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    >>> dr_map = diffrot_map(aia_map, -4 * u.day)
+
+
 
 .. _whatsnew-0.8-renamed-removed:
 
