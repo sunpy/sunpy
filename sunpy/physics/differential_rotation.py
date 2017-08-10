@@ -28,12 +28,14 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
         Number of seconds to rotate over.
     latitude : `~astropy.units.Quantity`
         heliographic coordinate latitude in Degrees.
-    rot_type : {'howard' | 'snodgrass' | 'allen'}
-        howard : Use values for small magnetic features from Howard et al.
-        snodgrass : Use Values from Snodgrass et. al
-        allen : Use values from Allen's Astrophysical Quantities, and simpler equation.
-    frame_time : {'sidereal' | 'synodic'}
-        Choose 'type of day' time reference frame.
+    rot_type : `str`
+        One of:
+        | ``howard`` : Use values for small magnetic features from Howard et al.
+        | ``snodgrass`` : Use Values from Snodgrass et. al
+        | ``allen`` : Use values from Allen's Astrophysical Quantities, and simpler equation.
+
+    frame_time : `str`
+        One of : ``'sidereal'`` or  ``'synodic'``. Choose 'type of day' time reference frame.
 
     Returns
     -------
@@ -42,10 +44,10 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
 
     References
     ----------
-    | * `IDL code equivalent <http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/diff_rot.pro>`_
-    | * `Howard rotation <http://adsabs.harvard.edu/abs/1990SoPh..130..295H>`_
-    | * `A review of rotation parameters (including Snodgrass values)
-    <http://link.springer.com/article/10.1023%2FA%3A1005226402796>`_
+
+    | * `IDL code equivalent <http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/diff_rot.pro>`__
+    | * `Howard rotation <http://adsabs.harvard.edu/abs/1990SoPh..130..295H>`__
+    | * `A review of rotation parameters (including Snodgrass values) <http://link.springer.com/article/10.1023%2FA%3A1005226402796>`__
 
     Examples
     --------
