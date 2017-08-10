@@ -259,11 +259,12 @@ def diffrot_map(smap, dt, pad=False):
     # Check whether the input is a submap
     if ((2 * smap.rsun_obs > smap.top_right_coord.Tx - smap.bottom_left_coord.Tx) or
         (2 * smap.rsun_obs > smap.top_right_coord.Ty - smap.bottom_left_coord.Ty)):
+
         submap = True
         if pad:
             # Calculating the largest distance between the corners and their rotation values
             deltax = deltay = 0
-            for corner in product(*product([0 * u.pix], [*smap.dimensions])):
+            for corner in product(*product([0 * u.pix], smap.dimensions)):
                 corner_world = smap.pixel_to_world(*corner)
                 corner_world_rotated = solar_rotate_coordinate(corner_world, new_time)
                 corner_px_rotated = smap.world_to_pixel(corner_world_rotated)
@@ -275,7 +276,8 @@ def diffrot_map(smap, dt, pad=False):
             deltax = np.int(np.ceil(deltax.value))
             deltay = np.int(np.ceil(deltay.value))
             # Create a new `smap` with the padding around it
-            smap_data = np.pad(smap.data, ((deltay, deltay), (deltax, deltax)), 'constant', constant_values=0)
+            smap_data = np.pad(smap.data, ((deltay, deltay), (deltax, deltax)),
+                               'constant', constant_values=0)
             smap_meta = deepcopy(smap.meta)
             smap_meta['naxis2'], smap_meta['naxis1'] = smap_data.shape
             smap_meta['crpix1'] += deltax
