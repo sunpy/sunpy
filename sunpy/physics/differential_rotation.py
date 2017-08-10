@@ -1,16 +1,20 @@
 from __future__ import division
+from datetime import timedelta
+from copy import deepcopy
+import warnings
+from itertools import product
 
 import numpy as np
-
+from skimage import transform
 from astropy import units as u
 from astropy.coordinates import SkyCoord, Longitude
 
+import sunpy.map
 from sunpy.time import parse_time
-from sunpy.coordinates import frames
+from sunpy.coordinates import frames, HeliographicStonyhurst
+from sunpy.image.util import to_norm, un_norm
 
-__author__ = ["Jose Ivan Campos Rozo", "Stuart Mumford", "Jack Ireland"]
-
-__all__ = ['diff_rot', 'solar_rotate_coordinate']
+__all__ = ['diff_rot', 'solar_rotate_coordinate', 'diffrot_map']
 
 
 @u.quantity_input(duration=u.s, latitude=u.degree)
@@ -27,7 +31,7 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     rot_type : {'howard' | 'snodgrass' | 'allen'}
         howard : Use values for small magnetic features from Howard et al.
         snodgrass : Use Values from Snodgrass et. al
-        allen : Use values from Allen, Astrophysical Quantities, and simpler equation.
+        allen : Use values from Allen's Astrophysical Quantities, and simpler equation.
     frame_time : {'sidereal' | 'synodic'}
         Choose 'type of day' time reference frame.
 
@@ -36,11 +40,12 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     longitude_delta : `~astropy.units.Quantity`
         The change in longitude over days (units=degrees)
 
-    Notes
-    -----
-    * IDL code equivalent: http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/diff_rot.pro
-    * Howard rotation: http://adsabs.harvard.edu/abs/1990SoPh..130..295H
-    * A review of rotation parameters (including Snodgrass values): http://link.springer.com/article/10.1023%2FA%3A1005226402796
+    References
+    ----------
+    | * `IDL code equivalent <http://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/diff_rot.pro>`_
+    | * `Howard rotation <http://adsabs.harvard.edu/abs/1990SoPh..130..295H>`_
+    | * `A review of rotation parameters (including Snodgrass values)
+    <http://link.springer.com/article/10.1023%2FA%3A1005226402796>`_
 
     Examples
     --------
@@ -51,39 +56,36 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
     >>> import astropy.units as u
     >>> from sunpy.physics.differential_rotation import diff_rot
     >>> rotation = diff_rot(2 * u.day, 30 * u.deg)
+
     Default rotation over two days for a number of latitudes:
     >>> rotation = diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg)
+
     With rotation type 'allen':
     >>> rotation = diff_rot(2 * u.day, np.linspace(-70, 70, 20) * u.deg, 'allen')
     """
 
     latitude = latitude.to(u.deg)
-    delta_seconds = duration.to(u.s).value
-    delta_days = delta_seconds / 24.0 / 3600.0
 
     sin2l = (np.sin(latitude))**2
     sin4l = sin2l**2
 
-    rot_params = {'howard': [2.894, -0.428, -0.370], 'snodgrass': [2.851, -0.343, -0.474]}
+    rot_params = {'howard': [2.894, -0.428, -0.370] * u.urad / u.second,
+                  'snodgrass': [2.851, -0.343, -0.474] * u.urad / u.second,
+                  'allen': [14.44, -3.0, 0] * u.deg / u.day
+                  }
 
     if rot_type not in ['howard', 'allen', 'snodgrass']:
-        raise ValueError("""rot_type must equal one of
-                        { 'howard' | 'allen' | 'snodgrass' }""")
+        raise ValueError(("rot_type must equal one of "
+                          "{{ {} }}".format(" | ".join(rot_params.keys()))))
 
-    elif rot_type == 'allen':
-        rotation_deg = delta_days * (14.44 - (3.0 * sin2l))
+    A, B, C = rot_params[rot_type]
 
-    else:
-        A, B, C = rot_params[rot_type]
-
-        # This is in micro-radians / sec
-        rotation_rate = A + B * sin2l + C * sin4l
-        rotation_deg = rotation_rate * 1e-6 * delta_seconds / np.deg2rad(1)
+    rotation = (A + B * sin2l + C * sin4l) * duration
 
     if frame_time == 'synodic':
-        rotation_deg -= 0.9856 * delta_days
+        rotation -= 0.9856 * u.deg / u.day * duration
 
-    return Longitude(rotation_deg * u.deg)
+    return Longitude(rotation.to(u.deg))
 
 
 def solar_rotate_coordinate(coordinate,
@@ -159,3 +161,145 @@ def solar_rotate_coordinate(coordinate,
 
     # Return the rotated coordinates to the input coordinate frame
     return heliographic_rotated.transform_to(coordinate.frame.name)
+
+
+@u.quantity_input(dt=u.s)
+def _warp_sun_coordinates(xy, smap, dt):
+    """
+    Function that returns a new list of coordinates for each input coord.
+    This is an inverse function needed by the scikit-image `transform.warp`
+    function.
+
+    Parameters
+    ----------
+    xy : `numpy.ndarray`
+        Array from `transform.warp`
+    smap : `~sunpy.map`
+        Original map that we want to transform
+    dt : `~astropy.units.Quantity`
+        Desired interval to rotate the input map by solar differential rotation.
+
+    Returns
+    -------
+    xy2 : `~numpy.ndarray`
+        Array with the inverse transformation
+    """
+    # NOTE: The time is being subtracted - this is because this function
+    # calculates the inverse of the transformation.
+    rotated_time = smap.date - timedelta(seconds=dt.to(u.s).value)
+
+    # Calculate the hpc coords
+    x = np.arange(0, smap.dimensions.x.value)
+    y = np.arange(0, smap.dimensions.y.value)
+    xx, yy = np.meshgrid(x, y)
+    # the xy input array would have the following shape
+    # xy = np.dstack([xx.T.flat, yy.T.flat])[0]
+
+    # We start by converting the pixel to world
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore')
+        hpc_coords = smap.pixel_to_world(xx * u.pix, yy * u.pix)
+
+        # then diff-rotate the hpc coordinates to the desired time
+        rotated_coord = solar_rotate_coordinate(hpc_coords, rotated_time)
+
+        # To find the values that are behind the sun we need to convert them
+        # to HeliographicStonyhurst
+        findOccult = rotated_coord.transform_to(HeliographicStonyhurst)
+
+        with np.errstate(invalid='ignore'):
+            # and find which ones are outside the [-90, 90] range.
+            occult = np.logical_or(np.less(findOccult.lon, -90 * u.deg),
+                                   np.greater(findOccult.lon, 90 * u.deg))
+
+        # NaN-ing values that move to the other side of the sun
+        rotated_coord.data.lon[occult] = np.nan * u.deg
+        rotated_coord.data.lat[occult] = np.nan * u.deg
+        rotated_coord.cache.clear()
+
+        # Go back to pixel co-ordinates
+        x2, y2 = smap.world_to_pixel(rotated_coord)
+
+    # Re-stack the data to make it correct output form
+    xy2 = np.dstack([x2.T.value.flat, y2.T.value.flat])[0]
+    # Returned a masked array with the non-finite entries masked.
+    xy2 = np.ma.array(xy2, mask=np.isnan(xy2))
+    return xy2
+
+
+@u.quantity_input(dt=u.s)
+def diffrot_map(smap, dt, pad=False):
+    """
+    Function to apply solar differential rotation to a sunpy map.
+
+    Parameters
+    ----------
+    smap : `~sunpy.map`
+        Original map that we want to transform.
+    dt : `~astropy.units.Quantity`
+        Desired interval between the input map and returned map.
+    pad : `bool`
+        Whether to create a padded map for submaps to don't loose data
+
+    Returns
+    -------
+    diffrot_map : `~sunpy.map`
+        A map with the result of applying solar differential rotation to the
+        input map.
+    """
+    new_time = smap.date + timedelta(seconds=dt.to(u.s).value)
+
+    # Check for masked maps
+    if smap.mask is not None:
+        smap_data = np.ma.array(smap.data, mask=smap.mask)
+    else:
+        smap_data = smap.data
+
+    submap = False
+    # Check whether the input is a submap
+    if ((2 * smap.rsun_obs > smap.top_right_coord.Tx - smap.bottom_left_coord.Tx) or
+        (2 * smap.rsun_obs > smap.top_right_coord.Ty - smap.bottom_left_coord.Ty)):
+
+        submap = True
+        if pad:
+            # Calculating the largest distance between the corners and their rotation values
+            deltax = deltay = 0
+            for corner in product(*product([0 * u.pix], smap.dimensions)):
+                corner_world = smap.pixel_to_world(*corner)
+                corner_world_rotated = solar_rotate_coordinate(corner_world, new_time)
+                corner_px_rotated = smap.world_to_pixel(corner_world_rotated)
+                dx = np.abs(corner_px_rotated.x - corner[0])
+                dy = np.abs(corner_px_rotated.y - corner[1])
+                deltax = dx if dx > deltax else deltax
+                deltay = dy if dy > deltay else deltay
+
+            deltax = np.int(np.ceil(deltax.value))
+            deltay = np.int(np.ceil(deltay.value))
+            # Create a new `smap` with the padding around it
+            smap_data = np.pad(smap.data, ((deltay, deltay), (deltax, deltax)),
+                               'constant', constant_values=0)
+            smap_meta = deepcopy(smap.meta)
+            smap_meta['naxis2'], smap_meta['naxis1'] = smap_data.shape
+            smap_meta['crpix1'] += deltax
+            smap_meta['crpix2'] += deltay
+            smap = sunpy.map.Map(smap_data, smap_meta)
+
+    # Apply solar differential rotation as a scikit-image warp
+    out = transform.warp(to_norm(smap_data), inverse_map=_warp_sun_coordinates,
+                         map_args={"smap": smap, "dt": dt})
+
+    # Recover the original intensity range.
+    out = un_norm(out, smap.data)
+
+    # Update the meta information with the new date and time, and reference pixel.
+    out_meta = deepcopy(smap.meta)
+    if out_meta.get('date_obs', False):
+        del out_meta['date_obs']
+    out_meta['date-obs'] = "{:%Y-%m-%dT%H:%M:%S}".format(new_time)
+
+    if submap:
+        crval_rotated = solar_rotate_coordinate(smap.reference_coordinate, new_time)
+        out_meta['crval1'] = crval_rotated.Tx.value
+        out_meta['crval2'] = crval_rotated.Ty.value
+
+    return sunpy.map.Map((out, out_meta))
