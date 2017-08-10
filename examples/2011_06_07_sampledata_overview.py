@@ -5,10 +5,13 @@ Sample Data Set Overview
 
 An overview of the coordinated sample data set for the SOL-2011-06-07 event.
 """
-import sunpy.data.sample as sample_data
+from __future__ import print_function, division
+
+import matplotlib.pyplot as plt
+
 import sunpy.map
 import sunpy.timeseries
-import matplotlib.pyplot as plt
+import sunpy.data.sample as sample_data
 
 ###############################################################################
 # On 2011 June 7, various solar instruments observed a spectacular solar
