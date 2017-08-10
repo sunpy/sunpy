@@ -13,10 +13,10 @@ A simple demonstration of creating a map from a numpy array of data.
 from __future__ import print_function, division
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 import sunpy.map
 import sunpy.data.sample
-import matplotlib.pyplot as plt
 
 ##############################################################################
 # SunPy Maps store 2D data in a numpy array and additional data in a metadata
