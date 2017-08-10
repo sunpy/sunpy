@@ -77,7 +77,7 @@ class EVEClient(GenericClient):
         self.map_['source'] = 'SDO'
         self.map_['provider'] = 'LASP'
         self.map_['instrument'] = 'eve'
-        self.map_['phyobs'] = 'irradiance'
+        self.map_['physobs'] = 'irradiance'
 
     @classmethod
     def _can_handle_query(cls, *query):

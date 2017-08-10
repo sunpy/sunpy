@@ -37,6 +37,7 @@ from sunpy.net.vso.attrs import walker, TIMEFORMAT
 from sunpy.util import replacement_filename
 from sunpy.time import parse_time
 
+from sunpy.util import deprecated
 from sunpy.extern import six
 from sunpy.extern.six import iteritems, text_type
 from sunpy.extern.six.moves import input
@@ -129,13 +130,20 @@ class QueryResponse(list):
         self.errors = []
         self.table = None
 
-    def query(self, *query):
+    def search(self, *query):
         """ Furtherly reduce the query response by matching it against
-        another query, e.g. response.query(attrs.Instrument('aia')). """
+        another query, e.g. response.search(attrs.Instrument('aia')). """
         query = and_(*query)
         return QueryResponse(
             attrs.filter_results(query, self), self.queryresult
         )
+
+    @deprecated('0.8', alternative='QueryResponse.search')
+    def query(self, *query):
+        """
+        See `~sunpy.net.vso.vso.QueryResponse.search`
+        """
+        return self.search(*query)
 
     @classmethod
     def create(cls, queryresult):
@@ -206,6 +214,17 @@ class QueryResponse(list):
     def add_error(self, exception):
         self.errors.append(exception)
 
+    def response_block_properties(self):
+        """
+        Returns a set of class attributes on all the response blocks.
+        """
+        s = {a if not a.startswith('_') else None for a in dir(self[0])}
+        for resp in self[1:]:
+            s = s.intersection({a if not a.startswith('_') else None for a in dir(resp)})
+
+        s.remove(None)
+        return s
+
     def __str__(self):
         """Print out human-readable summary of records retrieved"""
         return str(self.build_table())
@@ -275,7 +294,7 @@ class VSOClient(object):
                 item[tip] = v
         return obj
 
-    def query(self, *query):
+    def search(self, *query):
         """ Query data from the VSO with the new API. Takes a variable number
         of attributes as parameter, which are chained together using AND.
 
@@ -289,7 +308,7 @@ class VSOClient(object):
         >>> from datetime import datetime
         >>> from sunpy.net import vso
         >>> client = vso.VSOClient()
-        >>> client.query(
+        >>> client.search(
         ...    vso.attrs.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
         ...    vso.attrs.Instrument('eit') | vso.attrs.Instrument('aia'))   # doctest: +NORMALIZE_WHITESPACE
         <Table masked=False length=5>
@@ -324,6 +343,13 @@ class VSOClient(object):
                 response.add_error(ex)
 
         return QueryResponse.create(self.merge(responses))
+
+    @deprecated('0.8', alternative='VSOClient.search')
+    def query(self, *query):
+        """
+        See `~sunpy.net.vso.vso.VSOClient.search`
+        """
+        return self.search(*query)
 
     def merge(self, queryresponses):
         """ Merge responses into one. """
@@ -536,7 +562,7 @@ class VSOClient(object):
             time_near=datetime.utcnow()
         )
 
-    def get(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),
+    def fetch(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),
             downloader=None, site=None):
         """
         Download data specified in the query_response.
@@ -588,7 +614,7 @@ class VSOClient(object):
 
         Examples
         --------
-        >>> res = get(qr).wait() # doctest:+SKIP
+        >>> res = fetch(qr).wait() # doctest:+SKIP
         """
         if downloader is None:
             downloader = download.Downloader()
@@ -625,6 +651,15 @@ class VSOClient(object):
         )
         res.poke()
         return res
+
+    @deprecated('0.8', alternative='VSOClient.fetch')
+    def get(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),
+            downloader=None, site=None):
+        """
+        See `~sunpy.net.vso.vso.VSOClient.fetch`
+        """
+        return self.fetch(query_response, path=path, methods=methods, downloader=downloader, site=site)
+
 
     @staticmethod
     def link(query_response, maps):
@@ -805,6 +840,7 @@ class VSOClient(object):
         return all([x.__class__.__name__ in attrs.__all__ for x in query])
 
 
+@deprecated("0.8.0", alternative="Please use VSOClient")
 class InteractiveVSOClient(VSOClient):
 
     """ Client for use in the REPL. Prompts user for data if required. """
@@ -886,12 +922,12 @@ class InteractiveVSOClient(VSOClient):
             path = os.path.abspath(os.path.expanduser(path))
             if os.path.exists(path) and os.path.isdir(path):
                 path = os.path.join(path, '{file}')
-        return VSOClient.get(self, query_response, path, methods, downloader)
+        return VSOClient.fetch(self, query_response, path, methods, downloader)
 
 
 g_client = None
 
-
+@deprecated("0.8.0", alternative="Please use the VSO Clients directly")
 def search(*args, **kwargs):
     # pylint: disable=W0603
     global g_client
@@ -902,7 +938,7 @@ def search(*args, **kwargs):
 
 search.__doc__ = InteractiveVSOClient.search.__doc__
 
-
+@deprecated("0.8.0", alternative="Please use the VSO Clients directly")
 def get(query_response, path=None, methods=('URL-FILE',), downloader=None):
     # pylint: disable=W0603
     global g_client

@@ -15,7 +15,6 @@ can be downloaded from
 import numpy as np
 import matplotlib.pyplot as plt
 
-import astropy.units as u
 from astropy.utils.data import download_file
 
 import sunpy.map
@@ -23,8 +22,8 @@ import sunpy.map
 ###############################################################################
 # Use astropy to download the file to a temp location.
 
-filename = download_file('http://jsoc.stanford.edu/data/hmi/synoptic/hmi.Synoptic_Mr.2191.fits', cache=True)
-
+filename = download_file(
+    'http://jsoc.stanford.edu/data/hmi/synoptic/hmi.Synoptic_Mr.2191.fits', cache=True)
 
 ###############################################################################
 # We read this file in as a Map.
@@ -36,7 +35,6 @@ syn_map = sunpy.map.Map(filename)
 
 print(syn_map.meta['CUNIT2'])
 
-
 ###############################################################################
 # That is not a unit! What this is telling us is that the latitude coordinate
 # is actually the sine of latitude. According to the Thompson (2006) paper,
@@ -44,7 +42,7 @@ print(syn_map.meta['CUNIT2'])
 # the value of CDELT1 has the wrong sign.
 
 syn_map.meta['CUNIT2'] = 'degree'
-syn_map.meta['CDELT2'] = 180/np.pi * syn_map.meta['CDELT2']
+syn_map.meta['CDELT2'] = 180 / np.pi * syn_map.meta['CDELT2']
 syn_map.meta['CDELT1'] *= -1
 
 ###############################################################################
@@ -53,7 +51,6 @@ syn_map.meta['CDELT1'] *= -1
 # Set the colorbar properties.
 syn_map.plot_settings['cmap'] = 'hmimag'
 syn_map.plot_settings['norm'] = plt.Normalize(-1500, 1500)
-
 
 ###############################################################################
 # Create a figure with the Map's projection:
@@ -76,22 +73,20 @@ y.set_major_formatter('dd')
 x.set_axislabel("Carrington Longitude [deg]")
 y.set_axislabel("Latitude [deg]")
 
-
 x.set_ticks(color='black', exclude_overlapping=True)
 y.set_ticks(color='black', exclude_overlapping=True)
 
 # Hide the grid
-axes.coords.grid(color='black', alpha=0.6, linestyle='dotted',
-                 linewidth=0.5)
+axes.coords.grid(color='black', alpha=0.6, linestyle='dotted', linewidth=0.5)
 
 # Create a colorbar
 cb = plt.colorbar(im, fraction=0.019, pad=0.1)
 cb.set_label("LOS Magnetic Field [Gauss]")
 
-
 # Another horrible hack to make the ticks draw on the RHS
-axes.set_ylim((1, syn_map.data.shape[0]-1))
+axes.set_ylim((1, syn_map.data.shape[0] - 1))
 
-plt.title("{} {}-{}".format(syn_map.meta['content'], syn_map.meta['CAR_ROT'], syn_map.meta['CAR_ROT']+1))
+plt.title("{} {}-{}".format(syn_map.meta['content'], syn_map.meta['CAR_ROT'],
+                            syn_map.meta['CAR_ROT'] + 1))
 
 plt.show()

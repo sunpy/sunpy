@@ -22,6 +22,7 @@ from sunpy.util import unique
 from sunpy.util.xml import xml_to_dict
 from sunpy.extern.six import iteritems
 from sunpy.extern.six.moves import urllib
+from sunpy.util import deprecated
 
 __all__ = ['HEKClient']
 
@@ -76,7 +77,7 @@ class HEKClient(object):
                 return list(map(Response, results))
             page += 1
 
-    def query(self, *query):
+    def search(self, *query):
         """ Retrieves information about HEK records matching the criteria
         given in the query expression. If multiple arguments are passed,
         they are connected with AND. The result of a query is a list of
@@ -94,6 +95,14 @@ class HEKClient(object):
             return self._download(ndata[0])
         else:
             return self._merge(self._download(data) for data in ndata)
+
+    @deprecated('0.8', alternative='HEKClient.search')
+    def query(self, *query):
+        """
+        See `~sunpy.net.hek.hek.HEKClient.fetch`
+        """
+        return self.search(*query)
+
 
     def _merge(self, responses):
         """ Merge responses, removing duplicates. """
@@ -151,7 +160,7 @@ if __name__ == '__main__':
     from sunpy.net.hek import attrs as a
 
     c = HEKClient()
-    b = c.query(
+    b = c.search(
         a.Time((2010, 1, 1), (2010, 1, 2)) | a.Time((2010, 1, 3), (2010, 1, 4)),
         a.AR, a.FL
     )

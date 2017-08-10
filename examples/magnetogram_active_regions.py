@@ -8,19 +8,21 @@ This example shows how to overplot Active Region location on magnetogram plots.
 
 ##############################################################################
 # Start by importing the necessary modules.
+from __future__ import print_function, division
 
 import datetime
 
-import matplotlib.pyplot as plt
 import numpy as np
+import matplotlib.pyplot as plt
+
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-from sunpy.io.special import srs
-import sunpy.coordinates
-from sunpy.net import Fido, attrs as a
 import sunpy.map
+import sunpy.coordinates
+from sunpy.io.special import srs
 from sunpy.time import parse_time
+from sunpy.net import Fido, attrs as a
 
 ##############################################################################
 # Let's select a date (yyyy-mm-dd) for which we will be downloading files.
@@ -60,7 +62,7 @@ srs_results = Fido.search(a.Time(start_time, end_time), a.Instrument('SRS_TABLE'
 srs_downloaded_files = Fido.fetch(srs_results)
 
 ##############################################################################
-# We get one SRS file per day. To read this file, we pass the filename into 
+# We get one SRS file per day. To read this file, we pass the filename into
 # the SRS reader. So now `srs_table` contains an astropy table.
 
 srs_table = srs.read_srs(srs_downloaded_files[0])

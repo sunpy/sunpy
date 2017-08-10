@@ -6,7 +6,7 @@ import copy
 import os
 import datetime
 from abc import ABCMeta
-from collections import OrderedDict
+from collections import OrderedDict, namedtuple
 from functools import partial
 
 import numpy as np
@@ -19,6 +19,7 @@ from sunpy.time import TimeRange
 from sunpy.util import replacement_filename
 from sunpy.util.config import get_and_create_download_dir
 from sunpy import config
+from sunpy.util import deprecated
 
 from ..download import Downloader, Results
 from ..vso.attrs import Time, Wavelength, _Range
@@ -44,15 +45,15 @@ class QueryResponseBlock(object):
         map0 : Dict with relevant information
         url  : Uniform Resource Locator
         """
-        self.map_ = map0
+        self._map = map0
         self.source = map0.get('source', "Data not Available")
         self.provider = map0.get('provider', "Data not Available")
-        self.phyobs = map0.get('phyobs', "Data not Available")
+        self.physobs = map0.get('physobs', "Data not Available")
         self.instrument = map0.get('instrument', "Data not Available")
         self.url = url
         self.time = TimeRange(map0.get('Time_start'),
                               map0.get('Time_end')) if time is None else time
-        self.wavelength = map0.get('wavelength', np.NaN)
+        self.wave = map0.get('wavelength', np.NaN)
 
 
 def iter_urls(amap, url_list, time):
@@ -83,6 +84,17 @@ class QueryResponse(list):
         return TimeRange(min(qrblock.time.start for qrblock in self),
                          max(qrblock.time.end for qrblock in self))
 
+    def response_block_properties(self):
+        """
+        Returns a set of class attributes on all the response blocks.
+        """
+        s = {a if not a.startswith('_') else None for a in dir(self[0])}
+        for resp in self[1:]:
+            s = s.intersection({a if not a.startswith('_') else None for a in dir(resp)})
+
+        s.remove(None)
+        return s
+
     def __repr__(self):
         return repr(type(self)) + repr(self._build_table())
 
@@ -103,7 +115,7 @@ class QueryResponse(list):
                 (qrblock.time.end).strftime(TIME_FORMAT))
             columns['Source'].append(qrblock.source)
             columns['Instrument'].append(qrblock.instrument)
-            columns['Wavelength'].append(str(u.Quantity(qrblock.wavelength)))
+            columns['Wavelength'].append(str(u.Quantity(qrblock.wave)))
 
         return astropy.table.Table(columns)
 
@@ -187,7 +199,12 @@ class GenericClient(object):
                 if a_min == a_max:
                     self.map_[elem.__class__.__name__.lower()] = a_min
                 else:
-                    self.map_[elem.__class__.__name__.lower()] = (a_min, a_max)
+                    if isinstance(elem, Wavelength):
+                        prefix = 'wave'
+                    else:
+                        prefix = ''
+                    minmax = namedtuple("minmax", "{0}min {0}max".format(prefix))
+                    self.map_[elem.__class__.__name__.lower()] = minmax(a_min, a_max)
             else:
                 if hasattr(elem, 'value'):
                     self.map_[elem.__class__.__name__.lower()] = elem.value
@@ -266,7 +283,7 @@ class GenericClient(object):
             elif isinstance(path, six.string_types) and '{file}' not in path:
                 fname = os.path.join(path, '{file}')
 
-            temp_dict = qres[i].map_.copy()
+            temp_dict = qres[i]._map.copy()
             temp_dict['file'] = filename
             fname = fname.format(**temp_dict)
             fname = os.path.expanduser(fname)
@@ -280,7 +297,7 @@ class GenericClient(object):
 
         return paths
 
-    def query(self, *args, **kwargs):
+    def search(self, *args, **kwargs):
         """
         Query this client for a list of results.
 
@@ -299,7 +316,14 @@ class GenericClient(object):
             return QueryResponse.create(self.map_, urls, self._get_time_for_url(urls))
         return QueryResponse.create(self.map_, urls)
 
-    def get(self, qres, path=None, error_callback=None, **kwargs):
+    @deprecated('0.8', alternative='GenericClient.search')
+    def query(self, *query, **kwargs):
+        """
+        See `~sunpy.net.dataretriever.client.GenericClient.search`
+        """
+        return self.search(*query, **kwargs)
+
+    def fetch(self, qres, path=None, error_callback=None, **kwargs):
         """
         Download a set of results.
 
@@ -330,6 +354,13 @@ class GenericClient(object):
             dobj.download(aurl, fname, ncall, error_callback)
 
         return res
+
+    @deprecated('0.8', alternative='GenericClient.fetch')
+    def get(self, qres, path=None, error_callback=None, **kwargs):
+        """
+        See `~sunpy.net.dataretriever.client.GenericClient.fetch`
+        """
+        return self.fetch(qres, path=path, error_callback=error_callback, **kwargs)
 
     def _link(self, map_):
         """Helper Function"""

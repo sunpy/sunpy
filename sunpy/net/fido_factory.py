@@ -146,6 +146,15 @@ class UnifiedResponse(Sequence):
         """
         return self._list[i]
 
+    def response_block_properties(self):
+        """
+        Returns a set of class attributes on all the response blocks.
+        """
+        s = self.get_response(0).response_block_properties()
+        for i in range(1, len(self)):
+            s.intersection(self.get_response(i).response_block_properties())
+        return s
+
     @property
     def responses(self):
         """
@@ -339,7 +348,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         --------
         >>> from sunpy.net.vso.attrs import Time, Instrument
         >>> unifresp = Fido.search(Time('2012/3/4','2012/3/6'), Instrument('AIA'))
-        >>> downresp = Fido.get(unifresp)
+        >>> downresp = Fido.fetch(unifresp)
         >>> file_paths = downresp.wait()
         """
         wait = kwargs.pop("wait", True)
@@ -347,7 +356,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         reslist = []
         for query_result in query_results:
             for block in query_result.responses:
-                reslist.append(block.client.get(block, **kwargs))
+                reslist.append(block.client.fetch(block, **kwargs))
 
         results = DownloadResponse(reslist)
 
@@ -403,7 +412,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         """
         candidate_widget_types = self._check_registered_widgets(*query)
         tmpclient = candidate_widget_types[0]()
-        return tmpclient.query(*query), tmpclient
+        return tmpclient.search(*query), tmpclient
 
 
 Fido = UnifiedDownloaderFactory(

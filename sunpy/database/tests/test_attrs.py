@@ -48,7 +48,7 @@ def session():
 @pytest.fixture
 def vso_session():
     client = vso.VSOClient()
-    qr = client.query(
+    qr = client.search(
         vso.attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
         vso.attrs.Instrument('RHESSI'))
     entries = tables.entries_from_query_result(qr)
