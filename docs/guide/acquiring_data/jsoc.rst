@@ -16,6 +16,12 @@ data. An alternative way to fetch data from JSOC is by using the underlying JSOC
 can be preferred when the complex searches are to be made, or when you need to separate the staging
 and downloading steps, which is not supported by FIDO.
 
+The JSOC stages data before you can download it,
+so a JSOC query is a three stage process, first you query the JSOC for records,
+a table of these records is returned. Then you can request these records to be
+staged for download and then you can download them. Fido combines the stages into 2, ``search()``
+and ``fetch()``.
+
 Setup
 -----
 
@@ -23,10 +29,7 @@ SunPy's FIDO module is in ``sunpy.net``.  It can be imported as follows:
 
     >>> from sunpy.net import Fido, attrs as a
 
-This creates your client object. The JSOC stages data before you can download it,
-so a JSOC query is a three stage process, first you query the JSOC for records,
-a table of these records is returned. Then you can request these records to be
-staged for download and then you can download them.
+This creates your client object.
 The JSOC client handles the particulars of how the data from
 the data provider is downloaded to your computer.
 
@@ -76,6 +79,7 @@ as default. If you need to pass a Time in some other time scale, such as TAI,
 pass an Astropy Time object, like:
 
 	>>> from astropy.time import Time as T
+ss
 	``a.jsoc.Time(T('2014-01-01T00:00:00', scale='tai'), T('2014-01-01T01:00:00', scale='tai'))``
 
 The second argument:
@@ -174,14 +178,23 @@ by the given series.
 
 To get files for more than 1 segment at the same time, chain ``a.jsoc.Segment()`` using ``AND`` operator.
 
-	>>> res = Fido.search(jsoc.attrs.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-						   jsoc.attrs.Series('hmi.sharp_720s'),
-						   jsoc.attrs.Segment('continuum') & jsoc.attrs.Segment('magnetogram'))
+	>>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+						  a.jsoc.Series('hmi.sharp_720s'),
+						  a.jsoc.Segment('continuum') & a.jsoc.Segment('magnetogram'))
 
 
 Using Sample
 ^^^^^^^^^^^^
+In case you need to query for data, at some interval of time, say every 10 min, you can pass it
+using ``a.jsoc.Sample()``. In other words, if you need to query for `hmi.v_45s` series data
+between January 1st from 00:00 to 01:00, 2014, every 10 minutes, you can do:
 
+	>>> import astropy.units as u
+	>>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+						  a.jsoc.Series('hmi.v_45s'), a.jsoc.Sample(10*u.min))
+
+Note that the argument passed in ``a.jsoc.Sample()`` must be an astropy quanitity, convertible
+into seconds.
 
 Constructing complex queries
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -207,3 +220,18 @@ setting conditions that the returned records must satisfy.
 
 It should be noted that ``AND`` operator is supported by some of the attributes only. The attributes which
 support "&" are ``PrimeKey()``, ``Segment()``. Using "&" with any other attributes will throw an error.
+
+Downloading data
+----------------
+
+To download the files located by ``Fido.search()``, you can download them by ``Fido.fetch()``:
+
+	>>> downloaded_files = Fido.fetch(res)
+
+Using JSOCClient for complex usage
+----------------------------------
+
+Fido interface uses JSOCClient in its backend, which combines the last 2 stages the JSOC process into
+one. You can directly use the JSOC Client to make queries, instead of the FIDO Client. This will allow you
+to separate the 3 stages of the JSOC process, and perform it individually, hence allowing a greater
+control over the whole process.
