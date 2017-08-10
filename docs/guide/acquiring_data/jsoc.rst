@@ -29,7 +29,6 @@ SunPy's FIDO module is in ``sunpy.net``.  It can be imported as follows:
 
     >>> from sunpy.net import Fido, attrs as a
 
-This creates your client object.
 The JSOC client handles the particulars of how the data from
 the data provider is downloaded to your computer.
 
@@ -79,7 +78,7 @@ as default. If you need to pass a Time in some other time scale, such as TAI,
 pass an Astropy Time object, like:
 
 	>>> from astropy.time import Time as T
-ss
+
 	``a.jsoc.Time(T('2014-01-01T00:00:00', scale='tai'), T('2014-01-01T01:00:00', scale='tai'))``
 
 The second argument:
@@ -235,3 +234,62 @@ Fido interface uses JSOCClient in its backend, which combines the last 2 stages 
 one. You can directly use the JSOC Client to make queries, instead of the FIDO Client. This will allow you
 to separate the 3 stages of the JSOC process, and perform it individually, hence allowing a greater
 control over the whole process.
+
+Setup
+^^^^^
+
+SunPy's JSOC module is in ``sunpy.net``.  It can be imported as follows:
+
+    >>> from sunpy.net import jsoc
+    >>> client = jsoc.JSOCClient()
+
+This creates your client object.
+
+Making a query
+^^^^^^^^^^^^^^
+
+Querying JSOC using the JSOCCLient is completely similar to what we were doing with Fido.
+
+	>>> from sunpy.net import attrs as a
+	>>> res = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.v_45s'))
+
+Apart from the function name, everything is same. You need to pass the same values in the ``JSOCClient.search()``
+as you did in ``Fido.search()``. Complex queries can be built in a similar way, and all other things are same.
+
+Staging the request
+^^^^^^^^^^^^^^^^^^^
+
+JSOC is a 3-stage process, and after getting the query results, we need to stage a request for the data to be
+downloaded. Only then, can we download them. The download request can be staged like this:
+
+	>>> requests = client.request_data(res)
+	>>> print(requests)
+
+	<ExportRequest id="JSOC_20170713_1461", status=0>
+
+The function ``request_data()`` stages the request. It returns a ``drms.ExportRequest`` object, which has many
+attributes. The most important ones are ``ExportRequest id`` and ``status``. Only when the status is 0, we can
+move to the third step, i.e. downloading the data.
+
+If you are making more than 1 query at a time, it will return a list of ExportRequest objects. Hence, access the
+list elements accordingly. You can get the id and status of the request (if it is not a list) by:
+
+	>>> requests.id
+	>>> requests.status
+
+You can also check the status of a request made by:
+
+	>>> status = client.check_request(requests)
+
+You can pass a list of ExportRequest objects, and a list of status' will be returned.
+
+Downloading data
+^^^^^^^^^^^^^^^^
+
+Once the status code is 0 you can download the data using the `get_request` method:
+
+    >>> res = client.get_request(requests)
+
+This returns a Results instance which can be used to watch the progress of the download.
+
+    >>> res.wait(progress=True)   # doctest: +SKIP
