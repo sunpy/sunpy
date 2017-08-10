@@ -1,8 +1,8 @@
 .. _reference:
 
-=============
-API Reference
-=============
+==============
+Code Reference
+==============
 
 .. toctree::
    :maxdepth: 2
@@ -13,7 +13,7 @@ API Reference
    data
    database
    image
-   instr/index
+   instr
    io
    lightcurve
    map

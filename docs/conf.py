@@ -35,6 +35,8 @@ ON_TRAVIS = os.environ.get('TRAVIS') == 'true'
 if ON_RTD:
     os.environ['SUNPY_CONFIGDIR'] = '/home/docs/'
     os.environ['HOME'] = '/home/docs/'
+    os.environ['LANG'] = 'C'
+    os.environ['LC_ALL'] = 'C'
 
 try:
     import astropy_helpers
@@ -197,32 +199,40 @@ github_issues_url = 'https://github.com/sunpy/sunpy/issues/'
 
 # -- Options for the Sphinx gallery -------------------------------------------
 
-try:
-    import sphinx_gallery
-    extensions += ["sphinx_gallery.gen_gallery"]
-
-    sphinx_gallery_conf = {
-        'backreferences_dir':
-        'generated{}modules'.format(os.sep),  # path to store the module using example template
-        'filename_pattern':
-        '^((?!skip_).)*$',  # execute all examples except those that start with "skip_"
-        'examples_dirs': os.path.join('..', 'examples'),  # path to the examples scripts
-        'gallery_dirs': os.path.join('generated',
-                                     'gallery'),  # path to save gallery generated examples
-        'default_thumb_file': os.path.join('.', 'logo', 'sunpy_icon_128x128.png'),
-        'reference_url': {
-            'sunpy': None,
-            'astropy': 'http://docs.astropy.org/en/stable/',
-            'matplotlib': 'http://matplotlib.org/',
-            'numpy': 'http://docs.scipy.org/doc/numpy/',
-        },
-        'abort_on_example_error': True
-    }
-
-except ImportError:
-
+if ON_RTD and os.environ.get('READTHEDOCS_PROJECT').lower() != 'sunpy':
     def setup(app):
-        app.warn('The sphinx_gallery extension is not installed, so the '
+        app.warn('The gallery build takes too long on RTD, so the '
                  'gallery will not be built.  You will probably see '
                  'additional warnings about undefined references due '
                  'to this.')
+
+else:
+    try:
+        import sphinx_gallery
+        extensions += ["sphinx_gallery.gen_gallery"]
+
+        sphinx_gallery_conf = {
+            'backreferences_dir':
+            'generated{}modules'.format(os.sep),  # path to store the module using example template
+            'filename_pattern':
+            '^((?!skip_).)*$',  # execute all examples except those that start with "skip_"
+            'examples_dirs': os.path.join('..', 'examples'),  # path to the examples scripts
+            'gallery_dirs': os.path.join('generated',
+                                        'gallery'),  # path to save gallery generated examples
+            'default_thumb_file': os.path.join('.', 'logo', 'sunpy_icon_128x128.png'),
+            'reference_url': {
+                'sunpy': None,
+                'astropy': 'http://docs.astropy.org/en/stable/',
+                'matplotlib': 'http://matplotlib.org/',
+                'numpy': 'http://docs.scipy.org/doc/numpy/',
+            },
+            'abort_on_example_error': True
+        }
+
+    except ImportError:
+
+        def setup(app):
+            app.warn('The sphinx_gallery extension is not installed, so the '
+                    'gallery will not be built.  You will probably see '
+                    'additional warnings about undefined references due '
+                    'to this.')

@@ -4,10 +4,10 @@ mapcubes.
 """
 
 import numpy as np
+
 import astropy.units as u
 
-# SunPy imports
-from sunpy.physics.differential_rotation import rot_hpc
+from sunpy.physics.differential_rotation import solar_rotate_coordinate
 from sunpy.image.coalignment import apply_shifts
 
 __author__ = 'J. Ireland'
@@ -17,23 +17,25 @@ __all__ = ['calculate_solar_rotate_shift', 'mapcube_solar_derotate']
 
 def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
     """
-    Calculate the shift that must be applied to each layer
-    of a mapcube in order to compensate for solar rotation.  The center
-    of the map is used to calculate the position of each mapcube layer.
-    Shifts are calculated relative to a specified layer in the mapcube.
-    When using this functionality, it is a good idea to check that the
-    shifts that were applied to were reasonable and expected.  One way of
-    checking this is to animate the original mapcube, animate the derotated
-    mapcube, and compare the differences you see to the calculated shifts.
+    Calculate the shift that must be applied to each map contained in a mapcube
+    in order to compensate for solar rotation.
 
-    An example use is as follows.  If you select data from the SDO cutout
-    service, it is common to not use the solar tracking implemented by this
-    service.  This is because (at time of writing) the solar tracking
-    implemented by that service moves the image by single pixels at a time.
-    This is not optimal for many use cases, as it introduces artificial jumps
-    in the data.  So with solar tracking not chosen, the selected area is
-    like a window through which you can see the Sun rotating underneath.
+    The center of the map is used to calculate the position of each mapcube
+    layer. Shifts are calculated relative to a specified layer in the mapcube.
+    When using this functionality, it is a good idea to check that the shifts
+    that were applied to were reasonable and expected. One way of checking this
+    is to animate the original mapcube, animate the derotated mapcube, and
+    compare the differences you see to the calculated shifts. An example use is
+    as follows. If you select data from the SDO cutout service, it is common to
+    not use the solar tracking implemented by this service. This is because (at
+    time of writing) the solar tracking implemented by that service moves the
+    image by single pixels at a time. This is not optimal for many use cases,
+    as it introduces artificial jumps in the data. So with solar tracking not
+    chosen, the selected area is like a window through which you can see the
+    Sun rotating underneath.
 
+    Parameters
+    ----------
     mc : `sunpy.map.MapCube`
         The input mapcube.
     layer_index : int
@@ -41,36 +43,38 @@ def calculate_solar_rotate_shift(mc, layer_index=0, **kwargs):
         this layer.
     ``**kwargs``
         These keywords are passed to the function
-        `sunpy.physics.differential_rotation.rot_hpc`.
-
+        `sunpy.physics.differential_rotation.solar_rotate_coordinate`.
     Returns
     -------
     x, y : `~astropy.units.Quantity`, ~astropy.units.Quantity`
         The shifts relative to the index layer that can be applied
         to the input mapcube in order to compensate for solar rotation.
-        The shifts are given in helioprojective co-ordinates.
-
+        The shifts are given in arcseconds as understood in helioprojective
+        coordinates systems.
     """
     # Size of the data
     nt = len(mc.maps)
 
     # Storage for the shifts in arcseconds
-    xshift_arcseconds = np.zeros((nt)) * u.arcsec
+    xshift_arcseconds = np.zeros(nt) * u.arcsec
     yshift_arcseconds = np.zeros_like(xshift_arcseconds)
+
+    # Layer that
+    rotate_to_this_layer = mc.maps[layer_index]
 
     # Calculate the rotations and the shifts
     for i, m in enumerate(mc):
         # Calculate the rotation of the center of the map 'm' at its
         # observation time to the observation time of the reference layer
         # indicated by "layer_index".
-        newx, newy = rot_hpc(m.center.Tx,
-                             m.center.Ty,
-                             m.date,
-                             mc.maps[layer_index].date, **kwargs)
+        new_coordinate = solar_rotate_coordinate(m.center,
+                                                 rotate_to_this_layer.date,
+                                                 new_observer_location=rotate_to_this_layer.observer_coordinate,
+                                                 **kwargs)
 
         # Calculate the shift in arcseconds
-        xshift_arcseconds[i] = newx - mc.maps[layer_index].center.Tx
-        yshift_arcseconds[i] = newy - mc.maps[layer_index].center.Ty
+        xshift_arcseconds[i] = new_coordinate.Tx - rotate_to_this_layer.center.Tx
+        yshift_arcseconds[i] = new_coordinate.Ty - rotate_to_this_layer.center.Ty
 
     return {"x": xshift_arcseconds, "y": yshift_arcseconds}
 
@@ -91,15 +95,12 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
     mc : `sunpy.map.MapCube`
         A mapcube of shape (ny, nx, nt), where nt is the number of layers in
         the mapcube.
-
     layer_index : int
         Solar derotation shifts of all maps in the mapcube are assumed
         to be relative to the layer in the mapcube indexed by layer_index.
-
     clip : bool
         If True, then clip off x, y edges in the datacube that are potentially
         affected by edges effects.
-
     ``**kwargs``
         These keywords are passed to the function
         `sunpy.physics.solar_rotation.calculate_solar_rotate_shift`.
@@ -111,6 +112,7 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
 
     Examples
     --------
+
     >>> from sunpy.physics.solar_rotation import mapcube_solar_derotate
     >>> import sunpy.data.sample
     >>> map1 = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
@@ -125,7 +127,7 @@ def mapcube_solar_derotate(mc, layer_index=0, clip=True, shift=None, **kwargs):
     nt = len(mc.maps)
 
     # Storage for the pixel shifts and the shifts in arcseconds
-    xshift_keep = np.zeros((nt)) * u.pix
+    xshift_keep = np.zeros(nt) * u.pix
     yshift_keep = np.zeros_like(xshift_keep)
 
     # If no shifts are passed in, calculate them.  Otherwise,

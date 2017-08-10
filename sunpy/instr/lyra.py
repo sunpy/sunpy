@@ -12,32 +12,50 @@ from astropy.io import fits
 import pandas
 
 from sunpy.time import parse_time
-from sunpy import config
 from sunpy.util.net import check_download_file
 from sunpy.util.config import get_and_create_download_dir
-from sunpy import lightcurve
+from sunpy.util.decorators import deprecated
 
 from sunpy.extern.six.moves import urllib
 
 LYTAF_REMOTE_PATH = "http://proba2.oma.be/lyra/data/lytaf/"
 
 
-def remove_lytaf_events_from_lightcurve(lc, artifacts=None,
+__all__ = ['remove_lytaf_events_from_lightcurve',
+           'remove_lytaf_events_from_timeseries',
+           'get_lytaf_events',
+           'get_lytaf_event_types',
+           'download_lytaf_database',
+           'split_series_using_lytaf']
+
+
+@deprecated('v0.8',
+            message="""``remove_lytaf_events_from_lightcurve`` is deprecated as of SunPy v0.8 due to
+            the deprecation of ``LightCurve`` in favour of ``TimeSeries``. You should use
+            ``remove_lytaf_events_from_timeseries`` instead.""",
+            name="remove_lytaf_events_from_lightcurve",
+            alternative="remove_lytaf_events_from_timeseries"
+            )
+def remove_lytaf_events_from_lightcurve(lc, **kwargs):
+    return remove_lytaf_events_from_timeseries(lc, **kwargs)
+
+
+def remove_lytaf_events_from_timeseries(ts, artifacts=None,
                                         return_artifacts=False,
                                         lytaf_path=None,
                                         force_use_local_lytaf=False):
     """
-    Removes periods of LYRA artifacts defined in LYTAF from a LYRALightCurve.
+    Removes periods of LYRA artifacts defined in LYTAF from a TimeSeries.
 
     Parameters
     ----------
-    lc : `sunpy.lightcurve.LightCurve`
+    ts : `sunpy.timeseries.TimeSeries`
 
-     artifacts : list of strings
-        Contain the artifact types to be removed.  For list of artifact types
-        see reference [1].  For example, if user wants to remove only large
-        angle rotations, listed at reference [1] as LAR, let artifacts=["LAR"].
-        Default=[], i.e. no artifacts will be removed.
+    artifacts : list of strings
+        Sets the artifact types to be removed.  For a list of artifact types
+        see reference [1].  For example, if a user wants to remove only large
+        angle rotations, listed at reference [1] as LAR, set artifacts=["LAR"].
+        The default is that no artifacts will be removed.
 
     return_artifacts : `bool`
         Set to True to return a `numpy.recarray` containing the start time, end
@@ -55,25 +73,29 @@ def remove_lytaf_events_from_lightcurve(lc, artifacts=None,
 
     Returns
     -------
-    lc_new : `sunpy.lightcurve.LightCurve`
-        copy of input LYRALightCurve with periods corresponding to artifacts
+    ts_new : `sunpy.timeseries.TimeSeries`
+        copy of input TimeSeries with periods corresponding to artifacts
         removed.
 
     artifact_status : `dict`
         List of 4 variables containing information on what artifacts were
         found, removed, etc. from the time series.
-        artifact_status["lytaf"] = artifacts found : `numpy.recarray`
-            The full LYRA annotation file for the time series time range
-            output by get_lytaf_events().
-        artifact_status["removed"] = artifacts removed : `numpy.recarray`
-            Artifacts which were found and removed from from time series.
-        artifact_status["not_removed"] = artifacts found but not removed :
-              `numpy.recarray`
-            Artifacts which were found but not removed as they were not
-            included when user defined artifacts kwarg.
-        artifact_status["not_found"] = artifacts not found : `list` of strings
-            Artifacts listed to be removed by user when defining
-            artifacts kwarg which were not found in time series time range.
+        | **artifact_status["lytaf"]** : `numpy.recarray`
+        |     The full LYRA annotation file for the time series time range
+        |     output by get_lytaf_events().
+        | **artifact_status["removed"]** : `numpy.recarray`
+        |     Artifacts which were found and removed from from time series.
+        | **artifact_status["not_removed"]** : `numpy.recarray`
+        |     Artifacts which were found but not removed as they were not
+        |     included when user defined artifacts kwarg.
+        | **artifact_status["not_found"]** : `list` of strings
+        |     Artifacts listed to be removed by user when defining
+        |     artifacts kwarg which were not found in time series time range.
+
+    Notes
+    -----
+    This function is intended to take TimeSeries objects as input, but the
+    deprecated LightCurve is still supported here.
 
     References
     ----------
@@ -81,39 +103,38 @@ def remove_lytaf_events_from_lightcurve(lc, artifacts=None,
 
     Examples
     --------
-    Remove LARs (Large Angle Rotations) from LYRALightCurve for 4-Dec-2014:
+    Remove LARs (Large Angle Rotations) from TimeSeries for 4-Dec-2014:
 
-        >>> import sunpy.lightcurve as lc
-        >>> lc = lc.LYRALightCurve.create("2014-12-02")
-        >>> lc_nolars = lc.remove_artifacts_from_lyralightcurve(lc, artifacts=["LAR"])
+        >>> import sunpy.timeseries as ts
+        >>> import sunpy.data.sample
+        >>> lyrats = ts.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_TIMESERIES, source='LYRA')
+        >>> ts_nolars = ts.remove_artifacts_from_timeseries(lyrats, artifacts=["LAR"])
 
     To also retrieve information on the artifacts during that day:
-        >>> lc_nolars, artifact_status = lc.remove_artifacts_from_lyralightcurve(
-                lc, artifacts=["LAR"], return_artifacts=True)
+        >>> ts_nolars, artifact_status = ts.remove_artifacts_from_timeseries(
+                lyrats, artifacts=["LAR"], return_artifacts=True)
 
     """
     # Check that input argument is of correct type
     if not lytaf_path:
         lytaf_path = get_and_create_download_dir()
-    if not isinstance(lc, lightcurve.LightCurve):
-        raise TypeError("lc must be a LightCurve object.")
     # Remove artifacts from time series
-    data_columns = lc.data.columns
+    data_columns = ts.data.columns
     time, channels, artifact_status = _remove_lytaf_events(
-        lc.data.index,
-        channels=[np.asanyarray(lc.data[col]) for col in data_columns],
+        ts.data.index,
+        channels=[np.asanyarray(ts.data[col]) for col in data_columns],
         artifacts=artifacts, return_artifacts=True, lytaf_path=lytaf_path,
         force_use_local_lytaf=force_use_local_lytaf)
-    # Create new copy copy of lightcurve and replace data with
+    # Create new copy copy of timeseries and replace data with
     # artifact-free time series.
-    lc_new = copy.deepcopy(lc)
-    lc_new.data = pandas.DataFrame(
+    ts_new = copy.deepcopy(ts)
+    ts_new.data = pandas.DataFrame(
         index=time, data=dict((col, channels[i])
                               for i, col in enumerate(data_columns)))
     if return_artifacts:
-        return lc_new, artifact_status
+        return ts_new, artifact_status
     else:
-        return lc_new
+        return ts_new
 
 
 def _remove_lytaf_events(time, channels=None, artifacts=None,
