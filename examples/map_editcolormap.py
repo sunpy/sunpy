@@ -5,10 +5,12 @@ Editing Map Colormaps and Normalization
 
 A simple example to show how to edit the display of a map
 """
+from __future__ import print_function, division
 
 import matplotlib.cm as cm
-import matplotlib.colors as colors
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
 
@@ -26,10 +28,11 @@ aiamap.plot_settings['cmap'] = cm.get_cmap('Greys_r')
 aiamap.plot_settings['norm'] = colors.LogNorm(100, aiamap.max())
 
 ###############################################################################
-# You can find more colormaps in matplotlib (http://matplotlib.org/examples/color/colormaps_reference.html)
-# or look at the sunpy colormaps in `sunpy.cm`
-# For more normalizations check out `matplotlib.colors.Normalize`
-# or astropy provides additional norms in `astropy.visualization`
+# You can find more colormaps in matplotlib
+# (http://matplotlib.org/examples/color/colormaps_reference.html) or look at
+# the sunpy colormaps in `sunpy.cm` For more normalizations check out
+# `matplotlib.colors.Normalize` or astropy provides additional norms in
+# `astropy.visualization`
 
 aiamap.plot()
 plt.colorbar()
