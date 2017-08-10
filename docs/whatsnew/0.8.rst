@@ -34,7 +34,7 @@ By the numbers:
 Supported versions of Python
 ============================
 
-SunPy is tested against Python 2.7+, 3.5 and 3.6.  SunPy no longer supports Python 3.4
+SunPy is tested against Python 2.7, 3.5 and 3.6.  SunPy no longer supports Python 3.4.
 
 
 .. _whatsnew-0.8-fido:
