@@ -105,6 +105,20 @@ def test_post_wave_series():
 
 
 @pytest.mark.online
+def test_post_fail(recwarn):
+    res = client.search(
+        attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
+        attrs.Series('none'), attrs.Notify('jsoc@cadair.com'))
+    client.request_data(res)
+    w = recwarn.pop(Warning)
+    assert issubclass(w.category, Warning)
+    assert "Query 0 retuned status 4 with error Series none is not a valid series accessible from hmidb2." == str(
+        w.message)
+    assert w.filename
+    assert w.lineno
+
+
+@pytest.mark.online
 def test_wait_get():
     responses = client.search(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
@@ -290,3 +304,16 @@ def test_check_request():
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     req = client.request_data(responses)
     assert client.check_request(req) == 0
+
+@pytest.mark.online
+def test_results_filenames():
+    responses = client.search(
+        attrs.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
+        attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
+    path = tempfile.mkdtemp()
+    aa = client.fetch(responses, path=path)
+    assert isinstance(aa, Results)
+    files = aa.wait(progress=False)
+    assert len(files) == len(responses)
+    for hmiurl in aa.map_:
+        assert os.path.isfile(hmiurl)
