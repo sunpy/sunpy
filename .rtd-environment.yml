@@ -2,7 +2,7 @@ name: sunpy-rtd
 channels:
     - conda-forge
 dependencies:
-- astropy >=2.0
+- astropy>=2.0
 - beautifulsoup4
 - cairo
 - contextlib2
