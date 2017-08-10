@@ -226,7 +226,8 @@ else:
                 'matplotlib': 'http://matplotlib.org/',
                 'numpy': 'http://docs.scipy.org/doc/numpy/',
             },
-            'abort_on_example_error': True
+            'abort_on_example_error': True,
+            'plot_gallery': False
         }
 
     except ImportError:
