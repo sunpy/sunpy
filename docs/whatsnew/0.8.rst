@@ -158,9 +158,12 @@ TimeSeries objects can have more than one column::
     >>> goes.columns
     ['xrsa', 'xrsb']
 
-and have convenient plotting methods::
+and have convenient plotting methods.
 
-    >>> goes.peek()
+.. plot::
+    :include-source:
+
+    goes.peek()
 
 TimeSeries objects have a 'meta' property that stores the metadata of the timeseries::
 
@@ -202,13 +205,16 @@ with the identification and interpretation of the data::
 Differential rotation of maps
 =============================
 
-Maps can now be transformed using solar differential rates::
+Maps can now be transformed using solar differential rates.
 
-    >>> import sunpy.map
-    >>> import sunpy.data.sample
-    >>> from sunpy.physics.differential_rotation import diffrot_map
-    >>> aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    >>> dr_map = diffrot_map(aia_map, -4 * u.day)
+.. plot::
+    :include-source:
+
+    import sunpy.map
+    import sunpy.data.sample
+    from sunpy.physics.differential_rotation import diffrot_map
+    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    dr_map = diffrot_map(aia_map, -4 * u.day)
 
 
 
