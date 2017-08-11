@@ -112,8 +112,8 @@ def test_post_fail(recwarn):
     client.request_data(res)
     w = recwarn.pop(Warning)
     assert issubclass(w.category, Warning)
-    assert "Query 0 retuned status 4 with error Series none is not a valid series accessible from hmidb2." == str(
-        w.message)
+    assert "Query 0 retuned status 4 with error Series none is not a valid"\
+           "series accessible from hmidb2." == str(w.message)
     assert w.filename
     assert w.lineno
 
@@ -150,13 +150,12 @@ def test_invalid_query():
 @pytest.mark.online          # PASSED
 def test_lookup_records_errors():
     d1 = {'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
-          'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35)
-         }
+          'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35)}
     with pytest.raises(ValueError):
         client._lookup_records(d1)
 
     d1.update({'series': 'aia.lev1_euv_12s'})
-    d1.update({'keys' : 123})
+    d1.update({'keys': 123})
     with pytest.raises(TypeError):
         client._lookup_records(d1)
 
@@ -169,7 +168,7 @@ def test_lookup_records_errors():
     d1.update({'segment': 123})
     with pytest.raises(TypeError):
         client._lookup_records(d1)
-    
+
     d1.update({'segment': 'foo'})
     with pytest.raises(ValueError):
         client._lookup_records(d1)
@@ -189,7 +188,7 @@ def test_make_recordset_errors():
     d1.update({
         'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
         'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35),
-        'primekey': {'T_REC' : '2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI'}
+        'primekey': {'T_REC': '2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI'}
         })
 
     with pytest.raises(ValueError):
@@ -198,12 +197,13 @@ def test_make_recordset_errors():
     d1.update({
         'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
         'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35),
-        'wavelength' : 604*u.AA,
-        'primekey': {'WAVELNTH' : '604'}
+        'wavelength': 604*u.AA,
+        'primekey': {'WAVELNTH': '604'}
         })
 
     with pytest.raises(ValueError):
         client._make_recordset(**d1)
+
 
 @pytest.mark.online
 def test_make_recordset():
@@ -214,7 +214,7 @@ def test_make_recordset():
     exp = 'aia.lev1_euv_12s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]'
     assert client._make_recordset(**d1) == exp
 
-    d1.update({'wavelength' : 604*u.AA})
+    d1.update({'wavelength': 604*u.AA})
     exp = 'aia.lev1_euv_12s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI][604]'
     assert client._make_recordset(**d1) == exp
 
@@ -244,11 +244,13 @@ def test_make_recordset():
           'segment': ['continuum', 'magnetogram'],
           'primekey': {'HARPNUM': '4864'}
           }
-    exp = 'hmi.sharp_720s[4864][2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]{continuum,magnetogram}'
+    exp = 'hmi.sharp_720s[4864][2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]'\
+          '{continuum,magnetogram}'
     assert client._make_recordset(**d1) == exp
 
     d1.update({'sample': 300.0})
-    exp = 'hmi.sharp_720s[][2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI@300.0s]{continuum,magnetogram}'
+    exp = 'hmi.sharp_720s[][2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI@300.0s]'\
+          '{continuum,magnetogram}'
     assert client._make_recordset(**d1) == exp
 
 
@@ -260,6 +262,7 @@ def test_search_metadata():
     assert metadata.shape == (11, 176)
     for i in metadata.index.values:
         assert (i.startswith('aia.lev1_euv_12s') and i.endswith('[304]'))
+
 
 @pytest.mark.online
 def test_request_data_error():
@@ -304,6 +307,7 @@ def test_check_request():
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     req = client.request_data(responses)
     assert client.check_request(req) == 0
+
 
 @pytest.mark.online
 def test_results_filenames():
