@@ -76,11 +76,11 @@ Coordinates can be defined very simply::
     >>> a = SkyCoord(200*u.arcsec, 300*u.arcsec, frame=frames.Helioprojective)
     >>> a
     <SkyCoord (Helioprojective: obstime=None, rsun=695508.0 km, observer=earth): (Tx, Ty) in arcsec
-    ( 200.,  300.)>
+        ( 200.,  300.)>
     >>> b = SkyCoord(-20*u.degree, -56*u.degree, frame=frames.HeliographicStonyhurst)
     >>> b
     <SkyCoord (HeliographicStonyhurst: obstime=None): (lon, lat, radius) in (deg, deg, km)
-    (-20., -56.,  695508.)>
+        (-20., -56.,  695508.)>
 
 
 The coordinate "a" is in the helioprojective coordinate system, and the coordinate "b"
@@ -93,16 +93,16 @@ Maps can also be used to define coordinate frames::
     >>> aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     >>> c = SkyCoord(-45*u.arcsec, 600*u.arcsec, frame=aia_map.coordinate_frame)
     >>> c
-    <SkyCoord (Helioprojective: obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=None): (lon, lat, radius) in (deg, deg, m)
-    ( 0.,  0.048591,   1.51846026e+11)>): (Tx, Ty) in arcsec
-    (-45.,  600.)>
+    <SkyCoord (Helioprojective: obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
+        ( 0.,  0.048591,   1.51846026e+11)>): (Tx, Ty) in arcsec
+        (-45.,  600.)>
 
 The coordinate "c" is now defined with respect to the coordinate frame derived from the map.
 The observer attribute::
 
     >>> c.observer
-    <HeliographicStonyhurst Coordinate (obstime=None): (lon, lat, radius) in (deg, deg, m)
-    ( 0.,  0.048591,   1.51846026e+11)>
+    <HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
+        ( 0.,  0.048591,   1.51846026e+11)>
 
 defines the location from which the coordinate was observed.
 
@@ -114,7 +114,7 @@ Transformation between solar physics coordinate frames is simple::
 
     >>> c.transform_to(frames.HeliographicStonyhurst)
     <SkyCoord (HeliographicStonyhurst: obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, km)
-    (-3.51257477,  39.27459767,  696000.00000088)>
+        (-3.51257477,  39.27459767,  696000.00000088)>
 
 Transformation to astropy coordinate systems
 --------------------------------------------
@@ -124,7 +124,7 @@ For example, to convert to the International Celestial Reference System (ICRS)::
 
     >>> c.transform_to('icrs')
     <SkyCoord (ICRS): (ra, dec, distance) in (deg, deg, km)
-    ( 224.85859731,  10.52568476,  998439.00599877)>
+        ( 224.85859731,  10.52568476,  998439.00599877)>
 
 Specification of observer at any major solar system body
 --------------------------------------------------------
@@ -134,8 +134,8 @@ Major solar system bodies can be used to specify observer locations in SkyCoord:
     >>> d = SkyCoord(-45*u.arcsec, 600*u.arcsec, observer='Mars', obstime='2011-06-07 06:33:02', frame=frames.Helioprojective)
     >>> d
     <SkyCoord (Helioprojective: obstime=2011-06-07 06:33:02, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02): (lon, lat, radius) in (deg, deg, AU)
-    ( 135.78519602,  4.47598707,  1.43448427)>): (Tx, Ty) in arcsec
-    (-45.,  600.)>
+        ( 135.78519602,  4.47598707,  1.43448427)>): (Tx, Ty) in arcsec
+        (-45.,  600.)>
 
 
 .. _whatsnew-0.8-timeseries:
@@ -237,6 +237,10 @@ sunpy.physics.transforms
 
 The modules in ``sunpy.physics.transforms`` have been moved to `~sunpy.physics`.
 
+sunpy.net
+---------
+``HelioviewerClient`` has been removed from the ``sunpy.net`` namespace. It
+should now be imported with ``from sunpy.net.helioviewer import HelioviewerClient``.
 
 Full change log
 ===============
