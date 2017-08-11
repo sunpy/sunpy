@@ -109,7 +109,7 @@ extras_require = {'database': ["sqlalchemy"],
                   'image': ["scikit-image"],
                   'jpeg2000': ["glymur"],
                   'net': ["suds-jurko", "beautifulsoup4", "requests"],
-                  'tests': ["pytest", "pytest-cov", "pytest-mock", "mock", "hypothesis"]}
+                  'tests': ["pytest", "pytest-cov", "pytest-mock", "pytest-rerunfailures", "mock", "hypothesis"]}
 extras_require['all'] = extras_require['database'] + extras_require['image'] + \
                         extras_require['net'] + extras_require['tests']
 
@@ -117,11 +117,11 @@ setup(name=PACKAGENAME,
       version=VERSION,
       description=DESCRIPTION,
       scripts=scripts,
-      install_requires=['numpy>1.7.1',
-                        'astropy>=1.3',
+      install_requires=['numpy>=1.11',
+                        'astropy>=2.0',
                         'scipy',
                         'pandas>=0.12.0',
-                        'matplotlib>=1.1'],
+                        'matplotlib>=1.3'],
       extras_require=extras_require,
       provides=[PACKAGENAME],
       author=AUTHOR,
