@@ -83,7 +83,6 @@ def main(modulename='', coverage=False, cov_report=False,
     if verbose:
         all_args.append('-v')
 
-
     if parallel != 0:
         try:
             import xdist
