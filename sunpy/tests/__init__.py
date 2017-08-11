@@ -79,6 +79,8 @@ def main(modulename='', coverage=False, cov_report=False,
     if verbose:
         all_args.append('-v')
 
+    all_args.append('-p no:warnings -p no:doctest')
+    
     if parallel != 0:
         try:
             import xdist
