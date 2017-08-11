@@ -1,3 +1,5 @@
+## Code of Conduct
+
 The SunPy community is made up of members from around the globe with a diverse set of skills, personalities, and experiences.
 It is through these differences that our community experiences success and continued growth.
 We expect everyone in our community to follow these guidelines when interacting with others both inside and outside of our community.
@@ -41,6 +43,6 @@ We will take action when members of our community violate this code such as cont
 
 Parts of this code of conduct have been adapted from the [astropy](http://www.astropy.org/about.html) and the [Python Software Fundation](https://www.python.org/psf/codeofconduct/) codes of conduct.
 
-![CC-by](https://i.creativecommons.org/l/by/4.0/88x31.png) 
+---
 
 The SunPy Community Code of Conduct is licensed under a Creative Commons Attribution 4.0 International License. We encourage other communities related to ours to use or adapt this code as they see fit.
