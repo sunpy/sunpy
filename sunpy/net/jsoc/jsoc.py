@@ -30,7 +30,7 @@ __all__ = ['JSOCClient', 'JSOCResponse']
 
 
 PKEY_LIST_TIME = ['T_START', 'T_REC', 'T_OBS', 'MidTime', 'OBS_DATE',
-             'obsdate', 'DATE_OBS','starttime', 'stoptime', 'UTC_StartTime']
+                  'obsdate', 'DATE_OBS', 'starttime', 'stoptime', 'UTC_StartTime']
 
 
 class JSOCResponse(object):
@@ -149,15 +149,15 @@ class JSOCClient(object):
     it is used only if you need to make an export request. For example,
 
     >>> client = jsoc.JSOCClient()
-    >>> response = client.query(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...                         a.jsoc.Series('hmi.m_45s'))
+    >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+    ...                          a.jsoc.Series('hmi.m_45s'))
 
     The above is a successful query operation, and will return query responses as before.
 
     But, this response object cannot be used to make an export request and will throw an
     error if done so:
 
-    >>> res = client.get(response)   # doctest: +SKIP
+    >>> res = client.fetch(response)   # doctest: +SKIP
 
     ValueError: Email address is invalid or not registered
 
@@ -171,8 +171,8 @@ class JSOCClient(object):
     >>> from sunpy.net import attrs as a
     >>> client = jsoc.JSOCClient()
     >>> response = client.search(a.jsoc.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
-    ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Segment('image'),
-    ...                         a.jsoc.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))
+    ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Segment('image'),
+    ...                          a.jsoc.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))
 
     the response object holds the records that your query will return:
 
@@ -228,6 +228,7 @@ class JSOCClient(object):
     """
 
     def search(self, *query, **kwargs):
+
         """
         Build a JSOC query and submit it to JSOC for processing.
 
@@ -246,10 +247,10 @@ class JSOCClient(object):
         >>> from sunpy.net import jsoc
         >>> from sunpy.net import attrs as a
         >>> client = jsoc.JSOCClient()
-        >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+        >>> response = client.search(a.jsoc.Time('2010-01-01T00:00:00', '2010-01-01T01:00:00'),
         ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA),
         ...                          a.jsoc.Segment('image'))
-        
+
         Returns
         -------
         response : JSOCResults object
@@ -263,9 +264,9 @@ class JSOCClient(object):
         >>> from sunpy.net import jsoc
         >>> from sunpy.net import attrs as a
         >>> client = jsoc.JSOCClient()
-        >>> response = client.query(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-        ...                         a.jsoc.Series('hmi.v_45s'),
-        ...                         a.jsoc.Keys('T_REC, DATAMEAN, OBS_VR'))
+        >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+        ...                          a.jsoc.Series('hmi.v_45s'),
+        ...                          a.jsoc.Keys('T_REC, DATAMEAN, OBS_VR'))
 
 
         Returns
@@ -297,9 +298,9 @@ class JSOCClient(object):
         >>> from sunpy.net import jsoc
         >>> from sunpy.net import attrs as a
         >>> client = jsoc.JSOCClient()
-        >>> response = client.query(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T02:00:00'),
-        ...                         a.jsoc.Series('aia.lev1_euv_12s'),
-        ...                         a.jsoc.PrimeKey('WAVELNTH','171'))
+        >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T02:00:00'),
+        ...                          a.jsoc.Series('aia.lev1_euv_12s'),
+        ...                          a.jsoc.PrimeKey('WAVELNTH','171'))
 
 
 
@@ -349,28 +350,29 @@ class JSOCClient(object):
         >>> from sunpy.net import jsoc
         >>> from sunpy.net import attrs as a
         >>> client = jsoc.JSOCClient()
-        >>> metadata = client.search_metadata(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:02:00'),
+        >>> metadata = client.search_metadata(
+                                    a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:02:00'),
         ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))
-        
+
         Returns
         -------
         metadata : Pandas DataFrame
             A collection of metadata of all the files.
 
 
-                                                          T_REC                     T_OBS               ...         T_REC_epoch
-        aia.lev1_euv_12s[2014-01-01T00:00:01Z][304]  2014-01-01T00:00:01Z   2014-01-01T00:00:08.57Z     ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:00:13Z][304]  2014-01-01T00:00:13Z   2014-01-01T00:00:20.58Z     ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:00:25Z][304]  2014-01-01T00:00:25Z   2014-01-01T00:00:32.57Z     ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:00:37Z][304]  2014-01-01T00:00:37Z   2014-01-01T00:00:44.58Z     ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:00:49Z][304]  2014-01-01T00:00:49Z   2014-01-01T00:00:56.57Z     ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:01:01Z][304]  2014-01-01T00:01:01Z   2014-01-01T00:01:08.59Z     ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:01:13Z][304]  2014-01-01T00:01:13Z   2014-01-01T00:01:20.59Z     ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:01:25Z][304]  2014-01-01T00:01:25Z   2014-01-01T00:01:32.57Z     ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:01:37Z][304]  2014-01-01T00:01:37Z   2014-01-01T00:01:44.58Z     ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:01:49Z][304]  2014-01-01T00:01:49Z   2014-01-01T00:01:56.58Z     ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:02:01Z][304]  2014-01-01T00:02:01Z   2014-01-01T00:02:08.58Z     ...     1993.01.01_00:00:04_TAI
- 
+                                                          T_REC                  ...         T_REC_epoch
+        aia.lev1_euv_12s[2014-01-01T00:00:01Z][304]  2014-01-01T00:00:01Z        ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:00:13Z][304]  2014-01-01T00:00:13Z        ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:00:25Z][304]  2014-01-01T00:00:25Z        ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:00:37Z][304]  2014-01-01T00:00:37Z        ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:00:49Z][304]  2014-01-01T00:00:49Z        ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:01:01Z][304]  2014-01-01T00:01:01Z        ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:01:13Z][304]  2014-01-01T00:01:13Z        ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:01:25Z][304]  2014-01-01T00:01:25Z        ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:01:37Z][304]  2014-01-01T00:01:37Z        ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:01:49Z][304]  2014-01-01T00:01:49Z        ...     1993.01.01_00:00:04_TAI
+        aia.lev1_euv_12s[2014-01-01T00:02:01Z][304]  2014-01-01T00:02:01Z        ...     1993.01.01_00:00:04_TAI
+
 
         [11 rows x 176 columns]
 
@@ -473,7 +475,7 @@ class JSOCClient(object):
         return allstatus
 
     def fetch(self, jsoc_response, path=None, overwrite=False, progress=True,
-            max_conn=5, downloader=None, sleep=10):
+              max_conn=5, downloader=None, sleep=10):
         """
         Make the request for the data in jsoc_response and wait for it to be
         staged and then download the data.
@@ -541,10 +543,9 @@ class JSOCClient(object):
         See `~sunpy.net.jsoc.jsoc.JSOCClient.fetch`
         """
         return self.fetch(jsoc_response, path=path, overwrite=overwrite, progress=progress,
-            max_conn=max_conn, downloader=downloader, sleep=sleep)
+                          max_conn=max_conn, downloader=downloader, sleep=sleep)
 
-
-    def get_request(self, responses, path=None, overwrite=False, progress=True,
+    def get_request(self, requestIDs, path=None, overwrite=False, progress=True,
                     max_conn=5, downloader=None, results=None):
         """
         Query JSOC to see if request_id is ready for download.
@@ -648,7 +649,6 @@ class JSOCClient(object):
                 segment = str(segment)[1:-1].replace(' ', '').replace("'", '')
             segment = '{{{segment}}}'.format(segment=segment)
 
-
         # Extract and format sample
         sample = kwargs.get('sample', '')
         if sample:
@@ -734,7 +734,7 @@ class JSOCClient(object):
         else:
             keywords = iargs.get('keys', keywords_default)
 
-        if not 'series' in iargs:
+        if 'series' not in iargs:
             error_message = "Series must be specified for a JSOC Query"
             raise ValueError(error_message)
 
@@ -779,7 +779,10 @@ class JSOCClient(object):
             iargs['end_time'] = iargs['end_time'].tai.datetime
 
         ds = self._make_recordset(**iargs)
-        key = str(keywords)[1:-1].replace(' ', '').replace("'", '')
+        if isinstance(keywords, list):
+            key = str(keywords)[1:-1].replace(' ', '').replace("'", '')
+        else:
+            key = keywords
 
         r = c.query(ds, key=key, rec_index=isMeta)
 
