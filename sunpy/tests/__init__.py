@@ -78,8 +78,9 @@ def main(modulename='', coverage=False, cov_report=False,
 
     if verbose:
         all_args.append('-v')
-
-    all_args.append('-p no:warnings -p no:doctest')
+    
+    # Hardcoded until we update this module	
+    all_args.append('-p no:warnings')
     
     if parallel != 0:
         try:
