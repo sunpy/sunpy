@@ -71,6 +71,10 @@ def main(modulename='', coverage=False, cov_report=False,
         all_args.append('-k online')
     if not figure:
         all_args.append('-m not figure')
+
+    # Hardcoded until we update this module
+    all_args.append('-p no:warnings')
+
     all_args.append(path)
 
     if args:
@@ -78,10 +82,8 @@ def main(modulename='', coverage=False, cov_report=False,
 
     if verbose:
         all_args.append('-v')
-    
-    # Hardcoded until we update this module	
-    all_args.append('-p no:warnings')
-    
+
+
     if parallel != 0:
         try:
             import xdist
