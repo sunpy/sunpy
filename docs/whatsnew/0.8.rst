@@ -25,10 +25,11 @@ In addition to these major changes, SunPy 0.8 includes a large number of
 smaller improvements and bug fixes, which are described in the :ref:`changelog`.
 By the numbers:
 
-
-* ??? issues have been closed since v0.7
-* ??? pull requests have been merged since v0.7
-* ??? distinct people have contributed code
+* 1390 commits have been added since 0.7
+* 163 issues have been closed since 0.7
+* 200 pull requests have been merged since 0.7
+* 34 distinct people have contributed code
+* 16 new contributors
 
 .. _whatsnew-0.8-python:
 
