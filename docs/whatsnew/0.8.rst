@@ -124,7 +124,7 @@ For example, to convert to the International Celestial Reference System (ICRS)::
 
     >>> c.transform_to('icrs')
     <SkyCoord (ICRS): (ra, dec, distance) in (deg, deg, km)
-    ( 240.91724178, -6.72107631,  369983.29218687)>
+    ( 224.85859731,  10.52568476,  998439.00599877)>
 
 Specification of observer at any major solar system body
 --------------------------------------------------------
