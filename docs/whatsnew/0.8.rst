@@ -61,7 +61,6 @@ such as the VSO and non-VSO sources::
     ------------------- ------------------- ------ ---------- -------- --------------
     2005-01-01 00:12:10 2005-01-01 00:12:22   SOHO        EIT FULLDISK 195.0 .. 195.0
 
-
 .. _whatsnew-0.8-coordinates:
 
 New coordinate package
