@@ -167,10 +167,21 @@ man_pages = [('index', project.lower(), project + u' Documentation', [author], 1
 
 # -- Swap to Napoleon ---------------------------------------------------------
 extensions.append('sphinx.ext.napoleon')
+
 # Disable having a separate return type row
 napoleon_use_rtype = False
 # Disable google style docstrings
 napoleon_google_docstring = False
+
+try:
+    import recommonmark
+except ImportError:
+    raise ImportError("The documentation build needs recommonmark to build")
+
+source_parsers = {
+   '.md': 'recommonmark.parser.CommonMarkParser',
+}
+source_suffix = ['.rst', '.md']
 
 # -- Options for the edit_on_github extension ----------------------------------------
 extensions.remove('astropy_helpers.extern.numpydoc')
