@@ -171,7 +171,7 @@ def solar_rotate_coordinate(coordinate,
 
 
 @u.quantity_input(dt=u.s)
-def _warp_sun_coordinates(xy, smap, dt):
+def _warp_sun_coordinates(xy, smap, dt, **diffrot_kwargs):
     """
     Function that returns a new list of coordinates for each input coord.
     This is an inverse function needed by the scikit-image `transform.warp`
@@ -208,7 +208,7 @@ def _warp_sun_coordinates(xy, smap, dt):
         hpc_coords = smap.pixel_to_world(xx * u.pix, yy * u.pix)
 
         # then diff-rotate the hpc coordinates to the desired time
-        rotated_coord = solar_rotate_coordinate(hpc_coords, rotated_time)
+        rotated_coord = solar_rotate_coordinate(hpc_coords, rotated_time, **diffrot_kwargs)
 
         # To find the values that are behind the sun we need to convert them
         # to HeliographicStonyhurst
@@ -235,7 +235,7 @@ def _warp_sun_coordinates(xy, smap, dt):
 
 
 @u.quantity_input(dt='time')
-def diffrot_map(smap, time=None, dt=None, pad=False):
+def diffrot_map(smap, time=None, dt=None, pad=False, **diffrot_kwargs):
     """
     Function to apply solar differential rotation to a sunpy map.
 
@@ -283,7 +283,7 @@ def diffrot_map(smap, time=None, dt=None, pad=False):
             deltax = deltay = 0
             for corner in product(*product([0 * u.pix], smap.dimensions)):
                 corner_world = smap.pixel_to_world(*corner)
-                corner_world_rotated = solar_rotate_coordinate(corner_world, new_time)
+                corner_world_rotated = solar_rotate_coordinate(corner_world, new_time, **diffrot_kwargs)
                 corner_px_rotated = smap.world_to_pixel(corner_world_rotated)
                 dx = np.abs(corner_px_rotated.x - corner[0])
                 dy = np.abs(corner_px_rotated.y - corner[1])
@@ -301,9 +301,11 @@ def diffrot_map(smap, time=None, dt=None, pad=False):
             smap_meta['crpix2'] += deltay
             smap = sunpy.map.Map(smap_data, smap_meta)
 
+    warp_args = {'smap': smap, 'dt': dt}
+    warp_args.update(diffrot_kwargs)
     # Apply solar differential rotation as a scikit-image warp
     out = transform.warp(to_norm(smap_data), inverse_map=_warp_sun_coordinates,
-                         map_args={"smap": smap, "dt": dt})
+                         map_args=warp_args)
 
     # Recover the original intensity range.
     out = un_norm(out, smap.data)
@@ -315,7 +317,7 @@ def diffrot_map(smap, time=None, dt=None, pad=False):
     out_meta['date-obs'] = "{:%Y-%m-%dT%H:%M:%S}".format(new_time)
 
     if submap:
-        crval_rotated = solar_rotate_coordinate(smap.reference_coordinate, new_time)
+        crval_rotated = solar_rotate_coordinate(smap.reference_coordinate, new_time, **diffrot_kwargs)
         out_meta['crval1'] = crval_rotated.Tx.value
         out_meta['crval2'] = crval_rotated.Ty.value
 
