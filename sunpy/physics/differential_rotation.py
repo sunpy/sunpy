@@ -1,5 +1,5 @@
 from __future__ import division
-from datetime import timedelta
+import datetime
 from copy import deepcopy
 import warnings
 from itertools import product
@@ -193,7 +193,7 @@ def _warp_sun_coordinates(xy, smap, dt):
     """
     # NOTE: The time is being subtracted - this is because this function
     # calculates the inverse of the transformation.
-    rotated_time = smap.date - timedelta(seconds=dt.to(u.s).value)
+    rotated_time = smap.date - datetime.timedelta(seconds=dt.to(u.s).value)
 
     # Calculate the hpc coords
     x = np.arange(0, smap.dimensions.x.value)
@@ -234,8 +234,8 @@ def _warp_sun_coordinates(xy, smap, dt):
     return xy2
 
 
-@u.quantity_input(dt=u.s)
-def diffrot_map(smap, dt, pad=False):
+@u.quantity_input(dt='time')
+def diffrot_map(smap, time=None, dt=None, pad=False):
     """
     Function to apply solar differential rotation to a sunpy map.
 
@@ -243,7 +243,9 @@ def diffrot_map(smap, dt, pad=False):
     ----------
     smap : `~sunpy.map`
         Original map that we want to transform.
-    dt : `~astropy.units.Quantity`
+    time : sunpy-compatible time
+        date/time at which the input co-ordinate will be rotated to.
+    dt : `~astropy.units.Quantity` or `datetime`
         Desired interval between the input map and returned map.
     pad : `bool`
         Whether to create a padded map for submaps to don't loose data
@@ -254,7 +256,15 @@ def diffrot_map(smap, dt, pad=False):
         A map with the result of applying solar differential rotation to the
         input map.
     """
-    new_time = smap.date + timedelta(seconds=dt.to(u.s).value)
+    if time and dt:
+        raise ValueError('Only a time or an interval is accepted')
+    elif not (time or dt):
+        raise ValueError('Either a time or an interval (`dt=`) needs to be provided')
+    elif time:
+        new_time = parse_time(time)
+        dt = (new_time - smap.date).total_seconds() * u.s
+    else:
+        new_time = smap.date + datetime.timedelta(seconds=dt.to(u.s).value)
 
     # Check for masked maps
     if smap.mask is not None:
