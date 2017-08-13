@@ -516,3 +516,46 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
     result_map = sunpy.map.Map(image, dict_header)
 
     return result_map
+
+
+def _build_energy_bands(label, bands):
+    """
+    Parameters
+    ----------
+    label: `str`
+    bands: `list` of `str`
+    Returns
+    -------
+    bands_with_units: `list` of `str`
+        Each `str` item is an energy band and its unit
+    Example
+    -------
+    >>> build_energy_band_ranges('Energy bands (keV)', ['3 - 6', '6 - 12', '12 - 25'])
+    ['3 - 6 keV', '6 - 12 keV', '12 - 25 keV']
+    """
+
+    unit_pattern = re.compile(r'^.+\((?P<UNIT>\w+)\)$')
+
+    matched = unit_pattern.match(label)
+
+    if matched is None:
+        raise ValueError("Unable to find energy unit in '{0}' "
+                         "using REGEX '{1}'".format(label, unit_pattern.pattern))
+
+    unit = matched.group('UNIT').strip()
+
+    return ['{energy_band} {unit}'.format(energy_band=band, unit=unit) for band in bands]
+
+
+def _check_one_day(time_range):
+    """
+    Currently only support TimeRanges of a maximum of one day.
+    Issue a visible warning if `time_range` is greater than this
+    Parameters
+    ----------
+    time_range : `sunpy.time.TimeRange`
+    """
+    if time_range.days > 1 * u.day:
+        warnings.warn('Currently only support providing data from one whole day. Only data for {0} '
+                      'will be returned'.format(time_range.start.strftime("%Y-%m-%d")), UserWarning,
+                      stacklevel=2)
