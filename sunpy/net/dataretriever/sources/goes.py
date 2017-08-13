@@ -11,7 +11,7 @@ import datetime
 from bs4 import BeautifulSoup
 from six.moves.urllib.request import urlopen
 
-from sunpy.time import TimeRange
+from sunpy.time import TimeRange, parse_time
 from sunpy.util.scraper import Scraper
 
 from ..client import GenericClient
@@ -200,8 +200,8 @@ class GOESClient(GenericClient):
             return result
 
 
-        physobs = kwargs['physobs']
-        start_dates = {'INTENSITY': datetime.datetime(2010, 6, 4), 'IRRADIANCE':datetime.datetime(1980, 1, 4),
+        physobs = kwargs['physobs'].upper()
+        start_dates = {'INTENSITY': datetime.datetime(2010, 6, 4), 'IRRADIANCE': datetime.datetime(1980, 1, 4),
                        'PARTICLE_FLUX': datetime.datetime(2015, 5, 30)}
         START_DATE = start_dates[physobs]
         if timerange.end < START_DATE:
