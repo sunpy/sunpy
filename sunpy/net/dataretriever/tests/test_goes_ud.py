@@ -31,7 +31,7 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
 
 @given(goes_time())
 def test_can_handle_query(time):
-    ans1 = goes.GOESClient._can_handle_query(time, Instrument('goes'))
+    ans1 = goes.GOESClient._can_handle_query(time, Instrument('XRS'))
     assert ans1 is True
     ans2 = goes.GOESClient._can_handle_query(time)
     assert ans2 is False
@@ -41,18 +41,18 @@ def test_can_handle_query(time):
 
 def test_no_satellite():
     with pytest.raises(ValueError):
-        LCClient.search(Time("1950/01/01", "1950/02/02"), Instrument('goes'))
+        LCClient.search(Time("1950/01/01", "1950/02/02"), Instrument('XRS'))
 
 
 def test_fixed_satellite():
     ans1 = LCClient.search(a.Time("2017/01/01", "2017/01/02"),
-                           a.Instrument('goes'))
+                           a.Instrument('XRS'))
 
     for resp in ans1:
         assert "go15" in resp.url
 
     ans1 = LCClient.search(a.Time("2017/01/01", "2017/01/02"),
-                           a.Instrument('goes'),
+                           a.Instrument('XRS'),
                            a.goes.SatelliteNumber(13))
 
     for resp in ans1:
@@ -68,9 +68,9 @@ def test_query(time):
     tr = TimeRange(time.start, time.end)
     if parse_time("1983-05-01") in tr:
         with pytest.raises(ValueError):
-            LCClient.search(time, Instrument('goes'))
+            LCClient.search(time, Instrument('XRS'))
     else:
-        qr1 = LCClient.search(time, Instrument('goes'))
+        qr1 = LCClient.search(time, Instrument('XRS'))
         assert isinstance(qr1, QueryResponse)
         assert qr1.time_range().start == time.start
         assert qr1.time_range().end == time.end
@@ -78,8 +78,8 @@ def test_query(time):
 
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument", [
-    (Time('1983/06/17', '1983/06/18'), Instrument('goes')),
-    (Time('2012/10/4', '2012/10/6'), Instrument('goes')),
+    (Time('1983/06/17', '1983/06/18'), Instrument('XRS')),
+    (Time('2012/10/4', '2012/10/6'), Instrument('XRS')),
 ])
 def test_get(time, instrument):
     qr1 = LCClient.search(time, instrument)
@@ -90,7 +90,7 @@ def test_get(time, instrument):
 
 @pytest.mark.online
 def test_new_logic():
-    qr = LCClient.search(Time('2012/10/4', '2012/10/6'), Instrument('goes'))
+    qr = LCClient.search(Time('2012/10/4', '2012/10/6'), Instrument('XRS'))
     res = LCClient.fetch(qr)
     download_list = res.wait(progress=False)
     assert len(download_list) == len(qr)
@@ -102,7 +102,7 @@ def test_new_logic():
     [(a.Time("2012/10/4", "2012/10/6"), a.Instrument("goes")),
      (a.Time('2013/10/5', '2013/10/7'), a.Instrument("goes"))])
 def test_fido(time, instrument):
-    qr = Fido.search(a.Time('2012/10/4', '2012/10/6'), Instrument('goes'))
+    qr = Fido.search(a.Time('2012/10/4', '2012/10/6'), Instrument('XRS'))
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
