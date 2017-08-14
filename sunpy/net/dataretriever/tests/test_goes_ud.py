@@ -11,7 +11,7 @@ from sunpy.net import attrs as a
 from hypothesis import given, example
 from sunpy.net.tests.strategies import goes_time
 
-LCClient = goes.GOESClient()
+LCClient = goes.XRSClient()
 
 
 @pytest.mark.parametrize(
@@ -31,11 +31,11 @@ def test_get_url_for_time_range(timerange, url_start, url_end):
 
 @given(goes_time())
 def test_can_handle_query(time):
-    ans1 = goes.GOESClient._can_handle_query(time, Instrument('XRS'))
+    ans1 = goes.XRSClient._can_handle_query(time, Instrument('XRS'))
     assert ans1 is True
-    ans2 = goes.GOESClient._can_handle_query(time)
+    ans2 = goes.XRSClient._can_handle_query(time)
     assert ans2 is False
-    ans3 = goes.GOESClient._can_handle_query(time, Instrument('eve'))
+    ans3 = goes.XRSClient._can_handle_query(time, Instrument('eve'))
     assert ans3 is False
 
 
