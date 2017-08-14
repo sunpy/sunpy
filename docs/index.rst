@@ -8,6 +8,7 @@ free and open-source solar data analysis environment for Python.
   :maxdepth: 2
   :titlesonly:
 
+  whatsnew/index
   guide/index
   code_ref/index
   generated/gallery/index
