@@ -173,16 +173,6 @@ napoleon_use_rtype = False
 # Disable google style docstrings
 napoleon_google_docstring = False
 
-try:
-    import recommonmark
-except ImportError:
-    raise ImportError("The documentation build needs recommonmark to build")
-
-source_parsers = {
-   '.md': 'recommonmark.parser.CommonMarkParser',
-}
-source_suffix = ['.rst', '.md']
-
 # -- Options for the edit_on_github extension ----------------------------------------
 extensions.remove('astropy_helpers.extern.numpydoc')
 extensions.append('sphinx.ext.napoleon')
