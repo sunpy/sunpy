@@ -184,6 +184,9 @@ and have convenient plotting methods.
 .. plot::
     :include-source:
 
+    import sunpy.timeseries
+    import sunpy.data.sample
+    goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)
     goes.peek()
 
 TimeSeries objects have a 'meta' property that stores the metadata of the timeseries::
@@ -231,6 +234,7 @@ Maps can now be transformed using solar differential rates.
 .. plot::
     :include-source:
 
+    import astropy.units as u
     import sunpy.map
     import sunpy.data.sample
     from sunpy.physics.differential_rotation import diffrot_map
