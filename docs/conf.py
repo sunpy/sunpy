@@ -180,7 +180,7 @@ extensions.append('sphinx.ext.napoleon')
 napoleon_use_rtype = False
 # Disable google style docstrings
 napoleon_google_docstring = False
-extensions += ['astropy_helpers.sphinx.ext.edit_on_github', 'sphinx.ext.doctest']
+extensions += ['astropy_helpers.sphinx.ext.edit_on_github', 'sphinx.ext.doctest', 'sphinx.ext.githubpages']
 
 # Don't import the module as "version" or it will override the
 # "version" configuration parameter
@@ -226,7 +226,8 @@ else:
                 'matplotlib': 'http://matplotlib.org/',
                 'numpy': 'http://docs.scipy.org/doc/numpy/',
             },
-            'abort_on_example_error': True
+            'abort_on_example_error': True,
+            'plot_gallery': True
         }
 
     except ImportError:
