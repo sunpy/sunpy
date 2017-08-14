@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-# Author:   Michael Malocha <mjm159@humboldt.edu>
-# Last Edit:  September 22nd, 2013
-#
-# This module was developed with funding from the GSOC 2013 summer of code
-#
-
 """
 This module is meant to parse the HELIO registry and return WSDL endpoints to
 facilitate the interfacing between further modules and HELIO.
@@ -18,8 +12,7 @@ from contextlib import closing
 from sunpy.net.helio import registry_links as RL
 from sunpy.extern.six.moves import urllib
 
-__author__ = 'Michael Malocha'
-__version__ = 'September 22nd, 2013'
+__all__ = ['webservice_parser', 'endpoint_parser', 'wsdl_retriever']
 
 # Lifespan in seconds before a link times-out
 LINK_TIMEOUT = 3
@@ -61,7 +54,7 @@ def webservice_parser(service='HEC'):
         return None
     root = EL.fromstring(xml)
     links = []
-    
+
     for interface in root.iter('interface'):
         service_type = interface.attrib
         key = list(service_type.keys())
