@@ -62,6 +62,27 @@ such as the VSO and non-VSO sources::
     ------------------- ------------------- ------ ---------- -------- --------------
     2005-01-01 00:12:10 2005-01-01 00:12:22   SOHO        EIT FULLDISK 195.0 .. 195.0
 
+    >>> attrs_time = a.Time('2016/10/22 00:00', '2016/10/25 23:59')
+    >>> result = Fido.search(attrs_time, a.Instrument('lyra'))
+    >>> result
+    <sunpy.net.fido_factory.UnifiedResponse object at 0x11dfd8048>
+    Results from 1 Provider:
+
+    4 Results from the LYRAClient:
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str6     str4       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2016-10-22 00:00:00 2016-10-25 23:59:00 Proba2       lyra        nan
+    2016-10-22 00:00:00 2016-10-25 23:59:00 Proba2       lyra        nan
+    2016-10-22 00:00:00 2016-10-25 23:59:00 Proba2       lyra        nan
+    2016-10-22 00:00:00 2016-10-25 23:59:00 Proba2       lyra        nan
+
+Data is downloaded using::
+
+    >>> files = Fido.fetch(result)
+
+which returns a set of filepaths to the data.
+
 .. _whatsnew-0.8-coordinates:
 
 New coordinate package
