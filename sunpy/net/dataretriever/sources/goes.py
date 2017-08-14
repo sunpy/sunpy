@@ -62,7 +62,7 @@ class GOESClient(GenericClient):
         ----------
         timerange: sunpy.time.TimeRange
             time range for which data is to be downloaded.
-        satellite_number : int
+        satellitenumber : int
             GOES satellite number (default = 15)
         data_type : string
             Data type to return for the particular GOES satellite. Supported
@@ -84,8 +84,9 @@ class GOESClient(GenericClient):
                 regex += "{date:%y%m%d}.fits"
             else:
                 regex += "{date:%Y%m%d}.fits"
+            satellitenumber = kwargs.get('satellitenumber', self._get_goes_sat_num(date))
             url = base_url + regex.format(
-                date=date, sat=self._get_goes_sat_num(date))
+                date=date, sat=satellitenumber)
             result.append(url)
         return result
 
@@ -112,7 +113,7 @@ class GOESClient(GenericClient):
         boolean
             answer as to whether client can service the query
         """
-        chkattr = ['Time', 'Instrument']
+        chkattr = ['Time', 'Instrument', 'SatelliteNumber']
         chklist = [x.__class__.__name__ in chkattr for x in query]
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'goes':
