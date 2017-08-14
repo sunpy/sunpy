@@ -227,7 +227,7 @@ else:
                 'numpy': 'http://docs.scipy.org/doc/numpy/',
             },
             'abort_on_example_error': True,
-            'plot_gallery': False
+            'plot_gallery': True
         }
 
     except ImportError:
