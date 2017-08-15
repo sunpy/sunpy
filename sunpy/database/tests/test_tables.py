@@ -46,11 +46,12 @@ def fido_search_result():
     # No JSOC query
     return Fido.search(
         net_attrs.Time("2012/1/1", "2012/1/2"),
-        net_attrs.Instrument('lyra')|net_attrs.Instrument('eve')|
-        net_attrs.Instrument('goes')|net_attrs.Instrument('noaa-indices')|
-        net_attrs.Instrument('noaa-predict')|net_attrs.Instrument('norh')|
-        net_attrs.Instrument('rhessi')|
-        (net_attrs.Instrument('EVE')&net_attrs.Level(0))
+        net_attrs.Instrument('lyra') | net_attrs.Instrument('eve') |
+        net_attrs.Instrument('goes') | net_attrs.Instrument('noaa-indices') |
+        net_attrs.Instrument('noaa-predict') |
+        (net_attrs.Instrument('norh') & net_attrs.Wavelength(17*u.GHz)) |
+        net_attrs.Instrument('rhessi') |
+        (net_attrs.Instrument('EVE') & net_attrs.Level(0))
         )
 
 
