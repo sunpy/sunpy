@@ -256,7 +256,7 @@ def diffrot_map(smap, time=None, dt=None, pad=False, **diffrot_kwargs):
         A map with the result of applying solar differential rotation to the
         input map.
     """
-    if time and dt:
+    if (time is not None) and (dt is not None):
         raise ValueError('Only a time or an interval is accepted')
     elif not (time or dt):
         raise ValueError('Either a time or an interval (`dt=`) needs to be provided')
