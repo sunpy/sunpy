@@ -418,10 +418,6 @@ def test_entries_from_file_withoutwaveunit():
 
 def test_entries_from_file_time_string_parse_format():
 
-    with pytest.raises(ValueError):
-        # Error should be  raised because of the date format in GOES_DATA
-        entries = list(entries_from_file(GOES_DATA))
-
     entries = list(entries_from_file(GOES_DATA,
                                      time_string_parse_format='%d/%m/%Y'))
 
