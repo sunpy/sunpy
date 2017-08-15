@@ -1,0 +1,274 @@
+.. doctest-skip-all
+
+.. _whatsnew-0.8:
+
+**************************
+What's New in SunPy 0.8?
+**************************
+
+Overview
+========
+
+SunPy 0.8 is a major release that adds significant new functionality since
+the 0.7.x series of releases.
+
+On this page, you can read about some of the big changes in this release:
+
+* :ref:`whatsnew-0.8-python`
+* :ref:`whatsnew-0.8-fido`
+* :ref:`whatsnew-0.8-coordinates`
+* :ref:`whatsnew-0.8-timeseries`
+* :ref:`whatsnew-0.8-differential_rotation`
+* :ref:`whatsnew-0.8-renamed-removed`
+
+In addition to these major changes, SunPy 0.8 includes a large number of
+smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+By the numbers:
+
+* 1390 commits have been added since 0.7
+* 163 issues have been closed since 0.7
+* 200 pull requests have been merged since 0.7
+* 34 distinct people have contributed code
+* 16 new contributors
+
+.. _whatsnew-0.8-python:
+
+Supported versions of Python
+============================
+
+SunPy is tested against Python 2.7, 3.5 and 3.6.  SunPy no longer supports Python 3.4.
+
+
+.. _whatsnew-0.8-fido:
+
+New data downloading interface
+==============================
+
+The new package Fido is the primary interface to search for and download
+observational data. It unifies data search and download from multiple sources
+such as the VSO and non-VSO sources::
+
+    >>> from sunpy.net import Fido, attrs as a
+    >>> attrs_time = a.Time('2005/01/01 00:10', '2005/01/01 00:15')
+    >>> result = Fido.search(attrs_time, a.Instrument('eit'))
+    >>> result
+    <sunpy.net.fido_factory.UnifiedResponse object at 0x7f581489bb70>
+    Results from 1 Provider:
+
+    1 Results from the VSOClient:
+        Start Time [1]       End Time [1]    Source Instrument   Type   Wavelength [2]
+                                                                          Angstrom
+        str19               str19         str4     str3      str8      float64
+    ------------------- ------------------- ------ ---------- -------- --------------
+    2005-01-01 00:12:10 2005-01-01 00:12:22   SOHO        EIT FULLDISK 195.0 .. 195.0
+
+    >>> attrs_time = a.Time('2016/10/22 00:00', '2016/10/25 23:59')
+    >>> result = Fido.search(attrs_time, a.Instrument('lyra'))
+    >>> result
+    <sunpy.net.fido_factory.UnifiedResponse object at 0x11dfd8048>
+    Results from 1 Provider:
+
+    4 Results from the LYRAClient:
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str6     str4       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2016-10-22 00:00:00 2016-10-25 23:59:00 Proba2       lyra        nan
+    2016-10-22 00:00:00 2016-10-25 23:59:00 Proba2       lyra        nan
+    2016-10-22 00:00:00 2016-10-25 23:59:00 Proba2       lyra        nan
+    2016-10-22 00:00:00 2016-10-25 23:59:00 Proba2       lyra        nan
+
+Data is downloaded using::
+
+    >>> files = Fido.fetch(result)
+
+which returns a set of filepaths to the data.
+
+.. _whatsnew-0.8-coordinates:
+
+New coordinate package
+======================
+
+Spatial locations are now represented by SunPy coordinates.
+Coordinates can be defined very simply::
+
+    >>> from astropy import units as u
+    >>> from astropy.coordinates import SkyCoord
+    >>> from sunpy.coordinates import frames
+    >>> a = SkyCoord(200*u.arcsec, 300*u.arcsec, frame=frames.Helioprojective)
+    >>> a
+    <SkyCoord (Helioprojective: obstime=None, rsun=695508.0 km, observer=earth): (Tx, Ty) in arcsec
+        ( 200.,  300.)>
+    >>> b = SkyCoord(-20*u.degree, -56*u.degree, frame=frames.HeliographicStonyhurst)
+    >>> b
+    <SkyCoord (HeliographicStonyhurst: obstime=None): (lon, lat, radius) in (deg, deg, km)
+        (-20., -56.,  695508.)>
+
+
+The coordinate "a" is in the helioprojective coordinate system, and the coordinate "b"
+is in the heliographic Stonyhurst system.
+
+Maps can also be used to define coordinate frames::
+
+    >>> import sunpy.map
+    >>> import sunpy.data.sample
+    >>> aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    >>> c = SkyCoord(-45*u.arcsec, 600*u.arcsec, frame=aia_map.coordinate_frame)
+    >>> c
+    <SkyCoord (Helioprojective: obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
+        ( 0.,  0.048591,   1.51846026e+11)>): (Tx, Ty) in arcsec
+        (-45.,  600.)>
+
+The coordinate "c" is now defined with respect to the coordinate frame derived from the map.
+The observer attribute::
+
+    >>> c.observer
+    <HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
+        ( 0.,  0.048591,   1.51846026e+11)>
+
+defines the location from which the coordinate was observed.
+
+
+Transformation between solar physics coordinate systems
+-------------------------------------------------------
+
+Transformation between solar physics coordinate frames is simple::
+
+    >>> c.transform_to(frames.HeliographicStonyhurst)
+    <SkyCoord (HeliographicStonyhurst: obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, km)
+        (-3.51257477,  39.27459767,  696000.00000088)>
+
+Transformation to astropy coordinate systems
+--------------------------------------------
+
+Solar physics coordinates can also be transformed into astrophysical coordinates.
+For example, to convert to the International Celestial Reference System (ICRS)::
+
+    >>> c.transform_to('icrs')
+    <SkyCoord (ICRS): (ra, dec, distance) in (deg, deg, km)
+        ( 224.85859731,  10.52568476,  998439.00599877)>
+
+Specification of observer at any major solar system body
+--------------------------------------------------------
+
+Major solar system bodies can be used to specify observer locations in SkyCoord::
+
+    >>> d = SkyCoord(-45*u.arcsec, 600*u.arcsec, observer='Mars', obstime='2011-06-07 06:33:02', frame=frames.Helioprojective)
+    >>> d
+    <SkyCoord (Helioprojective: obstime=2011-06-07 06:33:02, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02): (lon, lat, radius) in (deg, deg, AU)
+        ( 135.78519602,  4.47598707,  1.43448427)>): (Tx, Ty) in arcsec
+        (-45.,  600.)>
+
+
+.. _whatsnew-0.8-timeseries:
+
+New timeseries data object
+==========================
+
+The TimeSeries object is used to represent columns of time-ordered scalar values,
+and is source-aware, just like the Map object.  This object supersedes the LightCurve object,
+which is now deprecated in 0.8.
+
+The TimeSeries object can be instantiated by passing in a file::
+
+    >>> import sunpy.timeseries
+    >>> import sunpy.data.sample
+    >>> goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)
+
+TimeSeries objects can have more than one column::
+
+    >>> goes.columns
+    ['xrsa', 'xrsb']
+
+and have convenient plotting methods.
+
+.. plot::
+    :include-source:
+
+    import sunpy.timeseries
+    import sunpy.data.sample
+    goes = sunpy.timeseries.TimeSeries(sunpy.data.sample.GOES_XRS_TIMESERIES)
+    goes.peek()
+
+TimeSeries objects have a 'meta' property that stores the metadata of the timeseries::
+
+    >>> goes.meta
+    |-------------------------------------------------------------------------------------------------|
+    |TimeRange                  | Columns         | Meta                                              |
+    |-------------------------------------------------------------------------------------------------|
+    |2011-06-06 23:59:59.961999 | xrsa            | simple: True                                      |
+    |            to             | xrsb            | bitpix: 8                                         |
+    |2011-06-07 23:59:57.631999 |                 | naxis: 0                                          |
+    |                           |                 | extend: True                                      |
+    |                           |                 | date: 26/06/2012                                  |
+    |                           |                 | numext: 3                                         |
+    |                           |                 | telescop: GOES 15                                 |
+    |                           |                 | instrume: X-ray Detector                          |
+    |                           |                 | object: Sun                                       |
+    |                           |                 | origin: SDAC/GSFC                                 |
+    |                           |                 | ...                                               |
+    |-------------------------------------------------------------------------------------------------|
+
+and the data can be accessed::
+
+    >>> goes.data
+                                        xrsa          xrsb
+    2011-06-06 23:59:59.961999  1.000000e-09  1.887100e-07
+    2011-06-07 00:00:02.008999  1.000000e-09  1.834600e-07
+    2011-06-07 00:00:04.058999  1.000000e-09  1.860900e-07
+    ...
+    2011-06-07 23:59:55.584999  1.000000e-09  1.624800e-07
+    2011-06-07 23:59:57.631999  1.000000e-09  1.598500e-07
+
+Data sources that do not provide FITS files need to have a 'source' keyword to help
+with the identification and interpretation of the data::
+
+    >>> eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='EVE')
+
+.. _whatsnew-0.8-differential_rotation:
+
+Differential rotation of maps
+=============================
+
+Maps can now be transformed using solar differential rates.
+
+.. plot::
+    :include-source:
+
+    import astropy.units as u
+    import sunpy.map
+    import sunpy.data.sample
+    from sunpy.physics.differential_rotation import diffrot_map
+    aia_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
+    dr_map = diffrot_map(aia_map, -4 * u.day)
+
+
+
+.. _whatsnew-0.8-renamed-removed:
+
+Renamed/removed functionality
+=============================
+
+Several sub-packages have been moved or removed, and these are described in the
+following sections.
+
+sunpy.lightcurve
+----------------
+
+The package ``sunpy.lightcurve`` has been deprecated in favor of `~sunpy.timeseries`,
+and will be removed in a future version of SunPy.
+
+sunpy.physics.transforms
+------------------------
+
+The modules in ``sunpy.physics.transforms`` have been moved to `~sunpy.physics`.
+
+sunpy.net
+---------
+``HelioviewerClient`` has been removed from the ``sunpy.net`` namespace. It
+should now be imported with ``from sunpy.net.helioviewer import HelioviewerClient``.
+
+Full change log
+===============
+
+To see a detailed list of all changes in version v0.8, including changes in
+API, please see the :ref:`changelog`.
