@@ -17,3 +17,4 @@ free and open-source solar data analysis environment for Python.
   bugs
   ssw
   changelog
+  coc

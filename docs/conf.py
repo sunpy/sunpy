@@ -161,6 +161,7 @@ man_pages = [('index', project.lower(), project + u' Documentation', [author], 1
 
 # -- Swap to Napoleon ---------------------------------------------------------
 extensions.append('sphinx.ext.napoleon')
+
 # Disable having a separate return type row
 napoleon_use_rtype = False
 # Disable google style docstrings
