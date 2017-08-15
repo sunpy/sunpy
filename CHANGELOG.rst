@@ -88,13 +88,14 @@ New Features
    transformations using an observer specified as a string, ``obstime``
    must be set.
 -  Added VSO query result block level caching in the database module.
-   This prevents redownloading of files which have already been
+   This prevents re-downloading of files which have already been
    downloaded. Especially helpful in case of overlapping queries.
 -  Change the default representation for the Heliographic Carrington
    frame so Longitude follows the convention of going from 0-360
    degrees.
--  All Clients that are able to search and download data now have a uniform API that is `search` and `fetch`.
-   The older functions are still there but are deprecated for 0.8.
+-  All Clients that are able to search and download data now have a
+   uniform API that is `search` and `fetch`. The older functions are
+   still there but are deprecated for 0.8.
 
 Bug fixes
 ---------
