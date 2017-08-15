@@ -82,7 +82,7 @@ def fido_search_result_list():
     fido_sr = []
 
     fido_sr.append(Fido.search(net_attrs.Time("2012/1/1", "2012/1/2"),
-        net_attrs.Instrument('lyra')))
+       net_attrs.Instrument('lyra')))
 
     fido_sr.append(Fido.search(net_attrs.Time("2012/1/1", "2012/1/2"),
         net_attrs.Instrument('goes')))
@@ -94,13 +94,13 @@ def fido_search_result_list():
         net_attrs.Instrument('eve')))
 
     fido_sr.append(Fido.search(net_attrs.Time("2012/1/1", "2012/1/2"),
-        net_attrs.Instrument('noaa-indices')))
+       net_attrs.Instrument('noaa-indices')))
 
     fido_sr.append(Fido.search(net_attrs.Time("2012/1/1", "2012/1/2"),
-        net_attrs.Instrument('noaa-predict')))
+         net_attrs.Instrument('noaa-predict')))
 
     fido_sr.append(Fido.search(net_attrs.Time("2012/1/1", "2012/1/2"),
-        net_attrs.Instrument('norh')))
+        (net_attrs.Instrument('norh') & net_attrs.Wavelength(17*units.GHz))))
 
     fido_sr.append(Fido.search(net_attrs.Time("2012/1/1", "2012/1/2"),
         net_attrs.Instrument('EVE'), net_attrs.Level(0)))
@@ -578,7 +578,7 @@ def test_download_from_qr(database, download_qr, tmpdir):
 @pytest.mark.online
 def test_download_from_fido_search_result(database,
     fido_search_result_list, tmpdir):
-
+    
     file_list = glob.glob(str(tmpdir.join("*")))
 
     for file in file_list:

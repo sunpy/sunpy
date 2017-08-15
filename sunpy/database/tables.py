@@ -474,18 +474,41 @@ class DatabaseEntry(Base):
         """
         # All attributes of DatabaseEntry that are not in QueryResponseBlock
         # are set as None for now.
-        source = str(sr_block.source) if sr_block.source is not None else None
-        provider = str(sr_block.provider) if sr_block.provider is not None else None
-        # physobs is written as phyobs in
-        # sunpy.net.dataretriever.client.QueryResponseBlock
-        physobs = getattr(sr_block, 'phyobs', None)
+        source = getattr(sr_block, 'source', None)
+        provider = getattr(sr_block, 'provider', None)
+        physobs = getattr(sr_block, 'physobs', None)
         if physobs is not None:
             physobs = str(physobs)
-        instrument = str(sr_block.instrument) if sr_block.instrument is not None else None
+        instrument = getattr(sr_block, 'instrument', None)
         time_start = sr_block.time.start
         time_end = sr_block.time.end
-        wavemin = None
-        wavemax = None
+        
+        wavelengths = getattr(sr_block, 'wave', None)
+        wavelength_temp = {}
+        if isinstance(wavelength_temp, tuple):
+            # Tuple of values
+            wavelength_temp['wavemin'] = wavelengths[0]
+            wavelength_temp['wavemax'] = wavelengths[1]
+        else:
+            # Single Value
+            wavelength_temp['wavemin'] = wavelength_temp['wavemax'] = wavelengths
+
+        final_values = {}
+        for key, val in wavelength_temp.items():
+            if isinstance(val, quantity.Quantity):
+                unit = getattr(val, 'unit', None)
+                if unit is None:
+                    if default_waveunit is not None:
+                        unit = Unit(default_waveunit)
+                    else:
+                        raise WaveunitNotFoundError(sr_block)
+                final_values[key] = unit.to(nm, float(val.value), equivalencies.spectral())
+            elif val is None or np.isnan(val):
+                final_values[key] = val
+
+        wavemin = final_values['wavemin']
+        wavemax = final_values['wavemax']
+
         #sr_block.url of a QueryResponseBlock attribute is stored in fileid
         fileid = str(sr_block.url) if sr_block.url is not None else None
         size = None

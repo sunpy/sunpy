@@ -139,9 +139,8 @@ class Downloader(object):
         server = self._get_server(url)
 
         # Create function to compute the filepath to download to if not set
-
-        if path is not None:
-            path = os.path.expanduser(path)
+        #if path is not None:
+        #    path = os.path.expanduser(path)
 
         if path is None:
             path = partial(default_name, get_and_create_download_dir())

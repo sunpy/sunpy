@@ -282,6 +282,8 @@ class GenericClient(object):
                 fname = os.path.join(default_dir, '{file}')
             elif isinstance(path, six.string_types) and '{file}' not in path:
                 fname = os.path.join(path, '{file}')
+            else:
+                fname = path
 
             temp_dict = qres[i]._map.copy()
             temp_dict['file'] = filename
@@ -346,16 +348,14 @@ class GenericClient(object):
         # Create function to compute the filepath to download to if not set
         default_dir = sunpy.config.get("downloads", "download_dir")
 
-        paths = self._get_full_filenames(qres, filenames, path)
-
         res = Results(lambda x: None, 0, lambda map_: self._link(map_))
 
         dobj = Downloader(max_conn=len(urls), max_total=len(urls))
 
         # We cast to list here in list(zip... to force execution of
         # res.require([x]) at the start of the loop.
-        for aurl, ncall in list(zip(urls, map(lambda x: res.require([x]),
-                                              urls))):
+        for aurl, ncall, fname in list(zip(urls, map(lambda x: res.require([x]),
+                                              urls), paths)):
             dobj.download(aurl, fname, ncall, error_callback)
         #    dobj.download(aurl, kwargs.get('path', None), ncall,
         #                    kwargs.get('ErrorBack', None))

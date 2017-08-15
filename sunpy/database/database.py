@@ -449,28 +449,43 @@ class Database(object):
                 entry.download_time = datetime.utcnow()
                 yield entry
 
-    def _download_and_collect_fido_entries(self, search_result, path=None,
-            wait=True, progress=False):
+    def _download_and_collect_fido_entries(self, search_result, **kwargs):
 
-        paths = Fido.fetch(search_result, wait=wait, progress=progress
-            , path=path)
+        client = kwargs.pop('client', None)
+        path = kwargs.pop('path', None)
+        progress = kwargs.pop('progress', False)
+        methods = kwargs.pop('methods', ('URL-FILE_Rice', 'URL-FILE'))
+        overwrite = kwargs.pop('overwrite', False)
+
+        if kwargs:
+            k, v = kwargs.popitem()
+            raise TypeError('unexpected keyword argument {0!r}'.format(k))
 
         entries_list = tables.entries_from_fido_search_result(search_result,
             default_waveunit=self.default_waveunit)
+        entries_list = list(entries_list)
 
-        for (path, sr_entry) in zip(paths, entries_list):
-            
-            # Caching Begins
-            exists=False
-            for existing_entry in self:
-                if existing_entry.path is not None and sr_entry._compare_attributes(existing_entry,
+        remove_list = []
+        delete_entries = []
+        for sr_entry, temp in zip(search_result, entries_list):
+            for database_entry in self:
+                if database_entry.path is not None and sr_entry._compare_attributes(database_entry,
                     ["source", "provider", "physobs", "fileid", "observation_time_start",
                     "observation_time_end", "instrument", "size", "wavemin", "wavemax"]):
-                    exists=True
-                    break
-            if exists:
-                continue
-            # Caching Ends
+                    if not overwrite:
+                        remove_list.append(qr)
+                    else:
+                        delete_entries.append(database_entry)
+
+        for temp in remove_list:
+            search_result = [x for x in search_result if x != temp]
+
+        for temp in delete_entries:
+            self.remove(temp)
+
+        paths = Fido.fetch(search_result, progress=progress, path=path)
+
+        for (path, sr_entry) in zip(paths, entries_list):
 
             try:
                 read_file_header(path)
@@ -900,13 +915,13 @@ class Database(object):
             query_result, client=client, path=path, progress=progress, overwrite=overwrite))
 
     def download_from_fido_search_result(self, search_result,
-            path=None, wait=True, progress=False, ignore_already_added=False):
+            path=None, wait=True, progress=False, ignore_already_added=False, overwrite=False):
         if not search_result:
             return
         self.add_many(
             self._download_and_collect_fido_entries(
-                search_result=search_result, path=path, wait=wait,
-                progress=progress),
+                search_result=search_result, path=path,
+                progress=progress, overwrite=overwrite),
             ignore_already_added=ignore_already_added)
 
     def add_from_vso_query_result(self, query_result,
