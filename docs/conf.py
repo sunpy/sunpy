@@ -123,12 +123,6 @@ try:
     from sunpy_sphinx_theme.conf import *
 
     html_sidebars = {'**': ['docsidebar.html']}
-    html_theme_options = {
-        'navbar_links': [
-            ("Documentation", "index"),
-        ],
-        'logo_url': 'http://sunpy.org'
-    }
 
 except ImportError:
     html_theme = 'default'
