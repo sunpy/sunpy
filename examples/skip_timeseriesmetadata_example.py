@@ -24,7 +24,7 @@ from sunpy.time import TimeRange, parse_time
 ##############################################################################
 # Search for Data
 
-goes_res = Fido.search(a.Time("2010-11-02", "2010-11-07"), a.Instrument('goes'))
+goes_res = Fido.search(a.Time("2010-11-02", "2010-11-07"), a.Instrument('XRS'))
 goes_res
 
 norh_res = Fido.search(a.Time("2010-11-02", "2010-11-07"), a.Instrument('norh'),
