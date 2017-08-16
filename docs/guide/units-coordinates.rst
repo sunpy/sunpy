@@ -4,7 +4,7 @@ Units and Coordinates in SunPy
 ==============================
 
 This section of the guide will talk about representing physical units and
-coordinates in space in SunPy. SunPy makes use of `Astropy <astropy.org>`__ for
+physical coordinates in SunPy. SunPy makes use of :ref:`Astropy <astropy:astropy-coordinates>` for
 both these tasks.
 
 
@@ -12,10 +12,10 @@ Units in SunPy
 --------------
 
 All functions in SunPy that accept or return numbers associated with physcial
-quantities accept and return `astropy.units.Quantity` objects. These objects
+quantities accept and return `~astropy.units.Quantity` objects. These objects
 represent a number (or an array of numbers) and a unit. This means SunPy is
 always explicit about the units associated with a value. Quantities and units
-are powerful tools for keeping track of variables with physical meaning and
+are powerful tools for keeping track of variables with a physical meaning and
 make it straightforward to convert the same physical quantity into different units.
 
 In this section of the guide we will give a quick introduction to `astropy.units`
@@ -26,7 +26,7 @@ import units as ``u``::
 
    >>> import astropy.units as u
 
-Once we have imported units we can create a quantity by mutltiplying a number by
+Once we have imported units we can create a quantity by multiplying a number by
 a unit::
 
    >>> length = 10 * u.meter
@@ -154,6 +154,18 @@ This `~astropy.coordinates.SkyCoord` object can then be transformed to any
 other coordinate frame defined either in Astropy or SunPy, for example::
 
   >>> c.transform_to(frames.Helioprojective)
+  <SkyCoord (Helioprojective: obstime=2017-08-01 00:00:00, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2017-08-01 00:00:00): (lon, lat, radius) in (deg, deg, AU)
+      ( 0.,  5.78339799,  1.01496923)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+      ( 769.74997696, -498.75932128,   1.51668819e+08)>
+
+
+It is also possible to convert three dimensional positions to astrophysical
+frames defined in Astropy, for example `~astropy.coordimates.ICRS`.
+
+  >>> c.transform_to('icrs')
+  <SkyCoord (ICRS): (ra, dec, distance) in (deg, deg, km)
+    ( 49.85053118,  0.05723938,  1417577.02975451)>
+
 
 
 Observer Location
@@ -186,7 +198,7 @@ Using Coordinates with SunPy Map
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 SunPy Map uses coordinates to specify locations on the image, and to plot
-overlays on plots of maps. When a Map is created a coordinate frame is
+overlays on plots of maps. When a Map is created, a coordinate frame is
 constructed from the header information. This can be accessed using
 ``.coordinate_frame``::
 
@@ -205,6 +217,15 @@ the coordinate system to that image::
   <SkyCoord (Helioprojective: obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=None): (lon, lat, radius) in (deg, deg, m)
     ( 0.,  0.048591,   1.51846026e+11)>): (Tx, Ty) in arcsec
     ( 100.,  10.)>
+
+This `~astropy.coordinates.SkyCoord` object could then be used to plot a point
+on top of the map::
+
+  >>> import matplotlib.pyplot as plt
+
+  >>> ax = plt.subplot(projection=m)
+  >>> m.plot()
+  >>> ax.plot_coord(c, 'o')
 
 For more information on coordinates see :ref:`sunpy-coordinates` section of
 the :ref:`reference`.
