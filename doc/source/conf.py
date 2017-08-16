@@ -90,9 +90,10 @@ intersphinx_mapping['wcsaxes'] = ('http://wcsaxes.readthedocs.io/en/stable/', No
 # -- Options for HTML output ---------------------------------------------------
 
 try:
-    import sphinx_rtd_theme
-    html_theme = 'sphinx_rtd_theme'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+    from sunpy_sphinx_theme.conf import *
+
+    html_sidebars = {'**': ['docsidebar.html']}
+
 except ImportError:
     html_theme = 'default'
 
