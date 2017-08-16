@@ -215,33 +215,6 @@ def test_from_fido_search_result_block(fido_search_result):
 
 
 @pytest.mark.online
-def test_entries_from_fido_search_result_JSOC():
-    search_result = Fido.search(
-        net_attrs.jsoc.Time('2014-01-01T00:00:00','2014-01-01T01:00:00'),
-        net_attrs.jsoc.Series('hmi.m_45s'),
-        net_attrs.jsoc.Notify("sunpy@sunpy.org")
-        )
-    with pytest.raises(ValueError):
-        # Using list() here is important because the
-        # entries_from_fido_search_result function uses yield.
-        # list() uses the generator to run the function body.
-        list(entries_from_fido_search_result(search_result))
-
-
-@pytest.mark.online
-def test_from_fido_search_result_block(fido_search_result):
-    entry = DatabaseEntry._from_fido_search_result_block(
-                fido_search_result[0][0])
-    expected_entry = DatabaseEntry(
-        source='Proba2', provider='esa', physobs='irradiance',
-        fileid='http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits',
-        observation_time_start= datetime(2012, 1, 1, 0, 0),
-        observation_time_end= datetime(2012, 1, 2, 0, 0),
-        instrument='lyra')
-    assert entry == expected_entry
-
-
-@pytest.mark.online
 def test_entry_from_qr_block(query_result):
     entry = DatabaseEntry._from_query_result_block(query_result[0])
     expected_entry = DatabaseEntry(
