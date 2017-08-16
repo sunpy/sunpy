@@ -1,3 +1,10 @@
+0.7.9
+-----
+
+* Database test fix #2214  
+* Thou shalt not implement generic API on GenericMap subclasses #2212
+* Docs moved to new theme
+
 0.7.8
 -----
 
