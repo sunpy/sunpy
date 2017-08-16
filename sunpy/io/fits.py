@@ -75,7 +75,7 @@ def read(filepath, hdus=None, memmap=None, **kwargs):
     Also all comments in the original file are concatenated into a single
     'comment' key in the returned FileHeader.
     """
-    with fits.open(filepath, memmap=memmap) as hdulist:
+    with fits.open(filepath, ignore_blank=True, memmap=memmap) as hdulist:
         if hdus is not None:
             if isinstance(hdus, int):
                 hdulist = hdulist[hdus]
@@ -121,7 +121,7 @@ def get_header(afile):
         hdulist = afile
         close = False
     else:
-        hdulist = fits.open(afile)
+        hdulist = fits.open(afile, ignore_blank=True)
         hdulist.verify('silentfix')
         close = True
 
