@@ -21,8 +21,9 @@ Searching for Data Using Fido
 -----------------------------
 
 To search for data with Fido, you need to specify attributes to search against.
-Examples of these attributes are Time, Instrument, Wavelength. Enter these
-properties using SunPy's attrs module::
+Examples of these attributes are Time, Instrument, Wavelength, some of these
+attributes are client specific, such as `wibble <sunpy.net.vso.attrs>` or
+`sunpy.net.jsoc.attrs`. Enter these properties using SunPy's attrs module::
 
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra'))
 
@@ -47,16 +48,20 @@ variable set to the Fido search, in this case, result::
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
 
 Queries can be made more flexible or specific by adding more attrs objects to
-the Fido search. Specific passbands taken with given instruments can be searched
-for by supplying an `~astropy.units.Quantity` to the Wavelength attribute::
+the Fido search. To search for specific passbands can be searched for by
+supplying an `~astropy.units.Quantity` to the `~sunpy.net.vso.attrs.Wavelength`
+attribute::
 
     >>> import astropy.units as u
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('norh'),
                              a.Wavelength(17*u.GHz))
 
-Data of a given cadence can also be specified using the Sample attribute. As
-`~sunpy.net.attrs.vso.Sample` is only supported by the `sunpy.net.vso.VSOClient`
-you specify sample with ``a.vso.Sample``. Attributes like this which are client
+Data of a given cadence can also be specified using the Sample attribute.
+
+To search for data at a given cadence use the `~sunpy.net.attrs.vso.Sample`
+attribute. `~sunpy.net.attrs.vso.Sample` is only supported by the
+`sunpy.net.vso.VSOClient` you specify sample with ``a.vso.Sample`` (this is only
+supported by certain VSO providers). Attributes like this which are client
 specific will result in ``Fido`` only search that client, in this case VSO.::
 
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'),
@@ -71,9 +76,6 @@ operator would::
 
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'),
                              a.Wavelength(171*u.angstrom) | a.Wavelength(94*u.angstrom))
-
-The above query searches the Virtual Solar Observatory (VSO), ``Fido`` is now
-the recommended way to search the VSO in SunPy.
 
 
 Indexing search results
@@ -151,13 +153,13 @@ You can also specify the path to which you want the data downloaded::
   >>> downloaded_files = Fido.fetch(results, path='/ThisIs/MyPath/to/Data/{file}.fits')
 
 This downloads the query results into the directory
-``/ThisIs/MyPath/to/Data`` naming each downloaded file with the
+``/ThisIs/MyPath/to/Data``, naming each downloaded file with the
 filename ``{file}`` obtained from the client, and appended with the suffix
-``.fits``. You can also use other properties of the query return
+``.fits``. You can also use other properties of the returned query
 to define the path where the data is saved.  For example, to save the
 data to a subdirectory named after the instrument, use
 
     >>> downloaded_files = Fido.fetch(results, path='./{instrument}/{file}.fits')
 
-You can see the list of options that can be specified in path, for all the files
+You can see the list of options that can be specified in path for all the files
 to be downloaded with ``results.response_block_properties``.
