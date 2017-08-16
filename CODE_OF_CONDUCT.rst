@@ -1,3 +1,5 @@
+.. _coc:
+
 Code of Conduct
 ===============
 

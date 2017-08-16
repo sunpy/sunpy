@@ -1,5 +1,5 @@
 ====================
-Testing new features
+Testing New Features
 ====================
 
 New features are constantly being developed for SunPy by contributors from

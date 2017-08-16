@@ -1,6 +1,6 @@
-================
-SunPy User Guide
-================
+===========
+SunPy Guide
+===========
 
 Welcome to the SunPy User Guide. SunPy is a community-developed, free and
 open-source solar data analysis environment. It is meant to provide
@@ -20,4 +20,7 @@ For more details checkout the :ref:`reference`.
    time
    roi
    customization
+   ssw
+   bugs
+   testingfeatures
    troubleshooting
