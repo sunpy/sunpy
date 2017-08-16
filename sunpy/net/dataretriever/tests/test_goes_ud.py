@@ -75,7 +75,7 @@ def test_query(time):
         assert qr1.time_range().start == time.start
         assert qr1.time_range().end == time.end
 
-
+@pytest.mark.skip(reason="Hangs with pytest only")
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument", [
     (Time('1983/06/17', '1983/06/18'), Instrument('XRS')),
@@ -88,6 +88,7 @@ def test_get(time, instrument):
     assert len(download_list) == len(qr1)
 
 
+@pytest.mark.skip(reason="Hangs with pytest only")
 @pytest.mark.online
 def test_new_logic():
     qr = LCClient.search(Time('2012/10/4', '2012/10/6'), Instrument('XRS'))
