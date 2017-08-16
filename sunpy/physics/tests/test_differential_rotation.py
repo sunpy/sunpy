@@ -144,21 +144,41 @@ def test_warp_sun():
 
 def test_diffrot_map(aia171_test_map):
     # Test a submap without padding
-    aia_srot = diffrot_map(aia171_test_map, -5 * u.day)
+    aia_srot = diffrot_map(aia171_test_map, dt=-5 * u.day)
     assert aia_srot.dimensions == aia171_test_map.dimensions
     assert (aia171_test_map.date - timedelta(days=5)) - aia_srot.date < timedelta(seconds=1)
 
 
 def test_diffrot_submap(aia171_test_submap):
     # Test a submap without padding
-    aia_srot = diffrot_map(aia171_test_submap, -0.5 * u.day)
+    aia_srot = diffrot_map(aia171_test_submap, '2011-02-14T12:00:00')
     assert aia_srot.dimensions == aia171_test_submap.dimensions
     assert (aia171_test_submap.date - timedelta(days=0.5)) - aia_srot.date < timedelta(seconds=1)
 
 
 def test_diffrot_submap_pad(aia171_test_submap):
-    aia_srot = diffrot_map(aia171_test_submap, -0.5 * u.day, pad=True)
+    aia_srot = diffrot_map(aia171_test_submap, dt=-0.5 * u.day, pad=True)
     assert aia_srot.dimensions >= aia171_test_submap.dimensions
     assert (aia171_test_submap.date - timedelta(days=0.5)) - aia_srot.date < timedelta(seconds=1)
     assert aia_srot.meta['naxis1'] == 35
     assert aia_srot.meta['naxis2'] == 18
+
+
+def test_diffrot_allen_submap_pad(aia171_test_submap):
+    aia_srot = diffrot_map(aia171_test_submap, dt=-0.5 * u.day, pad=True, rot_type='allen')
+    assert aia_srot.dimensions >= aia171_test_submap.dimensions
+    assert (aia171_test_submap.date - timedelta(days=0.5)) - aia_srot.date < timedelta(seconds=1)
+    assert aia_srot.meta['naxis1'] == 35
+    assert aia_srot.meta['naxis2'] == 18
+
+
+def test_diffrot_manyinputs(aia171_test_map):
+    with pytest.raises(ValueError) as exc_info:
+        diffrot_map(aia171_test_map, '2010-01-01', dt=3 * u.hour)
+    assert 'Only a time or an interval is accepted' in str(exc_info.value)
+
+
+def test_diffrot_noinputs(aia171_test_map):
+    with pytest.raises(ValueError) as exc_info:
+        diffrot_map(aia171_test_map)
+    assert 'Either a time or an interval (`dt=`) needs to be provided' in str(exc_info.value)

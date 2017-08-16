@@ -12,7 +12,5 @@ free and open-source solar data analysis environment for Python.
   code_ref/index
   generated/gallery/index
   dev_guide/index
-  testingfeatures
-  bugs
-  ssw
-  changelog
+  whatsnew/index
+  coc

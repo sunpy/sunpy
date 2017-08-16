@@ -5,7 +5,7 @@ recursive-include sunpy/data *
 recursive-include sunpy *.txt
 include README.md
 include RELEASE.md
-include CHANGELOG.md
+include CHANGELOG.rst
 include licenses/*.rst
 include sunpy/data/sunpyrc
 include sunpy/tests/figure_hashes_*.json

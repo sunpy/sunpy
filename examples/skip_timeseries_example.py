@@ -48,7 +48,7 @@ ts_gbm = sunpy.timeseries.TimeSeries(sunpy.data.sample.GBM_TIMESERIES, source='G
 ##############################################################################
 # You can create a list of TimeSeries objects by using multiple files. First
 # however, we shall download these files using `Fido`.
-goes = Fido.search(a.Time("2012/06/01", "2012/06/04"), a.Instrument("GOES"))
+goes = Fido.search(a.Time("2012/06/01", "2012/06/04"), a.Instrument("XRS"))
 goes_files = Fido.fetch(goes)
 
 # Using these new files you get a list:
