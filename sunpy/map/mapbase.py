@@ -20,7 +20,7 @@ from matplotlib import patches, cm, colors
 
 import astropy.wcs
 from astropy.coordinates import Longitude, Latitude
-
+from astropy.utils import deprecated
 from sunpy.image.transform import affine_transform
 from .nddata_compat import NDDataCompat as NDData
 
