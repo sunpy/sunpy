@@ -12,19 +12,17 @@ Creating maps
 -------------
 To make things easy, SunPy can download several example files which are used
 throughout the docs. These files have names like
-`~sunpy.data.sample.AIA_171_IMAGE` and `~sunpy.data.sample.RHESSI_IMAGE`.
-To create the sample `sunpy.map.sources.sdo.AIAMap` type the following into your
-interactive Python shell::
+`~sunpy.data.sample.AIA_171_IMAGE` and `~sunpy.data.sample.RHESSI_IMAGE`. To
+create a `Map <sunpy.map.map_factory.MapFactory>` from the the sample AIA image
+type the following into your Python shell::
 
     >>> import sunpy
     >>> import sunpy.map
     >>> import sunpy.data.sample
+
     >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
-If you have not downloaded the data already you should get an error and some
-instruction on how to download the sample data.
-
-The variable my_map is a :ref:`map` object. To create one from a
+The variable my_map is an `~sunpy.map.sources.AIAMap` object. To create one from a
 local FITS file try the following::
 
     >>> my_map = sunpy.map.Map('/mydirectory/mymap.fits')   # doctest: +SKIP
@@ -40,11 +38,12 @@ may vary. SunPy can also create maps from the jpg2000 files from
 Creating Custom Maps
 --------------------
 It is also possible to create maps using custom data (e.g. from a simulation).
-To do this you need to provide `~sunpy.map.map_factory.MapFactory` with both the data array as
-well as some basic meta information. If no header is given then some default
-values as assumed. Here is a simple example::
+To do this you need to provide `sunpy.map.Map <sunpy.map.map_factory.MapFactory>`
+with both the data array as well as some basic meta information. If no header is
+given then some default values as assumed. Here is a simple example::
 
     >>> import numpy as np
+
     >>> data = np.arange(0,100).reshape(10,10)
     >>> header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
     >>> my_map = sunpy.map.Map(data, header)
@@ -95,8 +94,9 @@ To get a list of all of the attributes check the documentation by typing::
 
     >>> help(my_map)   # doctest: +SKIP
 
-From SunPy version 0.6 many attributes return `~astropy.units.quantity.Quantity`
-objects, please refer to the `astropy.units`.
+Many attributes and functions of the map classes accept and return
+`~astropy.units.quantity.Quantity` or `~astropy.coordinates.SkyCoord` objects,
+please refer to :ref:`units-coordinates-sunpy` for more details.
 
 The meta data for the map is accessed by ::
 
@@ -495,8 +495,8 @@ addition of an associated boolean array which holds the mask.
 Composite Maps and Overlaying Maps
 ----------------------------------
 
-The `Map()` method described above can also handle a list of maps. If a series of maps
-are supplied as inputs, `Map()` will return a list of maps as the output.  However,
+The `Map <sunpy.map.map_factory.MapFactory>` method described above can also handle a list of maps. If a series of maps
+are supplied as inputs, `Map <sunpy.map.map_factory.MapFactory>` will return a list of maps as the output.  However,
 if the 'composite' keyword is set to True, then a `~sunpy.map.CompositeMap` object is
 returned.  This is useful if the maps are of a different type (e.g. different
 instruments).  For example, to create a simple composite map::

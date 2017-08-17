@@ -1,9 +1,11 @@
 """
-This module contains the factory code for the ``sunpy.net.Fido`` factory. As
-well as defining ``Fido`` which is an instance of
-`sunpy.net.fido_factory.UnifiedDownloaderFactory` it defines
-`~sunpy.net.fido_factory.UnifiedResponse` which ``Fido.search`` returns.
-`~sunpy.net.fido_factory.DownloadResponse` objects are returned by ``Fido.fetch``.
+This module provides the `Fido
+<sunpy.net.fido_factory.UnifiedDownloaderFactory>` instance of
+`sunpy.net.fido_factory.UnifiedDownloaderFactory` it also provides the
+`~sunpy.net.fido_factory.UnifiedResponse` class which
+`Fido.search <sunpy.net.fido_factory.UnifiedDownloaderFactory.search>` returns and the
+`~sunpy.net.fido_factory.DownloadResponse` class that is returned by
+`Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`.
 
 """
 # This module was initially developed under funding provided by Google Summer
