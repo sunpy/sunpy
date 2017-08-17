@@ -1,7 +1,7 @@
 The SunPy project is happy to announce the release of SunPy 0.8.0.
 
-SunPy 0.8 is the next major release of SunPy and contains 1390 commits in 200
-pull requests, closing 163 issues from 34 people, 16 of which have never
+SunPy 0.8 is the next major release of SunPy and contains 1442 commits in over
+200 pull requests, closing 163 issues from 35 people, 17 of which have never
 contributed before.
 
 This release is a large milestone for the SunPy library. It contains large new
@@ -16,12 +16,12 @@ The people who have contributed to the code for this release are:
 
     Stuart Mumford
     Jack Ireland
-    Punyaslok Pattnaik
     Nabil Freij
+    Punyaslok Pattnaik
     Alex Hamilton
     Ankit Kumar *
-    Steven Christe
     David Pérez-Suárez
+    Steven Christe
     Rishabh Sharma
     Albert Y. Shih
     Sudarshan Konge
@@ -43,6 +43,7 @@ The people who have contributed to the code for this release are:
     Joe Letts *
     Shane Maloney *
     Adrian Price-Whelan *
+    Dan D'Avella *
     Duygu Keşkek *
     Fionnlagh Mackenzie Dover *
     Kalpesh Krishna *
