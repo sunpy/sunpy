@@ -40,7 +40,7 @@ Creating Custom Maps
 It is also possible to create maps using custom data (e.g. from a simulation).
 To do this you need to provide `sunpy.map.Map <sunpy.map.map_factory.MapFactory>`
 with both the data array as well as some basic meta information. If no header is
-given then some default values as assumed. Here is a simple example::
+given then some default values are assumed. Here is a simple example::
 
     >>> import numpy as np
 

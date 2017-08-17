@@ -62,7 +62,7 @@ create some fake data and pass it into a timeseries object.
     my_timeseries.peek()
 
 We've created this timeseries object by passing TimeSeries a string which
-represent the name of a GOES lightcurve file. The
+represents the name of a GOES lightcurve file. The
 `.peek() <sunpy.timeseries.GenericTimeSeries.peek>` method plots the timeseries
 data and displays the plot with some default settings. You can also use
 `my_timeseries.plot() <sunpy.timeseries.TimeSeries.plot>` if you want more
