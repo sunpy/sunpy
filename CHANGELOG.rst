@@ -1,6 +1,15 @@
 Latest
 ======
 
+New features
+------------
+
+Bug fixes
+---------
+
+0.8.0
+=====
+
 New Features
 ------------
 
