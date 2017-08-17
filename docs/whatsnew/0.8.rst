@@ -23,13 +23,14 @@ On this page, you can read about some of the big changes in this release:
 
 In addition to these major changes, SunPy 0.8 includes a large number of
 smaller improvements and bug fixes, which are described in the :ref:`changelog`.
+
 By the numbers:
 
-* 1390 commits have been added since 0.7
+* 1442 commits have been added since 0.7
 * 163 issues have been closed since 0.7
 * 200 pull requests have been merged since 0.7
-* 34 distinct people have contributed code
-* 16 new contributors
+* 35 distinct people have contributed code
+* 17 new contributors
 
 .. _whatsnew-0.8-python:
 
@@ -45,10 +46,14 @@ New data downloading interface
 ==============================
 
 The new package Fido is the primary interface to search for and download
-observational data. It unifies data search and download from multiple sources
-such as the VSO and non-VSO sources::
+observational data. Fido is a unified interface for searching and fetching solar
+physics data irrespective of the underlying client or webservice through which
+the data is obtained, e.g. VSO, JSOC, etc. It therefore supplies a single, easy
+and consistent way to obtain most forms of solar physics data. It unifies data
+search and download from multiple sources such as the VSO and non-VSO sources::
 
     >>> from sunpy.net import Fido, attrs as a
+
     >>> attrs_time = a.Time('2005/01/01 00:10', '2005/01/01 00:15')
     >>> result = Fido.search(attrs_time, a.Instrument('eit'))
     >>> result
@@ -88,7 +93,10 @@ which returns a set of filepaths to the data.
 New coordinate package
 ======================
 
-Spatial locations are now represented by SunPy coordinates.
+The SunPy coordinates package describes locations in physical space, and
+coordinate frames. It provides a way to transform coordinates from one frame
+like helioprojective to another such as heliographic.
+
 Coordinates can be defined very simply::
 
     >>> from astropy import units as u
@@ -104,8 +112,8 @@ Coordinates can be defined very simply::
         (-20., -56.,  695508.)>
 
 
-The coordinate "a" is in the helioprojective coordinate system, and the coordinate "b"
-is in the heliographic Stonyhurst system.
+The coordinate ``a`` is in the helioprojective coordinate system, and the
+coordinate ``b`` is in the heliographic Stonyhurst system.
 
 Maps can also be used to define coordinate frames::
 
@@ -118,8 +126,8 @@ Maps can also be used to define coordinate frames::
         ( 0.,  0.048591,   1.51846026e+11)>): (Tx, Ty) in arcsec
         (-45.,  600.)>
 
-The coordinate "c" is now defined with respect to the coordinate frame derived from the map.
-The observer attribute::
+The coordinate ``c`` is now defined with respect to the coordinate frame derived
+from the map. The observer attribute::
 
     >>> c.observer
     <HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
@@ -208,7 +216,7 @@ TimeSeries objects have a 'meta' property that stores the metadata of the timese
     |                           |                 | ...                                               |
     |-------------------------------------------------------------------------------------------------|
 
-and the data can be accessed::
+and the data can be accessed as a pandas dataframe using::
 
     >>> goes.data
                                         xrsa          xrsb
@@ -219,7 +227,7 @@ and the data can be accessed::
     2011-06-07 23:59:55.584999  1.000000e-09  1.624800e-07
     2011-06-07 23:59:57.631999  1.000000e-09  1.598500e-07
 
-Data sources that do not provide FITS files need to have a 'source' keyword to help
+Data sources that do not provide FITS files need to have a ``source`` keyword to help
 with the identification and interpretation of the data::
 
     >>> eve = sunpy.timeseries.TimeSeries(sunpy.data.sample.EVE_TIMESERIES, source='EVE')

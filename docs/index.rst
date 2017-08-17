@@ -6,7 +6,6 @@ free and open-source solar data analysis environment for Python.
 
 .. toctree::
   :maxdepth: 2
-  :titlesonly:
 
   guide/index
   code_ref/index
