@@ -60,20 +60,22 @@ def test_fixed_satellite():
 
 
 @example(a.Time("2006-08-01", "2006-08-01"))
-@example(a.Time("1983-05-01", "1983-05-02"))
 # This example tests a time range with a satellite jump and no overlap
 @example(a.Time("2009-11-30", "2009-12-3"))
 @given(goes_time())
 def test_query(time):
-    tr = TimeRange(time.start, time.end)
-    if parse_time("1983-05-01") in tr:
+    qr1 = LCClient.search(time, Instrument('XRS'))
+    assert isinstance(qr1, QueryResponse)
+    assert qr1.time_range().start == time.start
+    assert qr1.time_range().end == time.end
+
+
+def test_query_error():
+    times = [a.Time("1983-05-01", "1983-05-02")]
+    for time in times:
         with pytest.raises(ValueError):
             LCClient.search(time, Instrument('XRS'))
-    else:
-        qr1 = LCClient.search(time, Instrument('XRS'))
-        assert isinstance(qr1, QueryResponse)
-        assert qr1.time_range().start == time.start
-        assert qr1.time_range().end == time.end
+
 
 @pytest.mark.skip(reason="Hangs with pytest only")
 @pytest.mark.online
