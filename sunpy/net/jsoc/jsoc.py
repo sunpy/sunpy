@@ -80,23 +80,23 @@ class JSOCClient(object):
 
     .. warning::
         JSOC now requires you to register your email address before requesting
-        data. See this site: http://jsoc.stanford.edu/ajax/register_email.html
+        data. See `this <http://jsoc.stanford.edu/ajax/register_email.html>`
 
     Notes
     -----
-    This Client mocks input to this site: http://jsoc.stanford.edu/ajax/exportdata.html
+    This Client mocks input to this `site <http://jsoc.stanford.edu/ajax/exportdata.html>`
     Therefore that is a good resource if things are mis-behaving.
-    The full list of 'series' is available through this site: http://jsoc.stanford.edu/
+    The full list of 'series' is available through this `site <http://jsoc.stanford.edu>`
 
     You can build more complex queries by specifying parameters to POST to JSOC via keyword
     arguments. You can generate these kwargs using the Export Data page at JSOC.
 
     JSOC now requires a validated email address, you can pass in your validated email address
     using the `~sunpy.net.jsoc.attrs.Notify` attribute. You have to register your email address
-    with JSOC http://jsoc.stanford.edu/ajax/register_email.html.
+    with JSOC beforehand `here <http://jsoc.stanford.edu/ajax/register_email.html>`.
 
-    The backend of SunPy's JSOC Client uses drms package: https://github.com/kbg/drms
-    The tutorials can be found at:https://drms.readthedocs.io/en/stable/tutorial.html
+    The backend of SunPy's JSOC Client uses `drms package <https://github.com/kbg/drms>`
+    The tutorials can be found `here <https://drms.readthedocs.io/en/stable/tutorial.html>`
     This can be used to build complex queries, by directly inputting the query string.
 
     Examples
@@ -228,7 +228,6 @@ class JSOCClient(object):
     """
 
     def search(self, *query, **kwargs):
-
         """
         Build a JSOC query and submit it to JSOC for processing.
 
@@ -237,6 +236,20 @@ class JSOCClient(object):
 
         Complex queries to be easily formed using logical operators such as
         `&` and `|`, in the same way as the VSO client.
+
+        Parameters
+        ----------
+        query : a variable number of :mod:`sunpy.net.jsoc.attrs`
+                as parameters, which are chained together using
+                the AND (`&`) operator.
+
+        Returns
+        -------
+        response : `~sunpy.net.jsoc.jsoc.JSOCResponse` object
+            A collection of records that the query returns.
+
+        Examples
+        --------
 
         *Example 1*
 
@@ -251,10 +264,6 @@ class JSOCClient(object):
         ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA),
         ...                          a.jsoc.Segment('image'))
 
-        Returns
-        -------
-        response : JSOCResults object
-            A collection of records that the query returns.
 
         *Example 2*
 
@@ -267,12 +276,7 @@ class JSOCClient(object):
         >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
         ...                          a.jsoc.Series('hmi.v_45s'),
         ...                          a.jsoc.Keys('T_REC, DATAMEAN, OBS_VR'))
-
-
-        Returns
-        -------
-        response : JSOCResults object
-            A collection of records that the query returns.
+        >>> print(response)
 
         <Table length=81>
                  T_REC            DATAMEAN     OBS_VR
@@ -301,13 +305,6 @@ class JSOCClient(object):
         >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T02:00:00'),
         ...                          a.jsoc.Series('aia.lev1_euv_12s'),
         ...                          a.jsoc.PrimeKey('WAVELNTH','171'))
-
-
-
-        Returns
-        -------
-        response : JSOCResults object
-            A collection of records that the query returns.
 
         """
 
@@ -338,7 +335,19 @@ class JSOCClient(object):
         Complex queries to be easily formed using logical operators such as
         `&` and `|`, in the same way as the query() function.
 
-        *Example*
+        Parameters
+        ----------
+        query : a variable number of :mod:`sunpy.net.jsoc.attrs`
+                as parameters, which are chained together using
+                the AND (`&`) operator.
+
+        Returns
+        -------
+        res : `~pandas.DataFrame` object
+            A collection of metadata of all the files.
+
+        Example
+        -------
 
         Request metadata or all all AIA 304 image data between 2014-01-01T00:00 and
         2014-01-01T01:00.
@@ -353,12 +362,7 @@ class JSOCClient(object):
         >>> metadata = client.search_metadata(
                                     a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:02:00'),
         ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))
-
-        Returns
-        -------
-        metadata : Pandas DataFrame
-            A collection of metadata of all the files.
-
+        >>> print(metadata)
 
                                                           T_REC                  ...         T_REC_epoch
         aia.lev1_euv_12s[2014-01-01T00:00:01Z][304]  2014-01-01T00:00:01Z        ...     1993.01.01_00:00:04_TAI
@@ -395,13 +399,13 @@ class JSOCClient(object):
 
         Parameters
         ----------
-        jsoc_response : JSOCResponse object
+        jsoc_response : `~sunpy.net.jsoc.jsoc.JSOCResponse` object
             The results of a query
 
         Returns
         -------
-        requests : ExportRequest Object or
-                   a list of ExportRequest objects
+        requests : `~drms.ExportRequest` Object or
+                   a list of  `~drms.ExportRequest` objects
 
                    Request Id can be accessed by requests.id
                    Request status can be accessed by requests.status
@@ -436,9 +440,9 @@ class JSOCClient(object):
 
         Parameters
         ----------
-        requests : ExportRequest Object or
-                   a list of ExportRequest objects,
-                   returned by request_data()
+        requests :  `~drms.ExportRequest` object or
+                   a list of  `~drms.ExportRequest` objects,
+                   returned by `~sunpy.net.jsoc.jsoc.JSOCClient.request_data`
 
         Returns
         -------
@@ -482,7 +486,7 @@ class JSOCClient(object):
 
         Parameters
         ----------
-        jsoc_response : JSOCResponse object
+        jsoc_response : `~sunpy.net.jsoc.jsoc.JSOCResponse` object
             A response object
 
         path : string
@@ -497,7 +501,7 @@ class JSOCClient(object):
         max_conns : int
             Maximum number of download connections.
 
-        downloader: `sunpy.download.Downloader` instance
+        downloader: `~sunpy.download.Downloader` instance
             A Custom downloader to use
 
         sleep : int
@@ -525,11 +529,7 @@ class JSOCClient(object):
 
             if progress:
                 self.check_request(response)
-
-            if response.status == 0:
-                res = response
-
-                r = self.get_request(res, path=path, overwrite=overwrite,
+                r = self.get_request(response, path=path, overwrite=overwrite,
                                      progress=progress, results=r)
             else:
                 time.sleep(sleep)
@@ -554,9 +554,9 @@ class JSOCClient(object):
 
         Parameters
         ----------
-        requests : ExportRequest Object or
-                   a list of ExportRequest objects,
-                   returned by request_data()
+        requests : `~drms.ExportRequest` object or
+                   a list of `~drms.ExportRequest` objects,
+                   returned by `~sunpy.net.jsoc.jsoc.JSOCClient.request_data`
 
         path : string
             Path to save data to, defaults to SunPy download dir
@@ -570,7 +570,7 @@ class JSOCClient(object):
         max_conns : int
             Maximum number of download connections.
 
-        downloader : `sunpy.download.Downloader` instance
+        downloader : `~sunpy.download.Downloader` instance
             A Custom downloader to use
 
         results: Results instance
@@ -668,8 +668,8 @@ class JSOCClient(object):
                 raise ValueError(error_message)
 
         else:
-            for _ in PKEY_LIST_TIME:
-                timestr = '{0}'.format(primekey.pop(_, ''))
+            for i in PKEY_LIST_TIME:
+                timestr = '{0}'.format(primekey.pop(i, ''))
                 if timestr:
                     break
 
@@ -757,7 +757,7 @@ class JSOCClient(object):
         if wavelength:
             if 'WAVELNTH' not in pkeys:
                 error_message = "The series {series} does not support wavelength attribute."\
-                                " Following primekeys are supported {pkeys}"
+                                "The following primekeys are supported {pkeys}"
                 raise TypeError(error_message.format(series=iargs['series'], pkeys=pkeys))
 
         # Raise errors for segments
