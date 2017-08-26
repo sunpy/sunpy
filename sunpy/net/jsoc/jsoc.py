@@ -29,8 +29,8 @@ from sunpy.util import deprecated
 __all__ = ['JSOCClient', 'JSOCResponse']
 
 
-PKEY_LIST_TIME = ['T_START', 'T_REC', 'T_OBS', 'MidTime', 'OBS_DATE',
-                  'obsdate', 'DATE_OBS', 'starttime', 'stoptime', 'UTC_StartTime']
+PKEY_LIST_TIME = {'T_START', 'T_REC', 'T_OBS', 'MidTime', 'OBS_DATE',
+                  'obsdate', 'DATE_OBS', 'starttime', 'stoptime', 'UTC_StartTime'}
 
 
 class JSOCResponse(object):
@@ -644,6 +644,7 @@ class JSOCClient(object):
         """
 
         # Extract and format segment
+        # Convert list of segments into a comma-separated string
         if segment:
             if isinstance(segment, list):
                 segment = str(segment)[1:-1].replace(' ', '').replace("'", '')
@@ -656,6 +657,9 @@ class JSOCClient(object):
 
         # Populate primekeys dict with Time and Wavelength values
         if start_time and end_time:
+            # Check whether any primekey listed in PKEY_LIST_TIME has been passed through
+            # PrimeKey() attribute. If yes, raise an error, since Time can only be passed
+            # either through PrimeKey() attribute or Time() attribute.
             if not any(x in PKEY_LIST_TIME for x in primekey):
                 timestr = '{start}-{end}{sample}'.format(
                         start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
@@ -668,10 +672,18 @@ class JSOCClient(object):
                 raise ValueError(error_message)
 
         else:
-            for i in PKEY_LIST_TIME:
-                timestr = '{0}'.format(primekey.pop(i, ''))
-                if timestr:
-                    break
+            # This is executed when Time has not been passed through Time() attribute.
+            # `match` stores all the time-type prime-keys that has been passed through
+            # PrimeKey() attribute. The length of `match` won't ever be greater than 1,
+            # but it is a good idea to keep a check.
+            match = set(primekey.keys()) & PKEY_LIST_TIME
+            if len(match) > 1:
+                error_message = "Querying of series, having more than 1 Time-type "\
+                                "prime-keys is not yet supported. Alternative is to "\
+                                "use only one of the primekey to query for series data."
+                raise ValueError(error_message)
+
+            timestr = '{0}'.format(primekey.pop(list(match)[0], ''))
 
         if wavelength:
             if not primekey.get('WAVELNTH', ''):
@@ -682,26 +694,85 @@ class JSOCClient(object):
                     wavelength = '{0}'.format(int(np.ceil(wavelength.to(u.AA).value)))
 
             else:
+                # This is executed when wavelength has been passed both through PrimeKey()
+                # and Wavelength().
                 error_message = "Wavelength attribute has been passed both as a Wavelength()"\
                                 " and PrimeKey(). Please provide any one of them"\
                                 " or separate them by OR operator."
                 raise ValueError(error_message)
 
         else:
+            # This is executed when wavelength has been passed through PrimeKey().
             wavelength = '{0}'.format(primekey.pop('WAVELNTH', ''))
 
+        # Populate primekey dict with formatted Time and Wavlength.
         if timestr:
             primekey['TIME'] = timestr
         if wavelength:
             primekey['WAVELNTH'] = wavelength
 
         # Extract and format primekeys
+        '''
+        All the primekeys are now stored in primekey dict, including Time and Wavelength
+        which were passed through pre-defined attributes. The following piece of code,
+        extracts the passed prime-keys and arranges it in the order as it appears in the
+        JSOC database.
+
+        `pkeys_isTime` is a Pandas DataFrame, whose index values are the Prime-key names
+        and the column stores a boolean value, identifying whether the prime-key is a
+        Time-type prime-key or not. Since, time-type prime-keys exist by different names,
+        we made it uniform in the above piece of code, by storing the time-type primekey
+        with a single name `TIME`.
+
+        Considering an example, if the primekeys that exist for a given series are
+        ['HARPNUM', 'T_OBS', 'WAVELNTH'], we will consider three different cases of the
+        passed primekeys.
+
+        pkeys_isTime.index.values = ['HARPNUM', 'T_OBS', 'WAVELNTH']
+
+        Case 1
+        ------
+
+        primekey = {'T_OBS' : , '2014.01.01_00:00:45_TAI',
+                    'HARPNUM' : '4864',
+                    'WAVELNTH': '605'}
+
+        If the primekey dict is as above, then pkstr should be as:
+
+        pkstr = '{4864}{2014.01.01_00:00:45_TAI}{605}'
+
+        Case 2
+        ------
+
+        primekey = {'T_OBS' : , '2014.01.01_00:00:45_TAI',
+                    'WAVELNTH': '605'}
+
+        If the primekey dict is as above, then pkstr should be as:
+
+        pkstr = '{}{2014.01.01_00:00:45_TAI}{605}'
+
+        Case 3
+        ------
+
+        primekey = {'T_OBS' : , '2014.01.01_00:00:45_TAI'}
+
+        If the primekey dict is as above, then pkstr should be as:
+
+        pkstr = '{}{2014.01.01_00:00:45_TAI}'
+
+        The idea behind this should be clear. We build up the `pkstr` string
+        containing the values of the prime-keys passed in the same order as
+        it occurs in the list `pkeys_isTime.index.values`, i.e. how it is stored
+        in the online database. Any missing prime-keys should be compensated by
+        an empty {}, if it occurs before any passed prime-key. Any empty curly braces
+        that is present at last of the pkstr, can be skipped.
+        '''
         pkstr = ''
         c = drms.Client()
         si = c.info(series)
         pkeys_isTime = si.keywords.loc[si.primekeys].is_time
         for pkey in pkeys_isTime.index.values:
-
+            # The loop is iterating over the list of prime-keys existing for the given series. 
             if len(primekey) > 0:
                 if pkeys_isTime[pkey]:
                     pkstr += '[{0}]'.format(primekey.pop('TIME', ''))
@@ -709,8 +780,11 @@ class JSOCClient(object):
                     pkstr += '[{0}]'.format(primekey.pop(pkey, ''))
             else:
                 break
+                # break because we can skip adding {} at the end of pkstr, if the primekey
+                # dict is empty.
 
         if not pkstr:
+            # pkstr cannot be totally empty
             error_message = "Atleast one PrimeKey must be passed."
             raise ValueError(error_message)
 
@@ -744,8 +818,10 @@ class JSOCClient(object):
             raise TypeError(error_message)
 
         # Raise errors for PrimeKeys
+        # Get a set of the PrimeKeys that exist for the given series, and check
+        # whether the passed PrimeKeys is a subset of that.
         pkeys = c.pkeys(iargs['series'])
-        pkeys_passed = iargs.get('primekey', None)
+        pkeys_passed = iargs.get('primekey', None)    # pkeys_passes is a dict, with key-value pairs.
         if pkeys_passed is not None:
             if not set(list(pkeys_passed.keys())) <= set(pkeys):
                 error_message = "Unexpected PrimeKeys were passed. The series {series} "\
@@ -761,24 +837,38 @@ class JSOCClient(object):
                 raise TypeError(error_message.format(series=iargs['series'], pkeys=pkeys))
 
         # Raise errors for segments
+        # Get a set of the segments that exist for the given series, and check
+        # whether the passed segments is a subset of that.
         si = c.info(iargs['series'])
-        segs = list(si.segments.index.values)
-        segs_passed = iargs.get('segment', '')
-        if segs_passed:
-            if not isinstance(segs_passed, list):
-                error_message = "Segments can only be passed as a list of strings."
+        segs = list(si.segments.index.values)          # Fetches all valid segment names
+        segs_passed = iargs.get('segment', None)
+        if segs_passed is not None:
+
+            if not isinstance(segs_passed, list) and not isinstance(segs_passed, six.string_types):
+                error_message = "Segments can only be passed as a comma-separated"\
+                                " string or a list of strings."
                 raise TypeError(error_message)
+
+            elif isinstance(segs_passed, six.string_types):
+                segs_passed = segs_passed.replace(' ','').split(',')
 
             if not set(segs_passed) <= set(segs):
                 error_message = "Unexpected Segments were passed. The series {series} "\
                                 "contains the following Segments {segs}"
                 raise ValueError(error_message.format(series=iargs['series'], segs=segs))
 
+            iargs['segment'] = segs_passed
+
+        # If Time has been passed as a PrimeKey, convert the Time object into TAI time scale,
+        # and then, convert it to datetime object.
+
         if 'start_time' in iargs:
             iargs['start_time'] = iargs['start_time'].tai.datetime
             iargs['end_time'] = iargs['end_time'].tai.datetime
 
         ds = self._make_recordset(**iargs)
+
+        # Convert the list of keywords into comma-separated string.
         if isinstance(keywords, list):
             key = str(keywords)[1:-1].replace(' ', '').replace("'", '')
         else:
@@ -786,6 +876,8 @@ class JSOCClient(object):
 
         r = c.query(ds, key=key, rec_index=isMeta)
 
+        # If the method was called from search_metadata(), return a Pandas Dataframe,
+        # otherwise return astropy.table
         if isMeta:
             return r
 
