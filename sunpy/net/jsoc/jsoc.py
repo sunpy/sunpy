@@ -225,6 +225,7 @@ class JSOCClient(object):
     of the download.
 
     >>> res.wait(progress=True)   # doctest: +SKIP
+
     """
 
     def search(self, *query, **kwargs):
@@ -360,7 +361,7 @@ class JSOCClient(object):
         >>> from sunpy.net import attrs as a
         >>> client = jsoc.JSOCClient()
         >>> metadata = client.search_metadata(
-                                    a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:02:00'),
+        ...                         a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:02:00'),
         ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))
         >>> print(metadata)
 
