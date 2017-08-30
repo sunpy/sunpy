@@ -545,7 +545,7 @@ class JSOCClient(object):
         return self.fetch(jsoc_response, path=path, overwrite=overwrite, progress=progress,
                           max_conn=max_conn, downloader=downloader, sleep=sleep)
 
-    def get_request(self, requestIDs, path=None, overwrite=False, progress=True,
+    def get_request(self, requests, path=None, overwrite=False, progress=True,
                     max_conn=5, downloader=None, results=None):
         """
         Query JSOC to see if request_id is ready for download.
@@ -584,8 +584,8 @@ class JSOCClient(object):
 
         # Convert Responses to a list if not already
 
-        if not isiterable(responses):
-            responses = [responses]
+        if not isiterable(requests):
+            requests = [requests]
 
         if path is None:
             path = config.get('downloads', 'download_dir')
@@ -599,14 +599,14 @@ class JSOCClient(object):
         if results is None:
             results = Results(lambda _: downloader.stop())
         urls = []
-        for response in responses:
+        for request in requests:
 
-            if response.status == 0:
-                for index, data in response.data.iterrows():
+            if request.status == 0:
+                for index, data in request.data.iterrows():
 
                     is_file = os.path.isfile(os.path.join(path, data['filename']))
                     if overwrite or not is_file:
-                        url_dir = response.request_url + '/'
+                        url_dir = request.request_url + '/'
                         urls.append(urllib.parse.urljoin(url_dir, data['filename']))
 
                     else:
@@ -619,11 +619,11 @@ class JSOCClient(object):
 
                 if progress:
                     print_message = "{0} URLs found for download. Totalling {1}MB"
-                    print(print_message.format(len(urls), response._d['size']))
+                    print(print_message.format(len(urls), request._d['size']))
 
             else:
                 if progress:
-                    self.check_request(response)
+                    self.check_request(request)
 
         if urls:
             for url in urls:
@@ -683,7 +683,10 @@ class JSOCClient(object):
                                 "use only one of the primekey to query for series data."
                 raise ValueError(error_message)
 
-            timestr = '{0}'.format(primekey.pop(list(match)[0], ''))
+            if match:
+                timestr = '{0}'.format(primekey.pop(list(match)[0], ''))
+            else:
+                timestr = ''
 
         if wavelength:
             if not primekey.get('WAVELNTH', ''):
@@ -862,9 +865,8 @@ class JSOCClient(object):
         # If Time has been passed as a PrimeKey, convert the Time object into TAI time scale,
         # and then, convert it to datetime object.
 
-        if 'start_time' in iargs:
-            iargs['start_time'] = iargs['start_time'].tai.datetime
-            iargs['end_time'] = iargs['end_time'].tai.datetime
+        iargs['start_time'] = iargs['start_time'].tai.datetime
+        iargs['end_time'] = iargs['end_time'].tai.datetime
 
         ds = self._make_recordset(**iargs)
 

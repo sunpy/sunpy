@@ -10,6 +10,7 @@ import datetime
 import pandas as pd
 import astropy.table
 import astropy.time
+from astropy.time import Time as astropyTime
 import astropy.units as u
 import pytest
 
@@ -105,20 +106,6 @@ def test_post_wave_series():
 
 
 @pytest.mark.online
-def test_post_fail(recwarn):
-    res = client.search(
-        attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
-        attrs.Series('none'), attrs.Notify('jsoc@cadair.com'))
-    client.request_data(res)
-    w = recwarn.pop(Warning)
-    assert issubclass(w.category, Warning)
-    assert "Query 0 retuned status 4 with error Series none is not a valid"\
-           "series accessible from hmidb2." == str(w.message)
-    assert w.filename
-    assert w.lineno
-
-
-@pytest.mark.online
 def test_wait_get():
     responses = client.search(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
@@ -149,8 +136,8 @@ def test_invalid_query():
 
 @pytest.mark.online          # PASSED
 def test_lookup_records_errors():
-    d1 = {'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
-          'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35)}
+    d1 = {'end_time': astropyTime(datetime.datetime(2014, 1, 1, 1, 0, 35), scale='tai'),
+          'start_time': astropyTime(datetime.datetime(2014, 1, 1, 0, 0, 35), scale='tai')}
     with pytest.raises(ValueError):
         client._lookup_records(d1)
 
@@ -186,8 +173,8 @@ def test_make_recordset_errors():
         client._make_recordset(**d1)
 
     d1.update({
-        'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
-        'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35),
+        'end_time': astropyTime(datetime.datetime(2014, 1, 1, 1, 0, 35), scale='tai'),
+        'start_time': astropyTime(datetime.datetime(2014, 1, 1, 0, 0, 35), scale='tai'),
         'primekey': {'T_REC': '2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI'}
         })
 
@@ -195,8 +182,8 @@ def test_make_recordset_errors():
         client._make_recordset(**d1)
 
     d1.update({
-        'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
-        'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35),
+        'end_time': astropyTime(datetime.datetime(2014, 1, 1, 1, 0, 35), scale='tai'),
+        'start_time': astropyTime(datetime.datetime(2014, 1, 1, 0, 0, 35), scale='tai'),
         'wavelength': 604*u.AA,
         'primekey': {'WAVELNTH': '604'}
         })
@@ -208,8 +195,8 @@ def test_make_recordset_errors():
 @pytest.mark.online
 def test_make_recordset():
     d1 = {'series': 'aia.lev1_euv_12s',
-          'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
-          'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35)
+          'end_time': astropyTime(datetime.datetime(2014, 1, 1, 1, 0, 35), scale='tai'),
+          'start_time': astropyTime(datetime.datetime(2014, 1, 1, 0, 0, 35), scale='tai')
           }
     exp = 'aia.lev1_euv_12s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]'
     assert client._make_recordset(**d1) == exp
@@ -228,8 +215,8 @@ def test_make_recordset():
     assert client._make_recordset(**d1) == exp
 
     d1 = {'series': 'hmi.v_45s',
-          'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
-          'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35),
+          'end_time': astropyTime(datetime.datetime(2014, 1, 1, 1, 0, 35), scale='tai'),
+          'start_time': astropyTime(datetime.datetime(2014, 1, 1, 0, 0, 35), scale='tai'),
           'segment': 'foo,bar'
           }
     exp = 'hmi.v_45s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]{foo,bar}'
@@ -239,8 +226,8 @@ def test_make_recordset():
     assert client._make_recordset(**d1) == exp
 
     d1 = {'series': 'hmi.sharp_720s',
-          'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
-          'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35),
+          'end_time': astropyTime(datetime.datetime(2014, 1, 1, 1, 0, 35), scale='tai'),
+          'start_time': astropyTime(datetime.datetime(2014, 1, 1, 0, 0, 35), scale='tai'),
           'segment': ['continuum', 'magnetogram'],
           'primekey': {'HARPNUM': '4864'}
           }
