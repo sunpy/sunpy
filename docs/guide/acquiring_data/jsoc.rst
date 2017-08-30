@@ -78,11 +78,12 @@ can be used to specify dates and time). The Time attribute takes UTC time,
 as default. If you need to pass a Time in some other time scale, such as TAI,
 pass an Astropy Time object, like:
 
-	>>> from astropy.time import Time as T
+	>>> import astropy.time
 
 Then, the Time attribute can be passed as::
 
-	``a.jsoc.Time(T('2014-01-01T00:00:00', scale='tai'), T('2014-01-01T01:00:00', scale='tai'))``
+	``a.jsoc.Time(astropy.time.Time('2014-01-01T00:00:00', scale='tai'),
+	              astropy.time.Time('2014-01-01T01:00:00', scale='tai'))``
 
 The second argument::
 

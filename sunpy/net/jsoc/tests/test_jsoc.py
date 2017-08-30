@@ -128,40 +128,44 @@ def test_get_request():
     assert isinstance(aa, Results)
 
 
-@pytest.mark.online         # passed
+@pytest.mark.online
 def test_invalid_query():
     with pytest.raises(ValueError):
         client.search(attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'))
 
 
-@pytest.mark.online          # PASSED
+@pytest.mark.online
 def test_lookup_records_errors():
-    d1 = {'end_time': astropyTime(datetime.datetime(2014, 1, 1, 1, 0, 35), scale='tai'),
-          'start_time': astropyTime(datetime.datetime(2014, 1, 1, 0, 0, 35), scale='tai')}
-    with pytest.raises(ValueError):
+    d1 = {'end_time': astropyTime(datetime.datetime(2014, 1, 1, 1, 0, 35)),
+          'start_time': astropyTime(datetime.datetime(2014, 1, 1, 0, 0, 35))}
+    with pytest.raises(ValueError):          # Series must be specified for a JSOC Query
         client._lookup_records(d1)
 
     d1.update({'series': 'aia.lev1_euv_12s'})
     d1.update({'keys': 123})
+    # Keywords can only be passed as a list or comma-separated strings.
     with pytest.raises(TypeError):
         client._lookup_records(d1)
 
     d1['keys'] = 'T_OBS'
     d1.update({'primekey': {'foo': 'bar'}})
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError):          # Unexpected PrimeKeys were passed.
         client._lookup_records(d1)
 
     del d1['primekey']
     d1.update({'segment': 123})
+    d1.update({'wavelength': 304*u.AA})
+    # Segments can only be passed as a comma-separated string or a list of strings.
     with pytest.raises(TypeError):
         client._lookup_records(d1)
 
     d1.update({'segment': 'foo'})
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError):          # Unexpected Segments were passed.
         client._lookup_records(d1)
 
     del d1['segment']
     d1.update({'series': 'hmi.m_45s'})
+    # The series does not support wavelength attribute.
     with pytest.raises(TypeError):
         client._lookup_records(d1)
 
@@ -173,8 +177,8 @@ def test_make_recordset_errors():
         client._make_recordset(**d1)
 
     d1.update({
-        'end_time': astropyTime(datetime.datetime(2014, 1, 1, 1, 0, 35), scale='tai'),
-        'start_time': astropyTime(datetime.datetime(2014, 1, 1, 0, 0, 35), scale='tai'),
+        'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
+        'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35),
         'primekey': {'T_REC': '2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI'}
         })
 
@@ -182,8 +186,8 @@ def test_make_recordset_errors():
         client._make_recordset(**d1)
 
     d1.update({
-        'end_time': astropyTime(datetime.datetime(2014, 1, 1, 1, 0, 35), scale='tai'),
-        'start_time': astropyTime(datetime.datetime(2014, 1, 1, 0, 0, 35), scale='tai'),
+        'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
+        'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35),
         'wavelength': 604*u.AA,
         'primekey': {'WAVELNTH': '604'}
         })
@@ -195,8 +199,8 @@ def test_make_recordset_errors():
 @pytest.mark.online
 def test_make_recordset():
     d1 = {'series': 'aia.lev1_euv_12s',
-          'end_time': astropyTime(datetime.datetime(2014, 1, 1, 1, 0, 35), scale='tai'),
-          'start_time': astropyTime(datetime.datetime(2014, 1, 1, 0, 0, 35), scale='tai')
+          'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
+          'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35)
           }
     exp = 'aia.lev1_euv_12s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]'
     assert client._make_recordset(**d1) == exp
@@ -215,8 +219,8 @@ def test_make_recordset():
     assert client._make_recordset(**d1) == exp
 
     d1 = {'series': 'hmi.v_45s',
-          'end_time': astropyTime(datetime.datetime(2014, 1, 1, 1, 0, 35), scale='tai'),
-          'start_time': astropyTime(datetime.datetime(2014, 1, 1, 0, 0, 35), scale='tai'),
+          'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
+          'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35),
           'segment': 'foo,bar'
           }
     exp = 'hmi.v_45s[2014.01.01_00:00:35_TAI-2014.01.01_01:00:35_TAI]{foo,bar}'
@@ -226,8 +230,8 @@ def test_make_recordset():
     assert client._make_recordset(**d1) == exp
 
     d1 = {'series': 'hmi.sharp_720s',
-          'end_time': astropyTime(datetime.datetime(2014, 1, 1, 1, 0, 35), scale='tai'),
-          'start_time': astropyTime(datetime.datetime(2014, 1, 1, 0, 0, 35), scale='tai'),
+          'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
+          'start_time': datetime.datetime(2014, 1, 1, 0, 0, 35),
           'segment': ['continuum', 'magnetogram'],
           'primekey': {'HARPNUM': '4864'}
           }

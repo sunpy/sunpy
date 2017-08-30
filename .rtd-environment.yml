@@ -62,3 +62,4 @@ dependencies:
 - glymur
 - pip:
     - sunpy-sphinx-theme
+    - drms
