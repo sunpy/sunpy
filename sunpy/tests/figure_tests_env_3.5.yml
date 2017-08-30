@@ -13,6 +13,7 @@ dependencies:
 - cycler=0.10.0=py35_0
 - dbus=1.10.10=0
 - decorator=4.0.11=py35_0
+- drms
 - expat=2.1.0=0
 - fontconfig=2.12.1=2
 - freetype=2.5.5=2
