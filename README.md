@@ -1,10 +1,8 @@
 # [SunPy](http://sunpy.org)
-[![Downloads](https://img.shields.io/pypi/dm/sunpy.svg)](https://pypi.python.org/pypi/sunpy/) 
-[![Latest Version](https://img.shields.io/pypi/v/sunpy.svg)](https://pypi.python.org/pypi/sunpy/) 
+[![Latest Version](https://img.shields.io/pypi/v/sunpy.svg)](https://pypi.python.org/pypi/sunpy/)
 [![Build Status](https://secure.travis-ci.org/sunpy/sunpy.svg)](http://travis-ci.org/sunpy/sunpy)
 [![Build status](https://ci.appveyor.com/api/projects/status/xow461iejsjvp9vl?svg=true)](https://ci.appveyor.com/project/sunpy/sunpy)
 [![Coverage Status](https://coveralls.io/repos/sunpy/sunpy/badge.svg?branch=master)](https://coveralls.io/r/sunpy/sunpy?branch=master)
-[![Code Issues](https://www.quantifiedcode.com/api/v1/project/9edd3e28230840038713e1c7dc3eb141/badge.svg)](https://www.quantifiedcode.com/app/project/9edd3e28230840038713e1c7dc3eb141)
 [![Research software impact](http://depsy.org/api/package/pypi/sunpy/badge.svg)](http://depsy.org/package/python/sunpy)
 [![DOI](https://zenodo.org/badge/2165383.svg)](https://zenodo.org/badge/latestdoi/2165383)
 [![Powered by NumFOCUS](https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A)](http://numfocus.org)
@@ -63,7 +61,7 @@ For more information or to ask questions about SunPy, check out:
  * [SunPy Documentation](http://docs.sunpy.org/en/latest/)
  * [SunPy Mailing List](https://groups.google.com/forum/#!forum/sunpy)
  * [SunPy Matrix Channel](https://riot.im/app/#/room/#sunpy-general:matrix.org)
- 
+
 Contributing
 ------------
 
@@ -79,4 +77,3 @@ for a list of some known outstanding items.
 
 When you are interacting with the SunPy community you are asked to follow
 our [Code of Conduct](https://github.com/sunpy/sunpy/wiki/Code-of-Conduct).
-
