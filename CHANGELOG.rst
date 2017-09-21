@@ -9,7 +9,7 @@ Bug Fixes
 - Fix docstring formatting for net.vso.attrs [#2309]]
 - Fix coloring of ticks under matplotlib 2.0 default style [#2320]
 - Always index arrays with tuples in `ImageAnimator` [#2320]
-- Misc Doc fixes [#2317]
+- Misc Doc fixes [#2317] [#2289]
 - Misc Readme Changes [#2281] [#2283]
 - Fix matplotlib / pandas 0.21 bug in examples [#2336]
 0.8.2
