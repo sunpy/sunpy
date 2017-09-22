@@ -63,15 +63,9 @@ def test_data_filenames():
     excludes = r'|'.join([fnmatch.translate(x) for x in excludes]) or r'$.'
 
     for root, dirs, files in os.walk(rootdir):
-
-        dirs[:] = [os.path.join(root, d) for d in dirs]
-        dirs[:] = [d for d in dirs if not re.match(excludes, d)]
-
         files = [os.path.join(root, f) for f in files]
         files = [f for f in files if not re.match(excludes, f)]
-
         files = [file.replace(rootdir + '/', '') for file in files]
-
         test_data_filenames_list.extend(files)
 
     return test_data_filenames_list
