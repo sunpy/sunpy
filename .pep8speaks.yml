@@ -6,3 +6,4 @@ pycodestyle:
     - ah_bootstrap.py
     - astropy_helpers/
     - docs/conf.py
+  descending_issues_order: True
