@@ -405,12 +405,13 @@ Reference Coord:\t {refcoord}
     @property
     def date(self):
         """Image observation time"""
-        time = parse_time(self.meta.get('date-obs', 'now'))
+        time = self.meta.get('date-obs', None)
         if time is None:
             warnings.warn_explicit("Missing metadata for observation time."
                                    " Using current time.",
                                    Warning, __file__,
                                    inspect.currentframe().f_back.f_lineno)
+            time = 'now'
         return parse_time(time)
 
     @property
