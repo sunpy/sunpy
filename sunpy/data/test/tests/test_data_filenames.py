@@ -21,7 +21,7 @@ def test_test_data_filenames(monkeypatch):
         if not os.path.isfile(file):
             all_exist = False
             break
-    new_output = []
+    new_op = []
     for path in output:
-    	new_output.append(path.replace('\\', '/')) # Handle in case of system = win32
-    assert isinstance(new_output, list) and new_output == ['/universe/solar_system/earth'] and all_exist
+        new_op.append(path.replace('\\', '/'))  # Handle in case of system = win32
+    assert isinstance(new_op, list) and new_op == ['/universe/solar_system/earth'] and all_exist
