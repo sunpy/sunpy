@@ -5,7 +5,10 @@ import sunpy.data.test
 
 @pytest.fixture
 def mockreturn(path):
-    return [(os.path.join('test', 'data', ''), (), ('code.py', 'test_file', 'code.pyc', '__init__.py'))]
+    paths = [
+        (os.path.join('test', 'data', ''), (), ('code.py', 'test_file', 'code.pyc', '__init__.py'))
+    ]
+    return paths
 
 
 def test_test_data_filenames(monkeypatch):
