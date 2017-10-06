@@ -178,7 +178,7 @@ class MapCube(object):
             axes.set_title("{s.name}".format(s=self[i]))
 
             # x-axis label
-            if self[0].coordinate_system.axs1 == 'HG':
+            if self[0].coordinate_system.axis1 == 'HG':
                 xlabel = 'Longitude [{lon}'.format(lon=self[i].spatial_units.axis1)
             else:
                 xlabel = 'X-position [{xpos}]'.format(xpos=self[i].spatial_units.axis1)
