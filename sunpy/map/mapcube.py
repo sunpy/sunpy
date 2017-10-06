@@ -178,16 +178,16 @@ class MapCube(object):
             axes.set_title("{s.name}".format(s=self[i]))
 
             # x-axis label
-            if self[0].coordinate_system.x == 'HG':
-                xlabel = 'Longitude [{lon}'.format(lon=self[i].spatial_units.x)
+            if self[0].coordinate_system.axs1 == 'HG':
+                xlabel = 'Longitude [{lon}'.format(lon=self[i].spatial_units.axis1)
             else:
-                xlabel = 'X-position [{xpos}]'.format(xpos=self[i].spatial_units.x)
+                xlabel = 'X-position [{xpos}]'.format(xpos=self[i].spatial_units.axis1)
 
             # y-axis label
-            if self[0].coordinate_system.y == 'HG':
-                ylabel = 'Latitude [{lat}]'.format(lat=self[i].spatial_units.y)
+            if self[0].coordinate_system.axis2 == 'HG':
+                ylabel = 'Latitude [{lat}]'.format(lat=self[i].spatial_units.axis2)
             else:
-                ylabel = 'Y-position [{ypos}]'.format(ypos=self[i].spatial_units.y)
+                ylabel = 'Y-position [{ypos}]'.format(ypos=self[i].spatial_units.axis2)
 
             axes.set_xlabel(xlabel)
             axes.set_ylabel(ylabel)
