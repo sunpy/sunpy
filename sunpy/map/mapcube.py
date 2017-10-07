@@ -91,7 +91,7 @@ class MapCube(object):
     # Sorting methods
     @classmethod
     def _sort_by_date(cls):
-        return lambda m: m.date # maps.sort(key=attrgetter('date'))
+        return lambda m: m.date  # maps.sort(key=attrgetter('date'))
 
     def _derotate(self):
         """Derotates the layers in the MapCube"""
