@@ -1,3 +1,14 @@
+0.8.2
+=====
+
+New Features
+------------
+
+Bug Fixes
+---------
+
+- Shows a warning if observation time is missing [#2293]
+
 0.8.1
 ======
 
