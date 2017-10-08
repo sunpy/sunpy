@@ -49,7 +49,7 @@ def test_data_filenames():
     """
     Return a list of all test files in ``data/test`` directory.
 
-    This ignores any py, pyc and __*__ files in these directories.
+    This ignores any ``py``, ``pyc`` and ``__*__`` files in these directories.
 
     Return
     ------
