@@ -109,6 +109,16 @@ class TestMap(object):
         backin = sunpy.map.Map(afilename)
         assert isinstance(backin, sunpy.map.sources.EITMap)
 
+    def test_cube_save(self):
+        #Test save out
+        cube = sunpy.map.Map(a_list_of_many, cube=True)
+        prefix_path = tempfile.tempdir
+        cube.save(prefix_path)
+        for i, _map in enumerate(cube.maps):
+            fname = os.path.join(tempfile.tempdir, "%d.fits"%(i))
+            backin = sunpy.map.Map(fname)
+            assert isinstance(backin, type(_map))
+
 #==============================================================================
 # Sources Tests
 #==============================================================================

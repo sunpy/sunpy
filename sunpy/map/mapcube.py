@@ -362,7 +362,6 @@ class MapCube(object):
         """
         return [m.meta for m in self.maps]
 
-
     def save(self, prefix_path):
         """
         Saves the Maps held by the MapCube object in a directory.
@@ -376,5 +375,3 @@ class MapCube(object):
             filename = "%d.fits"%(index)
             filepath = os.path.join(prefix_path, filename)
             _map.save(filepath)
-
-
