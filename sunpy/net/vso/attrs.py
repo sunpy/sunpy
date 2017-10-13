@@ -348,17 +348,17 @@ class Resolution(_VSOSimpleAttr):
     ----------
     value : float or string
 
-    The value can be entered in of three ways
-    (1) May be entered as a string or any numeric type for equality matching
-    (2) May be a string of the format '(min) - (max)' for range matching
-    (3) May be a string of the form '(operator) (number)' where operator is
-    one of: lt gt le ge < > <= >=
+        The value can be entered in of three ways
+        - May be entered as a string or any numeric type for equality matching
+        - May be a string of the format '(min) - (max)' for range matching
+        - May be a string of the form '(operator) (number)' where operator is
+          one of: lt gt le ge < > <= >=
 
-    This attribute is currently implemented for SDO/AIA and HMI only.
-    The "resolution" is a function of the highest level of data available.
-    If the CCD is 2048x2048, but is binned to 512x512 before downlink,
-    the 512x512 product is designated as '1'.  If a 2048x2048 and 512x512
-    product are both available, the 512x512 product is designated '0.25'.
+        This attribute is currently implemented for SDO/AIA and HMI only.
+        The "resolution" is a function of the highest level of data available.
+        If the CCD is 2048x2048, but is binned to 512x512 before downlink,
+        the 512x512 product is designated as '1'.  If a 2048x2048 and 512x512
+        product are both available, the 512x512 product is designated '0.25'.
 
     Reference: documentation in SSWIDL routine vso_search.pro.
     """
