@@ -1,7 +1,7 @@
 """
 Helioviewer Client tests
 """
-from __future__ import absolute_import
+
 
 import sunpy
 import sunpy.map
