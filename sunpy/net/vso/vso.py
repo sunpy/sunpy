@@ -5,7 +5,6 @@
 # the ESA Summer of Code (2011).
 #
 # pylint: disable=W0401,C0103,R0904,W0141
-from __future__ import absolute_import, division, print_function
 
 """
 This module provides a wrapper around the VSO API.
@@ -38,9 +37,9 @@ from sunpy.util import replacement_filename
 from sunpy.time import parse_time
 
 from sunpy.util import deprecated
-from sunpy.extern import six
-from sunpy.extern.six import iteritems, text_type
-from sunpy.extern.six.moves import input
+from .extern import six
+from ..six import iteritems, text_type
+from ...moves import input
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -399,8 +398,7 @@ class VSOClient(object):
 
         name = slugify(name)
 
-        if six.PY2:
-            name = name.encode(fs_encoding, "ignore")
+        
 
         if not name:
             name = "file"
