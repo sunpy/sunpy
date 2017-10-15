@@ -24,9 +24,10 @@ from sunpy.util.datatype_factory_base import BasicRegistrationFactory
 from sunpy.util.datatype_factory_base import NoMatchError
 from sunpy.util.datatype_factory_base import MultipleMatchError
 from sunpy.util.datatype_factory_base import ValidationFunctionError
-from sunpy.extern import six
+from .extern import six
 
-from sunpy.extern.six.moves.urllib.request import urlopen
+from .....request import urlopen
+
 
 __authors__ = ["Russell Hewett, Stuart Mumford"]
 __email__ = "stuart@mumford.me.uk"
