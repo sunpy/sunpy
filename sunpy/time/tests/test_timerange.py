@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from __future__ import absolute_import, division, print_function
+
 
 import datetime
 
@@ -8,7 +8,7 @@ import pytest
 import astropy.units as u
 
 import sunpy.time
-from sunpy.extern.six.moves import zip
+from ...moves import zip
 
 tbegin_str = '2012/1/1'
 tfin_str = '2012/1/2'
