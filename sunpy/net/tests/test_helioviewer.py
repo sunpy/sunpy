@@ -7,7 +7,7 @@ import sunpy
 import sunpy.map
 import pytest
 from sunpy.net.helioviewer import HelioviewerClient
-from sunpy.extern.six.moves import urllib
+from ...moves import urllib
 
 from sunpy.tests.helpers import skip_glymur
 
