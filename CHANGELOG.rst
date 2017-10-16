@@ -8,6 +8,7 @@ Bug Fixes
 ---------
 
 - Shows a warning if observation time is missing [#2293]
+- Updates MapCube to access the correct properties of the namedtuple SpatialPair [#2297]
 
 0.8.1
 ======
