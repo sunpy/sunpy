@@ -7,3 +7,6 @@ A Module for accessing the HELIO web service
 """
 
 from __future__ import absolute_import
+
+from .parser import *
+from .hec import *
