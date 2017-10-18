@@ -938,7 +938,7 @@ class ImageAnimatorWCS(ImageAnimator):
 
     """
     
-    @u.quantity_input(unit_x_axis= u.km , unit_y_axis =u.km)
+    
     def __init__(self, data, wcs=None, image_axes=[-1, -2], unit_x_axis, unit_y_axis,
                  axis_ranges=None, **kwargs):
         if not isinstance(wcs, astropy.wcs.WCS):
