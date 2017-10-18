@@ -6,6 +6,7 @@ from collections import OrderedDict
 
 import numpy as np
 import astropy.io.fits
+from astropy.wcs import WCS
 
 import sunpy
 from sunpy.map.mapbase import GenericMap, MAP_CLASSES
@@ -53,6 +54,7 @@ class MapFactory(BasicRegistrationFactory):
     Examples
     --------
     >>> import sunpy.map
+    >>> import sunpy.data
     >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
     >>> import sunpy.data.sample
     >>> mymap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
@@ -63,12 +65,25 @@ class MapFactory(BasicRegistrationFactory):
 
     >>> mymap = sunpy.map.Map((data, header))   # doctest: +SKIP
 
-    headers are some base of `dict` or `collections.OrderedDict`, including
-    `sunpy.io.header.FileHeader` or `sunpy.util.metadata.MetaDict` classes.
+    headers are some base of `dict` or `collections.OrderedDict`,
+    including `sunpy.io.header.FileHeader`
+    or `sunpy.util.metadata.MetaDict` classes.
 
-    * data, header pairs, not in tuples
+   * data, header pairs, not in tuples
 
     >>> mymap = sunpy.map.Map(data, header)   # doctest: +SKIP
+
+    * data, wcs object, in tuple
+
+    >>> from astropy.wcs import WCS
+    >>> wcs = WCS(AIA_171_IMAGE)
+    >>> mymap = sunpy.map.Map((data, wcs))    #doctest: +SKIP
+
+    * data, wcs object, not in tuple
+
+    >>> from astropy.wcs import WCS
+    >>> wcs = WCS(AIA_171_IMAGE)
+    >>> mymap = sunpy.map.Map(data, wcs)    #doctest: +SKIP
 
     * File names
 
@@ -92,13 +107,14 @@ class MapFactory(BasicRegistrationFactory):
 
     * Lists of any of the above
 
-    >>> mymap = sunpy.map.Map(['file1.fits', 'file2.fits', 'file3.fits', 'directory1/'])
-    # doctest: +SKIP
+    >>> mymap = sunpy.map.Map(['file1.fits', 'file2.fits', 'file3.fits',
+                               'directory1/'])   # doctest: +SKIP
 
     * Any mixture of the above not in a list
 
-    >>> mymap = sunpy.map.Map((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits')
-    # doctest: +SKIP
+    >>> mymap = sunpy.map.Map((data, header), data2, header2, 'file1.fits',
+                               url_str, 'eit_*.fits')   # doctest: +SKIP
+
     """
 
     def _read_file(self, fname, **kwargs):
@@ -137,6 +153,8 @@ class MapFactory(BasicRegistrationFactory):
         mixture of the following entries:
         * tuples of data,header
         * data, header not in a tuple
+        * data, wcs object in a tuple
+        * data, wcs object not in a tuple
         * filename, which will be read
         * directory, from which all files will be read
         * glob, from which all files will be read
@@ -153,7 +171,6 @@ class MapFactory(BasicRegistrationFactory):
                          '*.fits')
 
         """
-
         data_header_pairs = list()
         already_maps = list()
 
@@ -182,6 +199,28 @@ class MapFactory(BasicRegistrationFactory):
                 pair = (args[i], OrderedDict(args[i+1]))
                 data_header_pairs.append(pair)
                 i += 1   # an extra increment to account for the data-header pairing
+
+            # Data-wcs object pair in a tuple
+            elif ((type(arg) in [tuple, list]) and
+                  len(arg) == 2 and
+                  isinstance(arg[0], np.ndarray) and
+                  isinstance(arg[1], WCS)):
+
+                arg_header = arg[1].to_header()
+                if(self._validate_meta(arg_header)):
+                    arg[1] = OrderedDict(arg_header)
+                    data_header_pairs.append(arg)
+
+            # Data-wcs object pair not in a tuple
+            elif (isinstance(arg, np.ndarray) and
+                  isinstance(args[i+1], WCS)):
+
+                arg_header = args[i+1].to_header()
+                if(self._validate_meta(arg_header)):
+                    pair = (args[i], OrderedDict(arg_header))
+                    data_header_pairs.append(pair)
+                    i += 1    # an extra increment to account for the data-header pairing
+
 
             # File name
             elif (isinstance(arg, six.string_types) and
@@ -270,7 +309,6 @@ class MapFactory(BasicRegistrationFactory):
         for pair in data_header_pairs:
             data, header = pair
             meta = MetaDict(header)
-
             try:
                 new_map = self._check_registered_widgets(data, meta, **kwargs)
             except (NoMatchError, MultipleMatchError, ValidationFunctionError):
@@ -314,6 +352,7 @@ class MapFactory(BasicRegistrationFactory):
             else:
                 candidate_widget_types = [self.default_widget_type]
         elif n_matches > 1:
+
             raise MultipleMatchError("Too many candidate types identified ({0})."
                                      "Specify enough keywords to guarantee unique type"
                                      "identification.".format(n_matches))
