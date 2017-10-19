@@ -413,9 +413,13 @@ class CompositeMap(object):
         # Plot layers of composite map
         for m in self._maps:
             # Parameters for plotting
+            bl = m._get_lon_lat(m.bottom_left_coord)
+            tr = m._get_lon_lat(m.top_right_coord)
+            x_range = list(u.Quantity([bl[0], tr[0]]).to(m.spatial_units[0]).value)
+            y_range = list(u.Quantity([bl[1], tr[1]]).to(m.spatial_units[0]).value)
             params = {
                 "origin": "lower",
-                "extent": list(m.xrange.value) + list(m.yrange.value),
+                "extent": list(x_range) + list(y_range),
                 "cmap": m.plot_settings['cmap'],
                 "norm": m.plot_settings['norm'],
                 "alpha": m.alpha,
