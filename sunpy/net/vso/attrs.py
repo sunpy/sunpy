@@ -233,6 +233,8 @@ class Provider(_VSOSimpleAttr):
     ----------
     value : string
 
+    Notes
+    -----
     More information about each source may be found within in the VSO Registry.
     For a list of sources see
     http://sdac.virtualsolar.org/cgi/show_details?keyword=PROVIDER.
@@ -248,6 +250,8 @@ class Source(_VSOSimpleAttr):
     ----------
     value : string
 
+    Notes
+    -----
     More information about each source may be found within in the VSO Registry.
     User Interface programmers should note that some names may be encoded as
     UTF-8. Please note that 'Source' is used internally by VSO to represent
@@ -267,7 +271,6 @@ class Instrument(_VSOSimpleAttr):
 
     Notes
     -----
-
     More information about each instrument supported by the VSO may be found
     within the VSO Registry. For a list of instruments see
     http://sdac.virtualsolar.org/cgi/show_details?keyword=INSTRUMENT.
@@ -287,9 +290,11 @@ class Detector(_VSOSimpleAttr):
     ----------
     value : string
 
+
+    Notes
+    -----
     For a list of values understood by the VSO see
     http://sdac.virtualsolar.org/cgi/show_details?keyword=SOURCE.
-
     Reference: documentation in SSWIDL routine vso_search.pro.
     """
     pass
@@ -303,6 +308,8 @@ class Physobs(_VSOSimpleAttr):
     ----------
     value : string
 
+    Notes
+    -----
     More information about each instrument may be found within the VSO
     Registry.  For a list of physical observables see
     http://sdac.virtualsolar.org/cgi/show_details?keyword=PHYSOBS.
@@ -319,6 +326,8 @@ class Level(_VSOSimpleAttr):
     ----------
     value : float or string
 
+    Notes
+    -----
     The value can be entered in of three ways
     (1) May be entered as a string or any numeric type for equality matching
     (2) May be a string of the format '(min) - (max)' for range matching
@@ -334,7 +343,6 @@ class Pixels(_VSOSimpleAttr):
     Pixels are (currently) limited to a single dimension (and only implemented
     for SDO data)  We hope to change this in the future to support TRACE,
     Hinode and other investigations where this changed between observations.
-
     Reference: documentation in SSWIDL routine vso_search.pro.
     """
     pass
@@ -348,6 +356,8 @@ class Resolution(_VSOSimpleAttr):
     ----------
     value : float or string
 
+    Notes
+    -----
     The value can be entered in of three ways
     (1) May be entered as a string or any numeric type for equality matching
     (2) May be a string of the format '(min) - (max)' for range matching
@@ -359,7 +369,6 @@ class Resolution(_VSOSimpleAttr):
     If the CCD is 2048x2048, but is binned to 512x512 before downlink,
     the 512x512 product is designated as '1'.  If a 2048x2048 and 512x512
     product are both available, the 512x512 product is designated '0.25'.
-
     Reference: documentation in SSWIDL routine vso_search.pro.
     """
     pass
@@ -373,6 +382,8 @@ class PScale(_VSOSimpleAttr):
     ----------
     value : float or string
 
+    Notes
+    -----
     The value can be entered in of three ways
     (1) May be entered as a string or any numeric type for equality matching
     (2) May be a string of the format '(min) - (max)' for range matching
@@ -410,6 +421,8 @@ class Quicklook(_VSOSimpleAttr):
     value : boolean
         Set to True to retrieve quicklook data if available.
 
+    Notes
+    -----
     Quicklook items are assumed to be generated with a focus on speed rather
     than scientific accuracy.  They are useful for instrument planning and
     space weather but should not be used for science publication.
