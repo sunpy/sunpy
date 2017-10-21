@@ -3,13 +3,10 @@
 
 import datetime
 
-from bs4 import BeautifulSoup
-
 from sunpy.time.timerange import TimeRange
 from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
 
-from sunpy.extern.six.moves.urllib.request import urlopen
 __author__ = "Sudarshan Konge"
 __email__ = "sudk1896@gmail.com"
 
@@ -67,9 +64,7 @@ class BBSOClient(GenericClient):
                 format(START_DATE))
         prefix = 'http://www.bbso.njit.edu'
         suffix = '/pub/archive/%Y/%m/%d/bbso_halph_{level}_%Y%m%d_%H%M%S.fts'
-        suffix_gz = suffix + '.gz'  #Download compressed files as well, if available.
-        total_days = (timerange.end - timerange.start).days + 1
-        all_dates = timerange.split(total_days)
+        suffix_gz = suffix + '.gz'  # Download compressed files as well, if available.
         crawler = Scraper(prefix + suffix, level=level)
         crawler_gz = Scraper(prefix + suffix_gz, level=level)
         result = crawler.filelist(timerange) + crawler_gz.filelist(timerange)
@@ -109,8 +104,6 @@ class BBSOClient(GenericClient):
         boolean: answer as to whether client can service the query
 
         """
-        chkattr = ['Time', 'Instrument', 'Level']
-        chklist = [x.__class__.__name__ in chkattr for x in query]
         chk_var = 0
         for x in query:
             if x.__class__.__name__ == 'Instrument' and x.value.lower() == 'bbso':
