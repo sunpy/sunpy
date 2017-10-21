@@ -11,6 +11,7 @@ import numpy as np
 
 from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
+from sunpy.net import attrs as a
 
 __all__ = ['KanzelhoheClient']
 
@@ -42,8 +43,7 @@ class KanzelhoheClient(GenericClient):
 
     Examples
     --------
-    >>> from sunpy.net import Fido
-    >>> from sunpy.net import attrs as a
+    >>> from sunpy.net import Fido, attrs as a
     >>> timerange = a.Time('2015/12/28 00:00:00','2015/12/28 00:03:00')
     >>> results = Fido.search(timerange, a.Instrument('kanzelhohe'), a.Wavelength(6563*u.AA))
     >>> print(results)
@@ -59,7 +59,7 @@ class KanzelhoheClient(GenericClient):
         """
         returns list of urls corresponding to given TimeRange.
         """
-        wave_float = kwargs['wavelength'].min.value
+        wave_float = (kwargs['wavelength'].min if isinstance(kwargs['wavelength'], a.Wavelength) else kwargs['wavelength'].wavemin).value
         table = {6563:['halpha2k/recent', 'halph_fr'], 32768:['caiia', 'caiik_fi'], 5460:['phokada', 'bband_fi']}
         #Checking if value is close enough to a wavelength value.
         #Converting from one unit to other introduces precision errors.
