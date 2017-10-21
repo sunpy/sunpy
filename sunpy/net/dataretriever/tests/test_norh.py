@@ -32,7 +32,7 @@ from sunpy.net.tests.strategies import time_attr, range_time
      )
 ])
 def test_get_url_for_time_range(timerange, url_start, url_end):
-    urls = norh.NoRHClient()._get_url_for_timerange(timerange, wavelength=17*u.GHz)
+    urls = norh.NoRHClient()._get_url_for_timerange(timerange, wavelength=a.Wavelength(17*u.GHz))
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
