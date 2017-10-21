@@ -57,7 +57,7 @@ passbands can be searched for by supplying an `~astropy.units.Quantity` to the
 
     >>> import astropy.units as u
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('norh'),
-                             a.Wavelength(17*u.GHz))
+    ...                      a.Wavelength(17*u.GHz))
 
 Data of a given cadence can also be specified using the Sample attribute. To
 search for data at a given cadence use the
@@ -69,17 +69,17 @@ like this which are client specific will result in
 client for results, in this case VSO.::
 
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'),
-                             a.Wavelength(171*u.angstrom), a.vso.Sample(10*u.minute))
+    ...                      a.Wavelength(171*u.angstrom), a.vso.Sample(10*u.minute))
 
 To search for data from multiple instruments, wavelengths, times etc., use the
 pipe ``|`` operator. This joins queries together just as the logical ``OR``
 operator would::
 
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-                             a.Instrument('lyra') | a.Instrument('rhessi'))
+    ...                      a.Instrument('lyra') | a.Instrument('rhessi'))
 
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'),
-                             a.Wavelength(171*u.angstrom) | a.Wavelength(94*u.angstrom))
+    ...                      a.Wavelength(171*u.angstrom) | a.Wavelength(94*u.angstrom))
 
 
 Indexing search results

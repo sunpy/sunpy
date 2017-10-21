@@ -157,7 +157,7 @@ a short bit of code to get you started: ::
     >>> from sunpy.sun import constants as con
 
     # one astronomical unit (the average distance between the Sun and Earth)
-    >>> print con.au
+    >>> print(con.au)
       Name   = Astronomical Unit
       Value  = 1.495978707e+11
       Error  = 0.0
@@ -165,7 +165,7 @@ a short bit of code to get you started: ::
       Reference = IAU 2012 Resolution B2
 
     # the solar radius
-    >>> print con.radius
+    >>> print(con.radius)
       Name   = Solar radius
       Value  = 695508000.0
       Error  = 26000.0
@@ -350,7 +350,7 @@ A simple example of this is shown below::
 
   >>> db = Database()
   >>> db.fetch(a.Time("2011-09-20T01:00:00", "2011-09-20T02:00:00"),
-               a.Instrument('AIA'), a.vso.Sample(15*u.min))
+  ...          a.Instrument('AIA'), a.vso.Sample(15*u.min))
   >>> db.commit()
 
   >>> db
