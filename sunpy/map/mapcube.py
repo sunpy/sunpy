@@ -362,7 +362,7 @@ class MapCube(object):
         """
         return [m.meta for m in self.maps]
 
-    def save(self, prefix_path):
+    def save(self, prefix_path, filetype='auto', **kwargs):
         """
         Saves the Maps held by the MapCube object in a directory.
 
@@ -371,7 +371,11 @@ class MapCube(object):
         prefix_path : str
             /path/to/directory where file should be saved.
         """
+
+        max_index = len(self.maps)
+        length = len(str(max_index))
         for index, _map in enumerate(self.maps):
-            filename = "%d.fits"%(index)
-            filepath = os.path.join(prefix_path, filename)
-            _map.save(filepath)
+            filename = str(index).zfill(length)
+            filename_with_ext = "{}.fits".format(filename)
+            filepath = os.path.join(prefix_path, filename_with_ext)
+            _map.save(filepath, filetype, **kwargs)

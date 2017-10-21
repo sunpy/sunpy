@@ -114,9 +114,14 @@ class TestMap(object):
         cube = sunpy.map.Map(a_list_of_many, cube=True)
         prefix_path = tempfile.tempdir
         cube.save(prefix_path)
+        max_length = len(cube.maps)
+        length = len(str(max_length))
         for i, _map in enumerate(cube.maps):
-            fname = os.path.join(tempfile.tempdir, "%d.fits"%(i))
-            backin = sunpy.map.Map(fname)
+            fname = str(i).zfill(length)
+            fname_with_ext = "{}.fits".format(fname)
+            print(fname_with_ext)
+            fpath = os.path.join(tempfile.tempdir, fname_with_ext)
+            backin = sunpy.map.Map(fpath)
             assert isinstance(backin, type(_map))
 
 #==============================================================================
