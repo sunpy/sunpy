@@ -51,8 +51,8 @@ def test_query():
     assert qr.time_range().end == parse_time('2016/05/18 16:00:33')
 
 
-#This test downloads 2 fits files
-#each of size 8.4MB, total size 16.8MB
+# This test downloads 2 fits files
+# each of size 8.4MB, total size 16.8MB
 @pytest.mark.online
 @pytest.mark.parametrize("time, instrument, level",
                          [(Time('2016/5/18 15:28:00', '2016/5/18 16:30:00'),
@@ -64,8 +64,8 @@ def test_get(time, instrument, level):
     assert len(download_list) == len(qr)
 
 
-#This test downloads 2 fits files
-#each of size 8MB, total size 16MB
+# This test downloads 2 fits files
+# each of size 8MB, total size 16MB
 @pytest.mark.online
 def test_fido_query():
     qr = Fido.search(
