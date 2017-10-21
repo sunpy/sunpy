@@ -40,13 +40,14 @@ class NoRHClient(GenericClient):
                              "see http://solar.nro.nao.ac.jp/norh/doc/manuale/node65.html")
         else:
             wavelength = kwargs['wavelength']
+            wavelength_min = (wavelength.min if isinstance(wavelength, a.Wavelength) else wavelength.wavemin)
+            wavelength_max = (wavelength.max if isinstance(wavelength, a.Wavelength) else wavelength.wavemax)
 
-        # If wavelength is a single value GenericClient will have made it a
-        # Quantity in the kwargs.
-        if not isinstance(wavelength, u.Quantity):
-            raise ValueError("Wavelength to NORH must be one value not {}.".format(wavelength))
+        if wavelength_min != wavelength_max:
+            # This is a known incapability of the scraper
+            raise ValueError("Wavelength to NORH must be asked one frequency at a time")
 
-        wavelength = wavelength.to(u.GHz, equivalencies=u.spectral())
+        wavelength = wavelength_min.to(u.GHz, equivalencies=u.spectral())
         if wavelength == 34 * u.GHz:
             freq = 'tcz'
         elif wavelength == 17 * u.GHz:
