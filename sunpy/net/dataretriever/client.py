@@ -200,17 +200,15 @@ class GenericClient(object):
             elif isinstance(elem, _Range):
                 a_min = elem.min
                 a_max = elem.max
-                if a_min == a_max:
-                    self.map_[elem.__class__.__name__.lower()] = a_min
+                # if a_min == a_max:
+                #     self.map_[elem.__class__.__name__.lower()] = a_min
+                # else:
+                if isinstance(elem, Wavelength):
+                    prefix = 'wave'
                 else:
-                    if isinstance(elem, Wavelength):
-                        prefix = 'wave'
-                    else:
-                        prefix = ''
-                    minmax = namedtuple("minmax", "{0}min {0}max".format(prefix))
-                    self.map_[elem.__class__.__name__.lower()] = minmax(a_min, a_max)
-            elif issubclass(elem.__class__, Wavelength): #FIXME Is this still needed?
-                self.map_[elem.__class__.__name__.lower()] = elem
+                    prefix = ''
+                minmax = namedtuple("minmax", "{0}min {0}max".format(prefix))
+                self.map_[elem.__class__.__name__.lower()] = minmax(a_min, a_max)
             else:
                 if hasattr(elem, 'value'):
                     self.map_[elem.__class__.__name__.lower()] = elem.value
