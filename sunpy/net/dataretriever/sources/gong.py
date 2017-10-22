@@ -81,7 +81,7 @@ class GONGClient(GenericClient):
         instrument_in = ('instrument' in kwargs.keys() and kwargs['instrument'] in table_instruments.keys())
         wavelength_in = ('wavelength' in kwargs.keys())
 
-        url_pattern_1 = 'ftp://gong2.nso.edu/QR/{id}qa/%Y%m/{ObsID}bqa%y%m%d/{ObsID}bqa%y%m%dt%H%M.fits.gz'
+        url_pattern_1 = 'ftp://gong2.nso.edu/QR/{id}qa/%Y%m/{ObsID}{id}qa%y%m%d/{ObsID}{id}qa%y%m%dt%H%M.fits.gz'
         url_pattern_2 = 'http://gong2.nso.edu/HA/haf/%Y%m/%Y%m%d/%Y%m%d%H%M%S{ObsID}h.fits.fz'
 
         pattern_table = {6562: url_pattern_1, 6563: url_pattern_1, 6768: url_pattern_2}
