@@ -119,7 +119,6 @@ class TestMap(object):
         for i, _map in enumerate(cube.maps):
             fname = str(i).zfill(length)
             fname_with_ext = "{}.fits".format(fname)
-            print(fname_with_ext)
             fpath = os.path.join(tempfile.tempdir, fname_with_ext)
             backin = sunpy.map.Map(fpath)
             assert isinstance(backin, type(_map))
