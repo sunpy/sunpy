@@ -1,9 +1,9 @@
 """
 ============================
-The brightest pixel location
+Masking hot pixels
 ============================
 
-How to find and overplot the location of the brightest pixel
+How to find and mask hot pixels
 """
 from __future__ import print_function, division
 
