@@ -1,15 +1,13 @@
 # This module was developed with funding provided by
 # the Google Summer of Code 2016.
-import re
 import datetime
 
 import numpy as np
-from bs4 import BeautifulSoup
 
 from sunpy.net.dataretriever.client import GenericClient
 from sunpy.util.scraper import Scraper
+from sunpy.net import attrs as a
 
-from sunpy.extern.six.moves.urllib.request import urlopen
 
 __author__ = "Sudarshan Konge"
 __email__ = "sudk1896@gmail.com"
@@ -43,7 +41,7 @@ class VSMClient(GenericClient):
     >>> from sunpy.net import attrs as a
     >>> res = Fido.search(a.Time('2016/6/4', '2016/6/4 00:10:00'), a.Instrument('vsm'),
                           a.Wavelength(6302*u.AA), a.Physobs('VECTOR_MAGNETIC_FIELD'))
-    >>> print (res)
+    >>> print(res)
     [<Table length=6>
          Start Time           End Time      Source Instrument
            str19               str19         str5     str3
@@ -67,9 +65,11 @@ class VSMClient(GenericClient):
 
         physobs_in = ('physobs' in kwargs.keys() and
                       kwargs['physobs'] in table_physobs)
-        url_pattern = 'http://gong2.nso.edu/pubkeep/{dtype}/%Y%m/k4{dtype}%y%m%d/k4{dtype}%y%m%dt%H%M%S{suffix}'
+        domain = 'http://gong2.nso.edu/pubkeep/'
+        url_pattern = domain + '{dtype}/%Y%m/k4{dtype}%y%m%d/k4{dtype}%y%m%dt%H%M%S{suffix}.fts.gz'
 
-        wave_float = kwargs['wavelength'].min.value
+        wave = kwargs['wavelength']
+        wave_float = (wave.min if isinstance(wave, a.Wavelength) else wave.wavemin).value
 
         # The isclose function in numpy can only check two arrays if they are
         # close to each other within some precision. Standalone values such as
@@ -88,35 +88,6 @@ class VSMClient(GenericClient):
         if wave is None:
             raise ValueError("Enter correct wavelength values and units")
 
-        def download_from_nso(dtype, suffix, timerange):
-            tmp_pattern = 'k4{dtype}%y%m%dt%H%M%S{suffix}'
-            result = list()
-            base_url = 'http://gong2.nso.edu/pubkeep/{dtype}/{date:%Y%m}/k4{dtype}{date:%y%m%d}/'
-            total_days = (timerange.end - timerange.start).days + 1
-            all_dates = timerange.split(total_days)
-            for day in all_dates:
-                try:
-                    html = urlopen(base_url.format(dtype=dtype, date=day.end))
-                    soup = BeautifulSoup(html)
-                    for link in soup.findAll("a"):
-                        crawler = Scraper(
-                            tmp_pattern, dtype=dtype, suffix=suffix)
-                        simple_pattern = '%y%m%d_%H%M%S'
-                        url = str(link.get('href'))
-                        if (crawler._URL_followsPattern(url)):
-                            tmp = re.sub('k4' + dtype, '', url)
-                            tmp = re.sub('[a-zA-Z]', '', tmp)
-                            crawler_ = Scraper(simple_pattern)
-                            if (timerange.start <=
-                                    crawler_._extractDateURL(tmp) <=
-                                    timerange.end):
-                                result.append(
-                                    base_url.format(
-                                        dtype=dtype, date=day.end) + url)
-                except:
-                    pass
-            return result
-
         start_date = {
             6302: datetime.datetime(2003, 8, 21),
             8542: datetime.datetime(2003, 8, 26),
@@ -130,21 +101,23 @@ class VSMClient(GenericClient):
                 format(START_DATE))
 
         result = list()
+        suffixes = list()
         if wave == 6302:
             if not physobs_in:
-                result.extend(download_from_nso('v72', '.fts.gz', timerange))
-                result.extend(
-                    download_from_nso('v93', '_FDISK.fts.gz', timerange))
+                suffixes.append({'dtype': 'v72', 'suffix': ''})
+                suffixes.append({'dtype': 'v93', 'suffix': '_FDISK'})
             else:
                 if kwargs['physobs'] == 'VECTOR_MAGNETIC_FIELD':
-                    result.extend(
-                        download_from_nso('v93', '_FDISK.fts.gz', timerange))
+                    suffixes.append({'dtype': 'v93', 'suffix': '_FDISK'})
                 else:
-                    result.extend(
-                        download_from_nso('v72', '.fts.gz', timerange))
+                    suffixes.append({'dtype': 'v72', 'suffix': ''})
         else:
-            result.extend(
-                download_from_nso(table_wave[wave]), '.fts.gz', timerange)
+            suffixes.append({'dtype': table_wave[wave], 'suffix': ''})
+
+        for suf in suffixes:
+            crawler = Scraper(url_pattern, **suf)
+            result.extend(crawler.filelist(timerange))
+
         return result
 
     def _makeimap(self):
