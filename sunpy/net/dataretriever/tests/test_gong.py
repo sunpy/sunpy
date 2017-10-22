@@ -8,12 +8,16 @@ import datetime
 
 from astropy import units as u
 from sunpy.net.fido_factory import UnifiedResponse
+from sunpy.net.dataretriever.client import QueryResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
+from sunpy.time.timerange import TimeRange
 
 import sunpy.net.dataretriever.sources.gong as gong
 
 GONGClient = gong.GONGClient()
+FClient = gong.FARSIDEClient()
+
 TRANGE = a.Time('2014/6/4 00:00:00', '2014/6/4 00:07:00')
 
 
@@ -44,7 +48,7 @@ def test_can_handle_query(time, instrument, physobs, wavelength, expected):
 
 
 @pytest.mark.online
-def test_query():
+def test_query_range():
     qr = GONGClient.search(a.Time('2016/6/4 00:00:00', '2016/6/4 00:30:00'),
                            physobs='LOS_MAGNETIC_FIELD', instrument='bigbear')
     assert len(qr) == 3
@@ -71,6 +75,58 @@ def test_get(time, physobs, instrument, wavelength):
 def test_fido_query():
     qr = Fido.search(a.Time('2016/6/4', '2016/6/4 00:10:00'), a.Physobs('INTENSITY'),
                      a.Wavelength(6768*u.AA))
+    assert isinstance(qr, UnifiedResponse)
+    response = Fido.fetch(qr)
+    assert len(response) == qr._numfile
+
+
+@pytest.mark.online
+@pytest.mark.parametrize("timerange, url_start, url_end",
+                         [(TimeRange('2014/2/1', '2014/2/5'),
+                           '201402/mrfqo140201/mrfqo140201t0000.fits',
+                           '201402/mrfqo140205/mrfqo140205t0000.fits')])
+def test_farside_get_url_for_timerange(timerange, url_start, url_end):
+    urls = FClient._get_url_for_timerange(timerange)
+    assert isinstance(urls, list)
+    domain = 'http://farside.nso.edu/oQR/fqo/'
+    assert urls[0] == domain + url_start
+    assert urls[-1] == domain + url_end
+
+
+def test_farside_can_handle_query():
+    assert FClient._can_handle_query(a.Time('2015/12/28', '2015/12/30'), a.Instrument('farside'))
+    assert FClient._can_handle_query(a.Time('2015/12/28', '2015/12/30'), a.Instrument('Farside'))
+    assert not FClient._can_handle_query(a.Time('2015/12/28', '2015/12/30'))
+    assert not FClient._can_handle_query(a.Time('2015/12/28', '2015/12/30'), a.Instrument('bbso'))
+
+
+@pytest.mark.online
+def test_farside_query():
+    qr = FClient.search(a.Time('2016/1/1', '2016/1/5'), instrument='farside')
+    assert isinstance(qr, QueryResponse)
+    assert len(qr) == 9
+    assert qr.time_range().start.date() == datetime.date(2016, 1, 1)
+    assert qr.time_range().end.date() == datetime.date(2016, 1, 5)
+
+
+# Downloads 7 fits files each of size
+# 160KB. Total size ~ 1.2MB
+@pytest.mark.online
+@pytest.mark.parametrize("time, instrument",
+                         [(a.Time('2016/1/1 00:00:00', '2016/1/4 10:00:00'),
+                           a.Instrument('farside'))])
+def test_farside_get(time, instrument):
+    qr = FClient.search(time, instrument)
+    res = FClient.get(qr)
+    download_list = res.wait()
+    assert len(download_list) == len(qr)
+
+
+# Downloads 5 fits files each of size 160KB.
+# Total size ~ 800KB.
+@pytest.mark.online
+def test_farside_fido_query():
+    qr = Fido.search(a.Time('2016/5/18', '2016/5/20'), a.Instrument('farside'))
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
