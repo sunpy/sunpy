@@ -419,7 +419,7 @@ class CompositeMap(object):
             y_range = list(u.Quantity([bl[1], tr[1]]).to(m.spatial_units[0]).value)
             params = {
                 "origin": "lower",
-                "extent": list(x_range) + list(y_range),
+                "extent": x_range + y_range,
                 "cmap": m.plot_settings['cmap'],
                 "norm": m.plot_settings['norm'],
                 "alpha": m.alpha,
