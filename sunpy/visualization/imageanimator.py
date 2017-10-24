@@ -536,6 +536,13 @@ class ArrayAnimator(BaseFuncAnimator):
         base_kwargs.update(kwargs)
         BaseFuncAnimator.__init__(self, data, **base_kwargs)
 
+    @property
+    def frame_index(self):
+        """
+        A tuple version of ``frame_slice`` to be used when indexing arrays.
+        """
+        return tuple(self.frame_slice)
+
     def label_slider(self, i, label):
         """
         Change the Slider label
@@ -701,7 +708,7 @@ class ImageAnimator(ArrayAnimator):
                        }
 
         imshow_args.update(self.imshow_kwargs)
-        im = ax.imshow(self.data[self.frame_slice], **imshow_args)
+        im = ax.imshow(self.data[self.frame_index], **imshow_args)
         if self.if_colorbar:
             self._add_colorbar(im)
 
@@ -714,7 +721,7 @@ class ImageAnimator(ArrayAnimator):
         ind = np.argmin(np.abs(self.axis_ranges[ax_ind] - val))
         self.frame_slice[ax_ind] = ind
         if val != slider.cval:
-            im.set_array(self.data[self.frame_slice])
+            im.set_array(self.data[self.frame_index])
             slider.cval = val
 
     def _sanitize_axis_ranges(self, axis_ranges, data):
@@ -747,7 +754,6 @@ class ImageAnimator(ArrayAnimator):
                 if i not in self.slider_axes:
                     raise ValueError("Slider axes mis-match, non-slider axes need [min,max] pairs")
         return axis_ranges
-
 
 
 class LineAnimator(ArrayAnimator):
@@ -863,7 +869,7 @@ class LineAnimator(ArrayAnimator):
             ax.set_ylabel(self.ylabel)
         plot_args = {}
         plot_args.update(self.imshow_kwargs)
-        line, = ax.plot(self.xdata, self.data[self.frame_slice], **plot_args)
+        line, = ax.plot(self.xdata, self.data[self.frame_index], **plot_args)
         return line
 
     def update_plot(self, val, line, slider):
@@ -873,8 +879,9 @@ class LineAnimator(ArrayAnimator):
         ind = np.argmin(np.abs(self.axis_ranges[ax_ind] - val))
         self.frame_slice[ax_ind] = ind
         if val != slider.cval:
-            line.set_ydata(self.data[self.frame_slice])
+            line.set_ydata(self.data[self.frame_index])
             slider.cval = val
+
 
 class ImageAnimatorWCS(ImageAnimator):
     """
@@ -895,7 +902,7 @@ class ImageAnimatorWCS(ImageAnimator):
     ----------
     data: `numpy.ndarray`
         The data to be visualized >= 2D
-    
+
     wcs: `astropy.wcs.WCS`
         The wcs data.
 
@@ -949,10 +956,12 @@ class ImageAnimatorWCS(ImageAnimator):
         self.slices_wcsaxes = list_slices_wcsaxes[::-1]
         self.unit_x_axis = unit_x_axis
         self.unit_y_axis = unit_y_axis
-        super(ImageAnimatorWCS, self).__init__(data, image_axes=image_axes, axis_ranges=axis_ranges, **kwargs)
+        super(ImageAnimatorWCS, self).__init__(data, image_axes=image_axes,
+                                               axis_ranges=axis_ranges, **kwargs)
 
     def _get_main_axes(self):
-        axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs, slices=self.slices_wcsaxes)
+        axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs,
+                                 slices=self.slices_wcsaxes)
         self._set_unit_in_axis(axes)
         return axes
 
@@ -964,14 +973,13 @@ class ImageAnimatorWCS(ImageAnimator):
             axes.coords[1].set_format_unit(self.unit_y_axis)
             axes.coords[1].set_ticks(exclude_overlapping=True)
 
-
     def plot_start_image(self, ax):
         """Sets up plot of initial image."""
         imshow_args = {'interpolation': 'nearest',
                        'origin': 'lower',
                        }
         imshow_args.update(self.imshow_kwargs)
-        im = ax.imshow(self.data[self.frame_slice], **imshow_args)
+        im = ax.imshow(self.data[self.frame_index], **imshow_args)
         if self.if_colorbar:
             self._add_colorbar(im)
         return im
@@ -988,5 +996,5 @@ class ImageAnimatorWCS(ImageAnimator):
         if val != slider.cval:
             self.axes.reset_wcs(wcs=self.wcs, slices=self.slices_wcsaxes)
             self._set_unit_in_axis(self.axes)
-            im.set_array(self.data[self.frame_slice])
+            im.set_array(self.data[self.frame_index])
             slider.cval = val
