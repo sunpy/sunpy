@@ -418,7 +418,7 @@ class CompositeMap(object):
             bl = m._get_lon_lat(m.bottom_left_coord)
             tr = m._get_lon_lat(m.top_right_coord)
             x_range = list(u.Quantity([bl[0], tr[0]]).to(m.spatial_units[0]).value)
-            y_range = list(u.Quantity([bl[1], tr[1]]).to(m.spatial_units[0]).value)
+            y_range = list(u.Quantity([bl[1], tr[1]]).to(m.spatial_units[1]).value)
             params = {
                 "origin": "lower",
                 "extent": x_range + y_range,
