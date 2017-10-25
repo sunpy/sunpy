@@ -436,8 +436,8 @@ class Quicklook(_VSOSimpleAttr):
         Quicklook products are *not* searched by default.
 
     References
-    ---------
-        Documentation in SSWIDL routine vso_search.pro.
+    ----------
+    Documentation in SSWIDL routine vso_search.pro.
     """
     def __init__(self, value):
         super(Quicklook, self).__init__(value)
