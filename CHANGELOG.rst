@@ -1,14 +1,29 @@
-Latest
+0.8.2
+=====
+
+New Features
+------------
+
+Bug Fixes
+---------
+
+- Shows a warning if observation time is missing [#2293]
+- Updates MapCube to access the correct properties of the namedtuple SpatialPair [#2297]
+
+0.8.1
 ======
 
-New features
+New Features
 ------------
 
 Bug fixes
 ---------
 
+- Fixed TimeSeries test failures due to missing test files [#2273]
+- Refactored a GOES test to avoid a Py3.6 issue [#2276]
+
 0.8.0
-=====
+======
 
 New Features
 ------------
