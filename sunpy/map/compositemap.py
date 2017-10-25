@@ -221,7 +221,9 @@ class CompositeMap(object):
             The index of the map in the composite map.
 
         alpha : `float`
-            A float in the range 0 to 1.
+            A float in the range 0 to 1.  Increasing values of alpha decrease
+            the transparency of the layer (0 is complete transparency, 1
+            indicates the layer will be completely opaque).
 
         Returns
         -------
