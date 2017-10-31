@@ -402,10 +402,10 @@ class DatabaseEntry(Base):
 
         wavelengths = getattr(sr_block, 'wave', None)
         wavelength_temp = {}
-        if isinstance(wavelength_temp, tuple):
+        if isinstance(wavelengths, tuple):
             # Tuple of values
-            wavelength_temp['wavemin'] = wavelengths[0]
-            wavelength_temp['wavemax'] = wavelengths[1]
+            wavelength_temp['wavemin'] = wavelengths.wavemin
+            wavelength_temp['wavemax'] = wavelengths.wavemax
         else:
             # Single Value
             wavelength_temp['wavemin'] = wavelength_temp['wavemax'] = wavelengths
