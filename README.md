@@ -1,4 +1,5 @@
 # [SunPy](http://sunpy.org)
+[![Downloads](https://img.shields.io/pypi/dm/sunpy.svg)](https://pypi.python.org/pypi/sunpy/)
 [![Latest Version](https://img.shields.io/pypi/v/sunpy.svg)](https://pypi.python.org/pypi/sunpy/)
 [![Build Status](https://secure.travis-ci.org/sunpy/sunpy.svg)](http://travis-ci.org/sunpy/sunpy)
 [![Build status](https://ci.appveyor.com/api/projects/status/xow461iejsjvp9vl?svg=true)](https://ci.appveyor.com/project/sunpy/sunpy)
@@ -60,7 +61,7 @@ For more information or to ask questions about SunPy, check out:
 
  * [SunPy Documentation](http://docs.sunpy.org/en/latest/)
  * [SunPy Mailing List](https://groups.google.com/forum/#!forum/sunpy)
- * [SunPy Matrix Channel](https://riot.im/app/#/room/#sunpy-general:matrix.org)
+ * [SunPy Matrix Channel](https://riot.im/app/#/room/#sunpy:matrix.org)
 
 Contributing
 ------------
@@ -68,10 +69,13 @@ Contributing
 If you would like to get involved, start by joining the
 [SunPy mailing list](https://groups.google.com/forum/#!forum/sunpy)
 and check out the [Developer's Guide](http://docs.sunpy.org/en/latest/dev_guide/index.html) section
-of the SunPy docs. Stop by our IRC chat room named #sunpy on irc.freenode.net
+of the SunPy docs. Stop by our chat room [#sunpy:matrix.org](https://riot.im/app/#/room/#sunpy:matrix.org)
 if you have any questions. Help is always welcome so let us know what you like
 to work on, or check out the [issues page](https://github.com/sunpy/sunpy/issues)
-for a list of some known outstanding items.
+for the list of known outstanding items.
+
+For more information on contributing to SunPy, please read our
+[contributing guide](https://github.com/sunpy/sunpy/blob/master/CONTRIBUTING.md).
 
 ### Code of Conduct
 
