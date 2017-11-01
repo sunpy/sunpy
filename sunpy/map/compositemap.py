@@ -221,7 +221,9 @@ class CompositeMap(object):
             The index of the map in the composite map.
 
         alpha : `float`
-            A float in the range 0 to 1.
+            A float in the range 0 to 1.  Increasing values of alpha decrease
+            the transparency of the layer (0 is complete transparency, 1
+            indicates the layer will be completely opaque).
 
         Returns
         -------
@@ -413,9 +415,13 @@ class CompositeMap(object):
         # Plot layers of composite map
         for m in self._maps:
             # Parameters for plotting
+            bl = m._get_lon_lat(m.bottom_left_coord)
+            tr = m._get_lon_lat(m.top_right_coord)
+            x_range = list(u.Quantity([bl[0], tr[0]]).to(m.spatial_units[0]).value)
+            y_range = list(u.Quantity([bl[1], tr[1]]).to(m.spatial_units[1]).value)
             params = {
                 "origin": "lower",
-                "extent": list(m.xrange.value) + list(m.yrange.value),
+                "extent": x_range + y_range,
                 "cmap": m.plot_settings['cmap'],
                 "norm": m.plot_settings['norm'],
                 "alpha": m.alpha,
