@@ -7,6 +7,7 @@ New Features
 Bug Fixes
 ---------
 
+- CompositeMap axes scaling now uses map spatial units [#2310]
 - Shows a warning if observation time is missing [#2293]
 - Updates MapCube to access the correct properties of the namedtuple SpatialPair [#2297]
 
