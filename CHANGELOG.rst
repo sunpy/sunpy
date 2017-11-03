@@ -1,22 +1,24 @@
-0.8.2
-=====
-
-New Features
-------------
+0.8.3 (Unreleased)
+==================
 
 Bug Fixes
 ---------
 
 - CompositeMap axes scaling now uses map spatial units [#2310]
 - Moved license file to root of repository and updated README file [#2326]
+- Fix docstring formatting for net.vso.attrs [#2309]]
+
+0.8.2
+=====
+
+Bug Fixes
+---------
+
 - Shows a warning if observation time is missing [#2293]
 - Updates MapCube to access the correct properties of the namedtuple SpatialPair [#2297]
 
 0.8.1
 ======
-
-New Features
-------------
 
 Bug fixes
 ---------
