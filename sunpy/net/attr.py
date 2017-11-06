@@ -90,6 +90,33 @@ class DummyAttr(Attr):
         return isinstance(other, DummyAttr)
 
 
+# TODO: Remove _VSOSimpleAttr
+# This is a port of _VSOSimpleAttr.
+class SimpleAttr(Attr):
+    """
+    An attribute that only has a single value.
+
+    This type of attribute is not a composite and has a single value such as
+    ``Instrument('EIT')``.
+
+    Parameters
+    ----------
+    value : `object`
+       The value for the attribute to hold.
+    """
+    def __init__(self, value):
+        Attr.__init__(self)
+
+        self.value = value
+
+    def collides(self, other):
+        return isinstance(other, self.__class__)
+
+    def __repr__(self):
+        return "<{cname!s}({val!r})>".format(
+            cname=self.__class__.__name__, val=self.value)
+
+
 class AttrAnd(Attr):
     """ Attribute representing attributes ANDed together. """
     def __init__(self, attrs):
