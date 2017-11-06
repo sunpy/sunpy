@@ -9,7 +9,7 @@ from datetime import datetime
 import fnmatch
 import os
 
-from astropy.units import Unit, nm, equivalencies, quantity
+import astropy.units as u
 import astropy.table
 from sqlalchemy import Column, Integer, Float, String, DateTime, Boolean,\
     Table, ForeignKey
@@ -17,9 +17,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 import numpy as np
 
-from sunpy.time import parse_time, TimeRange
+from sunpy.time import parse_time
 from sunpy.io import fits, file_tools as sunpy_filetools
-from sunpy.util import print_table
 from sunpy.extern.six.moves import map
 from sunpy.extern import six
 import sunpy.net
@@ -315,28 +314,28 @@ class DatabaseEntry(Base):
         unit = None
         if wave.waveunit is None:
             if default_waveunit is not None:
-                unit = Unit(default_waveunit)
+                unit = u.Unit(default_waveunit)
         else:
             # some query response blocks store the unit "kev",
             # but AstroPy only understands "keV". See issue #766.
             waveunit = wave.waveunit
             if waveunit == "kev":
                 waveunit = "keV"
-            unit = Unit(waveunit)
+            unit = u.Unit(waveunit)
         if wave.wavemin is None:
             wavemin = None
         else:
             if unit is None:
                 raise WaveunitNotFoundError(qr_block)
-            wavemin = unit.to(nm, float(wave.wavemin),
-                              equivalencies.spectral())
+            wavemin = unit.to(u.nm, float(wave.wavemin),
+                              u.equivalencies.spectral())
         if wave.wavemax is None:
             wavemax = None
         else:
             if unit is None:
                 raise WaveunitNotFoundError(qr_block)
-            wavemax = unit.to(nm, float(wave.wavemax),
-                              equivalencies.spectral())
+            wavemax = unit.to(u.nm, float(wave.wavemax),
+                              u.equivalencies.spectral())
         source = getattr(qr_block, 'source', None)
         provider = getattr(qr_block, 'provider', None)
         fileid = getattr(qr_block, 'fileid', None)
@@ -412,14 +411,14 @@ class DatabaseEntry(Base):
 
         final_values = {}
         for key, val in wavelength_temp.items():
-            if isinstance(val, quantity.Quantity):
+            if isinstance(val, u.Quantity):
                 unit = getattr(val, 'unit', None)
                 if unit is None:
                     if default_waveunit is not None:
-                        unit = Unit(default_waveunit)
+                        unit = u.Unit(default_waveunit)
                     else:
                         raise WaveunitNotFoundError(sr_block)
-                final_values[key] = unit.to(nm, float(val.value), equivalencies.spectral())
+                final_values[key] = unit.to(u.nm, float(val.value), u.equivalencies.spectral())
             elif val is None or np.isnan(val):
                 final_values[key] = val
 
@@ -699,31 +698,30 @@ def entries_from_file(file, default_waveunit=None,
         unit = None
         if waveunit is not None:
             try:
-                unit = Unit(waveunit)
+                unit = u.Unit(waveunit)
             except ValueError:
                 raise WaveunitNotConvertibleError(waveunit)
-        for header_entry in entry.fits_header_entries:
-            key, value = header_entry.key, header_entry.value
-            if key == 'INSTRUME':
-                entry.instrument = value
-            elif key == 'WAVELNTH':
-                if unit is None:
-                    raise WaveunitNotFoundError(file)
-                # use the value of `unit` to convert the wavelength to nm
-                entry.wavemin = entry.wavemax = unit.to(
-                    nm, value, equivalencies.spectral())
-            # NOTE: the key DATE-END or DATE_END is not part of the official
-            # FITS standard, but many FITS files use it in their header
-            elif key in ('DATE-END', 'DATE_END'):
-                entry.observation_time_end = parse_time(
-                    value,
-                    _time_string_parse_format=time_string_parse_format
-                )
-            elif key in ('DATE-OBS', 'DATE_OBS'):
-                entry.observation_time_start = parse_time(
-                    value,
-                    _time_string_parse_format=time_string_parse_format
-                )
+
+        entry.instrument = header.get('INSTRUME')
+        wave = header.get('WAVELNTH')
+        if wave and unit is None:
+            raise WaveunitNotFoundError(file)
+        else:
+            entry.wavemin = entry.wavemax = unit.to(
+                u.nm, value, u.equivalencies.spectral())
+
+        end_time = header.get('DATE-END', header.get('DATE-END'))
+        entry.observation_time_end = parse_time(
+            end_time,
+            _time_string_parse_format=time_string_parse_format
+        )
+
+        start_time = header.get('DATE-BEG', header.get('DATE-END', header.get('DATE_OBS')))
+        entry.observation_time_start = parse_time(
+            start_time,
+            _time_string_parse_format=time_string_parse_format
+        )
+
         yield entry
 
 
