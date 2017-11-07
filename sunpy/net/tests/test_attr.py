@@ -8,11 +8,6 @@ import pytest
 from sunpy.net import attr
 
 
-"""
-Test Attr classes.
-"""
-
-
 class SA1(attr.SimpleAttr):
     pass
 
@@ -117,6 +112,25 @@ def test_dummyattr():
     other = attr.ValueAttr({'a': 'b'})
     assert (one | other) is other
     assert (one & other) is other
+
+
+def test_dummyattr_hash():
+    one = attr.DummyAttr()
+    assert hash(one) == hash(None)
+
+
+def test_dummyattr_collides():
+    one = attr.DummyAttr()
+    two = attr.DummyAttr()
+    assert one.collides(two) is False
+
+
+def test_dummyattr_eq():
+    one = attr.DummyAttr()
+    two = attr.DummyAttr()
+    other = attr.ValueAttr({'a': 'b'})
+    assert one == two
+    assert one != other
 
 
 def test_and_nesting():
