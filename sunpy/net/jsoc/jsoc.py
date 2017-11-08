@@ -11,21 +11,21 @@ import astropy.units as u
 import astropy.time
 import astropy.table
 from astropy.utils.misc import isiterable
+import drms
 
 from sunpy import config
 from sunpy.time import parse_time, TimeRange
 from sunpy.net.download import Downloader, Results
 from sunpy.net.attr import and_
-from sunpy.net.jsoc.attrs import walker
+from sunpy.net.jsoc import attrs
+from sunpy.net.jsoc.attrs import walker, Keys, PrimeKeys
+from sunpy.net.vso.attrs import _VSOSimpleAttr
 from sunpy.extern.six.moves import urllib
 from sunpy.extern import six
+from sunpy.util.metadata import MetaDict
 from sunpy.util import deprecated
 
 __all__ = ['JSOCClient', 'JSOCResponse']
-
-JSOC_INFO_URL = 'http://jsoc.stanford.edu/cgi-bin/ajax/jsoc_info'
-JSOC_EXPORT_URL = 'http://jsoc.stanford.edu/cgi-bin/ajax/jsoc_fetch'
-BASE_DL_URL = 'http://jsoc.stanford.edu'
 
 
 class JSOCResponse(object):
@@ -178,6 +178,14 @@ class JSOCClient(object):
     >>> res.wait(progress=True)   # doctest: +SKIP
     """
 
+    def initialise(self, ser):
+
+        c = drms.Client()
+        pkeys = c.pkeys(ser)
+        for pkey in pkeys:
+            genClass = type(pkey, (_VSOSimpleAttr,), {})
+            setattr(attrs, genClass.__name__, genClass)
+
     def search(self, *query, **kwargs):
         """
         Build a JSOC query and submit it to JSOC for processing.
@@ -254,31 +262,21 @@ class JSOCClient(object):
         requestIDs = []
         for block in jsoc_response.query_args:
             # Do a multi-request for each query block
-            responses.append(self._multi_request(**block))
-            for i, response in enumerate(responses[-1]):
-                if response.status_code != 200:
-                    warn_message = "Query {0} retuned code {1}"
-                    warnings.warn(
-                        Warning(warn_message.format(i, response.status_code)))
-                    responses.pop(i)
-                elif response.json()['status'] != 2:
-                    warn_message = "Query {0} retuned status {1} with error {2}"
-                    json_response = response.json()
-                    json_status = json_response['status']
-                    json_error = json_response['error']
-                    warnings.warn(Warning(warn_message.format(i, json_status,
-                                                              json_error)))
-                    responses[-1].pop(i)
 
-            # Extract the IDs from the JSON
-            requestIDs += [response.json()['requestid'] for response in responses[-1]]
+            ds = self._make_recordset(**block)
+            cd = drms.Client(email=block['notify'])
+            r = cd.export(ds, method='url', protocol='fits')
+            r.wait()
 
-        if return_responses:
-            return responses
+            responses.append(r)
+            requestIDs.append(r.id)
 
-        return requestIDs
+        # if return_responses:
+        #    return responses
 
-    def check_request(self, requestIDs):
+        return responses
+
+    def check_request(self, responses):
         """
         Check the status of a request and print out a message about it
 
@@ -293,27 +291,26 @@ class JSOCClient(object):
             A list of status' that were returned by JSOC
         """
         # Convert IDs to a list if not already
-        if not isiterable(requestIDs) or isinstance(requestIDs, six.string_types):
-            requestIDs = [requestIDs]
+        if not isiterable(responses) or isinstance(responses, drms.ExportRequest):
+            responses = [responses]
 
         allstatus = []
-        for request_id in requestIDs:
-            u = self._request_status(request_id)
-            status = int(u.json()['status'])
+        for response in responses:
+            status = response.status
 
             if status == 0:  # Data ready to download
                 print("Request {0} was exported at {1} and is ready to "
-                      "download.".format(u.json()['requestid'],
-                                         u.json()['exptime']))
+                      "download.".format(response.id,
+                                         response._d['exptime']))
             elif status == 1:
-                print_message = "Request {0} was submitted {1} seconds ago, " \
+                print_message = "Request {0} was submitted {1} seconds ago, "\
                                 "it is not ready to download."
-                print(print_message.format(u.json()['requestid'],
-                                           u.json()['wait']))
+                print(print_message.format(response.id,
+                                           response._d['wait']))
             else:
                 print_message = "Request returned status: {0} with error: {1}"
-                json_status = u.json()['status']
-                json_error = u.json()['error']
+                json_status = response.status
+                json_error = response._d['error']
                 print(print_message.format(json_status, json_error))
 
             allstatus.append(status)
@@ -357,27 +354,25 @@ class JSOCClient(object):
         """
 
         # Make staging request to JSOC
-        requestIDs = self.request_data(jsoc_response)
+        responses = self.request_data(jsoc_response)
         # Add them to the response for good measure
-        jsoc_response.requestIDs = requestIDs
+        jsoc_response.requestIDs = [r.id for r in responses]
         time.sleep(sleep/2.)
 
         r = Results(lambda x: None, done=lambda maps: [v['path'] for v in maps.values()])
 
-        while requestIDs:
-            for i, request_id in enumerate(requestIDs):
-                u = self._request_status(request_id)
+        for response in responses:
 
-                if progress:
-                    self.check_request(request_id)
+            if progress:
+                self.check_request(response)
 
-                if u.status_code == 200 and u.json()['status'] == '0':
-                    rID = requestIDs.pop(i)
-                    r = self.get_request(rID, path=path, overwrite=overwrite,
-                                         progress=progress, results=r)
+            if response.status == 0:
+                res = response
 
-                else:
-                    time.sleep(sleep)
+                r = self.get_request(res, path=path, overwrite=overwrite,
+                                     progress=progress, results=r)
+            else:
+                time.sleep(sleep)
 
         return r
 
@@ -391,7 +386,7 @@ class JSOCClient(object):
             max_conn=max_conn, downloader=downloader, sleep=sleep)
 
 
-    def get_request(self, requestIDs, path=None, overwrite=False, progress=True,
+    def get_request(self, responses, path=None, overwrite=False, progress=True,
                     max_conn=5, downloader=None, results=None):
         """
         Query JSOC to see if request_id is ready for download.
@@ -427,10 +422,10 @@ class JSOCClient(object):
             A Results instance or None if no URLs to download
         """
 
-        # Convert IDs to a list if not already
+        # Convert Responses to a list if not already
 
-        if not isiterable(requestIDs) or isinstance(requestIDs, six.string_types):
-            requestIDs = [requestIDs]
+        if not isiterable(responses) or isinstance(responses, drms.ExportRequest):
+            responses = [responses]
 
         if path is None:
             path = config.get('downloads', 'download_dir')
@@ -443,33 +438,32 @@ class JSOCClient(object):
         # number that have been completed.
         if results is None:
             results = Results(lambda _: downloader.stop())
-
         urls = []
-        for request_id in requestIDs:
-            u = self._request_status(request_id)
+        for response in responses:
 
-            if u.status_code == 200 and u.json()['status'] == '0':
-                for ar in u.json()['data']:
-                    is_file = os.path.isfile(os.path.join(path, ar['filename']))
+            if response.status == 0:
+                for index, data in response.data.iterrows():
+
+                    is_file = os.path.isfile(os.path.join(path, data['filename']))
                     if overwrite or not is_file:
-                        url_dir = BASE_DL_URL + u.json()['dir'] + '/'
-                        urls.append(urllib.parse.urljoin(url_dir, ar['filename']))
+                        url_dir = response.request_url + '/'
+                        urls.append(urllib.parse.urljoin(url_dir, data['filename']))
 
                     else:
                         print_message = "Skipping download of file {} as it " \
                                         "has already been downloaded"
-                        print(print_message.format(ar['filename']))
+                        print(print_message.format(data['filename']))
                         # Add the file on disk to the output
-                        results.map_.update({ar['filename']:
-                                            {'path': os.path.join(path, ar['filename'])}})
+                        results.map_.update({data['filename']:
+                                            {'path': os.path.join(path, data['filename'])}})
 
                 if progress:
                     print_message = "{0} URLs found for download. Totalling {1}MB"
-                    print(print_message.format(len(urls), u.json()['size']))
+                    print(print_message.format(len(urls), response._d['size']))
 
             else:
                 if progress:
-                    self.check_request(request_id)
+                    self.check_request(response)
 
         if urls:
             for url in urls:
@@ -497,7 +491,7 @@ class JSOCClient(object):
         -------
         datetime, in TAI
         """
-        # Convert from any input (in UTC) to TAI
+
         if isinstance(time, six.string_types):
             time = parse_time(time)
 
@@ -507,165 +501,131 @@ class JSOCClient(object):
         return time.datetime
 
     def _make_recordset(self, start_time, end_time, series, wavelength='',
-                        segment='', **kwargs):
-        # Build the dataset string
-        # Extract and format Wavelength
-        if wavelength:
-            if not series.startswith('aia'):
-                raise TypeError("This series does not support the wavelength attribute.")
-            else:
+                        segment='', primekeys={}, **kwargs):
+        """
+        Take the query arguments and build a record string.
+        """
+
+        # Extract and format segment
+        if segment:
+            if isinstance(segment, list):
+                segment = str(segment)[1:-1].replace(' ', '').replace("'", '')
+            segment = '{{{segment}}}'.format(segment=segment)
+
+        # Extract and format sample
+        sample = kwargs.get('sample', '')
+        if sample:
+            sample = '@{}s'.format(sample)
+
+        # Extract and format primekeys
+        pkstr = ''
+        c = drms.Client()
+        pkeys = c.pkeys(series)
+
+        for pkey in pkeys:
+            if pkey in ['T_OBS', 'T_REC', 'T_START']:
+                pkstr += '[{start}-{end}{sample}]'.format(
+                    start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                    end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
+                    sample=sample)
+
+            elif pkey == 'WAVELNTH' and wavelength is not '':
                 if isinstance(wavelength, list):
                     wavelength = [int(np.ceil(wave.to(u.AA).value)) for wave in wavelength]
                     wavelength = str(wavelength)
                 else:
                     wavelength = '[{0}]'.format(int(np.ceil(wavelength.to(u.AA).value)))
+                pkstr += wavelength
 
-        # Extract and format segment
-        if segment != '':
-            segment = '{{{segment}}}'.format(segment=segment)
+            elif len(primekeys) > 0:
+                pkstr += '[{0}]'.format(primekeys.pop(pkey, ''))
 
-        sample = kwargs.get('sample', '')
-        if sample:
-            sample = '@{}s'.format(sample)
+            else:
+                break
 
-        dataset = '{series}[{start}-{end}{sample}]{wavelength}{segment}'.format(
-                   series=series, start=start_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                   end=end_time.strftime("%Y.%m.%d_%H:%M:%S_TAI"),
-                   sample=sample,
-                   wavelength=wavelength, segment=segment)
+        dataset = '{series}{primekeys}{segment}'.format(series=series,
+                                                        primekeys=pkstr,
+                                                        segment=segment)
 
         return dataset
-
-    def _make_query_payload(self, start_time, end_time, series, notify=None,
-                            protocol='FITS', compression='rice', **kwargs):
-        """
-        Build the POST payload for the query parameters
-        """
-
-        if protocol.upper() == 'FITS' and compression and compression.lower() == 'rice':
-            jprotocol = 'FITS,compress Rice'
-        elif protocol.upper() == 'FITS':
-            jprotocol = 'FITS, **NONE**'
-        else:
-            jprotocol = protocol
-
-        if not notify:
-            raise ValueError("JSOC queries now require a valid email address "
-                             "before they will be accepted by the server")
-
-        dataset = self._make_recordset(start_time, end_time, series, **kwargs)
-        kwargs.pop('wavelength', None)
-        kwargs.pop('sample', None)
-
-        # Build full POST payload
-        payload = {'ds': dataset,
-                   'format': 'json',
-                   'method': 'url',
-                   'notify': notify,
-                   'op': 'exp_request',
-                   'process': 'n=0|no_op',
-                   'protocol': jprotocol,
-                   'requestor': 'none',
-                   'filenamefmt': '{0}.{{T_REC:A}}.{{CAMERA}}.{{segment}}'.format(series)}
-
-        payload.update(kwargs)
-        return payload
-
-    def _send_jsoc_request(self, start_time, end_time, series, notify=None,
-                           protocol='FITS', compression='rice', **kwargs):
-        """
-        Request that JSOC stages data for download
-
-        This routine puts in a POST request to JSOC
-        """
-
-        payload = self._make_query_payload(start_time, end_time, series,
-                                           notify=notify, protocol=protocol,
-                                           compression=compression, **kwargs)
-
-        r = requests.post(JSOC_EXPORT_URL, data=payload)
-
-        if r.status_code != 200:
-            exception_message = "JSOC POST Request returned code {0}"
-            raise Exception(exception_message.format(r.status_code))
-
-        return r, r.json()
 
     def _lookup_records(self, iargs):
         """
         Do a LookData request to JSOC to workout what results the query returns
         """
-        keywords = ['DATE', 'TELESCOP', 'INSTRUME', 'T_OBS', 'WAVELNTH',
-                    'WAVEUNIT']
+
+        keywords_default = ['DATE', 'TELESCOP', 'INSTRUME', 'T_OBS', 'WAVELNTH']
+        isMeta = iargs.get('meta', False)
+        c = drms.Client()
+
+        if isMeta:
+            keywords = '***ALL***'
+        else:
+            keywords = iargs.get('keys', keywords_default)
 
         if not all([k in iargs for k in ('start_time', 'end_time', 'series')]):
             error_message = "Both Time and Series must be specified for a "\
                             "JSOC Query"
             raise ValueError(error_message)
 
+        if not isinstance(keywords, list) and not isinstance(keywords, six.string_types):
+            error_message = "Keywords can only be passed as a list or"\
+                            " comma-separated strings."
+            raise ValueError(error_message)
+
+        segments = iargs.get('segment', '')
+        if segments:
+            if not isinstance(segments, list) and not isinstance(segments, six.string_types):
+                error_message = "Segments can only be passed as a list or"\
+                                " comma-separated strings."
+                raise ValueError(error_message)
+
+        pkeys = c.pkeys(iargs['series'])
+        pkeys_passed = iargs.get('primekeys', None)
+        if pkeys_passed is not None:
+            if not set(list(pkeys_passed.keys())) < set(pkeys):
+                error_message = "Unexpected PrimeKeys were passed. The series {series} "\
+                                "supports the following PrimeKeys {pkeys}"
+                raise TypeError(error_message.format(series=iargs['series'], pkeys=pkeys))
+
+        wavelength = iargs.get('wavelength', '')
+        if wavelength:
+            if 'WAVELNTH' not in pkeys:
+                error_message = "The series {series} does not support wavelength attribute."\
+                                " Following primekeys are supported {pkeys}"
+                raise TypeError(error_message.format(series=iargs['series'], pkeys=pkeys))
+
+        si = c.info(iargs['series'])
+        segs = list(si.segments.index.values)
+        segs_passed = iargs.get('segment', None)
+        if segs_passed is not None:
+            if not set(segs_passed) < set(segs):
+                error_message = "Unexpected Segments were passed. The series {series} "\
+                                "contains the following Segments {segs}"
+                raise TypeError(error_message.format(series=iargs['series'], segs=segs))
+
+        iargs['start_time'] = self._process_time(iargs['start_time'])
+        iargs['end_time'] = self._process_time(iargs['end_time'])
+
         postthis = {'ds': self._make_recordset(**iargs),
-                    'op': 'rs_list',
                     'key': str(keywords)[1:-1].replace(' ', '').replace("'", ''),
                     'seg': '**NONE**',
-                    'link': '**NONE**'}
+                    'link': '**NONE**',
+                    }
 
-        r = requests.get(JSOC_INFO_URL, params=postthis)
+        r = c.query(postthis['ds'], key=postthis['key'], rec_index=isMeta)
 
-        result = r.json()
+        if isMeta:
+            return r
 
-        out_table = {}
-        if 'keywords' in result:
-            for col in result['keywords']:
-                out_table.update({col['name']: col['values']})
-
-            # sort the table before returning
-            return astropy.table.Table(out_table)[keywords]
-
-        else:
+        if r is None or r.empty:
             return astropy.table.Table()
-
-    def _multi_request(self, **kwargs):
-        """
-        Make a series of requests to avoid the 100GB limit
-        """
-        start_time = kwargs.pop('start_time', None)
-        end_time = kwargs.pop('end_time', None)
-        series = kwargs.pop('series', None)
-        if any(x is None for x in (start_time, end_time, series)):
-            return []
-        start_time = self._process_time(start_time)
-        end_time = self._process_time(end_time)
-        tr = TimeRange(start_time, end_time)
-        returns = []
-        response, json_response = self._send_jsoc_request(start_time, end_time,
-                                                          series, **kwargs)
-
-        # We skip these lines because a massive request is not a practical test.
-        error_response = 'Request exceeds max byte limit of 100000MB'
-        if (json_response['status'] == 3 and
-                json_response['error'] == error_response):  # pragma: no cover
-            returns.append(self._multi_request(tr.start(), tr.center(), series, **kwargs)[0])
-            # pragma: no cover
-            returns.append(self._multi_request(tr.center(), tr.end(), series, **kwargs)[0])
-            # pragma: no cover
-
         else:
-            returns.append(response)
-
-        return returns
-
-    def _request_status(self, request_id):
-        """
-        GET the status of a request ID
-        """
-        payload = {'op': 'exp_status', 'requestid': request_id}
-        u = requests.get(JSOC_EXPORT_URL, params=payload)
-
-        return u
+            return astropy.table.Table.from_pandas(r)
 
     @classmethod
     def _can_handle_query(cls, *query):
-        chkattr = ['Series', 'Protocol', 'Notify', 'Compression', 'Wavelength',
-                   'Time', 'Segment']
+        chkattr = ['Series', 'Protocol', 'Notify', 'Wavelength', 'Time',
+                   'Segment', 'Keys']
 
         return all([x.__class__.__name__ in chkattr for x in query])
