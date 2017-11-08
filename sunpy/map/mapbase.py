@@ -1726,7 +1726,7 @@ Reference Coord:\t {refcoord}
             bl = self._get_lon_lat(self.bottom_left_coord)
             tr = self._get_lon_lat(self.top_right_coord)
             x_range = list(u.Quantity([bl[0], tr[0]]).to(self.spatial_units[0]).value)
-            y_range = list(u.Quantity([bl[1], tr[1]]).to(self.spatial_units[0]).value)
+            y_range = list(u.Quantity([bl[1], tr[1]]).to(self.spatial_units[1]).value)
             imshow_args.update({'extent': x_range + y_range})
         imshow_args.update(imshow_kwargs)
 
