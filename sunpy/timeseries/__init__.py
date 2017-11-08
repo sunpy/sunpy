@@ -1,7 +1,10 @@
 """
-SunPy's TimeSeries module provides a datatype for 1D time series data, replacing the SunPy LightCurve module.
+SunPy's TimeSeries module provides a datatype for 1D time series data, replacing
+the SunPy LightCurve module.
 
-Currently the objects can be instansiated from files (such as CSV and FITS) and urls to these files, but don't include data downloaders for their specific instruments as this will become part of the universal downloader.
+Currently the objects can be instansiated from files (such as CSV and FITS) and
+urls to these files, but don't include data downloaders for their specific
+instruments as this will become part of the universal downloader.
 """
 from __future__ import absolute_import
 from sunpy.timeseries.metadata import TimeSeriesMetaData
