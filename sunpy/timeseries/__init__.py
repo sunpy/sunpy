@@ -18,7 +18,11 @@ from sunpy.timeseries.sources.norh import NoRHTimeSeries
 from sunpy.timeseries.sources.rhessi import RHESSISummaryTimeSeries
 from sunpy.timeseries.sources.fermi_gbm import GBMSummaryTimeSeries
 
-# register pandas datetime converter with matplotlib
-# This is to work around the change in pandas-dev/pandas#17710
-import pandas.plotting._converter
-pandas.plotting._converter.register()
+
+try:
+    # register pandas datetime converter with matplotlib
+    # This is to work around the change in pandas-dev/pandas#17710
+    import pandas.plotting._converter
+    pandas.plotting._converter.register()
+except ImportError:
+    pass
