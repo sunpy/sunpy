@@ -12,6 +12,8 @@ Bug Fixes
 - Misc Doc fixes [#2317] [#2289]
 - Misc Readme Changes [#2281] [#2283]
 - Fix matplotlib / pandas 0.21 bug in examples [#2336]
+- Fixes the off limb enhancement example [#2329]
+
 0.8.2
 =====
 

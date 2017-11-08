@@ -46,7 +46,8 @@ y = np.array([aia.data[(r > this_r) * (r < this_r + rsun_step_size)].mean()
 
 ###############################################################################
 # Next let's plot it along with a fit to the data. We perform the fit in
-# log-linear space.
+# linear-log space.  We fit the logarithm of the intensity since the intensity
+# drops of very quickly as a function of distance from the limb.
 
 params = np.polyfit(rsun_array[rsun_array < 1.5],
                     np.log(y[rsun_array < 1.5]), 1)
@@ -61,8 +62,9 @@ plt.legend()
 plt.show()
 
 ###############################################################################
-# We now create our scaling array which we will multiply our original data by 5
-# In order to not affect the emission on the disk, we set the scale factor to
+# We now create our scaling array.  At the solar radius, the scale factor is 1.
+# Moving away from the disk, the scaling array increases in value.  Finally,
+# in order to not affect the emission on the disk, we set the scale factor to
 # unity for values of r below 1.
 scale_factor = np.exp((r-1)*-params[0])
 scale_factor[r < 1] = 1
