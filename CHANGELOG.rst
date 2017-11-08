@@ -1,8 +1,14 @@
 0.8.2
 =====
 
-New Features
-------------
+Bug Fixes
+---------
+
+- Fix coloring of ticks under matplotlib 2.0 default style [#2320]
+- Always index arrays with tuples in `ImageAnimator` [#2320]
+
+0.8.2
+=====
 
 Bug Fixes
 ---------
@@ -12,9 +18,6 @@ Bug Fixes
 
 0.8.1
 ======
-
-New Features
-------------
 
 Bug fixes
 ---------
