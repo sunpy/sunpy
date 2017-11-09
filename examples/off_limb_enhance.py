@@ -58,11 +58,11 @@ params = np.polyfit(rsun_array[rsun_array < 1.5],
 
 plt.rc('text', usetex=True)
 plt.plot(rsun_array, y, label='data')
-label = 'fit=$A\exp(${:.2f}$r)$'.format(params[0])
+label = r'fit=$A\exp(${:.2f}$r)$'.format(params[0])
 plt.plot(rsun_array, np.exp(np.poly1d(params)(rsun_array)), label=label)
 plt.yscale('log')
 plt.ylabel('mean DN')
-plt.xlabel('radius r ($R_{\odot}$)')
+plt.xlabel(r'radius r ($R_{\odot}$)')
 plt.legend()
 plt.show()
 
