@@ -55,6 +55,7 @@ params = np.polyfit(rsun_array[rsun_array < 1.5],
 ###############################################################################
 # Tell matplotlib to use LaTeX for all the text, and then plot the data and the
 # fit.
+
 plt.rc('text', usetex=True)
 plt.plot(rsun_array, y, label='data')
 label = 'fit=$A\exp(${:.2f}$r)$'.format(params[0])
@@ -70,11 +71,13 @@ plt.show()
 # Moving away from the disk, the scaling array increases in value.  Finally,
 # in order to not affect the emission on the disk, we set the scale factor to
 # unity for values of r less than 1.
+
 scale_factor = np.exp((r-1)*-params[0])
 scale_factor[r < 1] = 1
 
 ###############################################################################
 # Let's now plot and compare the results.
+
 scaled_map = sunpy.map.Map(aia.data * scale_factor, aia.meta)
 scaled_map.plot_settings['norm'] = colors.Normalize(vmin=10, vmax=10000)
 
