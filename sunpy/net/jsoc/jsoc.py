@@ -3,9 +3,7 @@ from __future__ import print_function, absolute_import
 
 import os
 import time
-import warnings
 
-import requests
 import numpy as np
 import pandas as pd
 import astropy.units as u
@@ -15,15 +13,11 @@ from astropy.utils.misc import isiterable
 import drms
 
 from sunpy import config
-from sunpy.time import parse_time, TimeRange
 from sunpy.net.download import Downloader, Results
 from sunpy.net.attr import and_
-from sunpy.net.jsoc import attrs
-from sunpy.net.jsoc.attrs import walker, Keys, PrimeKey
-from sunpy.net.vso.attrs import _VSOSimpleAttr
+from sunpy.net.jsoc.attrs import walker
 from sunpy.extern.six.moves import urllib
 from sunpy.extern import six
-from sunpy.util.metadata import MetaDict
 from sunpy.util import deprecated
 
 __all__ = ['JSOCClient', 'JSOCResponse']
