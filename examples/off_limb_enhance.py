@@ -33,7 +33,7 @@ x, y = np.meshgrid(*[np.arange(v.value) for v in aia.dimensions]) * u.pix
 # Now we can convert this to helioprojective coordinates and create a new
 # array which contains the normalized radial position for each pixel
 
-hpc_coords = aia.pixel_to_data(x, y)
+hpc_coords = aia.pixel_to_world(x, y)
 r = np.sqrt(hpc_coords.Tx ** 2 + hpc_coords.Ty ** 2) / aia.rsun_obs
 
 ###############################################################################
@@ -52,12 +52,16 @@ y = np.array([aia.data[(r > this_r) * (r < this_r + rsun_step_size)].mean()
 params = np.polyfit(rsun_array[rsun_array < 1.5],
                     np.log(y[rsun_array < 1.5]), 1)
 
+###############################################################################
+# Tell matplotlib to use LaTeX for all the text, and then plot the data and the
+# fit.
+plt.rc('text', usetex=True)
 plt.plot(rsun_array, y, label='data')
-label = r'fit=Aexp({:.2f}r)'.format(params[0])
+label = 'fit=$A\exp(${:.2f}$r)$'.format(params[0])
 plt.plot(rsun_array, np.exp(np.poly1d(params)(rsun_array)), label=label)
 plt.yscale('log')
 plt.ylabel('mean DN')
-plt.xlabel('radius r (Rsun)')
+plt.xlabel('radius r ($R_{\odot}$)')
 plt.legend()
 plt.show()
 
@@ -65,7 +69,7 @@ plt.show()
 # We now create our scaling array.  At the solar radius, the scale factor is 1.
 # Moving away from the disk, the scaling array increases in value.  Finally,
 # in order to not affect the emission on the disk, we set the scale factor to
-# unity for values of r below 1.
+# unity for values of r less than 1.
 scale_factor = np.exp((r-1)*-params[0])
 scale_factor[r < 1] = 1
 
