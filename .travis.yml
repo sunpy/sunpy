@@ -34,7 +34,7 @@ env:
         - MAIN_CMD='python setup.py'
         - SETUP_CMD='test'
         - CONDA_CHANNELS='astropy astropy-ci-extras conda-forge'
-        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock pyyaml pandas nomkl pytest-cov coverage glymur'
+        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock pyyaml pandas nomkl glymur'
         - PIP_DEPENDENCIES='hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures sunpy-sphinx-theme'
         - EVENT_TYPE='pull_request push'
 
@@ -56,6 +56,7 @@ matrix:
          - python: 3.6
            env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
                 EVENT_TYPE='push pull_request cron'
+                CONDA_CHANNELS='astropy'
 
          - python: 2.7
            env: SETUP_CMD='test'
