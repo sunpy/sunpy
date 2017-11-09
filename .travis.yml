@@ -79,6 +79,10 @@ matrix:
            env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
                 EVENT_TYPE='push pull_request cron'
 
+         - python: 3.6
+           stage: Initial tests
+           env: SETUP_CMD='test'
+
          - python: 2.7
            stage: Comprehensive tests
            env: SETUP_CMD='test'
