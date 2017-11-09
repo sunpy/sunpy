@@ -13,6 +13,7 @@ Bug Fixes
 - Misc Readme Changes [#2281] [#2283]
 - Fix matplotlib / pandas 0.21 bug in examples [#2336]
 - Fixes the off limb enhancement example [#2329]
+- Changes to masking hot pixels and picking bright pixels [#2325] [#2319]
 
 0.8.2
 =====
