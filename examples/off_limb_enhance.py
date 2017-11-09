@@ -46,32 +46,33 @@ y = np.array([aia.data[(r > this_r) * (r < this_r + rsun_step_size)].mean()
 
 ###############################################################################
 # Next let's plot it along with a fit to the data. We perform the fit in
-# log-linear space.
+# linear-log space.  We fit the logarithm of the intensity since the intensity
+# drops of very quickly as a function of distance from the limb.
 
 params = np.polyfit(rsun_array[rsun_array < 1.5],
-                    np.log10(y[rsun_array < 1.5]), 1)
+                    np.log(y[rsun_array < 1.5]), 1)
 
 plt.plot(rsun_array, y, label='data')
-label = r'fit=Ax^{:.2f}'.format(params[0])
-plt.plot(rsun_array, 10**np.poly1d(params)(rsun_array), label=label)
+label = r'fit=Aexp({:.2f}r)'.format(params[0])
+plt.plot(rsun_array, np.exp(np.poly1d(params)(rsun_array)), label=label)
 plt.yscale('log')
 plt.ylabel('mean DN')
-plt.xlabel('Rsun')
+plt.xlabel('radius r (Rsun)')
 plt.legend()
 plt.show()
 
 ###############################################################################
-# We now create our scaling array which we will multiply our original data by 5
-# In order to not affect the emission on the disk, we set the scale factor to
+# We now create our scaling array.  At the solar radius, the scale factor is 1.
+# Moving away from the disk, the scaling array increases in value.  Finally,
+# in order to not affect the emission on the disk, we set the scale factor to
 # unity for values of r below 1.
-scale_exponent = 5
-scale_factor = r ** scale_exponent
+scale_factor = np.exp((r-1)*-params[0])
 scale_factor[r < 1] = 1
 
 ###############################################################################
 # Let's now plot and compare the results.
 scaled_map = sunpy.map.Map(aia.data * scale_factor, aia.meta)
-norm = colors.Normalize(vmin=10, vmax=10000)
+scaled_map.plot_settings['norm'] = colors.Normalize(vmin=10, vmax=10000)
 
 fig = plt.figure(figsize=(12, 5))
 ax = fig.add_subplot(121, projection=aia)
