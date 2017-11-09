@@ -53,17 +53,22 @@ params = np.polyfit(rsun_array[rsun_array < 1.5],
                     np.log(y[rsun_array < 1.5]), 1)
 
 ###############################################################################
-# Tell matplotlib to use LaTeX for all the text, and then plot the data and the
-# fit.
+# Tell matplotlib to use LaTeX for all the text, make the fontsize bigger, and
+# then plot the data and the fit.
 
+fontsize = 14
 plt.rc('text', usetex=True)
+plt.rc('xtick', labelsize=fontsize)
+plt.rc('ytick', labelsize=fontsize)
 plt.plot(rsun_array, y, label='data')
-label = 'fit=$A\exp(${:.2f}$r)$'.format(params[0])
-plt.plot(rsun_array, np.exp(np.poly1d(params)(rsun_array)), label=label)
-plt.yscale('log')
-plt.ylabel('mean DN')
-plt.xlabel('radius r ($R_{\odot}$)')
-plt.legend()
+best_fit = np.exp(np.poly1d(params)(rsun_array))
+label = r'best fit: {:.2f}$e^{{{:.2f}r}}$'.format(best_fit[0], params[0])
+plt.plot(rsun_array, best_fit, label=label)
+plt.yscale(r'log', fontsize=fontsize)
+plt.ylabel(r'mean DN', fontsize=fontsize)
+plt.xlabel(r'radius r ($R_{\odot}$)', fontsize=fontsize)
+plt.title(r'observed off limb mean DN and best fit', fontsize=fontsize)
+plt.legend(fontsize=fontsize)
 plt.show()
 
 ###############################################################################
