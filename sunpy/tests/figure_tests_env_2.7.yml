@@ -16,7 +16,6 @@ dependencies:
 - db=5.3.28=1
 - dbus=1.10.10=0
 - decorator=4.0.11=py27_0
-- drms
 - enum34=1.1.6=py27_0
 - expat=2.1.0=0
 - fontconfig=2.12.1=2
