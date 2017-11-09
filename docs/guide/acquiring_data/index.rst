@@ -11,10 +11,8 @@ kind of solar data from different places.
     :maxdepth: 2
 
     sample-data
-    vso
     jsoc
     fido
     hek
     helioviewer
     database
-    io
