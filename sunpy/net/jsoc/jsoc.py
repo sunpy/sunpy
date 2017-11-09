@@ -770,7 +770,7 @@ class JSOCClient(object):
         si = c.info(series)
         pkeys_isTime = si.keywords.loc[si.primekeys].is_time
         for pkey in pkeys_isTime.index.values:
-            # The loop is iterating over the list of prime-keys existing for the given series. 
+            # The loop is iterating over the list of prime-keys existing for the given series.
             if len(primekey) > 0:
                 if pkeys_isTime[pkey]:
                     pkstr += '[{0}]'.format(primekey.pop('TIME', ''))
