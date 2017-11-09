@@ -73,6 +73,7 @@ class JSOCClient(object):
     query.
 
     .. warning::
+
         JSOC now requires you to register your email address before requesting
         data. See `this <http://jsoc.stanford.edu/ajax/register_email.html>`
 
@@ -98,41 +99,41 @@ class JSOCClient(object):
 
     *Example 1*
 
-    Query JSOC for some HMI data at 45 second cadence:
+    Query JSOC for some HMI data at 45 second cadence::
 
-    >>> from sunpy.net import jsoc
-    >>> from sunpy.net import attrs as a
-    >>> client = jsoc.JSOCClient()
-    >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...                          a.jsoc.Series('hmi.m_45s'), a.jsoc.Notify("sunpy@sunpy.org"))
+        >>> from sunpy.net import jsoc
+        >>> from sunpy.net import attrs as a
+        >>> client = jsoc.JSOCClient()
+        >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+        ...                          a.jsoc.Series('hmi.m_45s'), a.jsoc.Notify("sunpy@sunpy.org"))
 
-    the response object holds the records that your query will return:
+        the response object holds the records that your query will return:
 
-    >>> print(response)   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+        >>> print(response)   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
 
-    <Table length=81>
-            DATE         TELESCOP  INSTRUME           T_OBS          WAVELNTH
-           str20           str7     str10             str23          float64
-    -------------------- -------- ---------- ----------------------- --------
-    2014-01-05T17:46:02Z  SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI   6173.0
-    2014-01-05T17:47:11Z  SDO/HMI HMI_FRONT2 2014.01.01_00:01:22_TAI   6173.0
-    2014-01-05T17:48:18Z  SDO/HMI HMI_FRONT2 2014.01.01_00:02:07_TAI   6173.0
-    2014-01-05T17:49:26Z  SDO/HMI HMI_FRONT2 2014.01.01_00:02:52_TAI   6173.0
-    2014-01-05T17:50:34Z  SDO/HMI HMI_FRONT2 2014.01.01_00:03:37_TAI   6173.0
-    2014-01-05T17:51:43Z  SDO/HMI HMI_FRONT2 2014.01.01_00:04:22_TAI   6173.0
-                     ...      ...        ...                     ...      ...
-    2014-01-05T17:40:18Z  SDO/HMI HMI_FRONT2 2014.01.01_00:56:52_TAI   6173.0
-    2014-01-05T17:41:25Z  SDO/HMI HMI_FRONT2 2014.01.01_00:57:37_TAI   6173.0
-    2014-01-05T17:42:33Z  SDO/HMI HMI_FRONT2 2014.01.01_00:58:22_TAI   6173.0
-    2014-01-05T17:43:41Z  SDO/HMI HMI_FRONT2 2014.01.01_00:59:07_TAI   6173.0
-    2014-01-05T17:44:52Z  SDO/HMI HMI_FRONT2 2014.01.01_00:59:52_TAI   6173.0
-    2014-01-05T17:46:04Z  SDO/HMI HMI_FRONT2 2014.01.01_01:00:37_TAI   6173.0
+        <Table length=81>
+                DATE         TELESCOP  INSTRUME           T_OBS          WAVELNTH
+            str20           str7     str10             str23          float64
+        -------------------- -------- ---------- ----------------------- --------
+        2014-01-05T17:46:02Z  SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI   6173.0
+        2014-01-05T17:47:11Z  SDO/HMI HMI_FRONT2 2014.01.01_00:01:22_TAI   6173.0
+        2014-01-05T17:48:18Z  SDO/HMI HMI_FRONT2 2014.01.01_00:02:07_TAI   6173.0
+        2014-01-05T17:49:26Z  SDO/HMI HMI_FRONT2 2014.01.01_00:02:52_TAI   6173.0
+        2014-01-05T17:50:34Z  SDO/HMI HMI_FRONT2 2014.01.01_00:03:37_TAI   6173.0
+        2014-01-05T17:51:43Z  SDO/HMI HMI_FRONT2 2014.01.01_00:04:22_TAI   6173.0
+                        ...      ...        ...                     ...      ...
+        2014-01-05T17:40:18Z  SDO/HMI HMI_FRONT2 2014.01.01_00:56:52_TAI   6173.0
+        2014-01-05T17:41:25Z  SDO/HMI HMI_FRONT2 2014.01.01_00:57:37_TAI   6173.0
+        2014-01-05T17:42:33Z  SDO/HMI HMI_FRONT2 2014.01.01_00:58:22_TAI   6173.0
+        2014-01-05T17:43:41Z  SDO/HMI HMI_FRONT2 2014.01.01_00:59:07_TAI   6173.0
+        2014-01-05T17:44:52Z  SDO/HMI HMI_FRONT2 2014.01.01_00:59:52_TAI   6173.0
+        2014-01-05T17:46:04Z  SDO/HMI HMI_FRONT2 2014.01.01_01:00:37_TAI   6173.0
 
-    Length = 81 rows
+        Length = 81 rows
 
-    You can then make the request and download the data:
+    You can then make the request and download the data::
 
-    >>> res = client.fetch(response)   # doctest: +SKIP
+        >>> res = client.fetch(response)   # doctest: +SKIP
 
     This returns a Results instance which can be used to watch the progress
     of the download.
@@ -140,85 +141,85 @@ class JSOCClient(object):
     Note
     ----
     A registered email address is not required if you only need to query for data,
-    it is used only if you need to make an export request. For example,
+    it is used only if you need to make an export request. For example,::
 
-    >>> client = jsoc.JSOCClient()
-    >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...                          a.jsoc.Series('hmi.m_45s'))
+        >>> client = jsoc.JSOCClient()
+        >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+        ...                          a.jsoc.Series('hmi.m_45s'))
 
     The above is a successful query operation, and will return query responses as before.
 
     But, this response object cannot be used to make an export request and will throw an
-    error if done so:
+    error if done so::
 
-    >>> res = client.fetch(response)   # doctest: +SKIP
+        >>> res = client.fetch(response)   # doctest: +SKIP
 
-    ValueError: Email address is invalid or not registered
+        ValueError: Email address is invalid or not registered
 
     *Example 2*
 
     Query the JSOC for some AIA 171 data, and separate out the staging and the
-    download steps:
+    download steps::
 
-    >>> import astropy.units as u
-    >>> from sunpy.net import jsoc
-    >>> from sunpy.net import attrs as a
-    >>> client = jsoc.JSOCClient()
-    >>> response = client.search(a.jsoc.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
-    ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Segment('image'),
-    ...                          a.jsoc.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))
+        >>> import astropy.units as u
+        >>> from sunpy.net import jsoc
+        >>> from sunpy.net import attrs as a
+        >>> client = jsoc.JSOCClient()
+        >>> response = client.search(a.jsoc.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
+        ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Segment('image'),
+        ...                          a.jsoc.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))
 
-    the response object holds the records that your query will return:
+        the response object holds the records that your query will return:
 
-    >>> print(response)
+        >>> print(response)
 
-    <Table length=4>
-            DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH
-           str20           str7     str5            str23           int64
-    -------------------- -------- -------- ----------------------- --------
-    2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:12.34Z      171
-    2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:24.34Z      171
-    2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:36.34Z      171
-    2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:48.34Z      171
+        <Table length=4>
+                DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH
+            str20           str7     str5            str23           int64
+        -------------------- -------- -------- ----------------------- --------
+        2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:12.34Z      171
+        2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:24.34Z      171
+        2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:36.34Z      171
+        2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:48.34Z      171
 
 
-    You can then make the request:
+    You can then make the request::
 
-    >>> requests = client.request_data(response)
-    <ExportRequest id="JSOC_20170713_1461", status=0>
+        >>> requests = client.request_data(response)
+        <ExportRequest id="JSOC_20170713_1461", status=0>
 
     This returns a list of all the ExportRequest objects for your query. You can
-    get the ExportRequest ID :
+    get the ExportRequest ID ::
 
-    >>> requests.id
-    'JSOC_20170713_1461'
+        >>> requests.id
+        'JSOC_20170713_1461'
 
-    >>> requests.status
-    0
+        >>> requests.status
+        0
 
     You can also check the status of the request, which will print out a status
     message and return you the status code, a code of 1 means it is not ready
     to download and a code of 0 means the request is staged and ready. A code
     of 6 means an error, which is commonly that the request has not had time to
-    get into the queue.
+    get into the queue.::
 
-    >>> requests.status
-    0
+        >>> requests.status
+        0
 
-    or
+    or::
 
-    >>> status = client.check_request(requests)
-    Request JSOC_20140724_955 was submitted 10 seconds ago, it is not ready to download.
+        >>> status = client.check_request(requests)
+        Request JSOC_20140724_955 was submitted 10 seconds ago, it is not ready to download.
 
     Once the status code is 0 you can download the data using the `get_request`
-    method:
+    method::
 
-    >>> res = client.get_request(requests)
+        >>> res = client.get_request(requests)
 
     This returns a Results instance which can be used to watch the progress
-    of the download.
+    of the download.::
 
-    >>> res.wait(progress=True)   # doctest: +SKIP
+        >>> res.wait(progress=True)   # doctest: +SKIP
 
     """
 
@@ -249,57 +250,57 @@ class JSOCClient(object):
         *Example 1*
 
         Request all AIA 304 image data between 2014-01-01T00:00 and
-        2014-01-01T01:00.
+        2014-01-01T01:00.::
 
-        >>> import astropy.units as u
-        >>> from sunpy.net import jsoc
-        >>> from sunpy.net import attrs as a
-        >>> client = jsoc.JSOCClient()
-        >>> response = client.search(a.jsoc.Time('2010-01-01T00:00:00', '2010-01-01T01:00:00'),
-        ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA),
-        ...                          a.jsoc.Segment('image'))
+            >>> import astropy.units as u
+            >>> from sunpy.net import jsoc
+            >>> from sunpy.net import attrs as a
+            >>> client = jsoc.JSOCClient()
+            >>> response = client.search(a.jsoc.Time('2010-01-01T00:00:00', '2010-01-01T01:00:00'),
+            ...                          a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA),
+            ...                          a.jsoc.Segment('image'))
 
 
         *Example 2*
 
-        Request keyword data of hmi.v_45s for certain specific keywords only.
+        Request keyword data of hmi.v_45s for certain specific keywords only.::
 
-        >>> import astropy.units as u
-        >>> from sunpy.net import jsoc
-        >>> from sunpy.net import attrs as a
-        >>> client = jsoc.JSOCClient()
-        >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-        ...                          a.jsoc.Series('hmi.v_45s'),
-        ...                          a.jsoc.Keys('T_REC, DATAMEAN, OBS_VR'))
-        >>> print(response)
+            >>> import astropy.units as u
+            >>> from sunpy.net import jsoc
+            >>> from sunpy.net import attrs as a
+            >>> client = jsoc.JSOCClient()
+            >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
+            ...                          a.jsoc.Series('hmi.v_45s'),
+            ...                          a.jsoc.Keys('T_REC, DATAMEAN, OBS_VR'))
+            >>> print(response)
 
-        <Table length=81>
-                 T_REC            DATAMEAN     OBS_VR
-                 str23            float64     float64
-        ----------------------- ----------- -----------
-        2014.01.01_00:00:45_TAI 1906.518188 1911.202614
-        2014.01.01_00:01:30_TAI 1908.876221 1913.945512
-        2014.01.01_00:02:15_TAI   1911.7771 1916.667999
-        2014.01.01_00:03:00_TAI 1913.422485 1919.369924
-        2014.01.01_00:03:45_TAI 1916.500488 1922.050862
-                            ...         ...         ...
-        2014.01.01_00:57:45_TAI 2054.584473 2058.971861
-        2014.01.01_00:58:30_TAI 2056.094238 2060.075964
-        2014.01.01_00:59:15_TAI 2056.366699 2061.157734
-        2014.01.01_01:00:00_TAI 2057.013428 2062.217153
-        2014.01.01_01:00:45_TAI 2059.014893 2063.254285
+            <Table length=81>
+                    T_REC            DATAMEAN     OBS_VR
+                    str23            float64     float64
+            ----------------------- ----------- -----------
+            2014.01.01_00:00:45_TAI 1906.518188 1911.202614
+            2014.01.01_00:01:30_TAI 1908.876221 1913.945512
+            2014.01.01_00:02:15_TAI   1911.7771 1916.667999
+            2014.01.01_00:03:00_TAI 1913.422485 1919.369924
+            2014.01.01_00:03:45_TAI 1916.500488 1922.050862
+                                ...         ...         ...
+            2014.01.01_00:57:45_TAI 2054.584473 2058.971861
+            2014.01.01_00:58:30_TAI 2056.094238 2060.075964
+            2014.01.01_00:59:15_TAI 2056.366699 2061.157734
+            2014.01.01_01:00:00_TAI 2057.013428 2062.217153
+            2014.01.01_01:00:45_TAI 2059.014893 2063.254285
 
-        *Example 3*
+            *Example 3*
 
-        Request data of aia.lev1_euv_12s on the basis of primekeys other than T_REC.
+        Request data of aia.lev1_euv_12s on the basis of primekeys other than T_REC.::
 
-        >>> import astropy.units as u
-        >>> from sunpy.net import jsoc
-        >>> from sunpy.net import attrs as a
-        >>> client = jsoc.JSOCClient()
-        >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T02:00:00'),
-        ...                          a.jsoc.Series('aia.lev1_euv_12s'),
-        ...                          a.jsoc.PrimeKey('WAVELNTH','171'))
+            >>> import astropy.units as u
+            >>> from sunpy.net import jsoc
+            >>> from sunpy.net import attrs as a
+            >>> client = jsoc.JSOCClient()
+            >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T02:00:00'),
+            ...                          a.jsoc.Series('aia.lev1_euv_12s'),
+            ...                          a.jsoc.PrimeKey('WAVELNTH','171'))
 
         """
 
@@ -348,32 +349,32 @@ class JSOCClient(object):
         2014-01-01T01:00.
 
         Since, the function only performs a lookdata, and does not make a proper export
-        request, attributes like Segment need not be passed.
+        request, attributes like Segment need not be passed.::
 
-        >>> import astropy.units as u
-        >>> from sunpy.net import jsoc
-        >>> from sunpy.net import attrs as a
-        >>> client = jsoc.JSOCClient()
-        >>> metadata = client.search_metadata(
-        ...                         a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:02:00'),
-        ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))
-        >>> print(metadata)
+            >>> import astropy.units as u
+            >>> from sunpy.net import jsoc
+            >>> from sunpy.net import attrs as a
+            >>> client = jsoc.JSOCClient()
+            >>> metadata = client.search_metadata(
+            ...                         a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:02:00'),
+            ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))
+            >>> print(metadata)
 
-                                                          T_REC                  ...         T_REC_epoch
-        aia.lev1_euv_12s[2014-01-01T00:00:01Z][304]  2014-01-01T00:00:01Z        ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:00:13Z][304]  2014-01-01T00:00:13Z        ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:00:25Z][304]  2014-01-01T00:00:25Z        ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:00:37Z][304]  2014-01-01T00:00:37Z        ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:00:49Z][304]  2014-01-01T00:00:49Z        ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:01:01Z][304]  2014-01-01T00:01:01Z        ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:01:13Z][304]  2014-01-01T00:01:13Z        ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:01:25Z][304]  2014-01-01T00:01:25Z        ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:01:37Z][304]  2014-01-01T00:01:37Z        ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:01:49Z][304]  2014-01-01T00:01:49Z        ...     1993.01.01_00:00:04_TAI
-        aia.lev1_euv_12s[2014-01-01T00:02:01Z][304]  2014-01-01T00:02:01Z        ...     1993.01.01_00:00:04_TAI
+                                                            T_REC                  ...         T_REC_epoch
+            aia.lev1_euv_12s[2014-01-01T00:00:01Z][304]  2014-01-01T00:00:01Z        ...     1993.01.01_00:00:04_TAI
+            aia.lev1_euv_12s[2014-01-01T00:00:13Z][304]  2014-01-01T00:00:13Z        ...     1993.01.01_00:00:04_TAI
+            aia.lev1_euv_12s[2014-01-01T00:00:25Z][304]  2014-01-01T00:00:25Z        ...     1993.01.01_00:00:04_TAI
+            aia.lev1_euv_12s[2014-01-01T00:00:37Z][304]  2014-01-01T00:00:37Z        ...     1993.01.01_00:00:04_TAI
+            aia.lev1_euv_12s[2014-01-01T00:00:49Z][304]  2014-01-01T00:00:49Z        ...     1993.01.01_00:00:04_TAI
+            aia.lev1_euv_12s[2014-01-01T00:01:01Z][304]  2014-01-01T00:01:01Z        ...     1993.01.01_00:00:04_TAI
+            aia.lev1_euv_12s[2014-01-01T00:01:13Z][304]  2014-01-01T00:01:13Z        ...     1993.01.01_00:00:04_TAI
+            aia.lev1_euv_12s[2014-01-01T00:01:25Z][304]  2014-01-01T00:01:25Z        ...     1993.01.01_00:00:04_TAI
+            aia.lev1_euv_12s[2014-01-01T00:01:37Z][304]  2014-01-01T00:01:37Z        ...     1993.01.01_00:00:04_TAI
+            aia.lev1_euv_12s[2014-01-01T00:01:49Z][304]  2014-01-01T00:01:49Z        ...     1993.01.01_00:00:04_TAI
+            aia.lev1_euv_12s[2014-01-01T00:02:01Z][304]  2014-01-01T00:02:01Z        ...     1993.01.01_00:00:04_TAI
 
 
-        [11 rows x 176 columns]
+            [11 rows x 176 columns]
 
         """
         query = and_(*query)
