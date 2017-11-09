@@ -7,6 +7,8 @@ Bug Fixes
 - CompositeMap axes scaling now uses map spatial units [#2310]
 - Moved license file to root of repository and updated README file [#2326]
 - Fix docstring formatting for net.vso.attrs [#2309]]
+- Fix coloring of ticks under matplotlib 2.0 default style [#2320]
+- Always index arrays with tuples in `ImageAnimator` [#2320]
 
 0.8.2
 =====
