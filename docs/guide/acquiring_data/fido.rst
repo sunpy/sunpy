@@ -22,8 +22,8 @@ Searching for Data Using Fido
 -----------------------------
 
 To search for data with Fido, you need to specify attributes to search against.
-The full list of allowed attributes can be found in the
-`vso.attrs <sunpy.net.vso.attrs>` module.
+The (partial) range of allowed attributes are found in the `vso.attrs <sunpy.net.vso.attrs>`
+and `jsoc.attrs <sunpy.net.jsoc.attrs>`.
 Examples of these attributes are `a.Time <sunpy.net.vso.attrs.Time>`,
 `a.Instrument <sunpy.net.vso.attrs.Instrument>`,
 `a.Wavelength <sunpy.net.vso.attrs.Wavelength>`, some of these attributes are
