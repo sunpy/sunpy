@@ -1,5 +1,10 @@
 language: python
 
+os:
+    - linux
+
+stage: Initial tests
+
 # Setting sudo to false opts in to Travis-CI container-based builds.
 sudo: false
 
@@ -25,7 +30,6 @@ python:
     - 3.6
 
 # Configure the build environment. Global varibles are defined for all configurations.
-stage: Comprehensive tests
 
 env:
     global:
@@ -40,12 +44,16 @@ env:
         - PIP_DEPENDENCIES='hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures sunpy-sphinx-theme'
         - EVENT_TYPE='pull_request push'
 
+
     matrix:
         - SETUP_CMD='egg_info'
 
 stages:
+   # Do the install jobs, don't proceed if it fails
+   - name: Initial tests
+   # Do the rest of the tests
    - name: Comprehensive tests
-   - name: CRON tests
+   - name: Cron tests
      if: type = cron
 
 matrix:
@@ -57,28 +65,31 @@ matrix:
          # We order the jobs, so the longest running tests are in the top
          # four positions of the matrix
          - os: osx
-           stage: CRON tests
+           stage: Cron tests
            language: generic
            env: PYTHON_VERSION=3.6
 
          - python: 3.6
+           stage: Comprehensive tests
            env: SETUP_CMD='test --online --coverage -V'
                 EVENT_TYPE='push pull_request cron'
 
          - python: 3.6
-           stage: CRON tests
+           stage: Cron tests
            env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
                 EVENT_TYPE='push pull_request cron'
 
          - python: 2.7
+           stage: Comprehensive tests
            env: SETUP_CMD='test'
 
          # Previous numpy is tested on an older python version
          - python: 3.5
-           stage: CRON tests
+           stage: Cron tests
            env: NUMPY_VERSION=$PREVIOUS_NUMPY
 
          - python: 3.6
+           stage: Comprehensive tests
            env: SETUP_CMD='build_docs -w'
                 EVENT_TYPE='push pull_request cron'
                 SPHINX_VERSION='<1.6'
@@ -86,9 +97,11 @@ matrix:
          # Figure test runs use an env stored in the repo so don't have conda
          # requirements
          - python: 2.7
+           stage: Comprehensive tests
            env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
 
          - python: 3.5
+           stage: Comprehensive tests
            env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
 
 install:
