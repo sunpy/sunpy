@@ -30,7 +30,6 @@ python:
     - 3.6
 
 # Configure the build environment. Global varibles are defined for all configurations.
-
 env:
     global:
         - COLUMNS=240
@@ -39,11 +38,10 @@ env:
         - ASTROPY_VERSION='stable'
         - MAIN_CMD='python setup.py'
         - SETUP_CMD='test'
-        - CONDA_CHANNELS='astropy astropy-ci-extras conda-forge'
-        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock pyyaml pandas nomkl pytest-cov coverage glymur'
-        - PIP_DEPENDENCIES='hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures pytest-astropy sunpy-sphinx-theme'
+        - CONDA_CHANNELS='astropy astropy-ci-extras'
+        - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock pyyaml pandas nomkl'
+        - PIP_DEPENDENCIES='hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures pytest-astropy sunpy-sphinx-theme glymur'
         - EVENT_TYPE='pull_request push'
-
 
     matrix:
         - SETUP_CMD='egg_info'
@@ -78,10 +76,6 @@ matrix:
            stage: Cron tests
            env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
                 EVENT_TYPE='push pull_request cron'
-
-         - python: 3.6
-           stage: Initial tests
-           env: SETUP_CMD='test'
 
          - python: 2.7
            stage: Comprehensive tests
