@@ -1,7 +1,5 @@
 language: python
 
-stage: Comprehensive tests
-
 # Setting sudo to false opts in to Travis-CI container-based builds.
 sudo: false
 
@@ -27,6 +25,8 @@ python:
     - 3.6
 
 # Configure the build environment. Global varibles are defined for all configurations.
+stage: Comprehensive tests
+
 env:
     global:
         - COLUMNS=240
@@ -41,17 +41,12 @@ env:
         - EVENT_TYPE='pull_request push'
 
     matrix:
-        - stage: Initial tests
         - SETUP_CMD='egg_info'
 
 stages:
-   # Do the style check and a single test job, don't proceed if it fails
-   - name: Initial tests
-   # Do the rest of the tests
    - name: Comprehensive tests
    - name: CRON tests
      if: type = cron
-
 
 matrix:
 
@@ -80,6 +75,7 @@ matrix:
 
          # Previous numpy is tested on an older python version
          - python: 3.5
+           stage: CRON tests
            env: NUMPY_VERSION=$PREVIOUS_NUMPY
 
          - python: 3.6
