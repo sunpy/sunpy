@@ -1,5 +1,7 @@
 language: python
 
+stage: Comprehensive tests
+
 # Setting sudo to false opts in to Travis-CI container-based builds.
 sudo: false
 
@@ -39,13 +41,28 @@ env:
         - EVENT_TYPE='pull_request push'
 
     matrix:
+        - stage: Initial tests
         - SETUP_CMD='egg_info'
 
+stages:
+   # Do the style check and a single test job, don't proceed if it fails
+   - name: Initial tests
+   # Do the rest of the tests
+   - name: Comprehensive tests
+   - name: CRON tests
+     if: type = cron
+
+
 matrix:
+
+    # Don't wait for allowed failures
+    fast_finish: true
+
     include:
          # We order the jobs, so the longest running tests are in the top
          # four positions of the matrix
          - os: osx
+           stage: CRON tests
            language: generic
            env: PYTHON_VERSION=3.6
 
@@ -54,6 +71,7 @@ matrix:
                 EVENT_TYPE='push pull_request cron'
 
          - python: 3.6
+           stage: CRON tests
            env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
                 EVENT_TYPE='push pull_request cron'
 
