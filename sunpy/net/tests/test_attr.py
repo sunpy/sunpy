@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
 
 from __future__ import absolute_import
 
@@ -17,6 +16,10 @@ class SA2(attr.SimpleAttr):
 
 
 class SA3(attr.SimpleAttr):
+    pass
+
+
+class SA4(attr.SimpleAttr):
     pass
 
 
@@ -151,3 +154,65 @@ def test_or_nesting():
     a = attr.or_(a1, attr.AttrOr((a2, a3)))
     # Test that the nesting has been removed.
     assert len(a.attrs) == 3
+
+
+def test_attrand_repr():
+    a1 = SA1(1)
+    a2 = SA2(2)
+    aand = a1 & a2
+
+    assert "SA1" in repr(aand)
+    assert "SA2" in repr(aand)
+
+
+def test_attrand_eq():
+    a1 = SA1(1)
+    a2 = SA2(2)
+    aand = a1 & a2
+    aand2 = a1 & a2
+
+    assert not aand == a1
+    assert aand == aand2
+
+
+def test_attrand_hash():
+    a1 = SA1(1)
+    a2 = SA2(2)
+    a3 = SA2(3)
+    aand = a1 & a2
+    aand2 = a1 & a2
+    aand3 = a1 & a3
+
+    assert hash(aand) == hash(aand2)
+    assert hash(aand) != hash(aand3)
+
+
+def test_attrand_collides():
+    a1 = SA1(1)
+    a2 = SA2(2)
+    a3 = SA2(3)
+    aand = a1 & a2
+    aand2 = a1 & a2
+
+    assert aand.collides(a3)
+    assert not aand.collides(aand2)
+
+
+def test_attrand_and():
+    a1 = SA1(1)
+    a2 = SA2(2)
+    a3 = SA3(3)
+    a4 = SA4(4)
+    aand = a1 & a2
+    aand2 = a4 & a3
+    aor = a4 | a3
+
+    with pytest.raises(TypeError):
+        aand & aand
+
+    assert isinstance(aand & aand2, attr.AttrAnd)
+
+    assert isinstance(aand & aor, attr.AttrOr)
+
+    assert isinstance(aand & a3, attr.AttrAnd)
+    assert len((aand & a3).attrs) == 3
