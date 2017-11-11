@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 
 import astropy.units as u
+from astropy.visualization.mpl_normalize import ImageNormalize
+from astropy.visualization import AsinhStretch
 
 import sunpy.map
 from sunpy.data.sample import AIA_171_IMAGE
@@ -57,7 +59,6 @@ params = np.polyfit(rsun_array[rsun_array < 1.5],
 # then plot the data and the fit.
 
 fontsize = 14
-plt.rc('text', usetex=True)
 plt.rc('xtick', labelsize=fontsize)
 plt.rc('ytick', labelsize=fontsize)
 plt.plot(rsun_array, y, label='data')
@@ -69,6 +70,7 @@ plt.ylabel(r'mean DN', fontsize=fontsize)
 plt.xlabel(r'radius r ($R_{\odot}$)', fontsize=fontsize)
 plt.title(r'observed off limb mean DN and best fit', fontsize=fontsize)
 plt.legend(fontsize=fontsize)
+plt.tight_layout()
 plt.show()
 
 ###############################################################################
@@ -81,10 +83,13 @@ scale_factor = np.exp((r-1)*-params[0])
 scale_factor[r < 1] = 1
 
 ###############################################################################
-# Let's now plot and compare the results.
+# Let's now plot and compare the results.  The scaled map uses the same image
+# stretching function as the original image (set by the keyword 'stretch')
+# clipped to the same range (set by the keywords 'vmin' and 'vmax').
 
 scaled_map = sunpy.map.Map(aia.data * scale_factor, aia.meta)
-scaled_map.plot_settings['norm'] = colors.Normalize(vmin=10, vmax=10000)
+scaled_map.plot_settings['norm'] = ImageNormalize(stretch=aia.plot_settings['norm'].stretch,
+                                                  vmin=aia.data.min(), vmax=aia.data.max())
 
 fig = plt.figure(figsize=(12, 5))
 ax = fig.add_subplot(121, projection=aia)
