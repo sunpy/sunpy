@@ -216,3 +216,32 @@ def test_attrand_and():
 
     assert isinstance(aand & a3, attr.AttrAnd)
     assert len((aand & a3).attrs) == 3
+
+
+def test_attror_or():
+    a1 = SA1(1)
+    a2 = SA2(2)
+    a3 = SA3(3)
+    a4 = SA4(4)
+    aor = a1 | a2
+    aor2 = a4 | a3
+
+    comp = aor | aor2
+    assert isinstance(comp, attr.AttrOr)
+    assert len(comp.attrs) == 4
+
+    assert len((aor | a3).attrs) == 3
+
+
+def test_attror_and():
+    a1 = SA1(1)
+    a2 = SA2(2)
+    a3 = SA3(3)
+    aor = a1 | a2
+
+    comp = aor & a3
+
+    assert isinstance(comp, attr.AttrOr)
+    assert len(comp.attrs) == 2
+    assert isinstance(comp.attrs[0], attr.AttrAnd)
+    assert isinstance(comp.attrs[1], attr.AttrAnd)
