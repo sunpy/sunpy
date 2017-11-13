@@ -30,7 +30,7 @@ plt.show()
 
 ####################################################################
 # We now plot the aiamap data to see the distribution of the data.
-# We store the data values in y 
+# We store the data values in yvalues.
 
 yvalues = (aiamap.data).reshape(-1)
 xvalues = [i for i in range(len(yvalues))]
@@ -42,9 +42,10 @@ plt.plot(xvalues, yvalues)
 plt.show()
 
 
-###################################################################################################
+#####################################################################################
 # Next we check for the position in the aiamap data where we get local maxima.
-# We first set a threshold value, such that we will consider only those peaks greater than the threshold value
+# We first set a threshold value, such that we will consider only those peaks greater 
+# than the threshold value.
 
 thres = 0.3
 thres = thres * (np.max(yvalues) - np.min(yvalues)) + np.min(yvalues)
@@ -52,8 +53,9 @@ indexes = argrelmax(yvalues)
 filter_ind = np.where(yvalues[indexes] > thres )
 
 
-##########################################################################################################################
-# We now check for the indices at which we get such a local maxima and plot those positions marked 'x' in the aiamap data
+############################################################################
+# We now check for the indices at which we get such a local maxima and plot
+# those positions marked 'x' in the aiamap data.
 
 plt.figure(figsize=(10,6))
 plt.plot(np.array(xvalues), yvalues)
@@ -62,9 +64,7 @@ plt.title('First estimate')
 plt.show()
 
 
-
-
-###################################################################################################
+###################################################################################
 # We therefore import the coordinate functionality.
 
 max_indices = np.unravel_index(indexes[0][filter_ind[0]], aiamap.data.shape) * u.pixel
