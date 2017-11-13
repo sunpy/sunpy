@@ -7,7 +7,7 @@ How to find regions of local maxima
 """
 import astropy.units as u
 
-import scipy.signal
+from scipy.signal import argrelmax
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -40,19 +40,21 @@ plt.show()
 
 ###################################################################################################
 # Next we check for the position in the aiamap data where we get local maxima.
-# Using the below function we take the window width of 2000 at an interval of 100 to use for calculating the CWT matrix.
-
-indexes = scipy.signal.find_peaks_cwt(yvalues, np.arange(1,2000,100), noise_perc=0.1)
+# We first set a threshold value, such that we will consider only those peaks greater than the threshold value
+thres = 0.3
+thres = thres * (np.max(yvalues) - np.min(yvalues)) + np.min(yvalues)
+indexes = argrelmax(yvalues)
+filter_ind = np.where(yvalues[indexes] > thres )
 
 
 ##################################################################################################
 # We now check for the indices at which we get such a local maxima and plot those positions marked 'x'
 # in the aiamap data
-print(indexes)
-print(xvalues, yvalues[indexes])
+#print(indexes)
+#print(np.array(xvalues), yvalues[indexes[0][filter_ind[0]]])
 plt.figure(figsize=(10,6))
 plt.plot(np.array(xvalues), yvalues)
-plt.plot(indexes,yvalues[indexes],'bx',c='r')
+plt.plot(indexes[0][filter_ind[0]] ,yvalues[indexes[0][filter_ind[0]]],'bx',c='r')
 plt.title('First estimate')
 plt.show()
 
@@ -61,7 +63,7 @@ plt.show()
 
 ###################################################################################################
 # We therefore import the coordinate functionality.
-max_indices = np.unravel_index(indexes, aiamap.data.shape) * u.pixel
+max_indices = np.unravel_index(indexes[0][filter_ind[0]], aiamap.data.shape) * u.pixel
 hpc_max = aiamap.pixel_to_data(max_indices[1], max_indices[0])
 
 
