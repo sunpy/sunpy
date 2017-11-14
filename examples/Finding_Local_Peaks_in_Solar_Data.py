@@ -15,7 +15,7 @@ import sunpy.map
 from sunpy.data.sample import AIA_193_IMAGE
 
 #########################################################
-# We first create the Map using the sample data and then 
+# We first create the Map using the sample data.
 
 aiamap = sunpy.map.Map(AIA_193_IMAGE)
 
@@ -37,7 +37,7 @@ xvalues = [i for i in range(len(yvalues))]
 
 # We simply plot the data
 
-plt.figure(figsize=(10,6))
+plt.figure(figsize=(10, 6))
 plt.plot(xvalues, yvalues)
 plt.show()
 
@@ -50,16 +50,16 @@ plt.show()
 thres = 0.3
 thres = thres * (np.max(yvalues) - np.min(yvalues)) + np.min(yvalues)
 indexes = argrelmax(yvalues)
-filter_ind = np.where(yvalues[indexes] > thres )
+filter_ind = np.where(yvalues[indexes] > thres)
 
 
 ############################################################################
 # We now check for the indices at which we get such a local maxima and plot
 # those positions marked 'x' in the aiamap data.
 
-plt.figure(figsize=(10,6))
+plt.figure(figsize=(10, 6))
 plt.plot(np.array(xvalues), yvalues)
-plt.plot(indexes[0][filter_ind[0]] ,yvalues[indexes[0][filter_ind[0]]],'bx',c='r')
+plt.plot(indexes[0][filter_ind[0]], yvalues[indexes[0][filter_ind[0]]], 'bx', c='r')
 plt.title('First estimate')
 plt.show()
 
