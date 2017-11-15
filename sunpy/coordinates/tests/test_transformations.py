@@ -82,6 +82,27 @@ def test_hcrs_hgs():
     assert quantity_allclose(earth_hgs.radius, 1*u.AU, atol=0.017*u.AU)
 
 
+def test_hcrs_hgs_array_obstime():
+    # Get the Earth location in HCRS at two times
+    times = Time(['2017-01-01', '2017-06-01'])
+    earth_hcrs = SkyCoord(get_body_barycentric('earth', times), frame='icrs', obstime=times).hcrs
+
+    # Transform each time in separate calls (uses scalar obstime)
+    earth_hgs_0 = earth_hcrs[0].transform_to(HeliographicStonyhurst)
+    earth_hgs_1 = earth_hcrs[1].transform_to(HeliographicStonyhurst)
+
+    # Transform both times in one call (uses array obstime)
+    earth_hgs = earth_hcrs.transform_to(HeliographicStonyhurst)
+
+    # Confirm that the two approaches produce the same results
+    assert quantity_allclose(earth_hgs_0.lon, earth_hgs[0].lon, rtol=1e-10)
+    assert quantity_allclose(earth_hgs_0.lat, earth_hgs[0].lat, rtol=1e-10)
+    assert quantity_allclose(earth_hgs_0.radius, earth_hgs[0].radius, rtol=1e-10)
+    assert quantity_allclose(earth_hgs_1.lon, earth_hgs[1].lon, rtol=1e-10)
+    assert quantity_allclose(earth_hgs_1.lat, earth_hgs[1].lat, rtol=1e-10)
+    assert quantity_allclose(earth_hgs_1.radius, earth_hgs[1].radius, rtol=1e-10)
+
+
 def test_hgs_hgc_roundtrip():
     obstime = "2011-01-01"
 
