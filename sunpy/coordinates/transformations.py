@@ -299,11 +299,16 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
     sun_earth_detilt = sun_earth.transform(_SUN_DETILT_MATRIX)
 
     # Remove the component of the Sun-Earth vector that is parallel to the Sun's north pole
-    hgs_x_axis_detilt = CartesianRepresentation(sun_earth_detilt.xyz * [1, 1, 0])
+    # (The additional transpose operations are to handle both scalar and array obstime situations)
+    hgs_x_axis_detilt = CartesianRepresentation((sun_earth_detilt.xyz.T * [1, 1, 0]).T)
 
     # The above vector, which is in the Sun's equatorial plane, is also the X axis of HGS
     x_axis = CartesianRepresentation(1, 0, 0)
-    rot_matrix = _make_rotation_matrix_from_reprs(hgs_x_axis_detilt, x_axis)
+    if hgsframe.obstime.isscalar:
+        rot_matrix = _make_rotation_matrix_from_reprs(hgs_x_axis_detilt, x_axis)
+    else:
+        rot_matrix_list = [_make_rotation_matrix_from_reprs(vect, x_axis) for vect in hgs_x_axis_detilt]
+        rot_matrix = np.stack(rot_matrix_list)
 
     return matrix_product(rot_matrix, _SUN_DETILT_MATRIX)
 
