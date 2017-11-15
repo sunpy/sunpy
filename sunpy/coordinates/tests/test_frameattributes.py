@@ -79,12 +79,6 @@ def test_on_frame_error2():
         Helioprojective(obstime=17263871263)
 
 
-def test_array():
-    input = Time(['2012-01-01 00:00:00', '2012-01-01 00:00:05'])
-    with pytest.raises(ValueError):
-        Helioprojective(obstime=input)
-
-
 # ObserverCoordinateAttribute
 
 
