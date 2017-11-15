@@ -1,8 +1,25 @@
+0.8.3 (Unreleased)
+==================
+
+Bug Fixes
+---------
+
+- CompositeMap axes scaling now uses map spatial units [#2310]
+- Moved license file to root of repository and updated README file [#2326]
+- Fix docstring formatting for net.vso.attrs [#2309]]
+- Fix coloring of ticks under matplotlib 2.0 default style [#2320]
+- Always index arrays with tuples in `ImageAnimator` [#2320]
+- Added links to possible attrs for FIDO in guide [#2317] [#2289]
+- Updated GitHub Readme [#2281] [#2283]
+- Fix matplotlib / pandas 0.21 bug in examples [#2336]
+- Fixes the off limb enhancement example [#2329]
+- Changes to masking hot pixels and picking bright pixels examples [#2325] [#2319]
+- Travis CI fix for numpy-dev build [#2340]
+- Updated masking brightest pixel example [#2338]
+- Changed TRAVIS cronjobs [#2338]
+
 0.8.2
 =====
-
-New Features
-------------
 
 Bug Fixes
 ---------
@@ -12,9 +29,6 @@ Bug Fixes
 
 0.8.1
 ======
-
-New Features
-------------
 
 Bug fixes
 ---------
