@@ -80,6 +80,12 @@ matrix:
                 EVENT_TYPE='push pull_request cron'
 
          - python: 3.6
+           stage: Comprehensive tests
+           # Run this with pytest because our `setup.py` runner does not
+           # currently pick up doctests in docs/
+           env: MAIN_CMD='py.test -k-online -m "not figure"'
+
+         - python: 3.6
            stage: Initial tests
            env: SETUP_CMD='test'
 
