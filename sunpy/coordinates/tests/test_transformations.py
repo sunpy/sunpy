@@ -95,10 +95,10 @@ def test_hcrs_hgs_array_obstime():
     earth_hgs = earth_hcrs.transform_to(HeliographicStonyhurst)
 
     # Confirm that the two approaches produce the same results
-    assert quantity_allclose(earth_hgs_0.lon, earth_hgs[0].lon, rtol=1e-10)
+    assert quantity_allclose(earth_hgs_0.lon, earth_hgs[0].lon, atol=1e-12*u.deg)
     assert quantity_allclose(earth_hgs_0.lat, earth_hgs[0].lat, rtol=1e-10)
     assert quantity_allclose(earth_hgs_0.radius, earth_hgs[0].radius, rtol=1e-10)
-    assert quantity_allclose(earth_hgs_1.lon, earth_hgs[1].lon, rtol=1e-10)
+    assert quantity_allclose(earth_hgs_1.lon, earth_hgs[1].lon, atol=1e-12*u.deg)
     assert quantity_allclose(earth_hgs_1.lat, earth_hgs[1].lat, rtol=1e-10)
     assert quantity_allclose(earth_hgs_1.radius, earth_hgs[1].radius, rtol=1e-10)
 
