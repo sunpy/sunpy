@@ -236,7 +236,9 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
                              for i in range(120)])
         >>> channel_1 = np.zeros(len(TIME))+0.4
         >>> channel_2 = np.zeros(len(TIME))+0.1
+
     Remove LARs (Large Angle Rotations) from time series.
+
         >>> time_clean, channels_clean = remove_lyra_artifacts(
               time, channels=[channel_1, channel2], artifacts=['LAR'])
 
