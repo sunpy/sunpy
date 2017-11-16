@@ -117,6 +117,8 @@ class TestMap(object):
         aia = sunpy.map.Map(AIA_171_IMAGE)
         assert isinstance(aia,sunpy.map.sources.AIAMap)
         #Test a HMIMap
+        hmi = sunpy.map.Map(os.path.join(filepath, "hmi.v_45s.20160401_000000_TAI.2.Dopplergram.fits"))
+        assert isinstance(hmi, sunpy.map.sources.HMIMap)
 
     def test_soho(self):
         #Test EITMap, LASCOMap & MDIMap
@@ -154,7 +156,13 @@ class TestMap(object):
         assert isinstance(sot,sunpy.map.sources.SOTMap)
 
         #Test SWAPMap
+        swap = sunpy.map.Map(os.path.join(filepath, "SWAP", "resampled0_swap.fits"))
+        assert isinstance(swap, sunpy.map.sources.SWAPMap)
 
         #Test XRTMap
+        xrt = sunpy.map.Map(os.path.join(filepath, "HinodeXRT.fits"))
+        assert isinstance(xrt, sunpy.map.sources.XRTMap)
 
         #Test SXTMap
+        sxt = sunpy.map.Map(os.path.join(filepath, "sxtp_20000101_005818_131modified.fts.fits"))
+        assert isinstance(sxt, sunpy.map.sources.SXTMap)
