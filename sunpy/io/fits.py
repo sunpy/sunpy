@@ -231,6 +231,7 @@ def extract_waveunit(header):
     directly passed to ``astropy.units.Unit``::
 
         >>> import astropy.units
+        >>> header = {'WAVEUNIT': 'Angstrom', 'KEYCOMMENTS': {}}
         >>> waveunit = extract_waveunit(header)
         >>> if waveunit is not None:
         ...     unit = astropy.units.Unit(waveunit)
