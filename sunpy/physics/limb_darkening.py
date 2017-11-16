@@ -1,5 +1,3 @@
-import copy as c
-import sunpy.map
 import numpy as np
 from astropy import units as u
 from astropy.coordinates import SkyCoord
@@ -14,36 +12,42 @@ def limbdark(observation, limb_cut=True):
     A 5th order polynomial is fit to the limb darkening constants obtained from
     Astrophysical Quantities by Allan. Only in the wavelength
     range between 4000 and 15000 A.
+
     Parameters
     ----------
-        observation - SunPy Map object
-            SDO observation
-        limb_cut - Default: True
-            Background (r>1) values will be repleaced by np.nan
+    observation : `sunpy.map.GenericMap`.
+        Input map object
+    limb_cut : `bool`
+        If `True` background (r > 1) values will be repleaced by np.nan.
+
     Returns
     -------
-        observation - Corrected sunpy map object
-        The original map will be kept.
+    new_observation : `sunpy.map.GenericMap`
+        A new corrected Map.
+
     Notes
     -----
-        IDL code equavalent:
+    IDL code equavalent:
         http://hesperia.gsfc.nasa.gov/ssw/packages/nrl/idl/nrlgen/analysis/limb_dark.pro
+
     Reference
     ---------
-        Cox, Arthur N., Allen's astrophysical quantities, 4th ed. Publisher:
-            New York: AIP Press; Springer, 2000. ISBN: 038798746
+    Cox, Arthur N., Allen's astrophysical quantities, 4th ed. Publisher:
+        New York: AIP Press; Springer, 2000. ISBN: 038798746
+
     Examples
     --------
-        >>> import sunpy.map
-        >>> mymap = sunpy.map.Map('test.fits')
-        >>> newmap = limb_darkening(mymap, limb_cut=True)
-        >>> mymap.peek()
-        >>> newmap.peek()"""
+    >>> import sunpy.map
+    >>> from limb_darkening import limbdark
+    >>> mymap = sunpy.map.Map('test.fits')
+    >>> newmap = limb_darkening(mymap, limb_cut=True)
+    >>> mymap.peek()
+    >>> newmap.peek()
+    """
 
-    if observation.wavelength.value < 4000 or observation.wavelength.value > 15000:
-        raise ValueError("The wavelength of the observation must be between 4000 and 15000 A.")
+    if observation.wavelength < 400 * u.nm or observation.wavelength > 1500 * u.nm:
+        raise ValueError("The wavelength of the observation must be between 400 and 1500 nm.")
 
-    observation = c.copy(observation)
     wavelength = observation.wavelength.value
     x_center, y_center = observation.world_to_pixel(
         SkyCoord(0, 0, unit=u.arcsec, frame=observation.coordinate_frame))
@@ -72,9 +76,10 @@ def limbdark(observation, limb_cut=True):
     e2 = vl * (np.cos(np.arcsin(dist_grid)) ** 2)
     limbfilt = e1 + e2
 
-    res = observation.data / limbfilt
-    new_observation = sunpy.map.Map(res.astype(np.float32), observation.meta)
-    new_observation.meta['history'] += 'DARKLIMB CORRECTED'
+    new_data = observation.data / limbfilt
+    new_meta = observation.meta.copy()
+    new_meta['history'] += ' DARKLIMB CORRECTED'
+    new_observation = observation._new_instance(new_data, new_meta, observation.plot_settings)
 
     if limb_cut is True:
         new_observation.data[dist_grid > radius] = np.nan
