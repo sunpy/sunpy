@@ -1074,17 +1074,17 @@ def calculate_xray_luminosity(goeslc):
 
     >>> goeslc_new = calculate_xray_luminosity(goeslc)
     >>> goeslc_new.data   # doctest: +NORMALIZE_WHITESPACE
-                                        xrsa      xrsb  luminosity_xrsa \\
-    2014-01-01 00:00:00.421999  9.187300e-08  0.000004     2.498319e+16
-    2014-01-01 00:00:02.468999  9.187300e-08  0.000004     2.498319e+16
-    2014-01-01 00:00:04.518999  9.187300e-08  0.000004     2.498319e+16
-    2014-01-01 00:00:06.564999  9.298800e-08  0.000004     2.528640e+16
+                                        xrsa      xrsb  luminosity_xrsa  \\
+    2014-01-01 00:00:00.421999  9.187300e-08  0.000004     2.498454e+16
+    2014-01-01 00:00:02.468999  9.187300e-08  0.000004     2.498454e+16
+    2014-01-01 00:00:04.518999  9.187300e-08  0.000004     2.498454e+16
+    2014-01-01 00:00:06.564999  9.298800e-08  0.000004     2.528776e+16
     <BLANKLINE>
                                 luminosity_xrsb
-    2014-01-01 00:00:00.421999     9.543993e+17
-    2014-01-01 00:00:02.468999     9.543993e+17
-    2014-01-01 00:00:04.518999     9.529851e+17
-    2014-01-01 00:00:06.564999     9.529851e+17
+    2014-01-01 00:00:00.421999     9.544507e+17
+    2014-01-01 00:00:02.468999     9.544507e+17
+    2014-01-01 00:00:04.518999     9.530365e+17
+    2014-01-01 00:00:06.564999     9.530365e+17
 
     """
     # Check that input argument is of correct type
@@ -1266,7 +1266,7 @@ def _calc_xraylum(flux, date=None):
     >>> flux = Quantity([7e-6,7e-6], unit="W/m**2")
     >>> xraylum = _calc_xraylum(flux, date="2014-04-21")
     >>> xraylum
-    <Quantity [  1.98649103e+18,  1.98649103e+18] W>
+    <Quantity [  1.98751663e+18,  1.98751663e+18] W>
 
     """
     if date is not None:
@@ -1304,7 +1304,7 @@ def flareclass_to_flux(flareclass):
     >>> flareclass_to_flux('c4.7')
     <Quantity 4.7e-06 W / m2>
     >>> flareclass_to_flux('X2.4')
-    < Quantity 0.00024 W / m2>
+    <Quantity 0.00024 W / m2>
     """
     if not isinstance(flareclass, type('str')):
         raise TypeError("Input must be a string")
