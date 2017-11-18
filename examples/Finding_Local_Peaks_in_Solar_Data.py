@@ -59,7 +59,7 @@ plt.plot(np.array(xvalues), yvalues)
 plt.plot(indexes[0][filter_ind[0]], yvalues[indexes[0][filter_ind[0]]], 'bx',label = 'Local Maxima Coordinates',c='r')
 plt.title('Local Maxima in Map Data',fontsize=14)
 plt.ylabel('Intensity',fontsize=16)
-plt.xlabel('Pixel Locations',fontsize=16)
+plt.xlabel('Pixel Coordinates',fontsize=16)
 plt.legend()
 plt.show()
 
