@@ -34,12 +34,9 @@ plt.show()
 
 yvalues = (aiamap.data).reshape(-1)
 xvalues = [i for i in range(len(yvalues))]
+xvalues = np.array(xvalues)
+yvalues = np.array(yvalues)
 
-# We simply plot the data
-
-plt.figure(figsize=(10, 6))
-plt.plot(xvalues, yvalues)
-plt.show()
 
 
 #####################################################################################
@@ -59,8 +56,11 @@ filter_ind = np.where(yvalues[indexes] > thres)
 
 plt.figure(figsize=(10, 6))
 plt.plot(np.array(xvalues), yvalues)
-plt.plot(indexes[0][filter_ind[0]], yvalues[indexes[0][filter_ind[0]]], 'bx', c='r')
-plt.title('First estimate')
+plt.plot(indexes[0][filter_ind[0]], yvalues[indexes[0][filter_ind[0]]], 'bx',label = 'Local Maxima Coordinates',c='r')
+plt.title('Local Maxima in Map Data',fontsize=14)
+plt.ylabel('Intensity',fontsize=16)
+plt.xlabel('Pixel Locations',fontsize=16)
+plt.legend()
 plt.show()
 
 
