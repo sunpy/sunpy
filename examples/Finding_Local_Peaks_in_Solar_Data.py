@@ -9,6 +9,8 @@ import astropy.units as u
 
 from scipy.signal import argrelmax
 import matplotlib.pyplot as plt
+from mpl_toolkits import mplot3d
+from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 
 import sunpy.map
@@ -20,7 +22,7 @@ from sunpy.data.sample import AIA_193_IMAGE
 aiamap = sunpy.map.Map(AIA_193_IMAGE)
 
 #########################################################
-# Now we do a plot
+# Now we do a quick plot
 
 plt.figure()
 aiamap.plot()
@@ -30,12 +32,19 @@ plt.show()
 
 ####################################################################
 # We now plot the aiamap data to see the distribution of the data.
-# We store the data values in yvalues.
 
-yvalues = (aiamap.data).reshape(-1)
-xvalues = [i for i in range(len(yvalues))]
-xvalues = np.array(xvalues)
-yvalues = np.array(yvalues)
+fig = plt.figure(figsize=(12,8))
+ax = fig.add_subplot(111, projection='3d')
+x = y = np.arange(0, len(aiamap.data))
+X, Y = np.meshgrid(x, y)
+zs = np.array([aiamap.data[x][y] for x,y in zip(np.ravel(X), np.ravel(Y))])
+Intensity = zs.reshape(X.shape)
+ax.plot_surface(X, Y, Intensity)
+ax.set_xlabel('X Coordinates')
+ax.set_ylabel('Y Coordinates')
+ax.set_zlabel('Intensity')
+plt.show()
+
 
 
 
@@ -45,30 +54,37 @@ yvalues = np.array(yvalues)
 # than the threshold value.
 
 thres = 0.3
-thres = thres * (np.max(yvalues) - np.min(yvalues)) + np.min(yvalues)
-indexes = argrelmax(yvalues)
-filter_ind = np.where(yvalues[indexes] > thres)
+thres = thres * (np.max(Intensity) - np.min(Intensity)) + np.min(Intensity)
+indexes = argrelmax(Intensity)
+filter_ind = ind = np.where(Intensity[indexes] > thres )
+
+
+############################################################################
+# We now store the x , y coordinates where we get such local peaks
+
+xmax = indexes[0][ind[0]]
+ymax= indexes[1][ind[0]]
 
 
 ############################################################################
 # We now check for the indices at which we get such a local maxima and plot
-# those positions marked 'x' in the aiamap data.
+# those positions marked red in the aiamap data.
 
-plt.figure(figsize=(10, 6))
-plt.plot(np.array(xvalues), yvalues)
-plt.plot(indexes[0][filter_ind[0]], yvalues[indexes[0][filter_ind[0]]], 'bx',label = 'Local Maxima Coordinates',c='r')
-plt.title('Local Maxima in Map Data',fontsize=14)
-plt.ylabel('Intensity',fontsize=16)
-plt.xlabel('Pixel Coordinates',fontsize=16)
-plt.legend()
+fig = plt.figure(figsize=(12,8))
+ax = fig.add_subplot(111, projection='3d')
+zs2 = np.array([Intensity[x][y] for x,y in zip(xmax, ymax)])
+ax.plot_surface(X, Y, Intensity)
+ax.scatter(ymax,xmax,zs2,color = 'r')
+ax.set_xlabel('X Coordinates')
+ax.set_ylabel('Y Coordinates')
+ax.set_zlabel('Intensity')
 plt.show()
 
 
 ###################################################################################
 # We therefore import the coordinate functionality.
 
-max_indices = np.unravel_index(indexes[0][filter_ind[0]], aiamap.data.shape) * u.pixel
-hpc_max = aiamap.pixel_to_data(max_indices[1], max_indices[0])
+hpc_max = aiamap.pixel_to_data(xmax*u.pixel, ymax*u.pixel)
 
 
 ################################################################################
@@ -80,3 +96,4 @@ ax = plt.subplot(projection=aiamap)
 aiamap.plot()
 ax.plot_coord(hpc_max, 'bx')
 plt.show()
+
