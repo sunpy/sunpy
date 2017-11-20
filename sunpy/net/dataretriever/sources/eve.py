@@ -28,8 +28,8 @@ class EVEClient(GenericClient):
     --------
 
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
-                              a.Instrument('EVE'), a.Level(0))
-    >>> results
+    ...                       a.Instrument('EVE'), a.Level(0))  #doctest: +REMOTE_DATA
+    >>> results  #doctest: +REMOTE_DATA
     [<Table length=2>
         Start Time           End Time      Source Instrument
           str19               str19         str3     str3
