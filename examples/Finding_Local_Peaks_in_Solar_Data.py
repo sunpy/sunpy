@@ -41,8 +41,7 @@ Intensity = zs.reshape(X.shape)
 
 #####################################################################################
 # Next we check for the position in the aiamap data where we get local maxima.
-# We first set a threshold value, such that we will consider only those peaks 
-# greater than the threshold value.
+# We will consider only those peaks which are greater than a threshold value.
 
 thres = 0.3
 thres = thres * (np.max(Intensity) - np.min(Intensity)) + np.min(Intensity)
