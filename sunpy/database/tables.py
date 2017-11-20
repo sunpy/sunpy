@@ -514,24 +514,59 @@ def entries_from_query_result(qr, default_waveunit=None):
     >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
     >>> qr = client.search(
     ...     vso.attrs.Time('2001/1/1', '2001/1/2'),
+<<<<<<< variant A
     ...     vso.attrs.Instrument('eit'))  # doctest: +REMOTE_DATA
     >>> entries = entries_from_query_result(qr)  # doctest: +REMOTE_DATA
     >>> entry = next(entries)  # doctest: +REMOTE_DATA
     >>> entry.source  # doctest: +REMOTE_DATA
+>>>>>>> variant B
+    ...     vso.attrs.Instrument('eit'))
+    >>> entries = entries_from_query_result(qr)
+    >>> entry = next(entries)
+    >>> entry.source
+======= end
     SOHO
+<<<<<<< variant A
     >>> entry.provider  # doctest: +REMOTE_DATA
+>>>>>>> variant B
+    >>> entry.provider
+======= end
     SDAC
+<<<<<<< variant A
     >>> entry.physobs  # doctest: +REMOTE_DATA
+>>>>>>> variant B
+    >>> entry.physobs
+======= end
     'intensity'
+<<<<<<< variant A
     >>> entry.fileid  # doctest: +REMOTE_DATA
+>>>>>>> variant B
+    >>> entry.fileid
+======= end
     /archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.000042
+<<<<<<< variant A
     >>> entry.observation_time_start, entry.observation_time_end  # doctest: +REMOTE_DATA
+>>>>>>> variant B
+    >>> entry.observation_time_start, entry.observation_time_end
+======= end
     (datetime.datetime(2001, 1, 1, 0, 0, 42), datetime.datetime(2001, 1, 1, 0, 0, 54))
+<<<<<<< variant A
     >>> entry.instrument  # doctest: +REMOTE_DATA
+>>>>>>> variant B
+    >>> entry.instrument
+======= end
     EIT
+<<<<<<< variant A
     >>> entry.size  # doctest: +REMOTE_DATA
+>>>>>>> variant B
+    >>> entry.size
+======= end
     2059.0
+<<<<<<< variant A
     >>> entry.wavemin, entry.wavemax  # doctest: +REMOTE_DATA
+>>>>>>> variant B
+    >>> entry.wavemin, entry.wavemax
+======= end
     (19.5, 19.5)
 
     """
