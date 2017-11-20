@@ -35,14 +35,14 @@ plt.show()
 
 x = y = np.arange(0, len(aiamap.data))
 X, Y = np.meshgrid(x, y)
-zs = np.array([aiamap.data[x][y] for x,y in zip(np.ravel(X), np.ravel(Y))])
+zs = np.array([aiamap.data[x][y] for x, y in zip(np.ravel(X), np.ravel(Y))])
 Intensity = zs.reshape(X.shape)
 
 
 #####################################################################################
 # Next we check for the position in the aiamap data where we get local maxima.
-# We first set a threshold value, such that we will consider only those peaks greater 
-# than the threshold value.
+# We first set a threshold value, such that we will consider only those peaks 
+# greater than the threshold value.
 
 thres = 0.3
 thres = thres * (np.max(Intensity) - np.min(Intensity)) + np.min(Intensity)
@@ -60,9 +60,9 @@ ymax = indexes[1][ind[0]]
 # We now check for the indices at which we get such a local maxima and plot
 # those positions marked red in the aiamap data.
 
-fig = plt.figure(figsize=(12,8))
+fig = plt.figure(figsize=(12, 8))
 ax = fig.add_subplot(111, projection='3d')
-zs2 = np.array([Intensity[x][y] for x,y in zip(xmax, ymax)])
+zs2 = np.array([Intensity[x][y] for x, y in zip(xmax, ymax)])
 ax.plot_surface(X, Y, Intensity)
 ax.scatter(ymax, xmax, zs2, color='r')
 ax.set_xlabel('X Coordinates')
