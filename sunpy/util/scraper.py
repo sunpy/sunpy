@@ -51,7 +51,7 @@ class Scraper(object):
     >>> print(solmon.pattern)
     http://solarmonitor.org/data/%Y/%m/%d/fits/swap/swap_00174_fd_%Y%m%d_%H%M%S.fts.gz
     >>> print(solmon.now)
-    http://solarmonitor.org/data/2012/01/25/fits/swap/swap_00174_fd_20120125_173301.fts.gz
+    http://solarmonitor.org/data/2017/11/20/fits/swap/swap_00174_fd_20171120_193933.fts.gz
 
     Notes
     -----
@@ -195,6 +195,11 @@ class Scraper(object):
 
         Examples
         --------
+        >>> from sunpy.util.scraper import Scraper
+        >>> solmon_pattern = ('http://solarmonitor.org/data/'
+        ...                   '%Y/%m/%d/fits/{instrument}/'
+        ...                   '{instrument}_{wave:05d}_fd_%Y%m%d_%H%M%S.fts.gz')
+        >>> solmon = Scraper(solmon_pattern, instrument = 'swap', wave = 174)
         >>> from sunpy.time import TimeRange
         >>> timerange = TimeRange('2015-01-01','2015-01-01T16:00:00')
         >>> print(solmon.filelist(timerange))
