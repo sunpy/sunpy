@@ -284,26 +284,26 @@ class DatabaseEntry(Base):
         --------
         >>> from sunpy.net import vso
         >>> from sunpy.database.tables import DatabaseEntry
-        >>> client = vso.VSOClient()
+        >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
         >>> qr = client.search(
         ...     vso.attrs.Time('2001/1/1', '2001/1/2'),
-        ...     vso.attrs.Instrument('eit'))
-        >>> entry = DatabaseEntry._from_query_result_block(qr[0])
-        >>> entry.source
+        ...     vso.attrs.Instrument('eit'))  # doctest: +REMOTE_DATA
+        >>> entry = DatabaseEntry._from_query_result_block(qr[0])  # doctest: +REMOTE_DATA
+        >>> entry.source  # doctest: +REMOTE_DATA
         SOHO
-        >>> entry.provider
+        >>> entry.provider  # doctest: +REMOTE_DATA
         SDAC
-        >>> entry.physobs
+        >>> entry.physobs  # doctest: +REMOTE_DATA
         'intensity'
-        >>> entry.fileid
+        >>> entry.fileid  # doctest: +REMOTE_DATA
         /archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.000042
-        >>> entry.observation_time_start, entry.observation_time_end
+        >>> entry.observation_time_start, entry.observation_time_end  # doctest: +REMOTE_DATA
         (datetime.datetime(2001, 1, 1, 0, 0, 42), datetime.datetime(2001, 1, 1, 0, 0, 54))
-        >>> entry.instrument
+        >>> entry.instrument  # doctest: +REMOTE_DATA
         EIT
-        >>> entry.size
+        >>> entry.size  # doctest: +REMOTE_DATA
         2059.0
-        >>> entry.wavemin, entry.wavemax
+        >>> entry.wavemin, entry.wavemax  # doctest: +REMOTE_DATA
         (19.5, 19.5)
 
         """
@@ -511,27 +511,27 @@ def entries_from_query_result(qr, default_waveunit=None):
     --------
     >>> from sunpy.net import vso
     >>> from sunpy.database.tables import entries_from_query_result
-    >>> client = vso.VSOClient()
+    >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
     >>> qr = client.search(
     ...     vso.attrs.Time('2001/1/1', '2001/1/2'),
-    ...     vso.attrs.Instrument('eit'))
-    >>> entries = entries_from_query_result(qr)
-    >>> entry = next(entries)
-    >>> entry.source
+    ...     vso.attrs.Instrument('eit'))  # doctest: +REMOTE_DATA
+    >>> entries = entries_from_query_result(qr)  # doctest: +REMOTE_DATA
+    >>> entry = next(entries)  # doctest: +REMOTE_DATA
+    >>> entry.source  # doctest: +REMOTE_DATA
     SOHO
-    >>> entry.provider
+    >>> entry.provider  # doctest: +REMOTE_DATA
     SDAC
-    >>> entry.physobs
+    >>> entry.physobs  # doctest: +REMOTE_DATA
     'intensity'
-    >>> entry.fileid
+    >>> entry.fileid  # doctest: +REMOTE_DATA
     /archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.000042
-    >>> entry.observation_time_start, entry.observation_time_end
+    >>> entry.observation_time_start, entry.observation_time_end  # doctest: +REMOTE_DATA
     (datetime.datetime(2001, 1, 1, 0, 0, 42), datetime.datetime(2001, 1, 1, 0, 0, 54))
-    >>> entry.instrument
+    >>> entry.instrument  # doctest: +REMOTE_DATA
     EIT
-    >>> entry.size
+    >>> entry.size  # doctest: +REMOTE_DATA
     2059.0
-    >>> entry.wavemin, entry.wavemax
+    >>> entry.wavemin, entry.wavemax  # doctest: +REMOTE_DATA
     (19.5, 19.5)
 
     """
