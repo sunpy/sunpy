@@ -290,16 +290,16 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         Query for data from Nobeyama Radioheliograph and RHESSI
 
         >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-                          (a.Instrument('norh') & a.Wavelength(17*u.GHz)) | a.Instrument('rhessi'))
+        ...     (a.Instrument('norh') & a.Wavelength(17*u.GHz)) | a.Instrument('rhessi'))  # doctest: +REMOTE_DATA
 
         Query for 304 Angstrom SDO AIA data with a cadence of 10 minutes
 
         >>> import astropy.units as u
         >>> from sunpy.net import Fido, attrs as a
         >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-                                   a.Instrument('AIA'),
-                                   a.Wavelength(304*u.angstrom, 304*u.angstrom),
-                                   a.vso.Sample(10*u.minute))
+        ...                        a.Instrument('AIA'),
+        ...                        a.Wavelength(304*u.angstrom, 304*u.angstrom),
+        ...                        a.vso.Sample(10*u.minute))  # doctest: +REMOTE_DATA
 
         Parameters
         ----------
@@ -349,9 +349,9 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         Example
         --------
         >>> from sunpy.net.vso.attrs import Time, Instrument
-        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/6'), Instrument('AIA'))
-        >>> downresp = Fido.fetch(unifresp)
-        >>> file_paths = downresp.wait()
+        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/6'), Instrument('AIA'))  # doctest: +REMOTE_DATA
+        >>> downresp = Fido.fetch(unifresp)  # doctest: +REMOTE_DATA
+        >>> file_paths = downresp.wait()  # doctest: +REMOTE_DATA
         """
         wait = kwargs.pop("wait", True)
         progress = kwargs.pop("progress", True)
