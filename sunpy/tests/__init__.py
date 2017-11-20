@@ -68,12 +68,9 @@ def main(modulename='', coverage=False, cov_report=False,
         all_args.extend(['--cov', path])
     if cov_report:
         all_args.extend(['--cov-report', cov_report])
-    if online or remote_data:
+    if online or remote_data or not offline:
         all_args.append('--remote-data')
-    if not online:
-        all_args.append('-k-remote_data')
     if not offline:
-        all_args.append('--remote-data')
         all_args.append('-k remote_data')
     if not figure:
         all_args.append('-m not figure')
@@ -105,6 +102,4 @@ def main(modulename='', coverage=False, cov_report=False,
 
         all_args.extend(['-n', str(parallel)])
 
-    # de-duplicate
-    all_args = list(set(all_args))
     return pytest.main(all_args)
