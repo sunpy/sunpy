@@ -7,7 +7,7 @@ import pytest
 import sunpy
 import pandas
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_norh():
     norh=sunpy.lightcurve.NoRHLightCurve.create('2012-07-06')
     assert isinstance(norh, sunpy.lightcurve.NoRHLightCurve)

@@ -112,7 +112,7 @@ def test_tag_hashability():
 
 
 @pytest.mark.flaky(reruns=5)
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_entries_from_fido_search_result(fido_search_result):
     entries = list(entries_from_fido_search_result(fido_search_result))
     # 65 entries for 8 instruments in fido_search_result
@@ -186,7 +186,7 @@ def test_entries_from_fido_search_result(fido_search_result):
         instrument='eve')
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_entries_from_fido_search_result_JSOC():
     search_result = Fido.search(
         net_attrs.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
@@ -200,7 +200,7 @@ def test_entries_from_fido_search_result_JSOC():
         list(entries_from_fido_search_result(search_result))
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_from_fido_search_result_block(fido_search_result):
     entry = DatabaseEntry._from_fido_search_result_block(
         fido_search_result[0, 0][0].get_response(0)[0])
@@ -214,7 +214,7 @@ def test_from_fido_search_result_block(fido_search_result):
     assert entry == expected_entry
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_entry_from_qr_block(query_result):
     entry = DatabaseEntry._from_query_result_block(query_result[0])
     expected_entry = DatabaseEntry(
@@ -226,7 +226,7 @@ def test_entry_from_qr_block(query_result):
     assert entry == expected_entry
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_entry_from_qr_block_with_missing_physobs(qr_block_with_missing_physobs):
     entry = DatabaseEntry._from_query_result_block(
         qr_block_with_missing_physobs)
@@ -240,7 +240,7 @@ def test_entry_from_qr_block_with_missing_physobs(qr_block_with_missing_physobs)
 
 
 @pytest.mark.flaky(reruns=5)
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_entry_from_qr_block_kev(qr_block_with_kev_unit):
     # See issue #766.
     entry = DatabaseEntry._from_query_result_block(qr_block_with_kev_unit)
@@ -416,7 +416,7 @@ def test_entries_from_dir_recursively_false():
     assert len(entries) == 80
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_entries_from_query_result(query_result):
     entries = list(entries_from_query_result(query_result))
     assert len(entries) == 122
@@ -430,14 +430,14 @@ def test_entries_from_query_result(query_result):
     assert snd_entry == expected_entry
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_entry_from_query_results_with_none_wave(qr_with_none_waves):
     # does not raise WaveunitNotFoundError because neither wavemin nor wavemax
     # are given
     list(entries_from_query_result(qr_with_none_waves))
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_entry_from_query_results_with_none_wave_and_default_unit(
         qr_with_none_waves):
     entries = list(entries_from_query_result(qr_with_none_waves, 'nm'))
