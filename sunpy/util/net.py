@@ -186,9 +186,9 @@ def url_exists(url, timeout=2):
     Examples
     --------
     >>> from sunpy.util.net import url_exists
-    >>> url_exists('http://www.google.com')
+    >>> url_exists('http://www.google.com')  #doctest: +REMOTE_DATA
     True
-    >>> url_exists('http://aslkfjasdlfkjwerf.com')
+    >>> url_exists('http://aslkfjasdlfkjwerf.com')  #doctest: +REMOTE_DATA
     False
     """
     try:
@@ -212,7 +212,7 @@ def is_online():
     Examples
     --------
     >>> from sunpy.util.net import is_online
-    >>> is_online()
+    >>> is_online()  #doctest: +REMOTE_DATA
     True
     """
     return url_exists('http://www.google.com')
