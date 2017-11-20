@@ -29,23 +29,14 @@ aiamap.plot()
 plt.colorbar()
 plt.show()
 
+################################################################################
+# Since this is a 2D Map, we store the aiamap data in a variable called Intensity
+# 'x' and 'y' denote the X and Y coordinates of the map data respectively.
 
-####################################################################
-# We now plot the aiamap data to see the distribution of the data.
-
-fig = plt.figure(figsize=(12,8))
-ax = fig.add_subplot(111, projection='3d')
 x = y = np.arange(0, len(aiamap.data))
 X, Y = np.meshgrid(x, y)
 zs = np.array([aiamap.data[x][y] for x,y in zip(np.ravel(X), np.ravel(Y))])
 Intensity = zs.reshape(X.shape)
-ax.plot_surface(X, Y, Intensity)
-ax.set_xlabel('X Coordinates')
-ax.set_ylabel('Y Coordinates')
-ax.set_zlabel('Intensity')
-plt.show()
-
-
 
 
 #####################################################################################
@@ -56,15 +47,14 @@ plt.show()
 thres = 0.3
 thres = thres * (np.max(Intensity) - np.min(Intensity)) + np.min(Intensity)
 indexes = argrelmax(Intensity)
-filter_ind = ind = np.where(Intensity[indexes] > thres )
+filter_ind = ind = np.where(Intensity[indexes] > thres)
 
 
 ############################################################################
 # We now store the x , y coordinates where we get such local peaks
 
 xmax = indexes[0][ind[0]]
-ymax= indexes[1][ind[0]]
-
+ymax = indexes[1][ind[0]]
 
 ############################################################################
 # We now check for the indices at which we get such a local maxima and plot
@@ -74,7 +64,7 @@ fig = plt.figure(figsize=(12,8))
 ax = fig.add_subplot(111, projection='3d')
 zs2 = np.array([Intensity[x][y] for x,y in zip(xmax, ymax)])
 ax.plot_surface(X, Y, Intensity)
-ax.scatter(ymax,xmax,zs2,color = 'r')
+ax.scatter(ymax, xmax, zs2, color='r')
 ax.set_xlabel('X Coordinates')
 ax.set_ylabel('Y Coordinates')
 ax.set_zlabel('Intensity')
@@ -96,4 +86,3 @@ ax = plt.subplot(projection=aiamap)
 aiamap.plot()
 ax.plot_coord(hpc_max, 'bx')
 plt.show()
-
