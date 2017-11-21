@@ -120,7 +120,7 @@ install:
 
 before_script:
     # Download the sample data for the build of the documentation.
-    - if [[ $SETUP_CMD == *build_docs* ]]; then python -c "import sunpy.data.sample"; fi
+    - python -c "import sunpy.data.sample";
     - if [[ $SETUP_CMD == *figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; fi
 
 
