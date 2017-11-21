@@ -43,17 +43,17 @@ def translate_results_to_query(results):
     --------
     >>> from sunpy.net.hek import hek, HEKClient
     >>> from sunpy.net.hek2vso import hek2vso, H2VClient
-    >>> h = HEKClient()
-    >>> h2v = H2VClient()
+    >>> h = HEKClient()  # doctest: +REMOTE_DATA
+    >>> h2v = H2VClient()  # doctest: +REMOTE_DATA
     >>> q = h.search(hek.attrs.Time('2011/08/09 07:23:56',
-    ...             '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))
-    >>> len(q)
+    ...             '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))  # doctest: +REMOTE_DATA
+    >>> len(q)  # doctest: +REMOTE_DATA
     19
 
-    >>> hek2vso.translate_results_to_query(q[0])
+    >>> hek2vso.translate_results_to_query(q[0])  # doctest: +REMOTE_DATA
     [[<Time(datetime.datetime(2011, 8, 8, 1, 30, 4), datetime.datetime(2011, 8, 10, 0, 0, 4), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(210.99999999999997, 210.99999999999997, 'Angstrom')>]]
 
-    >>> hek2vso.translate_results_to_query(q)   # doctest: +ELLIPSIS
+    >>> hek2vso.translate_results_to_query(q)   # doctest: +ELLIPSIS +REMOTE_DATA
     [[<Time(datetime.datetime(2011, 8, 8, 1, 30, 4), datetime.datetime(2011, 8, 10, 0, 0, 4), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(210.99999999999997, 210.99999999999997, 'Angstrom')>], ..., [<Time(datetime.datetime(2011, 8, 9, 8, 1, 21), datetime.datetime(2011, 8, 9, 8, 16, 45), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(303.99999999999994, 303.99999999999994, 'Angstrom')>]]
     """
     queries = []
@@ -83,13 +83,13 @@ def vso_attribute_parse(phrase):
     --------
     >>> from sunpy.net.hek import hek, HEKClient
     >>> from sunpy.net.hek2vso import hek2vso, H2VClient
-    >>> h = HEKClient()
-    >>> h2v = H2VClient()
-    >>> q = h.search(hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))
-    >>> len(q)
+    >>> h = HEKClient()  # doctest: +REMOTE_DATA
+    >>> h2v = H2VClient()  # doctest: +REMOTE_DATA
+    >>> q = h.search(hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL'))  # doctest: +REMOTE_DATA
+    >>> len(q)  # doctest: +REMOTE_DATA
     19
 
-    >>> hek2vso.vso_attribute_parse(q[9])
+    >>> hek2vso.vso_attribute_parse(q[9])  # doctest: +REMOTE_DATA
     [<Time(datetime.datetime(2011, 8, 9, 7, 22, 38), datetime.datetime(2011, 8, 9, 8, 32, 2), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(210.99999999999997, 210.99999999999997, 'Angstrom')>]
     """
     try:
@@ -117,7 +117,7 @@ class H2VClient(object):
     --------
     >>> from sunpy.net.hek import hek
     >>> from sunpy.net import hek2vso
-    >>> h2v = hek2vso.H2VClient()
+    >>> h2v = hek2vso.H2VClient()  # doctest: +REMOTE_DATA
     """
 
     def __init__(self):
@@ -145,8 +145,9 @@ class H2VClient(object):
         Examples
         --------
         >>> from sunpy.net import hek, hek2vso
-        >>> h2v = hek2vso.H2VClient()
-        >>> q = h2v.full_query((hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'), hek.attrs.EventType('FL')))
+        >>> h2v = hek2vso.H2VClient()  # doctest: +REMOTE_DATA
+        >>> q = h2v.full_query((hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 12:40:29'),
+        ...                    hek.attrs.EventType('FL')))  # doctest: +REMOTE_DATA
         """
         self._quick_clean()
         if progress:
@@ -177,13 +178,13 @@ class H2VClient(object):
         Examples
         --------
         >>> from sunpy.net import hek, hek2vso
-        >>> h = hek.HEKClient()
+        >>> h = hek.HEKClient()  # doctest: +REMOTE_DATA
         >>> tstart = '2011/08/09 07:23:56'
         >>> tend = '2011/08/09 12:40:29'
         >>> event_type = 'FL'
-        >>> q = h.search(hek.attrs.Time(tstart, tend), hek.attrs.EventType(event_type))
-        >>> h2v = hek2vso.H2VClient()
-        >>> res = h2v.translate_and_query(q)
+        >>> q = h.search(hek.attrs.Time(tstart, tend), hek.attrs.EventType(event_type))  # doctest: +REMOTE_DATA
+        >>> h2v = hek2vso.H2VClient()  # doctest: +REMOTE_DATA
+        >>> res = h2v.translate_and_query(q)  # doctest: +REMOTE_DATA
         """
         vso_query = translate_results_to_query(hek_results)
         result_size = len(vso_query)
