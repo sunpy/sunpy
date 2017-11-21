@@ -34,8 +34,8 @@ class NOAAIndicesLightCurve(LightCurve):
     Examples
     --------
     >>> from sunpy import lightcurve as lc
-    >>> noaa = lc.NOAAIndicesLightCurve.create()
-    >>> noaa.peek()   # doctest: +SKIP
+    >>> noaa = lc.NOAAIndicesLightCurve.create()  # doctest: +REMOTE_DATA
+    >>> noaa.peek()  # doctest: +SKIP
 
     References
     ----------
@@ -154,7 +154,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
     Examples
     --------
     >>> from sunpy import lightcurve as lc
-    >>> noaa = lc.NOAAPredictIndicesLightCurve.create()
+    >>> noaa = lc.NOAAPredictIndicesLightCurve.create()  #doctest: +REMOTE_DATA
     >>> noaa.peek()   # doctest: +SKIP
 
 

@@ -940,8 +940,8 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
     >>> from astropy.units.quantity import Quantity
     >>> temp = Quantity([11.0, 11.0], unit="MK")
     >>> em = Quantity([4.0e+48, 4.0e+48], unit="cm**(-3)")
-    >>> rad_loss = _calc_rad_loss(temp, em)
-    >>> rad_loss["rad_loss_rate"]
+    >>> rad_loss = _calc_rad_loss(temp, em)  # doctest: +REMOTE_DATA
+    >>> rad_loss["rad_loss_rate"]  # doctest: +REMOTE_DATA
     <Quantity [  3.01851392e+19,  3.01851392e+19] J / s>
     """
     if not download_dir:
