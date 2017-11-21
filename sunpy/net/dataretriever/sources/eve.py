@@ -27,15 +27,22 @@ class EVEClient(GenericClient):
     Examples
     --------
 
+    >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
     ...                       a.Instrument('EVE'), a.Level(0))  #doctest: +REMOTE_DATA
     >>> results  #doctest: +REMOTE_DATA
-    [<Table length=2>
-        Start Time           End Time      Source Instrument
-          str19               str19         str3     str3
-    ------------------- ------------------- ------ ----------
-    2016-01-01 00:00:00 2016-01-02 00:00:00    SDO        eve
-    2016-01-02 00:00:00 2016-01-03 00:00:00    SDO        eve]
+    ...
+    Results from 1 Provider:
+    <BLANKLINE>
+    2 Results from the EVEClient:
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str3     str3       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2016-01-01 00:00:00 2016-01-02 00:00:00    SDO        eve        nan
+    2016-01-02 00:00:00 2016-01-03 00:00:00    SDO        eve        nan
+    <BLANKLINE>
+    <BLANKLINE>
+
     """
 
     def _get_url_for_timerange(self, timerange, **kwargs):

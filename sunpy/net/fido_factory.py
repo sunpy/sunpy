@@ -285,6 +285,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         Query for LYRALightCurve data for the time range ('2012/3/4','2012/3/6')
 
         >>> from sunpy.net import Fido, attrs as a
+        >>> import astropy.units as u
         >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra'))
 
         Query for data from Nobeyama Radioheliograph and RHESSI

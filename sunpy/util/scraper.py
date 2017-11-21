@@ -203,7 +203,10 @@ class Scraper(object):
         >>> from sunpy.time import TimeRange
         >>> timerange = TimeRange('2015-01-01','2015-01-01T16:00:00')
         >>> print(solmon.filelist(timerange))  # doctest: +REMOTE_DATA
-        ['http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_025423.fts.gz']
+        ['http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_025423.fts.gz',
+         'http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_061145.fts.gz',
+         'http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_093037.fts.gz',
+         'http://solarmonitor.org/data/2015/01/01/fits/swap/swap_00174_fd_20150101_124927.fts.gz']
 
         Note
         ----
