@@ -535,7 +535,7 @@ def entries_from_query_result(qr, default_waveunit=None):
     ...     vso.attrs.Instrument('eit'))
     >>> entries = entries_from_query_result(qr)  # doctest: +REMOTE_DATA
     >>> entry = next(entries)  # doctest: +REMOTE_DATA
-    >>> entry.source
+    >>> entry.source  # doctest: +REMOTE_DATA
     SOHO
     >>> entry.provider  # doctest: +REMOTE_DATA
     SDAC
