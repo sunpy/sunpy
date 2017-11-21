@@ -118,7 +118,7 @@ class MockHTTPResponse(MockObject):
     --------
     >>> result = MockHTTPResponse(url='http://abc.com', headers={'Content-Type':'text/html'})
     >>> result.headers.get('Content-Type')
-    text/html
+    'text/html'
     """
     def __init__(self, *args, **kwargs):
         super(MockHTTPResponse, self).__init__(*args, **kwargs)
