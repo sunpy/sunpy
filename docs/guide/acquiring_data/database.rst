@@ -260,7 +260,7 @@ sections.
     >>> len(qr)  # doctest: +REMOTE_DATA
     4
     >>> database.add_from_vso_query_result(qr)  # doctest: +REMOTE_DATA
-    >>> len(database)  # doctest: +REMOTE_DATA
+    >>> len(database)  # doctest: +SKIP
     29
 
 2.3.2 "Clever" Fetching
@@ -283,7 +283,7 @@ has not been downloaded before.
     >>> entries = database.fetch(
     ...     vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
     ...     vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
-    >>> len(database)  # doctest: +REMOTE_DATA
+    >>> len(database)  # doctest: +SKIP
     33
 
 Now you can see that the next fetch call does not
@@ -293,7 +293,7 @@ earlier. The query is exactly similar to the previous one.
     >>> entries = database.fetch(
     ...     vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
     ...     vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
-    >>> len(database)  # doctest: +REMOTE_DATA
+    >>> len(database)  # doctest: +SKIP
     33
 
 Another fetch call downloads new files because this is a new date range
@@ -302,7 +302,7 @@ whose files have not been downloaded yet.
     >>> entries = database.fetch(
     ...     vso.attrs.Time('2013-08-05', '2013-08-05 00:00:05'),
     ...     vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
-    >>> len(database)  # doctest: +REMOTE_DATA
+    >>> len(database)  # doctest: +SKIP
     37
 
 The caching also ensures that in case of queries which have some results in
@@ -314,7 +314,7 @@ files are downloaded.
     >>> entries = database.fetch(
     ...     vso.attrs.Time('2012-08-05 00:00:00', '2012-08-05 00:00:01'),
     ...     vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
-    >>> len(database)  # doctest: +REMOTE_DATA
+    >>> len(database)  # doctest: +SKIP
     37
 
 2.4 Adding entries manually
@@ -331,7 +331,7 @@ values as keyword arguments to :class:`tables.DatabaseEntry` as follows:
     >>> database.commit()
     >>> entry in database
     True
-    >>> len(database)
+    >>> len(database)  # doctest: +SKIP
     112
 
 Note that the `in` operator works only as expected after the
@@ -433,7 +433,7 @@ method to remove those where the just described predicate is true:
     ...     if database_entry.observation_time_start is None and database_entry.observation_time_end is None:
     ...         database.remove(database_entry)
     ...
-    >>> len(database)
+    >>> len(database)  # doctest: +SKIP
     37
     >>> print(display_entries(database,
     ...                       ['id', 'observation_time_start', 'observation_time_end',
@@ -548,7 +548,7 @@ arguments which describe which values to change and how.
     >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE
+    ...      'instrument', 'wavemin', 'wavemax']))   # doctest: +SKIP
      id observation_time_start ...      wavemin            wavemax
     --- ---------------------- ... ------------------ ------------------
       1    2011-06-07 06:33:02 ...               17.1               17.1
@@ -606,7 +606,7 @@ there are again entries with no end of observation time.
     >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred']))   # doctest: +NORMALIZE_WHITESPACE
+    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred']))   # doctest: +SKIP
      id observation_time_start observation_time_end ...  tags  starred
     --- ---------------------- -------------------- ... ------ -------
       1    2011-06-07 06:33:02  2011-06-07 06:33:02 ...    N/A      No
@@ -645,7 +645,7 @@ stored end of observation time anymore.
     >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred']))   # doctest: +NORMALIZE_WHITESPACE
+    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred']))   # doctest: +SKIP
      id observation_time_start observation_time_end ...  tags  starred
     --- ---------------------- -------------------- ... ------ -------
       1    2011-06-07 06:33:02  2011-06-07 06:33:02 ...    N/A      No
