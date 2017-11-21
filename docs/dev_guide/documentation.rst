@@ -89,10 +89,10 @@ perform function argument unit checks.  The decorator ensures that the
 units of the input to the function are convertible to that specified
 by the decorator, for example ::
 
-    import astropy.units as u
-    @u.quantity_input(myangle=u.arcsec)
-    def myfunction(myangle):
-        return myangle**2
+    >>> import astropy.units as u
+    >>> @u.quantity_input(myangle=u.arcsec)
+    ... def myfunction(myangle):
+    ...     return myangle**2
 
 This function only accepts arguments that are convertible to arcseconds.
 Therefore, ::
@@ -103,64 +103,68 @@ Therefore, ::
 returns the expected answer but ::
 
     >>> myfunction(20 * u.km)
+    Traceback (most recent call last):
+    ...
+    astropy.units.core.UnitsError: Argument 'myangle' to function 'myfunction' must be in units convertible to 'arcsec'.
 
 raises an error.
 
 The following is an example of a use-facing function that returns the area of a
 square, in units that are the square of the input length unit::
 
-    @u.quantity_input(side_length=u.m)
-    def get_area_of_square(side_length):
-        """
-        Compute the area of a square.
-
-        Parameters
-        ----------
-        side_length : `~astropy.units.quantity.Quantity`
-            Side length of the square
-
-        Returns
-        -------
-        area : `~astropy.units.quantity.Quantity`
-            Area of the square.
-        """
-
-        return (side_length ** 2)
+    >>> @u.quantity_input(side_length=u.m)
+    ... def get_area_of_square(side_length):
+    ...     """
+    ...     Compute the area of a square.
+    ...
+    ...     Parameters
+    ...     ----------
+    ...     side_length : `~astropy.units.quantity.Quantity`
+    ...         Side length of the square
+    ...
+    ...     Returns
+    ...     -------
+    ...     area : `~astropy.units.quantity.Quantity`
+    ...         Area of the square.
+    ...     """
+    ...
+    ...     return (side_length ** 2)
 
 This more advanced example shows how a private function that does not accept
 quantities can be wrapped by a function that does::
 
-    @u.quantity_input(side_length=u.m)
-    def some_function(length):
-        """
-        Does something useful.
-
-        Parameters
-        ----------
-        length : `~astropy.units.quantity.Quantity`
-            A length.
-
-        Returns
-        -------
-        length : `~astropy.units.quantity.Quantity`
-            Another length
-        """
-
-        # the following function either
-        # a] does not accept Quantities
-        # b] is slow if using Quantities
-        result = _private_wrapper_function(length.convert('meters').value)
-
-        # now convert back to a quantity
-        result = Quantity(result_meters, units_of_the_private_wrapper_function)
-
-        return result
+    >>> @u.quantity_input(side_length=u.m)
+    ... def some_function(length):
+    ...     """
+    ...     Does something useful.
+    ...
+    ...     Parameters
+    ...     ----------
+    ...     length : `~astropy.units.quantity.Quantity`
+    ...         A length.
+    ...
+    ...     Returns
+    ...     -------
+    ...     length : `~astropy.units.quantity.Quantity`
+    ...         Another length
+    ...     """
+    ...
+    ...     # the following function either
+    ...     # a] does not accept Quantities
+    ...     # b] is slow if using Quantities
+    ...     result = _private_wrapper_function(length.convert('meters').value)
+    ...
+    ...     # now convert back to a quantity
+    ...     result = Quantity(result_meters, units_of_the_private_wrapper_function)
+    ...
+    ...     return result
 
 In this example, the non-user facing function *_private_wrapper_function* requires a numerical input in units of
 meters, and returns a numerical output.  The developer knows that the result of *_private_wrapper_function* is in the
 units *units_of_the_private_wrapper_function*, and sets the result of *some_function* to return the answer in those
 units.
 
+.. doctest-skip-all
 
 Examples
 --------
