@@ -307,10 +307,10 @@ class VSOClient(object):
 
         >>> from datetime import datetime
         >>> from sunpy.net import vso
-        >>> client = vso.VSOClient()
+        >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
         >>> client.search(
         ...    vso.attrs.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
-        ...    vso.attrs.Instrument('eit') | vso.attrs.Instrument('aia'))   # doctest: +NORMALIZE_WHITESPACE
+        ...    vso.attrs.Instrument('eit') | vso.attrs.Instrument('aia'))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
         <Table masked=False length=5>
            Start Time [1]       End Time [1]     Source  Instrument   Type
              string152           string152      string32  string24  string64
@@ -477,7 +477,7 @@ class VSOClient(object):
 
             - May be entered as a string or any numeric type for equality matching
             - May be a string of the format '(min) - (max)' for range matching
-            - May be a string of the form '(operator) (number)' where operator 
+            - May be a string of the form '(operator) (number)' where operator
               is one of: lt gt le ge < > <= >=
 
 
@@ -488,13 +488,13 @@ class VSOClient(object):
 
         >>> from datetime import datetime
         >>> from sunpy.net import vso
-        >>> client = vso.VSOClient()
+        >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
         >>> qr = client.query_legacy(datetime(2010, 1, 1),
-        ...                          datetime(2010, 1, 1, 1), instrument='eit')
+        ...                          datetime(2010, 1, 1, 1), instrument='eit')  # doctest: +REMOTE_DATA
 
         Returns
         -------
-        out : :py:class:`QueryResult` (enhanced list) of matched items. Return 
+        out : :py:class:`QueryResult` (enhanced list) of matched items. Return
               value of same type as the one of :py:class:`VSOClient.query`.
         """
         sdk = lambda key: lambda value: {key: value}
