@@ -533,8 +533,8 @@ def entries_from_query_result(qr, default_waveunit=None):
     2059.0
     >>> entry.wavemin, entry.wavemax  # doctest: +REMOTE_DATA
     ...     vso.attrs.Instrument('eit'))
-    >>> entries = entries_from_query_result(qr)
-    >>> entry = next(entries)
+    >>> entries = entries_from_query_result(qr)  # doctest: +REMOTE_DATA
+    >>> entry = next(entries)  # doctest: +REMOTE_DATA
     >>> entry.source
     SOHO
     >>> entry.provider  # doctest: +REMOTE_DATA
