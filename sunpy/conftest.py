@@ -4,6 +4,7 @@ from functools import partial
 import os
 import tempfile
 import json
+import socket
 
 # Force MPL to use non-gui backends for testing.
 try:
@@ -44,7 +45,8 @@ def pytest_runtest_setup(item):
     if isinstance(item, item.Function):
         if 'remote_data' in item.keywords and not HAVE_REMOTEDATA:
             pytest.skip("skipping remotedata tests as pytest-remotedata is not installed")
-
+        if 'remote_data' in item.keywords:
+            item.add_marker(pytest.mark.xfail(raises=socket.timeout)
 
 def pytest_unconfigure(config):
     if len(figure_test_pngfiles) > 0:
