@@ -40,7 +40,7 @@ Intensity = zs.reshape(X.shape)
 
 
 #####################################################################################
-# Next we check for the position in the aiamap data where we get local maxima.
+# Next we check for the position in the aiamap data where we get such local maxima.
 # We will consider only those peaks which are greater than a threshold value.
 
 thres = 0.3
@@ -49,8 +49,8 @@ indexes = argrelmax(Intensity)
 filter_ind = ind = np.where(Intensity[indexes] > thres)
 
 
-############################################################################
-# We now store the x , y coordinates where we get such local peaks
+################################################################################
+# We now store the x , y coordinates of the regions where we get such local peaks
 
 xmax = indexes[0][ind[0]]
 ymax = indexes[1][ind[0]]
@@ -72,7 +72,7 @@ plt.show()
 
 
 ###################################################################################
-# We therefore import the coordinate functionality.
+# We therefore import the coordinate functionality for the local maximal regions.
 
 hpc_max = aiamap.pixel_to_data(xmax*u.pixel, ymax*u.pixel)
 
