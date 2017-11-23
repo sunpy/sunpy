@@ -43,10 +43,11 @@ def pytest_runtest_setup(item):
     can be requested).
     """
     if isinstance(item, item.Function):
-        if 'remote_data' in item.keywords and not HAVE_REMOTEDATA:
-            pytest.skip("skipping remotedata tests as pytest-remotedata is not installed")
         if 'remote_data' in item.keywords:
-            item.add_marker(pytest.mark.xfail(raises=socket.timeout)
+            if not HAVE_REMOTEDATA:
+                pytest.skip("skipping remotedata tests as pytest-remotedata is not installed")
+            else:
+                item.add_marker(pytest.mark.xfail(raises=socket.timeout))
 
 def pytest_unconfigure(config):
     if len(figure_test_pngfiles) > 0:
