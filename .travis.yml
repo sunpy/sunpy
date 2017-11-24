@@ -73,7 +73,7 @@ matrix:
            stage: Comprehensive tests
            # Run this with pytest because our `setup.py` runner does not
            # currently pick up doctests in docs/
-           env: MAIN_CMD='py.test -m "not figure"'
+           env: MAIN_CMD='python setup.py build; py.test -m "not figure" --cov -n 8'
                 EVENT_TYPE='push pull_request cron'
 
          - python: 3.6

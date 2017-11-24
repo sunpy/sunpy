@@ -153,7 +153,7 @@ class JSOCClient(object):
 
     You can then make the request:
 
-    >>> requestIDs = client.request_data(response)  # doctest: +REMOTE_DATA
+    >>> requestIDs = client.request_data(response)  # doctest: +SKIP
     [u'JSOC_20140724_952']
 
     This returns a list of all the request identifiers for your query.
@@ -164,13 +164,13 @@ class JSOCClient(object):
     of 6 means an error, which is commonly that the request has not had time to
     get into the queue.
 
-    >>> status = client.check_request(requestIDs)  # doctest: +REMOTE_DATA
+    >>> status = client.check_request(requestIDs)  # doctest: +SKIP
     Request JSOC_20140724_955 was submitted 10 seconds ago, it is not ready to download.
 
     Once the status code is 0 you can download the data using the `get_request`
     method:
 
-    >>> res = client.get_request(requestIDs)  # doctest: +REMOTE_DATA
+    >>> res = client.get_request(requestIDs)  # doctest: +SKIP
 
     This returns a Results instance which can be used to watch the progress
     of the download.
