@@ -55,9 +55,9 @@ def pairs_to_dict(lst_of_pairs):
 
     Examples
     --------
-    >>> pairs_to_dict([['a', 1], ['b', 2]])
+    >>> pairs_to_dict([['a', 1], ['b', 2]])  # doctest: +SKIP
     {'a': 1, 'b': 2}
-    >>> pairs_to_dict([('x', 34), ('y', 56)])
+    >>> pairs_to_dict([('x', 34), ('y', 56)])  # doctest: +SKIP
     {'x': 34, 'y': 56}
     """
     return {kv_pair[0]: kv_pair[1] for kv_pair in lst_of_pairs}
