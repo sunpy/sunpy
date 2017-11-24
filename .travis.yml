@@ -71,7 +71,9 @@ matrix:
 
          - python: 3.6
            stage: Comprehensive tests
-           env: SETUP_CMD='test --online --coverage -V'
+           # Run this with pytest because our `setup.py` runner does not
+           # currently pick up doctests in docs/
+           env: MAIN_CMD='py.test -m "not figure"'
                 EVENT_TYPE='push pull_request cron'
 
          - python: 3.6
@@ -81,9 +83,6 @@ matrix:
 
          - python: 3.6
            stage: Comprehensive tests
-           # Run this with pytest because our `setup.py` runner does not
-           # currently pick up doctests in docs/
-           env: MAIN_CMD='py.test -m "not figure"'
 
          - python: 3.6
            stage: Initial tests
@@ -120,7 +119,7 @@ install:
 
 before_script:
     # Download the sample data for the build of the documentation.
-    - python -c "import sunpy.data.sample";
+    - if [[ $SETUP_CMD != *egg_info* ]]; then python -c "import sunpy.data.sample"; fi
     - if [[ $SETUP_CMD == *figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; fi
 
 
