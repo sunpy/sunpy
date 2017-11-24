@@ -41,7 +41,7 @@ env:
         - SETUP_CMD='test'
         - CONDA_CHANNELS='astropy astropy-ci-extras'
         - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas nomkl'
-        - PIP_DEPENDENCIES='hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures sunpy-sphinx-theme glymur pytest-astropy pytest-cov pytest-xdist'
+        - PIP_DEPENDENCIES='hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures sunpy-sphinx-theme glymur pytest-astropy pytest-cov'
         - EVENT_TYPE='pull_request push'
 
 
@@ -73,7 +73,7 @@ matrix:
            stage: Comprehensive tests
            # Run this with pytest because our `setup.py` runner does not
            # currently pick up doctests in docs/
-           env: MAIN_CMD='py.test -m "not figure" --cov -n 8'
+           env: MAIN_CMD='py.test -m "not figure" --cov'
                 EVENT_TYPE='push pull_request cron'
 
          - python: 3.6
