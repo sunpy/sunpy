@@ -36,37 +36,6 @@ def suds_unwrapper(wrapped_data):
     -------
     unwrapped : `str`
         The xml results with the wrapper removed
-
-    Examples
-    --------
-    >>> from sunpy.net.helio import hec
-    >>> from suds.client import Client
-    >>> from sunpy.net.proxyfix import WellBehavedHttpTransport
-    >>> votable_interceptor = hec.VotableInterceptor()  # doctest: +REMOTE_DATA
-    >>> client = Client(hec.parser.wsdl)  # doctest: +REMOTE_DATA
-    >>> client.service.getTableNames()  # doctest: +REMOTE_DATA
-    >>> temp = client.last_received().str()  # doctest: +REMOTE_DATA
-    >>> print(temp)  # doctest: +REMOTE_DATA
-    <?xml version="1.0" encoding="UTF-8"?>
-    <S:Envelope ..... >
-       <S:Body>
-          <helio:queryResponse ... >
-             <VOTABLE xmlns="http://www.ivoa.net/xml/VOTable/v1.1" version="1.1">
-                <RESOURCE>
-                ...
-                </RESOURCE>
-             </VOTABLE>
-          </helio:queryResponse>
-       </S:Body>
-    </S:Envelope>
-    >>> temp = hec.suds_unwrapper(temp)  # doctest: +REMOTE_DATA
-    >>> print(temp)  # doctest: +REMOTE_DATA
-    <?xml version="1.0" encoding="UTF-8"?>
-    <VOTABLE xmlns="http://www.ivoa.net/xml/VOTable/v1.1" version="1.1">
-        <RESOURCE>
-        ...
-        </RESOURCE>
-     </VOTABLE>
     """
     if six.PY3 and not isinstance(wrapped_data, str):
         wrapped_data = wrapped_data.decode("utf-8")
