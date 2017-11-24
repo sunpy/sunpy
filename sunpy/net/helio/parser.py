@@ -38,7 +38,7 @@ def webservice_parser(service='HEC'):
     Examples
     --------
     >>> from sunpy.net.helio import parser
-    >>> parser.webservice_parser()  # doctest: +NORMALIZE_WHITESPACE
+    >>> parser.webservice_parser()  # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
     ['http://helio.mssl.ucl.ac.uk/helio-hec/HelioService',
     'http://msslkk.mssl.ucl.ac.uk/helio-hec/HelioService',
     'http://voparis-helio.obspm.fr/helio-hec/helio-hec/HelioService',
