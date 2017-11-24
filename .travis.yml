@@ -82,9 +82,6 @@ matrix:
                 EVENT_TYPE='push pull_request cron'
 
          - python: 3.6
-           stage: Comprehensive tests
-
-         - python: 3.6
            stage: Initial tests
            env: SETUP_CMD='test'
 
