@@ -379,7 +379,7 @@ If you then do a second query::
   >>> db.fetch(a.Time("2011-09-20T01:00:00", "2011-09-20T02:15:00"),
   ...          a.Instrument('AIA'), a.vso.Sample(15*u.min))  # doctest: +REMOTE_DATA
   >>> db.commit()  # doctest: +REMOTE_DATA
-  >>> db  # doctest: +REMOTE_DATA
+  >>> db  # doctest: +SKIP
   <Table length=12>
    id  observation_time_start observation_time_end ...    download_time      size
   str2         str19                 str19         ...        str19          str7
