@@ -110,11 +110,11 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
         >>> from sunpy.instr.lyra import remove_lytaf_events_from_timeseries
         >>> lyrats = ts.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_TIMESERIES, source='LYRA')
 
-        >>> ts_nolars = remove_lytaf_events_from_timeseries(lyrats, artifacts=["LAR"])
+        >>> ts_nolars = remove_lytaf_events_from_timeseries(lyrats, artifacts=["LAR"])  # doctest: +REMOTE_DATA
 
     To also retrieve information on the artifacts during that day:
         >>> ts_nolars, artifact_status = remove_lytaf_events_from_timeseries(
-        ...        lyrats, artifacts=["LAR"], return_artifacts=True)
+        ...        lyrats, artifacts=["LAR"], return_artifacts=True)  # doctest: +REMOTE_DATA
 
     """
     # Check that input argument is of correct type
@@ -245,7 +245,7 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
     Remove LARs (Large Angle Rotations) from time series.
 
         >>> time_clean, channels_clean = _remove_lytaf_events(
-        ...   time, channels=[channel_1, channel_2], artifacts=['LAR'])
+        ...   time, channels=[channel_1, channel_2], artifacts=['LAR'])  # doctest: +REMOTE_DATA
 
     """
     # Check inputs
@@ -430,7 +430,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     --------
     Get all events in the LYTAF files for January 2014
         >>> from sunpy.instr.lyra import get_lytaf_events
-        >>> lytaf = get_lytaf_events('2014-01-01', '2014-02-01')
+        >>> lytaf = get_lytaf_events('2014-01-01', '2014-02-01')  # doctest: +REMOTE_DATA
 
     """
     # Check inputs

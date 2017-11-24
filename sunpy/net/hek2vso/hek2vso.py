@@ -50,10 +50,10 @@ def translate_results_to_query(results):
     >>> len(q)  # doctest: +REMOTE_DATA
     19
 
-    >>> hek2vso.translate_results_to_query(q[0])  # doctest: +REMOTE_DATA
+    >>> hek2vso.translate_results_to_query(q[0])  # doctest: +SKIP
     [[<Time(datetime.datetime(2011, 8, 8, 1, 30, 4), datetime.datetime(2011, 8, 10, 0, 0, 4), None)>, <Source('SDO')>, <Instrument('HEK')>, <Wavelength(0.0, 0.0, 'Angstrom')>]]
 
-    >>> hek2vso.translate_results_to_query(q)   # doctest: +ELLIPSIS +REMOTE_DATA
+    >>> hek2vso.translate_results_to_query(q)   # doctest: +SKIP
     [[<Time(datetime.datetime(2011, 8, 8, 1, 30, 4), datetime.datetime(2011, 8, 10, 0, 0, 4), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(210.99999999999997, 210.99999999999997, 'Angstrom')>], ..., [<Time(datetime.datetime(2011, 8, 9, 8, 1, 21), datetime.datetime(2011, 8, 9, 8, 16, 45), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(303.99999999999994, 303.99999999999994, 'Angstrom')>]]
     """
     queries = []
@@ -89,8 +89,8 @@ def vso_attribute_parse(phrase):
     >>> len(q)  # doctest: +REMOTE_DATA
     19
 
-    >>> hek2vso.vso_attribute_parse(q[9])  # doctest: +REMOTE_DATA
-    [<Time(datetime.datetime(2011, 8, 9, 7, 22, 38), datetime.datetime(2011, 8, 9, 8, 32, 2), None)>, <Source(u'SDO')>, <Instrument(u'AIA')>, <Wave(210.99999999999997, 210.99999999999997, 'Angstrom')>]
+    >>> hek2vso.vso_attribute_parse(q[9])  # doctest: +REMOTE_DATA +FLOAT_CMP
+    [<Time(datetime.datetime(2011, 8, 9, 7, 22, 38), datetime.datetime(2011, 8, 9, 8, 32, 2), None)>, <Source('SDO')>, <Instrument('AIA')>, <Wavelength(210.99999999999997, 210.99999999999997, 'Angstrom')>]
     """
     try:
         query = [vso.attrs.Time(phrase['event_starttime'],

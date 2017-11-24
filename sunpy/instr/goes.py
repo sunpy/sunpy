@@ -231,16 +231,16 @@ def calculate_temperature_em(goeslc, abundances="coronal",
     >>> import sunpy.lightcurve as lc
     >>> time1 = "2014-01-01 00:00:00"
     >>> time2 = "2014-01-01 00:00:08"
-    >>> goeslc = lc.GOESLightCurve.create(time1, time2)
-    >>> goeslc.data
+    >>> goeslc = lc.GOESLightCurve.create(time1, time2)  # doctest: +REMOTE_DATA
+    >>> goeslc.data  # doctest: +REMOTE_DATA +FLOAT_CMP
                                         xrsa      xrsb
     2014-01-01 00:00:00.421999  9.187300e-08  0.000004
     2014-01-01 00:00:02.468999  9.187300e-08  0.000004
     2014-01-01 00:00:04.518999  9.187300e-08  0.000004
     2014-01-01 00:00:06.564999  9.298800e-08  0.000004
 
-    >>> goeslc_new = calculate_temperature_em(goeslc)
-    >>> goeslc_new.data
+    >>> goeslc_new = calculate_temperature_em(goeslc)  # doctest: +REMOTE_DATA
+    >>> goeslc_new.data  # doctest: +REMOTE_DATA +FLOAT_CMP
                                         xrsa      xrsb  temperature            em
     2014-01-01 00:00:00.421999  9.187300e-08  0.000004     6.270239  6.440648e+48
     2014-01-01 00:00:02.468999  9.187300e-08  0.000004     6.270239  6.440648e+48
@@ -1265,7 +1265,7 @@ def _calc_xraylum(flux, date=None):
     >>> from astropy.units.quantity import Quantity
     >>> flux = Quantity([7e-6,7e-6], unit="W/m**2")
     >>> xraylum = _calc_xraylum(flux, date="2014-04-21")  # doctest: +REMOTE_DATA
-    >>> xraylum
+    >>> xraylum  # doctest: +REMOTE_DATA
     <Quantity [  1.98751663e+18,  1.98751663e+18] W>
 
     """

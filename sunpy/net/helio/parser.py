@@ -38,7 +38,15 @@ def webservice_parser(service='HEC'):
     Examples
     --------
     >>> from sunpy.net.helio import parser
-    >>> parser.webservice_parser()
+    >>> parser.webservice_parser()  # doctest: +NORMALIZE_WHITESPACE
+    ['http://helio.mssl.ucl.ac.uk/helio-hec/HelioService',
+    'http://msslkk.mssl.ucl.ac.uk/helio-hec/HelioService',
+    'http://voparis-helio.obspm.fr/helio-hec/helio-hec/HelioService',
+    'http://hec.helio-vo.eu/helio_hec/HelioService',
+    'http://helio.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService',
+    'http://msslkk.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService',
+    'http://voparis-helio.obspm.fr/helio-hec/helio-hec/HelioLongQueryService',
+    'http://hec.helio-vo.eu/helio_hec/HelioLongQueryService']
 
     """
     link = RL.LINK + '/' + service.lower()
@@ -82,15 +90,16 @@ def endpoint_parser(link):
     Examples
     --------
     >>> from sunpy.net.helio import parser
-    >>> parser.endpoint_parser('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +REMOTE_DATA
-    ['http://msslkz.mssl.ucl.ac.uk:80/helio-hec/HelioService?wsdl',
-    'http://msslkz.mssl.ucl.ac.uk:80/helio-hec/HelioService1_0?wsdl',
-    'http://msslkz.mssl.ucl.ac.uk:80/helio-hec/HelioService1_0b?wsdl',
-    'http://msslkz.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService?wsdl',
-    'http://msslkz.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_0?wsdl',
-    'http://msslkz.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_1?wsdl',
-    'http://msslkz.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_0b?wsdl',
-    'http://msslkz.mssl.ucl.ac.uk:80/helio-hec/HelioTavernaService?wsdl']
+    >>> parser.endpoint_parser('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +REMOTE_DATA +NORMALIZE_WHITESPACE
+    ['http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioService?wsdl',
+    'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioService1_0?wsdl',
+    'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioService1_0b?wsdl',
+    'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService?wsdl',
+    'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_0?wsdl',
+    'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_1?wsdl',
+    'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioLongQueryService1_0b?wsdl',
+    'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioTavernaService?wsdl']
+
     """
     endpoint_page = link_test(link)
     if endpoint_page is None:
@@ -128,7 +137,8 @@ def taverna_parser(link):
     --------
     >>> from sunpy.net.helio import parser
     >>> parser.taverna_parser('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +REMOTE_DATA
-    ['http://msslkz.mssl.ucl.ac.uk:80/helio-hec/HelioTavernaService?wsdl']
+    ['http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioTavernaService?wsdl']
+
     """
     endpoints = endpoint_parser(link)
     taverna_links = []
@@ -162,7 +172,7 @@ def link_test(link):
     Examples
     --------
     >>> from sunpy.net.helio import parser
-    >>> parser.link_test('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +REMOTE_DATA
+    >>> result = parser.link_test('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +REMOTE_DATA
 
     >>> print(parser.link_test('http://rrnx.invalid_url5523.com'))  # doctest: +REMOTE_DATA
         None
@@ -198,7 +208,7 @@ def wsdl_retriever(service='HEC'):
     --------
     >>> from sunpy.net.helio import parser
     >>> parser.wsdl_retriever()  # doctest: +REMOTE_DATA
-    'http://msslkz.mssl.ucl.ac.uk:80/helio_hec/HelioTavernaService?wsdl'
+    'http://helio.mssl.ucl.ac.uk:80/helio_hec/HelioTavernaService?wsdl'
 
     Notes
     -----

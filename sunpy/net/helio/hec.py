@@ -43,9 +43,7 @@ def suds_unwrapper(wrapped_data):
     >>> from suds.client import Client
     >>> from sunpy.net.proxyfix import WellBehavedHttpTransport
     >>> votable_interceptor = hec.VotableInterceptor()  # doctest: +REMOTE_DATA
-    >>> client = Client(hec.parser.wsdl_retriever(),
-    ...                 plugins=[self.votable_interceptor],
-    ...                 transport=WellBehavedHttpTransport())  # doctest: +REMOTE_DATA
+    >>> client = Client(hec.parser.wsdl)  # doctest: +REMOTE_DATA
     >>> client.service.getTableNames()  # doctest: +REMOTE_DATA
     >>> temp = client.last_received().str()  # doctest: +REMOTE_DATA
     >>> print(temp)  # doctest: +REMOTE_DATA
@@ -226,7 +224,7 @@ class HECClient(object):
         --------
         >>> from sunpy.net.helio import hec
         >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
-        >>> print(hc.get_table_names())   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE +REMOTE_DATA
+        >>> print(hc.get_table_names())   # doctest: +SKIP
         [('timed_see_flare',) ('hi_event',) ('yohkoh_flare_list',)
          ('wind_mfi_bs_crossing_time',) ('seeds_soho',) ('seeds_stb',)
          ...
