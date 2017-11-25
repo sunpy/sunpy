@@ -24,10 +24,10 @@ cache:
   directories:
   - $HOME/sunpy/data
 
-python:
-    - 2.7
-    - 3.5
-    - 3.6
+# python:
+#     - 2.7
+#     - 3.5
+#     - 3.6
 
 # Configure the build environment. Global varibles are defined for all configurations.
 
