@@ -52,7 +52,7 @@ def test_input_error():
         va.Time('2012/1/1')
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_simpleattr_create(client):
     a = attr.ValueAttr({('instrument', ): 'eit'})
     assert va.walker.create(a, client.api)[0].instrument == 'eit'
@@ -85,7 +85,7 @@ def test_complexattr_apply():
     assert dct['test'] == {'foo': 'a', 'bar': 'b'}
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_complexattr_create(client):
     a = attr.ValueAttr({('time', 'start'): 'test'})
     assert va.walker.create(a, client.api)[0].time.start == 'test'
@@ -216,7 +216,7 @@ def test_repr():
     assert "Start Time End Time  Source Instrument   Type" in repr(qr)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_path(client):
     """
     Test that '{file}' is automatically appended to the end of a custom path if

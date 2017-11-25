@@ -2,14 +2,9 @@ from __future__ import absolute_import, print_function
 from functools import partial
 
 import os
-import socket
 import tempfile
 import json
-
-from sunpy.extern.six.moves.urllib.request import urlopen
-from sunpy.extern.six.moves.urllib.error import URLError
-
-import pytest
+import socket
 
 # Force MPL to use non-gui backends for testing.
 try:
@@ -19,23 +14,26 @@ except ImportError:
 else:
     matplotlib.use('Agg')
 
-from astropy.tests import disable_internet
 from sunpy.tests.hash import HASH_LIBRARY_NAME
 from sunpy.tests.helpers import new_hash_library, figure_test_pngfiles
+from sunpy.extern import six
 
-GOOGLE_URL = 'http://www.google.com'
+import pytest
 
 
-def site_reachable(url):
+# Don't actually import pytest_remotedata because that can do things to the
+# entrypoints code in pytest.
+if six.PY2:
+    import imp
     try:
-        urlopen(url, timeout=1)
-    except (URLError, socket.timeout):
-        return False
-    else:
-        return True
-
-
-is_online = partial(site_reachable, GOOGLE_URL)
+        imp.find_module('pytest_remotedata')
+        HAVE_REMOTEDATA = True
+    except ImportError:
+        HAVE_REMOTEDATA = False
+else:
+    import importlib
+    remotedata_spec = importlib.util.find_spec("pytest_remotedata")
+    HAVE_REMOTEDATA = remotedata_spec is not None
 
 
 def pytest_runtest_setup(item):
@@ -45,17 +43,11 @@ def pytest_runtest_setup(item):
     can be requested).
     """
     if isinstance(item, item.Function):
-        if 'online' in item.keywords and not is_online():
-            msg = 'skipping test {0} (reason: client seems to be offline)'
-            pytest.skip(msg.format(item.name))
-
-        if 'online' not in item.keywords:
-            disable_internet.turn_off_internet()
-
-
-def pytest_runtest_teardown(item, nextitem):
-    disable_internet.turn_on_internet()
-
+        if 'remote_data' in item.keywords:
+            if not HAVE_REMOTEDATA:
+                pytest.skip("skipping remotedata tests as pytest-remotedata is not installed")
+            else:
+                item.add_marker(pytest.mark.xfail(raises=socket.timeout))
 
 def pytest_unconfigure(config):
     if len(figure_test_pngfiles) > 0:
