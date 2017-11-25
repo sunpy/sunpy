@@ -4,7 +4,10 @@ GOES LightCurve Tests
 """
 from __future__ import absolute_import
 
+import socket
+
 import pytest
+
 import sunpy.lightcurve
 from sunpy.time import TimeRange
 
@@ -35,6 +38,7 @@ class TestGOESLightCurve(object):
         lc1 = sunpy.lightcurve.GOESLightCurve.create(timerange_a)
         assert isinstance(lc1, sunpy.lightcurve.GOESLightCurve)
 
+    @pytest.mark.xfail(raises=socket.timeout)
     @pytest.mark.remote_data
     def test_goes_default(self):
         """Test creation with no input"""
