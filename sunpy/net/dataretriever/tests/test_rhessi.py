@@ -12,7 +12,7 @@ from sunpy.net.fido_factory import UnifiedResponse
 LCClient = rhessi.RHESSIClient()
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 @pytest.mark.parametrize("timerange,url_start", [
     (TimeRange('2012/7/1', '2012/7/2'),
      'hessidata/metadata/catalog/hsi_obssumm_20120701_050.fits'),
@@ -35,7 +35,7 @@ def test_can_handle_query():
     assert ans2 is False
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_query():
     qr1 = LCClient.search(Time('2011/4/9', '2011/4/10'), Instrument('rhessi'))
     assert isinstance(qr1, QueryResponse)
@@ -44,7 +44,7 @@ def test_query():
     assert qr1.time_range().end == parse_time('2011/04/10')
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 @pytest.mark.parametrize("time,instrument", [
     (Time('2012/11/27', '2012/11/28'), Instrument('rhessi')),
     (Time('2012/10/4', '2012/10/5'), Instrument('rhessi')),
@@ -56,7 +56,7 @@ def test_get(time, instrument):
     assert len(download_list) == len(qr1)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 @pytest.mark.parametrize(
     "time, instrument",
     [(a.Time('2012/10/4', '2012/10/6'), a.Instrument('rhessi')),

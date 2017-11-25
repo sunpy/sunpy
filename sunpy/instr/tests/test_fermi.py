@@ -5,7 +5,7 @@ from sunpy.time import parse_time
 from sunpy.extern import six
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_download_weekly_pointing_file():
     # set a test date
     date = parse_time('2011-10-01')
@@ -14,7 +14,7 @@ def test_download_weekly_pointing_file():
     assert afile.endswith('.fits')
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_detector_angles():
     # set a test date
     date = parse_time('2012-02-15')

@@ -41,7 +41,7 @@ working connection to the internet. pytest is configured in a way that it
 iterates over all tests that have been marked as *online* and checks if
 there is an established connection to the internet. If there is none, the
 test is skipped, otherwise it is run. Marking tests is pretty
-straightforward in pytest: use the decorator ``@pytest.mark.online`` to
+straightforward in pytest: use the decorator ``@pytest.mark.remote_data`` to
 mark a test function as needing an internet connection.
 
 Writing a unit test for a figure

@@ -62,7 +62,7 @@ def get_and_create_temp_directory(tmpdir):
 
     return sunpy.config.get('downloads', 'download_dir')
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_path_exception():
     x = threading.Event()
     dw = Downloader(1, 2)
@@ -76,7 +76,7 @@ def test_path_exception():
     assert x.isSet()
     dw.stop()
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_download_http():
     items = []
     lck = threading.Lock()
@@ -114,7 +114,7 @@ def test_download_http():
     for item in items:
         assert os.path.exists(item['path'])
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_download_default_dir():
     _config = sunpy.config
 
@@ -145,7 +145,7 @@ def test_download_default_dir():
     finally:
         sunpy.config = _config
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_download_dir():
     tmpdir = tempfile.mkdtemp()
 

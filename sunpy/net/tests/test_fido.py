@@ -55,7 +55,7 @@ def test_offline_fido(query):
     check_response(query, unifiedresp)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 @given(online_query())
 def test_online_fido(query):
     unifiedresp = Fido.search(query)
@@ -82,7 +82,7 @@ def check_response(query, unifiedresp):
             assert query_instr.lower() == res.instrument.lower()
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_save_path():
     with tempfile.TemporaryDirectory() as target_dir:
         qr = Fido.search(a.Instrument('EVE'), a.Time("2016/10/01", "2016/10/02"), a.Level(0))
@@ -97,7 +97,7 @@ Factory Tests
 """
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_unified_response():
     start = parse_time("2012/1/1")
     end = parse_time("2012/1/2")
@@ -155,7 +155,7 @@ def test_multiple_match():
     Fido.registry = CLIENTS
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_no_wait_fetch():
         qr = Fido.search(a.Instrument('EVE'),
                          a.Time("2016/10/01", "2016/10/02"),
