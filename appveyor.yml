@@ -36,4 +36,5 @@ install:
 build: false
 
 test_script:
+    - "%CMD_IN_ENV% python -m sunpy.data.sample"
     - "%CMD_IN_ENV% python setup.py test"
