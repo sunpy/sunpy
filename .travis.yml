@@ -74,7 +74,7 @@ matrix:
            # Run this with pytest because our `setup.py` runner does not
            # currently pick up doctests in docs/
            env: MAIN_CMD="py.test"
-                SETUP_CMD="-k-figure --cov ./"
+                SETUP_CMD="--remote-data -k-figure --cov ./"
                 EVENT_TYPE='push pull_request cron'
 
          # - python: 3.6
@@ -126,7 +126,7 @@ script:
     - $MAIN_CMD $SETUP_CMD
 
 after_success:
-    - if [[ $SETUP_CMD == *coverage* ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
+    - if [[ $SETUP_CMD == *cov* ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
 
 # Notify the IRC channel of build status
 notifications:
