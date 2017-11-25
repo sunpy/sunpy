@@ -24,10 +24,10 @@ cache:
   directories:
   - $HOME/sunpy/data
 
-# python:
-#     - 2.7
-#     - 3.5
-#     - 3.6
+python:
+    - 2.7
+    - 3.5
+    - 3.6
 
 # Configure the build environment. Global varibles are defined for all configurations.
 
@@ -64,10 +64,10 @@ matrix:
     include:
          # We order the jobs, so the longest running tests are in the top
          # four positions of the matrix
-         # - os: osx
-         #   stage: Cron tests
-         #   language: generic
-         #   env: PYTHON_VERSION=3.6
+         - os: osx
+           stage: Cron tests
+           language: generic
+           env: PYTHON_VERSION=3.6
 
          - python: 3.6
            stage: Comprehensive tests
@@ -77,39 +77,39 @@ matrix:
                 SETUP_CMD="--remote-data -k-figure --cov ./"
                 EVENT_TYPE='push pull_request cron'
 
-         # - python: 3.6
-         #   stage: Cron tests
-         #   env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
-         #        EVENT_TYPE='push pull_request cron'
+         - python: 3.6
+           stage: Cron tests
+           env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
+                EVENT_TYPE='push pull_request cron'
 
-         # - python: 3.6
-         #   stage: Initial tests
-         #   env: SETUP_CMD='test'
+         - python: 3.6
+           stage: Initial tests
+           env: SETUP_CMD='test'
 
-         # - python: 2.7
-         #   stage: Comprehensive tests
-         #   env: SETUP_CMD='test'
+         - python: 2.7
+           stage: Comprehensive tests
+           env: SETUP_CMD='test'
 
-         # # Previous numpy is tested on an older python version
-         # - python: 3.5
-         #   stage: Cron tests
-         #   env: NUMPY_VERSION=$PREVIOUS_NUMPY
+         # Previous numpy is tested on an older python version
+         - python: 3.5
+           stage: Cron tests
+           env: NUMPY_VERSION=$PREVIOUS_NUMPY
 
-         # - python: 3.6
-         #   stage: Comprehensive tests
-         #   env: SETUP_CMD='build_docs -w'
-         #        EVENT_TYPE='push pull_request cron'
-         #        SPHINX_VERSION='<1.6'
+         - python: 3.6
+           stage: Comprehensive tests
+           env: SETUP_CMD='build_docs -w'
+                EVENT_TYPE='push pull_request cron'
+                SPHINX_VERSION='<1.6'
 
-         # # Figure test runs use an env stored in the repo so don't have conda
-         # # requirements
-         # - python: 2.7
-         #   stage: Comprehensive tests
-         #   env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
+         # Figure test runs use an env stored in the repo so don't have conda
+         # requirements
+         - python: 2.7
+           stage: Comprehensive tests
+           env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
 
-         # - python: 3.5
-         #   stage: Comprehensive tests
-         #   env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
+         - python: 3.5
+           stage: Comprehensive tests
+           env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
 
 install:
     - git clone git://github.com/astropy/ci-helpers.git
