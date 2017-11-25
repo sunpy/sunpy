@@ -26,7 +26,7 @@ def client():
         pytest.skip("HTTP error {}".format(e.code))
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 class TestHelioviewerClient:
     """Tests the Helioviewer.org API Client class"""
 

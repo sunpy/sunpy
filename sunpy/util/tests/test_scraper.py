@@ -163,7 +163,7 @@ def testURL_patternMilliseconds():
 
 
 @pytest.mark.xfail
-@pytest.mark.online
+@pytest.mark.remote_data
 def testFilesRange_sameDirectory_remote():
     pattern = ('http://solarmonitor.org/data/%Y/%m/%d/'
                'fits/{instrument}/'
@@ -180,7 +180,7 @@ def testFilesRange_sameDirectory_remote():
 
 
 @pytest.mark.xfail
-@pytest.mark.online
+@pytest.mark.remote_data
 def testFilesRange_sameDirectory_months_remote():
     pattern = ('http://www.srl.caltech.edu/{spacecraft}/DATA/{instrument}/'
                'Ahead/1minute/AeH%y%b.1m')
@@ -191,7 +191,7 @@ def testFilesRange_sameDirectory_months_remote():
     assert len(s.filelist(timerange)) == 2
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_ftp():
     pattern = 'ftp://solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/%Y/%m/tca%y%m%d'
     s = Scraper(pattern)
