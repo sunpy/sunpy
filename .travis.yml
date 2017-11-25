@@ -117,7 +117,7 @@ install:
 
 before_script:
     # Download the sample data for the build of the documentation.
-    - if [[ $SETUP_CMD != *egg_info* ]]; then python -c "import sunpy.data.sample"; fi
+    - if [[ $SETUP_CMD != *egg_info* ]]; then python -m "sunpy.data.sample"; fi
     - if [[ $MAIN_CMD == py.test* ]]; then python setup.py build; fi
     - if [[ $SETUP_CMD == *--figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; fi
 
