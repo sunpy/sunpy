@@ -192,6 +192,10 @@ edit_on_github_skip_regex = '_.*|generated/.*'
 
 github_issues_url = 'https://github.com/sunpy/sunpy/issues/'
 
+# -- Options for autodoc ------------------------------------------------------
+# Make sure members of classes are automatically documented
+autodoc_default_flags = ['members']
+
 # -- Options for the Sphinx gallery -------------------------------------------
 
 if ON_RTD and os.environ.get('READTHEDOCS_PROJECT').lower() != 'sunpy':
