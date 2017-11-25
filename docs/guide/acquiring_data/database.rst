@@ -237,7 +237,7 @@ directory ``sampledata_dir``).
     >>> database.add_from_dir(sampledata_dir, ignore_already_added=True,
     ...                       time_string_parse_format="%d/%m/%Y")
     >>> len(database)
-    111
+    58
 
 2.3 Adding entries using the VSO interface
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
