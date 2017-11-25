@@ -33,7 +33,7 @@ cache:
 
 env:
     global:
-        - COLUMNS=240
+        - COLUMNS=180
         - PREVIOUS_NUMPY=1.11.3
         - NUMPY_VERSION='stable'
         - ASTROPY_VERSION='stable'
