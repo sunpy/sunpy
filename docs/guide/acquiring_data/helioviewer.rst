@@ -29,17 +29,53 @@ and this can be done using one of two methods:
 Let's begin by getting a list of data sources available on the server
 using the get_datasources method::
 
-    from sunpy.net.helioviewer import HelioviewerClient
+    >>> from sunpy.net.helioviewer import HelioviewerClient
 
-    hv = HelioviewerClient()
-    datasources = hv.get_data_sources()
+    >>> hv = HelioviewerClient()
+    >>> datasources = hv.get_data_sources()  # doctest: +REMOTE_DATA
 
-    # print a list of datasources and their associated ids
-    for observatory, instruments in datasources.items():
-        for inst, detectors in instruments.items():
-            for det, measurements in detectors.items():
-                for meas, params in measurements.items():
-                    print("%s %s: %d" % (observatory, params['nickname'], params['sourceId']))
+    >>> # print a list of datasources and their associated ids
+    >>> for observatory, instruments in datasources.items():  # doctest: +REMOTE_DATA
+    ...     for inst, detectors in instruments.items():  # doctest: +REMOTE_DATA
+    ...         for det, measurements in detectors.items():  # doctest: +REMOTE_DATA
+    ...             for meas, params in measurements.items():  # doctest: +REMOTE_DATA
+    ...                 print("%s %s: %d" % (observatory, params['nickname'], params['sourceId']))  # doctest: +REMOTE_DATA
+    SOHO EIT 171: 0
+    SOHO EIT 195: 1
+    SOHO EIT 284: 2
+    SOHO EIT 304: 3
+    SOHO LASCO C2: 4
+    SOHO LASCO C3: 5
+    SOHO MDI Mag: 6
+    SOHO MDI Int: 7
+    SDO AIA 94: 8
+    SDO AIA 131: 9
+    SDO AIA 171: 10
+    SDO AIA 193: 11
+    SDO AIA 211: 12
+    SDO AIA 304: 13
+    SDO AIA 335: 14
+    SDO AIA 1600: 15
+    SDO AIA 1700: 16
+    SDO AIA 4500: 17
+    SDO HMI Int: 18
+    SDO HMI Mag: 19
+    STEREO_A EUVI-A 171: 20
+    STEREO_A EUVI-A 195: 21
+    STEREO_A EUVI-A 284: 22
+    STEREO_A EUVI-A 304: 23
+    STEREO_A COR1-A: 28
+    STEREO_A COR2-A: 29
+    STEREO_B EUVI-B 171: 24
+    STEREO_B EUVI-B 195: 25
+    STEREO_B EUVI-B 284: 26
+    STEREO_B EUVI-B 304: 27
+    STEREO_B COR1-B: 30
+    STEREO_B COR2-B: 31
+    PROBA2 SWAP 174: 32
+    Yohkoh SXT AlMgMn: 33
+    Yohkoh SXT thin-Al: 34
+    Yohkoh SXT white-light: 35
 
 At time of writing (2014/01/06) Helioviewer provides JP2 images from AIA, HMI, LASCO C2/C3, EIT,
 MDI, STEREO A/B COR1/2 & EUVI, SWAP and SXT.  New sources of JP2 images are being added every few months;
@@ -53,12 +89,12 @@ approach as shown in the following example.::
    >>> from sunpy.net.helioviewer import HelioviewerClient
    >>> import matplotlib.pyplot as plt
    >>> from matplotlib.image import imread
-   >>> hv = HelioviewerClient()
-   >>> file = hv.download_png('2099/01/01', 4.8, "[SDO,AIA,AIA,304,1,100]", x0=0, y0=0, width=512, height=512)
-   >>> im = imread(file)
-   >>> plt.imshow(im)
-   >>> plt.axis('off')
-   >>> plt.show()
+   >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
+   >>> file = hv.download_png('2099/01/01', 4.8, "[SDO,AIA,AIA,304,1,100]", x0=0, y0=0, width=512, height=512)  # doctest: +REMOTE_DATA
+   >>> im = imread(file)  # doctest: +REMOTE_DATA
+   >>> plt.imshow(im)  # doctest: +SKIP
+   >>> plt.axis('off')  # doctest: +SKIP
+   >>> plt.show()  # doctest: +SKIP
 
 
 .. image:: helioviewer-1.png
@@ -97,12 +133,12 @@ lower layer.::
    >>> from sunpy.net.helioviewer import HelioviewerClient
    >>> import matplotlib.pyplot as plt
    >>> from matplotlib.image import imread
-   >>> hv = HelioviewerClient()
-   >>> file = hv.download_png('2099/01/01', 6, "[SDO,AIA,AIA,304,1,100],[SDO,AIA,AIA,193,1,50],[SOHO,LASCO,C2,white-light,1,100]", x0=0, y0=0, width=768, height=768)
-   >>> im = imread(file)
-   >>> plt.imshow(im)
-   >>> plt.axis('off')
-   >>> plt.show()
+   >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
+   >>> file = hv.download_png('2099/01/01', 6, "[SDO,AIA,AIA,304,1,100],[SDO,AIA,AIA,193,1,50],[SOHO,LASCO,C2,white-light,1,100]", x0=0, y0=0, width=768, height=768)  # doctest: +REMOTE_DATA
+   >>> im = imread(file)  # doctest: +REMOTE_DATA
+   >>> plt.imshow(im)  # doctest: +SKIP
+   >>> plt.axis('off')  # doctest: +SKIP
+   >>> plt.show()  # doctest: +SKIP
 
 .. image:: helioviewer-2.png
 
@@ -117,12 +153,12 @@ can specify the values as separate keyword arguments.::
    >>> import matplotlib.pyplot as plt
    >>> from astropy.units import Quantity
    >>> from sunpy.map import Map
-   >>> hv = HelioviewerClient()
-   >>> filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')
-   >>> hmi = Map(filepath)
-   >>> xrange = Quantity([200, 550], 'arcsec')
-   >>> yrange = Quantity([-400, 200], 'arcsec')
-   >>> hmi.submap(xrange, yrange).peek()
+   >>> hv = HelioviewerClient()  # doctest: +REMOTE_DATA
+   >>> filepath = hv.download_jp2('2012/07/05 00:30:00', observatory='SDO', instrument='HMI', detector='HMI', measurement='continuum')  # doctest: +REMOTE_DATA
+   >>> hmi = Map(filepath)  # doctest: +REMOTE_DATA
+   >>> xrange = Quantity([200, 550], 'arcsec')  # doctest: +REMOTE_DATA
+   >>> yrange = Quantity([-400, 200], 'arcsec')  # doctest: +REMOTE_DATA
+   >>> hmi.submap(xrange, yrange).peek()  # doctest: +SKIP
 
 
 .. image:: helioviewer-3.png

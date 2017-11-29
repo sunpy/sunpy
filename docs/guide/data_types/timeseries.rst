@@ -170,6 +170,7 @@ update method, with the explicit user-given values taking precedence.
     >>> units = OrderedDict([('intensity', u.W/u.m**2)])
     >>> ts_table = ts.TimeSeries(table, meta, units)
 
+.. doctest-skip-all
 
 3. Inspecting TimeSeries & Getting at the Data
 -----------------------------------------------
@@ -191,21 +192,30 @@ the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.data` attribute.  The
 data is implemented as a Pandas `~pandas.DataFrame`, so to get a look at what
 data you have available use: ::
 
-    >>> my_timeseries.data
+    >>> my_timeseries.data  # doctest: +SKIP
 
 You can also get a quick overview of that data using: ::
 
     >>> my_timeseries.data.info()
+    <class 'pandas.core.frame.DataFrame'>
+    DatetimeIndex: 42177 entries, 2011-06-06 23:59:59.961999 to 2011-06-07 23:59:57.631999
+    Data columns (total 2 columns):
+    xrsa    42177 non-null float32
+    xrsb    42177 non-null float32
+    dtypes: float32(2)
+    memory usage: 659.0 KB
 
 Time series are columnar data so to get at a particular datum you need to
 first index the column, then the element you want. To get the names of the
 available columns: ::
 
     >>> my_timeseries.data.columns
+    Index(['xrsa', 'xrsb'], dtype='object')
 
 You can access the 0th element in the column `xrsa` with: ::
 
     >>> my_timeseries.data['xrsa'][0]
+    9.9999997e-10
 
 You can also grab all of the data at a particular time: ::
 
@@ -248,7 +258,7 @@ provides a more general plot.  Note that `~sunpy.timeseries.timeseriesbase.Gener
 returns a `matplotlib.figure.Figure` object, if you want to save this to a PNG
 file you can use the `savefig` method:
 
-    >>> fig.savefig('figure.png')
+    >>> fig.savefig('figure.png')  # doctest: +SKIP
 
 In addition, to enable users to modify the plot it is possible to grab the
 matplotlib axes object by using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.plot`
@@ -327,7 +337,6 @@ can manipulate it using normal Pandas methods, such as the `~pandas.DataFrame.re
 method.  To downsample you can use: ::
 
     >>> downsampled_dataframe = my_timeseries_trunc.data.resample('10T').mean()
-    >>> downsampled_timeseries = sunpy.timeseries.TimeSeries(downsampled_dataframe, my_timeseries_trunc.meta, my_timeseries_trunc.units) # ToDo: Fix this!
 
 Note, here ``10T`` means sample every 10 minutes and 'mean' is the method used
 to combine the data. Alternatively the sum method is often used.
@@ -350,14 +359,14 @@ GOES data to get a week or more of constant data in one TimeSeries.  This can be
 performed using the TimeSeries factory with the ``concatenate=True``
 keyword argument: ::
 
-    >>> concatenated_timeseries = sunpy.timeseries.TimeSeries(filepath1, filepath2, source='XRS', concatenate=True)
+    >>> concatenated_timeseries = sunpy.timeseries.TimeSeries(filepath1, filepath2, source='XRS', concatenate=True)  # doctest: +SKIP
 
 Note, you can list any number of files, or a folder or use a glob to select the
 input files to be concatenated.  It is possible to concatenate two TimeSeries
 after creating them with the factory using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.concatenate`
 method.  For example: ::
 
-    >>> concatenated_timeseries = goes_timeseries_1.concatenate(goes_timeseries_2)
+    >>> concatenated_timeseries = goes_timeseries_1.concatenate(goes_timeseries_2)  # doctest: +SKIP
 
 This will result in a TimeSeries identical to if you used the factory to create
 it in one step.  A limitation of the TimeSeries class is that often it is not
@@ -369,14 +378,15 @@ To do this you can still use the `~sunpy.timeseries.timeseriesbase.GenericTimeSe
 method, which will create a new TimeSeries with all the rows and columns of the
 source and concatenated TimeSeries in one: ::
 
-    >>> concatenated_timeseries = goes_timeseries.concatenate(eve_timeseries)
+    >>> concatenated_timeseries = goes_timeseries.concatenate(eve_timeseries)  # doctest: +SKIP
 
 Note that the more complex `~sunpy.timeseries.metadata.TimeSeriesMetaData`
 object now has 2 entries and shows details on both: ::
 
-    >>> concatenated_timeseries.meta
+    >>> concatenated_timeseries.meta  # doctest: +SKIP
 
 The metadata object is described in more detail in the next section.
+
 
 5.5 Creating an AstroPy Table from a TimeSeries
 -----------------------------------------------
@@ -399,7 +409,7 @@ console view: ::
 and the more sophisticated browser view using the `~astropy.table.table.Table.show_in_browser`
 method: ::
 
-    >>> table.show_in_browser(jsviewer=True)
+    >>> table.show_in_browser(jsviewer=True)  # doctest: +SKIP
 
 For further details about editing AstroPy tables you can read the `astropy
 documentation website <http://docs.astropy.org/en/stable/table/>`_.
