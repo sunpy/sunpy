@@ -57,25 +57,28 @@ your map simply type::
 
     >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     >>> my_map   # doctest: +NORMALIZE_WHITESPACE
-    SunPy AIAMap
+    SunPy Map
     ---------
-    Observatory:         SDO
-    Instrument:  AIA 3
-    Detector:    AIA
-    Measurement:         171.0 Angstrom
-    Wavelength:  171.0 Angstrom
-    Obs Date:    2011-03-19 10:54:00
-    dt:          1.999601 s
-    Dimension:   [ 1024.  1024.] pix
-    scale:               [ 2.4  2.4] arcsec / pix
+    Observatory:		 SDO
+    Instrument:		 AIA 3
+    Detector:		 AIA
+    Measurement:		 171.0 Angstrom
+    Wavelength:		 171.0 Angstrom
+    Observation Date:	 2011-06-07 06:33:02
+    Exposure Time:		 0.234256 s
+    Dimension:		 [ 1024.  1024.] pix
+    Coordinate System:	 helioprojective
+    Scale:			 [ 2.402792  2.402792] arcsec / pix
+    Reference Pixel:	 [ 512.5  512.5] pix
+    Reference Coord:	 [ 3.22309951  1.38578135] arcsec
     <BLANKLINE>
-    array([[ 0.3125, -0.0625, -0.125 , ...,  0.625 , -0.625 ,  0.    ],
-           [ 1.    ,  0.1875, -0.8125, ...,  0.625 , -0.625 ,  0.    ],
-           [-1.1875,  0.375 , -0.5   , ..., -0.125 , -0.625 , -1.1875],
+    array([[ -96.,    7.,   -2., ..., -128., -128., -128.],
+           [ -97.,   -5.,    0., ...,  -99., -104., -128.],
+           [ -94.,    1.,   -4., ...,   -5.,  -38., -128.],
            ...,
-           [-0.625 ,  0.0625, -0.3125, ...,  0.125 ,  0.125 ,  0.125 ],
-           [ 0.5625,  0.0625,  0.5625, ..., -0.0625, -0.0625,  0.    ],
-           [ 0.5   , -0.125 ,  0.4375, ...,  0.6875,  0.6875,  0.6875]])
+           [-128., -128., -128., ..., -128., -128., -128.],
+           [-128., -128., -128., ..., -128., -128., -128.],
+           [-128., -128., -128., ..., -128., -128., -128.]], dtype=float32)
 
 
 This will show a representation of the data as well as some of its associated
@@ -113,9 +116,9 @@ NumPy `~numpy.ndarray`, so for example, to get
 the 0th element in the array ::
 
     >>> my_map.data[0, 0]
-    0.3125
+    -96.0
     >>> my_map.data[0][0]
-    0.3125
+    -96.0
 
 One important fact to remember is that the first
 index is for the y direction while the second index is for the x direction.
@@ -127,9 +130,9 @@ Data attributes like `~numpy.ndarray.dtype` and
 the SunPyGenericMap object ::
 
     >>> my_map.dimensions
-    Pair(x=<Quantity 1024.0 pix>, y=<Quantity 1024.0 pix>)
+    PixelPair(x=<Quantity 1024.0 pix>, y=<Quantity 1024.0 pix>)
     >>> my_map.dtype
-    dtype('float64')
+    dtype('>f4')
 
 Here the dimensions attribute is similar to the `~numpy.ndarray.shape`
 attribute, however returning an `~astropy.units.quantity.Quantity`.
@@ -147,17 +150,17 @@ Some basic statistical functions on the data array are also passed through to Ma
 objects::
 
     >>> my_map.min()
-    -2.0
+    -128.0
     >>> my_map.max()
-    9429.125
+    192131.0
     >>> my_map.mean()
-    235.91531443595886
+    427.02139
 
 but you can also access all the other `~numpy.ndarray` functions and attributes
 but accessing the data array directly. For example::
 
     >>> my_map.data.std()
-    292.43424704677756
+    826.40955
 
 Plotting
 --------
@@ -243,23 +246,25 @@ long as it recognizes the instrument. To see what colormaps are available::
 
     >>> import sunpy.cm
     >>> sunpy.cm.cmlist.keys()   # doctest: +NORMALIZE_WHITESPACE
-    ['sohoeit304', 'sdoaia211', 'sohoeit195', 'trace1600', 'sdoaia94',
-     'trace284', 'trace1216', 'sdoaia304', 'trace1700', 'yohkohsxtal',
-     'trace195', 'sdoaia335', 'sdoaia1600', 'traceWL', 'stereohi2',
-     'sdoaia193', 'stereohi1', 'rhessi', 'trace171', 'trace1550',
-     'sohoeit284', 'stereocor2', 'hmimag', 'stereocor1', 'sdoaia1700',
-     'yohkohsxtwh', 'sohoeit171', 'hinodexrt', 'sdoaia131', 'sdoaia171',
-     'hinodesotintensity', 'sdoaia4500', 'soholasco3', 'soholasco2']
+    dict_keys(['sdoaia94', 'sdoaia131', 'sdoaia171', 'sdoaia193', 'sdoaia211',
+    'sdoaia304', 'sdoaia335', 'sdoaia1600', 'sdoaia1700', 'sdoaia4500',
+    'sohoeit171', 'sohoeit195', 'sohoeit284', 'sohoeit304', 'soholasco2',
+    'soholasco3', 'stereocor1', 'stereocor2', 'stereohi1', 'stereohi2',
+    'rhessi', 'yohkohsxtal', 'yohkohsxtwh', 'hinodexrt', 'hinodesotintensity',
+    'trace171', 'trace195', 'trace284', 'trace1216', 'trace1550', 'trace1600',
+    'trace1700', 'traceWL', 'hmimag', 'irissji1330', 'irissji1400',
+    'irissji1600', 'irissji2796', 'irissji2832', 'irissji5000', 'irissjiFUV',
+    'irissjiNUV', 'irissjiSJI_NUV'])
 
 The SunPy colormaps are registered with matplotlib so you can grab them like
 you would any other colormap::
 
-    >>> import matplotlib.pyplot as plt   # doctest: +SKIP
+    >>> import matplotlib.pyplot as plt
     >>> import sunpy.cm
 
 You need to import sunpy.cm or sunpy.map for this to work::
 
-    >>> cmap = plt.get_cmap('sdoaia171')   # doctest: +SKIP
+    >>> cmap = plt.get_cmap('sdoaia171')
 
 
 The following plot shows off all of the colormaps.

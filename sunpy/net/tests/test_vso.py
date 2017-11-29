@@ -40,8 +40,8 @@ class MockQRResponse:
     """
     Used to test `sunpy.net.vso.vso.iter_records` and `sunpy.net.vso.vso.iter_errors`
 
-    >>> res = MockQRResponse(items=[1, 2, 3, [4, 5]], errors=['no-connection'])
-    >>> res.provideritem[1].record.recorditem
+    >>> res = MockQRResponse(items=[1, 2, 3, [4, 5]], errors=['no-connection'])  # doctest: +SKIP
+    >>> res.provideritem[1].record.recorditem  # doctest: +SKIP
     [2]
     """
     def __init__(self, records=None, errors=None):

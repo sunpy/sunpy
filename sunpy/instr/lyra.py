@@ -107,12 +107,14 @@ def remove_lytaf_events_from_timeseries(ts, artifacts=None,
 
         >>> import sunpy.timeseries as ts
         >>> import sunpy.data.sample
+        >>> from sunpy.instr.lyra import remove_lytaf_events_from_timeseries
         >>> lyrats = ts.TimeSeries(sunpy.data.sample.LYRA_LEVEL3_TIMESERIES, source='LYRA')
-        >>> ts_nolars = ts.remove_artifacts_from_timeseries(lyrats, artifacts=["LAR"])
+
+        >>> ts_nolars = remove_lytaf_events_from_timeseries(lyrats, artifacts=["LAR"])  # doctest: +REMOTE_DATA
 
     To also retrieve information on the artifacts during that day:
-        >>> ts_nolars, artifact_status = ts.remove_artifacts_from_timeseries(
-                lyrats, artifacts=["LAR"], return_artifacts=True)
+        >>> ts_nolars, artifact_status = remove_lytaf_events_from_timeseries(
+        ...        lyrats, artifacts=["LAR"], return_artifacts=True)  # doctest: +REMOTE_DATA
 
     """
     # Check that input argument is of correct type
@@ -232,13 +234,18 @@ def _remove_lytaf_events(time, channels=None, artifacts=None,
     Example
     -------
     Sample data for example
+        >>> from datetime import datetime, timedelta
+        >>> from sunpy.instr.lyra import _remove_lytaf_events
+
         >>> time = np.array([datetime(2013, 2, 1)+timedelta(minutes=i)
-                             for i in range(120)])
-        >>> channel_1 = np.zeros(len(TIME))+0.4
-        >>> channel_2 = np.zeros(len(TIME))+0.1
+        ...                 for i in range(120)])
+        >>> channel_1 = np.zeros(len(time))+0.4
+        >>> channel_2 = np.zeros(len(time))+0.1
+
     Remove LARs (Large Angle Rotations) from time series.
-        >>> time_clean, channels_clean = remove_lyra_artifacts(
-              time, channels=[channel_1, channel2], artifacts=['LAR'])
+
+        >>> time_clean, channels_clean = _remove_lytaf_events(
+        ...   time, channels=[channel_1, channel_2], artifacts=['LAR'])  # doctest: +REMOTE_DATA
 
     """
     # Check inputs
@@ -423,7 +430,7 @@ def get_lytaf_events(start_time, end_time, lytaf_path=None,
     --------
     Get all events in the LYTAF files for January 2014
         >>> from sunpy.instr.lyra import get_lytaf_events
-        >>> lytaf = get_lytaf_events('2014-01-01', '2014-02-01')
+        >>> lytaf = get_lytaf_events('2014-01-01', '2014-02-01')  # doctest: +REMOTE_DATA
 
     """
     # Check inputs

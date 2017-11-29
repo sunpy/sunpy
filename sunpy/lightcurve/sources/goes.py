@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """Provides programs to process and analyze GOES X-ray data."""
 from __future__ import absolute_import
 
@@ -31,7 +31,7 @@ class GOESLightCurve(LightCurve):
     --------
     >>> from sunpy import lightcurve as lc
     >>> from sunpy.time import TimeRange
-    >>> goes = lc.GOESLightCurve.create(TimeRange('2012/06/01', '2012/06/05'))
+    >>> goes = lc.GOESLightCurve.create(TimeRange('2012/06/01', '2012/06/05'))  # doctest: +REMOTE_DATA
     >>> goes.peek()   # doctest: +SKIP
 
     References

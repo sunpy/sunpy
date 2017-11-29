@@ -94,25 +94,28 @@ class GenericMap(NDData):
     >>> import sunpy.data.sample
     >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
     >>> aia   # doctest: +NORMALIZE_WHITESPACE
-    SunPy AIAMap
+    SunPy Map
     ---------
-    Observatory:         SDO
-    Instrument:  AIA 3
-    Detector:    AIA
-    Measurement:         171.0 Angstrom
-    Wavelength:  171.0 Angstrom
-    Obs Date:    2011-03-19 10:54:00
-    dt:          1.999601 s
-    Dimension:   [ 1024.  1024.] pix
-    scale:               [ 2.4  2.4] arcsec / pix
+    Observatory:                SDO
+    Instrument:                 AIA 3
+    Detector:           AIA
+    Measurement:                171.0 Angstrom
+    Wavelength:                 171.0 Angstrom
+    Observation Date:   2011-06-07 06:33:02
+    Exposure Time:              0.234256 s
+    Dimension:          [ 1024.  1024.] pix
+    Coordinate System:  helioprojective
+    Scale:                      [ 2.402792  2.402792] arcsec / pix
+    Reference Pixel:    [ 512.5  512.5] pix
+    Reference Coord:    [ 3.22309951  1.38578135] arcsec
     <BLANKLINE>
-    array([[ 0.3125, -0.0625, -0.125 , ...,  0.625 , -0.625 ,  0.    ],
-           [ 1.    ,  0.1875, -0.8125, ...,  0.625 , -0.625 ,  0.    ],
-           [-1.1875,  0.375 , -0.5   , ..., -0.125 , -0.625 , -1.1875],
+    array([[ -96.,    7.,   -2., ..., -128., -128., -128.],
+           [ -97.,   -5.,    0., ...,  -99., -104., -128.],
+           [ -94.,    1.,   -4., ...,   -5.,  -38., -128.],
            ...,
-           [-0.625 ,  0.0625, -0.3125, ...,  0.125 ,  0.125 ,  0.125 ],
-           [ 0.5625,  0.0625,  0.5625, ..., -0.0625, -0.0625,  0.    ],
-           [ 0.5   , -0.125 ,  0.4375, ...,  0.6875,  0.6875,  0.6875]])
+           [-128., -128., -128., ..., -128., -128., -128.],
+           [-128., -128., -128., ..., -128., -128., -128.],
+           [-128., -128., -128., ..., -128., -128., -128.]], dtype=float32)
 
 
     >>> aia.spatial_units
@@ -1193,56 +1196,52 @@ Reference Coord:\t {refcoord}
         >>> import sunpy.data.sample
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
         >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=aia.coordinate_frame)
-        >>> tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=aia.coordinate_frame
+        >>> tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=aia.coordinate_frame)
         >>> aia.submap(bl, tr)   # doctest: +NORMALIZE_WHITESPACE
         SunPy Map
         ---------
-        Observatory:		 SDO
-        Instrument:		 AIA 3
-        Detector:		 AIA
-        Measurement:		 171.0 Angstrom
-        Wavelength:		 171.0 Angstrom
-        Observation Date:	 2011-03-19 10:54:00
-        Exposure Time:		 1.999601 s
-        Dimension:		 [ 333.  333.] pix
-        Coordinate System:	 helioprojective
-        Scale:			 [ 2.4  2.4] arcsec / pix
-        Reference Pixel:	 [ 125.5  125.5] pix
-        Reference Coord:	 [ 0.  0.] arcsec
+        Observatory:                SDO
+        Instrument:                 AIA 3
+        Detector:           AIA
+        Measurement:                171.0 Angstrom
+        Wavelength:                 171.0 Angstrom
+        Observation Date:   2011-06-07 06:33:02
+        Exposure Time:              0.234256 s
+        Dimension:          [ 334.  334.] pix
+        Coordinate System:  helioprojective
+        Scale:                      [ 2.402792  2.402792] arcsec / pix
+        Reference Pixel:    [ 127.5  126.5] pix
+        Reference Coord:    [ 3.22309951  1.38578135] arcsec
         <BLANKLINE>
-        array([[ 365.625 ,  438.1875,  395.1875, ...,  201.375 ,  204.4375,  216.    ],
-            [ 386.125 ,  389.5   ,  370.3125, ...,  207.3125,  202.1875,  196.75  ],
-            [ 380.75  ,  342.875 ,  320.875 , ...,  187.5   ,  196.9375,
-                178.875 ],
-            ...,
-            [ 225.3125,  219.1875,  211.1875, ...,  359.8125,  324.5625,
-                305.375 ],
-            [ 228.625 ,  228.8125,  225.8125, ...,  358.5   ,  318.    ,
-                297.1875],
-            [ 220.6875,  221.125 ,  209.625 , ...,  390.4375,  329.375 ,
-                302.3125]])
+        array([[  451.,   566.,   586., ...,  1179.,  1005.,   978.],
+               [  475.,   515.,   556., ...,  1026.,  1011.,  1009.],
+               [  547.,   621.,   621., ...,   935.,  1074.,  1108.],
+               ...,
+               [  203.,   195.,   226., ...,   612.,   580.,   561.],
+               [  207.,   213.,   233., ...,   651.,   622.,   537.],
+               [  230.,   236.,   222., ...,   516.,   586.,   591.]], dtype=float32)
 
         >>> aia.submap([0,0]*u.pixel, [5,5]*u.pixel)   # doctest: +NORMALIZE_WHITESPACE
         SunPy Map
         ---------
-        Observatory:		 SDO
-        Instrument:		 AIA 3
-        Detector:		 AIA
-        Measurement:		 171.0 Angstrom
-        Wavelength:		 171.0 Angstrom
-        Observation Date:	 2011-03-19 10:54:00
-        Exposure Time:		 1.999601 s
-        Dimension:		 [ 5.  5.] pix
-        Coordinate System:	 helioprojective
-        Scale:			 [ 2.4  2.4] arcsec / pix
-        Reference Pixel:	 [ 512.5  512.5] pix
-        Reference Coord:	 [ 0.  0.] arcsec
+        Observatory:                SDO
+        Instrument:                 AIA 3
+        Detector:           AIA
+        Measurement:                171.0 Angstrom
+        Wavelength:                 171.0 Angstrom
+        Observation Date:   2011-06-07 06:33:02
+        Exposure Time:              0.234256 s
+        Dimension:          [ 5.  5.] pix
+        Coordinate System:  helioprojective
+        Scale:                      [ 2.402792  2.402792] arcsec / pix
+        Reference Pixel:    [ 512.5  512.5] pix
+        Reference Coord:    [ 3.22309951  1.38578135] arcsec
         <BLANKLINE>
-        array([[ 0.3125, -0.0625, -0.125 ,  0.    , -0.375 ],
-            [ 1.    ,  0.1875, -0.8125,  0.125 ,  0.3125],
-            [-1.1875,  0.375 , -0.5   ,  0.25  , -0.4375],
-            [-0.6875, -0.3125,  0.8125,  0.0625,  0.1875],
-            [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
+        array([[-96.,   7.,  -2.,  -3.,  -1.],
+               [-97.,  -5.,   0.,   0.,   1.],
+               [-94.,   1.,  -4.,   2.,  -2.],
+               [-97.,  -8.,  -3.,  -5.,  -1.],
+               [-96.,   6.,  -5.,  -1.,  -4.]], dtype=float32)
 
         """
 

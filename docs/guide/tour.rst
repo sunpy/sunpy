@@ -159,17 +159,17 @@ a short bit of code to get you started: ::
     # one astronomical unit (the average distance between the Sun and Earth)
     >>> print(con.au)
       Name   = Astronomical Unit
-      Value  = 1.495978707e+11
-      Error  = 0.0
-      Units  = m
+      Value  = 149597870700.0
+      Uncertainty  = 0.0
+      Unit  = m
       Reference = IAU 2012 Resolution B2
 
     # the solar radius
     >>> print(con.radius)
       Name   = Solar radius
       Value  = 695508000.0
-      Error  = 26000.0
-      Units  = m
+      Uncertainty  = 26000.0
+      Unit  = m
       Reference = Allen's Astrophysical Quantities 4th Ed.
 
 Not all constants have a shortcut assigned to them (as above). The rest of the constants
@@ -178,13 +178,15 @@ keys.::
 
     >>> solar_constants = con.constants
     >>> solar_constants.keys()   # doctest: +NORMALIZE_WHITESPACE
-    ['solar flux unit', 'surface area', 'average density', 'radius', 'surface
-    gravity', 'ellipticity', 'visual magnitude', 'center density', 'average
-    angular size', 'absolute magnitude', 'sunspot cycle', 'effective
-    temperature', 'aphelion distance', 'mean energy production', 'mass
-    conversion rate', 'average intensity', 'volume', 'metallicity', 'moment of
-    inertia', 'escape velocity', 'perihelion distance', 'GM', 'oblateness',
-    'mean distance', 'age', 'mass', 'luminosity', 'center temperature']
+    dict_keys(['mass', 'radius', 'luminosity', 'mean distance',
+               'perihelion distance', 'aphelion distance', 'age',
+               'solar flux unit', 'visual magnitude', 'average angular size',
+               'surface area', 'average density', 'surface gravity',
+               'moment of inertia', 'volume', 'escape velocity', 'oblateness',
+               'metallicity', 'sunspot cycle', 'average intensity',
+               'effective temperature', 'mass conversion rate', 'center density',
+               'center temperature', 'absolute magnitude', 'mean energy production',
+               'ellipticity', 'GM'])
 
 You can also use the function `sunpy.constants.print_all()` to print out a table of all of the values
 available. These constants are provided as a convenience so that everyone is using the same
@@ -206,18 +208,18 @@ that can be expressed in length units ::
 
     >>> from sunpy.sun import constants as con
     >>> con.radius
-    <Constant name=u'Solar radius' value=695508000.0 error=26000.0 units='m' reference=u"Allen's Astrophysical Quantities 4th Ed.">
+    <<class 'astropy.constants.iau2012.IAU2012'> name='Solar radius' value=695508000.0 uncertainty=26000.0 unit='m' reference="Allen's Astrophysical Quantities 4th Ed.">
 
 shows the solar radius in units of meters.  The same physical quantity can be expressed in different units instead using the `.to()` method::
 
     >>> con.radius.to('km')
-    >>> <Quantity 695508.0 km>
+    <Quantity 695508.0 km>
 
 or equivalently::
 
     >>> import astropy.units as u
     >>> con.radius.to(u.km)
-    >>> <Quantity 695508.0 km>
+    <Quantity 695508.0 km>
 
 If, as is sometimes the case, you need just the raw value or the unit from a quantity, you can access these individually
 with the `value` and `unit` attributes, respectively::
@@ -311,9 +313,9 @@ is below::
   >>> from sunpy.net import Fido, attrs as a
 
   >>> results = Fido.search(a.Time("2011-09-20T01:00:00", "2011-09-20T02:00:00"),
-                            a.Instrument('EIT'))   # doctest: +NORMALIZE_WHITESPACE
+  ...                       a.Instrument('EIT'))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
 
-  <sunpy.net.fido_factory.UnifiedResponse object at 0x7fe70e6c6160>
+  ...
   Results from 1 Provider:
 
   4 Results from the VSOClient:
@@ -326,7 +328,7 @@ is below::
   2011-09-20 01:13:53 2011-09-20 01:14:05   SOHO        EIT FULLDISK 195.0 .. 195.0
   2011-09-20 01:19:47 2011-09-20 01:20:19   SOHO        EIT FULLDISK 304.0 .. 304.0
 
-  >>> Fido.fetch(results, path="./directory/")
+  >>> Fido.fetch(results, path="./directory/")  # doctest: +SKIP
   ['./directory/efz20110920.010015',
    './directory/efz20110920.010613',
    './directory/efz20110920.011353',
@@ -350,55 +352,56 @@ A simple example of this is shown below::
 
   >>> db = Database()
   >>> db.fetch(a.Time("2011-09-20T01:00:00", "2011-09-20T02:00:00"),
-  ...          a.Instrument('AIA'), a.vso.Sample(15*u.min))
-  >>> db.commit()
+  ...          a.Instrument('AIA'), a.vso.Sample(15*u.min))  # doctest: +REMOTE_DATA
+  >>> db.commit()  # doctest: +REMOTE_DATA
 
-  >>> db
-
-  <Table length=10>
-  id  observation_time_start observation_time_end instrument source provider  physobs  wavemin wavemax                                      path                                              fileid          tags starred    download_time      size
-  str2         str19                 str19            str3     str3    str4      str9     str4    str4                                      str77                                              str24           str3   str2         str19          str7
-  ---- ---------------------- -------------------- ---------- ------ -------- --------- ------- ------- ----------------------------------------------------------------------------- ------------------------ ---- ------- ------------------- -------
-    1    2011-09-20 01:00:00  2011-09-20 01:00:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_00_00_34z_image_lev1.fits aia__lev1:171:1095555635  N/A      No 2017-08-03 19:41:00 66200.0
-    2    2011-09-20 01:00:00  2011-09-20 01:00:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_00_00_34z_image_lev1.fits aia__lev1:171:1095555635  N/A      No 2017-08-03 19:41:00 66200.0
-    3    2011-09-20 01:15:00  2011-09-20 01:15:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_15_00_34z_image_lev1.fits aia__lev1:171:1095556535  N/A      No 2017-08-03 19:41:00 66200.0
-    4    2011-09-20 01:15:00  2011-09-20 01:15:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_15_00_34z_image_lev1.fits aia__lev1:171:1095556535  N/A      No 2017-08-03 19:41:00 66200.0
-    5    2011-09-20 01:30:00  2011-09-20 01:30:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_30_00_34z_image_lev1.fits aia__lev1:171:1095557435  N/A      No 2017-08-03 19:41:01 66200.0
-    6    2011-09-20 01:30:00  2011-09-20 01:30:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_30_00_34z_image_lev1.fits aia__lev1:171:1095557435  N/A      No 2017-08-03 19:41:01 66200.0
-    7    2011-09-20 01:45:00  2011-09-20 01:45:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_45_00_34z_image_lev1.fits aia__lev1:171:1095558335  N/A      No 2017-08-03 19:41:01 66200.0
-    8    2011-09-20 01:45:00  2011-09-20 01:45:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_45_00_34z_image_lev1.fits aia__lev1:171:1095558335  N/A      No 2017-08-03 19:41:01 66200.0
-    9    2011-09-20 02:00:00  2011-09-20 02:00:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t02_00_00_34z_image_lev1.fits aia__lev1:171:1095559235  N/A      No 2017-08-03 19:41:01 66200.0
-   10    2011-09-20 02:00:00  2011-09-20 02:00:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t02_00_00_34z_image_lev1.fits aia__lev1:171:1095559235  N/A      No 2017-08-03 19:41:01 66200.0
+  >>> db  # doctest: +SKIP
+  <Table length=12>
+  id  observation_time_start observation_time_end ...    download_time      size
+  str2         str19                 str19         ...        str19          str7
+  ---- ---------------------- -------------------- ... ------------------- -------
+    1    2011-09-20 01:00:00  2011-09-20 01:00:01 ... 2017-08-03 19:41:00 66200.0
+    2    2011-09-20 01:00:00  2011-09-20 01:00:01 ... 2017-08-03 19:41:00 66200.0
+    3    2011-09-20 01:15:00  2011-09-20 01:15:01 ... 2017-08-03 19:41:00 66200.0
+    4    2011-09-20 01:15:00  2011-09-20 01:15:01 ... 2017-08-03 19:41:00 66200.0
+    5    2011-09-20 01:30:00  2011-09-20 01:30:01 ... 2017-08-03 19:41:01 66200.0
+    6    2011-09-20 01:30:00  2011-09-20 01:30:01 ... 2017-08-03 19:41:01 66200.0
+    7    2011-09-20 01:45:00  2011-09-20 01:45:01 ... 2017-08-03 19:41:01 66200.0
+    8    2011-09-20 01:45:00  2011-09-20 01:45:01 ... 2017-08-03 19:41:01 66200.0
+    9    2011-09-20 02:00:00  2011-09-20 02:00:01 ... 2017-08-03 19:41:01 66200.0
+   10    2011-09-20 02:00:00  2011-09-20 02:00:01 ... 2017-08-03 19:41:01 66200.0
+   11    2011-09-20 02:15:00  2011-09-20 02:15:01 ... 2017-08-03 19:42:19 66200.0
+   12    2011-09-20 02:15:00  2011-09-20 02:15:01 ... 2017-08-03 19:42:19 66200.0
 
 
 If you then do a second query::
 
   >>> db.fetch(a.Time("2011-09-20T01:00:00", "2011-09-20T02:15:00"),
-               a.Instrument('AIA'), a.vso.Sample(15*u.min))
-  >>> db.commit()
-  >>> db
+  ...          a.Instrument('AIA'), a.vso.Sample(15*u.min))  # doctest: +REMOTE_DATA
+  >>> db.commit()  # doctest: +REMOTE_DATA
+  >>> db  # doctest: +SKIP
   <Table length=12>
-  id  observation_time_start observation_time_end instrument source provider  physobs  wavemin wavemax                                      path                                              fileid          tags starred    download_time      size
-  str2         str19                 str19            str3     str3    str4      str9     str4    str4                                      str77                                              str24           str3   str2         str19          str7
-  ---- ---------------------- -------------------- ---------- ------ -------- --------- ------- ------- ----------------------------------------------------------------------------- ------------------------ ---- ------- ------------------- -------
-    1    2011-09-20 01:00:00  2011-09-20 01:00:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_00_00_34z_image_lev1.fits aia__lev1:171:1095555635  N/A      No 2017-08-03 19:41:00 66200.0
-    2    2011-09-20 01:00:00  2011-09-20 01:00:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_00_00_34z_image_lev1.fits aia__lev1:171:1095555635  N/A      No 2017-08-03 19:41:00 66200.0
-    3    2011-09-20 01:15:00  2011-09-20 01:15:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_15_00_34z_image_lev1.fits aia__lev1:171:1095556535  N/A      No 2017-08-03 19:41:00 66200.0
-    4    2011-09-20 01:15:00  2011-09-20 01:15:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_15_00_34z_image_lev1.fits aia__lev1:171:1095556535  N/A      No 2017-08-03 19:41:00 66200.0
-    5    2011-09-20 01:30:00  2011-09-20 01:30:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_30_00_34z_image_lev1.fits aia__lev1:171:1095557435  N/A      No 2017-08-03 19:41:01 66200.0
-    6    2011-09-20 01:30:00  2011-09-20 01:30:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_30_00_34z_image_lev1.fits aia__lev1:171:1095557435  N/A      No 2017-08-03 19:41:01 66200.0
-    7    2011-09-20 01:45:00  2011-09-20 01:45:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_45_00_34z_image_lev1.fits aia__lev1:171:1095558335  N/A      No 2017-08-03 19:41:01 66200.0
-    8    2011-09-20 01:45:00  2011-09-20 01:45:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t01_45_00_34z_image_lev1.fits aia__lev1:171:1095558335  N/A      No 2017-08-03 19:41:01 66200.0
-    9    2011-09-20 02:00:00  2011-09-20 02:00:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t02_00_00_34z_image_lev1.fits aia__lev1:171:1095559235  N/A      No 2017-08-03 19:41:01 66200.0
-   10    2011-09-20 02:00:00  2011-09-20 02:00:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t02_00_00_34z_image_lev1.fits aia__lev1:171:1095559235  N/A      No 2017-08-03 19:41:01 66200.0
-   11    2011-09-20 02:15:00  2011-09-20 02:15:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t02_15_00_34z_image_lev1.fits aia__lev1:171:1095560135  N/A      No 2017-08-03 19:42:19 66200.0
-   12    2011-09-20 02:15:00  2011-09-20 02:15:01        AIA    SDO     JSOC intensity    17.1    17.1 /home/stuart/sunpy/data/aia_lev1_171a_2011_09_20t02_15_00_34z_image_lev1.fits aia__lev1:171:1095560135  N/A      No 2017-08-03 19:42:19 66200.0
+   id  observation_time_start observation_time_end ...    download_time      size
+  str2         str19                 str19         ...        str19          str7
+  ---- ---------------------- -------------------- ... ------------------- -------
+     1    2011-09-20 01:00:00  2011-09-20 01:00:01 ... 2017-08-03 19:41:00 66200.0
+     2    2011-09-20 01:00:00  2011-09-20 01:00:01 ... 2017-08-03 19:41:00 66200.0
+     3    2011-09-20 01:15:00  2011-09-20 01:15:01 ... 2017-08-03 19:41:00 66200.0
+     4    2011-09-20 01:15:00  2011-09-20 01:15:01 ... 2017-08-03 19:41:00 66200.0
+     5    2011-09-20 01:30:00  2011-09-20 01:30:01 ... 2017-08-03 19:41:01 66200.0
+     6    2011-09-20 01:30:00  2011-09-20 01:30:01 ... 2017-08-03 19:41:01 66200.0
+     7    2011-09-20 01:45:00  2011-09-20 01:45:01 ... 2017-08-03 19:41:01 66200.0
+     8    2011-09-20 01:45:00  2011-09-20 01:45:01 ... 2017-08-03 19:41:01 66200.0
+     9    2011-09-20 02:00:00  2011-09-20 02:00:01 ... 2017-08-03 19:41:01 66200.0
+    10    2011-09-20 02:00:00  2011-09-20 02:00:01 ... 2017-08-03 19:41:01 66200.0
+    11    2011-09-20 02:15:00  2011-09-20 02:15:01 ... 2017-08-03 19:42:19 66200.0
+    12    2011-09-20 02:15:00  2011-09-20 02:15:01 ... 2017-08-03 19:42:19 66200.0
 
 
 A query can then be performed against the database to get the records.
 
-  >>> entries = db.query(a.Time("2011-09-20T01:45:00", "2011-09-20T02:15:00"), a.Instrument('AIA'))
-  >>> len(entries)
+  >>> entries = db.query(a.Time("2011-09-20T01:45:00", "2011-09-20T02:15:00"), a.Instrument('AIA'))  # doctest: +REMOTE_DATA
+  >>> len(entries)  # doctest: +REMOTE_DATA
   4
 
 You can see that only two extra records were added to the database. For more

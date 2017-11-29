@@ -41,8 +41,8 @@ class RHESSISummaryLightCurve(LightCurve):
     Examples
     --------
     >>> from sunpy import lightcurve as lc
-    >>> rhessi = lc.RHESSISummaryLightCurve.create()
-    >>> rhessi = lc.RHESSISummaryLightCurve.create('2012/06/01', '2012/06/05')
+    >>> rhessi = lc.RHESSISummaryLightCurve.create()  #doctest: +REMOTE_DATA
+    >>> rhessi = lc.RHESSISummaryLightCurve.create('2012/06/01', '2012/06/05')  #doctest: +REMOTE_DATA
     >>> rhessi.peek()   # doctest: +SKIP
 
     References
@@ -65,7 +65,7 @@ class RHESSISummaryLightCurve(LightCurve):
         -------
         fig : `~matplotlib.Figure`
             A plot figure.
-            
+
         """
         figure = plt.figure()
         axes = plt.gca()
