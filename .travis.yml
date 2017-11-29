@@ -102,11 +102,11 @@ matrix:
          # requirements
          - python: 2.7
            stage: Comprehensive tests
-           env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
+           env: SETUP_CMD='test --figure' CONDA_ENVIRONMENT='sunpy/tests/figure_tests_env_2.7.yml' CONDA_DEPENDENCIES='' PIP_DEPENDENCIES=''
 
          - python: 3.5
            stage: Comprehensive tests
-           env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
+           env: SETUP_CMD='test --figure' CONDA_ENVIRONMENT='sunpy/tests/figure_tests_env_3.5.yml' CONDA_DEPENDENCIES='' PIP_DEPENDENCIES=''
 
 install:
     - git clone git://github.com/astropy/ci-helpers.git
@@ -115,7 +115,6 @@ install:
 before_script:
     # Download the sample data for the build of the documentation.
     - if [[ $SETUP_CMD == *build_docs* ]]; then python -c "import sunpy.data.sample"; fi
-    - if [[ $SETUP_CMD == *figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; fi
 
 
 script:
@@ -124,7 +123,7 @@ script:
 after_success:
     - if [[ $SETUP_CMD == *coverage* ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
 
-# Notify the IRC channel of build status
+# Notify the matrix channel of build status
 notifications:
   webhooks:
     urls:
