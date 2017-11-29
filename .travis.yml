@@ -32,7 +32,7 @@ python:
 # Configure the build environment. Global varibles are defined for all configurations.
 env:
     global:
-        - COLUMNS=240
+        - COLUMNS=180
         - PREVIOUS_NUMPY=1.11.3
         - NUMPY_VERSION='stable'
         - ASTROPY_VERSION='stable'
@@ -69,7 +69,10 @@ matrix:
 
          - python: 3.6
            stage: Comprehensive tests
-           env: SETUP_CMD='test --online --coverage -V'
+           # Run this with pytest because our `setup.py` runner does not
+           # currently pick up doctests in docs/
+           env: MAIN_CMD="py.test"
+                SETUP_CMD="--remote-data -k-figure --cov ./"
                 EVENT_TYPE='push pull_request cron'
 
          - python: 3.6
@@ -113,15 +116,16 @@ install:
 
 before_script:
     # Download the sample data for the build of the documentation.
-    - if [[ $SETUP_CMD == *build_docs* ]]; then python -c "import sunpy.data.sample"; fi
-    - if [[ $SETUP_CMD == *figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; fi
+    - if [[ $SETUP_CMD != *egg_info* ]]; then python -m "sunpy.data.sample"; fi
+    - if [[ $MAIN_CMD == py.test* ]]; then python setup.py build; fi
+    - if [[ $SETUP_CMD == *--figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; fi
 
 
 script:
     - $MAIN_CMD $SETUP_CMD
 
 after_success:
-    - if [[ $SETUP_CMD == *coverage* ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
+    - if [[ $SETUP_CMD == *cov* ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
 
 # Notify the IRC channel of build status
 notifications:

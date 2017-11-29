@@ -9,13 +9,11 @@ from sunpy.time import parse_time
 from suds.client import Client as C
 import suds
 from astropy.io.votable.table import parse_single_table
-import io
 
 from sunpy.extern import six
 from sunpy.extern.six.moves import range, input
 
 __author__ = 'Michael Malocha'
-__version__ = 'September 22nd, 2013'
 
 __all__ = ['HECClient']
 
@@ -38,37 +36,6 @@ def suds_unwrapper(wrapped_data):
     -------
     unwrapped : `str`
         The xml results with the wrapper removed
-
-    Examples
-    --------
-    >>> from sunpy.net.helio import hec  Todo: Fix this example!
-    >>> from suds.client import Client
-    >>> from sunpy.net.proxyfix import WellBehavedHttpTransport
-    >>> votable_interceptor = hec.VotableInterceptor()
-    >>> client = Client(hec.parser.wsdl_retriever(), plugins=[self.votable_interceptor], transport=WellBehavedHttpTransport())
-    >>> client.service.getTableNames()
-    >>> temp = client.last_received().str()
-    >>> print(temp)
-    <?xml version="1.0" encoding="UTF-8"?>
-    <S:Envelope ..... >
-       <S:Body>
-          <helio:queryResponse ... >
-             <VOTABLE xmlns="http://www.ivoa.net/xml/VOTable/v1.1" version="1.1">
-                <RESOURCE>
-                ...
-                </RESOURCE>
-             </VOTABLE>
-          </helio:queryResponse>
-       </S:Body>
-    </S:Envelope>
-    >>> temp = hec.suds_unwrapper(temp)
-    >>> print(temp)
-    <?xml version="1.0" encoding="UTF-8"?>
-    <VOTABLE xmlns="http://www.ivoa.net/xml/VOTable/v1.1" version="1.1">
-        <RESOURCE>
-        ...
-        </RESOURCE>
-     </VOTABLE>
     """
     if six.PY3 and not isinstance(wrapped_data, str):
         wrapped_data = wrapped_data.decode("utf-8")
@@ -105,11 +72,11 @@ def votable_handler(xml_table):
     Examples
     --------
     >>> from sunpy.net.helio import hec
-    >>> temp = hec.suds_unwrapper(xml_string)
-    >>> type(temp)
+    >>> temp = hec.suds_unwrapper(xml_string)  # doctest: +SKIP
+    >>> type(temp)  # doctest: +SKIP
     unicode
-    >>> temp = hec.votable_handler(temp)
-    >>> type(temp)
+    >>> temp = hec.votable_handler(temp)  # doctest: +SKIP
+    >>> type(temp)  # doctest: +SKIP
     astropy.io.votable.tree.Table
     """
     fake_file = six.BytesIO()
@@ -153,7 +120,8 @@ class HECClient(object):
         Examples
         --------
         >>> from sunpy.net.helio import hec
-        >>> hc = hec.HECClient()
+        >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
+
         """
         if link is None:
             # The default wsdl file
@@ -192,10 +160,10 @@ class HECClient(object):
         Examples
         --------
         >>> from sunpy.net.helio import hec
-        >>> hc = hec.HECClient()
+        >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
         >>> start = '2005/01/03'
         >>> end = '2005/12/03'
-        >>> temp = hc.time_query(start, end, max_records=10)   # doctest: +SKIP
+        >>> temp = hc.time_query(start, end, max_records=10)   # doctest: +SKIP +REMOTE_DATA
 
         """
         while table is None:
@@ -224,8 +192,8 @@ class HECClient(object):
         Examples
         --------
         >>> from sunpy.net.helio import hec
-        >>> hc = hec.HECClient()
-        >>> print(hc.get_table_names())   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+        >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
+        >>> print(hc.get_table_names())   # doctest: +SKIP
         [('timed_see_flare',) ('hi_event',) ('yohkoh_flare_list',)
          ('wind_mfi_bs_crossing_time',) ('seeds_soho',) ('seeds_stb',)
          ...
@@ -254,8 +222,8 @@ class HECClient(object):
         Examples
         --------
         >>> from sunpy.net.helio import hec
-        >>> hc = hec.HECClient()
-        >>> hc.make_table_list()   # doctest: +SKIP
+        >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
+        >>> hc.make_table_list()  # doctest: +SKIP
 
         """
         table_list = []
