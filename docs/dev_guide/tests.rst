@@ -112,11 +112,23 @@ you need to use the option ``-rs`` for skipped tests and ``-rx`` for
 xfailed tests, respectively. Or use ``-rxs`` for detailed information on
 both skipped and xfailed tests.
 
+
 When to write unit tests
 ------------------------
 
 A rule of thumb for unit testing is to have at least one unit test per public
 function.
+
+
+Writing Doctests
+----------------
+
+Code examples in the documentation will also be run as tests, this helps to
+validate that the documentation is accurate and upto date. SunPy uses the same
+doctest system as astropy, so for information on writing doctests see
+:ref:`astropy:doctests` in the astropy documentation.
+
+
 
 Testing Your Code Before Committing
 -----------------------------------
