@@ -57,8 +57,6 @@ params = np.polyfit(rsun_array[rsun_array < 1.5],
 # then plot the data and the fit.
 
 fontsize = 14
-plt.rc('xtick', labelsize=fontsize)
-plt.rc('ytick', labelsize=fontsize)
 plt.plot(rsun_array, y, label='data')
 best_fit = np.exp(np.poly1d(params)(rsun_array))
 label = r'best fit: {:.2f}$e^{{{:.2f}r}}$'.format(best_fit[0], params[0])
@@ -66,6 +64,8 @@ plt.plot(rsun_array, best_fit, label=label)
 plt.yscale(r'log', fontsize=fontsize)
 plt.ylabel(r'mean DN', fontsize=fontsize)
 plt.xlabel(r'radius r ($R_{\odot}$)', fontsize=fontsize)
+plt.xticks(fontsize=fontsize)
+plt.yticks(fontsize=fontsize)
 plt.title(r'observed off limb mean DN and best fit', fontsize=fontsize)
 plt.legend(fontsize=fontsize)
 plt.tight_layout()
