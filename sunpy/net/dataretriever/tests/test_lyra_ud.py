@@ -58,7 +58,7 @@ def test_query(time):
     assert qr1.time_range().end == time.end
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 @pytest.mark.parametrize("time,instrument", [
     (Time('2013/8/27', '2013/8/27'), Instrument('lyra')),
     (Time('2013/2/4', '2013/2/6'), Instrument('lyra')),
@@ -70,7 +70,7 @@ def test_get(time, instrument):
     assert len(download_list) == len(qr1)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 @pytest.mark.parametrize(
     "time, instrument",
     [(a.Time('2012/10/4', '2012/10/6'), a.Instrument('lyra')),

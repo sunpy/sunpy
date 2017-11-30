@@ -307,19 +307,20 @@ class VSOClient(object):
 
         >>> from datetime import datetime
         >>> from sunpy.net import vso
-        >>> client = vso.VSOClient()
+        >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
         >>> client.search(
         ...    vso.attrs.Time(datetime(2010, 1, 1), datetime(2010, 1, 1, 1)),
-        ...    vso.attrs.Instrument('eit') | vso.attrs.Instrument('aia'))   # doctest: +NORMALIZE_WHITESPACE
-        <Table masked=False length=5>
-           Start Time [1]       End Time [1]     Source  Instrument   Type
-             string152           string152      string32  string24  string64
-        ------------------- ------------------- -------- ---------- --------
-        2010-01-01 00:00:08 2010-01-01 00:00:20     SOHO        EIT FULLDISK
-        2010-01-01 00:12:08 2010-01-01 00:12:20     SOHO        EIT FULLDISK
-        2010-01-01 00:24:10 2010-01-01 00:24:22     SOHO        EIT FULLDISK
-        2010-01-01 00:36:08 2010-01-01 00:36:20     SOHO        EIT FULLDISK
-        2010-01-01 00:48:09 2010-01-01 00:48:21     SOHO        EIT FULLDISK
+        ...    vso.attrs.Instrument('eit') | vso.attrs.Instrument('aia'))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+        <QTable length=5>
+           Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
+                                                       ...             Angstrom
+               str19               str19         str4  ...   str8      float64
+        ------------------- ------------------- ------ ... -------- --------------
+        2010-01-01 00:00:08 2010-01-01 00:00:20   SOHO ... FULLDISK 195.0 .. 195.0
+        2010-01-01 00:12:08 2010-01-01 00:12:20   SOHO ... FULLDISK 195.0 .. 195.0
+        2010-01-01 00:24:10 2010-01-01 00:24:22   SOHO ... FULLDISK 195.0 .. 195.0
+        2010-01-01 00:36:08 2010-01-01 00:36:20   SOHO ... FULLDISK 195.0 .. 195.0
+        2010-01-01 00:48:09 2010-01-01 00:48:21   SOHO ... FULLDISK 195.0 .. 195.0
 
         Returns
         -------
@@ -477,7 +478,7 @@ class VSOClient(object):
 
             - May be entered as a string or any numeric type for equality matching
             - May be a string of the format '(min) - (max)' for range matching
-            - May be a string of the form '(operator) (number)' where operator 
+            - May be a string of the form '(operator) (number)' where operator
               is one of: lt gt le ge < > <= >=
 
 
@@ -488,13 +489,13 @@ class VSOClient(object):
 
         >>> from datetime import datetime
         >>> from sunpy.net import vso
-        >>> client = vso.VSOClient()
+        >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
         >>> qr = client.query_legacy(datetime(2010, 1, 1),
-        ...                          datetime(2010, 1, 1, 1), instrument='eit')
+        ...                          datetime(2010, 1, 1, 1), instrument='eit')  # doctest: +REMOTE_DATA
 
         Returns
         -------
-        out : :py:class:`QueryResult` (enhanced list) of matched items. Return 
+        out : :py:class:`QueryResult` (enhanced list) of matched items. Return
               value of same type as the one of :py:class:`VSOClient.query`.
         """
         sdk = lambda key: lambda value: {key: value}

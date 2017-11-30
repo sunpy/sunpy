@@ -26,11 +26,9 @@ from astropy.coordinates.builtin_frames import _make_transform_graph_docs
 from astropy.coordinates.transformations import FunctionTransform, DynamicMatrixTransform
 from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_product, matrix_transpose
 from astropy.coordinates import HCRS, get_body_barycentric, BaseCoordinateFrame, ConvertError
+from astropy.tests.helper import quantity_allclose
 
-from sunpy import sun
-
-from .representation import (SphericalWrap180Representation,
-                             UnitSphericalWrap180Representation)
+from .representation import SphericalWrap180Representation
 from .frames import (HeliographicStonyhurst, HeliographicCarrington,
                      Heliocentric, Helioprojective)
 
@@ -66,7 +64,7 @@ def hgs_to_hgc(hgscoord, hgcframe):
     c_lon = hgscoord.spherical.lon + _carrington_offset(hgscoord.obstime).to(
         u.deg)
     representation = SphericalRepresentation(c_lon, hgscoord.lat,
-                                                    hgscoord.radius)
+                                             hgscoord.radius)
     hgcframe = hgcframe.__class__(obstime=hgscoord.obstime)
     return hgcframe.realize_frame(representation)
 
@@ -218,6 +216,7 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     return heliocframe.realize_frame(representation)
 
 
+
 @frame_transform_graph.transform(FunctionTransform, Helioprojective,
                                  Helioprojective)
 def hpc_to_hpc(heliopcoord, heliopframe):
@@ -226,9 +225,9 @@ def hpc_to_hpc(heliopcoord, heliopframe):
     It does this by transforming through HGS.
     """
     if (heliopcoord.observer == heliopframe.observer or
-        (heliopcoord.observer.lat == heliopframe.observer.lat and
-         heliopcoord.observer.lon == heliopframe.observer.lon and
-         heliopcoord.observer.radius == heliopframe.observer.radius)):
+        (quantity_allclose(heliopcoord.observer.lat, heliopframe.observer.lat) and
+         quantity_allclose(heliopcoord.observer.lon, heliopframe.observer.lon) and
+         quantity_allclose(heliopcoord.observer.radius, heliopframe.observer.radius))):
         return heliopframe.realize_frame(heliopcoord._data)
 
     if not isinstance(heliopframe.observer, BaseCoordinateFrame):
@@ -269,7 +268,7 @@ _SOLAR_NORTH_POLE_HCRS = UnitSphericalRepresentation(lon=286.13*u.deg, lat=63.87
 
 # Calculate the rotation matrix to de-tilt the Sun's rotation axis to be parallel to the Z axis
 _SUN_DETILT_MATRIX = _make_rotation_matrix_from_reprs(_SOLAR_NORTH_POLE_HCRS,
-                                           CartesianRepresentation(0, 0, 1))
+                                                      CartesianRepresentation(0, 0, 1))
 
 
 @frame_transform_graph.transform(DynamicMatrixTransform, HCRS, HeliographicStonyhurst)
@@ -299,11 +298,16 @@ def hcrs_to_hgs(hcrscoord, hgsframe):
     sun_earth_detilt = sun_earth.transform(_SUN_DETILT_MATRIX)
 
     # Remove the component of the Sun-Earth vector that is parallel to the Sun's north pole
-    hgs_x_axis_detilt = CartesianRepresentation(sun_earth_detilt.xyz * [1, 1, 0])
+    # (The additional transpose operations are to handle both scalar and array obstime situations)
+    hgs_x_axis_detilt = CartesianRepresentation((sun_earth_detilt.xyz.T * [1, 1, 0]).T)
 
     # The above vector, which is in the Sun's equatorial plane, is also the X axis of HGS
     x_axis = CartesianRepresentation(1, 0, 0)
-    rot_matrix = _make_rotation_matrix_from_reprs(hgs_x_axis_detilt, x_axis)
+    if hgsframe.obstime.isscalar:
+        rot_matrix = _make_rotation_matrix_from_reprs(hgs_x_axis_detilt, x_axis)
+    else:
+        rot_matrix_list = [_make_rotation_matrix_from_reprs(vect, x_axis) for vect in hgs_x_axis_detilt]
+        rot_matrix = np.stack(rot_matrix_list)
 
     return matrix_product(rot_matrix, _SUN_DETILT_MATRIX)
 

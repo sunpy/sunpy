@@ -45,10 +45,9 @@ class EVELightCurve(LightCurve):
     >>> import sunpy.lightcurve
     >>> import sunpy.data.test
 
-    >>> eve = sunpy.lightcurve.EVELightCurve.create()
-    >>> eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')
-    >>> eve = sunpy.lightcurve.EVELightCurve.create(sunpy.data.test.EVE_AVERAGES_CSV)
-    >>> eve = sunpy.lightcurve.EVELightCurve.create("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt")
+    >>> eve = sunpy.lightcurve.EVELightCurve.create()  # doctest: +REMOTE_DATA
+    >>> eve = sunpy.lightcurve.EVELightCurve.create('2012/06/20')  # doctest: +REMOTE_DATA
+    >>> eve = sunpy.lightcurve.EVELightCurve.create("http://lasp.colorado.edu/eve/data_access/quicklook/quicklook_data/L0CS/LATEST_EVE_L0CS_DIODES_1m.txt")  # doctest: +REMOTE_DATA
     >>> eve.peek(subplots=True)    # doctest: +SKIP
 
     References

@@ -404,7 +404,7 @@ def test_walker_create_fitsheader_inverted(session):
 
 
 @pytest.mark.flaky(reruns=5)
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_walker_create_vso_instrument(vso_session):
     entries = walker.create(vso.attrs.Instrument('RHESSI'), vso_session)
     assert entries == [
@@ -423,7 +423,7 @@ def test_walker_create_vso_instrument(vso_session):
             instrument=u'RHESSI', size=-1.0, wavemin=0.4132806579880238,
             wavemax=7.293188082141598e-05)]
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_walker_create_wave(vso_session):
     entries = walker.create(vso.attrs.Wavelength(0 * u.AA, 10 * u.AA), vso_session)
     assert len(entries) == 2
@@ -432,7 +432,7 @@ def test_walker_create_wave(vso_session):
 
 
 @pytest.mark.flaky(reruns=5)
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_walker_create_time(vso_session):
     time = vso.attrs.Time(
         datetime(2011, 9, 17, 0, 0, 0), datetime(2011, 9, 20, 0, 0, 0))

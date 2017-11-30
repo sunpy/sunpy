@@ -47,7 +47,7 @@ LYTAF_TEST = np.append(
              dtype=LYTAF_TEST.dtype))
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_split_series_using_lytaf():
     '''test the downloading of the LYTAF file and subsequent queries'''
     tmp_dir = tempfile.mkdtemp()
@@ -105,7 +105,7 @@ def get_lyradata(dtype):
     return lyrats
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 @pytest.mark.parametrize('dtype', ['ts', 'lc'])
 def test_remove_lytaf_events_from_timeseries(dtype):
     """Test if artefacts are correctly removed from a TimeSeries.
