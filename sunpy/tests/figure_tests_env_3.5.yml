@@ -45,7 +45,7 @@ dependencies:
 - py=1.4.32=py35_0
 - pyparsing=2.1.4=py35_0
 - pyqt=5.6.0=py35_2
-- pytest=3.0.5=py35_0
+- pytest
 - pytest-mock=1.5.0=py35_0
 - python=3.5.2=0
 - python-dateutil=2.6.0=py35_0
@@ -65,3 +65,5 @@ dependencies:
 - wheel=0.29.0=py35_0
 - xz=5.2.2=1
 - zlib=1.2.8=3
+- pip:
+    - pytest-astropy

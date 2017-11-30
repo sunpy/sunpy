@@ -135,7 +135,7 @@ def test_process_time_astropy_tai():
     assert start == datetime.datetime(year=2012, month=1, day=1, second=0)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_status_request():
     r = client._request_status('none')
     assert r.json() == {
@@ -155,7 +155,7 @@ def test_empty_jsoc_response():
     assert len(Jresp) == 0
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_query():
     Jresp = client.search(
         attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:01:30'),
@@ -165,7 +165,7 @@ def test_query():
 
 
 @pytest.mark.flaky(reruns=5)
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_post_pass():
     responses = client.search(
         attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
@@ -177,7 +177,7 @@ def test_post_pass():
     assert tmpresp['method'] == 'url'
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_post_wavelength():
     responses = client.search(
         attrs.Time('2010/07/30T13:30:00', '2010/07/30T14:00:00'),
@@ -196,7 +196,7 @@ def test_post_wavelength():
     assert tmpresp['rcount'] == 151
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_post_notify_fail():
     responses = client.search(
         attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
@@ -205,7 +205,7 @@ def test_post_notify_fail():
         client.request_data(responses, return_resp=True)
 
 
-@pytest.mark.online()
+@pytest.mark.remote_data()
 def test_post_wave_series():
     with pytest.raises(TypeError):
         client.search(
@@ -214,7 +214,7 @@ def test_post_wave_series():
             attrs.Wavelength(193 * u.AA) | attrs.Wavelength(335 * u.AA))
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_post_fail(recwarn):
     res = client.search(
         attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
@@ -228,7 +228,7 @@ def test_post_fail(recwarn):
     assert w.lineno
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_request_status_fail():
     resp = client._request_status('none')
     assert resp.json() == {
@@ -244,7 +244,7 @@ def test_request_status_fail():
     }
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_wait_get():
     responses = client.search(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
@@ -255,7 +255,7 @@ def test_wait_get():
     assert res.total == 1
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_get_request():
     responses = client.search(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
@@ -267,7 +267,7 @@ def test_get_request():
     assert isinstance(aa, Results)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_results_filenames():
     responses = client.search(
         attrs.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),
@@ -281,7 +281,7 @@ def test_results_filenames():
         assert os.path.isfile(hmiurl)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_invalid_query():
     with pytest.raises(ValueError):
         client.search(attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'))

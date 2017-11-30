@@ -12,12 +12,12 @@ from sunpy.data.test import get_test_filepath
 
 EVE_AVERAGES_CSV = get_test_filepath("EVE_He_II_304_averages.csv")
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_eve():
     eve = sunpy.lightcurve.EVELightCurve.create('2013/04/15')
     assert isinstance(eve, sunpy.lightcurve.EVELightCurve)
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_txt():
     """Check support for parsing EVE TXT files """
     eve = sunpy.lightcurve.EVELightCurve.create(

@@ -9,3 +9,4 @@ pytest
 pytest-cov
 pytest-mock
 pytest-rerunfailures
+pytest-astropy

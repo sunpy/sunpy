@@ -9,6 +9,15 @@ Bug Fixes
 - Fix docstring formatting for net.vso.attrs [#2309]]
 - Fix coloring of ticks under matplotlib 2.0 default style [#2320]
 - Always index arrays with tuples in `ImageAnimator` [#2320]
+- Added links to possible attrs for FIDO in guide [#2317] [#2289]
+- Updated GitHub Readme [#2281] [#2283]
+- Fix matplotlib / pandas 0.21 bug in examples [#2336]
+- Fixes the off limb enhancement example [#2329]
+- Changes to masking hot pixels and picking bright pixels examples [#2325] [#2319]
+- Travis CI fix for numpy-dev build [#2340]
+- Updated masking brightest pixel example [#2338]
+- Changed TRAVIS cronjobs [#2338]
+- Support array values for `obstime` for coordinates and transformations [#2342]
 
 0.8.2
 =====

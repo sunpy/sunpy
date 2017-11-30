@@ -434,7 +434,7 @@ def test_add_already_existing_entry_ignore(database):
     assert entry.id == 1
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_add_entry_from_hek_qr(database):
     hek_res = hek.HEKClient().search(
         hek.attrs.Time('2011/08/09 07:23:56', '2011/08/09 07:24:00'),
@@ -456,7 +456,7 @@ def num_entries_from_vso_query(db, query, path=None, file_pattern='',
     return num_of_fits_headers
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_vso_query_block_caching(database, download_qr, tmpdir):
 
     assert len(database) == 0
@@ -497,7 +497,7 @@ def test_vso_query_block_caching(database, download_qr, tmpdir):
     assert num_of_fits_headers_1 + num_of_fits_headers_2 == num_of_fits_headers
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_vso_query_block_caching_with_overwrite_true_flag(database,
                                                           download_qr, tmpdir):
 
@@ -525,7 +525,7 @@ def test_vso_query_block_caching_with_overwrite_true_flag(database,
     assert len(database) > 0
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_download_from_qr(database, download_qr, tmpdir):
     assert len(database) == 0
     database.download_from_vso_query_result(
@@ -542,7 +542,7 @@ def test_download_from_qr(database, download_qr, tmpdir):
     assert len(database) == num_of_fits_headers > 0
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_add_entry_from_qr(database, query_result):
     assert len(database) == 0
     database.add_from_vso_query_result(query_result)
@@ -553,7 +553,7 @@ def test_add_entry_from_qr(database, query_result):
     assert len(database) == 16
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_add_entries_from_qr_duplicates(database, query_result):
     assert len(database) == 0
     database.add_from_vso_query_result(query_result)
@@ -562,7 +562,7 @@ def test_add_entries_from_qr_duplicates(database, query_result):
         database.add_from_vso_query_result(query_result)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_add_entries_from_qr_ignore_duplicates(database, query_result):
     assert len(database) == 0
     database.add_from_vso_query_result(query_result)
@@ -571,7 +571,7 @@ def test_add_entries_from_qr_ignore_duplicates(database, query_result):
     assert len(database) == 32
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_add_entry_fido_search_result(database, fido_search_result):
     assert len(database) == 0
     database.add_from_fido_search_result(fido_search_result)
@@ -582,7 +582,7 @@ def test_add_entry_fido_search_result(database, fido_search_result):
     assert len(database) == 65
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_add_entries_from_fido_search_result_JSOC_client(database):
     assert len(database) == 0
     search_result = Fido.search(
@@ -594,7 +594,7 @@ def test_add_entries_from_fido_search_result_JSOC_client(database):
         database.add_from_fido_search_result(search_result)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_add_entries_from_fido_search_result_duplicates(database, fido_search_result):
     assert len(database) == 0
     database.add_from_fido_search_result(fido_search_result)
@@ -603,7 +603,7 @@ def test_add_entries_from_fido_search_result_duplicates(database, fido_search_re
         database.add_from_fido_search_result(fido_search_result)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_add_entries_from_fido_search_result_ignore_duplicates(database, fido_search_result):
     assert len(database) == 0
     database.add_from_fido_search_result(fido_search_result)
@@ -879,7 +879,7 @@ def test_fetch_missing_arg(database):
         database.fetch()
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_fetch_empty_query_result(database, empty_query):
     database.fetch(*empty_query)
     with pytest.raises(EmptyCommandStackError):
@@ -887,7 +887,7 @@ def test_fetch_empty_query_result(database, empty_query):
     assert len(database) == 0
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_fetch(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
@@ -905,7 +905,7 @@ def test_fetch(database, download_query, tmpdir):
     assert len(database) == 4
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_fetch_duplicates(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
@@ -925,7 +925,7 @@ def test_fetch_missing_arg(database):
         database.fetch()
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_fetch(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
@@ -937,7 +937,7 @@ def test_fetch(database, download_query, tmpdir):
     assert database[0].download_time == download_time
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_fetch_separate_filenames():
     # Setup
     db = Database('sqlite:///')
@@ -974,7 +974,7 @@ def test_fetch_separate_filenames():
     shutil.rmtree(tmp_test_dir)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_disable_undo(database, download_query, tmpdir):
     entry = DatabaseEntry()
     with disable_undo(database) as db:

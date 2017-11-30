@@ -53,7 +53,7 @@ dependencies:
 - pycairo=1.10.0=py27_0
 - pyparsing=2.1.4=py27_0
 - pyqt=5.6.0=py27_2
-- pytest=3.0.5=py27_0
+- pytest
 - pytest-mock=1.5.0=py27_0
 - python=2.7.11=0
 - python-dateutil=2.6.0=py27_0
@@ -73,3 +73,5 @@ dependencies:
 - wheel=0.29.0=py27_0
 - xz=5.2.2=1
 - zlib=1.2.8=3
+- pip:
+    - pytest-astropy
