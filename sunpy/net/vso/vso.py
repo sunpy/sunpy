@@ -20,17 +20,13 @@ import itertools
 from datetime import datetime, timedelta
 from functools import partial
 from collections import defaultdict
-from suds import client, TypeNotFound
-from urllib.error import URLError, HTTPError
-from urllib.request import urlopen
+from zeep import client
 
 import astropy.units as u
 from astropy.table import QTable as Table
 
 from sunpy import config
 from sunpy.net import download
-from sunpy.net.base_client import BaseClient
-from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_
 from sunpy.net.vso import attrs
@@ -41,14 +37,9 @@ from sunpy.time import parse_time
 TIME_FORMAT = config.get("general", "time_format")
 
 DEFAULT_URL_PORT = [{'url': 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl',
-                     'port': 'nsoVSOi', 'transport': WellBehavedHttpTransport}]
+                     'port': 'nsoVSOi'}]
 
 RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
-
-# Override the logger that dumps the whole Schema
-# to stderr so it doesn't do that.
-suds_log = logging.getLogger('suds.umx.typed')
-suds_log.setLevel(50)
 
 
 # TODO: Name
@@ -108,9 +99,8 @@ def get_online_vso_url(api, url, port):
     if api is None and (url is None or port is None):
         for mirror in DEFAULT_URL_PORT:
             if check_connection(mirror['url']):
-                api = client.Client(
-                    mirror['url'], transport=mirror['transport']())
-                api.set_options(port=mirror['port'])
+                api = client.Client(mirror['url'], port_name=mirror['port'])
+                api.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
                 return api
 
 
@@ -274,26 +264,11 @@ class VSOClient(BaseClient):
         self.api = api
 
     def make(self, atype, **kwargs):
-        """ Create new SOAP object with attributes specified in kwargs.
-        To assign subattributes, use foo__bar=1 to assign
-        ['foo']['bar'] = 1. """
-        obj = self.api.factory.create(atype)
-        for k, v in kwargs.items():
-            split = k.split('__')
-            tip = split[-1]
-            rest = split[:-1]
-
-            item = obj
-            for elem in rest:
-                item = item[elem]
-
-            if isinstance(v, dict):
-                # Do not throw away type information for dicts.
-                for k, v in v.items():
-                    item[tip][k] = v
-            else:
-                item[tip] = v
-        return obj
+        """
+        Create a new SOAP object, without any nested kwarg BS.
+        """
+        obj = self.api.get_type("VSO:{}".format(atype))
+        return obj(**kwargs)
 
     def search(self, *query):
         """ Query data from the VSO with the new API. Takes a variable number
@@ -330,20 +305,19 @@ class VSOClient(BaseClient):
             :py:meth:`VSOClient.search`.
         """
         query = and_(*query)
-
+        QueryRequest = self.api.get_type('VSO:QueryRequest')
         responses = []
         for block in walker.create(query, self.api):
             try:
                 responses.append(
                     self.api.service.Query(
-                        self.make('QueryRequest', block=block)
+                        QueryRequest(block=block)
                     )
                 )
-            except TypeNotFound:
-                pass
             except Exception as ex:
                 response = QueryResponse.create(self.merge(responses))
                 response.add_error(ex)
+
 
         return QueryResponse.create(self.merge(responses))
 
@@ -451,7 +425,6 @@ class VSOClient(BaseClient):
             detector ID (C3, EUVI, COR2, etc.)
         layout : str
             layout of the data (image, spectrum, time_series, etc.)
-
         level : str
             level of the data product (numeric range, see below)
         pixels : str
@@ -483,7 +456,8 @@ class VSOClient(BaseClient):
         >>> from sunpy.net import vso
         >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
         >>> qr = client.query_legacy(datetime(2010, 1, 1),
-        ...                          datetime(2010, 1, 1, 1), instrument='eit')  # doctest: +REMOTE_DATA
+        ...                          datetime(2010, 1, 1, 1),
+        ...                          instrument='eit')  # doctest: +REMOTE_DATA
 
         Returns
         -------
@@ -491,7 +465,7 @@ class VSOClient(BaseClient):
             Matched items. Return value is of same type as the one of
             :py:class:`VSOClient.search`.
         """
-        sdk = lambda key: lambda value: {key: value}
+        sdk = lambda key: partial(lambda key, value: {key: value}, key)
         ALIASES = {
             'wave_min': sdk('wave_wavemin'),
             'wave_max': sdk('wave_wavemax'),
@@ -519,9 +493,11 @@ class VSOClient(BaseClient):
         if tend is not None:
             kwargs.update({'time_end': tend})
 
-        queryreq = self.api.factory.create('QueryRequest')
-        for key, value in kwargs.items():
-            for k, v in ALIASES.get(key, sdk(key))(value).items():
+        QueryRequest = self.api.get_type('VSO:QueryRequest')
+        block = self.api.get_type('VSO:QueryRequestBlock')()
+
+        for key, value in iteritems(kwargs):
+            for k, v in iteritems(ALIASES.get(key, sdk(key))(value)):
                 if k.startswith('time'):
                     v = parse_time(v).strftime(TIMEFORMAT)
                 attr = k.split('_')
@@ -529,23 +505,23 @@ class VSOClient(BaseClient):
                 rest = attr[:-1]
 
                 # pylint: disable=E1103
-                item = queryreq.block
+                item = block
                 for elem in rest:
                     try:
+                        if item[elem] is None:
+                            item[elem] = {}
                         item = item[elem]
                     except KeyError:
                         raise ValueError(
                             "Unexpected argument {key!s}.".format(key=key))
-                if lst not in item:
-                    raise ValueError(
-                        "Unexpected argument {key!s}.".format(key=key))
-                if item[lst]:
+                if lst in item and item[lst]:
                     raise ValueError(
                         "Got multiple values for {k!s}.".format(k=k))
                 item[lst] = v
+
         try:
-            return QueryResponse.create(self.api.service.Query(queryreq))
-        except TypeNotFound:
+            return QueryResponse.create(self.api.service.Query(QueryRequest(block=block)))
+        except Exception:
             return QueryResponse([])
 
     def latest(self):
