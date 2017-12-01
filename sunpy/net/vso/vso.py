@@ -29,7 +29,6 @@ from astropy.table import QTable as Table
 
 from sunpy import config
 from sunpy.net import download
-from sunpy.net.proxyfix import WellBehavedHttpTransport
 from sunpy.util.net import get_filename, slugify
 from sunpy.net.attr import and_, Attr
 from sunpy.net.vso import attrs
@@ -45,7 +44,7 @@ from sunpy.extern.six.moves import input
 TIME_FORMAT = config.get("general", "time_format")
 
 DEFAULT_URL_PORT = [{'url': 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl',
-                     'port': 'nsoVSOi', 'transport': WellBehavedHttpTransport}]
+                     'port': 'nsoVSOi'}]
 
 RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
 
