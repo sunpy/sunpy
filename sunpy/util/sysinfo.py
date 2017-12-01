@@ -7,7 +7,6 @@ import datetime
 __all__ = ['get_sys_dict', 'system_info']
 
 
-
 def get_sys_dict():
     """
     Test which packages are installed on system.
@@ -64,33 +63,27 @@ def get_sys_dict():
         pyqt_version = "NOT INSTALLED"
 
     try:
-        from suds import __version__ as suds_version
+        from zeep import __version__ as zeep_version
     except ImportError:
-        suds_version = "NOT INSTALLED"
+        zeep_version = "NOT INSTALLED"
 
     try:
         from sqlalchemy import __version__ as sqlalchemy_version
     except ImportError:
         sqlalchemy_version = "NOT INSTALLED"
 
-    try:
-        from requests import __version__ as requests_version
-    except ImportError:
-        requests_version = "NOT INSTALLED"
-
-
-
-    sys_prop = {'Time':datetime.datetime.utcnow().strftime("%A, %d. %B %Y %I:%M%p UT"),
-                'System':platform.system(), 'Processor':platform.processor(),
-                'SunPy':sunpy_version, 'SunPy_git':sunpy_git_description,
-                'Arch':platform.architecture()[0], "Python":platform.python_version(),
-                'NumPy':numpy_version,
-                'SciPy':scipy_version, 'matplotlib':matplotlib_version,
-                'Astropy':astropy_version, 'Pandas':pandas_version,
-                'beautifulsoup':bs4_version, 'PyQt':pyqt_version,
-                'SUDS':suds_version, 'Sqlalchemy':sqlalchemy_version, 'Requests':requests_version
+    sys_prop = {'Time': datetime.datetime.utcnow().strftime("%A, %d. %B %Y %I:%M%p UT"),
+                'System': platform.system(), 'Processor': platform.processor(),
+                'SunPy': sunpy_version, 'SunPy_git': sunpy_git_description,
+                'Arch': platform.architecture()[0], "Python": platform.python_version(),
+                'NumPy': numpy_version,
+                'SciPy': scipy_version, 'matplotlib': matplotlib_version,
+                'Astropy': astropy_version, 'Pandas': pandas_version,
+                'beautifulsoup': bs4_version, 'PyQt': pyqt_version,
+                'Zeep': zeep_version, 'Sqlalchemy': sqlalchemy_version
                 }
     return sys_prop
+
 
 def system_info():
     """
@@ -142,6 +135,6 @@ def system_info():
     print(" Recommended Libraries ")
     print("###########")
 
-    for sys_info in ['beautifulsoup', 'PyQt', 'SUDS',
+    for sys_info in ['beautifulsoup', 'PyQt', 'Zeep',
                      'Sqlalchemy', 'Requests']:
         print('{0}: {1}'.format(sys_info, sys_prop[sys_info]))
