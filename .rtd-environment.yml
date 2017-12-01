@@ -50,7 +50,7 @@ dependencies:
 - six
 - sqlalchemy
 - sqlite
-- suds-jurko
+- zeep
 - sphinx=1.5.6
 - sphinx_rtd_theme
 - tk
