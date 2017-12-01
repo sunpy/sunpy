@@ -167,6 +167,13 @@ class QueryResponse(list):
         )
 
     def build_table(self):
+        """
+        Create a human readable table.
+
+        Returns
+        -------
+        table : `astropy.table.QTable`
+        """
         keywords = ['Start Time', 'End Time', 'Source', 'Instrument', 'Type', 'Wavelength']
         record_items = {}
         for key in keywords:
@@ -217,6 +224,11 @@ class QueryResponse(list):
     def response_block_properties(self):
         """
         Returns a set of class attributes on all the response blocks.
+
+        Returns
+        -------
+        s : list
+            List of strings, containing attribute names in the response blocks.
         """
         s = {a if not a.startswith('_') else None for a in dir(self[0])}
         for resp in self[1:]:
@@ -324,8 +336,9 @@ class VSOClient(object):
 
         Returns
         -------
-        out : :py:class:`QueryResult` (enhanced list) of matched items. Return
-        value of same type as the one of :py:meth:`VSOClient.query`.
+        out : :py:class:`QueryResult` (enhanced list)
+            Matched items. Return value is of same type as the one of
+            :py:meth:`VSOClient.query`.
         """
         query = and_(*query)
 
@@ -495,8 +508,9 @@ class VSOClient(object):
 
         Returns
         -------
-        out : :py:class:`QueryResult` (enhanced list) of matched items. Return
-              value of same type as the one of :py:class:`VSOClient.query`.
+        out : :py:class:`QueryResult` (enhanced list)
+            Matched items. Return value is of same type as the one of
+            :py:class:`VSOClient.query`.
         """
         sdk = lambda key: lambda value: {key: value}
         ALIASES = {
@@ -564,7 +578,7 @@ class VSOClient(object):
         )
 
     def fetch(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),
-            downloader=None, site=None):
+              downloader=None, site=None):
         """
         Download data specified in the query_response.
 
@@ -610,8 +624,9 @@ class VSOClient(object):
 
         Returns
         -------
-        out : :py:class:`Results` object that supplies a list of filenames with meta attributes
-              containing the respective QueryResponse.
+        out : :py:class:`Results`
+            Object that supplies a list of filenames with meta attributes
+            containing the respective QueryResponse.
 
         Examples
         --------
@@ -660,7 +675,6 @@ class VSOClient(object):
         See `~sunpy.net.vso.vso.VSOClient.fetch`
         """
         return self.fetch(query_response, path=path, methods=methods, downloader=downloader, site=site)
-
 
     @staticmethod
     def link(query_response, maps):
@@ -928,6 +942,7 @@ class InteractiveVSOClient(VSOClient):
 
 g_client = None
 
+
 @deprecated("0.8.0", alternative="Please use the VSO Clients directly")
 def search(*args, **kwargs):
     # pylint: disable=W0603
@@ -938,6 +953,7 @@ def search(*args, **kwargs):
 
 
 search.__doc__ = InteractiveVSOClient.search.__doc__
+
 
 @deprecated("0.8.0", alternative="Please use the VSO Clients directly")
 def get(query_response, path=None, methods=('URL-FILE',), downloader=None):
