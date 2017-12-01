@@ -37,20 +37,15 @@ class UnifiedResponse(Sequence):
     second index can be used to select records from the results returned from
     that client, for instance if you only want every second result you could
     index the second dimension with ``::2``.
-
-    Parameters
-    ----------
-    lst : `object`
-        A single instance or an iterable of ``(QueryResponse, client)`` pairs
-        or ``QueryResponse`` objects with a ``.client`` attribute.
     """
 
     def __init__(self, lst):
         """
-        Input to this constructor can be one of a few things:
-
-        1. A ``QueryResponse`` object
-        2. A list of tuples ``(QueryResponse, client)``
+        Parameters
+        ----------
+        lst : `object`
+            A single instance or an iterable of ``(QueryResponse, client)``
+            pairs or ``QueryResponse`` objects with a ``.client`` attribute.
         """
 
         tmplst = []
@@ -60,7 +55,7 @@ class UnifiedResponse(Sequence):
             if not hasattr(lst, 'client'):
                 raise ValueError(
                     ("A {} object is only a valid input to UnifiedResponse "
-                    "if it has a client attribute.").
+                     "if it has a client attribute.").
                     format(type(lst).__name__))
             tmplst.append(lst)
             self._numfile = len(lst)
@@ -151,6 +146,11 @@ class UnifiedResponse(Sequence):
     def response_block_properties(self):
         """
         Returns a set of class attributes on all the response blocks.
+
+        Returns
+        -------
+        s : list
+            List of strings, containing attribute names in the response blocks.
         """
         s = self.get_response(0).response_block_properties()
         for i in range(1, len(self)):
@@ -311,7 +311,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         Returns
         -------
-        `sunpy.net.fido_factory.UnifiedResponse` object
+        `sunpy.net.fido_factory.UnifiedResponse`
             Container of responses returned by clients servicing query.
 
         Notes
@@ -410,7 +410,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         response : `~sunpy.net.dataretriever.client.QueryResponse`
 
         client : `object`
-		Instance of client class
+            Instance of client class
         """
         candidate_widget_types = self._check_registered_widgets(*query)
         tmpclient = candidate_widget_types[0]()
