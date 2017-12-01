@@ -416,3 +416,9 @@ def test_vso_hmi(client, tmpdir):
         fileids = dri.fileiditem.fileid[0]
         series = list(map(lambda x: x.split(':')[0], fileids))
         assert all([s == series[0] for s in series])
+
+
+def test_query_legacy():
+    vc = vso.VSOClient()
+    qr = vc.query_legacy("2011-01-01T00:00:00", "2011-01-01T00:01:00", instrument='aia')
+    print(qr)
