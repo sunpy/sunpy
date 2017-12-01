@@ -2,8 +2,6 @@ import numpy as np
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-__author__ = ["Norbert Gyenge"]
-
 
 def limbdark(observation, limb_cut=True):
     """
