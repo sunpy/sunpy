@@ -17,8 +17,9 @@ Bug Fixes
 - Travis CI fix for numpy-dev build [#2340]
 - Updated masking brightest pixel example [#2338]
 - Changed TRAVIS cronjobs [#2338]
-- Support array values for `obstime` for coordinates and transformations [#2342]
-
+- Support array values for `obstime` for coordinates and transformations [#2342] [#2346]
+- Updated Gallery off limb enhance example [#2337]
+- Doc fixes for VSO [#2354] [#2353] 
 0.8.2
 =====
 
