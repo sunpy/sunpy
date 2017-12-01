@@ -473,7 +473,8 @@ walker = AttrWalker()
 # pylint: disable=E0102,C0103,W0613
 def _create(wlk, root, api):
     """ Implementation detail. """
-    value = api.factory.create('QueryRequestBlock')
+    api.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
+    value = api.get_type('VSO:QueryRequestBlock')
     wlk.apply(root, api, value)
     return [value]
 
@@ -486,7 +487,7 @@ def _apply(wlk, root, api, queryblock):
         lst = k[-1]
         rest = k[:-1]
 
-        block = queryblock
+        block = queryblock.elements
         for elem in rest:
             block = block[elem]
         block[lst] = v
