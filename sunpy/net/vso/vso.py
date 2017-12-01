@@ -22,7 +22,7 @@ import socket
 from datetime import datetime, timedelta
 from functools import partial
 from collections import defaultdict
-from suds import client, TypeNotFound
+from zeep import client
 
 import astropy.units as u
 from astropy.table import QTable as Table
@@ -48,11 +48,6 @@ DEFAULT_URL_PORT = [{'url': 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.
                      'port': 'nsoVSOi', 'transport': WellBehavedHttpTransport}]
 
 RANGE = re.compile(r'(\d+)(\s*-\s*(\d+))?(\s*([a-zA-Z]+))?')
-
-# Override the logger that dumps the whole Schema
-# to stderr so it doesn't do that.
-suds_log = logging.getLogger('suds.umx.typed')
-suds_log.setLevel(50)
 
 
 # TODO: Name
@@ -350,8 +345,6 @@ class VSOClient(object):
                         self.make('QueryRequest', block=block)
                     )
                 )
-            except TypeNotFound:
-                pass
             except Exception as ex:
                 response = QueryResponse.create(self.merge(responses))
                 response.add_error(ex)
@@ -566,7 +559,7 @@ class VSOClient(object):
                 item[lst] = v
         try:
             return QueryResponse.create(self.api.service.Query(queryreq))
-        except TypeNotFound:
+        except:
             return QueryResponse([])
 
     def latest(self):
