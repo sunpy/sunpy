@@ -106,9 +106,8 @@ def get_online_vso_url(api, url, port):
     if api is None and (url is None or port is None):
         for mirror in DEFAULT_URL_PORT:
             if check_connection(mirror['url']):
-                api = client.Client(
-                    mirror['url'], transport=mirror['transport']())
-                api.set_options(port=mirror['port'])
+                api = client.Client(mirror['url'], port_name=mirror['port'])
+                api.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
                 return api
 
 
@@ -532,7 +531,7 @@ class VSOClient(object):
         if tend is not None:
             kwargs.update({'time_end': tend})
 
-        queryreq = self.api.factory.create('QueryRequest')
+        queryreq = self.api.type_factory('VSO:QueryRequest')
         for key, value in iteritems(kwargs):
             for k, v in iteritems(ALIASES.get(key, sdk(key))(value)):
                 if k.startswith('time'):
