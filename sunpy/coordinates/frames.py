@@ -66,7 +66,7 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
     >>> sc # doctest: +FLOAT_CMP
     <SkyCoord (HeliographicStonyhurst: obstime=2010-01-01 00:00:45): (lon, lat, radius) in (deg, deg, km)
         ( 1.,  1.,  2.)>
-    >>> sc.frame
+    >>> sc.frame # doctest: +FLOAT_CMP
     <HeliographicStonyhurst Coordinate (obstime=2010-01-01 00:00:45): (lon, lat, radius) in (deg, deg, km)
         ( 1.,  1.,  2.)>
     >>> sc = SkyCoord(HeliographicStonyhurst(-10*u.deg, 2*u.deg))

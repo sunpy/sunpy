@@ -1300,7 +1300,7 @@ def flareclass_to_flux(flareclass):
     --------
     >>> from sunpy.instr.goes import flareclass_to_flux
     >>> flareclass_to_flux('A1.0')
-    <Quantity 1e-08 W / m2>
+    <Quantity 1.e-08 W / m2>
     >>> flareclass_to_flux('c4.7')
     <Quantity 4.7e-06 W / m2>
     >>> flareclass_to_flux('X2.4')
