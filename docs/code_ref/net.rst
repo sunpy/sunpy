@@ -34,9 +34,6 @@ VSO
 .. automodapi:: sunpy.net.vso
    :headings: ^#
 
-.. automodapi:: sunpy.net.vso.vso
-  :headings: ^#
-
 .. automodapi:: sunpy.net.vso.attrs
    :headings: #~
 
