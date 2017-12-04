@@ -79,6 +79,16 @@ matrix:
 
          - python: 3.6
            stage: Cron tests
+           env: ASTROPY_VERSION='dev'
+                EVENT_TYPE='push pull_request cron'
+
+         - python: 3.6
+           stage: Cron tests
+           env: NUMPY_VERSION='dev'
+                EVENT_TYPE='push pull_request cron'
+
+         - python: 3.6
+           stage: Cron tests
            env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
                 EVENT_TYPE='push pull_request cron'
 
