@@ -140,7 +140,7 @@ def solar_rotate_coordinate(coordinate,
     >>> from sunpy.coordinates.ephemeris import get_earth
     >>> obstime = '2010-09-10 12:34:56'
     >>> c = SkyCoord(-570*u.arcsec, 120*u.arcsec, obstime=obstime, observer=get_earth(obstime), frame=frames.Helioprojective)
-    >>> solar_rotate_coordinate(c, '2010-09-10 13:34:56')
+    >>> solar_rotate_coordinate(c, '2010-09-10 13:34:56') # doctest: +FLOAT_CMP
     <SkyCoord (Helioprojective: obstime=2010-09-10 13:34:56, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2010-09-10 13:34:56): (lon, lat, radius) in (deg, deg, AU)
     ( 0.,  7.24822784,  1.00695436)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
     (-562.37689548,  119.26840368,   1.50083152e+08)>
