@@ -19,7 +19,7 @@ from sunpy.visualization import mapcubeanimator
 @pytest.fixture
 def mapcube_animator():
     mapcube = sunpy.map.Map()
-    return mapcubeanimator.MapCubeAnimator(mapcube, [-5, 5])
+    return mapcubeanimator.MapCubeAnimator(mapcube)
 
 #test for mapcubeanimator instances
 def test_mapcubeanimator_instances(mapcube_animator):
@@ -33,7 +33,7 @@ def test_mapcubeanimator_instances(mapcube_animator):
     assert mapcube_animator.button_func is None
     assert mapcube_animator.interval == 1
 
-def test_mapcubeanimator_plot_start_image(mapcube_Animator):
+def test_mapcubeanimator_plot_start_image(mapcube_animator):
     pass
 
 def test_mapcubeanimator_updatefig():
