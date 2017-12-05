@@ -68,7 +68,7 @@ class JSOCClient(object):
     query is a three stage process, first you query the JSOC for records,
     a table of these records is returned. Then you can request these records to
     be staged for download and then you can download them.
-    The last two stages of this process are bundled together into the `get()`
+    The last two stages of this process are bundled together into the `fetch()`
     method, but they can be separated if you are performing a large or complex
     query.
 
@@ -79,12 +79,7 @@ class JSOCClient(object):
 
     Notes
     -----
-    This Client mocks input to this `site <http://jsoc.stanford.edu/ajax/exportdata.html>`
-    Therefore that is a good resource if things are mis-behaving.
     The full list of 'series' is available through this `site <http://jsoc.stanford.edu>`
-
-    You can build more complex queries by specifying parameters to POST to JSOC via keyword
-    arguments. You can generate these kwargs using the Export Data page at JSOC.
 
     JSOC now requires a validated email address, you can pass in your validated email address
     using the `~sunpy.net.jsoc.attrs.Notify` attribute. You have to register your email address
