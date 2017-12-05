@@ -49,7 +49,7 @@ def test_empty_jsoc_response():
     assert len(Jresp) == 0
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_query():
     Jresp = client.search(
         attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:01:30'),
@@ -59,7 +59,7 @@ def test_query():
 
 
 @pytest.mark.flaky(reruns=5)
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_post_pass():
     responses = client.search(
         attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
@@ -70,7 +70,7 @@ def test_post_pass():
     assert tmpresp['method'] == 'url'
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_post_wavelength():
     responses = client.search(
         attrs.Time('2010/07/30T13:30:00', '2010/07/30T14:00:00'),
@@ -87,7 +87,7 @@ def test_post_wavelength():
     assert tmpresp['count'] == '302'
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_post_notify_fail():
     responses = client.search(
         attrs.Time('2012/1/1T00:00:00', '2012/1/1T00:00:45'),
@@ -96,7 +96,7 @@ def test_post_notify_fail():
         client.request_data(responses)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data()
 def test_post_wave_series():
     with pytest.raises(TypeError):
         client.search(
@@ -105,7 +105,7 @@ def test_post_wave_series():
             attrs.Wavelength(193 * u.AA) | attrs.Wavelength(335 * u.AA))
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_wait_get():
     responses = client.search(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
@@ -116,7 +116,7 @@ def test_wait_get():
     assert res.total == 1
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_get_request():
     responses = client.search(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
@@ -128,13 +128,13 @@ def test_get_request():
     assert isinstance(aa, Results)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_invalid_query():
     with pytest.raises(ValueError):
         client.search(attrs.Time('2012/1/1T01:00:00', '2012/1/1T01:00:45'))
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_lookup_records_errors():
     d1 = {'end_time': astropyTime(datetime.datetime(2014, 1, 1, 1, 0, 35)),
           'start_time': astropyTime(datetime.datetime(2014, 1, 1, 0, 0, 35))}
@@ -170,7 +170,7 @@ def test_lookup_records_errors():
         client._lookup_records(d1)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_make_recordset_errors():
     d1 = {'series': 'aia.lev1_euv_12s'}
     with pytest.raises(ValueError):
@@ -196,7 +196,7 @@ def test_make_recordset_errors():
         client._make_recordset(**d1)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_make_recordset():
     d1 = {'series': 'aia.lev1_euv_12s',
           'end_time': datetime.datetime(2014, 1, 1, 1, 0, 35),
@@ -245,7 +245,7 @@ def test_make_recordset():
     assert client._make_recordset(**d1) == exp
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_search_metadata():
     metadata = client.search_metadata(attrs.Time('2014-01-01T00:00:00', '2014-01-01T00:02:00'),
                                       attrs.Series('aia.lev1_euv_12s'), attrs.Wavelength(304*u.AA))
@@ -255,7 +255,7 @@ def test_search_metadata():
         assert (i.startswith('aia.lev1_euv_12s') and i.endswith('[304]'))
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_request_data_error():
     responses = client.query(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
@@ -265,7 +265,7 @@ def test_request_data_error():
         req = client.request_data(responses)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_request_data_protocol():
     responses = client.query(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
@@ -291,7 +291,7 @@ def test_request_data_protocol():
     assert req._d['protocol'] == 'as-is'
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_check_request():
     responses = client.query(
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
@@ -300,7 +300,7 @@ def test_check_request():
     assert client.check_request(req) == 0
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_results_filenames():
     responses = client.search(
         attrs.Time('2014/1/1T1:00:36', '2014/1/1T01:01:38'),

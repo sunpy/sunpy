@@ -24,7 +24,7 @@ Here are few examples of formats which `sunpy.time.parse_time()` accepts: ::
     >>> parse_time('2007/05/04T21:08:12')   # doctest: +SKIP
     >>> parse_time('20070504T210812')   # doctest: +SKIP
     >>> parse_time('2007-May-04 21:08:12')   # doctest: +SKIP
-    >>> parse_time('20070504_210812')   # doctest: +SKIP
+    >>> parse_time('20070504_210812')
     datetime.datetime(2007, 5, 4, 21, 8, 12)
 
 Each of the above returns the same datetime object ``datetime.datetime(2007,
@@ -87,7 +87,7 @@ do an inplace update to the object by either adding or subtracting the same time
 if you needed time ranges that spanned 30 minutes over a period of 4 hours you could do: ::
 
     >>> for a in range(8):
-    ...     print(time_range.next())
+    ...     print(time_range.next())  # doctest: +IGNORE_OUTPUT
         Start: 2010-03-04 00:16:40
         End:   2010-03-04 00:23:20
         Center:2010-03-04 00:20:00

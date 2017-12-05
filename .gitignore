@@ -71,3 +71,6 @@ $RECYCLE.BIN/
 
 # VScode
 .vscode
+
+.hypothesis/
+sunpydata.sqlite

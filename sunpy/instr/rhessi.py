@@ -530,7 +530,8 @@ def _build_energy_bands(label, bands):
         Each `str` item is an energy band and its unit
     Example
     -------
-    >>> build_energy_band_ranges('Energy bands (keV)', ['3 - 6', '6 - 12', '12 - 25'])
+    >>> from sunpy.instr.rhessi import _build_energy_bands
+    >>> _build_energy_bands('Energy bands (keV)', ['3 - 6', '6 - 12', '12 - 25'])
     ['3 - 6 keV', '6 - 12 keV', '12 - 25 keV']
     """
 

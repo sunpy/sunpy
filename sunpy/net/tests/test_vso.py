@@ -40,8 +40,8 @@ class MockQRResponse:
     """
     Used to test `sunpy.net.vso.vso.iter_records` and `sunpy.net.vso.vso.iter_errors`
 
-    >>> res = MockQRResponse(items=[1, 2, 3, [4, 5]], errors=['no-connection'])
-    >>> res.provideritem[1].record.recorditem
+    >>> res = MockQRResponse(items=[1, 2, 3, [4, 5]], errors=['no-connection'])  # doctest: +SKIP
+    >>> res.provideritem[1].record.recorditem  # doctest: +SKIP
     [2]
     """
     def __init__(self, records=None, errors=None):
@@ -94,7 +94,7 @@ def test_input_error():
         va.Time('2012/1/1')
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_simpleattr_create(client):
     a = attr.ValueAttr({('instrument', ): 'eit'})
     assert va.walker.create(a, client.api)[0].instrument == 'eit'
@@ -127,7 +127,7 @@ def test_complexattr_apply():
     assert dct['test'] == {'foo': 'a', 'bar': 'b'}
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_complexattr_create(client):
     a = attr.ValueAttr({('time', 'start'): 'test'})
     assert va.walker.create(a, client.api)[0].time.start == 'test'
@@ -262,7 +262,7 @@ def test_repr():
     assert "Start Time End Time  Source Instrument   Type" in repr(qr)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_path(client):
     """
     Test that '{file}' is automatically appended to the end of a custom path if

@@ -53,7 +53,6 @@ class MapFactory(BasicRegistrationFactory):
     Examples
     --------
     >>> import sunpy.map
-    >>> sunpy.data.download_sample_data(overwrite=False)   # doctest: +SKIP
     >>> import sunpy.data.sample
     >>> mymap = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
 
@@ -92,13 +91,11 @@ class MapFactory(BasicRegistrationFactory):
 
     * Lists of any of the above
 
-    >>> mymap = sunpy.map.Map(['file1.fits', 'file2.fits', 'file3.fits', 'directory1/'])
-    # doctest: +SKIP
+    >>> mymap = sunpy.map.Map(['file1.fits', 'file2.fits', 'file3.fits', 'directory1/'])  # doctest: +SKIP
 
     * Any mixture of the above not in a list
 
-    >>> mymap = sunpy.map.Map((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits')
-    # doctest: +SKIP
+    >>> mymap = sunpy.map.Map((data, header), data2, header2, 'file1.fits', url_str, 'eit_*.fits')  # doctest: +SKIP
     """
 
     def _read_file(self, fname, **kwargs):

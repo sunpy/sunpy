@@ -95,7 +95,7 @@ class TestMap(object):
         db_map = sunpy.map.Map(res)
         assert isinstance(db_map, sunpy.map.GenericMap)
 
-    @pytest.mark.online
+    @pytest.mark.remote_data
     def test_url_pattern(self):
         # A URL
         amap = sunpy.map.Map("http://data.sunpy.org/sample-data/AIA20110319_105400_0171.fits")
