@@ -19,7 +19,7 @@ from sunpy.visualization import mapcubeanimator
 @pytest.fixture
 def mapcube_animator():
     mapcube = sunpy.map.Map()
-    return mapcubeanimator.MapCubeAnimator(mapcube)
+    return mapcubeanimator.MapCubeAnimator(mapcube, slider_ranges = [[0, 5]])
 
 #test for mapcubeanimator instances
 def test_mapcubeanimator_instances(mapcube_animator):
