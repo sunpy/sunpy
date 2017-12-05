@@ -12,7 +12,8 @@ import inspect
 
 from sunpy.time import TimeRange, parse_time
 
-class TimeSeriesMetaData:
+
+class TimeSeriesMetaData(object):
     """
     An object used to store metadata for TimeSeries objects that enables multiple
     TimeSeries metadata to be concatenated in an organised fashion.
@@ -29,14 +30,38 @@ class TimeSeriesMetaData:
     >>> from sunpy.time import TimeRange, parse_time
     >>> from sunpy.util import MetaDict
     >>> tr = TimeRange('2012-06-01 00:00','2012-06-02 00:00')
-    >>> md = TimeSeriesMetaData(timerange=tr, colnames=['GOES'], meta=MetaDict([('goes_key','goes_val')]))
+    >>> md = TimeSeriesMetaData(timerange=tr, colnames=['GOES'],
+    ...                         meta=MetaDict([('goes_key','goes_val')]))
     >>> tr2 = TimeRange('2012-06-01 12:00','2012-06-02 12:00')
     >>> md.append(tr2, ['EVE'], MetaDict([('eve_key','eve_val')]))
     >>> md.find(parse_time('2012-06-01T21:08:12'))
+    |-------------------------------------------------------------------------------------------------|
+    |TimeRange                  | Columns         | Meta                                              |
+    |-------------------------------------------------------------------------------------------------|
+    |2012-06-01 00:00:00        | GOES            | goes_key: goes_val                                |
+    |            to             |                 |                                                   |
+    |2012-06-02 00:00:00        |                 |                                                   |
+    |-------------------------------------------------------------------------------------------------|
+    |2012-06-01 12:00:00        | EVE             | eve_key: eve_val                                  |
+    |            to             |                 |                                                   |
+    |2012-06-02 12:00:00        |                 |                                                   |
+    |-------------------------------------------------------------------------------------------------|
+    <BLANKLINE>
     >>> md.find(parse_time('2012-06-01T21:08:12')).columns
+    ['EVE', 'GOES']
     >>> md.find(parse_time('2012-06-01T21:08:12')).values()
+    ['eve_val', 'goes_val']
     >>> md.find(parse_time('2012-06-01T21:08:12')).metas
-    >>> md.find(parse_time('2012-06-01T21:08:12'), 'GOES')   # doctest: +SKIP
+    [MetaDict([('goes_key', 'goes_val')]), MetaDict([('eve_key', 'eve_val')])]
+    >>> md.find(parse_time('2012-06-01T21:08:12'), 'GOES')
+    |-------------------------------------------------------------------------------------------------|
+    |TimeRange                  | Columns         | Meta                                              |
+    |-------------------------------------------------------------------------------------------------|
+    |2012-06-01 00:00:00        | GOES            | goes_key: goes_val                                |
+    |            to             |                 |                                                   |
+    |2012-06-02 00:00:00        |                 |                                                   |
+    |-------------------------------------------------------------------------------------------------|
+
     """
 
     def __init__(self, meta=None, timerange=None, colnames=None, **kwargs):

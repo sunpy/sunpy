@@ -37,7 +37,7 @@ Creating Map Objects
 SunPy Map objects are constructed using the special factory
 class `~sunpy.map.Map`: ::
 
-    >>> x = sunpy.map.Map('file.fits')
+    >>> x = sunpy.map.Map('file.fits')  # doctest: +SKIP
 
 The result of a call to `~sunpy.map.Map` will be either a `~sunpy.map.mapbase.GenericMap` object,
 or a subclass of `~sunpy.map.mapbase.GenericMap` which either deals with a specific type of data,

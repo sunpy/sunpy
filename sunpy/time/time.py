@@ -192,18 +192,12 @@ def parse_time(time_string, time_format='', **kwargs):
 
         time_string_parse_format = kwargs.pop('_time_string_parse_format', None)
         if time_string_parse_format is not None:
-            # Following a comment by the Lead Developer, the Try / except clause
-            # is replaced.  The Lead Developer thinks that this the try/except
-            # clause is related to SunPy's database module.
-            try:
-                ts, time_delta = _regex_parse_time(time_string,
-                                                       time_string_parse_format)
-                if ts and time_delta:
-                    return datetime.strptime(ts, time_string_parse_format) + time_delta
-                else:
-                    return datetime.strptime(time_string, time_string_parse_format)
-            except Exception:
-                pass
+            ts, time_delta = _regex_parse_time(time_string,
+                                               time_string_parse_format)
+            if ts and time_delta:
+                return datetime.strptime(ts, time_string_parse_format) + time_delta
+            else:
+                return datetime.strptime(time_string, time_string_parse_format)
         raise ValueError("'{tstr!s}' is not a valid time string!".format(tstr=time_string))
 
 

@@ -214,13 +214,19 @@ def _sun_north_angle_to_z(frame):
     Return the angle between solar north and the Z axis of the provided frame's coordinate system
     and observation time.
     """
-    # Find the Sun center in HGS at the frame's observation time
-    sun_center = SkyCoord(0*u.deg, 0*u.deg, 0*u.km, frame=HGS, obstime=frame.obstime)
+    # Find the Sun center in HGS at the frame's observation time(s)
+    sun_center_repr = SphericalRepresentation(0*u.deg, 0*u.deg, 0*u.km)
+    # The representation is repeated for as many times as are in obstime prior to transformation
+    sun_center = SkyCoord(sun_center_repr._apply('repeat', frame.obstime.size),
+                          frame=HGS, obstime=frame.obstime)
 
-    # Find the Sun north in HGS at the frame's observation time
+    # Find the Sun north in HGS at the frame's observation time(s)
     # Only a rough value of the solar radius is needed here because, after the cross product,
     #   only the direction from the Sun center to the Sun north pole matters
-    sun_north = SkyCoord(0*u.deg, 90*u.deg, 690000*u.km, frame=HGS, obstime=frame.obstime)
+    sun_north_repr = SphericalRepresentation(0*u.deg, 90*u.deg, 690000*u.km)
+    # The representation is repeated for as many times as are in obstime prior to transformation
+    sun_north = SkyCoord(sun_north_repr._apply('repeat', frame.obstime.size),
+                         frame=HGS, obstime=frame.obstime)
 
     # Find the Sun center and Sun north in the frame's coordinate system
     sky_normal = sun_center.transform_to(frame).data.to_cartesian()
@@ -239,5 +245,9 @@ def _sun_north_angle_to_z(frame):
     cos_theta = sun_north_in_sky.dot(z_in_sky)
     sin_theta = sun_north_in_sky.cross(z_in_sky).dot(sky_normal)
     angle = np.arctan2(sin_theta, cos_theta).to('deg')
+
+    # If there is only one time, this function's output should be scalar rather than array
+    if angle.size == 1:
+        angle = angle[0]
 
     return Angle(angle)

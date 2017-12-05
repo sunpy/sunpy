@@ -9,7 +9,7 @@ import sunpy
 from sunpy.time import parse_time
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 @pytest.mark.parametrize("date,level,start,end",
                          [('2012/06/03', 3, '2012-06-03 00:00:00.047000',
                            '2012-06-03 23:59:00.047000'),
@@ -22,7 +22,7 @@ def test_lyra_level(date, level, start, end):
     assert lyra.time_range().end == parse_time(end)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 @pytest.mark.parametrize(("url, start, end"), [(
     'http://proba2.oma.be/lyra/data/bsd/2012/02/04/lyra_20120204-000000_lev3_std.fits',
     '2012-02-04 00:00:00.004000', '2012-02-04 23:59:00.004000'
