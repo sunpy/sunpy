@@ -704,23 +704,20 @@ def entries_from_file(file, default_waveunit=None,
 
         entry.instrument = header.get('INSTRUME')
         wave = header.get('WAVELNTH')
-        if wave is None:
-            pass
-        elif unit is None:
+        if unit is None:
             raise WaveunitNotFoundError(file)
-        else:
+        elif wave is not None:
             entry.wavemin = entry.wavemax = unit.to(
                 u.nm, wave, u.equivalencies.spectral())
         end_time = header.get('DATE-END', header.get('DATE_END'))
-        if end_time is None:
-            pass
-        else:
+
+        if end_time is not None:
             entry.observation_time_end = parse_time(end_time,
             _time_string_parse_format=time_string_parse_format
             )
 
         start_time = header.get('DATE-BEG', header.get('DATE_OBS', header.get('DATE_OBS')))
-        if start_time is None:
+        if start_time is not None:
             entry.observation_time_start = parse_time(start_time,
                 _time_string_parse_format=time_string_parse_format
             )
