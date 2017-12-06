@@ -113,7 +113,7 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
             elif isinstance(self._data, UnitSphericalRepresentation):
                 distance = RSUN_METERS.to(u.km)
 
-            if distance:
+            if distance is not None:
                 self._data = self.default_representation(lat=self._data.lat,
                                                          lon=self._data.lon,
                                                          distance=distance)
