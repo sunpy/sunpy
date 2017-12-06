@@ -12,29 +12,41 @@ import matplotlib.pyplot as plt
 
 import pytest
 
-import sunpy
+import sunpy.map
 
 from sunpy.visualization import mapcubeanimator
 
-@pytest.fixture
-def mapcube_animator():
-    mapcube = sunpy.map.Map()
-    return mapcubeanimator.MapCubeAnimator(mapcube, slider_ranges = [[0, 5]])
+from sunpy.data import test
 
-#test for mapcubeanimator instances
-def test_mapcubeanimator_instances(mapcube_animator):
-    t = sunpy.map.Map()
-    s = plt.axes([0.1, 0.8, 0.8, 0.1])
-    assert mapcube_animator.mapcube == t
-    assert mapcube_animator.annotate is True
-    assert mapcube_animator.colorbar is True
-    assert mapcube_animator.fig == s
-    assert mapcube_animator.button_labels is None
-    assert mapcube_animator.button_func is None
-    assert mapcube_animator.interval == 1
 
-def test_mapcubeanimator_plot_start_image(mapcube_animator):
+class map_animator(mapcubeanimator.MapCubeAnimator):
     pass
 
-def test_mapcubeanimator_updatefig():
+#test for mapcubeanimator instance
+def test_mapcubeanimator_instances():
+    file = test.get_test_filepath("FGMG4_20110214_030443.7.fits")
+    dummy = sunpy.map.Map(file, cube=True)
+    t = map_animator(dummy)
+    assert isinstance(t, mapcubeanimator.MapCubeAnimator)
+
+def test_get_main_axes():
     pass
+
+def update_fig():
+    file = test.get_test_filepath("FGMG4_20110214_030443.7.fits")
+    dummy = sunpy.map.Map(file, cube=True)
+    t = map_animator(dummy).updatefig(1)
+
+    assert isinstance(t, mapcubeanimator.MapCubeAnimator.updatefig)
+    assert t.val == 1
+    assert t.im is None
+    assert t.slider is None
+
+def plot_image():
+    file = test.get_test_filepath("FGMG4_20110214_030443.7.fits")
+    dummy = sunpy.map.Map(file, cube=True)
+    a = plt.axes([1, 2])
+    t = map_animator(dummy).plot_start_image(a)
+
+    assert isinstance(t, mapcubeanimator.MapCubeAnimator.plot_start_image)
+    assert t.ax == a
