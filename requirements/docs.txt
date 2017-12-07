@@ -5,5 +5,5 @@
 -r extra.txt
 
 sphinx
-git+https://github.com/sunpy/sunpy-sphinx-theme.git@v0.1.0a3
+sunpy-sphinx-theme
 sphinx-gallery
