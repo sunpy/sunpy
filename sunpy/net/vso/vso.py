@@ -42,8 +42,6 @@ from sunpy.extern import six
 from sunpy.extern.six import iteritems, text_type
 from sunpy.extern.six.moves import input
 
-__all__ = ['QueryResponse', 'VSOClient']
-
 TIME_FORMAT = config.get("general", "time_format")
 
 DEFAULT_URL_PORT = [{'url': 'http://docs.virtualsolar.org/WSDL/VSOi_rpc_literal.wsdl',
@@ -363,7 +361,7 @@ class VSOClient(object):
     @deprecated('0.8', alternative='VSOClient.search')
     def query(self, *query):
         """
-        See `~sunpy.net.vso.vso.VSOClient.search`
+        See `~sunpy.net.vso.VSOClient.search`
         """
         return self.search(*query)
 
@@ -674,7 +672,7 @@ class VSOClient(object):
     def get(self, query_response, path=None, methods=('URL-FILE_Rice', 'URL-FILE'),
             downloader=None, site=None):
         """
-        See `~sunpy.net.vso.vso.VSOClient.fetch`
+        See `~sunpy.net.vso.VSOClient.fetch`
         """
         return self.fetch(query_response, path=path, methods=methods, downloader=downloader, site=site)
 
@@ -966,4 +964,4 @@ def get(query_response, path=None, methods=('URL-FILE',), downloader=None):
     return g_client.get(query_response, path, methods, downloader)
 
 
-get.__doc__ = VSOClient.get.__doc__
+get.__doc__ = VSOClient.search.__doc__
