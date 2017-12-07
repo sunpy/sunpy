@@ -22,7 +22,6 @@ aiamap = sunpy.map.Map(AIA_193_IMAGE)
 plt.figure()
 aiamap.plot()
 plt.colorbar()
-plt.show()
 
 
 ###############################################################################
@@ -64,7 +63,6 @@ ax.scatter(ymax, xmax, zs2, color='r')
 ax.set_xlabel('x coordinate')
 ax.set_ylabel('y coordinate')
 ax.set_zlabel('Intensity')
-plt.show()
 
 
 ###############################################################################
