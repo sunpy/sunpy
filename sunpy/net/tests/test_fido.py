@@ -11,7 +11,7 @@ import astropy.units as u
 from sunpy.net import attr
 from sunpy.net.vso import attrs as va
 from sunpy.net import Fido, attrs as a
-from sunpy.net.vso.vso import QueryResponse as vsoQueryResponse
+from sunpy.net.vso import QueryResponse as vsoQueryResponse
 from sunpy.net.fido_factory import DownloadResponse, UnifiedResponse
 from sunpy.net.dataretriever.client import CLIENTS, QueryResponse
 from sunpy.util.datatype_factory_base import NoMatchError, MultipleMatchError
