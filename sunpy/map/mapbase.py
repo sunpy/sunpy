@@ -81,6 +81,21 @@ class GenericMap(NDData):
     """
     A Generic spatially-aware 2D data array
 
+    Parameters
+    ----------
+    data : `~numpy.ndarray`, list
+        A 2d list or ndarray containing the map data.
+    header : dict
+        A dictionary of the original image header tags.
+    plot_settings : dict, optional
+        Plot settings.
+
+    Other Parameters
+    ----------------
+    **kwargs :
+        Additional keyword arguments are passed to `~astropy.nddata.NDData`
+        init.
+
     Examples
     --------
     >>> import sunpy.map
@@ -159,21 +174,6 @@ class GenericMap(NDData):
     """
 
     def __init__(self, data, header, plot_settings=None, **kwargs):
-        """
-        Parameters
-        ----------
-        data : `~numpy.ndarray`, list
-            A 2d list or ndarray containing the map data.
-        header : dict
-            A dictionary of the original image header tags.
-        plot_settings : dict, optional
-            Plot settings.
-
-        Other Parameters
-        ----------------
-        **kwargs :
-            Additional keyword arguments are passed to `NDData` init.
-        """
         # If the data has more than two dimensions, the first dimensions
         # (NAXIS1, NAXIS2) are used and the rest are discarded.
         ndim = data.ndim
@@ -830,7 +830,7 @@ Reference Coord:\t {refcoord}
     @deprecated("0.8.0", alternative="sunpy.map.GenericMap.world_to_pixel")
     def data_to_pixel(self, coordinate, origin=0):
         """
-        See `~sunpy.map.mapbase.GenericMap.world_to_pixel`,
+        See `~sunpy.map.mapbase.GenericMap.world_to_pixel`.
         """
         return self.world_to_pixel(coordinate, origin=origin)
 
