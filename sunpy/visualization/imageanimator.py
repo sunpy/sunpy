@@ -950,8 +950,16 @@ class ImageAnimatorWCS(ImageAnimator):
         list_slices_wcsaxes[image_axes[0]] = 'x'
         list_slices_wcsaxes[image_axes[1]] = 'y'
         self.slices_wcsaxes = list_slices_wcsaxes[::-1]
-        self.unit_x_axis = unit_x_axis
-        self.unit_y_axis = unit_y_axis
+        if(unit_x_axis is not None):
+            self.unit_x_axis = u.Unit(unit_x_axis)
+        else:
+            self.unit_x_axis = unit_x_axis
+            
+        if(unit_y_axis is not None):
+            self.unit_y_axis = u.Unit(unit_y_axis)
+        else:
+            self.unit_y_axis = unit_y_axis            
+       
         super(ImageAnimatorWCS, self).__init__(data, image_axes=image_axes, axis_ranges=axis_ranges, **kwargs)
 
     def _get_main_axes(self):
@@ -959,14 +967,6 @@ class ImageAnimatorWCS(ImageAnimator):
         self._set_unit_in_axis(axes)
         return axes
 
-    def _get_unit_from_user(self):
-        if self.unit_x_axis is not None:
-            self.unit_x_axis = u.Unit(self.unit_x_axis)
-        if self.unit_y_axis is not None:
-            self.unit_y_axis = u.Unit(self.unit_y_axis)
-        
-        
-    
     def _set_unit_in_axis(self, axes):
         if self.unit_x_axis is not None:
             axes.coords[2].set_format_unit(self.unit_x_axis)
