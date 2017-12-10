@@ -4,10 +4,10 @@ Map is a generic Map class from which all other Map classes inherit from.
 from __future__ import absolute_import, division, print_function
 from sunpy.extern.six.moves import range
 
+import copy
 import warnings
 import inspect
 from abc import ABCMeta
-from copy import deepcopy
 from collections import OrderedDict, namedtuple
 
 import numpy as np
@@ -862,15 +862,17 @@ Reference Coord:\t {refcoord}
             A coordinate object representing the output coordinate.
 
         """
-        x, y = self.wcs.wcs_pix2world(x, y, origin)
 
-        # If the wcs is celestial it is output in degress
-        if self.wcs.is_celestial:
-            x = u.Quantity(x, u.deg)
-            y = u.Quantity(y, u.deg)
-        else:
-            x = u.Quantity(x, self.spatial_units[0])
-            y = u.Quantity(y, self.spatial_units[1])
+        # Hold the WCS instance here so we can inspect the output units after
+        # the pix2world call
+        temp_wcs = self.wcs
+
+        x, y = temp_wcs.wcs_pix2world(x, y, origin)
+
+        out_units = list(map(u.Unit, temp_wcs.wcs.cunit))
+
+        x = u.Quantity(x, out_units[0])
+        y = u.Quantity(y, out_units[1])
 
         return SkyCoord(x, y, frame=self.coordinate_frame)
 
@@ -1709,7 +1711,7 @@ Reference Coord:\t {refcoord}
                               Warning)
 
         # Normal plot
-        imshow_args = deepcopy(self.plot_settings)
+        imshow_args = copy.deepcopy(self.plot_settings)
         if 'title' in imshow_args:
             plot_settings_title = imshow_args.pop('title')
         else:
