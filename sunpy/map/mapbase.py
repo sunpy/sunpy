@@ -84,9 +84,17 @@ class GenericMap(NDData):
     Parameters
     ----------
     data : `~numpy.ndarray`, list
-        A 2d list or ndarray containing the map data
-    meta : dict
-        A dictionary of the original image header tags
+        A 2d list or ndarray containing the map data.
+    header : dict
+        A dictionary of the original image header tags.
+    plot_settings : dict, optional
+        Plot settings.
+
+    Other Parameters
+    ----------------
+    **kwargs :
+        Additional keyword arguments are passed to `~astropy.nddata.NDData`
+        init.
 
     Examples
     --------
@@ -166,7 +174,6 @@ class GenericMap(NDData):
     """
 
     def __init__(self, data, header, plot_settings=None, **kwargs):
-
         # If the data has more than two dimensions, the first dimensions
         # (NAXIS1, NAXIS2) are used and the rest are discarded.
         ndim = data.ndim
@@ -249,7 +256,7 @@ Reference Coord:\t {refcoord}
     def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
         """
         Instantiate a new instance of this class using given data.
-        This is a shortcut for ``type(self)(data, meta, plot_settings)``
+        This is a shortcut for ``type(self)(data, meta, plot_settings)``.
         """
         return cls(data, meta, plot_settings=plot_settings, **kwargs)
 
@@ -398,7 +405,7 @@ Reference Coord:\t {refcoord}
     @property
     def nickname(self):
         """An abbreviated human-readable description of the map-type; part of
-        the Helioviewer data model"""
+        the Helioviewer data model."""
         return self._nickname if self._nickname else self.detector
 
     @nickname.setter
@@ -407,7 +414,7 @@ Reference Coord:\t {refcoord}
 
     @property
     def date(self):
-        """Image observation time"""
+        """Image observation time."""
         time = self.meta.get('date-obs', None)
         if time is None:
             warnings.warn_explicit("Missing metadata for observation time."
@@ -419,7 +426,7 @@ Reference Coord:\t {refcoord}
 
     @property
     def detector(self):
-        """Detector name"""
+        """Detector name."""
         return self.meta.get('detector', "")
 
     @property
@@ -443,24 +450,24 @@ Reference Coord:\t {refcoord}
 
     @property
     def instrument(self):
-        """Instrument name"""
+        """Instrument name."""
         return self.meta.get('instrume', "").replace("_", " ")
 
     @property
     def measurement(self):
-        """Measurement name, defaults to the wavelength of image"""
+        """Measurement name, defaults to the wavelength of image."""
         return u.Quantity(self.meta.get('wavelnth', 0),
                           self.meta.get('waveunit', ""))
 
     @property
     def wavelength(self):
-        """wavelength of the observation"""
+        """Wavelength of the observation."""
         return u.Quantity(self.meta.get('wavelnth', 0),
                           self.meta.get('waveunit', ""))
 
     @property
     def observatory(self):
-        """Observatory or Telescope name"""
+        """Observatory or Telescope name."""
         return self.meta.get('obsrvtry',
                              self.meta.get('telescop', "")).replace("_", " ")
 
@@ -525,7 +532,6 @@ Reference Coord:\t {refcoord}
 
         Parameters
         ----------
-
         axis1 : `~astropy.units.Quantity`
             The shift to apply to the Longitude (solar-x) coordinate.
 
@@ -555,7 +561,7 @@ Reference Coord:\t {refcoord}
 
     @property
     def rsun_meters(self):
-        """Radius of the sun in meters"""
+        """Radius of the sun in meters."""
         return u.Quantity(self.meta.get('rsun_ref', constants.radius), 'meter')
 
     @property
@@ -577,13 +583,13 @@ Reference Coord:\t {refcoord}
 
     @property
     def coordinate_system(self):
-        """Coordinate system used for x and y axes (ctype1/2)"""
+        """Coordinate system used for x and y axes (ctype1/2)."""
         return SpatialPair(self.meta.get('ctype1', 'HPLN-   '),
                            self.meta.get('ctype2', 'HPLT-   '))
 
     @property
     def carrington_longitude(self):
-        """Carrington longitude (crln_obs)"""
+        """Carrington longitude (crln_obs)."""
         carrington_longitude = self.meta.get('crln_obs', None)
 
         if carrington_longitude is None:
@@ -600,7 +606,7 @@ Reference Coord:\t {refcoord}
 
     @property
     def heliographic_latitude(self):
-        """Heliographic latitude"""
+        """Heliographic latitude."""
         heliographic_latitude = self.meta.get('hglt_obs',
                                               self.meta.get('crlt_obs',
                                                             self.meta.get('solar_b0', None)))
@@ -619,7 +625,7 @@ Reference Coord:\t {refcoord}
 
     @property
     def heliographic_longitude(self):
-        """Heliographic longitude"""
+        """Heliographic longitude."""
         heliographic_longitude = self.meta.get('hgln_obs', 0.)
 
         if isinstance(heliographic_longitude, six.string_types):
@@ -660,7 +666,7 @@ Reference Coord:\t {refcoord}
 
     @property
     def reference_pixel(self):
-        """Reference point axes in pixels (i.e. crpix1, crpix2)"""
+        """Reference point axes in pixels (i.e. crpix1, crpix2)."""
         return PixelPair(self.meta.get('crpix1',
                                        (self.meta.get('naxis1') + 1) / 2.) * u.pixel,
                          self.meta.get('crpix2',
@@ -669,7 +675,8 @@ Reference Coord:\t {refcoord}
     @property
     def scale(self):
         """
-        Image scale along the x and y axes in units/pixel (i.e. cdelt1, cdelt2)
+        Image scale along the x and y axes in units/pixel
+        (i.e. cdelt1, cdelt2).
         """
         # TODO: Fix this if only CDi_j matrix is provided
         return SpatialPair(self.meta.get('cdelt1', 1.) * self.spatial_units[0] / u.pixel,
@@ -823,7 +830,7 @@ Reference Coord:\t {refcoord}
     @deprecated("0.8.0", alternative="sunpy.map.GenericMap.world_to_pixel")
     def data_to_pixel(self, coordinate, origin=0):
         """
-        See `~sunpy.map.mapbase.GenericMap.world_to_pixel`
+        See `~sunpy.map.mapbase.GenericMap.world_to_pixel`.
         """
         return self.world_to_pixel(coordinate, origin=origin)
 
@@ -871,7 +878,7 @@ Reference Coord:\t {refcoord}
     @deprecated("0.8.0", alternative="sunpy.map.GenericMap.pixel_to_world")
     def pixel_to_data(self, x, y, origin=0):
         """
-        See `~sunpy.map.mapbase.GenericMap.pixel_to_world`
+        See `~sunpy.map.mapbase.GenericMap.pixel_to_world`.
         """
         return self.pixel_to_world(x, y, origin=origin)
 
@@ -889,7 +896,7 @@ Reference Coord:\t {refcoord}
             Location to save file to.
 
         filetype : str
-            'auto' or any supported file extension
+            'auto' or any supported file extension.
         """
         io.write_file(filepath, self.data, self.meta, filetype=filetype,
                       **kwargs)
@@ -1187,7 +1194,8 @@ Reference Coord:\t {refcoord}
         Returns
         -------
         out : `~sunpy.map.GenericMap` or subclass
-            A new map instance is returned representing to specified sub-region
+            A new map instance is returned representing to specified
+            sub-region.
 
         Examples
         --------
@@ -1555,11 +1563,10 @@ Reference Coord:\t {refcoord}
     @u.quantity_input(levels=u.percent)
     def draw_contours(self, levels, axes=None, **contour_args):
         """
-        Draw contours of the data
+        Draw contours of the data.
 
         Parameters
         ----------
-
         levels : `~astropy.units.Quantity`
             A list of numbers indicating the level curves to draw given in
             percent.
@@ -1570,14 +1577,12 @@ Reference Coord:\t {refcoord}
 
         Returns
         -------
-
         cs : `list`
             The `~matplotlib.QuadContourSet` object, after it has been added to
             ``axes``.
 
         Notes
         -----
-
         Extra keyword arguments to this function are passed through to the
         `~matplotlib.pyplot.contour` function.
 
@@ -1595,7 +1600,8 @@ Reference Coord:\t {refcoord}
     @toggle_pylab
     def peek(self, draw_limb=False, draw_grid=False,
              colorbar=True, basic_plot=False, **matplot_args):
-        """Displays the map in a new figure
+        """
+        Displays the map in a new figure.
 
         Parameters
         ----------
@@ -1607,9 +1613,9 @@ Reference Coord:\t {refcoord}
             If `~astropy.units.Quantity` then sets degree difference between
             parallels and meridians.
         gamma : float
-            Gamma value to use for the color map
+            Gamma value to use for the color map.
         colorbar : bool
-            Whether to display a colorbar next to the plot
+            Whether to display a colorbar next to the plot.
         basic_plot : bool
             If true, the data is plotted by itself at it's natural scale; no
             title, labels, or axes are shown.
