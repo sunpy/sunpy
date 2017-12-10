@@ -2,11 +2,14 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 
+import os
 import datetime
 
 from sunpy.time import parse_time, TimeRange
 
 from ..client import GenericClient
+
+from sunpy.extern.six.moves.urllib.parse import urlsplit
 
 from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")
@@ -53,6 +56,25 @@ class XRSClient(GenericClient):
             # if no satellites were found then raise an exception
             raise ValueError('No operational GOES satellites on {}'.format(
                 date.strftime(TIME_FORMAT)))
+
+    def _get_time_for_url(self, urls):
+        times = []
+        for uri in urls:
+            uripath = urlsplit(uri).path
+
+            # Extract the yymmdd or yyyymmdd timestamp
+            datestamp = os.path.splitext(os.path.split(uripath)[1])[0][4:]
+
+            if int(datestamp) < 990115:
+                start = datetime.datetime.strptime(datestamp, "%y%m%d")
+            else:
+                start= datetime.datetime.strptime(datestamp, "%Y%m%d")
+
+            almost_day = datetime.timedelta(days=1, milliseconds=-1)
+            times.append(TimeRange(start, start+almost_day))
+
+        return times
+
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
