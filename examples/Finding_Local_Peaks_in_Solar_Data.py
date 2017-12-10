@@ -32,10 +32,13 @@ plt.colorbar()
 x = y = np.arange(0, len(aiamap.data))
 X, Y = np.meshgrid(x, y)
 
+
 ###############################################################################
 # We will only consider peaks within the AIA data that are above a threshold
 # value. Once these values are thresholded, the next step is to
 # calcualte the pixel locations of local maxima posistions.
+# This function comes from sci-kit image and the documenation is found
+# here `~skimage.feature.peak_local_max`.
 
 coordinates = peak_local_max(aiamap.data, min_distance=60, threshold_rel=0.2)
 
