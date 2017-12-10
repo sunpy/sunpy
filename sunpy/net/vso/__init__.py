@@ -6,4 +6,4 @@ from sunpy.net.vso.vso import VSOClient, InteractiveVSOClient, QueryResponse
 # Delete this in 0.9
 from sunpy.net.vso.vso import search, get
 
-__all__ = ['VSOClient', 'InteractiveVSOClient', 'QueryResponse', 'search', 'get']
+__all__ = ['VSOClient', 'InteractiveVSOClient', 'QueryResponse']
