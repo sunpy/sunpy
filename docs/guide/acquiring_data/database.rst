@@ -468,7 +468,7 @@ entry by iterating over ``database[::2]`` and then calling passing every
 yielded entry to :meth:`Database.remove`. You can even do advanced
 operations easily like for example removing every entry with a certain
 observation start time, instrument, and FITS header entry pair. This
-requires knowledge of the :meth:`Database.query` method though, which will
+requires knowledge of the :meth:`Database.search` method though, which will
 be covered in section 7, "Querying the database".
 
 5. Editing entries
@@ -676,7 +676,7 @@ stored end of observation time anymore.
 7. Querying the database
 ------------------------
 The API for querying databases is similar to querying the VSO using the
-method :meth:`sunpy.net.vso.VSOClient.query`. The :meth:`Database.query`
+method :meth:`sunpy.net.vso.VSOClient.search`. The :meth:`Database.search`
 method accepts any number of ORed query attributes (using \|) and
 combines them using AND. It returns a list of matched database entries.
 The special thing about querying databases is that all attributes support
@@ -695,7 +695,7 @@ server which is requested. The following query returns the data that was
 added in section 2.3.2, "Downloading":
 
     >>> print(display_entries(
-    ...     database.query(vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'), vso.attrs.Instrument('AIA')),
+    ...     database.search(vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'), vso.attrs.Instrument('AIA')),
     ...     ['id', 'observation_time_start', 'observation_time_end',
     ...      'instrument', 'wavemin', 'wavemax'], sort=True))   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
@@ -717,7 +717,7 @@ check `astropy.units`.
 
     >>> from astropy import units as u
     >>> print(display_entries(
-    ...     database.query(vso.attrs.Wavelength(1.0*u.nm, 2.0*u.nm)),
+    ...     database.searh(vso.attrs.Wavelength(1.0*u.nm, 2.0*u.nm)),
     ...     ['id', 'observation_time_start', 'observation_time_end',
     ...      'instrument', 'wavemin', 'wavemax'], sort=True))   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax
@@ -753,7 +753,7 @@ with the value 'Angstrom':
 
     >>> import sunpy.database.attrs as dbattrs
     >>> print(display_entries(
-    ...     database.query(dbattrs.Tag('spring') | dbattrs.Starred(), ~dbattrs.FitsHeaderEntry('WAVEUNIT', 'Angstrom')),
+    ...     database.search(dbattrs.Tag('spring') | dbattrs.Starred(), ~dbattrs.FitsHeaderEntry('WAVEUNIT', 'Angstrom')),
     ...     ['id', 'observation_time_start', 'observation_time_end',
     ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'], sort=True))   # doctest: +NORMALIZE_WHITESPACE +SKIP
     id observation_time_start observation_time_end instrument wavemin wavemax tags   starred

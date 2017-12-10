@@ -400,7 +400,7 @@ If you then do a second query::
 
 A query can then be performed against the database to get the records.
 
-  >>> entries = db.query(a.Time("2011-09-20T01:45:00", "2011-09-20T02:15:00"), a.Instrument('AIA'))  # doctest: +REMOTE_DATA
+  >>> entries = db.search(a.Time("2011-09-20T01:45:00", "2011-09-20T02:15:00"), a.Instrument('AIA'))  # doctest: +REMOTE_DATA
   >>> len(entries)  # doctest: +REMOTE_DATA
   4
 
