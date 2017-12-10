@@ -111,6 +111,7 @@ def test_fido(time, instrument):
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
 
+
 @given(goes_time())
 def test_time_for_url(time):
     time = time.start.date().strftime("%Y/%m/%d")

@@ -68,13 +68,12 @@ class XRSClient(GenericClient):
             if int(datestamp) < 990115:
                 start = datetime.datetime.strptime(datestamp, "%y%m%d")
             else:
-                start= datetime.datetime.strptime(datestamp, "%Y%m%d")
+                start = datetime.datetime.strptime(datestamp, "%Y%m%d")
 
             almost_day = datetime.timedelta(days=1, milliseconds=-1)
-            times.append(TimeRange(start, start+almost_day))
+            times.append(TimeRange(start, start + almost_day))
 
         return times
-
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
