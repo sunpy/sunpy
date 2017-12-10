@@ -24,6 +24,7 @@ Bug Fixes
 - Change to using pytest-remotedata for our online tests [#2345]
 - Fixed upstream astropy/numpy documentation issues [#2359]
 - Documenation for Map improved [#2361]
+- Fix the output units of pixel_to_world [#2362]
 
 0.8.2
 =====
