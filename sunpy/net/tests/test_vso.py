@@ -16,7 +16,7 @@ from astropy import units as u
 from sunpy.time import TimeRange
 from sunpy.net import vso
 from sunpy.net.vso import attrs as va
-from sunpy.net.vso.vso import QueryResponse
+from sunpy.net.vso import QueryResponse
 from sunpy.net import attr
 
 from sunpy.tests.mocks import MockObject
@@ -24,7 +24,7 @@ from sunpy.tests.mocks import MockObject
 
 class MockQRRecord:
     """
-    Used to test sunpy.net.vso.vso.QueryResponse.build_table(...)
+    Used to test sunpy.net.vso.QueryResponse.build_table(...)
     """
 
     def __init__(self, start_time=None, end_time=None, size=0, source='SOHO', instrument='aia',
@@ -321,7 +321,7 @@ def test_iter_errors(mock_response):
 def test_QueryResponse_build_table_defaults():
     records = (MockQRRecord(),)
 
-    qr = vso.vso.QueryResponse(records)
+    qr = vso.QueryResponse(records)
     table = qr.build_table()
 
     start_time_ = table['Start Time']
@@ -353,7 +353,7 @@ def test_QueryResponse_build_table_with_extent_type():
     """
     e_type = va.Extent(x=1.0, y=2.5, width=37, length=129.2, atype='CORONA')
 
-    qr = vso.vso.QueryResponse((MockQRRecord(extent_type=e_type),))
+    qr = vso.QueryResponse((MockQRRecord(extent_type=e_type),))
     table = qr.build_table()
 
     extent = table['Type'].data
@@ -369,7 +369,7 @@ def test_QueryResponse_build_table_with_no_start_time():
 
     records = (MockQRRecord(end_time=a_st.strftime(va.TIMEFORMAT)),)
 
-    qr = vso.vso.QueryResponse(records)
+    qr = vso.QueryResponse(records)
     table = qr.build_table()
 
     start_time_ = table['Start Time']
@@ -391,7 +391,7 @@ def test_QueryResponse_build_table_with_no_end_time():
 
     records = (MockQRRecord(start_time=a_st.strftime(va.TIMEFORMAT)),)
 
-    qr = vso.vso.QueryResponse(records)
+    qr = vso.QueryResponse(records)
     table = qr.build_table()
 
     start_time_ = table['Start Time']

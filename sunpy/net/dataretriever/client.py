@@ -232,7 +232,7 @@ class GenericClient(object):
         \*\*kwargs: `dict`
              Any extra keywords to refine the search. Generated from the
              attributes passed to
-             `~sunpy.net.dataretriever.client.GenericClient.query`.
+             `~sunpy.net.dataretriever.client.GenericClient.search`.
         """
         raise NotImplementedError
 
