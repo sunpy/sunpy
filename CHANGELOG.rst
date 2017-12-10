@@ -1,14 +1,44 @@
-Latest
-======
+0.8.3 (Unreleased)
+==================
 
-New features
-------------
+Bug Fixes
+---------
+
+- CompositeMap axes scaling now uses map spatial units [#2310]
+- Moved license file to root of repository and updated README file [#2326]
+- Fix docstring formatting for net.vso.attrs [#2309]]
+- Fix coloring of ticks under matplotlib 2.0 default style [#2320]
+- Always index arrays with tuples in `ImageAnimator` [#2320]
+- Added links to possible attrs for FIDO in guide [#2317] [#2289]
+- Updated GitHub Readme [#2281] [#2283]
+- Fix matplotlib / pandas 0.21 bug in examples [#2336]
+- Fixes the off limb enhancement example [#2329]
+- Changes to masking hot pixels and picking bright pixels examples [#2325] [#2319]
+- Travis CI fix for numpy-dev build [#2340]
+- Updated masking brightest pixel example [#2338]
+- Changed TRAVIS cronjobs [#2338]
+- Support array values for `obstime` for coordinates and transformations [#2342]
+
+0.8.2
+=====
+
+Bug Fixes
+---------
+
+- Shows a warning if observation time is missing [#2293]
+- Updates MapCube to access the correct properties of the namedtuple SpatialPair [#2297]
+
+0.8.1
+======
 
 Bug fixes
 ---------
 
+- Fixed TimeSeries test failures due to missing test files [#2273]
+- Refactored a GOES test to avoid a Py3.6 issue [#2276]
+
 0.8.0
-=====
+======
 
 New Features
 ------------

@@ -39,9 +39,9 @@ class NoRHLightCurve(LightCurve):
     Examples
     --------
     >>> import sunpy.lightcurve
-    >>> norh = sunpy.lightcurve.NoRHLightCurve.create('~/Data/norh/tca110607')   # doctest: +SKIP
-    >>> norh = sunpy.lightcurve.NoRHLightCurve.create('2011/08/10')
-    >>> norh = sunpy.lightcurve.NoRHLightCurve.create('2011/08/10',wavelength='34')
+    >>> norh = sunpy.lightcurve.NoRHLightCurve.create('~/Data/norh/tca110607')  # doctest: +SKIP
+    >>> norh = sunpy.lightcurve.NoRHLightCurve.create('2011/08/10')  # doctest: +SKIP
+    >>> norh = sunpy.lightcurve.NoRHLightCurve.create('2011/08/10',wavelength='34')  # doctest: +SKIP
     >>> norh.peek()   # doctest: +SKIP
 
     References

@@ -266,9 +266,9 @@ def test_data_range(generic_map):
 
     # the weird unit-de-unit thing here is to work around and inconsistency in
     # the way np.average works with astropy 1.3 and 2.0dev
-    assert_quantity_allclose(np.average(u.Quantity(generic_map.xrange).value) * u.deg,
+    assert_quantity_allclose(np.average(u.Quantity(generic_map.xrange).value) * u.arcsec,
                              generic_map.center.Tx)
-    assert_quantity_allclose(np.average(u.Quantity(generic_map.yrange).value) * u.deg,
+    assert_quantity_allclose(np.average(u.Quantity(generic_map.yrange).value) * u.arcsec,
                              generic_map.center.Ty)
 
 
@@ -550,6 +550,12 @@ def test_as_mpl_axes_aia171(aia171_test_map):
     assert all([ct1 == ct2 for ct1, ct2 in zip(ax.wcs.wcs.ctype, aia171_test_map.wcs.wcs.ctype)])
     # Map adds these attributes, so we use them to check.
     assert hasattr(ax.wcs, 'heliographic_observer')
+
+
+def test_pixel_to_world_no_projection(generic_map):
+    out = generic_map.pixel_to_world(*u.Quantity(generic_map.reference_pixel)+1*u.pix, origin=1)
+    assert_quantity_allclose(out.Tx, -10*u.arcsec)
+    assert_quantity_allclose(out.Ty, 10*u.arcsec)
 
 
 def test_validate_meta(generic_map):

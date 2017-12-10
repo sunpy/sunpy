@@ -1,13 +1,7 @@
 from __future__ import absolute_import
 
 import pytest
-
-try:
-    # >= Py3.3
-    import unittest.mock as mock
-except ImportError:
-    # Py 2.7 - Py.3.2
-    import mock
+import mock
 
 from sunpy.net.helio import hec
 from sunpy.net.helio.parser import (endpoint_parser, link_test, taverna_parser, webservice_parser,
@@ -93,7 +87,7 @@ def test_suds_unwrapper():
     assert hec.suds_unwrapper(suds_output) == expected_output
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_webservice_parser():
     result = webservice_parser()
     assert isinstance(result, list)

@@ -284,27 +284,27 @@ class DatabaseEntry(Base):
         --------
         >>> from sunpy.net import vso
         >>> from sunpy.database.tables import DatabaseEntry
-        >>> client = vso.VSOClient()
+        >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
         >>> qr = client.search(
         ...     vso.attrs.Time('2001/1/1', '2001/1/2'),
-        ...     vso.attrs.Instrument('eit'))
-        >>> entry = DatabaseEntry._from_query_result_block(qr[0])
-        >>> entry.source
-        'SOHO'
-        >>> entry.provider
-        'SDAC'
-        >>> entry.physobs
+        ...     vso.attrs.Instrument('eit'))  # doctest: +REMOTE_DATA
+        >>> entry = DatabaseEntry._from_query_result_block(qr[0])  # doctest: +REMOTE_DATA
+        >>> entry.source  # doctest: +REMOTE_DATA
+        SOHO
+        >>> entry.provider  # doctest: +REMOTE_DATA
+        SDAC
+        >>> entry.physobs  # doctest: +REMOTE_DATA
         'intensity'
-        >>> entry.fileid
-        '/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.010014'
-        >>> entry.observation_time_start, entry.observation_time_end
-        (datetime.datetime(2001, 1, 1, 1, 0, 14), datetime.datetime(2001, 1, 1, 1, 0, 21))
-        >>> entry.instrument
-        'EIT'
-        >>> entry.size
+        >>> entry.fileid  # doctest: +REMOTE_DATA
+        /archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.000042
+        >>> entry.observation_time_start, entry.observation_time_end  # doctest: +REMOTE_DATA
+        (datetime.datetime(2001, 1, 1, 0, 0, 42), datetime.datetime(2001, 1, 1, 0, 0, 54))
+        >>> entry.instrument  # doctest: +REMOTE_DATA
+        EIT
+        >>> entry.size  # doctest: +REMOTE_DATA
         2059.0
-        >>> entry.wavemin, entry.wavemax
-        (17.1, 17.1)
+        >>> entry.wavemin, entry.wavemax  # doctest: +REMOTE_DATA
+        (19.5, 19.5)
 
         """
         time_start = timestamp2datetime('%Y%m%d%H%M%S', qr_block.time.start)
@@ -367,27 +367,6 @@ class DatabaseEntry(Base):
         default_waveunit : `str`, optional
             The wavelength unit that is used if it cannot be found in the
             `sr_block`.
-
-        Examples
-        --------
-        >>> from sunpy.net import Fido, attrs
-        >>> from sunpy.database.tables import DatabaseEntry
-        >>> sr = Fido.search(attrs.Time("2012/1/1", "2012/1/2"),
-        ...    attrs.Instrument('lyra'))
-        >>> entry = DatabaseEntry._from_fido_search_result_block(sr[0][0])
-        >>> entry.source
-        'Proba2'
-        >>> entry.provider
-        'esa'
-        >>> entry.physobs
-        'irradiance'
-        >>> entry.fileid
-        'http://proba2.oma.be/lyra/data/bsd/2012/01/01/lyra_20120101-000000_lev2_std.fits'
-        >>> entry.observation_time_start, entry.observation_time_end
-        (datetime.datetime(2012, 1, 1, 0, 0), datetime.datetime(2012, 1, 2, 0, 0))
-        >>> entry.instrument
-        'lyra'
-
         """
         # All attributes of DatabaseEntry that are not in QueryResponseBlock
         # are set as None for now.
@@ -516,13 +495,13 @@ class DatabaseEntry(Base):
 
 def entries_from_query_result(qr, default_waveunit=None):
     """
-    Use a query response returned from :meth:`sunpy.net.vso.VSOClient.query`
+    Use a query response returned from :meth:`sunpy.net.vso.VSOClient.search`
     or :meth:`sunpy.net.vso.VSOClient.query_legacy` to generate instances of
     :class:`DatabaseEntry`. Return an iterator over those instances.
 
     Parameters
     ----------
-    qr : `sunpy.net.vso.vso.QueryResponse`
+    qr : `sunpy.net.vso.QueryResponse`
         The query response from which to build the database entries.
 
     default_waveunit : `str`, optional
@@ -532,28 +511,28 @@ def entries_from_query_result(qr, default_waveunit=None):
     --------
     >>> from sunpy.net import vso
     >>> from sunpy.database.tables import entries_from_query_result
-    >>> client = vso.VSOClient()
+    >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
     >>> qr = client.search(
     ...     vso.attrs.Time('2001/1/1', '2001/1/2'),
-    ...     vso.attrs.Instrument('eit'))
-    >>> entries = entries_from_query_result(qr)
-    >>> entry = entries.next()
-    >>> entry.source
-    'SOHO'
-    >>> entry.provider
-    'SDAC'
-    >>> entry.physobs
+    ...     vso.attrs.Instrument('eit'))  # doctest: +REMOTE_DATA
+    >>> entries = entries_from_query_result(qr)  # doctest: +REMOTE_DATA
+    >>> entry = next(entries)  # doctest: +REMOTE_DATA
+    >>> entry.source  # doctest: +REMOTE_DATA
+    SOHO
+    >>> entry.provider  # doctest: +REMOTE_DATA
+    SDAC
+    >>> entry.physobs  # doctest: +REMOTE_DATA
     'intensity'
-    >>> entry.fileid
-    '/archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.010014'
-    >>> entry.observation_time_start, entry.observation_time_end
-    (datetime.datetime(2001, 1, 1, 1, 0, 14), datetime.datetime(2001, 1, 1, 1, 0, 21))
-    >>> entry.instrument
-    'EIT'
-    >>> entry.size
+    >>> entry.fileid  # doctest: +REMOTE_DATA
+    /archive/soho/private/data/processed/eit/lz/2001/01/efz20010101.000042
+    >>> entry.observation_time_start, entry.observation_time_end  # doctest: +REMOTE_DATA
+    (datetime.datetime(2001, 1, 1, 0, 0, 42), datetime.datetime(2001, 1, 1, 0, 0, 54))
+    >>> entry.instrument  # doctest: +REMOTE_DATA
+    EIT
+    >>> entry.size  # doctest: +REMOTE_DATA
     2059.0
-    >>> entry.wavemin, entry.wavemax
-    (17.1, 17.1)
+    >>> entry.wavemin, entry.wavemax  # doctest: +REMOTE_DATA
+    (19.5, 19.5)
 
     """
     for block in qr:
@@ -587,7 +566,7 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
     >>> sr = Fido.search(attrs.Time("2012/1/1", "2012/1/2"),
     ...     attrs.Instrument('lyra'))
     >>> entries = entries_from_fido_search_result(sr)
-    >>> entry = entries.next()
+    >>> entry = next(entries)
     >>> entry.source
     'Proba2'
     >>> entry.provider
@@ -667,7 +646,7 @@ def entries_from_file(file, default_waveunit=None,
     >>> entry.instrument
     'SWAP'
     >>> entry.observation_time_start, entry.observation_time_end
-    (datetime.datetime(2012, 1, 1, 0, 16, 7, 836000), None)
+    (datetime.datetime(2011, 6, 7, 6, 33, 29, 759000), None)
     >>> entry.wavemin, entry.wavemax
     (17.400000000000002, 17.400000000000002)
     >>> len(entry.fits_header_entries)
@@ -770,15 +749,14 @@ def entries_from_dir(fitsdir, recursive=False, pattern='*',
 
     Examples
     --------
+    >>> import os
     >>> from sunpy.data.test import rootdir as fitsdir
     >>> from sunpy.database.tables import entries_from_dir
-    >>> entries = list(entries_from_dir(fitsdir, default_waveunit='angstrom'))
+
+    >>> eitdir = os.path.join(fitsdir, 'EIT')
+    >>> entries = list(entries_from_dir(eitdir, default_waveunit='angstrom'))
     >>> len(entries)
-    38
-    >>> # and now search `fitsdir` recursive
-    >>> entries = list(entries_from_dir(fitsdir, True, default_waveunit='angstrom'))
-    >>> len(entries)
-    59
+    13
 
     """
     for dirpath, dirnames, filenames in os.walk(fitsdir):

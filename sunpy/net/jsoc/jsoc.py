@@ -100,13 +100,13 @@ class JSOCClient(object):
 
     >>> from sunpy.net import jsoc
     >>> from sunpy.net import attrs as a
-    >>> client = jsoc.JSOCClient()
+    >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
     >>> response = client.search(a.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...                         a.jsoc.Series('hmi.m_45s'), a.jsoc.Notify("sunpy@sunpy.org"))
+    ...                         a.jsoc.Series('hmi.m_45s'), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
 
     the response object holds the records that your query will return:
 
-    >>> print(response)   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+    >>> print(response)   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE +REMOTE_DATA
             DATE         TELESCOP  INSTRUME  ... WAVELNTH     WAVEUNIT
     -------------------- -------- ---------- ... -------- ---------------
     2014-01-05T17:44:53Z  SDO/HMI HMI_FRONT2 ...   6173.0 Invalid KeyLink
@@ -136,14 +136,14 @@ class JSOCClient(object):
     >>> import astropy.units as u
     >>> from sunpy.net import jsoc
     >>> from sunpy.net import attrs as a
-    >>> client = jsoc.JSOCClient()
+    >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
     >>> response = client.search(a.Time('2014/1/1T00:00:00', '2014/1/1T00:00:36'),
     ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Segment('image'),
-    ...                         a.jsoc.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))
+    ...                         a.jsoc.Wavelength(171*u.AA), a.jsoc.Notify("sunpy@sunpy.org"))  # doctest: +REMOTE_DATA
 
     the response object holds the records that your query will return:
 
-    >>> print(response)
+    >>> print(response)  # doctest: +REMOTE_DATA
             DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH WAVEUNIT
     -------------------- -------- -------- ----------------------- -------- --------
     2014-01-06T15:07:12Z  SDO/AIA    AIA_3 2013-12-31T23:59:36.34Z      171 angstrom
@@ -153,7 +153,7 @@ class JSOCClient(object):
 
     You can then make the request:
 
-    >>> requestIDs = client.request_data(response)
+    >>> requestIDs = client.request_data(response)  # doctest: +SKIP
     [u'JSOC_20140724_952']
 
     This returns a list of all the request identifiers for your query.
@@ -164,13 +164,13 @@ class JSOCClient(object):
     of 6 means an error, which is commonly that the request has not had time to
     get into the queue.
 
-    >>> status = client.check_request(requestIDs)
+    >>> status = client.check_request(requestIDs)  # doctest: +SKIP
     Request JSOC_20140724_955 was submitted 10 seconds ago, it is not ready to download.
 
     Once the status code is 0 you can download the data using the `get_request`
     method:
 
-    >>> res = client.get_request(requestIDs)
+    >>> res = client.get_request(requestIDs)  # doctest: +SKIP
 
     This returns a Results instance which can be used to watch the progress
     of the download.
@@ -196,10 +196,10 @@ class JSOCClient(object):
         >>> import astropy.units as u
         >>> from sunpy.net import jsoc
         >>> from sunpy.net import attrs as a
-        >>> client = jsoc.JSOCClient()
+        >>> client = jsoc.JSOCClient()  # doctest: +REMOTE_DATA
         >>> response = client.search(a.Time('2010-01-01T00:00:00', '2010-01-01T01:00:00'),
         ...                         a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA),
-        ...                         a.jsoc.Compression('rice'), a.jsoc.Segment('image'))
+        ...                         a.jsoc.Compression('rice'), a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
 
         Returns
         -------

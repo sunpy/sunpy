@@ -4,7 +4,10 @@ GOES LightCurve Tests
 """
 from __future__ import absolute_import
 
+import socket
+
 import pytest
+
 import sunpy.lightcurve
 from sunpy.time import TimeRange
 
@@ -23,25 +26,26 @@ class TestGOESLightCurve(object):
     def timerange_c(self):
         return TimeRange('1980/01/05', '1980/01/06')
 
-    @pytest.mark.online
+    @pytest.mark.remote_data
     def test_goes_range(self, timerange_a):
         """Test creation with two times"""
         lc1 = sunpy.lightcurve.GOESLightCurve.create(timerange_a.start, timerange_a.end)
         assert isinstance(lc1, sunpy.lightcurve.GOESLightCurve)
 
-    @pytest.mark.online
+    @pytest.mark.remote_data
     def test_goes_timerange(self, timerange_a):
         """Test creation with a TimeRange"""
         lc1 = sunpy.lightcurve.GOESLightCurve.create(timerange_a)
         assert isinstance(lc1, sunpy.lightcurve.GOESLightCurve)
 
-    @pytest.mark.online
+    @pytest.mark.xfail(raises=socket.timeout)
+    @pytest.mark.remote_data
     def test_goes_default(self):
         """Test creation with no input"""
         lc1 = sunpy.lightcurve.GOESLightCurve.create()
         assert isinstance(lc1, sunpy.lightcurve.GOESLightCurve)
 
-    @pytest.mark.online
+    @pytest.mark.remote_data
     def test_data(self, timerange_a, timerange_b):
         """Test presence of data"""
         lc1 = sunpy.lightcurve.GOESLightCurve.create(timerange_b)
@@ -49,7 +53,7 @@ class TestGOESLightCurve(object):
         assert lc1.data.empty == False
         assert lc2.data.empty == False
 
-    @pytest.mark.online
+    @pytest.mark.remote_data
     def test_header(self, timerange_a, timerange_b):
         """Test presence of GOES satellite number in header"""
         lc1 = sunpy.lightcurve.GOESLightCurve.create(timerange_b)
@@ -57,21 +61,21 @@ class TestGOESLightCurve(object):
         assert lc1.header['TELESCOP'] == 'GOES 7'
         assert lc2.header['TELESCOP'] == 'GOES 10'
 
-    @pytest.mark.online
+    @pytest.mark.remote_data
     def test_goes_url(self):
         """Test creation with url"""
         url = 'http://umbra.nascom.nasa.gov/goes/fits/1995/go07950603.fits'
         lc1 = sunpy.lightcurve.GOESLightCurve.create(url)
         assert isinstance(lc1, sunpy.lightcurve.GOESLightCurve)
 
-    @pytest.mark.online
+    @pytest.mark.remote_data
     def compare(self, lc1, lc2):
         try:
             (lc1.data == lc2.data)
         except:
             raise Exception
 
-    @pytest.mark.online
+    @pytest.mark.remote_data
     def test_filename(self, timerange_a, timerange_b):
         """Compare data from two different time ranges to make
         sure they are not the same"""

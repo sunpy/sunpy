@@ -29,18 +29,15 @@ from astropy.io import fits
 # ==============================================================================
 
 filepath = sunpy.data.test.rootdir
-
 eve_filepath = os.path.join(filepath, 'EVE_L0CS_DIODES_1m_truncated.txt')
 fermi_gbm_filepath = os.path.join(filepath, 'gbm.fits')
 norh_filepath = os.path.join(filepath, 'tca110810_truncated')
-goes_filepath = os.path.join(filepath, 'goes.fits')
 lyra_filepath = os.path.join(filepath, 'lyra_20150101-000000_lev3_std_truncated.fits.gz')
 rhessi_filepath = os.path.join(filepath, 'hsi_obssumm_20120601_018_truncated.fits.gz')
 noaa_ind_filepath = os.path.join(filepath, 'RecentIndices_truncated.txt')
 noaa_pre_filepath = os.path.join(filepath, 'predicted-sunspot-radio-flux_truncated.txt')
-
-goes_filepath = os.path.join(filepath, 'go1520120601.fits.gz')
-
+goes_filepath_com = os.path.join(filepath, 'go1520120601.fits.gz')
+goes_filepath = os.path.join(filepath, 'go1520110607.fits')
 a_list_of_many = glob.glob(os.path.join(filepath, "eve", "*"))
 
 # ==============================================================================
@@ -102,6 +99,11 @@ class TestTimeSeries(object):
         ts_goes = sunpy.timeseries.TimeSeries(goes_filepath)
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
+    def test_implicit_goes_com(self):
+        # Test a GOES TimeSeries
+        ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com)
+        assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
+        
     def test_implicit_lyra(self):
         # Test a LYRA TimeSeries
         ts_lyra = sunpy.timeseries.TimeSeries(lyra_filepath)
@@ -136,6 +138,11 @@ class TestTimeSeries(object):
         ts_goes = sunpy.timeseries.TimeSeries(goes_filepath, source='XRS')
         assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
 
+    def test_goes_com(self):
+        #Test a GOES TimeSeries
+        ts_goes = sunpy.timeseries.TimeSeries(goes_filepath_com, source='XRS')
+        assert isinstance(ts_goes, sunpy.timeseries.sources.goes.XRSTimeSeries)
+        
     def test_lyra(self):
         #Test a LYRA TimeSeries
         ts_lyra = sunpy.timeseries.TimeSeries(lyra_filepath, source='LYRA')

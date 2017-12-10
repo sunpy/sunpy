@@ -33,7 +33,7 @@ subclass of interest and follow the following example::
     >>> from sunpy.lightcurve import GOESLightCurve
     >>> from sunpy.time import TimeRange
     >>> tr = TimeRange('2013/07/21', '2013/07/22')
-    >>> goes = GOESLightCurve.create(tr)
+    >>> goes = GOESLightCurve.create(tr)  # doctest: +REMOTE_DATA
 
 The `~sunpy.lightcurve.LightCurve.create` method will go off and download the
 data needed to populate the instance. The following instrument classes are supported.
