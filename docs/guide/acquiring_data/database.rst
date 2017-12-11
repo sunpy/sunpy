@@ -260,7 +260,7 @@ sections.
     >>> len(qr)  # doctest: +REMOTE_DATA
     4
     >>> database.add_from_vso_query_result(qr)  # doctest: +REMOTE_DATA
-    >>> len(database)  # doctest: 
+    >>> len(database)  # doctest: +REMOTE_DATA
     62
 
 2.3.2 "Clever" Fetching
@@ -283,7 +283,7 @@ has not been downloaded before.
     >>> entries = database.fetch(
     ...     vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
     ...     vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
-    >>> len(database)  # doctest: 
+    >>> len(database)  # doctest: +REMOTE_DATA
     66
 
 Now you can see that the next fetch call does not
@@ -293,7 +293,7 @@ earlier. The query is exactly similar to the previous one.
     >>> entries = database.fetch(
     ...     vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
     ...     vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
-    >>> len(database)  # doctest: 
+    >>> len(database)  # doctest: +REMOTE_DATA
     66
 
 Another fetch call downloads new files because this is a new date range
@@ -302,7 +302,7 @@ whose files have not been downloaded yet.
     >>> entries = database.fetch(
     ...     vso.attrs.Time('2013-08-05', '2013-08-05 00:00:05'),
     ...     vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
-    >>> len(database)  # doctest: 
+    >>> len(database)  # doctest: +REMOTE_DATA
     70
 
 The caching also ensures that in case of queries which have some results in
@@ -314,7 +314,7 @@ files are downloaded.
     >>> entries = database.fetch(
     ...     vso.attrs.Time('2012-08-05 00:00:00', '2012-08-05 00:00:01'),
     ...     vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
-    >>> len(database)  # doctest: 
+    >>> len(database)  # doctest: +REMOTE_DATA
     70
 
 2.4 Adding entries manually
@@ -331,7 +331,7 @@ values as keyword arguments to :class:`tables.DatabaseEntry` as follows:
     >>> database.commit()
     >>> entry in database
     True
-    >>> len(database)  # doctest:
+    >>> len(database) # doctest: +REMOTE_DATA
     71
 
 Note that the `in` operator works only as expected after the
@@ -357,11 +357,9 @@ cannot be found or is not set.
     >>> from sunpy.database.tables import display_entries
     >>> print(display_entries(database,
     ...                       ['id', 'observation_time_start', 'observation_time_end',
-    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE 
-    id observation_time_start ...      wavemin            wavemax      
-
-   --- ---------------------- ... ------------------ ------------------
-
+    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    id observation_time_start ...      wavemin            wavemax
+    -- ---------------------- ... ------------------ ------------------
      1    2011-06-07 06:33:02 ...               17.1               17.1
      2    2011-06-07 06:33:03 ...               33.5               33.5
      3    2011-06-07 06:33:29 ... 17.400000000000002 17.400000000000002
@@ -372,7 +370,7 @@ cannot be found or is not set.
      8                    N/A ...                N/A                N/A
      9                    N/A ...                N/A                N/A
     10                    N/A ...                N/A                N/A
-   ...                    ... ...                ...                ...
+    ..                    ... ...                ...                ...
     61    2011-05-08 00:00:02 ...                9.4                9.4
     62    2011-05-08 00:00:03 ...               33.5               33.5
     63    2012-08-05 00:00:01 ...                9.4                9.4
@@ -398,10 +396,9 @@ entry and returns a list of every 10th entry from there.
 
     >>> print(display_entries(database[9::10],
     ...                       ['id', 'observation_time_start', 'observation_time_end',
-    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE 
+    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
      id observation_time_start observation_time_end   instrument   wavemin wavemax
-
-    --- ---------------------- -------------------- -------------- ------- ------- 
+    --- ---------------------- -------------------- -------------- ------- -------
      10                    N/A                  N/A            N/A     N/A     N/A
      20                    N/A                  N/A            N/A     N/A     N/A
      30    2011-06-07 06:58:43                  N/A          AIA_2    19.3    19.3
@@ -425,13 +422,13 @@ method to remove those where the just described predicate is true:
     ...     if database_entry.observation_time_start is None and database_entry.observation_time_end is None:
     ...         database.remove(database_entry)
     ...
-    >>> len(database)  # doctest: 
+    >>> len(database) # doctest: +REMOTE_DATA
     38
     >>> print(display_entries(database,
     ...                       ['id', 'observation_time_start', 'observation_time_end',
-    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE 
-    id observation_time_start ...      wavemin            wavemax      
-   --- ---------------------- ... ------------------ ------------------
+    ...                        'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    id observation_time_start ...      wavemin            wavemax
+    -- ---------------------- ... ------------------ ------------------
      1    2011-06-07 06:33:02 ...               17.1               17.1
      2    2011-06-07 06:33:03 ...               33.5               33.5
      3    2011-06-07 06:33:29 ... 17.400000000000002 17.400000000000002
@@ -442,7 +439,7 @@ method to remove those where the just described predicate is true:
     32    2011-06-07 06:33:07 ...               19.3               19.3
     33    2011-06-07 00:00:00 ...                N/A                N/A
     35    2011-06-07 06:52:19 ...               19.3               19.3
-   ...                    ... ...                ...                ...
+    ..                    ... ...                ...                ...
     60    2011-05-08 00:00:00 ...               21.1               21.1
     61    2011-05-08 00:00:02 ...                9.4                9.4
     62    2011-05-08 00:00:03 ...               33.5               33.5
@@ -481,9 +478,9 @@ starred:
     >>> print(display_entries(
     ...     filter(lambda entry: entry.starred, database),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE
+    ...      'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
     id observation_time_start observation_time_end instrument wavemin wavemax
-   --- ---------------------- -------------------- ---------- ------- -------
+    -- ---------------------- -------------------- ---------- ------- -------
      2    2011-06-07 06:33:03                  N/A      AIA_1    33.5    33.5
     31    2011-06-07 06:33:02                  N/A      AIA_2    21.1    21.1
     48    2011-06-07 06:33:05                  N/A      AIA_3   160.0   160.0
@@ -516,9 +513,9 @@ year:
     >>> print(display_entries(
     ...     filter(lambda entry: spring in entry.tags, database),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE
+    ...      'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
     id observation_time_start observation_time_end instrument wavemin wavemax
-   --- ---------------------- -------------------- ---------- ------- -------
+    -- ---------------------- -------------------- ---------- ------- -------
     56    2014-04-09 06:00:12                  N/A      AIA_3    17.1    17.1
     59    2011-05-08 00:00:00  2011-05-08 00:00:01        AIA    17.1    17.1
     60    2011-05-08 00:00:00  2011-05-08 00:00:01        AIA    21.1    21.1
@@ -541,9 +538,9 @@ arguments which describe which values to change and how.
     >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax']))   # doctest:
-    id observation_time_start ...      wavemin            wavemax      
-   --- ---------------------- ... ------------------ ------------------
+    ...      'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    id observation_time_start ...      wavemin            wavemax
+    -- ---------------------- ... ------------------ ------------------
      1    2011-06-07 06:33:02 ...               17.1               17.1
      2    2011-06-07 06:33:03 ...               33.5               33.5
      3    2011-06-07 06:33:29 ... 17.400000000000002 17.400000000000002
@@ -554,7 +551,7 @@ arguments which describe which values to change and how.
     32    2011-06-07 06:33:07 ...               19.3               19.3
     33    2011-06-07 00:00:00 ...                N/A                N/A
     35    2011-06-07 06:52:19 ...               19.3               19.3
-   ...                    ... ...                ...                ...
+    ..                    ... ...                ...                ...
     60    2011-05-08 00:00:00 ...               21.1               21.1
     61    2011-05-08 00:00:02 ...                9.4                9.4
     62    2011-05-08 00:00:03 ...               33.5               33.5
@@ -598,9 +595,9 @@ there are again entries with no end of observation time.
     >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred']))   # doctest:
+    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred']))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
     id observation_time_start observation_time_end ...  tags  starred
-   --- ---------------------- -------------------- ... ------ -------
+    -- ---------------------- -------------------- ... ------ -------
      1    2011-06-07 06:33:02  2011-06-07 06:33:02 ...    N/A      No
      2    2011-06-07 06:33:03  2011-06-07 06:33:03 ...    N/A     Yes
      3    2011-06-07 06:33:29  2011-06-07 06:33:29 ...    N/A      No
@@ -611,7 +608,7 @@ there are again entries with no end of observation time.
     32    2011-06-07 06:33:07  2011-06-07 06:33:07 ...    N/A      No
     33    2011-06-07 00:00:00  2011-06-07 23:59:59 ...    N/A      No
     35    2011-06-07 06:52:19  2011-06-07 06:52:19 ...    N/A      No
-   ...                    ...                  ... ...    ...     ...
+    ..                    ...                  ... ...    ...     ...
     60    2011-05-08 00:00:00  2011-05-08 00:00:01 ... spring     Yes
     61    2011-05-08 00:00:02  2011-05-08 00:00:03 ... spring      No
     62    2011-05-08 00:00:03  2011-05-08 00:00:04 ... spring     Yes
@@ -636,9 +633,9 @@ stored end of observation time anymore.
     >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred']))   # doctest:
+    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred']))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
     id observation_time_start observation_time_end ...  tags  starred
-   --- ---------------------- -------------------- ... ------ -------
+    -- ---------------------- -------------------- ... ------ -------
      1    2011-06-07 06:33:02  2011-06-07 06:33:02 ...    N/A      No
      2    2011-06-07 06:33:03  2011-06-07 06:33:03 ...    N/A     Yes
      3    2011-06-07 06:33:29  2011-06-07 06:33:29 ...    N/A      No
@@ -649,7 +646,7 @@ stored end of observation time anymore.
     32    2011-06-07 06:33:07  2011-06-07 06:33:07 ...    N/A      No
     33    2011-06-07 00:00:00  2011-06-07 23:59:59 ...    N/A      No
     35    2011-06-07 06:52:19  2011-06-07 06:52:19 ...    N/A      No
-   ...                    ...                  ... ...    ...     ...
+    ..                    ...                  ... ...    ...     ...
     60    2011-05-08 00:00:00  2011-05-08 00:00:01 ... spring     Yes
     61    2011-05-08 00:00:02  2011-05-08 00:00:03 ... spring      No
     62    2011-05-08 00:00:03  2011-05-08 00:00:04 ... spring     Yes
@@ -687,9 +684,9 @@ added in section 2.3.2, "Downloading":
     >>> print(display_entries(
     ...     database.search(vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'), vso.attrs.Instrument('AIA')),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax'], sort=True))   # doctest: +NORMALIZE_WHITESPACE
+    ...      'instrument', 'wavemin', 'wavemax'], sort=True))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
     id observation_time_start observation_time_end instrument wavemin wavemax
-   --- ---------------------- -------------------- ---------- ------- -------
+    -- ---------------------- -------------------- ---------- ------- -------
     63    2012-08-05 00:00:01  2012-08-05 00:00:02        AIA     9.4     9.4
     64    2012-08-05 00:00:01  2012-08-05 00:00:02        AIA     9.4     9.4
     65    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
@@ -709,9 +706,9 @@ check `astropy.units`.
     >>> print(display_entries(
     ...     database.search(vso.attrs.Wavelength(1.0*u.nm, 2.0*u.nm)),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax'], sort=True))   # doctest: +NORMALIZE_WHITESPACE
-    id observation_time_start ...      wavemin            wavemax      
-   --- ---------------------- ... ------------------ ------------------
+    ...      'instrument', 'wavemin', 'wavemax'], sort=True))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    id observation_time_start ...      wavemin            wavemax
+    -- ---------------------- ... ------------------ ------------------
      1    2011-06-07 06:33:02 ...               17.1               17.1
      3    2011-06-07 06:33:29 ... 17.400000000000002 17.400000000000002
     30    2011-06-07 06:58:43 ...               19.3               19.3
@@ -750,9 +747,9 @@ with the value 'Angstrom':
     >>> print(display_entries(
     ...     database.search(dbattrs.Tag('spring') | dbattrs.Starred(), ~dbattrs.FitsHeaderEntry('WAVEUNIT', 'Angstrom')),
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'], sort=True))   # doctest: +NORMALIZE_WHITESPACE 
+    ...      'instrument', 'wavemin', 'wavemax', 'tags', 'starred'], sort=True))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
     id observation_time_start observation_time_end ... wavemax  tags  starred
-   --- ---------------------- -------------------- ... ------- ------ -------
+    -- ---------------------- -------------------- ... ------- ------ -------
      2    2011-06-07 06:33:03  2011-06-07 06:33:03 ...    33.5    N/A     Yes
     31    2011-06-07 06:33:02  2011-06-07 06:33:02 ...    21.1    N/A     Yes
     48    2011-06-07 06:33:05  2011-06-07 06:33:05 ...   160.0    N/A     Yes
@@ -786,9 +783,9 @@ to 10 and therefore removes the 5 entries that been used least recently.
     >>> print(display_entries(
     ...     database,
     ...     ['id', 'observation_time_start', 'observation_time_end',
-    ...      'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE 
-    id observation_time_start ...      wavemin            wavemax      
-   --- ---------------------- ... ------------------ ------------------
+    ...      'instrument', 'wavemin', 'wavemax']))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+    id observation_time_start ...      wavemin            wavemax
+    -- ---------------------- ... ------------------ ------------------
     35    2011-06-07 06:52:19 ...               19.3               19.3
     36    2011-06-07 06:39:31 ...               19.3               19.3
     41    2011-06-07 06:33:02 ...               17.1               17.1
