@@ -4,7 +4,7 @@ import numpy as np
 import astropy.units as u
 
 import sunpy.map
-from ...types import SunPyType
+from sunpy.io.special.asdf.type import SunPyType
 
 __all__ = ['GenericMapType']
 
