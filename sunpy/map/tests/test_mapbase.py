@@ -8,6 +8,8 @@ import os
 import pytest
 import datetime
 import warnings
+import glob
+import tempfile
 
 import numpy as np
 
@@ -29,6 +31,8 @@ from sunpy.time import parse_time
 from sunpy.extern import six
 
 testpath = sunpy.data.test.rootdir
+a_list_of_many = glob.glob(os.path.join(testpath, "EIT", "*"))
+a_fname = a_list_of_many[0]
 
 
 @pytest.fixture
@@ -278,6 +282,15 @@ def test_world_to_pixel(generic_map):
     # Note: FITS pixels start from 1,1
     test_pixel = generic_map.world_to_pixel(generic_map.reference_coordinate, origin=1)
     assert_quantity_allclose(test_pixel, generic_map.reference_pixel)
+
+
+def test_save(generic_map):
+        # Test save out
+        eitmap = sunpy.map.Map(a_fname)
+        afilename = tempfile.NamedTemporaryFile(suffix='fits').name
+        eitmap.save(afilename, filetype='fits', clobber=True)
+        backin = sunpy.map.Map(afilename)
+        assert isinstance(backin, sunpy.map.sources.EITMap)
 
 
 def test_default_shift():
