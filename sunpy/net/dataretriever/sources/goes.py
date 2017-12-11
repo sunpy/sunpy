@@ -93,7 +93,9 @@ class XRSClient(GenericClient):
         base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
         start_time = datetime.datetime.combine(timerange.start.date(),
                                                datetime.datetime.min.time())
-        total_days = int(timerange.days.value) + 1
+        # make sure we are counting a day even if only a part of it is in the query range.
+        day_range = TimeRange(timerange.start.date(), timerange.end.date())
+        total_days = int(day_range.days.value) + 1
         result = list()
 
         # Iterate over each day in the input timerange and generate a URL for

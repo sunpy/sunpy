@@ -67,8 +67,13 @@ def test_fixed_satellite():
 def test_query(time):
     qr1 = LCClient.search(time, Instrument('XRS'))
     assert isinstance(qr1, QueryResponse)
-    assert qr1.time_range().start == time.start
-    assert qr1.time_range().end == time.end
+    # We only compare dates here as the start time of the qr will always be the
+    # start of the day.
+    assert qr1.time_range().start.date() == time.start.date()
+
+    almost_day = datetime.timedelta(days=1, milliseconds=-1)
+    end = datetime.datetime.combine(time.end.date(), datetime.time()) + almost_day
+    assert qr1.time_range().end == end
 
 
 def test_query_error():
