@@ -263,10 +263,14 @@ def test_swap_cd():
 
 def test_data_range(generic_map):
     """Make sure xrange and yrange work"""
-    assert_quantity_allclose((generic_map.xrange[1] - generic_map.xrange[0]
-                              ).to(u.arcsec).value, generic_map.meta['cdelt1'] * generic_map.meta['naxis1'])
-    assert_quantity_allclose((generic_map.yrange[1] - generic_map.yrange[0]
-                              ).to(u.arcsec).value, generic_map.meta['cdelt2'] * generic_map.meta['naxis2'])
+    assert_quantity_allclose(
+        (generic_map.xrange[1] - generic_map.xrange[0]).to(u.arcsec).value,
+        generic_map.meta['cdelt1'] * generic_map.meta['naxis1']
+    )
+    assert_quantity_allclose(
+        (generic_map.yrange[1] - generic_map.yrange[0]).to(u.arcsec).value,
+        generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
+    )
 
     # the weird unit-de-unit thing here is to work around and inconsistency in
     # the way np.average works with astropy 1.3 and 2.0dev
