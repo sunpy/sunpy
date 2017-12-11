@@ -95,7 +95,6 @@ def test_attr_or():
 
     assert an is a1
 
-
 def test_simpleattr_collides():
     a1 = SA1(1)
 
@@ -232,7 +231,6 @@ def test_attror_or():
 
     assert len((aor | a3).attrs) == 3
 
-
 def test_attror_and():
     a1 = SA1(1)
     a2 = SA2(2)
@@ -245,3 +243,76 @@ def test_attror_and():
     assert len(comp.attrs) == 2
     assert isinstance(comp.attrs[0], attr.AttrAnd)
     assert isinstance(comp.attrs[1], attr.AttrAnd)
+
+def test_attror_xor():
+    a1 = [SA1(1), SA2(2)]
+    a2 = SA4(4)
+    a3 = SA3(3)
+    new = a2 | a3
+    for elem in a1:
+        with pytest.raises(TypeError):
+                new |= elem ^ a2
+
+    return new
+
+    assert isinstance(new, attr.AttrOr)
+    assert len(new.attrs) == 2
+    assert isinstance(new.attrs[0], attr.AttrOr)
+    assert isinstance(new.attrs[1], attr.AttrOr)
+
+def test_attror_repr():
+    a1 = SA1(1)
+    a2 = SA2(2)
+    aor = a1 | a2
+
+    assert "SA1" in repr(aor)
+    assert "SA2" in repr(aor)
+
+def test_attror_hash():
+    a1 = SA1(1)
+    a2 = SA2(2)
+    a3 = SA2(3)
+    aor = a1 | a2
+    aor2 = a1 | a2
+    aor3 = a1 | a3
+
+    assert hash(aor) == hash(aor2)
+    assert hash(aor) != hash(aor3)
+
+def test_attror_eq():
+    a1 = SA1(1)
+    a2 = SA2(2)
+    aor = a1 | a2
+    aor2 = a1 | a2
+
+    assert not aor == a1
+    assert aor == aor2
+
+def test_attror_collides():
+    a1 = SA1(1)
+    a2 = SA2(2)
+    
+    aor = a1 | a2
+    aor2 = a1 | a2
+
+    assert not aor.collides(aor2)
+    
+
+def test_and():
+    a1 = SA1(1)
+    a2 = (SA2(2), SA3(3))
+    for elem in a2:    
+        a1 &= elem
+    return a1
+        
+    
+    assert isinstance(a1, attr.and_)
+
+def test_or():
+    a1 = SA1(1)
+    a2 = (SA2(2), SA3(3))
+    for elem in a2:    
+        a1 |= elem
+    return a1
+
+    assert isinstance(a1, attr.or_)
