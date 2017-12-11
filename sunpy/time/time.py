@@ -1,7 +1,6 @@
 from __future__ import absolute_import, division, print_function
 import re
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, date, time, timedelta
 
 import numpy as np
 import pandas
@@ -170,6 +169,8 @@ def parse_time(time_string, time_format='', **kwargs):
         return time_string._mpl_repr()
     elif isinstance(time_string, datetime) or time_format == 'datetime':
         return time_string
+    elif isinstance(time_string, date):
+        return datetime.combine(time_string, time())
     elif isinstance(time_string, tuple):
         return datetime(*time_string)
     elif time_format == 'utime' or isinstance(time_string, (int, float)):
