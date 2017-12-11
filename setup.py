@@ -138,6 +138,12 @@ if extra_tags:
 else:
     extras_require = None
 
+# Entry points
+entry_points = {}
+entry_points['asdf_extensions'] = [
+    'sunpy = sunpy.io.special.asdf.extension:SunpyExtension',
+]
+
 setup(name=PACKAGENAME,
       version=VERSION,
       description=DESCRIPTION,
@@ -158,6 +164,7 @@ setup(name=PACKAGENAME,
       long_description_content_type='text/x-rst',
       cmdclass=cmdclassd,
       zip_safe=False,
+      entry_points=entry_points,
       use_2to3=False,
       entry_points=entry_points,
       python_requires='>={}'.format(__minimum_python_version__),
