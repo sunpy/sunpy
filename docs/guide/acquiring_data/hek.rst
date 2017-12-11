@@ -89,7 +89,7 @@ recognition method is called "frm_name". Using list comprehensions
 recognition methods used to find each of the flares in the result
 object, for example:
 
-    >>> [elem["frm_name"] for elem in result] # doctest:+SKIP
+    >>> [elem["frm_name"] for elem in result]
     [u'asainz',
      u'asainz',
      u'asainz',
@@ -232,7 +232,7 @@ arcseconds OR have a peak flux over 1000.0:
 
 and as a check
 
-    >>> [elem["fl_peakflux"] for elem in result] # doctest:+SKIP
+    >>> [elem["fl_peakflux"] for elem in result]
     [None,
     None,
     None,
@@ -251,7 +251,7 @@ and as a check
     923.984,
     1019.83]
 
-    >>> [elem["event_coord1"] for elem in result] # doctest:+SKIP
+    >>> [elem["event_coord1"] for elem in result]
     [51,
     51,
     51,
@@ -280,9 +280,9 @@ flux over 1000.0:
 
     >>> result = client.search(hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type), (hek.attrs.Event.Coord1 > 50) and (hek.attrs.FL.PeakFlux > 1000.0) )  # doctest: +REMOTE_DATA
 
-    >>> [elem["fl_peakflux"] for elem in result] # doctest:+SKIP
+    >>> [elem["fl_peakflux"] for elem in result]
     [2326.86, 1698.83, 2360.49, 3242.64, 1375.93, 6275.98, 1019.83]
-    >>> [elem["event_coord1"] for elem in result] # doctest:+SKIP
+    >>> [elem["event_coord1"] for elem in result]
     [883.2, 883.2, 883.2, 883.2, 883.2, 883.2, 883.2]
 
 In this case none of the peak fluxes are returned with the value
