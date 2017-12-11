@@ -248,7 +248,8 @@ and as a check
     3242.64,
     1375.93,
     6275.98,
-    923.984]
+    923.984,
+    1019.83]
 
     >>> [elem["event_coord1"] for elem in result] # doctest:+SKIP
     [51,
@@ -266,6 +267,7 @@ and as a check
     883.2,
     883.2,
     883.2,
+    883.2,
     883.2]
 
 Note that some of the fluxes are returned as "None".  This is because
@@ -279,9 +281,9 @@ flux over 1000.0:
     >>> result = client.search(hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type), (hek.attrs.Event.Coord1 > 50) and (hek.attrs.FL.PeakFlux > 1000.0) )  # doctest: +REMOTE_DATA
 
     >>> [elem["fl_peakflux"] for elem in result] # doctest:+SKIP
-    [2326.86, 1698.83, 2360.49, 3242.64, 1375.93, 6275.98]
+    [2326.86, 1698.83, 2360.49, 3242.64, 1375.93, 6275.98, 1019.83]
     >>> [elem["event_coord1"] for elem in result] # doctest:+SKIP
-    [883.2, 883.2, 883.2, 883.2, 883.2, 883.2]
+    [883.2, 883.2, 883.2, 883.2, 883.2, 883.2, 883.2]
 
 In this case none of the peak fluxes are returned with the value
 `None`.  Since we are using an `and` logical operator we need a result
