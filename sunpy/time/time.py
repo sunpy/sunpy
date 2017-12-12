@@ -126,6 +126,14 @@ def _astropy_time(time):
     return time if isinstance(time, astropy.time.Time) else astropy.time.Time(parse_time(time))
 
 
+def _parse_dt64(dt):
+    """
+    Parse a single numpy datetime64 object
+    """
+    # Validate (in an agnostic way) that we are getting a datetime rather than a date
+    return datetime(*(dt.astype(datetime).timetuple()[:6]))
+
+
 def parse_time(time_string, time_format='', **kwargs):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
@@ -162,12 +170,10 @@ def parse_time(time_string, time_format='', **kwargs):
         return datetime(*time_string)
     elif time_format == 'utime' or isinstance(time_string, (int, float)):
         return datetime(1979, 1, 1) + timedelta(0, time_string)
-    elif isinstance(time_string, pandas.DatetimeIndex):
-        return time_string._mpl_repr()
+    elif isinstance(time_string, np.datetime64):
+        return _parse_dt64(time_string)
     elif isinstance(time_string, np.ndarray) and 'datetime64' in str(time_string.dtype):
-        ii = [ss.astype(datetime) for ss in time_string]
-        # Validate (in an agnostic way) that we are getting a datetime rather than a date
-        return np.array([datetime(*(dt.timetuple()[:6])) for dt in ii])
+        return np.array([_parse_dt64(dt) for dt in time_string])
     elif time_string is 'now':
         return datetime.utcnow()
     elif isinstance(time_string, astropy.time.Time):

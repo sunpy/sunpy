@@ -77,6 +77,13 @@ def test_parse_time_numpy_datetime():
     assert all([isinstance(dt, datetime) for dt in dts])
 
 
+def test_parse_time_individual_numpy_datetime():
+    dt64 = np.datetime64('2005-02-01T00')
+    dt = parse_time(dt64)
+
+    assert isinstance(dt, datetime)
+
+
 def test_parse_time_astropy():
     astropy_time = parse_time(astropy.time.Time(['2016-01-02T23:00:01']))
 
