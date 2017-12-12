@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import pytest
+asdf = pytest.importorskip('asdf')
 
 import sunpy.map
 from sunpy.data.test import get_test_filepath
 from sunpy.io.special.asdf.extension import SunpyExtension
 
-asdf = pytest.importorskip('asdf')
 from asdf.tests.helpers import assert_roundtrip_tree
 
 
