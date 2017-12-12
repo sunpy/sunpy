@@ -48,6 +48,17 @@ def test_parse_time_pandas_timestamp():
     assert dt == LANDING
 
 
+def test_parse_time_pandas_series():
+    inputs = [datetime(2012, 1, i) for i in range(1, 13)]
+    ind = pandas.Series(inputs)
+
+    dts = parse_time(ind)
+
+    assert isinstance(dts, np.ndarray)
+    assert all([isinstance(dt, datetime) for dt in dts])
+    assert list(dts) == inputs
+
+
 def test_parse_time_pandas_index():
     inputs = [datetime(2012, 1, i) for i in range(1, 13)]
     ind = pandas.DatetimeIndex(inputs)

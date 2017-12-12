@@ -164,6 +164,10 @@ def parse_time(time_string, time_format='', **kwargs):
     """
     if isinstance(time_string, pandas.Timestamp):
         return time_string.to_pydatetime()
+    elif isinstance(time_string, pandas.Series) and 'datetime64' in str(time_string.dtype):
+        return np.array([dt.to_pydatetime() for dt in time_string])
+    elif isinstance(time_string, pandas.DatetimeIndex):
+        return time_string._mpl_repr()
     elif isinstance(time_string, datetime) or time_format == 'datetime':
         return time_string
     elif isinstance(time_string, tuple):
