@@ -38,15 +38,15 @@ def webservice_parser(service='HEC'):
     Examples
     --------
     >>> from sunpy.net.helio import parser
-    >>> parser.webservice_parser()  # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
-    ['http://helio.mssl.ucl.ac.uk/helio-hec/HelioService',
-    'http://msslkk.mssl.ucl.ac.uk/helio-hec/HelioService',
-    'http://voparis-helio.obspm.fr/helio-hec/helio-hec/HelioService',
-    'http://hec.helio-vo.eu/helio_hec/HelioService',
-    'http://helio.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService',
-    'http://msslkk.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService',
-    'http://voparis-helio.obspm.fr/helio-hec/helio-hec/HelioLongQueryService',
-    'http://hec.helio-vo.eu/helio_hec/HelioLongQueryService']
+    >>> parser.webservice_parser()  # doctest: +SKIP
+    ['http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService',
+     'http://festung3.oats.inaf.it:8080/helio-hec/HelioService',
+     'http://festung1.oats.inaf.it:8080/helio-hec/HelioService',
+     'http://hec.helio-vo.eu/helio_hec/HelioService',
+     'http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioLongQueryService',
+     'http://festung3.oats.inaf.it:8080/helio-hec/HelioLongQueryService',
+     'http://festung1.oats.inaf.it:8080/helio-hec/HelioLongQueryService',
+     'http://hec.helio-vo.eu/helio_hec/HelioLongQueryService']
 
     """
     link = RL.LINK + '/' + service.lower()
