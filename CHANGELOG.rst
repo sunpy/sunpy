@@ -19,11 +19,11 @@ Bug Fixes
 - Changed TRAVIS cronjobs [#2338]
 - Support array values for `obstime` for coordinates and transformations [#2342] [#2346]
 - Updated Gallery off limb enhance example [#2337]
-- Documenation fixes for VSO [#2354] [#2353] 
-- All tests within the docuemtation have been fixed [#2343]
+- Documentation fixes for VSO [#2354] [#2353]
+- All tests within the documentation have been fixed [#2343]
 - Change to using pytest-remotedata for our online tests [#2345]
 - Fixed upstream astropy/numpy documentation issues [#2359]
-- Documenation for Map improved [#2361]
+- Documentation for Map improved [#2361]
 - Fix the output units of pixel_to_world [#2362]
 
 0.8.2
