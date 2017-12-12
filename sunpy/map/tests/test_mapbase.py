@@ -8,6 +8,8 @@ import os
 import pytest
 import datetime
 import warnings
+import glob
+import tempfile
 
 import numpy as np
 
@@ -29,6 +31,8 @@ from sunpy.time import parse_time
 from sunpy.extern import six
 
 testpath = sunpy.data.test.rootdir
+a_list_of_many = glob.glob(os.path.join(testpath, "EIT", "*"))
+a_fname = a_list_of_many[0]
 
 
 @pytest.fixture
@@ -259,10 +263,14 @@ def test_swap_cd():
 
 def test_data_range(generic_map):
     """Make sure xrange and yrange work"""
-    assert_quantity_allclose((generic_map.xrange[1] - generic_map.xrange[0]
-            ).to(u.arcsec).value, generic_map.meta['cdelt1'] * generic_map.meta['naxis1'])
-    assert_quantity_allclose((generic_map.yrange[1] - generic_map.yrange[0]
-            ).to(u.arcsec).value, generic_map.meta['cdelt2'] * generic_map.meta['naxis2'])
+    assert_quantity_allclose(
+        (generic_map.xrange[1] - generic_map.xrange[0]).to(u.arcsec).value,
+        generic_map.meta['cdelt1'] * generic_map.meta['naxis1']
+    )
+    assert_quantity_allclose(
+        (generic_map.yrange[1] - generic_map.yrange[0]).to(u.arcsec).value,
+        generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
+    )
 
     # the weird unit-de-unit thing here is to work around and inconsistency in
     # the way np.average works with astropy 1.3 and 2.0dev
@@ -278,6 +286,15 @@ def test_world_to_pixel(generic_map):
     # Note: FITS pixels start from 1,1
     test_pixel = generic_map.world_to_pixel(generic_map.reference_coordinate, origin=1)
     assert_quantity_allclose(test_pixel, generic_map.reference_pixel)
+
+
+def test_save(generic_map):
+        # Test save out
+        eitmap = sunpy.map.Map(a_fname)
+        afilename = tempfile.NamedTemporaryFile(suffix='fits').name
+        eitmap.save(afilename, filetype='fits', clobber=True)
+        backin = sunpy.map.Map(afilename)
+        assert isinstance(backin, sunpy.map.sources.EITMap)
 
 
 def test_default_shift():

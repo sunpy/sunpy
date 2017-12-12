@@ -12,10 +12,11 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 from hypothesis import given, settings
-from hypothesis.extra.datetime import datetimes
+from hypothesis.strategies import datetimes
 from sunpy.net.tests.strategies import time_attr
 
 LCClient = eve.EVEClient()
+
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize("timerange,url_start,url_end", [
@@ -56,7 +57,7 @@ def test_query():
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 2
     assert qr1.time_range().start == parse_time('2012/08/09')
-    assert qr1.time_range().end == parse_time('2012/08/11') # includes end.
+    assert qr1.time_range().end == parse_time('2012/08/11')  # includes end.
 
 
 @pytest.mark.remote_data
@@ -84,7 +85,11 @@ def test_fido(query):
 
 
 @pytest.mark.remote_data
-@given(time_attr(time=datetimes(timezones=[], max_year=datetime.datetime.utcnow().year, min_year=2010)))
+@given(time_attr(time=datetimes(
+    # timezones=None,
+    max_value=datetime.datetime(datetime.datetime.utcnow().year, 1, 1, 0, 0),
+    min_value=datetime.datetime(2010, 1, 1, 0, 0),
+)))
 @settings(max_examples=2, timeout=240)
 def test_levels(time):
     """
