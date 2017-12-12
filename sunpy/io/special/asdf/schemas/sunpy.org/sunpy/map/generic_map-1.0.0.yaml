@@ -13,11 +13,11 @@ description:
 type: object
 properties:
   meta:
-    type: map
+    type: object
   data:
-    $ref: "tag:stsci.edu:asdf/core/ndarray-1.1.0"
+    $ref: "tag:stsci.edu:asdf/core/ndarray-1.0.0"
   plot_settings:
-    type: map
+    type: object
   shift:
     $ref: "tag:stsci.edu:asdf/unit/quantity-1.1.0"
 
