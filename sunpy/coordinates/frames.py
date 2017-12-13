@@ -6,8 +6,6 @@ the `astropy.coordinates` module.
 """
 from __future__ import absolute_import, division
 
-import warnings
-
 import numpy as np
 
 from astropy import units as u
@@ -16,7 +14,7 @@ from astropy.coordinates.representation import (CartesianRepresentation,
                                                 SphericalRepresentation)
 from astropy.coordinates.baseframe import (BaseCoordinateFrame,
                                            RepresentationMapping)
-from astropy.coordinates import Attribute, CoordinateAttribute, ConvertError
+from astropy.coordinates import Attribute, ConvertError
 
 from sunpy import sun
 from .representation import (SphericalWrap180Representation, UnitSphericalWrap180Representation)
@@ -26,7 +24,8 @@ from .frameattributes import TimeFrameAttributeSunPy, ObserverCoordinateAttribut
 RSUN_METERS = sun.constants.get('radius').si.to(u.m)
 DSUN_METERS = sun.constants.get('mean distance').si.to(u.m)
 
-__all__ = ['HeliographicStonyhurst', 'HeliographicCarrington', 'Heliocentric', 'Helioprojective']
+__all__ = ['HeliographicStonyhurst', 'HeliographicCarrington', 'Heliocentric',
+           'Helioprojective', 'HelioprojectiveRadial']
 
 
 class HeliographicStonyhurst(BaseCoordinateFrame):
@@ -370,7 +369,8 @@ class Helioprojective(BaseCoordinateFrame):
                                                                  lat=lat,
                                                                  distance=d))
 
-class HelioProjectiveRadial(BaseCoordinateFrame):
+
+class HelioprojectiveRadial(Helioprojective):
     """
     The Helioprojective-Radial frame is a spherical coordinate system projected
     on to the the celestial sphere.
@@ -394,22 +394,20 @@ class HelioProjectiveRadial(BaseCoordinateFrame):
     default_representation = SphericalRepresentation
 
     _frame_specific_representation_info = {
-        'spherical': [RepresentationMapping('lon', 'dec', u.deg),
-                      RepresentationMapping('lat', 'psi', u.deg),
+        'spherical': [RepresentationMapping('lat', 'dec', u.deg),
+                      RepresentationMapping('lon', 'psi', u.deg),
                       RepresentationMapping('distance', 'distance', u.km)],
 
-        'sphericalwrap180': [RepresentationMapping('lon', 'dec', u.deg),
-                             RepresentationMapping('lat', 'psi', u.deg),
+        'sphericalwrap180': [RepresentationMapping('lat', 'dec', u.deg),
+                             RepresentationMapping('lon', 'psi', u.deg),
                              RepresentationMapping('distance', 'distance', u.km)],
 
-        'unitspherical': [RepresentationMapping('lon', 'dec', u.deg),
-                          RepresentationMapping('lat', 'psi', u.deg)],
+        'unitspherical': [RepresentationMapping('lat', 'dec', u.deg),
+                          RepresentationMapping('lon', 'psi', u.deg)],
 
-        'unitsphericalwrap180': [RepresentationMapping('lon', 'dec', u.deg),
-                                 RepresentationMapping('lat', 'psi', u.deg)]}
+        'unitsphericalwrap180': [RepresentationMapping('lat', 'dec', u.deg),
+                                 RepresentationMapping('lon', 'psi', u.deg)]}
 
-    D0 = FrameAttribute(default=(1*u.au).to(u.km))
-    dateobs = TimeFrameAttributeSunPy()
-    L0 = FrameAttribute(default=0*u.deg)
-    B0 = FrameAttribute(default=0*u.deg)
-    rsun = FrameAttribute(default=RSUN_METERS.to(u.km))
+    obstime = TimeFrameAttributeSunPy()
+    rsun = Attribute(default=RSUN_METERS.to(u.km))
+    observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")

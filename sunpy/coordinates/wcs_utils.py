@@ -4,7 +4,8 @@ from __future__ import absolute_import, division
 import astropy.wcs.utils
 from astropy.wcs import WCSSUB_CELESTIAL
 
-from .frames import Helioprojective, Heliocentric, HeliographicStonyhurst, HeliographicCarrington
+from .frames import (Helioprojective, Heliocentric, HeliographicStonyhurst,
+                     HeliographicCarrington, HelioprojectiveRadial)
 
 __all__ = ['solar_wcs_frame_mapping']
 
@@ -52,8 +53,8 @@ def solar_wcs_frame_mapping(wcs):
     if xcoord == 'SOLX' and ycoord == 'SOLY':
         return Heliocentric(obstime=dateobs, observer=observer)
 
-
     if xcoord == 'HRLN' and ycoord == 'HRLT':
-        return HelioProjectiveRadial(dateobs=dateobs, L0=hglon, B0=hglat, D0=dsun)
+        return HelioprojectiveRadial(obstime=dateobs, observer=observer, rsun=rsun)
+
 
 astropy.wcs.utils.WCS_FRAME_MAPPINGS.append([solar_wcs_frame_mapping])

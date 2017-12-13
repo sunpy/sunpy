@@ -28,7 +28,7 @@ from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_product
 from astropy.coordinates import HCRS, get_body_barycentric, BaseCoordinateFrame, ConvertError
 from astropy.tests.helper import quantity_allclose
 
-from .representation import SphericalWrap180Representation
+from .representation import SphericalWrap180Representation, UnitSphericalWrap180Representation
 from .frames import (HeliographicStonyhurst, HeliographicCarrington,
                      Heliocentric, Helioprojective, HelioprojectiveRadial)
 
@@ -227,20 +227,18 @@ def hpc_to_hpr(hpcframe, hprframe):
     lat = np.deg2rad(hpcframe.Ty)
     # Elongation calc:
     # Get numerator and denomenator for atan2 calculation
-    top = np.cos(lat)*np.cos(lon)
-    btm = np.sqrt((np.cos(lat)**2)*(np.sin(lon)**2) + (np.sin(lat)**2))
-    el = np.arctan2(top,btm)
+    top = np.sqrt((np.cos(lat)**2) * (np.sin(lon)**2) + (np.sin(lat)**2))
+    btm = np.cos(lat) * np.cos(lon)
+    el = np.arctan2(top, btm)
     # Position angle calc:
-    top = np.sin(lat)
-    btm = -np.cos(lat)*np.sin(lon)
-    pa = np.arctan2(top,btm)
+    top = -np.cos(lat)*np.sin(lon)
+    btm = np.sin(lat)
+    psi = np.arctan2(top, btm)
     # Put it back into degs
-    # Take 90 degrees off both and times it by -1, because...
-    pi2 = u.Quantity(np.pi/2,unit=u.rad)
-    el = np.rad2deg(el)
-    pa = np.rad2deg(pa)
+    dec = el - 90*u.deg
 
-    representation = UnitSphericalRepresentation(el, pa)
+    print(psi, dec)
+    representation = UnitSphericalRepresentation(lon=psi, lat=dec)
     return hprframe.realize_frame(representation)
 
 
@@ -250,21 +248,20 @@ def hpr_to_hpc(hprframe, hpcframe):
     """
     Transform from the hprframe to a hpcframe
     """
-    # Get params in rads
-    el = np.deg2rad(hprframe.psi)
-    pa = np.deg2rad(hprframe.dec)
-    # pi/2 correction
-    el += u.deg*np.pi/2
+    psi = hprframe.psi
+    el = hprframe.dec + 90*u.deg
+
     # Longitude conversion
-    top = -np.sin(el)*np.sin(pa)
+    top = -np.sin(el) * np.sin(psi)
     btm = np.cos(el)
-    lon = np.arctan2(top,btm)
+    lon = np.arctan2(top, btm)
     # Latitude conversion
-    lat = np.arcsin(np.sin(el)*np.cos(pa))
+    lat = np.arcsin(np.sin(el) * np.cos(psi))
+
     # Convert back to degrees.
-    lon = np.rad2deg(lon)
-    lat = np.rad2deg(lat)
-    representation = UnitSphericalWrap180Representation(lon=lon, lat=lat)
+    dec = lat
+    print(dec.to(u.arcsec), lon.to(u.arcsec))
+    representation = UnitSphericalWrap180Representation(lon=lon, lat=dec)
     return hpcframe.realize_frame(representation)
 
 
