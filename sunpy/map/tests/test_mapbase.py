@@ -31,10 +31,6 @@ from sunpy.extern import six
 
 testpath = sunpy.data.test.rootdir
 
-@pytest.fixture
-def eit171_test_map():
-    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
-
 
 @pytest.fixture
 def aia171_test_map():
