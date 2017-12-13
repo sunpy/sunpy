@@ -222,23 +222,31 @@ def hpc_to_hpr(hpcframe, hprframe):
     """
     Transform from the hpcframe to a hprframe
     """
-    # Put it in rads for np
-    lon = np.deg2rad(hpcframe.Tx)
-    lat = np.deg2rad(hpcframe.Ty)
+    lon = hpcframe.Tx
+    lat = hpcframe.Ty
+    if issubclass(hpcframe.representation, UnitSphericalRepresentation):
+        distance = None
+    else:
+        distance = hpcframe.distance
+
     # Elongation calc:
     # Get numerator and denomenator for atan2 calculation
     top = np.sqrt((np.cos(lat)**2) * (np.sin(lon)**2) + (np.sin(lat)**2))
     btm = np.cos(lat) * np.cos(lon)
     el = np.arctan2(top, btm)
+
     # Position angle calc:
     top = -np.cos(lat)*np.sin(lon)
     btm = np.sin(lat)
     psi = np.arctan2(top, btm)
-    # Put it back into degs
+
+    # The frame stores declination parameter not elongation angle
     dec = el - 90*u.deg
 
-    print(psi, dec)
-    representation = UnitSphericalRepresentation(lon=psi, lat=dec)
+    if distance:
+        representation = SphericalRepresentation(lon=psi, lat=dec, distance=distance)
+    else:
+        representation = UnitSphericalRepresentation(lon=psi, lat=dec)
     return hprframe.realize_frame(representation)
 
 
@@ -250,6 +258,10 @@ def hpr_to_hpc(hprframe, hpcframe):
     """
     psi = hprframe.psi
     el = hprframe.dec + 90*u.deg
+    if issubclass(hprframe.representation, UnitSphericalRepresentation):
+        distance = None
+    else:
+        distance = hprframe.distance
 
     # Longitude conversion
     top = -np.sin(el) * np.sin(psi)
@@ -258,10 +270,11 @@ def hpr_to_hpc(hprframe, hpcframe):
     # Latitude conversion
     lat = np.arcsin(np.sin(el) * np.cos(psi))
 
-    # Convert back to degrees.
-    dec = lat
-    print(dec.to(u.arcsec), lon.to(u.arcsec))
-    representation = UnitSphericalWrap180Representation(lon=lon, lat=dec)
+    if distance:
+        representation = SphericalWrap180Representation(lon=lon, lat=lat, distance=distance)
+    else:
+        representation = UnitSphericalWrap180Representation(lon=lon, lat=lat)
+
     return hpcframe.realize_frame(representation)
 
 
