@@ -48,16 +48,18 @@ __authors__ = ["Steven Christe"]
 __email__ = "steven.d.christe@nasa.gov"
 
 PARAMETER_DOCS = """
-Parameters
-----------
-t :  [ int, float, time_string, datetime ], optional
-    Time, which can be either time_string, int, or datetime object. Parsed
-    using `~sunpy.time.parse_time`. Defaults to the current time.
+    Parameters
+    ----------
+    t :  [ int, float, time_string, datetime ], optional
+        Time, which can be either time_string, int, or datetime object. Parsed
+        using `~sunpy.time.parse_time`. Defaults to the current time.
 
 """
 
+
 def add_parameter_docs(f):
-    f.__doc__ += PARAMETER_DOCS
+    if isinstance(f.__doc__, str):
+        f.__doc__ += PARAMETER_DOCS
     return f
 
 
