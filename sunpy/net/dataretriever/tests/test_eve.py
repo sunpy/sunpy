@@ -21,16 +21,22 @@ LCClient = eve.EVEClient()
 @pytest.mark.remote_data
 @pytest.mark.parametrize("timerange,url_start,url_end", [
     (TimeRange('2012/4/21', '2012/4/21'),
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt',
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt'
+     ('http://lasp.colorado.edu/eve/data_access/evewebdata/'
+     'quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt',)
+     ('http://lasp.colorado.edu/eve/data_access/evewebdata/'
+     'quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt')
      ),
     (TimeRange('2012/5/5', '2012/5/6'),
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120505_EVE_L0CS_DIODES_1m.txt',
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120506_EVE_L0CS_DIODES_1m.txt'
+     ('http://lasp.colorado.edu/eve/data_access/evewebdata/'
+     'quicklook/L0CS/SpWx/2012/20120505_EVE_L0CS_DIODES_1m.txt'),
+     ('http://lasp.colorado.edu/eve/data_access/evewebdata/'
+     'quicklook/L0CS/SpWx/2012/20120506_EVE_L0CS_DIODES_1m.txt')
      ),
     (TimeRange('2012/7/7', '2012/7/14'),
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120707_EVE_L0CS_DIODES_1m.txt',
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120714_EVE_L0CS_DIODES_1m.txt'
+     ('http://lasp.colorado.edu/eve/data_access/evewebdata/'
+     'quicklook/L0CS/SpWx/2012/20120707_EVE_L0CS_DIODES_1m.txt'),
+     ('http://lasp.colorado.edu/eve/data_access/evewebdata/'
+     'quicklook/L0CS/SpWx/2012/20120714_EVE_L0CS_DIODES_1m.txt')
      )
 ])
 def test_get_url_for_time_range(timerange, url_start, url_end):
@@ -86,7 +92,6 @@ def test_fido(query):
 
 @pytest.mark.remote_data
 @given(time_attr(time=datetimes(
-    # timezones=None,
     max_value=datetime.datetime(datetime.datetime.utcnow().year, 1, 1, 0, 0),
     min_value=datetime.datetime(2010, 1, 1, 0, 0),
 )))
