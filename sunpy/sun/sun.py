@@ -47,22 +47,32 @@ Carrington Rotation Number = 1971.4091        check!
 __authors__ = ["Steven Christe"]
 __email__ = "steven.d.christe@nasa.gov"
 
+PARAMETER_DOCS = """
+Parameters
+----------
+t :  [ int, float, time_string, datetime ], optional
+    Time, which can be either time_string, int, or datetime object. Parsed
+    using `~sunpy.time.parse_time`. Defaults to the current time.
 
+"""
+
+def add_parameter_docs(f):
+    f.__doc__ += PARAMETER_DOCS
+    return f
+
+
+@add_parameter_docs
 def solar_cycle_number(t='now'):
     """
     Return the solar cycle number.
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     time = parse_time(t)
     result = (time.year + 8) % 28 + 1
     return result
 
 
+@add_parameter_docs
 def solar_semidiameter_angular_size(t='now'):
     r"""
     Return the angular size of the semi-diameter of the Sun as
@@ -78,11 +88,6 @@ def solar_semidiameter_angular_size(t='now'):
 
         Radius_{\odot}[rad]=\frac{<Radius_{\odot}[m]>}{D_{\odot \oplus}(t)[m]}
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     # Import here to avoid a circular import
     from sunpy.coordinates import get_sunearth_distance
@@ -90,46 +95,34 @@ def solar_semidiameter_angular_size(t='now'):
     return Angle(solar_semidiameter_rad.to(u.arcsec, equivalencies=u.dimensionless_angles()))
 
 
+@add_parameter_docs
 def position(t='now'):
     """
     Returns the position of the Sun (right ascension and declination)
     on the celestial sphere using the equatorial coordinate system in arcsec.
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     ra = true_rightascension(t)
     dec = true_declination(t)
     return ra, dec
 
 
+@add_parameter_docs
 def eccentricity_SunEarth_orbit(t='now'):
     """
     Returns the eccentricity of the Sun Earth Orbit.
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     T = julian_centuries(t)
     result = 0.016751040 - 0.00004180 * T - 0.0000001260 * T**2
     return result
 
 
+@add_parameter_docs
 def mean_ecliptic_longitude(t='now'):
     """
     Returns the mean ecliptic longitude.
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     T = julian_centuries(t)
     result = 279.696680 + 36000.76892 * T + 0.0003025 * T**2
@@ -137,21 +130,18 @@ def mean_ecliptic_longitude(t='now'):
     return Longitude(result)
 
 
+@add_parameter_docs
 def longitude_Sun_perigee(t='now'):  # pylint: disable=W0613
     # T = julian_centuries(t)
     return 1
 
 
+@add_parameter_docs
 def mean_anomaly(t='now'):
     """
     Returns the mean anomaly (the angle through which the Sun has moved
     assuming a circular orbit) as a function of time.
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     T = julian_centuries(t)
     result = 358.475830 + 35999.049750 * T - 0.0001500 * T**2 - 0.00000330 * T**3
@@ -159,30 +149,22 @@ def mean_anomaly(t='now'):
     return Longitude(result)
 
 
+@add_parameter_docs
 def carrington_rotation_number(t='now'):
     """
     Return the Carrington Rotation number
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     jd = julian_day(t)
     result = (1. / 27.2753) * (jd - 2398167.0) + 1.0
     return result
 
 
+@add_parameter_docs
 def geometric_mean_longitude(t='now'):
     """
     Returns the geometric mean longitude (in degrees).
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     T = julian_centuries(t)
     result = 279.696680 + 36000.76892 * T + 0.0003025 * T**2
@@ -190,15 +172,11 @@ def geometric_mean_longitude(t='now'):
     return Longitude(result)
 
 
+@add_parameter_docs
 def equation_of_center(t='now'):
     """
     Returns the Sun's equation of center (in degrees).
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     T = julian_centuries(t)
     mna = mean_anomaly(t)
@@ -208,47 +186,35 @@ def equation_of_center(t='now'):
     return Angle(result)
 
 
+@add_parameter_docs
 def true_longitude(t='now'):
     """
     Returns the Sun's true geometric longitude (in degrees).
     (Referred to the mean equinox of date.  Question: Should the higher
     accuracy terms from which app_long is derived be added to true_long?)
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     result = equation_of_center(t) + geometric_mean_longitude(t)
     return Longitude(result)
 
 
+@add_parameter_docs
 def true_anomaly(t='now'):
     """
     Returns the Sun's true anomaly (in degrees).
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     result = mean_anomaly(t) + equation_of_center(t)
     return Longitude(result)
 
 
+@add_parameter_docs
 @deprecated('0.8', 'Use sunpy.coordinates.get_sunearth_distance() for higher accuracy')
 def sunearth_distance(t='now'):
     """
     Returns the Sun Earth distance (AU). There are a set of higher
     accuracy terms not included here.
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     ta = true_anomaly(t)
     e = eccentricity_SunEarth_orbit(t)
@@ -256,15 +222,11 @@ def sunearth_distance(t='now'):
     return result * u.AU
 
 
+@add_parameter_docs
 def apparent_longitude(t='now'):
     """
     Returns the apparent longitude of the Sun.
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     T = julian_centuries(t)
     omega = (259.18 - 1934.142 * T) * u.deg
@@ -273,57 +235,41 @@ def apparent_longitude(t='now'):
     return Longitude(result)
 
 
+@add_parameter_docs
 def true_latitude(t='now'):  # pylint: disable=W0613
     """
     Returns the true latitude. Never more than 1.2 arcsec from 0,
     set to 0 here.
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     return Latitude(0.0 * u.deg)
 
 
+@add_parameter_docs
 def apparent_latitude(t='now'):  # pylint: disable=W0613
     """
     Returns the true latitude. Set to 0 here.
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     return Latitude(0.0 * u.deg)
 
 
+@add_parameter_docs
 def true_obliquity_of_ecliptic(t='now'):
     """
     Returns the true obliquity of the ecliptic.
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     T = julian_centuries(t)
     result = 23.452294 - 0.0130125 * T - 0.00000164 * T**2 + 0.000000503 * T**3
     return Angle(result, u.deg)
 
 
+@add_parameter_docs
 def true_rightascension(t='now'):
     """
     Return the true right ascension.
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     y = np.cos(true_obliquity_of_ecliptic(t)) * np.sin(true_longitude(t))
     x = np.cos(true_longitude(t))
@@ -331,44 +277,32 @@ def true_rightascension(t='now'):
     return Longitude(true_ra.to(u.hourangle))
 
 
+@add_parameter_docs
 def true_declination(t='now'):
     """
     Return the true declination.
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     result = np.arcsin(np.sin(true_obliquity_of_ecliptic(t)) * np.sin(apparent_longitude(t)))
     return Latitude(result.to(u.deg))
 
 
+@add_parameter_docs
 def apparent_obliquity_of_ecliptic(t='now'):
     """
     Return the apparent obliquity of the ecliptic.
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     omega = apparent_longitude(t)
     result = true_obliquity_of_ecliptic(t) + (0.00256 * np.cos(omega)) * u.deg
     return result
 
 
+@add_parameter_docs
 def apparent_rightascension(t='now'):
     """
     Returns the apparent right ascension of the Sun.
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     y = np.cos(apparent_obliquity_of_ecliptic(t)) * np.sin(apparent_longitude(t))
     x = np.cos(apparent_longitude(t))
@@ -376,15 +310,11 @@ def apparent_rightascension(t='now'):
     return Longitude(app_ra.to(u.hourangle))
 
 
+@add_parameter_docs
 def apparent_declination(t='now'):
     """
     Returns the apparent declination of the Sun.
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     ob = apparent_obliquity_of_ecliptic(t)
     app_long = apparent_longitude(t)
@@ -392,16 +322,12 @@ def apparent_declination(t='now'):
     return Latitude(result.to(u.deg))
 
 
+@add_parameter_docs
 @deprecated('0.8', 'Use sunpy.coordinates.get_sun_P() for higher accuracy')
 def solar_north(t='now'):
     """
     Returns the position of the Solar north pole in degrees.
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     T = julian_centuries(t)
     ob1 = true_obliquity_of_ecliptic(t)
@@ -418,16 +344,12 @@ def solar_north(t='now'):
     return Angle(result.to(u.deg))
 
 
+@add_parameter_docs
 @deprecated('0.8', 'Use sunpy.coordinates.get_sun_L0() and .get_sun_B0() for higher accuracy')
 def heliographic_solar_center(t='now'):
     """
     Returns the position of the solar center in heliographic coordinates.
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
     jd = julian_day(t)
     T = julian_centuries(t)
@@ -447,15 +369,11 @@ def heliographic_solar_center(t='now'):
     return Longitude(he_lon.to(u.deg)), Latitude(he_lat.to(u.deg))
 
 
+@add_parameter_docs
 def print_params(t='now'):
     """
     Print out a summary of Solar ephemeris.
 
-    Parameters
-    ----------
-    t :  [ int, float, time_string, datetime ], optional
-        Time, which can be either time_string, int, or datetime object. Parsed
-        using `~sunpy.time.parse_time`. Defaults to the current time.
     """
 
     # import here to avoid circular import
