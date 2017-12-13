@@ -1,9 +1,14 @@
-0.8.3 (Unreleased)
+0.9.0 (Unreleased)
 ==================
+
+New Features
+------------
 
 Bug Fixes
 ---------
 
+- `~sunpy.net.dataretriever.clients.XRSClient` now reports time ranges of files correctly. [#2364]
+- Make parse_time work with datetime64s and pandas series [#2370]
 - CompositeMap axes scaling now uses map spatial units [#2310]
 - Moved license file to root of repository and updated README file [#2326]
 - Fix docstring formatting for net.vso.attrs [#2309]]
@@ -18,23 +23,8 @@ Bug Fixes
 - Updated masking brightest pixel example [#2338]
 - Changed TRAVIS cronjobs [#2338]
 - Support array values for `obstime` for coordinates and transformations [#2342]
-- Make parse_time work with datetime64s and pandas series [#2370]
-
-0.8.2
-=====
-
-Bug Fixes
----------
-
 - Shows a warning if observation time is missing [#2293]
 - Updates MapCube to access the correct properties of the namedtuple SpatialPair [#2297]
-
-0.8.1
-======
-
-Bug fixes
----------
-
 - Fixed TimeSeries test failures due to missing test files [#2273]
 - Refactored a GOES test to avoid a Py3.6 issue [#2276]
 
