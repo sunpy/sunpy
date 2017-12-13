@@ -65,6 +65,7 @@ class XRSClient(GenericClient):
             # Extract the yymmdd or yyyymmdd timestamp
             datestamp = os.path.splitext(os.path.split(uripath)[1])[0][4:]
 
+            # 1999-01-15 as an integer.
             if int(datestamp) < 990115:
                 start = datetime.datetime.strptime(datestamp, "%y%m%d")
             else:
