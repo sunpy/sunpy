@@ -77,8 +77,9 @@ def check_response(query, unifiedresp):
         raise ValueError("No Time Specified")
 
     for block in unifiedresp.responses:
+        res_tr = block.time_range()
         for res in block:
-            assert res.time.start in query_tr
+            assert res.time.start in res_tr
             assert query_instr.lower() == res.instrument.lower()
 
 

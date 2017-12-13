@@ -4,6 +4,8 @@
 Bug Fixes
 ---------
 
+- `~sunpy.net.dataretriever.clients.XRSClient` now reports time ranges of files correctly. [#2364]
+- Make parse_time work with datetime64s and pandas series [#2370]
 - CompositeMap axes scaling now uses map spatial units [#2310]
 - Moved license file to root of repository and updated README file [#2326]
 - Fix docstring formatting for net.vso.attrs [#2309]]
@@ -25,7 +27,6 @@ Bug Fixes
 - Fixed upstream astropy/numpy documentation issues [#2359]
 - Documentation for Map improved [#2361]
 - Fix the output units of pixel_to_world [#2362]
-- Make parse_time work with datetime64s and pandas series [#2370]
 
 0.8.2
 =====
