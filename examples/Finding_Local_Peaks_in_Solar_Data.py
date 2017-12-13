@@ -2,10 +2,10 @@
 =================================
 Finding Local Peaks in Solar Data
 =================================
-
-Detecting radiation peaks in the solar surface is often crucial in the study of solar flares.
-This example illustrates detection of those areas where there is a spike in
-solar radiation intensity. We use the peak_local_max function under the scikit library
+Detecting intensity peaks in solar images can be useful, for example as
+a simple flare identification mechanism. This example illustrates detection
+of those areas where there is a spike in solar intensity. 
+We use the `~skimage.feature.peak_local_max` function in the scikit-image library
 to find those regions in the map data where the intensity values form a local maxima.
 Finally we plot those peaks in the original AIA plot.
 """
@@ -41,9 +41,9 @@ X, Y = np.meshgrid(x, y)
 
 #######################################################################################
 # We will only consider peaks within the AIA data that have minimum intensity
-# value equal to threshold_rel * max(Intensity) which is 20% of the maximum intensity
-# in our case. The next step is to calculate the pixel locations of local maxima
-# positions where peaks are separated by atleast min_distance = 60 pixels.
+# value equal to ``threshold_rel * max(Intensity)`` which is 20% of the maximum intensity.
+# The next step is to calculate the pixel locations of local maxima
+# positions where peaks are separated by at least ``min_distance = 60 pixels``.
 # This function comes from scikit image and the documenation is found
 # here `~skimage.feature.peak_local_max`.
 
