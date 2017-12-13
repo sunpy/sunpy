@@ -8,7 +8,6 @@ import os
 import pytest
 import datetime
 import warnings
-import glob
 import tempfile
 
 import numpy as np
@@ -31,8 +30,10 @@ from sunpy.time import parse_time
 from sunpy.extern import six
 
 testpath = sunpy.data.test.rootdir
-a_list_of_many = glob.glob(os.path.join(testpath, "EIT", "*"))
-a_fname = a_list_of_many[0]
+
+@pytest.fixture
+def eit171_test_map():
+    return sunpy.map.Map(os.path.join(testpath, 'aia_171_level1.fits'))
 
 
 @pytest.fixture
@@ -289,12 +290,14 @@ def test_world_to_pixel(generic_map):
 
 
 def test_save(generic_map):
-        # Test save out
-        eitmap = sunpy.map.Map(a_fname)
-        afilename = tempfile.NamedTemporaryFile(suffix='fits').name
-        eitmap.save(afilename, filetype='fits', clobber=True)
-        backin = sunpy.map.Map(afilename)
-        assert isinstance(backin, sunpy.map.sources.EITMap)
+    """Tests the map save function"""
+    aiamap = aia171_test_map()
+    afilename = tempfile.NamedTemporaryFile(suffix='fits').name
+    aiamap.save(afilename, filetype='fits', clobber=True)
+    loaded_save = sunpy.map.Map(afilename)
+    assert isinstance(loaded_save, sunpy.map.sources.AIAMap)
+    assert loaded_save.meta == aiamap.meta
+    assert_quantity_allclose(loaded_save.data, aiamap.data)
 
 
 def test_default_shift():
