@@ -1,8 +1,10 @@
-# This module was developed with funding from 
+# This module was developed with funding from
 # Google Summer of Code 2015
 # author - Ankit Kumar  <ankitkmr.iitk@gmail.com>
 
 import pytest
+
+from datetime import datetime
 
 from astropy import units as u
 
@@ -23,17 +25,17 @@ LCClient = stereo.LETClient()
 'http://www.srl.caltech.edu/STEREO/DATA/Level1/Public/behind/10Minute/2010/Sectored/CNO_hi/CNO_hi_sectored_behind_2010_07_10min_level1_11.txt')
 ])
 def test_get_url_for_time_range(timerange, species, duration_of_average, stereo_spacecraft, type_of_data, url_start, url_end):
-    urls = LCClient._get_url_for_timerange(timerange, species = species, duration_of_average =duration_of_average, 
+    urls = LCClient._get_url_for_timerange(timerange, species = species, duration_of_average =duration_of_average,
                                                         stereo_spacecraft =stereo_spacecraft, type_of_data= type_of_data)
     assert isinstance(urls, list)
     assert urls[0] == url_start
     assert urls[-1] == url_end
 
 def test_can_handle_query():
-    ans1 = stereo.LETClient._can_handle_query(Time(TimeRange('2008-03-01','2010-07-02')), Instrument('stereo/let'), species = 'Al', 
+    ans1 = stereo.LETClient._can_handle_query(Time(TimeRange('2008-03-01','2010-07-02')), Instrument('stereo/let'), species = 'Al',
                                                     duration_of_average = 10*u.min, stereo_spacecraft ='ahead', type_of_data ='summed')
     assert ans1 == True
-    ans1 = stereo.LETClient._can_handle_query(Time(TimeRange('1998-03-01','2003-07-02')), Instrument('stereo/let'), species = 'CNO_hi', 
+    ans1 = stereo.LETClient._can_handle_query(Time(TimeRange('1998-03-01','2003-07-02')), Instrument('stereo/let'), species = 'CNO_hi',
                                                     duration_of_average = 10*u.min, stereo_spacecraft ='behind', type_of_data ='sectored')
     assert ans1 == True
     ans2 = stereo.LETClient._can_handle_query(Time(TimeRange('2012/7/7', '2012/7/7')))
@@ -43,12 +45,12 @@ def test_can_handle_query():
 
 @pytest.mark.online
 def test_query():
-    qr1 = LCClient.query(Time(TimeRange('2012/8/9', '2012/10/11')), Instrument('stereo/let'), species = 'Al', 
+    qr1 = LCClient.query(Time(TimeRange('2012/8/9', '2012/10/11')), Instrument('stereo/let'), species = 'Al',
                                                     duration_of_average = 10*u.min, stereo_spacecraft ='ahead', type_of_data ='summed')
     assert isinstance(qr1,QueryResponse)
     assert len(qr1) == 2
-    assert qr1.time_range()[0] == '2012/08/09'
-    assert qr1.time_range()[1] == '2012/10/11'
+    assert qr1.time_range().start == datetime(2012,8,9)
+    assert qr1.time_range().end == datetime(2012,10,11)
 
 
 @pytest.mark.online
@@ -57,7 +59,7 @@ def test_query():
  (Time(TimeRange('2012/10/4', '2012/12/6')), Instrument('stereo/let'),'CNO_hi', 10*u.min, 'behind', 'sectored'),
 ])
 def test_get(time, instrument, species, duration_of_average, stereo_spacecraft, type_of_data):
-    qr1 = LCClient.query(time,instrument,species =species, duration_of_average = duration_of_average, 
+    qr1 = LCClient.query(time,instrument,species =species, duration_of_average = duration_of_average,
                                         stereo_spacecraft = stereo_spacecraft, type_of_data = type_of_data)
     res = LCClient.get(qr1)
     download_list = res.wait()

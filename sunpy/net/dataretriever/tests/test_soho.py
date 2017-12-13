@@ -1,5 +1,5 @@
 
-# This module was developed with funding from 
+# This module was developed with funding from
 # Google Summer of Code 2015
 # author - Ankit Kumar  <ankitkmr.iitk@gmail.com>
 
@@ -12,7 +12,7 @@ import sunpy.net.dataretriever.sources.soho as soho
 
 LCClient = soho.ERNEClient()
 
-
+@pytest.mark.online
 @pytest.mark.parametrize("timerange,species,url_start,url_end",
 [(TimeRange('1998-03-01','2003-07-02'),'alpha',
 'http://srl.utu.fi/erne_data/carrot/1933/cr1933a.txt',

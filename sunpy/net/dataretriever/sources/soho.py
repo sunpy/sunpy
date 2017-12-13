@@ -6,15 +6,16 @@ __email__ = "ankitkmr.iitk@gmail.com"
 #This module was developed under funding provided by
 #Google Summer of Code 2015
 
-import urllib2
 import datetime
+
+from sunpy.extern.six.moves import urllib
 
 from bs4 import BeautifulSoup
 from ..client import GenericClient
 
 from sunpy.time import TimeRange
-
 __all__ = ['ERNEClient']
+
 
 
 class ERNEClient(GenericClient):
@@ -63,7 +64,7 @@ class ERNEClient(GenericClient):
         """
 
         #Parameter Validations
-        if timerange.start < datetime.datetime(1996, 02, 13):
+        if timerange.start < datetime.datetime(1996, 2, 13):
             raise ValueError(
                 'Earliest date for which SEPT data is available is 1996-02-13')
 
@@ -76,7 +77,7 @@ class ERNEClient(GenericClient):
         to_continue = False
         filelists = []
 
-        opn = urllib2.urlopen(
+        opn = urllib.request.urlopen(
             'http://srl.utu.fi/erne_data/carrot/carrot{species}.html'.format(
                 species=species[0]))
 

@@ -89,7 +89,7 @@ class SEPTClient(GenericClient):
                          1 * u.d: '1d'}
 
         #Parameter Validation
-        if timerange.start < datetime.datetime(2007, 01, 20):
+        if timerange.start < datetime.datetime(2007, 1, 20):
             raise ValueError(
                 'Earliest date for which SEPT data is available is 2007-01-20')
 
@@ -223,7 +223,7 @@ class HETClient(GenericClient):
         dict_spacecraft = {'Ahead': 'AeH', 'Behind': 'BeH'}
 
         #Parameter Validations
-        if timerange.start < datetime.datetime(2006, 12, 01):
+        if timerange.start < datetime.datetime(2006, 12, 1):
             raise ValueError(
                 'Earliest date for which HET data is available is 2006-12-01')
 
@@ -349,7 +349,7 @@ class SITClient(GenericClient):
                      1 * u.d: ''}
 
         #Parameter Validations
-        if timerange.start < datetime.datetime(2007, 01, 01):
+        if timerange.start < datetime.datetime(2007, 1, 1):
             raise ValueError(
                 'Earliest date for which SIT data is available is 2007-01-01')
 
@@ -471,7 +471,7 @@ class PLASTICClient(GenericClient):
                          1 * u.h: '1hr'}
 
         #Parameter Validations
-        if timerange.start < datetime.datetime(2007, 02, 14):
+        if timerange.start < datetime.datetime(2007, 2, 14):
             raise ValueError(
                 'Earliest date for which PLASTIC data is available is 2007-02-14')
 
@@ -560,7 +560,7 @@ class MAGClient(GenericClient):
         dict_spacecraft = {'ahead': 'A', 'behind': 'B'}
 
         #Parameter Validations
-        if timerange.start < datetime.datetime(2006, 01, 01):
+        if timerange.start < datetime.datetime(2006, 1, 1):
             raise ValueError(
                 'Earliest date for which MAG data is available is 2006-01-01')
 

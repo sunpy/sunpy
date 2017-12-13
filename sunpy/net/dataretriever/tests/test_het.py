@@ -1,9 +1,11 @@
 
-# This module was developed with funding from 
+# This module was developed with funding from
 # Google Summer of Code 2015
 # author - Ankit Kumar  <ankitkmr.iitk@gmail.com>
 
 import pytest
+
+from datetime import datetime
 
 from astropy import units as u
 
@@ -14,6 +16,7 @@ import sunpy.net.dataretriever.sources.stereo as stereo
 
 LCClient = stereo.HETClient()
 
+@pytest.mark.online
 @pytest.mark.parametrize("timerange, stereo_spacecraft, duration_of_average, url_start,url_end",
 [(TimeRange('2008-03-01','2010-06-01'),'ahead', 15*u.min,
 'http://www.srl.caltech.edu/STEREO/DATA/HET/Ahead/15minute/AeH08Apr.15m',
@@ -24,7 +27,7 @@ LCClient = stereo.HETClient()
 ])
 
 def test_get_url_for_time_range(timerange, stereo_spacecraft, duration_of_average, url_start, url_end):
-    urls = LCClient._get_url_for_timerange(timerange, stereo_spacecraft = stereo_spacecraft, 
+    urls = LCClient._get_url_for_timerange(timerange, stereo_spacecraft = stereo_spacecraft,
                                                       duration_of_average = duration_of_average)
     assert isinstance(urls, list)
     assert urls[0] == url_start
@@ -39,13 +42,14 @@ def test_can_handle_query():
     ans3 = stereo.HETClient._can_handle_query(Time(TimeRange('2012/8/9', '2012/8/10')), Instrument('eve'))
     assert ans3 == False
 
+@pytest.mark.online
 def test_query():
     qr1 = LCClient.query(Time(TimeRange('2012/8/9', '2012/10/11')), Instrument('stereo/het'),
                                          stereo_spacecraft = 'ahead', duration_of_average = 1*u.min)
     assert isinstance(qr1,QueryResponse)
     assert len(qr1) == 2
-    assert qr1.time_range()[0] == '2012/08/09'
-    assert qr1.time_range()[1] == '2012/10/11'
+    assert qr1.time_range().start == datetime(2012,8,9)
+    assert qr1.time_range().end == datetime(2012,10,11)
 
 
 @pytest.mark.online
