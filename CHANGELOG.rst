@@ -25,6 +25,7 @@ Bug Fixes
 - Fixed upstream astropy/numpy documentation issues [#2359]
 - Documentation for Map improved [#2361]
 - Fix the output units of pixel_to_world [#2362]
+- Make parse_time work with datetime64s and pandas series [#2370]
 
 0.8.2
 =====
