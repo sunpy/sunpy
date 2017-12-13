@@ -2,11 +2,14 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 
+import os
 import datetime
 
 from sunpy.time import parse_time, TimeRange
 
 from ..client import GenericClient
+
+from sunpy.extern.six.moves.urllib.parse import urlsplit
 
 from sunpy import config
 TIME_FORMAT = config.get("general", "time_format")
@@ -54,6 +57,25 @@ class XRSClient(GenericClient):
             raise ValueError('No operational GOES satellites on {}'.format(
                 date.strftime(TIME_FORMAT)))
 
+    def _get_time_for_url(self, urls):
+        times = []
+        for uri in urls:
+            uripath = urlsplit(uri).path
+
+            # Extract the yymmdd or yyyymmdd timestamp
+            datestamp = os.path.splitext(os.path.split(uripath)[1])[0][4:]
+
+            # 1999-01-15 as an integer.
+            if int(datestamp) < 990115:
+                start = datetime.datetime.strptime(datestamp, "%y%m%d")
+            else:
+                start = datetime.datetime.strptime(datestamp, "%Y%m%d")
+
+            almost_day = datetime.timedelta(days=1, milliseconds=-1)
+            times.append(TimeRange(start, start + almost_day))
+
+        return times
+
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
         Returns a URL to the GOES data for the specified date.
@@ -72,7 +94,9 @@ class XRSClient(GenericClient):
         base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
         start_time = datetime.datetime.combine(timerange.start.date(),
                                                datetime.datetime.min.time())
-        total_days = int(timerange.days.value) + 1
+        # make sure we are counting a day even if only a part of it is in the query range.
+        day_range = TimeRange(timerange.start.date(), timerange.end.date())
+        total_days = int(day_range.days.value) + 1
         result = list()
 
         # Iterate over each day in the input timerange and generate a URL for

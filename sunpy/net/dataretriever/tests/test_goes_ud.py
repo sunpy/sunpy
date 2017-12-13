@@ -1,4 +1,5 @@
 import pytest
+import datetime
 
 from sunpy.time.timerange import TimeRange, parse_time
 from sunpy.net.vso.attrs import Time, Instrument
@@ -66,8 +67,13 @@ def test_fixed_satellite():
 def test_query(time):
     qr1 = LCClient.search(time, Instrument('XRS'))
     assert isinstance(qr1, QueryResponse)
-    assert qr1.time_range().start == time.start
-    assert qr1.time_range().end == time.end
+    # We only compare dates here as the start time of the qr will always be the
+    # start of the day.
+    assert qr1.time_range().start.date() == time.start.date()
+
+    almost_day = datetime.timedelta(days=1, milliseconds=-1)
+    end = datetime.datetime.combine(time.end.date(), datetime.time()) + almost_day
+    assert qr1.time_range().end == end
 
 
 def test_query_error():
@@ -109,3 +115,15 @@ def test_fido(time, instrument):
     assert isinstance(qr, UnifiedResponse)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
+
+
+@given(goes_time())
+def test_time_for_url(time):
+    time = time.start.date().strftime("%Y/%m/%d")
+    almost_day = datetime.timedelta(days=1, milliseconds=-1)
+
+    tr = TimeRange(time, almost_day)
+    url = LCClient._get_url_for_timerange(tr)
+    times = LCClient._get_time_for_url(url)
+
+    assert all([tr == t2 for t2 in times])
