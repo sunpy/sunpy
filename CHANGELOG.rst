@@ -18,6 +18,7 @@ Bug Fixes
 - Updated masking brightest pixel example [#2338]
 - Changed TRAVIS cronjobs [#2338]
 - Support array values for `obstime` for coordinates and transformations [#2342]
+- Make parse_time work with datetime64s and pandas series [#2370]
 
 0.8.2
 =====
