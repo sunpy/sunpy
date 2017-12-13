@@ -9,13 +9,10 @@ Created on Tue Dec  5 13:32:41 2017
 from __future__ import absolute_import
 
 import matplotlib.pyplot as plt
-
 import pytest
 
 import sunpy.map
-
 from sunpy.visualization import mapcubeanimator
-
 from sunpy.data import test
 
 
