@@ -16,6 +16,7 @@ from astropy.coordinates import Angle, Longitude, Latitude
 from sunpy.time import parse_time, julian_day, julian_centuries
 from sunpy.sun import constants
 from sunpy.util.decorators import deprecated
+from sunpy.extern import six
 
 __all__ = [
     "print_params", "heliographic_solar_center", "solar_north", "apparent_declination",
@@ -58,7 +59,7 @@ PARAMETER_DOCS = """
 
 
 def add_parameter_docs(f):
-    if isinstance(f.__doc__, str):
+    if isinstance(f.__doc__, six.string_types):
         f.__doc__ += PARAMETER_DOCS
     return f
 
