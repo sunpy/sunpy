@@ -140,3 +140,13 @@ def test_hpc_hpr_roundtrip_3d():
     assert_quantity_allclose(hpc.Tx, hpc2.Tx, atol=1e-13*u.arcsec)
     assert_quantity_allclose(hpc.Ty, hpc2.Ty, atol=1e-13*u.arcsec)
     assert_quantity_allclose(hpc.distance, hpc2.distance, atol=1e-13*u.km)
+
+
+def test_hpr_calculate_distance():
+    hpc = Helioprojective(0*u.arcsec, -100*u.arcsec, obstime="2017-12-25")
+    hpcd = hpc.calculate_distance()
+
+    hpr = hpc.transform_to(HelioprojectiveRadial(obstime="2017-12-25"))
+    hpr = hpr.calculate_distance()
+
+    assert_quantity_allclose(hpcd.distance, hpr.distance, atol=1e-13*u.km)

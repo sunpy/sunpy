@@ -220,7 +220,11 @@ def hgs_to_hcc(heliogcoord, heliocframe):
                                  HelioprojectiveRadial)
 def hpc_to_hpr(hpcframe, hprframe):
     """
-    Transform from the hpcframe to a hprframe
+    Transform from the hpcframe to a hprframe.
+
+    The hprframe holds declination angle (pole at -90) not theta_p (pole at 0),
+    however, the transformation in Thompson is defined in terms of theta_p, so
+    a conversion from declination is performed at the end of the transform.
     """
     lon = hpcframe.Tx
     lat = hpcframe.Ty
@@ -255,6 +259,10 @@ def hpc_to_hpr(hpcframe, hprframe):
 def hpr_to_hpc(hprframe, hpcframe):
     """
     Transform from the hprframe to a hpcframe
+
+    The hprframe holds declination angle (pole at -90) not theta_p (pole at 0),
+    however, the transformation in Thompson is defined in terms of theta_p, so
+    a conversion to theta_p is performed at the start of the transform.
     """
     psi = hprframe.psi
     el = hprframe.dec + 90*u.deg

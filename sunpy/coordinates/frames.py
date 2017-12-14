@@ -375,19 +375,18 @@ class HelioprojectiveRadial(Helioprojective):
     The Helioprojective-Radial frame is a spherical coordinate system projected
     on to the the celestial sphere.
 
-    The center of the solar disk is defined to be at the south pole of the sphere
-    and by definition has $\theta_p$ as 0 at this pole.
+    The center of the solar disk is defined to be at the south pole of the
+    sphere and by definition has $\theta_p$ as 0 at this pole. This frame
+    however, stores the declination parameter $\delta_p = $\theta_p - 90\deg$,
+    so the center of the solar disk is $(0, -90)$.
 
     Parameters
     ----------
-    representation: `~astropy.coordinates.BaseRepresentation` or None.
-        A representation object. If specified, other parameters must
-        be in keyword form.
-    dec: `Angle` object.
+    dec: `~astropy.coordinates.Latitude`
         Declination Parameter.
-    psi: `Angle` object.
-        Latitude coordinate.
-    distance: Z-axis coordinate.
+    psi: `~astropy.coordinates.Longitude`
+        Longitude coordinate.
+    distance: `~astropy.units.Quantity`
         The radial distance from the observer to the coordinate point.
     """
 
@@ -411,3 +410,33 @@ class HelioprojectiveRadial(Helioprojective):
     obstime = TimeFrameAttributeSunPy()
     rsun = Attribute(default=RSUN_METERS.to(u.km))
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
+
+    def calculate_distance(self):
+        """
+        This method calculates the third coordinate of the Helioprojective
+        frame. It assumes that the coordinate point is on the disk of the Sun
+        at the rsun radius.
+
+        If a point in the frame is off limb then NaN will be returned.
+
+        ..note ::
+
+            To perform this operation on the ``HelioprojectiveRadial`` frame
+            the frame is converted to ``Helioprojective`` first, the distance
+            is calculated and then transformed back.
+
+        Returns
+        -------
+        new_frame : `~sunpy.coordinates.frames.HelioProjectiveRadial`
+            A new frame instance with all the attributes of the original but
+            now with a third coordinate.
+        """
+
+        # TODO: Re-calculate this method native to the HPR frame. The trig
+        # should actually be easier in HPR as you only have to worry about the
+        # declination angle.
+
+        hpc = self.transform_to(Helioprojective(obstime=self.obstime, observer=self.observer))
+        hpc = hpc.calculate_distance()
+        hpr = hpc.transform_to(self.replicate_without_data())
+        return hpr
