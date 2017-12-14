@@ -3,7 +3,6 @@
 Finding Local Peaks in Solar Data
 =================================
 
-
 Detecting intensity peaks in solar images can be useful, for example as
 a simple flare identification mechanism. This example illustrates detection
 of those areas where there is a spike in solar intensity.
