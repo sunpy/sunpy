@@ -8,3 +8,4 @@ glymur
 suds-jurko
 beautifulsoup4
 requests
+h5py
