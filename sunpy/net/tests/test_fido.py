@@ -18,7 +18,7 @@ from sunpy.util.datatype_factory_base import NoMatchError, MultipleMatchError
 from sunpy.time import TimeRange, parse_time
 from sunpy import config
 
-from .strategies import (online_instruments, offline_instruments,
+from sunpy.net.tests.strategies import (online_instruments, offline_instruments,
                          time_attr, range_time, goes_time)
 
 TIMEFORMAT = config.get("general", "time_format")
