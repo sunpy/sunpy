@@ -69,7 +69,7 @@ So, how many flare detections did the query turn up?
     19
 
 The object returned by the above query is a list of Python dictionary
-objects.  Each dictionary consists of key-value pairs that exactly
+objects. Each dictionary consists of key-value pairs that exactly
 correspond to the parameters listed at
 http://www.lmsal.com/hek/VOEvent_Spec.html. You can inspect all the
 dictionary keys very simply:
@@ -81,7 +81,7 @@ dictionary keys very simply:
      u'hrc_coord',
      u'refs_orig',....
 
-and so on.  Remember, the HEK query we made returns all the flares in
+and so on. Remember, the HEK query we made returns all the flares in
 the time-range stored in the HEK, regardless of the feature
 recognition method.  The HEK parameter which stores the the feature
 recognition method is called "frm_name". Using list comprehensions
@@ -89,7 +89,7 @@ recognition method is called "frm_name". Using list comprehensions
 recognition methods used to find each of the flares in the result
 object, for example:
 
-    >>> [elem["frm_name"] for elem in result] # doctest:+SKIP
+    >>> [elem["frm_name"] for elem in result]  # doctest:+SKIP
     [u'asainz',
      u'asainz',
      u'asainz',
@@ -232,7 +232,7 @@ arcseconds OR have a peak flux over 1000.0:
 
 and as a check
 
-    >>> [elem["fl_peakflux"] for elem in result] # doctest:+SKIP
+    >>> [elem["fl_peakflux"] for elem in result] # doctest: +REMOTE_DATA
     [None,
     None,
     None,
@@ -248,9 +248,10 @@ and as a check
     3242.64,
     1375.93,
     6275.98,
-    923.984]
+    923.984,
+    1019.83]
 
-    >>> [elem["event_coord1"] for elem in result] # doctest:+SKIP
+    >>> [elem["event_coord1"] for elem in result] # doctest: +REMOTE_DATA
     [51,
     51,
     51,
@@ -262,6 +263,7 @@ and as a check
     883.2,
     69,
     69,
+    883.2,
     883.2,
     883.2,
     883.2,
@@ -278,10 +280,10 @@ flux over 1000.0:
 
     >>> result = client.search(hek.attrs.Time(tstart,tend), hek.attrs.EventType(event_type), (hek.attrs.Event.Coord1 > 50) and (hek.attrs.FL.PeakFlux > 1000.0) )  # doctest: +REMOTE_DATA
 
-    >>> [elem["fl_peakflux"] for elem in result] # doctest:+SKIP
-    [2326.86, 1698.83, 2360.49, 3242.64, 1375.93, 6275.98]
-    >>> [elem["event_coord1"] for elem in result] # doctest:+SKIP
-    [883.2, 883.2, 883.2, 883.2, 883.2, 883.2]
+    >>> [elem["fl_peakflux"] for elem in result] # doctest: +REMOTE_DATA
+    [2326.86, 1698.83, 2360.49, 3242.64, 1375.93, 6275.98, 1019.83]
+    >>> [elem["event_coord1"] for elem in result] # doctest: +REMOTE_DATA
+    [883.2, 883.2, 883.2, 883.2, 883.2, 883.2, 883.2]
 
 In this case none of the peak fluxes are returned with the value
 `None`.  Since we are using an `and` logical operator we need a result
