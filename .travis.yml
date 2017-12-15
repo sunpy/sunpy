@@ -49,12 +49,13 @@ env:
         - SETUP_CMD='egg_info'
 
 stages:
-   # Do the install jobs, don't proceed if it fails
+   # Do the install jobs and one offline test, it will not proceed if any fail
    - name: Initial tests
-   # Do the rest of the tests
-   - name: Comprehensive tests
+   # Cron only tests
    - name: Cron tests
      if: type = cron
+   # Do the rest of the tests
+   - name: Comprehensive tests
 
 matrix:
 
@@ -62,12 +63,11 @@ matrix:
     fast_finish: true
 
     include:
-         # We order the jobs, so the longest running tests are in the top
-         # four positions of the matrix
-         - os: osx
-           stage: Cron tests
-           language: generic
-           env: PYTHON_VERSION=3.6
+         # We order the jobs, in terms of the maintaniers mood
+         # Order of tests run in build stages
+         - python: 3.6
+           stage: Initial tests
+           env: SETUP_CMD='test'
 
          - python: 3.6
            stage: Comprehensive tests
@@ -76,34 +76,6 @@ matrix:
            env: MAIN_CMD="py.test"
                 SETUP_CMD="--remote-data -k-figure --cov ./"
                 EVENT_TYPE='push pull_request cron'
-
-         - python: 3.6
-           stage: Cron tests
-           env: ASTROPY_VERSION='dev'
-                EVENT_TYPE='push pull_request cron'
-
-         - python: 3.6
-           stage: Cron tests
-           env: NUMPY_VERSION='dev'
-                EVENT_TYPE='push pull_request cron'
-
-         - python: 3.6
-           stage: Cron tests
-           env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
-                EVENT_TYPE='push pull_request cron'
-
-         - python: 3.6
-           stage: Initial tests
-           env: SETUP_CMD='test'
-
-         - python: 2.7
-           stage: Comprehensive tests
-           env: SETUP_CMD='test'
-
-         # Previous numpy is tested on an older python version
-         - python: 3.5
-           stage: Cron tests
-           env: NUMPY_VERSION=$PREVIOUS_NUMPY
 
          - python: 3.6
            stage: Comprehensive tests
@@ -120,6 +92,35 @@ matrix:
          - python: 3.5
            stage: Comprehensive tests
            env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
+
+         - python: 2.7
+           stage: Comprehensive tests
+           env: SETUP_CMD='test'
+
+         - os: osx
+           stage: Cron tests
+           language: generic
+           env: PYTHON_VERSION=3.6
+
+         - python: 3.6
+           stage: Cron tests
+           env: ASTROPY_VERSION='dev'
+                EVENT_TYPE='push pull_request cron'
+
+         - python: 3.6
+           stage: Cron tests
+           env: NUMPY_VERSION='dev'
+                EVENT_TYPE='push pull_request cron'
+
+         - python: 3.6
+           stage: Cron tests
+           env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
+                EVENT_TYPE='push pull_request cron'
+
+         # Previous numpy is tested on an older python version
+         - python: 3.5
+           stage: Cron tests
+           env: NUMPY_VERSION=$PREVIOUS_NUMPY
 
 install:
     - git clone git://github.com/astropy/ci-helpers.git
