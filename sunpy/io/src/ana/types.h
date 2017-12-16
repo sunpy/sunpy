@@ -1,6 +1,7 @@
-#ifndef __TYPES_H__  // __TYPES_H__
-#define __TYPES_H__
 
+#ifndef __TYPES_H__ // __TYPES_H__
+#define __TYPES_H__
+#pragma once
 #include <stdint.h>
 
 //! @todo fix include guards to legal versions
@@ -10,11 +11,11 @@ typedef double float64_t;
 
 typedef float64_t fp_t;  //!< The default floating point type
 
-struct complex{
+struct Mycomplex{        // cannot use "complex" for class: It is already exiist in "math.h"
   fp_t re;
   fp_t im;
 };
-typedef struct complex complex_t;
+typedef struct Mycomplex complex_t;
 
 struct fzhead {                    // first block for fz files
   int synch_pattern;
@@ -37,4 +38,4 @@ void bswapi16(int16_t *x,int n);
 void bswapi32(int32_t *x,int n);
 void bswapi64(int64_t *x,int n);
 
-#endif               // __TYPES_H__
+#endif          // __TYPES_H__

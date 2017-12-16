@@ -10,13 +10,14 @@ version of the original anarw routines.
 #include <Python.h>				// For python extension
 #include <numpy/arrayobject.h> 	// For numpy
 #ifndef __USE_GNU
-#include <time.h>
+    #include <time.h>
 #else
-#include <sys/time.h>
-#endif
+	#include <sys/time.h>
+
+
 //#include "anadecompress.h"
 //#include "anacompress.h"
-#include "types.h"
+
 #include "anarw.h"
 
 // vasprintf() and asprintf() may not be defined, particularly on Windows
@@ -170,7 +171,8 @@ static PyObject *pyana_fzread(PyObject *self, PyObject *args) {
 	}
 
 	// Mold into numpy array
-	npy_intp npy_dims[nd];		// Dimensions array
+
+	npy_intp *npy_dims;		// Dimensions array
 	int npy_type;					// Numpy datatype
 
 	// Calculate total datasize
@@ -258,17 +260,19 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
 		return NULL;
 	}
 	// If header is NULL, then set the comment to a default value
+
 	if (NULL == header) {
 		if (debug == 1) printf("pyana_fzwrite(): Setting default header\n");
 		struct timeval *tv_time=NULL;
 		struct tm *tm_time=NULL;
-		gettimeofday(tv_time, NULL);
+		gettimeofday(&tv_time, NULL);
 		tm_time = gmtime(&(tv_time->tv_sec));
 		asprintf(&header, "#%-42s compress=%d date=%02d:%02d:%02d.%03ld\n",
 			filename,
 			compress,
 			tm_time->tm_hour, tm_time->tm_min, tm_time->tm_sec, (long) (tv_time->tv_usec/1000));
 	}
+
 	if (debug == 1) printf("pyana_fzwrite(): Header: '%s'\n", header);
 
 	// Convert datatype from PyArray type to ANA type, and verify that ANA
@@ -345,3 +349,4 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
 	// If we didn't crash up to here, we're probably ok :P
 	return Py_BuildValue("i", 1);
 }
+#endif
