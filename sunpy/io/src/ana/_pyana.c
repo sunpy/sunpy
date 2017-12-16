@@ -14,7 +14,7 @@ version of the original anarw routines.
 #else
 	#include <sys/time.h>
 
-
+#endif
 //#include "anadecompress.h"
 //#include "anacompress.h"
 
@@ -260,7 +260,10 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
 		return NULL;
 	}
 	// If header is NULL, then set the comment to a default value
-
+#ifndef __USE_GNU
+    #include <time.h>
+#else
+	#include <sys/time.h>
 	if (NULL == header) {
 		if (debug == 1) printf("pyana_fzwrite(): Setting default header\n");
 		struct timeval *tv_time=NULL;
@@ -272,7 +275,7 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
 			compress,
 			tm_time->tm_hour, tm_time->tm_min, tm_time->tm_sec, (long) (tv_time->tv_usec/1000));
 	}
-
+#endif
 	if (debug == 1) printf("pyana_fzwrite(): Header: '%s'\n", header);
 
 	// Convert datatype from PyArray type to ANA type, and verify that ANA
@@ -349,4 +352,5 @@ static PyObject * pyana_fzwrite(PyObject *self, PyObject *args) {
 	// If we didn't crash up to here, we're probably ok :P
 	return Py_BuildValue("i", 1);
 }
-#endif
+
+
