@@ -332,6 +332,7 @@ class VSOClient(object):
                 response = QueryResponse.create(self.merge(responses))
                 response.add_error(ex)
 
+
         return QueryResponse.create(self.merge(responses))
 
     @deprecated('0.8', alternative='VSOClient.search')
@@ -516,7 +517,7 @@ class VSOClient(object):
         if tend is not None:
             kwargs.update({'time_end': tend})
 
-        queryreq = self.api.type_factory('VSO:QueryRequest')
+        queryreq = self.api.get_type('VSO:QueryRequest')
         for key, value in iteritems(kwargs):
             for k, v in iteritems(ALIASES.get(key, sdk(key))(value)):
                 if k.startswith('time'):
