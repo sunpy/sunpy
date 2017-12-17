@@ -29,6 +29,7 @@ Bug Fixes
 - Fix the output units of pixel_to_world [#2362]
 - Documentation for Database improved [#2355]
 - Added test for mapsave [#2365]
+- Documentation for Sun improved [#2369]
 
 0.8.2
 =====
