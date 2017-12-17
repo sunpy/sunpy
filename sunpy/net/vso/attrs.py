@@ -474,23 +474,29 @@ walker = AttrWalker()
 def _create(wlk, root, api):
     """ Implementation detail. """
     api.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
-    value = api.get_type('VSO:QueryRequestBlock')
+    value = api.get_type('VSO:QueryRequestBlock')()
     wlk.apply(root, api, value)
+    print(value)
     return [value]
 
 
 @walker.add_applier(ValueAttr)
 # pylint: disable=E0102,C0103,W0613
-def _apply(wlk, root, api, queryblock):
+def _apply(wlk, root, api, block):
     """ Implementation detail. """
     for k, v in iteritems(root.attrs):
-        lst = k[-1]
-        rest = k[:-1]
+        name = k[0]
+        subkey = k[1:]
 
-        block = queryblock.elements
-        for elem in rest:
-            block = block[elem]
-        block[lst] = v
+        if subkey:
+            if len(subkey) != 1:
+                raise ValueError("Can't parse double nested ValueAttr")
+            if block[name]:
+                block[name].update({subkey: v})
+            else:
+                block[name] = {subkey: v}
+        else:
+            block[name] = v
 
 
 @walker.add_applier(AttrAnd)
