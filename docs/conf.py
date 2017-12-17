@@ -69,13 +69,6 @@ if on_rtd:
     os.environ['LC_ALL'] = 'C'
 
 try:
-    import suds
-except ImportError:
-    print('ERROR: suds could not be imported. Building the documentation requires '
-          'the "suds-jerko" package to be installed')
-    sys.exit(1)
-
-try:
     import skimage
 except ImportError:
     print('ERROR: skimage could not be imported. Building the documentation requires '
