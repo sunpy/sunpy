@@ -401,3 +401,10 @@ def test_QueryResponse_build_table_with_no_end_time():
     end_time_ = table['End Time']
     assert len(end_time_) == 1
     assert end_time_[0] == 'None'
+
+
+@pytest.mark.remote_data
+def test_query_legacy():
+    vc = vso.VSOClient()
+    qr = vc.query_legacy("2011-01-01T00:00:00", "2011-01-01T00:01:00", instrument='aia')
+    print(qr)
