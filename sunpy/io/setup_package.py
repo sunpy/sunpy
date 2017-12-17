@@ -13,15 +13,11 @@ def get_extensions():
     cfg = setup_helpers.DistutilsExtensionArgs()
     cfg['include_dirs'].append('numpy')
     cfg['sources'].extend(glob(os.path.join(os.path.dirname(__file__), 'src', 'ana', '*.c')))
-    if platform.system() == 'Windows':
+    if platform.system() == 'Windows' and int(platform.python_version()[0]) > 2:
         cfg['include_dirs'].append(os.path.join(os.path.dirname(__file__), "msinttypes"))
-        #cfg['extra_compile_args'].extend(['/D', '"WIN32"',
-        #                                  '/D', '"_WINDOWS"',
-        #                                  '/D', '"_MBCS"',
-        #                                  '/D', '"_USRDLL"',
-        #                                  '/D', '"_CRT_SECURE_NO_DEPRECATE"'])
+    elif platform.system() == 'Windows' and int(platform.python_version()[0]) == 2:
+        return list()
     else:
-        cfg['extra_compile_args'].extend(['-std=c99', '-O3'])
         cfg['extra_compile_args'].extend(['-std=c99', '-O3'])
         # Squash ALL (probably) warnings
         cfg['extra_compile_args'].extend(['-Wno-declaration-after-statement',
