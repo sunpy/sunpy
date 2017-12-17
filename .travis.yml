@@ -98,7 +98,7 @@ matrix:
            env: SETUP_CMD='test'
 
          - os: osx
-           stage: Cron tests
+           stage: Comprehensive tests
            language: generic
            env: PYTHON_VERSION=3.6
 
