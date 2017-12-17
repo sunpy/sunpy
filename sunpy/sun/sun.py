@@ -211,8 +211,8 @@ def true_anomaly(t='now'):
     return Longitude(result)
 
 
-@add_parameter_docs
 @deprecated('0.8', 'Use sunpy.coordinates.get_sunearth_distance() for higher accuracy')
+@add_parameter_docs
 def sunearth_distance(t='now'):
     """
     Returns the Sun Earth distance (AU). There are a set of higher
@@ -325,8 +325,8 @@ def apparent_declination(t='now'):
     return Latitude(result.to(u.deg))
 
 
-@add_parameter_docs
 @deprecated('0.8', 'Use sunpy.coordinates.get_sun_P() for higher accuracy')
+@add_parameter_docs
 def solar_north(t='now'):
     """
     Returns the position of the Solar north pole in degrees.
@@ -347,8 +347,8 @@ def solar_north(t='now'):
     return Angle(result.to(u.deg))
 
 
-@add_parameter_docs
 @deprecated('0.8', 'Use sunpy.coordinates.get_sun_L0() and .get_sun_B0() for higher accuracy')
+@add_parameter_docs
 def heliographic_solar_center(t='now'):
     """
     Returns the position of the solar center in heliographic coordinates.
