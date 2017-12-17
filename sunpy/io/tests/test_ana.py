@@ -8,7 +8,7 @@ import pytest
 
 from sunpy.io import ana
 
-from sunpy.tests.helpers import skip_ana 
+from sunpy.tests.helpers import skip_ana
 
 # Create a test image, store it, reread it and compare
 img_size = (456, 345)
@@ -21,6 +21,7 @@ img_i16 = img_i16.astype(np.int16)
 img_f32 = img_src*1.0/img_src.max()
 img_f32 = img_f32.astype(np.float32)
 
+
 @skip_ana
 def test_i8c():
     # Test int 8 compressed functions
@@ -28,6 +29,7 @@ def test_i8c():
     ana.write(afilename, img_i8, 'testcase', 0)
     img_i8c_rec = ana.read(afilename)
     assert np.sum(img_i8c_rec[0][0] - img_i8) == 0
+
 
 @skip_ana
 def test_i8u():
@@ -37,6 +39,7 @@ def test_i8u():
     img_i8u_rec = ana.read(afilename)
     assert np.sum(img_i8u_rec[0][0] - img_i8) == 0
 
+
 @skip_ana
 def test_i16c():
     # Test int 16 compressed functions
@@ -44,6 +47,7 @@ def test_i16c():
     ana.write(afilename, img_i16, 'testcase', 0)
     img_i16c_rec = ana.read(afilename)
     assert np.sum(img_i16c_rec[0][0] - img_i16) == 0
+
 
 @skip_ana
 def test_i16u():
@@ -53,6 +57,7 @@ def test_i16u():
     img_i16u_rec = ana.read(afilename)
     assert np.sum(img_i16u_rec[0][0] - img_i16) == 0
 
+
 @skip_ana
 def test_f32u():
     # Test float 32 uncompressed functions
@@ -60,6 +65,7 @@ def test_f32u():
     ana.write(afilename, img_f32, 'testcase', 0)
     img_f32u_rec = ana.read(afilename)
     assert np.sum(img_f32u_rec[0][0]- img_f32) == 0
+
 
 @skip_ana
 def test_f32c():

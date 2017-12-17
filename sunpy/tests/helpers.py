@@ -31,19 +31,12 @@ else:
     else:
         SKIP_GLYMUR = True
 
-# Skip ana tests if we are on Windows or we can't import the c extension.
-if platform.system() == 'Windows':
+try:
+    from sunpy.io import _pyana
+except ImportError as e:
     SKIP_ANA = True
 else:
     SKIP_ANA = False
-
-try:
-    import sunpy.io._pyana
-except ImportError:
-    SKIP_ANA = True
-else:
-    SKIP_ANA = SKIP_ANA or False
-
 
 skip_windows = pytest.mark.skipif(platform.system() == 'Windows', reason="Windows")
 
