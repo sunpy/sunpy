@@ -6,10 +6,9 @@ import io
 from sunpy.net.helio import parser
 from sunpy.time import parse_time
 from zeep.client import Client as C
+from lxml import etree
 from astropy.io.votable.table import parse_single_table
 
-from sunpy.extern import six
-from sunpy.extern.six.moves import range, input
 
 __all__ = ['HECClient']
 
@@ -110,11 +109,11 @@ class HECClient(object):
             table = self.make_table_list()
         start_time = parse_time(start_time)
         end_time = parse_time(end_time)
-        self.hec_client.service.TimeQuery(STARTTIME=start_time.isoformat(),
-                                          ENDTIME=end_time.isoformat(),
-                                          FROM=table,
-                                          MAXRECORDS=max_records)
-        results = votable_handler(self.votable_interceptor.last_payload)
+        results = self.hec_client.service.TimeQuery(STARTTIME=start_time.isoformat(),
+                                                    ENDTIME=end_time.isoformat(),
+                                                    FROM=table,
+                                                    MAXRECORDS=max_records)
+        results = votable_handler(etree.tostring(results))
         return results
 
     def get_table_names(self):
@@ -141,8 +140,8 @@ class HECClient(object):
          (b'stereob_het_sep',)]
 
         """
-        self.hec_client.service.getTableNames()
-        tables = votable_handler(self.votable_interceptor.last_payload)
+        results = self.hec_client.service.getTableNames()
+        tables = votable_handler(etree.tostring(results))
         return tables.array
 
     def make_table_list(self):

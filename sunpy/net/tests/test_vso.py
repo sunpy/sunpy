@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-# Author: Florian Mayer <florian.mayer@bitsrc.org>
 
-#pylint: disable=W0613
-
-import tempfile
 import datetime
 
 import pytest
@@ -122,7 +118,7 @@ def test_complexattr_apply():
 @pytest.mark.remote_data
 def test_complexattr_create(client):
     a = attr.ValueAttr({('time', 'start'): 'test'})
-    assert va.walker.create(a, client.api)[0].time.start == 'test'
+    assert va.walker.create(a, client.api)[0].time['start'] == 'test'
 
 
 def test_complexattr_and_duplicate():
@@ -255,7 +251,8 @@ def test_repr():
 
 
 @pytest.mark.remote_data
-def test_path(client):
+@pytest.mark.parametrize('progress', (False, True))
+def test_path(client, progress, tmpdir):
     """
     Test that '{file}' is automatically appended to the end of a custom path if
     it is not specified.
@@ -263,8 +260,8 @@ def test_path(client):
     qr = client.search(
         va.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
         va.Instrument('aia'), va.Wavelength(171 * u.AA))
-    tmp_dir = tempfile.mkdtemp()
-    files = client.fetch(qr, path=tmp_dir).wait(progress=False)
+    path = tmpdir / "{file}"
+    files = client.fetch(qr, path=path).wait(progress=progress)
 
     assert len(files) == 1
 
@@ -418,7 +415,29 @@ def test_vso_hmi(client, tmpdir):
         assert all([s == series[0] for s in series])
 
 
+@pytest.mark.remote_data
 def test_query_legacy():
     vc = vso.VSOClient()
     qr = vc.query_legacy("2011-01-01T00:00:00", "2011-01-01T00:01:00", instrument='aia')
-    print(qr)
+    assert len(qr) == 42
+
+
+@pytest.mark.remote_data
+def test_rhessi():
+    vc = vso.VSOClient()
+    qr = vc.search(
+        vso.attrs.Time((2011, 9, 20, 1), (2011, 9, 20, 2)),
+        vso.attrs.Instrument('RHESSI'))
+
+    assert len(qr) == 2
+    # Make sure it parses kev properly
+    assert str(qr)
+
+
+@pytest.mark.remote_data
+def test_progress_bar():
+    vc = vso.VSOClient()
+    qr = vc.search(vso.attrs.Time((2013, 5, 19, 2, 0), (2013, 5, 19, 2, 0), (2013, 5, 19, 2, 0)),
+                   vso.attrs.Instrument('VIRGO') | vso.attrs.Instrument('SECCHI'))
+    files = vc.fetch(qr).wait(progress=False)
+    assert len(files) == len(qr)

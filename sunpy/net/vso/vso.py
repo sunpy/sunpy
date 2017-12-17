@@ -9,30 +9,32 @@
 This module provides a wrapper around the VSO API.
 """
 
-import re
 import os
+import re
 import sys
-import logging
-import warnings
 import socket
-import itertools
-
+import warnings
 from datetime import datetime, timedelta
 from functools import partial
 from collections import defaultdict
+from urllib.error import URLError, HTTPError
+from urllib.request import urlopen
+
 from zeep import client
+from zeep.helpers import serialize_object
 
 import astropy.units as u
 from astropy.table import QTable as Table
 
 from sunpy import config
 from sunpy.net import download
-from sunpy.util.net import get_filename, slugify
-from sunpy.net.attr import and_
-from sunpy.net.vso import attrs
-from sunpy.net.vso.attrs import walker, TIMEFORMAT
-from sunpy.util import replacement_filename
 from sunpy.time import parse_time
+from sunpy.util import replacement_filename
+from sunpy.net.vso import attrs
+from sunpy.net.attr import and_
+from sunpy.util.net import slugify, get_filename
+from sunpy.net.vso.attrs import TIMEFORMAT, walker
+from sunpy.net.base_client import BaseClient
 
 TIME_FORMAT = config.get("general", "time_format")
 
@@ -176,9 +178,13 @@ class QueryResponse(list):
                                         if record.extent.type is not None else ['N/A'])
             # If we have a start and end Wavelength, make a quantity
             if hasattr(record, 'wave') and record.wave.wavemin and record.wave.wavemax:
+                unit = record.wave.waveunit
+                # Convert this so astropy units parses it correctly
+                if unit == "kev":
+                    unit = "keV"
                 record_items['Wavelength'].append(u.Quantity([float(record.wave.wavemin),
                                                               float(record.wave.wavemax)],
-                                                             unit=record.wave.waveunit))
+                                                             unit=unit))
             # If not save None
             else:
                 record_items['Wavelength'].append(None)
@@ -265,7 +271,7 @@ class VSOClient(BaseClient):
 
     def make(self, atype, **kwargs):
         """
-        Create a new SOAP object, without any nested kwarg BS.
+        Create a new SOAP object.
         """
         obj = self.api.get_type("VSO:{}".format(atype))
         return obj(**kwargs)
@@ -372,7 +378,8 @@ class VSOClient(BaseClient):
         if not name:
             name = "file"
 
-        fname = pattern.format(file=name, **dict(response))
+
+        fname = pattern.format(file=name, **serialize_object(response))
 
         if not overwrite and os.path.exists(fname):
             fname = replacement_filename(fname)
@@ -383,7 +390,6 @@ class VSOClient(BaseClient):
         return fname
 
     # pylint: disable=R0914
-    @deprecated("0.9", alternative="sunpy.net.Fido")
     def query_legacy(self, tstart=None, tend=None, **kwargs):
         """
         Query data from the VSO mocking the IDL API as close as possible.
@@ -498,8 +504,8 @@ class VSOClient(BaseClient):
         VSOQueryResponse = self.api.get_type('VSO:QueryResponse')
         block = self.api.get_type('VSO:QueryRequestBlock')()
 
-        for key, value in iteritems(kwargs):
-            for k, v in iteritems(ALIASES.get(key, sdk(key))(value)):
+        for key, value in kwargs.items():
+            for k, v in ALIASES.get(key, sdk(key))(value).items():
                 if k.startswith('time'):
                     v = parse_time(v).strftime(TIMEFORMAT)
                 attr = k.split('_')
@@ -617,10 +623,8 @@ class VSOClient(BaseClient):
         VSOGetDataResponse = self.api.get_type("VSO:VSOGetDataResponse")
 
         data_request = self.make_getdatarequest(query_response, methods, info)
-        print(data_request)
         data_response = VSOGetDataResponse(self.api.service.GetData(data_request))
 
-        print(data_response)
         self.download_all(data_response, methods, downloader, path, fileids, res)
 
         res.poke()
@@ -666,9 +670,9 @@ class VSOClient(BaseClient):
 
         datarequestitem = [
                        self.make('DataRequestItem', provider=k, fileiditem={'fileid': v})
-                       for k, v in iteritems(maps)]
+                       for k, v in maps.items()]
 
-        request = {'method': {'methodtype': methods},
+        request = {'method': [{'methodtype': m} for m in methods],
                    'info': info,
                    'datacontainer': {'datarequestitem': datarequestitem}
                    }
@@ -682,6 +686,7 @@ class VSOClient(BaseClient):
             ('0.7', (1, 4)),
             ('0.6', (0, 3)),
         ]
+
         for dresponse in response.getdataresponseitem:
             for version, (from_, to) in GET_VERSION:
                 if getattr(dresponse, version, '0.6') >= version:
@@ -695,10 +700,11 @@ class VSOClient(BaseClient):
             # pylint: disable=W0631
             code = (
                 dresponse.status[from_:to]
-                if hasattr(dresponse, 'status') else '200'
+                if getattr(dresponse, 'status', None) else '200'
             )
             if code == '200':
                 for dataitem in dresponse.getdataitem.dataitem:
+
                     try:
                         self.download(
                             dresponse.method.methodtype[0],
