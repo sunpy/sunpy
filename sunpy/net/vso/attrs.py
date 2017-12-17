@@ -476,7 +476,6 @@ def _create(wlk, root, api):
     api.set_ns_prefix('VSO', 'http://virtualsolar.org/VSO/VSOi')
     value = api.get_type('VSO:QueryRequestBlock')()
     wlk.apply(root, api, value)
-    print(value)
     return [value]
 
 
@@ -491,6 +490,8 @@ def _apply(wlk, root, api, block):
         if subkey:
             if len(subkey) != 1:
                 raise ValueError("Can't parse double nested ValueAttr")
+            subkey = subkey[0]
+
             if block[name]:
                 block[name].update({subkey: v})
             else:
@@ -544,7 +545,7 @@ walker.add_converter(Wavelength)(
     lambda x: ValueAttr({
             ('wave', 'wavemin'): x.min.value,
             ('wave', 'wavemax'): x.max.value,
-            ('wave', 'waveunit'): x.unit,
+            ('wave', 'waveunit'): x.unit.name,
     })
 )
 
