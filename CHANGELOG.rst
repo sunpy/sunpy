@@ -27,6 +27,7 @@ Bug Fixes
 - Fixed upstream astropy/numpy documentation issues [#2359]
 - Documentation for Map improved [#2361]
 - Fix the output units of pixel_to_world [#2362]
+- Documentation for Database improved [#2355]
 
 0.8.2
 =====
