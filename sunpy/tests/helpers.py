@@ -33,10 +33,10 @@ else:
 
 try:
     from sunpy.io import _pyana
-    SKIP_ANA = False
 except ImportError as e:
-    print(e)
     SKIP_ANA = True
+else:
+    SKIP_ANA = False
 
 skip_windows = pytest.mark.skipif(platform.system() == 'Windows', reason="Windows")
 
