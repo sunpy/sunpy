@@ -334,13 +334,13 @@ class VSOClient(object):
             :py:meth:`VSOClient.query`.
         """
         query = and_(*query)
-
+        QueryRequest = self.api.get_type('VSO:QueryRequest')
         responses = []
         for block in walker.create(query, self.api):
             try:
                 responses.append(
                     self.api.service.Query(
-                        self.make('QueryRequest', block=block)
+                        QueryRequest(block=block)
                     )
                 )
             except Exception as ex:
