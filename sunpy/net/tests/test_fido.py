@@ -4,7 +4,7 @@ import tempfile
 
 import pytest
 import hypothesis.strategies as st
-from hypothesis import given, assume
+from hypothesis import given, assume, example
 
 import astropy.units as u
 
@@ -18,8 +18,8 @@ from sunpy.util.datatype_factory_base import NoMatchError, MultipleMatchError
 from sunpy.time import TimeRange, parse_time
 from sunpy import config
 
-from .strategies import (online_instruments, offline_instruments,
-                         time_attr, range_time, goes_time)
+from sunpy.net.tests.strategies import (online_instruments, offline_instruments,
+                                        time_attr, range_time, goes_time)
 
 TIMEFORMAT = config.get("general", "time_format")
 
@@ -45,7 +45,12 @@ def online_query(draw, instrument=online_instruments(), time=time_attr()):
     query = draw(instrument)
     # If we have AttrAnd then we don't have RHESSI
     if isinstance(query, a.Instrument) and query.value == 'rhessi':
-        query = query & draw(range_time(parse_time('2002-02-01')))
+        # Build a time attr which does not span a month.
+        year = draw(st.integers(min_value=2003, max_value=2017))
+        month = draw(st.integers(min_value=1, max_value=12))
+        days = draw(st.integers(min_value=1, max_value=28))
+        query = query & a.Time("{}-{}-01".format(year, month, days),
+                               "{}-{}-{}".format(year, month, days))
     return query
 
 

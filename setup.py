@@ -108,7 +108,7 @@ package_info['package_data'][PACKAGENAME].extend(c_files)
 extras_require = {'database': ["sqlalchemy"],
                   'image': ["scikit-image"],
                   'jpeg2000': ["glymur"],
-                  'net': ["suds-jurko", "beautifulsoup4", "requests"],
+                  'net': ["suds-jurko", "beautifulsoup4", "requests", "dateutil"],
                   'tests': ["pytest", "pytest-cov", "pytest-mock", "pytest-rerunfailures", "mock", "hypothesis"]}
 extras_require['all'] = extras_require['database'] + extras_require['image'] + \
                         extras_require['net'] + extras_require['tests']

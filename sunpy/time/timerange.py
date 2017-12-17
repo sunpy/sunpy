@@ -185,8 +185,7 @@ class TimeRange(object):
         -------
         value : `astropy.units.Quantity`
         """
-        return (self.dt.microseconds * u.Unit('us') + self.dt.seconds * u.Unit('s') +
-                self.dt.days * u.Unit('day'))
+        return self.dt.total_seconds() * u.s
 
     def __eq__(self, other):
         """
