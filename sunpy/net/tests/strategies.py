@@ -18,8 +18,11 @@ def timedelta(draw):
     """
     keys = st.sampled_from(['days', 'seconds', 'microseconds', 'milliseconds',
                             'minutes', 'hours', 'weeks'])
-    values = st.floats(min_value=0, max_value=100)
-    return datetime.timedelta(**draw(st.dictionaries(keys, values)))
+    values = st.floats(min_value=1, max_value=100)
+    delta = datetime.timedelta(**draw(st.dictionaries(keys, values)))
+    # We don't want a 0 timedelta
+    assume(delta.total_seconds() > 0)
+    return delta
 
 
 def offline_instruments():

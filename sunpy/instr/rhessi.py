@@ -15,6 +15,7 @@ import warnings
 from datetime import datetime, timedelta
 
 import numpy as np
+from dateutil.relativedelta import relativedelta
 
 from astropy.io import fits
 from astropy import units as u
@@ -96,7 +97,6 @@ def get_obssumm_dbase_file(time_range):
     if _time_range.start < parse_time("2002/02/01"):
         raise ValueError("RHESSI summary files are not available for before 2002-02-01")
 
-    _check_one_day(_time_range)
 
     url = posixpath.join(get_base_url(), 'dbase',
                          _time_range.start.strftime("hsi_obssumm_filedb_%Y%m.txt"))
@@ -198,18 +198,27 @@ def get_obssum_filename(time_range):
         This API is currently limited to providing data from whole days only.
 
     """
+    time_range = TimeRange(time_range)
+
+    delta = relativedelta(time_range.end, time_range.start)
+    if delta.years > 0 or delta.months > 0:
+        raise ValueError("Rhessi search results can not be found for a"
+                         " time range crossing multiple months.")
+
+
     # need to download and inspect the dbase file to determine the filename
     # for the observing summary data
 
     dbase_file_name, _ = get_obssumm_dbase_file(time_range)
     dbase_dat = parse_obssumm_dbase_file(dbase_file_name)
 
-    _time_range = TimeRange(time_range)
-    index_number_start = _time_range.start.day - 1
-    index_number_end = _time_range.end.day - 1
+    index_number_start = time_range.start.day - 1
+    # If end is 0 set it to 1 so we always have at least one record.
+    index_number_end = time_range.end.day - 1 or index_number_start + 1
 
+    filenames = dbase_dat.get('filename')[index_number_start:index_number_end]
     return [posixpath.join(get_base_url(), 'metadata', 'catalog', filename + 's')
-            for filename in dbase_dat.get('filename')[index_number_start:index_number_end]]
+            for filename in filenames]
 
 
 def get_obssumm_file(time_range):

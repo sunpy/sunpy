@@ -4,7 +4,7 @@ import tempfile
 
 import pytest
 import hypothesis.strategies as st
-from hypothesis import given, assume
+from hypothesis import given, assume, example
 
 import astropy.units as u
 
@@ -45,7 +45,12 @@ def online_query(draw, instrument=online_instruments(), time=time_attr()):
     query = draw(instrument)
     # If we have AttrAnd then we don't have RHESSI
     if isinstance(query, a.Instrument) and query.value == 'rhessi':
-        query = query & draw(range_time(parse_time('2002-02-01')))
+        # Build a time attr which does not span a month.
+        year = draw(st.integers(min_value=2003, max_value=2017))
+        month = draw(st.integers(min_value=1, max_value=12))
+        days = draw(st.integers(min_value=1, max_value=28))
+        query = query & a.Time("{}-{}-01".format(year, month, days),
+                               "{}-{}-{}".format(year, month, days))
     return query
 
 
