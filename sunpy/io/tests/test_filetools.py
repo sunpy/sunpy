@@ -48,7 +48,6 @@ class TestFiletools(object):
             assert isinstance(pair[0][1], sunpy.io.header.FileHeader)
             assert np.all(pair[0][0] == np.tile(np.arange(32), (32, 1)).transpose())
 
-
     @skip_glymur
     def test_read_file_jp2(self):
         #Test read jp2
@@ -60,7 +59,6 @@ class TestFiletools(object):
         assert len(pair[0]) == 2
         assert isinstance(pair[0][0], np.ndarray)
         assert isinstance(pair[0][1], sunpy.io.header.FileHeader)
-
 
     def test_read_file_header_fits(self):
         #Test FITS
