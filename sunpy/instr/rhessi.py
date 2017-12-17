@@ -97,6 +97,7 @@ def get_obssumm_dbase_file(time_range):
     if _time_range.start < parse_time("2002/02/01"):
         raise ValueError("RHESSI summary files are not available for before 2002-02-01")
 
+    _check_one_day(_time_range)
 
     url = posixpath.join(get_base_url(), 'dbase',
                          _time_range.start.strftime("hsi_obssumm_filedb_%Y%m.txt"))
