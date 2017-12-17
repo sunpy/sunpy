@@ -278,26 +278,11 @@ class VSOClient(object):
         self.api = api
 
     def make(self, atype, **kwargs):
-        """ Create new SOAP object with attributes specified in kwargs.
-        To assign subattributes, use foo__bar=1 to assign
-        ['foo']['bar'] = 1. """
-        obj = self.api.factory.create(atype)
-        for k, v in iteritems(kwargs):
-            split = k.split('__')
-            tip = split[-1]
-            rest = split[:-1]
-
-            item = obj
-            for elem in rest:
-                item = item[elem]
-
-            if isinstance(v, dict):
-                # Do not throw away type information for dicts.
-                for k, v in iteritems(v):
-                    item[tip][k] = v
-            else:
-                item[tip] = v
-        return obj
+        """
+        Create a new SOAP object, without any nested kwarg BS.
+        """
+        obj = self.api.get_type("VSO:{}".format(atype))
+        return obj(**kwargs)
 
     def search(self, *query):
         """ Query data from the VSO with the new API. Takes a variable number
