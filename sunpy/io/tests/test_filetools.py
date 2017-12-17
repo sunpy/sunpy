@@ -6,10 +6,8 @@ import sunpy
 import sunpy.io
 import sunpy.data.test
 
-from sunpy.tests.helpers import skip_ana, skip_glymur, skip_windows
+from sunpy.tests.helpers import skip_glymur, skip_ana
 
-import sunpy.data.test
-import os
 testpath = sunpy.data.test.rootdir
 
 RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
@@ -50,6 +48,7 @@ class TestFiletools(object):
             assert isinstance(pair[0][1], sunpy.io.header.FileHeader)
             assert np.all(pair[0][0] == np.tile(np.arange(32), (32, 1)).transpose())
 
+
     @skip_glymur
     def test_read_file_jp2(self):
         #Test read jp2
@@ -61,6 +60,7 @@ class TestFiletools(object):
         assert len(pair[0]) == 2
         assert isinstance(pair[0][0], np.ndarray)
         assert isinstance(pair[0][1], sunpy.io.header.FileHeader)
+
 
     def test_read_file_header_fits(self):
         #Test FITS
@@ -77,7 +77,6 @@ class TestFiletools(object):
         assert isinstance(hlist, list)
         assert len(hlist) == 1
         assert isinstance(hlist[0], sunpy.io.header.FileHeader)
-
 
     def test_write_file_fits(self):
         #Test write FITS
