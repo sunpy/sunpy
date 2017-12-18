@@ -185,8 +185,7 @@ class TimeRange(object):
         -------
         value : `astropy.units.Quantity`
         """
-        return (self.dt.microseconds * u.Unit('us') + self.dt.seconds * u.Unit('s') +
-                self.dt.days * u.Unit('day'))
+        return self.dt.total_seconds() * u.s
 
     def __eq__(self, other):
         """
@@ -299,29 +298,32 @@ class TimeRange(object):
         >>> import astropy.units as u
         >>> from sunpy.time import TimeRange
         >>> time_range = TimeRange('2010/03/04 00:10', '2010/03/04 01:20')
-        >>> time_range.window(60*60*u.s, window=12*u.s)   # doctest: +NORMALIZE_WHITESPACE
-        [    Start: 2010-03-04 00:10:00
+        >>> time_range.window(60*60*u.s, window=12*u.s)   # doctest: +NORMALIZE_WHITESPACE +SKIP
+        [   <sunpy.time.timerange.TimeRange object at 0x7f0214bfc208>
+            Start: 2010-03-04 00:10:00
             End:   2010-03-04 00:10:12
             Center:2010-03-04 00:10:06
-            Duration:0.000138888888889 days or
-                   0.00333333333333 hours or
-                   0.2 minutes or
-                   12.0 seconds
-         ,    Start: 2010-03-04 01:10:00
+            Duration:0.0001388888888888889 days or
+                    0.003333333333333333 hours or
+                    0.2 minutes or
+                    12.0 seconds,
+            <sunpy.time.timerange.TimeRange object at 0x7f01fe43ac50>
+            Start: 2010-03-04 01:10:00
             End:   2010-03-04 01:10:12
             Center:2010-03-04 01:10:06
-            Duration:0.000138888888889 days or
-                   0.00333333333333 hours or
-                   0.2 minutes or
-                   12.0 seconds
-         ,    Start: 2010-03-04 02:10:00
+            Duration:0.0001388888888888889 days or
+                    0.003333333333333333 hours or
+                    0.2 minutes or
+                    12.0 seconds,
+            <sunpy.time.timerange.TimeRange object at 0x7f01fb90b898>
+            Start: 2010-03-04 02:10:00
             End:   2010-03-04 02:10:12
             Center:2010-03-04 02:10:06
-            Duration:0.000138888888889 days or
-                   0.00333333333333 hours or
-                   0.2 minutes or
-                   12.0 seconds
-          ]
+            Duration:0.0001388888888888889 days or
+                    0.003333333333333333 hours or
+                    0.2 minutes or
+                    12.0 seconds]
+
         """
         if not isinstance(window, timedelta):
             window = timedelta(seconds=window.to('s').value)

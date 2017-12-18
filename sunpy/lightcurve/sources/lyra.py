@@ -48,11 +48,11 @@ class LYRALightCurve(LightCurve):
     Examples
     --------
     >>> import sunpy
-    >>> lyra = sunpy.lightcurve.LYRALightCurve.create()
+    >>> lyra = sunpy.lightcurve.LYRALightCurve.create()   # doctest: +REMOTE_DATA
     >>> lyra = sunpy.lightcurve.LYRALightCurve.create('~/Data/lyra/lyra_20110810-000000_lev2_std.fits')   # doctest: +SKIP
-    >>> lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10')
-    >>> lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10', level=3)
-    >>> lyra = sunpy.lightcurve.LYRALightCurve.create("http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")
+    >>> lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10')   # doctest: +REMOTE_DATA
+    >>> lyra = sunpy.lightcurve.LYRALightCurve.create('2011/08/10', level=3)   # doctest: +REMOTE_DATA
+    >>> lyra = sunpy.lightcurve.LYRALightCurve.create("http://proba2.oma.be/lyra/data/bsd/2011/08/10/lyra_20110810-000000_lev2_std.fits")   # doctest: +REMOTE_DATA
     >>> lyra.peek()   # doctest: +SKIP
 
     References

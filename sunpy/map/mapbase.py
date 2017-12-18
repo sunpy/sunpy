@@ -4,10 +4,10 @@ Map is a generic Map class from which all other Map classes inherit from.
 from __future__ import absolute_import, division, print_function
 from sunpy.extern.six.moves import range
 
+import copy
 import warnings
 import inspect
 from abc import ABCMeta
-from copy import deepcopy
 from collections import OrderedDict, namedtuple
 
 import numpy as np
@@ -84,35 +84,46 @@ class GenericMap(NDData):
     Parameters
     ----------
     data : `~numpy.ndarray`, list
-        A 2d list or ndarray containing the map data
-    meta : dict
-        A dictionary of the original image header tags
+        A 2d list or ndarray containing the map data.
+    header : dict
+        A dictionary of the original image header tags.
+    plot_settings : dict, optional
+        Plot settings.
+
+    Other Parameters
+    ----------------
+    **kwargs :
+        Additional keyword arguments are passed to `~astropy.nddata.NDData`
+        init.
 
     Examples
     --------
     >>> import sunpy.map
     >>> import sunpy.data.sample
     >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    >>> aia   # doctest: +NORMALIZE_WHITESPACE
-    SunPy AIAMap
+    >>> aia   # doctest: +NORMALIZE_WHITESPACE +FLOAT_CMP
+    SunPy Map
     ---------
-    Observatory:         SDO
-    Instrument:  AIA 3
-    Detector:    AIA
-    Measurement:         171.0 Angstrom
-    Wavelength:  171.0 Angstrom
-    Obs Date:    2011-03-19 10:54:00
-    dt:          1.999601 s
-    Dimension:   [ 1024.  1024.] pix
-    scale:               [ 2.4  2.4] arcsec / pix
+    Observatory:                SDO
+    Instrument:                 AIA 3
+    Detector:           AIA
+    Measurement:                171.0 Angstrom
+    Wavelength:                 171.0 Angstrom
+    Observation Date:   2011-06-07 06:33:02
+    Exposure Time:              0.234256 s
+    Dimension:          [ 1024.  1024.] pix
+    Coordinate System:  helioprojective
+    Scale:                      [ 2.402792  2.402792] arcsec / pix
+    Reference Pixel:    [ 512.5  512.5] pix
+    Reference Coord:    [ 3.22309951  1.38578135] arcsec
     <BLANKLINE>
-    array([[ 0.3125, -0.0625, -0.125 , ...,  0.625 , -0.625 ,  0.    ],
-           [ 1.    ,  0.1875, -0.8125, ...,  0.625 , -0.625 ,  0.    ],
-           [-1.1875,  0.375 , -0.5   , ..., -0.125 , -0.625 , -1.1875],
+    array([[ -96.,    7.,   -2., ..., -128., -128., -128.],
+           [ -97.,   -5.,    0., ...,  -99., -104., -128.],
+           [ -94.,    1.,   -4., ...,   -5.,  -38., -128.],
            ...,
-           [-0.625 ,  0.0625, -0.3125, ...,  0.125 ,  0.125 ,  0.125 ],
-           [ 0.5625,  0.0625,  0.5625, ..., -0.0625, -0.0625,  0.    ],
-           [ 0.5   , -0.125 ,  0.4375, ...,  0.6875,  0.6875,  0.6875]])
+           [-128., -128., -128., ..., -128., -128., -128.],
+           [-128., -128., -128., ..., -128., -128., -128.],
+           [-128., -128., -128., ..., -128., -128., -128.]], dtype=float32)
 
 
     >>> aia.spatial_units
@@ -163,7 +174,6 @@ class GenericMap(NDData):
     """
 
     def __init__(self, data, header, plot_settings=None, **kwargs):
-
         # If the data has more than two dimensions, the first dimensions
         # (NAXIS1, NAXIS2) are used and the rest are discarded.
         ndim = data.ndim
@@ -246,7 +256,7 @@ Reference Coord:\t {refcoord}
     def _new_instance(cls, data, meta, plot_settings=None, **kwargs):
         """
         Instantiate a new instance of this class using given data.
-        This is a shortcut for ``type(self)(data, meta, plot_settings)``
+        This is a shortcut for ``type(self)(data, meta, plot_settings)``.
         """
         return cls(data, meta, plot_settings=plot_settings, **kwargs)
 
@@ -395,7 +405,7 @@ Reference Coord:\t {refcoord}
     @property
     def nickname(self):
         """An abbreviated human-readable description of the map-type; part of
-        the Helioviewer data model"""
+        the Helioviewer data model."""
         return self._nickname if self._nickname else self.detector
 
     @nickname.setter
@@ -404,7 +414,7 @@ Reference Coord:\t {refcoord}
 
     @property
     def date(self):
-        """Image observation time"""
+        """Image observation time."""
         time = self.meta.get('date-obs', None)
         if time is None:
             warnings.warn_explicit("Missing metadata for observation time."
@@ -416,7 +426,7 @@ Reference Coord:\t {refcoord}
 
     @property
     def detector(self):
-        """Detector name"""
+        """Detector name."""
         return self.meta.get('detector', "")
 
     @property
@@ -440,24 +450,24 @@ Reference Coord:\t {refcoord}
 
     @property
     def instrument(self):
-        """Instrument name"""
+        """Instrument name."""
         return self.meta.get('instrume', "").replace("_", " ")
 
     @property
     def measurement(self):
-        """Measurement name, defaults to the wavelength of image"""
+        """Measurement name, defaults to the wavelength of image."""
         return u.Quantity(self.meta.get('wavelnth', 0),
                           self.meta.get('waveunit', ""))
 
     @property
     def wavelength(self):
-        """wavelength of the observation"""
+        """Wavelength of the observation."""
         return u.Quantity(self.meta.get('wavelnth', 0),
                           self.meta.get('waveunit', ""))
 
     @property
     def observatory(self):
-        """Observatory or Telescope name"""
+        """Observatory or Telescope name."""
         return self.meta.get('obsrvtry',
                              self.meta.get('telescop', "")).replace("_", " ")
 
@@ -522,7 +532,6 @@ Reference Coord:\t {refcoord}
 
         Parameters
         ----------
-
         axis1 : `~astropy.units.Quantity`
             The shift to apply to the Longitude (solar-x) coordinate.
 
@@ -552,7 +561,7 @@ Reference Coord:\t {refcoord}
 
     @property
     def rsun_meters(self):
-        """Radius of the sun in meters"""
+        """Radius of the sun in meters."""
         return u.Quantity(self.meta.get('rsun_ref', constants.radius), 'meter')
 
     @property
@@ -574,13 +583,13 @@ Reference Coord:\t {refcoord}
 
     @property
     def coordinate_system(self):
-        """Coordinate system used for x and y axes (ctype1/2)"""
+        """Coordinate system used for x and y axes (ctype1/2)."""
         return SpatialPair(self.meta.get('ctype1', 'HPLN-   '),
                            self.meta.get('ctype2', 'HPLT-   '))
 
     @property
     def carrington_longitude(self):
-        """Carrington longitude (crln_obs)"""
+        """Carrington longitude (crln_obs)."""
         carrington_longitude = self.meta.get('crln_obs', None)
 
         if carrington_longitude is None:
@@ -597,7 +606,7 @@ Reference Coord:\t {refcoord}
 
     @property
     def heliographic_latitude(self):
-        """Heliographic latitude"""
+        """Heliographic latitude."""
         heliographic_latitude = self.meta.get('hglt_obs',
                                               self.meta.get('crlt_obs',
                                                             self.meta.get('solar_b0', None)))
@@ -616,7 +625,7 @@ Reference Coord:\t {refcoord}
 
     @property
     def heliographic_longitude(self):
-        """Heliographic longitude"""
+        """Heliographic longitude."""
         heliographic_longitude = self.meta.get('hgln_obs', 0.)
 
         if isinstance(heliographic_longitude, six.string_types):
@@ -657,7 +666,7 @@ Reference Coord:\t {refcoord}
 
     @property
     def reference_pixel(self):
-        """Reference point axes in pixels (i.e. crpix1, crpix2)"""
+        """Reference point axes in pixels (i.e. crpix1, crpix2)."""
         return PixelPair(self.meta.get('crpix1',
                                        (self.meta.get('naxis1') + 1) / 2.) * u.pixel,
                          self.meta.get('crpix2',
@@ -666,7 +675,8 @@ Reference Coord:\t {refcoord}
     @property
     def scale(self):
         """
-        Image scale along the x and y axes in units/pixel (i.e. cdelt1, cdelt2)
+        Image scale along the x and y axes in units/pixel
+        (i.e. cdelt1, cdelt2).
         """
         # TODO: Fix this if only CDi_j matrix is provided
         return SpatialPair(self.meta.get('cdelt1', 1.) * self.spatial_units[0] / u.pixel,
@@ -820,7 +830,7 @@ Reference Coord:\t {refcoord}
     @deprecated("0.8.0", alternative="sunpy.map.GenericMap.world_to_pixel")
     def data_to_pixel(self, coordinate, origin=0):
         """
-        See `~sunpy.map.mapbase.GenericMap.world_to_pixel`
+        See `~sunpy.map.mapbase.GenericMap.world_to_pixel`.
         """
         return self.world_to_pixel(coordinate, origin=origin)
 
@@ -852,15 +862,17 @@ Reference Coord:\t {refcoord}
             A coordinate object representing the output coordinate.
 
         """
-        x, y = self.wcs.wcs_pix2world(x, y, origin)
 
-        # If the wcs is celestial it is output in degress
-        if self.wcs.is_celestial:
-            x = u.Quantity(x, u.deg)
-            y = u.Quantity(y, u.deg)
-        else:
-            x = u.Quantity(x, self.spatial_units[0])
-            y = u.Quantity(y, self.spatial_units[1])
+        # Hold the WCS instance here so we can inspect the output units after
+        # the pix2world call
+        temp_wcs = self.wcs
+
+        x, y = temp_wcs.wcs_pix2world(x, y, origin)
+
+        out_units = list(map(u.Unit, temp_wcs.wcs.cunit))
+
+        x = u.Quantity(x, out_units[0])
+        y = u.Quantity(y, out_units[1])
 
         return SkyCoord(x, y, frame=self.coordinate_frame)
 
@@ -868,7 +880,7 @@ Reference Coord:\t {refcoord}
     @deprecated("0.8.0", alternative="sunpy.map.GenericMap.pixel_to_world")
     def pixel_to_data(self, x, y, origin=0):
         """
-        See `~sunpy.map.mapbase.GenericMap.pixel_to_world`
+        See `~sunpy.map.mapbase.GenericMap.pixel_to_world`.
         """
         return self.pixel_to_world(x, y, origin=origin)
 
@@ -886,7 +898,7 @@ Reference Coord:\t {refcoord}
             Location to save file to.
 
         filetype : str
-            'auto' or any supported file extension
+            'auto' or any supported file extension.
         """
         io.write_file(filepath, self.data, self.meta, filetype=filetype,
                       **kwargs)
@@ -1184,7 +1196,8 @@ Reference Coord:\t {refcoord}
         Returns
         -------
         out : `~sunpy.map.GenericMap` or subclass
-            A new map instance is returned representing to specified sub-region
+            A new map instance is returned representing to specified
+            sub-region.
 
         Examples
         --------
@@ -1193,56 +1206,52 @@ Reference Coord:\t {refcoord}
         >>> import sunpy.data.sample
         >>> aia = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
         >>> bl = SkyCoord(-300*u.arcsec, -300*u.arcsec, frame=aia.coordinate_frame)
-        >>> tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=aia.coordinate_frame
-        >>> aia.submap(bl, tr)   # doctest: +NORMALIZE_WHITESPACE
+        >>> tr = SkyCoord(500*u.arcsec, 500*u.arcsec, frame=aia.coordinate_frame)
+        >>> aia.submap(bl, tr)   # doctest: +NORMALIZE_WHITESPACE +FLOAT_CMP
         SunPy Map
         ---------
-        Observatory:		 SDO
-        Instrument:		 AIA 3
-        Detector:		 AIA
-        Measurement:		 171.0 Angstrom
-        Wavelength:		 171.0 Angstrom
-        Observation Date:	 2011-03-19 10:54:00
-        Exposure Time:		 1.999601 s
-        Dimension:		 [ 333.  333.] pix
-        Coordinate System:	 helioprojective
-        Scale:			 [ 2.4  2.4] arcsec / pix
-        Reference Pixel:	 [ 125.5  125.5] pix
-        Reference Coord:	 [ 0.  0.] arcsec
+        Observatory:                SDO
+        Instrument:                 AIA 3
+        Detector:           AIA
+        Measurement:                171.0 Angstrom
+        Wavelength:                 171.0 Angstrom
+        Observation Date:   2011-06-07 06:33:02
+        Exposure Time:              0.234256 s
+        Dimension:          [ 334.  334.] pix
+        Coordinate System:  helioprojective
+        Scale:                      [ 2.402792  2.402792] arcsec / pix
+        Reference Pixel:    [ 127.5  126.5] pix
+        Reference Coord:    [ 3.22309951  1.38578135] arcsec
         <BLANKLINE>
-        array([[ 365.625 ,  438.1875,  395.1875, ...,  201.375 ,  204.4375,  216.    ],
-            [ 386.125 ,  389.5   ,  370.3125, ...,  207.3125,  202.1875,  196.75  ],
-            [ 380.75  ,  342.875 ,  320.875 , ...,  187.5   ,  196.9375,
-                178.875 ],
-            ...,
-            [ 225.3125,  219.1875,  211.1875, ...,  359.8125,  324.5625,
-                305.375 ],
-            [ 228.625 ,  228.8125,  225.8125, ...,  358.5   ,  318.    ,
-                297.1875],
-            [ 220.6875,  221.125 ,  209.625 , ...,  390.4375,  329.375 ,
-                302.3125]])
+        array([[  451.,   566.,   586., ...,  1179.,  1005.,   978.],
+               [  475.,   515.,   556., ...,  1026.,  1011.,  1009.],
+               [  547.,   621.,   621., ...,   935.,  1074.,  1108.],
+               ...,
+               [  203.,   195.,   226., ...,   612.,   580.,   561.],
+               [  207.,   213.,   233., ...,   651.,   622.,   537.],
+               [  230.,   236.,   222., ...,   516.,   586.,   591.]], dtype=float32)
 
-        >>> aia.submap([0,0]*u.pixel, [5,5]*u.pixel)   # doctest: +NORMALIZE_WHITESPACE
+        >>> aia.submap([0,0]*u.pixel, [5,5]*u.pixel)   # doctest: +NORMALIZE_WHITESPACE +FLOAT_CMP
         SunPy Map
         ---------
-        Observatory:		 SDO
-        Instrument:		 AIA 3
-        Detector:		 AIA
-        Measurement:		 171.0 Angstrom
-        Wavelength:		 171.0 Angstrom
-        Observation Date:	 2011-03-19 10:54:00
-        Exposure Time:		 1.999601 s
-        Dimension:		 [ 5.  5.] pix
-        Coordinate System:	 helioprojective
-        Scale:			 [ 2.4  2.4] arcsec / pix
-        Reference Pixel:	 [ 512.5  512.5] pix
-        Reference Coord:	 [ 0.  0.] arcsec
+        Observatory:                SDO
+        Instrument:                 AIA 3
+        Detector:           AIA
+        Measurement:                171.0 Angstrom
+        Wavelength:                 171.0 Angstrom
+        Observation Date:   2011-06-07 06:33:02
+        Exposure Time:              0.234256 s
+        Dimension:          [ 5.  5.] pix
+        Coordinate System:  helioprojective
+        Scale:                      [ 2.402792  2.402792] arcsec / pix
+        Reference Pixel:    [ 512.5  512.5] pix
+        Reference Coord:    [ 3.22309951  1.38578135] arcsec
         <BLANKLINE>
-        array([[ 0.3125, -0.0625, -0.125 ,  0.    , -0.375 ],
-            [ 1.    ,  0.1875, -0.8125,  0.125 ,  0.3125],
-            [-1.1875,  0.375 , -0.5   ,  0.25  , -0.4375],
-            [-0.6875, -0.3125,  0.8125,  0.0625,  0.1875],
-            [-0.875 ,  0.25  ,  0.1875,  0.    , -0.6875]])
+        array([[-96.,   7.,  -2.,  -3.,  -1.],
+               [-97.,  -5.,   0.,   0.,   1.],
+               [-94.,   1.,  -4.,   2.,  -2.],
+               [-97.,  -8.,  -3.,  -5.,  -1.],
+               [-96.,   6.,  -5.,  -1.,  -4.]], dtype=float32)
 
         """
 
@@ -1556,11 +1565,10 @@ Reference Coord:\t {refcoord}
     @u.quantity_input(levels=u.percent)
     def draw_contours(self, levels, axes=None, **contour_args):
         """
-        Draw contours of the data
+        Draw contours of the data.
 
         Parameters
         ----------
-
         levels : `~astropy.units.Quantity`
             A list of numbers indicating the level curves to draw given in
             percent.
@@ -1571,14 +1579,12 @@ Reference Coord:\t {refcoord}
 
         Returns
         -------
-
         cs : `list`
             The `~matplotlib.QuadContourSet` object, after it has been added to
             ``axes``.
 
         Notes
         -----
-
         Extra keyword arguments to this function are passed through to the
         `~matplotlib.pyplot.contour` function.
 
@@ -1596,7 +1602,8 @@ Reference Coord:\t {refcoord}
     @toggle_pylab
     def peek(self, draw_limb=False, draw_grid=False,
              colorbar=True, basic_plot=False, **matplot_args):
-        """Displays the map in a new figure
+        """
+        Displays the map in a new figure.
 
         Parameters
         ----------
@@ -1608,9 +1615,9 @@ Reference Coord:\t {refcoord}
             If `~astropy.units.Quantity` then sets degree difference between
             parallels and meridians.
         gamma : float
-            Gamma value to use for the color map
+            Gamma value to use for the color map.
         colorbar : bool
-            Whether to display a colorbar next to the plot
+            Whether to display a colorbar next to the plot.
         basic_plot : bool
             If true, the data is plotted by itself at it's natural scale; no
             title, labels, or axes are shown.
@@ -1704,7 +1711,7 @@ Reference Coord:\t {refcoord}
                               Warning)
 
         # Normal plot
-        imshow_args = deepcopy(self.plot_settings)
+        imshow_args = copy.deepcopy(self.plot_settings)
         if 'title' in imshow_args:
             plot_settings_title = imshow_args.pop('title')
         else:

@@ -93,7 +93,7 @@ def test_suds_unwrapper():
     assert hec.suds_unwrapper(suds_output) == expected_output
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_webservice_parser():
     result = webservice_parser()
     assert isinstance(result, list)

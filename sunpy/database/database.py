@@ -154,11 +154,11 @@ def split_database(source_database, destination_database, *query_string):
     >>> from sunpy.net import vso
     >>> database1 = Database('sqlite:///:memory:')
     >>> database2 = Database('sqlite:///:memory:')
-    >>> client = vso.VSOClient()
-    >>> qr = client.search(vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'))
-    >>> database1.add_from_vso_query_result(qr)
+    >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
+    >>> qr = client.search(vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'))  # doctest: +REMOTE_DATA
+    >>> database1.add_from_vso_query_result(qr)  # doctest: +REMOTE_DATA
     >>> database1, database2 = split_database(database1, database2,
-    ...            vso.attrs.Instrument('AIA') | vso.attrs.Instrument('ERNE'))
+    ...            vso.attrs.Instrument('AIA') | vso.attrs.Instrument('ERNE'))  # doctest: +REMOTE_DATA
     """
 
     query_string = and_(*query_string)
@@ -462,7 +462,7 @@ class Database(object):
         Check if the query has already been used to collect new data.
 
         If yes, query the database using the method
-        :meth:`sunpy.database.Database.query` and return the result.
+        :meth:`sunpy.database.Database.search` and return the result.
 
         Otherwise, the retrieved search result is used to download all files
         that belong to this search result. After that, all the gathered
@@ -520,10 +520,10 @@ class Database(object):
         >>> from sunpy.net import vso
         >>> database = Database('sqlite:///:memory:')
         >>> database.fetch(vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
-        ...                vso.attrs.Instrument('AIA'))
+        ...                vso.attrs.Instrument('AIA'))  # doctest: +REMOTE_DATA
         >>> print(display_entries(database,
         ...                       ['id', 'observation_time_start', 'observation_time_end',
-        ...                        'instrument', 'wavemin', 'wavemax']))
+        ...                        'instrument', 'wavemin', 'wavemax']))  # doctest: +REMOTE_DATA
             id observation_time_start observation_time_end instrument wavemin wavemax
             --- ---------------------- -------------------- ---------- ------- -------
               1    2012-08-05 00:00:01  2012-08-05 00:00:02        AIA     9.4     9.4
@@ -531,10 +531,10 @@ class Database(object):
               3    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
               4    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
         >>> database.fetch(vso.attrs.Time('2012-08-05', '2012-08-05 00:00:01'),
-        ...                vso.attrs.Instrument('AIA'), overwrite=True)
+        ...                vso.attrs.Instrument('AIA'), overwrite=True)  # doctest: +REMOTE_DATA
         >>> print(display_entries(database,
         ...                       ['id', 'observation_time_start', 'observation_time_end',
-        ...                        'instrument', 'wavemin', 'wavemax']))
+        ...                        'instrument', 'wavemin', 'wavemax']))  # doctest: +REMOTE_DATA
              id observation_time_start observation_time_end instrument wavemin wavemax
             --- ---------------------- -------------------- ---------- ------- -------
               3    2012-08-05 00:00:02  2012-08-05 00:00:03        AIA    33.5    33.5
@@ -809,7 +809,7 @@ class Database(object):
         Parameters
         ----------
         query_result : list
-            The value returned by :meth:`sunpy.net.hek.HEKClient().query`
+            The value returned by :meth:`sunpy.net.hek.HEKClient().search`
 
         ignore_already_added : bool
             See :meth:`sunpy.database.Database.add`.
@@ -832,7 +832,7 @@ class Database(object):
 
         Parameters
         ----------
-        query_result : sunpy.net.vso.vso.QueryResponse
+        query_result : sunpy.net.vso.QueryResponse
             A VSO query response that was returned by the ``query`` method of a
             :class:`sunpy.net.vso.VSOClient` object.
 
@@ -852,7 +852,7 @@ class Database(object):
 
         Parameters
         ----------
-        query_result : sunpy.net.vso.vso.QueryResponse
+        query_result : sunpy.net.vso.QueryResponse
             A VSO query response that was returned by the ``query`` method of a
             :class:`sunpy.net.vso.VSOClient` object.
 

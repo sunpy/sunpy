@@ -26,14 +26,14 @@ def test_get_obssumm_dbase_file():
         rhessi.get_obssumm_dbase_file(['2002/01/01', '2002/04/01'])
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_get_obssum_filename():
     file_name = rhessi.get_obssum_filename(('2011/04/04', '2011/04/05'))
     # Irregardless of mirror server the osbsum file name should match
     assert file_name[0].split('metadata/catalog/')[1] == 'hsi_obssumm_20110404_042.fits'
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_parse_obssum_dbase_file():
     file = rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))
     obssum = rhessi.parse_obssumm_dbase_file(file[0])
@@ -60,7 +60,7 @@ def test_parse_obssum_dbase_file():
     assert obssum['npackets'][-1] == 0
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_get_parse_obssum_file():
     f = rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))  # doctest: +SKIP
     header, _data = rhessi.parse_obssumm_file(f[0])

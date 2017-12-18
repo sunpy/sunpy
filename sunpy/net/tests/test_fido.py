@@ -4,22 +4,22 @@ import tempfile
 
 import pytest
 import hypothesis.strategies as st
-from hypothesis import given, assume
+from hypothesis import given, assume, example
 
 import astropy.units as u
 
 from sunpy.net import attr
 from sunpy.net.vso import attrs as va
 from sunpy.net import Fido, attrs as a
-from sunpy.net.vso.vso import QueryResponse as vsoQueryResponse
+from sunpy.net.vso import QueryResponse as vsoQueryResponse
 from sunpy.net.fido_factory import DownloadResponse, UnifiedResponse
 from sunpy.net.dataretriever.client import CLIENTS, QueryResponse
 from sunpy.util.datatype_factory_base import NoMatchError, MultipleMatchError
 from sunpy.time import TimeRange, parse_time
 from sunpy import config
 
-from .strategies import (online_instruments, offline_instruments,
-                         time_attr, range_time, goes_time)
+from sunpy.net.tests.strategies import (online_instruments, offline_instruments,
+                                        time_attr, range_time, goes_time)
 
 TIMEFORMAT = config.get("general", "time_format")
 
@@ -45,7 +45,12 @@ def online_query(draw, instrument=online_instruments(), time=time_attr()):
     query = draw(instrument)
     # If we have AttrAnd then we don't have RHESSI
     if isinstance(query, a.Instrument) and query.value == 'rhessi':
-        query = query & draw(range_time(parse_time('2002-02-01')))
+        # Build a time attr which does not span a month.
+        year = draw(st.integers(min_value=2003, max_value=2017))
+        month = draw(st.integers(min_value=1, max_value=12))
+        days = draw(st.integers(min_value=1, max_value=28))
+        query = query & a.Time("{}-{}-01".format(year, month, days),
+                               "{}-{}-{}".format(year, month, days))
     return query
 
 
@@ -55,7 +60,7 @@ def test_offline_fido(query):
     check_response(query, unifiedresp)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 @given(online_query())
 def test_online_fido(query):
     unifiedresp = Fido.search(query)
@@ -77,12 +82,13 @@ def check_response(query, unifiedresp):
         raise ValueError("No Time Specified")
 
     for block in unifiedresp.responses:
+        res_tr = block.time_range()
         for res in block:
-            assert res.time.start in query_tr
+            assert res.time.start in res_tr
             assert query_instr.lower() == res.instrument.lower()
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_save_path():
     with tempfile.TemporaryDirectory() as target_dir:
         qr = Fido.search(a.Instrument('EVE'), a.Time("2016/10/01", "2016/10/02"), a.Level(0))
@@ -97,7 +103,7 @@ Factory Tests
 """
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_unified_response():
     start = parse_time("2012/1/1")
     end = parse_time("2012/1/2")
@@ -155,7 +161,7 @@ def test_multiple_match():
     Fido.registry = CLIENTS
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 def test_no_wait_fetch():
         qr = Fido.search(a.Instrument('EVE'),
                          a.Time("2016/10/01", "2016/10/02"),

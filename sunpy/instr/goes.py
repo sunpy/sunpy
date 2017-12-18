@@ -231,16 +231,16 @@ def calculate_temperature_em(goeslc, abundances="coronal",
     >>> import sunpy.lightcurve as lc
     >>> time1 = "2014-01-01 00:00:00"
     >>> time2 = "2014-01-01 00:00:08"
-    >>> goeslc = lc.GOESLightCurve.create(time1, time2)
-    >>> goeslc.data
+    >>> goeslc = lc.GOESLightCurve.create(time1, time2)  # doctest: +REMOTE_DATA
+    >>> goeslc.data  # doctest: +REMOTE_DATA +FLOAT_CMP
                                         xrsa      xrsb
     2014-01-01 00:00:00.421999  9.187300e-08  0.000004
     2014-01-01 00:00:02.468999  9.187300e-08  0.000004
     2014-01-01 00:00:04.518999  9.187300e-08  0.000004
     2014-01-01 00:00:06.564999  9.298800e-08  0.000004
 
-    >>> goeslc_new = calculate_temperature_em(goeslc)
-    >>> goeslc_new.data
+    >>> goeslc_new = calculate_temperature_em(goeslc)  # doctest: +REMOTE_DATA
+    >>> goeslc_new.data  # doctest: +REMOTE_DATA +FLOAT_CMP
                                         xrsa      xrsb  temperature            em
     2014-01-01 00:00:00.421999  9.187300e-08  0.000004     6.270239  6.440648e+48
     2014-01-01 00:00:02.468999  9.187300e-08  0.000004     6.270239  6.440648e+48
@@ -366,10 +366,10 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
     >>> shortflux = Quantity([7e-7, 7e-7], unit="W/m/m")
     >>> temp, em = _goes_chianti_tem(longflux, shortflux, satellite=15,
     ...                              date='2014-04-16',
-    ...                              abundances="coronal")
-    >>> temp
+    ...                              abundances="coronal")  # doctest: +REMOTE_DATA
+    >>> temp  # doctest: +REMOTE_DATA
     <Quantity [ 11.28295376, 11.28295376] MK>
-    >>> em
+    >>> em  # doctest: +REMOTE_DATA
     <Quantity [  4.78577516e+48,  4.78577516e+48] 1 / cm3>
 
     """
@@ -483,7 +483,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
     of the ratio of the short (0.5-4 angstrom) to long (1-8 angstrom)
     channels of the XRSs onboard various GOES satellites.  This method
     assumes an isothermal plasma, the ionisation equilibria of
-    [2]_, and a constant density of 10**10 cm**-3.
+
     (See White et al. 2005 for justification of this last assumption.)
     This function is based on goes_get_chianti_temp.pro in
     SolarSoftWare written in IDL by Stephen White.
@@ -504,8 +504,8 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
     >>> from sunpy.instr.goes import _goes_get_chianti_temp
     >>> fluxratio = Quantity([0.1,0.1])
     >>> temp = _goes_get_chianti_temp(fluxratio, satellite=15,
-    ...                               abundances="coronal")
-    >>> temp
+    ...                               abundances="coronal")  # doctest: +REMOTE_DATA
+    >>> temp  # doctest: +REMOTE_DATA
     <Quantity [ 12.27557778, 12.27557778] MK>
 
     """
@@ -660,8 +660,8 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     >>> longflux = u.Quantity([7e-6,7e-6], unit=u.W/u.m/u.m)
     >>> temp = u.Quantity([11, 11], unit=u.MK)
     >>> em = _goes_get_chianti_em(longflux, temp, satellite=15,
-    ...                           abundances="coronal")
-    >>> em
+    ...                           abundances="coronal")  # doctest: +REMOTE_DATA
+    >>> em  # doctest: +REMOTE_DATA
     <Quantity [  3.45200672e+48,  3.45200672e+48] 1 / cm3>
 
     """
@@ -805,16 +805,16 @@ def calculate_radiative_loss_rate(goeslc, force_download=False,
     >>> import sunpy.lightcurve as lc
     >>> time1 = "2014-01-01 00:00:00"
     >>> time2 = "2014-01-01 00:00:08"
-    >>> goeslc = lc.GOESLightCurve.create(time1, time2)
-    >>> goeslc.data
+    >>> goeslc = lc.GOESLightCurve.create(time1, time2)  # doctest: +REMOTE_DATA
+    >>> goeslc.data  # doctest: +REMOTE_DATA
                                         xrsa      xrsb
     2014-01-01 00:00:00.421999  9.187300e-08  0.000004
     2014-01-01 00:00:02.468999  9.187300e-08  0.000004
     2014-01-01 00:00:04.518999  9.187300e-08  0.000004
     2014-01-01 00:00:06.564999  9.298800e-08  0.000004
 
-    >>> goeslc_new = calculate_radiative_loss_rate(goeslc)
-    >>> goeslc_new.data   # doctest: +NORMALIZE_WHITESPACE
+    >>> goeslc_new = calculate_radiative_loss_rate(goeslc)  # doctest: +REMOTE_DATA
+    >>> goeslc_new.data   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
                                         xrsa      xrsb  temperature            em  \\
     2014-01-01 00:00:00.421999  9.187300e-08  0.000004     6.270239  6.440648e+48
     2014-01-01 00:00:02.468999  9.187300e-08  0.000004     6.270239  6.440648e+48
@@ -940,8 +940,8 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
     >>> from astropy.units.quantity import Quantity
     >>> temp = Quantity([11.0, 11.0], unit="MK")
     >>> em = Quantity([4.0e+48, 4.0e+48], unit="cm**(-3)")
-    >>> rad_loss = _calc_rad_loss(temp, em)
-    >>> rad_loss["rad_loss_rate"]
+    >>> rad_loss = _calc_rad_loss(temp, em)  # doctest: +REMOTE_DATA
+    >>> rad_loss["rad_loss_rate"]  # doctest: +REMOTE_DATA
     <Quantity [  3.01851392e+19,  3.01851392e+19] J / s>
     """
     if not download_dir:
@@ -1064,27 +1064,27 @@ def calculate_xray_luminosity(goeslc):
     >>> import sunpy.lightcurve as lc
     >>> time1 = "2014-01-01 00:00:00"
     >>> time2 = "2014-01-01 00:00:08"
-    >>> goeslc = lc.GOESLightCurve.create(time1, time2)
-    >>> goeslc.data
+    >>> goeslc = lc.GOESLightCurve.create(time1, time2)  # doctest: +REMOTE_DATA
+    >>> goeslc.data  # doctest: +REMOTE_DATA
                                         xrsa      xrsb
     2014-01-01 00:00:00.421999  9.187300e-08  0.000004
     2014-01-01 00:00:02.468999  9.187300e-08  0.000004
     2014-01-01 00:00:04.518999  9.187300e-08  0.000004
     2014-01-01 00:00:06.564999  9.298800e-08  0.000004
 
-    >>> goeslc_new = calculate_xray_luminosity(goeslc)
-    >>> goeslc_new.data   # doctest: +NORMALIZE_WHITESPACE
-                                        xrsa      xrsb  luminosity_xrsa \\
-    2014-01-01 00:00:00.421999  9.187300e-08  0.000004     2.498319e+16
-    2014-01-01 00:00:02.468999  9.187300e-08  0.000004     2.498319e+16
-    2014-01-01 00:00:04.518999  9.187300e-08  0.000004     2.498319e+16
-    2014-01-01 00:00:06.564999  9.298800e-08  0.000004     2.528640e+16
+    >>> goeslc_new = calculate_xray_luminosity(goeslc)  # doctest: +REMOTE_DATA
+    >>> goeslc_new.data   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+                                        xrsa      xrsb  luminosity_xrsa  \\
+    2014-01-01 00:00:00.421999  9.187300e-08  0.000004     2.498454e+16
+    2014-01-01 00:00:02.468999  9.187300e-08  0.000004     2.498454e+16
+    2014-01-01 00:00:04.518999  9.187300e-08  0.000004     2.498454e+16
+    2014-01-01 00:00:06.564999  9.298800e-08  0.000004     2.528776e+16
     <BLANKLINE>
                                 luminosity_xrsb
-    2014-01-01 00:00:00.421999     9.543993e+17
-    2014-01-01 00:00:02.468999     9.543993e+17
-    2014-01-01 00:00:04.518999     9.529851e+17
-    2014-01-01 00:00:06.564999     9.529851e+17
+    2014-01-01 00:00:00.421999     9.544507e+17
+    2014-01-01 00:00:02.468999     9.544507e+17
+    2014-01-01 00:00:04.518999     9.530365e+17
+    2014-01-01 00:00:06.564999     9.530365e+17
 
     """
     # Check that input argument is of correct type
@@ -1169,16 +1169,16 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
     ...                     datetime(2014,1,1,0,0,6),
     ...                     datetime(2014,1,1,0,0,8),
     ...                     datetime(2014,1,1,0,0,10),], dtype=object)
-    >>> lx_out = _goes_lx(longflux, shortflux, obstime)
-    >>> lx_out["longlum"]
+    >>> lx_out = _goes_lx(longflux, shortflux, obstime)  # doctest: +REMOTE_DATA
+    >>> lx_out["longlum"]  # doctest: +REMOTE_DATA
     <Quantity [  1.96860565e+18,  1.96860565e+18,  1.96860565e+18,
                  1.96860565e+18,  1.96860565e+18,  1.96860565e+18] W>
-    >>> lx_out["shortlum"]
+    >>> lx_out["shortlum"]  # doctest: +REMOTE_DATA
     <Quantity [  1.96860565e+17,  1.96860565e+17,  1.96860565e+17,
                  1.96860565e+17,  1.96860565e+17,  1.96860565e+17] W>
-    >>> lx_out["longlum_int"]
+    >>> lx_out["longlum_int"]  # doctest: +REMOTE_DATA
     <Quantity 1.968605654118636e+19 s W>
-    >>> lx_out["shortlum_int"]
+    >>> lx_out["shortlum_int"]  # doctest: +REMOTE_DATA
     <Quantity 1.9686056541186358e+18 s W>
 
     """
@@ -1264,9 +1264,9 @@ def _calc_xraylum(flux, date=None):
     >>> from sunpy.instr.goes import _calc_xraylum
     >>> from astropy.units.quantity import Quantity
     >>> flux = Quantity([7e-6,7e-6], unit="W/m**2")
-    >>> xraylum = _calc_xraylum(flux, date="2014-04-21")
-    >>> xraylum
-    <Quantity [  1.98649103e+18,  1.98649103e+18] W>
+    >>> xraylum = _calc_xraylum(flux, date="2014-04-21")  # doctest: +REMOTE_DATA
+    >>> xraylum  # doctest: +REMOTE_DATA
+    <Quantity [  1.98751663e+18,  1.98751663e+18] W>
 
     """
     if date is not None:
@@ -1299,12 +1299,12 @@ def flareclass_to_flux(flareclass):
     Examples
     --------
     >>> from sunpy.instr.goes import flareclass_to_flux
-    >>> flareclass_to_flux('A1.0')
+    >>> flareclass_to_flux('A1.0') #doctest: +FLOAT_CMP
     <Quantity 1e-08 W / m2>
     >>> flareclass_to_flux('c4.7')
     <Quantity 4.7e-06 W / m2>
     >>> flareclass_to_flux('X2.4')
-    < Quantity 0.00024 W / m2>
+    <Quantity 0.00024 W / m2>
     """
     if not isinstance(flareclass, type('str')):
         raise TypeError("Input must be a string")

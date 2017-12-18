@@ -70,14 +70,15 @@ class GreatArc(object):
     >>> from sunpy.coordinates.utils import GreatArc
     >>> import sunpy.map
     >>> from sunpy.data.sample import AIA_171_IMAGE
+
     >>> m = sunpy.map.Map(AIA_171_IMAGE)
     >>> a = SkyCoord(600*u.arcsec, -600*u.arcsec, frame=m.coordinate_frame)
     >>> b = SkyCoord(-100*u.arcsec, 800*u.arcsec, frame=m.coordinate_frame)
     >>> great_arc = GreatArc(a, b)
-    >>> ax = plt.subplot(projection=m)
-    >>> m.plot(axes=ax)
-    >>> ax.plot_coord(great_arc.coordinates(), color='c')
-    >>> plt.show()
+    >>> ax = plt.subplot(projection=m)  # doctest: +SKIP
+    >>> m.plot(axes=ax)  # doctest: +SKIP
+    >>> ax.plot_coord(great_arc.coordinates(), color='c')  # doctest: +SKIP
+    >>> plt.show()  # doctest: +SKIP
 
     """
 

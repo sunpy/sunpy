@@ -15,7 +15,7 @@ from hypothesis import given
 from sunpy.net.tests.strategies import time_attr, range_time
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 @pytest.mark.parametrize("timerange,url_start,url_end", [
     (TimeRange('2012/4/21', '2012/4/21'),
      'ftp://anonymous:data@sunpy.org@solar-pub.nao.ac.jp/pub/nsro/norh/data/tcx/2012/04/tca120421',
@@ -48,7 +48,7 @@ def test_can_handle_query(time):
     assert ans2 is False
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 @pytest.mark.parametrize("wave", [a.Wavelength(17*u.GHz), a.Wavelength(34*u.GHz)])
 @given(time=range_time(datetime.datetime(1992, 6, 1)))
 def test_query(time, wave):
@@ -86,7 +86,7 @@ def test_query_wrong_wave():
                 a.Wavelength(50*u.GHz))
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 @pytest.mark.parametrize("time,instrument,wave", [
     (a.Time('2012/10/4', '2012/10/6'), a.Instrument('norh'), a.Wavelength(17*u.GHz)),
     (a.Time('2013/10/5', '2013/10/7'), a.Instrument('norh'), a.Wavelength(34*u.GHz))])
@@ -98,7 +98,7 @@ def test_get(time, instrument, wave):
     assert len(download_list) == len(qr1)
 
 
-@pytest.mark.online
+@pytest.mark.remote_data
 @pytest.mark.parametrize(
     "time, instrument, wave",
     [(a.Time('2012/10/4', '2012/10/6'), a.Instrument('norh'), a.Wavelength(17*u.GHz)),

@@ -17,7 +17,6 @@ import astropy.units as u
 import sunpy
 from sunpy.timeseries.timeseriesbase import GenericTimeSeries, TIMESERIES_CLASSES
 from sunpy.util.metadata import MetaDict
-from sunpy.time import parse_time
 
 from sunpy.io.file_tools import read_file, UnrecognizedFileTypeError
 from sunpy.io.fits import HDPair
@@ -36,7 +35,6 @@ from sunpy.extern import six
 from sunpy.extern.six.moves.urllib.request import urlopen
 
 __authors__ = ["Alex Hamilton, Russell Hewett, Stuart Mumford"]
-__email__ = "stuart@mumford.me.uk"
 
 __all__ = ['TimeSeries', 'TimeSeriesFactory']
 
@@ -76,41 +74,41 @@ class TimeSeriesFactory(BasicRegistrationFactory):
 
     * data, header pairs, or data, header units triples, not in tuples
 
-    >>> my_timeseries = sunpy.timeseries.TimeSeries(data, header)
-    >>> my_timeseries = sunpy.timeseries.TimeSeries(data, header, units)
+    >>> my_timeseries = sunpy.timeseries.TimeSeries(data, header)  # doctest: +SKIP
+    >>> my_timeseries = sunpy.timeseries.TimeSeries(data, header, units)  # doctest: +SKIP
 
     * File names for files understood by sunpy.io and those not
 
     >>> my_timeseries = sunpy.timeseries.TimeSeries('filename.fits')   # doctest: +SKIP
-    >>> my_timeseries = sunpy.timeseries.TimeSeries('filename.fits', source='lyra')
+    >>> my_timeseries = sunpy.timeseries.TimeSeries('filename.fits', source='lyra')  # doctest: +SKIP
 
     * Multiple files can be combined into one TimeSeries, as long as they are
     the same source   # doctest: +SKIP
 
     >>> my_timeseries = sunpy.timeseries.TimeSeries(['goesfile1.fits', 'goesfile2.fits'],
-        concatenate=True)
+    ...                                             concatenate=True)  # doctest: +SKIP
 
     * All fits files in a directory by giving a directory
 
-    >>> my_timeseries = sunpy.timeseries.TimeSeries('local_dir/sub_dir')   # doctest: +SKIP
+    >>> my_timeseries = sunpy.timeseries.TimeSeries('local_dir/sub_dir')  # doctest: +SKIP
 
     * Some regex globs
 
-    >>> my_timeseries = sunpy.timeseries.TimeSeries('eit_*.fits')   # doctest: +SKIP
+    >>> my_timeseries = sunpy.timeseries.TimeSeries('eit_*.fits')  # doctest: +SKIP
 
     * URLs
 
-    >>> my_timeseries = sunpy.timeseries.TimeSeries(url)   # doctest: +SKIP
+    >>> my_timeseries = sunpy.timeseries.TimeSeries(url)  # doctest: +SKIP
 
     * Lists of any of the above
 
     >>> my_timeseries = sunpy.timeseries.TimeSeries(['file1.fits', 'file2.fits',
-        'file3.fits', 'directory1/'])   # doctest: +SKIP
+    ...                                              'file3.fits', 'directory1/'])  # doctest: +SKIP
 
     * Any mixture of the above not in a list
 
     >>> my_timeseries = sunpy.timeseries.TimeSeries((data, header), data2, header2,
-        'file1.fits', url, 'eit_*.fits')   # doctest: +SKIP
+    ...                                             'file1.fits', url, 'eit_*.fits')  # doctest: +SKIP
     """
 
     def _read_file(self, fname, **kwargs):

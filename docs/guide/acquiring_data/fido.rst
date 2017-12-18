@@ -40,7 +40,7 @@ instructions on how to download data using Fido, see :ref:`downloading_data`.
 To see a summary of results of our query, simple type the name of the
 variable set to the Fido search, in this case, result::
 
-    >>> result
+    >>> result  # doctest: +SKIP
     <sunpy.net.fido_factory.UnifiedResponse object at 0x7fe6258ab630>
     Results from 1 Provider:
 
@@ -59,7 +59,7 @@ passbands can be searched for by supplying an `~astropy.units.Quantity` to the
 
     >>> import astropy.units as u
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('norh'),
-    ...                      a.Wavelength(17*u.GHz))
+    ...                      a.Wavelength(17*u.GHz))  # doctest: +REMOTE_DATA
 
 Data of a given cadence can also be specified using the Sample attribute. To
 search for data at a given cadence use the
@@ -71,17 +71,17 @@ like this which are client specific will result in
 client for results, in this case VSO.::
 
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'),
-    ...                      a.Wavelength(171*u.angstrom), a.vso.Sample(10*u.minute))
+    ...                      a.Wavelength(171*u.angstrom), a.vso.Sample(10*u.minute))  # doctest: +REMOTE_DATA
 
 To search for data from multiple instruments, wavelengths, times etc., use the
 pipe ``|`` operator. This joins queries together just as the logical ``OR``
 operator would::
 
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-    ...                      a.Instrument('lyra') | a.Instrument('rhessi'))
+    ...                      a.Instrument('lyra') | a.Instrument('rhessi'))  # doctest: +REMOTE_DATA
 
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'),
-    ...                      a.Wavelength(171*u.angstrom) | a.Wavelength(94*u.angstrom))
+    ...                      a.Wavelength(171*u.angstrom) | a.Wavelength(94*u.angstrom))  # doctest: +REMOTE_DATA
 
 
 Indexing search results
@@ -95,17 +95,17 @@ second to the records returned.
 
 For example, the following code returns a response containing LYRA data from
 the `~sunpy.net.dataretriever.sources.LYRAClient`, and EVE data from the
-`~sunpy.net.vso.vso.VSOClient`::
+`~sunpy.net.vso.VSOClient`::
 
     >>> from sunpy.net import Fido, attrs as a
-    >>> result = Fido.search(a.Time("2012/1/1", "2012/1/2"),
-                             a.Instrument("lyra") | a.Instrument("eve"))
+    >>> results = Fido.search(a.Time("2012/1/1", "2012/1/2"),
+    ...                       a.Instrument("lyra") | a.Instrument("eve"))  # doctest: +REMOTE_DATA
 
 If you then wanted to inspect just the LYRA data for the whole time range
 specified in the search, you would index this response to see just the
 results returned by the `~sunpy.net.dataretriever.sources.LYRAClient`::
 
-    >>> results[0, :]
+    >>> results[0, :]  # doctest: +SKIP
     <sunpy.net.fido_factory.UnifiedResponse object at 0x7fe61fdf1b00>
     Results from 1 Provider:
 
@@ -119,7 +119,7 @@ results returned by the `~sunpy.net.dataretriever.sources.LYRAClient`::
 
 Or, equivalently::
 
-    >>> results[0]
+    >>> results[0]  # doctest: +SKIP
     <sunpy.net.fido_factory.UnifiedResponse object at 0x7fe625811748>
     Results from 1 Provider:
 
@@ -149,7 +149,7 @@ Once you have located your files via a
 `Fido.search <sunpy.net.fido_factory.UnifiedDownloaderFactory.search>`, you can
 download them via `Fido.fetch <sunpy.net.fido_factory.UnifiedDownloaderFactory.fetch>`::
 
-    >>> downloaded_files = Fido.fetch(results)
+    >>> downloaded_files = Fido.fetch(results)  # doctest: +SKIP
 
 This downloads the files to the location set in you sunpy config
 file.  It also returns a list ``downloaded_files``, of absolute file paths
@@ -157,7 +157,7 @@ of where the files have been downloaded to.
 
 You can also specify the path to which you want the data downloaded::
 
-  >>> downloaded_files = Fido.fetch(results, path='/ThisIs/MyPath/to/Data/{file}.fits')
+  >>> downloaded_files = Fido.fetch(results, path='/ThisIs/MyPath/to/Data/{file}.fits')  # doctest: +SKIP
 
 This downloads the query results into the directory
 ``/ThisIs/MyPath/to/Data``, naming each downloaded file with the
@@ -166,7 +166,7 @@ filename ``{file}`` obtained from the client, and appended with the suffix
 to define the path where the data is saved.  For example, to save the
 data to a subdirectory named after the instrument, use
 
-    >>> downloaded_files = Fido.fetch(results, path='./{instrument}/{file}.fits')
+    >>> downloaded_files = Fido.fetch(results, path='./{instrument}/{file}.fits')  # doctest: +SKIP
 
 You can see the list of options that can be specified in path for all the files
 to be downloaded with ``results.response_block_properties``.
