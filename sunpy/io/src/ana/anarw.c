@@ -6,6 +6,7 @@
 #include <stdarg.h>
 #include <stdint.h>
 #include "types.h"
+#pragma warning(disable: 4996)
 
 #include "anadecompress.h"
 #include "anacompress.h"
