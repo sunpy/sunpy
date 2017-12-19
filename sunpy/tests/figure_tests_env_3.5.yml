@@ -4,7 +4,7 @@ channels:
 - conda-forge
 dependencies:
 - glymur=0.8.8=py35_0
-- hypothesis=3.6.1=py35_0
+- hypothesis=3.42.1=py35_1
 - openjpeg=2.1.2=2
 - wcsaxes=0.9=py35_0
 - astropy=2.0=np111py35_0
