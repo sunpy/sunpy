@@ -230,7 +230,7 @@ def hpc_to_hpc(heliopcoord, heliopframe):
          quantity_allclose(heliopcoord.observer.lon, heliopframe.observer.lon) and
          quantity_allclose(heliopcoord.observer.radius, heliopframe.observer.radius) and
          ((heliopcoord.obstime == heliopframe.obstime) or
-            or (heliopframe.obstime is None))):
+            (heliopframe.obstime is None)))):
         return heliopframe.realize_frame(heliopcoord._data)
 
     if not isinstance(heliopframe.observer, BaseCoordinateFrame):
@@ -247,7 +247,7 @@ def hpc_to_hpc(heliopcoord, heliopframe):
         hpc = hgs.transform_to(heliopframe)
         return hpc
 
-    hgc = heliopcoord.transform_to(HeliographicCarrington(obstime=heliopframe.obstime))
+    hgc = heliopcoord.transform_to(HeliographicCarrington(obstime = heliopframe.obstime))
     hgc.observer = heliopframe.observer
     hpc = hgc.transform_to(heliopframe)
     return hpc
