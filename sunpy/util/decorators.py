@@ -12,6 +12,7 @@ import types
 import warnings
 
 from sunpy.util.exceptions import SunpyDeprecationWarning
+from sunpy.extern import six
 
 __all__ = ['deprecated']
 
@@ -95,7 +96,7 @@ def deprecated(since, message='', name='', alternative=''):
         func = get_function(func)
 
         def deprecated_func(*args, **kwargs):
-            
+
             category = SunpyDeprecationWarning
 
             warnings.warn(message, category, stacklevel=2)
@@ -162,7 +163,7 @@ def deprecated(since, message='', name='', alternative=''):
         altmessage = ''
         if not message or type(message) is type(deprecate):
             message = ('The {func} {obj_type} is deprecated and may '
-                           'be removed in a future version.')
+                       'be removed in a future version.')
             if alternative:
                 altmessage = '\n        Use {} instead.'.format(alternative)
 
@@ -182,3 +183,27 @@ def deprecated(since, message='', name='', alternative=''):
         return deprecate(message)
 
     return deprecate
+
+
+class Appender(object):
+    '''
+    A function decorator that will append and/or prepend an addendum
+    to the docstring of the target function.
+
+    If a dictionary(d) is provided as parameter then format by .format().
+    '''
+    def __init__(self, addendum, append=True, prepend=False, d={}):
+        if any(d):
+            addendum = addendum.format(**d)
+        self.addendum = addendum
+        self.append = append
+        self.prepend = prepend
+
+    def __call__(self, func):
+        func.__doc__ = func.__doc__ if func.__doc__ else ''
+        self.addendum = self.addendum if self.addendum else ''
+        if self.append and isinstance(func.__doc__, six.string_types):
+            func.__doc__ += self.addendum
+        if self.prepend and isinstance(func.__doc__, six.string_types):
+            func.__doc__ = self.addendum + func.__doc__
+        return func
