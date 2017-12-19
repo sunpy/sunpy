@@ -221,13 +221,15 @@ def hgs_to_hcc(heliogcoord, heliocframe):
                                  Helioprojective)
 def hpc_to_hpc(heliopcoord, heliopframe):
     """
-    This converts from HPC to HPC, with different observer location parameters.
-    It does this by transforming through HGS.
+    This converts from HPC to HPC, with different observer location parameters and
+    different date of observation.
+    It does this by transforming through HGC.
     """
     if (heliopcoord.observer == heliopframe.observer or
         (quantity_allclose(heliopcoord.observer.lat, heliopframe.observer.lat) and
          quantity_allclose(heliopcoord.observer.lon, heliopframe.observer.lon) and
-         quantity_allclose(heliopcoord.observer.radius, heliopframe.observer.radius))):
+         quantity_allclose(heliopcoord.observer.radius, heliopframe.observer.radius) and
+         (heliopcoord.obstime == heliopframe.obstime))):
         return heliopframe.realize_frame(heliopcoord._data)
 
     if not isinstance(heliopframe.observer, BaseCoordinateFrame):
@@ -237,9 +239,9 @@ def hpc_to_hpc(heliopcoord, heliopframe):
         raise ConvertError("Cannot transform between helioprojective frames "
                            "without `obstime` being specified for observer {}.".format(heliopcoord.observer))
 
-    hgs = heliopcoord.transform_to(HeliographicStonyhurst)
-    hgs.observer = heliopframe.observer
-    hpc = hgs.transform_to(heliopframe)
+    hgc = heliopcoord.transform_to(HeliographicCarrington(obstime = heliopframe.obstime))
+    hgc.observer = heliopframe.observer
+    hpc = hgc.transform_to(heliopframe)
 
     return hpc
 
