@@ -186,12 +186,12 @@ def deprecated(since, message='', name='', alternative=''):
 
 
 class Appender(object):
-    '''
+    """
     A function decorator that will append and/or prepend an addendum
     to the docstring of the target function.
 
     If a dictionary(d) is provided as parameter then format by .format().
-    '''
+    """
     def __init__(self, addendum, append=True, prepend=False, d={}):
         if any(d):
             addendum = addendum.format(**d)
