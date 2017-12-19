@@ -216,7 +216,6 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     return heliocframe.realize_frame(representation)
 
 
-
 @frame_transform_graph.transform(FunctionTransform, Helioprojective,
                                  Helioprojective)
 def hpc_to_hpc(heliopcoord, heliopframe):
@@ -229,7 +228,8 @@ def hpc_to_hpc(heliopcoord, heliopframe):
         (quantity_allclose(heliopcoord.observer.lat, heliopframe.observer.lat) and
          quantity_allclose(heliopcoord.observer.lon, heliopframe.observer.lon) and
          quantity_allclose(heliopcoord.observer.radius, heliopframe.observer.radius) and
-         (heliopcoord.obstime == heliopframe.obstime))):
+         ((heliopcoord.obstime == heliopframe.obstime) or
+            or (heliopframe.obstime == None))):
         return heliopframe.realize_frame(heliopcoord._data)
 
     if not isinstance(heliopframe.observer, BaseCoordinateFrame):
@@ -239,7 +239,14 @@ def hpc_to_hpc(heliopcoord, heliopframe):
         raise ConvertError("Cannot transform between helioprojective frames "
                            "without `obstime` being specified for observer {}.".format(heliopcoord.observer))
 
-    hgc = heliopcoord.transform_to(HeliographicCarrington(obstime = heliopframe.obstime))
+    if heliopframe.obstime == None :
+        hgs = heliopcoord.transform_to(HeliographicStonyhurst)
+        hgs.observer = heliopframe.observer
+        hpc = hgs.transform_to(heliopframe)
+
+        return hpc
+
+    hgc = heliopcoord.transform_to(HeliographicCarrington(obstime=heliopframe.obstime))
     hgc.observer = heliopframe.observer
     hpc = hgc.transform_to(heliopframe)
 
