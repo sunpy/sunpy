@@ -7,43 +7,40 @@ Created on Tue Dec  5 13:32:41 2017
 """
 
 from __future__ import absolute_import
-
+import os
 import matplotlib.pyplot as plt
 import pytest
 
 import sunpy.map
 from sunpy.visualization import mapcubeanimator
 from sunpy.data import test
-
-
-class map_animator(mapcubeanimator.MapCubeAnimator):
-    pass
+@pytest.fixture
+def map_animator():
+    testpath = test.rootdir
+    aia_file = os.path.join(testpath, "aia_171_level1.fits")
+    mapcube = sunpy.map.Map(aia_file)
+    cube = sunpy.map.MapCube(mapcube)
+    return mapcubeanimator.MapCubeAnimator(cube)
 
 #test for mapcubeanimator instance
-def test_mapcubeanimator_instances():
-    file = test.get_test_filepath("FGMG4_20110214_030443.7.fits")
-    dummy = sunpy.map.Map(file, cube=True)
-    t = map_animator(dummy)
-    assert isinstance(t, mapcubeanimator.MapCubeAnimator)
+def test_mapcubeanimator_instances(map_animator):
 
-def test_get_main_axes():
-    pass
+    assert isinstance(map_animator, mapcubeanimator.MapCubeAnimator)
+    assert map_animator.interval is 200
+    assert map_animator.annotate is True
+    assert map_animator.slider_ranges == [[0, 1]]
+    assert map_animator.timer == None
+    assert map_animator.active_slider == 0
+    assert map_animator.button_func == []
+    assert map_animator.remove_obj == []
 
-def update_fig():
-    file = test.get_test_filepath("FGMG4_20110214_030443.7.fits")
-    dummy = sunpy.map.Map(file, cube=True)
-    t = map_animator(dummy).updatefig(1)
+def test_updatefig(map_animator):
 
-    assert isinstance(t, mapcubeanimator.MapCubeAnimator.updatefig)
-    assert t.val == 1
-    assert t.im is None
-    assert t.slider is None
+    t = map_animator.updatefig(0, map_animator.im, 10)
+    assert t == None
 
-def plot_image():
-    file = test.get_test_filepath("FGMG4_20110214_030443.7.fits")
-    dummy = sunpy.map.Map(file, cube=True)
-    a = plt.axes([1, 2])
-    t = map_animator(dummy).plot_start_image(a)
-
-    assert isinstance(t, mapcubeanimator.MapCubeAnimator.plot_start_image)
-    assert t.ax == a
+def test_plot_start_image(map_animator):
+    t = map_animator.plot_start_image(plt.axes([0, 0, 0, 0]))
+    s = map_animator.mapcube[0].plot(axes=plt.axes([0, 0, 0, 0]))
+    assert t.axes == s.axes
+    
