@@ -49,6 +49,14 @@ def main(modulename='', coverage=False, cov_report=False,
     if pytest is None:
         raise ImportError("You need to install pytest to run SunPy's tests")
 
+    try:
+        import pytest_doctestplus
+    except ImportError:
+        raise ImportError(
+            "The 'test' command requires the 'pytest_doctestplus'."
+            " Please install 'pytest-astropy' that provides the"
+            " required plugin.")
+
     if not modulename:
         module = __import__('sunpy')
     else:
