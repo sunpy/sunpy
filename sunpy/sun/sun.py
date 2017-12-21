@@ -60,7 +60,7 @@ PARAMETER_DOCS = """
 """
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def solar_cycle_number(t='now'):
     """
     Return the solar cycle number.
@@ -71,7 +71,7 @@ def solar_cycle_number(t='now'):
     return result
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def solar_semidiameter_angular_size(t='now'):
     r"""
     Return the angular size of the semi-diameter of the Sun as
@@ -94,7 +94,7 @@ def solar_semidiameter_angular_size(t='now'):
     return Angle(solar_semidiameter_rad.to(u.arcsec, equivalencies=u.dimensionless_angles()))
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def position(t='now'):
     """
     Returns the position of the Sun (right ascension and declination)
@@ -106,7 +106,7 @@ def position(t='now'):
     return ra, dec
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def eccentricity_SunEarth_orbit(t='now'):
     """
     Returns the eccentricity of the Sun Earth Orbit.
@@ -117,7 +117,7 @@ def eccentricity_SunEarth_orbit(t='now'):
     return result
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def mean_ecliptic_longitude(t='now'):
     """
     Returns the mean ecliptic longitude.
@@ -129,13 +129,13 @@ def mean_ecliptic_longitude(t='now'):
     return Longitude(result)
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def longitude_Sun_perigee(t='now'):  # pylint: disable=W0613
     # T = julian_centuries(t)
     return 1
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def mean_anomaly(t='now'):
     """
     Returns the mean anomaly (the angle through which the Sun has moved
@@ -148,7 +148,7 @@ def mean_anomaly(t='now'):
     return Longitude(result)
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def carrington_rotation_number(t='now'):
     """
     Return the Carrington Rotation number
@@ -159,7 +159,7 @@ def carrington_rotation_number(t='now'):
     return result
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def geometric_mean_longitude(t='now'):
     """
     Returns the geometric mean longitude (in degrees).
@@ -171,7 +171,7 @@ def geometric_mean_longitude(t='now'):
     return Longitude(result)
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def equation_of_center(t='now'):
     """
     Returns the Sun's equation of center (in degrees).
@@ -185,7 +185,7 @@ def equation_of_center(t='now'):
     return Angle(result)
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def true_longitude(t='now'):
     """
     Returns the Sun's true geometric longitude (in degrees).
@@ -197,7 +197,7 @@ def true_longitude(t='now'):
     return Longitude(result)
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def true_anomaly(t='now'):
     """
     Returns the Sun's true anomaly (in degrees).
@@ -208,7 +208,7 @@ def true_anomaly(t='now'):
 
 
 @deprecated('0.8', 'Use sunpy.coordinates.get_sunearth_distance() for higher accuracy')
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def sunearth_distance(t='now'):
     """
     Returns the Sun Earth distance (AU). There are a set of higher
@@ -221,7 +221,7 @@ def sunearth_distance(t='now'):
     return result * u.AU
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def apparent_longitude(t='now'):
     """
     Returns the apparent longitude of the Sun.
@@ -234,7 +234,7 @@ def apparent_longitude(t='now'):
     return Longitude(result)
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def true_latitude(t='now'):  # pylint: disable=W0613
     """
     Returns the true latitude. Never more than 1.2 arcsec from 0,
@@ -244,7 +244,7 @@ def true_latitude(t='now'):  # pylint: disable=W0613
     return Latitude(0.0 * u.deg)
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def apparent_latitude(t='now'):  # pylint: disable=W0613
     """
     Returns the true latitude. Set to 0 here.
@@ -253,7 +253,7 @@ def apparent_latitude(t='now'):  # pylint: disable=W0613
     return Latitude(0.0 * u.deg)
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def true_obliquity_of_ecliptic(t='now'):
     """
     Returns the true obliquity of the ecliptic.
@@ -264,7 +264,7 @@ def true_obliquity_of_ecliptic(t='now'):
     return Angle(result, u.deg)
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def true_rightascension(t='now'):
     """
     Return the true right ascension.
@@ -276,7 +276,7 @@ def true_rightascension(t='now'):
     return Longitude(true_ra.to(u.hourangle))
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def true_declination(t='now'):
     """
     Return the true declination.
@@ -286,7 +286,7 @@ def true_declination(t='now'):
     return Latitude(result.to(u.deg))
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def apparent_obliquity_of_ecliptic(t='now'):
     """
     Return the apparent obliquity of the ecliptic.
@@ -297,7 +297,7 @@ def apparent_obliquity_of_ecliptic(t='now'):
     return result
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def apparent_rightascension(t='now'):
     """
     Returns the apparent right ascension of the Sun.
@@ -309,7 +309,7 @@ def apparent_rightascension(t='now'):
     return Longitude(app_ra.to(u.hourangle))
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def apparent_declination(t='now'):
     """
     Returns the apparent declination of the Sun.
@@ -322,7 +322,7 @@ def apparent_declination(t='now'):
 
 
 @deprecated('0.8', 'Use sunpy.coordinates.get_sun_P() for higher accuracy')
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def solar_north(t='now'):
     """
     Returns the position of the Solar north pole in degrees.
@@ -344,7 +344,7 @@ def solar_north(t='now'):
 
 
 @deprecated('0.8', 'Use sunpy.coordinates.get_sun_L0() and .get_sun_B0() for higher accuracy')
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def heliographic_solar_center(t='now'):
     """
     Returns the position of the solar center in heliographic coordinates.
@@ -368,7 +368,7 @@ def heliographic_solar_center(t='now'):
     return Longitude(he_lon.to(u.deg)), Latitude(he_lat.to(u.deg))
 
 
-@add_common_docstring(append = PARAMETER_DOCS)
+@add_common_docstring(append=PARAMETER_DOCS)
 def print_params(t='now'):
     """
     Print out a summary of Solar ephemeris.
