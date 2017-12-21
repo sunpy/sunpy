@@ -185,25 +185,26 @@ def deprecated(since, message='', name='', alternative=''):
     return deprecate
 
 
-class Appender(object):
+class add_common_docstring(object):
     """
     A function decorator that will append and/or prepend an addendum
     to the docstring of the target function.
 
     If a dictionary(d) is provided as parameter then format by .format().
     """
-    def __init__(self, addendum, append=True, prepend=False, d={}):
+    def __init__(self, append='', prepend='', d={}):
         if any(d):
-            addendum = addendum.format(**d)
-        self.addendum = addendum
+            append = append.format(**d)
+            prepend = prepend.format(**d)
         self.append = append
         self.prepend = prepend
 
     def __call__(self, func):
         func.__doc__ = func.__doc__ if func.__doc__ else ''
-        self.addendum = self.addendum if self.addendum else ''
+        self.append = self.append if self.append else ''
+        self.prepend = self.prepend if self.prepend else ''
         if self.append and isinstance(func.__doc__, six.string_types):
-            func.__doc__ += self.addendum
+            func.__doc__ += self.append
         if self.prepend and isinstance(func.__doc__, six.string_types):
-            func.__doc__ = self.addendum + func.__doc__
+            func.__doc__ = self.prepend + func.__doc__
         return func
