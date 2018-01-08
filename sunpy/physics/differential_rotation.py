@@ -314,7 +314,7 @@ def diffrot_map(smap, time=None, dt=None, pad=False, **diffrot_kwargs):
     out_meta = deepcopy(smap.meta)
     if out_meta.get('date_obs', False):
         del out_meta['date_obs']
-    out_meta['date-obs'] = "{:%Y-%m-%dT%H:%M:%S}".format(new_time)
+    out_meta['date-obs'] = "{:%Y-%m-%dT%H:%M:%SZ}".format(new_time)
 
     if submap:
         crval_rotated = solar_rotate_coordinate(smap.reference_coordinate, new_time, **diffrot_kwargs)
