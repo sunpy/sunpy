@@ -54,7 +54,7 @@ documentation.
 1. [Fork](https://help.github.com/articles/fork-a-repo) SunPy on GitHub
 1. Install the developer version of SunPy using git. 
 1. Make your changes and push to your fork.
-1. Create a .
+1. Create a pull request.
 
 If any of the above steps are unfamiliar to you check out our
 [Developers Guide](http://docs.sunpy.org/en/latest/dev.html). (Suggesting
