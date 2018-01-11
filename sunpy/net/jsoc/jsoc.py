@@ -549,38 +549,44 @@ class JSOCClient(object):
 
         Parameters
         ----------
-        requests : `~drms.ExportRequest` object or
-                   a list of `~drms.ExportRequest` objects,
-                   returned by `~sunpy.net.jsoc.jsoc.JSOCClient.request_data`
+        requests : `~drms.ExportRequest`, `str`, `list`
+            `~drms.ExportRequest` objects or `str` request IDs or lists
+            thereof, returned by
+            `~sunpy.net.jsoc.jsoc.JSOCClient.request_data`.
 
-        path : string
-            Path to save data to, defaults to SunPy download dir
+        path : `string`
+            Path to save data to, defaults to SunPy download dir.
 
-        overwrite : bool
-            Replace files with the same name if True
+        overwrite : `bool`
+            Replace files with the same name if True.
 
-        progress : bool
-            Print progress info to terminal
+        progress : `bool`
+            Print progress info to terminal.
 
-        max_conns : int
+        max_conns : `int`
             Maximum number of download connections.
 
-        downloader : `~sunpy.download.Downloader` instance
+        downloader : `~sunpy.net.download.Downloader`
             A Custom downloader to use
 
-        results: Results instance
-            A Results manager to use.
+        results: `~sunpy.net.download.Results`
+            A `~sunpy.net.download.Results` manager to use.
 
         Returns
         -------
-        res: Results
-            A Results instance or None if no URLs to download
+        res: `~sunpy.net.download.Results`
+            A `~sunpy.net.download.Results` instance or `None` if no URLs to download
         """
 
         # Convert Responses to a list if not already
-
-        if not isiterable(requests):
+        if isinstance(requests, six.string_types) or not isiterable(requests):
             requests = [requests]
+
+        c = drms.Client()
+        for i, request in enumerate(requests):
+            if isinstance(request, six.string_types):
+                r = c.export_from_id(request)
+                requests[i] = r
 
         if path is None:
             path = config.get('downloads', 'download_dir')
