@@ -1,7 +1,7 @@
 -----------------------------------
 Querying Helioviewer.org with SunPy
 -----------------------------------
-SunPy can be used to make several basic requests using the The `Helioviewer.org API <http://helioviewer.org/api/>`_
+SunPy can be used to make several basic requests using the The `Helioviewer.org API <https://helioviewer.org/api/>`_
 including generating a PNG and downloading a `JPEG 2000 <http://wiki.helioviewer.org/wiki/JPEG_2000>`_
 image and loading it into a SunPy Map.
 
@@ -173,4 +173,4 @@ the JP2 image meta data for plotting.  The color table is that used by the Helio
 display JP2 images in their browse clients.
 
 For more information about using querying Helioviewer.org, see the Helioviewer.org
-API documentation at: `http://helioviewer.org/api/ <http://helioviewer.org/api/>`__.
+API documentation at: `https://helioviewer.org/api/ <https://helioviewer.org/api/>`__.

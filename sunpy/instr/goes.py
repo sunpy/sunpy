@@ -9,7 +9,7 @@ the GOES/XRS instrument, see [Ref1]_.  GOES/XRS has become
 the "standard candle" for solar coronal observations due its longevity and
 consistency.  The GOES event list, based on GOES/XRS observations, has
 become the standard solar flare catalogue.
-See http://www.ngdc.noaa.gov/stp/solar/solarflares.html for information
+See hthttps://www.ngdc.noaa.gov/stp/solar/solarflares.html for information
 on the GOES event list definitions and data.
 
 The functions in this module provide useful software to analyse GOES/XRS
@@ -41,7 +41,7 @@ References
 ----------
 
 .. [Ref1] Hanser, F.A., & Sellers, F.B. 1996, Proc. SPIE, 2812, 344
-.. [Ref2] Dere, K.P., et al. 2009 A&A, 498, 915 DOI: `10.1051/0004-6361/200911712 <https://dx.doi.org/10.1051/0004-6361/200911712>`__
+.. [Ref2] Dere, K.P., et al. 2009 A&A, 498, 915 DOI: `10.1051/0004-6361/200911712 <https://www.aanda.org/articles/aa/abs/2009/18/aa11712-09/aa11712-09.html>`__
 
 """
 

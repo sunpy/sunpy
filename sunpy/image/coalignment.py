@@ -3,7 +3,7 @@ This module provides routines for the coalignment of images and mapcubes.
 
 Currently this module provides image coalignment by template matching.
 Which is partially inspired by the SSWIDL routine
-`tr_get_disp.pro <http://hesperia.gsfc.nasa.gov/ssw/trace/idl/util/routines/tr_get_disp.pro>`_.
+`tr_get_disp.pro <https://hesperia.gsfc.nasa.gov/ssw/trace/idl/util/routines/tr_get_disp.pro>`_.
 
 In this implementation, the template matching is handled via the scikit-image
 routine :func:`skimage.feature.match_template`.

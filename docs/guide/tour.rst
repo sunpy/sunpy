@@ -95,7 +95,7 @@ Plotting
 
 SunPy uses a matplotlib-like interface to its plotting so more complex plots can
 be built by combining SunPy with matplotlib. If you're not familiar with
-plotting in matplotlib, you should `learn the basics <http://matplotlib.org/users/tutorials.html>`__
+plotting in matplotlib, you should `learn the basics <https://matplotlib.org/users/tutorials.html>`__
 before continuing with this guide.
 
 Let's begin by creating a simple plot of an AIA image. To make things easy,

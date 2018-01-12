@@ -33,7 +33,7 @@ appropriate places for the FITS keywords it needs to interpret the coordinate
 system. If the type of FITS file is not recognized then SunPy will try some
 default FITS keywords and return a `~sunpy.map.GenericMap` but results
 may vary. SunPy can also create maps from the jpg2000 files from
-`helioviewer.org <http://helioviewer.org/>`_.
+`helioviewer.org <https://helioviewer.org/>`_.
 
 Creating Custom Maps
 --------------------
@@ -48,7 +48,7 @@ given then some default values are assumed. Here is a simple example::
     >>> header = {'cdelt1': 10, 'cdelt2': 10, 'telescop':'sunpy'}
     >>> my_map = sunpy.map.Map(data, header)
 
-The keys in the header follows the `FITS standard <http://fits.gsfc.nasa.gov/fits_dictionary.html>`_.
+The keys in the header follows the `FITS standard <https://fits.gsfc.nasa.gov/fits_dictionary.html>`_.
 
 Inspecting maps
 ---------------
@@ -123,7 +123,7 @@ the 0th element in the array ::
 One important fact to remember is that the first
 index is for the y direction while the second index is for the x direction.
 For more information about indexing please refer to the
-`Numpy documentation <http://www.scipy.org/Tentative_NumPy_Tutorial#head-864862d3f2bb4c32f04260fac61eb4ef34788c4c>`_.
+`Numpy documentation <https://www.scipy.org/Tentative_NumPy_Tutorial#head-864862d3f2bb4c32f04260fac61eb4ef34788c4c>`_.
 
 Data attributes like `~numpy.ndarray.dtype` and
 `~sunpy.map.GenericMap.dimensions` are accessible through
@@ -353,7 +353,7 @@ your images got clipped set the following values::
     >>> cmap.set_under('green', 1.0)   # doctest: +SKIP
 
 This will color the areas above and below in red and green respectively
-(similar to this `example <http://matplotlib.org/examples/pylab_examples/image_masked.html>`_).
+(similar to this `example <https://matplotlib.org/examples/pylab_examples/image_masked.html>`_).
 You can use the following colorbar command to display these choices::
 
     >>> plt.colorbar(extend='both')   # doctest: +SKIP

@@ -6,7 +6,7 @@ An open-source Python library for Solar Physics data analysis.
 
 Web Links
 ---------
-Homepage: http://www.sunpy.org
+Homepage: http://sunpy.org
 Documentation: http://docs.sunpy.org
 """
 from __future__ import absolute_import

@@ -86,7 +86,7 @@ def get_obssumm_dbase_file(time_range):
 
     References
     ----------
-    | http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing Summary Data
+    | https://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm Summary Data
 
     .. note::
         This API is currently limited to providing data from whole days only.
@@ -129,14 +129,14 @@ def parse_obssumm_dbase_file(filename):
 
     References
     ----------
-    | http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing Summary Data
+    | https://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm Summary Data
 
     .. note::
         This API is currently limited to providing data from whole days only.
 
     """
     # An example dbase file can be found at:
-    # http://hesperia.gsfc.nasa.gov/hessidata/dbase/hsi_obssumm_filedb_200311.txt
+    # https://hesperia.gsfc.nasa.gov/hessidata/dbase/hsi_obssumm_filedb_200311.txt
 
     with open(filename) as fd:
         reader = csv.reader(fd, delimiter=' ', skipinitialspace=True)
@@ -353,7 +353,7 @@ def uncompress_countrate(compressed_countrate):
 
     References
     ----------
-    Hsi_obs_summ_decompress.pro `<http://hesperia.gsfc.nasa.gov/ssw/hessi/idl/qlook_archive/hsi_obs_summ_decompress.pro>`_
+    Hsi_obs_summ_decompress.pro `<https://hesperia.gsfc.nasa.gov/ssw/hessi/idl/qlook_archive/hsi_obs_summ_decompress.pro>`_
     """
 
     # Ensure uncompressed counts are between 0 and 255
@@ -386,7 +386,7 @@ def hsi_linecolors():
 
     References
     ----------
-    hsi_linecolors.pro `<http://hesperia.gsfc.nasa.gov/ssw/hessi/idl/gen/hsi_linecolors.pro>`_
+    hsi_linecolors.pro `<https://hesperia.gsfc.nasa.gov/ssw/hessi/idl/gen/hsi_linecolors.pro>`_
     """
     return ('black', 'magenta', 'lime', 'cyan', 'y', 'red', 'blue', 'orange',
             'olive')

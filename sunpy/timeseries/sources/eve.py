@@ -53,11 +53,11 @@ class EVESpWxTimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `SDO Mission Homepage <http://sdo.gsfc.nasa.gov>`_
+    * `SDO Mission Homepage <https://sdo.gsfc.nasa.gov/>`_
     * `EVE Homepage <http://lasp.colorado.edu/home/eve/>`_
     * `Level 0CS Definition <http://lasp.colorado.edu/home/eve/data/>`_
     * `EVE Data Acess <http://lasp.colorado.edu/home/eve/data/data-access/>`_
-    * `Instrument Paper <http://link.springer.com/article/10.1007%2Fs11207-009-9487-6>`_
+    * `Instrument Paper <https://link.springer.com/article/10.1007%2Fs11207-009-9487-6>`_
     """
     # Class attribute used to specify the source class of the TimeSeries.
     _source = 'eve'

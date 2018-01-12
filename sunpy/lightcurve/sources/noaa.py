@@ -25,7 +25,7 @@ class NOAAIndicesLightCurve(LightCurve):
     2. The RI sunspot number is the official International Sunspot Number and is issued by
        the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
     3. The ratio between the SWO and RI indices.
-    4. Radio flux at 10.7 cm is produced by Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>
+    4. Radio flux at 10.7 cm is produced by Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>
        and the units are in sfu.
     5. The Ap Geomagnetic Index is produced by the United States Air Force (USAF).
 
@@ -149,7 +149,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
     * The predicted RI sunspot number is the official International Sunspot
     Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
     * The predicted radio flux at 10.7 cm is produced by
-    `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
+    `Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
 
     Examples
     --------
