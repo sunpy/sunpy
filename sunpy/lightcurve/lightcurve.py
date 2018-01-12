@@ -56,7 +56,7 @@ class LightCurve(object):
 
     References
     ----------
-    * `Pandas Documentation <http://pandas.pydata.org/pandas-docs/dev/dsintro.html>`_
+    * `Pandas Documentation <http://pandas-docs.github.io/pandas-docs-travis/>`_
 
     """
     _cond_dispatch = ConditionalDispatch()

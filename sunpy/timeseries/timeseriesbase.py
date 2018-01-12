@@ -103,7 +103,7 @@ class GenericTimeSeries:
 
     References
     ----------
-    * `Pandas Documentation <http://pandas.pydata.org/pandas-docs/dev/dsintro.html>`_
+    * `Pandas Documentation <http://pandas-docs.github.io/pandas-docs-travis/>`_
 
     """
 

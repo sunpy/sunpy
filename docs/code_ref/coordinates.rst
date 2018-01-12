@@ -46,7 +46,7 @@ SunPy implements support for the following solar physics coordinate systems:
 * Heliographic Carrington `~sunpy.coordinates.frames.HeliographicCarrington`
 
 for a complete description of these frames see `sunpy.coordinates.frames`, for
-a more detailed description of the frames see `Thompson (2006) <http://dx.doi.org/10.1051/0004-6361:20054262>`_
+a more detailed description of the frames see `Thompson (2006) <https://www.aanda.org/articles/aa/abs/2006/14/aa4262-05/aa4262-05.html>`_
 
 
 `~astropy.coordinates.SkyCoord` and all other `~astropy.coordinates` objects
@@ -298,6 +298,6 @@ Attribution
 
 Some of this documentation was adapted from Astropy under the terms of the `BSD
 License
-<https://raw.githubusercontent.com/astropy/astropy/master/licenses/LICENSE.rst>`_.
+<https://raw.githubusercontent.com/astropy/astropy/master/LICENSE.rst>`_.
 
 This package was initially developed by Pritish Chakraborty as part of GSOC 2014 and Stuart Mumford.

@@ -33,12 +33,12 @@ class XRTMap(GenericMap):
 
     References
     ----------
-    * `Hinode Mission Page <http://solarb.msfc.nasa.gov/index.html>`_
+    * `Hinode Mission Page <https://solarb.msfc.nasa.gov/index.html>`_
     * `XRT Instrument Page <http://xrt.cfa.harvard.edu>`_
     * `Fits header reference <http://hinode.nao.ac.jp/sbsc/SB_MW_Key13.pdf>`_
     * `Hinode User Guide <http://hinode.nao.ac.jp/hsc_e/instruction_e.shtml>`_
     * `XRT Analysis Guide <http://xrt.cfa.harvard.edu/science/tutorials.php>`_
-    * `Coronal Temperature Diagnostic Capability of the Hinode/X-Ray Telescope Based on Self-Consistent Calibration <http://arxiv.org/pdf/1011.2867.pdf>`_
+    * `Coronal Temperature Diagnostic Capability of the Hinode/X-Ray Telescope Based on Self-Consistent Calibration <https://arxiv.org/pdf/1011.2867.pdf>`_
     """
     filter_wheel1_measurements = ["Al_med", "Al_poly", "Be_med",
                                   "Be_thin", "C_poly", "Open"]
@@ -92,9 +92,9 @@ class SOTMap(GenericMap):
 
     References
     ----------
-    * `Hinode Mission Page <http://solarb.msfc.nasa.gov/index.html>`_
+    * `Hinode Mission Page <https://solarb.msfc.nasa.gov/index.html>`_
     * `Hinode SOT Instrument Page <http://sot.lmsal.com>`_
-    * `Hinode SOT Instrument Paper <http://arxiv.org/pdf/0711.1715.pdf>`_
+    * `Hinode SOT Instrument Paper <https://arxiv.org/pdf/0711.1715.pdf>`_
     * `Data Analsis Guide <https://sot.lmsal.com/doc/rep/sot254/fid366/SOT00042_33_SOT_Analysis_Guide_SAG.pdf>`_
     """
     # TODO: get a link for the SOT FITS headers

@@ -3,8 +3,8 @@ Documentation
 
 All code must be documented. Undocumented code will not be accepted into SunPy.
 Documentation should follow the guidelines in `PEP 8
-<http://www.python.org/dev/peps/pep-0008/>`_ and `PEP 257 (Docstring
-conventions) <http://www.python.org/dev/peps/pep-0257/>`_. Documentation for
+<https://www.python.org/dev/peps/pep-0008/>`_ and `PEP 257 (Docstring
+conventions) <https://www.python.org/dev/peps/pep-0257/>`_. Documentation for
 modules, classes, and functions should follow the `NumPy/SciPy documentation
 style guide
 <https://github.com/numpy/numpy/blob/master/doc/HOWTO_DOCUMENT.rst.txt>`_.
@@ -16,7 +16,7 @@ guidelines.
 Sphinx
 ------
 
-`Sphinx <http://sphinx.pocoo.org/>`_ is a tool for generating high-quality
+`Sphinx <http://www.sphinx-doc.org/en/stable/>`_ is a tool for generating high-quality
 documentation in various formats (HTML, pdf, etc) and is especially well-suited
 for documenting Python projects. Sphinx works by parsing files written using a
 `a Mediawiki-like syntax
@@ -24,7 +24,7 @@ for documenting Python projects. Sphinx works by parsing files written using a
 `reStructuredText <http://docutils.sourceforge.net/rst.html>`_. In addition
 to parsing static files of reStructuredText, Sphinx can also be told to parse
 code comments. In fact, in addition to what you are reading right now, the
-`Python documentation <http://www.python.org/doc/>`_ was also created using
+`Python documentation <https://www.python.org/doc/>`_ was also created using
 Sphinx.
 
 Usage
@@ -45,7 +45,7 @@ iteratively only adding things that have changed. If you'd like to start
 from scratch then just delete the build directory.
 
 For more information on how to use Sphinx, consult the `Sphinx documentation
-<http://sphinx.pocoo.org/contents.html>`_.
+<http://www.sphinx-doc.org/en/stable/contents.html>`_.
 
 The rest of this section will describe how to document the SunPy code in order
 to guarantee well-formatted documentation.
@@ -54,7 +54,7 @@ doctest
 #######
 
 The example codes in the Guide section of the docs are configured with the Sphinx
-`doctest extension <http://sphinx-doc.org/ext/doctest.html>`_.
+`doctest extension <http://www.sphinx-doc.org/en/stable/ext/doctest.html>`_.
 This will test the example code to make sure it runs correctly, it can be executed
 using: ::
 
@@ -267,7 +267,7 @@ Example (:class:`sunpy.map.Map`) ::
     ----------
     | http://docs.scipy.org/doc/numpy/reference/arrays.classes.html
     | http://docs.scipy.org/doc/numpy/user/basics.subclassing.html
-    | http://www.scipy.org/Subclasses
+    | https://www.scipy.org/Subclasses
 
     """
 

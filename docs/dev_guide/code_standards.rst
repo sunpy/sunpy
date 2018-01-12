@@ -2,12 +2,12 @@ Coding Standards
 ================
 
 All code that is part of the SunPy project should follow The Style Guide for
-Python (`PEP 8 <http://www.python.org/dev/peps/pep-0008/>`_) and
+Python (`PEP 8 <https://www.python.org/dev/peps/pep-0008/>`_) and
 the `coding style and conventions proposed by Astropy
 <http://docs.astropy.org/en/stable/development/codeguide.html#coding-style-conventions>`_.
 Additionally, all
 code that goes in the trunk should be checked using `PyLint
-<http://www.logilab.org/card/pylint_manual>`_. PyLint is an open source tool
+<https://www.logilab.org/card/pylint_manual>`_. PyLint is an open source tool
 which analyzes Python code and checks for compliance with PEP8, as well as
 common coding errors and other potentially confusing or erroneous code
 statements. Checking the SunPy trunk code this helps to ensure some baseline

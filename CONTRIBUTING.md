@@ -50,7 +50,7 @@ To make a contribution to the SunPy code or documentation you will need to use
 git and GitHub, which are the tools SunPy uses to manage changes to the code and
 documentation.
 
-1. Get a [GitHub Account](https://github.com/signup/free)
+1. Get a [GitHub Account](https://github.com/join)
 1. [Fork](https://help.github.com/articles/fork-a-repo) SunPy on GitHub
 1. Install the developer version of SunPy using git. 
 1. Make your changes and push to your fork.

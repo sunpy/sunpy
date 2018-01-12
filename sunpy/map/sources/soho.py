@@ -55,9 +55,9 @@ class EITMap(GenericMap):
 
     References
     ----------
-    * `SOHO Mission Page <http://sohowww.nascom.nasa.gov>`_
-    * `SOHO EIT Instrument Page <http://umbra.nascom.nasa.gov/eit/>`_
-    * `SOHO EIT User Guide <http://umbra.nascom.nasa.gov/eit/eit_guide/>`_
+    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
+    * `SOHO EIT Instrument Page <https://umbra.nascom.nasa.gov/eit/>`_
+    * `SOHO EIT User Guide <https://umbra.nascom.nasa.gov/eit/eit_guide/>`_
     """
 
     def __init__(self, data, header, **kwargs):
@@ -103,7 +103,7 @@ class LASCOMap(GenericMap):
 
     References
     ----------
-    * `SOHO Mission Page <http://sohowww.nascom.nasa.gov>`_
+    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
     * `SOHO LASCO Instrument Page <http://lasco-www.nrl.navy.mil>`_
     * `SOHO LASCO Fits Header keywords <http://lasco-www.nrl.navy.mil/index.php?p=content/keywords>`_
     * `SOHO LASCO User Guide <http://lasco-www.nrl.navy.mil/index.php?p=content/handbook/hndbk>`_
@@ -166,7 +166,7 @@ class MDIMap(GenericMap):
 
     References
     ----------
-    * `SOHO Mission Page <http://sohowww.nascom.nasa.gov>`_
+    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
     * `SOHO MDI Instrument Page <http://soi.stanford.edu>`_
     * `SOHO MDI Fits Header keywords <http://soi.stanford.edu/sssc/doc/keywords.html>`_
     * `SOHO MDI Instrument Paper <http://soi.stanford.edu/sssc/doc/SP_paper_1995/MDI_SP_paper_1995.pdf>`_

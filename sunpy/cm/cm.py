@@ -134,7 +134,7 @@ def get_cmap(name):
 
     References
     ----------
-    | http://matplotlib.sourceforge.net/api/cm_api.html
+    | https://matplotlib.org/api/cm_api.html
 
     """
     if name in cmlist:
@@ -212,7 +212,7 @@ def show_colormaps(filter=None):
 #
 #    Reference
 #    ---------
-#    | http://matplotlib.sourceforge.net/api/cm_api.html
+#    | https://matplotlib.org/api/cm_api.html
 #
 #    .. warning:: this function is under development
 #

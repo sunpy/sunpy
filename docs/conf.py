@@ -224,7 +224,7 @@ else:
             'reference_url': {
                 'sunpy': None,
                 'astropy': 'http://docs.astropy.org/en/stable/',
-                'matplotlib': 'http://matplotlib.org/',
+                'matplotlib': 'https://matplotlib.org/',
                 'numpy': 'http://docs.scipy.org/doc/numpy/',
             },
             'abort_on_example_error': True,

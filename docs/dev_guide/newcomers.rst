@@ -89,7 +89,7 @@ You can change ``my_fix`` to anything you prefer.
 If you get stuck or want help, just `ask here`_!
 
 .. _miniconda: https://conda.io/miniconda.html
-.. _instructions here: https://conda.io/docs/install/quick.html#quick-install
+.. _instructions here: https://conda.io/docs/user-guide/install/index.html
 .. _git: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 .. _GitHub: https://github.com/
 .. _fork: https://guides.github.com/activities/forking/
