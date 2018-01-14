@@ -75,8 +75,6 @@ class GenericTimeSeries:
         of time.
     meta : `~sunpy.timeseries.metadata.TimeSeriesMetaData`, optional
         The metadata giving details about the time series data/instrument.
-    **kwargs : dict
-        Keyword arguments are not used.
 
     Attributes
     ----------
