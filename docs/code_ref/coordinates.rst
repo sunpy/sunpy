@@ -21,7 +21,7 @@ The easiest interface to the coordinates module is through the `~astropy.coordin
   >>> c = SkyCoord(70*u.deg, -30*u.deg, frame=frames.HeliographicStonyhurst)
   >>> c
   <SkyCoord (HeliographicStonyhurst: obstime=None): (lon, lat, radius) in (deg, deg, km)
-      ( 70., -30.,  695508.)>
+      (70., -30., 695508.)>
 
 
 It is also possible to use strings to define the frame but in that case make sure to

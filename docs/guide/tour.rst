@@ -213,13 +213,13 @@ that can be expressed in length units ::
 shows the solar radius in units of meters.  The same physical quantity can be expressed in different units instead using the `.to()` method::
 
     >>> con.radius.to('km')
-    <Quantity 695508.0 km>
+    <Quantity 695508. km>
 
 or equivalently::
 
     >>> import astropy.units as u
     >>> con.radius.to(u.km)
-    <Quantity 695508.0 km>
+    <Quantity 695508. km>
 
 If, as is sometimes the case, you need just the raw value or the unit from a quantity, you can access these individually
 with the `value` and `unit` attributes, respectively::
