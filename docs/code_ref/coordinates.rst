@@ -83,7 +83,7 @@ referred to as 'solar-x' and 'solar-y'.::
 
   >>> c = SkyCoord(-500*u.arcsec, 100*u.arcsec, frame=frames.Helioprojective)
   >>> c.Tx
-  <Longitude180 -500.0 arcsec>
+  <Longitude180 -500. arcsec>
   >>> c.Ty
   <Latitude 100.0 arcsec>
 

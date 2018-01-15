@@ -247,7 +247,7 @@ the calculation. Therefore, if we define the radius in meters, the area will
 be in meters squared::
 
     >>> circle_area(4 * u.m)
-    <Quantity 50.26548245743669 m2>
+    <Quantity 50.26548246 m2>
 
 This also works with different units, for example ::
 
