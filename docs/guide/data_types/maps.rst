@@ -154,7 +154,7 @@ objects::
     >>> my_map.max()
     192131.0
     >>> my_map.mean()
-    427.02139
+    427.0214
 
 but you can also access all the other `~numpy.ndarray` functions and attributes
 but accessing the data array directly. For example::

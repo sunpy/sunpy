@@ -79,7 +79,7 @@ or days or seconds: ::
     >>> time_range.days
     <Quantity 0.00462963 d>
     >>> time_range.seconds
-    <Quantity 400.0 s>
+    <Quantity 400. s>
 
 It also makes it easy to create new time ranges. The functions next() and previous()
 do an inplace update to the object by either adding or subtracting the same time interval

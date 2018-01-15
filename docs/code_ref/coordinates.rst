@@ -85,7 +85,7 @@ referred to as 'solar-x' and 'solar-y'.::
   >>> c.Tx
   <Longitude180 -500. arcsec>
   >>> c.Ty
-  <Latitude 100.0 arcsec>
+  <Latitude 100. arcsec>
 
 `~sunpy.coordinates.Heliocentric`
 #################################
