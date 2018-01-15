@@ -1177,9 +1177,9 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
     <Quantity [1.96860565e+17, 1.96860565e+17, 1.96860565e+17, 1.96860565e+17,
                1.96860565e+17, 1.96860565e+17] W>
     >>> lx_out["longlum_int"]  # doctest: +REMOTE_DATA
-    <Quantity 1.968605654118636e+19 s W>
+    <Quantity 1.96860565e+19 s W>
     >>> lx_out["shortlum_int"]  # doctest: +REMOTE_DATA
-    <Quantity 1.9686056541186358e+18 s W>
+    <Quantity 1.96860565e+18 s W>
 
     """
     # Calculate X-ray luminosities

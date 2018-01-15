@@ -252,7 +252,7 @@ be in meters squared::
 This also works with different units, for example ::
 
     >>> circle_area(4 * u.imperial.foot)
-    <Quantity 50.26548245743669 ft2>
+    <Quantity 50.26548246 ft2>
 
 As demonstrated above, we can convert between different systems of measurement.
 For example, if you want the area of a circle in square feet, but were given
