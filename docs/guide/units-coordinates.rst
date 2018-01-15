@@ -31,7 +31,7 @@ a unit::
 
    >>> length = 10 * u.meter
    >>> length
-   <Quantity 10.0 m>
+   <Quantity 10. m>
 
 A `~astropy.units.Quantity` has both a ``.unit`` and a ``.value`` attribute::
 
