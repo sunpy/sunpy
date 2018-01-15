@@ -77,7 +77,7 @@ or days or seconds: ::
     >>> time_range.minutes
     <Quantity 6.66666667 min>
     >>> time_range.days
-    <Quantity 0.004629629629629629 d>
+    <Quantity 0.00462963 d>
     >>> time_range.seconds
     <Quantity 400.0 s>
 
