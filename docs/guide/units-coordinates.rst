@@ -62,7 +62,7 @@ through arithmetic operations when appropriate::
   >>> time = 15 * u.minute
   >>> speed = length / time
   >>> speed
-  <Quantity 1.5333326666666667 km / min>
+  <Quantity 1.53333267 km / min>
 
 However, operations which do not make physical sense for the units specified will cause an error::
 
