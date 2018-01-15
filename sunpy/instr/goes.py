@@ -370,7 +370,7 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
     >>> temp  # doctest: +REMOTE_DATA
     <Quantity [11.28295376, 11.28295376] MK>
     >>> em  # doctest: +REMOTE_DATA
-    <Quantity [  4.78577516e+48,  4.78577516e+48] 1 / cm3>
+    <Quantity [4.78577516e+48, 4.78577516e+48] 1 / cm3>
 
     """
     if not download_dir:
@@ -1174,8 +1174,8 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
     <Quantity [1.96860565e+18, 1.96860565e+18, 1.96860565e+18, 1.96860565e+18,
                  1.96860565e+18, 1.96860565e+18] W>
     >>> lx_out["shortlum"]  # doctest: +REMOTE_DATA
-    <Quantity [  1.96860565e+17,  1.96860565e+17,  1.96860565e+17,
-                 1.96860565e+17,  1.96860565e+17,  1.96860565e+17] W>
+    <Quantity [1.96860565e+17, 1.96860565e+17, 1.96860565e+17, 1.96860565e+17,
+               1.96860565e+17, 1.96860565e+17] W>
     >>> lx_out["longlum_int"]  # doctest: +REMOTE_DATA
     <Quantity 1.968605654118636e+19 s W>
     >>> lx_out["shortlum_int"]  # doctest: +REMOTE_DATA

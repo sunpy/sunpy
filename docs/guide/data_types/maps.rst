@@ -130,7 +130,7 @@ Data attributes like `~numpy.ndarray.dtype` and
 the SunPyGenericMap object ::
 
     >>> my_map.dimensions
-    PixelPair(x=<Quantity 1024.0 pix>, y=<Quantity 1024.0 pix>)
+    PixelPair(x=<Quantity 1024. pix>, y=<Quantity 1024. pix>)
     >>> my_map.dtype
     dtype('>f4')
 

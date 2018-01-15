@@ -48,7 +48,7 @@ unit systems::
   <Quantity 0.01 km>
 
   >>> length.cgs
-  <Quantity 1000.0 cm>
+  <Quantity 1000. cm>
 
 Probably most usefully, `~astropy.units.Quantity` objects will propogate units
 through arithmetic operations when appropriate::
