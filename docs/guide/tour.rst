@@ -259,7 +259,7 @@ For example, if you want the area of a circle in square feet, but were given
 the radius in meters, then you can convert it before passing it into the function::
 
     >>> circle_area((4 * u.m).to(u.imperial.foot))
-    <Quantity 541.0531502245425 ft2>
+    <Quantity 541.05315022 ft2>
 
 or you can convert the output::
 
