@@ -193,12 +193,14 @@ class add_common_docstring(object):
 
     Parameters
     ----------
-
     append : `str`, optional
         A string to append to the end of the functions docstring.
 
     prepend : `str`, optional
         A string to prepend to the start of the functions docstring.
+
+    **kwargs : `dict`, optional
+        A dictionary to format append and prepend strings.
     """
 
     def __init__(self, append=None, prepend=None, **kwargs):
