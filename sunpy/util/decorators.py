@@ -190,12 +190,21 @@ class add_common_docstring(object):
     A function decorator that will append and/or prepend an addendum
     to the docstring of the target function.
 
-    If a dictionary(d) is provided as parameter then format by .format().
+
+    Parameters
+    ----------
+
+    append : `str`, optional
+        A string to append to the end of the functions docstring.
+
+    prepend : `str`, optional
+        A string to prepend to the start of the functions docstring.
     """
-    def __init__(self, append='', prepend='', d={}):
-        if any(d):
-            append = append.format(**d)
-            prepend = prepend.format(**d)
+
+    def __init__(self, append=None, prepend=None, **kwargs):
+        if kwargs:
+            append = append.format(**kwargs)
+            prepend = prepend.format(**kwargs)
         self.append = append
         self.prepend = prepend
 
