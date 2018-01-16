@@ -1,6 +1,7 @@
 from __future__ import absolute_import, division, print_function
 import re
 from datetime import datetime, date, time, timedelta
+from functools import singledispatch
 
 import numpy as np
 import pandas
@@ -133,26 +134,23 @@ def _parse_dt64(dt):
     return dt.astype('M8[us]').astype(datetime)
 
 
+@singledispatch
 def parse_time(time_string, time_format='', **kwargs):
     """Given a time string will parse and return a datetime object.
     Similar to the anytim function in IDL.
     utime -- Time since epoch 1 Jan 1979
-
     Parameters
     ----------
     time_string : [ int, float, time_string, datetime ]
         Date to parse which can be either time_string, int, datetime object.
     time_format : [ basestring, utime, datetime ]
         Specifies the format user has provided the time_string in.
-
     Returns
     -------
     out : datetime
         DateTime corresponding to input date string
-
     Note:
     If time_string is an instance of float, then it is assumed to be in utime format.
-
     Examples
     --------
     >>> import sunpy.time
@@ -161,33 +159,17 @@ def parse_time(time_string, time_format='', **kwargs):
     >>> sunpy.time.parse_time('2005-08-04T00:01:02.000Z')
     datetime.datetime(2005, 8, 4, 0, 1, 2)
     """
-    if isinstance(time_string, pandas.Timestamp):
-        return time_string.to_pydatetime()
-    elif isinstance(time_string, pandas.Series) and 'datetime64' in str(time_string.dtype):
-        return np.array([dt.to_pydatetime() for dt in time_string])
-    elif isinstance(time_string, pandas.DatetimeIndex):
-        return time_string._mpl_repr()
-    elif isinstance(time_string, datetime) or time_format == 'datetime':
-        return time_string
-    elif isinstance(time_string, date):
-        return datetime.combine(time_string, time())
-    elif isinstance(time_string, tuple):
-        return datetime(*time_string)
-    elif time_format == 'utime' or isinstance(time_string, (int, float)):
-        return datetime(1979, 1, 1) + timedelta(0, time_string)
-    elif isinstance(time_string, np.datetime64):
-        return _parse_dt64(time_string)
-    elif isinstance(time_string, np.ndarray) and 'datetime64' in str(time_string.dtype):
-        return np.array([_parse_dt64(dt) for dt in time_string])
+    if time_format == 'datetime':
+        parse_time.dispatch(datetime)(time_string, time_format='', **kwargs)
+    elif time_format == 'utime':
+        parse_time.dispatch(float)(time_string, time_format='', **kwargs)
     elif time_string is 'now':
         return datetime.utcnow()
-    elif isinstance(time_string, astropy.time.Time):
-        return time_string.datetime
     else:
         # remove trailing zeros and the final dot to allow any
         # number of zeros. This solves issue #289
         if '.' in time_string:
-            time_string = time_string.rstrip("0").rstrip(".")
+                time_string = time_string.rstrip("0").rstrip(".")
         for time_format in TIME_FORMAT_LIST:
             try:
                 try:
@@ -200,7 +182,7 @@ def parse_time(time_string, time_format='', **kwargs):
                 return datetime.strptime(ts, time_format) + time_delta
             except ValueError:
                 pass
-
+    
         time_string_parse_format = kwargs.pop('_time_string_parse_format', None)
         if time_string_parse_format is not None:
             ts, time_delta = _regex_parse_time(time_string,
@@ -211,6 +193,85 @@ def parse_time(time_string, time_format='', **kwargs):
                 return datetime.strptime(time_string, time_string_parse_format)
         raise ValueError("'{tstr!s}' is not a valid time string!".format(tstr=time_string))
 
+@parse_time.register(pandas.Timestamp)
+def _parse_time(time_string, time_format='', **kwargs):
+	return time_string.to_pydatetime()
+
+
+@parse_time.register(pandas.Series)
+def _parse_time(time_string, time_format='', **kwargs):
+	if 'datetime64' in str(time_string.dtype):
+		return np.array([dt.to_pydatetime() for dt in time_string])
+	else:
+         parse_time.dispatch(object)(time_string, time_format='', **kwargs)
+
+@parse_time.register(pandas.DatetimeIndex)
+def _parse_time(time_string, time_format='', **kwargs):
+	return time_string._mpl_repr()
+
+
+@parse_time.register(datetime)
+def _parse_time(time_string, time_format='', **kwargs):
+	return time_string
+
+	
+@parse_time.register(date)
+def _parse_time(time_string, time_format='', **kwargs):
+    if time_format == 'datetime':
+        parse_time.dispatch(datetime)(time_string, time_format='', **kwargs)
+    else:
+        return datetime.combine(time_string, time())
+        
+
+@parse_time.register(tuple)
+def _parse_time(time_string, time_format='', **kwargs):
+    if time_format == 'datetime':
+        parse_time.dispatch(datetime)(time_string, time_format='', **kwargs)
+    else:
+        return datetime(*time_string)
+
+
+@parse_time.register(float)
+@parse_time.register(int)
+def _parse_time(time_string, time_format='', **kwargs):
+    if time_format == 'datetime':
+        parse_time.dispatch(datetime)(time_string, time_format='', **kwargs)
+    else:
+        return datetime(1979, 1, 1) + timedelta(0, time_string)
+        
+
+@parse_time.register(np.datetime64)
+def _parse_time(time_string, time_format='', **kwargs):
+    if time_format == 'datetime':
+        parse_time.dispatch(datetime)(time_string, time_format='', **kwargs)
+    elif time_format == 'utime':
+        parse_time.dispatch(float)(time_string, time_format='', **kwargs)
+    else:
+        return _parse_dt64(time_string)        
+
+
+@parse_time.register(np.ndarray)
+def _parse_time(time_string, time_format='', **kwargs):
+    if time_format == 'datetime':
+        parse_time.dispatch(datetime)(time_string, time_format='', **kwargs)
+    elif time_format == 'utime':
+        parse_time.dispatch(float)(time_string, time_format='', **kwargs)
+    else:
+        if 'datetime64' in str(time_string.dtype):
+            return np.array([_parse_dt64(dt) for dt in time_string])
+        else:
+            return parse_time.dispatch(object)(time_string, time_format='', **kwargs)
+
+@parse_time.register(astropy.time.Time)
+def _parse_time(time_string, time_format='', **kwargs):
+    if time_format == 'datetime':
+        parse_time.dispatch(datetime)(time_string, time_format='', **kwargs)
+    elif time_format == 'utime':
+        parse_time.dispatch(float)(time_string, time_format='', **kwargs)
+    elif time_string is 'now':
+        return datetime.utcnow()
+    else:
+        return time_string.datetime
 
 def is_time(time_string, time_format=''):
     """
