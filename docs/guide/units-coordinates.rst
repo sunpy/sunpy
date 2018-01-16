@@ -111,7 +111,7 @@ as they can be converted to those units. So for instance, passing in a time in m
 specified `time: u.s`::
 
   >>> speed(1*u.m, 1*u.minute)
-  <Quantity 1.0 m / min>
+  <Quantity 1. m / min>
 
 This may still not be quite as we want it, since we wanted the input time in seconds but the output is in m/min.
 We can correct this by defining the function with an additional annotation::

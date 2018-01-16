@@ -94,7 +94,7 @@ Heliocentric normally a Cartesian frame so the coordinates are accessed as ``x, 
 
   >>> c = SkyCoord(-72241.0*u.km, 361206.1*u.km, 589951.4*u.km, frame=frames.Heliocentric)
   >>> c.x
-  <Quantity -72241.0 km>
+  <Quantity -72241. km>
   >>> c.y
   <Quantity 361206.1 km>
   >>> c.z
