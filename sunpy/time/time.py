@@ -136,17 +136,17 @@ def _parse_dt64(dt):
 
 @singledispatch
 def convert_time(time_string, **kwargs):
-    #default case when no type matches
+    # default case when no type matches
     raise ValueError("'{tstr!s}' is not a valid time string!".format(tstr=time_string))
 
 
 @convert_time.register(pandas.Timestamp)
-def _(time_string, **kwargs):
+def convert_time_pandasTimestamp(time_string, **kwargs):
     return time_string.to_pydatetime()
 
 
 @convert_time.register(pandas.Series)
-def _(time_string, **kwargs):
+def convert_time_pandasSeries(time_string, **kwargs):
     if 'datetime64' in str(time_string.dtype):
         return np.array([dt.to_pydatetime() for dt in time_string])
     else:
@@ -154,38 +154,38 @@ def _(time_string, **kwargs):
 
 
 @convert_time.register(pandas.DatetimeIndex)
-def _(time_string, **kwargs):
+def convert_time_pandasDatetimeIndex(time_string, **kwargs):
     return time_string._mpl_repr()
 
 
 @convert_time.register(datetime)
-def _(time_string, **kwargs):
+def convert_time_datetime(time_string, **kwargs):
     return time_string
 
 
 @convert_time.register(date)
-def _(time_string, **kwargs):
+def convert_time_date(time_string, **kwargs):
     return datetime.combine(time_string, time())
 
 
 @convert_time.register(tuple)
-def _(time_string, **kwargs):
+def convert_time_tuple(time_string, **kwargs):
     return datetime(*time_string)
 
 
 @convert_time.register(float)
 @convert_time.register(int)
-def _(time_string, **kwargs):
+def convert_time_float(time_string, **kwargs):
     return datetime(1979, 1, 1) + timedelta(0, time_string)
 
 
 @convert_time.register(np.datetime64)
-def _convert_time(time_string, **kwargs):
+def convert_time_npdatetime64(time_string, **kwargs):
     return _parse_dt64(time_string)
 
 
 @convert_time.register(np.ndarray)
-def _(time_string, **kwargs):
+def convert_time_npndarray(time_string, **kwargs):
     if 'datetime64' in str(time_string.dtype):
         return np.array([_parse_dt64(dt) for dt in time_string])
     else:
@@ -193,12 +193,12 @@ def _(time_string, **kwargs):
 
 
 @convert_time.register(astropy.time.Time)
-def _(time_string, **kwargs):
+def convert_time_astropy(time_string, **kwargs):
     return time_string.datetime
 
 
 @convert_time.register(str)
-def _(time_string, **kwargs):
+def convert_time_str(time_string, **kwargs):
     # remove trailing zeros and the final dot to allow any
     # number of zeros. This solves issue #289
     if '.' in time_string:
@@ -223,7 +223,7 @@ def _(time_string, **kwargs):
             return datetime.strptime(ts, time_string_parse_format) + time_delta
         else:
             return datetime.strptime(time_string, time_string_parse_format)
-    #when no format matches, call default fucntion
+    # when no format matches, call default fucntion
     convert_time.dispatch(object)(time_string, **kwargs)
 
 
@@ -252,7 +252,7 @@ def parse_time(time_string, time_format='', **kwargs):
     datetime.datetime(2005, 8, 4, 0, 1, 2)
     """
     if time_format == 'utime':
-        return convert_time.dispatch(float)(time_string, **kwargs)
+        return convert_time(float(time_string), **kwargs)
     elif time_string is 'now':
         return datetime.utcnow()
     else:
