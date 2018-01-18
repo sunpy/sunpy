@@ -264,7 +264,7 @@ the radius in meters, then you can convert it before passing it into the functio
 or you can convert the output::
 
     >>> circle_area(4 * u.m).to(u.imperial.foot ** 2)
-    <Quantity 541.0531502245426 ft2>
+    <Quantity 541.05315022 ft2>
 
 
 This is an extremely brief summary of the powerful capbilities of Astropy units.  To find out more, see
