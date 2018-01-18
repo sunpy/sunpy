@@ -151,7 +151,7 @@ A SkyCoord object to represent a point on the Sun can then be created::
   ...              frame=frames.HeliographicStonyhurst)
   >>> c
   <SkyCoord (HeliographicStonyhurst: obstime=2017-08-01 00:00:00): (lon, lat, radius) in (deg, deg, km)
-      ( 70., -30.,  695508.)>
+      (70., -30., 695508.)>
 
 This `~astropy.coordinates.SkyCoord` object can then be transformed to any
 other coordinate frame defined either in Astropy or SunPy, for example::

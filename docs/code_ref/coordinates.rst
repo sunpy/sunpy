@@ -107,7 +107,7 @@ Both the heliographic frames use latitude, longitude and radius which are access
 
    >>> c = SkyCoord(70*u.deg, -30*u.deg, frame=frames.HeliographicStonyhurst)
    >>> c.lat
-   <Latitude -30.0 deg>
+   <Latitude -30. deg>
    >>> c.lon
    <Longitude180 70.0 deg>
    >>> c.radius
