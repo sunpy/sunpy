@@ -122,6 +122,10 @@ matrix:
            stage: Cron tests
            env: NUMPY_VERSION=$PREVIOUS_NUMPY
 
+before_install:
+    # Fix for Python 2 with Numpy 1.14. Should be fixed for 1.14.1
+    - if [[ $PYTHON_VERSION == 2.7 ]]; then NUMPY_VERSON=1.13; fi
+
 install:
     - git clone git://github.com/astropy/ci-helpers.git
     - source ci-helpers/travis/setup_conda.sh
@@ -129,8 +133,6 @@ install:
 before_script:
     # Download the sample data for the build of the documentation.
     - if [[ $SETUP_CMD != *egg_info* ]]; then python -m "sunpy.data.sample"; fi
-    # Fix for Python 2 with Numpy 1.14. Should be fixed for 1.14.1
-    - if [[ $PYTHON_VERSION == 2.7 ]]; then NUMPY_VERSON=1.13; fi
     - if [[ $MAIN_CMD == py.test* ]]; then python setup.py build; fi
     - if [[ $SETUP_CMD == *--figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; fi
 
