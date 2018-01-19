@@ -12,7 +12,7 @@ from sunpy.net import Fido
 from sunpy.net import attrs as a
 
 from hypothesis import given, settings
-from hypothesis.extra.datetime import datetimes
+from hypothesis.strategies import datetimes
 from sunpy.net.tests.strategies import time_attr
 
 LCClient = eve.EVEClient()
