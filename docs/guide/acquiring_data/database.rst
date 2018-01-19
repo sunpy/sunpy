@@ -12,15 +12,16 @@ database is used) or a local or remote database server (see the SQLAlchemy
 documentation for a `list of supported databases
 <http://docs.sqlalchemy.org/en/rel_0_8/dialects/>`_)
 This makes it possible to fetch required data from the local database
-instead of downloading it again from a remote server. The package
-:mod:`sunpy.database` was developed as part of `Google Summer of Code
-(GSOC) 2013
+instead of downloading it again from a remote server.
+
+The package :mod:`sunpy.database` was developed as part of
+`Google Summer of Code (GSOC) 2013
 <http://www.google-melange.com/gsoc/homepage/google/gsoc2013>`_.
 
 1. Connecting and initializing the database
 -------------------------------------------
-To start a connection to an existing or a new database, instantiate
-a :class:`Database` object.
+To start a connection to an existing or a new database, create
+a :class:`Database` object:
 
     >>> from sunpy.database import Database
     >>> database = Database('sqlite:///sunpydata.sqlite')
@@ -28,21 +29,14 @@ a :class:`Database` object.
 The database object in our example above connects to a new SQLite database with
 the file name "sunpydata.sqlite" in the current directory.
 
-The first parameter of ``Database`` receives one mandatory argument:
-a URL which describes how to connect to the database. This value is
-directly passed to :func:`sqlalchemy.create_engine`. The supported
+The first parameter of :class:`Database` receives one mandatory argument:
+a URL which describes how to connect to the database. The supported
 format of this URL is described by the documentation of
-:func:`sqlalchemy.create_engine` as follows:
+:func:`sqlalchemy.create_engine`.
 
-    "The string form of the URL is
-    ``dialect+driver://user:password@host/dbname[?key=value..]``, where
-    dialect is a database name such as ``mysql``, ``oracle``, ``postgresql``,
-    etc., and driver the name of a DBAPI, such as ``psycopg2``,
-    ``pyodbc``, ``cx_oracle``, etc."
-
-Note that a connection is only established when it's really needed, i.e. if some query
-is sent to the database to read from it. Transactions can also be committed explicitly
-using the :meth:`Database.commit` method.
+Note that a connection is only established when it's really needed,
+i.e. if some query is sent to the database to read from it. Transactions
+can also be committed explicitly using the :meth:`Database.commit` method.
 
 .. warning::
 
@@ -63,9 +57,8 @@ using the :meth:`Database.commit` method.
 
 2. Adding new entries
 ---------------------
-Before explaining how to add new entries, it is important to know what
-information is saved in an entry. Each database entry is an instance of
-the class :class:`tables.DatabaseEntry` with the following attributes:
+Each entry in a database is an instance of the class
+:class:`tables.DatabaseEntry` with the following attributes:
 
 ====================== ===================================================
       Attribute                            Description
@@ -116,10 +109,11 @@ tags                   A list of :class:`tables.Tag` instances.
   :meth:`Database.download` and   possibly :meth:`Database.fetch`.
 
 * The attributes ``path`` and ``download_time`` are set by the method
-  :meth:`Database.download` and also possibly by :meth:`Database.fetch`. ``starred``
-  is set or changed via the method   :meth:`Database.star` or :meth:`unstar`,
-  respectively. Analogously, ``tags`` is set via the methods :meth:`Database.tag`
-  and :meth:`Database.remove_tag`.
+  :meth:`Database.download` and also possibly by :meth:`Database.fetch`.
+
+* ``starred`` is set or changed via :meth:`Database.star` or :meth:`unstar`.
+
+* ``tags`` is set via :meth:`Database.tag` or :meth:`Database.remove_tag`.
 
 * The attribute ``fits_header_entries`` is set by the methods
   :meth:`Database.download`, :meth:`Database.add_from_dir`, and
@@ -131,47 +125,49 @@ The method :meth:`Database.add_from_file` receives one positional argument
 (either a string or a file-like object) which is used to add at least one
 new entry from the given FITS file to the database. Why "at least one" and
 not "exactly one"? The reason is that each database entry does not
-represent one file but one FITS header of a file. That means, if you pass
+represent one file, but one FITS header from a file. That means if you pass
 a file which has 5 FITS headers in it, 5 entries will be added to the
-database. The file in the following example (``sunpy.data.sample.AIA_171_IMAGE``) has
-only one FITS header, that is why just one entry is added to the database.
-However, if you are working with Hinode/SOT files you may notice that for
-each file you get two entries, one which refers to the observation and
-another that contains some (useless - as `discussed
-<http://listmgr.cv.nrao.edu/pipermail/fitsbits/2007-August/001923.html>`_
-in the `fitsbits mailing list
-<http://listmgr.cv.nrao.edu/mailman/listinfo/fitsbits>`_)
-telemetry data.
+database. The file in the following example
+(``sunpy.data.sample.AIA_171_IMAGE``) has only one FITS header, so just one
+entry is added to the database.
 
-The method saves the value of `path` by either simply passing on the value
-of the received argument (if it was a string) or by reading the value of
-``file.name`` where ``file`` is the passed argument. If the path cannot be
-determined, it stays to ``None`` (the default value).
+.. note::
 
-The values of `wavemin` and `wavemax` are only set if the wavelength unit
-of the passed FITS file can be found out or if the attribute
-`default_waveunit` of the database object is set. These values are then
-used to convert from the used unit to nanometers. The rationale behind
+  If you are working with Hinode/SOT files you may notice that for
+  each file you get two entries, one which refers to the observation and
+  another that contains some (useless - as `discussed
+  <http://listmgr.cv.nrao.edu/pipermail/fitsbits/2007-August/001923.html>`_
+  in the `fitsbits mailing list
+  <http://listmgr.cv.nrao.edu/mailman/listinfo/fitsbits>`_)
+  telemetry data.
+
+:meth:`Database.add_from_file` saves the value of ``path`` by either simply
+passing on the value of the received argument (if it was a string)
+or by reading the value of ``file.name`` where ``file`` is the passed argument.
+If the path cannot be determined, it stays as ``None`` (the default value).
+
+``wavemin`` and `wavemax`` are only set if the wavelength unit
+of the FITS file can be found out or if the ``default_waveunit`` attribute of
+the database object is set. These values are then
+used to convert from the used units to nanometers. The rationale behind
 this behaviour is that it makes querying for wavelengths more flexible.
-tl;dr: **wavelengths are always stored in nanometers!**
 
-The value of the attribute `instrument` is simply set by looking up the
-FITS header key *INSTRUME*. The value of `observation_time_start` is set
+``instrument`` is set by looking up the
+FITS header key *INSTRUME*. ``observation_time_start`` is set
 by searching for the FITS header key *DATE-OBS* or *DATE_OBS*.
-Analogously, `observation_time_end` is set by searching for *DATE-END* or
+Analogously, ``observation_time_end`` is set by searching for *DATE-END* or
 *DATE_END*. Finally, the whole FITS header is stored in the attribute
-`fits_header_entries` as a list of :class:`tables.FitsHeaderEntry`
-instances. All FITS comments are stored in the attribute
-`fits_key_comments` which is a list of :class:`tables.FitsKeyComment`
+``fits_header_entries`` as a list of :class:`tables.FitsHeaderEntry`
+instances, and FITS comments are stored in the attribute
+``fits_key_comments`` which is a list of :class:`tables.FitsKeyComment`
 instances.
 
-Using the function ``len`` on a :class:`Database` object returns the
+Using the function `len` on a :class:`Database` object returns the
 number of saved database entries. To get the first entry of the database,
 ``database[0]`` is used (the ID number of the entries does not matter,
 ``database[0]`` always returns the oldest saved entry of the database). If
-the database had been empty, this expression would have raised an
-:exc:`IndexError`. In section 3, more advanced formats of the slicing
-syntax are introduced.
+the database is empty, this expression raises an :exc:`IndexError`.
+In section 3, more advanced formats of the slicing syntax are introduced.
 
     >>> import sunpy.data.sample
     >>> database.add_from_file(sunpy.data.sample.AIA_171_IMAGE)
@@ -223,13 +219,14 @@ syntax are introduced.
 
 2.2 Adding entries from a directory of FITS files
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Adding all FITS files from a certain directory works by calling the method
+Adding all FITS files from a directory works by calling the method
 :meth:`Database.add_from_dir` and passing the desired directory to it. By
-setting the keyword argument `ignore_already_added` to `True`, no
+setting the keyword argument ``ignore_already_added`` to ``True``, no
 exception is raised if it is attempted to add an already existing entry
-(In this case, setting this parameter is required because the file
-``sunpy.data.sample.AIA_171_IMAGE`` was already added which is located in the
-directory ``sampledata_dir``).
+
+In the following example case, setting this parameter is required because the
+file ``sunpy.data.sample.AIA_171_IMAGE`` was already added, which is located
+in the directory ``sampledata_dir``
 
     >>> from sunpy import config
     >>> sampledata_dir = config.get("downloads", "sample_dir")
@@ -244,9 +241,8 @@ directory ``sampledata_dir``).
 
 2.3.1 Adding entries from a VSO query result
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-A VSO query result can be used to add new entries to the database. The
-number of database entries that will be added is equal to the value of
-``len(qr)`` in the following code snippet. Note that the method
+The number of database entries that will be added from a VSO query result
+is equal to the value of ``len(qr)`` in the following code snippet. Note that
 :meth:`Database.add_from_vso_query_result` does not download any files,
 though. If you want to add new entries using the VSO and also want to
 download files at the same time, take a look at the following two
@@ -266,18 +262,17 @@ sections.
 2.3.2 "Clever" Fetching
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-The method :meth:`Database.fetch` queries the database if the given query has
-already been used once to add entries. Otherwise, the given query is used to
-download and add new data. The :meth:`Database.fetch`  method also accepts an
-optional keyword argument `path` which is passed as-is to
-:meth:`sunpy.net.vso.VSOClient.get` and determines the value of the `path`
+The method :meth:`Database.fetch` checks if the given query has already been
+used once to add entries to the database. Otherwise, the query is used to
+download and add new data. The :meth:`Database.fetch` method also accepts an
+optional keyword argument ``path`` which is passed as-is to
+:meth:`sunpy.net.vso.VSOClient.get` and determines the value of the ``path``
 attribute of each entry.
 
-Note that not the number of records of the resulting query result determines the
-number of entries that will be added to the database! The number of entries that
-will be added depends on the total number of FITS headers.
+Note that the number of entries that will be added depends on the total number
+of FITS headers, **not** the number of records in the query.
 
-In the next code snippet you can see that new data is downloaded as this query
+In the next code snippet new data is downloaded as this query
 has not been downloaded before.
 
     >>> entries = database.fetch(
@@ -286,9 +281,8 @@ has not been downloaded before.
     >>> len(database)  # doctest: +REMOTE_DATA
     66
 
-Now you can see that the next fetch call does not
-add any new entries to the database, because they have been downloaded
-earlier. The query is exactly similar to the previous one.
+Any more identical fetch calls don't add any new entries to the database
+because they have already been downloaded.
 
     >>> entries = database.fetch(
     ...     vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'),
@@ -296,8 +290,8 @@ earlier. The query is exactly similar to the previous one.
     >>> len(database)  # doctest: +REMOTE_DATA
     66
 
-Another fetch call downloads new files because this is a new date range
-whose files have not been downloaded yet.
+However, this different fetch call downloads new files because there is a
+new date range whose files have not been downloaded yet.
 
     >>> entries = database.fetch(
     ...     vso.attrs.Time('2013-08-05', '2013-08-05 00:00:05'),
@@ -305,11 +299,10 @@ whose files have not been downloaded yet.
     >>> len(database)  # doctest: +REMOTE_DATA
     70
 
-The caching also ensures that in case of queries which have some results in
+The caching also ensures that when queries have some results in
 common, files for the common results will not be downloaded again. In the
-following example, you can see that even if the query is a new one, it
-will have all files in common with the previous query. Therefore, no new
-files are downloaded.
+following example, the query is new, but all of it's files have already been
+downloaded. This means no new files are downloaded.
 
     >>> entries = database.fetch(
     ...     vso.attrs.Time('2012-08-05 00:00:00', '2012-08-05 00:00:01'),
@@ -320,7 +313,7 @@ files are downloaded.
 2.4 Adding entries manually
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Although usually not required, it is also possible to add database entries
-by specifying the parameters manually. To do so, you simply pass the
+by specifying the parameters manually. To do so pass the
 values as keyword arguments to :class:`tables.DatabaseEntry` as follows:
 
     >>> from sunpy.database.tables import DatabaseEntry
@@ -334,14 +327,14 @@ values as keyword arguments to :class:`tables.DatabaseEntry` as follows:
     >>> len(database) # doctest: +REMOTE_DATA
     71
 
-Note that the `in` operator works only as expected after the
+Note that the `in` operator only works as expected after the
 :meth:`Database.commit` method has been called!
 
 3. Displaying entries in a table
 --------------------------------
-Meanwhile, 71 entries have been added, all of them saving a lot of data.
-How can selected data of each entry be displayed? Fortunately, there is a
-helper function to do this: :func:`tables.display_entries` takes two
+In the previous code snippets 71 entries have been added,
+all of them saving a lot of data. To display the database in a table format
+there is a helper function. :func:`tables.display_entries` takes two
 arguments: the first one is an iterator of :class:`tables.DatabaseEntry`
 instances. Remember that an instance of :class:`Database` yields instances
 of :class:`tables.DatabaseEntry` instances, so you can simply pass a
@@ -384,15 +377,12 @@ cannot be found or is not set.
      71                    N/A ...               25.0                N/A
     Length = 71 rows
 
-In Section 2.1, "Adding entries from one FITS file", it has already been
-shows that the index operator can be used to access certain single
-database entries like ``database[5]`` or even use negative indices such as
-in ``database[-2]`` to get the second-latest entry. It is also possible to
-use the more advanced slicing syntax: ``database[:]`` returns a list of
-all database entries (and is hereby an alias for ``list(database)``),
-``database[::2]`` returns a list of every 2nd entry, starting with the
-oldest one. As you can imagine, ``database[9::10]`` starts with the 10th
-entry and returns a list of every 10th entry from there.
+The index operator can be used to access certain single database entries like
+``database[5]``  to get the 5th entry or  ``database[-2]``
+to get the second-latest entry. It is also possible to
+use more advanced slicing syntax;
+see https://docs.scipy.org/doc/numpy/reference/arrays.indexing.html
+for more information.
 
     >>> print(display_entries(database[9::10],
     ...                       ['id', 'observation_time_start', 'observation_time_end',
@@ -409,14 +399,14 @@ entry and returns a list of every 10th entry from there.
 
 4. Removing entries
 -------------------
-``database.remove()`` can be used to remove database entries from the SunPy
+`database.remove()` can be used to remove database entries from the SunPy
 database. It takes a ``tables.DatabaseEntry`` object as argument.
 
-For example, let us imagine we want to only have database entries which have some
-observation time saved. To remove all entries where the value of both
-``observation_time_start`` and ``observation_time_end`` is None, one can
-simply iterate over the database and uses the :meth:`Database.remove`
-method to remove those where the just described predicate is true:
+For example, imagine we want to only have database entries which have an
+observation time saved. To remove all the entries where the value of both
+``observation_time_start`` and ``observation_time_end`` is ``None``,
+simply iterate over the database and the :meth:`Database.remove`
+method to remove those where there is no time set:
 
     >>> for database_entry in database:
     ...     if database_entry.observation_time_start is None and database_entry.observation_time_end is None:
@@ -453,24 +443,15 @@ method to remove those where the just described predicate is true:
      70    2013-08-05 00:00:02 ...               33.5               33.5
     Length = 38 rows
 
-There are more possible ways to remove entries: You can remove every 2nd
-entry by iterating over ``database[::2]`` and then calling passing every
-yielded entry to :meth:`Database.remove`. You can even do advanced
-operations easily like for example removing every entry with a certain
-observation start time, instrument, and FITS header entry pair. This
-requires knowledge of the :meth:`Database.search` method though, which will
-be covered in section 7, "Querying the database".
 
 5. Editing entries
 ------------------
+
 5.1 Starring and unstarring entries
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The database package supports marking certain entries as "starred". This
-concept may be familiar to you from graphical applications such as E-Mail
-clients or photo managers. The method :meth:`Database.star` marks the
-passed entry as starred. Let's say we are for some reason interested in
-all values that have a wavelength of 20nm or higher, so we mark those as
-starred:
+The database package supports marking certain entries as "starred" using the
+:meth:`Database.star` method. For example, to star
+all values that have a wavelength of 20nm or higher:
 
     >>> for database_entry in database:
     ...     if database_entry.wavemin and database_entry.wavemin > 20:
@@ -491,17 +472,15 @@ starred:
      69    2013-08-05 00:00:02  2013-08-05 00:00:03        AIA    33.5    33.5
      70    2013-08-05 00:00:02  2013-08-05 00:00:03        AIA    33.5    33.5
 
-So remove the mark from these entries, the method :meth:`Database.unstar`
+To remove the star from these entries, the :meth:`Database.unstar` method
 works the same way.
 
 5.2 Setting and removing tags
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-The starring concept is somewhat "binary" in a way that one can only
-decide whether to mark an entry as starred or not. To add some more
-information by assigning keywords to entries, the database package also
-supports *tags*. The `tags` property of a database object holds all tags
-that are saved in this database. Let us assign the tag *spring* to all
-entries that have been observed in March, April, or May on any day at any
+To add some more information by assigning tags to entries, the database package
+also supports *tags*. The ``tags`` property of a database object holds all tags
+that are saved in the database. For example, to assign the tag *spring* to all
+entries that have been observed in March, April, or May on any day in any
 year:
 
     >>> for database_entry in database:
@@ -522,14 +501,13 @@ year:
      61    2011-05-08 00:00:02  2011-05-08 00:00:03        AIA     9.4     9.4
      62    2011-05-08 00:00:03  2011-05-08 00:00:04        AIA    33.5    33.5
 
-5.3 Changing custom attributes
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-What still annoys me a bit is that there are entries in the database where
-the end of the observation time is `None`. Let us change them to the same
-value to the start of the observation time (because we can and because it
-looks prettier, not because it is accurate). The :meth:`Database.edit`
-method receives the database entry to be edited and any number of keyword
-arguments which describe which values to change and how.
+5.3 Manually changing attributes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Attributes for entries in the database can be manually edited. The
+:meth:`Database.edit` method receives the database entry to be edited and any
+number of keyword arguments to describe which values to change and how. For
+example, to change the time entires that are ``None`` to the start of the
+observation time (because it's possible, not because it is accurate!):
 
     >>> for database_entry in database:
     ...     if database_entry.observation_time_end is None:
@@ -565,21 +543,19 @@ arguments which describe which values to change and how.
      70    2013-08-05 00:00:02 ...               33.5               33.5
     Length = 38 rows
 
-You may ask yourself now "Why can't I simply use
-``database_entry.observation_time_end = database_entry.observation_time_start``"?
-Well, the answer is: you can, but it has one major disadvantage: you
-cannot undo this operation if you don't use the methods of the database
-objects such as :class:`Database.edit`. See the section 6, "Undoing and
-redoing operations", to see how undoing and redoing works.
+It is possible to use
+``database_entry.observation_time_end = database_entry.observation_time_start``",
+but it has one major disadvantage: this operation cannot be undone.
+See section 6 to see how undoing and redoing works.
 
 6. Undoing and redoing operations
 ---------------------------------
-A very handy feature of the database package is that every operation can
-be reverted that changes the database in some way. The Database class has
-the methods :meth:`Database.undo()` and :meth:`Database.redo()` to undo
+A very handy feature of the database package is that every operation that
+changes the database in some way can be reverted. The Database class has
+the methods :meth:`Database.undo` and :meth:`Database.redo` to undo
 and redo the last n commands, respectively.
 
-.. note::
+.. warning::
 
     The undo and redo history are only saved in-memory! That means in
     particular, that if you work on a Database object in an interactive
@@ -589,7 +565,7 @@ and redo the last n commands, respectively.
 In the following snippet, the operations from the sections 5.3, 5.2, and
 5.1 are undone. Note the following changes: there are no longer any tags
 anymore saved in the database, there is no entry which is starred and
-there are again entries with no end of observation time.
+the entries with no end of observation time are back.
 
     >>> database.undo(4)  # undo the edits from 5.3 (4 records have been affected)
     >>> print(display_entries(
@@ -622,12 +598,12 @@ there are again entries with no end of observation time.
      70    2013-08-05 00:00:02  2013-08-05 00:00:03 ...    N/A     Yes
     Length = 38 rows
 
-The redo method reverts the last n operations that have been undone. If
-not that many operations can be redone (i.e. any number greater than 14 in
-this example), an exception is raised. You can see that the redo call
-reverts the original state: the tags appeared again and all entries with a
-wavelength >20nm are starred again. Also, there are no entries with no
-stored end of observation time anymore.
+The :meth:`~Database.redo` method reverts the last n operations that have been
+undone. If not that many operations can be redone (i.e. any number greater than
+14 in this example), an exception is raised. The redo call
+reverts the original state: the tags have appeared again and all entries with a
+wavelength >20nm are starred again, and there are no entries with no
+stored end of observation time.
 
     >>> database.redo(1)  # redo all undone operations
     >>> print(display_entries(
@@ -674,12 +650,15 @@ with the EIT.
 7.1 Using VSO attributes
 ~~~~~~~~~~~~~~~~~~~~~~~~
 Using the attributes from :mod:`sunpy.net.vso.attrs` is quite intuitive:
-the simple attributes and the Time attribute work exactly as you expect
-it. Note though that the `near` parameter of
-:class:`sunpy.net.vso.attrs.Time` is ignored! The reason for this is that
-its behaviour is not documented and that it is different depending on the
-server which is requested. The following query returns the data that was
-added in section 2.3.2, "Downloading":
+the simple attributes and the Time attribute work exactly as you expect.
+
+.. note::
+
+  The `near` parameter of :class:`sunpy.net.vso.attrs.Time` is ignored, because
+  it's behaviour is not documented and it is different depending on the
+  server which is requested.
+
+The following query returns the data that was added in section 2.3.2:
 
     >>> print(display_entries(
     ...     database.search(vso.attrs.Time('2012-08-05', '2012-08-05 00:00:05'), vso.attrs.Instrument('AIA')),
@@ -697,8 +676,8 @@ added in section 2.3.2, "Downloading":
     __init__ of the Wave attribute)
 
 When using the :class:`sunpy.net.vso.attrs.Wave` attribute, you have to
-specify a unit using ``astropy.units.Quantity``. If not an error is
-raised. This also implies that there is no default unit that is
+specify a unit using `astropy.units.Quantity`. If not an error is
+raised. This also means that there is no default unit that is
 used by the class. To know how you can specify a detail using astropy
 check `astropy.units`.
 
@@ -730,13 +709,9 @@ They can be imported from the submodule :mod:`sunpy.database.attrs` and are in
 particular:
 
 - Starred
-
 - Tag
-
 - Path
-
 - DownloadTime
-
 - FitsHeaderEntry
 
 The following query searches for all entries that have the tag 'spring' or
@@ -770,7 +745,7 @@ All entries that are saved in the database are also saved in a cache
 in-memory. The type of the cache is determined at the initialization of
 the database object and cannot be changed after that. The default type is
 :class:`caching.LRUCache` (least-recently used) and the other one which is
-supported is :class:`caching.LFUCache` (least-frequently used). Per
+supported is :class:`caching.LFUCache` (least-frequently used). By
 default the cache size is ``float('inf')``, i.e. infinite. To set the
 cache size after the database object has been initialized, use the method
 :meth:`Database.set_cache_size`. If the new size is smaller than the
