@@ -105,9 +105,15 @@ class Downloader(object):
         raise e
 
     def wait(self):
+        """
+        Waits for all files to download completely and then return.
+        """
         self.done_lock.acquire()
 
     def stop(self):
+        """
+        Stops all downloads and then return.
+        """
         self.done_lock.release()
 
     def init(self):
