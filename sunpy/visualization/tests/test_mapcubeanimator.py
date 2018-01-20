@@ -10,6 +10,7 @@ import sunpy.map
 from sunpy.visualization import mapcubeanimator
 from sunpy.data import test
 
+
 @pytest.fixture
 def map_animator():
     testpath = test.rootdir
