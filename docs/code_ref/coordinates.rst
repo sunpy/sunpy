@@ -128,8 +128,8 @@ coordinates is::
    >>> c = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective, obstime="2017-07-26")
    >>> c
    <SkyCoord (Helioprojective: obstime=2017-07-26 00:00:00, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2017-07-26 00:00:00): (lon, lat, radius) in (deg, deg, AU)
-       ( 0.,  5.31701821,  1.01567428)>): (Tx, Ty) in arcsec
-       ( 0.,  0.)>
+       (0., 5.31701821, 1.01567428)>): (Tx, Ty) in arcsec
+       (0., 0.)>
 
    >>> c.transform_to(frames.HeliographicCarrington)
    <SkyCoord (HeliographicCarrington: obstime=2017-07-26 00:00:00): (lon, lat, radius) in (deg, deg, km)

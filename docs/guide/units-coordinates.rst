@@ -167,7 +167,7 @@ frames defined in Astropy, for example `~astropy.coordimates.ICRS`.
 
   >>> c.transform_to('icrs')
   <SkyCoord (ICRS): (ra, dec, distance) in (deg, deg, km)
-    ( 49.85053118,  0.05723938,  1417577.02975451)>
+    (49.85053118, 0.05723938, 1417577.02975451)>
 
 
 
