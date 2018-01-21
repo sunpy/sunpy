@@ -158,8 +158,8 @@ other coordinate frame defined either in Astropy or SunPy, for example::
 
   >>> c.transform_to(frames.Helioprojective)
   <SkyCoord (Helioprojective: obstime=2017-08-01 00:00:00, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2017-08-01 00:00:00): (lon, lat, radius) in (deg, deg, AU)
-      ( 0.,  5.78339799,  1.01496923)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
-      ( 769.74997696, -498.75932128,   1.51668819e+08)>
+      (0., 5.78339799, 1.01496923)>): (Tx, Ty, distance) in (arcsec, arcsec, km)
+      (769.74997696, -498.75932128, 1.51668819e+08)>
 
 
 It is also possible to convert three dimensional positions to astrophysical
