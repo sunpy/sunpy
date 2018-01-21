@@ -109,9 +109,9 @@ Both the heliographic frames use latitude, longitude and radius which are access
    >>> c.lat
    <Latitude -30. deg>
    >>> c.lon
-   <Longitude180 70.0 deg>
+   <Longitude180 70. deg>
    >>> c.radius
-   <Distance 695508.0 km>
+   <Distance 695508. km>
 
 Transforming Between Coordinate Frames
 --------------------------------------
