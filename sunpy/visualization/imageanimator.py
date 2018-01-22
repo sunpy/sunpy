@@ -953,12 +953,9 @@ class ImageAnimatorWCS(ImageAnimator):
         if wcs.wcs.naxis is not data.ndim:
             raise ValueError("Dimensions of data and wcs not matching")
         self.wcs = wcs
-        list_slices_wcsaxes = [0 for i in range(self.wcs.naxis)]
-        list_slices_wcsaxes[image_axes[0]] = 'x'
-        list_slices_wcsaxes[image_axes[1]] = 'y'
-        self.slices_wcsaxes = list_slices_wcsaxes[::-1]
-                 
-        super(ImageAnimatorWCS, self).__init__(data, image_axes=image_axes, axis_ranges=axis_ranges, **kwargs)
+                        
+        super(ImageAnimatorWCS, self).__init__(data, image_axes=image_axes, 
+                                               axis_ranges=axis_ranges, **kwargs)
 
         
     def _set_image_axes_units(self, unit_x_axis=None, unit_y_axis=None):
@@ -972,6 +969,11 @@ class ImageAnimatorWCS(ImageAnimator):
         else:
             self.unit_y_axis = unit_y_axis
             
+        list_slices_wcsaxes = [0 for i in range(self.wcs.naxis)]
+        list_slices_wcsaxes[image_axes[0]] = 'x'
+        list_slices_wcsaxes[image_axes[1]] = 'y'
+        self.slices_wcsaxes = list_slices_wcsaxes[::-1]
+            
 
     def _get_main_axes(self):
         axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs,
@@ -984,7 +986,6 @@ class ImageAnimatorWCS(ImageAnimator):
         if self.unit_x_axis is not None:
             axes.coords[2].set_format_unit(self.unit_x_axis)
             axes.coords[2].set_ticks(exclude_overlapping=True)
- 
         if self.unit_y_axis is not None:
             axes.coords[1].set_format_unit(self.unit_y_axis)
             axes.coords[1].set_ticks(exclude_overlapping=True)
