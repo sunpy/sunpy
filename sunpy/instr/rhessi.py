@@ -234,8 +234,8 @@ def get_obssumm_file(time_range):
 
     Returns
     -------
-    out : tuple
-        Return a tuple (filename, headers) where filename is the local file
+    out : list of tuples
+        Return a list of tuples (filename, headers) where filename is the local file
         name under which the object can be found, and headers is
         whatever the info() method of the object returned by urlopen.
 
@@ -248,12 +248,10 @@ def get_obssumm_file(time_range):
         This API is currently limited to providing data from whole days only.
 
     """
-    _check_one_day(TimeRange(time_range))
 
     filenames = get_obssum_filename(time_range)
 
-    # As we only support providing data from one whole day, only get the first file
-    return urlretrieve(filenames[0])
+    return [urlretrieve(filenames[x]) for x in range(len(filenames))]
 
 
 def parse_obssumm_file(filename):
