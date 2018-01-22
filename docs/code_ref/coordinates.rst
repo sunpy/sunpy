@@ -133,7 +133,7 @@ coordinates is::
 
    >>> c.transform_to(frames.HeliographicCarrington)
    <SkyCoord (HeliographicCarrington: obstime=2017-07-26 00:00:00): (lon, lat, radius) in (deg, deg, km)
-      ( 283.99298362,  5.31701821,  695508.00000058)>
+      (283.99298362, 5.31701821, 695508.00000058)>
 
 It is also possible to transform to any coordinate system implemented in Astropy. This can be used to find the position of the solar limb in AltAz equatorial coordinates::
 
