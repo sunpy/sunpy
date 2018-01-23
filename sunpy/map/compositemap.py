@@ -328,7 +328,8 @@ class CompositeMap(object):
 
         index_check = hasattr(self._maps[index], 'rsun_obs')
         if not index_check or index is None:
-            raise ValueError("Specified index does not have all the required attributes to draw limb.")
+            raise ValueError("Specified index does not have all"
+                             " the required attributes to draw limb.")
 
         return self._maps[index].draw_limb(axes=axes, **kwargs)
 
@@ -365,7 +366,8 @@ class CompositeMap(object):
 
         index_check = all([hasattr(self._maps[index], k) for k in needed_attrs])
         if not index_check or index is None:
-            raise ValueError("Specified index does not have all the required attributes to draw grid.")
+            raise ValueError("Specified index does not have all"
+                             " the required attributes to draw grid.")
 
         ax = self._maps[index].draw_grid(axes=axes, grid_spacing=grid_spacing, **kwargs)
         return ax
