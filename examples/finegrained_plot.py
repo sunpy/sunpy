@@ -18,8 +18,8 @@ from sunpy.data.sample import AIA_171_IMAGE
 
 
 ###############################################################################
-# skyCoord module provides flexible celestial coordinate representation and a
-# draw_limb method overplots the boundary of the spacial objects.Date of the
+# SkyCoord module provides flexible celestial coordinate representation and a
+# draw_limb method overplots the boundary of the spacial objects. Date of the
 # image taken can also be displayed in the plot.
 
 aiamap = sunpy.map.Map(AIA_171_IMAGE)
@@ -60,9 +60,8 @@ ax.grid(False)
 tx, ty = ax.coords
 tx.set_major_formatter('s')
 ty.set_major_formatter('s')
-ax.set_title('AIA 171$\AA$ ' + title_obsdate)
-ax.set_title('AIA 171$\AA{}'.format(title_obsdate))
+ax.set_title('AIA 171 $\AA$ {}'.format(title_obsdate))
 ax.set_ylabel('Helioprojective Latitude [arcsec]')
 ax.set_xlabel('Helioprojective Longitude [arcsec]')
-plt.colorbar(fraction=0.035, pad=0.03, label='DN', ax=ax)
+plt.colorbar(fraction=0.045, pad=0.03, label='DN', ax=ax)
 plt.show()
