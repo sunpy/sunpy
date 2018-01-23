@@ -384,10 +384,14 @@ class Database(object):
         """
         self.session.commit()
 
-    def _download_and_collect_entries(self, query_result, **kwargs):
+    def _download_and_collect_entries(self, query_result, **kwargs, path=''):
 
         client = kwargs.pop('client', None)
-        path = kwargs.pop('path', None)
+        if path is None:
+            path = kwargs.pop('path', None)
+        else
+            path = path
+            
         progress = kwargs.pop('progress', False)
         methods = kwargs.pop('methods', ('URL-FILE_Rice', 'URL-FILE'))
         overwrite = kwargs.pop('overwrite', False)
@@ -454,7 +458,7 @@ class Database(object):
 
         return self.fetch(*query, **kwargs)
 
-    def fetch(self, *query, **kwargs):
+    def fetch(self, *query, **kwargs, path=''):
 
         """
         fetch(*query[, path, overwrite, client, progress, methods])

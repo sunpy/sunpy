@@ -82,6 +82,10 @@ def test_fido(query):
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
 
+    path = Path('../database/tests/')
+    results = Fido.search(...)
+    files = Fido.fetch(results, path=path)
+
 
 @pytest.mark.remote_data
 @given(time_attr(time=datetimes(timezones=[], max_year=datetime.datetime.utcnow().year, min_year=2010)))

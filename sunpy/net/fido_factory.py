@@ -327,7 +327,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
     # Python 3: this line should be like this
     # def fetch(self, *query_results, wait=True, progress=True, **kwargs):
-    def fetch(self, *query_results, **kwargs):
+    def fetch(self, *query_results, **kwargs, path=""):
         """
         Download the records represented by
         `~sunpy.net.fido_factory.UnifiedResponse` objects.
@@ -357,9 +357,14 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         wait = kwargs.pop("wait", True)
         progress = kwargs.pop("progress", True)
         reslist = []
-        for query_result in query_results:
-            for block in query_result.responses:
-                reslist.append(block.client.fetch(block, **kwargs))
+        if path is None:
+            for query_result in query_results:
+                for block in query_result.responses:
+                    reslist.append(block.client.fetch(block, **kwargs))
+        else:
+            for query_result in query_results:
+                for block in query_result.responses:
+                    reslist.append(block.client.fetch(block, **kwargs, path=path))
 
         results = DownloadResponse(reslist)
 
