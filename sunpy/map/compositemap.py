@@ -56,7 +56,7 @@ class CompositeMap(object):
         Set the plot settings for a map with the CompositeMap.
     set_zorder(index, zorder)
         Set the layering preference (z-order) for a map within the CompositeMap.
-    plot(figure=None, overlays=None, draw_limb=False, gamma=1.0,
+    plot(figure=None, overlays=None, draw_limb=False,
     draw_grid=False, colorbar=True, basic_plot=False,title="SunPy Plot",
     matplot_args)
         Plots the composite map object using matplotlib
