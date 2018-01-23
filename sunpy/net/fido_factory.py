@@ -291,7 +291,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         Query for data from Nobeyama Radioheliograph and RHESSI
 
         >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-        ...     (a.Instrument('norh') & a.Wavelength(17*u.GHz)) | a.Instrument('rhessi'))  # doctest: +REMOTE_DATA
+        ...     (a.Instrument('norh') & a.Wavelength(17*u.GHz)) | a.Instrument('rhessi'))  
+        ...     # doctest: +REMOTE_DATA
 
         Query for 304 Angstrom SDO AIA data with a cadence of 10 minutes
 
@@ -350,7 +351,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         Example
         --------
         >>> from sunpy.net.vso.attrs import Time, Instrument
-        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT'))  # doctest: +REMOTE_DATA
+        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT'))  
+        ...     # doctest: +REMOTE_DATA
         >>> downresp = Fido.fetch(unifresp)  # doctest: +SKIP
         >>> file_paths = downresp.wait()  # doctest: +SKIP
         """

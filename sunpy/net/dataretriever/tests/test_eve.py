@@ -17,19 +17,26 @@ from sunpy.net.tests.strategies import time_attr
 
 LCClient = eve.EVEClient()
 
+
 @pytest.mark.remote_data
 @pytest.mark.parametrize("timerange,url_start,url_end", [
     (TimeRange('2012/4/21', '2012/4/21'),
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt',
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt'
+     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/\n\
+     L0CS/SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt',
+     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/\n\
+     SpWx/2012/20120421_EVE_L0CS_DIODES_1m.txt'
      ),
     (TimeRange('2012/5/5', '2012/5/6'),
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120505_EVE_L0CS_DIODES_1m.txt',
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120506_EVE_L0CS_DIODES_1m.txt'
+     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/\n\
+     SpWx/2012/20120505_EVE_L0CS_DIODES_1m.txt',
+     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/\n\
+     SpWx/2012/20120506_EVE_L0CS_DIODES_1m.txt'
      ),
     (TimeRange('2012/7/7', '2012/7/14'),
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120707_EVE_L0CS_DIODES_1m.txt',
-     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/SpWx/2012/20120714_EVE_L0CS_DIODES_1m.txt'
+     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/\n\
+     SpWx/2012/20120707_EVE_L0CS_DIODES_1m.txt',
+     'http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/L0CS/\n\
+     SpWx/2012/20120714_EVE_L0CS_DIODES_1m.txt'
      )
 ])
 def test_get_url_for_time_range(timerange, url_start, url_end):
@@ -56,7 +63,7 @@ def test_query():
     assert isinstance(qr1, QueryResponse)
     assert len(qr1) == 2
     assert qr1.time_range().start == parse_time('2012/08/09')
-    assert qr1.time_range().end == parse_time('2012/08/11') # includes end.
+    assert qr1.time_range().end == parse_time('2012/08/11')  # includes end.
 
 
 @pytest.mark.remote_data
@@ -88,7 +95,8 @@ def test_fido(query):
 
 
 @pytest.mark.remote_data
-@given(time_attr(time=datetimes(timezones=[], max_year=datetime.datetime.utcnow().year, min_year=2010)))
+@given(time_attr(time=datetimes(timezones=[], 
+    max_year=datetime.datetime.utcnow().year, min_year=2010)))
 @settings(max_examples=2, timeout=240)
 def test_levels(time):
     """

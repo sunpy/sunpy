@@ -155,10 +155,12 @@ def split_database(source_database, destination_database, *query_string):
     >>> database1 = Database('sqlite:///:memory:')
     >>> database2 = Database('sqlite:///:memory:')
     >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
-    >>> qr = client.search(vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'))  # doctest: +REMOTE_DATA
+    >>> qr = client.search(vso.attrs.Time('2011-05-08', '2011-05-08 00:00:05'))  
+    ...            # doctest: +REMOTE_DATA
     >>> database1.add_from_vso_query_result(qr)  # doctest: +REMOTE_DATA
     >>> database1, database2 = split_database(database1, database2,
-    ...            vso.attrs.Instrument('AIA') | vso.attrs.Instrument('ERNE'))  # doctest: +REMOTE_DATA
+    ...            vso.attrs.Instrument('AIA') | vso.attrs.Instrument('ERNE'))  
+    ...            # doctest: +REMOTE_DATA
     """
 
     query_string = and_(*query_string)
@@ -389,7 +391,7 @@ class Database(object):
         client = kwargs.pop('client', None)
         if path is None:
             path = kwargs.pop('path', None)
-        else
+        else:
             path = path
             
         progress = kwargs.pop('progress', False)
@@ -612,7 +614,8 @@ class Database(object):
         The query in the following example searches for all non-starred entries
         with the tag 'foo' or 'bar' (or both).
 
-        >>> database.search(~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'))   # doctest: +SKIP
+        >>> database.search(~attrs.Starred(), attrs.Tag('foo') | attrs.Tag('bar'))
+            # doctest: +SKIP
 
         """
         if not query:
