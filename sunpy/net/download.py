@@ -106,7 +106,7 @@ class Downloader(object):
 
     def wait(self):
         """
-        Waits for all files to download completely and then return.
+        Waits for all files to download and then return.
         """
         self.done_lock.acquire()
 
