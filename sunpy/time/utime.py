@@ -10,7 +10,8 @@ class TimeUTime(TimeFromEpoch):
     This time format is included for historical reasons. Some
     people in solar physics prefer using this epoch.
 
-    Example:
+    Example
+    -------
         >>> from astropy.time import Time
         >>> t = Time('2000-01-01T13:53:23')
         >>> print(t.utime)
