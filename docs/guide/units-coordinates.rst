@@ -210,16 +210,16 @@ constructed from the header information. This can be accessed using
 
   >>> m = sunpy.map.Map(AIA_171_IMAGE)
   >>> m.coordinate_frame
-  <Helioprojective Frame (obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
-     ( 0.,  0.048591,   1.51846026e+11)>)>
+    <Helioprojective Frame (obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
+        (0., 0.048591, 1.51846026e+11)>)>
 
 This can be used when creating a `~astropy.coordinates.SkyCoord` object to set
 the coordinate system to that image::
 
   >>> SkyCoord(100 * u.arcsec, 10*u.arcsec, frame=m.coordinate_frame)
   <SkyCoord (Helioprojective: obstime=2011-06-07 06:33:02.770000, rsun=696000000.0 m, observer=<HeliographicStonyhurst Coordinate (obstime=2011-06-07 06:33:02.770000): (lon, lat, radius) in (deg, deg, m)
-      ( 0.,  0.048591,   1.51846026e+11)>): (Tx, Ty) in arcsec
-      ( 100.,  10.)>
+      (0., 0.048591, 1.51846026e+11)>): (Tx, Ty) in arcsec
+      (100., 10.)>
 
 This `~astropy.coordinates.SkyCoord` object could then be used to plot a point
 on top of the map::
