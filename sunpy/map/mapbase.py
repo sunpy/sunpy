@@ -1614,8 +1614,6 @@ Reference Coord:\t {refcoord}
             Whether solar meridians and parallels are plotted.
             If `~astropy.units.Quantity` then sets degree difference between
             parallels and meridians.
-        gamma : float
-            Gamma value to use for the color map.
         colorbar : bool
             Whether to display a colorbar next to the plot.
         basic_plot : bool
