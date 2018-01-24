@@ -75,11 +75,11 @@ or days or seconds: ::
     >>> time_range.center
     datetime.datetime(2010, 3, 4, 0, 13, 20)
     >>> time_range.minutes
-    <Quantity 6.666666666666667 min>
+    <Quantity 6.66666667 min>
     >>> time_range.days
-    <Quantity 0.004629629629629629 d>
+    <Quantity 0.00462963 d>
     >>> time_range.seconds
-    <Quantity 400.0 s>
+    <Quantity 400. s>
 
 It also makes it easy to create new time ranges. The functions next() and previous()
 do an inplace update to the object by either adding or subtracting the same time interval
