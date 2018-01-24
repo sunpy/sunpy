@@ -4,7 +4,8 @@ from astropy.time.formats import erfa, TimeFromEpoch
 
 
 class TimeUTime(TimeFromEpoch):
-    """Seconds from 1979-01-01 00:00:00 UTC. Same as Unix time
+    """
+    Seconds from 1979-01-01 00:00:00 UTC. Same as Unix time
     but this starts 9 years later.
 
     This time format is included for historical reasons. Some
