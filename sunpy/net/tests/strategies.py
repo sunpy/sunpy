@@ -3,7 +3,7 @@ Provide a set of Hypothesis Strategies for various Fido related tests.
 """
 import hypothesis.strategies as st
 from hypothesis import assume
-from hypothesis.extra.datetime import datetimes
+from hypothesis.strategies import datetimes
 
 import datetime
 from sunpy.net import attrs as a
@@ -48,9 +48,10 @@ def online_instruments():
 
 
 @st.composite
-def time_attr(draw, time=datetimes(timezones=[],
-                                   max_year=datetime.datetime.utcnow().year,
-                                   min_year=1900),
+def time_attr(draw, time=datetimes(
+    max_value=datetime.datetime(datetime.datetime.utcnow().year, 1, 1, 0, 0),
+    min_value=datetime.datetime(1900, 1, 1, 0, 0)
+    ),
               delta=timedelta()):
     """
     Create an a.Time where it's always positive and doesn't have a massive time
@@ -65,9 +66,9 @@ def time_attr(draw, time=datetimes(timezones=[],
 
 
 @st.composite
-def goes_time(draw, time=datetimes(timezones=[],
-                                   max_year=datetime.datetime.utcnow().year,
-                                   min_year=1981),
+def goes_time(draw, time=datetimes(
+    max_value=datetime.datetime(datetime.datetime.utcnow().year, 1, 1, 0, 0),
+    min_value=datetime.datetime(1981, 1, 1, 0, 0)),
               delta=timedelta()):
     """
     Create an a.Time where it's always positive and doesn't have a massive time
@@ -85,7 +86,9 @@ def goes_time(draw, time=datetimes(timezones=[],
 
 
 def range_time(min_date, max_date=datetime.datetime.utcnow()):
-    time = datetimes(timezones=[], max_year=max_date.year,
-                     min_year=1960)
+    time = datetimes(
+        min_value=datetime.datetime(1960, 1, 1, 0, 0),
+        max_value=datetime.datetime(datetime.MAXYEAR, 1, 1, 0, 0),
+    )
     time = time.filter(lambda x: min_date < x < max_date)
     return time_attr(time=time)
