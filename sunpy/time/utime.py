@@ -12,10 +12,10 @@ class TimeUTime(TimeFromEpoch):
 
     Example
     -------
-        >>> from astropy.time import Time
-        >>> t = Time('2000-01-01T13:53:23')
-        >>> print(t.utime)
-        662738003.0
+    >>> from astropy.time import Time
+    >>> t = Time('2000-01-01T13:53:23')
+    >>> print(t.utime)
+    662738003.0
     """
     name = 'utime'
     unit = 1.0 / erfa.DAYSEC  # in days (1 day == 86400 seconds)
