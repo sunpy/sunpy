@@ -291,7 +291,8 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         Query for data from Nobeyama Radioheliograph and RHESSI
 
         >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'),
-        ...     (a.Instrument('norh') & a.Wavelength(17*u.GHz)) | a.Instrument('rhessi'))  # doctest: +REMOTE_DATA
+        ...     (a.Instrument('norh') & a.Wavelength(17*u.GHz)) | a.Instrument('rhessi'))  
+        ...     # doctest: +REMOTE_DATA
 
         Query for 304 Angstrom SDO AIA data with a cadence of 10 minutes
 
@@ -327,7 +328,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
     # Python 3: this line should be like this
     # def fetch(self, *query_results, wait=True, progress=True, **kwargs):
-    def fetch(self, *query_results, **kwargs):
+    def fetch(self, *query_results, **kwargs, path=""):
         """
         Download the records represented by
         `~sunpy.net.fido_factory.UnifiedResponse` objects.
@@ -350,16 +351,22 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         Example
         --------
         >>> from sunpy.net.vso.attrs import Time, Instrument
-        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT'))  # doctest: +REMOTE_DATA
+        >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT'))  
+        ...     # doctest: +REMOTE_DATA
         >>> downresp = Fido.fetch(unifresp)  # doctest: +SKIP
         >>> file_paths = downresp.wait()  # doctest: +SKIP
         """
         wait = kwargs.pop("wait", True)
         progress = kwargs.pop("progress", True)
         reslist = []
-        for query_result in query_results:
-            for block in query_result.responses:
-                reslist.append(block.client.fetch(block, **kwargs))
+        if path is None:
+            for query_result in query_results:
+                for block in query_result.responses:
+                    reslist.append(block.client.fetch(block, **kwargs))
+        else:
+            for query_result in query_results:
+                for block in query_result.responses:
+                    reslist.append(block.client.fetch(block, **kwargs, path=path))
 
         results = DownloadResponse(reslist)
 
