@@ -5,7 +5,7 @@ channels:
 dependencies:
 - ca-certificates=2016.9.26=0
 - glymur=0.8.8=py27_0
-- hypothesis=3.6.1=py27_0
+- hypothesis=3.42.1=py27_1
 - openjpeg=2.1.2=2
 - astropy=2.0=np111py27_0
 - beautifulsoup4=4.5.3=py27_0
