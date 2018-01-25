@@ -5,6 +5,9 @@ from asdf.util import filepath_to_url
 
 from .types import _sunpy_tags
 
+from .tags.map import *
+from .tags.coordinates import *
+
 __all__ = ['SunpyExtension']
 
 
