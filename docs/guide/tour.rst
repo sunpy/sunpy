@@ -305,7 +305,7 @@ Obtaining Data
 --------------
 
 SunPy supports searching for and fetching data from a variety of sources,
-including the `VSO <http://virtualsolar.org/>`__ and the
+including the `VSO <https://virtualsolar.org/>`__ and the
 `JSOC <http://jsoc.stanford.edu/>`__. The majority of SunPy's clients can be
 queried using the `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>` interface. An example of searching the VSO using this
 is below::

@@ -153,7 +153,7 @@ Other available options are: `[image]`, `[jpeg2000]` and `[tests]`
     installation.  In this case you may consider using the ``--user`` option
     to install the package into your home directory.  You can read more about
     how to do this in the `pip documentation
-    <https://pip.pypa.io/en/1.2.1/other-tools/#using-pip-with-the-user-scheme>`_.
+    <https://pip.pypa.io/en/stable/user_guide/#user-installs>`_.
 
     Alternatively, if you intend to do development on other software that uses
     SunPy, such as an affiliated package, consider installing SunPy into a
@@ -220,7 +220,7 @@ Building documentation
     Building the documentation is in general not necessary unless you
     are writing new documentation or do not have internet access, because
     the latest (and archive) versions of SunPy's documentation are
-    available at `docs.sunpy.org <http://docs.sunpy.org>`_ .
+    available at `docs.sunpy.org <http://docs.sunpy.org/en/stable/>`_ .
 
 Building the documentation requires the SunPy source code and some additional
 packages:
@@ -233,7 +233,7 @@ packages:
 
     Sphinx also requires a reasonably modern LaTeX installation to render
     equations.  Per the `Sphinx documentation
-    <http://sphinx-doc.org/builders.html?highlight=latex#sphinx.builders.latex.LaTeXBuilder>`_,
+    <http://www.sphinx-doc.org/en/stable/builders.html?highlight=latex.html#sphinx.builders.latex.LaTeXBuilder>`_,
     for the TexLive distribution the following packages are required to be
     installed:
 

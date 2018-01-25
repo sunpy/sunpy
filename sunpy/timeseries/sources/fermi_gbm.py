@@ -51,7 +51,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
     References
     ----------
     * `Fermi Mission Homepage <https://fermi.gsfc.nasa.gov>`_
-    * `Fermi GBM Homepage <https://fermi.gsfc.nasa.gov/science/instruments/gbm.html/>`_
+    * `Fermi GBM Homepage <https://fermi.gsfc.nasa.gov/science/instruments/gbm.html>`_
     * `Fermi Science Support Center <https://fermi.gsfc.nasa.gov/ssc/>`_
     * `Fermi Data Product <https://fermi.gsfc.nasa.gov/ssc/data/access/>`_
     * `GBM Instrument Papers <https://gammaray.msfc.nasa.gov/gbm/publications/>`_

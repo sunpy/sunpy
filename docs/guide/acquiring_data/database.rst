@@ -16,7 +16,7 @@ instead of downloading it again from a remote server.
 
 The package :mod:`sunpy.database` was developed as part of
 `Google Summer of Code (GSOC) 2013
-<http://www.google-melange.com/gsoc/homepage/google/gsoc2013>`_.
+<https://www.google-melange.com/archive/gsoc/2013>`_.
 
 1. Connecting and initializing the database
 -------------------------------------------

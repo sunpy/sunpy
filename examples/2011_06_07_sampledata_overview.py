@@ -22,8 +22,8 @@ import sunpy.data.sample as sample_data
 # fails to escape and falls back to the solar surface.
 # This example shows off our coordinated sample data set.
 # This event got a little bit of press coverage (e.g. `National Geographics
-# <http://news.nationalgeographic.com/news/2011/06/110608-solar-flare-sun-science-space/>`_,
-# `Discover Magazine <http://blogs.discovermagazine.com/badastronomy/2011/06/07/the-sun-lets-loose-a-huge-explosion/#.WlVnNnWQVxB>`_)
+# <https://news.nationalgeographic.com/news/2011/06/110608-solar-flare-sun-science-space/>`_,
+# `Discover Magazine <http://blogs.discovermagazine.com/badastronomy/2011/06/07/the-sun-lets-loose-a-huge-explosion/>`_)
 # and the literature contains a number of a papers about it (e.g. `Li et al.
 # <http://iopscience.iop.org/article/10.1088/0004-637X/746/1/13/meta>`_,
 # `Inglis et al. <http://iopscience.iop.org/article/10.1088/0004-637X/777/1/30/meta>`_)
