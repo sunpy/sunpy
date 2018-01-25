@@ -91,7 +91,7 @@ the beginning of the PR, i.e. `[0.6] My bug fix`. This makes it easier to filter
 
 For more information on contributing to SunPy check out the following:
 
-* Our [Developers Guide](//docs.sunpy.org/en/latest/dev_guide/index.html).
+* Our [Developers Guide](http://docs.sunpy.org/en/latest/dev_guide/index.html).
 * The [Developers Mailing List](https://groups.google.com/forum/#!forum/sunpy-dev)
 * The [Pull Request Review](https://github.com/sunpy/sunpy/wiki/Pull-Request-Review-Procedure) wiki page.
 * Our matrix channel [#sunpy-general:matrix.org](https://riot.im/app/#/room/#sunpy-general:matrix.org)
