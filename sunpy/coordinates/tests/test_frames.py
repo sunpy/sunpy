@@ -17,8 +17,6 @@ from ..frames import (Helioprojective,
                       HeliographicStonyhurst,
                       Heliocentric,
                       HeliographicCarrington)
-from ..representation import (UnitSphericalWrap180Representation,
-                              SphericalWrap180Representation)
 
 RSUN_METERS = sun.constants.get('radius').si.to(u.m)
 DSUN_METERS = sun.constants.get('mean distance').si.to(u.m)
@@ -39,11 +37,10 @@ These are common 2D params, kwargs are frame specific
 two_D_parameters = [
     ([0 * u.deg, 0 * u.arcsec], None),
     ([0 * u.deg, 0 * u.arcsec], {'obstime': '2011/01/01T00:00:00'}),
-    ([0 * u.deg, 0 * u.arcsec], {'representation': 'unitsphericalwrap180'}),
     ([0 * u.deg, 0 * u.arcsec], {'representation': 'unitspherical'}),
-    ([UnitSphericalWrap180Representation(0 * u.deg, 0 * u.arcsec)], None),
+    ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)], None),
     ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)], None), (
-        [UnitSphericalWrap180Representation(0 * u.deg, 0 * u.arcsec)],
+        [UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)],
         {'obstime': '2011/01/01T00:00:00'})
 ]
 """
@@ -52,13 +49,11 @@ These are common 3D params, kwargs are frame specific
 three_D_parameters = [
     ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], None),
     ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], {'obstime': '2011/01/01T00:00:00'}),
-    ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], {'representation': 'sphericalwrap180'
-                                           }),
     ([0 * u.deg, 0 * u.arcsec, 1 * u.Mm], {'representation': 'spherical'}),
-    ([SphericalWrap180Representation(0 * u.deg, 0 * u.arcsec, 1 * u.Mm)],
+    ([SphericalRepresentation(0 * u.deg, 0 * u.arcsec, 1 * u.Mm)],
      None),
     ([SphericalRepresentation(0 * u.deg, 0 * u.arcsec, 1 * u.Mm)], None), (
-        [SphericalWrap180Representation(0 * u.deg, 0 * u.arcsec, 1 * u.Mm)],
+        [SphericalRepresentation(0 * u.deg, 0 * u.arcsec, 1 * u.Mm)],
         {'obstime': '2011/01/01T00:00:00'})
 ]
 
@@ -82,7 +77,7 @@ def test_create_hpc_2d(args, kwargs):
         assert isinstance(hpc1._data, UnitSphericalRepresentation)
     else:
         # Check that we have a 2D wrap180 representation
-        assert isinstance(hpc1._data, UnitSphericalWrap180Representation)
+        assert isinstance(hpc1._data, UnitSphericalRepresentation)
 
     # Check the attrs are correct
     assert hpc1.Tx == 0 * u.arcsec
@@ -111,7 +106,7 @@ def test_create_3d(args, kwargs):
         assert isinstance(hpc1._data, SphericalRepresentation)
     else:
         # Check that we have a 2D wrap180 representation
-        assert isinstance(hpc1._data, SphericalWrap180Representation)
+        assert isinstance(hpc1._data, SphericalRepresentation)
 
     # Check the attrs are correct
     assert hpc1.Tx == 0 * u.arcsec
@@ -121,7 +116,7 @@ def test_create_3d(args, kwargs):
     # Check the attrs are in the correct default units
     assert hpc1.Tx.unit is u.arcsec
     assert hpc1.Ty.unit is u.arcsec
-    assert hpc1.distance.unit is u.km
+    assert hpc1.distance.unit is u.Mm
 
 
 def test_cart_init():
@@ -179,7 +174,7 @@ def test_hpc_distance():
 
     assert isinstance(hpc1, Helioprojective)
     # Check that we have a 2D wrap180 representation
-    assert isinstance(hpc1._data, UnitSphericalWrap180Representation)
+    assert isinstance(hpc1._data, UnitSphericalRepresentation)
 
     # Check the attrs are correct
     assert hpc1.Tx == 0 * u.arcsec
@@ -187,7 +182,7 @@ def test_hpc_distance():
 
     hpc2 = hpc1.calculate_distance()
 
-    assert isinstance(hpc2._data, SphericalWrap180Representation)
+    assert isinstance(hpc2._data, SphericalRepresentation)
 
     # Check the attrs are correct
     assert hpc2.Tx == 0 * u.arcsec
@@ -201,7 +196,7 @@ def test_hpc_distance_off_limb():
 
     assert isinstance(hpc1, Helioprojective)
     # Check that we have a 2D wrap180 representation
-    assert isinstance(hpc1._data, UnitSphericalWrap180Representation)
+    assert isinstance(hpc1._data, UnitSphericalRepresentation)
 
     # Check the attrs are correct
     assert hpc1.Tx == 1500 * u.arcsec
@@ -209,7 +204,7 @@ def test_hpc_distance_off_limb():
 
     hpc2 = hpc1.calculate_distance()
 
-    assert isinstance(hpc2._data, SphericalWrap180Representation)
+    assert isinstance(hpc2._data, SphericalRepresentation)
 
     # Check the attrs are correct
     assert hpc2.Tx == 1500 * u.arcsec
@@ -222,7 +217,7 @@ def test_hpc_distance_3D():
 
     assert isinstance(hpc1, Helioprojective)
     # Check that we have a 2D wrap180 representation
-    assert isinstance(hpc1._data, SphericalWrap180Representation)
+    assert isinstance(hpc1._data, SphericalRepresentation)
 
     # Check the attrs are correct
     assert hpc1.Tx == 1500 * u.arcsec
@@ -252,7 +247,7 @@ def test_create_hgs_2d(frame, args, kwargs):
         assert isinstance(hgs1._data, SphericalRepresentation)
     elif isinstance(hgs1, HeliographicStonyhurst):
         # Check that we have a 2D wrap180 representation
-        assert isinstance(hgs1._data, SphericalWrap180Representation)
+        assert isinstance(hgs1._data, SphericalRepresentation)
 
     # Check the attrs are correct
     assert hgs1.lon == 0 * u.deg
@@ -275,9 +270,7 @@ def test_create_hgs_force_2d(frame, args, kwargs):
 
     rep_kwarg = kwargs.get('representation', None) if kwargs else None
 
-    if rep_kwarg == 'unitsphericalwrap180':
-        assert isinstance(hgs1._data, UnitSphericalWrap180Representation)
-    elif rep_kwarg == 'unitspherical':
+    if rep_kwarg == 'unitspherical':
         assert isinstance(hgs1._data, UnitSphericalRepresentation)
 
     # Check the attrs are correct
@@ -314,7 +307,7 @@ def test_create_hgs_3d(frame, args, kwargs):
             assert isinstance(hgs1._data, SphericalRepresentation)
         elif isinstance(hgs1, HeliographicStonyhurst):
             # Check that we have a 2D wrap180 representation
-            assert isinstance(hgs1._data, SphericalWrap180Representation)
+            assert isinstance(hgs1._data, SphericalRepresentation)
 
     # Check the attrs are correct
     assert hgs1.lon == 0 * u.deg
