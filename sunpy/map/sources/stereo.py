@@ -76,7 +76,7 @@ class CORMap(GenericMap):
     ----------
     * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`_
     * `STEREO SECCHI <https://secchi.nrl.navy.mil>`_
-    * `COR1 Instrument Page <http://cor1.gsfc.nasa.gov>`_
+    * `COR1 Instrument Page <https://cor1.gsfc.nasa.gov>`_
     * `COR2 Instrument Page <https://secchi.nrl.navy.mil/index.php?p=cor2>`_
     * `COR1 User Guide <https://cor1.gsfc.nasa.gov/guide/>`_
     """

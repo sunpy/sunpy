@@ -101,6 +101,10 @@ if 'templates_path' not in locals():  # in case parent conf.py defines it
     templates_path = []
 templates_path.append('_templates')
 
+# For the linkcheck
+linkcheck_ignore = [r'https://dx.doi.org/\d+',r'https://riot.im/app/#/room/#sunpy-general:matrix.org',
+                    r'https://developer.apple.com/downloads/index.action']
+
 # This is added to the end of RST files - a good place to put substitutions to
 # be used globally.
 rst_epilog += """

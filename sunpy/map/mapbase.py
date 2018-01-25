@@ -935,8 +935,7 @@ Reference Coord:\t {refcoord}
 
         References
         ----------
-        * `Rebinning <http://scipy-cookbook.readthedocs.io//>`_ (Original
-          source, 2011/11/19)
+        * `Rebinning <https://scipy-cookbook.readthedocs.io/items/Rebinning.html>`_
         """
 
         # Note: because the underlying ndarray is transposed in sense when

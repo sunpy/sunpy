@@ -50,7 +50,7 @@ def resample(orig, dimensions, method='linear', center=False, minusone=False):
 
     References
     ----------
-    | https://www.scipy.org/Cookbook/Rebinning (Original source, 2011/11/19)
+    | https://scipy-cookbook.readthedocs.io/items/Rebinning.html
     """
 
     # Verify that number dimensions requested matches original shape

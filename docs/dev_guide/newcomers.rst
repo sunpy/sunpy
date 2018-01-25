@@ -29,7 +29,7 @@ This documentation is not only for the code itself but contains setup instructio
 However, documentation is never complete; there are always areas that could be expanded upon or could do with some proof reading to check whether what is written is easy to follow and understandable.
 If parts are confusing or difficult to follow, we would love suggestions or improvements!
 
-.. _online here: http://docs.sunpy.org/en/latest/dev.html
+.. _online here: http://docs.sunpy.org/en/latest/dev_guide/index.html
 
 Code
 ####

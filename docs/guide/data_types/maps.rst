@@ -123,7 +123,7 @@ the 0th element in the array ::
 One important fact to remember is that the first
 index is for the y direction while the second index is for the x direction.
 For more information about indexing please refer to the
-`Numpy documentation <https://www.scipy.org/Tentative_NumPy_Tutorial#head-864862d3f2bb4c32f04260fac61eb4ef34788c4c>`_.
+`Numpy documentation <https://docs.scipy.org/doc/numpy-dev/user/quickstart.html#indexing-slicing-and-iterating>`_.
 
 Data attributes like `~numpy.ndarray.dtype` and
 `~sunpy.map.GenericMap.dimensions` are accessible through

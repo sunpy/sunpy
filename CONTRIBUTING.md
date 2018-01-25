@@ -57,7 +57,7 @@ documentation.
 1. Create a [pull request](https://help.github.com/articles/creating-a-pull-request-from-a-fork/).
 
 If any of the above steps are unfamiliar to you check out our
-[Developers Guide](http://docs.sunpy.org/en/latest/dev.html). (Suggesting
+[Developers Guide](http://docs.sunpy.org/en/latest/dev_guide/index.html). (Suggesting
 improvements to the developers guide is an excellent way to contribute!)
 
 
@@ -91,7 +91,7 @@ the beginning of the PR, i.e. `[0.6] My bug fix`. This makes it easier to filter
 
 For more information on contributing to SunPy check out the following:
 
-* Our [Developers Guide](http://docs.sunpy.org/en/latest/dev.html).
+* Our [Developers Guide](//docs.sunpy.org/en/latest/dev_guide/index.html).
 * The [Developers Mailing List](https://groups.google.com/forum/#!forum/sunpy-dev)
 * The [Pull Request Review](https://github.com/sunpy/sunpy/wiki/Pull-Request-Review-Procedure) wiki page.
 * Our matrix channel [#sunpy-general:matrix.org](https://riot.im/app/#/room/#sunpy-general:matrix.org)
