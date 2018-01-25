@@ -41,7 +41,7 @@ References
 ----------
 
 .. [Ref1] Hanser, F.A., & Sellers, F.B. 1996, Proc. SPIE, 2812, 344
-.. [Ref2] Dere, K.P., et al. 2009 A&A, 498, 915 DOI: `10.1051/0004-6361/200911712 <https://www.aanda.org/articles/aa/abs/2009/18/aa11712-09/aa11712-09.html>`__
+.. [Ref2] Dere, K.P., et al. 2009 A&A, 498, 915 DOI: `10.1051/0004-6361/200911712 <https://dx.doi.org/10.1051/0004-6361/200911712>`__
 
 """
 
