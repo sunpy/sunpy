@@ -956,24 +956,7 @@ class ImageAnimatorWCS(ImageAnimator):
                         
         super(ImageAnimatorWCS, self).__init__(data, image_axes=image_axes, 
                                                axis_ranges=axis_ranges, **kwargs)
-
         
-    def _set_image_axes_units(self, unit_x_axis=None, unit_y_axis=None):
-        if(unit_x_axis is not None):
-            self.unit_x_axis = u.Unit(unit_x_axis)
-        else:
-            self.unit_x_axis = unit_x_axis
-         
-        if(unit_y_axis is not None):
-            self.unit_y_axis = u.Unit(unit_y_axis)
-        else:
-            self.unit_y_axis = unit_y_axis
-            
-        list_slices_wcsaxes = [0 for i in range(self.wcs.naxis)]
-        list_slices_wcsaxes[image_axes[0]] = 'x'
-        list_slices_wcsaxes[image_axes[1]] = 'y'
-        self.slices_wcsaxes = list_slices_wcsaxes[::-1]
-            
 
     def _get_main_axes(self):
         axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs,
@@ -989,6 +972,23 @@ class ImageAnimatorWCS(ImageAnimator):
         if self.unit_y_axis is not None:
             axes.coords[1].set_format_unit(self.unit_y_axis)
             axes.coords[1].set_ticks(exclude_overlapping=True)
+            
+    def set_image_axes_units(self, unit_x_axis=None, unit_y_axis=None):
+        if(unit_x_axis is not None):
+            self.unit_x_axis = u.Unit(unit_x_axis)
+        else:
+            self.unit_x_axis = unit_x_axis
+         
+        if(unit_y_axis is not None):
+            self.unit_y_axis = u.Unit(unit_y_axis)
+        else:
+            self.unit_y_axis = unit_y_axis    
+                   
+        list_slices_wcsaxes = [0 for i in range(self.wcs.naxis)]
+        list_slices_wcsaxes[image_axes[0]] = 'x'
+        list_slices_wcsaxes[image_axes[1]] = 'y'
+        self.slices_wcsaxes = list_slices_wcsaxes[::-1]
+        axes = self._get_main_axes()
 
     def plot_start_image(self, ax):
         """Sets up plot of initial image."""
