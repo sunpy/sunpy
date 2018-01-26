@@ -193,7 +193,10 @@ class Heliocentric(BaseCoordinateFrame):
     A coordinate or frame in the Heliocentric system.
 
     - The origin is the centre of the Sun
-    - The x-axis points from the centre of the Sun to the observer.
+    - The z-axis points from the centre of the Sun to the observer.
+    - The y-axis is perpendicular to the z-axis, and lies in the plane that
+      contains the z-axis and the solar rotation axis, pointing towards the
+      Sun's north pole.
 
     This frame may either be specified in Cartesian or cylindrical
     representation. Cylindrical representation replaces (x, y) with (rho, psi)
