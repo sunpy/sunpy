@@ -127,46 +127,6 @@ def test_cart_init():
     assert isinstance(hpc1._data, CartesianRepresentation)
 
 
-# # This is not actually valid, it should be re-purposed to be Heliocentric
-# # cylindrical Assuming that that is a vaild representation.
-# cylindrical_parameters = [
-#     ([100 * u.km, 25 * u.deg, 1 * u.Mm], {'representation': 'cylindrical'}), (
-#         [100 * u.km, 25 * u.deg, 1 * u.Mm], {'obstime': '2011/01/01T00:00:00',
-#                                              'representation': 'cylindrical'}),
-#     ([100 * u.km, 25 * u.deg], {'distance': 1 * u.Mm,
-#                                 'representation': 'cylindrical'}),
-#     (None, {'rho': 100 * u.km,
-#             'psi': 25 * u.deg,
-#             'distance': 1 * u.Mm,
-#             'representation': 'cylindrical'}),
-#     ([CylindricalRepresentation(100 * u.km, 25 * u.deg, 1 * u.Mm)],
-#      {'representation': 'cylindrical'}), (
-#          [CylindricalRepresentation(100 * u.km, 25 * u.deg, 1 * u.Mm)],
-#          {'obstime': '2011/01/01T00:00:00',
-#           'representation': 'cylindrical'})
-# ]
-#
-#
-# @pytest.mark.parametrize('args, kwargs', cylindrical_parameters)
-# def test_create_cylindrical(args, kwargs):
-#     hpc1 = init_frame(Helioprojective, args, kwargs)
-#
-#     # Check we have the right class!
-#     assert isinstance(hpc1, Helioprojective)
-#     # Check that we have a 2D wrap180 representation
-#     assert isinstance(hpc1._data, CylindricalRepresentation)
-#
-#     # Check the attrs are correct
-#     assert hpc1.rho == 100 * u.km
-#     assert hpc1.psi == 25 * u.deg
-#     assert hpc1.distance == 1 * u.Mm
-#
-#     # Check the attrs are in the correct default units
-#     assert hpc1.rho.unit is u.km
-#     assert hpc1.psi.unit is u.arcsec
-#     assert hpc1.distance.unit is u.km
-
-
 # Test HPC Calculate Distance
 def test_hpc_distance():
     hpc1 = Helioprojective(0 * u.deg, 0 * u.arcsec,
@@ -226,6 +186,20 @@ def test_hpc_distance_3D():
     hpc2 = hpc1.calculate_distance()
 
     assert hpc2 is hpc1
+
+
+def test_wrapping_on():
+    hpc1 = Helioprojective(359.9*u.deg, 10*u.deg)
+    assert_quantity_allclose(hpc1.Tx, -0.1*u.deg)
+    assert_quantity_allclose(hpc1.Tx.wrap_angle, 180*u.deg)
+
+
+def test_wrapping_off():
+    hpc1 = Helioprojective(359.9*u.deg, 10*u.deg, wrap_longitude=False)
+    assert_quantity_allclose(hpc1.Tx, 359.9*u.deg)
+    assert_quantity_allclose(hpc1.Tx.wrap_angle, 360*u.deg)
+
+
 
 # ==============================================================================
 # ## Heliographic Tests
@@ -327,6 +301,23 @@ def test_hgs_cart_init():
 
     assert isinstance(hpc1, HeliographicStonyhurst)
     assert isinstance(hpc1._data, CartesianRepresentation)
+
+
+def test_hgs_wrapping_on():
+    hpc1 = HeliographicStonyhurst(350*u.deg, 10*u.deg)
+    assert_quantity_allclose(hpc1.lon, -10*u.deg)
+    assert_quantity_allclose(hpc1.lon.wrap_angle, 180*u.deg)
+
+
+def test_hgs_wrapping_off():
+    hpc1 = HeliographicStonyhurst(350*u.deg, 10*u.deg, wrap_longitude=False)
+    assert_quantity_allclose(hpc1.lon, 350*u.deg)
+    assert_quantity_allclose(hpc1.lon.wrap_angle, 360*u.deg)
+
+def test_hgc_wrapping_360():
+    hpc1 = HeliographicCarrington(350*u.deg, 10*u.deg)
+    assert_quantity_allclose(hpc1.lon, 350*u.deg)
+    assert_quantity_allclose(hpc1.lon.wrap_angle, 360*u.deg)
 
 
 # ==============================================================================
