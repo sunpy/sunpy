@@ -83,7 +83,7 @@ referred to as 'solar-x' and 'solar-y'.::
 
   >>> c = SkyCoord(-500*u.arcsec, 100*u.arcsec, frame=frames.Helioprojective)
   >>> c.Tx
-  <Longitude180 -500. arcsec>
+  <Longitude -500. arcsec>
   >>> c.Ty
   <Latitude 100. arcsec>
 
@@ -109,7 +109,7 @@ Both the heliographic frames use latitude, longitude and radius which are access
    >>> c.lat
    <Latitude -30. deg>
    >>> c.lon
-   <Longitude180 70. deg>
+   <Longitude 70. deg>
    >>> c.radius
    <Distance 695508. km>
 
@@ -202,7 +202,7 @@ possible to transform SunPy frames to Astropy frames.
 
 Positions within these ``Frames`` are stored as a ``Representation`` of a
 coordinate, a representation being a description of a point in a Cartesian,
-spherical or cylindrical system (`sunpy.coordinates.representation`). A frame
+spherical or cylindrical system (`astropy.coordinates.representation`). A frame
 that contains a representation of one or many points is said to have been
 'realized'.
 
@@ -284,9 +284,6 @@ which is equivalent to::
     :headings: ^#
 
 .. automodapi:: sunpy.coordinates.ephemeris
-    :headings: ^#
-
-.. automodapi:: sunpy.coordinates.representation
     :headings: ^#
 
 .. automodapi:: sunpy.coordinates.offset_frame

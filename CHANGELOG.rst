@@ -4,6 +4,12 @@
 New Features
 ------------
 
+API Changes
+-----------
+
+- ``sunpy.coordinates.representation`` has been removed. Longitude wrapping is
+  now done in the constructor of the frames. [#2431]
+
 Bug Fixes
 ---------
 
@@ -27,6 +33,7 @@ Bug Fixes
 - Updates MapCube to access the correct properties of the namedtuple SpatialPair [#2297]
 - Fixed TimeSeries test failures due to missing test files [#2273]
 - Refactored a GOES test to avoid a Py3.6 issue [#2276]
+
 
 0.8.0
 ======
