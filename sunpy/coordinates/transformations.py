@@ -28,7 +28,6 @@ from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_product
 from astropy.coordinates import HCRS, get_body_barycentric, BaseCoordinateFrame, ConvertError
 from astropy.tests.helper import quantity_allclose
 
-from .representation import SphericalWrap180Representation
 from .frames import (HeliographicStonyhurst, HeliographicCarrington,
                      Heliocentric, Helioprojective)
 
@@ -81,7 +80,7 @@ def hgc_to_hgs(hgccoord, hgsframe):
         obstime = hgsframe.obstime
     s_lon = hgccoord.spherical.lon - _carrington_offset(obstime).to(
         u.deg)
-    representation = SphericalWrap180Representation(s_lon, hgccoord.lat,
+    representation = SphericalRepresentation(s_lon, hgccoord.lat,
                                                     hgccoord.radius)
     return hgsframe.realize_frame(representation)
 
@@ -107,7 +106,7 @@ def hcc_to_hpc(helioccoord, heliopframe):
     hpcx = np.rad2deg(np.arctan2(x, helioccoord.observer.radius - z))
     hpcy = np.rad2deg(np.arcsin(y / distance))
 
-    representation = SphericalWrap180Representation(hpcx, hpcy,
+    representation = SphericalRepresentation(hpcx, hpcy,
                                                     distance.to(u.km))
     return heliopframe.realize_frame(representation)
 
@@ -167,7 +166,7 @@ def hcc_to_hgs(helioccoord, heliogframe):
     hgln = np.arctan2(x, z * cosb - y * sinb) + l0_rad
     hglt = np.arcsin((y * cosb + z * sinb) / hecr)
 
-    representation = SphericalWrap180Representation(
+    representation = SphericalRepresentation(
         np.rad2deg(hgln), np.rad2deg(hglt), hecr.to(u.km))
     return heliogframe.realize_frame(representation)
 
