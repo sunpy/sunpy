@@ -40,7 +40,7 @@ __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hcrs_to_hgs', 'hgs_to_hcrs']
 
 
-def _carrington_offset(obstime):
+def _carrington_lon_offset(obstime):
     """
     Calculate the HG Longitude offest based on a time
     """
@@ -51,6 +51,19 @@ def _carrington_offset(obstime):
     # Import here to avoid a circular import
     from .ephemeris import get_sun_L0
     return get_sun_L0(obstime)
+
+
+def _carrington_lat_offset(obstime):
+    """
+    Calculate the Carrington lattitude based on a time.
+    """
+    if obstime is None:
+        raise ValueError("To perform this transformation the coordinate"
+                         " Frame needs a obstime Attribute")
+
+    # Import here to avoid a circular import
+    from .ephemeris import get_sun_B0
+    return get_sun_B0(obstime)
 
 # =============================================================================
 # ------------------------- Transformation Framework --------------------------
@@ -219,7 +232,6 @@ def hgs_to_hcc(heliogcoord, heliocframe):
         x.to(u.km), y.to(u.km), zz.to(u.km))
 
     return heliocframe.realize_frame(representation)
-
 
 
 @frame_transform_graph.transform(FunctionTransform, Helioprojective,
