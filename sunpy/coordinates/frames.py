@@ -19,6 +19,7 @@ from astropy.coordinates import Attribute, ConvertError
 from sunpy import sun
 from .representation import (SphericalWrap180Representation, UnitSphericalWrap180Representation)
 
+from .represenations import SouthPoleSphericalRepresentation, UnitSouthPoleSphericalRepresentation
 from .frameattributes import TimeFrameAttributeSunPy, ObserverCoordinateAttribute
 
 RSUN_METERS = sun.constants.get('radius').si.to(u.m)
@@ -390,22 +391,43 @@ class HelioprojectiveRadial(Helioprojective):
         The radial distance from the observer to the coordinate point.
     """
 
-    default_representation = SphericalRepresentation
+    default_representation = SouthPoleSphericalRepresentation
 
-    _frame_specific_representation_info = {
-        'spherical': [RepresentationMapping('lat', 'dec', u.deg),
-                      RepresentationMapping('lon', 'psi', u.deg),
-                      RepresentationMapping('distance', 'distance', u.km)],
+    frame_specific_representation_info = {
+        SouthPoleSphericalRepresentation: [RepresentationMapping(reprname='lon',
+                                                                 framename='psi',
+                                                                 defaultunit=u.arcsec),
+                                           RepresentationMapping(reprname='lat',
+                                                                 framename='el',
+                                                                 defaultunit=u.arcsec),
+                                           RepresentationMapping(reprname='distance',
+                                                                 framename='distance',
+                                                                 defaultunit=None)],
 
-        'sphericalwrap180': [RepresentationMapping('lat', 'dec', u.deg),
-                             RepresentationMapping('lon', 'psi', u.deg),
-                             RepresentationMapping('distance', 'distance', u.km)],
+        UnitSouthPoleSphericalRepresentation: [RepresentationMapping(reprname='lon',
+                                                                     framename='psi',
+                                                                     defaultunit=u.arcsec),
+                                               RepresentationMapping(reprname='lat',
+                                                                     framename='el',
+                                                                     defaultunit=u.arcsec)],
 
-        'unitspherical': [RepresentationMapping('lat', 'dec', u.deg),
-                          RepresentationMapping('lon', 'psi', u.deg)],
+        SphericalRepresentation: [RepresentationMapping(reprname='lon',
+                                                        framename='psi',
+                                                        defaultunit=u.arcsec),
+                                  RepresentationMapping(reprname='lat',
+                                                        framename='dec',
+                                                        defaultunit=u.arcsec),
+                                  RepresentationMapping(reprname='distance',
+                                                        framename='distance',
+                                                        defaultunit=None)],
 
-        'unitsphericalwrap180': [RepresentationMapping('lat', 'dec', u.deg),
-                                 RepresentationMapping('lon', 'psi', u.deg)]}
+        UnitSphericalRepresentation: [RepresentationMapping(reprname='lon',
+                                                            framename='psi',
+                                                            defaultunit=u.arcsec),
+                                      RepresentationMapping(reprname='lat',
+                                                            framename='dec',
+                                                            defaultunit=u.arcsec)],
+    }
 
     obstime = TimeFrameAttributeSunPy()
     rsun = Attribute(default=RSUN_METERS.to(u.km))

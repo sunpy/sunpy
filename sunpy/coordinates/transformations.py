@@ -28,7 +28,7 @@ from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_product
 from astropy.coordinates import HCRS, get_body_barycentric, BaseCoordinateFrame, ConvertError
 from astropy.tests.helper import quantity_allclose
 
-from .representation import SphericalWrap180Representation, UnitSphericalWrap180Representation
+from .represenations import SouthPoleSphericalRepresentation, UnitSouthPoleSphericalRepresentation
 from .frames import (HeliographicStonyhurst, HeliographicCarrington,
                      Heliocentric, Helioprojective, HelioprojectiveRadial)
 
@@ -226,13 +226,13 @@ def hpc_to_hpr(hpcframe, hprframe):
     however, the transformation in Thompson is defined in terms of theta_p, so
     a conversion from declination is performed at the end of the transform.
     """
-    lon = hpcframe.Tx
-    lat = hpcframe.Ty
-    if issubclass(hpcframe.representation, UnitSphericalRepresentation):
+    if isinstance(hpcframe._data, (UnitSphericalRepresentation, UnitSouthPoleSphericalRepresentation)):
         distance = None
     else:
         distance = hpcframe.distance
 
+    lon = hpcframe.Tx
+    lat = hpcframe.Ty
     # Elongation calc:
     # Get numerator and denomenator for atan2 calculation
     top = np.sqrt((np.cos(lat)**2) * (np.sin(lon)**2) + (np.sin(lat)**2))
@@ -244,13 +244,11 @@ def hpc_to_hpr(hpcframe, hprframe):
     btm = np.sin(lat)
     psi = np.arctan2(top, btm)
 
-    # The frame stores declination parameter not elongation angle
-    dec = el - 90*u.deg
-
     if distance:
-        representation = SphericalRepresentation(lon=psi, lat=dec, distance=distance)
+        representation = SouthPoleSphericalRepresentation(phi=psi, theta=el, r=distance)
     else:
-        representation = UnitSphericalRepresentation(lon=psi, lat=dec)
+        representation = UnitSouthPoleSphericalRepresentation(phi=psi, theta=el)
+
     return hprframe.realize_frame(representation)
 
 
@@ -264,12 +262,14 @@ def hpr_to_hpc(hprframe, hpcframe):
     however, the transformation in Thompson is defined in terms of theta_p, so
     a conversion to theta_p is performed at the start of the transform.
     """
-    psi = hprframe.psi
-    el = hprframe.dec + 90*u.deg
-    if issubclass(hprframe.representation, UnitSphericalRepresentation):
+    if isinstance(hprframe._data, (UnitSphericalRepresentation, UnitSouthPoleSphericalRepresentation)):
         distance = None
     else:
         distance = hprframe.distance
+
+    rep = hprframe.represent_as(SouthPoleSphericalRepresentation)
+    psi = rep.phi
+    el = rep.theta
 
     # Longitude conversion
     top = -np.sin(el) * np.sin(psi)
@@ -279,9 +279,9 @@ def hpr_to_hpc(hprframe, hpcframe):
     lat = np.arcsin(np.sin(el) * np.cos(psi))
 
     if distance:
-        representation = SphericalWrap180Representation(lon=lon, lat=lat, distance=distance)
+        representation = SphericalRepresentation(lon=lon, lat=lat, distance=distance)
     else:
-        representation = UnitSphericalWrap180Representation(lon=lon, lat=lat)
+        representation = UnitSphericalRepresentation(lon=lon, lat=lat)
 
     return hpcframe.realize_frame(representation)
 
