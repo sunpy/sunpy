@@ -5,8 +5,31 @@ from astropy.tests.helper import quantity_allclose, assert_quantity_allclose
 from astropy.coordinates import SkyCoord, get_body_barycentric
 from astropy.time import Time
 
-from sunpy.coordinates import Helioprojective, HeliographicStonyhurst, HeliographicCarrington, get_sun_L0
+import sunpy.coordinates.transformations as trans
+from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst,
+                               HeliographicCarrington, get_sun_L0,
+                               Heliocentric)
 from sunpy.time import parse_time
+
+
+def test_new_hcc_to_hgs():
+    # Generate 10 random coordinates
+    for i in range(10):
+        x = np.random.rand() * u.km
+        y = np.random.rand() * u.km
+        z = np.random.rand() * u.km
+        time = '2007-05-04T21:08:12'
+        hcc = Heliocentric(x=x, y=y, z=z, obstime=time)
+        hgs_frame = HeliographicCarrington(obstime=time)
+
+        # New matrix based transformation
+        out1 = hcc.transform_to(HeliographicStonyhurst)
+        # Old function based transformation
+        out2 = trans.old_hcc_to_hgs(hcc, hgs_frame)
+        # Check that they give the same results
+        assert_quantity_allclose(out1.lon, out2.lon)
+        assert_quantity_allclose(out1.lat, out2.lat)
+        assert_quantity_allclose(out1.radius, out2.radius)
 
 
 def test_hpc_hpc():

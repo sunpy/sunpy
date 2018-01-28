@@ -141,9 +141,9 @@ def hpc_to_hcc(heliopcoord, heliocframe):
     return heliocframe.realize_frame(representation)
 
 
-@frame_transform_graph.transform(FunctionTransform, Heliocentric,
-                                 HeliographicStonyhurst)
-def hcc_to_hgs(helioccoord, heliogframe):
+# @frame_transform_graph.transform(FunctionTransform, Heliocentric,
+#                                  HeliographicStonyhurst)
+def old_hcc_to_hgs(helioccoord, heliogframe):
     """
     Convert from Heliocentric Cartesian to Heliographic Stonyhurst.
     """
@@ -171,26 +171,54 @@ def hcc_to_hgs(helioccoord, heliogframe):
     return heliogframe.realize_frame(representation)
 
 
+@frame_transform_graph.transform(DynamicMatrixTransform, Heliocentric,
+                                 HeliographicStonyhurst)
+def hcc_to_hgs(hcc_coord, hgs_frame):
+    """
+    Convert from Heliocentric Cartesian to Heliographic Stonyhurst.
+    """
+    if not isinstance(hcc_coord.observer, BaseCoordinateFrame):
+        raise ConvertError("Cannot transform heliocentric coordinates to "
+                           "heliographic coordinates for observer '{}' "
+                           "without `obstime` being specified.".format(hcc_coord.observer))
+
+    x = hcc_coord.x.to(u.km)
+    y = hcc_coord.y.to(u.km)
+    z = hcc_coord.z.to(u.km)
+
+    # Get observer longitude/lattitude with respect to Earth
+    l0_rad = hcc_coord.observer.lon
+    b0_deg = hcc_coord.observer.lat
+
+    cosb = np.cos(np.deg2rad(b0_deg))
+    sinb = np.sin(np.deg2rad(b0_deg))
+
+    R = np.array([[0, -sinb, cosb],
+                  [1, 0, 0],
+                  [0, cosb, sinb]])
+    return R
+
+
 @frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst,
                                  Heliocentric)
-def hgs_to_hcc(heliogcoord, heliocframe):
+def hgs_to_hcc(hgs_coord, hcc_frame):
     """
-    Convert from Heliographic Stonyhurst to Heliograpic Carrington.
+    Convert from Heliographic Stonyhurst to Heliocentric.
     """
-    hglon = heliogcoord.lon
-    hglat = heliogcoord.lat
-    r = heliogcoord.radius.to(u.m)
+    hglon = hgs_coord.lon
+    hglat = hgs_coord.lat
+    r = hgs_coord.radius.to(u.m)
 
-    if heliocframe.obstime is None:
-        heliocframe._obstime = heliogcoord.obstime
+    if hcc_frame.obstime is None:
+        hcc_frame._obstime = hgs_coord.obstime
 
-    if not isinstance(heliocframe.observer, BaseCoordinateFrame):
+    if not isinstance(hcc_frame.observer, BaseCoordinateFrame):
         raise ConvertError("Cannot transform heliographic coordinates to "
                            "heliocentric coordinates for observer '{}' "
-                           "without `obstime` being specified.".format(heliocframe.observer))
+                           "without `obstime` being specified.".format(hcc_frame.observer))
 
-    l0_rad = heliocframe.observer.lon.to(u.rad)
-    b0_deg = heliocframe.observer.lat
+    l0_rad = hcc_frame.observer.lon.to(u.rad)
+    b0_deg = hcc_frame.observer.lat
 
     lon = np.deg2rad(hglon)
     lat = np.deg2rad(hglat)
@@ -212,7 +240,7 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     representation = CartesianRepresentation(
         x.to(u.km), y.to(u.km), zz.to(u.km))
 
-    return heliocframe.realize_frame(representation)
+    return hcc_frame.realize_frame(representation)
 
 
 
