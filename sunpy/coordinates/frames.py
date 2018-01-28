@@ -53,10 +53,10 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
     ----------
     representation : `~astropy.coordinates.BaseRepresentation` or `None`
         A representation object or None to have no data.
-    lon : `Angle`, optional
+    lon : `~astropy.coordinates.Angle`, optional
         The longitude for this object (``lat`` must also be given and
         ``representation`` must be None).
-    lat : `Angle`, optional
+    lat : `~astropy.coordinates.Angle`, optional
         The latitude for this object (``lon`` must also be given and
         ``representation`` must be None).
     radius : `~astropy.units.Quantity`, optional
