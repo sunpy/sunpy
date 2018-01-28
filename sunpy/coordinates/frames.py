@@ -441,24 +441,25 @@ class HelioprojectiveRadial(Helioprojective):
 
         If a point in the frame is off limb then NaN will be returned.
 
-        ..note ::
-
-            To perform this operation on the ``HelioprojectiveRadial`` frame
-            the frame is converted to ``Helioprojective`` first, the distance
-            is calculated and then transformed back.
-
         Returns
         -------
         new_frame : `~sunpy.coordinates.frames.HelioProjectiveRadial`
             A new frame instance with all the attributes of the original but
             now with a third coordinate.
         """
+        # Skip if we already are 3D
+        if isinstance(self._data, (SphericalRepresentation, SouthPoleSphericalRepresentation)):
+            return self
 
-        # TODO: Re-calculate this method native to the HPR frame. The trig
-        # should actually be easier in HPR as you only have to worry about the
-        # declination angle.
+        if not isinstance(self.observer, BaseCoordinateFrame):
+            raise ConvertError("Cannot calculate distance to the solar disk "
+                               "for observer '{}' "
+                               "without `obstime` being specified.".format(self.observer))
 
-        hpc = self.transform_to(Helioprojective(obstime=self.obstime, observer=self.observer))
-        hpc = hpc.calculate_distance()
-        hpr = hpc.transform_to(self.replicate_without_data())
-        return hpr
+        rep = self.represent_as(UnitSouthPoleSphericalRepresentation)
+
+        distance = self.observer.radius - (self.rsun * np.cos(rep.theta))
+
+        return self.realize_frame(SouthPoleSphericalRepresentation(phi=rep.phi,
+                                                                   theta=rep.theta,
+                                                                   r=distance))
