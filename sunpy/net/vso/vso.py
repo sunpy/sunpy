@@ -383,6 +383,7 @@ class VSOClient(BaseClient):
         return fname
 
     # pylint: disable=R0914
+    @deprecated("0.9", alternative="Use sunpy.net.Fido")
     def query_legacy(self, tstart=None, tend=None, **kwargs):
         """
         Query data from the VSO mocking the IDL API as close as possible.
