@@ -7,10 +7,6 @@
 # pylint: disable=W0401,C0103,R0904,W0141
 from __future__ import absolute_import, division, print_function
 
-"""
-This module provides a wrapper around the VSO API.
-"""
-
 import re
 import os
 import sys
@@ -449,7 +445,6 @@ class VSOClient(object):
             detector ID (C3, EUVI, COR2, etc.)
         layout : str
             layout of the data (image, spectrum, time_series, etc.)
-
         level : str
             level of the data product (numeric range, see below)
         pixels : str
@@ -481,7 +476,8 @@ class VSOClient(object):
         >>> from sunpy.net import vso
         >>> client = vso.VSOClient()  # doctest: +REMOTE_DATA
         >>> qr = client.query_legacy(datetime(2010, 1, 1),
-        ...                          datetime(2010, 1, 1, 1), instrument='eit')  # doctest: +REMOTE_DATA
+        ...                          datetime(2010, 1, 1, 1),
+        ...                          instrument='eit')  # doctest: +REMOTE_DATA
 
         Returns
         -------
@@ -489,7 +485,7 @@ class VSOClient(object):
             Matched items. Return value is of same type as the one of
             :py:class:`VSOClient.query`.
         """
-        sdk = lambda key: lambda value: {key: value}
+        sdk = lambda key: partial(lambda key, value: {key: value}, key)
         ALIASES = {
             'wave_min': sdk('wave_wavemin'),
             'wave_max': sdk('wave_wavemax'),
@@ -517,7 +513,9 @@ class VSOClient(object):
         if tend is not None:
             kwargs.update({'time_end': tend})
 
-        queryreq = self.api.get_type('VSO:QueryRequest')
+        QueryRequest = self.api.get_type('VSO:QueryRequest')
+        block = self.api.get_type('VSO:QueryRequestBlock')()
+
         for key, value in iteritems(kwargs):
             for k, v in iteritems(ALIASES.get(key, sdk(key))(value)):
                 if k.startswith('time'):
@@ -527,23 +525,23 @@ class VSOClient(object):
                 rest = attr[:-1]
 
                 # pylint: disable=E1103
-                item = queryreq.block
+                item = block
                 for elem in rest:
                     try:
+                        if item[elem] is None:
+                            item[elem] = {}
                         item = item[elem]
                     except KeyError:
                         raise ValueError(
                             "Unexpected argument {key!s}.".format(key=key))
-                if lst not in item:
-                    raise ValueError(
-                        "Unexpected argument {key!s}.".format(key=key))
-                if item[lst]:
+                if lst in item and item[lst]:
                     raise ValueError(
                         "Got multiple values for {k!s}.".format(k=k))
                 item[lst] = v
+
         try:
-            return QueryResponse.create(self.api.service.Query(queryreq))
-        except:
+            return QueryResponse.create(self.api.service.Query(QueryRequest(block=block)))
+        except Exception:
             return QueryResponse([])
 
     def latest(self):
