@@ -32,6 +32,22 @@ def test_new_hcc_to_hgs():
         assert_quantity_allclose(out1.radius, out2.radius)
 
 
+def test_hcc_to_hgs():
+    '''
+    Check that a coordinate pointing to the observer in Heliocentric
+    coordinates maps to the lattitude/longitude of the observer in
+    HeliographicStonyhurst coordinates.
+    '''
+    lat = 10 * u.deg
+    lon = 20 * u.deg
+    observer = HeliographicStonyhurst(lat=lat, lon=lon)
+    hcc_in = Heliocentric(x=0*u.km, y=0*u.km, z=1*u.km, observer=observer)
+    hgs_out = hcc_in.transform_to(HeliographicStonyhurst)
+
+    assert_quantity_allclose(hgs_out.lat, lat)
+    assert_quantity_allclose(hgs_out.lon, lon)
+
+
 def test_hpc_hpc():
     # Use some unphysical values for solar parameters for testing, to make it
     # easier to calculate expected results.
