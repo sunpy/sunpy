@@ -17,13 +17,13 @@ from datetime import datetime, timedelta
 import numpy as np
 from dateutil.relativedelta import relativedelta
 
-from astropy.io import fits
 from astropy import units as u
 
 from sunpy.time import TimeRange, parse_time
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.coordinates import get_sunearth_distance
 import sunpy.map
+import sunpy.io
 
 from sunpy.extern.six.moves import urllib
 from sunpy.extern.six.moves.urllib.request import urlopen, urlretrieve
@@ -327,7 +327,7 @@ def parse_obssumm_file(filename):
 
     """
 
-    afits = fits.open(filename)
+    afits = sunpy.io.read_file(filename)
     fits_header = afits[0].header
 
     reference_time_ut = parse_time(afits[5].data.field('UT_REF')[0])
@@ -469,7 +469,7 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
     # info_parameters = fits[2]
     # detector_efficiency = info_parameters.data.field('cbe_det_eff$$REL')
 
-    afits = fits.open(calibrated_event_list)
+    afits = sunpy.io.read_file(calibrated_event_list)
 
     fits_detector_index = detector + 2
     detector_index = detector - 1
@@ -533,7 +533,7 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
     pixel_size = pixel_size.to(u.arcsec)
     image_dim = np.array(image_dim.to(u.pix).value, dtype=int)
 
-    afits = fits.open(calibrated_event_list)
+    afits = sunpy.io.read_file(calibrated_event_list)
     info_parameters = afits[2]
     xyoffset = info_parameters.data.field('USED_XYOFFSET')[0]
     time_range = TimeRange(info_parameters.data.field('ABSOLUTE_TIME_RANGE')[0])

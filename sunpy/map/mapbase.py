@@ -17,7 +17,7 @@ from matplotlib import patches, cm, colors
 import astropy.wcs
 import astropy.units as u
 from astropy.visualization.wcsaxes import WCSAxes
-from astropy.coordinates import SkyCoord
+from astropy.coordinates import SkyCoord, UnitSphericalRepresentation
 
 import sunpy.io as io
 import sunpy.coordinates
@@ -263,9 +263,9 @@ Reference Coord:\t {refcoord}
     def _get_lon_lat(self, frame):
         """
         Given a coordinate frame, extract the lon and lat by casting to
-        SphericalWrap180Representation first.
+        SphericalRepresentation first.
         """
-        r = frame.represent_as(sunpy.coordinates.representation.SphericalWrap180Representation)
+        r = frame.represent_as(UnitSphericalRepresentation)
         return r.lon.to(self.spatial_units[0]), r.lat.to(self.spatial_units[1])
 
     @property
@@ -1614,8 +1614,6 @@ Reference Coord:\t {refcoord}
             Whether solar meridians and parallels are plotted.
             If `~astropy.units.Quantity` then sets degree difference between
             parallels and meridians.
-        gamma : float
-            Gamma value to use for the color map.
         colorbar : bool
             Whether to display a colorbar next to the plot.
         basic_plot : bool

@@ -8,4 +8,4 @@ glymur
 suds-jurko
 beautifulsoup4
 requests
-dateutil
+python-dateutil
