@@ -1643,7 +1643,11 @@ Reference Coord:\t {refcoord}
         im = self.plot(axes=axes, **matplot_args)
 
         if colorbar and not basic_plot:
-            figure.colorbar(im)
+            if draw_grid:
+                pad = 0.12  # Pad to compensate for ticks and axes labels
+            else:
+                pad = 0.05  # Default value for vertical colorbar
+            figure.colorbar(im, pad=pad)
 
         if draw_limb:
             self.draw_limb(axes=axes)
