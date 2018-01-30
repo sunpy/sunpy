@@ -91,7 +91,7 @@ matrix:
          - python: 3.5
            stage: Comprehensive tests
            env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
-           
+
          - python: 2.7
            stage: Comprehensive tests
            env: SETUP_CMD='test'
@@ -117,7 +117,7 @@ matrix:
                 EVENT_TYPE='push pull_request cron'
 
          - python: 3.5
-           stage: Comprehensive tests
+           stage: Cron tests
            env: SETUP_CMD='test --figure' ASTROPY_VERSION='dev'
                 CONDA_DEPENDENCIES='astropy'
 
