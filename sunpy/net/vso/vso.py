@@ -316,18 +316,18 @@ class VSOClient(object):
         """
         query = and_(*query)
         QueryRequest = self.api.get_type('VSO:QueryRequest')
+        VSOQueryResponse = self.api.get_type('VSO:QueryResponse')
         responses = []
         for block in walker.create(query, self.api):
             try:
                 responses.append(
-                    self.api.service.Query(
+                    VSOQueryResponse(self.api.service.Query(
                         QueryRequest(block=block)
-                    )
+                    ))
                 )
             except Exception as ex:
                 response = QueryResponse.create(self.merge(responses))
                 response.add_error(ex)
-
 
         return QueryResponse.create(self.merge(responses))
 
