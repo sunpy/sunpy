@@ -307,7 +307,7 @@ class Helioprojective(BaseCoordinateFrame):
                                                         framename='Tx',
                                                         defaultunit=u.arcsec),
                                   RepresentationMapping(reprname='lat',
-                                                        framename='dec',
+                                                        framename='Ty',
                                                         defaultunit=u.arcsec),
                                   RepresentationMapping(reprname='distance',
                                                         framename='distance',
@@ -326,24 +326,12 @@ class Helioprojective(BaseCoordinateFrame):
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
 
     def __init__(self, *args, **kwargs):
-        _rep_kwarg = kwargs.get('representation', None)
+        wrap = kwargs.pop('wrap_longitude', True)
 
         BaseCoordinateFrame.__init__(self, *args, **kwargs)
 
-        # Convert from Spherical to SphericalWrap180
-        # If representation was explicitly passed, do not change the rep.
-        if not _rep_kwarg:
-            # The base __init__ will make this a UnitSphericalRepresentation
-            # This makes it Wrap180 instead
-            if isinstance(self._data, UnitSphericalRepresentation):
-                self._data = UnitSphericalRepresentation(
-                    lat=self._data.lat, lon=self._data.lon)
-                self.representation = UnitSphericalRepresentation
-            # Make a Spherical Wrap180 instead
-            elif isinstance(self._data, SphericalRepresentation):
-                self._data = SphericalRepresentation(
-                    lat=self._data.lat, lon=self._data.lon, distance=self._data.distance)
-                self.representation = SphericalRepresentation
+        if wrap and isinstance(self._data, (UnitSphericalRepresentation, SphericalRepresentation)):
+            self._data.lon.wrap_angle = 180*u.deg
 
     def calculate_distance(self):
         """
