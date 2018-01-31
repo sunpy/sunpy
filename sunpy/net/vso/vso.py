@@ -306,18 +306,18 @@ class VSOClient(BaseClient):
         """
         query = and_(*query)
         QueryRequest = self.api.get_type('VSO:QueryRequest')
+        VSOQueryResponse = self.api.get_type('VSO:QueryResponse')
         responses = []
         for block in walker.create(query, self.api):
             try:
                 responses.append(
-                    self.api.service.Query(
+                    VSOQueryResponse(self.api.service.Query(
                         QueryRequest(block=block)
-                    )
+                    ))
                 )
             except Exception as ex:
                 response = QueryResponse.create(self.merge(responses))
                 response.add_error(ex)
-
 
         return QueryResponse.create(self.merge(responses))
 
@@ -383,7 +383,7 @@ class VSOClient(BaseClient):
         return fname
 
     # pylint: disable=R0914
-    @deprecated("0.9", alternative="Use sunpy.net.Fido")
+    @deprecated("0.9", alternative="sunpy.net.Fido")
     def query_legacy(self, tstart=None, tend=None, **kwargs):
         """
         Query data from the VSO mocking the IDL API as close as possible.
@@ -495,6 +495,7 @@ class VSOClient(BaseClient):
             kwargs.update({'time_end': tend})
 
         QueryRequest = self.api.get_type('VSO:QueryRequest')
+        VSOQueryResponse = self.api.get_type('VSO:QueryResponse')
         block = self.api.get_type('VSO:QueryRequestBlock')()
 
         for key, value in iteritems(kwargs):
@@ -520,10 +521,8 @@ class VSOClient(BaseClient):
                         "Got multiple values for {k!s}.".format(k=k))
                 item[lst] = v
 
-        try:
-            return QueryResponse.create(self.api.service.Query(QueryRequest(block=block)))
-        except Exception:
-            return QueryResponse([])
+        return QueryResponse.create(VSOQueryResponse(
+            self.api.service.Query(QueryRequest(block=block))))
 
     def latest(self):
         """ Return newest record (limited to last week). """
@@ -615,12 +614,15 @@ class VSOClient(BaseClient):
         if site is not None:
             info['site'] = site
 
-        self.download_all(
-            self.api.service.GetData(
-                self.make_getdatarequest(query_response, methods, info)),
-            methods, downloader, path,
-            fileids, res
-        )
+        VSOGetDataResponse = self.api.get_type("VSO:VSOGetDataResponse")
+
+        data_request = self.make_getdatarequest(query_response, methods, info)
+        print(data_request)
+        data_response = VSOGetDataResponse(self.api.service.GetData(data_request))
+
+        print(data_response)
+        self.download_all(data_response, methods, downloader, path, fileids, res)
+
         res.poke()
         return res
 
@@ -659,38 +661,19 @@ class VSOClient(BaseClient):
         if info is None:
             info = {}
 
-        # For the JSOC provider we need to make a DataRequestItem for each
-        # series, not just one for the whole provider.
+        if 'email' not in info:
+            info['email'] = 'sunpy'
 
-        # Remove JSOC provider items from the map
-        jsoc = maps.pop('JSOC', [])
+        datarequestitem = [
+                       self.make('DataRequestItem', provider=k, fileiditem={'fileid': v})
+                       for k, v in iteritems(maps)]
 
-        # Make DRIs for everything that's not JSOC one per provider
-        dris = [self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
-                for k, v in maps.items()]
+        request = {'method': {'methodtype': methods},
+                   'info': info,
+                   'datacontainer': {'datarequestitem': datarequestitem}
+                   }
 
-        def series_func(x):
-            """ Extract the series from the fileid. """
-            return x.split(':')[0]
-
-        # Sort the JSOC fileids by series
-        # This is a precursor to groupby as recommended by the groupby docs
-        series_sorted = sorted(jsoc, key=series_func)
-
-        # Iterate over the series and make a DRI for each.
-        # groupby creates an iterator based on a key function, in this case
-        # based on the series (the part before the first ':')
-        for series, fileids in itertools.groupby(series_sorted, key=series_func):
-            dris.append(self.make('DataRequestItem',
-                                  provider='JSOC',
-                                  fileiditem__fileid=[list(fileids)]))
-
-        return self.make(
-            'VSOGetDataRequest',
-            request__method__methodtype=methods,
-            request__info=info,
-            request__datacontainer__datarequestitem=dris
-        )
+        return self.make('VSOGetDataRequest', request=request)
 
     # pylint: disable=R0913,R0912
     def download_all(self, response, methods, dw, path, qr, res, info=None):
