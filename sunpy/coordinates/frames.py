@@ -314,10 +314,10 @@ class Helioprojective(BaseCoordinateFrame):
                                                         defaultunit=None)],
 
         UnitSphericalRepresentation: [RepresentationMapping(reprname='lon',
-                                                            framename='psi',
+                                                            framename='Tx',
                                                             defaultunit=u.arcsec),
                                       RepresentationMapping(reprname='lat',
-                                                            framename='dec',
+                                                            framename='Ty',
                                                             defaultunit=u.arcsec)],
     }
 
@@ -468,6 +468,8 @@ class HelioprojectiveRadial(Helioprojective):
         rep = self.represent_as(UnitSouthPoleSphericalRepresentation)
 
         distance = self.observer.radius - (self.rsun * np.cos(rep.theta))
+        # Set distance to NaN if off disk
+        distance[rep.theta > np.arcsin(self.rsun / self.observer.radius)] = np.NaN
 
         return self.realize_frame(SouthPoleSphericalRepresentation(phi=rep.phi,
                                                                    theta=rep.theta,
