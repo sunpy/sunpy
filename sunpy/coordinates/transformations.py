@@ -182,10 +182,6 @@ def hcc_to_hgs(hcc_coord, hgs_frame):
                            "heliographic coordinates for observer '{}' "
                            "without `obstime` being specified.".format(hcc_coord.observer))
 
-    x = hcc_coord.x.to(u.km)
-    y = hcc_coord.y.to(u.km)
-    z = hcc_coord.z.to(u.km)
-
     # Get observer longitude/lattitude with respect to Earth
     l0 = np.deg2rad(hcc_coord.observer.lon)
     b0 = np.deg2rad(hcc_coord.observer.lat)
