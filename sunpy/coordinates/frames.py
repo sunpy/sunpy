@@ -123,11 +123,17 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
 
 class HeliographicCarrington(HeliographicStonyhurst):
     """
-    A coordinate or frame in the Carrington Heliographic
-    system.
-    This frame differs from the Stonyhurst version in the
-    definition of the longitude, which is defined using
-    an offset which is a time-dependent scalar value.
+    A coordinate or frame in the Carrington Heliographic system.
+
+    - The origin is the centre of the Sun
+    - The z-axis is aligned with the Sun's north pole
+    - The x and y axes rotate with a period of 25.38 days. The line of zero
+      longitude passed through the disk centre as seen from Earth at
+      21:36 on 9th Nov 1853.
+
+    This frame differs from the Stonyhurst version in the definition of the
+    longitude, which is defined using the time-dependant offset described
+    above.
 
     Parameters
     ----------
@@ -141,8 +147,7 @@ class HeliographicCarrington(HeliographicStonyhurst):
         The latitude for this object (``lon`` must also be given and
         ``representation`` must be None).
     radius: `astropy.units.Quantity` object, optional, must be keyword.
-        This quantity holds the radial distance. If not specified, it is, by
-        default, the solar radius. Optional, must be keyword.
+        This quantity holds the radial distance. Defaults to the solar radius.
     obstime: SunPy Time
         The date and time of the observation, used to convert to heliographic
         carrington coordinates.
@@ -196,11 +201,16 @@ class HeliographicCarrington(HeliographicStonyhurst):
 class Heliocentric(BaseCoordinateFrame):
     """
     A coordinate or frame in the Heliocentric system.
-    This frame may either be specified in Cartesian
-    or cylindrical representation.
-    Cylindrical representation replaces (x, y) with
-    (rho, psi) where rho is the impact parameter and
-    psi is the position angle in degrees.
+
+    - The origin is the centre of the Sun
+    - The z-axis points from the centre of the Sun to the observer.
+    - The y-axis is perpendicular to the z-axis, and lies in the plane that
+      contains the z-axis and the solar rotation axis, pointing towards the
+      Sun's north pole.
+
+    This frame may either be specified in Cartesian or cylindrical
+    representation. Cylindrical representation replaces (x, y) with (rho, psi)
+    where rho is the impact parameter and psi is the position angle in degrees.
 
     Parameters
     ----------
@@ -214,8 +224,9 @@ class Heliocentric(BaseCoordinateFrame):
         Y-axis coordinate, optional, must be keyword.
     z: `Quantity` object. Shared by both representations.
         Z-axis coordinate, optional, must be keyword.
-    observer: `~sunpy.coordinates.frames.HeliographicStonyhurst`
-        The coordinate of the observer in the solar system.
+    observer: `~sunpy.coordinates.frames.HeliographicStonyhurst`, optional
+        The coordinate of the observer in the solar system. Defaults to the
+        Earth.
     obstime: SunPy Time
         The date and time of the observation, used to convert to heliographic
         carrington coordinates.
