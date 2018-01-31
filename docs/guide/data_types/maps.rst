@@ -66,11 +66,11 @@ your map simply type::
     Wavelength:		 171.0 Angstrom
     Observation Date:	 2011-06-07 06:33:02
     Exposure Time:		 0.234256 s
-    Dimension:		 [ 1024.  1024.] pix
+    Dimension:		 [1024. 1024.] pix
     Coordinate System:	 helioprojective
-    Scale:			 [ 2.402792  2.402792] arcsec / pix
-    Reference Pixel:	 [ 512.5  512.5] pix
-    Reference Coord:	 [ 3.22309951  1.38578135] arcsec
+    Scale:			 [2.402792 2.402792] arcsec / pix
+    Reference Pixel:	 [512.5 512.5] pix
+    Reference Coord:	 [3.22309951 1.38578135] arcsec
     <BLANKLINE>
     array([[ -96.,    7.,   -2., ..., -128., -128., -128.],
            [ -97.,   -5.,    0., ...,  -99., -104., -128.],
@@ -130,7 +130,7 @@ Data attributes like `~numpy.ndarray.dtype` and
 the SunPyGenericMap object ::
 
     >>> my_map.dimensions
-    PixelPair(x=<Quantity 1024.0 pix>, y=<Quantity 1024.0 pix>)
+    PixelPair(x=<Quantity 1024. pix>, y=<Quantity 1024. pix>)
     >>> my_map.dtype
     dtype('>f4')
 
@@ -154,7 +154,7 @@ objects::
     >>> my_map.max()
     192131.0
     >>> my_map.mean()
-    427.02139
+    427.0214
 
 but you can also access all the other `~numpy.ndarray` functions and attributes
 but accessing the data array directly. For example::
