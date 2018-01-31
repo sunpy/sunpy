@@ -20,10 +20,10 @@ def test_new_hcc_to_hgs():
         z = np.random.rand() * u.km
         time = '2007-05-04T21:08:12'
         hcc = Heliocentric(x=x, y=y, z=z, obstime=time)
-        hgs_frame = HeliographicCarrington(obstime=time)
+        hgs_frame = HeliographicStonyhurst(obstime=time)
 
         # New matrix based transformation
-        out1 = hcc.transform_to(HeliographicStonyhurst)
+        out1 = hcc.transform_to(hgs_frame)
         # Old function based transformation
         out2 = trans.old_hcc_to_hgs(hcc, hgs_frame)
         # Check that they give the same results

@@ -187,16 +187,23 @@ def hcc_to_hgs(hcc_coord, hgs_frame):
     z = hcc_coord.z.to(u.km)
 
     # Get observer longitude/lattitude with respect to Earth
-    l0_rad = hcc_coord.observer.lon
-    b0_deg = hcc_coord.observer.lat
+    l0 = np.deg2rad(hcc_coord.observer.lon)
+    b0 = np.deg2rad(hcc_coord.observer.lat)
 
-    cosb = np.cos(np.deg2rad(b0_deg))
-    sinb = np.sin(np.deg2rad(b0_deg))
+    cosl = np.cos(l0)
+    sinl = np.sin(l0)
+    cosb = np.cos(b0)
+    sinb = np.sin(b0)
 
-    R = np.array([[0, -sinb, cosb],
-                  [1, 0, 0],
-                  [0, cosb, sinb]])
-    return R
+    # Take into account lattitude, and swap axes
+    R1 = np.array([[0, -sinb, cosb],
+                   [1, 0, 0],
+                   [0, cosb, sinb]])
+    # Take into account longitude
+    R2 = np.array([[cosl, -sinl, 0],
+                   [sinl, cosl, 0],
+                   [0, 0, 1]])
+    return matrix_product(R2, R1)
 
 
 @frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst,
