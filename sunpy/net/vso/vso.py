@@ -403,7 +403,7 @@ class VSOClient(object):
         return fname
 
     # pylint: disable=R0914
-    @deprecated("0.9", alternative="Use sunpy.net.Fido")
+    @deprecated("0.9", alternative="sunpy.net.Fido")
     def query_legacy(self, tstart=None, tend=None, **kwargs):
         """
         Query data from the VSO mocking the IDL API as close as possible.
@@ -515,6 +515,7 @@ class VSOClient(object):
             kwargs.update({'time_end': tend})
 
         QueryRequest = self.api.get_type('VSO:QueryRequest')
+        VSOQueryResponse = self.api.get_type('VSO:QueryResponse')
         block = self.api.get_type('VSO:QueryRequestBlock')()
 
         for key, value in iteritems(kwargs):
@@ -540,10 +541,8 @@ class VSOClient(object):
                         "Got multiple values for {k!s}.".format(k=k))
                 item[lst] = v
 
-        try:
-            return QueryResponse.create(self.api.service.Query(QueryRequest(block=block)))
-        except Exception:
-            return QueryResponse([])
+        return QueryResponse.create(VSOQueryResponse(
+            self.api.service.Query(QueryRequest(block=block))))
 
     def latest(self):
         """ Return newest record (limited to last week). """
@@ -635,12 +634,15 @@ class VSOClient(object):
         if site is not None:
             info['site'] = site
 
-        self.download_all(
-            self.api.service.GetData(
-                self.make_getdatarequest(query_response, methods, info)),
-            methods, downloader, path,
-            fileids, res
-        )
+        VSOGetDataResponse = self.api.get_type("VSO:VSOGetDataResponse")
+
+        data_request = self.make_getdatarequest(query_response, methods, info)
+        print(data_request)
+        data_response = VSOGetDataResponse(self.api.service.GetData(data_request))
+
+        print(data_response)
+        self.download_all(data_response, methods, downloader, path, fileids, res)
+
         res.poke()
         return res
 
@@ -687,15 +689,19 @@ class VSOClient(object):
         if info is None:
             info = {}
 
-        return self.make(
-            'VSOGetDataRequest',
-            request__method__methodtype=methods,
-            request__info=info,
-            request__datacontainer__datarequestitem=[
-                self.make('DataRequestItem', provider=k, fileiditem__fileid=[v])
-                for k, v in iteritems(maps)
-            ]
-        )
+        if 'email' not in info:
+            info['email'] = 'sunpy'
+
+        datarequestitem = [
+                       self.make('DataRequestItem', provider=k, fileiditem={'fileid': v})
+                       for k, v in iteritems(maps)]
+
+        request = {'method': {'methodtype': methods},
+                   'info': info,
+                   'datacontainer': {'datarequestitem': datarequestitem}
+                   }
+
+        return self.make('VSOGetDataRequest', request=request)
 
     # pylint: disable=R0913,R0912
     def download_all(self, response, methods, dw, path, qr, res, info=None):
