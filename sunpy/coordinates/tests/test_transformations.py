@@ -5,7 +5,9 @@ from astropy.tests.helper import quantity_allclose, assert_quantity_allclose
 from astropy.coordinates import SkyCoord, get_body_barycentric
 from astropy.time import Time
 
-from sunpy.coordinates import Helioprojective, HelioprojectiveRadial, HeliographicStonyhurst, HeliographicCarrington, get_sun_L0
+from sunpy.coordinates import (Helioprojective, HelioprojectiveRadial,
+                               HeliographicStonyhurst, HeliographicCarrington,
+                               get_sun_L0)
 from sunpy.time import parse_time
 
 
@@ -149,4 +151,4 @@ def test_hpr_calculate_distance():
     hpr = hpc.transform_to(HelioprojectiveRadial(obstime="2017-12-25"))
     hpr = hpr.calculate_distance()
 
-    assert_quantity_allclose(hpcd.distance, hpr.distance, atol=1e-13*u.km)
+    assert_quantity_allclose(hpcd.distance, hpr.distance, rtol=1e-4)

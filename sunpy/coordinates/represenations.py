@@ -167,10 +167,10 @@ class SouthPoleSphericalRepresentation(BaseRepresentation):
 
     attr_classes = OrderedDict([('phi', Angle),
                                 ('theta', Angle),
-                                ('r', u.Quantity)])
+                                ('distance', u.Quantity)])
 
-    def __init__(self, phi, theta, r, differentials=None, copy=True):
-        super().__init__(phi, theta, r, copy=copy, differentials=differentials)
+    def __init__(self, phi, theta, distance, differentials=None, copy=True):
+        super().__init__(phi, theta, distance, copy=copy, differentials=differentials)
 
         # Wrap/validate phi/theta
         if copy:
@@ -184,8 +184,8 @@ class SouthPoleSphericalRepresentation(BaseRepresentation):
                              '0 deg <= angle <= 180 deg, '
                              'got {0}'.format(theta.to(u.degree)))
 
-        if self._r.unit.physical_type == 'length':
-            self._r = self._r.view(Distance)
+        if self._distance.unit.physical_type == 'length':
+            self._distance = self.distance.view(Distance)
 
     @property
     def phi(self):
@@ -202,11 +202,11 @@ class SouthPoleSphericalRepresentation(BaseRepresentation):
         return self._theta
 
     @property
-    def r(self):
+    def distance(self):
         """
         The distance from the origin to the point(s).
         """
-        return self._r
+        return self._distance
 
     # def unit_vectors(self):
     #     sinphi, cosphi = np.sin(self.phi), np.cos(self.phi)
@@ -220,7 +220,7 @@ class SouthPoleSphericalRepresentation(BaseRepresentation):
     #                                        costheta, copy=False))))
 
     # def scale_factors(self):
-    #     r = self.r / u.radian
+    #     r = self.distance / u.radian
     #     sintheta = np.sin(self.theta)
     #     l = np.broadcast_to(1.*u.one, self.shape, subok=True)
     #     return OrderedDict((('phi', r * sintheta),
@@ -235,7 +235,7 @@ class SouthPoleSphericalRepresentation(BaseRepresentation):
         if inspect.isclass(other_class) and not differential_class:
             if issubclass(other_class, SphericalRepresentation):
                 return other_class(lon=self.phi, lat=90 * u.deg + self.theta,
-                                   distance=self.r)
+                                   distance=self.distance)
             elif issubclass(other_class, UnitSphericalRepresentation):
                 return other_class(lon=self.phi, lat=90 * u.deg + self.theta)
 
@@ -248,10 +248,10 @@ class SouthPoleSphericalRepresentation(BaseRepresentation):
         """
 
         # We need to convert Distance to Quantity to allow negative values.
-        if isinstance(self.r, Distance):
-            d = self.r.view(u.Quantity)
+        if isinstance(self.distance, Distance):
+            d = self.distance.view(u.Quantity)
         else:
-            d = self.r
+            d = self.distance
 
         x = d * np.sin(self.theta) * np.cos(self.phi)
         y = d * np.sin(self.theta) * np.sin(self.phi)
@@ -273,7 +273,7 @@ class SouthPoleSphericalRepresentation(BaseRepresentation):
         phi = np.arctan2(cart.y, cart.x)
         theta = np.arctan2(s, z)
 
-        return cls(phi=phi, theta=theta, r=r, copy=False)
+        return cls(phi=phi, theta=theta, distance=r, copy=False)
 
     def norm(self):
         """Vector norm.
@@ -287,4 +287,4 @@ class SouthPoleSphericalRepresentation(BaseRepresentation):
         norm : `astropy.units.Quantity`
             Vector norm, with the same shape as the representation.
         """
-        return np.abs(self.r)
+        return np.abs(self.distance)

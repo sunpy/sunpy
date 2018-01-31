@@ -462,4 +462,4 @@ class HelioprojectiveRadial(Helioprojective):
 
         return self.realize_frame(SouthPoleSphericalRepresentation(phi=rep.phi,
                                                                    theta=rep.theta,
-                                                                   r=distance))
+                                                                   distance=distance))
