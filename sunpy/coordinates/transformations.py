@@ -30,7 +30,7 @@ from astropy.tests.helper import quantity_allclose
 
 from .representation import SouthPoleSphericalRepresentation, UnitSouthPoleSphericalRepresentation
 from .frames import (HeliographicStonyhurst, HeliographicCarrington,
-                     Heliocentric, Helioprojective, HelioprojectiveRadial)
+                     Heliocentric, Helioprojective, HelioprojectiveRadial, FITSHelioprojectiveRadial)
 
 __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',
@@ -284,6 +284,27 @@ def hpr_to_hpc(hprframe, hpcframe):
         representation = UnitSphericalRepresentation(lon=lon, lat=lat)
 
     return hpcframe.realize_frame(representation)
+
+
+@frame_transform_graph.transform(FunctionTransform,
+                                 HelioprojectiveRadial, FITSHelioprojectiveRadial)
+def hpr_to_fitshpr(hprframe, fitsframe):
+    out = fitsframe.realize_frame(hprframe.spherical)
+    for name in hprframe.frame_attributes.keys():
+        setattr(out, '_'+name, getattr(hprframe, name))
+    return out
+
+
+@frame_transform_graph.transform(FunctionTransform,
+                                 FITSHelioprojectiveRadial, HelioprojectiveRadial)
+def fitshpr_to_hpr(fitsframe, hprframe):
+    hprframe.frame_attributes = fitsframe.frame_attributes
+    out = hprframe.realize_frame(fitsframe.spherical.represent_as(SouthPoleSphericalRepresentation))
+    for name in fitsframe.frame_attributes.keys():
+        setattr(out, '_'+name, getattr(fitsframe, name))
+
+    return out
+
 
 
 @frame_transform_graph.transform(FunctionTransform, Helioprojective,
