@@ -81,10 +81,10 @@ class UnitSouthPoleSphericalRepresentation(BaseRepresentation):
         # is passed in, using the ._re_represent_differentials() method
         if inspect.isclass(other_class) and not differential_class:
             if issubclass(other_class, SphericalRepresentation):
-                return other_class(lon=self.phi, lat=90 * u.deg + self.theta,
+                return other_class(lon=self.phi, lat=self.theta - 90 * u.deg,
                                    distance=1.0)
             elif issubclass(other_class, UnitSphericalRepresentation):
-                return other_class(lon=self.phi, lat=90 * u.deg + self.theta)
+                return other_class(lon=self.phi, lat=self.theta - 90 * u.deg)
 
         return super().represent_as(other_class, differential_class)
 
@@ -236,10 +236,10 @@ class SouthPoleSphericalRepresentation(BaseRepresentation):
         # is passed in, using the ._re_represent_differentials() method
         if inspect.isclass(other_class) and not differential_class:
             if issubclass(other_class, SphericalRepresentation):
-                return other_class(lon=self.phi, lat=90 * u.deg + self.theta,
-                                   distance=self.distance)
+                return other_class(lon=self.phi, lat=self.theta - 90 * u.deg,
+                                   distance=1.0)
             elif issubclass(other_class, UnitSphericalRepresentation):
-                return other_class(lon=self.phi, lat=90 * u.deg + self.theta)
+                return other_class(lon=self.phi, lat=self.theta - 90 * u.deg)
 
         return super().represent_as(other_class, differential_class)
 
