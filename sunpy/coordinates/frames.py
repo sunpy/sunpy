@@ -303,23 +303,6 @@ class Helioprojective(BaseCoordinateFrame):
     default_representation = SphericalRepresentation
 
     frame_specific_representation_info = {
-        SouthPoleSphericalRepresentation: [RepresentationMapping(reprname='lon',
-                                                                 framename='psi',
-                                                                 defaultunit=u.arcsec),
-                                           RepresentationMapping(reprname='lat',
-                                                                 framename='el',
-                                                                 defaultunit=u.arcsec),
-                                           RepresentationMapping(reprname='distance',
-                                                                 framename='distance',
-                                                                 defaultunit=None)],
-
-        UnitSouthPoleSphericalRepresentation: [RepresentationMapping(reprname='lon',
-                                                                     framename='psi',
-                                                                     defaultunit=u.arcsec),
-                                               RepresentationMapping(reprname='lat',
-                                                                     framename='el',
-                                                                     defaultunit=u.arcsec)],
-
         SphericalRepresentation: [RepresentationMapping(reprname='lon',
                                                         framename='Tx',
                                                         defaultunit=u.arcsec),
@@ -342,6 +325,26 @@ class Helioprojective(BaseCoordinateFrame):
     rsun = Attribute(default=RSUN_METERS.to(u.km))
     observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
 
+    def __init__(self, *args, **kwargs):
+        _rep_kwarg = kwargs.get('representation', None)
+
+        BaseCoordinateFrame.__init__(self, *args, **kwargs)
+
+        # Convert from Spherical to SphericalWrap180
+        # If representation was explicitly passed, do not change the rep.
+        if not _rep_kwarg:
+            # The base __init__ will make this a UnitSphericalRepresentation
+            # This makes it Wrap180 instead
+            if isinstance(self._data, UnitSphericalRepresentation):
+                self._data = UnitSphericalRepresentation(
+                    lat=self._data.lat, lon=self._data.lon)
+                self.representation = UnitSphericalRepresentation
+            # Make a Spherical Wrap180 instead
+            elif isinstance(self._data, SphericalRepresentation):
+                self._data = SphericalRepresentation(
+                    lat=self._data.lat, lon=self._data.lon, distance=self._data.distance)
+                self.representation = SphericalRepresentation
+
     def calculate_distance(self):
         """
         This method calculates the third coordinate of the Helioprojective
@@ -352,12 +355,12 @@ class Helioprojective(BaseCoordinateFrame):
 
         Returns
         -------
-        new_frame : `~sunpy.coordinates.frames.HelioProjectiveRadial`
+        new_frame : `~sunpy.coordinates.frames.HelioProjective`
             A new frame instance with all the attributes of the original but
             now with a third coordinate.
         """
         # Skip if we already are 3D
-        if isinstance(self._data, (SphericalRepresentation, SouthPoleSphericalRepresentation)):
+        if isinstance(self._data, SphericalRepresentation):
             return self
 
         if not isinstance(self.observer, BaseCoordinateFrame):
@@ -365,13 +368,16 @@ class Helioprojective(BaseCoordinateFrame):
                                "for observer '{}' "
                                "without `obstime` being specified.".format(self.observer))
 
-        rep = self.represent_as(UnitSouthPoleSphericalRepresentation)
+        rep = self.represent_as(UnitSphericalRepresentation)
+        lat, lon = rep.lat, rep.lon
+        alpha = np.arccos(np.cos(lat) * np.cos(lon)).to(lat.unit)
+        c = self.observer.radius**2 - self.rsun**2
+        b = -2 * self.observer.radius * np.cos(alpha)
+        d = ((-1*b) - np.sqrt(b**2 - 4*c)) / 2
 
-        distance = self.observer.radius - (self.rsun * np.cos(rep.theta))
-
-        return self.realize_frame(SouthPoleSphericalRepresentation(phi=rep.phi,
-                                                                   theta=rep.theta,
-                                                                   distance=distance))
+        return self.realize_frame(SphericalRepresentation(lon=lon,
+                                                          lat=lat,
+                                                          distance=d))
 
 
 class HelioprojectiveRadial(Helioprojective):
