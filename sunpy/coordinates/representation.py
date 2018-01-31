@@ -11,6 +11,8 @@ from astropy.coordinates.representation import (BaseRepresentation,
 from astropy.coordinates.angles import Angle, Longitude
 from astropy.coordinates.distances import Distance
 
+__all__ = ['UnitSouthPoleSphericalRepresentation', 'SouthPoleSphericalRepresentation']
+
 
 class UnitSouthPoleSphericalRepresentation(BaseRepresentation):
     """

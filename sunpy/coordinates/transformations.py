@@ -28,7 +28,7 @@ from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_product
 from astropy.coordinates import HCRS, get_body_barycentric, BaseCoordinateFrame, ConvertError
 from astropy.tests.helper import quantity_allclose
 
-from .representation import SphericalWrap180Representation
+from .representation import SouthPoleSphericalRepresentation, UnitSouthPoleSphericalRepresentation
 from .frames import (HeliographicStonyhurst, HeliographicCarrington,
                      Heliocentric, Helioprojective, HelioprojectiveRadial)
 
