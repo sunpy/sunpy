@@ -76,9 +76,7 @@ def figure_test(test_function):
     @wraps(test_function)
     def wrapper(*args, **kwargs):
         if not os.path.exists(hash.HASH_LIBRARY_FILE):
-            pytest.skip('Could not find a figure hash library at '
-                        '{}, skipping map plotting tests'.format(hash.HASH_LIBRARY_FILE),
-                        allow_module_level=True)
+            pytest.xfail('Could not find a figure hash library at {}'.format(hash.HASH_LIBRARY_FILE))
         plt.figure()
         name = "{0}.{1}".format(test_function.__module__, test_function.__name__)
         pngfile = tempfile.NamedTemporaryFile(delete=False)
