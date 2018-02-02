@@ -455,14 +455,20 @@ class HelioprojectiveRadial(Helioprojective):
 
         rep = self.represent_as(UnitSouthPoleSphericalRepresentation)
 
-        distance = self.observer.radius - (self.rsun * np.cos(rep.theta))
+        distance = self.observer.radius - (self.rsun * np.cos(rep.lat))
         # Set distance to NaN if off disk
-        distance[rep.theta > np.arcsin(self.rsun / self.observer.radius)] = np.NaN
+        distance[rep.lat > np.arcsin(self.rsun / self.observer.radius)] = np.NaN
 
-        return self.realize_frame(SouthPoleSphericalRepresentation(phi=rep.phi,
-                                                                   theta=rep.theta,
+        return self.realize_frame(SouthPoleSphericalRepresentation(lon=rep.lon,
+                                                                   lat=rep.lat,
                                                                    distance=distance))
+
+    @property
+    def spherical(self):
+        return self.represent_as(SouthPoleSphericalRepresentation, in_frame_units=True)
 
 
 class FITSHelioprojectiveRadial(HelioprojectiveRadial):
     default_representation = SphericalRepresentation
+
+    # TODO: Can we just change the representation in the constructor here?!

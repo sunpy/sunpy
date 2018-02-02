@@ -21,11 +21,11 @@ class UnitSouthPoleSphericalRepresentation(BaseRepresentation):
 
     Parameters
     ----------
-    phi, theta : `~astropy.units.Quantity` or str
+    lon, lat : `~astropy.units.Quantity` or str
         The azimuth and inclination of the point(s), in angular units. The
         inclination should be between 0 and 180 degrees, and the azimuth will
         be wrapped to an angle between 0 and 360 degrees. These can also be
-        instances of `~astropy.coordinates.Angle`.  If ``copy`` is False, `phi`
+        instances of `~astropy.coordinates.Angle`.  If ``copy`` is False, `lon`
         will be changed inplace if it is not between 0 and 360 degrees.
 
     differentials : dict, `PhysicsSphericalDifferential`, optional
@@ -42,37 +42,30 @@ class UnitSouthPoleSphericalRepresentation(BaseRepresentation):
         If `True` (default), arrays will be copied rather than referenced.
     """
 
-    attr_classes = OrderedDict([('phi', Angle),
-                                ('theta', Angle)])
+    attr_classes = OrderedDict([('lon', Longitude),
+                                ('lat', Angle)])
 
-    def __init__(self, phi, theta, differentials=None, copy=True):
-        super().__init__(phi, theta, copy=copy, differentials=differentials)
+    def __init__(self, lon, lat, differentials=None, copy=True):
+        super().__init__(lon, lat, copy=copy, differentials=differentials)
 
-        # Wrap/validate phi/theta
-        if copy:
-            self._phi = self._phi.wrap_at(360 * u.deg)
-        else:
-            # necessary because the above version of `wrap_at` has to be a copy
-            self._phi.wrap_at(360 * u.deg, inplace=True)
-
-        if np.any(self._theta < 0.*u.deg) or np.any(self._theta > 180.*u.deg):
+        if np.any(self._lat < 0.*u.deg) or np.any(self._lat > 180.*u.deg):
             raise ValueError('Inclination angle(s) must be within '
                              '0 deg <= angle <= 180 deg, '
-                             'got {0}'.format(theta.to(u.degree)))
+                             'got {0}'.format(lat.to(u.degree)))
 
     @property
-    def phi(self):
+    def lon(self):
         """
         The azimuth of the point(s).
         """
-        return self._phi
+        return self._lon
 
     @property
-    def theta(self):
+    def lat(self):
         """
         The elevation of the point(s).
         """
-        return self._theta
+        return self._lat
 
     def represent_as(self, other_class, differential_class=None):
         # Take a short cut if the other class is a spherical representation
@@ -81,10 +74,10 @@ class UnitSouthPoleSphericalRepresentation(BaseRepresentation):
         # is passed in, using the ._re_represent_differentials() method
         if inspect.isclass(other_class) and not differential_class:
             if issubclass(other_class, SphericalRepresentation):
-                return other_class(lon=self.phi, lat=self.theta - 90 * u.deg,
+                return other_class(lon=self.lon, lat=self.lat - 90 * u.deg,
                                    distance=1.0)
             elif issubclass(other_class, UnitSphericalRepresentation):
-                return other_class(lon=self.phi, lat=self.theta - 90 * u.deg)
+                return other_class(lon=self.lon, lat=self.lat - 90 * u.deg)
 
         return super().represent_as(other_class, differential_class)
 
@@ -94,9 +87,9 @@ class UnitSouthPoleSphericalRepresentation(BaseRepresentation):
         coordinates.
         """
 
-        x = np.sin(self.theta) * np.cos(self.phi)
-        y = np.sin(self.theta) * np.sin(self.phi)
-        z = -1 * np.cos(self.theta)
+        x = np.sin(self.lat) * np.cos(self.lon)
+        y = np.sin(self.lat) * np.sin(self.lon)
+        z = -1 * np.cos(self.lat)
 
         return CartesianRepresentation(x=x, y=y, z=z, copy=False)
 
@@ -109,12 +102,11 @@ class UnitSouthPoleSphericalRepresentation(BaseRepresentation):
 
         z = -1 * cart.z
         s = np.hypot(cart.x, cart.y)
-        r = np.hypot(s, z)
 
-        phi = np.arctan2(cart.y, cart.x)
-        theta = np.arctan2(s, z)
+        lon = np.arctan2(cart.y, cart.x)
+        lat = np.arctan2(s, z)
 
-        return cls(phi=phi, theta=theta, copy=False)
+        return cls(lon=lon, lat=lat, copy=False)
 
     def norm(self):
         """Vector norm.
@@ -139,11 +131,11 @@ class SouthPoleSphericalRepresentation(BaseRepresentation):
 
     Parameters
     ----------
-    phi, theta : `~astropy.units.Quantity` or str
+    lon, lat : `~astropy.units.Quantity` or str
         The azimuth and inclination of the point(s), in angular units. The
         inclination should be between 0 and 180 degrees, and the azimuth will
         be wrapped to an angle between 0 and 360 degrees. These can also be
-        instances of `~astropy.coordinates.Angle`.  If ``copy`` is False, `phi`
+        instances of `~astropy.coordinates.Angle`.  If ``copy`` is False, `lon`
         will be changed inplace if it is not between 0 and 360 degrees.
 
     r : `~astropy.units.Quantity`
@@ -167,41 +159,34 @@ class SouthPoleSphericalRepresentation(BaseRepresentation):
 
     _unit_representation = UnitSouthPoleSphericalRepresentation
 
-    attr_classes = OrderedDict([('phi', Angle),
-                                ('theta', Angle),
+    attr_classes = OrderedDict([('lon', Longitude),
+                                ('lat', Angle),
                                 ('distance', u.Quantity)])
 
-    def __init__(self, phi, theta, distance, differentials=None, copy=True):
-        super().__init__(phi, theta, distance, copy=copy, differentials=differentials)
+    def __init__(self, lon, lat, distance, differentials=None, copy=True):
+        super().__init__(lon, lat, distance, copy=copy, differentials=differentials)
 
-        # Wrap/validate phi/theta
-        if copy:
-            self._phi = self._phi.wrap_at(360 * u.deg)
-        else:
-            # necessary because the above version of `wrap_at` has to be a copy
-            self._phi.wrap_at(360 * u.deg, inplace=True)
-
-        if np.any(self._theta < 0.*u.deg) or np.any(self._theta > 180.*u.deg):
+        if np.any(self._lat < 0.*u.deg) or np.any(self._lat > 180.*u.deg):
             raise ValueError('Inclination angle(s) must be within '
                              '0 deg <= angle <= 180 deg, '
-                             'got {0}'.format(theta.to(u.degree)))
+                             'got {0}'.format(lat.to(u.degree)))
 
         if self._distance.unit.physical_type == 'length':
             self._distance = self.distance.view(Distance)
 
     @property
-    def phi(self):
+    def lon(self):
         """
         The azimuth of the point(s).
         """
-        return self._phi
+        return self._lon
 
     @property
-    def theta(self):
+    def lat(self):
         """
         The elevation of the point(s).
         """
-        return self._theta
+        return self._lat
 
     @property
     def distance(self):
@@ -211,22 +196,22 @@ class SouthPoleSphericalRepresentation(BaseRepresentation):
         return self._distance
 
     # def unit_vectors(self):
-    #     sinphi, cosphi = np.sin(self.phi), np.cos(self.phi)
-    #     sintheta, costheta = np.sin(self.theta), np.cos(self.theta)
+    #     sinlon, coslon = np.sin(self.lon), np.cos(self.lon)
+    #     sinlat, coslat = np.sin(self.lat), np.cos(self.lat)
     #     return OrderedDict(
-    #         (('phi', CartesianRepresentation(-sinphi, cosphi, 0., copy=False)),
-    #          ('theta', CartesianRepresentation(costheta*cosphi,
-    #                                            costheta*sinphi,
-    #                                            -sintheta, copy=False)),
-    #          ('r', CartesianRepresentation(sintheta*cosphi, sintheta*sinphi,
-    #                                        costheta, copy=False))))
+    #         (('lon', CartesianRepresentation(-sinlon, coslon, 0., copy=False)),
+    #          ('lat', CartesianRepresentation(coslat*coslon,
+    #                                            coslat*sinlon,
+    #                                            -sinlat, copy=False)),
+    #          ('r', CartesianRepresentation(sinlat*coslon, sinlat*sinlon,
+    #                                        coslat, copy=False))))
 
     # def scale_factors(self):
     #     r = self.distance / u.radian
-    #     sintheta = np.sin(self.theta)
+    #     sinlat = np.sin(self.lat)
     #     l = np.broadcast_to(1.*u.one, self.shape, subok=True)
-    #     return OrderedDict((('phi', r * sintheta),
-    #                         ('theta', r),
+    #     return OrderedDict((('lon', r * sinlat),
+    #                         ('lat', r),
     #                         ('r', l)))
 
     def represent_as(self, other_class, differential_class=None):
@@ -236,10 +221,10 @@ class SouthPoleSphericalRepresentation(BaseRepresentation):
         # is passed in, using the ._re_represent_differentials() method
         if inspect.isclass(other_class) and not differential_class:
             if issubclass(other_class, SphericalRepresentation):
-                return other_class(lon=self.phi, lat=self.theta - 90 * u.deg,
+                return other_class(lon=self.lon, lat=self.lat - 90 * u.deg,
                                    distance=1.0)
             elif issubclass(other_class, UnitSphericalRepresentation):
-                return other_class(lon=self.phi, lat=self.theta - 90 * u.deg)
+                return other_class(lon=self.lon, lat=self.lat - 90 * u.deg)
 
         return super().represent_as(other_class, differential_class)
 
@@ -255,9 +240,9 @@ class SouthPoleSphericalRepresentation(BaseRepresentation):
         else:
             d = self.distance
 
-        x = d * np.sin(self.theta) * np.cos(self.phi)
-        y = d * np.sin(self.theta) * np.sin(self.phi)
-        z = -d * np.cos(self.theta)
+        x = d * np.sin(self.lat) * np.cos(self.lon)
+        y = d * np.sin(self.lat) * np.sin(self.lon)
+        z = -d * np.cos(self.lat)
 
         return CartesianRepresentation(x=x, y=y, z=z, copy=False)
 
@@ -270,12 +255,12 @@ class SouthPoleSphericalRepresentation(BaseRepresentation):
 
         z = -1 * cart.z
         s = np.hypot(cart.x, cart.y)
-        r = np.hypot(s, z)
+        d = np.hypot(s, z)
 
-        phi = np.arctan2(cart.y, cart.x)
-        theta = np.arctan2(s, z)
+        lon = np.arctan2(cart.y, cart.x)
+        lat = np.arctan2(s, z)
 
-        return cls(phi=phi, theta=theta, distance=r, copy=False)
+        return cls(lon=lon, lat=lat, distance=d, copy=False)
 
     def norm(self):
         """Vector norm.

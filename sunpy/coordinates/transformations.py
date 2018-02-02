@@ -245,9 +245,9 @@ def hpc_to_hpr(hpcframe, hprframe):
     psi = np.arctan2(top, btm)
 
     if distance:
-        representation = SouthPoleSphericalRepresentation(phi=psi, theta=el, r=distance)
+        representation = SouthPoleSphericalRepresentation(lon=psi, lat=el, distance=distance)
     else:
-        representation = UnitSouthPoleSphericalRepresentation(phi=psi, theta=el)
+        representation = UnitSouthPoleSphericalRepresentation(lon=psi, lat=el)
 
     return hprframe.realize_frame(representation)
 
@@ -268,8 +268,8 @@ def hpr_to_hpc(hprframe, hpcframe):
         distance = hprframe.distance
 
     rep = hprframe.represent_as(SouthPoleSphericalRepresentation)
-    psi = rep.phi
-    el = rep.theta
+    psi = rep.lon
+    el = rep.lat
 
     # Longitude conversion
     top = -np.sin(el) * np.sin(psi)
