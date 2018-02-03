@@ -20,7 +20,7 @@ from __future__ import absolute_import
 from datetime import datetime
 
 from astropy import units as u
-
+from astropy.time import Time as astropyTime
 from sunpy.time import TimeRange as _TimeRange
 from sunpy.net.attr import (
     Attr, AttrWalker, AttrAnd, AttrOr, DummyAttr, ValueAttr
@@ -178,12 +178,15 @@ class Time(Attr, _Range):
             self.start = start.start
             self.end = start.end
         else:
-            self.start = parse_time(start)
-            self.end = parse_time(end)
+            self.start = start if isinstance(start, astropyTime) else astropyTime(parse_time(start)
+            self.end = end if isinstance(end, astropyTime) else astropyTime(parse_time(end))
 
         if self.start > self.end:
             raise ValueError("End time must be after start time.")
-        self.near = None if near is None else parse_time(near)
+        if near is None:
+            self.near = None
+        else:
+            self.near = near if isinstance(near, astropyTime) else astropyTime(parse_time(near))
 
         _Range.__init__(self, self.start, self.end, self.__class__)
         Attr.__init__(self)
