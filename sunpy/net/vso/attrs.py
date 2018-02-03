@@ -178,15 +178,15 @@ class Time(Attr, _Range):
             self.start = start.start
             self.end = start.end
         else:
-            self.start = start if isinstance(start, astropyTime) else astropyTime(parse_time(start)
-            self.end = end if isinstance(end, astropyTime) else astropyTime(parse_time(end))
+            self.start = isinstance(start, astropyTime) and start or astropytime(parse_time(start))
+            self.end = isinstance(end, astropyTime) and end or astropyTime(parse_time(end))
 
         if self.start > self.end:
             raise ValueError("End time must be after start time.")
         if near is None:
             self.near = None
         else:
-            self.near = near if isinstance(near, astropyTime) else astropyTime(parse_time(near))
+            self.near = isinstance(near, astropyTime) and near or astropyTime(parse_time(near))
 
         _Range.__init__(self, self.start, self.end, self.__class__)
         Attr.__init__(self)
