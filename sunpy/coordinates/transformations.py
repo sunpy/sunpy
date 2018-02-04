@@ -183,8 +183,8 @@ def hcc_to_hgs(hcc_coord, hgs_frame):
                            "without `obstime` being specified.".format(hcc_coord.observer))
 
     # Get observer longitude/lattitude with respect to Earth
-    l0 = np.deg2rad(hcc_coord.observer.lon)
-    b0 = np.deg2rad(hcc_coord.observer.lat)
+    l0 = hcc_coord.observer.lon
+    b0 = hcc_coord.observer.lat
 
     cosl = np.cos(l0)
     sinl = np.sin(l0)
