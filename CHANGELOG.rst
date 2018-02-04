@@ -10,6 +10,9 @@ New Features
 - Decorator to append and/or prepend doc strings [#2386]
 - Adding `python setup.py test --figure-only` [#2557]
 - Fido.fetch now accepts pathlib.Path objects for path attribute.[#2559]
+- The :class:`HeliographicStonyhurst` coordinate system can now be specified
+  using a cartesian system, which is sometimes known as the
+  "Heliocentric Earth equatorial" (HEEQ) coordinate system. [#2437]
 
 API Changes
 -----------
