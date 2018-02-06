@@ -13,6 +13,7 @@ Bug Fixes
 Bug Fixes
 ---------
 
+- removed `wavelnth` keyword in meta desc of Maps to avoid using non standard FITS keyword like `nan` [#2427]
 - `~sunpy.net.dataretriever.clients.XRSClient` now reports time ranges of files correctly. [#2364]
 - Make parse_time work with datetime64s and pandas series [#2370]
 - CompositeMap axes scaling now uses map spatial units [#2310]

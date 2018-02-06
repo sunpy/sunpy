@@ -86,8 +86,7 @@ class CORMap(GenericMap):
 
         GenericMap.__init__(self, data, header, **kwargs)
 
-        self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
-        self.meta['wavelnth'] = np.nan
+        self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])        
         self.meta['waveunit'] = 'nm'
         self.plot_settings['cmap'] = cm.get_cmap('stereocor{det!s}'.format(det=self.detector[-1]))
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
@@ -131,8 +130,7 @@ class HIMap(GenericMap):
     """
     def __init__(self, data, header, **kwargs):
 
-        GenericMap.__init__(self, data, header, **kwargs)
-        self.meta['wavelnth'] = np.nan
+        GenericMap.__init__(self, data, header, **kwargs)        
         self.meta['waveunit'] = 'nm'
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = cm.get_cmap('stereohi{det!s}'.format(det=self.detector[-1]))
