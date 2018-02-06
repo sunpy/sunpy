@@ -319,4 +319,12 @@ def hgs_to_hcrs(hgscoord, hcrsframe):
     return matrix_transpose(hcrs_to_hgs(hcrsframe, hgscoord))
 
 
+@frame_transform_graph.transform(FunctionTransform, HeliographicStonyhurst, HeliographicStonyhurst)
+def hgs_to_hgs(from_coo, to_frame):
+    if np.all(from_coo.obstime == to_frame.obstime):
+        return to_frame.realize_frame(from_coo.data)
+    else:
+        return from_coo.transform_to(HCRS).transform_to(to_frame)
+
+
 __doc__ += _make_transform_graph_docs()
