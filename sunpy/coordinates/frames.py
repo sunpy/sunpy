@@ -472,3 +472,7 @@ class FITSHelioprojectiveRadial(HelioprojectiveRadial):
     default_representation = SphericalRepresentation
 
     # TODO: Can we just change the representation in the constructor here?!
+
+    @property
+    def spherical(self):
+        return self.represent_as('spherical', in_frame_units=True)
