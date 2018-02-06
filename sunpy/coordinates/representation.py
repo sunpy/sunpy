@@ -53,20 +53,6 @@ class UnitSouthPoleSphericalRepresentation(BaseRepresentation):
                              '0 deg <= angle <= 180 deg, '
                              'got {0}'.format(lat.to(u.degree)))
 
-    @property
-    def lon(self):
-        """
-        The azimuth of the point(s).
-        """
-        return self._lon
-
-    @property
-    def lat(self):
-        """
-        The elevation of the point(s).
-        """
-        return self._lat
-
     def represent_as(self, other_class, differential_class=None):
         # Take a short cut if the other class is a spherical representation
 
@@ -173,27 +159,6 @@ class SouthPoleSphericalRepresentation(BaseRepresentation):
 
         if self._distance.unit.physical_type == 'length':
             self._distance = self.distance.view(Distance)
-
-    @property
-    def lon(self):
-        """
-        The azimuth of the point(s).
-        """
-        return self._lon
-
-    @property
-    def lat(self):
-        """
-        The elevation of the point(s).
-        """
-        return self._lat
-
-    @property
-    def distance(self):
-        """
-        The distance from the origin to the point(s).
-        """
-        return self._distance
 
     # def unit_vectors(self):
     #     sinlon, coslon = np.sin(self.lon), np.cos(self.lon)
