@@ -14,6 +14,24 @@ from sunpy.net.tests.strategies import goes_time
 
 LCClient = goes.XRSClient()
 
+#Moving these two to the front made them pass (?!)
+@pytest.mark.remote_data
+@pytest.mark.parametrize("time, instrument", [
+    (Time('1983/06/17', '1983/06/18'), Instrument('XRS')),
+    (Time('2012/10/4', '2012/10/6'), Instrument('XRS')),
+])
+def test_get(time, instrument):
+    qr1 = LCClient.search(time, instrument)
+    res = LCClient.fetch(qr1)
+    download_list = res.wait(progress=False)
+    assert len(download_list) == len(qr1)
+
+@pytest.mark.remote_data
+def test_new_logic():
+    qr = LCClient.search(Time('2012/10/4', '2012/10/6'), Instrument('XRS'))
+    res = LCClient.fetch(qr)
+    download_list = res.wait(progress=False)
+    assert len(download_list) == len(qr)
 
 @pytest.mark.parametrize(
     "timerange,url_start,url_end",
@@ -81,27 +99,6 @@ def test_query_error():
     for time in times:
         with pytest.raises(ValueError):
             LCClient.search(time, Instrument('XRS'))
-
-#@pytest.mark.skip(reason="Hangs with pytest only")
-@pytest.mark.remote_data
-@pytest.mark.parametrize("time, instrument", [
-    (Time('1983/06/17', '1983/06/18'), Instrument('XRS')),
-    (Time('2012/10/4', '2012/10/6'), Instrument('XRS')),
-])
-def test_get(time, instrument):
-    qr1 = LCClient.search(time, instrument)
-    res = LCClient.fetch(qr1)
-    download_list = res.wait(progress=True)
-    assert len(download_list) == len(qr1)
-
-#@pytest.mark.skip(reason="Hangs with pytest only")
-@pytest.mark.remote_data
-def test_new_logic():
-    qr = LCClient.search(Time('2012/10/4', '2012/10/6'), Instrument('XRS'))
-    res = LCClient.fetch(qr)
-    download_list = res.wait(progress=True)
-    assert len(download_list) == len(qr)
-
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize(
