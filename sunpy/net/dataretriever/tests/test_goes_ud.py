@@ -1,7 +1,7 @@
 import pytest
 import datetime
 
-from sunpy.time.timerange import TimeRange, parse_time
+from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.goes as goes
@@ -14,7 +14,8 @@ from sunpy.net.tests.strategies import goes_time
 
 LCClient = goes.XRSClient()
 
-#Moving these two to the front made them pass (?!)
+
+# Moving these two to the front made them pass (?!)
 @pytest.mark.remote_data
 @pytest.mark.parametrize("time, instrument", [
     (Time('1983/06/17', '1983/06/18'), Instrument('XRS')),
@@ -26,12 +27,14 @@ def test_get(time, instrument):
     download_list = res.wait(progress=False)
     assert len(download_list) == len(qr1)
 
+
 @pytest.mark.remote_data
 def test_new_logic():
     qr = LCClient.search(Time('2012/10/4', '2012/10/6'), Instrument('XRS'))
     res = LCClient.fetch(qr)
     download_list = res.wait(progress=False)
     assert len(download_list) == len(qr)
+
 
 @pytest.mark.parametrize(
     "timerange,url_start,url_end",
@@ -99,6 +102,7 @@ def test_query_error():
     for time in times:
         with pytest.raises(ValueError):
             LCClient.search(time, Instrument('XRS'))
+
 
 @pytest.mark.remote_data
 @pytest.mark.parametrize(

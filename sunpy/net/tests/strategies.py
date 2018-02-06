@@ -7,7 +7,7 @@ from hypothesis.strategies import datetimes
 
 import datetime
 from sunpy.net import attrs as a
-from sunpy.time import parse_time, TimeRange
+from sunpy.time import TimeRange
 
 
 @st.composite
