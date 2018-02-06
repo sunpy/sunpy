@@ -60,7 +60,7 @@ def test_fixed_satellite():
         assert "go13" in resp.url
 
 
-@example(a.Time("2006-08-01", "2006-08-01"))
+@example(a.Time("2006-08-01", "2006-08-02"))
 # This example tests a time range with a satellite jump and no overlap
 @example(a.Time("2009-11-30", "2009-12-3"))
 @given(goes_time())
@@ -82,8 +82,7 @@ def test_query_error():
         with pytest.raises(ValueError):
             LCClient.search(time, Instrument('XRS'))
 
-
-@pytest.mark.skip(reason="Hangs with pytest only")
+#@pytest.mark.skip(reason="Hangs with pytest only")
 @pytest.mark.remote_data
 @pytest.mark.parametrize("time, instrument", [
     (Time('1983/06/17', '1983/06/18'), Instrument('XRS')),
@@ -92,16 +91,15 @@ def test_query_error():
 def test_get(time, instrument):
     qr1 = LCClient.search(time, instrument)
     res = LCClient.fetch(qr1)
-    download_list = res.wait(progress=False)
+    download_list = res.wait(progress=True)
     assert len(download_list) == len(qr1)
 
-
-@pytest.mark.skip(reason="Hangs with pytest only")
+#@pytest.mark.skip(reason="Hangs with pytest only")
 @pytest.mark.remote_data
 def test_new_logic():
     qr = LCClient.search(Time('2012/10/4', '2012/10/6'), Instrument('XRS'))
     res = LCClient.fetch(qr)
-    download_list = res.wait(progress=False)
+    download_list = res.wait(progress=True)
     assert len(download_list) == len(qr)
 
 
