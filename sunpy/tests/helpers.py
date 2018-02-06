@@ -40,9 +40,7 @@ else:
     SKIP_ANA = False
 
 skip_windows = pytest.mark.skipif(platform.system() == 'Windows', reason="Windows")
-
 skip_glymur = pytest.mark.skipif(SKIP_GLYMUR, reason="Glymur can not be imported")
-
 skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available")
 
 
@@ -52,8 +50,8 @@ def warnings_as_errors(request):
 
     request.addfinalizer(lambda *args: warnings.resetwarnings())
 
-new_hash_library = {}
 
+new_hash_library = {}
 figure_test_pngfiles = {}
 
 
@@ -77,16 +75,27 @@ def figure_test(test_function):
     def wrapper(*args, **kwargs):
         if not os.path.exists(hash.HASH_LIBRARY_FILE):
             pytest.xfail('Could not find a figure hash library at {}'.format(hash.HASH_LIBRARY_FILE))
+
+        name = "{0}.{1}".format(test_function.__module__,
+                                test_function.__name__)
         plt.figure()
-        name = "{0}.{1}".format(test_function.__module__, test_function.__name__)
         pngfile = tempfile.NamedTemporaryFile(delete=False)
         figure_hash = hash.hash_figure(test_function(*args, **kwargs), out_stream=pngfile)
         figure_test_pngfiles[name] = pngfile.name
         pngfile.close()
+
+        # Save the image that was generated
+        os.makedirs('result_images', exist_ok=True)
+        result_image_loc = 'result_images/{}.png'.format(name)
+        plt.savefig(result_image_loc)
+
         new_hash_library[name] = figure_hash
         if name not in hash.hash_library:
             pytest.fail("Hash not present: {0}".format(name))
-        else:
-            assert hash.hash_library[name] == figure_hash
+
+        if hash.hash_library[name] != figure_hash:
+            raise RuntimeError('Figure hash does not match expected hash.\n'
+                               'New image generated and placed at {}'.format(result_image_loc))
+
         plt.close()
     return wrapper
