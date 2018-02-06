@@ -7,6 +7,7 @@ import warnings
 import tempfile
 import platform
 import os
+import urllib.request
 
 import pytest
 import numpy as np
@@ -40,9 +41,7 @@ else:
     SKIP_ANA = False
 
 skip_windows = pytest.mark.skipif(platform.system() == 'Windows', reason="Windows")
-
 skip_glymur = pytest.mark.skipif(SKIP_GLYMUR, reason="Glymur can not be imported")
-
 skip_ana = pytest.mark.skipif(SKIP_ANA, reason="ANA is not available")
 
 
@@ -52,9 +51,10 @@ def warnings_as_errors(request):
 
     request.addfinalizer(lambda *args: warnings.resetwarnings())
 
-new_hash_library = {}
 
+new_hash_library = {}
 figure_test_pngfiles = {}
+remote_images = 'https://raw.githubusercontent.com/dstansby/sunpy-test-images/master/images/'
 
 
 def figure_test(test_function):
@@ -72,21 +72,37 @@ def figure_test(test_function):
     def test_simple_plot():
         plt.plot([0,1])
     """
+    @pytest.mark.remote_data
     @pytest.mark.figure
     @wraps(test_function)
     def wrapper(*args, **kwargs):
         if not os.path.exists(hash.HASH_LIBRARY_FILE):
             pytest.xfail('Could not find a figure hash library at {}'.format(hash.HASH_LIBRARY_FILE))
+
+        name = "{0}.{1}".format(test_function.__module__,
+                                test_function.__name__)
         plt.figure()
-        name = "{0}.{1}".format(test_function.__module__, test_function.__name__)
         pngfile = tempfile.NamedTemporaryFile(delete=False)
         figure_hash = hash.hash_figure(test_function(*args, **kwargs), out_stream=pngfile)
         figure_test_pngfiles[name] = pngfile.name
         pngfile.close()
+
         new_hash_library[name] = figure_hash
         if name not in hash.hash_library:
             pytest.fail("Hash not present: {0}".format(name))
-        else:
-            assert hash.hash_library[name] == figure_hash
+
+        if hash.hash_library[name] != figure_hash:
+            # Save the image that was actually generated
+            os.makedirs('result_images', exist_ok=True)
+            result_image_loc = 'result_images/{}.png'.format(name)
+            plt.savefig(result_image_loc)
+            # Download the expected image from the sunpy-test-images repo
+            url = '{}/{}.png'.format(remote_images, name)
+            expected_image_loc = 'result_images/{}_expected.png'.format(name)
+            urllib.request.urlretrieve(url, expected_image_loc)
+            raise RuntimeError('Figure hash does not match expected hash.\n'
+                               'New image generated and placed at {}\n'
+                               'Expected image downloaded to {}'.format(result_image_loc, expected_image_loc))
+
         plt.close()
     return wrapper
