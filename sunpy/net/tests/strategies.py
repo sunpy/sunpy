@@ -82,6 +82,7 @@ def goes_time(draw, time=datetimes(
     tr = TimeRange(t1, t2)
     # There is no GOES data for this date.
     assume(datetime.datetime(1983, 5, 1, 0, 0, 0) not in tr)
+    assume((datetime.datetime(1983, 5, 1) + draw(delta)) not in tr)
 
     return a.Time(tr)
 

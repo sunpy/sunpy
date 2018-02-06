@@ -1,5 +1,7 @@
-import pytest
 import datetime
+
+import pytest
+from hypothesis import given, example
 
 from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument
@@ -8,8 +10,6 @@ import sunpy.net.dataretriever.sources.goes as goes
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
-
-from hypothesis import given, example
 from sunpy.net.tests.strategies import goes_time
 
 LCClient = goes.XRSClient()
@@ -81,7 +81,7 @@ def test_fixed_satellite():
         assert "go13" in resp.url
 
 
-@example(a.Time("2006-08-01", "2006-08-02"))
+@example(a.Time("2006-08-01", "2006-08-01"))
 # This example tests a time range with a satellite jump and no overlap
 @example(a.Time("2009-11-30", "2009-12-3"))
 @given(goes_time())
