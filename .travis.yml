@@ -67,7 +67,7 @@ matrix:
          # Order of tests run in build stages
          - python: 3.6
            stage: Initial tests
-           env: SETUP_CMD='test'
+           env: SETUP_CMD='test' EVENT_TYPE='push pull_request cron'
 
          - python: 3.6
            stage: Comprehensive tests
@@ -87,44 +87,44 @@ matrix:
          - python: 2.7
            stage: Comprehensive tests
            env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
+                EVENT_TYPE='push pull_request cron'
 
          - python: 3.5
            stage: Comprehensive tests
            env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
+                EVENT_TYPE='push pull_request cron'
 
          - python: 2.7
            stage: Comprehensive tests
            env: SETUP_CMD='test'
+                EVENT_TYPE='push pull_request cron'
 
          - os: osx
            stage: Cron tests
            language: generic
-           env: PYTHON_VERSION=3.6
+           env: PYTHON_VERSION=3.6 EVENT_TYPE='cron'
 
          - python: 3.6
            stage: Cron tests
-           env: ASTROPY_VERSION='dev'
-                EVENT_TYPE='push pull_request cron'
+           env: ASTROPY_VERSION='dev' EVENT_TYPE='cron'
 
          - python: 3.6
            stage: Cron tests
-           env: NUMPY_VERSION='dev'
-                EVENT_TYPE='push pull_request cron'
+           env: NUMPY_VERSION='dev' EVENT_TYPE='cron'
 
          - python: 3.6
            stage: Cron tests
-           env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
-                EVENT_TYPE='push pull_request cron'
+           env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev' EVENT_TYPE='cron'
 
          - python: 3.5
            stage: Cron tests
-           env: SETUP_CMD='test --figure' ASTROPY_VERSION='dev'
+           env: SETUP_CMD='test --figure' EVENT_TYPE='cron' ASTROPY_VERSION='dev'
                 CONDA_DEPENDENCIES='astropy'
 
          # Previous numpy is tested on an older python version
          - python: 3.5
            stage: Cron tests
-           env: NUMPY_VERSION=$PREVIOUS_NUMPY
+           env: NUMPY_VERSION=$PREVIOUS_NUMPY EVENT_TYPE='cron'
 
 before_install:
     # Fix for Python 2 with Numpy 1.14. Should be fixed for 1.14.1
