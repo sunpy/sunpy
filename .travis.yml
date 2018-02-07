@@ -42,7 +42,7 @@ env:
         - CONDA_CHANNELS='astropy astropy-ci-extras'
         - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas nomkl'
         - PIP_DEPENDENCIES='hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures sunpy-sphinx-theme glymur pytest-astropy'
-        - EVENT_TYPE='pull_request push'
+        - EVENT_TYPE='push pull_request cron'
 
 
     matrix:
@@ -75,12 +75,10 @@ matrix:
            # currently pick up doctests in docs/
            env: MAIN_CMD="py.test"
                 SETUP_CMD="--remote-data -k-figure --cov ./"
-                EVENT_TYPE='push pull_request cron'
 
          - python: 3.6
            stage: Comprehensive tests
            env: SETUP_CMD='build_docs -w'
-                EVENT_TYPE='push pull_request cron'
 
          # Figure test runs use an env stored in the repo so don't have conda
          # requirements
@@ -104,17 +102,14 @@ matrix:
          - python: 3.6
            stage: Cron tests
            env: ASTROPY_VERSION='dev'
-                EVENT_TYPE='push pull_request cron'
 
          - python: 3.6
            stage: Cron tests
            env: NUMPY_VERSION='dev'
-                EVENT_TYPE='push pull_request cron'
 
          - python: 3.6
            stage: Cron tests
            env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
-                EVENT_TYPE='push pull_request cron'
 
          - python: 3.5
            stage: Cron tests
