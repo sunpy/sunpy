@@ -5,8 +5,48 @@ from astropy.tests.helper import quantity_allclose, assert_quantity_allclose
 from astropy.coordinates import SkyCoord, get_body_barycentric
 from astropy.time import Time
 
-from sunpy.coordinates import Helioprojective, HeliographicStonyhurst, HeliographicCarrington, get_sun_L0
+import sunpy.coordinates.transformations as trans
+from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst,
+                               HeliographicCarrington, get_sun_L0,
+                               Heliocentric)
 from sunpy.time import parse_time
+
+
+def test_new_hcc_to_hgs():
+    # Generate 10 random coordinates
+    for i in range(50):
+        x = (np.random.rand() - 0.5) * u.km
+        y = (np.random.rand() - 0.5) * u.km
+        z = (np.random.rand() - 0.5) * u.km
+        time = '2007-05-04T21:08:12'
+        hcc = Heliocentric(x=x, y=y, z=z, obstime=time)
+        hgs_frame = HeliographicStonyhurst(obstime=time)
+
+        # New matrix based transformation
+        out1 = hcc.transform_to(hgs_frame)
+        # Old function based transformation
+        out2 = trans.old_hcc_to_hgs(hcc, hgs_frame)
+        # Check that they give the same results
+        assert_quantity_allclose(np.mod(out1.lon, 360 * u.deg),
+                                 np.mod(out2.lon, 360 * u.deg))
+        assert_quantity_allclose(out1.lat, out2.lat)
+        assert_quantity_allclose(out1.radius, out2.radius)
+
+
+def test_hcc_to_hgs():
+    '''
+    Check that a coordinate pointing to the observer in Heliocentric
+    coordinates maps to the lattitude/longitude of the observer in
+    HeliographicStonyhurst coordinates.
+    '''
+    lat = 10 * u.deg
+    lon = 20 * u.deg
+    observer = HeliographicStonyhurst(lat=lat, lon=lon)
+    hcc_in = Heliocentric(x=0*u.km, y=0*u.km, z=1*u.km, observer=observer)
+    hgs_out = hcc_in.transform_to(HeliographicStonyhurst)
+
+    assert_quantity_allclose(hgs_out.lat, lat)
+    assert_quantity_allclose(hgs_out.lon, lon)
 
 
 def test_hpc_hpc():
