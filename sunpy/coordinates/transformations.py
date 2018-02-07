@@ -28,8 +28,9 @@ from astropy.coordinates.matrix_utilities import rotation_matrix, matrix_product
 from astropy.coordinates import HCRS, get_body_barycentric, BaseCoordinateFrame, ConvertError
 from astropy.tests.helper import quantity_allclose
 
+from .representation import SouthPoleSphericalRepresentation, UnitSouthPoleSphericalRepresentation
 from .frames import (HeliographicStonyhurst, HeliographicCarrington,
-                     Heliocentric, Helioprojective)
+                     Heliocentric, Helioprojective, HelioprojectiveRadial, FITSHelioprojectiveRadial)
 
 __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',
@@ -213,6 +214,96 @@ def hgs_to_hcc(heliogcoord, heliocframe):
         x.to(u.km), y.to(u.km), zz.to(u.km))
 
     return heliocframe.realize_frame(representation)
+
+
+@frame_transform_graph.transform(FunctionTransform, Helioprojective,
+                                 HelioprojectiveRadial)
+def hpc_to_hpr(hpcframe, hprframe):
+    """
+    Transform from the hpcframe to a hprframe.
+
+    The hprframe holds declination angle (pole at -90) not theta_p (pole at 0),
+    however, the transformation in Thompson is defined in terms of theta_p, so
+    a conversion from declination is performed at the end of the transform.
+    """
+    if isinstance(hpcframe._data, (UnitSphericalRepresentation, UnitSouthPoleSphericalRepresentation)):
+        distance = None
+    else:
+        distance = hpcframe.distance
+
+    lon = hpcframe.Tx
+    lat = hpcframe.Ty
+    # Elongation calc:
+    # Get numerator and denomenator for atan2 calculation
+    top = np.sqrt((np.cos(lat)**2) * (np.sin(lon)**2) + (np.sin(lat)**2))
+    btm = np.cos(lat) * np.cos(lon)
+    el = np.arctan2(top, btm)
+
+    # Position angle calc:
+    top = -np.cos(lat)*np.sin(lon)
+    btm = np.sin(lat)
+    psi = np.arctan2(top, btm)
+
+    if distance:
+        representation = SouthPoleSphericalRepresentation(lon=psi, lat=el, distance=distance)
+    else:
+        representation = UnitSouthPoleSphericalRepresentation(lon=psi, lat=el)
+
+    return hprframe.realize_frame(representation)
+
+
+@frame_transform_graph.transform(FunctionTransform,
+                                 HelioprojectiveRadial, Helioprojective)
+def hpr_to_hpc(hprframe, hpcframe):
+    """
+    Transform from the hprframe to a hpcframe
+
+    The hprframe holds declination angle (pole at -90) not theta_p (pole at 0),
+    however, the transformation in Thompson is defined in terms of theta_p, so
+    a conversion to theta_p is performed at the start of the transform.
+    """
+    if isinstance(hprframe._data, (UnitSphericalRepresentation, UnitSouthPoleSphericalRepresentation)):
+        distance = None
+    else:
+        distance = hprframe.distance
+
+    rep = hprframe.represent_as(SouthPoleSphericalRepresentation)
+    psi = rep.lon
+    el = rep.lat
+
+    # Longitude conversion
+    top = -np.sin(el) * np.sin(psi)
+    btm = np.cos(el)
+    lon = np.arctan2(top, btm)
+    # Latitude conversion
+    lat = np.arcsin(np.sin(el) * np.cos(psi))
+
+    if distance:
+        representation = SphericalRepresentation(lon=lon, lat=lat, distance=distance)
+    else:
+        representation = UnitSphericalRepresentation(lon=lon, lat=lat)
+
+    return hpcframe.realize_frame(representation)
+
+
+@frame_transform_graph.transform(FunctionTransform,
+                                 HelioprojectiveRadial, FITSHelioprojectiveRadial)
+def hpr_to_fitshpr(hprframe, fitsframe):
+    out = fitsframe.realize_frame(hprframe.spherical)
+    for name in hprframe.frame_attributes.keys():
+        setattr(out, '_'+name, getattr(hprframe, name))
+    return out
+
+
+@frame_transform_graph.transform(FunctionTransform,
+                                 FITSHelioprojectiveRadial, HelioprojectiveRadial)
+def fitshpr_to_hpr(fitsframe, hprframe):
+    hprframe.frame_attributes = fitsframe.frame_attributes
+    out = hprframe.realize_frame(fitsframe.spherical.represent_as(SouthPoleSphericalRepresentation))
+    for name in fitsframe.frame_attributes.keys():
+        setattr(out, '_'+name, getattr(fitsframe, name))
+
+    return out
 
 
 

@@ -23,6 +23,7 @@ from astropy.coordinates import Attribute, CoordinateAttribute, ConvertError
 
 from sunpy import sun
 
+from .representation import SouthPoleSphericalRepresentation, UnitSouthPoleSphericalRepresentation
 from .frameattributes import TimeFrameAttributeSunPy, ObserverCoordinateAttribute
 
 RSUN_METERS = sun.constants.get('radius').si.to(u.m)
@@ -376,3 +377,113 @@ class Helioprojective(BaseCoordinateFrame):
         return self.realize_frame(SphericalRepresentation(lon=lon,
                                                           lat=lat,
                                                           distance=d))
+
+
+class HelioprojectiveRadial(Helioprojective):
+    """
+    The Helioprojective-Radial frame is a spherical coordinate system projected
+    on to the the celestial sphere.
+
+    The center of the solar disk is defined to be at the south pole of the
+    sphere and by definition has $\theta_p$ as 0 at this pole. This frame
+    however, stores the declination parameter $\delta_p = $\theta_p - 90\deg$,
+    so the center of the solar disk is $(0, -90)$.
+
+    Parameters
+    ----------
+    dec: `~astropy.coordinates.Latitude`
+        Declination Parameter.
+    psi: `~astropy.coordinates.Longitude`
+        Longitude coordinate.
+    distance: `~astropy.units.Quantity`
+        The radial distance from the observer to the coordinate point.
+    """
+
+    default_representation = SouthPoleSphericalRepresentation
+
+    frame_specific_representation_info = {
+        SouthPoleSphericalRepresentation: [RepresentationMapping(reprname='lon',
+                                                                 framename='psi',
+                                                                 defaultunit=u.arcsec),
+                                           RepresentationMapping(reprname='lat',
+                                                                 framename='el',
+                                                                 defaultunit=u.arcsec),
+                                           RepresentationMapping(reprname='distance',
+                                                                 framename='distance',
+                                                                 defaultunit=None)],
+
+        UnitSouthPoleSphericalRepresentation: [RepresentationMapping(reprname='lon',
+                                                                     framename='psi',
+                                                                     defaultunit=u.arcsec),
+                                               RepresentationMapping(reprname='lat',
+                                                                     framename='el',
+                                                                     defaultunit=u.arcsec)],
+
+        SphericalRepresentation: [RepresentationMapping(reprname='lon',
+                                                        framename='psi',
+                                                        defaultunit=u.arcsec),
+                                  RepresentationMapping(reprname='lat',
+                                                        framename='dec',
+                                                        defaultunit=u.arcsec),
+                                  RepresentationMapping(reprname='distance',
+                                                        framename='distance',
+                                                        defaultunit=None)],
+
+        UnitSphericalRepresentation: [RepresentationMapping(reprname='lon',
+                                                            framename='psi',
+                                                            defaultunit=u.arcsec),
+                                      RepresentationMapping(reprname='lat',
+                                                            framename='dec',
+                                                            defaultunit=u.arcsec)],
+    }
+
+    obstime = TimeFrameAttributeSunPy()
+    rsun = Attribute(default=RSUN_METERS.to(u.km))
+    observer = ObserverCoordinateAttribute(HeliographicStonyhurst, default="earth")
+
+    def calculate_distance(self):
+        """
+        This method calculates the third coordinate of the Helioprojective
+        frame. It assumes that the coordinate point is on the disk of the Sun
+        at the rsun radius.
+
+        If a point in the frame is off limb then NaN will be returned.
+
+        Returns
+        -------
+        new_frame : `~sunpy.coordinates.frames.HelioProjectiveRadial`
+            A new frame instance with all the attributes of the original but
+            now with a third coordinate.
+        """
+        # Skip if we already are 3D
+        if isinstance(self._data, (SphericalRepresentation, SouthPoleSphericalRepresentation)):
+            return self
+
+        if not isinstance(self.observer, BaseCoordinateFrame):
+            raise ConvertError("Cannot calculate distance to the solar disk "
+                               "for observer '{}' "
+                               "without `obstime` being specified.".format(self.observer))
+
+        rep = self.represent_as(UnitSouthPoleSphericalRepresentation)
+
+        distance = self.observer.radius - (self.rsun * np.cos(rep.lat))
+        # Set distance to NaN if off disk
+        distance[rep.lat > np.arcsin(self.rsun / self.observer.radius)] = np.NaN
+
+        return self.realize_frame(SouthPoleSphericalRepresentation(lon=rep.lon,
+                                                                   lat=rep.lat,
+                                                                   distance=distance))
+
+    @property
+    def spherical(self):
+        return self.represent_as(SouthPoleSphericalRepresentation, in_frame_units=True)
+
+
+class FITSHelioprojectiveRadial(HelioprojectiveRadial):
+    default_representation = SphericalRepresentation
+
+    # TODO: Can we just change the representation in the constructor here?!
+
+    @property
+    def spherical(self):
+        return self.represent_as('spherical', in_frame_units=True)
