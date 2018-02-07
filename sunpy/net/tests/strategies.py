@@ -7,7 +7,7 @@ from hypothesis.strategies import datetimes
 
 import datetime
 from sunpy.net import attrs as a
-from sunpy.time import parse_time, TimeRange
+from sunpy.time import TimeRange
 
 
 @st.composite
@@ -76,11 +76,13 @@ def goes_time(draw, time=datetimes(
     """
     t1 = draw(time)
     t2 = t1 + draw(delta)
-    # We can't download data from the future...
+    # We can't download data from the future.
     assume(t2 < datetime.datetime.utcnow())
 
     tr = TimeRange(t1, t2)
-    assume(parse_time("1983-05-01") not in tr)
+    # There is no GOES data for this date.
+    assume(datetime.datetime(1983, 5, 1, 0, 0, 0) not in tr)
+    assume((datetime.datetime(1983, 5, 1) + draw(delta)) not in tr)
 
     return a.Time(tr)
 
