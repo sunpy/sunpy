@@ -87,15 +87,16 @@ def figure_test(test_function):
         figure_test_pngfiles[name] = pngfile.name
         pngfile.close()
 
+        # Save the image that was generated
+        os.makedirs('result_images', exist_ok=True)
+        result_image_loc = 'result_images/{}.png'.format(name)
+        plt.savefig(result_image_loc)
+
         new_hash_library[name] = figure_hash
         if name not in hash.hash_library:
             pytest.fail("Hash not present: {0}".format(name))
 
         if hash.hash_library[name] != figure_hash:
-            # Save the image that was actually generated
-            os.makedirs('result_images', exist_ok=True)
-            result_image_loc = 'result_images/{}.png'.format(name)
-            plt.savefig(result_image_loc)
             # Download the expected image from the sunpy-test-images repo
             url = '{}/{}.png'.format(remote_images, name)
             expected_image_loc = 'result_images/{}_expected.png'.format(name)
