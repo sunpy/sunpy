@@ -2,10 +2,11 @@ import numpy as np
 
 import astropy.units as u
 from astropy.tests.helper import quantity_allclose, assert_quantity_allclose
-from astropy.coordinates import SkyCoord, get_body_barycentric
+from astropy.coordinates import SkyCoord, get_body_barycentric, HeliocentricTrueEcliptic, Angle
 from astropy.time import Time
 
-from sunpy.coordinates import Helioprojective, HeliographicStonyhurst, HeliographicCarrington, get_sun_L0
+from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst, HeliographicCarrington,
+                               get_sun_L0, get_earth)
 from sunpy.time import parse_time
 
 
@@ -101,6 +102,26 @@ def test_hcrs_hgs_array_obstime():
     assert quantity_allclose(earth_hgs_1.lon, earth_hgs[1].lon, atol=1e-12*u.deg)
     assert quantity_allclose(earth_hgs_1.lat, earth_hgs[1].lat, rtol=1e-10)
     assert quantity_allclose(earth_hgs_1.radius, earth_hgs[1].radius, rtol=1e-10)
+
+
+def test_hgs_hcrs():
+    # This test checks the HGS->HCRS transformation by transforming from HGS to
+    # HeliocentricTrueEcliptic (HTE).  It will fail if there are errors in Astropy's
+    # HCRS->ICRS or ICRS->HTE transformations.
+
+    # Use published HGS coordinates in the Astronomical Almanac (2013), pages C6-C7
+    obstime = Time('2013-01-28')
+    earth_hgs = SkyCoord(0*u.deg, -5.73*u.deg, 0.9848139*u.AU, frame=HeliographicStonyhurst,
+                         obstime=obstime)
+
+    # Transform to HTE at observation-time equinox
+    earth_hte = earth_hgs.transform_to(HeliocentricTrueEcliptic(equinox=obstime))
+
+    # Validate against published values from the Astronomical Almanac (2013), page C6 per page E2
+    # The dominant source of inaccuracy is the limited precision of the published B0 used above
+    assert quantity_allclose(earth_hte.lon, Angle('308d13m30.51s') - 180*u.deg, atol=5*u.arcsec)
+    assert quantity_allclose(earth_hte.lat, -Angle('-0.27s'), atol=10*u.arcsec)
+    assert quantity_allclose(earth_hte.distance, 0.9848139*u.AU, atol=5e-7*u.AU)
 
 
 def test_hgs_hgc_roundtrip():
