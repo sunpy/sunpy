@@ -65,8 +65,7 @@ class EITMap(GenericMap):
         GenericMap.__init__(self, data, header, **kwargs)
 
         # Fill in some missing info
-        self.meta['detector'] = "EIT"
-        self.meta['waveunit'] = "Angstrom"
+        self.meta['detector'] = "EIT"        
         self._fix_dsun()
         self._nickname = self.detector
         self.plot_settings['cmap'] = cm.get_cmap(self._get_cmap_name())
@@ -128,8 +127,7 @@ class LASCOMap(GenericMap):
 
         # If non-standard Keyword is present, correct it too, for compatibility.
         if 'date_obs' in self.meta:
-            self.meta['date_obs'] = self.meta['date-obs']        
-        self.meta['waveunit'] = 'nm'
+            self.meta['date_obs'] = self.meta['date-obs']                
         self._nickname = self.instrument + "-" + self.detector
         self.plot_settings['cmap'] = cm.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
@@ -179,8 +177,7 @@ class MDIMap(GenericMap):
 
         # Fill in some missing or broken info
         self.meta['detector'] = "MDI"
-        self._fix_dsun()        
-        self.meta['waveunit'] = 'nm'
+        self._fix_dsun()                
         self._nickname = self.detector + " " + self.measurement
         vmin = np.nanmin(self.data)
         vmax = np.nanmax(self.data)
