@@ -70,6 +70,12 @@ matrix:
            env: SETUP_CMD='test'
 
          - python: 3.6
+           stage: Cron tests
+           # Pip Upstream checks
+           env: SETUP_COMD='test' CONDA_DEPENDENCIES=''
+                PIP_DEPENDENCIES='Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures sunpy-sphinx-theme glymur pytest-astropy'
+
+         - python: 3.6
            stage: Comprehensive tests
            # Run this with pytest because our `setup.py` runner does not
            # currently pick up doctests in docs/
