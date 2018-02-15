@@ -130,7 +130,7 @@ def test_complexattr_apply():
 @pytest.mark.remote_data
 def test_complexattr_create(client):
     a = attr.ValueAttr({('time', 'start'): 'test'})
-    assert va.walker.create(a, client.api)[0].time.start == 'test'
+    assert va.walker.create(a, client.api)[0].time['start'] == 'test'
 
 
 def test_complexattr_and_duplicate():
@@ -271,11 +271,10 @@ def test_path(client):
     qr = client.search(
         va.Time('2011-06-07 06:33', '2011-06-07 06:33:08'),
         va.Instrument('aia'), va.Wavelength(171 * u.AA))
-    print(qr)
     tmp_dir = tempfile.mkdtemp()
-    #files = client.fetch(qr, path=tmp_dir).wait(progress=False)
+    files = client.fetch(qr, path=tmp_dir).wait(progress=False)
 
-    #assert len(files) == 1
+    assert len(files) == 1
 
     # The construction of a VSO filename is bonkers complex, so there is no
     # practical way to determine what it should be in this test, so we just

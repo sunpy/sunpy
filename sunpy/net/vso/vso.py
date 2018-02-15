@@ -10,7 +10,6 @@ from __future__ import absolute_import, division, print_function
 import re
 import os
 import sys
-import logging
 import requests
 import warnings
 import socket
@@ -19,6 +18,7 @@ from datetime import datetime, timedelta
 from functools import partial
 from collections import defaultdict
 from zeep import client
+from zeep.helpers import serialize_object
 
 import astropy.units as u
 from astropy.table import QTable as Table
@@ -392,7 +392,8 @@ class VSOClient(object):
         if not name:
             name = "file"
 
-        fname = pattern.format(file=name, **dict(response))
+
+        fname = pattern.format(file=name, **serialize_object(response))
 
         if not overwrite and os.path.exists(fname):
             fname = replacement_filename(fname)
@@ -637,10 +638,8 @@ class VSOClient(object):
         VSOGetDataResponse = self.api.get_type("VSO:VSOGetDataResponse")
 
         data_request = self.make_getdatarequest(query_response, methods, info)
-        print(data_request)
         data_response = VSOGetDataResponse(self.api.service.GetData(data_request))
 
-        print(data_response)
         self.download_all(data_response, methods, downloader, path, fileids, res)
 
         res.poke()
@@ -696,7 +695,7 @@ class VSOClient(object):
                        self.make('DataRequestItem', provider=k, fileiditem={'fileid': v})
                        for k, v in iteritems(maps)]
 
-        request = {'method': {'methodtype': methods},
+        request = {'method': [{'methodtype': m} for m in methods],
                    'info': info,
                    'datacontainer': {'datarequestitem': datarequestitem}
                    }
@@ -710,6 +709,7 @@ class VSOClient(object):
             ('0.7', (1, 4)),
             ('0.6', (0, 3)),
         ]
+
         for dresponse in response.getdataresponseitem:
             for version, (from_, to) in GET_VERSION:
                 if getattr(dresponse, version, '0.6') >= version:
@@ -723,10 +723,11 @@ class VSOClient(object):
             # pylint: disable=W0631
             code = (
                 dresponse.status[from_:to]
-                if hasattr(dresponse, 'status') else '200'
+                if getattr(dresponse, 'status', None) else '200'
             )
             if code == '200':
                 for dataitem in dresponse.getdataitem.dataitem:
+
                     try:
                         self.download(
                             dresponse.method.methodtype[0],
