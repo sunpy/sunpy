@@ -19,7 +19,8 @@ from astropy.coordinates.representation import (CartesianRepresentation,
 from astropy.coordinates.baseframe import (BaseCoordinateFrame,
                                            RepresentationMapping)
 
-from astropy.coordinates import Attribute, CoordinateAttribute, ConvertError
+from astropy.coordinates import Attribute, ConvertError
+from astropy.tests.helper import quantity_allclose
 
 from sunpy import sun
 
@@ -103,6 +104,10 @@ class HeliographicStonyhurst(BaseCoordinateFrame):
     def __init__(self, *args, **kwargs):
         _rep_kwarg = kwargs.get('representation', None)
         wrap = kwargs.pop('wrap_longitude', True)
+
+        if ('radius' in kwargs and kwargs['radius'].unit is u.one and
+                quantity_allclose(kwargs['radius'], 1*u.one)):
+            kwargs['radius'] = RSUN_METERS.to(u.km)
 
         super(HeliographicStonyhurst, self).__init__(*args, **kwargs)
 
@@ -358,7 +363,8 @@ class Helioprojective(BaseCoordinateFrame):
             now with a third coordinate.
         """
         # Skip if we already are 3D
-        if isinstance(self._data, SphericalRepresentation):
+        if (isinstance(self._data, SphericalRepresentation) and
+                not (self.distance.unit is u.one and quantity_allclose(self.distance, 1*u.one))):
             return self
 
         if not isinstance(self.observer, BaseCoordinateFrame):
