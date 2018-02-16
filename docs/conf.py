@@ -43,11 +43,6 @@ if on_rtd:
     os.environ['LANG'] = 'C'
     os.environ['LC_ALL'] = 'C'
 
-try:
-    import suds
-except ImportError:
-    raise ImportError('suds could not be imported, please install the '
-                      '"suds-jerko" package and try again')
 
 from sunpy.extern import six
 import sunpy
