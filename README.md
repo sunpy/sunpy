@@ -6,6 +6,7 @@
 [![Research software impact](http://depsy.org/api/package/pypi/sunpy/badge.svg)](http://depsy.org/package/python/sunpy)
 [![DOI](https://zenodo.org/badge/2165383.svg)](https://zenodo.org/badge/latestdoi/2165383)
 [![Powered by NumFOCUS](https://img.shields.io/badge/powered%20by-NumFOCUS-orange.svg?style=flat&colorA=E1523D&colorB=007D8A)](http://numfocus.org)
+[![Open Source Helpers](https://www.codetriage.com/sunpy/sunpy/badges/users.svg)](https://www.codetriage.com/sunpy/sunpy)
 
 
 SunPy is an open-source Python library for solar physics data analysis. See [sunpy.org](http://sunpy.org) for more information about the project.
