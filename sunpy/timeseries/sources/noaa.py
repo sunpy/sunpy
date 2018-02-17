@@ -110,7 +110,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         axes.xaxis.grid(True, 'major')
         axes.legend()
 
-        figure.show()
+        plt.show()
         return figure
 
     @classmethod

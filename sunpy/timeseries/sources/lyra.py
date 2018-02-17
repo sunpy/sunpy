@@ -118,7 +118,7 @@ class LYRATimeSeries(GenericTimeSeries):
         for axe in axes:
             axe.locator_params(axis='y',nbins=6)
 
-        figure.show()
+        plt.show()
 
         return figure
 
