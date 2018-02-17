@@ -42,7 +42,7 @@ env:
         - CONDA_CHANNELS='astropy astropy-ci-extras'
         - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas nomkl'
         - PIP_DEPENDENCIES='hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures sunpy-sphinx-theme glymur pytest-astropy'
-        - EVENT_TYPE='pull_request push'
+        - EVENT_TYPE='push pull_request cron'
 
 
     matrix:
@@ -70,17 +70,21 @@ matrix:
            env: SETUP_CMD='test'
 
          - python: 3.6
+           stage: Cron tests
+           # Pip Upstream checks
+           env: SETUP_COMD='test' CONDA_DEPENDENCIES=''
+                PIP_DEPENDENCIES='Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures sunpy-sphinx-theme glymur pytest-astropy'
+
+         - python: 3.6
            stage: Comprehensive tests
            # Run this with pytest because our `setup.py` runner does not
            # currently pick up doctests in docs/
            env: MAIN_CMD="py.test"
                 SETUP_CMD="--remote-data -k-figure --cov ./"
-                EVENT_TYPE='push pull_request cron'
 
          - python: 3.6
            stage: Comprehensive tests
            env: SETUP_CMD='build_docs -w'
-                EVENT_TYPE='push pull_request cron'
 
          # Figure test runs use an env stored in the repo so don't have conda
          # requirements
@@ -104,17 +108,19 @@ matrix:
          - python: 3.6
            stage: Cron tests
            env: ASTROPY_VERSION='dev'
-                EVENT_TYPE='push pull_request cron'
 
          - python: 3.6
            stage: Cron tests
            env: NUMPY_VERSION='dev'
-                EVENT_TYPE='push pull_request cron'
 
          - python: 3.6
            stage: Cron tests
            env: NUMPY_VERSION='dev' ASTROPY_VERSION='dev'
-                EVENT_TYPE='push pull_request cron'
+
+         - python: 3.5
+           stage: Cron tests
+           env: SETUP_CMD='test --figure' ASTROPY_VERSION='dev'
+                CONDA_DEPENDENCIES='astropy'
 
          # Previous numpy is tested on an older python version
          - python: 3.5
