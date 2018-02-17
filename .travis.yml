@@ -97,6 +97,10 @@ matrix:
            stage: Comprehensive tests
            env: SETUP_CMD='test'
 
+         - python: 3.5
+           stage: Comprehensive tests
+           env: ASTROPY_VERSION='lts'
+
          - os: osx
            stage: Cron tests
            language: generic
