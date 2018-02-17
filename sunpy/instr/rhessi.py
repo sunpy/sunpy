@@ -16,6 +16,7 @@ from datetime import datetime, timedelta
 
 import numpy as np
 from dateutil.relativedelta import relativedelta
+from dateutil.rrule import rrule, MONTHLY
 
 from astropy import units as u
 
@@ -30,9 +31,10 @@ from sunpy.extern.six.moves.urllib.request import urlopen, urlretrieve
 from sunpy.extern.six.moves.urllib.error import URLError
 
 
-__all__ = ['get_obssumm_dbase_file', 'parse_obssumm_dbase_file',
-           'get_obssum_filename', 'get_obssumm_file', 'parse_obssumm_file',
-           'backprojection']
+__all__ = ['get_observing_summary_dbase_file',
+           'parse_observing_summary_dbase_file',
+           'get_observing_summary_filename', 'get_observing_summary_file',
+           'parse_observing_summary_file', 'backprojection']
 
 # Measured fixed grid parameters
 grid_pitch = (4.52467, 7.85160, 13.5751, 23.5542, 40.7241, 70.5309, 122.164,
@@ -62,15 +64,15 @@ def get_base_url():
     raise IOError('Unable to find an online HESSI server from {0}'.format(data_servers))
 
 
-def get_obssumm_dbase_file(time_range):
+def get_observing_summary_dbase_file(time):
     """
-    Download the RHESSI observing summary database file. This file lists the
-    name of observing summary files for specific time ranges.
+    Download the RHESSI observing summary database file for the time given.
+    One file covers an entire month.  This file lists the name of observing
+    summary files for specific times.
 
     Parameters
     ----------
-    time_range : `str`, `sunpy.time.TimeRange`
-        A `~sunpy.time.TimeRange` or `~sunpy.time.TimeRange` compatible string.
+    time : `str`, datetime
 
     Returns
     -------
@@ -82,7 +84,7 @@ def get_obssumm_dbase_file(time_range):
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> fname, hdrs = rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
+    >>> fname, hdrs = rhessi.get_observing_summary_dbase_file('2011/04/04')   # doctest: +SKIP
 
     References
     ----------
@@ -92,20 +94,16 @@ def get_obssumm_dbase_file(time_range):
         This API is currently limited to providing data from whole days only.
 
     """
-    _time_range = TimeRange(time_range)
+    _time = parse_time(time)
 
-    if _time_range.start < parse_time("2002/02/01"):
-        raise ValueError("RHESSI summary files are not available for before 2002-02-01")
+    if _time < parse_time("2002/02/01"):
+        raise ValueError("RHESSI summary files are not available before 2002-02-01")
 
-    _check_one_day(_time_range)
-
-    url = posixpath.join(get_base_url(), 'dbase',
-                         _time_range.start.strftime("hsi_obssumm_filedb_%Y%m.txt"))
-
+    url = posixpath.join(get_base_url(), 'dbase', _time.strftime("hsi_obssumm_filedb_%Y%m.txt"))
     return urlretrieve(url)
 
 
-def parse_obssumm_dbase_file(filename):
+def parse_observing_summary_dbase_file(filename):
     """
     Parse the RHESSI observing summary database file. This file lists the
     name of observing summary files for specific time ranges along with other
@@ -124,8 +122,8 @@ def parse_obssumm_dbase_file(filename):
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> fname, _ = rhessi.get_obssumm_dbase_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
-    >>> rhessi.parse_obssumm_dbase_file(fname)   # doctest: +SKIP
+    >>> fname, _ = rhessi.get_observing_summary_dbase_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
+    >>> rhessi.parse_observing_summary_dbase_file(fname)   # doctest: +SKIP
 
     References
     ----------
@@ -173,11 +171,11 @@ def parse_obssumm_dbase_file(filename):
         }
 
 
-def get_obssum_filename(time_range):
+def get_observing_summary_filename(time_range):
     """
     Download the RHESSI observing summary data from one of the RHESSI
-    servers, parses it, and returns the name of the obssumm files relevant for
-    the time range.
+    servers, parses it, and returns the name of the observing summary files
+    relevant for the time range.
 
     Parameters
     ----------
@@ -187,12 +185,12 @@ def get_obssum_filename(time_range):
     Returns
     -------
     out : list
-        Returns the filenames of the observation summary file
+        Returns the urls of the observation summary file
 
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> rhessi.get_obssum_filename(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
+    >>> rhessi.get_observing_summary_filename(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
     ['http://soleil.i4ds.ch/hessidata/metadata/catalog/hsi_obssumm_20110404_042.fits']
 
     .. note::
@@ -200,77 +198,32 @@ def get_obssum_filename(time_range):
 
     """
     time_range = TimeRange(time_range)
+    # remove time from dates
+    time_range = TimeRange(time_range.start.strftime('%Y/%m/%d'),
+                           time_range.end.strftime('%Y/%m/%d'))
 
-    delta = relativedelta(time_range.end, time_range.start)
-    if delta.years > 0 or delta.months > 0:
-        raise ValueError("Rhessi search results can not be found for a"
-                         " time range crossing multiple months.")
+    filenames = []
 
+    diff_months = (time_range.end.year - time_range.start.year) * 12 + time_range.end.month - time_range.start.month
+    first_month = parse_time(time_range.start.strftime('%Y/%m/01'))
+    month_list = list(rrule(MONTHLY, dtstart=first_month, count=diff_months + 1))
 
     # need to download and inspect the dbase file to determine the filename
     # for the observing summary data
-
-    dbase_file_name, _ = get_obssumm_dbase_file(time_range)
-    dbase_dat = parse_obssumm_dbase_file(dbase_file_name)
-
-    index_number_start = time_range.start.day - 1
-    # If end is 0 set it to 1 so we always have at least one record.
-    index_number_end = time_range.end.day - 1 or index_number_start + 1
-
-    filenames = dbase_dat.get('filename')[index_number_start:index_number_end]
-    return [posixpath.join(get_base_url(), 'metadata', 'catalog', filename + 's')
-        for filename in filenames]
-
-
-def get_obssum_filename_multiple_months(time_range):
-    """
-    Download the RHESSI observing summary data from one of the RHESSI
-    servers, parses it, and returns the name of the obssumm files relevant for
-    the time range.
-
-    Parameters
-    ----------
-    time_range : str, TimeRange
-        A TimeRange or time range compatible string
-
-    Returns
-    -------
-    out : list of lists
-        Returns the filenames of the observation summary file for multiple months
-        in the time range
-
-    Examples
-    --------
-    >>> import sunpy.instr.rhessi as rhessi
-    >>> rhessi.get_obssum_filename_multiple_months(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
-    ['http://soleil.i4ds.ch/hessidata/metadata/catalog/hsi_obssumm_20110404_042.fits']
-
-    .. note::
-        This API is currently limited to providing data from whole days only.
-
-    """
-    time_range = TimeRange(time_range)
-    filenames = []
-    delta = relativedelta(time_range.end, time_range.start)
-    date = time_range.start
-    if  delta.years <= 0 and delta.months <= 0 and time_range.start.month != time_range.end.month :
-        filenames.append(get_obssum_filename((date,date+relativedelta(day = 1, months =+ 1, days = -1))))
-        filenames.append(get_obssum_filename((date+relativedelta(day = 1, months =+ 1),time_range.end )))
-
-    else :
-        for month in range(delta.months + 1):
-            if (date.month == time_range.end.month):
-                filenames.append(get_obssum_filename((date,time_range.end)))
-
-            else :
-                filenames.append(get_obssum_filename((date,date+relativedelta(day = 1, months =+ 1, days = -1))))
-
-            date += relativedelta(day = 1, months =+ 1)
+    # the dbase files are monthly but contain the daily filenames
+    for this_month in month_list:
+        dbase_file_name, hdrs = get_observing_summary_dbase_file(this_month)
+        dbase_dat = parse_observing_summary_dbase_file(dbase_file_name)
+        this_month_obssumm_filenames = dbase_dat.get('filename')
+        daily_filenames_dates = [datetime.strptime(d[0:20], 'hsi_obssumm_%Y%m%d') for d in this_month_obssumm_filenames]
+        for i, this_date in enumerate(daily_filenames_dates):
+            if this_date >= time_range.start and this_date <= time_range.end:
+                filenames.append(posixpath.join(get_base_url(), 'metadata', 'catalog', this_month_obssumm_filenames[i] + 's'))
 
     return filenames
 
 
-def get_obssumm_file(time_range):
+def get_observing_summary_file(time_range):
     """
     Download the RHESSI observing summary data from one of the RHESSI
     servers.
@@ -297,12 +250,12 @@ def get_obssumm_file(time_range):
 
     """
 
-    filenames = get_obssum_filename(time_range)
+    filenames = get_observing_summary_filename(time_range)
 
     return [urlretrieve(filenames[x]) for x in range(len(filenames))]
 
 
-def parse_obssumm_file(filename):
+def parse_observing_summary_file(filename):
     """
     Parse a RHESSI observation summary file.
     Note: this is for the Lightcurve datatype only, the TimSeries uses the
@@ -602,17 +555,3 @@ def _build_energy_bands(label, bands):
     unit = matched.group('UNIT').strip()
 
     return ['{energy_band} {unit}'.format(energy_band=band, unit=unit) for band in bands]
-
-
-def _check_one_day(time_range):
-    """
-    Currently only support TimeRanges of a maximum of one day.
-    Issue a visible warning if `time_range` is greater than this
-    Parameters
-    ----------
-    time_range : `sunpy.time.TimeRange`
-    """
-    if time_range.days > 1 * u.day:
-        warnings.warn('Currently only support providing data from one whole day. Only data for {0} '
-                      'will be returned'.format(time_range.start.strftime("%Y-%m-%d")), UserWarning,
-                      stacklevel=2)
