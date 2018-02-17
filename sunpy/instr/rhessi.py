@@ -267,7 +267,7 @@ def get_obssum_filename_multiple_months(time_range):
 
             date += relativedelta(day = 1, months =+ 1)
 
-    return filenames
+    return [filename for filenames_month in filenames for filename in filenames_month]
 
 
 def get_obssumm_file(time_range):
