@@ -6,13 +6,6 @@ Bug Fixes
 
 - Improve detection of ``SkyCoord`` frame instantiation when distance is
   `1*u.one`. This fixes a plotting bug with ``WCSAxes`` in Astropy 3.0
-
-0.8.3
-=====
-
-Bug Fixes
----------
-
 - removed `wavelnth` keyword in meta desc of Maps to avoid using non standard FITS keyword like `nan` [#2427]
 
 0.8.3
