@@ -11,11 +11,9 @@ import csv
 import posixpath
 import re
 import socket
-import warnings
 from datetime import datetime, timedelta
 
 import numpy as np
-from dateutil.relativedelta import relativedelta
 from dateutil.rrule import rrule, MONTHLY
 
 from astropy import units as u
@@ -25,6 +23,7 @@ from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.coordinates import get_sunearth_distance
 import sunpy.map
 import sunpy.io
+from sunpy.util import deprecated
 
 from sunpy.extern.six.moves import urllib
 from sunpy.extern.six.moves.urllib.request import urlopen, urlretrieve
@@ -222,7 +221,7 @@ def get_observing_summary_filename(time_range):
 
     return filenames
 
-
+@deprecated
 def get_observing_summary_file(time_range):
     """
     Download the RHESSI observing summary data from one of the RHESSI
@@ -243,7 +242,7 @@ def get_observing_summary_file(time_range):
     Examples
     --------
     >>> import sunpy.instr.rhessi as rhessi
-    >>> fname, hdrs = rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
+    >>> fname, hdrs = rhessi.get_observing_summary_file(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
 
     .. note::
         This API is currently limited to providing data from whole days only.
