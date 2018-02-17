@@ -122,7 +122,7 @@ def test_create_3d(args, kwargs):
     # Check the attrs are in the correct default units
     assert hpc1.Tx.unit is u.arcsec
     assert hpc1.Ty.unit is u.arcsec
-    assert hpc1.distance.unit is u.km
+    assert hpc1.distance.unit.is_equivalent(u.km)
 
 
 def test_cart_init():

@@ -314,12 +314,12 @@ class Helioprojective(BaseCoordinateFrame):
         'spherical': [
             RepresentationMapping('lon', 'Tx', u.arcsec),
             RepresentationMapping('lat', 'Ty', u.arcsec),
-            RepresentationMapping('distance', 'distance', u.km)
+            RepresentationMapping('distance', 'distance', None)
         ],
         'sphericalwrap180': [
             RepresentationMapping('lon', 'Tx', u.arcsec),
             RepresentationMapping('lat', 'Ty', u.arcsec),
-            RepresentationMapping('distance', 'distance', u.km)
+            RepresentationMapping('distance', 'distance', None)
         ],
         'unitspherical': [
             RepresentationMapping('lon', 'Tx', u.arcsec),
