@@ -10,7 +10,8 @@ from astropy.tests.helper import assert_quantity_allclose
 
 from astropy.coordinates import (UnitSphericalRepresentation,
                                  SphericalRepresentation,
-                                 CartesianRepresentation)
+                                 CartesianRepresentation,
+                                 SkyCoord)
 
 from ... import sun
 from ..frames import (Helioprojective,
@@ -346,3 +347,47 @@ def test_create_hcc_3d(args, kwargs):
     assert hcc.x.unit is u.km
     assert hcc.y.unit is u.km
     assert hcc.z.unit is u.km
+
+# ==============================================================================
+# SkyCoord Tests
+# ==============================================================================
+
+
+two_D_parameters = [
+    ([0 * u.deg, 0 * u.arcsec], {}),
+    ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)], {}),
+    ([UnitSphericalRepresentation(0 * u.deg, 0 * u.arcsec)], {}),
+    ([SphericalRepresentation(0 * u.deg, 0 * u.arcsec, 1*u.one)], {}),
+]
+
+
+@pytest.mark.parametrize("args, kwargs",
+                         two_D_parameters + [([0 * u.deg, 0 * u.arcsec],
+                                              {'representation': 'unitspherical'})])
+def test_skycoord_hpc(args, kwargs):
+    """
+    Test that when instantiating a HPC frame with SkyCoord calculate distance
+    still works.
+    """
+
+    sc = SkyCoord(*args, **kwargs, frame="helioprojective", obstime="2011-01-01T00:00:00")
+    # Test the transform to HGS because it will force a `calculate_distance` call.
+    hgs = sc.transform_to("heliographic_stonyhurst")
+
+    assert isinstance(hgs.frame, HeliographicStonyhurst)
+
+
+@pytest.mark.parametrize("args, kwargs", two_D_parameters)
+def test_skycoord_hgs(args, kwargs):
+    """
+    Test that when instantiating a HPC frame with SkyCoord correctly replaces
+    distance.
+
+    Note: We only need to test HGS here not HGC as they share the same
+    constructor.
+    """
+
+    RSUN_METERS = sun.constants.get('radius').si
+    sc = SkyCoord(*args, **kwargs, frame="heliographic_stonyhurst", obstime="2011-01-01T00:00:00")
+
+    assert_quantity_allclose(sc.radius, RSUN_METERS)
