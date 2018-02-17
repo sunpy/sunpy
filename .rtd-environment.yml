@@ -2,7 +2,7 @@ name: sunpy-rtd
 channels:
     - conda-forge
 dependencies:
-- astropy>=2.0
+- astropy
 - beautifulsoup4
 - cairo
 - contextlib2
@@ -37,7 +37,7 @@ dependencies:
 - pyparsing
 - pyqt
 - pytest
-- python=3.5
+- python
 - python-dateutil
 - pytz
 - qt
@@ -51,7 +51,7 @@ dependencies:
 - sqlalchemy
 - sqlite
 - suds-jurko
-- sphinx=1.5.6
+- sphinx
 - sphinx_rtd_theme
 - tk
 - wheel
