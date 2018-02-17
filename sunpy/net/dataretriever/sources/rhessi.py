@@ -21,7 +21,7 @@ class RHESSIClient(GenericClient):
             Date range should be specified using a TimeRange, or start
             and end dates at datetime instances or date strings.
         """
-        return rhessi.get_obssum_filename(timerange)
+        return rhessi.get_observing_summary_filename(timerange)
 
     def _makeimap(self):
         """
