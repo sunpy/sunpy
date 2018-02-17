@@ -215,7 +215,6 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     return heliocframe.realize_frame(representation)
 
 
-
 @frame_transform_graph.transform(FunctionTransform, Helioprojective,
                                  Helioprojective)
 def hpc_to_hpc(heliopcoord, heliopframe):
@@ -241,7 +240,10 @@ def hpc_to_hpc(heliopcoord, heliopframe):
     hpc = hgs.transform_to(heliopframe)
 
     return hpc
+    
 
+@frame_transform_graph.transform(FunctionTransform, Heliocentric,
+                                 Heliocentric)
 def hcc_to_hcc(helioccoord, heliocframe):
     """
     This convert Heliocentric Coordinates from one observer to HelioCenric Coordinates from other Observer.
@@ -267,7 +269,8 @@ def hcc_to_hcc(helioccoord, heliocframe):
     hgs.observer = heliocframe.observer
     hcc = hgs.transform_to(heliocframe)
 
-    return hcc    
+    return hcc 
+   
 
 def _make_rotation_matrix_from_reprs(start_representation, end_representation):
     """
