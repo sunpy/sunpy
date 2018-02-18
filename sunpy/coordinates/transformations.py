@@ -175,7 +175,7 @@ def hcc_to_hgs(helioccoord, heliogframe):
                                  Heliocentric)
 def hgs_to_hcc(heliogcoord, heliocframe):
     """
-    Convert from Heliographic Stonyhurst to Heliograpic Carrington.
+    Convert from Heliographic Stonyhurst to Heliocentric Cartesian.
     """
     hglon = heliogcoord.lon
     hglat = heliogcoord.lat
