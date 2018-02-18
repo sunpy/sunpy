@@ -74,14 +74,11 @@ def hgc_to_hgs(hgccoord, hgsframe):
     """
     Convert from Heliograpic Carrington to Heliographic Stonyhurst.
     """
-    if hgccoord.obstime:
-        obstime = hgccoord.obstime
-    else:
-        obstime = hgsframe.obstime
-    s_lon = hgccoord.spherical.lon - _carrington_offset(obstime).to(
+    s_lon = hgccoord.spherical.lon - _carrington_offset(hgccoord.obstime).to(
         u.deg)
     representation = SphericalRepresentation(s_lon, hgccoord.lat,
                                                     hgccoord.radius)
+    hgsframe = hgsframe.__class__(obstime=hgccoord.obstime)
     return hgsframe.realize_frame(representation)
 
 
