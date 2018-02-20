@@ -41,7 +41,7 @@ env:
         - SETUP_CMD='test'
         - CONDA_CHANNELS='astropy astropy-ci-extras'
         - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas nomkl'
-        - PIP_DEPENDENCIES='hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures pytest-cov sunpy-sphinx-theme glymur pytest-astropy codecov'
+        - PIP_DEPENDENCIES='hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures pytest-cov sunpy-sphinx-theme glymur pytest-astropy'
         - EVENT_TYPE='push pull_request cron'
 
 
@@ -146,6 +146,7 @@ install:
     - git clone --depth 1 git://github.com/astropy/ci-helpers.git
     - source ci-helpers/travis/setup_conda.sh
 
+
 before_script:
     # Download the sample data for the build of the documentation.
     - if [[ $SETUP_CMD != *egg_info* ]]; then python -m "sunpy.data.sample"; fi
@@ -157,7 +158,7 @@ script:
     - $MAIN_CMD $SETUP_CMD
 
 after_success:
-    - if [[ $SETUP_CMD = *"test"* ]]; then codecov; fi
+    - if [[ $SETUP_CMD = *"test"* ]]; then pip install codecov; codecov; fi
 
 # Notify the IRC channel of build status
 notifications:
