@@ -69,12 +69,7 @@ matrix:
            stage: Initial tests
            env: SETUP_CMD='test'
 
-         - python: 3.6
-           stage: Cron tests
-           # Pip Upstream checks
-           env: SETUP_COMD='test' CONDA_DEPENDENCIES=''
-                PIP_DEPENDENCIES='Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures sunpy-sphinx-theme glymur pytest-astropy'
-
+        # Comprehensive tests below this line
          - python: 3.6
            stage: Comprehensive tests
            # Run this with pytest because our `setup.py` runner does not
@@ -88,22 +83,27 @@ matrix:
 
          # Figure test runs use an env stored in the repo so don't have conda
          # requirements
+         # Python 2.7 figure tests
          - python: 2.7
            stage: Comprehensive tests
            env: SETUP_CMD='test --figure --cov' CONDA_DEPENDENCIES=''
 
-         - python: 3.5
-           stage: Comprehensive tests
-           env: SETUP_CMD='test --figure --cov' CONDA_DEPENDENCIES=''
-
+         # Python 2.7 non-figure tests
          - python: 2.7
            stage: Comprehensive tests
            env: SETUP_CMD='test --cov'
 
+         # Python 3.5 figure tests
+         - python: 3.5
+           stage: Comprehensive tests
+           env: SETUP_CMD='test --figure --cov' CONDA_DEPENDENCIES=''
+
+         # Python 3.5 non-figure tests
          - python: 3.5
            stage: Comprehensive tests
            env: ASTROPY_VERSION='lts'
 
+        # Cron tests below this line
          - os: osx
            stage: Cron tests
            language: generic
@@ -131,12 +131,19 @@ matrix:
            stage: Cron tests
            env: NUMPY_VERSION=$PREVIOUS_NUMPY
 
+         - python: 3.6
+           stage: Cron tests
+           # Pip Upstream checks
+           env: SETUP_COMD='test' CONDA_DEPENDENCIES=''
+                PIP_DEPENDENCIES='Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures sunpy-sphinx-theme glymur pytest-astropy'
+
+
 before_install:
     # Fix for Python 2 with Numpy 1.14. Should be fixed for 1.14.1
     - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then export NUMPY_VERSION=1.13; fi
 
 install:
-    - git clone git://github.com/astropy/ci-helpers.git
+    - git clone --depth 1 git://github.com/astropy/ci-helpers.git
     - source ci-helpers/travis/setup_conda.sh
 
 before_script:
@@ -150,7 +157,7 @@ script:
     - $MAIN_CMD $SETUP_CMD
 
 after_success:
-    - codecov
+    - if [[ $SETUP_CMD = *"test"* ]]; then codecov; fi
 
 # Notify the IRC channel of build status
 notifications:
