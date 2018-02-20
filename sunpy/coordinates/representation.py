@@ -10,6 +10,9 @@ from __future__ import absolute_import, division
 
 from collections import OrderedDict
 
+import warnings
+
+from astropy.utils.exceptions import AstropyDeprecationWarning
 from astropy import units as u
 from astropy.coordinates.representation import (SphericalRepresentation,
                                                 UnitSphericalRepresentation,
@@ -116,4 +119,8 @@ class SphericalWrap180Representation(SphericalRepresentation):
     recommended_units = {'lon': u.deg, 'lat': u.deg}
 
     _unitrep = UnitSphericalWrap180Representation
+
+
+with warnings.catch_warnings():
+  warnings.simplefilter('ignore', AstropyDeprecationWarning)
 
