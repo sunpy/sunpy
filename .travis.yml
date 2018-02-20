@@ -67,6 +67,7 @@ matrix:
          # Order of tests run in build stages
          - python: 3.6
            stage: Initial tests
+           env: SETUP_CMD='test --coverage'
 
         # Comprehensive tests below this line
          - python: 3.6
