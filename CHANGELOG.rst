@@ -1,5 +1,16 @@
-0.8.3 (Unreleased)
+0.8.4 (Unreleased)
 ==================
+
+Bug Fixes
+---------
+
+- Improve detection of ``SkyCoord`` frame instantiation when distance is
+  `1*u.one`. This fixes a plotting bug with ``WCSAxes`` in Astropy 3.0 [#2465]
+- removed `wavelnth` keyword in meta desc of Maps to avoid using non standard FITS keyword like `nan` [#2427]
+- Change the default units for HPC distance from `u.km` to `None`. [#2465]
+
+0.8.3
+=====
 
 Bug Fixes
 ---------

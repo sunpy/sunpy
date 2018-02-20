@@ -1744,7 +1744,7 @@ Reference Coord:\t {refcoord}
 
         if wcsaxes_compat.is_wcsaxes(axes):
             wcsaxes_compat.default_wcs_grid(axes, units=self.spatial_units,
-                                            ctypes=self.coordinate_system)
+                                            ctypes=self.wcs.wcs.ctype)
 
         # Set current image (makes colorbar work)
         plt.sca(axes)
