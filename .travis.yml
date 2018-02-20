@@ -41,7 +41,7 @@ env:
         - SETUP_CMD='test'
         - CONDA_CHANNELS='astropy astropy-ci-extras'
         - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas nomkl'
-        - PIP_DEPENDENCIES='hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures sunpy-sphinx-theme glymur pytest-astropy'
+        - PIP_DEPENDENCIES='hypothesis suds-jurko sphinx-gallery pytest-sugar pytest-rerunfailures pytest-cov sunpy-sphinx-theme glymur pytest-astropy codecov'
         - EVENT_TYPE='push pull_request cron'
 
 
@@ -90,15 +90,15 @@ matrix:
          # requirements
          - python: 2.7
            stage: Comprehensive tests
-           env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
+           env: SETUP_CMD='test --figure --cov' CONDA_DEPENDENCIES=''
 
          - python: 3.5
            stage: Comprehensive tests
-           env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
+           env: SETUP_CMD='test --figure --cov' CONDA_DEPENDENCIES=''
 
          - python: 2.7
            stage: Comprehensive tests
-           env: SETUP_CMD='test'
+           env: SETUP_CMD='test --cov'
 
          - python: 3.5
            stage: Comprehensive tests
@@ -150,7 +150,7 @@ script:
     - $MAIN_CMD $SETUP_CMD
 
 after_success:
-    - if [[ $SETUP_CMD == *cov* ]]; then coveralls --rcfile='./sunpy/tests/coveragerc'; fi
+    - codecov
 
 # Notify the IRC channel of build status
 notifications:
