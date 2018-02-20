@@ -75,7 +75,7 @@ matrix:
            # Run this with pytest because our `setup.py` runner does not
            # currently pick up doctests in docs/
            env: MAIN_CMD="py.test"
-                SETUP_CMD="--remote-data -k-figure --cov ./"
+                SETUP_CMD="--remote-data -k-figure ./"
 
          - python: 3.6
            stage: Comprehensive tests
@@ -86,17 +86,17 @@ matrix:
          # Python 2.7 figure tests
          - python: 2.7
            stage: Comprehensive tests
-           env: SETUP_CMD='test --figure --cov' CONDA_DEPENDENCIES=''
+           env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
 
          # Python 2.7 non-figure tests
          - python: 2.7
            stage: Comprehensive tests
-           env: SETUP_CMD='test --cov'
+           env: SETUP_CMD='test'
 
          # Python 3.5 figure tests
          - python: 3.5
            stage: Comprehensive tests
-           env: SETUP_CMD='test --figure --cov' CONDA_DEPENDENCIES=''
+           env: SETUP_CMD='test --figure' CONDA_DEPENDENCIES=''
 
          # Python 3.5 non-figure tests
          - python: 3.5
