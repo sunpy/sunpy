@@ -219,7 +219,55 @@ def get_obssum_filename(time_range):
 
     filenames = dbase_dat.get('filename')[index_number_start:index_number_end]
     return [posixpath.join(get_base_url(), 'metadata', 'catalog', filename + 's')
-            for filename in filenames]
+        for filename in filenames]
+
+
+def get_obssum_filename_multiple_months(time_range):
+    """
+    Download the RHESSI observing summary data from one of the RHESSI
+    servers, parses it, and returns the name of the obssumm files relevant for
+    the time range.
+
+    Parameters
+    ----------
+    time_range : str, TimeRange
+        A TimeRange or time range compatible string
+
+    Returns
+    -------
+    out : list of lists
+        Returns the filenames of the observation summary file for multiple months
+        in the time range
+
+    Examples
+    --------
+    >>> import sunpy.instr.rhessi as rhessi
+    >>> rhessi.get_obssum_filename_multiple_months(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
+    ['http://soleil.i4ds.ch/hessidata/metadata/catalog/hsi_obssumm_20110404_042.fits']
+
+    .. note::
+        This API is currently limited to providing data from whole days only.
+
+    """
+    time_range = TimeRange(time_range)
+    filenames = []
+    delta = relativedelta(time_range.end, time_range.start)
+    date = time_range.start
+    if  delta.years <= 0 and delta.months <= 0 and time_range.start.month != time_range.end.month :
+        filenames.append(get_obssum_filename((date,date+relativedelta(day = 1, months =+ 1, days = -1))))
+        filenames.append(get_obssum_filename((date+relativedelta(day = 1, months =+ 1),time_range.end )))
+
+    else :
+        for month in range(delta.months + 1):
+            if (date.month == time_range.end.month):
+                filenames.append(get_obssum_filename((date,time_range.end)))
+
+            else :
+                filenames.append(get_obssum_filename((date,date+relativedelta(day = 1, months =+ 1, days = -1))))
+
+            date += relativedelta(day = 1, months =+ 1)
+
+    return [filename for filenames_month in filenames for filename in filenames_month]
 
 
 def get_obssumm_file(time_range):
@@ -234,8 +282,8 @@ def get_obssumm_file(time_range):
 
     Returns
     -------
-    out : tuple
-        Return a tuple (filename, headers) where filename is the local file
+    out : list of tuples
+        Return a list of tuples (filename, headers) where filename is the local file
         name under which the object can be found, and headers is
         whatever the info() method of the object returned by urlopen.
 
@@ -248,12 +296,10 @@ def get_obssumm_file(time_range):
         This API is currently limited to providing data from whole days only.
 
     """
-    _check_one_day(TimeRange(time_range))
 
     filenames = get_obssum_filename(time_range)
 
-    # As we only support providing data from one whole day, only get the first file
-    return urlretrieve(filenames[0])
+    return [urlretrieve(filenames[x]) for x in range(len(filenames))]
 
 
 def parse_obssumm_file(filename):
