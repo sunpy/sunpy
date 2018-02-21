@@ -190,11 +190,8 @@ def get_observing_summary_filename(time_range):
     --------
     >>> import sunpy.instr.rhessi as rhessi
     >>> rhessi.get_observing_summary_filename(('2011/04/04', '2011/04/05'))   # doctest: +SKIP
-    ['http://soleil.i4ds.ch/hessidata/metadata/catalog/hsi_obssumm_20110404_042.fits']
-
-    .. note::
-        This API is currently limited to providing data from whole days only.
-
+    ['https://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20110404_042.fits',
+     'https://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20110405_031.fits']
     """
     time_range = TimeRange(time_range)
     # remove time from dates
@@ -203,9 +200,10 @@ def get_observing_summary_filename(time_range):
 
     filenames = []
 
-    diff_months = (time_range.end.year - time_range.start.year) * 12 + time_range.end.month - time_range.start.month
+    diff_months = (time_range.end.year - time_range.start.year) * 12 +\
+                   time_range.end.month - time_range.start.month
     first_month = parse_time(time_range.start.strftime('%Y/%m/01'))
-    month_list = list(rrule(MONTHLY, dtstart=first_month, count=diff_months + 1))
+    month_list = list(rrule(MONTHLY, dtstart=first_month, count=diff_months+1))
 
     # need to download and inspect the dbase file to determine the filename
     # for the observing summary data
@@ -235,8 +233,8 @@ def get_observing_summary_file(time_range):
     Returns
     -------
     out : list of tuples
-        Return a list of tuples (filename, headers) where filename is the local file
-        name under which the object can be found, and headers is
+        Return a list of tuples (filename, headers) where filename is the
+        local file name under which the object can be found, and headers is
         whatever the info() method of the object returned by urlopen.
 
     Examples
