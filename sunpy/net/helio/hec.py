@@ -6,6 +6,7 @@ from __future__ import print_function, absolute_import
 from sunpy.net.helio import parser
 from sunpy.time import parse_time
 from zeep.client import Client as C
+from lxml import etree
 from astropy.io.votable.table import parse_single_table
 
 from sunpy.extern import six
@@ -36,7 +37,7 @@ def votable_handler(xml_table):
 
     """
     fake_file = six.BytesIO()
-    fake_file.write(six.b(xml_table))
+    fake_file.write(xml_table)
     votable = parse_single_table(fake_file)
     fake_file.close()
     return votable
@@ -110,16 +111,16 @@ class HECClient(object):
             table = self.make_table_list()
         start_time = parse_time(start_time)
         end_time = parse_time(end_time)
-        self.hec_client.service.TimeQuery(STARTTIME=start_time.isoformat(),
-                                          ENDTIME=end_time.isoformat(),
-                                          FROM=table,
-                                          MAXRECORDS=max_records)
-        results = votable_handler(self.votable_interceptor.last_payload)
+        results = self.hec_client.service.TimeQuery(STARTTIME=start_time.isoformat(),
+                                                    ENDTIME=end_time.isoformat(),
+                                                    FROM=table,
+                                                    MAXRECORDS=max_records)
+        results = votable_handler(etree.tostring(results))
         return results
 
     def get_table_names(self):
         """
-        Returns a list of the available tables to query.
+        Returns a l)ist of the available tables to q)uery.
 
         Returns the names of all the tables that can be queried via the
         webservice.
@@ -141,8 +142,8 @@ class HECClient(object):
          ('stereob_het_sep',)]
 
         """
-        self.hec_client.service.getTableNames()
-        tables = votable_handler(self.votable_interceptor.last_payload)
+        results = self.hec_client.service.getTableNames()
+        tables = votable_handler(etree.tostring(results))
         return tables.array
 
     def make_table_list(self):
