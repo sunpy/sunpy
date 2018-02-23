@@ -75,6 +75,9 @@ class GenericTimeSeries:
         of time.
     meta : `~sunpy.timeseries.metadata.TimeSeriesMetaData`, optional
         The metadata giving details about the time series data/instrument.
+    units : dict, optional
+        A mapping from column names in *data* to the physical units of
+        that column.
 
     Attributes
     ----------
@@ -83,6 +86,9 @@ class GenericTimeSeries:
         of time.
     meta : `~sunpy.timeseries.metadata.TimeSeriesMetaData`
         The metadata giving details about the time series data/instrument.
+    units : dict
+        A mapping from column names in *data* to the physical units of
+        that column.
 
     Examples
     --------
