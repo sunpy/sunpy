@@ -75,6 +75,9 @@ and the :ref:`timeseries_code_ref`.
 Spectra
 -------
 
+.. warning:: This module is under development! It is being moved into its own
+             `repository <https://github.com/sunpy/radiospectra>`__.
+
 SunPy has spectral support for instruments which have such a capacity. CALLISTO,
 an international network of Solar Radio Spectrometers, is a specific example.
 
