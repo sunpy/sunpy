@@ -246,7 +246,8 @@ def hpc_to_hpc(heliopcoord, heliopframe):
                                  Heliocentric)
 def hcc_to_hcc(helioccoord, heliocframe):
     """
-    Convert from Heliocentric Cartesian to Heliocentric Cartesian, with different observer location parameters.
+    Convert from Heliocentric Cartesian to Heliocentric Cartesian
+    with different observer location parameters.
     It does by transforming through HGS.
     """
     if (helioccoord.observer == heliocframe.observer or
