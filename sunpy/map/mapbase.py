@@ -198,6 +198,11 @@ class GenericMap(NDData):
 
         # Setup some attributes
         self._nickname = None
+        self._default_time = None
+        self._default_dsun = None
+        self._default_carrington_longitude = None
+        self._default_heliographic_lattitude = None
+        self._default_heliographic_longitude = None
 
         # Validate header
         # TODO: This should be a function of the header, not of the map
@@ -417,11 +422,14 @@ Reference Coord:\t {refcoord}
         """Image observation time."""
         time = self.meta.get('date-obs', None)
         if time is None:
-            warnings.warn_explicit("Missing metadata for observation time."
-                                   " Using current time.",
-                                   Warning, __file__,
-                                   inspect.currentframe().f_back.f_lineno)
-            time = 'now'
+            if self._default_time is None:
+                warnings.warn_explicit(
+                    "Missing metadata for observation time:"
+                    " setting observation time to current time",
+                    Warning, __file__,
+                    inspect.currentframe().f_back.f_lineno)
+                self._default_time = parse_time('now')
+            time = self._default_time
         return parse_time(time)
 
     @property
@@ -435,11 +443,13 @@ Reference Coord:\t {refcoord}
         dsun = self.meta.get('dsun_obs', None)
 
         if dsun is None:
-            warnings.warn_explicit("Missing metadata for Sun-spacecraft"
-                                   " separation: assuming Sun-Earth distance",
-                                   Warning, __file__,
-                                   inspect.currentframe().f_back.f_lineno)
-            dsun = get_sunearth_distance(self.date).to(u.m)
+            if self._default_dsun is None:
+                warnings.warn_explicit("Missing metadata for Sun-spacecraft"
+                                       " separation: assuming Sun-Earth distance",
+                                       Warning, __file__,
+                                       inspect.currentframe().f_back.f_lineno)
+                self._default_dsun = get_sunearth_distance(self.date).to(u.m)
+            return self._default_dsun
 
         return u.Quantity(dsun, 'm')
 
@@ -593,11 +603,13 @@ Reference Coord:\t {refcoord}
         carrington_longitude = self.meta.get('crln_obs', None)
 
         if carrington_longitude is None:
-            warnings.warn_explicit("Missing metadata for Carrington longitude:"
-                                   " assuming Earth-based observer",
-                                   Warning, __file__,
-                                   inspect.currentframe().f_back.f_lineno)
-            carrington_longitude = get_sun_L0(self.date)
+            if self._default_carrington_longitude is None:
+                warnings.warn_explicit("Missing metadata for Carrington longitude:"
+                                       " assuming Earth-based observer",
+                                       Warning, __file__,
+                                       inspect.currentframe().f_back.f_lineno)
+                self._default_carrington_longitude = get_sun_L0(self.date)
+            carrington_longitude = self._default_carrington_longitude
 
         if isinstance(carrington_longitude, six.string_types):
             carrington_longitude = float(carrington_longitude)
@@ -612,11 +624,13 @@ Reference Coord:\t {refcoord}
                                                             self.meta.get('solar_b0', None)))
 
         if heliographic_latitude is None:
-            warnings.warn_explicit("Missing metadata for heliographic latitude:"
-                                   " assuming Earth-based observer",
-                                   Warning, __file__,
-                                   inspect.currentframe().f_back.f_lineno)
-            heliographic_latitude = get_sun_B0(self.date)
+            if self._default_heliographic_lattitude is None:
+                warnings.warn_explicit("Missing metadata for heliographic latitude:"
+                                       " assuming Earth-based observer",
+                                       Warning, __file__,
+                                       inspect.currentframe().f_back.f_lineno)
+                self._default_heliographic_lattitude = get_sun_B0(self.date)
+            heliographic_latitude = self._default_heliographic_lattitude
 
         if isinstance(heliographic_latitude, six.string_types):
             heliographic_latitude = float(heliographic_latitude)
@@ -626,7 +640,17 @@ Reference Coord:\t {refcoord}
     @property
     def heliographic_longitude(self):
         """Heliographic longitude."""
-        heliographic_longitude = self.meta.get('hgln_obs', 0.)
+        heliographic_longitude = self.meta.get('hgln_obs', None)
+
+        if heliographic_longitude is None:
+            if self._default_heliographic_longitude is None:
+                warnings.warn_explicit(
+                    "Missing metadata for heliographic longitude: "
+                    "assuming longitude of 0 degrees",
+                    Warning, __file__,
+                    inspect.currentframe().f_back.f_lineno)
+                self._default_heliographic_longitude = 0
+            heliographic_longitude = self._default_heliographic_longitude
 
         if isinstance(heliographic_longitude, six.string_types):
             heliographic_longitude = float(heliographic_longitude)
