@@ -61,8 +61,10 @@ For more information or to ask questions about SunPy, check out:
  * [SunPy Mailing List](https://groups.google.com/forum/#!forum/sunpy)
  * [SunPy Matrix Channel](https://riot.im/app/#/room/#sunpy:matrix.org)
 
-Contributing [![Open Source Helpers](https://www.codetriage.com/sunpy/sunpy/badges/users.svg)](https://www.codetriage.com/sunpy/sunpy)
+Contributing
 ------------
+
+[![Open Source Helpers](https://www.codetriage.com/sunpy/sunpy/badges/users.svg)](https://www.codetriage.com/sunpy/sunpy)
 
 If you would like to get involved, start by joining the
 [SunPy mailing list](https://groups.google.com/forum/#!forum/sunpy)
