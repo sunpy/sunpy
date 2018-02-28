@@ -91,7 +91,7 @@ class RHESSISummaryLightCurve(LightCurve):
 
         axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
         figure.autofmt_xdate()
-        figure.show()
+        plt.show()
 
     @classmethod
     def _get_default_uri(cls):

@@ -99,7 +99,7 @@ class GOESLightCurve(LightCurve):
 
         axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
         figure.autofmt_xdate()
-        figure.show()
+        plt.show()
 
         return figure
 

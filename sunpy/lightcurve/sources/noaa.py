@@ -105,7 +105,7 @@ class NOAAIndicesLightCurve(LightCurve):
         axes.xaxis.grid(True, 'major')
         axes.legend()
 
-        figure.show()
+        plt.show()
         return figure
 
     @classmethod
@@ -208,7 +208,7 @@ class NOAAPredictIndicesLightCurve(LightCurve):
         axes.xaxis.grid(True, 'major')
         axes.legend()
 
-        figure.show()
+        plt.show()
         return figure
 
     @classmethod

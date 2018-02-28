@@ -504,7 +504,7 @@ class CompositeMap(object):
         else:
             raise TypeError("draw_grid should be bool, int, long or float")
 
-        figure.show()
+        plt.show()
 
 
 class OutOfRangeAlphaValue(ValueError):

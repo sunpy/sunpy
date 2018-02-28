@@ -103,7 +103,7 @@ class EVELightCurve(LightCurve):
             if "title" not in kwargs:
                 kwargs['title'] = 'EVE ' + column.replace('_', ' ')
             data.plot(**kwargs)
-        figure.show()
+        plt.show()
         return figure
 
     @staticmethod
