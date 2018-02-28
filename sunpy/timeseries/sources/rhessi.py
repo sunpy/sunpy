@@ -99,7 +99,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         axes.set_yscale("log")
         axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
 
-        axes.set_title('RHESSI Observing Summary Count Rates')
+        axes.set_title(title)
         axes.set_ylabel('Count Rate s$^{-1}$ detector$^{-1}$')
 
         axes.yaxis.grid(True, 'major')
@@ -113,6 +113,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
         figure.autofmt_xdate()
         figure.show()
+        return figure
 
     @classmethod
     def _parse_file(cls, filepath):
