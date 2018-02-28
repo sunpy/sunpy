@@ -4,6 +4,8 @@
 New Features
 ------------
 
+- Added TimeUTime class to support utime. [#2409]
+
 API Changes
 -----------
 
@@ -18,7 +20,6 @@ API Changes
 Bug Fixes
 ---------
 
-- Added TimeUTime class to support utime. [#2409]
 - Fix HGS frame constructor and HPC ``calculate_distance`` with SkyCoord constructor. [#2463]
 - removed `wavelnth` keyword in meta desc of Maps to avoid using non standard FITS keyword like `nan` [#2427]
 - `~sunpy.net.dataretriever.clients.XRSClient` now reports time ranges of files correctly. [#2364]
