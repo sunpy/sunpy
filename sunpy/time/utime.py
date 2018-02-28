@@ -2,6 +2,8 @@ from __future__ import absolute_import
 
 from astropy.time.formats import erfa, TimeFromEpoch
 
+__all__ = ['TimeUTime']
+
 
 class TimeUTime(TimeFromEpoch):
     """
