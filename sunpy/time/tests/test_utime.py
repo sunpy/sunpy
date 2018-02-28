@@ -3,7 +3,7 @@ import pytest
 from astropy.time import Time
 
 # Ignore PEP8 F401 warning here, this registers TimeUTime in astropy.time.Time
-from utime import TimeUTime
+from sunpy.time import TimeUTime
 
 
 def test_utime_t0():
