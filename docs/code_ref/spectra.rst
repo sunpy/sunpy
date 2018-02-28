@@ -6,7 +6,7 @@ SunPy spectra
 .. warning::
 
    The spectra module is being moved to an affiliated package, see `spectra
-   <http://docs.sunpy.org/projects/radiospectra/en/latest/>`__.
+   <http://docs.sunpy.org/projects/radiospectra/>`__.
 
 
 Overview
