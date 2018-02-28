@@ -112,7 +112,7 @@ cmlist = {
 for name, cmap in cmlist.items():
     cm.register_cmap(name=name, cmap=cmap)
 
-@deprecated("0.9", "Use Matplotlib to load the colormaps", , alternative='plt.get_cmap')
+@deprecated("0.9", "Use Matplotlib to load the colormaps", alternative='plt.get_cmap')
 def get_cmap(name):
     """
     Get a colormap.
