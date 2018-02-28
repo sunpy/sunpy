@@ -420,7 +420,7 @@ class GenericTimeSeries:
         # Now make the plot
         figure = plt.figure()
         self.plot(**kwargs)
-        figure.show()
+        plt.show()
 
         return figure
 

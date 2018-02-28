@@ -1658,7 +1658,7 @@ Reference Coord:\t {refcoord}
         else:
             raise TypeError("draw_grid should be a bool or an astropy Quantity.")
 
-        figure.show()
+        plt.show()
 
     @toggle_pylab
     def plot(self, annotate=True, axes=None, title=True, **imshow_kwargs):

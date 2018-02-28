@@ -254,7 +254,7 @@ class LightCurve(object):
 
         figure = plt.figure()
         self.plot(**kwargs)
-        figure.show()
+        plt.show()
 
         return figure
 
