@@ -11,7 +11,7 @@ from sunpy.util.decorators import deprecated
 __all__ = ['Spectrum']
 
 
-@deprecated("0.8", "this module is being moved to radiospectra - https://github.com/sunpy/radiospectra")
+@deprecated("0.8", "this module is being moved to radiospectra - http://docs.sunpy.org/projects/radiospectra/en/latest/")
 class Spectrum(np.ndarray):
     """
     Class representing a 1 dimensional spectrum.
