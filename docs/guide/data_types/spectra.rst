@@ -3,7 +3,7 @@ Spectra
 =======
 
 .. warning:: This module is under development! It is being moved into its own
-             `repository <http://docs.sunpy.org/projects/radiospectra/en/latest/>`__.
+             `repository <http://docs.sunpy.org/projects/>`__.
 
 Spectrograms
 ------------
