@@ -72,10 +72,14 @@ matrix:
         # Comprehensive tests below this line
          - python: 3.6
            stage: Comprehensive tests
+           env: SETUP_CMD="test --online-only --coverage"
+
+         - python: 3.6
+           stage: Comprehensive tests
            # Run this with pytest because our `setup.py` runner does not
            # currently pick up doctests in docs/
            env: MAIN_CMD="py.test"
-                SETUP_CMD="--remote-data -k-figure --cov --cov-config sunpy/tests/coveragerc ./"
+                SETUP_CMD="--remote-data -k-figure --cov --cov-config sunpy/tests/coveragerc ./docs/"
 
          - python: 3.6
            stage: Comprehensive tests
