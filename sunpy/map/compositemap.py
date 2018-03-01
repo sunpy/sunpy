@@ -4,6 +4,8 @@ Author: `Keith Hughitt <keith.hughitt@nasa.gov>`
 """
 from __future__ import absolute_import, print_function, division
 
+import numpy as np
+
 import matplotlib.pyplot as plt
 
 import astropy.units as u
@@ -431,10 +433,16 @@ class CompositeMap(object):
             }
             params.update(matplot_args)
 
+            # The request to show a map layer rendered as a contour is indicated by a
+            # non False levels property.  If levels is False, then the layer is
+            # rendered using imshow.
             if m.levels is False:
-                ret.append(axes.imshow(m.data, **params))
+                # Check for the presence of masked map data
+                if m.mask is None:
+                    ret.append(axes.imshow(m.data, **params))
+                else:
+                    ret.append(axes.imshow(np.ma.array(np.asarray(m.data), mask=m.mask), **params))
 
-            # Use contour for contour data, and imshow otherwise
             if m.levels is not False:
                 # Set data with values <= 0 to transparent
                 # contour_data = np.ma.masked_array(m, mask=(m <= 0))
