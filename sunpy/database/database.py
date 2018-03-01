@@ -462,7 +462,7 @@ class Database(object):
         Check if the query has already been used to collect new data.
 
         If yes, query the database using the method
-        :meth:`sunpy.database.Database.query` and return the result.
+        :meth:`sunpy.database.Database.search` and return the result.
 
         Otherwise, the retrieved search result is used to download all files
         that belong to this search result. After that, all the gathered
@@ -809,7 +809,7 @@ class Database(object):
         Parameters
         ----------
         query_result : list
-            The value returned by :meth:`sunpy.net.hek.HEKClient().query`
+            The value returned by :meth:`sunpy.net.hek.HEKClient().search`
 
         ignore_already_added : bool
             See :meth:`sunpy.database.Database.add`.
@@ -832,7 +832,7 @@ class Database(object):
 
         Parameters
         ----------
-        query_result : sunpy.net.vso.vso.QueryResponse
+        query_result : sunpy.net.vso.QueryResponse
             A VSO query response that was returned by the ``query`` method of a
             :class:`sunpy.net.vso.VSOClient` object.
 
@@ -852,7 +852,7 @@ class Database(object):
 
         Parameters
         ----------
-        query_result : sunpy.net.vso.vso.QueryResponse
+        query_result : sunpy.net.vso.QueryResponse
             A VSO query response that was returned by the ``query`` method of a
             :class:`sunpy.net.vso.VSOClient` object.
 

@@ -6,10 +6,8 @@ import sunpy
 import sunpy.io
 import sunpy.data.test
 
-from sunpy.tests.helpers import skip_ana, skip_glymur, skip_windows
+from sunpy.tests.helpers import skip_glymur, skip_ana
 
-import sunpy.data.test
-import os
 testpath = sunpy.data.test.rootdir
 
 RHESSI_IMAGE = os.path.join(testpath, 'hsi_image_20101016_191218.fits')
@@ -77,7 +75,6 @@ class TestFiletools(object):
         assert isinstance(hlist, list)
         assert len(hlist) == 1
         assert isinstance(hlist[0], sunpy.io.header.FileHeader)
-
 
     def test_write_file_fits(self):
         #Test write FITS

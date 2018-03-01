@@ -58,8 +58,8 @@ dependencies:
 - xz
 - zlib
 - openjpeg
-- sphinx-gallery
 - glymur
 - pip:
     - sunpy-sphinx-theme
+    - git+https://github.com/sphinx-gallery/sphinx-gallery
     - drms
