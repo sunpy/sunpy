@@ -97,7 +97,7 @@ class CompositeOperation(DatabaseOperation):
         for operation in self._operations:
             # FIXME: What follows is the worst hack of my life. Enjoy.
             # Without it, the test test_clear_database would fail.
-            f = open(os.devnull, 'w'); f.write(repr(operation)); f.flush()
+            f = open(os.devnull, 'w'); f.write(repr(operation)); f.flush(); f.close()
             operation()
 
     def undo(self):
