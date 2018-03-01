@@ -7,3 +7,4 @@
 sphinx
 sunpy-sphinx-theme
 sphinx-gallery
+sphinx_astropy

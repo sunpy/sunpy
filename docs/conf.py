@@ -45,19 +45,11 @@ except ImportError:
                       '"suds-jerko" package and try again')
 
 try:
-    import astropy_helpers
+    from sphinx_astropy.conf.v1 import * 
 except ImportError:
-    # Building from inside the docs directory?
-    if os.path.basename(os.getcwd()) == 'docs':
-        a_h_path = os.path.abspath(os.path.join('..', 'astropy_helpers'))
-        if os.path.isdir(a_h_path):
-            sys.path.insert(1, a_h_path)
+    print('ERROR: the documentation requires the sphinx-astropy package to be installed')
+    sys.exit(1)
 
-    # If that doesn't work trying to import from astropy_helpers below will
-    # still blow up
-
-    # Load all of the global Astropy configuration
-from astropy_helpers.sphinx.conf import *
 from sunpy.extern import six
 import sunpy
 
@@ -174,14 +166,13 @@ napoleon_use_rtype = False
 napoleon_google_docstring = False
 
 # -- Options for the edit_on_github extension ----------------------------------------
-extensions.remove('astropy_helpers.extern.numpydoc')
 extensions.append('sphinx.ext.napoleon')
 
 # Disable having a separate return type row
 napoleon_use_rtype = False
 # Disable google style docstrings
 napoleon_google_docstring = False
-extensions += ['astropy_helpers.sphinx.ext.edit_on_github', 'sphinx.ext.doctest', 'sphinx.ext.githubpages']
+extensions += ['sphinx_astropy.ext.edit_on_github', 'sphinx.ext.doctest', 'sphinx.ext.githubpages']
 
 # Don't import the module as "version" or it will override the
 # "version" configuration parameter
