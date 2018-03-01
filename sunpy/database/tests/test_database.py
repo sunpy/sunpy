@@ -911,7 +911,7 @@ def test_fetch_duplicates(database, download_query, tmpdir):
     database.default_waveunit = 'angstrom'
     database.fetch(
         *download_query, path=str(tmpdir.join('{file}.fits')), progress=True)
-    assert len(database) == 2
+    assert len(database) == 4
     download_time = database[0].download_time
     database.fetch(*download_query, path=str(tmpdir.join('{file}.fits')))
     assert len(database) == 4
@@ -930,7 +930,7 @@ def test_fetch(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
     database.fetch(*download_query, path=str(tmpdir.join('{file}.fits')))
-    assert len(database) == 2
+    assert len(database) == 4
     download_time = database[0].download_time
     database.fetch(*download_query, path=str(tmpdir.join('{file}.fits')))
     assert len(database) == 4
