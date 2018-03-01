@@ -32,6 +32,9 @@ from .representation import SphericalWrap180Representation
 from .frames import (HeliographicStonyhurst, HeliographicCarrington,
                      Heliocentric, Helioprojective)
 
+from sunpy.sun import sun
+RSUN_METERS = sun.constants.get('radius').si.to(u.m)
+
 __all__ = ['hgs_to_hgc', 'hgc_to_hgs', 'hcc_to_hpc',
            'hpc_to_hcc', 'hcc_to_hgs', 'hgs_to_hcc',
            'hpc_to_hpc',
@@ -180,7 +183,10 @@ def hgs_to_hcc(heliogcoord, heliocframe):
     """
     hglon = heliogcoord.lon
     hglat = heliogcoord.lat
-    r = heliogcoord.radius.to(u.m)
+    r = heliogcoord.radius
+    if r.unit is u.one and quantity_allclose(r, 1*u.one):
+        r = np.ones_like(r)
+        r *= RSUN_METERS
 
     if heliocframe.obstime is None:
         heliocframe._obstime = heliogcoord.obstime
