@@ -2,6 +2,8 @@
 # This module was developed under funding provided by
 # Google Summer of Code 2014
 
+from __future__ import print_function, absolute_import
+
 import copy
 import os
 import datetime
@@ -21,8 +23,8 @@ from sunpy.util.config import get_and_create_download_dir
 from sunpy import config
 from sunpy.util import deprecated
 
-from ..download import Downloader, Results
-from ..vso.attrs import Time, Wavelength, _Range
+from sunpy.net.download import Downloader, Results
+from sunpy.net.vso.attrs import Time, Wavelength, _Range
 
 TIME_FORMAT = config.get("general", "time_format")
 
