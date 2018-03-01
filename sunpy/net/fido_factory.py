@@ -72,7 +72,7 @@ class UnifiedResponse(Sequence):
                 else:
                     raise ValueError(
                         "{} is not a valid input to UnifiedResponse.".format(type(lst)))
-
+        print(tmplst)
         self._list = tmplst
 
     def __len__(self):
@@ -287,7 +287,7 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
 
         >>> from sunpy.net import Fido, attrs as a
         >>> import astropy.units as u
-        >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra'))
+        >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra')) # doctest: +REMOTE_DATA
 
         Query for data from Nobeyama Radioheliograph and RHESSI
 
