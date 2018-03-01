@@ -42,6 +42,8 @@ Bug Fixes
 - Updates MapCube to access the correct properties of the namedtuple SpatialPair [#2297]
 - Fixed TimeSeries test failures due to missing test files [#2273]
 - Refactored a GOES test to avoid a Py3.6 issue [#2276]
+- The documentation build now uses the Sphinx configuration from sphinx-astropy 
+  rather than from astropy-helpers.
 
 0.8.0
 ======
