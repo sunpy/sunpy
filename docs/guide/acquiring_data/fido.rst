@@ -95,7 +95,7 @@ second to the records returned.
 
 For example, the following code returns a response containing LYRA data from
 the `~sunpy.net.dataretriever.sources.LYRAClient`, and EVE data from the
-`~sunpy.net.vso.vso.VSOClient`::
+`~sunpy.net.vso.VSOClient`::
 
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2012/1/1", "2012/1/2"),

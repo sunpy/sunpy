@@ -8,6 +8,7 @@ import os
 import pytest
 import datetime
 import warnings
+import tempfile
 
 import numpy as np
 
@@ -259,16 +260,20 @@ def test_swap_cd():
 
 def test_data_range(generic_map):
     """Make sure xrange and yrange work"""
-    assert_quantity_allclose((generic_map.xrange[1] - generic_map.xrange[0]
-            ).to(u.arcsec).value, generic_map.meta['cdelt1'] * generic_map.meta['naxis1'])
-    assert_quantity_allclose((generic_map.yrange[1] - generic_map.yrange[0]
-            ).to(u.arcsec).value, generic_map.meta['cdelt2'] * generic_map.meta['naxis2'])
+    assert_quantity_allclose(
+        (generic_map.xrange[1] - generic_map.xrange[0]).to(u.arcsec).value,
+        generic_map.meta['cdelt1'] * generic_map.meta['naxis1']
+    )
+    assert_quantity_allclose(
+        (generic_map.yrange[1] - generic_map.yrange[0]).to(u.arcsec).value,
+        generic_map.meta['cdelt2'] * generic_map.meta['naxis2']
+    )
 
     # the weird unit-de-unit thing here is to work around and inconsistency in
     # the way np.average works with astropy 1.3 and 2.0dev
-    assert_quantity_allclose(np.average(u.Quantity(generic_map.xrange).value) * u.deg,
+    assert_quantity_allclose(np.average(u.Quantity(generic_map.xrange).value) * u.arcsec,
                              generic_map.center.Tx)
-    assert_quantity_allclose(np.average(u.Quantity(generic_map.yrange).value) * u.deg,
+    assert_quantity_allclose(np.average(u.Quantity(generic_map.yrange).value) * u.arcsec,
                              generic_map.center.Ty)
 
 
@@ -278,6 +283,17 @@ def test_world_to_pixel(generic_map):
     # Note: FITS pixels start from 1,1
     test_pixel = generic_map.world_to_pixel(generic_map.reference_coordinate, origin=1)
     assert_quantity_allclose(test_pixel, generic_map.reference_pixel)
+
+
+def test_save(generic_map):
+    """Tests the map save function"""
+    aiamap = aia171_test_map()
+    afilename = tempfile.NamedTemporaryFile(suffix='fits').name
+    aiamap.save(afilename, filetype='fits', clobber=True)
+    loaded_save = sunpy.map.Map(afilename)
+    assert isinstance(loaded_save, sunpy.map.sources.AIAMap)
+    assert loaded_save.meta == aiamap.meta
+    assert_quantity_allclose(loaded_save.data, aiamap.data)
 
 
 def test_default_shift():
@@ -550,6 +566,12 @@ def test_as_mpl_axes_aia171(aia171_test_map):
     assert all([ct1 == ct2 for ct1, ct2 in zip(ax.wcs.wcs.ctype, aia171_test_map.wcs.wcs.ctype)])
     # Map adds these attributes, so we use them to check.
     assert hasattr(ax.wcs, 'heliographic_observer')
+
+
+def test_pixel_to_world_no_projection(generic_map):
+    out = generic_map.pixel_to_world(*u.Quantity(generic_map.reference_pixel)+1*u.pix, origin=1)
+    assert_quantity_allclose(out.Tx, -10*u.arcsec)
+    assert_quantity_allclose(out.Ty, 10*u.arcsec)
 
 
 def test_validate_meta(generic_map):

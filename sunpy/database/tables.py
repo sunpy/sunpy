@@ -495,13 +495,13 @@ class DatabaseEntry(Base):
 
 def entries_from_query_result(qr, default_waveunit=None):
     """
-    Use a query response returned from :meth:`sunpy.net.vso.VSOClient.query`
+    Use a query response returned from :meth:`sunpy.net.vso.VSOClient.search`
     or :meth:`sunpy.net.vso.VSOClient.query_legacy` to generate instances of
     :class:`DatabaseEntry`. Return an iterator over those instances.
 
     Parameters
     ----------
-    qr : `sunpy.net.vso.vso.QueryResponse`
+    qr : `sunpy.net.vso.QueryResponse`
         The query response from which to build the database entries.
 
     default_waveunit : `str`, optional

@@ -368,9 +368,9 @@ def _goes_chianti_tem(longflux, shortflux, satellite=8,
     ...                              date='2014-04-16',
     ...                              abundances="coronal")  # doctest: +REMOTE_DATA
     >>> temp  # doctest: +REMOTE_DATA
-    <Quantity [ 11.28295376, 11.28295376] MK>
+    <Quantity [11.28295376, 11.28295376] MK>
     >>> em  # doctest: +REMOTE_DATA
-    <Quantity [  4.78577516e+48,  4.78577516e+48] 1 / cm3>
+    <Quantity [4.78577516e+48, 4.78577516e+48] 1 / cm3>
 
     """
     if not download_dir:
@@ -506,7 +506,7 @@ def _goes_get_chianti_temp(fluxratio, satellite=8, abundances="coronal",
     >>> temp = _goes_get_chianti_temp(fluxratio, satellite=15,
     ...                               abundances="coronal")  # doctest: +REMOTE_DATA
     >>> temp  # doctest: +REMOTE_DATA
-    <Quantity [ 12.27557778, 12.27557778] MK>
+    <Quantity [12.27557778, 12.27557778] MK>
 
     """
     if not download_dir:
@@ -662,7 +662,7 @@ def _goes_get_chianti_em(longflux, temp, satellite=8, abundances="coronal",
     >>> em = _goes_get_chianti_em(longflux, temp, satellite=15,
     ...                           abundances="coronal")  # doctest: +REMOTE_DATA
     >>> em  # doctest: +REMOTE_DATA
-    <Quantity [  3.45200672e+48,  3.45200672e+48] 1 / cm3>
+    <Quantity [3.45200672e+48, 3.45200672e+48] 1 / cm3>
 
     """
     if not download_dir:
@@ -942,7 +942,7 @@ def _calc_rad_loss(temp, em, obstime=None, force_download=False,
     >>> em = Quantity([4.0e+48, 4.0e+48], unit="cm**(-3)")
     >>> rad_loss = _calc_rad_loss(temp, em)  # doctest: +REMOTE_DATA
     >>> rad_loss["rad_loss_rate"]  # doctest: +REMOTE_DATA
-    <Quantity [  3.01851392e+19,  3.01851392e+19] J / s>
+    <Quantity [3.01851392e+19, 3.01851392e+19] J / s>
     """
     if not download_dir:
         download_dir = get_and_create_download_dir()
@@ -1171,15 +1171,15 @@ def _goes_lx(longflux, shortflux, obstime=None, date=None):
     ...                     datetime(2014,1,1,0,0,10),], dtype=object)
     >>> lx_out = _goes_lx(longflux, shortflux, obstime)  # doctest: +REMOTE_DATA
     >>> lx_out["longlum"]  # doctest: +REMOTE_DATA
-    <Quantity [  1.96860565e+18,  1.96860565e+18,  1.96860565e+18,
-                 1.96860565e+18,  1.96860565e+18,  1.96860565e+18] W>
+    <Quantity [1.96860565e+18, 1.96860565e+18, 1.96860565e+18, 1.96860565e+18,
+                 1.96860565e+18, 1.96860565e+18] W>
     >>> lx_out["shortlum"]  # doctest: +REMOTE_DATA
-    <Quantity [  1.96860565e+17,  1.96860565e+17,  1.96860565e+17,
-                 1.96860565e+17,  1.96860565e+17,  1.96860565e+17] W>
+    <Quantity [1.96860565e+17, 1.96860565e+17, 1.96860565e+17, 1.96860565e+17,
+               1.96860565e+17, 1.96860565e+17] W>
     >>> lx_out["longlum_int"]  # doctest: +REMOTE_DATA
-    <Quantity 1.968605654118636e+19 s W>
+    <Quantity 1.96860565e+19 s W>
     >>> lx_out["shortlum_int"]  # doctest: +REMOTE_DATA
-    <Quantity 1.9686056541186358e+18 s W>
+    <Quantity 1.96860565e+18 s W>
 
     """
     # Calculate X-ray luminosities
@@ -1266,7 +1266,7 @@ def _calc_xraylum(flux, date=None):
     >>> flux = Quantity([7e-6,7e-6], unit="W/m**2")
     >>> xraylum = _calc_xraylum(flux, date="2014-04-21")  # doctest: +REMOTE_DATA
     >>> xraylum  # doctest: +REMOTE_DATA
-    <Quantity [  1.98751663e+18,  1.98751663e+18] W>
+    <Quantity [1.98751663e+18, 1.98751663e+18] W>
 
     """
     if date is not None:
@@ -1299,7 +1299,7 @@ def flareclass_to_flux(flareclass):
     Examples
     --------
     >>> from sunpy.instr.goes import flareclass_to_flux
-    >>> flareclass_to_flux('A1.0')
+    >>> flareclass_to_flux('A1.0') #doctest: +FLOAT_CMP
     <Quantity 1e-08 W / m2>
     >>> flareclass_to_flux('c4.7')
     <Quantity 4.7e-06 W / m2>

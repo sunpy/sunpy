@@ -15,14 +15,15 @@ import warnings
 from datetime import datetime, timedelta
 
 import numpy as np
+from dateutil.relativedelta import relativedelta
 
-from astropy.io import fits
 from astropy import units as u
 
 from sunpy.time import TimeRange, parse_time
 from sunpy.sun.sun import solar_semidiameter_angular_size
 from sunpy.coordinates import get_sunearth_distance
 import sunpy.map
+import sunpy.io
 
 from sunpy.extern.six.moves import urllib
 from sunpy.extern.six.moves.urllib.request import urlopen, urlretrieve
@@ -198,18 +199,27 @@ def get_obssum_filename(time_range):
         This API is currently limited to providing data from whole days only.
 
     """
+    time_range = TimeRange(time_range)
+
+    delta = relativedelta(time_range.end, time_range.start)
+    if delta.years > 0 or delta.months > 0:
+        raise ValueError("Rhessi search results can not be found for a"
+                         " time range crossing multiple months.")
+
+
     # need to download and inspect the dbase file to determine the filename
     # for the observing summary data
 
     dbase_file_name, _ = get_obssumm_dbase_file(time_range)
     dbase_dat = parse_obssumm_dbase_file(dbase_file_name)
 
-    _time_range = TimeRange(time_range)
-    index_number_start = _time_range.start.day - 1
-    index_number_end = _time_range.end.day - 1
+    index_number_start = time_range.start.day - 1
+    # If end is 0 set it to 1 so we always have at least one record.
+    index_number_end = time_range.end.day - 1 or index_number_start + 1
 
+    filenames = dbase_dat.get('filename')[index_number_start:index_number_end]
     return [posixpath.join(get_base_url(), 'metadata', 'catalog', filename + 's')
-            for filename in dbase_dat.get('filename')[index_number_start:index_number_end]]
+            for filename in filenames]
 
 
 def get_obssumm_file(time_range):
@@ -271,7 +281,7 @@ def parse_obssumm_file(filename):
 
     """
 
-    afits = fits.open(filename)
+    afits = sunpy.io.read_file(filename)
     fits_header = afits[0].header
 
     reference_time_ut = parse_time(afits[5].data.field('UT_REF')[0])
@@ -413,7 +423,7 @@ def _backproject(calibrated_event_list, detector=8, pixel_size=(1., 1.),
     # info_parameters = fits[2]
     # detector_efficiency = info_parameters.data.field('cbe_det_eff$$REL')
 
-    afits = fits.open(calibrated_event_list)
+    afits = sunpy.io.read_file(calibrated_event_list)
 
     fits_detector_index = detector + 2
     detector_index = detector - 1
@@ -477,7 +487,7 @@ def backprojection(calibrated_event_list, pixel_size=(1., 1.) * u.arcsec,
     pixel_size = pixel_size.to(u.arcsec)
     image_dim = np.array(image_dim.to(u.pix).value, dtype=int)
 
-    afits = fits.open(calibrated_event_list)
+    afits = sunpy.io.read_file(calibrated_event_list)
     info_parameters = afits[2]
     xyoffset = info_parameters.data.field('USED_XYOFFSET')[0]
     time_range = TimeRange(info_parameters.data.field('ABSOLUTE_TIME_RANGE')[0])

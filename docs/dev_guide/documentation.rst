@@ -98,7 +98,7 @@ This function only accepts arguments that are convertible to arcseconds.
 Therefore, ::
 
     >>> myfunction(20 * u.degree)
-    <Quantity 400.0 deg2>
+    <Quantity 400. deg2>
 
 returns the expected answer but ::
 

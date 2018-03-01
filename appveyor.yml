@@ -13,7 +13,7 @@ environment:
       CONDA_CHANNELS: "conda-forge astropy-ci-extras"
       CONDA_DEPENDENCIES: "scipy matplotlib mock pandas requests beautifulsoup4 sqlalchemy scikit-image pytest-mock wcsaxes suds-jurko glymur drms"
       PIP_DEPENDENCIES: "hypothesis sunpy-sphinx-theme pytest-astropy"
-      NUMPY_VERSION: "stable"
+      NUMPY_VERSION: "1.13"
       ASTROPY_VERSION: "stable"
 
   matrix:

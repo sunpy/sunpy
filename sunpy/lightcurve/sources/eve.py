@@ -36,7 +36,8 @@ class EVELightCurve(LightCurve):
 
     Level 0CS data is primarily used for space weather. It is provided near
     real-time and is crudely calibrated 1-minute averaged broadband irradiances
-    from ESP and MEGS-P broadband.
+    from ESP and MEGS-P broadband. For other levels of EVE data, use
+    `~sunpy.net.Fido`, with `sunpy.net.attrs.Instrument('eve')`.
 
     Data is available starting on 2010/03/01.
 
@@ -142,7 +143,7 @@ class EVELightCurve(LightCurve):
     @staticmethod
     def _parse_level_0cs(fp):
         """Parses and EVE Level 0CS file."""
-        is_missing_data = False      #boolean to check for missing data
+        is_missing_data = False  # boolean to check for missing data
         missing_data_val = numpy.nan
         header = []
         fields = []
@@ -150,21 +151,21 @@ class EVELightCurve(LightCurve):
         # Read header at top of file
         while line.startswith(";"):
             header.append(line)
-            if '; Missing data:' in line :
+            if '; Missing data:' in line:
                 is_missing_data = True
                 missing_data_val = line.split(':')[1].strip()
 
             line = fp.readline()
 
         meta = OrderedDict()
-        for hline in header :
+        for hline in header:
             if hline == '; Format:\n' or hline == '; Column descriptions:\n':
                 continue
             elif ('Created' in hline) or ('Source' in hline):
                 meta[hline.split(':',
                                  1)[0].replace(';',
                                                ' ').strip()] = hline.split(':', 1)[1].strip()
-            elif ':' in hline :
+            elif ':' in hline:
                 meta[hline.split(':')[0].replace(';', ' ').strip()] = hline.split(':')[1].strip()
 
         fieldnames_start = False
@@ -182,16 +183,13 @@ class EVELightCurve(LightCurve):
         year = int(date_parts[0])
         month = int(date_parts[2])
         day = int(date_parts[3])
-        #last_pos = fp.tell()
-        #line = fp.readline()
-        #el = line.split()
-        #len
 
         # function to parse date column (HHMM)
         parser = lambda x: datetime(year, month, day, int(x[0:2]), int(x[2:4]))
 
-        data = read_csv(fp, sep="\s*", names=fields, index_col=0, date_parser=parser, header=None, engine='python')
-        if is_missing_data :   #If missing data specified in header
+        data = read_csv(fp, sep="\s*", names=fields, index_col=0,
+                        date_parser=parser, header=None, engine='python')
+        if is_missing_data:  # If missing data specified in header
             data[data == float(missing_data_val)] = numpy.nan
 
         # data.columns = fields
