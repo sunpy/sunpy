@@ -77,19 +77,12 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         **kwargs : `dict`
             Any additional plot arguments that should be used
             when plotting.
-
-        Returns
-        -------
-        fig : `~matplotlib.Figure`
-            A plot figure.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
 
         figure = plt.figure()
         axes = plt.gca()
-
-        #dates = matplotlib.dates.date2num(self.data.index)
 
         lc_linecolors = rhessi.hsi_linecolors()
 
