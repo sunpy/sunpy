@@ -442,11 +442,13 @@ class CompositeMap(object):
                     ret.append(axes.imshow(m.data, **params))
                 else:
                     ret.append(axes.imshow(np.ma.array(np.asarray(m.data), mask=m.mask), **params))
+            else:
+                # Check for the presence of masked map data
+                if m.mask is None:
+                    ret.append(axes.contour(m.data, m.levels, **params))
+                else:
+                    ret.append(axes.contour(np.ma.array(np.asarray(m.data), mask=m.mask), **params))
 
-            if m.levels is not False:
-                # Set data with values <= 0 to transparent
-                # contour_data = np.ma.masked_array(m, mask=(m <= 0))
-                ret.append(axes.contour(m.data, m.levels, **params))
                 # Set the label of the first line so a legend can be created
                 ret[-1].collections[0].set_label(m.name)
 
