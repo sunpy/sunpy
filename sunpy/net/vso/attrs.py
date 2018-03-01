@@ -165,7 +165,7 @@ class Time(Attr, _Range):
     end : SunPy Time String
         The end time of the range.
 
-    near: SunPy Time String
+    near : SunPy Time String
         Return a singular record closest in time to this value as possible,
         inside the start and end window. Note: not all providers support this
         functionality.

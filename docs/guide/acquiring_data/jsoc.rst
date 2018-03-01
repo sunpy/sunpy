@@ -7,12 +7,12 @@ as well as certain other missions and instruments. These data are available from
 which can be directly accessed by the online `JSOC interface <http://jsoc.stanford.edu/ajax/lookdata.html>`
 
 SunPy's JSOC Client provides an easier interface to query for JSOC data and make export requests.
-It uses `drms module <https://github.com/kbg/drms>` as its backend, and exposes a similar API as
+It uses `drms module <https://drms.readthedocs.io/>` as its backend, and exposes a similar API as
 the VSO Client.
 
 There are two ways of downloading JSOC data. One way is using Sunpy's unified search interface,
-known as Fido. Fido supplies a single, easy and consistent way to to obtain most forms of physics
-data. An alternative way to fetch data from JSOC is by using the underlying JSOC Client. This option
+known as Fido. Fido supplies a single, easy and consistent way to to obtain most forms of solar physics data.
+An alternative way to fetch data from JSOC is by using the underlying JSOC Client. This option
 can be preferred when the complex searches are to be made, or when you need to separate the staging
 and downloading steps, which is not supported by Fido.
 
@@ -26,7 +26,7 @@ staged for download and then you can download them. Fido combines the stages int
 Setup
 -----
 
-SunPy's FIDO module is in `sunpy.net`.  It can be imported as follows:
+SunPy's Fido module is in `sunpy.net`.  It can be imported as follows:
 
     >>> from sunpy.net import Fido, attrs as a
 
