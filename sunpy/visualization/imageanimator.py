@@ -889,8 +889,14 @@ class LineAnimator(ArrayAnimator):
         if val != slider.cval:
             line.set_ydata(self.data[self.frame_index])
             if self.xdata.shape == self.data.shape:
-                # CAUTION: Assumes data is 2D and plot_axis_index=1 or -1
-                line.set_xdata(self.xdata[val])
+                item = [slid._slider.val for slid in self.sliders]
+                item[ax_ind] = val
+                if self.plot_axis_index < 0:
+                    i = self.data.ndim + self.plot_axis_index
+                else:
+                    i = self.plot_axis_index
+                item.insert(i, slice(None))
+                line.set_xdata(self.xdata[tuple(item)])
             slider.cval = val
 
 
