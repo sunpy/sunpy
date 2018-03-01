@@ -30,7 +30,14 @@ Examples of these attributes are `a.Time <sunpy.net.vso.attrs.Time>`,
 client specific, such as `a.vso <sunpy.net.vso.attrs>` or
 `a.jsoc <sunpy.net.jsoc.attrs>`.::
 
-    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra'))
+    >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra')) # doctest: +REMOTE_DATA
+    [<class 'sunpy.net.dataretriever.client.QueryResponse'><Table length=3>
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str6     str4       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
+    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
+    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan]
 
 This returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing
 information on the available online files which fit the criteria specified by
@@ -40,13 +47,11 @@ instructions on how to download data using Fido, see :ref:`downloading_data`.
 To see a summary of results of our query, simple type the name of the
 variable set to the Fido search, in this case, result::
 
-    >>> result  # doctest: +SKIP
-    <sunpy.net.fido_factory.UnifiedResponse object at 0x7fe6258ab630>
+    >>> result # doctest: +SKIP
+    <sunpy.net.fido_factory.UnifiedResponse object at 0x7feedb6558d0>
     Results from 1 Provider:
-
-    3 Results from the LYRAClient:
-        Start Time           End Time      Source Instrument Wavelength
-          str19               str19         str6     str4       str3
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str6     str4       str3
     ------------------- ------------------- ------ ---------- ----------
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
     2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
