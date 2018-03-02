@@ -21,7 +21,7 @@ The easiest interface to the coordinates module is through the `~astropy.coordin
   >>> c = SkyCoord(70*u.deg, -30*u.deg, frame=frames.HeliographicStonyhurst)
   >>> c
   <SkyCoord (HeliographicStonyhurst: obstime=None): (lon, lat, radius) in (deg, deg, km)
-      ( 70., -30.,  695508.)>
+      (70., -30., 695508.)>
 
 
 It is also possible to use strings to define the frame but in that case make sure to
@@ -83,9 +83,9 @@ referred to as 'solar-x' and 'solar-y'.::
 
   >>> c = SkyCoord(-500*u.arcsec, 100*u.arcsec, frame=frames.Helioprojective)
   >>> c.Tx
-  <Longitude180 -500.0 arcsec>
+  <Longitude -500. arcsec>
   >>> c.Ty
-  <Latitude 100.0 arcsec>
+  <Latitude 100. arcsec>
 
 `~sunpy.coordinates.Heliocentric`
 #################################
@@ -94,7 +94,7 @@ Heliocentric normally a Cartesian frame so the coordinates are accessed as ``x, 
 
   >>> c = SkyCoord(-72241.0*u.km, 361206.1*u.km, 589951.4*u.km, frame=frames.Heliocentric)
   >>> c.x
-  <Quantity -72241.0 km>
+  <Quantity -72241. km>
   >>> c.y
   <Quantity 361206.1 km>
   >>> c.z
@@ -107,11 +107,11 @@ Both the heliographic frames use latitude, longitude and radius which are access
 
    >>> c = SkyCoord(70*u.deg, -30*u.deg, frame=frames.HeliographicStonyhurst)
    >>> c.lat
-   <Latitude -30.0 deg>
+   <Latitude -30. deg>
    >>> c.lon
-   <Longitude180 70.0 deg>
+   <Longitude 70. deg>
    >>> c.radius
-   <Distance 695508.0 km>
+   <Distance 695508. km>
 
 Transforming Between Coordinate Frames
 --------------------------------------
@@ -128,12 +128,12 @@ coordinates is::
    >>> c = SkyCoord(0*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective, obstime="2017-07-26")
    >>> c
    <SkyCoord (Helioprojective: obstime=2017-07-26 00:00:00, rsun=695508.0 km, observer=<HeliographicStonyhurst Coordinate (obstime=2017-07-26 00:00:00): (lon, lat, radius) in (deg, deg, AU)
-       ( 0.,  5.31701821,  1.01567428)>): (Tx, Ty) in arcsec
-       ( 0.,  0.)>
+       (0., 5.31701821, 1.01567428)>): (Tx, Ty) in arcsec
+       (0., 0.)>
 
    >>> c.transform_to(frames.HeliographicCarrington)
    <SkyCoord (HeliographicCarrington: obstime=2017-07-26 00:00:00): (lon, lat, radius) in (deg, deg, km)
-      ( 283.99298362,  5.31701821,  695508.00000058)>
+      (283.99298362, 5.31701821, 695508.00000058)>
 
 It is also possible to transform to any coordinate system implemented in Astropy. This can be used to find the position of the solar limb in AltAz equatorial coordinates::
 
@@ -144,7 +144,7 @@ It is also possible to transform to any coordinate system implemented in Astropy
     >>> greenbelt_frame = AltAz(obstime=time, location=greenbelt)
 
     >>> west_limb = SkyCoord(900*u.arcsec, 0*u.arcsec, frame=frames.Helioprojective, obstime=time)
-    >>> west_limb.transform_to(greenbelt_frame)  # doctest: +FLOAT_CMP +REMOTE_DATA
+    >>> west_limb.transform_to(greenbelt_frame)  # doctest: +FLOAT_CMP +REMOTE_DATA +SKIP
     <SkyCoord (AltAz: obstime=2017-07-11 15:00:00.000, location=(1126916.53031967, -4833386.58391627, 3992696.622115747) m, pressure=0.0 hPa, temperature=0.0 deg_C, relative_humidity=0, obswl=1.0 micron): (az, alt, distance) in (deg, deg, m)
         ( 111.40839095,  57.1664571,   1.51860261e+11)>
 
@@ -202,7 +202,7 @@ possible to transform SunPy frames to Astropy frames.
 
 Positions within these ``Frames`` are stored as a ``Representation`` of a
 coordinate, a representation being a description of a point in a Cartesian,
-spherical or cylindrical system (`sunpy.coordinates.representation`). A frame
+spherical or cylindrical system (`astropy.coordinates.representation`). A frame
 that contains a representation of one or many points is said to have been
 'realized'.
 
@@ -284,9 +284,6 @@ which is equivalent to::
     :headings: ^#
 
 .. automodapi:: sunpy.coordinates.ephemeris
-    :headings: ^#
-
-.. automodapi:: sunpy.coordinates.representation
     :headings: ^#
 
 .. automodapi:: sunpy.coordinates.offset_frame

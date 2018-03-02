@@ -1,18 +1,21 @@
-import pytest
 import datetime
 
-from sunpy.time.timerange import TimeRange, parse_time
+import pytest
+from hypothesis import given, example
+
+from sunpy.time.timerange import TimeRange
 from sunpy.net.vso.attrs import Time, Instrument
 from sunpy.net.dataretriever.client import QueryResponse
 import sunpy.net.dataretriever.sources.goes as goes
 from sunpy.net.fido_factory import UnifiedResponse
 from sunpy.net import Fido
 from sunpy.net import attrs as a
-
-from hypothesis import given, example
 from sunpy.net.tests.strategies import goes_time
 
-LCClient = goes.XRSClient()
+
+@pytest.fixture
+def LCClient():
+    return goes.XRSClient()
 
 
 @pytest.mark.parametrize(
@@ -23,7 +26,7 @@ LCClient = goes.XRSClient()
      (TimeRange('2008/06/02', '2008/06/04'),
       'http://umbra.nascom.nasa.gov/goes/fits/2008/go1020080602.fits',
       'http://umbra.nascom.nasa.gov/goes/fits/2008/go1020080604.fits')])
-def test_get_url_for_time_range(timerange, url_start, url_end):
+def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     urls = LCClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)
     assert urls[0] == url_start
@@ -40,12 +43,12 @@ def test_can_handle_query(time):
     assert ans3 is False
 
 
-def test_no_satellite():
+def test_no_satellite(LCClient):
     with pytest.raises(ValueError):
         LCClient.search(Time("1950/01/01", "1950/02/02"), Instrument('XRS'))
 
 
-def test_fixed_satellite():
+def test_fixed_satellite(LCClient):
     ans1 = LCClient.search(a.Time("2017/01/01", "2017/01/02"),
                            a.Instrument('XRS'))
 
@@ -64,7 +67,7 @@ def test_fixed_satellite():
 # This example tests a time range with a satellite jump and no overlap
 @example(a.Time("2009-11-30", "2009-12-3"))
 @given(goes_time())
-def test_query(time):
+def test_query(LCClient, time):
     qr1 = LCClient.search(time, Instrument('XRS'))
     assert isinstance(qr1, QueryResponse)
     # We only compare dates here as the start time of the qr will always be the
@@ -76,29 +79,27 @@ def test_query(time):
     assert qr1.time_range().end == end
 
 
-def test_query_error():
+def test_query_error(LCClient):
     times = [a.Time("1983-05-01", "1983-05-02")]
     for time in times:
         with pytest.raises(ValueError):
             LCClient.search(time, Instrument('XRS'))
 
 
-@pytest.mark.skip(reason="Hangs with pytest only")
 @pytest.mark.remote_data
 @pytest.mark.parametrize("time, instrument", [
     (Time('1983/06/17', '1983/06/18'), Instrument('XRS')),
     (Time('2012/10/4', '2012/10/6'), Instrument('XRS')),
 ])
-def test_get(time, instrument):
+def test_get(LCClient, time, instrument):
     qr1 = LCClient.search(time, instrument)
     res = LCClient.fetch(qr1)
     download_list = res.wait(progress=False)
     assert len(download_list) == len(qr1)
 
 
-@pytest.mark.skip(reason="Hangs with pytest only")
 @pytest.mark.remote_data
-def test_new_logic():
+def test_new_logic(LCClient):
     qr = LCClient.search(Time('2012/10/4', '2012/10/6'), Instrument('XRS'))
     res = LCClient.fetch(qr)
     download_list = res.wait(progress=False)
@@ -118,7 +119,7 @@ def test_fido(time, instrument):
 
 
 @given(goes_time())
-def test_time_for_url(time):
+def test_time_for_url(LCClient, time):
     time = time.start.date().strftime("%Y/%m/%d")
     almost_day = datetime.timedelta(days=1, milliseconds=-1)
 

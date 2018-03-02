@@ -213,13 +213,13 @@ that can be expressed in length units ::
 shows the solar radius in units of meters.  The same physical quantity can be expressed in different units instead using the `.to()` method::
 
     >>> con.radius.to('km')
-    <Quantity 695508.0 km>
+    <Quantity 695508. km>
 
 or equivalently::
 
     >>> import astropy.units as u
     >>> con.radius.to(u.km)
-    <Quantity 695508.0 km>
+    <Quantity 695508. km>
 
 If, as is sometimes the case, you need just the raw value or the unit from a quantity, you can access these individually
 with the `value` and `unit` attributes, respectively::
@@ -247,24 +247,24 @@ the calculation. Therefore, if we define the radius in meters, the area will
 be in meters squared::
 
     >>> circle_area(4 * u.m)
-    <Quantity 50.26548245743669 m2>
+    <Quantity 50.26548246 m2>
 
 This also works with different units, for example ::
 
     >>> circle_area(4 * u.imperial.foot)
-    <Quantity 50.26548245743669 ft2>
+    <Quantity 50.26548246 ft2>
 
 As demonstrated above, we can convert between different systems of measurement.
 For example, if you want the area of a circle in square feet, but were given
 the radius in meters, then you can convert it before passing it into the function::
 
     >>> circle_area((4 * u.m).to(u.imperial.foot))
-    <Quantity 541.0531502245425 ft2>
+    <Quantity 541.05315022 ft2>
 
 or you can convert the output::
 
     >>> circle_area(4 * u.m).to(u.imperial.foot ** 2)
-    <Quantity 541.0531502245426 ft2>
+    <Quantity 541.05315022 ft2>
 
 
 This is an extremely brief summary of the powerful capbilities of Astropy units.  To find out more, see

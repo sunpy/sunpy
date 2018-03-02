@@ -77,19 +77,12 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         **kwargs : `dict`
             Any additional plot arguments that should be used
             when plotting.
-
-        Returns
-        -------
-        fig : `~matplotlib.Figure`
-            A plot figure.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
 
         figure = plt.figure()
         axes = plt.gca()
-
-        #dates = matplotlib.dates.date2num(self.data.index)
 
         lc_linecolors = rhessi.hsi_linecolors()
 
@@ -99,7 +92,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         axes.set_yscale("log")
         axes.set_xlabel(datetime.datetime.isoformat(self.data.index[0])[0:10])
 
-        axes.set_title('RHESSI Observing Summary Count Rates')
+        axes.set_title(title)
         axes.set_ylabel('Count Rate s$^{-1}$ detector$^{-1}$')
 
         axes.yaxis.grid(True, 'major')
