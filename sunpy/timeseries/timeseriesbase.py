@@ -546,13 +546,13 @@ class GenericTimeSeries:
         """
         Freqs = []
         Spectra = []
-        for col in self.columns :
+        for col in self.columns:
             data_ = self.data[col]
             freq, spectra = signal.periodogram(data_, fs)
             Freqs.append(freq)
             Spectra.append(spectra)
 
-        return Freqs , Spectra
+        return Freqs, Spectra
 
 # #### Export/Output Methods #### #
 
