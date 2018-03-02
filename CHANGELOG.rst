@@ -1,5 +1,14 @@
-0.8.4 (Unreleased)
-==================
+0.8.5
+=====
+
+Bug Fixes
+---------
+
+- Removed AstropyDeprecationWarning from sunpy.coordinates.representation [#2476]
+- Fix for NorthOffsetFrame under Astropy 3.0 [#2486]
+
+0.8.4
+=====
 
 Bug Fixes
 ---------
