@@ -77,11 +77,6 @@ class EVELightCurve(LightCurve):
         **kwargs : dict
             Any additional plot arguments that should be used
             when plotting.
-
-        Returns
-        -------
-        fig : `~matplotlib.Figure`
-            A plot figure.
         """
         figure = plt.figure()
         # Choose title if none was specified
@@ -103,7 +98,6 @@ class EVELightCurve(LightCurve):
                 kwargs['title'] = 'EVE ' + column.replace('_', ' ')
             data.plot(**kwargs)
         figure.show()
-        return figure
 
     @staticmethod
     def _get_default_uri():
