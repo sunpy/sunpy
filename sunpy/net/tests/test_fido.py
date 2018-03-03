@@ -128,6 +128,7 @@ def test_no_time_error():
     assert all(str(a) not in str(excinfo.value) for a in query2.attrs)
 
 
+@pytest.mark.remote_data
 def test_no_match():
     with pytest.raises(DrmsQueryError):
         Fido.search(a.jsoc.Time("2016/10/01", "2016/10/02"), a.jsoc.Series("bob"),
