@@ -70,6 +70,11 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
 
         **plot_args : `dict`
             Any additional plot arguments that should be used when plotting.
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
@@ -106,6 +111,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         axes.legend()
 
         figure.show()
+        return figure
 
     @classmethod
     def _parse_file(cls, filepath):
@@ -214,6 +220,11 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         ----------
         **plot_args : `dict`
             Any additional plot arguments that should be used when plotting.
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
@@ -235,6 +246,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         axes.legend()
 
         figure.show()
+        return figure
 
     @staticmethod
     def _parse_file(filepath):

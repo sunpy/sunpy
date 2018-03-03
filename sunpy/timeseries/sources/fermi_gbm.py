@@ -74,6 +74,12 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         ----------
         **kwargs : `dict`
             Any additional plot arguments that should be used when plotting.
+
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
@@ -93,7 +99,9 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         axes.set_ylabel('Counts/s/keV')
         axes.legend()
         figure.autofmt_xdate()
-        figure.show()
+
+        plt.show()
+        return figure
 
     @classmethod
     def _parse_file(cls, filepath):

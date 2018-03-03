@@ -90,8 +90,15 @@ class Spectrum(np.ndarray):
         **matplot_args : dict
             Any additional plot arguments that should be used
             when plotting.
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
         """
 
         figure = plt.figure()
         lines = self.plot(**matplot_args)
         figure.show()
+
+        return figure

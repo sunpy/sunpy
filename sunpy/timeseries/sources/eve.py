@@ -79,6 +79,11 @@ class EVESpWxTimeSeries(GenericTimeSeries):
         **kwargs : `dict`
             Any additional plot arguments that should be used
             when plotting.
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
@@ -103,6 +108,7 @@ class EVESpWxTimeSeries(GenericTimeSeries):
                 kwargs['title'] = 'EVE ' + column.replace('_', ' ')
             data.plot(**kwargs)
         figure.show()
+        return figure
 
     @classmethod
     def _parse_file(cls, filepath):

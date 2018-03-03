@@ -61,6 +61,11 @@ class GOESLightCurve(LightCurve):
         **kwargs : dict
             Any additional plot arguments that should be used
             when plotting.
+
+        Returns
+        -------
+        fig : `~matplotlib.Figure`
+            A plot figure.
         """
         figure = plt.figure()
         axes = plt.gca()
@@ -95,6 +100,8 @@ class GOESLightCurve(LightCurve):
         axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
         figure.autofmt_xdate()
         figure.show()
+
+        return figure
 
     @classmethod
     def _get_default_uri(cls):
