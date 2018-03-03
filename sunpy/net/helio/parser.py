@@ -9,7 +9,7 @@ import xml.etree.ElementTree as EL
 from bs4 import BeautifulSoup
 from contextlib import closing
 
-from sunpy.net.helio import registry_links as w
+from sunpy.net.helio import registry_links as RL
 from sunpy.extern.six.moves import urllib
 
 __all__ = ['webservice_parser', 'endpoint_parser', 'wsdl_retriever']
