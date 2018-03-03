@@ -163,6 +163,31 @@ In case of AIA series, ``a.jsoc.Wavelength()`` can be passed as a primekey.
     >>> import astropy.units as u
     >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...                               a.jsoc.Series('aia.lev1_euv_12s'), a.jsoc.Wavelength(304*u.AA))  # doctest: +REMOTE_DATA
+    [<Table length=301>
+            DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH
+           str20           str7     str5            str23           int64
+    -------------------- -------- -------- ----------------------- --------
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_4 2014-01-01T00:00:08.57Z      304
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_4 2014-01-01T00:00:20.58Z      304
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_4 2014-01-01T00:00:32.57Z      304
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_4 2014-01-01T00:00:44.58Z      304
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_4 2014-01-01T00:00:56.57Z      304
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_4 2014-01-01T00:01:08.59Z      304
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_4 2014-01-01T00:01:20.59Z      304
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_4 2014-01-01T00:01:32.57Z      304
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_4 2014-01-01T00:01:44.58Z      304
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_4 2014-01-01T00:01:56.58Z      304
+                     ...      ...      ...                     ...      ...
+    2014-01-07T15:05:13Z  SDO/AIA    AIA_4 2014-01-01T00:58:20.58Z      304
+    2014-01-07T15:05:13Z  SDO/AIA    AIA_4 2014-01-01T00:58:32.57Z      304
+    2014-01-07T15:05:13Z  SDO/AIA    AIA_4 2014-01-01T00:58:44.57Z      304
+    2014-01-07T15:05:13Z  SDO/AIA    AIA_4 2014-01-01T00:58:56.59Z      304
+    2014-01-07T15:05:13Z  SDO/AIA    AIA_4 2014-01-01T00:59:08.58Z      304
+    2014-01-07T15:05:13Z  SDO/AIA    AIA_4 2014-01-01T00:59:20.57Z      304
+    2014-01-07T15:05:13Z  SDO/AIA    AIA_4 2014-01-01T00:59:32.57Z      304
+    2014-01-07T15:05:13Z  SDO/AIA    AIA_4 2014-01-01T00:59:44.57Z      304
+    2014-01-07T15:05:13Z  SDO/AIA    AIA_4 2014-01-01T00:59:56.58Z      304
+    2014-01-07T15:05:15Z  SDO/AIA    AIA_4 2014-01-01T01:00:08.58Z      304]
 
 Note that, only Time and Wavelength are in-built attributes here. If you need to pass any other primekey,
 it should be passed like this:
@@ -200,6 +225,31 @@ If you want to get a manual set of keywords in the response object, you can pass
     >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...                   a.jsoc.Series('hmi.v_45s'),
     ...                   a.jsoc.Keys(['TELESCOP', 'INSTRUME', 'T_OBS']))  # doctest: +REMOTE_DATA
+    [<Table length=81>
+    TELESCOP  INSTRUME           T_OBS
+      str7     str10             str23
+    -------- ---------- -----------------------
+     SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:01:22_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:02:07_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:02:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:03:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:04:22_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:05:07_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:05:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:06:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:07:22_TAI
+         ...        ...                     ...
+     SDO/HMI HMI_FRONT2 2014.01.01_00:53:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:54:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:55:22_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:56:07_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:56:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:57:37_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:58:22_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:59:07_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_00:59:52_TAI
+     SDO/HMI HMI_FRONT2 2014.01.01_01:00:37_TAI]
 
 The parameter passed into ``a.jsoc.Keys()`` can be either a list of strings, or a string with keywords seperated by
 comma and a space. Meaning to say,::
@@ -242,13 +292,62 @@ by the given series.
     >>> response = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...                        a.jsoc.Series('aia.lev1_euv_12s'),
     ...                        a.jsoc.Segment('image'))  # doctest: +REMOTE_DATA
+    [<Table length=2107>
+            DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH
+           str20           str7     str5            str23           int64
+    -------------------- -------- -------- ----------------------- --------
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_4 2014-01-01T00:00:02.57Z       94
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_1 2014-01-01T00:00:10.07Z      131
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:12.34Z      171
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_2 2014-01-01T00:00:07.84Z      193
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_2 2014-01-01T00:00:01.07Z      211
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_4 2014-01-01T00:00:08.57Z      304
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_1 2014-01-01T00:00:04.07Z      335
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_4 2014-01-01T00:00:14.57Z       94
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_1 2014-01-01T00:00:22.07Z      131
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:24.34Z      171
+                     ...      ...      ...                     ...      ...
+    2014-01-07T15:05:13Z  SDO/AIA    AIA_2 2014-01-01T00:59:49.07Z      211
+    2014-01-07T15:05:13Z  SDO/AIA    AIA_4 2014-01-01T00:59:56.58Z      304
+    2014-01-07T15:05:13Z  SDO/AIA    AIA_1 2014-01-01T00:59:52.07Z      335
+    2014-01-07T15:05:15Z  SDO/AIA    AIA_4 2014-01-01T01:00:02.57Z       94
+    2014-01-07T15:05:15Z  SDO/AIA    AIA_1 2014-01-01T01:00:10.07Z      131
+    2014-01-07T15:05:15Z  SDO/AIA    AIA_3 2014-01-01T01:00:12.34Z      171
+    2014-01-07T15:05:15Z  SDO/AIA    AIA_2 2014-01-01T01:00:07.84Z      193
+    2014-01-07T15:05:15Z  SDO/AIA    AIA_2 2014-01-01T01:00:01.07Z      211
+    2014-01-07T15:05:15Z  SDO/AIA    AIA_4 2014-01-01T01:00:08.58Z      304
+    2014-01-07T15:05:15Z  SDO/AIA    AIA_1 2014-01-01T01:00:04.07Z      335]
 
 To get files for more than 1 segment at the same time, chain ``a.jsoc.Segment()`` using ``AND`` operator.
 
     >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...                   a.jsoc.Series('hmi.sharp_720s'),
     ...                   a.jsoc.Segment('continuum') & a.jsoc.Segment('magnetogram'))  # doctest: +REMOTE_DATA
-
+    [<Table length=61>
+            DATE         TELESCOP  INSTRUME          T_OBS          WAVELNTH
+           str20           str7      str9            str23          float64
+    -------------------- -------- --------- ----------------------- --------
+    2015-09-09T17:40:12Z  SDO/HMI HMI_SIDE1 2013.12.31_23:59:52_TAI   6173.0
+    2015-09-09T17:40:13Z  SDO/HMI HMI_SIDE1 2014.01.01_00:11:52_TAI   6173.0
+    2015-09-09T17:40:13Z  SDO/HMI HMI_SIDE1 2014.01.01_00:23:52_TAI   6173.0
+    2015-09-09T17:40:13Z  SDO/HMI HMI_SIDE1 2014.01.01_00:35:52_TAI   6173.0
+    2015-09-09T17:40:14Z  SDO/HMI HMI_SIDE1 2014.01.01_00:47:52_TAI   6173.0
+    2015-09-09T17:40:14Z  SDO/HMI HMI_SIDE1 2014.01.01_00:59:52_TAI   6173.0
+    2015-09-09T17:54:18Z  SDO/HMI HMI_SIDE1 2013.12.31_23:59:52_TAI   6173.0
+    2015-09-09T17:54:19Z  SDO/HMI HMI_SIDE1 2014.01.01_00:11:52_TAI   6173.0
+    2015-09-09T17:54:19Z  SDO/HMI HMI_SIDE1 2014.01.01_00:23:52_TAI   6173.0
+    2015-09-09T17:54:20Z  SDO/HMI HMI_SIDE1 2014.01.01_00:35:52_TAI   6173.0
+                     ...      ...       ...                     ...      ...
+    2014-02-06T20:02:04Z  SDO/HMI HMI_SIDE1 2014.01.01_00:23:52_TAI   6173.0
+    2014-02-06T20:04:34Z  SDO/HMI HMI_SIDE1 2014.01.01_00:35:52_TAI   6173.0
+    2014-02-06T20:06:43Z  SDO/HMI HMI_SIDE1 2014.01.01_00:47:52_TAI   6173.0
+    2014-02-06T20:09:02Z  SDO/HMI HMI_SIDE1 2014.01.01_00:59:52_TAI   6173.0
+    2015-09-09T18:23:52Z  SDO/HMI HMI_SIDE1 2013.12.31_23:59:52_TAI   6173.0
+    2015-09-09T18:23:52Z  SDO/HMI HMI_SIDE1 2014.01.01_00:11:52_TAI   6173.0
+    2015-09-09T18:23:53Z  SDO/HMI HMI_SIDE1 2014.01.01_00:23:52_TAI   6173.0
+    2015-09-09T18:23:53Z  SDO/HMI HMI_SIDE1 2014.01.01_00:35:52_TAI   6173.0
+    2015-09-09T18:23:54Z  SDO/HMI HMI_SIDE1 2014.01.01_00:47:52_TAI   6173.0
+    2015-09-09T18:23:54Z  SDO/HMI HMI_SIDE1 2014.01.01_00:59:52_TAI   6173.0]
 
 Using Sample
 ^^^^^^^^^^^^
@@ -258,7 +357,7 @@ between January 1st from 00:00 to 01:00, 2014, every 10 minutes, you can do:
 
     >>> import astropy.units as u
     >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...                   a.jsoc.Series('hmi.v_45s'), a.jsoc.Sample(10*u.min))  # doctest: +REMOTE_DATA
+    ...                   a.jsoc.Series('hmi.v_45s'), a.jsoc.Sample(10*u.min))  # doctest: +SKIP +REMOTE_DATA
 
 Note that the argument passed in ``a.jsoc.Sample()`` must be an astropy quanitity, convertible
 into seconds.
@@ -268,10 +367,45 @@ Constructing complex queries
 
 Complex queries can be built using OR operators.
 
-Let's look for 2 dfifferent series data at the same time:
+Let's look for 2 different series data at the same time:
 
     >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...                   a.jsoc.Series('hmi.v_45s') | a.jsoc.Series('aia.lev1_euv_12s'))  # doctest: +REMOTE_DATA
+    [<Table length=81>
+            DATE         TELESCOP  INSTRUME           T_OBS          WAVELNTH
+           str20           str7     str10             str23          float64
+    -------------------- -------- ---------- ----------------------- --------
+    2014-01-05T17:46:02Z  SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI   6173.0
+    2014-01-05T17:47:10Z  SDO/HMI HMI_FRONT2 2014.01.01_00:01:22_TAI   6173.0
+    2014-01-05T17:48:18Z  SDO/HMI HMI_FRONT2 2014.01.01_00:02:07_TAI   6173.0
+    2014-01-05T17:49:25Z  SDO/HMI HMI_FRONT2 2014.01.01_00:02:52_TAI   6173.0
+    2014-01-05T17:50:34Z  SDO/HMI HMI_FRONT2 2014.01.01_00:03:37_TAI   6173.0
+    2014-01-05T17:51:42Z  SDO/HMI HMI_FRONT2 2014.01.01_00:04:22_TAI   6173.0
+                     ...      ...        ...                     ...      ...
+    2014-01-05T17:39:09Z  SDO/HMI HMI_FRONT2 2014.01.01_00:56:07_TAI   6173.0
+    2014-01-05T17:40:17Z  SDO/HMI HMI_FRONT2 2014.01.01_00:56:52_TAI   6173.0
+    2014-01-05T17:41:25Z  SDO/HMI HMI_FRONT2 2014.01.01_00:57:37_TAI   6173.0
+    2014-01-05T17:42:33Z  SDO/HMI HMI_FRONT2 2014.01.01_00:58:22_TAI   6173.0
+    2014-01-05T17:43:41Z  SDO/HMI HMI_FRONT2 2014.01.01_00:59:07_TAI   6173.0
+    2014-01-05T17:44:52Z  SDO/HMI HMI_FRONT2 2014.01.01_00:59:52_TAI   6173.0
+    2014-01-05T17:46:03Z  SDO/HMI HMI_FRONT2 2014.01.01_01:00:37_TAI   6173.0, <Table length=2107>
+            DATE         TELESCOP INSTRUME          T_OBS          WAVELNTH
+           str20           str7     str5            str23           int64
+    -------------------- -------- -------- ----------------------- --------
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_4 2014-01-01T00:00:02.57Z       94
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_1 2014-01-01T00:00:10.07Z      131
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_3 2014-01-01T00:00:12.34Z      171
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_2 2014-01-01T00:00:07.84Z      193
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_2 2014-01-01T00:00:01.07Z      211
+    2014-01-07T15:05:10Z  SDO/AIA    AIA_4 2014-01-01T00:00:08.57Z      304
+                     ...      ...      ...                     ...      ...
+    2014-01-07T15:05:15Z  SDO/AIA    AIA_4 2014-01-01T01:00:02.57Z       94
+    2014-01-07T15:05:15Z  SDO/AIA    AIA_1 2014-01-01T01:00:10.07Z      131
+    2014-01-07T15:05:15Z  SDO/AIA    AIA_3 2014-01-01T01:00:12.34Z      171
+    2014-01-07T15:05:15Z  SDO/AIA    AIA_2 2014-01-01T01:00:07.84Z      193
+    2014-01-07T15:05:15Z  SDO/AIA    AIA_2 2014-01-01T01:00:01.07Z      211
+    2014-01-07T15:05:15Z  SDO/AIA    AIA_4 2014-01-01T01:00:08.58Z      304
+    2014-01-07T15:05:15Z  SDO/AIA    AIA_1 2014-01-01T01:00:04.07Z      335]
 
 The two series names are joined together by the operator "|".
 This is the ``OR`` operator.  Think of the above query as setting a set
@@ -281,6 +415,55 @@ hmi.v_45s data from two separate days:
     >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00') |
     ...                   a.jsoc.Time('2014-01-02T00:00:00', '2014-01-02T01:00:00'),
     ...                   a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
+    [<Table length=81>
+            DATE         TELESCOP  INSTRUME           T_OBS          WAVELNTH
+           str20           str7     str10             str23          float64
+    -------------------- -------- ---------- ----------------------- --------
+    2014-01-05T17:46:02Z  SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI   6173.0
+    2014-01-05T17:47:10Z  SDO/HMI HMI_FRONT2 2014.01.01_00:01:22_TAI   6173.0
+    2014-01-05T17:48:18Z  SDO/HMI HMI_FRONT2 2014.01.01_00:02:07_TAI   6173.0
+    2014-01-05T17:49:25Z  SDO/HMI HMI_FRONT2 2014.01.01_00:02:52_TAI   6173.0
+    2014-01-05T17:50:34Z  SDO/HMI HMI_FRONT2 2014.01.01_00:03:37_TAI   6173.0
+    2014-01-05T17:51:42Z  SDO/HMI HMI_FRONT2 2014.01.01_00:04:22_TAI   6173.0
+    2014-01-05T17:52:50Z  SDO/HMI HMI_FRONT2 2014.01.01_00:05:07_TAI   6173.0
+    2014-01-05T17:53:59Z  SDO/HMI HMI_FRONT2 2014.01.01_00:05:52_TAI   6173.0
+    2014-01-05T17:55:08Z  SDO/HMI HMI_FRONT2 2014.01.01_00:06:37_TAI   6173.0
+    2014-01-05T17:56:16Z  SDO/HMI HMI_FRONT2 2014.01.01_00:07:22_TAI   6173.0
+                     ...      ...        ...                     ...      ...
+    2014-01-05T17:35:43Z  SDO/HMI HMI_FRONT2 2014.01.01_00:53:52_TAI   6173.0
+    2014-01-05T17:36:54Z  SDO/HMI HMI_FRONT2 2014.01.01_00:54:37_TAI   6173.0
+    2014-01-05T17:38:01Z  SDO/HMI HMI_FRONT2 2014.01.01_00:55:22_TAI   6173.0
+    2014-01-05T17:39:09Z  SDO/HMI HMI_FRONT2 2014.01.01_00:56:07_TAI   6173.0
+    2014-01-05T17:40:17Z  SDO/HMI HMI_FRONT2 2014.01.01_00:56:52_TAI   6173.0
+    2014-01-05T17:41:25Z  SDO/HMI HMI_FRONT2 2014.01.01_00:57:37_TAI   6173.0
+    2014-01-05T17:42:33Z  SDO/HMI HMI_FRONT2 2014.01.01_00:58:22_TAI   6173.0
+    2014-01-05T17:43:41Z  SDO/HMI HMI_FRONT2 2014.01.01_00:59:07_TAI   6173.0
+    2014-01-05T17:44:52Z  SDO/HMI HMI_FRONT2 2014.01.01_00:59:52_TAI   6173.0
+    2014-01-05T17:46:03Z  SDO/HMI HMI_FRONT2 2014.01.01_01:00:37_TAI   6173.0, <Table length=81>
+            DATE         TELESCOP  INSTRUME           T_OBS          WAVELNTH
+           str20           str7     str10             str23          float64
+    -------------------- -------- ---------- ----------------------- --------
+    2014-01-06T17:56:14Z  SDO/HMI HMI_FRONT2 2014.01.02_00:00:37_TAI   6173.0
+    2014-01-06T17:57:22Z  SDO/HMI HMI_FRONT2 2014.01.02_00:01:22_TAI   6173.0
+    2014-01-06T17:58:31Z  SDO/HMI HMI_FRONT2 2014.01.02_00:02:07_TAI   6173.0
+    2014-01-06T17:59:39Z  SDO/HMI HMI_FRONT2 2014.01.02_00:02:52_TAI   6173.0
+    2014-01-06T18:00:48Z  SDO/HMI HMI_FRONT2 2014.01.02_00:03:37_TAI   6173.0
+    2014-01-06T18:01:56Z  SDO/HMI HMI_FRONT2 2014.01.02_00:04:22_TAI   6173.0
+    2014-01-06T18:03:04Z  SDO/HMI HMI_FRONT2 2014.01.02_00:05:07_TAI   6173.0
+    2014-01-06T18:04:14Z  SDO/HMI HMI_FRONT2 2014.01.02_00:05:52_TAI   6173.0
+    2014-01-06T18:05:22Z  SDO/HMI HMI_FRONT2 2014.01.02_00:06:37_TAI   6173.0
+    2014-01-06T18:06:30Z  SDO/HMI HMI_FRONT2 2014.01.02_00:07:22_TAI   6173.0
+                     ...      ...        ...                     ...      ...
+    2014-01-06T17:45:56Z  SDO/HMI HMI_FRONT2 2014.01.02_00:53:52_TAI   6173.0
+    2014-01-06T17:47:05Z  SDO/HMI HMI_FRONT2 2014.01.02_00:54:37_TAI   6173.0
+    2014-01-06T17:48:14Z  SDO/HMI HMI_FRONT2 2014.01.02_00:55:22_TAI   6173.0
+    2014-01-06T17:49:22Z  SDO/HMI HMI_FRONT2 2014.01.02_00:56:07_TAI   6173.0
+    2014-01-06T17:50:30Z  SDO/HMI HMI_FRONT2 2014.01.02_00:56:52_TAI   6173.0
+    2014-01-06T17:51:37Z  SDO/HMI HMI_FRONT2 2014.01.02_00:57:37_TAI   6173.0
+    2014-01-06T17:52:45Z  SDO/HMI HMI_FRONT2 2014.01.02_00:58:22_TAI   6173.0
+    2014-01-06T17:53:54Z  SDO/HMI HMI_FRONT2 2014.01.02_00:59:07_TAI   6173.0
+    2014-01-06T17:55:01Z  SDO/HMI HMI_FRONT2 2014.01.02_00:59:52_TAI   6173.0
+    2014-01-06T17:56:08Z  SDO/HMI HMI_FRONT2 2014.01.02_01:00:37_TAI   6173.0]
 
 Each of the arguments in this query style can be thought of as
 setting conditions that the returned records must satisfy.
