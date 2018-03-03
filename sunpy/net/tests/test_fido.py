@@ -7,6 +7,7 @@ import hypothesis.strategies as st
 from hypothesis import given, assume, example
 
 import astropy.units as u
+from drms import DrmsQueryError
 
 from sunpy.net import attr
 from sunpy.net.vso import attrs as va
@@ -128,8 +129,8 @@ def test_no_time_error():
 
 
 def test_no_match():
-    with pytest.raises(NoMatchError):
-        Fido.search(a.Time("2016/10/01", "2016/10/02"), a.jsoc.Series("bob"),
+    with pytest.raises(DrmsQueryError):
+        Fido.search(a.jsoc.Time("2016/10/01", "2016/10/02"), a.jsoc.Series("bob"),
                     a.vso.Sample(10*u.s))
 
 
