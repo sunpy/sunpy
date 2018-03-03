@@ -104,7 +104,7 @@ class JSOCClient(object):
 
         the response object holds the records that your query will return:
 
-        >>> print(response)   # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE +REMOTE_DATA
+        >>> print(response)   # doctest: +ELLIPSIS  +REMOTE_DATA
                 DATE         TELESCOP  INSTRUME           T_OBS          WAVELNTH
         -------------------- -------- ---------- ----------------------- --------
         2014-01-05T17:46:02Z  SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI   6173.0
