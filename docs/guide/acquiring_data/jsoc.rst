@@ -359,7 +359,7 @@ between January 1st from 00:00 to 01:00, 2014, every 10 minutes, you can do:
     >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
     ...                   a.jsoc.Series('hmi.v_45s'), a.jsoc.Sample(10*u.min))  # doctest: +SKIP +REMOTE_DATA
 
-Note that the argument passed in ``a.jsoc.Sample()`` must be an astropy quanitity, convertible
+Note that the argument passed in ``a.jsoc.Sample()`` must be an astropy quantity, convertible
 into seconds.
 
 Constructing complex queries
