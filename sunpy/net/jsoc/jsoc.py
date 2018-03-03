@@ -892,6 +892,6 @@ class JSOCClient(object):
     @classmethod
     def _can_handle_query(cls, *query):
         chkattr = ['Series', 'Protocol', 'Notify', 'Wavelength', 'Time',
-                   'Segment', 'Keys', 'PrimeKey']
+                   'Segment', 'Keys', 'PrimeKey', 'Sample']
 
         return all([x.__class__.__name__ in chkattr for x in query])

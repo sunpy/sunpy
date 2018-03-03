@@ -357,7 +357,18 @@ between January 1st from 00:00 to 01:00, 2014, every 10 minutes, you can do:
 
     >>> import astropy.units as u
     >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'),
-    ...                   a.jsoc.Series('hmi.v_45s'), a.jsoc.Sample(10*u.min))  # doctest: +SKIP +REMOTE_DATA
+    ...                   a.jsoc.Series('hmi.v_45s'), a.jsoc.Sample(10*u.min))  # doctest: +REMOTE_DATA
+    [<Table length=7>
+            DATE         TELESCOP  INSTRUME           T_OBS          WAVELNTH
+           str20           str7     str10             str23          float64
+    -------------------- -------- ---------- ----------------------- --------
+    2014-01-05T17:46:02Z  SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI   6173.0
+    2014-01-05T18:00:49Z  SDO/HMI HMI_FRONT2 2014.01.01_00:10:22_TAI   6173.0
+    2014-01-05T18:15:38Z  SDO/HMI HMI_FRONT2 2014.01.01_00:20:07_TAI   6173.0
+    2014-01-05T18:30:25Z  SDO/HMI HMI_FRONT2 2014.01.01_00:29:52_TAI   6173.0
+    2014-01-05T18:45:12Z  SDO/HMI HMI_FRONT2 2014.01.01_00:39:37_TAI   6173.0
+    2014-01-05T19:00:04Z  SDO/HMI HMI_FRONT2 2014.01.01_00:49:22_TAI   6173.0
+    2014-01-05T17:43:41Z  SDO/HMI HMI_FRONT2 2014.01.01_00:59:07_TAI   6173.0]
 
 Note that the argument passed in ``a.jsoc.Sample()`` must be an astropy quantity, convertible
 into seconds.
