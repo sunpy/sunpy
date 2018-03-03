@@ -56,7 +56,7 @@ A map contains a number of data-associated attributes. To get a quick look at
 your map simply type::
 
     >>> my_map = sunpy.map.Map(sunpy.data.sample.AIA_171_IMAGE)
-    >>> my_map   # doctest: +NORMALIZE_WHITESPACE
+    >>> my_map   # doctest:
     SunPy Map
     ---------
     Observatory:		 SDO
@@ -245,7 +245,7 @@ The Map object chooses the appropriate colormap for you when it is created as
 long as it recognizes the instrument. To see what colormaps are available::
 
     >>> import sunpy.cm
-    >>> sunpy.cm.cmlist.keys()   # doctest: +NORMALIZE_WHITESPACE
+    >>> sunpy.cm.cmlist.keys()   # doctest:
     dict_keys(['sdoaia94', 'sdoaia131', 'sdoaia171', 'sdoaia193', 'sdoaia211',
     'sdoaia304', 'sdoaia335', 'sdoaia1600', 'sdoaia1700', 'sdoaia4500',
     'sohoeit171', 'sohoeit195', 'sohoeit284', 'sohoeit304', 'soholasco2',

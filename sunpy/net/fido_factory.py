@@ -288,6 +288,13 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         >>> from sunpy.net import Fido, attrs as a
         >>> import astropy.units as u
         >>> unifresp = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra')) # doctest: +REMOTE_DATA
+        [<class 'sunpy.net.dataretriever.client.QueryResponse'><Table length=3>
+             Start Time           End Time      Source Instrument Wavelength
+               str19               str19         str6     str4       str3
+        ------------------- ------------------- ------ ---------- ----------
+        2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
+        2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
+        2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan]
 
         Query for data from Nobeyama Radioheliograph and RHESSI
 
@@ -352,6 +359,19 @@ class UnifiedDownloaderFactory(BasicRegistrationFactory):
         --------
         >>> from sunpy.net.vso.attrs import Time, Instrument
         >>> unifresp = Fido.search(Time('2012/3/4','2012/3/5'), Instrument('EIT'))  # doctest: +REMOTE_DATA
+        [<QTable length=8>
+           Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
+                                                       ...             Angstrom
+               str19               str19         str4  ...   str8      float64
+        ------------------- ------------------- ------ ... -------- --------------
+        2012-03-04 01:00:13 2012-03-04 01:00:25   SOHO ... FULLDISK 171.0 .. 171.0
+        2012-03-04 01:06:09 2012-03-04 01:08:11   SOHO ... FULLDISK 284.0 .. 284.0
+        2012-03-04 01:13:49 2012-03-04 01:14:01   SOHO ... FULLDISK 195.0 .. 195.0
+        2012-03-04 01:19:41 2012-03-04 01:20:13   SOHO ... FULLDISK 304.0 .. 304.0
+        2012-03-04 13:00:15 2012-03-04 13:00:27   SOHO ... FULLDISK 171.0 .. 171.0
+        2012-03-04 13:06:11 2012-03-04 13:08:13   SOHO ... FULLDISK 284.0 .. 284.0
+        2012-03-04 13:13:51 2012-03-04 13:14:03   SOHO ... FULLDISK 195.0 .. 195.0
+        2012-03-04 13:19:45 2012-03-04 13:20:18   SOHO ... FULLDISK 304.0 .. 304.0]
         >>> downresp = Fido.fetch(unifresp)  # doctest: +SKIP
         >>> file_paths = downresp.wait()  # doctest: +SKIP
         """

@@ -177,7 +177,7 @@ are stored in a dictionary. The following code grabs the dictionary and gets all
 keys.::
 
     >>> solar_constants = con.constants
-    >>> solar_constants.keys()   # doctest: +NORMALIZE_WHITESPACE
+    >>> solar_constants.keys()   # doctest:
     dict_keys(['mass', 'radius', 'luminosity', 'mean distance',
                'perihelion distance', 'aphelion distance', 'age',
                'solar flux unit', 'visual magnitude', 'average angular size',
@@ -313,7 +313,7 @@ is below::
   >>> from sunpy.net import Fido, attrs as a
 
   >>> results = Fido.search(a.Time("2011-09-20T01:00:00", "2011-09-20T02:00:00"),
-  ...                       a.Instrument('EIT'))   # doctest: +NORMALIZE_WHITESPACE +REMOTE_DATA
+  ...                       a.Instrument('EIT'))   # doctest:  +REMOTE_DATA
    [<QTable length=4>
        Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
                                                    ...             Angstrom

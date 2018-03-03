@@ -9,7 +9,7 @@ import xml.etree.ElementTree as EL
 from bs4 import BeautifulSoup
 from contextlib import closing
 
-from sunpy.net.helio import registry_links as RL
+from sunpy.net.helio import registry_links as w
 from sunpy.extern.six.moves import urllib
 
 __all__ = ['webservice_parser', 'endpoint_parser', 'wsdl_retriever']
@@ -90,7 +90,7 @@ def endpoint_parser(link):
     Examples
     --------
     >>> from sunpy.net.helio import parser
-    >>> parser.endpoint_parser('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +REMOTE_DATA +NORMALIZE_WHITESPACE
+    >>> parser.endpoint_parser('http://msslkz.mssl.ucl.ac.uk/helio-hec/HelioService')  # doctest: +REMOTE_DATA
     ['http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioService?wsdl',
     'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioService1_0?wsdl',
     'http://helio.mssl.ucl.ac.uk:80/helio-hec/HelioService1_0b?wsdl',

@@ -10,7 +10,13 @@ is an interface to multiple sources including all the sources implemented in
 
 >>> from sunpy.net import Fido, attrs as a
 >>> results = Fido.search(a.Time("2012/1/1", "2012/1/2"), a.Instrument('lyra'))  # doctest: +REMOTE_DATA
->>> files = Fido.fetch(results)  # doctest: +REMOTE_DATA
+    [<class 'sunpy.net.dataretriever.client.QueryResponse'><Table length=2>
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str6     str4       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
+    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan]
+>>> files = Fido.fetch(results)  # doctest: +SKIP
 
 .. automodapi:: sunpy.net
    :no-heading:

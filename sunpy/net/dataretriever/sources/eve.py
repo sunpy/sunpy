@@ -30,7 +30,13 @@ class EVEClient(GenericClient):
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
     ...                       a.Instrument('EVE'), a.Level(0))  #doctest: +REMOTE_DATA
-    >>> results  #doctest: +SKIP
+    [<class 'sunpy.net.dataretriever.client.QueryResponse'><Table length=2>
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str3     str3       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2016-01-01 00:00:00 2016-01-02 00:00:00    SDO        eve        nan
+    2016-01-02 00:00:00 2016-01-03 00:00:00    SDO        eve        nan]
+    >>> results  #doctest: +REMOTE_DATA
     ...
     Results from 1 Provider:
     <BLANKLINE>

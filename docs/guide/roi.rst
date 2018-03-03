@@ -16,7 +16,7 @@ You can create an ROI object with the following: ::
 
 This creates an roi called result for the specific time range. Querying the newly created ROI gives the following: ::
 
-    >>> result   # doctest: +NORMALIZE_WHITESPACE
+    >>> result   # doctest:
     SunPy Region-of-interest (ROI) object
     -------------------------------------
     Source: 		LYRA LYTAF

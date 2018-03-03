@@ -58,6 +58,31 @@ Let's start with a very simple query.  We could ask for all ``hmi.v_45s`` series
 between January 1st from 00:00 to 01:00, 2014.
 
     >>> res = Fido.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
+    [<Table length=81>
+            DATE         TELESCOP  INSTRUME           T_OBS          WAVELNTH
+           str20           str7     str10             str23          float64
+    -------------------- -------- ---------- ----------------------- --------
+    2014-01-05T17:46:02Z  SDO/HMI HMI_FRONT2 2014.01.01_00:00:37_TAI   6173.0
+    2014-01-05T17:47:10Z  SDO/HMI HMI_FRONT2 2014.01.01_00:01:22_TAI   6173.0
+    2014-01-05T17:48:18Z  SDO/HMI HMI_FRONT2 2014.01.01_00:02:07_TAI   6173.0
+    2014-01-05T17:49:25Z  SDO/HMI HMI_FRONT2 2014.01.01_00:02:52_TAI   6173.0
+    2014-01-05T17:50:34Z  SDO/HMI HMI_FRONT2 2014.01.01_00:03:37_TAI   6173.0
+    2014-01-05T17:51:42Z  SDO/HMI HMI_FRONT2 2014.01.01_00:04:22_TAI   6173.0
+    2014-01-05T17:52:50Z  SDO/HMI HMI_FRONT2 2014.01.01_00:05:07_TAI   6173.0
+    2014-01-05T17:53:59Z  SDO/HMI HMI_FRONT2 2014.01.01_00:05:52_TAI   6173.0
+    2014-01-05T17:55:08Z  SDO/HMI HMI_FRONT2 2014.01.01_00:06:37_TAI   6173.0
+    2014-01-05T17:56:16Z  SDO/HMI HMI_FRONT2 2014.01.01_00:07:22_TAI   6173.0
+                     ...      ...        ...                     ...      ...
+    2014-01-05T17:35:43Z  SDO/HMI HMI_FRONT2 2014.01.01_00:53:52_TAI   6173.0
+    2014-01-05T17:36:54Z  SDO/HMI HMI_FRONT2 2014.01.01_00:54:37_TAI   6173.0
+    2014-01-05T17:38:01Z  SDO/HMI HMI_FRONT2 2014.01.01_00:55:22_TAI   6173.0
+    2014-01-05T17:39:09Z  SDO/HMI HMI_FRONT2 2014.01.01_00:56:07_TAI   6173.0
+    2014-01-05T17:40:17Z  SDO/HMI HMI_FRONT2 2014.01.01_00:56:52_TAI   6173.0
+    2014-01-05T17:41:25Z  SDO/HMI HMI_FRONT2 2014.01.01_00:57:37_TAI   6173.0
+    2014-01-05T17:42:33Z  SDO/HMI HMI_FRONT2 2014.01.01_00:58:22_TAI   6173.0
+    2014-01-05T17:43:41Z  SDO/HMI HMI_FRONT2 2014.01.01_00:59:07_TAI   6173.0
+    2014-01-05T17:44:52Z  SDO/HMI HMI_FRONT2 2014.01.01_00:59:52_TAI   6173.0
+    2014-01-05T17:46:03Z  SDO/HMI HMI_FRONT2 2014.01.01_01:00:37_TAI   6173.0]
 
 This returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing
 information on the available online files which fit the criteria specified by

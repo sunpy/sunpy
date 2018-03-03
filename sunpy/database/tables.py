@@ -566,6 +566,12 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
     >>> sr = Fido.search(attrs.Time("2012/1/1", "2012/1/2"),
     ...     attrs.Instrument('lyra')) # doctest: +REMOTE_DATA
     >>> entries = entries_from_fido_search_result(sr) # doctest: +REMOTE_DATA
+    [<class 'sunpy.net.dataretriever.client.QueryResponse'><Table length=2>
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str6     str4       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
+    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan]
     >>> entry = next(entries) # doctest: +REMOTE_DATA
     >>> entry.source # doctest: +REMOTE_DATA
     'Proba2'
