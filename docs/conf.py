@@ -39,6 +39,12 @@ if ON_RTD:
     os.environ['LC_ALL'] = 'C'
 
 try:
+    import suds
+except ImportError:
+    raise ImportError('suds could not be imported, please install the '
+                      '"suds-jerko" package and try again')
+
+try:
     import astropy_helpers
 except ImportError:
     # Building from inside the docs directory?
