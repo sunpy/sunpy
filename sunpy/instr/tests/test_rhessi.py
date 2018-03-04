@@ -13,7 +13,7 @@ import sunpy.map
 import sunpy.data.test
 import sunpy.instr.rhessi as rhessi
 from sunpy.extern.six.moves.urllib.error import URLError
-
+from sunpy.extern.six.moves.urllib.request import urlopen, urlretrieve
 
 TESTPATH = sunpy.data.test.rootdir
 SPLIT_STR = 'metadata/catalog/'
@@ -85,10 +85,11 @@ def test_get_observing_summary_filename_one_day(one_day_timerange):
     Test that one file is returned with the expected non-changing
     part of the filename.
     """
-    file_names = rhessi.get_observing_summary_filename(one_day_timerange)
+    file_name = rhessi.get_observing_summary_filename(one_day_timerange)
     # Irregardless of mirror server the observing summary filename should match
-    assert len(file_names) == np.ceil(one_day_timerange.days.value)
-    assert file_names[0].split(SPLIT_STR)[1][0:20] == 'hsi_obssumm_20110404'
+    predicted_file_name = one_day_timerange.start.strftime('hsi_obssumm_%Y%m%d')
+    assert len(file_name) == np.ceil(one_day_timerange.days.value)
+    assert file_name[0].split(SPLIT_STR)[1][0:20] == predicted_file_name
 
 
 @pytest.mark.remote_data
@@ -98,10 +99,13 @@ def test_get_observing_summary_filename_two_day(two_days_timerange):
     part of the filenames.
     """
     file_names = rhessi.get_observing_summary_filename(two_days_timerange)
+    predicted_file_name1 = two_days_timerange.start.strftime('hsi_obssumm_%Y%m%d')
+    predicted_file_name2 = two_days_timerange.end.strftime('hsi_obssumm_%Y%m%d')
+
     # Irregardless of mirror server the obssumm file name should match
-    assert len(file_names) == np.ceil(two_days_timerange.days.value)
-    assert file_names[0].split(SPLIT_STR)[1][0:20] == 'hsi_obssumm_20110404'
-    assert file_names[1].split(SPLIT_STR)[1][0:20] == 'hsi_obssumm_20110404'
+    assert len(file_names) == np.ceil(two_days_timerange.days.value) + 1
+    assert file_names[0].split(SPLIT_STR)[1][0:20] == predicted_file_name1
+    assert file_names[1].split(SPLIT_STR)[1][0:20] == predicted_file_name2
 
 
 @pytest.mark.remote_data
@@ -112,7 +116,7 @@ def test_get_observing_summary_filename_cross_month(cross_month_timerange):
     """
     file_names = rhessi.get_observing_summary_filename(cross_month_timerange)
     # Irregardless of mirror server the obssumm file name should match
-    assert len(file_names) == np.ceil(cross_month_timerange.days.value)
+    assert len(file_names) == np.ceil(cross_month_timerange.days.value) + 1
 
 
 @pytest.mark.remote_data
@@ -121,23 +125,26 @@ def test_parse_observing_summary_dbase_file(one_day_timerange):
     Test that we get the observing summary dbase file with the content
     we expect.
     """
-    file = rhessi.get_observing_summary_filename(one_day_timerange)
+    file = rhessi.get_observing_summary_dbase_file(one_day_timerange.start)
     obssum = rhessi.parse_observing_summary_dbase_file(file[0])
 
-    assert obssum['filename'][0][0:20] == 'hsi_obssumm_20110401'
-    assert obssum['filename'][-1][0:20] == 'hsi_obssumm_20110430'
+    predict_file_name = one_day_timerange.start.strftime('hsi_obssumm_%Y%m01')
+    predict_nextday_file_name = one_day_timerange.start.strftime('hsi_obssumm_%Y%m02')
+
+    assert obssum['filename'][0][0:20] == predict_file_name
+    assert obssum['filename'][1][0:20] == predict_nextday_file_name
 
     assert obssum['orb_st'][0] == 0
-    assert obssum['orb_st'][-1] == 0
+    assert obssum['orb_st'][-1] == 65536
 
     assert obssum['orb_end'][0] == 0
-    assert obssum['orb_end'][-1] == 0
+    assert obssum['orb_end'][-1] == 65536
 
-    assert obssum['start_time'][0] == datetime(2011, 4, 1, 0, 0, 0)
-    assert obssum['start_time'][-1] == datetime(2011, 4, 30, 0, 0, 0)
+    assert obssum['start_time'][0] == datetime(2016, 1, 1, 0, 0, 0)
+    assert obssum['start_time'][-1] == datetime(2016, 1, 31, 0, 0, 0)
 
-    assert obssum['end_time'][0] == datetime(2011, 4, 2, 0, 0, 0)
-    assert obssum['end_time'][-1] == datetime(2011, 5, 1, 0, 0, 0)
+    assert obssum['end_time'][0] == datetime(2016, 1, 2, 0, 0, 0)
+    assert obssum['end_time'][-1] == datetime(2016, 2, 1, 0, 0, 0)
 
     assert obssum['status_flag'][0] == 0
     assert obssum['status_flag'][-1] == 0
@@ -153,8 +160,10 @@ def test_get_parse_observing_summary_file(one_day_timerange):
     """
     f = rhessi.get_observing_summary_filename(one_day_timerange)
     header, _data = rhessi.parse_observing_summary_file(f[0])
-    assert header.get('DATE_OBS') == '2011-04-04T00:00:00.000'
-    assert header.get('DATE_END') == '2011-04-05T00:00:00.000'
+    predict_date_obs = one_day_timerange.start.strftime('%Y-%m-%dT00:00:00.000')
+    predict_date_end = (one_day_timerange.start + timedelta(days=1)).strftime('%Y-%m-%dT00:00:00.000')
+    assert header.get('DATE_OBS') == predict_date_obs
+    assert header.get('DATE_END') == predict_date_end
     assert header.get('TELESCOP') == 'HESSI'
 
 
