@@ -77,29 +77,13 @@ class LYRATimeSeries(GenericTimeSeries):
             The number of columns to plot.
 
         **kwargs : `dict`
-            Any additional plot arguments that should be used when plotting.
-
-        Returns
-        -------
-        fig : `~matplotlib.Figure`
-            A plot figure.
+            Any additional plot arguments that should be used when plotting
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
 
         lyranames = (('Lyman alpha','Herzberg cont.','Al filter','Zr filter'),
                  ('120-123nm','190-222nm','17-80nm + <5nm','6-20nm + <2nm'))
-
-        # Choose title if none was specified
-        #if not kwargs.has_key("title"):
-        #    if len(self.data.columns) > 1:
-        #        kwargs['title'] = 'LYRA data'
-        #    else:
-        #        if self._filename is not None:
-        #            base = self._filename
-        #            kwargs['title'] = os.path.splitext(base)[0]
-        #        else:
-        #            kwargs['title'] = 'LYRA data'
         figure = plt.figure()
         plt.subplots_adjust(left=0.17,top=0.94,right=0.94,bottom=0.15)
         axes = plt.gca()
@@ -119,8 +103,6 @@ class LYRATimeSeries(GenericTimeSeries):
             axe.locator_params(axis='y',nbins=6)
 
         figure.show()
-
-        return figure
 
     @classmethod
     def _parse_file(cls, filepath):

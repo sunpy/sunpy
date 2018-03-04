@@ -5,9 +5,30 @@ from astropy.tests.helper import quantity_allclose, assert_quantity_allclose
 from astropy.coordinates import SkyCoord, get_body_barycentric, HeliocentricTrueEcliptic, Angle
 from astropy.time import Time
 
+<<<<<<< HEAD
 from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst, HeliographicCarrington,Heliocentric,
+=======
+from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst,
+                               HeliographicCarrington, Heliocentric,
+>>>>>>> upstream/master
                                get_sun_L0, get_earth)
 from sunpy.time import parse_time
+
+
+def test_hcc_to_hgs():
+    '''
+    Check that a coordinate pointing to the observer in Heliocentric
+    coordinates maps to the lattitude/longitude of the observer in
+    HeliographicStonyhurst coordinates.
+    '''
+    lat = 10 * u.deg
+    lon = 20 * u.deg
+    observer = HeliographicStonyhurst(lat=lat, lon=lon)
+    hcc_in = Heliocentric(x=0*u.km, y=0*u.km, z=1*u.km, observer=observer)
+    hgs_out = hcc_in.transform_to(HeliographicStonyhurst)
+
+    assert_quantity_allclose(hgs_out.lat, lat)
+    assert_quantity_allclose(hgs_out.lon, lon)
 
 
 def test_hpc_hpc():

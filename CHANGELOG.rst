@@ -4,6 +4,8 @@
 New Features
 ------------
 
+- Added TimeUTime class to support utime. [#2409]
+
 API Changes
 -----------
 
@@ -40,7 +42,6 @@ Bug Fixes
 - Updates MapCube to access the correct properties of the namedtuple SpatialPair [#2297]
 - Fixed TimeSeries test failures due to missing test files [#2273]
 - Refactored a GOES test to avoid a Py3.6 issue [#2276]
-
 
 0.8.0
 ======

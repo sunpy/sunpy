@@ -9,6 +9,12 @@ try:
 except ImportError:
     pytest = None
 
+try:
+    import pytest_doctestplus
+    doctestplus = False
+except ImportError:
+    doctestplus = True
+
 
 def main(modulename='', coverage=False, cov_report=False,
          online=False, offline=True, remote_data=False, figure=False, verbose=False,
@@ -48,6 +54,9 @@ def main(modulename='', coverage=False, cov_report=False,
     print(modulename)
     if pytest is None:
         raise ImportError("You need to install pytest to run SunPy's tests")
+
+    if doctestplus:
+        raise ImportError("You need to install pytest-astropy to run SunPy's tests")
 
     if not modulename:
         module = __import__('sunpy')
