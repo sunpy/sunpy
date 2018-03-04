@@ -67,55 +67,6 @@ def test_hpc_hpc_null():
     assert hpc_out.observer == hpc_new.observer
 
 
-def test_hcc_hcc():
-    # Use some unphysical values for solar parameters for testing, to make it
-    # easier to calculate expected results.
-
-    D0 = 1 * u.km
-    L0 = 1 * u.deg
-    observer_in = HeliographicStonyhurst(lat=0 * u.deg, lon=0 * u.deg, radius=D0)
-    observer_out = HeliographicStonyhurst(lat=0 * u.deg, lon=L0, radius=D0)
-
-    hcc_in = Heliocentric(0 * u.km, 0 * u.km, 0 * u.km , obstime= '2017-07-26 00:00:00', observer=observer_in)
-    hcc_out = Heliocentric(observer=observer_out, obstime= '2017-05-26 00:00:00')
-
-    hcc_new = hcc_in.transform_to(hcc_out)
-
-    assert hcc_new.observer == hcc_out.observer
-
-
-def test_hcc_hcc_sc():
-    # Use some unphysical values for solar parameters for testing, to make it
-    # easier to calculate expected results.
-
-    D0 = 1*u.km
-    L0 = 1*u.deg
-    observer_in = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, radius=D0)
-    observer_out = HeliographicStonyhurst(lat=0*u.deg, lon=L0, radius=D0)
-
-    sc_in = SkyCoord(0*u.km, 0*u.km, 0*u.km, obstime='2017-07-26 00:00:00', observer=observer_in,
-                     frame='heliocentric')
-    hcc_out = Heliocentric(observer=observer_out, obstime='2018-01-1 00:00:00')
-
-    hcc_new = sc_in.transform_to(hcc_out)
-
-    assert hcc_new.observer == hcc_out.observer
-
-
-def test_hcc_hcc_null():
-
-    hcc_in = Heliocentric(0*u.km, 0*u.km, 0*u.km)
-    hcc_out = Heliocentric()
-
-    hcc_new = hcc_in.transform_to(hcc_out)
-
-    assert hcc_new is not hcc_in
-    assert quantity_allclose(hcc_new.x, hcc_in.x)
-    assert quantity_allclose(hcc_new.y, hcc_in.y)
-    assert quantity_allclose(hcc_new.z, hcc_in.z)
-    assert hcc_out.observer == hcc_new.observer
-
-
 def test_hcrs_hgs():
     # Get the current Earth location in HCRS
     now = Time(parse_time('now'))

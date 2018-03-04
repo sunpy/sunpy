@@ -242,37 +242,6 @@ def hpc_to_hpc(heliopcoord, heliopframe):
     return hpc
 
 
-@frame_transform_graph.transform(FunctionTransform, Heliocentric,
-                                 Heliocentric)
-def hcc_to_hcc(helioccoord, heliocframe):
-    """
-    Convert from Heliocentric Cartesian to Heliocentric Cartesian
-    with different observer location parameters.
-    It does by transforming through HGS.
-    """
-    if (helioccoord.observer == heliocframe.observer or
-        (quantity_allclose(helioccoord.observer.lat, heliocframe.observer.lat) and
-         quantity_allclose(helioccoord.observer.lon, heliocframe.observer.lon) and
-         quantity_allclose(helioccoord.observer.radius, heliocframe.observer.radius))):
-        return heliocframe.realize_frame(helioccoord._data)
-
-    if not isinstance(helioccoord.observer, BaseCoordinateFrame):
-        raise ConvertError("Cannot transform heliocentric coordinates to "
-                           "heliographic coordinates for observer '{}' "
-                           "without `obstime` being specified.".format(helioccoord.observer))
-
-    if not isinstance(heliocframe.observer, BaseCoordinateFrame):
-        raise ConvertError("Cannot transform heliocentric coordinates to "
-                           "heliographic coordinates for observer '{}' "
-                           "without `obstime` being specified.".format(heliocframe.observer))
-
-    hgs = helioccoord.transform_to(HeliographicStonyhurst)
-    hgs.observer = heliocframe.observer
-    hcc = hgs.transform_to(heliocframe)
-
-    return hcc
-
-
 def _make_rotation_matrix_from_reprs(start_representation, end_representation):
     """
     Return the matrix for the direct rotation from one representation to a second representation.
