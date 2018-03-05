@@ -54,12 +54,10 @@ class SunPyTest(AstropyTest):
     ]
 
     user_options = _fix_user_options(user_options)
-
     package_name = ''
 
     def initialize_options(self):
         self.package = ''
-        #self.test_path = None
         self.verbose_results = False
         self.plugins = None
         self.args = None
@@ -88,6 +86,8 @@ class SunPyTest(AstropyTest):
         """
         Build a Python script to run the tests.
         """
+
+        self._validate_required_deps()  # checks if modules are installed
 
         cmd_pre = ''  # Commands to run before the test function
         cmd_post = ''  # Commands to run after the test function

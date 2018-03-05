@@ -73,4 +73,5 @@ $RECYCLE.BIN/
 .vscode
 
 .hypothesis/
+.pytest_cache/
 sunpydata.sqlite
