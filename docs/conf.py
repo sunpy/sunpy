@@ -29,10 +29,9 @@ import os
 import datetime
 import sys
 
-ON_RTD = os.environ.get('READTHEDOCS') == 'True'
 ON_TRAVIS = os.environ.get('TRAVIS') == 'true'
 
-if ON_RTD:
+if on_rtd:
     os.environ['SUNPY_CONFIGDIR'] = '/home/docs/'
     os.environ['HOME'] = '/home/docs/'
     os.environ['LANG'] = 'C'
@@ -79,7 +78,6 @@ check_sphinx_version(needs_sphinx)
 
 # add any custom intersphinx for sunpy
 intersphinx_mapping.pop('h5py', None)
-intersphinx_mapping['astropy'] = ('http://docs.astropy.org/en/stable/', None)
 intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/latest/', None)
 intersphinx_mapping['pandas'] = ('http://pandas.pydata.org/pandas-docs/stable/', None)
 intersphinx_mapping['skimage'] = ('http://scikit-image.org/docs/stable/', None)
@@ -174,6 +172,9 @@ napoleon_use_rtype = False
 napoleon_google_docstring = False
 extensions += ['sphinx_astropy.ext.edit_on_github', 'sphinx.ext.doctest', 'sphinx.ext.githubpages']
 
+# Remove numpydoc
+extensions.remove('numpydoc')
+
 # Don't import the module as "version" or it will override the
 # "version" configuration parameter
 from sunpy import version as versionmod
@@ -191,7 +192,7 @@ github_issues_url = 'https://github.com/sunpy/sunpy/issues/'
 
 # -- Options for the Sphinx gallery -------------------------------------------
 
-if ON_RTD and os.environ.get('READTHEDOCS_PROJECT').lower() != 'sunpy':
+if on_rtd and os.environ.get('READTHEDOCS_PROJECT').lower() != 'sunpy':
     def setup(app):
         app.warn('The gallery build takes too long on RTD, so the '
                  'gallery will not be built.  You will probably see '
