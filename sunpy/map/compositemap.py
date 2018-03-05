@@ -411,7 +411,6 @@ class CompositeMap(object):
                                                    self._maps[0].spatial_units[0]))
             axes.set_ylabel(axis_labels_from_ctype(self._maps[0].coordinate_system[1],
                                                    self._maps[0].spatial_units[1]))
-
             axes.set_title(title)
 
         # Define a list of plotted objects
