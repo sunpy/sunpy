@@ -6,4 +6,4 @@
 
 sphinx
 sunpy-sphinx-theme
-sphinx-gallery
+git+https://github.com/sphinx-gallery/sphinx-gallery
