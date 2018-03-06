@@ -167,6 +167,7 @@ napoleon_google_docstring = False
 
 extensions += ['sphinx_astropy.ext.edit_on_github', 'sphinx.ext.doctest', 'sphinx.ext.githubpages']
 
+# -- Options for the edit_on_github extension 
 # Don't import the module as "version" or it will override the
 # "version" configuration parameter
 from sunpy import version as versionmod
