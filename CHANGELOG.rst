@@ -43,7 +43,7 @@ Bug Fixes
 - Fixed TimeSeries test failures due to missing test files [#2273]
 - Refactored a GOES test to avoid a Py3.6 issue [#2276]
 - The documentation build now uses the Sphinx configuration from sphinx-astropy 
-  rather than from astropy-helpers.
+  rather than from astropy-helpers.[#2494]
 
 0.8.0
 ======
