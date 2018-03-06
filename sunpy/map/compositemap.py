@@ -446,7 +446,7 @@ class CompositeMap(object):
                 if m.mask is None:
                     ret.append(axes.contour(m.data, m.levels, **params))
                 else:
-                    ret.append(axes.contour(np.ma.array(np.asarray(m.data), mask=m.mask), **params))
+                    ret.append(axes.contour(np.ma.array(np.asarray(m.data), mask=m.mask), m.levels, **params))
 
                 # Set the label of the first line so a legend can be created
                 ret[-1].collections[0].set_label(m.name)
