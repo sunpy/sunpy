@@ -156,24 +156,16 @@ latex_documents = [('index', project + '.tex', project + u' Documentation', auth
 man_pages = [('index', project.lower(), project + u' Documentation', [author], 1)]
 
 # -- Swap to Napoleon ---------------------------------------------------------
-extensions.append('sphinx.ext.napoleon')
-
-# Disable having a separate return type row
-napoleon_use_rtype = False
-# Disable google style docstrings
-napoleon_google_docstring = False
-
-# -- Options for the edit_on_github extension ----------------------------------------
-extensions.append('sphinx.ext.napoleon')
-
-# Disable having a separate return type row
-napoleon_use_rtype = False
-# Disable google style docstrings
-napoleon_google_docstring = False
-extensions += ['sphinx_astropy.ext.edit_on_github', 'sphinx.ext.doctest', 'sphinx.ext.githubpages']
-
 # Remove numpydoc
 extensions.remove('numpydoc')
+extensions.append('sphinx.ext.napoleon')
+
+# Disable having a separate return type row
+napoleon_use_rtype = False
+# Disable google style docstrings
+napoleon_google_docstring = False
+
+extensions += ['sphinx_astropy.ext.edit_on_github', 'sphinx.ext.doctest', 'sphinx.ext.githubpages']
 
 # Don't import the module as "version" or it will override the
 # "version" configuration parameter
