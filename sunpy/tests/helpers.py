@@ -85,7 +85,8 @@ def figure_test(test_function):
             fig = plt.gcf()
 
         # Save the image that was generated
-        os.makedirs('result_images', exist_ok=True)
+        if not os.path.exists('result_images'):
+            os.mkdir('result_images')
         result_image_loc = os.path.join('result_images', '{}.png'.format(name))
         plt.savefig(result_image_loc)
         plt.close()
