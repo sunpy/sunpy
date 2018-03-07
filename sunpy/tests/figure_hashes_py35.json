@@ -25,5 +25,5 @@
     "sunpy.timeseries.tests.test_timeseriesbase.test_noaa_ind_peek": "10f1fc9e29f41f07ba63b119170e2ba649fa6440b0e23ffd32baee59b5df9aed",
     "sunpy.timeseries.tests.test_timeseriesbase.test_noaa_pre_peek": "09c2fb9890be936cdd414309c456e624c39183f594c663d4956fa9c20cf7a289",
     "sunpy.timeseries.tests.test_timeseriesbase.test_norh_peek": "1e03ed25af3b6534a50c849e3b37c7307f8903009966744440d77cfc231c3855",
-    "sunpy.timeseries.tests.test_timeseriesbase.test_rhessi_peek": "0efa07c81fcf5ef99f9b09be131dac2bf2ae5509e4c123b72930f09562ed4b7c"
+    "sunpy.timeseries.tests.test_timeseriesbase.test_rhessi_peek": "e56a17d1df7516f36800547932cda061d1813a520ca59362223f7ba374f8a7c1"
 }

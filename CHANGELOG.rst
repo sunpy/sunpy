@@ -6,6 +6,11 @@ Bug Fixes
 
 - Removed AstropyDeprecationWarning from sunpy.coordinates.representation [#2476]
 - Fix for NorthOffsetFrame under Astropy 3.0 [#2486]
+- Fix lightcurve tests under numpy dev [#2505]
+- Updated depecration link of radiospectra [#2481]
+- Fixed Padding values in some of the documentation pages [#2497]
+- Move documentation build to circleci [#2509]
+- Fix Issue #2470 hgs_to_hcc(heliogcoord, heliocframe) [#2502]
 
 0.8.4
 =====
