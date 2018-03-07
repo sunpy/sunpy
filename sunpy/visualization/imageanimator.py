@@ -825,7 +825,7 @@ class LineAnimator(ArrayAnimator):
                  xlim=None, ylim=None, **kwargs):
         # Check inputs.
         self.plot_axis_index = int(plot_axis_index)
-        if self.plot_axis_index not in range(-2, 2):
+        if self.plot_axis_index not in range(-data.ndim, data.ndim):
             raise ValueError("plot_axis_index must be either 0 or 1 (or equivalent "
                              "negative indices) referring to the axis of data to be "
                              "used for a single plot.")
