@@ -11,6 +11,7 @@ Bug Fixes
 - Fixed Padding values in some of the documentation pages [#2497]
 - Move documentation build to circleci [#2509]
 - Fix Issue #2470 hgs_to_hcc(heliogcoord, heliocframe) [#2502]
+- Fixing CompositeMap object so that it respects masked maps [#2492]
 
 0.8.4
 =====
