@@ -29,6 +29,12 @@ import os
 import datetime
 import sys
 
+try:
+    from sphinx_astropy.conf.v1 import *
+except ImportError:
+    print('ERROR: the documentation requires the sphinx-astropy package to be installed')
+    sys.exit(1)
+
 ON_TRAVIS = os.environ.get('TRAVIS') == 'true'
 
 if on_rtd:
@@ -42,12 +48,6 @@ try:
 except ImportError:
     raise ImportError('suds could not be imported, please install the '
                       '"suds-jerko" package and try again')
-
-try:
-    from sphinx_astropy.conf.v1 import * 
-except ImportError:
-    print('ERROR: the documentation requires the sphinx-astropy package to be installed')
-    sys.exit(1)
 
 from sunpy.extern import six
 import sunpy
@@ -167,7 +167,7 @@ napoleon_google_docstring = False
 
 extensions += ['sphinx_astropy.ext.edit_on_github', 'sphinx.ext.doctest', 'sphinx.ext.githubpages']
 
-# -- Options for the edit_on_github extension 
+# -- Options for the edit_on_github extension
 # Don't import the module as "version" or it will override the
 # "version" configuration parameter
 from sunpy import version as versionmod
