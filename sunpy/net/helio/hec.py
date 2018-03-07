@@ -223,7 +223,7 @@ class HECClient(object):
         --------
         >>> from sunpy.net.helio import hec
         >>> hc = hec.HECClient()  # doctest: +REMOTE_DATA
-        >>> hc.make_table_list()  # doctest: +SKIP
+        >>> hc.make_table_list()  # doctest: +REMOTE_DATA
 
         """
         table_list = []

@@ -50,7 +50,7 @@ def translate_results_to_query(results):
     >>> len(q)  # doctest: +REMOTE_DATA
     19
 
-    >>> hek2vso.translate_results_to_query(q[0])  # doctest: +SKIP
+    >>> hek2vso.translate_results_to_query(q[0])  # doctest: +REMOTE_DATA
     [[<Time(datetime.datetime(2011, 8, 8, 1, 30, 4), datetime.datetime(2011, 8, 10, 0, 0, 4), None)>, <Source('SDO')>, <Instrument('HEK')>, <Wavelength(0.0, 0.0, 'Angstrom')>]]
 
     >>> hek2vso.translate_results_to_query(q)   # doctest: +SKIP
