@@ -41,7 +41,7 @@ env:
         - SETUP_CMD='test --coverage'
         - CONDA_CHANNELS='sunpy'
         - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas nomkl pytest-astropy suds-jurko glymur'
-        - PIP_DEPENDENCIES='git+https://github.com/sphinx-gallery/sphinx-gallery pytest-sugar pytest-rerunfailures pytest-cov sunpy-sphinx-theme hypothesis'
+        - PIP_DEPENDENCIES='git+https://github.com/sphinx-gallery/sphinx-gallery sphinx-astropy pytest-sugar pytest-rerunfailures pytest-cov sunpy-sphinx-theme hypothesis'
         - EVENT_TYPE='push pull_request cron'
         - MPLBACKEND='agg'
 
@@ -81,10 +81,6 @@ matrix:
            # currently pick up doctests in docs/
            env: MAIN_CMD="py.test"
                 SETUP_CMD="--remote-data -k-figure --cov --cov-config sunpy/tests/coveragerc ./docs/"
-
-         - python: 3.6
-           stage: Comprehensive tests
-           env: SETUP_CMD='build_docs -w'
 
          # Python 2.7 (implicit astropy 2)
          - python: 2.7
