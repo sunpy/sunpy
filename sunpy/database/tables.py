@@ -564,7 +564,6 @@ def entries_from_fido_search_result(sr, default_waveunit=None):
     >>> from sunpy.net import Fido, attrs
     >>> from sunpy.database.tables import entries_from_fido_search_result
     >>> sr = Fido.search(attrs.Time("2012/1/1", "2012/1/2"),
-    ...     attrs.Instrument('lyra')) # doctest: +REMOTE_DATA
     >>> entries = entries_from_fido_search_result(sr) # doctest: +REMOTE_DATA
     [<class 'sunpy.net.dataretriever.client.QueryResponse'><Table length=2>
          Start Time           End Time      Source Instrument Wavelength

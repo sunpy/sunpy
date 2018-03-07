@@ -26,7 +26,7 @@ System Info
 To quickly collect information on your system, you can use our convenience function
 ``system_info`` which you can run through: ::
 
-    >>> import sunpy
+    >>> import sunpy   # doctest: +SKIP
     >>> sunpy.util.system_info()   # doctest: +SKIP
 
 The output should look something like: ::

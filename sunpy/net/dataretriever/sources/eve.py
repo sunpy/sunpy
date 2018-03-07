@@ -36,19 +36,16 @@ class EVEClient(GenericClient):
     ------------------- ------------------- ------ ---------- ----------
     2016-01-01 00:00:00 2016-01-02 00:00:00    SDO        eve        nan
     2016-01-02 00:00:00 2016-01-03 00:00:00    SDO        eve        nan]
-    >>> results  #doctest: +REMOTE_DATA
-    ...
+    >>> results  #doctest: +SKIP
+    <sunpy.net.fido_factory.UnifiedResponse object at 0x7f7fb0bb1a58>
     Results from 1 Provider:
-    <BLANKLINE>
+
     2 Results from the EVEClient:
          Start Time           End Time      Source Instrument Wavelength
            str19               str19         str3     str3       str3
     ------------------- ------------------- ------ ---------- ----------
     2016-01-01 00:00:00 2016-01-02 00:00:00    SDO        eve        nan
     2016-01-02 00:00:00 2016-01-03 00:00:00    SDO        eve        nan
-    <BLANKLINE>
-    <BLANKLINE>
-
     """
 
     def _get_url_for_timerange(self, timerange, **kwargs):

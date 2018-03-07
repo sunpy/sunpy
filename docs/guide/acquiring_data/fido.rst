@@ -85,22 +85,30 @@ client for results, in this case VSO.::
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'),
     ...                      a.Wavelength(171*u.angstrom), a.vso.Sample(10*u.minute))  # doctest: +REMOTE_DATA
     [<QTable length=289>
-     Start Time [1]       End Time [1]    Source Instrument   Type   Wavelength [2]
-                                                                          Angstrom
-           str19               str19         str3     str3      str8      float64
-    ------------------- ------------------- ------ ---------- -------- --------------
-    2012-03-05 04:30:00 2012-03-05 04:30:01    SDO        AIA FULLDISK 171.0 .. 171.0
-    2012-03-04 09:10:00 2012-03-04 09:10:01    SDO        AIA FULLDISK 171.0 .. 171.0
-    2012-03-05 22:50:00 2012-03-05 22:50:01    SDO        AIA FULLDISK 171.0 .. 171.0
-    2012-03-05 20:50:00 2012-03-05 20:50:01    SDO        AIA FULLDISK 171.0 .. 171.0
-    2012-03-04 01:00:00 2012-03-04 01:00:01    SDO        AIA FULLDISK 171.0 .. 171.0
-                    ...                 ...    ...        ...      ...            ...
-    2012-03-04 07:30:00 2012-03-04 07:30:01    SDO        AIA FULLDISK 171.0 .. 171.0
-    2012-03-05 00:00:00 2012-03-05 00:00:01    SDO        AIA FULLDISK 171.0 .. 171.0
-    2012-03-05 13:50:00 2012-03-05 13:50:01    SDO        AIA FULLDISK 171.0 .. 171.0
-    2012-03-05 15:20:00 2012-03-05 15:20:01    SDO        AIA FULLDISK 171.0 .. 171.0
-    2012-03-05 08:10:00 2012-03-05 08:10:01    SDO        AIA FULLDISK 171.0 .. 171.0
-    2012-03-04 02:50:00 2012-03-04 02:50:01    SDO        AIA FULLDISK 171.0 .. 171.0]
+        Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
+                                                    ...             Angstrom
+            str19               str19         str3  ...   str8      float64
+    ------------------- ------------------- ------ ... -------- --------------
+    2012-03-05 04:30:00 2012-03-05 04:30:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 09:10:00 2012-03-04 09:10:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 22:50:00 2012-03-05 22:50:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 20:50:00 2012-03-05 20:50:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 01:00:00 2012-03-04 01:00:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 15:40:00 2012-03-04 15:40:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 12:40:00 2012-03-05 12:40:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 10:50:00 2012-03-05 10:50:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 01:50:00 2012-03-04 01:50:01    SDO ... FULLDISK 171.0 .. 171.0
+                    ...                 ...    ... ...      ...            ...
+    2012-03-04 07:40:00 2012-03-04 07:40:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 05:10:00 2012-03-05 05:10:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 08:00:00 2012-03-05 08:00:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 20:10:00 2012-03-04 20:10:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 07:30:00 2012-03-04 07:30:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 00:00:00 2012-03-05 00:00:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 13:50:00 2012-03-05 13:50:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 15:20:00 2012-03-05 15:20:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 08:10:00 2012-03-05 08:10:01    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 02:50:00 2012-03-04 02:50:01    SDO ... FULLDISK 171.0 .. 171.0]
 
 To search for data from multiple instruments, wavelengths, times etc., use the
 pipe ``|`` operator. This joins queries together just as the logical ``OR``
@@ -108,42 +116,70 @@ operator would::
 
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'),
     ...                      a.Instrument('lyra') | a.Instrument('rhessi'))  # doctest: +REMOTE_DATA
+    [<class 'sunpy.net.dataretriever.client.QueryResponse'><Table length=3>
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str6     str4       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
+    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
+    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan, <class 'sunpy.net.dataretriever.client.QueryResponse'><Table length=2>
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str6     str6       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2012-03-04 00:00:00 2012-03-06 00:00:00 rhessi     rhessi        nan
+    2012-03-04 00:00:00 2012-03-06 00:00:00 rhessi     rhessi        nan]
 
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('aia'),
     ...                      a.Wavelength(171*u.angstrom) | a.Wavelength(94*u.angstrom))  # doctest: +REMOTE_DATA
     [<QTable length=289>
-    Start Time [1]       End Time [1]    Source Instrument   Type   Wavelength [2]
-                                                                          Angstrom
-           str19               str19         str3     str3      str8      float64
-    ------------------- ------------------- ------ ---------- -------- --------------
-    2012-03-05 15:39:25 2012-03-05 15:49:25    SDO        AIA FULLDISK 171.0 .. 171.0
-    2012-03-05 03:59:26 2012-03-05 04:09:13    SDO        AIA FULLDISK 171.0 .. 171.0
-    2012-03-04 03:09:36 2012-03-04 03:19:25    SDO        AIA FULLDISK 171.0 .. 171.0
-    2012-03-04 22:49:36 2012-03-04 22:59:25    SDO        AIA FULLDISK 171.0 .. 171.0
-    2012-03-05 06:19:26 2012-03-05 06:29:25    SDO        AIA FULLDISK 171.0 .. 171.0
-                    ...                 ...    ...        ...      ...            ...
-    2012-03-05 16:39:25 2012-03-05 16:49:13    SDO        AIA FULLDISK 171.0 .. 171.0
-    2012-03-04 00:59:36 2012-03-04 01:09:25    SDO        AIA FULLDISK 171.0 .. 171.0
-    2012-03-04 06:09:36 2012-03-04 06:19:25    SDO        AIA FULLDISK 171.0 .. 171.0
-    2012-03-05 07:19:36 2012-03-05 07:29:25    SDO        AIA FULLDISK 171.0 .. 171.0
-    2012-03-04 13:09:36 2012-03-04 13:19:25    SDO        AIA FULLDISK 171.0 .. 171.0
-    2012-03-05 23:39:25 2012-03-05 23:49:25    SDO        AIA FULLDISK 171.0 .. 171.0, <QTable length=289>
-       Start Time [1]       End Time [1]    Source Instrument   Type   Wavelength [2]
-                                                                          Angstrom
-           str19               str19         str3     str3      str8      float64
-    ------------------- ------------------- ------ ---------- -------- --------------
-    2012-03-04 15:29:26 2012-03-04 15:39:15    SDO        AIA FULLDISK   94.0 .. 94.0
-    2012-03-04 04:19:26 2012-03-04 04:29:15    SDO        AIA FULLDISK   94.0 .. 94.0
-    2012-03-05 13:29:26 2012-03-05 13:39:15    SDO        AIA FULLDISK   94.0 .. 94.0
-    2012-03-04 17:19:26 2012-03-04 17:29:15    SDO        AIA FULLDISK   94.0 .. 94.0
-    2012-03-04 19:29:26 2012-03-04 19:39:15    SDO        AIA FULLDISK   94.0 .. 94.0
-                    ...                 ...    ...        ...      ...            ...
-    2012-03-04 19:19:26 2012-03-04 19:29:15    SDO        AIA FULLDISK   94.0 .. 94.0
-    2012-03-04 14:29:26 2012-03-04 14:39:15    SDO        AIA FULLDISK   94.0 .. 94.0
-    2012-03-04 23:49:26 2012-03-04 23:59:15    SDO        AIA FULLDISK   94.0 .. 94.0
-    2012-03-05 06:09:26 2012-03-05 06:19:15    SDO        AIA FULLDISK   94.0 .. 94.0
-    2012-03-05 05:39:26 2012-03-05 05:49:15    SDO        AIA FULLDISK   94.0 .. 94.0
-    2012-03-05 01:59:26 2012-03-05 02:09:15    SDO        AIA FULLDISK   94.0 .. 94.0]
+       Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
+                                                   ...             Angstrom
+           str19               str19         str3  ...   str8      float64
+    ------------------- ------------------- ------ ... -------- --------------
+    2012-03-05 15:39:25 2012-03-05 15:49:25    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 03:59:26 2012-03-05 04:09:13    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 03:09:36 2012-03-04 03:19:25    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 22:49:36 2012-03-04 22:59:25    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 06:19:26 2012-03-05 06:29:25    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 00:59:25 2012-03-05 01:09:25    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 10:39:36 2012-03-05 10:49:25    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 22:09:36 2012-03-04 22:19:25    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 13:19:36 2012-03-05 13:29:25    SDO ... FULLDISK 171.0 .. 171.0
+                    ...                 ...    ... ...      ...            ...
+    2012-03-04 00:00:00 2012-03-04 00:09:25    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 22:09:36 2012-03-05 22:19:25    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 18:29:36 2012-03-04 18:39:25    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 10:39:25 2012-03-04 10:49:25    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 16:39:25 2012-03-05 16:49:13    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 00:59:36 2012-03-04 01:09:25    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 06:09:36 2012-03-04 06:19:25    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 07:19:36 2012-03-05 07:29:25    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-04 13:09:36 2012-03-04 13:19:25    SDO ... FULLDISK 171.0 .. 171.0
+    2012-03-05 23:39:25 2012-03-05 23:49:25    SDO ... FULLDISK 171.0 .. 171.0, <QTable length=289>
+       Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
+                                                   ...             Angstrom
+           str19               str19         str3  ...   str8      float64
+    ------------------- ------------------- ------ ... -------- --------------
+    2012-03-04 15:29:26 2012-03-04 15:39:15    SDO ... FULLDISK   94.0 .. 94.0
+    2012-03-04 04:19:26 2012-03-04 04:29:15    SDO ... FULLDISK   94.0 .. 94.0
+    2012-03-05 13:29:26 2012-03-05 13:39:15    SDO ... FULLDISK   94.0 .. 94.0
+    2012-03-04 17:19:26 2012-03-04 17:29:15    SDO ... FULLDISK   94.0 .. 94.0
+    2012-03-04 19:29:26 2012-03-04 19:39:15    SDO ... FULLDISK   94.0 .. 94.0
+    2012-03-05 03:39:26 2012-03-05 03:49:15    SDO ... FULLDISK   94.0 .. 94.0
+    2012-03-04 19:09:26 2012-03-04 19:19:15    SDO ... FULLDISK   94.0 .. 94.0
+    2012-03-04 01:59:26 2012-03-04 02:09:15    SDO ... FULLDISK   94.0 .. 94.0
+    2012-03-04 15:59:26 2012-03-04 16:09:15    SDO ... FULLDISK   94.0 .. 94.0
+                    ...                 ...    ... ...      ...            ...
+    2012-03-05 13:19:26 2012-03-05 13:29:15    SDO ... FULLDISK   94.0 .. 94.0
+    2012-03-04 23:39:26 2012-03-04 23:49:15    SDO ... FULLDISK   94.0 .. 94.0
+    2012-03-04 13:09:26 2012-03-04 13:19:15    SDO ... FULLDISK   94.0 .. 94.0
+    2012-03-04 17:09:26 2012-03-04 17:19:15    SDO ... FULLDISK   94.0 .. 94.0
+    2012-03-04 19:19:26 2012-03-04 19:29:15    SDO ... FULLDISK   94.0 .. 94.0
+    2012-03-04 14:29:26 2012-03-04 14:39:15    SDO ... FULLDISK   94.0 .. 94.0
+    2012-03-04 23:49:26 2012-03-04 23:59:15    SDO ... FULLDISK   94.0 .. 94.0
+    2012-03-05 06:09:26 2012-03-05 06:19:15    SDO ... FULLDISK   94.0 .. 94.0
+    2012-03-05 05:39:26 2012-03-05 05:49:15    SDO ... FULLDISK   94.0 .. 94.0
+    2012-03-05 01:59:26 2012-03-05 02:09:15    SDO ... FULLDISK   94.0 .. 94.0]
 
 Indexing search results
 -----------------------
@@ -161,22 +197,59 @@ the `~sunpy.net.dataretriever.sources.LYRAClient`, and EVE data from the
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2012/1/1", "2012/1/2"),
     ...                       a.Instrument("lyra") | a.Instrument("eve"))  # doctest: +REMOTE_DATA
+    [<class 'sunpy.net.dataretriever.client.QueryResponse'><Table length=2>
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str6     str4       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
+    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan, <QTable length=54>
+       Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
+                                                   ...             Angstrom
+           str19               str19         str3  ...   str8      float64
+    ------------------- ------------------- ------ ... -------- --------------
+    2012-01-01 00:00:00 2012-01-02 00:00:00    SDO ... FULLDISK   1.0 .. 304.0
+    2012-01-02 00:00:00 2012-01-03 00:00:00    SDO ... FULLDISK   1.0 .. 304.0
+    2012-01-01 00:00:00 2012-01-01 01:00:00    SDO ... FULLDISK 93.0 .. 1033.0
+    2012-01-01 01:00:00 2012-01-01 02:00:00    SDO ... FULLDISK 93.0 .. 1033.0
+    2012-01-01 02:00:00 2012-01-01 03:00:00    SDO ... FULLDISK 93.0 .. 1033.0
+    2012-01-01 03:00:00 2012-01-01 04:00:00    SDO ... FULLDISK 93.0 .. 1033.0
+    2012-01-01 04:00:00 2012-01-01 05:00:00    SDO ... FULLDISK 93.0 .. 1033.0
+    2012-01-01 05:00:00 2012-01-01 06:00:00    SDO ... FULLDISK 93.0 .. 1033.0
+    2012-01-01 06:00:00 2012-01-01 07:00:00    SDO ... FULLDISK 93.0 .. 1033.0
+                    ...                 ...    ... ...      ...            ...
+    2012-01-01 17:00:00 2012-01-01 18:00:00    SDO ... FULLDISK 60.0 .. 1060.0
+    2012-01-01 18:00:00 2012-01-01 19:00:00    SDO ... FULLDISK 60.0 .. 1060.0
+    2012-01-01 19:00:00 2012-01-01 20:00:00    SDO ... FULLDISK 60.0 .. 1060.0
+    2012-01-01 20:00:00 2012-01-01 21:00:00    SDO ... FULLDISK 60.0 .. 1060.0
+    2012-01-01 21:00:00 2012-01-01 22:00:00    SDO ... FULLDISK 60.0 .. 1060.0
+    2012-01-01 22:00:00 2012-01-01 23:00:00    SDO ... FULLDISK 60.0 .. 1060.0
+    2012-01-01 23:00:00 2012-01-02 00:00:00    SDO ... FULLDISK 60.0 .. 1060.0
+    2012-01-02 00:00:00 2012-01-02 01:00:00    SDO ... FULLDISK 60.0 .. 1060.0
+    2012-01-01 00:00:00 2012-01-02 00:00:00    SDO ... FULLDISK  1.0 .. 1050.0
+    2012-01-02 00:00:00 2012-01-03 00:00:00    SDO ... FULLDISK  1.0 .. 1050.0]
 
 If you then wanted to inspect just the LYRA data for the whole time range
 specified in the search, you would index this response to see just the
 results returned by the `~sunpy.net.dataretriever.sources.LYRAClient`::
 
     >>> results[0, :]  # doctest: +SKIP
-    <sunpy.net.fido_factory.UnifiedResponse object at 0x7fe61fdf1b00>
+    [<class 'sunpy.net.dataretriever.client.QueryResponse'><Table length=2>
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str6     str4       str3
+    ------------------- ------------------- ------ ---------- ----------
+    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
+    2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan]
+    <sunpy.net.fido_factory.UnifiedResponse object at 0x7f5a90ccd898>
     Results from 1 Provider:
-
+    <BLANKLINE>
     2 Results from the LYRAClient:
-        Start Time           End Time      Source Instrument Wavelength
-          str19               str19         str6     str4       str3
+         Start Time           End Time      Source Instrument Wavelength
+           str19               str19         str6     str4       str3
     ------------------- ------------------- ------ ---------- ----------
     2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
     2012-01-01 00:00:00 2012-01-02 00:00:00 Proba2       lyra        nan
-
+    <BLANKLINE>
+    <BLANKLINE>
 
 Or, equivalently::
 

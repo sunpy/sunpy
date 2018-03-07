@@ -66,7 +66,7 @@ def test_parse_obssum_dbase_file():
 
 @pytest.mark.remote_data
 def test_get_parse_obssum_file():
-    f = rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))  # doctest: +SKIP
+    f = rhessi.get_obssumm_file(('2011/04/04', '2011/04/05'))
     header, _data = rhessi.parse_obssumm_file(f[0])
     assert header.get('DATE_OBS') == '2011-04-04T00:00:00.000'
     assert header.get('DATE_END') == '2011-04-05T00:00:00.000'
