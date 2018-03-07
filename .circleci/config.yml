@@ -1,0 +1,37 @@
+apt-run: &apt-install
+  name: Install apt packages
+  command: |
+    sudo apt update
+    sudo apt install -y graphviz
+
+pip-run: &pip-install
+  name: Install Python dependencies
+  command: |
+    python3 -m venv venv
+    . venv/bin/activate
+    pip install -r requirements/docs.txt
+
+version: 2
+jobs:
+  build:
+    environment:
+      - MAIN_CMD: "venv/bin/python setup.py"
+      - SETUP_CMD: "build_docs -w"
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run: *apt-install
+      - run: *pip-install
+      - run: $MAIN_CMD $SETUP_CMD
+
+      - store_artifacts:
+          path: docs/_build/html
+
+      - run:
+          name: "Built documentation is available at:"
+          command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/docs/_build/html/index.html"; echo $DOCS_URL
+
+notify:
+  webhooks:
+    - url: https://giles.cadair.com/circleci
