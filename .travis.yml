@@ -41,7 +41,7 @@ env:
         - SETUP_CMD='test --coverage'
         - CONDA_CHANNELS='sunpy'
         - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas nomkl pytest-astropy suds-jurko glymur'
-        - PIP_DEPENDENCIES='git+https://github.com/sphinx-gallery/sphinx-gallery pytest-sugar pytest-rerunfailures pytest-cov sunpy-sphinx-theme hypothesis drms'
+        - PIP_DEPENDENCIES='git+https://github.com/sphinx-gallery/sphinx-gallery sphinx-astropy pytest-sugar pytest-rerunfailures pytest-cov sunpy-sphinx-theme hypothesis drms'
         - EVENT_TYPE='push pull_request cron'
         - MPLBACKEND='agg'
 
