@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from sunpy.visualization.imageanimator import LineAnimator
 
 ###############################################################################
-# Example 1: Animate a 2D cube of random data as a line plot along an
+# Animate a 2D cube of random data as a line plot along an
 # axis where the x-axis drifts with time.
 
 # Define some random data
