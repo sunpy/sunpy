@@ -24,13 +24,7 @@ cache:
   directories:
   - $HOME/sunpy/data
 
-python:
-    - 2.7
-    - 3.5
-    - 3.6
-
 # Configure the build environment. Global varibles are defined for all configurations.
-
 env:
     global:
         - COLUMNS=180
@@ -44,10 +38,6 @@ env:
         - PIP_DEPENDENCIES='git+https://github.com/sphinx-gallery/sphinx-gallery sphinx-astropy pytest-sugar pytest-rerunfailures pytest-cov sunpy-sphinx-theme hypothesis'
         - EVENT_TYPE='push pull_request cron'
         - MPLBACKEND='agg'
-
-
-    matrix:
-        - SETUP_CMD='egg_info'
 
 stages:
    # Do the install jobs and one offline test, it will not proceed if any fail
