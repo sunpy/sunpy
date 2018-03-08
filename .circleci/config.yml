@@ -13,7 +13,28 @@ pip-run: &pip-install
 
 version: 2
 jobs:
-  build:
+  egg-info-36:
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run: python setup.py egg_info
+
+  egg-info-35:
+    docker:
+      - image: circleci/python:3.5
+    steps:
+      - checkout
+      - run: python setup.py egg_info
+
+  egg-info-27:
+    docker:
+      - image: circleci/python:2.7
+    steps:
+      - checkout
+      - run: python setup.py egg_info
+
+  html-docs:
     environment:
       - MAIN_CMD: "venv/bin/python setup.py"
       - SETUP_CMD: "build_docs -w"
@@ -31,6 +52,21 @@ jobs:
       - run:
           name: "Built documentation is available at:"
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/docs/_build/html/index.html"; echo $DOCS_URL
+
+
+workflows:
+  version: 2
+
+  egg-info:
+    jobs:
+      - egg-info-36
+      - egg-info-35
+      - egg-info-27
+
+  test-documentation:
+    jobs:
+      - html-docs
+
 
 notify:
   webhooks:
