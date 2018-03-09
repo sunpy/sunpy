@@ -26,13 +26,12 @@ In addition, the standard for spelling is American English.
    When C extensions are used, the python interface must meet interface guidelines, and the use of Cython is strongly recommended.
 -  If an external C library is needed, the source code for the library should be bundled with the SunPy core.
    Additionally, the package must be compatible with using a system-installed library.
--  Any data used for tests can be included in `sunpy/data/test` as long as it is less than about 1 MB.
--  If there is larger data files that are required, that can be added to the `sample-data repository <https://github.com/sunpy/sample-data>`_.
-   Ideally, this data should not be used for code test but can be within documentation.
+-  Any data used for tests can be included in `sunpy/data/test` as long as it is around 100 KiB.
+-  We keep data used for examples in the `sample-data repository <https://github.com/sunpy/sample-data>`_.
+   This data should not be used for code test but can be within documentation.
 -  All persistent configuration should be stored using the functions in
    sunpy.config.
 -  General utilities necessary for but not specific to the package should be placed in the .utils module.
-   These utilities will be moved to the sunpy.utils module when the package is integrated into the core package. If a utility is already present in sunpy.utils, the package should always use that utility instead of re-implementing it in .utils.
    If changes or enhancements are required of that utility than a separate pull request should be presented to the community
 -  Packages implementing many classes/functions not relevant to the component requested will not be accepted - the package should only
    include the required functionality and relevant extensions.
@@ -46,5 +45,5 @@ PEP8 Rules
 Additionally, all code that goes in the project should be checked using one of the many PEP8 linters that are available (pep8, pylint, flake8 as some examples).
 This is to ensure that the SunPy code follows The Style Guide for Python (`PEP 8 <http://www.python.org/dev/peps/pep-0008/>`_).
 
-To ensure this, each pull request is checked for PEP8 issues by a bot called PEP8SPEAKS.
+To ensure this, each pull request is checked for PEP8 issues by a bot called `pep8speaks <https://pep8speaks.com/>`_.
 This way, people are aware of any potential issues with their submitted code.
