@@ -37,7 +37,7 @@ class GOESLightCurve(LightCurve):
     References
     ----------
     * `GOES Mission Homepage <http://www.goes.noaa.gov>`_
-    * `GOES XRS Homepage <http://www.swpc.noaa.gov/products/goes-x-ray-flux>`_
+    * `GOES XRS Homepage <https://www.swpc.noaa.gov/products/goes-x-ray-flux>`_
     * `GOES XRS Guide <https://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf>`_
     * `NASCOM Data Archive <https://umbra.nascom.nasa.gov/goes/fits/>`_
     """

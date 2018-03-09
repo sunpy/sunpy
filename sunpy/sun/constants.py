@@ -4,11 +4,6 @@ Fundamental Solar Physical Constants
 These constants are taken from various sources. The structure of this module is heavily
 based on if not directly copied from the SciPy constants module but contains Solar
 Physical constants.
-
-Websites
---------
-| https://books.google.es/books?id=4SWENr1tIJ0C&q=sfu#v=snippet&q=sfu&f=false
-
 """
 
 from __future__ import absolute_import, division, print_function

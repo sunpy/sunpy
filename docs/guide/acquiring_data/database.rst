@@ -10,13 +10,11 @@ via the :mod:`sunpy.net` package) onto a local or remote database. The
 database may be a single file located on a local hard drive (if a SQLite
 database is used) or a local or remote database server (see the SQLAlchemy
 documentation for a `list of supported databases
-<http://docs.sqlalchemy.org/en/stable/dialects/>`_)
+<http://docs.sqlalchemy.org/en/latest/dialects/index.html>`_)
 This makes it possible to fetch required data from the local database
 instead of downloading it again from a remote server.
 
-The package :mod:`sunpy.database` was developed as part of
-`Google Summer of Code (GSOC) 2013
-<https://www.google-melange.com/archive/gsoc/2013>`_.
+The package :mod:`sunpy.database` was developed as part of Google Summer of Code (GSOC) 2013.
 
 1. Connecting and initializing the database
 -------------------------------------------
@@ -135,11 +133,7 @@ entry is added to the database.
 
   If you are working with Hinode/SOT files you may notice that for
   each file you get two entries, one which refers to the observation and
-  another that contains some (useless - as `discussed
-  <http://listmgr.cv.nrao.edu/pipermail/fitsbits/2007-August/001923.html>`_
-  in the `fitsbits mailing list
-  <http://listmgr.cv.nrao.edu/mailman/listinfo/fitsbits>`_)
-  telemetry data.
+  another that contains some (useless) telemetry data.
 
 :meth:`Database.add_from_file` saves the value of ``path`` by either simply
 passing on the value of the received argument (if it was a string)
