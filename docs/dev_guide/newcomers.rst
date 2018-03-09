@@ -107,6 +107,7 @@ To start you would need to commit the changes.
     git commit -a -m '<message>'
 
 Where you replace ``<message>`` with some text of the work you have done.
+We strongly recommend having a read over `this guide`_ about how you write commit messages.
 
 Next step is to submit the changes back to SunPy.
 
@@ -129,6 +130,7 @@ This can be sent to a contributor or attached in the Google group.
 
 Just remember, if you hit any problems get in touch!
 
+.. _this guide: https://chris.beams.io/posts/git-commit/
 .. _friendly guide: https://guides.github.com/activities/hello-world/
 .. _Google Group: https://groups.google.com/forum/#!forum/sunpy
 .. _email a SunPy contributor: stuart@mumford.me.uk

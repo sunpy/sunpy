@@ -69,7 +69,7 @@ SunPy has the following strict requirements:
 
 - `SciPy <https://www.scipy.org/>`_ 0.10.0 or later
 
-- `AstroPy <http://www.astropy.org/>`__ 1.0.0 or later
+- `Astropy <http://www.astropy.org/>`__ 1.0.0 or later
 
 SunPy also depends on other packages for optional features.
 However, note that these only need to be installed if those particular features

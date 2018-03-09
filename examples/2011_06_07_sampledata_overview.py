@@ -71,7 +71,7 @@ aia_094_map.draw_grid()
 ax = fig.add_subplot(616, projection=aia_1600_map)
 aia_1600_map.plot()
 aia_1600_map.draw_grid()
-plt.tight_layout(pad=1.50)
+plt.tight_layout(pad=6.50)
 plt.show()
 
 ###############################################################################
@@ -94,7 +94,7 @@ ax = fig.add_subplot(514, projection=aia_cutout04_map)
 aia_cutout04_map.plot()
 ax = fig.add_subplot(515, projection=aia_cutout05_map)
 aia_cutout05_map.plot()
-plt.tight_layout(pad=2.50)
+plt.tight_layout(pad=5.50)
 plt.show()
 
 ###############################################################################

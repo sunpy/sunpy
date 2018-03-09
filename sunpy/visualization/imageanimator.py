@@ -602,7 +602,7 @@ class ArrayAnimator(BaseFuncAnimator):
                     axis_ranges[i] = np.linspace(axis_ranges[i][0], axis_ranges[i][1], d)
 
             # If we have a whole list of values for the axis, make sure we are a slider axis.
-            elif len(axis_ranges[i]) == d:
+            elif len(axis_ranges[i]) == d or axis_ranges[i].shape == data.shape:
                 axis_ranges[i] = np.array(axis_ranges[i])
 
             # If above criteria are not met, raise an error.
@@ -824,8 +824,8 @@ class LineAnimator(ArrayAnimator):
     def __init__(self, data, plot_axis_index=-1, axis_ranges=None, ylabel=None, xlabel=None,
                  xlim=None, ylim=None, **kwargs):
         # Check inputs.
-        plot_axis_index = int(plot_axis_index)
-        if plot_axis_index not in range(-2, 2):
+        self.plot_axis_index = int(plot_axis_index)
+        if self.plot_axis_index not in range(-data.ndim, data.ndim):
             raise ValueError("plot_axis_index must be either 0 or 1 (or equivalent "
                              "negative indices) referring to the axis of data to be "
                              "used for a single plot.")
@@ -833,20 +833,22 @@ class LineAnimator(ArrayAnimator):
             raise ValueError("data must have at least two dimensions.  One for data "
                              "for each single plot and at least one for time/iteration.")
         # Ensure axis_ranges are input correctly.
-        if axis_ranges[plot_axis_index] is not None:
-            if len(axis_ranges[plot_axis_index]) != data.shape[plot_axis_index]:
+        if axis_ranges[self.plot_axis_index] is not None:
+            if (len(axis_ranges[self.plot_axis_index]) != data.shape[self.plot_axis_index] and
+                    axis_ranges[self.plot_axis_index].shape != data.shape):
                 raise ValueError("The plot_axis_index axis range must be specified as None "
-                                 "or an array. Not [min, max]")
+                                 "a 1D array of same length as plot_axis_index axis, "
+                                 "or an array of same shape as data.")
         # Define number of slider axes.
         self.naxis = data.ndim
         self.num_sliders = self.naxis-1
         # Attach data to class.
         if axis_ranges is not None and all(axis_range is None for axis_range in axis_ranges):
             axis_ranges = None
-        if axis_ranges[plot_axis_index] is None:
-            self.xdata = np.arange(data.shape[plot_axis_index])
+        if axis_ranges[self.plot_axis_index] is None:
+            self.xdata = np.arange(data.shape[self.plot_axis_index])
         else:
-            self.xdata = np.asarray(axis_ranges[plot_axis_index])
+            self.xdata = np.asarray(axis_ranges[self.plot_axis_index])
         if ylim is None:
             ylim = (data.min(), data.max())
         if xlim is None:
@@ -856,7 +858,7 @@ class LineAnimator(ArrayAnimator):
         self.xlabel = xlabel
         self.ylabel = ylabel
         # Run init for base class
-        super(LineAnimator, self).__init__(data, image_axes=[plot_axis_index],
+        super(LineAnimator, self).__init__(data, image_axes=[self.plot_axis_index],
                                            axis_ranges=axis_ranges, **kwargs)
 
     def plot_start_image(self, ax):
@@ -869,7 +871,13 @@ class LineAnimator(ArrayAnimator):
             ax.set_ylabel(self.ylabel)
         plot_args = {}
         plot_args.update(self.imshow_kwargs)
-        line, = ax.plot(self.xdata, self.data[self.frame_index], **plot_args)
+        if self.xdata.shape == self.data.shape:
+            item = [0] * self.data.ndim
+            item[self.plot_axis_index] = None
+            xdata = np.squeeze(self.xdata[tuple(item)])
+        else:
+            xdata = self.xdata
+        line, = ax.plot(xdata, self.data[self.frame_index], **plot_args)
         return line
 
     def update_plot(self, val, line, slider):
@@ -880,6 +888,15 @@ class LineAnimator(ArrayAnimator):
         self.frame_slice[ax_ind] = ind
         if val != slider.cval:
             line.set_ydata(self.data[self.frame_index])
+            if self.xdata.shape == self.data.shape:
+                item = [slid._slider.val for slid in self.sliders]
+                item[ax_ind] = val
+                if self.plot_axis_index < 0:
+                    i = self.data.ndim + self.plot_axis_index
+                else:
+                    i = self.plot_axis_index
+                item.insert(i, slice(None))
+                line.set_xdata(self.xdata[tuple(item)])
             slider.cval = val
 
 

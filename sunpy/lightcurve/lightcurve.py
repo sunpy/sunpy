@@ -245,18 +245,11 @@ class LightCurve(object):
         **kwargs : `dict`
             Any additional plot arguments that should be used
             when plotting.
-
-        Returns
-        -------
-        fig : `~matplotlib.Figure`
-            A plot figure.
         """
 
         figure = plt.figure()
         self.plot(**kwargs)
         figure.show()
-
-        return figure
 
     @staticmethod
     def _download(uri, kwargs,
