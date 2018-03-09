@@ -44,7 +44,7 @@ if on_rtd:
 try:
     import suds
 except ImportError:
-    print('ERROR: the documentation requires the suds-jerko package to be installed')
+    print('ERROR: suds could not be imported and the documentation requires the suds-jerko package to be installed')
     sys.exit(1)
 
 from sunpy import version as versionmod
