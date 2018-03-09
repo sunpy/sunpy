@@ -47,7 +47,7 @@ Some definitions
 
 References
 ----------
-| Thompson (2006), A&A, 449, 791 <https://dx.doi.org/10.1051/0004-6361:20054262>
+| Thompson (2006), A&A, 449, 791 <https://doi.org/10.1051/0004-6361:20054262>
 | PDF <https://fits.gsfc.nasa.gov/wcs/coordinates.pdf>
 """
 from __future__ import absolute_import
