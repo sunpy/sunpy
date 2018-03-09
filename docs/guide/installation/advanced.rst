@@ -69,7 +69,7 @@ SunPy has the following strict requirements:
 
 - `SciPy <http://www.scipy.org/>`_ 0.10.0 or later
 
-- `AstroPy <http://www.astropy.org/>`__ 1.0.0 or later
+- `Astropy <http://www.astropy.org/>`__ 1.0.0 or later
 
 SunPy also depends on other packages for optional features.
 However, note that these only need to be installed if those particular features
@@ -143,7 +143,7 @@ Other available options are: `[image]`, `[jpeg2000]` and `[tests]`
 
 .. note::
 
-   ``suds-py3`` is not compatible where as ``suds-jurko`` works fine with SunPy. Hence we depend on ``suds-jurko`` for operations under various modules under `~sunpy.net`.  
+   ``suds-py3`` is not compatible where as ``suds-jurko`` works fine with SunPy. Hence we depend on ``suds-jurko`` for operations under various modules under `~sunpy.net`.
 
 
 .. note::
