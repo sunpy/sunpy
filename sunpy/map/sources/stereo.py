@@ -28,7 +28,7 @@ class EUVIMap(GenericMap):
     References
     ----------
     * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`_
-    * `STEREO SECCHI <https://secchi.nrl.navy.mil>`_
+    * `STEREO SECCHI <http://secchi.nrl.navy.mil>`_
     * `Instrument Page <http://secchi.lmsal.com/EUVI/>`_
     """
 
@@ -75,9 +75,9 @@ class CORMap(GenericMap):
     References
     ----------
     * `STEREO Mission Page <https://stereo.gsfc.nasa.gov/>`_
-    * `STEREO SECCHI <https://secchi.nrl.navy.mil>`_
+    * `STEREO SECCHI <http://secchi.nrl.navy.mil>`_
     * `COR1 Instrument Page <https://cor1.gsfc.nasa.gov>`_
-    * `COR2 Instrument Page <https://secchi.nrl.navy.mil/index.php?p=cor2>`_
+    * `COR2 Instrument Page <http://secchi.nrl.navy.mil/index.php?p=cor2>`_
     * `COR1 User Guide <https://cor1.gsfc.nasa.gov/guide/>`_
     """
 
@@ -85,7 +85,7 @@ class CORMap(GenericMap):
 
         GenericMap.__init__(self, data, header, **kwargs)
 
-        self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])                
+        self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = cm.get_cmap('stereocor{det!s}'.format(det=self.detector[-1]))
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
 
@@ -128,7 +128,7 @@ class HIMap(GenericMap):
     """
     def __init__(self, data, header, **kwargs):
 
-        GenericMap.__init__(self, data, header, **kwargs)                
+        GenericMap.__init__(self, data, header, **kwargs)
         self._nickname = "{0}-{1}".format(self.detector, self.observatory[-1])
         self.plot_settings['cmap'] = cm.get_cmap('stereohi{det!s}'.format(det=self.detector[-1]))
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.25)))

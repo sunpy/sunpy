@@ -39,11 +39,11 @@ class NOAAIndicesLightCurve(LightCurve):
 
     References
     ----------
-    * `Solar and Geomagnetic Indices Data Archive <http://legacy-www.swpc.noaa.gov/Data/index.html#indices>`_
+    * `Solar and Geomagnetic Indices Data Archive <https://www.swpc.noaa.gov/products-and-data>`_
     * `Recent solar indices <ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt>`_
     * `Indices Descriptions <ftp://ftp.swpc.noaa.gov/pub/weekly/README3>`_
-    * `NOAA plots of Solar Cycle Progression <http://www.swpc.noaa.gov/products/solar-cycle-progression>`_
-    * `NOAA Product List <http://www.swpc.noaa.gov/products-and-data>`_
+    * `NOAA plots of Solar Cycle Progression <https://www.swpc.noaa.gov/products/solar-cycle-progression>`_
+    * `NOAA Product List <https://www.swpc.noaa.gov/products-and-data>`_
 
 
     """
@@ -153,10 +153,10 @@ class NOAAPredictIndicesLightCurve(LightCurve):
 
     References
     ----------
-    * `Solar and Geomagnetic Indices Data Archive <http://legacy-www.swpc.noaa.gov/Data/index.html#indices>`_
+    * `Solar and Geomagnetic Indices Data Archive <https://www.swpc.noaa.gov/products-and-data>`_
     * `Predicted solar indices <http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt>`_
-    * `NOAA plots of Solar Cycle Progression <http://www.swpc.noaa.gov/products/solar-cycle-progression>`_
-    * `NOAA Product List <http://www.swpc.noaa.gov/products-and-data>`_
+    * `NOAA plots of Solar Cycle Progression <https://www.swpc.noaa.gov/products/solar-cycle-progression>`_
+    * `NOAA Product List <https://www.swpc.noaa.gov/products-and-data>`_
 
     """
 
