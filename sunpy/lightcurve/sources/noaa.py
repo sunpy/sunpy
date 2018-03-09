@@ -66,12 +66,6 @@ class NOAAIndicesLightCurve(LightCurve):
 
         **plot_args : dict
             Any additional plot arguments that should be used when plotting.
-
-        Returns
-        -------
-        fig : ~matplotlib.Figure
-            A plot figure.
-
         """
 
         figure = plt.figure()
@@ -106,7 +100,6 @@ class NOAAIndicesLightCurve(LightCurve):
         axes.legend()
 
         figure.show()
-        return figure
 
     @classmethod
     def _get_default_uri(cls):
@@ -184,12 +177,6 @@ class NOAAPredictIndicesLightCurve(LightCurve):
         ----------
         **plot_args : dict
             Any additional plot arguments that should be used when plotting.
-
-        Returns
-        -------
-        fig : `~matplotlib.Figure`
-            A plot figure.
-
         """
 
         figure = plt.figure()
@@ -209,7 +196,6 @@ class NOAAPredictIndicesLightCurve(LightCurve):
         axes.legend()
 
         figure.show()
-        return figure
 
     @classmethod
     def _get_default_uri(cls):

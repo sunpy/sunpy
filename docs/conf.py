@@ -29,10 +29,15 @@ import os
 import datetime
 import sys
 
-ON_RTD = os.environ.get('READTHEDOCS') == 'True'
+try:
+    from sphinx_astropy.conf.v1 import *
+except ImportError:
+    print('ERROR: the documentation requires the sphinx-astropy package to be installed')
+    sys.exit(1)
+
 ON_TRAVIS = os.environ.get('TRAVIS') == 'true'
 
-if ON_RTD:
+if on_rtd:
     os.environ['SUNPY_CONFIGDIR'] = '/home/docs/'
     os.environ['HOME'] = '/home/docs/'
     os.environ['LANG'] = 'C'
@@ -44,20 +49,6 @@ except ImportError:
     raise ImportError('suds could not be imported, please install the '
                       '"suds-jerko" package and try again')
 
-try:
-    import astropy_helpers
-except ImportError:
-    # Building from inside the docs directory?
-    if os.path.basename(os.getcwd()) == 'docs':
-        a_h_path = os.path.abspath(os.path.join('..', 'astropy_helpers'))
-        if os.path.isdir(a_h_path):
-            sys.path.insert(1, a_h_path)
-
-    # If that doesn't work trying to import from astropy_helpers below will
-    # still blow up
-
-    # Load all of the global Astropy configuration
-from astropy_helpers.sphinx.conf import *
 from sunpy.extern import six
 import sunpy
 
@@ -87,7 +78,6 @@ check_sphinx_version(needs_sphinx)
 
 # add any custom intersphinx for sunpy
 intersphinx_mapping.pop('h5py', None)
-intersphinx_mapping['astropy'] = ('http://docs.astropy.org/en/stable/', None)
 intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/latest/', None)
 intersphinx_mapping['pandas'] = ('http://pandas.pydata.org/pandas-docs/stable/', None)
 intersphinx_mapping['skimage'] = ('http://scikit-image.org/docs/stable/', None)
@@ -170,6 +160,8 @@ latex_documents = [('index', project + '.tex', project + u' Documentation', auth
 man_pages = [('index', project.lower(), project + u' Documentation', [author], 1)]
 
 # -- Swap to Napoleon ---------------------------------------------------------
+# Remove numpydoc
+extensions.remove('numpydoc')
 extensions.append('sphinx.ext.napoleon')
 
 # Disable having a separate return type row
@@ -177,16 +169,9 @@ napoleon_use_rtype = False
 # Disable google style docstrings
 napoleon_google_docstring = False
 
-# -- Options for the edit_on_github extension ----------------------------------------
-extensions.remove('astropy_helpers.extern.numpydoc')
-extensions.append('sphinx.ext.napoleon')
+extensions += ['sphinx_astropy.ext.edit_on_github', 'sphinx.ext.doctest', 'sphinx.ext.githubpages']
 
-# Disable having a separate return type row
-napoleon_use_rtype = False
-# Disable google style docstrings
-napoleon_google_docstring = False
-extensions += ['astropy_helpers.sphinx.ext.edit_on_github', 'sphinx.ext.doctest', 'sphinx.ext.githubpages']
-
+# -- Options for the edit_on_github extension
 # Don't import the module as "version" or it will override the
 # "version" configuration parameter
 from sunpy import version as versionmod
@@ -204,7 +189,7 @@ github_issues_url = 'https://github.com/sunpy/sunpy/issues/'
 
 # -- Options for the Sphinx gallery -------------------------------------------
 
-if ON_RTD and os.environ.get('READTHEDOCS_PROJECT').lower() != 'sunpy':
+if on_rtd and os.environ.get('READTHEDOCS_PROJECT').lower() != 'sunpy':
     def setup(app):
         app.warn('The gallery build takes too long on RTD, so the '
                  'gallery will not be built.  You will probably see '

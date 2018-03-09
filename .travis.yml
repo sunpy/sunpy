@@ -24,13 +24,7 @@ cache:
   directories:
   - $HOME/sunpy/data
 
-python:
-    - 2.7
-    - 3.5
-    - 3.6
-
 # Configure the build environment. Global varibles are defined for all configurations.
-
 env:
     global:
         - COLUMNS=180
@@ -41,12 +35,9 @@ env:
         - SETUP_CMD='test --coverage'
         - CONDA_CHANNELS='sunpy'
         - CONDA_DEPENDENCIES='openjpeg Cython jinja2 scipy matplotlib mock requests beautifulsoup4 sqlalchemy scikit-image pytest-mock lxml pyyaml pandas nomkl pytest-astropy suds-jurko glymur'
-        - PIP_DEPENDENCIES='git+https://github.com/sphinx-gallery/sphinx-gallery pytest-sugar pytest-rerunfailures pytest-cov sunpy-sphinx-theme hypothesis'
+        - PIP_DEPENDENCIES='git+https://github.com/sphinx-gallery/sphinx-gallery sphinx-astropy pytest-sugar pytest-rerunfailures pytest-cov sunpy-sphinx-theme hypothesis'
         - EVENT_TYPE='push pull_request cron'
-
-
-    matrix:
-        - SETUP_CMD='egg_info'
+        - MPLBACKEND='agg'
 
 stages:
    # Do the install jobs and one offline test, it will not proceed if any fail
@@ -72,14 +63,14 @@ matrix:
         # Comprehensive tests below this line
          - python: 3.6
            stage: Comprehensive tests
-           # Run this with pytest because our `setup.py` runner does not
-           # currently pick up doctests in docs/
-           env: MAIN_CMD="py.test"
-                SETUP_CMD="--remote-data -k-figure --cov --cov-config sunpy/tests/coveragerc ./"
+           env: SETUP_CMD="test --online-only --coverage"
 
          - python: 3.6
            stage: Comprehensive tests
-           env: SETUP_CMD='build_docs -w'
+           # Run this with pytest because our `setup.py` runner does not
+           # currently pick up doctests in docs/
+           env: MAIN_CMD="py.test"
+                SETUP_CMD="--remote-data -k-figure --cov --cov-config sunpy/tests/coveragerc ./docs/"
 
          # Python 2.7 (implicit astropy 2)
          - python: 2.7
@@ -144,7 +135,7 @@ install:
 before_script:
     # Download the sample data for the build of the documentation.
     - if [[ $SETUP_CMD != *egg_info* ]]; then python -m "sunpy.data.sample"; fi
-    - if [[ $MAIN_CMD == py.test* ]]; then python setup.py build; fi
+    - if [[ $MAIN_CMD == py.test* ]]; then pip install -e ./; fi
     - if [[ $SETUP_CMD == *--figure* ]]; then conda env create --file sunpy/tests/figure_tests_env_$PYTHON_VERSION.yml; source activate sunpy-figure-tests-$PYTHON_VERSION; fi
 
 script:

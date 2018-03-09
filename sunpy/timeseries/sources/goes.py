@@ -72,11 +72,6 @@ class XRSTimeSeries(GenericTimeSeries):
 
         **kwargs : `dict`
             Any additional plot arguments that should be used when plotting.
-
-        Returns
-        -------
-        fig : `~matplotlib.Figure`
-            A plot figure.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
@@ -114,8 +109,6 @@ class XRSTimeSeries(GenericTimeSeries):
         axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
         figure.autofmt_xdate()
         figure.show()
-
-        return figure
 
     # ToDo: is this part of the DL pipeline? If so delete.
     @classmethod
