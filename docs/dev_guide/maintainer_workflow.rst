@@ -21,7 +21,7 @@ The second option should only be used on complex pull requests.
 Using Milestones and Labels
 ===========================
 
-These guidelines are adapted from `similar guidelines <http://docs.astropy.org/en/stable/development/workflow/maintainer_workflow.html#using-milestones-and-labels>`_ followed by AstroPy:
+These guidelines are adapted from `similar guidelines <http://docs.astropy.org/en/stable/development/workflow/maintainer_workflow.html#using-milestones-and-labels>`_ followed by Astropy:
 
 * All open pull requests should have a milestone.
 

@@ -8,11 +8,11 @@ Fundamental Components of a Pull Request
 
 Each pull request *must* meet the following criteria before it is considered for merge:
 
--  The code must be PEP 8 compliant and meet the ill-defined SunPy quality standards.
+*  The code must be PEP 8 compliant and meet the ill-defined SunPy quality standards.
    We have these in the :ref:`coding-standards` page.
--  The PR must contain a CHANGELOG entry if it changes the behavior of any code.
--  The test coverage **ABSOLUTELY** must not decrease, and for new features should be at or very close to 100%.
--  All code must be properly documented.
+*  The PR must contain a CHANGELOG entry if it changes the behavior of any code.
+*  The test coverage should not decrease, and for new features should be at or very close to 100%.
+*  All code must be properly documented.
    Each function and each class must have an associated documentation string in the correct format.
 
 Review Process
@@ -20,9 +20,9 @@ Review Process
 
 Before the ‘merge’ button is clicked the following criteria must be met:
 
--  All the builds pass (currently Travis, Appveyor and Coveralls).
--  At least two members (not the author of the PR) of the sunpy-developers group have approved the PR.
--  All comments posted on the thread must be resolved.
+*  All the continuous integration pass unless there is a known issue.
+*  At least two members (not the author of the PR) of the sunpy-developers group have approved the PR.
+*  All comments posted on the thread must be resolved.
 
 It is important that approval for merging the PR is done on the comment thread, as this becomes part of the ‘permanent record’, this includes in during community meetings or in chat.
 
