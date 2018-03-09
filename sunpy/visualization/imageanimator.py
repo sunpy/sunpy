@@ -783,18 +783,26 @@ class LineAnimator(ArrayAnimator):
     fig: `matplotlib.figure`
         Figure to use
 
-    axis_ranges: `list` of physical coordinates for array or None
-        If None array indices will be used for all axes.
-        X-axis values must be supplied (if desired) as an array in the
-        element of axis_ranges corresponding to the plot_axis_index in the
-        data input arg, i.e. xdata = axis_ranges[plot_axis_index].
-        Also, the number of x-axis values must correspond to the number
-        of y-axis values, i.e. len(axis_ranges[plot_axis_index]) must equal
-        len(data[plot_axis_index]).
-        For the slider axes a [min, max] pair can be specified or an array the
-        same length as the axis which will provide all values for that slider.
-        If None is specified for an axis then the array indices will be used
-        for that axis.
+    axis_ranges: `list` of physical coordinates or None
+        Each element of axis_ranges provides an array of physical coordinates for the
+        corresponding dimension of the data array.  If an element is None, array indices will be
+        used for that axis.  If axis_range itself is None, array indices will be used for all axes.
+        X-axis values must be supplied (if desired) as an array in the element of
+        axis_ranges corresponding to the plot_axis_index in the data array,
+        i.e. x_axis_values == axis_ranges[plot_axis_index].
+        The shape of x-axis values can take two forms.  First, it can correspond to
+        the length of the data array along the dimension corresponding to the x-axis,
+        i.e. len(axis_ranges[plot_axis_index]) == len(data[plot_axis_index]).
+        In this scenario the same x-axis values are used in every frame of the animation.
+        The second option is that the x-axis array has the same shape as the data array.
+        In this scenario the x-axis is refreshed for each frame. For example,
+        if the data.shape == axis_ranges[plot_axis_index] == (4, 3), where
+        plot_axis_index == 0, the 0th frame of the animation will show data
+        from data[:, 0] with the x-axis described by axis_ranges[plot_axis_index][:, 0],
+        while the 1st frame will show data from data[:, 1] with the x-axis described by
+        axis_ranges[plot_axis_index][:, 1].
+        For the slider axes the axis range is an array of the same length as the dimension of the
+        data array corresponding to that slider.
 
     xlabel: `str`
         Label of x-axis of plot.
