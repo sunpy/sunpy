@@ -12,10 +12,9 @@ import posixpath
 import re
 import socket
 from datetime import datetime, timedelta
-
-import numpy as np
 from dateutil.rrule import rrule, MONTHLY
 
+import numpy as np
 from astropy import units as u
 
 from sunpy.time import TimeRange, parse_time
@@ -25,7 +24,6 @@ import sunpy.map
 import sunpy.io
 from sunpy.util import deprecated
 
-from sunpy.extern.six.moves import urllib
 from sunpy.extern.six.moves.urllib.request import urlopen, urlretrieve
 from sunpy.extern.six.moves.urllib.error import URLError
 
@@ -193,17 +191,16 @@ def get_observing_summary_filename(time_range):
     ['https://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20110404_042.fits',
      'https://hesperia.gsfc.nasa.gov/hessidata/metadata/catalog/hsi_obssumm_20110405_031.fits']
     """
-    time_range = TimeRange(time_range)
+    dt = TimeRange(time_range)
     # remove time from dates
-    time_range = TimeRange(time_range.start.strftime('%Y/%m/%d'),
-                           time_range.end.strftime('%Y/%m/%d'))
+    dt = TimeRange(dt.start.date(), dt.end.date())
 
     filenames = []
 
-    diff_months = (time_range.end.year - time_range.start.year) * 12 +\
-                   time_range.end.month - time_range.start.month
-    first_month = parse_time(time_range.start.strftime('%Y/%m/01'))
-    month_list = list(rrule(MONTHLY, dtstart=first_month, count=diff_months+1))
+    diff_months = (dt.end.year - dt.start.year) * 12 +\
+                   dt.end.month - dt.start.month
+    first_month = datetime(dt.start.year, dt.start.month, 1)
+    month_list = rrule(MONTHLY, dtstart=first_month, count=diff_months+1)
 
     # need to download and inspect the dbase file to determine the filename
     # for the observing summary data
@@ -214,7 +211,7 @@ def get_observing_summary_filename(time_range):
         this_month_obssumm_filenames = dbase_dat.get('filename')
         daily_filenames_dates = [datetime.strptime(d[0:20], 'hsi_obssumm_%Y%m%d') for d in this_month_obssumm_filenames]
         for i, this_date in enumerate(daily_filenames_dates):
-            if this_date >= time_range.start and this_date <= time_range.end:
+            if dt.start <= this_date <= dt.end:
                 filenames.append(posixpath.join(get_base_url(), 'metadata', 'catalog', this_month_obssumm_filenames[i] + 's'))
 
     return filenames
