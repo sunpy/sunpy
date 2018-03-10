@@ -8,4 +8,4 @@ glymur==0.8.14
 suds-jurko==0.6
 beautifulsoup4==4.6.0
 requests==2.18.4
-python-dateutil
+python-dateutil==2.6.1
