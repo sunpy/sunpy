@@ -3,7 +3,7 @@
 -r base.txt
 
 sqlalchemy==1.2.5
-scikit-image
+scikit-image==0.13.1
 glymur
 suds-jurko
 beautifulsoup4
