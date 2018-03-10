@@ -86,7 +86,7 @@ def get_obssumm_dbase_file(time_range):
 
     References
     ----------
-    | https://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm Summary Data
+    | https://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing%20Summary%20Data
 
     .. note::
         This API is currently limited to providing data from whole days only.
@@ -129,7 +129,7 @@ def parse_obssumm_dbase_file(filename):
 
     References
     ----------
-    | https://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm Summary Data
+    | https://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm#Observing%20Summary%20Data
 
     .. note::
         This API is currently limited to providing data from whole days only.
