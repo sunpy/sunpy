@@ -9,4 +9,4 @@ pytest==3.4.2
 pytest-cov==2.5.1
 pytest-mock==1.7.1
 pytest-rerunfailures==4.0
-pytest-astropy
+pytest-astropy==0.2.1
