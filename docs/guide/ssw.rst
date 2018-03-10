@@ -2,7 +2,7 @@
 SSWIDL/SunPy Cheat Sheet
 ========================
 
-`SolarSoft (SSWIDL) <https://sohowww.nascom.nasa.gov//solarsoft/>`_ is a  
+`SolarSoft (SSWIDL) <https://sohowww.nascom.nasa.gov/solarsoft/>`_ is a
 popular IDL software library for solar data analysis, and in fact, many parts 
 of SunPy are inspired by data structures and functions in SSWIDL. Though IDL and Python are very different it sometimes helps to consider how to translate
 simple tasks between the two languages. The primary packages which provide much of the functionality for scientific data analysis in Python are NumPy and SciPy. In the following we assume that those packages are available to you and that you are imported Numpy is imported as np with the following import statement::

@@ -52,7 +52,7 @@ class EUVIMap(GenericMap):
 
         References
         ----------
-        https://sohowww.nascom.nasa.gov//solarsoft/stereo/secchi/doc/FITS_keywords.pdf
+        https://sohowww.nascom.nasa.gov/solarsoft/stereo/secchi/doc/FITS_keywords.pdf
         """
         return self.meta.get('rsun', None)
 
