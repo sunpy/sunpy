@@ -3,10 +3,10 @@
 -r base.txt
 -r extra.txt
 
-hypothesis
-mock
-pytest
-pytest-cov
-pytest-mock
-pytest-rerunfailures
-pytest-astropy
+hypothesis==3.48.1
+mock==2.0.0
+pytest==3.4.2
+pytest-cov==2.5.1
+pytest-mock==1.7.1
+pytest-rerunfailures==4.0
+pytest-astropy==0.2.1

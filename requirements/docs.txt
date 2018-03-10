@@ -4,7 +4,7 @@
 -r dev.txt
 -r extra.txt
 
-sphinx
-sunpy-sphinx-theme
+sphinx==1.7.1
+sunpy-sphinx-theme==1.0.7
 git+https://github.com/sphinx-gallery/sphinx-gallery
-sphinx-astropy
+sphinx-astropy==1.0

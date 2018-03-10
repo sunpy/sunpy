@@ -2,10 +2,10 @@
 
 -r base.txt
 
-sqlalchemy
-scikit-image
-glymur
-suds-jurko
-beautifulsoup4
-requests
-python-dateutil
+sqlalchemy==1.2.5
+scikit-image==0.13.1
+glymur==0.8.14
+suds-jurko==0.6
+beautifulsoup4==4.6.0
+requests==2.18.4
+python-dateutil==2.6.1
