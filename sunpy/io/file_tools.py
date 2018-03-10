@@ -208,8 +208,8 @@ def _detect_filetype(filepath):
     # Checks for one of two signatures found at beginning of all JP2 files.
     # Adapted from ExifTool
     # [1] http://www.sno.phy.queensu.ca/~phil/exiftool/
-    # [2] http://www.jpeg.org/public/fcd15444-2.pdf
-    # [3] ftp://ftp.remotesensing.org/jpeg2000/fcd15444-1.pdf
+    # [2] http://www.hlevkin.com/Standards/fcd15444-2.pdf
+    # [3] http://www.hlevkin.com/Standards/fcd15444-1.pdf
     jp2_signatures = [b"\x00\x00\x00\x0cjP  \x0d\x0a\x87\x0a",
                       b"\x00\x00\x00\x0cjP\x1a\x1a\x0d\x0a\x87\x0a"]
 

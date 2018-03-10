@@ -166,7 +166,7 @@ class MDIMap(GenericMap):
     * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
     * `SOHO MDI Instrument Page <http://soi.stanford.edu>`_
     * `SOHO MDI Fits Header keywords <http://soi.stanford.edu/sssc/doc/keywords.html>`_
-    * `SOHO MDI Instrument Paper <http://soi.stanford.edu/sssc/doc/SP_paper_1995/MDI_SP_paper_1995.pdf>`_
+    * `SOHO MDI Instrument Paper <https://doi.org/10.1007/978-94-009-0191-9_5>`_
     """
 
     def __init__(self, data, header, **kwargs):
