@@ -447,7 +447,6 @@ class GenericTimeSeries:
 
         warnings.simplefilter('always', Warning)
 
-        #
         for meta_property in ('cunit1', 'cunit2', 'waveunit'):
             if (self.meta.get(meta_property) and
                 u.Unit(self.meta.get(meta_property),
@@ -524,35 +523,6 @@ class GenericTimeSeries:
         # Remove non-existant columns
         redundant_cols = list(set(self.meta.columns) - set(self.columns))
         self.meta._remove_columns(redundant_cols)
-
-    def power_spectra(self, fs = 1):
-        """
-        Estimate power spectral density of the TimeSeries
-
-        Parameter
-        ----------
-        fs : `float, optional`
-            Sampling frequency of the time series in units of Hz.
-            Defaults to 1.0.
-
-        Returns
-        -------
-        Freqs : array of arrays
-            Array of sample frequencies for all the columns in the TimeSeries.
-
-        Spectra : array of arrays
-            Power spectral density or power spectrum of all the columns in
-            the TimeSeries.
-        """
-        Freqs = []
-        Spectra = []
-        for col in self.columns:
-            data_ = self.data[col]
-            freq, spectra = signal.periodogram(data_, fs)
-            Freqs.append(freq)
-            Spectra.append(spectra)
-
-        return Freqs, Spectra
 
 # #### Export/Output Methods #### #
 
