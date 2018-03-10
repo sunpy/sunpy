@@ -14,7 +14,6 @@ import copy
 
 import matplotlib.pyplot as plt
 import pandas as pd
-from scipy import signal
 
 from sunpy import config
 from sunpy.time import TimeRange
