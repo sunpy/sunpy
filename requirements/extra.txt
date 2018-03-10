@@ -5,7 +5,7 @@
 sqlalchemy==1.2.5
 scikit-image==0.13.1
 glymur==0.8.14
-suds-jurko
+suds-jurko==0.6
 beautifulsoup4
 requests
 python-dateutil
