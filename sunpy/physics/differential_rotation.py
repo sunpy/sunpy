@@ -50,7 +50,7 @@ def diff_rot(duration, latitude, rot_type='howard', frame_time='sidereal'):
 
     * `IDL code equivalent <https://hesperia.gsfc.nasa.gov/ssw/gen/idl/solar/diff_rot.pro>`__
     * `Howard rotation <http://adsabs.harvard.edu/abs/1990SoPh..130..295H>`__
-    * `A review of rotation parameters (including Snodgrass values) <https://link.springer.com/article/10.1023%2FA%3A1005226402796>`__
+    * `A review of rotation parameters (including Snodgrass values) <https://doi.org/10.1023/A:1005226402796>`__
 
     Examples
     --------
