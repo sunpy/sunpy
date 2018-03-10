@@ -4,7 +4,7 @@
 -r extra.txt
 
 hypothesis==3.48.1
-mock
+mock==2.0.0
 pytest
 pytest-cov
 pytest-mock
