@@ -4,6 +4,8 @@ Find Peaks in SunPy TimeSeries
 ==============================
 
 This example illustrates how to find minimum or maximum peaks in a TimeSeries.
+Note: Peak finding is a complex problem that has many potential solutions and
+this example is just one method of many.
 """
 
 ##############################################################################
@@ -16,63 +18,63 @@ import sunpy.data.sample
 from sunpy.timeseries import TimeSeries
 
 ##############################################################################
-# We will now create a TimeSeries object from an observational data source and 
-# do analysis on its truncated version.
+# We will now create a TimeSeries object from an observational data source,
+# Also, we will truncate it to do analysis on a smaller time duration of 10
+# years.
 
 ts_noaa_ind = sunpy.timeseries.TimeSeries(
     sunpy.data.sample.NOAAINDICES_TIMESERIES, source='NOAAIndices')
-my_timeseries = ts_noaa_ind.truncate(0,100)
+my_timeseries = ts_noaa_ind.truncate('1991/01/01', '2001/01/01')
 my_timeseries.peek()
 
 ##############################################################################
 # Now we take the column 'sunspot SWO' of this TimeSeries and try to find it's
-# peaks. For peak finding, we first decide a DELTA value which controls how
-# much difference between values in the TimeSeries defines a peak. Then we
-# iterate over the data values and consider a point to be a maximum peak if it
-# has the maximal value, and was preceded (to the left) by a value lower by 
-# DELTA. Similar logic applies to find the minimum valued peaks.
+# extrema. To do this, we first decide a DELTA value which controls how much
+# difference between values in the TimeSeries defines an extremum point. Then
+# we iterate over the data values and consider a point to be a local maxima if
+# it has the maximal value, and was preceded (to the left) by a value lower by
+# DELTA. Similar logic applies to find a local minima.
 
 series = my_timeseries.data['sunspot SWO']
+# We take delta to be approximately the length of smallest peak that we wish
+# to detect
 DELTA = 10
 # Set inital values
 mn, mx = np.Inf, -np.Inf
-minpos, maxpos = np.NaN, np.NaN
 minpeaks = []
 maxpeaks = []
 lookformax = True
-# Iterate over data values
-for i in np.arange(len(series)):
-    this = series[i]
+# Iterate over items in series
+for time_pos, value in series.iteritems():
+    this = value
     if this > mx:
         mx = this
-        mxpos = series.index[i]
+        mxpos = time_pos
     if this < mn:
         mn = this
-        mnpos = series.index[i]
+        mnpos = time_pos
     if lookformax:
         if this < mx-DELTA:
-        	# a local maxima peak
+            # a local maxima
             maxpeaks.append((mxpos, mx))
             mn = this
-            mnpos = series.index[i]
+            mnpos = time_pos
             lookformax = False
     else:
         if this > mn+DELTA:
-        	# a local minima peak
+            # a local minima
             minpeaks.append((mnpos, mn))
             mx = this
-            mxpos = series.index[i]
+            mxpos = time_pos
             lookformax = True
-# Plotting the figure and peaks
-plt.figure(2)
-fontsize = 14
-plt.ylabel(r'Sunspot Number')
-plt.xlabel(r'Time')
-plt.title(r'Peaks in TimeSeries')
-plt.tight_layout()
-series.plot(legend=True)
-plt.scatter(np.array(minpeaks)[:,0],np.array(minpeaks)[:,1],color='red', label='min')
-plt.scatter(np.array(maxpeaks)[:,0],np.array(maxpeaks)[:,1],color='green', label='max')
+# Plotting the figure and extremum points
+plt.figure()
+plt.ylabel('Sunspot Number')
+plt.xlabel('Time')
+plt.title('Peaks in TimeSeries')
+series.plot()
+plt.scatter(*zip(*minpeaks), color='red', label='min')
+plt.scatter(*zip(*maxpeaks), color='green', label='max')
 plt.legend()
 plt.grid(True)
 plt.show()
