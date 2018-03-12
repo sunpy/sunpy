@@ -9,7 +9,7 @@ pip-run: &pip-install
   command: |
     python3 -m venv venv
     . venv/bin/activate
-    pip install -r requirements/docs.txt
+    pip install -q -r requirements/docs.txt
 
 version: 2
 jobs:
@@ -35,16 +35,13 @@ jobs:
       - run: python setup.py egg_info
 
   html-docs:
-    environment:
-      - MAIN_CMD: "venv/bin/python setup.py"
-      - SETUP_CMD: "build_docs -w"
     docker:
       - image: circleci/python:3.6
     steps:
       - checkout
       - run: *apt-install
       - run: *pip-install
-      - run: $MAIN_CMD $SETUP_CMD
+      - run: venv/bin/python setup.py build_docs -w 2> /dev/null
 
       - store_artifacts:
           path: docs/_build/html
