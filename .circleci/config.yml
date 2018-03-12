@@ -38,6 +38,9 @@ jobs:
     docker:
       - image: circleci/python:3.6
     steps:
+      - restore_cache:
+          keys: sample-data-v1
+
       - checkout
       - run: *apt-install
       - run: *pip-install
@@ -49,6 +52,11 @@ jobs:
       - run:
           name: "Built documentation is available at:"
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/docs/_build/html/index.html"; echo $DOCS_URL
+
+      - save_cache:
+          key: sample-data-v1
+          paths:
+            - ~/sunpy/data/sample_data
 
 
 workflows:
