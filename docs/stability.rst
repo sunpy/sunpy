@@ -312,3 +312,6 @@ The current planned and existing sub-packages are:
             </td>
         </tr>
     </table>
+
+
+Taken with love from the `Astropy project <https://github.com/astropy/astropy/blob/master/LICENSE.rst>`_
