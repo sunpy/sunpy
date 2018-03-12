@@ -8,4 +8,4 @@ glymur
 suds-jurko
 beautifulsoup4
 requests
-python-dateutil
+python-dateutil==2.7.0
