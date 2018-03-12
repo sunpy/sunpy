@@ -899,12 +899,12 @@ class LineAnimator(ArrayAnimator):
         """Updates plot based on slider/array dimension being iterated."""
         val = int(val)
         ax_ind = self.slider_axes[slider.slider_ind]
-        ind = np.argmin(np.abs(self.axis_ranges[ax_ind] - val))
+        ind = int(np.argmin(np.abs(self.axis_ranges[ax_ind] - val)))
         self.frame_slice[ax_ind] = ind
         if val != slider.cval:
             line.set_ydata(self.data[self.frame_index])
             if self.xdata.shape == self.data.shape:
-                item = [slid._slider.val for slid in self.sliders]
+                item = [int(slid._slider.val) for slid in self.sliders]
                 item[ax_ind] = val
                 if self.plot_axis_index < 0:
                     i = self.data.ndim + self.plot_axis_index
