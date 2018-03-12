@@ -6,6 +6,6 @@ sqlalchemy
 scikit-image
 glymur
 suds-jurko
-beautifulsoup4
+beautifulsoup4==4.6.0
 requests
 python-dateutil
