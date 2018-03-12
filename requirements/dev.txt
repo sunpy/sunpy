@@ -3,7 +3,7 @@
 -r base.txt
 -r extra.txt
 
-hypothesis
+hypothesis==3.49.0
 mock
 pytest
 pytest-cov
