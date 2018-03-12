@@ -847,19 +847,20 @@ class LineAnimator(ArrayAnimator):
             raise ValueError("data must have at least two dimensions.  One for data "
                              "for each single plot and at least one for time/iteration.")
         # Ensure axis_ranges are input correctly.
-        if axis_ranges[self.plot_axis_index] is not None:
-            if (len(axis_ranges[self.plot_axis_index]) != data.shape[self.plot_axis_index] and
-                    axis_ranges[self.plot_axis_index].shape != data.shape):
-                raise ValueError("The plot_axis_index axis range must be specified as None "
-                                 "a 1D array of same length as plot_axis_index axis, "
-                                 "or an array of same shape as data.")
+        if axis_ranges is not None:
+            if axis_ranges[self.plot_axis_index] is not None:
+                if (len(axis_ranges[self.plot_axis_index]) != data.shape[self.plot_axis_index] and
+                        axis_ranges[self.plot_axis_index].shape != data.shape):
+                    raise ValueError("The plot_axis_index axis range must be specified as None "
+                                     "a 1D array of same length as plot_axis_index axis, "
+                                     "or an array of same shape as data.")
         # Define number of slider axes.
         self.naxis = data.ndim
         self.num_sliders = self.naxis-1
         # Attach data to class.
         if axis_ranges is not None and all(axis_range is None for axis_range in axis_ranges):
             axis_ranges = None
-        if axis_ranges[self.plot_axis_index] is None:
+        if axis_ranges is None or axis_ranges[self.plot_axis_index] is None:
             self.xdata = np.arange(data.shape[self.plot_axis_index])
         else:
             self.xdata = np.asarray(axis_ranges[self.plot_axis_index])
