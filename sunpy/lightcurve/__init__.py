@@ -9,6 +9,14 @@ from __future__ import absolute_import
 __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
+import warnings
+from sunpy.util.exceptions import SunpyDeprecationWarning
+
+warnings.warn("As of v0.8.0, the `sunpy.lightcurve` module is deprecated and will be "
+              "removed in a future version. Use `sunpy.timeseries` or "
+              "`sunpy.map` for coordinate transformations.",
+              SunpyDeprecationWarning)
+
 from sunpy.lightcurve.lightcurve import LightCurve
 from sunpy.lightcurve.sources.eve import *
 from sunpy.lightcurve.sources.goes import *

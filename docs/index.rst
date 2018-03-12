@@ -14,5 +14,4 @@ We have a documentation :any:`index <genindex>` and a :any:`module <modindex>` l
   generated/gallery/index
   dev_guide/index
   whatsnew/index
-  stability
   coc
