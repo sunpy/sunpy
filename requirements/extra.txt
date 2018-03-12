@@ -2,7 +2,7 @@
 
 -r base.txt
 
-sqlalchemy
+sqlalchemy==1.2.5
 scikit-image
 glymur
 suds-jurko
