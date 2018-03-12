@@ -8,5 +8,5 @@ mock
 pytest
 pytest-cov
 pytest-mock
-pytest-rerunfailures
+pytest-rerunfailures==4.0
 pytest-astropy
