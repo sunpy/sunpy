@@ -815,23 +815,27 @@ class LineAnimator(ArrayAnimator):
     Notes
     -----
     Additional information on API of axes_ranges kwarg.
+
     #. X-axis values must be supplied (if desired) as an array in the element of
-    the axis_ranges list corresponding to the plot_axis_index in the data array, i.e.
-    ``x_axis_values == axis_ranges[plot_axis_index]``
+       the axis_ranges list corresponding to the plot_axis_index in the data array, i.e.
+       ``x_axis_values == axis_ranges[plot_axis_index]``
+
     #. The shape of the x-axis values array can take two forms.
-        * First, it can equal the the length of the data array along the dimension
-        corresponding to the x-axis, i.e.
-        ``len(axis_ranges[plot_axis_index]) == len(data[plot_axis_index])``
-        In this scenario the same x-axis values are used in every frame of the animation.
-        * Second, the x-axis array can have the same shape as the data array.
-        In this scenario the x-axis is refreshed for each frame. For example, if
-        ``data.shape == axis_ranges[plot_axis_index] == (4, 3)``,
-        where ``plot_axis_index == 0``, the 0th frame of the animation will show data from
-        ``data[:, 0]`` with the x-axis described by ``axis_ranges[plot_axis_index][:, 0]``,
-        while the 1st frame will show data from ``data[:, 1]`` with the x-axis described by
-        ``axis_ranges[plot_axis_index][:, 1]``.
+
+       a) First, it can equal the the length of the data array along the dimension
+          corresponding to the x-axis, i.e.
+          ``len(axis_ranges[plot_axis_index]) == len(data[plot_axis_index])``
+          In this scenario the same x-axis values are used in every frame of the animation.
+       b) Second, the x-axis array can have the same shape as the data array.
+          In this scenario the x-axis is refreshed for each frame. For example, if
+          ``data.shape == axis_ranges[plot_axis_index] == (4, 3)``,
+          where ``plot_axis_index == 0``, the 0th frame of the animation will show data from
+          ``data[:, 0]`` with the x-axis described by ``axis_ranges[plot_axis_index][:, 0]``,
+          while the 1st frame will show data from ``data[:, 1]`` with the x-axis described by
+          ``axis_ranges[plot_axis_index][:, 1]``.
+
     #. For the slider axes the axis range is an array of the same length as the dimension of the
-    data array to which that slider corresponds.
+       data array to which that slider corresponds.
 
     """
 
