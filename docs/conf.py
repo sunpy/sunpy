@@ -30,6 +30,9 @@ import datetime
 import sys
 from distutils.version import LooseVersion
 
+
+import ruamel.yaml as yaml
+
 from sphinx import __version__
 SPHINX_LT_17 = LooseVersion(__version__) < LooseVersion('1.7')
 
@@ -50,6 +53,12 @@ try:
 except ImportError:
     print('ERROR: the documentation requires the sphinx-astropy package to be installed')
     sys.exit(1)
+
+try:
+    import sphinx_gallery
+    has_sphinx_gallery = True
+except ImportError:
+    has_sphinx_gallery = False
 
 if on_rtd:
     os.environ['SUNPY_CONFIGDIR'] = '/home/docs/'
@@ -82,17 +91,21 @@ needs_sphinx = '1.5'
 # major.minor, call `check_sphinx_version("x.y.z")` here.
 check_sphinx_version(needs_sphinx)
 
-# The intersphinx_mapping in astropy_helpers.sphinx.conf refers to astropy for
-# the benefit of affiliated packages who want to refer to objects in the
-# astropy core.  However, we don't want to cyclically reference astropy in its
-# own build so we remove it here.
-#del intersphinx_mapping['astropy']
-
 # add any custom intersphinx for sunpy
 intersphinx_mapping.pop('h5py', None)
 intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/latest/', None)
 intersphinx_mapping['pandas'] = ('http://pandas.pydata.org/pandas-docs/stable/', None)
 intersphinx_mapping['skimage'] = ('http://scikit-image.org/docs/stable/', None)
+
+# Load data about stability
+
+with open('./dev_guide/sunpy_stability.yaml', 'r') as estability:
+    sunpy_modules = yaml.load(estability.read(), Loader=yaml.Loader)
+
+html_context = {
+    'sunpy_modules': sunpy_modules
+}
+
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -136,7 +149,6 @@ release = versionmod.version
 
 try:
     from sunpy_sphinx_theme.conf import *
-
     html_sidebars = {'**': ['docsidebar.html']}
 
 except ImportError:
@@ -202,42 +214,50 @@ edit_on_github_skip_regex = '_.*|generated/.*'
 github_issues_url = 'https://github.com/sunpy/sunpy/issues/'
 
 # -- Options for the Sphinx gallery -------------------------------------------
+if has_sphinx_gallery:
+    extensions += ["sphinx_gallery.gen_gallery"]
 
-if on_rtd and os.environ.get('READTHEDOCS_PROJECT').lower() != 'sunpy':
-    def setup(app):
-        app.warn('The gallery build takes too long on RTD, so the '
-                 'gallery will not be built.  You will probably see '
+    sphinx_gallery_conf = {
+        'backreferences_dir':
+        'generated{}modules'.format(os.sep),  # path to store the module using example template
+        'filename_pattern':
+        '^((?!skip_).)*$',  # execute all examples except those that start with "skip_"
+        'examples_dirs': os.path.join('..', 'examples'),  # path to the examples scripts
+        'gallery_dirs': os.path.join('generated',
+                                    'gallery'),  # path to save gallery generated examples
+        'default_thumb_file': os.path.join('.', 'logo', 'sunpy_icon_128x128.png'),
+        'reference_url': {
+            'sunpy': None,
+            'astropy': 'http://docs.astropy.org/en/stable/',
+            'matplotlib': 'https://matplotlib.org/',
+            'numpy': 'http://docs.scipy.org/doc/numpy/',
+        },
+        'abort_on_example_error': True,
+        'plot_gallery': True
+    }
+
+def rstjinja(app, docname, source):
+    """
+    Render our pages as a jinja template for fancy templating goodness.
+    """
+    # Make sure we're outputting HTML
+    if app.builder.format != 'html':
+        return
+    src = source[0]
+    if "Current status" in src[:20]:
+        rendered = app.builder.templates.render_string(
+            src, app.config.html_context
+        )
+        source[0] = rendered
+
+
+def setup(app):
+    if has_sphinx_gallery == False:
+        app.warn('The sphinx_gallery extension is not installed, so the '
+                 'gallery will not be built. You will probably see '
                  'additional warnings about undefined references due '
                  'to this.')
-
-else:
     try:
-        import sphinx_gallery
-        extensions += ["sphinx_gallery.gen_gallery"]
-
-        sphinx_gallery_conf = {
-            'backreferences_dir':
-            'generated{}modules'.format(os.sep),  # path to store the module using example template
-            'filename_pattern':
-            '^((?!skip_).)*$',  # execute all examples except those that start with "skip_"
-            'examples_dirs': os.path.join('..', 'examples'),  # path to the examples scripts
-            'gallery_dirs': os.path.join('generated',
-                                        'gallery'),  # path to save gallery generated examples
-            'default_thumb_file': os.path.join('.', 'logo', 'sunpy_icon_128x128.png'),
-            'reference_url': {
-                'sunpy': None,
-                'astropy': 'http://docs.astropy.org/en/stable/',
-                'matplotlib': 'https://matplotlib.org/',
-                'numpy': 'http://docs.scipy.org/doc/numpy/',
-            },
-            'abort_on_example_error': True,
-            'plot_gallery': True
-        }
-
-    except ImportError:
-
-        def setup(app):
-            app.warn('The sphinx_gallery extension is not installed, so the '
-                    'gallery will not be built.  You will probably see '
-                    'additional warnings about undefined references due '
-                    'to this.')
+        app.connect("source-read", rstjinja)
+    except:
+        pass
