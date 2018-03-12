@@ -6,7 +6,7 @@
 hypothesis
 mock
 pytest
-pytest-cov
+pytest-cov==2.5.1
 pytest-mock
 pytest-rerunfailures
 pytest-astropy
