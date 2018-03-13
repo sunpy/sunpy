@@ -8,7 +8,14 @@ import datetime
 from abc import ABCMeta
 from collections import OrderedDict, namedtuple
 from functools import partial
-import pathlib
+
+# Remove in 1.0
+# Py2 does not have pathlib
+try:
+    import pathlib
+    HAS_PATHLIB = True
+except ImportError:
+    HAS_PATHLIB = False
 
 import numpy as np
 import astropy.table
@@ -346,7 +353,7 @@ class GenericClient(object):
         # Check for type of path
         if isinstance(path, str) or path is None:
             pass
-        elif isinstance(path, pathlib.Path):
+        elif HAS_PATHLIB and isinstance(path, pathlib.Path):
             path = str(path.absolute())
         else:
             err = "path should be either 'pathlib.Path' or 'str'. "\
