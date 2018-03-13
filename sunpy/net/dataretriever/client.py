@@ -333,6 +333,12 @@ class GenericClient(object):
         qres : `~sunpy.net.dataretriever.QueryResponse`
             Results to download.
 
+        path : string or pathlib.Path
+            Path to the download directory
+
+        error_callback : Function
+            Callback function for error during downloads
+
         Returns
         -------
         Results Object
@@ -343,8 +349,8 @@ class GenericClient(object):
         elif isinstance(path, pathlib.Path):
             path = str(path.absolute())
         else:
-            err = 'path should be either pathlib.Path object or str object. '\
-                'Got "{}".'.format(type(path))
+            err = "path should be either 'pathlib.Path' or 'str'. "\
+                "Got '{}'.".format(type(path))
             raise TypeError(err)
 
         urls = [qrblock.url for qrblock in qres]
