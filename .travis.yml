@@ -84,10 +84,18 @@ matrix:
            stage: Comprehensive tests
            env: SETUP_CMD='test --figure --coverage' CONDA_DEPENDENCIES=''
 
+         - python: 2.7
+           stage: Comprehensive tests
+           env: SETUP_CMD='test --figure-only --coverage' CONDA_DEPENDENCIES=''
+
          # Python 3.5 figure tests
          - python: 3.5
            stage: Comprehensive tests
            env: SETUP_CMD='test --figure --coverage' CONDA_DEPENDENCIES=''
+
+         - python: 3.5
+           stage: Comprehensive tests
+           env: SETUP_CMD='test --figure-only --coverage' CONDA_DEPENDENCIES=''
 
          # Python 3.5 with astropy 2
          - python: 3.5
