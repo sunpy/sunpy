@@ -17,8 +17,8 @@ except ImportError:
 
 
 def main(modulename='', coverage=False, cov_report=False,
-         online=False, offline=True, remote_data=False, figure=False, verbose=False,
-         parallel=0, args=None):
+         online=False, offline=True, remote_data=False, figure=False, figure_only=False,
+         verbose=False, parallel=0, args=None):
     """
     Execute the test suite of the sunpy package. The parameters may be
     used to restrict the number of tests that will be executed or to
@@ -81,8 +81,13 @@ def main(modulename='', coverage=False, cov_report=False,
         all_args.append('--remote-data')
     if not offline:
         all_args.append('-k remote_data')
+
+    if figure_only:
+        figure = True
     if not figure:
         all_args.append('-m not figure')
+    if figure_only:
+        all_args.append('-m figure')
 
     # Hardcoded until we update this module
     all_args.append('-p no:warnings')
