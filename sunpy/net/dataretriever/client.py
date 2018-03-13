@@ -8,6 +8,7 @@ import datetime
 from abc import ABCMeta
 from collections import OrderedDict, namedtuple
 from functools import partial
+import pathlib
 
 import numpy as np
 import astropy.table
@@ -336,6 +337,15 @@ class GenericClient(object):
         -------
         Results Object
         """
+        # Check for type of path
+        if isinstance(path, str):
+            pass
+        elif isinstance(path, pathlib.Path):
+            path = str(path.absolute())
+        else:
+            err = 'path should be either pathlib.Path object or str object. '\
+                'Got "{}".'.format(type(path))
+            raise TypeError(err)
 
         urls = [qrblock.url for qrblock in qres]
 
