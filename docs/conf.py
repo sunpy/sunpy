@@ -29,6 +29,19 @@ import os
 import datetime
 import sys
 
+
+# -- Convert Sphinx Warnings to output to stdout not stderr---------------------
+
+import logging
+from sphinx.util.logging import NAMESPACE, WarningStreamHandler, SafeEncodingWriter
+
+sphinxlogger = logging.getLogger(NAMESPACE)
+handlers = sphinxlogger.handlers
+warninghandler = list(filter(lambda x: isinstance(x, WarningStreamHandler), handlers))[0]
+warninghandler.stream = SafeEncodingWriter(stream=sys.stdout)
+
+# -- Import Base config from sphinx-astropy ------------------------------------
+
 try:
     from sphinx_astropy.conf.v1 import *
 except ImportError:
