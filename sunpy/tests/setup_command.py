@@ -38,6 +38,9 @@ class SunPyTest(AstropyTest):
         # Run tests that check figure generation
         ('figure', None,
          'Run tests that compare figures against stored hashes.'),
+        # Run only tests that check figure generation
+        ('figure-only', None,
+         'Only run tests that compare figures against stored hashes.'),
         # Calculate test coverage
         ('coverage', 'c',
          'Create a coverage report. Requires the coverage package.'),
@@ -64,6 +67,7 @@ class SunPyTest(AstropyTest):
         self.online = False
         self.online_only = False
         self.figure = False
+        self.figure_only = False
         self.coverage = False
         self.cov_report = 'term' if self.coverage else None
         self.docs_path = os.path.abspath('docs')
@@ -109,6 +113,7 @@ class SunPyTest(AstropyTest):
                'online={online!r}, '
                'offline={offline!r}, '
                'figure={figure!r}, '
+               'figure_only={figure_only!r}, '
                'cov_report={1.cov_report!r})); '
                '{cmd_post}'
                'sys.exit(result)')
@@ -117,6 +122,7 @@ class SunPyTest(AstropyTest):
                        online=online,
                        offline=offline,
                        figure=self.figure,
+                       figure_only=self.figure_only,
                        cmd_pre=cmd_pre,
                        cmd_post=cmd_post)
         return x
