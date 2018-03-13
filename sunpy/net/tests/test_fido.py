@@ -1,6 +1,7 @@
 import os
 import copy
 import tempfile
+import pathlib
 
 import pytest
 import hypothesis.strategies as st
@@ -93,6 +94,14 @@ def test_save_path():
     with tempfile.TemporaryDirectory() as target_dir:
         qr = Fido.search(a.Instrument('EVE'), a.Time("2016/10/01", "2016/10/02"), a.Level(0))
         files = Fido.fetch(qr, path=os.path.join(target_dir, "{instrument}"+os.path.sep+"{level}"))
+        for f in files:
+            assert target_dir in f
+            assert "eve{}0".format(os.path.sep) in f
+
+    with tempfile.TemporaryDirectory() as target_dir:
+        qr = Fido.search(a.Instrument('EVE'), a.Time("2016/10/01", "2016/10/02"), a.Level(0))
+        path = pathlib.Path(os.path.join(target_dir, "{instrument}"+os.path.sep+"{level}"))
+        files = Fido.fetch(qr, path=path)
         for f in files:
             assert target_dir in f
             assert "eve{}0".format(os.path.sep) in f
