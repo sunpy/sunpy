@@ -338,7 +338,7 @@ class GenericClient(object):
         Results Object
         """
         # Check for type of path
-        if isinstance(path, str):
+        if isinstance(path, str) or path is None:
             pass
         elif isinstance(path, pathlib.Path):
             path = str(path.absolute())
