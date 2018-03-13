@@ -1,4 +1,5 @@
 import datetime
+import pathlib
 import pytest
 
 from sunpy.time import parse_time
@@ -82,6 +83,12 @@ def test_fido(query):
     assert isinstance(client, eve.EVEClient)
     response = Fido.fetch(qr)
     assert len(response) == qr._numfile
+    path1 = '.'
+    response1 = Fido.fetch(qr, path=path1)
+    assert len(response1) == qr._numfile
+    path2 = pathlib.Path('.')
+    response2 = Fido.fetch(qr, path=path2)
+    assert len(response2) == qr._numfile
 
 
 @pytest.mark.remote_data
