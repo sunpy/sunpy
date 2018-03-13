@@ -50,6 +50,9 @@ def main(modulename='', coverage=False, cov_report=False,
     figure: bool
         Include the figure tests in the test run.
 
+    figure_only: bool
+        Include only the figure tests in the test run.
+
     """
     print(modulename)
     if pytest is None:
@@ -81,13 +84,11 @@ def main(modulename='', coverage=False, cov_report=False,
         all_args.append('--remote-data')
     if not offline:
         all_args.append('-k remote_data')
-
     if figure_only:
         figure = True
+        all_args.append('-m figure')
     if not figure:
         all_args.append('-m not figure')
-    if figure_only:
-        all_args.append('-m figure')
 
     # Hardcoded until we update this module
     all_args.append('-p no:warnings')
