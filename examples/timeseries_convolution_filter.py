@@ -33,15 +33,14 @@ ts_noaa_ind = sunpy.timeseries.TimeSeries(
 # elements. Here we will use AstroPy’s convolve function with a “boxcar” kernel
 # of width w = 10.
 
-data = ts_noaa_ind.data['sunspot SWO'].values
-index = ts_noaa_ind.data['sunspot SWO'].index
 # Apply convolution filter
-convolved_data = convolve(data, kernel=Box1DKernel(10))
+ts_noaa_ind.data['sunspot SWO Smoothed'] = convolve(
+	ts_noaa_ind.data['sunspot SWO'].values, kernel=Box1DKernel(10))
 # Plotting original and smoothed timeseries
 plt.ylabel('Sunspot Number')
 plt.xlabel('Time')
 plt.title('Smoothing of Time Series')
-plt.plot(index, data, label='Sunspot SWO')
-plt.plot(index, convolved_data, label='Sunspot SWO Smoothed')
+plt.plot(ts_noaa_ind.data['sunspot SWO'])
+plt.plot(ts_noaa_ind.data['sunspot SWO Smoothed'])
 plt.legend()
 plt.show()

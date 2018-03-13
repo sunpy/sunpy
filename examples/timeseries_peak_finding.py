@@ -44,29 +44,41 @@ mn, mx = np.Inf, -np.Inf
 minpeaks = []
 maxpeaks = []
 lookformax = True
+start = True
 # Iterate over items in series
 for time_pos, value in series.iteritems():
-    this = value
-    if this > mx:
-        mx = this
+    if value > mx:
+        mx = value
         mxpos = time_pos
-    if this < mn:
-        mn = this
+    if value < mn:
+        mn = value
         mnpos = time_pos
     if lookformax:
-        if this < mx-DELTA:
+        if value < mx-DELTA:
             # a local maxima
             maxpeaks.append((mxpos, mx))
-            mn = this
+            mn = value
             mnpos = time_pos
             lookformax = False
+        elif start:
+            # a local minima at beginning
+            minpeaks.append((mnpos, mn))
+            mx = value
+            mxpos = time_pos
+            start = False
     else:
-        if this > mn+DELTA:
+        if value > mn+DELTA:
             # a local minima
             minpeaks.append((mnpos, mn))
-            mx = this
+            mx = value
             mxpos = time_pos
             lookformax = True
+# check for extrema at end
+if value > mn+DELTA:
+    maxpeaks.append((mxpos, mx))
+elif value < mx-DELTA:
+    minpeaks.append((mnpos, mn))
+
 # Plotting the figure and extremum points
 plt.figure()
 plt.ylabel('Sunspot Number')
