@@ -48,8 +48,6 @@ except ImportError:
     print('ERROR: the documentation requires the sphinx-astropy package to be installed')
     sys.exit(1)
 
-ON_TRAVIS = os.environ.get('TRAVIS') == 'true'
-
 if on_rtd:
     os.environ['SUNPY_CONFIGDIR'] = '/home/docs/'
     os.environ['HOME'] = '/home/docs/'
@@ -59,14 +57,12 @@ if on_rtd:
 try:
     import suds
 except ImportError:
-    raise ImportError('suds could not be imported, please install the '
-                      '"suds-jerko" package and try again')
+    print('ERROR: suds could not be imported and the documentation requires the suds-jerko package to be installed')
+    sys.exit(1)
 
-from sunpy.extern import six
-import sunpy
+from sunpy import version as versionmod
 
 # -- Shut up numpy warnings from WCSAxes
-
 import numpy as np
 np.seterr(invalid='ignore')
 
@@ -104,6 +100,13 @@ if 'templates_path' not in locals():  # in case parent conf.py defines it
     templates_path = []
 templates_path.append('_templates')
 
+# For the linkcheck
+linkcheck_ignore = [r" https://doi.org/\d+",
+                    r"https://riot.im/\d+",
+                    r"https://github.com/\d+",
+                    r"http://docs.sunpy.org/\d+"]
+linkcheck_anchors = False
+
 # This is added to the end of RST files - a good place to put substitutions to
 # be used globally.
 rst_epilog += """
@@ -124,9 +127,9 @@ copyright = u'{}, {}'.format(datetime.datetime.now().year, author)
 # built documents.
 
 # The short X.Y version.
-version = sunpy.__version__.split('-', 1)[0]
+version = versionmod.version.split('-', 1)[0]
 # The full version, including alpha/beta/rc tags.
-release = sunpy.__version__
+release = versionmod.version
 
 try:
     from sunpy_sphinx_theme.conf import *
@@ -183,7 +186,6 @@ extensions += ['sphinx_astropy.ext.edit_on_github', 'sphinx.ext.doctest', 'sphin
 # -- Options for the edit_on_github extension
 # Don't import the module as "version" or it will override the
 # "version" configuration parameter
-from sunpy import version as versionmod
 edit_on_github_project = "sunpy/sunpy"
 if versionmod.release:
     edit_on_github_branch = "v{0}.{1}.x".format(versionmod.major, versionmod.minor)
@@ -222,7 +224,7 @@ else:
             'reference_url': {
                 'sunpy': None,
                 'astropy': 'http://docs.astropy.org/en/stable/',
-                'matplotlib': 'http://matplotlib.org/',
+                'matplotlib': 'https://matplotlib.org/',
                 'numpy': 'http://docs.scipy.org/doc/numpy/',
             },
             'abort_on_example_error': True,

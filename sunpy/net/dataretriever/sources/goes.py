@@ -91,7 +91,7 @@ class XRSClient(GenericClient):
             types depend on the satellite number specified. (default = xrs_2s)
         """
         # find out which satellite and datatype to query from the query times
-        base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
+        base_url = 'https://umbra.nascom.nasa.gov/goes/fits/'
         start_time = datetime.datetime.combine(timerange.start.date(),
                                                datetime.datetime.min.time())
         # make sure we are counting a day even if only a part of it is in the query range.
