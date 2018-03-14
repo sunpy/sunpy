@@ -29,7 +29,7 @@ This documentation is not only for the code itself but contains setup instructio
 However, documentation is never complete; there are always areas that could be expanded upon or could do with some proof reading to check whether what is written is easy to follow and understandable.
 If parts are confusing or difficult to follow, we would love suggestions or improvements!
 
-.. _online here: http://docs.sunpy.org/en/latest/dev.html
+.. _online here: http://docs.sunpy.org/en/latest/dev_guide/index.html
 
 Code
 ####
@@ -89,7 +89,7 @@ You can change ``my_fix`` to anything you prefer.
 If you get stuck or want help, just `ask here`_!
 
 .. _miniconda: https://conda.io/miniconda.html
-.. _instructions here: https://conda.io/docs/install/quick.html#quick-install
+.. _instructions here: https://conda.io/docs/user-guide/install/index.html
 .. _git: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 .. _GitHub: https://github.com/
 .. _fork: https://guides.github.com/activities/forking/

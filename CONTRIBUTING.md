@@ -50,14 +50,14 @@ To make a contribution to the SunPy code or documentation you will need to use
 git and GitHub, which are the tools SunPy uses to manage changes to the code and
 documentation.
 
-1. Get a [GitHub Account](https://github.com/signup/free)
+1. Get a [GitHub Account](https://github.com/join)
 1. [Fork](https://help.github.com/articles/fork-a-repo) SunPy on GitHub
 1. Install the developer version of SunPy using git. 
 1. Make your changes and push to your fork.
 1. Create a [pull request](https://help.github.com/articles/creating-a-pull-request-from-a-fork/).
 
 If any of the above steps are unfamiliar to you check out our
-[Developers Guide](http://docs.sunpy.org/en/latest/dev.html). (Suggesting
+[Developers Guide](http://docs.sunpy.org/en/latest/dev_guide/index.html). (Suggesting
 improvements to the developers guide is an excellent way to contribute!)
 
 
@@ -91,7 +91,7 @@ the beginning of the PR, i.e. `[0.6] My bug fix`. This makes it easier to filter
 
 For more information on contributing to SunPy check out the following:
 
-* Our [Developers Guide](http://docs.sunpy.org/en/latest/dev.html).
+* Our [Developers Guide](http://docs.sunpy.org/en/latest/dev_guide/index.html).
 * The [Developers Mailing List](https://groups.google.com/forum/#!forum/sunpy-dev)
 * The [Pull Request Review](https://github.com/sunpy/sunpy/wiki/Pull-Request-Review-Procedure) wiki page.
 * Our matrix channel [#sunpy-general:matrix.org](https://riot.im/app/#/room/#sunpy-general:matrix.org)

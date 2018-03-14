@@ -36,14 +36,14 @@ In addition, the standard for spelling is American English.
 -  Packages implementing many classes/functions not relevant to the component requested will not be accepted - the package should only
    include the required functionality and relevant extensions.
 -  The use of short cryptic variable names is highly discouraged!
--  All code should follow The Style Guide for Python (`PEP 8 <http://www.python.org/dev/peps/pep-0008/>`_).
+-  All code should follow The Style Guide for Python (`PEP 8 <https://www.python.org/dev/peps/pep-0008/>`_).
 -  All code should follow the `coding style and conventions proposed by Astropy <http://docs.astropy.org/en/stable/development/codeguide.html#coding-style-conventions>`_.
 
 PEP8 Rules
 ----------
 
 Additionally, all code that goes in the project should be checked using one of the many PEP8 linters that are available (pep8, pylint, flake8 as some examples).
-This is to ensure that the SunPy code follows The Style Guide for Python (`PEP 8 <http://www.python.org/dev/peps/pep-0008/>`_).
+This is to ensure that the SunPy code follows The Style Guide for Python (`PEP 8 <https://www.python.org/dev/peps/pep-0008/>`_).
 
 To ensure this, each pull request is checked for PEP8 issues by a bot called `pep8speaks <https://pep8speaks.com/>`_.
 This way, people are aware of any potential issues with their submitted code.
