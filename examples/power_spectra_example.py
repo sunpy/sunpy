@@ -39,8 +39,3 @@ plt.title('Power Spectrum of {}'.format(xray_short))
 plt.ylabel('Power Spectral Density(({})**2/Hz)'.format(ts.units[xray_short]))
 plt.xlabel('Frequency(Hz)')
 plt.show()
-
-
-
-
-
