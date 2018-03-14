@@ -892,7 +892,7 @@ class LineAnimator(ArrayAnimator):
         plot_args.update(self.imshow_kwargs)
         if self.xdata.shape == self.data.shape:
             item = [0] * self.data.ndim
-            item[self.plot_axis_index] = None
+            item[self.plot_axis_index] = slice(None)
             xdata = np.squeeze(self.xdata[tuple(item)])
         else:
             xdata = self.xdata
