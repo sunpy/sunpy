@@ -8,7 +8,6 @@ New Features
 - Example for fine-grained use of ticks and grids [#2435]
 - Maintiners Workflow Guide [#2411]
 - Decorator to append and/or prepend doc strings [#2386]
-- Gallery: Finding Local Peaks in Solar Data [#2339]
 
 API Changes
 -----------

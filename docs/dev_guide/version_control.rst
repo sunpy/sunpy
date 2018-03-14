@@ -333,6 +333,7 @@ If you add a `-i`, this will turn on interactive mode ::
 you should see something like this ::
 
     pick 2231360 some old commit
+    pick g3s62dc some mid commit you want to remove
     pick ee2adc2 Adds new feature
     # Rebase 2cf755d..ee2adc2 onto 2cf755d (9 commands)
     #
@@ -345,6 +346,22 @@ you should see something like this ::
     # x, exec = run command (the rest of the line) using shell
     # d, drop = remove commit
 
+Here you can change `pick` to any of the other commands that are listed and have that change the commits in your local history.
+So if you wanted to remove the middle commit you would change ::
+
+    pick g3s62dc some mid commit you want to remove
+
+to ::
+
+    drop g3s62dc some mid commit you want to remove
+
+or if you wanted to keep the changes merge that commit into the previous commit ::
+
+    squash g3s62dc some mid commit you want to remove
+
+Now when you exit the screen, git will now apply the changes you are after.
+
+If any problem arises, git will tell you and allow you either work through the problem using `git mergetool` or to abort the process `git rebase --abort`.
 
 Backporting contribution
 ^^^^^^^^^^^^^^^^^^^^^^^^
