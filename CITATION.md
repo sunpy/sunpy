@@ -7,7 +7,7 @@ The continued growth and development of SunPy is dependent on the community bein
 
 	*This research has made use of SunPy, an open-source and free community-developed solar data analysis package written in Python (citation).*
 
-	The citation is to the [SunPy v0.5 paper](https://iopscience.iop.org/article/10.1088/1749-4699/8/1/014009)/[arXiv(open access)](http://arxiv.org/abs/1505.02563). If the journal allows please also include a link to sunpy.org. If you have the time, please email us to let us know about your paper, as we maintain a [public list](https://www.zotero.org/groups/sunpy_-_python_for_solar_physicists) of papers on [Zotero](https://www.zotero.org/). 
+	The citation is to the [SunPy v0.5 paper](https://iopscience.iop.org/article/10.1088/1749-4699/8/1/014009)/[arXiv(open access)](https://arxiv.org/abs/1505.02563). If the journal allows please also include a link to sunpy.org. If you have the time, please email us to let us know about your paper, as we maintain a [public list](https://www.zotero.org/groups/sunpy_-_python_for_solar_physicists) of papers on [Zotero](https://www.zotero.org/). 
 	A BibTeX entry for LaTeX users is:
 
 ```

@@ -85,7 +85,7 @@ we might want the distance and time as inputs::
 
 However, this requires that length and time both have the appropriate units. We therefore want to use
 `~astropy.units.quantity_input` to enforce this, here we use
-`function annotations <http://python-3-for-scientists.readthedocs.io/en/latest/python3_user_features.html#function-annotations>`__
+`function annotations <https://python-3-for-scientists.readthedocs.io/en/latest/python3_features.html#function-annotations>`__
 to specify the units (this is a Python 3.5+ feature, see the
 `~astropy.units.quantity_input` documentation for more details and Python 2 instructions)::
 

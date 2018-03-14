@@ -32,6 +32,6 @@ If not, please provide the following information in your e-mail to the
     problem.
 
 You will likely get a faster response writing to the mailing list than
-filing a bug in the `bug tracker <http://github.com/sunpy/sunpy/issues>`_.
+filing a bug in the `bug tracker <https://github.com/sunpy/sunpy/issues>`_.
 If your problem has been determined to be a bug and can not be quickly solved, the issues
 may be filed a bug in the tracker so the issue doesn't get lost.
