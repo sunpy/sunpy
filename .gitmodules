@@ -1,3 +1,4 @@
 [submodule "astropy_helpers"]
 	path = astropy_helpers
 	url = https://github.com/Cadair/astropy-helpers.git
+        ignore = dirty
