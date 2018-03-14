@@ -110,6 +110,14 @@ Commit and push the changes to your GitHub: ::
  git commit -a -m "My first commit"
  git push
 
+In addition to all of this, we support several custom tags you can add anywhere in the commit message.
+Please use these tags extensively, especially for documentation PRs and WIP commits.
+
+*  [skip ci] or [ci skip]  - Skips Appveyor and Travis.
+*  [skip appveyor] - Skips Appveyor only.
+*  [skip travis] or [travis skip] -  These terminate the Travis builds before the install steps, effectively skipping testing.
+*  [docs only] or [build docs] - These terminate all non documentation build jobs in Travis before the install steps.
+
 You local repo is now synced with GitHub and ahead of the main repo as it
 contains your change. Remember to commit after you've done a unit of work (i.e.
 often). This will make it easier for you (in the future) and everyone else to

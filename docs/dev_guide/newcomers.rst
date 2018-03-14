@@ -109,6 +109,17 @@ To start you would need to commit the changes.
 Where you replace ``<message>`` with some text of the work you have done.
 We strongly recommend having a read over `this guide`_ about how you write commit messages.
 
+In addition to this, we support several custom tags you can add anywhere in the commit message.
+Please use these tags extensively, especially for documentation PRs and WIP commits.
+
+*  [skip ci] or [ci skip]  - Skips Appveyor and Travis.
+*  [skip appveyor] - Skips Appveyor only.
+*  [skip travis] or [travis skip] -  These terminate the Travis builds before the install steps, effectively skipping testing.
+*  [docs only] or [build docs] - These terminate all non documentation build jobs in Travis before the install steps.
+
+We have auto-cancellation enabled both on Appveyor and Travis for SunPy core.
+This means that queued builds for commits are cancelled if there is a newer commit pushed to that given branch.
+
 Next step is to submit the changes back to SunPy.
 
 The preferred method is that you submit a Pull Request (PR) using GitHub.
