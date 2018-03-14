@@ -50,11 +50,11 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `Fermi Mission Homepage <http://fermi.gsfc.nasa.gov>`_
-    * `Fermi GBM Homepage <http://gammaray.nsstc.nasa.gov/gbm/>`_
-    * `Fermi Science Support Center <http://fermi.gsfc.nasa.gov/ssc/>`_
-    * `Fermi Data Product <http://fermi.gsfc.nasa.gov/ssc/data/access/>`_
-    * `GBM Instrument Papers <http://gammaray.msfc.nasa.gov/gbm/publications/>`_
+    * `Fermi Mission Homepage <https://fermi.gsfc.nasa.gov>`_
+    * `Fermi GBM Homepage <https://fermi.gsfc.nasa.gov/science/instruments/gbm.html>`_
+    * `Fermi Science Support Center <https://fermi.gsfc.nasa.gov/ssc/>`_
+    * `Fermi Data Product <https://fermi.gsfc.nasa.gov/ssc/data/access/>`_
+    * `GBM Instrument Papers <http://gammaray.nsstc.nasa.gov/gbm/publications/instrument_journal_gbm.html>`_
     """
 
     # Class attribute used to specify the source class of the TimeSeries.
@@ -74,12 +74,6 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         ----------
         **kwargs : `dict`
             Any additional plot arguments that should be used when plotting.
-
-
-        Returns
-        -------
-        fig : `~matplotlib.Figure`
-            A plot figure.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
@@ -99,9 +93,7 @@ class GBMSummaryTimeSeries(GenericTimeSeries):
         axes.set_ylabel('Counts/s/keV')
         axes.legend()
         figure.autofmt_xdate()
-
-        plt.show()
-        return figure
+        figure.show()
 
     @classmethod
     def _parse_file(cls, filepath):

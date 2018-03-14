@@ -30,7 +30,7 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
       <http://sidc.oma.be>`_ in Brussels, Belgium.
     * The ratio between the SWO and RI indices.
     * Radio flux at 10.7 cm is produced by
-      `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the
+      `Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the
       units are in sfu.
     * The Ap Geomagnetic Index is produced by the United States Air Force (USAF).
 
@@ -43,11 +43,11 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `Solar and Geomagnetic Indices Data Archive <http://legacy-www.swpc.noaa.gov/Data/index.html#indices>`_
+    * `Solar and Geomagnetic Indices Data Archive <https://www.swpc.noaa.gov/products/3-day-geomagnetic-forecast>`_
     * `Recent solar indices <ftp://ftp.swpc.noaa.gov/pub/weekly/RecentIndices.txt>`_
     * `Indices Descriptions <ftp://ftp.swpc.noaa.gov/pub/weekly/README3>`_
-    * `NOAA plots of Solar Cycle Progression <http://www.swpc.noaa.gov/products/solar-cycle-progression>`_
-    * `NOAA Product List <http://www.swpc.noaa.gov/products-and-data>`_
+    * `NOAA plots of Solar Cycle Progression <https://www.swpc.noaa.gov/products/solar-cycle-progression>`_
+    * `NOAA Product List <https://www.swpc.noaa.gov/products-and-data>`_
     """
 
     # Class attribute used to specify the source class of the TimeSeries.
@@ -70,11 +70,6 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
 
         **plot_args : `dict`
             Any additional plot arguments that should be used when plotting.
-
-        Returns
-        -------
-        fig : `~matplotlib.Figure`
-            A plot figure.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
@@ -111,7 +106,6 @@ class NOAAIndicesTimeSeries(GenericTimeSeries):
         axes.legend()
 
         figure.show()
-        return figure
 
     @classmethod
     def _parse_file(cls, filepath):
@@ -185,7 +179,7 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
     * The predicted RI sunspot number is the official International Sunspot
       Number and is issued by the `Solar Influence Data Analysis Center (SDIC) <http://sidc.oma.be>`_ in Brussels, Belgium.
     * The predicted radio flux at 10.7 cm is produced by
-      `Penticon/Ottawa <http://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
+      `Penticon/Ottawa <https://www.ngdc.noaa.gov/stp/solar/flux.html>`_ and the units are in sfu.
 
     Examples
     --------
@@ -196,10 +190,10 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * `Solar and Geomagnetic Indices Data Archive <http://legacy-www.swpc.noaa.gov/Data/index.html#indices>`_
+    * `Solar and Geomagnetic Indices Data Archive <https://www.swpc.noaa.gov/products/3-day-geomagnetic-forecast>`_
     * `Predicted solar indices <http://services.swpc.noaa.gov/text/predicted-sunspot-radio-flux.txt>`_
-    * `NOAA plots of Solar Cycle Progression <http://www.swpc.noaa.gov/products/solar-cycle-progression>`_
-    * `NOAA Product List <http://www.swpc.noaa.gov/products-and-data>`_
+    * `NOAA plots of Solar Cycle Progression <https://www.swpc.noaa.gov/products/solar-cycle-progression>`_
+    * `NOAA Product List <https://www.swpc.noaa.gov/products-and-data>`_
 
     """
 
@@ -220,11 +214,6 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         ----------
         **plot_args : `dict`
             Any additional plot arguments that should be used when plotting.
-
-        Returns
-        -------
-        fig : `~matplotlib.Figure`
-            A plot figure.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
@@ -246,7 +235,6 @@ class NOAAPredictIndicesTimeSeries(GenericTimeSeries):
         axes.legend()
 
         figure.show()
-        return figure
 
     @staticmethod
     def _parse_file(filepath):

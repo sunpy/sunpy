@@ -1,0 +1,78 @@
+apt-run: &apt-install
+  name: Install apt packages
+  command: |
+    sudo apt update
+    sudo apt install -y graphviz
+
+pip-run: &pip-install
+  name: Install Python dependencies
+  command: |
+    python3 -m venv venv
+    . venv/bin/activate
+    pip install -q -r requirements/docs.txt
+
+version: 2
+jobs:
+  egg-info-36:
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - run: python setup.py egg_info
+
+  egg-info-35:
+    docker:
+      - image: circleci/python:3.5
+    steps:
+      - checkout
+      - run: python setup.py egg_info
+
+  egg-info-27:
+    docker:
+      - image: circleci/python:2.7
+    steps:
+      - checkout
+      - run: python setup.py egg_info
+
+  html-docs:
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - restore_cache:
+          keys: sample-data-v1
+
+      - checkout
+      - run: *apt-install
+      - run: *pip-install
+      - run: venv/bin/python setup.py build_docs -w 2> /dev/null
+
+      - store_artifacts:
+          path: docs/_build/html
+
+      - run:
+          name: "Built documentation is available at:"
+          command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/docs/_build/html/index.html"; echo $DOCS_URL
+
+      - save_cache:
+          key: sample-data-v1
+          paths:
+            - ~/sunpy/data/sample_data
+
+
+workflows:
+  version: 2
+
+  egg-info:
+    jobs:
+      - egg-info-36
+      - egg-info-35
+      - egg-info-27
+
+  test-documentation:
+    jobs:
+      - html-docs
+
+
+notify:
+  webhooks:
+    - url: https://giles.cadair.com/circleci

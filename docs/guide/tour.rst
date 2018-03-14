@@ -75,6 +75,9 @@ and the :ref:`timeseries_code_ref`.
 Spectra
 -------
 
+.. warning:: This module is under development! It is being moved into its own
+             `repository <http://docs.sunpy.org/projects/radiospectra/>`__.
+
 SunPy has spectral support for instruments which have such a capacity. CALLISTO,
 an international network of Solar Radio Spectrometers, is a specific example.
 
@@ -95,7 +98,7 @@ Plotting
 
 SunPy uses a matplotlib-like interface to its plotting so more complex plots can
 be built by combining SunPy with matplotlib. If you're not familiar with
-plotting in matplotlib, you should `learn the basics <http://matplotlib.org/users/tutorials.html>`__
+plotting in matplotlib, you should `learn the basics <https://matplotlib.org/users/tutorials.html>`__
 before continuing with this guide.
 
 Let's begin by creating a simple plot of an AIA image. To make things easy,
@@ -305,7 +308,7 @@ Obtaining Data
 --------------
 
 SunPy supports searching for and fetching data from a variety of sources,
-including the `VSO <http://virtualsolar.org/>`__ and the
+including the `VSO <https://virtualsolar.org/>`__ and the
 `JSOC <http://jsoc.stanford.edu/>`__. The majority of SunPy's clients can be
 queried using the `Fido <sunpy.net.fido_factory.UnifiedDownloaderFactory>` interface. An example of searching the VSO using this
 is below::

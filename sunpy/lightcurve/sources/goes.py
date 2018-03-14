@@ -37,9 +37,9 @@ class GOESLightCurve(LightCurve):
     References
     ----------
     * `GOES Mission Homepage <http://www.goes.noaa.gov>`_
-    * `GOES XRS Homepage <http://www.swpc.noaa.gov/products/goes-x-ray-flux>`_
-    * `GOES XRS Guide <http://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf>`_
-    * `NASCOM Data Archive <http://umbra.nascom.nasa.gov/goes/fits/>`_
+    * `GOES XRS Homepage <https://www.swpc.noaa.gov/products/goes-x-ray-flux>`_
+    * `GOES XRS Guide <https://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf>`_
+    * `NASCOM Data Archive <https://umbra.nascom.nasa.gov/goes/fits/>`_
     """
 
     def peek(self, title="GOES Xray Flux"):
@@ -61,11 +61,6 @@ class GOESLightCurve(LightCurve):
         **kwargs : dict
             Any additional plot arguments that should be used
             when plotting.
-
-        Returns
-        -------
-        fig : `~matplotlib.Figure`
-            A plot figure.
         """
         figure = plt.figure()
         axes = plt.gca()
@@ -100,8 +95,6 @@ class GOESLightCurve(LightCurve):
         axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
         figure.autofmt_xdate()
         figure.show()
-
-        return figure
 
     @classmethod
     def _get_default_uri(cls):
@@ -175,7 +168,7 @@ class GOESLightCurve(LightCurve):
 
         # find out which satellite and datatype to query from the query times
         sat_num = GOESLightCurve._get_goes_sat_num(start, end)
-        base_url = 'http://umbra.nascom.nasa.gov/goes/fits/'
+        base_url = 'https://umbra.nascom.nasa.gov/goes/fits/'
 
         if start < parse_time('1999/01/15'):
             url = base_url + "{date:%Y}/go{sat:02d}{date:%y%m%d}.fits".format(
@@ -188,7 +181,7 @@ class GOESLightCurve(LightCurve):
     @staticmethod
     def _parse_fits(filepath):
         """Parses a GOES/XRS FITS file from
-        http://umbra.nascom.nasa.gov/goes/fits/"""
+        https://umbra.nascom.nasa.gov/goes/fits/"""
         fits = pyfits.open(filepath)
         header = fits[0].header
         if len(fits) == 4:

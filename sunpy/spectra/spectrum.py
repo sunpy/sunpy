@@ -11,7 +11,7 @@ from sunpy.util.decorators import deprecated
 __all__ = ['Spectrum']
 
 
-@deprecated("0.8", "this module is being moved to sunpyspectra - https://github.com/sunpy/spectra")
+@deprecated("0.8", "this module is being moved to radiospectra - http://docs.sunpy.org/projects/radiospectra/")
 class Spectrum(np.ndarray):
     """
     Class representing a 1 dimensional spectrum.
@@ -90,15 +90,8 @@ class Spectrum(np.ndarray):
         **matplot_args : dict
             Any additional plot arguments that should be used
             when plotting.
-
-        Returns
-        -------
-        fig : `~matplotlib.Figure`
-            A plot figure.
         """
 
         figure = plt.figure()
         lines = self.plot(**matplot_args)
         figure.show()
-
-        return figure

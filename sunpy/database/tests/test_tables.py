@@ -136,7 +136,7 @@ def test_entries_from_fido_search_result(fido_search_result):
     # 2 entries from goes
     assert entries[56] == DatabaseEntry(
         source='nasa', provider='sdac', physobs='irradiance',
-        fileid='http://umbra.nascom.nasa.gov/goes/fits/2012/go1520120101.fits',
+        fileid='https://umbra.nascom.nasa.gov/goes/fits/2012/go1520120101.fits',
         observation_time_start=datetime(2012, 1, 1, 0, 0),
         observation_time_end=datetime(2012, 1, 1, 23, 59, 59, 999000),
         wavemin=np.nan, wavemax=np.nan,
@@ -406,14 +406,14 @@ def test_entries_from_dir_recursively_true():
     entries = list(entries_from_dir(testdir, True,
                                     default_waveunit='angstrom',
                                     time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 101
+    assert len(entries) == 102
 
 
 def test_entries_from_dir_recursively_false():
     entries = list(entries_from_dir(testdir, False,
                                     default_waveunit='angstrom',
                                     time_string_parse_format='%d/%m/%Y'))
-    assert len(entries) == 80
+    assert len(entries) == 81
 
 
 @pytest.mark.remote_data

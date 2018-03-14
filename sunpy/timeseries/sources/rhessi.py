@@ -52,8 +52,8 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * RHESSI Homepage `<http://hesperia.gsfc.nasa.gov/rhessi3/index.html>`_
-    * Mission Paper `<http://link.springer.com/article/10.1023%2FA%3A1022428818870>`_
+    * RHESSI Homepage `<https://hesperia.gsfc.nasa.gov/rhessi3/index.html>`_
+    * Mission Paper `<https://doi.org/10.1023/A:1022428818870>`_
     """
 
     # Class attribute used to specify the source class of the TimeSeries.
@@ -77,19 +77,12 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         **kwargs : `dict`
             Any additional plot arguments that should be used
             when plotting.
-
-        Returns
-        -------
-        fig : `~matplotlib.Figure`
-            A plot figure.
         """
         # Check we have a timeseries valid for plotting
         self._validate_data_for_ploting()
 
         figure = plt.figure()
         axes = plt.gca()
-
-        #dates = matplotlib.dates.date2num(self.data.index)
 
         lc_linecolors = rhessi.hsi_linecolors()
 
@@ -113,7 +106,6 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
         axes.fmt_xdata = matplotlib.dates.DateFormatter('%H:%M')
         figure.autofmt_xdate()
         figure.show()
-        return figure
 
     @classmethod
     def _parse_file(cls, filepath):
@@ -138,7 +130,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
                              ('300 - 800 keV', u.ct / u.s / u.Unit('detector')),
                              ('800 - 7000 keV', u.ct / u.s / u.Unit('detector')),
                              ('7000 - 20000 keV', u.ct / u.s / u.Unit('detector'))])
-        # Todo: check units used. http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm
+        # Todo: check units used. https://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm
         return data, header, units
 
     @classmethod

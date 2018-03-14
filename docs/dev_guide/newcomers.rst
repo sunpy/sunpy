@@ -29,7 +29,7 @@ This documentation is not only for the code itself but contains setup instructio
 However, documentation is never complete; there are always areas that could be expanded upon or could do with some proof reading to check whether what is written is easy to follow and understandable.
 If parts are confusing or difficult to follow, we would love suggestions or improvements!
 
-.. _online here: http://docs.sunpy.org/en/latest/dev.html
+.. _online here: http://docs.sunpy.org/en/latest/dev_guide/index.html
 
 Code
 ####
@@ -89,7 +89,7 @@ You can change ``my_fix`` to anything you prefer.
 If you get stuck or want help, just `ask here`_!
 
 .. _miniconda: https://conda.io/miniconda.html
-.. _instructions here: https://conda.io/docs/install/quick.html#quick-install
+.. _instructions here: https://conda.io/docs/user-guide/install/index.html
 .. _git: https://git-scm.com/book/en/v2/Getting-Started-Installing-Git
 .. _GitHub: https://github.com/
 .. _fork: https://guides.github.com/activities/forking/
@@ -107,6 +107,7 @@ To start you would need to commit the changes.
     git commit -a -m '<message>'
 
 Where you replace ``<message>`` with some text of the work you have done.
+We strongly recommend having a read over `this guide`_ about how you write commit messages.
 
 Next step is to submit the changes back to SunPy.
 
@@ -129,6 +130,7 @@ This can be sent to a contributor or attached in the Google group.
 
 Just remember, if you hit any problems get in touch!
 
+.. _this guide: https://chris.beams.io/posts/git-commit/
 .. _friendly guide: https://guides.github.com/activities/hello-world/
 .. _Google Group: https://groups.google.com/forum/#!forum/sunpy
 .. _email a SunPy contributor: stuart@mumford.me.uk
