@@ -96,6 +96,20 @@ If you get stuck or want help, just `ask here`_!
 .. _SunPy repository: https://github.com/sunpy/sunpy
 .. _ask here: https://riot.im/app/#/room/#sunpy-general:matrix.org
 
+Astropy helpers
+---------------
+
+Within SunPy is a folder called `astropy_helpers` and this is a git submodule.
+It can be common that this will be different to between branches or the main SunPy repository.
+As a result, it can sometimes be added by accident to a commit you make.
+Once this happens it can be difficult to remove it without using a `git rebase`.
+
+If you see that astropy_helpers is different or missing please run ::
+
+    git submodule update --init
+
+which should fix the issue for you.
+
 Send it back to us
 ------------------
 
