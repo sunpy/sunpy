@@ -310,6 +310,42 @@ the resolution of the conflict with: ::
 
 You can then proceed to push this change up to your branch.
 
+Rebasing
+^^^^^^^^
+
+Sometimes it might be better to instead of merging in upstream/master, to rebase on top of upstream/master, or if you would like to clean up  your commit history if you deem it messy.
+**However**, be warned that rebasing is a nuclear option.
+If it goes wrong, it fundamentally changes your git history, there is no way back if you have not got a copy somewhere else, say your online fork of SunPy.
+You can back out of a rebase during the process.
+
+We will have a brief example here but since rebasing is a major step (depending on the complexity of the pull request) we would recommend checking out `this <https://www.digitalocean.com/community/tutorials/how-to-rebase-and-update-a-pull-request>`_ or `this <https://www.atlassian.com/git/tutorials/rewriting-history/git-rebase>`_ tutorial.
+
+If you are on your own branch and you have upstream added as a remote.
+You can do ::
+
+    git rebase upstream/master
+
+which will rebase your commits on top of upstream/master and if there are no major changes, it should complete with no problem.
+If you add a `-i`, this will turn on interactive mode ::
+
+    git rebase -i upstream/master
+
+you should see something like this ::
+
+    pick 2231360 some old commit
+    pick ee2adc2 Adds new feature
+    # Rebase 2cf755d..ee2adc2 onto 2cf755d (9 commands)
+    #
+    # Commands:
+    # p, pick = use commit
+    # r, reword = use commit, but edit the commit message
+    # e, edit = use commit, but stop for amending
+    # s, squash = use commit, but meld into previous commit
+    # f, fixup = like "squash", but discard this commit's log message
+    # x, exec = run command (the rest of the line) using shell
+    # d, drop = remove commit
+
+
 Backporting contribution
 ^^^^^^^^^^^^^^^^^^^^^^^^
 

@@ -29,7 +29,15 @@ It is important that approval for merging the PR is done on the comment thread, 
 Continuous Integration
 ======================
 
-Stuff
+Currently we have a variety of bots or services that respond or activate on an opened pull request.
+While we try not to change them, they have undergone several changes with the aim of making them clear and focused on specific issues.
+
+*  pep8speaks: Performs a PEP8 check on any submitted code.
+*  CircleCi: Tests to see if sunpy installs and builds the documentation.
+*  Giles: Returns a link if the documentation does build successful.
+*  Travis: Runs our test suite to make sure it passes on Linux.
+*  AppVeyor: Runs our test suite to make sure it passes on Windows.
+*  CodeCov: Checks how much of the codebase has tests.
 
 SunPy GitHub Groups
 ===================
