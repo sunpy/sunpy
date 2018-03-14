@@ -103,6 +103,8 @@ class SunPyTest(AstropyTest):
 
         online = self.online
         offline = not self.online_only
+        figure = self.figure
+        figure_only = self.figure_only
 
         cmd = ('{cmd_pre}{0}; import {1.package_name}, sys; result = ('
                '{1.package_name}.self_test('
@@ -121,8 +123,8 @@ class SunPyTest(AstropyTest):
                        self,
                        online=online,
                        offline=offline,
-                       figure=self.figure,
-                       figure_only=self.figure_only,
+                       figure=figure,
+                       figure_only=figure_only,
                        cmd_pre=cmd_pre,
                        cmd_post=cmd_post)
         return x
