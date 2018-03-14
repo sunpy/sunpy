@@ -318,7 +318,7 @@ Sometimes it might be better to instead of merging in upstream/master, to rebase
 If it goes wrong, it fundamentally changes your git history, there is no way back if you have not got a copy somewhere else, say your online fork of SunPy.
 You can back out of a rebase during the process.
 
-We will have a brief example here but since rebasing is a major step (depending on the complexity of the pull request) we would recommend checking out `this <https://www.digitalocean.com/community/tutorials/how-to-rebase-and-update-a-pull-request>`_ or `this <https://www.atlassian.com/git/tutorials/rewriting-history/git-rebase>`_ tutorial.
+We will have a brief example here but since rebasing is a major step (depending on the complexity of the pull request) we would recommend checking out `this <https://www.digitalocean.com/community/tutorials/how-to-rebase-and-update-a-pull-request>`_ or `this one <https://www.atlassian.com/git/tutorials/rewriting-history/git-rebase>`_ tutorial.
 
 If you are on your own branch and you have upstream added as a remote.
 You can do ::

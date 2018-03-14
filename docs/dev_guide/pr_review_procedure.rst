@@ -34,10 +34,10 @@ While we try not to change them, they have undergone several changes with the ai
 
 *  pep8speaks: Performs a PEP8 check on any submitted code.
 *  CircleCi: Tests to see if sunpy installs and builds the documentation.
-*  Giles: Returns a link if the documentation does build successful.
-*  Travis: Runs our test suite to make sure it passes on Linux.
+*  Giles: Returns a link if the documentation does build successfully.
+*  Travis: Runs our test suite to make sure it passes on Linux and mac OS.
 *  AppVeyor: Runs our test suite to make sure it passes on Windows.
-*  CodeCov: Checks how much of the codebase has tests.
+*  CodeCov: Checks how many lines of the code lack test coverage.
 
 SunPy GitHub Groups
 ===================
