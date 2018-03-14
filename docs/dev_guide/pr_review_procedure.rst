@@ -26,6 +26,11 @@ Before the ‘merge’ button is clicked the following criteria must be met:
 
 It is important that approval for merging the PR is done on the comment thread, as this becomes part of the ‘permanent record’, this includes in during community meetings or in chat.
 
+Continuous Integration
+======================
+
+Stuff
+
 SunPy GitHub Groups
 ===================
 
