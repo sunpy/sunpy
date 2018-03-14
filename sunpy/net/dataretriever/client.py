@@ -351,14 +351,13 @@ class GenericClient(object):
         Results Object
         """
         # Check for type of path
-        if isinstance(path, str) or path is None:
-            pass
-        elif HAS_PATHLIB and isinstance(path, pathlib.Path):
-            path = str(path.absolute())
-        else:
-            err = "path should be either 'pathlib.Path' or 'str'. "\
-                "Got '{}'.".format(type(path))
-            raise TypeError(err)
+        if path is not None:
+            if HAS_PATHLIB and isinstance(path, pathlib.Path):
+                path = str(path.absolute())
+            elif not isinstance(path, six.string_types):
+                err = "path should be either 'pathlib.Path' or 'str'. "\
+                    "Got '{}'.".format(type(path))
+                raise TypeError(err)
 
         urls = [qrblock.url for qrblock in qres]
 
