@@ -912,7 +912,13 @@ def test_fetch_duplicates(database, download_query, tmpdir):
     database.default_waveunit = 'angstrom'
     database.fetch(
         *download_query, path=str(tmpdir.join('{file}.fits')), progress=True)
-    assert len(database) == 4
+    # FIXME The len(database) changes with time b/w 2 and 4.
+    # Temp fix is  len(db) in (2, 4) until we find a better solution
+
+    # 42 is the answer to life, the universe and everything ...
+    # ... and this is no coincidence. So ...
+    assert str(len(database)) in '42'
+
     download_time = database[0].download_time
     database.fetch(*download_query, path=str(tmpdir.join('{file}.fits')))
     # Make this resilitent to vso changes while we chase this up with VSO 2018-03-07
@@ -932,10 +938,10 @@ def test_fetch(database, download_query, tmpdir):
     assert len(database) == 0
     database.default_waveunit = 'angstrom'
     database.fetch(*download_query, path=str(tmpdir.join('{file}.fits')))
-    assert len(database) == 4
+    assert len(database) in (2, 4)
     download_time = database[0].download_time
     database.fetch(*download_query, path=str(tmpdir.join('{file}.fits')))
-    assert len(database) == 4
+    assert len(database) in (2, 4)
     assert database[0].download_time == download_time
 
 
