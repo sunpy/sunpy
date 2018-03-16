@@ -25,6 +25,7 @@ API Changes
 Bug Fixes
 ---------
 
+- Improve TimeSeriesBase docstring [#2399]
 - Validate that pytest-doctestplus is installed [#2388]
 - Fix use of self.wcs in plot in mapbase [#2398]
 - Updated docstring with pointer to access EVE data for other levels [#2402]
