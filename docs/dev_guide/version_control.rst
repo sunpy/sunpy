@@ -110,14 +110,6 @@ Commit and push the changes to your GitHub: ::
  git commit -a -m "My first commit"
  git push
 
-In addition to all of this, we support several custom tags you can add anywhere in the commit message.
-Please use these tags extensively, especially for documentation PRs and WIP commits.
-
-*  [skip ci] or [ci skip]  - Skips Appveyor and Travis.
-*  [skip appveyor] - Skips Appveyor only.
-*  [skip travis] or [travis skip] -  These terminate the Travis builds before the install steps, effectively skipping testing.
-*  [docs only] or [build docs] - These terminate all non documentation build jobs in Travis before the install steps.
-
 You local repo is now synced with GitHub and ahead of the main repo as it
 contains your change. Remember to commit after you've done a unit of work (i.e.
 often). This will make it easier for you (in the future) and everyone else to
@@ -323,10 +315,17 @@ Rebasing
 
 Sometimes it might be better to instead of merging in upstream/master, to rebase on top of upstream/master, or if you would like to clean up  your commit history if you deem it messy.
 **However**, be warned that rebasing is a nuclear option.
-If it goes wrong, it fundamentally changes your git history, there is no way back if you have not got a copy somewhere else, say your online fork of SunPy.
-You can back out of a rebase during the process.
+If it goes wrong, it fundamentally changes your git history, there is no way back if you do not have a copy somewhere else, say a local branch for example.
+You can also back out of a rebase during the process.
 
-We will have a brief example here but since rebasing is a major step (depending on the complexity of the pull request) we would recommend checking out `this <https://www.digitalocean.com/community/tutorials/how-to-rebase-and-update-a-pull-request>`_ or `this one <https://www.atlassian.com/git/tutorials/rewriting-history/git-rebase>`_ tutorial.
+We will have a brief example here but since rebasing is a major step (depending on the complexity of the pull request) we would recommend checking out one of these tutorials on the subject: `tutorial 1 <https://www.digitalocean.com/community/tutorials/how-to-rebase-and-update-a-pull-request>`_ and `tutorial 2 <https://www.atlassian.com/git/tutorials/rewriting-history/git-rebase>`_.
+
+With the above warning in mind, you can create a local copy of the branch you want to rebase ::
+
+    git commit -m "My last messy commit"
+    git checkout -b MyCleanNewFeature
+
+and you still have your git history from `MyCleanNewFeature` in its branch
 
 If you are on your own branch and you have upstream added as a remote.
 You can do ::

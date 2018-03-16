@@ -33,22 +33,12 @@ Currently we have a variety of bots or services that respond or activate on an o
 While we try not to change them, they have undergone several changes with the aim of making them clear and focused on specific issues.
 
 *  pep8speaks: Performs a PEP8 check on any submitted code.
-*  CircleCi: Tests to see if sunpy installs and builds the documentation.
+*  `CircleCi <https://circleci.com/gh/sunpy/sunpy/>`_: Tests to see if sunpy installs and builds the documentation.
 *  Giles: Returns a link if the documentation does build successfully.
-*  Travis: Runs our test suite to make sure it passes on Linux and mac OS.
-*  AppVeyor: Runs our test suite to make sure it passes on Windows.
-*  CodeCov: Checks how many lines of the code lack test coverage.
+*  `Travis <https://travis-ci.org/sunpy/sunpy>`_: Runs our test suite to make sure it passes on Linux and mac OS.
+*  `AppVeyor <https://ci.appveyor.com/project/sunpy/sunpy>`_: Runs our test suite to make sure it passes on Windows.
+*  `CodeCov <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage.
 
-We support several custom tags you can add anywhere in the commit message.
-Please use these tags extensively, especially for documentation PRs and WIP commits.
-
-*  [skip ci] or [ci skip]  - Skips Appveyor and Travis.
-*  [skip appveyor] - Skips Appveyor only.
-*  [skip travis] or [travis skip] -  These terminate the Travis builds before the install steps, effectively skipping testing.
-*  [docs only] or [build docs] - These terminate all non documentation build jobs in Travis before the install steps.
-
-We have auto-cancellation enabled both on Appveyor and Travis for SunPy core.
-This means that queued builds for commits are cancelled if there is a newer commit pushed to that given branch.
 
 SunPy GitHub Groups
 ===================

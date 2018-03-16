@@ -121,17 +121,19 @@ To start you would need to commit the changes.
     git commit -a -m '<message>'
 
 Where you replace ``<message>`` with some text of the work you have done.
-We strongly recommend having a read over `this guide`_ about how you write commit messages.
+We strongly recommend having a read over `this guide about how you write commit messages <https://chris.beams.io/posts/git-commit/>`_.
 
 In addition to this, we support several custom tags you can add anywhere in the commit message.
 Please use these tags extensively, especially for documentation PRs and WIP commits.
 
-*  [skip ci] or [ci skip]  - Skips Appveyor and Travis.
-*  [skip appveyor] - Skips Appveyor only.
-*  [skip travis] or [travis skip] -  These terminate the Travis builds before the install steps, effectively skipping testing.
-*  [docs only] or [build docs] - These terminate all non documentation build jobs in Travis before the install steps.
+*  pep8speaks: Performs a PEP8 check on any submitted code.
+*  `CircleCi <https://circleci.com/gh/sunpy/sunpy/>`_: Tests to see if sunpy installs and builds the documentation.
+*  Giles: Returns a link if the documentation does build successfully.
+*  `Travis <https://travis-ci.org/sunpy/sunpy>`_: Runs our test suite to make sure it passes on Linux and mac OS.
+*  `AppVeyor <https://ci.appveyor.com/project/sunpy/sunpy>`_: Runs our test suite to make sure it passes on Windows.
+*  `CodeCov <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage.
 
-We have auto-cancellation enabled both on Appveyor and Travis for SunPy core.
+We have auto-cancellation enabled on Appveyor, Travis and CircleCi for SunPy core.
 This means that queued builds for commits are cancelled if there is a newer commit pushed to that given branch.
 
 Next step is to submit the changes back to SunPy.
@@ -155,7 +157,6 @@ This can be sent to a contributor or attached in the Google group.
 
 Just remember, if you hit any problems get in touch!
 
-.. _this guide: https://chris.beams.io/posts/git-commit/
 .. _friendly guide: https://guides.github.com/activities/hello-world/
 .. _Google Group: https://groups.google.com/forum/#!forum/sunpy
 .. _email a SunPy contributor: stuart@mumford.me.uk

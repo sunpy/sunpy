@@ -18,7 +18,7 @@ If you use SunPy, we therefore ask that you acknowledge SunPy appropriately in a
    maintain a `public list`_ of papers on `Zotero`_. A BibTeX entry for
    LaTeX users is:
 
-::
+.. code:: bibtex
 
         @ARTICLE{2015CS&D....8a4009S,
            author = {{SunPy Community}, T. and {Mumford}, S.~J. and {Christe}, S. and
