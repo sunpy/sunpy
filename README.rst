@@ -1,8 +1,7 @@
 `SunPy`_
 ========
 
-|Latest Version| |Build Status| |Build status| |codecov| |Research
-software impact| |DOI| |Powered by NumFOCUS|
+|Latest Version| |Build Status| |Build status| |codecov| |Research software impact| |DOI| |Powered by NumFOCUS|
 
 SunPy is an open-source Python library for solar physics data analysis.
 See `sunpy.org`_ for more information about the project.
