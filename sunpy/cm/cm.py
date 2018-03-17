@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
 from sunpy.cm import color_tables as ct
+from sunpy.util import deprecated
 
 __all__ = ['get_cmap', 'show_colormaps', 'cmlist']
 
@@ -111,6 +112,7 @@ cmlist = {
 for name, cmap in cmlist.items():
     cm.register_cmap(name=name, cmap=cmap)
 
+@deprecated("0.9", "Use Matplotlib to load the colormaps", alternative='plt.get_cmap')
 def get_cmap(name):
     """
     Get a colormap.
@@ -191,55 +193,3 @@ def show_colormaps(filter=None):
                  horizontalalignment='right')
     plt.show()
 
-# def test_equalize(data):
-#    """Returns a color map which performs histogram equalization on the data.
-#
-#    Parameters
-#    ----------
-#    data : ndarray
-#
-#    Returns
-#    -------
-#    value : matplotlib colormap
-#
-#    See Also
-#    --------
-#
-#    Examples
-#    --------
-#    >>> import sunpy.cm as cm
-#    >>> cm.test_equalize()
-#
-#    Reference
-#    ---------
-#    | https://matplotlib.org/api/cm_api.html
-#
-#    .. warning:: this function is under development
-#
-#    .. todo:: finish coding this function!
-#
-#    """
-#    dfile = cbook.get_sample_data('s1045.ima', asfileobj=False)
-#
-#    im = np.fromstring(file(dfile, 'rb').read(), np.uint16).astype(float)
-#    im.shape = 256, 256
-#
-#    #imshow(im, ColormapJet(256))
-#    #imshow(im, cmap=cm.jet)
-#
-#    imvals = np.sort(im.flatten())
-#    lo = imvals[0]
-#    hi = imvals[-1]
-#    steps = (imvals[::len(imvals)/256] - lo) / (hi - lo)
-#    num_steps = float(len(steps))
-#    interps = [(s, idx/num_steps, idx/num_steps) for idx,
-#        s in enumerate(steps)]
-#    interps.append((1, 1, 1))
-#    cdict = {'red': interps,
-#             'green': interps,
-#             'blue': interps}
-#    histeq_cmap = colors.LinearSegmentedColormap('HistEq', cdict)
-#    pylab.figure()
-#    pylab.imshow(im, cmap=histeq_cmap)
-#    pylab.title('histeq')
-#    pylab.show()
