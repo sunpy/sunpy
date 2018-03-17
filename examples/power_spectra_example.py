@@ -13,6 +13,8 @@ import matplotlib.pyplot as plt
 import pandas as pd 
 from scipy import signal
 
+import astropy.units as u
+
 import sunpy.timeseries
 from sunpy.data.sample import GOES_XRS_TIMESERIES
 
@@ -26,16 +28,17 @@ ts = sunpy.timeseries.TimeSeries(GOES_XRS_TIMESERIES)
 
 ###############################################################################
 # We now use scipy's periodogram to estimate the power spectra of the first 
-# column of the Timeseries
+# column of the Timeseries. Astropy's Lomb-Scargle Periodograms can be used
+# instead of scipy's periodogram.
 
 xray_short = ts.columns[0]
-freq, spectra = signal.periodogram(ts.data[xray_short], fs=1)
+freq, spectra = signal.periodogram(ts.data[xray_short], fs=0.48)
 
 ###############################################################################
 # Plot the power spectrum
 
 plt.semilogy(freq, spectra)
 plt.title('Power Spectrum of {}'.format(xray_short))
-plt.ylabel('Power Spectral Density(({})**2/Hz)'.format(ts.units[xray_short]))
-plt.xlabel('Frequency(Hz)')
+plt.ylabel('Power Spectral Density [{:LaTeX}]'.format(ts.units[xray_short] ** 2 / u.Hz))
+plt.xlabel('Frequency [Hz]')
 plt.show()
