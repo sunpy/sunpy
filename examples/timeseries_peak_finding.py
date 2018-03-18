@@ -38,6 +38,25 @@ my_timeseries.peek()
 
 
 def findpeaks(series, DELTA):
+    """
+    Finds extrema in a pandas series data.
+
+    Parameters
+    ----------
+    series : `pandas.Series`
+        The data series from which we need to find extrema.
+
+    DELTA : `float`
+        The minimum difference between data values that defines a peak.
+
+    Returns
+    -------
+    minpeaks : `list`
+        list of pos, val pairs of local minima points.
+
+    maxpeaks : `list`
+        list of pos, val pairs of local maxima points.
+    """
     # Set inital values
     mn, mx = np.Inf, -np.Inf
     minpeaks = []
@@ -85,7 +104,7 @@ def findpeaks(series, DELTA):
 # approximately the length of smallest peak that we wish to detect.
 
 series = my_timeseries.data['sunspot SWO']
-minpeaks, maxpeaks = findpeaks(series, DELTA=10)
+minpeaks, maxpeaks = findpeaks(series, DELTA=10.)
 # Plotting the figure and extremum points
 plt.figure()
 plt.ylabel('Sunspot Number')
