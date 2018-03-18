@@ -35,7 +35,7 @@ ts_noaa_ind = sunpy.timeseries.TimeSeries(
 
 # Apply convolution filter
 ts_noaa_ind.data['sunspot SWO Smoothed'] = convolve(
-	ts_noaa_ind.data['sunspot SWO'].values, kernel=Box1DKernel(10))
+    ts_noaa_ind.data['sunspot SWO'].values, kernel=Box1DKernel(10))
 # Plotting original and smoothed timeseries
 plt.ylabel('Sunspot Number')
 plt.xlabel('Time')
