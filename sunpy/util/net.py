@@ -85,7 +85,7 @@ def get_system_filename(sock, url, default=u"file"):
     in file system encoding. """
     name = get_filename(sock, url)
     if not name:
-        name = default.decode("ascii", "ignore")
+        name = default
     return name.encode(sys.getfilesystemencoding(), 'ignore')
 
 
@@ -109,6 +109,159 @@ def download_file(url, directory, default=u'file', overwrite=False):
     finally:
         opn.close()
     return path
+
+
+def download_file_with_cache(remote_url, directory, cache=True,
+                             show_progress=True, timeout=None, overwrite=False,
+                             default=u"file"):
+    """
+    Accepts a URL, downloads and optionally caches the result
+    returning the filename, with a name determined by the file's MD5
+    hash. If ``cache=True`` and the file is present in the cache, just
+    returns the filename.
+
+    Parameters
+    ----------
+    remote_url : str
+        The URL of the file to download
+
+    cache : bool, optional
+        Whether to use the cache
+
+    show_progress : bool, optional
+        Whether to display a progress bar during the download (default
+        is `True`)
+
+    timeout : float, optional
+        The timeout, in seconds.  Otherwise, use
+        `astropy.utils.data.Conf.remote_timeout`.
+
+    Returns
+    -------
+    local_path : str
+        Returns the local path that the file was download to.
+
+    Raises
+    ------
+    urllib2.URLError, urllib.error.URLError
+        Whenever there's a problem getting the remote file.
+    """
+    from astropy.utils.console import ProgressBarOrSpinner
+    from astropy.utils.data import (Conf, _get_download_cache_locs,
+                                    _acquire_download_cache_lock,
+                                    _release_download_cache_lock,
+                                    check_free_space_in_dir)
+
+    import urllib.error
+    import shelve
+    import socket
+
+    conf = Conf()
+    _dataurls_to_alias = {}
+
+    if timeout is None:
+        timeout = conf.remote_timeout
+
+    missing_cache = False
+
+    if cache:
+        try:
+            _, urlmapfn = _get_download_cache_locs()
+        except OSError as e:
+            msg = 'Remote data cache could not be accessed due to '
+            estr = '' if len(e.args) < 1 else (': ' + str(e))
+            warn(CacheMissingWarning(msg + e.__class__.__name__ + estr))
+            cache = False
+            # indicates that the cache is missing to raise a warning later
+            missing_cache = True
+    url_key = remote_url
+    opn = urlopen(remote_url)
+    filename = get_system_filename(opn, remote_url, default)
+    path = os.path.join(directory, filename.decode('utf-8'))
+    # Check if URL is Astropy data server, which has alias, and cache it.
+    if (url_key.startswith(conf.dataurl) and
+            conf.dataurl not in _dataurls_to_alias):
+        with urllib.request.urlopen(conf.dataurl, timeout=timeout) as remote:
+            _dataurls_to_alias[conf.dataurl] = [conf.dataurl, remote.geturl()]
+
+    try:
+        if cache:
+            # We don't need to acquire the lock here, since we are only reading
+            with shelve.open(urlmapfn) as url2hash:
+                if url_key in url2hash:
+                    if url2hash[url_key] != path:
+                        shutil.move(url2hash[url_key], path)
+                        url2hash[url_key] = path
+                    return url2hash[url_key]
+                # If there is a cached copy from mirror, use it.
+                else:
+                    for cur_url in _dataurls_to_alias.get(conf.dataurl, []):
+                        if url_key.startswith(cur_url):
+                            url_mirror = url_key.replace(cur_url,
+                                                         conf.dataurl_mirror)
+                            if url_mirror in url2hash:
+                                return url2hash[url_mirror]
+        with urllib.request.urlopen(remote_url, timeout=timeout) as remote:
+            info = remote.info()
+            if 'Content-Length' in info:
+                try:
+                    size = int(info['Content-Length'])
+                except ValueError:
+                    size = None
+            else:
+                size = None
+
+            if size is not None:
+                check_free_space_in_dir(directory, size)
+
+            if show_progress:
+                progress_stream = sys.stdout
+            else:
+                progress_stream = io.StringIO()
+
+            dlmsg = "Downloading {0}".format(remote_url)
+            with ProgressBarOrSpinner(size, dlmsg, file=progress_stream) as p:
+                if not overwrite and os.path.exists(path):
+                    path = replacement_filename(path)
+                with open(path, 'wb') as f:
+                    try:
+                        bytes_read = 0
+                        block = remote.read(conf.download_block_size)
+                        while block:
+                            f.write(block)
+                            bytes_read += len(block)
+                            p.update(bytes_read)
+                            block = remote.read(conf.download_block_size)
+                    except BaseException:
+                        if os.path.exists(f.name):
+                            os.remove(f.name)
+                        raise
+
+        if cache:
+            _acquire_download_cache_lock()
+            try:
+                with shelve.open(urlmapfn) as url2hash:
+                    # We check now to see if another process has
+                    # inadvertently written the file underneath us
+                    # already
+                    if url_key in url2hash:
+                        return url2hash[url_key]
+                    url2hash[url_key] = f.name
+            finally:
+                _release_download_cache_lock()
+
+    except urllib.error.URLError as e:
+        if hasattr(e, 'reason') and hasattr(e.reason, 'errno') and e.reason.errno == 8:
+            e.reason.strerror = e.reason.strerror + '. requested URL: ' + remote_url
+            e.reason.args = (e.reason.errno, e.reason.strerror)
+        raise e
+    except socket.timeout as e:
+        # this isn't supposed to happen, but occasionally a socket.timeout gets
+        # through.  It's supposed to be caught in `urrlib2` and raised in this
+        # way, but for some reason in mysterious circumstances it doesn't. So
+        # we'll just re-raise it here instead
+        raise urllib.error.URLError(e)
+    return f.name
 
 
 def download_fileobj(opn, directory, url='', default=u"file", overwrite=False):

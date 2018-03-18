@@ -22,7 +22,7 @@ from sunpy.io.file_tools import read_file, UnrecognizedFileTypeError
 from sunpy.io.fits import HDPair
 from sunpy.io.header import FileHeader
 
-from sunpy.util.net import download_file
+from sunpy.util.net import download_file, download_file_with_cache
 from sunpy.util import expand_list
 from sunpy.util.config import get_and_create_download_dir
 
@@ -362,7 +362,7 @@ class TimeSeriesFactory(BasicRegistrationFactory):
             elif (isinstance(arg, six.string_types) and
                   _is_url(arg)):
                 url = arg
-                path = download_file(url, get_and_create_download_dir())
+                path = download_file_with_cache(url, get_and_create_download_dir())
                 pairs = self._read_file(path, **kwargs)
                 # data_header_pairs += pairs
                 filepaths.append(pairs[1])
