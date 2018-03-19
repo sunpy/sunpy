@@ -21,7 +21,7 @@ from sunpy.data.sample import RHESSI_TIMESERIES
 ###############################################################################
 # Let's first load a TimeSeries from sample data.
 
-# Input data contains 9 columns , which are evenly sampled with a time
+# Input data contains 9 columns, which are evenly sampled with a time
 # step of 4 seconds.
 ts = sunpy.timeseries.TimeSeries(RHESSI_TIMESERIES)
 
@@ -31,7 +31,7 @@ ts = sunpy.timeseries.TimeSeries(RHESSI_TIMESERIES)
 # instead of scipy's periodogram.
 
 x_ray = ts.columns[0]
-# The suitable value for fs would be 0.25 Hz as cadence of the data is 4 s.
+# The suitable value for fs would be 0.25 Hz as the time step is 4 s.
 freq, spectra = signal.periodogram(ts.data[xray_short], fs=0.25)
 ###############################################################################
 # Plot the power spectrum
