@@ -154,7 +154,7 @@ class GenericMap(NDData):
 
     * If a CDi_j matrix is provided it is assumed that it can be converted to a
       PCi_j matrix and CDELT keywords as described in
-      `Greisen & Calabretta (2002) <http://dx.doi.org/10.1051/0004-6361:20021327>`_
+      `Greisen & Calabretta (2002) <https://doi.org/10.1051/0004-6361:20021327>`_
 
     * The 'standard' FITS keywords that are used by this class are the PCi_j
       matrix and CDELT, along with the other keywords specified in the WCS
@@ -935,8 +935,7 @@ Reference Coord:\t {refcoord}
 
         References
         ----------
-        * `Rebinning <http://www.scipy.org/Cookbook/Rebinning>`_ (Original
-          source, 2011/11/19)
+        * `Rebinning <https://scipy-cookbook.readthedocs.io/items/Rebinning.html>`_
         """
 
         # Note: because the underlying ndarray is transposed in sense when
@@ -1363,7 +1362,7 @@ Reference Coord:\t {refcoord}
 
         References
         ----------
-        | `Summarizing blocks of an array using a moving window <http://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html>`_
+        | `Summarizing blocks of an array using a moving window <https://mail.scipy.org/pipermail/numpy-discussion/2010-July/051760.html>`_
         """
 
         # Note: because the underlying ndarray is transposed in sense when

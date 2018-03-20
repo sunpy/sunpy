@@ -1,9 +1,11 @@
+.. _version_control:
+
 Version Control
 ===============
 
-Source-code for SunPy is managed using `Git <http://git-scm.com>`_,
+Source-code for SunPy is managed using `Git <https://git-scm.com>`_,
 a Distributed Version Control system. Code branches are hosted on
-`GitHub.com <http://github.com/sunpy/sunpy>`_, a free project hosting website
+`GitHub.com <https://github.com/sunpy/sunpy>`_, a free project hosting website
 for Open-Source software. To contribute to SunPy you will need to create an
 account on GitHub.
 
@@ -22,7 +24,7 @@ Getting Started
 ###############
 
 Creating your own fork of SunPy on GitHub is easy to do. Go ahead and create
-a free account on `create an account on GitHub <https://github.com/signup/free>`_.
+a free account on `create an account on GitHub <https://github.com/join>`_.
 Github has some `great resources to help <https://help.github.com/>`_.
 Here is a quick overview of the process.
 
@@ -32,7 +34,7 @@ Adding an SSH key to GitHub
 Next, you need to tell GitHub who you are. In order to push any code to GitHub
 you need to create a public SSH key and associate it with your GitHub account.
 For instructions on how this is done, see the article on GitHub on
-`Setting up git <http://help.github.com/set-up-git-redirect>`_ under
+`Setting up git <https://help.github.com/set-up-git-redirect>`_ under
 "Set Up SSH Keys". You only need to do this once, although if you plan to
 work from multiple computers you will need to go through the process for each
 computer.
@@ -64,7 +66,7 @@ changes are completed, and have been verified to work, should they be
 requested to be merged into the SunPy code base (through a pull request).
 GitHub provides a simple mechanism to setup your own
 personal repo by providing an option to `fork a repository
-<http://help.github.com/fork-a-repo/>`_. When you create a fork of a GitHub
+<https://help.github.com/fork-a-repo/>`_. When you create a fork of a GitHub
 project, a copy of the repo will automatically be created for you, and a link
 will be provided which you can use to download the code to your machine and
 begin working on it.
@@ -79,7 +81,7 @@ local machine, edit and run: ::
 
 or: ::
 
- git clone http://github.com/sunpy/sunpy.git
+ git clone https://github.com/sunpy/sunpy.git
 
 By default your fork of the repo on GitHub is identified by the name `origin`.
 In order to keep the fork up to date with the main repo, it is useful to add it

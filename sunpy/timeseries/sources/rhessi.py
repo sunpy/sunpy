@@ -52,8 +52,8 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
 
     References
     ----------
-    * RHESSI Homepage `<http://hesperia.gsfc.nasa.gov/rhessi3/index.html>`_
-    * Mission Paper `<http://link.springer.com/article/10.1023%2FA%3A1022428818870>`_
+    * RHESSI Homepage `<https://hesperia.gsfc.nasa.gov/rhessi3/index.html>`_
+    * Mission Paper `<https://doi.org/10.1023/A:1022428818870>`_
     """
 
     # Class attribute used to specify the source class of the TimeSeries.
@@ -130,7 +130,7 @@ class RHESSISummaryTimeSeries(GenericTimeSeries):
                              ('300 - 800 keV', u.ct / u.s / u.Unit('detector')),
                              ('800 - 7000 keV', u.ct / u.s / u.Unit('detector')),
                              ('7000 - 20000 keV', u.ct / u.s / u.Unit('detector'))])
-        # Todo: check units used. http://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm
+        # Todo: check units used. https://hesperia.gsfc.nasa.gov/ssw/hessi/doc/guides/hessi_data_access.htm
         return data, header, units
 
     @classmethod
