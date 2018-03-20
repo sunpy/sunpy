@@ -43,12 +43,12 @@ class XRSTimeSeries(GenericTimeSeries):
     References
     ----------
     * `GOES Mission Homepage <http://www.goes.noaa.gov>`_
-    * `GOES XRS Homepage <http://www.swpc.noaa.gov/products/goes-x-ray-flux>`_
-    * `GOES XRS Guide <http://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf>`_
-    * `NASCOM Data Archive <http://umbra.nascom.nasa.gov/goes/fits/>`_
+    * `GOES XRS Homepage <https://www.swpc.noaa.gov/products/goes-x-ray-flux>`_
+    * `GOES XRS Guide <https://ngdc.noaa.gov/stp/satellite/goes/doc/GOES_XRS_readme.pdf>`_
+    * `NASCOM Data Archive <https://umbra.nascom.nasa.gov/goes/fits/>`_
 
     Notes:
-    http://umbra.nascom.nasa.gov/goes/fits/goes_fits_files_notes.txt
+    https://umbra.nascom.nasa.gov/goes/fits/goes_fits_files_notes.txt
     """
 
     # Class attribute used to specify the source class of the TimeSeries.
@@ -147,7 +147,7 @@ class XRSTimeSeries(GenericTimeSeries):
     @classmethod
     def _parse_file(cls, filepath):
         """Parses a GOES/XRS FITS file from
-        http://umbra.nascom.nasa.gov/goes/fits/"""
+        https://umbra.nascom.nasa.gov/goes/fits/"""
 
         hdus = sunpy.io.read_file(filepath)
         return cls._parse_hdus(hdus)

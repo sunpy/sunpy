@@ -9,21 +9,42 @@ pip-run: &pip-install
   command: |
     python3 -m venv venv
     . venv/bin/activate
-    pip install -r requirements/docs.txt
+    pip install -q -r requirements/docs.txt
 
 version: 2
 jobs:
-  build:
-    environment:
-      - MAIN_CMD: "venv/bin/python setup.py"
-      - SETUP_CMD: "build_docs -w"
+  egg-info-36:
     docker:
       - image: circleci/python:3.6
     steps:
       - checkout
+      - run: python setup.py egg_info
+
+  egg-info-35:
+    docker:
+      - image: circleci/python:3.5
+    steps:
+      - checkout
+      - run: python setup.py egg_info
+
+  egg-info-27:
+    docker:
+      - image: circleci/python:2.7
+    steps:
+      - checkout
+      - run: python setup.py egg_info
+
+  html-docs:
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - restore_cache:
+          keys: sample-data-v1
+
+      - checkout
       - run: *apt-install
       - run: *pip-install
-      - run: $MAIN_CMD $SETUP_CMD
+      - run: venv/bin/python setup.py build_docs -w 2> /dev/null
 
       - store_artifacts:
           path: docs/_build/html
@@ -31,6 +52,26 @@ jobs:
       - run:
           name: "Built documentation is available at:"
           command: DOCS_URL="${CIRCLE_BUILD_URL}/artifacts/${CIRCLE_NODE_INDEX}/${CIRCLE_WORKING_DIRECTORY/#\~/$HOME}/docs/_build/html/index.html"; echo $DOCS_URL
+
+      - save_cache:
+          key: sample-data-v1
+          paths:
+            - ~/sunpy/data/sample_data
+
+
+workflows:
+  version: 2
+
+  egg-info:
+    jobs:
+      - egg-info-36
+      - egg-info-35
+      - egg-info-27
+
+  test-documentation:
+    jobs:
+      - html-docs
+
 
 notify:
   webhooks:

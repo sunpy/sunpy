@@ -21,11 +21,11 @@ def LCClient():
 @pytest.mark.parametrize(
     "timerange,url_start,url_end",
     [(TimeRange('1995/06/03', '1995/06/05'),
-      'http://umbra.nascom.nasa.gov/goes/fits/1995/go07950603.fits',
-      'http://umbra.nascom.nasa.gov/goes/fits/1995/go07950605.fits'),
+      'https://umbra.nascom.nasa.gov/goes/fits/1995/go07950603.fits',
+      'https://umbra.nascom.nasa.gov/goes/fits/1995/go07950605.fits'),
      (TimeRange('2008/06/02', '2008/06/04'),
-      'http://umbra.nascom.nasa.gov/goes/fits/2008/go1020080602.fits',
-      'http://umbra.nascom.nasa.gov/goes/fits/2008/go1020080604.fits')])
+      'https://umbra.nascom.nasa.gov/goes/fits/2008/go1020080602.fits',
+      'https://umbra.nascom.nasa.gov/goes/fits/2008/go1020080604.fits')])
 def test_get_url_for_time_range(LCClient, timerange, url_start, url_end):
     urls = LCClient._get_url_for_timerange(timerange)
     assert isinstance(urls, list)

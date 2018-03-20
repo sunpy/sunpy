@@ -1,3 +1,5 @@
+.. _testing:
+
 Testing
 =======
 
@@ -157,7 +159,7 @@ specified in the .travis.yml file in the root of the SunPy repo.
 New Functionality
 -----------------
 
-For SunPy, we would encourage all developers to thoroughly `cover <http://en.wikipedia.org/wiki/Code_coverage>`_
+For SunPy, we would encourage all developers to thoroughly `cover <https://en.wikipedia.org/wiki/Code_coverage>`_
 their code by writing unit tests for each new function created.
 
 Developers who want to take an aggressive approach to reducing bugs may even

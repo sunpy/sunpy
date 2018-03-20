@@ -64,7 +64,7 @@ class TestGOESLightCurve(object):
     @pytest.mark.remote_data
     def test_goes_url(self):
         """Test creation with url"""
-        url = 'http://umbra.nascom.nasa.gov/goes/fits/1995/go07950603.fits'
+        url = 'https://umbra.nascom.nasa.gov/goes/fits/1995/go07950603.fits'
         lc1 = sunpy.lightcurve.GOESLightCurve.create(url)
         assert isinstance(lc1, sunpy.lightcurve.GOESLightCurve)
 
@@ -97,5 +97,5 @@ class TestGOESLightCurve(object):
         """Test the getting of urls"""
         g = sunpy.lightcurve.GOESLightCurve
         # time ranges create urls with either 4 digit or 2 digit years
-        assert g._get_url_for_date_range(timerange_b) == 'http://umbra.nascom.nasa.gov/goes/fits/1995/go07950603.fits'
-        assert g._get_url_for_date_range(timerange_a) == 'http://umbra.nascom.nasa.gov/goes/fits/2008/go1020080601.fits'
+        assert g._get_url_for_date_range(timerange_b) == 'https://umbra.nascom.nasa.gov/goes/fits/1995/go07950603.fits'
+        assert g._get_url_for_date_range(timerange_a) == 'https://umbra.nascom.nasa.gov/goes/fits/2008/go1020080601.fits'

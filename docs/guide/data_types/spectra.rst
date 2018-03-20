@@ -113,4 +113,4 @@ frequencies of BIR): ::
     d = CallistoSpectrogram.from_range('BIR', '2011-09-22 10:15:00', '2011-09-22 10:45:00')
 
 .. _e-Callisto: http://www.e-callisto.org/
-.. _Rosse Observatory: http://rosseobservatory.ie/
+.. _Rosse Observatory: http://www.rosseobservatory.ie
