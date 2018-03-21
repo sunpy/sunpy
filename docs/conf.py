@@ -150,6 +150,20 @@ try:
     html_context = {
         'sunpy_modules': sunpy_modules
     }
+
+    def rstjinja(app, docname, source):
+        """
+        Render our pages as a jinja template for fancy templating goodness.
+        """
+        # Make sure we're outputting HTML
+        if app.builder.format != 'html':
+            return
+        src = source[0]
+        if "Current status" in src[:20]:
+            rendered = app.builder.templates.render_string(
+                src, app.config.html_context
+            )
+            source[0] = rendered
 except ImportError:
     has_yaml = False
     print('Warning: Stability of SunPy API page of the documentation requires the ruamel.yaml package to be installed')
@@ -222,21 +236,6 @@ if has_sphinx_gallery:
         'abort_on_example_error': True,
         'plot_gallery': True
     }
-
-def rstjinja(app, docname, source):
-    """
-    Render our pages as a jinja template for fancy templating goodness.
-    """
-    # Make sure we're outputting HTML
-    if app.builder.format != 'html':
-        return
-    src = source[0]
-    if "Current status" in src[:20]:
-        rendered = app.builder.templates.render_string(
-            src, app.config.html_context
-        )
-        source[0] = rendered
-
 
 def setup(app):
     if not has_sphinx_gallery:
