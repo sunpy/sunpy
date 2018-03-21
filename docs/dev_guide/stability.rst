@@ -13,26 +13,32 @@ The classification is as follows:
          .planned:before {
               color: #cbcbcb;
               content: "⬤";
+              padding: 5px;
          }
          .dev:before {
               color: #ffad00;
               content: "⬤";
+              padding: 5px;
          }
          .stable:before {
               color: #4e72c3;
               content: "⬤";
+              padding: 5px;
          }
          .mature:before {
               color: #03a913;
               content: "⬤";
+              padding: 5px;
          }
          .pendingdep:before {
               color: #a84b03;
               content: "⬤";
+              padding: 5px;
          }
          .deprecated:before {
               color: #ff0000;
               content: "⬤";
+              padding: 5px;
          }
     </style>
 
