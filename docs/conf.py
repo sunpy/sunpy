@@ -30,7 +30,6 @@ import datetime
 import sys
 from distutils.version import LooseVersion
 
-
 import ruamel.yaml as yaml
 
 from sphinx import __version__
@@ -47,7 +46,6 @@ if not SPHINX_LT_17:
     warninghandler.stream = SafeEncodingWriter(stream=sys.stdout)
 
 # -- Import Base config from sphinx-astropy ------------------------------------
-
 try:
     from sphinx_astropy.conf.v1 import *
 except ImportError:
@@ -74,38 +72,35 @@ except ImportError:
 
 from sunpy import version as versionmod
 
-# -- Shut up numpy warnings from WCSAxes
+# -- Shut up numpy warnings from WCSAxes --------------------------------------
 import numpy as np
 np.seterr(invalid='ignore')
 
 # -- Download Sample Data -----------------------------------------------------
-
 import sunpy.data.sample
 
 # -- General configuration ----------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-needs_sphinx = '1.5'
+needs_sphinx = '1.6'
 
 # To perform a Sphinx version check that needs to be more specific than
 # major.minor, call `check_sphinx_version("x.y.z")` here.
 check_sphinx_version(needs_sphinx)
 
-# add any custom intersphinx for sunpy
+# Add any custom intersphinx for SunPy
 intersphinx_mapping.pop('h5py', None)
 intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/latest/', None)
 intersphinx_mapping['pandas'] = ('http://pandas.pydata.org/pandas-docs/stable/', None)
 intersphinx_mapping['skimage'] = ('http://scikit-image.org/docs/stable/', None)
 
 # Load data about stability
-
 with open('./dev_guide/sunpy_stability.yaml', 'r') as estability:
     sunpy_modules = yaml.load(estability.read(), Loader=yaml.Loader)
 
 html_context = {
     'sunpy_modules': sunpy_modules
 }
-
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -133,7 +128,6 @@ rst_epilog += """
 """.format(sunpy)
 
 # -- Project information ------------------------------------------------------
-
 project = u'SunPy'
 author = u'The SunPy Community'
 copyright = u'{}, {}'.format(datetime.datetime.now().year, author)
@@ -141,7 +135,6 @@ copyright = u'{}, {}'.format(datetime.datetime.now().year, author)
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
-
 # The short X.Y version.
 version = versionmod.version.split('-', 1)[0]
 # The full version, including alpha/beta/rc tags.
@@ -150,38 +143,27 @@ release = versionmod.version
 try:
     from sunpy_sphinx_theme.conf import *
     html_sidebars = {'**': ['docsidebar.html']}
-
 except ImportError:
     html_theme = 'default'
 
-# Custom sidebar templates, maps document names to template names.
-# html_sidebars = {}
-
 # The name of an image file (within the static path) to use as favicon of the
-# docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
+# docs. This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
 html_favicon = "./logo/favicon.ico"
-
-# If not '', a 'Last updated on:' timestamp is inserted at every page bottom,
-# using the given strftime format.
-# html_last_updated_fmt = ''
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
 html_title = '{0} v{1}'.format(project, release)
 
-
 # Output file base name for HTML help builder.
 htmlhelp_basename = project + 'doc'
 
 # -- Options for LaTeX output --------------------------------------------------
-
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [('index', project + '.tex', project + u' Documentation', author, 'manual')]
 
 # -- Options for manual page output --------------------------------------------
-
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [('index', project.lower(), project + u' Documentation', [author], 1)]
@@ -198,7 +180,7 @@ napoleon_google_docstring = False
 
 extensions += ['sphinx_astropy.ext.edit_on_github', 'sphinx.ext.doctest', 'sphinx.ext.githubpages']
 
-# -- Options for the edit_on_github extension
+# -- Options for the edit_on_github extension ---------------------------------
 # Don't import the module as "version" or it will override the
 # "version" configuration parameter
 edit_on_github_project = "sunpy/sunpy"
@@ -208,15 +190,12 @@ else:
     edit_on_github_branch = "master"
 edit_on_github_source_root = ""
 edit_on_github_doc_root = "docs"
-
 edit_on_github_skip_regex = '_.*|generated/.*'
-
 github_issues_url = 'https://github.com/sunpy/sunpy/issues/'
 
 # -- Options for the Sphinx gallery -------------------------------------------
 if has_sphinx_gallery:
     extensions += ["sphinx_gallery.gen_gallery"]
-
     sphinx_gallery_conf = {
         'backreferences_dir':
         'generated{}modules'.format(os.sep),  # path to store the module using example template
@@ -252,7 +231,7 @@ def rstjinja(app, docname, source):
 
 
 def setup(app):
-    if has_sphinx_gallery == False:
+    if has_sphinx_gallery is False:
         app.warn('The sphinx_gallery extension is not installed, so the '
                  'gallery will not be built. You will probably see '
                  'additional warnings about undefined references due '
