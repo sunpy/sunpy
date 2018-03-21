@@ -54,7 +54,11 @@ except ImportError:
 
 try:
     import sphinx_gallery
-    has_sphinx_gallery = True
+    if on_rtd and os.environ.get('READTHEDOCS_PROJECT').lower() != 'sunpy':
+        # Gallery takes too long on RTD to build unless you extra build time.
+        has_sphinx_gallery = False
+    else:
+        has_sphinx_gallery = True
 except ImportError:
     has_sphinx_gallery = False
 
