@@ -1,4 +1,4 @@
 
--r doc.txt
+-r docs.txt
 
 sphinx>=1.7
