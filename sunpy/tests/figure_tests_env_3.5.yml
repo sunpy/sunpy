@@ -80,7 +80,7 @@ dependencies:
   - six=1.11.0=py35_1
   - sqlalchemy=1.2.1=py35_0
   - sqlite=3.20.1=2
-  - suds-jurko=0.6=py35_1
+  - zeep=2.4.0=py27_0
   - tk=8.6.7=0
   - toolz=0.8.2=py_2
   - tornado=4.5.3=py35_0
