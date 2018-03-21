@@ -3,8 +3,8 @@ recursive-include sunpy *.h
 recursive-include sunpy *.c
 recursive-include sunpy/data *
 recursive-include sunpy *.txt
-include README.md
-include RELEASE.md
+include README.rst
+include RELEASE.rst
 include CHANGELOG.rst
 include licenses/*.rst
 include sunpy/data/sunpyrc

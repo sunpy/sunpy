@@ -55,9 +55,9 @@ class EITMap(GenericMap):
 
     References
     ----------
-    * `SOHO Mission Page <http://sohowww.nascom.nasa.gov>`_
-    * `SOHO EIT Instrument Page <http://umbra.nascom.nasa.gov/eit/>`_
-    * `SOHO EIT User Guide <http://umbra.nascom.nasa.gov/eit/eit_guide/>`_
+    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
+    * `SOHO EIT Instrument Page <https://umbra.nascom.nasa.gov/eit/>`_
+    * `SOHO EIT User Guide <https://umbra.nascom.nasa.gov/eit/eit_guide/>`_
     """
 
     def __init__(self, data, header, **kwargs):
@@ -103,10 +103,7 @@ class LASCOMap(GenericMap):
 
     References
     ----------
-    * `SOHO Mission Page <http://sohowww.nascom.nasa.gov>`_
-    * `SOHO LASCO Instrument Page <http://lasco-www.nrl.navy.mil>`_
-    * `SOHO LASCO Fits Header keywords <http://lasco-www.nrl.navy.mil/index.php?p=content/keywords>`_
-    * `SOHO LASCO User Guide <http://lasco-www.nrl.navy.mil/index.php?p=content/handbook/hndbk>`_
+    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
     """
 
     def __init__(self, data, header, **kwargs):
@@ -128,7 +125,7 @@ class LASCOMap(GenericMap):
 
         # If non-standard Keyword is present, correct it too, for compatibility.
         if 'date_obs' in self.meta:
-            self.meta['date_obs'] = self.meta['date-obs']                
+            self.meta['date_obs'] = self.meta['date-obs']
         self._nickname = self.instrument + "-" + self.detector
         self.plot_settings['cmap'] = cm.get_cmap('soholasco{det!s}'.format(det=self.detector[1]))
         self.plot_settings['norm'] = ImageNormalize(stretch=source_stretch(self.meta, PowerStretch(0.5)))
@@ -166,10 +163,10 @@ class MDIMap(GenericMap):
 
     References
     ----------
-    * `SOHO Mission Page <http://sohowww.nascom.nasa.gov>`_
+    * `SOHO Mission Page <https://sohowww.nascom.nasa.gov/>`_
     * `SOHO MDI Instrument Page <http://soi.stanford.edu>`_
     * `SOHO MDI Fits Header keywords <http://soi.stanford.edu/sssc/doc/keywords.html>`_
-    * `SOHO MDI Instrument Paper <http://soi.stanford.edu/sssc/doc/SP_paper_1995/MDI_SP_paper_1995.pdf>`_
+    * `SOHO MDI Instrument Paper <https://doi.org/10.1007/978-94-009-0191-9_5>`_
     """
 
     def __init__(self, data, header, **kwargs):
@@ -178,7 +175,7 @@ class MDIMap(GenericMap):
 
         # Fill in some missing or broken info
         self.meta['detector'] = "MDI"
-        self._fix_dsun()                
+        self._fix_dsun()
         self._nickname = self.detector + " " + self.measurement
         vmin = np.nanmin(self.data)
         vmax = np.nanmax(self.data)

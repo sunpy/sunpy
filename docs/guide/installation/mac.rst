@@ -16,7 +16,7 @@ suits you.
 
 For users who wish to have more control over the installation of Python, several
 alternative installation methods are provided below, including instructions for
-`Macports <http://www.macports.org/>`_ and `Homebrew <http://mxcl.github.com/homebrew/>`_.
+`Macports <https://www.macports.org/>`_ and `Homebrew <https://brew.sh/>`_.
 The following instructions are not recommended for beginners. OS X comes pre-loaded with
 Python but each versions of OS X (Mountain Lion, Snow Leopard, etc.) ships with a
 different version of Python. In the instructions below, we therefore recommend that you
@@ -27,7 +27,7 @@ packages they are installed for the correct Python so beware.
 Python 2.7.3+
 ^^^^^^^^^^^^^
 Download and install the latest version of
-`32 bit Python 2.7.3 <http://www.python.org/download/releases/2.7.3/>`
+`32 bit Python 2.7.3 <https://www.python.org/download/releases/2.7.3/>`
 using their DMG installer. Next, choose your package installer of choice (either
 Macports or Homebrew) and follow the instructions below. If you do not have either
 go to their respective websites and install one of the other as needed.
@@ -51,7 +51,7 @@ developer account).
 Homebrew
 ^^^^^^^^
 
-`Homebrew <http://mxcl.github.com/homebrew/>`_ is a tool for helping to automate
+`Homebrew <https://brew.sh/>`_ is a tool for helping to automate
 the installation of a number of useful tools and libraries on Mac OS X. It is
 similar to Macports, but attempts to improve on some of the pitfalls of
 Macports.
@@ -73,17 +73,17 @@ Now on to the next steps.
 
 Git
 ^^^
-Head over and `download <http://git-scm.com/downloads>` and install git.
+Head over and `download <https://git-scm.com/downloads>` and install git.
 
 Pip
 ^^^
 Most Python distributions ship with a tool called
-`easy_install <http://pypi.python.org/pypi/setuptools>`_
+`easy_install <https://pypi.python.org/pypi/setuptools>`_
 which assists with installing Python packages.
 
 Although `easy_install`_ is capable of installing most of
 the dependencies needed for SunPy itself, a more powerful tool called
-`pip <http://pypi.python.org/pypi/pip>`__ which provides a more flexible installation
+`pip <https://pypi.python.org/pypi/pip>`__ which provides a more flexible installation
 (including support for uninstalling, upgrading, and installing from remote
 sources such as GitHub) and should be used instead.
 

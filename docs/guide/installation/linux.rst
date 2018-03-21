@@ -35,12 +35,12 @@ Now we shall install pip.
 Pip
 ^^^
 Most Python distributions ship with a tool called
-`easy_install <http://pypi.python.org/pypi/setuptools>`_
+`easy_install <https://pypi.python.org/pypi/setuptools>`_
 which assists with installing Python packages.
 
 Although `easy_install`_ is capable of installing most of
 the dependencies needed for SunPy itself, a more powerful tool called
-`pip <http://pypi.python.org/pypi/pip>`__ provides a more flexible installation
+`pip <https://pypi.python.org/pypi/pip>`__ provides a more flexible installation
 (including support for uninstalling, upgrading, and installing from remote
 sources such as GitHub) and should be used instead.
 

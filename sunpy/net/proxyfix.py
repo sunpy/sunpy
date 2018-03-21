@@ -23,6 +23,6 @@ class WellBehavedHttpTransport(SudsHttpTransport):
         Thus, passing an empty list will use the default ProxyHandler which
         behaves correctly.
 
-        This method comes from http://stackoverflow.com/a/12433606/1087595
+        This method comes from https://stackoverflow.com/a/12433606/1087595
         """
         return []
