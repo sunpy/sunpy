@@ -9,8 +9,8 @@ from abc import ABCMeta
 from collections import OrderedDict, namedtuple
 from functools import partial
 
-# Remove in 1.0
-# Py2 does not have pathlib
+# Python 3:
+# Remove in 1.0: Py2 does not have pathlib
 try:
     import pathlib
     HAS_PATHLIB = True
