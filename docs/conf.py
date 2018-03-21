@@ -67,13 +67,6 @@ if on_rtd:
     os.environ['LC_ALL'] = 'C'
 
 try:
-    import ruamel.yaml as yaml
-    has_yaml = True
-except ImportError:
-    has_yaml = False
-    print('Warning: Extra page of the documentation requires the ruamel.yaml package to be installed')
-
-try:
     import suds
 except ImportError:
     print('ERROR: suds could not be imported and the documentation requires the suds-jerko package to be installed')
@@ -102,14 +95,6 @@ intersphinx_mapping.pop('h5py', None)
 intersphinx_mapping['sqlalchemy'] = ('http://docs.sqlalchemy.org/en/latest/', None)
 intersphinx_mapping['pandas'] = ('http://pandas.pydata.org/pandas-docs/stable/', None)
 intersphinx_mapping['skimage'] = ('http://scikit-image.org/docs/stable/', None)
-
-# Load data about stability
-with open('./dev_guide/sunpy_stability.yaml', 'r') as estability:
-    sunpy_modules = yaml.load(estability.read(), Loader=yaml.Loader)
-
-html_context = {
-    'sunpy_modules': sunpy_modules
-}
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -154,6 +139,20 @@ try:
     html_sidebars = {'**': ['docsidebar.html']}
 except ImportError:
     html_theme = 'default'
+
+try:
+    import ruamel.yaml as yaml
+    has_yaml = True
+    # Load data about stability
+    with open('./dev_guide/sunpy_stability.yaml', 'r') as estability:
+        sunpy_modules = yaml.load(estability.read(), Loader=yaml.Loader)
+
+    html_context = {
+        'sunpy_modules': sunpy_modules
+    }
+except ImportError:
+    has_yaml = False
+    print('Warning: Stability of SunPy API page of the documentation requires the ruamel.yaml package to be installed')
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs. This file should be a Windows icon file (.ico) being 16x16 or 32x32
