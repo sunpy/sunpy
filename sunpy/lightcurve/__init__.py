@@ -10,12 +10,12 @@ __author__ = "Keith Hughitt"
 __email__ = "keith.hughitt@nasa.gov"
 
 import warnings
-from sunpy.util.exceptions import SunpyDeprecationWarning
+from sunpy.util.exceptions import SunpyDeprecationWarning as _SunpyDeprecationWarning
 
 warnings.warn("As of v0.8.0, the `sunpy.lightcurve` module is deprecated and will be "
               "removed in a future version. Use `sunpy.timeseries` or "
               "`sunpy.map` for coordinate transformations.",
-              SunpyDeprecationWarning)
+              _SunpyDeprecationWarning)
 
 from sunpy.lightcurve.lightcurve import LightCurve
 from sunpy.lightcurve.sources.eve import *

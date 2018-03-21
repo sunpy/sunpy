@@ -45,7 +45,7 @@ time:
   comments: Will see major changes in 1.0.
 timeseries:
   status: stable
-  comments:
+  comments: No plans to change what we currently have but only add to it.
 visualization:
   status: stable
   comments: No plans to change what we currently have but only add to it.
