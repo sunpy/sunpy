@@ -53,6 +53,7 @@ class Downloader(object):
 
             with closing(urllib.request.urlopen(url)) as sock:
                 fullname = path(sock, url)
+
                 dir_ = os.path.abspath(os.path.dirname(fullname))
                 if not os.path.exists(dir_):
                     os.makedirs(dir_)

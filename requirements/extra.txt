@@ -5,7 +5,7 @@
 sqlalchemy
 scikit-image
 glymur
-suds-jurko
+zeep
 beautifulsoup4
 requests
 python-dateutil

@@ -91,7 +91,7 @@ dependencies:
   - sqlite=3.20.1=2
   - ssl_match_hostname=3.5.0.1=py27_1
   - subprocess32=3.2.7=py27_0
-  - suds-jurko=0.6=py27_1
+  - zeep=2.4.0=py27_0
   - tk=8.6.7=0
   - toolz=0.8.2=py_2
   - tornado=4.5.3=py27_0

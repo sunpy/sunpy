@@ -48,21 +48,19 @@ except ImportError:
     print('ERROR: the documentation requires the sphinx-astropy package to be installed')
     sys.exit(1)
 
+ON_TRAVIS = os.environ.get('TRAVIS') == 'true'
+
 if on_rtd:
     os.environ['SUNPY_CONFIGDIR'] = '/home/docs/'
     os.environ['HOME'] = '/home/docs/'
     os.environ['LANG'] = 'C'
     os.environ['LC_ALL'] = 'C'
 
-try:
-    import suds
-except ImportError:
-    print('ERROR: suds could not be imported and the documentation requires the suds-jerko package to be installed')
-    sys.exit(1)
 
 from sunpy import version as versionmod
 
 # -- Shut up numpy warnings from WCSAxes
+
 import numpy as np
 np.seterr(invalid='ignore')
 
