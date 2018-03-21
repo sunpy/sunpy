@@ -310,6 +310,66 @@ the resolution of the conflict with: ::
 
 You can then proceed to push this change up to your branch.
 
+Rebasing
+^^^^^^^^
+
+Sometimes it might be better to instead of merging in upstream/master, to rebase on top of upstream/master, or if you would like to clean up  your commit history if you deem it messy.
+**However**, be warned that rebasing is a nuclear option.
+If it goes wrong, it fundamentally changes your git history, there is no way back if you do not have a copy somewhere else, say a local branch for example.
+You can also back out of a rebase during the process.
+
+We will have a brief example here but since rebasing is a major step (depending on the complexity of the pull request) we would recommend checking out one of these tutorials on the subject: `tutorial 1 <https://www.digitalocean.com/community/tutorials/how-to-rebase-and-update-a-pull-request>`_ and `tutorial 2 <https://www.atlassian.com/git/tutorials/rewriting-history/git-rebase>`_.
+
+With the above warning in mind, you can create a local copy of the branch you want to rebase ::
+
+    git commit -m "My last messy commit"
+    git checkout -b MyCleanNewFeature
+
+and you still have your git history from `MyCleanNewFeature` in its branch
+
+If you are on your own branch and you have upstream added as a remote.
+You can do ::
+
+    git rebase upstream/master
+
+which will rebase your commits on top of upstream/master and if there are no major changes, it should complete with no problem.
+If you add a `-i`, this will turn on interactive mode ::
+
+    git rebase -i upstream/master
+
+you should see something like this ::
+
+    pick 2231360 some old commit
+    pick g3s62dc some mid commit you want to remove
+    pick ee2adc2 Adds new feature
+    # Rebase 2cf755d..ee2adc2 onto 2cf755d (9 commands)
+    #
+    # Commands:
+    # p, pick = use commit
+    # r, reword = use commit, but edit the commit message
+    # e, edit = use commit, but stop for amending
+    # s, squash = use commit, but meld into previous commit
+    # f, fixup = like "squash", but discard this commit's log message
+    # x, exec = run command (the rest of the line) using shell
+    # d, drop = remove commit
+
+Here you can change `pick` to any of the other commands that are listed and have that change the commits in your local history.
+So if you wanted to remove the middle commit you would change ::
+
+    pick g3s62dc some mid commit you want to remove
+
+to ::
+
+    drop g3s62dc some mid commit you want to remove
+
+or if you wanted to keep the changes merge that commit into the previous commit ::
+
+    squash g3s62dc some mid commit you want to remove
+
+Now when you exit the screen, git will now apply the changes you are after.
+
+If any problem arises, git will tell you and allow you either work through the problem using `git mergetool` or to abort the process `git rebase --abort`.
+
 Backporting contribution
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
