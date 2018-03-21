@@ -542,7 +542,7 @@ def cor_color_table(number):
 
 # Standard TRACE color RGB triples, as defined by the SSWIDL program
 # trace_colors.pro.
-# See http://hesperia.gsfc.nasa.gov/ssw/trace/idl/util/trace_colors.pro
+# See https://hesperia.gsfc.nasa.gov/ssw/trace/idl/util/trace_colors.pro
 trace_171_r = np.array(
       [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
