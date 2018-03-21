@@ -30,8 +30,6 @@ import datetime
 import sys
 from distutils.version import LooseVersion
 
-import ruamel.yaml as yaml
-
 from sphinx import __version__
 SPHINX_LT_17 = LooseVersion(__version__) < LooseVersion('1.7')
 
@@ -55,7 +53,7 @@ except ImportError:
 try:
     import sphinx_gallery
     if on_rtd and os.environ.get('READTHEDOCS_PROJECT').lower() != 'sunpy':
-        # Gallery takes too long on RTD to build unless you extra build time.
+        # Gallery takes too long on RTD to build unless you have extra build time.
         has_sphinx_gallery = False
     else:
         has_sphinx_gallery = True
@@ -67,6 +65,13 @@ if on_rtd:
     os.environ['HOME'] = '/home/docs/'
     os.environ['LANG'] = 'C'
     os.environ['LC_ALL'] = 'C'
+
+try:
+    import ruamel.yaml as yaml
+    has_yaml = True
+except ImportError:
+    has_yaml = False
+    print('Warning: Extra page of the documentation requires the ruamel.yaml package to be installed')
 
 try:
     import suds
@@ -235,12 +240,10 @@ def rstjinja(app, docname, source):
 
 
 def setup(app):
-    if has_sphinx_gallery is False:
+    if not has_sphinx_gallery:
         app.warn('The sphinx_gallery extension is not installed, so the '
                  'gallery will not be built. You will probably see '
                  'additional warnings about undefined references due '
                  'to this.')
-    try:
+    if has_yaml:
         app.connect("source-read", rstjinja)
-    except:
-        pass
