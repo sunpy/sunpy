@@ -28,17 +28,20 @@
 import os
 import datetime
 import sys
+from distutils.version import LooseVersion
 
+from sphinx import __version__
+SPHINX_LT_17 = LooseVersion(__version__) < LooseVersion('1.7')
 
 # -- Convert Sphinx Warnings to output to stdout not stderr---------------------
+if not SPHINX_LT_17:
+    import logging
+    from sphinx.util.logging import NAMESPACE, WarningStreamHandler, SafeEncodingWriter
 
-import logging
-from sphinx.util.logging import NAMESPACE, WarningStreamHandler, SafeEncodingWriter
-
-sphinxlogger = logging.getLogger(NAMESPACE)
-handlers = sphinxlogger.handlers
-warninghandler = list(filter(lambda x: isinstance(x, WarningStreamHandler), handlers))[0]
-warninghandler.stream = SafeEncodingWriter(stream=sys.stdout)
+    sphinxlogger = logging.getLogger(NAMESPACE)
+    handlers = sphinxlogger.handlers
+    warninghandler = list(filter(lambda x: isinstance(x, WarningStreamHandler), handlers))[0]
+    warninghandler.stream = SafeEncodingWriter(stream=sys.stdout)
 
 # -- Import Base config from sphinx-astropy ------------------------------------
 
