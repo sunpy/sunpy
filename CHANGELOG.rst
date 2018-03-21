@@ -5,23 +5,83 @@ New Features
 ------------
 
 - Added TimeUTime class to support utime. [#2409]
+- Example for fine-grained use of ticks and grids [#2435]
+- Maintiners Workflow Guide [#2411]
+- Decorator to append and/or prepend doc strings [#2386]
+- Adding `python setup.py test --figure-only` [#2557]
 
 API Changes
 -----------
 
-- ``sunpy.coordinates.representation`` has been removed. Longitude wrapping is
-  now done in the constructor of the frames. [#2431]
-- Propagation of ``obstime`` in the coordinate frame transformation has changed,
-  this means in general when transforming directly between frames (not
+- ``sunpy.coordinates.representation`` has been removed. Longitude wrapping is now done in the constructor of the frames. [#2431]
+- Propagation of ``obstime`` in the coordinate frame transformation has changed, this means in general when transforming directly between frames (not
   ``SkyCoord``) you will have to specify ``obstime`` in more places. [#2461]
-- Transforming between Heliographic Stonyhurst and Carrington now requires that
-  ``obstime`` be defined and the same on both the input and output frames. [#2461]
+- Transforming between Heliographic Stonyhurst and Carrington now requires that ``obstime`` be defined and the same on both the input and output frames. [#2461]
+- Removed the figure return from .peek() [#2487]
 
 Bug Fixes
 ---------
 
+- Improve TimeSeriesBase docstring [#2399]
+- Validate that pytest-doctestplus is installed [#2388]
+- Fix use of self.wcs in plot in mapbase [#2398]
+- Updated docstring with pointer to access EVE data for other levels [#2402]
+- Fix broken links and redirections in documentation [#2403]
+- Fixes Documentation changes due to NumPy 1.14 [#2404]
+- Added docstrings to functions in dowload.py [#2415]
+- Clean up database doc [#2414]
+- rhessi.py now uses sunpy.io instead of astropy.io [#2416]
+- Remove Gamma usage in Map [#2424]
+- Changed requirements to python-dateutil [#2426]
+- Clarify coordinate system definitions [#2429]
+- Improve Map Peek when using draw_grid [#2442]
+- Add HCC --> HGS test [#2443]
+- Testing the transformation linking SunPy and Astropy against published values [#2454]
+- Fixed title bug in sunpy.timeseries.rhessi [#2477]
+- Allow LineAnimator to accept a varying x-axis [#2491]
+- Indexing Bug Fix to LineAnimator [#2560]
+- Output sphinx warnings to stdout [#2553]
+- Docstring improvement for LineAnimator [#2514]
+- move the egg_info builds to circleci [#2512]
+- Added tests for TraceMap [#2504]
 - Fix HGS frame constructor and HPC ``calculate_distance`` with SkyCoord constructor. [#2463]
+- removed `wavelnth` keyword in meta desc of Maps to avoid using non standard FITS keyword like `nan` [#2456]
+- The documentation build now uses the Sphinx configuration from sphinx-astropy rather than from astropy-helpers.[#2494]
+- Migrate to hypothesis.strategies.datetimes [#2368]
+- Prevent a deprecation warning due to truth values of Quantity [#2358]
+
+0.8.5
+=====
+
+Bug Fixes
+---------
+
+- Removed AstropyDeprecationWarning from sunpy.coordinates.representation [#2476]
+- Fix for NorthOffsetFrame under Astropy 3.0 [#2486]
+- Fix lightcurve tests under numpy dev [#2505]
+- Updated depecration link of radiospectra [#2481]
+- Fixed Padding values in some of the documentation pages [#2497]
+- Move documentation build to circleci [#2509]
+- Fix Issue #2470 hgs_to_hcc(heliogcoord, heliocframe) [#2502]
+- Fixing CompositeMap object so that it respects masked maps [#2492]
+
+0.8.4
+=====
+
+Bug Fixes
+---------
+
+- Improve detection of ``SkyCoord`` frame instantiation when distance is
+  `1*u.one`. This fixes a plotting bug with ``WCSAxes`` in Astropy 3.0 [#2465]
 - removed `wavelnth` keyword in meta desc of Maps to avoid using non standard FITS keyword like `nan` [#2427]
+- Change the default units for HPC distance from `u.km` to `None`. [#2465]
+
+0.8.3
+=====
+
+Bug Fixes
+---------
+
 - `~sunpy.net.dataretriever.clients.XRSClient` now reports time ranges of files correctly. [#2364]
 - Make parse_time work with datetime64s and pandas series [#2370]
 - CompositeMap axes scaling now uses map spatial units [#2310]
@@ -37,13 +97,35 @@ Bug Fixes
 - Travis CI fix for numpy-dev build [#2340]
 - Updated masking brightest pixel example [#2338]
 - Changed TRAVIS cronjobs [#2338]
-- Support array values for `obstime` for coordinates and transformations [#2342]
+- Support array values for `obstime` for coordinates and transformations [#2342] [#2346]
+- Updated Gallery off limb enhance example [#2337]
+- Documentation fixes for VSO [#2354] [#2353]
+- All tests within the documentation have been fixed [#2343]
+- Change to using pytest-remotedata for our online tests [#2345]
+- Fixed upstream astropy/numpy documentation issues [#2359]
+- Documentation for Map improved [#2361]
+- Fix the output units of pixel_to_world [#2362]
+- Documentation for Database improved [#2355]
+- Added test for mapsave [#2365]
+- Documentation for Sun improved [#2369]
+
+0.8.2
+=====
+
+Bug Fixes
+---------
+
 - Shows a warning if observation time is missing [#2293]
 - Updates MapCube to access the correct properties of the namedtuple SpatialPair [#2297]
+
+0.8.1
+======
+
+Bug fixes
+---------
+
 - Fixed TimeSeries test failures due to missing test files [#2273]
 - Refactored a GOES test to avoid a Py3.6 issue [#2276]
-- The documentation build now uses the Sphinx configuration from sphinx-astropy 
-  rather than from astropy-helpers.[#2494]
 
 0.8.0
 ======
