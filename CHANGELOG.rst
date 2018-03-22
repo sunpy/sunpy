@@ -9,6 +9,7 @@ New Features
 - Maintiners Workflow Guide [#2411]
 - Decorator to append and/or prepend doc strings [#2386]
 - Adding `python setup.py test --figure-only` [#2557]
+- Fido.fetch now accepts pathlib.Path objects for path attribute.[#2559]
 
 API Changes
 -----------
