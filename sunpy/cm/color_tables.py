@@ -1037,16 +1037,11 @@ def sot_color_table(measurement):
     try:
         r, g, b = {
             'intensity': (r0, g0, b0),
-            # :todo
-            # 'stokesQUV': (),
-            # 'magnetic field': (),
-            # 'velocity': (),
-            # 'width': (),
             }[measurement]
     except KeyError:
         raise ValueError(
             "Invalid (or not supported) SOT type. Valid values are: "
-            "intensity"  # TODO, stokesQUV, magnetic field, velocity, width."
+            "intensity"
             )
 
     cdict = create_cdict(r, g, b)
