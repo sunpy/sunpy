@@ -38,7 +38,7 @@ distribution will usually be the easiest route, while on MacOS X you will
 need the XCode command line tools.
 
 The `instructions for building Numpy from source
-<http://docs.scipy.org/doc/numpy/user/install.html>`_ are also a good
+<https://docs.scipy.org/doc/numpy/user/install.html>`_ are also a good
 resource for setting up your environment to build Python packages.
 
 .. note:: If you are using MacOS X, you will need to the XCode command line
@@ -63,19 +63,19 @@ dependencies installed (with the potential exception of `glymur`).
 
 SunPy has the following strict requirements:
 
-- `Python <http://www.python.org/>`_ 2.7.x, 3.5.x or later
+- `Python <https://www.python.org/>`_ 2.7.x, 3.5.x or later
 
 - `NumPy <http://www.numpy.org/>`_  1.6.0 or later
 
-- `SciPy <http://www.scipy.org/>`_ 0.10.0 or later
+- `SciPy <https://www.scipy.org/>`_ 0.10.0 or later
 
-- `AstroPy <http://www.astropy.org/>`__ 1.0.0 or later
+- `Astropy <http://www.astropy.org/>`__ 1.0.0 or later
 
 SunPy also depends on other packages for optional features.
 However, note that these only need to be installed if those particular features
 are needed. SunPy will import even if these dependencies are not installed.
 
-- `Matplotlib <http://matplotlib.org/>`_ [*Highly Recommended*] 1.3.0 or later:
+- `Matplotlib <https://matplotlib.org/>`_ [*Highly Recommended*] 1.3.0 or later:
   For `~sunpy.timeseries`, `~sunpy.map`, `~sunpy.spectra`, `~sunpy.instr`
   and `~sunpy.visualization`.
 
@@ -85,12 +85,12 @@ are needed. SunPy will import even if these dependencies are not installed.
 
 - `suds-jurko <https://bitbucket.org/jurko/suds>`_: For `~sunpy.net`.
 
-- `beautifulsoup4 <http://www.crummy.com/software/BeautifulSoup/>`_: For `~sunpy.spectra.Callisto` Spectrograms and `~sunpy.net.helio`
+- `beautifulsoup4 <https://www.crummy.com/software/BeautifulSoup/>`_: For `~sunpy.spectra.Callisto` Spectrograms and `~sunpy.net.helio`
 
 - `requests <http://docs.python-requests.org/en/latest/>`_: For the `~sunpy.net.jsoc` submodule.
 
 - `glymur <https://glymur.readthedocs.io/en/latest/>`_ 0.5.9 or later: To enable reading of JPEG2000 files.
-  Glymur requires the installation of the `OpenJPEG C library <http://code.google.com/p/openjpeg/downloads/list>`_.
+  Glymur requires the installation of the `OpenJPEG C library <https://code.google.com/archive/p/openjpeg/downloads>`_.
 
 To run the tests:
 
@@ -98,7 +98,7 @@ To run the tests:
 
 - `mock <https://github.com/testing-cabal/mock>`_
 
-- `pytest <http://pytest.org/latest/>`_
+- `pytest <https://docs.pytest.org/en/latest/>`_
 
 - `pytest-cov <https://github.com/pytest-dev/pytest-cov>`_
 
@@ -143,7 +143,7 @@ Other available options are: `[image]`, `[jpeg2000]` and `[tests]`
 
 .. note::
 
-   ``suds-py3`` is not compatible where as ``suds-jurko`` works fine with SunPy. Hence we depend on ``suds-jurko`` for operations under various modules under `~sunpy.net`.  
+   ``suds-py3`` is not compatible where as ``suds-jurko`` works fine with SunPy. Hence we depend on ``suds-jurko`` for operations under various modules under `~sunpy.net`.
 
 
 .. note::
@@ -153,7 +153,7 @@ Other available options are: `[image]`, `[jpeg2000]` and `[tests]`
     installation.  In this case you may consider using the ``--user`` option
     to install the package into your home directory.  You can read more about
     how to do this in the `pip documentation
-    <http://www.pip-installer.org/en/1.2.1/other-tools.html#using-pip-with-the-user-scheme>`_.
+    <https://pip.pypa.io/en/stable/user_guide/#user-installs>`_.
 
     Alternatively, if you intend to do development on other software that uses
     SunPy, such as an affiliated package, consider installing SunPy into a
@@ -176,7 +176,7 @@ correctly is to use the :func:`sunpy.self_test()` function::
 which will run many of the SunPy tests.
 
 The tests should run and print out any failures, which you can report at
-the `SunPy issue tracker <http://github.com/sunpy/sunpy/issues>`_.
+the `SunPy issue tracker <https://github.com/sunpy/sunpy/issues>`_.
 
 
 Installing the Development Version of SunPy
@@ -220,12 +220,12 @@ Building documentation
     Building the documentation is in general not necessary unless you
     are writing new documentation or do not have internet access, because
     the latest (and archive) versions of SunPy's documentation are
-    available at `docs.sunpy.org <http://docs.sunpy.org>`_ .
+    available at `docs.sunpy.org <http://docs.sunpy.org/en/stable/>`_ .
 
 Building the documentation requires the SunPy source code and some additional
 packages:
 
-    - `Sphinx <http://sphinx.pocoo.org>`_ (and its dependencies) 1.0 or later
+    - `Sphinx <http://www.sphinx-doc.org/en/stable/>`_ (and its dependencies) 1.0 or later
 
     - `Graphviz <http://www.graphviz.org>`_
 
@@ -233,7 +233,7 @@ packages:
 
     Sphinx also requires a reasonably modern LaTeX installation to render
     equations.  Per the `Sphinx documentation
-    <http://sphinx-doc.org/builders.html?highlight=latex#sphinx.builders.latex.LaTeXBuilder>`_,
+    <http://www.sphinx-doc.org/en/stable/builders.html?highlight=latex.html#sphinx.builders.latex.LaTeXBuilder>`_,
     for the TexLive distribution the following packages are required to be
     installed:
 

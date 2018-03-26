@@ -28,7 +28,7 @@ scientific packages.  Anaconda is very powerful and easy to use. Installing
 Anaconda provides (almost) all the packages you need to use SunPy.
 
 To install the Anaconda Python distribution follow the instructions
-`here <http://docs.continuum.io/anaconda/install.html>`_. You will need to
+`here <https://docs.anaconda.com/anaconda/install/>`_. You will need to
 select the correct download for your platform and follow the install procedure.
 Note that although Anaconda makes it simple to switch between Python versions,
 we recommend that new users install the latest Python 3.x version of Anaconda.

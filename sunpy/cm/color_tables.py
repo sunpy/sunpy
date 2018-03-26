@@ -542,7 +542,7 @@ def cor_color_table(number):
 
 # Standard TRACE color RGB triples, as defined by the SSWIDL program
 # trace_colors.pro.
-# See http://hesperia.gsfc.nasa.gov/ssw/trace/idl/util/trace_colors.pro
+# See https://hesperia.gsfc.nasa.gov/ssw/trace/idl/util/trace_colors.pro
 trace_171_r = np.array(
       [  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
          0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
@@ -1037,16 +1037,11 @@ def sot_color_table(measurement):
     try:
         r, g, b = {
             'intensity': (r0, g0, b0),
-            # :todo
-            # 'stokesQUV': (),
-            # 'magnetic field': (),
-            # 'velocity': (),
-            # 'width': (),
             }[measurement]
     except KeyError:
         raise ValueError(
             "Invalid (or not supported) SOT type. Valid values are: "
-            "intensity"  # TODO, stokesQUV, magnetic field, velocity, width."
+            "intensity"
             )
 
     cdict = create_cdict(r, g, b)

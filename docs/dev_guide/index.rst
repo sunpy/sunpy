@@ -14,7 +14,10 @@ We currently recommend the :ref:`newcomers` as the place to start.
 
    newcomers
    version_control
+   pr_review_procedure
+   maintainer_workflow
    code_standards
    config
    documentation
    tests
+   stability

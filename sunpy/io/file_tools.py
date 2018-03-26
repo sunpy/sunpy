@@ -40,12 +40,14 @@ class Readers(dict):
                               "please check that you have the required dependencies installed.")
         return val
 
-#Map the readers
+
+# Map the readers
 _readers = Readers({
-            'fits':fits,
-            'jp2':jp2,
-            'ana':ana
+            'fits': fits,
+            'jp2': jp2,
+            'ana': ana
 })
+
 
 def read_file(filepath, filetype=None, **kwargs):
     """
@@ -73,16 +75,19 @@ def read_file(filepath, filetype=None, **kwargs):
     -----
     Other keyword arguments are passed to the reader used.
     """
-    if filetype:
+    # Use the explicitly passed filetype
+    if filetype is not None:
         return _readers[filetype].read(filepath, **kwargs)
 
+    # Go through the known extensions
     for extension, readername in _known_extensions.items():
         if filepath.endswith(extension) or filetype in extension:
             return _readers[readername].read(filepath, **kwargs)
 
-    # If filetype is not apparent from extension, attempt to detect
+    # If filetype is not apparent from the extension, attempt to detect it
     readername = _detect_filetype(filepath)
     return _readers[readername].read(filepath, **kwargs)
+
 
 def read_file_header(filepath, filetype=None, **kwargs):
     """
@@ -106,15 +111,19 @@ def read_file_header(filepath, filetype=None, **kwargs):
     headers : `list`
         A list of headers
     """
-    if filetype:
+    # Use the explicitly passed filetype
+    if filetype is not None:
         return _readers[filetype].get_header(filepath, **kwargs)
 
+    # Go through the known extensions
     for extension, readername in _known_extensions.items():
         if filepath.endswith(extension) or filetype in extension:
             return _readers[readername].get_header(filepath, **kwargs)
 
+    # If filetype is not apparent from the extension, attempt to detect it
     readername = _detect_filetype(filepath)
     return _readers[readername].get_header(filepath, **kwargs)
+
 
 def write_file(fname, data, header, filetype='auto', **kwargs):
     """
@@ -150,7 +159,7 @@ def write_file(fname, data, header, filetype='auto', **kwargs):
             if filetype in extension:
                 return _readers[readername].write(fname, data, header, **kwargs)
 
-    # Nothing has matched, panic
+    # Nothing has matched, report an error
     raise ValueError("This filetype is not supported")
 
 
@@ -199,8 +208,8 @@ def _detect_filetype(filepath):
     # Checks for one of two signatures found at beginning of all JP2 files.
     # Adapted from ExifTool
     # [1] http://www.sno.phy.queensu.ca/~phil/exiftool/
-    # [2] http://www.jpeg.org/public/fcd15444-2.pdf
-    # [3] ftp://ftp.remotesensing.org/jpeg2000/fcd15444-1.pdf
+    # [2] http://www.hlevkin.com/Standards/fcd15444-2.pdf
+    # [3] http://www.hlevkin.com/Standards/fcd15444-1.pdf
     jp2_signatures = [b"\x00\x00\x00\x0cjP  \x0d\x0a\x87\x0a",
                       b"\x00\x00\x00\x0cjP\x1a\x1a\x0d\x0a\x87\x0a"]
 
@@ -212,13 +221,16 @@ def _detect_filetype(filepath):
     raise UnrecognizedFileTypeError("The requested filetype is not currently "
                                     "supported by SunPy.")
 
+
 class UnrecognizedFileTypeError(IOError):
     """Exception to raise when an unknown file type is encountered"""
     pass
 
+
 class ReaderError(ImportError):
     """Exception to raise when an unknown file type is encountered"""
     pass
+
 
 class InvalidJPEG2000FileExtension(IOError):
     pass

@@ -56,7 +56,7 @@ class LightCurve(object):
 
     References
     ----------
-    * `Pandas Documentation <http://pandas.pydata.org/pandas-docs/dev/dsintro.html>`_
+    * `Pandas Documentation <https://pandas.pydata.org/pandas-docs/stable/>`_
 
     """
     _cond_dispatch = ConditionalDispatch()
@@ -245,18 +245,11 @@ class LightCurve(object):
         **kwargs : `dict`
             Any additional plot arguments that should be used
             when plotting.
-
-        Returns
-        -------
-        fig : `~matplotlib.Figure`
-            A plot figure.
         """
 
         figure = plt.figure()
         self.plot(**kwargs)
         figure.show()
-
-        return figure
 
     @staticmethod
     def _download(uri, kwargs,

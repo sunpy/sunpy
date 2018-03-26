@@ -106,9 +106,6 @@ class MapCube(object):
 
         Parameters
         ----------
-        gamma: float
-            Gamma value to use for the color map
-
         axes: mpl axes
             axes to plot the animation on, if none uses current axes
 

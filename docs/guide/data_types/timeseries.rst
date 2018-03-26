@@ -100,7 +100,7 @@ it into a TimeSeries object: ::
 
 The first line imports the numpy module used to create and store the data.
 The second line creates a basic numpy array of values representing a sine wave.
-We can use this array along with a suitable time storing object (such as AstroPy
+We can use this array along with a suitable time storing object (such as Astropy
 `~astropy.time` or a list of `datetime` objects) to make a Pandas
 `~pandas.core.frame.DataFrame`.  A suitable list of times must contain the same
 number of values as the data, this can be created using: ::
@@ -129,15 +129,15 @@ by sending them as arguments to the factory: ::
     >>> units = OrderedDict([('intensity', u.W/u.m**2)])
     >>> ts_custom = ts.TimeSeries(data, meta, units)
 
-2.2 Creating Custom TimeSeries from an AstroPy Table
+2.2 Creating Custom TimeSeries from an Astropy Table
 ----------------------------------------------------
 
 A Pandas `~pandas.core.frame.DataFrame` is the underlying object used to store
 the data within a TimeSeries, so the above example is the most lightweight to
 create a custom TimeSeries, but being scientific data it will often be more
-convenient to use an AstroPy `~astropy.table.table.Table` and let the factory
+convenient to use an Astropy `~astropy.table.table.Table` and let the factory
 convert this.  An advantage of this method is it allows you to include metadata
-and AstroPy `~astropy.units.quantity.Quantity` values, which are both supported
+and Astropy `~astropy.units.quantity.Quantity` values, which are both supported
 in tables, without additional arguments.  For example: ::
 
     >>> import datetime
@@ -155,7 +155,7 @@ in tables, without additional arguments.  For example: ::
 
 Note that due to the properties of the `~astropy.time.Time` object, this will be
 a mixin column which since it is a single object, limits the versatility of
-the `~astropy.table.Table` a little. For more on mixin columns see the `AstroPy
+the `~astropy.table.Table` a little. For more on mixin columns see the `Astropy
 docs <http://docs.astropy.org/en/stable/table/mixin_columns.html>`_.  The units
 will be taken from the table quantities for each column, the metadata will
 simply be the table.meta dictionary.  You can also explicitly add metadata and
@@ -230,7 +230,7 @@ you provide. You can consider the data as x or y values: ::
 You can read more about indexing at the `pandas documentation website
 <http://pandas.pydata.org/pandas-docs/stable/>`_.
 
-A TimeSeries can also return an AstroPy `~astropy.units.quantity.Quantity` for a
+A TimeSeries can also return an Astropy `~astropy.units.quantity.Quantity` for a
 given column using the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.quantity`
 method, this uses the values stored in the data and units stored in the units
 dictionary to determine the `~astropy.units.quantity.Quantity`: ::
@@ -293,13 +293,13 @@ can read the `pandas documentation website <http://pandas.pydata.org/pandas-docs
 
 Additionally the TimeSeries provides the `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.add_column`
 method which will either add a new column or update a current column if the
-colname is already present. This can take numpy array or preferably an AstroPy
+colname is already present. This can take numpy array or preferably an Astropy
 `~astropy.units.quantity.Quantity` value.  For example: ::
 
     >>> values = u.Quantity(my_timeseries.data['xrsa'].values, my_timeseries.units['xrsa']) * 1000
     >>> my_timeseries.add_column('new col', values)
 
-Note that the values will be converted into the column units if an AstroPy
+Note that the values will be converted into the column units if an Astropy
 `~astropy.units.quantity.Quantity` is given. Caution should be taken when adding
 a new column because this column won't have any associated MetaData entry,
 similarly if you use an array of values it won't add an entry into the units
@@ -326,7 +326,7 @@ for example taking every 2nd value from 0 to 10000 can be done using: ::
     >>> my_timeseries_trunc = my_timeseries.truncate(0,100000,2)
 
 Caution should be used when removing values from the data manually, the
-TimeSeries can't guarantee AstroPy units are correctly preserved when you
+TimeSeries can't guarantee Astropy units are correctly preserved when you
 interact with the data directly.
 
 5.3 Down and Up Sampling a TimeSeries Using Pandas
@@ -346,7 +346,7 @@ You can also upsample, such as: ::
 
 Note, here we upsample to 30 second intervals using ``30S`` and use the pandas
 fill-forward method. Alternatively the back-fill method could be used.  Caution
-should be used when resampling the data, the TimeSeries can't guarantee AstroPy
+should be used when resampling the data, the TimeSeries can't guarantee Astropy
 Units are correctly preserved when you interact with the data directly.
 
 5.4 Concatenating TimeSeries
@@ -388,7 +388,7 @@ object now has 2 entries and shows details on both: ::
 The metadata object is described in more detail in the next section.
 
 
-5.5 Creating an AstroPy Table from a TimeSeries
+5.5 Creating an Astropy Table from a TimeSeries
 -----------------------------------------------
 
 If you want to take the data from your TimeSeries and use it as a `~astropy.table.table.Table`
@@ -398,9 +398,9 @@ method.  For example: ::
     >>> table = my_timeseries.to_table()
 
 Note that this `~astropy.table.table.Table` will contain a mixin column for
-containing the AstroPy `~astropy.time.core.Time` object representing the index,
+containing the Astropy `~astropy.time.core.Time` object representing the index,
 it will also add the relevant units to the columns. One of the most useful
-reasons for doing this is that AstroPy `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.to_table`
+reasons for doing this is that Astropy `~sunpy.timeseries.timeseriesbase.GenericTimeSeries.to_table`
 objects have some very nice options for viewing the data, including the basic
 console view: ::
 
@@ -411,7 +411,7 @@ method: ::
 
     >>> table.show_in_browser(jsviewer=True)  # doctest: +SKIP
 
-For further details about editing AstroPy tables you can read the `astropy
+For further details about editing Astropy tables you can read the `astropy
 documentation website <http://docs.astropy.org/en/stable/table/>`_.
 
 

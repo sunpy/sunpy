@@ -10,7 +10,7 @@ from .sources.noaa import NOAAIndicesClient, NOAAPredictClient, SRSClient
 
 # Import and register other sources
 from sunpy.net.jsoc.jsoc import JSOCClient
-from sunpy.net.vso.vso import VSOClient
+from sunpy.net.vso import VSOClient
 
 # Add the JSOC and VSO Clients explicitly as they do not inherit from
 # GenericClient

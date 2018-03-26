@@ -12,6 +12,7 @@ import types
 import warnings
 
 from sunpy.util.exceptions import SunpyDeprecationWarning
+from sunpy.extern import six
 
 __all__ = ['deprecated']
 
@@ -95,7 +96,7 @@ def deprecated(since, message='', name='', alternative=''):
         func = get_function(func)
 
         def deprecated_func(*args, **kwargs):
-            
+
             category = SunpyDeprecationWarning
 
             warnings.warn(message, category, stacklevel=2)
@@ -162,7 +163,7 @@ def deprecated(since, message='', name='', alternative=''):
         altmessage = ''
         if not message or type(message) is type(deprecate):
             message = ('The {func} {obj_type} is deprecated and may '
-                           'be removed in a future version.')
+                       'be removed in a future version.')
             if alternative:
                 altmessage = '\n        Use {} instead.'.format(alternative)
 
@@ -182,3 +183,39 @@ def deprecated(since, message='', name='', alternative=''):
         return deprecate(message)
 
     return deprecate
+
+
+class add_common_docstring(object):
+    """
+    A function decorator that will append and/or prepend an addendum
+    to the docstring of the target function.
+
+
+    Parameters
+    ----------
+    append : `str`, optional
+        A string to append to the end of the functions docstring.
+
+    prepend : `str`, optional
+        A string to prepend to the start of the functions docstring.
+
+    **kwargs : `dict`, optional
+        A dictionary to format append and prepend strings.
+    """
+
+    def __init__(self, append=None, prepend=None, **kwargs):
+        if kwargs:
+            append = append.format(**kwargs)
+            prepend = prepend.format(**kwargs)
+        self.append = append
+        self.prepend = prepend
+
+    def __call__(self, func):
+        func.__doc__ = func.__doc__ if func.__doc__ else ''
+        self.append = self.append if self.append else ''
+        self.prepend = self.prepend if self.prepend else ''
+        if self.append and isinstance(func.__doc__, six.string_types):
+            func.__doc__ += self.append
+        if self.prepend and isinstance(func.__doc__, six.string_types):
+            func.__doc__ = self.prepend + func.__doc__
+        return func

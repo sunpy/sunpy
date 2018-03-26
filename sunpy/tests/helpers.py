@@ -6,6 +6,7 @@ from __future__ import absolute_import, division, print_function
 import warnings
 import tempfile
 import platform
+import os
 
 import pytest
 import numpy as np
@@ -31,19 +32,12 @@ else:
     else:
         SKIP_GLYMUR = True
 
-# Skip ana tests if we are on Windows or we can't import the c extension.
-if platform.system() == 'Windows':
+try:
+    from sunpy.io import _pyana
+except ImportError as e:
     SKIP_ANA = True
 else:
     SKIP_ANA = False
-
-try:
-    import sunpy.io._pyana
-except ImportError:
-    SKIP_ANA = True
-else:
-    SKIP_ANA = SKIP_ANA or False
-
 
 skip_windows = pytest.mark.skipif(platform.system() == 'Windows', reason="Windows")
 
@@ -81,6 +75,8 @@ def figure_test(test_function):
     @pytest.mark.figure
     @wraps(test_function)
     def wrapper(*args, **kwargs):
+        if not os.path.exists(hash.HASH_LIBRARY_FILE):
+            pytest.xfail('Could not find a figure hash library at {}'.format(hash.HASH_LIBRARY_FILE))
         plt.figure()
         name = "{0}.{1}".format(test_function.__module__, test_function.__name__)
         pngfile = tempfile.NamedTemporaryFile(delete=False)

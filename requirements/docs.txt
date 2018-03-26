@@ -4,6 +4,8 @@
 -r dev.txt
 -r extra.txt
 
+ruamel.yaml
 sphinx
-git+https://github.com/sunpy/sunpy-sphinx-theme.git@v0.1.0a3
-sphinx-gallery
+sunpy-sphinx-theme
+git+https://github.com/sphinx-gallery/sphinx-gallery
+sphinx-astropy

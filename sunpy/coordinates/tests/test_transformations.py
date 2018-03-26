@@ -2,11 +2,29 @@ import numpy as np
 
 import astropy.units as u
 from astropy.tests.helper import quantity_allclose, assert_quantity_allclose
-from astropy.coordinates import SkyCoord, get_body_barycentric
+from astropy.coordinates import SkyCoord, get_body_barycentric, HeliocentricTrueEcliptic, Angle
 from astropy.time import Time
 
-from sunpy.coordinates import Helioprojective, HeliographicStonyhurst, HeliographicCarrington, get_sun_L0
+from sunpy.coordinates import (Helioprojective, HeliographicStonyhurst,
+                               HeliographicCarrington, Heliocentric,
+                               get_sun_L0, get_earth)
 from sunpy.time import parse_time
+
+
+def test_hcc_to_hgs():
+    '''
+    Check that a coordinate pointing to the observer in Heliocentric
+    coordinates maps to the lattitude/longitude of the observer in
+    HeliographicStonyhurst coordinates.
+    '''
+    lat = 10 * u.deg
+    lon = 20 * u.deg
+    observer = HeliographicStonyhurst(lat=lat, lon=lon)
+    hcc_in = Heliocentric(x=0*u.km, y=0*u.km, z=1*u.km, observer=observer)
+    hgs_out = hcc_in.transform_to(HeliographicStonyhurst)
+
+    assert_quantity_allclose(hgs_out.lat, lat)
+    assert_quantity_allclose(hgs_out.lon, lon)
 
 
 def test_hpc_hpc():
@@ -103,16 +121,36 @@ def test_hcrs_hgs_array_obstime():
     assert quantity_allclose(earth_hgs_1.radius, earth_hgs[1].radius, rtol=1e-10)
 
 
+def test_hgs_hcrs():
+    # This test checks the HGS->HCRS transformation by transforming from HGS to
+    # HeliocentricTrueEcliptic (HTE).  It will fail if there are errors in Astropy's
+    # HCRS->ICRS or ICRS->HTE transformations.
+
+    # Use published HGS coordinates in the Astronomical Almanac (2013), pages C6-C7
+    obstime = Time('2013-01-28')
+    earth_hgs = SkyCoord(0*u.deg, -5.73*u.deg, 0.9848139*u.AU, frame=HeliographicStonyhurst,
+                         obstime=obstime)
+
+    # Transform to HTE at observation-time equinox
+    earth_hte = earth_hgs.transform_to(HeliocentricTrueEcliptic(equinox=obstime))
+
+    # Validate against published values from the Astronomical Almanac (2013), page C6 per page E2
+    # The dominant source of inaccuracy is the limited precision of the published B0 used above
+    assert quantity_allclose(earth_hte.lon, Angle('308d13m30.51s') - 180*u.deg, atol=5*u.arcsec)
+    assert quantity_allclose(earth_hte.lat, -Angle('-0.27s'), atol=10*u.arcsec)
+    assert quantity_allclose(earth_hte.distance, 0.9848139*u.AU, atol=5e-7*u.AU)
+
+
 def test_hgs_hgc_roundtrip():
     obstime = "2011-01-01"
 
     hgsin = HeliographicStonyhurst(lat=0*u.deg, lon=0*u.deg, obstime=obstime)
-    hgcout = hgsin.transform_to(HeliographicCarrington)
+    hgcout = hgsin.transform_to(HeliographicCarrington(obstime=obstime))
 
     assert_quantity_allclose(hgsin.lat, hgcout.lat)
     assert_quantity_allclose(hgcout.lon, get_sun_L0(obstime))
 
-    hgsout = hgcout.transform_to(HeliographicStonyhurst)
+    hgsout = hgcout.transform_to(HeliographicStonyhurst(obstime=obstime))
 
     assert_quantity_allclose(hgsout.lat, hgsin.lat)
     assert_quantity_allclose(hgsout.lon, hgsin.lon)

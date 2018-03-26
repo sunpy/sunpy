@@ -45,5 +45,5 @@ top_right = SkyCoord(0*u.arcsec, -200 * u.arcsec, frame=swap_map.coordinate_fram
 bottom_left = SkyCoord(-900 * u.arcsec, -900 * u.arcsec, frame=swap_map.coordinate_frame)
 swap_submap = swap_map.submap(bottom_left, top_right)
 swap_submap.peek(draw_limb=True, draw_grid=True)
-
+plt.tight_layout(pad=1.00)
 plt.show()

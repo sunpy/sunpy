@@ -29,7 +29,7 @@ def to_norm(arr):
     >>> import numpy as np
     >>> from sunpy.image.util import to_norm
     >>> out = to_norm(np.array([-1, 0, 1]))
-    >>> out
+    >>> out # doctest: +FLOAT_CMP
     array([ 0. ,  0.5,  1. ])
     """
     arr = np.array(arr, dtype='double')

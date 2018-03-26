@@ -3,7 +3,7 @@ Spectra
 =======
 
 .. warning:: This module is under development! It is being moved into its own
-             `repository <https://github.com/sunpy/spectra>`__.
+             `repository <http://docs.sunpy.org/projects/radiospectra/>`__.
 
 Spectrograms
 ------------
@@ -113,4 +113,4 @@ frequencies of BIR): ::
     d = CallistoSpectrogram.from_range('BIR', '2011-09-22 10:15:00', '2011-09-22 10:45:00')
 
 .. _e-Callisto: http://www.e-callisto.org/
-.. _Rosse Observatory: http://rosseobservatory.ie/
+.. _Rosse Observatory: http://www.rosseobservatory.ie

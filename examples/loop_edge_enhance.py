@@ -39,7 +39,7 @@ edge_enhanced_im = np.hypot(sx, sy)
 
 edge_map = sunpy.map.Map(edge_enhanced_im, aia_smap.meta)
 
-fig = plt.figure(figsize=(12, 4))
+fig = plt.figure(figsize=(12, 6))
 ax = fig.add_subplot(121, projection=aia_smap)
 aia_smap.plot()
 ax = fig.add_subplot(122, projection=aia_smap)
