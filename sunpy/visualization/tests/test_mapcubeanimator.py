@@ -9,6 +9,7 @@ import pytest
 import sunpy.map
 from sunpy.visualization import mapcubeanimator
 from sunpy.data import test
+from sunpy.tests.helpers import figure_test
 
 
 @pytest.fixture
@@ -39,8 +40,7 @@ def test_updatefig(map_animator):
     t = map_animator.updatefig(0, map_animator.im, 10)
     assert t is None
 
-
-def test_plot_start_image(map_animator):
-    t = map_animator.plot_start_image(plt.axes([0, 0, 0, 0]))
-    s = map_animator.mapcube[0].plot(axes=plt.axes([0, 0, 0, 0]))
-    assert t.axes == s.axes
+@figure_test
+def test_plot_mapcubeanimator(map_animator):
+    map_animator.im
+    return plt.gcf()
