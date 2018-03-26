@@ -43,4 +43,4 @@ def test_updatefig(map_animator):
 @figure_test
 def test_plot_mapcubeanimator(map_animator):
     map_animator.im
-    return plt.gcf()
+    
