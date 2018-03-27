@@ -9,6 +9,7 @@ import matplotlib.animation as mplanim
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import mpl_toolkits.axes_grid1.axes_size as Size
 import astropy.wcs
+import astropy.units as u
 
 from sunpy.extern import six
 from sunpy.extern.six.moves import range
@@ -979,21 +980,19 @@ class ImageAnimatorWCS(ImageAnimator):
     Extra keywords are passed to imshow.
 
     """
-    def __init__(self, data, wcs=None, image_axes=[-1, -2], unit_x_axis=None, unit_y_axis=None,
+    
+    
+    def __init__(self, data, wcs=None, image_axes=[-1, -2], 
                  axis_ranges=None, **kwargs):
         if not isinstance(wcs, astropy.wcs.WCS):
             raise ValueError("wcs data should be provided.")
         if wcs.wcs.naxis is not data.ndim:
             raise ValueError("Dimensions of data and wcs not matching")
         self.wcs = wcs
-        list_slices_wcsaxes = [0 for i in range(self.wcs.naxis)]
-        list_slices_wcsaxes[image_axes[0]] = 'x'
-        list_slices_wcsaxes[image_axes[1]] = 'y'
-        self.slices_wcsaxes = list_slices_wcsaxes[::-1]
-        self.unit_x_axis = unit_x_axis
-        self.unit_y_axis = unit_y_axis
-        super(ImageAnimatorWCS, self).__init__(data, image_axes=image_axes,
+                        
+        super(ImageAnimatorWCS, self).__init__(data, image_axes=image_axes, 
                                                axis_ranges=axis_ranges, **kwargs)
+        
 
     def _get_main_axes(self):
         axes = self.fig.add_axes([0.1, 0.1, 0.8, 0.8], projection=self.wcs,
@@ -1002,12 +1001,30 @@ class ImageAnimatorWCS(ImageAnimator):
         return axes
 
     def _set_unit_in_axis(self, axes):
+        self._set_image_axis_units(unit_x_axis, unit_y_axis)
         if self.unit_x_axis is not None:
             axes.coords[2].set_format_unit(self.unit_x_axis)
             axes.coords[2].set_ticks(exclude_overlapping=True)
         if self.unit_y_axis is not None:
             axes.coords[1].set_format_unit(self.unit_y_axis)
             axes.coords[1].set_ticks(exclude_overlapping=True)
+            
+    def set_image_axes_units(self, unit_x_axis=None, unit_y_axis=None):
+        if(unit_x_axis is not None):
+            self.unit_x_axis = u.Unit(unit_x_axis)
+        else:
+            self.unit_x_axis = unit_x_axis
+         
+        if(unit_y_axis is not None):
+            self.unit_y_axis = u.Unit(unit_y_axis)
+        else:
+            self.unit_y_axis = unit_y_axis    
+                   
+        list_slices_wcsaxes = [0 for i in range(self.wcs.naxis)]
+        list_slices_wcsaxes[image_axes[0]] = 'x'
+        list_slices_wcsaxes[image_axes[1]] = 'y'
+        self.slices_wcsaxes = list_slices_wcsaxes[::-1]
+        axes = self._get_main_axes()
 
     def plot_start_image(self, ax):
         """Sets up plot of initial image."""
