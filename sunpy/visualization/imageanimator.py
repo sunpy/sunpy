@@ -1001,13 +1001,16 @@ class ImageAnimatorWCS(ImageAnimator):
         self._set_unit_in_axis(axes)
         return axes
 
-    def _set_unit_in_axis(self, axes):
-        if self.unit_x_axis is not None:
-            axes.coords[2].set_format_unit(self.unit_x_axis)
-            axes.coords[2].set_ticks(exclude_overlapping=True)
-        if self.unit_y_axis is not None:
-            axes.coords[1].set_format_unit(self.unit_y_axis)
-            axes.coords[1].set_ticks(exclude_overlapping=True)
+    def _set_image_axes_units(self, unit_x_axis=None, unit_y_axis=None):
+        if(unit_x_axis is not None):
+            self.unit_x_axis = u.Unit(unit_x_axis)
+        else:
+            self.unit_x_axis = self.wcs.wcs.cunit[0]
+
+        if(unit_y_axis is not None):
+            self.unit_y_axis = u.Unit(unit_y_axis)
+        else:
+            self.unit_y_axis = self.wcs.wcs.cunit[1]
 
     def plot_start_image(self, ax):
         """Sets up plot of initial image."""
@@ -1015,10 +1018,42 @@ class ImageAnimatorWCS(ImageAnimator):
                        'origin': 'lower',
                        }
         imshow_args.update(self.imshow_kwargs)
+        ax.ticklabel_format(style='sci')
         im = ax.imshow(self.data[self.frame_index], **imshow_args)
         if self.if_colorbar:
             self._add_colorbar(im)
         return im
+
+    def plot_user_input(self, axes, tick_spacing, x_tick_position = None, y_tick_position = None,  xlabel = None, ylabel = None ):
+        """"Lets the user set the tick spacing and tick labels with proper tick position""""
+        self._set_image_axis_units(unit_x_axis, unit_y_axis)
+        if self.unit_x_axis is not None:
+            axes.coords[2].set_format_unit(self.unit_x_axis)
+        if self.unit_y_axis is not None:
+            axes.coords[1].set_format_unit(self.unit_y_axis)
+
+        axes.coords[2].set_ticks(spacing = tick_spacing * self.wcs.wcs.cunit[0], exclude_overlapping=True)
+        axes.coords[1].set_ticks(spacing = tick_spacing * self.wcs.wcs.cunit[1], exclude_overlapping=True)
+
+        if xlabel is None:
+            axes.coords[2].set_axislabel('Galactic Latitude')
+        else:
+            axes.coords[2].set_axislabel(xlabel)
+        if ylabel is None:
+            axes.coords[1].set_axislabel('Galactic Longitude')
+        else:
+            axes.coords[1].set_axislabel(ylabel)
+
+        if x_tick_position is not None:
+            axes.coords[2].set_axislabel_position(x_tick_position)
+        else:
+            axes.coords[2].set_axislabel_position('b')
+        if y_tick_position is not None:
+            axes.coords[1].set_axislabel_position(y_tick_position)
+        else:
+            axes.coords[1].set_axislabel_position('l')
+
+
 
     def update_plot(self, val, im, slider):
         """Updates plot based on slider/array dimension being iterated."""
