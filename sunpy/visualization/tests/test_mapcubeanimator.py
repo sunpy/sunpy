@@ -37,10 +37,11 @@ def test_mapcubeanimator_instances(map_animator):
 
 
 def test_updatefig(map_animator):
-    t = map_animator.updatefig(0, map_animator.im, 10)
-    assert t is None
+    index_before = map_animator.active_slider
+    map_animator.updatefig(0, map_animator.im, 10)
+    index_after = map_animator.active_slider
+    assert index_after == index_before
 
 @figure_test
 def test_plot_mapcubeanimator(map_animator):
-    map_animator.im
-    
+    map_animator.plot_start_image(plt.axes([0, 0, 1 , 1]))
