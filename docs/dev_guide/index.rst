@@ -20,3 +20,4 @@ We currently recommend the :ref:`newcomers` as the place to start.
    config
    documentation
    tests
+   stability
