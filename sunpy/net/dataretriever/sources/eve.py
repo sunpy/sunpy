@@ -16,16 +16,15 @@ __all__ = ['EVEClient']
 BASEURL = ('http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/'
            'L0CS/SpWx/%Y/%Y%m%d_EVE_L0CS_DIODES_1m.txt')
 
-
 class EVEClient(GenericClient):
     """
-    This EVEClient is for the Level 0C data from http://lasp.colorado.edu/home/eve/data/data-access/.
+    This EVEClient is for the Level 0C data
+    from http://lasp.colorado.edu/home/eve/data/data-access/.
 
     To use this client you must request Level 0 data.
 
     Examples
     --------
-
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
     ...                       a.Instrument('EVE'), a.Level(0))  #doctest: +REMOTE_DATA
@@ -38,7 +37,6 @@ class EVEClient(GenericClient):
     >>> results  #doctest: +SKIP
     <sunpy.net.fido_factory.UnifiedResponse object at 0x7f7fb0bb1a58>
     Results from 1 Provider:
-
     2 Results from the EVEClient:
          Start Time           End Time      Source Instrument Wavelength
            str19               str19         str3     str3       str3
@@ -50,7 +48,7 @@ class EVEClient(GenericClient):
 
     def _get_url_for_timerange(self, timerange, **kwargs):
         """
-        Returns list of URLS corresponding to value of input timerange.
+        Return list of URLS corresponding to value of input timerange.
 
         Parameters
         ----------
@@ -61,8 +59,8 @@ class EVEClient(GenericClient):
         -------
         urls : list
             list of URLs corresponding to the requested time range
-        """
 
+        """
         # If start of time range is before 00:00, converted to such, so
         # files of the requested time ranger are included.
         # This is done because the archive contains daily files.
