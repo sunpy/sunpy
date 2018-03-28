@@ -509,13 +509,19 @@ SunPy's JSOC module is in `sunpy.net`.  It can be imported as follows:
 
 This creates your client object.
 
+
 Making a query
 ^^^^^^^^^^^^^^
 
 Querying JSOC using the JSOCClient is completely similar to what we were doing with Fido.
+The biggest difference is that JSOC requires a registered email address before you are allowed to make a request.
+See `this <http://jsoc.stanford.edu/ajax/register_email.html>` to register your email address.
+We can add email address to the search query with the `~jsoc.Notify` attribute.
+Please note you can search without this but right now, you can not add the email address after the search (this true?).
 
     >>> from sunpy.net import attrs as a
-    >>> res = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.v_45s'))  # doctest: +REMOTE_DATA
+    >>> res = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T01:00:00'), a.jsoc.Series('hmi.v_45s'),
+    ...                     a.jsoc.Notify('sunpy@sunpy.org'))  # doctest: +REMOTE_DATA
 
 Apart from the function name, everything is same. You need to pass the same values in the
 `~sunpy.net.jsoc.JSOCClient.search` as you did in `~sunpy.net.fido_factory.UnifiedDownloaderFactory.search`.
@@ -529,7 +535,6 @@ downloaded. Only then, can we download them. The download request can be staged 
 
     >>> requests = client.request_data(res)  # doctest: +SKIP
     >>> print(requests)  # doctest: +SKIP
-
     <ExportRequest id="JSOC_20170713_1461", status=0>
 
 The function `~sunpy.net.jsoc.JSOCClient.request_data` stages the request.
@@ -541,7 +546,9 @@ If you are making more than 1 query at a time, it will return a list of ExportRe
 list elements accordingly. You can get the id and status of the request (if it is not a list) by:
 
     >>> requests.id  # doctest: +SKIP
+    JSOC_20170713_1461
     >>> requests.status  # doctest: +SKIP
+    0
 
 You can also check the status of a request made by:
 

@@ -32,13 +32,13 @@ Sphinx.
 Usage
 #####
 
-All of the SunPy documentation is contained in the ``doc/source`` folder and
+All of the SunPy documentation is contained in the ``docs`` folder and
 code comments. The examples from the example gallery can be found in
 ``examples``. To build the documentation locally you must have Sphinx
 (as well as Numpydoc, astropy-helpers, and sphinx-gallery) installed on
 your computer. In the root directory run ::
 
-    python setup.py build_docs
+    python setup.py build_docs -w -l 2> /dev/null
 
 This will generate HTML documentation for SunPy in the ``docs/_build/html``
 directory. The gallery examples are located under
