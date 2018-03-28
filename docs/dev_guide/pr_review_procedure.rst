@@ -26,6 +26,20 @@ Before the ‘merge’ button is clicked the following criteria must be met:
 
 It is important that approval for merging the PR is done on the comment thread, as this becomes part of the ‘permanent record’, this includes in during community meetings or in chat.
 
+Continuous Integration
+======================
+
+Currently we have a variety of bots or services that respond or activate on an opened pull request.
+While we try not to change them, they have undergone several changes with the aim of making them clear and focused on specific issues.
+
+*  pep8speaks: Performs a PEP8 check on any submitted code.
+*  `CircleCi <https://circleci.com/gh/sunpy/sunpy/>`_: Tests to see if sunpy installs and builds the documentation.
+*  Giles: Returns a link if the documentation does build successfully.
+*  `Travis <https://travis-ci.org/sunpy/sunpy>`_: Runs our test suite to make sure it passes on Linux and mac OS.
+*  `AppVeyor <https://ci.appveyor.com/project/sunpy/sunpy>`_: Runs our test suite to make sure it passes on Windows.
+*  `CodeCov <https://codecov.io/gh/sunpy/sunpy/>`_: Checks how many lines of the code lack test coverage.
+
+
 SunPy GitHub Groups
 ===================
 

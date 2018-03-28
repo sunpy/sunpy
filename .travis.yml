@@ -114,7 +114,7 @@ matrix:
 
          - python: 3.5
            stage: Cron tests
-           env: SETUP_CMD='test --figure' ASTROPY_VERSION='dev'
+           env: SETUP_CMD='test --figure-only' ASTROPY_VERSION='dev'
                 CONDA_DEPENDENCIES='astropy'
 
          # Previous numpy is tested on an older python version
