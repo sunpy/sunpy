@@ -598,7 +598,10 @@ class JSOCClient(object):
         # number that have been completed.
         if results is None:
             results = Results(lambda _: downloader.stop())
+
         urls = []
+        # FIXME
+        results.map_ = []
         for request in requests:
 
             if request.status == 0:
@@ -614,8 +617,10 @@ class JSOCClient(object):
                                         "has already been downloaded"
                         print(print_message.format(data['filename']))
                         # Add the file on disk to the output
-                        results.map_.update({data['filename']:
-                                            {'path': os.path.join(path, data['filename'])}})
+                        # FIXME
+                        #results.map_.update({data['filename']:
+                        #                    {'path': os.path.join(path, data['filename'])}})
+                        results.map_.append(os.path.join(path, data['filename']))
 
                 if progress:
                     print_message = "{0} URLs found for download. Totalling {1}MB"
