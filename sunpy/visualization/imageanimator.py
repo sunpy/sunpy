@@ -844,9 +844,8 @@ class LineAnimator(ArrayAnimator):
         # Check inputs.
         self.plot_axis_index = int(plot_axis_index)
         if self.plot_axis_index not in range(-data.ndim, data.ndim):
-            raise ValueError("plot_axis_index must be either 0 or 1 (or equivalent "
-                             "negative indices) referring to the axis of data to be "
-                             "used for a single plot.")
+            raise ValueError("plot_axis_index must be within range of number of data dimensions"
+                             " (or equivalent negative indices).")
         if data.ndim < 2:
             raise ValueError("data must have at least two dimensions.  One for data "
                              "for each single plot and at least one for time/iteration.")
