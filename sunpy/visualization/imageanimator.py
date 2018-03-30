@@ -724,18 +724,34 @@ class ImageAnimator(ArrayAnimator):
 
         # If value along an axis is set with an array, generate a NonUniformImage
         if self.non_regular_plot_axis:
+            # If user has inverted the axes, transpose the data so the dimensions match.
             if self.image_axes[0] < self.image_axes[1]:
                 data = self.data[self.frame_index].transpose()
             else:
                 data = self.data[self.frame_index]
+            # Initialize a NonUniformImage with the relevant data and axis values and
+            # add the image to the axes.
             im = mpl.image.NonUniformImage(ax, **imshow_args)
             im.set_data(self.axis_ranges[self.image_axes[0]],
                         self.axis_ranges[self.image_axes[1]], data)
             ax.add_image(im)
-            ax.set_xlim(self.axis_ranges[self.image_axes[0]][0],
-                        self.axis_ranges[self.image_axes[0]][-1])
-            ax.set_ylim(self.axis_ranges[self.image_axes[1]][0],
-                        self.axis_ranges[self.image_axes[1]][-1])
+            # Define the xlim and ylim bearing in mind that the pixel values along
+            # the axes are plotted in the middle of the pixel.  Therefore make sure
+            # there's half a pixel buffer either side of the ends of the axis ranges.
+            xlim = (self.axis_ranges[self.image_axes[0]][0] - \
+                    (self.axis_ranges[self.image_axes[0]][1] - \
+                     self.axis_ranges[self.image_axes[0]][0]) / 2.,
+                    self.axis_ranges[self.image_axes[0]][-1] + \
+                    (self.axis_ranges[self.image_axes[0]][-1] - \
+                     self.axis_ranges[self.image_axes[0]][-2]) / 2.)
+            ylim = (self.axis_ranges[self.image_axes[1]][0] - \
+                    (self.axis_ranges[self.image_axes[1]][1] - \
+                     self.axis_ranges[self.image_axes[1]][0]) / 2.,
+                    self.axis_ranges[self.image_axes[1]][-1] + \
+                    (self.axis_ranges[self.image_axes[1]][-1] - \
+                     self.axis_ranges[self.image_axes[1]][-2]) / 2.)
+            ax.set_xlim(xlim)
+            ax.set_ylim(ylim)
         else:
             # Else produce a more basic plot with regular axes.
             im = ax.imshow(self.data[self.frame_index], **imshow_args)
