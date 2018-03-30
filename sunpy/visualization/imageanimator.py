@@ -1025,7 +1025,7 @@ class ImageAnimatorWCS(ImageAnimator):
         return im
 
     def plot_user_input(self, axes, tick_spacing, x_tick_position = None, y_tick_position = None,  xlabel = None, ylabel = None ):
-        """"Lets the user set the tick spacing and tick labels with proper tick position""""
+        """Lets the user set the tick spacing and tick labels with proper tick position."""
         self._set_image_axis_units(unit_x_axis, unit_y_axis)
         if self.unit_x_axis is not None:
             axes.coords[2].set_format_unit(self.unit_x_axis)
