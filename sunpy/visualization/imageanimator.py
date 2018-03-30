@@ -526,6 +526,21 @@ class ArrayAnimator(BaseFuncAnimator):
             raise ValueError("spatial_axes and slider_axes mismatch")
 
         self.axis_ranges = self._sanitize_axis_ranges(axis_ranges, data)
+        # Due to some reason, if a slider axis range is of length two and the
+        # difference between the entries is 1, the slider start and end both get
+        # set to the 0th value stopping the animation updating the plot.
+        # In this case iterate the latter element by one to get the desired behaviour.
+        hacked_axis_ranges = [False] * len(self.axis_ranges)
+        index_changed = [None] * len(self.axis_ranges)
+        for i in range(len(self.axis_ranges)):
+            if len(self.axis_ranges[i]) == 2 and data.shape[i] == 2:
+                if 0 <= (self.axis_ranges[i][-1] - self.axis_ranges[i][0]) <= 1:
+                    axis_ranges[i][-1] += 1
+                    index_changed[i] = -1
+                elif -1 <= (self.axis_ranges[i][-1] - self.axis_ranges[i][0]) <= 0:
+                    axis_ranges[i][0] -= 1
+                    index_changed[i] = 0
+                hacked_axis_ranges[i] = True
 
         # create data slice
         self.frame_slice = [slice(None)] * self.naxis
@@ -536,6 +551,15 @@ class ArrayAnimator(BaseFuncAnimator):
                        'slider_ranges': [self.axis_ranges[i] for i in self.slider_axes]}
         base_kwargs.update(kwargs)
         BaseFuncAnimator.__init__(self, data, **base_kwargs)
+
+        # Undo hack of length 2 axis ranges
+        for i in np.arange(len(self.axis_ranges)):
+            if len(self.axis_ranges[i]) == 2 and data.shape[i] == 2:
+                if hacked_axis_ranges[i]:
+                    if index_changed[i] == 0:
+                        axis_ranges[i][0] += 1
+                    elif index_changed[i] == -1:
+                        axis_ranges[i][-1] -= 1
 
     @property
     def frame_index(self):
@@ -581,7 +605,7 @@ class ArrayAnimator(BaseFuncAnimator):
         """
         # If no axis range at all make it all [min,max] pairs
         if axis_ranges is None:
-            axis_ranges = [[0, i] for i in data.shape]
+            axis_ranges = [None] * data.ndim
 
         # need the same number of axis ranges as axes
         if len(axis_ranges) != data.ndim:
@@ -590,11 +614,11 @@ class ArrayAnimator(BaseFuncAnimator):
         # For each axis validate and translate the axis_ranges
         for i, d in enumerate(data.shape):
             # If [min,max] pair or None
-            if axis_ranges[i] is None or len(axis_ranges[i]) == 2:
+            if axis_ranges[i] is None or (len(axis_ranges[i]) == 2 and d > 2):
                 # If min==max or None
                 if axis_ranges[i] is None or axis_ranges[i][0] == axis_ranges[i][1]:
                     if i in self.slider_axes:
-                        axis_ranges[i] = np.arange(0, d)
+                        axis_ranges[i] = np.arange(0, d+1)
                     else:
                         axis_ranges[i] = [0, d]
                         # min max pair for slider axes should be converted
@@ -612,12 +636,6 @@ class ArrayAnimator(BaseFuncAnimator):
                                  "of axes in data whose elements are either None, [min,max], "
                                  "or a list/array of same length as the plot/image axis of data.")
 
-            # Due to some reason, if a slider axis range is of length two and the
-            # difference between the entries is 1, the slider start and end both get
-            # set to the 0th value stopping the animation updating the plot.
-            # In this case iterate the latter element by one to get the desired behaviour.
-            if len(axis_ranges[i]) == 2 and (axis_ranges[i][-1] - axis_ranges[i][0] == 1):
-                axis_ranges[i][-1] += 1
         return axis_ranges
 
     @abc.abstractmethod
