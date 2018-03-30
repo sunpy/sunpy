@@ -755,37 +755,6 @@ class ImageAnimator(ArrayAnimator):
                 im.set_array(self.data[self.frame_index])
             slider.cval = val
 
-    def _sanitize_axis_ranges(self, axis_ranges, data):
-        """
-        This method takes the various allowed values of axis_ranges and returns
-        them in a standardized way for the rest of the class to use.
-
-        The outputted axis_ranges describe the physical coordinates of the
-        array axes.
-
-        The allowed values of axis_range is either None or a list.
-        If axis_ranges is None then all axes are assumed to be not scaled and
-        use array indices.
-
-        Where axis_ranges is a list it must have the same length as the number
-        of axis as the array and each element must be one of the following:
-
-            * None: Build a min,max pair or linspace array of array indices
-            * [min, max]: leave for image axes or convert to a array for slider axes
-            (from min to max in axis length steps)
-            * [min, max] pair where min == max: convert to array indies min,max pair or array.
-            * array of axis length, check that it was passed for a slider axes and do nothing
-            if it was, error if it is not.
-        """
-        # Run super class's version of this function.
-        axis_ranges = super(ImageAnimator, self)._sanitize_axis_ranges(axis_ranges, data)
-        # Check that axis ranges which are array type are only for slider axes.
-        #for i, d in enumerate(data.shape):
-        #    if len(axis_ranges[i]) == d:
-        #        if i not in self.slider_axes:
-        #            raise ValueError("Slider axes mis-match, non-slider axes need [min,max] pairs")
-        return axis_ranges
-
 
 class LineAnimator(ArrayAnimator):
     """
