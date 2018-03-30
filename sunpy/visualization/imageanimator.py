@@ -3,6 +3,7 @@
 import abc
 
 import numpy as np
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.widgets as widgets
 import matplotlib.animation as mplanim
@@ -593,13 +594,13 @@ class ArrayAnimator(BaseFuncAnimator):
                 # If min==max or None
                 if axis_ranges[i] is None or axis_ranges[i][0] == axis_ranges[i][1]:
                     if i in self.slider_axes:
-                        axis_ranges[i] = np.linspace(0, d, d)
+                        axis_ranges[i] = np.arange(0, d)
                     else:
                         axis_ranges[i] = [0, d]
                         # min max pair for slider axes should be converted
                         # to an array
                 elif i in self.slider_axes:
-                    axis_ranges[i] = np.linspace(axis_ranges[i][0], axis_ranges[i][1], d)
+                    axis_ranges[i] = np.arange(axis_ranges[i][0], axis_ranges[i][1])
 
             # If we have a whole list of values for the axis, make sure we are a slider axis.
             elif len(axis_ranges[i]) == d or axis_ranges[i].shape == data.shape:
@@ -690,6 +691,10 @@ class ImageAnimator(ArrayAnimator):
         # Define number of slider axes.
         self.naxis = data.ndim
         self.num_sliders = self.naxis-2
+        # Define marker to determine if plot axes values are supplied via array of
+        # pixel values or min max pair. This will determine the type of image produced
+        # and hence how to plot and update it.
+        self.non_regular_plot_axis = False
         # Run init for parent class
         super(ImageAnimator, self).__init__(data, image_axes=image_axes,
                                             axis_ranges=axis_ranges, **kwargs)
@@ -700,15 +705,33 @@ class ImageAnimator(ArrayAnimator):
         extent = []
         # reverse because numpy is in y-x and extent is x-y
         for i in self.image_axes[::-1]:
-            extent += self.axis_ranges[i]
+            if self.non_regular_plot_axis is False and len(self.axis_ranges[i]) > 2:
+                self.non_regular_plot_axis = True
+            extent.append(self.axis_ranges[i][0])
+            extent.append(self.axis_ranges[i][-1])
 
         imshow_args = {'interpolation': 'nearest',
                        'origin': 'lower',
-                       'extent': extent,
-                       }
-
+                       'extent': extent}
         imshow_args.update(self.imshow_kwargs)
-        im = ax.imshow(self.data[self.frame_index], **imshow_args)
+
+        # If value along an axis is set with an array, generate a NonUniformImage
+        if self.non_regular_plot_axis:
+            if self.image_axes[0] < self.image_axes[1]:
+                data = self.data[self.frame_index].transpose()
+            else:
+                data = self.data[self.frame_index]
+            im = mpl.image.NonUniformImage(ax, **imshow_args)
+            im.set_data(self.axis_ranges[self.image_axes[0]],
+                        self.axis_ranges[self.image_axes[1]], data)
+            ax.add_image(im)
+            ax.set_xlim(self.axis_ranges[self.image_axes[0]][0],
+                        self.axis_ranges[self.image_axes[0]][-1])
+            ax.set_ylim(self.axis_ranges[self.image_axes[1]][0],
+                        self.axis_ranges[self.image_axes[1]][-1])
+        else:
+            # Else produce a more basic plot with regular axes.
+            im = ax.imshow(self.data[self.frame_index], **imshow_args)
         if self.if_colorbar:
             self._add_colorbar(im)
 
@@ -721,7 +744,15 @@ class ImageAnimator(ArrayAnimator):
         ind = np.argmin(np.abs(self.axis_ranges[ax_ind] - val))
         self.frame_slice[ax_ind] = ind
         if val != slider.cval:
-            im.set_array(self.data[self.frame_index])
+            if self.non_regular_plot_axis:
+                if self.image_axes[0] < self.image_axes[1]:
+                    data = self.data[self.frame_index].transpose()
+                else:
+                    data = self.data[self.frame_index]
+                im.set_data(self.axis_ranges[self.image_axes[0]],
+                            self.axis_ranges[self.image_axes[1]], data)
+            else:
+                im.set_array(self.data[self.frame_index])
             slider.cval = val
 
     def _sanitize_axis_ranges(self, axis_ranges, data):
@@ -749,10 +780,10 @@ class ImageAnimator(ArrayAnimator):
         # Run super class's version of this function.
         axis_ranges = super(ImageAnimator, self)._sanitize_axis_ranges(axis_ranges, data)
         # Check that axis ranges which are array type are only for slider axes.
-        for i, d in enumerate(data.shape):
-            if len(axis_ranges[i]) == d:
-                if i not in self.slider_axes:
-                    raise ValueError("Slider axes mis-match, non-slider axes need [min,max] pairs")
+        #for i, d in enumerate(data.shape):
+        #    if len(axis_ranges[i]) == d:
+        #        if i not in self.slider_axes:
+        #            raise ValueError("Slider axes mis-match, non-slider axes need [min,max] pairs")
         return axis_ranges
 
 
