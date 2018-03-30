@@ -600,7 +600,7 @@ class ArrayAnimator(BaseFuncAnimator):
                         # min max pair for slider axes should be converted
                         # to an array
                 elif i in self.slider_axes:
-                    axis_ranges[i] = np.arange(axis_ranges[i][0], axis_ranges[i][1])
+                    axis_ranges[i] = np.arange(axis_ranges[i][0], axis_ranges[i][1]+1)
 
             # If we have a whole list of values for the axis, make sure we are a slider axis.
             elif len(axis_ranges[i]) == d or axis_ranges[i].shape == data.shape:
@@ -611,6 +611,13 @@ class ArrayAnimator(BaseFuncAnimator):
                 raise ValueError("axis_ranges must be None or a list with length equal to number "
                                  "of axes in data whose elements are either None, [min,max], "
                                  "or a list/array of same length as the plot/image axis of data.")
+
+            # Due to some reason, if a slider axis range is of length two and the
+            # difference between the entries is 1, the slider start and end both get
+            # set to the 0th value stopping the animation updating the plot.
+            # In this case iterate the latter element by one to get the desired behaviour.
+            if len(axis_ranges[i]) == 2 and (axis_ranges[i][-1] - axis_ranges[i][0] == 1):
+                axis_ranges[i][-1] += 1
         return axis_ranges
 
     @abc.abstractmethod
