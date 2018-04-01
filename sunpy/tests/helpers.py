@@ -7,6 +7,7 @@ import warnings
 import tempfile
 import platform
 import os
+import datetime
 
 import pytest
 import numpy as np
@@ -52,6 +53,7 @@ def warnings_as_errors(request):
 
 hash_library = hash.hash_library
 new_hash_library = {}
+test_fig_dir = 'result_images_{:%H%M%S}'.format(datetime.datetime.now())
 
 
 def figure_test(test_function):
@@ -85,9 +87,9 @@ def figure_test(test_function):
             fig = plt.gcf()
 
         # Save the image that was generated
-        if not os.path.exists('result_images'):
-            os.mkdir('result_images')
-        result_image_loc = os.path.join('result_images', '{}.png'.format(name))
+        if not os.path.exists(test_fig_dir):
+            os.mkdir(test_fig_dir)
+        result_image_loc = os.path.join(test_fig_dir, '{}.png'.format(name))
         plt.savefig(result_image_loc)
         plt.close()
 

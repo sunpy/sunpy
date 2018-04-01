@@ -76,5 +76,5 @@ $RECYCLE.BIN/
 .pytest_cache/
 sunpydata.sqlite
 
-result_images
+result_images*
 .pytest_cache

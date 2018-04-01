@@ -14,7 +14,7 @@ else:
     matplotlib.use('Agg')
 
 from sunpy.tests.hash import HASH_LIBRARY_NAME
-from sunpy.tests.helpers import new_hash_library
+from sunpy.tests.helpers import new_hash_library, test_fig_dir
 from sunpy.extern import six
 
 import pytest
@@ -49,7 +49,7 @@ def pytest_runtest_setup(item):
 def pytest_unconfigure(config):
     if len(new_hash_library) > 0:
         # Write the new hash library in JSON
-        hashfile = os.path.join('result_images', HASH_LIBRARY_NAME)
+        hashfile = os.path.join(test_fig_dir, HASH_LIBRARY_NAME)
         with open(hashfile, 'w') as outfile:
             json.dump(new_hash_library, outfile, sort_keys=True, indent=4, separators=(',', ': '))
 
