@@ -11,7 +11,23 @@ pip-run: &pip-install
     . venv/bin/activate
     pip install -q -r requirements/docs.txt
 
+conda-run: &conda-install
+  name: Install conda environment from env file
+  command: |
+    wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
+    export PATH=/home/circleci/miniconda2/bin:$PATH
+    chmod +x miniconda.sh && ./miniconda.sh -b
+    conda env create --file sunpy/tests/figure_tests_env_3.5.yml
+    source activate sunpy-figure-tests-3.5
+
+figure-run: &figure-tests
+  name: Run figure tests
+  command: |
+    python setup.py test --figure-only
+    python sunpy/tests/circle_image_tests.py
+
 version: 2
+
 jobs:
   egg-info-36:
     docker:
@@ -58,6 +74,16 @@ jobs:
           paths:
             - ~/sunpy/data/sample_data
 
+  nightly-35:
+    docker:
+      - image: circleci/python:3.5
+    steps:
+      - run: export ENV_FILE="figure_tests_env_3.5.yml"
+      - run: export ENV_NAME="sunpy-figure-tests-3.5"
+      - checkout
+      - run: *conda-install
+      - run: *figure-tests
+
 
 workflows:
   version: 2
@@ -68,9 +94,9 @@ workflows:
       - egg-info-35
       - egg-info-27
 
-  test-documentation:
+  testing-nightly:
     jobs:
-      - html-docs
+      - nightly-35
 
 
 notify:
