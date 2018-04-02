@@ -233,13 +233,13 @@ def _(time_string, time_format='', **kwargs):
 
 @parse_time.register(np.datetime64)
 def _(time_string, time_format='', **kwargs):
-    if 'datetime64' in time_format:
         return _parse_dt64(time_string)
 
 
 @parse_time.register(np.ndarray)
 def _(time_string, time_format='', **kwargs):
-    return np.array([_parse_dt64(dt) for dt in time_string])
+    if 'datetime64' in time_format:
+        return np.array([_parse_dt64(dt) for dt in time_string])
 
 
 @parse_time.register(astropy.time.Time)
