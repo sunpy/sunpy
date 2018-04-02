@@ -133,6 +133,7 @@ def _parse_dt64(dt):
     # Validate (in an agnostic way) that we are getting a datetime rather than a date
     return datetime(*(dt.astype(datetime).timetuple()[:6]))
 
+
 @singledispatch
 def parse_time(time_string, time_format='', **kwargs):
     """
@@ -161,13 +162,14 @@ def parse_time(time_string, time_format='', **kwargs):
     """
     raise ValueError("'{tstr!s}' is not a valid time string!".format(tstr=time_string))
 
+
 @parse_time.register(str)
 def _(time_string, time_format='', **kwargs):
     if time_string == 'now':
-            return datetime.utcnow()
+        return datetime.utcnow()
     else:
-           # remove trailing zeros and the final dot to allow any
-           # number of zeros. This solves issue #289
+        # remove trailing zeros and the final dot to allow any
+        # number of zeros. This solves issue #289
         if '.' in time_string:
             time_string = time_string.rstrip("0").rstrip(".")
         for time_format in TIME_FORMAT_LIST:
@@ -182,7 +184,6 @@ def _(time_string, time_format='', **kwargs):
                 return datetime.strptime(ts, time_format) + time_delta
             except ValueError:
                 pass
-    
         time_string_parse_format = kwargs.pop('_time_string_parse_format', None)
         if time_string_parse_format is not None:
             ts, time_delta = _regex_parse_time(time_string,
@@ -192,50 +193,59 @@ def _(time_string, time_format='', **kwargs):
             else:
                 return datetime.strptime(time_string, time_string_parse_format)
         raise ValueError("'{tstr!s}' is not a valid time string!".format(tstr=time_string))
-        
+
+
 @parse_time.register(pandas.Timestamp)
 def _(time_string, time_format='', **kwargs):
-     return time_string.to_pydatetime()
- 
+    return time_string.to_pydatetime()
+
+
 @parse_time.register(pandas.Series)
 def _(time_string, time_format='', **kwargs):
     return np.array([dt.to_pydatetime() for dt in time_string])
+
 
 @parse_time.register(pandas.DatetimeIndex)
 def _(time_string, time_format='', **kwargs):
     return time_string._mpl_repr()
 
+
 @parse_time.register(datetime)
 def _(time_string, time_format='', **kwargs):
     return time_string
+
 
 @parse_time.register(date)
 def _(time_string, time_format='', **kwargs):
     return datetime.combine(time_string, time())
 
+
 @parse_time.register(tuple)
 def _(time_string, time_format='', **kwargs):
     return datetime(*time_string)
+
 
 @parse_time.register(float)
 @parse_time.register(int)
 def _(time_string, time_format='', **kwargs):
     return datetime(1979, 1, 1) + timedelta(0, time_string)
 
+
 @parse_time.register(np.datetime64)
 def _(time_string, time_format='', **kwargs):
     if 'datetime64' in time_format:
         return _parse_dt64(time_string)
 
+
 @parse_time.register(np.ndarray)
 def _(time_string, time_format='', **kwargs):
     return np.array([_parse_dt64(dt) for dt in time_string])
+
 
 @parse_time.register(astropy.time.Time)
 def _(time_string, time_format='', **kwargs):
     return time_string.datetime
 
-    
 
 def is_time(time_string, time_format=''):
     """
