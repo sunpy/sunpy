@@ -19,6 +19,7 @@ conda-run: &conda-install
     chmod +x miniconda.sh && ./miniconda.sh -b
     conda env create --file sunpy/tests/figure_tests_env_3.5.yml
     source activate sunpy-figure-tests-3.5
+    python --version
 
 figure-run: &figure-tests
   name: Run figure tests
