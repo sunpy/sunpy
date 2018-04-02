@@ -238,7 +238,7 @@ def _(time_string, time_format='', **kwargs):
 
 @parse_time.register(np.ndarray)
 def _(time_string, time_format='', **kwargs):
-    if 'datetime64' in time_format:
+    if 'datetime64' in str(time_string.dtype):
         return np.array([_parse_dt64(dt) for dt in time_string])
 
 
