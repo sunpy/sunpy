@@ -46,11 +46,18 @@ def hash_figure(figure=None, out_stream=None):
 
     figure.savefig(imgdata, format='png')
 
-    imgdata.seek(0)
-    buf = imgdata.read()
+    out = _hash_file(imgdata)
     if out_stream is None:
         imgdata.close()
+    return out
 
+
+def _hash_file(in_stream):
+    """
+    Hashes an already opened file
+    """
+    in_stream.seek(0)
+    buf = in_stream.read()
     hasher = hashlib.sha256()
     hasher.update(buf)
     return hasher.hexdigest()
