@@ -140,7 +140,7 @@ class Downloader(object):
         out : None
         """
         # Load balancing?
-        # @todo: explain
+        # TODO: explain
 
         server = self._get_server(url)
 
