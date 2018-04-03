@@ -589,32 +589,29 @@ class JSOCClient(object):
         if isinstance(requests, six.string_types) or not isiterable(requests):
             requests = [requests]
 
+        default_dir = config.get("downloads", "download_dir")
+        paths = []
         c = drms.Client()
+        temp_dict = self.query_args[0]
+        if path is None:
+            path = os.path.join(default_dir, '{file}')
+        elif isinstance(path, six.string_types) and '{file}' not in path:
+            path = os.path.join(path, '{file}')
+
         for i, request in enumerate(requests):
             if isinstance(request, six.string_types):
                 r = c.export_from_id(request)
                 requests[i] = r
-
-        default_dir = config.get("downloads", "download_dir")
-        paths = []
-        for i, request in enumerate(requests):
-            for filename in request.data['filename']:
-                if path is None:
-                    fname = os.path.join(default_dir, '{file}')
-                elif isinstance(path, six.string_types) and '{file}' not in path:
-                    fname = os.path.join(path, '{file}')
+            for filename in requests[i].data['filename']:
+                temp_dict['file'] = filename
+                ext = os.path.splitext(filename)[1]
+                if path.endswith(ext):
+                    fname = path.strip(ext)
                 else:
                     fname = path
-
-                temp_dict = self.query_args[0]
-                if '.fits' in path:
-                    filename = filename.strip('.fits')
-                temp_dict['file'] = filename
                 fname = fname.format(**temp_dict)
                 fname = os.path.expanduser(fname)
-
                 fname = partial(simple_path, fname)
-
                 paths.append(fname.args[0])
 
         if downloader is None:
@@ -650,7 +647,6 @@ class JSOCClient(object):
             else:
                 if progress:
                     self.check_request(request)
-
         if urls:
             for i, url in enumerate(urls):
                 downloader.download(url, callback=results.require([url]),
