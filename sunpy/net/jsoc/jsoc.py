@@ -3,6 +3,7 @@ from __future__ import print_function, absolute_import
 
 import os
 import time
+from functools import partial
 
 import numpy as np
 import pandas as pd
@@ -25,6 +26,9 @@ __all__ = ['JSOCClient', 'JSOCResponse']
 
 PKEY_LIST_TIME = {'T_START', 'T_REC', 'T_OBS', 'MidTime', 'OBS_DATE',
                   'obsdate', 'DATE_OBS', 'starttime', 'stoptime', 'UTC_StartTime'}
+
+def simple_path(path, sock, url):
+    return path
 
 
 class JSOCResponse(object):
@@ -208,6 +212,9 @@ class JSOCClient(object):
         >>> res.wait(progress=True)   # doctest: +SKIP
 
     """
+
+    def __init__(self):
+        self.query_args = None
 
     def search(self, *query, **kwargs):
         """
@@ -407,6 +414,7 @@ class JSOCClient(object):
         """
 
         requests = []
+        self.query_args = jsoc_response.query_args
         for block in jsoc_response.query_args:
 
             ds = self._make_recordset(**block)
@@ -587,9 +595,27 @@ class JSOCClient(object):
                 r = c.export_from_id(request)
                 requests[i] = r
 
-        if path is None:
-            path = config.get('downloads', 'download_dir')
-        path = os.path.expanduser(path)
+        default_dir = config.get("downloads", "download_dir")
+        paths = []
+        for i, request in enumerate(requests):
+            for filename in request.data['filename']:
+                if path is None:
+                    fname = os.path.join(default_dir, '{file}')
+                elif isinstance(path, six.string_types) and '{file}' not in path:
+                    fname = os.path.join(path, '{file}')
+                else:
+                    fname = path
+
+                temp_dict = self.query_args[0]
+                if '.fits' in path:
+                    filename = filename.strip('.fits')
+                temp_dict['file'] = filename
+                fname = fname.format(**temp_dict)
+                fname = os.path.expanduser(fname)
+
+                fname = partial(simple_path, fname)
+
+                paths.append(fname.args[0])
 
         if downloader is None:
             downloader = Downloader(max_conn=max_conn, max_total=max_conn)
@@ -600,14 +626,11 @@ class JSOCClient(object):
             results = Results(lambda _: downloader.stop())
 
         urls = []
-        # FIXME
-        results.map_ = []
         for request in requests:
 
             if request.status == 0:
                 for index, data in request.data.iterrows():
-
-                    is_file = os.path.isfile(os.path.join(path, data['filename']))
+                    is_file = os.path.isfile(paths[index])
                     if overwrite or not is_file:
                         url_dir = request.request_url + '/'
                         urls.append(urllib.parse.urljoin(url_dir, data['filename']))
@@ -617,10 +640,8 @@ class JSOCClient(object):
                                         "has already been downloaded"
                         print(print_message.format(data['filename']))
                         # Add the file on disk to the output
-                        # FIXME
-                        #results.map_.update({data['filename']:
-                        #                    {'path': os.path.join(path, data['filename'])}})
-                        results.map_.append(os.path.join(path, data['filename']))
+                        #results.require([paths[index]])
+                        #results.poke()
 
                 if progress:
                     print_message = "{0} URLs found for download. Totalling {1}MB"
@@ -631,9 +652,9 @@ class JSOCClient(object):
                     self.check_request(request)
 
         if urls:
-            for url in urls:
+            for i, url in enumerate(urls):
                 downloader.download(url, callback=results.require([url]),
-                                    errback=lambda x: print(x), path=path)
+                                    errback=lambda x: print(x), path=paths[i])
 
         else:
             # Make Results think it has finished.
