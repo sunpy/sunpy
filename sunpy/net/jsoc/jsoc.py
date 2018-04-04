@@ -4,7 +4,7 @@ from __future__ import print_function, absolute_import
 import os
 import time
 from functools import partial
-from typing import List, Any
+from collections import Sequence
 
 import numpy as np
 import pandas as pd
@@ -28,11 +28,12 @@ __all__ = ['JSOCClient', 'JSOCResponse']
 PKEY_LIST_TIME = {'T_START', 'T_REC', 'T_OBS', 'MidTime', 'OBS_DATE',
                   'obsdate', 'DATE_OBS', 'starttime', 'stoptime', 'UTC_StartTime'}
 
+
 def simple_path(path, sock, url):
     return path
 
 
-class JSOCResponse(object):
+class JSOCResponse(Sequence):
     def __init__(self, table=None):
         """
         table : `astropy.table.Table`
@@ -56,6 +57,12 @@ class JSOCResponse(object):
             return 0
         else:
             return len(self.table)
+
+    def __getitem__(self, item):
+        return type(self)(self.table[item])
+
+    def __iter__(self):
+        return (t for t in [self])
 
     def append(self, table):
         if self.table is None:
