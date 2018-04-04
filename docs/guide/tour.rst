@@ -317,16 +317,6 @@ is below::
 
   >>> results = Fido.search(a.Time("2011-09-20T01:00:00", "2011-09-20T02:00:00"),
   ...                       a.Instrument('EIT'))   # doctest:  +REMOTE_DATA
-   [<QTable length=4>
-       Start Time [1]       End Time [1]    Source ...   Type   Wavelength [2]
-                                                   ...             Angstrom
-           str19               str19         str4  ...   str8      float64
-    ------------------- ------------------- ------ ... -------- --------------
-    2011-09-20 01:00:15 2011-09-20 01:00:27   SOHO ... FULLDISK 171.0 .. 171.0
-    2011-09-20 01:06:13 2011-09-20 01:08:15   SOHO ... FULLDISK 284.0 .. 284.0
-    2011-09-20 01:13:53 2011-09-20 01:14:05   SOHO ... FULLDISK 195.0 .. 195.0
-    2011-09-20 01:19:47 2011-09-20 01:20:19   SOHO ... FULLDISK 304.0 .. 304.0]
-
   >>> Fido.fetch(results, path="./directory/")  # doctest: +SKIP
   ['./directory/efz20110920.010015',
    './directory/efz20110920.010613',

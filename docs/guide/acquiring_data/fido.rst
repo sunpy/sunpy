@@ -31,13 +31,6 @@ client specific, such as `a.vso <sunpy.net.vso.attrs>` or
 `a.jsoc <sunpy.net.jsoc.attrs>`.::
 
     >>> result = Fido.search(a.Time('2012/3/4', '2012/3/6'), a.Instrument('lyra')) # doctest: +REMOTE_DATA
-    [<class 'sunpy.net.dataretriever.client.QueryResponse'><Table length=3>
-         Start Time           End Time      Source Instrument Wavelength
-           str19               str19         str6     str4       str3
-    ------------------- ------------------- ------ ---------- ----------
-    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
-    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan
-    2012-03-04 00:00:00 2012-03-06 00:00:00 Proba2       lyra        nan]
 
 This returns an `~sunpy.net.fido_factory.UnifiedResponse` object containing
 information on the available online files which fit the criteria specified by
