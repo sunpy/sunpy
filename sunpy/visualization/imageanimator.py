@@ -9,6 +9,7 @@ import matplotlib.animation as mplanim
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 import mpl_toolkits.axes_grid1.axes_size as Size
 import astropy.wcs
+import astropy.units as u
 
 from sunpy.extern import six
 from sunpy.extern.six.moves import range
@@ -1032,9 +1033,11 @@ class ImageAnimatorWCS(ImageAnimator):
         if self.unit_y_axis is not None:
             axes.coords[1].set_format_unit(self.unit_y_axis)
 
-
-        axes.coords[2].set_ticks(spacing = tick_spacing , exclude_overlapping=True)
-        axes.coords[1].set_ticks(spacing = tick_spacing , exclude_overlapping=True)
+        if not isinstance(tick_spacing, u.Quantity ):
+            raise TypeError("Astropy Quantities should be provided")
+        else:
+            axes.coords[2].set_ticks(spacing = tick_spacing , exclude_overlapping=True)
+            axes.coords[1].set_ticks(spacing = tick_spacing , exclude_overlapping=True)
 
         if xlabel is None:
             axes.coords[2].set_axislabel(self.wcs.wcs.ctype[0])
