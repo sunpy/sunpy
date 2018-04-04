@@ -40,8 +40,8 @@ instructions on how to download data using Fido, see :ref:`downloading_data`.
 To see a summary of results of our query, simple type the name of the
 variable set to the Fido search, in this case, result::
 
-    >>> result # doctest: +SKIP
-    <sunpy.net.fido_factory.UnifiedResponse object at 0x7feedb6558d0>
+    >>> result # doctest: +ELLIPSIS +REMOTE_DATA
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
          Start Time           End Time      Source Instrument Wavelength
            str19               str19         str6     str4       str3

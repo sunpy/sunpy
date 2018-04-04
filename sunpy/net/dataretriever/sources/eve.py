@@ -13,8 +13,10 @@ from ..client import GenericClient
 
 
 __all__ = ['EVEClient']
+
 BASEURL = ('http://lasp.colorado.edu/eve/data_access/evewebdata/quicklook/'
            'L0CS/SpWx/%Y/%Y%m%d_EVE_L0CS_DIODES_1m.txt')
+
 
 class EVEClient(GenericClient):
     """
@@ -25,24 +27,22 @@ class EVEClient(GenericClient):
 
     Examples
     --------
+
     >>> from sunpy.net import Fido, attrs as a
     >>> results = Fido.search(a.Time("2016/1/1", "2016/1/2"),
     ...                       a.Instrument('EVE'), a.Level(0))  #doctest: +REMOTE_DATA
-    [<class 'sunpy.net.dataretriever.client.QueryResponse'><Table length=2>
-         Start Time           End Time      Source Instrument Wavelength
-           str19               str19         str3     str3       str3
-    ------------------- ------------------- ------ ---------- ----------
-    2016-01-01 00:00:00 2016-01-02 00:00:00    SDO        eve        nan
-    2016-01-02 00:00:00 2016-01-03 00:00:00    SDO        eve        nan]
-    >>> results  #doctest: +SKIP
-    <sunpy.net.fido_factory.UnifiedResponse object at 0x7f7fb0bb1a58>
+    >>> results  #doctest: +REMOTE_DATA +ELLIPSIS
+    <sunpy.net.fido_factory.UnifiedResponse object at ...>
     Results from 1 Provider:
+    <BLANKLINE>
     2 Results from the EVEClient:
          Start Time           End Time      Source Instrument Wavelength
            str19               str19         str3     str3       str3
     ------------------- ------------------- ------ ---------- ----------
     2016-01-01 00:00:00 2016-01-02 00:00:00    SDO        eve        nan
     2016-01-02 00:00:00 2016-01-03 00:00:00    SDO        eve        nan
+    <BLANKLINE>
+    <BLANKLINE>
 
     """
 
