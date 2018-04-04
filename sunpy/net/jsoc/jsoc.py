@@ -4,6 +4,7 @@ from __future__ import print_function, absolute_import
 import os
 import time
 from functools import partial
+from typing import List, Any
 
 import numpy as np
 import pandas as pd
@@ -612,7 +613,7 @@ class JSOCClient(object):
                 fname = fname.format(**temp_dict)
                 fname = os.path.expanduser(fname)
                 fname = partial(simple_path, fname)
-                paths.append(fname.args[0])
+                paths.append(fname)
 
         if downloader is None:
             downloader = Downloader(max_conn=max_conn, max_total=max_conn)
@@ -627,27 +628,28 @@ class JSOCClient(object):
 
             if request.status == 0:
                 for index, data in request.data.iterrows():
-                    is_file = os.path.isfile(paths[index])
+                    is_file = os.path.isfile(paths[index].args[0])
                     if overwrite or not is_file:
                         url_dir = request.request_url + '/'
                         urls.append(urllib.parse.urljoin(url_dir, data['filename']))
 
-                    else:
+                    if not overwrite and is_file:
                         print_message = "Skipping download of file {} as it " \
-                                        "has already been downloaded"
+                                        "has already been downloaded." \
+                                        "If you want to redownload the data, "\
+                                        "please set overwrite to True"
                         print(print_message.format(data['filename']))
                         # Add the file on disk to the output
                         #results.require([paths[index]])
                         #results.poke()
 
-                if progress:
-                    print_message = "{0} URLs found for download. Totalling {1}MB"
-                    print(print_message.format(len(urls), request._d['size']))
-
             else:
                 if progress:
                     self.check_request(request)
         if urls:
+            if progress:
+                print_message = "{0} URLs found for download. Totalling {1}MB"
+                print(print_message.format(len(urls), request._d['size']))
             for i, url in enumerate(urls):
                 downloader.download(url, callback=results.require([url]),
                                     errback=lambda x: print(x), path=paths[i])
