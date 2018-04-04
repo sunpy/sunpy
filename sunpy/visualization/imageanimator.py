@@ -1032,8 +1032,9 @@ class ImageAnimatorWCS(ImageAnimator):
         if self.unit_y_axis is not None:
             axes.coords[1].set_format_unit(self.unit_y_axis)
 
-        axes.coords[2].set_ticks(spacing = tick_spacing * self.wcs.wcs.cunit[0], exclude_overlapping=True)
-        axes.coords[1].set_ticks(spacing = tick_spacing * self.wcs.wcs.cunit[1], exclude_overlapping=True)
+
+        axes.coords[2].set_ticks(spacing = tick_spacing , exclude_overlapping=True)
+        axes.coords[1].set_ticks(spacing = tick_spacing , exclude_overlapping=True)
 
         if xlabel is None:
             axes.coords[2].set_axislabel(self.wcs.wcs.ctype[0])
