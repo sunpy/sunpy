@@ -180,7 +180,7 @@ are stored in a dictionary. The following code grabs the dictionary and gets all
 keys.::
 
     >>> solar_constants = con.constants
-    >>> solar_constants.keys()   # doctest:
+    >>> solar_constants.keys()
     dict_keys(['mass', 'radius', 'luminosity', 'mean distance',
                'perihelion distance', 'aphelion distance', 'age',
                'solar flux unit', 'visual magnitude', 'average angular size',

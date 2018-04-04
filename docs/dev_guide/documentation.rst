@@ -38,7 +38,7 @@ code comments. The examples from the example gallery can be found in
 (as well as Numpydoc, astropy-helpers, and sphinx-gallery) installed on
 your computer. In the root directory run ::
 
-    python setup.py build_docs -w -l 2> /dev/null
+    python setup.py build_docs
 
 This will generate HTML documentation for SunPy in the ``docs/_build/html``
 directory. The gallery examples are located under
