@@ -14,16 +14,15 @@ this example is just one method of many.
 import numpy as np
 import matplotlib.pyplot as plt
 
-import sunpy.data.sample
 from sunpy.timeseries import TimeSeries
+from sunpy.data.sample import NOAAINDICES_TIMESERIES as noaa_ind
 
 ##############################################################################
 # We will now create a TimeSeries object from an observational data source,
 # Also, we will truncate it to do analysis on a smaller time duration of 10
 # years.
 
-ts_noaa_ind = sunpy.timeseries.TimeSeries(
-    sunpy.data.sample.NOAAINDICES_TIMESERIES, source='NOAAIndices')
+ts_noaa_ind = TimeSeries(noaa_ind, source='NOAAIndices')
 my_timeseries = ts_noaa_ind.truncate('1991/01/01', '2001/01/01')
 my_timeseries.peek()
 
@@ -51,11 +50,9 @@ def findpeaks(series, DELTA):
 
     Returns
     -------
-    minpeaks : `list`
-        list of pos, val pairs of local minima points.
-
-    maxpeaks : `list`
-        list of pos, val pairs of local maxima points.
+    minpeaks, maxpeaks : `list`
+        Lists consisting of pos, val pairs for both local minima points and
+        local maxima points.
     """
     # Set inital values
     mn, mx = np.Inf, -np.Inf
