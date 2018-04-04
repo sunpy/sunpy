@@ -3,6 +3,7 @@ from __future__ import print_function, absolute_import
 
 import os
 import time
+import warnings
 from functools import partial
 from collections import Sequence
 
@@ -33,6 +34,10 @@ def simple_path(path, sock, url):
     return path
 
 
+class NotExportedError(Exception):
+    pass
+
+
 class JSOCResponse(Sequence):
     def __init__(self, table=None):
         """
@@ -41,7 +46,7 @@ class JSOCResponse(Sequence):
 
         self.table = table
         self.query_args = None
-        self.requestIDs = None
+        self.requests = None
 
     def __str__(self):
         return str(self.table)
@@ -69,6 +74,13 @@ class JSOCResponse(Sequence):
             self.table = table
         else:
             self.table = astropy.table.vstack([self.table, table])
+
+    def response_block_properties(self):
+        """
+        Returns a set of class attributes on all the response blocks.
+        """
+        warnings.warn("The JSOC client does not support response block properties", UserWarning)
+        return set()
 
 
 class JSOCClient(object):
@@ -221,9 +233,6 @@ class JSOCClient(object):
 
     """
 
-    def __init__(self):
-        self.query_args = None
-
     def search(self, *query, **kwargs):
         """
         Build a JSOC query and submit it to JSOC for processing.
@@ -286,23 +295,23 @@ class JSOCClient(object):
             >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
             ...                          a.jsoc.Series('hmi.v_45s'),
             ...                          a.jsoc.Keys('T_REC, DATAMEAN, OBS_VR'))  # doctest: +REMOTE_DATA
-            >>> print(response)  # doctest: +REMOTE_DATA
-                     T_REC               DATAMEAN            OBS_VR
-            ----------------------- ------------------ ------------------
-            2014.01.01_00:00:45_TAI        1906.518188        1911.202614
-            2014.01.01_00:01:30_TAI        1908.876221        1913.945512
-            2014.01.01_00:02:15_TAI          1911.7771 1916.6679989999998
-            2014.01.01_00:03:00_TAI        1913.422485 1919.3699239999999
-            2014.01.01_00:03:45_TAI        1916.500488        1922.050862
-            2014.01.01_00:04:30_TAI        1920.414795 1924.7110050000001
-            2014.01.01_00:05:15_TAI        1922.636963         1927.35015
-            2014.01.01_00:06:00_TAI 1924.6973879999998        1929.968523
-            2014.01.01_00:06:45_TAI        1927.758301 1932.5664510000001
-            2014.01.01_00:07:30_TAI        1929.646118         1935.14288
-            2014.01.01_00:08:15_TAI        1932.097046        1937.698521
-            2014.01.01_00:09:00_TAI 1935.7286379999998         1940.23353
-            2014.01.01_00:09:45_TAI        1937.754028        1942.747605
-            2014.01.01_00:10:30_TAI 1940.1462399999998        1945.241147
+            >>> print(response)  # doctest: +REMOTE_DATA +FLOAT_CMP
+                     T_REC            DATAMEAN     OBS_VR
+            ----------------------- ----------- -----------
+            2014.01.01_00:00:45_TAI 1906.518188 1911.202614
+            2014.01.01_00:01:30_TAI 1908.876221 1913.945512
+            2014.01.01_00:02:15_TAI   1911.7771 1916.667999
+            2014.01.01_00:03:00_TAI 1913.422485 1919.369924
+            2014.01.01_00:03:45_TAI 1916.500488 1922.050862
+            2014.01.01_00:04:30_TAI 1920.414795 1924.711005
+            2014.01.01_00:05:15_TAI 1922.636963  1927.35015
+            2014.01.01_00:06:00_TAI 1924.697388 1929.968523
+            2014.01.01_00:06:45_TAI 1927.758301 1932.566451
+            2014.01.01_00:07:30_TAI 1929.646118  1935.14288
+            2014.01.01_00:08:15_TAI 1932.097046 1937.698521
+            2014.01.01_00:09:00_TAI 1935.728638  1940.23353
+            2014.01.01_00:09:45_TAI 1937.754028 1942.747605
+            2014.01.01_00:10:30_TAI  1940.14624 1945.241147
 
             *Example 3*
 
@@ -404,7 +413,8 @@ class JSOCClient(object):
 
     def request_data(self, jsoc_response, **kwargs):
         """
-        Request that JSOC stages the data for download.
+        Request that JSOC stages the data for download. This method will not
+        wait for the request to be staged.
 
         Parameters
         ----------
@@ -436,7 +446,6 @@ class JSOCClient(object):
 
             method = 'url' if protocol == 'fits' else 'url_quick'
             r = cd.export(ds, method=method, protocol=protocol)
-            r.wait()
 
             requests.append(r)
 
@@ -467,11 +476,11 @@ class JSOCClient(object):
         for request in requests:
             status = request.status
 
-            if status == 0:  # Data ready to download
+            if status == request._status_code_ok:  # Data ready to download
                 print("Request {0} was exported at {1} and is ready to "
                       "download.".format(request.id,
                                          request._d['exptime']))
-            elif status == 1:
+            elif status in request._status_codes_pending:
                 print_message = "Request {0} was submitted {1} seconds ago, "\
                                 "it is not ready to download."
                 print(print_message.format(request.id,
@@ -479,7 +488,7 @@ class JSOCClient(object):
             else:
                 print_message = "Request returned status: {0} with error: {1}"
                 json_status = request.status
-                json_error = request._d['error']
+                json_error = request._d.get('error', '')
                 print(print_message.format(json_status, json_error))
 
             allstatus.append(status)
@@ -530,7 +539,7 @@ class JSOCClient(object):
         if not isiterable(responses):
             responses = [responses]
         # Add them to the response for good measure
-        jsoc_response.requestIDs = [r.id for r in responses]
+        jsoc_response.requests = [r for r in responses]
         time.sleep(sleep/2.)
 
         r = Results(lambda x: None, done=lambda maps: [v['path'] for v in maps.values()])
@@ -592,32 +601,39 @@ class JSOCClient(object):
         res: `~sunpy.net.download.Results`
             A `~sunpy.net.download.Results` instance or `None` if no URLs to download
         """
+        c = drms.Client()
 
         # Convert Responses to a list if not already
         if isinstance(requests, six.string_types) or not isiterable(requests):
             requests = [requests]
 
-        default_dir = config.get("downloads", "download_dir")
-        paths = []
-        c = drms.Client()
-        temp_dict = self.query_args[0]
-        if path is None:
-            path = os.path.join(default_dir, '{file}')
-        elif isinstance(path, six.string_types) and '{file}' not in path:
-            path = os.path.join(path, '{file}')
-
+        # Ensure all the requests are drms ExportRequest objects
         for i, request in enumerate(requests):
             if isinstance(request, six.string_types):
                 r = c.export_from_id(request)
                 requests[i] = r
-            for filename in requests[i].data['filename']:
-                temp_dict['file'] = filename
+
+        # We only download if all are finished
+        if not all([r.has_succeeded() for r in requests]):
+            raise NotExportedError("Can not download as not all the requests have been exported for download yet.")
+
+        # Ensure path has a {file} in it
+        if path is None:
+            default_dir = config.get("downloads", "download_dir")
+            path = os.path.join(default_dir, '{file}')
+        elif isinstance(path, six.string_types) and '{file}' not in path:
+            path = os.path.join(path, '{file}')
+
+        paths = []
+        for request in requests:
+            for filename in request.data['filename']:
+                # Ensure we don't duplicate the file extension
                 ext = os.path.splitext(filename)[1]
                 if path.endswith(ext):
                     fname = path.strip(ext)
                 else:
                     fname = path
-                fname = fname.format(**temp_dict)
+                fname = fname.format(file=filename)
                 fname = os.path.expanduser(fname)
                 fname = partial(simple_path, fname)
                 paths.append(fname)
@@ -628,7 +644,8 @@ class JSOCClient(object):
         # A Results object tracks the number of downloads requested and the
         # number that have been completed.
         if results is None:
-            results = Results(lambda _: downloader.stop(), done=lambda maps: [v['path'] for v in maps.values()])
+            results = Results(lambda _: downloader.stop(),
+                              done=lambda maps: [v['path'] for v in maps.values()])
 
         urls = []
         for request in requests:

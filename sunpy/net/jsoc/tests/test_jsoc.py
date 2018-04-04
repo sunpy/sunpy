@@ -43,7 +43,7 @@ def test_empty_jsoc_response():
     Jresp = JSOCResponse()
     assert Jresp.table is None
     assert Jresp.query_args is None
-    assert Jresp.requestIDs is None
+    assert Jresp.requests is None
     assert str(Jresp) == 'None'
     assert repr(Jresp) == 'None'
     assert len(Jresp) == 0
@@ -77,6 +77,7 @@ def test_post_wavelength():
         attrs.Series('aia.lev1_euv_12s'), attrs.Wavelength(193 * u.AA) |
         attrs.Wavelength(335 * u.AA), attrs.Notify('jsoc@cadair.com'))
     aa = client.request_data(responses)
+    [r.wait() for r in aa]
     tmpresp = aa[0]._d
     assert tmpresp['protocol'] == 'fits'
     assert tmpresp['method'] == 'url'
@@ -271,6 +272,7 @@ def test_request_data_protocol():
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     req = client.request_data(responses)
+    req.wait()
     assert req._d['method'] == 'url'
     assert req._d['protocol'] == 'fits'
 
@@ -279,6 +281,7 @@ def test_request_data_protocol():
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'),
         attrs.Protocol('fits'))
     req = client.request_data(responses)
+    req.wait()
     assert req._d['method'] == 'url'
     assert req._d['protocol'] == 'fits'
 
@@ -287,6 +290,7 @@ def test_request_data_protocol():
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'),
         attrs.Protocol('as-is'))
     req = client.request_data(responses)
+    req.wait()
     assert req._d['method'] == 'url_quick'
     assert req._d['protocol'] == 'as-is'
 
@@ -297,6 +301,7 @@ def test_check_request():
         attrs.Time('2012/1/1T1:00:36', '2012/1/1T01:00:38'),
         attrs.Series('hmi.M_45s'), attrs.Notify('jsoc@cadair.com'))
     req = client.request_data(responses)
+    req.wait()
     assert client.check_request(req) == 0
 
 
