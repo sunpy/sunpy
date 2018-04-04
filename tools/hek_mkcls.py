@@ -269,3 +269,39 @@ def mk_cls(key, used, pad=1, nokeys=True, init=True, name=None, base='EventType'
         ret += '''    def __init__(self):
         EventType.__init__(self, %r)''' % name.lower()
     return ret
+
+if __name__ == '__main__':
+    BUFFER = 4096
+    used = set()
+    tmpl = (
+        os.path.join(os.path.dirname(__file__), 'hektemplate.py')
+        if len(sys.argv) <= 2 else sys.argv[2]
+    )
+    dest = (
+        os.path.join(
+            os.path.dirname(__file__), os.pardir, 'sunpy', 'net', 'hek',
+            'attrs.py')
+        if len(sys.argv) <= 1 else sys.argv[1]
+    )
+
+    if dest == '-':
+        fd = sys.stdout
+    else:
+        fd = open(dest, 'w')
+
+    tmplfd = open(tmpl)
+
+    while True:
+        buf = tmplfd.read(BUFFER)
+        if not buf:
+            break
+        fd.write(buf)
+
+    fd.write('\n\n')
+    fd.write('\n\n'.join(mk_cls(evt, used, name=NAMES[evt]) for evt in EVENTS))
+    fd.write('\n\n')
+    fd.write('\n\n'.join(mk_cls(evt, used, 0, 0, 0, NAMES[evt], 'object') for evt in OTHER_NOPAD))
+    fd.write('\n\n')
+    fd.write('\n\n'.join(mk_cls(evt, used, 1, 0, 0, NAMES[evt], 'object') for evt in OTHER))
+    fd.write('\n\n')
+    fd.write(mk_gen(set(fields) - used))
