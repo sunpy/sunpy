@@ -214,10 +214,6 @@ class JSOCClient(object):
         >>> requests.status  # doctest: +SKIP
         0
 
-    or::
-
-        >>> status = client.check_request(requests)  # doctest: +SKIP
-
     Once the status code is 0 you can download the data using the `get_request`
     method::
 
@@ -292,7 +288,7 @@ class JSOCClient(object):
             >>> response = client.search(a.jsoc.Time('2014-01-01T00:00:00', '2014-01-01T00:10:00'),
             ...                          a.jsoc.Series('hmi.v_45s'),
             ...                          a.jsoc.Keys('T_REC, DATAMEAN, OBS_VR'))  # doctest: +REMOTE_DATA
-            >>> print(response)  # doctest: +REMOTE_DATA +FLOAT_CMP
+            >>> print(response)  # doctest: +REMOTE_DATA +FLOAT_CMP +SKIP
                      T_REC            DATAMEAN     OBS_VR
             ----------------------- ----------- -----------
             2014.01.01_00:00:45_TAI 1906.518188 1911.202614
@@ -450,6 +446,7 @@ class JSOCClient(object):
             return requests[0]
         return requests
 
+    @deprecated('0.9', alternative='drms.ExportRequest.status')
     def check_request(self, requests):
         """
         Check the status of a request and print out a message about it.
@@ -544,13 +541,9 @@ class JSOCClient(object):
         r = Results(lambda x: None, done=lambda maps: [v['path'] for v in maps.values()])
 
         for response in responses:
-
-            if progress:
-                self.check_request(response)
-                r = self.get_request(response, path=path, overwrite=overwrite,
-                                     progress=progress, results=r)
-            else:
-                time.sleep(sleep)
+            response.wait(verbose=progress)
+            r = self.get_request(response, path=path, overwrite=overwrite,
+                                 progress=progress, results=r)
 
         return r
 
@@ -614,7 +607,8 @@ class JSOCClient(object):
 
         # We only download if all are finished
         if not all([r.has_succeeded() for r in requests]):
-            raise NotExportedError("Can not download as not all the requests have been exported for download yet.")
+            raise NotExportedError("Can not download as not all the requests"
+                                   "have been exported for download yet.")
 
         # Ensure path has a {file} in it
         if path is None:
@@ -665,10 +659,6 @@ class JSOCClient(object):
                         # Add the file on disk to the output
                         results.map_.update({data['filename']:
                                             {'path': paths[index].args[0]}})
-
-            else:
-                if progress:
-                    self.check_request(request)
         if urls:
             if progress:
                 print_message = "{0} URLs found for download. Full request totalling {1}MB"
@@ -871,7 +861,7 @@ class JSOCClient(object):
         # Get a set of the PrimeKeys that exist for the given series, and check
         # whether the passed PrimeKeys is a subset of that.
         pkeys = c.pkeys(iargs['series'])
-        pkeys_passed = iargs.get('primekey', None)    # pkeys_passes is a dict, with key-value pairs.
+        pkeys_passed = iargs.get('primekey', None)  # pkeys_passes is a dict, with key-value pairs.
         if pkeys_passed is not None:
             if not set(list(pkeys_passed.keys())) <= set(pkeys):
                 error_message = "Unexpected PrimeKeys were passed. The series {series} "\
@@ -900,7 +890,7 @@ class JSOCClient(object):
                 raise TypeError(error_message)
 
             elif isinstance(segs_passed, six.string_types):
-                segs_passed = segs_passed.replace(' ','').split(',')
+                segs_passed = segs_passed.replace(' ', '').split(',')
 
             if not set(segs_passed) <= set(segs):
                 error_message = "Unexpected Segments were passed. The series {series} "\
